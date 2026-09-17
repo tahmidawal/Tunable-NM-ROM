@@ -353,6 +353,45 @@ def controls_section(control_attempts, screen_attempts):
             + '\n'.join(rows) + spread)
 
 
+def resolution_rows():
+    """One row per (operator, rung, metric) from the resolution audit, for summary.json."""
+    rows = []
+    for path in sorted(LANE.glob('runs/*/audit.json')):
+        a = json.loads(path.read_text())
+        if not (a.get('labels') and a.get('top_rung_gate')):
+            continue
+        digest = sha(path)
+        for entry in a['checkpoints']:
+            name = entry['name']
+            lab = a['labels'][name]
+            for rung in a['rungs']:
+                t = a['models'][f'{name}@{rung}|timing']
+                base = dict(operator=name, arm=f'{name}@{rung}', capacity=f'{rung} intervals', params=None,
+                            dtype=None, seed=None, budget_s=None, epochs=None, best_epoch=None,
+                            stop_reason='frozen checkpoint, no training', job_id=a['job_id'], gpu=a['gpu'],
+                            attempt=a['attempt'], source=str(path.relative_to(WT)), source_sha256=digest,
+                            cross_job=False, rung=rung, label=lab['label'])
+                for cohort in ('validation', 'diagnosis'):
+                    m = a['models'].get(f'{name}@{rung}|{cohort}')
+                    if not m:
+                        continue
+                    tag = 'validation-32' if cohort == 'validation' else 'diagnosis-8'
+                    for block, metric in (('worst_over_evolved_times', 'worst_evolved_fixed_initial_error'),
+                                          ('worst_over_all_times', 'worst_all_times_fixed_initial_error'),
+                                          ('initial_time_term', 't0_term_fixed_initial_error')):
+                        rows.append(dict(base, cohort=tag, metric=metric, value=m[block]['maximum']))
+                        rows.append(dict(base, cohort=tag, metric=metric.replace('worst', 'median').replace('t0_term', 'median_t0_term'),
+                                         value=m[block]['median']))
+                fl = a['interpolation_floor'][f'validation@{rung}']['worst_over_evolved_times']['maximum']
+                rows.append(dict(base, cohort='validation-32', metric='interpolation_floor_worst_evolved', value=fl))
+                rows.append(dict(base, cohort='validation-32', metric='same_job_device_query_pooled_median_ms',
+                                 value=t['device_query_pooled_median_ms']))
+                if rung != 256:
+                    rows.append(dict(base, cohort='validation-32', metric='same_job_speedup_vs_own_256',
+                                     value=lab['base_median_ms'] / t['device_query_pooled_median_ms']))
+    return rows
+
+
 def resolution_section():
     """DESIGN §A5: the operator's own inference-time knob. Reads runs/*/audit.json written by
     audit_resolution.py (it carries `labels`), never a driver output."""
@@ -658,6 +697,7 @@ def main():
     rows += poisson_rows(poisson, fno_p, sha(FNO_POISSON_AUDIT))
     control_attempts = load_attempts('burgers', controls=True)
     rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS), references=False)
+    rows += resolution_rows()
     text = build(attempts, fno, launch, diagnosis, control_attempts)
     glossary = text.index('## Glossary')
     extra = poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + resolution_section().lstrip('\n')
@@ -671,7 +711,8 @@ def main():
     report.write_text(text)
     (HERE / 'summary.json').write_text(json.dumps(dict(
         generated=dt.datetime.now(dt.timezone.utc).isoformat(), report=report.name, generator_sha256=sha(__file__),
-        sources={str(a['path'].relative_to(WT)): a['sha'] for a in attempts} | {str(FNO_AUDIT.relative_to(WT)): sha(FNO_AUDIT), str(DIAGNOSIS.relative_to(WT)): sha(DIAGNOSIS), str(FNO_POISSON_AUDIT.relative_to(WT)): sha(FNO_POISSON_AUDIT)},
+        sources={str(p.relative_to(WT)): sha(p) for p in sorted(LANE.glob('runs/*/audit.json'))}
+                | {str(a['path'].relative_to(WT)): a['sha'] for a in attempts} | {str(FNO_AUDIT.relative_to(WT)): sha(FNO_AUDIT), str(DIAGNOSIS.relative_to(WT)): sha(DIAGNOSIS), str(FNO_POISSON_AUDIT.relative_to(WT)): sha(FNO_POISSON_AUDIT)},
         rule='every number in the report is read from these files; none is typed by hand; no cross-job speed ratio',
         rows=rows), indent=2) + '\n')
     print(report, len(rows), 'rows')

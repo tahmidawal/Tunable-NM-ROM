@@ -1,0 +1,83 @@
+% sections/intro.tex -- every number here is a macro from tables/numbers.tex.
+\section{Introduction}
+\label{sec:intro}
+
+A learned surrogate for a family of PDE solves is usually a single point in the
+accuracy--cost plane. A neural operator \citep{Li2020FNO,Lu2021DeepONet,
+Kovachki2023NeuralOperator} evaluates in one forward pass at one accuracy;
+getting a more accurate or a cheaper answer means training another model. A
+projection-based reduced-order model (ROM) has the opposite character: because
+it solves the discretised equations in a small number of coordinates, it
+inherits the solver's controls, and a classical linear ROM exposes an obvious
+family through its basis rank. A \emph{nonlinear-manifold} ROM
+\citep{LeeCarlberg2020,KimChoi2022NMROM} trades that rank for a learned
+decoder whose few coordinates reach further than the same number of linear
+modes, and in doing so appears to give the family up: the decoder is fixed once
+trained, and the solver's remaining knobs move cost far more than they move
+accuracy.
+
+This paper is about recovering the family without retraining, and about being
+precise on what it is worth. We work with a decoder that writes the solution as
+a fixed spatial \emph{bank} $\bank$ of $R$ functions times a small neural
+\emph{head} $\head$ of $k$ latent coordinates, and at inference we let the
+solver add $q$ fixed linear directions on top of the head's output,
+$u=\bank(\head(\latent)+\corr y)$. The rank $q$ dials the reachable set from
+the head's image ($q=0$) to the bank's whole span ($q=R$), where the model is a
+linear ROM and needs no nonlinear iteration at all. The paper has the same
+three-part skeleton as our earlier attempt at this claim, re-founded on this
+decoder and on evidence we now trust, and it reports the losses as losses.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{A tunable NM-ROM from one trained decoder.} With the test count
+  $M$ held fixed so that $q$ is the only control, the Burgers $256^2$ ladder is
+  monotone, every rung converges, and its four rungs span
+  $\nQxmErrSpan\times$ in error and $\nQxmCostSpan\times$ in cost inside one
+  allocation (\S\ref{sec:exp:qxm}); this meets a bar fixed before any run. The
+  cost side has two further levers, offline-certified quadrature rules
+  ($\nEqtopCostRatioMin$--$\nEqtopCostRatioMax\times$ the dense cost at
+  matched error, provisional) and the stopping tolerance
+  (\S\ref{sec:exp:panel}). At matched latent dimension the family beats the
+  classical linear ROM (\S\ref{sec:exp:head}); it does not beat a tuned
+  full-order solver or a well-trained neural operator at $256^2$, and we say
+  so first (\S\ref{sec:exp:panel}, \S\ref{sec:exp:operators}).
+\item \textbf{The architecture that makes it possible.} A bank that evaluates
+  per node, so the cached reduced cost is flat while the mesh grows
+  $\nMeshBurgersUnknownGrowth\times$ (\S\ref{sec:exp:mesh}); a linear skip in
+  the head, so the cold solve starts reliably; and the bank/head/correction
+  split, which is what lets a run-time rank interpolate between the head's
+  compression and the bank's floor (\S\ref{sec:method}).
+\item \textbf{The structural condition.} Where the weak residual is nonlinear in
+  the coefficients (Burgers), the corrections cost a growing nonlinear solve and
+  the ladder is a genuine trade. Where it is linear (Poisson, heat, waves) the
+  corrections are eliminated exactly, the top rung is the linear model, and it
+  is also the cheapest point: the family collapses, and on waves the learned
+  bank is itself worse than a POD basis of the same rank
+  (\S\ref{sec:exp:linear}). This says when the nonlinear manifold is worth
+  having.
+\item \textbf{Two methodological findings.} Every result is reported in a
+  three-layer decomposition---bank floor, best-found, solved---so that each
+  lever's effect can be assigned to the layer it acts on
+  (\S\ref{sec:method:layers}); and quadrature rules must be certified on states
+  the solver actually reaches, never by their fitting residual
+  (\S\ref{sec:exp:eq}).
+\end{enumerate}
+
+\paragraph{What we do not claim.} No speedup over an efficient full-order
+solver in 2D: at $256^2$ none of the $\nPanelReducedCount$ reduced-order
+subjects in the same-allocation panel is non-dominated once the full-order
+controls are included. No accuracy superiority over neural operators: a U-Net
+and a Transolver trained on the same data beat the ROM on the matched cohort,
+and only the FNO does not. No frontier over classical POD at every rank:
+POD-512 beats the best dense rung on the evolved metric. No cost ratio across
+jobs, ever. No convergence theory. And every number is single-seed,
+development-cohort evidence until the seed and sealed-cohort runs land
+(\S\ref{sec:limitations}).
+
+\paragraph{The reviewers' asks.} This is a resubmission, and the three reviews
+of the earlier version asked for specific things: one checkpoint per curve and
+a stated protocol (fxe8); competitive full-order solvers, precisely specified
+PDEs and harder domains (GwrW); tuned baselines on shared data, seeds, and a
+case where the nonlinear manifold is the enabling ingredient (5mgh). Each ask is
+mapped to the section that answers it, or to the limitation that concedes it,
+in Appendix~\ref{app:reviewers}.

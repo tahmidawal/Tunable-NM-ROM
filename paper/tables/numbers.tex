@@ -38,19 +38,42 @@
 \newcommand{\nColdMesh}{1024}
 \newcommand{\nColdStarts}{nearest, zero}
 \newcommand{\nEqtopBar}{0.116}
+\newcommand{\nEqtopCostRatioMax}{0.21}
+\newcommand{\nEqtopCostRatioMin}{0.18}
+\newcommand{\nEqtopLadderConverged}{yes}
+\newcommand{\nEqtopLadderCostSpan}{12.23}
+\newcommand{\nEqtopLadderErrSpan}{3.51}
+\newcommand{\nEqtopLadderFirstErr}{1.8891}
+\newcommand{\nEqtopLadderFirstMs}{59.1}
+\newcommand{\nEqtopLadderLastErr}{0.5389}
+\newcommand{\nEqtopLadderLastMs}{722.2}
+\newcommand{\nEqtopLadderMonotone}{yes}
+\newcommand{\nEqtopParentOneTwentyEightRho}{0.1908}
+\newcommand{\nEqtopParentTwoFiftySixRho}{0.1678}
+\newcommand{\nEqtopPendingJob}{3783811}
 \newcommand{\nEqtopPrimaryOneTwentyEight}{yes}
 \newcommand{\nEqtopPrimaryOneTwentyEightM}{2048}
 \newcommand{\nEqtopPrimaryOneTwentyEightRho}{0.0669}
-\newcommand{\nEqtopPrimarySixtyFour}{yes}
-\newcommand{\nEqtopPrimarySixtyFourM}{1024}
-\newcommand{\nEqtopPrimarySixtyFourRho}{0.0531}
+\newcommand{\nEqtopPrimaryOneTwentyEightStates}{64}
 \newcommand{\nEqtopPrimaryTwoFiftySix}{yes}
 \newcommand{\nEqtopPrimaryTwoFiftySixM}{2048}
 \newcommand{\nEqtopPrimaryTwoFiftySixRho}{0.1074}
+\newcommand{\nEqtopPrimaryTwoFiftySixStates}{64}
+\newcommand{\nEqtopQsixtyFourArchivedRho}{0.0531}
+\newcommand{\nEqtopQsixtyFourRedrawRho}{0.1220}
 \newcommand{\nEqtopStaticWorstFit}{1.5e-04}
 \newcommand{\nEqtopStaticWorstQ}{256}
 \newcommand{\nEqtopStaticWorstRho}{0.462}
-\newcommand{\nEqtopTopRungs}{\gen{pending: b-eqtop draw replication (job 3783811)}}
+\newcommand{\nEqtopStatus}{provisional pending `bet301` (3783811)}
+\newcommand{\nEqtopTightBar}{0.06}
+\newcommand{\nEqtopTopDenseErr}{0.5194}
+\newcommand{\nEqtopTopDenseMs}{3915.1}
+\newcommand{\nEqtopTopEqErr}{0.5389}
+\newcommand{\nEqtopTopEqMs}{722.2}
+\newcommand{\nEqtopTopM}{2048}
+\newcommand{\nEqtopTopOldRuleErr}{1.0361}
+\newcommand{\nEqtopTopOldRuleRho}{0.1678}
+\newcommand{\nEqtopTopRho}{0.1074}
 \newcommand{\nLshapeBestFloor}{0.6650}
 \newcommand{\nLshapeEnrichFloor}{0.6650}
 \newcommand{\nLshapeEnrichGain}{1.067}
@@ -176,28 +199,50 @@
 \newcommand{\nPanelTenTwentyFour}{\gen{pending: b-panel 1024$^2$ (job 3783817)}}
 \newcommand{\nPanelTolSavingOneTwoEight}{23}
 \newcommand{\nPanelTolSavingZero}{26}
-\newcommand{\nPlinBestFoundQzero}{3.1211}
-\newcommand{\nPlinCgLooseErr}{0.1527}
-\newcommand{\nPlinCgLooseMs}{23.8}
-\newcommand{\nPlinDspan}{3.17}
-\newcommand{\nPlinDstDeviceMs}{0.227}
-\newcommand{\nPlinDstMs}{6.945}
-\newcommand{\nPlinFloor}{0.7459}
-\newcommand{\nPlinNonDomAll}{}
-\newcommand{\nPlinNonDomReduced}{\texttt{d\_linear\_qr\_m4@new\_K32}, \texttt{d\_linear\_qr\_m256@incumbent}, \texttt{e\_pod512\_m4@trainset}}
-\newcommand{\nPlinPodFiveTwelveErr}{0.1855}
-\newcommand{\nPlinPodFiveTwelveMs}{10.00}
-\newcommand{\nPlinPodOneTwentyEightErr}{2.5117}
-\newcommand{\nPlinPodOneTwentyEightMs}{4.82}
-\newcommand{\nPlinQfiveTwelveLmMs}{117.9}
-\newcommand{\nPlinQtwoFiftySixErr}{0.9689}
-\newcommand{\nPlinQtwoFiftySixMs}{9.66}
-\newcommand{\nPlinQzeroErr}{3.1567}
-\newcommand{\nPlinQzeroMs}{9.21}
-\newcommand{\nPlinSpanBelowTop}{1.11}
-\newcommand{\nPlinTenTwentyFour}{\gen{pending: p-linear 1024$^2$}}
-\newcommand{\nPlinTopErr}{0.7459}
-\newcommand{\nPlinTopMs}{3.22}
+\newcommand{\nPlinHeadBestArm}{\texttt{K64\_w256\_L3}}
+\newcommand{\nPlinHeadMaxDrop}{34.2}
+\newcommand{\nPlinHeadRatioBest}{2.76}
+\newcommand{\nPlinHeadRatioPrimary}{4.18}
+\newcommand{\nPlinTenTwentyFourBestFoundQzero}{3.1139}
+\newcommand{\nPlinTenTwentyFourCgLooseMs}{62.5}
+\newcommand{\nPlinTenTwentyFourCgTightMs}{103.6}
+\newcommand{\nPlinTenTwentyFourDegenerate}{yes}
+\newcommand{\nPlinTenTwentyFourDspan}{1.55}
+\newcommand{\nPlinTenTwentyFourDstMs}{3.248}
+\newcommand{\nPlinTenTwentyFourFalsifiedIntent}{no}
+\newcommand{\nPlinTenTwentyFourFloor}{0.7421}
+\newcommand{\nPlinTenTwentyFourMidMsMax}{6.9}
+\newcommand{\nPlinTenTwentyFourMidMsMin}{6.4}
+\newcommand{\nPlinTenTwentyFourMonotone}{yes}
+\newcommand{\nPlinTenTwentyFourPodFiveTwelveErr}{0.1838}
+\newcommand{\nPlinTenTwentyFourPodFiveTwelveMs}{6.97}
+\newcommand{\nPlinTenTwentyFourQtwoFiftySixErr}{0.9648}
+\newcommand{\nPlinTenTwentyFourQtwoFiftySixMs}{6.85}
+\newcommand{\nPlinTenTwentyFourQzeroErr}{3.1495}
+\newcommand{\nPlinTenTwentyFourQzeroMs}{6.39}
+\newcommand{\nPlinTenTwentyFourTopErr}{0.7421}
+\newcommand{\nPlinTenTwentyFourTopMs}{4.42}
+\newcommand{\nPlinTenTwentyFourTopOverMidCost}{1.55}
+\newcommand{\nPlinTwoFiftySixBestFoundQzero}{3.1211}
+\newcommand{\nPlinTwoFiftySixCgLooseMs}{23.8}
+\newcommand{\nPlinTwoFiftySixCgTightMs}{38.0}
+\newcommand{\nPlinTwoFiftySixDegenerate}{no}
+\newcommand{\nPlinTwoFiftySixDspan}{3.17}
+\newcommand{\nPlinTwoFiftySixDstMs}{2.526}
+\newcommand{\nPlinTwoFiftySixFalsifiedIntent}{no}
+\newcommand{\nPlinTwoFiftySixFloor}{0.7459}
+\newcommand{\nPlinTwoFiftySixMidMsMax}{10.2}
+\newcommand{\nPlinTwoFiftySixMidMsMin}{9.2}
+\newcommand{\nPlinTwoFiftySixMonotone}{yes}
+\newcommand{\nPlinTwoFiftySixPodFiveTwelveErr}{0.1855}
+\newcommand{\nPlinTwoFiftySixPodFiveTwelveMs}{10.00}
+\newcommand{\nPlinTwoFiftySixQtwoFiftySixErr}{0.9689}
+\newcommand{\nPlinTwoFiftySixQtwoFiftySixMs}{9.66}
+\newcommand{\nPlinTwoFiftySixQzeroErr}{3.1567}
+\newcommand{\nPlinTwoFiftySixQzeroMs}{9.21}
+\newcommand{\nPlinTwoFiftySixTopErr}{0.7459}
+\newcommand{\nPlinTwoFiftySixTopMs}{3.22}
+\newcommand{\nPlinTwoFiftySixTopOverMidCost}{3.17}
 \newcommand{\nQxmAllTimesSpanFixed}{2.83}
 \newcommand{\nQxmAllTimesSpanScheduledFour}{2.83}
 \newcommand{\nQxmAnovaInter}{8.8}
@@ -304,7 +349,9 @@
 \newcommand{\provAblPoissonJob}{3711736}
 \newcommand{\provBurgersCkpt}{18f0266ae6f04542\ldots}
 \newcommand{\provBurgersCkptFull}{18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589}
-\newcommand{\provEqtopJob}{3780164}
+\newcommand{\provEqtopJob}{3780164, 3780165}
+\newcommand{\provEqtopJobs}{bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots)}
+\newcommand{\provEqtopLadderJob}{3780164}
 \newcommand{\provLshapeCommit}{1086ccefdcb5\ldots}
 \newcommand{\provLshapeGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provLshapeJob}{3783786}
@@ -321,9 +368,9 @@
 \newcommand{\provPanelCommit}{89df5cd18b01\ldots}
 \newcommand{\provPanelGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provPanelJob}{3780638}
-\newcommand{\provPlinCommit}{b43a437d7360}
-\newcommand{\provPlinGpu}{NVIDIA A100-PCIE-40GB}
-\newcommand{\provPlinJob}{3783813}
+\newcommand{\provPlinHeadGpu}{NVIDIA A100-PCIE-40GB}
+\newcommand{\provPlinHeadJob}{3783883}
+\newcommand{\provPlinJobs}{$256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a437d7360); $1024^2$: job 3783813 (NVIDIA H200, commit 3e411b5ac59d)}
 \newcommand{\provPoissonCkptFull}{a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c}
 \newcommand{\provQxmCommit}{ed431edb498a}
 \newcommand{\provQxmJobs}{G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB)}

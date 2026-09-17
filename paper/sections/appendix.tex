@@ -1,0 +1,237 @@
+% sections/appendix.tex
+\input{sections/method-details}
+
+\section{Provenance}
+\label{app:provenance}
+
+\begin{table}[h]
+\centering
+\caption{Provenance of every result table: job id, GPU, source commit and
+checkpoint. The SHA256 of every machine-readable file the generator read is in
+\texttt{tables/provenance.json}. Every job asserted \texttt{jax\_backend=gpu},
+float64 and highest matmul precision before doing any work.}
+\label{tab:provenance}
+\input{tables/T02_provenance}
+\end{table}
+
+\section{Full tables}
+\label{app:tables}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $256^2$ same-allocation panel (job
+\provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
+an attained initial fit; ``strict'' is the earlier rule that does not.}
+\label{tab:panel-all}
+\input{tables/T05_panel_all}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Fixed-$q$ sweeps in the test count $M$ (dense; errors comparable
+across the three b-qxm jobs, costs not shown). The last column restricts the
+span to at least two tests per unknown.}
+\label{tab:qxm-fixedq}
+\input{tables/T04b_fixed_q}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Head ablation, Burgers $256^2$ (job \provAblBurgersJob,
+\provAblBurgersGpu). Same-grid error against the converged full-order solve;
+``vs ref'' against the $4096^2$ reference.}
+\label{tab:head-burgers}
+\input{tables/T06a_head_burgers}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Head ablation, Poisson $1024^2$, $R=128$ (job \provAblPoissonJob,
+\provAblPoissonGpu).}
+\label{tab:head-poisson}
+\input{tables/T06b_head_poisson}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Solver knobs at a fixed Burgers checkpoint on 32 held-out cases (job
+\provTuneJob, \provTuneGpu, checkpoint \provTuneCkpt). Loosening the
+tolerance from $10^{-8}$ to $10^{-3}$ removes $\nTuneTolSavingPct\,\%$ of the
+query for a change from $\nTuneTolErrConverged$ to $\nTuneTolErrLoose\,\%$
+worst error; a cap of 2 is a cliff ($\nTuneCapTwoErr\,\%$). The full-order
+control at tolerance $10^{-4}$ beats the best ROM setting on both axes.}
+\label{tab:knobs}
+\input{tables/T08_solver_knobs}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Cold-start iteration-cap sweep on Poisson at $\nColdMesh$ intervals
+(local GB10 diagnostic; only ratios transfer). From the nearest training code
+the converged answer is reached at a small cap; from $z=0$ the cap traces the
+monotone curve the earlier manuscript reported as a frontier, every point of
+which is dominated by starting well.}
+\label{tab:coldstart}
+\input{tables/T08b_cold_start}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Provisional.} Cheapest rule certified on each bar per rung,
+with its fit-state count, and the parent lane's rule re-certified on the same
+held-out states. Jobs \provEqtopJobs. Draw replication $\nEqtopPendingJob$
+pending.}
+\label{tab:eqcert}
+\input{tables/T09b_eq_certification}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Provisional.} Every quadrature rule: NNLS fit residual beside
+the held-out $\rho$, so the anti-correlation stays visible. Bars: primary
+$\rho_{\max}\le\nEqtopBar$, tight $\rho_{\max}\le\nEqtopTightBar$.}
+\label{tab:eqrules}
+\input{tables/T09c_eq_rules_full}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Frozen-checkpoint mesh ladder (Burgers job \provMeshBurgersJob on
+\provMeshBurgersGpu, checkpoint \provMeshBurgersCkpt; Poisson job
+\provMeshPoissonJob on \provMeshPoissonGpu, checkpoint
+\provMeshPoissonCkpt). ``efficient FOM'' is the cheapest same-job full-order
+arm meeting the 5\,\% target on that mesh.}
+\label{tab:mesh}
+\input{tables/T10_mesh_ladder}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Reflective 2D wave, one job per mesh (\provWaveJobs); costs
+comparable only within a mesh. The top rung is the learned bank evolved by
+exact modal propagation with no head.}
+\label{tab:waves}
+\input{tables/T11a_waves}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Poisson head capacity on the frozen $R=512$ bank (job
+\provPlinHeadJob, \provPlinHeadGpu): width helps, depth alone does not, and
+no arm reaches a $2\times$ ratio to the floor. The re-run of the primary
+recipe reproduces it exactly.}
+\label{tab:head-capacity}
+\input{tables/T11c_head_capacity}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Per-rung mean and spread over three training seeds, monotone-seed
+count (lane b-seeds).}
+\label{tab:seeds}
+\input{tables/T12_seeds}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Development against sealed worst error per rung, difficulty-normalised
+(lane b-seeds).}
+\label{tab:sealed}
+\input{tables/T13_sealed}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{U-Net against FNO on the Poisson operator-screen dataset (physical
+reference). The U-Net arms hit the epoch cap while still improving; the FNO
+early-stopped.}
+\label{tab:operators-poisson}
+\input{tables/T14b_operators_poisson}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Speed at bit-level parity (jobs \provSpeedJobs): fastest arm whose
+fields agree with the incumbent to $10^{-12}$ with identical iteration counts
+and exit reasons. The pre-registered $2\times$ target fails at every mesh.}
+\label{tab:speed}
+\input{tables/T15_speed}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Training study on the Burgers head (jobs \provTrainJobs): data
+density, objective, latent dimension and a joint bank arm, each evaluated
+through the unchanged head-ablation machinery. $\nTrainArmsPassing$ of
+$\nTrainArmsEvaluated$ arms pass the pre-registered success criterion. The
+like-for-like retrain does not reproduce the incumbent, so the density verdict
+is measured below baseline.}
+\label{tab:training}
+\input{tables/T16_training}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{L-shaped Poisson (job \provLshapeJob, \provLshapeGpu): bank floors
+by boundary factor and rank, and the head layer at $256^2$. The solve layer is
+$\nLshapeSolve$.}
+\label{tab:lshape}
+\input{tables/T18a_lshape_bank}\\[4pt]
+\input{tables/T18b_lshape_head}
+\end{table}
+
+\section{Reviewer map}
+\label{app:reviewers}
+
+The three NeurIPS 2026 reviews are answered as follows; ``withdrawn'' means the
+claim is gone from this paper.
+
+\begin{center}\small
+\begin{tabular}{llp{7.6cm}}
+\toprule
+reviewer & ask & where \\
+\midrule
+fxe8 & one checkpoint per curve; the frontier claim & \S\ref{sec:method:tuning}, \S\ref{sec:exp:qxm}; Pareto dominance withdrawn \\
+fxe8 & heat step invalid for a nonlinear decoder; CG on a weighted operator & Appendix~\ref{app:method:heat}; no CG is applied \\
+fxe8 & EQ under-specified, three sample counts & \S\ref{sec:method:precomp}, Appendix~\ref{app:method:eq} \\
+fxe8 & only unpreconditioned CG as comparator; the $324\times$ & \S\ref{sec:exp:mesh}, \S\ref{sec:exp:linear}; speedup withdrawn \\
+fxe8 & asymmetric tuning against FNO/DeepONet & \S\ref{sec:exp:operators} (shared data, equal budget, three families) \\
+fxe8 & timing methodology; no code & \S\ref{sec:setup}; Appendix~\ref{app:provenance} \\
+GwrW & which PDEs, domains, boundaries & Table~\ref{tab:problems}, \S\ref{sec:method:manifold} \\
+GwrW & harder problems; a direct solver comparator & \S\ref{sec:exp:linear} (DST in every job), L-shape (Table~\ref{tab:lshape}), NS pending \\
+GwrW & the direct solver outperforms the method & conceded in \S\ref{sec:intro} and \S\ref{sec:exp:panel} \\
+5mgh & broken or untuned baselines & \S\ref{sec:exp:operators}; \S\ref{sec:exp:head} (POD-LSPG through the same solver) \\
+5mgh & single seed & \S\ref{sec:limitations}; Tables~\ref{tab:seeds}, \ref{tab:sealed} pending \\
+5mgh & SMA-NM-ROM under a cold-start protocol & not run; \S\ref{sec:limitations} \\
+5mgh & when is the nonlinear manifold the enabling ingredient & \S\ref{sec:exp:head}, \S\ref{sec:exp:linear} \\
+5mgh & Galerkin vs LSPG; small residual is not accuracy & \S\ref{sec:method:weak} \\
+5mgh & is the family really free from one model & \S\ref{sec:method:tuning}, \S\ref{sec:exp:eq} (rules re-solved offline, selected at run time) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Glossary}
+\label{app:glossary}
+
+Written for a reader who knows none of this project's vocabulary.
+
+\begin{description}[style=nextline,leftmargin=0pt]
+\item[Bank, head, latent code ($\bank$, $\head$, $\latent$; $R$, $k$)] The fixed spatial functions the decoder combines (width $R$); the small network that maps $k$ latent numbers to their coefficients; the $k$ numbers solved for per query.
+\item[Correction rank $q$, rung, ladder, $\corr$] The number of fixed extra bank directions the solver may add to the head's output; one value of $q$; the sequence of rungs; the matrix of directions, a nested prefix chosen offline. $q=0$ is the head alone, $q=R$ the linear model on the bank.
+\item[Test count $M$, weak tests, row scaling] How many sine test functions the residual is averaged against; the functions; the diagonal weights on those averaged equations. All three change which solution is selected.
+\item[$m$, EQ, rule, NNLS, fit states, reachable states] Quadrature node count; empirical quadrature, evaluating a sum over all nodes by a weighted sum over $m$ of them; one fitted instance; the non-negative least-squares fit; the states used to fit a rule; states the solver actually visits, as opposed to stored snapshots.
+\item[$\rho$, primary and tight bars, certified] The rule's relative error on the projected advection term on held-out reachable states; $\rho_{\max}\le\nEqtopBar$ and $\le\nEqtopTightBar$; passing a bar. Never the NNLS fit residual.
+\item[Dense] Evaluating the advection term at every interior node, exactly.
+\item[Evolved vs all-times metric, $t{=}0$ compression] Worst error over output times $t>0$; over all output times including $t=0$; the error at $t=0$ alone, which is the decoder's reconstruction of the supplied initial field and bounds the all-times metric from below.
+\item[Same-grid, reference, physical error] Error against the converged full-order solve on the same mesh (isolates the reduction); against a much finer solve (includes the mesh's own discretisation error); the cell's declared accuracy metric.
+\item[Three layers: bank floor, best-found, solved] Error of the best linear projection onto the bank (what nothing at inference can beat); the smallest error any point of the augmented manifold attains, found by a multistart oracle (an upper bound on the true minimum); the error the deployed iteration returns.
+\item[Stationary, budget exit, early-stopped, converged, strict] The solve met the normalised-gradient tolerance; it hit its iteration cap; any output produced under a cap or stall; the pre-registered completion rule that also accepts an attained initial fit whose residual is at round-off; the earlier rule that does not.
+\item[Non-dominated, frontier, error span, cost span] A point nothing else beats on both axes; the set of such points; ratio of largest to smallest error among a ladder's non-dominated converged points; the same for cost. The tunability bar: monotone, at least three non-dominated points, at least $2\times$ on both spans, nothing early-stopped.
+\item[Same-allocation, same-job, cross-job] Two measurements inside one cluster allocation on one GPU, which may be divided; two from different allocations, which may not.
+\item[Development cohort, held-out, sealed cohort] Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).
+\item[Pre-registered] Declared in a design document before the job ran; every bar, gate and falsification clause in this paper was.
+\item[POD-LSPG, $k'$, DST, CG, Newton] The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
+\item[FNO, U-Net, Transolver] Three neural-operator families; each is one trained model giving one accuracy--cost point.
+\item[Checkpoint, frozen, incumbent] Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
+\item[Provisional, pending] A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
+\end{description}

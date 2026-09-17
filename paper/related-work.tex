@@ -38,7 +38,7 @@ fixed arrays, and compressive tensor approximations appear already in
 polynomial, which yields online-efficient reduced models by the same mechanism;
 \citet{WederSchwerdtnerPeherstorfer2024} give online-efficient Neural Galerkin
 models on quadratic manifolds for linear PDEs. Relative to this line,
-\emph{the tensor construction in \eqref{eq:tensor} is not new}. What differs is
+\emph{the tensor construction in the precomputed quadratic form of Appendix~\ref{app:method:burgers} is not new}. What differs is
 the pairing: the coefficient map $\head$ is an unrestricted neural network while
 only the \emph{discrete field operator} is required to be polynomial, so the
 manifold is not itself quadratic and the guarantees available for quadratic
@@ -52,37 +52,43 @@ $\jac{\umanifold}\T(\Aop u-f)=\dhead\T[\,C\head-d\,]$ with $C=\bank\T\Aop\bank$
 and $d=\bank\T(f-\Aop\lift)$. This is an algebraic observation about the printed
 architecture, not a measured statement about its implementation.
 
-\paragraph{Hyper-reduction.}
-Where the projected operator is not exactly precomputable we use empirical
-quadrature in the non-negative least-squares form of \citet{Hernandez2017EQ},
-with the linear-programming variant of \citet{YanoPatera2019LPEQ} and energy-based
-mesh sampling \citep{FarhatECSW2014} as the nearby alternatives, and DEIM
-\citep{ChaturantabutSorensen2010} as the interpolation-based one. We use this
-machinery unchanged. Two things we do differently are worth stating, both of them
-corrections rather than contributions: the quadrature fits only the term that
-resists preassembly, since the linear terms are exact by
-\eqref{eq:linear-precomp} and need no sampling at all; and the node count is a
-selection among rules fitted offline, not a continuous online control
-(\S\ref{sec:method:eq}). The comparison we care about is therefore between exact
-preassembly and a fitted rule on the same frozen decoder, holding tests, row
-scaling, initialisation, time discretisation, stopping and output contract fixed
---- including the offline cost of each.
-
 \paragraph{Neural operators.}
 FNO \citep{Li2020FNO}, DeepONet \citep{Lu2021DeepONet} and the broader
 operator-learning literature \citep{Kovachki2023NeuralOperator} learn a map
-between function spaces and evaluate it in a single forward pass. They are
-non-intrusive: they need no discrete operator at inference and apply where no
-solver exists, which is a capability our method does not have. They also
-produce one accuracy--cost point per trained model, which is the asymmetry our
-solver-side controls address (\S\ref{sec:method:tuning}). We do not treat these
-as substitutes for one another, and we do not present a head-to-head table as a
+between function spaces and evaluate it in a single forward pass; U-Net
+backbones \citep{Ronneberger2015UNet} are the standard strong baseline of the
+PDEBench suite \citep{Takamoto2022PDEBench}, and Transolver
+\citep{Wu2024Transolver} is a recent transformer operator with physics
+attention. They are non-intrusive: they need no discrete operator at inference
+and apply where no solver exists, which is a capability our method does not
+have, and each trained model gives one accuracy--cost point, which is the
+asymmetry the correction rank addresses (\S\ref{sec:method:tuning}). We do not
+treat the two as substitutes and we do not present a head-to-head table as a
 verdict on either family: we state the condition under which the comparison is
-meaningful (\S\ref{sec:method:intrusive}), hold the training data and split
-fixed, and report the result whichever way it falls. In the screens completed so
-far the neural operator is the more accurate model on the elliptic problem
-(\gen{Poisson matched-data screen: per-capacity worst and mean error, ROM and
-FNO}), and we report that rather than omitting it.
+meaningful (\S\ref{sec:setup}), hold the training data and split
+fixed across an FNO, a U-Net and a Transolver at an equal wall budget, and
+report the result whichever way it falls. It falls against us: the U-Net and
+the Transolver are more accurate than the reduced model on Burgers, and only
+the FNO is not (\S\ref{sec:exp:operators}). Whether a trained operator exposes
+its own inference-time family through evaluation resolution is a pending
+control that can narrow our framing further.
+
+\paragraph{Hyper-reduction and its certification.}
+Where the projected operator is not exactly precomputable we use empirical
+quadrature in the non-negative least-squares form of \citet{Hernandez2017EQ},
+with the linear-programming variant of \citet{YanoPatera2019LPEQ}, energy-based
+mesh sampling \citep{FarhatECSW2014,Chapman2017AcceleratedECSW}, GNAT
+\citep{Carlberg2013GNAT} and DEIM \citep{ChaturantabutSorensen2010} as the
+nearby alternatives. We use this machinery unchanged; what we add is a rule
+about how a fitted rule may be \emph{accepted}. The usual practice certifies a
+rule by its fit residual on the snapshots it was built from, or by an error on
+stored snapshots; we show that neither predicts the rule's error on the states
+a solver actually visits, that the fit must be built on such reachable states,
+and that the number of fit states binds before the node count does
+(\S\ref{sec:exp:eq}). The comparison we care about is therefore between exact
+evaluation and a certified rule on the same frozen decoder, holding tests, row
+scaling, initialisation, time discretisation, stopping and output contract
+fixed, including the offline cost of each.
 
 \paragraph{Classical solvers.}
 The separable, constant-coefficient cells admit a direct discrete sine-transform
@@ -97,13 +103,13 @@ but what happens where no such solver exists.
 
 \paragraph{What we claim, and what we do not.}
 The contribution we are prepared to defend is a combination and its
-characterisation: a frozen separable decoder whose spatial bank permits both
-exact preassembly of the linear and polynomial parts of a weak discrete
-residual and sampled evaluation of the parts that resist it; a precisely stated
-weak least-squares solve with recorded stationarity and exit reasons; and
-measurements of when the compression pays and when it does not, including the
-cases where it does not. We do not claim a new projection, a new hyper-reduction
-algorithm, a new tensor construction, a speedup at matched accuracy against a
-tuned classical solver, dominance over neural operators, or an accuracy--cost
-frontier. Where the evidence is a single training seed on development cases, we
-say so next to the number.
+characterisation: a frozen separable decoder whose bank, head and correction
+directions are separable enough that a run-time rank moves the reachable set
+without retraining; a precisely stated weak least-squares solve with recorded
+stationarity and exit reasons; a structural condition on when that rank is a
+genuine trade; and two reporting practices, the three-layer decomposition and
+certification on reachable states. We do not claim a new projection, a new
+hyper-reduction algorithm, a speedup at matched accuracy against a tuned
+classical solver, accuracy superiority over neural operators, or dominance over
+POD at every rank. Where the evidence is a single training seed on development
+cases, we say so next to the number.

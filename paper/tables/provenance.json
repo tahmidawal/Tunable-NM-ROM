@@ -42,16 +42,17 @@
     "plinear_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-p-linear/experiments/p-linear/reports/summary.json",
       "reachable": true,
-      "sha256": "0fcc3a1e6a71201b4730b0b8503d8206a9df63f8a267de9fbf82f62005eb3a21"
+      "sha256": "92e7146b97627fecd055f4fb960abcebef23e304a5444cccb84beb89722ac7ac"
     },
     "plinear_report": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-p-linear/experiments/p-linear/reports/2026-09-17-p-linear.md",
       "reachable": true,
-      "sha256": "df8f74a6025cdaaf058ea93a6db21786fa20bef87b5ab6b06baabf0b556e11e7"
+      "sha256": "dceb6755f90d65cbc26a649048c43839a6ecd2b4692aae26a477770829d3829f"
     },
-    "plinear1024_summary": {
-      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-p-linear/experiments/p-linear/reports/summary-1024.json",
-      "reachable": false
+    "plinear_verdicts": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-p-linear/experiments/p-linear/reports/verdicts.json",
+      "reachable": true,
+      "sha256": "2bb444c2b7d2c5bec45c89ab14224c77e6f113d03b1363609c7a2affebbaae3e"
     },
     "abl01": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-head-ablation/experiments/head-ablation/checks/abl01-audit.json",
@@ -82,6 +83,11 @@
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json",
       "reachable": true,
       "sha256": "d766533e2235935d58b7c868f4a949deab359034ad3ffa2842622458801c0833"
+    },
+    "eqtop_report": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md",
+      "reachable": true,
+      "sha256": "2ab56ab9fbb3f55cd447aa619d2588b42f88568e629dc93b272f1028c067c066"
     },
     "mesh_ladder": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-mesh-ladder/experiments/mesh-ladder/reports/2026-09-14-frozen-checkpoint-mesh-ladder.json",
@@ -144,14 +150,6 @@
     [
       "operator seed/precision control",
       "no-second ctrl01 (job 3783831)"
-    ],
-    [
-      "T11 Poisson 1024",
-      "p-linear 1024$^2$"
-    ],
-    [
-      "T9 top rungs",
-      "b-eqtop draw replication (job 3783811)"
     ],
     [
       "T18 solve layer",

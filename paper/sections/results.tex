@@ -10,65 +10,108 @@ come first.
 \subsection{Nothing reduced is on the frontier at $256^2$}
 \label{sec:exp:panel}
 
+Two plain sentences first. At $256^2$ a well-tuned full-order solver and the
+FNO are both cheaper and more accurate than every reduced model, ours
+included. At $1024^2$ the three cheapest quadrature rungs are on the
+non-dominated set, on the evolved-times metric only, and the cheapest reduced
+query falls from $\nPanelCheapestRatio\times$ to
+$\nPanelTenTwentyFourCheapestRatio\times$ the cost of the cheapest same-job
+full-order setting; we do not call that a crossover until the $512^2$ panel
+now queued brackets it.
+
 Table~\ref{tab:tunability} and Figure~\ref{fig:family} come from one
-allocation on one A100 with $\nPanelSubjectCount$ timed subjects: the
-correction ladder with dense and certified-quadrature advection at two
-tolerances, POD-LSPG at six ranks, the unrestricted bank, the trained FNO, and
-eight full-order Newton settings, all against the same converged reference.
-On (GPU ms, worst \evolved\ error) \textbf{$\nPanelReducedNonDomEvolved$ of the
-$\nPanelReducedCount$ reduced subjects are non-dominated} once the full-order
-controls are included, and likewise on the \alltimes\ metric
-($\nPanelReducedNonDomAll$ of $\nPanelReducedCount$). The most accurate reduced
-subject is POD-512 at $\nPanelPodFiveTwelveErr\,\%$ and
-$\nPanelPodFiveTwelveMs$\,ms; Newton at tolerance $10^{-3}$, $\Delta t=0.005$,
-reaches $\nPanelFomNtThreeFineErr\,\%$ at $\nPanelFomNtThreeFineMs$\,ms, and
-the FNO, timed in the same allocation, $\nPanelFnoErr\,\%$ at
-$\nPanelFnoMs$\,ms. This is the evidence for the abstract's sentence that the
-model does not beat an efficient full-order solver in 2D.
+allocation on one A100 (job \provPanelJob, \nPanelSubjectCount{} timed
+subjects): the correction ladder with dense advection and two quadrature rule
+sets at two tolerances, POD-LSPG at ranks \nPanelPodRanks, the unrestricted
+bank, the trained FNO, and full-order Newton at several settings, all against
+one converged reference. On (GPU ms, worst \evolved\ error)
+\textbf{\nPanelReducedNonDomEvolved{} of the \nPanelReducedCount{} admissible
+reduced subjects are non-dominated} once the full-order controls are in, and
+likewise on the \alltimes\ metric (\nPanelReducedNonDomAll{} of
+\nPanelReducedCount). The most accurate reduced subject is POD-512 at
+$\nPanelPodFiveTwelveErr\,\%$ and $\nPanelPodFiveTwelveMs$\,ms;
+\nPanelFomBeatingMostAccurate{} same-job full-order settings are cheaper and
+at least as accurate (the cheapest, Newton at $10^{-3}$, $\Delta t=0.005$,
+$\nPanelFomNtThreeFineErr\,\%$ at $\nPanelFomNtThreeFineMs$\,ms), and the FNO
+reaches $\nPanelFnoErr\,\%$ at $\nPanelFnoMs$\,ms. Within the reduced
+subjects the dense ladder $q=0,\dots,256$ is monotone on both metrics with
+every rung converged, spanning $\nPanelDenseErrSpan\times$ in evolved error
+for $\nPanelDenseCostSpan\times$ in cost, but it raises $M=4(K+q)$ with $q$,
+which \S\ref{sec:exp:qxm} separates. Quadrature is a cost lever at equal
+error ($\nPanelEqSpeedupZero\times$ at $q=0$,
+$\nPanelEqSpeedupOneTwoEight\times$ at $q=128$, four-decimal-identical error)
+and the tolerance $10^{-6}\to10^{-3}$ removes a further
+$\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$. Two rule sets ran
+side by side: the rules the b-eqtop ladder used and the rules its replication
+selected (\S\ref{sec:exp:eq}), the same files at $q\le32$. The first breaks
+upward at $q=256$, where its rule passes only the secondary bar
+($\nPanelEqQTwoFiftySixErr\,\%$ against the dense rung's
+$\nPanelBestRungErr\,\%$); the second is monotone at both tolerances, reaches
+its dense twin's all-times error at $q=256$ in
+$\nPanelEqtopQtwoFiftySixTimeSaving\times$ less time, and runs
+$\nPanelEqtopTwinSpeedupMin$--$\nPanelEqtopTwinSpeedupMax\times$ cheaper than
+its dense twins along the ladder; its $q=64$ rule is confirmed on re-draw, its
+$q=128$ and $256$ rules are single-draw and never called certified. The
+classical baseline: on the \evolved\ metric POD-512 beats the best dense rung
+on both axes ($\nPanelBestRungErr\,\%$ at $\nPanelBestRungMs$\,ms); on the
+\alltimes\ metric it is dominated by the unrestricted bank and no POD rank is
+on the reduced-only frontier. Both are printed because the metric decides.
 
-Within the reduced subjects (Table~\ref{tab:tunability}): the dense ladder
-$q=0,\dots,256$ is monotone on both metrics with every rung converged, spanning
-$\nPanelDenseErrSpan\times$ in evolved error for $\nPanelDenseCostSpan\times$ in
-cost, but it raises $M=4(K+q)$ with $q$, which \S\ref{sec:exp:qxm} separates.
-Quadrature is a cost lever at equal error---$\nPanelEqSpeedupZero\times$ at
-$q=0$ and $\nPanelEqSpeedupOneTwoEight\times$ at $q=128$, about $5\times$
-cheaper at four-decimal-identical error---and loosening the tolerance from
-$10^{-6}$ to $10^{-3}$ removes a further
-$\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$. The EQ ladder here is
-not monotone at the top because its two upper rungs carried rules passing only
-the secondary bar; \S\ref{sec:exp:eq} shows the fix (cross-job spread of an
-identical cell: $\nQxmAnchorSpreadPct\,\%$, \S\ref{sec:limitations}).
-
-The classical baseline: on the \evolved\ metric POD-512 beats the best dense
-rung on both axes ($\nPanelPodFiveTwelveErr\,\%$ at $\nPanelPodFiveTwelveMs$\,ms
-against $\nPanelBestRungErr\,\%$ at $\nPanelBestRungMs$\,ms); on the \alltimes\
-metric it is dominated by the unrestricted bank, and the reduced-only frontier
-is $\nPanelReducedOnlyFrontierEq$ EQ rungs plus that endpoint with no POD rank
-on it. Both are printed because the metric decides. The POD ranks $k'\ge32$
-carry a ``strict'' flag of no only because their initial fit is attainable at
-round-off ($0/0$ stationarity); each sits on its own projection floor.
+\textbf{At $1024^2$ the statement is mesh-qualified.} In a second allocation
+on one H200 (job \provPanelTenTwentyFourJob;
+Tables~\ref{tab:tunability-tentwentyfour}, \ref{tab:panel-all-tentwentyfour};
+only same-job ratios are compared with $256^2$),
+\nPanelTenTwentyFourReducedNonDomEvolved{} of the
+\nPanelTenTwentyFourReducedCount{} admissible reduced subjects are
+non-dominated on (GPU ms, worst \evolved\ error): the $q=0$, $16$ and $32$
+rungs with rules transferred from $256^2$, beside
+\nPanelTenTwentyFourNonDomFomList. The cheapest admissible reduced query costs
+$\nPanelTenTwentyFourCheapestRatio\times$ the cheapest same-job full-order
+setting, against $\nPanelCheapestRatio\times$ at $256^2$
+($\nPanelTenTwentyFourCheapestOverFft\times$ against
+$\nPanelCheapestOverFft\times$ the converged FFT solve). On the \alltimes\
+metric no reduced subject is non-dominated at either mesh, because the $t=0$
+compression
+($\nPanelTenTwentyFourFrontierTzeroMin$--$\nPanelTenTwentyFourFrontierTzeroMax\,\%$
+on those rungs) bounds it: which metric is the headline decides whether this
+paragraph reports a gain. The transferred rules at $q\ge64$ miss the primary
+bar at $1024^2$ ($\rho_{\max}$ $\nPanelTenTwentyFourEqxferQSixtyFourRho$,
+$\nPanelTenTwentyFourEqxferQOneTwentyEightRho$,
+$\nPanelTenTwentyFourEqxferQTwoFiftySixRho$ against $\nEqtopBar$), which
+the lane reads as ruling out fit-state starvation as the binding cause; why
+they fail at the top rungs is open.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig_tunability_family}
-\caption{The family. Left: worst evolved error against the correction rank for
-the two fixed-$M$ ladders and the scheduled ladder (b-qxm; errors comparable
-across its three jobs, costs not, so no cost axis). Centre: the $256^2$
-same-allocation panel (job \provPanelJob), correction rungs against POD ranks,
-the free bank, the FNO and the full-order controls, filled markers converged,
-the non-dominated set as a step line. Right: the primary-rule EQ ladder against
-its dense twins (job \provEqtopLadderJob, provisional, replication
-\nEqtopPendingJob\ pending). No cost is compared across panels.}
+\caption{The family on Burgers $256^2$, three views. \textbf{A}: worst evolved
+error against the correction rank $q$ for the two fixed-$M$ ladders and the
+scheduled ladder (b-qxm, jobs \provQxmJobs; errors are comparable across its
+jobs, costs are not, so there is no cost axis). \textbf{B}: the same-allocation
+panel (b-panel, job \provPanelJob): every timed subject on (GPU ms, worst
+evolved error), correction rungs beside POD ranks, the free bank, the FNO and
+the full-order Newton controls; filled markers converged; the step line is the
+non-dominated set. \textbf{C}: the EQ ladder built from the cheapest rule
+passing the primary bar per rung, against its dense twins in the same job
+(b-eqtop, job \provEqtopLadderJob; the replication job \provEqtopRepJob{}
+later confirmed the rules at $q=\nEqtopConfirmedRungs$ and found them marginal
+at $q=\nEqtopMarginalRungs$). No cost is compared across panels. What it
+shows: the rank moves error monotonically at fixed $M$ (A); in one allocation
+no reduced subject reaches the non-dominated set once the full-order controls
+are in (B); the EQ ladder tracks its dense twin at a fraction of the cost (C).}
 \label{fig:family}
 \end{figure}
 
 \subsection{Rank against test count: the family at fixed $M$}
 \label{sec:exp:qxm}
 
-The crossed grid (Table~\ref{tab:qxm}) runs $q\in\{0,\dots,256\}$ against fixed
-$M\in\{256,1088\}$, the schedules $M\in\{4,8,16\}(K+q)$ and bridge cells, a
-saturation sweep in $M$ and a solver control, in three jobs whose shared cells
-agree to $10^{-9}$. Two fixed-$M$ ladders were run and both are reported. At
+The rank alone moves the error: hold the test count fixed, add correction
+directions, and the error falls at every step while the cost rises. The crossed
+grid (Table~\ref{tab:qxm}) runs $q\in\{0,\dots,256\}$ against fixed
+$M\in\{256,1088\}$, the schedules $M\in\{4,8,16\}(K+q)$, bridge cells,
+saturation sweeps in $M$ and a solver control, in \nQxmJobCount{} jobs whose
+shared cells agree to $\nQxmAnchorWorstAll$ relative. Both fixed-$M$ ladders
+are reported. At
 $M=256$ the ladder $q=0,\dots,\nQxmTwoFiftySixQtop$ inside one job spans
 $\nQxmTwoFiftySixErrSpan\times$ in error for $\nQxmTwoFiftySixCostSpan\times$
 in cost and \textbf{fails} the pre-registered bar (monotone, at least three
@@ -76,20 +119,36 @@ non-dominated points, at least $2\times$ on both axes, nothing early-stopped).
 \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$, inside one job, is
 monotone, every rung converged, and spans $\nQxmErrSpan\times$ in evolved error
 for $\nQxmCostSpan\times$ in cost with $\nQxmNonDom$ non-dominated points}, and
-passes. The choice of $M=1088$ as the headline was made after the crossed grid
-was run, by the lane's decision rule (the largest fixed $M$ that holds every
-rung to $q=256$), not pre-registered; at $M=256$ the $q=256$ rung is
-under-determined ($M<K+q$) and cannot exist. The scheduled ladder spans $\nQxmSpanScheduledFour\times$, of which
+passes. $M=1088$ was chosen as the headline after the grid ran, by the lane's
+rule (the largest fixed $M$ holding every rung to $q=256$), not
+pre-registered; at $M=256$ the $q=256$ rung is under-determined ($M<K+q$).
+The scheduled ladder spans $\nQxmSpanScheduledFour\times$, of which
 $\nQxmShareRankCorner\,\%$ of the log-span is rank; the test count does
-$\nQxmRungTestShares\,\%$ of the work at successive rungs, buying the bottom of
-the ladder while the rank buys the top, and the $M$ needed grows with $q$. The
-solver switch at $K+q>64$ is inert.
+$\nQxmRungTestShares\,\%$ of the work at successive rungs, buying the bottom
+of the ladder while the rank buys the top. Two extensions followed. Pushing the
+fixed-$M$ column to $q=\nQxmExtQtop$ (job \nQxmExtJob) was uninformative: that
+rung did not converge, so it enters no span and no figure, while the
+$q\le\nQxmCertifiedQtop$ rungs re-run there reproduce the values above to
+$\nQxmRoundTwoAnchorWorst$ relative. Raising $M$ at $q=256$ instead (job
+\provQxmSaturationTwoFiftySixJob) saturates at $M^\star=\nQxmMstarTwoFiftySix$,
+about \nQxmMstarTwoFiftySixTpu{} tests per unknown
+($\nQxmMstarTwoFiftySixErr\,\%$ at $\nQxmMstarTwoFiftySixCost\times$ the
+$M=1088$ cost); past it more tests buy accuracy with diminishing return
+($\nQxmQtwoFiftySixErrLargest\,\%$ at $M=\nQxmQtwoFiftySixMlargest$ for
+$\nQxmQtwoFiftySixCostLargest\times$ the cost). Repeated on \nSeedsCount{}
+training seeds (Table~\ref{tab:seeds}), the scheduled ladder is monotone on
+\nSeedsMonotoneEvolved{} of \nSeedsCount{} and meets the knob bar on
+\nSeedsKnobBar{} of \nSeedsCount{} (\nSeedsUnconvergedCells{} hit the step
+budget); the sealed cohort is not yet opened.
 
 \subsection{Quadrature rules: validate on reachable states, then re-draw}
 \label{sec:exp:eq}
 
-A rule's NNLS fit residual predicts nothing about its error on the states the
-solver visits (Figure~\ref{fig:cert}): the static-snapshot rule at
+A quadrature rule has to be judged on the states the solver reaches, not on how
+well it fits the states it was built from; and that judgement itself changes
+from one draw of the rule to the next. A rule's NNLS fit residual predicts
+nothing about its error on the states the solver visits
+(Figure~\ref{fig:cert}): the static-snapshot rule at
 $q=\nEqtopStaticWorstQ$ fits to $\nEqtopStaticWorstFit$ and reaches
 $\rho_{\max}=\nEqtopStaticWorstRho$ held-out, four times the primary bar. Scored by \eqref{eq:rho} on reachable states, the top-rung blocker is the
 number of fit states, not the node count: 14- and 8-state rules at $q=128$ and
@@ -121,8 +180,10 @@ are withdrawn by the same data (Table~\ref{tab:replication}).
 \subsection{The head earns its place per dimension, not per millisecond}
 \label{sec:exp:head}
 
-At matched $k=16$ in one frozen bank per PDE, the head is compared with the
-optimal rank-$k$ affine map inside the same bank, a quadratic map, the
+At the same latent dimension the neural head is more accurate than any linear
+map in the same bank; per millisecond it is not the best choice. At matched
+$k=16$ in one frozen bank per PDE, the head is compared with the optimal
+rank-$k$ affine map inside the same bank, a quadratic map, the
 unrestricted bank, and POD-LSPG at ranks $8$--$128$, through the same weak
 objective, tests, solver and stopping rule (Tables~\ref{tab:head-burgers},
 \ref{tab:head-poisson}). \textbf{The matched-dimension result is the claim}: on
@@ -148,8 +209,10 @@ $\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
 \subsection{Cached cost is flat in the mesh; nothing crosses over}
 \label{sec:exp:mesh}
 
-With one frozen checkpoint per PDE transferred across $64$--$1024$ intervals,
-the cached reduced solve costs
+The cached part of the reduced solve does not grow with the mesh, the whole
+query does, and at no mesh on the square is the reduced model cheaper than
+the best full-order arm. With one frozen checkpoint per PDE transferred across
+$64$--$1024$ intervals, the cached reduced solve costs
 $\nMeshBurgersCachedFirst\to\nMeshBurgersCachedLast$\,ms on Burgers while the
 unknowns grow $\nMeshBurgersUnknownGrowth\times$ (Table~\ref{tab:mesh}); the
 complete query does not inherit that, growing
@@ -164,8 +227,10 @@ of its $2\times$ target, because the query is kernel-count bound
 \subsection{Where the control collapses: linear PDEs}
 \label{sec:exp:linear}
 
-When the residual is linear in the coefficients the corrections are eliminated
-exactly and the ladder has a different shape. Poisson at $1024^2$ ($R=512$,
+On the linear PDEs there is no trade to make: the corrections are solved
+exactly, and the top rung of the ladder is both the most accurate point and the
+cheapest. When the residual is linear in the coefficients the corrections are
+eliminated exactly and the ladder has a different shape. Poisson at $1024^2$ ($R=512$,
 $K=32$; Table~\ref{tab:linear}): the rungs $q=0,\dots,256$ run
 $\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at a flat
 $\nPlinTenTwentyFourMidMsMin$--$\nPlinTenTwentyFourMidMsMax$\,ms, and the top
@@ -221,23 +286,34 @@ $\nNsPodOverOracleEvolved\times$ on evolved states, which depend on fourteen
 parameters that 512 trajectories sample sparsely. So the correction-rank trade
 needs \emph{both} a residual nonlinear in the coefficients and a manifold that
 beats POD held-out; Poisson, heat and waves lack the first, this cell the
-second, and Burgers on the square had both yet still lost on cost. \textbf{On the L-shaped domain the trade does exist.} No fast transform applies
-there, so the full-order comparator is a sparse direct solve whose cost grows
-with the mesh ($\nLshapeSpluMsSixtyFour$, $\nLshapeSpluMsOneTwentyEight$,
-$\nLshapeSpluMsTwoFiftySix$\,ms at $64^2$, $128^2$, $256^2$) while the reduced
-arms stay nearly flat, so the crossover falls between $128^2$ and $256^2$
-(Table~\ref{tab:lshape-solve}): at $64^2$ the direct solve dominates everything;
-at $128^2$ the only reduced members of the non-dominated set are POD rungs
-$\nLshapeOneTwentyEightCheapRange\times$ cheaper at
-$\nLshapeOneTwentyEightReducedErrRange\,\%$ error, which is cheapness, not a
-trade; at $256^2$ the set has $\nLshapeNonDomCount$ subjects,
-$\nLshapeNonDomReduced$ of them reduced, and the head at $q=64$ reaches
-$\nLshapeNeuralErr\,\%$ worst at $\nLshapeNeuralMs$\,ms against the direct
-solve's exact answer at $\nLshapeSpluMsTwoFiftySix$\,ms:
-$\nLshapeNeuralCheaper\times$ cheaper per query at about two percent error. The
-win is on cost alone---no reduced arm beats that solve on accuracy at any mesh,
-and it is exact to round-off---and it is the mesh-flat reduced query of
-\S\ref{sec:exp:mesh} paying on the one domain without a fast transform. In a separate job at $M=1024$, whose costs are not comparable with those above,
+second, and Burgers on the square had both yet still lost on cost.
+
+\textbf{On the L-shaped domain the trade does exist, and it widens with the
+mesh.} In plain terms: the reduced solve becomes the cheaper option between
+$128^2$ and $256^2$, and by $512^2$ it is $\nLshapeNeuralCheaperFiveTwelve\times$
+cheaper than the direct solve at about two percent error. No fast transform
+applies there, so the full-order comparator is a sparse direct solve whose cost
+climbs with the mesh ($\nLshapeSpluMsSixtyFour$,
+$\nLshapeSpluMsOneTwentyEight$, $\nLshapeSpluMsTwoFiftySix$,
+$\nLshapeSpluMsFiveTwelve$\,ms at $64^2$ to $512^2$) while the head at $q=64$
+stays nearly flat (\nLshapeNeuralMsTrend\,ms). Table~\ref{tab:lshape-solve}
+gives the non-dominated set per mesh, one job per mesh, every ratio inside its
+job: at $64^2$ the direct solve dominates everything; at $128^2$ only POD rungs
+join the set (\nLshapeOneTwentyEightBestReduced{} at
+$\nLshapeOneTwentyEightBestReducedErr\,\%$,
+$\nLshapeOneTwentyEightBestReducedCheaper\times$ the direct solve's cost),
+cheapness rather than a trade; at $256^2$ the head at $q=64$ reaches
+$\nLshapeNeuralErr\,\%$ at $\nLshapeNeuralMs$\,ms against
+$\nLshapeSpluMsTwoFiftySix$\,ms, $\nLshapeNeuralCheaper\times$ cheaper; at
+$512^2$ it reaches $\nLshapeNeuralErrFiveTwelve\,\%$ at
+$\nLshapeNeuralMsFiveTwelve$\,ms against $\nLshapeSpluMsFiveTwelve$\,ms,
+$\nLshapeNeuralCheaperFiveTwelve\times$ cheaper, and is the most accurate
+reduced subject on the set (best POD rung: \nLshapeFiveTwelveBestPod{} at
+$\nLshapeFiveTwelveBestPodErr\,\%$). The win is on cost alone: no reduced arm
+beats the direct solve on accuracy at any mesh, and nothing is claimed beyond
+$512^2$. This is the mesh-flat reduced query of \S\ref{sec:exp:mesh} paying on
+the one domain without a fast transform, with a manifold that here beats POD
+at the same cost. In a separate job at $M=1024$, whose costs are not comparable with those above,
 the free rung $q=R$ is the one place the learned bank beats the linear baseline
 on both axes, at $\nLshapeFreeOverFloor\times$ its own bank floor with no solver
 iterations (Table~\ref{tab:lshape-free}). Every L-shape error quoted is the optimistic end of a range: worst best-found is
@@ -250,7 +326,9 @@ $\nLshapeHeadRatioMin$--$\nLshapeHeadRatioMax\times$ above it.
 \subsection{Neural operators on the same data}
 \label{sec:exp:operators}
 
-A PDEBench-style U-Net and a Transolver were trained on exactly the FNO's data,
+Neural operators trained on the same data are more accurate than the reduced
+model, and the one that was timed against it is also cheaper. A PDEBench-style
+U-Net and a Transolver were trained on exactly the FNO's data,
 split, reference, metric, budget and selection rule (Table~\ref{tab:operators}). Worst error on the matched eight-case cohort:
 U-Net-small $\nOpEightUnetSmall$, U-Net-medium $\nOpEightUnetMedium$,
 Transolver-refine $\nOpEightTsolRefine$, U-Net-refine $\nOpEightUnetRefine$,

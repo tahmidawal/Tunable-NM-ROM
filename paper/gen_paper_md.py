@@ -118,6 +118,38 @@ def resolve_inputs(s):
     return re.sub(r'\\input\{([^}]+)\}', rep, s)
 
 
+def status_block():
+    """Eight-odd italic lines under the title for the reader of the draft; removed before submission."""
+    import datetime, glob, os
+    pend = []
+    try:
+        for line in open(HERE / 'tables' / 'PENDING.md'):
+            m = re.match(r'- `(.*?)` waits on \*\*(.*?)\*\*', line.strip())
+            if m: pend.append((m.group(1), m.group(2)))
+    except FileNotFoundError:
+        pass
+    tabs = sorted(os.path.basename(p)[:-3] for p in glob.glob(str(HERE / 'tables-md' / 'T*.md')))
+    final = [t for t in tabs if 'PENDING' not in open(HERE / 'tables-md' / (t + '.md')).read()]
+    pending_tabs = [t for t in tabs if t not in final]
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    lines = [
+        f'*Status for the reader (generated {now}; this block is removed before submission).*',
+        f'*Final tables ({len(final)}): ' + ', '.join(t.split('_')[0] for t in final) + '.*',
+        '*Pending cells: ' + ('; '.join(f'`{a}` waits on {b}' for a, b in pend) if pend else 'none') + '. In-flight jobs are listed in Table C.3: '
+        'sealed cohort 3804465 (b-seeds), NS K=32 arm 3787320 (ns2d), low-viscosity training 3804337 (b-lowvisc), 512² panel 3805065 (b-panel).*',
+        '*Provisional: the three-seed table (T12) until the sealed cohort lands; the 1024² frontier statement in §5.1 until the 512² panel brackets it; '
+        'the two top EQ rungs are single-draw rules, never certified.*',
+        '*Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, '
+        'and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; '
+        '(2) sign-off on the abstract\'s new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*',
+        '*Changed in this pass: b-panel closed (bpn301 replaces bpn101 at 256², bpn203 adds 1024²); L-shape closed at 512² and now in the abstract; '
+        'b-qxm pin at 4b9723e8 dropped after the lane committed its regeneration (no number in §5.2 moved); three seeds landed on the development cohort; '
+        'Figure 2 moved into §3.2 beside the equation it draws.*',
+        '',
+    ]
+    return lines
+
+
 def main():
     M = load_macros(); B = load_bib()
     main_tex = read_tex('main.tex')
@@ -154,6 +186,7 @@ def main():
     # ---- pass 2: render
     out = [f'# {title}', '', '*Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; '
            'tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*', '']
+    out += status_block()
     sec = [0, 0]; app = False; tab = 0; fig = 0; eq = 0
     i = 0
     text = body

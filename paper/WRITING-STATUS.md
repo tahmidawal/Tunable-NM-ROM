@@ -1,5 +1,34 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-17 evening — reader-ready pass (this is the current state; sections below are history)
+
+Lanes read in this build, all from **committed** lane state (`GIT_PINS` in `gen_tables.py` pins
+b-panel 13ddecac, b-seeds e533b48e; b-qxm b4e38103 and lshape dc762ed3 are clean trees):
+
+| lane | state | what the paper reads |
+|---|---|---|
+| b-panel | closed | bpn301 (3789570) = 256² with both rule sets, replaces bpn101; bpn203 (3789572, H200) = 1024². T3, T3b, T5, T5b. Claim mesh-qualified in §1, §5.1, abstract ("at 256²"). bpn401 (3805065, 512²) in flight |
+| b-qxm | closed | pin dropped; §5.2 numbers unchanged; q=512 extension unconverged (one sentence, not plotted); M-saturation at q=256 (one sentence); five jobs in T2 |
+| lshape | closed | 64²–512² solves (T18c); head q=64 2.77× at 256² and 7.60× at 512² cheaper than SuperLU; in abstract, Contribution 3, §5.6, conclusion |
+| b-seeds | development cohort landed | T12 + T12b from e533b48e; sealed cohort (3804465) pending → T13 placeholder |
+| b-eqtop, no-second, w-ladder, p-linear, ns2d | unchanged | same summaries as the previous provenance |
+| b-lowvisc | register only | lvt01 (3804337) in T2c; no prose |
+
+Figures: Fig. 2 (architecture) now sits in §3.2 beside eq. (ladder); Appendix B keeps the block
+table. Figs. 1–3 have standalone captions (what is plotted, lane/job, one takeaway).
+`PAPER.md` opens with an italic "Status for the reader" block (generated; removed before submission).
+
+Remaining PENDING markers: T13 / seeds-sealed / T2 sealed row (b-seeds sealed cohort, job 3804465);
+NS K=32 arm (ns204, job 3787320).
+
+Open decisions (user's): headline Burgers metric — now decisive for §5.1 at 1024² (reduced rungs
+non-dominated on evolved only); sign-off on the abstract's opening two sentences (unchanged here).
+
+Coordinator notes: (1) the L-shape is Poisson, residual linear in the coefficients — written as the
+no-fast-transform case, not "nonlinear residual + manifold"; (2) the committed seeds summary shows
+the incumbent *better* than every seed at q=16–128 (evolved), so "incumbent inside the seed spread
+at every rung" was not written; (3) bpn301 recheck JSON lists 48 arms, the message said 47.
+
 Updated 2026-09-17 (third checkpoint: round-1 review addressed; see `REVIEW-ROUND1-DISPOSITION.md`). Build: `./build.sh` in this directory (regenerates `tables/` and
 `tables-md/` from the lanes' JSON, renders `PAPER.md` from the LaTeX sources, then
 `latexmk -pdf main.tex`); PDF at `paper/main.pdf` (git-ignored).
@@ -14,7 +43,7 @@ prose numbers are in `tables-md/numbers.json`. Style: official ICLR 2027 kit
 (`iclr2027_conference.sty/.bst`, fetched from `media.iclr.cc/Conferences/ICLR2027/iclr-2027-style-files.zip`),
 anonymous, `\iclrfinalcopy` commented out.
 
-## Page count
+## Page count (superseded: after the 2026-09-17 evening pass the main text runs to page 10; the rebuild from the old source addresses the budget)
 
 26 pages total. Main text (intro through conclusion) ends on **page 9** (reproducibility statement opens page 10), within the
 ICLR 2027 submission limit of 9 pages (10 at camera-ready). References p10–11, appendices
@@ -108,7 +137,7 @@ families), T14c (resolution ladder), T17 (offline cost), T19 (solver variants), 
 (NNLS fit vs held-out rho). Abstract sentence 1 was changed by the pre-registered falsification
 clause of the resolution job; the user should confirm the new wording.
 
-## OPEN: the b-qxm pin (coordinator briefed 2026-09-17, position agreed)
+## RESOLVED 2026-09-17 evening: the b-qxm pin (lane committed b4e38103; pin dropped; history kept below)
 
 `gen_tables.py` now reads b-qxm's `analysis.json` from the lane's **committed** state
 (`GIT_PINS`, commit `4b9723e8`, 09:40), not its working tree. Reason: the lane's uncommitted

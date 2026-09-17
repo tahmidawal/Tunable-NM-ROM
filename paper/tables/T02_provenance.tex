@@ -5,8 +5,9 @@
 \toprule
 table & lane & job id(s) & GPU & commit & checkpoint \\
 \midrule
-T3, T5 & b-panel & 3780638 & NVIDIA A100 80GB PCIe & 89df5cd18b01\ldots & incumbent (gate checkpoint\_unchanged; hash in T2, tuning row) \\
-T4 & b-qxm & G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB), E1 = 3783898 (NVIDIA A100-PCIE-40GB), E2 = 3783899 (NVIDIA A100 80GB PCIe) & per job & ed431edb498a & 18f0266ae6f04542\ldots \\
+T3, T5 & b-panel ($256^2$, bpn301) & 3789570 & NVIDIA A100 80GB PCIe & f3c5fbed8a21\ldots & incumbent (gate checkpoint\_unchanged; hash in T2, tuning row) \\
+T3b, T5b & b-panel ($1024^2$, bpn203) & 3789572 & NVIDIA H200 & f3c5fbed8a21\ldots & incumbent (gate checkpoint\_unchanged; hash in T2, tuning row) \\
+T4 & b-qxm & G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB), E1 = 3783898 (NVIDIA A100-PCIE-40GB), E2 = 3783899 (NVIDIA A100 80GB PCIe) & per job & ed431edb498a / 76072bf42014 & 18f0266ae6f04542\ldots \\
 T6a, T7 & head-ablation (Burgers) & 3711424 & NVIDIA A100 80GB PCIe & 2718bd320dce\ldots & 18f0266ae6f04542\ldots \\
 T6b, T7 & head-ablation (Poisson) & 3711736 & NVIDIA A100 80GB PCIe & 6759adcc9d85\ldots & a128e7635c31\ldots \\
 T8 & fixed-checkpoint tuning & 3712269 & NVIDIA A100 80GB PCIe & d2b93bd4f56d\ldots & 18f0266ae6f0\ldots \\
@@ -19,7 +20,8 @@ T11b, T11c & p-linear & $256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a
 T14, T14c, T14d & no-second (5 of 8 jobs counted; two preamble deaths uncounted) & 3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189 & A100 (per job) & per job & operator checkpoints hash-verified in job \\
 T15 & b-speed & 3745655 (spd01), 3745656 (fine01), 3745913 (comp01) & A100 80GB PCIe & 8fdfbb08 / 94399dd6 & 18f0266ae6f04542\ldots \\
 T16 & b-head-train & 3745912 (training), 3749074 (evaluation) & A100-PCIE-40GB & 0f0c56f7 / 2b9e7ee7 & trained checkpoints hashed in archive \\
-T18, T18c, T18d & lshape & 3784662 & NVIDIA A100 80GB PCIe & 1086ccefdcb5\ldots & 7 heads + bases Git-tracked \\
-T12, T13 & b-seeds & \gen{b-seeds} & --- & --- & --- \\
+T18, T18c, T18d & lshape & training 3784662; solves 3784662, 3784663, 3789568; free rung 3784910 & NVIDIA A100 80GB PCIe & 1086ccefdcb5\ldots & 7 heads + bases Git-tracked \\
+T12 & b-seeds (development cohort) & \texttt{seed1} = 3783776 (NVIDIA A100 80GB PCIe); \texttt{seed2} = 3783777 (NVIDIA A100 80GB PCIe); \texttt{seed3} = 3783778 (NVIDIA A100-PCIE-40GB) & per job & per job & three seed checkpoints hashed in summary \\
+T13 & b-seeds (sealed cohort) & \gen{b-seeds sealed cohort} & --- & --- & --- \\
 \bottomrule
 \end{tabular}

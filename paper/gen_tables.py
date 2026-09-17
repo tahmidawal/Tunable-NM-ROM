@@ -40,6 +40,7 @@ SOURCES = {
     'panel_summary': '2026-09-17-b-panel/experiments/b-panel/reports/summary.json',
     'panel_audit': '2026-09-17-b-panel/experiments/b-panel/checks/bpn101-audit.json',
     'panel_report': '2026-09-17-b-panel/experiments/b-panel/reports/2026-09-17-b-panel.md',
+    'panel_bpn301_recheck': '2026-09-17-b-panel/experiments/b-panel/checks/bpn301-recheck.json',
     'nosecond_summary': '2026-09-17-no-second/experiments/no-second/reports/summary.json',
     'wladder_summary': '2026-09-17-w-ladder/experiments/w-ladder/reports/summary.json',
     'wladder_report': '2026-09-17-w-ladder/experiments/w-ladder/reports/2026-09-17-w-ladder.md',
@@ -87,11 +88,14 @@ RETRACTED_ATTEMPTS = [
     ('ns2d', 'ns202', '3783797', 'Navier--Stokes $K=32$ head', 'pre-\\S A4 attempt on a rank-capped bank; superseded by ns204'),
 ]
 IN_FLIGHT = [
-    ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel (H200)'),
-    ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets'),
-    ('lshape', '3789568', '3789568', 'L-shape solve at $512^2$'),
+    ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel, H200 (landed; Tables~\\ref{tab:tunability-tentwentyfour}, \\ref{tab:panel-all-tentwentyfour})'),
+    ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables~\\ref{tab:tunability}, \\ref{tab:panel-all})'),
+    ('b-panel', 'bpn401', '3805065', '$512^2$ panel, same GPU model as $256^2$, brackets the frontier crossover (pre-registered in the lane design before submission)'),
+    ('b-seeds', 'sealed', '3804465', 'sealed-cohort evaluation of the three seeds (Table~\\ref{tab:sealed})'),
+    ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('ns2d', 'ns204', '3787320', 'Navier--Stokes $K=32$ head on the full-rank bank (phase-2 gate only)'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
+    ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
 ]
 
 PROV: dict[str, dict] = {}
@@ -107,12 +111,17 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-GIT_PINS = {
+GIT_PINS: dict[str, tuple[str, str]] = {
     # lane file -> (lane worktree, commit): read the COMMITTED blob, not the working tree.
-    # b-qxm's working tree is mid-regeneration ("round 2") and its uncommitted analysis.json
-    # withdraws the fixed-M ladder's span; until the lane publishes that, the paper reads the
-    # lane's last committed state and says so.  See WRITING-STATUS.md.
-    'qxm_analysis': ('2026-09-17-b-qxm', '4b9723e8'),
+    # Empty since b-qxm committed its round-2 regeneration (b4e38103, 18:15): the pin at
+    # 4b9723e8 that held §5.2 while that lane's working tree was dirty is no longer needed
+    # (its regenerated span_q_at_M1088 is bit-identical to the pinned value).
+    # b-seeds: its working tree is dirty (the lane is still writing up); read the committed
+    # three-seed development summary (e533b48e) and nothing newer.
+    'seeds_summary': ('2026-09-17-b-seeds', 'e533b48e'),
+    # b-panel closed at 13ddecac (bpn301 = 256^2 with both rule sets, bpn203 = 1024^2)
+    'panel_summary': ('2026-09-17-b-panel', '13ddecac'),
+    'panel_report': ('2026-09-17-b-panel', '13ddecac'),
 }
 
 
@@ -127,8 +136,8 @@ def load(key: str):
             PROV[key] = {'path': f'{lane}:{rel}', 'reachable': True, 'pinned_commit': rev,
                          'sha256': hashlib.sha256(out.stdout.encode()).hexdigest(),
                          'note': 'read from the lane commit, not the working tree'}
-            macro('provQxmPin', rev)
-            return json.loads(out.stdout)
+            macro('prov' + ''.join(w.capitalize() for w in key.split('_')) + 'Pin', rev)
+            return json.loads(out.stdout) if rel.endswith('.json') else out.stdout
     path = (ROOT / SOURCES[key]).resolve()
     if not path.exists():
         PROV[key] = {'path': str(path), 'reachable': False}
@@ -258,159 +267,178 @@ def pivot(rows, key='subject', metric='metric', value='value'):
 
 # =========================================================================== T3 / T5 panel
 def build_panel():
-    summ = load('panel_summary')
-    audit = load('panel_audit')
+    summ = load('panel_summary'); rep = load('panel_report')
     if summ is None:
-        write('T03_tunability.tex', gen('b-panel', 'T3'))
-        write('T05_panel_all.tex', gen('b-panel', 'T5'))
+        write('T03_tunability.tex', gen('b-panel', 'T3')); write('T05_panel_all.tex', gen('b-panel', 'T5'))
         return
     rows = summ['rows']
-    job = rows[0]['job_id']
-    P = pivot(rows)
-    fam = {r['subject']: r['family'] for r in rows}
-    qk = {r['subject']: r.get('q_or_k') for r in rows}
-    Mof = {r['subject']: r.get('M') for r in rows}
-    quad = {r['subject']: r.get('quadrature') for r in rows}
-    tol = {r['subject']: r.get('tol') for r in rows}
-
-    gpu = audit.get('gpu') if audit else None
-    commit = audit.get('commit') if audit else None
-    # checkpoint sha: search the audit text for the frozen Burgers checkpoint hash
-    ck = None
-    if audit:
-        m = re.search(r'\b(18f0266a[0-9a-f]{56})\b', json.dumps(audit))
-        ck = m.group(1) if m else None
-    macro('provPanelJob', job)
-    macro('provPanelGpu', gpu or '---')
-    macro('provPanelCommit', hexprefix(commit))
-    macro('provPanelCkpt', hexprefix(ck) if ck else 'incumbent (gate checkpoint\\_unchanged; hash in T2, tuning row)')
-
-    # ---- T3: the ladders side by side (dense / EQ 1e-6 / EQ 1e-3) + POD + FOM
-    ladders = [('dense', 'dense_g1em06'), ('EQ, tol $10^{-6}$', 'eqcert_g1em06'),
-               ('EQ, tol $10^{-3}$', 'eqcert_g0p001')]
-    qs = [0, 16, 32, 64, 128, 256]
+    bymesh = defaultdict(list)
+    for r in rows:
+        bymesh[int(r['mesh'])].append(r)
+    gpu_of = dict(re.findall(r"job `(\d+)` on `(NVIDIA [^`]+)`", rep or ''))
+    commits = list(dict.fromkeys(re.findall(r"Source commit `([0-9a-f]+)`", rep or '')))
+    macro('provPanelCommit', ' / '.join(hexprefix(c) for c in commits) if commits else '---')
+    macro('provPanelCkpt', 'incumbent (gate checkpoint\\_unchanged; hash in T2, tuning row)')
+    macro('provPanelJobs', ', '.join(sorted({r['job_id'] for r in rows})))
+    SFX = {256: '', 1024: 'TenTwentyFour'}
     Ms = {0: 64, 16: 128, 32: 192, 64: 320, 128: 576, 256: 1088}
-    t3rows = []
-    for q in qs:
-        cells = [str(q), str(Ms[q])]
-        for _, suf in ladders:
-            s = f'q{q}_M{Ms[q]}_{suf}'
-            p = P[s]
-            cells += [pct(p['worst_evolved_percent']), pct(p['worst_all_times_percent']),
-                      ms(p['median_gpu_ms'])]
-        cells.append(pct(P[f'q{q}_M{Ms[q]}_dense_g1em06']['worst_t0_compression_percent']))
-        t3rows.append(cells)
-    cols = ['$q$', '$M$']
-    for lab, _ in ladders:
-        cols += [f'{lab}: evolved \\%', 'all \\%', 'ms']
-    cols.append('$t{=}0$ \\%')
-    write('T03_tunability.tex', tabular(cols, t3rows, 'rr' + 'rrr' * 3 + 'r', r'\scriptsize'),
-          f'b-panel job {job}')
-
-    # ladder spans (from the '*' rows if present; else compute)
-    def ladder_stats(suf, ql):
-        errs = [P[f'q{q}_M{Ms[q]}_{suf}']['worst_evolved_percent'] for q in ql]
-        cost = [P[f'q{q}_M{Ms[q]}_{suf}']['median_gpu_ms'] for q in ql]
-        mono = all(errs[i] >= errs[i + 1] for i in range(len(errs) - 1))
-        conv = all(P[f'q{q}_M{Ms[q]}_{suf}']['converged'] for q in ql)
-        return errs, cost, mono, conv
-    e, c, mono, conv = ladder_stats('dense_g1em06', qs)
-    macro('nPanelDenseErrSpan', f'{e[0]/e[-1]:.2f}')
-    macro('nPanelDenseCostSpan', f'{c[-1]/c[0]:.2f}')
-    macro('nPanelDenseMonotone', yn(mono)); macro('nPanelDenseConverged', yn(conv))
-    e6, c6, mono6, _ = ladder_stats('eqcert_g1em06', qs)
-    macro('nPanelEqMonotone', yn(mono6))
-    macro('nPanelEqQtwofiftysixEvolved', pct(P['q256_M1088_eqcert_g1em06']['worst_evolved_percent']))
-    macro('nPanelEqQonetwentyeightEvolved', pct(P['q128_M576_eqcert_g1em06']['worst_evolved_percent']))
-    macro('nPanelEqQtwofiftysixBasis', str(P['q256_M1088_eqcert_g1em06'].get('rule_basis')))
-    macro('nPanelEqQonetwentyeightBasis', str(P['q128_M576_eqcert_g1em06'].get('rule_basis')))
-    macro('nPanelEqQsixtyfourBasis', str(P['q64_M320_eqcert_g1em06'].get('rule_basis')))
-
-    # EQ vs dense at matched (q,M): cost and error
-    for q, nm in [(0, 'Zero'), (128, 'OneTwoEight')]:
-        d = P[f'q{q}_M{Ms[q]}_dense_g1em06']; eq6 = P[f'q{q}_M{Ms[q]}_eqcert_g1em06']
-        eq3 = P[f'q{q}_M{Ms[q]}_eqcert_g0p001']
-        macro(f'nPanelDenseMs{nm}', ms(d['median_gpu_ms']))
-        macro(f'nPanelEqMs{nm}', ms(eq6['median_gpu_ms']))
-        macro(f'nPanelEqLooseMs{nm}', ms(eq3['median_gpu_ms']))
-        macro(f'nPanelDenseErr{nm}', pct(d['worst_evolved_percent']))
-        macro(f'nPanelEqErr{nm}', pct(eq6['worst_evolved_percent']))
-        macro(f'nPanelEqLooseErr{nm}', pct(eq3['worst_evolved_percent']))
-        macro(f'nPanelEqSpeedup{nm}', f'{d["median_gpu_ms"]/eq6["median_gpu_ms"]:.2f}')
-        macro(f'nPanelTolSaving{nm}', f'{100*(1-eq3["median_gpu_ms"]/eq6["median_gpu_ms"]):.0f}')
-
-    # FOM controls and the frontier statement
-    foms = [s for s in P if fam[s] == 'fom']
-    reduced = [s for s in P if fam[s] in ('rom', 'fast', 'pod', 'free')]
-    macro('nPanelReducedCount', str(len(reduced)))
-    macro('nPanelSubjectCount', str(len([s for s in P if s != '*'])))
-    nd = P.get('*', {})
-    nd_evolved = nd.get('nondominated_gpu_evolved_admissible')
-    nd_all = nd.get('nondominated_gpu_all_admissible')
-    def count_reduced(lst):
-        return None if lst is None else sum(1 for s in lst if s in reduced)
-    macro('nPanelReducedNonDomEvolved', str(count_reduced(nd_evolved)))
-    macro('nPanelReducedNonDomAll', str(count_reduced(nd_all)))
-    ndr = nd.get('nondominated_gpu_all_reduced_only') or []
-    macro('nPanelReducedOnlyFrontierSize', str(len(ndr)))
-    macro('nPanelReducedOnlyFrontierEq', str(sum(1 for s in ndr if fam[s] in ('rom', 'fast'))))
-    macro('nPanelReducedOnlyFrontierPod', str(sum(1 for s in ndr if fam[s] == 'pod')))
-    ndr_e = nd.get('nondominated_gpu_evolved_reduced_only') or []
-    macro('nPanelReducedOnlyFrontierEvolvedPod', str(sum(1 for s in ndr_e if fam[s] == 'pod')))
-    for s, nm in [('nt1e-3_dt005', 'NtThreeFine'), ('nt1e-4_dt005', 'NtFourFine'),
-                  ('nt1e-2_dt01', 'NtTwoCoarse'), ('fft_tight', 'FftTight'), ('dense_tight', 'DenseTight')]:
-        macro(f'nPanelFom{nm}Err', pct(P[s]['worst_evolved_percent']))
-        macro(f'nPanelFom{nm}Ms', ms(P[s]['median_gpu_ms']))
-        macro(f'nPanelFom{nm}Ref', pct(P[s]['worst_reference_percent']))
-    best = P['q256_M1088_dense_g1em06']
-    macro('nPanelBestRungErr', pct(best['worst_evolved_percent'])); macro('nPanelBestRungMs', ms(best['median_gpu_ms']))
-    macro('nPanelBestRungAll', pct(best['worst_all_times_percent']))
-    macro('nPanelFomOverBest', f'{best["median_gpu_ms"]/P["nt1e-3_dt005"]["median_gpu_ms"]:.1f}')
-    pod = P['pod512_M2048_dense']; free = P['free512_M1024_dense']
-    macro('nPanelPodFiveTwelveErr', pct(pod['worst_evolved_percent'])); macro('nPanelPodFiveTwelveMs', ms(pod['median_gpu_ms']))
-    macro('nPanelPodFiveTwelveAll', pct(pod['worst_all_times_percent']))
-    macro('nPanelFreeErr', pct(free['worst_evolved_percent'])); macro('nPanelFreeMs', ms(free['median_gpu_ms']))
-    macro('nPanelFreeAll', pct(free['worst_all_times_percent']))
-    macro('nPanelFreeFloor', pct(free['best_found_percent'])); macro('nPanelFreeOverFloor', f'{free["solved_over_best_found"]:.2f}')
-    macro('nPanelPodOneTwentyEightErr', pct(P['pod128_M512_dense']['worst_evolved_percent']))
-    macro('nPanelPodOneTwentyEightAll', pct(P['pod128_M512_dense']['worst_all_times_percent']))
-    macro('nPanelPodOneTwentyEightMs', ms(P['pod128_M512_dense']['median_gpu_ms']))
-    macro('nPanelPodTwoFiftySixErr', pct(P['pod256_M1024_dense']['worst_evolved_percent']))
-    macro('nPanelPodTwoFiftySixMs', ms(P['pod256_M1024_dense']['median_gpu_ms']))
-    fno = P['fno-large']
-    macro('nPanelFnoErr', pct(fno['worst_evolved_percent'])); macro('nPanelFnoMs', ms(fno['median_gpu_ms']))
-    macro('nPanelFnoRef', pct(fno['worst_reference_percent']))
-    macro('nPanelQzeroT', pct(P['q0_M64_dense_g1em06']['worst_t0_compression_percent']))
-    macro('nPanelQzeroEvolved', pct(P['q0_M64_dense_g1em06']['worst_evolved_percent']))
-    macro('nPanelQzeroAll', pct(P['q0_M64_dense_g1em06']['worst_all_times_percent']))
-    macro('nPanelFastMs', ms(P['q0_M64_eqcert_g1em06_fastL4']['median_gpu_ms']))
-    macro('nPanelRefDiscretisation', pct(P['fft_tight']['worst_reference_percent']))
-    # POD strict-flag arithmetic
-    strict_no = [s for s in reduced if P[s].get('converged') and not P[s].get('converged_strict')]
-    macro('nPanelStrictNoCount', str(len(strict_no)))
-    icres = [P[s].get('max_ic_relative_residual') for s in strict_no if P[s].get('max_ic_relative_residual') is not None]
-    macro('nPanelStrictNoIcResidualMax', f'{max(icres):.1e}' if icres else '---')
-    sob = [P[s].get('solved_over_best_found') for s in strict_no if fam[s] == 'pod']
-    macro('nPanelPodSolvedOverFloorMax', f'{max(sob):.5f}' if sob else '---')
-
-    # ---- T5: every subject
-    order = [s for s in P if s != '*']
-    t5 = []
-    for s in order:
-        p = P[s]
-        t5.append([tt(s), fam[s], str(qk[s]) if qk[s] is not None else '---',
-                   str(Mof[s]) if Mof[s] else '---', str(quad[s] or '---'),
-                   pct(p.get('worst_evolved_percent')), pct(p.get('worst_all_times_percent')),
-                   pct(p.get('worst_t0_compression_percent')), pct(p.get('worst_reference_percent')),
-                   ms(p.get('median_gpu_ms')), ms(p.get('median_host_ms')),
-                   yn(p.get('converged')) if fam[s] in ('rom', 'fast', 'pod', 'free') else '---',
-                   yn(p.get('converged_strict')) if fam[s] in ('rom', 'fast', 'pod', 'free') else '---'])
-    cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'evolved \\%', 'all \\%',
-            '$t{=}0$ \\%', 'vs ref \\%', 'GPU ms', 'host ms', 'conv.', 'strict']
-    write('T05_panel_all.tex', tabular(cols, t5, 'lllllrrrrrrcc', r'\tiny'), f'b-panel job {job}')
-    # 1024^2 panel: pending
-    if load('panel1024_summary') is None:
-        macro('nPanelTenTwentyFour', gen('b-panel 1024$^2$ (bpn203, job 3789572)', 'T5 1024'))
+    qs = [0, 16, 32, 64, 128, 256]
+    REDUCED = ('rom', 'fast', 'pod', 'free')
+    for mesh in sorted(bymesh):
+        R = bymesh[mesh]; P = pivot(R); job = R[0]['job_id']; sfx = SFX[mesh]
+        fam = {r['subject']: r['family'] for r in R}
+        qk = {r['subject']: r.get('q_or_k') for r in R}
+        Mof = {r['subject']: r.get('M') for r in R}
+        quad = {r['subject']: r.get('quadrature') for r in R}
+        rset = {r['subject']: r.get('rule_set') for r in R}
+        rstat = {r['subject']: r.get('rule_status') for r in R}
+        rm = {r['subject']: r.get('rule_m') for r in R}
+        adm = {r['subject']: r.get('admissible') for r in R}
+        macro(f'provPanel{sfx}Job', job); macro(f'provPanel{sfx}Gpu', gpu_of.get(job, '---'))
+        macro(f'nPanel{sfx}Mesh', str(mesh))
+        sets = ['eqcert', 'eqtop'] if mesh == 256 else ['eqxfer']
+        SETNAME = {'eqcert': 'EQ, b-eqtop ladder rules', 'eqtop': 'EQ, replication-selected rules', 'eqxfer': 'EQ, rules transferred from $256^2$'}
+        # ---- T3: the ladders side by side at tolerance 1e-6 (+ the loose tolerance for the last set)
+        t3 = []
+        for q in qs:
+            cells = [str(q), str(Ms[q])]
+            d = P[f'q{q}_M{Ms[q]}_dense_g1em06']
+            cells += [pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), ms(d['median_gpu_ms'])]
+            for st_ in sets:
+                e = P[f'q{q}_M{Ms[q]}_{st_}_g1em06']
+                cells += [pct(e['worst_evolved_percent']), pct(e['worst_all_times_percent']), ms(e['median_gpu_ms']),
+                          tex_escape(str(rstat.get(f'q{q}_M{Ms[q]}_{st_}_g1em06') or '---'))]
+            cells.append(pct(d['worst_t0_compression_percent']))
+            t3.append(cells)
+        cols = ['$q$', '$M$', 'dense: evolved \\%', 'all \\%', 'ms']
+        for st_ in sets:
+            cols += [SETNAME[st_] + ': evolved \\%', 'all \\%', 'ms', 'rule status']
+        cols.append('$t{=}0$ \\%')
+        write(f'T03{"b" if sfx else ""}_tunability.tex', tabular(cols, t3, 'rr' + 'rrr' + 'rrrl' * len(sets) + 'r', r'\tiny'), f'b-panel job {job}, {mesh}^2, tolerance 1e-6')
+        # ---- ladder statistics
+        def ladder_stats(suf, ql):
+            errs = [P[f'q{q}_M{Ms[q]}_{suf}']['worst_evolved_percent'] for q in ql]
+            cost = [P[f'q{q}_M{Ms[q]}_{suf}']['median_gpu_ms'] for q in ql]
+            mono = all(errs[i] >= errs[i + 1] for i in range(len(errs) - 1))
+            conv = all(P[f'q{q}_M{Ms[q]}_{suf}']['converged'] for q in ql)
+            return errs, cost, mono, conv
+        e, c, mono, conv = ladder_stats('dense_g1em06', qs)
+        macro(f'nPanel{sfx}DenseErrSpan', f'{e[0]/e[-1]:.2f}'); macro(f'nPanel{sfx}DenseCostSpan', f'{c[-1]/c[0]:.2f}')
+        macro(f'nPanel{sfx}DenseMonotone', yn(mono)); macro(f'nPanel{sfx}DenseConverged', yn(conv))
+        SN = {'eqcert': 'Eq', 'eqtop': 'Eqtop', 'eqxfer': 'Eqxfer'}
+        for st_ in sets:
+            for tl, tn in [('g1em06', ''), ('g0p001', 'Loose')]:
+                _, _, m_, cv_ = ladder_stats(f'{st_}_{tl}', qs)
+                macro(f'nPanel{sfx}{SN[st_]}{tn}Monotone', yn(m_)); macro(f'nPanel{sfx}{SN[st_]}{tn}Converged', yn(cv_))
+            for q, qn in [(64, 'SixtyFour'), (128, 'OneTwentyEight'), (256, 'TwoFiftySix')]:
+                sub = f'q{q}_M{Ms[q]}_{st_}_g1em06'
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Err', pct(P[sub]['worst_evolved_percent'])); macro(f'nPanel{sfx}{SN[st_]}Q{qn}Ms', ms(P[sub]['median_gpu_ms']))
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}All', pct(P[sub]['worst_all_times_percent']))
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Status', tex_escape(str(rstat.get(sub) or '---'))); macro(f'nPanel{sfx}{SN[st_]}Q{qn}M', str(rm.get(sub) or '---'))
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Rho', f"{P[sub]['rho_max']:.4f}" if P[sub].get('rho_max') is not None else '---')
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}FitStates', str(P[sub].get('rule_fit_states') or '---'))
+                macro(f'nPanel{sfx}{SN[st_]}Q{qn}Basis', str(P[sub].get('rule_basis') or '---'))
+            # dense-twin speedups over the ladder at tolerance 1e-6
+            sp = [P[f'q{q}_M{Ms[q]}_dense_g1em06']['median_gpu_ms'] / P[f'q{q}_M{Ms[q]}_{st_}_g1em06']['median_gpu_ms'] for q in qs]
+            macro(f'nPanel{sfx}{SN[st_]}TwinSpeedupMin', f'{min(sp):.1f}'); macro(f'nPanel{sfx}{SN[st_]}TwinSpeedupMax', f'{max(sp):.1f}')
+            macro(f'nPanel{sfx}{SN[st_]}PassingQs', ', '.join(str(q) for q in qs if P[f'q{q}_M{Ms[q]}_{st_}_g1em06'].get('rule_basis') == 'primary'))
+        if mesh == 256:
+            macro('nPanelEqQtwofiftysixEvolved', pct(P['q256_M1088_eqcert_g1em06']['worst_evolved_percent']))
+            macro('nPanelEqQonetwentyeightEvolved', pct(P['q128_M576_eqcert_g1em06']['worst_evolved_percent']))
+            macro('nPanelEqQtwofiftysixBasis', str(P['q256_M1088_eqcert_g1em06'].get('rule_basis')))
+            macro('nPanelEqQonetwentyeightBasis', str(P['q128_M576_eqcert_g1em06'].get('rule_basis')))
+            macro('nPanelEqQsixtyfourBasis', str(P['q64_M320_eqcert_g1em06'].get('rule_basis')))
+            # same rule files at q <= 32 in both sets?
+            same = all(P[f'q{q}_M{Ms[q]}_eqcert_g1em06'].get('rule_file_sha256') == P[f'q{q}_M{Ms[q]}_eqtop_g1em06'].get('rule_file_sha256') for q in (0, 16, 32))
+            macro('nPanelEqSetsSameRulesLowQ', yn(same))
+            sp = [P[f'q{q}_M{Ms[q]}_dense_g1em06']['median_gpu_ms'] / P[f'q{q}_M{Ms[q]}_{st_}_g1em06']['median_gpu_ms'] for st_ in sets for q in qs]
+            macro('nPanelTwinSpeedupMin', f'{min(sp):.1f}'); macro('nPanelTwinSpeedupMax', f'{max(sp):.1f}')
+            macro('nPanelDenseQtwoFiftySixAll', pct(P['q256_M1088_dense_g1em06']['worst_all_times_percent']))
+            macro('nPanelEqtopQtwoFiftySixTimeSaving', f"{P['q256_M1088_dense_g1em06']['median_gpu_ms'] / P['q256_M1088_eqtop_g1em06']['median_gpu_ms']:.1f}")
+        # EQ vs dense at matched (q, M): cost and error (the first EQ set of the mesh)
+        st0 = sets[0]
+        for q, nm in [(0, 'Zero'), (128, 'OneTwoEight')]:
+            d = P[f'q{q}_M{Ms[q]}_dense_g1em06']; eq6 = P[f'q{q}_M{Ms[q]}_{st0}_g1em06']; eq3 = P[f'q{q}_M{Ms[q]}_{st0}_g0p001']
+            macro(f'nPanel{sfx}DenseMs{nm}', ms(d['median_gpu_ms'])); macro(f'nPanel{sfx}EqMs{nm}', ms(eq6['median_gpu_ms']))
+            macro(f'nPanel{sfx}EqLooseMs{nm}', ms(eq3['median_gpu_ms'])); macro(f'nPanel{sfx}DenseErr{nm}', pct(d['worst_evolved_percent']))
+            macro(f'nPanel{sfx}EqErr{nm}', pct(eq6['worst_evolved_percent'])); macro(f'nPanel{sfx}EqLooseErr{nm}', pct(eq3['worst_evolved_percent']))
+            macro(f'nPanel{sfx}EqSpeedup{nm}', f'{d["median_gpu_ms"]/eq6["median_gpu_ms"]:.2f}')
+            macro(f'nPanel{sfx}TolSaving{nm}', f'{100*(1-eq3["median_gpu_ms"]/eq6["median_gpu_ms"]):.0f}')
+        # ---- frontier statements
+        subjects = [x for x in P if x != '*']
+        reduced = [x for x in subjects if fam[x] in REDUCED]
+        adm_red = [x for x in reduced if adm.get(x)]
+        foms = [x for x in subjects if fam[x] == 'fom']
+        macro(f'nPanel{sfx}SubjectCount', str(len(subjects))); macro(f'nPanel{sfx}ReducedAllCount', str(len(reduced)))
+        macro(f'nPanel{sfx}ReducedCount', str(len(adm_red)))
+        nd = P.get('*', {})
+        nd_e = nd.get('nondominated_gpu_evolved_admissible') or []; nd_a = nd.get('nondominated_gpu_all_admissible') or []
+        macro(f'nPanel{sfx}ReducedNonDomEvolved', str(sum(1 for x in nd_e if x in reduced)))
+        macro(f'nPanel{sfx}ReducedNonDomAll', str(sum(1 for x in nd_a if x in reduced)))
+        macro(f'nPanel{sfx}NonDomReducedList', ', '.join(tt(x) for x in nd_e if x in reduced) or 'none')
+        macro(f'nPanel{sfx}NonDomFomList', ', '.join(tt(x) for x in nd_e if x not in reduced) or 'none')
+        ndr = nd.get('nondominated_gpu_all_reduced_only') or []
+        macro(f'nPanel{sfx}ReducedOnlyFrontierSize', str(len(ndr)))
+        macro(f'nPanel{sfx}ReducedOnlyFrontierEq', str(sum(1 for x in ndr if fam[x] in ('rom', 'fast'))))
+        macro(f'nPanel{sfx}ReducedOnlyFrontierPod', str(sum(1 for x in ndr if fam[x] == 'pod')))
+        ndr_e = nd.get('nondominated_gpu_evolved_reduced_only') or []
+        macro(f'nPanel{sfx}ReducedOnlyFrontierEvolvedPod', str(sum(1 for x in ndr_e if fam[x] == 'pod')))
+        # cheapest admissible reduced against the cheapest full-order setting of the same job, and against fft_tight
+        cheap_r = min(adm_red, key=lambda x: P[x]['median_gpu_ms']); cheap_f = min(foms, key=lambda x: P[x]['median_gpu_ms'])
+        macro(f'nPanel{sfx}CheapestReduced', tt(cheap_r)); macro(f'nPanel{sfx}CheapestReducedMs', ms(P[cheap_r]['median_gpu_ms'])); macro(f'nPanel{sfx}CheapestReducedErr', pct(P[cheap_r]['worst_evolved_percent']))
+        macro(f'nPanel{sfx}CheapestFom', tt(cheap_f)); macro(f'nPanel{sfx}CheapestFomMs', ms(P[cheap_f]['median_gpu_ms'])); macro(f'nPanel{sfx}CheapestFomErr', pct(P[cheap_f]['worst_evolved_percent']))
+        macro(f'nPanel{sfx}CheapestRatio', f"{P[cheap_r]['median_gpu_ms'] / P[cheap_f]['median_gpu_ms']:.2f}")
+        macro(f'nPanel{sfx}CheapestOverFft', f"{P[cheap_r]['median_gpu_ms'] / P['fft_tight']['median_gpu_ms']:.3f}")
+        # the most accurate reduced subject and the same-job FOM settings that beat it on both axes
+        acc_r = min(adm_red, key=lambda x: P[x]['worst_evolved_percent'])
+        beat = [x for x in foms if P[x]['median_gpu_ms'] <= P[acc_r]['median_gpu_ms'] and P[x]['worst_evolved_percent'] <= P[acc_r]['worst_evolved_percent']]
+        macro(f'nPanel{sfx}MostAccurateReduced', tt(acc_r)); macro(f'nPanel{sfx}MostAccurateReducedErr', pct(P[acc_r]['worst_evolved_percent'])); macro(f'nPanel{sfx}MostAccurateReducedMs', ms(P[acc_r]['median_gpu_ms']))
+        macro(f'nPanel{sfx}FomBeatingMostAccurate', str(len(beat)))
+        # t = 0 compression on the frontier's reduced members (bounds the all-times metric)
+        tz = [P[x]['worst_t0_compression_percent'] for x in nd_e if x in reduced and P[x].get('worst_t0_compression_percent') is not None]
+        if tz: macro(f'nPanel{sfx}FrontierTzeroMin', pct(min(tz), 2)); macro(f'nPanel{sfx}FrontierTzeroMax', pct(max(tz), 2))
+        for x, nm in [('nt1e-3_dt005', 'NtThreeFine'), ('nt1e-4_dt005', 'NtFourFine'), ('nt1e-2_dt01', 'NtTwoCoarse'), ('fft_tight', 'FftTight'), ('dense_tight', 'DenseTight')]:
+            if x in P:
+                macro(f'nPanel{sfx}Fom{nm}Err', pct(P[x]['worst_evolved_percent'])); macro(f'nPanel{sfx}Fom{nm}Ms', ms(P[x]['median_gpu_ms']))
+                macro(f'nPanel{sfx}Fom{nm}Ref', pct(P[x]['worst_reference_percent']))
+        best = P['q256_M1088_dense_g1em06']
+        macro(f'nPanel{sfx}BestRungErr', pct(best['worst_evolved_percent'])); macro(f'nPanel{sfx}BestRungMs', ms(best['median_gpu_ms'])); macro(f'nPanel{sfx}BestRungAll', pct(best['worst_all_times_percent']))
+        if 'pod512_M2048_dense' in P:
+            pod = P['pod512_M2048_dense']
+            macro(f'nPanel{sfx}PodFiveTwelveErr', pct(pod['worst_evolved_percent'])); macro(f'nPanel{sfx}PodFiveTwelveMs', ms(pod['median_gpu_ms'])); macro(f'nPanel{sfx}PodFiveTwelveAll', pct(pod['worst_all_times_percent']))
+        free = P['free512_M1024_dense']
+        macro(f'nPanel{sfx}FreeErr', pct(free['worst_evolved_percent'])); macro(f'nPanel{sfx}FreeMs', ms(free['median_gpu_ms'])); macro(f'nPanel{sfx}FreeAll', pct(free['worst_all_times_percent']))
+        macro(f'nPanel{sfx}FreeFloor', pct(free['best_found_percent'])); macro(f'nPanel{sfx}FreeOverFloor', f'{free["solved_over_best_found"]:.2f}')
+        macro(f'nPanel{sfx}PodRanks', ', '.join(str(qk[x]) for x in sorted((x for x in subjects if fam[x] == 'pod'), key=lambda x: int(qk[x]))))
+        macro(f'nPanel{sfx}PodOneTwentyEightErr', pct(P['pod128_M512_dense']['worst_evolved_percent'])); macro(f'nPanel{sfx}PodOneTwentyEightAll', pct(P['pod128_M512_dense']['worst_all_times_percent']))
+        macro(f'nPanel{sfx}PodOneTwentyEightMs', ms(P['pod128_M512_dense']['median_gpu_ms']))
+        macro(f'nPanel{sfx}PodTwoFiftySixErr', pct(P['pod256_M1024_dense']['worst_evolved_percent'])); macro(f'nPanel{sfx}PodTwoFiftySixMs', ms(P['pod256_M1024_dense']['median_gpu_ms']))
+        fno = P['fno-large']
+        macro(f'nPanel{sfx}FnoErr', pct(fno['worst_evolved_percent'])); macro(f'nPanel{sfx}FnoMs', ms(fno['median_gpu_ms'])); macro(f'nPanel{sfx}FnoRef', pct(fno['worst_reference_percent']))
+        macro(f'nPanel{sfx}QzeroT', pct(P['q0_M64_dense_g1em06']['worst_t0_compression_percent'])); macro(f'nPanel{sfx}QzeroEvolved', pct(P['q0_M64_dense_g1em06']['worst_evolved_percent']))
+        macro(f'nPanel{sfx}QzeroAll', pct(P['q0_M64_dense_g1em06']['worst_all_times_percent']))
+        if 'q0_M64_eqcert_g1em06_fastL4' in P: macro(f'nPanel{sfx}FastMs', ms(P['q0_M64_eqcert_g1em06_fastL4']['median_gpu_ms']))
+        macro(f'nPanel{sfx}RefDiscretisation', pct(P['fft_tight']['worst_reference_percent']))
+        strict_no = [x for x in reduced if P[x].get('converged') and not P[x].get('converged_strict')]
+        macro(f'nPanel{sfx}StrictNoCount', str(len(strict_no)))
+        icres = [P[x].get('max_ic_relative_residual') for x in strict_no if P[x].get('max_ic_relative_residual') is not None]
+        macro(f'nPanel{sfx}StrictNoIcResidualMax', f'{max(icres):.1e}' if icres else '---')
+        sob = [P[x].get('solved_over_best_found') for x in strict_no if fam[x] == 'pod']
+        macro(f'nPanel{sfx}PodSolvedOverFloorMax', f'{max(sob):.5f}' if sob else '---')
+        # ---- T5: every subject
+        t5 = []
+        for x in subjects:
+            d = P[x]; isred = fam[x] in REDUCED
+            rule = (f"{rset[x]} $m{{=}}{rm[x]}$, {rstat[x]}" if rset.get(x) else '---')
+            t5.append([tt(x), fam[x], str(qk[x]) if qk[x] is not None else '---', str(Mof[x]) if Mof[x] else '---', str(quad[x] or '---'),
+                       tex_escape(rule), pct(d.get('worst_evolved_percent')), pct(d.get('worst_all_times_percent')),
+                       pct(d.get('worst_t0_compression_percent')), pct(d.get('worst_reference_percent')),
+                       ms(d.get('median_gpu_ms')), ms(d.get('median_host_ms')),
+                       yn(d.get('converged')) if isred else '---', yn(d.get('converged_strict')) if isred else '---', yn(adm.get(x)) if isred else '---'])
+        cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'GPU ms', 'host ms', 'conv.', 'strict', 'adm.']
+        write(f'T05{"b" if sfx else ""}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
+    # the crossover ratios, both meshes, same-job only
+    macro('nPanelCheapestRatioDrop', f"{float(MACROS['nPanelCheapestRatio']) / float(MACROS['nPanelTenTwentyFourCheapestRatio']):.2f}")
 
 
 # =========================================================================== T4 rank vs tests
@@ -427,7 +455,7 @@ def build_qxm():
     hdr, rows = md_table(rep, 'job') if rep else (None, None)
     jobs = {r[0]: r for r in rows} if rows else {}
     macro('provQxmJobs', ', '.join(f"{r[0]} = {r[2]} ({tex_escape(r[3])})" for r in rows) if rows else '---')
-    macro('provQxmCommit', tex_escape(rows[0][4]) if rows else '---')
+    macro('provQxmCommit', ' / '.join(dict.fromkeys(tex_escape(r[4]) for r in rows)) if rows else '---')
     macro('provQxmWithinJob', f"{wj['job']} = {wj['job_id']}")
     macro('nQxmFixedM', str(ev['fixed_M']['1088']['M']))
     macro('nQxmErrSpan', f"{wj['error_span']:.2f}")
@@ -435,11 +463,32 @@ def build_qxm():
     macro('nQxmNonDom', str(wj['non_dominated_points']))
     macro('nQxmPasses', yn(wj['passes_tunability_bar']))
     macro('nQxmMonotone', yn(wj['monotone_error']))
-    macro('nQxmFixedMConverged', yn(ev['fixed_M']['1088']['all_converged']))
+    fm = ev['fixed_M']['1088']
+    # the declared column also attempted q = 512 (round 2), which did not converge; the lane keeps
+    # `span` null for the declared range and reports the converged prefix as `certified_span`
+    macro('nQxmFixedMConverged', yn(fm['certified_all_converged']))
+    macro('nQxmCertifiedQtop', str(fm['certified_q_range'][1]))
+    macro('nQxmCertifiedSpan', f"{fm['certified_span']:.2f}")
+    la = fm.get('within_job_longest_attempted')
+    if la:
+        macro('nQxmExtJob', la['job_id']); macro('nQxmExtQtop', str(la['q'][-1]))
+        macro('nQxmExtTopConverged', yn(la['converged'][-1]))
+        macro('nQxmExtRoundOneRungsReproduced', str(sum(1 for q in la['q'] if q in wj['q'])))
+    # round-2 anchors: every shared cell re-run in E1/E2 against its round-1 twin
+    macro('nQxmAnchorWorstAll', f"{max(max(x['rel_evolved'], x['rel_all']) for x in a['anchors']):.1e}")
+    macro('nQxmAnchorsAllPass', yn(all(x['passed'] for x in a['anchors'])))
+    macro('nQxmJobCount', str(len({x for x in [y['a_job'] for y in a['anchors']] + [y['b_job'] for y in a['anchors']]})))
+    r2 = [x for x in a['anchors'] if x['b_job'] in ('3783898', '3783899')]
+    if r2:
+        macro('nQxmRoundTwoAnchorWorst', f"{max(max(x['rel_evolved'], x['rel_all']) for x in r2):.1e}")
+        macro('nQxmRoundTwoAnchorCount', str(len(r2)))
     macro('nQxmSpanFixedTwoFiftySix', f"{ev['fixed_M']['256']['span']:.2f}")
     macro('nQxmSpanScheduledFour', f"{ev['scheduled']['4x']['span']:.2f}")
     macro('nQxmSpanScheduledEight', f"{ev['scheduled']['8x']['span']:.2f}")
-    macro('nQxmAllTimesSpanFixed', f"{al['fixed_M']['1088']['span']:.2f}")
+    # all-times fixed-M column: the declared range includes the unconverged q = 512 attempt, so the
+    # lane nulls `span`; the converged prefix (q <= 256) is `certified_span`
+    macro('nQxmAllTimesSpanFixed', f"{al['fixed_M']['1088']['certified_span']:.2f}")
+    macro('nQxmAllTimesCertifiedQtop', str(al['fixed_M']['1088']['certified_q_range'][1]))
     macro('nQxmAllTimesSpanScheduledFour', f"{al['scheduled']['4x']['span']:.2f}")
     dec = a['decomposition']['worst_evolved_percent']
     macro('nQxmShareRankCorner', f"{100*dec['corner']['share_q']:.1f}")
@@ -455,6 +504,14 @@ def build_qxm():
     macro('nQxmMstarSixtyFour', str(sat['64']['M_star'])); macro('nQxmMstarSixtyFourTpu', f"{sat['64']['tests_per_unknown_at_M_star']:.1f}")
     macro('nQxmQzeroMlargest', str(sat['0']['largest_M'])); macro('nQxmQzeroErrLargest', pct(sat['0']['value_at_largest_M']))
     macro('nQxmQzeroErrMstar', pct(sat['0']['error_at_M_star']))
+    s256 = sat['256']
+    macro('nQxmMstarTwoFiftySix', str(s256['M_star'])); macro('nQxmMstarTwoFiftySixTpu', f"{s256['tests_per_unknown_at_M_star']:.0f}")
+    macro('nQxmMstarTwoFiftySixErr', pct(s256['error_at_M_star'])); macro('nQxmMstarTwoFiftySixCost', f"{s256['cost_ratio_at_M_star']:.2f}")
+    macro('nQxmQtwoFiftySixMlargest', str(s256['largest_M'])); macro('nQxmQtwoFiftySixErrLargest', pct(s256['value_at_largest_M']))
+    c256 = {c['M']: c for c in s256['curve']}
+    macro('nQxmQtwoFiftySixCostLargest', f"{c256[s256['largest_M']]['cost_ratio_to_4x']:.2f}")
+    macro('nQxmQtwoFiftySixMaxGainPastMstar', f"{100*max(c['improvement_to_next'] for c in s256['curve'] if c['M'] >= s256['M_star'] and c['improvement_to_next'] is not None):.1f}")
+    macro('provQxmSaturationTwoFiftySixJob', a['saturation']['sources']['256']['job_id'])
     macro('nQxmSpanMatQtwoFiftySix', f"{ev['fixed_q']['256']['span']:.2f}")
     macro('nQxmSpanMatQzero', f"{ev['fixed_q']['0']['span']:.2f}")
     best_m = ev['fixed_q']['256']['M_best']; best_v = min(ev['fixed_q']['256']['values'])
@@ -1257,7 +1314,7 @@ def build_lshape():
             q, h = sub[8:].split('@'); return f'head $q{{=}}{q}$ (' + tex_escape(h) + ')'
         return tt(sub)
     t = []
-    for mesh in (64, 128, 256):
+    for mesh in (64, 128, 256, 512):
         nd = [sub for (m, tm, sub) in V if m == mesh and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
         nd = sorted(nd, key=lambda sub: V[(mesh, 257, sub)]['median_total_ms'])
         for sub in nd:
@@ -1268,19 +1325,48 @@ def build_lshape():
     write('T18c_lshape_solve.tex', tabular(['mesh', 'subject', 'family', 'worst same-grid \\%', 'complete-query ms'], t, 'lllrr', r'\scriptsize'),
           'lshape solve layer, M = 257; the non-dominated set per mesh, one job per mesh')
     macro('provLshapeSolveJobs', ', '.join(sorted({jobs[k] for k in jobs if k[1] == 257})))
-    for mesh, nm in [(64, 'SixtyFour'), (128, 'OneTwentyEight'), (256, 'TwoFiftySix')]:
+    NM = [(64, 'SixtyFour'), (128, 'OneTwentyEight'), (256, 'TwoFiftySix'), (512, 'FiveTwelve')]
+    trend = []
+    for mesh, nm in NM:
         d = V.get((mesh, 257, 'fom_splu'), {})
         if d: macro(f'nLshapeSpluMs{nm}', ms(d['median_total_ms'], 2))
-    best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {})
-    splu = V.get((256, 257, 'fom_splu'), {})
+        b = V.get((mesh, 257, 'neural_q64@head_sdf_R512_K16'), {})
+        if b:
+            macro(f'nLshapeNeuralMs{nm}', ms(b['median_total_ms'], 3)); trend.append(ms(b['median_total_ms'], 2))
+            macro(f'nLshapeNeuralErr{nm}', pct(100 * b['worst_same_grid'], 3))
+            if d: macro(f'nLshapeNeuralCheaper{nm}', f"{d['median_total_ms'] / b['median_total_ms']:.2f}")
+        ndm = [sub for (m, tm, sub) in V if m == mesh and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
+        macro(f'nLshapeNonDomCount{nm}', str(len(ndm))); macro(f'nLshapeNonDomReduced{nm}', str(sum(1 for sub in ndm if fam[sub] != 'fom')))
+        # is the head at q=64 on the non-dominated set at this mesh?
+        macro(f'nLshapeNeuralNonDom{nm}', yn(bool(V.get((mesh, 257, 'neural_q64@head_sdf_R512_K16'), {}).get('nondominated_complete_ms'))))
+    macro('nLshapeNeuralMsTrend', ' $\\to$ '.join(trend))
+    # the 256^2 crossover cell keeps its short names (used in the intro and §5.6)
+    best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {}); splu = V.get((256, 257, 'fom_splu'), {})
     if best and splu:
         macro('nLshapeNeuralErr', pct(100 * best['worst_same_grid'], 3)); macro('nLshapeNeuralMs', ms(best['median_total_ms'], 3))
         macro('nLshapeNeuralCheaper', f"{splu['median_total_ms'] / best['median_total_ms']:.2f}")
-    nd256 = [sub for (m, tm, sub) in V if m == 256 and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
-    macro('nLshapeNonDomCount', str(len(nd256)))
-    macro('nLshapeNonDomReduced', str(sum(1 for sub in nd256 if fam[sub] != 'fom')))
+    macro('nLshapeNonDomCount', MACROS['nLshapeNonDomCountTwoFiftySix']); macro('nLshapeNonDomReduced', MACROS['nLshapeNonDomReducedTwoFiftySix'])
+    # 512^2: the most accurate reduced subject on the set, and the cheapest full-order subject
+    nd512 = [sub for (m, tm, sub) in V if m == 512 and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
+    if nd512:
+        red = [sub for sub in nd512 if fam[sub] != 'fom']
+        bestred = min(red, key=lambda sub: V[(512, 257, sub)]['worst_same_grid'])
+        macro('nLshapeFiveTwelveBestReduced', name(bestred))
+        macro('nLshapeFiveTwelveBestReducedErr', pct(100 * V[(512, 257, bestred)]['worst_same_grid'], 3))
+        pods = [sub for sub in red if sub.startswith('pod')]
+        if pods:
+            bp = min(pods, key=lambda sub: V[(512, 257, sub)]['worst_same_grid'])
+            macro('nLshapeFiveTwelveBestPod', name(bp)); macro('nLshapeFiveTwelveBestPodErr', pct(100 * V[(512, 257, bp)]['worst_same_grid'], 3))
+            macro('nLshapeFiveTwelveBestPodMs', ms(V[(512, 257, bp)]['median_total_ms'], 3))
+        cg = V.get((512, 257, 'fom_cg_gpu_r0.01'), {})
+        if cg:
+            macro('nLshapeFiveTwelveCgErr', pct(100 * cg['worst_same_grid'], 3)); macro('nLshapeFiveTwelveCgMs', ms(cg['median_total_ms'], 2))
     nd128 = [sub for (m, tm, sub) in V if m == 128 and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms') and fam[sub] != 'fom']
     if nd128:
+        bp128 = min(nd128, key=lambda sub: V[(128, 257, sub)]['worst_same_grid'])
+        macro('nLshapeOneTwentyEightBestReduced', name(bp128))
+        macro('nLshapeOneTwentyEightBestReducedErr', pct(100 * V[(128, 257, bp128)]['worst_same_grid'], 3))
+        macro('nLshapeOneTwentyEightBestReducedCheaper', f"{V[(128, 257, 'fom_splu')]['median_total_ms'] / V[(128, 257, bp128)]['median_total_ms']:.2f}")
         errs = [100 * V[(128, 257, sub)]['worst_same_grid'] for sub in nd128]
         macro('nLshapeOneTwentyEightReducedErrRange', f"{min(errs):.1f}--{max(errs):.1f}")
         cheap = [V[(128, 257, 'fom_splu')]['median_total_ms'] / V[(128, 257, sub)]['median_total_ms'] for sub in nd128]
@@ -1316,7 +1402,8 @@ def build_lshape():
         hi = vr['checks']['free_rung_is_head_independent_to_roundoff']['detail']
         macro('nLshapeHeadIndepRel', f"{hi['worst_relative_field_difference']:.2e}")
         macro('nLshapeHeadIndepBitwise', yn(hi['bitwise_identical']))
-    macro('nLshapeSolve', 'landed at $64^2$--$256^2$ (Table~\\ref{tab:lshape-solve}); $512^2$ pending')
+    macro('nLshapeSolve', 'in Table~\\ref{tab:lshape-solve} ($64^2$--$512^2$, one job per mesh)')
+    macro('nLshapeJobCount', str(len({r['job_id'] for r in s_rows})))
 
 
 # =========================================================================== T17 offline cost, T1b spec, T19 solver variants
@@ -1392,11 +1479,90 @@ def build_offline_and_spec():
 
 
 # =========================================================================== T12/T13 seeds, ns2d
-def build_pending():
-    if load('seeds_summary') is None:
+def build_seeds():
+    rows = load('seeds_summary')
+    if rows is None:
         write('T12_seeds.tex', gen('b-seeds', 'T12') + '\n')
         write('T13_sealed.tex', gen('b-seeds sealed cohort', 'T13') + '\n')
         macro('nSeedsStatus', gen('b-seeds', 'seeds'))
+        return
+    rows = rows['rows'] if isinstance(rows, dict) else rows
+    import statistics as st
+    dev = [r for r in rows if r['cohort'] == 'dev' and r['ladder'] == 'dense_m4']
+    V = defaultdict(dict)      # (checkpoint, attempt, q) -> metric -> value
+    for r in dev:
+        V[(r['checkpoint'], r['attempt'], r['q'])][r['metric']] = r['value']
+    seeds = sorted({r['checkpoint'] for r in dev if r['checkpoint'].startswith('seed')})
+    attempts = sorted({r['attempt'] for r in dev if r['attempt']})
+    jobs = {(r['checkpoint'], r['attempt']): (r['job_id'], r['gpu']) for r in dev if r['job_id']}
+    qs = sorted({int(r['q']) for r in dev if r['q'] is not None})
+    Mof = {int(r['q']): r.get('M') for r in dev if r['q'] is not None and r.get('M') is not None}
+    def seedvals(q, metric):
+        out = []
+        for sd in seeds:
+            for k in V:
+                if k[0] == sd and k[2] is not None and int(k[2]) == q and metric in V[k]:
+                    out.append(V[k][metric])
+        return out
+    def inc(q, metric):
+        vals = {round(V[k][metric], 6) for k in V if k[0] == 'incumbent' and k[2] is not None and int(k[2]) == q and metric in V[k]}
+        return vals
+    def ms_(vals, d=4):
+        return f"{st.mean(vals):.{d}f} $\\pm$ {st.stdev(vals):.{d}f}" if len(vals) > 1 else (f"{vals[0]:.{d}f}" if vals else '---')
+    t = []
+    for q in qs:
+        ev = seedvals(q, 'evolved'); al = seedvals(q, 'all_times'); bf = seedvals(q, 'best_found'); cv = seedvals(q, 'converged')
+        ie = inc(q, 'evolved'); ia = inc(q, 'all_times')
+        assert len(ie) == 1 and len(ia) == 1, ('incumbent re-runs disagree across jobs', q, ie, ia)
+        t.append([str(q), str(Mof.get(q, '---')), ms_(ev), f"{ie.pop():.4f}", ms_(al), f"{ia.pop():.4f}", ms_(bf),
+                  f"{sum(1 for c in cv if c)} of {len(cv)}"])
+    write('T12_seeds.tex', tabular(['$q$', '$M$', 'evolved \\%, seeds', 'evolved \\%, incumbent', 'all-times \\%, seeds',
+                                    'all-times \\%, incumbent', 'best-found \\%, seeds', 'converged'], t, 'rrllllll', r'\scriptsize'),
+          'b-seeds development cohort, dense M = 4(K+q), three training seeds (one job each) beside the incumbent re-run in the same job; mean +- sample std over seeds; costs are not averaged across jobs')
+    # per-seed ladder verdicts
+    per = []
+    for sd in seeds:
+        k = [k for k in V if k[0] == sd and k[2] is None]
+        d = V[k[0]] if k else {}
+        jid, gpu = jobs.get((sd, k[0][1]), ('---', '---')) if k else ('---', '---')
+        per.append([tt(sd), tt(jid), tex_escape(gpu), yn(d.get('monotone_evolved')), yn(d.get('monotone_all_times')), yn(d.get('all_converged')),
+                    ratio(d.get('error_span_evolved')), ratio(d.get('cost_span')), yn(d.get('knob_bar_passes'))])
+    write('T12b_seeds_verdicts.tex', tabular(['seed', 'job', 'GPU', 'monotone (evolved)', 'monotone (all-times)', 'every rung converged',
+                                              'error span', 'cost span', 'knob bar'], per, 'lllllllll', r'\scriptsize'),
+          'b-seeds per-seed ladder verdicts, development cohort, dense M = 4(K+q)')
+    cnt = lambda metric: sum(1 for sd in seeds for k in V if k[0] == sd and k[2] is None and V[k].get(metric))
+    macro('nSeedsCount', str(len(seeds)))
+    macro('nSeedsMonotoneEvolved', str(cnt('monotone_evolved'))); macro('nSeedsMonotoneAll', str(cnt('monotone_all_times')))
+    macro('nSeedsAllConverged', str(cnt('all_converged'))); macro('nSeedsKnobBar', str(cnt('knob_bar_passes')))
+    spans = [V[k]['error_span_evolved'] for sd in seeds for k in V if k[0] == sd and k[2] is None and 'error_span_evolved' in V[k]]
+    macro('nSeedsErrSpanMin', ratio(min(spans))); macro('nSeedsErrSpanMax', ratio(max(spans)))
+    cs = [V[k]['cost_span'] for sd in seeds for k in V if k[0] == sd and k[2] is None and 'cost_span' in V[k]]
+    macro('nSeedsCostSpanMin', ratio(min(cs))); macro('nSeedsCostSpanMax', ratio(max(cs)))
+    # which rung fails to converge on the non-converged seed(s)
+    bad = sorted({(k[0], int(k[2])) for k in V if k[0] in seeds and k[2] is not None and V[k].get('converged') is False})
+    macro('nSeedsUnconvergedCells', ', '.join(f"{tt(sd)} at $q={q}$" for sd, q in bad) if bad else 'none')
+    # three layers at q = 0 per seed
+    fl = [V[k]['three_layer_bank_floor_percent'] for sd in seeds for k in V if k[0] == sd and 'three_layer_bank_floor_percent' in V[k]]
+    bf = [V[k]['three_layer_best_found_percent'] for sd in seeds for k in V if k[0] == sd and 'three_layer_best_found_percent' in V[k]]
+    macro('nSeedsFloorMin', pct(min(fl))); macro('nSeedsFloorMax', pct(max(fl)))
+    macro('nSeedsBestFoundMin', pct(min(bf))); macro('nSeedsBestFoundMax', pct(max(bf)))
+    # the pre-registered verdict rows
+    ver = {r['metric']: r['value'] for r in rows if r['cohort'] == 'verdict'}
+    macro('nSeedsCone', yn(ver.get('C1_monotone_converged_on_at_least_2_of_3'))); macro('nSeedsConeCount', str(ver.get('C1_count')))
+    macro('nSeedsCfour', yn(ver.get('C4_knob_bar_on_at_least_2_of_3')))
+    macro('nSeedsFthree', yn(ver.get('F3_recipe_not_reproduced')))
+    macro('nSeedsSealedPresent', yn(ver.get('sealed_present')))
+    macro('provSeedsJobs', '; '.join(f"{tt(sd)} = {jobs[(sd, a)][0]} ({tex_escape(jobs[(sd, a)][1])})" for sd in seeds for a in attempts if (sd, a) in jobs))
+    # T13: the sealed cohort has not been opened
+    if not ver.get('sealed_present'):
+        write('T13_sealed.tex', gen('b-seeds sealed cohort', 'T13') + '\n')
+        macro('nSeedsStatus', 'three seeds landed on the development cohort (Table~\\ref{tab:seeds}); the sealed cohort is ' + gen('b-seeds sealed cohort', 'seeds sealed'))
+    else:
+        raise SystemExit('b-seeds sealed rows present: extend build_seeds before reading them')
+
+
+def build_pending():
+    build_seeds()
     n = load('ns2d_summary')
     if n:
         n = n['rows'] if isinstance(n, dict) else n
@@ -1487,7 +1653,8 @@ def build_problems_and_provenance(mesh):
     P = []
     def prov(table, lane, job, gpu, commit, ckpt):
         P.append([table, lane, job, gpu, commit, ckpt])
-    prov('T3, T5', 'b-panel', MACROS.get('provPanelJob', '---'), MACROS.get('provPanelGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
+    prov('T3, T5', 'b-panel ($256^2$, bpn301)', MACROS.get('provPanelJob', '---'), MACROS.get('provPanelGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
+    prov('T3b, T5b', 'b-panel ($1024^2$, bpn203)', MACROS.get('provPanelTenTwentyFourJob', '---'), MACROS.get('provPanelTenTwentyFourGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
     prov('T4', 'b-qxm', MACROS.get('provQxmJobs', '---'), 'per job', MACROS.get('provQxmCommit', '---'), MACROS.get('provBurgersCkpt', '---'))
     prov('T6a, T7', 'head-ablation (Burgers)', MACROS.get('provAblBurgersJob', '---'), MACROS.get('provAblBurgersGpu', '---'), MACROS.get('provAblBurgersCommit', '---'), MACROS.get('provBurgersCkpt', '---'))
     prov('T6b, T7', 'head-ablation (Poisson)', MACROS.get('provAblPoissonJob', '---'), MACROS.get('provAblPoissonGpu', '---'), MACROS.get('provAblPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
@@ -1501,14 +1668,17 @@ def build_problems_and_provenance(mesh):
     prov('T14, T14c, T14d', 'no-second (5 of 8 jobs counted; two preamble deaths uncounted)', MACROS.get('provOpJobs', '---'), 'A100 (per job)', 'per job', 'operator checkpoints hash-verified in job')
     prov('T15', 'b-speed', MACROS.get('provSpeedJobs', '---'), 'A100 80GB PCIe', '8fdfbb08 / 94399dd6', MACROS.get('provBurgersCkpt', '---'))
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')
-    prov('T18, T18c, T18d', 'lshape', MACROS.get('provLshapeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
-    prov('T12, T13', 'b-seeds', gen('b-seeds', 'T2 seeds row'), '---', '---', '---')
+    prov('T18, T18c, T18d', 'lshape', 'training ' + MACROS.get('provLshapeJob', '---') + '; solves ' + MACROS.get('provLshapeSolveJobs', '---') + '; free rung ' + MACROS.get('provLshapeFreeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
+    prov('T12', 'b-seeds (development cohort)', MACROS['provSeedsJobs'] if 'provSeedsJobs' in MACROS else gen('b-seeds', 'T2 seeds row'), 'per job', 'per job', 'three seed checkpoints hashed in summary')
+    prov('T13', 'b-seeds (sealed cohort)', gen('b-seeds sealed cohort', 'T2 sealed row'), '---', '---', '---')
     write('T02b_retracted.tex', tabular(['lane', 'attempt', 'job', 'what it would have produced', 'why nothing is reported'],
                                         [[l, tt(a), tt(j), w, why] for l, a, j, w, why in RETRACTED_ATTEMPTS],
                                         r'llp{1.6cm}p{3.2cm}p{6.0cm}', r'\scriptsize'),
           'attempts that produced no reported number')
+    def fill(w):   # in-flight notes may name generated macros; substitute their values so the Markdown twin reads them too
+        return re.sub(r'\\(n[A-Za-z]+)\{\}', lambda m: MACROS.get(m.group(1), m.group(0)), w)
     write('T02c_inflight.tex', tabular(['lane', 'attempt', 'job', 'what it will add'],
-                                       [[l, tt(a), tt(j), w] for l, a, j, w in IN_FLIGHT],
+                                       [[l, tt(a), tt(j), fill(w)] for l, a, j, w in IN_FLIGHT],
                                        r'llp{1.6cm}p{7.6cm}', r'\scriptsize'),
           'attempts in flight at the time of writing')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),

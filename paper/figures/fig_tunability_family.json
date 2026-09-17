@@ -2,15 +2,15 @@
  "sources": {
   "qxm": {
    "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-qxm/experiments/b-qxm/reports/analysis.json",
-   "sha256": "b77a7c2162dae4b3316c0ecdad7a7d5fdc7add4dbb976bc75a887c938cffb72e"
+   "sha256": "28819214f88981718f677ca924f4d41d95c8efd4ea642c1432c7a7b819f809ff"
   },
   "panel": {
    "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-panel/experiments/b-panel/reports/summary.json",
-   "sha256": "52a0d8ec9a56d24fced42f1321faaa2b5a080a5c1da0f91675e37045e011fd38"
+   "sha256": "a27e1914b715d6cd4921a5fd3939d9705aa4e9b6f50ef33e638999bd3fbcadfc"
   },
   "eqtop": {
    "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json",
-   "sha256": "d766533e2235935d58b7c868f4a949deab359034ad3ffa2842622458801c0833"
+   "sha256": "78b88d5220d5005c489e7498bf434934275813a0ed7bd57fe602e25115007bd8"
   }
  },
  "panel_a": [
@@ -32,7 +32,7 @@
     0.871143378946005,
     0.5193843584884361
    ],
-   "converged": true
+   "converged": false
   },
   {
    "name": "fixed $M{=}256$",
@@ -77,223 +77,319 @@
    {
     "subject": "q0_M256_dense_g1em06",
     "family": "rom",
-    "cost_ms": 341.13388299010694,
-    "err": 1.2710311817108326,
+    "cost_ms": 341.4788170484826,
+    "err": 1.2710311817106656,
     "err_all": 2.562871982659394,
     "converged": true
    },
    {
     "subject": "q0_M64_dense_g1em06",
     "family": "rom",
-    "cost_ms": 284.8215844715014,
-    "err": 1.8889895724282881,
+    "cost_ms": 283.9128156192601,
+    "err": 1.888989572428342,
     "err_all": 2.562871982659394,
     "converged": true
    },
    {
     "subject": "q0_M64_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 42.61956352274865,
-    "err": 1.889764959851439,
+    "cost_ms": 43.63606555853039,
+    "err": 1.8897649598515933,
     "err_all": 2.5628089884190532,
     "converged": true
    },
    {
     "subject": "q0_M64_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 57.851168094202876,
-    "err": 1.8891456982770818,
+    "cost_ms": 59.46279806084931,
+    "err": 1.8891456982769574,
+    "err_all": 2.562871982659394,
+    "converged": true
+   },
+   {
+    "subject": "q0_M64_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 43.41051750816405,
+    "err": 1.8897649598515933,
+    "err_all": 2.5628089884190532,
+    "converged": true
+   },
+   {
+    "subject": "q0_M64_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 58.57302248477936,
+    "err": 1.8891456982769574,
     "err_all": 2.562871982659394,
     "converged": true
    },
    {
     "subject": "q16_M128_dense_g1em06",
     "family": "rom",
-    "cost_ms": 363.0445405142382,
-    "err": 1.3984510242290626,
-    "err_all": 2.4805768890056634,
+    "cost_ms": 360.770357074216,
+    "err": 1.398451024229065,
+    "err_all": 2.4805768890055964,
     "converged": true
    },
    {
     "subject": "q16_M128_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 60.3977789869532,
-    "err": 1.4272077976698652,
-    "err_all": 2.4805768890056634,
+    "cost_ms": 63.30291845370084,
+    "err": 1.4272077976697874,
+    "err_all": 2.4805768890055964,
     "converged": true
    },
    {
     "subject": "q16_M128_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 79.74279706832021,
-    "err": 1.4269572689483463,
-    "err_all": 2.4805768890056634,
+    "cost_ms": 81.7023339914158,
+    "err": 1.4269572689485142,
+    "err_all": 2.4805768890055964,
+    "converged": true
+   },
+   {
+    "subject": "q16_M128_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 62.090121558867395,
+    "err": 1.4272077976697874,
+    "err_all": 2.4805768890055964,
+    "converged": true
+   },
+   {
+    "subject": "q16_M128_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 81.0922714881599,
+    "err": 1.4269572689485142,
+    "err_all": 2.4805768890055964,
     "converged": true
    },
    {
     "subject": "q32_M192_dense_g1em06",
     "family": "rom",
-    "cost_ms": 442.6137444097549,
-    "err": 1.2335889771437984,
+    "cost_ms": 434.6987995086238,
+    "err": 1.233588977143888,
     "err_all": 2.353373355998495,
     "converged": true
    },
    {
     "subject": "q32_M192_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 72.31724204029888,
-    "err": 1.2497087430048168,
+    "cost_ms": 73.69497290346771,
+    "err": 1.2497087430046772,
     "err_all": 2.353373355998495,
     "converged": true
    },
    {
     "subject": "q32_M192_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 95.68090096581727,
-    "err": 1.2492798969294137,
+    "cost_ms": 96.40272136311978,
+    "err": 1.2492798969294627,
+    "err_all": 2.353373355998495,
+    "converged": true
+   },
+   {
+    "subject": "q32_M192_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 74.10443143453449,
+    "err": 1.2497087430046772,
+    "err_all": 2.353373355998495,
+    "converged": true
+   },
+   {
+    "subject": "q32_M192_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 97.80656243674457,
+    "err": 1.2492798969294627,
     "err_all": 2.353373355998495,
     "converged": true
    },
    {
     "subject": "q64_M320_dense_g1em06",
     "family": "rom",
-    "cost_ms": 637.3496839078143,
-    "err": 1.084339045842535,
+    "cost_ms": 621.1031170096248,
+    "err": 1.0843390458424207,
     "err_all": 2.14887054252661,
     "converged": true
    },
    {
     "subject": "q64_M320_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 88.50845496635884,
-    "err": 1.2278072200986492,
+    "cost_ms": 90.82757716532797,
+    "err": 1.2278072200987218,
     "err_all": 2.14887054252661,
     "converged": true
    },
    {
     "subject": "q64_M320_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 119.11801446694881,
-    "err": 1.2274712853624112,
+    "cost_ms": 119.65121096000075,
+    "err": 1.2274712853622685,
+    "err_all": 2.14887054252661,
+    "converged": true
+   },
+   {
+    "subject": "q64_M320_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 113.88700641691685,
+    "err": 1.0841360787547905,
+    "err_all": 2.14887054252661,
+    "converged": true
+   },
+   {
+    "subject": "q64_M320_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 148.94624752923846,
+    "err": 1.0840450242948816,
     "err_all": 2.14887054252661,
     "converged": true
    },
    {
     "subject": "q128_M576_dense_g1em06",
     "family": "rom",
-    "cost_ms": 1223.2192971277982,
-    "err": 0.8930065401030812,
-    "err_all": 1.8115929162889788,
+    "cost_ms": 1186.926499940455,
+    "err": 0.8930065401031689,
+    "err_all": 1.8115929162892646,
     "converged": true
    },
    {
     "subject": "q128_M576_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 189.04604157432914,
-    "err": 0.8926212011275294,
-    "err_all": 1.8115929162889788,
+    "cost_ms": 189.3341689137742,
+    "err": 0.8926212011272175,
+    "err_all": 1.8115929162892646,
     "converged": true
    },
    {
     "subject": "q128_M576_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 247.0446334918961,
-    "err": 0.8925086614947928,
-    "err_all": 1.8115929162889788,
+    "cost_ms": 246.53433309867978,
+    "err": 0.8925086614949695,
+    "err_all": 1.8115929162892646,
+    "converged": true
+   },
+   {
+    "subject": "q128_M576_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 205.1262145396322,
+    "err": 0.893190036881173,
+    "err_all": 1.8115929162892646,
+    "converged": true
+   },
+   {
+    "subject": "q128_M576_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 273.48320407327265,
+    "err": 0.8930672872477369,
+    "err_all": 1.8115929162892646,
     "converged": true
    },
    {
     "subject": "q256_M1088_dense_g1em06",
     "family": "rom",
-    "cost_ms": 4164.621871081181,
-    "err": 0.5193843632474474,
-    "err_all": 0.9052751422572456,
+    "cost_ms": 3939.7635699715465,
+    "err": 0.5193843632474806,
+    "err_all": 0.9052751422571457,
     "converged": true
    },
    {
     "subject": "q256_M1088_eqcert_g0p001",
     "family": "rom",
-    "cost_ms": 429.4381671352312,
-    "err": 1.0324163502213763,
-    "err_all": 1.0324163502213763,
+    "cost_ms": 429.5602075289935,
+    "err": 1.0324163502214976,
+    "err_all": 1.0324163502214976,
     "converged": true
    },
    {
     "subject": "q256_M1088_eqcert_g1em06",
     "family": "rom",
-    "cost_ms": 700.3522380255163,
-    "err": 1.0361161038686248,
-    "err_all": 1.0361161038686248,
+    "cost_ms": 697.6438695564866,
+    "err": 1.036116103868751,
+    "err_all": 1.036116103868751,
+    "converged": true
+   },
+   {
+    "subject": "q256_M1088_eqtop_g0p001",
+    "family": "rom",
+    "cost_ms": 466.447661514394,
+    "err": 0.5129113521156669,
+    "err_all": 0.9052751422571457,
+    "converged": true
+   },
+   {
+    "subject": "q256_M1088_eqtop_g1em06",
+    "family": "rom",
+    "cost_ms": 746.0200455971062,
+    "err": 0.5129194368597558,
+    "err_all": 0.9052751422571457,
     "converged": true
    },
    {
     "subject": "q0_M64_eqcert_g1em06_fastL4",
     "family": "fast",
-    "cost_ms": 39.09741248935461,
-    "err": 1.88914569827928,
-    "err_all": 2.562871982659335,
+    "cost_ms": 40.35864432808012,
+    "err": 1.8891456982792685,
+    "err_all": 2.5628719826593365,
     "converged": true
    },
    {
     "subject": "pod16_M64_dense",
     "family": "pod",
-    "cost_ms": 46.89220862928778,
-    "err": 28.725005808876208,
+    "cost_ms": 46.77594790700823,
+    "err": 28.725005808876215,
     "err_all": 61.65025492288995,
     "converged": true
    },
    {
     "subject": "pod32_M128_dense",
     "family": "pod",
-    "cost_ms": 81.6551324678585,
-    "err": 18.799482814431162,
+    "cost_ms": 80.98783111199737,
+    "err": 18.79948281443117,
     "err_all": 47.06814138119375,
     "converged": true
    },
    {
     "subject": "pod64_M256_dense",
     "family": "pod",
-    "cost_ms": 148.1896995101124,
-    "err": 7.0835113495326105,
+    "cost_ms": 145.7472265465185,
+    "err": 7.083511349532609,
     "err_all": 19.81564290293073,
     "converged": true
    },
    {
     "subject": "pod128_M512_dense",
     "family": "pod",
-    "cost_ms": 337.20438403543085,
-    "err": 1.9464407752560067,
+    "cost_ms": 331.5846074838191,
+    "err": 1.946440775256006,
     "err_all": 10.119784232883548,
     "converged": true
    },
    {
     "subject": "pod256_M1024_dense",
     "family": "pod",
-    "cost_ms": 927.7861800510436,
-    "err": 0.7108533909390623,
-    "err_all": 3.769834330123995,
+    "cost_ms": 898.7690535141155,
+    "err": 0.7108533909390663,
+    "err_all": 3.769834330123996,
     "converged": true
    },
    {
     "subject": "pod512_M2048_dense",
     "family": "pod",
-    "cost_ms": 2928.9085790514946,
-    "err": 0.21838116503823504,
+    "cost_ms": 2790.8281789859757,
+    "err": 0.21838116503823346,
     "err_all": 0.6125243904755928,
     "converged": true
    },
    {
     "subject": "free512_M1024_dense",
     "family": "free",
-    "cost_ms": 2542.2871420159936,
-    "err": 0.44709172914247114,
+    "cost_ms": 2439.5514444913715,
+    "err": 0.44709172915704176,
     "err_all": 0.6026673508069846,
     "converged": true
    },
    {
     "subject": "fno-large",
     "family": "fno",
-    "cost_ms": 7.214168086647987,
+    "cost_ms": 7.182571920566261,
     "err": 7.416410478237783,
     "err_all": 7.416410478237783,
     "converged": true
@@ -301,7 +397,7 @@
    {
     "subject": "dense_tight",
     "family": "fom",
-    "cost_ms": 60.79329294152558,
+    "cost_ms": 63.87839943636209,
     "err": 8.402271393609418e-14,
     "err_all": 8.402271393609418e-14,
     "converged": true
@@ -309,7 +405,7 @@
    {
     "subject": "fft_tight",
     "family": "fom",
-    "cost_ms": 89.28451943211257,
+    "cost_ms": 90.40484204888344,
     "err": 0.0,
     "err_all": 0.0,
     "converged": true
@@ -317,7 +413,7 @@
    {
     "subject": "nt1e-2_dt005",
     "family": "fom",
-    "cost_ms": 15.836982522159815,
+    "cost_ms": 15.656420961022377,
     "err": 3.7126546739634616,
     "err_all": 3.7126546739634616,
     "converged": true
@@ -325,7 +421,7 @@
    {
     "subject": "nt1e-2_dt01",
     "family": "fom",
-    "cost_ms": 9.282445069402456,
+    "cost_ms": 9.009246015921235,
     "err": 3.199937091473226,
     "err_all": 3.199937091473226,
     "converged": true
@@ -333,7 +429,7 @@
    {
     "subject": "nt1e-3_dt005",
     "family": "fom",
-    "cost_ms": 31.414113473147154,
+    "cost_ms": 31.787732965312898,
     "err": 0.04889766354765399,
     "err_all": 0.04889766354765399,
     "converged": true
@@ -341,7 +437,7 @@
    {
     "subject": "nt1e-3_dt01",
     "family": "fom",
-    "cost_ms": 20.049333106726408,
+    "cost_ms": 19.724276033230126,
     "err": 1.5178517607598867,
     "err_all": 1.5178517607598867,
     "converged": true
@@ -349,7 +445,7 @@
    {
     "subject": "nt1e-4_dt005",
     "family": "fom",
-    "cost_ms": 36.73426155000925,
+    "cost_ms": 36.99925902765244,
     "err": 0.03384942323363766,
     "err_all": 0.03384942323363766,
     "converged": true
@@ -357,7 +453,7 @@
    {
     "subject": "nt1e-4_dt01",
     "family": "fom",
-    "cost_ms": 27.86762546747923,
+    "cost_ms": 27.768754516728222,
     "err": 1.5108805044811702,
     "err_all": 1.5108805044811702,
     "converged": true
@@ -487,7 +583,7 @@
   }
  ],
  "status": {
-  "panel_c": "provisional pending `bet301` (3783811)"
+  "panel_c": "final"
  },
  "labels": {
   "seed": "single training seed",

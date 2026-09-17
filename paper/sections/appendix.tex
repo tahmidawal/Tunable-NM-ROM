@@ -4,15 +4,35 @@
 \section{Architecture}
 \label{app:arch}
 
-\begin{figure}[h]
+Figure~\ref{fig:arch} (\S\ref{sec:method:ladder}) draws the pipeline;
+Table~\ref{tab:arch-blocks} lists its blocks, their sizes in the symbols of
+\S\ref{sec:method:manifold}, and when each is fixed. Numeric sizes per cell
+($k$, $R$, $M$, $m$) are in Table~\ref{tab:problems}; the training budgets
+are in Table~\ref{tab:offline}.
+
+\begin{table}[h]
 \centering
-\resizebox{\linewidth}{!}{\input{figures/architecture}}
-\caption{Architecture and data flow. Purple: trained once and frozen for every
-result. Blue: assembled offline once per mesh. Orange: computed inside the timed
-query. Green: chosen at run time among artefacts that already exist. Grey:
-supplied, or a comparator.}
-\label{fig:arch}
-\end{figure}
+\caption{The blocks of Figure~\ref{fig:arch}. ``Fixed when'' is the colour of
+the block in the figure.}
+\label{tab:arch-blocks}
+{\scriptsize
+\begin{tabular}{llll}
+\toprule
+block & what it is & size & fixed when \\
+\midrule
+coordinate net $g_\phi$ & random-Fourier-feature MLP, evaluated per node & $R$ outputs per node & trained once \\
+bank $\bank$ & $\bcmask(x)\,g_\phi(x)\T$ at the mesh nodes, \eqref{eq:bank} & $n\times R$ & assembled once per mesh \\
+head $\head$ & two-layer SiLU MLP plus a linear skip & $k\to R$ & trained once \\
+code library $Z$ & auto-decoder codes of the training states & $k$ per state & trained once \\
+tests $\tests$ & the first $M$ sine modes & $M\times n$ & fixed per run \\
+linear operator $B$ & $\tests\Aop\bank$ & $M\times R$ & assembled once per mesh \\
+corrections $\corr$ & PCA of the head residual on the training codes, nested in $q$ & $R\times q$ & once per checkpoint \\
+quadrature rules & NNLS fit on reachable states, one rule per $m$, validated by held-out $\rho$ & $m$ nodes & once per checkpoint \\
+solve & damped LM on $(\latent,y)$ (Burgers); $y$ eliminated exactly (linear PDEs) & $k+q$ unknowns & inside the timed query \\
+controls & rank $q$; stored rule or dense; tolerance and budget & --- & chosen at run time \\
+\bottomrule
+\end{tabular}}
+\end{table}
 
 \section{Provenance}
 \label{app:provenance}
@@ -87,13 +107,17 @@ block-damped step is the one kept.}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{fig_eq_certification}
-\caption{NNLS fit residual on the fitting set against held-out $\rho_{\max}$
-on reachable states for every fitted quadrature rule (jobs \provEqtopJob), with
-the primary and tight bars. The fit residual does not predict the held-out
-error; hollow squares are rules fitted on static snapshots. Each point is one
-draw, and the same construction re-drawn moves by
-$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ (Table~\ref{tab:replication}), so a
-point below the bar is a passing draw, not a certified construction.}
+\caption{Quadrature rules: fit residual against held-out error. Each point is
+one fitted rule; the horizontal axis is its NNLS fit residual on the states it
+was fitted to, the vertical axis its worst held-out $\rho$ \eqref{eq:rho} on
+states the solver actually reaches, with the primary and tight bars drawn.
+Filled markers are rules fitted on reachable states, hollow squares rules
+fitted on static snapshots. Data: every rule of the b-eqtop lane, jobs
+\provEqtopJob{} (Table~\ref{tab:eqrules}). What it shows: the fit residual
+does not predict the held-out error, and because the same construction
+re-drawn moves by $\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$
+(Table~\ref{tab:replication}), a point below the bar is a passing draw, not a
+certified construction.}
 \label{fig:cert}
 \end{figure}
 
@@ -152,11 +176,13 @@ across jobs; timing never is, and none is shown. Single seed, one mesh, one
 \begin{table}[h]
 \centering
 \caption{The correction ladder at $256^2$ in one allocation (job
-\provPanelJob, \provPanelGpu, checkpoint \provPanelCkpt): dense advection and
-the certified rule at two tolerances, worst error over evolved and over all
+\provPanelJob, \provPanelGpu, checkpoint \provPanelCkpt), tolerance $10^{-6}$:
+dense advection beside two quadrature rule sets, the rules the b-eqtop ladder
+used and the rules its replication selected (\S\ref{sec:exp:eq}), with each
+rule's status from that replication; worst error over evolved and over all
 times (\%), median GPU ms, and the $t{=}0$ compression bounding the all-times
-metric. The $q=128$ and $256$ rules here certify on the secondary bar only;
-primary rules are in Table~\ref{tab:eqladder}. Every subject of the job is in
+metric. ``Certified in one draw'' is a single passing draw, not a certified
+construction. Every subject of the job, at both tolerances, is in
 Table~\ref{tab:panel-all}.}
 \label{tab:tunability}
 \input{tables/T03_tunability}
@@ -164,11 +190,34 @@ Table~\ref{tab:panel-all}.}
 
 \begin{table}[h]
 \centering
+\caption{The correction ladder at $1024^2$ in one allocation (job
+\provPanelTenTwentyFourJob, \provPanelTenTwentyFourGpu, same checkpoint),
+tolerance $10^{-6}$: dense advection beside the quadrature rules transferred
+from $256^2$ (rule status as at $256^2$; the $q\ge64$ rules miss the primary
+bar here, \S\ref{sec:exp:panel}). Milliseconds are not comparable with
+Table~\ref{tab:tunability}: different GPU, different job.}
+\label{tab:tunability-tentwentyfour}
+\input{tables/T03b_tunability}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{Every timed subject of the $256^2$ same-allocation panel (job
 \provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
-an attained initial fit; ``strict'' is the earlier rule that does not.}
+an attained initial fit; ``strict'' is the earlier rule that does not;
+``adm.'' is admissibility for the frontier (converged, and for EQ subjects a
+rule passing a bar).}
 \label{tab:panel-all}
 \input{tables/T05_panel_all}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $1024^2$ same-allocation panel (job
+\provPanelTenTwentyFourJob, H200). Columns as in Table~\ref{tab:panel-all};
+milliseconds are comparable only within this table.}
+\label{tab:panel-all-tentwentyfour}
+\input{tables/T05b_panel_all}
 \end{table}
 
 \begin{table}[h]
@@ -299,10 +348,16 @@ recipe reproduces it exactly.}
 
 \begin{table}[h]
 \centering
-\caption{Per-rung mean and spread over three training seeds, monotone-seed
-count (lane b-seeds).}
+\caption{Three training seeds on the development cohort (lane b-seeds, jobs
+\provSeedsJobs). Top: per rung of the dense $M=4(K+q)$ ladder, worst error
+over the six development cases as mean $\pm$ sample standard deviation over
+the \nSeedsCount{} seed checkpoints, beside the incumbent checkpoint re-run in
+each seed's own job (its value is identical in all three jobs). Bottom: the
+per-seed ladder verdicts. Costs are never averaged across jobs. Provisional
+until the sealed cohort (Table~\ref{tab:sealed}) is opened.}
 \label{tab:seeds}
-\input{tables/T12_seeds}
+\input{tables/T12_seeds}\\[4pt]
+\input{tables/T12b_seeds_verdicts}
 \end{table}
 
 \begin{table}[h]
@@ -382,10 +437,11 @@ ladder and timing were therefore never run. The $K=32$ arm on the same bank
 \caption{L-shaped Poisson, solve layer at $M=257$ (jobs
 \provLshapeSolveJobs, one per mesh): the non-dominated set on (complete-query
 ms, worst same-grid error) at each mesh, over every reduced and full-order
-subject. The sparse direct solve is exact to round-off; the $512^2$ job is
-pending: its first attempt failed a residual gate that is unreachable in
-float64 at that mesh, where the achievable residual floor grows like $N^2$; the
-gate now takes the larger of the two bounds, which changes no mesh already run.}
+subject. The sparse direct solve is exact to round-off. The $512^2$ job's
+first attempt (Table~\ref{tab:retracted}) failed a residual gate that is
+unreachable in float64 at that mesh, where the achievable residual floor grows
+like $N^2$; the gate now takes the larger of the two bounds, which changed no
+mesh already run, and the re-run differs from that attempt only by the gate.}
 \label{tab:lshape-solve}
 \input{tables/T18c_lshape_solve}
 \end{table}

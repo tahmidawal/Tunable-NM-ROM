@@ -32,9 +32,9 @@ solve that is actually run, \S\ref{sec:method:precomp} the offline operators and
 the quadrature rules with their certification, \S\ref{sec:method:tuning} what is
 fixed and what is chosen at run time, and \S\ref{sec:method:layers} the error
 decomposition every result is reported in. Per-PDE derivations, solver constants
-and exit codes are in Appendix~\ref{app:method}.
-Figure~\ref{fig:arch} (appendix) shows the data flow and, by colour, when
-each quantity is fixed.
+and exit codes are in Appendix~\ref{app:method}; Figure~\ref{fig:arch} shows
+the data flow and, by colour, when each quantity is fixed, and
+Appendix~\ref{app:arch} lists the blocks.
 
 \subsection{Setting and trial manifold}
 \label{sec:method:manifold}
@@ -97,6 +97,20 @@ coefficients together,
   \qquad \latent\in\Real^{k},\; y\in\Real^{q},\; 0\le q\le R .
   \label{eq:ladder}
 \end{equation}
+\begin{figure}[t]
+\centering
+\resizebox{0.8\linewidth}{!}{\input{figures/architecture}}
+\caption{Architecture and data flow of the model in \eqref{eq:ladder}. Colour
+says when each quantity is fixed: purple, trained once and frozen for every
+result in the paper; blue, assembled offline once per mesh; orange, computed
+inside the timed query; green, chosen at run time among artefacts that already
+exist; grey, supplied, or a comparator. This is a schematic of the pipeline,
+not a measurement, and reads no job output. What it shows: the only things
+that change between operating points are the three green controls (the rank
+$q$, the stored quadrature rule or dense evaluation, and the tolerance), so
+every point of the family comes from one training run.}
+\label{fig:arch}
+\end{figure}
 The columns of $\corr$ are chosen offline once per checkpoint by a principal
 component analysis of the head's own residual on the training codes (the part of
 the bank-projected training states the head fails to reach), ordered so that

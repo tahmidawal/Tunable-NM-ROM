@@ -95,7 +95,7 @@ def panel_a(ax, a):
 
 
 def panel_b(ax, s):
-    rows = s['rows']
+    rows = [r for r in s['rows'] if int(r['mesh']) == 256]   # the 256^2 job; the 1024^2 job is another GPU
     P = defaultdict(dict); fam = {}
     for r in rows:
         P[r['subject']][r['metric']] = r['value']; fam[r['subject']] = r['family']
@@ -105,7 +105,7 @@ def panel_b(ax, s):
         if sub == '*' or not d.get('admissible'):
             continue
         f = fam[sub]; col, mk = style[f]
-        if f == 'rom' and 'eqcert' in sub:
+        if f == 'rom' and ('eqcert' in sub or 'eqtop' in sub):
             col = C_EQ
         conv = d.get('converged'); conv = True if conv is None else bool(conv)
         p = {'subject': sub, 'family': f, 'cost_ms': d['median_gpu_ms'], 'err': d['worst_evolved_percent'],
@@ -121,7 +121,7 @@ def panel_b(ax, s):
     ax.set_xlabel('median GPU ms, one allocation'); ax.set_ylabel('worst evolved error (%)')
     ax.set_title(f"B  the $256^2$ panel, job {rows[0]['job_id']} (b-panel)", fontsize=8, loc='left')
     handles = [Line2D([], [], marker='o', color=C_DENSE, ls='', label='rungs, dense'),
-               Line2D([], [], marker='o', color=C_EQ, ls='', label='rungs, certified EQ'),
+               Line2D([], [], marker='o', color=C_EQ, ls='', label='rungs, EQ (both rule sets)'),
                Line2D([], [], marker='s', color=C_POD, ls='', label='POD-LSPG'),
                Line2D([], [], marker='^', color=C_FREE, ls='', label='free bank'),
                Line2D([], [], marker='P', color=C_FNO, ls='', label='FNO'),
@@ -149,7 +149,7 @@ def panel_c(ax, e):
                         'certified_primary': meta[k]['certified_primary'], 'cost_ms': x, 'err': y, 'job_id': meta[k]['job_id']})
     ax.set_xscale('log'); ax.set_xlabel('median GPU ms, one allocation'); ax.set_ylabel('worst evolved error (%)')
     pend = ', '.join(p['job_id'] for p in e.get('pending', []))
-    ax.set_title(f"C  EQ ladder, job {meta[prim[0]]['job_id']} (b-eqtop) -- PROVISIONAL, {pend} pending", fontsize=8, loc='left')
+    ax.set_title(f"C  EQ ladder, job {meta[prim[0]]['job_id']} (b-eqtop)" + (f" -- PROVISIONAL, {pend} pending" if pend else ''), fontsize=8, loc='left')
     ax.legend(fontsize=6.5, frameon=False, loc='upper right')
     return out
 

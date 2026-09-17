@@ -2,10 +2,15 @@
 \section{Limitations}
 \label{sec:limitations}
 
-\textbf{Single seed, single checkpoint.} Every number rests on one training
-seed and one checkpoint per PDE; the three-seed repetition and the sealed-cohort
-evaluation are running, and that lane amended its fidelity gate from $10^{-9}$
-to $10^{-3}$ relative before reading any of its numbers.
+\textbf{One checkpoint per PDE; three seeds on one ladder only.} Every
+headline rests on one training seed and one checkpoint per PDE. The Burgers
+scheduled ladder was repeated on \nSeedsCount{} seeds
+(Table~\ref{tab:seeds}): monotone on \nSeedsMonotoneEvolved{} of
+\nSeedsCount, meeting the knob bar on \nSeedsKnobBar{} of \nSeedsCount{}
+(\nSeedsUnconvergedCells{} did not converge), spans
+\nSeedsErrSpanMin--\nSeedsErrSpanMax{} in error. That lane amended its
+fidelity gate from $10^{-9}$ to $10^{-3}$ relative before reading any number,
+and its sealed cohort is not yet opened.
 \textbf{Development cohort}: six opened Burgers cases (32 held-out for the
 tuning study), eight wave and twelve Poisson.
 \textbf{2D only}; Navier--Stokes has a certified full-order solver but its
@@ -25,7 +30,10 @@ the epochs at equal wall clock; the Transolver arm below the ROM has no twin.
 after the crossed grid ran and the $M=256$ ladder fails the same bar.
 \textbf{Cross-job spread} of an identical cell is $\nQxmAnchorSpreadPct\,\%$.
 
+\textbf{The $1024^2$ frontier statement} rests on one job, on the evolved
+metric only, and on rules transferred from $256^2$; a $512^2$ panel on the
+$256^2$ GPU model is queued to bracket it (Table~\ref{tab:inflight}).
+
 \paragraph{Pending cells.} Not in this draft, and no result sentence depends on
-them: the $1024^2$ panel (\nPanelTenTwentyFour); seeds and the sealed cohort
-(\nSeedsStatus); the L-shape solve at $512^2$; the Navier--Stokes $K=32$ arm
+them: the sealed cohort (\nSeedsStatus); the Navier--Stokes $K=32$ arm
 (\nNsKthirtyTwo).

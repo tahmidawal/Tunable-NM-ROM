@@ -1,0 +1,18 @@
+{
+  "attempt": "ctrl01",
+  "job_id": "3783831",
+  "job_name": "ctol_nos_ctrl01",
+  "source_commit": "cba4e4a42dd70c45914ea97a5822468b72d0a467",
+  "remote": "/cluster/tufts/paralab/tawal01/no_second_20260917/ctrl01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 04:20:00",
+  "submitted_utc": "2026-09-17T13:31:48.986547+00:00",
+  "arms": [
+    "medium-f64 (twin unet-medium, dtype only)",
+    "medium-seed2 (twin unet-medium, seed only)",
+    "tsol-small-f64 (twin tsol-small, dtype only)"
+  ],
+  "rationale": "DESIGN \u00a7A4: the screens produced a positive single-seed claim (both new families below the FNO on validation mean and median; U-Net below the ROM on the matched cohort worst), so the pre-registered seed and precision controls now defend the headline rather than merely decorating it",
+  "queue_before": "no owned no-second jobs (all three screens collected and their remote dirs removed)",
+  "queue_after": "exactly one owned job, 3783831 in ctrl01",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged"
+}

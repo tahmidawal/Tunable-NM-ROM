@@ -134,6 +134,19 @@ across jobs; timing never is, and none is shown. Single seed, one mesh, one
 
 \begin{table}[h]
 \centering
+\caption{The correction ladder at $256^2$ in one allocation (job
+\provPanelJob, \provPanelGpu, checkpoint \provPanelCkpt): dense advection and
+the certified rule at two tolerances, worst error over evolved and over all
+times (\%), median GPU ms, and the $t{=}0$ compression bounding the all-times
+metric. The $q=128$ and $256$ rules here certify on the secondary bar only;
+primary rules are in Table~\ref{tab:eqladder}. Every subject of the job is in
+Table~\ref{tab:panel-all}.}
+\label{tab:tunability}
+\input{tables/T03_tunability}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{Every timed subject of the $256^2$ same-allocation panel (job
 \provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
 an attained initial fit; ``strict'' is the earlier rule that does not.}
@@ -337,9 +350,32 @@ is measured below baseline.}
 
 \begin{table}[h]
 \centering
+\caption{L-shaped Poisson, solve layer at $M=257$ (jobs
+\provLshapeSolveJobs, one per mesh): the non-dominated set on (complete-query
+ms, worst same-grid error) at each mesh, over every reduced and full-order
+subject. The sparse direct solve is exact to round-off; the $512^2$ job is
+pending: its first attempt failed a residual gate that is unreachable in
+float64 at that mesh, where the achievable residual floor grows like $N^2$; the
+gate now takes the larger of the two bounds, which changes no mesh already run.}
+\label{tab:lshape-solve}
+\input{tables/T18c_lshape_solve}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{L-shaped Poisson, free rung at $M=1024$ (job \provLshapeFreeJob).
+\textbf{These costs are not comparable with Table~\ref{tab:lshape-solve}}: the
+dense projection is charged inside every reduced query here. Non-dominated set
+only.}
+\label{tab:lshape-free}
+\input{tables/T18d_lshape_free}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{L-shaped Poisson (job \provLshapeJob, \provLshapeGpu): bank floors
 by boundary factor and rank, and the head layer at $256^2$. The solve layer is
-$\nLshapeSolve$.}
+\nLshapeSolve{}.}
 \label{tab:lshape}
 \input{tables/T18a_lshape_bank}\\[4pt]
 \input{tables/T18b_lshape_head}

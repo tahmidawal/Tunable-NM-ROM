@@ -110,16 +110,38 @@
 \newcommand{\nHeatHeadMsTwoFiftySix}{11.9}
 \newcommand{\nLshapeBestFloor}{0.6650}
 \newcommand{\nLshapeBestFloorCommon}{1.6155}
+\newcommand{\nLshapeDevelopmentWorst}{6.8}
 \newcommand{\nLshapeEnrichFloor}{0.6650}
 \newcommand{\nLshapeEnrichGain}{1.067}
+\newcommand{\nLshapeFreeErr}{0.7791}
+\newcommand{\nLshapeFreeFaster}{1.54}
+\newcommand{\nLshapeFreeMoreAccurate}{1.19}
+\newcommand{\nLshapeFreeMs}{2.583}
+\newcommand{\nLshapeFreeOverFloor}{1.003}
+\newcommand{\nLshapeHeadIndepBitwise}{no}
+\newcommand{\nLshapeHeadIndepRel}{4.06e-14}
 \newcommand{\nLshapeHeadRatioMax}{5.77}
 \newcommand{\nLshapeHeadRatioMin}{2.24}
 \newcommand{\nLshapeKsixteenBest}{3.8607}
 \newcommand{\nLshapeKthirtytwoBest}{3.1802}
+\newcommand{\nLshapeNeuralCheaper}{2.77}
+\newcommand{\nLshapeNeuralErr}{2.131}
+\newcommand{\nLshapeNeuralMs}{3.028}
+\newcommand{\nLshapeNonDomCount}{7}
+\newcommand{\nLshapeNonDomReduced}{6}
+\newcommand{\nLshapeOneTwentyEightCheapRange}{1.08--1.19}
+\newcommand{\nLshapeOneTwentyEightReducedErrRange}{7.7--34.6}
+\newcommand{\nLshapePodTwoFiftySixErr}{0.9303}
+\newcommand{\nLshapePodTwoFiftySixMs}{3.987}
 \newcommand{\nLshapeSdfFloor}{0.7698}
 \newcommand{\nLshapeSelectedFloorCommon}{1.6155}
 \newcommand{\nLshapeSmoothFloor}{0.7093}
-\newcommand{\nLshapeSolve}{\gen{pending: lshape solve jobs 3784662/3/4}}
+\newcommand{\nLshapeSolve}{landed at $64^2$--$256^2$ (Table~\ref{tab:lshape-solve}); $512^2$ pending}
+\newcommand{\nLshapeSpluMsOneTwentyEight}{2.48}
+\newcommand{\nLshapeSpluMsSixtyFour}{1.28}
+\newcommand{\nLshapeSpluMsTwoFiftySix}{8.39}
+\newcommand{\nLshapeValidationGap}{2.5}
+\newcommand{\nLshapeValidationWorst}{16.7}
 \newcommand{\nMeshBurgersCachedFirst}{44.16}
 \newcommand{\nMeshBurgersCachedLast}{43.58}
 \newcommand{\nMeshBurgersCachedRatio}{0.987}
@@ -140,7 +162,7 @@
 \newcommand{\nMeshPoissonUnknownGrowth}{264}
 \newcommand{\nNsGatesFailed}{B-ORTH\_N128, B-ORTH\_N256, B-ORTH\_N64, F-JAC\_N128, F-JAC\_N256, F-JAC\_N64, H-ORACLE\_N128, H-ORACLE\_N256, H-ORACLE\_N64, audit}
 \newcommand{\nNsGatesPassed}{118 of 163}
-\newcommand{\nNsRom}{\gen{pending: ns2d phases 2--3}}
+\newcommand{\nNsRom}{\gen{ns2d phases 2--3}}
 \newcommand{\nOfflineDirectionSeconds}{1242}
 \newcommand{\nOfflineFitHoursLadderTotal}{1.7}
 \newcommand{\nOfflineFitSecondsLadderTotal}{6102}
@@ -181,7 +203,7 @@
 \newcommand{\nOpPoissonFnoWorstRange}{28.3--32.5}
 \newcommand{\nOpPoissonUnetWorstRange}{8.31 / 6.02 / 12.80}
 \newcommand{\nOpResolutionKnob}{landed (Table~\ref{tab:resolution})}
-\newcommand{\nOpSeedControl}{\gen{pending: no-second ctrl01 (job 3783831)}}
+\newcommand{\nOpSeedControl}{\gen{no-second ctrl01 (job 3783831)}}
 \newcommand{\nPanelBestRungAll}{0.9053}
 \newcommand{\nPanelBestRungErr}{0.5194}
 \newcommand{\nPanelBestRungMs}{4164.6}
@@ -257,7 +279,7 @@
 \newcommand{\nPanelStrictNoCount}{6}
 \newcommand{\nPanelStrictNoIcResidualMax}{1.0e-15}
 \newcommand{\nPanelSubjectCount}{36}
-\newcommand{\nPanelTenTwentyFour}{\gen{pending: b-panel 1024$^2$ (job 3783817)}}
+\newcommand{\nPanelTenTwentyFour}{\gen{b-panel 1024$^2$ (job 3783817)}}
 \newcommand{\nPanelTolSavingOneTwoEight}{23}
 \newcommand{\nPanelTolSavingZero}{26}
 \newcommand{\nPlinHeadBestArm}{\texttt{K64\_w256\_L3}}
@@ -395,7 +417,7 @@
 \newcommand{\nResUnetSpeedSixtyFour}{2.55}
 \newcommand{\nResUnetSpeedThirtyTwo}{2.56}
 \newcommand{\nResUsableList}{\texttt{fno-large}}
-\newcommand{\nSeedsStatus}{\gen{pending: b-seeds}}
+\newcommand{\nSeedsStatus}{\gen{b-seeds}}
 \newcommand{\nSpeedArmMs}{30.824}
 \newcommand{\nSpeedFixedUs}{17.2}
 \newcommand{\nSpeedFusionRsq}{0.873}
@@ -495,8 +517,10 @@
 \newcommand{\provHeatGpu}{NVIDIA A100-PCIE-40GB}
 \newcommand{\provHeatJob}{3511417}
 \newcommand{\provLshapeCommit}{1086ccefdcb5\ldots}
+\newcommand{\provLshapeFreeJob}{3784910}
 \newcommand{\provLshapeGpu}{NVIDIA A100 80GB PCIe}
-\newcommand{\provLshapeJob}{3783786}
+\newcommand{\provLshapeJob}{3784662}
+\newcommand{\provLshapeSolveJobs}{3784662, 3784663}
 \newcommand{\provMeshBurgersCkpt}{18f0266ae6f0\ldots}
 \newcommand{\provMeshBurgersCommit}{521cdced6f4d\ldots}
 \newcommand{\provMeshBurgersGpu}{NVIDIA A100-PCIE-40GB}
@@ -517,7 +541,8 @@
 \newcommand{\provPlinJobs}{$256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a437d7360); $1024^2$: job 3783813 (NVIDIA H200, commit 3e411b5ac59d)}
 \newcommand{\provPoissonCkptFull}{a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c}
 \newcommand{\provQxmCommit}{ed431edb498a}
-\newcommand{\provQxmJobs}{G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB)}
+\newcommand{\provQxmJobs}{G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB), E1 = 3783898 (NVIDIA A100-PCIE-40GB), E2 = 3783899 (NVIDIA A100 80GB PCIe)}
+\newcommand{\provQxmPin}{4b9723e8}
 \newcommand{\provQxmWithinJob}{G2 = 3780177}
 \newcommand{\provResGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provResJob}{3787189}

@@ -48,6 +48,7 @@ SOURCES = {
     'plinear_verdicts': '2026-09-17-p-linear/experiments/p-linear/reports/verdicts.json',
     'lshape_summary': '2026-09-17-lshape/experiments/lshape/reports/summary.json',
     'lshape_report': '2026-09-17-lshape/experiments/lshape/reports/2026-09-17-lshape.md',
+    'lshape_verify': '2026-09-17-lshape/experiments/lshape/checks/verify_report_2026-09-17.json',
     'eqtop_summary': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json',
     'eqtop_report': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md',
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
@@ -87,7 +88,28 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+GIT_PINS = {
+    # lane file -> (lane worktree, commit): read the COMMITTED blob, not the working tree.
+    # b-qxm's working tree is mid-regeneration ("round 2") and its uncommitted analysis.json
+    # withdraws the fixed-M ladder's span; until the lane publishes that, the paper reads the
+    # lane's last committed state and says so.  See WRITING-STATUS.md.
+    'qxm_analysis': ('2026-09-17-b-qxm', '4b9723e8'),
+}
+
+
 def load(key: str):
+    if key in GIT_PINS:
+        import subprocess
+        lane, rev = GIT_PINS[key]
+        rel = SOURCES[key].split('/', 1)[1]
+        out = subprocess.run(['git', '-C', str(ROOT / lane), 'show', f'{rev}:{rel}'],
+                             capture_output=True, text=True)
+        if out.returncode == 0:
+            PROV[key] = {'path': f'{lane}:{rel}', 'reachable': True, 'pinned_commit': rev,
+                         'sha256': hashlib.sha256(out.stdout.encode()).hexdigest(),
+                         'note': 'read from the lane commit, not the working tree'}
+            macro('provQxmPin', rev)
+            return json.loads(out.stdout)
     path = (ROOT / SOURCES[key]).resolve()
     if not path.exists():
         PROV[key] = {'path': str(path), 'reachable': False}
@@ -135,7 +157,7 @@ def yn(b) -> str:
 
 def gen(lane: str, what: str = '') -> str:
     PENDING.append((what or lane, lane))
-    return r'\gen{pending: ' + tex_escape(lane) + '}'
+    return r'\gen{' + tex_escape(lane) + '}'
 
 
 def macro(name: str, value) -> None:
@@ -1168,10 +1190,12 @@ def build_lshape():
     s = load('lshape_summary'); rep = load('lshape_report')
     if s is None:
         write('T18_lshape.tex', gen('lshape', 'T18')); return
+    s_rows = s['rows'] if isinstance(s, dict) else s
     by = defaultdict(dict)
-    for r in s:
-        by[(r['mesh'], r['subject'])][r['metric']] = r['value']
-    job = s[0]['job_id']
+    for r in s_rows:
+        if r['family'] in ('bank', 'head'):
+            by[(r['mesh'], r['subject'])][r['metric']] = r['value']
+    job = s_rows[0]['job_id']
     m = re.search(r'Training job `(\d+)` on `(NVIDIA [^`]+)`, source commit `([0-9a-f]+)`', rep or '')
     macro('provLshapeJob', job); macro('provLshapeGpu', m.group(2) if m else '---'); macro('provLshapeCommit', hexprefix(m.group(3)) if m else '---')
     banks = ['smooth_R256', 'smooth_R512', 'sdf_R256', 'sdf_R512', 'enrich_R512', 'smooth_ff128s2_R512']
@@ -1181,7 +1205,7 @@ def build_lshape():
                   pct(100 * by[(256, b)]['bank_floor_common_worst'])])
     write('T18a_lshape_bank.tex', tabular(['bank', 'floor, dev.\\ $256^2$ \\%', 'floor, dev.\\ $512^2$ \\%', 'floor, common $256^2$ \\%'], t, 'lrrr', r'\scriptsize'),
           f'lshape job {job}')
-    heads = [k[1] for k in by if k[0] == 256 and k[1].startswith('head_')]
+    heads = [k[1] for k in by if k[0] == 256 and k[1].startswith('head_') and 'best_found_dev_worst' in by[k]]
     t = []
     for h in sorted(heads):
         d = by[(256, h)]
@@ -1198,8 +1222,83 @@ def build_lshape():
     macro('nLshapeHeadRatioMin', f"{min(ratios):.2f}"); macro('nLshapeHeadRatioMax', f"{max(ratios):.2f}")
     macro('nLshapeKthirtytwoBest', pct(100 * by[(256, 'head_sdf_R512_K32')]['best_found_dev_worst']))
     macro('nLshapeKsixteenBest', pct(100 * by[(256, 'head_sdf_R512_K16')]['best_found_dev_worst']))
-    if load('lshape_solve_summary') is None:
-        macro('nLshapeSolve', gen('lshape solve jobs 3784662/3/4', 'T18 solve layer'))
+    # ---- solve layer: the non-dominated sets per mesh (M = 257) and the free rung (M = 1024)
+    V = defaultdict(dict); fam = {}; jobs = {}
+    for r in s_rows:
+        if r.get('test_modes') and r['metric'] in ('worst_same_grid', 'median_total_ms', 'nondominated_complete_ms',
+                                                   'nondominated_reduced_only', 'median_iterations'):
+            V[(r['mesh'], r['test_modes'], r['subject'])][r['metric']] = r['value']
+            fam[r['subject']] = r['family']; jobs[(r['mesh'], r['test_modes'])] = r['job_id']
+    lab = {'fom_splu': 'sparse direct (SuperLU)', 'fom_cg_gpu_r0.0001': 'CG $10^{-4}$', 'fom_cg_gpu_r0.01': 'CG $10^{-2}$',
+           'fom_cg_gpu_r1e-10': 'CG $10^{-10}$', 'fom_pcg_ic0_cpu_r0.01': 'IC(0)-PCG $10^{-2}$', 'fom_pcg_ic0_cpu_r1e-10': 'IC(0)-PCG $10^{-10}$'}
+    def name(sub):
+        if sub in lab: return lab[sub]
+        if sub.startswith('pod'): return "POD $k'{=}" + sub[3:] + "$"
+        if sub.startswith('freebank@'): return 'free rung $q{=}R$ (' + tex_escape(sub.split('@')[1]) + ')'
+        if sub.startswith('neural_q'):
+            q, h = sub[8:].split('@'); return f'head $q{{=}}{q}$ (' + tex_escape(h) + ')'
+        return tt(sub)
+    t = []
+    for mesh in (64, 128, 256):
+        nd = [sub for (m, tm, sub) in V if m == mesh and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
+        nd = sorted(nd, key=lambda sub: V[(mesh, 257, sub)]['median_total_ms'])
+        for sub in nd:
+            d = V[(mesh, 257, sub)]
+            t.append([f'${mesh}^2$', name(sub), fam[sub], pct(100 * d['worst_same_grid']), ms(d['median_total_ms'], 3)])
+        t.append('MIDRULE')
+    t.pop()
+    write('T18c_lshape_solve.tex', tabular(['mesh', 'subject', 'family', 'worst same-grid \\%', 'complete-query ms'], t, 'lllrr', r'\scriptsize'),
+          'lshape solve layer, M = 257; the non-dominated set per mesh, one job per mesh')
+    macro('provLshapeSolveJobs', ', '.join(sorted({jobs[k] for k in jobs if k[1] == 257})))
+    for mesh, nm in [(64, 'SixtyFour'), (128, 'OneTwentyEight'), (256, 'TwoFiftySix')]:
+        d = V.get((mesh, 257, 'fom_splu'), {})
+        if d: macro(f'nLshapeSpluMs{nm}', ms(d['median_total_ms'], 2))
+    best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {})
+    splu = V.get((256, 257, 'fom_splu'), {})
+    if best and splu:
+        macro('nLshapeNeuralErr', pct(100 * best['worst_same_grid'], 3)); macro('nLshapeNeuralMs', ms(best['median_total_ms'], 3))
+        macro('nLshapeNeuralCheaper', f"{splu['median_total_ms'] / best['median_total_ms']:.2f}")
+    nd256 = [sub for (m, tm, sub) in V if m == 256 and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms')]
+    macro('nLshapeNonDomCount', str(len(nd256)))
+    macro('nLshapeNonDomReduced', str(sum(1 for sub in nd256 if fam[sub] != 'fom')))
+    nd128 = [sub for (m, tm, sub) in V if m == 128 and tm == 257 and V[(m, tm, sub)].get('nondominated_complete_ms') and fam[sub] != 'fom']
+    if nd128:
+        errs = [100 * V[(128, 257, sub)]['worst_same_grid'] for sub in nd128]
+        macro('nLshapeOneTwentyEightReducedErrRange', f"{min(errs):.1f}--{max(errs):.1f}")
+        cheap = [V[(128, 257, 'fom_splu')]['median_total_ms'] / V[(128, 257, sub)]['median_total_ms'] for sub in nd128]
+        macro('nLshapeOneTwentyEightCheapRange', f"{min(cheap):.2f}--{max(cheap):.2f}")
+    # free rung, M = 1024: its own job, costs not comparable with the M = 257 tables
+    t = []
+    nd1024 = [sub for (m, tm, sub) in V if m == 256 and tm == 1024 and V[(m, tm, sub)].get('nondominated_complete_ms')]
+    for sub in sorted(nd1024, key=lambda sub: V[(256, 1024, sub)]['median_total_ms']):
+        d = V[(256, 1024, sub)]
+        t.append([name(sub), fam[sub], pct(100 * d['worst_same_grid']), ms(d['median_total_ms'], 3)])
+    write('T18d_lshape_free.tex', tabular(['subject', 'family', 'worst same-grid \\%', 'complete-query ms'], t, 'llrr', r'\scriptsize'),
+          f"lshape free rung at M = 1024, job {jobs.get((256, 1024), '---')}; costs NOT comparable with the M = 257 tables")
+    fr = V.get((256, 1024, 'freebank@head_sdf_R512_K16'), {}); p256 = V.get((256, 1024, 'pod256'), {})
+    if fr and p256:
+        macro('nLshapeFreeErr', pct(100 * fr['worst_same_grid'], 4)); macro('nLshapeFreeMs', ms(fr['median_total_ms'], 3))
+        macro('nLshapePodTwoFiftySixErr', pct(100 * p256['worst_same_grid'], 4)); macro('nLshapePodTwoFiftySixMs', ms(p256['median_total_ms'], 3))
+        macro('nLshapeFreeMoreAccurate', f"{p256['worst_same_grid'] / fr['worst_same_grid']:.2f}")
+        macro('nLshapeFreeFaster', f"{p256['median_total_ms'] / fr['median_total_ms']:.2f}")
+        macro('provLshapeFreeJob', jobs.get((256, 1024), '---'))
+    for r in s_rows:
+        if r['metric'] == 'free_rung_worst_over_bank_floor' and r['subject'].endswith('K16'):
+            macro('nLshapeFreeOverFloor', f"{r['value']:.3f}")
+        if r['metric'] == 'best_found_validation_worst_max':
+            macro('nLshapeValidationWorst', pct(100 * r['value'], 1))
+        if r['metric'] == 'best_found_development_worst_max':
+            macro('nLshapeDevelopmentWorst', pct(100 * r['value'], 1))
+    try:
+        macro('nLshapeValidationGap', f"{float(MACROS['nLshapeValidationWorst']) / float(MACROS['nLshapeDevelopmentWorst']):.1f}")
+    except (KeyError, ValueError, ZeroDivisionError):
+        pass
+    vr = load('lshape_verify')
+    if vr:
+        hi = vr['checks']['free_rung_is_head_independent_to_roundoff']['detail']
+        macro('nLshapeHeadIndepRel', f"{hi['worst_relative_field_difference']:.2e}")
+        macro('nLshapeHeadIndepBitwise', yn(hi['bitwise_identical']))
+    macro('nLshapeSolve', 'landed at $64^2$--$256^2$ (Table~\\ref{tab:lshape-solve}); $512^2$ pending')
 
 
 # =========================================================================== T17 offline cost, T1b spec, T19 solver variants
@@ -1330,7 +1429,7 @@ def build_problems_and_provenance(mesh):
     prov('T14, T14c, T14d', 'no-second (5 of 8 jobs counted; two preamble deaths uncounted)', MACROS.get('provOpJobs', '---'), 'A100 (per job)', 'per job', 'operator checkpoints hash-verified in job')
     prov('T15', 'b-speed', MACROS.get('provSpeedJobs', '---'), 'A100 80GB PCIe', '8fdfbb08 / 94399dd6', MACROS.get('provBurgersCkpt', '---'))
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')
-    prov('T18', 'lshape', MACROS.get('provLshapeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
+    prov('T18, T18c, T18d', 'lshape', MACROS.get('provLshapeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
     prov('T12, T13', 'b-seeds', gen('b-seeds', 'T2 seeds row'), '---', '---', '---')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),
           'provenance registry; SHA256 of every file read is in tables/provenance.json')

@@ -53,8 +53,11 @@ the condition under which it is a trade; the losses are reported as losses.
   model and also the cheapest point, and the collapse is confounded with a weak
   bank: on those cells the learned bank is three to four times worse than a POD
   basis of the same rank, while on Burgers the two are comparable
-  (\S\ref{sec:exp:linear}). We characterise where the nonlinear manifold is not
-  worth having; no cell in this paper shows it non-dominated at matched cost.
+  (\S\ref{sec:exp:linear}). Where no fast transform exists and the full-order
+  cost grows with the mesh, the trade does appear: on an L-shaped domain a
+  reduced arm is on the non-dominated set from $256^2$ upward, at
+  $\nLshapeNeuralCheaper\times$ the cost of a sparse direct solve and about two
+  percent error.
 \item \textbf{Two reporting practices.} Every result is reported as bank floor,
   best-found and solved error, so each lever's effect lands on the layer it acts
   on (\S\ref{sec:method:layers}); and quadrature rules are validated on states

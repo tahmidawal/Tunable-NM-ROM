@@ -103,3 +103,29 @@ Disposition per finding in `REVIEW-ROUND1-DISPOSITION.md`. New generated artefac
 families), T14c (resolution ladder), T17 (offline cost), T19 (solver variants), Fig. 3
 (NNLS fit vs held-out rho). Abstract sentence 1 was changed by the pre-registered falsification
 clause of the resolution job; the user should confirm the new wording.
+
+## OPEN, needs the coordinator: the b-qxm headline may be withdrawn upstream
+
+`gen_tables.py` now reads b-qxm's `analysis.json` from the lane's **committed** state
+(`GIT_PINS`, commit `4b9723e8`, 09:40), not its working tree. Reason: the lane's uncommitted
+working tree (modified 13:43, alongside `generate_xm.py`, `summary.json` and both figures —
+it is mid-regeneration for "round 2") reverses the paper's headline:
+
+| field | lane commit 4b9723e8 (what the paper uses) | lane working tree (uncommitted) |
+|---|---|---|
+| `span_q_at_M1088` | 2.4368 | `null` |
+| `fixed1088_all_converged` | true | false |
+| `fixed1088_passes_tunability_bar` | true | `null` |
+| `fixed1088_within_job` | job 3780177, 4 rungs | `null` |
+| `headline` | fixed-M ladder (M = 1088, pure rank) | scheduled ladder |
+| `rank_claim_false` | false | **true** |
+| `unavailable_reason` | — | "a rung is not converged; the span is not patched" |
+
+The paper's Contribution 1, §5.2, the abstract's "meets a bar fixed before any run" and the
+conclusion all rest on the committed reading. The working-tree reading would withdraw them.
+A plausible benign explanation is that the fixed-$M$ column was extended to $q=512$, where
+$(512, 1088)$ is only 2.06 tests per unknown and does not converge, so the lane's own rule
+refuses to patch the span — i.e. a longer ladder, not a refutation of the published four-rung
+result. **I have not assumed either way.** Nothing in the paper was changed on the strength of
+an uncommitted file; the pin keeps the build reproducible and traceable. The coordinator should
+say which state is authoritative, and the pin comes out as soon as the lane commits.

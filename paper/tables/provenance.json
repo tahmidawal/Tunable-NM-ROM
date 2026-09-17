@@ -15,14 +15,16 @@
       "reachable": false
     },
     "qxm_analysis": {
-      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-qxm/experiments/b-qxm/reports/analysis.json",
+      "path": "2026-09-17-b-qxm:experiments/b-qxm/reports/analysis.json",
       "reachable": true,
-      "sha256": "b77a7c2162dae4b3316c0ecdad7a7d5fdc7add4dbb976bc75a887c938cffb72e"
+      "pinned_commit": "4b9723e8",
+      "sha256": "b77a7c2162dae4b3316c0ecdad7a7d5fdc7add4dbb976bc75a887c938cffb72e",
+      "note": "read from the lane commit, not the working tree"
     },
     "qxm_report": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-qxm/experiments/b-qxm/reports/2026-09-17-b-qxm.md",
       "reachable": true,
-      "sha256": "e582a2ef85ddbf795bfe7de6869e01dc66f196a7e664c41999c2ed389df76d99"
+      "sha256": "439458e98cb1345601c28b4f4d1074db30315285706760cf52b5f837390e6d97"
     },
     "nosecond_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-no-second/experiments/no-second/reports/summary.json",
@@ -77,7 +79,7 @@
     "lshape_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-lshape/experiments/lshape/reports/summary.json",
       "reachable": true,
-      "sha256": "19ee8fa6f4d7b5a1320db6a19ade7a0254b8a49b5bbba46461a40bdfe5b5f2df"
+      "sha256": "0241415a5f3e6ad7e8be1ff260c779a488ff51313b2337ab2684c07f966d21e6"
     },
     "tuning02": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/artifacts/tuning02/output-index.json",
@@ -132,11 +134,12 @@
     "lshape_report": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-lshape/experiments/lshape/reports/2026-09-17-lshape.md",
       "reachable": true,
-      "sha256": "0779fc808db46f42776459b0c37b56fe10fcfc952e506fd72d2ddde3bc2c2188"
+      "sha256": "99dc4378d58022e2fc35b78e5cb9c138eeaf2266522dcb73315ccf5bc559e00b"
     },
-    "lshape_solve_summary": {
-      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-lshape/experiments/lshape/reports/summary-solve.json",
-      "reachable": false
+    "lshape_verify": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-lshape/experiments/lshape/checks/verify_report_2026-09-17.json",
+      "reachable": true,
+      "sha256": "1ac97c93044210760c9fe8f2cd613ccce052c30f4501932137970dfaec01a965"
     },
     "seeds_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json",
@@ -166,10 +169,6 @@
     [
       "operator seed/precision control",
       "no-second ctrl01 (job 3783831)"
-    ],
-    [
-      "T18 solve layer",
-      "lshape solve jobs 3784662/3/4"
     ],
     [
       "T12",

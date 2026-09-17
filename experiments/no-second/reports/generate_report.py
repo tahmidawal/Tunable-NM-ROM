@@ -110,6 +110,19 @@ def poisson_section(attempts, fno_p):
         d, ph = r['discrete'], r['physical_candidate']
         acc.append(f"| `fno-{size}` | FNO (parent lane, other job) | `{fno_p['job_id']}` | {pct(d['median'])} | {pct(d['maximum'])} | {pct(ph['mean'])} | "
                    f"{pct(ph['median'])} | {pct(ph['p95'])} | {pct(ph['maximum'])} | {ph['above_threshold_counts']['0.05']} |")
+    # An arm whose best epoch is in the last 5% of the epochs it ran was still improving when
+    # its stopping condition fired: its number is a lower bound on the family under this protocol.
+    improving = [arm for a in attempts for arm, r in a['audit']['arms'].items()
+                 if r.get('complete') and r['best_epoch'] >= 0.95 * (r['epochs_completed'] - 1)]
+    still = ''
+    if improving:
+        worst_budget = max(r['wall_budget_seconds'] for a in attempts for r in a['audit']['arms'].values() if r.get('complete'))
+        used = max(r['training_seconds'] for a in attempts for r in a['audit']['arms'].values() if r.get('complete'))
+        still = (f"\n\n**{', '.join('`' + x + '`' for x in sorted(improving))} were still improving when training ended:** each "
+                 f"selected a checkpoint in the last 5% of the epochs it ran, and the stopping condition was the "
+                 f"500-epoch cap, not the wall budget \u2014 the longest arm used {used:.0f} s of its {worst_budget:.0f} s. "
+                 f"These numbers are therefore a lower bound on what this family reaches under this protocol, "
+                 f"not a converged result. The Poisson FNO, by contrast, early-stopped inside the same cap.")
     return f"""
 
 ## Poisson: U-Net on the Poisson operator-screen dataset
@@ -125,7 +138,7 @@ capacity, validation selection on the discrete target, no refinement. Two metric
 the parent audit: **discrete** (against the training target) and **physical candidate**
 (against the refinement sidecar). No matched ROM/DST cohort is scored here.
 
-{chr(10).join(cap)}
+{chr(10).join(cap)}{still}
 
 {chr(10).join(acc)}
 """

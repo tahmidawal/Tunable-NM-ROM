@@ -363,8 +363,14 @@ def main():
             float(np.exp((np.log(bar) - ic) / sl)) if sl < 0 else None)
         verdict['extrapolation_slope'] = float(sl)
 
+    # The attempt is the submit directory this result was collected from. The config's own
+    # `attempt` field was written when the config was generated and was not re-stamped on the
+    # resubmissions of DESIGN.md A4-A6; both are recorded so neither can be mistaken.
+    parts = Path(a.result).resolve().parts
+    attempt = parts[parts.index('runs') + 1] if 'runs' in parts else r['config'].get('attempt')
     out = dict(result=str(Path(a.result).resolve()), mode='eqcert', job_id=r.get('job_id'),
-               commit=r.get('commit'), gpu=r.get('gpu'), attempt=r['config'].get('attempt'),
+               commit=r.get('commit'), gpu=r.get('gpu'), attempt=attempt,
+               config_attempt=r['config'].get('attempt'),
                elapsed_seconds=r.get('elapsed_seconds'), rho_bar=bar, checks=checks,
                failed=sorted(fail), arms=rows, rules=rules, rule_choice=r['rule_choice'],
                collection=r['collection'], ladders=ladders, verdict=verdict, r3=r3out)

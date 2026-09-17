@@ -225,8 +225,10 @@ def main():
             headline = ('q-ridge — certifying the empirical quadrature on reachable states '
                         'makes the Burgers ladder monotone again')
         elif v.get('regression_present_in_old_rule'):
-            headline = ('q-ridge — the regression is the quadrature rule, and certifying it '
-                        'on reachable states does not remove it within $m \\le 8192$')
+            mmax = max(x['m_target'] for x in eq['rules'] if x['population'] == 'reachable')
+            headline = ('q-ridge — the regression is the quadrature rule; certifying it on '
+                        'reachable states removes almost all of it, but not the top rung '
+                        f'within the constructible $m \\le {mmax}$')
         else:
             headline = 'q-ridge — EQ rule certification, with the two demoted controls'
     else:

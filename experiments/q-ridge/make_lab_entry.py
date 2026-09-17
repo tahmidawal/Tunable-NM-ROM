@@ -75,13 +75,24 @@ def main():
     v = eq['verdict']
     cert = eq['ladders']['certified']
 
+    old = eq['ladders']['old_rule']
+    gains = [o / max(c, 1e-300) for o, c in zip(old['worst_evolved_percent'],
+                                                cert['worst_evolved_percent'])]
+    best = max(gains)
+    best_q = cert['q'][gains.index(best)]
+    bad = [(cert['q'][i], cert['q'][i + 1]) for i in range(len(cert['q']) - 1)
+           if cert['worst_evolved_percent'][i + 1] > cert['worst_evolved_percent'][i] + 1e-12]
     if v['passes']:
         head = ('certifying the empirical quadrature on states the ROM actually reaches makes '
                 'the Burgers ladder monotone again')
     elif v['regression_present_in_old_rule']:
-        head = ('the evolved-times regression is the empirical-quadrature RULE, and '
-                'certifying it on reachable states does not remove it within the declared '
-                '$m$ grid')
+        head = ('the evolved-times regression is the empirical-quadrature RULE; certifying it '
+                f'on states the ROM actually reaches removes up to {best:.2f}x of it (at '
+                f'$q={best_q}$) at no extra cost, but '
+                + (f"leaves {len(bad)} violation{'s' if len(bad) != 1 else ''} "
+                   f"({', '.join(f'$q={x}\\to{y}$' for x, y in bad)}) "
+                   'because no constructible $m$ certifies the top rungs'
+                   if bad else 'the pre-registered criterion still fails'))
     else:
         head = 'EQ rule certification, with the ridge and the test-count sweep as controls'
     W.append(f'### q-ridge — {head}; neither a ridge on the corrections nor more tests '
@@ -156,6 +167,22 @@ def main():
     W.append(table(['$q$', '$M$', 'chosen $m$', 'basis', '$\\rho_{max}$', '$\\rho_{95}$'],
                    [[c['q'], c['M'], c['chosen_m'], c['basis'], fmt(c['rho_max']),
                      fmt(c['rho_p95'])] for c in eq['rule_choice']]))
+
+    W.append('\n**What the certification buys, rung by rung** (worst evolved-times error, '
+             'incumbent static-population rule against the cheapest certified reachable-state '
+             'rule, and the dense twin where this job ran one).\n')
+    dn = {e_q: (m, ev) for e_q, m, ev in zip(eq['ladders']['dense']['q'],
+                                             eq['ladders']['dense']['M'],
+                                             eq['ladders']['dense']['worst_evolved_percent'])}
+    W.append(table(['$q$', '$M$', 'old rule $m$ / evolved %', 'certified $m$ / evolved %',
+                    'improvement', 'dense evolved %', 'cost vs old rule'],
+                   [[cert['q'][i], cert['M'][i],
+                     f"{old['m'][i]} / {old['worst_evolved_percent'][i]:.4f}",
+                     f"{cert['m'][i]} / {cert['worst_evolved_percent'][i]:.4f}",
+                     f"{gains[i]:.2f}x",
+                     (f"{dn[cert['q'][i]][1]:.4f}" if cert['q'][i] in dn else '—'),
+                     f"{cert['cost_ratio_to_old_rule'][i]:.3f}x"]
+                    for i in range(len(cert['q']))]))
 
     W.append('\n**The rebuilt ladder, both metrics.**\n')
     rows = []

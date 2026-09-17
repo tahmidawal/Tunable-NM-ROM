@@ -444,9 +444,12 @@ def main():
         all_subjects_all_times=nondominated(rows, 'median_gpu_ms', 'worst_all_times_percent'),
         all_subjects_evolved=nondominated(rows, 'median_gpu_ms', 'worst_evolved_percent'))
 
+    parts = Path(a.result).resolve().parts
+    attempt = parts[parts.index('runs') + 1] if 'runs' in parts else r['config'].get('attempt')
     out = dict(result=str(Path(a.result).resolve()), mode=a.mode, job_id=r.get('job_id'),
                commit=r.get('commit'), gpu=r.get('gpu'), elapsed_seconds=r.get('elapsed_seconds'),
-               attempt=r['config'].get('attempt'), checks=checks, failed=sorted(fail),
+               attempt=attempt, config_attempt=r['config'].get('attempt'),
+               checks=checks, failed=sorted(fail),
                arms=rows, ladders=ladders, verdict=verdict, frontier=frontier, r3=r3out)
     Path(a.out).write_text(json.dumps(out, indent=2) + '\n')
     print(json.dumps(dict(failed=sorted(fail), arms=len(rows),

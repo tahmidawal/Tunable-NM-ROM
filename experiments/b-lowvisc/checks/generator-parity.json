@@ -1,0 +1,101 @@
+{
+  "patched": {
+    "path": "experiments/b-lowvisc/deps/burgers2d-coord-rom/burgers2d_film.py",
+    "sha256": "959ba3af27c03cd46cc90830a59b287874daa53f06c3fa626e9ff6be0728d5aa"
+  },
+  "original": {
+    "path": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+    "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4"
+  },
+  "bounds": {
+    "default": [
+      0.01,
+      0.1
+    ],
+    "lowvisc": [
+      0.001,
+      0.01
+    ]
+  },
+  "draws": [
+    {
+      "seed": 0,
+      "count": 576,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 7.105427357601002e-16,
+      "nu_sha256_original": "a5634177b72402e7a15c6aa32d8cb444f33bf0d9ca15ef59a327129279bb3b36",
+      "nu_sha256_patched_default": "a5634177b72402e7a15c6aa32d8cb444f33bf0d9ca15ef59a327129279bb3b36",
+      "nu_sha256_patched_lowvisc": "4b3215588259b0bfd826b357b25e20a367854556c8aa7aa575916b999d1b61d3"
+    },
+    {
+      "seed": 1000,
+      "count": 4032,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 1.0658141036401502e-15,
+      "nu_sha256_original": "fd58ea83360cfac185eb4fc72ac16255fa77ba5ff6bd12934f999509e9d1a72c",
+      "nu_sha256_patched_default": "fd58ea83360cfac185eb4fc72ac16255fa77ba5ff6bd12934f999509e9d1a72c",
+      "nu_sha256_patched_lowvisc": "e1e04cf3d88b07a5df16e360c171ab328b8b4c6deb045ad3f99ac385b2d0c585"
+    },
+    {
+      "seed": 1,
+      "count": 8,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 7.105427357601002e-16,
+      "nu_sha256_original": "d57db965faa2a87bb6000771b59f88a9fd041f66b6f3e1769d71c908b0c40a42",
+      "nu_sha256_patched_default": "d57db965faa2a87bb6000771b59f88a9fd041f66b6f3e1769d71c908b0c40a42",
+      "nu_sha256_patched_lowvisc": "6ef6a2929314226264983e0dbc1ca26606d49cb7569c822ec81b6454d207f4be"
+    },
+    {
+      "seed": 0,
+      "count": 128,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 7.105427357601002e-16,
+      "nu_sha256_original": "3af983772cb5c9257e2202a70fade58332ad732f0747c9f954abf9aa82026b8b",
+      "nu_sha256_patched_default": "3af983772cb5c9257e2202a70fade58332ad732f0747c9f954abf9aa82026b8b",
+      "nu_sha256_patched_lowvisc": "2bfcfb8bae0656dbd5d31a52f4160b0811ce7c13e38ea72c101874a39cd0e29c"
+    },
+    {
+      "seed": 7090702,
+      "count": 4,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 3.552713678800501e-16,
+      "nu_sha256_original": "25d41a0f846616557751343d631ffb8b242a0d541841ba248043cc7aef7b29ba",
+      "nu_sha256_patched_default": "25d41a0f846616557751343d631ffb8b242a0d541841ba248043cc7aef7b29ba",
+      "nu_sha256_patched_lowvisc": "5bb94e07847739510403bc3477c752452688cfe7d834cf3bc4c836fc9a415bc6"
+    },
+    {
+      "seed": 911702,
+      "count": 2,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 3.552713678800501e-16,
+      "nu_sha256_original": "0bcc416c92154e63aa1955ef04db9ec8aac999ef39deca6bde1097bed53cc22f",
+      "nu_sha256_patched_default": "0bcc416c92154e63aa1955ef04db9ec8aac999ef39deca6bde1097bed53cc22f",
+      "nu_sha256_patched_lowvisc": "68701738c55d149930b0c36a3d79878105a182fb8454c1924c9e2691c6234c47"
+    },
+    {
+      "seed": 17092026,
+      "count": 6,
+      "default_bounds_physical_bitwise_identical": true,
+      "default_bounds_z_bitwise_identical": true,
+      "lowvisc_descriptors_bitwise_identical": true,
+      "lowvisc_viscosity_ratio_max_relative_deviation_from_ten": 3.552713678800501e-16,
+      "nu_sha256_original": "5f5c635d90cd12b87aaa6fb658a4b27b308710e0c63f9696fb9214418ed6d069",
+      "nu_sha256_patched_default": "5f5c635d90cd12b87aaa6fb658a4b27b308710e0c63f9696fb9214418ed6d069",
+      "nu_sha256_patched_lowvisc": "23ad0475eb36544240f9a5f67c17e3784958fe4bd5d1b9cd0a9a94830c5e58d0"
+    }
+  ],
+  "passed": true,
+  "note": "z is returned but discarded as `_z` by sep_burgers_r3.py and sep_coeff_extract.py, the only consumers in this chain, so a last-bit change in its log-nu column under the defaults touches no number."
+}

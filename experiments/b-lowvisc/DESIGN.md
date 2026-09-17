@@ -272,3 +272,66 @@ It is $[10^{-2},10^{-1}]$ (`engines.params_draw:25`, `burgers2d_film.sample_para
 low-viscosity family is therefore $[10^{-3},10^{-2}]$ — one decade below the incumbent, which is
 coincidentally the range the brief believed the incumbent to have. Recorded so that no later reader
 mistakes the incumbent cell for a low-viscosity one.
+
+**A3 (2026-09-17, while the gate job `lvg01` was queued, before any of its numbers existed) — the
+stage-3 panel is pre-registered here, from the `b-qxm` lane's finding.** Self-audit row 13 left
+"fixed $M$ is the honest control" as an open item. `b-qxm`'s report, DESIGN and round-2 audit JSONs
+were read; the relevant facts, and what this lane adopts from them:
+
+* $M$ is the number of weak test equations (the first $M$ sine modes in ascending
+  discrete-Laplacian order); a cell has $K+q$ unknowns and the gate `overdetermined_weak_system`
+  requires $M>K+q$. The incumbent ladder scheduled $M=4(K+q)$, which **confounds** the ladder:
+  raising $M$ alone at $q=0$ from 64 to 256 already buys 1.8890 → 1.2710 %, i.e. 31 % of the
+  scheduled ladder's log-span. A corner-path decomposition puts the split at 69 % rank / 31 % test
+  count, and rung by rung the test-count share falls 0.835 → 0.046: **$M$ buys the bottom of the
+  ladder, $q$ buys the top.**
+* Both fixed-$M$ columns: $M=256$ spans 1.220× in evolved error over $q\le128$ and **fails** the
+  $\ge2\times$ knob bar; $M=1088=4(K+256)$ spans 2.437× in error and 5.163× in cost and **passes**.
+  On the allegation of selective reporting (review finding 14): `b-qxm`'s DESIGN §3 names
+  `fixed1088` and its arithmetic rationale before any job was submitted, §6 pre-registers the
+  headline rule, and the report prints the failing $M=256$ column beside it. The fair caveat,
+  which this lane repeats, is that $M=1088$ is the *only* fixed $M$ that can hold $q=256$ at all.
+* Round-2 jobs, on disk and not yet in that lane's report: the whole $M=1088$ column in one job
+  (error span 2.437×, **within-one-job** cost span 5.247×); $q=512$ does **not** reach stationarity
+  at $M=1088$, 2112 or 3168 (worst joint stationarity 0.1774 against a $10^{-6}$ bar), so it is not
+  test-starvation; and $q=256$ at $M=1088$ is **test-starved by 28 %** — $M^\star=2176$.
+
+**Adopted for stage 3, fixed now.** Headline column: fixed $M=1088$, $q\in\{0,16,32,64,128,256\}$,
+the whole column in one job. Control column, printed beside it and not dropped whatever it says:
+fixed $M=256$, $q\le128$. Additional cell $(q,M)=(256,2176)$, because the headline $M$ costs the
+top rung 28 % of its accuracy. **No $q=512$.** Dense (exact) quadrature everywhere; no EQ rule
+enters any panel number, since this lane has no certified rule for a new checkpoint. Solver
+`varpro.make_block_lm` at per-step budget 600, IC budget 400, `gtol` $10^{-6}$, residual tolerance
+$10^{-9}\|u_{\rm gauss}\|\sqrt{n_g}$; `XLA_PYTHON_CLIENT_MEM_FRACTION=0.55`; the Gauss-Jordan→LU
+control cell at $(32,1088)$ kept in and excluded from spans. The panel job requests an **80 GB**
+A100 or an H100/H200 — `b-qxm` records that a panel with several large $M$ does not fit a 40 GB
+card. POD-LSPG at $k'\in\{16,32,64,128,256,512\}$ through the same objective, solver and budget;
+the unrestricted $R=512$ bank; and the tuned full-order Newton grid of §5, all in that one job.
+
+**Consequence for criterion P, recorded before the panel runs.** A dense-quadrature reduced query
+evaluates the residual at every node, so its cost per iteration is of the same order as a
+full-order Newton step and it needs more iterations: in job `3780638` the cheapest dense reduced
+arm is 284.8 ms against `fft_tight` at 89.3 ms. Without hyper-reduction, P therefore requires the
+full-order grid to become several times more expensive — which is leg (b), the leg §2 already
+records as the weaker one. **If leg (b) fails, P is expected to fail, and the lane's deliverable is
+F3 plus whatever leg (a) shows.** This is written before the measurement so the outcome cannot be
+presented as anticipated after the fact. Fitting and certifying an EQ rule for the new checkpoint
+(the q-ridge machinery, roughly an hour of NNLS per rung) is the obvious extension and is **not**
+in the four-job plan; it is named here as the first thing to buy with the reserve jobs if leg (a)
+passes and leg (b) is merely weak rather than absent.
+
+**A4 (2026-09-17, same time) — the generator patch and its parity proof.** Stage 2 needs training
+data at the low-viscosity family, and the training chain draws its parameters inside
+`burgers2d_film.sample_params`, not through `engines.params_draw`. This lane therefore carries its
+own copy at `experiments/b-lowvisc/deps/burgers2d-coord-rom/burgers2d_film.py`, which differs from
+the copy the incumbent's own training job staged in exactly one way: the viscosity bounds are read
+from `BURGERS_NU_LO` / `BURGERS_NU_HI`, defaulting to the incumbent's `(0.01, 0.1)`, and the `z`
+descriptor's log-$\nu$ centre and scale are derived from those bounds rather than written as
+`log(sqrt(0.001))` and `0.5*log(10)`. `check_generator_parity.py` loads both modules and compares
+`sample_params` over all seven draws the recipe makes (seeds 0/576, 1000/4032, 1/8, 0/128,
+7090702/4, 911702/2, 17092026/6): under the defaults every column is **bitwise identical**,
+including `z`; at the low-viscosity bounds the first four columns are bitwise identical and
+$\nu_{\rm hi}/\nu_{\rm lo}=10$ to $1.07\times10^{-15}$. Recorded in
+`checks/generator-parity.json`; the training job reruns the check on the cluster before its first
+training step and fails if it does not pass. b-seeds' copy is left untouched, so its own
+provenance hashes still hold.

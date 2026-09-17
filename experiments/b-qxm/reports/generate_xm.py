@@ -143,6 +143,33 @@ def spans(grid, metric):
                      unavailable_reason=(None if allc else 'a rung is not converged; the span is not patched'),
                      declared_fixed_column=declared)
         (fixed if declared else other)[M] = entry
+    # Cost may only be compared inside one job, so for each fixed-M column find the job that
+    # holds the most of its rungs and report that segment's cost and error span together.
+    for M, entry in fixed.items():
+        # Use every APPEARANCE, not just the primary row: G2 runs the q = 0 cells of both
+        # fixed columns as in-job anchors precisely so a cost ladder exists inside one job.
+        byjob = {}
+        for (qq, MM), lst in grid.appear.items():
+            if MM != M:
+                continue
+            for au_, r_ in lst:
+                byjob.setdefault(au_['question'], []).append((qq, r_, au_))
+        best = max(byjob.values(), key=lambda v: (len(v), max(x[0] for x in v)))
+        best.sort(key=lambda t: t[0])
+        if len(best) >= 2 and all(r['converged'] for _, r, _ in best):
+            errs = [r[metric] for _, r, _ in best]
+            costs = [r['median_gpu_ms'] for _, r, _ in best]
+            nd = [i for i in range(len(best))
+                  if not any((costs[j] <= costs[i] and errs[j] <= errs[i] and (costs[j] < costs[i] or errs[j] < errs[i]))
+                             for j in range(len(best)))]
+            entry['within_job'] = dict(
+                job=best[0][2]['question'], job_id=best[0][2]['job_id'], q=[q for q, _, _ in best],
+                values=errs, median_gpu_ms=costs, error_span=errs[0] / errs[-1],
+                cost_span=costs[-1] / costs[0], monotone_error=mono(errs), monotone_cost=mono([-c for c in costs]),
+                non_dominated_points=len(nd),
+                passes_tunability_bar=bool(mono(errs) and errs[0] / errs[-1] >= 2. and costs[-1] / costs[0] >= 2. and len(nd) >= 3))
+        else:
+            entry['within_job'] = None
     out['fixed_M'] = fixed
     out['other_M_with_two_rows'] = other
     byq = {}
@@ -283,6 +310,9 @@ def verdict(sp, dec, sat):
     v['span_q_at_M1088'] = s1088['span'] if s1088 else None
     v['span_q_at_M256_to_q128'] = s256['span'] if s256 else None
     v['headline_fixed_M'] = bool(s1088 and s1088['monotone'] and s1088['all_converged'] and s1088['span'] is not None and s1088['span'] >= 2.)
+    wj = (s1088 or {}).get('within_job')
+    v['fixed1088_within_job'] = wj
+    v['fixed1088_passes_tunability_bar'] = (wj or {}).get('passes_tunability_bar')
     v['headline'] = ('fixed-M ladder (M = 1088, pure rank), scheduled ladder reported beside it'
                      if v['headline_fixed_M'] else 'scheduled ladder, with the M share printed beside every span')
     avail = [x for x in fx.values() if x['M'] in (256, 1088) and x['span'] is not None]
@@ -485,6 +515,25 @@ def main():
                 'on $M$ (gate `t0_field_invariant_in_M`), so its $M$-spans and its $\\Delta_M$ are near zero '
                 '**by construction** wherever the compression exceeds the evolved error. It is reported for '
                 'completeness; the evolved metric is the one that separates the factors.')
+        d.h(3, 'The pure-rank ladder as an operating-point family, measured inside one job')
+        d.p('The tunability bar this project has used since 15 September: error monotone in the setting, at '
+            'least three non-dominated points, at least $2\\times$ span in **both** error and cost, no '
+            'early-stopped point. Cost may only be compared inside one job, so each fixed-$M$ column is '
+            'reported over the longest run of its rungs that one job holds.')
+        wrows = []
+        for M, x in sorted(s['fixed_M'].items()):
+            w = x.get('within_job')
+            if not w:
+                continue
+            wrows.append([M, w['job'], w['job_id'], ', '.join(map(str, w['q'])), ' / '.join(f(t) for t in w['values']),
+                          ' / '.join(f(t, 0) for t in w['median_gpu_ms']), f(w['error_span'], 3) + 'x',
+                          f(w['cost_span'], 3) + 'x', w['non_dominated_points'], yn(w['monotone_error']), yn(w['passes_tunability_bar'])])
+            for kk in ('error_span', 'cost_span'):
+                srow(q=None, M=M, metric=f'fixed_M_within_job.{kk}.{title}', value=w[kk], job_id=w['job_id'],
+                     attempt=None, arm=None, source_sha256=None)
+        d.table(['$M$', 'job', 'job id', 'rungs $q$', 'worst evolved %', 'median GPU ms', 'error span', 'cost span',
+                 'non-dominated points', 'monotone', 'passes the tunability bar'], wrows or [['—'] * 11])
+
         d.h(3, 'At fixed $M$: the span in $q$ (the pure-rank effect)')
         d.table(['$M$', 'rows $q$', 'values %', 'monotone in $q$', 'every rung converged', 'span (first/last)', 'span to $q=128$'],
                 [[x['M'], ', '.join(map(str, x['q'])), ' / '.join(f(v) for v in x['values']), yn(x['monotone']),

@@ -1,0 +1,142 @@
+{
+  "checks": {
+    "span_q_fixed_M256": {
+      "mine": 1.2200715106073892,
+      "report": 1.2200715106073892,
+      "agree": true
+    },
+    "monotone_fixed_M256": {
+      "mine": true,
+      "report": true
+    },
+    "span_q_fixed_M1088": {
+      "mine": 2.4368429602045354,
+      "report": 2.4368429602045354,
+      "agree": true
+    },
+    "monotone_fixed_M1088": {
+      "mine": true,
+      "report": true
+    },
+    "span_scheduled_4x": {
+      "mine": 3.6369781676269595,
+      "report": 3.6369781676269595,
+      "agree": true
+    },
+    "corner_delta_M": {
+      "mine": 0.40044983036918724,
+      "report": 0.40044983036918724,
+      "agree": true
+    },
+    "corner_delta_q": {
+      "mine": 0.8907033327655605,
+      "report": 0.8907033327655605,
+      "agree": true
+    },
+    "corner_identity_holds": {
+      "mine": 1.2911531631347477,
+      "report": 1.2911531631347477,
+      "agree": true
+    },
+    "corner_share_M": {
+      "mine": 0.31014897519744944,
+      "report": 0.31014897519744944,
+      "agree": true
+    },
+    "corner_share_q": {
+      "mine": 0.6898510248025506,
+      "report": 0.6898510248025506,
+      "agree": true
+    },
+    "rung_delta_M": {
+      "mine": 0.4440866686770489,
+      "report": 0.44408666867704893,
+      "agree": true
+    },
+    "rung_share_M": {
+      "mine": 0.34394576984102,
+      "report": 0.34394576984102004,
+      "agree": true
+    },
+    "rung_total_equals_corner_total": {
+      "mine": 1.2911531631347477,
+      "report": 1.2911531631347477,
+      "agree": true
+    },
+    "anova_frac_q": {
+      "mine": 0.8508031836710135,
+      "report": 0.8508031836710135,
+      "agree": true
+    },
+    "anova_frac_M": {
+      "mine": 0.06118637457989803,
+      "report": 0.06118637457989803,
+      "agree": true
+    },
+    "anova_frac_interaction": {
+      "mine": 0.08801044174908834,
+      "report": 0.08801044174908834,
+      "agree": true
+    },
+    "within_job_error_span": {
+      "mine": 2.4368429602045056,
+      "report": 2.4368429602045056,
+      "agree": true
+    },
+    "within_job_cost_span": {
+      "mine": 5.1626587819982905,
+      "report": 5.1626587819982905,
+      "agree": true
+    },
+    "within_job_same_job": {
+      "mine": true,
+      "report": true,
+      "agree": true
+    },
+    "saturation_M_star_q0": {
+      "mine": 256,
+      "report": 256,
+      "agree": true
+    },
+    "saturation_cost_ratio_q0": {
+      "mine": 1.2101110662903052,
+      "report": 1.2101110662903052,
+      "agree": true
+    },
+    "saturation_M_star_q64": {
+      "mine": 256,
+      "report": 256,
+      "agree": true
+    },
+    "saturation_cost_ratio_q64": {
+      "mine": 0.9224680283078982,
+      "report": 0.9224680283078982,
+      "agree": true
+    },
+    "summary_rows_match_audits": {
+      "mine": 0,
+      "report": 0,
+      "agree": true,
+      "mismatches": []
+    },
+    "field_rederived_q0_M64_dense": {
+      "mine": 1.8889895724293762,
+      "report": 1.8889895724293762,
+      "agree": true
+    },
+    "field_rederived_q256_M1088_dense": {
+      "mine": 0.5193843584884361,
+      "report": 0.5193843584884361,
+      "agree": true
+    },
+    "field_rederived_q128_M1088_dense": {
+      "mine": 0.871143378946005,
+      "report": 0.871143378946005,
+      "agree": true
+    }
+  },
+  "disagreements": [],
+  "n_checks": 27,
+  "all_agree": true,
+  "note": "independent recomputation of the report headline numbers and a re-derivation of three cells from the archived fields; shares no code with reports/generate_xm.py"
+}

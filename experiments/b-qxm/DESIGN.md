@@ -424,3 +424,51 @@ Remote: `/cluster/tufts/paralab/tawal01/b_qxm_20260917/<attempt>/`; paralab at 9
 (439 GB free) at submission. Three of the eight-job cap used. If a job is still pending after
 3 h it is cancelled and resubmitted as `h100`, then `h200`, then `l40s`, science unchanged;
 each resubmission gets a new attempt directory and is recorded here.
+
+### A2 (2026-09-17, after the results) — outcome against the pre-registered rules
+
+All three jobs COMPLETED exit 0 on the `gpu` partition from commit `ed431edb`: 3780175
+(`bqx101`, pax050, A100 80 GB, 2528 s), 3780177 (`bqx201`, pax051, **A100 40 GB**, 3715 s),
+3780178 (`bqx301`, pax052, **A100 40 GB**, 3217 s). **Zero failed gates in all three.** The
+$t = 0$ field was **bitwise** invariant in $M$ in all 54 $(q, \text{case})$ families
+(worst relative difference exactly 0.0), so the re-tiering in A0 was not needed in the end —
+the $10^{-12}$ probe passes too. Every one of the 19 unconditional $q = 0$ fidelity
+reproductions landed at $\le 9.3\times10^{-13}$, i.e. the $10^{-9}$ bar held on the cluster,
+which retires the A0 worry: the $2.1\times10^{-7}$ smoke deviation is a shared-GB10 artefact
+and does not exist in a one-process, one-GPU allocation. The two-tier $q > 0$ pairs also came
+in at $\le 9.2\times10^{-9}$, inside $10^{-3}$ by six orders.
+
+**Memory.** Peak device use was 9.94 GB (G2) and 11.36 GB (S1) against the ~22 GB pool that
+`XLA_PYTHON_CLIENT_MEM_FRACTION=0.55` reserves on a **40 GB** card, with 18 and 17 jitted
+subjects resident. Both landed on 40 GB nodes, so the binding case was exercised and the
+split-by-$q$ sizing is now measured on the target hardware rather than extrapolated from the
+GB10. No CUBIN out-of-memory occurred; the two earmarked reserve attempts were not needed.
+Three of the eight-job cap used.
+
+**Verdict.** H(both) holds, with the rank dominant: the pure-rank ladder at fixed $M = 1088$
+is monotone, fully converged, and spans $2.437\times$, so by §6 the **fixed-$M$ ladder is the
+headline** and the scheduled ladder is reported beside it. The rank claim is **not** false
+($2.437\times \ge 1.5\times$). H(tests) is **false** (rank share $0.690 \ge 0.5$ on the corner
+path). H(rank) is **false** as well: the $M$ effect does not saturate everywhere — at
+$q = 256$ the span over $M \ge 2(K+q)$ is $2.025\times$ ($0.7566 \to 0.3736$ % for
+$M = 544 \to 2176$). Corner and rung paths agree (test-count share 0.310 and 0.344, well
+inside the 0.15 disagreement threshold), and the two-way variance shares on the balanced
+sub-grid are rank 85.1 %, test count 6.1 %, interaction 8.8 %.
+
+**The structure the decomposition exposes, which neither hypothesis predicted.** The split is
+not uniform along the ladder: rung by rung, the test count does 84 %, 77 %, 40 %, 10 %, 5 % of
+the work at $q = 0\to16, 16\to32, 32\to64, 64\to128, 128\to256$. The test count is what buys
+the *bottom* of the ladder and the rank is what buys the *top*. Equivalently, $M$ saturates
+in absolute terms at low $q$ ($M^\star = 256$ at $q = 0$, flat to $M = 4096$) but not at high
+$q$; what is roughly invariant is the tests-per-unknown ratio, not $M$ itself.
+
+**Solver control.** $(32, 1088)$ with LU reproduced its Gauss–Jordan twin to
+$4.7\times10^{-14}$ relative at $1.000\times$ the cost in the same job, so the `gj`$\to$`lu`
+switch at $K + q > 64$ is inert and does not contaminate the rank ladder.
+
+**Saturation.** $q = 0$: $M^\star = 256$, $1.2710$ %, $1.210\times$ the $M = 64$ cost —
+**not** cost-neutral by the $\le 1.1\times$ rule, so that sentence is not written. $q = 64$:
+$M^\star = 256$, $1.1255$ %, $0.922\times$ the scheduled $M = 320$ cost — cheaper *and* within
+3.7 % of it, so at $q = 64$ the scheduled rule overspends on tests. The $q = 64$ curve is
+**non-monotone** at the tail ($1.0593 \to 1.0594 \to 1.0620$ % at $M = 1088, 2048, 4096$):
+past saturation more tests very slightly hurt.

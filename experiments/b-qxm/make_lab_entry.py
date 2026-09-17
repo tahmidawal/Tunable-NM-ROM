@@ -95,6 +95,17 @@ def main():
     for lab, x in sorted(sp['scheduled'].items()):
         L.append(f"| scheduled `{lab}` | {', '.join(f'({q},{M})' for q, M in x['cells'])} | {' / '.join(f(t) for t in x['values'])} | {yn(x['monotone'])} | {f(x['span'], 3)}x |")
     L.append('')
+    w = v.get('fixed1088_within_job')
+    if w:
+        L.append(f"**The pure-rank ladder as an operating-point family, inside one job** (`{w['job']}`, {w['job_id']}, so the "
+                 'costs are comparable): rungs $q$ = ' + ', '.join(map(str, w['q'])) + ' at fixed $M = 1088$, worst evolved '
+                 + ' / '.join(f(t) for t in w['values']) + ' %, median GPU '
+                 + ' / '.join(f(t, 0) for t in w['median_gpu_ms']) + ' ms — error span '
+                 f"**{f(w['error_span'], 3)}x**, cost span **{f(w['cost_span'], 3)}x**, {w['non_dominated_points']} non-dominated "
+                 f"points, monotone {yn(w['monotone_error'])}. It **{'passes' if w['passes_tunability_bar'] else 'fails'}** the "
+                 "project's standing tunability bar (monotone, $\\ge 3$ non-dominated points, $\\ge 2\\times$ in both error "
+                 'and cost, nothing early-stopped) **with the test count held fixed**, which is what the audit\'s objection asked for.')
+        L.append('')
     L.append('| fixed $q$ | $M$ | values | monotone in $M$ | span (max/min) | span over $M \\ge 2(K+q)$ |')
     L.append('|---|---|---|---|---|---|')
     for q, x in sorted(sp['fixed_q'].items(), key=lambda kv: int(kv[0])):

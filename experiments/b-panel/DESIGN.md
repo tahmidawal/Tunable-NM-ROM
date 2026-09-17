@@ -552,6 +552,12 @@ instruction, it is read and recorded here rather than re-executed, since every g
 already passed. Jobs used: still three (`bpn101` complete, `bpn201` retracted, `bpn202`
 failed); no cluster job has run since this amendment. `bpn301` is staged and submitted next.
 
+**Submitted.** `bpn301` = job **3789570**, `NVIDIA A100` with `--constraint=a100-80G`, `--mem 180G`,
+`gpu` partition, `--exclude=pax007`, staged from commit `f3c5fbed`, remote
+`b_panel_20260917/bpn301`, manifest verified remotely (`sha256sum -c MANIFEST.sha256 --quiet`).
+`squeue -u tawal01` before submission showed no `bpn_` job; immediately after, exactly one,
+`bpn_bpn301` (3789570), `PD`. Not waited on.
+
 ## A9 — 2026-09-17 ~13:00, coordinator follow-up on `bpn202`: cause confirmed, not the refit;
 resubmitted as `bpn203` with the same §A7/§A8 fix, no arms dropped
 
@@ -596,3 +602,11 @@ recorded in the lab log entry this session appends. Not waited on.
 
 Job count after this amendment: `bpn101` (complete), `bpn201` (retracted), `bpn202` (failed),
 `bpn301` (submitted this session), `bpn203` (submitted this session) — five of the cap of eight.
+
+**Submitted.** `bpn203` = job **3789572**, H200, `--mem 240G`, `gpu` partition,
+`--exclude=pax007`, staged from commit `f3c5fbed`, remote `b_panel_20260917/bpn203`, manifest
+verified remotely. `squeue -u tawal01` immediately before this submission showed exactly one
+`bpn_` job (`bpn_bpn301`, 3789570, from this session's other submission above); immediately
+after, exactly two (`bpn_bpn301` 3789570, `bpn_bpn203` 3789572), each the only job in its own
+attempt directory. Not waited on. This is the resubmission's only attempt, per the
+coordinator's "do not resubmit more than once."

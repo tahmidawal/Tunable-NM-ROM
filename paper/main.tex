@@ -21,8 +21,8 @@
 %    evolved times vs worst over all times) -- both printed; decisive at 1024^2,
 %    where reduced rungs are non-dominated on the evolved metric only;
 %    (2) the title was changed by the user on 2026-09-17 (two words: "and
-%    Hyperbolic", "Petrov--Galerkin"); the abstract keeps the old opening two
-%    sentences about neural operators.
+%    Hyperbolic", "Petrov--Galerkin"); the abstract's opening premise was
+%    re-worded on 2026-09-17 (round-2 review B1) to match §5.1's evidence.
 % ===========================================================================
 \documentclass{article}
 \usepackage{iclr2027_conference,times}
@@ -65,10 +65,10 @@
 % =====================================================================
 \begin{abstract}
 
-Neural operators such as Fourier Neural Operators
-\citep{Li2020FNO} and DeepONets \citep{Lu2021DeepONet} deliver one
-(accuracy, speed) point per trained model and offer no way to tune
-either at deployment. We present a non-linear manifold reduced order
+Neural operators such as Fourier Neural Operators \citep{Li2020FNO} and
+DeepONets \citep{Lu2021DeepONet} deliver one (accuracy, speed) point per
+trained model; at deployment only the evaluation grid can be changed,
+which moves cost but not what the model can represent. We present a non-linear manifold reduced order
 model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs that exposes a
 family of accuracy/cost operating points from a single trained
 decoder, controlled at inference time by one primary knob, the rank $q$
@@ -106,10 +106,11 @@ says when the nonlinear manifold is worth having.
 
 Neural operators for partial differential equations (PDEs)
 \citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,Li2024PINO,BoulleTownsend2024} have
-become a strong empirical baseline, but each trained model produces a
-single fixed (accuracy, wall-clock) operating point: there is no
-deployment-time knob a practitioner can turn to spend more compute for
-more accuracy, or vice versa. Classical Full Order Methods (FOMs)
+become a strong empirical baseline, but each trained model produces
+essentially one (accuracy, wall-clock) operating point: the only
+deployment-time knob, the evaluation grid, moves cost without changing
+what the model can represent, and it worked for one of the four operator
+arms we tested (\S\ref{sec:results:operators}). Classical Full Order Methods (FOMs)
 \citep{Hughes2000FEM} solved iteratively
 \citep{HestenesStiefel1952CG} expose this knob through their iteration
 tolerance, and where a fast transform applies they are hard to beat on
@@ -117,9 +118,8 @@ wall-clock at the resolutions of interest.
 
 Two families of methods sit on either side of this gap. Neural
 operators and PDE foundation models
-\citep{HerdePoseidon2024,McCabeMPP2024,HaoDPOT2024,Chen2024UnsupervisedNO} deliver fast
-amortised inference but fix the accuracy/speed point at training time,
-so the only way to recover a different point is to retrain. Reduced order
+\citep{HerdePoseidon2024,McCabeMPP2024,HaoDPOT2024,Chen2024UnsupervisedNO} deliver fast amortised inference but fix what the model can represent at
+training time, so a materially different accuracy needs retraining. Reduced order
 models (ROMs) address the same problem from the opposite direction: linear
 projection-based ROMs \citep{BennerGugercinWillcox2015,Sirovich1987POD}
 inherit the FOM's guarantees but hit the Kolmogorov $n$-width barrier
@@ -851,8 +851,9 @@ by a single trained model: at inference, the correction rank $q$ and
 three solver-side knobs --- the iteration cap, the stopping tolerance,
 and the Empirical Quadrature sample count --- trade accuracy for cost,
 spanning $\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in cost on
-2D Burgers in one allocation. This is the lever neural operators do not
-expose: each trained model delivers one fixed operating point. The framework does not beat a tuned full-order solver or
+2D Burgers in one allocation. This is the lever a neural operator does not expose from one trained
+model: its evaluation grid moves cost, not what the model can represent
+(\S\ref{sec:results:operators}). The framework does not beat a tuned full-order solver or
 a neural operator trained on the same data at $256^2$ on the square, and
 we report that; its wins are cost-only, on the L-shaped domain where no
 fast transform applies and, on the evolved-times metric, at $1024^2$.

@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 19:22; this block is removed before submission).*
+*Status for the reader (generated 2026-09-17 19:48; this block is removed before submission).*
 *Final tables (39): T01, T01b, T02b, T02c, T03, T03b, T04, T04b, T05, T05b, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T12, T12b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T19.*
 *Pending cells: `T13` waits on b-seeds sealed cohort; `seeds sealed` waits on b-seeds sealed cohort; `T2 sealed row` waits on b-seeds sealed cohort. In-flight jobs are listed in Table C.3: sealed cohort 3804465 (b-seeds), NS K=32 arm 3787320 (ns2d), low-viscosity training 3804337 (b-lowvisc), 512² panel 3805065 (b-panel).*
 *Provisional: the three-seed table (T12) until the sealed cohort lands; the 1024² frontier statement in §5.1 until the 512² panel brackets it; the two top EQ rungs are single-draw rules, never certified.*
@@ -11,10 +11,10 @@
 
 ## Abstract
 
-Neural operators such as Fourier Neural Operators
-(Li et al., 2021) and DeepONets (Lu et al., 2021) deliver one
-(accuracy, speed) point per trained model and offer no way to tune
-either at deployment. We present a non-linear manifold reduced order
+Neural operators such as Fourier Neural Operators (Li et al., 2021) and
+DeepONets (Lu et al., 2021) deliver one (accuracy, speed) point per
+trained model; at deployment only the evaluation grid can be changed,
+which moves cost but not what the model can represent. We present a non-linear manifold reduced order
 model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs that exposes a
 family of accuracy/cost operating points from a single trained
 decoder, controlled at inference time by one primary knob, the rank $q$
@@ -50,10 +50,11 @@ says when the nonlinear manifold is worth having.
 
 Neural operators for partial differential equations (PDEs)
 (Li et al., 2021; Lu et al., 2021; Kovachki et al., 2023; Li2024PINO, ?; BoulleTownsend2024, ?) have
-become a strong empirical baseline, but each trained model produces a
-single fixed (accuracy, wall-clock) operating point: there is no
-deployment-time knob a practitioner can turn to spend more compute for
-more accuracy, or vice versa. Classical Full Order Methods (FOMs)
+become a strong empirical baseline, but each trained model produces
+essentially one (accuracy, wall-clock) operating point: the only
+deployment-time knob, the evaluation grid, moves cost without changing
+what the model can represent, and it worked for one of the four operator
+arms we tested (§6.1). Classical Full Order Methods (FOMs)
 (Hughes2000FEM, ?) solved iteratively
 (HestenesStiefel1952CG, ?) expose this knob through their iteration
 tolerance, and where a fast transform applies they are hard to beat on
@@ -61,9 +62,8 @@ wall-clock at the resolutions of interest.
 
 Two families of methods sit on either side of this gap. Neural
 operators and PDE foundation models
-(HerdePoseidon2024, ?; McCabeMPP2024, ?; HaoDPOT2024, ?; Chen2024UnsupervisedNO, ?) deliver fast
-amortised inference but fix the accuracy/speed point at training time,
-so the only way to recover a different point is to retrain. Reduced order
+(HerdePoseidon2024, ?; McCabeMPP2024, ?; HaoDPOT2024, ?; Chen2024UnsupervisedNO, ?) deliver fast amortised inference but fix what the model can represent at
+training time, so a materially different accuracy needs retraining. Reduced order
 models (ROMs) address the same problem from the opposite direction: linear
 projection-based ROMs (Benner et al., 2015; Sirovich, 1987)
 inherit the FOM's guarantees but hit the Kolmogorov $n$-width barrier
@@ -813,8 +813,9 @@ by a single trained model: at inference, the correction rank $q$ and
 three solver-side knobs — the iteration cap, the stopping tolerance,
 and the Empirical Quadrature sample count — trade accuracy for cost,
 spanning $2.44\times$ in error for $5.16\times$ in cost on
-2D Burgers in one allocation. This is the lever neural operators do not
-expose: each trained model delivers one fixed operating point. The framework does not beat a tuned full-order solver or
+2D Burgers in one allocation. This is the lever a neural operator does not expose from one trained
+model: its evaluation grid moves cost, not what the model can represent
+(§6.1). The framework does not beat a tuned full-order solver or
 a neural operator trained on the same data at $256^2$ on the square, and
 we report that; its wins are cost-only, on the L-shaped domain where no
 fast transform applies and, on the evolved-times metric, at $1024^2$.

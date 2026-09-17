@@ -12,13 +12,72 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-09-10
+# Where things stand — 2026-09-15
 
 *(Fork point and mathematical scope refreshed during the 2026-09-04 architecture review.
 The dated chronology below preserves the earlier findings and retractions; the original
 2026-08-25 current-state block is in git history, commit c3f1726 and nearby.)*
 
 ## Read this first
+
+**2026-09-16 — overnight five-lane campaign complete (user: keep tunability as a core claim; latitude = data/objective/K/R, no new architectures).** All lanes audited, lab-logged (dated entries at the bottom), local-only branches: `exp/2026-09-16-{b-ladder-top,b-head-train,b-speed,p-bank-head,paper-refresh}`; every cluster namespace empty. Preceded on 2026-09-15 by the three inference-knob cells (`prior-dial`, `head-refine`, `cheap-corrections`) and the zero-start / cold-start cap diagnostics. Headlines, one frozen checkpoint per PDE unless stated:
+
+- **Solver-side knobs (cap, tolerance, EQ, cold starts) are cost controls only.** Error is representation-bound (best-found ≈ solved on both PDEs). From z=0 the cap traces a curve on Poisson, but every point is dominated by the nearest-code start; Burgers zero-per-step is hopeless. The old paper's knob regime is reproduced and explained: under-converged solves plus capacity changes between operating points.
+- **Corrections ladder q is the one accuracy control from a frozen checkpoint.** Burgers 256²: q=0…128 converged at 3 it/step (cheap-corrections); q=256 converges with the per-step budget raised 180→600 at 0.988× cost, worst same-grid 0.905 % vs q=128 1.81 % (b-ladder-top job 3749039). The pre-registered "knob" rule still FAILS: on the all-times metric the ladder is monotone but the converged error span is 1.42×; on the evolved-times metric q=16 is worse than q=0 (unexplained) and the span is 1.27×. The ladder's monotonicity on the all-times metric is carried by the t=0 compression term. In the combined same-job envelope (q × EQ × tolerance vs FOM, POD-16…128, FNO in one allocation, job 3747245) the non-dominated set is entirely full-order: Newton nt1e-4 reaches 0.034 % same-grid at 37.7 ms; best ROM is q=256 EQ at 0.76 % evolved / 497 ms; FNO 7.4 % evolved at 11.2 ms. The q=512 EQ rung fails (3.65 % vs 0.60 % dense) even with a valid untruncated rule — unexplained.
+- **λ prior dial and per-query head refinement are not knobs** (Poisson: free accuracy to the bank floor, cost 1.16×; Burgers: pinned by t=0 or 8–43× cost).
+- **Speed (b-speed, jobs 3745655/3745656/3745913): 1.52× at 256², 1.47× at 1024², at parity** (identical iteration counts/exit reasons, fields ≤1e-12). Fused residual+Jacobian 1.25×, head output layer folded into the bank 1.15×; block Gauss–Jordan LOSES at K=16; the query is launch-bound (17 µs/step + 141 µs/iteration), so >1.5× needs fewer iterations. Against the cheapest fair Newton control (nt1e-2, dt 0.01) the ratio is 3.45× slower at 256², 2.27× at 512², **0.98–1.01× at 1024²** (crossover reached, not cleared). Batched throughput 12 ms/query (FOM unbatched).
+- **Training (b-head-train, jobs 3745912/3749074): NEGATIVE, with a caveat.** No retrained Burgers head beats the incumbent (best 2.83 % vs 2.54 % best-found; bank floor 0.39 %). The like-for-like retrain of the incumbent's own recipe lands 1.56× worse, so the lane's pipeline does not reproduce the incumbent (it expands 1.8× more states at the same step budget) and the data-ladder verdict is measured below baseline. Corrected fact: the incumbent head was trained on **4608** trajectories, not 128. Code-smoothness penalty is harmful; K and objective within noise; R=1024 joint arm retracted (warm start never took).
+- **Poisson (p-bank-head, jobs 3745606/3748202): 6.09 → 3.11 % worst at 1024²** with R=512, K=32 (bank floor 0.74 %, +32 corrections 2.46 %, 1.33× cost, all stationary, beats POD at k′=K). Success rule missed (target < 2 %). Diagnosis: the head UNDERFITS its own training data (bank 1.93 % vs head 4.68 % on training sources, codes converged) → function-class/objective-limited, not data; and a better bank widens the head's relative gap (2.6× → 4.2×). POD-128 on the same snapshots (2.50 % at 6.2 ms) dominates every neural checkpoint; DST 4.5 ms exact. Poisson is the correctness case; no speedup.
+- **Paper/repo (paper-refresh):** OUTLINE and reviewer map refreshed to on-disk evidence with SHA256s; tunability section rewritten to "monotone family of offline-prepared operating points, dominates the POD ladder, does not beat an efficient FOM"; `paper/figures/gen_fig_tunability_family.py` (provisional, cross-job); skeleton compiles. **GitHub code-only mirror prepared and dry-run, NOT pushed:** drops 214 of 215 GiB, keeps all source/reports/JSON/manifests, pack 170 MiB, zero files >50 MB; seven commits >2 GB exist (not four). Publish command in `reports/2026-09-16-code-only-github-mirror-plan.md` awaits approval.
+
+**Decisions waiting on the user:** (1) Burgers headline metric — worst over evolved times with t=0 compression reported separately (1.90 %) vs worst over all times (2.56 %); this moves the headline ~2× and decides whether the q ladder reads as monotone. (2) Approve the code-only mirror push. (3) Merge or archive the eleven 2026-09-1x worktrees. (4) Whether to pursue the two unexplained ladder facts (q=16 evolved regression; q=512 EQ failure) and the head recipe reproduction before any tunability figure enters the paper.
+
+**Landmines added this round:** `engines.params_draw` draws column-by-column (drawing 4 ≠ extending 2); cluster vs GB10 NumPy differ by 1 ulp in `exp` (viscosity/width columns) — use value gates, not hash gates, across machines; GB10's first f64 QR of a 64516×512 matrix returns NaN (guard with a rank assert); whole-query bitwise parity is not achievable across program restructurings (XLA fusion) — gate at 1e-12 + identical integers.
+
+**Superseded below:** the 2026-09-15 paragraph that follows.
+
+**2026-09-15 — the four reviewer-answering experiments and the paper methods rewrite are complete; the campaign's picture is now settled enough to position a new paper.** Five concurrent agents ran on 2026-09-14/15 in five worktrees (`2026-09-14-no-burgers`, `2026-09-14-no-audit`, `2026-09-14-head-ablation`, `2026-09-14-mesh-ladder`, `2026-09-14-paper-draft`; the last three forked from the consolidated baseline `02ff0f1f`), nine A100 jobs (`3710790`, `3710846`, `3711134`, `3711388`, `3711389`, `3711424`, `3711736`, `3712269`, `3713867`), every one checksum-collected, independently NumPy-audited, archived in its worktree and removed from the cluster; all cluster namespaces are empty except the preserved Burgers dataset cache `no_burgers_20260914/pilot-data01`. Each experiment's dated entry is at the bottom of this file. The findings, all from one frozen Burgers checkpoint (`sep_hfit_dense_mid_N256_dense.pkl`, K=16, R=512) unless stated:
+
+- **The nonlinear head is necessary at matched latent dimension** (head ablation, branch head `2d82421d`). Burgers 256: neural head 2.56 % same-grid error vs linear 56.9 %, quadratic 31.8 %, POD-LSPG k=16 61.7 %, k=128 10.1 % at 7× the cost; no POD rank ≤ 8K matches it. Poisson 1024: head wins per dimension (6.09 % vs 17.3 % linear at K=16) but POD-128 matches it (4.35 %) at essentially the same cost, because the Poisson query is dominated by projection/decode, not the reduced solve.
+- **Solver-side tuning gives a step, not a slope** (fixed-checkpoint tuning, `f5350a84`, jobs 3711134/3712269, 32 held-out validation cases). Evolution tolerance 1e-6→1e-3 removes 23 % of GPU time for +1e-5 pp worst error; the iteration cap is a cliff (cap 8: 4.4 %, caps 4/2: 75 %, frozen trajectory); EQ m=256/512/1024/full-grid span 0.15 pp of worst error while the full grid costs 5.4× m=512. Accuracy is representation-limited: tripling solver work changes the answer in the 9th decimal, and the decoder's compression of the supplied initial field alone (1.87 % worst) is comparable to the whole trajectory error. The tolerance-matched FOM (`same_nt1e-4_dt005`, 22.4 ms, 6.17 % worst) beats every tuned ROM setting on median error, worst error and cost simultaneously. Retracted within that study: the calibration reading that `same_nt1e-2_dt005` is the accuracy bar (35 % worst on held-out).
+- **Bank enrichment is the only inference-time accuracy lever, and it is expensive** (correction ladder, job 3713867). Neural anchor plus q linear bank directions solved jointly: solved error monotone in q (2.56→2.48→2.15→1.81→0.91→0.60 % for q=0…512) and tracks the representation ceiling, reaching the bank floor 0.392 % at q=512; but only q=0 and q=16 converge under the shared stopping rule, and cost grows 1.7× (q=16) to ~195× (q=512), 4× of which is the forced growth of the test-mode count and the rest the absence of an EQ rule above q=16. No rung beats the efficient FOM on both axes. dt 0.01 vs 0.005 saves 7–22 % and degrades the typical case. EQ remains a 6–7× cost lever at zero accuracy change.
+- **Cached cost is mesh-independent; there is no crossover against an efficient FOM in 2D** (mesh ladder, `ab16ca81`, jobs 3711388/3711389, one frozen checkpoint per PDE, 64→1024 intervals in one job per PDE). Burgers cached 44.2→43.6 ms and Poisson 2.09→2.02 ms while interior unknowns grow 264×; growth is confined to dense decode and host transfer. Burgers accuracy improves under frozen-weight transfer (10.9 %→3.9 %, passing 5 % from 256 up); Poisson is pinned at its 6.11 % representation floor at every mesh. The tolerance-matched Burgers FOM is 2.0–3.8× faster at every rung; Poisson direct DST is 8.9–15.8× faster. The 10× "win" against over-solved Newton at 1e-6 is the inflated comparison AGENTS.md forbids and is not a headline.
+- **FNO on the Burgers common dataset** (`f3510e88`, jobs 3710790/3710846, four capacities at equal wall budget, direct multi-time output). Best validation-selected FNO (large, 17.9 M params): 1.81 % median / 6.38 % worst on 32 held-out cases, 7.3 ms device query; on the matched 8-case cohort 2.48 % worst vs ROM 1.87 % and FOM 1.00 %. So on Burgers the ROM is more accurate than a tuned FNO (the reverse of Poisson); no speed ratio is stated because ROM/FOM timings come from another allocation. The interleaved same-job ROM/FNO/FOM panel is the only admissible speed statement and has not run.
+- **Paper methods rewrite** (`fc6d2739`, `paper/` in the paper-draft worktree): corrected methods, related work, outline with claim-to-figure ledger, reviewer-response map, bibliography, compiling NeurIPS skeleton. It documents the code as it runs, and records ten discrepancies with the old manuscript, chiefly: the heat scheme is Crank–Nicolson not backward Euler; the projection is a row-scaled weak least-squares over M>k sine tests, not tangent Galerkin; the solver is damped LM; there is no ViT encoder in the deployed path (separable coordinate decoder with least-squares latent fit); EQ samples only the weak advection term; the Poisson objective is the tested error, never identified before.
+
+**Positioning agreed with the user (2026-09-15): one paper, not two.** The user is pushing for a new paper rather than a resubmission. The method-paper framing ("anchored manifold with monotone enrichment") does not survive the ladder's cost on Burgers as measured; the defensible positioning is a structural/diagnostic paper — what is and is not tunable in nonlinear-manifold ROMs from a single trained decoder — built on the three-layer error decomposition (representation / reduction / solver), with every inference-time lever priced from one checkpoint (only EQ is a large cost lever; only enrichment is an accuracy lever; nothing is both), the necessity of the nonlinear anchor, mesh-independent cached cost, and honest same-job FOM/FNO comparisons. Target a computational-science venue. One engineering route could revive the mechanism story and is optional: eliminate the corrections with an inner linear solve so the nonlinear iteration stays K-dimensional, plus offline EQ rules for the larger test spaces; not run.
+
+**Open items for the next session.** (1) The user's decisions: paper framing (diagnostic vs revived mechanism), whether to run the enrichment-elimination job, and whether to merge any of the six 2026-09-1x worktrees (none merged; ask, do not merge). (2) Interleaved same-job ROM/FNO/FOM timing panel on Burgers. (3) Three training seeds and the sealed cohorts before any number enters the paper. (4) GitHub: no `exp/2026-09-13`/`2026-09-14` branch is on origin — the consolidated branch is 416 commits ahead of `origin/main` with multi-GB chunked archives, single pushes fail with HTTP 500, and a plain push repacks the 199 GB repository to ~48 GB RSS on the shared box; a staged/seeded push on 2026-09-15 got 375 of 416 consolidated commits onto origin (temp ref, deleted afterwards) and then hit the real blocker: four single commits on the consolidated lineage each add 3.9–8.6 GB of heat archive chunks (`f2ec3ee5` transfer04 8.6 GB, `ab159c71` 6.1 GB, `d9980cb2` 5.7 GB, `1d6e5221` 3.9 GB), far above GitHub's ~2 GB per-push pack limit, and a single commit cannot be split. No branch descending from them can reach GitHub as-is; SSH is not configured (publickey denied). Options are the user's: Git LFS for `*.part*` chunks, a history rewrite dropping the archives from the pushed lineage, or a code-only filtered mirror branch. (5) `pilot-data01` cache cleanup once the timing panel no longer needs it. (6) The 2026-09-14 handoff's `--check` fails on the manifest only (collector rewrote one audit JSON with last-ulp float changes; report text unchanged). (7) `LAB-LOG.md` and other pre-existing main files remain modified-uncommitted on `main` by the standing instruction not to stage them incidentally; the user should decide when to commit main.
+
+**Superseded below:** the handoff pointer, collector block and 2026-09-14 campaign paragraph that follow describe the state before these five agents ran; they are kept for the record.
+
+**Claude Code handoff available.** Read `reports/2026-09-14-claude-code-continuation-handoff.md` after this canonical log. Generated evidence, exact continuation paths, original resource balances and a pasteable prompt are retained on main at `a96ee10d3ed38a31552ee95d4f78568a914fee7f`. The Burgers dataset computation is complete; consult the collector block below for final collection/audit status.
+
+**Tunability scope clarified by the user.** The intended mechanism is the earlier ViT + LinearCPDecoder method's fixed-checkpoint solver controls: Gauss-Newton iteration budget, stopping tolerance, and selection among offline-fitted EQ rules where sampling is used. The user did not mean nested network-capacity levels; the previous recommendation of that alternative did not answer their request. Keep neural weights, latent dimension and CP/bank rank fixed when testing this mechanism. Existing runs and numerical findings are unchanged. A source-generated staged solver/EQ test plan and saved-iteration summary are now retained on the audit branch at `fd9b5eb8`; the new tuning experiment has not run.
+
+<!-- burgers-20260914-current-start -->
+**Burgers first-stage collection — finished.** Job `3702709` is checksum-collected, audited and Git-archived in the Burgers worktree; its exact completed job directory is removed. Complete shared dataset: `True`. The refined independent reference gate passed; the inherited ROM is slower and less accurate than the efficient FOM in the same-job diagnostic. No advantage over FNO or FOM is established. A cluster-generated dataset handoff cache remains at `/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01` for downstream copying and later cleanup. No additional GPU job or merge was performed by the collector; the broader campaign remains open. See the dated entry for retained evidence and limitations.
+<!-- burgers-20260914-current-end -->
+
+**2026-09-14 neural-operator/FOM campaign — Poisson screen and Burgers data computation completed; Burgers collection active.** The user-authorized GPT-6 Astra owners completed and audited the initial Poisson diagnosis and fresh r128/r256 capacity screen; the root-owned FNO worker completed and audited all three capacities. Matched ROM/FNO train and validation index hashes agree. The fresh ROMs generalize worse than the FNOs in this one-seed common-data screen, and neither is selected. The historical ROM has a different training history. No joint FNO/ROM/FOM timing panel or matched-accuracy speed advantage is established. Both completed Poisson job directories and the FNO job directory were checksum-collected and removed. Burgers job `3702709` has passed the refined empirical reference gate and audited diagnosis and completed shared-data computation; see the owner block above for pending collection and final dataset-audit status. The current native Burgers ROM is slower and less accurate than an efficient same-job FOM. Final cohorts remain sealed, broader experiments remain open, and no worktree has been merged.
+
+**2026-09-14 consolidated starting point — created, integrated and verified.** The user approved the proposed corrected heat base and worktree. `worktrees/2026-09-13-nmrom-consolidated`, branch `exp/2026-09-13-nmrom-consolidated`, commit `02ff0f1f18db37d8589b28e90c3a93dae5bc5a88`, now contains the selected Poisson, heat, Burgers and fresh reflective-wave implementations, frozen model files, dependencies and current report snapshots. Start at its `consolidated/README.md`. Content/provenance checks and exact campaign/aggregate report regeneration pass; one bounded saved-case full-query replay per PDE passes on the local GPU. The evidence mirror makes report verification independent of other live worktrees. This is a runnable consolidated research baseline, with the existing Poisson/wave accuracy misses preserved; no new training, full-cohort validation or merge into main occurred. Original experiment trees and archives remain intact. The matched neural-operator pilot on Poisson and Burgers has since been launched, as recorded above; the consolidated baseline itself remains unchanged.
+
+**2026-09-11 accuracy improvement and reflective-wave acceleration — complete and independently audited.** The authorized bounded round is finished in the four previously approved corrected worktrees. Heat's initial-plus-tail training lowers worst current-relative error on all 16 development cases at 1024 intervals from 7.595346% to 4.762515%, with 11.623313 GPU ms and a 4.633307× advantage against the same-job fastest tested passing CG. Poisson's fixed-weight corrections improve worst static relative error from 7.280248% to 6.110576%; target-failing cases fall from 8 to 2 out of 42. The primary costs 6.043163 GPU ms versus 3.927122 ms for its original control: an accuracy–cost tradeoff. Burgers retains the original head with explicit stationarity, 3.884680% worst fixed-initial error; both retraining arms are rejected as accuracy improvements. The selected reflective-wave method takes 202.941565 GPU ms, 22.064145× faster than the same-job original ROM, while worst energy-state error falls from 6.213781% to 5.145194%. Poisson and waves still miss their physical target, so their CG ratios are timing-only; direct DST remains faster for linear PDEs. All owner/coordinator audits and archive restoration checks pass, exact remote run directories are removed, and the queue is empty. Final paper cohorts remain sealed, absorbing waves excluded, no merge into main or presentation update. Source-generated report and retained-change inventory are `reports/2026-09-11-accuracy-improvements-and-wave-speed.md` and `reports/2026-09-11-accuracy-integration.json`, main `fa0f0c21`. Final branches: Poisson `ef255280`, heat `5974d3e0`, Burgers `ad9e2e7e`, wave `277ef65c`. Selected code/artifact integration into the approved consolidated worktree is now complete as recorded above; the original branches remain separate. Negative results and failed attempts are retained; no accepted numerical result is retracted.
+
+**2026-09-11 Poisson online tunability and revised table PDF — complete and audited.** The user requested a fixed-checkpoint Poisson tuning test and the existing multiresolution PDF regenerated as tables without absorbing-wave data. The bounded screen tested 17 presets on all 30 opened Gaussian-source development cases, then froze a shortlist for 64, 256, 1024 intervals. At 1024 intervals, explicit stationarity stopping takes 2.613982069 GPU ms versus the same-job baseline 2.942848019 ms (11.175091% less time), with effectively unchanged 6.801556288% worst current-relative error. The fastest diagnostic takes 1.969695906 ms with 29.995107215% error and no stationary solves; the most accurate stationary setting takes 6.941578002 ms with 6.801549768% error. No tested setting meets the original 5% gate on every case. These are switches among offline-prepared/compiled presets, not arbitrary free changes of mode count. All 4770 invocations and 1146 full fields passed owner auditing; root independently checked 12 worst-case configuration/mesh outputs. The requested `reports/2026-09-11-iterative-fom-multiresolution.pdf` is now a four-page table document with the new Poisson endpoints; the scaling figure is retained under `-scaling.pdf`. Main `fa531a4`, Poisson archive `e1682b4`, scientific source `9528b21`, job `3548866`. Exact remote directory is removed and the queue is empty. Worktrees remain separate, final cases unopened; no training, numerical retraction or absorbing archive deletion. The PDF now highlights the fastest stationary Poisson NMROM as 32.004494× faster than its same-job fastest tested passing CG FOM at 1024 intervals, with the missed physical target stated beside it and explicit faster/slower factors in every tuning row. At the user's request, the primary PDF comparison now omits the FOM error and combined ROM/FOM gate columns; the matching FOM-error column in the iterative-control table is also omitted.
+
+**2026-09-11 collaborator presentation — complete.** The generated 17-slide LaTeX deck and PDF at `reports/2026-09-11-multiresolution-collaborator-slides` present Poisson, heat, Burgers and reflective-wave multiresolution results, following the user's requested presentation scope. Portable source ZIP and numerical provenance are included; main `fd834e5`. Source-derived numbers, PDF layout and an independent portable build passed. Two discussion slides propose fixed-checkpoint effort controls and shared network-capacity levels; no tunability experiment or new training was run. Underlying experimental evidence, remaining accuracy/stopping limitations and separate worktrees are unchanged.
+
+**2026-09-11 user-selected iterative FOM multiresolution comparison — complete and audited.** The current frozen Poisson, heat, Burgers and fresh wave models were compared at 64, 256, 1024 intervals per axis in the existing approved worktrees. At the largest mesh, tight iterative FOM/ROM GPU ratios are Poisson 75.448×, heat 17.253× and Burgers 14.534×, with worst ROM errors 6.80156%, 4.55548% and 3.90762%. Against the fastest tested iterative FOM passing the physical target, the largest-mesh ratios reduce to 33.907×, 4.848× and 1.633× respectively. Poisson fails its accuracy target; heat passes; fine-grid Burgers passes the existing physical/stopping contract but all ROM exits are stalls with unmeasured stationarity. Neither wave boundary has a ROM runtime advantage or an all-state accuracy pass. For reflective waves at the largest mesh, the existing timing components assign 99.499% of query time to latent evolution; each trajectory evaluates 3840 RK stages with state-dependent derivatives, QR and SVD guards. Operation-specific shares remain unprofiled. These are development comparisons against named iterative algorithms; original direct/explicit FOM diagnostics remain valid. Generated full report, CSV, JSON, scaling figures and hash manifest: `reports/2026-09-11-iterative-fom-multiresolution.md`, main `f807386`. Every result archive passed collection checksums, all exact completed remote directories are absent, and the account queue was empty at closure. All repetition arrays are retained; this combined report uses pooled repetition medians, while owner panels also show medians of case medians. No earlier numerical evidence is retracted, no discarded wave evidence is reinstated, and no training, final-cohort access or merge occurred in this round.
+
+**2026-09-10 user-selected iterative heat FOM comparison — complete and independently audited.** The user selected the older CG algorithm as the main FOM comparator. Existing heat worktree, source `7e6d2e3`, job `3529772` on `NVIDIA A100-PCIE-40GB`. At 1024 intervals, current Cholesky NMROM takes 12.206228450 GPU ms versus matched-CN CG at tolerance 1e-6 taking 210.595535464 ms (17.253×); worst current-relative errors are 4.555479480% and 0.034908539%. Looser CG at tolerance 1e-2 takes 59.177982039 ms with 0.770684590% error; the ROM advantage is 4.848× GPU / 2.267× including host transfers. Both pass the development target. CG is faster on the smallest mesh; on the middle mesh the ROM wins only against tighter CG. The historical backward-Euler step-count control is also reported. All 864 invocations passed field/source audits, and every CG solve and nonlinear fit/step met its stopping rule. Exact remote directory checksum-collected and removed. Heat archive `1f576c9`, generated report and scaling figures `reports/2026-09-10-heat-iterative-cg-comparison.md` (main `4b6580f`). This is a same-grid iterative-CG comparison, not a universal FOM speedup; earlier direct-transform results remain valid as separate diagnostics. No retraining, new worktree, final-cohort opening or merge.
+
+**2026-09-10 direct CP algebra heat transfer — complete and independently audited.** Existing approved heat worktree, source `8af2f6b`, job `3528798` on `NVIDIA A100 80GB PCIe`. Cholesky alone reduces median GPU time at 1024 intervals from 13.465231517 to 12.396388978 ms (7.938% less), preserving 4.555479480% worst current-relative error. The declared joint Gram + Cholesky method takes 12.915947475 ms; Gram alone adds no measured benefit on this mesh. All attempted initial fits/time steps are stationary, every counter agrees, and all trajectory parity gates pass. Same-job direct/coarse FOMs remain faster at 0.885449001/0.287753006 ms. Full-field, source, weak-gradient and checksum audits passed for 504 timed invocations; exact remote directory removed. Heat archive `9891754`, main generated report `reports/2026-09-10-heat-cp-algebra-comparison.md` (`ff28024`). No time-integrator change, retraining, final cohort, new worktree or merge. A learned initializer/head accuracy experiment remains open; the historical CP speed ratio is not inherited.
+
+**2026-09-10 nonlinear heat acceleration — complete and audited development round.** Existing approved heat worktree; screen source `da53af9` / job `3518484`, convergence follow-up source `4c4d27d` / job `3519092`. Adaptive initialization with original stepping reduces median GPU time by 10.686% at 1024 intervals, with unchanged worst error and all attempted fits/time steps stationary. The follow-up nonlinear prediction/projection method takes 7.240736042 ms versus its same-job original NMROM at 12.939105509 ms (1.787×), with worst current-relative errors 4.545182314% and 4.555479480%. One case on each mesh still misses stationarity after the larger correction budget; its difficult query is slower than the original. The informal converged-method label is withdrawn. Same-job direct/coarse GPU FOMs remain faster at 1.085098484/0.362294493 ms. Bounded projection fails the physical target. Source, full-field metrics, sampled decoder identity and weak residual/gradient audits passed; both exact remote directories were checksum-collected and removed. Heat archive commits `ab159c7`, `1d6e522`; main report `reports/2026-09-10-heat-nonlinear-acceleration.md`, `4c91c7d`. Initial nonlinear fitting/representation and prediction-interval refinement remain open. No retraining, new worktree, final-cohort opening, merge, or changes to other sessions' jobs. Expanded historical CP review at the user's direction recovered May sources and July reduced-Gram/Cholesky/graph experiments outside this repository; the direct Cholesky/contracted-normal-equation comparison is now complete, as recorded in the current CP algebra entry above. Report `reports/2026-07-30-cp-heat-optimization-transfer.md` (`4c77704`), preserved sources in heat `96133d1`. Historical summary arithmetic is checked, but no new current-solver gain or independent historical field validation is claimed.
+
+**2026-09-10 direct linear heat-bank comparison — complete and audited.** User requested testing direct linear evolution in the learned heat bank. Existing approved heat worktree, scientific source `73fdaa88eb754470539f6ff9dfaa9422cb00255a`, job `3511417` on `NVIDIA A100-PCIE-40GB`. At 1024 intervals, the linear learned-bank ROM takes 0.561659457 ms on the GPU with worst current-relative error 1.675830489%, versus current NMROM 12.318827561 ms / 4.555479480% and same-grid direct FOM 1.034562592 ms / 0.000350103%. The coarse direct FOM remains faster on the GPU at 0.313115539 ms with 2.577910115% error. Linear evolution uses free bank coefficients and does not preserve the compressed nonlinear manifold. Both exact continuous and original-discrete weak linear controls were tested; no retraining. Report `reports/2026-09-10-heat-linear-bank-comparison.md`, source audit for the user's CP-paper side question `reports/2026-09-10-cp-heat-speed-source-audit.json`; main `3462a54`, heat `81e95fe`. Checksum archive and independent field/operator audit passed; exact remote attempt removed. Existing branches remain separate; final paper cohorts unopened. Other sessions' modified-CP jobs are untouched.
 
 **2026-09-10 modified CP + EQ pilot — complete and independently audited.**
 The approved `ideate` comparison of original CP+EQ, latent-modulated CP factors+EQ,
@@ -68,6 +127,92 @@ The new wave benchmark starts with fresh independently verified truth, boundary
 operators and data, and uses a learned spatial bank from the outset. The previous
 proposal to reuse old wave infrastructure/POD banks is withdrawn. This override applies
 to every earlier wave statement below, even where its historical wording says verified.
+
+**2026-09-07 paper-preparation study — continued development round complete; worktrees remain separate:**
+the user now requests multiresolution accuracy/speed experiments on fresh 2D waves,
+Burgers 2D, Poisson 2D and heat 2D. Proposed protocol is
+`worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/MULTIRESOLUTION-PAPER-DESIGN.md`.
+It distinguishes frozen-network mesh transfer from per-resolution tuning and
+measures paired cost at matched physical accuracy, including initialization and
+requested field output. The user has now explicitly selected the current separable
+decoder and a performance comparison against efficient FOM solvers. The proposed
+ViT + CP comparator is withdrawn; no older-decoder campaign is in scope. The objective
+is faster complete queries at matched physical accuracy, with error at matched cost
+and the crossover with resolution also measured. The user approved the proposed
+four worktrees/bases/owners/namespaces with “Okay. go ahead and get that started.
+Continue autonomously.” Both frozen-weight transfer and per-resolution tuning are
+the working scope. No hard deadline or total compute budget was supplied; start
+with bounded pilots and scale from measured cost and accuracy, without asking
+again for routine work within this scope. Root coordinates in the existing repair
+tree. Approved new worktrees are `2026-09-07-mr-wave2d`, `2026-09-07-mr-burgers2d`,
+`2026-09-07-mr-poisson2d`, and `2026-09-07-mr-heat2d`, each with its matching
+`exp/` branch and separate `mr_<pde>_20260907` paralab namespace. Wave forks from
+`906cbe6`, the other three from `da47912`; schedule at most three child agents
+alongside root. Local space and cluster access were checked, the account queue
+was empty, and all proposed cluster namespaces were unused at kickoff.
+Heat needs a verified separable port, and
+fresh compressed wave accuracy remains an open problem. This request sets the
+new proposed work scope without reinstating old wave evidence or changing any
+existing result/gate. The dated handoff remains a prior snapshot.
+
+The initial four-PDE frozen-network pilots are now complete, checked and archived:
+wave `3349951`, heat `3349961`, Burgers `3350012`, Poisson `3350079`. Their exact
+remote attempt directories were checksum-collected and deleted. The generated
+cross-PDE report is `reports/2026-09-07-multiresolution-pilots.md`
+(main `6ed7d04`, including all audited continued development, the latest-results table and updated wave figures), with a hash manifest and generator beside it. A complete recorded-results bundle and experiment index are also available in `reports/2026-09-07-multiresolution-results.zip` and its adjacent CSV (main `0468e44`); full-field and checkpoint archives remain in their separate experiment trees. None of the
+reported primary configurations establishes a complete-query advantage over its
+efficient FOM. These are small development cohorts with different explicitly
+named norms, not final paper results. The root independently recomputed preserved
+heat, Burgers and Poisson field errors; wave received source/accounting/hash review
+plus its owner's NumPy saved-field reconstruction audit. Strict reference bounds
+remain unspecified where evidence is empirical. The bounded follow-ups are also
+complete and checksum-archived: Burgers reference/multistart `3350134` and cold-fit
+diagnostic `3350594`, heat tolerance/compilation `3350258`, and Poisson
+weak-mode/representation/compilation `3350408`. Their exact remote directories
+were removed, and the account queue was empty at coordinator close.
+Heat's tolerance change reduces complete-query cost substantially, but its direct
+FOM remains faster. Poisson's difficult-source bank projection limits accuracy;
+additional weak modes and compilation do not establish a ROM advantage. Burgers'
+finer reference supports only explicitly empirical development targets, and its
+cold-fit budget exits remain visible. Its finer-mesh initial error has both a
+changing-sampling-objective contribution and a frozen-bank representation loss;
+an explanation based only on optimizer starting guesses is withdrawn. Fixed
+physical fitting samples improve the initial fit; corrected full rollouts and
+their costs are now measured in the continued-development round below. Full mesh
+ladders, per-resolution training and independent confirmation remain open.
+No experiment branch has been merged. The user answered
+the merge question with “go with the recommended and keep pushing”: retain all
+four separate worktrees and continue development in their existing approved
+branches/namespaces. The continued bounded round tested corrected Burgers full rollouts,
+fixed-bank heat head refinement, the Poisson small-system solver and an accuracy
+training proposal, and matched-dimensional fresh-wave dynamics controls. Each
+owner retains separate job directories and same-job efficient-FOM controls.
+The generated report now includes these audited developments: heat head refinement
+`3352849`, Poisson guarded linear solver `3352868`, corrected Burgers rollout
+`3352857`, and fresh-wave dynamics controls `3353136`. All four attempts were
+checksum-collected and their exact remote directories removed. Heat's expanded
+training-code/head procedure reduces worst current-relative rollout error to
+about 4% on both meshes, with unchanged spatial weights, but remains slower than
+direct FOM. Burgers now qualifies at the explicitly empirical 5% target on all
+three requested meshes; the efficient FOM envelope still wins. The Poisson kernel
+preserves accuracy with only a modest speed gain. Wave's equal-dimensional
+linear/nonlinear ordering depends on boundary; larger linear spaces improve
+errors, but even full-bank controls fail late absorbing current-relative accuracy.
+Their raw same-grid timing advantages are not an NM-ROM or FOM-envelope speed claim.
+Root independently recomputed all 280 heat, 672 Poisson, 720 Burgers and 156 wave
+timed common-field errors; owners retain additional full-grid and operator audits.
+Burgers' larger-step study `3353574` is complete, audited and archived (owner `1859ac5`, root field review `564be23`). Larger steps reduce some query cost but the efficient FOM envelope still wins; iteration-cap effects remain explicit. Poisson's broader coverage-by-loss study `3353137` is now fully audited and archived (owner `a6bfd4b`, root `708335e`); relative loss helps worst development sources, while expanded coverage at fixed updates is not uniformly beneficial. Fresh-wave larger nonlinear heads `3353701` are also audited and archived (owner `77af541`, root `c962ea0`): reflective accuracy improves substantially but neither larger head establishes a nonlinear-ROM FOM advantage or resolves late absorbing current-relative accuracy. Both exact remote attempts were removed. Read-only analysis of the preceding audited wave run finds initial-moment errors and subsequent drift in a discrete invariant preserved by the full solver; this is a mechanism diagnostic, not a causal correction result. Poisson's source-projection/initialization study `3354845` and the wider frozen-head heat transfer study `3354958` are now complete, independently audited and checksum-archived. The exact remote attempts are absent. Poisson's field-based starting guess modestly reduces cost; the equivalent projection choices have no consistent advantage. Heat transfers both frozen heads across the full declared mesh ladder, including fresh development cases, but its charged efficient-FOM envelope still wins. All latest error, timing and outlier counts are generated in the report's opening table. All four owner worktrees are clean and committed, with separate branches retained as the user requested. The account queue is empty at coordinator close. No further GPU study is active in this round. Per-resolution training, broader scientific cohorts and independent final confirmation remain open; final cohorts remain sealed.
+
+**2026-09-10 historical comparison audit — current negative tables do not retest the earlier tensor configuration.**
+The user identified `reports/2026-09-03-burgers-poisson-tensor-tables.md` and correctly recalled flat cached reduced cost and a Burgers tensor FOM advantage under the earlier protocol. The source/raw-aggregation reconciliation is now `reports/2026-09-10-historical-poisson-and-burgers-cost-audit.md`. Current Burgers uses a larger frozen bank, sampled upwind advection and nearest-code fitting; the earlier small-bank tensor and its trained sampled-field initializer are not in that current query. The FOM implementation, same/coarse-mesh selection, checkpoints, cohorts, error statistics and host-transfer accounting also changed. Poisson still retains exact reduced weak algebra; the old large gains were against CG, and an archived direct spectral comparator already beat the old ROM. Cached solve cost can remain independent of grid size while input projection and full host output cannot. The earlier explanation based only on nonlinear latent solving is withdrawn as a sufficient explanation of the historical change. The next comparison should reconnect the historical tensor/initializer controls with the current benchmark before a broad architecture sweep. This audit changes interpretation and experiment coverage, not the recorded measurements; no new GPU result, universal tensor win or merged branch is claimed.
+
+**2026-09-10 user override — historical device-resident comparison restored and audited.**
+The user requested comparison “the old way.” The completed replay restores the earlier separable Burgers tensor/initializer and Poisson quadrature-free configurations, supplied fields and decoded outputs on the GPU, and original named same-grid FOMs. This supersedes the preceding recommendation to make the modern host-to-host/coarse-FOM envelope primary for this comparison. Existing modern measurements retain their original scope. Generated report, evidence JSON and scaling PNG/PDF: `reports/2026-09-10-historical-burgers-poisson-replay.*`, with `reports/generate_historical_replay.py`. Each PDE ladder uses one GPU allocation. At the largest grid, Burgers tensor query is 33.814831986 ms versus its original dense-preconditioned FOM 118.731188471 ms (3.511216277x); mean/worst current-relative errors are 6.381431040% / 33.724695850%. Poisson QF is 4.005349416 ms versus original CG 101.342156471 ms (25.301701787x), with mean/worst held-out errors 3.476481459% / 8.240432434%. Its direct spectral control remains faster at 0.721505261 ms. The large QF mesh is an extension of the older QF ladder. These are restored-development-cohort results, not final paper confirmation or a generic win over efficient FOMs. Stall/censored exits remain explicit. Root field/aggregate audit passed; owner archives and exact remote cleanup are complete. Existing Burgers and Poisson branches remain separate at `b4eddc8` and `b72e52b`.
+
+**2026-09-10 fresh-wave device-resident comparison — complete and independently audited.**
+The user asked to run the wave cases after the historical Burgers/Poisson replay. Fresh-wave job `3494637` is complete from scientific source `c729df09cfe02de93ee09e34163578961762bc90`, with a clean owner worktree at `9005ab63f4dfaa6106f330a1870ba44d4d7707ac`. Both reflective and absorbing boundaries were tested on [256, 512] intervals, with the frozen first-seed MLP32 primary and MLP16 control and full GPU displacement/velocity input/output. At 512 intervals, MLP32 queries take 4504.802308977 ms reflective and 4999.114625505 ms absorbing, versus the same-job DST FOM 5.832233117 ms and RK4 FOM 259.307837929 ms. Worst current-relative displacement errors are 3.568416768% and 246.553264451%; absorbing worst initial-normalized displacement error is 2.139333805%. Reduced evolution stays nearly flat with mesh but dominates query cost. Neither nonlinear head beats its named FOM. All recorded reference/refinement, finite and fit-stationarity checks passed; these do not imply the physical accuracy targets pass. Root independently checked full fields, temporal refinements and references. Report/JSON/PNG/PDF are `reports/2026-09-10-fresh-wave-device-comparison*` (main `6cc8bf8`), generated by `reports/generate_wave_device_replay.py`. Exact remote attempt checksum-collected, archived and deleted; queue empty. No branch merge, new worktree, additional wave sweep or reinstated pre-reset wave evidence. Final paper cohorts remain unopened.
+
+**2026-09-10 unified results document:** the user requested one Markdown with all reported speed/accuracy results. `reports/2026-09-10-all-pde-speed-and-accuracy.md` now consolidates the latest Burgers/Poisson and fresh-wave GPU replays, the full latest heat ladder, paired/control configurations, and the earlier four-PDE development report with its original scope. The file is generated from audited JSONs and existing generated reports, with a coverage/hash manifest and glossary; main `da3d343`. Heat's earlier host-to-host/FOM-envelope contract remains explicit. No new numerical experiment or retraction accompanies this documentation change.
 
 **Current consolidated line of descent:** branch
 `exp/2026-09-04-separable-tensor-consolidated`, worktree
@@ -135,9 +280,12 @@ archives and independent audits are on the repair branch. No merge performed.
 Canonical generated report: `reports/2026-09-07-fresh-wave-head-transfer.md`.
 Dated handoff snapshot: `reports/2026-09-07-nmrom-handoff.md` covers the architecture,
 Burgers-3D screen, fresh waves, exact result locations, branch ownership and proposed
-next experiment. This lab log remains canonical. A newly arranged still-image sequence
-of the wave evolving remains open after the user's latest visualization wording;
-the handoff request interrupted that follow-up. Existing static grids remain available.
+next experiment. This lab log remains canonical. Still-image sequences of the wave evolving are now available from the fresh
+multiresolution pilot, linked in `reports/2026-09-07-multiresolution-pilots.md`.
+They compare reference displacement, the actual finer-mesh frozen-decoder solve
+and absolute error at fixed physical times and color scales. PNG/PDF files,
+plotting code and source hashes are on repair `2104a89`. Earlier static grids
+remain available.
 Animated surface and top views, with a standalone play/pause/time-slider viewer, are
 now available at `reports/animations/2026-09-07-wave-evolution.html`. They compare
 the same validation reference and decoder with fixed amplitude scales.
@@ -6621,6 +6769,1862 @@ new experiment authorization. No previous verdict or wave evidence reset is retr
 the handoff remains a dated snapshot and the final cohort stays sealed.
 
 
+## 2026-09-07 — project progress review
+
+### Assessment of the current PDE-transfer direction
+
+User asked to look into progress in this direction. Reviewed the canonical log,
+dated handoff, Burgers architecture notes and audit, fresh-wave review disposition,
+retained Burgers tensor report and current branch history. Asked an optional scope
+clarification and proceeded with project progress from the available context.
+This was a documentary/evidence review, not a new numerical campaign.
+
+Verified all 21 handoff input hashes, the handoff and generator hashes,
+and all 6 referenced independent wave-audit hashes against the saved manifests.
+Every check matched. This establishes consistency with the recorded evidence;
+it does not rerun or independently recertify the numerical experiments.
+
+The strongest recent Burgers representation improvement remains the quadratic head.
+The following existing validation summaries are generated from the checked campaign
+audit, which is one of the immutable handoff inputs. Errors are relative field L2
+reconstruction percentages, not rollout errors. Outliers exceed the unchanged
+provisional worst-state ceiling.
+
+| Optimizer seed | Mean % | Median % | Worst % | Outliers |
+|---|---|---|---|---|
+| 200 | 4.689399 | 3.892390 | 20.305274 | 2 |
+| 201 | 4.688630 | 3.887288 | 20.272908 | 2 |
+
+Both repeats still fail the representation screen. The fresh-wave review retains
+0/8 accepted reflective head/repeats and
+0/8 accepted absorbing head/repeats. Full-bank linear success uses a
+larger state dimension; compression and nonlinear evolution are not isolated by
+that comparison. Initial-normalized wave errors do not certify relative accuracy
+of a vanishing field. The previously retained reflective quadratic case remains
+temporally unresolved. All prior wave evidence remains excluded.
+
+The latest multiple-Gaussian clarification is included: Burgers already contains
+multi-component initial fields, whereas fresh-wave multi-bump initial conditions
+remain untested. Navier–Stokes remains open; the Stokes groundwork is not a completed
+Navier–Stokes demonstration. The next proposed controlled wave comparison remains
+a frozen-bank latent-dimension ladder with affine and nonlinear heads at matching
+dimensions; Burgers needs improved unseen-initial-state representation before rollout.
+These are existing open questions and proposed diagnostics, not new authorizations.
+
+No scientific finding, threshold or retraction changed, so the current-state block
+was left intact. No simulation, training, cluster action, new branch, merge or final
+cohort access occurred. This canonical log is the only file edited by this session;
+pre-existing edits and concurrent canonical-log additions were preserved. Detailed
+results remain in `reports/2026-09-07-nmrom-handoff.md` and
+`reports/2026-09-07-fresh-wave-head-transfer.md`; no duplicate status report was created.
+
+
+## 2026-09-07 — older ViT and CP decoder review
+
+### Original pipeline, archived implementation and later rebuttal claims
+
+User clarified that the requested direction is the older ViT + CP decoder.
+Read the canonical log first, then the clean Heat/Poisson packages, frozen archive
+source/configs, the saved reviewer/rebuttal text, the CP cost audit and raw timing
+JSON, the historical fixed-Heat reproduction log, and the mirrored-ViT status from
+`origin/decoder-explorer`. No numerical experiment or architecture change was made.
+
+The older decoder already has the factorization $u=G_{\mathrm{CP}}h(z)+b$.
+Each spatial column is a product of learned axis factors, for example
+$G_{\mathrm{CP},r}(i,j)=W_x(r,i)W_y(r,j)$. ViT patchifies the field and learns
+latent codes offline. The public Poisson solve starts at zero without calling the
+encoder; Heat encodes its initial state and warm-starts subsequent latent steps.
+The MLP/linear-skip coefficient map is nonlinear even though the frozen spatial
+span is finite. The newer learned coordinate-bank model also has a finite spatial
+span; finite rank alone is not proof of a CP-specific failure, and the old mesh
+accuracy trend does not prove that every CP configuration must worsen on refinement.
+The old sampled pointwise residual and the newer projected weak residual are also
+different solver choices, not just interchangeable decoder implementations.
+
+Direct source clarification: archived Heat-2D N64 ACC uses `LinearCPDecoder`,
+including `W_direct`, whereas the public Heat package uses plain `CPDecoder`.
+The same archived Heat solver explicitly uses a dense residual, with no EQ, and
+advances the decoded state correctly. The public Heat frozen-rollout bug is a port
+regression and cannot invalidate the archived paper runs by itself. Its corrected
+package reproduction is not the identical archived model/algorithm. The public
+Poisson analytical-data/FD-solver inconsistency remains visible in source. The
+Poisson decoder docstring's rank guarantee is too strong: a linear skip adds to
+the nonlinear derivative and does not, by itself, certify full Jacobian rank.
+
+The saved reviewer file contains later author-reported revisions that are absent
+from the root headline table: corrected discrete Poisson truth, retraining, one
+checkpoint per accuracy/speed pair, withdrawal of the original headline speedup,
+and corrected Heat timing claims. These text claims have not been reconciled with
+immutable raw result/checkpoint manifests in this review and are not newly accepted
+scientific results. No medians, outlier counts or independent cohort certification
+are inferred for the reported errors below.
+
+| Cell | Rebuttal-reported accuracy point (rel-L2 @ speedup) | Rebuttal-reported speed point (rel-L2 @ speedup) |
+|---|---|---|
+| Poisson-2D N=64 | 5.9e-4 @ 1.7x | 1.11e-1 @ 7.3x |
+| Poisson-2D N=128 | 6.9e-4 @ 1.3x | 6.19e-2 @ 12.6x |
+| Poisson-2D N=256 | 1.3e-3 @ 2.6x | 4.01e-2 @ 24.6x |
+| Poisson-3D N=32 | 8.41e-3 @ 0.5x | 1.54e-1 @ 3.3x |
+| Poisson-3D N=64 | 7.6e-3 @ 1.1x | 2.43e-1 @ 8.2x |
+| Poisson-3D N=128 | 7.1e-3 @ 4.0x | 1.59e-1 @ 26.0x |
+
+Rows were extracted programmatically from the first Poisson table in
+`Older Paper /reviewer_comments `; source SHA-256
+`f760dab84c8b6bcff0d3da1d88999291977e84f4e80b4c8d9a84392cf042cbb6`.
+They are a documentary record, not tables regenerated from numerical run JSONs.
+The separate Heat correction in that text is likewise an unverified historical
+claim here. Earlier wave claims in the rebuttal remain excluded by the user's
+wave evidence reset. The rebuttal itself describes its Burgers-2D/wave extensions
+as frozen POD-type bases, so they do not establish transfer of the learned CP
+pipeline or isolate decoder nonlinearity.
+
+The raw CP cost JSON reports backend `gpu`, GPU `NVIDIA A100 80GB PCIe`,
+rank 128, quadrature count 640 and 10 fixed iterations.
+Recomputed the across-mesh range divided by mean for each latent dimension:
+spread 0.266122%–2.110598%; recorded FLOPs are identical across meshes
+at each latent dimension. This is the random-weight fixed-shape kernel audit,
+not a trained-model accuracy/speed result. The JSON stores medians/IQRs, not raw
+repetition arrays. Full-field encoding/input preparation/output and the resources
+required to maintain accuracy are outside the fixed-iteration claim. Source SHA-256
+`f66945b95af3002d4bb2869c866f4e850d890a2105bfceb96885268eca3feef1`.
+
+No original checkpoint files were found inside this checkout's `best-results/`,
+despite its READMEs listing them; this is a local availability observation, not a
+claim that the checkpoints no longer exist elsewhere. Restoring exact archived
+inputs and reconciling the later revised claims are open before reproduction.
+A fair renewed comparison would hold data, residual, latent dimension and numerical
+protocol fixed while changing the spatial bank and/or coefficient head separately.
+
+Only this canonical log was appended; no source, frozen archive, report, branch or
+worktree was changed, no GPU or cluster job was started, and no merge occurred.
+Existing scientific verdicts and the old-wave exclusion remain unchanged. The
+original huge speedup and universal CP-failure interpretations must not be carried
+forward as established evidence. This session does not promote the saved rebuttal
+numbers into the current-state results block.
+
+
+## 2026-09-07 — distinguishing the CP and coordinate-bank paper directions
+
+### Architecture comparison and conditional publication strategy
+
+User asked how the current separable architecture differs from ViT + CP and whether
+they could support separate papers serving different purposes. Reviewed canonical
+state, the separable design/architecture reports, actual consolidated feature/head
+code and the tensor report's prior-art qualification. Conducted a bounded primary-
+source literature check; this is publication-planning advice, not an exhaustive
+novelty review or a new experiment.
+
+Both architectures have the form $u=Gh(z)$ after accounting for fixed boundary
+factors and affine offsets. CP uses products of learned axis-factor arrays as the
+spatial columns; the current model evaluates a joint coordinate network to obtain
+its spatial columns. Both nonlinear heads describe subsets of finite-dimensional
+spatial spans. The ViT-versus-auto-decoder training choice is separable from the
+spatial representation and can be changed independently. Grid-local CP parameter
+storage depends on resolution; fixed coordinate-network parameter shapes need not,
+but cached banks, operator assembly, full-field inputs/outputs and the capacity
+needed to preserve accuracy can still depend on the grid. Continuous evaluation
+alone proves neither accuracy on unseen resolutions nor transfer to new geometry.
+
+The weak projected residual and exact reduced linear/polynomial operators are
+method choices layered on top of the representation. They can also be used with
+CP banks. Thus grid-independent iteration cost, nonlinearity, deployment solver
+knobs, and polynomial precomputation cannot be assigned exclusively to the newer
+architecture. Exactness must remain scoped to the discretized operator, with the
+recorded sign-upwind caveats; it is not a continuum-accuracy guarantee.
+
+Conditional paper split proposed:
+
+- CP paper: compact tensor-factorized neural manifolds for repeated PDE solves on
+  fixed structured meshes; substantiate practical memory/cost/accuracy tradeoffs,
+  solver-compatible coefficient maps, one-checkpoint operating points and fair
+  classical/reduced baselines. The ViT and generic solver-tolerance knobs alone
+  do not establish the contribution. Restore original artifacts and reconcile
+  corrected truth, public-port differences and timings before using old claims.
+- Current-method paper: continuous learned spatial banks with nonlinear
+  coefficient manifolds and efficient weak reduced operators; substantiate the
+  benefits of spatial representation independently from residual reformulation,
+  and show useful compression/evolution at controlled accuracy. Reusing the same
+  weights across meshes is a prospective test, distinct from retraining an
+  architecture separately at each resolution. New geometries and unchanged-
+  weight cross-PDE transfer remain unestablished.
+
+Suggested discriminating experiment, not authorized or launched: cross CP versus
+coordinate banks with the same coefficient-head/training protocol and sampled
+versus exact projected operators wherever both are applicable. Hold cohorts,
+latent dimension, bank size, physical metrics and convergence protocol fixed;
+report parameter/storage/training costs as well as online cost. Include matched-
+dimension affine/POD controls and unrestricted full-bank controls to distinguish
+nonlinear compression from added basis size. Each proposed paper should establish
+its own claim and the newer paper should explicitly compare against the CP model.
+Current Burgers and wave failures remain evidence of unresolved limitations, not
+successful broad-PDE transfer. Two papers are a plausible plan, not a conclusion
+that the existing results already constitute two complete contributions.
+
+Primary sources informing the overlap assessment:
+
+- [Kim et al., efficient nonlinear-manifold ROM](https://arxiv.org/abs/2011.07727):
+  nonlinear decoder hyper-reduction and physics-based latent solves already exist.
+- [Lu et al., DeepONet](https://doi.org/10.1038/s42256-021-00302-5): branch/trunk
+  operator-network architecture predates this project; a spatial/coefficient
+  decomposition alone is not a new operator-learning claim. This project's
+  online PDE solution for latent coordinates is a different inference procedure.
+- [Chang et al., LiCROM](https://arxiv.org/abs/2310.15907): continuous learned
+  spatial fields with linear reduced coordinates and changing discretizations.
+- [Puri et al., SNF-ROM](https://arxiv.org/abs/2405.14890): smooth neural-field
+  nonlinear reduction with projected physics and dynamics-aware representation.
+- [Stefanescu et al., tensorial POD](https://arxiv.org/abs/1402.2018): offline
+  polynomial reduced tensors and full-dimension-independent online contractions.
+
+Only this canonical log was appended. No new report, implementation, training,
+cluster action, experimental branch/worktree or merge was created. Existing
+scientific results, retractions and old-wave exclusions remain unchanged.
+
+
+## 2026-09-07 — publication priorities for continuous learned spatial banks
+
+### Recommended evidence and possible methodological contributions
+
+User asked which directions to push to make the current-method paper publishable.
+Reviewed current canonical results, the generated handoff's proposed dimension
+study and the retained cost/accuracy corrections. An optional audience question
+was asked; advice proceeds under a scientific-computing/numerical-methods audience
+assumption. A bounded primary-source literature search informs the suggestions;
+this is not an exhaustive novelty certification or an experiment authorization.
+
+Proposed central question: can training a continuous learned coefficient manifold
+for its actual PDE evolution deliver useful nonlinear compression at matched
+accuracy and cost, while preserving precomputed reduced operators and portability
+of frozen decoder weights across meshes? Each part remains a testable proposal,
+not an established combined result.
+
+Priority order recommended:
+
+- Establish where nonlinear compression helps with a frozen-bank dimension ladder:
+  affine and nonlinear heads at matching state dimensions, a POD comparator, and
+  the unrestricted bank as a distinct higher-dimensional control. Measure initial
+  fitting, snapshot fitting, projected dynamics and autonomous evolution separately.
+  Use accuracy/cost frontiers as well as equal-dimension comparisons. Retain failed
+  fits and outliers; optimizer repeats on one split do not test data variability.
+- Test training against the actual precomputed reduced dynamics, starting from
+  a frozen bank and anchored reconstruction. Short autonomous rollout losses and
+  PDE-vector-field compatibility at decoded/evolved states are different from
+  matching saved snapshot velocities. The already-tested velocity penalty is not
+  a successful rollout remedy. For waves, use the complete phase state and retain
+  velocity consistency/curvature terms. Test on held-out trajectories and refined
+  time steps so fitting the training integrator is not mistaken for physical
+  accuracy. Reconstruction-only and existing velocity-loss controls are required.
+- Demonstrate frozen-weight resolution transfer: fit on meshes that resolve the
+  declared family, freeze both networks, rebuild the discrete physical operators
+  on held-out meshes, and validate evolution against independently refined truth.
+  State explicitly which operator assembly costs recur. Plotting on a finer grid
+  is not such a test. Include a fair CP interpolation/transfer baseline and
+  continuous linear-bank or neural-field baselines where relevant. Do not claim
+  geometry or unchanged-weight cross-PDE transfer from this experiment.
+- Add one useful numerical-analysis contribution if feasible: distinguish bank,
+  coefficient-manifold, dynamics, operator-approximation and numerical-solve errors;
+  connect a computable diagnostic to error under stated stability assumptions.
+  Enlarged independent weak tests can diagnose missed modes, but a small projected
+  residual alone is not a full-state certificate. Any adaptive fallback must use
+  online information rather than truth-based retrospective selection and include
+  its real cost. Existing a posteriori bounds in nonlinear-ROM literature must be
+  acknowledged; a generic bound alone is not a new contribution.
+- Use one additional physical application to substantiate the method. A verified
+  incompressible flow with localized interacting vortices is a candidate aligned
+  with the user's existing data style and NS interest. Divergence, boundary,
+  pressure/reconstruction and energy behavior require explicit treatment. NS is
+  not mathematically gated on wave success. Further PDE labels or dimensions alone
+  do not establish a distinct methodological advance.
+
+An alternative computational focus is operator-aware compression of the accurate
+large spatial bank/reduced tensors. Validate residual and Jacobian action as well
+as rollout and storage/cost. The earlier head-output PCA compression failure is
+not evidence that every operator-aware strategy fails, but simply repeating it
+would not be a new direction. Generic CP/Tucker decomposition alone is established
+technology, and a compressed operator is no longer exact unless that is proved.
+
+Suggested paper evidence comprises a matched nonlinear/linear dimension study,
+a genuinely frozen-weight resolution-transfer study, a bank-versus-operator
+ablation, an actual rollout improvement from the chosen new method, and complete
+paired cost-to-accuracy accounting. Initial-state fitting, final full-field output,
+training/operator assembly and amortization remain visible. Preserve current
+families, exclusion of Gaussian-descriptor conditioning, weak-form requirements,
+f64/highest precision, untouched final cohorts and failed cases. Retain Burgers
+as the existing positive testbed and fresh waves as a difficult diagnostic; the
+new Burgers-3D and wave heads still do not provide successful transfer evidence.
+If nonlinear heads fail to improve matched-cost accuracy, reconsider whether the
+paper should center on reliable continuous-bank reduction or a controlled account
+of nonlinear-compression limits, instead of asserting a benefit not observed.
+
+Additional primary literature located during this turn:
+
+- [SNF-ROM, JCP](https://doi.org/10.1016/j.jcp.2025.113957): continuous neural
+  fields, regularity and projected dynamics already form an established method.
+- [Operator Inference Aware Quadratic Manifolds](https://arxiv.org/abs/2507.20463):
+  jointly considers reconstruction and downstream reduced-model prediction, so
+  dynamics-aware representation learning alone is not an untouched topic.
+- [Constrained autoencoders for nonlinear projections](https://arxiv.org/abs/2307.15288):
+  dynamics-aware costs and oblique projections address reduction geometry.
+- [Quadratic-manifold Neural Galerkin](https://arxiv.org/abs/2412.17695): reduced
+  dynamics and precomputation for linear full models provide a close comparator.
+- [Weak neural Galerkin](https://doi.org/10.1016/j.physleta.2025.130757): weak-form
+  neural evolution exists; weak form alone cannot supply this paper's novelty.
+- [CoLoRA](https://arxiv.org/abs/2402.14646): reduced implicit neural models with
+  continuously adapted low-rank weights are a relevant equation-driven baseline.
+- [Romor, Stabile and Rozza](https://arxiv.org/abs/2308.03396): nonlinear
+  hyper-reduced Navier–Stokes models already exist, including local approximants.
+- [Kim et al.](https://arxiv.org/abs/2009.11990): nonlinear-manifold hyper-reduction
+  with a posteriori bounds predates the proposed reliability direction.
+
+No solver, training, data generation, new experimental tree, cluster action,
+implementation or merge occurred. Only this canonical log was appended. No
+existing scientific result, acceptance gate or retraction was changed.
+
+
+## 2026-09-07 — proposed four-PDE paper multiresolution campaign
+
+### Reviewable protocol and setup questions before new experiments
+
+User requested paper-preparation multiresolution accuracy/speed experiments on
+fresh waves 2D, Burgers 2D, Poisson 2D and heat 2D, and explicitly invited questions
+before starting. Read the canonical log and AGENTS.md, the fresh frozen wave source
+manifest, current Burgers tensor/Poisson quadrature-free reports, the consolidated
+lineage and corrected-heat branch provenance. Also checked official JAX benchmarking
+guidance for asynchronous timing, compilation and transfer accounting.
+
+Prepared `worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/MULTIRESOLUTION-PAPER-DESIGN.md`
+in the existing coordinator worktree. It is a proposed protocol, not a new results
+report or campaign authorization. It specifies frozen-weight mesh transfer and
+separately optimized per-resolution studies; common physical data across meshes;
+independently refined truth as well as same-grid FOM discrepancy; matched-dimensional
+affine/POD and corrected CP comparators; efficient classical baselines; validation-only
+selection and sealed final cohorts; paired same-job cost/accuracy with initial fitting,
+source preparation, field output, offline assembly/training and amortization visible.
+Proposed meshes and accuracy thresholds are labeled settings, not achieved results.
+No speedup or publication acceptance is promised.
+
+The existing fresh wave heads still miss their full target. A small matched-dimension
+accuracy pilot is needed before a broad scaling sweep. Poisson must include its fast
+direct transform comparator, not only unpreconditioned CG. Burgers tensor differences
+on decoded negative states must stay explicit, with the FOM upwind operator retained
+in the general weak path. Heat requires a verified separable port; the corrected
+public package and archived paper code are read-only, distinct reference sources.
+The public rollout defect does not itself invalidate the archived heat experiments.
+
+Asynchronous questions asked the user to choose the main architecture (current
+coordinate-separable with older ViT/CP baseline recommended), both kinds of resolution
+study versus one, and deadline/compute budget. No responses had arrived when this
+entry was written. Proposed new directories under `worktrees/` are
+`2026-09-07-mr-wave2d`, `2026-09-07-mr-burgers2d`, `2026-09-07-mr-poisson2d`,
+`2026-09-07-mr-heat2d`, with corresponding `exp/` branches, subagents `mr_wave2d`,
+`mr_burgers2d`, `mr_poisson2d`, `mr_heat2d`, and separate paralab namespaces
+`mr_wave2d_20260907`, `mr_burgers2d_20260907`, `mr_poisson2d_20260907`,
+`mr_heat2d_20260907`. Wave base is `exp/2026-09-06-wave-head-transfer` at `906cbe6`;
+the others propose `exp/2026-09-04-separable-tensor-consolidated` at `da47912`.
+Heat additionally reads correction branch `fix/heat-rollout-warm-start` at `292c8d9`.
+The pinned base revisions and absence of local proposed branch/directory collisions
+were checked. Remote namespaces have not been created or reserved.
+
+The user must approve new ownership/base/names before creation under AGENTS.md.
+At most three child agents would run alongside root; the fourth owner is scheduled
+when a slot frees. No new scientific worktree, subagent, cluster job, merge, training,
+reference solve or final-cohort opening occurred. Root changed only its existing
+repair design file and the canonical lab log; pre-existing log additions and other
+user edits were preserved. No result, historical gate or retraction changed.
+
+
+## 2026-09-07 — paper comparison scope confirmed
+
+### Current separable decoder versus FOM; older ViT + CP excluded
+
+User clarified twice, with the first clarification turn interrupted, that “older”
+means the ViT + CP pipeline and that the goal is to show the current method is
+better than FOM. The architecture-choice question is resolved: use the current
+continuous-coordinate separable NM-ROM. Withdraw the proposed ViT + CP comparison
+from the new multiresolution campaign; do not train, repair or benchmark that older
+architecture as a campaign arm.
+
+Updated the existing repair-tree `MULTIRESOLUTION-PAPER-DESIGN.md` to make the main
+claim complete-query speed at matched physical accuracy versus efficient FOM,
+with error at matched time budget and the resolution crossover also measured.
+Initialization/source handling, requested field output, offline costs and
+amortization stay visible. Same-bank linear models are focused diagnostics only
+when necessary to locate a bottleneck, not a separate competing-ROM study.
+Selecting a desired advantage does not establish it in advance; configurations
+must meet the declared error target before their speedup qualifies.
+
+The four-PDE scope, existing data style, Gaussian-descriptor exclusion, fresh-wave
+evidence reset and unresolved accuracy findings remain unchanged. This correction
+is not confirmation of the proposed new worktree/base/namespace table or a compute
+budget. Those pending setup items were not re-asked during this clarification.
+No experiment, new branch/worktree, subagent, cluster job, merge or final-cohort
+opening occurred. Read-only inspection and design/log edits only; pre-existing
+canonical-log and other user changes were preserved.
+
+
+## 2026-09-07 — frozen fresh-wave multiresolution pilot started
+
+### mr_wave2d owner: implementation and immutable GPU submission
+
+The user-approved wave tree `worktrees/2026-09-07-mr-wave2d`, branch
+`exp/2026-09-07-mr-wave2d`, forks from `906cbe6`. Implemented
+`experiments/multiresolution-wave/` and committed source at
+`a02aacd9578f46a9bee0dcb093acd35e62d10739`. Frozen mathematical files from
+`fdcc649` remain hash-identical. The new study freezes the displacement-only MLP
+head seed 691200 and the corresponding learned coordinate bank separately for
+fixed-wall and absorbing boundaries; both use latent dimension 16 and bank/test
+dimension 64. Exact QR coordinate conversion preserves the physical decoder on
+new meshes; no network training or old-wave dependency is introduced.
+
+The declared development pilot uses intervals 256 and 512, validation seed 690602
+indices 0 and 1, physical horizon 2.4 and observation spacing 0.05. It compares
+actual rebuilt-operator ROM evolution at steps 0.0025/0.00125 against GPU exact
+sine-transform semidiscrete propagation for fixed walls and vectorized fresh RK4
+at CFL 0.45/0.225 for absorption. Complete-query timing includes host field inputs,
+800-iteration multistart cold fitting, physical-speed operator rescaling, evolution,
+dense displacement/physical-velocity output and host transfer. Three raw paired
+repetitions per configuration carry the corresponding physical errors, status and
+output hashes. Matrix assembly and warmup/first-call costs are recorded separately.
+Dense initialization/output preclude any grid-independent end-to-end claim.
+
+Independent continuum-sine references use intervals 512/1024; absorber references
+use fresh intervals 1024 with a separate temporal pair, edge-energy balance and
+invariant checks. The driver records nested mesh discrepancies, separate same-grid
+and physical-reference errors, absolute/current/initial-normalized errors and
+vanishing-state flags. Reference uncertainty, ROM timestep differences, and new-grid
+fit validity require post-run analysis. The historical 400/800 fitting-budget
+stability gate is not rechecked by this pilot. Two cases are development evidence,
+not final-cohort or distribution-wide confirmation; the final cohort stays sealed.
+
+Six small numerical controls passed locally on GPU in f64/highest in 4.313 seconds
+through the guarded jaxrun command: FFT sine transform versus independent SciPy,
+analytic standing mode/physical velocity and RK4 parity, independent edge energy
+including absorbing corners, QR values/Jacobians/curvature, nested coordinate
+alignment, and vanishing-field normalization. Persisted local log is
+`experiments/multiresolution-wave/checks/local-tests.txt`.
+
+Submitted one two-hour A100-40GB job `3349951`, name `ctol_mr_wave_pilot01`, in unique
+remote directory `/cluster/tufts/paralab/tawal01/mr_wave2d_20260907/pilot01`.
+Both queue checks and source/checkpoint hashes are in the tree's
+`experiments/multiresolution-wave/runs/pilot01/submission.json`; queue was empty
+before submission and the new job was pending afterward. The paralab share had
+470 GB free. Direct scp staging included committed source and compact immutable
+checkpoints only, with truth regenerated from seed on GPU. A mandatory GPU
+preflight and numerical controls run before the pilot. No numerical result is
+accepted yet. Nothing was retracted; no merge occurred.
+
+Root takes interim monitoring ownership while the next PDE owner starts. Once the
+job is terminal, collection command from the wave tree is
+`/home/tahmid/Dev/.venv/bin/python experiments/multiresolution-wave/cluster.py collect pilot01`.
+It verifies input/output/pull manifests and source hashes, archives locally, then
+deletes the exact remote directory and checks absence. Collection, generated
+findings, scientific review and final commit are still outstanding.
+
+
+## 2026-09-07 — Burgers 2D multiresolution pilot implementation and first submission
+
+### Approved isolated Burgers owner — interim milestone while the GPU job is pending
+
+Worktree `worktrees/2026-09-07-mr-burgers2d`, branch
+`exp/2026-09-07-mr-burgers2d`, was created by the coordinator from approved
+consolidated commit `da47912`. Scientific code is committed at `96befb8` under
+`experiments/mr-burgers2d/`; no merge occurred. This is an implementation and
+submission milestone, not an accepted scientific accuracy/speed result.
+
+Implemented a self-contained interior-state Burgers FOM with the unchanged
+sign-upwind advection, centered diffusion and backward Euler. Its adaptive
+Newton/BiCGStab solver uses an exact discrete Helmholtz preconditioner via FFT
+sine transforms, removing the inherited dense sine-matrix preconditioner's
+cubic axis cost. The ROM uses the current coordinate-separable checkpoint,
+exact weak linear operators, and decoder-output NNLS advection quadrature with
+the sign-dependent FOM stencil. The positive-field advection tensor is excluded
+from the online path. Both neural tracks stay frozen while mesh operators and
+quadrature are rebuilt; timestep/stalling settings are selected independently
+per resolution. Benefits from weight retraining remain untested.
+
+The pilot stages the tracked dense-mid legacy N256 K16/R512 checkpoint, trained
+on 255 intervals, and evaluates new 256/512-interval grids. It records sampled
+bank singular values/rank rather than trusting the configured bank size. Four
+new validation-only physical draws use seed 7090702 and the unchanged Gaussian
+parameter ranges; no final cohort was opened. The fixed physical horizon is
+0.25 with outputs at 0, 0.05, 0.10, 0.15, 0.20 and 0.25. Reference generation
+uses 512/1024 intervals with timestep refinement to 0.000625; its measured
+spatial/time differences will determine which accuracy targets remain unresolved.
+All complete queries include host dense input, cold latent fitting/input
+restriction, solve, six dense outputs/interpolation and return to host.
+Coarser FOM solves are eligible for the common-output accuracy/cost envelope.
+Every timed invocation preserves its own fields, errors, iterations and status.
+
+Seven local GPU component checks passed: FFT versus dense sine maximum absolute
+difference 2.4424906541753444e-15; Helmholtz inverse relative error
+2.7205063373289206e-16; mixed-sign FOM versus dense Newton relative error
+1.1471350817161907e-18; weak diffusion identity relative error
+5.221649507651083e-16; Gauss-Jordan versus LU worst relative error
+9.533544875453698e-10 on an intentionally condition-1e8 SPD system. An actual
+R64/K16 checkpoint pipeline smoke at 24 intervals finished in
+17.21594730298966 seconds with finite six-time fields and exact zero boundary
+values. All local GPU checks used the required absolute venv, jaxrun cgroup,
+f64 and highest matmul precision. Initial test-wrapper unpacking and read-only
+NumPy-view errors were corrected before the passing checks; no scientific
+result existed to retract. Syntax and shell checks passed.
+
+Submitted `ctol_mr_burgers_pilot01` as job **3350012**, with a two-hour limit and
+one A100, into its unique attempt directory
+`/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/pilot01/`. Queue was checked
+before and after submission; it was pending for priority at handoff. Staged
+source/checkpoint bytes were verified against the commit and the remote manifest
+passed before sbatch. The share had 470 GB available. Mandatory GPU backend
+preflight, f64/highest, per-attempt outputs, and checksum collection/closed-log
+cleanup are implemented. No scientific GPU output has yet been accepted or
+pulled, and the job directory must remain until verified collection.
+
+Next: inspect the job's GPU/precision/provenance, reference convergence/refinement,
+actual bank rank, quadrature held-training-code diagnostics and all timed
+convergence/outliers. Generate the numerical report from `pilot.json`, checksum
+pull and remove only the exact attempt directory, commit results, and decide
+from measured cost whether extension or weight tuning is justified. The owner
+yields this interim milestone so the coordinator can schedule Poisson; no
+subagent was spawned by the Burgers owner and no other scientific tree changed.
+
+
+## 2026-09-07 — verified heat separable port and first frozen-mesh development pilot
+
+### Restricted heat pilot: trustworthy advancement, stable transfer, negative query-cost result
+
+Approved owner `mr_heat2d` worked only in `worktrees/2026-09-07-mr-heat2d`,
+branch `exp/2026-09-07-mr-heat2d`, from consolidated `da47912`.
+Source/design/config/tests were committed at `ad882df3ecb8614d4cafa6a25761e920f3074e3d`;
+checked native artifacts and generated findings are committed at `e45f399f22b1dd95ba9da44dd17e4dd6e4b16a21`.
+No merge was performed; root coordinates the eventual merge question.
+
+Implemented a new continuous-coordinate heat port using only current
+`sep_common.features` and nonlinear MLP-plus-skip `head`, with no CP decoder,
+old heat numerical dependency, POD initialization or Gaussian-descriptor head
+input. Read corrected heat code only for physical/state-carry correctness.
+This deliberately restricted single polynomial-boundary-weighted Gaussian
+family is a development cohort, not coverage of archived multi-bump heat.
+The exact family, seeds and dimensions are pinned in
+`experiments/mr-heat2d/config-pilot.json` in the heat worktree.
+
+Cluster job `3349961` (`ctol_mr_heat_p01`) completed successfully
+in two minutes on `NVIDIA A100 80GB PCIe` at `pax105`.
+GPU preflight, f64 and highest matmul precision passed. Four actual GPU component
+tests and independent reference gates passed before training: eigenmode errors
+below 3.5563416e-16,
+Crank–Nicolson refinement ratio 4.0011926,
+and spectral physical-reference refinement uncertainty
+1.8100328e-10. The actual scan advances the current
+decoded state; its frozen-carry negative control fails. Operator/Jacobian exactness
+against the discrete stencil was verified anew at every mesh.
+
+Trained K=8, R=32 with
+M=64 weak tests at
+64 intervals, then froze both networks and rebuilt
+operators on [64, 128]. Training used
+32 trajectories and 12000 optimizer steps,
+taking 16.801719 seconds including first-step compilation.
+All 4 development validation cases and every timing
+repetition are retained; no final cohort was opened.
+
+A native post-pull audit verifies 18 file checksums,
+source bytes against git history, checkpoint hash and every saved field/error
+pair. It recomputes transfer errors on a common
+64-interval observation grid, rather than comparing
+per-mesh sampled norms. At CN dt=0.025, common-current time-maximum error median /
+worst is 0.058575352 /
+0.097356446 on 64, and
+0.05854512 /
+0.097356446 on 128.
+The observed complete-query development target reached by all ROM cases is 0.1;
+three of four cases miss 0.05. Initial-state fitting is a substantial error floor:
+unrestricted-bank worst is about 0.01031, versus best recorded multistart head
+worst about 0.09736. All selected initial fits and rollout steps satisfy the
+pinned stationarity criterion. An unused initial start is nonstationary and remains
+recorded in each repeated relevant invocation. Current/initial/absolute errors,
+vanishing-amplitude flags, energy and actual state changes are all persisted.
+
+At dt=0.025, complete-query latency is about 27.7–27.8 ms for the ROM, versus
+1.22–1.37 ms for exact-time FFT/DST FOM propagation, measured paired within the
+same job/GPU. About 20 ms is reduced evolution and 6.2 ms is initial fitting;
+readout and transfers are small at these two meshes. Halving dt raises ROM cost
+to about 37.2 ms with little error change. Raw phase/repetition arrays, associated
+fields and counters are retained. CN-only same-grid FOM error and spatial-reference
+error remain separate. These are provisional restricted-cohort findings, not a
+positive speedup, independent confirmation or a paper headline.
+
+Generated findings and exact values:
+`worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-PILOT-NOTES.md`;
+raw source/checkpoint/results/references/fields/logs and manifests under
+`experiments/mr-heat2d/runs/pilot01/` in that worktree. The paired report's first
+target column is explicitly observed-error-only; the common-grid audit separately
+requires all-repetition solver validity and a reference-uncertainty margin.
+Root also independently recomputed every saved metric without importing heat
+experiment code; reported zero disagreement and confirmed stationary selected
+fits/steps. Its review is in repair `multiresolution_campaign/heat_pilot01_review.json`.
+
+All remote outputs were checksum-pulled and the exact directory
+`/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/pilot01` was deleted, with absence
+verified. No heat job remains queued. No previous accepted evidence was retracted.
+The unqualified interpretation of per-grid physical norms as a common-grid
+comparison was avoided by adding the generated common-observation audit.
+
+Next bounded proposal, not yet submitted: use this frozen checkpoint to compare
+a fused complete-query path and a small solver-stationarity-tolerance ladder,
+with every algorithm/output equivalence and cost/accuracy condition retained.
+The phase data do not support attributing the whole gap to outer host dispatch.
+Then diagnose the nonlinear-head initial-state generalization on the fixed bank;
+do not grow the mesh merely to seek a crossover. Broader heat component-count
+coverage, per-resolution optimization and final confirmation remain open.
+Root requested this interim close to free an agent slot; no further heat job
+was submitted.
+
+
+## 2026-09-07 — Autonomous four-PDE multiresolution kickoff and first independent audit
+
+### Root coordinator — approved worktrees, paired protocol and heat saved-field review
+
+The user approved the previously named bases/worktrees/owners/namespaces and asked
+for autonomous continuation. All four dated `2026-09-07-mr-<pde>` experiment trees
+were created with their approved `exp/` branches. Wave uses fresh-wave commit
+`906cbe6`; Burgers, Poisson and heat use consolidated `da47912`. Root continues
+writing scientific coordination code only in `2026-09-06-burgers3d-repair`.
+Three PDE owners run concurrently and yield slots as their pilots finish. The
+fourth Poisson owner is now implementing its separate current-decoder pilot.
+No older ViT + CP campaign or old wave evidence was reinstated. No branch merged.
+
+Shared design, machine-readable protocol and paired-result accounting checks are
+committed on repair at `9de0144`. Eight CPU accounting regression checks passed,
+covering failed cases, missing repetitions, cross-job/GPU or output mismatches,
+separate timing/accuracy invocations, unknown/underresolved reference uncertainty,
+and the need for reference-error margin at a target. The checker validates
+accounting only; native operators and fields require independent review. Repair
+`f05e801` clarifies that deliberate predeclared accuracy stopping can qualify through
+independent physical-error measurements without certifying stationarity; failed
+optimization or budget exhaustion cannot be silently renamed successful stopping.
+
+Heat pilot `3349961` completed; the heat owner archived/committed its source,
+checkpoint, every timed output and raw repetitions and removed its exact remote
+attempt after checksum verification. Root independently recomputed every saved
+current-normalized, initial-normalized and absolute field error with no imports
+from the experiment implementation. Every value matched exactly, query component
+costs fit within total costs, and selected fits/rollout steps were stationary on
+all retained repetitions. The root audit also recomputes both resolutions on a
+shared observation grid. Script and hashed review are on repair `09f90ff` in
+`experiments/separable-decoder/multiresolution_campaign/`. These are restricted
+single-bump development results, not a final heat cohort or a proof of a continuum
+error bound. The head reconstruction gap and the iterative rollout cost remain
+separate problems. Heat's next proposed bounded test freezes the checkpoint and
+compares solver tolerances/fused queries before increasing capacity or resolution.
+
+Burgers pilot `3350012` completed and the owner collected its outputs. Its initial
+physical-reference refinement estimate does not resolve the full cohort's requested
+targets; no qualified speedup is accepted. A bounded follow-up will refine space
+and time independently and test the next resolution against both same-grid and
+adequate coarse-grid FOMs. Wave `3349951` was pending because its batch script
+pinned an unnecessary A100-40GB feature; its owner removed that scheduler feature
+while retaining the same source/job/attempt, with before/after override provenance
+in its worktree. Poisson will compare against direct FFT sine solves and charged
+coarse-grid interpolation, with new fixed development draws and untouched finals.
+
+Open: finish/check wave and Poisson pilots, resolve Burgers reference accuracy,
+run measured solver improvements, broaden both studies and independent cohorts,
+and generate the consolidated paper evidence. Starting the pilots is not completion
+of the full paper campaign. All earlier result retractions remain in force.
+
+
+## 2026-09-07 — frozen Poisson multiresolution development pilot complete
+
+### mr_poisson2d owner: direct DST comparison and checked result archive
+
+The approved worktree `worktrees/2026-09-07-mr-poisson2d`, branch
+`exp/2026-09-07-mr-poisson2d`, is saved at `c4c8f4e7e0aa7382ae223a785af714435c2e4245`.
+Scientific source was frozen at `82d2c3261126cb150bb83220ec3edbcf0dd5f489`; GPU job
+`3350079` completed successfully on `NVIDIA A100 80GB PCIe`.
+
+The inherited continuous-coordinate separable checkpoint trained on nodes is
+frozen across the new interval meshes. No old-wave physics, ViT/CP arm, descriptor
+conditioning, network training or sealed-final-cohort access was used.
+
+The new development cohort uses seed `7090703`, count
+`6`, with exact parameter arrays retained across
+meshes `[256, 512]` intervals. The pilot retains
+`288` complete timed invocations and all raw repetitions,
+field hashes, per-source physical/same-grid errors, stationarity and stop reasons.
+
+Only the loosest declared physical target is attained across all development
+sources by this checkpoint. Generated matched-target findings:
+
+- Intervals `256`, target `0.1`, selected tau
+  `0.01`: ROM median `4.69963055` ms, direct DST
+  `2.03370559` ms; FOM/ROM speedup `0.432737333`.
+
+- Intervals `512`, target `0.1`, selected tau
+  `0.01`: ROM median `4.9577785` ms, direct DST
+  `2.39130197` ms; FOM/ROM speedup `0.482333362`.
+
+
+The reduced model is slower than DST here. Tighter stationary latent solves
+do not make the smaller declared physical targets attainable. Coarse DST with
+charged interpolation is also retained and is slower than same-grid DST in this
+bounded implementation. No desired speed advantage is assumed or claimed.
+
+Both meshes retain bank rank `64` and
+`64` weak modes. Independent nested SciPy
+FD-DST references show second-order refinement and maximum empirical relative
+uncertainty `7.35123109e-06`, below all
+declared uncertainty budgets. This empirical refinement evidence is not a
+rigorous continuum error bound. Full-grid weak residual/Jacobian parity passes
+on both meshes.
+
+Six small local GPU controls and the same cluster controls passed; the archive
+audit verifies source/checkpoint bytes against git history, GPU/f64/highest,
+component sums, output repetition identity, refined references and warning-free
+completion. Scheduler-only removal of the unnecessary A100-40GB constraint is
+recorded without changing source or the job directory. Input/result/full-pull
+checksums passed; the exact remote directory
+`/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/pilot01` was deleted
+after archive verification. No Poisson job remains active.
+
+Complete raw JSON, logs, source and output manifests, checked archive, generated
+summary/findings and standalone accuracy–cost figures live under
+`experiments/multiresolution-poisson/runs/pilot01/` in the approved tree.
+`reports/generate.py`, `reports/audit.py` and `reports/plot.py` reproduce them.
+Numbers remain provisional development evidence from one inherited checkpoint
+and one small source cohort, with synchronized host input/output included.
+
+No earlier result was retracted; this new efficient-baseline comparison must not
+be substituted for the older unpreconditioned-CG speed claims. No merge occurred.
+Proposed next work, persisted in `NEXT-PILOT.md`, varies only smooth test-space
+size, diagnoses unrestricted-bank versus multistart full-field head fitting, and
+tests a parity-checked fused complete query against the current implementation.
+It is not launched: root requested yielding the agent slot for heat, with no new
+Poisson GPU job until coordinator reactivation. Per-resolution training, broader
+mesh study and independent confirmation remain open. Merge choice remains with
+the user through the coordinator.
+
+
+## 2026-09-07 — Poisson pilot paired-statistic clarification
+
+### Generated reporting correction after coordinator review
+
+The earlier Poisson entry quoted the ratio of aggregate median costs. It remains
+a valid explicitly labeled cost ratio, but the campaign primary statistic is now
+generated as the median over sources of each source's median paired-repetition
+FOM/ROM ratio. This changes no raw invocation, case qualification or negative
+performance conclusion. The generated JSON retains both statistics.
+
+Intervals `256`, target `0.1`: aggregate-median cost ratio
+`0.432737333`; primary median-of-source paired ratio
+`0.421264144`.
+
+Intervals `512`, target `0.1`: aggregate-median cost ratio
+`0.482333362`; primary median-of-source paired ratio
+`0.49944498`.
+
+Latest Poisson branch commit is `c72e6b709d87d59c4c95093715940a72582ce990`. No new job or merge.
+
+
+## 2026-09-07 — frozen fresh-wave multiresolution pilot collected
+
+### mr_wave2d owner: checked negative cost result, mesh transfer and late-field error
+
+The owner resumed the approved wave tree after interim coordination. Pending job
+`3349951` had been restricted to `a100-40G`, with a next-day start estimate.
+Removed the unnecessary feature through `scontrol update JobId=3349951 Features=`;
+the same job/attempt/source/config/checkpoints then ran immediately on `pax105`,
+NVIDIA A100 80GB PCIe. Before/after scheduler provenance is tracked in
+`experiments/multiresolution-wave/runs/pilot01/scheduler-override.json`. The
+immutable submitted batch script retains its original feature declaration; the
+override is explicit and the staging helper now defaults to generic A100.
+
+Job completed in 00:10:46 with exit 0. GPU preflight, f64/highest, and all six
+cluster numerical controls passed. Logs contain no captured-large-constant,
+OOM, fallback, disk-full or traceback warning. Input, output and whole-pull
+manifests and source hashes were checked; the exact remote attempt was deleted
+and absence verified. The complete archive is stored in byte-exact ordered parts
+with `ARCHIVE.json` and `ARCHIVE.sha256`. Native arrays, immutable checkpoint
+inputs, source snapshot and logs are tracked beside the archive.
+
+Scientific source remains `a02aacd9578f46a9bee0dcb093acd35e62d10739`;
+native result SHA-256 `d969c32607dacdd0d87e7a411eb8c426ed4dc98fcabe0d993261f753c10e86c5`.
+The run retained 84 complete-query timing/error records.
+All declared trajectories completed and selected cold fits were stationary.
+The initial-fit budget was 800 only; the historical doubled-budget
+stability gate is not rechecked. The final cohort stays sealed.
+
+Generated primary-step results (max over displacement, velocity and energy-state
+errors, normalized by initial scales; development cases only):
+
+| Boundary | Intervals | ROM error median / worst | ROM query median s | FOM method | FOM query median s | FOM error worst |
+|---|---:|---:|---:|---|---:|---:|
+| dirichlet | 256 | 0.4616545 / 0.55367078 | 3.3003812 | dst | 0.014024027 | 0.0050474164 |
+| dirichlet | 512 | 0.4601371 / 0.55204339 | 3.3542739 | dst | 0.064533786 | 0.0014446214 |
+| absorbing | 256 | 0.075763388 / 0.076553518 | 3.221258 | rk4 | 0.094984093 | 0.000874814 |
+| absorbing | 512 | 0.075729459 / 0.076543465 | 3.2743082 | rk4 | 0.2971971 | 0.0001950751 |
+
+The fixed-wall cases miss every declared target. The two absorbing development
+cases meet only the loose initial-normalized target, with no speed advantage;
+they do not reinstate the full original wave-cohort pass. Increasing the grid
+resolution preserves approximately the same ROM accuracy. The measured ROM
+latency is dominated by latent evolution, while dense initialization/output
+remain mesh-dependent costs. No qualifying speedup, crossover, or amortization
+is claimed. No new wave training or additional wave job was launched.
+
+The largest ROM time-step-pair difference across both meshes/boundaries is
+1.04106986e-06; every recorded pair passes the original refinement criterion.
+dirichlet: maximum empirical_self_difference is 4.45075078e-11.
+absorbing: maximum conditional_fine_reference_estimate is 7.2397636e-05.
+These are empirical refinement diagnostics, with conditional absorber
+contraction assumptions, not rigorous continuum error bounds. The normalized
+accounting records leave the reference bound null.
+
+At final time, absorbing current-relative displacement errors range
+2.2687883–3.125954;
+current-relative energy-state errors range
+2.9280813–4.1082308.
+Absolute displacement errors range
+0.0006610653–0.00083504097.
+Both initial and current normalization, absolute values and zero/vanishing
+flags remain in the native result and generated finding.
+
+An independent NumPy bank/gauge reconstruction reproduced all
+16 saved ROM output trajectories within the audit tolerance.
+All 84 records passed output-size and timing-component accounting.
+This checks coefficient-to-field correspondence at the saved observation mesh,
+not an independently regenerated full-grid truth/error audit. Root separately
+accepted all twelve normalized accounting pairs and source-artifact SHA checks.
+
+Artifacts: `experiments/multiresolution-wave/runs/pilot01/cluster/out/pilot/result.json`;
+generated `analysis/summary.json`, `analysis/FINDINGS.md`, `analysis/pair_*_audit.json`
+and `analysis/saved-field-audit.json`. Generators are `analyze.py` and
+`audit_saved_fields.py`. New-mesh QR/physical tangent parity, discrete operators,
+reference audits, raw timings and coefficients remain available.
+
+The focused unrestricted-bank projection has much smaller displacement error
+than the compressed evolution, but this does not isolate head compression from
+dynamics. Proposed next wave diagnostic, not launched: keep the learned bank
+fixed; compare linear and nonlinear coefficient heads at matched latent
+dimensions, evaluating snapshot fitting, tangent quality and autonomous rollout
+separately, with an unrestricted bank only as a higher-dimensional diagnostic.
+Keep independent weak tests comfortably larger than latent dimension as it grows.
+No further wave work is started while the other PDE owners run their bounded
+follow-ups. No result was retracted and no merge was performed. Root resumes
+ownership after this close; merging remains a user choice.
+
+
+## 2026-09-07 — frozen heat checkpoint runtime follow-up
+
+### mr_heat2d owner: tolerance savings, exact compiled-query parity, persistent FOM loss
+
+Root resumed the same approved heat worktree/namespace for the bounded frozen
+checkpoint follow-up. Source/config/design/tests are on heat commit
+`06f8ed98653e95bbf094c42212171d0db3519541`. Complete checked outputs, native audit, generated notes,
+standalone SVG/PNG figure and an unlaunched accuracy proposal are on heat commit
+`3350fe5d0bb1033c5fc77ff21ded20eaad7809c8`. No branch was merged.
+
+Job `3350258` (`ctol_mr_heat_p02`) completed successfully in
+00:01:59 on `NVIDIA A100 80GB PCIe`. Source and the unchanged checkpoint were
+staged by content hash against committed git blobs. Data and physical references
+were regenerated from the same pinned seeds on the GPU. GPU/f64/highest preflight
+and all reference checks passed again. Two local guarded GPU composition/parity
+checks passed before submission, and the batch repeated them. No captured-large-
+constant warning, OOM, cuInit fallback, truncated log or disk-full error occurred.
+
+The saved pilot checkpoint `c60ebb97c62329c750f86504f0585678248ed1f20f2c054db304e1091bc969c3` remained unchanged. The
+same restricted single-bump cases and meshes were used, with dt=0.025
+and gradient tolerances [1e-09, 1e-07, 1e-06, 1e-05]. Both initial
+multistart fitting and every weak heat step use the arm's declared tolerance.
+Each tolerance runs the original modular query and a single compiled composition
+of the exact same initialization/evolution/readout functions. All model/bank/code
+arrays are explicit runtime arguments; CN-factor construction is charged within
+both paths. Full host initial input and all requested full host outputs are
+charged, with separate offline compilation/setup/reference costs.
+
+The native post-pull audit verifies 81 archive file checksums,
+60 unique content-addressed field arrays, source bytes
+against git history and all 504 timed invocations. Saved physical,
+same-grid and common-grid current/initial/absolute metrics agree within
+3.8857806e-16. Every warm and timed compiled/modular
+field, latent and iteration/acceptance/reason-counter comparison agrees exactly.
+All selected initial fits and rollout steps satisfy their declared convergence
+criterion without selected budget exhaustion; unused failed initial alternatives
+remain explicitly retained.
+
+Generated numerical summary (all ratios pair repetitions within case before
+aggregating across cases, on the same physical GPU):
+
+- 64 intervals: strict modular 28.323083 ms; strict compiled 27.292345 ms; compiled gtol=1e-5 14.177434 ms; paired strict-control improvement 1.9467705x. Direct DST FOM 1.1972245 ms; paired FOM/optimized-ROM ratio 0.084756705. Common-grid current-error median/worst 0.058577892/0.097356475; maximum strict-control field drift 0.00034727162.
+- 128 intervals: strict modular 28.820751 ms; strict compiled 27.011174 ms; compiled gtol=1e-5 14.267861 ms; paired strict-control improvement 1.9650333x. Direct DST FOM 1.3757055 ms; paired FOM/optimized-ROM ratio 0.095970325. Common-grid current-error median/worst 0.058547721/0.097356475; maximum strict-control field drift 0.00034732348.
+
+Most savings come from fewer LM attempts, not outer dispatch fusion. The current
+head's representation/initial-state gap is unaffected: three of four development
+cases still miss current-error target 0.05. Optimized ROM remains substantially
+slower than the direct FOM on both meshes. Every relaxed arm stays below the
+predeclared strict-control field-drift ceiling 0.001; the audit also
+checks per-time changes in physical error so cancellation cannot hide a changed
+trajectory. No new training, capacity change, mesh growth or final-cohort opening
+occurred.
+
+Reference refinement evidence is empirical, with delta
+1.8100328e-10. The adjusted empirical ratio is
+$(e+\delta)/(1-\delta)$; rigorous continuum-bound fields are null, and empirical
+eligibility is never labeled a strict physical guarantee. All meshes are compared
+on the same 64-interval observation grid. These remain
+provisional restricted development results pending independent root review.
+
+Artifacts: `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-RUNTIME-NOTES.md`,
+`figures/heat-runtime.svg` and `.png`, and `runs/pilot02/` in that worktree.
+`audit_runtime.py` independently recomputes metrics without importing experiment
+numerics, then generates the numerical findings. `plot_runtime.py` generates the
+standalone figure from the audited JSON. All raw repetitions, exact output hashes,
+unique output/reference/input arrays, solver information, checkpoint, source,
+logs and manifests are tracked.
+
+The exact remote directory
+`/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/pilot02` was deleted after
+checksummed collection and native audit, and its absence verified. No heat job
+remains queued. No previous scientific result was retracted or replaced.
+
+Next proposal, not launched: freeze the current spatial bank and coefficient-head
+architecture, then compare head/code refinement on the original training cohort
+against an expanded independently seeded training cohort, with matched update and
+minibatch budgets and unchanged validation. The original-cohort control separates
+more optimization from coverage. The prospective settings and reconstruction-first
+checks are recorded in `NEXT-ACCURACY-PILOT.md`. Broader multi-component heat,
+per-resolution optimization and independent final confirmation remain open. Root
+owns the next training decision and eventual user merge question.
+
+
+## 2026-09-07 — Poisson frozen test-space and query-fusion follow-up complete
+
+### mr_poisson2d owner: exact parity, representation diagnosis and efficient-FOM comparison
+
+The coordinator reactivated the bounded same-tree follow-up after heat started.
+The approved Poisson branch is saved at `8cc0b8ada7704a83489520018f41b90d89c6845b`. Scientific source
+`0175877d40c96bc4c0e28cd2c8e2e3b0f6cbc966` ran as GPU job `3350408` on
+`NVIDIA A100 80GB PCIe` with GPU preflight, f64 and highest precision.
+
+Frozen checkpoint, development seed `7090703` and
+count `6` are unchanged. Meshes remain
+`[256, 512]` intervals. Requested smooth test dimensions
+`[64, 128, 256]` retain complete sine shells
+`[64, 129, 257]`.
+No network training, new final cohort, descriptor conditioning or old-wave
+physics was introduced.
+
+The run records `672` complete timed invocations. All
+`72` modular/fused gates have field and latent relative
+differences `0.0` /
+`0.0` and identical solver counters. The fused
+query preserves the original trust-LM algorithm and generic small linear solve;
+its input, combined device pipeline and output are timed in the same invocation.
+Segmented controls retain separately synchronized projection/init, solve and
+output costs; those are not inserted into fused-query timing.
+
+Generated representation diagnostics:
+
+- Intervals `256`: increasing requested modes from
+  `64` to `256` changes worst tight-solve
+  physical error `0.07318650975` to
+  `0.07254236511`. Full-bank worst same-grid projection
+  error is `0.05746521529`; best head-oracle worst physical
+  error is `0.07254234612`. Maximum physical-error
+  difference between enlarged-test solves and best head fits is
+  `5.391418529e-08`.
+
+- Intervals `512`: increasing requested modes from
+  `64` to `256` changes worst tight-solve
+  physical error `0.07318908053` to
+  `0.07254231244`. Full-bank worst same-grid projection
+  error is `0.05738777838`; best head-oracle worst physical
+  error is `0.07254230004`. Maximum physical-error
+  difference between enlarged-test solves and best head fits is
+  `1.893455983e-08`.
+
+
+Exact QR full-field fits use only reference-based diagnostics, never online
+initialization or deployment selection. All fixed starts, budgets, latent outputs,
+counters and stationarity are retained. Doubling the declared oracle budget
+changes no best recorded error, and selected fits are stationary. These are local
+fits, not a global nonlinear optimality proof. The unrestricted bank itself
+remains above the smaller accuracy target on the difficult source.
+
+Only the loosest declared target qualifies across the whole development cohort.
+Generated same-job efficient-baseline comparison:
+
+- Intervals `256`, target `0.1`: selected
+  `rom_modular` at requested modes `64`, tau `0.01`
+  has latency `3.793382755` ms versus
+  `1.480761013` ms for `dst`; the campaign
+  median of paired case-median FOM/ROM ratios is
+  `0.3913180258`.
+
+- Intervals `512`, target `0.1`: selected
+  `rom_fused` at requested modes `64`, tau `0.01`
+  has latency `4.082571977` ms versus
+  `1.917136746` ms for `dst`; the campaign
+  median of paired case-median FOM/ROM ratios is
+  `0.4691001541`.
+
+
+Fusion gives modest changes and does not produce a direct-DST advantage.
+No cross-job raw timing comparison is used. Latency is the median over cases of
+case-median repetition times; the paired statistic is the median over cases of
+FOM case-median time divided by ROM case-median time. The previous Poisson entry
+used a different aggregation order. Both are now explicitly generated from the
+same old raw observations in the follow-up findings; no raw value is withdrawn:
+
+- First-pilot intervals `256`: median of per-repetition
+  ratios `0.4212641438`; campaign ratio of
+  case medians `0.3949575131`.
+
+- First-pilot intervals `512`: median of per-repetition
+  ratios `0.4994449799`; campaign ratio of
+  case medians `0.4995046213`.
+
+
+The earlier assertion that the former aggregation was the campaign primary
+statistic is corrected here; the data and negative performance finding remain.
+Reference accounting now stores the raw final-refinement difference delta and
+uses the strict relative-denominator adjustment `(error+delta)/(1-delta)`.
+Reference evidence remains empirical, without a rigorous continuum-bound claim.
+
+Independent CPU artifact checks match all `672` invocation
+metrics to maximum absolute difference
+`5.30084409e-16` and oracle errors to
+`2.775557562e-17`.
+Source/checkpoint/result bytes match git and the archive; all timing-component
+sums, reference differences, preserved field hashes, GPU precision and logs pass.
+The complete archive is preserved in ordered, checksummed parts, with
+reassembly hash `4845fec7cdd7df8fc64be8fb96a521eaa50ecda04882fb54a4665e68c6697c5a`. All remote output was checksum-pulled
+and `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/pilot02` was deleted
+after verification. No Poisson job remains active.
+
+Raw results, logs, input/result/pull manifests, archive parts, generated findings,
+summary/audit JSON and standalone figures are committed under
+`experiments/multiresolution-poisson/runs/pilot02/`; generators are in the
+experiment's `reports/` directory. `AFTER-PILOT02.md` records bounded next
+options: a controlled tiny linear-system kernel ablation for speed, and a
+separately labeled bank/head improvement study for smaller accuracy targets.
+Neither is launched here. Results remain development evidence from one frozen
+checkpoint and cohort, not independent confirmation. No merge occurred; the
+user's merge choice remains with the coordinator.
+
+## 2026-09-07 — Burgers multiresolution pilot and cold-objective audit complete
+
+### Approved Burgers owner: final checked development evidence
+
+Worktree `worktrees/2026-09-07-mr-burgers2d`, branch `exp/2026-09-07-mr-burgers2d`, final scientific/archive commit `f405f52cd5fcb8d561daacefd582417415df0465`. The generated question-based report is `experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md` in that worktree. Code, native checkpoint lineage, GPU smoke checks, all raw timing repetitions, recorded errors/stop conditions and retained observation fields are committed. No branch merge was performed; the coordinator owns the merge question.
+
+Every attempt completed on the required GPU backend with f64/highest, clean closed logs and checked source/checkpoint/output hashes. Scheduler records and exact-directory cleanup are recorded in `SUBMISSION.json`:
+
+- `pilot01`: job `3350012`, source `96befb8815a4c20c8d9f2862502e454ab8402032`, `COMPLETED 0:0`, elapsed `00:03:40` on `pax105`. Archive `runs/pilot01`; exact remote directory deleted.
+- `pilot02`: job `3350134`, source `9a2025c1f0624db91fb8ecbcfef0d0d433373187`, `COMPLETED 0:0`, elapsed `00:19:56` on `pax105`. Archive `runs/pilot02`; exact remote directory deleted.
+- `cold03`: job `3350594`, source `0fb42607811425d639ba58714da2210f152cf463`, `COMPLETED 0:0`, elapsed `00:03:13` on `pax105`. Archive `runs/cold03`; exact remote directory deleted.
+
+The adaptive sign-upwind backward-Euler FOM uses an FFT sine-transform Helmholtz preconditioner. Dense-transform/operator parity and mixed-sign Newton checks passed. Frozen transfer retains K=16, R=512, M=64 and m=256; sampled rank is 512 at every tested mesh. The inherited checkpoint used 256 nodes, i.e. 255 intervals. The validation seed 7090702 and all 4 clipped-Gaussian cases were unchanged. Final cohorts stayed unopened.
+
+The follow-up uses output grids [256, 512, 1024] and a reference at 4096 intervals with dt=0.0003125. The largest empirical additive margin is 0.003736669161: it passes the predeclared reference-budget fraction for a 5% development target, while the 1% target remains unresolved. Three-level observed orders are approximately first order in space and time. This is empirical refinement evidence, not a rigorous physical error bound; shared strict paired-audit records deliberately retain a null bound.
+
+All 828 complete-query invocation errors were independently recomputed from retained observation fields, with maximum discrepancy 4.16334e-17. There were 0 adaptive FOM tolerance failures and 0 failed/nonfinite ROM evolution stops. All 36 initial-fit budget exits remain visible. Configured improvement/stall stops are not stationarity certificates.
+
+The complete-query pilot establishes no ROM advantage over the eligible FOM envelope. The original complete-query errors and costs remain unchanged after the cold-only diagnostic. Native configuration selection uses pooled repetition medians; the canonical cross-PDE report uses the median of per-case medians and labels that difference. Both report median per-case paired speed ratios; closely timed FOM choices can differ. The same invocation supplies each timed error, with input transfer, initial fitting, evolution and requested dense output charged.
+
+| Output intervals | Cold edge full-grid worst | Fixed Gauss full-grid worst | Full-grid QR worst | Unrestricted bank floor |
+|---|---:|---:|---:|---:|
+| 256 | 0.0260047709 | 0.0256287152 | 0.0254466283 | 0.00189802781 |
+| 512 | 0.0546716139 | 0.0328358513 | 0.0328284663 | 0.0149534838 |
+| 1024 | 0.0869507463 | 0.0385621976 | 0.0385489267 | 0.022593 |
+
+These cold-only controls use budget 180 and four starts. All 240 declared fits and unchanged source cases/checkpoint passed the independent archive audit. Retained common-grid error recomputation differs by at most 2.77556e-17; incumbent cold fields reproduce the original query run within 5.19029e-14. Fine full-grid errors and bank projection floors are same-invocation GPU scalar diagnostics: full fine fields were restricted before archival, so only common-grid fields and the coarsest full-grid norms were independently reconstructed.
+
+The original equal-weight cold samples move toward the first/last interior nodes as the grid refines. Fixed physical midpoint/weighted Gauss state fitting with charged bilinear interpolation substantially reduces the finer-grid initial error, and the same samples agree under Gram versus QR factorization. The unrestricted bank floor also grows under the full-grid norm. Thus sample-coordinate/objective drift and genuine frozen-bank representation loss both matter. Any explanation based solely on optimizer basins/starting guesses is withdrawn. The continuous hard-wall bank and clipped ICs suggest a near-wall contribution, but spatial localization and the remaining nonlinear-head/local-fit gap were not isolated. Full-grid QR is a diagnostic in the learned bank, not POD or a globally optimal nonlinear fit.
+
+The corrected initializer has not been used in a rollout; its evolution accuracy and full-query latency remain unmeasured. Reduced evolution dominates staged timing while dense output transfer grows with resolution; actual LM trial counts are recorded, but GPU kernel-launch counts were not profiled. Per-resolution solver settings and quadrature are supported; per-resolution weight retraining remains open. No additional jobs are approved or pending in this bounded campaign, and the latest account queue check was empty. Root is integrating the checked evidence into the canonical four-PDE report.
+
+
+## 2026-09-07 — Four-PDE pilot round closed with audited follow-ups
+
+### Root coordinator — results, corrections, artifacts and remaining paper work
+
+The user-approved four worktrees, bases, owners and cluster namespaces were used for the current continuous-coordinate separable NM-ROM versus efficient FOMs. The old ViT + CP comparator remains excluded. Only the fresh verified wave lineage was used; no historical wave evidence was reinstated.
+
+The initial four pilots and all bounded follow-ups completed. The generated canonical report, source generator and artifact-hash manifest are on main at `2b22fa8`: `reports/2026-09-07-multiresolution-pilots.md`. Earlier report-only commits were `44af1c3`, `6056fcd` and `5a39a2f`; these were documentation commits, not experiment merges.
+
+| Owner | Final experiment commit | Completed GPU jobs |
+|---|---|---|
+| Fresh waves | `d1779d2` | `3349951` |
+| Heat | `3350fe5d0bb1033c5fc77ff21ded20eaad7809c8` | `3349961`, `3350258` |
+| Poisson | `8cc0b8ada7704a83489520018f41b90d89c6845b` | `3350079`, `3350408` |
+| Burgers | `f405f52cd5fcb8d561daacefd582417415df0465` | `3350012`, `3350134`, `3350594` |
+
+All jobs passed GPU preflight and ran f64/highest in isolated paralab attempt directories. Data were regenerated from recorded seeds. Owners checksum-collected outputs and deleted the exact remote attempts; root reconfirmed an empty account queue. The reports retain source/checkpoint hashes, cases, meshes, settings, GPU type, job IDs, raw timing repetitions and numerical validity records. No local real experiment or package installation was needed.
+
+Generated follow-up findings (numbers below read from the canonical report JSON):
+
+- Heat, 64 intervals: same-job strict modular 28.323083 ms becomes relaxed compiled 14.177434 ms; median case-median improvement 1.9543312. Direct FOM is 1.1972245 ms. Worst current-normalized error remains 0.0973564751; maximum strict-to-relaxed field drift 0.00034727162. This is a runtime improvement within ROM, not a FOM speedup.
+- Heat, 128 intervals: same-job strict modular 28.820751 ms becomes relaxed compiled 14.267861 ms; median case-median improvement 1.9188922. Direct FOM is 1.3757055 ms. Worst current-normalized error remains 0.097356475; maximum strict-to-relaxed field drift 0.000347323484. This is a runtime improvement within ROM, not a FOM speedup.
+- Burgers, 256 output intervals, development target 0.1: median paired FOM/ROM 0.275459839, using `rom_L256_dt0.005_stall0.01_starts1` and `fom_L128_out256_dt0.01_ntol0.01`. No complete-query ROM advantage. Empirical reference uncertainty maximum 0.00373666916; rigorous bound remains unspecified.
+- Burgers, 512 output intervals, development target 0.1: median paired FOM/ROM 0.316227898, using `rom_L512_dt0.005_stall0.01_starts1` and `fom_L128_out512_dt0.01_ntol0.01`. No complete-query ROM advantage. Empirical reference uncertainty maximum 0.00373666916; rigorous bound remains unspecified.
+- Burgers, 1024 output intervals, development target 0.1: median paired FOM/ROM 0.455796446, using `rom_L1024_dt0.005_stall0.01_starts1` and `fom_L128_out1024_dt0.01_ntol0.01`. No complete-query ROM advantage. Empirical reference uncertainty maximum 0.00373666916; rigorous bound remains unspecified.
+- Burgers cold-only diagnostic, 256 intervals, budget 180, starts 4: worst full-grid initial error edge Gram 0.0260047709, fixed Gauss 0.0256287152, full-grid QR 0.0254466283; unrestricted bank projection floor 0.00189802781. Finer-grid full norms/floors are in-job scalar diagnostics; retained common-grid fields were independently recomputed. These are not stationary/global nonlinear fit certificates or corrected full-rollout results.
+- Burgers cold-only diagnostic, 512 intervals, budget 180, starts 4: worst full-grid initial error edge Gram 0.0546716139, fixed Gauss 0.0328358513, full-grid QR 0.0328284663; unrestricted bank projection floor 0.0149534838. Finer-grid full norms/floors are in-job scalar diagnostics; retained common-grid fields were independently recomputed. These are not stationary/global nonlinear fit certificates or corrected full-rollout results.
+- Burgers cold-only diagnostic, 1024 intervals, budget 180, starts 4: worst full-grid initial error edge Gram 0.0869507463, fixed Gauss 0.0385621976, full-grid QR 0.0385489267; unrestricted bank projection floor 0.022593. Finer-grid full norms/floors are in-job scalar diagnostics; retained common-grid fields were independently recomputed. These are not stationary/global nonlinear fit certificates or corrected full-rollout results.
+- Poisson, 256 intervals: increasing requested modes 64 to 256 changes stationary worst physical error 0.0731865097 to 0.0725423651. The full-bank and head diagnostics in the generated report identify a representation limitation; query fusion produces no direct-FOM advantage.
+- Poisson, 512 intervals: increasing requested modes 64 to 256 changes stationary worst physical error 0.0731890805 to 0.0725423124. The full-bank and head diagnostics in the generated report identify a representation limitation; query fusion produces no direct-FOM advantage.
+
+Fresh waves remain inaccurate and slower than their declared efficient FOMs in the tested compressed model. Reflective/absorbing time refinement passes for this pilot; smaller time steps do not explain away the error. Displacement normalization uses the initial displacement L2 norm; velocity/energy-state use the initial phase-energy scale, not initial velocity alone. Absorbing current-relative errors must remain visible as the physical field decays.
+
+Root review artifacts and scientific postprocessing are committed in `worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/multiresolution_campaign/`, current repair head `2104a89`. Relevant commits: protocol/accounting `9de0144`; heat field audit `09f90ff`; explicit deliberate stopping `f05e801`; heat cost/error plot `3897cb3`; Burgers saved-field audit `80e0459`; Poisson saved-field and denominator accounting `2a6b31e`; wave accounting/hash review `5a0dd6b`; wave-evolution still figures/provenance `2104a89`. The accounting unit checks passed; no repeat numerical test was needed for report-only changes.
+
+Root independently reconstructed the first heat, Burgers and Poisson retained-field metrics. Owners independently reconstructed follow-up metrics and checked saved controls, source and archives. The wave root review covers source/accounting/hash contracts; its owner also performed NumPy saved-field reconstruction, which is not a new independent full-grid truth solve. The cold-only Burgers audit cannot independently reconstruct fine full-grid norms from restricted archived fields, and that limitation is stated beside the table.
+
+The final report hashes 18 source artifacts. In-memory regeneration reproduced Markdown and JSON byte-for-byte and all linked artifacts existed. The Poisson owner reviewed report hashes, aggregation and interpretation; the Burgers owner reviewed the new margins, selections, cold-fit norms and limitations. Review corrected a reversed prose label (ROM advantage versus FOM advantage), clarified common-observation-grid norms and wave denominators, and added guards for missing configurations and failed cold fits. These reporting fixes did not alter raw numerical results.
+
+The campaign consistently uses the median of per-case timing medians and the median of per-case FOM/ROM ratios. Native exploratory reports retain explicitly labeled alternate pooling orders; these are different statistics, not different raw results. Close Burgers FOM candidates can change selection under the pooling convention. The earlier sole-starting-basin explanation of Burgers fine-mesh error is withdrawn: sample-objective drift and a bank representation gap both contribute. No independent-confirmation or rigorous-reference claim is made.
+
+Wave-evolution PNG/PDF still sequences and the heat accuracy/cost figure are linked from the canonical report. They use actual numerical outputs, fixed visual scales and saved provenance. This completes the earlier request for wave-evolution images.
+
+Remaining work: test the corrected Burgers initializer in a charged full rollout without changing the clipped family; separate boundary training coverage if necessary. For heat, the saved next pilot separates more optimization from more training coverage with a frozen bank. For Poisson, distinguish stronger bank/head coverage from the proposed tiny linear-system runtime kernel. For waves, run matched-dimensional frozen-bank linear/nonlinear representation and dynamics controls. Those next tests are proposals, not completed or active jobs. The full mesh ladder, per-resolution retraining, repeated training/data seeds, validation selection, final unopened-cohort evaluation and offline-cost accounting are still required for the paper.
+
+All scientific trees were left separate, with no experiment merge. The required user merge choice will be asked in the closing response; without explicit approval, keep the four worktrees as they stand. Existing unrelated main changes were preserved, and the shared lab log was not committed wholesale as coordinator-owned content.
+
+
+## 2026-09-07 — Continued development with separate experiment worktrees
+
+### Root coordinator — user merge choice and next bounded round
+
+The user accepted the recommendation to retain separate worktrees and instructed “go with the recommended and keep pushing”. No merge is requested or performed. Existing bases, branches, owners and cluster namespaces remain approved; no routine branch/compute permission is needed for this continuation.
+
+The queue was empty and paralab had approximately 470 GB available at start. Burgers resumes from `f405f52` for fixed physical Gauss initial fitting in complete rollouts against original edge fitting and the efficient coarse/same-grid FOM envelope. Heat resumes from `3350fe5` for the saved fixed-bank original-cohort versus expanded-cohort head/code refinement with paired optimization seeds and rollout after its representation gate. Poisson resumes from `8cc0b8a` for a guarded tiny-system linear-solver ablation, retaining generic control and charged fallback, and a separately proposed bank/head accuracy experiment. Root prepares the fresh-wave matched-dimensional diagnostic while the three owners work; a dedicated owner will use the existing wave tree when a slot becomes available.
+
+Each initial real attempt is bounded by the existing two-hour GPU ceiling, with local smoke checks only, complete provenance/repetition arrays, same-invocation physical metrics and costs, checked collection and exact remote cleanup. No final cohort is opened. Root continues independent review and updates the canonical generated question report after accepting results. This entry records authorized work starting, not successful results; a closing entry will follow.
+
+
+## 2026-09-07 — fixed-bank heat accuracy improvement from expanded training coverage
+
+### mr_heat2d owner: matched optimization controls, checked gated rollouts, retained FOM loss
+
+The user chose continued separate worktrees and said to keep pushing. Root resumed
+heat in the same approved tree/branch/namespace from `3350fe5`; no new tree or merge
+was created. Scientific source/config/design are committed at `0597f0dd505de537ebbda459d9db330132126d44`.
+The complete checked archive and generated artifacts are on `c65a92c`; final
+reporting/attribution clarification and the clean heat branch are at `8df5ecf6f8261147d9c6d3b418d8e7f57254ed02`.
+The user's decision to retain separate worktrees remains in effect.
+
+Implemented the saved head-coverage protocol: the frozen original head is a control;
+original-cohort and expanded-cohort head/code refinements each run both sampling
+seeds [790714, 790715]. Every refinement uses
+8000 matched updates and batch size 192.
+The expanded cohort adds 128 training
+trajectories from seed 790713 to the original
+32. The spatial network, Fourier lift and output scale remain
+bitwise unchanged, the bank rank remains 32, and the coefficient-head
+architecture/latent/bank dimensions are unchanged. Validation cases never enter
+the training loss or training-code library; final cohorts remain unopened.
+
+The exact QR-compressed full-field reconstruction objective includes the constant
+error outside the bank. A GPU component test verifies both objective and head/code
+gradient equality against full-field loss; another verifies spatial parameters stay
+frozen during training. Both local guarded GPU tests passed in 9.150 seconds, and
+the batch repeated them. All arrays are passed as JIT arguments.
+
+Job `3352849` (`ctol_mr_heat_p03`) completed in 00:02:41 on
+`NVIDIA A100 80GB PCIe`. GPU/f64/highest preflight and fresh reference checks passed.
+No captured-large-constant warning, OOM, fallback, truncated log or disk-full error
+was observed. Every scheduled training endpoint/checkpoint, actual training wall
+cost, seed, code initialization map and cohort draw is saved. Offline training
+seconds include first compilation and host work and are not a paired warm-GPU
+training-speed comparison.
+
+Strict multistart reconstruction, generated from native run JSON:
+
+- frozen: initial median/worst 0.0503788321/0.0973564463; later-time median/worst 0.0308089242/0.062354924; rollout gate False.
+- original_seed790714: initial median/worst 0.0465310407/0.0941133183; later-time median/worst 0.025006705/0.0589800677; rollout gate False.
+- original_seed790715: initial median/worst 0.0467689044/0.094311878; later-time median/worst 0.025294132/0.0591516717; rollout gate False.
+- expanded_seed790714: initial median/worst 0.0265592228/0.0395305118; later-time median/worst 0.0174010738/0.0216824647; rollout gate True.
+- expanded_seed790715: initial median/worst 0.0266970278/0.0403031189; later-time median/worst 0.0173339078/0.0211243832; rollout gate True.
+
+Both expanded endpoints pass the predeclared all-case stationary initial-error
+ceiling 0.05; both original-cohort
+refinements fail it. The unchanged unrestricted bank's worst reconstruction error
+is 0.0103101462. All selected initial and later snapshot
+fits are stationary; unused nonstationary starts remain saved. Every endpoint uses
+its own training-code lookup library, so expanded coverage changes both fitted
+head/codes and available starting-code coverage. The result is a fixed-bank
+expanded-coverage pipeline improvement, not an isolation of those mechanisms or
+proof of global fit optimality.
+
+The two qualifying expanded heads then ran complete compiled queries at strict and
+runtime-selected tolerances, together with the frozen original head and direct DST
+FOM in this same job. Both original meshes were retained, with no larger mesh
+extension. Full host initial input, full-input projection and both online fitting
+starts, evolution, all requested dense field outputs and host output transfer are
+charged. All 280 timing repetitions and their associated fields,
+errors, gradients and counters are retained. Native generated representative rows:
+
+- N=64 fom_dst_exact_time: query median 1.13795005 ms, current-reference error median/worst 0.00067520492/0.000709211281, native paired-repetition FOM/method ratio 1.
+- N=64 expanded_seed790714_gtol1e-05: query median 12.382497 ms, current-reference error median/worst 0.0265592283/0.0395311252, native paired-repetition FOM/method ratio 0.091144253.
+- N=64 expanded_seed790715_gtol1e-05: query median 12.1713775 ms, current-reference error median/worst 0.0266970857/0.0403034685, native paired-repetition FOM/method ratio 0.0949883621.
+- N=128 fom_dst_exact_time: query median 1.22589705 ms, current-reference error median/worst 0.000168684279/0.000177175319, native paired-repetition FOM/method ratio 1.
+- N=128 expanded_seed790714_gtol1e-05: query median 12.21361 ms, current-reference error median/worst 0.0265592283/0.0395311259, native paired-repetition FOM/method ratio 0.0948646831.
+- N=128 expanded_seed790715_gtol1e-05: query median 12.010503 ms, current-reference error median/worst 0.0266970857/0.040303469, native paired-repetition FOM/method ratio 0.0965626034.
+
+Both expanded heads attain the 5% development error target over the complete
+requested rollout on both meshes. Dense complete queries remain slower than the
+same-job direct DST FOM. Initial reconstruction remains the largest error in these
+cases. The native report explicitly uses the median across cases of median paired-
+repetition ratios; the canonical coordinator report retains its case-median-ratio
+convention. No cross-job raw timing comparison or positive FOM speedup is claimed.
+
+Native audit checked 112 file hashes, 83 unique
+arrays, all checkpoint/frozen spatial parameters, source blobs against git history,
+training-library bounds/cohort separation, fit-selection/gates, output shapes,
+repetition completeness and metric recomputation. Maximum native metric disagreement
+is 3.33066907e-16. Root's independent no-JAX audit separately
+reported exact metric agreement on all timed invocations, matching frozen/control
+parameters and declared RNG cohorts/counts, and stationary selected fits/steps.
+Compiled/modular field/latent/counter parity passed for every timed case/arm/mesh.
+
+All meshes use common observation intervals 64.
+The physical reference refinement evidence is empirical, with delta
+1.81003284e-10; the adjusted ratio is
+$(e+\delta)/(1-\delta)$. Rigorous continuum-bound fields stay null. These are
+restricted single-bump development results, not independent final confirmation,
+broader multi-component coverage or a full per-resolution study.
+
+Generated findings: `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/HEAT-HEAD-NOTES.md`.
+The independent native audit/generator is `audit_head.py`, with its raw/audit JSON
+and full source/checkpoint/input/reference/output archive under `runs/pilot03/`.
+Standalone `figures/heat-head.svg` and `.png`, generated by `plot_head.py`, show
+initial-fit controls and complete-query accuracy/cost. All artifacts are tracked.
+The previous prospective document now points to this completed result.
+
+Outputs were checksum-collected and the exact remote directory
+`/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/pilot03` was deleted; absence was
+verified. No heat job remains active. No earlier result was retracted; offline
+cost wording and mechanism attribution were clarified without changing raw results.
+Root requested this bounded close to free the wave-control agent slot. Further
+heat speed/kernel work and any mesh extension await a later bounded continuation;
+no additional training or job was launched and no branch was merged.
+
+## 2026-09-07
+
+### Poisson guarded small-system kernel pilot (separate approved worktree)
+
+Completed job `3352868` from source `20f96592b14c2d9727eb40341d2c6cbcb568f464` in the existing Poisson worktree/namespace. Generated findings, native JSON, independent CPU audit and checksum archive parts are under `worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot03/`. Exact remote attempt was checksum-collected and deleted. The unchanged compact bank/head and fixed development cohort remain the controls; sealed finals were untouched.
+
+Audit covers 672 timed invocations and 1200 replayed normal systems, maximum metric discrepancy 5.30084409e-16. Specialized field agreement is 2.39879533e-11, with 0 timed fallbacks. Changed counters and replay-counter mismatches remain explicit in generated findings; no exact-trajectory identity is claimed.
+
+At 256 intervals and target 0.1, selected complete-query ROM is 4.03637925 ms, FOM 1.92481501 ms, median of case-median FOM/ROM ratios 0.471638988. This is same-job development selection with empirical reference refinement, not rigorous continuum certification.
+
+At 512 intervals and target 0.1, selected complete-query ROM is 4.71971749 ms, FOM 2.43502526 ms, median of case-median FOM/ROM ratios 0.498425597. This is same-job development selection with empirical reference refinement, not rigorous continuum certification.
+
+The kernel gives modest complete-query improvement over the original fused query but no DST crossover or new accuracy qualification. The coordinator approved a separate same-tree continuation: coverage crossed with global versus per-snapshot relative training loss, retained original checkpoint control, fixed matched endpoints and fresh development-only validation. No merge is requested because the user explicitly retained separate worktrees.
+
+## 2026-09-07 — Corrected Burgers initializer validated in complete rollouts
+
+### Burgers owner — rollout04 closed; larger-timestep control approved
+
+The user chose to keep all four worktrees separate and continue. Existing Burgers worktree/branch/namespace were reused, without a new branch or merge. GPU source `d73fb4119057d4826c783d02829dd08835fe7a24`, completed archive/report commit `590561c0dd19f97a5fbda6cce5a675d5ad0b3658`. Job `3352857` completed `0:0` in `00:26:56` on pax050, `NVIDIA A100 80GB PCIe`; the log confirms GPU execution, f64 and highest precision. All closed outputs were checksum-collected to `experiments/mr-burgers2d/runs/rollout04/` in the Burgers worktree, and the exact remote attempt directory was removed. Other owners' jobs continued; no Burgers job remained active at this close.
+
+The unchanged checkpoint, clipped-Gaussian family, validation seed 7090702 and all 4 cases were retained. Frozen Gauss state fitting charges interpolation of the supplied dense field. The original edge initializer is measured again at matched dt/stall/budget. Fixed-Gauss controls vary initial budget, reduced timestep and evolution improvement threshold. The efficient sign-upwind FOM retains its full coarse-output envelope and adaptive tolerances. All 3 repetitions per setting include the complete dense host-input-to-host-output query.
+
+Independent audit verified 720 calls across 60 configurations and 240 saved complete-grid outputs. Maximum common and complete-grid error-reconstruction discrepancies are 4.16334e-17 and 4.16334e-17; regenerated reference metrics agree within 3.33067e-16. All 720 dense output hashes match their corresponding first repetitions. There were 0 FOM tolerance failures or nonfinite invocations. This archive resolves the prior restriction-only limitation for actual rollout field norms, while historical cold-only bank projection floors remain separately labeled scalar diagnostics.
+
+| Requested intervals | Selected complete-grid ROM at target 0.05 | ROM / FOM ms | Paired FOM/ROM |
+|---|---|---|---:|
+| 256 | `rom_L256_edge_ic60_dt0.005_stall0.01_starts1` | 36.676151 / 10.6652 | 0.304129331 |
+| 512 | `rom_L512_fixed_gauss_ic60_dt0.005_stall0.01_starts1` | 39.675718 / 12.261496 | 0.321172316 |
+| 1024 | `rom_L1024_fixed_gauss_ic180_dt0.005_stall0.01_starts1` | 54.903816 / 25.548924 | 0.482013087 |
+
+These selections pass only the empirical reference budget, with maximum margin 0.003736669161. The common-grid selections agree. The 1% reference budget remains unresolved, and no rigorous physical-error bound or final-cohort result is claimed.
+
+| Intervals | Original edge complete-grid worst | Gauss180 primary complete-grid worst | Gauss180 initial worst |
+|---|---:|---:|---:|
+| 256 | 0.0453987543 | 0.0455070013 | 0.0256287077 |
+| 512 | 0.0546710899 | 0.037133408 | 0.0328358507 |
+| 1024 | 0.086953369 | 0.0390762033 | 0.0385622001 |
+
+Thus the finer-grid full-rollout accuracy improvement is now measured, not inferred from a cold-only run. No complete-query ROM speed advantage appears. The original control remains cheapest at the coarsest requested mesh. All 18 initial budget exits occur in budget60 arms; the Gauss180 arms have none. All recorded evolution stops are deliberate small-step/improvement exits, not stationary/global-optimum certificates.
+
+The initial-fit gap remains relevant to tighter accuracy. The saved near-wall diagnostics measure error at nodes closer to a wall than the training mesh first interior node, without claiming an independently reconstructed bank projection floor. Smaller timesteps reduce some later errors; the finest smaller-step trajectory reaches the unchanged initial-field maximum. Tightening the tested evolution stopping threshold has only a small field effect.
+
+At 512 intervals, staged Gauss180 median initial-fit and evolution times are 4.215799 and 30.21546 ms, with 137 LM attempts. These are separate synchronized component diagnostics, not substitutes for complete-query costs or kernel-launch counts.
+At 1024 intervals, staged Gauss180 median initial-fit and evolution times are 4.28714 and 30.26628 ms, with 134.5 LM attempts. These are separate synchronized component diagnostics, not substitutes for complete-query costs or kernel-launch counts.
+
+The generated one-question report remains `experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md`, now describing rollout04. Its plot distinguishes common and complete-grid errors. `AUDIT.json`, `SUMMARY.json` and `DIAGNOSTICS.json` retain numerical evidence, margins, selections and field localization. Root independently checked all retained common-grid errors and is integrating the new results into the canonical report.
+
+Next, root approved one bounded larger-timestep study in the same tree: Gauss180, one start, stall0.01, dt0.005/0.01/0.025/0.05 at512/1024, preserving the four cases, three repetitions, frozen checkpoint and efficient FOM envelope. The common observation grid will remain256 for comparability; complete-grid norms will also be audited. This tests possible temporal over-resolution before architecture changes. The next source/preflight/job ID will be recorded separately.
+
+## 2026-09-07 — fresh-wave matched-dimensional dynamics controls
+
+### mr_wave_dynamics owner — frozen-bank compression ladder, complete queries and independent reconstruction
+
+The user retained the separate approved worktrees and requested continued development. This session used only `worktrees/2026-09-07-mr-wave2d`, branch `exp/2026-09-07-mr-wave2d`, with the existing wave namespace. No branch or merge was created. Scientific source/config/design are committed at `a0c4d0a7d7b59b05615846e61df0499ef5de4f62`; the checked archive, native audit, generated findings and plots are committed at `3534673724d0829b7c78bf2df5f6a9b821014192`. The user’s existing choice to keep worktrees separate remains in effect.
+
+Job `3353136` completed on `NVIDIA A100 80GB PCIe` at `pax050` in the recorded `00:17:18`, with GPU preflight, f64 and highest precision. The batch repeated the existing six solver controls and three new affine controls; local mathematical controls passed in the saved smoke log and the actual-checkpoint pipeline completed under the local minute limit. Two CPU audit/helper tests also passed. No captured-constant warning, fallback, OOM, truncated log or disk-full failure was observed.
+
+The unchanged fresh-wave MLP displacement head has the saved common-affine equal-dimensional control, plus training-only affine32 and full64 linear controls inside the same frozen neural bank. The augmented propagator retains the nonzero affine-offset forcing and actual reduced mass. Every query charges full host inputs, field projection/fitting, supplied-speed-dependent generator and exponential, evolution, requested dense displacement/velocity outputs and host transfer. Mesh-only tables and training-only coefficient PCA are offline. No validation fit initializes a timed query. The final cohort stays sealed.
+
+Training regeneration and PCA agreement, generated from native JSON:
+- dirichlet: original seed 690601, count 64, intervals 256; original displacement/velocity hashes match True; saved PCA16 projector defect 2.02069171252e-14, center defect 3.30098617319e-17. The saved common initialization remains unchanged, and the larger ladder is the same training construction extended.
+- absorbing: original seed 690601, count 64, intervals 256; original displacement/velocity hashes match True; saved PCA16 projector defect 1.35158913187e-14, center defect 3.21253849182e-17. The saved common initialization remains unchanged, and the larger ladder is the same training construction extended.
+
+Fine-grid complete-query development results, generated from native JSON. Errors are time maxima on the common observation grid, with displacement divided by its initial L2 norm and velocity/energy state divided by initial phase-energy scale. Ratios are medians of per-case same-grid FOM/method query ratios:
+- dirichlet rom: median/worst required error 0.460137104148/0.552043385594; query median 3380.99123747 ms; raw same-grid FOM/method 0.0184357184275.
+- dirichlet affine16: median/worst required error 0.263324291569/0.302048959196; query median 60.6830765028 ms; raw same-grid FOM/method 1.02717217805.
+- dirichlet affine32: median/worst required error 0.0433949075887/0.0518880923669; query median 60.3146740468 ms; raw same-grid FOM/method 1.03347986697.
+- dirichlet full64: median/worst required error 0.0311162569697/0.0328962054109; query median 61.9177955668 ms; raw same-grid FOM/method 1.00670988463.
+- absorbing rom: median/worst required error 0.0757294591964/0.0765434651702; query median 3300.85134302 ms; raw same-grid FOM/method 0.0846689546497.
+- absorbing affine16: median/worst required error 0.168166926584/0.186664296748; query median 61.6480534663 ms; raw same-grid FOM/method 4.53480719014.
+- absorbing affine32: median/worst required error 0.0562761817187/0.0591274722314; query median 54.9658724922 ms; raw same-grid FOM/method 5.13761568711.
+- absorbing full64: median/worst required error 0.0284687028378/0.0302014316398; query median 62.5465000048 ms; raw same-grid FOM/method 4.46803487389.
+
+The matched affine control improves reflective rollout but worsens absorbing rollout. Larger linear spaces improve both. Nonlinear snapshot displacement fits can be better than matched affine fits while autonomous rollout is worse; snapshot fit alone does not establish dynamics. This does not prove an irreducible error for all nonlinear manifolds at the same dimension. The linear controls do not constitute an unchanged nonlinear-decoder speedup. Coarser efficient FOM solves with charged interpolation were not swept, so the listed ratios are not a cost-to-tolerance FOM envelope.
+
+Absorbing late-time current-relative energy-state errors at the finer mesh, generated from native JSON:
+- rom: 2.9280813195 to 4.10704501721 times the current reference norm.
+- affine16: 21.4504186127 to 46.2361332923 times the current reference norm.
+- affine32: 2.69765307107 to 3.65007672096 times the current reference norm.
+- full64: 1.32914902515 to 2.15488274819 times the current reference norm.
+
+The reference becomes small. Full64 includes zero exactly and has zero normal force within the full weak bank by construction, yet its late current-relative error remains large. Zero representability and local weak normal force are diagnostics, not sufficient physical-accuracy certificates. No sole curvature or offset explanation is asserted. All absolute errors, fixed scales, current norms and vanishing flags are retained.
+
+Snapshot/tangent/normal-force diagnostics are restricted to observation indices `[0, 12, 24, 36, 48]`; all requested observations still enter rollout metrics. The same eight starts use paired fitting budgets `[400, 800]`. There are 0 selected nonstationary diagnostic fits, including zero targets, and maximum longer-budget objective change 0. These remain local best-recorded fits, not global optima. All 8 nonlinear time-refinement checks pass; maximum required difference 1.04106986009e-06.
+
+The owner’s independent CPU audit checks 156 timed invocations and 78 output files. Common physical metrics and full-grid ROM discrepancy metrics recompute with maximum scalar difference 0/0. Independent coordinate-network reconstruction matches full bank tables to 2.92887242237e-13; 768 fitting endpoints match objectives to 1.30104260698e-17 and gradients to 3.0227162376e-16. NumPy chain-rule reconstruction checks nonlinear physical velocity, curvature and normal force. The 24 affine generator/propagation controls match independent actual-mass/offset calculations and direct-time SciPy exponentials, maximum state difference 5.24380538991e-11.
+
+Root separately audited every timed call on the common observation grid and the independent affine mathematical fixtures. The owner read-only reviewed the canonical report’s wave section: numeric tables, statistics and caveats agree; requested clarification of the initial-normalization table header and preservation of a solver-cost track in next work. There was no numerical retraction. The audits reuse retained reference trajectories; full-grid timed FOM metrics at nonreference CFLs cannot be reconstructed from their common fields and remain outside the fine-grid audit scope. Reference refinements remain empirical, with rigorous bounds unspecified.
+
+All output was checksum-collected using source/output/pull manifests, then exact remote `/cluster/tufts/paralab/tawal01/mr_wave2d_20260907/dynamics02` was deleted and absence verified. The full archive is 4119323795 bytes in 44 checked parts. Large extracted NPZ files are omitted only as duplicate git blobs; complete bytes remain tracked in the archive, with a tested checksum-verifying `restore_archive.py` that restores missing files and refuses to overwrite differing existing files. Raw JSON, source/config/provenance and manifests are tracked directly. Nothing exists only in scratch space.
+
+Generated findings, exact tables, audit JSON and accuracy/cost/error-evolution PNG/PDF figures live at `worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/dynamics02/analysis/`. No additional wave training or GPU submission was launched. Next work remains larger matched nonlinear/linear dimensions, explicit late-time absorber accuracy and separately measured nonlinear-evolution cost, followed by an efficient coarser-FOM resolution envelope before any paper speed claim. Neural mesh retraining, broader independent development repeats and final confirmation remain open.
+
+
+## 2026-09-07
+
+### Burgers timestep study closed: modest savings, efficient FOM still faster
+
+Continued in the user-approved separate Burgers worktree/branch and namespace; no branch or merge was created. The user chose continued separation. The bounded steps05 study used scientific source `ffd57ee68cd1a1a61503556135d74220a0ca2fa0` and job `3353574` (`ctol_mr_burgers_steps05`), completed 0:0 on pax050 / NVIDIA A100 80GB PCIe in 23m53s. The driver elapsed time was 1402.328s. Final archive, source, audit and generated findings are committed as `1859ac56b7299f437a9f5b703fde8cc17ef8cc6d` in `worktrees/2026-09-07-mr-burgers2d`.
+
+The frozen R512/K16 checkpoint, clipped Gaussian initial-condition family, seed 7090702 and all 4 development cases stayed unchanged; final cases remain unopened. Requested meshes were 512,1024 intervals with common observations on 256 intervals. Fixed physical Gauss fitting used budget 180 and one start, with charged dense-input interpolation. Only ROM time step varied over the four predeclared settings; weak modes/quadrature, the existing residual-guarded linear latent extrapolation, improvement threshold and trial cap stayed unchanged. Every efficient FOM configuration from the preceding rollout study that applies to these output meshes was retained. The local GPU timestep/alignment smoke passed in the required under-minute envelope, and production GPU/f64/highest preflight and kernel parity checks passed.
+
+All 516 timed invocations across 43 configurations were retained with same-invocation cost, error and status. All 172 full-grid artifacts and common fields passed independent NumPy reconstruction; maximum metric discrepancies were 7.21645e-16 full-grid and 1.110223e-16 common-grid. Every repetition's full-field hash matches its corresponding first actual artifact. The raw result SHA256 is `689a2abab1efd920d0a5ad74debb17b126c4601706cbb24225571f4c17d1d865`. Closed logs have no warnings/errors, all source/checkpoint/output hashes passed, the 8.6 GB archive was pulled with checksums, and the exact remote `mr_burgers2d_20260907/steps05` directory was deleted. Root separately checked all common-field errors and reported agreement to floating-point precision.
+
+The regenerated three-level reference retains an explicitly empirical margin of 0.00373666916063; 5% and 10% development qualification is supported, while 1% remains unresolved. Eligibility requires each case's error plus its margin to meet the target. The table uses requested-grid norms normalized by the initial reference field, with costs given as cohort medians of case-repetition medians and paired ratios as medians of per-case FOM/ROM ratios. Common-grid selections agree in this run.
+
+| Output intervals | Empirical target | Selected ROM dt | Worst full-grid error | ROM / selected FOM ms | Paired FOM/ROM |
+|---|---|---:|---:|---:|---:|
+| 512 | 5% | 0.01 | 4.619446% | 35.730211 / 12.146742 | 0.339988547 |
+| 512 | 10% | 0.025 | 8.584952% | 31.940097 / 12.146742 | 0.390960428 |
+| 1024 | 5% | 0.01 | 4.635117% | 49.463007 / 24.903444 | 0.523878980 |
+| 1024 | 10% | 0.025 | 8.899827% | 46.457107 / 24.903444 | 0.559712154 |
+
+Initial full-grid maxima remain 3.2835851% and 3.8562200% at the two meshes; the saved initial fields agree exactly across time-step arms. Larger-step losses occur later. The largest time step has worst full-grid errors above 20%; fewer time steps do not proportionally reduce the recorded LM work. Evolution stop counts are {"0": 78, "2": 2082} (0: configured budget, 2: configured improvement), with no failed/nonfinite exit. All 96 initial fits stop under the configured improvement rule. These are not stationary or global-optimum certificates. At time step .025 every case reaches the trial cap on its first step; this is a diagnosed startup limitation, not proof that it accounts for all later error.
+
+The earlier suggestion that the current method lacks guarded linear latent extrapolation is withdrawn: that predictor is already in `engines.py` and in every measured arm. A separately predeclared startup-step allocation or different time formula could be a bounded later test, since the first step has no extrapolation history. No such change or further GPU submission was made. The efficient FOM envelope remains faster, the unchanged initial fit limits tighter errors, and this study does not establish a bank-only or optimizer-only cause.
+
+Native generated report: `worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/reports/2026-09-07-burgers2d-multiresolution.md`; raw/audit/summary/diagnostics: the same experiment's `runs/steps05/`. The report retains a link to the audited rollout04 edge/Gauss comparison, records all later-time and initial errors, iteration/cap counts and component costs, and has checked generation reproducibility and links. Stop for coordinator review with a clean tree; all worktrees remain separate.
+
+## 2026-09-07
+
+### Wave agent — fixed-bank larger heads and outgoing-wave moment diagnostic closed
+
+Worked only in the existing approved `worktrees/2026-09-07-mr-wave2d`, branch `exp/2026-09-07-mr-wave2d`; user chose continued separate worktrees. Completed result/audit/archive commit `77af541a5995e3870583e6e957f9579d116a2760`. Numerical source and staging predated submission; no new GPU work follows this close.
+
+Larger-head attempt `k32heads03`, job `3353701`, scientific source `0351e9865ac4559c9e9dbd7bfe4b8a52596e143c`, completed 0:0 in 00:31:40 on pax049, `NVIDIA A100 80GB PCIe`. GPU backend, f64 and highest precision passed; no numerical warnings or truncated output. Source hashes, frozen inputs and all three pull/output/source manifests verified. The exact remote attempt under `mr_wave2d_20260907` was deleted and absence checked. Archive: 6251670224 bytes, 67 parts, SHA256 `3db5d798f54a4fa35746ea897373560e94850376aff0ffa5ad9524360257e29d`. Complete fields, coordinate banks, coefficients, fitting endpoints and all four new checkpoints are preserved; raw JSON/code/manifests and nested head checkpoints are also tracked directly. `RESTORE.md` and the tested streaming restore helper retain the large duplicate arrays omitted from direct git blobs.
+
+The original 64 training cases were regenerated from seed 690601 on the cluster; original hashes matched for both boundaries. Original reconstruction-only training protocol stayed fixed: 10000 updates per endpoint, seeds [691200, 691201], frozen learned bank with 64 weak equations, new configuration dimension 32. The overdetermination ratio changes explicitly from 4 to 2. The same two development cases per boundary and meshes [256, 512] were used; final cohort stays closed. Frozen MLP16 remains at dt .0025; both new heads have repeated dt .01/.005/.0025, matched affine32 and same-job efficient DST/RK4 controls. The 16 dt .00125 single-call controls are fully charged in raw JSON but excluded from every speed comparison/selection. No velocity, tangent, normal-force, rollout or validation objective was added.
+
+The independent native CPU audit passed 228 comparison invocations and 16 fine controls; failed trajectories: 0 timed and 0 fine. Maximum common/full-grid ROM metric disagreement: 0 / 0. It independently reconstructs coordinate banks, trained-head derivatives, physical velocities/curvature/normal force, 2304 diagnostic fit endpoints including rank and stationarity, selected cold-fit stationarity, training initialization/objectives and affine generators. Root separately checked all common fields and invocation roles with discrepancy 3.1086244689504383e-15. All 48 adjacent step comparisons pass the unchanged criterion 0.01; maximum required difference 0.000303607674648. Selected diagnostic nonstationarity count 0; maximum selected 400/800 budget objective change 0.
+
+Fine-mesh results below are time-max errors with fixed initial normalization, maximized across displacement, velocity and phase-energy norms. Timing is a median of per-case repetition medians; raw paired ratios are medians of same-case requested-mesh FOM/method costs. They are not a coarse-FOM cost-to-tolerance envelope.
+
+| Boundary | Method | dt | Worst required error | Query median seconds | Paired same-grid FOM/method |
+|---|---|---:|---:|---:|---:|
+| dirichlet | frozen_mlp16_seed691200 | 0.0025 | 0.552043385594 | 3.37382378703 | 0.0182534739804 |
+| dirichlet | new_mlp32_seed691200 | 0.01 | 0.0620294688155 | 1.21724243648 | 0.0505928992521 |
+| dirichlet | new_mlp32_seed691200 | 0.0025 | 0.0620437926302 | 4.60387989855 | 0.0133765047494 |
+| dirichlet | new_mlp32_seed691201 | 0.01 | 0.0677418063979 | 1.21662655001 | 0.0506185271264 |
+| dirichlet | new_mlp32_seed691201 | 0.0025 | 0.0677940935633 | 4.60520430701 | 0.0133726584875 |
+| dirichlet | affine32 | 0 | 0.0518880923669 | 0.0595703714644 | 1.03380062235 |
+| absorbing | frozen_mlp16_seed691200 | 0.0025 | 0.0765434651702 | 3.28812294046 | 0.0844831318301 |
+| absorbing | new_mlp32_seed691200 | 0.01 | 0.0591320723752 | 1.33663877298 | 0.207855977696 |
+| absorbing | new_mlp32_seed691200 | 0.0025 | 0.0591290718542 | 5.094416907 | 0.0545307682117 |
+| absorbing | new_mlp32_seed691201 | 0.01 | 0.0618111736227 | 1.32815155649 | 0.209194790151 |
+| absorbing | new_mlp32_seed691201 | 0.0025 | 0.0618111736227 | 5.0501262655 | 0.0550125602751 |
+| absorbing | affine32 | 0 | 0.0591274722314 | 0.0516608370235 | 5.48073805964 |
+
+The larger heads substantially improve reflective accuracy and modestly improve absorbing initial-normalized error, but they increase cost at matched time step. The observed speed recovery against frozen MLP16 comes from the larger tested time step. No nonlinear row is faster than the same-job requested-mesh FOM; both larger seeds miss the all-case 5% target. On the finer mesh neither larger head beats the matched affine worst error; on the coarser absorbing mesh seed691200 has a very small improvement. All original empirical reference limits remain, including the absence of a rigorous error bound or independent final-cohort confirmation.
+
+Late absorbing final energy-state errors divided by the remaining reference norm remain:
+- frozen_mlp16_seed691200: 2.9280813195 / 4.10704501721.
+- new_mlp32_seed691200: 2.92708691453 / 3.22814115156.
+- new_mlp32_seed691201: 3.12150753835 / 4.66729224091.
+
+A separate read-only moment diagnostic on the already audited `dynamics02` archive is committed `067714e`. Actual outgoing operator normalization gives the conserved mass integral of velocity plus speed times boundary integral of displacement. The N512 constant-test projection error is 0.00409384396709; the full reference moment drifts at most 4.33680868994e-17. Unrestricted bank-projected initial moments are 0.000744056739409 / -0.000976556237386. Initial projection/head-fit error and subsequent autonomous drift are stored separately, with exact mass/edge/corner/speed formulas and full-grid checks. Nonzero reduced generator rows establish a missing invariance property; they do not establish how much physical error this causes. No correction or original numerical finding was retracted.
+
+Unsubmitted future design `NEXT-MOMENT-CONTROL.md` (commit `6737bbd`) specifies a factorial control: original versus constant-augmented learned span, crossed with original versus corrected initial moment. It adds no training and no submission. The existing K32 job was unchanged. Next direction requires assessment of these diagnostics, not another head-size or time-refinement sweep by default.
+
+Native artifacts: `experiments/multiresolution-wave/runs/k32heads03/analysis/{summary.json,audit.json,FINDINGS.md}` and checked PNG/PDF accuracy-cost/error-evolution figures. Moment artifacts: `runs/dynamics02/analysis/{ABSORBING-MOMENT.md,absorbing-moment.json}` and operator/trace NPZs. Root canonical larger-head and moment report sections were reviewed read-only against native artifacts; numeric/statistical/scope review passed. Canonical top status/report integration is owned by the coordinator. Worktree is clean and remains separate; no merge or further GPU job was performed.
+
+
+## 2026-09-07
+
+### Poisson continuation factorial and projection/initialization speed study closed
+
+The user retained separate worktrees and requested continued development. This session stayed in the approved Poisson tree, branch and remote namespace; no branch or merge was created. The reviewed result archive and generated findings are committed through `a970e274165085e3e4373113d8598853952172c0`. No further Poisson GPU study is launched this round.
+
+Training factorial job `3353137` used immutable source `0ed8384c30ff150d0f25adfe1dead41a8a739c26`; speed factorial job `3354845` used `20893525a16603a99f527dbd9e10affcdc206b9d`. Each used its own attempt directory, GPU preflight, float64/highest precision, paired complete-query repetitions and burn-in. Source and checkpoint bytes were staged from committed history with direct checksums; data were regenerated from seeds. Sealed final sources stayed closed.
+
+The training factorial crossed original coverage with expanded coverage and shared-global with full-field per-snapshot relative normalization. All 4 fixed endpoints reached 10000 updates. Original reproduction used the first 512 sources of the original 576 draw; expanded coverage added 1536 independently seeded sources. Training uses 256 nodes, while queries use [256, 512] intervals. Both bank and head were continued, along with training codes, under matched updates and batches rather than equal visits per source. Actual offline source/code-fit/compile/train/diagnostic elapsed was 47.1393422 seconds. Offline durations are not a paired warm training-speed comparison.
+
+The owner audit checked 7680 training-study query invocations, 896 unique timed fields and 300 reference-only bank/head diagnostic panels. Maximum independent CPU query-metric difference was 5.30084409e-16. The root coordinator separately audited every timed field and independently reproduced the endpoint selection.
+
+Training stationary-control physical errors, generated from native data:
+
+| Intervals | Development cohort | Model | Median / worst physical error | Invalid / nonstationary |
+|---:|---|---|---:|---:|
+| 256 | existing_development | original_frozen | 0.00760189002 / 0.0725423651 | 0 / 0 |
+| 256 | existing_development | original_global | 0.00758192806 / 0.0719184612 | 0 / 0 |
+| 256 | existing_development | expanded_global | 0.00905150484 / 0.0746116862 | 0 / 0 |
+| 256 | existing_development | original_relative | 0.0131921547 / 0.0608459011 | 0 / 0 |
+| 256 | existing_development | expanded_relative | 0.0136182999 / 0.0576748392 | 0 / 0 |
+| 256 | fresh_development | original_frozen | 0.0195452025 / 0.0766875934 | 0 / 0 |
+| 256 | fresh_development | original_global | 0.0194650646 / 0.0776348521 | 0 / 0 |
+| 256 | fresh_development | expanded_global | 0.0185411662 / 0.0849998522 | 0 / 0 |
+| 256 | fresh_development | original_relative | 0.0208308225 / 0.068015643 | 0 / 0 |
+| 256 | fresh_development | expanded_relative | 0.0184733094 / 0.0747453733 | 0 / 0 |
+| 512 | existing_development | original_frozen | 0.00760168447 / 0.0725423124 | 0 / 0 |
+| 512 | existing_development | original_global | 0.00758172043 / 0.0719184032 | 0 / 0 |
+| 512 | existing_development | expanded_global | 0.00905132552 / 0.0746116238 | 0 / 0 |
+| 512 | existing_development | original_relative | 0.0131920174 / 0.0608457768 | 0 / 0 |
+| 512 | existing_development | expanded_relative | 0.0136181807 / 0.0576747557 | 0 / 0 |
+| 512 | fresh_development | original_frozen | 0.0195451089 / 0.0766875155 | 0 / 0 |
+| 512 | fresh_development | original_global | 0.0194649613 / 0.077634775 | 0 / 0 |
+| 512 | fresh_development | expanded_global | 0.0185410352 / 0.0849997815 | 0 / 0 |
+| 512 | fresh_development | original_relative | 0.0208306791 / 0.068015574 | 0 / 0 |
+| 512 | fresh_development | expanded_relative | 0.0184731351 / 0.0747452342 | 0 / 0 |
+
+The predeclared minimax rule across all sources and both meshes selects `original_relative`, SHA256 `81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a`, with worst empirically adjusted error 0.0680196727. This choice uses every development case, not the previously inspected narrow-source example. Relative normalization changes the tradeoff between worst-case and median errors; expanded coverage does not uniformly improve the fixed-compute endpoints. Bank/head fits remain local reference-only diagnostics and are never online initializations.
+
+The speed factorial retains the original and selected checkpoint, crossing sine-product versus forward-DST source projection with mean-code versus nearest training-prediction initialization. It records 1800 repeated primary calls and 480 separate single-call stationary controls. The cache uses only training codes and decoder-predicted weak coefficients. Lookup, projection, guarded linear solve/fallback, nonlinear evolution, decoding and full host-field transfer are charged. Cache/operator assembly and compilation are offline.
+
+Full host source through returned host field, stop reason/counters/latents, guard diagnostics and initialization metadata. Independent stationarity recomputation, physical-error and parity scoring occur after the timer, using that same invocation.
+
+The residual threshold remains relative to each chosen start. A nearer start can demand a tighter absolute threshold and force a stationary exit. Initial/final residuals, absolute thresholds, stop reasons and nearest-index gaps are retained. Projection parity compares the same initialization choice; different mean/nearest local minima are evaluated directly rather than rejected by equality.
+
+| Intervals | Checkpoint | Projection | Initialization | Primary query ms | Worst physical error | Invalid / nonstationary | Paired same-grid DST/ROM |
+|---:|---|---|---|---:|---:|---:|---:|
+| 256 | original_frozen | skinny_sine_products | mean_training_code | 4.3612505 | 0.0766875934 | 0 / 11 | 0.412807273 |
+| 256 | original_frozen | skinny_sine_products | nearest_cached_scaled_weak_prediction | 3.79991601 | 0.0766875934 | 0 / 0 | 0.426915035 |
+| 256 | original_frozen | forward_dst_and_gather | mean_training_code | 4.17404401 | 0.0766875934 | 0 / 11 | 0.410709182 |
+| 256 | original_frozen | forward_dst_and_gather | nearest_cached_scaled_weak_prediction | 3.903693 | 0.0766875934 | 0 / 0 | 0.43268999 |
+| 256 | original_relative | skinny_sine_products | mean_training_code | 4.36738844 | 0.068015643 | 0 / 6 | 0.398234345 |
+| 256 | original_relative | skinny_sine_products | nearest_cached_scaled_weak_prediction | 3.93937051 | 0.068015643 | 0 / 0 | 0.445042553 |
+| 256 | original_relative | forward_dst_and_gather | mean_training_code | 4.34452749 | 0.068015643 | 0 / 6 | 0.394674063 |
+| 256 | original_relative | forward_dst_and_gather | nearest_cached_scaled_weak_prediction | 3.7348675 | 0.068015643 | 0 / 0 | 0.456780496 |
+| 512 | original_frozen | skinny_sine_products | mean_training_code | 4.68914851 | 0.0766875155 | 0 / 11 | 0.480681009 |
+| 512 | original_frozen | skinny_sine_products | nearest_cached_scaled_weak_prediction | 4.18058998 | 0.0766875155 | 0 / 0 | 0.545576953 |
+| 512 | original_frozen | forward_dst_and_gather | mean_training_code | 4.59367101 | 0.0766875155 | 0 / 11 | 0.484046831 |
+| 512 | original_frozen | forward_dst_and_gather | nearest_cached_scaled_weak_prediction | 4.32107202 | 0.0766875155 | 0 / 0 | 0.532466198 |
+| 512 | original_relative | skinny_sine_products | mean_training_code | 4.60523053 | 0.068015574 | 0 / 6 | 0.480207839 |
+| 512 | original_relative | skinny_sine_products | nearest_cached_scaled_weak_prediction | 4.01824253 | 0.068015574 | 0 / 0 | 0.561288028 |
+| 512 | original_relative | forward_dst_and_gather | mean_training_code | 4.83629951 | 0.068015574 | 0 / 6 | 0.458062264 |
+| 512 | original_relative | forward_dst_and_gather | nearest_cached_scaled_weak_prediction | 4.20458097 | 0.068015574 | 0 / 0 | 0.542128391 |
+
+Both complete-query development envelopes use median case-median latencies and medians of per-case cost ratios. The efficient FOM panel includes same-grid DST and charged coarse-grid interpolation. Every source must meet the solver, parity and empirical reference-adjusted accuracy gates; reference differences are not rigorous continuum bounds. Separate stationary controls do not enter speed selection.
+
+| Intervals | Target | Selected speed-study ROM | ROM / selected FOM ms | Paired FOM/ROM |
+|---:|---:|---|---:|---:|
+| 256 | 0.1 | original_relative / forward_dst_and_gather / nearest_cached_scaled_weak_prediction | 3.7348675 / 1.75096601 | 0.456780496 |
+| 256 | 0.05 | unattained | — / 1.75096601 | — |
+| 256 | 0.01 | unattained | — / 1.75096601 | — |
+| 256 | 0.001 | unattained | — / 1.75096601 | — |
+| 512 | 0.1 | original_relative / skinny_sine_products / nearest_cached_scaled_weak_prediction | 4.01824253 / 2.26715201 | 0.561288028 |
+| 512 | 0.05 | unattained | — / 2.26715201 | — |
+| 512 | 0.01 | unattained | — / 2.26715201 | — |
+| 512 | 0.001 | unattained | — / 2.26715201 | — |
+
+The speed-study CPU audit checks 668 preserved full fields, reconstructs neural outputs from saved coordinates and weights, verifies the training-only cache and selected codes, and recomputes physical errors, residuals and stationarity. Maximum query-metric discrepancy is 5.30084409e-16, decoded-field relative discrepancy 7.25450008e-15, and stationarity discrepancy 2.31287212e-13. Projection-gate failures: 0; primary fallbacks: 0; stationary fallbacks: 0. All failures remain in native records and errors. The audit distinguishes exact saved source-parameter hashes from tiny cross-architecture exponential roundoff in independent seed regeneration.
+
+- `pilot04`: archive 1877205838 bytes in 38 checked parts, SHA256 `486713c64ffb9cbc60c51fe31f828af61b30b0efd51895e17b3374e723edb4e0`. Exact remote `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/pilot04` deleted and absence checked.
+- `pilot05`: archive 858639891 bytes in 18 checked parts, SHA256 `831001c363bb364c86107f57231e5df70ab12f33c6db16eea212273f0983cb2c`. Exact remote `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/pilot05` deleted and absence checked.
+
+All raw JSON, source manifests, logs, native audits, PNG/PDF figures and generated findings are preserved under `worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/`. The four trained checkpoints are also directly tracked under `runs/pilot04/checkpoints/`, not only inside the checked archive.
+
+No prior numerical result is retracted. Cross-architecture exact input-hash regeneration is not asserted; recorded within-job source hashes, exact persisted draw prefixes and numerical CPU reconstruction are the supported checks. These bounded development studies do not establish an optimal training recipe, a globally optimal head fit, rigorous physical certification or a paper-complete speed claim. Further training, solver changes and final confirmation remain open; stop for coordinator review with separate worktrees.
+
+
+## 2026-09-07
+
+### Heat frozen-head transfer04 closed: accurate transfer, efficient FOM still faster
+
+Continued in the user-approved separate heat worktree/branch and existing namespace, with no new branch or merge. The bounded transfer study used scientific source `88ae5905d3f1ec424edbc4d7b8027e19eebe296b` and job `3354958` on pax049 / NVIDIA A100 80GB PCIe; driver elapsed time was 647.216831s. Native source, complete checked archive, audits and generated findings are committed through `7fcd0237fb5aaa3949e6e2a27236caa9a0598514`. The exact raw results SHA256 is `9efffdee15de45d5c375703877eb52654dc6569ea22ada919af0b56224886a76`.
+
+Both expanded-coverage heads and their training-code libraries stayed frozen. The declared restricted polynomial-boundary Gaussian family, diffusivity and output times were unchanged. Original development seed 790711 contributed 4 cases and fresh development seed 790716 contributed 8; neither cohort entered training or initializer lookup. Final confirmation remains unopened. Requested meshes were [64, 128, 256, 512, 1024], shared observations 64, fixed Crank–Nicolson step 0.025 and validated gradient tolerance 1e-05. Mesh-dependent full-input QR projections and weak operators were rebuilt, and all complete/modular query parity checks passed.
+
+Every FOM returns the exact supplied requested-grid initial field; host coarse restriction, direct-time sine-transform propagation, physically aligned interpolation and complete contiguous host output construction are charged. ROM instead returns its actual fitted initial field and charges full input transfer/projection, multistart fitting, evolution and all outputs. Coarse solver choices and the same-grid solver are deduplicated only when their actual solver/output configuration is identical. Paired GPU burn-in and synchronization precede each block; every cost and error uses the same actual invocation.
+
+The native independent NumPy/SciPy audit checked 1152 invocations and 528 field files, maximum metric disagreement 5.26245713672e-14. Every FOM evolved/interpolated field matches independent SciPy/NumPy calculations to relative discrepancy 6.44690924177e-16; complete spectral-reference trajectories match to 1.1044037433e-15. The observed nested-reference discrepancy is 1.62810884586e-12; it is empirical evidence only and the strict bound is null. Selected nonstationary initial fits/steps: 0/0. Root independently checked the preserved production fields, cohorts, frozen weights/libraries, repetitions and t0 policy; maximum metric difference 0, source audit JSON SHA256 `36cd9886199a1c514fdcb829c333052c5609ebd1bc759ca97ddc7639648ec11a`.
+
+Across both heads and all union-cohort meshes, the worst full current-relative physical error was 4.560008975% and worst shared-grid error 4.560001183%. Both frozen heads satisfy the empirically adjusted development target throughout this mesh ladder. The efficient FOM remains faster. The following union-cohort selections use the full-grid 5% target, medians of per-case timing medians, and paired ratios as medians of per-case FOM/ROM ratios of those medians. All repetitions and reference allowances enter eligibility.
+
+| Output intervals | Selected ROM | Selected FOM | ROM ms | FOM ms | Paired FOM/ROM |
+|---:|---|---|---:|---:|---:|
+| 64 | expanded_seed790715 | fom_dst_64 | 12.565909 | 0.509903 | 0.040695447 |
+| 128 | expanded_seed790714 | fom_dst_64 | 12.260174 | 0.673200 | 0.056623713 |
+| 256 | expanded_seed790714 | fom_dst_64 | 13.207777 | 1.164132 | 0.087957124 |
+| 512 | expanded_seed790714 | fom_dst_16 | 14.986074 | 4.515824 | 0.291338607 |
+| 1024 | expanded_seed790715 | fom_dst_16 | 27.732991 | 21.410562 | 0.766730009 |
+
+Full and shared physical norms are reported separately, with current normalization, initial normalization, absolute error and decay/energy/advancement records at every output. Same-grid semidiscrete discrepancies remain separate from discrete-versus-spectral spatial errors. ROM-versus-discrete discrepancy contains representation, weak-solve and time error; this transfer study does not independently separate those contributions. No earlier scientific result is retracted. The planned GPU memory figure is a live-array estimate, not a measured allocator peak; detailed Slurm host-memory accounting is preserved.
+
+All 553 member checksums passed, and the 8974452498 archive bytes are tracked in 96 checked chunks with a tested restoration helper. Large extracted NPZ fields are omitted only as duplicate git blobs. Exact remote `/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/transfer04` was deleted and absence verified. Generated native report, audit/summary JSON and PNG/PDF accuracy/cost/component figures live at `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/transfer04/analysis/`.
+
+This establishes frozen transfer for the declared restricted single-bump development family, not coverage of archived multi-bump heat or an efficient-FOM speed advantage. Broader scientific cohorts, tighter accuracy and further runtime work remain open for a later separately bounded continuation. No additional GPU study was launched this round, and all worktrees remain separate.
+
+## 2026-09-07 — Continued multiresolution round closed
+
+### Root coordinator — audited results, report integration and separate worktree handoff
+
+Continued the user-authorized campaign in the existing repair worktree, with each PDE owner confined to its approved worktree and cluster namespace. The user already chose to retain these worktrees separately; no new branch, namespace or merge was created. All numerical jobs in this bounded round have finished. The full paper objective remains open because no completed nonlinear-ROM study establishes a complete-query advantage over its tested efficient FOM.
+
+Canonical generated report: `reports/2026-09-07-multiresolution-pilots.md`, source generator and JSON manifest committed on main at `6ed7d04ac339f944795108dc2937431c570f21f1`. Root independent audits and saved-field wave evolution figures are committed in the repair tree through `f116b105d7d4c33b747e2dcf17b4bcf19141c9c7`. The report verifies 52 source artifact hashes, reproduces byte-for-byte, and all local artifact links resolve. The heat and Poisson owners independently reviewed their final canonical passages; their numerical reviews passed and the heat wording clarifications were applied.
+
+Latest finest-mesh development selections, generated directly from the canonical report JSON:
+
+| PDE | Output intervals | Cases | Norm | Worst error (%) | ROM / FOM query (ms) | Paired FOM/ROM | Timing outliers ROM / FOM |
+|---|---:|---:|---|---:|---:|---:|---:|
+| Heat | 1024 | 12 | Current L2, full grid | 4.55547948 | 27.732991 / 21.4105624 | 0.766730009 | 0 / 0 |
+| Burgers | 1024 | 4 | Initial L2, full grid | 4.63511733 | 49.463007 / 24.903444 | 0.52387898 | 0 / 0 |
+| Poisson | 512 | 30 | Steady L2, common grid | 6.8015574 | 4.01824253 / 2.26715201 | 0.561288028 | 0 / 0 |
+| Reflective wave | 512 | 2 | Initial wave state, common grid | 6.20294688 | 1217.24244 / 61.584 | 0.0505928993 | 0 / 0 |
+| Absorbing wave | 512 | 2 | Initial wave state, common grid | 5.91320724 | 1336.63877 / 277.789682 | 0.207855978 | 0 / 0 |
+
+Costs are medians of case-median repetitions; ratios are medians of paired per-case ratios. Outliers here exceed twice their own case/configuration median, and no repetition is discarded. Heat/Burgers/Poisson selections use declared targets with empirical reference allowances and the tested same/coarse-FOM envelope. Wave rows use the first declared larger-head seed and a raw same-grid comparison; a coarse-FOM envelope is still missing. The norms differ across PDEs. Absorbing wave error relative to its small remaining field is much worse than its initially normalized error above.
+
+Independent root saved-field audit summary, generated from the committed review JSONs:
+
+| Study | GPU job | Numerical source commit | Timed invocations | Separate accuracy controls | Maximum metric disagreement |
+|---|---|---|---:|---:|---:|
+| Heat transfer | 3354958 | `88ae5905d3f1ec424edbc4d7b8027e19eebe296b` | 1152 | 0 | 0 |
+| Burgers larger steps | 3353574 | `ffd57ee68cd1a1a61503556135d74220a0ca2fa0` | 516 | 0 | 8.32667268e-17 |
+| Poisson training | 3353137 | `0ed8384c30ff150d0f25adfe1dead41a8a739c26` | 7680 | 0 | 2.35922393e-16 |
+| Poisson projection/initialization | 3354845 | `20893525a16603a99f527dbd9e10affcdc206b9d` | 1800 | 480 | 3.46944695e-16 |
+| Fresh-wave larger heads | 3353701 | `0351e9865ac4559c9e9dbd7bfe4b8a52596e143c` | 228 | 16 | 3.10862447e-15 |
+
+These root checks reuse preserved reference fields. Wave and Burgers root metrics are on their common observation grids; owner audits retain full-grid reconstruction and operator checks. Heat root checks include full and common grids, all saved norms, frozen weights, seeded cohorts, repeats and supplied-initial-field handling. Poisson root checks independently reproduce the all-case training-endpoint selection and the field-based initialization.
+
+Poisson's speed audit also independently replays 120 nearest-library source-field panels, with maximum scalar disagreement 4.88498131e-15. The chosen starting code sets its own residual-reduction threshold; it is not re-anchored to a common start. Physical error, stationarity recomputation and projection-parity diagnostics occur after the timed complete query using that same invocation. Separate stationary controls never enter speed selection.
+
+Independent Poisson seed regeneration on the local ARM versus cluster x86 machines differs by at most 1.38777878e-17 in exponential width reconstruction. Recorded source hashes, persisted draw prefixes and uniform draws match exactly. This is bounded cross-architecture math-library roundoff, not evidence of corrupted data; exact cross-architecture exponential hashes are not claimed.
+
+What improved: the heat coverage/head procedure preserves useful accuracy over the wider frozen mesh ladder; Burgers larger steps reduce some online work; Poisson relative loss improves worst development sources and nearest training-prediction initialization saves modest query cost; larger nonlinear wave heads substantially improve reflective accuracy. What did not work: equivalent Poisson source projections give no consistent gain, more Poisson coverage at fixed updates does not uniformly improve error, and none of these changes produces a nonlinear-ROM FOM speed advantage. Burgers larger steps retain explicit nonlinear iteration-cap effects. Fresh-wave larger heads still fail late absorbing current-relative accuracy.
+
+Retractions and interpretation limits: no earlier numerical result is retracted in this closing step. The root proposal to add latent extrapolation to Burgers was withdrawn after source inspection showed it is already present and lacks history only at startup. The absorbing moment diagnostic establishes a missing discrete invariant, but no causal repair was run and it does not quantify the share of physical error caused by that defect. Linear wave control timing ratios are not an NM-ROM or cost-envelope result. Heat GPU live-array memory is an estimate, not a measured allocator peak; Slurm host-memory accounting remains separate. Empirical reference allowances remain explicitly labeled and rigorous-bound fields remain null.
+
+Final clean owner heads (all remain separate):
+
+| Worktree | Committed head |
+|---|---|
+| `worktrees/2026-09-07-mr-heat2d` | `766a3caa4981d5673ed1118ecc149659052171f3` |
+| `worktrees/2026-09-07-mr-burgers2d` | `1859ac56b7299f437a9f5b703fde8cc17ef8cc6d` |
+| `worktrees/2026-09-07-mr-poisson2d` | `0a0db091c187dfd58907671e110c24ca40f098f7` |
+| `worktrees/2026-09-07-mr-wave2d` | `77af541a5995e3870583e6e957f9579d116a2760` |
+
+All latest attempt archives were checksum-verified and preserved with source, checkpoint, seed, mesh, solver configuration, raw repetition arrays, GPU job/type and precision provenance. Root rechecked exact remote absence for heat `transfer04`, Burgers `steps05`, Poisson `pilot04` and `pilot05`, and waves `k32heads03`. The account queue was empty at close. No GPU jobs were canceled; no further numerical jobs are active in this round.
+
+Remaining paper work: broader and independent scientific cohorts, explicit per-resolution retraining versus frozen transfer, tighter error targets and confidence from repeated training/data seeds, reduced online cost, a controlled absorbing moment intervention, and a wave coarse-FOM envelope. Keep final cohorts unopened until a validation-selected method and protocol are frozen. The next continuation should use these approved existing trees, not the frozen main science baseline.
+
+This closing step leaves inherited main-tree lab-log and unrelated document modifications intact; it commits only the generated campaign report files on main and the root audit artifact in its experiment tree.
+
+## 2026-09-09 — Explanation of the measured ROM cost gap
+
+### Root coordinator — source and timing review, no new experiment
+
+The user asked why the ROMs are slower than the FOMs. Read the canonical current state, generated campaign report, native heat/Poisson/Burgers timing components, and the archived fresh-wave reduced equations. This was read-only scientific analysis of existing audited runs; no new solver, training, benchmark, job or worktree was created. The conclusions and numerical status at the top remain unchanged.
+
+The current neural decoder does not directly predict an entire PDE query in one forward pass. Queries map supplied fields into latent coordinates, solve reduced equations, and reconstruct/return requested full fields. Heat and Poisson still solve nonlinear reduced systems; waves evaluate a state-dependent neural Jacobian, directional second derivative, QR factorization and singular-value rank guard at every Runge–Kutta stage. The wave evolution source explicitly uses only reduced bank operators, so its measured slow evolution is not explained by an un-hyper-reduced full-grid PDE residual. Its stage factors cannot all be precomputed because the decoder tangent changes with the latent state. Individual Jacobian/QR/SVD/launch cost shares have not been profiled.
+
+The classical comparisons exploit these benchmarks' structure: sine-transform Poisson and heat solvers, direct modal propagation for reflective waves, explicit stencil evolution for absorbing waves, and adaptively stopped Newton/Krylov Burgers solves with diffusion preconditioning. Eligible coarse FOMs are allowed to interpolate to the requested output mesh with that work charged. Output mesh size is therefore not always FOM solve size. Training, compilation and offline operator setup are excluded from online comparisons.
+
+Generated component checks from saved same-query wave timing arrays (each entry is a median of case-median phase timings):
+
+| Boundary | Method | Output intervals | Initial mapping ms | Evolution ms | Full output ms | Complete query ms | Evolution / complete (%) |
+|---|---|---:|---:|---:|---:|---:|---:|
+| dirichlet | new_mlp32_seed691200 | 512 | 28.4401255 | 1132.18413 | 54.8604564 | 1217.24244 | 93.0122132 |
+| dirichlet | dst | 512 | 0.375700998 | 5.415308 | 54.3004861 | 61.584 | 8.7933684 |
+| absorbing | new_mlp32_seed691200 | 512 | 32.289012 | 1255.64548 | 47.1230255 | 1336.63877 | 93.9405253 |
+| absorbing | rk4 | 512 | 0.0203470117 | 229.464549 | 47.171646 | 277.789682 | 82.6036975 |
+
+Generated heat union-cohort component checks:
+
+| Method | Output intervals | Input ms | Fused device ms | Host output ms | Complete query ms |
+|---|---:|---:|---:|---:|---:|
+| expanded_seed790715 | 1024 | 1.57345546 | 12.6458345 | 13.5736025 | 27.732991 |
+| fom_dst_16 | 1024 | 0.784117961 | 0.319901446 | 20.0065695 | 21.4105624 |
+
+Component medians need not sum to complete-query medians. Poisson fused device timing combines source projection, lookup, reduced solve and decoding; its separate sub-costs are not measured by this panel. Burgers staged components are separately synchronized diagnostic invocations with field parity, and must not be substituted into the fused timing comparisons.
+
+Interpretation: small latent dimension does not guarantee cheap numerical work. Full output also creates a common cost floor, especially at larger meshes. Requiring tighter accuracy would force an empirical comparison of both methods and may disqualify current ROMs; it is not a guaranteed way to manufacture a crossover. Better GPU utilization or a different rank-check schedule are possible optimization hypotheses, not established causal findings. The priority is to make the reduced solve/evolution cheaper while retaining accuracy and numerical guards; further spatial compression by itself need not accomplish this. No earlier result is retracted, and no new speed advantage is claimed.
+
+## 2026-09-09 — Prioritized speed experiments proposed
+
+### Root coordinator — answer to how to make the current ROM faster
+
+Reviewed the current Burgers LM implementation, Poisson fused projection/nearest-code/LM path, and archived fresh-wave head geometry and stage solves. The user asked for acceleration directions; no new numerical experiment, code change, training, branch or job was started in this explanatory turn. Existing audited measurements and the current-state block remain unchanged.
+
+Recommended first stage: keep checkpoints and physical accuracy requirements fixed, and measure derivative, factorization, rank-check and reduced-iteration costs within each complete query. For Burgers, Poisson and heat, test selective Jacobian/normal-matrix reuse with current residual evaluation, refresh on poor progress or changed active behavior, and fallback to the current solver. A changed damping parameter changes the factored matrix, so caching a Jacobian does not automatically permit reuse of a factorization. Burgers already reuses the Jacobian on rejected trials and already has a guarded latent extrapolator; the new intervention would reduce rebuilds after accepted updates, not add either existing mechanism again. Retain its exact upwind advection inside the weak form.
+
+For waves, test a shared implementation of head value, tangent Jacobian and directional curvature against the existing autodiff values. Benchmark rank checks using the already formed triangular QR factor instead of factoring the taller Jacobian independently, with the same rank criterion and fallback on numerically marginal cases. In exact arithmetic a thin orthonormal QR preserves the singular values in its triangular factor; runtime and finite-precision behavior still require direct tests. Do not simply remove curvature or rank protection from the current equations. No measured gain from either proposal is asserted.
+
+Second stage, if iterative work remains dominant: a new field-based learned starting-guess model with weak-equation correction and fallback. Initial prediction would use fixed physical field samples or weak field coefficients; evolution prediction would use the preceding state and supplied PDE coefficients/time step. Training data and codes only; no Gaussian center/width/amplitude descriptors or evaluation answers. Charge feature extraction, predictor, correction, fallback and dense outputs. Predicting a small number of corrections is a target, not permission to accept a fixed unconverged answer. Poisson's nearest-code experiment is prior evidence for a modest initialization effect, not proof that this new predictor works. This is a proposal for additional training, not a change to the previously authorized trained models or an established cross-family guarantee.
+
+A possible later wave-specific architectural control is a first-order joint displacement/velocity decoder, which changes the model and can avoid the current explicit second-derivative curvature calculation. It would require retraining and independent kinematic, boundary, energy, weak-residual and long-rollout checks; simply dropping the curvature term from the existing displacement manifold is invalid. Linear reduced controls remain informative comparators and do not substitute for the requested nonlinear-ROM result.
+
+Prioritize verified reductions in online work with frozen checkpoints before broader training or architecture sweeps. Preserve float64/highest precision, the complete host-field query contract, efficient same/coarse-FOM controls, raw repetition arrays and physical-error gates. A residual check alone does not certify physical accuracy. Dense output optimization must preserve all requested fields; sparse outputs would define a separate use case rather than repair this comparison. No promised speedup, new result or retraction follows from this proposal.
+
+Primary external references consulted: SUNDIALS KINSOL mathematical documentation, https://sundials.readthedocs.io/en/latest/kinsol/Mathematics_link.html, describing modified-Newton Jacobian reuse with progress-triggered refresh; SciML NonlinearSolve solver documentation, https://docs.sciml.ai/NonlinearSolve/stable/solvers/nonlinear_system_solvers/, describing specialized small-system solvers and guarded solver choices. These support algorithmic options, not a speed prediction for this repository. A requested JAX advanced-autodiff documentation fetch failed; derivative conclusions above come from the archived project source.
+
+## 2026-09-09 — Complete current-campaign results export
+
+### Root coordinator — all recorded studies and experiment-level summary
+
+The user requested all experiment results. Consolidated the current four-PDE separable NM-ROM multiresolution campaign, respecting the exclusions of ViT + CP and reset older-wave evidence. The inventory contains 17 completed GPU studies, plus the archived absorbing-wave moment postprocessing. This export is scoped to the current paper campaign; earlier pre-campaign and Burgers-3D research remains in its existing archives and chronology. No new experiment or speed optimization was run.
+
+Added `reports/export_multiresolution_results.py`, the generated `reports/2026-09-07-multiresolution-experiment-index.csv`, and `reports/2026-09-07-multiresolution-results.zip`, committed at `0468e4423130d468077a3c442badc738b10c4d73`. The existing canonical report and numerical source files are unchanged. The ZIP includes all 52 source JSON artifacts from the report manifest, directly linked native findings/plots and available PDF counterparts, the experiment index, exporter, scope/glossary README and member checksum manifest. Archive members: 91; bytes: 22796824; SHA256: `764554a5673f82ee36216c1f73691e0168fdb970d4a739ad0dc488827f48c667`. Source hashes and every extracted bundle member were checked against their recorded/assembled bytes.
+
+The raw records preserve every recorded configuration, timing repetition, metric, audit and control role in the original schemas. Full-field NPZ arrays, trained checkpoint archives, staged source trees and cluster logs remain in their existing separately checked archives; they are not duplicated into this results bundle. Consequently it is a complete recorded-results export for the indexed studies, not a standalone reproduction environment. Warmups, single-call accuracy controls and separately synchronized component diagnostics must not be pooled into repeated speed measurements.
+
+The response covers the initial pilots and every subsequent heat, Burgers, Poisson and fresh-wave study, including negative results and the linear-wave controls. Explicitly distinguish full versus shared observation grids, initial versus current normalization, small original versus fresh development cohorts, and same-grid wave comparisons versus efficient FOM envelopes. None of the completed nonlinear-ROM experiments establishes the requested complete-query speed advantage. Latest selected rows have no timing outliers under the recorded twice-case-median definition; failures and other configurations remain in the records. Final cohorts stay unopened.
+
+Jacobian reuse, shared wave geometry/rank calculations, a new learned predictor and the joint displacement/velocity architecture remain proposals without new measured results. No earlier number is retracted by this packaging step. Worktrees remain separate; inherited main-tree lab-log and unrelated document changes are preserved.
+
+
+## 2026-09-09 — Parallel accuracy and cost strategy review
+
+### Root coordinator — three independent reviews, controlled next experiments
+
+The user explicitly requested parallel agents to think through better accuracy and results. Reviewed the current separable four-PDE campaign with read-only heat/Burgers, Poisson, and fresh-wave agents. Root independently checked the derived evidence and assembled a bounded strategy; no scientific source, checkpoint, job, branch, namespace or worktree was created or changed. Existing approved experiment worktrees remain separate. No new GPU measurement or FOM advantage is claimed.
+
+Generated and committed `reports/2026-09-09-accuracy-and-cost-improvement-strategy.md`, its adjacent evidence JSON, and `reports/generate_accuracy_cost_strategy.py` on main at `8f4e127a8f7823b1e51055c3ca3e2db5df3a0f34`. The generator verified all 52 archived catalog hashes; byte-for-byte regeneration and every local report link passed. All measured report numbers are generated from recorded JSONs. Proposed gates are labeled as design choices. Three reviewers checked the assembled report; heat's refined-head gate was strengthened to retain full-rollout accuracy and cost, and Poisson's SVD interpretation was corrected to avoid inferring rank insufficiency from an average-optimal span's worst-case failure.
+
+Priority: heat exact weak-mode propagation with nonlinear reconstruction at output times, combined only after isolated controls with better initial representation and a sampled-field initializer. Current configuration has 20 sequential projected steps and 5 later outputs. Propagating modes between requested times changes the reduced method; first preserve the current fitted initial moments to isolate this change. Dense full-input heat projection remains a cost path to address explicitly. The proposed initial-error gate must also preserve empirical complete-rollout eligibility, stationarity, and query cost. An earlier small-cohort bank diagnostic is not a floor for the current fresh cohort.
+
+Poisson: at the selected model's finest mesh, all-development worst full same-grid bank error is 5.50243203%, common-reference bank diagnostic 5.50013929%, and best-recorded stationary head fit 6.80154998%. The close deployed/head-fit agreement makes representation the primary accuracy lever. Test fixed-rank staged bank training, with training-only reweighting before concluding a larger rank is needed. Test exact offline-QR weak-residual compression separately; preserve the orthogonal residual constant in all stopping/normalization logic. A learned initializer must beat the already existing nearest-code control. Partially linear variable projection is a later architecture control, supported conceptually by the NIST O'Leary/Rust publication linked in the report, not an established repository gain.
+
+Burgers: test Jacobian reuse across accepted corrections, actual-residual progress guards, upwind-sign awareness and fresh-Jacobian termination checks. Guarded extrapolation and rejected-trial Jacobian reuse already exist. A derived 9.35855609% reduction in the recorded finer-step complete-query median would recover its better accuracy at the current coarser-step cost, but still would not establish an FOM win. Startup-controlled BDF2 is later and must use correctly spaced history and an identical-startup backward-Euler control. Tighter accuracy also requires addressing the bank/initial representation limit.
+
+Wave: shared derivative work, SVD from the existing triangular QR factor, and a compiled complete initialization wrapper are separate frozen-checkpoint parity/cost experiments. The latest first-seed finest-mesh timing arrays give the following hypothetical zero-evolution diagnostics, computed by subtraction per repetition followed by the median:
+
+| Boundary | Case | Complete query minus evolution (ms) | Same-job FOM complete query (ms) |
+|---|---:|---:|---:|
+| Reflective | 0 | 86.194897 | 61.793997 |
+| Reflective | 1 | 84.030762 | 61.374003 |
+| Absorbing | 0 | 87.564757 | 273.674767 |
+| Absorbing | 1 | 74.656539 | 281.904597 |
+
+These are derived counterfactuals, not newly measured methods. Reflective initialization/output already exceeds its same-grid FOM; evolution optimization alone cannot cross while the remainder stays fixed. Run the already designed absorbing constant-direction/initial-moment factorial on linear controls first; preserved moment without better physical fields is a negative result. Reduced linear propagation followed by nonlinear weak projection is a later method change with phase, dissipation, kinematic and cost controls. The previous generic joint displacement/velocity-head suggestion is demoted because eliminating curvature can increase generic solve size and does not enforce physical consistency. Protected-anchor geometry was already tried on Burgers-3D and worsened accuracy despite improved conditioning; it is not a new proven wave remedy.
+
+No prior measurement is retracted. This review refines the earlier acceleration proposals and records why some are lower priority. All gates require full supplied-field-to-host-output accounting, efficient same/coarse FOM controls within each GPU job, f64/highest, overdetermined weak equations, decoder-output quadrature refits where needed, physical-error checks, raw repetitions, medians/outliers and unopened final cohorts. Independent final confirmation and any accuracy/speed gain from these proposals remain open. Canonical current numerical state is unchanged; inherited main-tree log and unrelated document edits were preserved.
+
+
+## 2026-09-10 — Empirical quadrature and online cost clarified
+
+### Root coordinator — exact spatial reduction does not eliminate nonlinear solve cost
+
+The user asked whether avoiding empirical quadrature should make the current ROM much faster. Read the canonical state and checked the current owner sources: heat `run_pilot.py::assemble` and `heat_core.py`, Poisson `core.py::assemble`, Burgers `engines.py::build_rom`/`weak`, and fresh-wave `fresh_models.py::head_geometry`, `fresh_rom.py::weak_acceleration`, and the multiresolution `pilot.py` query wrapper. No numerical experiment, branch, worktree, training or implementation change was made.
+
+Clarified the scope of the premise: heat, Poisson and fresh-wave repeated linear spatial terms use preassembled reduced matrices; Burgers still uses a decoder-output-based nonnegative empirical quadrature rule for its sign-dependent upwind advection. Burgers fits and stores those points/weights during setup, outside the reported complete-query timer, and uses sampled local stencils during each nonlinear residual evaluation. Its mass/diffusion terms are precomputed exactly. Fixed Gauss sampling for the initial field is a separate initializer and does not remove the empirical advection rule.
+
+For a fixed learned bank and a linear PDE operator, the projected operator acting on the bank can be precomputed, leaving a small matrix applied to the nonlinear head during solving. That removes repeated full-grid spatial assembly but not head derivatives, reduced nonlinear fitting, wave curvature/QR/SVD, repeated steps/stages, input projection or requested dense outputs. The fresh-wave latent rollout explicitly avoids the full grid; its online geometric work is still substantial. Heat's initial projection and the wave initial field projections remain dense, and Poisson still processes the supplied source. Full host-field output is charged for every method.
+
+Empirical quadrature normally trades an offline point/weight fit for fewer online spatial evaluations; omitting the offline fitting stage does not itself accelerate a query whose timer already excludes it. Exact preassembly is an alternative for these linear operators, not evidence of an automatic advantage over efficient classical FOM solves. The strategy remains to reduce online nonlinear work and initialization/output cost while preserving physical accuracy. No speed ratio is asserted between an unmeasured full-integration ROM and the current reduced implementation, and no existing numerical result is retracted.
+
+Primary literature checked for the offline/online distinction: Patera and Yano, “An LP empirical quadrature procedure for parametrized functions,” https://www.numdam.org/item/10.1016/j.crma.2017.10.020/ ; Yano and Patera, “An LP empirical quadrature procedure for reduced basis treatment of parametrized nonlinear PDEs,” https://www.sciencedirect.com/science/article/abs/pii/S0045782518301087 . These establish the algorithmic distinction, not a measured runtime claim for this repository. Canonical scientific state and existing separate worktrees remain unchanged.
+
+
+## 2026-09-10 — Why the efficient FOM currently wins
+
+### Root coordinator — computational work versus latent dimension
+
+The user asked again why FOM is faster. Checked the canonical latest comparison JSON, the heat direct modal propagator, Poisson DST solve, Burgers current staged diagnostics/setup table, and the heat cost-to-accuracy selection table. This explanatory turn launched no experiments and changed no scientific implementation or result.
+
+The central distinction is that fewer solved coordinates does not imply less total work. On the current linear constant-coefficient rectangular-domain cases, Poisson solves diagonal equations after sine transforms; heat propagates modes directly to requested output times. The nonlinear decoder instead requires iterative constrained fitting, with head derivatives and small dense solves; current heat also repeats these fits through intermediate steps. Reflective-wave FOM likewise exploits direct modal propagation, while the nonlinear wave rollout computes state-dependent tangent/curvature geometry and factorizations at stages. These are statements about the checked current algorithms, not a generic claim about every FOM or an attribution of GPU overhead without profiling.
+
+Burgers remains nonlinear in both formulations. Its reduced solve still expands latent coordinates through a substantially larger feature bank, evaluates weighted sampled upwind stencils, and repeats nonlinear corrections. The current native table distinguishes latent size, bank size, weak tests and quadrature samples; latent size alone is not the residual/Jacobian operation count. The FOM uses local stencil operations and transform preconditioning. Separately synchronized staged diagnostics remain diagnostic only; they are not substituted for complete-query timings or summed into a new timing claim.
+
+The efficient FOM envelope also permits a coarse solver followed by charged interpolation when it meets the same physical error target on the requested output grid. Thus a large requested output mesh does not force the selected FOM to solve on that mesh. Current heat demonstrates this distinction. Both methods still return all requested host fields, which limits available savings but does not by itself explain the compute gap. Wave rows remain same-grid comparisons, so coarse-FOM selection is not their explanation.
+
+The explanation emphasizes direct linear algebra versus nonlinear coordinate fitting and retained online workload. The actionable conclusion is to exploit linear modal propagation where available and reduce nonlinear correction/geometry work where necessary. It does not promise a crossover, invoke unmeasured hardware effects, reinstate older-wave evidence or change any existing measurement. Canonical current scientific state and separate worktrees are unchanged.
+
+
+## 2026-09-10 — Both formulations must solve for the solution
+
+### Root coordinator — clarification of direct FOM versus nonlinear latent solving
+
+The user challenged wording that could imply the FOM does not need to find the solution. Clarified that both methods receive inputs and compute an unknown solution; no FOM is supplied the answer. A fixed linear discretization can be solved by a direct factorization or a diagonalizing transform, or by an iterative linear solver. The current nonlinear decoder represents possible fields but does not directly map each supplied input to its solution. Composing a linear PDE operator with the nonlinear head creates a nonlinear latent fitting problem whose Jacobian changes with the latent state. Fewer unknowns can offset that added work, but current measured complete-query results do not establish that advantage. Burgers is nonlinear in both formulations; the linear-versus-nonlinear distinction is explicitly confined to the linear PDE cases. This is a wording correction and conceptual explanation, with no changed numerical result, code, job or experimental state.
+
+
+## 2026-09-10 — Latest results shown again
+
+### Root coordinator — unchanged audited development comparison
+
+The user requested the results again. Read the canonical state and reverified every artifact hash in `reports/2026-09-07-multiresolution-pilots.json`, then read its `latest_comparisons` rows. The response restates the latest representative finest-output-mesh configurations with case counts, physical error and complete-query medians. These are unchanged development measurements, not outcomes from the proposed accuracy/cost strategy. Heat/Burgers/Poisson use the recorded efficient-FOM envelopes and empirical target allowances; wave rows retain their first predeclared larger-head seed and same-grid baseline scope. Initial/current normalization and full/common grids remain distinct, and late absorbing current-relative error is not hidden by its initial-normalized summary. No new numerical run, implementation change, archive change or performance claim was made. Current state and open final confirmation are unchanged.
+
+
+## 2026-09-10 — Historical Poisson and tensor Burgers performance reconciled
+
+### Root coordinator — user-specified report traced to raw data and source
+
+The user challenged the current loss of the earlier flat-cost/FOM-speedup picture and pointed explicitly to `reports/2026-09-03-burgers-poisson-tensor-tables.md`. Read that report, its source reports/generators, retained tensor/QF/scaling JSONs and the old/new scientific timer/operator code. No new jobs, architecture edits, checkpoint changes, worktrees or branches were created. The new one-question report, generator and evidence JSON are committed on main at `f6a08d17c4d07b305e49e6ac9f14e7533d4a9501` under `reports/2026-09-10-historical-poisson-and-burgers-cost-audit.*` and `reports/generate_historical_cost_audit.py`.
+
+Verified 104 recorded timing/error aggregation identities from available repetition/per-time arrays, maximum absolute disagreement 3.469446951953614e-18. Recorded fingerprints for 25 source/data artifacts; these identify inspected bytes, not a new independent GPU execution certificate. Deterministic report regeneration, local links and staged whitespace checks passed. The audit does not rerun PDEs or independently reconstruct old full fields. Earlier schemas lacking raw rows and the old largest-grid Poisson driver's separate error calls are explicitly qualified.
+
+The remembered Burgers result exists: at old N=1024 nodes/axis, K=16, R=64, job 3038923, NVIDIA A100 80GB PCIe, paired tensor device-query median 34.110138979 ms versus the then-selected same-grid dense-sine-preconditioned FOM 117.688300990 ms; historical ratio of cohort medians 3.450243960. This is not the current median-of-paired-ratios statistic. Latent solve median was 27.131010502 ms. The same-job sampled exact-linear control already had FOM/ROM 3.306957786; tensor removal of sampling changed its unpaired fused device-query median by 5.703533845%, so omission of tensor alone is not a measured explanation of the reversal.
+
+Old Burgers headline error was mean over trajectories and times: 0.0638139029602. Maximum archived current-normalized same-grid time/case error is 0.337246396852. Current worst initial-normalized refined-reference errors cannot be directly compared to that old mean or norm. The earlier ladder changed checkpoint with mesh and used different GPUs across resolutions; no cross-job exponent is inferred. The separately audited 1D one-process ladder supports flat cached solve cost, but its efficient tridiagonal FOM still won. No earlier wave evidence was used.
+
+Actual changes: current Burgers K=16/R=512 frozen mesh-transfer checkpoint uses exact weak mass/diffusion and NNLS sampled sign-upwind advection. The earlier tensor was fixed-backward polynomial advection, with exactness on nonnegative decoded states and measured nonzero discrepancies at undershoots. The approved campaign protocol deliberately chose the sampled general path, but later explanations did not communicate that it was not a tensor retest. The old trained sampled-field encoder plus full-projection correction also was not carried into the current query, so a learned initializer is a mechanism to revisit rather than a new project idea. The old larger-bank compression attempt failed its fidelity gate and did not validate a tensor for this current checkpoint.
+
+Old Burgers timing began with GPU-resident input and ended after GPU decoding, with CPU conversion afterward. Current timing begins before input transfer and returns requested fields to host. Old FOM used dense sine-matrix products in its exact Helmholtz preconditioner; current uses FFT-based sine transforms, plus eligible coarser meshes and timestep/tolerance selection. Old retained all step outputs on GPU while current charges requested host observation fields. These multiple changes prevent attributing the cost gap to any single factor from separate jobs.
+
+Poisson: old N=1024 cached sampled ROM 3.501904197 ms versus selected CG 98.314098082 ms, ratio 28.074468218; the SAME archive already reports direct spectral cost 0.638835598 ms. The separate quadrature-free experiment retained near-flat projected-source/solve/device-decode cost, and current Poisson retains exact preassembled B h(z)-f_m algebra. The present primary baseline is direct; tests, cohorts, weights, stopping and transfer accounting changed. It is incorrect to describe the old iterative-comparator gain as a previously established win against the present efficient FOM. It is also incorrect to infer demonstrated performance for variable-coefficient/other problems from this constant-coefficient table.
+
+Correction to prior explanation: the statement that the current ROM performs nonlinear fitting is true but was already true in the earlier successful study. It is withdrawn as a sufficient causal explanation of the historical reversal. Current negative results remain valid for their documented protocol; they do not disprove the earlier tensor scaling or constitute a same-configuration regression experiment. No recorded number is retracted or overwritten.
+
+Recommended next bounded comparison: reproduce the archived small-bank Burgers tensor with sampled/full-upwind controls and its initializer, then measure those and current controls on identical inputs/hardware, retaining both GPU-resident and host-to-host timers. Keep efficient FFT-preconditioned same/coarse FOMs as the primary modern baselines; old dense FOM is only a historical factor control. Match checkpoints while changing residuals, preserve sign/derivative/error/convergence gates, and separate frozen transfer from mesh-specific training. Reconcile Poisson QF paths at fixed checkpoint/tests/stopping and retain direct and explicitly identified iterative comparators. These are proposals, not submitted runs. Existing separate worktrees, prior approvals and sealed final cohorts remain unchanged. The top state block now records this interpretation and coverage correction; unrelated user edits remain untouched.
+
+
+## 2026-09-10 — Older submission and quadrature-free paper strategy
+
+### ideate — manuscript review, algebraic continuity, and proposed submission scope
+
+The user supplied the older submission's OpenReview discussion and asked what to do about a corrected paper incorporating the tensor/Poisson approach. Read the canonical current state, the archived PDF and main.tex inside `Older Paper ` (the directory has a trailing space), the September tensor tables, the historical cost audit, separable architecture and tensor method reports, and the old Poisson quadrature-free/Burgers tensor implementations. Also read the existing historical replay protocol. No PDE solve, training run, cluster operation, new worktree, branch, merge, submission, or external message was performed. Existing concurrent changes on main were preserved.
+
+Saved `reports/2026-09-10-quadrature-free-paper-strategy.md`. It contains a proposed integrated paper claim, explicit reduced algebra, a manuscript correction table, evidence limitations, primary-literature positioning, and bounded experiments. It intentionally links the existing generated numerical tables rather than copying measured numbers into new prose. Local document links and formatting checks passed. This is a proposal, not a user-approved change to the active replay or scientific scope.
+
+A consequential algebraic observation: the older printed CP decoder already factors into a fixed spatial bank and nonlinear coefficient map, after incorporating its mask/lift/bias. Exact reduced preassembly for fixed linear operators is therefore available in principle there too, including for the printed tangent projection; the newer coordinate network is not the sole reason it becomes possible. This is a derivation from the printed architecture, not a measured optimization of the older implementation and not a proposal to restart the previously excluded ViT/CP campaign. The nonlinear image stays inside its spatial bank; a linear skip alone does not prove full Jacobian rank or cold-start convergence.
+
+The current weak residual least-squares objective must be distinguished from tangent Galerkin and ordinary full residual LSPG. The older heat equation assumes a homogeneous linear decoder. The older Poisson approximate Hessian omits decoder-curvature terms if interpreted as Newton on its printed tangent residual. The rebuttal's claim that ordinary residual least squares equals Galerkin whenever the decoder is linear is false without additional assumptions. The report gives the differing normal equations; no historical GPU numbers were reclassified from these algebraic observations alone.
+
+Recommended one substantially rewritten paper centered on learned nonlinear coefficient compression with precomputed weak operators. Poisson supplies clean algebraic parity and a strong direct-solver limitation; Burgers supplies the nonlinear performance study. Finish the already approved historical replay before new sweeps, retaining its GPU-resident input/full-output primary timer and explicitly named original same-grid baselines plus the separate Poisson direct control. Subsequent proposed controls hold checkpoint, tests, initialization, solver and output contract fixed across full-grid/EQ/tensor paths, then compare nonlinear, linear and quadratic coefficient maps and unrestricted bank coefficients with fair solve formulations. Any new experiments require their normal scope/base handling; none were launched here.
+
+The historical Burgers tensor is exact for its fixed polynomial stencil, with agreement to sign-upwind conditional on decoded-state signs; truth positivity alone is insufficient and undershoots give a measured nonzero mismatch. Historical tensor cost is close to tuned EQ, so removing quadrature is not the sole source of its FOM advantage. Tensor work/storage depend on bank and test dimensions, while input projection, initial fitting, requested dense output, setup and mesh transfer remain distinct costs. Exact evaluation of selected weak equations does not certify full physical accuracy. Prior wave evidence remains excluded.
+
+Primary sources checked: Stefanescu, Sandu and Navon, tensorial POD (https://arxiv.org/abs/1402.2018); Lee and Carlberg, manifold projection (https://arxiv.org/abs/1812.08373); Weder, Schwerdtner and Peherstorfer, online-efficient quadratic-manifold Neural Galerkin for linear PDEs (https://arxiv.org/abs/2412.17695). These preclude claiming tensor projection or generic mesh-independent nonlinear reduced evaluation as newly invented here. This was a targeted positioning check, not an exhaustive novelty review. Remaining submission questions are a demonstrated nonlinear-head advantage, sign/discretization scope, independently confirmed error–cost curves, training-seed/cohort robustness, and clean mathematical/measurement claims. No recorded numerical result was retracted and canonical experimental state is unchanged.
+
+
+## 2026-09-10 — Considering separate CP/EQ and precomputed-operator papers
+
+### ideate — conditional scientific split, no experiment launch
+
+The user asked whether to make separate papers for the original CP decoder with empirical quadrature and the precomputed weak operators. Re-read canonical current state and updated the existing one-question strategy report, `reports/2026-09-10-quadrature-free-paper-strategy.md`, with a two-paper alternative, proposed titles, distinct central questions/evidence, the shared-method bridge and criteria for retaining the split. Preserved the initial integrated-paper recommendation as the preceding proposal. Document links and formatting checks passed; no measured results were copied or changed.
+
+The proposed CP/EQ paper emphasizes practical cold-start/rollout reliability, node-evaluable architecture, corrected empirical quadrature and measured fixed-checkpoint runtime choices. Its strongest distinct motivation would be sampled discrete operators not admitting an economical exact tensor, or bank sizes at which tensor work/storage become costly. These are motivations to test, not newly demonstrated CP results. Fixing the prior errors alone is not a new contribution, and the paper cannot claim EQ is mathematically necessary for its fixed-linear CP cases.
+
+The proposed operator paper emphasizes exact weak preassembly conditions, rank-dependent time/memory, nonlinear coefficient-map value, controlled full/EQ/precomputed parity and cost, and explicitly qualified mesh transfer. The older CP decoder already factors through a fixed spatial bank, so architecture and evaluator choice must not be conflated. A frozen-checkpoint CP preassembly control is a possible bridge, not authorization to restart the previously excluded older-decoder training campaign. Rechecked primary tensorial POD and quadratic-manifold Neural Galerkin sources; neither generic polynomial precomputation nor linear-problem online efficiency can be claimed as new in isolation.
+
+Recommended developing distinct abstracts and claim-to-figure allocations before committing to two submissions. The corrected CP/EQ method can serve as an identified baseline in the operator paper; shared datasets/checkpoints/results need explicit attribution and each paper needs its own central evidence. If precomputation dominates all intended CP/EQ cases or the operator paper adds only a small evaluator substitution, reconsider the split. This is scientific planning, not a venue-policy assessment or confirmation that either manuscript is ready. Existing historical replay, worktree ownership and numerical evidence remain unchanged. No branch, worktree, subagent, GPU job, source implementation, external communication or submission was created, and no numerical finding was retracted.
+
+
+## 2026-09-10 — Tunability retained with precomputed operators
+
+### ideate — fixed-checkpoint solver controls in both proposed papers
+
+The user asked whether the two proposed papers can keep tunability. Read canonical state and checked the historical quadrature-free Poisson driver's iteration-cap/tolerance controls and the Burgers tensor step's budget/tolerance arguments. Both precomputed paths retain iterative latent solving; eliminating EQ does not eliminate these controls. Extended the existing paper-strategy report with this distinction and the candidate title “Tunable Nonlinear Manifold ROMs with Precomputed Weak Operators.” Formatting check passed.
+
+CP/EQ may also choose among independently fitted offline quadrature rules. The precomputed path has no EQ node-count knob. Its first proposed tunability claim should hold decoder and operators fixed while varying solver effort, with no retraining. Actual physical accuracy–cost curves remain to be demonstrated: representation floors, stalled solves and non-monotone relationships between weak residual and field error can make a nominal knob ineffective. More allowed iterations alone does not prove useful tunability or global convergence. Time-step changes and validated preassembled weak-test subsets are optional future controls; changing tests changes the objective and requires adequate overdetermination. Latent and bank dimensions are not free fixed-checkpoint controls without an explicitly nested model. No new experimental authorization, worktree, code mutation, GPU run or numerical finding followed from this explanatory turn. Existing study scope and numerical evidence are unchanged.
+
+
+## 2026-09-10 — Separate paper headlines: tunability and mesh-independent reduced solving
+
+### ideate — user clarification incorporated without conflating mathematical properties
+
+The user clarified that only the CP/EQ paper should emphasize tunability and the precomputed-operator paper should emphasize cost staying constant with resolution. Updated the existing paper-strategy report to follow this division. Withdrew the earlier recommendation to put “Tunable” in both titles as the preferred framing; retained the underlying factual observation that both implemented solvers expose budget/tolerance controls. No numerical result was withdrawn. Formatting check passed.
+
+The CP/EQ paper's proposed main figure varies budgets and offline-fitted quadrature choices at fixed weights and plots physical error versus query cost. The operator paper's proposed main figure varies mesh size at fixed reduced dimensions and solver policy, plots cached reduced computation with physical accuracy and iteration counts, and reports complete device-query timings alongside initialization and decoding. Constant operation count per reduced evaluation follows from preassembly at fixed bank/test/latent sizes. Constant total latent solve work additionally requires fixed or comparable iteration/time-step counts; retaining accuracy may force larger reduced dimensions and is an empirical question.
+
+Explicitly distinguished this from an asymptotically constant dense-input/full-output query: setup, arbitrary input processing and reconstruction must touch mesh-dependent values even when fields stay on the GPU. Finite-range flat full-query timings remain possible and should be reported under their actual timer. The user's historical GPU-resident comparison protocol is unchanged. Also noted that fixed-size EQ can already have mesh-independent repeated work; exact preassembly without fitted empirical nodes, operator/sign restrictions, and learned-bank/head value must distinguish the second paper beyond flat timings alone. No new experiment, worktree, branch, subagent, cluster action or external communication occurred, and existing active study scope is unchanged.
+
+
+## 2026-09-10 — Historical device-resident comparisons reproduced
+
+### Root coordinator — original Burgers tensor and Poisson QF replay
+
+The user selected the earlier comparison after the historical audit. Continued the existing approved PDE worktrees and namespaces with separate owners; no new worktree or base was created and no branch was merged. Root protocol was committed at `2998961` in the repair worktree, then extended at the user’s request to prepare fresh waves after completion of these GPU runs.
+
+Burgers job `3492130` used one NVIDIA A100 80GB allocation for every mesh, with the original per-grid K16/R64/M64 checkpoints, source-stage bytes, sampled-field encoder/correction, full/EQ/tensor controls, timestep, seeded cohort and dense-sine-preconditioned tolerance FOM. Only measurement/capture instrumentation was added; the archived trained N512 checkpoint replaced its original in-job bank training. Scientific/archive commits are `749e888` / `b4eddc864e06a69ed0ad665af812c7e70349980c`.
+
+| Burgers nodes/axis | Latent ms | Paired ROM / FOM ms | FOM/ROM | Mean / worst error (%) |
+|---|---|---|---|---|
+| 64 | 27.694556979 | 29.401578475 / 12.366274605 | 0.420599003 | 2.309414232 / 17.910756179 |
+| 256 | 27.393615921 | 29.638364096 / 17.223948962 | 0.581136965 | 2.451214452 / 16.398139290 |
+| 512 | 27.855643537 | 29.634085367 / 40.158072487 | 1.355131160 | 2.456235037 / 15.577943599 |
+| 1024 | 26.712907944 | 33.814831986 / 118.731188471 | 3.511216277 | 6.381431040 / 33.724695850 |
+
+The cached Burgers evolution cost is nearly flat on one GPU. The original H200 N512 comparison was a different GPU and is not a contradictory crossover. Every tensor mesh retains its recorded stalled step exits, with no blowups; no stationary-minimizer claim is made. The smaller-grid archived errors reproduce to numerical precision; the largest-grid initializer retraining introduces a small nonzero departure. The largest archived time/case departure is 5.416218357507e-06. Full-grid independent field reconstruction covers the predeclared first trajectory on each mesh; other cases retain native timed full errors and sampled fields.
+
+Poisson final job `3492398`, source `54a70f8`, used one NVIDIA A100 40GB allocation for all four meshes; archive commit `b72e52b8fea1bc0b097c232e8a3a607e6926f4ea`. Frozen original QF/full operators and trust-LM were compared with original unpreconditioned CG and dense spectral solve, with both stopping settings/cohorts retained. Large arrays were explicit JIT arguments. The largest QF mesh extends the original QF ladder.
+
+| Poisson nodes/axis, held-out tau=.001 | QF ms | Selected CG ms | CG/QF | Direct ms | Mean / worst error (%) |
+|---|---|---|---|---|---|
+| 128 | 3.268108238 | 4.057029670 | 1.241400032 | 0.122877187 | 3.062619670 / 8.080006340 |
+| 256 | 2.970887290 | 8.458120457 | 2.847001462 | 0.135789684 | 3.141493026 / 7.585602530 |
+| 512 | 3.217455291 | 25.687769288 | 7.983877620 | 0.218039495 | 3.153807390 / 8.056517333 |
+| 1024 | 4.005349416 | 101.342156471 | 25.301701787 | 0.721505261 | 3.476481459 / 8.240432434 |
+
+Initial Poisson attempt `3492150` completed its smaller meshes but stopped before any largest-mesh timing: reference residual 3.893633676811e-10 exceeded the incorrectly inherited smaller-grid guard 1.0e-10. The archived original largest-grid script and JSON explicitly used 1.0e-09. Restored that documented guard, retained the original numerical CG tolerance, added an independent direct-field agreement gate, and reran the entire ladder in one allocation. Final maximum CG/direct discrepancy is 1.136456015793e-14. The initial attempt is preserved and superseded for headline timing, not mixed with final-job rows. Both exact Poisson attempt directories and the Burgers attempt directory were checksum-collected, archived and deleted.
+
+Root generator passed 456 timing/error identities and 60 full-field groups, independently reconstructing all 1664 Poisson timed field errors and 408 first-trajectory Burgers field errors, plus independent NumPy Poisson reference-stencil checks. Plot inspected; local report links checked. Owners retain additional all-arm/configuration/stop-reason audits. Every reported primary timing outlier count is zero under the declared within-case twice-median rule. GPU/f64/highest, input/result content manifests, seeds, configs, hardware, job IDs and stopping records are retained.
+
+Scope: GPU-resident same-discretization queries, original named FOMs and mean-based historical tolerance selection. Modern host-to-host/FOM-envelope results are unchanged under their original scope. The observed speedups do not establish a universal FOM win; the Poisson direct solver remains faster. Checkpoints differ by mesh, so this is not frozen-weight transfer or a resolution-only accuracy-convergence claim. Primary Poisson solves retain censored exits, Burgers retains stalled exits, and worst errors remain explicit. No old wave result or older ViT/CP comparator was reinstated. Final independent paper cohorts remain unopened.
+
+### Root coordinator — user-authorized fresh-wave follow-up
+
+The user asked to do the wave cases after this comparison. Continued preparation in the already approved fresh-wave worktree `2026-09-07-mr-wave2d` at `77af541`, with no new branch or worktree and no merge. The owner corrected an initial planning confusion between saved visualization size and actual solver mesh before implementation: use the already audited 256/512-interval pair, first-seed MLP32 primary and MLP16 control, existing development cases, observation times and time-refinement checks. This is a planned device-resident comparison using current verified reflective/absorbing FOMs and exclusively post-reset fresh-wave data/operators; no wave submission or new wave result at this entry. Root will review the query boundary before submission.
+
+
+## 2026-09-10 — Fresh-wave device-query comparison completed
+
+### Root coordinator — reflective and absorbing wave follow-up
+
+Continued the existing approved wave owner/worktree after the historical Burgers/Poisson GPU jobs and their independent audits finished, as the user requested. No new worktree or branch base was created. Root reviewed the supplied-field projection, all cold-fit starts, speed-dependent operator preparation, reduced evolution and blocked full GPU displacement/velocity output. A bounded local frozen-head GPU parity smoke passed before submission. The replay also compiles the initializer as one block; differences from prior host-query costs cannot be attributed only to host-transfer exclusions.
+
+Scientific source `c729df09cfe02de93ee09e34163578961762bc90`; job `3494637` on NVIDIA A100-PCIE-40GB; Slurm completed 0:0 in 15:00. Frozen rank 64 bank, first recorded optimizer seed 691200, MLP32 primary/MLP16 control, existing development seed 690602 cases [0, 1]. Both boundary types and both meshes ran in the same allocation, f64/highest, with a GPU preflight, warmups, per-block burn-in and raw timing arrays. The horizon is 2.4, with 49 outputs. Primary timestep 0.0025; separate accuracy-only step 0.00125. Reflective scoring is exact for its semidiscrete DST operator. Absorbing timing CFL is 0.45; the reference uses 0.05625, checked against 0.1125 on the same mesh. No empirical-quadrature fit or retraining is part of these queries.
+
+| Boundary | Intervals | MLP32 / FOM query ms | FOM/ROM | Mean / worst current-relative displacement (%) | Worst initial-normalized displacement (%) |
+|---|---|---|---|---|---|
+| dirichlet | 256 | 4504.967524554 / 4.144775914 | 0.000920045681 | 1.688463287 / 3.568985985 | 1.793941203 |
+| dirichlet | 512 | 4504.802308977 / 5.832233117 | 0.001294670158 | 1.688488217 / 3.568416768 | 1.795695950 |
+| absorbing | 256 | 5003.071819898 / 89.255545987 | 0.017840148853 | 45.657879186 / 246.539392933 | 2.139789001 |
+| absorbing | 512 | 4999.114625505 / 259.307837929 | 0.051870752594 | 45.662516862 / 246.553264451 | 2.139333805 |
+
+All 8 recorded reference checks passed; largest absorbing temporal discrepancy 1.457553446807e-08 is below 1.000000000000e-04. All 16 nonlinear refinements passed; maximum difference on physical reference initial scales is 1.187573129681e-06, below 1.000000000000e-02. No incomplete or nonstationary case and no root timing outlier (above 1.5 times its case repetition median). Native audit retains a separate twice-median outlier convention and all-component accuracy-target qualification. The root speed ratio divides cohort median times; the native ratio takes a median of paired case ratios. Each definition is explicitly labeled in its report.
+
+Root independently recomputed 40 full displacement/velocity artifact pairs and checked 72 timed invocation identities, 3024 metric arrays/scalars and all 16 step-halving pairs. Maximum metric departure is 2.220446049250e-16. All reflective references match an independent SciPy semidiscrete propagator to maximum pointwise discrepancy 4.276579090856e-13; absorbing reference moment drift is at most 7.806255641896e-17. Initial fields were independently regenerated from the recorded family/seed, and staged code was checked by content against the recorded git commit. Root does not claim independent reconstruction of the unsaved coarser absorbing reference. The native owner independently audited all 88 timed/fine calls.
+
+Reduced evolution accounts for 99.557890355% of reflective and 99.510655240% of absorbing primary query time at the largest mesh (ratios of component/query medians). The frozen implementation evaluates geometry, QR and SVD at every RK stage, totaling 3841 evaluations including initialization. Evolution is the measured bottleneck; the separate operation costs have not been profiled or ablated. Near-flat reduced cost is observed, but no nonlinear-ROM speed advantage is established. Reflective displacement improves with the larger head; absorbing current-relative late-time accuracy remains poor despite much smaller initial-normalized errors. Finite trajectories and passed temporal/stationarity checks are not physical-accuracy certificates. These existing development cases remain provisional paper evidence.
+
+Owner commit `9005ab63f4dfaa6106f330a1870ba44d4d7707ac` is clean. All three transport manifests and staged source hashes passed. The 6150315093-byte preserved archive has 66 parts and SHA256 `0a796dc79313681b014bf135ab16b145bcbd7870afa9f4e591736835f45cfe57`. Exact remote attempt `/cluster/tufts/paralab/tawal01/mr_wave2d_20260907/device04` was deleted with absence verified after archival; account queue empty. Report, evidence JSON and inspected scaling PNG/PDF are generated on main at `6cc8bf884eaa08cc023496727b6532388c1b0c5b`. Source is `reports/generate_wave_device_replay.py`; all report links and generator hashes checked. Earlier wave evidence reset is unchanged; no old wave implementation, result or checkpoint was reinstated. No existing numerical measurement was retracted. The completed comparison does not support a wave FOM advantage under this timer. No additional architecture sweep was started; profiling the reduced timestepper and correcting absorbing late-time accuracy remain open. Existing worktrees remain separate, as previously selected by the user.
+
+
+## 2026-09-10 — Locating speed and accuracy comparisons
+
+### Root coordinator — report navigation for the four-PDE study
+
+The user asked where to find ROM/FOM speed and accuracy comparisons for all problems. Checked the canonical state and report sections. Pointed to the completed historical Burgers/Poisson replay report, the fresh reflective/absorbing wave device-comparison report, and the wider-mesh heat section in the multiresolution development report. The latest Burgers/Poisson/wave replays use the user-selected GPU-resident same-grid contract; heat has not received that replay and retains its separately labeled complete-query/efficient-FOM-envelope comparison. The earlier four-PDE overview remains available under its original scope. No experiment, result, source code, branch or scientific interpretation was changed, and no numerical finding was retracted.
+
+
+## 2026-09-10 — One Markdown for all reported PDE comparisons
+
+### Root coordinator — consolidated speed and accuracy record
+
+The user requested “Give me one markdown with all the results.” Created `reports/2026-09-10-all-pde-speed-and-accuracy.md`, generator `reports/generate_all_pde_comparisons.py`, and the adjacent manifest on main at `da3d343850be25c19d7bbdb04be624225b603126`. The Markdown includes the latest finest-mesh overview; full heat resolution selections with both ROM and FOM worst errors; all latest Burgers/Poisson and fresh reflective/absorbing wave tables; 15 paired Burgers numerical controls; 104 Poisson method/cohort/tolerance configurations; 16 wave accuracy-only controls; and the complete earlier generated multiresolution development report. All 375 original Markdown table lines were retained, with 536 table lines in the resulting compilation, including headers/separators.
+
+Additional table aggregates were recomputed from retained run JSONs after checking their recorded hashes. Heat selections were cross-checked against the independent review and owner audit; Burgers timing/error values came from the same captured paired outputs; Poisson medians/errors/outliers were recomputed from source arrays. All 46 local links and every contents anchor passed, and formatting checks passed. No simulation, model fitting, new timing, branch/worktree creation, merge or final-cohort evaluation occurred. Existing source reports and unrelated workspace edits were preserved. Heat retains its separately labeled host-query/efficient-FOM-envelope protocol; earlier-wave evidence reset remains intact. No numerical finding was retracted.
+
 ## 2026-09-10
 
 ### ideate — modified CP + EQ implementation and independent review
@@ -6668,6 +8672,26 @@ Burgers smoke job `3500334` is queued at this entry. No scientific training resu
 or speed claim exists yet. Training, evaluation, independent field audit, the
 generated final comparison, checksum collection/cleanup, and merge decision
 remain open.
+
+
+## 2026-09-10 — Heat and wave bottlenecks and proposed next tests
+
+### Root coordinator — diagnosis from captured outputs
+
+The user asked what is wrong with heat, reflective waves and absorbing waves and what to do next. Rechecked the measured cost components, initial errors, reference and step-halving diagnostics, and the implemented nonlinear wave stages. For the selected finest heat case, worst initial error is 4.54518231401% versus maximum rollout error 4.55547947988%; its device solve/readout median is 12.6458344748 ms and host output median 13.5736024822 ms. These are component medians, not subtractable estimates for a new GPU protocol. The selected FOM solves a coarser grid with charged interpolation/output. Heat needs the same-grid device-resident replay before interpreting its comparison alongside the new replays; no speedup from removing transfers is assumed. Initial head representation/fitting is the first accuracy target; earlier controlled heat data already showed a lower unrestricted-bank reconstruction error, with scope restricted to that earlier cohort.
+
+For both wave boundaries, measured reduced evolution accounts for over 99% of the current query cost. Source recomputes decoder geometry, QR and SVD every RK stage; operation-specific profiling/ablation has not been done. Existing step halving produces maximum discrepancy 1.187573129681e-06 on reference initial scales. Proposed first speed tests are profiling/factorization and conditioning-check costs, then larger steps with the same output times, reference accuracy and failure checks. The exact discrete reflective DST remains a strong baseline; its zero same-grid error is not zero continuum error. Preassembly and frozen reduced dimension already give nearly flat mesh cost, so additional preassembly alone is not the missing fix.
+
+Extended the earlier absorbing conservation diagnostic to the current collected device replay by independent NumPy area and edge sums, with source-field checksums. The checked moment is the area integral of velocity plus speed times the boundary integral of displacement, including both corner contributions. Script `reports/check_current_absorbing_balance.py` and result `reports/2026-09-10-absorbing-wave-balance-check.json` are committed on main at `c4c67ac550fde3fab66f460e8ffeaa749bc78e37`. No model or numerical solver was executed. The following are signed absolute moment errors/drifts, not relative field errors.
+
+| Case | Method | Initial moment error | Maximum drift from own start | Final moment error | Reference drift |
+|---|---|---|---|---|---|
+| 0 | frozen_mlp16_seed691200 | 6.142049146415e-03 | 1.738407710245e-02 | -1.512215292747e-03 | 1.387778780781e-16 |
+| 0 | frozen_mlp32_seed691200 | -1.816084969551e-04 | 3.341983916480e-03 | -2.502485144081e-03 | 1.387778780781e-16 |
+| 1 | frozen_mlp16_seed691200 | 1.649772970217e-02 | 1.823517749726e-02 | -1.492485273546e-03 | 1.682681771698e-16 |
+| 1 | frozen_mlp32_seed691200 | 3.590670235899e-03 | 4.937132735184e-03 | -1.346462499285e-03 | 1.682681771698e-16 |
+
+The current larger head also violates this balance at initialization and during evolution. This is a measured defect, not proof that it accounts for all late-time field error. Proposed accuracy tests give the decoder an explicit constant direction and enforce the true global moment in initial fitting and reduced evolution, separating those controls from late-time training reweighting. Keep both initial- and current-normalized field errors and energy/velocity errors; changing the denominator does not fix the absorbing tail. No constraint correction or new training was implemented, and no GPU follow-up was submitted. Existing numerical results and evidence reset remain unchanged; no finding was retracted.
 
 
 ## 2026-09-10 — Modified CP pilot implementation checkpoint
@@ -6820,6 +8844,61 @@ after login-p02 banner timeouts. No scientific allocation changed. The global
 validation seal, untouched evaluation, final generated report and merge decision
 remain open. No final speedup is established and no scientific result is retracted.
 
+## 2026-09-10 — Direct linear heat evolution and archived CP speed mechanisms
+
+### Root — completed user-requested linear learned-bank experiment
+
+Continued the existing heat worktree from `766a3ca` without creating a new branch or namespace. Implemented a free-coefficient linear weak heat equation and precomputed small matrix exponentials at the requested output times. Retained the linear least-squares version of the old discrete weak step plus a half-step accuracy control. The frozen learned spatial weights and expanded head remain unchanged; the linear state has the full bank dimension, whereas the nonlinear comparator retains its compressed latent dimension. All methods charge full supplied GPU input through full blocked GPU output; host transfers are additionally recorded from each same invocation. This is a method comparison, not a matched-dimension nonlinear-ROM result.
+
+Completed job `3511417` in private attempt `/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/linear05`; full mesh ladder and both existing development cohorts, no final cohort, training or selection sweep. Local analytic and independent least-squares smoke checks passed. The cluster used float64, highest precision and GPU preflight, with no captured-large-constant or failed-runtime warnings. Source, outputs, repetition arrays and checkpoint provenance were checksum-collected into locally tracked archive parts, all archived members verified, and the exact remote directory deleted. Scientific source `73fdaa88eb754470539f6ff9dfaa9422cb00255a`; archive `d9980cb`; independent acceptance `81e95fe`; root report `3462a54`.
+
+The following values are generated from the accepted audit JSON, not copied from older timings.
+
+| Method | Intervals | GPU median ms | Host median ms | Worst physical current-relative error % | GPU / host outliers |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| linear_weak_exact | 1024 | 0.561659457 | 17.681166413 | 1.675830489 | 0 / 0 |
+| linear_weak_cn | 1024 | 0.580535503 | 24.580228492 | 1.675830489 | 0 / 0 |
+| nmrom | 1024 | 12.318827561 | 36.325426539 | 4.555479480 | 0 / 0 |
+| fom_same_grid | 1024 | 1.034562592 | 25.068663992 | 0.000350103 | 0 / 0 |
+| fom_coarse16 | 1024 | 0.313115539 | 24.364979472 | 2.577910115 | 10 / 0 |
+
+Independent audit checked 492 unique fields and 900 paired timing/error invocations, recomputing 71712 metric entries. Maximum metric discrepancy 5.26245713672e-14; reference-refinement difference 1.62810884586e-12, empirical only. Independent QR-based reduced operators agree within 2.66367551041e-14. Every saved nonlinear comparator case/mesh field agrees with the earlier frozen-head run, maximum relative difference 2.90530056652e-15; timing comparisons use this new allocation only. The initial audit reached the serialization step after passing scientific checks but could not serialize a NumPy integer; the serializer count type was fixed, the failed log retained, and the complete audit rerun successfully. No simulation was rerun or scientific number altered for that fix.
+
+The linear variant is faster and more accurate than the current NMROM on these cases, and faster than the same-grid direct FOM at the largest requested mesh. It does not beat the coarse-FOM GPU control at their common development accuracy target. Host timings are separately measured and include mesh-dependent transfers. Broader family coverage, variable diffusivity, independent paper cases, initialization/readout compression, and a comparable-dimension nonlinear/linear study remain open. User's existing decision to retain separate worktrees persists; no merge or new numerical finding is retracted.
+
+### Root — user side question about speed in the CP paper
+
+Read the archived manuscript inside `Older Paper /neurips26__Copy_ (1).zip`, the saved author/reviewer discussion, frozen Heat-2D ACC and Heat-3D FAST drivers, and current heat code. Recorded source hashes and relevant line locations in `reports/2026-09-10-cp-heat-speed-source-audit.json`.
+
+The archived ROM gained from JAX device-loop fusion, eliminating Python synchronization inside iterations, and passing diffusivity as a runtime parameter. Current heat already has compiled nonlinear loops and exact precomputed weak operators; its present experiment has fixed diffusivity, so changing-diffusivity compilation reuse is not established. The archived Heat-2D source explicitly uses a dense residual without EQ, invokes the encoder before its rollout timer without a separate synchronization boundary, and grades the final field. The archived Heat-3D FOM uses a Python loop of CG solves and preserves every snapshot, whereas its ROM returns initial and final fields. The saved author correction explicitly identifies unfair FOM compilation and replaces reported heat speedups; those later text claims were not independently remeasured here. The current direct spectral and coarse-FOM controls and all-requested-time errors are a different benchmark contract. The frozen public-package heat rollout regression is separate; the archived paper Heat-2D driver advances the decoded current state correctly.
+
+The fixed CP factors do allow exact preassembly of linear weak operators, after accounting for masks and biases, and retain a nonlinear latent problem if the coefficient map remains nonlinear. Factored spatial initialization/readout is a potential further cost reduction for the current learned bank, requiring a checked approximation or architecture change; no such CP compression or CP retraining was implemented in this turn. No older CP performance figure was promoted to accepted current evidence, and no new CP GPU job was launched. Existing other-session jobs remain untouched.
+
+## 2026-09-10 — Proposed acceleration while retaining the heat nonlinear manifold
+
+### Root — iteration audit and recommendation, no new solver experiment
+
+User asked whether similar acceleration can retain the current NMROM. Read the canonical current state, current initializer/rollout source, and the accepted linear05 raw JSON (SHA-256 `f6a3704bb5781f3487e6853daf7cd88b54224d8e19540c1d3eb2ed2f76d609ab`). The following is a read-only audit of the first retained repetition per finest-mesh case, not separate phase timings.
+
+| Case | Nearest-start attempts | Mean-start attempts | Selected start | Total timestep attempts | Median attempts per step | Initial relative error |
+| ---: | ---: | ---: | --- | ---: | ---: | ---: |
+| 0 | 4 | 17 | mean | 57 | 3 | 0.0403035002461 |
+| 1 | 9 | 13 | mean | 46 | 2 | 0.0171748497826 |
+| 2 | 5 | 15 | nearest | 50 | 2.5 | 0.0362195712919 |
+| 3 | 3 | 10 | mean | 47 | 2 | 0.00978113834449 |
+| 4 | 5 | 17 | nearest | 50 | 2.5 | 0.0173004422682 |
+| 5 | 5 | 14 | nearest | 49 | 2 | 0.0331256667509 |
+| 6 | 3 | 13 | mean | 55 | 3 | 0.0232742849394 |
+| 7 | 9 | 13 | mean | 50 | 2.5 | 0.042743026033 |
+| 8 | 4 | 17 | mean | 52 | 2 | 0.0123378573807 |
+| 9 | 5 | 15 | nearest | 58 | 3 | 0.0454518231401 |
+| 10 | 5 | 53 | nearest | 40 | 2 | 0.0359396681863 |
+| 11 | 4 | 12 | nearest | 53 | 3 | 0.0132929184254 |
+
+Current heat already compiles its complete reduced query and preassembles weak linear operators. The remaining proposed experiment keeps the nonlinear head and latent dimension, uses precomputed linear heat propagation to predict bank coefficients, then corrects latent coordinates with a bounded small number of linearized weak least-squares updates. The accepted field remains the nonlinear decoder output. A failed reduced-residual check would trigger additional correction or the existing smaller-step solver. Larger propagation intervals and fewer corrections need field-error and stability checks; no speed gain or accepted accuracy is established for this proposal.
+
+The two-start initializer is another candidate for an adaptive cost reduction: some slow second starts are discarded, but other cases obtain substantially better fits from the second start, so blindly removing it is not justified. Current initial error is already close to worst rollout error; timestep acceleration alone cannot repair initial representation/fitting error. CP-style factored spatial projection/readout remains a separate candidate rather than a substitute for reducing repeated latent work. Counts do not establish which phase dominates measured wall time. No new GPU job, code change to the solver, branch, merge, accepted-method replacement or numerical retraction occurred.
+
 
 ## 2026-09-10 — Global modified-CP validation seal and untouched evaluation
 
@@ -6866,6 +8945,85 @@ owner commits. No merge or worktree cleanup is authorized or performed; original
 worktree paths and verified raw archives must remain available for existing reports.
 No scientific result is retracted; all new numerical evidence remains validation-only
 until the final evaluation jobs complete and pass their full-field audits.
+
+
+## 2026-09-10 — Frozen nonlinear heat acceleration and convergence follow-up
+
+### Root — resumed the requested heat experiments; both bounded studies complete
+
+Continued in the existing approved `2026-09-07-mr-heat2d` worktree from `81e95fe`, with its established private cluster namespace. Implemented adaptive initialization and reduced linear prediction followed by nonlinear weak projection while preserving the frozen spatial bank, nonlinear head and latent dimension. The projected method changes the time integrator; it is not exact algebraic acceleration of the previous trajectory and is not the free-coefficient linear ROM. The local implementation smoke passed under the required one-minute limit; its bounded-correction accuracy loss was retained as a negative control, and the full-budget adaptive control was added before the screen.
+
+The first screen is `nonlinear06`, scientific source `da53af9`, job `3518484`; the increased-correction-budget follow-up is `nonlinear07`, source `4c4d27d`, job `3519092`. Every method received the supplied full field and returned every requested full field. GPU burn-in, paired timing/error invocations, complete repetition arrays, fixed development cases, regenerated seeded data and same-allocation direct FOM controls were retained. The follow-up was selected from screen diagnostics and is explicitly development work, not independent final confirmation.
+
+**nonlinear06:** job `3518484` on `NVIDIA A100 80GB PCIe` / `pax106`. Checked archive 6378147840 bytes in 68 parts, 300 members; full arrays are preserved exactly in tracked archive parts. Scientific archive and audit: `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/nonlinear06/`. Exact remote attempt removed only after checksum verification.
+
+| Method | Intervals | Median GPU ms | Median host ms | Worst current-relative error (%) | Nonstationary timed steps | GPU / host outliers |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| nmrom | 1024 | 13.385909027 | 31.074143015 | 4.555479480 | 0 | 0 / 0 |
+| nmrom_adaptive | 1024 | 11.955555994 | 30.949321459 | 4.555479480 | 0 | 0 / 0 |
+| exp_project_full | 1024 | 7.195643382 | 26.019443409 | 4.545182314 | 6 | 0 / 0 |
+| exp_project_full_adaptive | 1024 | 7.636279450 | 25.288837031 | 4.545182314 | 3 | 0 / 0 |
+| exp_project2 | 1024 | 4.883697024 | 23.005209048 | 6.193098720 | 180 | 0 / 0 |
+| exp_project2_adaptive | 1024 | 4.152897978 | 22.593383444 | 6.193098720 | 180 | 0 / 0 |
+| linear_weak_exact | 1024 | 0.537293497 | 18.875581911 | 1.675830489 | 0 | 0 / 0 |
+| fom_same_grid | 1024 | 0.947071007 | 19.117499003 | 0.000350103 | 0 | 0 / 0 |
+| fom_coarse16 | 1024 | 0.492372550 | 18.760438543 | 2.577910115 | 0 | 9 / 0 |
+
+Independent audit passed 276 unique full fields, 648 paired timing/error invocations and 47088 metric entries; maximum discrepancy 5.26245713672e-14. Independently reconstructed 432 nonlinear trajectories on common physical observation nodes, maximum mismatch 4.67229512442e-16; this is sampled identity checking alongside full-field error auditing, not independent full-grid neural reconstruction. All 1440 projected weak residual/gradient pairs matched within 1.36782946081e-15; independent reduced-operator mismatch at most 3.0010322191e-14. Original NMROM fields match the previous archive within 3.55889896134e-15. Empirical reference delta 1.62810884586e-12, not a rigorous continuum bound. All outliers retained; timing ratios never mix these allocations.
+
+**nonlinear07:** job `3519092` on `NVIDIA A100-PCIE-40GB` / `pax003`. Checked archive 4084019200 bytes in 44 parts, 205 members; full arrays are preserved exactly in tracked archive parts. Scientific archive and audit: `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/nonlinear07/`. Exact remote attempt removed only after checksum verification.
+
+| Method | Intervals | Median GPU ms | Median host ms | Worst current-relative error (%) | Nonstationary timed steps | GPU / host outliers |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| nmrom | 1024 | 12.939105509 | 36.776523455 | 4.555479480 | 0 | 0 / 0 |
+| exp_project_full | 1024 | 7.240736042 | 31.794531038 | 4.545182314 | 3 | 0 / 0 |
+| linear_weak_exact | 1024 | 0.599153922 | 25.129487971 | 1.675830489 | 0 | 0 / 0 |
+| fom_same_grid | 1024 | 1.085098484 | 25.578003027 | 0.000350103 | 0 | 0 / 0 |
+| fom_coarse16 | 1024 | 0.362294493 | 24.937627488 | 2.577910115 | 0 | 6 / 0 |
+
+Independent audit passed 180 unique full fields, 360 paired timing/error invocations and 26352 metric entries; maximum discrepancy 5.26245713672e-14. Independently reconstructed 144 nonlinear trajectories on common physical observation nodes, maximum mismatch 4.12405834879e-16; this is sampled identity checking alongside full-field error auditing, not independent full-grid neural reconstruction. All 360 projected weak residual/gradient pairs matched within 1.00691803935e-15; independent reduced-operator mismatch at most 2.5483808158e-14. Original NMROM fields match the previous archive within 4.07217186713e-15. Empirical reference delta 1.62810884586e-12, not a rigorous continuum bound. All outliers retained; timing ratios never mix these allocations.
+
+The adaptive initializer skips unneeded second starts and is the smaller improvement with no recorded stationarity failures. The aggressive combined projection variant reaches 6.193098720% worst error and fails the physical target despite lower cost. The full projection correction limit was increased from the screen to the follow-up; the difficult case still misses the gradient threshold on each mesh and can take longer than the original NMROM. The report includes per-case timings and exact remaining residuals/gradients rather than hiding them behind medians.
+
+**Correction / retraction:** early progress language called the full-budget projection method converged. That characterization is withdrawn because actual budget exits were recorded, including after the higher-limit follow-up. No saved field/error figure was withdrawn; passing a physical-error target and satisfying the nonlinear stopping criterion are separate results. No accepted default solver was replaced by the still-nonstationary projected method.
+
+**Open:** reduce initial nonlinear fitting/representation error and its online cost; distinguish local-fit limitations from nonlinear-head representation limits; test shorter linear-prediction intervals with charged extra projections to address the difficult correction. Full resolution ladders, broader families, variable diffusivity and untouched final-cohort confirmation remain open. The current nonlinear methods do not establish a GPU advantage over the efficient matched-target heat FOM.
+
+Generated combined report: `reports/2026-09-10-heat-nonlinear-acceleration.md`, generator and hash manifest adjacent, main `4c91c7d`. Both implementation/evidence sets are committed in the heat branch through `1d6e522`; first-screen archive `ab159c7`. Existing worktrees remain separate under the user's earlier decision; no merge or new permission request, and other sessions' modified-CP jobs were untouched.
+
+## 2026-09-10 — Direct CP heat implementation transfer review
+
+### Root — user redirects the question to the archived CP mechanisms
+
+User challenged the linear-prediction direction and asked why the successful archived CP technique was not being applied directly. Re-read the archived Heat-2D and Heat-3D numerical paths, current heat assembly/initializer/rollout, and the saved author timing correction. Extended `reports/2026-09-10-cp-heat-speed-source-audit.json` with hash-checked source locations and explicit already-present versus missing mechanisms. This review adds no performance measurement.
+
+The current solver already precomputes its exact weak spatial operators, differentiates only the small reduced residual online, carries latent coordinates through a compiled device rollout, and decodes full fields only at requested outputs. The archived Heat-3D path instead obtains small online work through precomputed CP values at quadrature stencils and carries the newly decoded quadrature-node state; the archived Heat-2D cell explicitly uses a dense residual. Neither justifies adding approximate quadrature to current already-small exact weak algebra.
+
+Two concrete CP mechanisms are absent from the current heat model: a trained encoder for initial latent coordinates and a separately evolved amplitude scale with a normalized decoder. Current initialization performs nonlinear fits, and its fixed bank `out_scale` is not an evolving amplitude variable. A direct transfer study should train a compatible field-derived encoder and normalized-head/scale variant while keeping the current weak time integrator as the comparison baseline. It must charge encoder input processing, added corrections and all requested field outputs, and report the additional scalar coordinate. Archived weights are not compatible drop-in weights for the current unnormalized head. Any speed or accuracy gain from these missing features remains untested.
+
+The older CP comparison used iterative CG, whereas the current heat comparison includes a direct spectral solver and coarse interpolation. Existing archived timing/output/accuracy differences remain documented; the saved author correction does not independently remeasure a current CP result. The latest linear-prediction study was a different integrator experiment, not a completed direct CP mechanism transfer. No numerical figure is retracted, no new job or worktree started, and no branch merged.
+
+## 2026-09-10 — Recovered original May heat work and July CP optimization study
+
+### Root — broader historical search after the user supplied the Dev-directory pointer
+
+User pointed to older NeurIPS/NMROM experiments outside the current repository. Located `/home/tahmid/Dev/Neurips`, including `HEAT_ROUNDS.md`, `h2opt.py`, `h3opt.py`, `h3red.py`, conversion/verification scripts and raw result files. Following their source paths also located the original cluster project `/cluster/tufts/paralab/tawal01/NMROM-Apr8/20260423-NEURIPS/Tunable-ROM`, including `2026-05-21-heat` and May session records. The original Heat-3D checkpoint and FOM cache paths remain present; neither was loaded or changed. The May repair/training study and July implementation/timing study are distinct historical stages.
+
+Selected local sources and raw records, plus checksum-verified remote May sources, are preserved in the existing heat worktree at `experiments/mr-heat2d/history/cp-heat-transfer-20260910`, with a source manifest. Heat commit `96133d1`. Original external and cluster files were preserved; no data-generation/training/benchmark job was launched. No new worktree or merge.
+
+**Correction to the preceding source review:** the frozen driver copies did not include the later reduced-Gram, Cholesky and graph studies. The earlier list of encoder and amplitude differences was incomplete as a list of transfer opportunities. Historical CP speed improvement retained the nonlinear solve; some gains came from changing how each iteration was assembled and solved. The current weak solver already avoids full-grid online residuals and runs f64, but still uses a general small linear solve and explicitly forms the small weak Jacobian. Cholesky and fully contracted normal equations are concrete missing comparisons.
+
+The following archived values were recomputed from preserved July per-case arrays and timing repetitions, not copied from prose. These are historical aggregate checks only; full fields, per-repetition errors and solver gradients were not independently audited. Old error headlines are mean final-time errors, speedups are medians of per-case ratios, and the baseline is that study's compiled iterative CG solver. Every listed row reports a shared node. No ratio was compared with the current direct spectral/coarse FOM.
+
+| Historical method | Median per-case speedup | Mean final error (%) | Maximum final error (%) | Faster cases |
+| --- | ---: | ---: | ---: | ---: |
+| heat2d N=128 recompiled_acc_red_r8A_redgraph | 1.079566 | 0.863504 | 2.036324 | 5 / 10 |
+| heat2d N=128 recompiled_fast_red_r8A_redgraph | 1.214041 | 1.274771 | 3.036263 | 5 / 10 |
+| heat3d N=128 recompiled_acc_v5w_r8B_graph | 4.116510 | 18.320561 | 37.893239 | 10 / 10 |
+
+The current method can retain its weak objective and nonlinear decoder while precomputing bank-space Gram contractions for the normal equations and replacing general LU with Cholesky on the damped system. Numerical parity, stopping reasons and paired current-FOM timing must be checked before accepting a gain. The existing already-small weak residual limits how much of the historical grid-sized-Jacobian gain remains available. Counted-loop/graph changes were configuration-dependent historically and should not be copied blindly. A trained encoder and explicit amplitude remain separate training/architecture candidates rather than prerequisites for this algebraic comparison.
+
+Generated report and arithmetic audit: `reports/2026-07-30-cp-heat-optimization-transfer.{md,json}`, generator adjacent; main `4c77704`. Existing `reports/2026-09-10-cp-heat-speed-source-audit.json` cross-links the expanded scope. No current numerical result or old-wave evidence was reinstated or retracted. The next implementation experiment remains to be run.
 
 ## 2026-09-10 — Completed modified-CP Burgers and wave pilot
 
@@ -6915,3 +9073,3117 @@ Open: improve initial representation/fitting and wave evolution before claiming 
 ### ideate — raw runtime exception and accuracy qualification
 
 The user asked whether the FOM is faster in every case. The selected largest-target classical solver is faster than all diagnostic ROMs in 5/6 cells. The raw-time exception is burgers2d at 512 intervals: cp takes 29.5804 ms versus FOM 43.4578 ms (FOM/ROM time ratio 1.46914), but worst errors are 45.2739% and 3.20343% respectively. Modified CP and FiLM are slower than the selected classical solver in every cell. This raw-time exception does not establish a matched-accuracy speedup; no ROM meets the cohort accuracy target. The interpretation concerns this completed CP/EQ pilot, not the separate precomputed-operator work. No new experiments, settings, results, or merges were introduced.
+
+## 2026-09-10 — Direct transfer of CP algebra to the current heat NMROM
+
+### Root heat session — same-step Gram and Cholesky ablations
+
+The user asked whether the recovered CP techniques can improve the current cases. Continued the already approved heat tree from `96133d1`; implemented an optional Cholesky solve in `heat_core.py` and separate contracted-normal-equation paths in `cp_algebra_paths.py`. Original initialization, frozen checkpoint, weak objective, damping, stopping rule and CN stepping remain fixed. The default original solver is retained as a control. No new permission, branch or cluster namespace was needed for this continuation.
+
+Scientific source `8af2f6b`; independent audit `55786dc`; full archive `9891754`. The local GPU smoke completed in 24.831804 seconds and passed exact nonlinear-head least squares plus field/latent/count equivalence. Cluster job `3528798` completed on `pax007` / `NVIDIA A100 80GB PCIe` in the private `mr_heat2d_20260907/cp_algebra08` directory. Source and frozen checkpoint hashes were checked against git content. The log verifies GPU, float64 and highest matrix precision; cases and nested-grid references were regenerated from the recorded seeds. Every timed block was burned in; actual outputs and repetition timings came from the same invocation.
+
+Same-job results at 1024 intervals (median GPU time; worst current-relative field error over all cases and requested times):
+
+| Method | GPU ms | Host ms | Worst relative error (%) |
+| --- | ---: | ---: | ---: |
+| `nmrom` | 13.465231517 | 28.791182558 | 4.555479480 |
+| `nmrom_cholesky` | 12.396388978 | 27.967276925 | 4.555479480 |
+| `nmrom_gram_lu` | 13.471693965 | 29.283634038 | 4.555479480 |
+| `nmrom_gram_cholesky` | 12.915947475 | 28.389882471 | 4.555479480 |
+| `linear_weak_exact` | 0.514046464 | 16.184805485 | 1.675830489 |
+| `fom_same_grid` | 0.885449001 | 16.662808484 | 0.000350103 |
+| `fom_coarse16` | 0.287753006 | 16.085625044 | 2.577910115 |
+
+Cholesky alone is the useful tested algebra change on the larger mesh: 7.938% less median GPU time. The declared primary joint change gives a 1.042528 ratio of cohort median times; it improves every case median. All arms and both meshes are reported, without timing exclusions or relabeling the joint primary arm. These are development results, not final paper confirmation. The direct and coarse FOMs still win. All nonlinear methods retain the original physical error; no accuracy improvement is claimed.
+
+Independent NumPy/SciPy audit passed 228 distinct full arrays, 504 timed invocations and 36720 metric entries (maximum discrepancy 5.26245713672e-14). Reconstructed 5760 time-step residual/gradient pairs within 9.96807007054e-16 and 576 initial-fit pairs within 1.68615121865e-15. Every fit and step met stationarity, and all attempted/accepted/termination counters agree across algebra variants. Largest full-trajectory parity delta 3.00211788972e-15; largest internal-latent delta 5.35443510255e-14. Sampled decoder identity and independent QR/Gram checks passed. Initial-fit targets were reconstructed through sampled linear projections, not an independently rebuilt full-grid projection.
+
+Archive contains 5233674240 bytes in 56 tracked parts, joined SHA256 `a0b58d282dbddf28848595c14e9a7426bf1cad8c8061c21e3320a78879f9595e`. All 252 remote members passed checksum collection before the exact completed directory was removed. Native results, source, checkpoints, all fields, timing repetitions and audit are under `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/cp_algebra08/`; ignored extracted full fields are recoverable from committed parts with `restore_linear.py`. Generated report and generator live on main at `reports/2026-09-10-heat-cp-algebra-comparison.md` and `reports/generate_heat_cp_algebra.py` (`ff28024`).
+
+No prior result is retracted in this round. The historical full-grid Jacobian reduction is largely already present through the current weak formulation; precomputing its remaining small Gram does not reproduce the old large speed gains. A learned initializer from supplied-field features and joint coefficient-head training remain the next distinct speed/accuracy direction, with an explicit amplitude coordinate as an option to test. This architecture work is proposed, not implemented or validated here. Existing final cohorts remain unopened; the experiment branch stays separate, and no merge or other session job was modified.
+
+## 2026-09-10 — Why the earlier CP heat ROM could beat its FOM
+
+### Root heat session — clarification of the changed full-order algorithm
+
+The user challenged why historical CP beat FOM while the current heat NMROM does not. Re-read the canonical log, preserved July `HEAT_ROUNDS.md`/`h2opt.py`, current `heat_core.py`, historical timing review, source audit and the authors' heat-timing correction. The historical corrected comparator performs compiled iterative CG solves over backward-Euler time steps. The current rectangular, constant-coefficient heat comparator diagonalizes the discrete Laplacian with a sine transform and applies exponential decay directly at requested times; it does not run those CG solves or internal time steps. The current nonlinear ROM still performs initial fits and nonlinear latent corrections. Consequently a historical win against iterative CG and a current loss against direct spectral propagation are compatible. Mesh, dimensionality, data, precision, hardware and output/error accounting also differ; timing ratios cannot be transported across these studies.
+
+The baseline change should have been made explicit in the explanation. The earliest very large paper heat wins were additionally affected by unequal FOM compilation, as the author's archived correction records; later compiled-CG CP wins remain in the historical timing arrays. This clarification neither reinstates the retracted large claims nor independently validates historical full fields. A paired current NMROM/iterative-CG/direct-transform comparison under one physical problem and timing contract would quantify the baseline effect; no new benchmark was run here. Existing result numbers, branch state, frozen archives and merge decisions are unchanged. Evidence remains in `reports/2026-07-30-cp-heat-optimization-transfer.md`, `reports/2026-09-10-cp-heat-speed-source-audit.json`, and `reports/2026-09-10-heat-cp-algebra-comparison.md`.
+
+## 2026-09-10 — Current heat NMROM against the user-selected iterative CG FOM
+
+### Root heat session — compiled CG, matched time steps and accuracy controls
+
+The user requested "Lets use the older one please" after the distinction between iterative CG and direct spectral FOMs was explained, then instructed continued execution. Continued the existing authorized heat branch from `9891754`, without creating or merging a worktree. Implemented `cg_paths.py` with standard unpreconditioned CG, previous-state warm starts, explicit relative stopping, iteration counts, and a charged final true-residual check per time step. Both CG and the full rollout are compiled. The main baseline uses the current NMROM CN time grid at the historical CG tolerance; a separate backward-Euler arm keeps the historical step count on the current physical problem. This is a port of the old solver algorithm, not a replay of the old family/checkpoint/geometry.
+
+Source `7e6d2e3`; audit `ec93f94`; archive `1f576c9`; root report `4b6580f`. Job `3529772` completed on `pax003` / `NVIDIA A100-PCIE-40GB` in its own `mr_heat2d_20260907/iterative_cg09` directory. Mandatory GPU, float64 and highest matmul precision preflight passed. Source/checkpoint content hashes and seeded regeneration were recorded; all timed blocks were burned in, method order alternated, and each timing/error pair belongs to one actual invocation. Every requested full output is charged, with host input/output transfers separately measured on the same invocation. Compilation and offline assembly are retained separately.
+
+The frozen nonlinear checkpoint, initialization, original weak equation and nonlinear stopping tolerance were unchanged. Main same-grid comparison (median GPU time; worst current-relative error over all cases and requested times):
+
+| Intervals/axis | Cholesky NMROM GPU ms | CG at 1e-6 GPU ms | CG/NMROM | ROM worst error (%) | CG worst error (%) |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 | 11.226765462 | 5.505837966 | 0.490421 | 4.559260371 | 0.067378564 |
+| 256 | 11.341399630 | 20.997201558 | 1.851377 | 4.555681208 | 0.031260767 |
+| 1024 | 12.206228450 | 210.595535464 | 17.253121 | 4.555479480 | 0.034908539 |
+
+At 1024, loosening CG to 1e-2 gives 59.177982039 GPU ms / 0.770684590% worst error. NMROM is still 4.848179× faster on the GPU, and 2.266538× with all host transfers (36.841067020 versus 83.501660032 ms). This is the fastest passing tested CN-CG tolerance, selected on development cases; it is not a global classical cost optimum. The tighter historical tolerance delivers much lower error than the ROM, so its larger speed ratio is reported beside the loose-tolerance controls. The historical-step-count BE-CG control takes 306.818958488 ms / 0.567119882% error on the largest mesh. The direct-transform and free-bank controls remain labeled diagnostics and were also rerun in the same allocation.
+
+The local smoke completed in 23.453828 seconds. Its new CG fixture matched independent dense time stepping within 1.67701636802e-12 and installed JAX CG within 0. Local timings are excluded from reported performance.
+
+Independent NumPy/SciPy audit passed 372 unique full arrays, 864 timed invocations and 62640 metric entries, with maximum discrepancy 5.26245713672e-14. Every CG output was compared with independent sine-transform evaluation of the exact matching discrete time-step formula. Every recorded linear solve converged; per-step true-residual evidence is source/record checked because internal full CG states are not retained. Independent nonlinear checks covered 4320 time-step residual/gradient pairs and 432 initial-fit pairs, with maxima 1.49739839668e-15 and 1.80411241502e-15. All nonlinear solves met stationarity; Cholesky field/latent parity and all iteration/acceptance/termination counters agree. Original fields reproduce the earlier frozen archive. All timing outliers are retained; the primary ROM and CG comparisons have none.
+
+Full evidence is retained in `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/iterative_cg09/`. The archive is 6151649280 bytes in 66 tracked parts, joined SHA256 `102d2bbef016ddcedeaa79b778c0295d64689b111b9567bf6076814d8b54a52d`. All 399 members passed collection checksums before the exact completed remote directory was removed. Extracted full fields are ignored in Git and recoverable from the committed parts using `restore_linear.py`. Generated report, PNG/PDF scaling figures, provenance manifest and generator are under main `reports/2026-09-10-heat-iterative-cg-*` and `reports/generate_heat_iterative_cg.py`.
+
+No previous numerical result is retracted. The user-selected comparator changes the benchmark question: the current NMROM has a resolution-dependent speed advantage over the stated same-grid iterative CG configurations, while the earlier direct-transform FOM advantage remains valid. This uses one training seed and the existing fixed-diffusivity single-bump development family; there is no final-cohort claim, matched-error equality, coarse-grid CG search or globally optimized classical frontier. Improving initial nonlinear representation/fitting, confirming on independent cases and extending the resolution/case coverage remain open. Existing worktrees remain separate; no merge, retraining, historical-archive change or other session job was performed.
+
+## 2026-09-11 — Current Poisson multiresolution iterative FOM extension
+
+### poisson_iterative_multires — bounded panel submitted in the existing approved tree
+
+The user requested analogous iterative-baseline results for all four PDEs over multiple resolutions. Continued the approved Poisson worktree from `b72e52b`, without new worktrees, branches, retraining or final-cohort access. Source `085e318ea8946e0443ce6a129171d09a16d34cbe` freezes the previously selected current relative-loss checkpoint and training-only nearest-code initialization; all thirty earlier development sources remain included. The configured interval ladder and same-grid CG tolerance controls are preserved in `experiments/multiresolution-poisson/config-iterative-cg.json`. The direct sine-transform comparator remains a separately named diagnostic. The expected physical accuracy limitation is retained rather than replacing the current model with the historical censored replay.
+
+Job `3534456` runs in the private `mr_poisson2d_20260907/iterative_cg06` directory on `pax049`, allocated physical GPU index `4`, UUID `GPU-74d9bc51-9598-c873-88b7-cf67f1886e14`, an NVIDIA A100 80GB PCIe. Source and checkpoint hashes and exact previous cluster cohort hashes passed preflight. A local sub-minute smoke passed the independent SciPy sine-transform and installed-JAX CG fixture and each tested query. Its initial ARM-vs-x86 byte-hash mismatch was traced to one-ulp NumPy exponential rounding; only the non-scientific local smoke permits that difference. The real cluster cohort keeps the strict previous hash gate.
+
+The job is still running; no performance or accuracy finding is accepted yet. Independent NumPy/SciPy field, reference, weak-gradient, source/cache and true-CG-residual checks are implemented, along with a generated handoff that separates stationary exits, accepted residual-reduction exits and failures. Target qualification retains the empirical `(error + delta)/(1 - delta)` adjustment. Collection, exact remote cleanup, full audit and final result handoff remain pending. No other session's worktree or job was modified.
+
+## 2026-09-11 — Completed current Poisson multiresolution iterative comparison
+
+### poisson_iterative_multires — audited frozen-weight ladder and complete evidence retention
+
+Completed the existing approved Poisson panel without retraining, a new worktree or final-cohort access. Scientific source `085e318ea8946e0443ce6a129171d09a16d34cbe`, audit implementation `2d1bd59`, complete archive commit `6377296`. Job `3534456` completed on `pax049` / `NVIDIA A100 80GB PCIe`. GPU assignment and UUID records identify its dedicated allocated GPU despite sharing the node with the concurrent wave job. The selected current checkpoint remains frozen across all query meshes; all 30 previously opened development cases remain included.
+
+| Intervals/axis | NMROM GPU ms | CG 1e-6 GPU ms | Raw CG/ROM median-time ratio | ROM worst error (%) | CG worst error (%) |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 | 2.532532555 | 5.697583081 | 2.249757 | 6.802558226 | 0.257216583 |
+| 256 | 2.380928607 | 22.302564001 | 9.367170 | 6.801564301 | 0.015459738 |
+| 1024 | 2.486736514 | 188.389985007 | 75.757920 | 6.801556262 | 0.000735144 |
+
+At 1024 intervals the fastest passing tested CG tolerance is 0.1, taking 84.620377980 GPU ms / 88.169009541 host ms with 1.019172874% worst relative error. The raw ratio to ROM is 34.028687 on GPU and 14.755208 including host transfers. The corresponding median of case-wise GPU ratios is 33.258981; these aggregate definitions are deliberately kept separate. ROM misses the adjusted 5% target on 6/30 cases on every mesh, so **no matched-target NMROM speedup is established**. These are favorable raw iterative-CG runtime ratios beside the retained accuracy failure. Same-job direct DST remains faster at 0.317259575 GPU ms on the largest mesh.
+
+Independent NumPy/SciPy checks passed all 1890 timed invocations and 630 distinct full fields. Maximum physical-metric discrepancy is 1.68736933404e-16; independently rebuilt decoder field discrepancy 3.61604550136e-15; true CG residual discrepancy 5.13478148889e-16; previous current-model pilot field discrepancy 2.5098264066e-15. Every current NMROM solve is stationary and every CG solve converged. Source/checkpoint hashes match git content; all frozen case parameters match the earlier cluster archive exactly. CPU regeneration differs only by the explicitly recorded cross-platform exponential rounding. The maximum empirical nested reference difference is 7.35117844147e-06; it is not a rigorous continuum error bound.
+
+Accuracy uses full requested-grid relative L2 error against the restricted finest reference, with independent common-observation and same-grid diagnostics. Qualification retains `(error + delta)/(1 - delta)` and the declared reference allowance. Timing includes supplied source projection, nearest training-only code lookup, weak solving and complete field output, with full host transfers separately recorded on the same invocation. All timing repetitions and outliers remain included; the primary ROM has 4 GPU timing outliers under the stated within-case rule, and no primary tight-CG outliers.
+
+The checksum archive contains 2278918990 bytes in 46 committed parts; joined SHA256 `72e7fb5cb7a0e6db5bb03ebc60150e6b497c043c611b77646f068610c3ab6462`. All source/result/collection manifests passed before deleting and verifying absence of the exact `mr_poisson2d_20260907/iterative_cg06` remote directory. Restorable raw fields, checkpoint, source, all timing arrays, audit, GPU identity and machine-readable `panel.json` are under `worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/iterative_cg06/`. `restore_iterative.py` rebuilds ignored extracted data from tracked parts. Root owns the consolidated report; no main report was edited by this session.
+
+No earlier measurement is retracted. This restores the user-selected iterative FOM comparison for the current frozen decoder; it does not substitute the older censored replay or establish a universal FOM advantage. Accuracy improvement, independent confirmation and broader PDE families remain open. The owned worktree is clean and committed, retains its separate branch, and has no remaining running job. No branch was merged and no other session job was changed.
+
+## 2026-09-11 — Completed current Burgers multiresolution iterative comparison
+
+### burgers_iterative_multires — frozen corrected rollout, tolerance controls and independent audit
+
+Completed the existing approved Burgers worktree from `b4eddc8`, without a new branch, retraining, final-cohort access or a merge. Scientific source `46ced2fd6bdd45758cc978f90d572d9fe09e3d80`, full archive/audit commit `b0e7aaa`. Job `3534502` completed in its private `mr_burgers2d_20260907/iterative06` directory on `pax143` / `NVIDIA A100-PCIE-40GB`. The log confirms GPU execution and highest matmul precision, and both fields and every frozen network array passed float64 checks. All physical cases and fine references were regenerated from the recorded existing development seed.
+
+The current decoder has k=16, r=512, M=64, m=256, with fixed Gauss initial fitting and unchanged backward-Euler stepping. Its weak linear terms are preassembled; advection remains the sampled full sign-upwind operator. This is not the historical smaller-bank polynomial tensor. The network was trained on 256 nodes per axis, corresponding to 255 intervals. Evaluation meshes below count intervals. The instrumented query reproduced original case-zero fields and all initial/evolution counters on every requested mesh before timing.
+
+Root declared `fft_tight` as primary before any timing outcomes, with that decision committed in `PRIMARY-SELECTION.json`. It uses compiled tolerance-stopped Newton–BiCGStab, Newton tolerance 1e-6 and linear tolerance 1e-8, with the same time grid as the ROM. Loose/medium Newton controls and the older dense sine-transform preconditioner remain separately named. A charged true linear-correction residual check and retained previous-output-step fields support verification; comparisons concern these instrumented complete queries. The primary table uses median GPU time and worst fixed-initial-normalized trajectory error:
+
+| Intervals/axis | NMROM GPU ms | Tight iterative FOM GPU ms | Raw FOM/ROM median-time ratio | ROM worst error (%) | FOM worst error (%) |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 | 36.226368044 | 74.331412441 | 2.051859 | 10.854648111 | 10.989131074 |
+| 256 | 35.669685109 | 114.544949029 | 3.211269 | 4.550700126 | 4.026514657 |
+| 1024 | 38.783386932 | 594.221845968 | 15.321556 | 3.907620325 | 2.141610957 |
+
+At the largest mesh, the fastest passing tested FOM is `fft_loose`, taking 67.342492519 GPU ms / 86.096104002 host ms with 2.389936524% worst error. The NMROM takes 38.783386932 / 57.562775561 ms, giving raw ratios 1.736375 on GPU and 1.495691 with host transfers. The historical dense-preconditioner control takes 106.330299517 GPU ms and has 1.656559087% worst error. The middle mesh has faster loose FOM controls; the smallest mesh fails the physical target for both model classes. Current-relative errors remain separately available and are not interchangeable with the fixed-initial target.
+
+The two larger ROM meshes pass the existing empirical five-percent physical gate, including casewise refinement margins and the reference-budget requirement. Every NMROM initial fit and evolution step exits with the declared small-improvement/step reason. There are no budget/nonfinite exits, but **these stalls do not certify stationarity**. The generated panel separates physical-target pass, the stopping contract and unknown stationarity. Every FOM nonlinear and linear residual flag passes. All timing repetitions are retained, with no within-case timing outliers under the declared rule. No new convergence or matched-error-equality claim is made.
+
+Independent NumPy/SciPy audit passed 180 timed invocations and 60 distinct full fields. Maximum physical-metric difference is 2.01227923213e-16; sampled decoder difference 2.12618858694e-14; independent weak-step residual difference 1.28164145963e-12 across 1800 checks; independent output-step FOM residual difference 3.46944695195e-17 across 720 checks. Source/checkpoint content hashes, every repetition's full-field hash, all reference refinements, frozen configuration and timing coverage passed. Local independent Gaussian regeneration differs from cluster bytes only by platform exponential rounding: maximum relative physical-parameter difference 1.96812239457e-16, and maximum initial-field difference 2.22044604925e-16. Exact shared cluster input identity is checked separately. Inner linear residuals are verified from source/records; the individual Newton correction vectors are not archived for independent reconstruction.
+
+The checksum archive contains 2925496320 bytes in 31 tracked parts, joined SHA256 `5687904badc34bfccae65f4a38dc1065b4030e7576350131dec908fc2a6fd436`. All 101 archive members passed collection checksums before deleting and verifying absence of the exact completed remote directory. Full restorable fields, small operators, checkpoint, immutable source, timing arrays, `AUDIT.json` and machine-readable `PANEL.json` are under `worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/iterative06/`. `restore_iterative.py` recovers ignored extracted fields from committed parts. Root owns the combined main report; this owner did not write a separate main report.
+
+No earlier scientific measurement is retracted. This establishes the stated development runtime/error comparison against named same-grid iterative algorithms, not a universal FOM advantage, a globally tuned classical frontier, a stationarity certificate or final paper confirmation. Tighter accuracy, formal stopping checks and independent confirmation remain open. The existing branch remains separate and clean; no other session's worktree or job was modified. Root coordinates the combined current-state update.
+
+## 2026-09-11 — Completed fresh-wave multiresolution iterative comparison
+
+### waves_iterative_multires — matched-time-step CG controls and complete field audit
+
+Completed the already approved wave worktree from `9005ab6`, with scientific source `e1d377928913fc94c06c6052459a4ab4847c1eb1` and full archive/audit commit `321ce49eeb70d97868c07b53e02b0a16accfceaa`. Job `3534457` completed on `pax049` / `NVIDIA A100 80GB PCIe`. Dedicated GPU assignment is preserved in `gpu-assignment.txt`; its UUID differs from the concurrent Poisson job on the same node. Only independently verified post-reset mathematics and frozen learned-bank MLP32 checkpoints were used. No earlier wave evidence was reinstated, and no model, cohort, mesh or time step was changed after outcomes.
+
+The new full solver applies implicit midpoint to the verified mass/stiffness/boundary-damping wave system. Mass scaling makes the absorbing solve symmetric positive definite. Counted, warm-started, unpreconditioned CG and the entire rollout are compiled; every step charges and records a true residual. This is a new matched-time-step iterative control using fresh wave mathematics, not a literal historical wave algorithm. The nonlinear ROM retains its original RK4 dynamics and initialization. Both use the same physical step/output grid; their time integration formulas differ. Original DST/RK4 full solvers remain same-job diagnostics.
+
+| Boundary | Intervals/axis | NMROM GPU ms | CG 1e-6 GPU ms | ROM worst current-relative displacement (%) | CG worst current-relative displacement (%) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| dirichlet | 64 | 4509.707745514 | 110.526552540 | 3.640744983 | 0.352077988 |
+| dirichlet | 256 | 4530.300116516 | 135.484914994 | 3.568985985 | 0.353387416 |
+| dirichlet | 1024 | 4531.539562857 | 1053.455187590 | 3.568421726 | 0.353176377 |
+| absorbing | 64 | 5026.190294535 | 171.523700468 | 246.290947772 | 1.726303412 |
+| absorbing | 256 | 5040.485497913 | 331.545377034 | 246.539392933 | 0.200498859 |
+| absorbing | 1024 | 5027.969526011 | 3619.950752007 | 246.556677558 | 0.230577303 |
+
+No tested wave NMROM query is faster than its matched-time-step CG full solver. Reflective displacement passes the descriptive five-percent target, but velocity and energy-state errors do not: that is not an all-state accuracy pass. Absorbing NMROM fails both current-relative and fixed-initial all-state targets; vanishing-reference flags remain visible. Current/initial-normalized qualifications and each component are retained separately in the generated panel.
+On the largest dirichlet mesh the NMROM's worst current-relative velocity and energy-state errors are 7.813100556% and 6.213780916%.
+On the largest absorbing mesh the NMROM's worst current-relative velocity and energy-state errors are 295.689310699% and 322.822810359%.
+
+The loose CG control also demonstrates that linear-solve convergence does not certify trajectory accuracy. It misses the current-state physical target on all but the smallest reflective mesh. The tight absorbing CG control misses the current velocity/energy target on the smallest mesh while passing the fixed-initial target; its two larger meshes pass both. These failures are retained beside the tolerances. No global classical optimum, continuum error bound or final-cohort inference is claimed.
+
+Independent NumPy/SciPy checks passed all 144 timed and 12 accuracy-only invocations, representing 60 distinct predicted displacement/velocity pairs. All 69120 timed CG steps meet their true relative-residual tolerance (maximum ratio 0.999765562544). There are no numerical/rank/stationarity/reference-refinement/ROM-refinement failures and no timing outliers. Sampled decoder-bank identities, full decoded-field identities, independent head geometry and the selected full-field initialization fit passed; maximum selected-fit diagnostic discrepancy is 4.03735588723e-13, maximum head-coefficient discrepancy 5.6898930012e-16. Reused-mesh frozen trajectories reproduce the previous accepted wave archive within 2.08266157378e-14 in the largest initial-normalized component difference.
+
+Independent dense small-grid stepping and matrix assembly validate the new integrator, with the expected second-order refinement against the matrix exponential. Reflective saved reference fields are independently checked by SciPy sine transforms; tight/loose CG fields are also compared with the exact matching midpoint modal solution. Both absorbing temporal-reference refinements are archived and independently recomputed. Physical energy balance, rank, and absorbing invariant diagnostics are retained. Internal full CG states are not stored, so individual-step residuals are source/record evidence; the full trajectory/reference/mode checks are independent. Bank identity is sampled at fixed indices; physical errors and decoded output identities are checked on full grids.
+
+Timing is supplied GPU displacement/velocity/speed through both full GPU fields at all observations, charging initial projection, every fit start, dynamics and output. Mesh-only assembly and compilation are separate. Output-transfer timings are retained, but input transfer is excluded; these are not host-to-host times. The reported median is the median of case medians; both ratios of those medians and medians of paired case ratios are exported. Every actual repetition is hashed, scored and retained; only byte-identical full arrays are deduplicated.
+
+All 164 remote members and the three collection/source/result manifests passed before the exact completed `mr_wave2d_20260907/iterative05` directory was removed. The archive contains 22539581440 bytes in 239 tracked parts, joined SHA256 `c6e5bac52a3a93d384961b330f84e64bd5be6bdc14a68500827f7c61f5041ee8`. Source, frozen checkpoints, all 84 full-field/operator artifacts, timing arrays, analysis, closure and the machine-readable `analysis/panel.json` are retained in `worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/`. `restore_archive.py` verifies and restores the ignored extracted arrays from the committed parts.
+
+No earlier numerical result is retracted. This completes the bounded development panel; wave online geometry cost, all-state reflective accuracy and late absorbing robustness remain open. Only the existing exposed development cases and frozen weights were used, without retraining or final-cohort access. The owned branch is clean and remains separate; no other worktree/job was changed. Root owns the combined main report and coordinated current-state update.
+
+## 2026-09-11 — Consolidated iterative-FOM multiresolution results
+
+### root — Four-PDE report, cross-panel review and closure
+
+Completed the user-requested extension of the selected iterative FOM comparison to Poisson 2D, heat 2D, Burgers 2D and both fresh wave boundaries. Continued the already approved four worktrees and cluster namespaces; delegated the three new panels to their existing owners and reused the accepted heat study. No new branch, permission flow, final cohort, retraining or merge was needed.
+
+The generated report is `reports/2026-09-11-iterative-fom-multiresolution.md`, committed with its generator, CSV, JSON, PNG/PDF scaling figures, manifest and independent wave field audit as main `f807386bbab827e9084a7088f074c35ff7a3114d`. Tables below are generated from the same normalized run JSON. All timing repetitions are retained and pooled with equal repeats per case; ratios divide those medians. This differs from native panels that aggregate case medians. Both statistics remain available; neither replaces or retracts the underlying measurements.
+
+| Problem | Intervals/axis | ROM GPU ms | Primary iterative FOM GPU ms | FOM/ROM | Worst ROM / FOM error (%) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Poisson 2D | 64 | 2.467676 | 5.734171 | 2.323713 | 6.802558 / 0.257217 |
+| Poisson 2D | 256 | 2.355025 | 22.279216 | 9.460288 | 6.801564 / 0.015460 |
+| Poisson 2D | 1024 | 2.494607 | 188.212207 | 75.447624 | 6.801556 / 0.000735 |
+| Heat 2D | 64 | 11.226765 | 5.505838 | 0.490421 | 4.559260 / 0.067379 |
+| Heat 2D | 256 | 11.341400 | 20.997202 | 1.851377 | 4.555681 / 0.031261 |
+| Heat 2D | 1024 | 12.206228 | 210.595535 | 17.253121 | 4.555479 / 0.034909 |
+| Burgers 2D | 64 | 36.226368 | 78.239553 | 2.159740 | 10.854648 / 10.989131 |
+| Burgers 2D | 256 | 35.747030 | 117.472879 | 3.286228 | 4.550700 / 4.026515 |
+| Burgers 2D | 1024 | 41.676780 | 605.746994 | 14.534400 | 3.907620 / 2.141611 |
+| Reflective waves | 64 | 4510.115586 | 110.526553 | 0.024506 | 3.640745 / 0.352078 |
+| Reflective waves | 256 | 4530.335871 | 135.462180 | 0.029901 | 3.568986 / 0.353387 |
+| Reflective waves | 1024 | 4532.594209 | 1053.342714 | 0.232393 | 3.568422 / 0.353176 |
+| Absorbing waves | 64 | 5026.589922 | 171.361087 | 0.034091 | 246.290948 / 1.726303 |
+| Absorbing waves | 256 | 5039.758514 | 331.496804 | 0.065776 | 246.539393 / 0.200499 |
+| Absorbing waves | 1024 | 5028.499462 | 3619.963462 | 0.719889 | 246.556678 / 0.230577 |
+
+Poisson and heat use current-relative field L2 error; Burgers uses its declared fixed-initial reference norm. Wave headline error is current-relative displacement only: qualification also checks velocity and energy state. Errors are maxima over cases, times and retained invocations. Poisson uses zero-start unpreconditioned CG; heat uses previous-state-started CG with matched Crank–Nicolson steps. Burgers uses compiled Newton–BiCGStab with FFT preconditioning; its tight primary was declared before timings. Wave uses a newly verified mass-scaled implicit-midpoint CG control at the same physical step/output grid as the retained RK4 ROM, not a literal historical wave replay. Exact tolerances and all loose controls are named in the report.
+
+| Problem | Largest-mesh fastest tested passing iterative FOM | FOM GPU ms | FOM/ROM GPU | FOM/ROM including transfers | Worst FOM error (%) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Poisson 2D | CG, tolerance 1e-01 | 84.584228 | 33.906829 | 14.900513 | 1.019173 |
+| Heat 2D | CN-CG, tolerance 1e-2 | 59.177982 | 4.848179 | 2.266538 | 0.770685 |
+| Burgers 2D | Newton 1e-02 / linear 5e-01; FFT | 68.043659 | 1.632652 | 1.442217 | 2.389937 |
+
+These looser-control choices use the opened development cases and are not a globally optimal FOM frontier. Poisson still misses the declared physical target, so its runtime ratio is not a target-matched accuracy claim. Heat passes the physical and stationary stopping checks. Burgers passes the original physical/refinement/stopping gate on the two larger meshes; all its initial fits and steps terminate by the declared small-improvement/step rule, with stationarity unmeasured. The coarse Burgers mesh fails physical accuracy for both model classes. The current Burgers model samples FOM-exact sign-upwind advection with refitted NNLS quadrature and preassembled linear terms; it is not the earlier small polynomial tensor bank. No universal quadrature-free claim is made.
+
+Both wave ROMs are slower than the tight iterative control at every mesh. Reflective displacement alone meets the descriptive target while velocity and energy do not. Absorbing late-time current-relative errors remain large; initial-normalized component diagnostics are retained without substituting them for the failed current-relative target. No wave ROM meets the full-state target under either normalization. Only output transfers were measured for waves, so complete host-to-host runtime is unavailable. All direct-transform/explicit FOM comparisons remain separate diagnostics; previous discarded wave experiments stay historical and untrusted.
+
+| Panel | Scientific source | Job | GPU | Native result |
+| --- | --- | --- | --- | --- |
+| Poisson 2D | `085e318ea8946e0443ce6a129171d09a16d34cbe` | `3534456` | NVIDIA A100 80GB PCIe | `worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/iterative_cg06/result.json` |
+| Heat 2D | `7e6d2e39aafdf90afc53fad03af8eca6799574bc` | `3529772` | NVIDIA A100-PCIE-40GB | `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/results.json` |
+| Burgers 2D | `46ced2fd6bdd45758cc978f90d572d9fe09e3d80` | `3534502` | NVIDIA A100-PCIE-40GB | `worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/iterative06/archive/out/result.json` |
+| Reflective waves | `e1d377928913fc94c06c6052459a4ab4847c1eb1` | `3534457` | NVIDIA A100 80GB PCIe | `worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cluster/out/pilot/result.json` |
+
+All owner audits passed source/checkpoint hashes, paired fields/timings, retained repetitions, reference and method-specific numerical checks. Every job used GPU, float64 and highest matrix precision with burn-in. Poisson and wave jobs shared a node but used distinct recorded physical GPU UUIDs. Root additionally recomputed 4 complete largest-grid wave displacement fields and 12 timed output identities, both boundaries and primary methods, without owner metric helpers; maximum metric discrepancy 0. This audit is scoped to displacement; owner audits cover all retained velocity/energy diagnostics and fields. Root also reviewed the scalar stopping/eligibility adapters and wave mass-scaled stepping, preserving declared Burgers stall eligibility while labeling unknown stationarity.
+
+Final artifact verification passed 23 source hashes, 5 generated hashes and 20 local report links. The consolidated selected controls contain 75 method/mesh rows and 2754 timed invocations. Additional heat controls and accuracy-only wave controls remain in the linked native reports/archives. No outlier was excluded.
+
+Checksum-verified, restorable archives and owner closure records are committed in each experiment tree. Root independently checked that the exact completed `iterative_cg09` heat, `iterative_cg06` Poisson, `iterative06` Burgers and `iterative05` wave directories are absent from their approved paralab namespaces; the account queue was empty. All four owned worktrees are clean and remain separate under the existing user decision. No unrelated worktree or job was changed. The canonical log contains pre-existing uncommitted history and other sessions' entries; this closing update preserves them and does not stage them with the report commit.
+
+No prior numerical result is retracted in this round. Newly assembled headline claims explicitly retain physical failures, Burgers stalls, wave component failures and the choice of iterative comparator. Remaining work is Poisson representation/accuracy, coarse Burgers accuracy and stationarity measurement, wave geometry runtime and all-state/absorbing robustness, plus independent final paper validation. This development comparison is complete; current-study final cohorts remain unopened.
+
+## 2026-09-11 — Why the reflective-wave NMROM remains slow
+
+### root — Existing paired timing components and stage-source audit
+
+The user asked why the reflective-wave case is slow. Recomputed pooled component medians from the accepted iterative wave archive; no new solver, scientific run, job, training, worktree or merge. Checked the current source bytes for `fresh_rom.py`, `fresh_models.py` and `iterative_replay.py` against the recorded scientific commit. This explanation refines the already recorded stage-cost diagnosis; it does not claim an operation-level profiler result.
+
+Source `e1d377928913fc94c06c6052459a4ab4847c1eb1`, job `3534457`; result SHA256 `23ef1c7825cf062b561890a4257b0d4cc01d67bb0b4652abf95889ac9544a504` at `worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/iterative05/cluster/out/pilot/result.json`. Measurements are GPU-resident input through both full GPU output fields, with compilation and mesh-only assembly excluded. Components sum exactly per invocation; their independently computed medians need not sum exactly. All retained repetitions enter the calculation.
+
+| Intervals/axis | Retained invocations | Initialization/projection ms | Latent evolution ms | Dense GPU output ms | Total GPU ms | Median per-invocation evolution share (%) |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 | 6 | 19.425183 | 4489.271962 | 0.903215 | 4510.115586 | 99.547549 |
+| 256 | 6 | 19.574880 | 4510.318995 | 0.780867 | 4530.335871 | 99.549701 |
+| 1024 | 6 | 20.180414 | 4510.054793 | 2.511024 | 4532.594209 | 99.499356 |
+
+At each mesh the frozen decoder has 32 configuration coordinates and a bank of rank 64. The physical horizon 2.4 with step 0.0025 requires 960 RK4 steps, hence 3840 stage acceleration evaluations plus one initial check. Every acceleration computes head values and physical tangent velocity, a full reduced Jacobian, a directional second derivative, QR and a triangular least-squares solve, and singular values for the numerical-rank guard. The resulting Jacobian is 64 by 32; the rollout contains no full-grid PDE evaluation. Derivatives are recomputed because the decoder tangent changes with state. Evolution is explicit RK4, not repeated nonlinear optimization; nonlinear fitting is confined to initialization.
+
+Total GPU runtime increases only 0.498405% from the smallest to the largest requested mesh. Spatial compression is therefore already delivering nearly flat runtime; the large constant is in reduced evolution. The physical wave PDE is linear, but mapping it through a nonlinear decoder introduces state-dependent Jacobian and curvature terms. The compiled iterative FOM uses linear stencil/vector operations and CG without those neural-geometry factorizations. Repeated small decompositions and their GPU execution overhead are plausible contributors, but the separate derivative, QR, SVD, solve and kernel-overhead shares remain unmeasured. No claim that SVD alone explains the cost or that removing curvature is valid.
+
+Next proposed optimization is to profile those stage operations, then test cheaper condition/rank guarding and time-step/stage reductions with unchanged physical-error, reference and numerical-validity checks. A rank check cannot simply be deleted and called equivalent. A linear bank evolution would be a distinct model-class control, not the identical nonlinear manifold. No optimization speedup is established in this explanatory turn. Existing accuracy failures and numerical evidence remain unchanged; nothing is retracted.
+
+Source content hashes:
+
+- `experiments/fresh-wave-head/fresh_rom.py`: `960aefef2ffb77f2a0ff4ac4c99ae55e8ebd036486ce1c6d460dd5b5b98434ff`
+- `experiments/fresh-wave-head/fresh_models.py`: `bef42f5ead734fb6b85b2e17b92790b8327f5f1dc3abce941c62f993de6e5553`
+- `experiments/multiresolution-wave/iterative_replay.py`: `a1545c6d36e024e819d83d9c63fa5a9bdb0a7617f84e340fc668625d7fe91621`
+
+## 2026-09-11 — Collaborator presentation and paper-wide tunability proposal
+
+### root — Generated Beamer deck, portable build and scope closure
+
+The user requested a LaTeX presentation of the accepted multiresolution results for collaborators, explicitly leaving absorbing scenarios out of this presentation. They then asked to include thinking about accuracy/speed knobs in trained networks, clarifying that this concerns the paper as a whole. Completed the presentation while incorporating this steering; no new numerical experiment, training, worktree, cluster job or merge was launched.
+
+The generated 17-slide source, compiled PDF, standalone runtime figures, portable ZIP, numerical extract, build/hash manifest and companion instructions are under `reports/2026-09-11-multiresolution-collaborator-slides.*`, committed on main as `fd834e5e8991ed30dd996248277a5ac28153fea9`. Generator: `reports/generate_2026_09_11_collaborator_slides.py`. Scope is Poisson 2D, heat 2D, Burgers 2D and reflective waves. The underlying full experimental record is retained unchanged; the user-requested presentation omission is not an evidence retraction.
+
+The slides cover the fine-grid overview, measurement contract, fixed spatial bank/nonlinear head, explicit FOM algorithms/tolerances, runtime scaling, each PDE's full multiresolution timing/error table, looser passing FOM comparisons, direct-transform diagnostics, the reflective evolution-cost breakdown, open work and a plain-language glossary. Physical failures, Burgers stall exits with unmeasured stationarity, distinct error normalizations, wave velocity/energy failures, empirical reference checks and the development-only status are visible beside the relevant claims. Source/job/GPU identifiers and retained timing outliers appear in the audit slide. All measured numbers and plots are generated from the accepted JSONs; no GPU timing was remeasured for the presentation.
+
+The proposed tunability slides distinguish current frozen-checkpoint solver-effort/time-step controls from network-capacity controls. Active latent dimension and active bank size are candidate post-training knobs. Current-checkpoint truncation can first be screened as an ablation; reliable smaller levels may require training shared weights with losses at every supported latent/bank budget. This is training once per PDE across capacity levels, then selecting a level at inference without changing weights. Inactive computation must actually be omitted; numerical zero masks alone do not establish a runtime saving. Each level needs compatible preassembled operators, adequate weak overdetermination, rank/accuracy checks and valid refitted sampling where applicable. No new nested model or tunability curve is claimed as implemented or measured.
+
+The proposed evaluation freezes weights, measures paired physical error/query cost/stopping failures across budgets, selects operating points on validation cases, and confirms frozen choices on unopened cases and meshes. More solver effort cannot remove all representation limits; a lower weak residual need not imply smaller physical error. Requested physical accuracy is not guaranteed by a solver tolerance alone. These proposals do not alter the earlier publication-emphasis decision or authorize a new older-CP campaign.
+
+Validation passed a clean LaTeX build with 0 overfull boxes; every slide was visually reviewed, with revised slides inspected again after layout fixes. Verified 9 source hashes, 6 generated artifact hashes, exact identity of all 63 presented-panel normalized rows, and all 24 primary runtime entries in extracted PDF text. The ZIP passed integrity checks and independently compiled in a fresh directory to the expected 17 pages. Rendered PDF/TeX scope checks exclude the omitted scenario. The large native field archives remain in their existing experiment worktrees; the portable ZIP includes the presentation and compact numerical provenance, not those large fields.
+
+No existing result, numerical gate or model is retracted. Paper-wide tunability remains proposed work; the audited accuracy/stopping limitations remain open. Existing experiment branches stay separate. Unrelated modified documents, untracked report drafts and all prior canonical-log history were preserved and were not staged with this presentation commit. This canonical closing entry remains in the existing dirty log, rather than committing other sessions' uncommitted history.
+
+
+## 2026-09-11 — Fixed-checkpoint Poisson online tunability
+
+### poisson_online_tuning — complete audited screen and multiresolution confirmation
+
+The user requested online accuracy/speed tuning at fixed trained weights. Continued the approved `worktrees/2026-09-07-mr-poisson2d` branch from `6377296`; scientific source `9528b214d8535c2798f9a8ea423615abc8f5ad66`, archive/panel commit `e1682b4ea02cb105d3218d61585aed768e62809a`. Job `3548866` completed on `NVIDIA A100 80GB PCIe` at `pax049`. All data was regenerated from the recorded development seeds; the frozen checkpoint hash remains `81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a`. No retraining, new worktree, final-cohort opening or merge occurred.
+
+Predeclared 17 online presets on the complete 30-source development cohort: iteration budgets, relative residual targets, explicit in-loop stationarity thresholds, requested weak-mode counts and source-based multistart effort. Modes and training-code weak predictions were prepared offline for each mesh/setting with exact algebra and no quadrature. All retained mode sets remain comfortably larger than the latent dimension. Network weights, latent dimension and spatial-bank size are unchanged. The in-loop stationarity stop has distinct reason 6; the default old kernel schedule is unchanged. Configured thresholds, budgets and mode sets are precompiled presets; only residual tau is a runtime scalar in this implementation.
+
+The coarse screen froze cohort-wide selectors before any confirmation timing: `{'fastest_gpu': 'budget_1', 'most_accurate': 'multistart4_M1024', 'unrestricted_accuracy': 'multistart4_M1024', 'fastest_passing': None, 'fastest_stationary': 'stationarity_1e-06'}`. The unique shortlist `['nmrom_baseline', 'budget_1', 'multistart4_M1024', 'stationarity_1e-06']` was rerun at every declared mesh with tight/loose CG and direct DST in the same job. Most accurate is restricted to complete-cohort stationarity at the unchanged tolerance; the unrestricted physical-error winner is recorded separately and coincides here. Fastest is a finite diagnostic candidate and may exhaust its budget. These are tested development extrema within the frozen shortlist, not global optima or independent final validation.
+
+The following table is generated from the audited `panel.json`; GPU/host times are pooled medians of all retained, equal-count repetitions. Each error is worst current-relative full-field L2 over all sources/repetitions against restricted fine FD-DST truth.
+
+| Intervals | Setting | Actual weak modes | GPU ms | Host ms | Worst error (%) | Stationary / invocations | Selected stop counts |
+|---:|---|---:|---:|---:|---:|---:|---|
+| 64 | `nmrom_baseline` | 257 | 2.361356514 | 3.353985492 | 6.802558226 | 90 / 90 | `{'1': 90}` |
+| 64 | `budget_1` | 257 | 1.488303416 | 2.462943667 | 30.069926271 | 0 / 90 | `{'0': 90}` |
+| 64 | `stationarity_1e-06` | 257 | 2.210260020 | 3.222762491 | 6.802558107 | 90 / 90 | `{'6': 90}` |
+| 64 | `multistart4_M1024` | 1024 | 6.426691427 | 7.413681480 | 6.802473602 | 90 / 90 | `{'1': 87, '6': 3}` |
+| 256 | `nmrom_baseline` | 257 | 2.615745179 | 3.615904949 | 6.801564301 | 90 / 90 | `{'1': 90}` |
+| 256 | `budget_1` | 257 | 1.672698534 | 2.779986942 | 29.999484564 | 0 / 90 | `{'0': 90}` |
+| 256 | `stationarity_1e-06` | 257 | 2.346732537 | 3.461685497 | 6.801564318 | 90 / 90 | `{'6': 90}` |
+| 256 | `multistart4_M1024` | 1025 | 6.636181031 | 7.789318566 | 6.801553229 | 90 / 90 | `{'1': 84, '6': 6}` |
+| 1024 | `nmrom_baseline` | 257 | 2.942848019 | 6.524564000 | 6.801556262 | 90 / 90 | `{'1': 90}` |
+| 1024 | `budget_1` | 257 | 1.969695906 | 5.475586513 | 29.995107215 | 0 / 90 | `{'0': 90}` |
+| 1024 | `stationarity_1e-06` | 257 | 2.613982069 | 6.129781133 | 6.801556288 | 90 / 90 | `{'6': 90}` |
+| 1024 | `multistart4_M1024` | 1025 | 6.941578002 | 10.419410071 | 6.801549768 | 90 / 90 | `{'1': 84, '6': 6}` |
+
+No tested preset passes the unchanged physical/reference/numerical development target on the entire cohort. The fastest diagnostic exhausts its budget on every confirmed solve; those outputs are not stationary. Baseline, fastest-stationary and most-accurate settings pass the numerical stationarity check but retain the physical error floor. More modes and four starts make a negligible physical-error change and add cost.
+
+At the largest mesh, the explicit stationary stop reduces GPU time by 11.175091% and host time by 6.050716% versus its same-panel baseline. Most-accurate worst error improves by only 0.000006494 percentage points. Tight CG takes 185.810411931 GPU ms; the fastest tested passing CG takes 83.659172640 ms at `cg_1e-01`, versus direct DST at 0.319030485 ms. A raw iterative speed ratio is not a matched-target ROM advantage because the ROM still misses the target. No timing ratios are formed across jobs or between screen and confirmation phases.
+
+Every one of 4770 paired invocations (2070 screen / 2700 confirmation), 1146 distinct full fields, and 3960 start records passed independent NumPy/SciPy field, reference, exact-operator, head-Jacobian, residual, stationarity, nearest-code and weak-residual winner audits. Maximum physical-metric disagreement is 3.469447e-16; maximum stationarity disagreement is 5.975201e-14; baseline field parity with the earlier accepted study is 3.288704e-15. All timing components sum, every requested case/method/repetition exists, raw repetition arrays and outliers remain visible, and the frozen selection was independently recomputed. Root separately checked worst-case endpoints. Source/seed/checkpoint/GPU/f64/highest-precision/log checks passed.
+
+Restorable archive: `experiments/multiresolution-poisson/runs/online_tuning07/ARCHIVE.json`, 3068693277 bytes in 61 committed parts, joined SHA-256 `211eb496b2e0f81dc66d7f1589c34a4ea8ae329b170f99663b3038190c6bed51`. All collection manifests and source hashes passed; the exact remote attempt directory was deleted and its absence checked. The account queue is empty. Primary output/audit/panel are `experiments/multiresolution-poisson/runs/online_tuning07/result.json`, `audit.json`, `panel.json`; all owners retain their separate branches.
+
+Retractions: none; the earlier baseline numerical results remain valid, and archived wave data is untouched. The previous untested online-control proposal is now partially measured: prepared solver-work settings are tested, while changing active latent or bank dimensions in a trained network remains untested. Open work is improving the frozen Poisson representation/physical accuracy beyond this observed online-control floor and then validating a selected operating point on independent paper cohorts. No new experiment is running.
+
+## 2026-09-11 — Poisson tuning results and consolidated table PDF
+
+### root — Final comparison, independent audit and document closure
+
+The user authorized Poisson online speed/accuracy testing and asked to regenerate the named multiresolution PDF as tables, omitting absorbing-wave data and adding fastest/most-accurate Poisson results. Continued the existing approved Poisson worktree from `6377296`, with its dedicated `poisson_online_tuning` subagent and existing paralab namespace. No new branch, worktree, model training, empirical-quadrature campaign, final-cohort draw or merge. The owner implementation/archive closure appears immediately above; the source is `9528b214d8535c2798f9a8ea423615abc8f5ad66` and the committed archive is `e1682b4ea02cb105d3218d61585aed768e62809a`.
+
+The report at `reports/2026-09-11-iterative-fom-multiresolution.*` is committed as `d14ec6f9472207f94fdb6d76446f54efb2835eea`. Its exact requested PDF path now holds four landscape pages: baseline multiresolution tables, Poisson online tuning endpoints with freshly paired CG/DST controls, fastest passing iterative controls, and wave component/provenance/outlier/glossary tables. The separate scaling figure moved to `2026-09-11-iterative-fom-multiresolution-scaling.pdf`; the PNG, Markdown, CSV, JSON and manifest are regenerated consistently. Absorbing rows are omitted from displayed panels and tables; complete archived evidence is retained. The previous collaborator slide deck remains its earlier snapshot.
+
+The Poisson baseline is retimed in the new job; new ROM timings are paired only with that job's FOM timings. Main tables use pooled repetition medians and complete-cohort worst full-field errors. The most-accurate selector requires every selected solve to satisfy the existing stationarity threshold; the unrestricted selector is retained and coincides with it. The cheapest diagnostic setting is explicitly nonstationary, and no fastest-passing setting exists at the unchanged target. Actual weak-mode counts include full eigenvalue shells rather than assuming requested counts. Compilation/assembly of these fixed-checkpoint operating presets is offline.
+
+| Setting at 1024 intervals | GPU ms | Host ms | Worst relative error (%) | Stationary invocations |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline | 2.942848019 | 6.524564000 | 6.801556262 | 90/90 |
+| Fastest tested | 1.969695906 | 5.475586513 | 29.995107215 | 0/90 |
+| Fastest stationary | 2.613982069 | 6.129781133 | 6.801556288 | 90/90 |
+| Most accurate* | 6.941578002 | 10.419410071 | 6.801549768 | 90/90 |
+
+The useful stationary GPU reduction is 11.175091199%; the most-accurate worst-error reduction on this mesh is only 0.000006493567 percentage points. More solve effort did not materially improve physical accuracy in this tested sweep. Current-reference accuracy remains above the original physical target. These are development extrema within a frozen coarse-selected shortlist, not globally optimal networks/solvers or independent final-paper confirmation.
+
+Root evidence is `reports/2026-09-11-poisson-online-tuning.coordinator-audit.json`, generated by `reports/audit_poisson_online_tuning.py`. The separate NumPy/SciPy implementation checks the worst field for every confirmed ROM setting on each mesh, exact weak residual and independently differentiated head gradient, nearest-code initial guesses, all-start minimum-residual selection, accumulated counters, sampled meshfree decoder parity, full boundaries and staged code/checkpoint identity against git. Maximum field-error disagreement is 3.55271368e-15; weak-residual relative disagreement 5.69884871e-15; stationarity absolute disagreement 3.1303027e-15. A strict regenerated-source byte assertion was corrected for the already documented ARM/x86 NumPy exponential difference: archive bytes/code/checkpoints remain strictly hashed, and the regenerated source is checked numerically through the same-case saved DST solution's Poisson operator (maximum relative discrepancy 1.00604822e-11). This fixes a portability assumption in the supplementary audit, not a measured result.
+
+Validation passed a clean portable LaTeX build with no overfull boxes, visual inspection of all four pages, presence of all 12 displayed tuning rows and their rounded numerical values in extracted PDF text, 33 source hashes, 7 generated artifact hashes, and every local Markdown link. The combined JSON/CSV hold 116 method/phase/mesh rows corresponding to 7452 retained timed invocations. Screen and confirmation times remain separately identified. No outlier was discarded.
+
+Root rechecked exact remote absence for `mr_poisson2d_20260907/online_tuning07`, the empty account queue, and the clean committed Poisson worktree. All experiment branches remain separate under the user's existing decision. Only the report sources and generated artifacts were committed on main; unrelated modified documents, untracked report drafts and the canonical log's pre-existing uncommitted history are preserved. No earlier scientific evidence is retracted. Decoder/training accuracy improvements, independently sealed final validation and reliable network-capacity tuning remain open beyond this completed bounded study.
+
+## 2026-09-11 — Exact Poisson numbers requested in discussion
+
+### root — Read-only numerical clarification
+
+Read the canonical state and verified the normalized report JSON against its generated-artifact hash manifest. Returned stored same-job confirmation values at 1024 intervals for the baseline, fastest diagnostic, fastest stationary, most accurate stationary, tight/fastest-passing CG and DST. The fastest-passing CG/fastest-stationary ROM ratio is 32.004493688968104, computed from 83.65917264018208 / 2.6139820693060756 GPU ms. The current ROM error is 6.801556287945474%; an accuracy-qualified result at the same runtime remains conditional, not a newly achieved result. Source JSON SHA-256: `35a79e9b0a41b457d98fa3ef230dd39e0a883d386bcaa6497f32a86307e71076`. No experiment, parameter, report, gate, evidence status or worktree state changed; nothing retracted.
+
+## 2026-09-11 — Explicit Poisson speed factors in the PDF
+
+### root — Requested presentation wording
+
+The user requested that the PDF state how many times faster the fastest ROM is than the FOM. Updated the existing renderer and rebuilt `reports/2026-09-11-iterative-fom-multiresolution.pdf`, committed as `8a87ec648101590a882650fa973562493ae48ccd`. Page 2 now highlights the fastest stationary NMROM at 1024 intervals as 32.004494× faster than the fastest tested passing CG FOM, derived from 83.65917264018208 / 2.6139820693060756 GPU ms. The named comparator tolerance, measured 6.801556% ROM error and missed 5% accuracy gate appear beside the headline. Both tight-CG and fastest-passing-CG columns now say times faster or times slower; sub-unity raw ratios are displayed as reciprocal slower factors. The nonstationary fastest diagnostic remains separately labeled and reported.
+
+The report remains four pages with absorbing-wave data omitted from display. A clean staged LaTeX build passed without overfull boxes; page 2 was visually reviewed, all 24 speed cells and the headline were checked against source data in extracted PDF text, and all 33 source plus 7 generated hashes passed. Original normalized scientific panels and Poisson tuning records compare exactly equal to the preceding version; only presentation/source hashes changed. No experiment, training, worktree, solver configuration, accuracy gate or numerical evidence changed; nothing retracted. The canonical log and unrelated dirty documents remain unstaged.
+
+## 2026-09-11 — Simplified PDF comparison columns
+
+### root — User-requested presentation edit
+
+Removed the named `FOM error %` and `5% + gates: ROM / FOM` columns from the primary comparison table in `reports/2026-09-11-iterative-fom-multiresolution.pdf`, and removed the matching FOM-error column from the iterative-control table. Removed the now-orphaned primary-table dagger marker from its explanatory note. ROM error, paired timing/speed results, the Poisson faster/slower columns and headline, and the remaining diagnostic tables are retained. Updated the renderer and generated TeX/PDF/manifest; main commit `fa531a4fd5af1d62d33be33347e12fffed4fa788`. No experiments or scientific records changed, and no evidence was retracted.
+
+Validation: clean staged LaTeX build without overfull boxes, four-page output, visual check of the simplified primary table, absence of both requested header strings in extracted PDF text, preserved Poisson speed headline, full hash-manifest verification, and exact equality of all normalized panel/tuning data to the preceding version. Unrelated modified files and the pre-existing canonical-log history remain unstaged; worktrees remain separate.
+
+## 2026-09-11 — Empirical quadrature discussion for current Poisson
+
+### root — Operator inspection and proposed direction, no experiment
+
+The user asked whether empirical quadrature would help following the discussion of further network training. Inspected `worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/core.py` and `speed_core.py`, the accepted online-tuning results, and the primary empirical-cubature paper by Hernández, Caicedo and Ferrer (https://doi.org/10.1016/j.cma.2016.10.022). The current Poisson weak spatial operator is already assembled exactly offline into a small matrix; online nonlinear iterations evaluate the coefficient head and reduced matrix products. Exactness here refers to the selected discrete weak operator, not the physical solution. Source projection and full-field decoding remain mesh-dependent and are included in the charged query. Their separate cost shares are not established by the fused timing.
+
+Empirical quadrature could reduce source-projection work or support a future decoder/operator for which exact contraction is unavailable. It would introduce an additional integration approximation and would not enlarge the current frozen decoder's representable fields. No direct physical-accuracy improvement or additional speedup is established. The current Burgers comparison already uses fitted weak quadrature for upwind advection. Recommended retaining exact Poisson as the control, diagnosing best achievable decoder reconstruction versus the weak solve, and profiling remaining grid-dependent work before selecting an EQ comparison. A more expressive decoder plus EQ is a possible later accuracy/cost experiment, not an achieved improvement or a necessary replacement for the separable architecture.
+
+No new job, training, worktree, report edit or numerical measurement occurred. No evidence or reported number was retracted. Decoder accuracy, the objective/representation distinction, and any measured benefit from EQ remain open.
+
+## 2026-09-11 — Recommended next Poisson accuracy experiment
+
+### root — Recovered existing representation evidence and refined the recommendation
+
+The user asked what to try to improve accuracy. Read the accepted training design, continuation implementation, generated multiresolution training findings and `reports/2026-09-09-accuracy-and-cost-improvement-strategy.md`. The preceding discussion suggested a bank-versus-head reconstruction diagnostic as new work; that framing was incomplete. The earlier strategy already records this diagnostic for the selected `original_relative` checkpoint on the complete opened development cohort. Its full same-grid unrestricted bank projection misses the physical target, while its best recorded stationary head fit nearly matches the deployed weak solve on the common-reference metric. These are distinct norms; the latter is not a certified global nonlinear optimum. No measured result is retracted.
+
+Recommended first testing staged spatial-bank training at unchanged rank and latent dimension: fit the coordinate bank with unrestricted training coefficients, compare its representation to a normalized-training-snapshot SVD control, then fit the nonlinear coefficient head and finish with joint refinement. Preserve the existing per-field relative reconstruction normalization. Use training-only difficult-case weighting as a separate controlled change; the earlier expanded-data continuation did not uniformly improve worst-case accuracy at fixed updates, so merely increasing data with the same budget is not the proposed intervention. Evaluate the nonlinear head in the physical field norm, not an unweighted coefficient norm unless the bank is orthonormal.
+
+If fixed-rank bank training remains inadequate, enlarge the bank as a separate arm. If bank accuracy is adequate but head compression remains limiting, enlarge the latent dimension separately. Keep exact weak Poisson contraction, generic supplied-field inputs and independent validation; remeasure complete-query timing and stopping after retraining because fixed matrix sizes do not guarantee fixed nonlinear iteration counts. The previously proposed bank and end-to-end targets remain experimental objectives, not predicted gains. The final paper cohort stays unopened until model selection is complete.
+
+This was a recommendation and source review only. No training, new worktree, cluster submission, report regeneration or numerical measurement occurred. The earlier numerical evidence and current result tables are unchanged.
+
+
+## 2026-09-11 — Burgers archived-endpoint stationarity diagnostic
+
+### root — Independent CPU derivative and saved-state review during accuracy campaign
+
+Implemented `reports/audit_burgers_stationarity.py` and generated its adjacent diagnostic JSON from the previously accepted iterative archive. This adds an independent analysis of existing GPU outputs; no PDE solve, GPU benchmark, source checkpoint or earlier timing/error was changed. The original small-improvement stopping contract remains as published. The diagnostic threshold below is for the new investigation, not a retroactive eligibility change.
+
+| Intervals | Stage | Unique endpoints | Median normalized gradient | Maximum normalized gradient | At or below diagnostic threshold |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 64 | initial | 4 | 5.06682963e-06 | 7.84766233e-06 | 0 |
+| 64 | evolution | 200 | 4.66453365e-05 | 0.0436475022 | 1 |
+| 256 | initial | 4 | 1.48233326e-06 | 9.28749587e-06 | 1 |
+| 256 | evolution | 200 | 6.27659185e-05 | 0.029867196 | 5 |
+| 1024 | initial | 4 | 3.5774623e-06 | 9.26552007e-06 | 1 |
+| 1024 | evolution | 200 | 2.09167747e-05 | 0.0572133258 | 12 |
+
+The diagnostic uses `norm(J.T @ r)/(norm(J, Frobenius)*norm(r))` and threshold `1e-6`. It evaluates one archived deterministic repetition for every mesh/case, including the initial fit and every saved evolution endpoint. Derivatives follow the recorded upwind sign branch; the evidence retains distance to its switching surface.
+
+Analytic head Jacobians agree with complex-step derivatives to 9.25154492e-15 relative; weak Jacobians agree to 1.99668169e-14. Rebuilt weak residual norms differ from archived records by at most 1.72009629e-12. Input/operator/checkpoint/audit/script hashes are preserved in the generated JSON.
+
+The strongest departures occur during startup. A stationary continuation with a controlled startup budget is therefore a concrete first Burgers accuracy arm, ahead of a blind capacity increase. Reduced-objective stationarity still does not guarantee lower physical error; the planned paired experiment must measure it. Numerical results are not retracted. Independent new-query validation and training improvements remain open.
+
+
+## 2026-09-11 — heat accuracy continuation submitted
+
+### Heat owner: fixed-bank initial and tail training, accuracy10
+
+Continued the existing approved heat worktree from `1f576c9`; no new branch or namespace. Scientific source `c7cc18d` implements the frozen current head, matched uniform continuation, initial-emphasis-only continuation, and combined initial/tail continuation. All trained arms retain k=8/r=32, the same 160 training trajectories, optimizer schedule and 24000 updates. Full current development coverage plus four predeclared new development draws is retained; final paper cases remain unopened. Bank-gate diagnostics and baseline training metrics are written before training or a gate abort. Strict full-field bank/head controls are recorded at the training and largest confirmation meshes, separately from online queries and separately against exact semidiscrete and refined continuum references.
+
+A complete reduced local smoke passed under the required one-minute limit, followed by a focused full/compressed loss-and-gradient parity and fine-fit integration smoke. The first larger smoke reached reconstruction before its explicit 55-second guard and is retained as a timing-limited smoke, not a numerical result. Local smoke numbers are not accepted experimental evidence.
+
+Submitted job `3563072` using the GPU partition and private attempt `/cluster/tufts/paralab/tawal01/mr_heat2d_20260907/accuracy10`. Queue checks before and after submission and all staged content hashes passed. At owner scheduling handoff the job was pending; GPU preflight, full experiment results, checksum collection, independent audit and exact remote cleanup remain open. No accuracy or speed improvement is claimed. Durable continuation metadata and collection/audit commands are in `experiments/mr-heat2d/runs/accuracy10/HANDOFF.json`. Root will monitor while a slot is used for Burgers preparation, then resume this owner for acceptance. No prior result was retracted.
+
+Heat scheduling handoff update: job `3563072` is running on `pax106`; stdout contains both `jax_backend=gpu` and `x64=True precision=highest`. Training/rollout acceptance remains pending.
+
+
+## 2026-09-11 — Staged Poisson accuracy training launched
+
+### poisson_online_tuning — active job handoff, no new accepted accuracy result
+
+The user authorized staged-training accuracy improvements in parallel PDE owners. Continued the already approved Poisson worktree from `e1682b4`; no new branch or namespace. Root reviewed the fixed-network staged design, then required pre-assertion persistence, explicit rank failure handling, exact field-norm head loss, reference-only stationary head diagnostics and a precisely declared training-time match. These are implemented in scientific source `db66d194efa56a9fecbee9f0c116f42d7f356e7e`.
+
+The unchanged original-relative control and all retrained endpoints retain the current latent dimension and feature count. Stages are [('staged_bank', 40000), ('staged_head', 30000), ('staged_joint', 20000)]; ordinary joint continuation matches the sum of synchronized staged optimizer-block seconds, rounded up to a complete 250-update block. All block durations, actual updates/exposures, compilation and total overhead are separately retained. Full-rank QR is checked before coefficient solves; deficient banks receive truncated-SVD diagnostics and fail the numerical rank gate. The nonlinear head phase uses the full field metric through QR with the directly evaluated perpendicular contribution. No coefficient-MSE surrogate, POD primary decoder or evaluation-informed initializer is used.
+
+All 30 opened development cases and 12 newly seeded development cases are fixed before training. The original training prefix and training mesh remain unchanged; final cases are unopened. Four checkpoint endpoints will be timed across [64, 256, 1024] with 3 repetitions and same-job CG/DST controls. Staged-bank coefficients/checkpoint and training-only normalized POD span diagnostics are also retained. At the configured diagnostic mesh, bounded full-field head fits retain all starts, fields and actual stationarity. Proposed accuracy/cost gates remain unaltered; no outcome is yet promoted.
+
+Local sub-minute GPU controls passed field-vs-QR loss equivalence, frozen parameter subtrees, a deliberately deficient feature bank and oracle residual equality to the returned full field. Submitted job `3563323` in `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/staged_accuracy08` on the GPU partition. GPU preflight, focused controls and the full small integration smoke passed; the real run started cleanly on `pax049`. The initial completion marker in the log is for `out/smoke`, not the full study. Require `out/pilot/result.json` complete, successful accounting and a clean exit before collection/acceptance. Other owners' jobs were untouched.
+
+Per root scheduling, the owner is yielding its agent slot while the long job runs so a Burgers owner can start, and will be reactivated for collection/audit. Durable handoff: `experiments/multiresolution-poisson/runs/staged_accuracy08/HANDOFF.md`; source/submission/handoff commit `bd4d2f26ab5c4d45571c039c52cf71285e242675`. The owned tree is clean. Collection, independent multi-checkpoint field/operator/training audits, restorable archive commit, final panel generation and numerical lab-log closure remain outstanding. The panel generator is prepared and gated on a passed audit. No study-completion, accuracy improvement, retraining-on-final-data or merge claim is made.
+
+## 2026-09-11
+
+### Burgers accuracy owner — fixed-bank head training and strict-solve comparison launched
+
+The user authorized accuracy experiments across PDEs with parallel owners. This owner continued only the already approved Burgers worktree `worktrees/2026-09-07-mr-burgers2d` from `b0e7aaa`. Source `cbc4e4d8432763a8ea6a02fac0b433066cd521af` adds the predeclared `experiments/mr-burgers2d/ACCURACY-DESIGN.md`, `config-accuracy.json`, training/solver driver and collection helper. The protocol compares frozen/refined heads crossed with accepted/strict solvers, preserving the spatial bank and k16/r512. Initial truth is regenerated from canonical training seed 0; exact N1024 field-metric QR targets are processed in batches. Old decoded training-state replay is explicitly a regularizer, not fresh PDE truth. New initial training codes augment only the trained cold library; both heads use the same old-code EQ fit-state indices and original trust radius, with decoder-output quadrature refitted per mesh/head. All four opened cases and two preregistered fresh development cases are evaluated at N64/256/1024 only after terminal weights freeze; the final paper cohort is unopened.
+
+The sub-minute GPU smoke record `experiments/mr-burgers2d/smoke-accuracy.json` passed strict least-squares stationarity, head-coordinate conversion, sampled-upwind rollout and independent diagnostic-gradient parity. Real job `3563749` is running in `/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy07`, GPU partition, on pax007 with NVIDIA A100 80GB PCIe. Its log confirms `jax_backend=gpu`, the frozen source commit, and `TRAIN_BEGIN`; stderr was empty at handoff. Submission metadata is in `experiments/mr-burgers2d/runs/accuracy07/SUBMISSION.json`. The three-hour allocation automatically trains, regenerates refined references, and runs all paired ROM/FOM repetitions with full fields and every internal latent retained. No measured accuracy or speed improvement is accepted yet. Collection, independent fields/weak-gradient/provenance audits, generated comparison and exact remote cleanup remain open. No old result is retracted; other owners' jobs were untouched, and worktrees remain separate.
+
+
+## 2026-09-11 — heat accuracy continuation complete and audited
+
+### Heat owner: targeted initial training passes the expanded development target
+
+Completed approved job `3563072` on `NVIDIA A100 80GB PCIe` / `pax106` in 12m59s, from scientific source `c7cc18d4a12820f471076fcbb5e95cce3c6c75c4`. Existing heat worktree remains separate; accepted archive/retention commit `5974d3e0df3f2e0906059564a72511de375ea2a5`, finalized independent auditor source `afae026`. No new branch, final-cohort access or additional training sweep. All three scheduled 24000-update endpoints, unchanged frozen checkpoint, raw repetitions, fields, seed/configuration records and training costs are retained.
+
+Both initial-emphasis procedures pass the empirical physical target and every attempted online initialization/time-step stationarity check on all meshes and all development cases. At 1024 intervals across all 16 cases, frozen / uniform / initial-only / predeclared initial-plus-tail worst current-relative field errors are 7.595346134629% / 5.335281545558% / 4.867423134090% / 4.762514650695%. Their pooled median full GPU-query times are 11.970927822404 / 11.724362964742 / 11.371227097698 / 11.623312602751 ms. Uniform continuation misses both the expanded physical target and an attempted-initialization stationarity requirement; its failures are retained. Initial-only and initial-plus-tail preserve the nonlinear k=8/r=32 architecture and the supplied-field input contract.
+
+On the original 12 opened development cases alone, frozen / initial-only / initial-plus-tail worst errors are 4.555479479881% / 3.306614062555% / 3.598163171368%. The larger frozen error on all cases comes from the four new predeclared development draws and does not retract the prior smaller-cohort result. Initial-plus-tail remains the predeclared primary; initial-only remains the controlled ablation rather than a post-selected primary.
+
+At the largest mesh on all cases, primary initial-plus-tail is 16.462610578686 times faster than paired CG at tolerance 1e-6 and 4.633306906975 times faster than paired CG at 1e-2. Direct sine-transform FOM remains faster, at 0.895604956895 GPU ms. The small GPU cost improvement over the frozen model does not extend to host-inclusive time: frozen / initial-only / initial-plus-tail take 26.835649856366 / 27.103459578939 / 27.322125504725 host ms. No broad claim of a faster total host query is made.
+
+Independent NumPy/SciPy auditing passed all 1152 invocations and 598 distinct saved fields. Every seed-generated supplied initial field and both original reference meshes were reconstructed independently. Weak-step and initialization diagnostic differences are bounded by 1.30876e-15 and 1.79444e-15; prior frozen-field parity passed on all 36 original case/mesh combinations. Root separately verified worst full fields, decoder identity and all weak steps for four models across three meshes. Strict 1e-9 representation diagnostics retain their own nonstationary fits, including one finest-mesh initial-only fit; these are distinct from the fully stationary declared online queries.
+
+All 633 archived members passed checksums and restoration from 128 tracked parts (12030341120 bytes). Trained checkpoints are additionally tracked explicitly. The exact completed remote `accuracy10` directory was removed after verified restoration; other sessions' directories and jobs were untouched. Generated exact cohort panels and readable tables are `worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/analysis/panel.json` and `summary.md`; retention and checksum proofs are alongside them.
+
+No previous numerical result is retracted. This remains one training seed and a restricted single-bump development family; final paper confirmation, repeated training seeds and broader-family accuracy remain open. No further heat training is needed for this bounded round, and no branch merge occurred.
+
+
+## 2026-09-11 — Fixed-rank Poisson staged accuracy complete and audited
+
+### poisson_online_tuning — Staging does not improve complete-cohort worst error
+
+Accepted job `3563323` on NVIDIA A100 80GB PCIe / pax049, scientific source `db66d194efa56a9fecbee9f0c116f42d7f356e7e`. Retention/audit commit `3d4b607313108ad01db94070288c1504400ccedc` in the existing approved Poisson worktree. Native outputs, all five checkpoints (also explicit), machine panel and restoration evidence are under `experiments/multiresolution-poisson/runs/staged_accuracy08`. No new branch or merge; all final cases remain unopened.
+
+At the largest mesh on all 42 development cases, model order ['original_relative', 'joint_matched', 'staged_head', 'staged_joint'] has worst current-relative field errors [7.280247641666445, 7.5711986152659545, 7.75747167064986, 7.660328204633634] percent and pooled median GPU query times [2.6130909100174904, 2.545561408624053, 2.5977500481531024, 2.5653450284153223] ms. Every trained arm misses complete physical eligibility. The unrestricted same-grid learned-bank floors are [6.489096124704413, 6.936344319838521, 6.9811791709849, 6.966506025157362] percent. Fixed-rank staging therefore did not improve the worst bank representation or worst online accuracy in this bounded run.
+
+Ordinary joint continuation improves the original 30-case worst error from 6.801556287945% to 6.605687016800%, but worsens the later development cohort. This cohort expansion does not retract the original smaller-cohort result. All 1512 online neural invocations pass stationarity, linear-solve and rank checks; all 512 training sources are unchanged. Every reference-only head-fit case has a best-found stationary candidate, whose errors closely track the deployed solve. These are not global nonlinear minima.
+
+Staged optimizer phases use [40000, 30000, 20000] updates and [14.732390051940456, 6.2241012991871685, 8.933143042260781] synchronized optimizer seconds. The ordinary control uses 66750 updates and 29.922026970889 seconds, the first full declared block reaching the staged total. The full recorded training/data/QR/diagnostic/checkpoint time is 90.795480584027 seconds. All actual blocks, exposures and overhead remain available; equal measured optimizer effort is not a convergence proof.
+
+Independent NumPy/SciPy audit passed 3024 same-invocation timing/field records, 1848 distinct fields, 336 full-field head-fit candidates and 627 optimizer blocks. Maximum decoder discrepancy 4.605021e-15, bank projection discrepancy 7.5412471e-14, stationarity discrepancy 1.879007e-14; previous frozen-field parity 2.9316587e-15. Source/checkpoint/operator identities and all training freezes/ranks/QR metrics passed. Root independently audited worst endpoints separately.
+
+All 104 tracked archive parts (5216503208 compressed bytes) were restored as a stream and all 2058 members matched original checksums. The exact completed remote attempt was deleted after checksum collection; other owners' directories and jobs were untouched.
+
+Normalized training-only POD rank 64 has worst training projection error 5.592179536932% and development worst errors by [('all', 42), ('existing_development', 30), ('new_development', 12)] of [7.051345651218993, 5.970270104964732, 7.051345651218993] percent at the original training mesh. This span minimizes average squared relative training error, not minimax error; its development projections are diagnostics rather than neural online results or impossibility bounds.
+
+Normalized training-only POD rank 128 has worst training projection error 1.463338720931% and development worst errors by [('all', 42), ('existing_development', 30), ('new_development', 12)] of [4.685278377535167, 3.4728435386173833, 4.685278377535167] percent at the original training mesh. This span minimizes average squared relative training error, not minimax error; its development projections are diagnostics rather than neural online results or impossibility bounds.
+
+Root approved an isolated learned-bank r128/k16 follow-up versus a per-phase optimizer-time-matched r64 staged control. No difficult-case weighting is included. Function-preserving widening retains the original decoder function and latent dimension while adding spatial output columns; full-rank, field/Jacobian parity and exact QR metric controls are required. The same 42 development cases are now all opened and cannot be called fresh independent confirmation for that capacity choice. The proposed 3% bank objective stays separate from 5% online physical eligibility. Follow-up implementation/smoke is in progress; no new capacity GPU job or accepted improvement yet. No previous numerical result is retracted.
+
+
+## 2026-09-11 — Isolated Poisson bank-capacity comparison submitted
+
+### poisson_online_tuning — r128/k16 versus phase-time-matched r64, active handoff
+
+After accepting fixed-rank08, root reviewed and approved the conditional capacity protocol in the same owned worktree and namespace. Scientific source `f3e3c21a440a31eb97b06fdb9ab9951662e17935` implements function-preserving learned-bank widening and fixed staged training at unchanged latent dimension, with a separately trained smaller-bank control matched to each phase's synchronized optimizer-block seconds. No tail weighting or dataset expansion is added. Both retain the original relative field metric, exact QR head metric, exact weak method, source-only nearest training-code initialization and stationary online stopping. All 42 development cases were already opened before this capacity hypothesis; they are not new independent validation. Final cases remain unopened. The proposed bank target and physical eligibility remain separately recorded, unchanged.
+
+Focused sub-minute GPU checks passed full field/Jacobian identity, widened numerical rank, QR field-metric equality, deficient-rank rejection, frozen head parameters and widened online stationary-field parity. An initial missing-import smoke failure is retained and fixed. The full local integration smoke completed all six training phases and time matching, then reached its explicit short runtime guard during evaluation setup; it is recorded as incomplete, not an experimental result. The complete integration smoke subsequently passed on the cluster before real training.
+
+Submitted job `3564896` with GPU partition and one-hour allocation, private remote `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/capacity_accuracy09`. Queue/disk/source checks passed; GPU backend/f64/highest controls passed on pax049, and real training began cleanly with no stderr errors. No capacity accuracy or speed result is accepted at this handoff. The preceding fixed-rank08 archive and figures remain the current accepted Poisson training evidence.
+
+Durable handoff and commands: `experiments/multiresolution-poisson/runs/capacity_accuracy09/HANDOFF.md`; commit `b98447e11cd2d16024b7351c2ee9e14e0c2cd4f0`. Prepared `audit_capacity_training.py` independently passes all six local-smoke training phases; the complete source/field audit and panel generator are ready for collected capacity outputs but are not yet validated against this unfinished job. Root may monitor and reactivate this owner for exact checksum collection, all-field/rank/head/solver/timing audit, restoration, remote cleanup, machine panel and commit. Collection and acceptance remain open; no merge or previous-result retraction.
+
+## 2026-09-11
+
+### /root — accuracy campaign continuation checkpoint
+
+The user resumed experimentation after a session interruption. The existing approved four owners, worktrees and namespaces remain in use; no new worktree or merge. Root has committed independent CPU endpoint audits and the source-generated campaign report through `2739b6b3`. Accepted heat primary at1024 on all16development cases: worst current-relative error 7.595346135% → 4.762514651%, GPU 11.623312603ms. Poisson capacity09 passed full source/training/field audits and root15endpoint checks: bank projection 6.489096125% → 4.354562804%, but online physical error 7.280247642% → 7.553764804%; capacity alone is not an online improvement.
+
+Burgers08 passed full owner and root12trajectory checks. Frozen strict solve error 3.884679626% at49.119184841ms versus old stall-based 3.907620325% at37.532219547ms. The576-field trained strict head regresses to5.459553761%. Earlier07 failed an instrumentation equality, not a demonstrated physical solve failure; its verified checkpoint/reference artifacts were reused in08, with all paired query costs and fields rerun. Strict gradient classification is unchanged, with no charged/posthoc/NumPy threshold disagreement.08 exact remote is deleted after verified09 inheritance. Broader4608-field coverage09 is running as3571954 onpax144, source9bd640437f8ba1d830806d950fd34949dbbb8bfc; no additional search after this arm.
+
+Wave screens06–10 are accepted and retained; root independently checked allfive worst screen10ROM outputs using spectral energy and complex-step tangent velocities. Nested40 contains phase32 exactly and improves screen accuracy, but misses5% all-state physical target. Confirmation11 failed a configuration lookup before any cases or invocations; its failed archive was retained and removed remotely. Identical frozen scientific protocol12 (only the operational key corrected) completed job3565786 onpax049 in55m44s, source3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d,324timed invocations and36refinement controls. Full37GB archive collection and acceptance are outstanding; raw fine-grid timing/accuracy claims remain provisional until that audit.
+
+Poisson's accepted training-only residual decomposition supports one final nested correction family with8/16/32directions (32primary), based solely onr128_joint training residuals. Exact variable projection of the linear block is approved with full/projected residual-gradient parity, rank diagnostics and full-objective stationarity; final source/config review precedes submission. All42Poisson and sixBurgers cases are now opened development, not fresh final validation. Final paper cohorts stay sealed and absorbing waves remain excluded. No successful numerical result is retracted; unsuccessful training/capacity arms and both failed operational attempts remain visible. The report is still partial until these final checks finish; existing PDF/deck tables are unchanged.
+
+
+## 2026-09-11 — Poisson capacity comparison accepted and correction directions diagnosed
+
+### poisson_online_tuning — A better bank does not yet improve the trained online decoder
+
+Accepted job `3564896` / NVIDIA A100 80GB PCIe / pax049, scientific source `f3e3c21a440a31eb97b06fdb9ab9951662e17935`; retention commit `787f1beac4fd496ab0b3e1d6366e44747632431d`. Source result SHA256 `e1bb9f840794ec79bf6d33e209f1d612ea08f431cf7d573f9727156f80be3d34` and archive SHA256 `d937404a353abc1da24c963bd46c308cb47825f7edb341c801ac471d6bb9ca6b`. Native data, complete panel, readable tables, audit/provenance and all checkpoints are retained under `experiments/multiresolution-poisson/runs/capacity_accuracy09`. The exact remote attempt has been deleted. Existing approved worktree/namespace only; no merge or final-cohort access.
+
+Largest-mesh all-case model order ['original_relative', 'r64_head', 'r64_joint', 'r128_head', 'r128_joint']: worst full-field relative errors [7.2802476416664454, 7.785384212268835, 7.68165298787715, 7.386210144222718, 7.553764804375597] percent; pooled median GPU times [2.6102724950760603, 2.6239349972456694, 2.584366942755878, 2.8704843716695905, 2.849252545274794] ms; host-inclusive times [6.245763972401619, 6.214081542566419, 6.217931513674557, 6.464139558374882, 6.453854497522116] ms. Every neural endpoint misses complete physical eligibility. Rank128 joint improves the bank's worst same-grid projection from 6.489096124704% to 4.354562804191%, but fails the separate proposed bank target and does not improve online worst error or finest-grid cost versus frozen original.
+
+Same-job largest-mesh controls: [('cg_1e-06', 186.9902334874496, 0.0007851934586639191), ('cg_3e-02', 97.86847897339612, 0.2695201012229846), ('cg_1e-01', 83.92224553972483, 1.1826428569903018), ('dst', 0.32805895898491144, 0.0007851307552723396)] (method, GPU milliseconds, worst physical percent). All named FOM controls pass physical/numerical eligibility. Direct DST remains faster than the neural methods; no universal FOM advantage is claimed.
+
+The independent audit passed 3402 full invocation records, 2184 distinct fields, 1890 online starts, 420 bounded head-fit candidates, 8 checkpoints and 762 optimizer blocks. No online numerical invocation fails; every reference-only head-fit case has a stationary candidate. Maximum decoder disagreement 3.9375518e-15, normalized-gradient disagreement 2.4314463e-14, full-bank projection disagreement 7.900347e-14, and prior frozen-field difference 2.9294978e-15. Root's separate worst-endpoint implementation also passed. These fits remain local stationary diagnostics, not global head optima.
+
+All 118 tracked archive parts restored to 2416 verified members, 5910581934 compressed bytes; all original source/result/pull and restored-member checksums pass. Every checkpoint is also tracked explicitly. No result is retracted; all development cases were already opened before this capacity choice.
+
+Training-only nested correction diagnostic for r128_head: bank projection worst 1.896563810716%; directions/normalized inside-bank energy captured percent/worst corrected training percent [(0, 0.0, 5.616718248041179), (8, 27.87520366491995, 5.042698562845581), (16, 46.65426556851847, 4.012149403160755), (32, 70.39007842152087, 3.0770725287726055)]. Directions are SVD vectors of relative training residuals in the exact QR physical metric. They use saved optimized training codes, not independently certified stationary fits; no extra nonlinear fit or PDE solve was performed. All tested correction weak matrices have full column rank.
+
+Training-only nested correction diagnostic for r128_joint: bank projection worst 2.000158323771%; directions/normalized inside-bank energy captured percent/worst corrected training percent [(0, 0.0, 4.99414251620858), (8, 27.676685915426187, 4.403181018419375), (16, 46.73130579698052, 3.334735892321676), (32, 70.23143333982463, 2.817541087828626)]. Directions are SVD vectors of relative training residuals in the exact QR physical metric. They use saved optimized training codes, not independently certified stationary fits; no extra nonlinear fit or PDE solve was performed. All tested correction weak matrices have full column rank.
+
+Root approved preparing one final frozen r128_joint family with a shared training-residual basis and nested8/16/32 corrections,32primary. Exact variable projection will solve the linear correction coordinates while retaining16 nonlinear optimizer coordinates; nominal decoder dimensions, both full/projected gradient gates, rank/recovery diagnostics, old-manifold inclusion and charged recovery/output remain explicit. This combines correction capacity with analytic elimination. The original bank and physical targets stay unchanged, all42cases remain opened development and final cases remain sealed. No further search after that bounded family. Final source/config/smoke review is pending; no correction job submitted at this closure snapshot.
+
+## 2026-09-11
+
+### Burgers accuracy owner — strict stopping retained; both initial-training refinements rejected
+
+Continued only the existing approved Burgers worktree `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-burgers2d` and namespace `mr_burgers2d_20260907`. The bounded accuracy round is complete; no new worktree, final-cohort opening, additional search or merge. The concrete unmerged scope is in `experiments/mr-burgers2d/INTEGRATION-accuracy.json`, generated by its retained inventory script.
+
+**Failed attempt retained:** `accuracy07`, job `3563749`, source `cbc4e4d8432763a8ea6a02fac0b433066cd521af`, completed training and refined-reference generation but aborted on a reporting assertion comparing differently evaluated normalized gradients. Only 134 of 324 timed rows were persisted; this incomplete comparison is not accepted. Its exact failed A100 charged-gradient difference was not saved and cannot be quoted. A focused GPU replay reproduced the orphan field to relative difference 4.848e-14; its analytic NumPy comparison supports floating-point cancellation/fusion as the reporting discrepancy. The unchanged stationarity threshold was not relaxed. Failed outputs, trained checkpoint, targets, references and diagnostics remain checksum archived.
+
+**Audited repair control:** `accuracy08`, job `3565181`, source `47b783429500b559f6a509448ca11f164183b658`, reused verified frozen training/reference bytes with explicit lineage and retimed every method in one allocation. All 324 invocations passed the independent full-field/source/gradient audit; root separately verified worst trajectories. At the finest mesh, original stall stopping takes 37.532219547 GPU ms with 3.907620325% worst fixed-initial error and 0/18 stationary queries; strict stopping takes 49.119184841 ms, 3.884679626% and 18/18. The strict change improves numerical reliability with only a small physical-error improvement and more work. The initial-field refined head failed the physical target despite improved training reconstruction.
+
+**Final coverage control:** `accuracy09`, job `3571954` on `NVIDIA A100-SXM4-40GB`, source `9bd640437f8ba1d830806d950fd34949dbbb8bfc`, added only the preregistered expanded initial-family head. Original, inherited refined, and expanded-coverage heads were compared with identical strict stopping, bank/capacity, opened development cases and reference bytes; no cross-job timing was spliced. Both training procedures use the same update count and head batches. Broader coverage increases optimized-code state, periodic training diagnostics, and the cold-start library; EQ fitting keeps the same original code IDs but refits weights per head and mesh. Teacher replay preserves decoded training outputs and is not new PDE truth.
+
+| Finest-mesh method | GPU ms | Worst fixed-initial error % | Worst initial error % | Physical and numerical pass |
+|---|---:|---:|---:|---|
+| frozen_stationary | 55.924139917 | 3.884679626 | 3.856219623 | yes |
+| trained576_stationary | 49.021903658 | 5.459553761 | 4.592752115 | no |
+| trained4608_stationary | 49.600264523 | 5.277322641 | 2.824661748 | no |
+| fft_loose | 68.086456973 | 2.389936524 | 0.000000000 | yes |
+| fft_tight | 512.905664975 | 2.141610957 | 0.000000000 | yes |
+
+These errors divide the saved field-error norm by the reference initial-field norm and maximize over saved times/cases. The retained original strict head is 1.217478840 times faster than its same-job loose iterative FFT-preconditioned FOM; both pass the fine-grid contract. Every method still misses the physical target at the smallest mesh; both trained heads also fail at the middle mesh. No universal FOM speed claim follows.
+
+The expanded training audit independently regenerated all 4608 initial fields over 1046529 interior nodes: QR rank 512, condition 23674.908057334, direct perpendicular squared-error discrepancy 1.826e-15. All 27 nonstationary initial-code fits were retained. Training median reconstruction changed from 1.747966038% to 1.575853743%; median decoded replay drift is 1.660645425%. On the difficult opened case, initial reconstruction improves from 3.856219623% to 2.824661748%, while trajectory error worsens from 3.884679626% to 5.277322641%. Thus this full initial-training procedure does not improve rollout accuracy; separating true trajectory training, changed manifold geometry and quadrature coverage is future work, not resolved by this round.
+
+The coverage owner audit passed all 270 invocations, 90 distinct complete fields, 8262 saved weak states with repetitions, and 540 FOM output steps. There are 0 disagreements in charged/posthoc/independent-NumPy threshold classification; the conservative criterion is used in the panel. All 36 inherited-control trajectories reproduce earlier fields, maximum relative difference 6.897e-14, and every solver counter agrees. Root independently passed the worst method/mesh endpoint audit.
+
+**Disposition:** retain the original checkpoint and propose only the strict stopping/diagnostic functions for scoped integration. Keep both trained checkpoints and all failed/negative evidence as research artifacts; do not adopt either retrained head. Worktrees remain separate; the coordinator owns the required merge decision.
+
+`accuracy08` restorable archive commit `fe0bc57043d01224b1f9555e4139f744434dc551` retains 65 checked parts and 6056642560 bytes; result SHA `056ba0ae8b16bf8737ac370cef6219414fecff3e693592fc4f15f67cdd41cb7e`. Exact remote directory removed, with retained `CLEANUP.json` absence proof. Restorer: `/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/restore_iterative.py experiments/mr-burgers2d/runs/accuracy08`.
+
+`accuracy09` restorable archive commit `3ccf003df9d86d8b474ac9f9430baaeb5c315ae4` retains 63 checked parts and 5883453440 bytes; result SHA `cf7409cbb553a78662ee8eb5b6e33d52ec89228f511a74eb2170562f4eeb9c33`. Exact remote directory removed, with retained `CLEANUP.json` absence proof. Restorer: `/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/restore_iterative.py experiments/mr-burgers2d/runs/accuracy09`.
+
+All exact completed Burgers attempt directories are absent, the account queue was empty at final cleanup, and the canonical campaign report remains coordinator-owned. No older accepted numerical result is retracted beyond the explicitly incomplete failed reporting attempt.
+
+## 2026-09-11 — Reflective-wave acceleration and accuracy campaign
+
+### Reflective-wave owner: guarded geometry, phase supervision and nested enrichment
+
+Continued only the approved `exp/2026-09-07-mr-wave2d` worktree/namespace. Absorbing waves and the sealed final-paper cohort remained excluded. All accepted runs used fresh post-reset bank/head lineage, regenerated query inputs, f64/highest GPU execution, full displacement and physical-velocity outputs, paired same-job iterative CG and direct DST controls, saved repetitions, source/output hashes and independent NumPy/SciPy field/geometry audits. Every exact remote attempt directory was removed after checksum collection.
+
+| Attempt | Job | Scientific source | Timed invocations | Distinct timed fields | Refinement fields |
+|---|---|---|---:|---:|---:|
+| accel06 | 3563074 | `2826ce49f385d34a65229798893ec1f2977c714a` | 54 | 18 | 4 |
+| accel07 | 3563590 | `b55fe991cff4512063c8109dcdcc72d3ed21d060` | 90 | 30 | 6 |
+| accel08 | 3563875 | `2514d3954d7a8c83429d698f4788f3176a2816fd` | 60 | 20 | 8 |
+| accel09 | 3564476 | `160b338a7d61a5111e46bff0b168610ae4a77282` | 60 | 20 | 8 |
+| accel10 | 3565033 | `452cbabf21404a32300b93747e1254117fefa62f` | 66 | 22 | 10 |
+| accel12 | 3565786 | `3eb9b6586ba019b9bc076d9da21f7a0600fb1f9d` | 324 | 108 | 36 |
+
+The parity-preserving guarded-Cholesky geometry reduced the original ROM median by 6.929743702× at the unchanged timestep; retaining the verified larger timestep gave 24.993359802× in the same screen. Shared analytic derivatives, conservative rank bounds with exact-SVD fallback and measured normal-solve backward residuals preserve the original guard. Independent saved-state audits are empirical finite-precision checks, not exhaustive interval certificates for every internal stage.
+
+The further timestep enlargement failed its predeclared refinement requirement and was rejected. Linear-bank evolution with stationary nonlinear output reconstruction was tested separately with a larger internal state; it reduced some errors but still missed the all-state target and was not selected. Physical output velocity used the full implicit stationarity Hessian, with saved neighboring-time kinematic checks.
+
+Matched fixed-encoder field-only and field/energy/tangent training separated the effect of added supervision. Phase supervision modestly improved initial-scaled errors; a newly trained larger head did not improve the worst rollout error. The final additive architecture preserves the accepted nonlinear head and appends fixed linear training directions, improving both displacement and velocity errors. The fixed training-library appended scores are not residual-corrected; all initial coordinates are nevertheless fitted to supplied fields.
+
+Final confirmation settings/checkpoint were frozen before the separately seeded fresh development cohort. The first confirmation attempt failed at an operational baseline lookup before generating any query case; its complete failure archive is retained under `runs/accel11`, and the corrected retry preserves every scientific setting and selection hash. No earlier accepted numerical result was retracted. Audit provenance was strengthened by binding every accepted audit to its raw-result hash, auditor hash and matching source/job identities.
+
+| Intervals per axis | Original ROM GPU ms | Selected nested ROM GPU ms | Worst initial-scaled u / v / energy-state % | Fastest tested passing CG GPU ms | CG / selected ROM | Direct DST GPU ms |
+|---:|---:|---:|---|---:|---:|---:|
+| 64 | 4485.909332056 | 199.438048410 | 1.477906550 / 3.260997024 / 5.041070830 | 42.195605929 (`cgdt_0.005_tol_0.01`) | 0.211572497× | 3.760324442 |
+| 256 | 4472.278085188 | 200.158698019 | 1.542840760 / 3.419016401 / 5.136114487 | 138.838245883 (`cgdt_0.005_tol_1e-06`) | 0.693640832× | 4.422320519 |
+| 1024 | 4477.732209489 | 202.941564610 | 1.546467806 / 3.421021638 / 5.145194102 | 601.496360614 (`cgdt_0.005_tol_0.01`) | 2.963889442× | 16.732216580 |
+
+These confirmation medians pool both opened and both fresh development cases, with the full repetition arrays retained. The selected nested manifold improves high-resolution iterative-FOM timing and physical errors, but the pooled all-state accuracy target remains missed. Direct DST remains faster. Fresh cases are reported separately in the generated panels; they were not used for further tuning. Some loose CG settings converge numerically while failing the physical target and are excluded from the passing comparator.
+
+Displacement uses the supplied initial displacement norm. Velocity and energy-state use the square root of twice the supplied initial physical energy; initial velocity can vanish in some cases. Energy-state error measures trajectory mismatch and differs from energy drift. Current-relative errors and defined phase errors remain in every full result/panel. The selected model has forty configuration coordinates and eighty phase coordinates in the frozen sixty-four-function bank; original controls have thirty-two configuration coordinates.
+
+Artifacts, scientific sources, checkpoints, audits, generated panels and verified bounded archive parts live under `experiments/multiresolution-wave/runs/`. The coordinator owns the generated main campaign report. No further wave search, new worktree, merge, final-cohort opening or presentation replacement occurred. Remaining paper work includes meeting the all-state target and broader independent families/seeds; this is a bounded development result.
+
+
+## 2026-09-11 — Final Poisson nested correction family accepted
+
+### Poisson owner: one frozen correction family, complete evidence and integration inventory
+
+Continued only the previously authorized Poisson worktree `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-poisson2d`. Job `3572754` completed successfully in 00:18:55 on `NVIDIA A100-PCIE-40GB` / `pax144`. Scientific source is `d5146f31268f6c4302c745280420d857c98ebcef`; accepted result/archive commit `0f5683124099eeab3f6e736d3f71c6c7e6a1a22b`; generated integration inventory commit `ef2552800756bd9e6be1b9f44776b0406f056d51`. Root independently audited all fifteen worst method/mesh endpoints in `reports/2026-09-11-poisson-correction.coordinator-audit.json`. No main report was edited by this owner.
+
+The sole final family freezes the accepted r128_joint bank/head and one 32-direction normalized training-residual basis, with nested 8/16/32 prefixes and 32 predeclared primary. Nominal dimensions are 24/32/48; exact analytic elimination leaves sixteen nonlinear optimization variables. Requested weak modes remain 256, actual retained count 257. The change combines additional linear correction capacity and analytic elimination; it is not a width-only solver comparison. Cold starts use only supplied-source weak contractions and projected training-prediction caches. Both full-objective and projected-objective stationarity, full projected-Jacobian rank, recovery stability and residual reconstruction are gated. Final rank and gradient diagnostics are charged to every paired neural timing. No runtime comparison across jobs is made.
+
+The training-only basis proof regenerated all 512 training snapshots and the exact physical QR metric. Its orthogonality discrepancy was 9.69572421626e-15, and the leading normalized residual eigenspace discrepancy was 4.17542336767e-13. Saved optimized training codes were used; no new stationary/global training-fit claim is made. There was no additional neural training, source-family input, empirical quadrature, development-basis construction, final-case opening or further search.
+
+The all-case results below are generated from the accepted panel. GPU and host columns are pooled medians of all case/repetition samples. Physical error is current-relative full-field error against restricted 2048 FD-DST truth; the retained adjusted-error/refinement/numerical gate is stricter than this displayed error alone.
+
+| Intervals | Method | Worst physical error % | GPU ms | Host ms | Invalid invocations | Pass original 5% gate |
+|---:|---|---:|---:|---:|---:|---|
+| 64 | original_relative | 7.281746791 | 4.830094986 | 6.358522922 | 0 | False |
+| 64 | r128_q0 | 7.555330339 | 4.766348982 | 6.275452557 | 0 | False |
+| 64 | r128_q8 | 7.209430195 | 4.852019949 | 6.369687035 | 0 | False |
+| 64 | r128_q16 | 7.034353823 | 4.893498030 | 6.425868021 | 0 | False |
+| 64 | r128_q32 | 6.111945612 | 4.910127958 | 6.465680897 | 0 | False |
+| 64 | cg_1e-06 | 0.273174612 | 8.385410998 | 9.331011097 | 0 | True |
+| 64 | cg_3e-02 | 1.376768812 | 4.725827603 | 5.616743467 | 0 | True |
+| 64 | cg_1e-01 | 9.627059360 | 4.033061559 | 4.919995437 | 0 | False |
+| 64 | dst | 0.273174595 | 0.256050494 | 1.892254455 | 0 | True |
+| 256 | original_relative | 7.280264410 | 4.622388049 | 6.362127489 | 0 | False |
+| 256 | r128_q0 | 7.553790293 | 4.633263452 | 6.336176069 | 0 | False |
+| 256 | r128_q8 | 7.207541630 | 4.764289479 | 6.587217911 | 0 | False |
+| 256 | r128_q16 | 7.032166305 | 4.813236534 | 6.573889405 | 0 | False |
+| 256 | r128_q32 | 6.110597964 | 4.744898528 | 6.652622134 | 0 | False |
+| 256 | cg_1e-06 | 0.016505991 | 34.804447903 | 36.210973980 | 0 | True |
+| 256 | cg_3e-02 | 0.721699972 | 17.501462949 | 18.643896910 | 0 | True |
+| 256 | cg_1e-01 | 3.036037861 | 15.021541505 | 16.278672963 | 0 | True |
+| 256 | dst | 0.016506036 | 0.209140591 | 2.184999059 | 0 | True |
+| 1024 | original_relative | 7.280247642 | 3.927121987 | 11.218029540 | 0 | False |
+| 1024 | r128_q0 | 7.553764804 | 4.412962473 | 11.692038621 | 0 | False |
+| 1024 | r128_q8 | 7.207505095 | 5.031712935 | 12.251327978 | 0 | False |
+| 1024 | r128_q16 | 7.032119181 | 5.232792464 | 12.490236550 | 0 | False |
+| 1024 | r128_q32 | 6.110576109 | 6.043163012 | 13.092478970 | 0 | False |
+| 1024 | cg_1e-06 | 0.000785193 | 251.533783972 | 258.338489453 | 0 | True |
+| 1024 | cg_3e-02 | 0.269520101 | 103.618530440 | 110.952986404 | 0 | True |
+| 1024 | cg_1e-01 | 1.182642857 | 89.205304510 | 96.314497408 | 0 | True |
+| 1024 | dst | 0.000785131 | 0.395367970 | 8.098021965 | 0 | True |
+
+At the finest mesh, the primary reduces worst physical error from original 7.280247642% and uncorrected-r128 7.553764804% to 6.110576109%, but its GPU/host cost increases to 6.043163012/13.092478970 ms from original 3.927121987/11.218029540 ms. Original-thirty/later-twelve primary errors are 6.110576109% / 5.918245005%. All 42 cases were already-opened development before this family was selected. No neural setting passes the original complete-cohort physical gate. The unchanged r128 bank has worst same-grid projection error 4.354562804%, still missing the separate proposed 3% bank target. Every solve passes its numerical gates; stationarity does not imply global optimality or physical accuracy. Direct DST remains faster than the neural methods. This is a measured accuracy/cost tradeoff, not the original requested simultaneous accuracy/speed success.
+
+Owner acceptance independently verified 3402 invocations, 1386 distinct full fields, 1890 online starts, 252 bank projection fields, every exact source/checkpoint/basis hash, full/projected gradients and ranks, all linear recoveries and initializers, FOM residuals and timing-component sums. Maximum decoder discrepancy was 3.27906338255e-15, full/projected normalized-gradient discrepancy 2.16679816933e-14/2.43920277932e-14, and original/q0 field parity against accepted capacity09 was 3.30948554669e-15. Invalid invocation count is 0.
+
+All three source/result/pull checksum manifests passed. The 4639765857 byte archive is retained as 93 tracked parts; independent streaming restoration verified every one of 1587 members before deletion of exactly `/cluster/tufts/paralab/tawal01/mr_poisson2d_20260907/correction_accuracy10`. Queue was empty afterward. Result SHA256 `4113d0fc72cf1dc9bad1e684c7b1b9bdb86532f12f4d0279aeca85aab1ddf1a7`; archive SHA256 `dd0744d7e118a93185bb3a804b5ea5cdafddd5c7433a65e3750c9e994b5988c6`. Explicit checkpoints and the correction basis are retained alongside all full raw fields and repetition arrays.
+
+Accepted paths under the worktree: `experiments/multiresolution-poisson/runs/correction_accuracy10/` contains `panel.json`, `summary.md`, `result.json`, `audit.json`, `audit-code-provenance.json`, `restoration-audit.json`, `ARCHIVE.json`, `cleanup.json`, `checkpoints/` and `basis.npz`. The generated `experiments/multiresolution-poisson/accuracy-integration/INTEGRATION-INVENTORY.md` and `integration-inventory.json` bind the staged08, capacity09 and correction10 implementations/configs/checkpoints/basis to exact scientific and archive commits, and retain actual target failures separately from accepted numerical evidence. Every listed implementation/checkpoint commit hash was verified against git bytes.
+
+No earlier numerical result is retracted. The final approved family is complete; no further search or GPU job remains. Sealed final cohorts stay untouched. No worktree was merged; root owns the final canonical current-state refresh, combined report and required merge decision.
+
+## 2026-09-11
+### Accuracy campaign — coordinator final closure
+
+Completed the authorized bounded parallel round in the existing corrected worktrees. The final Poisson family and its independent audits close the last outstanding track. No further correction-basis search followed evaluation.
+
+| PDE | Intervals | Cases | Before / retained error % | Retained GPU ms | Same-job iterative FOM / ROM | Physical target |
+| --- | --- | --- | --- | --- | --- | --- |
+| Poisson | 1024 | 42 | 7.280248 / 6.110576 | 6.043163 | 14.761360× | Miss |
+| Heat | 1024 | 16 | 7.595346 / 4.762515 | 11.623313 | 4.633307× | Pass |
+| Burgers | 1024 | 6 | 3.907620 / 3.884680 | 55.924140 | 1.217479× | Pass |
+| Reflective waves | 1024 | 4 | 6.213781 / 5.145194 | 202.941565 | 2.963889× | Miss |
+
+Norms differ: static field L2 for Poisson, current field L2 for heat, fixed initial-field L2 for Burgers, initial energy-state scale for waves. Timing ratios use each retained method and its passing iterative comparator in one job. Poisson/wave ratios are timing-only because the ROM target is missed; direct DST remains faster. Burgers before/after accuracy comes from the stopping comparison; its latest retimed original fields were verified against that parent.
+
+Report, generator, normalized repetitions and integration inventory committed at `fa0f0c21b7da0098c12d2a95cd2efa9aa332743c`. Root Poisson checks passed all 15 worst method/mesh endpoints, independently verifying linear elimination, fields, gradients, ranks, source-only initialization and sampled decoding; code/evidence committed at `f5875d68`. The final read-only reviewer verified all 64 report source hashes, generator identity and integration hashes, with no blocker. `git diff --check` passed. All owner closing entries precede this closure. Queue checked empty; checksum collection, full archive restoration and exact remote cleanup are documented in each run.
+
+Retained changes: heat initial-plus-tail head; Poisson fixed-weight nested corrections with analytic linear elimination as a research candidate; Burgers original head plus explicit stationarity; wave analytic geometry/guarded Cholesky acceleration, separately verified larger step and frozen nested correction decoder. Owner inventories separate implementation, checkpoints, verification and unsuccessful alternatives.
+
+Negative evidence/retractions: fixed-capacity Poisson staging and bank expansion alone did not improve full online accuracy; both Burgers initial-field retraining arms worsen development trajectories; larger wave-head retraining and the rejected larger step did not help. Poisson corrections and selected waves still miss the physical target. Failed instrumentation, pre-query and smoke attempts remain recorded. No accepted numerical result is retracted, and no discarded wave evidence was reinstated.
+
+Open scientific work: better Poisson representation at acceptable query cost; trajectory-aware Burgers training with a controlled EQ-fidelity comparison; improved wave displacement-gradient/velocity accuracy; multiple training seeds and later sealed final validation. These are future experiments, not unfinished work in this bounded round. Branches remain separate. Present the concrete integration inventory and ask whether to merge, as AGENTS.md requires; no merge is authorized by this closure.
+
+## 2026-09-13
+### Updated-table review — coordinator
+
+The user requested the updated tables. Read the canonical current state and extracted the retained methods directly from the accepted campaign JSON for every recorded mesh. Comparators are selected among same-job iterative FOM settings passing the full development-cohort criteria; where none passes, leave the comparator and ratio unqualified rather than substitute a failed control. Preserve the Poisson/wave target misses and the differing error normalizations. The table source remains the finalized September campaign report; its JSON SHA256 is `67a5639286ba0ee5bb8f36b44455e898c9b3ada3a0072aedea7f13f5e777f417`. No new experiment, merge, publication validation, numerical retraction or PDF change occurred. Current scientific state and pending merge decision are unchanged.
+
+## 2026-09-13
+### Consolidated starting-point status — coordinator
+
+The user asked whether all updates and a consolidated worktree were ready for a new process. Verified that all four accepted PDE worktrees are clean and retain their recorded commits. Main has the finalized campaign Markdown/JSON and integration inventory; the presentation PDF/deck still describe the previous round. No new consolidated worktree or merge exists. Proposed `worktrees/2026-09-13-nmrom-consolidated`, branch `exp/2026-09-13-nmrom-consolidated`, based on the corrected heat head `5974d3e0df3f2e0906059564a72511de375ea2a5`, then integrating the selected Poisson, Burgers and wave implementations, checkpoints and latest reports. This base retains the corrected heat rollout instead of inheriting the frozen main implementation. The proposed path does not exist. User confirmation of this base and worktree creation remains required by AGENTS.md; no tree or branch was created in this status review.
+
+## 2026-09-13
+### New-session accuracy handoff — coordinator
+
+At the user's request, created `reports/2026-09-11-accuracy-campaign-handoff.md`, generated from the finalized campaign JSON and retained integration inventories. The filename follows the numerical finalization date; preparation date is recorded in the document. Includes exact clean worktree heads, source-generated accuracy/runtime table, retained checkpoint/basis paths and hashes, negative results, the proposed corrected-heat consolidation base, pending merge approval, PDF/slides status, runtime rules, glossary and a pasteable next-session prompt. This is a snapshot and explicitly defers to this canonical log for later state changes.
+
+Generator `reports/generate_accuracy_handoff.py` and adjacent `.manifest.json` preserve reproducibility. Checked 5 source documents and 7 checkpoint/basis files, verified all document links, and ran `git diff --check`. Handoff commit `19403cf242067bde82c4d38ffbb0970d14699550`; document SHA256 `04ea3f2a962b89ea5cca5f5337c2a30cbd763844e829f2385fcb75501229e795`. No consolidation, merge, experiment or presentation update was performed. Existing scientific findings, final-cohort seal and pending user decision remain unchanged.
+
+## 2026-09-13
+### Handoff readback and current-state verification
+
+Read the canonical current-state block and closing chronology, repository operating rules and `reports/2026-09-11-accuracy-campaign-handoff.md` for the user's status request. Verified that the four accepted PDE worktrees remain clean at the exact heads recorded in the handoff, and main remains at `19403cf242067bde82c4d38ffbb0970d14699550`. No new campaign consolidation worktree is registered. Existing main-checkout edits were preserved.
+
+The completed, audited development campaign remains the latest accepted state: heat and Burgers pass their recorded physical targets; Poisson and reflective waves still miss theirs. Selected implementations and checkpoints remain in separate worktrees; current campaign Markdown/JSON are on main, while the PDF tables/slides still describe the preceding round. Consolidation/base approval, presentation refresh if requested, remaining accuracy work and sealed final validation are still open. No scientific run, numerical retraction, branch creation or merge occurred. The cluster queue was not queried in this readback; its empty status is recorded only at the earlier campaign closure. No current-state rewrite was needed.
+
+## 2026-09-13
+### Earlier CP manuscript accuracy readback
+
+At the user's request, located and read `Older Paper /neurips26__Copy_ (3).pdf`, its saved author/reviewer discussion, the existing CP source audit and historical heat transfer report. The manuscript is *Tunable Non-linear Manifold ROMs for Elliptic and Parabolic PDEs via Matrix-Free Galerkin Projection*, using a ViT encoder and LinearCPDecoder. The following percentage conversions were extracted programmatically from the saved author discussion; they are historical reported best-accuracy settings, not new independently validated GPU results.
+
+| Cell | Reported relative L2 error (%) | Status |
+| --- | ---: | --- |
+| Poisson-2D N=64 | 0.058700 | Later author-response table |
+| Poisson-2D N=128 | 0.069000 | Later author-response table |
+| Poisson-2D N=256 | 0.13200 | Later author-response table |
+| Poisson-3D N=32 | 0.84100 | Later author-response table |
+| Poisson-3D N=64 | 0.75700 | Later author-response table |
+| Poisson-3D N=128 | 0.71300 | Later author-response table |
+| Heat-2D N=64 (b) | 0.52100 | Submission value carried into rebuttal |
+| Heat-2D N=128 (b) | 0.37500 | Submission value carried into rebuttal |
+| Heat-3D N=32 (b) | 9.3000 | Submission value carried into rebuttal |
+| Heat-3D N=64 (b) | 7.4900 | Submission value carried into rebuttal |
+| Heat-3D N=128 (b) | 18.200 | Submission value carried into rebuttal |
+| Heat-3D N=128 acc | 18.300 | Subsequent author correction |
+
+Poisson was retrained against corrected discrete truth after the original analytic targets were found inconsistent with the boundary conditions. The original manuscript reports case averages except its explicitly median-based Poisson-3D table; these statistics and heat final-state errors differ from current worst-case, all-requested-time development metrics. Different families, resolutions and per-cell checkpoints prevent an architecture accuracy comparison from these tables alone. The frozen heat rollout was a clean-package port regression, not present in the archived paper drivers. Original large timing claims were already corrected and are not reinstated. Some frozen best-results README values describe other runs and do not reproduce the submitted table. The existing July heat review separately retains later variant-specific final-error aggregates and labels them historical/provisional.
+
+This session checked documents and percentage arithmetic only; no training, PDE solve, cluster operation, final-cohort access, new worktree or merge occurred. No accepted numerical result is newly retracted. A matched historical/current decoder accuracy comparison remains unperformed; the current campaign status is unchanged.
+
+## 2026-09-13
+### Current campaign aggregate errors
+
+At the user's request, computed case-weighted mean, median, final-state and observation-averaged errors for the retained methods at every accepted mesh. Generator `reports/generate_accuracy_aggregates.py` reads the accepted campaign and its linked raw JSONs; tables and per-case arrays are retained in `reports/2026-09-11-accuracy-aggregates.md` and `.json`. This is CPU-only reaggregation of accepted development evidence, not a new PDE solve or independent field audit.
+
+| PDE | Intervals | Cases | Mean / median / worst case-maximum error % | Mean final error % | Cases above 5% |
+| --- | ---: | ---: | --- | ---: | ---: |
+| Poisson | 1024 | 42 | 1.982130 / 1.266120 / 6.110576 | 1.982130 | 2 |
+| Heat | 1024 | 16 | 2.329988 / 2.353578 / 4.762515 | 1.373674 | 0 |
+| Burgers | 1024 | 6 | 2.404137 / 2.053097 / 3.884680 | 1.136027 | 0 |
+| Reflective waves | 1024 | 4 | 4.214115 / 3.953492 / 5.145194 | 4.134007 | 1 |
+
+Primary normalizations remain static field for Poisson, current field for heat, initial field for Burgers, and initial energy-state scale for reflective waves. Companion current-field Burgers and wave displacement/velocity metrics are retained separately. No averages are pooled across PDEs or meshes. Every repetition's error array equals its case's first array exactly, so repeated timings do not inflate sample sizes. All source hashes, case counts and primary worst errors match the accepted campaign panels; all cases and statistical outliers remain included. The report defines upper Tukey outliers separately from counts exceeding the physical error threshold.
+
+Aggregate JSON SHA256 `5624c0ecab9b0674d8b15fc67bf6e03e67bfa3164f41a7bafb01beeaf4a80dac`. Comparison with the older CP paper remains limited by different families, reference protocols, horizons and per-mesh training; the final-state mean is a closer statistical match for heat. Existing Poisson/wave target misses, final-cohort seal, separate worktrees and pending consolidation decision remain unchanged. No new numerical result is retracted, and no GPU job, branch creation, merge or PDF/slides edit occurred.
+
+## 2026-09-13
+### Empirical-quadrature usage in the retained campaign
+
+For the user's methodology question, followed the retained solver entrypoints and operator assembly code. Burgers uses decoder-output-trained nonnegative empirical quadrature for the FOM-exact sign-dependent upwind advection term (`experiments/mr-burgers2d/engines.py`, `build_rom` and `weak` in its approved worktree). Its accepted accuracy09 JSON records K=16, R=512, M=64 and m=256; all 256 selected center weights are positive on every accepted mesh. Linear weak terms are preassembled. The retained initial-state fit separately uses fixed Gaussian quadrature, not trained EQ weights.
+
+Poisson uses full-grid sine contractions to assemble its reduced operator and to project each supplied source (`experiments/multiresolution-poisson/core.py`), then applies the nested correction projection in `correction_core.py`; no empirical node/weight fit is used. Heat assembles the weak bank projection and exact QR initial-fit compression (`experiments/mr-heat2d/run_pilot.py`, imported by `run_accuracy.py`); no EQ is used. Reflective waves assemble full-grid weighted bank stiffness and mass-orthonormal coordinates (`experiments/multiresolution-wave/pilot.py`, `assemble`/`rebuild`) and evolve through reduced analytic geometry (`acceleration.py`); no EQ is used. These linear PDE paths still use their ordinary spatial-discretization weights during assembly and charge query-specific full-field input/output work. They should not be described as relying on empirical hyper-reduction for their online spatial operators.
+
+This readback changes no result or implementation. It rules out empirical-quadrature approximation as the source of current Poisson/heat/reflective-wave error; it does not identify the remaining error mechanisms. Burgers quadrature-fidelity attribution remains open. No new numerical experiment, source edit, merge, worktree or final-cohort access occurred; no accepted result is retracted.
+
+## 2026-09-13
+### Expected effect of EQ on the other retained PDEs
+
+The user asked what would happen if EQ were also used for Poisson, heat and reflective waves. Rechecked the supplied-field projections, heat operator assembly, wave reduced force, and archived CP Heat-2D driver. The expectation is conditional and unmeasured: approximating an already preassembled reduced matrix with EQ leaves the online matrix dimensions unchanged; evaluating sampled spatial operators anew at every iteration can add work relative to the existing contractions. EQ fitting also adds offline cost. The more plausible query-time application is sampled source projection for Poisson or sampled initial-field projection/fitting for heat and waves, with separate checks of field error and projection fidelity. Full-field input-transfer and requested output costs remain under the current query contract.
+
+A frozen decoder's best achievable representation error is unchanged by EQ. Changing the approximate objective may move physical error either way and may affect conditioning or wave energy/stability; no accuracy improvement or speedup is established. Increasing quadrature fidelity should recover the chosen discrete weak operation when sufficiently resolved, not remove its existing representation error. The archived Heat-2D driver explicitly used dense residuals without EQ, so its reported subpercent errors are not evidence that adding EQ improves current heat accuracy.
+
+Reviewed the primary EQ reference by Patera and Yano (2017), https://doi.org/10.1016/j.crma.2017.10.020, for offline point/weight fitting and online integration approximation; the project-specific expectations follow from the inspected implementation. A bounded frozen-checkpoint comparison preserving weak tests, solver policy and full-field timing would be needed to measure the effect. No experiment, source change, new worktree, approval request, merge or numerical retraction occurred; current accepted results remain unchanged.
+
+## 2026-09-13
+### Recommended next work after the accuracy and EQ review
+
+The user asked what to do next. Recommend first assembling a runnable consolidated baseline from the existing integration inventory, then one bounded Poisson accuracy diagnosis/improvement round before another broad campaign. Proposed consolidation remains `worktrees/2026-09-13-nmrom-consolidated`, branch `exp/2026-09-13-nmrom-consolidated`, based on corrected heat `5974d3e0df3f2e0906059564a72511de375ea2a5`; retain the selected Poisson/Burgers/wave code, checkpoints, dependencies and current reports. Verify hashes, imports and bounded parity against retained results. The proposed directory is still absent; creation and integration approval remain pending.
+
+At 1024 intervals, the accepted Poisson bank diagnostic has 4.354563% worst same-grid projection error, while the retained solve has 6.110576% worst physical error. These cohort maxima use distinct references and need per-case comparison; their difference is not an additive error decomposition. Reuse existing projection/fitting diagnostics, fill only missing development diagnostics, and distinguish bank representation, nonlinear-head fitting and weak online solve before choosing a training or solver change. Preserve the existing full-cohort acceptance gate and measure mean, median, tails and paired cost; no new numerical target is adopted by this recommendation.
+
+Subsequent priorities remain reflective-wave displacement-gradient/velocity accuracy and trajectory-aware Burgers training with quadrature fidelity isolated. Broad seed/family confirmation and sealed final validation follow method selection. Adding EQ to already preassembled linear operators is not the recommended accuracy intervention. This is a proposed sequence, not an authorized new GPU campaign; no worktree, branch, agent, cluster job or merge was created, and no accepted numerical evidence changed or was retracted.
+
+## 2026-09-14
+### Consolidated accuracy-campaign baseline — authorized creation and integration
+
+The user approved the previously proposed corrected heat base and consolidated worktree with “yes. Create that now”. Created `worktrees/2026-09-13-nmrom-consolidated`, branch `exp/2026-09-13-nmrom-consolidated`, from `5974d3e0df3f2e0906059564a72511de375ea2a5`. The September 13 name was retained from that proposal. Completed and committed the scoped integration at `02ff0f1f18db37d8589b28e90c3a93dae5bc5a88`. Source heads were heat `5974d3e0df3f2e0906059564a72511de375ea2a5`, poisson `ef2552800756bd9e6be1b9f44776b0406f056d51`, burgers `ad9e2e7efa7894230cc0494db948ce17fd5f67ee`, wave `277ef65c267dd1fee9090c50b6294dcc83ba2531`. All four source trees were clean before integration and remain unchanged.
+
+Imported the selected Poisson fixed-head correction solver and basis, original Burgers checkpoint with explicit stationarity and its decoder-output EQ implementation, and fresh post-reset reflective-wave accelerated solver, nested head, initializer and bank rebuild inputs. The corrected heat implementation and selected initial-plus-tail checkpoint are inherited. Native scientific source bytes are unchanged; no full branch merge was used. Selected model paths, exact source Git blobs and content hashes are recorded in `consolidated/manifest.json`; `consolidated/README.md` and the root README point to the selected entrypoints instead of the historical frozen-rollout package. Every selected checkpoint and required replay fixture is Git-tracked.
+
+CPU verification checks 647 imported file hashes and 251 imported Python sources. The campaign Markdown/JSON, integration JSON and aggregate Markdown/JSON regenerate byte for byte using the copied evidence mirror, without access to other live worktrees. Original report status wording is preserved as a snapshot and explained in the entrypoint guide; canonical reports remain on main. Original restorable archives and rejected alternatives remain on their source branches.
+
+Bounded local full-query replays on the NVIDIA GB10 used JAX 0.10.1, float64, highest matrix multiplication precision, individual jaxrun scopes and a 55-second timeout per process. Each used one already-opened case at 64 intervals; these are integration checks, not new accuracy measurements, timing evidence or full-cohort validation. Poisson, heat and waves rebuild their mesh operators from the frozen models. Burgers rebuilds its bank and reuses the archived EQ and initial-fit matrices to keep the smoke bounded. All query validity/stationarity checks pass; wave cold-fit and completion checks pass. Relative field differences from archived outputs are generated below from the saved replay JSON:
+
+| PDE | Output | Relative L2 replay discrepancy | Parity passed |
+| --- | --- | ---: | --- |
+| poisson | field | 5.571044266789e-16 | True |
+| heat | field | 1.625330296402e-15 | True |
+| burgers | fields | 1.470149495078e-14 | True |
+| wave | u | 3.628767099210e-10 | True |
+| wave | v | 9.842711615887e-10 | True |
+
+Successful logs contain the GPU preflight and no warnings, OOMs or truncated output. Full replay records, original expected-field hash checks, source/checkpoint checks and logs are retained in `consolidated/checks/` and beside the entrypoint guide. The declared cross-device field parity tolerance was set before the successful replays and is recorded in every JSON.
+
+Failed integration attempts are retained and explained in `consolidated/verification-notes.md`: the importer initially used the wrong restored Poisson field directory; the initial heat wrapper used a bytes-only hash instead of the native shape/dtype-inclusive hash; and the first Poisson wrapper required byte-identical source regeneration. The Poisson full source was not archived; regeneration uses the original function and recorded parameters, but its local hash differs from the cluster hash. Both hashes remain recorded, numerical output parity passes, and source bitwise equality is not claimed. Different platform transcendental rounding is only a possible explanation. The complete staged whitespace check retains four pre-existing warnings in byte-identical imported code/evidence, including frozen wave mathematics; every other staged file passes. No scientific source was changed to suppress those warnings.
+
+The consolidated worktree is clean after its commit. The canonical lab-log update is left in the main working copy alongside the pre-existing user changes. No cluster submission, new training, new accuracy campaign, sealed final-cohort access, presentation update or merge into main occurred. No accepted result is retracted; the Poisson and reflective-wave physical target misses remain. The next suggested scientific task is the bounded per-case Poisson representation/head/online-solve diagnosis, which has not been started by this consolidation.
+
+## 2026-09-14
+### Paper direction — matched neural-operator comparisons and accuracy/cost improvement
+
+The user asked how to improve accuracy and speed relative to FNOs and other neural operators for the paper. Read the current state, consolidated entrypoint guide, accepted aggregate/campaign results, the earlier precomputed-operator paper strategy, and the matched heat linear-bank comparison. No matched FNO evaluation is established by the retained current campaign; its FOM speed ratios cannot be transferred to neural operators.
+
+Recommended next bounded scientific study: use consolidated commit `02ff0f1f18db37d8589b28e90c3a93dae5bc5a88` as the proposed base, start with Poisson and Burgers, establish a common field-input/full-output training and evaluation contract, and train a tuned FNO before selecting a new accuracy target. Include an efficient tensorized FNO or CNO and a same-spatial-bank direct coefficient/latent predictor in the fuller comparison. Keep well-solved POD/free-bank and efficient direct/iterative FOM controls. Existing heat evidence makes the free-bank control essential: nonlinear compression has not automatically improved either accuracy or query cost. FNO already supports frozen-weight resolution transfer, so transfer alone does not distinguish this method.
+
+Accuracy work should compare same-case, same-reference spatial-bank projection, best-found nonlinear fitting, and online prediction errors. These diagnostics are not an additive error decomposition; fitted nonlinear minima are not certified global optima. Improve the bank only when its representation floor blocks the target. Otherwise investigate head capacity/objective, tangent quality, weak test coverage and online convergence. Burgers initial-only retraining has already regressed trajectories; prioritize short-trajectory field losses and dynamically relevant tangent/weak consistency, with an isolated frozen-checkpoint EQ-fidelity comparison. Keep the FOM-exact sign-upwind operator. For waves, separately assess displacement-gradient and velocity representation; a smaller displacement L2 alone does not resolve the energy-state failure. Adding EQ to already preassembled linear terms remains unmotivated as an accuracy fix.
+
+The leading speed hypothesis is a learned initializer from supplied-field projections and, where relevant, a learned reduced-state step predictor, followed by the unchanged weak correction and validity checks. Compare current solve, direct prediction, and prediction with correction. The initializer mainly targets solver work; representation and trajectory training must earn physical accuracy improvements. A small fixed correction budget is only a diagnostic if it misses stationarity; smaller weak residuals do not ensure smaller physical errors. The final paper should test whether physics correction pays relative to a direct same-bank predictor and a physics-informed neural-operator alternative; prediction plus equation-based refinement is established prior work, not a novel ingredient by itself.
+
+Recommended comparison controls: identical source/initial fields, known PDE parameter access, boundary treatment, reference discretization, output times and error normalization; split by independent input cases/trajectories rather than snapshots. Match data access and give each method a disclosed tuning budget; show model-size/cost curves rather than an arbitrarily weak comparator. Let operator baselines predict requested times directly and include coarse-grid prediction plus interpolation when accurate. Measure paired complete-query GPU latency on one device/allocation, warmup and synchronization, batch-one latency and batch throughput separately, setup/training/data costs and peak memory. Retain the repository's float64/highest-precision protocol; any deployment-precision comparison requires a separately specified protocol and cannot inherit a claim from an artificially constrained FNO. Cached reduced kernel cost and full dense output cost must remain separate. Larger input families and repeated training seeds precede sealed final validation; current small development cohorts and low-parameter Gaussian families alone are insufficient for a broad operator-learning claim.
+
+Primary sources checked for this advice (not an exhaustive novelty or state-of-the-art survey):
+- FNO: https://arxiv.org/abs/2010.08895
+- Official FNO/TFNO implementation: https://github.com/neuraloperator/neuraloperator and https://neuraloperator.github.io/dev/modules/generated/neuralop.models.TFNO.html
+- CNO: https://arxiv.org/abs/2302.01178
+- PDEBench: https://arxiv.org/abs/2210.07182
+- DeepONet: https://www.nature.com/articles/s42256-021-00302-5
+- PINO, including instance-wise refinement: https://arxiv.org/html/2111.03794v4
+
+This is a research recommendation, not a promised FNO speedup or an accepted new result. No benchmark implementation, training, GPU/cluster job, worktree creation, merge, or final-cohort access occurred. The consolidated worktree and all scientific results remain unchanged; no accepted result is retracted. The next study's exact data, configurations and execution scope remain to be specified before launch.
+
+## 2026-09-14
+### Sequential experiment campaign — persistent GPU allocation proposal and live preflight
+
+The user requested a step-by-step approach and suggested reserving a few GPUs to run successive experiments without repeated queue waits. Performed read-only preflight through `tufts-login`: `squeue -u tawal01` returned no jobs; the gpu partition is UP with a two-day maximum and normal QoS. A100 40G/80G nodes are mixed/allocated, while several L40S nodes are idle; availability does not guarantee an A100 start time. The default association exposes normal, interactive and preempt QoS. The paralab filesystem reports 91% used and 457G available. No allocation was requested during this planning/preflight turn.
+
+The prescribed cluster environment contains JAX/jaxlib 0.10.2, Flax 0.12.8 and Optax 0.2.8. Distribution metadata finds neither torch nor neuraloperator. These are login-side package checks only, not a GPU backend test. The baseline stack must be pinned in the existing environment without dependency replacement of JAX, then both JAX and PyTorch exercised on an actual allocated GPU before starting the longer campaign blocks. No package was installed or changed.
+
+Concrete proposed allocation: three independent one-A100-80GB batch jobs on gpu, normal QoS, an initial eight-hour time limit each, eight CPU cores and 96G host RAM per worker. The initial block is capped at 24 GPU-hours if all three run for their entire requested duration; it is not a promise to finish the full paper campaign in that time. Each job executes fresh child processes/job steps sequentially on its assigned GPU, with per-task immutable code/config hashes and a distinct output directory. It starts the next runnable task after a completed result and required gate, checkpoints before its walltime, and exits when its useful backlog is exhausted rather than holding an unused GPU. Normal Slurm allocation is meant; no administrator advance reservation or priority guarantee is requested. Prefer separate single-GPU jobs to requiring all GPUs together. Tufts documents only one interactive-QoS GPU job per user, so several interactive-priority shells are not the proposed approach.
+
+Proposed owners/worktrees, all branched from corrected consolidated `02ff0f1f18db37d8589b28e90c3a93dae5bc5a88`:
+- Poisson study: `worktrees/2026-09-14-no-poisson`, branch `exp/2026-09-14-no-poisson`, namespace `/cluster/tufts/paralab/tawal01/no_poisson_20260914/`.
+- Burgers study: `worktrees/2026-09-14-no-burgers`, branch `exp/2026-09-14-no-burgers`, namespace `/cluster/tufts/paralab/tawal01/no_burgers_20260914/`.
+- Independent reference/audit and paired benchmark work: `worktrees/2026-09-14-no-audit`, branch `exp/2026-09-14-no-audit`, namespace `/cluster/tufts/paralab/tawal01/no_audit_20260914/`.
+Each would have its own agent and allocation; no agents, branches, worktrees or remote namespaces have been created. The required base and named-isolation confirmation from AGENTS.md remains outstanding. The user's GPU-reuse preference is accepted and does not itself need to be asked again.
+
+Planned sequence: (1) freeze the shared input/output, PDE/reference, data-split, precision and metric contract and stage runnable first tasks; (2) complete environment/preflight and saved-case checks; (3) start reusable batch allocations with ready work; (4) regenerate/cache the agreed training and development data on cluster and establish the current ROM/FOM controls; (5) screen small/medium/large FNOs using one training seed before spending on repeated seeds; (6) diagnose same-reference bank/head/online errors, then test a selected representation or trajectory-training change and a supplied-field learned initializer, preserving weak stationarity checks; (7) compare direct same-bank prediction, prediction with correction, and current solves; (8) freeze the shortlist and benchmark every competing method together on one GPU/allocation, including coarse prediction/interpolation and requested-time inference; (9) expand to efficient operator alternatives, repeated training seeds and the full mesh ladder, then sealed final validation only after selection.
+
+The audit worker handles useful reference, replay and numerical checking work before the final timing panel is ready. Its final panel interleaves all shortlisted methods; no speed ratio is assembled from the separate Poisson/Burgers training allocations. Pilot stopping/continuation decisions use physical accuracy, stationarity, reference quality and paired runtime; no advertised speedup target is guaranteed. Initial results on inherited checkpoints with unmatched training histories are labelled pilot comparisons, not matched-data publication evidence. Full-field output and setup costs remain explicit. Existing float64/highest precision, GPU preflight, per-job directories, content provenance, timing repetitions, checksummed collection and exact remote cleanup rules remain in force.
+
+Primary scheduling references checked:
+- https://rtguides.it.tufts.edu/hpc/compute/partition.html (gpu limits; interactive QoS is one GPU for four hours; public gpu maximum two days).
+- https://slurm.schedmd.com/quickstart.html (multiple sequential or parallel job steps inside one allocation).
+- https://slurm.schedmd.com/gres.html (GPU allocation and per-step device assignment).
+
+No new numerical finding, source modification, training, submission, reservation, merge or retraction occurred. The existing consolidated tree is clean. The plan and live environment findings are retained here so the next session can proceed from the concrete base/layout decision.
+
+
+## 2026-09-14
+### Neural-operator preparation started, then paused for discussion of exact experiments
+
+The user asked to get the experiment data and runners ready after saying “Okay” to the previously proposed worktrees/base. Created the three named branches/worktrees from consolidated `02ff0f1f18db37d8589b28e90c3a93dae5bc5a88`: `exp/2026-09-14-no-poisson`, `exp/2026-09-14-no-burgers`, and `exp/2026-09-14-no-audit`. Each received a separate owner, as required for simultaneous preparation. Proposed remote namespaces remain `/cluster/tufts/paralab/tawal01/no_poisson_20260914/`, `/cluster/tufts/paralab/tawal01/no_burgers_20260914/`, and `/cluster/tufts/paralab/tawal01/no_audit_20260914/`; none was created or submitted to. Read-only cluster preflight found the account queue empty and paralab approximately 91% used with 457G available.
+
+The user then steered the task: “First, i would like to discuss what exact experiments would we actulaly try and test”. All owners were instructed to pause implementation. Draft files only: Poisson `experiments/neural-operator-poisson/dataset.py`; Burgers `experiments/neural-operator-burgers/data.py`, `protocol.json`, and `.gitignore`; audit `experiments/neural-operator-audit/dataset.py`, `spectral_conv_f64.py`, and `NEURALOPERATOR-LICENSE`. These are unfinished, unverified and uncommitted. The Poisson draft still needs schema alignment; the Burgers protocol is provisional; the operator runner has not been completed. No dataset or runner is claimed ready. The root session made no code changes to the consolidated baseline. This canonical entry records the three owners' preparation on their behalf to avoid concurrent log writes.
+
+Preliminary common-data proposal: Poisson source-to-solution and scalar Burgers initial-field/viscosity-to-trajectory, full zero-Dirichlet nodal fields, split by independent case, stable per-case seeds, shared training/validation targets and hashed records. Training counts, refinement gates, output schema and configuration choices remain subject to the experiment discussion. Reference calibration precedes bulk generation; a single Burgers anchor case should first establish runtime, followed by enough independent calibration cases to assess the empirical spatial/time refinement margin. No coarse solution is to be silently relabelled physical truth. Final paper cohorts remain sealed.
+
+Read-only local package metadata finds Torch 2.11.0 and NeuralOperator 2.0.0 already installed alongside JAX 0.10.1; the cluster environment still lacks Torch/NeuralOperator. Inspection of installed official SpectralConv identified a hard-coded complex64 FFT output allocation; merely casting model parameters to double is insufficient for the repository f64 contract. A local subclass draft preserves the FFT dtype but has not passed parameter, intermediate, gradient or output verification. Installed packages were not modified. The precision issue is a preparation finding, not an accepted numerical result or a criticism of deployment-precision operator performance.
+
+The proposed scientific discussion is organized around: same-case bank/nonlinear-fit/online-error diagnosis (including Poisson's existing linear correction span); a tuned FNO capacity screen; direct same-bank/latent prediction versus prediction with weak correction and the existing stationary solve; conditional bank/head growth for Poisson and trajectory-aware training for Burgers; an isolated frozen-checkpoint Burgers EQ-fidelity study; and selected-method resolution/data-size/seed and broader-family confirmation. Capacity levels, correction budgets and accuracy thresholds discussed are proposed settings, not measured results. Historical Poisson correction-direction sweeps and rejected Burgers initial-only retraining must remain identified as existing evidence, not new discoveries. Oracle fits are diagnostics and never deployment timing baselines. Matched-data publication comparisons require retraining the relevant ROM components on the common cases; inherited checkpoints support only labelled preliminary positioning.
+
+No GPU smoke, production data generation, training, package installation, allocation, new result, final-cohort access, commit, merge or numerical retraction occurred. The current session's scope is now discussion, and preparation remains paused pending the user's experimental choices. No experiment has finished and no merge is proposed at this stage. Prior scientific results and all frozen archives remain unchanged.
+
+
+## 2026-09-14
+### Authorized experiment launch — Astra owners, matched data, efficient FOM controls
+
+The user explicitly added being faster than the FOM to the objective and authorized starting the discussed experiments with GPT-6 Astra subagents. Created new model-overridden Astra owners `poisson_run` and `burgers_run` in the already approved worktrees. A third Astra spawn was rejected by the agent service's thread limit; this was explained to the user. The root session took sole ownership of the existing `2026-09-14-no-audit` worktree for environment, FNO and collection infrastructure. No new worktree/base confirmation was needed and no additional branch was created. The two previous preparation owners remain idle. The consolidated baseline was not modified.
+
+The first block retains a maximum of eight actual GPU-hours per lane, up to the previously proposed total, and executes useful ready tasks sequentially. Poisson first submitted one hour for calibration/data/diagnosis, then two hours for matched representation training; FNO requested seven hours for three sequential capacity models; Burgers used its initial allocation for calibration and will use a successor bounded by remaining lane time. Every allocation uses normal QoS on gpu with an A100-80G constraint, eight CPUs and 96G host memory. Queue checks bracketed submissions, and no job was cancelled. GPU timing comparisons remain within a single job and invocation, include complete requested outputs, and must meet the declared physical gate. Direct DST and tolerance-tuned CG remain Poisson controls; calibrated timestep/mesh and convergence choices remain Burgers controls. A speed advantage over a truth-manufacturing tolerance alone is insufficient.
+
+Poisson first job `3701314`, source `50098e583fdbb4384653d0bdc6a3885a7d9832a8`, completed on pax106, NVIDIA A100 80GB PCIe. It generated eight calibration cases, 128 training cases and 32 fresh validation cases at 256 intervals; final cohorts were not accessed. The source-generated summary at `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-poisson/experiments/neural-operator-poisson/runs/pilot01/summary.json` passes the archive NumPy checks and records 672 timed invocations. Maximum calibration refinement change is 1.811723114371e-06; all validation reference gates pass. The native retained weak count is 257. The following table is generated directly from that JSON against its empirical fine-reference candidate:
+
+| Diagnostic | Median error % | Worst error % |
+| --- | ---: | ---: |
+| Bank projection | 0.717422153 | 7.070385077 |
+| Best-found nonlinear plus linear fit | 1.489124746 | 14.837549006 |
+| Stationary online solve | 1.489661727 | 14.840114266 |
+
+The added Poisson correction fields are G times coefficient directions C, so unrestricted G and [G,GC] have the same span; their equal projection floors were verified. These fits are best-found diagnostics, not certified global nonlinear optima or deployable predictors. The common worst case is validation00023; the bank itself misses the five-percent gate and the head adds a substantial limitation, while the stationary online solution is already close to the best-found fit. The owner also independently replayed the full/reduced weak gradients using NumPy beyond the initial summary's older stationarity-limit wording. Generated same-job GPU medians: nmrom 3.356570494 ms, dst 0.153937610 ms, cg_0.1 9.360325988 ms. The ROM misses its physical gate and is slower than DST; no matched-accuracy speedup follows. The older cohort's reported maximum is not retracted because these are different validation cases. All source, field, timing and checkpoint evidence is retained on the Poisson branch; original pilot01 was removed after checksum collection and verified transfer of the immutable shared data into the FNO namespace.
+
+Conditional representation follow-up `3702473`, source `6b906b12`, has started on pax007. It trains fresh common-data controls with bank ranks 128/256, latent dimension 16 and both bank/head hidden widths fixed at 256. The correction policy retains 32 training-derived directions. Equal training phases, sampled cases/coordinates and losses are recorded; historical weights are a separate unmatched-data pilot, not initialization for these controls. The experiment isolates bank output capacity while keeping the common hidden widths fixed. The owner is responsible for source/data/field/stationarity audits, Git-retained artifacts and exact completed-directory cleanup; no result for this follow-up is accepted here.
+
+Burgers `3701221`, calibration source `17b5574c`, completed its full eight-case, 72-solve reference calibration on pax007. The owner reports decreasing refinements but three cases above the proposed 0.001 empirical reference margin at the training output mesh. Bulk data generation remains locked. Authorized the focused next reference test at the same 4096 spatial intervals and halved time step 0.00015625, using two new settings on each calibration case and explicitly verified cached settings from the unchanged original failed run. A separately frozen refined protocol must record its effective settings and every borrowed artifact's original provenance. The original failed calibration is retained; first-order extrapolation is a hypothesis, not a passing result. Evolved-field diagnosis and the efficient FOM panel are prepared; any provisional reference status remains explicit. All successor work must fit the remaining actual eight-hour Burgers lane budget.
+
+FNO source `ebcdae25` implements official NeuralOperator 2.0.0 with exactly one reviewed spectral-buffer allocation change to preserve complex128, explicit complex parameter conversion, full-field boundary handling, training-only normalization, case-disjoint data auditing, validation-selected checkpoints, saved loss curves and full predictions. Local forward/backward/optimizer dtype tracing, boundary/initial-state checks, checkpoint equality and the two-epoch driver smoke passed. Failed preparation attempts are retained: the first wrapper compared a module hash to a function hash; the next checkpoint smoke encountered NeuralOperator's custom-class extra state under weights-only loading. The hash scope was corrected, and loading the immediately self-created checkpoint was adjusted. These were implementation checks, not failed scientific experiments. Three whitespace warnings in raw smoke logs are preserved; the new source files have no whitespace defects.
+
+Installed Torch 2.11.0+cu128 and the missing operator/support packages using pinned additions and --no-deps in the prescribed cluster venv. The before/after inventory proves no previously installed distribution version changed, including JAX/JAXlib and existing NVIDIA libraries. Torch's declared older cuDNN/NCCL/NVSHMEM pins and cuda-toolkit metapackage are not satisfied; complete pip-check output, including pre-existing missing Flax/rich dependencies, is retained. This is an explicitly recorded runtime combination verified by allocated-GPU tests, not a claim of satisfying upstream package pins. The environment setup evidence was checksum-collected and its exact remote setup directory/transfer archive removed; installed packages remain in the venv.
+
+Sequential FNO job `3702464` is running on pax106 in `/cluster/tufts/paralab/tawal01/no_audit_20260914/fno_poisson01`. Its JAX GPU preflight, both-PDE Torch dtype/gradient/checkpoint checks and complete training-driver smoke all passed on the allocated A100. It is training the small/medium/large four-layer FNOs with widths/modes (32,16), (48,24), (64,32), one initialization seed, the identical 128/32 Poisson cases, at most 500 epochs per model, validation plateau stopping and two-hour per-model runtime caps. The worker exits when its useful queue is exhausted. This is an initial capacity screen; learning-rate refinement and repeated seeds remain open. Training time is resource accounting, not query-latency evidence or a cross-job speed ratio.
+
+The copied training/validation indices are byte-identical to the Poisson originals; 352 referenced artifact hashes and cross-split identities passed. The original absolute calibration provenance path is preserved and explicitly relocated to a copied calibration directory in `copied-data-audit.json`. Coarse sampled inputs versus analytic finer reference inputs are declared a Gaussian continuum-family pilot limitation, not arbitrary-field operator evidence. Input NPZ files contain exactly supplied field, target, known coefficients and times; generation descriptors stay outside model inputs.
+
+The audit branch records cluster verification and environment evidence at `e2a6ed38`. A bounded local collection monitor, PID 3118925, handles only owned FNO job3702464: read-only polling, archive checksum and source verification, independent saved-field errors against both discrete and numerical-reference targets, Git-retained archive chunks, exact remote cleanup, and a locked canonical log append. Its field-audit path passed a tiny manufactured fixture check. It does not select models, run GPU work or establish a speed claim. The Astra owners continue their lanes and will append final dated entries under a file lock. The main conversation remains available for the user while this work runs.
+
+No final paper cohort, merge into main, presentation edit, accepted FNO speed ratio or broader-campaign completion occurred. All failures and old checkpoints remain preserved. Reference refinement, matched representation outcomes, FNO tuning, learned prediction/correction, the isolated Burgers EQ study and eventual same-GPU all-method timing remain open. The merge decision will be requested when the agreed experimental work is ready for integration.
+
+
+## 2026-09-14
+### Launch-session closing queue update and independent Burgers reference readback
+
+Focused Burgers refinement is submitted as `3702709`, source `5169c095`, exact namespace directory `/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02`; it is pending resources at this readback. Poisson matched training `3702473` and FNO capacity training `3702464` are running on pax007 and pax106 respectively. The root independently checked the limiting original Burgers calibration case from its checksummed local archive: space difference 0.000525706648209688, time difference 0.000859903536962083, sum 0.00138561018517177, above the unchanged 0.001 budget. The source-index hash and three field hashes are recorded in `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit/experiments/neural-operator-audit/checks/burgers-reference-case-audit.json`; the runnable independent NumPy script is beside the checks directory. This confirms the reported failure, not a continuum-error certificate. The first Burgers calibration remains preserved and the refined protocol records its actual settings and borrowed-field provenance.
+
+The audit branch's collection/restoration documentation and independent reference readback are committed. Its worktree is clean; collection monitor PID3118925 was observed running. The two Astra owners retain responsibility for their active jobs and locked canonical closing entries. No final accuracy/speed result for the new trained models, merge, or final-cohort opening is claimed by this launch handoff.
+
+## 2026-09-14
+### Poisson lane — independent diagnosis and matched capacity screen; broader operator study remains open
+
+Completed the authorized first Poisson diagnosis and its conditional matched-data capacity screen in `worktrees/2026-09-14-no-poisson`. The retained branch head is `02fac7a161333b8013c92df0f9de439e887ec475`; all source, trained checkpoints, references, output fields, repetitions and independent audits are under `experiments/neural-operator-poisson/runs/`. No merge or final-cohort access occurred. The table values below are generated from the retained JSONs by `experiments/neural-operator-poisson/append_log.py`, not transcribed from conversation.
+
+Execution and evidence:
+- `pilot01`: source `50098e583fdbb4384653d0bdc6a3885a7d9832a8`, job `3701314`, NVIDIA A100 80GB PCIe on `pax106`, elapsed 208 seconds. GPU preflight, float64/highest precision, source/output checksums and independent numerical audits passed. The exact remote job directory is removed.
+- `matched01`: source `6b906b122da97e0c0fb356595c05b01161d3dac2`, job `3702473`, NVIDIA A100 80GB PCIe on `pax007`, elapsed 529 seconds. GPU preflight, float64/highest precision, source/output checksums and independent numerical audits passed. The exact remote job directory is removed.
+
+The shared dataset contains 160 training/validation cases, split into the recorded independent training and validation cohorts, plus the separate calibration cohort. The largest calibration relative change between the two recorded fine meshes is 1.811723114371e-06; all validation empirical refinement gates pass. Training targets are exact discrete FD/DST solutions. Error tables use the recorded fine-grid candidate restricted to the requested mesh; continuum interpretation remains provisional under empirical refinement, not a rigorous bound. Original copied indices are unchanged, with explicit calibration-path relocation; future generated indices embed portable calibration evidence.
+
+The historical checkpoint is an unmatched-training diagnostic. Fresh arms share hidden widths, Fourier features, latent dimension, training cases, phase update counts, source/point sampling streams and correction policy; only the bank feature count varies. The smaller fresh arm is a common-width control, not the historical architecture. Fresh weights and training-field PCA codes initialize both arms. Training never opens validation. Each correction basis is refitted from normalized training residuals only. All phase checkpoints, optimizer timing blocks, losses, exposures and parameter counts are retained. This is one initialization seed with fixed phase budgets; it does not establish a matched tuning-budget comparison against FNO.
+
+| Model | Bank median / worst error (%) | Best-found fit median / worst (%) | Online median / worst (%) | Online cases above 5% | Invalid online invocations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| historical r128 | 0.717422153 / 7.070385077 | 1.489124746 / 14.837549006 | 1.489661727 / 14.840114266 | 2 | 0 |
+| fresh r128 | 1.214296867 / 9.777653775 | 5.526244911 / 38.718696041 | 5.532976040 / 40.113066515 | 19 | 0 |
+| fresh r256 | 0.933933741 / 5.942619499 | 5.125291386 / 55.363057788 | 6.295649027 / 55.496645685 | 21 | 0 |
+
+Neither fresh model passes the diagnostic accuracy target on every validation case. The larger bank lowers the projection floor in this single-seed screen, while its worst best-found fit and online errors increase. Both fresh models generalize poorly compared with their training reconstruction errors; they are retained as negative accuracy-screen outcomes, not selected replacements. The original diagnosis suggested that its converged online solve nearly reaches the best-found fit. After fresh training, some cases also show sizeable online-versus-fit gaps, so that earlier observation must not be generalized to these new heads. Stationarity alone does not establish physical accuracy.
+
+The initial audit's byte-equality check for separately computed PCA starting codes failed; its log is retained. Maximum absolute code difference is 4.218847493576e-14 and relative difference is 7.383397419220e-15. The explicit numerical audit uses absolute/relative tolerances 1.0e-12/1.0e-12; shared initial hidden weights and dataset hashes remain byte-identical. This is a documented audit-assumption correction after the initial failure, not a change to training, data, outputs or a claim of byte-identical PCA codes.
+
+Full learned-bank and augmented-bank projections agree: the physical correction fields lie inside the learned bank. Projection, multistart best-found fit and online errors are compared on the same cases and reference; their cohort maxima are not an additive decomposition. The fits are not certified global optima. Independent NumPy reconstruction and analytic head derivatives check full/reduced weak stationarity; physical accuracy is a separate gate.
+
+| Fresh-model panel | Method | Median GPU time (ms) | Median complete host query (ms) | Worst candidate-relative error (%) |
+| --- | --- | ---: | ---: | ---: |
+| r128 | nmrom | 5.173551035 | 6.644772540 | 40.113066515 |
+| r128 | dst | 0.151855522 | 2.026011993 | 0.017729394 |
+| r128 | cg_0.1 | 11.250844924 | 12.802018551 | 4.218490757 |
+| r256 | nmrom | 3.661453957 | 5.187331000 | 55.496645685 |
+| r256 | dst | 0.153026951 | 1.840283454 | 0.017729394 |
+| r256 | cg_0.1 | 11.308580986 | 12.753103918 | 4.218490757 |
+
+These cost/accuracy pairs come from the same saved invocations on the same allocation, with warmup, GPU burn-in and complete repetition arrays. All tested CG tolerances remain in the JSON, including failures or slower settings. Direct DST is included as the efficient linear FOM control. No ratio is assembled across the historical and fresh jobs, and no FNO speedup or broader-study completion is claimed.
+
+Nothing from the earlier accepted campaign is retracted: the new independent validation cases differ from its cohort. The open work is the tuned-operator comparison and a joint paired cost/accuracy panel, followed by any selected accuracy or initialization change and the later resolution/data/seed controls. The final paper cohort remains sealed; the worktree remains separate.
+
+
+## 2026-09-14
+### FNO capacity worker 3702464 — collected automatically
+
+The owned Poisson FNO worker ended and was checksummed, independently field-audited and archived at `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit/experiments/neural-operator-audit/runs/fno_poisson01`. Source hashes and the checkpoints, saved predictions and declared discrete errors of completed models were verified; missing models are listed explicitly. Physical-candidate error arrays and mean/median/tail/outlier statistics are generated in `field-audit.json`. Archive SHA256 `b9d14a87ea6f2ed144afdf05a1776c24108c7093bade92e120914c5b42bd95c2`; bounded archive parts and audit records are Git-tracked. The exact completed remote job directory and transfer archive were removed. Accounting: `3702464|ctol_noa_fno_p01|COMPLETED|00:58:16|pax106`. This is single-seed development evidence; no paired FNO/ROM/FOM timing claim or final-cohort access occurred. The broader campaign and user merge decision remain open.
+
+
+## 2026-09-14
+### Burgers active-worker handoff — refined reference passes; current ROM does not beat efficient FOM
+
+The original failed reference calibration remains archived unchanged. The focused refinement now passes on all 8 independent calibration cases: 4096 intervals, time step 0.00015625, worst empirical margin 0.000958815954249601 against the unchanged 0.001 budget. The full owner NumPy audit checked 64 saved fields and their step records, source hashes, original cached source/protocol/index/field links, requested initial fields and recorded refinement arithmetic. This is empirical evidence, not a rigorous continuum certificate.
+
+The independent diagnosis audit checked 168 complete paired invocations on the same 8 cases; maximum reproduced-metric discrepancy is 6.938893903907228e-18. Native ROM median GPU/complete-host times are 54.630692990/57.551909471 ms with worst candidate-relative error 1.867067979%; the native FOM at Newton tolerance 0.01, linear tolerance 0.5 and time step 0.005 takes 16.664419032/18.758816470 ms with 0.997803277% error. Both columns have 0/0 failed stopping checks. The ROM is slower and less accurate here; no advantage over efficient FOM or neural operators is established. Full repetition arrays, all additional FOM presets, projection/fit/evolved-field errors and sampled-state quadrature discrepancies remain in the diagnosis evidence.
+
+The original checkpoint has unmatched training history and is only a pilot diagnostic. The archive retains the native fitted initial output; future deployable comparisons must return supplied initial output exactly for all methods while still charging internal fitting/evolution and keeping compression error separate. The bank, best-found nonlinear fit and online errors are not an additive decomposition; the multistart fit is not globally certified. The prepared quadrature-ablation source has not been run on a GPU.
+
+The first 16 generated training records independently passed schema, seed, sampled initial field, finite float64 boundary and every saved solver-residual check. Bulk generation remains active under the existing total lane GPU budget. Numerical execution source is `5169c0950e95eb666ada753f358032be2c5a9585`; collector source is `51812214ee6addd1e7a92141f8f639b960135e3f`. Local CPU monitor PID `3182016` is bounded to 12 hours and submits no GPU job. It will checksum-collect the full raw archive, rerun reference/diagnosis/dataset audits, retain compressed chunks and manifests in Git, then remove only the exact completed job directory. A verified cluster-generated cache is planned at `/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01` for subsequent FNO copying; original indices and their calibration-path relocation are retained explicitly. Its current state and failure status are durable in the checks directory. On successful completion it updates only this owner’s current-state paragraph and appends a locked canonical closing entry. Training/operator comparisons, later diagnosis-driven changes and the merge decision remain open.
+
+
+## 2026-09-14
+### User status update — Poisson completed; Burgers dataset generation continues
+
+At 20:57 UTC, checked the live scheduler, collection processes, canonical owner entries and retained JSONs. Only Burgers job `3702709` is running, on pax007; it has produced 84 of 128 planned training cases and has not yet started the 32 validation cases. No failure or stderr is recorded. The current average saved solve time is about 131 seconds per case, suggesting approximately 2.8 more hours of solve work for the remaining planned cases, excluding collection/auditing and any change in case cost. Collector PID3182016 is alive. The original failed calibration remains preserved; the refined full-cohort empirical gate and reference/diagnosis audits have passed. No Burgers FNO training, trajectory retraining, learned correction or EQ rollout ablation has run yet.
+
+Poisson matched-ROM job `3702473` and FNO job `3702464` are complete, audited, Git-archived and their exact remote job directories removed. The FNO worker completed all three capacities in its recorded allocation, with an independent saved-field audit. Cross-checked the matched ROM and FNO training/validation index hashes: both use identical recorded cases and discrete targets. The following comparison is generated from the retained ROM `matched-summary.json` and FNO `field-audit.json`, against the same physical-reference candidates on the same 32 validation cases at 256 intervals. It is a one-seed common-data screen; tuning budgets are not matched and the FNOs have not received further tuning.
+
+| Model | Mean error % | Median error % | Worst error % | Cases above 5% |
+| --- | ---: | ---: | ---: | ---: |
+| FNO small | 4.051765 | 2.644894 | 32.468105 | 4 |
+| FNO medium | 3.515362 | 2.345553 | 28.277713 | 4 |
+| FNO large | 3.450394 | 2.025227 | 29.374664 | 4 |
+| Fresh ROM r128 | 7.886126 | 5.532976 | 40.113067 | 19 |
+| Fresh ROM r256 | 8.369544 | 6.295649 | 55.496646 | 21 |
+
+The larger fresh bank lowers its projection floor but worsens the deployed ROM's validation errors. These fresh arms are negative outcomes and are not selected replacements for the historical checkpoint; its different training history prevents treating it as a matched-data competitor. The FNOs have lower errors than these two fresh ROMs in this screen, but all three retain four cases above the five-percent threshold. No FNO inference timings have yet been paired with ROM and efficient FOM timings in one job; accuracy comparisons do not establish a speed advantage. The existing same-job Poisson DST and Burgers FOM diagnostics also do not support a current ROM speed/accuracy win.
+
+The user was informed that the joint accuracy/speed objective remains unmet. Next work remains complete Burgers data and its common-data operator comparison, diagnose training/generalization limits before more Poisson capacity changes, and test the already-authorized learned prediction/correction and isolated EQ hypotheses with a shared timing panel. This status check submitted or cancelled no job, changed no numerical source/environment, accessed no final cohort, and merged no worktree.
+
+
+## 2026-09-14
+### Accuracy versus the older CP manuscript and measured tunability — user readback
+
+Re-read the historical CP manuscript accuracy record and saved author/reviewer discussion, current retained aggregate report, audited fixed-checkpoint solver-effort screen, nested-correction panel, and completed common-data Poisson ROM/FNO results. The historical Poisson-2D and Heat-2D reported best-accuracy aggregates are lower than the retained current aggregates; the fresh common-data Poisson training arms are worse again and remain rejected replacements. Different source families, meshes, horizons, training histories and reference protocols prevent attributing these numerical gaps to the decoder architecture. Heat final-state means are the closer statistical comparison to the manuscript, rather than current worst-over-time errors. This is document/result readback, not a new historical reproduction or matched CP/current experiment.
+
+The fixed-neural-weight correction-prefix family provides measured accuracy/cost tunability after offline operator/cache preparation. The following finest-mesh rows are extracted from the accepted source-generated correction report; they cover the same development cases and same GPU job, and do not describe the new common-data training arms.
+
+| Correction directions | Worst physical error % | Median GPU ms | Median host ms |
+| --- | --- | --- | --- |
+| 0 | 7.553765 | 4.412962 | 11.692039 |
+| 8 | 7.207505 | 5.031713 | 12.251328 |
+| 16 | 7.032119 | 5.232792 | 12.490237 |
+| 32 | 6.110576 | 6.043163 | 13.092479 |
+
+The largest prefix reduces worst error by approximately 19.11% relative to its uncorrected parent while increasing same-job GPU time by 36.94%; every prefix still misses the full-cohort physical target. Linear corrections expand the allowed coefficient family inside the existing spatial bank; they do not expand its unrestricted spatial span. The nonlinear optimization dimension stays fixed through exact elimination of the linear coordinates.
+
+The separate solver-effort screen supports a modest runtime saving at unchanged physical accuracy; expensive mode/multistart settings barely move the representation-related floor, and the cheapest truncated setting is nonstationary with much worse field error. These prepared inference presets are real controls, but a broad or guaranteed requested-accuracy frontier has not been established. EQ rule size is a potential prepared-preset control for current Burgers only; its isolated rollout ablation is prepared but unrun. Current Poisson, heat and wave paths do not use EQ. The fresh rank comparison trains separate models and is not an inference-time capacity knob. Shared nested latent/bank training remains proposed work.
+
+The older saved author discussion explicitly corrects mixed-checkpoint endpoints and clarifies offline NNLS preparation; its headline continuous single-model frontier and original speedup claims must not be carried over unqualified. No numerical result is newly retracted. No scientific source, environment, branch or active job was changed; no new GPU experiment, final-cohort access or merge occurred. The Burgers collector's durable state was still monitoring when read. Broader accuracy/speed experiments remain open.
+
+
+## 2026-09-14
+### Feasibility of the requested accuracy, speed and fixed-model tunability — discussion
+
+The user reaffirmed needing a useful fixed-model accuracy/speed frontier and competitive FNO/FOM performance, asking whether it is possible. Re-read canonical state, the authorized matched-comparison design and current diagnosis records. The negative fresh-model and solver-effort results do not establish impossibility; neither do existing correction-prefix gains establish the full requested outcome. The objective remains unchanged. No target was relaxed and no speed/accuracy result was promised.
+
+Recommended mechanism: first establish that the largest affordable representation and its well-solved weak dynamics can meet the intended physical accuracy on development data. Diagnose spatial-bank coverage separately from nonlinear fitting, prediction and evolution. Then train one shared hierarchy of small-to-large decoder levels, with a physical reconstruction/trajectory objective at every supported level, and prepare compatible reduced operators and valid quadrature where used. Larger levels should contain the smaller solutions structurally, while inactive computation must actually be skipped. Structural inclusion does not guarantee the deployed nonconvex weak solve has monotone physical error. Merely slicing an ordinarily trained checkpoint or changing separately trained ranks is insufficient.
+
+Pair the hierarchy with a supplied-field latent/coefficient predictor and, for Burgers, a learned step predictor followed by weak-form correction. The direct prediction, limited-correction outputs and stationary solves must be reported under their actual stopping status; bounded corrections do not inherit a stationary-solver claim. Training across prediction/correction budgets is a proposed way to improve their usefulness. Preassembled or properly sampled corrections, complete input/output cost and same-job baseline timing remain mandatory. EQ alone is not expected to remove a representation floor.
+
+Proposed success evidence is several useful settings from one frozen checkpoint on the same held-out cases, with the requested competitive operating point assessed simultaneously for accuracy and latency against tuned FNO and an efficient FOM meeting the declared tolerance. Good endpoints from different configurations must not be combined into a dominance claim. Burgers is the next candidate within the already authorized scope; constant-coefficient Poisson retains direct DST as a demanding control. Neither universal superiority nor a requested physical-error guarantee follows from having tunable budgets. Validated error estimation would be additional work for automatic requested-accuracy selection.
+
+Checked primary sources: Matryoshka Representation Learning (https://arxiv.org/abs/2205.13147), which demonstrates training nested representation capacities in other tasks, and PINO (https://arxiv.org/html/2111.03794v4), which includes instance-wise PDE refinement of learned operators. These support the ingredients' plausibility and establish relevant prior work; they do not validate this proposed ROM implementation or its competitiveness. Prediction/refinement is not claimed as a new ingredient, and neural operators should not be described as inherently unable to refine.
+
+This turn clarifies feasibility and a conditional architecture/training recommendation. No new experiment, source change, allocation, worktree, package change, final-cohort access or merge occurred. Existing background collection and already-authorized experiments were not interrupted; no current live queue state was asserted from the older log. No numerical result is retracted.
+
+
+## 2026-09-14
+### User correction — tunability means the existing ViT + CP solver mechanism
+
+The user explicitly rejected the preceding nested-capacity explanation and asked whether the coordinator understands how the ViT + CP NMROM is tunable. Re-read the archived manuscript source in `Older Paper /neurips26__Copy_ (1).zip` (`main.tex`), saved author/reviewer discussion, and the existing CP source audit. Acknowledge the scope error: nested capacity training is a different proposal and is not the requested interpretation or an authorized replacement of this tuning mechanism.
+
+In the intended fixed-checkpoint experiment, the learned decoder manifold, neural weights, latent dimension and CP rank stay unchanged. Online latent coordinates are found by the PDE solve. The Gauss-Newton iteration budget and stopping tolerance change the work spent solving on that same manifold. Where EQ is implemented, selecting among independently prepared quadrature rules changes sampled residual/Jacobian work and the quadrature approximation. CP node evaluation permits gathering the selected points and necessary stencil neighbours without decoding the full field at each iteration; final requested dense output remains charged. ViT is the learned encoder component, not the tuning control itself; the manuscript uses cold initialization for Poisson, while heat can encode the supplied initial field.
+
+EQ node/weight fitting is offline and can require a separate NNLS fit for each supported rule; choosing a stored rule does not retrain the decoder. Archived Heat-2D uses a dense residual, so not every CP paper cell exercised all three controls. The current preassembled linear PDE paths retain iterative-effort controls but do not automatically have an EQ sample-count control. A useful fixed-checkpoint field-error/cost curve remains an empirical question, and a smaller residual or larger budget is not a guarantee of monotone physical accuracy. The immediate conceptual comparison is this solver/quadrature mechanism, not separately trained model sizes or nested-manifold enrichment.
+
+No source, job, environment or scientific result changed. No new experiment, training, worktree or merge occurred; no final cases were accessed. Withdrew the preceding nested-capacity recommendation as a response to the user's intended question, without retracting any numerical evidence. The current-state block records the clarified scope for subsequent work.
+
+
+## 2026-09-14
+### Concrete next experiment for classic fixed-checkpoint tuning
+
+The user asked what to do about the limited tunability after clarifying the ViT + CP mechanism. Root reviewed the existing Poisson diagnosis and Burgers implementation; the existing GPT-6 Astra Burgers owner performed a bounded read-only readiness and live-budget check. No new agent, worktree, GPU submission, cancellation or source mutation in the Burgers tree occurred. The active dataset worker and collector were left intact.
+
+Created and committed `experiments/neural-operator-audit/prepare_fixed_checkpoint_tuning.py` and its generated `checks/fixed-checkpoint-tuning-plan.json` in the root-owned audit worktree at `fd9b5eb8`. These are a saved-evidence summary and proposed protocol, not an executed tuning experiment. The generator verifies the accepted diagnosis-index hash and the selected invocation hashes before extracting iteration counts. It passed on the existing audited data; staged whitespace checks passed.
+
+Saved evolved-field diagnostics, expressed as percentages of the reference initial-field norm and extracted programmatically from that plan:
+
+| Diagnostic | Median case maximum % | Worst % |
+| --- | --- | --- |
+| bank | 0.010239 | 0.108358 |
+| nonlinear_best_found | 0.421101 | 0.842452 |
+| online | 0.939970 | 1.658743 |
+
+One invocation per case gives evolution iteration quantiles min/median/p95/max of 2/3/8/42; initial-fit iterations by case are [120, 9, 11, 178, 28, 44, 16, 48]. These are reaggregations of existing invocations, not new timing or trajectory results. Evolved errors exclude the native fitted initial output, which remains separately retained. Bank/nonlinear/online errors are not additive, and best-found nonlinear fits are not globally certified.
+
+The minimal proposed sequence fixes checkpoint, latent dimension, bank rank, mesh, weak modes and timestep. Establish output stability of a converged full discrete-upwind weak rollout on two diagnostic cases, then compare the prepared EQ rules with the same initialization and solver settings across the existing calibration cohort. Follow with a small cap screen and a separately isolated tolerance screen; freeze a shortlist before common validation and same-GPU FNO/FOM timing. A separate supplied-input-only dense initial-fit check may diagnose cold-fit approximation, but cannot silently change the initializer in the quadrature comparison.
+
+Source gaps are concrete: the existing EQ runner has no full-grid weak rollout arm or cap/tolerance sweep, the residual threshold is hardcoded, and one gtol currently changes both initial fitting and evolution. Its pre-fit budget check does not bound NNLS walltime. New arms require appropriate rollout/source/stopping audits and bounded staging. The initial staged screen uses gradient tolerances with explicit normalization; a residual-tolerance screen is a distinct optional follow-up. Initial fitting stays frozen until its own separately measured study.
+
+Clarified the acceptance interpretation: deliberately early-stopped, finite outputs can appear as approximate points in a physical-error/query-cost curve. They retain their true stopping status and cannot be relabelled stationary or as passing the unchanged stationary-ROM gate. Their actual physical errors, failure counts and complete timing determine usefulness; lack of stationarity alone does not erase a diagnostic curve point. This does not rehabilitate the previous inaccurate low-budget Poisson endpoint.
+
+If EQ creates the trajectory gap, improve decoder-output-fitted quadrature while keeping the checkpoint fixed. If representation itself is inadequate, improve one checkpoint using reconstruction/trajectory training, freeze it, then repeat the same solver-side study. If fits are accurate but full-weak evolution remains poor, isolate timestep and weak-projection/dynamics errors before attributing the gap to training. No nested-capacity model is proposed in this protocol. No result or gate is retracted. A full classic tuning run and joint competitive operating point remain unestablished; no new allocation or final-cohort access occurred.
+
+
+## 2026-09-14
+### Claude Code continuation handoff — completed document and collector repair
+
+At the user's request, created `reports/2026-09-14-claude-code-continuation-handoff.md`, adjacent JSON manifest, and `reports/generate-claude-code-continuation-handoff.py`. A separate GPT-6 Astra documentation owner wrote only main-checkout reports; root retained ownership of the audit tree and the Burgers owner made only its narrow collector repair. Scoped main documentation commit `a96ee10d3ed38a31552ee95d4f78568a914fee7f`; report SHA256 `3e77fc2f16a72fa9b5608f3e3c31a76f3d6b9ad3e72129ef807d8cf3ef0d4902`. No pre-existing main edits were staged. The canonical log remains authoritative and this handoff is a dated snapshot, not a second status authority.
+
+The report includes the user's clarified classic ViT/CP tuning objective, exact observed worktree heads and dirty-file preservation, source-generated Poisson/FNO and Burgers tables, current implementation gaps and proposed fixed-checkpoint stages, remaining original lane resources, collector recovery/ownership precautions, source/checkpoint/archive/environment links, a pasteable Claude continuation prompt and a plain-language glossary. It explicitly states that the new tuning experiment, Burgers FNO/trajectory work and joint same-GPU competitive panel have not run. No nested-capacity substitution, fresh allocation budget, final-cohort access or merge is authorized by the document.
+
+Read-only live scheduler/accounting and dataset observations were captured at `2026-09-15T01:07:08.617128+00:00`; collector restart identity was verified at `2026-09-15T01:10:35.837609+00:00`. Snapshot retained on the audit branch at `eec85285`, in `experiments/neural-operator-audit/checks/claude-handoff-live-snapshot.json`. All listed GPU jobs had completed and the account queue was empty. Burgers remote indices reported complete train/validation datasets as generated below; final dataset acceptance still awaits collection audits.
+
+| Split | Recorded cases | Planned count | Generation complete |
+| --- | ---: | ---: | --- |
+| train | 128 | 128 | True |
+| validation | 32 | 32 | True |
+
+Original allocation accounting, not new allowances:
+
+| Lane | Consumed seconds | Remaining seconds |
+| --- | ---: | ---: |
+| burgers | 24427 | 4373 |
+| poisson | 737 | 28063 |
+| audit | 3496 | 25304 |
+
+The original monitor was alive but repeatedly retried an explicit completed-job `squeue` lookup that exits with an invalid-job error; it never reached accounting-based completion detection. The owner verified the old process command and terminated only that local monitor, preserved the entire original failure log in Git, and changed queue polling to query the account then select the exact owned numeric ID and name. Source fix `629efba81ac42c93067b0d388ae1481337e05117`, repair/restart evidence head `21e12e979005468cce7247ae49cd7d703aa3a423`. New collector PID `3432725`, log `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/runs/refinement02/collection-monitor-restarted.log`. Root reviewed the narrow source diff, restart identity and phase; no scientific dependencies, GPU job or dataset were changed.
+
+At this closing local check the durable collection phase is `collecting`. Raw transfer, complete-dataset audits, Git chunk archive, cache creation and exact remote cleanup must not be presumed finished until the collector's final success record. No duplicate collector was started, and the source-hash audit hazard is explicit in the handoff: do not edit Burgers scientific dependencies while collection is pending. The pending ultimate raw archive link is clearly marked.
+
+Validation: report and manifest regenerate exactly; the owner verified the retained checkpoint hash and source/document links, and root independently verified every manifest source hash, the generator/document hashes and the local links. The only not-yet-existing link is the explicitly pending Burgers final archive manifest. Scoped whitespace checks passed. The main scientific baseline, frozen archives and final cohorts remain unchanged; no numerical result is newly retracted. The prior data-generation-active snapshot has been superseded by completed computation with repaired collection in progress. The broader research campaign and eventual worktree merge decision remain open.
+
+
+## 2026-09-15
+### Burgers lane — refined reference, unchanged-head diagnosis and shared data collection
+
+Owned job `3702709` finished on `NVIDIA A100 80GB PCIe` with GPU backend, float64 and highest matrix precision. Accounting: `3702709|ctol_nob_refinement02|COMPLETED|22852|pax007`. Immutable execution source is `5169c0950e95eb666ada753f358032be2c5a9585`; collection/audit/archive commit is `92663fd85b4df5eea93743a51423812181033353` in `worktrees/2026-09-14-no-burgers`. Full raw arrays, sources, manifests, logs, stopping records and all timing repetitions are retained in `experiments/neural-operator-burgers/artifacts/refinement02` as bounded compressed archive chunks, whole SHA256 `a097a9bac5f6dab9c83ad4f67ee8afcd8cce4c763dd232fed9740b98d50e5efb`. Source and output checksums, the full reference audit, dataset audit and independent NumPy diagnosis audit passed before exact remote job-directory cleanup.
+
+The original job 3701221 calibration failure is preserved unchanged: its selected-mesh candidate worst empirical margin was 0.001385610185171771, above the 0.001 budget. The focused refinement retained 4096 spatial intervals and used time step 0.00015625; its worst margin is 0.0009588159542496009. All 8 independent calibration cases pass the unchanged budget with decreasing recorded refinements. The complete effective protocol and new source hashes are frozen, and reused original fields keep their old source/configuration/index/hash links. This is empirical refinement evidence, not a rigorous continuum certificate or a per-generated-case error bound. No cheaper candidate passed this reference gate.
+
+The same-case diagnosis uses the inherited checkpoint with unmatched training history. Its frozen bank projection, multistart best-found nonlinear fit and native online rollout are compared against the same evolved reference fields. The fit is not a certified global optimum and these maxima are not an additive error decomposition.
+
+| Diagnostic | Worst all-times error (%) | Worst evolved-times error (%) |
+| --- | ---: | ---: |
+| Free bank projection | 0.211974095 | 0.108357824 |
+| Best-found nonlinear fit | 1.866825230 | 0.842451632 |
+| Native online ROM | 1.867067979 | 1.658743436 |
+
+| Paired method | Median GPU (ms) | Median complete host query (ms) | Worst candidate-relative error (%) | Failed stopping checks | Upper-Tukey latency outliers |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| rom | 54.630692990 | 57.551909471 | 1.867067979 | 0 | 0 |
+| same_nt1e-2_dt005 | 16.664419032 | 18.758816470 | 0.997803277 | 0 | 1 |
+| same_nt1e-4_dt005 | 19.060995546 | 21.059535444 | 1.381132054 | 0 | 0 |
+| same_nt1e-6_dt005 | 81.567215500 | 83.902787999 | 1.381082188 | 0 | 0 |
+| same_nt1e-2_dt01 | 9.296755539 | 11.171960505 | 1.864194721 | 0 | 1 |
+| coarse_half_dt005 | 18.534938514 | 20.638627466 | 1.899297165 | 0 | 0 |
+| coarse_quarter_dt01 | 13.841546490 | 15.895978024 | 3.639752175 | 0 | 0 |
+
+All 168 invocations have paired cost/accuracy fields and retained repetition arrays, with GPU burn-in before each timed block. The efficient loose-tolerance FOM is faster and more accurate than this ROM: no ROM speed/accuracy advantage is established. These are within-job comparisons; no cross-job timing ratio is used. The native ROM retains fitted initial output for the archived compression diagnostic. A future deployable panel must return supplied initial output exactly for every method while still charging internal initial fitting and evolution, with compression error separate; that wrapper change must not silently replace these archived metrics.
+
+The independent audit also records sampled-state empirical-quadrature advection discrepancies for 8 cases in `checks/refinement02-diagnosis-audit.json`: worst relative projected-advection difference 0.09545600827413993, and worst preconditioned step-component difference over initial norm 0.002190684039086919. These component comparisons are not trajectory bounds or causal attribution. Frozen-head quadrature-ablation source is prepared, but this collection monitor submits no GPU work. Trajectory training, correction and operator comparison remain open.
+
+Dataset collection checked 160 model-facing cases; complete planned dataset: `True`. train: 128/128. validation: 32/32. Exact four-key NPZ schema, finite float64 fields, zero boundaries, supplied initial output, independently regenerated seeds/initial fields, cross-split uniqueness, source hashes and every saved solver-step residual passed. The input is the sampled initial field plus viscosity; generation descriptors remain offline. Fine references evaluate the analytic Gaussian initial family, so this is a Gaussian continuum-family pilot, not evidence for an arbitrary sampled-field operator. A verified cluster-generated handoff cache remains at `/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01` for the FNO owner; its `RELOCATION.json` preserves original index hashes and explicitly relocates calibration paths. The exact completed job directory is removed; the shared cache needs cleanup after downstream cluster copying. The original failure is not retracted, final cohorts remain sealed, and no merge occurred. The broader experiment campaign and eventual user merge decision remain open.
+
+
+## 2026-09-14
+
+### Paper methods rewrite — draft
+
+CPU-only writing session in `worktrees/2026-09-14-paper-draft`, branch `exp/2026-09-14-paper-draft`, forked from the corrected consolidated baseline `exp/2026-09-13-nmrom-consolidated` at `02ff0f1f`. No GPU, no cluster, no experiment, no new number. Local commits `8fe27df4`, `0fd90cff`, `fc6d2739`. **`git push` to origin timed out and the branch is local only** — it needs pushing from a session with working remote access.
+
+**What was written**, all under `paper/` in that worktree:
+
+- `paper/methods.tex` — a complete corrected Methodology section, plus `paper/macros.tex` and `paper/refs.bib` (25 entries: Lee & Carlberg, Carlberg LSPG, Ştefănescu & Sandu tensorial POD, Weder/Schwerdtner/Peherstorfer, Hernández EQ, Yano & Patera, Kim & Choi, Li FNO, Lu DeepONet, Kovachki, Lawson & Hanson, DEIM, ECSW, Geelen, Barnett & Farhat, Golub & Pereyra, Swarztrauber, and others). It covers: the decoder `u = u_g + G h_theta(z)` with the exact Jacobian rank bound and when it is attained; the implemented weak residual (sine tests, the eigenvector identity `P A = Lambda P`, the row scaling per PDE), the least-squares objective actually minimised, the normalized-gradient stop `||J^T r||/(||J||_F ||r||)` with the per-cell reason codes, and the damped LM update as coded; the fully discrete Crank–Nicolson heat step as a nonlinear problem in `z_{n+1}` with the decoded-current-state right-hand side, and the Cholesky / contracted-Gram paths; Poisson as a tested-error minimisation with exactly eliminated linear corrections (variable projection with a constant projector, so the elimination adds no approximation and only the Gauss–Newton head curvature is dropped); precomputed operators `B = P A G`, `b`, and the quadratic tensor `T_iab` with `O(M R^2)` storage and contraction, its three conditions, and the statement that offline assembly is mesh-dependent while cached reduced evaluation has no explicit mesh loop; EQ as offline NNLS on decoder-output snapshots with selection among stored rules; the fixed-checkpoint controls; and the intrusive/non-intrusive asymmetry.
+- `paper/related-work.tex` — positioning that states plainly what is not new.
+- `paper/OUTLINE.md` — the one-paper outline with a claim ledger (claim → decisive experiment → acceptance criterion → evidence status) and a claim-to-figure allocation table.
+- `paper/REVIEWER-RESPONSE-MAP.md` — every complaint from fxe8, GwrW and 5mgh mapped to what answers it, with status.
+- `paper/figures/README.md` and `paper/figures/architecture.mmd` — planned figures with their generator locations, and a mermaid diagram colour-coded by when each quantity is fixed. The diagram was rendered with `mmdc` to confirm it parses.
+- `paper/main-skeleton.tex` with `neurips_2026.sty` copied from the old submission. **It compiles cleanly** under `latexmk`: no errors, no undefined references or citations, no overfull or underfull boxes, 10 pages. No number is typed by hand anywhere; numeric slots are `\gen{...}` placeholders.
+
+**Code the equations were checked against**, line by line: `experiments/separable-decoder/sep_common.py` (`features`, `head`, `SeparableDecoder`); `experiments/mr-burgers2d/engines.py` (`spatial`, `residual`, `modes`, `weak`, `build_rom`, `nnls_capped`, `build_gauss_cold`, `make_lm`) and `accuracy_paths.py` (`make_stationary_lm`, `make_rom`, `make_diagnostics`); `experiments/multiresolution-poisson/core.py` (`assemble`, `rom_query`, `dst_solve`), `correction_core.py` (`prepare_correction`, `correction_query`), `kernel_solver.py` (`make_lm_kernel`, `guarded_gj`) and `experiments/cost-to-tolerance/ctol_tol.py` (`lm_tau_poisson`); `experiments/mr-heat2d/heat_core.py` (`mode_matrix`, `cn_factor`, `make_lm`, `make_rollout`), `cp_algebra_paths.py` (`make_gram_lm`, `build`) and `run_pilot.py` (`assemble`, including its in-job exactness assertion); and, read-only in `worktrees/2026-08-29-b2d-tensor`, `b2d_tensor_common.py` (`backward_diff_bank_2d`, `build_T`, `symmetrize`, `q_of`).
+
+**Discrepancies found between the old manuscript and the code.** Ten, each recorded as a `DISCREPANCY` comment in `methods.tex`; the code was followed in every case. Beyond the heat Eq. (4) error that reviewer fxe8 caught, the substantive ones are:
+
+1. **The heat scheme is Crank–Nicolson, not backward Euler.** The old paper printed a backward-Euler step; `heat_core.cn_factor` implements `(1 - dt*kappa*lam/2)/(1 + dt*kappa*lam/2)`. Neither the review nor the rebuttal noticed this — the rebuttal's corrected text still says backward Euler.
+2. **There is no encoder in the deployed path.** The old paper's architecture is a ViT encoder feeding a LinearCPDecoder; the implemented method is a separable coordinate decoder with latent codes obtained by an auto-decoder fit at training time and a least-squares fit at query time. The "ViT for global coupling" argument does not apply to the method as implemented.
+3. **Boundary enforcement is a smooth polynomial factor, not a binary mask, and there is no lift.** `bc_poly(x) = 16 x(1-x) y(1-y)` is folded into the bank and `u_g = 0`. Enforcement is still exact, but the mechanism differs and as implemented it covers only homogeneous Dirichlet data.
+4. **The projection is not tangent Galerkin.** The old paper's `J_D^T (K u - F) = 0` with `dz = -(J_D^T K J_D)^{-1} r` is never formed anywhere. Every implemented path minimises a row-scaled weak residual over `M > k` fixed sine tests. The rebuttal's assertion that residual least squares and Galerkin coincide for a linear decoder is not repeated; the two conditions differ.
+5. **The solver is damped Levenberg–Marquardt, not Gauss–Newton**, with monotone accept/reject, a trust radius and no line search.
+6. **No CG is applied to the projected operator** — the `k x k` damped normal system is solved directly (guarded Gauss–Jordan with symmetric diagonal scaling and a backward-error-gated fallback, or Cholesky). Reviewer fxe8's symmetry objection is therefore moot, but only because the implementation differs from the printed description.
+7. **The latent ODE `J^T J zdot = -kappa J^T K u` is never formed or integrated.**
+8. **EQ fits the weak advection term only**, with `M` rows per snapshot, not the tangent-projected residual with `k` rows; the linear terms are exact and never sampled. The old paper's three irreconcilable quadrature counts are the requested count `m`, the achieved support size, and the number of fit snapshots.
+
+Two smaller ones are recorded in the file: the Poisson row scaling makes the elliptic objective the **tested error** `P(u - u*)`, not merely a residual norm, which the old paper never identified; and only the Burgers assembly asserts `M >= 4k`, `m >= 4M`.
+
+**A correction to the session brief, which matters for the claim ledger.** The brief stated that four experiments were running concurrently. Reading the sibling worktrees on disk, they are not: `2026-09-14-head-ablation` and `2026-09-14-mesh-ladder` are clean checkouts of `02ff0f1f` with no design document, no code and no output; the Burgers fixed-checkpoint tuning driver (`tuning.py`, `tuning-config.json` in `2026-09-14-no-burgers`) is written but **untracked and not run**, with its plan committed at `2026-09-14-no-audit/.../checks/fixed-checkpoint-tuning-plan.json`; and the Burgers FNO lane is committed in `2026-09-14-no-audit` but has no run directory and no job. The Poisson matched-data neural-operator screen **is** complete and is negative for the ROM. `paper/OUTLINE.md` §0 records both the brief's status and the on-disk status side by side, and every claim in the ledger carries the on-disk one.
+
+**Open.** The branch is unpushed. The Burgers `tuning.py` must be committed before it runs — work in an untracked file does not exist. No figure generator has been written yet; the seven planned ones are specified in `paper/figures/README.md` but none exists. Of the paper's six contributions, only the two that are statements about the implementation (exact preassembly parity, the precisely stated solver with its diagnostics) currently have evidence on disk; the head ablation, the matched preassembly-versus-EQ comparison, the frozen-checkpoint mesh ladder, and the fixed-checkpoint control curve are all unrun, and multi-seed repetition and sealed-cohort confirmation are unrun for everything. No numerical result was produced, changed or retracted by this session, and "Where things stand" was not rewritten.
+
+
+## 2026-09-14
+### Head ablation at matched latent dimension — complete and audited; nonlinear head wins per dimension on both PDEs, POD buys it back only on Poisson
+
+The question was whether the nonlinear coefficient map earns its place at one frozen spatial bank, which is reviewer 5mgh's demand for a linear POD-Galerkin/DEIM baseline with the same knobs and the follow-up objection that the rebuttal's wins came from a frozen POD basis plus the solver. Arms (a) neural, (b) linear, (c) quadratic, (d) unrestricted bank coefficients and (e) classical POD-LSPG were run at matched latent dimension through the same weak objective, test modes, time discretization, initializer policy, stopping rule and output contract.
+
+Worktree `worktrees/2026-09-14-head-ablation`, branch `exp/2026-09-14-head-ablation` at `34e9fd2fbbce2fb89e5de2a7cdfda69fab407311`, forked from the corrected consolidated baseline `exp/2026-09-13-nmrom-consolidated` at `02ff0f1f`. Cluster namespace `/cluster/tufts/paralab/tawal01/headabl_20260914/`. Jobs: Burgers `3711424` (`NVIDIA A100 80GB PCIe`, source `2718bd320dce1f6411ca9dd8b097fee10ca61419`), Poisson `3711736`.
+
+**Fidelity gates before any verdict.** Run through the generic arm machinery with the archived operators, the Burgers neural arm reproduces the consolidated saved case to 1.633e-14 relative and is bit-identical (0.0e+00) to the incumbent `accuracy_paths.make_rom`, so arm (a) is the retained solver rather than a re-implementation.
+In the job itself, `a_neural_eq` reproduces the retained multiresolution campaign's `frozen_stationary` rollout errors on 12 case/mesh combinations to a worst relative difference of 5.025e-13, so the regenerated reference and rebuilt operators are the campaign's own.
+
+**Burgers 2D.**
+At 64 intervals the same-job converged full-order model already carries 10.989131% worst error against the refined reference, so the reference metric is partly discretization error and the same-grid discrepancy is the discriminator. The neural head reaches 5.501845% worst same-grid, 10.856979% worst rollout, best-found reconstruction 2.295950%, median 48.154 GPU ms. a_neural_dense: same-grid 3.956378%, rollout 10.818181%, best-found 2.295950%, 69.150 ms. b_linear_dec_eq: same-grid 56.929483%, rollout 56.929483%, best-found 56.929165%, 19.944 ms. b_linear_truth_eq: same-grid 60.534665%, rollout 60.534665%, best-found 60.534282%, 19.911 ms. c_quad_dec_eq: same-grid 31.789671%, rollout 31.789671%, best-found 31.786271%, 26.323 ms. e_pod16_eq: same-grid 60.735669%, rollout 60.735669%, best-found 60.735599%, 16.921 ms. e_pod128_dense: same-grid 8.663764%, rollout 10.980339%, best-found 8.659057%, 84.590 ms. d_freebank_dense: same-grid 0.997017%, rollout 11.011289%, best-found 0.314713%, 459.168 ms. No POD rank up to 128 (8x K) matches it on same-grid error; the largest rung reaches 8.663764% at 84.590 ms.
+At 256 intervals the same-job converged full-order model already carries 4.026515% worst error against the refined reference, so the reference metric is partly discretization error and the same-grid discrepancy is the discriminator. The neural head reaches 2.562872% worst same-grid, 4.554611% worst rollout, best-found reconstruction 2.544663%, median 47.649 GPU ms. a_neural_dense: same-grid 2.562872%, rollout 4.557509%, best-found 2.544663%, 281.664 ms. b_linear_dec_eq: same-grid 56.929573%, rollout 56.929573%, best-found 56.929572%, 19.948 ms. b_linear_truth_eq: same-grid 61.522625%, rollout 61.522625%, best-found 61.522624%, 19.665 ms. c_quad_dec_eq: same-grid 31.827588%, rollout 31.827588%, best-found 31.827575%, 28.027 ms. e_pod16_eq: same-grid 61.650255%, rollout 61.650255%, best-found 61.650255%, 16.328 ms. e_pod128_dense: same-grid 10.119784%, rollout 10.119784%, best-found 10.118905%, 328.344 ms. d_freebank_dense: same-grid 0.602667%, rollout 4.042335%, best-found 0.391845%, 2417.608 ms. No POD rank up to 128 (8x K) matches it on same-grid error; the largest rung reaches 10.119784% at 328.344 ms.
+
+**Poisson 2D (linear control).** The weak residual is exactly $Bh(z)-f_m$ with no time stepping and no quadrature approximation, so the arms differ only in the coefficient map. The generic machinery with the frozen neural head reaches the incumbent `core.rom_query` solution to 9.584e-07 relative, inside the declared 1e-06 tolerance; that is agreement on the same stationary point between two Levenberg-Marquardt implementations, not bit identity.
+At 64 intervals the pure neural head reaches 6.094768% worst error at 2.974 ms. a_neural_q32: 4.671593% at 4.508 ms. b_linear_dec: 17.296808% at 2.364 ms. b_linear_truth: 21.188427% at 2.373 ms. c_quad_dec: 16.630489% at 2.795 ms. e_pod16: 20.053948% at 2.254 ms. e_pod128: 4.382993% at 2.987 ms. d_freebank: 2.339102% at 3.048 ms. Smallest POD rank matching the pure neural head: 128 (8x K), 4.382993% at 2.987 ms.
+At 256 intervals the pure neural head reaches 6.092742% worst error at 2.879 ms. a_neural_q32: 4.667102% at 4.533 ms. b_linear_dec: 17.296603% at 2.292 ms. b_linear_truth: 21.166217% at 2.372 ms. c_quad_dec: 16.630252% at 2.860 ms. e_pod16: 20.054741% at 2.308 ms. e_pod128: 4.347266% at 3.001 ms. d_freebank: 2.327632% at 3.029 ms. Smallest POD rank matching the pure neural head: 128 (8x K), 4.347266% at 3.001 ms.
+At 1024 intervals the pure neural head reaches 6.092722% worst error at 5.843 ms. a_neural_q32: 4.667013% at 7.317 ms. b_linear_dec: 17.296602% at 5.163 ms. b_linear_truth: 21.164847% at 5.329 ms. c_quad_dec: 16.630250% at 5.774 ms. e_pod16: 20.054797% at 4.659 ms. e_pod128: 4.345242% at 5.930 ms. d_freebank: 2.327435% at 5.995 ms. Smallest POD rank matching the pure neural head: 128 (8x K), 4.345242% at 5.930 ms.
+
+**Methodology correction retained.** The campaign's stationarity test is the normalized gradient, which is scale invariant and can only fall below its tolerance once the residual becomes orthogonal to the reduced tangent space. An arm whose reduced fit is attainable drives the residual to round-off while that ratio stays of order one, so it exits by the small-step rule with a better fit and a worse-looking stationarity number. Both the stationarity value and a separate completion status (no budget exit, no rejected-step exit) are recorded for every invocation. Nothing previously accepted is retracted by this; it means the stationarity column alone must not be read as a quality ranking across arms of different reduced dimension.
+
+**Recorded deviations.** Arm (d) needs more tests than bank features, so it runs at a larger test count with exact dense advection; a nonnegative-least-squares rule at four times that test count is not constructible inside the job budget. On Burgers the higher POD rungs also run with exact dense advection, which favours the POD baseline, so any reported matching rank is a conservative lower bound. Arms above 64 unknowns use a pivoted dense step solve instead of the incumbent unrolled Gauss-Jordan, which is more accurate, not weaker. Best-found reconstruction is an exact projection for affine-manifold arms and a seeded multistart local search for curved ones, so it is an upper bound exactly where the nonlinear arms would benefit from tightness.
+
+Source-generated report: `experiments/head-ablation/reports/2026-09-14-head-ablation.md`, with its generator beside it. Raw archives are Git-tracked as bounded chunks under `experiments/head-ablation/artifacts/`: abl01 sha256 a994253715af7f585a1682cbf9ae8f4a609254862fd5b92006ad9cbbb71c8020 (8 chunks); pabl01 sha256 6e5238db127b9290b1e0cfc38c06c6c20af7c628c0a9c534fd55809896373f0e (25 chunks). Every exact remote attempt directory was removed after checksum collection and the namespace is empty. These archives are large - roughly 348 MB and 1.2 GB - because they retain every dense output field at the finest mesh; the coordinator should weigh that against the already heavy repository when staging pushes.
+
+**Not pushed.** The coordinator instructed mid-session that no branch descended from the consolidated baseline may be pushed from this worktree, because `git pack-objects` repacks a 199 GB repository and reaches roughly 48 GB resident on the shared box. An incremental push started before that instruction had already created `origin/exp/2026-09-14-head-ablation` at `ad804863`, an ancestor 60 commits behind this branch head; it was stopped immediately and no git process remains. The coordinator will push the remaining branches in stages.
+
+**Open.** Other PDEs, other checkpoints, more than one training seed, and the sealed final cohorts. No claim is made here about a speed advantage over a full-order solver; the same-job full-order rows are context only, and the retained Burgers reduced model remains slower and less accurate than an efficient same-job full-order solver, as already recorded. No worktree was merged and no earlier numerical result is retracted.
+
+## 2026-09-14
+
+### Frozen-checkpoint mesh ladder — complete, both PDEs measured, no retraction
+
+Worktree `worktrees/2026-09-14-mesh-ladder`, branch `exp/2026-09-14-mesh-ladder` at `e463881c`, forked from the corrected consolidated baseline `exp/2026-09-13-nmrom-consolidated` at `02ff0f1f`. Cluster namespace `/cluster/tufts/paralab/tawal01/mrladder_20260914/`, one attempt directory per PDE, both removed after checksum collection.
+
+The question was the principal figure for the mesh-independence claim: at **one frozen checkpoint per PDE**, with latent dimension, bank rank, weak modes, solver policy and stopping all fixed, how do the cached reduced solve, the complete device query and the offline per-mesh setup behave across 64/128/256/512/1024 intervals per axis, and where (if anywhere) is the crossover against an efficient same-job full-order solver. Each PDE ran as **one job on one GPU** with every arm interleaved in a randomized order, which is what the historical ladders lacked: those used a different GPU per mesh and, on Burgers, a mesh-specific checkpoint, so they established neither a same-GPU scaling nor frozen-weight transfer.
+
+- **Burgers 2D — job `3711388`, NVIDIA A100-PCIE-40GB on `pax051`, attempt `burgers01`, 6 development cases x 5 repetitions, 1862 s.**  Cached reduced solve 44.156 -> 44.720 -> 44.730 -> 45.116 -> 43.577 ms from 64 to 1024 intervals (0.987x end to end, 1.035x between its own extremes) while interior unknowns grow 264x. Complete device query 48.504 -> 46.467 -> 48.191 -> 47.405 -> 50.093 ms (1.033x). Offline per-mesh setup 26.31 s at 64 and 27.48 s at 1024, charged separately. Worst physical error 10.8570% at 64 and 3.8847% at 1024 intervals. Accuracy does not degrade with refinement, it improves: the frozen checkpoint misses the 5% target at 64, 128 and meets it at 256, 512, 1024 intervals. **No crossover at any rung**: the efficient same-job FOM is faster than the reduced complete device query everywhere. FOM/ROM by rung: 64: 0.265x vs `fom_same_nt1e-2`, 128: 0.320x vs `fom_same_nt1e-2`, 256: 0.325x vs `fom_same_nt1e-2`, 512: 0.495x vs `fom_same_nt1e-2`, 1024: 0.443x vs `fom_coarse4_nt1e-4`.
+- **Poisson 2D — job `3711389`, NVIDIA A100 80GB PCIe on `pax105`, attempt `poisson01`, 42 development cases x 3 repetitions, 728 s.**  Cached reduced solve 2.094 -> 2.080 -> 2.086 -> 1.937 -> 2.021 ms from 64 to 1024 intervals (0.965x end to end, 1.081x between its own extremes) while interior unknowns grow 264x. Complete device query 2.252 -> 2.246 -> 2.241 -> 2.341 -> 3.004 ms (1.334x). Offline per-mesh setup 4.59 s at 64 and 5.12 s at 1024, charged separately. Worst physical error 6.1119% at 64 and 6.1106% at 1024 intervals. The frozen checkpoint misses the 5% target at **every** rung, so none of its timing ratios is a qualifying speedup. **No crossover at any rung**: the efficient same-job FOM is faster than the reduced complete device query everywhere. FOM/ROM by rung: 64: 0.063x vs `dst`, 128: 0.065x vs `dst`, 256: 0.067x vs `dst`, 512: 0.079x vs `dst`, 1024: 0.112x vs `dst`. The ROM-vs-same-grid-FOM discrepancy at 1024 intervals is 6.1106% against the exact direct-transform solution, essentially equal to the physical error, so the error is reduction error and not discretisation error.
+
+**Method points worth keeping.** The three costs are each their own completed device computation; none is obtained by subtracting another. Both staged solvers were checked against the retained selected solvers: the Burgers split is **bitwise identical** to `accuracy_paths.make_rom` and reproduces the consolidated replay's saved 64-interval case to 1.6e-14 against a declared 1e-8 tolerance; the Poisson split matches the native `correction_query` field to 6.7e-16. The cross-mesh restriction is nested-node injection, validated in-job (restricting in one step and through every intermediate rung give bitwise identical fields, and the boundary survives exactly).
+
+**One measurement difference worth flagging, not a retraction.** The Poisson complete device query here excludes the stationarity and projected-Jacobian-rank diagnostics that the native `correction_query` charges into the same interval, so it is not comparable with the 2026-09-11 Poisson GPU column. The native row is still recorded per case, outside every timer, and remains the source of every stopping and rank verdict.
+
+**Independent audit.** A NumPy-only audit that imports neither driver nor JAX: `burgers01` passed (840 common-grid errors recomputed in NumPy from the archived observation fields, worst absolute difference 1.1e-16); `poisson01` passed (3150 common-grid errors recomputed in NumPy from the archived observation fields, worst absolute difference 3.5e-17). It also checks the timing identity and positivity of every invocation, requires a complete Cartesian invocation grid, and re-derives the reference digests.
+
+**Retracted or withdrawn: nothing.** No earlier numerical result is contradicted here. This ladder does not retest the historical small-bank tensor configuration and does not reinstate any discarded evidence.
+
+**Open.** Final cohorts remain sealed and nothing was merged. Per-resolution tuning is deliberately untested, since that answers a different question from frozen-weight transfer. The branch is **not on origin**: this worktree is descended from the consolidated baseline and the coordinator asked that no push be made from it, because `git pack-objects` on the 199 GB repository reaches roughly 48 GB resident on the shared GB10 and risks an earlyoom kill of other agents' work. Twenty-one local branches, including the base `exp/2026-09-13-nmrom-consolidated`, are in the same state; the coordinator will push them in stages.
+
+Report, figure (PNG and PDF), aggregates JSON and generator: `experiments/mesh-ladder/reports/2026-09-14-frozen-checkpoint-mesh-ladder.*` with `generate_ladder.py` beside them. Chunked, checksum-verified job archives: `experiments/mesh-ladder/artifacts/<attempt>/`.
+
+
+## 2026-09-14
+### Burgers fixed-checkpoint tuning — complete, audited, negative
+
+Ran the classic ViT/CP fixed-checkpoint tuning study the user asked for, in
+`worktrees/2026-09-14-no-burgers` (branch `exp/2026-09-14-no-burgers`, head `c904465f229523a20042b3420b37d17dea6fb043`), cluster
+namespace `/cluster/tufts/paralab/tawal01/no_burgers_20260914/`. One frozen checkpoint
+`experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl`, verified SHA256
+`18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589`. Latent dimension 16, bank rank 512, 64 weak modes, 256 intervals,
+dt 0.005, cold initializer and initial-fit controls (ic_budget 400, gtol 1e-6) all held fixed.
+Only the Gauss-Newton evolution iteration cap, the evolution stopping tolerance and the
+offline-fitted EQ rule varied. No retraining, no capacity change, no relaxed gate.
+
+**Source work first.** `accuracy_paths.make_rom` now exposes the evolution stopping tolerance and
+the previously hard-coded evolution weak-residual threshold separately from the initial-fit
+controls, and accepts an alternative weak residual; omitting the new arguments is bit-for-bit the
+original solver. Added the quadrature-free control as a complete rollout arm (FOM-exact upwind
+advection on every interior node projected onto the same 64 weak modes), a walltime-bounded NNLS
+quadrature fitter that preserves a truncated rule's partial support, weights and fit residual, and
+the staged driver `tuning.py` with its generated immutable `tuning-config.json` (SHA256
+`a624de02b1e169f3902ab767aff18793dd8a12af49f1a0f51a50e20114f8dff7`). `eq_ablation.py` now uses the same bounded fitter. Local GPU checks on
+the GB10 passed: the full-grid weak operator matches an independent NumPy assembly to
+8.7e-15 and its Jacobian matches central differences to
+1.78e-09; explicitly passing the default controls
+is bit-identical to omitting them; and the retuned defaults reproduce the archived A100 stopping
+records for two saved calibration cases exactly (integer iterations and reasons identical, fields
+to 1.2e-14). Records: `checks/tuning-smoke.json`, `checks/tuning-default-equivalence.json`.
+
+**Jobs.** Calibration `3711134` (`ctol_nob_tuning01`), COMPLETED 00:38:03 on `NVIDIA A100 80GB
+PCIe`, execution source `db48b7a86ee4f38ea9f79751e730a70c841144d0`, 528 timed invocations. Held-out
+`3712269` (`ctol_nob_tuning02`), COMPLETED 00:35:11 on the same GPU model, execution source
+`d2b93bd4f56d07580d3357972737eab92a96622f`, 960 timed invocations. Both logged `jax_backend=gpu`, f64,
+highest matmul precision, each in its own attempt directory with `squeue` checked before and after
+submission. Raw archives are retained as bounded Git chunks: `artifacts/tuning01` whole SHA256
+`f5a7da08b9411d38c65512ddc776d87dc10c99504c235a91c61bd351c6570ddd`, `artifacts/tuning02` whole SHA256 `3603ed2ba88eae3de63fa96529301fb5e9de4f0afd6a1841cf9466ced4bbf6ef`. Both exact remote attempt directories are
+removed; the verified `pilot-data01` dataset cache was read in place and left intact for the
+downstream FNO owner.
+
+**Offline quadrature rules.** The bounded fitter reproduced the archived accepted m=256 rule
+exactly — identical support, zero weight difference — in 17 s, which pins the new fitter to the
+audited one. Relative NNLS fits: m=256 0.0051591, m=512
+0.000465755 (102 s), m=1024 6.08107e-05 (880 s).
+None was deadline-truncated.
+
+**Sentinel (untimed, cases 00002 and 00003).** Tightening the solver stops changing the answer:
+ultra versus converged differ by 8.85e-10 to
+6.95e-09 relative field, against a declared 1e-6
+tolerance. Physical error is unchanged across native, converged and ultra to six significant
+figures on both cases while total Gauss-Newton iterations roughly triple. The sampled and
+full-grid supplied-field initial fits agree to four digits
+(0.016436 against
+0.01643; 0.010151
+against 0.010092), so the cold-start sampling rule is not
+the bottleneck.
+
+**Calibration quadrature control** (8 cases, 3 repetitions, solver settings and initializer
+unchanged across the quadrature arms):
+
+| Arm | Median case error (%) | Worst error (%) | Median GPU (ms) | Median complete query (ms) | Early-stopped | Gradient-stationary | Cases above 10% |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `m256_native` | 0.939970 | 1.658743 | 54.176387 | 56.393012 | 0 | 24 | 0 |
+| `m512_native` | 0.942177 | 1.510853 | 57.788957 | 59.930177 | 0 | 24 | 0 |
+| `m1024_native` | 0.940334 | 1.556934 | 63.313999 | 65.883465 | 0 | 24 | 0 |
+| `m256_converged` | 0.939970 | 1.658743 | 65.956854 | 68.155141 | 0 | 24 | 0 |
+| `m512_converged` | 0.942177 | 1.510853 | 70.726856 | 73.191591 | 0 | 24 | 0 |
+| `m1024_converged` | 0.940334 | 1.556933 | 76.839364 | 79.336293 | 0 | 24 | 0 |
+| `full_native` | 0.940624 | 1.567388 | 309.817492 | 311.814486 | 0 | 24 | 0 |
+| `full_converged` | 0.940624 | 1.567388 | 392.165308 | 394.900876 | 0 | 24 | 0 |
+| `same_nt1e-2_dt01` | 0.847080 | 1.864195 | 9.052748 | 10.617246 | 0 | 0 | 0 |
+| `same_nt1e-2_dt005` | 0.413806 | 0.997803 | 16.519509 | 18.305014 | 0 | 0 | 0 |
+| `same_nt1e-4_dt005` | 0.870488 | 1.381132 | 18.543491 | 20.341579 | 0 | 0 | 0 |
+| `same_nt1e-6_dt005` | 0.872767 | 1.381082 | 81.907711 | 84.587124 | 0 | 0 | 0 |
+| `coarse_half_dt005` | 1.434636 | 1.899297 | 17.588601 | 19.821747 | 0 | 0 | 0 |
+| `coarse_quarter_dt01` | 2.777721 | 3.639752 | 13.494967 | 15.548257 | 0 | 0 | 0 |
+
+**Calibration effort screens** on the selected `m512` rule (selection criterion: lowest worst-case
+error at the converged setting, ties within 1% broken by lower median GPU time):
+
+| Arm | Median case error (%) | Worst error (%) | Median GPU (ms) | Median complete query (ms) | Early-stopped | Gradient-stationary | Cases above 10% |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `m512_cap2` | 58.466971 | 74.896500 | 32.733207 | 35.152685 | 24 | 0 | 8 |
+| `m512_cap4` | 58.466971 | 74.896500 | 44.495170 | 46.741079 | 24 | 0 | 8 |
+| `m512_cap8` | 1.217488 | 4.442939 | 59.531328 | 61.962703 | 24 | 0 | 0 |
+| `m512_gtol0.001` | 0.941904 | 1.510865 | 50.292543 | 52.660222 | 0 | 0 | 0 |
+| `m512_gtol1e-05` | 0.942175 | 1.510853 | 60.783314 | 63.096100 | 0 | 0 | 0 |
+| `m512_gtol1e-06` | 0.942177 | 1.510853 | 65.185628 | 67.498714 | 0 | 24 | 0 |
+
+`m512_gtol1e-06` is the archived native configuration on the selected rule, measured in the second
+pass, so it doubles as a same-setting reproducibility control.
+
+**Held-out confirmation** on the 32 common validation cases, shortlist frozen from calibration
+measurements alone (`checks/tuning02-shortlist.json`, SHA256
+`142a5a760b3548f19d1c111a64d7d9d6224238dd4c211aa73c8df559eaf40c3d`), efficient FOM controls interleaved in the same job:
+
+| Arm | Median case error (%) | Worst error (%) | Median GPU (ms) | Median complete query (ms) | Early-stopped | Gradient-stationary | Cases above 10% |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `same_nt1e-2_dt01` | 1.341303 | 6.806734 | 9.910044 | 12.210279 | 0 | 0 | 0 |
+| `coarse_quarter_dt01` | 3.594731 | 16.094676 | 13.961922 | 16.169056 | 0 | 0 | 2 |
+| `same_nt1e-2_dt005` | 1.135606 | 35.357022 | 17.380670 | 19.398844 | 0 | 0 | 3 |
+| `coarse_half_dt005` | 1.850760 | 9.849329 | 21.185605 | 23.499694 | 0 | 0 | 0 |
+| `same_nt1e-4_dt005` | 1.233720 | 6.170513 | 22.389024 | 24.487508 | 0 | 0 | 0 |
+| `m512_cap2` | 65.494110 | 90.324105 | 28.368548 | 31.055967 | 96 | 0 | 31 |
+| `m512_gtol0.001` | 1.453594 | 6.701206 | 41.641916 | 44.679836 | 0 | 0 | 0 |
+| `m256_native` | 1.473297 | 7.244774 | 51.008713 | 53.272908 | 0 | 96 | 0 |
+| `m512_converged` | 1.453762 | 6.711730 | 64.668124 | 67.017914 | 0 | 96 | 0 |
+| `same_nt1e-6_dt005` | 1.233681 | 6.171972 | 88.287076 | 90.477352 | 0 | 0 | 0 |
+
+**What this answers.** Cost is genuinely tunable from a frozen checkpoint; accuracy is not. On the
+selected rule, loosening the evolution gradient tolerance from 1e-6 to 1e-3 removes 22.847% of the
+GPU time and changes the worst physical error by +0.000012 percentage points. Starving the
+iteration cap is a cliff, not a dial: at cap 8 the worst error rises to 4.442939%, and at caps 4
+and 2 the solver makes no accepted step at all and the trajectory collapses to 74.896500%, while
+the saving is far from proportional because the fixed initial fit and the decode still have to be
+paid. Quadrature barely moves accuracy either — m=256, m=512, m=1024 and the quadrature-free
+full-grid control span only 0.147890 percentage points of worst error — but it moves cost a
+great deal: the full-grid control costs 5.36 times the m=512 arm for no accuracy gain,
+so empirical quadrature is a large and real cost win. The reason accuracy is flat is
+representation: the decoder's own compression of the supplied initial field is already 1.867068%
+at worst, comparable to the whole trajectory error.
+
+**Does any tuned setting beat the efficient FOM on both accuracy and cost? No.** On the held-out
+cases the best tuned setting `m512_gtol0.001` reaches 6.701206% worst
+error at 41.641916 ms, while `same_nt1e-4_dt005` reaches
+6.170513% at 22.389024 ms — better on median
+case error, worst-case error and cost simultaneously. The single comparison the ROM wins is
+worst-case error against the cheapest control `same_nt1e-2_dt01`
+(6.701206% against 6.806734%), and that
+control is 4.20 times cheaper.
+
+**Retracted / corrected.** The calibration-stage reading that `same_nt1e-2_dt005` is the accuracy
+bar does not survive the held-out pass: that control reaches 35.357022%
+worst error on the 32 held-out cases, with 3 of 32 cases above 10%, despite a
+median case error of only 1.135606%. Its loose Newton tolerance is not reliable
+across the wider family. The dominance conclusion is unchanged, because other controls dominate
+every tuned setting on the held-out cases too. Also recorded as a measurement limit, not a result:
+the two full-order controls re-timed in the second pass of the calibration job drifted by
++13.335% and +15.936% in median GPU time within one job, so arms measured in
+different passes must not be separated more finely than that.
+
+**Audits.** Independent NumPy recomputation passed for both jobs (`checks/tuning01-audit.json`,
+`checks/tuning02-audit.json`): 528 and 960 invocations, 176 and 320 saved arrays recomputed, worst
+error-metric differences 1.1e-16 and 2.2e-16, zero gradient difference, no stopping-record
+mismatch, every deployable output returning the supplied initial field exactly, all three
+repetitions present for every case and arm, and every repetition byte-identical. Cap-limited exits
+are recorded as early stopped throughout and are never relabelled stationary.
+
+**Not done / open.** The branch is **not pushed**: repacking this 199 GB repository with its 4.4 GB
+committed archive drove `git pack-objects` to about 48 GB resident on the shared GB10, so the push
+was deliberately killed (`checks/tuning-branch-push.json`); no other 2026-09-1x worktree branch is
+on origin either, so every commit named here exists only locally. No FNO arm is in this panel, so
+no neural-operator comparison is established by it. The 6-7% held-out worst errors are far above
+the older development targets for this family and this study did not attempt to fix that — the
+evidence points at representation, so the next step is to improve one checkpoint's reconstruction
+and trajectory training, freeze it, and repeat this same fixed-checkpoint protocol unchanged. The
+initial-fit budget was frozen by design and is the obvious remaining cost target: it is a large
+constant that no evolution knob can remove. Generated report:
+`experiments/neural-operator-burgers/reports/2026-09-14-fixed-checkpoint-tuning.md`, SHA256
+`97bab0ea75a9f9520a13da93322fd5110cda77de73bf2b4b909a0e7fa5da6f87`, produced by the generator beside it. Worktrees remain separate; no merge was
+performed and the merge decision remains with the user.
+
+
+## 2026-09-14
+### Burgers fixed-checkpoint tuning — glossary correction to the entry above
+
+Wording-only correction to the entry immediately above, made in the same session. The
+report's `Gradient-stationary` column applies one fixed 1e-6 normalized-gradient bar to
+every arm, so an arm whose own declared stopping tolerance is looser than 1e-6 — such as
+`m512_gtol0.001` — can satisfy its own stopping test on every step and still show zero
+gradient-stationary invocations. The original glossary line did not say which bar was used
+and could be misread as a stopping failure. The glossary now says so explicitly.
+
+No number, table, run, archive, audit or conclusion changes. The regenerated report SHA256
+is `53a8003a3c64ace86a4ff3cdc8418c17fd75061dac900964f22c6e3fda3cb6a5`, superseding the
+`97bab0ea75a9f9520a13da93322fd5110cda77de73bf2b4b909a0e7fa5da6f87` recorded above; branch
+head is now `b34843fb` plus this documentation commit in
+`worktrees/2026-09-14-no-burgers`.
+
+
+## 2026-09-15
+### Burgers fixed-weight correction ladder — complete and audited; error monotone in q but the upper rungs stop converging, and no rung beats the efficient FOM on both axes
+
+The coordinator asked how much accuracy a frozen checkpoint can buy at inference time, and at what cost, by solving q extra fixed linear bank directions on top of the neural head: u(z,y) = G(h_theta(z) + C_q y). Every network weight, the bank, the weak objective, the test-mode family, the initializer policy, the trust radius, the iteration budgets and the stopping tolerance are the head-ablation arm (a) contract; q and the time step are the only knobs. Unlike Poisson, the Burgers weak residual is quadratic in the coefficients through the upwind advection term, so y cannot be eliminated analytically and the whole augmented vector is solved by the same Levenberg-Marquardt iteration.
+
+Worktree `worktrees/2026-09-14-head-ablation`, branch `exp/2026-09-14-head-ablation` at `805ba2cd5f8ac2bfa190438f0eaa660019fda00a`. Namespace `/cluster/tufts/paralab/tawal01/headabl_20260914/qlad01`, job `3713867` on `NVIDIA A100-PCIE-40GB`, source `313374fab24ee74e69d0355ebf60f53d49cefc1a`, 256 intervals, 6 opened development cases (the same six arm (a) used; the eight refinement calibration cases belong to a different lane), 3 timed repetitions with GPU burn-in before every block, all repetition arrays retained. Elapsed 3716.4 s.
+
+**Fidelity gates.** Through the corrected-head wrapper at q=0 the local smoke reproduces the consolidated saved Burgers case to 1.403e-14 relative and is bit-identical (0.0e+00) to the incumbent `accuracy_paths.make_rom`.
+In the job, `q0_eq` reproduces the head-ablation job's `a_neural_eq` on all 6 cases to a worst relative difference of 7.174e-13, with 0 of 6 output fields bitwise identical across the two jobs. Every recorded error was independently recomputed from the retained output fields by NumPy.
+
+**Direction rule (offline, nested, recorded).** field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q. 1024 seeded snapshots, 4 multistart fits at budget 200, seed 20260915; the head's own best-found relative fit over them is 0.5584% median, 6.9161% worst; available rank 512. The fit is offline and one-time and enters no query timing, but at 1757.6 s it dominated the job's setup cost, and the retained stderr shows a single XLA slow-operation alarm covering nearly the whole stage: the cost is compilation of a doubly vectorised Levenberg-Marquardt while_loop with a forward-mode Jacobian inside, not arithmetic. Flattening that loop would remove most of the setup cost without changing any reported number; worth doing before this rule is reused. Residual energy captured: q=0 0.0000%, q=16 45.2788%, q=64 80.2613%, q=128 94.7010%, q=256 99.8307%, q=512 100.0000%.
+
+The primary metric is the same-grid discrepancy against the converged same-mesh full-order solve, because the refined-reference metric also contains this mesh's discretization error.
+
+| q | solved dim | M | quad | best-found % | worst same-grid % | worst reference % | median iters/step | budget exits | completed | median GPU ms | median host ms |
+|---:|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|
+| 0 | 16 | 64 | dense | 2.5447 | 2.5629 | 4.5575 | 3.0 | 0 | yes | 336.793 | 339.257 |
+| 0 (M control) | 16 | 2112 | dense | 2.5447 | 2.5629 | 4.0687 | 3.0 | 0 | yes | 1361.309 | 1364.314 |
+| 0 (dt 0.01) | 16 | 64 | dense | 2.5447 | 2.5629 | 5.5576 | 4.0 | 0 | yes | 262.223 | 264.619 |
+| 0 | 16 | 64 | eq | 2.5447 | 2.5629 | 4.5546 | 3.0 | 0 | yes | 48.758 | 51.278 |
+| 0 (dt 0.01) | 16 | 64 | eq | 2.5447 | 2.5629 | 5.5638 | 4.0 | 0 | yes | 45.469 | 48.158 |
+| 16 | 32 | 128 | dense | 2.4615 | 2.4806 | 4.1065 | 3.0 | 0 | yes | 498.271 | 500.443 |
+| 16 | 32 | 128 | eq | 2.4615 | 2.4806 | 4.1197 | 3.0 | 0 | yes | 83.233 | 85.642 |
+| 64 | 80 | 320 | dense | 2.1386 | 2.1489 | 4.1013 | 3.0 | 6 | no | 1266.072 | 1268.568 |
+| 128 | 144 | 576 | dense | 1.8105 | 1.8116 | 4.0797 | 3.0 | 15 | no | 2538.979 | 2541.763 |
+| 256 | 272 | 1088 | dense | 0.9016 | 0.9053 | 4.0361 | 6.0 | 60 | no | 9306.086 | 9308.814 |
+| 512 | 528 | 2112 | dense | 0.3918 | 0.6027 | 4.0392 | 2.0 | 9 | no | 9502.081 | 9504.550 |
+| FOM fft_tight | - | - | - | - | 0.0000 | 4.0265 | 2.0 | - | - | 89.090 | 91.780 |
+| FOM nt1e-2 | - | - | - | - | 3.7127 | 2.4737 | 1.0 | - | - | 15.523 | 17.944 |
+
+**Monotonicity.** Error along q=[0, 16, 64, 128, 256, 512] is monotone decreasing ([2.5629, 2.4806, 2.1489, 1.8116, 0.9053, 0.6027] percent); cost is monotone increasing ([336.793, 498.271, 1266.072, 2538.979, 9306.086, 9502.081] median GPU ms).
+The upper rungs are NOT converged solves: q=64 (6 iteration-budget exits, worst normalized gradient 2.60e-02), q=128 (15 iteration-budget exits, worst normalized gradient 3.26e-02), q=256 (60 iteration-budget exits, worst normalized gradient 5.55e-02), q=512 (9 iteration-budget exits, worst normalized gradient 2.59e-01) failed to complete under the shared stopping rule. They are legitimate approximate points on an error/cost curve but keep their true stopping status and must not be read as a converged accuracy curve. The trust radius and per-step budget were deliberately held at the q=0 values so q is the only knob, and that is what binds as the solved dimension grows.
+Restricted to the rungs that do converge (q=[0, 16]), the error falls only from 2.5629% to 2.4806% for a 1.479-fold cost increase.
+Hyper-reduction, not correction capacity, is the lever that moves cost: at q=0 the empirical-quadrature arm costs 48.758 ms against 336.793 ms dense, a factor 6.908, with worst same-grid errors differing by 0.0000 percentage points. It is not available above q=16 because the nonnegative-least-squares rule at m=4M stops being constructible there.
+Hyper-reduction, not correction capacity, is the lever that moves cost: at q=16 the empirical-quadrature arm costs 83.233 ms against 498.271 ms dense, a factor 5.986, with worst same-grid errors differing by 0.0000 percentage points. It is not available above q=16 because the nonnegative-least-squares rule at m=4M stops being constructible there.
+Time-step knob at q=0 (dense): doubling the step to 0.01 costs 262.223 ms against 336.793 ms, a factor 0.779 only, because the initial fit and the decode do not scale with step count; worst same-grid is unchanged at 2.5629% but the median rises from 1.6957% to 1.9413%. It buys little and costs accuracy on the typical case.
+Time-step knob at q=0 (eq): doubling the step to 0.01 costs 45.469 ms against 48.758 ms, a factor 0.933 only, because the initial fit and the decode do not scale with step count; worst same-grid is unchanged at 2.5629% but the median rises from 1.7013% to 1.9508%. It buys little and costs accuracy on the typical case.
+
+Two effects grow together because the weak objective needs M > K+q, so M=4(K+q) grows with q. The q=0 control at the ladder's largest test count M=2112 costs 1361.309 ms against 336.793 ms at M=64, a factor 4.042, at 2.5629% against 2.5629%, so most of the ladder's cost growth is the growing test count rather than the extra unknowns.
+
+Best rung q=512 removes 1.9602 percentage points for 9165.288 extra median GPU ms, 0.00021 points per millisecond, a cost factor 28.213 over q=0.
+
+Against the same-job full-order `nt1e-2` (3.7127% same-grid, 15.523 ms median GPU, 17.944 ms complete host query): no rung dominates it on both axes.
+Against the same-job full-order `fft_tight` (0.0000% same-grid, 89.090 ms median GPU, 91.780 ms complete host query): no rung dominates it on both axes.
+
+**Recorded deviations.** Empirical quadrature is fitted only at q in [0, 16]; above that m=4M grows with q and the bounded nonnegative-least-squares fit is not constructible inside the job budget, so those rungs use the exact dense grid sum, stated per row, with paired eq/dense rows at the same q isolating the quadrature effect. At q=R the reachable set coincides with the head-ablation free-bank arm (d), but the parameterization is redundant by K dimensions and the test count differs, so it is the same reachable set and not the same solver; the two are not expected to agree numerically. The trust radius, budgets and tolerance stay at arm (a) values for every rung, so a fixed trust radius is a tighter restriction on a larger step, which is part of what the ladder measures. Arms above 64 unknowns use a pivoted dense step solve rather than the incumbent unrolled Gauss-Jordan, which is more accurate, not weaker. The stationarity column is not a quality ranking; the completion column is the honest status.
+
+Source-generated report and figure: `experiments/head-ablation/reports/2026-09-14-burgers-correction-ladder.md` with `-cost.png` / `-cost.pdf` beside it, both produced by `reports/generate_correction_ladder.py`. Raw archive Git-tracked as bounded chunks under `experiments/head-ablation/artifacts/qlad01/`: qlad01 sha256 9f0de364a4b0f25b9d702e3ef0d570229a427de208dff9941d2fdeacc54bb097 (6 chunks). The exact remote attempt directory was removed after checksum collection and the namespace is empty. Not pushed, per the coordinator's standing instruction; commits are local only.
+
+**Open.** Other meshes, other checkpoints, more than one training seed, the sealed final cohort, and whether a direction rule fitted to trajectory error rather than reconstruction residual would move the curve. No earlier numerical result is retracted and no worktree was merged.
+
+
+## 2026-09-15
+### Burgers FNO common-data baseline — complete, audited, no speed claim
+
+The root-owned audit worktree `worktrees/2026-09-14-no-audit`, branch
+`exp/2026-09-14-no-audit`, commit `f3510e88`, trained and evaluated an FNO baseline on the
+Burgers common dataset in namespace `/cluster/tufts/paralab/tawal01/no_audit_20260914/`. Two GPU
+jobs ran, each in its own job directory: `3710790`
+(`fno_burgers01`, bounded equal-epoch capacity screen) and `3710846`
+(`fno_burgers02`, equal-wall-budget long training, matched-cohort scoring and timing). Both
+printed `jax_backend=gpu` on `NVIDIA A100 80GB PCIe`, ran float64/complex128 with highest matmul
+precision, and were checksum-collected, independently NumPy-audited and Git-archived before their
+exact remote job directories were removed. Primary accounting:
+`3710846|ctol_noa_fno_b02|COMPLETED|03:22:35|pax105`. The shared Burgers cache
+`/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01` was copied from with checksum
+verification (162 and 171 files verified against `DATA.sha256`) and was not modified or deleted;
+its cleanup remains the Burgers lane's.
+
+**Design.** The operator is a direct multi-time output, not an autoregressive rollout: one forward
+pass produces the five evolved fields as output channels and the supplied initial state is returned
+bitwise, so there is no step-to-step error accumulation and no rollout growth to report. The output
+time set is therefore fixed by training and cannot be extended. Inputs are the sampled initial
+field, the viscosity and coordinates only; generation descriptors, case ids and solver sidecars are
+offline metadata. Accuracy uses the Burgers lane's own fixed-initial metric — the maximum over the
+six requested times of the interior discrepancy over the interior norm of the supplied initial
+field. `check_burgers_error_definition.py` imports that lane's `fixed_initial_errors` by path
+(SHA256 `8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7`) and proves the two implementations agree to
+`3.469e-18`, i.e. summation order only.
+
+**Validation accuracy on the 32 held-out cases** (recomputed independently from saved fields):
+
+| Run | width/modes | Epochs | Median case-max (%) | Worst case-max (%) | Cases > 2% | Real parameters |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `fno-large` | 64/32 | 692 | 1.805424 | 6.382471 | 14 | 17877317 |
+| `fno-medium` | 48/24 | 1198 | 1.763751 | 6.042254 | 15 | 5780213 |
+| `fno-refine` | 64/32 | 688 | 1.880982 | 7.174734 | 15 | 17877317 |
+| `fno-small` | 32/16 | 1741 | 1.955163 | 7.481166 | 15 | 1193125 |
+
+**Same-job complete-query timing** (supplied on-device initial field to on-device complete
+trajectory, GPU burn-in before every timed block, every repetition retained):
+
+| Run | Device query pooled median (ms) | Host transfer pooled median (ms) |
+| --- | ---: | ---: |
+| `fno-large` | 7.314731 | 0.238796 |
+| `fno-medium` | 5.479467 | 0.237148 |
+| `fno-refine` | 7.317725 | 0.236758 |
+| `fno-small` | 3.348632 | 0.238052 |
+
+**Matched eight-case accuracy comparison** (worst / median fixed-initial error):
+
+| Method | Worst (%) | Median (%) |
+| --- | ---: | ---: |
+| `fno-large` (FNO) | 2.482867 | 1.049415 |
+| `fno-medium` (FNO) | 2.888206 | 1.219505 |
+| `fno-refine` (FNO) | 3.266010 | 1.344824 |
+| `fno-small` (FNO) | 2.935038 | 1.212381 |
+| `rom` (ROM, other job) | 1.867068 | — |
+| `same_nt1e-2_dt005` (FOM, other job) | 0.997803 | — |
+| `same_nt1e-4_dt005` (FOM, other job) | 1.381132 | — |
+| `same_nt1e-6_dt005` (FOM, other job) | 1.381082 | — |
+| `same_nt1e-2_dt01` (FOM, other job) | 1.864195 | — |
+| `coarse_half_dt005` (FOM, other job) | 1.899297 | — |
+| `coarse_quarter_dt01` (FOM, other job) | 3.639752 | — |
+
+On the eight cases and references the Burgers lane's own ROM/FOM diagnosis used at 256 intervals, the validation-selected FNO `fno-large` reaches 2.482867% worst fixed-initial error, against the recorded ROM 1.867068% and efficient FOM `same_nt1e-2_dt005` 0.997803%. Accuracy on identical cases is comparable across jobs; timing is not, and none is compared. The cohort is disjoint from FNO training by generation seed and by input-field content, re-checked against the training index.
+
+The bounded first screen, job `3710790` on `NVIDIA A100 80GB PCIe` (accounting `3710790|ctol_noa_fno_b01|COMPLETED|00:46:00|pax007`), gave all three capacities an identical 200-epoch budget; its best run `fno-large` reached 7.639449% worst validation error after 200 epochs and every capacity was still improving at the budget, which is why the primary job switched to an equal wall budget with early stopping. Those screen numbers are superseded, not retracted.
+
+**No speed claim is established.** The FNO timings above are same-job, same-GPU only; the ROM and
+FOM timings were measured in job `3702709` on a different allocation and are never divided by
+them. The interleaved ROM/FNO/FOM panel remains the only admissible route to a speed statement,
+and the timing protocol is recorded in `timing.py`'s module docstring so that job can reproduce it.
+
+**Limitations and what was not done.** Single training seed, one mesh (256 intervals), one Gaussian
+continuum family, bounded compute per capacity; this is not a tuned FNO baseline and establishes no
+capacity ceiling. Training is deliberately **not resumable** — each run was bounded inside one
+allocation and any truncated run is reported as truncated at its recorded epoch; explicit restart
+semantics were not added. The eight-case cohort is small, so its worst-case column is a single case.
+Nothing under `best-results/` or any other worktree was modified, no worktree was created or merged,
+and no final cohort was opened.
+
+**Open items.** (1) The interleaved same-job ROM/FNO/FOM timing panel. (2) **This branch is
+committed locally but not pushed.** Two early `git push` attempts failed with HTTP 500 from GitHub;
+the coordinator then directed every agent to stop pushing, because packing this 199 GB repository
+reaches roughly 48 GB resident on the shared GB10 and risks `earlyoom` killing other agents' work.
+The coordinator will push branches in stages. No other recent `exp/2026-09-1x` branch is on origin
+either. All work is committed on `exp/2026-09-14-no-audit`. (3) Resolution transfer, repeated
+seeds, TFNO and wider families remain unstudied. (4) The shared `pilot-data01` cache can now be
+cleaned up by the Burgers lane.
+
+Generated report: `experiments/neural-operator-audit/reports/2026-09-14-burgers-fno-baseline.md`
+(SHA256 `87b9a55bfc0a4ca1acfd0e105032a08c3b3a6235cb2f64f557d29bdfc8dbff4c`) with its generator and source manifest beside it.
+No earlier numerical result is retracted.
+
+
+## 2026-09-15
+### head-refine — per-query refinement of the frozen head's weights; complete and audited on both PDEs, and it is not a knob on either
+
+The coordinator asked whether refining the frozen head's own weights at query time, anchored to the trained weights, is a usable inference-time accuracy/cost knob. Everything except the refinement is the head-ablation arm (a) contract: the frozen bank, the latent dimension, the weak objective, the test-mode family, the time discretization, the initializer policy, the Levenberg-Marquardt stopping rule and the output contract. The only online knobs are the variant, the number n of Adam steps taken on theta inside the timed query, and the anchor weight mu. Two pre-registered variants: V1 refines once against the supplied initial field on the initializer's own node set, V2 refines after every time step against that step's weak residual and then re-solves z. On Poisson the query is a single static solve, so V2 has no per-step structure to exploit and collapses onto V1; only V1 was defined and run there.
+
+Worktree `worktrees/2026-09-15-head-refine`, branch `exp/2026-09-15-head-refine` at `7ac83312`, forked from `exp/2026-09-14-head-ablation` at `2d82421d`. Namespace `/cluster/tufts/paralab/tawal01/head_refine_20260915/`, one attempt directory per PDE. Burgers job `3733978` (`NVIDIA A100-PCIE-40GB`, source `4ba4d17f6b65e2d527546f3123591e038eedd5de`, 256 intervals, the same 6 opened development cases arm (a) used, elapsed 1234.1 s); Poisson job `3733979` (`NVIDIA A100-PCIE-40GB`, source `4ba4d17f6b65e2d527546f3123591e038eedd5de`, 1024 intervals, the same 12 development sources, elapsed 427.7 s). Both logged `jax_backend=gpu`, f64, highest matmul precision, 3 timed repetitions with GPU burn-in before every timed block, randomised subject order, every repetition array retained, refinement steps INSIDE the timed query.
+
+**Five fidelity gates, all passed.** Through the new code path with theta as a traced runtime operand, n=0 reproduces the consolidated saved Burgers case to 1.358e-14 relative and the incumbent `accuracy_paths.make_rom` to 1.463e-14, both inside the declared 1e-12; the reconstructed head is bit-identical to the retained head (0.0e+00). In the Burgers job `n0` reproduces `abl01`'s `a_neural_eq` on all 6 cases to 1.140e-12 against a declared 1e-9, with 0 of 6 fields bitwise identical across jobs. In the Poisson job `n0` reproduces `pabl01`'s `a_neural` on all 12 sources to 4.455e-15 against the declared cross-job 1e-06. An independent NumPy audit that imports neither driver nor JAX recomputed every reported error from the retained fields (worst relative difference 5.65e-16 Burgers, 1.21e-15 Poisson) and re-decoded the saved refined weights in pure NumPy at a fixed 4096-node bank sample: 162 Burgers (arm, case) pairs to 4.52e-14 and 156 Poisson pairs to 2.96e-15.
+
+**Burgers step size and anchor.** Adam, chosen once on one training-family calibration case (not an evaluation case) by lowest V1 data term after n=8 at the loose anchor, then frozen for both variants, both anchor weights, every n and every evaluation case: alpha = 1e-05. Anchor diagnostic at n=32 on the same calibration case (diagnostic only, selects nothing): mu=1 drift 1.721e-04 anchor/data gradient 1.66e-04, mu=100 drift 1.111e-04 anchor/data gradient 1.08e-02, mu=1000 drift 5.871e-05 anchor/data gradient 5.77e-02, mu=10000 drift 3.204e-05 anchor/data gradient 3.40e-01, mu=100000 drift 1.450e-05 anchor/data gradient 1.02e+00, mu=1e+06 drift 6.468e-06 anchor/data gradient 1.92e+00.
+
+**Poisson step size and anchor.** Adam, chosen once on one training-family calibration case (not an evaluation case) by lowest V1 data term after n=8 at the loose anchor, then frozen for both variants, both anchor weights, every n and every evaluation case: alpha = 0.0001. This sits at the edge of the pre-registered grid, so the calibration did not bracket an interior optimum and every number below is for that step size. Anchor diagnostic at n=32 on the same calibration case (diagnostic only, selects nothing): mu=1 drift 1.939e-03 anchor/data gradient 1.79e-01, mu=100 drift 4.910e-04 anchor/data gradient 1.05e+00, mu=1000 drift 1.376e-04 anchor/data gradient 1.28e+00, mu=10000 drift 9.756e-05 anchor/data gradient 5.22e+00, mu=100000 drift 8.789e-05 anchor/data gradient 3.65e+01, mu=1e+06 drift 8.672e-05 anchor/data gradient 3.51e+02.
+
+**Pre-registered acceptance (error monotone in n; at least 3 non-dominated points spanning >= 2x in cost and >= 2x in error; none early-stopped) — the verdict per variant and anchor:**
+
+| PDE | variant | anchor | monotone | non-dominated | cost span | error span | none early-stopped | verdict |
+|---|---|---|---|---:|---:|---:|---|---|
+| Burgers | V1 | loose | no | 2 | 1.11x | 1.01x | yes | **NOT a knob** |
+| Burgers | V1 | tight | no | 2 | 1.11x | 1.05x | yes | **NOT a knob** |
+| Burgers | V2 | loose | no | 2 | 2.81x | 1.00x | yes | **NOT a knob** |
+| Burgers | V2 | tight | no | 2 | 2.78x | 1.00x | yes | **NOT a knob** |
+| Poisson | V1 | loose | no | 6 | 3.54x | 2.16x | yes | **NOT a knob** |
+| Poisson | V1 | tight | no | 2 | 1.21x | 1.19x | yes | **NOT a knob** |
+
+**What each ladder failed on:** Burgers V1/loose — monotonicity, fewer than three non-dominated points, cost span below 2x, error span below 2x; Burgers V1/tight — monotonicity, fewer than three non-dominated points, cost span below 2x, error span below 2x; Burgers V2/loose — monotonicity, fewer than three non-dominated points, error span below 2x; Burgers V2/tight — monotonicity, fewer than three non-dominated points, error span below 2x; Poisson V1/loose — monotonicity; Poisson V1/tight — monotonicity, fewer than three non-dominated points, cost span below 2x, error span below 2x.
+
+- Burgers V1 / loose: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [2.5629, 4.1122, 2.5259, 2.9942, 2.6895, 3.0425, 2.9772] percent at [50.737, 53.14, 56.402, 58.185, 60.406, 67.408, 80.597] median ms. Nothing on this ladder is early-stopped. Monotonicity breaks at n=1 (2.5629 -> 4.1122 %), n=4 (2.5259 -> 2.9942 %), n=16 (2.6895 -> 3.0425 %).
+- Burgers V1 / tight: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [2.5629, 4.1122, 2.4345, 2.9896, 2.4452, 2.5512, 2.51] percent at [50.737, 53.356, 56.158, 60.55, 61.579, 68.012, 81.034] median ms. Nothing on this ladder is early-stopped. Monotonicity breaks at n=1 (2.5629 -> 4.1122 %), n=4 (2.4345 -> 2.9896 %), n=16 (2.4452 -> 2.5512 %).
+- Burgers V2 / loose: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [2.5629, 32.7477, 4.3275, 5.6716, 2.5629, 2.5629, 2.5629] percent at [50.737, 246.9, 119.654, 119.38, 142.808, 175.589, 253.545] median ms. Nothing on this ladder is early-stopped. Monotonicity breaks at n=1 (2.5629 -> 32.7477 %), n=4 (4.3275 -> 5.6716 %).
+- Burgers V2 / tight: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [2.5629, 19.3042, 3.4746, 4.1049, 2.5629, 2.5629, 2.5629] percent at [50.737, 197.057, 127.632, 125.731, 141.253, 182.151, 257.879] median ms. Early-stopped on this ladder: v2_n1_mutight, v2_n2_mutight. Monotonicity breaks at n=1 (2.5629 -> 19.3042 %), n=4 (3.4746 -> 4.1049 %).
+- Poisson V1 / loose: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [6.0931, 6.4759, 5.6145, 4.7492, 4.0113, 3.3936, 2.8183] percent at [10.819, 12.027, 13.123, 15.248, 19.167, 25.763, 38.259] median ms. Nothing on this ladder is early-stopped. Monotonicity breaks at n=1 (6.0931 -> 6.4759 %).
+- Poisson V1 / tight: worst same-grid along n=[0, 1, 2, 4, 8, 16, 32] is [6.0931, 6.4759, 5.1317, 8.3936, 5.1787, 6.444, 5.255] percent at [10.819, 11.951, 13.083, 15.692, 20.156, 28.201, 43.38] median ms. Nothing on this ladder is early-stopped. Monotonicity breaks at n=1 (6.0931 -> 6.4759 %), n=4 (5.1317 -> 8.3936 %), n=16 (5.1787 -> 6.4440 %).
+
+**Burgers non-dominated set** (every reduced arm in the primary quadrature): `n0` 2.5629% at 50.737 ms, drift 0.000e+00, converged; `v1_n2_mutight` 2.4345% at 56.158 ms, drift 2.753e-05, converged.
+
+**Poisson non-dominated set** (every reduced arm in the primary quadrature): `n0` 6.0931% at 10.819 ms, drift 0.000e+00, converged; `v1_n2_mutight` 5.1317% at 13.083 ms, drift 1.780e-04, converged; `v1_n4_muloose` 4.7492% at 15.248 ms, drift 8.313e-04, converged; `v1_n8_muloose` 4.0113% at 19.167 ms, drift 1.102e-03, converged; `v1_n16_muloose` 3.3936% at 25.763 ms, drift 1.357e-03, converged; `v1_n32_muloose` 2.8183% at 38.259 ms, drift 1.413e-03, converged.
+
+**Three layers on Burgers.** The frozen bank projection floor is 0.3918% worst and is unchanged by refinement, so it bounds every arm. The unrefined head reaches 2.5447% best-found reconstruction and 2.5629% worst same-grid at 50.737 median GPU ms. `v1_n8_muloose` best-found 2.4434%, same-grid 2.6895%, 60.406 ms; `v1_n8_mutight` best-found 2.4115%, same-grid 2.4452%, 61.579 ms; `v1_n32_muloose` best-found 2.4423%, same-grid 2.9772%, 80.597 ms; `v1_n32_mutight` best-found 2.2322%, same-grid 2.5100%, 81.034 ms; `v2_n8_muloose` best-found 2.5447%, same-grid 2.5629%, 142.808 ms; `v2_n8_mutight` best-found 2.5447%, same-grid 2.5629%, 141.253 ms; `v2_n32_muloose` best-found 2.5447%, same-grid 2.5629%, 253.545 ms; `v2_n32_mutight` best-found 2.5447%, same-grid 2.5629%, 257.879 ms.
+
+**Three layers on Poisson.** Bank projection floor 2.3148% worst; the unrefined head reaches 6.0926% best-found and 6.0931% worst same-grid at 10.819 median ms. `v1_n8_muloose` best-found 4.0108%, same-grid 4.0113%, 19.167 ms; `v1_n8_mutight` best-found 5.1782%, same-grid 5.1787%, 20.156 ms; `v1_n32_muloose` best-found 2.8178%, same-grid 2.8183%, 38.259 ms; `v1_n32_mutight` best-found 5.2545%, same-grid 5.2550%, 43.380 ms.
+
+**A structural point that must not be misread.** For the unrefined Burgers head the maximum over the six output times is attained at t=0 (2.5629% against 1.9002% over the evolved times): the t=0 output is the model's own compression of the supplied initial field. V2 has not taken a single refinement step by the time that field is decoded, so NO V2 arm can move the worst-over-times number once its evolved times fall below the t=0 value. Several V2 rows therefore sit at exactly the n=0 value for that structural reason, not because refinement did nothing - their drift is non-zero and their per-time errors do change. The same pinning applies to the V2 best-found reconstruction column, which is a max over times whose t=0 entry uses theta_0. V1 does move the number, because it refines before t=0 is decoded. This was not anticipated in DESIGN.md and is recorded here as the main interpretive correction of the cell.
+
+**Held-out generalisation risk, reported explicitly.** Worst same-grid error per output time is in the report for every arm. Arms that improve the first evolved output time and worsen the last relative to `n0` — the signature of overfitting the supplied initial field: `v2_n8_mutight`.
+
+**Recorded deviations and limitations.** The dense control is a pair at the two ends of the V1 ladder rather than a single arm, because one dense row alone cannot be differenced. The empirical-quadrature rule and the cold-start candidate table are offline artifacts fitted at theta_0 and stay frozen while theta moves; the dense pair isolates that. The two anchor weights were moved from {1e-3, 10} to {1e2, 1e5} after the local fidelity smoke and before any evaluation run, because the anchor gradient is about 3e-6 against a data gradient of 6e-2 to 1, so the original pair was numerically indistinguishable from no anchor; only gradient scales were consulted, no accuracy number. The step-size grid was widened downward for the same reason. Both amendments are dated in `DESIGN.md`. One checkpoint per PDE, one mesh, one training seed; the final cohorts stay sealed and no new case was opened.
+
+Source-generated report and figure: `experiments/head-refine/reports/2026-09-15-per-query-head-refinement.md` (SHA256 `8127f6b4682a5aa38e5ac45f9e06e1645900254af86f354ca2d1fda6e140b015`) with `-cost.png` / `-cost.pdf` beside it, produced by `reports/generate_head_refine.py`. Raw archives Git-tracked as bounded chunks under `experiments/head-refine/artifacts/`: bref01 sha256 a17cf81010e7bd9f3d276a6e89f9874a36b8032f50a64ce39e2ffb49de96a312 (25 chunks); pref01 sha256 345a9361d0db4ae2c54aae6cae17ad870e8bd9b9473e515a0fbf8de32dc7ce02 (30 chunks). Both exact remote attempt directories were removed after checksum collection and the namespace is empty. Not pushed, per the coordinator's standing instruction; commits are local only.
+
+**Open.** Other meshes, other checkpoints, more than one training seed, the sealed final cohorts, a step size chosen inside its grid rather than at an edge, and whether refining a smaller subset of the head (the linear skip alone, say) would move the frontier. No earlier numerical result is retracted and no worktree was merged.
+
+
+## 2026-09-15
+### prior-dial — on Burgers, trusting the neural prior less is not a knob on either metric; on Poisson it is an accuracy lever that is nearly free, spans 2.62x in error for only 1.16x in cost at 1024 intervals
+
+The coordinator asked whether "trust in the neural prior" is a usable inference-time accuracy/cost knob on one frozen checkpoint. Instead of solving only for the latent code with the bank coefficients pinned to the head, the full bank coefficient vector c is solved under a penalty pulling it towards the head: min_{z,c} ||r_w(c)||^2 + lambda ||R_G (c - h_theta(z))||^2, with G = Q_G R_G the thin QR already used by arms.py, so the penalty is the squared FIELD-norm distance from the head's own state. lambda = infinity is head-ablation arm (a) exactly; lambda -> 0 with M >= R is the free-bank arm (d). Every network weight, the bank, K = 16, the initializer policy, dt, the stopping rule and the output contract are arm (a)'s.
+
+Worktree `worktrees/2026-09-15-prior-dial`, branch `exp/2026-09-15-prior-dial` at `008ee9e9e5bcb60236957457719ce75aa969af47`, forked from `exp/2026-09-14-head-ablation` at `2d82421d`. Namespace `/cluster/tufts/paralab/tawal01/prior_dial_20260915/`. Burgers job `3733929` (`pdial01`) on `NVIDIA A100 80GB PCIe`, Poisson job `3733930` (`ppdial01`) on `NVIDIA A100-PCIE-40GB`, both from source `b47211e0ab823fa8359cf0dd57ce06292593d96c`, both printing `jax_backend=gpu`, float64, matmul precision highest; elapsed 3952.3 s and 412.7 s. One job per attempt directory, `squeue` checked before and after each submit. 3 timed repetitions with GPU burn-in before every block, every repetition array retained. Burgers: 256 intervals, the frozen `sep_hfit_dense_mid_N256_dense.pkl`, the same six opened development cases as abl01 and qlad01. Poisson: the frozen pabl01 bank/head (K=16, R=128, retained M=257), the same twelve development sources, at 1024 and 64 intervals. No new case was opened.
+
+**Scaling of lambda, declared before the run.** lambda = lambda_rel * sigma^2 with sigma = ||A R_G^{-1}||_2 = ||Phi^T Q_G||_2, the exact linear part of d r_w / d y, which is state independent because the 1/(1 + dt nu lam_j) row scaling of the weak residual cancels the diffusion term exactly. Since Phi and Q_G both have orthonormal columns, sigma is the largest principal cosine between the test-mode span and the bank span; measured 0.9999999997 on Burgers and 0.9999998638 on Poisson. lambda_rel = 1 balances the strongest linear residual response against the prior. Sweep: lambda_rel in [inf, 1000, 100, 10, 1, 0.1, 0.01, 0.001], at test counts M = [64, 256, 1024] on Burgers.
+
+**Fidelity gates.** Through the new code path at lambda = infinity the local smoke reproduces the consolidated saved Burgers case to 2.013e-14 relative and is bit-identical (0.0e+00) to the incumbent `accuracy_paths.make_rom`; the finite path at lambda_rel = 1e+06 returns to that limit to 3.646e-06. In the job, `M64_eq_laminf` reproduces abl01's `a_neural_eq` on all 6 cases to a worst relative difference of 1.007e-12 (0 of 6 fields bitwise identical across jobs), and Poisson `laminf` reproduces pabl01's `a_neural` to 4.221e-15. Every recorded error was independently recomputed from the retained output fields by NumPy (worst disagreement 5.17e-16).
+
+**The structural finding, and it decides the headline.** The contract fixes arm (a)'s initializer, which starts the correction at y = 0, so the t = 0 output field is the head's compression of the supplied field and cannot depend on lambda; the audit confirms it to 0.00e+00 relative across every lambda, test count and quadrature. On these six cases that compression error is also the LARGEST of the six output times, so the worst same-grid error over all times is pinned by construction at 2.5629% and no setting of lambda moves it. This is a fact about the checkpoint and the contract, not a defect of the dial, and it is why DESIGN.md amendment 2 — recorded from a local probe BEFORE submission — added the worst same-grid error over the evolved times as a declared secondary metric while keeping the pre-registered primary metric and its criteria unchanged. The correction ladder moved this metric only because its initializer fitted the augmented vector too; that difference was not previously stated anywhere and is the main reason the two cells' headline numbers are not comparable.
+
+**Burgers, primary block (M = 64, EQ — arm (a)'s own test count and quadrature).**
+
+| lambda_rel | worst same-grid all times % | worst same-grid evolved % | realised ‖y‖/‖u‖ % | median iters/step | budget exits | completed | median GPU ms |
+|---:|---:|---:|---:|---:|---:|---|---:|
+| inf | 2.5629 | 1.9002 | 0.0000 | 3.0 | 0 | yes | 48.607 |
+| 1000 | 2.5629 | 1.9001 | 0.0005 | 3.0 | 0 | yes | 480.726 |
+| 100 | 2.5629 | 1.8996 | 0.0048 | 3.0 | 0 | yes | 496.818 |
+| 10 | 2.5629 | 1.8940 | 0.0440 | 3.0 | 0 | yes | 510.869 |
+| 1 | 2.5629 | 1.8373 | 0.2808 | 4.0 | 0 | yes | 568.029 |
+| 0.1 | 2.5629 | 1.5475 | 0.7293 | 5.0 | 6 | no | 1231.406 |
+| 0.01 | 2.5629 | 1.6844 | 0.9696 | 8.0 | 45 | no | 2268.825 |
+| 0.001 | 2.5629 | 1.7111 | 1.0126 | 9.5 | 159 | no | 3637.492 |
+| FOM fft_loose | 3.7127 | 3.7127 | n/a | 1.0 | n/a | n/a | 15.237 |
+| FOM fft_tight | 0.0000 | 0.0000 | n/a | 2.0 | n/a | n/a | 90.074 |
+
+**Verdict against the pre-registered acceptance criteria** (fixed in DESIGN.md before any implementation: error monotone in lambda; at least 3 non-dominated points spanning >= 2x in cost AND >= 2x in error; none early-stopped).
+
+- **primary, worst same-grid over all six output times: NOT A KNOB.** Monotone: yes. Non-dominated points 1, spanning 1.00x in cost and 1.00x in error (fail). None early-stopped: yes.
+- **secondary, worst same-grid over the evolved times: NOT A KNOB.** Monotone: no. Non-dominated points 6, spanning 25.33x in cost and 1.23x in error (fail). None early-stopped: no.
+
+**What the test count does, which is the real content.** With the bank free, the weak residual has only M equations; at M < R it is easy to satisfy with a tiny correction and the prior is barely binding, and the small-lambda end there is a REGULARIZED UNDERDETERMINED solve, not the free bank. Only M > R reaches the free-bank limit.
+
+| M | quad. | overdetermined | worst evolved % at lambda=inf | best worst evolved % | at lambda_rel | cost factor | best point completed |
+|---:|---|---|---:|---:|---:|---:|---|
+| 64 | dense | no (R=512) | 1.8890 | 1.4213 | 0.001 | 43.517 | NO |
+| 64 | eq | no (R=512) | 1.9002 | 1.5475 | 0.1 | 25.334 | NO |
+| 256 | dense | no (R=512) | 1.2710 | 0.7928 | 0.1 | 11.823 | NO |
+| 1024 | dense | yes | 1.2657 | 0.7370 | 0.1 | 8.593 | NO |
+
+**Cost span, since that is what Poisson failed on.** Applying the same three criteria block by block (the criteria are pre-registered on the primary block only; this is the separate question of whether the test count changes the shape of the frontier):
+
+| block | metric | monotone | non-dom. points | cost span | >= 2x cost | error span | >= 2x error | none early-stopped |
+|---|---|---|---:|---:|---|---:|---|---|
+| M=64 dense | all times | yes | 1 | 1.00x | NO | 1.00x | NO | yes |
+| M=64 dense | evolved | yes | 4 | 43.52x | yes | 1.33x | NO | NO |
+| M=64 eq | all times | yes | 1 | 1.00x | NO | 1.00x | NO | yes |
+| M=64 eq | evolved | NO | 6 | 25.33x | yes | 1.23x | NO | NO |
+| M=256 dense | all times | yes | 1 | 1.00x | NO | 1.00x | NO | yes |
+| M=256 dense | evolved | NO | 6 | 11.82x | yes | 1.60x | NO | NO |
+| M=1024 dense | all times | yes | 1 | 1.00x | NO | 1.00x | NO | yes |
+| M=1024 dense | evolved | NO | 6 | 8.59x | yes | 1.72x | NO | NO |
+
+On Burgers the cost span CLEARS 2x at every test count on the evolved-time metric, because the finite-lambda path solves K+R = 528 unknowns instead of K = 16 whatever lambda is; what fails is the error span, the monotonicity and the convergence of the points that do buy accuracy. Poisson fails the opposite way, on cost. The dial is never a knob, but it fails for a different reason on each PDE.
+
+Non-dominated over every Burgers arm on the evolved-time metric: `M64_eq_laminf` (1.9002%, 48.6 ms, completed), `M64_dense_laminf` (1.8890%, 290.3 ms, completed), `M256_dense_laminf` (1.2710%, 349.6 ms, completed), `M1024_dense_laminf` (1.2657%, 716.4 ms, completed), `M256_dense_lam10` (1.2578%, 2426.2 ms, completed), `M256_dense_lam1` (1.1382%, 2604.9 ms, completed), `M256_dense_lam0p1` (0.7928%, 4133.2 ms, EARLY-STOPPED), `M1024_dense_lam0p1` (0.7370%, 6155.7 ms, EARLY-STOPPED).
+
+Against the same-job full-order `fft_loose` (3.7127% same-grid over all times, 15.237 ms median GPU): no arm dominates it on both axes.
+Against the same-job full-order `fft_loose` (3.7127% same-grid over evolved times, 15.237 ms median GPU): no arm dominates it on both axes.
+Against the same-job full-order `fft_tight` (0.0000% same-grid over all times, 90.074 ms median GPU): no arm dominates it on both axes.
+Against the same-job full-order `fft_tight` (0.0000% same-grid over evolved times, 90.074 ms median GPU): no arm dominates it on both axes.
+
+**Poisson, where c is eliminated exactly.** The Poisson weak residual is linear in c, so y has the closed form (B_y^T B_y + lambda I) y = B_y^T (f_m - B h(z)), evaluated from one thin SVD of B_y = B R_G^{-1} built at setup (never the Gram, which would square the condition number); the outer LM runs in z only and differentiates through it, so the solved dimension stays K and the trust radius keeps its latent meaning. M = 257 > R = 128, so lambda -> 0 does reach the free bank.
+
+| intervals | lambda_rel | worst same-grid % | median same-grid % | worst physical % | realised ‖y‖/‖u‖ % | median host ms |
+|---:|---:|---:|---:|---:|---:|---:|
+| 64 | inf | 6.2391 | 1.2454 | 6.0948 | 0.0000 | 3.2826 |
+| 64 | 1000 | 6.2339 | 1.2444 | 6.0895 | 0.0057 | 4.0126 |
+| 64 | 100 | 6.1875 | 1.2348 | 6.0429 | 0.0562 | 4.1264 |
+| 64 | 10 | 5.7685 | 1.1484 | 5.6211 | 0.5167 | 4.1030 |
+| 64 | 1 | 3.7851 | 0.7355 | 3.6223 | 2.8609 | 4.0251 |
+| 64 | 0.1 | 2.5109 | 0.3924 | 2.3667 | 5.2382 | 3.8926 |
+| 64 | 0.01 | 2.4613 | 0.3771 | 2.3362 | 5.7132 | 3.8103 |
+| 64 | 0.001 | 2.4614 | 0.3773 | 2.3387 | 5.7655 | 3.8476 |
+| 64 | FOM dst_direct | 0.0000 | 0.0000 | 0.2572 | n/a | 1.5210 |
+| 1024 | inf | 6.0931 | 1.2421 | 6.0927 | 0.0000 | 10.3103 |
+| 1024 | 1000 | 6.0880 | 1.2411 | 6.0876 | 0.0056 | 12.1815 |
+| 1024 | 100 | 6.0422 | 1.2315 | 6.0418 | 0.0552 | 12.1440 |
+| 1024 | 10 | 5.6279 | 1.1454 | 5.6275 | 0.5076 | 12.2159 |
+| 1024 | 1 | 3.6593 | 0.7341 | 3.6589 | 2.8104 | 12.0361 |
+| 1024 | 0.1 | 2.3781 | 0.3871 | 2.3777 | 5.1450 | 12.0375 |
+| 1024 | 0.01 | 2.3276 | 0.3722 | 2.3272 | 5.6114 | 11.9645 |
+| 1024 | 0.001 | 2.3277 | 0.3723 | 2.3273 | 5.6628 | 11.8104 |
+| 1024 | FOM dst_direct | 0.0000 | 0.0000 | 0.0007 | n/a | 7.8928 |
+
+- 64 intervals: worst same-grid NOT monotone in lambda, [6.2391, 6.2339, 6.1875, 5.7685, 3.7851, 2.5109, 2.4613, 2.4614] percent from lambda = infinity down; 2 non-dominated points spanning 1.16x in cost and 2.53x in error, all completed. The direct DST solve costs 1.5210 ms with zero same-grid error by definition, against 3.2826 ms for the ROM at lambda = infinity.
+- 1024 intervals: worst same-grid NOT monotone in lambda, [6.0931, 6.088, 6.0422, 5.6279, 3.6593, 2.3781, 2.3276, 2.3277] percent from lambda = infinity down; 3 non-dominated points spanning 1.16x in cost and 2.62x in error, all completed. The direct DST solve costs 7.8928 ms with zero same-grid error by definition, against 10.3103 ms for the ROM at lambda = infinity.
+
+**Recorded deviations.** (1) The trust radius is applied to the LATENT block only in the primary sweep: arm (a)'s radius 0.0525651166 is 1% of the training code cloud's radius, a latent-space quantity, and carrying it to y (field-norm units) would cap the field correction at that same number and silently regularize the small-lambda end with something that is not lambda. Paired trust-control rows at two lambda values measure the size of that choice. At lambda = infinity there is no y block and the two are identical. (2) The LM residual tolerance now includes the sqrt(lambda) y block, so the absolute residual exit is harder to reach at large lambda; the stationarity and small-step exits are unaffected and every row reports its budget exits. (3) Empirical quadrature is fitted only at M = 64 (m = 4M = 256), which is arm (a)'s own rule refit with the identical seed, candidate cap, fit-state count and code table; at M = 256 and 1024 an m = 4M NNLS rule is not constructible inside the job budget, so those blocks use the exact dense grid sum, stated per row, and the EQ rule — fitted on decoder-output advection snapshots — is extrapolating once c leaves the head manifold, which the paired dense block at M = 64 measures. (4) Arms above 64 unknowns use a pivoted dense step solve rather than the incumbent unrolled Gauss-Jordan: more accurate, not weaker. (5) Layers 1 and 2 of the error decomposition coincide at every finite lambda, because the penalty restricts the SOLVER and not the reachable set; whatever lambda does, it does entirely in the reduction/solver layer.
+
+**Nothing is retracted.** No earlier numerical result is withdrawn by this cell. The correction ladder's numbers stand; what is newly recorded is that its initializer fitted the augmented vector while this cell's does not, so the two cells' all-times metrics are not comparable and the ladder's ability to move that metric came partly from correcting the t = 0 compression.
+
+Source-generated report and figures: `experiments/prior-dial/reports/2026-09-15-prior-dial.md` (SHA256 `3813a1c2c40b9c5e63ffb5d9d62f20db4c1c43a7a8913ec8a6a582b779100a47`) with `-cost.png`/`-cost.pdf` and `-poisson.png`/`-poisson.pdf` beside it, all produced by `reports/generate_prior_dial.py`. Raw archives Git-tracked as bounded chunks under `experiments/prior-dial/artifacts/`: pdial01 sha256 b633910da2cc53671d67c72e27f8b439e424b57c648bb3806c4e715882dd95e9 (13 chunks); ppdial01 sha256 95533375413ed34398f1ddffb0435393f974ef214b73f14404a85b7003269ec6 (18 chunks). Both exact remote attempt directories were removed after checksum collection and the namespace is empty. Not pushed, per the coordinator's standing instruction; commits are local only.
+
+**Open.** Whether letting the same penalty act on the INITIAL state fit — which would change arm (a)'s initializer contract and was therefore out of scope here — unpins the all-times metric; other meshes, other checkpoints, more than one training seed; the sealed final cohort; and whether an M > R test family with a constructible hyper-reduction rule would make the Burgers dial affordable. No worktree was merged.
+
+## 2026-09-15
+### Poisson zero-start diagnostic — the starting point changes cost, never the answer
+
+User question: what happens if the latent solve starts from z = 0 every time, as the old
+ViT + CP Poisson solver did. Local GB10 diagnostic (jaxrun, f64, highest matmul precision,
+`jax_backend=gpu`), no cluster job, no repository source changed. Frozen head-ablation Poisson
+checkpoint `runs/correction_accuracy10/checkpoints/r128_joint.pkl` (K=16, R=128), the same
+12 development sources, 257 sine tests, LM budget 300, stationarity 1e-6, trust radius
+1.236 (the radius of the training codes; mean code norm 0.59, max 1.23). Four starts:
+nearest training code by weak prediction (the head-ablation arm (a) policy), mean training
+code (the incumbent `core.rom_query` policy), z = 0 with the same trust radius, z = 0 with
+no trust radius. Script, JSON and log committed in worktree `2026-09-14-head-ablation` at
+`experiments/head-ablation/checks/zero-start/`.
+
+| intervals | start | worst same-grid % | median % | LM iters median / max | stationary |
+|---:|---|---:|---:|---:|---|
+| 1024 | nearest code | 6.0931 | 1.2421 | 5 / 6 | 12/12 |
+| 1024 | mean code | 6.0931 | 1.2421 | 14 / 20 | 12/12 |
+| 1024 | zero | 6.0931 | 1.2421 | 14 / 20 | 12/12 |
+| 1024 | zero, no trust radius | 6.0931 | 1.2421 | 14 / 20 | 12/12 |
+
+Identical at 64 and 256 (6.2391 / 6.1014 % worst). Per-case same-grid errors agree across
+all four starts to <= 1e-9; the nearest-code row reproduces the audited pabl01 arm (a)
+exactly. Every solve exits stationary (reason 4). Cost: the zero start takes about 3x the
+iterations and about 2x the local wall time (41 -> 85 ms on the GB10; A100 numbers in
+pabl01 are 5.8 ms for the nearest start).
+
+Reading: on this checkpoint and cohort the head's surface has a single basin for the weak
+objective; where the solve starts changes only how many steps it takes. The old solver's
+cold start therefore explains its iteration counts, not any accuracy difference, and there
+is no accuracy hidden in the current initializer. One checkpoint, development cohort only,
+wall times from the shared GB10 are not comparable with cluster timings. Nothing retracted.
+
+## 2026-09-15
+### cheap-corrections — the Burgers correction ladder now CONVERGES to q=128 and the pre-registered 3x target PASSES, but q is still not a knob: the error span of the non-dominated converged set falls short of 2x
+
+The coordinator asked whether the audited fixed-weight correction ladder (job `3713867`) can be made to CONVERGE cheaply without changing the checkpoint, the directions rule or the reachable set. Three changes, each isolated: (1) eliminate the correction coefficients from the nonlinear iteration; (2) decouple the test count from $q$; (3) fit one empirical quadrature rule per rung. Predeclared protocol and its amendments: `experiments/cheap-corrections/DESIGN.md`.
+
+Worktree `worktrees/2026-09-15-cheap-corrections`, branch `exp/2026-09-15-cheap-corrections` at `3ea369e0`. Namespace `/cluster/tufts/paralab/tawal01/cheap_corr_20260915/`. Burgers job `3734098` (`cclad01`) on `NVIDIA A100 80GB PCIe`, source `f76ec2ff9acd1cfad96dcb0bda733b29a20b1be6`, elapsed 8792.7 s. Poisson job `3734084` (`ccpoi01`) on `NVIDIA A100 80GB PCIe`, source `165a716399b3e1ff76e46c8b5c0d0d4da176cf87`, elapsed 570.6 s. Both printed `jax_backend=gpu`, ran float64 with highest matmul precision, and were checksum-collected, independently NumPy-audited and archived before their exact remote attempt directories were removed.
+
+**Gates.** `complete` yes; `backend_gpu` yes; `x64` yes; `precision_highest` yes; `bank_frozen` yes; `checkpoint_unchanged` yes; `final_cohort_unopened` yes; `reference_residuals` yes; `reference_fields_bitwise_match_qlad01` no; `directions_hash_matches_qlad01` no; `directions_rank_covers_ladder` yes; `flattened_direction_fit` yes; `every_subject_case_has_all_reps` yes; `repetition_output_identical` yes; `every_invocation_paired` yes; `overdetermined_weak_system` yes; `test_count_rule_followed` yes; `every_rom_carries_exit_and_stationarity` yes; `q0_variants_bitwise` yes; `artifacts_present` yes; `recorded_errors_recomputed_from_saved_fields` yes; `q0_reproduces_qlad01_q0_eq` yes; `cases_identical` yes; `q0_reproduces_abl01_a_neural_eq` yes; `q16_varpro_agrees_with_qlad01_q16_dense` yes.
+
+Poisson gates: `complete` yes; `backend_gpu` yes; `x64` yes; `precision_highest` yes; `bank_frozen` yes; `final_cohort_unopened` yes; `retained_direction_prefix_exact` yes; `every_subject_case_has_all_reps` yes; `repetition_output_identical` yes; `overdetermined_weak_system` yes; `nonlinear_dimension_stays_K` yes; `every_rom_reports_solver_validity` yes; `artifacts_present` yes; `recorded_errors_recomputed_from_saved_fields` yes; `q32_reproduces_pabl01_a_neural_q32` yes; `cohort_identical` yes.
+
+**Solver variants at matched $q$, test count and quadrature** (dense, $M=4(K+q)$):
+
+| q | variant | worst same-grid % | median GPU ms | median iters/step | budget exits | max joint gradient | converged |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 0 | alt | 2.5629 | 282.438 | 3.0 | 0 | 9.97e-07 | yes |
+| 0 | block | 2.5629 | 282.871 | 3.0 | 0 | 9.97e-07 | yes |
+| 0 | joint | 2.5629 | 283.221 | 3.0 | 0 | 9.97e-07 | yes |
+| 0 | varpro | 2.5629 | 282.866 | 3.0 | 0 | 9.97e-07 | yes |
+| 16 | alt | 2.4806 | 1026.099 | 7.0 | 0 | 8.07e-03 | no |
+| 16 | block | 2.4806 | 359.839 | 3.0 | 0 | 9.99e-07 | yes |
+| 16 | joint | 2.4806 | 427.170 | 3.0 | 0 | 9.92e-07 | yes |
+| 16 | varpro | 2.4806 | 3420.852 | 17.0 | 0 | 9.98e-07 | yes |
+| 32 | block | 2.3534 | 433.285 | 3.0 | 0 | 9.83e-07 | yes |
+| 64 | alt | 2.1489 | 1427.426 | 7.0 | 0 | 3.43e-02 | no |
+| 64 | block | 2.1489 | 619.242 | 3.0 | 0 | 9.47e-07 | yes |
+| 64 | joint | 2.1489 | 1119.719 | 3.0 | 6 | 2.60e-02 | no |
+| 64 | varpro | 2.1489 | 9527.948 | 33.0 | 0 | 9.97e-07 | yes |
+| 128 | alt | 1.8116 | 2215.151 | 7.0 | 0 | 4.46e-02 | no |
+| 128 | block | 1.8116 | 1184.683 | 3.0 | 0 | 9.93e-07 | yes |
+| 128 | joint | 1.8116 | 2268.532 | 3.0 | 15 | 3.26e-02 | no |
+| 256 | block | 0.9053 | 3927.271 | 5.0 | 12 | 2.27e-03 | no |
+| 512 | block | 0.6027 | 3790.395 | 2.0 | 0 | 1.38e-01 | no |
+
+**The ladder.** All Burgers arms:
+
+| arm | q | rule | M | quad | m | worst same-grid % | worst reference % | median GPU ms | budget exits | converged |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `q0_Mmax_dense_block` | 0 | Mmax | 2112 | dense | — | 2.5629 | 4.0687 | 1115.649 | 0 | yes |
+| `q0_m2_dense_block` | 0 | m2 | 32 | dense | — | 3.8946 | 4.9659 | 296.888 | 0 | yes |
+| `q0_m256_dense_block` | 0 | m256 | 256 | dense | — | 2.5629 | 4.0637 | 338.578 | 0 | yes |
+| `q0_m256_dense_varpro` | 0 | m256 | 256 | dense | — | 2.5629 | 4.0637 | 338.195 | 0 | yes |
+| `q0_m256_eq_block` | 0 | m256 | 256 | eq | 1010 | 2.5629 | 4.0527 | 60.206 | 0 | yes |
+| `q0_m256_eq_varpro` | 0 | m256 | 256 | eq | 1010 | 2.5629 | 4.0527 | 60.237 | 0 | yes |
+| `q0_m4_dense_alt` | 0 | m4 | 64 | dense | — | 2.5629 | 4.5575 | 282.438 | 0 | yes |
+| `q0_m4_dense_block` | 0 | m4 | 64 | dense | — | 2.5629 | 4.5575 | 282.871 | 0 | yes |
+| `q0_m4_dense_joint` | 0 | m4 | 64 | dense | — | 2.5629 | 4.5575 | 283.221 | 0 | yes |
+| `q0_m4_dense_varpro` | 0 | m4 | 64 | dense | — | 2.5629 | 4.5575 | 282.866 | 0 | yes |
+| `q0_m4_eq_varpro` | 0 | m4 | 64 | eq | 256 | 2.5629 | 4.5546 | 49.128 | 0 | yes |
+| `q16_m2_dense_block` | 16 | m2 | 64 | dense | — | 2.4806 | 4.4307 | 394.245 | 0 | yes |
+| `q16_m256_dense_block` | 16 | m256 | 256 | dense | — | 2.4806 | 4.0664 | 420.396 | 0 | yes |
+| `q16_m256_dense_varpro` | 16 | m256 | 256 | dense | — | 2.4806 | 4.0664 | 3100.231 | 0 | yes |
+| `q16_m256_eq_block` | 16 | m256 | 256 | eq | 1000 | 2.4806 | 4.0654 | 83.235 | 0 | yes |
+| `q16_m256_eq_varpro` | 16 | m256 | 256 | eq | 1000 | 2.4806 | 4.0654 | 483.214 | 0 | yes |
+| `q16_m4_dense_alt` | 16 | m4 | 128 | dense | — | 2.4806 | 4.1079 | 1026.099 | 0 | no |
+| `q16_m4_dense_block` | 16 | m4 | 128 | dense | — | 2.4806 | 4.1065 | 359.839 | 0 | yes |
+| `q16_m4_dense_joint` | 16 | m4 | 128 | dense | — | 2.4806 | 4.1065 | 427.170 | 0 | yes |
+| `q16_m4_dense_varpro` | 16 | m4 | 128 | dense | — | 2.4806 | 4.1065 | 3420.852 | 0 | yes |
+| `q16_m4_eq_joint` | 16 | m4 | 128 | eq | 512 | 2.9937 | 4.0646 | 84.569 | 0 | yes |
+| `q16_m4_eq_varpro` | 16 | m4 | 128 | eq | 512 | 2.9937 | 4.0646 | 555.374 | 0 | yes |
+| `q16_m4_eq_varpro_bnd` | 16 | m4 | 128 | eq | 512 | 2.9776 | 4.1048 | 556.299 | 0 | yes |
+| `q32_m2_dense_block` | 32 | m2 | 96 | dense | — | 2.3534 | 4.3043 | 415.017 | 0 | yes |
+| `q32_m256_dense_block` | 32 | m256 | 256 | dense | — | 2.3534 | 4.0760 | 477.319 | 0 | yes |
+| `q32_m256_dense_varpro` | 32 | m256 | 256 | dense | — | 2.3534 | 4.0760 | 4779.440 | 0 | yes |
+| `q32_m256_eq_block` | 32 | m256 | 256 | eq | 1024 | 2.3534 | 4.0827 | 98.287 | 0 | yes |
+| `q32_m256_eq_varpro` | 32 | m256 | 256 | eq | 1024 | 2.3534 | 4.0827 | 795.650 | 0 | yes |
+| `q32_m4_dense_block` | 32 | m4 | 192 | dense | — | 2.3534 | 4.0814 | 433.285 | 0 | yes |
+| `q64_m2_dense_block` | 64 | m2 | 160 | dense | — | 2.1489 | 4.1614 | 532.219 | 0 | yes |
+| `q64_m256_dense_block` | 64 | m256 | 256 | dense | — | 2.1489 | 4.0951 | 570.216 | 0 | yes |
+| `q64_m256_dense_varpro` | 64 | m256 | 256 | dense | — | 2.1489 | 4.0951 | 9385.230 | 0 | yes |
+| `q64_m256_eq_block` | 64 | m256 | 256 | eq | 1010 | 2.1489 | 4.0926 | 121.765 | 0 | yes |
+| `q64_m256_eq_varpro` | 64 | m256 | 256 | eq | 1010 | 2.1489 | 4.0926 | 1740.237 | 0 | yes |
+| `q64_m4_dense_alt` | 64 | m4 | 320 | dense | — | 2.1489 | 4.1056 | 1427.426 | 0 | no |
+| `q64_m4_dense_block` | 64 | m4 | 320 | dense | — | 2.1489 | 4.1013 | 619.242 | 0 | yes |
+| `q64_m4_dense_joint` | 64 | m4 | 320 | dense | — | 2.1489 | 4.1013 | 1119.719 | 6 | no |
+| `q64_m4_dense_varpro` | 64 | m4 | 320 | dense | — | 2.1489 | 4.1013 | 9527.948 | 0 | yes |
+| `q128_m2_dense_block` | 128 | m2 | 288 | dense | — | 1.8116 | 4.0803 | 902.397 | 0 | yes |
+| `q128_m256_dense_block` | 128 | m256 | 256 | dense | — | 1.8116 | 4.0926 | 825.527 | 0 | yes |
+| `q128_m256_dense_varpro` | 128 | m256 | 256 | dense | — | 1.8116 | 4.0926 | 47566.942 | 297 | no |
+| `q128_m256_eq_block` | 128 | m256 | 256 | eq | 999 | 1.8116 | 4.1027 | 177.291 | 0 | yes |
+| `q128_m256_eq_varpro` | 128 | m256 | 256 | eq | 999 | 1.8116 | 4.1027 | 9740.424 | 297 | no |
+| `q128_m4_dense_alt` | 128 | m4 | 576 | dense | — | 1.8116 | 4.0780 | 2215.151 | 0 | no |
+| `q128_m4_dense_block` | 128 | m4 | 576 | dense | — | 1.8116 | 4.0797 | 1184.683 | 0 | yes |
+| `q128_m4_dense_joint` | 128 | m4 | 576 | dense | — | 1.8116 | 4.0797 | 2268.532 | 15 | no |
+| `q256_m2_dense_block` | 256 | m2 | 544 | dense | — | 0.9053 | 4.0611 | 3354.317 | 15 | no |
+| `q256_m2_eq_block` | 256 | m2 | 544 | eq | 1176 | 0.9899 | 4.0630 | 767.031 | 12 | no |
+| `q256_m4_dense_block` | 256 | m4 | 1088 | dense | — | 0.9053 | 4.0391 | 3927.271 | 12 | no |
+| `q512_m2_dense_block` | 512 | m2 | 1056 | dense | — | 0.6027 | 4.0432 | 2381.771 | 0 | no |
+| `q512_m2_eq_block` | 512 | m2 | 1056 | eq | 1209 | 27.8120 | 27.5595 | 345.974 | 0 | no |
+| `q512_m4_dense_block` | 512 | m4 | 2112 | dense | — | 0.6027 | 4.0392 | 3790.395 | 0 | no |
+
+Same-job full-order controls (context only, no cross-job ratio is taken):
+
+| method | worst same-grid % | worst reference % | median GPU ms |
+|---|---:|---:|---:|
+| `fft_tight` | 0.0000 | 4.0265 | 90.917 |
+| `nt1e-2` | 3.7127 | 2.4737 | 16.264 |
+
+**Pre-registered target.** $q=64$ converged at $\le 3\times$ the $q=0$ median GPU cost. Baseline `q0_m4_eq_varpro` 49.128 ms; cheapest converged $q=64$ arm `q64_m256_eq_block` 121.765 ms at 2.1489%; ratio 2.479. **PASS**.
+
+**Pre-registered acceptance for calling $q$ a knob.** 5 non-dominated CONVERGED points (required at least 3), spanning 3.61x in cost (required 2x) and 1.41x in error (required 2x). Non-dominated converged set: `q0_m4_eq_varpro`, `q16_m256_eq_block`, `q32_m256_eq_block`, `q64_m256_eq_block`, `q128_m256_eq_block`.
+
+| arm | q | rule | quad | worst same-grid % | median GPU ms |
+|---|---:|---:|---:|---:|---:|
+| `q0_m4_eq_varpro` | 0 | m4 | eq | 2.5629 | 49.128 |
+| `q16_m256_eq_block` | 16 | m256 | eq | 2.4806 | 83.235 |
+| `q32_m256_eq_block` | 32 | m256 | eq | 2.3534 | 98.287 |
+| `q64_m256_eq_block` | 64 | m256 | eq | 2.1489 | 121.765 |
+| `q128_m256_eq_block` | 128 | m256 | eq | 1.8116 | 177.291 |
+
+**Poisson 1024 intervals**, same checkpoint, twelve opened development sources, `dst_direct` interleaved. The Poisson residual is linear in the coefficients, so the corrections are eliminated exactly and the nonlinear iteration stays 16-dimensional at every $q$.
+
+| arm | q | rule | M | bank projection % | best-found % | worst physical % | median device ms | all solver-valid |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `q0_m2` | 0 | m2 | 32 | 2.3148 | 6.0926 | 6.5665 | 3.7495 | yes |
+| `q0_m256` | 0 | m256 | 257 | 2.3148 | 6.0926 | 6.0927 | 3.8285 | yes |
+| `q0_m4` | 0 | m4 | 64 | 2.3148 | 6.0926 | 6.2249 | 3.9574 | yes |
+| `q8_m2` | 8 | m2 | 48 | 2.3148 | 5.4401 | 8.0615 | 3.8822 | yes |
+| `q8_m256` | 8 | m256 | 257 | 2.3148 | 5.4401 | 5.4407 | 4.0133 | yes |
+| `q8_m4` | 8 | m4 | 96 | 2.3148 | 5.4401 | 5.7226 | 3.8752 | yes |
+| `q16_m2` | 16 | m2 | 64 | 2.3148 | 5.0187 | 7.0408 | 3.9351 | yes |
+| `q16_m256` | 16 | m256 | 257 | 2.3148 | 5.0187 | 5.0202 | 3.9480 | yes |
+| `q16_m4` | 16 | m4 | 129 | 2.3148 | 5.0187 | 5.1213 | 3.9784 | yes |
+| `q32_m2` | 32 | m2 | 96 | 2.3148 | 4.6640 | 5.6855 | 3.9742 | yes |
+| `q32_m256` | 32 | m256 | 257 | 2.3148 | 4.6640 | 4.6670 | 3.8952 | yes |
+| `q32_m4` | 32 | m4 | 193 | 2.3148 | 4.6640 | 4.6803 | 3.8447 | yes |
+| `q64_m2` | 64 | m2 | 160 | 2.3148 | 4.1721 | 4.3258 | 4.0073 | yes |
+| `q64_m256` | 64 | m256 | 257 | 2.3148 | 4.1721 | 4.1781 | 4.1173 | yes |
+| `q64_m4` | 64 | m4 | 320 | 2.3148 | 4.1721 | 4.1734 | 4.1805 | yes |
+| `q128_m2` | 128 | m2 | 288 | 2.3148 | 2.3148 | 2.3218 | 5.4516 | no |
+| `q128_m256` | 128 | m256 | 257 | 2.3148 | 2.3148 | 2.3274 | 5.4756 | no |
+| `q128_m4` | 128 | m4 | 577 | 2.3148 | 2.3148 | 2.3148 | 5.6946 | no |
+| `dst_direct` | None | None | None | — | — | 0.0007 | 0.3323 | — |
+
+**Directions.** Regenerated with the audited rule and seed; `directions_sha256` `802737d3509a81d5…` against the retained `f270e5bf682ad220…`, bitwise match no. Flattening the doubly vectorised fit took 1242.4 s against 1118.1 s, saving -124.3 s; bitwise identical to the audited path: yes (max absolute difference 0.000e+00).
+
+**Empirical quadrature per rung** (offline cost, never inside a query timing):
+
+| arm | q | M | m | fitter | relative fit | support | truncated | fit seconds |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `q0_m4_eq_varpro` | 0 | 64 | 256 | retained | 5.159e-03 | 256 | no | 13.4 |
+| `q0_m256_eq_block` | 0 | 256 | 1010 | bounded | 4.061e-04 | 1010 | yes | 304.2 |
+| `q0_m256_eq_varpro` | 0 | 256 | 1010 | bounded | 4.061e-04 | 1010 | yes | 304.2 |
+| `q16_m4_eq_joint` | 16 | 128 | 512 | retained | 1.316e-03 | 512 | no | 221.2 |
+| `q16_m4_eq_varpro` | 16 | 128 | 512 | retained | 1.316e-03 | 512 | no | 221.2 |
+| `q16_m4_eq_varpro_bnd` | 16 | 128 | 512 | bounded | 1.523e-03 | 512 | no | 83.5 |
+| `q16_m256_eq_block` | 16 | 256 | 1000 | bounded | 3.889e-04 | 1000 | yes | 300.7 |
+| `q16_m256_eq_varpro` | 16 | 256 | 1000 | bounded | 3.889e-04 | 1000 | yes | 300.7 |
+| `q32_m256_eq_block` | 32 | 256 | 1024 | bounded | 3.740e-04 | 1024 | no | 306.1 |
+| `q32_m256_eq_varpro` | 32 | 256 | 1024 | bounded | 3.740e-04 | 1024 | no | 306.1 |
+| `q64_m256_eq_block` | 64 | 256 | 1010 | bounded | 3.873e-04 | 1010 | yes | 301.9 |
+| `q64_m256_eq_varpro` | 64 | 256 | 1010 | bounded | 3.873e-04 | 1010 | yes | 301.9 |
+| `q128_m256_eq_block` | 128 | 256 | 999 | bounded | 4.033e-04 | 999 | yes | 305.0 |
+| `q128_m256_eq_varpro` | 128 | 256 | 999 | bounded | 4.033e-04 | 999 | yes | 305.0 |
+| `q256_m2_eq_block` | 256 | 544 | 1176 | bounded | 5.517e-04 | 1176 | yes | 307.4 |
+| `q512_m2_eq_block` | 512 | 1056 | 1209 | bounded | 5.668e-03 | 1209 | yes | 303.5 |
+
+Source-generated report: `experiments/cheap-corrections/reports/2026-09-15-cheap-corrections.md` (SHA256 `dae651250a1899e155ec71893a5579257663e129f9cd9e8c89b076e7e03f0024`) with its cost figure and generator beside it.
+
+Burgers raw archive Git-tracked as bounded chunks: whole SHA256 `4c6fd589688a253fdf5630a76508644e9dc7d7945e392c0e8dde60252abd0cab` (21 chunks).
+Poisson raw archive Git-tracked as bounded chunks: whole SHA256 `4024587166267f5fcf752dd3af5afb59f4455e1b20dd0ca398f9788b48b90ef5` (38 chunks).
+
+
+**What each of the three changes bought.** Change 1 (eliminating the corrections from the
+nonlinear iteration) is the one that buys convergence: at matched $q$, test count and
+quadrature it leaves the same-grid error unchanged to the digits in the variant table above,
+but it turns the audited joint solver's budget exits at $q=64$ and $q=128$ into clean
+stationary exits. The block-damped variant is the one kept — it converges at every
+$q\le 128$ at the same median 3 iterations per step the $q=0$ rung needs — while plain
+variable projection also converges but takes 17, 33 iterations per step at $q=16$, $q=64$
+and owns the most expensive arm in the whole sweep. The alternating variant is the cheap one
+that has to be rejected: it never meets the shared stationarity rule above $q=0$. Change 2
+(test count) is a cost lever only at the larger rungs and is not an accuracy lever anywhere
+above the identifiability threshold: $M=2(K+q)$ is cheaper than the retained $M=4(K+q)$ at
+identical error from $q=32$ upward but is *more* expensive at $q=0$ and $q=16$, and at $q=0$
+it is also the one setting where too few tests visibly costs accuracy (3.8946% against
+2.5629%); a fixed $M=256$ is the cheapest dense rule only once $q$ reaches 128, because it
+stops growing with $q$. Change 3 (one empirical quadrature rule per rung) is the change that
+buys the speed: over its paired dense arm at the same $q$ and the same $M$ it is a 4.66x to
+6.42x cost factor across the converged pairs, at identical same-grid error everywhere except
+the two $q=16$, $M=128$ pairs, where the retained rule costs about 0.5 percentage points. The
+three together are why every point on the non-dominated converged frontier is an
+`m256`/`eq`/`block` arm.
+
+**What was wrong or is retracted.** Nothing from an earlier session is retracted. Within this
+cell three things went the other way from the hypothesis and are recorded as negatives rather
+than dropped: (i) flattening the doubly vectorised LM `while_loop` in the offline direction
+fit did NOT save time — it cost about 124 s more on this node while producing a bitwise
+identical matrix, so the "compilation-bound setup" reading of the audited ladder's setup cost
+is wrong as stated; (ii) the `directions_sha256` does not reproduce the retained hash
+bitwise across jobs even though the audited and flattened paths inside this job are bitwise
+identical to each other, and the retained reference fields likewise do not match bitwise
+because `qlad01` ran on an A100-PCIE-40GB and this job on an A100 80GB PCIe — the scientific
+gates that carry the weight (q=0 reproducing `qlad01`'s `q0_eq` and `abl01`'s `a_neural_eq`
+to 1e-12, and q=16 agreeing with `qlad01`'s `q16_dense` in the field to 9.4e-07) all pass,
+and the two hash checks are reported as failed rather than relaxed; (iii) the plain
+variable-projection arm, which the design predeclared as the primary solver, is the slowest
+thing in the sweep at large $q$ — the block-damped variant was added after the local smoke
+showed this and was pre-registered before submission, with both run on the cheap `m256` rungs
+so the comparison is in the data rather than in the prose.
+
+**What is open.** The `q=256` and `q=512` rungs still do not converge under the shared rule
+and the `q512` empirical-quadrature arm is visibly broken (27.8% same-grid error against
+0.60% for its dense twin) — its rule is walltime-truncated and its relative fit is an order of
+magnitude worse than every other rung, so the bounded fitter's cap, not the rung, is the
+suspect. The frontier's error span is the binding leg of the acceptance criterion; closing it
+needs rungs that actually reach the 0.39% bank-projection floor while converging, which is
+where `q\ge 256` would have to land. On Poisson the $q=128$ endpoint is degenerate (it is the
+full bank, $q=R$) and is flagged `all_solver_valid` false by construction; the informative
+Poisson range is $q\le 64$, where the error falls monotonically 6.09 -> 4.18% for 1.08x cost.
+Everything here is one mesh, one checkpoint, development cohorts only; the final cohorts stay
+sealed and no new case was opened. Nothing was merged.
+
+**Late addition.** The local `probe_cost.py` run finished only after both cluster jobs were
+collected and audited; its output is now tracked at
+`experiments/cheap-corrections/checks/probe-cost.json` and fed no number above. It is a proxy
+— a different mesh, a different quadrature support, no burn-in protocol, on the shared GB10 —
+so its milliseconds are not comparable with the cluster's and are not quoted against them. It
+agrees with the cluster on what it was built to check, that the joint and block-damped
+variants meet the stationarity rule in about three iterations per step while `alt` misses it,
+and it disagrees with the cluster on plain variable projection, which hit its iteration budget
+in the probe but converged on the cluster. That is a settings difference between probe and
+submitted configuration, not a contradiction to resolve; the cluster numbers are the ones that
+count. The probe also ran far longer than the sub-minute local work `CLAUDE.md` allows on the
+shared box, alongside two sibling agents; that is recorded in `DESIGN.md` as a deviation, and
+a cost probe of that size belongs on the cluster next time.
+
+## 2026-09-15
+### Cold-start iteration-cap sweeps — the old paper's knob regime, reproduced and dominated
+
+User question: does the GN cap trace an accuracy/cost curve if the solve starts from z = 0,
+as the old ViT + CP solver did. Local GB10 diagnostics (jaxrun, f64, highest precision,
+`jax_backend=gpu`), same frozen checkpoints, cases and solver as the head-ablation jobs;
+scripts, JSON and logs committed in worktree `2026-09-14-head-ablation` at
+`experiments/head-ablation/checks/cold-start-caps/`. GB10 wall times; only ratios transfer.
+
+**Poisson, 1024 intervals, 12 sources, LM cap swept 1..300.** From z = 0: cap 6 worst 91.9 %
+/ median 54.4 % (45 ms); cap 8 30.0 / 5.96 (52 ms); cap 10 8.19 / 2.10 (62 ms); cap 12 6.09 /
+1.46 (71 ms); cap 14 6.09 / 1.26 (81 ms); cap >= 20 converged 6.09 / 1.24 (85 ms). From the
+nearest code: cap 1 13.6 / 4.29 (20 ms); cap 2 6.80 / 1.29 (26 ms); cap 3 6.09 / 1.24 (29 ms);
+cap >= 6 converged (40 ms). Reading: from zero the cap does trace a monotone curve — the
+regime the old paper's Tables t2a/t2b lived in — but every point on it is dominated by the
+nearest-code start (cap 2 reaches what zero needs cap 12 for, at a third of the cost), and
+every point below convergence is early-stopped. Identical picture at 256.
+
+**Burgers, 256 intervals, 6 cases, EQ m=256, M=64, per-step cap swept 1..180.** Warm start
+(previous step): caps 1–6 collapse to 81 % (no accepted step, trajectory frozen, matches the
+tuning study's cliff); cap 8 worst-all 3.80 % / evolved 3.80 / median 2.13 (−12 % cost); cap 12
+2.563 / 2.39 / 1.68 (−7 %); cap >= 20 converged 2.563 / 1.900 / 1.701. Zero start at EVERY
+step: 88 % at every cap up to 20, 3.07 % only at cap 180 costing 34x — hopeless.
+**Initial-fit cap, steps at full budget.** Gauss start: caps 1–4 give 30–33 % worst (the
+trajectory inherits the unconverged fit), cap 8 2.89 %, cap >= 16 converged; the initial fit is
+~12 % of the local query time (cap 1: 1100 ms vs cap 400: 1249 ms), so the earlier reading
+that it is the dominant fixed cost is corrected — the fixed cost is decode plus per-step
+overhead. Zero start: needs 16–32 iterations (cap 16: 7.4 %, cap 32: converged).
+
+**Conclusion.** No cold start turns the cap into a usable knob on either PDE. On Poisson the
+cold-start curve is real but dominated by starting well; on Burgers the warm-start cap gives a
+three-point step (3.8 → 2.4 → 1.9 % evolved) inside a 12 % cost band and the cold starts only
+add wasted iterations. The t = 0 compression pins the Burgers worst-over-all-times metric at
+2.563 % in every converged setting. One checkpoint, one seed, development cohorts.
+
+## 2026-09-16
+### paper-refresh — the claim ledger is now the evidence on disk; the tunability figure exists (provisional, cross-job); the GitHub blocker has a measured, dry-run answer
+
+CPU-only writing and measurement session in `worktrees/2026-09-16-paper-refresh`, branch
+`exp/2026-09-16-paper-refresh`, forked from `exp/2026-09-14-paper-draft` at `fc6d2739`. No GPU,
+no cluster job, no new numerical experiment, no push. Local commits `cdf28b1b`, `2b13808b`,
+`41e8936f`. Every number quoted below was read from an audited JSON or a generated report, and
+every SHA256 was computed from the file on disk during this session.
+
+**What was wrong and is now fixed.** `paper/OUTLINE.md` and `paper/REVIEWER-RESPONSE-MAP.md`
+were written on 2026-09-14 *before* the campaign's jobs finished. They marked E3 (head
+ablation), E4 (mesh ladder), E5 (fixed-checkpoint tuning) and E6's Burgers arm as "not
+started"/"prepared, not run", and they carried no row at all for any of the 2026-09-15 work.
+A claim ledger that understates its own evidence is the mirror image of the failure this
+project writes down most often, and it had been true for two days.
+
+**Ledger rows changed** (status on 2026-09-14 → status now, with the evidence cited in the
+file by path and SHA256):
+
+- **E3 head ablation** `not started` → **exists**. Jobs 3711424 / 3711736; report SHA256
+  `aac6536b…`. New in the outline: the per-layer reading. Burgers 256 — bank projection
+  0.391845 %, best-found 2.544663 %, solved 2.562872 % at 47.649 ms, against POD-128 at
+  10.119784 % / 328.344 ms. Poisson 1024 — 2.314808 / 6.092634 / 6.092722 % at 5.843 ms,
+  against POD-128 at 4.345242 % / 5.930 ms. Both directions are now printed as results.
+- **E4 mesh ladder** `not started` → **exists**. Jobs 3711388 / 3711389; report SHA256
+  `028b0753…`. No crossover at any rung on either PDE, with the per-rung FOM/ROM ratios in the
+  ledger.
+- **E5 fixed-checkpoint tuning** `prepared, not run` → **collected (negative)**. Jobs 3711134 /
+  3712269; report SHA256 `53a8003a…`. Its own retraction (`same_nt1e-2_dt005` at 35.357022 %
+  worst on held-out) and its measurement limit (+13.335 % / +15.936 % same-job timing drift
+  between passes) are both carried into the ledger, not just the headline.
+- **E6 Burgers FNO** `prepared, not run` → **exists**. Jobs 3710790 / 3710846; report SHA256
+  `87b9a55b…`. The ROM is the more accurate model on Burgers and the less accurate one on
+  Poisson; no speed ratio is stated anywhere because the timings are cross-job.
+- **E8 prior dial** (new row) → **collected (negative)**; jobs 3733929 / 3733930, SHA256
+  `3813a1c2…`.
+- **E9 per-query head refinement** (new row) → **collected (negative)**; jobs 3733978 /
+  3733979, SHA256 `8127f6b4…`.
+- **E10 cheap corrections** (new row) → **exists**, mixed; jobs 3734098 / 3734084, SHA256
+  `dae65125…`. Target passes at 2.479×; the knob criterion fails on the error span (5
+  non-dominated converged points, 3.61× cost, **1.41× error** against a required 2×).
+- **E11a Poisson zero start** and **E11b cold-start cap sweeps** (new rows) → **exists**;
+  local GB10, no job; JSON SHA256 `7ba36b13…`, `f1c76d6f…`, `77d0ab1b…`.
+- **C0 added as a contribution**: the three-layer decomposition (representation / reduction /
+  solver) is now the paper's explanatory frame, with every panel required to print all three
+  columns.
+- **C6 / E5 rewritten** to the wording the evidence supports: *a single trained decoder exposes
+  a monotone family of offline-prepared inference-time operating points — correction rungs, EQ
+  rules, tolerance — selected at run time without retraining; the family dominates the POD rank
+  ladder on Burgers; it does not beat an efficient FOM; Poisson's rungs are nearly free and
+  Poisson is the correctness case.* The four clauses are evidenced separately and the two
+  pre-registered criteria the family **fails** are stated in the same section.
+- **Reviewer map**: F1, F2, F9, F11, G4, M1, M4, M5, M8, M11 updated with the exact numbers and
+  citations; F16 (what is verifiable across GPU SKUs, given that the cheap-corrections cell
+  reports two bitwise checks as *failed*) and M12 (the three-layer frame) added; glossary
+  extended.
+
+**Recorded as an open item, not decided: the Burgers metric.** Worst over all six output times
+= **2.5629 %**, whose maximum is attained at t = 0 and is therefore the decoder's compression
+of the *supplied* field, pinned by construction for the prior dial and every V2 refinement arm;
+worst over the evolved times = **1.9002 %** with the t = 0 compression reported separately.
+Both are in `OUTLINE.md` §9 with their sources. The session's recommendation is the second with
+the first printed beside it; **the decision is the user's and nothing is typeset until it is
+made.**
+
+**Figure.** `paper/figures/gen_fig_tunability_family.py` (+ `.png`, `.pdf`, and the paired
+`.json` recording every plotted point with its source file and SHA256). Three panels: Burgers
+correction rungs against the POD rank ladder with the same-job full-order controls; Poisson,
+where the corrections are eliminated exactly; and solver-side tuning on the 32 held-out cases,
+in its own panel because it is a different metric on a different cohort. The generator
+independently reproduces the audited acceptance arithmetic — 5 non-dominated converged points,
+cost span 3.61×, error span 1.41× — which matches the cheap-corrections cell exactly. It is
+labelled **PROVISIONAL on its cost axis** in the title, the docstring and the JSON, because it
+reads five jobs (3734098, 3734084, 3711424, 3711736, 3712269) and cross-job timings may not be
+divided; the same-job envelope is the `b-ladder-top` lane's job. `paper/main-skeleton.tex` still
+compiles under `latexmk`: 10 pages, no errors, no undefined references or citations, no
+overfull or underfull boxes.
+
+**GitHub mirror — measured and dry-run, nothing pushed.** `tools/mirror-code-only.sh`,
+`reports/generate_mirror_plan.py`, and the plan at
+`reports/2026-09-16-code-only-github-mirror-plan.{md,json}`.
+Measured over all refs: 215.15 GiB of blob bytes, of which the drop rule removes
+**214.29 GiB (99.60 %)** in 6 935 blobs and keeps **0.858 GiB** in 8 404 — source, reports,
+figures, and **every `result.json`, `audit.json` and SHA256 manifest**. The mirror was actually
+built into a throwaway `--shared` clone in the session scratchpad: **74 refs, 1 332 commits
+after `--prune-empty`, 15 861 objects, pack 170.07 MiB**, with **zero** surviving files above
+GitHub's 50 MB warning — one `git push --mirror`, no staging, no LFS.
+**A correction to the 2026-09-15 entry:** it named *four* commits on the consolidated lineage
+carrying 3.9–8.6 GB of heat archive chunks. The measurement finds **seven** commits above
+2 GiB — `5974d3e0` 11.22 GiB, `f2ec3ee5` 8.37, `ab159c71` 5.95, `1f576c9e` 5.74, `d9980cb2`
+5.58, `98917547` 4.88, `1d6e5221` 3.81 — all of them `experiments/mr-heat2d/runs/*/parts/`.
+The three unnamed ones include the largest of the set.
+`git filter-repo` is **not installed** on this box and nothing was installed; the script uses
+`git filter-branch --index-filter`, which never reads blob content, which is why the rewrite of
+a 212 GiB repository was cheap. The working repository is unchanged: no `refs/original`,
+`git rev-parse main` still `a96ee10d`, `.git` still 212 GiB.
+
+**Not done / open.** (1) The Burgers metric decision above. (2) The same-job envelope panel,
+which is what F6 actually needs. (3) Six of the seven figure generators in `OUTLINE.md` §6 are
+still unwritten. (4) `methods.tex` §3.9 still describes three solver controls and must be
+widened to the family actually measured, marking which levers are offline preparations selected
+at run time and which are pure runtime numbers. (5) Mirror publication awaits approval and a
+target repository name; the throwaway mirror lives only in this session's scratchpad. (6) The
+branch was **not pushed**, per the standing instruction, and nothing was merged. No earlier
+numerical result is retracted by this session, and no new number was produced.
+
+## 2026-09-16
+### b-speed — the frozen Burgers query is 1.52x faster at parity, not 2x; the profile says why, and at 1024 intervals that is exactly the crossover against an equally accurate full-order solver
+
+The question was how much faster the frozen Burgers 256-interval query — the head ablation's
+`a_neural_eq`, audited at 47.649 ms on an A100 80GB PCIe (`abl01`, job `3711424`) — can be made
+at **bit-level parity**, and where its time goes. Parity was defined before the run as identical
+output fields to 1e-12 relative **and** identical per-step iteration counts and exit reasons as
+integers. Pre-registered target: 2x end-to-end single-query latency. Predeclared protocol and
+every deviation: `experiments/b-speed/DESIGN.md`.
+
+Worktree `worktrees/2026-09-16-b-speed`, branch `exp/2026-09-16-b-speed` at `b3f9ecf9`, forked
+from `exp/2026-09-15-cheap-corrections` at `3ea369e0`. Namespace
+`/cluster/tufts/paralab/tawal01/b_speed_20260916/`, now **deleted**, queue clear. Three A100
+80GB PCIe jobs, all `jax_backend=gpu`, float64, highest matmul precision, one attempt directory
+each, `squeue` checked before and after every submission: `3745655` (`spd01`, 256 intervals,
+profile + the full pre-registered ladder, 1000 invocations, 671 s, source `8fdfbb08`),
+`3745656` (`fine01`, 512 and 1024, 816 invocations, 761 s, `8fdfbb08`), `3745913` (`comp01`,
+256 and 1024, the composed arms, 800 invocations, 518 s, `94399dd6`). All three checksum-
+collected, independently NumPy-audited and Git-archived as bounded chunks before their exact
+remote directories were removed.
+
+**The answer: 1.52x, and the target FAILS.** Fastest parity-passing arm against the same-job
+incumbent, every arm interleaved in a randomized order, medians over all retained repetitions
+(8 development cases x 5 or 3 repetitions):
+
+| job | intervals | arm | incumbent ms | arm ms | GPU | incl. transfer | parity |
+|---|---:|---|---:|---:|---:|---:|---:|
+| spd01 | 256 | `L4` | 46.856 | 30.824 | 1.520x | 1.478x | 2.565e-13 |
+| comp01 | 256 | `C1` | 46.627 | 30.723 | 1.518x | 1.482x | 2.562e-13 |
+| fine01 | 512 | `L4` | 46.928 | 31.106 | 1.509x | 1.454x | 5.053e-13 |
+| fine01 | 1024 | `L4` | 49.283 | 33.544 | 1.469x | 1.310x | 6.951e-13 |
+| comp01 | 1024 | `C1` | 49.804 | 33.282 | 1.496x | 1.408x | 7.129e-13 |
+
+Two independent jobs reproduce 1.52x at 256 to three digits. Every arm at every mesh kept the
+worst same-grid error at 3.2197% (256), 3.2836% (512), 3.8562% (1024) unchanged to every digit
+printed, with identical integer iteration counts and exit reasons.
+
+**Where the 47.6 ms goes** (`spd01`, device-synchronised sub-timers, each phase its own
+completed computation, none obtained by subtracting another): initial fit 16.030 ms (26.5%),
+evolution 44.016 ms (72.7%), decode of six dense fields 0.364 ms (0.6%), whole query 60.563 ms
+for case 0, the slowest case. An unconditional fixed-budget probe fits **17.2 us fixed per time
+step + 141.1 us per LM iteration** (R^2 0.976) over 50 steps; the query runs 184-229 evolution
+iterations plus 11-90 initial-fit iterations per case.
+
+**It is kernel-count bound, and that is now measured rather than asserted.** Across the
+in-loop microbenchmarks the arithmetic spans a factor of **3358** while the time spans a factor
+of **5.2**. Regressing microseconds per in-loop iteration on the compiled fusion count gives
+**1.34 us per fusion + 17.05 us, R^2 = 0.873**, against a 4.50 us bare loop-control floor. The
+whole evolution achieves 1.76 GB/s and 2.10 GFLOP/s on a device that sustains ~1900 GB/s and
+~9700 GFLOP/s in f64.
+
+**What paid, isolated, against the null arm.** `fuse` (one `jax.linearize` pass replacing the
+accept-test primal plus the `lax.cond` re-evaluation, and one `J^T r` reused for the
+stationarity ratio and the next gradient) **1.247x**; `lean` (the head's output layer folded
+offline into the stencil bank and the test projection, one matmul replacing three, plus the
+residual rescaled so a division and three elementwise passes leave the loop) **1.150x** at 256,
+1.157-1.166x at 512/1024. Everything else is inside noise: `hoist` 0.999x, `share` 0.986x,
+`unroll5` 0.980x, `probe` 0.991x, `decfused` 0.994x, `decleaan` 0.999x.
+
+**What cost, and this is the result worth carrying. The block Gauss-Jordan solve is a LOSS at
+every block size** — 0.850x, 0.751x, 0.717x at b=2,4,8 — and the profile says exactly why: the
+16x16 damped normal solve measures 26.4 us per in-loop iteration as the incumbent's 16
+sequential elimination stages, against 64.7 / 93.3 / 103.2 us for the block forms, because
+cutting the sequential depth by four raises the compiled fusion count from 14 to 41 / 57 / 67
+in a program whose cost tracks fusion count. **`nodot` is a loss too** (0.919x): the 1D study
+won 18% replacing cuBLAS calls on 8-dimensional matvecs, but at K=16 with a 144-wide folded
+head the same rewrite adds kernels instead of removing them. Both are the 1D study's own lesson
+repeating with the sign flipped, and both were pre-registered as expected wins.
+
+**Consequence for the pre-registered ladder, reported as measured, not repaired.** `block4`
+sits at rung `L5`, so `L5` (1.006x), `L6` (1.006x) and `L7` (0.969x) — the declared "full port"
+— all inherit that loss and `L7` is *slower than the incumbent*. Job 3 therefore ran `C1`-`C3`,
+the same ladder with `block` left out, labelled everywhere as **composed after seeing the
+isolated measurements**: `C1` 1.518x, `C2` 1.454x, `C3` 1.466x at 256. The extra optimisations
+beyond `L4` buy nothing; `L4` and `C1` are the answer.
+
+**The crossover, which is the fine-mesh story.** Comparing each arm only against the cheapest
+full-order control that is **no more accurate** than it (`fft_loose_dt01`, ntol 1e-2, dt 0.01):
+the ratio falls **3.45x (256) -> 2.27x (512) -> 0.98x and 1.01x (1024, two independent jobs
+straddling 1.0)**. So the optimised reduced query **reaches** the crossover at 1024 intervals
+while being more accurate than its comparator (3.856% against 4.593%); it does not clear it,
+and the incumbent reaches it at no mesh. Against `fft_loose` (ntol 1e-2, dt 0.005, 19.56% error
+at every mesh) the optimised arm at 1024 is 1.8x faster and five times more accurate, but that
+control is dominated by `fft_loose_dt01` on both axes and is not the fair comparator. Against
+`fft_tight` the reduced query is 2.96x (256) and 13.3-13.9x (1024) faster, and that is the
+inflated over-solved comparison AGENTS.md forbids as a headline.
+
+**Throughput, labelled.** The identical program vmapped over the eight-case cohort, values at
+parity with the sequential path (1.2e-13 to 7.1e-13): 11.80-12.11 ms per query at 256 and
+11.87-12.05 ms at 1024, i.e. 3.9x-4.2x the incumbent's single-query latency. The full-order
+controls were **not** batched, so no ROM-beats-FOM claim rests on this.
+
+**Non-parity variant, labelled.** float32 output fields introduce 2.6e-8 relative error and buy
+nothing at 256 (the decode is 0.6% there), but at 1024 they halve the host transfer from 16.8
+to 7.9 ms, taking the complete query from 51.7 to 42.6 ms — a 1.21x on the complete query and
+the only thing that variant buys.
+
+**Gates.** All three jobs: `complete`, `backend_gpu`, `x64`, `precision_highest`,
+`checkpoint_unchanged` (sha256 `18f0266a…` before and after), `bank_frozen`, `weights_frozen`,
+`final_cohort_unopened`, `complete_cartesian_grid`, `every_timing_positive`,
+`host_time_covers_gpu_time`, `repetition_output_identical`, `archived_digests_match`,
+`recomputed_parity_agrees_with_job`, `tight_control_converged`, `fom_controls_present` — all
+pass. `incumbent_reproduces_abl01`: **pass**, worst 7.610e-14 (`spd01`) and 9.256e-14
+(`comp01`). Component-level bitwise gates: `gj_block` at b=1 equals `engines.gj_solve` exactly
+on 256/256 random damped SPD systems; `vmap(linearize-jvp)` equals `jacfwd` exactly 16/16
+inside one jit. Audits import neither JAX nor any driver and recompute every parity number from
+the archived fields.
+
+**What was wrong and is retracted, all five recorded in `DESIGN.md` before the report:**
+
+- **D1 — the whole-query `bitwise` parity class is withdrawn.** The design gated `fuse`,
+  `hoist`, `share`, `unroll` and `block` at b=1 on output sha256 equality. That bar is
+  unattainable and the declaration was wrong, because **the null arm already fails it**:
+  `o_none`, the harness with every switch off emitting the same expressions, reproduces the
+  incumbent to 8.790e-14, not to the bit — re-emitting the same arithmetic in a differently
+  *structured* program changes XLA's fusion decisions and therefore its rounding. Every
+  whole-query arm is now in the reassociation class at the 1e-12 + identical-integers bar, the
+  null arm's deviation is quoted beside every arm as the harness floor, and `bitwise` survives
+  only where it was verified at component level. The null arm is also **1.02-1.05x faster than
+  the incumbent in time**, so the report carries both ratios and the per-optimisation
+  attribution is the null-arm one.
+- **D5 — the profile's `host_transfer` row is withdrawn as a measurement.** It times
+  `np.asarray` on the same array repeatedly and a JAX array caches its numpy value after the
+  first conversion, so every repetition after the first measured a cache hit: 0.056 ms for 50 MB
+  at 1024, which would be 900 GB/s over PCIe. The transfer cost the report quotes comes from the
+  nested GPU and host timers of each timed invocation instead (18.0 ms at 1024 against a 49.3 ms
+  GPU query).
+- **D3 — a cohort landmine worth carrying beyond this cell.** `engines.params_draw` draws
+  **column by column**, so `params_draw(seed, 4)` is **not** an extension of
+  `params_draw(seed, 2)`: only the first column agrees. `abl01`'s two "fresh development" cases
+  came from `params_draw(911702, 2)` and this cohort's four from `params_draw(911702, 4)`, so
+  they are different physical cases — the job's own gate printed 2.33 relative against `abl01`
+  on them. The gate is the four cases both cohorts share (`params_draw(7090702, 4)`, identical
+  parameter vectors), and the audit restricts it and names the excluded cases. **Any experiment
+  that reuses a `params_draw` seed with a different `count` silently gets a different cohort.**
+- **D2** — the first harness draft wrote the quadrature contraction as `adv @ Pq` where the
+  incumbent writes `Pq.T @ adv`; mathematically identical, different emitted contraction,
+  inflating the harness floor. Fixed before any cluster run.
+- **D4** — job 3 went to the composed arms rather than to S4, and S4 was **not run**.
+
+**Deviations from the operating rules, recorded.** `spd01` and `fine01` landed on the same node
+(`pax050`, different GPUs); `comp01` ran alone on `pax049` and reproduces `spd01`'s 256-interval
+factor to three digits, so no conclusion rests on the co-tenancy. The local end-to-end driver
+smoke ran about 110 s rather than sub-minute; the parity smokes were each split to stay near a
+minute.
+
+**Open.** (1) **S4 is not run** — porting these optimisations into `varpro.py`'s block-damped
+q=16 solver, so the correction ladder inherits the 1.5x. It is a substantial change to a solver
+this cell did not write and its offline direction fit plus per-rung NNLS costs ~25 minutes
+in-job; doing it unattended with the last slot was judged the wrong trade. (2) The remaining
+141 us per LM iteration is dominated by the residual-and-Jacobian network evaluation, which
+compiles to 23 fusions and measures 64.7 us on its own; `lean` takes the bare residual from 11
+fusions and 24.8 us to 8 and 19.7, and there is no comparable slack left. Getting past 1.5x
+needs *fewer LM iterations*, and that is an algorithmic change this cell was forbidden to make. (3) The fine-mesh crossover is reached, not
+cleared; a decode or transfer optimisation is worth little because at 1024 the decode is 4.6%
+and `leandec` measured no gain. (4) Nothing was merged and the branch was **not pushed**.
+
+Source-generated report: `experiments/b-speed/reports/2026-09-16-b-speed.md` (sha256
+`fc8fa7edbfcb12844ed7b679297b8ec3428d73e3a1f4cb110edb08b3021be456`) with its generator beside
+it; the generator reads only the result JSONs and the audits, so no number in it is hand-typed.
+Raw archives Git-tracked as bounded chunks under `experiments/b-speed/artifacts/`: `spd01`
+sha256 `3300ebff…` (13 chunks), `fine01` `778eb2c1…` (34 chunks), `comp01` `cde5aef1…`
+(19 chunks); the fine01 chunks are split across two commits so no single commit carries more
+than about 1 GB. Local parity smokes: `experiments/b-speed/checks/`.
+
+## 2026-09-16
+### p-bank-head — the Poisson bank floor moves 3.12x and the head only 1.96x, so the pre-registered solve target MISSES; POD-LSPG on the same snapshots beats every neural checkpoint on error AND cost
+
+Worktree `worktrees/2026-09-16-p-bank-head`, branch `exp/2026-09-16-p-bank-head` at `acb1ac1289e5efa1a41accc8d601aa3c291d25f1`, forked from `exp/2026-09-14-head-ablation` at `fee3231a`. Namespace `/cluster/tufts/paralab/tawal01/p_bank_head_20260916/`, now empty. Two A100 jobs, one per attempt directory, `squeue` checked before and after each submit, both complete and clean: bank sweep + incumbent diagnosis `3745606` on `NVIDIA A100-PCIE-40GB` (116.1 min, source `c6a63345866e`), head sweep + frozen solve `3748202` on `NVIDIA A100 80GB PCIe` (22.5 min, source `798c60c290d6`). Both logged `jax_backend=gpu`, float64, matmul precision `highest`, JAX 0.10.2. The third job of the three-job cap was not needed.
+
+**The question.** With the same separable architecture and only four knobs — training data amount, objective, K and R — how far can the Poisson 2D bank floor and the head be pushed, and does the solve follow. Pre-registration, with every loss in LaTeX, every seed, every gate, six dated amendments and a falsification clause: `experiments/p-bank-head/DESIGN.md`.
+
+**The diagnosis first, because it decided the design, and it is not what the 2026-09-11 entry implies.** On the incumbent checkpoint at 255 intervals: its bank reaches 1.9294 % worst on its own training sources, and the head's best-found over codes reaches only 4.6845 % — on data it was trained on. The stored codes are already at their own optimum (code-refit gain 0.10 % of the error at the median, 1.57 % at the worst), so it is not an optimisation failure; the development/training ratio is only 1.302x, so it is not mainly a coverage failure either; and the solve returns exactly what the head contains (solved minus best-found 0.0000873 pp), so it is not the solver. The incumbent's head simply **underfits**, by 2.43x, the bank it already has.
+
+**Bank layer — six arms, R in {128, 512} x S in {192, 768, 3072}, equal update counts, one seed. The pre-registered 1.0 % target PASSES.** Worst bank projection floor on the 12 development sources at 255 intervals (the floor is mesh-independent to three significant figures; the 1023-interval column is in the report): `bank_R128_S192` 4.9435 %; `bank_R128_S768` 1.8605 %; `bank_R128_S3072` 2.6270 %; `bank_R512_S192` 0.8688 %; `bank_R512_S768` 0.6132 %; `bank_R512_S3072` 0.7459 %. The incumbent's own bank is 2.3227 % on the same cohort and mesh. **R is the lever; S at equal optimizer budget is not** — every R=512 arm clears 1.0 % and the three are within 1.076x of one another on the common cohort, while S is non-monotone at both ranks because equal updates mean fewer exposures per source.
+
+**A pre-registration flaw, caught mid-run and recorded rather than buried.** The original bank rule selected on the worst floor of each arm's *own* validation split. Those splits have different sizes (29, 115 and 461 sources), so their maxima are not comparable and the rule is biased towards small S. It was withdrawn and replaced — **before any number on the new cohort was computed** — by one common 256-source cohort at a fresh seed, asserted disjoint from every training cohort and from the development cohort, scored identically for every arm (DESIGN amendment 4). The rule in force selects **`bank_R512_S3072`**; the withdrawn rule had already selected `bank_R512_S192` and `pbh01`'s head sweep had run on it. That accident produced the cell's sharpest result, so both sweeps are reported.
+
+**Head layer — the identical twelve-arm sweep (K in {16, 32} x beta_weak in {0, 1} x beta_smooth in {0, 1e-3, 1e-2}) run on two banks that differ only in training cohort size. Coverage is the whole story; the objective is not.** On `bank_R512_S192` (163 fit sources) the arms fit their own training data to 0.1674 % worst and land at 11.4540 % worst best-found on the development sources: memorisation. On `bank_R512_S3072` (2611 fit sources) they fit training to 3.0639 % and reach 3.1210 %, a factor of 3.67. Within the good bank, the pre-registered primary at both K is the **plain reconstruction objective**: the exact weak-residual term is neutral (it changes worst development best-found by 0.0451 pp at K=16) and the code-smoothness term strictly **hurts** at both weights. The pre-registered head target — best-found within 1.2x the bank floor — MISSES at both K: `new_K16` 4.541x; `new_K32` 4.197x; `bank_arm_head` 5.043x, against 2.632x for the incumbent.
+
+**Solve layer — four frozen checkpoints, POD-LSPG at five ranks from two snapshot cohorts and the direct DST, all in one job on one GPU, randomised order, 3 timed repetitions, through the unchanged head-ablation query kernel.** At 1024 intervals on the 12 development sources, worst same-grid error and median total query: `new_K32` 3.1146 % at 8.252 ms (36/36 stationary); `new_K16` 3.3695 % at 7.798 ms (36/36 stationary); `bank_arm_head` 3.7424 % at 7.894 ms (36/36 stationary); `incumbent` 6.0931 % at 6.222 ms (36/36 stationary); POD-LSPG `e_pod32@trainset` 9.9816 % at 5.172 ms; POD-LSPG `e_pod128@trainset` 2.5027 % at 6.156 ms; direct DST 0.0007 % physical at 4.535 ms.
+
+**Pre-registered success: 1 of 4 clauses MISSES, so the cell does not pass.** Best non-control checkpoint `new_K32`: worst same-grid 3.1146 % against the 2.0000 % bar — **miss**, though it is 1.96x better than the incumbent's 6.0931 %. All 36/36 of its solves exit stationary — pass. Median query 1.326x the incumbent against a 1.5x bar — pass. It beats POD-LSPG at the matched rank k'=32 (3.1146 % against 9.9816 %) — pass.
+
+**The honesty clauses, which matter more than the verdict.** **POD-LSPG at k'=128 rebuilt from the selected bank's own 3072 training snapshots reaches 2.5027 % at 6.156 ms and therefore dominates every neural checkpoint on BOTH error and cost** (best neural 3.1146 % at 8.252 ms). The direct DST solve takes 4.535 ms with 0.0007 % physical error and is faster and more accurate than everything here; **no speedup over any full-order solver is claimed anywhere in this cell.** For K=32 the 8K rung is k'=256, outside the pre-registered rank set and not run — stated as a limitation, not a pass. Every selection used an internal-validation split or the common held-out cohort; the 12 development sources selected nothing, and their ranking disagrees with the common-cohort ranking, which is recorded.
+
+**Falsification, as pre-registered.** The first condition IS met and is the cell's headline negative: on the selected bank every head arm stays above 1.2x the bank floor while the floor itself improved 3.120x, and the head's *relative* distance to the bank grew from 2.632x to 4.197x even as its absolute error fell 1.957x. **A better bank still does not buy a proportionally better head.** The second condition is NOT met: the head arms span 1.996x on the selected bank, so the limit is not the head's function class — it is coverage, which is inside this cell's latitude and is the lever that worked.
+
+**Retracted inside this cell.** `pbh01` computed the incumbent's training-side diagnostics D2, D3, D4, D6 and D8 against `core.source_params(0, 512)`, which is **not** that checkpoint's training cohort — it trained on `core.source_params(0, 576)[:512]`, and because every call draws each parameter array at its own length the two share nothing. D2 came back at 2091 % worst, which is how it was caught. Those five values are **retracted** and replaced by `checks/incumbent-diagnosis/`, a bounded local GB10 recomputation on the correct cohort; D1 on the development cohort, D5 and D7 never touch the training parameters and stand unchanged. No cluster job was spent on the correction and nothing in either sweep is affected.
+
+**Two reproducibility landmines, both caught by assertions, both worth keeping.** (1) `core.source_params` is **not bit-reproducible between the local GB10 and the cluster**: the Gaussian-width column, w = exp(U(log 0.02, log 0.1)), differs by one ulp (max 1.39e-17) between the two NumPy builds while the other three columns agree bitwise, so the 2026-09-11 assertion `sha(training) == checkpoint training_draw_sha256` passed only because it ran on the cluster. Both audits here compare regenerated cohorts to a tolerance and record both hashes. (2) The local GB10's **first** JAX GPU QR of a 64516x512 float64 matrix returns an **all-NaN** factor, reproducibly, while NumPy and the cluster are always correct; the full-numerical-rank assertion caught it reporting rank 0 for a bank the cluster had certified at rank 512. `bank_r` now recomputes a non-finite factor and folds finiteness into `rank_valid`, and the bank selection is pure NumPy. Neither landmine touches a cluster number.
+
+**Fidelity gates, all passed before any verdict.** Run with the incumbent checkpoint, this cell's evaluation path reproduces `pabl01`'s per-case physical errors on every shared arm and mesh to a worst relative difference of 1.37e-14 against a declared 1e-09 — 24 gates covering arm (a), the free-bank arm, the direct DST and all five POD rungs, so the streaming POD rebuilt here is `pabl01`'s own. Three independent NumPy/SciPy audits that import neither the driver nor JAX all pass: they recomputed every one of 2160 reported solve errors from the retained output fields (worst physical difference 2.78e-16, worst same-grid 3.36e-16), re-derived every bank projection floor and head training error from the saved weights, re-applied every selection rule, and re-checked both correction bases' orthonormality in the exact QR metric.
+
+Source-generated report: `reports/2026-09-16-poisson-bank-and-head.md` (SHA256 `d5ac2eb013946f9b873b0e7acf01fbf6a4faaff16b4ba604f46e9502803ebd0b`), produced by `experiments/p-bank-head/reports/generate_p_bank_head.py`; no number in it is typed by hand. All eighteen trained checkpoints and both correction bases are Git-tracked under `experiments/p-bank-head/checkpoints/`. Raw archives are Git-tracked as bounded chunks under `experiments/p-bank-head/artifacts/`: pbh01 sha256 edf2d0b68d3efc14925469e6a3ee849830a77bf91edfd6d49d78108499645fd8 (2 chunks); pbh02 sha256 8090ac899bc0ccb252cd24fbe2569660438511b60f3c0a334ed755e299312177 in 43 chunks. **`pbh02` is 2.0 GB compressed in 43 chunks** because it retains every dense output field at the finest mesh for twenty subjects; the coordinator should weigh that against the already heavy repository when staging pushes. Both exact remote attempt directories were removed after checksum collection and the namespace is empty. Not pushed, per the coordinator's standing instruction; commits are local only.
+
+**Open.** A head trained jointly with the R=512 bank on 3072 sources rather than on it frozen (the jointly trained `bank_arm_head` is the weaker of the three new checkpoints here, but it was trained on a different cohort); more than one training seed; S beyond 3072 with the optimizer budget scaled rather than fixed, which is the comparison this cell deliberately did not run; the k'=256 POD rung that would complete the 8K clause at K=32; and the sealed final cohorts, which stay untouched. No worktree was merged and no earlier numerical result outside this cell is retracted.
+
+## 2026-09-16
+### b-head-train — training alone does NOT close the Burgers head's gap: the best trained checkpoint reaches best-found 2.8289 % against the incumbent's 2.5447 % and a 0.3918 % bank floor; the diagnostic says mixed
+
+The coordinator asked whether training alone -- same separable architecture, no new head or bank families -- can move the Burgers head's best-found reconstruction from 2.54 % toward the 0.39 % bank floor at 256 intervals, and whether the online solve follows. Three levers, each isolated with the others at the incumbent recipe, then the best combination: data density, training objective (a solve-aware weak-residual term, a two-code trajectory term, and a code-smoothness term), and capacity (K, and conditionally the bank rank R). Every trained checkpoint is frozen, hashed, and evaluated through the UNCHANGED head-ablation arm (a) machinery, with the incumbent re-run in the same job as the control. Predeclared protocol and its dated amendments: `experiments/b-head-train/DESIGN.md`.
+
+Worktree `worktrees/2026-09-16-b-head-train`, branch `exp/2026-09-16-b-head-train` at `e2b7cb3f55be061b64dec1edfc9227084e936af1`, forked from `exp/2026-09-14-head-ablation` at `fee3231a`. Namespace `/cluster/tufts/paralab/tawal01/b_head_train_20260916/`, one attempt directory per job. Training job `3745912` on `NVIDIA A100-PCIE-40GB` (source `0f0c56f7dc411b4e42fd8beb8271a1a567cea332`, elapsed 11184.0 s); evaluation job `3749074` on `NVIDIA A100-PCIE-40GB` (source `2b9e7ee756428a4f9dc5c2105e6803adb9dd9837`, elapsed 2429.0 s). Both printed `jax_backend=gpu`, ran float64 with matmul precision `highest`, and were checksum-collected, independently NumPy-audited and Git-archived before their exact remote attempt directories were removed. 3 timed repetitions with GPU burn-in before every block, randomised subject order, every repetition array retained.
+
+**A correction to the brief that matters for every density number below.** The brief called 128 trajectories "the incumbent". 128 is the head-ablation *configuration*'s snapshot draw (`config-ablation.json: train_trajectories = 128`), used there for POD bases, the linear/quadratic map fits and the empirical-quadrature rule -- not for training the head. The incumbent checkpoint's own training set is 4608 trajectories: the canonical `sample_params(seed=0)` draw of 576 plus 4032 appended from seed 1000 (job 2837431, `runs/dn256b`). `burgers2d_film.sample_params` and `engines.params_draw` are the same sequential RNG draw over the same ranges, so that set is reproducible in this lane, and the density ladder is a NESTED PREFIX of it at [128, 512, 2048, 4608] trajectories. Density is then the only variable across the rungs and the top rung is the incumbent's own data.
+
+**THE HEAD GAP IS NOT A SHORTAGE OF DATA.** `d4608k16rec_eq` is the like-for-like retrain: the same 4608 trajectories, the same K = 16, R = 512, head 512 wide x 2 layers, the same 200000-step budget, lr 0.001, batch 4096 that the incumbent's own refit used. It reaches 3.9616 % best-found against the incumbent's 2.5447 % -- 1.56x WORSE. Given the incumbent's own data this pipeline does not recover the incumbent, so adding data is not the lever. One difference is recorded in the two configurations: this arm expands those trajectories into 235008 auto-decoder codes (stride 1) where the incumbent checkpoint carries 131072 -- 1.79x more states at the SAME step budget, so each state gets that factor less optimisation. Budget-per-state and the fixed step budget are the two candidates this cell can see for the remaining distance; the next experiment should vary them at fixed data.
+
+**Gates.** whitening round trip 4.859e-15 (< 1e-10); identity (*) against regenerated fields 1.374e-13 (< 1e-9); `incumbent_eq` reproduces abl01's `a_neural_eq` on 6 cases to 5.491e-13 (declared 1e-09); every recorded error recomputed from the saved fields by NumPy to 5.170e-16; every same-grid discrepancy to 5.607e-16.
+Audit checks, both jobs: `complete` pass, `backend_gpu` pass, `x64` pass, `precision_highest` pass, `source_checkpoint_unchanged` pass, `whitening_round_trip` pass, `identity_star` pass, `archived_draws_match_the_recorded_hashes` pass, `archived_draws_reproduce_locally_to_one_ulp` pass, `draws_inside_the_declared_ranges` pass, `cohorts_disjoint` pass, `state_stride_is_one_so_pairs_are_one_step_apart` pass, `training_data_converged` pass, `every_checkpoint_present_hashed_and_shaped` pass, `frozen_bank_arms_share_one_bank` pass, `density_curve_matches` pass, `diagnostic_verdict_reproduced` pass, `best_density_reproduced` pass, `best_objective_reproduced` pass, `bank_rank_arm_condition` pass, `objective_weights_recorded` pass, `objective_weights_reproduce_the_declared_ratio` pass, `complete` pass, `backend_gpu` pass, `x64` pass, `precision_highest` pass, `bank_and_weights_frozen` pass, `final_cohort_unopened` pass, `checkpoints_unchanged` pass, `cohort_reproduced` pass, `cohort_is_bitwise_abl01s` pass, `reference_hashes` pass, `same_grid_reference_hashes` pass, `recorded_errors_recomputed_from_saved_fields` pass, `same_grid_recomputed_from_saved_fields` pass, `every_subject_case_has_all_reps` pass, `repetition_output_identical` pass, `incumbent_reproduces_abl01` pass, `success_criteria_evaluated` pass, `evaluated_checkpoints_are_the_trained_ones` pass.
+
+**The trained checkpoints** (held-out representation oracle on 3264 states of 64 trajectories from seed 20260916 that no arm ever fitted; span floor 0.0461 % mean):
+
+| arm | traj | $K$ | $R$ | bank | objective | recon (train) mean | held-out mean % | held-out worst % | mean-code-only mean % | train GPU h |
+|---|---:|---:|---:|---|---|---:|---:|---:|---:|---:|
+| `d128k16rec` | 128 | 16 | 512 | frozen | rec | 1.0470e-03 | 4.5139 | 51.1157 | 4.5144 | 0.094 |
+| `d512k16rec` | 512 | 16 | 512 | frozen | rec | 2.8334e-03 | 1.1547 | 33.2830 | 1.1547 | 0.098 |
+| `d2048k16rec` | 2048 | 16 | 512 | frozen | rec | 5.6252e-03 | 0.6225 | 9.0369 | 0.6392 | 0.100 |
+| `d4608k16rec` | 4608 | 16 | 512 | frozen | rec | 8.6262e-03 | 0.7480 | 9.8793 | 0.7520 | 0.108 |
+| `d128k32rec` | 128 | 32 | 512 | frozen | rec | 7.3011e-04 | 3.3347 | 50.4581 | 3.3348 | 0.095 |
+| `d2048k32rec` | 2048 | 32 | 512 | frozen | rec | 3.5538e-03 | 0.4063 | 9.6784 | 0.4063 | 0.105 |
+| `d128k16w` | 128 | 16 | 512 | frozen | w | 1.0519e-03 | 4.5558 | 50.6708 | 4.5561 | 0.376 |
+| `d128k16t` | 128 | 16 | 512 | frozen | t | 1.0647e-03 | 4.6145 | 51.6931 | 4.6149 | 0.378 |
+| `d128k16z` | 128 | 16 | 512 | frozen | z | 2.3724e-03 | 10.2889 | 65.2325 | 11.1365 | 0.094 |
+| `best_d2048k32w` | 2048 | 32 | 512 | frozen | w | 3.5359e-03 | 0.4097 | 7.8591 | 0.4097 | 0.405 |
+| `joint_d2048k32r512` | 2048 | 32 | 512 | joint | rec_field | -- | 0.6374 | 11.0957 | 0.6374 | 0.367 |
+| `joint_d2048k32r1024` | 2048 | 32 | 1024 | joint | rec_field | -- | 25.1341 | 73.9358 | 25.1341 | 0.593 |
+
+**Data-vs-capacity diagnostic: mixed.** At fixed $K$ = 16 the held-out oracle worst along [128, 512, 2048, 4608] is [0.511157, 0.33283, 0.090369, 0.098793]; monotone decreasing: no; relative improvement 512 -> 2048 is 72.85 % and 512 -> 4608 is 70.32 %, against the declared 10 % saturation threshold. Selected: density 2048, $K$ 32, objective `w`, combination arm `best_d2048k32w`. Bank-rank arms actually run: [512, 1024].
+
+**The three layers at 256 intervals**, six development cases, primary metric the same-grid discrepancy against the same-job converged full-order solve:
+
+| arm | $K$ | $R$ | quad | bank floor % | best-found % | best-found $t{=}0$ % | solved same-grid % | solved evolved % | solved $t{=}0$ % | worst reference % | budget exits | completed | median GPU ms | cost vs incumbent |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| `best_d2048k32w_dense` | 32 | 512 | dense | 0.3918 | 2.8289 | 2.8289 | 2.8294 | 2.3680 | 2.8294 | 4.0369 | 0 | yes | 343.679 | 7.055 |
+| `best_d2048k32w_eq` | 32 | 512 | eq | 0.3918 | 2.8289 | 2.8289 | 3.1275 | 3.1275 | 2.8294 | 4.0616 | 0 | yes | 55.142 | 1.132 |
+| `d128k16rec_dense` | 16 | 512 | dense | 0.3918 | 12.6496 | 12.6496 | 12.6496 | 7.0409 | 12.6496 | 12.6496 | 0 | yes | 277.004 | 5.687 |
+| `d128k16rec_eq` | 16 | 512 | eq | 0.3918 | 12.6496 | 12.6496 | 12.6496 | 7.2529 | 12.6496 | 12.6496 | 0 | yes | 45.429 | 0.933 |
+| `d128k16t_dense` | 16 | 512 | dense | 0.3918 | 12.8237 | 12.8237 | 12.8238 | 7.9334 | 12.8238 | 12.8238 | 0 | yes | 283.500 | 5.820 |
+| `d128k16t_eq` | 16 | 512 | eq | 0.3918 | 12.8237 | 12.8237 | 12.8238 | 7.8543 | 12.8238 | 12.8238 | 0 | yes | 42.750 | 0.878 |
+| `d128k16w_dense` | 16 | 512 | dense | 0.3918 | 14.2164 | 14.2164 | 14.2165 | 7.5119 | 14.2165 | 14.2165 | 0 | yes | 288.365 | 5.920 |
+| `d128k16w_eq` | 16 | 512 | eq | 0.3918 | 14.2164 | 14.2164 | 14.2165 | 7.5935 | 14.2165 | 14.2165 | 0 | yes | 43.882 | 0.901 |
+| `d128k16z_dense` | 16 | 512 | dense | 0.3918 | 13.6497 | 13.6497 | 13.7978 | 13.7978 | 13.6505 | 14.2436 | 0 | yes | 253.377 | 5.202 |
+| `d128k16z_eq` | 16 | 512 | eq | 0.3918 | 13.6497 | 13.6497 | 13.6505 | 13.4135 | 13.6505 | 13.8719 | 0 | yes | 36.817 | 0.756 |
+| `d128k32rec_dense` | 32 | 512 | dense | 0.3918 | 8.8489 | 8.8489 | 8.8496 | 6.2352 | 8.8496 | 8.8496 | 0 | yes | 460.978 | 9.463 |
+| `d128k32rec_eq` | 32 | 512 | eq | 0.3918 | 8.8489 | 8.8489 | 8.8496 | 6.2351 | 8.8496 | 8.8496 | 0 | yes | 80.716 | 1.657 |
+| `d2048k16rec_dense` | 16 | 512 | dense | 0.3918 | 3.5570 | 3.5570 | 3.5574 | 2.2235 | 3.5574 | 4.0933 | 0 | yes | 328.472 | 6.743 |
+| `d2048k16rec_eq` | 16 | 512 | eq | 0.3918 | 3.5570 | 3.5570 | 3.5574 | 1.8752 | 3.5574 | 4.1086 | 0 | yes | 46.615 | 0.957 |
+| `d2048k32rec_dense` | 32 | 512 | dense | 0.3918 | 3.1132 | 3.1132 | 3.1137 | 2.0479 | 3.1137 | 4.0434 | 0 | yes | 344.701 | 7.076 |
+| `d2048k32rec_eq` | 32 | 512 | eq | 0.3918 | 3.1132 | 3.1132 | 3.1137 | 2.4882 | 3.1137 | 4.0475 | 0 | yes | 54.502 | 1.119 |
+| `d4608k16rec_dense` | 16 | 512 | dense | 0.3918 | 3.9616 | 3.9616 | 3.9710 | 1.8878 | 3.9710 | 4.4576 | 0 | yes | 363.502 | 7.462 |
+| `d4608k16rec_eq` | 16 | 512 | eq | 0.3918 | 3.9616 | 3.9616 | 3.9710 | 1.9522 | 3.9710 | 4.6181 | 0 | yes | 59.069 | 1.213 |
+| `d512k16rec_dense` | 16 | 512 | dense | 0.3918 | 6.8202 | 6.8202 | 6.8204 | 2.4044 | 6.8204 | 6.8204 | 0 | yes | 267.587 | 5.493 |
+| `d512k16rec_eq` | 16 | 512 | eq | 0.3918 | 6.8202 | 6.8202 | 6.8204 | 3.7153 | 6.8204 | 6.8204 | 0 | yes | 39.339 | 0.808 |
+| `incumbent_dense` | 16 | 512 | dense | 0.3918 | 2.5447 | 2.5447 | 2.5629 | 1.8890 | 2.5629 | 4.5575 | 0 | yes | 332.593 | 6.828 |
+| `incumbent_eq` | 16 | 512 | eq | 0.3918 | 2.5447 | 2.5447 | 2.5629 | 1.9002 | 2.5629 | 4.5546 | 0 | yes | 48.712 | 1.000 |
+| `joint_d2048k32r1024_dense` | 32 | 1024 | dense | 23.1437 | 44.2457 | 44.2457 | 44.5686 | 34.1020 | 44.5686 | 44.5686 | 0 | yes | 400.286 | 8.217 |
+| `joint_d2048k32r1024_eq` | 32 | 1024 | eq | 23.1437 | 44.2457 | 44.2457 | 44.5686 | 33.9541 | 44.5686 | 44.5686 | 0 | yes | 46.379 | 0.952 |
+| `joint_d2048k32r512_dense` | 32 | 512 | dense | 2.8517 | 5.0383 | 5.0383 | 5.0471 | 1.7317 | 5.0471 | 5.0471 | 0 | yes | 284.585 | 5.842 |
+| `joint_d2048k32r512_eq` | 32 | 512 | eq | 2.8517 | 5.0383 | 5.0383 | 5.0471 | 2.4399 | 5.0471 | 5.0471 | 0 | yes | 46.344 | 0.951 |
+| `fft_loose` (FOM) | - | - | - | - | - | - | 3.7127 | 3.7127 | 0.0000 | 2.4737 | - | - | 15.818 | - |
+| `fft_tight` (FOM) | - | - | - | - | - | - | 0.0000 | 0.0000 | 0.0000 | 4.0265 | - | - | 90.979 | - |
+
+**Pre-registered success** (best-found worst < 1.0 %, solved worst same-grid < 1.3 %, every solve stationary and completed, cost <= 1.5x the incumbent): **no arm passes**, out of 26 evaluated.
+
+**Recorded deviations.** The density ladder is a nested prefix of the incumbent's own draw rather than three independent `params_draw(0,n)` draws (recorded deviation D1 in DESIGN.md), and a 4608 rung was added so one arm is a like-for-like retrain of the incumbent. The joint bank+head arms cannot use identity (*) and train against a seeded subset of 4096 of the 65025 interior points, at a capped density, continuing from the selected frozen-bank arm; their orthonormality weight is calibrated at the warm start rather than inherited, and their held-out oracle uses the mean-code initialisation only, so the mean-code-only column is the like-for-like one across the two families. Amendments A1-A3 in DESIGN.md are dated and were all made before any evaluation number existed; the first training submission (`3745663`) was CANCELLED while pending, consumed no GPU time and produced no output, because two defects in the joint arms were found after submission. The weak-residual training terms use the exact dense advection rather than the empirical-quadrature rule, because that rule is fitted at a fixed head and would drift as theta moves.
+
+**RETRACTED AS A RANK TEST (amendment A4).** `joint_d2048k32r1024` did not inherit the warm start it was supposed to continue from: `widen` keeps the incumbent feature columns but initialises the new head output columns at random, so the widened decoder starts from a data term of 4.318e+01 where its narrow sibling starts from 1.461e-05. Because lambda_orth is calibrated at the warm start, it was then set against that large value and dominated the run. The wide-rank arm is reported with its numbers but it says nothing about bank rank; a fair rank arm needs a warm-start-preserving widening and a penalty calibrated after it. Not rerun: the job cap reserved the remaining job for the evaluation.
+
+**Three audit gates failed on a byte hash and were replaced by a stronger value check (amendment A5).** The cluster NumPy and the local NumPy disagree by one unit in the last place in np.exp, and the viscosity column is the only one that passes through it; a direct probe shows their default_rng streams are otherwise identical. The train draw differs in 201 rows, column(s) [4], at most 1 ULP. The holdout draw differs in 3 rows, column(s) [4], at most 1 ULP. The eval draw differs in 1 rows, column(s) [4], at most 1 ULP. The attempt's own draws are now regenerated in the cluster interpreter, accepted only because each hashes to exactly the value the job recorded, committed as artifacts/<attempt>/draws.npz, and checked against a local re-derivation to <= 1 ULP, against the declared ranges, and for cohort disjointness on the actual values. The evaluation cohort is asserted BITWISE equal to abl01's own recorded cases in the job and again in the audit. No reported number moves: 1 ULP in nu is O(1e-16) relative.
+
+**The objective weights are fixed and declared, but their calibration point is weaker than DESIGN.md said, and this is the cell's main recorded flaw.** The declared rule is beta = rho * L_rec / L_term 'at the incumbent head'. The driver evaluated the incumbent head at 512 of its own training codes paired with the same number of UNRELATED snapshots' targets: the incumbent's codes index its own dense state pick and the driver strided both arrays independently instead of joining them on it. The join was recoverable -- the checkpoint carries `hfit_pick`, the global state ids its codes belong to, in exactly the trajectory-major order this lane uses -- and was not used. Realised values: L_rec 6.14924, L_weak 6.15473, L_smooth 31.5697, beta_w = beta_t = 0.0999108, gamma 0.0194783. Because the weights are a RATIO of two terms evaluated at the same arbitrary point, the arms stay well defined at fixed reported weights; what is NOT licensed is the claim that the added term contributes a tenth of the loss at the incumbent's own fit. The realised share of the loss each added term held at the END of training is in the report's training table, so a weight that turned out to be uninformative is visible rather than hidden.
+
+**A compile-time note worth carrying forward.** `common.make_projector` jits a closure over the cached bank, so XLA reported a large captured constant during the first projection compile. At this bank size that costs compile time only and the job ran at full speed, but the same pattern at a larger bank or a finer mesh is the captured-constant landmine `CLAUDE.md` warns about; the bank should be an explicit jit argument if this code is reused there.
+
+Source-generated report: `reports/2026-09-16-can-training-move-the-burgers-head.md` (SHA256 `b10b08e581346d960d326fb1a4f60cf778fbc226205510e64fa36bb0e9a564d0`) with its generator beside it. Raw archives Git-tracked as bounded chunks under `experiments/b-head-train/artifacts/`. The trained checkpoints are inside the training archive. Both exact remote attempt directories were removed after checksum collection and the namespace is empty. Not pushed, per the coordinator's standing instruction; commits are local only.
+
+**Open.** Other meshes, other checkpoints, more than one training seed per arm, the sealed final cohort, and a step budget chosen per density rather than held fixed across the ladder. No earlier numerical result is retracted and no worktree was merged.
+
+
+## 2026-09-16
+### b-ladder-top — the three solver fixes are INERT at $q=256$; the rung converges only by raising the iteration budget, for free; and on the evolved-times metric the ladder is not even monotone
+
+The coordinator asked two questions in order. **Q1:** make the $q=256$ rung of the
+fixed-weight correction ladder converge, with three candidate fixes each isolated — a
+coarse-to-fine cascade warm start, column equilibration of the augmented Jacobian, and a
+damping/trust schedule for the correction block decoupled from the latent block — and a valid
+empirical-quadrature rule per rung. **Q2:** price the whole inference-time envelope in ONE job:
+the $q$ ladder crossed with the quadrature and the evolution tolerance, against same-job
+full-order controls, POD-LSPG and the trained FNO, reporting BOTH the worst-over-all-times and
+the worst-over-evolved-times error with the $t=0$ compression separated out. A third job, Q1-B,
+was predeclared after Q1 landed to answer the *"at a stated cost"* half of Q1's target.
+Predeclared protocol and every amendment: `experiments/b-ladder-top/DESIGN.md`. Nothing was
+merged.
+
+Worktree `worktrees/2026-09-16-b-ladder-top`, branch `exp/2026-09-16-b-ladder-top`. Namespace `/cluster/tufts/paralab/tawal01/b_ladder_top_20260916/`. Q1 job `3745589` (`btq101`) on `NVIDIA A100 80GB PCIe`, source `b03fc2e07aa3ed98cacaccaacbd640f078d19f3d`, elapsed 5641.8 s. Q1-B job `3749039` (`btq102`) on `NVIDIA A100 80GB PCIe`, source `4eccb76e3a9f908ad853f467d9043a4db30d0d00`, elapsed 3292.0 s. Q2 job `3747245` (`btq201`) on `NVIDIA A100-PCIE-40GB`, source `a9b99c50cb2e5b274cd02cf5b53dc62cc9eb8c75`, elapsed 6557.5 s. Every job printed `jax_backend=gpu`, ran float64 with highest matmul precision, and were checksum-collected, independently NumPy-audited and archived before their exact remote attempt directories were removed.
+
+**Q1 gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `cclad01_fidelity` yes; `checkpoint_unchanged` yes; `complete` yes; `directions_hash_matches_cclad01` yes; `directions_rank_covers_ladder` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `q0_arms_bitwise` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_cclad01` no; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q0_m4_dense_base` yes; `reproduces_q0_m4_eq_base` yes; `reproduces_q128_m2_dense_base` yes; `same_grid_baseline_present` yes; `x64` yes.
+
+**Q1-B gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `cclad01_fidelity` yes; `checkpoint_unchanged` yes; `complete` yes; `directions_hash_matches_cclad01` no; `directions_rank_covers_ladder` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_cclad01` no; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q256_m2_dense_base` yes; `same_grid_baseline_present` yes; `x64` yes.
+
+**Q2 gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `cclad01_fidelity` yes; `checkpoint_unchanged` yes; `complete` yes; `directions_hash_matches_cclad01` no; `directions_rank_covers_ladder` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `fno_cohort_disjoint_from_training` yes; `fno_returns_supplied_field_at_t0` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_cclad01` yes; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q0_M256_dense_g1em06` yes; `reproduces_q128_M256_dense_g1em06` yes; `same_grid_baseline_present` yes; `x64` yes.
+
+**Fidelity against the cheap-corrections job.**
+
+Q1:
+
+| arm | reproduces | tolerance | relative difference (reference) | relative difference (same-grid) | passed |
+|---|---|---|---|---|---|
+| `q0_m4_dense_base` | `q0_m4_dense_block` | 1e-09 | 2e-13 | 0e+00 | yes |
+| `q0_m4_eq_base` | `q0_m4_eq_varpro` | 1e-09 | 1e-14 | 0e+00 | yes |
+| `q128_m2_dense_base` | `q128_m2_dense_block` | 1e-09 | 4e-13 | 1e-13 | yes |
+
+Q1-B:
+
+| arm | reproduces | tolerance | relative difference (reference) | relative difference (same-grid) | passed |
+|---|---|---|---|---|---|
+| `q256_m2_dense_base` | `q256_m2_dense_block` | 1e-09 | 5e-13 | 9e-14 | yes |
+
+Q2:
+
+| arm | reproduces | tolerance | relative difference (reference) | relative difference (same-grid) | passed |
+|---|---|---|---|---|---|
+| `q0_M256_dense_g1em06` | `q0_m256_dense_block` | 1e-09 | 5e-13 | 0e+00 | yes |
+| `q128_M256_dense_g1em06` | `q128_m256_dense_block` | 1e-03 | 4e-10 | 6e-10 | yes |
+
+**Conditioning of the augmented normal equations** (offline probe, $\lambda=10^{-6}$):
+
+| q | unknowns | column norm ratio | $\kappa$ unscaled | $\kappa$ equilibrated | improvement |
+|---|---|---|---|---|---|
+| 0 | 16 | 4.231e+00 | 2.968e+05 | 2.582e+05 | 1.149 |
+| 64 | 80 | 9.204e+01 | 3.475e+05 | 2.271e+05 | 1.530 |
+| 128 | 144 | 8.277e+01 | 6.080e+05 | 4.342e+05 | 1.400 |
+| 256 | 272 | 1.066e+02 | 6.139e+06 | 3.492e+06 | 1.758 |
+| 512 | 528 | 9.735e+01 | 6.865e+10 | 3.494e+07 | 1964.597 |
+
+**Q1 convergence sweep** (dense quadrature):
+
+| arm | q | fix | median iters/step | budget exits | worst joint gradient | worst same-grid all % | worst evolved % | median GPU ms | cascade total ms | converged |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `q0_m4_dense_base` | 0 | `base` | 3.0 | 0 | 9.970e-07 | 2.5629 | 1.8890 | 284.991 | — | yes |
+| `q0_m4_dense_pre` | 0 | `pre` | 3.0 | 0 | 9.970e-07 | 2.5629 | 1.8890 | 285.330 | — | yes |
+| `q0_m4_dense_predamp` | 0 | `predamp` | 3.0 | 0 | 9.970e-07 | 2.5629 | 1.8890 | 284.855 | — | yes |
+| `q64_m2_dense_base` | 64 | `base` | 3.0 | 0 | 9.909e-07 | 2.1489 | 1.4480 | 535.900 | — | yes |
+| `q64_m2_dense_predamp` | 64 | `predamp` | 3.0 | 0 | 9.909e-07 | 2.1489 | 1.4480 | 534.841 | — | yes |
+| `q128_m2_dense_base` | 128 | `base` | 3.0 | 0 | 9.983e-07 | 1.8116 | 0.9799 | 913.684 | — | yes |
+| `q128_m2_dense_casc` | 128 | `casc` | 3.0 | 63 | 5.339e-02 | 1.8116 | 0.9799 | 1043.120 | 1577.962 | no |
+| `q128_m2_dense_damp` | 128 | `damp` | 3.0 | 0 | 9.983e-07 | 1.8116 | 0.9799 | 913.827 | — | yes |
+| `q128_m2_dense_pre` | 128 | `pre` | 3.0 | 0 | 9.983e-07 | 1.8116 | 0.9799 | 914.715 | — | yes |
+| `q128_m2_dense_predamp` | 128 | `predamp` | 3.0 | 0 | 9.983e-07 | 1.8116 | 0.9799 | 914.730 | — | yes |
+| `q256_m2_dense_base` | 256 | `base` | 5.0 | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3398.977 | — | no |
+| `q256_m2_dense_casc` | 256 | `casc` | 7.0 | 180 | 2.212e-02 | 0.9053 | 0.7566 | 12301.559 | 13216.289 | no |
+| `q256_m2_dense_damp` | 256 | `damp` | 5.0 | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3413.226 | — | no |
+| `q256_m2_dense_pre` | 256 | `pre` | 5.0 | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3399.543 | — | no |
+| `q256_m2_dense_predamp` | 256 | `predamp` | 5.0 | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3410.992 | — | no |
+| `q512_m2_dense_base` | 512 | `base` | 2.0 | 0 | 1.497e-01 | 0.6027 | 0.4343 | 2402.103 | — | no |
+| `q512_m2_dense_casc` | 512 | `casc` | 2.0 | 0 | 1.732e-01 | 0.6027 | 0.4343 | 2372.593 | 5783.585 | no |
+| `q512_m2_dense_damp` | 512 | `damp` | 2.0 | 0 | 1.497e-01 | 0.6027 | 0.4343 | 2431.989 | — | no |
+| `q512_m2_dense_pre` | 512 | `pre` | 2.0 | 0 | 1.497e-01 | 0.6027 | 0.4343 | 2404.754 | — | no |
+| `q512_m2_dense_predamp` | 512 | `predamp` | 2.0 | 0 | 1.497e-01 | 0.6027 | 0.4343 | 2424.614 | — | no |
+
+**Q1 empirical quadrature per rung:**
+
+| arm | q | M | m | relative fit | truncated | rule valid | fit seconds | worst same-grid all % | median GPU ms | converged |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `q0_m4_eq_base` | 0 | 64 | 256 | 0.005159 | no | yes | 13.3 | 2.5629 | 48.907 | yes |
+| `q128_m2_eq_base` | 128 | 288 | 1152 | 0.000288 | no | yes | 217.5 | 1.8116 | 182.093 | yes |
+| `q128_m2_eq_predamp` | 128 | 288 | 1152 | 0.000288 | no | yes | 217.5 | 1.8116 | 184.949 | yes |
+| `q256_m2_eq_base` | 256 | 544 | 2048 | 0.000083 | no | yes | 841.7 | 0.9053 | 842.368 | no |
+| `q256_m2_eq_predamp` | 256 | 544 | 2048 | 0.000083 | no | yes | 841.7 | 0.9053 | 853.113 | no |
+| `q512_m2_eq_base` | 512 | 1056 | 2048 | 0.000206 | no | yes | 1005.9 | 3.6505 | 396.541 | no |
+| `q512_m2_eq_predamp` | 512 | 1056 | 2048 | 0.000206 | no | yes | 1005.9 | 3.6505 | 410.159 | no |
+
+**Q1-B, one relaxed contract constant at a time, $q=256$ only:**
+
+| arm | per-step iteration budget | latent trust radius | quadrature | budget exits | worst joint gradient | worst same-grid all % | worst evolved % | median GPU ms | cost vs control | converged |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `q256_m2_dense_base` | 180 | x1 | dense | 15 | 1.191e-03 | 0.9053 | 0.7566 | 3662.173 | 1.000x | no |
+| `q256_m2_dense_base_b2000` | 2000 | x1 | dense | 0 | 9.710e-07 | 0.9053 | 0.7566 | 3652.751 | 0.997x | yes |
+| `q256_m2_dense_base_b600` | 600 | x1 | dense | 0 | 9.710e-07 | 0.9053 | 0.7566 | 3618.621 | 0.988x | yes |
+| `q256_m2_dense_base_b600t10` | 600 | x10 | dense | 0 | 9.710e-07 | 0.9053 | 0.7566 | 2179.486 | 0.595x | yes |
+| `q256_m2_dense_base_t10` | 180 | x10 | dense | 3 | 6.266e-03 | 0.9053 | 0.7566 | 2192.885 | 0.599x | no |
+| `q256_m2_eq_base` | 180 | x1 | eq | 15 | 1.978e-03 | 0.9053 | 0.7580 | 843.870 | 0.230x | no |
+| `q256_m2_eq_base_b2000` | 2000 | x1 | eq | 0 | 9.849e-07 | 0.9053 | 0.7580 | 848.014 | 0.232x | yes |
+
+**Q2 envelope, every subject, both metrics:**
+
+| subject | family | q / k' | quadrature | evolution tol | worst all times % | worst evolved % | t0 compression % | median GPU ms | converged |
+|---|---|---|---|---|---|---|---|---|---|
+| `fno-large` | fno | None | — | — | 7.4164 | 7.4164 | 0.0000 | 11.206 | — |
+| `fft_tight` | fom | None | — | — | 0.0000 | 0.0000 | 0.0000 | 92.903 | — |
+| `nt1e-2_dt01` | fom | None | — | — | 3.1999 | 3.1999 | 0.0000 | 9.312 | — |
+| `nt1e-4_dt005` | fom | None | — | — | 0.0338 | 0.0338 | 0.0000 | 37.699 | — |
+| `pod16_dense` | pod | 16 | dense | 1e-06 | 61.6503 | 28.7250 | 61.6503 | 50.835 | yes |
+| `pod32_dense` | pod | 32 | dense | 1e-06 | 47.0681 | 18.7995 | 47.0681 | 91.176 | no |
+| `pod64_dense` | pod | 64 | dense | 1e-06 | 19.8156 | 7.0835 | 19.8156 | 172.769 | no |
+| `pod128_dense` | pod | 128 | dense | 1e-06 | 10.1198 | 1.9464 | 10.1198 | 392.033 | no |
+| `q0_M256_dense_g0p001` | rom | 0 | dense | 0.001 | 2.5628 | 1.2705 | 2.5628 | 311.286 | no |
+| `q0_M256_dense_g1em06` | rom | 0 | dense | 1e-06 | 2.5629 | 1.2710 | 2.5629 | 422.825 | yes |
+| `q0_M256_eq_g0p001` | rom | 0 | eq | 0.001 | 2.5628 | 1.3182 | 2.5628 | 45.762 | no |
+| `q0_M256_eq_g1em06` | rom | 0 | eq | 1e-06 | 2.5629 | 1.3186 | 2.5629 | 60.627 | yes |
+| `q16_M256_eq_g0p001` | rom | 16 | eq | 0.001 | 2.4806 | 1.8070 | 2.4806 | 66.350 | no |
+| `q16_M256_eq_g1em06` | rom | 16 | eq | 1e-06 | 2.4806 | 1.8066 | 2.4806 | 84.494 | yes |
+| `q32_M256_eq_g0p001` | rom | 32 | eq | 0.001 | 2.3534 | 1.3052 | 2.3534 | 77.793 | no |
+| `q32_M256_eq_g1em06` | rom | 32 | eq | 1e-06 | 2.3534 | 1.3048 | 2.3534 | 101.934 | yes |
+| `q64_M256_eq_g0p001` | rom | 64 | eq | 0.001 | 2.1489 | 1.5742 | 2.1489 | 94.373 | no |
+| `q64_M256_eq_g1em06` | rom | 64 | eq | 1e-06 | 2.1489 | 1.5738 | 2.1489 | 126.211 | yes |
+| `q128_M256_dense_g1em06` | rom | 128 | dense | 1e-06 | 1.8116 | 1.0418 | 1.8116 | 1183.578 | yes |
+| `q128_M256_eq_g0p001` | rom | 128 | eq | 0.001 | 1.8116 | 1.3517 | 1.8116 | 153.748 | no |
+| `q128_M256_eq_g1em06` | rom | 128 | eq | 1e-06 | 1.8116 | 1.3517 | 1.8116 | 188.358 | yes |
+| `q256_M544_eq_g0p001` | rom | 256 | eq | 0.001 | 0.9053 | 0.7580 | 0.9053 | 496.671 | no |
+| `q256_M544_eq_g1em06` | rom | 256 | eq | 1e-06 | 0.9053 | 0.7580 | 0.9053 | 912.092 | no |
+| `q512_M1056_eq_g1em06` | rom | 512 | eq | 1e-06 | 3.6505 | 3.6505 | 0.6027 | 459.722 | no |
+
+**Non-dominated over (median GPU ms, worst error), all output times:**
+
+| subject | family | q / k' | worst error % | median GPU ms | converged |
+|---|---|---|---|---|---|
+| `nt1e-2_dt01` | fom | None | 3.1999 | 9.312 | — |
+| `nt1e-4_dt005` | fom | None | 0.0338 | 37.699 | — |
+| `fft_tight` | fom | None | 0.0000 | 92.903 | — |
+
+**Non-dominated over (median GPU ms, worst error), evolved times only:**
+
+| subject | family | q / k' | worst error % | median GPU ms | converged |
+|---|---|---|---|---|---|
+| `nt1e-2_dt01` | fom | None | 3.1999 | 9.312 | — |
+| `nt1e-4_dt005` | fom | None | 0.0338 | 37.699 | — |
+| `fft_tight` | fom | None | 0.0000 | 92.903 | — |
+
+**Pre-registered criterion for calling $q$ a knob:**
+
+| metric | monotone at fixed M | monotone over every rung | converged non-dominated points | cost span | error span | passes |
+|---|---|---|---|---|---|---|
+| evolved | no | no | 4 | 19.522 | 1.266 | no |
+| all_times | yes | no | 5 | 3.107 | 1.415 | no |
+
+**FNO in the same allocation.** `fno-large`, 17,877,317 real parameters, checkpoint SHA256 `208d9002cd8e8567…`, pooled device query 11.206 ms median over 18 retained repetitions.
+
+Source-generated report: `experiments/b-ladder-top/reports/2026-09-16-b-ladder-top.md` (SHA256 `d1d64a4766c876cb33583a6163bb315e767706ec276a41db10305c11cb5d06b4`) with its envelope figure and generator beside it.
+
+Raw archive `btq101` Git-tracked as bounded chunks: whole SHA256 `c81aa8c2a01d46527321250433e3ccd08fdc05358b61a3795eeeececba0584e3` (12 chunks).
+Raw archive `btq102` Git-tracked as bounded chunks: whole SHA256 `5b83355915231e0211fb702113930dd975626f761815c5635d08843ebf02e6b0` (5 chunks).
+Raw archive `btq201` Git-tracked as bounded chunks: whole SHA256 `14e6820c401014a30a8fec4bf6fdea5e9dcd5a245efe2776adee10aa0c6e0760` (11 chunks).
+
+**Q1 — the three fixes are inert, and the two failing rungs fail for different
+reasons.** At $q=256$ the `base`, `pre`, `damp` and `predamp` arms are indistinguishable to four
+decimals in error, in median iterations per step, in budget-exit count and in worst gradient;
+the cascade arm is much worse. The failure localises to **five time steps of ONE case out of
+six** (case 0, steps 0-3 and 31 of 50). At $q=512$ there is no solver failure at all: at $q=R$
+the corrections span the whole bank, the supplied field is fitted to $10^{-16}$ relative, and
+the normalized gradient $\|J^\top r\|/(\|J\|\,\|r\|)$ becomes a $0/0$ ratio whose reported
+value means nothing, while every one of the rung's 900 time steps exits on the gradient
+criterion. That is the same degenerate endpoint the Poisson $q=R$ rung showed.
+
+Fix (b) does exactly what it was predicted to do to the conditioning and nothing to the answer:
+it cuts $\kappa$ of the damped normal equations at $q=512$ by a factor of 1965 and changes no
+reported error anywhere. The conditioning was never the binding constraint. Fix (c) changes
+nothing measurable. Fix (a) is actively harmful.
+
+**Q1-B — the rung converges at a raised iteration budget, and the relaxation is free.** Raising
+the per-step budget from the retained 180 to 600, changing nothing else, gives zero budget
+exits and a worst gradient inside $10^{-6}$ at 0.988x the control's median GPU time, because
+the extra iterations land on five of nine hundred steps. Its worst same-grid error is strictly
+below the $q=128$ rung's, so the pre-registered Q1 accuracy requirement holds — the target
+PASSES under that one declared relaxation and FAILS under the frozen contract. Ten times the
+latent trust radius is a genuine 1.67x **cost** lever at unchanged error and does not converge
+the rung on its own. Every arm reports the same error to four decimals whether it converged or
+not: **the convergence failure was a stopping-rule fact, not an accuracy fact.**
+
+**Empirical quadrature per rung is now constructible everywhere.** Raising the bounded fitter's
+refit block from $m/64$ to $m/16$ made every rule in this lane reach full target support with
+none truncated, including $m=2048$ at $q=512$ in 1006 s.
+
+**Q2 — the ladder's monotonicity is the $t=0$ compression term.** On the worst-over-all-times
+metric the fixed-test-count rungs fall monotonically and the criterion fails only on error
+span. On the worst-over-**evolved**-times metric the same rungs are **not monotone** ($q=16$ is
+worse than $q=0$), and the converged non-dominated set spans 1.266x in error across 19.5x in
+cost. "$q$ is a knob" therefore fails on both metrics, for a different reason on each. The
+decoder's compression of the supplied field is what makes the all-times ladder look monotone.
+
+**Q2 — nothing but the full-order solver is on the envelope.** On both metrics the non-dominated
+set over every subject in the job — ladder rungs, POD-LSPG ranks, the trained FNO and the FOM
+controls — contains only same-job full-order controls. The FNO ran in the same Slurm allocation
+on the same GPU with the neural-operator lane's `timing.py` protocol replicated, its six cases
+verified disjoint from its training draw, and it returns the supplied field bitwise at $t=0$,
+which is exactly why the all-times metric flatters it and both metrics are reported.
+
+**Retracted from the cheap-corrections cell:** its speculation that the broken
+$q=512$ empirical-quadrature arm (27.8 % same-grid error) was the bounded fitter's **walltime
+cap**. With the larger refit block that rule now converges to full support with a relative fit
+an order of magnitude better, and the rung still gives 3.65 % same-grid error against 0.60 %
+for its dense twin. The cap was not the suspect; the failure is in the rung.
+
+**Retracted within this cell:** the design's own framing that $q=512$ "does not converge" as a
+solver fact — see the degenerate-endpoint finding above — and the working hypothesis behind all
+three fixes, that the $q=256$ failure lives in the correction block's damping, trust radius or
+conditioning. It lives in none of them.
+
+**Recorded negatives rather than dropped:** the cascade warm start (fix a) turns a cleanly
+converged $q=128$ rung into one with 63 budget exits and the $q=256$ rung into one with 180 at
+3.6x the cost, even though its three-way guard cannot start a step from a worse residual; and
+the `q0_arms_bitwise` gate failed vacuously on Q1-B (which has no $q=0$ arms) before being
+changed to report "not applicable", which is recorded in `DESIGN.md` rather than silently fixed.
+
+**Cross-job reproduction, for the record.** Every substantive fidelity gate passes at or inside
+$10^{-9}$: Q1 reproduces `cclad01`'s $q=0$ dense, $q=0$ EQ and $q=128$ dense rows, Q1-B
+reproduces its $q=256$ dense row, and Q2 reproduces its $q=0$ and $q=128$ fixed-$M$ dense rows.
+The directions hash reproduced `cclad01` bitwise in Q1 (same GPU model) and did not in Q2 or
+Q1-B; the 4096-interval reference fields did the opposite, matching `qlad01` bitwise in Q2 and
+not in Q1. Neither hash is a gate and both are reported as probes.
+
+**Open.** (1) The $q=16$ regression on the evolved-times metric is unexplained and
+reproducible across both quadratures and both evolution tolerances; nothing here says why one
+extra correction direction makes the trajectory worse while making the supplied-field fit
+better. (2) The $q=512$ empirical-quadrature failure is measured, not explained; the hypothesis
+on offer — that at $q=R$ the reachable states include fields the $m$-point rule was never
+fitted on — was not tested. (3) The five stubborn $q=256$ steps are all in the first four steps
+after the initial fit plus one late step of one case; a cheaper fix than more iterations (a
+sub-step or a continuation start) was not tried. (4) Whether the $t=0$ compression should be
+charged to the ROM at all is a framing decision for the paper: the FNO's output contract returns
+the supplied field, the ROM's decodes it, and that single difference moves the headline number
+by a factor of two. **Next session:** decide (4) before any of these numbers enter the
+manuscript, and note that the campaign's standing conclusion is unchanged and now measured on
+one GPU in one job — the tolerance-matched FOM beats every reduced-order and operator subject
+on both axes at once. One mesh, one checkpoint, one training seed, six opened development cases;
+final cohorts sealed, no new case opened, nothing merged.
+
+## 2026-09-16
+### q-diag — the evolved-metric non-monotonicity of the Burgers correction ladder is the EMPIRICAL QUADRATURE, not $q$: every dense ladder in every job is monotone, every EQ ladder is not
+
+The coordinator asked which of four candidate causes explains b-ladder-top's open item (1) —
+that the fixed-weight correction ladder is monotone in $q$ on the worst-over-all-times metric
+but not on the worst-over-evolved-times metric ($q=16$ worse than $q=0$, job `3747245`, also at
+fixed $M$) — and, on the same data, where the $q=512$ EQ rung's 3.65 % against 0.60 % dense
+lives. **Read-only lane: no cluster job, no GPU.** Every number was recomputed in NumPy from
+the already collected, checksum-verified and independently audited archives `btq101`, `btq102`,
+`btq201` (b-ladder-top), `cclad01` (cheap-corrections) and `qlad01` (head-ablation), plus the
+frozen Burgers checkpoint SHA256 `18f0266a…` those jobs used. Nothing was re-solved, refitted or
+retrained. Predeclared protocol with a falsifiable decision rule per cause, committed before any
+number was computed: `experiments/q-diag/DESIGN.md`.
+
+Worktree `worktrees/2026-09-16-q-diag`, branch `exp/2026-09-16-q-diag`, forked from
+`exp/2026-09-16-b-ladder-top` at `b8efd5b4`; commits `119417a2` (design) and `c9a2074d`
+(results). Not pushed, not merged. No cluster namespace was used.
+
+**Gates.** `recomputes_archived_reference_errors` 6.1e-16 (threshold 1e-12); 
+`recomputes_archived_arm_aggregates` 0.0e+00 over 183 comparisons against the three
+b-ladder-top audit JSONs; `numpy_weak_residual_matches_recorded` 3.4e-11 — the NumPy
+re-implementation of the decoder, bank, test modes and weak residual reproduces the cluster
+jobs' own recorded per-step residual norms; `local_defect_selfcheck` 4.0e-09 — the NumPy
+full-order stepper propagates `fft_tight` back onto itself. All pass.
+
+**The census — the single decisive table.** Worst error along each job's own ladder, both
+metrics, every quadrature and test-count rule:
+
+| job | ladder | metric | monotone? |
+|---|---|---|---|
+| `cclad01` | dense, fixed $M=256$ | evolved 1.2710 → 1.2305 → 1.1869 → 1.1255 → 1.0418 | yes |
+| `cclad01` | EQ, fixed $M=256$ | evolved 1.3113 → 1.4956 → 1.5231 → 1.5557 → 1.6141 | **NO, at every rung** |
+| `cclad01` | dense, $M=2(K+q)$ and $M=4(K+q)$ | evolved, $q=0\ldots512$ | yes (both) |
+| `btq201` | EQ, fixed $M=256$, both $g_\mathrm{tol}$ | evolved | **NO** at $q=16$, $q=64$, $q=512$ |
+| `btq201` | dense, fixed $M=256$ | evolved | yes |
+| `qlad01` | dense, joint solver, $q=0\ldots512$ | evolved | yes |
+| `qlad01` | EQ, joint solver | evolved 1.9002 → 2.1807 | **NO** at $q=16$ |
+| `btq101` | dense, $q=0\ldots512$ | evolved | yes |
+| `btq101` | EQ | evolved | **NO** at $q=512$ |
+
+**12 of 12 dense ladder/metric combinations are monotone; 3 of 10 EQ combinations are.** The
+regression survives three solvers (`joint`, `block`, `base`), two evolution tolerances, three
+test-count rules and three GPUs, and is absent from the dense twin of every arm that shows it.
+
+**Cause (3), quadrature — SUPPORTED, decisively.** At matched $q$, matched $M=256$, matched
+solver and matched tolerance the EQ-minus-dense worst evolved error is $+0.0403$, $+0.2651$,
+$+0.3363$, $+0.4302$, $+0.5723$ pp at $q=0,16,32,64,128$ — monotone in $q$. It is one case
+(case 3, the case with the largest $t_0$ compression) and one time ($t=0.05$); the gap is below
+0.01 pp on five of six cases at every rung. The local one-interval defect (full-order operator
+applied in NumPy to each arm's own saved fields; measurement floor 4.0e-07 %) puts the whole
+penalty in the **first** output interval: dense-vs-EQ first-interval defect $1.5858/1.6273$,
+$1.5083/1.7786$, $1.3809/1.7604$, $1.3076/1.7834$, $1.1314/1.6999$ %, penalty $+0.0415$ →
+$+0.5685$ pp, while intervals 2–5 agree to three decimals at every rung up to $q=128$.
+
+The mechanism was measured, not asserted. `arms.weak_eq` approximates **only** the advection
+term, so the rule's whole contribution is
+$\rho(u)=\lVert\sum_j w_j\Phi(x_j)a(u)(x_j)-\Phi^\top a(u)\rVert/\lVert\Phi^\top a(u)\rVert$,
+a functional of one field and therefore computable on every saved field. On the converged-FOM
+state each interval is stepped from, $\rho$ rises monotonically with $q$ at essentially fixed
+$m$: $0.1158, 0.1679, 0.1731, 0.1766, 0.1854$ at $q=0..128$ ($m\in[999,1010]$), $0.2970$ at
+$q=256$, $0.7661$ at $q=512$. The first-principles bound
+$\varepsilon=\Delta t\,\rho\,\lVert\Phi^\top a\rVert/\lVert\hat u(t_0)\rVert$ over ten substeps
+correlates with the measured first-interval gap at Pearson $0.873$ over all 30 (rung, case)
+points and reproduces the case structure. In `btq201` the EQ ladder bounces rather than rising
+($q=16$ up, $q=32$ down, $q=64$ up, $q=128$ down) and $\rho$ bounces with it
+($0.0074, 0.0553, 0.0203, 0.0486, 0.0294$ on case 3 at $t=0.05$).
+
+**Cause (1), trajectory-blind directions — REFUTED.** Both predeclared criteria fail. (a) The
+$q=16$ penalty on case 3 is largest at the first evolved time and decays
+($+0.184, +0.070, -0.010, -0.007, +0.011$ pp in `cclad01` EQ). (b) The per-interval local
+defect ratio to $q=0$ is **below 1 everywhere**, in both quadratures — $0.95, 0.87, 0.73, 0.65$
+at the first interval for $q=16,32,64,128$. More correction directions make the local step
+strictly more accurate.
+
+**Cause (2), overfitting the $M$ test equations — measured, real, and NOT the explanation.**
+$C_q$ is archived nowhere, so it was **recovered** from saved data: every ROM invocation carries
+$w_n=(z_n,y_n)$ for all 51 internal steps and the decoded field at six output times, and with
+$c=G^{+}u$ the pooled $(y,\,c-h_\theta(z))$ pairs over-determine it. Recovered at
+$q=16,32,64,128$ from 216–432 pooled pairs at full design rank, held-out pair reconstruction
+$6\times10^{-13}$ to $1.4\times10^{-12}$. With $C_q$ the weak residual was recomputed at all 50
+internal reachable states of the dense $M=256$ arms, on their own 256 test modes and on the next
+1024 sine modes: on-test median falls $1.00\to0.87\to0.83\to0.78\to0.50$ while held-out rises
+$1.00\to1.03\to1.11\to1.44\to1.68$, ratio crossing 1 between $q=32$ and $q=64$. That is a
+genuine, monotone overfitting signature — **but the dense field error still falls monotonically
+over the same range**, so the predeclared conjunction (lower on-test residual *with* higher field
+error) does not hold and cause (2) does not explain the observation. Recorded as a latent risk
+that would bite at larger $q$ or smaller $M$. It is the same mechanism as cause (3) through a
+different error source: the extra unknowns exploit whatever is wrong in the residual they are
+handed; with dense quadrature what is wrong lives outside the test space and costs nothing yet,
+with EQ it lives inside it and costs the field.
+
+**Cause (4), noise — REFUTED.** Arms that are the same computation by construction (`block` vs
+`varpro` at matched $q$, $M$, quadrature) differ by at most $7.4\times10^{-6}$ pp. The $q=16$
+regression is $0.18$–$0.49$ pp, four to five orders of magnitude larger, and reproduces in three
+jobs on three GPUs. It is also not "$q=16$ is bad": it is absent in the dense twin of every arm
+that shows it.
+
+**Question (5).** The non-monotonicity appears at $q=32$, $q=64$ and $q=128$ as well as $q=16$
+(in `cclad01`'s fixed-$M$ EQ ladder it appears at *every* rung); it appears in
+cheap-corrections' `cclad01` at budget 180, in its EQ arms only; and it appears in
+head-ablation's `qlad01` joint-solver ladder, in its EQ arm only, while the same job's dense
+joint ladder is monotone through $q=512$.
+
+**The $q=512$ EQ rung.** Its $t_0$ compression, $0.6027$ %, is the best in the ladder; every
+percentage point above that is injected by the time stepping and injected immediately — the
+error is already 3.00 % at $t=0.05$ with the untruncated $m=2048$ rule (13.44 % with
+`cclad01`'s truncated $m=1209$ one), against $0.3169$ % for the dense twin. First-interval local
+defect: $0.3166$ % dense against $13.45$ % EQ. The support geometry does **not** separate it:
+at $m=2048$ the $q=512$ rule sits on a larger share of the advection front (33.8 % of the top-1 %
+$|a|$ cells within one grid cell of a node, 3.5 % of the advection mass sampled) than the
+$q=128$ rule at $m=999$ does (18.1 %, 1.8 %) and its $\rho$ is five times worse. The difference
+is **what the rule is fitted to**: the enriched code family for rung $q$ spans a $q$-dimensional
+correction space that, at $q=R=512$, is the entire bank, while $m$ stays at 2048 of 65025 nodes.
+Most likely cause, with evidence: at $q=R$ the rule is asked to integrate the advection of an
+essentially arbitrary element of a 512-dimensional space from 2048 point values and cannot — its
+error on states the ROM actually reaches is 8–50 % while its NNLS relative fit on its own fitting
+set reads $2.06\times10^{-4}$.
+
+**Which fix the data supports.** Of the four on offer — trajectory-fitted directions, a ridge on
+$y$, more tests, or none (noise) — **none, for this observation.** The directions are innocent
+here; a ridge on $y$ would damp a correction block that is not misbehaving in the dense arms;
+more tests is not it because the regression is measured at a *fixed* $M=256$ where the dense
+twin is monotone. What the data supports is refitting or re-certifying the **empirical
+quadrature** on the states the ROM actually reaches, and growing $m$ with $q$. This is the
+diagnosis the sibling `q-trajdirs` and `q-ridge` lanes should be read against; note that
+trajectory-fitted directions would also change the enriched codes the quadrature rule is fitted
+on, so that arm could still move these numbers — a prediction, not a result.
+
+**Retracted / corrected from b-ladder-top.** Its Q2 framing that "the ladder is not even
+monotone" on the evolved metric is too broad as stated: the **dense** ladder is monotone on the
+evolved metric in that same job and in three others, at three test-count rules, through
+$q=512$; only the empirical-quadrature ladder is not. Also corrected: b-ladder-top's standing
+hypothesis for the $q=512$ EQ failure — "at $q=R$ the reachable states include fields the
+$m$-point rule was never fitted on" — is confirmed in substance but **not** by node coverage;
+the rule's support is as good as the lower rungs', so the phrase "were never fitted on" must be
+read as *what the rule was fitted to*, not *where it samples*. A third, general correction with
+evidence: the NNLS relative fit cannot certify an EQ rule. Across the whole table it is flat at
+$3$–$6\times10^{-4}$ while $\rho$ on reachable states spans $0.009$ to $0.60$, and the rule with
+the second-best reported fit has by far the worst $\rho$. This is the 2026-08-25 "never certify
+EQ by NNLS rel-fit" note, now measured.
+
+**Recorded rather than dropped.** The bound $\varepsilon$ over-predicts the realised gap by
+about an order of magnitude (the solver re-equilibrates after each perturbed step), and $\rho$
+alone is necessary but not sufficient — case 4 carries $\rho\approx0.025$ at late times under
+the $q=0$ rule with a field gap of $0.001$ pp. The $|$gap$|$-vs-$\rho$ correlation over all 150
+(rung, case, evolved time) points is Pearson $0.790$, Spearman $0.584$, not 1.
+
+Source-generated report:
+`experiments/q-diag/reports/2026-09-16-q16-regression-diagnosis.md` (SHA256
+`c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893b8a03cd803c6e`) with its per-time figure and
+generator beside it; stage scripts `per_time.py`, `reference_norms.py`, `quadrature.py`,
+`local_defect.py`, `heldout_tests.py` and their outputs in `experiments/q-diag/checks/`.
+
+**Open.** (1) Whether growing $m$ with $q$ restores monotonicity is not measurable from saved
+data — every archived rule has $m\in[999,2048]$ while $K+q$ spans 16 to 528, and no arm varies
+$m$ at fixed $q$. That is the one-line experiment this diagnosis points at. (2) The recovered
+$C_q$ now makes the *dense* weak residual of the **EQ** arms' solved internal states computable;
+it was not computed here. (3) $C_q$ was recovered numerically rather than read from the job —
+the recovery residuals ($\le1.4\times10^{-12}$ on held-out pairs) and the $3.4\times10^{-11}$
+agreement with the jobs' own recorded residual norms are the warrant. One mesh, one checkpoint,
+one training seed, six opened development cases; final cohorts untouched, no new case opened,
+nothing merged, nothing pushed.
+
+## 2026-09-16
+
+### q-trajdirs — redirected mid-flight: the trajectory-direction hypothesis was killed by the q-diag lane before this lane's own job landed, and the DENSE correction ladder PASSES the redirected knob criterion
+
+The lane opened on one question — does fitting the correction directions $C_q$ to the ROM's **trajectory** error, instead of the head's **static** reconstruction residual, make the Burgers $256^2$ ladder monotone on the worst-over-evolved-times metric? It was pre-registered in full, implemented, smoked and submitted. **While that job was running, the `q-diag` lane answered the underlying question from data that already existed: the $q=16$ evolved-metric regression is the EMPIRICAL QUADRATURE, not the directions.** The coordinator redirected the lane; both halves are recorded below and the redirect itself is section 11 of `experiments/q-trajdirs/DESIGN.md`, appended without editing anything above it. Nothing was merged and the branch was **not** pushed.
+
+`q-diag`'s diagnosis, cited because it is what redirected this lane: `worktrees/2026-09-16-q-diag/experiments/q-diag/reports/2026-09-16-q16-regression-diagnosis.md`, SHA256 `c0bf57626d9e0a42…`. Its verdict: 12 of 12 dense ladder/metric combinations monotone across four jobs, only empirical-quadrature ladders regressing, and cause (1) — trajectory-blind directions — refuted on both of its pre-registered criteria, the incumbent directions' per-interval step map improving with $q$ at 0.95 / 0.87 / 0.73 / 0.65.
+
+Worktree `worktrees/2026-09-16-q-trajdirs`, branch `exp/2026-09-16-q-trajdirs`, forked from `exp/2026-09-16-b-ladder-top` at `b8efd5b4`. Namespace `/cluster/tufts/paralab/tawal01/q_trajdirs_20260916/`. Two A100 jobs, one attempt directory each, `squeue` checked before and after every submission, the three-job cap leaving one unused: the redirected primary `3757505` (`qtd02`) on `NVIDIA A100-PCIE-40GB`, source `f064b8825c57fad2a6c3c62715ad41568ddce828`, elapsed 3152.1 s; and the control `3756800` (`qtd01`) on `NVIDIA A100-PCIE-40GB`, source `59fa69b1ad0c88140fc9519d6dad74fa0570ad9c`, **FAILED** before writing its elapsed time. Both printed `jax_backend=gpu`, ran float64 with highest matmul precision, and were checksum-collected, independently NumPy-audited and archived before their exact remote attempt directories were removed; the namespace is now empty.
+
+**The redirected verdict.** On the `dense_m4` ladder — incumbent directions, DENSE quadrature, $M=4(K+q)$, per-step budget 600, one allocation:
+
+| criterion | holds | measured |
+|---|---|---|
+| 1. worst evolved error non-increasing in $q$, every rung converged | yes | monotone yes, all converged yes |
+| 2. converged non-dominated set spans $\ge2\times$ in error AND $\ge2\times$ in cost, evolved metric | yes | 6 points, error span 3.637x, cost span 13.070x |
+| (reported) worst all-times error non-increasing in $q$ | yes | — |
+
+
+**Overall: the redirected criterion PASSES.** Converged non-dominated arms on the evolved metric: `old_q128_M576_dense`, `old_q16_M128_dense`, `old_q256_M1088_dense`, `old_q32_M192_dense`, `old_q64_M320_dense`, `q0_M64_dense`.
+
+
+**Part 1, no GPU — the dense ladder in data that already existed.** The four comparator archives (`cclad01`, `btq101`, `btq102`, `btq201`) were restored from their Git-tracked chunks and every same-grid error recomputed in NumPy from the saved fields, reproducing each job's archived reference error to 5.76e-16 relative:
+
+| ladder | rungs | monotone evolved | monotone all times | every rung converged | non-dominated points | evolved error span | cost span | passes redirected criterion |
+|---|---|---|---|---|---|---|---|---|
+| `btq101_m2` | 64, 128, 256, 512 | yes | yes | no | 2 | 1.478 | 1.705 | no |
+| `cclad01_m2` | 0, 16, 32, 64, 128, 256, 512 | yes | yes | no | 5 | 3.975 | 3.040 | no |
+| `cclad01_m256` | 0, 16, 32, 64, 128 | yes | yes | yes | 5 | 1.220 | 2.438 | no |
+| `cclad01_m4` | 0, 16, 32, 64, 128, 256, 512 | yes | yes | no | 5 | 2.115 | 4.188 | no |
+
+
+**8 of 8** dense ladder/metric combinations in the archives are monotone — the `q-diag` census reproduced independently from the fields rather than from its tables.
+
+
+**Part 2 — the redirected job, every dense rung at budget 600 in one allocation.**
+
+
+`dense_m4` — incumbent directions, DENSE quadrature, M = 4(K+q); monotone evolved yes, monotone all times yes, every rung converged yes:
+
+| $q$ | $M$ | $m$ | all % | evolved % | $t_0$ % | best-found % | median GPU ms | budget exits | converged |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 64 | — | 2.5629 | 1.8890 | 2.5629 | 2.5447 | 333.192 | 0 | yes |
+| 16 | 128 | — | 2.4806 | 1.3985 | 2.4806 | 2.4615 | 417.939 | 0 | yes |
+| 32 | 192 | — | 2.3534 | 1.2336 | 2.3534 | 2.3325 | 496.922 | 0 | yes |
+| 64 | 320 | — | 2.1489 | 1.0843 | 2.1489 | 2.1386 | 701.655 | 0 | yes |
+| 128 | 576 | — | 1.8116 | 0.8930 | 1.8116 | 1.8105 | 1330.433 | 0 | yes |
+| 256 | 1088 | — | 0.9053 | 0.5194 | 0.9053 | 0.9016 | 4354.902 | 0 | yes |
+
+
+`dense_fixedM` — incumbent directions, DENSE quadrature, fixed M = 256; monotone evolved yes, monotone all times yes, every rung converged yes:
+
+| $q$ | $M$ | $m$ | all % | evolved % | $t_0$ % | best-found % | median GPU ms | budget exits | converged |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 256 | — | 2.5629 | 1.2710 | 2.5629 | 2.5447 | 404.245 | 0 | yes |
+| 16 | 256 | — | 2.4806 | 1.2305 | 2.4806 | 2.4615 | 490.820 | 0 | yes |
+| 32 | 256 | — | 2.3534 | 1.1869 | 2.3534 | 2.3325 | 544.416 | 0 | yes |
+| 64 | 256 | — | 2.1489 | 1.1255 | 2.1489 | 2.1386 | 643.200 | 0 | yes |
+| 128 | 256 | — | 1.8116 | 1.0418 | 1.8116 | 1.8105 | 915.975 | 0 | yes |
+
+
+Same-job full-order controls:
+
+| control | worst all times % | worst evolved % | median GPU ms |
+|---|---|---|---|
+| `fft_loose` | 3.7127 | 3.7127 | 15.366 |
+| `fft_tight` | 0.0000 | 0.0000 | 88.630 |
+| `nt1e-2_dt01` | 3.1999 | 3.1999 | 8.883 |
+
+
+Non-dominated over (median GPU ms, error), every subject: all times `fft_tight`, `nt1e-2_dt01`; evolved times `fft_tight`, `nt1e-2_dt01`.
+
+
+**Gates, `qtd02`.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `btq201_envelope_probe` yes; `checkpoint_unchanged` yes; `complete` yes; `cross_job_fidelity` no; `direction_cohorts_disjoint_from_evaluation` yes; `direction_prefixes_recomputed_from_artifact` yes; `directions_hashed_and_saved` yes; `directions_rank_covers_ladder` yes; `evaluation_cohort_bitwise_abl01` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `nested_prefix_consistent` yes; `no_eq_rule_truncated` yes; `old_directions_hash_matches_comparator` no; `overdetermined_weak_system` yes; `precision_highest` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_comparator` yes; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_old_q128_M256_dense` yes; `reproduces_old_q128_M576_dense` yes; `reproduces_old_q16_M128_dense` yes; `reproduces_old_q16_M256_dense` yes; `reproduces_old_q256_M1088_dense` no; `reproduces_old_q32_M192_dense` yes; `reproduces_old_q32_M256_dense` yes; `reproduces_old_q64_M256_dense` no; `reproduces_old_q64_M320_dense` no; `reproduces_q0_M256_dense` yes; `reproduces_q0_M64_dense` yes; `same_grid_baseline_present` yes; `step_budget_is_600` yes; `x64` yes.
+
+
+**Cross-job fidelity, `qtd02`.**
+
+| arm | reproduces | job | tolerance | worst relative difference | passed |
+|---|---|---|---|---|---|
+| `old_q128_M256_dense` | `q128_M256_dense_g1em06` | btq201 | 1.00e-09 | 7.67e-10 | yes |
+| `old_q128_M576_dense` | `q128_m4_dense_block` | cclad01 | 1.00e-09 | 1.14e-10 | yes |
+| `old_q16_M128_dense` | `q16_m4_dense_block` | cclad01 | 1.00e-09 | 5.59e-11 | yes |
+| `old_q16_M256_dense` | `q16_m256_dense_block` | cclad01 | 1.00e-09 | 5.59e-11 | yes |
+| `old_q256_M1088_dense` | `q256_m4_dense_block` | cclad01 | 1.00e-09 | 3.03e-09 | no |
+| `old_q32_M192_dense` | `q32_m4_dense_block` | cclad01 | 1.00e-09 | 3.91e-11 | yes |
+| `old_q32_M256_dense` | `q32_m256_dense_block` | cclad01 | 1.00e-09 | 3.91e-11 | yes |
+| `old_q64_M256_dense` | `q64_m256_dense_block` | cclad01 | 1.00e-09 | 1.07e-09 | no |
+| `old_q64_M320_dense` | `q64_m4_dense_block` | cclad01 | 1.00e-09 | 1.07e-09 | no |
+| `q0_M256_dense` | `q0_m256_dense_block` | cclad01 | 1.00e-09 | 7.64e-13 | yes |
+| `q0_M64_dense` | `q0_m4_dense_block` | cclad01 | 1.00e-09 | 3.91e-13 | yes |
+
+
+**The control, `qtd01` — the trajectory-fitted directions, run because it was already running.** It **did not reach its timed phase**, so it has no ladders and no verdict; what it did produce is below. Three direction sets differing only in which residual matrix is decomposed:
+
+| set | residual decomposed | rows | rank | fit s | `directions_sha256` |
+|---|---|---|---|---|---|
+| `old` | static reconstruction residual, 1024 snapshots | 1024 | 512 | 1546.9 | `104887e76be1e80c…` |
+| `traj` | trajectory error, 32 trajectories x 51 internal steps | 1632 | 512 | 27.0 | `06f85e4493050c5f…` |
+| `prac` | trajectory error, 6 trajectories x 51 internal steps | 306 | 306 | 8.8 | `44cfa21138a127d6…` |
+
+
+Cross-capture $\kappa_q(P,C)$, per cent of residual matrix $P$'s whitened energy that direction set $C$ reaches at rung $q$:
+
+| residual $P$ | directions $C$ | $q=16$ | $q=32$ | $q=64$ | $q=128$ | $q=256$ |
+|---|---|---|---|---|---|---|
+| `old` | `old` | 45.28 | 62.01 | 80.26 | 94.70 | 99.83 |
+| `old` | `traj` | 11.41 | 22.76 | 39.98 | 64.82 | 92.68 |
+| `old` | `prac` | 8.64 | 15.57 | 28.60 | 53.65 | 90.56 |
+| `traj` | `old` | 11.72 | 22.05 | 38.99 | 66.87 | 97.82 |
+| `traj` | `traj` | 73.61 | 86.31 | 95.74 | 99.61 | 100.00 |
+| `traj` | `prac` | 9.86 | 18.89 | 34.44 | 59.94 | 94.25 |
+| `prac` | `old` | 4.53 | 10.60 | 26.17 | 51.33 | 94.86 |
+| `prac` | `traj` | 48.11 | 57.80 | 68.92 | 83.95 | 97.45 |
+| `prac` | `prac` | 94.37 | 99.37 | 100.00 | 100.00 | 100.00 |
+
+
+Principal angles between the direction subspaces (field metric, degrees):
+
+| pair | $q$ | overlap | min | median | max |
+|---|---|---|---|---|---|
+| `prac_vs_old` | 16 | 0.07913 | 56.97 | 77.98 | 89.14 |
+| `prac_vs_old` | 64 | 0.30809 | 25.88 | 60.56 | 89.63 |
+| `prac_vs_old` | 256 | 0.82904 | 0.00 | 4.89 | 89.71 |
+| `traj_vs_old` | 16 | 0.17578 | 38.18 | 70.17 | 88.69 |
+| `traj_vs_old` | 64 | 0.44116 | 11.74 | 48.81 | 89.89 |
+| `traj_vs_old` | 256 | 0.85741 | 0.00 | 4.11 | 89.08 |
+| `traj_vs_prac` | 16 | 0.14263 | 26.37 | 74.96 | 89.84 |
+| `traj_vs_prac` | 64 | 0.31203 | 11.63 | 59.87 | 89.55 |
+| `traj_vs_prac` | 256 | 0.80031 | 0.00 | 6.15 | 89.36 |
+
+
+The static manifold floor (best-found on the supplied field) each rule buys, worst over the six cases; a dash is a rung this job did not build for that rule:
+
+| directions | $q=0$ % | $q=16$ % | $q=32$ % | $q=64$ % | $q=128$ % | $q=256$ % |
+|---|---|---|---|---|---|---|
+| `old` | 2.5447 | 2.4615 | — | 2.1386 | — | — |
+| `traj` | 2.5447 | 2.4780 | 2.2711 | 2.0764 | 1.8172 | 1.0681 |
+| `prac` | 2.5447 | 2.4241 | 2.2857 | 2.0669 | 1.7430 | 0.9492 |
+
+
+**Its timed ladders do not exist.** It built all 31 reduced arms and every empirical-quadrature rule, ran every offline diagnostic above, and then died in the compile warm-up of its 21st subject with `jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: [0] Failed to load in-memory CUBIN (compiled for a different GPU?).: CUDA_ERROR_OUT_OF_MEMORY: out of memory [executable_name='jit__lambda']` on a 40 GB A100 it was sized past. Its offline output is collected, checksum-verified and audited in a `--partial` mode; it was **not** resubmitted, because the redirect said not to spend another job on new directions, and the third job of the cap is unused.
+
+
+**Gates, `qtd01`** (the `complete` gate fails by construction for a partial job). `backend_gpu` yes; `bank_frozen` yes; `complete` no; `direction_cohorts_disjoint_from_evaluation` yes; `direction_prefixes_recomputed_from_artifact` yes; `directions_hashed_and_saved` yes; `directions_rank_covers_ladder` yes; `evaluation_cohort_bitwise_abl01` yes; `every_declared_rung_has_a_reconstruction` yes; `every_eq_rule_reports_validity` yes; `final_cohort_unopened` yes; `nested_prefix_consistent` yes; `no_eq_rule_truncated` yes; `old_directions_hash_matches_comparator` no; `overdetermined_weak_system` yes; `precision_highest` yes; `reference_fields_bitwise_match_comparator` yes; `reference_residuals` yes; `x64` yes.
+
+
+Source-generated report: `experiments/q-trajdirs/reports/2026-09-16-dense-correction-ladder.md` (SHA256 `da86a865f7dc254ed0515714d9c369ead5c5d1249d9dcf0ee974d6ca12a7ff56`) with its figure and its generator beside it; the generator reads only the audited JSONs, so no number in it is hand-typed. The archive-only Part 1 is `experiments/q-trajdirs/checks/dense-from-archives.json`, produced by `dense_from_archives.py` with no GPU.
+
+
+Raw archive `qtd01` Git-tracked as bounded chunks: whole SHA256 `8768d2fd24e7d5e29e1d31ff131c3a4a0d84daa92acf1e1aadf22ed77b487add` (2 chunks).
+
+
+Raw archive `qtd02` Git-tracked as bounded chunks: whole SHA256 `188fbf88a8d3562399f5d2b5a2f9efb18f6c3bbfb38759d1f861f2b7431828e1` (7 chunks).
+
+
+## 2026-09-16
+### Handoff written — `reports/2026-09-16-tunability-campaign-handoff.md`
+
+Snapshot of the 15–16 September tunability campaign for the next session: the question and
+the verdict table against the pre-registered bar, the lane lineage (mermaid), findings by
+theme, every retraction and correction made in the window, the landmines, the four decisions
+waiting on the user, and how to resume (fork points, namespaces, suggested order). Committed
+on `main` at `6a594a27` with `reports/generate_handoff_manifest.py`, which writes
+`…handoff.manifest.{md,json}`: branch head, worktree cleanliness and SHA256 of all 21 cited
+lane reports and check JSONs, plus the `LAB-LOG.md` hash at generation. The EQ-certification
+lane (`q-ridge`, job 3768168) was still running when the handoff was written and is marked in
+progress there; its close will be a separate entry. This lab log remains canonical.
+
+### q-ridge — the evolved-times regression is the empirical-quadrature RULE; certifying it on states the ROM actually reaches removes up to 5.86x of it (at $q=256$) at no extra cost, but leaves 1 violation ($q=128\to256$) because no constructible $m$ certifies the top rungs; neither a ridge on the corrections nor more tests fixes it either
+
+The coordinator first asked whether the Burgers $256^2$ correction ladder's non-monotonicity on the worst-over-evolved-times metric ($q=16$ worse than $q=0$) is the extra unknowns **overfitting the $M$ weak test equations**, with two remedies — a field-metric ridge on the corrections (R1) and more tests at fixed $q$ (R2) — and a held-out-residual control (R3). Mid-flight, after `q-diag` reported that the cause is the quadrature, the lane was **re-scoped**: R1 and R2 were demoted to controls and the primary became **EQ rule certification** — refit the $m$-point rule on states the ROM actually reaches, grow $m$ at fixed $M=4(K+q)$, certify every rule by its held-out $\rho$ rather than by its NNLS fit residual, and rebuild the ladder with the cheapest certified rule per rung. Predeclared protocol and every amendment, including the re-scope as §A3: `experiments/q-ridge/DESIGN.md`. Nothing was merged or pushed.
+
+Worktree `worktrees/2026-09-16-q-ridge`, branch `exp/2026-09-16-q-ridge`, forked from `exp/2026-09-16-b-ladder-top` at `b8efd5b4`. Namespace `/cluster/tufts/paralab/tawal01/q_ridge_20260916/`. R1 job `3757235` (`qrg101`) on `NVIDIA A100 80GB PCIe`, source `5fc6099127d4`, elapsed 5389.4 s; R2 job `3757237` (`qrg201`) on `NVIDIA A100 80GB PCIe`, source `5fc6099127d4`, elapsed 6834.0 s; EQCERT job `3768168` (`qrg304`) on `NVIDIA A100 80GB PCIe`, source `467a4670f179`, elapsed 10502.3 s. All three printed `jax_backend=gpu`, ran float64 at highest matmul precision, and were checksum-collected, independently NumPy-audited and archived before their exact remote attempt directories were removed. Two earlier submissions (3757043, 3757044) died in the sbatch preamble on a placeholder collision, before the GPU preflight and with zero GPU work; they are recorded in `DESIGN.md` §A1 and are not counted against the three-job cap.
+
+**R1 (qrg101) gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `bank_sha256_consistent` yes; `checkpoint_unchanged` yes; `complete` yes; `cross_job_fidelity` yes; `decoded_fields_match_saved_outputs` yes; `directions_hash_matches_cclad01` yes; `directions_rank_covers_ladder` yes; `eq_rules_untruncated` yes; `evaluation_cohort_bitwise_abl01` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `r3_mode_blocks_complete` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_a_source` yes; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q0_m4_dense_l0` yes; `reproduces_q0_m4_eq_l0_ret` yes; `reproduces_q16_m4_dense_l0` yes; `reproduces_q256_m2_dense_l0` yes; `reproduces_q64_m4_dense_l0` yes; `same_grid_baseline_present` yes; `step_budget_600` yes; `t0_field_invariant_in_lambda` yes; `x64` yes.
+
+**R2 (qrg201) gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `bank_sha256_consistent` yes; `checkpoint_unchanged` yes; `complete` yes; `cross_job_fidelity` yes; `decoded_fields_match_saved_outputs` yes; `directions_hash_matches_cclad01` no; `directions_rank_covers_ladder` yes; `eq_rules_untruncated` yes; `evaluation_cohort_bitwise_abl01` yes; `every_eq_rule_reports_validity` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `r3_mode_blocks_complete` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_fields_bitwise_match_a_source` yes; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q0_m4_dense_l0` yes; `reproduces_q0_m4_eq_l0_ret` yes; `reproduces_q16_m4_dense_l0` yes; `reproduces_q64_m4_dense_l0` yes; `same_grid_baseline_present` yes; `step_budget_600` yes; `t0_field_invariant_in_lambda` —; `x64` yes.
+
+**EQCERT (qrg304) gates.** `artifacts_present` yes; `backend_gpu` yes; `bank_frozen` yes; `bank_sha256_consistent` yes; `checkpoint_unchanged` yes; `complete` yes; `cross_job_fidelity` yes; `decoded_fields_match_saved_outputs` yes; `directions_hash_matches_cclad01` no; `evaluation_cohort_bitwise_abl01` yes; `every_invocation_paired` yes; `every_rom_carries_exit_and_stationarity` yes; `every_rule_archived` yes; `every_rule_reports_rho` yes; `every_subject_case_has_all_reps` yes; `final_cohort_unopened` yes; `fit_and_certification_trajectories_disjoint` yes; `no_rule_truncated` yes; `overdetermined_weak_system` yes; `precision_highest` yes; `r3_mode_blocks_complete` yes; `recorded_errors_recomputed_from_saved_fields` yes; `reference_residuals` yes; `repetition_output_identical` yes; `reproduces_q0_m4_eqold_ret` yes; `reproduces_q128_m2_eqold_bnd` yes; `rule_grid_complete` yes; `same_grid_baseline_present` yes; `step_budget_600` yes; `x64` yes.
+
+**Cross-job fidelity.**
+
+| job | arm | source | comparator | tolerance | rel. diff (all-times) | rel. diff (evolved) | passed |
+|---|---|---|---|---|---|---|---|
+| qrg101 | `q0_m4_dense_l0` | btq101 | `q0_m4_dense_base` | 1e-09 | 9.5e-15 | 2.4e-13 | yes |
+| qrg101 | `q0_m4_eq_l0_ret` | btq101 | `q0_m4_eq_base` | 1e-09 | 9.5e-15 | 4.1e-13 | yes |
+| qrg101 | `q16_m4_dense_l0` | cclad01 | `q16_m4_dense_block` | 1e-09 | 2.4e-14 | 6.5e-15 | yes |
+| qrg101 | `q256_m2_dense_l0` | btq102 | `q256_m2_dense_base_b600` | 1e-03 | 1.2e-13 | 3.6e-13 | yes |
+| qrg101 | `q64_m4_dense_l0` | cclad01 | `q64_m4_dense_block` | 1e-09 | 9.5e-15 | 8.9e-14 | yes |
+| qrg201 | `q0_m4_dense_l0` | btq101 | `q0_m4_dense_base` | 1e-09 | 0.0e+00 | 2.4e-13 | yes |
+| qrg201 | `q0_m4_eq_l0_ret` | btq101 | `q0_m4_eq_base` | 1e-09 | 0.0e+00 | 5.1e-14 | yes |
+| qrg201 | `q16_m4_dense_l0` | cclad01 | `q16_m4_dense_block` | 1e-03 | 3.6e-14 | 2.1e-14 | yes |
+| qrg201 | `q64_m4_dense_l0` | cclad01 | `q64_m4_dense_block` | 1e-03 | 3.3e-14 | 8.0e-14 | yes |
+| qrg304 | `q0_m4_eqold_ret` | btq101 | `q0_m4_eq_base` | 1e-09 | 0.0e+00 | 5.0e-13 | yes |
+| qrg304 | `q128_m2_eqold_bnd` | btq101 | `q128_m2_eq_base` | 1e-03 | 2.5e-10 | 1.0e-09 | yes |
+
+
+**EQ rule certification — every rule, its NNLS fit and its held-out $\rho$** (bar $\rho^\star = 0.116$, declared before the job ran from `q-diag`'s $q=0$ incumbent measurement).
+
+| $q$ | population | $m$ target | $m$ | $m/M$ | NNLS fit | $\rho_{max}$ | $\rho_{95}$ | certified | truncated | fit (s) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | reachable | 1024 | 1024 | 16.00 | 4.58e-05 | 0.0153 | 0.0088 | yes | no | 71.5 |
+| 0 | reachable | 2048 | 1521 | 23.77 | 7.83e-06 | 0.0261 | 0.0083 | yes | no | 116.7 |
+| 0 | static | 256 | 256 | 4.00 | 6.85e-03 | 0.2407 | 0.2073 | no | no | 6.0 |
+| 16 | reachable | 1024 | 1024 | 8.00 | 1.90e-04 | 0.0935 | 0.0273 | yes | no | 146.5 |
+| 16 | reachable | 2048 | 2048 | 16.00 | 1.92e-05 | 0.0452 | 0.0041 | yes | no | 641.6 |
+| 16 | static | 512 | 512 | 4.00 | 1.54e-03 | 0.1279 | 0.0523 | no | no | 48.0 |
+| 32 | reachable | 1024 | 1024 | 5.33 | 2.89e-04 | 0.0533 | 0.0226 | yes | no | 154.7 |
+| 32 | reachable | 2048 | 2048 | 10.67 | 2.66e-05 | 0.0668 | 0.0120 | yes | no | 650.7 |
+| 32 | static | 768 | 768 | 4.00 | 6.27e-04 | 0.1482 | 0.0214 | no | no | 99.6 |
+| 64 | reachable | 1024 | 1024 | 3.20 | 7.12e-04 | 0.0531 | 0.0230 | yes | no | 159.9 |
+| 64 | reachable | 2048 | 2048 | 6.40 | 7.54e-05 | 0.1120 | 0.0172 | yes | no | 656.1 |
+| 64 | static | 1280 | 1280 | 4.00 | 2.43e-04 | 0.1439 | 0.0235 | no | no | 275.3 |
+| 128 | reachable | 1024 | 1024 | 1.78 | 1.62e-03 | 0.2786 | 0.2246 | no | no | 238.2 |
+| 128 | reachable | 2048 | 2048 | 3.56 | 1.04e-04 | 0.1908 | 0.0518 | no | no | 781.1 |
+| 128 | static | 2048 | 2048 | 3.56 | 7.16e-05 | 0.2194 | 0.0677 | no | no | 840.8 |
+| 256 | reachable | 1024 | 1024 | 0.94 | 4.01e-02 | 0.5731 | 0.5370 | no | no | 100.1 |
+| 256 | reachable | 2048 | 2048 | 1.88 | 3.08e-04 | 0.1678 | 0.0957 | no | no | 962.1 |
+| 256 | static | 2048 | 2048 | 1.88 | 1.49e-04 | 0.4621 | 0.4275 | no | no | 1485.1 |
+
+
+**The rule chosen at each rung.**
+
+| $q$ | $M$ | chosen $m$ | basis | $\rho_{max}$ | $\rho_{95}$ |
+|---|---|---|---|---|---|
+| 0 | 64 | 1024 | primary | 0.0153 | 0.0088 |
+| 16 | 128 | 1024 | primary | 0.0935 | 0.0273 |
+| 32 | 192 | 1024 | primary | 0.0533 | 0.0226 |
+| 64 | 320 | 1024 | primary | 0.0531 | 0.0230 |
+| 128 | 576 | 2048 | secondary | 0.1908 | 0.0518 |
+| 256 | 1088 | 2048 | secondary | 0.1678 | 0.0957 |
+
+
+**What the certification buys, rung by rung** (worst evolved-times error, incumbent static-population rule against the cheapest certified reachable-state rule, and the dense twin where this job ran one).
+
+| $q$ | $M$ | old rule $m$ / evolved % | certified $m$ / evolved % | improvement | dense evolved % | cost vs old rule |
+|---|---|---|---|---|---|---|
+| 0 | 64 | 256 / 3.4166 | 1024 / 1.8891 | 1.81x | 1.8890 | 1.129x |
+| 16 | 128 | 512 / 2.1427 | 1024 / 1.4270 | 1.50x | — | 1.106x |
+| 32 | 192 | 768 / 1.5026 | 1024 / 1.2493 | 1.20x | — | 1.063x |
+| 64 | 320 | 1280 / 1.1454 | 1024 / 1.2275 | 0.93x | 1.0843 | 0.957x |
+| 128 | 576 | 2048 / 0.8928 | 2048 / 0.8925 | 1.00x | — | 1.006x |
+| 256 | 1088 | 2048 / 6.0676 | 2048 / 1.0361 | 5.86x | 0.5194 | 1.015x |
+
+
+**The rebuilt ladder, both metrics.**
+
+| ladder | q | worst evolved % | worst all-times % | median GPU ms | monotone | converged | cost <=2x old rule | passes |
+|---|---|---|---|---|---|---|---|---|
+| EQ, cheapest certified rule per rung | 0, 16, 32, 64, 128, 256 | 1.8891 / 1.4270 / 1.2493 / 1.2275 / 0.8925 / 1.0361 | 2.5629 / 2.4806 / 2.3534 / 2.1489 / 1.8116 / 1.0361 | 57 / 79 / 96 / 119 / 247 / 699 | no | yes | yes | no |
+| EQ, incumbent static-population rule | 0, 16, 32, 64, 128, 256 | 3.4166 / 2.1427 / 1.5026 / 1.1454 / 0.8928 / 6.0676 | 3.4166 / 2.4806 / 2.3534 / 2.1489 / 1.8116 / 6.0676 | 51 / 72 / 90 / 124 / 245 / 689 | no | yes | — | — |
+| dense (exact) quadrature | 0, 64, 256 | 1.8890 / 1.0843 / 0.5194 | 2.5629 / 2.1489 / 0.9053 | 282 / 620 / 3945 | yes | yes | — | — |
+
+
+No $m$ in the declared grid reaches the bar at $q=256$; a log-log extrapolation of $\rho_{max}$ against $m$ puts the crossing at $m \approx 2522$ (slope -1.772).
+
+
+**R1 — the field-metric ridge (demoted to a control).**
+
+
+*dense quadrature:*
+
+| setting | worst evolved % at q = 0, 16, 64, 256 | worst all-times % | median GPU ms | monotone | converged | cost <=1.5x | all-times not raised | passes |
+|---|---|---|---|---|---|---|---|---|
+| $\lambda_{rel}=0$ | 1.8890 / 1.3985 / 1.0843 / 0.5194 | 2.5629 / 2.4806 / 2.1489 / 0.9053 | 295 / 368 / 627 / 3912 | yes | yes | yes | yes | yes |
+| $\lambda_{rel}=0.0001$ | 1.8890 / 1.3983 / 1.0842 / 0.5127 | 2.5629 / 2.4806 / 2.1489 / 0.9053 | 295 / 369 / 625 / 4021 | yes | yes | yes | yes | yes |
+| $\lambda_{rel}=0.001$ | 1.8890 / 1.3966 / 1.0830 / 0.4727 | 2.5629 / 2.4806 / 2.1489 / 0.9053 | 295 / 369 / 627 / 3738 | yes | yes | yes | yes | yes |
+| $\lambda_{rel}=0.01$ | 1.8890 / 1.3838 / 1.0745 / 0.4308 | 2.5629 / 2.4806 / 2.1489 / 0.9053 | 295 / 370 / 630 / 3033 | yes | yes | yes | yes | yes |
+| $\lambda_{rel}=0.1$ | 1.8890 / 1.3750 / 1.0877 / 0.6251 | 2.5629 / 2.4806 / 2.1489 / 0.9053 | 295 / 369 / 634 / 2862 | yes | yes | yes | yes | yes |
+| $\lambda_{rel}=1$ | 1.8890 / 1.4297 / 1.2140 / 1.1011 | 2.5629 / 2.4806 / 2.1489 / 1.1011 | 295 / 367 / 634 / 2658 | yes | yes | yes | no | no |
+
+
+*eq quadrature:*
+
+| setting | worst evolved % at q = 0, 16, 64, 256 | worst all-times % | median GPU ms | monotone | converged | cost <=1.5x | all-times not raised | passes |
+|---|---|---|---|---|---|---|---|---|
+| $\lambda_{rel}=0$ | 2.0659 / 2.1811 / 1.1408 / 3.5204 | 2.5629 / 2.4806 / 2.1489 / 3.5204 | 52 / 72 / 127 / 715 | no | yes | yes | yes | no |
+| $\lambda_{rel}=0.0001$ | 2.0659 / 2.1809 / 1.1406 / 3.5155 | 2.5629 / 2.4806 / 2.1489 / 3.5155 | 52 / 73 / 127 / 732 | no | yes | yes | yes | no |
+| $\lambda_{rel}=0.001$ | 2.0659 / 2.1786 / 1.1396 / 3.4804 | 2.5629 / 2.4806 / 2.1489 / 3.4804 | 52 / 74 / 127 / 669 | no | yes | yes | yes | no |
+| $\lambda_{rel}=0.01$ | 2.0659 / 2.1604 / 1.1332 / 3.2834 | 2.5629 / 2.4806 / 2.1489 / 3.2834 | 52 / 74 / 128 / 518 | no | yes | yes | yes | no |
+| $\lambda_{rel}=0.1$ | 2.0659 / 2.1247 / 1.1623 / 2.7294 | 2.5629 / 2.4806 / 2.1489 / 2.7294 | 52 / 73 / 132 / 485 | no | no | yes | yes | no |
+| $\lambda_{rel}=1$ | 2.0659 / 2.1720 / 1.3026 / 2.5988 | 2.5629 / 2.4806 / 2.1489 / 2.5988 | 52 / 74 / 130 / 452 | no | yes | yes | yes | no |
+
+
+**R2 — more tests at fixed $q$ (demoted to a control).**
+
+
+*dense quadrature:*
+
+| setting | worst evolved % at q = 0, 16, 64 | worst all-times % | median GPU ms | monotone | converged | cost <=1.5x | all-times not raised | passes |
+|---|---|---|---|---|---|---|---|---|
+| $M=16(K+q)$ | 1.2710 / 1.2204 / 1.0588 | 2.5629 / 2.4806 / 2.1489 | 343 / 545 / 1302 | yes | yes | no | yes | no |
+| $M=4(K+q)$ | 1.8890 / 1.3985 / 1.0843 | 2.5629 / 2.4806 / 2.1489 | 284 / 358 / 621 | yes | yes | yes | yes | yes |
+| $M=8(K+q)$ | 1.4695 / 1.2305 / 1.0619 | 2.5629 / 2.4806 / 2.1489 | 283 / 419 / 896 | yes | yes | yes | yes | yes |
+
+
+*eq quadrature:*
+
+| setting | worst evolved % at q = 0, 16, 64 | worst all-times % | median GPU ms | monotone | converged | cost <=1.5x | all-times not raised | passes |
+|---|---|---|---|---|---|---|---|---|
+| $M=16(K+q)$ | 1.3186 / 1.2202 / 5.2481 | 2.5629 / 2.4806 / 5.2481 | 58 / 109 / 184 | no | yes | no | no | no |
+| $M=4(K+q)$ | 2.0659 / 2.1811 / 1.1408 | 2.5629 / 2.4806 / 2.1489 | 50 / 71 / 124 | no | yes | yes | yes | no |
+| $M=8(K+q)$ | 1.5756 / 1.8066 / 1.1243 | 2.5629 / 2.4806 / 2.1489 | 49 / 80 / 157 | no | yes | yes | yes | no |
+
+
+**R3 — the weak residual on held-out test modes** (worst over cases and steps, per-mode RMS normalised by the per-node RMS of the previous state; the common held-out block is the 512 modes ranked 1537-2048, beyond every arm's $M$ in any of the three jobs). `q-diag` already measured this on the dense fixed-$M=256$ arms; what is new here is the same measurement under a ridge and under larger $M$.
+
+| job | arm | $q$ | quadrature | $\lambda_{rel}$ | $M$ | $m$ | in-space | held-out (common) | held/in |
+|---|---|---|---|---|---|---|---|---|---|
+| qrg101 | `q0_m4_dense_l0` | 0 | dense | 0 | 64 | — | 1.570e-01 | 1.302e-01 | 0.829 |
+| qrg101 | `q0_m4_eq_l0` | 0 | eq | 0 | 64 | 256 | 2.919e-01 | 1.329e-01 | 0.455 |
+| qrg101 | `q0_m4_eq_l0_ret` | 0 | eq | 0 | 64 | 256 | 1.964e-01 | 1.337e-01 | 0.681 |
+| qrg101 | `q16_m4_dense_l0` | 16 | dense | 0 | 128 | — | 1.270e-01 | 1.262e-01 | 0.994 |
+| qrg101 | `q16_m4_dense_l0p0001` | 16 | dense | 1e-04 | 128 | — | 1.270e-01 | 1.262e-01 | 0.994 |
+| qrg101 | `q16_m4_dense_l0p001` | 16 | dense | 1e-03 | 128 | — | 1.270e-01 | 1.262e-01 | 0.994 |
+| qrg101 | `q16_m4_dense_l0p01` | 16 | dense | 1e-02 | 128 | — | 1.271e-01 | 1.263e-01 | 0.994 |
+| qrg101 | `q16_m4_dense_l0p1` | 16 | dense | 1e-01 | 128 | — | 1.275e-01 | 1.269e-01 | 0.995 |
+| qrg101 | `q16_m4_dense_l1` | 16 | dense | 1e+00 | 128 | — | 1.438e-01 | 1.266e-01 | 0.880 |
+| qrg101 | `q16_m4_eq_l0` | 16 | eq | 0 | 128 | 512 | 1.353e-01 | 1.410e-01 | 1.043 |
+| qrg101 | `q16_m4_eq_l0p0001` | 16 | eq | 1e-04 | 128 | 512 | 1.353e-01 | 1.410e-01 | 1.043 |
+| qrg101 | `q16_m4_eq_l0p001` | 16 | eq | 1e-03 | 128 | 512 | 1.353e-01 | 1.410e-01 | 1.043 |
+| qrg101 | `q16_m4_eq_l0p01` | 16 | eq | 1e-02 | 128 | 512 | 1.352e-01 | 1.411e-01 | 1.043 |
+| qrg101 | `q16_m4_eq_l0p1` | 16 | eq | 1e-01 | 128 | 512 | 1.362e-01 | 1.415e-01 | 1.039 |
+| qrg101 | `q16_m4_eq_l1` | 16 | eq | 1e+00 | 128 | 512 | 1.550e-01 | 1.408e-01 | 0.908 |
+| qrg101 | `q256_m2_dense_l0` | 256 | dense | 0 | 544 | — | 2.847e-02 | 6.786e-02 | 2.383 |
+| qrg101 | `q256_m4_dense_l0` | 256 | dense | 0 | 1088 | — | 3.127e-02 | 3.628e-02 | 1.160 |
+| qrg101 | `q256_m4_eq_l0` | 256 | eq | 0 | 1088 | 2048 | 6.044e-02 | 5.764e-02 | 0.954 |
+| qrg101 | `q64_m4_dense_l0` | 64 | dense | 0 | 320 | — | 9.560e-02 | 1.078e-01 | 1.127 |
+| qrg101 | `q64_m4_eq_l0` | 64 | eq | 0 | 320 | 1280 | 9.560e-02 | 1.199e-01 | 1.255 |
+| qrg201 | `q0_m16_dense_l0` | 0 | dense | 0 | 256 | — | 1.233e-01 | 1.153e-01 | 0.936 |
+| qrg201 | `q0_m16_eq_l0` | 0 | eq | 0 | 256 | 1024 | 1.233e-01 | 1.216e-01 | 0.987 |
+| qrg201 | `q0_m4_dense_l0` | 0 | dense | 0 | 64 | — | 1.570e-01 | 1.302e-01 | 0.829 |
+| qrg201 | `q0_m4_eq_l0` | 0 | eq | 0 | 64 | 256 | 2.919e-01 | 1.329e-01 | 0.455 |
+| qrg201 | `q0_m4_eq_l0_ret` | 0 | eq | 0 | 64 | 256 | 1.964e-01 | 1.337e-01 | 0.681 |
+| qrg201 | `q0_m8_dense_l0` | 0 | dense | 0 | 128 | — | 1.373e-01 | 1.298e-01 | 0.945 |
+| qrg201 | `q0_m8_eq_l0` | 0 | eq | 0 | 128 | 512 | 1.518e-01 | 1.363e-01 | 0.898 |
+| qrg201 | `q16_m16_dense_l0` | 16 | dense | 0 | 512 | — | 1.011e-01 | 9.439e-02 | 0.933 |
+| qrg201 | `q16_m16_eq_l0` | 16 | eq | 0 | 512 | 2048 | 1.065e-01 | 1.068e-01 | 1.003 |
+| qrg201 | `q16_m4_dense_l0` | 16 | dense | 0 | 128 | — | 1.270e-01 | 1.262e-01 | 0.994 |
+| qrg201 | `q16_m4_eq_l0` | 16 | eq | 0 | 128 | 512 | 1.353e-01 | 1.410e-01 | 1.043 |
+| qrg201 | `q16_m8_dense_l0` | 16 | dense | 0 | 256 | — | 1.182e-01 | 1.150e-01 | 0.973 |
+| qrg201 | `q16_m8_eq_l0` | 16 | eq | 0 | 256 | 1024 | 1.235e-01 | 1.318e-01 | 1.068 |
+| qrg201 | `q64_m16_dense_l0` | 64 | dense | 0 | 1280 | — | 8.044e-02 | 6.841e-02 | 0.850 |
+| qrg201 | `q64_m16_eq_l0` | 64 | eq | 0 | 1280 | 2048 | 9.599e-02 | 8.135e-02 | 0.848 |
+| qrg201 | `q64_m4_dense_l0` | 64 | dense | 0 | 320 | — | 9.560e-02 | 1.078e-01 | 1.127 |
+| qrg201 | `q64_m4_eq_l0` | 64 | eq | 0 | 320 | 1280 | 9.560e-02 | 1.199e-01 | 1.255 |
+| qrg201 | `q64_m8_dense_l0` | 64 | dense | 0 | 640 | — | 8.627e-02 | 8.624e-02 | 1.000 |
+| qrg201 | `q64_m8_eq_l0` | 64 | eq | 0 | 640 | 2048 | 9.428e-02 | 1.009e-01 | 1.070 |
+| qrg304 | `q0_m4_dense` | 0 | dense | 0 | 64 | — | 1.570e-01 | 1.302e-01 | 0.829 |
+| qrg304 | `q0_m4_eqcert` | 0 | eq | 0 | 64 | 1024 | 1.574e-01 | 1.275e-01 | 0.810 |
+| qrg304 | `q0_m4_eqold_ret` | 0 | eq | 0 | 64 | 256 | 1.964e-01 | 1.337e-01 | 0.681 |
+| qrg304 | `q0_m4_eqstatic` | 0 | eq | 0 | 64 | 256 | 1.853e-01 | 1.442e-01 | 0.778 |
+| qrg304 | `q128_m2_eqold_bnd` | 128 | eq | 0 | 288 | 1152 | 8.089e-02 | 1.204e-01 | 1.488 |
+| qrg304 | `q128_m4_eqcert` | 128 | eq | 0 | 576 | 2048 | 7.340e-02 | 9.763e-02 | 1.330 |
+| qrg304 | `q128_m4_eqstatic` | 128 | eq | 0 | 576 | 2048 | 7.244e-02 | 9.613e-02 | 1.327 |
+| qrg304 | `q16_m4_eqcert` | 16 | eq | 0 | 128 | 1024 | 1.271e-01 | 1.301e-01 | 1.023 |
+| qrg304 | `q16_m4_eqstatic` | 16 | eq | 0 | 128 | 512 | 1.337e-01 | 1.382e-01 | 1.034 |
+| qrg304 | `q256_m4_dense` | 256 | dense | 0 | 1088 | — | 3.127e-02 | 3.628e-02 | 1.160 |
+| qrg304 | `q256_m4_eqcert` | 256 | eq | 0 | 1088 | 2048 | 5.536e-02 | 5.924e-02 | 1.070 |
+| qrg304 | `q256_m4_eqstatic` | 256 | eq | 0 | 1088 | 2048 | 5.988e-02 | 4.404e-02 | 0.735 |
+| qrg304 | `q32_m4_eqcert` | 32 | eq | 0 | 192 | 1024 | 1.190e-01 | 1.295e-01 | 1.088 |
+| qrg304 | `q32_m4_eqstatic` | 32 | eq | 0 | 192 | 768 | 1.197e-01 | 1.351e-01 | 1.129 |
+| qrg304 | `q64_m4_dense` | 64 | dense | 0 | 320 | — | 9.560e-02 | 1.078e-01 | 1.127 |
+| qrg304 | `q64_m4_eqcert` | 64 | eq | 0 | 320 | 1024 | 9.911e-02 | 1.226e-01 | 1.237 |
+| qrg304 | `q64_m4_eqstatic` | 64 | eq | 0 | 320 | 1280 | 9.561e-02 | 1.194e-01 | 1.249 |
+
+
+Source-generated report: `experiments/q-ridge/reports/2026-09-16-q-ridge.md` (SHA256 `8a9935b75951efd7b9e8532b762d8b5434c079129a9d3d8102275f86d7232167`) with its LaTeX twin, its two figures and its generator beside it.
+
+Raw archive `qrg101` Git-tracked as bounded chunks: whole SHA256 `63a97e38f7c1b6982ca47fb5e6209375d1c0e47799369c383a5bc9374d94f024` (18 chunks). `output/bank_G.npz` is excluded by design and its SHA256 recorded beside them.
+
+Raw archive `qrg201` Git-tracked as bounded chunks: whole SHA256 `5e58dd7b13c70b8a925bb7ffec20c8a1031b3ba431a954ee7300176365d394e6` (10 chunks). `output/bank_G.npz` is excluded by design and its SHA256 recorded beside them.
+
+Raw archive `qrg304` Git-tracked as bounded chunks: whole SHA256 `2df8074de63f0c309310dfd6371d42d2bd9dd7298d5345fab21489646b39dd62` (9 chunks). `output/bank_G.npz` is excluded by design and its SHA256 recorded beside them.
+

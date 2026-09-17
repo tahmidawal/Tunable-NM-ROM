@@ -407,3 +407,20 @@ $q \in \{0, 8\}$ (8 of 8 cells); every cell stationary with zero budget exits; t
 cell at $M = 4(K+q)$ bitwise equal to the parent's rule-path arm; error monotone in $M$ at
 both $q$. Wall time 135 s — over the sub-minute rule by the direction fit and eight
 compiles; recorded as a deviation, not repeated.
+
+### A1 (2026-09-17, before any result) — submission record
+
+Source commit `ed431edb` (every staged file byte-checked against it by `cluster/stage.py`).
+Three submissions from three attempt directories, `squeue -u tawal01` checked before and
+after each, exactly one job per directory confirmed:
+
+| job | attempt | config | Slurm job id | GPU request | time | submitted |
+|---|---|---|---|---|---|---|
+| G1 | `bqx101` | `config-g1.json` | 3780175 | `a100:1`, `--exclude pax007`, `--mem 180G` | 08:00:00 | 2026-09-17, pending (Priority) |
+| G2 | `bqx201` | `config-g2.json` | 3780177 | same | 08:00:00 | same |
+| S1 | `bqx301` | `config-s1.json` | 3780178 | same | 08:00:00 | same |
+
+Remote: `/cluster/tufts/paralab/tawal01/b_qxm_20260917/<attempt>/`; paralab at 91 %
+(439 GB free) at submission. Three of the eight-job cap used. If a job is still pending after
+3 h it is cancelled and resubmitted as `h100`, then `h200`, then `l40s`, science unchanged;
+each resubmission gets a new attempt directory and is recorded here.

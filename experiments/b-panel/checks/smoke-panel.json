@@ -1,0 +1,293 @@
+{
+  "rule_rebuild_vs_fixture": {
+    "G5_relative": 0.0,
+    "Pq_relative": 0.0,
+    "m": 256
+  },
+  "rule_rebuild_bitwise_q4": {
+    "G5": true,
+    "Pq": true,
+    "m": 320
+  },
+  "baseline_saved_case": {
+    "arm": "q0_M64_eqcert_g1em06",
+    "relative_l2_to_saved_case": 1.9333458553704972e-14,
+    "latent_relative_l2": 6.802101232418257e-13,
+    "budget_exits": 0,
+    "converged": true
+  },
+  "transfer": [
+    {
+      "q": 0,
+      "M": 64,
+      "m": 145,
+      "certification": {
+        "states": 16,
+        "rho_max": 0.20420371313788385,
+        "rho_p95": 0.20420371313788385,
+        "rho_median": 0.20420371313788385,
+        "rho_mean": 0.20420371313788385,
+        "rho_min": 0.20420371313788385
+      },
+      "seconds": 40.066586099914275,
+      "basis": "none"
+    },
+    {
+      "q": 4,
+      "M": 80,
+      "m": 185,
+      "certification": {
+        "states": 16,
+        "rho_max": 0.18677481483565045,
+        "rho_p95": 0.18677481483565045,
+        "rho_median": 0.18677481483565045,
+        "rho_mean": 0.18677481483565045,
+        "rho_min": 0.18677481483565045
+      },
+      "seconds": 48.32317039894406,
+      "basis": "none"
+    }
+  ],
+  "runs": {
+    "smoke64": {
+      "seconds": 416.1924276560312,
+      "reused_existing_output": false,
+      "subjects": [
+        "fft_tight",
+        "dense_tight",
+        "nt1e-2_dt01",
+        "q0_M64_dense_g1em06",
+        "q4_M80_dense_g1em06",
+        "q0_M64_eqcert_g1em06",
+        "q4_M80_eqcert_g1em06",
+        "pod8_M32_dense",
+        "pod16_M64_dense",
+        "q0_M64_eqcert_g0p001",
+        "q4_M80_eqcert_g0p001",
+        "q0_M128_dense_g1em06",
+        "free512_M1024_dense",
+        "q0_M64_eqcert_g1em06_fastL4"
+      ],
+      "gates": {
+        "evaluation_cohort_bitwise_abl01": null,
+        "directions_file_sha256": true,
+        "directions_prefix_hashes": true,
+        "direct_reproduces_fft_tight": true,
+        "fast_parity": true,
+        "repetition_output_identical": true,
+        "fft_tight_converged_everywhere": true
+      },
+      "audit_failed": [],
+      "arms": {
+        "q0_M128_dense_g1em06": {
+          "evolved": 0.64640215720939,
+          "all": 2.3472598964769458,
+          "gpu_ms": 458.8714904966764,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "q0_M64_dense_g1em06": {
+          "evolved": 0.7644347328606406,
+          "all": 2.3472598964769458,
+          "gpu_ms": 323.13796546077356,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "q0_M64_eqcert_g0p001": {
+          "evolved": 1.1508440344407571,
+          "all": 2.347278506585395,
+          "gpu_ms": 89.57592200022191,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q0_M64_eqcert_g1em06": {
+          "evolved": 1.1379566710584441,
+          "all": 2.3472598964769458,
+          "gpu_ms": 90.37288499530405,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q4_M80_dense_g1em06": {
+          "evolved": 0.7475293460773237,
+          "all": 2.3367791278421235,
+          "gpu_ms": 333.8122600107454,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "q4_M80_eqcert_g0p001": {
+          "evolved": 0.9854825505741066,
+          "all": 2.3367791278421235,
+          "gpu_ms": 141.7254395200871,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q4_M80_eqcert_g1em06": {
+          "evolved": 0.9855008930330537,
+          "all": 2.3367791278421235,
+          "gpu_ms": 257.35943601466715,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q0_M64_eqcert_g1em06_fastL4": {
+          "evolved": 1.1379566710579796,
+          "all": 2.3472598964769733,
+          "gpu_ms": 110.06525997072458,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "pod8_M32_dense": {
+          "evolved": 66.60504263459045,
+          "all": 99.02356576109675,
+          "gpu_ms": 28.088971448596567,
+          "converged": true,
+          "strict": false,
+          "admissible": true
+        },
+        "pod16_M64_dense": {
+          "evolved": 65.32931515677038,
+          "all": 97.33098005252917,
+          "gpu_ms": 25.01965395640582,
+          "converged": true,
+          "strict": false,
+          "admissible": true
+        },
+        "free512_M1024_dense": {
+          "evolved": 0.16347468747071403,
+          "all": 0.5700538430780832,
+          "gpu_ms": 5691.077509953175,
+          "converged": true,
+          "strict": false,
+          "admissible": true
+        },
+        "dense_tight": {
+          "evolved": 1.790191331924439e-14,
+          "all": 1.790191331924439e-14,
+          "gpu_ms": 59.762806980870664,
+          "converged": null,
+          "strict": null,
+          "admissible": true
+        },
+        "fft_tight": {
+          "evolved": 0.0,
+          "all": 0.0,
+          "gpu_ms": 192.70384003175423,
+          "converged": null,
+          "strict": null,
+          "admissible": true
+        },
+        "nt1e-2_dt01": {
+          "evolved": 1.4285004987159995,
+          "all": 1.4285004987159995,
+          "gpu_ms": 28.68091850541532,
+          "converged": null,
+          "strict": null,
+          "admissible": true
+        }
+      },
+      "nondominated_admissible_evolved": [
+        "pod16_M64_dense",
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ]
+    },
+    "smoke128": {
+      "seconds": 400.60444199608173,
+      "reused_existing_output": false,
+      "subjects": [
+        "fft_tight",
+        "nt1e-2_dt01",
+        "q0_M64_dense_g1em06",
+        "q4_M80_dense_g1em06",
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06",
+        "pod8_M32_dense"
+      ],
+      "gates": {
+        "evaluation_cohort_bitwise_abl01": null,
+        "directions_file_sha256": true,
+        "directions_prefix_hashes": true,
+        "transfer_fit_cert_disjoint": true,
+        "repetition_output_identical": true,
+        "fft_tight_converged_everywhere": true
+      },
+      "audit_failed": [],
+      "arms": {
+        "q0_M64_dense_g1em06": {
+          "evolved": 0.785034302527831,
+          "all": 2.3348989252244228,
+          "gpu_ms": 588.385678420309,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "q0_M64_eqxfer_g1em06": {
+          "evolved": 4.442713449750656,
+          "all": 4.442713449750656,
+          "gpu_ms": 109.21471402980387,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "q4_M80_dense_g1em06": {
+          "evolved": 0.7403775247780305,
+          "all": 2.3247147686853586,
+          "gpu_ms": 1259.2476875288412,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "q4_M80_eqxfer_g1em06": {
+          "evolved": 3.566382029995162,
+          "all": 3.566382029995162,
+          "gpu_ms": 136.9888360495679,
+          "converged": true,
+          "strict": true,
+          "admissible": false
+        },
+        "pod8_M32_dense": {
+          "evolved": 59.02179954499219,
+          "all": 92.13353888324262,
+          "gpu_ms": 30.37554951151833,
+          "converged": true,
+          "strict": true,
+          "admissible": true
+        },
+        "fft_tight": {
+          "evolved": 0.0,
+          "all": 0.0,
+          "gpu_ms": 108.12399053247645,
+          "converged": null,
+          "strict": null,
+          "admissible": true
+        },
+        "nt1e-2_dt01": {
+          "evolved": 1.3542460923422377,
+          "all": 1.3542460923422377,
+          "gpu_ms": 10.711096983868629,
+          "converged": null,
+          "strict": null,
+          "admissible": true
+        }
+      },
+      "nondominated_admissible_evolved": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ]
+    }
+  },
+  "report": {
+    "md_bytes": 18083,
+    "summary_rows": 346
+  },
+  "total_seconds": 899.4885393789737,
+  "deviation": "two driver runs; exceeds the sub-minute rule, recorded in DESIGN.md A2"
+}

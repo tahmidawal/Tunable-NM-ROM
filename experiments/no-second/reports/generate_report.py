@@ -19,8 +19,9 @@ LANE = HERE.parent
 WT = LANE.parents[1]
 FNO_AUDIT = LANE.parent / 'neural-operator-audit/runs/fno_burgers02/field-audit.json'
 FNO_LAUNCH = LANE.parent / 'neural-operator-audit/checks/collection-burgers02-launch.json'
-DIAGNOSIS = Path('/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-burgers/'
-                 'experiments/neural-operator-burgers/checks/refinement02-diagnosis-audit.json')
+# Hash-pinned copy of the Burgers lane's diagnosis audit (its SHA256 is asserted in main()).
+DIAGNOSIS = LANE / 'checks/refinement02-diagnosis-audit.json'
+DIAGNOSIS_SHA256 = 'ffa77d1b8bc44d2bd3d0ac2753444d2e1ff379898735258b60b9d68a41e3e187'
 DIAGNOSIS_JOB = '3702709'
 FAMILY_LABEL = {'unet': 'U-Net', 'transolver': 'Transolver', 'fno': 'FNO'}
 
@@ -197,7 +198,9 @@ def selected(attempts):
 
 def build(attempts, fno, launch, diagnosis):
     jobs = ', '.join(f"`{a['audit']['job_id']}` ({a['audit']['attempt']}, {a['audit']['gpu']}, commit `{a['audit']['source_commit'][:8]}`)" for a in attempts)
-    fno_sel = 'fno-large'
+    # Same selection rule as this lane's arms: argmin of validation mean case-max over every
+    # complete arm, refine included.
+    fno_sel = min(fno['models'], key=lambda k: fno['models'][k]['fixed_initial']['mean'])
     fno_val = fno['models'][fno_sel]['fixed_initial']
     fno_coh = fno['diagnosis_cohort']['models'][fno_sel]['fixed_initial']
     rom = diagnosis['summary']['rom']['worst_fixed_initial_error']
@@ -385,6 +388,7 @@ def main():
         raise SystemExit('no passed audit.json under runs/')
     fno = json.loads(FNO_AUDIT.read_text())
     launch = json.loads(FNO_LAUNCH.read_text())
+    assert sha(DIAGNOSIS) == DIAGNOSIS_SHA256
     diagnosis = json.loads(DIAGNOSIS.read_text())
     rows = rows_for(attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS))
     text = build(attempts, fno, launch, diagnosis)

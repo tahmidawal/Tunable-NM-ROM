@@ -158,24 +158,45 @@ def train(args):
             save_checkpoint(args.out / 'best.pt', checkpoint)
         save_checkpoint(args.out / 'last.pt', checkpoint)
         print(json.dumps({k:record[k] for k in ('epoch','train_mean_squared_relative_error','wall_seconds','best_so_far')}), flush=True)
-        if STOP or stale >= config['patience'] or time.monotonic()-started >= args.wall_seconds:
+        if STOP:
+            stop_reason = 'signal'
             break
-    stopped_by_early_stopping = stale >= config['patience']
-    stopped_by_epoch_cap = len(history) == config['epochs'] and not stopped_by_early_stopping
+        if stale >= config['patience']:
+            stop_reason = 'early_stopping'
+            break
+        if time.monotonic()-started >= args.wall_seconds:
+            stop_reason = 'wall_budget'
+            break
+    else:
+        stop_reason = 'epoch_cap'
     restored = torch.load(args.out / 'best.pt', map_location='cuda', weights_only=False)
     model.load_state_dict(restored['model'])
-    metrics = evaluate(model, validation, norm, pde, config['batch_size'])
-    np.savez(args.out / 'validation-errors.npz', errors=np.asarray(metrics['errors'], dtype=np.float64))
+    # The reported errors and the saved prediction fields come from ONE batch-1 pass, so
+    # the audit's recomputation from the saved fields is exact by construction even for a
+    # float32 network, whose batched kernels need not be batch-invariant.
+    model.eval()
+    errors = []
     with torch.no_grad():
         for i, row in enumerate(validation_records):
             x, p, y = batch(validation, slice(i, i+1))
-            prediction = adapter.predict(model, x, p, *norm, pde).cpu().numpy()[0]
-            np.savez(args.out / f"{row['case_id']}.prediction.npz", prediction=prediction)
+            prediction = adapter.predict(model, x, p, *norm, pde)
+            errors.append(adapter.relative_errors(prediction, y, x, pde).cpu().tolist()[0])
+            np.savez(args.out / f"{row['case_id']}.prediction.npz", prediction=prediction.cpu().numpy()[0])
+    error = np.asarray(errors)
+    if not np.isfinite(error).all():
+        raise RuntimeError('Final validation produced nonfinite errors')
+    per_case = error.max(axis=1)
+    metrics = dict(errors=errors, mean_case_max=float(per_case.mean()),
+                   median_case_max=float(np.median(per_case)), worst_case_max=float(per_case.max()),
+                   p95_case_max=float(np.quantile(per_case, .95)),
+                   above_threshold_counts={str(t): int((per_case > t).sum()) for t in (.01, .02, .05)},
+                   batched_selection_score=history[restored['epoch']]['validation']['mean_case_max'])
+    np.savez(args.out / 'validation-errors.npz', errors=error.astype(np.float64))
     write_json(args.out / 'result.json', dict(complete=True, pde=pde, best_epoch=restored['epoch'],
         family=adapter.family_of(config), parameter_dtype=str(getattr(model, 'parameter_dtype', torch.float64)),
-        epochs_completed=len(history), stopped_by_signal=STOP,
-        stopped_by_wall_budget=time.monotonic()-started >= args.wall_seconds,
-        stopped_by_early_stopping=stopped_by_early_stopping, stopped_by_epoch_cap=stopped_by_epoch_cap,
+        epochs_completed=len(history), stop_reason=stop_reason, stopped_by_signal=stop_reason == 'signal',
+        stopped_by_wall_budget=stop_reason == 'wall_budget',
+        stopped_by_early_stopping=stop_reason == 'early_stopping', stopped_by_epoch_cap=stop_reason == 'epoch_cap',
         wall_budget_seconds=args.wall_seconds, warmup_epochs=warmup,
         validation=metrics, parameter_tensor_elements=sum(p.numel() for p in model.parameters()),
         real_parameter_count=sum(p.numel()*(2 if p.is_complex() else 1) for p in model.parameters()),

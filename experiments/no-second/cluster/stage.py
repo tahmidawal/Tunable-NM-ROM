@@ -69,7 +69,7 @@ def main():
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:__GPU__:1
-#SBATCH --exclude=__EXCLUDE__
+__CONSTRAINT__#SBATCH --exclude=__EXCLUDE__
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=180G
 #SBATCH --time=__HOURS__
@@ -99,12 +99,18 @@ mkdir data
 cp -r __CACHE__/train __CACHE__/validation __CACHE__/refinement __CACHE__/DATA.sha256 data/
 ( cd data && sha256sum -c DATA.sha256 --quiet && echo "data_verified=$(wc -l < DATA.sha256)" )
 "$PY" -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
-"$PY" code/worker_second.py code/specs/__SPEC__
+# Forward Slurm's USR1 (sent to this batch shell 180 s before the limit) to the worker,
+# which asks train.py for an epoch-boundary stop; then wait for it.
+"$PY" code/worker_second.py code/specs/__SPEC__ &
+WORKER=$!
+trap 'kill -USR1 "$WORKER" 2>/dev/null || true' USR1
+wait "$WORKER"
 find out data/diagnosis-cohort -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
     tokens = (('__JOBNAME__', spec['job_name']), ('__REMOTE__', remote), ('__CACHE__', CACHE),
-              ('__SPEC__', spec_name), ('__HOURS__', spec['time']), ('__EXCLUDE__', EXCLUDE), ('__GPU__', args.gpu))
+              ('__SPEC__', spec_name), ('__HOURS__', spec['time']), ('__EXCLUDE__', EXCLUDE), ('__GPU__', args.gpu),
+              ('__CONSTRAINT__', '#SBATCH --constraint=a100-80G\n' if args.gpu == 'a100' else ''))
     for token, value in tokens:
         assert script.count(token) >= 1, token
         script = script.replace(token, value)

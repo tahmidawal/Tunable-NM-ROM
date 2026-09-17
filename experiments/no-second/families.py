@@ -16,22 +16,31 @@ the FNO arm. With `float64` declared, the network itself is float64 too and the
 family is precision-identical to the FNO arm. TF32 is disabled by `model.configure`
 regardless, so a float32 network uses genuine IEEE single-precision arithmetic.
 
-U-Net. The PDEBench 2D baseline: a four-level encoder–decoder with two 3×3
+Note the padding is applied to the *normalised* features, so the padded ring carries
+the value 0 rather than the normalised boundary value; it is cropped away at the exit
+and the mask restores the exact boundary, so it is a fixed ring the networks learn
+around, not a correctness issue.
+
+U-Net. The PDEBench 2D baseline topology (GroupNorm and GELU in place of PDEBench's
+BatchNorm and tanh): a four-level encoder–decoder with two 3×3
 convolutions per level, channel doubling per level from `base` to `16*base` at the
 bottleneck, 2×2 max-pooling down, 2×2 transposed-convolution up with skip
 concatenation, GroupNorm(8) and GELU. The 257×257 nodal grid is zero-padded to
 272×272 (divisible by 16) at the entry and cropped back at the exit; zero padding
 is the natural extension of a zero-Dirichlet field.
 
-Transolver. Physics attention on a structured 2D mesh (Wu et al., ICML 2024): each
+Transolver. Physics attention (Wu et al., ICML 2024), the structured-mesh layer with
+3×3 convolutional projections, applied to a *patchified* grid: each
 layer projects every token to `slices` learned slice weights, aggregates the tokens
 into `slices` physics tokens per head, runs ordinary attention among those
 tokens and broadcasts the result back through the same slice weights, followed by
 a pre-norm MLP. Tokens here are `patch`×`patch` blocks of the padded grid
 (257 → 260 for patch 4) so the token count is in the regime the paper uses;
 the position of every token enters as the paper's "unified" positional
-encoding (distances to an `ref`×`ref` reference grid). The per-token decoder is a
-linear map to `patch*patch*5` values unpatched back onto the grid and cropped.
+encoding (distances to an `ref`×`ref` reference grid). The per-token decoder is the
+upstream LayerNorm + one linear map, here to `patch*patch*5` values unpatched back
+onto the grid and cropped. Upstream tokens are single grid nodes; patchifying is this
+lane's change to keep the token count in the paper's regime at 257².
 """
 from __future__ import annotations
 
@@ -139,7 +148,7 @@ class PhysicsAttention(nn.Module):
         b, c, h, w = x.shape
         fx_mid = self.heads_first(self.in_project_fx(x))
         x_mid = self.heads_first(self.in_project_x(x))
-        weights = torch.softmax(self.in_project_slice(x_mid) / torch.clamp(self.temperature, 0.01, 5), dim=-1)  # B h N G
+        weights = torch.softmax(self.in_project_slice(x_mid) / torch.clamp(self.temperature, 0.1, 5), dim=-1)  # B h N G
         norm = weights.sum(2)  # B h G
         token = torch.einsum('bhnc,bhng->bhgc', fx_mid, weights) / (norm + 1e-5)[..., None]
         q, k, v = self.to_q(token), self.to_k(token), self.to_v(token)
@@ -175,7 +184,7 @@ class Transolver2d(nn.Module):
         self.placeholder = nn.Parameter(torch.rand(dim) / dim)
         self.blocks = nn.ModuleList([TransolverBlock(dim, heads, slices, mlp_ratio) for _ in range(layers)])
         self.ln = nn.LayerNorm(dim)
-        self.decoder = nn.Sequential(nn.Linear(dim, dim * 2), nn.GELU(), nn.Linear(dim * 2, cout * patch * patch))
+        self.decoder = nn.Linear(dim, cout * patch * patch)  # upstream: LayerNorm then one Linear
         self.register_buffer('ref_grid', torch.stack(torch.meshgrid(
             torch.linspace(0, 1, ref), torch.linspace(0, 1, ref), indexing='ij')).reshape(2, -1).T, persistent=False)
 

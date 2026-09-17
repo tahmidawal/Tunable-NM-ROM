@@ -98,7 +98,8 @@ budget. Both checkpoints are saved so the `b-panel` lane can time either.
 
 - `unet02`: (a) the validation-selected U-Net capacity in float64, same budget
   (precision control); (b) the same capacity at a second seed (20260915), float32
-  (seed-variance control). No refinement.
+  (seed-variance control). No refinement. (§A1: plus the validation-selected Transolver
+  capacity in float64 if its pace allows, same budget.)
 - Poisson U-Net on the Poisson operator-screen dataset of lane `no-poisson`, same
   protocol, if the Burgers arms finish early. Pre-registered as a separate §A
   amendment with its own gates before it is staged.
@@ -191,3 +192,33 @@ Every table ends with a glossary. No speed ratio appears anywhere.
   recomputation of the audited numbers from the archived fields is exact.
 - P4 Codex audit of this file: `reports/codex-design-audit.md`; accepted/rejected
   findings recorded in §A1.
+
+## §A1 — Independent design audit (2026-09-17, before the first job)
+
+Codex could not run (its sandbox failed to start, then the account hit its usage limit
+until 2026-09-19; both traces are in the scratchpad and `reports/codex-design-audit.md`
+records the failure). The audit was performed instead by an independent Claude
+subagent given the same read-only, adversarial brief (findings reproduced verbatim in
+`reports/design-audit-2026-09-17.md`). Findings and what was done with each:
+
+| # | Severity | Finding | Action |
+| --- | --- | --- | --- |
+| 1 | MAJOR | Reported validation errors came from a batch-8 pass but the saved fields from a batch-1 pass; batched float32 kernels are not batch-invariant, so gate G4 (1e-11) would trip or be loosened post hoc. | **Accepted.** `train.py` now derives the reported errors and the saved fields from one batch-1 pass. The batch-8 selection score is retained as `batched_selection_score`; the audit asserts it equals the history entry and that the batch-1 vs batch-8 gap is ≤ 1e-5 relative (float32) / 1e-11 (float64) — pre-registered here. |
+| 2 | MAJOR | `run.sbatch` no longer `exec`s the worker, so Slurm's USR1 never reached it. | **Accepted.** The worker runs in the background with a `trap` forwarding USR1, then `wait`. |
+| 3 | MAJOR | `audit.py` could pass with an arm skipped or the cohort/timing missing. | **Accepted.** It now asserts the arm set equals the spec's (plus refine), the cohort and timing blocks are present for every arm, no signal stop, and the protocol constants (epochs 4000, patience 250, batch 8, wd 1e-4, lr ∈ {1e-3, 3e-4}, seed ∈ {20260914, 20260915}). |
+| 4 | MAJOR | "Validation-selected arm" ambiguous about `refine`; the FNO reference was hard-coded. | **Accepted.** Rule: the validation-selected arm of a family is the argmin of the validation **mean case-maximum** error over every complete arm **including `refine`** (the worker's own selection score). The same rule is applied in code to the FNO audit to pick the FNO reference for V1; with the FNO's audited numbers that is `fno-large` (mean 2.2811 %), whose worst/median (6.3825 % / 1.8054 %) V1 quotes. |
+| 5 | MINOR | Protocol constants recorded but not asserted. | Accepted (see 3). |
+| 6 | MINOR | "Zero padding is the natural extension" is wrong as implemented: features are normalised, so the ring is 0 rather than the normalised boundary value. | **Accepted as wording**; behaviour unchanged (the ring is cropped and masked), documented in `families.py`. |
+| 7 | MINOR | Transolver deviates from upstream: temperature clamp min 0.01 vs 0.1; two-layer MLP decoder vs LayerNorm + Linear; patch tokens vs per-node tokens; placeholder added unconditionally. | **Accepted**: clamp set to upstream 0.1; decoder set to upstream LayerNorm + one Linear (parameter counts become 3 108 240 / 6 952 208 / 12 322 960, superseding §3.2); described as "patchified" everywhere. Placeholder left (harmless). |
+| 8 | NOTE | U-Net norm/activation differ from PDEBench (BatchNorm/tanh). | **Accepted as labelling**: "PDEBench topology with GroupNorm/GELU", which is what the brief asked for. |
+| 12 | MINOR | Stop flags not mutually exclusive; 4000-epoch cap reachable by a fast float32 arm. | **Accepted.** `train.py` captures the loop-exit reason at the `break`. Reading rule: an arm ended by the epoch cap or by early stopping *below* budget is reported as such and is **not** read as budget-bound; the falsification clause's "budget is binding" applies only to wall-budget stops. |
+| 13 | MINOR | No `a100-80G` constraint. | **Accepted**; added for A100 submissions, as the parent had. |
+| 15 | MINOR | ROM/FOM rows read from another worktree by absolute path. | **Accepted**; hash-pinned copy at `checks/refinement02-diagnosis-audit.json` (SHA256 `ffa77d1b…`), asserted by the generator. |
+| 17 | — | Fairness disclosures a reviewer will raise. | **Accepted, disclosed here**: (a) the Transolver capacities span 3.1–12.3 M, narrower than the FNO's 1.2–17.9 M; (b) lr/wd/patience/plateau were chosen for the FNO and are not re-tuned per family — `refine` is the only family-level tuning, and the Transolver paper's own recipe (OneCycle, wd 1e-5) is not used; (c) the precision and seed controls are pre-registered for the U-Net only; a Transolver float64 control is added to job 3 **if** its selected capacity's epoch pace allows (§3.4 amended accordingly); (d) an equal wall budget in float32 gives the new families more epochs than the float64 FNO had — favourable to them, and stated in the report; (e) an arm that early-stops long before the budget is read per finding 12. |
+| 9–11, 14, 16, 18 | NOTE | Padding/patch arithmetic verified analytically; precision handling sound; warm-up/plateau interaction benign (the Transolver `refine` inherits the 10-epoch warm-up to 3e-4 — noted); directory/cache/CPU hazards handled; complete diff list confirms the shared protocol. | No action; `checks/fno-parity.json` re-run after these edits. |
+
+Rejected: none. Every code change above is confined to `train.py` (final-pass errors,
+stop reason), `families.py` (upstream clamp/decoder, docstrings), `audit.py`,
+`cluster/stage.py` and `reports/generate_report.py`; the loss, optimiser, scheduler,
+selection rule, budgets and metric are untouched, and the smokes and the FNO parity
+check are re-run on the amended files before staging.

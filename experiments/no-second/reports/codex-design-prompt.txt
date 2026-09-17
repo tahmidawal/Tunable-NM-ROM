@@ -1,0 +1,17 @@
+You are an independent auditor for a pre-registered numerical experiment. READ-ONLY: do not modify, create or delete any file; do not run GPU work; do not submit jobs; do not run any Python that imports jax. You may read files and run cheap CPU-only NumPy/SciPy snippets (no jax) to check formulas.
+
+Audit `experiments/lshape/DESIGN.md` against the code that will implement it:
+`experiments/lshape/lsh_core.py`, `lsh_fit.py`, `lsh_train.py`, `lsh_solve.py`, `lsh_audit_np.py`, `config-train.json`, `config-solve.json`, `cluster/stage.py`, `cluster/make_models.py`, `gate_square.py`.
+Context: the parent cell is `experiments/p-bank-head/` (DESIGN.md, pbh_core.py, pbh_train.py, pbh_solve.py) on the unit square; this cell moves Poisson to the L-shaped domain (0,1)^2 \ [1/2,1)^2 with a separable decoder u = bc(x) g(x)^T h(z), and compares against sparse direct (SuperLU) and PCG full-order solvers on one error-cost plane. The decoder architecture is in `experiments/separable-decoder/sep_common.py`; the solver in `experiments/head-ablation/arms.py` (make_stationary_lm).
+
+Check specifically, and report each as a numbered finding with severity (blocker / should-fix / note) and a one-line proposed fix:
+1. Geometry: is the interior-node set and n = (N-1)^2 - (N/2)^2 right? Are the two inner segments treated as boundary (zero) nodes? Is the Kronecker-restricted assembly truly independent of the stencil assembly?
+2. Boundary factors: does bc_smooth = 16 x1(1-x1)x2(1-x2)(a+b+sqrt(a^2+b^2)), a=1/2-x1, b=1/2-x2, vanish exactly on all six boundary segments and nowhere inside Omega? Is it smooth away from the corner? Does the SDF closed form (min of x, y, right, top, corner distance) equal the true distance to the boundary everywhere in Omega? Are the singular columns r^{2j/3} sin(2j(phi-pi/2)/3) with phi in (pi/2, 2pi) the correct corner eigenfunctions for the 3pi/2 sector and do they vanish on both inner segments?
+3. Weak residual: B = Lambda^{-1} Phi^T A G with Phi the lowest-M eigenvectors of A — is the residual correctly defined and is the analytic elimination (Q,R of B C; B_perp; y recovery) algebraically right in lsh_solve.make_rom_kernel, including the q = R_total free-bank rung and the full-stationarity diagnostic?
+4. Pre-registration: are the pass/fail criteria, selection rule, falsification clause and non-dominated-set definition unambiguous and free of look-ahead (is any selection made on the development cohort)? Any wiggle room that would let a bad result be reported as good?
+5. Timing fairness: every subject timed host-in/host-out in the same process; CPU splu vs GPU ROM; is anything charged unfairly to one side? Is the eigen-decomposition/POD/factorisation cost correctly treated as offline setup and stated as such?
+6. Cohorts: the centre-rejection rule and the "each column drawn at its own length" landmine; disjointness assertions; does the audit regenerate cohorts independently?
+7. Obvious code bugs that would crash or silently mis-measure (shapes, jit closure over large arrays, index order mismatches between Geometry.idx and the operator rows, scatter/gather, reference restriction by nested nodes with fine_intervals divisible by N).
+8. Anything in DESIGN.md that the code does not implement, or vice versa.
+
+Write the findings to stdout as Markdown. Be concrete: cite file:line. Do not pad.

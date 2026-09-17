@@ -64,11 +64,15 @@ def check_prediction(prediction, target, supplied):
     return errors
 
 
+PROTOCOL = dict(epochs=4000, patience=250, batch_size=8, weight_decay=0.0001)
+LEARNING_RATES = {0.001, 0.0003}
+
+
 def stop_reason(result):
-    reasons = [k for k in ('stopped_by_signal', 'stopped_by_early_stopping', 'stopped_by_wall_budget',
-                           'stopped_by_epoch_cap') if result.get(k)]
-    assert reasons, result
-    return reasons[0].replace('stopped_by_', '')
+    reason = result['stop_reason']
+    assert reason in ('signal', 'early_stopping', 'wall_budget', 'epoch_cap')
+    assert result[f'stopped_by_{reason}'] is True
+    return reason
 
 
 def audit_arm(folder, rows, data_root):
@@ -79,6 +83,11 @@ def audit_arm(folder, rows, data_root):
     assert provenance['final_cohort_opened'] is False
     history = json.loads((folder / 'history.json').read_text())
     assert len(history) == result['epochs_completed']
+    config = provenance['config']
+    for key, value in PROTOCOL.items():
+        assert config[key] == value, (folder, key, config[key])
+    assert config['learning_rate'] in LEARNING_RATES and config['seed'] in (20260914, 20260915), folder
+    assert config['family'] in ('unet', 'transolver')
     per_case, per_time, declared = [], [], []
     for index, row in enumerate(rows):
         with np.load(data_root / row['path']) as case:
@@ -96,8 +105,15 @@ def audit_arm(folder, rows, data_root):
     assert sha(folder / 'best.pt') == result['best_checkpoint_sha256']
     with np.load(folder / 'validation-errors.npz') as saved:
         assert np.allclose(saved['errors'], np.asarray(per_time), rtol=1e-11, atol=1e-13)
+    # The selection score in history came from the batch-8 pass; the reported numbers come
+    # from the batch-1 pass whose fields are saved. Batched float32 kernels need not be
+    # batch-invariant, so the pre-registered tolerance is 1e-5 relative for float32 and
+    # 1e-11 for float64.
     best = history[result['best_epoch']]
-    assert abs(best['validation']['mean_case_max'] - result['validation']['mean_case_max']) <= 1e-12
+    assert best['validation']['mean_case_max'] == result['validation']['batched_selection_score']
+    tolerance = 1e-5 if result['parameter_dtype'] == 'torch.float32' else 1e-11
+    selection_gap = abs(best['validation']['mean_case_max'] - result['validation']['mean_case_max'])
+    assert selection_gap <= tolerance * result['validation']['mean_case_max'], (folder, selection_gap)
     return dict(complete=True, family=result['family'], parameter_dtype=result['parameter_dtype'],
                 config=provenance['config'], config_sha256=provenance['config_sha256'],
                 seed=provenance['seed'], real_parameter_count=result['real_parameter_count'],
@@ -105,6 +121,8 @@ def audit_arm(folder, rows, data_root):
                 stop_reason=stop_reason(result), wall_budget_seconds=result['wall_budget_seconds'],
                 training_seconds=result['training_seconds'], warmup_epochs=result.get('warmup_epochs', 0),
                 final_learning_rate=history[-1]['learning_rate'],
+                batched_selection_score=result['validation']['batched_selection_score'],
+                batch1_vs_batch8_selection_gap=selection_gap,
                 best_checkpoint_sha256=result['best_checkpoint_sha256'],
                 peak_allocated_bytes=max(h['peak_allocated_bytes'] for h in history),
                 fixed_initial=statistics(per_case), case_maximum_errors=per_case,
@@ -192,12 +210,21 @@ def main(attempt):
     worker = json.loads((root / 'out/worker.json').read_text())
     precision = json.loads((root / 'out/precision.json').read_text())
     assert precision['passed']
+    expected_arms = {f"{prefix}-{a['name']}" for a in spec['arms']}
+    if spec.get('refine_learning_rate'):
+        expected_arms.add(f'{prefix}-refine')
+    assert set(arms) == expected_arms, (set(arms), expected_arms)
+    assert not selection['stopped_by_signal']
+    cohort = audit_cohort(root, prefix)
+    assert cohort['present'] and set(cohort['models']) == expected_arms, 'cohort must be scored for every arm'
+    timing = audit_timing(root)
+    assert timing['present'] and set(timing['models']) == expected_arms
     result = dict(attempt=attempt, job_id=job_id, gpu=gpu, source_commit=provenance['source_commit'],
                   spec=spec, data_files_verified=data_verified, jax_backend='gpu',
                   train_index_sha256=FNO_TRAIN_INDEX, validation_index_sha256=FNO_VALIDATION_INDEX,
                   identical_split_to_fno_job=True, validation_cases=len(rows),
                   arms=arms, capacity_selection=selection, worker_tasks=worker,
-                  cohort=audit_cohort(root, prefix), timing=audit_timing(root),
+                  cohort=cohort, timing=timing,
                   metric='maximum over the six requested output times of the interior l2 discrepancy divided by '
                          'the interior l2 norm of the supplied initial field (Burgers lane metric)',
                   passed=bool(arms) and all(a.get('complete') for a in arms.values()),

@@ -30,10 +30,11 @@ decoder; and a decoder — a per-node spatial bank from a Fourier-feature
 coordinate network (Tancik et al., 2020) times a small neural
 head with a linear skip, plus nested correction directions — identified
 against three constraints: cold-start convergence, EQ compatibility, and
-mesh-independent per-node evaluation. Across 2D Burgers, Poisson, heat and waves, the trained-once family is
-monotone in $q$ on Burgers on each of three training seeds and, with the
-test count held fixed so that $q$ is the only control, meets a bar fixed
-before any run, on the same-grid error: against a fine reference every
+mesh-independent per-node evaluation. Across 2D Burgers, Poisson, heat and waves, the trained-once family's
+scheduled ladder is monotone in $q$ on Burgers on each of three training
+seeds, and its fixed-test-count ladder, where $q$ is the only control,
+meets a bar fixed before any run on one checkpoint, on the same-grid
+error: against a fine reference every
 rung is within a few percent of the mesh's own discretisation error, so
 the knob moves the reduction error, not the physical error, at the
 meshes we ran; its quadrature
@@ -716,10 +717,18 @@ as the headline after the grid ran, by the lane's rule (the largest fixed
 $M$ holding every rung to $q=256$), not pre-registered; the $q=512$
 extension did not converge and enters no span, and raising $M$ at $q=256$
 saturates at $M^\star=2176$ with diminishing return past
-it. Repeated on 3{} training seeds
-(Table 32), the scheduled ladder is monotone on
-3{} of 3{} and meets the knob bar on
-2{} of 3{}; the sealed cohort is not yet opened.
+it. Repeated on 3{} training seeds (Table 32), the
+scheduled ladder is monotone on 3{} of 3{}
+and meets the knob bar on 2{} of 3{}, which is the
+lane's pre-registered pass (at least two of three); the third seed fails
+on convergence at one rung (`seed3` at $q=256${},
+6{} budget exits), not on span (its own
+spans are 3.93$\times${} in error and
+20.97$\times${} in cost). The incumbent checkpoint that
+every headline uses is better than all three fresh seeds at
+$q=16, 32, 64, 128$ on the evolved metric: it is a favourable
+draw, and the fixed-$M$ ladder above is that one checkpoint. The sealed
+cohort is not yet opened.
 
 **Quadrature and tolerance move cost.**
 Quadrature is a cost lever at equal error ($4.77\times$
@@ -866,10 +875,13 @@ been run.
 
 **Limitations.**
 
-(i) Every headline rests on one training seed and one checkpoint per PDE;
-the Burgers scheduled ladder was repeated on 3{} seeds
-(Table 32; `seed3` at $q=256${} did not converge), and
-its sealed cohort is not yet opened. (ii)
+(i) Every headline rests on one checkpoint per PDE, and the Burgers one
+is a favourable draw: it beats all three fresh seeds at
+$q=16, 32, 64, 128$ (Table 32). The scheduled
+ladder was repeated on 3{} seeds and meets the knob bar on
+2{} of 3{} (the pre-registered pass), the third
+failing on convergence at one rung; the fixed-$M$ ladder is single-seed;
+the sealed cohort is not yet opened. (ii)
 Discretisations are finite-difference on uniform Cartesian grids. (iii)
 Benchmarks are restricted to 2D; the Navier–Stokes reduced model failed
 its pre-registered gate at $K=16$ and $K=32$

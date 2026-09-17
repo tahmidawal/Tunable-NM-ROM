@@ -1594,6 +1594,20 @@ def build_seeds():
     # which rung fails to converge on the non-converged seed(s)
     bad = sorted({(k[0], int(k[2])) for k in V if k[0] in seeds and k[2] is not None and V[k].get('converged') is False})
     macro('nSeedsUnconvergedCells', ', '.join(f"{tt(sd)} at $q={q}$" for sd, q in bad) if bad else 'none')
+    # review r2 (B2/R5): the unconverged seed's own spans and budget exits; where the incumbent beats every fresh seed
+    if bad:
+        sd, q = bad[0]
+        kk = [k for k in V if k[0] == sd and k[2] is None]
+        if kk:
+            macro('nSeedsUnconvergedSeedErrSpan', ratio(V[kk[0]].get('error_span_evolved'))); macro('nSeedsUnconvergedSeedCostSpan', ratio(V[kk[0]].get('cost_span')))
+        bx = [V[k].get('budget_exits') for k in V if k[0] == sd and k[2] is not None and int(k[2]) == q and V[k].get('budget_exits') is not None]
+        if bx: macro('nSeedsUnconvergedSeedBudgetExits', str(int(bx[0])))
+    better = []
+    for q in qs:
+        ev = seedvals(q, 'evolved'); ie = inc(q, 'evolved')
+        if ev and len(ie) == 1 and list(ie)[0] < min(ev): better.append(q)
+    macro('nSeedsIncumbentBetterQs', ', '.join(str(q) for q in better) if better else 'none'); macro('nSeedsIncumbentBetterCount', str(len(better)))
+    macro('nSeedsRungCount', str(len(qs)))
     # three layers at q = 0 per seed
     fl = [V[k]['three_layer_bank_floor_percent'] for sd in seeds for k in V if k[0] == sd and 'three_layer_bank_floor_percent' in V[k]]
     bf = [V[k]['three_layer_best_found_percent'] for sd in seeds for k in V if k[0] == sd and 'three_layer_best_found_percent' in V[k]]

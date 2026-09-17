@@ -241,3 +241,21 @@ by construction and cannot be $10^{-6}$. The gate is therefore restated, sharper
 
 The coordinator's $10^{-6}$ is met by F-TG-semi (and exceeded by F-TG-exact); the continuum
 comparison is a convergence-order gate, as it must be for a finite-difference scheme.
+
+## §A2 (2026-09-17, during job 3780151, before Phase 2) — the F-JAC negative control was an absolute threshold on a mesh-scaling quantity
+
+F-JAC required the plain centred-difference Jacobian to violate the $\sum\omega J$ identity by
+$\ge10^{-3}$. That control's leak is itself $O(h^2)$ for a smooth pair: job 3780151 measured
+2.0e-2, 4.2e-3, (64²: see report), 2.4e-4, 5.9e-5 at $N=16,32,\dots,256$, so the gate "failed"
+at 128² and 256² while the Arakawa identities read 2–4e-18 — the control still discriminates
+by thirteen orders of magnitude. This is the recurring failure mode the design itself names
+(absolute tolerances for quantities that scale with the mesh). Restated as a **ratio**:
+
+- F-JAC passes when every Arakawa identity and the antisymmetry defect are $\le10^{-13}$ **and**
+  the centred control's $\sum\omega J$ violation is $\ge10^{6}\times$ the Arakawa
+  $\sum\omega J$ violation on the same pair.
+
+The stored numbers of job 3780151 are re-evaluated under this rule by `audit_phase1.py`
+(recorded as `passed_A2` beside the original verdict); the driver uses the ratio rule from
+commit §A2 onward. The scheme is unchanged; only the gate arithmetic is amended, and the
+original verdict is kept in the JSON.

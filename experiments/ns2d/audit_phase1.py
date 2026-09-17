@@ -148,6 +148,14 @@ def main():
         h = hashlib.sha256(np.ascontiguousarray(d['physical']).tobytes()).hexdigest()
         audit['checks'].append(dict(name=f'dev8_N{N}.physical_prefix_sha256', value=h))
 
+    # DESIGN §A2: re-evaluate F-JAC under the ratio rule from the stored numbers
+    for k, g in G.items():
+        if k.startswith('F-JAC_N'):
+            ratio = g['centred_control_zJ'] / max(g['sum_zJ'], 1e-300)
+            ok = g['worst_identity'] <= 1e-13 and g['antisymmetry_rel'] <= 1e-13 and ratio >= 1e6
+            audit['checks'].append(dict(name=f'{k}.passed_A2', control_ratio=ratio, passed_A2=ok,
+                                        passed_original=g['passed']))
+            print(f'{k}: control ratio {ratio:.3e} -> passed_A2={ok} (original {g["passed"]})')
     audit['n_checks'] = len(audit['checks'])
     print('ALL_MATCH', audit['all_match'], 'checks', audit['n_checks'])
     if len(sys.argv) > 2:

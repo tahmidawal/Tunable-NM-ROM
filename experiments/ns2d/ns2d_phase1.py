@@ -286,8 +286,10 @@ def main():
     for N in NS:
         gate_lap(report, N, rng)
         j = gate_jac(report, N, rng)
+        # DESIGN §A2: the centred control is a RATIO to the Arakawa identity (its leak is O(h^2))
+        j['control_ratio'] = j['centred_control_zJ'] / max(j['sum_zJ'], 1e-300)
         gate(report, f'F-JAC_N{N}', j['worst_identity'] <= 1e-13 and j['antisymmetry_rel'] <= 1e-13
-             and j['centred_control_zJ'] >= 1e-3, **j)
+             and j['control_ratio'] >= 1e6, **j)
     # analytic-J order over the NS ladder
     errs = [report['gates'][f'F-JAC_N{N}']['analytic_rel'] for N in NS]
     orders = F.observed_order(errs) if len(NS) > 1 else []

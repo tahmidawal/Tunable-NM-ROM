@@ -254,4 +254,80 @@ indices 2–3 of the two development seeds, no absorbing boundary, no final coho
 
 ## 10. Amendments
 
-(none yet)
+### A1 (2026-09-17, before any job) — acting on the independent design audit
+
+The Codex quota was exhausted (notice in LANE-PROTOCOL.md), so the pre-job audit was done by
+an independent Claude reviewer with the same read-only prompt; its report is
+`reports/design-audit-2026-09-17.md`. Findings accepted and what changed:
+
+1. **The §1 table's millisecond values were hand-typed from other jobs' tables** (audit
+   finding 38–39). They are withdrawn. The table below is printed by `design_table.py` from the
+   two archived JSONs; the head rows are worst over 4 cases (accel12) while the linear-bank row
+   is worst over 2 cases (accel07) and the two jobs are different allocations, so **no ratio is
+   formed across them here** — J1 measures the in-job ratio.
+
+| accel12 (job 3565786, NVIDIA A100 80GB PCIe, result sha256 4993f0d12cfb), 64 intervals | cases | GPU ms (median, all reps) | worst energy-state % | worst u % |
+|---|---:|---:|---:|---:|
+| `chol_guard` (dt 0.01) | 4 | 178.9815 | 6.2231 | 1.8109 |
+| `trained_nested40` (dt 0.01) | 4 | 199.4380 | 5.0411 | 1.4779 |
+
+| accel07 (job 3563590, NVIDIA A100 80GB PCIe, result sha256 3638e00ac97d), 64 intervals | cases | GPU ms (median, all reps) | worst energy-state % | worst u % |
+|---|---:|---:|---:|---:|
+| `chol_guard` (dt 0.01) | 2 | 182.2200 | 6.2231 | 1.8109 |
+| `linear_bank64` (dt 0.0) | 2 | 1.4473 | 3.2113 | 0.7826 |
+
+
+2. **Direction scaling (finding 8).** The pre-registered "orthonormal" PCA directions for
+   `nested_q*` are replaced by the **scaled** directions `standardized_linear[:, 32:32+q]`,
+   exactly `nested_head.build`'s convention, so `nested_q8` and `trained_nested40` differ only
+   in the fixed-code $y$-starts. Column norms of the scaled directions fall from
+   $8.7\times10^{-4}$ (column 32) to $7.6\times10^{-5}$ (column 63); the guarded-Cholesky
+   fast path needs $1/(\|J\|_F\|L^{-1}\|_F) > 10^{-3}$, so **the $q = 16$ and $q = 32$ rungs
+   are expected to run the QR + exact-SVD fallback on many or all stages** and cost several
+   times `head_q0`. That cost is the genuine cost of that operating point in the retained
+   solver and is reported as measured, with `total_guard_fallbacks` per invocation; §3.1's
+   sentence "costs the same launch-bound stage as the $q=0$ solve" is withdrawn. The
+   trajectory is invariant to the $y$ scaling in exact arithmetic; the guard is not.
+3. **D3's arm set (finding 1)** is the five head rungs of §3.1 plus `linear_bank64`; the
+   integrator variants and POD arms are reported in a second, non-verdict set.
+4. **D1 and the initial state (finding 3).** The primary metric includes $t = 0$, where the
+   head returns an 8-start nonlinear fit and the bank a raw projection; this is the single
+   largest disclosed confound. The report states, per arm, whether the worst is attained at
+   $t = 0$ and gives the worst over evolved times ($t > 0$) beside it; the dimension-matched
+   reading `pod_k40` vs `trained_nested40` is reported. D1 itself is unchanged.
+5. **D2 matched-integrator reading (finding 2).** Beside D2, the ratio
+   `linear_bank64_rk4` / `head_q0` (same RK4, same $\Delta t$, same 240 steps) is reported so
+   "closed form beats stepping" and "linear beats nonlinear" are separated. D2 unchanged.
+6. **$q = 32$ vs the bank (findings 6–7).** G5b's "$\lesssim 10^{-6}$" is withdrawn: the two
+   arms start from different initial states (fit vs projection) and RK4 is not invariant under
+   the nonlinear change of variables, so the pair measures both; the RK4-vs-modal pair
+   `linear_bank64_rk4` vs `linear_bank64` sets the integration band. All three are reported.
+7. **RK4 on the full bank (finding 14).** $\lambda_{\max}(K)$ is now recorded per mesh with
+   $\omega_{\max}\Delta t$ at $c = 1.15$ against the RK4 stability bound $2\sqrt2$. If
+   `linear_bank64_rk4` fails to complete it is reported as such; it is an integrator control,
+   not verdict-bearing.
+8. **Gates enforced in code (findings 27–28):** bank $K \succ 0$ asserted; every non-head
+   arm must `complete`; every CG arm must meet its true-residual tolerance with no cap exits;
+   the retained-value gate G3 raises after saving `result.json`, so a failed gate is a failed
+   job (no `ALL-DONE`). Head rungs that do not complete are recorded, not aborted (a
+   non-completing rung is a finding). Rank checks now take the minimum over the untransformed
+   and mesh-transformed joint Jacobian (finding 10); the initializer identity is checked to
+   $10^{-12}$ absolute, not by projector (finding 21).
+9. **Smoke (finding 26).** The local smoke uses every 8th training case for the POD
+   (`pod_training_case_stride: 8`, hash gate skipped and recorded); the jobs use all 64
+   cases with the hash gate. The exact method-of-snapshots POD is not the campaign-config
+   randomized SVD and is labelled so (finding 19). Transfer checks now include a
+   near-Nyquist mode and the prolong→restrict round trip (finding 18).
+10. **Fairness of the POD transfer (finding 17):** the neural bank is re-evaluated
+    analytically on the fine grid and carries content beyond the $255^2$ sine band; POD modes
+    are band-limited to it. This mildly favours the bank at $1024^2$ and is disclosed with H-POD.
+11. **Operations:** a free-space preflight (≥ 30 GB on paralab, exit 43 otherwise) precedes
+    any write; walltimes 2 h / 3 h / 6 h for J1–J3 (host-side scoring of 49 fields at $1023^2$
+    dominates J3, finding 36); the CN propagator is built inside the timer while the modal
+    eigendecomposition is offline (finding 13, disclosed); the 64 training trajectories are
+    regenerated twice per job (once for the PCA ladder, once for the POD; ~100 s each, accepted).
+
+Findings rejected: finding 25 (four repetitions) — the protocol fixes three timed repetitions;
+order alternation 2:1 is disclosed and all repetitions are retained. Finding 30
+(record-not-abort nondeterminism) — a nondeterministic timed output invalidates the hash
+deduplication and stays a hard stop.

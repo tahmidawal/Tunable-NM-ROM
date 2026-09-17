@@ -758,8 +758,8 @@ after the crossed grid ran and the $M=256$ ladder fails the same bar.
 **Cross-job spread** of an identical cell is $14 %$.
 
 **Pending cells.** Not in this draft, and no result sentence depends on
-them: the $1024^2$ panel (\gen{b-panel 1024$^2$ (bpn203, job 3789572)}); seeds and the sealed cohort
-(\gen{b-seeds}); the L-shape solve at $512^2$; Navier–Stokes (\gen{ns2d phases 2–3}).
+them: the $1024^2$ panel (**[PENDING: b-panel 1024$^2$ (bpn203, job 3789572)]**); seeds and the sealed cohort
+(**[PENDING: b-seeds]**); the L-shape solve at $512^2$; Navier–Stokes (**[PENDING: ns2d phases 2–3]**).
 
 ## 7 Conclusion
 

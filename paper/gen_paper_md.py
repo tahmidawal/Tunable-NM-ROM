@@ -71,6 +71,9 @@ def expand(s, M):
     s = re.sub(r'\\todo' + ARG, r'**[TODO: \1]**', s)
     for _ in range(3):
         s = re.sub(r'\\([A-Za-z]+)(?![A-Za-z])', lambda m: M.get(m.group(1), m.group(0)), s)
+    # macros can expand INTO a placeholder, so run the placeholder rules again afterwards
+    s = re.sub(r'\\gen' + ARG, r'**[PENDING: \1]**', s)
+    s = re.sub(r'\\todo' + ARG, r'**[TODO: \1]**', s)
     return s
 
 

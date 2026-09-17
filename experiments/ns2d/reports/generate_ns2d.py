@@ -114,7 +114,24 @@ def phase2(doc, d, job, sha):
     c = d['config']
     doc.h(2, f'Phase 2 — bank and head $K={c["K"]}$, $R={c["R"]}$ (job {job}, commit `{str(d["commit"])[:12]}`, complete={yn(d.get("complete"))})')
     t = d.get('training', {})
-    doc.p(f'Training: {t.get("n_snapshots")} snapshots on ${c["TRAIN_N"]}^2$, {t.get("steps")} steps, reconstruction rel-$L_2$ mean {sci(t.get("recon_rel_l2_mean"))}, median {sci(t.get("recon_rel_l2_median"))}, max {sci(t.get("recon_rel_l2_max"))}, {fx(t.get("seconds"), 0)} s.')
+    arch = c.get('ARCH', {})
+    doc.p(f'Training: {t.get("n_snapshots")} snapshots on ${c["TRAIN_N"]}^2$, {t.get("steps")} steps, reconstruction rel-$L_2$ mean {sci(t.get("recon_rel_l2_mean"))}, median {sci(t.get("recon_rel_l2_median"))}, max {sci(t.get("recon_rel_l2_max"))}, {fx(t.get("seconds"), 0)} s. '
+          f'Architecture: bank MLP {arch.get("g_hidden")}×{arch.get("g_layers")} (structural rank bound $\\min(R,\\texttt{{g\\_hidden}})={min(c["R"], arch.get("g_hidden", c["R"]))}$, DESIGN §A4), head MLP {arch.get("h_hidden")}×{arch.get("h_layers")} + linear skip.')
+    for m in ('recon_rel_l2_mean', 'recon_rel_l2_median', 'recon_rel_l2_max'):
+        if m in t:
+            doc.row(phase=2, mesh=c['TRAIN_N'], subject=f'head_K{c["K"]}_R{c["R"]}', metric=f'training.{m}', value=t[m], gate='H-TRAIN',
+                    passed=G.get('H-TRAIN', {}).get('passed'), job_id=job, source_sha256=sha)
+    orth = [[k[7:], g.get('rank'), sci(g.get('cond_Rb')), yn(g['passed'])] for k, g in G.items() if k.startswith('B-ORTH_N')]
+    if orth:
+        doc.h(3, 'Bank rank on each evaluation grid (thin QR of $G$)')
+        doc.table(['$N$', 'numerical rank', '$\\kappa(R_b)$', 'B-ORTH passed'], orth)
+        for k, g in G.items():
+            if k.startswith('B-ORTH_N'):
+                doc.row(phase=2, mesh=int(k[8:]), subject=f'bank_R{c["R"]}', metric='rank', value=g.get('rank'), gate=k, passed=g['passed'], job_id=job, source_sha256=sha)
+    dat = [[k[7:], g.get('mode', 'hash'), yn(g.get('hash_mismatch', g.get('expected') is not None and g.get('expected') != g.get('got'))), sci(g.get('value_worst_rel')), yn(g['passed'])] for k, g in G.items() if k.startswith('B-DATA_')]
+    if dat:
+        doc.h(3, 'Cohort identity against Phase 1 (hash, or value on the archived 8 trajectories — DESIGN §A4)')
+        doc.table(['cohort', 'mode', 'hash mismatch', 'value worst rel.', 'passed'], dat)
     rows = []
     for N, fl in d.get('floors', {}).items():
         for kind, ks in fl.items():
@@ -128,12 +145,14 @@ def phase2(doc, d, job, sha):
     rows = []
     for N, o in d.get('oracle', {}).items():
         rows.append([N, o['states'], sci(o['oracle_median']), sci(o['oracle_worst']), sci(o['single_start_median']), sci(o['podK_median']),
-                     sci(o['bank_floor_median']), fx(o['podK_median'] / o['oracle_median'], 2), yn(G.get(f'H-ORACLE_N{N}', {}).get('passed')), yn(G.get(f'H-SOLVED_N{N}', {}).get('passed'))])
+                     sci(o['bank_floor_median']), fx(o['podK_median'] / o['oracle_median'], 2), sci(o.get('formula_vs_field_worst_rel')),
+                     yn(G.get(f'H-ORACLE_N{N}', {}).get('passed')), yn(G.get(f'H-SOLVED_N{N}', {}).get('passed'))])
         for m in ('oracle_median', 'oracle_worst', 'single_start_median', 'podK_median', 'bank_floor_median'):
             doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric=f'oracle.{m}', value=o[m], gate=f'H-ORACLE_N{N}',
                     passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
     doc.h(3, 'Head oracle versus the linear POD-$K$ floor (same held-out states)')
-    doc.table(['$N$', 'states', 'oracle median', 'oracle worst', 'single-start median', 'POD-$K$ median', 'bank floor median', 'POD-$K$ / oracle', 'H-ORACLE', 'H-SOLVED'], rows)
+    doc.table(['$N$', 'states', 'oracle median', 'oracle worst', 'single-start median', 'POD-$K$ median', 'bank floor median', 'POD-$K$ / oracle', 'formula vs field', 'H-ORACLE', 'H-SOLVED'], rows)
+    doc.p('The H-ORACLE bar is oracle median $\\le \\tfrac12$ POD-$K$ median (ratio $\\ge 2$). "formula vs field" is the worst relative difference between the whitened-metric formula and the direct field-space evaluation of the oracle error (— for runs before DESIGN §A4, whose reported oracle numbers were computed through $R_b^{-1}$; the audit measured the contamination).')
     doc.table(['gate', 'passed'], [[k, yn(g['passed'])] for k, g in G.items()])
 
 
@@ -199,7 +218,15 @@ def main():
     doc.md.insert(3, '| ' + ' | '.join(hdr) + ' |\n|' + '|'.join(['---'] * len(hdr)) + '|\n' + '\n'.join('| ' + ' | '.join(str(c) for c in r) + ' |' for r in srcs) + '\n')
     for s in a.audit:
         d = json.loads(Path(s).read_text())
-        doc.p(f'Independent NumPy audit `{s}`: {d.get("n_checks")} checks, all match = {yn(d.get("all_match"))}.')
+        bad = [ch['name'] for ch in d.get('checks', []) if not ch.get('match', True)]
+        extra = ''
+        if bad:
+            worst = max((ch for ch in d['checks'] if not ch.get('match', True)), key=lambda ch: abs(ch.get('recomputed', 0) - ch.get('reported', 0)))
+            extra = f' Mismatched: {", ".join(f"`{b}`" for b in bad)} (largest: recomputed {sci(worst["recomputed"])} vs reported {sci(worst["reported"])}).'
+        doc.p(f'Independent NumPy audit `{s}`: {d.get("n_checks")} checks, all match = {yn(d.get("all_match"))}.{extra}')
+        for ch in d.get('checks', []):
+            if not ch.get('match', True):
+                doc.row(phase='audit', mesh=None, subject=Path(s).parent.name, metric=ch['name'], value=ch.get('recomputed'), gate='audit', passed=False, job_id='—', source_sha256=hashlib.sha256(Path(s).read_bytes()).hexdigest())
     doc.md.append(GLOSSARY)
     out = Path(a.out)
     out.with_suffix('.md').write_text('\n'.join(doc.md))

@@ -1,8 +1,49 @@
 {
   "namespace": "/cluster/tufts/paralab/tawal01/b_eqtop_20260917",
   "submissions": [
-    {"n": 1, "attempt": "bet101", "config": "config-j1.json", "job_id": "3780164", "gpu_request": "a100:1 constraint a100-80G, 16 cpus, 180G, 20h", "submitted": "2026-09-17T05:31-04:00", "source_commit": "ace8936e", "squeue_before_after": "exactly one job per attempt directory, verified"},
-    {"n": 2, "attempt": "bet201", "config": "config-j2.json", "job_id": "3780165", "gpu_request": "a100:1 (any), 16 cpus, 180G, 20h", "submitted": "2026-09-17T05:31-04:00", "source_commit": "ace8936e", "squeue_before_after": "exactly one job per attempt directory, verified"}
+    {
+      "n": 1,
+      "attempt": "bet101",
+      "config": "config-j1.json",
+      "job_id": "3780164",
+      "gpu_request": "a100:1 constraint a100-80G, 16 cpus, 180G, 20h",
+      "submitted": "2026-09-17T05:31-04:00",
+      "source_commit": "ace8936e",
+      "squeue_before_after": "exactly one job per attempt directory, verified"
+    },
+    {
+      "n": 2,
+      "attempt": "bet201",
+      "config": "config-j2.json",
+      "job_id": "3780165",
+      "gpu_request": "a100:1 (any), 16 cpus, 180G, 20h",
+      "submitted": "2026-09-17T05:31-04:00",
+      "source_commit": "ace8936e",
+      "squeue_before_after": "exactly one job per attempt directory, verified"
+    },
+    {
+      "n": 3,
+      "attempt": "bet301",
+      "config": "config-j3.json",
+      "job_id": "3783811",
+      "gpu_request": "a100:1 (any), 16 cpus, 180G, 20h",
+      "submitted": "2026-09-17T09:31-04:00",
+      "source_commit": "b2844c60",
+      "squeue_before_after": "exactly one job per attempt directory, verified",
+      "purpose": "DESIGN A2: four independent draws of (pool, fit states) at q = 64, 128, 256"
+    }
   ],
-  "cap": 8
+  "cap": 8,
+  "collected": [
+    {
+      "attempt": "bet201",
+      "job_id": "3780165",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "01:56:37",
+      "node": "pax106",
+      "archived": "experiments/b-eqtop/artifacts/bet201",
+      "remote_deleted": "2026-09-17T09:28-04:00"
+    }
+  ]
 }

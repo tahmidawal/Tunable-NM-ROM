@@ -182,7 +182,7 @@ def main():
             arm=x['name'], kind=x['kind'], family=x['family'], q=x.get('q'), k=x.get('k'), M=x.get('M'), m=x.get('m'),
             quadrature=x.get('quadrature'), gtol=x.get('gtol'), dt=x.get('dt'), solved_dimension=x.get('solved_dimension'),
             rule_kind=x.get('rule_kind'), gpu_ms=[], host_ms=[], case_ref={}, case_all={}, case_ev={}, case_t0={},
-            per_time={}, iters=[], maxit=[], stat=[], icstat=[], icrel=[], conv=[], strict=[], comp=[], be=[], exits=[],
+            per_time={}, iters=[], maxit=[], stat=[], stepstat=[], icstat=[], icrel=[], conv=[], strict=[], comp=[], be=[], exits=[],
             ntol=x.get('ntol'), ltol=x.get('ltol'), preconditioner=x.get('preconditioner'), newton=[]))
         t['gpu_ms'].append(x['gpu_seconds'] * 1e3)
         t['host_ms'].append(x['host_seconds'] * 1e3)
@@ -195,6 +195,7 @@ def main():
         if x['kind'] == 'rom':
             t['maxit'].append(x['max_iterations'])
             t['stat'].append(x['worst_joint_stationarity'])
+            t['stepstat'].append(float(np.max(x['step_joint_stationarity'])))
             t['icstat'].append(x['ic_joint_stationarity'])
             t['icrel'].append(x['ic_relative_residual'])
             t['conv'].append(x['converged_audit'])
@@ -242,6 +243,7 @@ def main():
             max_iterations=(int(max(t['maxit'])) if t['maxit'] else None),
             newton_iterations_median=(median(t['newton']) if t['newton'] else None),
             max_joint_stationarity=(float(np.max(t['stat'])) if t['stat'] else None),
+            max_step_stationarity=(float(np.max(t['stepstat'])) if t['stepstat'] else None),
             max_ic_stationarity=(float(np.max(t['icstat'])) if t['icstat'] else None),
             max_ic_relative_residual=(float(np.max(t['icrel'])) if t['icrel'] else None),
             converged=conv, converged_strict=(bool(all(t['strict'])) if t['strict'] else None),
@@ -251,6 +253,32 @@ def main():
             admissible=bool(admissible)))
     for row in rows:
         row.pop('median_of_case_median_gpu_ms', None)
+    floors = {}
+    for e in r['reconstruction']:
+        key = ('pod', e.get('k')) if e.get('family') == 'pod' else ('rom', e.get('q'))
+        floors[key] = dict(best_found_percent=100 * e['worst_best_found'],
+                           bank_projection_percent=(100 * e['worst_bank_projection']
+                                                    if 'worst_bank_projection' in e else None))
+    for x in rows:
+        if x['family'] == 'pod':
+            fl = floors.get(('pod', x['k'])) or {}
+            best = fl.get('best_found_percent')
+        elif x['family'] in ('rom', 'fast'):
+            fl = floors.get(('rom', x['q'])) or {}
+            best = fl.get('best_found_percent')
+        elif x['family'] == 'free':
+            # the unrestricted bank solves ALL R coefficients, so its representation floor is
+            # the bank projection itself, not a head manifold
+            fl = floors.get(('rom', 0)) or {}
+            best = fl.get('bank_projection_percent')
+        else:
+            fl, best = {}, None
+        x['best_found_percent'] = best
+        x['best_found_kind'] = ('bank projection (all R coefficients)' if x['family'] == 'free'
+                                else ('POD span projection' if x['family'] == 'pod'
+                                      else ('head manifold best-found' if best is not None else None)))
+        x['bank_projection_percent'] = fl.get('bank_projection_percent')
+        x['solved_over_best_found'] = (x['worst_all_times_percent'] / best if best else None)
     by = {x['arm']: x for x in rows}
     rows.sort(key=lambda x: ({'rom': 0, 'fast': 1, 'pod': 2, 'free': 3, 'fno': 4, 'fom': 5}.get(x['family'], 9),
                              x['q'] if x['q'] is not None else (x['k'] or -1), x['arm']))

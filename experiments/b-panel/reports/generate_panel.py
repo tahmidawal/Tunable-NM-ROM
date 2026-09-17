@@ -47,6 +47,10 @@ def table(header, rows):
     return '\n'.join(out) + '\n'
 
 
+def by_arm(au, name):
+    return next((x for x in au['arms'] if x['arm'] == name), None)
+
+
 def sub_label(x):
     if x['family'] in ('rom', 'fast'):
         return f"q={x['q']}"
@@ -59,6 +63,9 @@ def figure(au, out_png, out_pdf, out_json):
     rows = au['arms']
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.6))
     plotted = []
+    pos = [x[k] for x in rows for k in ('worst_evolved_percent', 'worst_all_times_percent')
+           if x.get(k) is not None and x[k] > 0]
+    floor = min(pos) / 3. if pos else 1e-4      # exactly-zero subjects are the same-grid reference itself
     for ax, ek, title in ((axes[0], 'worst_evolved_percent', 'worst over evolved times'),
                           (axes[1], 'worst_all_times_percent', 'worst over all output times')):
         nd = set(au['nondominated']['gpu_evolved' if ek.startswith('worst_evolved') else 'gpu_all']['admissible'])
@@ -70,14 +77,14 @@ def figure(au, out_png, out_pdf, out_json):
             fam = x['family']
             lab = LABEL[fam] if fam not in seen else None
             seen.add(fam)
-            ax.scatter(c, max(er, 1e-4), marker=MARK[fam], s=42 if x['admissible'] else 26, c=COLOR[fam],
+            ax.scatter(c, max(er, floor), marker=MARK[fam], s=42 if x['admissible'] else 26, c=COLOR[fam],
                        alpha=1. if x['admissible'] else .45, edgecolors='k' if x['arm'] in nd else 'none',
                        linewidths=1.4 if x['arm'] in nd else 0, label=lab, zorder=3)
             plotted.append(dict(metric=ek, arm=x['arm'], family=fam, median_gpu_ms=c, error_percent=er,
                                 admissible=x['admissible'], nondominated=(x['arm'] in nd)))
         front = sorted([x for x in rows if x['arm'] in nd], key=lambda z: z['median_gpu_ms'])
         if front:
-            ax.plot([z['median_gpu_ms'] for z in front], [max(z[ek], 1e-4) for z in front], 'k--', lw=.8, zorder=2)
+            ax.plot([z['median_gpu_ms'] for z in front], [max(z[ek], floor) for z in front], 'k--', lw=.8, zorder=2)
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.set_xlabel('median GPU time per query (ms)')
@@ -102,6 +109,22 @@ def section(W, au, tag):
       f"Costs are medians over 6 cases × 3 repetitions; ratios are only meaningful inside this table.\n")
     if au['dropped']:
         W('**Subjects dropped by the OOM rule (DESIGN.md §3.1):** ' + ', '.join(f"`{d['name']}` ({d['phase']})" for d in au['dropped']) + '\n')
+    zero = [x['arm'] for x in au['arms'] if x['worst_all_times_percent'] <= 0.]
+    disc = au['fom_discretisation_error_percent']
+    if zero:
+        W('### How to read the two error columns\n')
+        verb = 'sits' if len(zero) == 1 else 'sit'
+        W(f"The same-grid columns measure every subject against this job's converged `fft_tight` solve, so "
+          f"**{' and '.join(f'`{z}`' for z in zero)} {verb} at exactly zero there by construction** — "
+          f"`fft_tight` *is* the reference, and `dense_tight`, the same solve through a different "
+          f"preconditioner, agrees with it to "
+          f"{sci(au['checks']['direct_reproduces_fft_tight']['detail']['worst_relative'])} relative. They are "
+          f"plotted at the axis floor, and they appear on the same-grid frontier for that reason, not because "
+          f"they are free. The `worst vs ref %` column is where the full-order solvers are not free: against the "
+          f"4096-interval reference this mesh's own discretisation error is "
+          f"{f(min(disc.values()))}–{f(max(disc.values()))} % for the full-order controls, and every reduced "
+          f"subject inherits it. A reduced subject is only interesting where it is cheaper than a full-order "
+          f"solve of the accuracy it actually delivers.\n")
     W('### Every subject\n')
     hdr = ['subject', 'family', 'q / k′', 'M', 'quad.', 'm', 'rule basis', 'tol', 'worst all %', 'worst evolved %',
            'median evolved %', 't=0 %', 'worst vs ref %', 'GPU ms', 'complete ms', 'med it', 'max it', 'budget exits',
@@ -120,6 +143,22 @@ def section(W, au, tag):
     W(table(hdr, [[f"`{x['arm']}`", json.dumps(x['exit_reason_counts']), sci(x['max_joint_stationarity']), sci(x['max_ic_stationarity']),
                    sci(x['max_ic_relative_residual']), f(x['converged']), f(x['converged_strict'])]
                   for x in au['arms'] if x['kind'] == 'rom']))
+    W('### What is on the frontier\n')
+    nd_adm = set(au['nondominated']['gpu_evolved']['admissible'])
+    red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible']]
+    best_red = min(red, key=lambda x: x['worst_evolved_percent']) if red else None
+    cheaper_fom = [x for x in au['arms'] if x['family'] == 'fom'
+                   and best_red and x['worst_evolved_percent'] <= best_red['worst_evolved_percent']
+                   and x['median_gpu_ms'] <= best_red['median_gpu_ms']]
+    n_red_front = sum(1 for a_ in nd_adm if (by_arm(au, a_) or {}).get('family') in ('rom', 'fast', 'pod', 'free'))
+    W(f"On (median GPU ms, worst evolved %) over admissible subjects, **{n_red_front} of the "
+      f"{len(red)} reduced subjects are non-dominated**. " +
+      (f"The most accurate reduced subject is `{best_red['arm']}` at {f(best_red['worst_evolved_percent'])} % and "
+       f"{f(best_red['median_gpu_ms'], 1)} ms; " +
+       (f"the full-order settings that are **both cheaper and at least as accurate** are "
+        + ', '.join(f"`{x['arm']}` ({f(x['worst_evolved_percent'])} %, {f(x['median_gpu_ms'], 1)} ms)" for x in cheaper_fom)
+        + '.' if cheaper_fom else 'no full-order setting is both cheaper and at least as accurate.')
+       if best_red else '') + '\n')
     W('### Non-dominated sets\n')
     for key, v in au['nondominated'].items():
         W(f"**({v['cost']}, {v['error']})** — admissible subjects: " + (', '.join(f'`{a}`' for a in v['admissible']) or 'none')

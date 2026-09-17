@@ -187,11 +187,13 @@ MODES = np.array([(1, 0), (0, 1), (1, 1), (1, -1), (2, 0), (0, 2)], dtype=float)
 NU_LO, NU_HI = 1e-3, 1e-2
 
 
-def params_draw(seed, count):
+def params_draw(seed, count, nmodes=6):
     """Column-by-column draws (the params_draw landmine: drawing 4 cases != extending 2).
-    Columns 0..5 = a_k, 6..11 = b_k (unit normals), 12 = nu (log-uniform)."""
+    Columns 0..m-1 = a_k, m..2m-1 = b_k (unit normals), 2m = nu (log-uniform), m = nmodes
+    (default 6 = the frozen 12-amplitude family, bit-identical to the Phase-1 draws; DESIGN
+    §A9 uses nmodes=3, the first three modes of MODES, a NEW family with its own hashes)."""
     r = np.random.default_rng(seed)
-    cols = [r.standard_normal(count) for _ in range(12)]
+    cols = [r.standard_normal(count) for _ in range(2 * nmodes)]
     cols.append(np.exp(r.uniform(np.log(NU_LO), np.log(NU_HI), count)))
     return np.stack(cols, axis=1)
 
@@ -199,13 +201,15 @@ def params_draw(seed, count):
 def initial(N, phys):
     """omega_0 on the N-grid, rescaled analytically so U_rms = 1 (mesh-independent).
     U_rms^2 = sum_k (a_k^2 + b_k^2) / (8 pi^2 |k|^2)  for psi_k = omega_k / (4 pi^2 |k|^2)."""
-    a, b = np.asarray(phys[:6], float), np.asarray(phys[6:12], float)
+    m = (len(phys) - 1) // 2                                   # 6 for the frozen family
+    a, b = np.asarray(phys[:m], float), np.asarray(phys[m:2 * m], float)
+    modes = MODES[:m]
     X, Y = coords(N)
     w = np.zeros((N, N))
-    for (kx, ky), ak, bk in zip(MODES, a, b):
+    for (kx, ky), ak, bk in zip(modes, a, b):
         ph = 2.0 * PI * (kx * X + ky * Y)
         w += ak * np.cos(ph) + bk * np.sin(ph)
-    k2 = (MODES ** 2).sum(1)
+    k2 = (modes ** 2).sum(1)
     urms = np.sqrt(np.sum((a * a + b * b) / (8.0 * PI * PI * k2)))
     return w / urms
 

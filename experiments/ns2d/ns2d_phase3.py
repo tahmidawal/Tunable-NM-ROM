@@ -56,6 +56,7 @@ EXPECT = E('EXPECT_HASHES', '')
 TQ_STATES = int(E('TQ_STATES', '32'))
 T_CHUNK = int(E('T_CHUNK', '256'))
 T_BLOCK = int(E('T_BLOCK', '16'))
+M_FIXED = int(E('M_FIXED', '0'))                 # DESIGN §A9 (ns304): 0 = 4(K+q) per rung; else one M for every subject
 SMOKE = int(E('SMOKE', '0'))
 OUT = Path(E('OUT', 'output'))
 NSTEPS = int(round(T / DT))
@@ -153,7 +154,7 @@ def generate(phys_all, ntol, ltol):
     worst, mit = 0.0, 0
     t0 = time.time()
     for i, p in enumerate(phys_all):
-        st, it, rn = host(run(jnp.asarray(F.initial(N, p)), float(p[12]), ntol, ltol))
+        st, it, rn = host(run(jnp.asarray(F.initial(N, p)), float(p[-1]), ntol, ltol))
         assert np.isfinite(st).all()
         U[i] = st.reshape(NOUT, -1)
         worst, mit = max(worst, float(rn.max())), max(mit, int(it.max()))
@@ -219,7 +220,7 @@ def main():
                   checkpoint=dict(path=CKPT, sha256=hashlib.sha256(Path(CKPT).read_bytes()).hexdigest(),
                                   cfg=ck['cfg'], K=K, R=R),
                   config=dict(N=N, Q_LADDER=Q_LADDER, PODK=PODK, MATCHED_POD=MATCHED_POD, FOM_NTOLS=FOM_NTOLS,
-                              REPS=REPS, BURN=BURN, CASES=CASES, RES_SNAPSHOTS=RES_SNAPSHOTS,
+                              REPS=REPS, BURN=BURN, CASES=CASES, RES_SNAPSHOTS=RES_SNAPSHOTS, M_FIXED=M_FIXED,
                               RES_STARTS=RES_STARTS, RES_BUDGET=RES_BUDGET, RES_SEED=RES_SEED,
                               IC_BUDGET=IC_BUDGET, STEP_BUDGET=STEP_BUDGET, GTOL=GTOL, DT=DT, T=T,
                               OUT_EVERY=OUT_EVERY, NOUT=NOUT, EVAL_IDX=EVAL_IDX, N_TRAIN=N_TRAIN,
@@ -285,9 +286,10 @@ def main():
     jax.clear_caches()
 
     # ---- test modes and tensors (largest M once; rows nested)
-    M_neural = 4 * (K + max(Q_LADDER))
+    M_neural = M_FIXED or 4 * (K + max(Q_LADDER))
     pod_ks = sorted(set(PODK + ([K + q for q in Q_LADDER if q > 0] if MATCHED_POD else [])))
-    M_pod = 4 * max(pod_ks)
+    M_pod = M_FIXED or 4 * max(pod_ks)
+    assert M_neural >= K + max(Q_LADDER) and M_pod >= max(pod_ks), 'test space must not be underdetermined'
     Phi_n, lam_n, ids_n = RM.fourier_modes(N, M_neural)
     Phi_p, lam_p, ids_p = RM.fourier_modes(N, M_pod)
     t0 = time.perf_counter()
@@ -337,21 +339,26 @@ def main():
     Hn_n = jnp.sum(Hrot_n * Hrot_n, 1)
     A_p = jnp.asarray(Phi_p).T @ Vpod
     Qp = RM.symmetrize(T_p)
+    # with M_FIXED every rung shares ONE device copy of the (M, R, R) tensor (a per-rung
+    # jnp.asarray of the same slice would hold Q_LADDER copies of ~4.6 GB at R = 512)
+    A_n_dev, Qn_dev, lam_n_dev = jnp.asarray(A_n), jnp.asarray(Qn), jnp.asarray(lam_n)
     for q in Q_LADDER:
-        M = 4 * (K + q)
+        M = M_FIXED or 4 * (K + q)
         name = f'neural_q{q}'
         Cq = Cdir[:, :q]
 
         def head_q(w, Cq=Cq, K=K):
             return D.head(params, w[:K]) + Cq @ w[K:]
 
-        ops = dict(B=G, Qb=Qb, Rb=Rb, A=jnp.asarray(A_n[:M]), Q=jnp.asarray(Qn[:M]), lam=jnp.asarray(lam_n[:M]),
+        full = M == Qn_dev.shape[0]
+        ops = dict(B=G, Qb=Qb, Rb=Rb, A=A_n_dev if full else A_n_dev[:M], Q=Qn_dev if full else Qn_dev[:M],
+                   lam=lam_n_dev if full else lam_n_dev[:M],
                    Zcand=jnp.asarray(Zcand), Hrot=Hrot_n, Hn=Hn_n, Cq=Cq)
         subjects.append(dict(name=name, arm='neural', q=q, K=K, D=R, M=M, unknowns=K + q,
                              query=RM.make_query(head_q, K, q, None, DT, NSTEPS, OUT_EVERY, IC_BUDGET,
                                                  STEP_BUDGET, GTOL), ops=ops))
     for k in pod_ks:
-        M = 4 * k
+        M = M_FIXED or 4 * k
         V = Vpod[:, :k]
         ops = dict(B=V, Qb=V, Rb=jnp.eye(k, dtype=jnp.float64), A=A_p[:M, :k], Q=jnp.asarray(Qp[:M, :k, :k]),
                    lam=jnp.asarray(lam_p[:M]), Zcand=jnp.zeros((1, k)), Hrot=jnp.zeros((1, k)),
@@ -365,7 +372,7 @@ def main():
     # ---- FOM ladder FIRST: the same-job full-order controls are the campaign's scarcest
     # number, so they are produced before the ROM arms can exhaust the wall clock.
     w0s = [jnp.asarray(Uref[c, 0].reshape(N, N)) for c in range(len(phys_dev))]
-    nus = [float(p[12]) for p in phys_dev]
+    nus = [float(p[-1]) for p in phys_dev]
     for ntol in FOM_NTOLS + [NTOL]:
         ltol = 0.1 * ntol if ntol > NTOL else LTOL
         run, _ = F.make_fom(N, DT, NSTEPS, OUT_EVERY)

@@ -50,6 +50,11 @@ ORACLE_CASES = int(E('ORACLE_CASES', '64'))
 ORACLE_TIMES = [int(v) for v in E('ORACLE_TIMES', '0,5,10,15,20,25').split(',')]
 ORACLE_STARTS, ORACLE_BUDGET = int(E('ORACLE_STARTS', '8')), int(E('ORACLE_BUDGET', '300'))
 PODK_LIST = [int(v) for v in E('PODK', f'{K},{R}').split(',')]
+NMODES = int(E('NMODES', '6'))                       # DESIGN §A9: 3 = the low-dimensional family
+TRAIN_EXTRA = int(E('TRAIN_EXTRA', '0'))            # DESIGN §A9: extra training trajectories
+SEED_TRAIN_EXTRA = int(E('SEED_TRAIN_EXTRA', '20260920'))
+POD_BIG = int(E('POD_BIG', '20000'))                # snapshots above which the POD Gram is blocked
+RECORD_HASHES = int(E('RECORD_HASHES', '0'))       # DESIGN §A9 (ns303): a NEW family has no Phase-1 hash; record, do not fail
 SMOKE = int(E('SMOKE', '0'))
 OUT = Path(E('OUT', 'output'))
 NSTEPS = int(round(T / DT))
@@ -111,7 +116,7 @@ def data_gate(report, expect, cohort, N, U, info, ref, dev_ok=None, prefix='B-DA
     want, got = expect.get(f'{cohort}_N{N}'), info['sha256']
     kw = dict(expected=want, got=got, seconds=info['seconds'], mode='hash')
     if want is None:
-        ok, kw['mode'] = bool(SMOKE), 'smoke-no-expectation'
+        ok, kw['mode'] = (True, 'recorded-new-family') if RECORD_HASHES else (bool(SMOKE), 'smoke-no-expectation')
     elif want == got:
         ok = True
     else:
@@ -146,7 +151,7 @@ def generate(N, phys_all):
     worst, mit = 0.0, 0
     t0 = time.time()
     for i, p in enumerate(phys_all):
-        st, it, rn = host(run(jnp.asarray(F.initial(N, p)), float(p[12]), NTOL, LTOL))
+        st, it, rn = host(run(jnp.asarray(F.initial(N, p)), float(p[-1]), NTOL, LTOL))
         assert np.isfinite(st).all()
         U[i] = st.reshape(NOUT, -1)
         worst, mit = max(worst, float(rn.max())), max(mit, int(it.max()))
@@ -156,8 +161,41 @@ def generate(N, phys_all):
                    newton_max_it=mit, seconds=time.time() - t0, sha256=sha(U))
 
 
+def pod_snapshots_big(U, kmax, block=4096):
+    """Method of snapshots for S x n arrays too large to hold three times on the device
+    (DESIGN §A9, ns302: S = 53 248 at n = 65 536).  The Gram is accumulated block-wise on
+    the GPU into host memory, the top-kmax eigenpairs are computed on the CPU, and the
+    modes are assembled block-wise; one reorthogonalisation on the GPU as in pod_snapshots.
+    Same quantity as pod_snapshots (exact method of snapshots), different blocking."""
+    import scipy.linalg
+    S = U.shape[0]
+    Gm = np.empty((S, S))
+    blocks = [jnp.asarray(U[s:s + block]) for s in range(0, S, block)]
+    for i, s in enumerate(range(0, S, block)):
+        for j, t in enumerate(range(0, S, block)):
+            if j < i:
+                continue
+            g = np.asarray(blocks[i] @ blocks[j].T)
+            Gm[s:s + block, t:t + block] = g
+            Gm[t:t + block, s:s + block] = g.T
+    del blocks
+    w, V = scipy.linalg.eigh(Gm, subset_by_index=[S - kmax, S - 1])
+    idx = np.argsort(w)[::-1]
+    w, V = w[idx], V[:, idx]
+    s_all = np.sqrt(np.maximum(w, 0.0))
+    Vd = jnp.asarray(V)
+    acc = jnp.zeros((U.shape[1], kmax))
+    for s in range(0, S, block):
+        acc = acc + jnp.asarray(U[s:s + block]).T @ Vd[s:s + block]
+    Vk = acc / jnp.asarray(s_all)[None, :]
+    Vk, _ = jnp.linalg.qr(Vk)
+    return Vk, s_all
+
+
 def pod_snapshots(U, kmax):
     """Method of snapshots on the GPU: U (S, n) -> V (n, kmax) orthonormal, singular values."""
+    if U.shape[0] > POD_BIG:
+        return pod_snapshots_big(U, kmax)
     Ud = jnp.asarray(U)
     Gm = Ud @ Ud.T                                        # (S, S)
     w, V = jnp.linalg.eigh(Gm)
@@ -210,7 +248,8 @@ def main():
                               OUT_EVERY=OUT_EVERY, N_TRAIN=N_TRAIN, N_DEV=N_DEV, SEEDS=SEEDS,
                               NTOL=NTOL, LTOL=LTOL, ORACLE_CASES=ORACLE_CASES,
                               ORACLE_TIMES=ORACLE_TIMES, ORACLE_STARTS=ORACLE_STARTS,
-                              ORACLE_BUDGET=ORACLE_BUDGET, PODK=PODK_LIST),
+                              ORACLE_BUDGET=ORACLE_BUDGET, PODK=PODK_LIST, NMODES=NMODES,
+                              TRAIN_EXTRA=TRAIN_EXTRA, SEED_TRAIN_EXTRA=SEED_TRAIN_EXTRA),
                   gates={}, data={}, training={}, floors={}, oracle={}, complete=False)
     dump(report)
     gate(report, 'S0', (backend == 'gpu' and jax.config.jax_enable_x64
@@ -224,7 +263,9 @@ def main():
     assert ARCH['g_hidden'] >= R, 'B-RANKCAP: bank rank <= g_hidden < R (DESIGN §A4); refusing to train'
     expect = json.loads(Path(EXPECT).read_text()) if EXPECT and Path(EXPECT).exists() else {}
     ref = load_ref()
-    phys = dict(train=F.params_draw(SEEDS['train'], N_TRAIN), dev=F.params_draw(SEEDS['dev'], N_DEV))
+    phys = dict(train=F.params_draw(SEEDS['train'], N_TRAIN, NMODES), dev=F.params_draw(SEEDS['dev'], N_DEV, NMODES))
+    if TRAIN_EXTRA:
+        phys['train_extra'] = F.params_draw(SEED_TRAIN_EXTRA, TRAIN_EXTRA, NMODES)
 
     # ---- data at the training mesh (dev FIRST: its value gate certifies this node's roundoff)
     Udev, idev = generate(TRAIN_N, phys['dev'])
@@ -235,10 +276,24 @@ def main():
     data_gate(report, expect, 'train', TRAIN_N, Utr, itr, ref, dev_ok=dev_ok)
     dump(report)
     log(f'DATA train {Utr.shape} dev {Udev.shape} in {itr["seconds"]+idev["seconds"]:.0f}s')
+    if TRAIN_EXTRA:
+        # DESIGN §A9 (ns302): extra trajectories from their OWN seed, appended after the
+        # gated base cohort, so the base cohort's hash gate is unchanged and the extra
+        # cohort's hash is recorded (no prior expectation exists for it).
+        Uex, iex = generate(TRAIN_N, phys['train_extra'])
+        iex['seed'] = SEED_TRAIN_EXTRA
+        report['data'][f'train_extra_N{TRAIN_N}'] = iex
+        gate(report, f'B-DATA_train_extra_N{TRAIN_N}', np.isfinite(Uex).all() and iex['worst_rel_residual'] <= NTOL * 10,
+             mode='recorded', got=iex['sha256'], seconds=iex['seconds'], trajectories=TRAIN_EXTRA)
+        Utr = np.concatenate([Utr, Uex], axis=0)
+        del Uex
+        dump(report)
+        log(f'DATA train+extra {Utr.shape}')
 
     # ---- train
-    S = N_TRAIN * NOUT
+    S = Utr.shape[0] * NOUT
     Uflat = Utr.reshape(S, -1)
+    n_traj_total = Utr.shape[0]
     params, Z, tinfo = D.train_autodecoder(jax.random.PRNGKey(SEED), TRAIN_N, Uflat, K, R,
                                            steps=STEPS, lr=LR, lam_orth=LAM_ORTH, batch=BATCH,
                                            tag=f'K{K}R{R}', **ARCH)
@@ -282,7 +337,7 @@ def main():
         if N == TRAIN_N:
             fl['pod'] = floors_on_dev(Vpod, Ud, PODK_LIST)
         else:
-            Vn, _ = pod_snapshots(generate(N, phys['train'])[0].reshape(S, -1), max(PODK_LIST))
+            Vn, _ = pod_snapshots(generate(N, np.concatenate([phys['train'], phys.get('train_extra', phys['train'][:0])]))[0].reshape(S, -1), max(PODK_LIST))
             fl['pod'] = floors_on_dev(Vn, Ud, PODK_LIST)
         report['floors'][str(N)] = fl
         bank_w, podR_w = fl['bank'][str(R)]['worst_evolved_fixed'], fl['pod'][str(R)]['worst_evolved_fixed']
@@ -336,6 +391,7 @@ def main():
              and oi['oracle_median'] >= oi['bank_floor_median'] * (1 - 1e-9),
              oracle_median=oi['oracle_median'], podK_median=oi['podK_median'],
              ratio_podK_over_oracle=oi['podK_median'] / oi['oracle_median'],
+             passes_at_1p5=bool(oi['oracle_median'] <= oi['podK_median'] / 1.5),   # DESIGN §A9: slope marker, not the bar
              bank_floor_median=oi['bank_floor_median'], oracle_worst=oi['oracle_worst'])
         gate(report, f'H-SOLVED_N{N}', oi['single_start_median'] <= 1.5 * oi['oracle_median'],
              single_start_median=oi['single_start_median'], oracle_median=oi['oracle_median'])

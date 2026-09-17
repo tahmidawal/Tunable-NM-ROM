@@ -21,6 +21,7 @@ FILES = [
     'experiments/ns2d/ns2d_phase1.py',
     'experiments/ns2d/ns2d_decoder.py',
     'experiments/ns2d/ns2d_phase2.py',
+    'experiments/ns2d/ns2d_headfit.py',
     'experiments/ns2d/cluster/stage.py',
     'experiments/separable-decoder/sep_common.py',
 ]
@@ -32,7 +33,7 @@ OPTIONAL = [
     'experiments/ns2d/checkpoints/ckpt_K16_R256.pkl',
     'experiments/ns2d/checkpoints/ckpt_K32_R512.pkl',
 ]
-DRIVERS = ('ns2d_phase1.py', 'ns2d_phase2.py', 'ns2d_phase3.py')
+DRIVERS = ('ns2d_phase1.py', 'ns2d_phase2.py', 'ns2d_phase3.py', 'ns2d_headfit.py')
 EXCLUDE = 'pax007'
 
 

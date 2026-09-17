@@ -453,3 +453,73 @@ best fit. The medians over 384 states and both verdicts stand (ratio 1.19 / 1.15
 placing every budget-exit state at the bank floor would move the median by at most 18 ranks).
 The report table now carries the count per mesh (`oracle.budget_exits_of_states` in
 `summary.json`). Recorded as a correction, not silently edited.
+
+## §A9 (2026-09-17 ~19:30 EDT, user decision "keep pushing", cap raised 8 → 12) — a NEW Phase-2 cell: diagnose the generalisation failure and test its two candidate causes; one exploratory ladder on the best manifold
+
+**Status of what came before.** The §A4/§A6/§A7 negative stands as recorded: the pre-registered
+heads $(16,256)$ and $(32,512)$, trained by the Burgers auto-decoder recipe on 512 trajectories of
+the 12-amplitude family, do not beat POD-$K$ by 2× on held-out states, and Phase 3 was not run
+for them. Nothing below re-scores, re-gates or rescues `ns203`/`ns204`. This is a new cell with
+its own question, pre-registered before any of its jobs is submitted.
+
+**The diagnosis so far (§A6/§A7, generated numbers).** The held-out/training gap is 3–4×; the
+head beats POD-16 at $t=0$ (1.63×) but not on evolved states (1.19×); the bank floor is 10–30×
+below the oracle. Two candidate causes, not exclusive: (D) **data** — 512 trajectories do not
+cover the 14-dimensional (12 amplitudes, $\nu$, $t$) input; (H) **head** — the MLP head (this
+function class / this recipe) cannot interpolate the manifold even when the data does cover it.
+
+### Arms (four jobs, submitted in parallel, one attempt directory each)
+
+| attempt | driver | what | question |
+|---|---|---|---|
+| `ns301` | `ns2d_headfit.py` | head-only on the **frozen `ns203` bank** ($K=16$, $R=256$): nested subsets of the gated 512-trajectory cohort, $n\in\{128,256,512\}$ (the first $n$), × regimes {`plain`: the ns203 head 512×3, Adam, warmup-cosine, 100k steps, last iterate; `reg`: same head, AdamW weight decay $10^{-4}$ on the head weights, dev-select early stopping every 5000 steps; `reg_small`: 128×2 head, otherwise `reg`}; 9 arms in one job | does the held-out oracle improve with trajectory count, at what log-log slope, and does regularisation move it |
+| `ns302` | `ns2d_phase2.py` | **4× data**: 512 base trajectories (seed 20260917, gated by hash) + 1536 from seed 20260920 (hash recorded), same family, $K=16$, $R=256$, `G_HIDDEN=512`, head 512×3, 100k steps; per-step batch 13 312 rows (= ns203's full batch) because 53 248 snapshots × 65 536 points do not fit three times on an 80 GB device | H-ORACLE vs POD-16 of the same 2048 trajectories, bar 2.0; the ratio at 1.5 recorded (`passes_at_1p5`) so the slope is visible |
+| `ns303` | `ns2d_phase2.py` | **lower-dimensional family**: 3 modes $\{(1,0),(0,1),(1,1)\}$, 6 amplitudes, same $\nu$ range, 512 trajectories, otherwise the ns203 recipe | does the head pass H-ORACLE when the input is 8-dimensional (6 amplitudes, $\nu$, $t$) |
+| `ns304` | `ns2d_phase3.py` | **exploratory ladder on the `ns204` manifold** ($K=32$, $R=512$, the best trained): $q\in\{0,32,64,128,256,512\}$ at one fixed test space $M=2176=4(K+q_{\max})$ for every subject; POD-LSPG at $k'\in\{32,512\}$ and at every matched $K+q$; the FOM tolerance ladder timed in the same job; three timed reps; three-layer decomposition | does the correction rank close the gap between the $q=0$ manifold (oracle 0.12) and the bank floor (0.012) — the paper's mechanism — independently of whether $q=0$ beats POD-32 |
+
+### Pre-registered readings (stated before the jobs run)
+
+- **ns301.** For each regime the dev-report oracle median at $n=128,256,512$ and the least-squares
+  log-log slope. Reading rule: slope $\le-0.25$ under any regime (2× data → ≥19 % better) =
+  "needs data" (supports D); slope $\ge-0.10$ under every regime = "head-limited" (supports H);
+  between = ambiguous. Regularisation "moves it" if the `reg` or `reg_small` dev-report median at
+  $n=512$ is ≥10 % below `plain`'s. Selection uses dev cases 32–63 only; every reported number is
+  on dev cases 0–31; the oracle on 64 training trajectories is recorded beside it (the gap per
+  arm). Caveat, stated now: the frozen bank was trained on all 512 trajectories, so the subset
+  arms measure the head's data dependence with a bank that has seen everything; that biases the
+  small-$n$ arms *optimistically*, so a flat slope is the stronger reading.
+- **ns302 / ns303.** The Phase-2 gates of §A4 unchanged (B-RANKCAP, B-DATA, B-ORTH, B-FLOOR,
+  H-TRAIN, H-SOLVED, H-ORACLE at the 2.0 bar), at the training mesh only (`EVAL_NS=256`: the
+  three meshes were flat to three digits in every previous run). ns303's cohorts are a new
+  family: their hashes are recorded (`mode=recorded-new-family`), not compared with Phase 1;
+  ns302's base cohort keeps the Phase-1 hash gate and the extra cohort's hash is recorded.
+  **Whichever of ns302/ns303 passes H-ORACLE gets the reserved Phase-3 job** with the §A3 driver
+  at the pre-registered rungs. If both fail, the cell's finding is that neither 4× data nor an
+  8-dimensional input rescues this head, and ns301's slope says which of D/H to believe.
+- **ns304** is labelled *exploratory after a failed gate*. Its `R-LADDER` verdict is reported but
+  is not a Phase-3 result of the paper's pre-registration (that requires a head that passed
+  H-ORACLE). What it can establish: monotonicity of worst-evolved error in $q$, the same-job cost
+  per rung, the non-dominated set against POD-LSPG at matched dimension, and whether the top rung
+  ($q=R$, the full bank span) reaches the bank floor.
+
+### Mechanics fixed by this amendment
+
+- `ns2d_fom.params_draw(seed, count, nmodes=6)` and `initial` are mode-count aware; the default
+  is byte-identical to Phase 1 (the smoke reproduces the frozen family's draw path).
+- `ns2d_phase2.py`: `NMODES`, `TRAIN_EXTRA`/`SEED_TRAIN_EXTRA` (appended after the gated base
+  cohort), `RECORD_HASHES` (new-family cohorts pass by recording), `POD_BIG` (a blocked method
+  of snapshots for $S>20\,000$, verified against the GPU path to $7\times10^{-15}$ on the projector),
+  `passes_at_1p5` recorded in H-ORACLE.
+- `ns2d_phase3.py`: `M_FIXED` (one test space for every subject; one device copy of the tensor
+  shared by all rungs).
+- `ns2d_headfit.py`: new driver (documented in its header); trains in the whitened coefficient
+  space, which is exactly the field-space loss up to the fixed bank-perpendicular term, and
+  reports every error in field space (§A4).
+- Checkpoints `checkpoints/ckpt_K16_R256.pkl` (ns203, sha `a8aebfc2…`) and
+  `checkpoints/ckpt_K32_R512.pkl` (ns204, sha `1d03ee4e…`) are committed for staging.
+- Local smokes (2026-09-17 19:2x EDT, 32², K=4, R=16): phase-2 with `NMODES=3`, `TRAIN_EXTRA=4`,
+  `POD_BIG=100`, `RECORD_HASHES=1` — all mechanics gates pass; head-fit smoke — 6 arms, summary
+  and slopes produced; phase-3 smoke with `M_FIXED=32` — R-TB 0, R-TFFT 6.7e-16, R-TQ 1.0e-15,
+  R-LIN 1.2e-15; weight decay verified to act on the head weights only.
+- Wall-time allocations: ns301 5 h, ns302 12 h, ns303 8 h, ns304 24 h (A100, 180 GB). Jobs
+  6–9 of 12. One reserved for Phase 3 on a passing head; two spare.

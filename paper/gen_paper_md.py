@@ -155,6 +155,11 @@ def main():
     main_tex = read_tex('main.tex')
     body = main_tex[main_tex.index(r'\begin{document}') + len(r'\begin{document}'):main_tex.index(r'\end{document}')]
     body = resolve_inputs(body)
+    # the inline bibliography (bib-inline.tex, carried over from the previous submission) is
+    # not rendered: PAPER.md keeps a pointer, main.pdf carries the references
+    body = re.sub(r'\\begin\{thebibliography\}.*?\\end\{thebibliography\}',
+                  r'\\section*{References}\n\nSee \\texttt{bib-inline.tex} and \\texttt{main.pdf}; citations in the text are author--year keys from that file.\n',
+                  body, flags=re.S)
     title = re.search(r'\\title\{(.*?)\}', main_tex).group(1)
 
     # ---- pass 1: numbering of sections, tables, figures, equations

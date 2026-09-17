@@ -6,6 +6,5 @@
 | b-panel | `bpn401` | `3805065` | $512^2$ panel, same GPU model as $256^2$, brackets the frontier crossover (pre-registered in the lane design before submission) |
 | b-seeds | `sealed` | `3804465` | sealed-cohort evaluation of the three seeds (Table \ref{tab:sealed}) |
 | lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
-| ns2d | `ns204` | `3787320` | Navier–Stokes $K=32$ head on the full-rank bank (phase-2 gate only) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |

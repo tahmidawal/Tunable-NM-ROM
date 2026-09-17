@@ -1,5 +1,27 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-17 late — REBUILT FROM THE OLD SOURCE (current state; everything below is history)
+
+User direction: keep the wording, style and title of the previous paper; update with the current
+architecture and the new results. `main.tex` is now the old NeurIPS `main.tex`
+(`old-neurips-main.tex`, archived in this tree) with the ICLR 2027 kit, the user-approved
+two-word title change (see `ABSTRACT-2026-09-17.md`), the same section order and voice, and only
+the overturned sentences rewritten. Details, derivations and every full table live in the
+appendices (`sections/appendix.tex`, `sections/method-details.tex`); the inline bibliography is
+`bib-inline.tex` (the old 74 entries plus 13 new ones). `main.tex` is canonical; `PAPER.md` is
+regenerated from it by `gen_paper_md.py` and no longer carries the bibliography.
+
+Status for the reader is a comment block at the top of `main.tex` (removed before submission):
+pending T13 / seeds-sealed (job 3804465) only (ns2d closed at 50bf36da: K=32 fails the same bar); in flight lvt01
+(3804337) and bpn401 (3805065); Figure 2 sits in Appendix B for the page budget; provisional T12 until T13, the 1024² frontier statement until
+bpn401, the two top EQ rungs single-draw; open user decisions: headline Burgers metric (decisive
+at 1024²), and the abstract keeps the old opening two sentences.
+
+Coordinator notes carried over: the L-shape is Poisson (linear residual) and is written as the
+no-fast-transform case; the committed seeds summary shows the incumbent better than every seed at
+q=16–128 on the evolved metric, so "incumbent inside the seed spread" was not written; the bpn301
+recheck lists 48 arms (message said 47).
+
 ## 2026-09-17 evening — reader-ready pass (this is the current state; sections below are history)
 
 Lanes read in this build, all from **committed** lane state (`GIT_PINS` in `gen_tables.py` pins

@@ -93,7 +93,6 @@ IN_FLIGHT = [
     ('b-panel', 'bpn401', '3805065', '$512^2$ panel, same GPU model as $256^2$, brackets the frontier crossover (pre-registered in the lane design before submission)'),
     ('b-seeds', 'sealed', '3804465', 'sealed-cohort evaluation of the three seeds (Table~\\ref{tab:sealed})'),
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
-    ('ns2d', 'ns204', '3787320', 'Navier--Stokes $K=32$ head on the full-rank bank (phase-2 gate only)'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
 ]
@@ -122,6 +121,8 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     # b-panel closed at 13ddecac (bpn301 = 256^2 with both rule sets, bpn203 = 1024^2)
     'panel_summary': ('2026-09-17-b-panel', '13ddecac'),
     'panel_report': ('2026-09-17-b-panel', '13ddecac'),
+    # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
+    'ns2d_summary': ('2026-09-17-ns2d', '50bf36da'),
 }
 
 
@@ -136,7 +137,8 @@ def load(key: str):
             PROV[key] = {'path': f'{lane}:{rel}', 'reachable': True, 'pinned_commit': rev,
                          'sha256': hashlib.sha256(out.stdout.encode()).hexdigest(),
                          'note': 'read from the lane commit, not the working tree'}
-            macro('prov' + ''.join(w.capitalize() for w in key.split('_')) + 'Pin', rev)
+            _digits = {'0': 'Zero', '1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine'}
+            macro('prov' + ''.join(_digits.get(c, c) for c in ''.join(w.capitalize() for w in key.split('_'))) + 'Pin', rev)
             return json.loads(out.stdout) if rel.endswith('.json') else out.stdout
     path = (ROOT / SOURCES[key]).resolve()
     if not path.exists():
@@ -1620,11 +1622,42 @@ def build_pending():
             rk, rok = v('bank_R256', f'B-ORTH_N{mesh}', mesh, 'rank')
             gt.append([f'${mesh}^2$', str(int(rk)) if rk is not None else '---', yn(rok), pct(100 * b), pct(100 * pp), yn(bok),
                        pct(100 * o), pct(100 * p), f"{p / o:.2f}", yn(ok)])
-        write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-256 worst \\%', 'B-FLOOR',
-                                      'oracle median \\%', 'POD-16 median \\%', 'POD-16 / oracle', 'H-ORACLE ($\\ge$2.0)'],
-                                     gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, job {NS_JOB} (K=16, R=256, full-rank bank); every gate passes except H-ORACLE')
+        # ns204: K=32 on the R=512 full-rank bank (job 3787320), same gates
+        NS2 = '3787320'
+        P3 = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS2:
+                P3[(r['subject'], r['gate'], r['mesh'])][r['metric']] = (r['value'], r['passed'])
+        def v2(sub, gate, mesh, metric):
+            return P3.get((sub, gate, mesh), {}).get(metric, (None, None))
+        if P3:
+            gt.append('MIDRULE')
+            for mesh in (64, 128, 256):
+                o, ok = v2('head_K32_R512', f'H-ORACLE_N{mesh}', mesh, 'oracle.oracle_median'); p, _ = v2('head_K32_R512', f'H-ORACLE_N{mesh}', mesh, 'oracle.podK_median')
+                b, bok = v2('bank_512', f'B-FLOOR_N{mesh}', mesh, 'floor.worst_evolved_fixed'); pp, _ = v2('pod_512', f'B-FLOOR_N{mesh}', mesh, 'floor.worst_evolved_fixed')
+                rk, rok = v2('bank_R512', f'B-ORTH_N{mesh}', mesh, 'rank')
+                gt.append([f'${mesh}^2$ ($K{{=}}32$)', str(int(rk)) if rk is not None else '---', yn(rok), pct(100 * b) if b is not None else '---', pct(100 * pp) if pp is not None else '---', yn(bok),
+                           pct(100 * o), pct(100 * p), f"{p / o:.2f}", yn(ok)])
+            o2, ok2 = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle.oracle_median'); p2, _ = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle.podK_median')
+            macro('nNsKthirtyTwoOracleMedian', pct(100 * o2)); macro('nNsKthirtyTwoPodMedian', pct(100 * p2)); macro('nNsKthirtyTwoOracleRatio', f"{p2 / o2:.2f}")
+            macro('nNsKthirtyTwoOraclePass', yn(ok2))
+            ratios = [v2('head_K32_R512', f'H-ORACLE_N{m}', m, 'oracle.podK_median')[0] / v2('head_K32_R512', f'H-ORACLE_N{m}', m, 'oracle.oracle_median')[0] for m in (64, 128, 256)]
+            macro('nNsKthirtyTwoOracleRatioMin', f"{min(ratios):.2f}"); macro('nNsKthirtyTwoOracleRatioMax', f"{max(ratios):.2f}")
+            t02, _ = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.t0'); ev2, _ = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.evolved')
+            if t02 is not None: macro('nNsKthirtyTwoPodOverOracleTzero', f"{t02:.2f}")
+            if ev2 is not None: macro('nNsKthirtyTwoPodOverOracleEvolved', f"{ev2:.2f}")
+            gap2, _ = v2('head_K32_R512', 'H-ORACLE', 256, 'heldout_oracle_over_training_recon_median')
+            if gap2 is not None: macro('nNsKthirtyTwoHeldoutOverTrain', f"{gap2:.1f}")
+            bx1, _ = v('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states'); bx2, _ = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states')
+            macro('nNsBudgetExitsKsixteen', str(int(bx1)) if bx1 is not None else '---'); macro('nNsBudgetExitsKthirtyTwo', str(int(bx2)) if bx2 is not None else '---')
+            macro('provNsJobs', f'{NS_JOB} ($K{{=}}16$, $R{{=}}256$), {NS2} ($K{{=}}32$, $R{{=}}512$)')
+        write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-$R$ worst \\%', 'B-FLOOR',
+                                      'oracle median \\%', 'POD-$K$ median \\%', 'POD-$K$ / oracle', 'H-ORACLE ($\\ge$2.0)'],
+                                     gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, jobs {NS_JOB} (K=16, R=256) and {NS2} (K=32, R=512), full-rank banks; every gate passes except H-ORACLE; oracle values are upper bounds (some held-out fits hit the LM budget)')
         macro('nNsRom', 'not run: the pre-registered gate to it failed (\\S\\ref{sec:exp:linear})')
-    macro('nNsKthirtyTwo', gen('ns2d ns204 (job 3787320), K=32 with the full-rank bank', 'NS K=32 arm'))
+        macro('nNsKthirtyTwo', 'landed (job ' + NS2 + '): fails the same bar (Table~\\ref{tab:ns})')
+    if 'nNsKthirtyTwo' not in MACROS:
+        macro('nNsKthirtyTwo', gen('ns2d ns204 (job 3787320), K=32 with the full-rank bank', 'NS K=32 arm'))
 
 
 # =========================================================================== T1 / T2

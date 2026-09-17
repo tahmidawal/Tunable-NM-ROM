@@ -132,7 +132,16 @@ when, and only when, its residual norm is smaller.
 \subsection{Empirical quadrature: the fit and the counts}
 \label{app:method:eq}
 
-A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
+A fitted rule with support $\mathcal S$ and weights $w$ is scored by the
+held-out relative error of the projected advection term,
+\begin{equation}
+  \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
+  \qquad
+  \rho_{\max}\le\nEqtopBar\ \text{(primary bar)},\quad \rho_{\max}\le\nEqtopTightBar\ \text{(tight)},
+  \label{eq:rho}
+\end{equation}
+over the held-out reachable states described below; the primary bar is
+\nEqtopBarOrigin. A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
 $n_{\text{fit}}$ stored codes $c^{(\ell)}$ we evaluate the decoded state, form
 the per-node contributions $N_i(\bank c^{(\ell)})$ and the exact full-grid
 target $\tests N(\bank c^{(\ell)})$, and solve

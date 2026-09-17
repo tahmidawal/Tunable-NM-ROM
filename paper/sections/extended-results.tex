@@ -1,0 +1,107 @@
+% sections/extended-results.tex -- detail moved out of the main text for the page budget.
+\section{Extended results}
+\label{app:extended}
+
+\subsection{Neural operators: controls and the resolution knob}
+\label{app:extended:operators}
+Both pre-registered controls were run on the selected U-Net
+(Table~\ref{tab:op-controls}): its float64 twin lands at
+$\nOpCtrlMediumFSixtyFour\,\%$ and its second-seed twin at
+$\nOpCtrlMediumSeedTwo\,\%$, both below the ROM, so that comparison is not
+a seed or precision artefact --- though the float64 margin is
+$\nOpCtrlMediumFSixtyFourMargin$\,pp and, at equal wall clock, the float64
+twins ran
+$\nOpCtrlMediumFSixtyFourEpochRatio$--$\nOpCtrlTsolSmallFSixtyFourEpochRatio\times$
+of their parents' epochs, so precision is confounded with an epoch effect.
+The Transolver arm below the ROM has no twin and remains a single-seed
+float32 result. Every operator number is a lower bound
+(\nOpLaneImproving{} of this lane's arms and \nOpFnoImproving{} FNO arms
+were still improving at their budget). The operators' own knob,
+evaluation resolution, was tested under a pre-registered rule
+(Table~\ref{tab:resolution}; speedups are within one model's own curve in
+one job and carry no comparison to the ROM or the solver):
+\nResUsableList{} is usable --- one step, $256\to128$, buys the whole gain
+($\nResFnoSpeedup\times$ its own speed at $\nResFnoErrRatio\times$ its own
+error), below which the query is launch-bound
+($\nResFnoMsOneTwentyEight$, $\nResFnoMsSixtyFour$,
+$\nResFnoMsThirtyTwo$\,ms) while the error rises to
+$\nResFnoErrRatioSixtyFour\times$ and $\nResFnoErrRatioThirtyTwo\times$
+--- while \nResDegenerateList{} are not (the U-Net breaks at once, the
+Transolver is cost-flat). At rung 128 no family is within
+$\nResMinFloorRatioOneTwentyEight\times$ of the interpolation floor, so the
+off-resolution error is the network's, not the grid's.
+
+\subsection{Quadrature: the fit-state count and the replication}
+\label{app:extended:eq}
+Scored by \eqref{eq:rho} on reachable states, the top-rung blocker is the
+number of fit states, not the node count: 14- and 8-state rules at $q=128$
+and $256$ fail at $m=2048$ ($\rho_{\max}=\nEqtopParentOneTwentyEightRho$,
+$\nEqtopParentTwoFiftySixRho$) where 64-state rules pass in that draw
+($\nEqtopPrimaryOneTwentyEightRho$, $\nEqtopPrimaryTwoFiftySixRho$;
+Table~\ref{tab:eqcert}). Rebuilt with the cheapest rule passing the
+primary bar per rung and timed in one allocation, the EQ ladder runs
+$\nEqtopLadderFirstErr\to\nEqtopLadderLastErr\,\%$ at
+$\nEqtopLadderFirstMs\to\nEqtopLadderLastMs$\,ms
+(Table~\ref{tab:eqladder}; offline cost in Table~\ref{tab:offline}). In
+the replication (pool and fit-state subset, four draws at fixed $q$, $m$,
+fit-state count; Table~\ref{tab:replication}) the rules are confirmed at
+$q=\nEqtopConfirmedRungs$ and marginal at $q=\nEqtopMarginalRungs$ (draws
+passing / draws); at $q=256$ the rule the ladder ran is the only one of
+$\nEqtopTopDraws$ draws of its recipe to meet the bar (re-draws
+$\nEqtopTopRedrawRange$). ``Every rung carries a certified rule'' is
+withdrawn as a statement about the construction, and four earlier
+readings are withdrawn by the same data.
+
+\subsection{The head at matched dimension: metric dependence and the three layers}
+\label{app:extended:head}
+On Burgers, on the all-times metric no POD rank up to $k'=128$ matches the
+head ($\nAblBurgersPodOneTwentyEight\,\%$), while on evolved times POD-128
+reaches $\nPanelPodOneTwentyEightErr\,\%$ against the $q=0$ rung's
+$\nPanelQzeroEvolved\,\%$. In three layers (Table~\ref{tab:layers}): floor
+$\nAblBurgersFloor\,\%$, best-found $\nAblBurgersBestFound\,\%$, solved
+$\nAblBurgersNeural\,\%$. On Poisson a wider head moves the
+best-found/floor ratio only from $\nPlinHeadRatioPrimary$ to
+$\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
+
+\subsection{The linear cells in full}
+\label{app:extended:linear}
+Poisson at $1024^2$ ($R=512$, $K=32$; Table~\ref{tab:linear}): the middle
+rungs cost a flat
+$\nPlinTenTwentyFourMidMsMin$--$\nPlinTenTwentyFourMidMsMax$\,ms; the
+pre-registered degenerate-curve criterion passes (at $256^2$ only its
+literal cost-span clause fails, because the top rung is
+$\nPlinTwoFiftySixTopOverMidCost\times$ cheaper than the middle rungs);
+solver effort buys nothing at $q=0$ (floor $\nPlinTenTwentyFourFloor$,
+best-found $\nPlinTenTwentyFourBestFoundQzero$, solved
+$\nPlinTenTwentyFourQzeroErr\,\%$ at $M=129$). Heat at $1024^2$ (an
+earlier cell of the same family, Table~\ref{tab:heat}): the bank evolved
+linearly reaches $\nHeatBankErrTenTwentyFour\,\%$ at
+$\nHeatBankMsTenTwentyFour$\,ms against the head's
+$\nHeatHeadErrTenTwentyFour\,\%$ at $\nHeatHeadMsTenTwentyFour$\,ms, with
+the direct solve at $\nHeatFomMsTenTwentyFour$\,ms. The reflective wave
+(Table~\ref{tab:waves}): the top rung, the bank under exact modal
+propagation with no head, is not strictly the most accurate rung (strict
+reading: \nWaveTopStrictBestTwoFiftySix{}) but matches the $q=32$ rung
+within the pre-registered integrator tie band of
+$\nWaveTieBandPpTwoFiftySix$\,pp at every mesh ($256^2$:
+$\nWaveBankErrTwoFiftySix$ against $\nWaveQthirtytwoErrTwoFiftySix\,\%$),
+and is
+$\nWaveBankOverHeadCostSixtyFour$--$\nWaveBankOverHeadCostTenTwentyFour\times$
+cheaper than the cheapest head rung; the head ladder is monotone in $q$
+(\nWaveHeadLadderMonotoneTwoFiftySix{}), cost is not. On waves POD $k'=64$
+reaches $\nWavePodErrTwoFiftySix\,\%$ against the bank's
+$\nWaveBankErrTwoFiftySix\,\%$ at the same cost. On the L-shaped domain
+the sparse direct solve costs $\nLshapeSpluMsSixtyFour$,
+$\nLshapeSpluMsOneTwentyEight$, $\nLshapeSpluMsTwoFiftySix$,
+$\nLshapeSpluMsFiveTwelve$\,ms at $64^2$, $128^2$, $256^2$, $512^2$; at
+$64^2$ it dominates everything and at $128^2$ only POD rungs join the
+non-dominated set (\nLshapeOneTwentyEightBestReduced{} at
+$\nLshapeOneTwentyEightBestReducedErr\,\%$,
+$\nLshapeOneTwentyEightBestReducedCheaper\times$ the direct solve's cost),
+cheapness rather than a trade; at $512^2$ the best POD rung,
+\nLshapeFiveTwelveBestPod{}, reaches $\nLshapeFiveTwelveBestPodErr\,\%$ at
+$\nLshapeFiveTwelveBestPodMs$\,ms. In a separate job at $M=1024$, whose
+costs are not comparable with those above, the free rung $q=R$ is the one
+place the learned bank beats the linear baseline on both axes, at
+$\nLshapeFreeOverFloor\times$ its own bank floor with no solver iterations
+(Table~\ref{tab:lshape-free}).

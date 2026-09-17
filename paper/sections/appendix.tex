@@ -1,14 +1,46 @@
 % sections/appendix.tex
 \input{sections/method-details}
 
-\section{Architecture}
+\section{Per-cell Training Schedule}
+\label{app:training-schedule}
+
+This appendix lists the per-cell configuration and training cost referenced in
+\S\ref{sec:impl}. The problem specification per cell (mesh, $k$, $R$, $M$,
+reference and cohorts) is Table~\ref{tab:problems} and the sampled families
+Table~\ref{tab:spec}; the offline cost per stage, from the lane records, is
+Table~\ref{tab:offline}; the head-retraining arms on the frozen Burgers bank
+(training-set size, latent dimension and loss terms) are Table~\ref{tab:training}.
+Every headline uses one checkpoint per PDE, named by hash in
+Table~\ref{tab:provenance}.
+
+\section{Architecture Choices: Evidence from Sweeps}
 \label{app:arch}
 
-Figure~\ref{fig:arch} (\S\ref{sec:method:ladder}) draws the pipeline;
+This appendix collects the evidence behind the architectural choices in
+\S\ref{sec:decoder}: the matched-dimension head ablation on Burgers and
+Poisson (Tables~\ref{tab:head-burgers}, \ref{tab:head-poisson}), the three
+error layers per cell (Table~\ref{tab:layers}), the head-capacity sweep on the
+frozen Poisson bank (Table~\ref{tab:head-capacity}), the head-retraining arms
+(Table~\ref{tab:training}), and the solver variants for the corrections on
+Burgers (Table~\ref{tab:solver-variants}). The linear skip is a design choice
+adopted for cold-start convergence and is not ablated in this paper.
+\begin{figure}[h]
+\centering
+\resizebox{0.9\linewidth}{!}{\input{figures/architecture}}
+\caption{NM-ROM pipeline. Colour says when each quantity is fixed:
+purple, trained once and frozen for every result; blue, assembled
+offline once per mesh; orange, computed inside the timed query; green,
+chosen at run time among artefacts that already exist; grey, supplied,
+or a comparator. This is a schematic, not a measurement. The only things
+that change between operating points are the three green controls (the
+rank $q$, the stored quadrature rule or dense evaluation, and the
+tolerance), so every point of the family comes from one training run.}
+\label{fig:arch}
+\end{figure}
+
+Figure~\ref{fig:arch} draws the pipeline;
 Table~\ref{tab:arch-blocks} lists its blocks, their sizes in the symbols of
-\S\ref{sec:method:manifold}, and when each is fixed. Numeric sizes per cell
-($k$, $R$, $M$, $m$) are in Table~\ref{tab:problems}; the training budgets
-are in Table~\ref{tab:offline}.
+\S\ref{sec:method:manifold}, and when each is fixed.
 
 \begin{table}[h]
 \centering
@@ -44,7 +76,7 @@ checkpoint. The SHA256 of every machine-readable file the generator read is in
 \texttt{tables/provenance.json}. Every job asserted \texttt{jax\_backend=gpu},
 float64 and highest matmul precision before doing any work.}
 \label{tab:provenance}
-\input{tables/T02_provenance}
+\resizebox{\linewidth}{!}{\input{tables/T02_provenance}}
 \end{table}
 
 \begin{table}[h]
@@ -53,7 +85,7 @@ float64 and highest matmul precision before doing any work.}
 row, no gate and no oracle value; it is listed so that it is visibly retracted rather than
 absent.}
 \label{tab:retracted}
-\input{tables/T02b_retracted}
+\resizebox{\linewidth}{!}{\input{tables/T02b_retracted}}
 \end{table}
 
 \begin{table}[h]
@@ -73,7 +105,7 @@ pending in \S\ref{sec:limitations}.}
 configurations where recorded; the sealed final cohorts have not been opened
 for any cell.}
 \label{tab:problems}
-\input{tables/T01_problems}
+\resizebox{\linewidth}{!}{\input{tables/T01_problems}}
 \end{table}
 
 \begin{table}[h]
@@ -81,7 +113,7 @@ for any cell.}
 \caption{Sampled problem families, transcribed from the generator sources named
 in the last column (code constants, not run outputs).}
 \label{tab:spec}
-\input{tables/T01b_spec}
+\resizebox{\linewidth}{!}{\input{tables/T01b_spec}}
 \end{table}
 
 \begin{table}[h]
@@ -91,7 +123,7 @@ retrained arms (the incumbent's own training time was not recorded), the
 correction-direction fit, and the NNLS fit of each rule the primary EQ ladder
 ran. Every rule is refit when $m$ changes; nothing is nested.}
 \label{tab:offline}
-\input{tables/T17_offline_cost}
+\resizebox{\linewidth}{!}{\input{tables/T17_offline_cost}}
 \end{table}
 
 \begin{table}[h]
@@ -140,7 +172,7 @@ cases: what the bank can express, what the augmented manifold can reach
 p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
 appears.}
 \label{tab:layers}
-\input{tables/T07_three_layers}
+\resizebox{\linewidth}{!}{\input{tables/T07_three_layers}}
 \end{table}
 
 \begin{table}[h]
@@ -149,7 +181,7 @@ appears.}
 \provPlinJobs; never compare costs across meshes; $q=512$ via LM is degenerate
 by construction and its QR twin is the timed top rung).}
 \label{tab:linear}
-\input{tables/T11b_poisson}
+\resizebox{\linewidth}{!}{\input{tables/T11b_poisson}}
 \end{table}
 
 \begin{table}[h]
@@ -185,7 +217,7 @@ metric. ``Certified in one draw'' is a single passing draw, not a certified
 construction. Every subject of the job, at both tolerances, is in
 Table~\ref{tab:panel-all}.}
 \label{tab:tunability}
-\input{tables/T03_tunability}
+\resizebox{\linewidth}{!}{\input{tables/T03_tunability}}
 \end{table}
 
 \begin{table}[h]
@@ -197,7 +229,7 @@ from $256^2$ (rule status as at $256^2$; the $q\ge64$ rules miss the primary
 bar here, \S\ref{sec:exp:panel}). Milliseconds are not comparable with
 Table~\ref{tab:tunability}: different GPU, different job.}
 \label{tab:tunability-tentwentyfour}
-\input{tables/T03b_tunability}
+\resizebox{\linewidth}{!}{\input{tables/T03b_tunability}}
 \end{table}
 
 \begin{table}[h]
@@ -208,7 +240,7 @@ an attained initial fit; ``strict'' is the earlier rule that does not;
 ``adm.'' is admissibility for the frontier (converged, and for EQ subjects a
 rule passing a bar).}
 \label{tab:panel-all}
-\input{tables/T05_panel_all}
+\resizebox{\linewidth}{!}{\input{tables/T05_panel_all}}
 \end{table}
 
 \begin{table}[h]
@@ -217,7 +249,7 @@ rule passing a bar).}
 \provPanelTenTwentyFourJob, H200). Columns as in Table~\ref{tab:panel-all};
 milliseconds are comparable only within this table.}
 \label{tab:panel-all-tentwentyfour}
-\input{tables/T05b_panel_all}
+\resizebox{\linewidth}{!}{\input{tables/T05b_panel_all}}
 \end{table}
 
 \begin{table}[h]
@@ -226,7 +258,7 @@ milliseconds are comparable only within this table.}
 across the three b-qxm jobs, costs not shown). The last column restricts the
 span to at least two tests per unknown.}
 \label{tab:qxm-fixedq}
-\input{tables/T04b_fixed_q}
+\resizebox{\linewidth}{!}{\input{tables/T04b_fixed_q}}
 \end{table}
 
 \begin{table}[h]
@@ -235,7 +267,7 @@ span to at least two tests per unknown.}
 \provAblBurgersGpu). Same-grid error against the converged full-order solve;
 ``vs ref'' against the $4096^2$ reference.}
 \label{tab:head-burgers}
-\input{tables/T06a_head_burgers}
+\resizebox{\linewidth}{!}{\input{tables/T06a_head_burgers}}
 \end{table}
 
 \begin{table}[h]
@@ -298,7 +330,7 @@ replication (job \provEqtopRepJob): confirmed = every re-draw passes, marginal
 (SHA256-identified); they are not properties of the construction above
 $q=32$. Ladder rows read from the \provEqtopLadderSource.}
 \label{tab:eqladder}
-\input{tables/T09_eq_ladder}
+\resizebox{\linewidth}{!}{\input{tables/T09_eq_ladder}}
 \end{table}
 
 \begin{table}[h]
@@ -313,7 +345,7 @@ count; the inherited fit-state convention for $q\ge128$ (0 of 6 draws pass);
 export at $q\ge64$, superseded by rules chosen by moving up in $m$, a
 post-hoc choice the lane discloses.}
 \label{tab:replication}
-\input{tables/T09d_replication}
+\resizebox{\linewidth}{!}{\input{tables/T09d_replication}}
 \end{table}
 
 \begin{table}[h]
@@ -324,7 +356,7 @@ post-hoc choice the lane discloses.}
 \provMeshPoissonCkpt). ``efficient FOM'' is the cheapest same-job full-order
 arm meeting the 5\,\% target on that mesh.}
 \label{tab:mesh}
-\input{tables/T10_mesh_ladder}
+\resizebox{\linewidth}{!}{\input{tables/T10_mesh_ladder}}
 \end{table}
 
 \begin{table}[h]
@@ -356,8 +388,8 @@ each seed's own job (its value is identical in all three jobs). Bottom: the
 per-seed ladder verdicts. Costs are never averaged across jobs. Provisional
 until the sealed cohort (Table~\ref{tab:sealed}) is opened.}
 \label{tab:seeds}
-\input{tables/T12_seeds}\\[4pt]
-\input{tables/T12b_seeds_verdicts}
+\resizebox{\linewidth}{!}{\input{tables/T12_seeds}}\\[4pt]
+\resizebox{\linewidth}{!}{\input{tables/T12b_seeds_verdicts}}
 \end{table}
 
 \begin{table}[h]
@@ -387,7 +419,7 @@ budget with exactly one variable changed, and is never eligible for capacity
 selection. ``vs ROM'' is the matched eight-case worst against the ROM's, from
 job 3702709; at equal wall clock a float64 twin is also a fewer-epochs twin.}
 \label{tab:op-controls}
-\input{tables/T14d_controls}
+\resizebox{\linewidth}{!}{\input{tables/T14d_controls}}
 \end{table}
 
 \begin{table}[h]
@@ -429,7 +461,7 @@ pre-registered bar was a $2.0\times$ margin over POD at matched dimension; the
 ladder and timing were therefore never run. The $K=32$ arm on the same bank
 (ns204) is pending.}
 \label{tab:ns}
-\input{tables/T11e_ns}
+\resizebox{\linewidth}{!}{\input{tables/T11e_ns}}
 \end{table}
 
 \begin{table}[h]
@@ -465,6 +497,8 @@ by boundary factor and rank, and the head layer at $256^2$. The solve layer is
 \input{tables/T18a_lshape_bank}\\[4pt]
 \input{tables/T18b_lshape_head}
 \end{table}
+
+\input{sections/extended-results}
 
 \section{Glossary}
 \label{app:glossary}

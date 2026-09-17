@@ -317,3 +317,46 @@ two meshes are on different cards; no ratio is formed between them anywhere, and
 prints the GPU per job in its own table. Both jobs' logs contain `jax_backend=gpu` and
 `ALL-DONE`; both `.err` streams are empty except for one XLA slow-compile notice in
 `plhead1`.
+
+**2026-09-17, §A10 — the untimed augmented best-found oracle was wrong for $q > 0$ in
+both collected ladder jobs; diagnosed, fixed, and the affected column retracted. Written
+with both jobs' numbers in hand — post-hoc for both meshes; no pre-registered criterion
+touches the affected quantity.** `plin_core.oracle_projected` eliminates $y$ by projecting
+the $R$-dimensional residual off $\mathrm{span}(V)$ with $r - VV^\top r$, which is a
+projection only if $V^\top V = I$. $V = R_G C_q$ was formed with the **query** mesh's QR
+factor $R_G$, but $C_q$ is orthonormal in the **training** mesh's (255) metric, and the
+bank's column norms scale with the number of grid points: measured $V^\top V$ (retained 32
+columns, `checks/2026-09-17-oracle-metric-scale.json`) is $0.0630\,I$ at 64, $I$ at 255,
+$1.0079\,I$ at 256 and $16.13\,I$ at 1024 intervals — the prediction $((n-1)/254)^2$ to
+within 0.6 %. The symptom was in plain sight in the 1024 job: the column *rises* with $q$
+(24 % at $q{=}32$, 45.7 % at $q{=}R$ where it must equal the 0.742 % floor) and its
+iteration counts at $q{=}R$ are identical to $q{=}0$, because with $VV^\top \approx 16\,I$
+the LM was minimising $15\,|r|$ — the $q{=}0$ objective rescaled. At 256 the same defect
+inflates the column by $\le (\rho-1)^2|Pr|^2$ with $\rho - 1 = 0.0079$: the reported
+0.74624 % at $q{=}R$ against the 0.74586 % floor is exactly that inflation, and the
+$q < R$ values are within $5\times10^{-4}$ relative of correct. At 64 (the local smoke,
+$\rho = 0.063$) the column barely moved with $q$ — a signal I should have read before
+submitting and did not.
+
+**What is affected.** Only the untimed `augmented best-found` column for $q > 0$ (the
+`augmented_best_found_q*` rows of `summary.json`). The $q = 0$ value has no $V$ and is
+correct (it agrees with the dense oracle to $10^{-13}$ at 256). No timed arm, no gate, no
+consistency pair, no POD/DST/CG row and none of D1–D3 or the falsification readings call
+this function: the ladder's own solves eliminate $y$ through `correction_core`'s thin QR of
+$BC_q$, which does not assume orthonormality, and their errors bracket correctly (the
+$q = R$ solve reaches the floor to four decimals at both meshes).
+
+**Fix.** One line in `oracle_projected`: $V$ is orthonormalised by a thin QR before use,
+which leaves $\mathrm{span}(V)$ — the only thing the oracle depends on — unchanged. Verified
+locally at 64 intervals (`checks/oracle_fix_check.py`,
+`checks/2026-09-17-oracle-fix-check-64.json`): the unfixed path reproduces the smoke's
+recorded values to $10^{-13}$; the fixed path returns the floor at $q = R$ to a relative
+difference of 0.0, brackets at $q = 32$ (2.554 % between the 0.809 % floor and the 3.242 %
+$q{=}0$ value) and leaves $q = 0$ bit-identical.
+
+**Reporting.** The generator prints the affected column with its metric scale $\rho$ and a
+bracket check per rung, marks every $q > 0$ value from the collected jobs **invalid** at
+1024 and **inflated ($\le 5\times10^{-4}$)** at 256, and excludes them from every
+statement. The correct column requires re-running the untimed oracle with the fixed code
+(a fifth cluster job, `plorc`, ~5 min at each mesh; not launched — the coordinator decides
+whether the column is worth a job). The three-layer picture at $q = 0$ stands as reported.

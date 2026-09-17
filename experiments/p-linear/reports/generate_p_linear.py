@@ -380,18 +380,52 @@ def main():
                '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
         rec = next(r for r in d['reconstruction'] if r['model'] == prim)
         aug = {x['q']: x['best_found']['worst'] for x in rec['augmented']}
+        # DESIGN A10: the untimed augmented oracle in the collected jobs projected with a
+        # V whose Gram is rho*I, rho = ((n-1)/(train-1))^2, instead of I. Its q > 0 values
+        # are wrong by (1-rho)^2 |Pr|^2 -- meaningless at 1024, <= 5e-4 relative at 256.
+        # The column is printed with rho and a per-rung bracket check and never used.
+        dir_rec = next(x for x in d['directions'] if x.get('model') == prim and 'training_intervals' in x)
+        rho = ((n - 1) / (dir_rec['training_intervals'] - 1)) ** 2
+        R_ = max(d['config']['ladder_q'])
+        floor_w = rec['bank_projection']['worst']
+        solved_at = {r['q']: r['worst'] for r in rows if r['kind'] == 'ladder' and r['model'] == prim
+                     and r['rule'] == 'm4' and '_ccrule' not in r['name'] and r['q'] < R_}
+        solved_at[R_] = next(r['worst'] for r in rows if r['name'] == f'd_linear_qr_m4@{prim}')
+        aug_ok = {q: (q == 0) or (abs(rho - 1) < 0.05 and floor_w * (1 - 1e-9) <= v <= solved_at.get(q, float('inf')) * (1 + 1e-3))
+                  for q, v in aug.items()}
+        aug_bracket = {q: bool(floor_w * (1 - 1e-9) <= v <= solved_at.get(q, float('inf')) * (1 + 1e-9)) for q, v in aug.items()}
+
+        def aug_cell(q):
+            if q not in aug:
+                return '—'
+            if q == 0:
+                return pct(aug[q])
+            if not aug_ok[q]:
+                return f'~~{pct(aug[q])}~~ INVALID (A10)'
+            return f"{pct(aug[q])} (inflated ≤ {100 * (rho - 1) ** 2:.1e} %, A10)"
         ladder_rows = [r for r in rows if r['kind'] == 'ladder' and r['model'] == prim
                        and '_ccrule' not in r['name']]
         ladder_rows += [r for r in rows if r['kind'] == 'linear' and r['model'] == prim]
         for r in sorted(ladder_rows, key=lambda r: (r['rule'], r['q'])):
             md.append(f"| `{r['name']}` | {r['q']} | {r['M']} | {pct(r['worst'])} | {pct(r['median'])} | "
-                      f"{pct(aug[r['q']]) if r['q'] in aug else '—'} | {pct(rec['bank_projection']['worst'])} | "
+                      f"{aug_cell(r['q'])} | {pct(rec['bank_projection']['worst'])} | "
                       f"{r['total_ms']:.3f} | {r['device_ms']:.3f} | {r['valid']}/{r['count']}{' (q=R, degenerate by construction)' if r['degenerate'] else ''} | "
                       f"{r['iterations']:.1f} |")
         bfd = rec.get('best_found_dense', {}).get('worst')
         md += ['', f"Three layers at q = 0 for `{prim}`: bank floor {pct(rec['bank_projection']['worst'])}, dense best-found "
-               f"{pct(bfd) if bfd is not None else '—'}, projected-oracle best-found {pct(aug[0])}, solved (`q0_m256`) "
+               f"{pct(bfd) if bfd is not None else '— (not run above 256 intervals, DESIGN A7)'}, projected-oracle best-found {pct(aug[0])}, solved (`q0_m256`) "
                f"{pct(next(r['worst'] for r in rows if r['name'] == f'q0_m256@{prim}'))}.", '',
+               f"**Augmented best-found column, q > 0 (DESIGN §A10).** In this job the untimed oracle projected with "
+               f"$V^\\top V = \\rho I$, $\\rho = ((n-1)/{dir_rec['training_intervals'] - 1})^2 = {rho:.4f}$, instead of $I$. "
+               f"Bracket floor ≤ best-found(q) ≤ solved(q) holds at q = "
+               f"{', '.join(str(q) for q in sorted(aug) if aug_bracket[q]) or 'none'} and fails at q = "
+               f"{', '.join(str(q) for q in sorted(aug) if not aug_bracket[q]) or 'none'} (at q = R the oracle must equal the floor; it reads "
+               f"{pct(aug[R_]) if R_ in aug else '—'} against {pct(floor_w)}). "
+               + ('Every q > 0 value in this column is therefore **retracted** and nothing in this report uses it; the solved errors and the floor bracket each rung on their own. '
+                  if not all(aug_ok.values()) else
+                  'The q > 0 values are correct to the stated inflation bound and are used nowhere in the criterion. ')
+               + 'The q = 0 value has no V and is unaffected. The oracle is fixed in `plin_core.py` and verified locally '
+               '(`checks/2026-09-17-oracle-fix-check-64.json`); a corrected column needs a re-run of the untimed oracle.', '',
                '### Every subject', '', subject_table(rows), '', '### Fidelity gates and consistency', '',
                '| gate | metric | worst relative difference | tolerance | verdict |', '|---|---|---:|---:|---|']
         for g in d['gates']:
@@ -426,7 +460,9 @@ def main():
                                     non_dominated_all=r['name'] in crit['nd_all'], non_dominated_reduced=r['name'] in crit['nd_red']))
         for x in rec['augmented']:
             summary.append(dict(mesh=n, subject=f"augmented_best_found_q{x['q']}@{prim}", family='oracle', q_or_k=x['q'],
-                                metric='worst_same_grid', value=x['best_found']['worst'], job_id=d['job_id']))
+                                metric='worst_same_grid', value=x['best_found']['worst'], job_id=d['job_id'],
+                                oracle_valid=bool(aug_ok[x['q']]), retracted=not aug_ok[x['q']],
+                                note=None if aug_ok[x['q']] else 'DESIGN A10: oracle projected with V^T V = rho I; value retracted'))
         summary.append(dict(mesh=n, subject=f'bank_floor@{prim}', family='oracle', q_or_k=0, metric='worst_same_grid',
                             value=rec['bank_projection']['worst'], job_id=d['job_id']))
         for key in ('D1_span',):

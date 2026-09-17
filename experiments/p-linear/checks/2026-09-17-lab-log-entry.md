@@ -1,118 +1,44 @@
 ## 2026-09-17
-### p-linear — on Poisson 2D the correction ladder's top rung is a direct linear solve that is BOTH the most accurate and the cheapest point; the pre-registered cost-span clause fails because of it, and POD-512 and the DST solver still dominate everything
+### p-linear — Poisson 2D ladder to q = R on the best checkpoint: at 1024² the pre-registered degenerate-curve criterion PASSES (D1 1.55x, D2 strict, D3); at 256² D1 fails literally (3.17x) only because the top rung is cheaper than the middle; neither mesh meets the falsification intent; the untimed augmented-oracle column for q > 0 is retracted (A10)
 
-DRAFT, written while `plin1024b` and `plhead1` were still queued; the 1024-interval block and
-job 3 are filled in before this is appended to the canonical log.
+INTERIM entry: all three completed jobs are collected, audited and archived; the corrected oracle column (A10) has not been re-run. Worktree `worktrees/2026-09-17-p-linear`, branch `exp/2026-09-17-p-linear`, forked from `exp/2026-09-16-p-bank-head` at `266dea9d`. Namespace `/cluster/tufts/paralab/tawal01/p_linear_20260917/` (empty after collection). Pre-registration with ten dated amendments: `experiments/p-linear/DESIGN.md`. Report generated from the run JSONs: `experiments/p-linear/reports/2026-09-17-p-linear.md`, with `summary.json`, `verdicts.json`, a per-mesh figure and `self-audit-report.md` (Codex unavailable until 2026-09-19 11:33).
 
-Worktree `worktrees/2026-09-17-p-linear`, branch `exp/2026-09-17-p-linear`, forked from
-`exp/2026-09-16-p-bank-head` at `266dea9d`. Namespace
-`/cluster/tufts/paralab/tawal01/p_linear_20260917/`. Pre-registration with eight dated
-amendments: `experiments/p-linear/DESIGN.md`. Report generated from the run JSONs:
-`experiments/p-linear/reports/2026-09-17-p-linear.md`, with `summary.json`, `verdicts.json`
-and a per-mesh figure whose plotted points are also written to JSON.
+**Jobs (4 of 8).** `plin256` = `3780692` (NVIDIA A100-PCIE-40GB, 19.5 min, source `b43a437d7360`); `plin1024` = `3780691` **FAILED, retracted** (below); `plin1024b` = `3783813` (**NVIDIA H200**, 16.2 min, source `3e411b5ac59d`); `plhead1` = `3783883` (NVIDIA A100-PCIE-40GB, 31.9 min, source `2d2cad99709f`). All logged `jax_backend=gpu`, float64, matmul precision `highest`; one job per attempt directory, `squeue` before and after every submit; remote directories deleted after checksum collection. The two meshes ran on different cards and are never compared on cost.
 
-**The question.** The paper's structural claim is that the accuracy/cost trade from correction
-rank exists only where the projected residual is nonlinear in the bank coefficients (Burgers),
-and that on a linear PDE the curve degenerates. That claim rested on the incumbent R=128/K=16
-ladder to q=64. This cell puts the whole ladder to q=R on the best Poisson checkpoint
-(`pbh02`'s `new_K32`, R=512, K=32) with every comparator — POD-LSPG to k'=512, the direct DST
-solve, unpreconditioned CG at four tolerances, the head alone, the free bank — timed in the
-same job on the same GPU, at 1024 and 256 intervals.
+**The question.** Whether the accuracy/cost trade from correction rank q degenerates on a linear PDE: top rung a linear reduced model that is also (about) the cheapest, with POD-LSPG or a direct solver non-dominated. Ladder to q = R = 512 on `pbh02`'s `new_K32` (R = 512, K = 32), every comparator timed in the same job on the same GPU, 12 development sources, 3 timed repetitions.
 
-**Jobs.** `plin256` = `3780692`, A100-PCIE-40GB, 19m40s, COMPLETED, source `b43a437d`;
-`plin1024` = `3780691` **FAILED** (below); `plin1024b` = `3783813` (H200, 240G, resubmit);
-`plhead1` = `3783883` (job 3). All logged `jax_backend=gpu`, float64, matmul precision
-`highest`. One job per attempt directory, `squeue` checked before and after every submit.
-
-**What was wrong, and what it cost.** `plin1024` died after 14m27s with a GPU
-`RESOURCE_EXHAUSTED`. It was **not** the disk-full failure mode (the share was at 91 % and the
-log is complete). The scheduler gave it an **A100-PCIE-40GB** where the parent lane's
-equivalent job had an 80 GB card, and the *untimed* dense best-found oracle
-(`arms.make_reconstruction`) allocates a `jacfwd` Jacobian of `f64[8, 1046529, 32]` — 2.0 GiB
-per array, with 31.94 GiB autotuner variants. No number was timed and no gate ran, so nothing
-is retracted; the job is recorded in `runs/plin1024/FAILURE.json` with its logs. Fix
-(DESIGN §A7): that oracle is a **cross-check** of the pre-registered projected oracle, which
-computes the same quantity in the exact QR metric with an R-dimensional residual, so it now
-runs only at meshes ≤ 256 and the two are compared wherever both run (they agree to ~1e-13).
-The resubmit also asks for an H200 with 240 GB.
-
-**Two design corrections made from the local smoke, before any cluster number existed.**
-(§A4) At q = R the eliminated ladder path is mathematically inert in z, and the smoke caught
-it chasing round-off for its entire budget: 194–195 Jacobians and 118 ms against 5–7
-Jacobians and 9.7 ms at q = 256, landing on exactly the same error. Charging that to the top
-rung would have failed the criterion for an artefact, so the pre-registered top rung is the
-rank-R linear reduced model solved **directly** (thin QR of the weak operator offline, one
-projection, one triangular solve, one decode online). The eliminated arm is still run and
-reported beside it. (§A5) The `dst_direct` same-grid gate was comparing two round-off-level
-numbers as a ratio; gates now also pass on an absolute floor of 1e-12, which only an exact
-solver can ever use.
-
-**Result at 256 intervals (12 development sources, 3 timed repetitions, randomised order).**
-The `m4` ladder, worst same-grid error and median complete-query time:
+**1024² (`plin1024b`), the paper's row.** The `m4` ladder with the A4 direct top rung:
 
 | rung | worst same-grid | median total ms |
 |---|---:|---:|
-| q=0 | 3.1567 % | 9.214 |
-| q=32 | 2.4699 % | 9.537 |
-| q=64 | 2.0808 % | 9.819 |
-| q=128 | 1.5497 % | 10.219 |
-| q=256 | 0.9689 % | 9.658 |
-| q=R=512, direct | **0.7459 %** | **3.221** |
+| `q0_m4@new_K32` | 3.1495 % | 6.394 |
+| `q32_m4@new_K32` | 2.4641 % | 6.592 |
+| `q64_m4@new_K32` | 2.0760 % | 6.745 |
+| `q128_m4@new_K32` | 1.5459 % | 6.875 |
+| `q256_m4@new_K32` | 0.9648 % | 6.849 |
+| `d_linear_qr_m4@new_K32` | 0.7421 % | 4.424 |
 
-The top rung is simultaneously the **most accurate and the cheapest** point of the ladder, and
-its error equals the bank projection floor (0.7459 %) to four decimals. The eliminated twin
-`q512_m4` reaches the same 0.7459 % but takes 117.854 ms.
+Clauses: D1 span 1.554x (pass; over the q < R rungs alone, post-hoc, 1.075x); D2 pass, strict yes; D3 pass (non-dominated all: `dst_direct`; reduced: `d_linear_qr_m4@new_K32`, `d_linear_qr_m256@incumbent`, `e_pod512_m4@trainset`); monotone yes; falsified literal not met, intent not met. **Verdict: DEGENERATE under D1 ∧ D2 ∧ D3 as pre-registered.** The top rung reaches the bank floor (0.7421 %) and is the cheapest ladder point; the q < R rungs span only 1.075x in cost. Comparators in the same job: POD-LSPG k'=512 0.1838 % at 6.972 ms; DST direct exact at 3.248 ms; unpreconditioned CG 62.5–121.4 ms (1e-2 to 1e-8). Head alone (`a_neural@new_K32`) 3.1146 % at 5.047 ms. Eliminated `q512_m4` reaches the same floor at 43.220 ms (inert iteration, A4). No speedup over any full-order solver is claimed.
 
-**Verdict against the pre-registered clauses, and the one that fails.** D2 passes in its
-strict form (the top rung *is* the cheapest and the most accurate). D3 passes: `dst_direct` is
-the only point on the non-dominated set of all subjects, and the reduced non-dominated set is
-`d_linear_qr_m4@new_K32`, `d_linear_qr_m256@incumbent`, `e_pod512_m4@trainset`. **D1 fails at
-3.173x** — but it fails because the top rung is 3.17x *cheaper* than the dearest rung, not
-because any rung pays more for accuracy.
+**256² (`plin256`).**
 
-**The honest problem with my own wording, recorded as §A8 with the 256 numbers already in
-hand.** The falsification clause reads "falsified if D1 fails with error monotone
-non-increasing in q (the ladder buys accuracy for >= 2x cost)". Its two literal conjuncts are
-both met; its parenthetical gloss is not — **no rung costs >= 2x the cheapest ladder point
-while being more accurate than it**. I did not anticipate a ladder whose top rung is cheaper
-than its middle. I did **not** rewrite D1: every report and both independent implementations
-now print D1 as written, `falsified_literal`, `falsified_intent`, the list of any rungs that
-buy accuracy, and — labelled post-hoc — the span over the q < R rungs alone (1.109x at 256).
-For the 1024 job, which had not run when §A8 was written, `falsified_intent` is the clause I
-declared would decide the claim.
+| rung | worst same-grid | median total ms |
+|---|---:|---:|
+| `q0_m4@new_K32` | 3.1567 % | 9.214 |
+| `q32_m4@new_K32` | 2.4699 % | 9.537 |
+| `q64_m4@new_K32` | 2.0808 % | 9.819 |
+| `q128_m4@new_K32` | 1.5497 % | 10.219 |
+| `q256_m4@new_K32` | 0.9689 % | 9.658 |
+| `d_linear_qr_m4@new_K32` | 0.7459 % | 3.221 |
 
-**The comparators, which are the part the paper needs.** At 256 intervals POD-LSPG at k'=512
-reaches **0.1855 % at 10.002 ms** — four times better than the best neural point at three
-times its cost — and the direct DST solve is **exact at 2.526 ms**, cheaper than every reduced
-model in the job. Unpreconditioned CG is the slowest full-order route (23.8 ms at 1e-2 rising
-to 44.6 ms at 1e-8), so the direct transform solver, not CG, is the one to beat. Jacobi-PCG
-was not run and the reason is stated rather than measured: the 5-point Dirichlet Laplacian has
-a constant diagonal, so Jacobi preconditioning is a scalar rescaling and its iterates coincide
-with CG's. **No speedup over any full-order solver is claimed anywhere in this cell.**
+Clauses: D1 span 3.173x (FAIL; over the q < R rungs alone, post-hoc, 1.109x); D2 pass, strict yes; D3 pass (non-dominated all: `dst_direct`; reduced: `d_linear_qr_m4@new_K32`, `d_linear_qr_m256@incumbent`, `e_pod512_m4@trainset`); monotone yes; falsified literal MET, intent not met. **Verdict: not degenerate as literally written, because D1 fails — and it fails because the top rung is 3.17x cheaper than the dearest rung, not because any rung buys accuracy for ≥ 2x (A8).** POD-LSPG k'=512 0.1855 % at 10.002 ms; DST 2.526 ms.
 
-**Fidelity and audit.** All 23 cross-job gates pass: the `pbh02` arms (`a_neural`,
-`a_neural_q32`, `d_freebank`, three POD ranks, `dst_direct`) at 64/256/1024 and the `ccpoi01`
-arms at 1024, worst 7.8e-13 relative against a 1e-9 bar, on both physical and same-grid error.
-In-job consistency: `q0_m256` reproduces the parent's `a_neural` kernel to 7.9e-16 in the
-field; `q32_m4` and `q32_m256` are bitwise identical (0.0); `q512_m4` and the direct solve
-agree to 3.2e-7, which is the operator's conditioning times round-off rather than the 1e-8 I
-had declared, and the threshold was relaxed to 1e-5 and reported as a consistency pair, not a
-gate (§A6). An independent NumPy/SciPy audit that imports neither the driver nor JAX
-recomputed all 1368 reported errors from the 456 retained fields (worst difference 3.4e-16),
-re-derived the bank floor (3.7e-11), re-checked the timing identity, the invocation grid, the
-exit bookkeeping and every gate, and re-derived the criterion independently: all pass.
+**Do the two meshes agree?** On D2 (strict), D3, monotonicity and both falsification readings, yes; on the literal D1 they differ only through the size of the top rung's cost advantage (1.55x at 1024, 3.17x at 256). Under `falsified_intent`, declared in A8 as the deciding clause before the 1024 job ran, both meshes say the same thing: no rung pays ≥ 2x for accuracy.
 
-**Two lane-level failures worth recording.** The Codex auditor was unavailable for this lane's
-whole window (usage limit until 2026-09-19 11:33) and a substitute fresh-context Claude auditor
-was killed by an API session limit before it read a file, so the design audit is a **written
-self-audit** (`reports/self-audit-design.md`, 22 claims each with the JSON field it rests on
-and the check run) — a weaker independence guarantee than a second model family, and the report
-says so (§A2). Separately, rebuilding the retained 32 correction directions from scratch
-reproduces their subspace only to a principal-angle defect of 6e-6 even though the QR metric
-matches to 5.6e-17: the bank's condition number is 2.6e7 and the singular-value gap at column
-32 is 1 %, so round-off in the triangular solve is amplified. This is why the design uses the
-retained prefix **verbatim** instead of rebuilding it (§A3).
+**Job 3 — head capacity on the frozen R = 512 bank (`plhead1`).** H1: the pbh02 recipe re-run reproduces the primary's development best-found to 0.00 % (pass). H2: the primary's best-found/floor ratio is 4.184x; the largest reduction is 34.2 % (`K64_w256_L3`, 2.755x, dev best-found 2.0553 %), past the 20 % bar but short of the 2x bar for a better anchor: **partial movement**. Width helps (`K32_w256_L2` 3.037x), depth alone does not (`K32_w128_L3` 4.106x), 3x the schedule gives 3.543x. Validation selects `K32_w256_L2`; no arm enters the linear-case table.
 
-**Open.** The 1024-interval block (`plin1024b`) and job 3 (`plhead1`) were still queued when
-this was drafted. Everything here is one checkpoint, one training seed, development cohorts
-only; the sealed cohorts stay sealed and no new case was opened. Nothing was merged.
+**What was wrong and retracted.** (1) `plin1024` (`3780691`) died at 00:14:27 with a GPU RESOURCE_EXHAUSTED in the *untimed* dense best-found oracle on an A100-PCIE-40GB (2.0 GiB jacfwd Jacobians with 32 GiB autotuner variants); the log is complete and the share was at 91% (not disk-full), so this is not the disk-full mode. No timed number and no gate came from it. Fix A7: the dense oracle runs only at ≤ 256 intervals (it is a cross-check of the projected oracle, which agrees with it to 2e-11); resubmitted on an H200 with 240 GB. (2) **A10, found after collection:** the untimed augmented best-found oracle projected with a V whose Gram is ρI, ρ = ((n−1)/254)², not I — measured V^T V = 0.063 I / 1.0079 I / 16.13 I at 64/256/1024. Its q > 0 values are meaningless at 1024 (they rise with q, reading 45.7496 % at q = R where the floor is 0.7421 %) and inflated by ≤ 5e-4 relative at 256; q = 0 is unaffected. The signal was visible in the 64-interval smoke (the column barely moved with q) and I missed it. Retracted in the report and flagged in `summary.json`; fixed by orthonormalising V (verified locally: fixed q = R equals the floor to 0e+00 relative); not re-run. No timed arm, gate or D-clause uses that function. (3) Codex unavailable throughout; design and report audits are written self-audits (A2, A9).
+
+**Audit.** Independent NumPy audits (no driver, no JAX) recompute every reported error from the retained fields: 1024 1440 errors, worst 1.5e-16; bank floor rebuilt by NumPy QR to 6.8e-11; all 23 cross-job gates at 1024 and 18 at 256 pass at 1e-9; the criterion re-derived independently agrees at both meshes.
+
+**Open.** The corrected oracle column needs one untimed re-run (`plorc`, ~5 min per mesh) if the paper wants the bracket; the coordinator decides. Everything is one checkpoint, one seed, development cohorts only; sealed cohorts untouched; nothing merged, nothing pushed.

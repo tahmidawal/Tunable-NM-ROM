@@ -158,10 +158,24 @@ def oracle_projected(head, Rg, Zcand, T, perp2, nu2, V, budget, starts=8, gtol=1
     remaining objective is the residual projected off span(V): a K-dimensional multistart
     LM with an R-dimensional residual, exactly `pbh_core.oracle_errors` with the projector
     folded in. At q = 0 (V empty) it is that oracle; at q = R it is the bank floor.
+
+    DESIGN A10. `C_q` is orthonormal in the bank's QR metric at the TRAINING mesh (255),
+    but `R_G` here is the QUERY mesh's factor, whose column norms scale like
+    ((n-1)/254)^2 relative to the training mesh: `V^T V` measured 0.063 I at 64, 1.0079 I
+    at 256 and 16.13 I at 1024 intervals. Jobs 3780692 (256) and 3783813 (1024) ran this
+    function with `r - V V^T r`, which is a projection only when V^T V = I, so their
+    q > 0 oracle values are wrong (inflated by (1 - rho)^2 |P r|^2; at 256 the inflation
+    is <= 5e-4 relative, at 1024 the column is meaningless). The q = 0 value has no V and
+    is unaffected. The fix is one line: V is orthonormalised by a thin QR before use, so
+    span(V) -- the only thing the oracle depends on -- is unchanged and the projector is
+    exact at every mesh. No timed arm, gate or D1-D3 quantity calls this function.
     """
     K = int(np.asarray(Zcand).shape[1])
     Vj = jnp.asarray(V)
     q = int(Vj.shape[1])
+    if q:
+        Vj, _ = jnp.linalg.qr(Vj, mode='reduced')
+        assert float(jnp.max(jnp.abs(Vj.T @ Vj - jnp.eye(q)))) < 1e-8
 
     def resid(z, t, R):
         r = R @ head(z) - t

@@ -18,8 +18,8 @@ figure. Pre-registration: [`DESIGN.md`](DESIGN.md).
 | `references/` | per-case cross-job fidelity references extracted from `pbh02` and `ccpoi01` by `make_references.py` |
 | `audit_np.py` | independent NumPy/SciPy audit; imports neither the driver nor JAX |
 | `cluster/` | flat Git-verified staging, checksum collection, chunked archives |
-| `checks/` | local smoke records |
-| `reports/` | the generated report, `summary.json`, figures, and their generator |
+| `checks/` | local smoke records; `oracle_fix_check.py` + `2026-09-17-oracle-fix-check-64.json` (DESIGN A10 fix verified), `2026-09-17-oracle-metric-scale.json` (the measured $V^\top V$ scale per mesh), the generated lab-log entry |
+| `reports/` | the generated report, `summary.json`, `verdicts.json`, figures, their generator, and `generate_entries.py` (writes `self-audit-report.md` and the lab-log entry from the same JSONs) |
 
 ## Running
 
@@ -35,7 +35,17 @@ JAX_DEFAULT_MATMUL_PRECISION=highest jaxrun /home/tahmid/Dev/.venv/bin/python \
 python experiments/p-linear/cluster/stage.py solve plin1024 --config config-1024.json
 python experiments/p-linear/cluster/stage.py solve plin256  --config config-256.json
 python experiments/p-linear/cluster/stage.py head  plhead1  --config config-head.json
+# the 1024 resubmit after the A100-40GB OOM (DESIGN A7)
+python experiments/p-linear/cluster/stage.py solve plin1024b --config config-1024.json --gpu h200 --mem 240G
 ```
 
 Namespace `/cluster/tufts/paralab/tawal01/p_linear_20260917/`, one attempt directory per
 job, `squeue` checked before and after every submit.
+
+## State (2026-09-17)
+
+Jobs: `plin256` = 3780692 (A100-PCIE-40GB), `plin1024` = 3780691 (**retracted**, OOM in the
+untimed dense oracle), `plin1024b` = 3783813 (**H200**), `plhead1` = 3783883 (A100-PCIE-40GB).
+All three completed jobs are collected, audited, chunked under `artifacts/`, and their remote
+directories deleted. The untimed augmented-oracle column for $q > 0$ in both ladder jobs is
+retracted (DESIGN §A10; fixed in `plin_core.py`, not re-run). Nothing else is retracted.

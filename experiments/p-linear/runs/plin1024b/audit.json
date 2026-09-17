@@ -2,8 +2,8 @@
   "backend": {
     "passed": true,
     "backend": "gpu",
-    "gpu": "NVIDIA A100-PCIE-40GB",
-    "job": "3780692"
+    "gpu": "NVIDIA H200",
+    "job": "3783813"
   },
   "cohort_parameters": {
     "passed": true,
@@ -11,10 +11,10 @@
   },
   "recomputed_errors": {
     "passed": true,
-    "invocations": 1368,
-    "distinct_fields": 456,
-    "worst_physical_difference": 1.4799359654427136e-16,
-    "worst_same_grid_difference": 3.357262514314276e-16
+    "invocations": 1440,
+    "distinct_fields": 480,
+    "worst_physical_difference": 1.464983716341307e-16,
+    "worst_same_grid_difference": 1.5265566588595902e-16
   },
   "timing_identity": {
     "passed": true,
@@ -22,7 +22,7 @@
   },
   "invocation_grid": {
     "passed": true,
-    "subjects": 38,
+    "subjects": 40,
     "repetitions": 3,
     "cases": 12
   },
@@ -32,55 +32,85 @@
       {
         "ours": "a_neural@incumbent",
         "theirs": "a_neural@incumbent",
-        "worst": 3.0986699443714513e-15,
+        "worst": 3.5242933996057763e-15,
         "passed": true
       },
       {
         "ours": "q32_m256@incumbent",
         "theirs": "a_neural_q32@incumbent",
-        "worst": 4.4820932133915525e-15,
+        "worst": 4.642468008379287e-15,
         "passed": true
       },
       {
         "ours": "d_freebank_m256@incumbent",
         "theirs": "d_freebank@incumbent",
-        "worst": 2.472039648778531e-15,
+        "worst": 1.1080611673151384e-15,
         "passed": true
       },
       {
         "ours": "a_neural@new_K32",
         "theirs": "a_neural@new_K32",
-        "worst": 3.518708468619314e-15,
+        "worst": 1.906497591426664e-15,
         "passed": true
       },
       {
         "ours": "q32_m256@new_K32",
         "theirs": "a_neural_q32@new_K32",
-        "worst": 1.7010138425032816e-13,
+        "worst": 5.39772182170513e-13,
         "passed": true
       },
       {
         "ours": "e_pod32_m256@trainset",
         "theirs": "e_pod32@trainset",
-        "worst": 9.921141749747917e-16,
+        "worst": 1.6660769541753943e-14,
         "passed": true
       },
       {
         "ours": "e_pod64_m256@trainset",
         "theirs": "e_pod64@trainset",
-        "worst": 4.55968129886855e-14,
+        "worst": 1.9860250287665776e-13,
         "passed": true
       },
       {
         "ours": "e_pod128_m256@trainset",
         "theirs": "e_pod128@trainset",
-        "worst": 4.791178100434441e-13,
+        "worst": 5.523114409058372e-12,
         "passed": true
       },
       {
         "ours": "dst_direct",
         "theirs": "dst_direct",
-        "worst": 4.815847439579065e-12,
+        "worst": 1.0012751178869903e-10,
+        "passed": true
+      },
+      {
+        "ours": "q0_m256@incumbent",
+        "theirs": "q0_m256",
+        "worst": 1.9182807625327562e-15,
+        "passed": true
+      },
+      {
+        "ours": "q32_m256@incumbent",
+        "theirs": "q32_m256",
+        "worst": 4.70171183676746e-15,
+        "passed": true
+      },
+      {
+        "ours": "q64_m256_ccrule@incumbent",
+        "theirs": "q64_m256",
+        "worst": 3.5295603801000586e-14,
+        "passed": true
+      },
+      {
+        "ours": "q64_m4_ccrule@incumbent",
+        "theirs": "q64_m4",
+        "worst": 3.9603006164443797e-14,
+        "passed": true
+      },
+      {
+        "ours": "dst_direct",
+        "theirs": "dst_direct",
+        "worst": 1.0012751178869903e-10,
         "passed": true
       }
     ],
@@ -100,34 +130,34 @@
       "d_linear_qr_m4@new_K32"
     ],
     "worst_same_grid": [
-      0.03156746847454927,
-      0.02469902971220685,
-      0.020808230111158,
-      0.015497283990881629,
-      0.00968850419215881,
-      0.007458632302014631
+      0.031495039123511044,
+      0.0246409229050417,
+      0.020759558396990722,
+      0.015458944831401197,
+      0.009647906290076344,
+      0.0074213021208988286
     ],
     "cost_ms": [
-      9.21419495716691,
-      9.536888566799462,
-      9.818680584430695,
-      10.219317395240068,
-      9.658001945354044,
-      3.220925573259592
+      6.394164985977113,
+      6.5916485618799925,
+      6.744685466401279,
+      6.875463062897325,
+      6.848674616776407,
+      4.4244840973988175
     ],
     "top_rung": "d_linear_qr_m4@new_K32",
     "cheapest_rung": "d_linear_qr_m4@new_K32",
-    "D1_cost_span": 3.17278905171909,
-    "D1": false,
-    "D1_neural_rungs_only_span_posthoc": 1.1090841297308738,
+    "D1_cost_span": 1.5539581364840827,
+    "D1": true,
+    "D1_neural_rungs_only_span_posthoc": 1.0752714510769952,
     "D2_top_lowest_error": true,
     "D2_top_within_1p1": true,
     "D2": true,
     "D2_strict_top_cheapest": true,
     "D3": true,
-    "degenerate": false,
+    "degenerate": true,
     "error_monotone": true,
-    "falsified_literal": true,
+    "falsified_literal": false,
     "falsified_intent": false,
     "rungs_that_buy_accuracy": [],
     "non_dominated_all": [
@@ -142,8 +172,8 @@
   },
   "numpy_bank_floor": {
     "passed": true,
-    "max_abs_difference": 3.6531368533508635e-11,
-    "worst": 0.007458604095354888
+    "max_abs_difference": 6.753724489383384e-11,
+    "worst": 0.007421272877219635
   },
   "all_passed": true
 }

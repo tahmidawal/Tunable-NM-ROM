@@ -1,4 +1,52 @@
 {
+  "1024": {
+    "ladder": [
+      "q0_m4@new_K32",
+      "q32_m4@new_K32",
+      "q64_m4@new_K32",
+      "q128_m4@new_K32",
+      "q256_m4@new_K32",
+      "d_linear_qr_m4@new_K32"
+    ],
+    "costs": [
+      6.394164985977113,
+      6.5916485618799925,
+      6.744685466401279,
+      6.875463062897325,
+      6.848674616776407,
+      4.4244840973988175
+    ],
+    "errs": [
+      0.031495039123511044,
+      0.0246409229050417,
+      0.020759558396990722,
+      0.015458944831401197,
+      0.009647906290076344,
+      0.0074213021208988286
+    ],
+    "D1_span": 1.5539581364840827,
+    "D1": true,
+    "D1_neural_span_posthoc": 1.0752714510769952,
+    "D2_lowest": true,
+    "D2_within": true,
+    "D2_strict": true,
+    "D3_fom": true,
+    "D3_pod": true,
+    "nd_all": [
+      "dst_direct"
+    ],
+    "nd_red": [
+      "d_linear_qr_m4@new_K32",
+      "d_linear_qr_m256@incumbent",
+      "e_pod512_m4@trainset"
+    ],
+    "monotone": true,
+    "falsified_literal": false,
+    "falsified_intent": false,
+    "buys": [],
+    "cheapest": "d_linear_qr_m4@new_K32",
+    "top": "d_linear_qr_m4@new_K32"
+  },
   "256": {
     "ladder": [
       "q0_m4@new_K32",
@@ -46,5 +94,11 @@
     "buys": [],
     "cheapest": "d_linear_qr_m4@new_K32",
     "top": "d_linear_qr_m4@new_K32"
+  },
+  "head": {
+    "H1_pass": true,
+    "H1_relative": 0.0,
+    "H2_max_drop": 0.3415024361063732,
+    "H2_min_ratio": 2.755480974836571
   }
 }

@@ -1,0 +1,186 @@
+{
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024,
+  "residual_starts": 4,
+  "residual_budget": 200,
+  "residual_seed": 20260915,
+  "decoder_code_subsample": 8192,
+  "quadrature_multiplier": 4,
+  "quadrature_cap": 2048,
+  "eq_blocks": 16,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "max_fit_rows": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 600,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "reps": 3,
+  "order_seed": 911716,
+  "burn_seconds": 0.25,
+  "step_budget_provenance": "btq102 sweep block '_b600' (q256_m2_dense_base_b600): zero budget exits, worst joint gradient 9.71e-07, 0.988x the budget-180 control cost",
+  "q_ladder": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "fft_loose",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    }
+  ],
+  "collect_iters": 12,
+  "collect_seed": 20260916,
+  "fit_trajectories": 24,
+  "cert_trajectories": 8,
+  "cert_states": 512,
+  "certify_chunk": 32,
+  "incumbent_candidate_cap": 8192,
+  "incumbent_fit_states": 64,
+  "incumbent_max_fit_rows": 8192,
+  "incumbent_cap": 2048,
+  "rule_fitter": "bounded",
+  "rho_bar": 0.116,
+  "rho_bar_provenance": "q-diag 2026-09-16, report SHA256 c0bf57626d9e0a422965446b39e79e423c9a39f6886b7ca1893b8a03cd803c6e: cclad01 arm q0_m256_eq_block, rho = 0.1158 at t = 0",
+  "expected_directions_sha256": "f65b82e22871fd439a1a786e95910ce15cc36b61ec294588c4ac6a6f0bb07892",
+  "expected_pool_sha256": {
+    "0": {
+      "fit": "ba6dc9547ca928163c90a44c6f6b0ec7d52f358f8239e0b4e1c71b67c544c0cb",
+      "cert": "30d538b5bb41e7a9f735910baa7de6dd345bbd7781c3510aa119b9e669eee08f"
+    },
+    "16": {
+      "fit": "22480f84c6a867e27afa3d0a27c45c7f67fc35d72ffcfe5615f0a4c9af266b0a",
+      "cert": "b4c570e0b8c99c836a555a4d73ba6be2597dcf68e8598ed499c3e53814a5a76c"
+    },
+    "32": {
+      "fit": "368eae9d3ecdf1b2c2e135341301a759b94e5aec14d5f03c95ddf2637d4779f4",
+      "cert": "1ee8ef968febcbb9fe595c072504feee232a2a988bd852c0065d45179c063c82"
+    },
+    "64": {
+      "fit": "a7dfd3086ff6db8bb241fa490f8ba905810f47afe94e897f888958a116d611a9",
+      "cert": "0dcc835dd31e0bc2dda2d26300e712b19af0ed8d86598138fd36df65d34e3e19"
+    },
+    "128": {
+      "fit": "ddb9bd6bec3cb187a16ffbbb18cf3f9a242b52e4fcd3f164705aa89f8399d30d",
+      "cert": "832c719895b96eb20ad432dc16e3b5af0a337351b8201f77932aa304a4e022a3"
+    },
+    "256": {
+      "fit": "f18826aaa60462e5c19474a955cdff262b3143b4e76ff7e7566c8e57878e4aad",
+      "cert": "2575ca5d9a1312dc06bd629646225784d96202cd0026504cc8a51d4dec52925f"
+    }
+  },
+  "qrg304": {
+    "job_id": "3768168",
+    "commit": "467a4670f179d9b595bbcadfd5e185abae42bb1b",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "archive_sha256": "2df8074de63f0c309310dfd6371d42d2bd9dd7298d5345fab21489646b39dd62"
+  },
+  "bars": {
+    "primary": 0.116,
+    "tight": 0.06
+  },
+  "bars_provenance": "primary: q-ridge DESIGN A3.4 / q-diag rho of the q=0 incumbent rule (0.1158); tight: the coordinator's tighter bar, declared before this job ran, to test whether the primary bar is sufficient at the top rung",
+  "recertify_tolerance": 1e-06,
+  "candidate_pool": 16384,
+  "pool_seed": 20260917,
+  "eq_seconds": 5400.0,
+  "fit_workers": 12,
+  "fit_threads": 1,
+  "fit_submission_deadline_seconds": 43200.0,
+  "max_rom_arms": 16,
+  "attempt": "bet201",
+  "question": "CURVE",
+  "timed_phase": false,
+  "new_rungs": [
+    0,
+    16,
+    32,
+    64
+  ],
+  "arms": [
+    {
+      "name": "std",
+      "fit_states": "incumbent",
+      "scaling": "row",
+      "compress": false,
+      "m_grid": [
+        256,
+        512,
+        1024,
+        2048,
+        3072,
+        4096
+      ],
+      "adaptive": false,
+      "confirm": 0
+    },
+    {
+      "name": "fs64",
+      "fit_states": 64,
+      "scaling": "row",
+      "compress": true,
+      "m_grid": [
+        1024,
+        2048
+      ],
+      "adaptive": false,
+      "confirm": 0
+    },
+    {
+      "name": "rhow64",
+      "fit_states": 64,
+      "scaling": "state",
+      "compress": true,
+      "m_grid": [
+        1024,
+        2048
+      ],
+      "adaptive": false,
+      "confirm": 0
+    }
+  ],
+  "dense_twins": [],
+  "reproduction_arms": [],
+  "purpose": "The held-out rho against m at every rung q <= 64 on a common grid, so the empirical law rho_max ~ m^-alpha and the m needed for a target rho can be stated per rung; plus the fit-state and scaling arms at m = 1024 and 2048 to see whether they matter below the top rungs. No timed phase.",
+  "expectations": {}
+}

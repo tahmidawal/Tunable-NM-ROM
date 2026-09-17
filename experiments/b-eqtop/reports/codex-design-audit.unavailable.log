@@ -1,0 +1,39 @@
+OpenAI Codex v0.154.0
+--------
+workdir: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-eqtop
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 01a0adc4-136b-77a1-99cf-f543fc7768b7
+--------
+user
+You are an independent auditor (a different model family) for a pre-registered numerical experiment. READ-ONLY: do not modify, create or delete any file; do not run Python, JAX or GPU work; do not submit cluster jobs; do not commit. Report findings only, as markdown.
+
+Context: this repository is a reduced-order-model research codebase. The lane `experiments/b-eqtop/` (worktree root is the current directory) will run cluster jobs to certify empirical-quadrature (EQ) rules for the top rungs (q = 128, 256) of a Burgers correction ladder, following the parent lane `experiments/q-ridge/` (read its DESIGN.md sections A3-A7 and its report `experiments/q-ridge/reports/2026-09-16-q-ridge.md` for the numbers this lane starts from).
+
+Read, in order:
+1. experiments/b-eqtop/DESIGN.md  (the pre-registration under audit)
+2. experiments/b-eqtop/eqtop.py, experiments/b-eqtop/fitworker.py, experiments/b-eqtop/q_eqtop.py  (the code that implements it)
+3. experiments/b-eqtop/make_config.py and the generated config-j1.json / config-j2.json
+4. experiments/b-eqtop/audit_eqtop.py, experiments/b-eqtop/smoke_eqtop.py
+5. experiments/q-ridge/eqcert.py and experiments/cheap-corrections/varpro.py (bounded_nnls), which the lane reuses
+6. experiments/b-eqtop/cluster/stage.py
+
+Audit adversarially and answer specifically:
+(a) Is the pre-registered pass/fail (DESIGN §7) falsifiable and free of loopholes? Could the lane declare a pass on a ladder that is not actually a fair, converged, same-job comparison? Is anything left to post-hoc choice?
+(b) The QR compression claim (DESIGN §3): is the algebra right, and does `eqtop.compress` + `fitworker.py` + the sidecar implement exactly that (including the reported relative fit and the gradient-threshold in bounded_nnls that uses ||b||)? Any numerical trap (rank deficiency, GPU QR mode='r' semantics, sign conventions)?
+(c) The 'state' scaling: is the objective really sum_s rho(u_s)^2? Check build_design against the rho definition.
+(d) The chain scheduler `run_chains`: any way a chain can hang, double-submit, mis-count the confirmation point, or leave worker processes running into the timed phase? Does the timed phase correctly wait for every worker?
+(e) The driver q_eqtop.py: does the rule choice (cheapest per bar, tie-break) match DESIGN §6? Are the archived qrg304 rules loaded and re-certified correctly (nodes/weights hashes, M per rung)? Are the fidelity expectations in config-j1.json consistent with arm names the driver actually creates? Could the `max_rom_arms` assertion or the arm construction skip an arm silently?
+(f) Are there any captured-large-constant hazards (jit closing over G/Phi), memory hazards (a 69632 x 16385 float64 QR on an 80 GB A100; 8 concurrent workers each holding a 2 GB design), or walltime hazards (20 h limit) you can see?
+(g) The audit script: does it recompute what it claims independently of the driver? Any place it trusts driver flags instead of recomputing?
+(h) Anything in the DESIGN that is scientifically weak: is the m grid, the stopping rule, the two bars, or the three arms likely to leave the question unanswered? What would you add or change BEFORE the job runs (concrete, cheap suggestions only)?
+
+Be concrete: cite file:line. Rank findings by severity (blocking / should-fix / note). Do not pad.
+
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+ERROR: You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 19th, 2026 11:33 AM.
+ERROR: You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 19th, 2026 11:33 AM.

@@ -1,0 +1,17 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"prolongation_check": {"max_abs_difference": 0.0, "tolerance": 1e-12, "source": "/cluster/tufts/paralab/tawal01/no_second_20260917/res02/code/engines_output_field.py", "source_sha256": "d69c446f29c168822aa451ff97eac8f9e91872c960680e99b9794d70246135bf"}}
+{"validation@256": 0.0, "validation@128": 0.2255, "validation@64": 0.9233, "validation@32": 4.0157}
+{"diagnosis@256": 0.0, "diagnosis@128": 0.0729, "diagnosis@64": 0.3105, "diagnosis@32": 1.2462}
+{"fno-large@256": {"worst_evolved_pct": 6.3825, "median_ms": 7.3506}}
+{"fno-large@128": {"worst_evolved_pct": 7.2993, "median_ms": 3.4627}}
+{"fno-large@64": {"worst_evolved_pct": 9.8214, "median_ms": 3.438}}
+{"fno-large@32": {"worst_evolved_pct": 13.851, "median_ms": 3.3263}}
+{"unet-refine@256": {"worst_evolved_pct": 7.5176, "median_ms": 5.9021}}
+{"unet-refine@128": {"worst_evolved_pct": 38.1348, "median_ms": 2.347}}
+{"unet-refine@64": {"worst_evolved_pct": 60.1808, "median_ms": 2.3113}}
+{"unet-refine@32": {"worst_evolved_pct": 67.6496, "median_ms": 2.3016}}
+{"tsol-refine@256": {"worst_evolved_pct": 9.3183, "median_ms": 11.1953}}
+{"tsol-refine@128": {"worst_evolved_pct": 15.2905, "median_ms": 8.1509}}
+{"tsol-refine@64": {"worst_evolved_pct": 35.1768, "median_ms": 8.0915}}
+{"tsol-refine@32": {"worst_evolved_pct": 75.1331, "median_ms": 8.0402}}
+RESOLUTION FINISHED

@@ -1,0 +1,26 @@
+{
+  "checkpoints": [
+    {
+      "name": "fno-large",
+      "checkpoint": "ckpt/fno-large.pt",
+      "sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+      "source_job": "3710846",
+      "selected_by": "validation mean case-maximum fixed-initial error over all complete arms (DESIGN \u00a7A1)"
+    },
+    {
+      "name": "unet-refine",
+      "checkpoint": "ckpt/unet-refine.pt",
+      "sha256": "8fd7eb8327483e6bfdd550bd3a2e48a1ee254a426fc2f6b680f67ccfde76c734",
+      "source_job": "3780138",
+      "selected_by": "validation mean case-maximum fixed-initial error over all complete arms (DESIGN \u00a7A1)"
+    },
+    {
+      "name": "tsol-refine",
+      "checkpoint": "ckpt/tsol-refine.pt",
+      "sha256": "7f5a96d7077a59e247712d27440918580f48c00d426439616d00df4858e9c01e",
+      "source_job": "3780139",
+      "selected_by": "validation mean case-maximum fixed-initial error over all complete arms (DESIGN \u00a7A1)"
+    }
+  ],
+  "note": "Frozen validation-selected checkpoints, hash-verified against the audits that published them. fno-large comes from the parent FNO lane job 3710846 via its Git-archived run; unet-refine and tsol-refine from this lane. No training occurs in the resolution job."
+}

@@ -145,7 +145,13 @@ def main(attempt):
             recomputed = float(np.median(samples) * 1e3)
             assert abs(recomputed - stated['timings'][key]['device_query_pooled_median_ms']) <= 1e-9 * max(1., recomputed)
             models[f'{key}|timing'] = dict(device_query_pooled_median_ms=recomputed,
-                                           repetitions=list(samples.shape))
+                                           device_query_p05_ms=float(np.quantile(samples, .05) * 1e3),
+                                           device_query_p95_ms=float(np.quantile(samples, .95) * 1e3),
+                                           device_query_mean_ms=float(samples.mean() * 1e3),
+                                           repetitions=list(samples.shape),
+                                           timed_region='on-device supplied field and parameters to the on-device '
+                                                        'complete six-time trajectory (the parent lane\'s device query); '
+                                                        'the device-to-host copy is not included')
 
     # ---- §A5 top-rung gate: rung 256 must reproduce the published numbers ---------------
     top = {}

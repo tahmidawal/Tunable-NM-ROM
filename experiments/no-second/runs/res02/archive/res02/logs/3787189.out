@@ -1,0 +1,14 @@
+host=pax049 source_commit=40d7fef8d95f57a70424db226bbf066d91e2138d job=3787189
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-793c50be-fdce-eeff-be9d-e2286320ae0d, 81920 MiB, 575.57.08
+10.235.106.22:/projects/paralab  4.6T  4.2T  399G  92% /cluster/tufts/paralab
+jax_backend=gpu
+data_verified=395
+checkpoints_verified=3
+torch 2.11.0+cu128 cuda True
+{"task": "resolution-smoke", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/smoke_resolution.py", "--output", "out/resolution-smoke.json"], "exit_code": 0, "started_unix": 1789659042.14055, "ended_unix": 1789659049.8215463, "job_id": "3787189"}
+{"task": "cohort", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/prepare_diagnosis_cohort.py", "--reference-index", "data/refinement/index.json", "--train-index", "data/train/index.json", "--out", "data/diagnosis-cohort"], "exit_code": 0, "started_unix": 1789659049.8247993, "ended_unix": 1789659051.211915, "job_id": "3787189"}
+{"task": "resolution", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/resolution.py", "--checkpoints", "code/checkpoints.json", "--validation-index", "data/validation/index.json", "--cohort-index", "data/diagnosis-cohort/index.json", "--out", "out/resolution", "--repetitions", "30", "--burn-in", "20", "--timing-cases", "8"], "exit_code": 0, "started_unix": 1789659051.2152154, "ended_unix": 1789659139.3753524, "job_id": "3787189"}
+WORKER FINISHED
+1.4G	out
+ALL-DONE

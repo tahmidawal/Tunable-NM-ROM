@@ -13453,3 +13453,93 @@ final report against `runs/*/audit.json`.
 float64 at equal *epochs* rather than equal wall-clock was not tried; no other PDE/mesh
 controls. Lane is closed: nothing pending on the cluster, remote namespace empty, worktree
 committed (`ea812685`), not pushed, not merged.
+
+## 2026-09-17
+
+### b-panel — `bpn301` (256² panel, eqcert+eqtop both as arms) and `bpn203` (1024² resubmission) submitted; `bpn202`'s second failure diagnosed as an untimed-diagnostic OOM, not the refit
+
+**What ran.** Branch `exp/2026-09-17-b-panel`, worktree
+`worktrees/2026-09-17-b-panel`, commits `f3c5fbed` (staged content) and `aeb26400` (job-id
+record). Two jobs submitted this session, both from `tufts-login`, namespace
+`/cluster/tufts/paralab/tawal01/b_panel_20260917/`:
+
+- `bpn301` = job **3789570**, A100 (`--constraint=a100-80G`), `--mem 180G`, `gpu` partition,
+  `--exclude=pax007`, `config-256.json`. The **whole** 256² panel re-run in one allocation,
+  replacing `bpn101`'s table wholesale, now carrying **both** rule sets as arms at matched
+  $q\in\{0,16,32,64,128,256\}$, $M=4(K+q)$ and `gtol`$\in\{10^{-6},10^{-3}\}$: `eqcert`
+  (qrg304's rules, unchanged) and `eqtop` (b-eqtop's final exported set,
+  `worktrees/2026-09-17-b-eqtop/experiments/b-eqtop/certified-rules/`, staged read-only into
+  `inputs/rules-eqtop/`), plus the dense ladder, POD-LSPG ranks, the free bank, `fast`, the FNO
+  and the full-order Newton controls, 3 timed reps.
+- `bpn203` = job **3789572**, H200, `--mem 240G`, `gpu` partition, `--exclude=pax007`,
+  `config-1024.json`. Resubmission of the twice-failed `bpn201`/`bpn202` 1024² panel, same
+  science, with the fix below applied and smoked, no arm dropped.
+
+`squeue -u tawal01` was checked before and after each `sbatch`: zero `bpn_` jobs before
+`bpn301`; exactly one (`bpn_bpn301`) after; exactly one more (`bpn_bpn203`) after the second
+submission, each the sole job in its own attempt directory. Neither job was waited on.
+
+**Local smoke that gated `bpn301`.** Run by the prior session in this worktree before it was
+killed by the model usage limit (`checks/smoke-panel-a8.json`); read and recorded here rather
+than re-run, since every gate already passed:
+
+- baseline reproduction of the saved audited case: relative $\ell_2$ $1.44\times10^{-14}$
+  (matches the lane's earlier $1.4\times10^{-14}$).
+- the required new gate — a second rule *set* pointing at byte-identical files reproduces the
+  first bitwise — passed twice over: the in-job driver gate `matched_rule_files_bitwise` (4
+  pairs, `same_fields`/`same_iterations` all true) and its independent NumPy-audit
+  recomputation (`saved_fields_identical` true for all 4 pairs), plus the pre-existing
+  `duplicate_rule_set_bitwise` gate (4 arms, 8 invocations, all bitwise).
+- the uncapped fit-state fix (`fit_states_uncapped`): configured 16, used $[16,16]$, design
+  rows exactly `states × M`, no cap.
+- `priority_override_honoured`, `fft_tight_converged_everywhere`, `repetition_output_identical`,
+  `direct_reproduces_fft_tight`, `fast_parity`, `transfer_fit_cert_disjoint`: all pass;
+  `audit_failed: []` on both driver runs. `cluster_config_declarations` confirmed
+  `config-256/512/1024.json` all declare and honour their subject/override lists, including
+  both `eqcert` and `eqtop` arms in `config-256.json`.
+- Deviation (already priced under this lane's §A2 precedent): total smoke wall time 167.86 s,
+  over the nominal sub-minute local budget.
+
+**The caveat that travels with the `eqtop` arm, per rung, from b-eqtop's
+`PROVENANCE.json.rules[*].construction.status`:** $q=0,16,32$ confirmed (3/3, 3/3, 2/2 draws);
+$q=64$'s *exported* rule (`bet201` `std`, $m=2048$) is **confirmed (2/2)** — a different,
+more expensive construction than the archived $m=1024$ incumbent that b-eqtop's replication
+found marginal (2/6); $q=128,256$ are **"certified in one draw"** (single-draw rules above the
+$m=2048$ constructions that replication found marginal, 4/5 and 1/5) — not certified
+constructions. Every row and file in `inputs/PROVENANCE.json` carries this status, `export_basis`
+and an `eqtop_status_note` quoting b-eqtop's own language, so the nuance survives past this
+entry. Arms are named `eqtop`, not `eqcert2`.
+
+**`bpn202`'s second failure (job 3787247, H200, 28m37s) — diagnosed, not re-derived; the
+coordinator's suspicion did not hold.** The coordinator asked, after `bpn301` was submitted, to
+pull the log, record the cause, archive, clean up, and — if the transferred-rule refit was the
+problem — drop the quadrature arms from the 1024² job. All of the recording/archiving/cleanup
+had already been done by the prior session (`artifacts/bpn202-failed/FAILURE.json`, logs,
+manifest; the remote attempt directory confirmed deleted by `ssh tufts-login ls` returning
+empty for `b_panel_20260917/`). The refit is **not** the cause: all six transfers completed
+(37–390 s each, values identical to the retracted `bpn201`'s and to §A5.2's prediction — the
+top rungs uncertified for fit-state-starvation reasons, but not crashed). The actual cause is
+an XLA autotuning OOM inside the **untimed** best-found reconstruction diagnostic at $q=256$,
+after all 29 timed subjects were already resident (`panel.py:630`,
+`INTERNAL: Failed to get configs`, 16.97/16.98/31.97 GiB allocation requests) — the same defect
+§A7 had already diagnosed and fixed in this worktree. Because the crash is not caused by the EQ
+arms (the diagnostic runs over every declared ROM $q$ regardless of quadrature, and the
+already-committed fix now shares each EQ arm's $\Phi_M$/$A$ with its dense twin instead of
+holding a private copy), dropping the quadrature arms would not have prevented it and was not
+done. `bpn203` resubmits with the diagnostic-before-builds reorder, the shared test matrices,
+and the uncapped fit-state count already in place — the same mechanism `smoke-panel-a8.json`
+gates — with every arm intact.
+
+**What was wrong and retracted.** Nothing new retracted this session. Carried forward from
+earlier in the lane: `bpn201` (config-parsing crash, §A6) and `bpn202` (OOM in the untimed
+diagnostic, §A7) are both retracted/failed and archived, not tabled. The coordinator's
+hypothesis that the refit caused `bpn202`'s crash is recorded and did not hold (§A9) — stated
+plainly rather than quietly dropped.
+
+**What is left open.** `bpn301` and `bpn203` are both `PD` in queue, not yet landed. Neither was
+waited on this session (per the coordinator's no-idle-polling notice). Next session:
+checksum-collect and NumPy-audit both once they land; if `bpn203` fails a third time, escalate
+rather than resubmit again (the coordinator's "do not resubmit more than once" is now spent for
+this attempt). `bpn401` (512², the middle mesh) remains queued behind these in §A5's plan,
+budget permitting (job count now 5 of 8: `bpn101` complete, `bpn201` retracted, `bpn202`
+failed, `bpn301` and `bpn203` submitted).

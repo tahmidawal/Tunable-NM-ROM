@@ -273,8 +273,11 @@ def main():
       f'development: {sum(conv_dev.values())} of {len(seeds)} seeds converged |')
     w(f'| C4 — knob bar (≥ 2× error and ≥ 2× cost on the converged non-dominated set) on ≥ 2 of 3 seeds | '
       f'{f(C4)} | {sum(knob.values())} of {len(seeds)} |')
-    w(f'| TR — each seed reproduces the incumbent recipe (best-found ≤ {f(tr_bf, 2)} %, bank floor ≤ {f(tr_fl, 2)} %) | '
-      f'{f(not F3)} | ' + '; '.join(f'{s}: best-found {f(v["best_found"])} %, floor {f(v["bank_floor"])} % → {f(v["passes"])}' for s, v in TR.items()) + ' |')
+    tr_pass = sum(1 for v in TR.values() if v['passes'])
+    w(f'| TR — seeds reproducing the incumbent recipe (best-found ≤ {f(tr_bf, 2)} %, bank floor ≤ {f(tr_fl, 2)} %) | '
+      f'{tr_pass} of {len(TR)} | ' + '; '.join(f'{s}: best-found {f(v["best_found"])} %, floor {f(v["bank_floor"])} % → {f(v["passes"])}' for s, v in TR.items()) + ' |')
+    w(f'| F3 — the recipe is NOT reproduced (≥ 2 of 3 seeds fail TR), so the seed table is provisional | '
+      f'{f(F3)} | {len(TR) - tr_pass} of {len(TR)} seeds fail TR |')
     w('')
     w(f'Monotone-on-evolved counts: ' + ', '.join(f'`{lad}` {n} of {len(seeds)}' for lad, n in verdict['monotone_evolved_counts'].items())
       + '. Monotone-on-all-times counts: ' + ', '.join(f'`{lad}` {n} of {len(seeds)}' for lad, n in verdict['monotone_all_times_counts'].items()) + '.\n')

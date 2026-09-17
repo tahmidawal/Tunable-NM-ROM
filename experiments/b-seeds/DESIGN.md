@@ -236,6 +236,7 @@ trajectory, identity $(\ast)$ mean deviation $<10^{-6}$, whitening round trip $<
 Audit (`audit_seeds.py`, NumPy only): every reported error recomputed from the saved fields
 ($<10^{-9}$); every same-grid discrepancy against the same-job `fft_tight`; repetitions
 identical; all reps present; `incumbent_reproduces_qtd02` (eleven arms, $10^{-3}$; $10^{-9}$ as a probe, A1.1);
+`evaluation_cohort_matches_abl01_to_one_ulp` (values, with bitwise as a probe, A2);
 `training_complete` (300000 and 200000 steps, not capped); `pick_is_131072_with_27648_early`;
 `training_data_fingerprint_matches_incumbent` (stage A and B sums and sums of squares against
 `push_r3a` / `dn256b` JSONs, $10^{-9}$ relative — a value gate, because the FOM's last bits are
@@ -337,3 +338,20 @@ family. Its 25 findings were acted on as follows (numbers are its):
 
 Also in this amendment: the audit's own `training_gates` read the stage A/B JSONs by exact
 `N256` names, which the 64-interval smoke exposed; they now glob the mesh.
+
+**A2 (2026-09-17, after the three seed jobs were submitted, before any of their numbers existed).**
+The development-cohort gate `evaluation_cohort_bitwise_abl01` compared a **byte hash** of the six
+cases against `abl01`'s. Running the audit locally on the 64-interval smoke output showed it
+failing on one row, column 4 (viscosity) at **1 ulp / 1.97e-16 relative** — the recorded
+GB10-vs-cluster `np.exp` difference (`CLAUDE.md` landmine; `b-head-train` A5 hit the same thing).
+The real jobs compare cluster-recorded values against cluster-recorded values and should be
+bitwise, but a hash gate does not survive a machine or a NumPy version change, so the gate is now
+the **value** gate `evaluation_cohort_matches_abl01_to_one_ulp` (values agree to ≤ 1 ulp, with the
+differing rows, columns, max ulp and max relative difference recorded), and bitwise equality is
+reported beside it as the probe `evaluation_cohort_bitwise_abl01`. This is the substitution
+`b-head-train` A5 made for the same reason: stronger on values, not weaker. §7 reads accordingly.
+No number moves: 1 ulp in $\nu$ perturbs a solution by $O(10^{-16})$ relative.
+
+Also in A2, found by dry-running the report generator on that smoke audit: the verdict table's TR
+row showed the falsification flag `not F3` in its "holds" column, so **one** seed failing TR would
+have been printed as "yes". TR now reports "*n* of *m* seeds", and F3 is its own row.

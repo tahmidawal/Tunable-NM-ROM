@@ -280,14 +280,29 @@ def main():
     mine_pc = np.array(r['physical_cases'], dtype=float)
     if a.cohort == 'dev':
         abl = ROOT / 'experiments/head-ablation/artifacts/abl01/result.json'
-        recomputed = None
         if abl.exists():
-            pc = np.array(json.loads(abl.read_text())['physical_cases'])
-            recomputed = hashlib.sha256(np.ascontiguousarray(pc).tobytes()).hexdigest()
-            cg = dict(cg, abl01_recomputed_sha256=recomputed,
-                      bitwise_equal=bool(np.array_equal(mine_pc, pc)))
-        gate('evaluation_cohort_bitwise_abl01',
-             bool(cg.get('bitwise_equal', cg.get('passed'))), cg)
+            pc = np.array(json.loads(abl.read_text())['physical_cases'], dtype=float)
+            same_shape = pc.shape == mine_pc.shape
+            ulps = (np.abs(mine_pc - pc) / np.spacing(np.abs(pc))) if same_shape else None
+            cg = dict(cg, abl01_recomputed_sha256=hashlib.sha256(
+                np.ascontiguousarray(pc).tobytes()).hexdigest(),
+                bitwise_equal=bool(same_shape and np.array_equal(mine_pc, pc)),
+                max_ulp=(float(ulps.max()) if same_shape else None),
+                max_relative=(float((np.abs(mine_pc - pc) / np.maximum(np.abs(pc), 1e-300)).max())
+                              if same_shape else None),
+                rows_differing=(int((np.abs(mine_pc - pc) > 0).any(1).sum()) if same_shape else None),
+                columns_differing=(sorted({int(c) for c in np.nonzero(np.abs(mine_pc - pc))[1]})
+                                   if same_shape else None))
+            # A VALUE gate, per CLAUDE.md's cross-machine landmine and b-head-train A5: the
+            # viscosity column passes through np.exp, which differs by one ulp between the GB10
+            # and the cluster NumPy, so a byte hash does not survive a machine or version change.
+            # Bitwise equality is reported beside it as a probe.
+            gate('evaluation_cohort_matches_abl01_to_one_ulp',
+                 bool(same_shape and ulps.max() <= 1.0), cg)
+            info('evaluation_cohort_bitwise_abl01', cg['bitwise_equal'], cg,
+                 'expected to hold cluster-to-cluster; a 1-ulp miss across machines is not a defect')
+        else:
+            gate('evaluation_cohort_matches_abl01_to_one_ulp', bool(cg.get('passed')), cg)
         gate('cohort_roles_are_development',
              all(v in ('opened development', 'fresh development') for v in r['cohort_roles']),
              r['cohort_roles'])

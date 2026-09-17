@@ -299,3 +299,21 @@ cost span over the $q < R$ rungs alone, which is the quantity D1 was designed to
 (1.109× at 256). For the 1024 job, which had not run when this was written, the same six
 quantities are reported and **`falsified_intent` is the clause I will treat as deciding the
 paper's claim**, with the literal verdict printed beside it either way.
+
+**2026-09-17, §A9 — the post-hoc report audit is a written self-audit; Codex remains
+unavailable.** The coordinator's notice (LANE-PROTOCOL.md, 2026-09-17 ~23:30) confirms the
+Codex usage limit holds until 2026-09-19 11:33. The report audit against the raw JSONs
+(protocol rule 12b) is therefore performed as a written self-audit,
+`reports/self-audit-report.md`: one row per claim in the report and the lab-log entry, the
+`result.json` / `audit.json` field it rests on, and the check run. The independence guarantee
+is weaker than a second model family and every consumer of this lane's numbers should read it
+as such. If the lane is still open after 2026-09-19 11:33 the Codex report audit is run and
+its accepted and rejected findings are appended here as §A10.
+
+Recorded with this amendment, for a respawned agent: `plhead1` (job `3783883`) completed on
+`pax143` (A100-PCIE-40GB) at 32m05s; `plin1024b` (job `3783813`) completed on `pax008`
+(**H200**, 143 GB) at 16m43s, whereas `plin256` (job `3780692`) ran on a **40 GB A100**. The
+two meshes are on different cards; no ratio is formed between them anywhere, and the report
+prints the GPU per job in its own table. Both jobs' logs contain `jax_backend=gpu` and
+`ALL-DONE`; both `.err` streams are empty except for one XLA slow-compile notice in
+`plhead1`.

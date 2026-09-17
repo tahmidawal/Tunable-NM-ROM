@@ -1,0 +1,52 @@
+{
+  "backend": {
+    "passed": true,
+    "backend": "gpu",
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "job": "3783883"
+  },
+  "cohort_parameters": {
+    "passed": true,
+    "max_abs_difference": null
+  },
+  "recomputed_errors": {
+    "passed": true,
+    "invocations": 324,
+    "distinct_fields": 108,
+    "worst_physical_difference": 1.464983716341307e-16,
+    "worst_same_grid_difference": 1.0591185640168621e-16
+  },
+  "timing_identity": {
+    "passed": true,
+    "worst_seconds": 0.0
+  },
+  "invocation_grid": {
+    "passed": true,
+    "subjects": 9,
+    "repetitions": 3,
+    "cases": 12
+  },
+  "fidelity_gates_recomputed": {
+    "passed": true,
+    "rows": [
+      {
+        "ours": "a_neural@pbh02_primary_K32",
+        "theirs": "a_neural@new_K32",
+        "worst": 1.942371736497749e-15,
+        "passed": true
+      },
+      {
+        "ours": "dst_direct",
+        "theirs": "dst_direct",
+        "worst": 1.0012751178869903e-10,
+        "passed": true
+      }
+    ],
+    "driver_gates_all_passed": true
+  },
+  "exit_bookkeeping": {
+    "passed": true,
+    "inconsistent_rows": 0
+  },
+  "all_passed": true
+}

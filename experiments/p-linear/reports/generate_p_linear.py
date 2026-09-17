@@ -323,7 +323,9 @@ def head_section(d, audit):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--attempts', nargs='*', default=['plin1024', 'plin256'])
+    ap.add_argument('--attempts', nargs='*', default=['plin1024b', 'plin256'])
+    ap.add_argument('--failed', nargs='*', default=['plin1024'],
+                    help='retracted attempts, reported from runs/<attempt>/FAILURE.json')
     ap.add_argument('--head', default='plhead1')
     ap.add_argument('--out', default=str(HERE / f'{DATE}-p-linear.md'))
     a = ap.parse_args()
@@ -429,12 +431,53 @@ def main():
                             value=rec['bank_projection']['worst'], job_id=d['job_id']))
         for key in ('D1_span',):
             summary.append(dict(mesh=n, subject='criterion', family='criterion', q_or_k=None, metric=key, value=crit[key], job_id=d['job_id']))
+    # GPU per mesh, stated once so that nobody forms a ratio across jobs. Every ratio in
+    # this report is between rows of ONE job on ONE GPU; the two meshes ran on different
+    # cards and are never divided into each other.
+    gpus = [(att, d_['intervals'], d_['job_id'], d_['gpu']) for att in a.attempts
+            for d_ in [load_attempt(att)[0]] if d_ is not None]
+    if gpus:
+        md += ['## GPUs, one per job — no ratio is ever formed across meshes or cards', '',
+               '| attempt | mesh | job | GPU |', '|---|---:|---|---|']
+        md += [f'| `{att}` | {n_}² | `{j}` | `{g}` |' for att, n_, j, g in gpus]
+        md += ['', 'Each mesh is one job on one card; every cost ratio, span and non-dominated set above '
+               'is computed within that job only. The 1024² and 256² rows are never compared to each '
+               'other on cost' + (' (an H200 versus a 40 GB A100)' if len({g for *_, g in gpus}) > 1 else '') + '.', '']
+    # Retracted attempts: every attempt that produced no accepted number, from its
+    # FAILURE.json (written at retraction time), so the retraction is generated, not typed.
+    failed = []
+    for att in a.failed:
+        fj = LANE / 'runs' / att / 'FAILURE.json'
+        if fj.exists():
+            failed.append((att, json.loads(fj.read_text())))
+    if failed:
+        md += ['## Retracted attempts', '',
+               '| attempt | job | state | elapsed | node / GPU | failure | disk at failure | timed numbers | gates run | superseded by |',
+               '|---|---|---|---|---|---|---|---|---|---|']
+        for att, f in failed:
+            md.append(f"| `{att}` | `{f['job_id']}` | {f['state']} {f['exit_code']} | {f['elapsed']} | {f['node']}, {f['gpu']} | "
+                      f"{f['failure']} | {f['disk_at_failure']} | {'yes' if f['timed_numbers_produced'] else 'none'} | "
+                      f"{'yes' if f['gates_run'] else 'none'} | {f['superseded_by']} |")
+        md += ['', 'A retracted attempt contributes nothing above: no timed row, no gate, no oracle value. '
+               'Its logs are retained under `runs/<attempt>/logs/`. The rule for an *empty* log is that '
+               'disk-full is the likely cause; a retracted attempt whose log is complete and ends in a '
+               'traceback is diagnosed from that traceback instead.', '']
+        for att, f in failed:
+            summary.append(dict(mesh=None, subject=att, family='retracted', q_or_k=None, metric='timed_numbers_produced',
+                                value=f['timed_numbers_produced'], job_id=f['job_id'], failure=f['failure']))
     dh, ah, _ = load_attempt(a.head)
     if dh is not None:
         sec, srows, hv = head_section(dh, ah)
         md += [sec, '']
         summary += srows
         verdicts['head'] = hv
+    else:
+        sub = LANE / 'runs' / a.head / 'SUBMISSION.json'
+        job = json.loads(sub.read_text())['job_id'] if sub.exists() else 'not submitted'
+        md += [f'## Job 3 — head capacity on the frozen bank (`{a.head}`, job `{job}`) — PENDING', '',
+               'Not collected at the time this report was generated. Nothing is said about it here; '
+               'the section is generated from its `result.json` once the job is collected and audited.', '']
+        verdicts['head'] = dict(pending=True, job_id=job)
     md += ['## Glossary', '',
            '- **rung / q**: the number of linear correction directions added to the neural head\'s output; q = 0 is the head alone, q = R spans the whole bank (a linear least-squares solve).',
            '- **m4 / m256**: the test-count rule: m4 uses M = 4 x (number of unknowns) sine test modes; m256 uses a fixed 256 requested modes (257 retained).',

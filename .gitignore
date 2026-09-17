@@ -25,3 +25,10 @@ experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
 # runs/<attempt>/archive/ are the same bytes unpacked and must not be tracked twice —
 # pbh02's alone is 2.0 GB compressed and 4.0 GB unpacked.
 experiments/p-bank-head/runs/*/archive/
+
+# p-linear: plhead1 and plin1024b job archives are preserved exactly as checksum-verified
+# chunks under experiments/p-linear/artifacts/<attempt>/; the unpacked runs/<attempt>/archive/
+# trees are the same bytes and are not tracked twice. (plin256/archive was already tracked
+# before this rule and is left as committed.)
+experiments/p-linear/runs/plhead1/archive/
+experiments/p-linear/runs/plin1024b/archive/

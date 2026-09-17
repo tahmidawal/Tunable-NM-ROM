@@ -168,7 +168,7 @@ def main():
                                     cases=r['cases'], job_id=job, attempt=attempt, source_sha256=sha))
         for name, d in dec.items():
             for metric in ('worst_energy_state', 'worst_displacement'):
-                summary.append(dict(mesh=n, subject=name, family='decomposition:' + d['layer'], q_or_k=None, dimension=d['dimension'], metric=metric, value=d[metric],
+                summary.append(dict(mesh=n, subject=f"{name}@{d['layer']}", arm=name, family='decomposition:' + d['layer'], q_or_k=None, dimension=d['dimension'], metric=metric, value=d[metric],
                                     cases=len(result['decomposition']), job_id=job, attempt=attempt, source_sha256=sha))
         for k, v in vd.items():
             summary.append(dict(mesh=n, subject='verdict', family='verdict', q_or_k=None, dimension=None, metric=k, value=v, cases=None, job_id=job, attempt=attempt, source_sha256=sha))

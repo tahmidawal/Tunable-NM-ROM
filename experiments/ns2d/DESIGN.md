@@ -217,3 +217,27 @@ FOM, a hashed dataset, and the bank/head floors — an appendix and a foundation
 - **Dev / sealed cohort**: trajectories used for evaluation now / held unopened.
 - **Arakawa Jacobian**: the energy- and enstrophy-conserving finite-difference form of $J(\psi,\omega)$.
 - **Implicit midpoint**: Crank–Nicolson with the nonlinear term at the midpoint state.
+
+## §A1 (2026-09-17, before job 1) — the Taylor–Green gate, corrected for a second-order scheme
+
+The F-TG row above copied the coordinator's "matches the analytic solution to $\le10^{-6}$ at
+128²", which is a pseudo-spectral number. For the frozen second-order scheme the discrete
+Laplacian eigenvalue of the TG mode is $\lambda_h=4N^2(1-\cos 2\pi/N)$ versus $8\pi^2$, so at
+$N=128$, $\nu=10^{-2}$, $T=1$ the *continuum* discrepancy is $\nu T(8\pi^2-\lambda_h)\approx1.6\times10^{-5}$
+by construction and cannot be $10^{-6}$. The gate is therefore restated, sharper:
+
+- **F-TG-exact**: with Arakawa $J_A(\psi,c\psi)=0$, TG has the closed-form fully discrete
+  solution $\omega^n=\big(\tfrac{1-a}{1+a}\big)^n\omega_0$, $a=\tfrac{\Delta t\,\nu\lambda_h}{2}$.
+  The FOM must match it to $\le10^{-10}$ relative at $N\in\{64,128,256\}$ (this is a Newton-tolerance
+  identity, and it tests the Laplacian, the Poisson solve, the Jacobian's antisymmetry and the
+  time scheme together). Negative controls: a wrong $\lambda$ (scaled by 4/3) and the backward
+  Euler scheme must both fail at $\ge10^{-4}$.
+- **F-TG-semi**: FOM versus the semi-discrete $\omega_0e^{-\nu\lambda_h t}$ at $\le10^{-6}$
+  (the time-discretisation error alone, predicted $\approx1.6\times10^{-7}$ at $\Delta t=2\times10^{-3}$).
+- **F-TG-cont**: FOM versus continuum TG: observed spatial order $2.00\pm0.05$ over
+  $64\to128\to256$, **and** the measured error at each $N$ must agree with the closed-form
+  prediction $|e^{-\nu T\lambda_h}-e^{-8\pi^2\nu T}|/e^{-8\pi^2\nu T}$ to within 2 % — a
+  prediction-matching gate, not an absolute threshold.
+
+The coordinator's $10^{-6}$ is met by F-TG-semi (and exceeded by F-TG-exact); the continuum
+comparison is a convergence-order gate, as it must be for a finite-difference scheme.

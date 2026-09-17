@@ -44,6 +44,28 @@
       "node": "pax106",
       "archived": "experiments/b-eqtop/artifacts/bet201",
       "remote_deleted": "2026-09-17T09:28-04:00"
+    },
+    {
+      "attempt": "bet101",
+      "job_id": "3780164",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "04:32:40",
+      "node": "pax049",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "archived": "experiments/b-eqtop/artifacts/bet101",
+      "archive_sha256": "d85fbc273d11d0892eee85ffeb5d4549a3fb8717fd14839b3150d013a22698bc",
+      "audit": "experiments/b-eqtop/checks/bet101-audit.json",
+      "audit_failed_blocking_gates": [],
+      "remote_deleted": "2026-09-17T10:47-04:00"
+    }
+  ],
+  "pending": [
+    {
+      "attempt": "bet301",
+      "job_id": "3783811",
+      "state_at": "2026-09-17T10:47-04:00 RUNNING on pax052 (1h18m)",
+      "purpose": "DESIGN A2 draw replication; every certification claim in the interim report is provisional until it lands"
     }
   ]
 }

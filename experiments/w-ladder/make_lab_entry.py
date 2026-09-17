@@ -25,9 +25,11 @@ jobs = {m: next(r['job_id'] for r in S if r['mesh'] == m) for m in meshes}
 attempts = {m: next(r['attempt'] for r in S if r['mesh'] == m) for m in meshes}
 heads = ['head_q0', 'trained_nested40', 'nested_q8', 'nested_q16', 'nested_q32']
 
+ratios = [val(m, 'head_q0', 'median_gpu_ms') / val(m, 'linear_bank64', 'median_gpu_ms') for m in meshes]
 lines = ['## 2026-09-17', '',
-         '### w-ladder — the reflective 2D wave is the second linear PDE whose correction ladder is degenerate: '
-         'the top rung (linear evolution of the full learned bank) is the most accurate rung and two orders of magnitude the cheapest', '']
+         '### w-ladder — the reflective 2D wave is the second linear PDE whose correction ladder is degenerate: the top rung '
+         f'(linear evolution of the full learned bank) is the most accurate rung and {min(ratios):.0f}–{max(ratios):.0f}× cheaper '
+         'than the cheapest head rung', '']
 lines.append('Branch `exp/2026-09-17-w-ladder`, worktree `worktrees/2026-09-17-w-ladder`, forked from the consolidated baseline '
              '`exp/2026-09-13-nmrom-consolidated` at `02ff0f1f`. Cluster namespace `/cluster/tufts/paralab/tawal01/w_ladder_20260917/` '
              '(empty at close). Nothing merged, nothing pushed. Pre-registration and every amendment: '

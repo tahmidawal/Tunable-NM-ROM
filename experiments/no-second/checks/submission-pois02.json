@@ -1,0 +1,13 @@
+{
+  "attempt": "pois02",
+  "job_id": "3780625",
+  "job_name": "ctol_nos_pois01",
+  "source_commit": "339c026bc9ede20a37d3a02c040a192c8047b143",
+  "remote": "/cluster/tufts/paralab/tawal01/no_second_20260917/pois02",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 03:30:00",
+  "submitted_utc": "2026-09-17T09:58:14.226320+00:00",
+  "replaces": "pois01 / 3780224 (preamble failure, configs not staged; remote dir removed after its logs were preserved)",
+  "queue_before": "owned: 3780138 unet01 RUNNING, 3780139 tsol01 RUNNING; no job in pois02",
+  "queue_after": "owned: 3780138, 3780139 RUNNING and 3780625 pois02 PENDING \u2014 one job per attempt directory",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged"
+}

@@ -19,6 +19,8 @@ LANE = HERE.parent
 WT = LANE.parents[1]
 FNO_AUDIT = LANE.parent / 'neural-operator-audit/runs/fno_burgers02/field-audit.json'
 FNO_LAUNCH = LANE.parent / 'neural-operator-audit/checks/collection-burgers02-launch.json'
+FNO_POISSON_AUDIT = LANE.parent / 'neural-operator-audit/runs/fno_poisson01/field-audit.json'
+FNO_POISSON_PARAMS = {'small': 1192801, 'medium': 5779729, 'large': 17876673}  # from its archived result.json files
 # Hash-pinned copy of the Burgers lane's diagnosis audit (its SHA256 is asserted in main()).
 DIAGNOSIS = LANE / 'checks/refinement02-diagnosis-audit.json'
 DIAGNOSIS_SHA256 = 'ffa77d1b8bc44d2bd3d0ac2753444d2e1ff379898735258b60b9d68a41e3e187'
@@ -47,13 +49,86 @@ def capacity_of(config):
     return f"width {config['width']}, modes {config['modes']}"
 
 
-def load_attempts():
+def load_attempts(pde='burgers'):
     attempts = []
     for path in sorted(LANE.glob('runs/*/audit.json')):
         audit = json.loads(path.read_text())
-        if audit.get('passed'):
+        if audit.get('passed') and audit.get('pde', 'burgers') == pde:
             attempts.append(dict(audit=audit, path=path, sha=sha(path)))
     return attempts
+
+
+def poisson_rows(attempts, fno_p, fno_p_sha):
+    rows = []
+    for a in attempts:
+        audit = a['audit']
+        for arm, r in audit['arms'].items():
+            if not r.get('complete'):
+                continue
+            base = dict(operator=FAMILY_LABEL[r['family']], arm=arm, capacity=capacity_of(r['config']), params=r['real_parameter_count'],
+                        dtype=r['parameter_dtype'], seed=r['seed'], budget_s=r['wall_budget_seconds'], epochs=r['epochs_completed'],
+                        best_epoch=r['best_epoch'], stop_reason=r['stop_reason'], job_id=audit['job_id'], gpu=audit['gpu'],
+                        attempt=audit['attempt'], source=str(a['path'].relative_to(WT)), source_sha256=a['sha'], cross_job=False)
+            for kind in ('discrete', 'physical_candidate'):
+                for metric in ('maximum', 'median', 'mean'):
+                    rows.append(dict(base, cohort='poisson-validation-32', metric=f"{'worst' if metric == 'maximum' else metric}_{kind}_relative_error",
+                                     value=r[kind][metric]))
+            t = audit['timing'].get('models', {}).get(arm)
+            if t:
+                rows.append(dict(base, cohort='poisson-validation-32', metric='same_job_device_query_pooled_median_ms', value=t['device_pooled_median_ms']))
+    for size, r in fno_p['models'].items():
+        base = dict(operator='FNO', arm=f'fno-{size}', capacity='—', params=FNO_POISSON_PARAMS[size], dtype='torch.float64', seed=20260914,
+                    budget_s=7200.0, epochs=None, best_epoch=r['best_epoch'], stop_reason='early_stopping', job_id=fno_p['job_id'],
+                    gpu='NVIDIA A100 80GB PCIe', attempt='fno_poisson01', source=str(FNO_POISSON_AUDIT.relative_to(WT)),
+                    source_sha256=fno_p_sha, cross_job=True)
+        for kind in ('discrete', 'physical_candidate'):
+            for metric in ('maximum', 'median', 'mean'):
+                rows.append(dict(base, cohort='poisson-validation-32', metric=f"{'worst' if metric == 'maximum' else metric}_{kind}_relative_error",
+                                 value=r[kind][metric]))
+    return rows
+
+
+def poisson_section(attempts, fno_p):
+    if not attempts:
+        return ''
+    jobs = ', '.join(f"`{a['audit']['job_id']}` ({a['audit']['attempt']}, {a['audit']['gpu']}, commit `{a['audit']['source_commit'][:8]}`)" for a in attempts)
+    cap = ['| Run | Operator | Capacity | Network dtype | Real parameters | Epochs run | Best epoch | Training s | Budget s | Ended by | Job |',
+           '| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |']
+    acc = ['| Run | Operator | Job | Discrete: median (%) | Discrete: worst (%) | Physical: mean (%) | Physical: median (%) | Physical: p95 (%) | Physical: worst (%) | Cases > 5% (physical) |',
+           '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+    for a in attempts:
+        for arm, r in a['audit']['arms'].items():
+            if not r.get('complete'):
+                continue
+            cap.append(f"| `{arm}` | {FAMILY_LABEL[r['family']]} | {capacity_of(r['config'])} | {r['parameter_dtype'].replace('torch.', '')} | "
+                       f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | {r['training_seconds']:.0f} | "
+                       f"{r['wall_budget_seconds']:.0f} | {r['stop_reason'].replace('_', ' ')} | `{a['audit']['job_id']}` |")
+            d, ph = r['discrete'], r['physical_candidate']
+            acc.append(f"| `{arm}` | {FAMILY_LABEL[r['family']]} | `{a['audit']['job_id']}` | {pct(d['median'])} | {pct(d['maximum'])} | {pct(ph['mean'])} | "
+                       f"{pct(ph['median'])} | {pct(ph['p95'])} | {pct(ph['maximum'])} | {ph['above_threshold_counts']['0.05']} |")
+    for size, r in fno_p['models'].items():
+        d, ph = r['discrete'], r['physical_candidate']
+        acc.append(f"| `fno-{size}` | FNO (parent lane, other job) | `{fno_p['job_id']}` | {pct(d['median'])} | {pct(d['maximum'])} | {pct(ph['mean'])} | "
+                   f"{pct(ph['median'])} | {pct(ph['p95'])} | {pct(ph['maximum'])} | {ph['above_threshold_counts']['0.05']} |")
+    return f"""
+
+## Poisson: U-Net on the Poisson operator-screen dataset
+
+Jobs: {jobs}. The dataset is the Poisson FNO job's (`{fno_p['job_id']}`): 128 training and 32
+validation cases at 256 intervals, source field in, zero-Dirichlet solution out, training
+target the declared discrete (five-point FD/DST) solution, with an evaluation-only physical
+reference sidecar (2048-interval refinement) per validation case. Because no cluster copy
+survived, the files were re-uploaded from the Git archive and re-verified in-job against
+their recorded hashes; the train/validation index SHA256 equal the FNO job's (asserted by
+the audit). Protocol = the Poisson FNO's: 500-epoch cap, patience 80, 7200 s wall budget per
+capacity, validation selection on the discrete target, no refinement. Two metrics, as in
+the parent audit: **discrete** (against the training target) and **physical candidate**
+(against the refinement sidecar). No matched ROM/DST cohort is scored here.
+
+{chr(10).join(cap)}
+
+{chr(10).join(acc)}
+"""
 
 
 def rows_for(attempts, fno, fno_sha, diagnosis, diagnosis_sha):
@@ -378,6 +453,7 @@ job**, including the FNO's; the `b-panel` lane owns the same-job panel.
 - **ROM / FOM:** the project's reduced-order model and the conventional full-grid solver; `same_nt1e-2_dt005` is the efficient FOM arm (Newton tolerance $10^{{-2}}$, step 0.005).
 - **V1:** the pre-registered competitiveness criterion — within 1.5× of the FNO's validation worst and median.
 - **Burn-in / pooled median / host transfer:** timing-protocol terms from the parent lane, reproduced unchanged.
+- **Discrete / physical candidate (Poisson):** error against the declared finite-difference training target, and against the finer evaluation-only reference solution; both are whole-field discrepancy over the field's norm.
 """
     return text
 
@@ -391,7 +467,13 @@ def main():
     assert sha(DIAGNOSIS) == DIAGNOSIS_SHA256
     diagnosis = json.loads(DIAGNOSIS.read_text())
     rows = rows_for(attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS))
+    poisson = load_attempts('poisson')
+    fno_p = json.loads(FNO_POISSON_AUDIT.read_text())
+    rows += poisson_rows(poisson, fno_p, sha(FNO_POISSON_AUDIT))
     text = build(attempts, fno, launch, diagnosis)
+    glossary = text.index('## Glossary')
+    text = text[:glossary] + poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + text[glossary:]
+    attempts = attempts + poisson
     date = max(dt.date.fromtimestamp(a['path'].stat().st_mtime) for a in attempts).isoformat()
     report = HERE / f'{date}-no-second.md'
     for old in HERE.glob('*-no-second.md'):
@@ -400,7 +482,7 @@ def main():
     report.write_text(text)
     (HERE / 'summary.json').write_text(json.dumps(dict(
         generated=dt.datetime.now(dt.timezone.utc).isoformat(), report=report.name, generator_sha256=sha(__file__),
-        sources={str(a['path'].relative_to(WT)): a['sha'] for a in attempts} | {str(FNO_AUDIT.relative_to(WT)): sha(FNO_AUDIT), str(DIAGNOSIS): sha(DIAGNOSIS)},
+        sources={str(a['path'].relative_to(WT)): a['sha'] for a in attempts} | {str(FNO_AUDIT.relative_to(WT)): sha(FNO_AUDIT), str(DIAGNOSIS.relative_to(WT)): sha(DIAGNOSIS), str(FNO_POISSON_AUDIT.relative_to(WT)): sha(FNO_POISSON_AUDIT)},
         rule='every number in the report is read from these files; none is typed by hand; no cross-job speed ratio',
         rows=rows), indent=2) + '\n')
     print(report, len(rows), 'rows')

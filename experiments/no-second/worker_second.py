@@ -27,6 +27,7 @@ GLOBAL_SECONDS = float(SPEC['global_seconds'])
 RESERVE = float(SPEC['reserve_seconds'])
 PER_ARM_SECONDS = float(SPEC['per_arm_seconds'])
 PREFIX = SPEC['prefix']
+PDE = SPEC.get('pde', 'burgers')
 TRAIN = 'data/train/index.json'
 VALIDATION = 'data/validation/index.json'
 started = time.monotonic()
@@ -83,11 +84,12 @@ def train(name, config, budget):
 
 
 run('precision', [PY, 'code/smoke_second.py', '--output', 'out/precision.json'])
-run('training-smoke', [PY, 'code/training_smoke_second.py', '--family', SPEC['family'],
+run('training-smoke', [PY, 'code/training_smoke_second.py', '--family', SPEC['family'], '--pde', PDE,
                        '--out', 'out/training-smoke'])
-run('cohort', [PY, 'code/prepare_diagnosis_cohort.py',
-               '--reference-index', 'data/refinement/index.json',
-               '--train-index', TRAIN, '--out', 'data/diagnosis-cohort'])
+if PDE == 'burgers':
+    run('cohort', [PY, 'code/prepare_diagnosis_cohort.py',
+                   '--reference-index', 'data/refinement/index.json',
+                   '--train-index', TRAIN, '--out', 'data/diagnosis-cohort'])
 
 trained = []
 for arm in SPEC['arms']:
@@ -123,8 +125,9 @@ if refine_lr and scores and not stopping and remaining() - RESERVE >= 1200:
     per_arm_wall_seconds=PER_ARM_SECONDS, trained=trained, stopped_by_signal=stopping,
     design='equal wall budget per arm with early stopping; epoch counts differ by design'), indent=2) + '\n')
 
-run('cohort-eval', [PY, 'code/evaluate_cohort.py', '--index', 'data/diagnosis-cohort/index.json',
-                    '--runs', 'out', '--out', 'out/diagnosis-cohort', '--pattern', f'{PREFIX}-*'], allow_failure=True)
+if PDE == 'burgers':
+    run('cohort-eval', [PY, 'code/evaluate_cohort.py', '--index', 'data/diagnosis-cohort/index.json',
+                        '--runs', 'out', '--out', 'out/diagnosis-cohort', '--pattern', f'{PREFIX}-*'], allow_failure=True)
 run('timing', [PY, 'code/timing.py', '--train-index', TRAIN, '--validation-index', VALIDATION,
                '--runs', 'out', '--out', 'out/timing', '--pattern', f'{PREFIX}-*',
                '--repetitions', '30', '--burn-in', '20'], allow_failure=True)

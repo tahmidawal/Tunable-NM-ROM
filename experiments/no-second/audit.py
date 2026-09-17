@@ -26,6 +26,9 @@ FNO_TRAIN_INDEX = '5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8
 FNO_VALIDATION_INDEX = '468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad'
 FNO_COHORT_INDEX = json.loads((LANE.parent / 'neural-operator-audit/runs/fno_burgers02/field-audit.json')
                               .read_text())['diagnosis_cohort']['cohort_index_sha256']
+# The Poisson FNO job's (3702464) index hashes, from its archived provenance.json.
+FNO_POISSON_TRAIN_INDEX = 'd20a5994af09b2dd5631186a9e920bd2444b1bea86e6c9521841d398f1bf1013'
+FNO_POISSON_VALIDATION_INDEX = '65cc277bf30b55fce7e6b976514c4a1a2be3c664e9cc3193dee95f7e9100500d'
 
 
 def sha(path):
@@ -73,6 +76,62 @@ def stop_reason(result):
     assert reason in ('signal', 'early_stopping', 'wall_budget', 'epoch_cap')
     assert result[f'stopped_by_{reason}'] is True
     return reason
+
+
+def audit_arm_poisson(folder, rows, data_root):
+    """Poisson: whole-field discrepancy over the target norm against the declared discrete
+    target, and the same against the physical-reference sidecar (the parent's two metrics)."""
+    result = json.loads((folder / 'result.json').read_text())
+    provenance = json.loads((folder / 'provenance.json').read_text())
+    assert provenance['train_index_sha256'] == FNO_POISSON_TRAIN_INDEX, folder
+    assert provenance['validation_index_sha256'] == FNO_POISSON_VALIDATION_INDEX, folder
+    assert result['pde'] == 'poisson'
+    history = json.loads((folder / 'history.json').read_text())
+    assert len(history) == result['epochs_completed']
+    config = provenance['config']
+    for key, value in dict(epochs=500, patience=80, batch_size=8, weight_decay=0.0001).items():
+        assert config[key] == value, (folder, key, config[key])
+    assert config['learning_rate'] in LEARNING_RATES and config['seed'] == 20260914 and config['family'] in ('unet', 'transolver')
+    discrete, physical, declared = [], [], []
+    for index, row in enumerate(rows):
+        with np.load(data_root / row['path']) as case:
+            target = case['target'].copy()
+        assert sha(data_root / row['path']) == row['sha256']
+        with np.load(folder / (row['case_id'] + '.prediction.npz')) as saved:
+            prediction = saved['prediction'].copy()
+        assert prediction.shape == target.shape and prediction.dtype == np.float64 and np.isfinite(prediction).all()
+        for edge in (prediction[..., 0, :], prediction[..., -1, :], prediction[..., :, 0], prediction[..., :, -1]):
+            assert not np.any(edge)
+        e = float(np.linalg.norm(prediction - target) / np.linalg.norm(target))
+        stated = float(result['validation']['errors'][index][0])
+        assert abs(e - stated) <= 1e-11 * max(e, 1e-300) + 1e-13, (row['case_id'], e, stated)
+        discrete.append(e)
+        declared.append(stated)
+        ref = row['reference']
+        assert sha(data_root / ref['path']) == ref['sha256']
+        with np.load(data_root / ref['path']) as saved:
+            reference = saved['target'].copy()
+        physical.append(float(np.linalg.norm(prediction - reference) / np.linalg.norm(reference)))
+    assert sha(folder / 'best.pt') == result['best_checkpoint_sha256']
+    best = history[result['best_epoch']]
+    assert best['validation']['mean_case_max'] == result['validation']['batched_selection_score']
+    tolerance = 1e-5 if result['parameter_dtype'] == 'torch.float32' else 1e-11
+    selection_gap = abs(best['validation']['mean_case_max'] - result['validation']['mean_case_max'])
+    assert selection_gap <= tolerance * result['validation']['mean_case_max'], (folder, selection_gap)
+    return dict(complete=True, family=result['family'], parameter_dtype=result['parameter_dtype'], pde='poisson',
+                config=config, config_sha256=provenance['config_sha256'], seed=provenance['seed'],
+                real_parameter_count=result['real_parameter_count'], best_epoch=result['best_epoch'],
+                epochs_completed=result['epochs_completed'], stop_reason=stop_reason(result),
+                wall_budget_seconds=result['wall_budget_seconds'], training_seconds=result['training_seconds'],
+                warmup_epochs=result.get('warmup_epochs', 0), final_learning_rate=history[-1]['learning_rate'],
+                batched_selection_score=result['validation']['batched_selection_score'],
+                batch1_vs_batch8_selection_gap=selection_gap, best_checkpoint_sha256=result['best_checkpoint_sha256'],
+                peak_allocated_bytes=max(h['peak_allocated_bytes'] for h in history),
+                discrete=statistics(discrete), physical_candidate=statistics(physical),
+                discrete_errors=discrete, physical_candidate_errors=physical, declared_errors=declared,
+                validation_case_ids=[r['case_id'] for r in rows],
+                train_index_sha256=provenance['train_index_sha256'],
+                validation_index_sha256=provenance['validation_index_sha256'])
 
 
 def audit_arm(folder, rows, data_root):
@@ -200,11 +259,13 @@ def main(attempt):
     assert 'torch_backend=cuda' in (root / 'logs/precision.log').read_text()
     gpu = re.search(r'\n(NVIDIA [^,]+), ', log).group(1)
     data_verified = int(re.search(r'data_verified=(\d+)', log).group(1))
+    pde = spec.get('pde', 'burgers')
     rows = json.loads((root / 'data/validation/index.json').read_text())['records']
-    assert sha(root / 'data/validation/index.json') == FNO_VALIDATION_INDEX
+    assert sha(root / 'data/validation/index.json') == (FNO_VALIDATION_INDEX if pde == 'burgers' else FNO_POISSON_VALIDATION_INDEX)
+    arm_audit = audit_arm if pde == 'burgers' else audit_arm_poisson
     arms = {}
     for folder in sorted((root / 'out').glob(f'{prefix}-*')):
-        arms[folder.name] = audit_arm(folder, rows, root / 'data/validation') if (folder / 'result.json').exists() \
+        arms[folder.name] = arm_audit(folder, rows, root / 'data/validation') if (folder / 'result.json').exists() \
             else dict(complete=False)
     selection = json.loads((root / 'out/capacity-selection.json').read_text())
     worker = json.loads((root / 'out/worker.json').read_text())
@@ -215,13 +276,14 @@ def main(attempt):
         expected_arms.add(f'{prefix}-refine')
     assert set(arms) == expected_arms, (set(arms), expected_arms)
     assert not selection['stopped_by_signal']
-    cohort = audit_cohort(root, prefix)
-    assert cohort['present'] and set(cohort['models']) == expected_arms, 'cohort must be scored for every arm'
+    cohort = audit_cohort(root, prefix) if pde == 'burgers' else dict(present=False, note='no matched cohort for Poisson')
+    assert pde == 'poisson' or (cohort['present'] and set(cohort['models']) == expected_arms), 'cohort must be scored for every arm'
     timing = audit_timing(root)
     assert timing['present'] and set(timing['models']) == expected_arms
-    result = dict(attempt=attempt, job_id=job_id, gpu=gpu, source_commit=provenance['source_commit'],
+    result = dict(attempt=attempt, job_id=job_id, gpu=gpu, source_commit=provenance['source_commit'], pde=pde,
                   spec=spec, data_files_verified=data_verified, jax_backend='gpu',
-                  train_index_sha256=FNO_TRAIN_INDEX, validation_index_sha256=FNO_VALIDATION_INDEX,
+                  train_index_sha256=FNO_TRAIN_INDEX if pde == 'burgers' else FNO_POISSON_TRAIN_INDEX,
+                  validation_index_sha256=FNO_VALIDATION_INDEX if pde == 'burgers' else FNO_POISSON_VALIDATION_INDEX,
                   identical_split_to_fno_job=True, validation_cases=len(rows),
                   arms=arms, capacity_selection=selection, worker_tasks=worker,
                   cohort=cohort, timing=timing,
@@ -232,7 +294,8 @@ def main(attempt):
                              'no speed ratio, no cross-job timing')
     (run / 'audit.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(dict(job=job_id, gpu=gpu, passed=result['passed'],
-                          arms={k: (v['fixed_initial']['maximum'], v['epochs_completed'], v['stop_reason'])
+                          arms={k: ((v['fixed_initial'] if pde == 'burgers' else v['physical_candidate'])['maximum'],
+                                    v['epochs_completed'], v['stop_reason'])
                                 for k, v in arms.items() if v.get('complete')},
                           cohort={k: v['fixed_initial']['maximum'] for k, v in result['cohort'].get('models', {}).items()})))
 

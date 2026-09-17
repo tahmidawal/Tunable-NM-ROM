@@ -222,3 +222,35 @@ stop reason), `families.py` (upstream clamp/decoder, docstrings), `audit.py`,
 `cluster/stage.py` and `reports/generate_report.py`; the loss, optimiser, scheduler,
 selection rule, budgets and metric are untouched, and the smokes and the FNO parity
 check are re-run on the amended files before staging.
+
+## §A2 — Poisson U-Net (job 4, `pois01`), pre-registered 2026-09-17 before submission
+
+The brief's item 5, taken now because both Burgers jobs are running and the Poisson FNO
+runs were short (all three early-stopped within 27 min).
+
+- **Data.** The Poisson FNO job `3702464` dataset (128 train / 32 validation cases, 256
+  intervals; source field → zero-Dirichlet solution; training target = declared discrete
+  FD/DST solution; evaluation-only 2048-interval physical-reference sidecars). No cluster
+  copy survives (both `no_poisson_20260914` and `no_audit_20260914` were cleaned), so the
+  files were **re-uploaded from the Git-archived job** (archive SHA256 `b9d14a87…`, parts
+  Git-tracked in the parent lane) to `no_second_20260917/poisson-data01/`. This is the one
+  deviation from "data is never staged from this machine"; it is a byte-exact copy of the
+  cluster-generated originals, `DATA-tv.sha256` (all 206 train/validation files) verified on
+  the cluster after upload and again in the sbatch preamble, every case re-verified against
+  its index hash by `dataset.load_index`, and the audit asserts the index SHA256 equal the
+  FNO job's (`d20a5994…` / `65cc277b…`).
+- **Protocol = the Poisson FNO's**, not the Burgers one: 500-epoch cap, patience 80,
+  **7200 s wall per capacity**, AdamW lr 1e-3, wd 1e-4, batch 8, plateau scheduler, seed
+  20260914, checkpoint selected on validation mean error against the discrete target.
+  **No refinement run** (the Poisson FNO had none). U-Net capacities base 24/32/48 in
+  float32 as for Burgers; loss = squared relative error against the discrete target.
+- **Metrics** (the parent audit's two): discrete (vs training target) and physical candidate
+  (vs the refinement sidecar), whole-field discrepancy over the field norm, recomputed with
+  NumPy from the saved fields. Reported: worst, median, mean, p95, cases > 5 %.
+- **Criterion V1-P**: the validation-selected U-Net (argmin validation mean discrete error)
+  is compared with the FNO's validation-selected run under the same rule (`fno-large`, mean
+  3.4504 %, median 2.0253 %, worst 29.3747 % physical candidate). Within 1.5× on worst and
+  median = "competitive"; the worst is dominated by four >5 % cases for every FNO capacity,
+  so the median and the >5 % count are reported alongside. No ROM/DST cohort here.
+- Gates G1–G5 apply (G3 with the Poisson hashes; no cohort). One job, `03:30:00` on an
+  A100-80G; global 12 000 s, reserve 600 s.

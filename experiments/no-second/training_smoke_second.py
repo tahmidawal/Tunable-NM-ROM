@@ -25,7 +25,11 @@ parser.add_argument('--out', required=True, type=Path)
 parser.add_argument('--family', required=True, choices=sorted(TINY))
 parser.add_argument('--dtype', default='float32', choices=('float32', 'float64'))
 parser.add_argument('--mesh', type=int, default=64)
+parser.add_argument('--pde', default='burgers', choices=('burgers', 'poisson'))
 args = parser.parse_args()
+POISSON = args.pde == 'poisson'
+if POISSON:
+    TIMES = np.array([0.], dtype=np.float64)
 args.out.mkdir(parents=True, exist_ok=False)
 n = args.mesh
 for split, count, code in [('train', 4, 300), ('validation', 2, 400)]:
@@ -39,14 +43,21 @@ for split, count, code in [('train', 4, 300), ('validation', 2, 400)]:
         field[[0, -1], :] = 0
         field[:, [0, -1]] = 0
         nu = .02 + (code + i) / 10000
-        trajectory = np.stack([field * np.exp(-2 * np.pi ** 2 * nu * t) for t in TIMES])[:, None]
-        trajectory[0] = field[None]
+        if POISSON:
+            # Manufactured Poisson pair: source f = 2 pi^2 u for u = sin(pi x) sin(pi y) (scaled).
+            trajectory = field[None, None].copy()
+            field = 2 * np.pi ** 2 * field
+            parameters = np.zeros((0,), dtype=np.float64)
+        else:
+            trajectory = np.stack([field * np.exp(-2 * np.pi ** 2 * nu * t) for t in TIMES])[:, None]
+            trajectory[0] = field[None]
+            parameters = np.array([nu], dtype=np.float64)
         cid = f'smoke-{args.family}-{split}-{i}'
         path = folder / f'{cid}.npz'
-        np.savez(path, input=field[None], target=trajectory, parameters=np.array([nu], dtype=np.float64), times=TIMES)
+        np.savez(path, input=field[None], target=trajectory, parameters=parameters, times=TIMES)
         rows.append(dict(case_id=cid, split=split, case_index=i, seed=code + i, mesh=n,
                          path=path.name, sha256=dataset.sha256(path)))
-    (folder / 'index.json').write_text(json.dumps(dict(pde='burgers', complete=True, records=rows,
+    (folder / 'index.json').write_text(json.dumps(dict(pde=args.pde, complete=True, records=rows,
         kind='manufactured implementation fixture; not PDE-family training evidence')))
 config = dict(TINY[args.family], dtype=args.dtype, epochs=2, patience=2, batch_size=2, warmup_epochs=1,
               learning_rate=.001, weight_decay=.0001, seed=20260914)
@@ -56,7 +67,7 @@ subprocess.run([sys.executable, str(Path(__file__).with_name('train.py')), '--sm
     '--validation-index', str(args.out / 'validation/index.json'),
     '--config', str(args.out / 'config.json'), '--out', str(args.out / 'run')], check=True)
 result = json.loads((args.out / 'run/result.json').read_text())
-assert result['epochs_completed'] == 2 and result['complete'] and result['pde'] == 'burgers'
+assert result['epochs_completed'] == 2 and result['complete'] and result['pde'] == args.pde
 assert result['family'] == args.family and result['parameter_dtype'] == f'torch.{args.dtype}'
 assert result['stopped_by_epoch_cap'] and not result['stopped_by_early_stopping'] and not result['stopped_by_wall_budget']
 predictions = sorted(args.out.glob('run/*.prediction.npz'))
@@ -66,10 +77,10 @@ for path, row in zip(predictions, json.loads((args.out / 'validation/index.json'
         prediction = saved['prediction']
     with np.load(args.out / 'validation' / row['path']) as truth:
         supplied = truth['input']
-    assert prediction.shape == (6, 1, n + 1, n + 1) and prediction.dtype == np.float64
-    assert np.array_equal(prediction[0], supplied), 'Supplied initial state must be returned exactly'
+    assert prediction.shape == ((1, 1, n + 1, n + 1) if POISSON else (6, 1, n + 1, n + 1)) and prediction.dtype == np.float64
+    assert POISSON or np.array_equal(prediction[0], supplied), 'Supplied initial state must be returned exactly'
     for edge in (prediction[..., 0, :], prediction[..., -1, :], prediction[..., :, 0], prediction[..., :, -1]):
         assert not np.any(edge)
-print(json.dumps(dict(family=args.family, dtype=args.dtype, mesh=n, real_parameters=result['real_parameter_count'],
+print(json.dumps(dict(family=args.family, pde=args.pde, dtype=args.dtype, mesh=n, real_parameters=result['real_parameter_count'],
                       training_seconds=result['training_seconds'])), flush=True)
 print(f'{args.family}_training_entrypoint_smoke=passed', flush=True)

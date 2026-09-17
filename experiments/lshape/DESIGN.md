@@ -357,3 +357,19 @@ worst relative difference to the parent's audited square floors $5.30\times10^{-
 and $5.08\times10^{-11}$ (pure NumPy path) against $10^{-9}$; sparse-direct vs DST parity
 $6.1\times10^{-14}$. (d) The $N=32$ training smoke ran end to end and its NumPy audit passed
 every check. Nothing in §§1–9 changes.
+
+**2026-09-17, §A2 — the CPU preconditioned comparator is IC(0)-PCG, not ILU-PCG. Found by the
+solve smoke, before any solve job.** §2 declared `fom_pcg_ilu_cpu_r*` with SuperLU's `spilu`
+as the preconditioner and said a true IC(0) "is not hand-rolled". The $N=64$ smoke showed why
+that was wrong: SuperLU's ILU is a threshold ILU with partial pivoting and a column
+permutation, so the preconditioned operator is **not symmetric** and conjugate gradients has
+no convergence guarantee with it — at $N=64$ it ran to the 100000-iteration cap at a
+relative error of $1.6\times10^{-2}$ (at $N=32$ it converged in 4 iterations, which is how
+the flaw hid). The comparator is replaced by a zero-fill incomplete Cholesky, IC(0),
+computed by the classical recurrence on the 5-point pattern (`lsh_core.ic0_factor`: no
+common predecessors exist in the zero-fill pattern, so $L_{kk}^2 = A_{kk} - L_{kW}^2 -
+L_{kS}^2$), applied through two SuperLU triangular solves in natural order; its
+pattern residual $\|(LL^\top - A)\circ\mathrm{pat}(A)\|_{\max}$ is recorded per mesh. The
+subject is named `fom_pcg_ic0_cpu_r{1e-2,1e-10}` and everything else in §2 stands. Measured
+on the local box at $N=512$ (loaded, for iteration counts only): IC(0)-PCG 189 iterations at
+$10^{-2}$ and 519 at $10^{-10}$ against 1746 for plain CG at $10^{-10}$.

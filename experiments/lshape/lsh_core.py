@@ -151,7 +151,7 @@ def assemble_kron(geom):
 class FOM:
     """Sparse direct reference + timed comparators on one geometry."""
 
-    def __init__(self, geom, ilu_drop_tol=1e-4, ilu_fill_factor=10., build_ilu=True):
+    def __init__(self, geom, build_ic0=True):
         self.geom = geom
         t0 = time.perf_counter()
         self.A = assemble_stencil(geom)
@@ -159,14 +159,22 @@ class FOM:
         t0 = time.perf_counter()
         self.lu = spla.splu(self.A.tocsc())
         self.factor_seconds = time.perf_counter() - t0
-        self.ilu = None
-        self.ilu_seconds = None
-        if build_ilu:
-            t0 = time.perf_counter()
-            self.ilu = spla.spilu(self.A.tocsc(), drop_tol=ilu_drop_tol, fill_factor=ilu_fill_factor)
-            self.ilu_seconds = time.perf_counter() - t0
-            self.ilu_nnz = int(self.ilu.L.nnz + self.ilu.U.nnz)
         self.lu_nnz = int(self.lu.L.nnz + self.lu.U.nnz)
+        self.ic0_seconds = None
+        self.ic0_nnz = None
+        self.ic0_pattern_residual = None
+        if build_ic0:
+            t0 = time.perf_counter()
+            L = ic0_factor(geom)
+            E = (L @ L.T - self.A).multiply(abs(self.A) > 0)
+            self.ic0_pattern_residual = float(abs(E).max()) if E.nnz else 0.0
+            self._icL = spla.splu(L, permc_spec='NATURAL', diag_pivot_thresh=0.0, options=dict(SymmetricMode=True))
+            self._icLT = spla.splu(L.T.tocsc(), permc_spec='NATURAL', diag_pivot_thresh=0.0, options=dict(SymmetricMode=True))
+            self.ic0_seconds = time.perf_counter() - t0
+            self.ic0_nnz = int(L.nnz)
+
+    def ic0_apply(self, r):
+        return self._icLT.solve(self._icL.solve(r))
 
     def gates(self, tol_sym=1e-12):
         A1 = self.A
@@ -218,15 +226,43 @@ class FOM:
                               lambda1_reference=LSHAPE_LAMBDA1 if self.geom.shape == 'lshape' else 2 * np.pi ** 2,
                               lambda1_relative_difference=float(abs(lam[0] - (LSHAPE_LAMBDA1 if self.geom.shape == 'lshape' else 2 * np.pi ** 2)) / (LSHAPE_LAMBDA1 if self.geom.shape == 'lshape' else 2 * np.pi ** 2)))
 
-    def pcg_ilu(self, f_int, rtol, maxiter=100000):
+    def pcg_ic0(self, f_int, rtol, maxiter=100000):
         n = self.geom.n
-        M = spla.LinearOperator((n, n), matvec=self.ilu.solve, dtype=float)
+        M = spla.LinearOperator((n, n), matvec=self.ic0_apply, dtype=float)
         count = [0]
 
         def cb(_):
             count[0] += 1
         u, info = spla.cg(self.A, np.asarray(f_int), rtol=rtol, atol=0.0, maxiter=maxiter, M=M, callback=cb)
         return u, int(count[0]), int(info)
+
+
+def ic0_factor(geom):
+    """Zero-fill incomplete Cholesky of the 5-point operator: L has A's lower pattern, so
+    L[k,k]^2 = A[k,k] - L[k,W]^2 - L[k,S]^2 with W, S the west and south interior
+    neighbours (no common predecessors exist in the zero-fill pattern). The recurrence is
+    sequential in the lexicographic order and always exists for this M-matrix."""
+    N, n, num = geom.N, geom.n, geom.number
+    ii, jj = geom.ij[:, 0], geom.ij[:, 1]
+    pW, pS = num[ii - 1, jj], num[ii, jj - 1]
+    off, diag = -float(N * N), 4.0 * N * N
+    d = np.empty(n)
+    off2 = off * off
+    for k in range(n):
+        v = diag
+        w, s_ = pW[k], pS[k]
+        if w >= 0:
+            v -= off2 / d[w]
+        if s_ >= 0:
+            v -= off2 / d[s_]
+        d[k] = v
+    assert np.all(d > 0), 'IC(0) pivot lost positivity'
+    sq = np.sqrt(d)
+    rows, cols, vals = [np.arange(n)], [np.arange(n)], [sq]
+    for p in (pW, pS):
+        k = p >= 0
+        rows.append(np.arange(n)[k]); cols.append(p[k]); vals.append(off / sq[p[k]])
+    return sp.csc_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))), shape=(n, n))
 
 
 def make_gpu_cg(geom, maxiter):

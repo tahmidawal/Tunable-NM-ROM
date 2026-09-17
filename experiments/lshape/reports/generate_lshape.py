@@ -196,14 +196,14 @@ def main():
     if solves:
         W('### Full-order setup, per mesh (offline, not charged to any query)')
         W('')
-        W('| mesh | n | nnz(A) | SuperLU factor s | nnz(L+U) | ILU factor s | nnz(ILU) | eigen-solve s (M modes) | eigen residual | 1024-ref residual |')
+        W('| mesh | n | nnz(A) | SuperLU factor s | nnz(L+U) | IC(0) factor s | nnz(IC0 L) | eigen-solve s (M modes) | eigen residual | 1024-ref residual |')
         W('|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
         for sv in solves:
             for f in sv['fom']:
                 w = next(x for x in sv['weak_ops'] if x['intervals'] == f['intervals'])
                 fr = max(x['fine_residual'] for x in sv['references'] if 'fine_residual' in x)
                 W(f'| {f["intervals"]} | {f["interior_unknowns"]} | {f["nnz"]} | {f["splu_factor_seconds"]:.3f} | {f["splu_lu_nnz"]} | '
-                  f'{f["ilu_factor_seconds"]:.3f} | {f["ilu_nnz"]} | {w["seconds"]:.1f} ({w["M"]}) | {w["eigen_residual"]:.1e} | {fr:.1e} |')
+                  f'{f["ic0_factor_seconds"]:.3f} | {f["ic0_nnz"]} | {w["seconds"]:.1f} ({w["M"]}) | {w["eigen_residual"]:.1e} | {fr:.1e} |')
         W('')
         W('### Discretisation error of the FD solution itself (same-grid vs restricted 1024-interval direct solve)')
         W('')
@@ -413,7 +413,7 @@ def main():
         ('G-FOM gates', 'checks that the full-order operator is what it claims: symmetric, positive definite with the known first eigenvalue, identical under two independent assemblies, solved to round-off by the reference, and reproduced by the iterative solvers at tight tolerance.'),
         ('fom_splu', 'the sparse direct solve (SuperLU LU factorisation, factorised once offline; each timed query is one triangular solve pair on the CPU).'),
         ('fom_cg_gpu_r*', 'plain conjugate gradients on the GPU, matrix-free, stopped when the relative residual falls below r. Because the operator diagonal is constant, Jacobi preconditioning would change nothing, so this is also the Jacobi-PCG rung.'),
-        ('fom_pcg_ilu_cpu_r*', 'conjugate gradients on the CPU with an incomplete-LU preconditioner (SuperLU ILU, drop tolerance 1e-4), factorised once offline.'),
+        ('fom_pcg_ic0_cpu_r*', 'conjugate gradients on the CPU with a zero-fill incomplete-Cholesky preconditioner (IC(0), the classical choice for this operator), factorised once offline.'),
         ('same-grid error', 'relative L2 difference between a subject\'s output and the sparse-direct reference on the same mesh; the primary error metric.'),
         ('physical error', 'relative L2 difference against the 1024-interval direct solution restricted to the mesh\'s nodes; it includes the mesh\'s own discretisation error, which is large near the corner.'),
         ('worst / median', 'maximum / middle value over the development cases.'),

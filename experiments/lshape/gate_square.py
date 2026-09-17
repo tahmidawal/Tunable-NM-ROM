@@ -43,7 +43,7 @@ def main():
     assert K_.sha_array(dev) == ref['development']['sha256']
     n = 255
     geom = K_.Geometry(n, 'square')
-    fom = K_.FOM(geom, build_ilu=False)
+    fom = K_.FOM(geom, build_ic0=False)
     gates = fom.gates()
     U = K_.fields(fom, dev)
     F = np.stack([K_.source_interior(geom, q) for q in dev])

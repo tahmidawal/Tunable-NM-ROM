@@ -93,7 +93,7 @@ def fom_pcg_query(fom, source_full, rtol):
     start = time.perf_counter()
     f = fom.geom.gather(source_full)
     t1 = time.perf_counter()
-    u, it, info = fom.pcg_ilu(f, rtol)
+    u, it, info = fom.pcg_ic0(f, rtol)
     t2 = time.perf_counter()
     field = fom.geom.scatter(u)
     end = time.perf_counter()
@@ -188,7 +188,7 @@ def main():
     nfine = cfg['fine_intervals']
     t0 = time.perf_counter()
     gfine = K_.Geometry(nfine, 'lshape')
-    ffine = K_.FOM(gfine, build_ilu=False)
+    ffine = K_.FOM(gfine, build_ic0=False)
     fine = {}
     for case, q in enumerate(dev):
         u, resid = ffine.reference(K_.source_interior(gfine, q))
@@ -205,7 +205,7 @@ def main():
     for n in cfg['intervals']:
         print('MESH', n, flush=True)
         geom = K_.Geometry(n, 'lshape')
-        fom = K_.FOM(geom, cfg['ilu_drop_tol'], cfg['ilu_fill_factor'], build_ilu=True)
+        fom = K_.FOM(geom, build_ic0=True)
         gate = fom.gates()
         ops = K_.weak_ops(fom, cfg['requested_modes'], cfg['mode_seed'])
         gate.update(intervals=n, lambda_min=ops['info']['lambda_min'], lambda1_reference=K_.LSHAPE_LAMBDA1,
@@ -219,8 +219,8 @@ def main():
         assert gate['passed'], gate
         R_['fom'].append(dict(intervals=n, interior_unknowns=geom.n, nnz=int(fom.A.nnz),
                               assembly_seconds=fom.assembly_seconds, splu_factor_seconds=fom.factor_seconds,
-                              splu_lu_nnz=fom.lu_nnz, ilu_factor_seconds=fom.ilu_seconds, ilu_nnz=fom.ilu_nnz,
-                              ilu_drop_tol=cfg['ilu_drop_tol'], ilu_fill_factor=cfg['ilu_fill_factor']))
+                              splu_lu_nnz=fom.lu_nnz, ic0_factor_seconds=fom.ic0_seconds, ic0_nnz=fom.ic0_nnz,
+                              ic0_pattern_residual=fom.ic0_pattern_residual))
         R_['weak_ops'].append(dict(intervals=n, **ops['info']))
         save()
 
@@ -335,8 +335,8 @@ def main():
         subjects.append(dict(kind='splu', name='fom_splu'))
         for rtol in cfg['cg_gpu_rtols']:
             subjects.append(dict(kind='cg_gpu', name=f'fom_cg_gpu_r{rtol:g}', rtol=rtol))
-        for rtol in cfg['pcg_ilu_rtols']:
-            subjects.append(dict(kind='pcg_ilu', name=f'fom_pcg_ilu_cpu_r{rtol:g}', rtol=rtol))
+        for rtol in cfg['pcg_ic0_rtols']:
+            subjects.append(dict(kind='pcg_ic0', name=f'fom_pcg_ic0_cpu_r{rtol:g}', rtol=rtol))
         R_['declared_subjects'] += [dict(intervals=n, **{k: v for k, v in s.items() if k != 'index'}) for s in subjects]
 
         def invoke(sub, source):
@@ -380,8 +380,8 @@ def main():
             save()
 
         # ---------------------------------------------------- solver gate G5 --
-        tight = [x for x in R_['invocations'] if x['intervals'] == n and x['kind'] in ('cg_gpu', 'pcg_ilu')
-                 and x['rtol'] == min(cfg['cg_gpu_rtols'] if x['kind'] == 'cg_gpu' else cfg['pcg_ilu_rtols'])]
+        tight = [x for x in R_['invocations'] if x['intervals'] == n and x['kind'] in ('cg_gpu', 'pcg_ic0')
+                 and x['rtol'] == min(cfg['cg_gpu_rtols'] if x['kind'] == 'cg_gpu' else cfg['pcg_ic0_rtols'])]
         worst = max(x['same_grid_error'] for x in tight)
         g5 = dict(intervals=n, gate='G-FOM-5 tight iterative solves agree with the direct reference',
                   worst_relative_difference=worst, tolerance=cfg['solver_agreement_limit'],

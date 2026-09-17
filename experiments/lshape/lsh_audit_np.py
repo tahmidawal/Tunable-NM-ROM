@@ -330,7 +330,7 @@ def audit_solve(out, tol):
     agg = aggregate(d['invocations'])
     checks['every_subject_case_has_all_reps'] = all(v['reps'] == list(range(cfg['repetitions'])) and v['cases'] == len(dev)
                                                     for v in agg.values())
-    tight = [x for x in d['invocations'] if x['kind'] in ('cg_gpu', 'pcg_ilu') and x['rtol'] <= 1e-10]
+    tight = [x for x in d['invocations'] if x['kind'] in ('cg_gpu', 'pcg_ic0') and x['rtol'] <= 1e-10]
     checks['tight_iterative_solves_match_direct'] = max(x['same_grid_error'] for x in tight) <= cfg['solver_agreement_limit']
     detail['nondominated_complete_ms'] = {}
     for n in cfg['intervals']:

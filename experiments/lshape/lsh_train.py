@@ -89,7 +89,7 @@ def main():
     geoms, foms = {}, {}
     for n in meshes:
         geoms[n] = K_.Geometry(n, 'lshape')
-        foms[n] = K_.FOM(geoms[n], build_ilu=False)
+        foms[n] = K_.FOM(geoms[n], build_ic0=False)
         g = foms[n].gates()
         lam1, _, minfo = foms[n].modes(1)
         g.update(intervals=n, lambda_min=float(lam1[0]), lambda1_reference=K_.LSHAPE_LAMBDA1,

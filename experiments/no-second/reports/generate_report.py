@@ -49,11 +49,19 @@ def capacity_of(config):
     return f"width {config['width']}, modes {config['modes']}"
 
 
-def load_attempts(pde='burgers'):
+def is_control(audit):
+    """A control attempt (spec prefix `ctrl`) varies ONE variable against a screen twin. It is
+    never eligible for capacity selection and never appears in the capacity/validation tables;
+    it has its own section. Letting a control into `selected()` would silently let a
+    one-variable control displace the headline arm."""
+    return audit['spec']['prefix'] == 'ctrl'
+
+
+def load_attempts(pde='burgers', controls=False):
     attempts = []
     for path in sorted(LANE.glob('runs/*/audit.json')):
         audit = json.loads(path.read_text())
-        if audit.get('passed') and audit.get('pde', 'burgers') == pde:
+        if audit.get('passed') and audit.get('pde', 'burgers') == pde and is_control(audit) == controls:
             attempts.append(dict(audit=audit, path=path, sha=sha(path)))
     return attempts
 
@@ -284,7 +292,64 @@ def selected(attempts):
     return best
 
 
-def build(attempts, fno, launch, diagnosis):
+def twin_of(arm, spec):
+    for a in spec['arms']:
+        if f"{spec['prefix']}-{a['name']}" == arm:
+            return a.get('twin'), a.get('role', '')
+    return None, ''
+
+
+def controls_section(control_attempts, screen_attempts):
+    """Each control arm beside the screen arm it differs from in exactly one variable."""
+    if not control_attempts:
+        return ''
+    screen = {arm: (r, a['audit']) for a in screen_attempts for arm, r in a['audit']['arms'].items() if r.get('complete')}
+    rows = ['| Control | Differs from | In | Epochs | Ended by | Validation mean (%) | median (%) | worst (%) | Cohort worst (%) | Job |',
+            '| --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |']
+    deltas = []
+    for a in control_attempts:
+        audit = a['audit']
+        for arm, r in audit['arms'].items():
+            if not r.get('complete'):
+                continue
+            twin, role = twin_of(arm, audit['spec'])
+            what = 'network dtype' if 'dtype' in role or r['parameter_dtype'] == 'torch.float64' else 'seed'
+            c = audit['cohort'].get('models', {}).get(arm, {}).get('fixed_initial')
+            v = r['fixed_initial']
+            rows.append(f"| `{arm}` | `{twin}` | {what} | {r['epochs_completed']} | {r['stop_reason'].replace('_', ' ')} | "
+                        f"{pct(v['mean'])} | {pct(v['median'])} | {pct(v['maximum'])} | {pct(c['maximum']) if c else '—'} | `{audit['job_id']}` |")
+            if twin in screen:
+                tw = screen[twin][0]['fixed_initial']
+                rows.append(f"| `{twin}` (twin, screen) | — | — | {screen[twin][0]['epochs_completed']} | "
+                            f"{screen[twin][0]['stop_reason'].replace('_', ' ')} | {pct(tw['mean'])} | {pct(tw['median'])} | "
+                            f"{pct(tw['maximum'])} | "
+                            f"{pct(screen[twin][1]['cohort']['models'][twin]['fixed_initial']['maximum'])} | `{screen[twin][1]['job_id']}` |")
+                deltas.append((arm, twin, what, v['mean'] - tw['mean'], v['median'] - tw['median'], v['maximum'] - tw['maximum']))
+    spread = ''
+    if deltas:
+        caps = [r['fixed_initial'] for a in screen_attempts for arm, r in a['audit']['arms'].items() if r.get('complete')]
+        cap_spread_mean = max(c['mean'] for c in caps) - min(c['mean'] for c in caps)
+        cap_spread_worst = max(c['maximum'] for c in caps) - min(c['maximum'] for c in caps)
+        lines = []
+        for arm, twin, what, dm, dmed, dw in deltas:
+            big = abs(dm) > cap_spread_mean or abs(dw) > cap_spread_worst
+            lines.append(f"- `{arm}` vs `{twin}` ({what} only): mean {dm * 100:+.4f} pp, median {dmed * 100:+.4f} pp, "
+                         f"worst {dw * 100:+.4f} pp \u2014 **{'outside' if big else 'inside'}** the screen's own "
+                         f"capacity-to-capacity spread ({cap_spread_mean * 100:.4f} pp mean, {cap_spread_worst * 100:.4f} pp worst).")
+        verdict = ('Every control lands inside the screen\'s own capacity-to-capacity spread, so the reported '
+                   'float32 single-seed numbers stand as reported (DESIGN \u00a7A4 reading rule).'
+                   if not any(abs(d[3]) > cap_spread_mean or abs(d[5]) > cap_spread_worst for d in deltas)
+                   else '**At least one control moves a headline metric by more than the screen\'s own '
+                        'capacity-to-capacity spread, so the numbers it bears on are flagged precision- or '
+                        'seed-sensitive (DESIGN \u00a7A4 reading rule).**')
+        spread = '\n\n' + '\n'.join(lines) + '\n\n' + verdict
+    return ('\n\n## Controls: precision and seed\n\nEach control repeats a screen arm under the identical '
+            'protocol and budget with **exactly one variable changed**, and is shown beside that arm. Controls are '
+            'never eligible for capacity selection and are excluded from the tables above.\n\n'
+            + '\n'.join(rows) + spread)
+
+
+def build(attempts, fno, launch, diagnosis, control_attempts=()):
     jobs = ', '.join(f"`{a['audit']['job_id']}` ({a['audit']['attempt']}, {a['audit']['gpu']}, commit `{a['audit']['source_commit'][:8]}`)" for a in attempts)
     # Same selection rule as this lane's arms: argmin of validation mean case-max over every
     # complete arm, refine included.
@@ -319,17 +384,7 @@ def build(attempts, fno, launch, diagnosis):
             + (f" On the matched eight cases: worst {pct(c['maximum'])}%, median {pct(c['median'])}% "
                f"(FNO {pct(fno_coh['maximum'])}%, ROM {pct(rom)}%, efficient FOM `same_nt1e-2_dt005` {pct(fom)}%)." if c else
                ' The matched cohort was not scored in this job.') + tail_note)
-    controls = ''
-    ctrl = [(arm, r, a['audit']) for a in attempts for arm, r in a['audit']['arms'].items()
-            if r.get('complete') and (r['parameter_dtype'] == 'torch.float64' or r['seed'] != 20260914)]
-    if ctrl:
-        controls = '\n\n## Controls: precision and seed\n\nThe validation-selected U-Net capacity retrained under the identical protocol with the network in float64 (precision control) and at a second seed in float32 (seed-variance control). Compare against the float32, seed-20260914 twin in the tables above.\n\n' \
-            + '| Run | Network dtype | Seed | Epochs | Ended by | Validation worst (%) | Validation median (%) | Cohort worst (%) | Cohort median (%) | Job |\n| --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- |\n'
-        for arm, r, audit in ctrl:
-            c = audit['cohort'].get('models', {}).get(arm, {}).get('fixed_initial')
-            controls += (f"| `{arm}` | {r['parameter_dtype'].replace('torch.', '')} | {r['seed']} | {r['epochs_completed']} | {r['stop_reason'].replace('_', ' ')} | "
-                         f"{pct(r['fixed_initial']['maximum'])} | {pct(r['fixed_initial']['median'])} | "
-                         f"{pct(c['maximum']) if c else '—'} | {pct(c['median']) if c else '—'} | `{audit['job_id']}` |\n")
+    controls = controls_section(control_attempts, attempts)
     today = dt.date.today().isoformat()
     text = f"""# Second and third neural-operator baselines on the Burgers common dataset: U-Net and Transolver
 
@@ -497,10 +552,12 @@ def main():
     poisson = load_attempts('poisson')
     fno_p = json.loads(FNO_POISSON_AUDIT.read_text())
     rows += poisson_rows(poisson, fno_p, sha(FNO_POISSON_AUDIT))
-    text = build(attempts, fno, launch, diagnosis)
+    control_attempts = load_attempts('burgers', controls=True)
+    rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS))[:-7 * len(diagnosis['summary'])] if control_attempts else []
+    text = build(attempts, fno, launch, diagnosis, control_attempts)
     glossary = text.index('## Glossary')
     text = text[:glossary] + poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + text[glossary:]
-    attempts = attempts + poisson
+    attempts = attempts + poisson + control_attempts
     date = max(dt.date.fromtimestamp(a['path'].stat().st_mtime) for a in attempts).isoformat()
     report = HERE / f'{date}-no-second.md'
     for old in HERE.glob('*-no-second.md'):

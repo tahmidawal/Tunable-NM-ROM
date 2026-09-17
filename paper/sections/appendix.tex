@@ -296,6 +296,17 @@ own error). Speedups are within one model's own curve, same job.}
 
 \begin{table}[h]
 \centering
+\caption{One-variable controls on the validation-selected capacities (job
+\provOpCtrlJob): each repeats a screen arm under the identical protocol and
+budget with exactly one variable changed, and is never eligible for capacity
+selection. ``vs ROM'' is the matched eight-case worst against the ROM's, from
+job 3702709; at equal wall clock a float64 twin is also a fewer-epochs twin.}
+\label{tab:op-controls}
+\input{tables/T14d_controls}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{U-Net against FNO on the Poisson operator-screen dataset (physical
 reference). The U-Net arms hit the epoch cap while still improving; the FNO
 early-stopped.}

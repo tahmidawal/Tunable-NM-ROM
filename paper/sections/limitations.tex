@@ -3,10 +3,9 @@
 \label{sec:limitations}
 
 \textbf{Single seed, single checkpoint.} Every number rests on one training
-seed and one checkpoint per PDE. The three-seed repetition and the
-sealed-cohort evaluation are running; that lane has recorded an amendment to
-its fidelity gate, from $10^{-9}$ to $10^{-3}$ relative, made before any of its
-numbers were read.
+seed and one checkpoint per PDE; the three-seed repetition and the sealed-cohort
+evaluation are running, and that lane amended its fidelity gate from $10^{-9}$
+to $10^{-3}$ relative before reading any of its numbers.
 \textbf{Development cohort}: six opened Burgers cases (32 held-out for the
 tuning study), eight wave and twelve Poisson; on the L-shape the 461-source
 validation worst is two to three times the 32-source development worst.
@@ -14,11 +13,13 @@ validation worst is two to three times the 32-source development worst.
 L-shape cell has no solve layer yet and Navier--Stokes no reduced model.
 \textbf{No cold-start comparison against a shallow masked-autoencoder ROM}; the
 classical comparison is POD-LSPG through our own solver, and the linear skip is
-a design choice we do not ablate.
+a design choice, not ablated.
 \textbf{Operator numbers are lower bounds}: \nOpLaneImproving{}
 U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were still improving at
-their wall budget, and none was tuned per family; a larger budget beats the
-ROM by more.
+their wall budget, and none was tuned per family. The U-Net comparison survives
+a float64 and a second-seed control, but that margin is
+$\nOpCtrlMediumFSixtyFourMargin$\,pp and the float64 twins ran a quarter to half
+the epochs at equal wall clock; the Transolver arm below the ROM has no twin.
 \textbf{Quadrature rules above $q=32$ are marginal} (\S\ref{sec:exp:eq}): the
 top-rung errors are those of the specific rules that passed their draw.
 \textbf{The headline ladder was chosen after the fact and quotes a dearer
@@ -30,9 +31,7 @@ $\nQxmAnchorSpreadPct\,\%$, the size of the tolerance saving.
 \textbf{No theory}: no convergence guarantee, no quadrature-error bound on
 unseen states, no continuum error bound.
 
-\paragraph{Pending cells.} Not in this draft, and no result sentence depends
-on them: the $1024^2$ panel (\nPanelTenTwentyFour); seeds and the sealed cohort
+\paragraph{Pending cells.} Not in this draft, and no result sentence depends on
+them: the $1024^2$ panel (\nPanelTenTwentyFour); seeds and the sealed cohort
 (\nSeedsStatus); the L-shape solve layer (\nLshapeSolve); the Navier--Stokes
-reduced model (\nNsRom); the operators' seed and precision controls
-(\nOpSeedControl). The resolution control has landed and fired its
-pre-registered clause (\S\ref{sec:exp:operators}).
+reduced model (\nNsRom).

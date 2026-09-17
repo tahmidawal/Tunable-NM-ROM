@@ -477,8 +477,10 @@ def build_operators():
     for r in rows:
         by[(r['arm'], r['job_id'], r['cohort'])][r['metric']] = r['value']
         meta[(r['arm'], r['job_id'])] = r          # keyed on (arm, job): the Poisson screen reuses arm names
-    burg8 = sorted({(r['arm'], r['job_id']) for r in rows if r['cohort'] == 'diagnosis-8'},
+    CTRL = 'ctrl-'                      # one-variable controls: never eligible for selection (lane DESIGN 3.4/A4)
+    burg8 = sorted({(r['arm'], r['job_id']) for r in rows if r['cohort'] == 'diagnosis-8' and not r['arm'].startswith(CTRL)},
                    key=lambda k: by[(k[0], k[1], 'diagnosis-8')].get('worst_fixed_initial_error', 9))
+    ctrl8 = sorted({(r['arm'], r['job_id']) for r in rows if r['cohort'] == 'diagnosis-8' and r['arm'].startswith(CTRL)})
     t = []
     for a, jb in burg8:
         m = meta[(a, jb)]; d = by[(a, jb, 'diagnosis-8')]; v = by.get((a, jb, 'validation-32'), {})
@@ -511,6 +513,35 @@ def build_operators():
     fno_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] == '3710846' and r.get('epochs')})
     macro('nOpLaneImproving', f"{sum(1 for k in lane_arms if improving(k))} of {len(lane_arms)}")
     macro('nOpFnoImproving', f"{sum(1 for k in fno_arms if improving(k))} of {len(fno_arms)}")
+    # ---- one-variable controls (precision, seed): each twins a screen arm
+    if ctrl8:
+        TWIN = {'ctrl-medium-f64': ('unet-medium', '3780138', 'network dtype float64'),
+                'ctrl-medium-seed2': ('unet-medium', '3780138', 'training seed'),
+                'ctrl-tsol-small-f64': ('tsol-small', '3780139', 'network dtype float64')}
+        rom = w8('rom'); t = []
+        for a, jb in ctrl8:
+            m = meta[(a, jb)]; d = by[(a, jb, 'diagnosis-8')]; v = by.get((a, jb, 'validation-32'), {})
+            tw, twjob, what = TWIN[a]
+            tm = meta[(tw, twjob)]; td = by[(tw, twjob, 'diagnosis-8')]
+            val = 100 * d['worst_fixed_initial_error']; tval = 100 * td['worst_fixed_initial_error']
+            t.append([tt(a), tt(tw), what, f"{m['epochs']} vs {tm['epochs']} ({m['epochs']/tm['epochs']:.2f}$\\times$)",
+                      pct(val), pct(tval), ('below' if val < rom else 'above') + f" ({abs(val - rom):.4f} pp)",
+                      ('below' if tval < rom else 'above')])
+            key = ''.join(w.title() for w in a.replace(CTRL, '').split('-'))
+            for dg, wd in [('64', 'SixtyFour'), ('2', 'Two'), ('1', 'One'), ('3', 'Three')]:
+                key = key.replace(dg, wd)
+            macro('nOpCtrl' + key, pct(val)); macro('nOpCtrl' + key + 'Margin', f"{abs(val - rom):.4f}")
+            macro('nOpCtrl' + key + 'Side', 'below' if val < rom else 'above')
+            macro('nOpCtrl' + key + 'EpochRatio', f"{m['epochs']/tm['epochs']:.2f}")
+        write('T14d_controls.tex', tabular(['control', 'twin', 'one variable changed', 'epochs vs twin', 'control worst \\%',
+                                            'twin worst \\%', 'control vs ROM', 'twin vs ROM'], t, 'llp{2.4cm}lrrll', r'\scriptsize'),
+              f'no-second controls, job {ctrl8[0][1]}; matched eight-case worst, ROM from job 3702709')
+        macro('provOpCtrlJob', ctrl8[0][1])
+        surv = [a for a, jb in ctrl8 if TWIN[a][0] == 'unet-medium']
+        macro('nOpCtrlCount', str(len(ctrl8)))
+        macro('nOpCtrlSurviving', str(sum(1 for a in surv if 100 * by[(a, ctrl8[0][1], 'diagnosis-8')]['worst_fixed_initial_error'] < rom)))
+    # job list for the provenance row, from the records
+    macro('provOpJobs', ', '.join(sorted({r['job_id'] for r in allrows})))
     # Poisson screen
     pv = {(r['arm'], r['job_id']): by[(r['arm'], r['job_id'], 'poisson-validation-32')] for r in rows if r['cohort'] == 'poisson-validation-32'}
     if pv:
@@ -1296,7 +1327,7 @@ def build_problems_and_provenance(mesh):
     prov('T11a', 'w-ladder', MACROS.get('provWaveJobs', '---'), 'per job', 'per job', 'frozen-math SHA asserted in job')
     prov('T11d', 'heat linear bank (2026-09-10)', MACROS.get('provHeatJob', '---'), MACROS.get('provHeatGpu', '---'), MACROS.get('provHeatCommit', '---'), 'expanded\\_seed790715 (frozen)')
     prov('T11b, T11c', 'p-linear', MACROS.get('provPlinJobs', '---') + '; head capacity job ' + MACROS.get('provPlinHeadJob', '---'), 'per job', 'per job', 'R=512/K=32 checkpoint (pbh02 primary)')
-    prov('T14', 'no-second', '3780138, 3780139, 3780625 (+ FNO 3710846, 3702464)', 'A100 80GB PCIe', 'c4f8b045 / 339c026b', 'operator checkpoints hash-verified in job')
+    prov('T14, T14c, T14d', 'no-second (5 of 8 jobs counted; two preamble deaths uncounted)', MACROS.get('provOpJobs', '---'), 'A100 (per job)', 'per job', 'operator checkpoints hash-verified in job')
     prov('T15', 'b-speed', MACROS.get('provSpeedJobs', '---'), 'A100 80GB PCIe', '8fdfbb08 / 94399dd6', MACROS.get('provBurgersCkpt', '---'))
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')
     prov('T18', 'lshape', MACROS.get('provLshapeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')

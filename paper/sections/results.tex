@@ -172,14 +172,16 @@ $\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
 \label{sec:exp:mesh}
 
 With one frozen checkpoint per PDE transferred across $64$--$1024$ intervals,
-the cached reduced solve costs $\nMeshBurgersCachedFirst\to\nMeshBurgersCachedLast$\,ms
-on Burgers while the unknowns grow $\nMeshBurgersUnknownGrowth\times$
-(Table~\ref{tab:mesh}); the complete query grows
-$\nMeshBurgersCompleteRatio\times$ through dense input and output. Against the
-cheapest same-job full-order arm meeting the target there is no crossover at
-any rung (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
-\nMeshPoissonFomOverRomRange{} against the direct transform on Poisson). A kernel-level port at bit-level parity makes the frozen query
-$\nSpeedGpuTwoFiftySix$ faster at $256^2$, short of its $2\times$ target
+the cached reduced solve costs
+$\nMeshBurgersCachedFirst\to\nMeshBurgersCachedLast$\,ms on Burgers while the
+unknowns grow $\nMeshBurgersUnknownGrowth\times$ (Table~\ref{tab:mesh}); the
+complete query does not inherit that, growing
+$\nMeshBurgersCompleteRatio\times$ through dense input and output. There is no
+crossover against the cheapest same-job full-order arm meeting the target at any
+rung (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
+\nMeshPoissonFomOverRomRange{} against the direct transform on Poisson), and a
+kernel port at bit-level parity buys $\nSpeedGpuTwoFiftySix$ at $256^2$, short
+of its $2\times$ target, because the query is kernel-count bound
 (Table~\ref{tab:speed}).
 
 \subsection{Where the control collapses: linear PDEs}
@@ -235,19 +237,27 @@ head sits $\nLshapeHeadRatioMin$--$\nLshapeHeadRatioMax\times$ above its floor
 \label{sec:exp:operators}
 
 A PDEBench-style U-Net and a Transolver were trained on exactly the FNO's data,
-split, reference, metric, wall budget and selection rule
-(Table~\ref{tab:operators}). Worst error on the matched eight-case cohort:
+split, reference, metric, budget and selection rule (Table~\ref{tab:operators}). Worst error on the matched eight-case cohort:
 U-Net-small $\nOpEightUnetSmall$, U-Net-medium $\nOpEightUnetMedium$,
 Transolver-refine $\nOpEightTsolRefine$, U-Net-refine $\nOpEightUnetRefine$,
 \textbf{ROM $\nOpEightRom$}, FNO-large $\nOpEightFnoLarge$, efficient full-order
 solver $\nOpEightFomEfficient\,\%$: $\nOpArmsBeatingRom$ operator arms beat the
-ROM and every FNO capacity is worse than it. An earlier FNO-only finding that the ROM is more accurate than a neural
-operator was an artefact of the family and is withdrawn. On cost, only the FNO
-was timed against the ROM in one allocation, where it dominates on both axes
-(\S\ref{sec:exp:panel}); the U-Net and Transolver were not timed against it, so
-no cost statement is made for them. Every operator number is a lower bound (\nOpLaneImproving{}
-U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were still improving at
-their budget); on Poisson the gap is larger (Table~\ref{tab:operators-poisson}).
+ROM and every FNO capacity is worse than it. An earlier FNO-only finding that the ROM is the more accurate model was an
+artefact of the family and is withdrawn. Only the FNO was timed against the ROM
+in one allocation, where it dominates on both axes (\S\ref{sec:exp:panel}); the
+U-Net and Transolver were not, so no cost statement is made for them. Both pre-registered controls were run on the selected U-Net
+(Table~\ref{tab:op-controls}): its float64 twin lands at
+$\nOpCtrlMediumFSixtyFour\,\%$ and its second-seed twin at
+$\nOpCtrlMediumSeedTwo\,\%$, both below the ROM, so that comparison is not a
+seed or precision artefact. Two caveats: the float64 margin is thin
+($\nOpCtrlMediumFSixtyFourMargin$\,pp), and at equal wall clock the float64 twins
+ran $\nOpCtrlMediumFSixtyFourEpochRatio$--$\nOpCtrlTsolSmallFSixtyFourEpochRatio\times$
+of their parents' epochs, so precision is confounded with an epoch effect. The Transolver arm below the ROM has no twin and remains a single-seed float32
+result, and its float64 twin trips the lane's precision-sensitivity flag.
+Every operator number is a lower bound
+(\nOpLaneImproving{} U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were
+still improving at their budget); on Poisson the gap is larger
+(Table~\ref{tab:operators-poisson}).
 The operators' own knob, evaluation resolution, was tested under a
 pre-registered rule (Table~\ref{tab:resolution}; speedups are within one
 model's own curve in one job and carry no comparison to the ROM or the solver):
@@ -259,8 +269,7 @@ $\nResFnoErrRatioSixtyFour\times$ and $\nResFnoErrRatioThirtyTwo\times$---while
 \nResDegenerateList{} are not (the U-Net breaks at once,
 $\nResUnetErrRatioOneTwentyEight\times$ error at rung 128; the Transolver is
 cost-flat, $\nResTsolSpeedOneTwentyEight\times$). At rung 128 no family is
-closer than $\nResMinFloorRatioOneTwentyEight\times$ to the interpolation floor,
-so the off-resolution error is the network's, not the grid's. ``One
-accuracy--cost point per trained operator'' is therefore withdrawn; what
-distinguishes $q$ is that it moves what the model can represent, which a
-coarser evaluation grid does not.
+within $\nResMinFloorRatioOneTwentyEight\times$ of the interpolation floor, so
+the off-resolution error is the network's, not the grid's. ``One accuracy--cost
+point per trained operator'' is withdrawn; what distinguishes $q$ is that it
+moves what the model can represent, which a coarser grid does not.

@@ -382,13 +382,31 @@ def twin_of(arm, spec):
     return None, ''
 
 
-def controls_section(control_attempts, screen_attempts):
-    """Each control arm beside the screen arm it differs from in exactly one variable."""
+def controls_section(control_attempts, screen_attempts, rom=None, rom_job=None):
+    """Each control arm beside the screen arm it differs from in exactly one variable.
+
+    DESIGN §A4 reading rule, applied literally: a control is *inside* if it moves its twin's
+    validation **worst or median** by no more than the twin's own screen's capacity-to-capacity
+    spread. "The screen" is read as the twin's family's screen job (every complete arm that job
+    trained, refine included) — the family reading. Because that reading was fixed after the
+    control returned (the earlier draft of this function pooled both families and tested mean
+    and worst), the table also shows the two neighbouring readings — the three capacities alone
+    (strictest) and both families pooled (loosest) — so the reader sees where each verdict flips."""
     if not control_attempts:
         return ''
     screen = {arm: (r, a['audit']) for a in screen_attempts for arm, r in a['audit']['arms'].items() if r.get('complete')}
-    rows = ['| Control | Differs from | In | Epochs | Ended by | Validation mean (%) | median (%) | worst (%) | Cohort worst (%) | Job |',
-            '| --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |']
+    by_family = {}
+    for a in screen_attempts:
+        for arm, r in a['audit']['arms'].items():
+            if r.get('complete'):
+                by_family.setdefault(r['family'], {})[arm] = r['fixed_initial']
+    pooled = [v for fam in by_family.values() for v in fam.values()]
+
+    def spread(values, key):
+        return max(v[key] for v in values) - min(v[key] for v in values)
+
+    rows = ['| Control | Differs from | In | Epochs | Ended by | Validation mean (%) | median (%) | worst (%) | Cohort worst (%) | Cohort median (%) | Job |',
+            '| --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |']
     deltas = []
     for a in control_attempts:
         audit = a['audit']
@@ -400,36 +418,95 @@ def controls_section(control_attempts, screen_attempts):
             c = audit['cohort'].get('models', {}).get(arm, {}).get('fixed_initial')
             v = r['fixed_initial']
             rows.append(f"| `{arm}` | `{twin}` | {what} | {r['epochs_completed']} | {r['stop_reason'].replace('_', ' ')} | "
-                        f"{pct(v['mean'])} | {pct(v['median'])} | {pct(v['maximum'])} | {pct(c['maximum']) if c else '—'} | `{audit['job_id']}` |")
+                        f"{pct(v['mean'])} | {pct(v['median'])} | {pct(v['maximum'])} | {pct(c['maximum']) if c else '—'} | "
+                        f"{pct(c['median']) if c else '—'} | `{audit['job_id']}` |")
             if twin in screen:
-                tw = screen[twin][0]['fixed_initial']
-                rows.append(f"| `{twin}` (twin, screen) | — | — | {screen[twin][0]['epochs_completed']} | "
-                            f"{screen[twin][0]['stop_reason'].replace('_', ' ')} | {pct(tw['mean'])} | {pct(tw['median'])} | "
-                            f"{pct(tw['maximum'])} | "
-                            f"{pct(screen[twin][1]['cohort']['models'][twin]['fixed_initial']['maximum'])} | `{screen[twin][1]['job_id']}` |")
-                deltas.append((arm, twin, what, v['mean'] - tw['mean'], v['median'] - tw['median'], v['maximum'] - tw['maximum']))
-    spread = ''
-    if deltas:
-        caps = [r['fixed_initial'] for a in screen_attempts for arm, r in a['audit']['arms'].items() if r.get('complete')]
-        cap_spread_mean = max(c['mean'] for c in caps) - min(c['mean'] for c in caps)
-        cap_spread_worst = max(c['maximum'] for c in caps) - min(c['maximum'] for c in caps)
-        lines = []
-        for arm, twin, what, dm, dmed, dw in deltas:
-            big = abs(dm) > cap_spread_mean or abs(dw) > cap_spread_worst
-            lines.append(f"- `{arm}` vs `{twin}` ({what} only): mean {dm * 100:+.4f} pp, median {dmed * 100:+.4f} pp, "
-                         f"worst {dw * 100:+.4f} pp \u2014 **{'outside' if big else 'inside'}** the screen's own "
-                         f"capacity-to-capacity spread ({cap_spread_mean * 100:.4f} pp mean, {cap_spread_worst * 100:.4f} pp worst).")
-        verdict = ('Every control lands inside the screen\'s own capacity-to-capacity spread, so the reported '
-                   'float32 single-seed numbers stand as reported (DESIGN \u00a7A4 reading rule).'
-                   if not any(abs(d[3]) > cap_spread_mean or abs(d[5]) > cap_spread_worst for d in deltas)
-                   else '**At least one control moves a headline metric by more than the screen\'s own '
-                        'capacity-to-capacity spread, so the numbers it bears on are flagged precision- or '
-                        'seed-sensitive (DESIGN \u00a7A4 reading rule).**')
-        spread = '\n\n' + '\n'.join(lines) + '\n\n' + verdict
+                tr, ta = screen[twin]
+                tw = tr['fixed_initial']
+                tc = ta['cohort']['models'][twin]['fixed_initial']
+                rows.append(f"| `{twin}` (twin, screen) | — | — | {tr['epochs_completed']} | "
+                            f"{tr['stop_reason'].replace('_', ' ')} | {pct(tw['mean'])} | {pct(tw['median'])} | "
+                            f"{pct(tw['maximum'])} | {pct(tc['maximum'])} | {pct(tc['median'])} | `{ta['job_id']}` |")
+                deltas.append(dict(arm=arm, twin=twin, what=what, family=tr['family'], v=v, tw=tw, c=c, tc=tc,
+                                   epochs=r['epochs_completed'], twin_epochs=tr['epochs_completed']))
+    if not deltas:
+        return ('\n\n## Controls: precision and seed\n\n' + '\n'.join(rows))
+    # ---- the §A4 reading rule under three spreads ----
+    read_rows = ['| Control vs twin | Metric | Delta (pp) | Family screen, 4 arms (§A4 as applied) | Family, 3 capacities only | Both families pooled |',
+                 '| --- | --- | ---: | ---: | ---: | ---: |']
+    flagged = []
+    for d in deltas:
+        fam = by_family[d['family']]
+        caps = [v for arm, v in fam.items() if not arm.endswith('-refine')]
+        outside_a4 = False
+        for label, key in (('worst', 'maximum'), ('median', 'median'), ('mean', 'mean')):
+            delta = d['v'][key] - d['tw'][key]
+            cells = []
+            for values in (list(fam.values()), caps, pooled):
+                sp = spread(values, key)
+                out = abs(delta) > sp
+                cells.append(f"{sp * 100:.4f} — **outside**" if out else f"{sp * 100:.4f} — inside")
+                if values is not caps and values is not pooled and key != 'mean' and out:
+                    outside_a4 = True
+            read_rows.append(f"| `{d['arm']}` vs `{d['twin']}` | {label} | {delta * 100:+.4f} | {cells[0]} | {cells[1]} | {cells[2]} |")
+        d['outside_a4'] = outside_a4
+        if outside_a4:
+            flagged.append(d)
+    # ---- the positive claim: does the twin stay on the same side of the ROM's cohort worst? ----
+    claim_lines = []
+    for d in deltas:
+        if d['c'] is None or rom is None:
+            continue
+        twin_side = 'below' if d['tc']['maximum'] < rom else 'above'
+        ctrl_side = 'below' if d['c']['maximum'] < rom else 'above'
+        same = twin_side == ctrl_side
+        head = (f"- `{d['twin']}` is **{twin_side}** the ROM on the matched eight-case worst ({pct(d['tc']['maximum'])}% vs "
+                f"{pct(rom)}%); its {d['what']} twin `{d['arm']}` lands at {pct(d['c']['maximum'])}%, "
+                f"**{ctrl_side}** the ROM by {abs(d['c']['maximum'] - rom) * 100:.4f} pp — ")
+        if twin_side == 'below':
+            claim_lines.append(head + ('the same side: the claim survives this control.' if same else
+                                       '**the other side: the claim does not survive this control.**'))
+        else:
+            # No positive claim rests on an arm that was already above the ROM. Name the family's
+            # below-ROM arms that have no twin, so the reader knows what is still undefended.
+            twinned = {x['twin'] for x in deltas}
+            fam_audit = next(ta for tr, ta in screen.values() if tr['family'] == d['family'])
+            undefended = [arm for arm, m in fam_audit['cohort']['models'].items()
+                          if m['fixed_initial']['maximum'] < rom and arm not in twinned]
+            claim_lines.append(head + 'no positive claim rests on this arm, so this control defends none'
+                               + (f"; the {FAMILY_LABEL[d['family']]} arm(s) below the ROM, "
+                                  f"{', '.join(f'`{a}` ({pct(fam_audit['cohort']['models'][a]['fixed_initial']['maximum'])}%)' for a in undefended)}, "
+                                  '**have no twin and remain a single-seed float32 result**.' if undefended else '.'))
+    equal_wall = []
+    for d in deltas:
+        if d['what'] == 'network dtype':
+            equal_wall.append(f"`{d['arm']}` completed {d['epochs']} epochs against `{d['twin']}`'s {d['twin_epochs']} "
+                              f"({d['epochs'] / d['twin_epochs']:.2f}×) in the same 3000 s")
+    if flagged:
+        verdict = ('**At least one control moves its twin\'s validation worst or median by more than that twin\'s own '
+                   'screen spread, so the numbers it bears on are flagged precision- or seed-sensitive (DESIGN §A4 '
+                   'reading rule):** ' + '; '.join(f"`{d['twin']}` ({d['what']}, `{d['arm']}`)" for d in flagged) + '. '
+                   + 'Every other control lands inside its twin\'s screen spread and those float32 single-seed numbers stand as reported.')
+    else:
+        verdict = ('Every control lands inside its twin\'s screen spread on validation worst and median, so the reported '
+                   'float32 single-seed numbers stand as reported (DESIGN §A4 reading rule).')
     return ('\n\n## Controls: precision and seed\n\nEach control repeats a screen arm under the identical '
             'protocol and budget with **exactly one variable changed**, and is shown beside that arm. Controls are '
-            'never eligible for capacity selection and are excluded from the tables above.\n\n'
-            + '\n'.join(rows) + spread)
+            'never eligible for capacity selection and are excluded from the tables above. The controls twin the '
+            '**validation-selected capacity without refinement** (DESIGN §3.4/§A4), so the refined headline arms '
+            '(`unet-refine`, `tsol-refine`) have no twin here; what the controls test is whether the capacity the '
+            'selection rule chose is stable under one changed variable.\n\n'
+            + '\n'.join(rows)
+            + '\n\n**Reading rule (DESIGN §A4) under three spreads.** A control is flagged when |delta| exceeds the '
+              'spread on validation worst or median; the family-screen column is the reading applied, the other two '
+              'are shown so the reader can see where the verdict would flip.\n\n'
+            + '\n'.join(read_rows) + '\n\n' + verdict
+            + ('\n\n**Equal wall, not equal epochs.** ' + '; '.join(equal_wall) + '. A float64 twin at equal '
+               'compute is therefore also a fewer-epochs twin; the protocol holds compute equal by design, and the '
+               'dtype effect is not separated from the epoch effect here.' if equal_wall else '')
+            + (('\n\n**The positive single-seed claim, tested control by control** (matched eight-case worst, ROM from '
+                f'job `{rom_job}`, accuracy comparable across jobs on these cases).\n\n' + '\n'.join(claim_lines))
+               if claim_lines else ''))
 
 
 def resolution_rows():
@@ -679,7 +756,7 @@ def build(attempts, fno, launch, diagnosis, control_attempts=()):
                f"(FNO worst {pct(fno_coh['maximum'])}% / median {pct(fno_coh['median'])}%, ROM worst {pct(rom)}%, "
                f"efficient FOM `same_nt1e-2_dt005` worst {pct(fom)}%)." if c else
                ' The matched cohort was not scored in this job.') + tail_note)
-    controls = controls_section(control_attempts, attempts)
+    controls = controls_section(control_attempts, attempts, rom=rom, rom_job=DIAGNOSIS_JOB)
     # ---- fairness disclosures required by DESIGN §A1 finding 17, generated from the data ----
     # (`sel` and `fno_sel` are already computed above.)
     lane_arms = [(arm, r) for a in attempts for arm, r in a['audit']['arms'].items() if r.get('complete')]
@@ -699,6 +776,9 @@ def build(attempts, fno, launch, diagnosis, control_attempts=()):
              for f, rs in sorted(by_family.items())}
     fno_span = (min(x['real_parameter_count'] for x in fno['models'].values()),
                 max(x['real_parameter_count'] for x in fno['models'].values()))
+    seed_control_note = ('the one-variable precision and seed controls are in the section "Controls: precision and seed" below, '
+                         'and they twin the validation-selected capacities only (one second seed, one family; not the refined arms).'
+                         if control_attempts else 'the precision and seed controls are a separate job.')
     fairness = f"""**Read these numbers with the following, all pre-registered in DESIGN §A1 finding 17.**
 
 - **Almost nothing here is converged.** {len(improving)} of {len(lane_arms)} arms in this lane, and
@@ -719,7 +799,7 @@ def build(attempts, fno, launch, diagnosis, control_attempts=()):
   published recipe was not used. This is what "matched protocol" costs: it is fair, not optimal, for
   every family including the FNO.
 - **One seed.** Differences between a family's own arms — and between families — are not yet
-  separated from seed variation; the precision and seed controls are a separate job."""
+  separated from seed variation; {seed_control_note}"""
 
     # Reference quality and metric-shape numbers, read from the archived data, never typed.
     import numpy as np

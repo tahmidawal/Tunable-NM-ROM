@@ -19,6 +19,14 @@ for run, keep in (('accel12', ('chol_guard', 'trained_nested40')), ('accel07', (
                 rows.append(dict(source=run, job_id=r['provenance']['job_id'], intervals=i['intervals'], case=i['case'], method=rename[i['method']],
                                  archived_method=i['method'], setting=i['setting'], metric=metric,
                                  value=i['same_grid_discrepancy'][metric]['max_initial_normalized']))
+            # The tie-invariant quantity: eight starts reach the same minimum and argmin breaks the
+            # tie by index, so the SELECTED START can flip between identical runs while the objective
+            # it reached does not.  Gate the objective tightly and the trajectory error loosely.
+            if 'cold_fit' in i:
+                cf = i['cold_fit']
+                rows.append(dict(source=run, job_id=r['provenance']['job_id'], intervals=i['intervals'], case=i['case'], method=rename[i['method']],
+                                 archived_method=i['method'], setting=i['setting'], metric='selected_fit_objective',
+                                 value=cf['objective'][cf['selected']], archived_selected_start=cf['selected']))
 out = Path(__file__).parent / 'retained-gates.json'
 out.write_text(json.dumps(dict(sources=sources, gates=rows), indent=2) + '\n')
 print(len(rows), 'gate rows;', {(x['intervals'], x['method']) for x in rows})

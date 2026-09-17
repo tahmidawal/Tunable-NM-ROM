@@ -540,12 +540,22 @@ def main():
             rows = [r for r in data['invocations'] if r['case'] == g['case'] and r['method'] == g['method'] and r['repetition'] == 0]
             if not rows:
                 continue
-            got = rows[0]['same_grid_discrepancy'][g['metric']]['max_initial_normalized']
+            row = rows[0]
+            extra = {}
+            if g['metric'] == 'selected_fit_objective':
+                # DESIGN A4: tie-invariant. Eight starts reach the same minimum; argmin breaks the tie
+                # by index, so the selected START may differ between identical runs while the objective
+                # reached does not. This is the strict check.
+                cf = row['cold_fit']; got = cf['objective'][cf['selected']]; tolerance = 1e-9
+                extra = dict(measured_selected_start=int(cf['selected']),
+                             selected_start_matches_archive=int(cf['selected']) == g.get('archived_selected_start'))
+            else:
+                got = row['same_grid_discrepancy'][g['metric']]['max_initial_normalized']
+                # A trajectory error inherits the start-tie flip, so it is gated loosely for the
+                # fit-based arms and tightly for the deterministic linear ones.
+                tolerance = 1e-7 if 'cold_fit' in row else 1e-9
             rel = abs(got - g['value']) / abs(g['value'])
-            # DESIGN A3: the retained nested40's 8-start fit stops at a threshold and varies at the
-            # 1e-9 level between identical runs; the deterministic paths reproduce to <= 1e-13.
-            tolerance = 1e-7 if g['method'] == 'trained_nested40' else 1e-9
-            checks.append(dict(**g, measured=got, relative_difference=rel, tolerance=tolerance, passed=rel <= tolerance))
+            checks.append(dict(**g, **extra, measured=got, relative_difference=rel, tolerance=tolerance, passed=rel <= tolerance))
         data['gates'] = dict(retained_value_checks=checks, all_passed=all(x['passed'] for x in checks), count=len(checks))
         print('gates', json.dumps(data['gates']), flush=True); save()
         if not data['gates']['all_passed']:

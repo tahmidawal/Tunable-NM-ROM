@@ -398,3 +398,32 @@ relative for `trained_nested40` and stays 1e-9 for the deterministic `head_q0` a
 `linear_bank64` paths, still fatal. Resubmitted as `wl64b` / `wl256b` / `wl1024b`. The report
 generator implements A2's tie band and prints, per arm, the worst over evolved times and
 whether the worst is attained at $t = 0$.
+
+### A4 (2026-09-17, after wl256b failed its own gate) — the retained-value gate tests a tie-breaking index, not the physics
+
+`wl256b` (job 3780448) completed all 432 timed invocations and all 8 decompositions, then
+raised on the retained-value gate and exited 1. The log is complete (34 KB) and the share had
+411 GB free, so this is not the disk-full failure mode; it is the gate being wrong.
+
+Diagnosis, from the recorded fit counters rather than assumed. For `fresh_development_0` at
+256², `head_q0` selected start **4** where accel12 selected start **0**, with *identical*
+iteration counts `[6]*8` and an identical selected objective 1.152180e-04; `trained_nested40`
+selected start 7 where the archive selected 4, objective 5.148519e-05 in both. For `opened_0`,
+where both runs selected the same start, the errors reproduced to 1e-14. So the eight starts
+of `pilot.cold_fit` reach the same minimum, `jnp.argmin` breaks the tie by index, and a
+last-bit difference in the objective flips which start wins — moving the latent code, and the
+trajectory error, at the 1e-8 level. The A3 tolerance was applied only to `trained_nested40`;
+the same mechanism affects `head_q0` on cases whose starts happen to tie.
+
+The gate is therefore rebuilt around the tie-invariant quantity:
+
+- **selected cold-fit objective, 1e-9 relative, fatal** — the fit must reach the same minimum.
+  The selected start index is recorded beside it and may differ.
+- trajectory error (u / v / energy-state): **1e-7 relative** for any arm carrying a cold fit,
+  **1e-9** for the deterministic linear arms, both fatal.
+
+A 1e-7 relative difference on a ~5 % error is 5e-9 percentage points and cannot move any
+verdict; the gate's job is to catch a wrong checkpoint, mesh or configuration, which would
+show as 1e-2 or worse. Both the loosening and the new strict objective check are recorded
+before the resubmission (`wl256c`). `wl256b`'s output is archived as a gate-failed attempt;
+its numbers are superseded by `wl256c` if that job passes.

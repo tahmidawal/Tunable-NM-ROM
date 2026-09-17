@@ -1,0 +1,143 @@
+{
+  "attempt": "smoke",
+  "lane": "b-lowvisc",
+  "purpose": "local 64-interval smoke of the same driver; validates no number",
+  "intervals": 64,
+  "dt": 0.005,
+  "families": [
+    {
+      "name": "incumbent",
+      "nu_lo": 0.01,
+      "nu_hi": 0.1
+    },
+    {
+      "name": "lowvisc",
+      "nu_lo": 0.001,
+      "nu_hi": 0.01
+    }
+  ],
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "expected_incumbent_cases": null,
+  "expected_incumbent_cases_note": "values, not a hash: np.exp differs by one ulp between the GB10 that wrote this file and the cluster NumPy that will recompute it, so the gate compares to 4e-16 relative and reports bitwise equality beside it as a probe",
+  "reference_mesh": 256,
+  "reference_dt": 0.00125,
+  "train_seed": 0,
+  "train_trajectories": 8,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "snapshot_residual_bar": 1e-08,
+  "pod_ranks": [
+    4,
+    8,
+    16
+  ],
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "dense_tight",
+      "preconditioner": "dense",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    }
+  ],
+  "same_grid_reference": "fft_tight",
+  "reps": 1,
+  "order_seed": 20260917,
+  "burn_seconds": 0.0,
+  "mesh_probe": {
+    "meshes": [
+      128
+    ],
+    "settings": [
+      "fft_tight"
+    ],
+    "families": [
+      "incumbent",
+      "lowvisc"
+    ]
+  },
+  "pod_probe_meshes": [
+    128
+  ],
+  "pod_probe_note": "the whole leg-(a) measurement repeated at 512 intervals for both families, so a degradation measured at 256 can be separated from the first-order-upwind numerical diffusion of that grid; it runs last and is guarded, so a failure there voids nothing above it. 1024 is left out: the snapshot matrix would be 27.9 GB on device.",
+  "comparator_source": "b-panel job 3780638, reports/summary.json, family=pod metric=best_found_percent",
+  "comparator_pod_best_found_percent": null,
+  "comparator_tolerance": 0.001,
+  "comparator_fom_median_gpu_ms": {
+    "dense_tight": 60.79329294152558,
+    "fft_tight": 89.28451943211257,
+    "nt1e-2_dt005": 15.836982522159815,
+    "nt1e-2_dt01": 9.282445069402456,
+    "nt1e-3_dt005": 31.414113473147154,
+    "nt1e-3_dt01": 20.049333106726408,
+    "nt1e-4_dt005": 36.73426155000925,
+    "nt1e-4_dt01": 27.86762546747923
+  },
+  "comparator_fom_worst_evolved_percent": {
+    "dense_tight": 8.402271393609418e-14,
+    "fft_tight": 0.0,
+    "nt1e-2_dt005": 3.7126546739634616,
+    "nt1e-2_dt01": 3.199937091473226,
+    "nt1e-3_dt005": 0.04889766354765399,
+    "nt1e-3_dt01": 1.5178517607598867,
+    "nt1e-4_dt005": 0.03384942323363766,
+    "nt1e-4_dt01": 1.5108805044811702
+  },
+  "comparator_fom_note": "recorded for the report only: b-panel ran on its own allocation, so no cost of this job may be divided by one of those. The incumbent family is re-timed HERE and every cost ratio this lane states is between two subjects of this job.",
+  "leg_a_rank": 16,
+  "leg_a_bar": 2.0,
+  "leg_b_bar": 1.5
+}

@@ -1,0 +1,406 @@
+{
+  "attempt": "smoke",
+  "source": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6e5fe858-5d6b-4b34-a1bd-df699b1d4032/scratchpad/lv-smoke",
+  "job_id": null,
+  "commit": null,
+  "gpu": "NVIDIA GB10",
+  "checks": [
+    {
+      "check": "job_complete",
+      "passed": true
+    },
+    {
+      "check": "jax_backend_gpu",
+      "passed": true,
+      "backend": "gpu"
+    },
+    {
+      "check": "x64_and_highest_precision",
+      "passed": true,
+      "precision": "highest"
+    },
+    {
+      "check": "no_trained_model_used",
+      "passed": true
+    },
+    {
+      "check": "final_cohort_unopened",
+      "passed": true
+    },
+    {
+      "check": "cohort_redrawn_matches_incumbent",
+      "passed": true,
+      "max_relative_difference": 0.0
+    },
+    {
+      "check": "cohort_redrawn_matches_lowvisc",
+      "passed": true,
+      "max_relative_difference": 0.0
+    },
+    {
+      "check": "descriptors_bitwise_identical_across_families",
+      "passed": true
+    },
+    {
+      "check": "viscosity_ratio_is_exactly_ten",
+      "passed": true,
+      "max_relative_deviation": 3.552713678800501e-16
+    },
+    {
+      "check": "reference_hash_incumbent_0",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_0",
+      "passed": true,
+      "max_relative_residual": 3.0873826087062347e-12
+    },
+    {
+      "check": "reference_hash_incumbent_1",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_1",
+      "passed": true,
+      "max_relative_residual": 5.067002386397761e-12
+    },
+    {
+      "check": "reference_hash_incumbent_2",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_2",
+      "passed": true,
+      "max_relative_residual": 7.026153161709188e-13
+    },
+    {
+      "check": "reference_hash_incumbent_3",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_3",
+      "passed": true,
+      "max_relative_residual": 6.9554497823176845e-12
+    },
+    {
+      "check": "reference_hash_incumbent_4",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_4",
+      "passed": true,
+      "max_relative_residual": 1.246755704804078e-12
+    },
+    {
+      "check": "reference_hash_incumbent_5",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_incumbent_5",
+      "passed": true,
+      "max_relative_residual": 4.077990605558752e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_0",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_0",
+      "passed": true,
+      "max_relative_residual": 8.544903294501702e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_1",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_1",
+      "passed": true,
+      "max_relative_residual": 9.826870661781076e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_2",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_2",
+      "passed": true,
+      "max_relative_residual": 9.07907950398614e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_3",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_3",
+      "passed": true,
+      "max_relative_residual": 9.682214466491341e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_4",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_4",
+      "passed": true,
+      "max_relative_residual": 9.909762710396605e-12
+    },
+    {
+      "check": "reference_hash_lowvisc_5",
+      "passed": true
+    },
+    {
+      "check": "reference_residual_lowvisc_5",
+      "passed": true,
+      "max_relative_residual": 4.410335908351568e-12
+    },
+    {
+      "check": "truth_hash_incumbent",
+      "passed": true
+    },
+    {
+      "check": "truth_hash_lowvisc",
+      "passed": true
+    },
+    {
+      "check": "invocation_field_hashes",
+      "passed": true,
+      "mismatches": 0
+    },
+    {
+      "check": "errors_vs_reference_recomputed",
+      "passed": true,
+      "max_absolute_difference": 0.0
+    },
+    {
+      "check": "errors_same_grid_recomputed",
+      "passed": true,
+      "max_absolute_difference": 0.0
+    },
+    {
+      "check": "pod_orthonormal_incumbent",
+      "passed": true,
+      "max_deviation": 1.4876988529977098e-14
+    },
+    {
+      "check": "pod_floors_recomputed_incumbent",
+      "passed": true,
+      "max_absolute_percentage_point_difference": 0.0
+    },
+    {
+      "check": "pod_eigenvalues_nonincreasing_incumbent",
+      "passed": true
+    },
+    {
+      "check": "pod_orthonormal_lowvisc",
+      "passed": true,
+      "max_deviation": 5.10702591327572e-15
+    },
+    {
+      "check": "pod_floors_recomputed_lowvisc",
+      "passed": true,
+      "max_absolute_percentage_point_difference": 0.0
+    },
+    {
+      "check": "pod_eigenvalues_nonincreasing_lowvisc",
+      "passed": true
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-3_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-4_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__fft_tight__L128",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__dense_tight__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__dense_tight__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-2_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-3_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-2_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-3_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-4_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-2_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-4_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-2_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__fft_tight__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__nt1e-3_dt01__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__fft_tight__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_lowvisc__fft_tight__L128",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "reps_present_incumbent__nt1e-4_dt005__L64",
+      "passed": true,
+      "rows": 6,
+      "expected": 6
+    },
+    {
+      "check": "median_gpu_ms_recomputed",
+      "passed": true,
+      "max_absolute_difference": 0.0
+    },
+    {
+      "check": "frontier_same_grid_incumbent",
+      "passed": true
+    },
+    {
+      "check": "frontier_same_grid_lowvisc",
+      "passed": true
+    },
+    {
+      "check": "leg_a_ratios_recomputed",
+      "passed": true,
+      "max_absolute_difference": 0.0
+    },
+    {
+      "check": "leg_b_cost_ratios_recomputed",
+      "passed": true,
+      "max_absolute_difference": 0.0
+    },
+    {
+      "check": "pod_probe_truth_hash_L128_incumbent",
+      "passed": true
+    },
+    {
+      "check": "pod_probe_floors_recomputed_L128_incumbent",
+      "passed": true,
+      "max_absolute_percentage_point_difference": 0.0,
+      "route": "same-algebra (weaker)"
+    },
+    {
+      "check": "pod_probe_truth_hash_L128_lowvisc",
+      "passed": true
+    },
+    {
+      "check": "pod_probe_floors_recomputed_L128_lowvisc",
+      "passed": true,
+      "max_absolute_percentage_point_difference": 0.0,
+      "route": "same-algebra (weaker)"
+    },
+    {
+      "check": "in_job_gate_cohorts_differ_only_in_viscosity",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "max_descriptor_difference": 0.0,
+        "families": [
+          "incumbent",
+          "lowvisc"
+        ]
+      }
+    },
+    {
+      "check": "in_job_gate_timed_tight_matches_untimed_truth",
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "cases": 12,
+        "bitwise_matches": 12
+      }
+    },
+    {
+      "check": "hypothesis_gate_leg_a_pod_degrades",
+      "passed": true,
+      "advisory": true,
+      "verdict": false,
+      "detail": {
+        "bar": 2.0,
+        "rank": "16",
+        "ratio": 1.0508542325043837,
+        "passed": false
+      }
+    },
+    {
+      "check": "hypothesis_gate_leg_b_fom_cost_rises",
+      "passed": true,
+      "advisory": true,
+      "verdict": true,
+      "detail": {
+        "bar": 1.5,
+        "max_cost_ratio": 2.242682542594654,
+        "passed": true
+      }
+    }
+  ],
+  "failed": [],
+  "passed": true
+}

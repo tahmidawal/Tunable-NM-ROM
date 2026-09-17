@@ -253,7 +253,9 @@ def main():
     Cnp = np.ascontiguousarray(np.asarray(dz['C']))
     QS_ALL = sorted(set(cfg['dense_q']) | set(cfg['eq_q']) | set(cfg.get('extra_dense_q', [])))
     prefix = {str(q): sha_array(np.ascontiguousarray(Cnp[:, :q])) for q in QS_ALL}
-    ok_prefix = all(prefix[k] == dprov['prefix_sha256'].get(k) for k in prefix)
+    recorded = {k: v for k, v in prefix.items() if k in dprov['prefix_sha256']}
+    # every rung the source recorded must match; a rung it never recorded (smoke q = 4) is reported, not gated
+    ok_prefix = bool(recorded) and all(dprov['prefix_sha256'][k] == v for k, v in recorded.items())
     report['directions'] = dict(file=cfg['directions_file'], sha256=got, expected_sha256=dprov['sha256'],
                                 columns=int(Cnp.shape[1]), prefix_sha256=prefix,
                                 expected_prefix_sha256=dprov['prefix_sha256'], source_job=dprov['source_job'],

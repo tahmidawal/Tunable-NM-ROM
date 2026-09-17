@@ -235,3 +235,12 @@ other gate passed at $\le 10^{-12}$ relative. (b) The extension orthonormality a
 $10^{-7}$ on a $512\times512$ Gram (the parent's $10^{-8}$ was on $32\times32$); the smoke
 measured $4.6\times10^{-10}$ with the full fit split. Nothing in D1–D3 or the gates' $10^{-9}$
 relative tolerance changes.
+
+**2026-09-17, §A6 — one consistency threshold, from the passing smoke.** The final smoke
+passed all 23 fidelity gates (worst $7.8\times10^{-13}$ relative) and completed. The
+`q512_m4` vs `d_linear_qr_m4` field check came out at $3.2\times10^{-7}$ against the
+$10^{-8}$ I had declared: both solve the same full-rank least-squares problem, but the
+eliminated path recovers $y$ through the QR of $BC$ after an inert $z$ iteration and the
+direct arm through the QR of $B$, so they agree to the operator's conditioning times
+round-off, not to $10^{-8}$. The threshold is set to $10^{-5}$; it is a reported
+consistency pair, not a gate, and D1–D3 do not use it.

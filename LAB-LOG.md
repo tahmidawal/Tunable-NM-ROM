@@ -13798,3 +13798,60 @@ if F2 does not fire does the stage-3 panel (`lvp01`, pre-registered in A3: fixed
 M=256 control, the (256, 2176) cell, no q=512, dense quadrature, 80 GB card) run. Jobs used: 2 of 8.
 The obvious purchase with the reserve: a finer-mesh (L=512) confirmation that answers F4, which is
 the single thing standing between this cell and a paper headline.
+
+## 2026-09-17
+### b-qxm round-2 addendum — round-1's ladder stands; a report-generator defect that erased it under a failed extension is fixed; q=512 is uninformative; q=256 saturates by 2176
+
+This session (a fresh agent, respawned after the third usage-limit restart) resumed the lane
+with round-2 jobs COMPLETE but 11 files dirty and the working tree's `analysis.json`
+contradicting the committed one (`4b9723e8`): `rank_claim_false` had flipped from `false` to
+`true` and the headline from "fixed-M ladder" to "scheduled ladder". Diagnosis, confirmed
+against the raw audit JSONs before touching anything: **round 1's own result never changed.**
+`bqx201` (G2, 3780177) ran $q = 0, 64, 128, 256$ at fixed $M = 1088$ in one job — monotone,
+every rung converged, error span $2.437\times$, cost span $5.163\times$, 4 non-dominated
+points, passes the tunability bar — and `bqx401` (E1, round 2) independently reproduces every
+one of those four values (plus $q=16,32$) to $\le 9.9\times10^{-9}$ inside its own job. What
+had changed was `reports/generate_xm.py`: round 2 appended a non-converged $q=512$ rung to the
+*same named object* as round 1's converged four-rung column, and the column's `all_converged`
+flag — computed over the union — flipped and nulled the span for the whole object, including
+the part that never touched $q=512$. Fixed by splitting `span` (the full declared range,
+correctly `null`/unavailable when a rung fails, per DESIGN.md §5) from a new `certified_span`
+(the converged prefix only, unaffected by a failed later extension); `verdict()` now reads
+`certified_span` for `rank_claim_false` and the headline. Regenerated: `span_q_at_M1088 =
+2.4368429602045354` (bit-identical to the committed value), `headline = fixed-M ladder`,
+`rank_claim_false = false`. Full detail, the exact mechanism, and both extension verdicts:
+`experiments/b-qxm/DESIGN.md` §A5.
+
+**E1** ($q=512$ at $M=1088,2112,3168$, testing whether the rank has run out): **uninformative**,
+per A3's literal clause — all three fail to converge (worst joint gradient $1.77\times10^{-1}$
+against the $10^{-6}$ bar, zero budget exits). Raw (uncertified) values $0.4250, 0.2307,
+0.1844$ % at 2.06/4.0/6.0 tests per unknown are directionally consistent with test-starvation
+rather than a rank limit, but per §5 an unconverged cell has no certified value and nothing is
+decided; excluded from every span.
+
+**E2** ($q=256$ saturation in $M$, job `bqx501`/E2/3783899): $M^\star = 2176$ (8 tests/unknown),
+error $0.3736$ %, cost $1.493\times$ the $M=1088$ cell; the curve keeps inching down to
+$0.3510$ % by $M=6528$ but each further doubling buys under 1.2 % more accuracy — diminishing,
+not a second plateau worth naming.
+
+**What was wrong and retracted.** The generator defect above: a later, failed extension of a
+column silently erasing an already-certified, already-reported shorter result inside the same
+named object. It never reached the paper (the committed `4b9723e8` json was correct throughout;
+only the working tree was briefly wrong, mid-regeneration, when the prior session was killed
+by a usage limit). Retracted and fixed; recorded in `experiments/b-qxm/checks/retractions.md`
+and DESIGN.md §A5.
+
+Both round-2 jobs COMPLETED exit 0, zero failed gates, `jax_backend=gpu`, float64, highest
+matmul precision; checksum-collected (local chunk hashes match `archive.json`; remote
+`collection.tar.gz.sha256` matched before deletion), remote attempt directories deleted.
+`checks/selfaudit.py` extended to filter to converged cells (matching §5's own definition)
+before forming its independent span, and re-run against the round-2 report: 29/29 checks
+agree, zero disagreements. Codex remained over quota (until 2026-09-19 11:33); this written
+self-audit stands in, per the coordinator's notice.
+
+Source-generated report updated in place: `experiments/b-qxm/reports/2026-09-17-b-qxm.md`,
+`summary.json` (510 rows), `analysis.json`, both figures, all generated from the audit JSONs
+by `reports/generate_xm.py`; nothing hand-typed. Raw archives `bqx401` (3783898) and `bqx501`
+(3783899) Git-tracked as bounded chunks under `experiments/b-qxm/artifacts/{bqx401,bqx501}/`.
+Five of the eight-job cap used across both rounds. Nothing merged, nothing pushed. Committed
+to `worktrees/2026-09-17-b-qxm`, branch `exp/2026-09-17-b-qxm`.

@@ -410,32 +410,34 @@ the coordinator's call, not this session's.
 **Job plan after §A6.** Jobs used: `ns101`, `ns201`, `ns202`, `ns203`, `ns204` (5 of 8).
 `ns204` pending. No Phase-3 job is staged.
 
-## §A7 (2026-09-17 evening, after job 3787320 `ns204`) — the =32$ head also fails H-ORACLE with a full-rank bank; Phase 2 is closed for both heads and Phase 3 is not submitted
+## §A7 (2026-09-17 evening, after job 3787320 `ns204`) — the $K=32$ head also fails H-ORACLE with a full-rank bank; Phase 2 is closed for both heads and Phase 3 is not submitted
 
-**What happened.** `ns204` (=32$, =512$, `G_HIDDEN=1024`, head 12\times3$, 100 000
+**What happened.** `ns204` ($K=32$, $R=512$, `G_HIDDEN=1024`, head $512\times3$, 100 000
 full-batch steps; A100 `pax049`, 7 h 30 m, exit 0, `jax_backend=gpu`, `ALL-DONE`, commit
 `beffbb1b`) passed B-RANKCAP, B-DATA by hash at every mesh, **B-ORTH with numerical rank
-512 = R and $\kappa(R_b)=141*, B-FLOOR (bank worst-evolved 0.0756 vs POD-512 0.0600, ratio
+512 = R and $\kappa(R_b)=141$**, B-FLOOR (bank worst-evolved 0.0756 vs POD-512 0.0600, ratio
 1.26; bank floor median 0.0040, *below* the POD-512 median 0.0115), H-SOLVED (single-start
 0.1270 within 1.05× of the oracle) and H-TRAIN (reconstruction median 0.0376) — and **failed
 H-ORACLE at every mesh: oracle median 0.1209 vs POD-32 median 0.1395, ratio 1.15** (64²:
 0.1218/0.1407; 128²: 0.1211/0.1396; bar 2.0). The independent NumPy audit
-(`artifacts/ns204/audit.json`) matches all 67 checks. Oracle LM median 65 {'0': 18, '4': 366}.
+(`artifacts/ns204/audit.json`) matches all 67 checks. Oracle LM median 65 iterations of a
+300 budget; stopping-reason codes {0: 18, 4: 366} states (the driver's code map is in
+`ns2d_phase2.py`).
 
 **Per §A4 this is the negative finding for the second head; the bar is not lowered and no
 Phase-3 job is staged.** Both pre-registered heads now carry the same verdict: with a
-full-rank bank and the long recipe, the auto-decoder head cannot beat linear POD-$ by 2× on
+full-rank bank and the long recipe, the auto-decoder head cannot beat linear POD-$K$ by 2× on
 held-out decaying 2D NS at $\mathrm{Re}\in[100,1000]$.
 
 **Diagnostic (generated into the report from the per-state arrays).** Same mechanism as §A6,
 and sharper: held-out / training = **3.2** (0.1209 vs 0.0376); on evolved times POD-32 / oracle
-= 1.16; **at =0$ POD-32 is better than the oracle (0.0189 vs 0.0230, ratio 0.82)** — at =32$
+= 1.16; **at $t=0$ POD-32 is better than the oracle (0.0189 vs 0.0230, ratio 0.82)** — at $K=32$
 even the initial condition is fit better by 32 linear modes than by the 32-code neural
 manifold, because the 12-parameter initial family is inside the span of 32 POD modes of the
 training snapshots. The bank floor (median 0.004) is not the limit.
 
-**Consequence for the lane.** Phase 2 is closed as a gated negative for both $ and
-$. The Phase-3 question (correction-rank trade on a degree-2 residual) is not
+**Consequence for the lane.** Phase 2 is closed as a gated negative for both $(16,256)$ and
+$(32,512)$. The Phase-3 question (correction-rank trade on a degree-2 residual) is not
 reached; the deliverable is Phases 1–2, the certified FOM and dataset, the floors, and this
 negative. Any further Phase 2 (lower-dimensional family, more trajectories) is a new
 pre-registration; jobs used 5 of 8; the 2026-09-22 stop rule stands.

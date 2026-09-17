@@ -97,7 +97,7 @@
       "q64_m4@new_K32",
       "q128_m4@new_K32",
       "q256_m4@new_K32",
-      "d_linear_qr_m4@new_K32"
+      "q512_m4@new_K32"
     ],
     "worst_same_grid": [
       0.03156746847454927,
@@ -105,7 +105,7 @@
       0.020808230111158,
       0.015497283990881629,
       0.00968850419215881,
-      0.007458632302014631
+      0.007458632301862235
     ],
     "cost_ms": [
       9.21419495716691,
@@ -113,23 +113,17 @@
       9.818680584430695,
       10.219317395240068,
       9.658001945354044,
-      3.220925573259592
+      117.85369063727558
     ],
-    "top_rung": "d_linear_qr_m4@new_K32",
-    "cheapest_rung": "d_linear_qr_m4@new_K32",
-    "D1_cost_span": 3.17278905171909,
+    "D1_cost_span": 12.790448995829808,
     "D1": false,
-    "D1_neural_rungs_only_span_posthoc": 1.1090841297308738,
     "D2_top_lowest_error": true,
-    "D2_top_within_1p1": true,
-    "D2": true,
-    "D2_strict_top_cheapest": true,
+    "D2_top_within_1p1": false,
+    "D2": false,
+    "D2_strict_top_cheapest": false,
     "D3": true,
     "degenerate": false,
     "error_monotone": true,
-    "falsified_literal": true,
-    "falsified_intent": false,
-    "rungs_that_buy_accuracy": [],
     "non_dominated_all": [
       "dst_direct"
     ],
@@ -139,6 +133,11 @@
       "e_pod512_m4@trainset"
     ],
     "passed": true
+  },
+  "numpy_bank_floor": {
+    "passed": true,
+    "max_abs_difference": 3.6531368533508635e-11,
+    "worst": 0.007458604095354888
   },
   "all_passed": true
 }

@@ -1,0 +1,235 @@
+{
+  "attempt": "plin1024",
+  "intervals": 1024,
+  "fixed_test_count": 256,
+  "training_intervals": 255,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "eval_seed": 7090703,
+  "eval_count": 6,
+  "fresh_seed": 7090732,
+  "fresh_count": 6,
+  "models": [
+    {
+      "id": "new_K32",
+      "role": "primary",
+      "checkpoint": "checkpoints/primary_K32.pkl",
+      "basis": "checkpoints/primary_K32-basis.npz",
+      "training": {
+        "seed": 0,
+        "draw_count": 3072,
+        "prefix": null,
+        "fit_split": {
+          "split_seed": 20260916,
+          "validation_fraction": 0.15
+        }
+      },
+      "freebank_rule": "m4"
+    },
+    {
+      "id": "incumbent",
+      "role": "control",
+      "checkpoint": "../multiresolution-poisson/runs/correction_accuracy10/checkpoints/r128_joint.pkl",
+      "basis": "../multiresolution-poisson/runs/correction_accuracy10/basis.npz",
+      "training": {
+        "seed": 0,
+        "draw_count": 576,
+        "prefix": 512,
+        "fit_split": null
+      },
+      "freebank_rule": "m256"
+    }
+  ],
+  "ladder_q": [
+    0,
+    32,
+    64,
+    128,
+    256,
+    512
+  ],
+  "ladder_rules": [
+    "m256",
+    "m4"
+  ],
+  "control_q": [
+    0,
+    32,
+    64,
+    128
+  ],
+  "ccrule_arms": {
+    "model": "incumbent",
+    "train_seed": 0,
+    "train_count": 192,
+    "residual_snapshots": 192,
+    "residual_starts": 4,
+    "residual_budget": 200,
+    "residual_seed": 20260915,
+    "rules": [
+      "m256",
+      "m4"
+    ],
+    "q": [
+      64
+    ]
+  },
+  "pod_cohort": {
+    "id": "trainset",
+    "seed": 0,
+    "count": 3072
+  },
+  "pod_ranks": [
+    32,
+    64,
+    128,
+    256,
+    512
+  ],
+  "pod_rules": [
+    "m256",
+    "m4"
+  ],
+  "pod_block": 256,
+  "cg_tolerances": [
+    0.01,
+    0.0001,
+    1e-06,
+    1e-08
+  ],
+  "cg_maxiter": 40000,
+  "reference_intervals": [
+    1024,
+    2048
+  ],
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "repetitions": 3,
+  "order_seed": 911717,
+  "burn_seconds": 0.1,
+  "fidelity_tolerance": 1e-09,
+  "retained": {
+    "online_preset": {
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-06,
+      "starts": 1,
+      "requested_modes": 256
+    },
+    "stationarity_tolerance": 1e-06,
+    "linear_backward_error_limit": 1e-12,
+    "residual_reconstruction_limit": 1e-10
+  },
+  "gates": [
+    {
+      "file": "references/pbh02-reference.json",
+      "intervals": [
+        64,
+        256,
+        1024
+      ],
+      "pairs": [
+        [
+          "a_neural@incumbent",
+          "a_neural@incumbent"
+        ],
+        [
+          "q32_m256@incumbent",
+          "a_neural_q32@incumbent"
+        ],
+        [
+          "d_freebank_m256@incumbent",
+          "d_freebank@incumbent"
+        ],
+        [
+          "a_neural@new_K32",
+          "a_neural@new_K32"
+        ],
+        [
+          "q32_m256@new_K32",
+          "a_neural_q32@new_K32"
+        ],
+        [
+          "e_pod32_m256@trainset",
+          "e_pod32@trainset"
+        ],
+        [
+          "e_pod64_m256@trainset",
+          "e_pod64@trainset"
+        ],
+        [
+          "e_pod128_m256@trainset",
+          "e_pod128@trainset"
+        ],
+        [
+          "dst_direct",
+          "dst_direct"
+        ]
+      ]
+    },
+    {
+      "file": "references/ccpoi01-reference.json",
+      "intervals": [
+        1024
+      ],
+      "pairs": [
+        [
+          "q0_m256@incumbent",
+          "q0_m256"
+        ],
+        [
+          "q32_m256@incumbent",
+          "q32_m256"
+        ],
+        [
+          "q64_m256_ccrule@incumbent",
+          "q64_m256"
+        ],
+        [
+          "q64_m4_ccrule@incumbent",
+          "q64_m4"
+        ],
+        [
+          "dst_direct",
+          "dst_direct"
+        ]
+      ]
+    }
+  ],
+  "consistency": [
+    [
+      "q0_m256@new_K32",
+      "a_neural@new_K32",
+      1e-06
+    ],
+    [
+      "q0_m256@incumbent",
+      "a_neural@incumbent",
+      1e-06
+    ],
+    [
+      "q512_m4@new_K32",
+      "d_linear_qr_m4@new_K32",
+      1e-05
+    ],
+    [
+      "d_freebank_m4@new_K32",
+      "d_linear_qr_m4@new_K32",
+      0.01
+    ],
+    [
+      "d_freebank_m256@incumbent",
+      "d_linear_qr_m256@incumbent",
+      1e-06
+    ],
+    [
+      "q32_m4@new_K32",
+      "q32_m256@new_K32",
+      1e-12
+    ]
+  ],
+  "timing_contract": "host source array in to dense nodal field out; every subject in the same job on the same GPU, randomised order, GPU burn-in before every invocation, three repetitions retained",
+  "fidelity_absolute_floor": 1e-12,
+  "dense_oracle_max_intervals": 256
+}

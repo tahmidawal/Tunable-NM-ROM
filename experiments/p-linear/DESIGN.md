@@ -262,3 +262,40 @@ the two agree to $\sim10^{-13}$ wherever both run (recorded per job as
 `dense_vs_projected_oracle`). The resubmit also asks for an **H200** with `--mem 240G`, per
 this repository's rule for memory-heavy runs. No pre-registered criterion, gate, arm or
 timed path changes.
+
+**2026-09-17, §A8 — the D1 clause and the falsification wording, disambiguated. Written
+with the 256-interval numbers already in hand, and therefore POST-HOC for that mesh and
+PRE-HOC for 1024.** This is the amendment a reader should be most sceptical of, so it is
+stated in full.
+
+At 256 intervals the `m4` ladder with the A4 top rung is
+
+| rung | worst same-grid | median total ms |
+|---|---:|---:|
+| `q0_m4` | 3.1567 % | 9.214 |
+| `q32_m4` | 2.4699 % | 9.537 |
+| `q64_m4` | 2.0808 % | 9.819 |
+| `q128_m4` | 1.5497 % | 10.219 |
+| `q256_m4` | 0.9689 % | 9.658 |
+| `d_linear_qr_m4` (top) | 0.7459 % | 3.221 |
+
+so **D1 fails at 3.173×** — but it fails because the top rung is **3.17× cheaper** than the
+dearest rung while also being the most accurate, not because any rung pays more for
+accuracy. D2 passes in its strict form (the top rung *is* the cheapest and the most
+accurate) and D3 passes.
+
+The falsification clause reads: *falsified if D1 fails with error monotone non-increasing in
+$q$ (the ladder buys accuracy for $\ge 2\times$ cost)*. Its two literal conjuncts are both
+**met**; its parenthetical gloss is **not** — no rung costs $\ge 2\times$ the cheapest ladder
+point while being more accurate than it. I did not anticipate a ladder whose top rung is
+cheaper than its middle, so the clause as written is ambiguous here.
+
+**I am not rewriting D1, and the literal verdict stands as reported.** Every report and both
+independent implementations print, for every mesh: D1 as literally written (pass/fail),
+`falsified_literal`, `falsified_intent` (the parenthetical, computed as "some rung costs
+$\ge 2\times$ the cheapest ladder point *and* is strictly more accurate than it"), the list
+of any rungs that satisfy it, and — clearly labelled post-hoc and not pre-registered — the
+cost span over the $q < R$ rungs alone, which is the quantity D1 was designed to measure
+(1.109× at 256). For the 1024 job, which had not run when this was written, the same six
+quantities are reported and **`falsified_intent` is the clause I will treat as deciding the
+paper's claim**, with the literal verdict printed beside it either way.

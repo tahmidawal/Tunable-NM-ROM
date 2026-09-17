@@ -131,11 +131,18 @@ def main():
     if 'ladder_q' in cfg:
         rows = summarise(d['invocations'], names)
         prim = cfg['models'][0]['id']
-        ladder = [f'q{q}_m4@{prim}' for q in cfg['ladder_q'] if f'q{q}_m4@{prim}' in rows]
+        # DESIGN A4: the q = R point of the ladder is the DIRECT rank-R linear solve, not
+        # the eliminated arm (whose inert z iteration burns its whole budget on round-off).
+        R = max(cfg['ladder_q'])
+        top = f'd_linear_qr_m4@{prim}'
+        ladder = [f'q{q}_m4@{prim}' for q in cfg['ladder_q']
+                  if q < R and f'q{q}_m4@{prim}' in rows] + ([top] if top in rows else [])
         costs = [rows[k]['cost_ms'] for k in ladder]
         errs = [rows[k]['worst'] for k in ladder]
-        top = ladder[-1]
         d1 = max(costs) / min(costs)
+        # the span over the q < R rungs alone: what D1 was designed to measure, before the
+        # top rung turned out to be CHEAPER than the rungs below it. Post-hoc, labelled.
+        d1_neural = max(costs[:-1]) / min(costs[:-1]) if len(costs) > 1 else 1.0
         d2_low = rows[top]['worst'] <= min(errs) + 1e-15
         d2_cost = rows[top]['cost_ms'] <= 1.1 * min(costs)
         d2_strict = rows[top]['cost_ms'] <= min(costs)
@@ -146,12 +153,26 @@ def main():
         nd_red = [red[i] for i in non_dominated([(rows[k]['worst'], rows[k]['cost_ms']) for k in red])]
         d3 = any(k in fom for k in nd_all) and any(k.startswith('e_pod') for k in nd_red)
         mono = all(errs[i + 1] <= errs[i] + 1e-15 for i in range(len(errs) - 1))
+        # Falsification, both readings (DESIGN A8). LITERAL: D1 fails and error is monotone.
+        # INTENT (the clause's own parenthetical, "the ladder buys accuracy for >= 2x cost"):
+        # some rung is >= 2x the cost of the cheapest ladder point AND strictly more accurate
+        # than it -- i.e. paying more actually buys accuracy.
+        cheap_i = int(np.argmin(costs))
+        buys = [(ladder[i], costs[i] / costs[cheap_i], errs[i])
+                for i in range(len(ladder))
+                if costs[i] >= 2 * costs[cheap_i] and errs[i] < errs[cheap_i]]
         checks['criterion'] = dict(ladder=ladder, worst_same_grid=errs, cost_ms=costs,
-                                   D1_cost_span=d1, D1=bool(d1 < 2), D2_top_lowest_error=bool(d2_low),
+                                   top_rung=top, cheapest_rung=ladder[cheap_i],
+                                   D1_cost_span=d1, D1=bool(d1 < 2),
+                                   D1_neural_rungs_only_span_posthoc=d1_neural,
+                                   D2_top_lowest_error=bool(d2_low),
                                    D2_top_within_1p1=bool(d2_cost), D2=bool(d2_low and d2_cost),
                                    D2_strict_top_cheapest=bool(d2_strict), D3=bool(d3),
                                    degenerate=bool(d1 < 2 and d2_low and d2_cost and d3),
-                                   error_monotone=bool(mono), non_dominated_all=nd_all,
+                                   error_monotone=bool(mono),
+                                   falsified_literal=bool(d1 >= 2 and mono),
+                                   falsified_intent=bool(buys), rungs_that_buy_accuracy=buys,
+                                   non_dominated_all=nd_all,
                                    non_dominated_reduced=nd_red, passed=True)
 
     if a.floor and 'ladder_q' in cfg:

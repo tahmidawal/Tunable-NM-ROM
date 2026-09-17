@@ -1,0 +1,17 @@
+{
+  "attempt": "plin1024",
+  "job_id": "3780691",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed": "00:14:27",
+  "node": "pax144",
+  "gpu": "NVIDIA A100-PCIE-40GB (40960 MiB)",
+  "max_rss_kb": 16458720,
+  "req_mem": "180G",
+  "failure": "GPU OOM (RESOURCE_EXHAUSTED) inside the UNTIMED dense best-found oracle: f64[8,1046529,32] jacfwd Jacobian, 2.0 GiB per array, 31.94 GiB autotuner variants",
+  "disk_at_failure": "91% (not disk-full)",
+  "timed_numbers_produced": false,
+  "gates_run": false,
+  "superseded_by": "plin1024b / 3783813 (H200, 240G, DESIGN A7 dense-oracle cap)",
+  "logs": "logs/3780691.out, logs/3780691.err.gz"
+}

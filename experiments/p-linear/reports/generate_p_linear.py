@@ -94,13 +94,17 @@ def rows_of(d):
     return out
 
 
-def criterion(rows, prim):
+def criterion(rows, prim, R):
+    """The pre-registered clauses. DESIGN A4: the q = R point is the DIRECT rank-R linear
+    solve `d_linear_qr_m4`, not the eliminated `q{R}_m4` arm; A8: falsification is reported
+    under both the literal wording and the clause's own parenthetical intent."""
     ladder = [r for r in rows if r['kind'] == 'ladder' and r['model'] == prim and r['rule'] == 'm4'
-              and '_ccrule' not in r['name']]
+              and '_ccrule' not in r['name'] and r['q'] < R]
     ladder.sort(key=lambda r: r['q'])
+    top = next(r for r in rows if r['name'] == f'd_linear_qr_m4@{prim}')
+    ladder = ladder + [top]
     costs = [r['total_ms'] for r in ladder]
     errs = [r['worst'] for r in ladder]
-    top = ladder[-1]
     fom = [r for r in rows if r['kind'] in ('fom', 'cg')]
     allp = non_dominated([(r['worst'], r['total_ms']) for r in rows])
     red = [r for r in rows if r['kind'] not in ('fom', 'cg')]
@@ -108,16 +112,22 @@ def criterion(rows, prim):
     nd_all = [rows[i]['name'] for i in allp]
     nd_red = [red[i]['name'] for i in redp]
     d1 = max(costs) / min(costs)
+    d1_neural = max(costs[:-1]) / min(costs[:-1]) if len(costs) > 1 else 1.0
+    cheap = int(np.argmin(costs))
+    buys = [dict(rung=ladder[i]['name'], cost_factor=costs[i] / costs[cheap], worst=errs[i])
+            for i in range(len(ladder))
+            if costs[i] >= 2 * costs[cheap] and errs[i] < errs[cheap]]
+    mono = all(errs[i + 1] <= errs[i] + 1e-15 for i in range(len(errs) - 1))
     return dict(ladder=[r['name'] for r in ladder], costs=costs, errs=errs,
-                D1_span=d1, D1=d1 < 2,
+                D1_span=d1, D1=d1 < 2, D1_neural_span_posthoc=d1_neural,
                 D2_lowest=top['worst'] <= min(errs) + 1e-15,
                 D2_within=top['total_ms'] <= 1.1 * min(costs),
                 D2_strict=top['total_ms'] <= min(costs) + 1e-12,
                 D3_fom=any(n in [f['name'] for f in fom] for n in nd_all),
                 D3_pod=any(n.startswith('e_pod') for n in nd_red),
-                nd_all=nd_all, nd_red=nd_red,
-                monotone=all(errs[i + 1] <= errs[i] + 1e-15 for i in range(len(errs) - 1)),
-                cheapest=ladder[int(np.argmin(costs))]['name'], top=top['name'])
+                nd_all=nd_all, nd_red=nd_red, monotone=mono,
+                falsified_literal=bool(d1 >= 2 and mono), falsified_intent=bool(buys),
+                buys=buys, cheapest=ladder[cheap]['name'], top=top['name'])
 
 
 def subject_table(rows):
@@ -276,7 +286,7 @@ def main():
             continue
         rows = rows_of(d)
         prim = d['config']['models'][0]['id']
-        crit = criterion(rows, prim)
+        crit = criterion(rows, prim, max(d['config']['ladder_q']))
         n = d['intervals']
         prov = '' if (audit and audit.get('all_passed')) else ' *(provisional: audit not complete)*'
         md += [f"## {n} intervals — `{att}`, job `{d['job_id']}`, `{d['gpu']}`, source `{d['commit'][:12]}`{prov}", '',
@@ -293,15 +303,29 @@ def main():
                f"| D3 full-order solver on the non-dominated set | | {', '.join(f'`{x}`' for x in crit['nd_all'])} | **{'pass' if crit['D3_fom'] else 'FAIL'}** |",
                f"| D3 POD-LSPG on the reduced non-dominated set | | {', '.join(f'`{x}`' for x in crit['nd_red'])} | **{'pass' if crit['D3_pod'] else 'FAIL'}** |",
                '',
-               f"Verdict at {n} intervals: **{'DEGENERATE' if (crit['D1'] and crit['D2_lowest'] and crit['D2_within'] and crit['D3_fom'] and crit['D3_pod']) else 'NOT degenerate under the pre-registered clauses'}**. "
+               f"Verdict at {n} intervals: **{'DEGENERATE' if (crit['D1'] and crit['D2_lowest'] and crit['D2_within'] and crit['D3_fom'] and crit['D3_pod']) else 'NOT degenerate under the pre-registered clauses as literally written'}**. "
                f"Ladder error monotone non-increasing in q: {'yes' if crit['monotone'] else 'no'}.", '',
+               '**Falsification, both readings (DESIGN §A8).** The clause reads: falsified if D1 fails '
+               '*with error monotone non-increasing in q* — its own parenthetical gloss being "the ladder '
+               'buys accuracy for $\\ge 2\\times$ cost".', '',
+               f"- **Literal**: D1 {'fails' if not crit['D1'] else 'holds'} and the error {'is' if crit['monotone'] else 'is not'} monotone, "
+               f"so the literal conjunction is **{'MET' if crit['falsified_literal'] else 'not met'}**.",
+               f"- **Intent**: a rung must cost $\\ge 2\\times$ the cheapest ladder point *and* be strictly more accurate than it. "
+               f"Rungs that do: **{', '.join(f'`{b['rung']}` ({b['cost_factor']:.2f}x)' for b in crit['buys']) if crit['buys'] else 'none'}**, "
+               f"so the intended condition is **{'MET' if crit['falsified_intent'] else 'not met'}**.",
+               f"- The cheapest ladder point is `{crit['cheapest']}`; the top rung is `{crit['top']}`. "
+               f"The D1 span is driven by the top rung being **{max(crit['costs']) / crit['costs'][-1]:.2f}x cheaper** than the dearest rung, "
+               f"not by any rung paying more for accuracy. Span over the $q < R$ rungs alone "
+               f"(post-hoc, not pre-registered): {crit['D1_neural_span_posthoc']:.3f}x.", '',
                '### The ladder', '',
                '| rung | q | M | worst same-grid | median same-grid | augmented best-found (worst) | bank floor | median total ms | median device ms | valid | LM Jacobians |',
                '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
         rec = next(r for r in d['reconstruction'] if r['model'] == prim)
         aug = {x['q']: x['best_found']['worst'] for x in rec['augmented']}
-        for r in sorted([r for r in rows if r['kind'] == 'ladder' and r['model'] == prim and '_ccrule' not in r['name']],
-                        key=lambda r: (r['rule'], r['q'])):
+        ladder_rows = [r for r in rows if r['kind'] == 'ladder' and r['model'] == prim
+                       and '_ccrule' not in r['name']]
+        ladder_rows += [r for r in rows if r['kind'] == 'linear' and r['model'] == prim]
+        for r in sorted(ladder_rows, key=lambda r: (r['rule'], r['q'])):
             md.append(f"| `{r['name']}` | {r['q']} | {r['M']} | {pct(r['worst'])} | {pct(r['median'])} | "
                       f"{pct(aug[r['q']]) if r['q'] in aug else '—'} | {pct(rec['bank_projection']['worst'])} | "
                       f"{r['total_ms']:.3f} | {r['device_ms']:.3f} | {r['valid']}/{r['count']}{' (q=R, degenerate by construction)' if r['degenerate'] else ''} | "

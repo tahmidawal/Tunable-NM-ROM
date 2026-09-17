@@ -28,6 +28,8 @@ OPTIONAL = [
     'experiments/ns2d/ns2d_rom.py',
     'experiments/ns2d/ns2d_phase3.py',
     'experiments/ns2d/configs/phase1-hashes.json',
+    'experiments/ns2d/checkpoints/ckpt_K16_R256.pkl',
+    'experiments/ns2d/checkpoints/ckpt_K32_R512.pkl',
 ]
 DRIVERS = ('ns2d_phase1.py', 'ns2d_phase2.py', 'ns2d_phase3.py')
 EXCLUDE = 'pax007'

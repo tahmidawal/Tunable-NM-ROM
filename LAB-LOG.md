@@ -14069,3 +14069,41 @@ Source-generated report: `experiments/b-panel/reports/2026-09-17-b-panel.md` (SH
 Raw archive `bpn101` Git-tracked as bounded chunks: whole SHA256 `db2fcb6f1fd1c75024455c963eda8619ac2ba38ecdbae97986cfa3abf2cfd1ab` (15 chunks).
 Raw archive `bpn203` Git-tracked as bounded chunks: whole SHA256 `dedab45db81d35dbeaa47e22b95cece13352217cdd9d417390bec7bf6e118c68` (185 chunks).
 Raw archive `bpn301` Git-tracked as bounded chunks: whole SHA256 `4c788e051fe7813086a86ad28369373a1ad4188938c15cfb5fb2814555a75c42` (19 chunks).
+
+## 2026-09-17
+
+### b-seeds — the dense Burgers correction ladder across three retrained seeds and a sealed cohort: C1 (monotone + converged on ≥ 2 of 3 seeds) HOLDS (2 of 3); sealed/dev ratio ≤ 1.5 at every rung not run (difficulty-normalised: not run)
+
+Branch `exp/2026-09-17-b-seeds` at `7b0b5f6e4a3fcda1bac9ba752355a31f3f8399fb`, forked from `exp/2026-09-16-q-ridge` at `7dc970fc`; namespace `/cluster/tufts/paralab/tawal01/b_seeds_20260917/`, one attempt directory per job. Jobs: `s1` 3783776 (NVIDIA A100 80GB PCIe), `s2` 3783777 (NVIDIA A100 80GB PCIe), `s3` 3783778 (NVIDIA A100-PCIE-40GB). Every job printed `jax_backend=gpu`, ran float64 at highest matmul precision, was checksum-collected, independently NumPy-audited and Git-archived before its exact remote attempt directory was removed. Predeclared protocol and amendments: `experiments/b-seeds/DESIGN.md`.
+
+**T12 — development cohort, `dense_m4`, worst evolved % (seed mean ± std; incumbent re-run in the same job):**
+
+| q | seed1 | seed2 | seed3 | incumbent | converged (seeds) |
+|---|---|---|---|---|---|
+| 0 | 2.5745 | 1.7483 | 1.6778 | 1.8890 | 3 of 3 |
+| 16 | 1.6914 | 1.6114 | 1.4935 | 1.3985 | 3 of 3 |
+| 32 | 1.2932 | 1.5243 | 1.3006 | 1.2336 | 3 of 3 |
+| 64 | 1.1470 | 1.2561 | 1.2358 | 1.0843 | 3 of 3 |
+| 128 | 0.9337 | 0.9853 | 0.9495 | 0.8930 | 3 of 3 |
+| 256 | 0.6329 | 0.4363 | 0.4268 | 0.5194 | 2 of 3 |
+
+**Three layers at q = 0 (bank floor / best-found / solved all-times %):** seed1: 0.3627 / 2.8600 / 2.8605; seed2: 0.3827 / 2.5361 / 2.5367; seed3: 0.3511 / 2.5697 / 2.6005; incumbent: 0.3918 / 2.5447 / 2.5629.
+
+**T13 — sealed cohort PENDING.** The sealed cohort was opened after the three seed attempts were collected, audited and archived, and submitted as attempt `final`, job 3804465 (a100, 10:00:00, 2026-09-17T22:22Z (18:22 EDT)): sealed cohort opened: incumbent -> seed1 -> seed2 -> seed3, dense_m4 + dense_fixedM, same-job FOM controls, 3 timed reps. It is the lane's 4th of 8 jobs. No `config-sealed-*.json` appears in any seed attempt's staged files. This entry is interim; the sealed numbers and the C2/C2n/C3 verdicts follow when it lands.
+
+Counts over the three seeds on the development cohort — `dense_m4` monotone on evolved: 3 of 3, on all times: 3 of 3, every rung converged: 2 of 3, knob bar: 2 of 3; `dense_fixedM` monotone on evolved: 3 of 3. C1 = yes (2 of 3); F3 (the recipe is NOT reproduced on >= 2 seeds) = no.
+
+**What was wrong, retracted or substituted (chronological).**
+
+- **Codex audit substituted (DESIGN.md A1).** `codex exec` with `gpt-6-astra` and `gpt-5.6-sol` both returned the account's usage limit ("try again at Sep 19th, 2026 11:33 AM"), so the protocol's pre-job Codex audit could not be obtained. An independent review by a Claude agent with no access to this lane's conversation (same read-only brief) was used instead and is recorded as such — a different context, not a different model family. Its blocker (the incumbent fidelity gate set at a $10^{-9}$ tier qtd02 itself did not meet) and its major findings were accepted before any job.
+- **First local parent smoke died at CUDA init** (`CUDA_ERROR_OUT_OF_MEMORY` creating the stream executor) while another lane's processes held most of the shared GB10; it was rerun once the slot freed. No number depended on it.
+- **The audit's training gates read the stage A/B JSONs by their `N256` names**; the 64-interval chain smoke exposed it (`FileNotFoundError`). Fixed to glob the mesh before any job; recorded in A1.
+- **Local smokes exceeded the sub-minute rule** (the parent smoke ≈ 2 min, the chain smoke ≈ 15 min at 64 intervals), as the parent lanes' smokes did; recorded as a deviation, the rule stands.
+- **Seed 3's top rung is not converged and is reported as such.** `old_q256_M1088_dense` on seed 3 exits on the 600-step budget for 2 of the 6 development cases (cases 2 and 3), identically in all three timed repetitions, worst joint stationarity 1.52e-06 / 5.83e-06 against `gtol` 1e-06. It is budget exhaustion, not divergence — that rung still carries seed 3's lowest error. Nothing was tuned in response (the budget is part of the frozen qtd02 configuration), so C1, C3 and C4 read 2 of 3 and every table marks the rung unconverged. No number was withdrawn.
+- **The 1e-9 fidelity probe fails on the high-$q$ incumbent arms**, as A1.1 anticipated: worst 1.34e-08 (s3, `old_q256_M1088_dense`), against the amended 1e-3 gate that every one of the 33 incumbent arms passes with five orders of margin. 20 of 33 arms still meet 1e-9. This is reported per arm in the report body, not only in the amendment.
+
+Source-generated report: `experiments/b-seeds/reports/2026-09-17-b-seeds.md` (SHA256 `40a05e6097e467974fb312fb1323f75e3c5e8f66327ab062cc79e356464f5d6c`), with `summary.json` and the generator beside it; every number above is read from `summary.json`. Raw archives are Git-tracked as bounded chunks under `experiments/b-seeds/artifacts/`. Not pushed; not merged.
+
+Written self-audit in place of the unavailable Codex audit (`reports/self-audit-report.md`, DESIGN.md A1/A3): `reports/selfaudit_recheck.py` re-derives every development number from the retained `.npz` fields without reading an audit JSON or importing the report generator, and parses the published T12 table back out of the report markdown — **360 of 360 comparisons agree** (errors and costs to 1e-12 relative, printed means to 5e-5 absolute). Two generator-side defects it exists because of were found and fixed after the numbers landed: EQ rows were keyed by audit file name rather than the seed label (a null `checkpoint` in 180 `summary.json` rows and a file name in the report's seed column), and the lab-log helper crashed on those nulls. Neither touched a measured value; the report was regenerated.
+
+Open for the next session: job 3804465 (sealed cohort, incumbent + three seeds, every rung) — collect with `experiments/b-seeds/cluster/finish.py final`, audit in `sealed` cohort mode, regenerate the report with the same command to fill in T13 and the C2 / C2n / C3 verdicts, then delete the remote attempt directory. After 2026-09-19 11:33, run the Codex audit of the finished report and append it as a dated addendum. Jobs used: 4 of the lane's 8.

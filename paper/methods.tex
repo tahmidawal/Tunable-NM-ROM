@@ -4,17 +4,13 @@
 % Tightened from the 2026-09-16 version; the per-PDE instance derivations
 % (Poisson identity, Crank--Nicolson heat step, Burgers stencil, the Gram
 % path, the NNLS fit) now live in sections/method-details.tex (Appendix A),
-% together with every DISCREPANCY comment recording where the previous
-% manuscript and the implemented code disagreed and the code was followed.
 % The correction ladder u = G(h_theta(z) + C_q y) is first-class here because
 % the rank q is the paper's knob.
 %
 % Sources checked (paths relative to the worktree root), unchanged:
 %   experiments/separable-decoder/sep_common.py
 %   experiments/mr-burgers2d/engines.py, accuracy_paths.py
-%   experiments/multiresolution-poisson/core.py, correction_core.py, kernel_solver.py
 %   experiments/cost-to-tolerance/ctol_tol.py
-%   experiments/mr-heat2d/heat_core.py, cp_algebra_paths.py, run_pilot.py
 %   worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/b2d_tensor_common.py
 %   worktrees/2026-09-15-cheap-corrections/experiments/cheap-corrections/{cheap_ladder,varpro}.py
 %   worktrees/2026-09-16-q-ridge/experiments/q-ridge/q_eqcert.py   (held-out rho certification)
@@ -36,19 +32,9 @@ solve that is actually run, \S\ref{sec:method:precomp} the offline operators and
 the quadrature rules with their certification, \S\ref{sec:method:tuning} what is
 fixed and what is chosen at run time, and \S\ref{sec:method:layers} the error
 decomposition every result is reported in. Per-PDE derivations, solver constants
-and exit codes are in Appendix~\ref{app:method}. Figure~\ref{fig:arch}
-shows the data flow and, by colour, when each quantity is fixed.
-
-\begin{figure}[t]
-\centering
-\resizebox{\linewidth}{!}{\input{figures/architecture}}
-\caption{Architecture and data flow. Purple: trained once and frozen for every
-result. Blue: assembled offline once per mesh. Orange: computed inside the timed
-query. Green: chosen at run time among artefacts that already exist. Grey:
-supplied, or a comparator. The correction rank $q$, the stored quadrature rule
-and the tolerance are the whole family; nothing is re-optimised at query time.}
-\label{fig:arch}
-\end{figure}
+and exit codes are in Appendix~\ref{app:method}.
+Figure~\ref{fig:arch} (appendix) shows the data flow and, by colour, when
+each quantity is fixed.
 
 \subsection{Setting and trial manifold}
 \label{sec:method:manifold}
@@ -76,18 +62,18 @@ factor that enforces the boundary condition exactly at every resolution,
   \bcmask(x) = 16\,x_1(1-x_1)\,x_2(1-x_2).
   \label{eq:bank}
 \end{equation}
-% DISCREPANCY (D1) vs old-submission Eq. (1): binary mask plus nonzero lift
-% there; smooth factor folded into the bank with u_g = 0 here.  Code followed.
 The head is a two-layer SiLU MLP plus a linear skip,
 $\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, so its Jacobian
 $\dhead=D\varphi_\theta+W\T$ retains a latent-independent component; the rank
 of $\jac{\umanifold}=\bank\,\dhead$ is at most $\min\{k,\rank\bank\}$ and the
-skip makes equality generic without proving it, so we measure the rank of the
-projected Jacobian at every solved query rather than asserting it. There is no
+skip makes equality generic without proving it; the elliptic solver checks the
+numerical rank of the projected Jacobian at every query and counts a failed
+check as an invalid solve (the ``valid'' column of Table~\ref{tab:linear}).
+The skip is a design choice, adopted so that the cold solve has a
+latent-independent descent direction; we do not ablate it in this paper. There is no
 encoder in the deployed path: latent codes come from an auto-decoder fit at
 training time and from a least-squares fit against the supplied input at query
 time (\S\ref{sec:method:weak}).
-% DISCREPANCY (D6) vs old-submission Sec. 4.4: the ViT-encoder argument does not
 % apply to the method described here.
 
 Two consequences of \eqref{eq:decoder} organise everything that follows. The
@@ -130,9 +116,11 @@ exactly and the nonlinear iteration stays $k$-dimensional at every $q$
 projector \citep{GolubPereyra1973}). When the residual is quadratic in the
 coefficients (Burgers) the elimination is not closed-form; we damp the
 $(\latent,y)$ blocks separately inside one Levenberg--Marquardt step
-(\emph{block-damped} variable projection), which is what turned the budget
-exits of a joint solve at $q\ge 64$ into clean stationary exits at unchanged
-error. The test count $M$ must exceed $k+q$; the headline ladder holds $M$
+(\emph{block-damped} variable projection): in the same job a joint LM on
+$(\latent,y)$ at $q=64$ leaves $\nBlockJointBudgetExits$ budget exits and plain
+variable projection is an order of magnitude slower, while the block-damped
+step exits stationary everywhere at the same error
+(Table~\ref{tab:solver-variants}). The test count $M$ must exceed $k+q$; the headline ladder holds $M$
 fixed across rungs so that $q$ is the only control (\S\ref{sec:exp:qxm}).
 
 \subsection{Weak residual, objective, and solver}
@@ -159,16 +147,12 @@ Appendix~\ref{app:method}; it changes which solution is selected and is part of
 the method. This is a least-squares Petrov--Galerkin condition with an
 explicit, latent-independent test space \citep{Carlberg2011LSPG,LeeCarlberg2020},
 not tangent Galerkin, and overdetermined rather than square.
-% DISCREPANCY (D2) vs old-submission Eqs. (2)-(3): tangent Galerkin printed
-% there; no implemented path forms J^T K J.  Code followed.
 Each attempt solves the damped normal system
 $(H+\lambda\,\diag(\diag H))\,\delta=-g$ with $H=\jac{}\T\jac{}$, $g=\jac{}\T\rweak$
 from forward-mode differentiation through $\head$ \citep{Bradbury2018JAX}, and
 accepts the step only if it is finite, within a fixed trust radius, and strictly
 decreases the residual: damped Levenberg--Marquardt with a monotone test
 \citep{Marquardt1963}, no line search.
-% DISCREPANCY (D8): "Gauss--Newton" with an undamped update in the old
-% manuscript; implemented as damped LM with an explicit trust radius.
 Three exit families are recorded and never conflated: the scale-free
 stationarity measure
 \begin{equation}
@@ -212,11 +196,10 @@ cached $5m\times R$ stencil block.
 
 A rule is fitted offline by non-negative least squares
 \citep{LawsonHanson1974NNLS} on decoder outputs at $n_{\rm fit}$ stored codes,
-with a hard cap of $m$ nodes (Appendix~\ref{app:method:eq}). Changing $m$
-re-solves the fit; rules are not nested; deployment selects among stored rules.
-Two things about rules are results of this paper rather than conventions. First,
-\emph{a rule is never certified by its NNLS fit residual}. We certify it by the
-held-out relative error of the projected advection term,
+with a hard cap of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$
+re-solves the fit, rules are not nested, and deployment selects among stored
+rules. \emph{A rule is never certified by its NNLS fit residual}; we certify it
+by the held-out relative error of the projected advection term,
 \begin{equation}
   \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
   \qquad
@@ -224,8 +207,9 @@ held-out relative error of the projected advection term,
   \label{eq:rho}
 \end{equation}
 over states the solver actually reaches on trajectories disjoint from the fit
-and evaluation cases. Second, the fit states must be reachable states too, and
-their \emph{number} binds before the node count does (\S\ref{sec:exp:eq}).
+and evaluation cases. The primary bar is \nEqtopBarOrigin. Second, the fit states must be reachable states too, and at the top rungs
+($q\ge128$) their \emph{number} binds before the node count does
+(\S\ref{sec:exp:eq}).
 
 \subsection{What is fixed, what is chosen, and how error is reported}
 \label{sec:method:tuning}
@@ -241,7 +225,6 @@ count $M$ is a design parameter of the weak problem and is held fixed along the
 headline ladder; where earlier cells raised it with $q$ we say so and report
 the effect separately (\S\ref{sec:exp:qxm}). Nothing is re-optimised at query
 time, and no operating point is reported without its exit reasons.
-% DISCREPANCY (D5) vs old-submission Sec. 5.1: no implemented path applies CG to
 % the projected operator; the k x k damped system is solved directly.
 
 \label{sec:method:layers}
@@ -257,12 +240,7 @@ can only move the layer it acts on: $q$ moves the reduction layer, tolerance
 and budget the solver layer, nothing at inference the floor.
 
 \label{sec:method:limits}
-The construction provides no accuracy certificate, no escape from the bank, no
-convergence theory for the cold-start iteration and no bound on the quadrature
-error on unseen states; $\bank$, $\tests$, $B$ and the rules must be rebuilt at
-each resolution even though $\theta$ transfers, and that setup is charged
-separately; exact preassembly is conditional on a fixed or affinely separable
-linear operator and, for Burgers, on a sign restriction decoded states can
-violate; and on separable constant-coefficient cells the discrete sine
-transform is a direct solve \citep{Swarztrauber1977} faster than every reduced
-model we measure.
+The construction provides no accuracy certificate, no escape from the bank, and
+no convergence theory; $\bank$, $\tests$, $B$ and the rules are rebuilt at each
+resolution even though $\theta$ transfers, and that setup is charged
+separately.

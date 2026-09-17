@@ -27,6 +27,12 @@
 \newcommand{\nAblPoissonQthirtytwo}{4.6670}
 \newcommand{\nAblPoissonQthirtytwoMs}{7.317}
 \newcommand{\nAblPoissonQuad}{16.6303}
+\newcommand{\nBlockBlockBudgetExits}{0}
+\newcommand{\nBlockBlockErr}{2.1489}
+\newcommand{\nBlockBlockMs}{619.2}
+\newcommand{\nBlockJointBudgetExits}{6}
+\newcommand{\nBlockJointErr}{2.1489}
+\newcommand{\nBlockJointMs}{1119.7}
 \newcommand{\nColdCapEightNearest}{6.09}
 \newcommand{\nColdCapEightZero}{30.03}
 \newcommand{\nColdCapTwelveNearest}{6.09}
@@ -38,6 +44,7 @@
 \newcommand{\nColdMesh}{1024}
 \newcommand{\nColdStarts}{nearest, zero}
 \newcommand{\nEqtopBar}{0.116}
+\newcommand{\nEqtopBarOrigin}{the held-out $\rho$ of the incumbent $q{=}0$ rule at the state carrying the first-interval penalty, measured in the q-diag cell and adopted as the primary bar in the q-ridge design before any certification job ran; the tight bar was declared before b-eqtop ran}
 \newcommand{\nEqtopCostRatioMax}{0.21}
 \newcommand{\nEqtopCostRatioMin}{0.18}
 \newcommand{\nEqtopLadderConverged}{yes}
@@ -87,6 +94,7 @@
 \newcommand{\nHeatHeadMsTenTwentyFour}{12.3}
 \newcommand{\nHeatHeadMsTwoFiftySix}{11.9}
 \newcommand{\nLshapeBestFloor}{0.6650}
+\newcommand{\nLshapeBestFloorCommon}{1.6155}
 \newcommand{\nLshapeEnrichFloor}{0.6650}
 \newcommand{\nLshapeEnrichGain}{1.067}
 \newcommand{\nLshapeHeadRatioMax}{5.77}
@@ -94,6 +102,7 @@
 \newcommand{\nLshapeKsixteenBest}{3.8607}
 \newcommand{\nLshapeKthirtytwoBest}{3.1802}
 \newcommand{\nLshapeSdfFloor}{0.7698}
+\newcommand{\nLshapeSelectedFloorCommon}{1.6155}
 \newcommand{\nLshapeSmoothFloor}{0.7093}
 \newcommand{\nLshapeSolve}{\gen{pending: lshape solve jobs 3784662/3/4}}
 \newcommand{\nMeshBurgersCachedFirst}{44.16}
@@ -114,9 +123,20 @@
 \newcommand{\nMeshPoissonEverFaster}{no}
 \newcommand{\nMeshPoissonFomOverRomRange}{0.063--0.112}
 \newcommand{\nMeshPoissonUnknownGrowth}{264}
-\newcommand{\nNsGatesFailed}{F-JAC\_N128, F-JAC\_N256, F-JAC\_N64}
-\newcommand{\nNsGatesPassed}{88 of 109}
+\newcommand{\nNsGatesFailed}{B-ORTH\_N128, B-ORTH\_N256, B-ORTH\_N64, F-JAC\_N128, F-JAC\_N256, F-JAC\_N64, H-ORACLE\_N128, H-ORACLE\_N256, H-ORACLE\_N64, audit}
+\newcommand{\nNsGatesPassed}{118 of 163}
 \newcommand{\nNsRom}{\gen{pending: ns2d phases 2--3}}
+\newcommand{\nOfflineDirectionSeconds}{1242}
+\newcommand{\nOfflineFitHoursLadderTotal}{1.7}
+\newcommand{\nOfflineFitSecondsLadderTotal}{6102}
+\newcommand{\nOfflineFitSecondsQOneTwentyEight}{2920}
+\newcommand{\nOfflineFitSecondsQSixteen}{147}
+\newcommand{\nOfflineFitSecondsQSixtyFour}{160}
+\newcommand{\nOfflineFitSecondsQThirtyTwo}{155}
+\newcommand{\nOfflineFitSecondsQTwoFiftySix}{2650}
+\newcommand{\nOfflineFitSecondsQZero}{72}
+\newcommand{\nOfflineTrainSecondsBest}{1459}
+\newcommand{\nOfflineTrainSecondsLikeForLike}{387}
 \newcommand{\nOpArmsBeatingRom}{4}
 \newcommand{\nOpEightFnoLarge}{2.4829}
 \newcommand{\nOpEightFomEfficient}{0.9978}
@@ -127,11 +147,11 @@
 \newcommand{\nOpEightUnetRefine}{1.7110}
 \newcommand{\nOpEightUnetSmall}{1.4712}
 \newcommand{\nOpEveryFnoWorse}{yes}
-\newcommand{\nOpFnoImproving}{1 of 4}
+\newcommand{\nOpFnoImproving}{4 of 4}
 \newcommand{\nOpLaneImproving}{7 of 8}
 \newcommand{\nOpPoissonFnoWorstRange}{28.3--32.5}
 \newcommand{\nOpPoissonUnetWorstRange}{8.31 / 6.02 / 12.80}
-\newcommand{\nOpResolutionKnob}{\gen{pending: no-second res01 (job 3783920)}}
+\newcommand{\nOpResolutionKnob}{landed (Table~\ref{tab:resolution})}
 \newcommand{\nOpSeedControl}{\gen{pending: no-second ctrl01 (job 3783831)}}
 \newcommand{\nPanelBestRungAll}{0.9053}
 \newcommand{\nPanelBestRungErr}{0.5194}
@@ -257,6 +277,10 @@
 \newcommand{\nPlinTwoFiftySixTopOverMidCost}{3.17}
 \newcommand{\nQxmAllTimesSpanFixed}{2.83}
 \newcommand{\nQxmAllTimesSpanScheduledFour}{2.83}
+\newcommand{\nQxmAnchorJobs}{3780175 / 3780177}
+\newcommand{\nQxmAnchorMsA}{742.2}
+\newcommand{\nQxmAnchorMsB}{848.0}
+\newcommand{\nQxmAnchorSpreadPct}{14}
 \newcommand{\nQxmAnovaInter}{8.8}
 \newcommand{\nQxmAnovaRank}{85.1}
 \newcommand{\nQxmAnovaTests}{6.1}
@@ -266,6 +290,7 @@
 \newcommand{\nQxmErrSpan}{2.44}
 \newcommand{\nQxmFixedM}{1088}
 \newcommand{\nQxmFixedMConverged}{yes}
+\newcommand{\nQxmFixedQtopMs}{4377.9}
 \newcommand{\nQxmFixedQzeroMs}{848.0}
 \newcommand{\nQxmMonotone}{yes}
 \newcommand{\nQxmMstarSixtyFour}{256}
@@ -291,6 +316,19 @@
 \newcommand{\nQxmSpanMatQzero}{1.49}
 \newcommand{\nQxmSpanScheduledEight}{3.93}
 \newcommand{\nQxmSpanScheduledFour}{3.64}
+\newcommand{\nQxmTwoFiftySixCostSpan}{2.27}
+\newcommand{\nQxmTwoFiftySixErrSpan}{1.22}
+\newcommand{\nQxmTwoFiftySixNonDom}{3}
+\newcommand{\nQxmTwoFiftySixPasses}{no}
+\newcommand{\nQxmTwoFiftySixQtop}{128}
+\newcommand{\nResAnyUsable}{yes}
+\newcommand{\nResDegenerateList}{\texttt{tsol-refine}, \texttt{unet-refine}}
+\newcommand{\nResFnoErrRatio}{1.14}
+\newcommand{\nResFnoLarge}{R-USABLE}
+\newcommand{\nResFnoSpeedup}{2.12}
+\newcommand{\nResTsolRefine}{R-DEGENERATE}
+\newcommand{\nResUnetRefine}{R-DEGENERATE}
+\newcommand{\nResUsableList}{\texttt{fno-large}}
 \newcommand{\nSeedsStatus}{\gen{pending: b-seeds}}
 \newcommand{\nSpeedArmMs}{30.824}
 \newcommand{\nSpeedFixedUs}{17.2}
@@ -300,6 +338,7 @@
 \newcommand{\nSpeedIncumbentMs}{46.856}
 \newcommand{\nSpeedPerIterUs}{141.1}
 \newcommand{\nSpeedUsPerFusion}{1.34}
+\newcommand{\nSpreadQtwoFiftySixPct}{12}
 \newcommand{\nTrainArmsEvaluated}{26}
 \newcommand{\nTrainArmsPassing}{0}
 \newcommand{\nTrainBestRetrained}{2.8289}
@@ -319,6 +358,9 @@
 \newcommand{\nWaveBankErrSixtyFour}{4.932}
 \newcommand{\nWaveBankErrTenTwentyFour}{5.133}
 \newcommand{\nWaveBankErrTwoFiftySix}{5.121}
+\newcommand{\nWaveBankMinusQthirtytwoPpSixtyFour}{0.016}
+\newcommand{\nWaveBankMinusQthirtytwoPpTenTwentyFour}{0.017}
+\newcommand{\nWaveBankMinusQthirtytwoPpTwoFiftySix}{0.017}
 \newcommand{\nWaveBankMsSixtyFour}{1.17}
 \newcommand{\nWaveBankMsTenTwentyFour}{4.56}
 \newcommand{\nWaveBankMsTwoFiftySix}{1.43}
@@ -337,6 +379,9 @@
 \newcommand{\nWaveHeadErrSixtyFour}{11.205}
 \newcommand{\nWaveHeadErrTenTwentyFour}{11.339}
 \newcommand{\nWaveHeadErrTwoFiftySix}{11.331}
+\newcommand{\nWaveHeadLadderMonotoneSixtyFour}{yes}
+\newcommand{\nWaveHeadLadderMonotoneTenTwentyFour}{yes}
+\newcommand{\nWaveHeadLadderMonotoneTwoFiftySix}{yes}
 \newcommand{\nWaveHeadMsSixtyFour}{184.5}
 \newcommand{\nWaveHeadMsTenTwentyFour}{192.5}
 \newcommand{\nWaveHeadMsTwoFiftySix}{183.5}
@@ -353,6 +398,18 @@
 \newcommand{\nWavePodMsSixtyFour}{1.20}
 \newcommand{\nWavePodMsTenTwentyFour}{4.23}
 \newcommand{\nWavePodMsTwoFiftySix}{1.40}
+\newcommand{\nWaveQthirtytwoErrSixtyFour}{4.916}
+\newcommand{\nWaveQthirtytwoErrTenTwentyFour}{5.116}
+\newcommand{\nWaveQthirtytwoErrTwoFiftySix}{5.104}
+\newcommand{\nWaveTieBandPpSixtyFour}{0.019}
+\newcommand{\nWaveTieBandPpTenTwentyFour}{0.020}
+\newcommand{\nWaveTieBandPpTwoFiftySix}{0.020}
+\newcommand{\nWaveTopStrictBestSixtyFour}{no}
+\newcommand{\nWaveTopStrictBestTenTwentyFour}{no}
+\newcommand{\nWaveTopStrictBestTwoFiftySix}{no}
+\newcommand{\nWaveTopWithinBandSixtyFour}{yes}
+\newcommand{\nWaveTopWithinBandTenTwentyFour}{yes}
+\newcommand{\nWaveTopWithinBandTwoFiftySix}{yes}
 \newcommand{\provAblBurgersCommit}{2718bd320dce\ldots}
 \newcommand{\provAblBurgersGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provAblBurgersJob}{3711424}
@@ -361,6 +418,8 @@
 \newcommand{\provAblPoissonJob}{3711736}
 \newcommand{\provBurgersCkpt}{18f0266ae6f04542\ldots}
 \newcommand{\provBurgersCkptFull}{18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589}
+\newcommand{\provCcladGpu}{NVIDIA A100 80GB PCIe}
+\newcommand{\provCcladJob}{3734098}
 \newcommand{\provEqtopJob}{3780164, 3780165}
 \newcommand{\provEqtopJobs}{bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots)}
 \newcommand{\provEqtopLadderJob}{3780164}
@@ -379,7 +438,7 @@
 \newcommand{\provMeshPoissonGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provMeshPoissonJob}{3711389}
 \newcommand{\provNsJob}{3780151}
-\newcommand{\provPanelCkpt}{asserted unchanged by gate}
+\newcommand{\provPanelCkpt}{incumbent (gate checkpoint\_unchanged; hash in T2, tuning row)}
 \newcommand{\provPanelCommit}{89df5cd18b01\ldots}
 \newcommand{\provPanelGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provPanelJob}{3780638}
@@ -390,10 +449,12 @@
 \newcommand{\provQxmCommit}{ed431edb498a}
 \newcommand{\provQxmJobs}{G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB)}
 \newcommand{\provQxmWithinJob}{G2 = 3780177}
+\newcommand{\provResGpu}{NVIDIA A100 80GB PCIe}
+\newcommand{\provResJob}{3787189}
 \newcommand{\provSpeedJobs}{3745655 (spd01), 3745656 (fine01), 3745913 (comp01)}
 \newcommand{\provTrainJobs}{3745912 (training), 3749074 (evaluation)}
 \newcommand{\provTuneCkpt}{18f0266ae6f0\ldots}
 \newcommand{\provTuneCommit}{d2b93bd4f56d\ldots}
 \newcommand{\provTuneGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provTuneJob}{3712269}
-\newcommand{\provWaveJobs}{$64^2$: job 3780447 (0bb3cc86, commit 3780447); $256^2$: job 3783805 (2655bb01, commit 3783805); $1024^2$: job 3780450 (0bb3cc86, commit 3780450)}
+\newcommand{\provWaveJobs}{$64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86)}

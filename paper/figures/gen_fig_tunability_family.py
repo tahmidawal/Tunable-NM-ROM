@@ -163,7 +163,7 @@ def main():
     qxm, prov_q = load(root, 'qxm'); panel, prov_p = load(root, 'panel'); eqtop, prov_e = load(root, 'eqtop')
     plt.rcParams.update({'font.size': 7, 'axes.labelsize': 7, 'xtick.labelsize': 6.5, 'ytick.labelsize': 6.5,
                          'axes.edgecolor': MUTED, 'axes.linewidth': 0.6, 'figure.facecolor': 'white'})
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.5))
+    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.2))
     for ax in axes:
         ax.grid(True, which='major', color='#e6e6e6', lw=0.5); ax.set_axisbelow(True)
     a = panel_a(axes[0], qxm); b, front = panel_b(axes[1], panel); c = panel_c(axes[2], eqtop)

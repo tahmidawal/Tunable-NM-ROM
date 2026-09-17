@@ -1,7 +1,6 @@
 # Writing status — ICLR 2027 draft
 
-Updated 2026-09-17 (second checkpoint: Markdown canonical, main text trimmed to 9 pages,
-family figure re-pointed). Build: `./build.sh` in this directory (regenerates `tables/` and
+Updated 2026-09-17 (third checkpoint: round-1 review addressed; see `REVIEW-ROUND1-DISPOSITION.md`). Build: `./build.sh` in this directory (regenerates `tables/` and
 `tables-md/` from the lanes' JSON, renders `PAPER.md` from the LaTeX sources, then
 `latexmk -pdf main.tex`); PDF at `paper/main.pdf` (git-ignored).
 
@@ -17,7 +16,7 @@ anonymous, `\iclrfinalcopy` commented out.
 
 ## Page count
 
-24 pages total. Main text (intro through conclusion) now ends on **page 9**, within the
+26 pages total. Main text (intro through conclusion) ends on **page 9** (reproducibility statement opens page 10), within the
 ICLR 2027 submission limit of 9 pages (10 at camera-ready). References p10–11, appendices
 p12–24. Trim done by moving T1, T4, T7, T11b, T14 to the appendix (T3 and the family figure
 stay in the main text), compressing method §3.3–3.5 into three subsections, and shortening
@@ -46,7 +45,7 @@ the intro, related work, setup, limitations and conclusion.
 | App. A method details | `sections/method-details.tex` | complete |
 | App. B provenance (T2) | generated | complete for landed lanes |
 | App. C full tables | `sections/appendix.tex` | T4b, T5, T6a/b, T8, T8b, T9b, T9c, T10, T11a, T11c, T12*, T13*, T14b, T15, T16, T18a/b |
-| App. D reviewer map | `sections/appendix.tex` | complete |
+| App. D reviewer map | removed for double-blind; the private map stays in `REVIEWER-RESPONSE-MAP.md` |
 | App. E glossary | `sections/appendix.tex` | complete |
 | Fig. 2 tunability family | `figures/gen_fig_tunability_family.py` | re-pointed: A rank vs error (b-qxm, no cost axis because its cells span three jobs), B the 256² same-allocation panel (b-panel), C the primary-rule EQ ladder vs dense twins (b-eqtop, provisional); paired JSON with SHA256s; included in §5.1 |
 
@@ -58,7 +57,7 @@ the intro, related work, setup, limitations and conclusion.
 | T12 seeds, T13 sealed cohort, `\nSeedsStatus`, T2 seeds row | b-seeds |
 | T18 solve layer (`\nLshapeSolve`) | lshape jobs 3784662/3/4 |
 | NS reduced model (`\nNsRom`), T1 NS row | ns2d phases 2–3 |
-| operator resolution knob (`\nOpResolutionKnob`) | no-second res01, job 3783920 (binding for the framing sentence) |
+| operator resolution knob | LANDED (job 3787189): `fno-large` R-USABLE, so "one accuracy–cost point per trained operator" is withdrawn; abstract sentence 1 changed (user sign-off needed) |
 | operator seed/precision control (`\nOpSeedControl`) | no-second ctrl01, job 3783831 (not cited in prose yet) |
 | T9 top-rung certification status | b-eqtop draw replication, job 3783811 (numbers present, flagged provisional) |
 
@@ -97,3 +96,10 @@ the intro, related work, setup, limitations and conclusion.
 
 - Burgers headline metric (evolved vs all-times): both printed everywhere; none chosen.
 - Whether to keep "heat" in the abstract (item 1 above).
+
+## Round-1 review (commit 8dd88495) — status
+
+Disposition per finding in `REVIEW-ROUND1-DISPOSITION.md`. New generated artefacts: T01b (sampling
+families), T14c (resolution ladder), T17 (offline cost), T19 (solver variants), Fig. 3
+(NNLS fit vs held-out rho). Abstract sentence 1 was changed by the pre-registered falsification
+clause of the resolution job; the user should confirm the new wording.

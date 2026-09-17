@@ -45,9 +45,10 @@
 \maketitle
 
 \begin{abstract}
-A learned PDE surrogate usually gives one accuracy--cost point; getting another
-means retraining. We show a nonlinear-manifold reduced-order model that turns one
-trained decoder into a family of operating points chosen at run time. The decoder
+A learned PDE surrogate is fixed once trained: what it can represent cannot be
+changed at inference. We show a nonlinear-manifold reduced-order model whose
+reachable set is chosen at run time, turning one trained decoder into a family
+of operating points. The decoder
 writes the solution as a fixed spatial bank times a small neural head. At inference
 the solver may add $q$ extra bank directions on top of the head's output: $q$ sets
 accuracy, while offline-certified quadrature rules and the solver tolerance set
@@ -80,8 +81,9 @@ named in Appendix~\ref{app:provenance}; the script records the SHA256 of every
 file it reads. Each run's job id, GPU, source commit and checkpoint hash are in
 Table~\ref{tab:provenance}. Solver definitions, stopping rules and exit-reason
 codes are in \S\ref{sec:method:weak} and Appendix~\ref{app:method}; timing and
-cohort protocol in \S\ref{sec:setup}. Code, checkpoints and run records will be
-released with the camera-ready.
+cohort protocol in \S\ref{sec:setup}. An anonymised repository with the
+generator, the provenance registry, the lane summaries and the audit JSONs, and
+the checkpoints by hash, accompanies the submission.
 
 \section*{AI use statement}
 Language-model assistants were used to draft and edit prose, to write the table

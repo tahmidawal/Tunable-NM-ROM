@@ -2,15 +2,13 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-One trained decoder can expose a monotone accuracy--cost family at run time,
-and the control is the number of fixed bank directions the solver may add to
-the neural head's output: with the test count held fixed, that rank alone spans
-$\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in cost on 2D Burgers,
-every rung converged, inside one allocation, and certified quadrature and the
-tolerance then move cost at fixed accuracy. The trade exists because the
-residual is nonlinear in the coefficients; where it is linear the top rung is
-a linear model and the cheapest point, and the learned bank loses to POD at
-matched rank. None of this beats a tuned full-order solver or a well-trained
-neural operator in 2D; the case for the reduced model rests on the mechanism,
-the structural condition, and two reporting practices---three-layer error and
-certification on reachable states---rather than on winning.
+One trained decoder exposes a monotone accuracy--cost family at run time
+through the number of bank directions the solver may add to the head's output:
+with the test count fixed, that rank alone spans $\nQxmErrSpan\times$ in error
+for $\nQxmCostSpan\times$ in cost on 2D Burgers inside one allocation, and
+certified quadrature moves cost at fixed accuracy. The trade
+exists where the residual is nonlinear in the coefficients; where it is linear
+the top rung is a linear model and the cheapest point, confounded with a weak
+bank. None of this beats a tuned full-order solver or a
+well-trained neural operator in 2D; the case rests on the mechanism and its
+condition, not on winning.

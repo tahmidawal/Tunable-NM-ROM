@@ -67,6 +67,8 @@ SOURCES = {
     'speed_audit_fine01': '2026-09-16-b-speed/experiments/b-speed/artifacts/fine01/audit.json',
     'speed_audit_comp01': '2026-09-16-b-speed/experiments/b-speed/artifacts/comp01/audit.json',
     'headtrain_eval': '2026-09-16-b-head-train/experiments/b-head-train/checks/eval01-audit.json',
+    'headtrain_train': '2026-09-16-b-head-train/experiments/b-head-train/checks/train02-audit.json',
+    'cclad01': '2026-09-15-cheap-corrections/experiments/cheap-corrections/checks/cclad01-audit.json',
     # earlier heat cell of the same decoder family (main branch reports/, absolute path handled in load)
     'heat_report': '../reports/2026-09-10-heat-linear-bank-comparison.md',
     'heat_manifest': '../reports/2026-09-10-heat-linear-bank-comparison.manifest.json',
@@ -240,7 +242,7 @@ def build_panel():
     macro('provPanelJob', job)
     macro('provPanelGpu', gpu or '---')
     macro('provPanelCommit', hexprefix(commit))
-    macro('provPanelCkpt', hexprefix(ck) if ck else 'asserted unchanged by gate')
+    macro('provPanelCkpt', hexprefix(ck) if ck else 'incumbent (gate checkpoint\\_unchanged; hash in T2, tuning row)')
 
     # ---- T3: the ladders side by side (dense / EQ 1e-6 / EQ 1e-3) + POD + FOM
     ladders = [('dense', 'dense_g1em06'), ('EQ, tol $10^{-6}$', 'eqcert_g1em06'),
@@ -416,7 +418,7 @@ def build_qxm():
     macro('nQxmSpanMatQzero', f"{ev['fixed_q']['0']['span']:.2f}")
     best_m = ev['fixed_q']['256']['M_best']; best_v = min(ev['fixed_q']['256']['values'])
     macro('nQxmBestErr', pct(best_v)); macro('nQxmBestM', str(best_m))
-    macro('nQxmFixedQzeroMs', ms(wj['median_gpu_ms'][0]))
+    macro('nQxmFixedQzeroMs', ms(wj['median_gpu_ms'][0])); macro('nQxmFixedQtopMs', ms(wj['median_gpu_ms'][-1]))
     # the scheduled ladder's q=0 cost inside the same job (G2 anchors the (0,256)/(0,1088) cells only);
     # report G1's (0,64) cost separately and never as a ratio against G2.
     hdr, grid = md_table(rep, '$q$') if rep else (None, None)
@@ -434,9 +436,20 @@ def build_qxm():
 
     # ---- T4 table: fixed-M within-job ladder; scheduled 4x; fixed-q spans
     rows_t4 = []
-    for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms']):
-        rows_t4.append([f"fixed $M={wj['M'] if 'M' in wj else 1088}$", str(q), '1088', pct(v), ms(c)])
+    w256 = ev['fixed_M']['256']['within_job']
+    for q, v, c in zip(w256['q'], w256['values'], w256['median_gpu_ms']):
+        rows_t4.append(['fixed $M=256$ (job ' + w256['job_id'] + ')', str(q), '256', pct(v), ms(c)])
     rows_t4.append('MIDRULE')
+    for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms']):
+        rows_t4.append(['fixed $M=1088$ (job ' + wj['job_id'] + ')', str(q), '1088', pct(v), ms(c)])
+    rows_t4.append('MIDRULE')
+    macro('nQxmTwoFiftySixErrSpan', f"{w256['error_span']:.2f}"); macro('nQxmTwoFiftySixCostSpan', f"{w256['cost_span']:.2f}")
+    macro('nQxmTwoFiftySixPasses', yn(w256['passes_tunability_bar'])); macro('nQxmTwoFiftySixNonDom', str(w256['non_dominated_points']))
+    macro('nQxmTwoFiftySixQtop', str(max(w256['q'])))
+    anc = [x for x in a['anchors'] if x['q'] == 0 and x['M'] == 1088]
+    if anc:
+        x = anc[0]; macro('nQxmAnchorSpreadPct', f"{100*abs(x['b_ms']-x['a_ms'])/min(x['a_ms'],x['b_ms']):.0f}")
+        macro('nQxmAnchorMsA', ms(x['a_ms'])); macro('nQxmAnchorMsB', ms(x['b_ms'])); macro('nQxmAnchorJobs', f"{x['a_job']} / {x['b_job']}")
     for (q, M), v in zip(ev['scheduled']['4x']['cells'], ev['scheduled']['4x']['values']):
         rows_t4.append(['scheduled $M=4(K+q)$', str(q), str(M), pct(v), '---'])
     write('T04_rank_vs_tests.tex', tabular(['ladder', '$q$', '$M$', 'worst evolved \\%', 'GPU ms'],
@@ -457,64 +470,90 @@ def build_operators():
     if s is None:
         write('T14_operators.tex', gen('no-second', 'T14'))
         return
-    rows = s['rows']
+    allrows = s['rows']
+    rows = [r for r in allrows if r.get('rung') is None]      # the resolution ladder is handled below
     by = defaultdict(dict)
     meta = {}
     for r in rows:
-        by[(r['arm'], r['cohort'])][r['metric']] = r['value']
-        meta[r['arm']] = r
-    arms8 = sorted({r['arm'] for r in rows if r['cohort'] == 'diagnosis-8'},
-                   key=lambda a: by[(a, 'diagnosis-8')].get('worst_fixed_initial_error', 9))
+        by[(r['arm'], r['job_id'], r['cohort'])][r['metric']] = r['value']
+        meta[(r['arm'], r['job_id'])] = r          # keyed on (arm, job): the Poisson screen reuses arm names
+    burg8 = sorted({(r['arm'], r['job_id']) for r in rows if r['cohort'] == 'diagnosis-8'},
+                   key=lambda k: by[(k[0], k[1], 'diagnosis-8')].get('worst_fixed_initial_error', 9))
     t = []
-    for a in arms8:
-        m = meta[a]; d = by[(a, 'diagnosis-8')]; v = by.get((a, 'validation-32'), {})
-        still = ''
-        if m.get('epochs') and m.get('best_epoch'):
-            still = yn(m['best_epoch'] >= 0.95 * m['epochs'])
+    for a, jb in burg8:
+        m = meta[(a, jb)]; d = by[(a, jb, 'diagnosis-8')]; v = by.get((a, jb, 'validation-32'), {})
+        still = yn(m['best_epoch'] >= 0.95 * m['epochs']) if m.get('epochs') and m.get('best_epoch') else '---'
         t.append([tt(a), m['operator'], f"{m['params']:,}" if m.get('params') else '---',
                   str(m.get('epochs') or '---'), still,
                   pct(100 * d['worst_fixed_initial_error']),
-                  pct(100 * d['median_fixed_initial_error']) if 'median_fixed_initial_error' in d else '---',
                   pct(100 * v['worst_fixed_initial_error']) if v else '---',
                   pct(100 * v['median_fixed_initial_error']) if v else '---',
-                  tt(m['job_id'])])
+                  tt(jb)])
     write('T14_operators.tex', tabular(['arm', 'family', 'params', 'epochs', 'still improving',
-                                        '8-case worst \\%', '8-case median \\%', 'val-32 worst \\%',
-                                        'val-32 median \\%', 'job'], t, 'lllrcrrrrl', r'\scriptsize'),
-          'no-second + parent FNO lane; accuracy comparable across jobs, timing never')
+                                        '8-case worst \\%', 'val-32 worst \\%', 'val-32 median \\%', 'job'], t, 'lllrcrrrl', r'\tiny'),
+          'no-second + parent FNO lane; accuracy comparable across jobs, timing never; rows keyed on (arm, job)')
     def w8(a):
-        return 100 * by[(a, 'diagnosis-8')]['worst_fixed_initial_error']
+        k = [k for k in burg8 if k[0] == a][0]
+        return 100 * by[(k[0], k[1], 'diagnosis-8')]['worst_fixed_initial_error']
     for a, nm in [('unet-small', 'UnetSmall'), ('unet-medium', 'UnetMedium'), ('tsol-refine', 'TsolRefine'),
                   ('unet-refine', 'UnetRefine'), ('rom', 'Rom'), ('fno-large', 'FnoLarge'),
                   ('same_nt1e-2_dt005', 'FomEfficient'), ('unet-large', 'UnetLarge')]:
         macro(f'nOpEight{nm}', pct(w8(a)))
-    better = [a for a in arms8 if meta[a]['operator'] not in ('ROM', 'FOM') and w8(a) < w8('rom')]
+    better = [k for k in burg8 if meta[k]['operator'] not in ('ROM', 'FOM') and w8(k[0]) < w8('rom')]
     macro('nOpArmsBeatingRom', str(len(better)))
-    fno_worse = all(w8(a) > w8('rom') for a in arms8 if meta[a]['operator'] == 'FNO')
-    macro('nOpEveryFnoWorse', yn(fno_worse))
-    # still-improving counts
-    burg = [a for a in meta if meta[a].get('cohort') in ('validation-32', 'diagnosis-8') and meta[a].get('epochs')]
-    lane_arms = [a for a in {r['arm'] for r in rows if r['job_id'] in ('3780138', '3780139')}]
-    fno_arms = [a for a in {r['arm'] for r in rows if r['job_id'] == '3710846' and r.get('epochs')}]
-    def improving(a):
-        m = meta[a]; return m.get('best_epoch') and m.get('epochs') and m['best_epoch'] >= 0.95 * m['epochs']
-    macro('nOpLaneImproving', f"{sum(1 for a in lane_arms if improving(a))} of {len(lane_arms)}")
-    macro('nOpFnoImproving', f"{sum(1 for a in fno_arms if improving(a))} of {len(fno_arms)}")
-    # Poisson
-    pv = {a: by[(a, 'poisson-validation-32')] for a in {r['arm'] for r in rows if r['cohort'] == 'poisson-validation-32'}}
+    macro('nOpEveryFnoWorse', yn(all(w8(k[0]) > w8('rom') for k in burg8 if meta[k]['operator'] == 'FNO')))
+    def improving(k):
+        m = meta[k]; return bool(m.get('best_epoch') and m.get('epochs') and m['best_epoch'] >= 0.95 * m['epochs'])
+    lane_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] in ('3780138', '3780139') and r.get('epochs')})
+    fno_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] == '3710846' and r.get('epochs')})
+    macro('nOpLaneImproving', f"{sum(1 for k in lane_arms if improving(k))} of {len(lane_arms)}")
+    macro('nOpFnoImproving', f"{sum(1 for k in fno_arms if improving(k))} of {len(fno_arms)}")
+    # Poisson screen
+    pv = {(r['arm'], r['job_id']): by[(r['arm'], r['job_id'], 'poisson-validation-32')] for r in rows if r['cohort'] == 'poisson-validation-32'}
     if pv:
-        un = [a for a in pv if a.startswith('unet')]; fn = [a for a in pv if a.startswith('fno')]
+        un = [a for a in pv if a[0].startswith('unet')]; fn = [a for a in pv if a[0].startswith('fno')]
         macro('nOpPoissonUnetWorstRange', ' / '.join(pct(100 * pv[a]['worst_physical_candidate_relative_error'], 2) for a in sorted(un)))
         macro('nOpPoissonFnoWorstRange', f"{100*min(pv[a]['worst_physical_candidate_relative_error'] for a in fn):.1f}--{100*max(pv[a]['worst_physical_candidate_relative_error'] for a in fn):.1f}")
         tp = []
         for a in sorted(pv):
             m = meta[a]; d = pv[a]
-            tp.append([tt(a), m['operator'], f"{m['params']:,}" if m.get('params') else '---',
+            tp.append([tt(a[0]), m['operator'], f"{m['params']:,}" if m.get('params') else '---',
                        pct(100 * d['median_physical_candidate_relative_error'], 2),
-                       pct(100 * d['worst_physical_candidate_relative_error'], 2), tt(m['job_id'])])
+                       pct(100 * d['worst_physical_candidate_relative_error'], 2), tt(a[1])])
         write('T14b_operators_poisson.tex', tabular(['arm', 'family', 'params', 'median \\%', 'worst \\%', 'job'],
                                                     tp, 'lllrrl', r'\scriptsize'), 'no-second Poisson screen')
-    macro('nOpResolutionKnob', gen('no-second res01 (job 3783920)', 'operator resolution knob'))
+    # ---- the operators' own inference-time knob: evaluation resolution (pre-registered R-USABLE / R-DEGENERATE)
+    res = [r for r in allrows if r.get('rung') is not None and r.get('cohort') == 'validation-32']
+    if res:
+        Rv = defaultdict(dict)
+        for r in res:
+            Rv[(r['operator'], int(r['rung']))][r['metric']] = r['value']
+        ops = sorted({k[0] for k in Rv}); job = res[0]['job_id']; gpu = res[0].get('gpu', '---')
+        macro('provResJob', job); macro('provResGpu', gpu)
+        t = []; verdicts = {}
+        for op in ops:
+            usable = False; first_fail = None
+            for rung in sorted({k[1] for k in Rv if k[0] == op}, reverse=True):
+                d = Rv[(op, rung)]
+                sp = d.get('same_job_speedup_vs_own_256'); er = d.get('worst_evolved_error_ratio_vs_own_256')
+                ok = bool(d.get('meets_error_gate_2x')) and bool(d.get('meets_speed_gate_1p5x'))
+                if rung < 256 and ok: usable = True
+                t.append([tt(op), str(rung), pct(100 * d['worst_evolved_fixed_initial_error'], 2), pct(100 * d.get('interpolation_floor_worst_evolved', 0), 2),
+                          ms(d['same_job_device_query_pooled_median_ms'], 2), f"{sp:.2f}" if sp else '---', f"{er:.2f}" if er else '---',
+                          ('yes' if ok else 'no') if rung < 256 else 'ref.'])
+            verdicts[op] = 'R-USABLE' if usable else 'R-DEGENERATE'
+            macro('nRes' + re.sub(r'[^A-Za-z]', '', op.title()), verdicts[op])
+        write('T14c_resolution.tex', tabular(['operator', 'rung', 'worst evolved \\%', 'interp.\\ floor \\%', 'device ms', 'speed vs 256', 'error vs 256', 'both gates'],
+                                             t, 'lrrrrrrc', r'\scriptsize'), f'no-second resolution ladder, job {job}')
+        macro('nResAnyUsable', yn(any(v == 'R-USABLE' for v in verdicts.values())))
+        macro('nResUsableList', ', '.join(tt(o) for o, v in verdicts.items() if v == 'R-USABLE') or 'none')
+        macro('nResDegenerateList', ', '.join(tt(o) for o, v in verdicts.items() if v == 'R-DEGENERATE') or 'none')
+        f128 = Rv.get(('fno-large', 128), {})
+        if f128:
+            macro('nResFnoSpeedup', f"{f128['same_job_speedup_vs_own_256']:.2f}"); macro('nResFnoErrRatio', f"{f128['worst_evolved_error_ratio_vs_own_256']:.2f}")
+        macro('nOpResolutionKnob', 'landed (Table~\\ref{tab:resolution})')
+    else:
+        macro('nOpResolutionKnob', gen('no-second res01, operator resolution knob', 'operator resolution knob'))
     macro('nOpSeedControl', gen('no-second ctrl01 (job 3783831)', 'operator seed/precision control'))
 
 
@@ -550,7 +589,7 @@ def build_linear():
         if wrep:
             for m in re.finditer(r'(\d+)² ran on (NVIDIA [^ ]+(?: [^ ]+)*?) at commit `([0-9a-f]+)` \(job (\d+)\)', wrep):
                 gpus[int(m.group(1))] = (m.group(2), m.group(3), m.group(4))
-        macro('provWaveJobs', '; '.join(f"${k}^2$: job {v[0]}" + (f" ({tex_escape(gpus[k][1])}, commit {gpus[k][2]})" if k in gpus else '')
+        macro('provWaveJobs', '; '.join(f"${k}^2$: job {v[0]}" + (f" ({tex_escape(gpus[k][0])}, commit {gpus[k][1]})" if k in gpus else '')
                                        for k, v in sorted(jobs.items())))
         for mesh, nm in [(64, 'SixtyFour'), (256, 'TwoFiftySix'), (1024, 'TenTwentyFour')]:
             h = by[(mesh, 'head_q0')]; b = by[(mesh, 'linear_bank64')]; p = by[(mesh, 'pod_k64')]; d = by[(mesh, 'dst')]
@@ -563,6 +602,12 @@ def build_linear():
             v = by[(mesh, 'verdict')]
             macro(f'nWaveDegenerate{nm}', yn(v.get('all')))
             macro(f'nWaveMidRungMs{nm}', ms(by[(mesh, 'nested_q32')]['median_gpu_ms']))
+            macro(f'nWaveTieBandPp{nm}', f"{100*v['tie_band_delta']:.3f}" if v.get('tie_band_delta') is not None else '---')
+            macro(f'nWaveTopWithinBand{nm}', yn(v.get('D1_accuracy'))); macro(f'nWaveTopStrictBest{nm}', yn(v.get('D1_strict')))
+            macro(f'nWaveHeadLadderMonotone{nm}', yn(v.get('H_mono_ladder')))
+            q32 = by[(mesh, 'nested_q32')]
+            macro(f'nWaveQthirtytwoErr{nm}', pct(100 * q32['worst_energy_state'], 3))
+            macro(f'nWaveBankMinusQthirtytwoPp{nm}', f"{100*(b['worst_energy_state']-q32['worst_energy_state']):.3f}")
         # three layers at 256
         pf = by[(256, 'linear_bank64@projection_floor')]; bf = by[(256, 'nested_q32@best_found')]
         macro('nWaveFloorTwoFiftySix', pct(100 * pf['worst_energy_state'], 3))
@@ -929,6 +974,7 @@ def build_eqtop():
         macro('nEqtopStaticWorstFit', f"{worst[1].get('relative_fit', float('nan')):.1e}")
     # anti-correlation example at q=128: parent static m=2048 has the smaller fit and the larger rho than fs64 m=2048
     macro('nEqtopBar', '0.116'); macro('nEqtopTightBar', '0.06')
+    macro('nEqtopBarOrigin', 'the held-out $\\rho$ of the incumbent $q{=}0$ rule at the state carrying the first-interval penalty, measured in the q-diag cell and adopted as the primary bar in the q-ridge design before any certification job ran; the tight bar was declared before b-eqtop ran')
     # full rules table (appendix)
     t = []
     for k in sorted(F, key=lambda k: (k[0], k[3], k[1], k[2] or 0)):
@@ -1059,6 +1105,8 @@ def build_lshape():
     write('T18b_lshape_head.tex', tabular(['head arm', 'best-found \\%', 'weak solve \\% (untimed)', 'best-found / bank floor'], t, 'lrrr', r'\scriptsize'),
           f'lshape job {job}')
     macro('nLshapeBestFloor', pct(100 * min(by[(512, b)]['bank_floor_dev_worst'] for b in banks)))
+    macro('nLshapeBestFloorCommon', pct(100 * min(by[(256, b)]['bank_floor_common_worst'] for b in banks)))
+    macro('nLshapeSelectedFloorCommon', pct(100 * by[(256, 'sdf_R512')]['bank_floor_common_worst']))
     macro('nLshapeSmoothFloor', pct(100 * by[(512, 'smooth_R512')]['bank_floor_dev_worst'])); macro('nLshapeEnrichFloor', pct(100 * by[(512, 'enrich_R512')]['bank_floor_dev_worst']))
     macro('nLshapeEnrichGain', f"{by[(512, 'smooth_R512')]['bank_floor_dev_worst']/by[(512, 'enrich_R512')]['bank_floor_dev_worst']:.3f}")
     macro('nLshapeSdfFloor', pct(100 * by[(512, 'sdf_R512')]['bank_floor_dev_worst']))
@@ -1068,6 +1116,78 @@ def build_lshape():
     macro('nLshapeKsixteenBest', pct(100 * by[(256, 'head_sdf_R512_K16')]['best_found_dev_worst']))
     if load('lshape_solve_summary') is None:
         macro('nLshapeSolve', gen('lshape solve jobs 3784662/3/4', 'T18 solve layer'))
+
+
+# =========================================================================== T17 offline cost, T1b spec, T19 solver variants
+def build_offline_and_spec():
+    rows = []
+    tr = load('headtrain_train')
+    if tr:
+        arms = {r['arm']: r for r in tr['arm_table']}
+        for k, lab, mac in [('d4608k16rec', 'head training, like-for-like retrain of the incumbent recipe (4608 traj., 200k steps)', 'nOfflineTrainSecondsLikeForLike'),
+                            ('best_d2048k32w', 'head training, selected retrained arm', 'nOfflineTrainSecondsBest')]:
+            if k in arms and arms[k].get('train_gpu_hours') is not None:
+                rows.append([lab, f"{3600*arms[k]['train_gpu_hours']:.0f}", 'once per checkpoint', 'b-head-train job 3745912 (A100-PCIE-40GB)'])
+                macro(mac, f"{3600*arms[k]['train_gpu_hours']:.0f}")
+    cc = load('cclad01')
+    if cc:
+        d = cc['checks'].get('flattened_direction_fit', {}).get('detail', {})
+        if d.get('seconds'):
+            rows.append(['correction directions $C_q$ (PCA of the head residual; flattened LM fit of the best-found codes)', f"{d['seconds']:.0f}", 'once per checkpoint, all $q$', f"cheap-corrections job {cc['job_id']}"])
+            macro('nOfflineDirectionSeconds', f"{d['seconds']:.0f}")
+    e = load('eqtop_summary')
+    if e:
+        R = defaultdict(dict)
+        for r in e['rows']:
+            if r['table'] == 'rules':
+                R[(r['q'], r['arm'], r['m'], r['population'], r['job_id'])][r['metric']] = r['value']
+        Lm = {}
+        for r in e['rows']:
+            if r['table'] == 'ladder' and r['ladder'] == 'primary' and r['metric'] == 'worst_evolved_percent':
+                Lm[r['q']] = r
+        tot = 0.0; names = {0: 'Zero', 16: 'Sixteen', 32: 'ThirtyTwo', 64: 'SixtyFour', 128: 'OneTwentyEight', 256: 'TwoFiftySix'}
+        for q in sorted(Lm):
+            m = Lm[q]
+            cand = [(k, v) for k, v in R.items() if k[0] == q and k[2] == m['m'] and v.get('rho_max') is not None and abs(v['rho_max'] - m['rho_max']) < 1e-9]
+            if cand:
+                k, v = cand[0]; fs = v.get('fit_seconds') or 0; tot += fs
+                rows.append([f"certified EQ rule, $q={q}$, $m={m['m']}$ ({tex_escape(k[1])}, {tex_escape(k[3])})", f"{fs:.0f}", 'once per rung and rule', f"b-eqtop job {k[4]}"])
+                macro('nOfflineFitSecondsQ' + names[q], f"{fs:.0f}")
+        macro('nOfflineFitSecondsLadderTotal', f"{tot:.0f}"); macro('nOfflineFitHoursLadderTotal', f"{tot/3600:.1f}")
+    write('T17_offline_cost.tex', tabular(['offline stage', 'seconds', 'amortised over', 'source'], rows, r'p{6.2cm}rp{2.4cm}p{3.6cm}', r'\scriptsize'),
+          'offline cost per stage; NNLS fit seconds are those of the rule each primary-ladder rung ran')
+    if cc:
+        A = {r['arm']: r for r in cc['checks']['arm_table']}
+        t = []
+        for arm, lab in [('q64_m4_dense_joint', '$q{=}64$, joint LM on $(z,y)$'), ('q64_m4_dense_block', '$q{=}64$, block-damped'),
+                         ('q64_m4_dense_varpro', '$q{=}64$, plain variable projection'),
+                         ('q128_m256_dense_varpro', '$q{=}128$, plain variable projection'), ('q128_m256_dense_block', '$q{=}128$, block-damped')]:
+            r = A.get(arm)
+            if r:
+                t.append([lab, str(r['M']), pct(r['worst_same_grid_percent']), str(r['total_budget_exits']), yn(r['all_stationary']), ms(r['median_gpu_ms'])])
+        write('T19_solver_variants.tex', tabular(['arm', '$M$', 'worst all-times \\%', 'budget exits', 'all stationary', 'GPU ms'], t, 'lrrrcr', r'\scriptsize'),
+              f"cheap-corrections job {cc['job_id']} ({cc['gpu']})")
+        macro('provCcladJob', cc['job_id']); macro('provCcladGpu', cc['gpu'])
+        j = A.get('q64_m4_dense_joint'); bl = A.get('q64_m4_dense_block')
+        if j and bl:
+            macro('nBlockJointBudgetExits', str(j['total_budget_exits'])); macro('nBlockBlockBudgetExits', str(bl['total_budget_exits']))
+            macro('nBlockJointMs', ms(j['median_gpu_ms'])); macro('nBlockBlockMs', ms(bl['median_gpu_ms']))
+            macro('nBlockJointErr', pct(j['worst_same_grid_percent'])); macro('nBlockBlockErr', pct(bl['worst_same_grid_percent']))
+    spec = [
+        ['Burgers 2D', '$u_t+u(u_x+u_y)=\\nu\\Delta u$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
+         '$u_0=a\\exp(-\\lvert x-c\\rvert^2/2w^2)$, $c_i\\sim U(0.15,0.85)$, $w\\sim U(0.05,0.20)$, $a\\sim U(0.5,2)$; $\\nu\\sim\\log U(0.01,0.1)$; outputs $t\\in\\{0.05,\\dots,0.25\\}$',
+         tt('experiments/mr-burgers2d/engines.py:params_draw')],
+        ['Poisson 2D', '$-\\Delta u=f$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
+         '$f=a\\exp(-\\lvert x-c\\rvert^2/2w^2)$, $c_i\\sim U(0.15,0.85)$, $w\\sim\\log U(0.02,0.1)$, $a\\sim U(0.5,2)$',
+         tt('multistage-precision/ms_parametric.py:sample_params')],
+        ['Poisson, L-shape', 'same source family on $(0,1)^2\\setminus[\\tfrac12,1)^2$', 'as above; sources centred in the removed quadrant rejected', tt('experiments/lshape')],
+        ['Heat 2D', '$u_t=\\kappa\\Delta u$ on $(0,1)^2$, $\\kappa=0.02$ fixed', 'polynomial-boundary Gaussian family (single\\_bc\\_poly\\_gaussian\\_v1); Crank--Nicolson $\\Delta t=0.025$', 'heat linear-bank report, job 3511417'],
+        ['Wave 2D (reflective)', '$u_{tt}=c^2\\Delta u$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
+         'compact bump $\\times$ Gaussian: half-widths $s_i\\sim U(0.36,0.42)$, centre $c_i\\sim U(s_i{+}0.025,\\,1{-}s_i{-}0.025)$, amplitude $\\sim U(0.7,1.3)$, $\\sigma_i\\sim U(0.12,0.16)$, advective velocity $v_i\\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\\sim U(0.85,1.15)$',
+         tt('experiments/multiresolution-wave/audit_dynamics.py:parameter_rows')],
+    ]
+    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.7cm}p{3.4cm}p{6.2cm}p{2.6cm}', r'\tiny'),
+          'sampling families transcribed from the generator sources named in the last column')
 
 
 # =========================================================================== T12/T13 seeds, ns2d
@@ -1099,15 +1219,14 @@ def build_problems_and_provenance(mesh):
          '6 development cases; 32 held-out (tuning); sealed cohort unopened'],
         ['Poisson 2D', '$-\\Delta u=f$, $(0,1)^2$, $u|_{\\partial\\Omega}=0$', '$256^2$, $1024^2$', 'none (elliptic)',
          '$K=16$, $R=128$ (incumbent); $K=32$, $R=512$', 'exact discrete (DST); 2048$^2$ refinement', '12 development sources'],
-        ['Heat 2D', '$u_t=\\kappa\\Delta u$, $(0,1)^2$', '---', 'Crank--Nicolson', '---', 'exact modal', 'method section only; no new run in this campaign'],
+        ['Heat 2D', '$u_t=\\kappa\\Delta u$, $(0,1)^2$', '$64^2$--$1024^2$', 'Crank--Nicolson', '$k=8$, $R=32$', 'exact modal', '12 development cases (earlier cell, job 3511417)'],
         ['Wave 2D (reflective)', '$u_{tt}=c^2\\Delta u$, $(0,1)^2$, $u|_{\\partial\\Omega}=0$', '$64^2$, $256^2$, $1024^2$', 'RK4 on the manifold; exact modal propagation for the bank',
          '$K=32$, $R=64$', 'direct DST', '8 development cases'],
         ['Poisson, L-shape', '$-\\Delta u=f$, $(0,1)^2\\setminus[\\tfrac12,1)^2$', '$256^2$, $512^2$', 'none', '$K\\in\\{16,32\\}$, $R\\in\\{256,512,514\\}$',
          'sparse direct (SuperLU)', '3072 / 256 / 32 sources (train / selection / development)'],
-        ['Navier--Stokes 2D', 'vorticity--streamfunction, periodic', '$64^2$--$256^2$', 'implicit midpoint', '---', 'certified FOM (phase 1)', gen('ns2d phases 2--3', 'T1 NS row')],
     ]
     write('T01_problems.tex', tabular(['PDE', 'equation, domain, boundary', 'meshes', 'time stepping', 'reduced sizes', 'reference', 'cohorts'],
-                                      rows, r'lp{3.4cm}p{1.6cm}p{2.4cm}p{2.2cm}p{2.2cm}p{2.6cm}', r'\tiny'),
+                                      rows, r'p{1.5cm}p{3.0cm}p{1.4cm}p{2.0cm}p{1.9cm}p{1.9cm}p{2.3cm}', r'\tiny'),
           'problem specification; numeric fields read from tuning02 config where recorded')
     # T2 provenance: one row per result table
     P = []
@@ -1150,7 +1269,13 @@ def main():
     build_training()
     build_lshape()
     build_pending()
+    build_offline_and_spec()
     build_problems_and_provenance(mesh)
+    try:
+        v = [float(MACROS['nEqtopTopDenseMs']), float(MACROS['nPanelBestRungMs']), float(MACROS['nQxmFixedQtopMs'])]
+        macro('nSpreadQtwoFiftySixPct', f"{100*(max(v)-min(v))/min(v):.0f}")
+    except (KeyError, ValueError):
+        pass
     # numbers.tex
     lines = ['% GENERATED by paper/gen_tables.py -- do not edit.',
              '% Every prose number in the manuscript is one of these macros.']

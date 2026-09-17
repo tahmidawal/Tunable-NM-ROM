@@ -4,30 +4,40 @@
 
 \textbf{Single seed, single checkpoint.} Every number rests on one training
 seed and one checkpoint per PDE. The three-seed repetition and the
-sealed-cohort evaluation (Tables~\ref{tab:seeds}, \ref{tab:sealed}) are
-running; that lane has recorded an amendment to its fidelity gate, from
-$10^{-9}$ to $10^{-3}$ relative, made before any of its numbers were read.
+sealed-cohort evaluation are running; that lane has recorded an amendment to
+its fidelity gate, from $10^{-9}$ to $10^{-3}$ relative, made before any of its
+numbers were read.
 \textbf{Development cohort.} Burgers numbers are on six opened cases (32
-held-out for the tuning study), wave and Poisson on eight and twelve; the
-L-shape cell shows the tail this understates (worst error on 461 validation
-sources is two to three times the worst on its 32 development sources).
-\textbf{2D only.}
-\textbf{No cold-start SMA-NM-ROM comparison}, which reviewer 5mgh asked for;
-the classical comparison is POD-LSPG through our own solver.
-\textbf{Operator numbers are lower bounds}: $\nOpLaneImproving$
-U-Net/Transolver arms and $\nOpFnoImproving$ FNO arms were still improving at
+held-out for the tuning study), wave and Poisson on eight and twelve; on the
+L-shape the 461-source validation worst is two to three times the 32-source
+development worst.
+\textbf{2D only, and nothing harder than viscous Burgers is solved}: the
+L-shape cell has no solve layer yet and Navier--Stokes no reduced model.
+\textbf{No cold-start comparison against a shallow masked-autoencoder ROM}; the
+classical comparison is POD-LSPG through our own solver, and the linear skip is
+a design choice we do not ablate.
+\textbf{Operator numbers are lower bounds}: \nOpLaneImproving{}
+U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were still improving at
 their wall budget, and none was tuned per family; a larger budget beats the
 ROM by more.
 \textbf{Quadrature certification is one draw}: a second draw at $q=64$ moved
 $\rho_{\max}$ from $\nEqtopQsixtyFourArchivedRho$ to
 $\nEqtopQsixtyFourRedrawRho$ and flipped the flag; until job
 $\nEqtopPendingJob$ lands the EQ ladder is ``certified in this draw''.
-\textbf{The headline ladder quotes a dearer baseline}: the fixed-$M$ $q=0$
-rung costs $\nQxmFixedQzeroMs$\,ms where the scheduled $M=4(K+q)$ rung costs
-$\nQxmScheduledQzeroMs$\,ms (different jobs, accuracy identical to $10^{-9}$).
-\textbf{Pending cells}: the $1024^2$ panel, the L-shape solve layer, the
-Navier--Stokes reduced model, and the operator resolution knob, which is
-binding---if a trained operator exposes its own accuracy--cost family through
-evaluation resolution, ``one point per trained operator'' is withdrawn.
-\textbf{No theory}: no convergence guarantee for the cold-start iteration, no
-bound on the quadrature error on unseen states, no continuum error bound.
+\textbf{The headline ladder was chosen after the fact and quotes a dearer
+baseline}: $M=1088$ was selected after the crossed grid ran, the $M=256$
+ladder fails the same bar, and the fixed-$M$ $q=0$ rung costs
+$\nQxmFixedQzeroMs$\,ms against $\nQxmScheduledQzeroMs$\,ms for the scheduled
+rung (different jobs). \textbf{Cross-job spread} of an identical cell is
+$\nQxmAnchorSpreadPct\,\%$, the size of the tolerance saving.
+\textbf{Offline cost is not free}: the primary EQ ladder's rules took
+$\nOfflineFitHoursLadderTotal$\,h of NNLS in total (Table~\ref{tab:offline}).
+\textbf{No theory}: no convergence guarantee, no quadrature-error bound on
+unseen states, no continuum error bound.
+
+\paragraph{Pending cells.} Not in this draft, and no result sentence depends
+on them: the $1024^2$ panel (\nPanelTenTwentyFour); seeds and the sealed cohort
+(\nSeedsStatus); the L-shape solve layer (\nLshapeSolve); the Navier--Stokes
+reduced model (\nNsRom); the operators' seed and precision controls
+(\nOpSeedControl). The resolution control has landed and fired its
+pre-registered clause (\S\ref{sec:exp:operators}).

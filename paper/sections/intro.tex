@@ -2,68 +2,70 @@
 \section{Introduction}
 \label{sec:intro}
 
-A learned surrogate for a family of PDE solves is usually one point in the
-accuracy--cost plane: a neural operator \citep{Li2020FNO,Lu2021DeepONet,
-Kovachki2023NeuralOperator} evaluates in one forward pass at one accuracy, and
-a different point means another model. A projection-based reduced-order model
-(ROM) solves the discretised equations in a few coordinates and so inherits the
-solver's controls; a linear ROM exposes an obvious family through its basis
-rank. A \emph{nonlinear-manifold} ROM \citep{LeeCarlberg2020,KimChoi2022NMROM}
-trades that rank for a learned decoder whose few coordinates reach further than
-the same number of linear modes, and appears to give the family up: the decoder
-is fixed once trained, and the solver's remaining knobs move cost far more than
-accuracy.
+A projection-based reduced-order model (ROM) solves the discretised equations in
+a few coordinates and so inherits the solver's controls; a linear ROM exposes an
+obvious accuracy--cost family through its basis rank
+\citep{BennerGugercinWillcox2015}. A \emph{nonlinear-manifold} ROM
+\citep{LeeCarlberg2020,KimChoi2022NMROM} trades that rank for a learned decoder
+whose few coordinates reach further than the same number of linear modes, and
+in doing so appears to give the family up: the decoder is fixed once trained,
+and the solver's remaining controls (tolerance, iteration budget) move cost far
+more than they move accuracy. This paper recovers an accuracy control for a
+nonlinear-manifold ROM without retraining, gives it a structural meaning, and is
+precise about what it is worth.
 
-This paper recovers the family without retraining and is precise about what it
-is worth. The decoder writes the solution as a fixed spatial \emph{bank}
-$\bank$ of $R$ functions times a small neural \emph{head} $\head$ of $k$
-coordinates, and at inference the solver may add $q$ fixed linear directions,
-$u=\bank(\head(\latent)+\corr y)$. The rank $q$ dials the reachable set from the
-head's image ($q=0$) to the bank's whole span ($q=R$), where the model is a
-linear ROM with no nonlinear iteration. We keep the three-part skeleton of our
-earlier attempt at this claim, re-founded on this decoder and on evidence we now
-trust, and we report the losses as losses.
+The decoder writes the solution as a fixed spatial \emph{bank} $\bank$ of $R$
+functions times a small neural \emph{head} $\head$ of $k$ coordinates, and at
+inference the solver may add $q$ fixed linear directions,
+$u=\bank(\head(\latent)+\corr y)$. The rank $q$ moves the reachable set from
+the head's image ($q=0$) to the bank's whole span ($q=R$), where the model is a
+linear ROM with no nonlinear iteration: a control with a structural meaning.
+The paper's three parts are the control, the architecture that admits it, and
+the condition under which it is a trade; the losses are reported as losses.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-\item \textbf{A tunable NM-ROM from one trained decoder.} With the test count
-  $M$ held fixed so that $q$ is the only control, the Burgers $256^2$ ladder is
-  monotone, every rung converges, and its rungs span $\nQxmErrSpan\times$ in
-  error for $\nQxmCostSpan\times$ in cost inside one allocation
-  (\S\ref{sec:exp:qxm}), meeting a bar fixed before any run. Certified
-  quadrature rules ($\nEqtopCostRatioMin$--$\nEqtopCostRatioMax\times$ the
-  dense cost at matched error, provisional) and the stopping tolerance are
-  cost levers (\S\ref{sec:exp:panel}). The family beats the classical linear
-  ROM at matched latent dimension (\S\ref{sec:exp:head}); it does not beat a
-  tuned full-order solver or a well-trained neural operator at $256^2$
+\item \textbf{A run-time accuracy control from one trained decoder, and a
+  matched-dimension result.} With the test count $M$ held fixed so that $q$ is
+  the only control, the Burgers $256^2$ ladder is monotone, every rung
+  converges, and its rungs span $\nQxmErrSpan\times$ in error for
+  $\nQxmCostSpan\times$ in cost inside one allocation (\S\ref{sec:exp:qxm}),
+  meeting a bar fixed before any run. Certified quadrature rules cut the cost
+  about $5\times$ at four-decimal-identical error, and the tolerance is a
+  further cost lever (\S\ref{sec:exp:panel}). At matched latent dimension
+  $k=16$ inside one bank, the neural head reaches $\nAblBurgersNeural\,\%$
+  where the best linear map reaches $\nAblBurgersLinear\,\%$ and POD-16
+  $\nAblBurgersPodSixteen\,\%$ (\S\ref{sec:exp:head}). The family does not beat
+  a tuned full-order solver or a well-trained neural operator at $256^2$
   (\S\ref{sec:exp:panel}, \S\ref{sec:exp:operators}).
-\item \textbf{The architecture that makes it possible.} A bank that evaluates
-  per node, so the cached reduced cost is flat while the mesh grows
-  $\nMeshBurgersUnknownGrowth\times$ (\S\ref{sec:exp:mesh}); a linear skip in
-  the head, so the cold solve starts reliably; and the bank/head/correction
-  split, which lets a run-time rank interpolate between the head's compression
-  and the bank's floor (\S\ref{sec:method}).
-\item \textbf{The structural condition.} Where the weak residual is nonlinear
-  in the coefficients (Burgers) the corrections cost a growing nonlinear solve
-  and the ladder is a genuine trade. Where it is linear (Poisson, heat, waves)
-  the corrections are eliminated exactly, the top rung is the linear model and
-  also the cheapest point, and on Poisson and waves the learned bank is itself
-  worse than a POD basis of the same rank (\S\ref{sec:exp:linear}).
-\item \textbf{Two methodological findings.} Every result is reported as bank
-  floor, best-found and solved error, so each lever's effect lands on the layer
-  it acts on (\S\ref{sec:method:layers}); and quadrature rules must be
-  certified on states the solver actually reaches, never by their fitting
-  residual (\S\ref{sec:exp:eq}).
+\item \textbf{The architectural choices that admit the control.} A bank that
+  evaluates per node, so the cached reduced cost is flat while the mesh grows
+  $\nMeshBurgersUnknownGrowth\times$ (\S\ref{sec:exp:mesh}, measured); a
+  linear skip in the head, chosen so that the decoder Jacobian keeps a
+  latent-independent component for the cold start (\S\ref{sec:method:manifold},
+  a design choice we do not ablate); and the bank/head/correction split with
+  exact elimination of the corrections where the residual is linear
+  (\S\ref{sec:method:ladder}, measured).
+\item \textbf{Where the control is not worth having.} Where the weak residual
+  is nonlinear in the coefficients (Burgers) the corrections cost a growing
+  nonlinear solve and the ladder is a trade. Where it is linear (Poisson, heat,
+  waves) the corrections are eliminated exactly, the top rung is the linear
+  model and also the cheapest point, and the collapse is confounded with a weak
+  bank: on those cells the learned bank is three to four times worse than a POD
+  basis of the same rank, while on Burgers the two are comparable
+  (\S\ref{sec:exp:linear}). We characterise where the nonlinear manifold is not
+  worth having; no cell in this paper shows it non-dominated at matched cost.
+\item \textbf{Two reporting practices.} Every result is reported as bank floor,
+  best-found and solved error, so each lever's effect lands on the layer it acts
+  on (\S\ref{sec:method:layers}); and quadrature rules are certified on states
+  the solver actually reaches, never by their fitting residual, which we show
+  does not predict the held-out error (\S\ref{sec:exp:eq}).
 \end{enumerate}
 
 \paragraph{What we do not claim.} No speedup over an efficient full-order
-solver in 2D: none of the $\nPanelReducedCount$ reduced subjects in the
-same-allocation panel is non-dominated once the full-order controls are in. No
-accuracy superiority over neural operators: a U-Net and a Transolver trained on
-the same data beat the ROM, and only the FNO does not. No frontier over POD at
-every rank: POD-512 beats the best dense rung on the evolved metric. No cost
-ratio across jobs, ever. No convergence theory. Every number is single-seed,
-development-cohort evidence until the seed and sealed-cohort runs land
-(\S\ref{sec:limitations}). Appendix~\ref{app:reviewers} maps each ask of the
-three reviews of the earlier version to the section that answers it or the
-limitation that concedes it.
+solver in 2D (none of the $\nPanelReducedCount$ reduced subjects in the
+same-allocation panel is non-dominated); no accuracy superiority over neural
+operators (a U-Net and a Transolver beat the ROM); no frontier over POD at
+every rank (POD-512 beats the best dense rung on the evolved metric); no cost
+ratio across jobs; no convergence theory; and every number is single-seed,
+development-cohort evidence (\S\ref{sec:limitations}).

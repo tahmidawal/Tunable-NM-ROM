@@ -24,13 +24,12 @@ recorded random order, float64 and highest matmul precision. Device query
 \emph{No ratio is ever formed across jobs or GPUs.} Offline setup is charged
 once per mesh and reported separately.
 \textbf{Comparators} are always in the same job: Newton with a modal Helmholtz
-preconditioner at several tolerances for Burgers; the direct sine transform
-and tuned conjugate gradients for Poisson, heat and waves; sparse direct and
-IC(0)-PCG on the L-shape; POD-LSPG at several ranks through the same weak
-objective, tests, solver and stopping rule. Neural operators are trained on
-the identical dataset and split with recorded index hashes, an equal wall
-budget per capacity and the same selection rule.
-\textbf{Provenance.} Every table names its job id, GPU and checkpoint in its
-caption or in Table~\ref{tab:provenance}; every solve carries its exit reason;
-every error is recomputed from the saved fields by an independent NumPy audit;
-every number in the paper is emitted by one generator from those records.
+preconditioner at several tolerances (Burgers); the direct sine transform and
+tuned conjugate gradients (Poisson, heat, waves); sparse direct and IC(0)-PCG
+(L-shape); POD-LSPG through the same weak objective, tests, solver and stopping
+rule; neural operators on the identical dataset and split with recorded index
+hashes, an equal wall budget and the same selection rule.
+\textbf{Provenance.} Every table names its job id, GPU and checkpoint here or
+in Table~\ref{tab:provenance}; every solve carries its exit reason; every error
+is recomputed from saved fields by an independent NumPy audit; every number is
+emitted by one generator from those records.

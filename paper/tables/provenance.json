@@ -27,7 +27,7 @@
     "nosecond_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-no-second/experiments/no-second/reports/summary.json",
       "reachable": true,
-      "sha256": "df8f06ca0d69c1aff0c9e0cc96b25c56d533a3bc7edefac5cf81f5f8138b0e7f"
+      "sha256": "728225a3d2207e5a11e964ac49349d4b7550afd6f687eabd6e38565dbcf96e0b"
     },
     "wladder_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-w-ladder/experiments/w-ladder/reports/summary.json",
@@ -145,17 +145,23 @@
     "ns2d_summary": {
       "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-ns2d/experiments/ns2d/reports/summary.json",
       "reachable": true,
-      "sha256": "17f1486aa07388b9a1e47c98d299ca64e06342b031fcd31a769fc74ba090ba36"
+      "sha256": "e7bcb276d9399a547888aedc7997a9179e6b75e5163db4fbca0994db1c08bde5"
+    },
+    "headtrain_train": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-b-head-train/experiments/b-head-train/checks/train02-audit.json",
+      "reachable": true,
+      "sha256": "3a056f929b7f050d50f3ef51dcff38a366aecc77bb57801ae25c55441200e472"
+    },
+    "cclad01": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-15-cheap-corrections/experiments/cheap-corrections/checks/cclad01-audit.json",
+      "reachable": true,
+      "sha256": "b8dd6b239cee71461597f5071d9f65dbca55278ae9767eb8bb1cbf63abaa65ba"
     }
   },
   "pending": [
     [
       "T5 1024",
       "b-panel 1024$^2$ (job 3783817)"
-    ],
-    [
-      "operator resolution knob",
-      "no-second res01 (job 3783920)"
     ],
     [
       "operator seed/precision control",
@@ -179,10 +185,6 @@
     ],
     [
       "NS ROM",
-      "ns2d phases 2--3"
-    ],
-    [
-      "T1 NS row",
       "ns2d phases 2--3"
     ],
     [

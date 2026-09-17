@@ -1,6 +1,19 @@
 % sections/appendix.tex
 \input{sections/method-details}
 
+\section{Architecture}
+\label{app:arch}
+
+\begin{figure}[h]
+\centering
+\resizebox{\linewidth}{!}{\input{figures/architecture}}
+\caption{Architecture and data flow. Purple: trained once and frozen for every
+result. Blue: assembled offline once per mesh. Orange: computed inside the timed
+query. Green: chosen at run time among artefacts that already exist. Grey:
+supplied, or a comparator.}
+\label{fig:arch}
+\end{figure}
+
 \section{Provenance}
 \label{app:provenance}
 
@@ -28,10 +41,50 @@ for any cell.}
 
 \begin{table}[h]
 \centering
-\caption{Rank against test count (dense advection, budget 600, single seed).
-Top: the pure-rank ladder at fixed $M=\nQxmFixedM$ inside job
-\provQxmWithinJob; bottom: the scheduled ladder, whose cells span two jobs so
-its costs are not printed together. Jobs \provQxmJobs; commit
+\caption{Sampled problem families, transcribed from the generator sources named
+in the last column (code constants, not run outputs).}
+\label{tab:spec}
+\input{tables/T01b_spec}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Offline cost per stage, from the lane records: head training on the
+retrained arms (the incumbent's own training time was not recorded), the
+correction-direction fit, and the NNLS fit of each rule the primary EQ ladder
+ran. Every rule is refit when $m$ changes; nothing is nested.}
+\label{tab:offline}
+\input{tables/T17_offline_cost}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{How the corrections are solved on Burgers, one job (job
+\provCcladJob, \provCcladGpu): joint LM on $(z,y)$, block-damped, and plain
+variable projection at $q=64$ and $128$. Same error where all converge; the
+block-damped step is the one kept.}
+\label{tab:solver-variants}
+\input{tables/T19_solver_variants}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\linewidth]{fig_eq_certification}
+\caption{\textbf{Provisional.} NNLS fit residual on the fitting set against
+held-out $\rho_{\max}$ on reachable states for every fitted quadrature rule of
+the certification cell (jobs \provEqtopJob), with the primary and tight bars.
+The fit residual does not predict the held-out error; hollow squares are rules
+fitted on static snapshots. One draw per rule; replication \nEqtopPendingJob\
+pending.}
+\label{fig:cert}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Rank against test count (dense advection, budget 600, single seed). Both
+fixed-$M$ ladders are shown; the $M=256$ ladder fails the bar and the
+$M=1088$ ladder passes it, and $M=1088$ was chosen after the grid was run.
+The scheduled ladder's cells span two jobs so its costs are not printed. Jobs \provQxmJobs; commit
 \provQxmCommit; checkpoint \provBurgersCkpt.}
 \label{tab:qxm}
 \input{tables/T04_rank_vs_tests}
@@ -129,8 +182,8 @@ control at tolerance $10^{-4}$ beats the best ROM setting on both axes.}
 \centering
 \caption{Cold-start iteration-cap sweep on Poisson at $\nColdMesh$ intervals
 (local GB10 diagnostic; only ratios transfer). From the nearest training code
-the converged answer is reached at a small cap; from $z=0$ the cap traces the
-monotone curve the earlier manuscript reported as a frontier, every point of
+the converged answer is reached at a small cap; from $z=0$ the cap traces a
+monotone curve that looks like an accuracy--cost frontier, every point of
 which is dominated by starting well.}
 \label{tab:coldstart}
 \input{tables/T08b_cold_start}
@@ -203,6 +256,17 @@ count (lane b-seeds).}
 
 \begin{table}[h]
 \centering
+\caption{The operators' own inference-time knob: each validation-selected
+checkpoint evaluated at coarser grids and prolonged back (job \provResJob,
+\provResGpu), with the interpolation floor (a perfect operator's error at that
+rung) and the pre-registered gates ($\ge1.5\times$ own speed at $\le2\times$
+own error). Speedups are within one model's own curve, same job.}
+\label{tab:resolution}
+\input{tables/T14c_resolution}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{U-Net against FNO on the Poisson operator-screen dataset (physical
 reference). The U-Net arms hit the epoch cap while still improving; the FNO
 early-stopped.}
@@ -240,36 +304,6 @@ $\nLshapeSolve$.}
 \input{tables/T18a_lshape_bank}\\[4pt]
 \input{tables/T18b_lshape_head}
 \end{table}
-
-\section{Reviewer map}
-\label{app:reviewers}
-
-The three NeurIPS 2026 reviews are answered as follows; ``withdrawn'' means the
-claim is gone from this paper.
-
-\begin{center}\small
-\begin{tabular}{llp{7.6cm}}
-\toprule
-reviewer & ask & where \\
-\midrule
-fxe8 & one checkpoint per curve; the frontier claim & \S\ref{sec:method:tuning}, \S\ref{sec:exp:qxm}; Pareto dominance withdrawn \\
-fxe8 & heat step invalid for a nonlinear decoder; CG on a weighted operator & Appendix~\ref{app:method:heat}; no CG is applied \\
-fxe8 & EQ under-specified, three sample counts & \S\ref{sec:method:precomp}, Appendix~\ref{app:method:eq} \\
-fxe8 & only unpreconditioned CG as comparator; the $324\times$ & \S\ref{sec:exp:mesh}, \S\ref{sec:exp:linear}; speedup withdrawn \\
-fxe8 & asymmetric tuning against FNO/DeepONet & \S\ref{sec:exp:operators} (shared data, equal budget, three families) \\
-fxe8 & timing methodology; no code & \S\ref{sec:setup}; Appendix~\ref{app:provenance} \\
-GwrW & which PDEs, domains, boundaries & Table~\ref{tab:problems}, \S\ref{sec:method:manifold} \\
-GwrW & harder problems; a direct solver comparator & \S\ref{sec:exp:linear} (DST in every job), L-shape (Table~\ref{tab:lshape}), NS pending \\
-GwrW & the direct solver outperforms the method & conceded in \S\ref{sec:intro} and \S\ref{sec:exp:panel} \\
-5mgh & broken or untuned baselines & \S\ref{sec:exp:operators}; \S\ref{sec:exp:head} (POD-LSPG through the same solver) \\
-5mgh & single seed & \S\ref{sec:limitations}; Tables~\ref{tab:seeds}, \ref{tab:sealed} pending \\
-5mgh & SMA-NM-ROM under a cold-start protocol & not run; \S\ref{sec:limitations} \\
-5mgh & when is the nonlinear manifold the enabling ingredient & \S\ref{sec:exp:head}, \S\ref{sec:exp:linear} \\
-5mgh & Galerkin vs LSPG; small residual is not accuracy & \S\ref{sec:method:weak} \\
-5mgh & is the family really free from one model & \S\ref{sec:method:tuning}, \S\ref{sec:exp:eq} (rules re-solved offline, selected at run time) \\
-\bottomrule
-\end{tabular}
-\end{center}
 
 \section{Glossary}
 \label{app:glossary}

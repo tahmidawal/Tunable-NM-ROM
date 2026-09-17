@@ -53,9 +53,14 @@ the intro, related work, setup, limitations and conclusion.
 
 | placeholder | waits on |
 |---|---|
-| T5 at 1024² | b-panel job 3783817 |
+| T5 at 1024² | b-panel **bpn203, job 3789572** (H200, running). Earlier attempts retracted: bpn201/3783817 config-parsing bug, bpn202/3787247 OOM in an untimed diagnostic — both listed in the retracted-attempts table, not deleted |
 | T12 seeds, T13 sealed cohort, seeds status, T2 seeds row | b-seeds |
 | NS reduced model | ns2d phases 2–3 |
+
+Also running: b-panel **bpn301, job 3789570**, the 256² re-run carrying both quadrature rule
+sets (it will put the certified-EQ cheap arm beside the dense ladder in one allocation), and the
+L-shape solve at 512² (job 3789568). When they land, the provenance rows must carry the live job
+ids, and the retracted attempts stay in Table `T02b`.
 
 Landed since the first checkpoint and no longer pending: the operator resolution knob (job
 3787189, Table T14c, fired its falsification clause), the operator seed/precision controls

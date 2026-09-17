@@ -75,6 +75,23 @@ SOURCES = {
     'heat_manifest': '../reports/2026-09-10-heat-linear-bank-comparison.manifest.json',
 }
 
+# Attempts that produced no reported number.  Recorded so a retracted attempt appears as one
+# rather than vanishing; job ids and causes are the lane's, relayed by the campaign coordinator.
+RETRACTED_ATTEMPTS = [
+    ('b-panel', 'bpn201', '3783817', '$1024^2$ panel', 'config-parsing bug; no timed number produced'),
+    ('b-panel', 'bpn202', '3787247', '$1024^2$ panel', 'out of memory during autotuning inside an untimed diagnostic'),
+    ('lshape', 'lsh01', '3780148', 'bank and head training', 'mis-scaled basis-orthonormality gate; rerun in full as lsh02'),
+    ('p-linear', 'plin1024', '3780691', 'Poisson $1024^2$ ladder', 'GPU out of memory in the untimed best-found oracle; rerun on an H200'),
+    ('w-ladder', 'wl256b', '3780448', 'wave $256^2$ ladder', 'retained-value gate failed on a tie-breaking difference; rerun as wl256c'),
+    ('no-second', 'pois01', '3780224', 'Poisson U-Net screen', 'stager omitted a config directory; no training ran; rerun as pois02'),
+]
+IN_FLIGHT = [
+    ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel (H200)'),
+    ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets'),
+    ('lshape', '3789568', '3789568', 'L-shape solve at $512^2$'),
+    ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
+]
+
 PROV: dict[str, dict] = {}
 MACROS: dict[str, str] = {}
 PENDING: list[tuple[str, str]] = []   # (macro or table, lane)
@@ -391,7 +408,7 @@ def build_panel():
     write('T05_panel_all.tex', tabular(cols, t5, 'lllllrrrrrrcc', r'\tiny'), f'b-panel job {job}')
     # 1024^2 panel: pending
     if load('panel1024_summary') is None:
-        macro('nPanelTenTwentyFour', gen('b-panel 1024$^2$ (job 3783817)', 'T5 1024'))
+        macro('nPanelTenTwentyFour', gen('b-panel 1024$^2$ (bpn203, job 3789572)', 'T5 1024'))
 
 
 # =========================================================================== T4 rank vs tests
@@ -1430,6 +1447,14 @@ def build_problems_and_provenance(mesh):
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')
     prov('T18, T18c, T18d', 'lshape', MACROS.get('provLshapeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
     prov('T12, T13', 'b-seeds', gen('b-seeds', 'T2 seeds row'), '---', '---', '---')
+    write('T02b_retracted.tex', tabular(['lane', 'attempt', 'job', 'what it would have produced', 'why nothing is reported'],
+                                        [[l, tt(a), tt(j), w, why] for l, a, j, w, why in RETRACTED_ATTEMPTS],
+                                        r'llp{1.6cm}p{3.2cm}p{6.0cm}', r'\scriptsize'),
+          'attempts that produced no reported number')
+    write('T02c_inflight.tex', tabular(['lane', 'attempt', 'job', 'what it will add'],
+                                       [[l, tt(a), tt(j), w] for l, a, j, w in IN_FLIGHT],
+                                       r'llp{1.6cm}p{7.6cm}', r'\scriptsize'),
+          'attempts in flight at the time of writing')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),
           'provenance registry; SHA256 of every file read is in tables/provenance.json')
 

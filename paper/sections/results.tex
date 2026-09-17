@@ -33,13 +33,9 @@ $M=4(K+q)$ with $q$ (\S\ref{sec:exp:qxm} separates the two). Certified
 quadrature is a cost lever at equal error: at $q=0$ the rule costs
 $\nPanelEqMsZero$\,ms against $\nPanelDenseMsZero$\,ms dense
 ($\nPanelEqSpeedupZero\times$) for $\nPanelEqErrZero$ against
-$\nPanelDenseErrZero\,\%$, and at $q=128$ $\nPanelEqMsOneTwoEight$ against
-$\nPanelDenseMsOneTwoEight$\,ms ($\nPanelEqSpeedupOneTwoEight\times$) for
-$\nPanelEqErrOneTwoEight$ against $\nPanelDenseErrOneTwoEight\,\%$: about
-$5\times$ cheaper at four-decimal-identical error. Loosening the tolerance from
-$10^{-6}$ to $10^{-3}$ removes a further
-$\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$ at negligible error
-change. The EQ ladder of this panel is \emph{not} monotone at the top ($q=256$:
+$\nPanelDenseErrZero\,\%$ and $\nPanelEqSpeedupOneTwoEight\times$ at $q=128$: about $5\times$ cheaper at
+four-decimal-identical error. Loosening the tolerance from $10^{-6}$ to $10^{-3}$ removes a further
+$\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$ at negligible error change. The EQ ladder of this panel is \emph{not} monotone at the top ($q=256$:
 $\nPanelEqQtwofiftysixEvolved\,\%$ against $\nPanelEqQonetwentyeightEvolved\,\%$
 at $q=128$) because those rungs carried rules certified only on the secondary
 bar; \S\ref{sec:exp:eq} shows the fix (cross-job spread of an identical cell:
@@ -100,11 +96,9 @@ for $\nQxmCostSpan\times$ in cost with $\nQxmNonDom$ non-dominated points}, and
 passes. The choice of $M=1088$ as the headline was made after the crossed grid
 was run, by the lane's decision rule (the largest fixed $M$ that holds every
 rung to $q=256$), not pre-registered; at $M=256$ the $q=256$ rung is
-under-determined ($M<K+q$) and cannot exist. The scheduled ladder spans
-$\nQxmSpanScheduledFour\times$; its log-span is $\nQxmShareRankCorner\,\%$ rank
-and $\nQxmShareTestsCorner\,\%$ test count along the corner path, and on the
-balanced sub-grid the rank main effect carries $\nQxmAnovaRank\,\%$ of the
-variance in log error against $\nQxmAnovaTests\,\%$. The test count does
+under-determined ($M<K+q$) and cannot exist. The scheduled ladder spans $\nQxmSpanScheduledFour\times$, of which
+$\nQxmShareRankCorner\,\%$ of the log-span is rank and $\nQxmShareTestsCorner\,\%$
+test count. The test count does
 $\nQxmRungTestShares\,\%$ of the work at successive rungs: it buys the bottom
 of the ladder and the rank buys the top, and the absolute $M$ needed grows with
 $q$ (at $q=256$ the $M$ effect is still $\nQxmSpanMatQtwoFiftySix\times$). The
@@ -123,15 +117,14 @@ fitted on 14 and 8 states at $q=128$ and $256$ reach
 $\rho_{\max}=\nEqtopParentOneTwentyEightRho$ and $\nEqtopParentTwoFiftySixRho$
 at $m=2048$ and fail, while 64-state rules at the same $m$ reach
 $\nEqtopPrimaryOneTwentyEightRho$ and $\nEqtopPrimaryTwoFiftySixRho$ and pass
-(Table~\ref{tab:eqcert}); at $q=64$ a 25-state rule passes where a 64-state
-re-draw does not, so this is a statement about $q\ge128$. Rebuilt with the cheapest primary-certified rule per rung
+(Table~\ref{tab:eqcert}) (a statement about $q\ge128$; at $q=64$ a 25-state rule passes where a
+64-state re-draw does not). Rebuilt with the cheapest primary-certified rule per rung
 and timed in one allocation, the EQ ladder is monotone on the evolved metric
 (\nEqtopLadderMonotone{}), every rung converged, running
 $\nEqtopLadderFirstErr\to\nEqtopLadderLastErr\,\%$ at
 $\nEqtopLadderFirstMs\to\nEqtopLadderLastMs$\,ms, $\nEqtopCostRatioMin$--$\nEqtopCostRatioMax\times$
-the same-job dense cost; at $q=256$ the 8-state rule gave
-$\nEqtopTopOldRuleErr\,\%$ where the 64-state rule gives $\nEqtopTopEqErr\,\%$
-against dense $\nEqtopTopDenseErr\,\%$ (Table~\ref{tab:eqladder}). The rules are not free: the primary ladder's rules took
+the same-job dense cost (Table~\ref{tab:eqladder}; at $q=256$, $\nEqtopTopEqErr\,\%$ against dense
+$\nEqtopTopDenseErr\,\%$). The rules are not free: the primary ladder's rules took
 $\nOfflineFitHoursLadderTotal$\,h of NNLS in total (Table~\ref{tab:offline}). \textbf{All
 of this is one draw}: a second draw at $q=64$ moved $\rho_{\max}$ from
 $\nEqtopQsixtyFourArchivedRho$ to $\nEqtopQsixtyFourRedrawRho$ and flipped the
@@ -173,13 +166,10 @@ decode. In three layers (Table~\ref{tab:layers}): on Burgers the floor is
 $\nAblBurgersFloor\,\%$, best-found $\nAblBurgersBestFound\,\%$, solved
 $\nAblBurgersNeural\,\%$; the solver layer costs $\nAblBurgersSolverGapPp$
 percentage points and the reduction layer sits
-$\nAblBurgersReductionOverFloor\times$ above the floor. The head is the binding
-layer, and training alone does not close it: no retrained head on the same bank
-beats the incumbent's best-found $\nTrainIncumbentBest\,\%$
-(Table~\ref{tab:training}, with the caveat that the like-for-like retrain does
-not reproduce the incumbent), and on Poisson a wider head moves the
-best-found/floor ratio from $\nPlinHeadRatioPrimary$ to $\nPlinHeadRatioBest$
-and no further (Table~\ref{tab:head-capacity}).
+$\nAblBurgersReductionOverFloor\times$ above the floor. The head is the binding layer; retraining it on the same bank does not
+close the gap (Table~\ref{tab:training}), and on Poisson a wider head moves the
+best-found/floor ratio only from $\nPlinHeadRatioPrimary$ to
+$\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
 
 \subsection{Cached cost is flat in the mesh; nothing crosses over}
 \label{sec:exp:mesh}
@@ -191,9 +181,8 @@ on Burgers while the unknowns grow $\nMeshBurgersUnknownGrowth\times$
 $\nMeshBurgersCompleteRatio\times$ through dense input and output. Against the
 cheapest same-job full-order arm meeting the target there is no crossover at
 any rung (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
-\nMeshPoissonFomOverRomRange{} against the direct transform on Poisson). A kernel-level port at bit-level parity makes the
-frozen Burgers query $\nSpeedGpuTwoFiftySix$ faster at $256^2$, short of its
-$2\times$ target, because the query is kernel-count bound
+\nMeshPoissonFomOverRomRange{} against the direct transform on Poisson). A kernel-level port at bit-level parity makes the frozen query
+$\nSpeedGpuTwoFiftySix$ faster at $256^2$, short of its $2\times$ target
 (Table~\ref{tab:speed}).
 
 \subsection{Where the control collapses: linear PDEs}
@@ -209,10 +198,10 @@ $\nPlinTenTwentyFourTopErr\,\%$ and is the \emph{cheapest} point at
 $\nPlinTenTwentyFourTopMs$\,ms; the pre-registered degenerate-curve criterion
 passes (at $256^2$ only its literal cost-span clause fails, because the top
 rung is $\nPlinTwoFiftySixTopOverMidCost\times$ cheaper than the middle rungs).
-Solver effort buys nothing at $q=0$: floor $\nPlinTenTwentyFourFloor$,
+Solver effort buys nothing at $q=0$ (floor $\nPlinTenTwentyFourFloor$,
 best-found $\nPlinTenTwentyFourBestFoundQzero$, solved
-$\nPlinTenTwentyFourQzeroErr\,\%$ ($M=129$; the $M=257$ solve in
-Table~\ref{tab:layers} differs in the fourth digit). The direct transform is
+$\nPlinTenTwentyFourQzeroErr\,\%$ at $M=129$; Table~\ref{tab:layers} gives the
+$M=257$ solve). The direct transform is
 exact at $\nPlinTenTwentyFourDstMs$\,ms. Heat at
 $1024^2$ (an earlier cell of the same family, Table~\ref{tab:heat}): the bank
 evolved linearly reaches $\nHeatBankErrTenTwentyFour\,\%$ at
@@ -240,10 +229,9 @@ banks ($\nPanelFreeAll\,\%$ against $\nPanelPodFiveTwelveAll\,\%$ on the
 all-times metric). The exact elimination is a property of the linear residual; the size of the
 collapse is at least as much a property of these banks. No reduced arm beats
 the direct solve on any of the three. On the L-shaped domain (no fast transform) the bank floor is
-$\nLshapeBestFloor\,\%$ on the development cohort and
-$\nLshapeSelectedFloorCommon\,\%$ on the selection cohort, corner enrichment
-buys only $\nLshapeEnrichGain\times$, and every head sits
-$\nLshapeHeadRatioMin$--$\nLshapeHeadRatioMax\times$ above its floor
+$\nLshapeBestFloor\,\%$ (development) and $\nLshapeSelectedFloorCommon\,\%$
+(selection cohort), corner enrichment buys $\nLshapeEnrichGain\times$, and every
+head sits $\nLshapeHeadRatioMin$--$\nLshapeHeadRatioMax\times$ above its floor
 (Table~\ref{tab:lshape}); its solve layer has not run.
 
 \subsection{Neural operators on the same data}
@@ -256,13 +244,26 @@ U-Net-small $\nOpEightUnetSmall$, U-Net-medium $\nOpEightUnetMedium$,
 Transolver-refine $\nOpEightTsolRefine$, U-Net-refine $\nOpEightUnetRefine$,
 \textbf{ROM $\nOpEightRom$}, FNO-large $\nOpEightFnoLarge$, efficient full-order
 solver $\nOpEightFomEfficient\,\%$: $\nOpArmsBeatingRom$ operator arms beat the
-ROM and every FNO capacity is worse than it. The earlier finding that the ROM
-is more accurate than a neural operator was an artefact of the family chosen
-and is withdrawn. On cost, only the FNO was timed against the ROM in one
-allocation, and there it dominates the ROM on both axes ($\nPanelFnoErr\,\%$ at
-$\nPanelFnoMs$\,ms, \S\ref{sec:exp:panel}); the U-Net and the Transolver beat
-the ROM on accuracy and were not timed against it, so no cost statement is made
-for them. Every operator number is a lower bound (\nOpLaneImproving{}
+ROM and every FNO capacity is worse than it. An earlier FNO-only finding that the ROM is more accurate than a neural
+operator was an artefact of the family and is withdrawn. On cost, only the FNO
+was timed against the ROM in one allocation, where it dominates on both axes
+(\S\ref{sec:exp:panel}); the U-Net and Transolver were not timed against it, so
+no cost statement is made for them. Every operator number is a lower bound (\nOpLaneImproving{}
 U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were still improving at
 their budget); on Poisson the gap is larger (Table~\ref{tab:operators-poisson}).
-What survives is the within-reduced-model claim and the mechanism.
+The operators' own knob, evaluation resolution, was tested under a
+pre-registered rule (Table~\ref{tab:resolution}; speedups are within one
+model's own curve in one job and carry no comparison to the ROM or the solver):
+\nResUsableList{} is R-USABLE---one step, $256\to128$, buys the whole gain
+($\nResFnoSpeedup\times$ its own speed at $\nResFnoErrRatio\times$ its own
+error), below which the query is launch-bound ($\nResFnoMsOneTwentyEight$,
+$\nResFnoMsSixtyFour$, $\nResFnoMsThirtyTwo$\,ms) while the error rises to
+$\nResFnoErrRatioSixtyFour\times$ and $\nResFnoErrRatioThirtyTwo\times$---while
+\nResDegenerateList{} are not (the U-Net breaks at once,
+$\nResUnetErrRatioOneTwentyEight\times$ error at rung 128; the Transolver is
+cost-flat, $\nResTsolSpeedOneTwentyEight\times$). At rung 128 no family is
+closer than $\nResMinFloorRatioOneTwentyEight\times$ to the interpolation floor,
+so the off-resolution error is the network's, not the grid's. ``One
+accuracy--cost point per trained operator'' is therefore withdrawn; what
+distinguishes $q$ is that it moves what the model can represent, which a
+coarser evaluation grid does not.

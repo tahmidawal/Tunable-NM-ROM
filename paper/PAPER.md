@@ -19,8 +19,8 @@ and meets a bar fixed before any run, with the test count held constant so the r
 alone is the control, and it beats the classical linear reduced model at matched
 latent dimension. It does not win outright: a well-tuned full-order solver, and
 neural operators trained on the same data, are both cheaper and more accurate
-here, and we report that. On Poisson and heat the family collapses to a linear
-model, which says when the nonlinear manifold is worth having. We also show that
+here, and we report that. On Poisson, heat and waves the family collapses to a
+linear model, which says when the nonlinear manifold is worth having. We also show that
 quadrature rules must be validated on states the solver actually reaches, not on
 their fitting residual.
 
@@ -66,12 +66,11 @@ a tuned full-order solver or a well-trained neural operator at $256^2$
 (§5.1, §5.7).
 2. **The architectural choices that admit the control.** A bank that
 evaluates per node, so the cached reduced cost is flat while the mesh grows
-$264\times$ (§5.5, measured); a
-linear skip in the head, chosen so that the decoder Jacobian keeps a
-latent-independent component for the cold start (§3.1,
-a design choice we do not ablate); and the bank/head/correction split with
-exact elimination of the corrections where the residual is linear
-(§3.2, measured).
+$264\times$ (measured, §5.5); a linear
+skip in the head so the cold start has a latent-independent descent direction
+(a design choice, not ablated); and the bank/head/correction split with exact
+elimination of the corrections where the residual is linear (measured,
+§3.2).
 3. **Where the control is not worth having.** Where the weak residual
 is nonlinear in the coefficients (Burgers) the corrections cost a growing
 nonlinear solve and the ladder is a trade. Where it is linear (Poisson, heat,
@@ -486,13 +485,9 @@ $M=4(K+q)$ with $q$ (§5.2 separates the two). Certified
 quadrature is a cost lever at equal error: at $q=0$ the rule costs
 $57.9$ ms against $284.8$ ms dense
 ($4.92\times$) for $1.8891$ against
-$1.8890 %$, and at $q=128$ $247.0$ against
-$1223.2$ ms ($4.95\times$) for
-$0.8925$ against $0.8930 %$: about
-$5\times$ cheaper at four-decimal-identical error. Loosening the tolerance from
-$10^{-6}$ to $10^{-3}$ removes a further
-$26$–$23 %$ at negligible error
-change. The EQ ladder of this panel is *not* monotone at the top ($q=256$:
+$1.8890 %$ and $4.95\times$ at $q=128$: about $5\times$ cheaper at
+four-decimal-identical error. Loosening the tolerance from $10^{-6}$ to $10^{-3}$ removes a further
+$26$–$23 %$ at negligible error change. The EQ ladder of this panel is *not* monotone at the top ($q=256$:
 $1.0361 %$ against $0.8925 %$
 at $q=128$) because those rungs carried rules certified only on the secondary
 bar; §5.3 shows the fix (cross-job spread of an identical cell:
@@ -556,11 +551,9 @@ for $5.16\times$ in cost with $4$ non-dominated points**, and
 passes. The choice of $M=1088$ as the headline was made after the crossed grid
 was run, by the lane's decision rule (the largest fixed $M$ that holds every
 rung to $q=256$), not pre-registered; at $M=256$ the $q=256$ rung is
-under-determined ($M<K+q$) and cannot exist. The scheduled ladder spans
-$3.64\times$; its log-span is $69.0 %$ rank
-and $31.0 %$ test count along the corner path, and on the
-balanced sub-grid the rank main effect carries $85.1 %$ of the
-variance in log error against $6.1 %$. The test count does
+under-determined ($M<K+q$) and cannot exist. The scheduled ladder spans $3.64\times$, of which
+$69.0 %$ of the log-span is rank and $31.0 %$
+test count. The test count does
 $84, 77, 40, 10, 5 %$ of the work at successive rungs: it buys the bottom
 of the ladder and the rank buys the top, and the absolute $M$ needed grows with
 $q$ (at $q=256$ the $M$ effect is still $2.03\times$). The
@@ -580,15 +573,14 @@ fitted on 14 and 8 states at $q=128$ and $256$ reach
 $\rho_{\max}=0.1908$ and $0.1678$
 at $m=2048$ and fail, while 64-state rules at the same $m$ reach
 $0.0669$ and $0.1074$ and pass
-(Table 19); at $q=64$ a 25-state rule passes where a 64-state
-re-draw does not, so this is a statement about $q\ge128$. Rebuilt with the cheapest primary-certified rule per rung
+(Table 19) (a statement about $q\ge128$; at $q=64$ a 25-state rule passes where a
+64-state re-draw does not). Rebuilt with the cheapest primary-certified rule per rung
 and timed in one allocation, the EQ ladder is monotone on the evolved metric
 (yes{}), every rung converged, running
 $1.8891\to0.5389 %$ at
 $59.1\to722.2$ ms, $0.18$–$0.21\times$
-the same-job dense cost; at $q=256$ the 8-state rule gave
-$1.0361 %$ where the 64-state rule gives $0.5389 %$
-against dense $0.5194 %$ (Table 2). The rules are not free: the primary ladder's rules took
+the same-job dense cost (Table 2; at $q=256$, $0.5389 %$ against dense
+$0.5194 %$). The rules are not free: the primary ladder's rules took
 $1.7$ h of NNLS in total (Table 6). **All
 of this is one draw**: a second draw at $q=64$ moved $\rho_{\max}$ from
 $0.0531$ to $0.1220$ and flipped the
@@ -636,13 +628,10 @@ decode. In three layers (Table 9): on Burgers the floor is
 $0.3918 %$, best-found $2.5447 %$, solved
 $2.5629 %$; the solver layer costs $0.018$
 percentage points and the reduction layer sits
-$6.5\times$ above the floor. The head is the binding
-layer, and training alone does not close it: no retrained head on the same bank
-beats the incumbent's best-found $2.5447 %$
-(Table 29, with the caveat that the like-for-like retrain does
-not reproduce the incumbent), and on Poisson a wider head moves the
-best-found/floor ratio from $4.18$ to $2.76$
-and no further (Table 23).
+$6.5\times$ above the floor. The head is the binding layer; retraining it on the same bank does not
+close the gap (Table 29), and on Poisson a wider head moves the
+best-found/floor ratio only from $4.18$ to
+$2.76$ (Table 23).
 
 ### 5.5 Cached cost is flat in the mesh; nothing crosses over
 
@@ -655,9 +644,8 @@ on Burgers while the unknowns grow $264\times$
 $1.033\times$ through dense input and output. Against the
 cheapest same-job full-order arm meeting the target there is no crossover at
 any rung (FOM/ROM 0.265–0.495{} on Burgers,
-0.063–0.112{} against the direct transform on Poisson). A kernel-level port at bit-level parity makes the
-frozen Burgers query $1.520x$ faster at $256^2$, short of its
-$2\times$ target, because the query is kernel-count bound
+0.063–0.112{} against the direct transform on Poisson). A kernel-level port at bit-level parity makes the frozen query
+$1.520x$ faster at $256^2$, short of its $2\times$ target
 (Table 28).
 
 ### 5.6 Where the control collapses: linear PDEs
@@ -674,10 +662,10 @@ $0.7421 %$ and is the *cheapest* point at
 $4.42$ ms; the pre-registered degenerate-curve criterion
 passes (at $256^2$ only its literal cost-span clause fails, because the top
 rung is $3.17\times$ cheaper than the middle rungs).
-Solver effort buys nothing at $q=0$: floor $0.7421$,
+Solver effort buys nothing at $q=0$ (floor $0.7421$,
 best-found $3.1139$, solved
-$3.1495 %$ ($M=129$; the $M=257$ solve in
-Table 9 differs in the fourth digit). The direct transform is
+$3.1495 %$ at $M=129$; Table 9 gives the
+$M=257$ solve). The direct transform is
 exact at $3.248$ ms. Heat at
 $1024^2$ (an earlier cell of the same family, Table 11): the bank
 evolved linearly reaches $1.68 %$ at
@@ -705,10 +693,9 @@ banks ($0.6027 %$ against $0.6125 %$ on the
 all-times metric). The exact elimination is a property of the linear residual; the size of the
 collapse is at least as much a property of these banks. No reduced arm beats
 the direct solve on any of the three. On the L-shaped domain (no fast transform) the bank floor is
-$0.6650 %$ on the development cohort and
-$1.6155 %$ on the selection cohort, corner enrichment
-buys only $1.067\times$, and every head sits
-$2.24$–$5.77\times$ above its floor
+$0.6650 %$ (development) and $1.6155 %$
+(selection cohort), corner enrichment buys $1.067\times$, and every
+head sits $2.24$–$5.77\times$ above its floor
 (Table 30); its solve layer has not run.
 
 ### 5.7 Neural operators on the same data
@@ -722,16 +709,29 @@ U-Net-small $1.4712$, U-Net-medium $1.5189$,
 Transolver-refine $1.5224$, U-Net-refine $1.7110$,
 **ROM $1.8671$**, FNO-large $2.4829$, efficient full-order
 solver $0.9978 %$: $4$ operator arms beat the
-ROM and every FNO capacity is worse than it. The earlier finding that the ROM
-is more accurate than a neural operator was an artefact of the family chosen
-and is withdrawn. On cost, only the FNO was timed against the ROM in one
-allocation, and there it dominates the ROM on both axes ($7.4164 %$ at
-$7.2$ ms, §5.1); the U-Net and the Transolver beat
-the ROM on accuracy and were not timed against it, so no cost statement is made
-for them. Every operator number is a lower bound (7 of 8{}
+ROM and every FNO capacity is worse than it. An earlier FNO-only finding that the ROM is more accurate than a neural
+operator was an artefact of the family and is withdrawn. On cost, only the FNO
+was timed against the ROM in one allocation, where it dominates on both axes
+(§5.1); the U-Net and Transolver were not timed against it, so
+no cost statement is made for them. Every operator number is a lower bound (7 of 8{}
 U-Net/Transolver arms and 4 of 4{} FNO arms were still improving at
 their budget); on Poisson the gap is larger (Table 27).
-What survives is the within-reduced-model claim and the mechanism.
+The operators' own knob, evaluation resolution, was tested under a
+pre-registered rule (Table 26; speedups are within one
+model's own curve in one job and carry no comparison to the ROM or the solver):
+`fno-large`{} is R-USABLE—one step, $256\to128$, buys the whole gain
+($2.12\times$ its own speed at $1.14\times$ its own
+error), below which the query is launch-bound ($3.46$,
+$3.44$, $3.33$ ms) while the error rises to
+$1.54\times$ and $2.17\times$—while
+`tsol-refine`, `unet-refine`{} are not (the U-Net breaks at once,
+$5.07\times$ error at rung 128; the Transolver is
+cost-flat, $1.37\times$). At rung 128 no family is
+closer than $32\times$ to the interpolation floor,
+so the off-resolution error is the network's, not the grid's. “One
+accuracy–cost point per trained operator” is therefore withdrawn; what
+distinguishes $q$ is that it moves what the model can represent, which a
+coarser evaluation grid does not.
 
 ## 6 Limitations
 
@@ -742,10 +742,9 @@ seed and one checkpoint per PDE. The three-seed repetition and the
 sealed-cohort evaluation are running; that lane has recorded an amendment to
 its fidelity gate, from $10^{-9}$ to $10^{-3}$ relative, made before any of its
 numbers were read.
-**Development cohort.** Burgers numbers are on six opened cases (32
-held-out for the tuning study), wave and Poisson on eight and twelve; on the
-L-shape the 461-source validation worst is two to three times the 32-source
-development worst.
+**Development cohort**: six opened Burgers cases (32 held-out for the
+tuning study), eight wave and twelve Poisson; on the L-shape the 461-source
+validation worst is two to three times the 32-source development worst.
 **2D only, and nothing harder than viscous Burgers is solved**: the
 L-shape cell has no solve layer yet and Navier–Stokes no reduced model.
 **No cold-start comparison against a shallow masked-autoencoder ROM**; the
@@ -765,8 +764,6 @@ ladder fails the same bar, and the fixed-$M$ $q=0$ rung costs
 $848.0$ ms against $290.6$ ms for the scheduled
 rung (different jobs). **Cross-job spread** of an identical cell is
 $14 %$, the size of the tolerance saving.
-**Offline cost is not free**: the primary EQ ladder's rules took
-$1.7$ h of NNLS in total (Table 6).
 **No theory**: no convergence guarantee, no quadrature-error bound on
 unseen states, no continuum error bound.
 
@@ -785,12 +782,9 @@ One trained decoder exposes a monotone accuracy–cost family at run time
 through the number of bank directions the solver may add to the head's output:
 with the test count fixed, that rank alone spans $2.44\times$ in error
 for $5.16\times$ in cost on 2D Burgers inside one allocation, and
-certified quadrature moves cost at fixed accuracy. The trade
-exists where the residual is nonlinear in the coefficients; where it is linear
-the top rung is a linear model and the cheapest point, confounded with a weak
-bank. None of this beats a tuned full-order solver or a
-well-trained neural operator in 2D; the case rests on the mechanism and its
-condition, not on winning.
+certified quadrature moves cost at fixed accuracy. The trade exists where the residual is nonlinear in the coefficients; where
+it is linear the top rung is a linear model and the cheapest point. None of it beats a tuned full-order solver or a well-trained neural
+operator in 2D.
 
 ## Reproducibility statement
 
@@ -1755,7 +1749,7 @@ Written for a reader who knows none of this project's vocabulary.
 - **Development cohort, held-out, sealed cohort** — Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).
 - **Pre-registered** — Declared in a design document before the job ran; every bar, gate and falsification clause in this paper was.
 - **POD-LSPG, $k'$, DST, CG, Newton** — The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
-- **FNO, U-Net, Transolver** — Three neural-operator families; each is one trained model giving one accuracy–cost point.
+- **FNO, U-Net, Transolver** — Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost–accuracy control of its own (Table 26), but one that does not change what the model can represent.
 - **Checkpoint, frozen, incumbent** — Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
 - **Provisional, pending** — A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
 

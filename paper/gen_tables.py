@@ -482,7 +482,7 @@ def build_operators():
     t = []
     for a, jb in burg8:
         m = meta[(a, jb)]; d = by[(a, jb, 'diagnosis-8')]; v = by.get((a, jb, 'validation-32'), {})
-        still = yn(m['best_epoch'] >= 0.95 * m['epochs']) if m.get('epochs') and m.get('best_epoch') else '---'
+        still = yn(m['still_improving']) if m.get('still_improving') is not None else (yn(m['best_epoch'] >= 0.95 * m['epochs']) if m.get('epochs') and m.get('best_epoch') else '---')
         t.append([tt(a), m['operator'], f"{m['params']:,}" if m.get('params') else '---',
                   str(m.get('epochs') or '---'), still,
                   pct(100 * d['worst_fixed_initial_error']),
@@ -503,7 +503,10 @@ def build_operators():
     macro('nOpArmsBeatingRom', str(len(better)))
     macro('nOpEveryFnoWorse', yn(all(w8(k[0]) > w8('rom') for k in burg8 if meta[k]['operator'] == 'FNO')))
     def improving(k):
-        m = meta[k]; return bool(m.get('best_epoch') and m.get('epochs') and m['best_epoch'] >= 0.95 * m['epochs'])
+        m = meta[k]
+        if m.get('still_improving') is not None:
+            return bool(m['still_improving'])
+        return bool(m.get('best_epoch') and m.get('epochs') and m['best_epoch'] >= 0.95 * m['epochs'])
     lane_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] in ('3780138', '3780139') and r.get('epochs')})
     fno_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] == '3710846' and r.get('epochs')})
     macro('nOpLaneImproving', f"{sum(1 for k in lane_arms if improving(k))} of {len(lane_arms)}")
@@ -551,6 +554,18 @@ def build_operators():
         f128 = Rv.get(('fno-large', 128), {})
         if f128:
             macro('nResFnoSpeedup', f"{f128['same_job_speedup_vs_own_256']:.2f}"); macro('nResFnoErrRatio', f"{f128['worst_evolved_error_ratio_vs_own_256']:.2f}")
+        for op, nm in [('fno-large', 'Fno'), ('unet-refine', 'Unet'), ('tsol-refine', 'Tsol')]:
+            for rung, rn in [(128, 'OneTwentyEight'), (64, 'SixtyFour'), (32, 'ThirtyTwo')]:
+                d = Rv.get((op, rung), {})
+                if d:
+                    macro(f'nRes{nm}Ms{rn}', ms(d['same_job_device_query_pooled_median_ms'], 2))
+                    macro(f'nRes{nm}ErrRatio{rn}', f"{d['worst_evolved_error_ratio_vs_own_256']:.2f}")
+                    macro(f'nRes{nm}Speed{rn}', f"{d['same_job_speedup_vs_own_256']:.2f}")
+                    if d.get('interpolation_floor_worst_evolved'):
+                        macro(f'nRes{nm}FloorRatio{rn}', f"{d['worst_evolved_fixed_initial_error']/d['interpolation_floor_worst_evolved']:.0f}")
+        fr = [Rv[(op, 128)]['worst_evolved_fixed_initial_error'] / Rv[(op, 128)]['interpolation_floor_worst_evolved'] for op in ops if (op, 128) in Rv and Rv[(op, 128)].get('interpolation_floor_worst_evolved')]
+        if fr:
+            macro('nResMinFloorRatioOneTwentyEight', f"{min(fr):.0f}")
         macro('nOpResolutionKnob', 'landed (Table~\\ref{tab:resolution})')
     else:
         macro('nOpResolutionKnob', gen('no-second res01, operator resolution knob', 'operator resolution knob'))

@@ -40,12 +40,11 @@ the condition under which it is a trade; the losses are reported as losses.
   (\S\ref{sec:exp:panel}, \S\ref{sec:exp:operators}).
 \item \textbf{The architectural choices that admit the control.} A bank that
   evaluates per node, so the cached reduced cost is flat while the mesh grows
-  $\nMeshBurgersUnknownGrowth\times$ (\S\ref{sec:exp:mesh}, measured); a
-  linear skip in the head, chosen so that the decoder Jacobian keeps a
-  latent-independent component for the cold start (\S\ref{sec:method:manifold},
-  a design choice we do not ablate); and the bank/head/correction split with
-  exact elimination of the corrections where the residual is linear
-  (\S\ref{sec:method:ladder}, measured).
+  $\nMeshBurgersUnknownGrowth\times$ (measured, \S\ref{sec:exp:mesh}); a linear
+  skip in the head so the cold start has a latent-independent descent direction
+  (a design choice, not ablated); and the bank/head/correction split with exact
+  elimination of the corrections where the residual is linear (measured,
+  \S\ref{sec:method:ladder}).
 \item \textbf{Where the control is not worth having.} Where the weak residual
   is nonlinear in the coefficients (Burgers) the corrections cost a growing
   nonlinear solve and the ladder is a trade. Where it is linear (Poisson, heat,

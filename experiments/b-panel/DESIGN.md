@@ -369,7 +369,7 @@ status honestly under the existing admissibility rule.
 
 `bpn201` (job 3783817, H200 on `pax008`, 240 GB, staged from `e330cca4`) exited 1 after 20m23s.
 Disk was checked first: paralab at 92 % with 396 GB free at job start and now, both log files
-non-empty, so not disk-full. Not memory either: the batch step's peak host RSS was 76 GB of 240,
+non-empty, so not disk-full. Not memory either: the batch step's peak host RSS was 76 023 968 K = 72.5 GiB of 240 GB,
 and the crash is a Python exception, verbatim from `logs/3783817.err`:
 
 ```
@@ -414,3 +414,9 @@ fit-state cap in `bpn301` once that size has been smoked.
 The `runs/bpn201/` staging copy is deleted locally with the remote directory; the retracted
 archive is `artifacts/bpn201-retracted/` (`FAILURE.json`, verbatim logs, scheduler record,
 partial `result.json`, the six transferred rule files, remote hashes).
+
+**Submitted.** `bpn202` = job **3787247** (H200, `--mem 240G`, staged from `494c3f48`, remote
+`b_panel_20260917/bpn202`, manifest verified remotely, one `bpn_` job in the queue before and
+after). The remote `bpn201` directory and its local staging copy are deleted; the retracted
+record is `artifacts/bpn201-retracted/`. The smoke that gated the fix: `checks/smoke-panel-a6.json`
+(baseline $1.4\times10^{-14}$, GATE5 override honoured, GATE6 the three cluster configs declare).

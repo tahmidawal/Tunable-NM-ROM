@@ -38,6 +38,7 @@ CHECKPOINT = 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N
 HOURS = '20:00:00'
 EXCLUDE = 'pax007'
 GPU = {'a100': '#SBATCH --gres=gpu:a100:1\n#SBATCH --constraint=a100-80G',
+       'a100any': '#SBATCH --gres=gpu:a100:1',
        'h100': '#SBATCH --gres=gpu:h100:1',
        'h200': '#SBATCH --gres=gpu:h200:1',
        'l40s': '#SBATCH --gres=gpu:l40s:1'}

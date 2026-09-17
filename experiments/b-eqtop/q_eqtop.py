@@ -463,11 +463,12 @@ def main():
             used.add(pick[2])
     for g in cfg['reproduction_arms']:              # qrg304's chosen rules at 128 and 256
         key = (g['q'], 'reachable', g['m'])
-        if key in archived and key not in used:
+        tag = ('archived', g['q'], 'reachable', g['m'])
+        if key in archived and tag not in used:
             rule, info = archived[key]
             add(g['name'], g['q'], 4 * (K + g['q']), 'eq', eq_data(4 * (K + g['q']), rule),
                 m=info['m'], rule_kind='archived:reachable', extra=extra_of(info, 'archived'))
-            used.add(key)
+            used.add(tag)
     for q in cfg['dense_twins']:
         add(f'q{q}_dense', q, 4 * (K + q), 'dense', dense_op[q], rule_kind='dense')
     assert len([s for s in subjects]) <= cfg['max_rom_arms'], len(subjects)

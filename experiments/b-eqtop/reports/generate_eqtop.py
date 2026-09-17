@@ -49,151 +49,265 @@ RULE_HDR = ['$q$', '$M$', 'source', 'arm', 'fit states', 'pool', '$m$', '$m$ tar
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--j1', required=True)
-    p.add_argument('--j2', default=None)
+    p.add_argument('--j1', default=None, help='the ladder job (bet101) audit')
+    p.add_argument('--j2', default=None, help='the rho-vs-m curve job (bet201) audit')
+    p.add_argument('--j3', default=None, help='the draw-replication job (bet301) audit')
     p.add_argument('--out', required=True)
     a = p.parse_args()
-    A = json.loads(Path(a.j1).read_text())
-    B = json.loads(Path(a.j2).read_text()) if a.j2 and Path(a.j2).exists() else None
-    bars = A['bars']
+    load = lambda p_: (json.loads(Path(p_).read_text()) if p_ and Path(p_).exists() else None)
+    A, B, C = load(a.j1), load(a.j2), load(a.j3)
+    assert B or A, 'at least one audit is required'
+    bars = (A or B)['bars']
+    jobs = [j for j in (A, B, C) if j]
     summary = []
 
     def row(**kw):
         summary.append(dict(kw))
 
     md = []
-    v = A['verdict']
-    lad = A['ladders']
-    md.append(f"# b-eqtop — {'every rung of the EQ ladder is primary-certified' if v['every_rung_primary_certified'] else 'the top rungs are not all certifiable at m ≤ 6144'}; the primary ladder is {'monotone' if v['primary_ladder_monotone_evolved'] else 'NOT monotone'} on the evolved metric\n")
-    md.append(f"Final numbers from job `{A['job_id']}` (attempt `{A['attempt']}`, `{A['gpu']}`, source `{A['commit']}`, elapsed {f(A['elapsed_seconds'], 0)} s; fit phase {f(A['fit_phase_seconds'], 0)} s)"
-              + (f" and job `{B['job_id']}` (attempt `{B['attempt']}`, `{B['gpu']}`, source `{B['commit']}`, elapsed {f(B['elapsed_seconds'], 0)} s)" if B else '')
-              + ". Frozen Burgers checkpoint `18f0266ae6f0…` at 256 intervals, six opened development cases, budget-600 block-damped variable projection, $M = 4(K+q)$. Pre-registered design: [`../DESIGN.md`](../DESIGN.md). Every number below is read from the audit JSONs.\n")
-    md.append(f"Failed blocking gates, job 1: **{', '.join(A['failed']) or 'none'}**" + (f"; job 2: **{', '.join(B['failed']) or 'none'}**" if B else '') + ".\n")
+    if A:
+        v, lad = A['verdict'], A['ladders']
+        title = ('every rung of the EQ ladder carries a primary-certified rule'
+                 if v['every_rung_primary_certified'] else
+                 f"rungs {v['rungs_without_primary_rule']} carry no primary-certified rule at $m \\le 6144$")
+        title += ('; the primary EQ ladder is monotone on the evolved metric'
+                  if v['primary_ladder_monotone_evolved'] else
+                  '; the primary EQ ladder still regresses on the evolved metric')
+    else:
+        v, lad = None, None
+        title = 'the rule-certification curve (the ladder job is not in this build)'
+    md.append(f'# b-eqtop — {title}\n')
+    md.append('Jobs: ' + '; '.join(
+        f"`{j['attempt']}` = {j['job_id']} ({j['question']}), `{j['gpu']}`, source `{j['commit']}`, "
+        f"elapsed {f(j['elapsed_seconds'], 0)} s" for j in jobs)
+        + ". Frozen Burgers checkpoint `18f0266ae6f0…` at 256 intervals, $K = 16$, $R = 512$, six opened "
+          "development cases, budget-600 block-damped variable projection, $M = 4(K+q)$, float64, "
+          "highest matmul precision, `jax_backend=gpu`. Pre-registered design and its amendments: "
+          "[`../DESIGN.md`](../DESIGN.md). Every number here is read from the audit JSONs by "
+          "`generate_eqtop.py`; none is typed.\n")
+    md.append('Failed blocking gates: ' + '; '.join(
+        f"{j['attempt']} **{', '.join(j['failed']) or 'none'}**" for j in jobs) + '.\n')
 
-    # ---- verdict block
-    md.append('## Verdict against the pre-registered criteria\n')
-    md.append(table(['criterion', 'holds', 'measured'], [
-        ['P1: primary-certified rule at every rung', yn(v['every_rung_primary_certified']),
-         f"rungs without one: {v['rungs_without_primary_rule'] or 'none'}"],
-        ['P2: primary ladder monotone on evolved times, all converged, EQ cheaper than dense',
-         yn(v['primary_ladder_passes']),
-         f"monotone {yn(v['primary_ladder_monotone_evolved'])}; converged {yn(lad['primary']['all_converged']) if lad['primary'] else '—'}; cheaper than dense {yn(lad['primary']['cheaper_than_dense_where_measured']) if lad['primary'] else '—'}"],
-        ['P3: tight ladder monotone on evolved times', yn(v['tight_ladder_monotone_evolved']),
-         f"rungs present: {lad['tight']['q'] if lad['tight'] else '—'}"],
-        ['hybrid ladder (certified EQ, dense where uncertified) monotone', yn(v['hybrid_ladder_monotone_evolved']),
-         f"quadrature per rung: {lad['hybrid']['quadrature'] if lad['hybrid'] else '—'}"],
-    ]))
-    t = v['top_rung']
-    md.append(f"Top rung $q = {t['q']}$: primary arm rule $m = {t['primary_rule']}$, $\\rho_{{\\max}} = {f(t['primary_rho_max'])}$, certified {yn(t['primary_certified'])}, evolved {f(t['evolved_percent'])} % against dense {f(t['dense_evolved_percent'])} %.\n")
-    md.append('Predicted $m$ for each bar at the top rung from the per-arm log–log law $\\rho_{\\max} \\propto m^{-\\alpha}$:\n')
-    md.append(table(['arm', '$m$ for primary (0.116)', '$m$ for tight (0.06)'],
-                    [[arm, f(d.get('primary'), 0), f(d.get('tight'), 0)] for arm, d in t['m_for_bar_by_arm'].items()]))
+    # ------------------------------------------------------------------ headline
+    if C and C.get('replication'):
+        md.append('> **Read the certification numbers with §"How much of $\\rho_{\\max}$ is the draw" first.** '
+                  'A rule is a sample from a construction: independent draws of the candidate pool and the '
+                  'fit-state subset move $\\rho_{\\max}$ enough to flip the verdict at the bar. Single-rule '
+                  'certifications below are reported as such, and the replication table gives the spread.\n')
 
-    # ---- ladders
-    md.append('## The rebuilt ladders (job 1, one allocation)\n')
-    for key in ('primary', 'tight', 'hybrid', 'dense'):
-        d = lad.get(key)
-        if not d:
-            continue
-        md.append(f"**{d['name']}** — monotone evolved: **{yn(d['monotone_evolved'])}**; monotone all-times: {yn(d['monotone_all_times'])}; every rung converged: {yn(d['all_converged'])}; every EQ rung cheaper than its dense twin: {yn(d['cheaper_than_dense_where_measured'])}; violations: {d['violations'] or 'none'}.\n")
+    if A:
+        md.append('## Verdict against the pre-registered criteria\n')
+        md.append(table(['criterion', 'holds', 'measured'], [
+            ['P1: a primary-certified rule at every rung', yn(v['every_rung_primary_certified']),
+             f"rungs without one: {v['rungs_without_primary_rule'] or 'none'}"],
+            ['P2: primary ladder monotone on evolved times, all converged, EQ cheaper than its dense twin',
+             yn(v['primary_ladder_passes']),
+             f"monotone {yn(v['primary_ladder_monotone_evolved'])}; converged "
+             f"{yn(lad['primary']['all_converged']) if lad['primary'] else '—'}; cheaper than dense "
+             f"{yn(lad['primary']['cheaper_than_dense_where_measured']) if lad['primary'] else '—'}"],
+            ['P3: tight ladder ($\\rho_{\\max} \\le %s$) monotone on evolved times' % bars['tight'],
+             yn(v['tight_ladder_monotone_evolved']),
+             f"rungs present: {lad['tight']['q'] if lad['tight'] else 'none'}"],
+            ['hybrid ladder (certified EQ where it exists, dense elsewhere) monotone',
+             yn(v['hybrid_ladder_monotone_evolved']),
+             f"quadrature per rung: {lad['hybrid']['quadrature'] if lad['hybrid'] else '—'}"],
+        ]))
+        t = v['top_rung']
+        md.append(f"Top rung $q = {t['q']}$: the chosen primary rule has $m = {t['primary_rule']}$, "
+                  f"$\\rho_{{\\max}} = {f(t['primary_rho_max'])}$, certified {yn(t['primary_certified'])}; "
+                  f"its evolved error is {f(t['evolved_percent'])} % against the same-job dense twin's "
+                  f"{f(t['dense_evolved_percent'])} %.\n")
+
+        # ---- ladders
+        md.append('## The rebuilt ladders (one allocation, three timed repetitions)\n')
+        for key in ('primary', 'tight', 'hybrid', 'dense'):
+            d = lad.get(key)
+            if not d:
+                continue
+            md.append(f"**{d['name']}** — monotone evolved: **{yn(d['monotone_evolved'])}**; monotone "
+                      f"all-times: {yn(d['monotone_all_times'])}; every rung converged: "
+                      f"{yn(d['all_converged'])}; every EQ rung cheaper than its dense twin: "
+                      f"{yn(d['cheaper_than_dense_where_measured'])}; violations: {d['violations'] or 'none'}.\n")
+            rows = []
+            for i, q in enumerate(d['q']):
+                rows.append([q, d['M'][i], d['quadrature'][i],
+                             d['m'][i] if d['m'][i] is not None else '—', f(d['rho_max'][i]),
+                             yn(d['certified_primary'][i]), yn(d['certified_tight'][i]),
+                             f(d['worst_evolved_percent'][i]), f(d['worst_all_times_percent'][i]),
+                             f(d['worst_t0_compression_percent'][i]), f(d['median_gpu_ms'][i], 1),
+                             f(d['cost_vs_dense_twin'][i], 3) if d['cost_vs_dense_twin'][i] is not None else '—',
+                             yn(d['converged'][i]), d['arms'][i]])
+                for metric, val in (('worst_evolved_percent', d['worst_evolved_percent'][i]),
+                                    ('worst_all_times_percent', d['worst_all_times_percent'][i]),
+                                    ('t0_compression_percent', d['worst_t0_compression_percent'][i]),
+                                    ('median_gpu_ms', d['median_gpu_ms'][i])):
+                    row(table='ladder', ladder=key, arm=d['arms'][i], q=q, m=d['m'][i],
+                        population=d['quadrature'][i], metric=metric, value=val,
+                        certified_primary=d['certified_primary'][i], certified_secondary=None,
+                        certified_tight=d['certified_tight'][i], rho_max=d['rho_max'][i],
+                        job_id=A['job_id'], source_sha=A['commit'])
+            md.append(table(['$q$', '$M$', 'quadrature', '$m$', '$\\rho_{\\max}$', 'primary', 'tight',
+                             'worst evolved %', 'worst all-times %', '$t=0$ compression %',
+                             'median GPU ms', 'cost / dense twin', 'converged', 'arm'], rows))
+
+        md.append('### Every timed arm and the same-job full-order controls\n')
         rows = []
-        for i, q in enumerate(d['q']):
-            rows.append([q, d['M'][i], d['quadrature'][i], d['m'][i] if d['m'][i] is not None else '—',
-                         f(d['rho_max'][i]), yn(d['certified_primary'][i]), yn(d['certified_tight'][i]),
-                         f(d['worst_evolved_percent'][i]), f(d['worst_all_times_percent'][i]),
-                         f(d['worst_t0_compression_percent'][i]), f(d['median_gpu_ms'][i], 1),
-                         f(d['cost_vs_dense_twin'][i], 3) if d['cost_vs_dense_twin'][i] is not None else '—',
-                         yn(d['converged'][i]), d['arms'][i]])
-            for metric, val in (('worst_evolved_percent', d['worst_evolved_percent'][i]),
-                                ('worst_all_times_percent', d['worst_all_times_percent'][i]),
-                                ('t0_compression_percent', d['worst_t0_compression_percent'][i]),
-                                ('median_gpu_ms', d['median_gpu_ms'][i])):
-                row(table='ladder', ladder=key, arm=d['arms'][i], q=q, m=d['m'][i],
-                    population=d['quadrature'][i], metric=metric, value=val,
-                    certified_primary=d['certified_primary'][i], certified_secondary=None,
-                    certified_tight=d['certified_tight'][i], rho_max=d['rho_max'][i],
-                    job_id=A['job_id'], source_sha=A['commit'])
-        md.append(table(['$q$', '$M$', 'quadrature', '$m$', '$\\rho_{\\max}$', 'primary', 'tight',
-                         'worst evolved %', 'worst all-times %', '$t=0$ compression %',
-                         'median GPU ms', 'cost / dense twin', 'converged', 'arm'], rows))
+        for x in A['arms']:
+            rows.append([x['arm'], x['q'] if x['q'] is not None else '—', x['M'] or '—', x['m'] or '—',
+                         x['quadrature'] or '—', f(x['rho_max']), yn(x['certified_primary']),
+                         yn(x['certified_tight']), f(x['worst_evolved_percent']),
+                         f(x['worst_all_times_percent']), f(x['worst_t0_compression_percent']),
+                         f(x['median_gpu_ms'], 1), f(x['median_iterations'], 1),
+                         x['total_budget_exits'] if x['total_budget_exits'] is not None else '—',
+                         sci(x['max_joint_stationarity']), yn(x['converged'])])
+            if x['family'] == 'fom':
+                for metric in ('worst_evolved_percent', 'worst_all_times_percent', 'median_gpu_ms'):
+                    row(table='controls', ladder=None, arm=x['arm'], q=None, m=None, population='fom',
+                        metric=metric, value=x[metric], certified_primary=None,
+                        certified_secondary=None, certified_tight=None, rho_max=None,
+                        job_id=A['job_id'], source_sha=A['commit'])
+        md.append(table(['arm', '$q$', '$M$', '$m$', 'quadrature', '$\\rho_{\\max}$', 'primary', 'tight',
+                         'worst evolved %', 'worst all-times %', '$t=0$ %', 'median GPU ms',
+                         'median iters', 'budget exits', 'worst joint gradient', 'converged'], rows))
+        md.append('### $\\rho$ against the evolved error at the top rung\n')
+        md.append('The question the bar exists to answer: does a lower $\\rho$ buy a lower field error?\n')
+        md.append(table(['arm', '$m$', '$\\rho_{\\max}$', '$\\rho_{95}$', 'worst evolved %', 'primary', 'tight'],
+                        [[x['arm'], x['m'], f(x['rho_max']), f(x['rho_p95']), f(x['evolved_percent']),
+                          yn(x['certified_primary']), yn(x['certified_tight'])]
+                         for x in v['top_rung_rho_vs_evolved']]))
 
-    # ---- every timed arm
-    md.append('### Every timed arm and the same-job full-order controls\n')
-    rows = []
-    for x in A['arms']:
-        rows.append([x['arm'], x['q'] if x['q'] is not None else '—', x['M'] or '—', x['m'] or '—',
-                     x['quadrature'] or '—', f(x['rho_max']), yn(x['certified_primary']), yn(x['certified_tight']),
-                     f(x['worst_evolved_percent']), f(x['worst_all_times_percent']),
-                     f(x['worst_t0_compression_percent']), f(x['median_gpu_ms'], 1),
-                     f(x['median_iterations'], 1), x['total_budget_exits'] if x['total_budget_exits'] is not None else '—',
-                     sci(x['max_joint_stationarity']), yn(x['converged'])])
-        if x['family'] == 'fom':
-            for metric in ('worst_evolved_percent', 'worst_all_times_percent', 'median_gpu_ms'):
-                row(table='controls', ladder=None, arm=x['arm'], q=None, m=None, population='fom',
-                    metric=metric, value=x[metric], certified_primary=None, certified_secondary=None,
-                    certified_tight=None, rho_max=None, job_id=A['job_id'], source_sha=A['commit'])
-    md.append(table(['arm', '$q$', '$M$', '$m$', 'quadrature', '$\\rho_{\\max}$', 'primary', 'tight',
-                     'worst evolved %', 'worst all-times %', '$t=0$ %', 'median GPU ms', 'median iters',
-                     'budget exits', 'worst joint gradient', 'converged'], rows))
-    md.append('### $\\rho$ against the evolved error at the top rung\n')
-    md.append(table(['arm', '$m$', '$\\rho_{\\max}$', '$\\rho_{95}$', 'worst evolved %', 'primary', 'tight'],
-                    [[x['arm'], x['m'], f(x['rho_max']), f(x['rho_p95']), f(x['evolved_percent']),
-                      yn(x['certified_primary']), yn(x['certified_tight'])] for x in v['top_rung_rho_vs_evolved']]))
+    # ------------------------------------------------------------- replication
+    if C and C.get('replication'):
+        md.append('## How much of $\\rho_{\\max}$ is the draw?\n')
+        md.append(f"Four independent draws of (candidate pool, fit-state subset) at fixed $(q, m, "
+                  f"\\text{{states}}, \\text{{scaling}})$, pre-registered in DESIGN §A2 after `{B['attempt'] if B else 'bet201'}` "
+                  f"showed two draws disagreeing by up to $2.3\\times$. Nothing else differs between the draws.\n")
+        rows = []
+        for x in C['replication']:
+            rows.append([x['q'], x['m_target'], x['fit_states'], x['scaling'], x['draws'],
+                         ', '.join(f(r) for r in x['rho_max']), f(x['rho_min']), f(x['rho_max_of_draws']),
+                         f(x['rho_mean']), f(x['rho_std']), f(x['spread_ratio'], 2),
+                         f"{x['certified_primary_count']}/{x['draws']}",
+                         f"{x['certified_tight_count']}/{x['draws']}"])
+            for metric, val in (('rho_mean', x['rho_mean']), ('rho_std', x['rho_std']),
+                                ('spread_ratio', x['spread_ratio']),
+                                ('certified_primary_fraction', x['certified_primary_count'] / x['draws'])):
+                row(table='replication', ladder=None, arm=x['key'], q=x['q'], m=x['m_target'],
+                    population='reachable', metric=metric, value=val, certified_primary=None,
+                    certified_secondary=None, certified_tight=None, rho_max=x['rho_mean'],
+                    job_id=C['job_id'], source_sha=C['commit'])
+        md.append(table(['$q$', '$m$ target', 'fit states', 'scaling', 'draws', 'each $\\rho_{\\max}$',
+                         'min', 'max', 'mean', 'sd', 'spread', 'certify primary', 'certify tight'], rows))
 
-    # ---- rules
+    # ------------------------------------------------------------------ rules
     md.append('## Every rule, its fit and its held-out $\\rho$\n')
-    md.append(f"Bars: primary $\\rho_{{\\max}} \\le {bars['primary']}$, tight $\\rho_{{\\max}} \\le {bars['tight']}$, secondary $\\rho_{{95}} \\le {bars['primary']}$; 512 held-out reachable states per rung from 8 certification trajectories disjoint from the 24 fit trajectories. **The NNLS relative fit never certifies a rule.** Source `qrg304` rows are the archived rules re-certified in this job.\n")
-    rows = rule_rows(A['rules'], A['job_id'])
-    if B:
-        rows += rule_rows(B['rules'], B['job_id'])
-    md.append(table(RULE_HDR, rows))
-    for job in ([A] + ([B] if B else [])):
-        for x in job['rules']:
+    md.append(f"Bars: primary $\\rho_{{\\max}} \\le {bars['primary']}$, tight $\\rho_{{\\max}} \\le {bars['tight']}$, "
+              f"secondary $\\rho_{{95}} \\le {bars['primary']}$. 512 held-out reachable states per rung, from 8 "
+              "certification trajectories disjoint from the 24 fit trajectories and from the six evaluation "
+              "cases. **A rule is never certified by its NNLS fit residual**, which is printed beside $\\rho$ so "
+              "the anti-correlation stays visible. `qrg304` rows are that job's archived rules re-certified here.\n")
+    rows = []
+    for j in jobs:
+        rows += rule_rows(j['rules'], j['job_id'])
+        for x in j['rules']:
             for metric, val in (('rho_max', x['rho_max']), ('rho_p95', x['rho_p95']),
                                 ('rho_median', x['rho_median']), ('relative_fit', x['relative_fit']),
                                 ('fit_seconds', x.get('fit_seconds'))):
                 row(table='rules', ladder=None, arm=x['arm'], q=x['q'], m=x['m'],
                     population=f"{x['source']}:{x['population']}", metric=metric, value=val,
-                    certified_primary=x['certified_primary'], certified_secondary=x['certified_secondary'],
+                    certified_primary=x['certified_primary'],
+                    certified_secondary=x['certified_secondary'],
                     certified_tight=x['certified_tight'], rho_max=x['rho_max'],
-                    job_id=job['job_id'], source_sha=job['commit'])
+                    job_id=j['job_id'], source_sha=j['commit'])
+    seen = set()
+    dedup = []
+    for r_ in rows:
+        k = tuple(r_[:8]) + (r_[-1],)
+        if k in seen:
+            continue
+        seen.add(k)
+        dedup.append(r_)
+    md.append(table(RULE_HDR, dedup))
 
-    # ---- laws
-    md.append('## The empirical law $\\rho_{\\max} \\propto m^{-\\alpha}$ per rung and arm\n')
+    # ---- the two construction effects, measured
+    if B:
+        md.append('### The two things that move $\\rho_{\\max}$ at fixed $m$\n')
+        R = B['rules']
+        rows = []
+        for q in sorted({x['q'] for x in R}):
+            for m in (1024, 2048):
+                old = [x for x in R if x['source'] == 'qrg304' and x['q'] == q
+                       and x['population'] == 'reachable' and x['m_target'] == m]
+                new = [x for x in R if x['source'] == 'this_job' and x['q'] == q
+                       and x['arm'] == 'std' and x['m_target'] == m]
+                if old and new:
+                    o, n = old[0], new[0]
+                    rows.append([q, m, o['fit_states'], f(o['rho_max']), yn(o['certified_primary']),
+                                 f(n['rho_max']), yn(n['certified_primary']),
+                                 f(n['rho_max'] / o['rho_max'], 2)])
+        md.append('**The draw.** The identical construction — same population, same fit-state count, same '
+                  'target $m$ — under `qrg304`\'s pool of 8192 and this lane\'s of 16384, which also '
+                  'changes the fit-state subset:\n')
+        md.append(table(['$q$', '$m$ target', 'fit states', '`qrg304` $\\rho_{\\max}$', 'certified',
+                         'this lane $\\rho_{\\max}$', 'certified', 'ratio'], rows))
+        rows = []
+        arms = sorted({x['arm'] for x in R if x['source'] == 'this_job'})
+        for q in sorted({x['q'] for x in R if x['source'] == 'this_job'}):
+            cells = []
+            for arm in arms:
+                xs = [x for x in R if x['source'] == 'this_job' and x['q'] == q
+                      and x['arm'] == arm and x['m_target'] == 2048]
+                cells.append(f"{f(xs[0]['rho_max'])} ($m$={xs[0]['m']}, {xs[0]['fit_states']} st.)"
+                             if xs else '—')
+            rows.append([q] + cells)
+        md.append('**The fit states and the row scaling**, at $m$ target 2048 in this lane\'s own job:\n')
+        md.append(table(['$q$'] + arms, rows))
+
+    # ------------------------------------------------------------------- laws
+    md.append('## The empirical law $\\rho_{\\max} \\propto m^{-\\alpha}$\n')
+    md.append('Fitted over each chain\'s untruncated points. **These slopes are fitted through the draw '
+              'noise measured above**, so the "$m$ for bar" columns are order-of-magnitude statements, not '
+              'predictions; where a chain certified, the cheapest certified $m$ is the measurement and the '
+              'law is not needed.\n')
     rows = []
-    for job in ([A] + ([B] if B else [])):
-        for l in job['laws']:
+    for j in jobs:
+        for l in j['laws']:
             fit = l['fit_rho_max'] or {}
             rows.append([l['q'], l['arm'], ', '.join(str(m) for m in l['m']),
-                         ', '.join(f(r) for r in l['rho_max']), f(fit.get('alpha')), fit.get('points', '—'),
-                         f(l['m_for_bar'].get('primary'), 0), f(l['m_for_bar'].get('tight'), 0),
-                         l['cheapest_certified_m'].get('primary') or '—', l['cheapest_certified_m'].get('tight') or '—',
-                         job['job_id']])
+                         ', '.join(f(r) for r in l['rho_max']), f(fit.get('alpha'), 3),
+                         fit.get('points', '—'), f(l['m_for_bar'].get('primary'), 0),
+                         f(l['m_for_bar'].get('tight'), 0),
+                         l['cheapest_certified_m'].get('primary') or '—',
+                         l['cheapest_certified_m'].get('tight') or '—', j['job_id']])
             row(table='laws', ladder=None, arm=l['arm'], q=l['q'], m=None, population='reachable',
-                metric='alpha', value=fit.get('alpha'), certified_primary=None, certified_secondary=None,
-                certified_tight=None, rho_max=None, job_id=job['job_id'], source_sha=job['commit'])
+                metric='alpha', value=fit.get('alpha'), certified_primary=None,
+                certified_secondary=None, certified_tight=None, rho_max=None,
+                job_id=j['job_id'], source_sha=j['commit'])
             for b_, val in l['m_for_bar'].items():
                 row(table='laws', ladder=None, arm=l['arm'], q=l['q'], m=None, population='reachable',
-                    metric=f'm_for_{b_}_bar_by_law', value=val, certified_primary=None, certified_secondary=None,
-                    certified_tight=None, rho_max=None, job_id=job['job_id'], source_sha=job['commit'])
+                    metric=f'm_for_{b_}_bar_by_law', value=val, certified_primary=None,
+                    certified_secondary=None, certified_tight=None, rho_max=None,
+                    job_id=j['job_id'], source_sha=j['commit'])
     md.append(table(['$q$', 'arm', '$m$ grid fitted', '$\\rho_{\\max}$ per $m$', '$\\alpha$', 'points',
-                     '$m$ for primary (law)', '$m$ for tight (law)', 'cheapest certified $m$ (primary)',
-                     'cheapest certified $m$ (tight)', 'job'], rows))
+                     '$m$ for primary (law)', '$m$ for tight (law)',
+                     'cheapest certified $m$ (primary)', 'cheapest certified $m$ (tight)', 'job'], rows))
     md.append('### Chains: how each (rung, arm) stopped\n')
+    md.append("`gradient` means the fitter found no remaining candidate that improves the fit — the "
+              "design, not the grid, caps $m$ there.\n")
     rows = []
-    for job in ([A] + ([B] if B else [])):
-        for k, c in (job['chains'] or {}).items():
-            rows.append([k, c['stop_reason'], c['rules_fitted'], c['certified'], job['job_id']])
+    for j in jobs:
+        for k, c in sorted((j['chains'] or {}).items()):
+            rows.append([k, c['stop_reason'], c['rules_fitted'], c['certified'], j['job_id']])
     md.append(table(['chain', 'stop reason', 'rules fitted', 'primary-certified', 'job'], rows))
 
-    # ---- gates
+    # ------------------------------------------------------------------ gates
     md.append('## Gates and cross-job fidelity\n')
-    for job in ([A] + ([B] if B else [])):
+    for j in jobs:
         rows = [[k, yn(c['passed']), 'informational' if c.get('blocking') is False else 'blocking']
-                for k, c in sorted(job['checks'].items())]
-        md.append(f"### {job['attempt']} (job {job['job_id']})\n")
+                for k, c in sorted(j['checks'].items())]
+        md.append(f"### {j['attempt']} (job {j['job_id']})\n")
         md.append(table(['gate', 'passed', 'kind'], rows))
-        fid = job.get('fidelity') or {}
+        fid = j.get('fidelity') or {}
         if fid:
             rows = []
             for arm, d_ in sorted(fid.items()):
@@ -202,8 +316,9 @@ def main():
                              sci((dd.get('worst_all_times_percent') or {}).get('relative_difference')),
                              sci((dd.get('worst_evolved_percent') or {}).get('relative_difference')),
                              yn(d_['passed'])])
-            md.append(table(['arm', 'qrg304 comparator', 'tolerance', 'rel. diff (all-times)',
+            md.append(table(['arm', '`qrg304` comparator', 'tolerance', 'rel. diff (all-times)',
                              'rel. diff (evolved)', 'passed'], rows))
+
 
     md.append('## Glossary\n')
     md.append('\n'.join([

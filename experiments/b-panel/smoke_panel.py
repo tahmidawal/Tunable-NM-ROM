@@ -58,10 +58,10 @@ def main():
     t_all = time.perf_counter()
     out_json = Path(sys.argv[1])
     scratch = Path(os.environ.get('SMOKE_SCRATCH', str(HERE / 'runs/smoke')))
-    if scratch.exists():
+    if scratch.exists() and os.environ.get('SMOKE_REUSE') != '1':
         shutil.rmtree(scratch)
     inputs = scratch / 'inputs'
-    (inputs / 'rules').mkdir(parents=True)
+    (inputs / 'rules').mkdir(parents=True, exist_ok=True)
     shutil.copy2(HERE / 'inputs/directions_qtd02.npz', inputs / 'directions_qtd02.npz')
     real_prov = json.loads((HERE / 'inputs/PROVENANCE.json').read_text())
     out = {}
@@ -123,11 +123,14 @@ def main():
     for tag, cfgname in (('smoke64', 'config-smoke64.json'), ('smoke128', 'config-smoke128.json')):
         od = scratch / tag / 'output'
         t0 = time.perf_counter()
-        subprocess.run([PY, str(HERE / 'panel.py'), '--config', str(HERE / cfgname), '--checkpoint', str(CK),
+        reuse = os.environ.get('SMOKE_REUSE') == '1' and (od / 'COMPLETE').exists()
+        if not reuse:
+            subprocess.run([PY, str(HERE / 'panel.py'), '--config', str(HERE / cfgname), '--checkpoint', str(CK),
                         '--inputs', str(inputs), '--out', str(od)], check=True, env=env)
         res = json.loads((od / 'result.json').read_text())
+        assert np.allclose(np.asarray(res['physical_cases'][0]), np.asarray(raw['physical_cases'][0]), rtol=0, atol=1e-15), 'case 0 is not the fixture case'
         assert res['complete'] and not res['dropped'], (tag, res['dropped'])
-        runs[tag] = dict(seconds=time.perf_counter() - t0, subjects=res['timed_subjects'],
+        runs[tag] = dict(seconds=time.perf_counter() - t0, reused_existing_output=bool(reuse), subjects=res['timed_subjects'],
                          gates={k: v.get('passed') for k, v in res['gates'].items()})
         print('DRIVER', tag, round(runs[tag]['seconds'], 1), len(res['timed_subjects']), 'subjects', flush=True)
         au = scratch / tag / 'audit.json'

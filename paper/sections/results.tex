@@ -204,7 +204,24 @@ On Burgers, in the panel job, the free bank and POD-512 are comparable as
 banks ($\nPanelFreeAll\,\%$ against $\nPanelPodFiveTwelveAll\,\%$ on the
 all-times metric). The exact elimination is a property of the linear residual; the size of the
 collapse is at least as much a property of these banks. No reduced arm beats
-the direct solve on any of the three. \textbf{On the L-shaped domain the trade does exist.} No fast transform applies
+the direct solve on any of the three.
+
+\textbf{Navier--Stokes collapses for a different reason.} On 2D incompressible
+flow (vorticity--streamfunction, a nonlinear residual) the family was gated
+before any ladder ran (Table~\ref{tab:ns}): with a full-rank $R=256$ bank whose
+floor matches POD-256 ($\nNsBankWorst$ against $\nNsPodTwoFiftySixWorst\,\%$
+worst), the $K=16$ head's held-out oracle reaches $\nNsOracleMedian\,\%$ median
+against POD-16's $\nNsPodSixteenMedian\,\%$, a ratio of $\nNsOracleRatio$ where
+the pre-registered bar was $\nNsOracleBar$, so no ladder was built. The limit is
+head generalisation: training reconstruction improved
+$\nNsTrainImprovement\times$ over the rank-capped predecessor while the held-out
+oracle did not move, the held-out/training gap is $\nNsHeldoutOverTrain\times$,
+and the head beats POD-16 by $\nNsPodOverOracleTzero\times$ at $t=0$ but only
+$\nNsPodOverOracleEvolved\times$ on evolved states, which depend on fourteen
+parameters that 512 trajectories sample sparsely. So the correction-rank trade
+needs \emph{both} a residual nonlinear in the coefficients and a manifold that
+beats POD held-out; Poisson, heat and waves lack the first, this cell the
+second, and Burgers on the square had both yet still lost on cost. \textbf{On the L-shaped domain the trade does exist.} No fast transform applies
 there, so the full-order comparator is a sparse direct solve whose cost grows
 with the mesh ($\nLshapeSpluMsSixtyFour$, $\nLshapeSpluMsOneTwentyEight$,
 $\nLshapeSpluMsTwoFiftySix$\,ms at $64^2$, $128^2$, $256^2$) while the reduced

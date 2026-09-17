@@ -55,7 +55,7 @@ the intro, related work, setup, limitations and conclusion.
 |---|---|
 | T5 at 1024² | b-panel **bpn203, job 3789572** (H200, running). Earlier attempts retracted: bpn201/3783817 config-parsing bug, bpn202/3787247 OOM in an untimed diagnostic — both listed in the retracted-attempts table, not deleted |
 | T12 seeds, T13 sealed cohort, seeds status, T2 seeds row | b-seeds |
-| NS reduced model | ns2d phases 2–3 |
+| NS K=32 arm | ns2d ns204, job 3787320 (the K=16 arm CLOSED as a pre-registered negative: H-ORACLE ratio 1.19 vs bar 2.0, job 3787319; phase 3 never submitted; T11e generated; ns202/3783797 retracted and listed in T02b) |
 
 Also running: b-panel **bpn301, job 3789570**, the 256² re-run carrying both quadrature rule
 sets (it will put the certified-EQ cheap arm beside the dense ladder in one allocation), and the

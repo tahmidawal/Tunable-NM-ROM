@@ -84,11 +84,13 @@ RETRACTED_ATTEMPTS = [
     ('p-linear', 'plin1024', '3780691', 'Poisson $1024^2$ ladder', 'GPU out of memory in the untimed best-found oracle; rerun on an H200'),
     ('w-ladder', 'wl256b', '3780448', 'wave $256^2$ ladder', 'retained-value gate failed on a tie-breaking difference; rerun as wl256c'),
     ('no-second', 'pois01', '3780224', 'Poisson U-Net screen', 'stager omitted a config directory; no training ran; rerun as pois02'),
+    ('ns2d', 'ns202', '3783797', 'Navier--Stokes $K=32$ head', 'pre-\\S A4 attempt on a rank-capped bank; superseded by ns204'),
 ]
 IN_FLIGHT = [
     ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel (H200)'),
     ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets'),
     ('lshape', '3789568', '3789568', 'L-shape solve at $512^2$'),
+    ('ns2d', 'ns204', '3787320', 'Navier--Stokes $K=32$ head on the full-rank bank (phase-2 gate only)'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
 ]
 
@@ -1397,12 +1399,66 @@ def build_pending():
         macro('nSeedsStatus', gen('b-seeds', 'seeds'))
     n = load('ns2d_summary')
     if n:
-        gates = [r for r in n if r.get('gate')]
-        passed = sum(1 for r in gates if r['passed']); macro('nNsGatesPassed', f'{passed} of {len(gates)}')
-        fails = sorted({r['gate'] for r in gates if not r['passed']})
-        macro('nNsGatesFailed', tex_escape(', '.join(fails)) if fails else 'none')
-        macro('provNsJob', n[0]['job_id'])
-    macro('nNsRom', gen('ns2d phases 2--3', 'NS ROM'))
+        n = n['rows'] if isinstance(n, dict) else n
+        macro('provNsFomJob', n[0]['job_id'])
+        NS_JOB = '3787319'                       # ns203: K=16, R=256, full-rank bank; the phase-2 verdict job
+        P2 = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS_JOB:
+                P2[(r['subject'], r['gate'], r['mesh'])][r['metric']] = (r['value'], r['passed'])
+        def v(sub, gate, mesh, metric):
+            return P2.get((sub, gate, mesh), {}).get(metric, (None, None))
+        m256 = 256
+        macro('provNsJob', NS_JOB)
+        # gates at 256^2 (the same at 64^2 and 128^2; printed per mesh in the table)
+        orc, orc_ok = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.oracle_median')
+        pod, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.podK_median')
+        single, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.single_start_median')
+        bfl, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.bank_floor_median')
+        macro('nNsOracleMedian', pct(100 * orc)); macro('nNsPodSixteenMedian', pct(100 * pod))
+        macro('nNsOracleRatio', f"{pod / orc:.2f}"); macro('nNsOracleBar', '2.0')
+        macro('nNsOraclePass', yn(orc_ok))
+        macro('nNsSingleStartMedian', pct(100 * single)); macro('nNsSingleOverOracle', f"{single / orc:.2f}")
+        macro('nNsBankFloorMedian', pct(100 * bfl))
+        t0, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle_by_time.podK_over_oracle.t0')
+        ev, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle_by_time.podK_over_oracle.evolved')
+        macro('nNsPodOverOracleTzero', f"{t0:.2f}"); macro('nNsPodOverOracleEvolved', f"{ev:.2f}")
+        macro('nNsOracleTzero', pct(100 * v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle_by_time.oracle.median_t0')[0]))
+        macro('nNsPodTzero', pct(100 * v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle_by_time.POD-16.median_t0')[0]))
+        bw, _ = v('bank_256', 'B-FLOOR_N256', m256, 'floor.worst_evolved_fixed'); pw, _ = v('pod_256', 'B-FLOOR_N256', m256, 'floor.worst_evolved_fixed')
+        macro('nNsBankWorst', pct(100 * bw)); macro('nNsPodTwoFiftySixWorst', pct(100 * pw)); macro('nNsBankOverPod', f"{bw / pw:.2f}")
+        bm, _ = v('bank_256', 'B-FLOOR_N256', m256, 'floor.median_case_worst_fixed'); pm, _ = v('pod_256', 'B-FLOOR_N256', m256, 'floor.median_case_worst_fixed')
+        macro('nNsBankMedian', pct(100 * bm)); macro('nNsPodTwoFiftySixMedian', pct(100 * pm))
+        rank, _ = v('bank_R256', 'B-ORTH_N256', m256, 'rank'); macro('nNsBankRank', str(int(rank)) if rank is not None else '---')
+        tr, _ = v('head_K16_R256', 'H-TRAIN', m256, 'training.recon_rel_l2_median'); macro('nNsTrainRecon', pct(100 * tr))
+        gap, _ = v('head_K16_R256', 'H-ORACLE', m256, 'heldout_oracle_over_training_recon_median'); macro('nNsHeldoutOverTrain', f"{gap:.1f}")
+        # the rank-capped predecessor ns201 is job 3783796; same metric names, keyed by job id
+        PREV = {}
+        for r in n:
+            if str(r.get('job_id')) == '3783796' and r.get('mesh') == m256:
+                PREV[(r['subject'], r['gate'], r['metric'])] = r['value']
+        ptr = PREV.get(('head_K16_R256', 'H-TRAIN', 'training.recon_rel_l2_median'))
+        por = PREV.get(('head_K16_R256', 'H-ORACLE_N256', 'oracle.oracle_median'))
+        prk = PREV.get(('bank_R256', 'B-ORTH_N256', 'rank'))
+        macro('provNsPrevJob', '3783796')
+        macro('nNsPrevTrainRecon', pct(100 * ptr) if ptr is not None else '---')
+        macro('nNsPrevOracleMedian', pct(100 * por) if por is not None else '---')
+        macro('nNsPrevRank', str(int(prk)) if prk is not None else '---')
+        macro('nNsTrainImprovement', f"{ptr / tr:.1f}" if (ptr and tr) else '---')
+        macro('nNsOracleChange', f"{100 * (orc - por):+.2f}" if (por is not None and orc is not None) else '---')
+        # the gate table: phase-2 gates per mesh
+        gt = []
+        for mesh in (64, 128, 256):
+            o, ok = v('head_K16_R256', f'H-ORACLE_N{mesh}', mesh, 'oracle.oracle_median'); p, _ = v('head_K16_R256', f'H-ORACLE_N{mesh}', mesh, 'oracle.podK_median')
+            b, bok = v('bank_256', f'B-FLOOR_N{mesh}', mesh, 'floor.worst_evolved_fixed'); pp, _ = v('pod_256', f'B-FLOOR_N{mesh}', mesh, 'floor.worst_evolved_fixed')
+            rk, rok = v('bank_R256', f'B-ORTH_N{mesh}', mesh, 'rank')
+            gt.append([f'${mesh}^2$', str(int(rk)) if rk is not None else '---', yn(rok), pct(100 * b), pct(100 * pp), yn(bok),
+                       pct(100 * o), pct(100 * p), f"{p / o:.2f}", yn(ok)])
+        write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-256 worst \\%', 'B-FLOOR',
+                                      'oracle median \\%', 'POD-16 median \\%', 'POD-16 / oracle', 'H-ORACLE ($\\ge$2.0)'],
+                                     gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, job {NS_JOB} (K=16, R=256, full-rank bank); every gate passes except H-ORACLE')
+        macro('nNsRom', 'not run: the pre-registered gate to it failed (\\S\\ref{sec:exp:linear})')
+    macro('nNsKthirtyTwo', gen('ns2d ns204 (job 3787320), K=32 with the full-rank bank', 'NS K=32 arm'))
 
 
 # =========================================================================== T1 / T2

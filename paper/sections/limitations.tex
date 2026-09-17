@@ -8,8 +8,8 @@ evaluation are running, and that lane amended its fidelity gate from $10^{-9}$
 to $10^{-3}$ relative before reading any of its numbers.
 \textbf{Development cohort}: six opened Burgers cases (32 held-out for the
 tuning study), eight wave and twelve Poisson.
-\textbf{2D only}; Navier--Stokes has a certified full-order solver but no
-reduced model.
+\textbf{2D only}; Navier--Stokes has a certified full-order solver but its
+reduced model failed its pre-registered gate at $K=16$ (\S\ref{sec:exp:linear}).
 \textbf{No cold-start comparison against a shallow masked-autoencoder ROM}; the
 classical comparison is POD-LSPG through our own solver, and the linear skip is
 a design choice, not ablated. \textbf{No theory}: no convergence guarantee, no
@@ -27,4 +27,5 @@ after the crossed grid ran and the $M=256$ ladder fails the same bar.
 
 \paragraph{Pending cells.} Not in this draft, and no result sentence depends on
 them: the $1024^2$ panel (\nPanelTenTwentyFour); seeds and the sealed cohort
-(\nSeedsStatus); the L-shape solve at $512^2$; Navier--Stokes (\nNsRom).
+(\nSeedsStatus); the L-shape solve at $512^2$; the Navier--Stokes $K=32$ arm
+(\nNsKthirtyTwo).

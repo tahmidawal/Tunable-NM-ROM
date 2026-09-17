@@ -367,6 +367,18 @@ is measured below baseline.}
 
 \begin{table}[h]
 \centering
+\caption{Navier--Stokes 2D, phase-2 gates on the $K=16$ head over the full-rank
+$R=256$ bank (job \provNsJob, A100; full-order solver and dataset certified in
+job \provNsFomJob). Every gate passes except the held-out oracle, whose
+pre-registered bar was a $2.0\times$ margin over POD at matched dimension; the
+ladder and timing were therefore never run. The $K=32$ arm on the same bank
+(ns204) is pending.}
+\label{tab:ns}
+\input{tables/T11e_ns}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{L-shaped Poisson, solve layer at $M=257$ (jobs
 \provLshapeSolveJobs, one per mesh): the non-dominated set on (complete-query
 ms, worst same-grid error) at each mesh, over every reduced and full-order

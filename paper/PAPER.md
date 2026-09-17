@@ -664,12 +664,29 @@ On Burgers, in the panel job, the free bank and POD-512 are comparable as
 banks ($0.6027 %$ against $0.6125 %$ on the
 all-times metric). The exact elimination is a property of the linear residual; the size of the
 collapse is at least as much a property of these banks. No reduced arm beats
-the direct solve on any of the three. **On the L-shaped domain the trade does exist.** No fast transform applies
+the direct solve on any of the three.
+
+**Navier–Stokes collapses for a different reason.** On 2D incompressible
+flow (vorticity–streamfunction, a nonlinear residual) the family was gated
+before any ladder ran (Table 34): with a full-rank $R=256$ bank whose
+floor matches POD-256 ($14.0838$ against $13.0322 %$
+worst), the $K=16$ head's held-out oracle reaches $20.2417 %$ median
+against POD-16's $24.0219 %$, a ratio of $1.19$ where
+the pre-registered bar was $2.0$, so no ladder was built. The limit is
+head generalisation: training reconstruction improved
+$4.1\times$ over the rank-capped predecessor while the held-out
+oracle did not move, the held-out/training gap is $4.0\times$,
+and the head beats POD-16 by $1.63\times$ at $t=0$ but only
+$1.19\times$ on evolved states, which depend on fourteen
+parameters that 512 trajectories sample sparsely. So the correction-rank trade
+needs *both* a residual nonlinear in the coefficients and a manifold that
+beats POD held-out; Poisson, heat and waves lack the first, this cell the
+second, and Burgers on the square had both yet still lost on cost. **On the L-shaped domain the trade does exist.** No fast transform applies
 there, so the full-order comparator is a sparse direct solve whose cost grows
 with the mesh ($1.28$, $2.48$,
 $8.39$ ms at $64^2$, $128^2$, $256^2$) while the reduced
 arms stay nearly flat, so the crossover falls between $128^2$ and $256^2$
-(Table 34): at $64^2$ the direct solve dominates everything;
+(Table 35): at $64^2$ the direct solve dominates everything;
 at $128^2$ the only reduced members of the non-dominated set are POD rungs
 $1.08–1.19\times$ cheaper at
 $7.7–34.6 %$ error, which is cheapness, not a
@@ -683,9 +700,9 @@ and it is exact to round-off—and it is the mesh-flat reduced query of
 §5.5 paying on the one domain without a fast transform. In a separate job at $M=1024$, whose costs are not comparable with those above,
 the free rung $q=R$ is the one place the learned bank beats the linear baseline
 on both axes, at $1.003\times$ its own bank floor with no solver
-iterations (Table 35). Every L-shape error quoted is the optimistic end of a range: worst best-found is
+iterations (Table 36). Every L-shape error quoted is the optimistic end of a range: worst best-found is
 $6.8 %$ on 32 development sources against
-$16.7 %$ on 461 validation sources. Bank and head layers are as before (Table 36): floor
+$16.7 %$ on 461 validation sources. Bank and head layers are as before (Table 37): floor
 $0.6650 %$, corner enrichment buying only
 $1.067\times$, every head
 $2.24$–$5.77\times$ above it.
@@ -740,8 +757,8 @@ evaluation are running, and that lane amended its fidelity gate from $10^{-9}$
 to $10^{-3}$ relative before reading any of its numbers.
 **Development cohort**: six opened Burgers cases (32 held-out for the
 tuning study), eight wave and twelve Poisson.
-**2D only**; Navier–Stokes has a certified full-order solver but no
-reduced model.
+**2D only**; Navier–Stokes has a certified full-order solver but its
+reduced model failed its pre-registered gate at $K=16$ (§5.6).
 **No cold-start comparison against a shallow masked-autoencoder ROM**; the
 classical comparison is POD-LSPG through our own solver, and the linear skip is
 a design choice, not ablated. **No theory**: no convergence guarantee, no
@@ -759,7 +776,8 @@ after the crossed grid ran and the $M=256$ ladder fails the same bar.
 
 **Pending cells.** Not in this draft, and no result sentence depends on
 them: the $1024^2$ panel (**[PENDING: b-panel 1024$^2$ (bpn203, job 3789572)]**); seeds and the sealed cohort
-(**[PENDING: b-seeds]**); the L-shape solve at $512^2$; Navier–Stokes (**[PENDING: ns2d phases 2–3]**).
+(**[PENDING: b-seeds]**); the L-shape solve at $512^2$; the Navier–Stokes $K=32$ arm
+(**[PENDING: ns2d ns204 (job 3787320), K=32 with the full-rank bank]**).
 
 ## 7 Conclusion
 
@@ -1068,6 +1086,7 @@ absent.
 | p-linear | `plin1024` | `3780691` | Poisson $1024^2$ ladder | GPU out of memory in the untimed best-found oracle; rerun on an H200 |
 | w-ladder | `wl256b` | `3780448` | wave $256^2$ ladder | retained-value gate failed on a tie-breaking difference; rerun as wl256c |
 | no-second | `pois01` | `3780224` | Poisson U-Net screen | stager omitted a config directory; no training ran; rerun as pois02 |
+| ns2d | `ns202` | `3783797` | Navier–Stokes $K=32$ head | pre-\S A4 attempt on a rank-capped bank; superseded by ns204 |
 
 **Table 3.** Attempts in flight when this version was prepared; the cells they fill are marked
 pending in §6.
@@ -1078,6 +1097,7 @@ pending in §6.
 | b-panel | `bpn203` | `3789572` | $1024^2$ same-allocation panel (H200) |
 | b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets |
 | lshape | `3789568` | `3789568` | L-shape solve at $512^2$ |
+| ns2d | `ns204` | `3787320` | Navier–Stokes $K=32$ head on the full-rank bank (phase-2 gate only) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 
 ## D Full tables
@@ -1825,7 +1845,21 @@ is measured below baseline.
 | selected: 2048 traj., $K{=}32$, weak term | 32 | 0.3918 | 2.8289 | 3.1275 | 3.1275 | 55.1 | yes |
 | joint bank$+$head, $R{=}512$ | 32 | 2.8517 | 5.0383 | 5.0471 | 2.4399 | 46.3 | yes |
 
-**Table 34.** L-shaped Poisson, solve layer at $M=257$ (jobs
+**Table 34.** Navier–Stokes 2D, phase-2 gates on the $K=16$ head over the full-rank
+$R=256$ bank (job 3787319, A100; full-order solver and dataset certified in
+job 3780151). Every gate passes except the held-out oracle, whose
+pre-registered bar was a $2.0\times$ margin over POD at matched dimension; the
+ladder and timing were therefore never run. The $K=32$ arm on the same bank
+(ns204) is pending.
+
+<!-- table: T11e_ns -->
+| mesh | bank rank | B-ORTH | bank worst % | POD-256 worst % | B-FLOOR | oracle median % | POD-16 median % | POD-16 / oracle | H-ORACLE ($\ge$2.0) |
+|---|---|---|---|---|---|---|---|---|---|
+| $64^2$ | 256 | yes | 14.0487 | 13.0669 | yes | 20.3442 | 24.1747 | 1.19 | no |
+| $128^2$ | 256 | yes | 14.0932 | 13.0156 | yes | 20.2574 | 24.0400 | 1.19 | no |
+| $256^2$ | 256 | yes | 14.0838 | 13.0322 | yes | 20.2417 | 24.0219 | 1.19 | no |
+
+**Table 35.** L-shaped Poisson, solve layer at $M=257$ (jobs
 3784662, 3784663, one per mesh): the non-dominated set on (complete-query
 ms, worst same-grid error) at each mesh, over every reduced and full-order
 subject. The sparse direct solve is exact to round-off; the $512^2$ job is
@@ -1849,8 +1883,8 @@ gate now takes the larger of the two bounds, which changes no mesh already run.
 | $256^2$ | head $q{=}64$ (head_sdf_R512_K16) | neural+linear | 2.1305 | 3.028 |
 | $256^2$ | sparse direct (SuperLU) | fom | 0.0000 | 8.386 |
 
-**Table 35.** L-shaped Poisson, free rung at $M=1024$ (job 3784910).
-**These costs are not comparable with Table 34**: the
+**Table 36.** L-shaped Poisson, free rung at $M=1024$ (job 3784910).
+**These costs are not comparable with Table 35**: the
 dense projection is charged inside every reduced query here. Non-dominated set
 only.
 
@@ -1863,9 +1897,9 @@ only.
 | free rung $q{=}R$ (head_sdf_R512_K16) | free | 0.7791 | 2.583 |
 | sparse direct (SuperLU) | fom | 0.0000 | 8.351 |
 
-**Table 36.** L-shaped Poisson (job 3784662, NVIDIA A100 80GB PCIe): bank floors
+**Table 37.** L-shaped Poisson (job 3784662, NVIDIA A100 80GB PCIe): bank floors
 by boundary factor and rank, and the head layer at $256^2$. The solve layer is
-landed at $64^2$–$256^2$ (Table 34); $512^2$ pending{}.
+landed at $64^2$–$256^2$ (Table 35); $512^2$ pending{}.
 
 <!-- table: T18a_lshape_bank -->
 | bank | floor, dev. $256^2$ % | floor, dev. $512^2$ % | floor, common $256^2$ % |

@@ -4,4 +4,5 @@
 | b-panel | `bpn203` | `3789572` | $1024^2$ same-allocation panel (H200) |
 | b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets |
 | lshape | `3789568` | `3789568` | L-shape solve at $512^2$ |
+| ns2d | `ns204` | `3787320` | Navier–Stokes $K=32$ head on the full-rank bank (phase-2 gate only) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |

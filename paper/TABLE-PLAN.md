@@ -24,7 +24,7 @@ in flight. `failed` = job failed, diagnosis or resubmission pending. `not run` =
 | T8 | Solver knobs at a fixed checkpoint: cap, tolerance, quadrature count, cold start | fxe8 F7/F8, 5mgh M11 | inherited | done |
 | T9 | Quadrature rule certification: NNLS fit versus held-out error on reachable states, per rung | R7, 5mgh M8/M9 | b-eqtop | running — top rungs certify once the fit-state count is raised; draw-replication in flight |
 | T10 | Mesh ladder, frozen checkpoint, 64 → 1024 | R2, sub-cubic scaling | inherited (mesh-ladder) | done |
-| T11 | Where the family collapses: Poisson ladder with POD and the direct solve; heat linear bank; wave | R14, GwrW G5 | p-linear, w-ladder | Poisson 256² done, 1024² rerunning; wave 64²/1024² done, 256² rerunning |
+| T11 | Where the family collapses: Poisson ladder with POD and the direct solve; heat linear bank; wave; **Navier–Stokes phase-2 gate (T11e)** | R14, GwrW G5 | p-linear, w-ladder, ns2d | Poisson 256²/1024² done; wave 64²/256²/1024² done; heat from the 2026-09-10 cell; **NS: K=16 fails the pre-registered held-out oracle bar (1.19× vs 2.0), phase 3 not submitted, reported as a negative; ns204 (K=32) pending** |
 | T12 | Seeds: per-rung mean and spread over three training seeds, monotone-seed count | R6 | b-seeds | running (three trainings) |
 | T13 | Sealed cohort: development versus sealed worst error per rung, difficulty-normalised | R6, pre-registration | b-seeds | pending the seed jobs |
 | T14 | Neural operators on shared data: FNO, U-Net, Transolver capacities, matched cohort against the ROM and the full-order solver | R3, 5mgh M1 | no-second | **done** — U-Net and Transolver beat the ROM; accuracy claim withdrawn |

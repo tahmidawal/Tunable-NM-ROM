@@ -47,3 +47,15 @@ Still a written self-audit (Codex quota-blocked until 2026-09-19 11:33). Mechani
 **Open after this addendum.** Whether K=32 (`ns204`, job 3787320) also fails H-ORACLE with a
 full-rank bank; whether a lower-dimensional family or more trajectories would close the 4.0×
 held-out/training gap (a new pre-registration, not done).
+
+## Addendum 2 — `ns204` (job 3787320, K=32, R=512, 2R bank)
+
+Written self-audit; mechanical check `artifacts/ns204/audit.json` (67 checks, **all match**).
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 18 | rank 512 = R at every mesh, κ(R_b)=141; B-RANKCAP/B-ORTH pass | `gates.B-ORTH_N{64,128,256}.rank`, `.cond_Rb` | audit recomputes the NumPy bank and its SVD rank: 512 at all three meshes | verified |
+| 19 | H-ORACLE FAILS: oracle median 0.1218/0.1211/0.1209 vs POD-32 0.1407/0.1396/0.1395, ratio 1.15 (bar 2.0) | `oracle.{N}.oracle_median`, `.podK_median`, `gates.H-ORACLE_N{N}` | audit recomputes ‖G h(z) − u‖/n₀ at the saved codes on the 48 archived states and the pass rule; matches to 1e-9 | verified — pre-registered negative (§A7) |
+| 20 | B-DATA passes by hash at all meshes on `pax049` — the node whose 256² hash mismatched in `ns201` | `gates.B-DATA_*` | read from the JSON; §A4's value path was not exercised; the earlier `ns201` mismatch on this node is therefore not reproduced and remains unexplained (claim 6 stays open) | verified (hash) |
+| 21 | Held-out / training = 3.2 (0.1209 vs 0.0376); POD-32 / oracle = 0.82 at t=0 and 1.16 on evolved times | `training.recon_rel_l2_median`; `oracle.256.per_state_{oracle,podK}` (64 cases × 6 times) | `generate_ns2d.py` computes from the per-state lists; audit checks lists equal the npz arrays | verified on the held-out side; the training median is the driver's own number |
+| 22 | The oracle fit is converged: LM median 65 {'0': 18, '4': 366} | `oracle.256.oracle_iters_median`, `.oracle_reasons` | read from the JSON, not recomputed | reported |

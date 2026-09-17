@@ -1,0 +1,8 @@
+Rule-7 baseline reproduction (2026-09-17, local GB10, slot helper, CPU scipy):
+stk2d_common.solve_stokes manufactured-solution errors vs archived
+experiments/separable-decoder/runs/stk2d/stk2d_fom_gates_nu1_M64.json S_FOM rows.
+N=8:  u 5.302928754551e-02 (rel dev 0.00e+00)  p 2.617215297703e-02 (3.98e-16)
+N=16: u 1.295074672188e-02 (0.00e+00)          p 6.454542799558e-03 (1.34e-16)
+N=32: u 3.218964440079e-03 (0.00e+00)          p 1.608189084015e-03 (2.70e-16)
+N=64: u 8.035776793740e-04 (0.00e+00)          p 4.017081548549e-04 (2.43e-15)
+WORST_REL_DEV 2.429e-15 PASS (bar 1e-9). Script: runs/baseline_smoke.py

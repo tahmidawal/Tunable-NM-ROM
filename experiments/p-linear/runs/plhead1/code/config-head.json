@@ -1,0 +1,52 @@
+{
+  "attempt": "plhead1",
+  "bank_checkpoint": "checkpoints/bankarm_head.pkl",
+  "primary_checkpoint": "checkpoints/primary_K32.pkl",
+  "train_seed": 0,
+  "split_seed": 20260916,
+  "validation_fraction": 0.15,
+  "eval_seed": 7090703, "eval_count": 6,
+  "fresh_seed": 7090732, "fresh_count": 6,
+  "training_intervals": 255,
+  "solve_intervals": 1024,
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "oracle_gauss_jordan_max": 32,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reference_intervals": [1024, 2048],
+  "repetitions": 3,
+  "order_seed": 911719,
+  "burn_seconds": 0.1,
+  "fidelity_tolerance": 1e-09,
+  "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2},
+  "head_lr": 0.001,
+  "head_seed": 20260916201,
+  "head_wall_cap_seconds": 3600,
+  "training_common": {
+    "source_batch": 64, "point_batch": 4096, "orthogonality_weight": 0.0001,
+    "timing_block_updates": 250, "log_every_updates": 10000,
+    "warmup_fraction": 0.02, "final_learning_rate_fraction": 0.01
+  },
+  "arms": [
+    {"arm": "K32_w128_L2",    "K": 32, "width": 128, "layers": 2, "updates": 150000, "role": "control: the pbh02 recipe re-run"},
+    {"arm": "K32_w256_L2",    "K": 32, "width": 256, "layers": 2, "updates": 150000, "role": "width only"},
+    {"arm": "K32_w128_L3",    "K": 32, "width": 128, "layers": 3, "updates": 150000, "role": "depth only"},
+    {"arm": "K32_w256_L3",    "K": 32, "width": 256, "layers": 3, "updates": 150000, "role": "2x width, 3 layers"},
+    {"arm": "K64_w128_L2",    "K": 64, "width": 128, "layers": 2, "updates": 150000, "role": "larger K"},
+    {"arm": "K64_w256_L3",    "K": 64, "width": 256, "layers": 3, "updates": 150000, "role": "larger K, 2x width, 3 layers"},
+    {"arm": "K32_w128_L2_x3", "K": 32, "width": 128, "layers": 2, "updates": 450000, "role": "optimisation-limited control: 3x updates"}
+  ],
+  "gates": [
+    {"file": "references/pbh02-reference.json", "intervals": [64, 256, 1024],
+     "pairs": [["a_neural@pbh02_primary_K32", "a_neural@new_K32"], ["dst_direct", "dst_direct"]]}
+  ],
+  "criteria": {
+    "H1_control_reproduces_pbh02_within_relative": 0.05,
+    "H1_reference_dev_best_found_worst_255": "pbh02 head_K32_w0_s0 best_found_development.worst",
+    "H2_class_limited_if_no_arm_lowers_ratio_by_more_than": 0.20,
+    "H2_better_anchor_if_ratio_below": 2.0
+  }
+}

@@ -153,6 +153,40 @@ def phase2(doc, d, job, sha):
     doc.h(3, 'Head oracle versus the linear POD-$K$ floor (same held-out states)')
     doc.table(['$N$', 'states', 'oracle median', 'oracle worst', 'single-start median', 'POD-$K$ median', 'bank floor median', 'POD-$K$ / oracle', 'formula vs field', 'H-ORACLE', 'H-SOLVED'], rows)
     doc.p('The H-ORACLE bar is oracle median $\\le \\tfrac12$ POD-$K$ median (ratio $\\ge 2$). "formula vs field" is the worst relative difference between the whitened-metric formula and the direct field-space evaluation of the oracle error (— for runs before DESIGN §A4, whose reported oracle numbers were computed through $R_b^{-1}$; the audit measured the contamination).')
+    # Per-output-time breakdown from the stored per-state arrays (state order is case-major:
+    # cases x times, as the driver writes them; the audit checks json == npz element-wise).
+    rows = []
+    for N, o in d.get('oracle', {}).items():
+        times = o.get('times')
+        if not times or 'per_state_oracle' not in o:
+            continue
+        nt = len(times)
+        nc = len(o['per_state_oracle']) // nt
+        for key, label in (('per_state_oracle', 'oracle'), ('per_state_single', 'single-start'), ('per_state_podK', f'POD-{c["K"]}'), ('per_state_bank', f'bank-{c["R"]} floor')):
+            E = np.asarray(o[key], dtype=float).reshape(nc, nt)
+            med = np.median(E, 0)
+            rows.append([N, label] + [sci(float(v)) for v in med] + [sci(float(E.max()))])
+            for ti, tv in enumerate(times):
+                doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric=f'oracle_by_time.{label}.median_t{tv * float(c.get("DT", 0.0)) * float(c.get("OUT_EVERY", 0)):g}', value=float(med[ti]), gate=f'H-ORACLE_N{N}',
+                        passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
+        Eo = np.asarray(o['per_state_oracle'], dtype=float).reshape(nc, nt)
+        Ep = np.asarray(o['per_state_podK'], dtype=float).reshape(nc, nt)
+        r0 = float(np.median(Ep[:, 0]) / np.median(Eo[:, 0]))
+        rev = float(np.median(Ep[:, 1:]) / np.median(Eo[:, 1:]))
+        rows.append([N, f'POD-{c["K"]} / oracle (median)', fx(r0, 2)] + ['—'] * (nt - 1) + [f'evolved: {fx(rev, 2)}'])
+        doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric='oracle_by_time.podK_over_oracle.t0', value=r0, gate=f'H-ORACLE_N{N}', passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
+        doc.row(phase=2, mesh=int(N), subject=f'head_K{c["K"]}_R{c["R"]}', metric='oracle_by_time.podK_over_oracle.evolved', value=rev, gate=f'H-ORACLE_N{N}', passed=G.get(f'H-ORACLE_N{N}', {}).get('passed'), job_id=job, source_sha256=sha)
+    if rows:
+        times = next(iter(d['oracle'].values()))['times']
+        snap_dt = float(c.get('DT', 0.0)) * float(c.get('OUT_EVERY', 0))  # oracle 'times' are snapshot indices
+        doc.h(3, f'Held-out error by output time (median over the {next(iter(d["oracle"].values()))["states"] // len(times)} dev cases; last column = worst state)')
+        doc.table(['$N$', 'quantity'] + [f'$t={tv * snap_dt:g}$' for tv in times] + ['worst'], rows)
+        tr = d.get('training', {})
+        o256 = d['oracle'].get(str(c['TRAIN_N'])) or next(iter(d['oracle'].values()))
+        gap = (o256['oracle_median'] / tr['recon_rel_l2_median']) if tr.get('recon_rel_l2_median') else None
+        doc.p(f'Training reconstruction median {sci(tr.get("recon_rel_l2_median"))} (trained codes, training snapshots) versus held-out oracle median {sci(o256["oracle_median"])} at the training mesh: held-out / training ratio {fx(gap, 2)}. '
+              'A ratio near 1 means the head is capacity-limited; a large ratio means the trained manifold does not cover held-out states (generalisation, not capacity).')
+        doc.row(phase=2, mesh=c['TRAIN_N'], subject=f'head_K{c["K"]}_R{c["R"]}', metric='heldout_oracle_over_training_recon_median', value=gap, gate='H-ORACLE', passed=G.get(f'H-ORACLE_N{c["TRAIN_N"]}', {}).get('passed'), job_id=job, source_sha256=sha)
     doc.table(['gate', 'passed'], [[k, yn(g['passed'])] for k, g in G.items()])
 
 
@@ -187,6 +221,8 @@ GLOSSARY = '''## Glossary
 - **Bank / head / latent code**: learned spatial features / the neural map from the code to bank coefficients / the numbers solved online.
 - **Floor**: error of the best projection onto a span (bank or POD); no ROM on that span can do better.
 - **Oracle / single-start**: best latent fit by multi-start LM / the query-time single-start policy.
+- **Held-out / training ratio**: the held-out oracle median divided by the training-reconstruction median; near 1 = the head cannot represent the data (capacity), large = it represents training states but not new ones (generalisation).
+- **Evolved**: output times $t>0$; the $t=0$ state is the band-limited initial condition and is reported separately because it is much easier to fit.
 - **Worst evolved / worst all times / $t=0$**: error normalised by the initial reference norm, maximised over $t>0$ / over all outputs / at $t=0$ only.
 - **Correction rank $q$**: extra linear directions solved jointly with the code; POD-LSPG is the classical linear control.
 - **Budget exits**: LM steps that hit the iteration cap (an unconverged rung is flagged).

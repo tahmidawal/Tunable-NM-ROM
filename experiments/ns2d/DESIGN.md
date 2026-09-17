@@ -359,3 +359,53 @@ list each claim, the JSON field it rests on, and the check run, and are labelled
 self-audits. The independent NumPy audits (`audit_phase1.py`, `audit_phase2.py`,
 `audit_phase3.py`) remain the mechanical check. The Codex report audit is to be run after
 2026-09-19 11:33 if the lane is still open.
+
+## §A6 (2026-09-17 18:3x EDT, after job 3787319 `ns203`) — H-ORACLE fails with a full-rank bank: the pre-registered negative finding for the $K=16$ head; Phase 3 is not submitted for it
+
+**What happened.** `ns203` ($K=16$, $R=256$, `G_HIDDEN=512`, head $512\times3$, 100 000
+full-batch steps; A100 `pax050`, 4 h 40 m, exit 0, `jax_backend=gpu`, `ALL-DONE`) passed
+every Phase-2 gate that §A4 fixed — B-RANKCAP, B-DATA by hash at all three meshes on this node,
+B-ORTH with numerical rank 256 and $\kappa(R_b)=44$ at $N\in\{64,128,256\}$, B-FLOOR with the
+bank floor now *below* the POD-256 floor per state (median 0.012 vs 0.033) and within 1.08× of
+it on the worst evolved state, H-SOLVED, H-TRAIN — and **failed H-ORACLE at every mesh with the
+same ratio as the rank-capped `ns201`: POD-16 median / oracle median = 1.19** (0.240 / 0.202;
+bar 2.0). The independent NumPy audit (`artifacts/ns203/audit.json`) matches all 67 checks;
+the field-space and whitened-formula oracle values agree to $5\times10^{-14}$, so the §A4
+contamination is gone and the number is real.
+
+**Per §A4, stated before the run: this is the negative finding, and the bar is not lowered.**
+This auto-decoder head (separable periodic bank + MLP head, Burgers recipe) cannot beat linear
+POD-$K$ by 2× on decaying 2D NS at $\mathrm{Re}\in[100,1000]$ with $K=16$. Phase 3 is **not
+submitted** for the $(16,256)$ head. The $(32,512)$ head's verdict is stated separately when
+`ns204` lands (its rank-capped predecessor `ns202` had ratio 1.18).
+
+**Diagnostic, from the stored per-state arrays (generated into the report, not typed).** The
+failure is *generalisation*, not capacity:
+
+- Training reconstruction median fell from 0.206 (`ns201`, 30k steps, $128\times2$ head) to
+  **0.050** (`ns203`); the held-out oracle median did not move (0.2028 → 0.2024). The
+  held-out / training ratio is **4.0**.
+- By output time: at $t=0$ the oracle beats POD-16 by **1.63×** (0.026 vs 0.042); on every
+  evolved time it is 1.1–1.4× (e.g. $t=0.4$: 0.279 vs 0.305). The initial condition is a
+  12-parameter band-limited field that $K=16$ codes cover; the evolved states depend on
+  (12 amplitudes, $\nu$, $t$), a 14-dimensional input, and **512 training trajectories do not
+  cover it** ($512^{1/14}\approx1.6$ points per axis). The head memorises the training
+  trajectories (0.050) and has no neighbours for a held-out draw.
+- The bank is not the limit (floor median 0.012 at 256²), and neither is the fit: oracle LM
+  median 39 iterations, no budget exits; single-start median within 1.10× of the oracle.
+
+**What this means for the paper question.** The lane's Phase-3 test (does the correction-rank
+trade exist on a degree-2 residual) is not reached for $K=16$, because its precondition — a
+head whose manifold is closer to the held-out data than linear POD-$K$ — does not hold for
+this family with this data budget. That is a finding about the data family (12 i.i.d. Gaussian
+amplitudes is a high-dimensional family for 512 trajectories), not a rescue.
+
+**Not done, and why.** Lowering the H-ORACLE bar, re-scoring on training trajectories, or
+opening the sealed cohort would each turn a pre-registered fail into a pass by changing the
+rule after the number was seen; none is done. Retraining with more trajectories or a
+lower-dimensional family (e.g. 3 modes, 6 amplitudes) would be a *new* Phase 2 with a new
+pre-registration and 2–3 more jobs; with 5 of 8 jobs used and the 2026-09-22 stop rule, that is
+the coordinator's call, not this session's.
+
+**Job plan after §A6.** Jobs used: `ns101`, `ns201`, `ns202`, `ns203`, `ns204` (5 of 8).
+`ns204` pending. No Phase-3 job is staged.

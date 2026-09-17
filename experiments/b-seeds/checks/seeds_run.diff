@@ -1,0 +1,53 @@
+--- /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/qtd_run.py	2026-09-16 10:45:39.898956072 -0400
++++ experiments/b-seeds/seeds_run.py	2026-09-17 00:52:44.934236434 -0400
+@@ -1,4 +1,12 @@
+-"""Trajectory-fitted correction directions against the incumbent static rule.
++"""b-seeds ladder driver: `q-trajdirs/qtd_run.py` (job 3757505, qtd02) with four
++non-numerical edits, recorded in DESIGN.md D2 and checks/seeds_run.diff:
++  (1) `final_cohort_unopened` is read from the config instead of being hard-coded True,
++  (2) `cohort_roles` / `cohort_note` can be supplied by the config (the sealed cohort),
++  (3) the checkpoint label and the lane name are recorded in result.json,
++  (4) the completion banner names this lane.
++Nothing that touches a number changes. The original docstring follows.
++
++Trajectory-fitted correction directions against the incumbent static rule.
+ 
+ One job. The frozen Burgers checkpoint, the frozen bank and head, the weak objective,
+ the initializer policy, the block-damped variable-projection solver at per-step budget
+@@ -80,7 +88,8 @@
+                   jax_version=jax.__version__, checkpoint_sha256=sha_file(a.checkpoint),
+                   K=K, R=R, intervals=L, output_times=TIMES,
+                   spatial_bank_frozen=True, network_weights_frozen=True,
+-                  final_cohort_unopened=True,
++                  final_cohort_unopened=bool(cfg.get('final_cohort_unopened', True)),
++                  lane='b-seeds', checkpoint_label=cfg.get('checkpoint_label'),
+                   timing_contract=('supplied dense initial field on GPU to six dense GPU output '
+                                    'fields; same-invocation host transfers also measured; '
+                                    'identical for every subject'),
+@@ -94,10 +103,13 @@
+     physical = np.concatenate((e.params_draw(cfg['eval_seed'], cfg['eval_cases']),
+                                e.params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
+     report['physical_cases'] = physical.tolist()
+-    report['cohort_roles'] = (['opened development'] * cfg['eval_cases']
+-                              + ['fresh development'] * cfg['eval_fresh_cases'])
+-    report['cohort_note'] = ('exactly the six opened development cases of abl01, qlad01, '
+-                             'cclad01 and the b-ladder-top jobs; no new case is opened')
++    report['cohort_roles'] = list(cfg.get('cohort_roles') or (
++        ['opened development'] * cfg['eval_cases']
++        + ['fresh development'] * cfg['eval_fresh_cases']))
++    assert len(report['cohort_roles']) == len(physical), (len(report['cohort_roles']), len(physical))
++    report['cohort_note'] = cfg.get('cohort_note', (
++        'exactly the six opened development cases of abl01, qlad01, '
++        'cclad01 and the b-ladder-top jobs; no new case is opened'))
+     got = sha_array(physical)
+     want = cfg.get('expected_cohort_sha256')
+     report['gates']['evaluation_cohort_bitwise_abl01'] = dict(
+@@ -518,7 +530,7 @@
+     report['complete'] = True
+     save()
+     (out / 'COMPLETE').write_text('complete\n')
+-    print('Q-TRAJDIRS COMPLETE', flush=True)
++    print('B-SEEDS LADDER COMPLETE', flush=True)
+ 
+ 
+ if __name__ == '__main__':

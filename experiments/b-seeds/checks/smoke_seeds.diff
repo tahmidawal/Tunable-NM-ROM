@@ -1,0 +1,20 @@
+--- /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/smoke_qtd.py	2026-09-16 10:16:30.433579990 -0400
++++ experiments/b-seeds/smoke_seeds.py	2026-09-17 00:52:44.934914565 -0400
+@@ -31,7 +31,7 @@
+ import jax.numpy as jnp
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+-for sub in ('experiments/q-trajdirs', 'experiments/b-ladder-top',
++for sub in ('experiments/b-seeds', 'experiments/b-ladder-top',
+             'experiments/cheap-corrections', 'experiments/head-ablation',
+             'experiments/mr-burgers2d'):
+     sys.path.insert(0, str(ROOT / sub))
+@@ -203,7 +203,7 @@
+     if len(sys.argv) > 1:
+         Path(sys.argv[1]).parent.mkdir(parents=True, exist_ok=True)
+         Path(sys.argv[1]).write_text(json.dumps(out, indent=2) + '\n')
+-    print('Q-TRAJDIRS SMOKE OK', round(out['seconds'], 1), flush=True)
++    print('B-SEEDS SMOKE OK', round(out['seconds'], 1), flush=True)
+ 
+ 
+ if __name__ == '__main__':

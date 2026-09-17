@@ -1,0 +1,147 @@
+{
+  "attempt": "dev-seed2",
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024,
+  "residual_starts": 4,
+  "residual_budget": 200,
+  "residual_seed": 20260915,
+  "direction_sets_to_build": [],
+  "direction_traj_seed": 20260916,
+  "direction_traj_count": 32,
+  "direction_prac_seed": 20260917,
+  "direction_prac_count": 6,
+  "direction_fom_ntol": 1e-06,
+  "direction_fom_ltol": 1e-08,
+  "decoder_code_subsample": 8192,
+  "q_ladder": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "comparison_q": [
+    16,
+    64,
+    256
+  ],
+  "fixed_test_count": 256,
+  "quadrature_multiplier": 4,
+  "quadrature_cap": 2048,
+  "eq_seconds": 2400.0,
+  "eq_blocks": 16,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "max_fit_rows": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 600,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "tau_y": 0.1,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 911723,
+  "burn_seconds": 0.25,
+  "pass_criteria": {
+    "ladder": "dense_m4",
+    "error_span": 2.0,
+    "cost_span": 2.0,
+    "note": "the redirected pass of DESIGN.md amendment 2026-09-16 B"
+  },
+  "ladders": [
+    {
+      "id": "dense_m4",
+      "label": "incumbent directions, DENSE quadrature, M = 4(K+q)",
+      "dirset": "old",
+      "rule": "m4",
+      "quadrature": "dense",
+      "q": [
+        0,
+        16,
+        32,
+        64,
+        128,
+        256
+      ]
+    },
+    {
+      "id": "dense_fixedM",
+      "label": "incumbent directions, DENSE quadrature, fixed M = 256",
+      "dirset": "old",
+      "rule": "mfix",
+      "quadrature": "dense",
+      "q": [
+        0,
+        16,
+        32,
+        64,
+        128
+      ]
+    }
+  ],
+  "extra_arms": [],
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "fft_loose",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    }
+  ],
+  "expected_cohort_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "expected_directions_sha256": null,
+  "expected_reference_sha256": {
+    "0": "363d77568dbd1b117ef10d8c634548ebe4febe0366d44c40519ace63dfecab21",
+    "1": "bc411074cbaf401b31a3291db010d190066a2ad82cb808098d3c70c8b8fced76",
+    "2": "79fb8ec6495589c16df12071a0f55fba2732bb9d334df9a19b27bc5c7a35b259",
+    "3": "fc3db5f4ae81e5e70df8a6074aacfc9948c1a66618c3c88ec8883007acfe2905",
+    "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
+    "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
+  },
+  "fidelity_expectations": {},
+  "btq201_expectations": {},
+  "cclad01_job_id": 3734098,
+  "btq101_job_id": 3745589,
+  "btq102_job_id": 3749039,
+  "btq201_job_id": 3747245,
+  "purpose": "Development-cohort dense correction ladder for one checkpoint (seed2): the qtd02 configuration verbatim (same six opened cases, same ladders, same budget-600 block-damped variable-projection solver, same-job fft_tight / fft_loose / nt1e-2_dt01 controls, three timed repetitions).",
+  "checkpoint_label": "seed2",
+  "lane": "b-seeds",
+  "parent_configuration": "q-trajdirs config-dense.json, job 3757505 (qtd02)",
+  "final_cohort_unopened": true
+}

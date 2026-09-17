@@ -1,0 +1,95 @@
+[
+  {
+    "destination": "experiments/b-seeds/seeds_run.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/qtd_run.py",
+    "sha256": "dafc6f10f8128a7b85bb4b14b62215fcf0a4ceb093a9cceaf5df8ca61c3dd963",
+    "source_sha256": "dafc6f10f8128a7b85bb4b14b62215fcf0a4ceb093a9cceaf5df8ca61c3dd963",
+    "bytes": 27827,
+    "note": "copied verbatim, then patched (see DESIGN.md D2; diff recorded in checks/seeds_run.diff)",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/trajdirs.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/trajdirs.py",
+    "sha256": "dd0c910c5b75c206f3c7ec05f901d04e5bc2bbdc20b8818341198b065be1faf2",
+    "source_sha256": "dd0c910c5b75c206f3c7ec05f901d04e5bc2bbdc20b8818341198b065be1faf2",
+    "bytes": 8998,
+    "note": "verbatim",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/audit_seeds.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/audit_qtd.py",
+    "sha256": "cf1757fc19f661432bf9752e46447e7a9ccee52269eccd5fd4084fe82224975b",
+    "source_sha256": "cf1757fc19f661432bf9752e46447e7a9ccee52269eccd5fd4084fe82224975b",
+    "bytes": 30802,
+    "note": "copied, then extended for cohort modes and the qtd02 comparator (see DESIGN.md D3)",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/smoke_seeds.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/smoke_qtd.py",
+    "sha256": "9ce3feb8351518f6b46e2e38387677a75329a25d5aece6181efcdb0247d78075",
+    "source_sha256": "9ce3feb8351518f6b46e2e38387677a75329a25d5aece6181efcdb0247d78075",
+    "bytes": 11089,
+    "note": "copied, then re-pointed at this lane (paths only)",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/comparators/qtd02-config-dense.json",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/config-dense.json",
+    "sha256": "37d64788a56ff3481ec8145e9d48c064c3a009bf28503826c01c41c64978f476",
+    "source_sha256": "37d64788a56ff3481ec8145e9d48c064c3a009bf28503826c01c41c64978f476",
+    "bytes": 5599,
+    "note": "the exact qtd02 (job 3757505) configuration",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/comparators/qtd02-result.json",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/artifacts/qtd02/result.json",
+    "sha256": "270b6d0f14febab55e84e00cc7203653e3ba827de8298d3609868a56c9b9ac8e",
+    "source_sha256": "270b6d0f14febab55e84e00cc7203653e3ba827de8298d3609868a56c9b9ac8e",
+    "bytes": 2078244,
+    "note": "qtd02 raw result.json (job 3757505); comparator for the incumbent fidelity gate",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/comparators/qtd02-audit.json",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-16-q-trajdirs/experiments/q-trajdirs/checks/qtd02-audit.json",
+    "sha256": "abbeec35382f8f18a63f24b999ee16818582ac936d9f2e6948c1ce49327aad03",
+    "source_sha256": "abbeec35382f8f18a63f24b999ee16818582ac936d9f2e6948c1ce49327aad03",
+    "bytes": 99035,
+    "note": "qtd02 audited same-grid table; comparator for the incumbent fidelity gate",
+    "source_commit": "c755744e0d77eb51df35fb73d9da3f89297f2b4f"
+  },
+  {
+    "destination": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-25-burgers-accuracy/experiments/separable-decoder/cluster/stage/ext256/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py",
+    "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+    "source_sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+    "bytes": 22619,
+    "note": "the incumbent generator WITH the exact-Helmholtz BiCGStab preconditioner: hashes to the entry the incumbent jobs 2835788 and 2837431 staged (runs/push_r3a and runs/dn256b MANIFEST.sha256)",
+    "source_commit": null,
+    "matches_incumbent_manifest_entry": "code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py"
+  },
+  {
+    "destination": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-seeds/experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py",
+    "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+    "source_sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+    "bytes": 21740,
+    "note": "hashes to the incumbent manifests entry",
+    "source_commit": null,
+    "matches_incumbent_manifest_entry": "code/deps/poisson2d-rom-objective/deps/ms_autodecoder.py"
+  },
+  {
+    "destination": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+    "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-seeds/experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py",
+    "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+    "source_sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+    "bytes": 18723,
+    "note": "hashes to the incumbent manifests entry",
+    "source_commit": null,
+    "matches_incumbent_manifest_entry": "code/deps/poisson2d-rom-objective/deps/ms_parametric.py"
+  }
+]

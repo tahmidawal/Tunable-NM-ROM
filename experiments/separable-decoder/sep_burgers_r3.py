@@ -120,6 +120,10 @@ NEWTON_TOLS = [float(v) for v in os.environ.get(
 LIN_FRACS = [float(v) for v in os.environ.get("LIN_FRACS", "0.05,0.5").split(",")]
 MAX_NEWTON = int(os.environ.get("MAX_NEWTON", "20"))
 OUT_PREFIX = os.environ.get("OUT_PREFIX", "")
+# b-seeds (2026-09-17): TRAIN_ONLY=1 stops right after the checkpoint and its
+# full-interior reconstruction check are written, skipping the round-3 EQ /
+# speed / accuracy protocol that follows.  Nothing before that point changes.
+TRAIN_ONLY = int(os.environ.get("TRAIN_ONLY", "0"))
 REASON_NAMES = {0: "budget", 1: "tol", 2: "stalled", 3: "lambda_max",
                 4: "tol_at_init", 5: "nan_at_init"}
 
@@ -387,6 +391,14 @@ def main():
                f"(pool recon mean {tinfo['recon_rel_l2_mean']:.3e})")
     del S_full
     save()
+    if TRAIN_ONLY:
+        report["train_only"] = True
+        report["complete"] = True
+        report["total_seconds"] = time.time() - t_all
+        save()
+        sc.log(f"TRAIN_ONLY: checkpoint emitted -> {CKPT} in "
+               f"{report['total_seconds']:.0f}s; the round-3 protocol is skipped")
+        return
 
     train_radius = float(np.max(np.linalg.norm(Z_tr - Z_tr.mean(0), axis=1)))
     bc.TR_DELTA = (TR_FACTOR * train_radius) if TR_FACTOR > 0 else np.inf

@@ -308,3 +308,59 @@ ablation asks and which this panel can now answer at ranks the ablation never re
 same function with the same domination rule; it changes no pre-registered criterion, no
 admissibility flag and no reported number. It was added after seeing the data and is labelled
 post-hoc everywhere it appears, here and in the report.
+
+## A5 — 2026-09-17 10:20: the remaining job budget, the reserved EQ re-run, and a risk recorded before it can be rationalised
+
+Two jobs spent (`bpn101` 256² complete; `bpn201` 1024² in flight), six of the cap of eight free.
+Planned, in priority order:
+
+| attempt | mesh | purpose | status |
+|---|---|---|---|
+| `bpn101` | 256² | the panel | complete, job 3780638 |
+| `bpn201` | 1024² | the panel, model and rules transferred | submitted, job 3783817 |
+| `bpn301` | 256² | **reserved**: the panel re-run on b-eqtop's improved rules | on the coordinator's signal, not before |
+| `bpn401` | 512² | the middle mesh, so the trend is three points not two | after `bpn301` |
+
+Four spare for GPU-type escalation or a resubmit.
+
+### A5.1 The reserved re-run must be a FULL panel, not a cheap-arm patch
+
+The request was to re-run "the 256² cheap arm" with better rules. Taken literally that would
+reintroduce the exact defect this lane exists to remove: new empirical-quadrature costs measured in
+`bpn301` would have to be compared against `bpn101`'s full-order controls, i.e. **across two
+allocations on two GPUs**, which is the NeurIPS failure mode. `bpn101` cost 28m50s, so a complete
+re-run is cheap. `bpn301` therefore re-runs the **whole** 256² panel — every FOM control, POD rank,
+the dense ladder and the FNO — in one allocation, and its table replaces `bpn101`'s wholesale rather
+than being spliced into it.
+
+It additionally carries **both rule sets as arms in that one job**: qrg304's rules (the superseded
+ones, `eqcert`) and b-eqtop's (`eqtop`), at matched $q$, $M$ and tolerance. The improvement is then
+measured in-allocation against its own predecessor instead of across jobs, and if the ladder becomes
+monotone the evidence for *why* is in the same table. `bpn101` remains the record of what the
+superseded rules gave; nothing about it is withdrawn.
+
+### A5.2 A risk to `bpn201`, recorded now because it will be tempting to explain away later
+
+b-eqtop's finding is that the binding constraint on an EQ rule is the number of **fit states**, not
+the node count $m$: at $q=256$ a 64-state rule certifies on the primary bar at $m=2048$ where the
+8-state rule gives $\rho_{\max}=0.1678$. That 0.1678 is precisely the qrg304 rule this lane
+transfers at $q=256$.
+
+`bpn201`'s transferred-rule refit chooses its fit-state count by the incumbent convention
+$\mathrm{clip}(8192/M,\,8,\,64)$, which yields **64, 64, 42, 25, 14 and 8** states at
+$q=0,16,32,64,128,256$. Its top two rungs are therefore fitted on 14 and 8 states and are at
+elevated risk of returning secondary-certified or uncertified at $1024^2$ — for the reason b-eqtop
+identified, not for anything about the mesh.
+
+**This is predicted here, before the job returns.** If those rungs come back uncertified, that is a
+confirmation of b-eqtop's diagnosis and not a surprise to be reinterpreted afterwards; if they
+certify, the prediction was wrong and will be recorded as such.
+
+**Why the job is not being cancelled and resubmitted with a larger fit-state count**, although it is
+still PENDING with zero GPU time and could be. Raising the count makes the fixed-support refit a
+nonnegative least-squares problem of up to $69632\times2048$, a size the local smoke never
+exercised; shipping an unsmoked change into the most expensive job of the lane is the worse risk.
+`bpn201`'s dense ladder, POD ranks, full-order controls and FNO — which carry the crossover evidence
+the 1024² job exists for — do not depend on any EQ rule at all. The fit-state count is therefore
+fixed in `bpn301`, where it can be smoked first, and `bpn201` reports its rules' certification
+status honestly under the existing admissibility rule.

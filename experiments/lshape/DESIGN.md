@@ -574,3 +574,37 @@ self-audit.** The coordinator re-verified on 2026-09-17 that the Codex usage lim
 `reports/self-audit-2026-09-17-solves.md`, which lists every claim in the regenerated report,
 the `result.json` field it rests on, and the check run against it, and which additionally
 records the independent NumPy audit verdicts for `lsh03`, `lsh04` and `lsh06`.
+
+**2026-09-17, §A9 — the free rung is head-independent to round-off, not byte-identically; §A6's
+claim is corrected. No reported number moves.** §A6(b) recorded, from the $N=32$, $R=32$ local
+smoke, "byte-identical output from the $K=4$ and $K=8$ heads (as it must be: the rung is
+head-independent)". On the real $N=256$, $R=512$ banks in `lsh06` the two heads' output fields
+are **not** bitwise identical. The mathematics is unchanged and the conclusion is unchanged: with
+$C=I$ the recovered coefficients are
+$h_\theta(z) + R_q^{-1}Q_q^\top(f_m - Bh_\theta(z))$, and since $Q_qR_q = BC = B$ the term
+$R_q^{-1}Q_q^\top Bh_\theta(z)$ equals $h_\theta(z)$ *in exact arithmetic*, so the head cancels.
+In f64 that cancellation is inexact and what survives depends on $h_\theta(z)$, which differs
+between the $K=16$ and $K=32$ heads. Measured on all 32 development cases
+(`checks/verify_report_2026-09-17.py`, check `free_rung_is_head_independent_to_roundoff`): worst
+relative field difference between the two heads $4.06\times10^{-14}$, worst difference in the
+reported same-grid error $4.86\times10^{-17}$, i.e. the two subjects agree on every reported digit
+(worst $0.7790957\,\%$ for both). The three timed repetitions of one subject **are** bitwise
+identical, as the per-invocation `field_sha256` values show, which is why the smoke's stronger
+claim was not caught earlier: at $R=32$ the cancellation happened to be exact. The report now
+states the measured agreement instead of asserting byte-identity.
+
+**2026-09-17, §A10 — the report generator keys timed subjects by job and by test-mode block, and
+the $M=257$ and $M=1024$ results are presented as separate tables.** §A6's carry-forward (ii) is
+implemented: `reports/generate_lshape.py` builds `aggs` under the key
+`(job_id, mesh, subject)`, groups solve jobs into blocks by `config.requested_modes`, and
+**raises** if two jobs in one block report the same `(mesh, subject)` — the silent overwrite that
+would have let `lsh06` replace `lsh04`'s $N=256$ numbers. The guard was tested against the real
+JSONs by passing `lsh04`'s `result.json` twice; it aborts with the colliding subject named.
+Every headline table, every per-mesh solve section, every clause lookup and every figure panel is
+now resolved through the block index, each `summary.json` row carries `test_modes` beside
+`job_id` and `source_sha`, and the headline carries an explicit statement that costs may not be
+compared across blocks (the dense $M\times n$ projection is charged inside every reduced query).
+Carry-forward (i) is implemented as well: the validation-versus-development gap is generated from
+`lsh02`'s `head_arms` and printed immediately below the headline verdict, not in a caveat
+section. Carry-forward (iii), the $K=64$ head, is **not** run: the solve jobs were the priority
+and `lsh07` consumed the seventh of eight jobs.

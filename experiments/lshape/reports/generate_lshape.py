@@ -125,51 +125,126 @@ def main():
     W('')
 
     # ------------------------------------------------------------ headline ---
-    aggs = {}
-    for sv in solves:
-        agg = aggregate(sv)
-        for key, v in agg.items():
-            v['job_id'] = sv['job_id']
-            v['source_sha'] = sha_file(a.solve[solves.index(sv)])
-            aggs[key] = v
-    meshes = sorted(set(k[0] for k in aggs))
+    # Timed subjects are keyed by JOB, never by (mesh, name) alone: a second job at the same
+    # mesh would otherwise overwrite the first silently (DESIGN.md A6, carry-forward ii).
+    # Jobs are grouped into blocks by their test-mode count M, because the online residual
+    # charges a dense M x n projection inside every reduced query: costs are comparable
+    # WITHIN a block and never across blocks.
+    aggs, blocks, block_index, block_jobs = {}, {}, {}, {}
+    for i, sv in enumerate(solves):
+        blocks.setdefault(sv['config']['requested_modes'], []).append((sv, sha_file(a.solve[i])))
+    for M, entries in blocks.items():
+        idx = {}
+        for sv, ssrc in entries:
+            for (n, name), v in aggregate(sv).items():
+                v['job_id'], v['source_sha'], v['M'] = sv['job_id'], ssrc, M
+                if (n, name) in idx:
+                    raise SystemExit(
+                        f'two jobs report subject {name!r} at N={n} with the same M={M} '
+                        f'(jobs {idx[(n, name)][0]} and {sv["job_id"]}). Costs are only comparable within '
+                        'one job; give the second job its own block or drop it.')
+                idx[(n, name)] = (sv['job_id'], n, name)
+                aggs[(sv['job_id'], n, name)] = v
+        block_index[M] = idx
+        block_jobs[M] = [sv['job_id'] for sv, _ in entries]
+
+    def look(M, n, name):
+        """One timed subject, by block and job -- never by (mesh, name) alone."""
+        key = block_index.get(M, {}).get((n, name))
+        return aggs[key] if key else None
+
+    def block_meshes(M):
+        return sorted({n for n, _ in block_index[M]})
+
+    Ms = sorted(blocks)
+    meshes = sorted({n for M in Ms for n in block_meshes(M)})
     W('## Headline: the non-dominated set per mesh, full-order comparators included')
     W('')
     W('Subject $A$ dominates $B$ if $\\mathrm{err}_A\\le\\mathrm{err}_B$ and $\\mathrm{cost}_A\\le\\mathrm{cost}_B$ with '
       'one strict, on (worst same-grid error over the development cases, median complete-query ms). '
       '"Reduced" means any neural, correction-ladder, free-bank or POD subject.')
     W('')
-    W('| mesh | non-dominated set (complete-query ms) | reduced model in it? | non-dominated set (device / solver ms) |')
-    W('|---|---|---|---|')
-    verdict_lines = []
-    for n in meshes:
-        items = [v for k, v in aggs.items() if k[0] == n]
-        nd = nondominated(items, 'worst_same_grid', 'median_total_ms')
-        for v in items:
-            v['secondary_cost_ms'] = subject_cost(v)
-        nd2 = nondominated(items, 'worst_same_grid', 'secondary_cost_ms')
-        red = [x['name'] for x in nd if x['family'] != 'fom']
-        W(f'| {n} | ' + ', '.join(f'`{x["name"]}` ({pc(x["worst_same_grid"], 3)} %, {x["median_total_ms"]:.3f} ms)' for x in nd)
-          + f' | {"yes: " + ", ".join(red) if red else "**no**"} | '
-          + ', '.join(f'`{x["name"]}` ({pc(x["worst_same_grid"], 3)} %, {x["secondary_cost_ms"]:.3f} ms)' for x in nd2) + ' |')
-        for x in nd:
-            emit(n, x['name'], x['family'], x['q'] if x['family'] != 'pod' else x['k'], 'nondominated_complete_ms', True,
-                 x['job_id'], x['source_sha'])
-        verdict_lines.append((n, red))
-        # the reduced-only front, without the full-order comparators
-        nd_red = nondominated([v for v in items if v['family'] != 'fom'], 'worst_same_grid', 'median_total_ms')
-        for x in nd_red:
-            emit(n, x['name'], x['family'], x['q'] if x['family'] != 'pod' else x['k'], 'nondominated_reduced_only', True,
-                 x['job_id'], x['source_sha'])
+    W('**The blocks below are separate tables on purpose and their costs may NOT be compared.** '
+      'The online residual projects the source onto $M$ test modes with a dense $M\\times n$ product, '
+      'and that product is charged inside every reduced query, so a subject at $M=1024$ carries about four '
+      'times the projection work of the same subject at $M=257$. Every comparison that matters — reduced '
+      'against full-order — is within one job and therefore inside one block.')
     W('')
-    any_red = [n for n, red in verdict_lines if red]
-    if meshes:
-        W('**Statement.** ' + (f'A reduced model is non-dominated once the sparse direct solve and the PCG rungs are '
-                               f'included at mesh(es) {", ".join(map(str, any_red))}.' if any_red else
-                               'At no mesh is any reduced model non-dominated once the sparse direct solve and the PCG '
-                               'rungs are included: `fom_splu` (or a PCG rung) is both more accurate and cheaper than '
-                               'every neural, correction-ladder and POD subject.'))
+    verdict = {}
+    for M in Ms:
+        W(f'### Block $M={M}$ test modes — job(s) ' + ', '.join(f'`{j}`' for j in block_jobs[M]))
         W('')
+        W('| mesh | non-dominated set (complete-query ms) | reduced model in it? | non-dominated set (device / solver ms) |')
+        W('|---|---|---|---|')
+        for n in block_meshes(M):
+            items = [aggs[k] for k in block_index[M].values() if k[1] == n]
+            nd = nondominated(items, 'worst_same_grid', 'median_total_ms')
+            for v in items:
+                v['secondary_cost_ms'] = subject_cost(v)
+            nd2 = nondominated(items, 'worst_same_grid', 'secondary_cost_ms')
+            red = [x['name'] for x in nd if x['family'] != 'fom']
+            W(f'| {n} | ' + ', '.join(f'`{x["name"]}` ({pc(x["worst_same_grid"], 3)} %, {x["median_total_ms"]:.3f} ms)' for x in nd)
+              + f' | {"yes: " + ", ".join("`" + r + "`" for r in red) if red else "**no**"} | '
+              + ', '.join(f'`{x["name"]}` ({pc(x["worst_same_grid"], 3)} %, {x["secondary_cost_ms"]:.3f} ms)' for x in nd2) + ' |')
+            for x in nd:
+                emit(n, x['name'], x['family'], x['q'] if x['family'] != 'pod' else x['k'], 'nondominated_complete_ms',
+                     True, x['job_id'], x['source_sha'], test_modes=M)
+            nd_red = nondominated([v for v in items if v['family'] != 'fom'], 'worst_same_grid', 'median_total_ms')
+            for x in nd_red:
+                emit(n, x['name'], x['family'], x['q'] if x['family'] != 'pod' else x['k'], 'nondominated_reduced_only',
+                     True, x['job_id'], x['source_sha'], test_modes=M)
+            verdict[(M, n)] = (red, nd)
+        W('')
+
+    # The plain-language verdict, generated from the fronts above.
+    for M in Ms:
+        for n in block_meshes(M):
+            red, nd = verdict[(M, n)]
+            splu = look(M, n, 'fom_splu')
+            best = min((x for x in nd if x['family'] != 'fom'), key=lambda x: x['worst_same_grid'], default=None)
+            if red and best is not None and splu is not None:
+                cheap = min((x for x in nd if x['family'] != 'fom'), key=lambda x: x['median_total_ms'])
+                bar = 0.05  # the cell's own pre-registered solved-error bar, DESIGN section 8 clause 1
+                W(f'**$M={M}$, $N={n}$.** {len(red)} reduced subjects are non-dominated. The most accurate of them, '
+                  f'`{best["name"]}`, reaches {pc(best["worst_same_grid"], 3)} % worst error at '
+                  f'{best["median_total_ms"]:.3f} ms, against `fom_splu`, which is exact to round-off '
+                  f'({pc(splu["worst_same_grid"], 2)} %) at {splu["median_total_ms"]:.3f} ms — '
+                  f'{splu["median_total_ms"] / best["median_total_ms"]:.2f}x more expensive per query. The cheapest '
+                  f'reduced subject on the front is `{cheap["name"]}` at {cheap["median_total_ms"]:.3f} ms and '
+                  f'{pc(cheap["worst_same_grid"], 3)} %. '
+                  + ('Non-dominance here means **cheaper and less accurate**, never better on both axes: no reduced '
+                     'subject improves on the direct solve\'s accuracy, and the front records what accuracy each one '
+                     'gives up to be cheaper.'
+                     if best['worst_same_grid'] < bar else
+                     '**This is a cheapness-only membership.** Every reduced subject on this front is above the cell\'s '
+                     f'own {bar * PCT:.0f} % solved-error bar, so the front records subjects that are barely cheaper '
+                     'than the direct solve while being far less accurate — not a usable operating point.'))
+            elif splu is not None:
+                W(f'**$M={M}$, $N={n}$.** **No reduced model is non-dominated.** `fom_splu` costs '
+                  f'{splu["median_total_ms"]:.3f} ms at {pc(splu["worst_same_grid"], 3)} % error; the cheapest reduced '
+                  f'subject costs {min(x["median_total_ms"] for x in [aggs[k] for k in block_index[M].values() if k[1] == n and aggs[k]["family"] != "fom"]):.3f} ms, '
+                  'so the direct solve is both more accurate and cheaper than every one of them.')
+            W('')
+
+    # ------------------------------------- the validation-versus-development gap
+    if tr.get('head_arms'):
+        vw = [h['best_found_validation']['worst'] for h in tr['head_arms']]
+        dw = [h['best_found_development']['worst'] for h in tr['head_arms']]
+        W('**Read every error above beside this gap.** The development cohort has '
+          f'{tr["cohorts"]["development"]["count"]} sources; the held-out validation split of the training draw has '
+          f'{len(tr["cohorts"]["training"]["validation"])}. Across the {len(tr["head_arms"])} head arms the worst '
+          f'best-found reconstruction error is {pc(min(dw), 1)}–{pc(max(dw), 1)} % on the '
+          f'{tr["cohorts"]["development"]["count"]} development sources but {pc(min(vw), 1)}–{pc(max(vw), 1)} % on the '
+          f'{len(tr["cohorts"]["training"]["validation"])} validation sources — a factor of about '
+          f'{max(vw) / max(dw):.1f} on the worst case. The worst case over 32 draws is simply not the worst case over '
+          f'{len(tr["cohorts"]["training"]["validation"])}, and the solved errors in every table below are worst-over-32 '
+          'numbers. Treat them as the optimistic end of the range; a 461-source solve sweep is the measurement that '
+          'would replace them, and it has not been run.')
+        W('')
+        emit(cfg['training_intervals'], 'head_arms', 'head', None, 'best_found_validation_worst_max', max(vw),
+             tr['job_id'], tsrc)
+        emit(cfg['training_intervals'], 'head_arms', 'head', None, 'best_found_development_worst_max', max(dw),
+             tr['job_id'], tsrc)
 
     # ------------------------------------------------------------ gates -------
     W('## Operator verification gates (G-FOM, DESIGN.md section 2)')
@@ -196,23 +271,30 @@ def main():
     if solves:
         W('### Full-order setup, per mesh (offline, not charged to any query)')
         W('')
-        W('| mesh | n | nnz(A) | SuperLU factor s | nnz(L+U) | IC(0) factor s | nnz(IC0 L) | eigen-solve s (M modes) | eigen residual | 1024-ref residual |')
-        W('|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
+        W('| job | mesh | n | nnz(A) | SuperLU factor s | nnz(L+U) | IC(0) factor s | nnz(IC0 L) | eigen-solve s (M modes) | eigen residual | 1024-ref residual |')
+        W('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
         for sv in solves:
             for f in sv['fom']:
                 w = next(x for x in sv['weak_ops'] if x['intervals'] == f['intervals'])
                 fr = max(x['fine_residual'] for x in sv['references'] if 'fine_residual' in x)
-                W(f'| {f["intervals"]} | {f["interior_unknowns"]} | {f["nnz"]} | {f["splu_factor_seconds"]:.3f} | {f["splu_lu_nnz"]} | '
+                W(f'| `{sv["job_id"]}` | {f["intervals"]} | {f["interior_unknowns"]} | {f["nnz"]} | {f["splu_factor_seconds"]:.3f} | {f["splu_lu_nnz"]} | '
                   f'{f["ic0_factor_seconds"]:.3f} | {f["ic0_nnz"]} | {w["seconds"]:.1f} ({w["M"]}) | {w["eigen_residual"]:.1e} | {fr:.1e} |')
         W('')
         W('### Discretisation error of the FD solution itself (same-grid vs restricted 1024-interval direct solve)')
         W('')
-        W('| mesh | worst over cases | median over cases |')
-        W('|---:|---:|---:|')
+        W('The reduced models are graded against the same-grid direct solve, not against this; the column is here '
+          'so a reader can see how much of the mesh\'s own error the corner singularity costs.')
+        W('')
+        W('| job | mesh | worst over cases | median over cases |')
+        W('|---|---:|---:|---:|')
+        seen_disc = set()
         for sv in solves:
             for n in sv['config']['intervals']:
+                if n in seen_disc:
+                    continue
+                seen_disc.add(n)
                 dl = [x['discretisation_delta_vs_fine'] for x in sv['references'] if x.get('intervals') == n]
-                W(f'| {n} | {pc(max(dl), 4)} % | {pc(float(np.median(dl)), 4)} % |')
+                W(f'| `{sv["job_id"]}` | {n} | {pc(max(dl), 4)} % | {pc(float(np.median(dl)), 4)} % |')
                 emit(n, 'fd_same_grid', 'fom', None, 'discretisation_delta_vs_1024_worst', max(dl), sv['job_id'], sha_file(a.solve[solves.index(sv)]))
         W('')
 
@@ -291,15 +373,19 @@ def main():
     # ------------------------------------------------------------ solve -------
     for sv in solves:
         ssrc = sha_file(a.solve[solves.index(sv)])
+        Msv = sv['config']['requested_modes']
         for n in sv['config']['intervals']:
-            W(f'## Solve at N={n} (job `{sv["job_id"]}`, {sv["cohort"]["count"]} development cases × {sv["config"]["repetitions"]} repetitions)')
+            W(f'## Solve at N={n}, $M={Msv}$ (job `{sv["job_id"]}`, {sv["cohort"]["count"]} development cases × {sv["config"]["repetitions"]} repetitions)')
+            W('')
+            W(f'Every cost in this section is measured inside job `{sv["job_id"]}` at $M={Msv}$ test modes and is '
+              'comparable only with the other costs in this section.')
             W('')
             W('### Three-layer decomposition per checkpoint (untimed)')
             W('')
             W('| checkpoint | $K$ | $R$ | bank floor worst / median | best-found worst / median | solved q=0 worst |')
             W('|---|---:|---:|---:|---:|---:|')
             for r in [x for x in sv['reconstruction'] if x['intervals'] == n]:
-                s0 = aggs.get((n, f'neural_q0@{r["model"]}'))
+                s0 = look(Msv, n, f'neural_q0@{r["model"]}')
                 W(f'| `{r["model"]}` | {r["K"]} | {r["R_total"]} | {pc(r["bank_projection"]["worst"])} / {pc(r["bank_projection"]["median"])} | '
                   f'{pc(r["best_found"]["worst"])} / {pc(r["best_found"]["median"])} | {pc(s0["worst_same_grid"]) if s0 else "—"} |')
                 emit(n, r['model'], 'bank', r['R_total'], 'bank_floor_dev_worst', r['bank_projection']['worst'], sv['job_id'], ssrc)
@@ -309,7 +395,8 @@ def main():
             W('')
             W('| subject | family | $K$ / $k\'$ | $q$ | worst same-grid | median same-grid | worst physical | median complete ms | median device / solver ms | stationary | median iters | max iters |')
             W('|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
-            items = sorted([v for k, v in aggs.items() if k[0] == n], key=lambda v: (v['family'] != 'fom', v['family'], v['name']))
+            items = sorted([v for k, v in aggs.items() if k[0] == sv['job_id'] and k[1] == n],
+                           key=lambda v: (v['family'] != 'fom', v['family'], v['name']))
             for v in items:
                 cost2 = v['median_device_ms'] if v['median_device_ms'] is not None else v['median_solver_ms']
                 W(f'| `{v["name"]}` | {v["family"]}{"" if v["where"] == "gpu" else " (cpu)"} | {v["k"] if v["k"] is not None else "—"} | '
@@ -321,7 +408,7 @@ def main():
                 for metric in ('worst_same_grid', 'median_same_grid', 'worst_physical', 'median_total_ms', 'median_device_ms',
                                'median_solver_ms', 'stationary', 'median_iterations'):
                     if v[metric] is not None:
-                        emit(n, v['name'], v['family'], qk, metric, v[metric], sv['job_id'], ssrc,
+                        emit(n, v['name'], v['family'], qk, metric, v[metric], sv['job_id'], ssrc, test_modes=Msv,
                              reps_ms=v['total_ms_reps'] if metric == 'median_total_ms' else None)
             W('')
             # clauses at N=256
@@ -329,8 +416,8 @@ def main():
                 prim = [v for v in items if v['family'] == 'neural' and v['primary']]
                 if prim:
                     best = min(prim, key=lambda v: v['worst_same_grid'])
-                    pod_match = aggs.get((n, f'pod{best["k"]}'))
-                    pod8 = aggs.get((n, f'pod{8 * best["k"]}'))
+                    pod_match = look(Msv, n, f'pod{best["k"]}')
+                    pod8 = look(Msv, n, f'pod{8 * best["k"]}')
                     W('### Pre-registered cell success at N=256')
                     W('')
                     W('| clause | requirement | value | verdict |')
@@ -344,11 +431,89 @@ def main():
                     if pod8:
                         W(f'| honesty | POD-LSPG at k\'=8K (`pod{8 * best["k"]}`) vs the head | {pc(pod8["worst_same_grid"])} % vs {pc(best["worst_same_grid"])} % | '
                           f'{"POD at 8K matches or beats the head" if pod8["worst_same_grid"] <= best["worst_same_grid"] else "head beats POD at 8K"} |')
-                    splu = aggs.get((n, 'fom_splu'))
+                    splu = look(Msv, n, 'fom_splu')
                     if splu:
                         W(f'| honesty | `fom_splu` cost and error | {pc(splu["worst_same_grid"])} % at {splu["median_total_ms"]:.3f} ms vs `{best["name"]}` {best["median_total_ms"]:.3f} ms | '
                           f'{"the direct solve is cheaper" if splu["median_total_ms"] <= best["median_total_ms"] else "the head is cheaper than the direct solve"} |')
                     W('')
+
+    # --------------------------------------------------------- the free rung --
+    free = sorted({(v['M'], k[1], k[2]) for k, v in aggs.items() if v['family'] == 'free'})
+    W('## The free rung $q=R$: a purely linear reduced model on the same bank')
+    W('')
+    if not free:
+        W('No free rung is present in these jobs. It needs more test modes than bank columns '
+          f'($M > R$), and the primaries have $R={max(x["R_total"] for x in tr["head_arms"])}$.')
+        W('')
+    else:
+        W('On this rung the correction basis is the whole bank ($C=I$), so no nonlinear unknown remains: '
+          'the head is bypassed and every coefficient comes from one exact least-squares elimination against '
+          'the test modes. It is the paper\'s structural claim made concrete — on a linear PDE the top rung of '
+          'the ladder is itself a **linear** reduced model.')
+        W('')
+        # Head-independence, measured rather than asserted (DESIGN.md A9).
+        pairs = [(look(M, n, x), look(M, n, y)) for M, n, x in free for _, _, y in free
+                 if x < y and look(M, n, x)['model'] != look(M, n, y)['model'] or
+                 (x < y and look(M, n, x)['k'] != look(M, n, y)['k'])]
+        if pairs:
+            u, v2 = pairs[0]
+            W(f'**Head-independence, measured.** The rung is head-independent in exact arithmetic, and the two '
+              f'heads on the same bank ($K={u["k"]}$ and $K={v2["k"]}$) agree on every reported figure: worst '
+              f'{pc(u["worst_same_grid"])} % against {pc(v2["worst_same_grid"])} %, median '
+              f'{pc(u["median_same_grid"])} % against {pc(v2["median_same_grid"])} %. They are **not** bitwise '
+              'identical: with $C=I$ the elimination cancels $h(z)$ against $R_q^{-1}Q_q^\\top B\\,h(z)$, and in '
+              'f64 that cancellation leaves round-off that still depends on $h(z)$. The measured worst relative '
+              'field difference between the two heads is in `checks/verify_report_2026-09-17.json` '
+              '(`free_rung_is_head_independent_to_roundoff`); the timed repetitions of one subject *are* bitwise '
+              'identical. DESIGN.md §A6 claimed byte-identical output from the two heads on the strength of an '
+              '$N=32$, $R=32$ smoke, where the cancellation happened to be exact; §A9 corrects that.')
+            W('')
+        W('| block $M$ | job | mesh | subject | $R$ | worst same-grid % | median same-grid % | bank floor worst % | worst / floor | median complete ms | iters | on the non-dominated front? |')
+        W('|---:|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---|')
+        for M, n, name in free:
+            v = look(M, n, name)
+            rec = next((r for r in [x for sv in solves if sv['job_id'] == v['job_id']
+                                    for x in sv['reconstruction']] if r['intervals'] == n and r['model'] == v['model']), None)
+            fl_ = rec['bank_projection']['worst'] if rec else None
+            on = name in [x['name'] for x in verdict[(M, n)][1]]
+            over = f'{v["worst_same_grid"] / fl_:.3f}x' if fl_ else '—'
+            W(f'| {M} | `{v["job_id"]}` | {n} | `{name}` | {rec["R_total"] if rec else "—"} | {pc(v["worst_same_grid"])} | '
+              f'{pc(v["median_same_grid"])} | {pc(fl_)} | {over} | '
+              f'{v["median_total_ms"]:.3f} | {num(v["median_iterations"], 1)} | {"**yes**" if on else "no"} |')
+            emit(n, name, 'free', rec['R_total'] if rec else None, 'free_rung_worst_over_bank_floor',
+                 (v['worst_same_grid'] / fl_) if fl_ else None, v['job_id'], v['source_sha'], test_modes=M)
+        W('')
+        # The within-block comparison against the best POD rank, generated from the same job.
+        for M, n, name in free:
+            v = look(M, n, name)
+            pods = [aggs[k] for k in block_index[M].values() if k[1] == n and aggs[k]['family'] == 'pod']
+            if not pods:
+                continue
+            bestpod = min(pods, key=lambda x: x['worst_same_grid'])
+            wins = v['worst_same_grid'] <= bestpod['worst_same_grid'] and v['median_total_ms'] <= bestpod['median_total_ms']
+            W(f'**`{name}` against the best linear baseline in the same job.** The strongest POD-LSPG rank at '
+              f'$M={M}$, $N={n}$ is `{bestpod["name"]}` at {pc(bestpod["worst_same_grid"])} % worst and '
+              f'{bestpod["median_total_ms"]:.3f} ms; the free rung is {pc(v["worst_same_grid"])} % at '
+              f'{v["median_total_ms"]:.3f} ms, so it '
+              + (f'**dominates** it — {bestpod["worst_same_grid"] / v["worst_same_grid"]:.2f}x better worst error at '
+                 f'{bestpod["median_total_ms"] / v["median_total_ms"]:.2f}x the speed. That is the one place in this '
+                 'cell where the learned bank beats the classical linear baseline on both axes at once.'
+                 if wins else
+                 'does not dominate it.'))
+            W('')
+            emit(n, name, 'free', None, 'free_rung_worst_over_best_pod',
+                 v['worst_same_grid'] / bestpod['worst_same_grid'], v['job_id'], v['source_sha'], test_modes=M)
+            break
+        W('**Why these rows are at $M=1024$ and not at $M=R+1$** (DESIGN.md §A6). The rung is the least-squares '
+          'solution of $Bc=f_M$ over all $R$ coefficients, so it needs $M>R$ equations. At the smallest such '
+          'count, $M=R+1$, the system is one equation over square: the bank content outside the span of the '
+          'lowest $R+1$ eigenmodes is unconstrained, $\\mathrm{cond}(B)$ is $10^6$–$10^7$, and an untimed NumPy '
+          'sweep on these exact banks put the rung 8–13x above its own bank floor (`smooth_R512` 8.4852 % worst '
+          'against a 0.7123 % floor). From $M\\approx768$ it is within 4 % of the floor on every bank and at '
+          '$M=1024$ it *is* the floor. The sweep is `checks/free_rung_M_sweep.json`; the timed rung was therefore '
+          'run at $M=1024$, which is why it lives in its own block and its cost may not be set beside the '
+          '$M=257$ tables.')
+        W('')
 
     # ------------------------------------------------------------ audits ------
     if audits:
@@ -380,9 +545,10 @@ def main():
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        fig, axes = plt.subplots(1, len(meshes), figsize=(4.6 * len(meshes), 4.2), squeeze=False)
-        for ax, n in zip(axes[0], meshes):
-            items = [v for k, v in aggs.items() if k[0] == n]
+        panels = [(M, n) for M in Ms for n in block_meshes(M)]
+        fig, axes = plt.subplots(1, len(panels), figsize=(4.6 * len(panels), 4.2), squeeze=False)
+        for ax, (M, n) in zip(axes[0], panels):
+            items = [aggs[k] for k in block_index[M].values() if k[1] == n]
             for fam, color in PALETTE.items():
                 pts = [v for v in items if v['family'] == fam]
                 if not pts:
@@ -399,7 +565,7 @@ def main():
             ax.set_xscale('log'); ax.set_yscale('log')
             ax.set_xlabel('median complete-query ms (host in → host out)')
             ax.set_ylabel('worst same-grid error over cases (%)')
-            ax.set_title(f'N = {n}, n = {next(f["interior_unknowns"] for sv in solves for f in sv["fom"] if f["intervals"] == n)}')
+            ax.set_title(f'N = {n}, n = {next(f["interior_unknowns"] for sv in solves for f in sv["fom"] if f["intervals"] == n)}, M = {M}')
             ax.grid(True, which='major', color='#e6e6e6', linewidth=0.6)
             ax.spines['top'].set_visible(False); ax.spines['right'].set_visible(False)
         axes[0][0].legend(fontsize=7, frameon=False)
@@ -411,7 +577,9 @@ def main():
         W('')
         W('Each panel is one mesh; every timed subject is one point (worst same-grid error over the development cases '
           'against median complete-query milliseconds), hollow markers coloured by family, the grey step is the '
-          'non-dominated front with full-order comparators included, and only front members are labelled.')
+          'non-dominated front with full-order comparators included, and only front members are labelled. '
+          'Panels are labelled with their test-mode count M; panels at different M are different cost scales and '
+          'must not be compared horizontally.')
         W('')
 
     # -------------------------------------------- deviations and honesty ------
@@ -422,9 +590,14 @@ def main():
          f'85 % fit split ({tr["cohorts"]["training"]["count"] - len(tr["cohorts"]["training"]["validation"])} sources); '
          f'POD-LSPG is built from all {solves[0]["pod_cohort"]["used"] if solves else "—"} training snapshots. The difference '
          'favours POD, and it is left that way deliberately so the linear baseline is not handicapped.'),
-        ('No free-bank rung exists.', 'The $q=R$ rung needs more test modes than bank columns, and both primaries have '
-         f'$R={max(x["R_total"] for x in tr["head_arms"])}$ against $M={cfg["requested_modes"]}$ tests, so it is not constructible here. '
-         'The untimed bank projection floor stands in for it as the representation ceiling.'),
+        ('The free-bank rung is not constructible in the $M=257$ block.', 'The $q=R$ rung needs more test modes than '
+         f'bank columns, and both primaries have $R={max(x["R_total"] for x in tr["head_arms"])}$ against $M=257$ tests. '
+         'In that block the untimed bank projection floor stands in for it as the representation ceiling; the rung '
+         'itself was measured in a separate job at $M=1024$ and is reported in its own, non-comparable block.'),
+        ('The two blocks are not one table.', 'Test modes enter every reduced query as a dense $M\\times n$ projection, '
+         'so a subject at $M=1024$ is doing about four times the projection work of the same subject at $M=257$. '
+         'The $M=1024$ job re-ran the six full-order comparators and all five POD ranks in the same allocation for '
+         'exactly this reason: the comparison that decides the cell is within one job, never across two.'),
         ('The comparison heads run at $q=0$ only.', 'The correction ladder is run on the two primaries; the heads on the '
          'non-selected banks answer the boundary-factor question at $q=0$, which is where that question lives.'),
         ('Offline setup is not charged to any query.', 'The operator assembly, the SuperLU and IC(0) factorisations, the '

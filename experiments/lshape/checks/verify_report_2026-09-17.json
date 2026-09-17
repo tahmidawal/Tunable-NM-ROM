@@ -1,0 +1,195 @@
+{
+  "checks": {
+    "every_timed_row_is_keyed_by_job_and_block": {
+      "pass_": true,
+      "detail": {
+        "rows": 820,
+        "unkeyed": 0
+      }
+    },
+    "no_duplicate_timed_rows": {
+      "pass_": true,
+      "detail": {
+        "duplicates": []
+      }
+    },
+    "nondominated_sets_match_independent_audit": {
+      "pass_": true,
+      "detail": {
+        "audit": {
+          "('3784662', 64)": [
+            "fom_splu"
+          ],
+          "('3784662', 128)": [
+            "fom_splu",
+            "pod16",
+            "pod32",
+            "pod64"
+          ],
+          "('3784663', 256)": [
+            "fom_splu",
+            "neural_q0@head_smooth_R256_K16",
+            "neural_q64@head_sdf_R512_K16",
+            "pod128",
+            "pod16",
+            "pod32",
+            "pod64"
+          ],
+          "('3784910', 256)": [
+            "fom_splu",
+            "freebank@head_sdf_R512_K16",
+            "freebank@head_sdf_R512_K32",
+            "pod16",
+            "pod32"
+          ]
+        },
+        "report": {
+          "('3784662', 64)": [
+            "fom_splu"
+          ],
+          "('3784662', 128)": [
+            "fom_splu",
+            "pod16",
+            "pod32",
+            "pod64"
+          ],
+          "('3784663', 256)": [
+            "fom_splu",
+            "neural_q0@head_smooth_R256_K16",
+            "neural_q64@head_sdf_R512_K16",
+            "pod128",
+            "pod16",
+            "pod32",
+            "pod64"
+          ],
+          "('3784910', 256)": [
+            "fom_splu",
+            "freebank@head_sdf_R512_K16",
+            "freebank@head_sdf_R512_K32",
+            "pod16",
+            "pod32"
+          ]
+        }
+      }
+    },
+    "report_values_recomputed_from_raw_invocations": {
+      "pass_": true,
+      "detail": {
+        "worst_relative_difference": 0.0
+      }
+    },
+    "free_rung_is_head_independent_to_roundoff": {
+      "pass_": true,
+      "detail": {
+        "cases": 32,
+        "worst_relative_field_difference": 4.061408280067816e-14,
+        "worst_same_grid_error_difference": 4.85722573273506e-17,
+        "bitwise_identical": false
+      }
+    },
+    "timed_repetitions_are_bit_identical": {
+      "pass_": true,
+      "detail": {
+        "cases": 32
+      }
+    },
+    "free_rung_reaches_its_bank_floor": {
+      "pass_": true,
+      "detail": {
+        "worst": 0.007790957054212605,
+        "bank_floor": 0.007766252837797699,
+        "ratio": 1.003180969887392
+      }
+    },
+    "free_rung_runs_no_lm": {
+      "pass_": true,
+      "detail": {
+        "max_iterations": 0
+      }
+    },
+    "all_gates_passed": {
+      "pass_": true,
+      "detail": {
+        "gates": 10
+      }
+    },
+    "all_jobs_gpu_x64_highest_complete": {
+      "pass_": true,
+      "detail": {
+        "env": [
+          [
+            "lsh02",
+            "gpu",
+            true,
+            "highest",
+            true
+          ],
+          [
+            "lsh03",
+            "gpu",
+            true,
+            "highest",
+            true
+          ],
+          [
+            "lsh04",
+            "gpu",
+            true,
+            "highest",
+            true
+          ],
+          [
+            "lsh06",
+            "gpu",
+            true,
+            "highest",
+            true
+          ]
+        ]
+      }
+    },
+    "validation_gap_matches_training_json": {
+      "pass_": true,
+      "detail": {
+        "validation_worst_range": [
+          0.10711135272525328,
+          0.16661417698680767
+        ],
+        "development_worst_range": [
+          0.031802251878827306,
+          0.06796094091740958
+        ],
+        "arms": 7,
+        "validation_cases": 461,
+        "development_cases": 32
+      }
+    },
+    "independent_numpy_audits_pass": {
+      "pass_": true,
+      "detail": {
+        "lsh02": {
+          "passed": true,
+          "checks": 19,
+          "failed": []
+        },
+        "lsh03": {
+          "passed": true,
+          "checks": 13,
+          "failed": []
+        },
+        "lsh04": {
+          "passed": true,
+          "checks": 13,
+          "failed": []
+        },
+        "lsh06": {
+          "passed": true,
+          "checks": 13,
+          "failed": []
+        }
+      }
+    }
+  },
+  "passed": true,
+  "failed": []
+}

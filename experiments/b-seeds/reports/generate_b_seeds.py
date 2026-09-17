@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import statistics
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -77,7 +78,7 @@ def main():
     p.add_argument('--audits', nargs='+', required=True)
     p.add_argument('--eqcert', nargs='*', default=[])
     p.add_argument('--out', required=True)
-    p.add_argument('--date', default='2026-09-18')
+    p.add_argument('--date', default=date.today().isoformat())
     a = p.parse_args()
     audits = load(a.audits)
     out_md = Path(a.out + '.md')
@@ -213,6 +214,10 @@ def main():
                      best_found_bar=tr_bf, bank_floor_bar=tr_fl,
                      passes=bool(tl['best_found_percent'] <= tr_bf and tl['bank_floor_percent'] <= tr_fl))
     F3 = sum(1 for v in TR.values() if not v['passes']) >= 2
+    # the sealed job's submission record, so a pending T13 names its job id from a file
+    subs = json.loads((ROOT / 'experiments/b-seeds/checks/submissions.json').read_text())
+    final_sub = next((j for j in subs['jobs'] if j['attempt'].startswith('final')), None)
+
     verdict = dict(C1_monotone_converged_on_at_least_2_of_3=C1, C1_count=c1_count,
                    monotone_evolved_counts={lad: sum(v.values()) for lad, v in mono_dev.items()},
                    monotone_all_times_counts={lad: sum(v.values()) for lad, v in mono_dev_all.items()},
@@ -222,7 +227,8 @@ def main():
                    C3_every_rung_converged_everywhere=C3,
                    C4_knob_bar_on_at_least_2_of_3=C4, knob=knob,
                    TR=TR, F3_recipe_not_reproduced=F3, seeds_present=seeds,
-                   sealed_present=sorted(sealed))
+                   sealed_present=sorted(sealed),
+                   sealed_job_pending=(final_sub['job_id'] if final_sub and not sealed else None))
     for k, v in verdict.items():
         if not isinstance(v, dict):
             row(checkpoint='all', cohort='verdict', attempt=None, job_id=None, gpu=None, ladder='dense_m4',
@@ -232,7 +238,14 @@ def main():
     eq = {}
     for pth in a.eqcert:
         e = json.loads(Path(pth).read_text())
-        eq[e.get('checkpoint_label') or Path(pth).name] = e
+        # the EQ-certification audit is q-ridge's and carries no checkpoint label; stage F always
+        # runs on the seed checkpoint this job trained, whose label is in `config_attempt`
+        # ('eqcert-seed1' -> 'seed1'). Falling back to the file name put a file name in the
+        # seed column of the table and a null `checkpoint` in every EQ row of summary.json.
+        label = e.get('checkpoint_label') or (
+            e.get('config_attempt', '').split('eqcert-')[-1] or None) or Path(pth).name
+        e['checkpoint_label'] = label
+        eq[label] = e
         for rr in e.get('rules', []):
             row(checkpoint=e.get('checkpoint_label'), cohort='dev', attempt=e.get('attempt'),
                 job_id=e.get('job_id'), gpu=e.get('gpu'), ladder='eqcert', q=rr['q'], M=rr.get('M'),
@@ -261,7 +274,11 @@ def main():
       f'{" and " + str(len(eq)) + " EQ-certification results" if eq else ""}; every number below is '
       f'read from them. State of the numbers: ' +
       ('**final** — the sealed cohort has been opened and evaluated.' if sealed else
-       '**provisional** — development cohort only; the sealed cohort is still unopened.') +
+       ('**development cohort final, sealed cohort PENDING** — the sealed cohort was opened '
+        f"and submitted as job {final_sub['job_id']} (attempt `{final_sub['attempt']}`, "
+        f"{final_sub['submitted_utc']}); section 5 is filled in when it lands."
+        if final_sub else
+        '**provisional** — development cohort only; the sealed cohort is still unopened.')) +
       ' Pre-registration: `experiments/b-seeds/DESIGN.md`.\n')
     w('## 1. Verdict against the pre-registered criteria\n')
     w('| criterion | holds | measured |\n|---|---|---|')
@@ -366,6 +383,15 @@ def main():
         w('')
 
     # ------------------------------------------------------------ T13 ----
+    has_t13 = bool(sealed) or bool(final_sub)
+    if not sealed and final_sub:
+        w('## 5. T13 — the sealed cohort: PENDING\n')
+        w(f"The sealed cohort `params_draw(17092026, 6)` (`checks/sealed-cohort.json`, committed "
+          f"before the first job) was opened in attempt `{final_sub['attempt']}`, job "
+          f"{final_sub['job_id']}, submitted {final_sub['submitted_utc']} on {final_sub['gpu_requested']}: "
+          f"{final_sub['stages']}. No `config-sealed-*.json` appears in any seed attempt's staged "
+          f"files. C2, C2n and C3 read 'not yet run' above and this section is regenerated, with "
+          'the same generator, when the job lands.\n')
     if sealed:
         w('## 5. T13 — the sealed cohort, `dense_m4`, worst evolved % (and all-times %)\n')
         w(f'The sealed cohort is `params_draw(17092026, 6)`, opened once, in the final job (DESIGN.md §3). '
@@ -411,7 +437,7 @@ def main():
         w('')
 
     # ------------------------------------------------------ FOM controls ----
-    w(f'## {6 if sealed else 5}. Same-job full-order controls\n')
+    w(f'## {6 if has_t13 else 5}. Same-job full-order controls\n')
     w('| job | block | control | worst all-times % | worst evolved % | median GPU ms |')
     w('|---|---|---|---|---|---|')
     for name, x in sorted(audits.items()):
@@ -422,7 +448,7 @@ def main():
 
     # ------------------------------------------------------- EQ cert ----
     if eq:
-        w(f'## {7 if sealed else 6}. EQ rule certification per seed ($q \\le 64$, reachable population, $m = 1024$, bar $\\rho_{{\\max}} \\le 0.116$)\n')
+        w(f'## {7 if has_t13 else 6}. EQ rule certification per seed ($q \\le 64$, reachable population, $m = 1024$, bar $\\rho_{{\\max}} \\le 0.116$)\n')
         w('| seed | $q$ | population | $m$ | NNLS fit | $\\rho_{\\max}$ | $\\rho_{95}$ | certified | EQ evolved % (cert rule) | EQ evolved % (static rule) | dense evolved % (ladder job) | EQ GPU ms |')
         w('|---|---|---|---|---|---|---|---|---|---|---|---|')
         for label, e in sorted(eq.items()):
@@ -440,7 +466,7 @@ def main():
         w('')
 
     # ------------------------------------------------- integrity of the bars ----
-    n_int = 8 if sealed else 7
+    n_int = 8 if has_t13 else 7
     w(f'## {n_int}. Integrity notes on the bars this report is graded against\n')
     w('**The incumbent fidelity bar was weakened before the first job, and this is what it bought.** '
       'The lane pre-registered that the incumbent, re-run in every job, must reproduce the audited '

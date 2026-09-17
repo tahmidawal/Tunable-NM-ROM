@@ -34,8 +34,29 @@
       "stages": "A bank (300000 steps) -> B extract (131072 states) -> C head refit (200000 steps) -> D seed ladder -> E incumbent ladder -> F eqcert (timeout 4h, non-fatal)",
       "manifest_sha256": "baf0f6c30f0beb671382120c78f104a396d1bd9181878f5a1a85197ea5448210",
       "sbatch_sha256": "2c994bb506c5eb747c7e3c6062e8b4435ee238815e8f7459a76ff07c39f8d8d7"
+    },
+    {
+      "attempt": "final",
+      "job_id": 3804465,
+      "seed": null,
+      "work_dir": "/cluster/tufts/paralab/tawal01/b_seeds_20260917/final",
+      "submitted_utc": "2026-09-17T22:22Z (18:22 EDT)",
+      "gpu_requested": "a100",
+      "mem": "180G",
+      "time_limit": "10:00:00",
+      "commit": "320708749287cca2ad39a56995aa941acd19c2d5",
+      "stages": "sealed cohort opened: incumbent -> seed1 -> seed2 -> seed3, dense_m4 + dense_fixedM, same-job FOM controls, 3 timed reps",
+      "squeue_before_in_namespace": 0,
+      "squeue_after_in_namespace": 1,
+      "manifest_sha256": "8ae1672bc33737cd262533335ad86080a43ab3f726dc70cc358f41dc45f31bb8",
+      "sbatch_sha256": "67c7e704b61d7b3b61b817c21b566541d95d46e653d82c3b485621091872e3a4",
+      "checkpoints": {
+        "seed1": "55e98cc1f369d5285ae22a12c1cbcb1e160b5b0cf5e40ab0e3d27e6184b9974d",
+        "seed2": "2997e06e773d945989af27fa14f473299d7f3e28802f9176037cab142419764f",
+        "seed3": "1194495b2d96747d5c25df14feb9632493cbc7f64b1764511c06489ea8cb51f1"
+      }
     }
   ],
-  "sealed_cohort_staged": false,
-  "sealed_note": "no config-sealed-*.json is in any seed attempt; each PROVENANCE.json lists every staged file"
+  "sealed_cohort_staged": true,
+  "sealed_note": "no config-sealed-*.json appears in any seed attempt PROVENANCE.json or archive MANIFEST.sha256 (zero matches in all six files); the sealed cohort is staged only in attempt `final`, job 3804465, submitted after the three seed jobs were collected, audited and archived (DESIGN.md A4)"
 }

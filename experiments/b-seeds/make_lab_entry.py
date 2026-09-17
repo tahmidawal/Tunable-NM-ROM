@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -24,7 +25,7 @@ def main():
     p.add_argument('--report', required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--retractions', default=None)
-    p.add_argument('--date', default='2026-09-18')
+    p.add_argument('--date', default=date.today().isoformat())
     a = p.parse_args()
     rows = json.loads(Path(a.summary).read_text())
 
@@ -36,7 +37,8 @@ def main():
         return m[0]['value'] if m else None
 
     verdict = {r['metric']: r['value'] for r in get(cohort='verdict')}
-    seeds = sorted({r['checkpoint'] for r in rows if r.get('checkpoint', '').startswith('seed') and r.get('cohort') == 'dev'})
+    seeds = sorted({r['checkpoint'] for r in rows if (r.get('checkpoint') or '').startswith('seed')
+                    and r.get('cohort') == 'dev' and r.get('ladder') != 'eqcert'})
     jobs = sorted({(r['attempt'], r['job_id'], r['gpu']) for r in rows if r.get('job_id')}, key=lambda t: str(t[1]))
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     rep = Path(a.report)
@@ -97,6 +99,18 @@ def main():
                 cells.append(f'{fmt(se)} / {fmt(de)}')
             w(f'| {q} | ' + ' | '.join(cells) + ' |')
         w('')
+    pending = verdict.get('sealed_job_pending')
+    if pending:
+        subs = json.loads((ROOT / 'experiments/b-seeds/checks/submissions.json').read_text())
+        fs = next(j for j in subs['jobs'] if str(j['job_id']) == str(int(pending)))
+        w(f"**T13 — sealed cohort PENDING.** The sealed cohort was opened after the three seed "
+          f"attempts were collected, audited and archived, and submitted as attempt "
+          f"`{fs['attempt']}`, job {fs['job_id']} ({fs['gpu_requested']}, {fs['time_limit']}, "
+          f"{fs['submitted_utc']}): {fs['stages']}. It is the lane's 4th of 8 jobs. No "
+          f"`config-sealed-*.json` appears in any seed attempt's staged files. This entry is "
+          f"interim; the sealed numbers and the C2/C2n/C3 verdicts follow when it lands.")
+        w('')
+
     def count(metric, ladder='dense_m4', cohort='dev'):
         vals = [val(checkpoint=s, cohort=cohort, ladder=ladder, metric=metric) for s in seeds]
         return f'{sum(1 for v in vals if v)} of {len(seeds)}'

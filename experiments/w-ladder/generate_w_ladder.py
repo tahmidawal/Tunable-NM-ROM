@@ -223,10 +223,12 @@ def main():
                   f"{cheap['median_gpu_ms'] / lb['median_gpu_ms']:.0f}× cheaper and {cheap['worst_energy_state'] / lb['worst_energy_state']:.2f}× more accurate | "
                   + (f"{pct(pod['worst_energy_state'])} % at {ms(pod['median_gpu_ms'])} ms | " if pod else 'n/a | ')
                   + f"{pct(dst['worst_energy_state'])} % at {ms(dst['median_gpu_ms'])} ms | **{vd['all']}** |")
+    ratios = [rows['head_q0']['median_gpu_ms'] / rows['linear_bank64']['median_gpu_ms'] for _, rows, _ in meshes]
     up += ['', 'The top rung of the correction ladder — the full learned bank evolved linearly, with no head — is at every '
-           'mesh both the most accurate rung (within the integrator tie band of DESIGN §10 A2) and by two orders of magnitude '
-           'the cheapest, so the accuracy-cost curve over correction rank $q$ is degenerate, as it is on heat. No ROM arm beats '
-           'the direct full-order solver on accuracy, and POD-Galerkin at the same rank as the learned bank is reported beside it.', '']
+           f'mesh both the most accurate rung (within the integrator tie band of DESIGN §10 A2) and {min(ratios):.0f}–{max(ratios):.0f}× '
+           'cheaper than the cheapest head rung, so the accuracy-cost curve over correction rank $q$ is degenerate, as it is on '
+           'heat. No ROM arm beats the direct full-order solver on accuracy, and POD-Galerkin at the same rank as the learned '
+           'bank is reported beside it.', '']
     out = LANE / 'reports'
     figure(meshes, out / '2026-09-17-w-ladder.png')
     (out / 'summary.json').write_text(json.dumps(summary, indent=1) + '\n')

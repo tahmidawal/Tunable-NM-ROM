@@ -1,0 +1,54 @@
+host=pax105 source_commit=8a01627b25da197132f581025dd4ff8fd0f17545
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  434G  91% /cluster/tufts/paralab
+jax_backend=gpu
+GATE S0: PASS backend=gpu precision=highest
+GATE F-LAP_N64: PASS N=64 rel=3.516e-15 tol=1.000e-12
+GATE F-JAC_N64: FAIL N=64 sum_J=1.184e-17 sum_zJ=6.318e-18 sum_psiJ=7.911e-18 worst_identity=1.184e-17 antisymmetry_rel=1.205e-16 analytic_rel=2.273e-02 centred_control_zJ=9.639e-04
+GATE F-LAP_N128: PASS N=128 rel=5.516e-15 tol=1.000e-12
+GATE F-JAC_N128: FAIL N=128 sum_J=2.324e-18 sum_zJ=3.692e-18 sum_psiJ=2.820e-18 worst_identity=3.692e-18 antisymmetry_rel=1.496e-16 analytic_rel=5.724e-03 centred_control_zJ=2.366e-04
+GATE F-LAP_N256: PASS N=256 rel=1.460e-14 tol=1.000e-12
+GATE F-JAC_N256: FAIL N=256 sum_J=9.255e-18 sum_zJ=2.447e-18 sum_psiJ=1.404e-18 worst_identity=9.255e-18 antisymmetry_rel=2.378e-16 analytic_rel=1.434e-03 centred_control_zJ=5.893e-05
+GATE F-JAC-ORDER: PASS 
+GATE F-TG_N64: PASS N=64 exact_rel=1.729e-14 semi_rel=1.637e-07 cont_rel=6.340e-04 cont_pred=6.342e-04 cont_pred_dev=2.583e-04 wrong_lambda_rel=3.008e-01 be_rel=6.221e-04 newton_max_it=1 newton_worst_rn=7.841e-17
+GATE F-TG_N128: PASS N=128 exact_rel=4.353e-14 semi_rel=1.640e-07 cont_rel=1.584e-04 cont_pred=1.585e-04 cont_pred_dev=1.034e-03 wrong_lambda_rel=3.010e-01 be_rel=6.229e-04 newton_max_it=1 newton_worst_rn=1.861e-16
+GATE F-TG_N256: PASS N=256 exact_rel=9.710e-14 semi_rel=1.641e-07 cont_rel=3.947e-05 cont_pred=3.964e-05 cont_pred_dev=4.139e-03 wrong_lambda_rel=3.011e-01 be_rel=6.231e-04 newton_max_it=1 newton_worst_rn=6.729e-16
+GATE F-TG-ORDER: PASS 
+   mms N=64 dt=5.0e-04 err 4.317e-04 newton max 2 rn 1.0e-13
+   mms N=128 dt=5.0e-04 err 1.081e-04 newton max 1 rn 4.4e-14
+   mms N=256 dt=5.0e-04 err 2.707e-05 newton max 1 rn 1.1e-14
+GATE F-MMS: PASS temporal_N=128 temporal_order=2.000e+00 temporal_order_vs_finest=2.322e+00 flipped_sign_control=5.210e-02
+GATE F-BUDGET_N64: PASS N=64 nu=8.446e-03 steps=100 identity_enstrophy=8.748e-14 identity_energy=1.339e-13 conservation_enstrophy=1.771e-16 conservation_energy=2.217e-16 be_control_enstrophy=5.441e-03 newton_max_it=2 newton_worst_rn=7.295e-17
+GATE F-BUDGET_N128: PASS N=128 nu=8.446e-03 steps=100 identity_enstrophy=6.852e-14 identity_energy=8.358e-14 conservation_enstrophy=3.542e-16 conservation_energy=2.220e-16 be_control_enstrophy=5.506e-03 newton_max_it=2 newton_worst_rn=1.765e-16
+GATE F-BUDGET_N256: PASS N=256 nu=8.446e-03 steps=100 identity_enstrophy=1.030e-13 identity_energy=1.365e-13 conservation_enstrophy=3.542e-16 conservation_energy=4.441e-16 be_control_enstrophy=5.522e-03 newton_max_it=2 newton_worst_rn=6.372e-16
+   mesh re100 N=64 newton max 2 worst rn 7.77e-17
+   mesh re100 N=128 newton max 2 worst rn 2.05e-16
+   mesh re100 N=256 newton max 2 worst rn 7.55e-16
+   mesh re100 N=512 newton max 2 worst rn 2.97e-15
+GATE F-MESH_re100: PASS dev_index=6 tag=re100 nu=1.000e-02
+   mesh re1000 N=64 newton max 2 worst rn 6.62e-16
+   mesh re1000 N=128 newton max 2 worst rn 1.56e-15
+   mesh re1000 N=256 newton max 2 worst rn 1.94e-15
+   mesh re1000 N=512 newton max 2 worst rn 2.10e-15
+GATE F-MESH_re1000: PASS dev_index=57 tag=re1000 nu=1.000e-03
+GATE F-INDEP: PASS N=64 steps=100 nu=1.123e-03 worst_rel=9.136e-16 jax_seconds=1.453e+00 numpy_seconds=6.529e+02 jax_newton_max=2 numpy_newton_max=2 numpy_worst_rn=1.285e-16
+   data N=64 train: 512 traj, 468s, cfl 0.31, newton max 2, rn 2.5e-15, sha e98831405d59
+GATE F-DATA_train_N64: PASS worst_rel_residual=2.547e-15 max_cfl=3.055e-01 newton_max_it=2
+   data N=64 dev: 64 traj, 60s, cfl 0.30, newton max 2, rn 1.9e-15, sha 76bb1790da52
+GATE F-DATA_dev_N64: PASS worst_rel_residual=1.895e-15 max_cfl=3.028e-01 newton_max_it=2
+   data N=64 sealed: 64 traj, 59s, cfl 0.30, newton max 2, rn 1.2e-15, sha d4c37a713009
+GATE F-DATA_sealed_N64: PASS worst_rel_residual=1.245e-15 max_cfl=2.982e-01 newton_max_it=2
+   data N=128 train: 512 traj, 578s, cfl 0.61, newton max 2, rn 7.3e-15, sha a5d45feb60bc
+GATE F-DATA_train_N128: PASS worst_rel_residual=7.349e-15 max_cfl=6.126e-01 newton_max_it=2
+   data N=128 dev: 64 traj, 74s, cfl 0.61, newton max 2, rn 3.5e-15, sha b82e69bc9c5d
+GATE F-DATA_dev_N128: PASS worst_rel_residual=3.529e-15 max_cfl=6.063e-01 newton_max_it=2
+   data N=128 sealed: 64 traj, 73s, cfl 0.60, newton max 2, rn 2.0e-15, sha 543012df75b9
+GATE F-DATA_sealed_N128: PASS worst_rel_residual=2.046e-15 max_cfl=5.988e-01 newton_max_it=2
+   data N=256 train: 512 traj, 629s, cfl 1.23, newton max 2, rn 9.8e-15, sha 4ce80fafbf1f
+GATE F-DATA_train_N256: PASS worst_rel_residual=9.837e-15 max_cfl=1.226e+00 newton_max_it=2
+   data N=256 dev: 64 traj, 81s, cfl 1.21, newton max 2, rn 4.5e-15, sha f69ca8e87621
+GATE F-DATA_dev_N256: PASS worst_rel_residual=4.482e-15 max_cfl=1.213e+00 newton_max_it=2
+   data N=256 sealed: 64 traj, 79s, cfl 1.20, newton max 2, rn 2.5e-15, sha 2994ccb390d1
+GATE F-DATA_sealed_N256: PASS worst_rel_residual=2.454e-15 max_cfl=1.199e+00 newton_max_it=2
+PHASE1 done in 2847s; all_passed=False; failed=['F-JAC_N64', 'F-JAC_N128', 'F-JAC_N256']
+ALL-DONE

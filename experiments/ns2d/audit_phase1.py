@@ -59,9 +59,9 @@ def main():
     audit = dict(source=str(out / 'result.json'), checks=[], all_match=True)
 
     def check(name, recomputed, reported):
-        ok = close(recomputed, reported)
-        audit['checks'].append(dict(name=name, recomputed=recomputed, reported=reported, match=ok))
-        audit['all_match'] &= ok
+        ok = bool(close(recomputed, reported))
+        audit['checks'].append(dict(name=name, recomputed=float(recomputed), reported=float(reported), match=ok))
+        audit['all_match'] = bool(audit['all_match'] and ok)
         print(f'{"ok " if ok else "MISMATCH"} {name}: recomputed {recomputed:.6e} reported {reported:.6e}')
 
     for f in sorted(out.glob('tg_N*.npz')):
@@ -108,10 +108,10 @@ def main():
         # the JAX values at their own size, so these are VALUE gates against the threshold
         # (lane protocol landmine: value gates, not hash gates, across implementations)
         for nm, v in (('identity_enstrophy', wz), ('identity_energy', we)):
-            ok = v <= 1e-10 and g[nm] <= 1e-10
-            audit['checks'].append(dict(name=f'F-BUDGET_N{N}.{nm}', recomputed=v, reported=g[nm],
+            ok = bool(v <= 1e-10 and g[nm] <= 1e-10)
+            audit['checks'].append(dict(name=f'F-BUDGET_N{N}.{nm}', recomputed=float(v), reported=float(g[nm]),
                                         threshold=1e-10, match=ok))
-            audit['all_match'] &= ok
+            audit['all_match'] = bool(audit['all_match'] and ok)
             print(f'{"ok " if ok else "MISMATCH"} F-BUDGET_N{N}.{nm}: recomputed {v:.3e} reported {g[nm]:.3e} (both <= 1e-10)')
         s0 = d['states_nu0']
         Z0 = 0.5 * np.sum(s0 * s0, axis=(1, 2)) / (N * N)
@@ -152,9 +152,9 @@ def main():
     for k, g in G.items():
         if k.startswith('F-JAC_N'):
             ratio = g['centred_control_zJ'] / max(g['sum_zJ'], 1e-300)
-            ok = g['worst_identity'] <= 1e-13 and g['antisymmetry_rel'] <= 1e-13 and ratio >= 1e6
-            audit['checks'].append(dict(name=f'{k}.passed_A2', control_ratio=ratio, passed_A2=ok,
-                                        passed_original=g['passed']))
+            ok = bool(g['worst_identity'] <= 1e-13 and g['antisymmetry_rel'] <= 1e-13 and ratio >= 1e6)
+            audit['checks'].append(dict(name=f'{k}.passed_A2', control_ratio=float(ratio), passed_A2=ok,
+                                        passed_original=bool(g['passed'])))
             print(f'{k}: control ratio {ratio:.3e} -> passed_A2={ok} (original {g["passed"]})')
     audit['n_checks'] = len(audit['checks'])
     print('ALL_MATCH', audit['all_match'], 'checks', audit['n_checks'])

@@ -288,11 +288,23 @@ def main():
     for q in cfg['new_rungs']:
         M = 4 * (K + q)
         ph, _ = modes(M)
-        cand = ET.candidate_pool(L, cfg['candidate_pool'], cfg['pool_seed'] + q)
+        cand_shared = ET.candidate_pool(L, cfg['candidate_pool'], cfg['pool_seed'] + q)
         for arm in cfg['arms']:
             n = incumbent_states(M) if arm['fit_states'] == 'incumbent' else int(arm['fit_states'])
             pool = pools[q]['fit']
-            sel = np.sort(rng.choice(len(pool), min(n, len(pool)), replace=False))
+            # A replication arm carries `seed_offset`: it draws its OWN candidate pool and its
+            # own fit-state subset from a dedicated stream, leaving the shared `rng` stream
+            # (and therefore every ordinary arm) untouched.
+            off = arm.get('seed_offset')
+            if off is None:
+                cand = cand_shared
+                sel = np.sort(rng.choice(len(pool), min(n, len(pool)), replace=False))
+                draw_seed = None
+            else:
+                draw_seed = int(cfg['pool_seed'] + q + 100000 * int(off))
+                cand = ET.candidate_pool(L, cfg['candidate_pool'], draw_seed)
+                arng = np.random.default_rng(draw_seed + 7)
+                sel = np.sort(arng.choice(len(pool), min(n, len(pool)), replace=False))
             t0 = time.perf_counter()
             D, b, dinfo_ = ET.build_design(G, ph, L, pool[sel], cand, scaling=arm['scaling'])
             if arm['compress']:
@@ -308,7 +320,8 @@ def main():
             spath.write_text(json.dumps(dict(unreachable_residual=cinfo['unreachable_residual'],
                                              b_norm=cinfo['b_norm'])))
             del D, b, Dw, bw
-            rec = dict(key=key, q=q, M=M, arm=arm['name'], fit_states=int(len(sel)),
+            rec = dict(key=key, q=q, M=M, arm=arm['name'], draw_seed=draw_seed,
+                       seed_offset=off, fit_states=int(len(sel)),
                        fit_state_indices_sha256=sha_array(sel), scaling=arm['scaling'],
                        candidates=int(len(cand)), candidates_sha256=sha_array(cand),
                        design=dinfo_ | dict(target_norms=None), compression=cinfo,

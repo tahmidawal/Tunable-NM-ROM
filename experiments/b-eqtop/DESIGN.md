@@ -281,3 +281,43 @@ arms are now assembled in declared priority order (primary six, dense four, repr
 tight extras) and cut at 16 with every dropped arm recorded; (3) the per-rule walltime cap is
 raised from 5400 to 7200 s so that $m = 6144$ on a compressed design is constructible; the
 11 h submission deadline and the 20 h limit are unchanged.
+
+### A2 (2026-09-17, after `bet201`, before `bet301`) — how much of $\rho_{\max}$ is the draw? A pre-registered replication
+
+`bet201` (job 3780165) re-fitted the incumbent construction at $q \le 64$ with a **different
+candidate pool and a different fit-state subset** at the same $m$ and the same fit-state
+*count* as `qrg304`. The rules are not close: $\rho_{\max}$ moves by $0.11\times$ to
+$2.30\times$, and at $q = 64$, $m = 1024$ it moves from $0.0531$ (certified) to $0.1220$
+(**not** certified). Certification at a given $m$ is therefore **not** a deterministic
+property of $(q, m, \text{population}, \text{states})$; it depends on which pool and which
+fit states were drawn. Two consequences, stated now rather than after the fact:
+
+1. Any two-point log–log slope fitted through such rules — including `q-ridge`'s
+   $\alpha = 1.772$ and its $m \approx 2522$ crossing, and the per-arm laws this lane
+   reports — is fitted through draw noise of that size, and the predicted "$m$ for the bar"
+   is an order-of-magnitude statement at best. The reports must say so at the point of use.
+2. A single certified rule is a *sample*, not a guarantee. The paper claim this lane can
+   support is about the construction, not about one rule.
+
+**`bet301`, pre-registered here.** Four independent draws of (candidate pool, fit-state
+subset) at fixed $(q, m, \text{fit-state count}, \text{scaling})$, at the three rungs whose
+verdict this lane turns on, for the two constructions that decide it:
+
+| configuration | $q$ | $m$ | fit states | draws |
+|---|---|---|---|---|
+| incumbent (`std`) | 64, 128, 256 | 1024 | 25 / 14 / 8 | 4 |
+| 64 fit states (`fs64`) | 64, 128, 256 | 2048 | 64 | 4 |
+
+A replication arm draws its pool and its fit states from a dedicated stream
+(`pool_seed + q + 100000\,i`), leaving the shared stream — and therefore every ordinary arm —
+untouched. No timed phase; the 24 fits are the job.
+
+**Reported** per configuration: the four $\rho_{\max}$, their min, max, mean and sample
+standard deviation, the spread ratio, and **how many of the four draws certify** on each bar.
+**No pass/fail is attached**: this is a measurement of the criterion's variability, and its
+result changes how every other number in this lane is *reported*, not whether it passed.
+Where a configuration certifies on some draws and not others, the lane reports the count and
+calls the configuration *marginal at that $m$* rather than certified.
+
+Job count: `bet101` and `bet201` are submissions 1 and 2; `bet301` is submission 3 of the cap
+of 8.

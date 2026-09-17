@@ -125,6 +125,7 @@ def main():
                           certified_secondary=bool(c['rho_p95'] <= bars['primary'] and not f['truncated']),
                           truncated=bool(f['truncated']), fit_seconds=f['seconds'],
                           stop_reason=f['stop_reason'], scaling=d['scaling'],
+                          seed_offset=d.get('seed_offset'), draw_seed=d.get('draw_seed'),
                           compressed=bool(d['compression']['compressed']),
                           wall_seconds=x.get('wall_seconds')))
     # the driver's own flags must agree with the audit's recomputation from rho
@@ -155,6 +156,28 @@ def main():
                              m_for_bar={b: m_for_bar(fit, v) for b, v in bars.items()},
                              cheapest_certified_m=cheapest))
 
+    # ---------------------------- replication: the spread of rho over independent draws ---
+    reps = {}
+    for x in rules:
+        if x.get('seed_offset') is None:
+            continue
+        k = f"q{x['q']}_m{x['m_target']}_{x['fit_states']}states_{x['scaling']}"
+        reps.setdefault(k, []).append(x)
+    replication = []
+    for k, xs in sorted(reps.items()):
+        v = np.array([x['rho_max'] for x in xs], float)
+        replication.append(dict(
+            key=k, q=xs[0]['q'], m_target=xs[0]['m_target'], fit_states=xs[0]['fit_states'],
+            scaling=xs[0]['scaling'], draws=len(xs),
+            draw_seeds=[x['draw_seed'] for x in xs], m_achieved=[x['m'] for x in xs],
+            rho_max=[float(z) for z in v], rho_min=float(v.min()), rho_max_of_draws=float(v.max()),
+            rho_mean=float(v.mean()), rho_std=float(v.std(ddof=1)) if len(v) > 1 else None,
+            spread_ratio=float(v.max() / max(v.min(), 1e-300)),
+            certified_primary_count=int(sum(x['certified_primary'] for x in xs)),
+            certified_tight_count=int(sum(x['certified_tight'] for x in xs)),
+            relative_fit=[x['relative_fit'] for x in xs]))
+    out_reps = replication
+
     # ------------------------------------------ per-rung choice (from the job)
     choice = r['rule_choice']
 
@@ -163,7 +186,7 @@ def main():
                question=cfg.get('question'), elapsed_seconds=r.get('elapsed_seconds'),
                fit_phase_seconds=r.get('fit_phase_seconds'), bars=bars, rules=rules,
                laws=laws, rule_choice=choice, chains=r.get('chains'), designs=r.get('designs'),
-               collection=r['collection'])
+               collection=r['collection'], replication=out_reps)
 
     if not timed:
         out.update(checks=checks, failed=sorted(fail), arms=[], ladders=None, verdict=None)

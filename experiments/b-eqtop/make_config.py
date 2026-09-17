@@ -106,7 +106,29 @@ def main():
                        'can be stated per rung; plus the fit-state and scaling arms at m = 1024 '
                        'and 2048 to see whether they matter below the top rungs. No timed phase.'),
               expectations={})
-    for name, cfg in (('config-j1.json', j1), ('config-j2.json', j2)):
+    # ---- job 3 (A2): how much of rho_max is the draw? ------------------------
+    # Four independent draws of (candidate pool, fit-state subset) at fixed (q, m, states,
+    # scaling), at the three configurations the top-rung verdict turns on. No timed phase.
+    def rep_arms(states, scaling, compress, m, n=4):
+        return [dict(name=f'rep{scaling[:3]}{states}m{m}s{i + 1}', fit_states=states,
+                     scaling=scaling, compress=compress, m_grid=[m], adaptive=False,
+                     confirm=0, seed_offset=i + 1,
+                     note=f'replication draw {i + 1} of {n} at m = {m}') for i in range(n)]
+    j3 = dict(shared, attempt='bet301', question='REPLICATION', timed_phase=False,
+              new_rungs=[64, 128, 256], dense_twins=[], reproduction_arms=[],
+              fit_workers=12, fit_threads=1,
+              fit_submission_deadline_seconds=12 * 3600.,
+              arms=(rep_arms('incumbent', 'row', False, 1024)
+                    + rep_arms(64, 'row', True, 2048)),
+              purpose=('Replication: bet201 showed that two independent draws of the candidate '
+                       'pool and the fit-state subset change rho_max at fixed (q, m, states) by '
+                       '0.11x to 2.3x, enough to flip certification at q = 64, m = 1024. This '
+                       'job measures that spread directly: four independent draws at each of '
+                       'q = 64, 128, 256, for the incumbent construction at m = 1024 and the '
+                       '64-fit-state construction at m = 2048, so the certification verdict can '
+                       'be reported with its draw-to-draw variability.'),
+              expectations={})
+    for name, cfg in (('config-j1.json', j1), ('config-j2.json', j2), ('config-j3.json', j3)):
         (HERE / name).write_text(json.dumps(cfg, indent=2) + '\n')
         print(name, 'rungs', cfg['new_rungs'], 'arms', [a['name'] for a in cfg['arms']])
 

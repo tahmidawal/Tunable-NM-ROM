@@ -152,10 +152,15 @@ def main():
     # ---------------------------------------------------------------- cohort --
     physical = np.concatenate((e.params_draw(cfg['eval_seed'], cfg['eval_cases']),
                                e.params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
+    roles = ['opened development'] * cfg['eval_cases'] + ['fresh development'] * cfg['eval_fresh_cases']
+    report['physical_sha256'] = sha_array(physical)      # of the FULL draw: params_draw is column-wise
+    if cfg.get('case_subset'):
+        # smoke only: keep listed cases of the full draw (drawing fewer would change the cases)
+        idx = [int(i) for i in cfg['case_subset']]
+        physical, roles = physical[idx], [roles[i] for i in idx]
+        report['case_subset'] = idx
     report['physical_cases'] = physical.tolist()
-    report['physical_sha256'] = sha_array(physical)
-    report['cohort_roles'] = (['opened development'] * cfg['eval_cases']
-                              + ['fresh development'] * cfg['eval_fresh_cases'])
+    report['cohort_roles'] = roles
     want = cfg.get('expected_physical_sha256')
     report['gates']['evaluation_cohort_bitwise_abl01'] = dict(
         expected=want, got=report['physical_sha256'], passed=(None if want is None else report['physical_sha256'] == want))

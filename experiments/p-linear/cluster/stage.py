@@ -54,7 +54,7 @@ SCRIPT = '''#!/bin/bash
 #SBATCH --gres=gpu:__GPU__:1
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=180G
+#SBATCH --mem=__MEM__
 #SBATCH --time=__HOURS__:00:00
 #SBATCH --output=__REMOTE__/logs/%j.out
 #SBATCH --error=__REMOTE__/logs/%j.err
@@ -89,6 +89,7 @@ def main():
     p.add_argument('--config', required=True, help='config file name inside experiments/p-linear')
     p.add_argument('--hours', type=int, default=8)
     p.add_argument('--gpu', default='a100', choices=['a100', 'h100', 'h200', 'l40s'])
+    p.add_argument('--mem', default='180G', help='180G on A100/H100; 240G for H200-class runs')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     out = ROOT / LANE / 'runs' / a.attempt
@@ -112,7 +113,8 @@ def main():
     (out / 'COMMIT.txt').write_text(commit + '\n')
     script = SCRIPT
     for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', a.gpu),
-                         ('__HOURS__', f'{a.hours:02d}'), ('__BODY__', BODY[a.mode])):
+                         ('__HOURS__', f'{a.hours:02d}'), ('__MEM__', a.mem),
+                         ('__BODY__', BODY[a.mode])):
         script = script.replace(token, value)
     script = script.replace('__CONFIG__', a.config)
     assert '__' not in script.replace('__pycache__', ''), script

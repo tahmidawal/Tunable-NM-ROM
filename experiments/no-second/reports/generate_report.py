@@ -66,7 +66,7 @@ def load_attempts(pde='burgers', controls=False):
     return attempts
 
 
-def poisson_rows(attempts, fno_p, fno_p_sha):
+def poisson_rows(attempts, fno_p, fno_p_sha):  # called once; its FNO block is emitted once
     rows = []
     for a in attempts:
         audit = a['audit']
@@ -152,7 +152,9 @@ the parent audit: **discrete** (against the training target) and **physical cand
 """
 
 
-def rows_for(attempts, fno, fno_sha, diagnosis, diagnosis_sha):
+def rows_for(attempts, fno, fno_sha, diagnosis, diagnosis_sha, references=True):
+    """`references=False` emits only the attempts' own rows, so a second call (for the
+    control attempts) cannot duplicate the FNO / ROM / FOM reference rows."""
     rows = []
     for a in attempts:
         audit, job = a['audit'], a['audit']['job_id']
@@ -179,6 +181,8 @@ def rows_for(attempts, fno, fno_sha, diagnosis, diagnosis_sha):
             if t:
                 rows.append(dict(base, cohort='validation-32', metric='same_job_device_query_pooled_median_ms',
                                  value=t['device_pooled_median_ms']))
+    if not references:
+        return rows
     fno_job = fno['job_id']
     for arm, r in fno['models'].items():
         base = dict(operator='FNO', arm=arm, capacity=capacity_of(r['config']), params=r['real_parameter_count'],
@@ -553,7 +557,7 @@ def main():
     fno_p = json.loads(FNO_POISSON_AUDIT.read_text())
     rows += poisson_rows(poisson, fno_p, sha(FNO_POISSON_AUDIT))
     control_attempts = load_attempts('burgers', controls=True)
-    rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS))[:-7 * len(diagnosis['summary'])] if control_attempts else []
+    rows += rows_for(control_attempts, fno, sha(FNO_AUDIT), diagnosis, sha(DIAGNOSIS), references=False)
     text = build(attempts, fno, launch, diagnosis, control_attempts)
     glossary = text.index('## Glossary')
     text = text[:glossary] + poisson_section(poisson, fno_p).lstrip('\n') + ('\n' if poisson else '') + text[glossary:]

@@ -48,7 +48,7 @@ LANES = [
      ['experiments/q-diag/reports/2026-09-16-q16-regression-diagnosis.md']),
     ('dense ladder certification', '2026-09-16-q-trajdirs',
      ['experiments/q-trajdirs/reports/2026-09-16-dense-correction-ladder.md']),
-    ('EQ rule certification (in progress at handoff)', '2026-09-16-q-ridge',
+    ('EQ rule certification', '2026-09-16-q-ridge',
      ['experiments/q-ridge/reports/2026-09-16-q-ridge.md']),
 ]
 

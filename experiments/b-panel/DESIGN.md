@@ -728,3 +728,12 @@ job in `b_panel_20260917/bpn401`, `squeue` before and after, not waited on. Expe
 twelve transfers and 47 subjects at 512² put the estimate at **1.5–2.5 h**; the allocation asks for 20 h.
 Job count after submission: **six of the cap of eight** (`bpn101`, `bpn201` retracted, `bpn202` failed,
 `bpn301`, `bpn203`, `bpn401`).
+
+**Submitted.** `bpn401` = job **3805065**, `--gres=gpu:a100:1 --constraint=a100-80G`, `--mem 180G`, `gpu`
+partition, `--exclude=pax007`, `--time 20:00:00`, staged from commit `7a57f02e`, pushed by `rsync` to
+`b_panel_20260917/bpn401` and `sha256sum -c MANIFEST.sha256 --quiet` verified remotely before submission.
+`squeue -u tawal01` immediately before showed no `bpn_` job; immediately after, exactly one,
+`bpn_bpn401` (3805065), `PENDING (Priority)` — the only job in its attempt directory. The queue held 26
+pending `gpu` jobs at submission; per protocol rule 4 it is escalated to H100 → H200 → L40S only if still
+pending after 3 h, science unchanged (an escalation would forfeit the shared-hardware comparison with
+`bpn301`, and is to be recorded here if it happens). Not waited on. Job count: **six of eight**.

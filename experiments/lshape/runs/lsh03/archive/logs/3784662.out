@@ -1,0 +1,34 @@
+host=pax050 source_commit=941a550e707de227490e930d5e147dc8eb54d8d6
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  396G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+FINE REFERENCE done 25.4
+MESH 64
+GATE {'nnz': 14473, 'interior_unknowns': 2945, 'symmetry_max_abs': 0.0, 'symmetric': True, 'independent_assembly_nnz_difference': 0, 'independent_assembly_agrees': True, 'diagonal_constant': True, 'intervals': 64, 'lambda_min': 38.62480728058881, 'lambda1_reference': 38.5588953760876, 'lambda1_relative_difference': 0.001709382591444483, 'positive_definite': True, 'lambda1_within_1pct': None, 'passed': True}
+RECON 64 head_smooth_R256_K16 floor 0.016301901634444872 best 0.03680474930469467
+RECON 64 head_smooth_R512_K16 floor 0.007722320502049726 best 0.03776889724833622
+RECON 64 head_sdf_R256_K16 floor 0.017047514468473725 best 0.03707620245206427
+RECON 64 head_sdf_R512_K16 floor 0.008854361908138451 best 0.040448855302492245
+RECON 64 head_sdf_R512_K32 floor 0.008854361908138451 best 0.03346867202401716
+RECON 64 head_enrich_R512_K16 floor 0.0072314439892050665 best 0.04049567182232966
+RECON 64 head_smooth_ff128s2_R512_K16 floor 0.025854287068954426 best 0.06999154375037346
+TIMED 64 0 641.7
+TIMED 64 1 881.6
+TIMED 64 2 1122.2
+GATE {'intervals': 64, 'gate': 'G-FOM-5 tight iterative solves agree with the direct reference', 'worst_relative_difference': 3.263519605669518e-11, 'tolerance': 1e-08, 'passed': True}
+MESH 128
+GATE {'nnz': 59657, 'interior_unknowns': 12033, 'symmetry_max_abs': 0.0, 'symmetric': True, 'independent_assembly_nnz_difference': 0, 'independent_assembly_agrees': True, 'diagonal_constant': True, 'intervals': 128, 'lambda_min': 38.58809171094646, 'lambda1_reference': 38.5588953760876, 'lambda1_relative_difference': 0.0007571880515271637, 'positive_definite': True, 'lambda1_within_1pct': True, 'passed': True}
+RECON 128 head_smooth_R256_K16 floor 0.015340413918465592 best 0.03528214408404322
+RECON 128 head_smooth_R512_K16 floor 0.007243394188191438 best 0.036275680799654896
+RECON 128 head_sdf_R256_K16 floor 0.015975183368117818 best 0.035550953247067134
+RECON 128 head_sdf_R512_K16 floor 0.008023444444698045 best 0.038963647985173676
+RECON 128 head_sdf_R512_K32 floor 0.008023444444698045 best 0.032124935587839354
+RECON 128 head_enrich_R512_K16 floor 0.006782602177010334 best 0.03889279777141438
+RECON 128 head_smooth_ff128s2_R512_K16 floor 0.025606464761008866 best 0.06836018425951396
+TIMED 128 0 1458.2
+TIMED 128 1 1709.6
+TIMED 128 2 1959.8
+GATE {'intervals': 128, 'gate': 'G-FOM-5 tight iterative solves agree with the direct reference', 'worst_relative_difference': 2.5693450971173207e-11, 'tolerance': 1e-08, 'passed': True}
+LSHAPE SOLVE COMPLETE
+ALL-DONE

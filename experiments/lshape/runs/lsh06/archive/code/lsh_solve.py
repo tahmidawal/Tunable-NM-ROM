@@ -202,10 +202,9 @@ def main():
     ffine = K_.FOM(gfine, build_ic0=False)
     fine = {}
     for case, q in enumerate(dev):
-        u, resid, floor = ffine.reference(K_.source_interior(gfine, q))
+        u, resid = ffine.reference(K_.source_interior(gfine, q))
         fine[case] = gfine.scatter(u)
         R_['references'].append(dict(case=case, fine_intervals=nfine, fine_residual=resid,
-                                     fine_residual_roundoff_floor=floor,
                                      fine_sha256=K_.sha_array(fine[case])))
     R_['fine_reference'] = dict(intervals=nfine, interior_unknowns=gfine.n, factor_seconds=ffine.factor_seconds,
                                 lu_nnz=ffine.lu_nnz, seconds=time.perf_counter() - t0)
@@ -239,19 +238,12 @@ def main():
         # references and sources
         same, sources, F_int = {}, [], []
         for case, q in enumerate(dev):
-            u, resid, floor = fom.reference(K_.source_interior(geom, q))
-            # G-FOM-4 (DESIGN A7): the residual is round-off-limited, and its floor grows
-            # like ||A||_inf ~ N^2, so the gate is the larger of the declared absolute bound
-            # and that measured floor. Both numbers are recorded per case.
-            limit = max(cfg['reference_residual_limit'],
-                        cfg['reference_residual_roundoff_factor'] * floor)
-            assert resid <= limit, (n, case, resid, floor, limit)
+            u, resid = fom.reference(K_.source_interior(geom, q))
+            assert resid <= cfg['reference_residual_limit'], (n, case, resid)
             same[case] = geom.scatter(u)
             sources.append(K_.source_full(geom, q))
             F_int.append(geom.gather(sources[-1]))
             R_['references'].append(dict(case=case, intervals=n, same_grid_residual=resid,
-                                         same_grid_residual_roundoff_floor=floor,
-                                         same_grid_residual_limit=limit,
                                          same_sha256=K_.sha_array(same[case]),
                                          discretisation_delta_vs_fine=K_.relative(same[case], geom.restrict_from(fine[case], nfine))))
         chain = {c: geom.restrict_from(fine[c], nfine) for c in fine}

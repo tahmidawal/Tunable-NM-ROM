@@ -1,0 +1,21 @@
+host=pax049 source_commit=941a550e707de227490e930d5e147dc8eb54d8d6
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.22:/projects/paralab  4.6T  4.2T  396G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+FINE REFERENCE done 26.0
+MESH 256
+GATE {'nnz': 242185, 'interior_unknowns': 48641, 'symmetry_max_abs': 0.0, 'symmetric': True, 'independent_assembly_nnz_difference': 0, 'independent_assembly_agrees': True, 'diagonal_constant': True, 'intervals': 256, 'lambda_min': 38.57123825668056, 'lambda1_reference': 38.5588953760876, 'lambda1_relative_difference': 0.00032010462106274695, 'positive_definite': True, 'lambda1_within_1pct': True, 'passed': True}
+RECON 256 head_smooth_R256_K16 floor 0.015112886067748467 best 0.03491860324496368
+RECON 256 head_smooth_R512_K16 floor 0.0071229953351577965 best 0.03592445453839125
+RECON 256 head_sdf_R256_K16 floor 0.01569714000821364 best 0.035176603204297704
+RECON 256 head_sdf_R512_K16 floor 0.007766252837788642 best 0.038606933631261046
+RECON 256 head_sdf_R512_K32 floor 0.007766252837788642 best 0.031802251878821276
+RECON 256 head_enrich_R512_K16 floor 0.0066759955506009334 best 0.03850815897879251
+RECON 256 head_smooth_ff128s2_R512_K16 floor 0.025437921158837175 best 0.06796094091744909
+TIMED 256 0 617.1
+TIMED 256 1 758.2
+TIMED 256 2 898.7
+GATE {'intervals': 256, 'gate': 'G-FOM-5 tight iterative solves agree with the direct reference', 'worst_relative_difference': 1.8375406701198052e-11, 'tolerance': 1e-08, 'passed': True}
+LSHAPE SOLVE COMPLETE
+ALL-DONE

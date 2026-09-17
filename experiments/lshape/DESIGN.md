@@ -516,3 +516,61 @@ subjects by `(mesh, name)` and would let a second $N=256$ job overwrite `lsh04` 
 as well and present the $M=257$ and $M=1024$ blocks as separate, non-comparable tables; (iii) a
 $K=64$ head is a reasonable use of a spare job only after the solve jobs land, and is not
 submitted now. Cluster jobs after this one: five used, three in reserve.
+
+**2026-09-17, §A7 — `lsh05` (N=512) aborted on G-FOM-4; the gate is round-off-floor-aware and
+the job is resubmitted once as `lsh07`. The reference field itself does not change.** Job
+`3784664` (A100, `pax049`) passed the GPU preflight and the G-FOM-1/2/3 operator gates at
+$N=512$ (`lambda1_relative_difference` $1.32\times10^{-4}$) and then died at 1 m 15 s on
+`assert resid <= cfg['reference_residual_limit']` with $\mathrm{resid} = 1.0661\times10^{-12}$
+against the declared $10^{-12}$, on development case 8. It is not a staging, config-key or
+memory failure: the staged manifest verified, `jax_backend=gpu` was printed and the paralab
+share was at 92 %, not full.
+
+*What was measured (CPU-only NumPy, `checks/smoke-a7-reference-gate.json` and the diagnosis in
+the session scratchpad; the independent audit module reproduces the driver's reference field to
+max absolute difference exactly $0$ at $N\in\{32,64,256\}$).* The residual **stagnates**: at
+$N=512$ case 8 it is $2.486\times10^{-12}$ after the direct solve and
+$1.064,\,1.063,\,1.067,\,1.069 \times10^{-12}$ after one, two, three and four steps of
+iterative refinement. No number of refinements reaches $10^{-12}$, because the *evaluation* of
+$\|Au-f\|$ in f64 has a round-off floor
+$\varepsilon\,\|A\|_\infty\|u\|_2/\|f\|_2$, and the measured residual sits at a
+mesh-independent $0.156\times$ that floor at **both** $N=256$ ($0.1562$) and $N=512$
+($0.1556$). The floor is $1.99\times10^{-12}$ at $N=256$ and $7.95\times10^{-12}$ at $N=512$:
+it grows like $\|A\|_\infty \sim N^2$. A fixed absolute bound on this quantity is therefore a
+mesh-dependent gate in disguise — $5\times$ above the floor at $N=256$, $0.13\times$ below it
+at $N=512$, i.e. unreachable there by any f64 algorithm. The cluster and the GB10 differ on the
+failing case by $2\times10^{-15}$ absolute ($1.0661$ vs $1.0640\times10^{-12}$), the
+already-paid-for 1-ulp cross-machine effect.
+
+*The change, which is the smallest one that changes no science.* `FOM.reference` returns the
+measured floor as a third value; nothing about the reference field, the factorisation or the
+two refinement steps changes, and the audit module computes its own floor the same way. G-FOM-4
+now accepts
+$$\mathrm{resid} \;\le\; \max\bigl(\texttt{reference\_residual\_limit},\;
+\texttt{reference\_residual\_roundoff\_factor}\cdot\varepsilon\,\|A\|_\infty\|u\|_2/\|f\|_2\bigr),$$
+with the factor set to $1.0$, and both the floor and the applied limit are recorded per case in
+`references`. The gate is **unchanged at $10^{-12}$ wherever the floor is below it** — every
+mesh already run: measured worst $4.70\times10^{-15}$ ($N=32$), $1.87\times10^{-14}$ ($N=64$),
+$7.42\times10^{-14}$ ($N=128$, `lsh03`) and $2.97\times10^{-13}$ ($N=256$, `lsh04`, where the
+limit rises only to at most $1.99\times10^{-12}$ and the measured value is $6.7\times$ inside
+it) — and at $N=512$ it becomes $7.95\times10^{-12}$ against a measured $1.07\times10^{-12}$, a
+$7.4\times$ margin. Every reported error in this cell is $\ge 10^{-4}$ relative, eight orders
+above any of these numbers, so no error, ranking or criterion moves. `lsh03`, `lsh04` and
+`lsh06` are **not** re-run and are unaffected; their staged copies of `config-solve.json` and
+`lsh_core.py` preserve exactly what they executed. The independent audit's own
+`reference_residual_below_limit` check takes the same rule and now also reports
+`worst_reference_residual_over_limit`; re-audited after the patch, all three completed jobs
+still pass all thirteen checks.
+
+*Resubmission.* One resubmit only, as attempt `lsh07`, identical in every scientific respect to
+`lsh05` — same config file, same $M=257$, same cohorts, seeds, arms, ladder, POD ranks,
+comparators, repetitions and timing contract, same A100 request and `--mem 180G`. If it fails
+again the cell reports $N\in\{64,128,256\}$ and stops. Cluster jobs after `lsh07`: seven used,
+one in reserve.
+
+**2026-09-17, §A8 — the Codex audit of the final report is again replaced by a written
+self-audit.** The coordinator re-verified on 2026-09-17 that the Codex usage limit holds until
+2026-09-19 11:33, after this lane's reporting window. As in §A1 and §A5 the substitute is
+`reports/self-audit-2026-09-17-solves.md`, which lists every claim in the regenerated report,
+the `result.json` field it rests on, and the check run against it, and which additionally
+records the independent NumPy audit verdicts for `lsh03`, `lsh04` and `lsh06`.

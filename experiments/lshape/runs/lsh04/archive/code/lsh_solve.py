@@ -24,16 +24,8 @@ import arms as A
 import lsh_core as K_
 
 
-def make_rom_kernel(head, geom, trust, budget, gtol, linear, q, free=False):
-    """One complete reduced query. Every large array is an argument.
-
-    `free` marks the q = R rung (DESIGN.md section 6, section A6): C = I, so B_perp = (I - QQ^T)B
-    is zero to round-off and there is no nonlinear unknown left -- every coefficient is
-    recovered by the exact elimination below. The LM is not run on that rung: on a zero
-    operator its normalised gradient is a round-off cosine, so it would spin through its
-    damping ladder to exit reason 3 on every query and inflate the cost of what is, by
-    construction, a linear reduced model. Its stationarity is `full_stationarity`, the
-    gradient of the FULL residual, which the kernel computes for every rung regardless."""
+def make_rom_kernel(head, geom, trust, budget, gtol, linear, q):
+    """One complete reduced query. Every large array is an argument."""
     N, nfull = geom.N, (geom.N + 1) ** 2
     lm = A.make_stationary_lm(lambda z, fp, Bp: Bp @ head(z) - fp, budget, trust, gtol, linear)
 
@@ -43,10 +35,7 @@ def make_rom_kernel(head, geom, trust, budget, gtol, linear, q, free=False):
         fm = P @ f
         fp = fm - Q @ (Q.T @ fm) if q else fm
         index = jnp.argmin(jnp.sum((predictions - fp[None, :]) ** 2, axis=1))
-        if free:
-            z, rn, it, reason, gn = codes[index], jnp.linalg.norm(fp), jnp.int32(0), jnp.int32(4), jnp.asarray(0.)
-        else:
-            z, rn, it, reason, gn = lm(codes[index], (fp, Bp), 0.)
+        z, rn, it, reason, gn = lm(codes[index], (fp, Bp), 0.)
         h = head(z)
         if q:
             y = jax.scipy.linalg.solve_triangular(Rq, Q.T @ (fm - B @ h), lower=False)
@@ -202,10 +191,9 @@ def main():
     ffine = K_.FOM(gfine, build_ic0=False)
     fine = {}
     for case, q in enumerate(dev):
-        u, resid, floor = ffine.reference(K_.source_interior(gfine, q))
+        u, resid = ffine.reference(K_.source_interior(gfine, q))
         fine[case] = gfine.scatter(u)
         R_['references'].append(dict(case=case, fine_intervals=nfine, fine_residual=resid,
-                                     fine_residual_roundoff_floor=floor,
                                      fine_sha256=K_.sha_array(fine[case])))
     R_['fine_reference'] = dict(intervals=nfine, interior_unknowns=gfine.n, factor_seconds=ffine.factor_seconds,
                                 lu_nnz=ffine.lu_nnz, seconds=time.perf_counter() - t0)
@@ -239,19 +227,12 @@ def main():
         # references and sources
         same, sources, F_int = {}, [], []
         for case, q in enumerate(dev):
-            u, resid, floor = fom.reference(K_.source_interior(geom, q))
-            # G-FOM-4 (DESIGN A7): the residual is round-off-limited, and its floor grows
-            # like ||A||_inf ~ N^2, so the gate is the larger of the declared absolute bound
-            # and that measured floor. Both numbers are recorded per case.
-            limit = max(cfg['reference_residual_limit'],
-                        cfg['reference_residual_roundoff_factor'] * floor)
-            assert resid <= limit, (n, case, resid, floor, limit)
+            u, resid = fom.reference(K_.source_interior(geom, q))
+            assert resid <= cfg['reference_residual_limit'], (n, case, resid)
             same[case] = geom.scatter(u)
             sources.append(K_.source_full(geom, q))
             F_int.append(geom.gather(sources[-1]))
             R_['references'].append(dict(case=case, intervals=n, same_grid_residual=resid,
-                                         same_grid_residual_roundoff_floor=floor,
-                                         same_grid_residual_limit=limit,
                                          same_sha256=K_.sha_array(same[case]),
                                          discretisation_delta_vs_fine=K_.relative(same[case], geom.restrict_from(fine[case], nfine))))
         chain = {c: geom.restrict_from(fine[c], nfine) for c in fine}
@@ -296,8 +277,7 @@ def main():
                 else:
                     Q, Rq, lrank, Bp = empty['Q'], empty['Rq'], 0, B
                 assert lrank == q, (mid, n, q, lrank)
-                kern = make_rom_kernel(head, geom, trust, cfg['lm_budget'], cfg['stationarity_tolerance'], linear, q,
-                                       free=(q == L['Rtot']))
+                kern = make_rom_kernel(head, geom, trust, cfg['lm_budget'], cfg['stationarity_tolerance'], linear, q)
                 pred = jax.jit(jax.vmap(lambda z, Bp: Bp @ head(z), in_axes=(0, None)))(jnp.asarray(L['codes']), Bp)
                 name = f'neural_q{q}@{mid}' if q < L['Rtot'] else f'freebank@{mid}'
                 built.append(dict(name=name, model=mid, k=L['K'], q=q, kernel=kern, predictions=pred,
@@ -306,7 +286,6 @@ def main():
                                   linear_solve=linear, primary=m['primary']))
                 R_['arm_setup'].append(dict(intervals=n, arm=name, model=mid, family=built[-1]['family'], k=L['K'],
                                             q=q, R_total=L['Rtot'], M=M, trust_radius=trust, linear_solve=linear,
-                                            free_rung=bool(q == L['Rtot']), nonlinear_unknowns=0 if q == L['Rtot'] else L['K'],
                                             bank_rank=rank['rank'], bank_condition=rank['condition_number'],
                                             linear_rank=lrank, operator_sha256=K_.sha_array(B),
                                             projected_operator_sha256=K_.sha_array(Bp), bank_sha256=K_.sha_array(G)))

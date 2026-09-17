@@ -153,7 +153,6 @@ class FOM:
 
     def __init__(self, geom, build_ic0=True):
         self.geom = geom
-        self._normA = None
         t0 = time.perf_counter()
         self.A = assemble_stencil(geom)
         self.assembly_seconds = time.perf_counter() - t0
@@ -191,12 +190,6 @@ class FOM:
                     independent_assembly_agrees=bool(diff.nnz == 0),
                     diagonal_constant=bool(np.allclose(A1.diagonal(), 4.0 * self.geom.N ** 2)))
 
-    @property
-    def norm_A_inf(self):
-        if self._normA is None:
-            self._normA = float(abs(self.A).sum(axis=1).max())
-        return self._normA
-
     def solve(self, f_int):
         return self.lu.solve(np.asarray(f_int))
 
@@ -208,23 +201,13 @@ class FOM:
         return out
 
     def reference(self, f_int, refinements=2):
-        """Direct solve plus iterative refinement.
-
-        Returns `(u, relative residual, round-off floor)`. The floor is
-        `eps * ||A||_inf * ||u||_2 / ||f||_2`, the scale below which the *evaluation* of
-        ||Au - f|| in f64 carries no information; it grows like N^2 with the mesh because
-        ||A||_inf does (DESIGN A7). The residual itself stagnates after one refinement at a
-        mesh-independent 0.156x of it, so a fixed absolute bound on the residual is a
-        mesh-dependent gate in disguise."""
+        """Direct solve plus iterative refinement; returns (u, relative residual)."""
         f = np.asarray(f_int)
         u = self.lu.solve(f)
         for _ in range(refinements):
             r = f - self.A @ u
             u = u + self.lu.solve(r)
-        nf = float(np.linalg.norm(f))
-        resid = float(np.linalg.norm(self.A @ u - f) / nf)
-        floor = float(np.finfo(float).eps * self.norm_A_inf * np.linalg.norm(u) / nf)
-        return u, resid, floor
+        return u, float(np.linalg.norm(self.A @ u - f) / np.linalg.norm(f))
 
     def modes(self, M, seed=0):
         """Lowest-M eigenpairs of A by shift-invert Lanczos on the SuperLU factor."""

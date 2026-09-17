@@ -100,10 +100,14 @@ class Solver:
         self.lu = spla.splu(self.A)
 
     def ref(self, f):
+        """Returns (u, relative residual, round-off floor eps*||A||_inf*||u||/||f||)."""
         u = self.lu.solve(f)
         for _ in range(2):
             u = u + self.lu.solve(f - self.A @ u)
-        return u, float(np.linalg.norm(self.A @ u - f) / np.linalg.norm(f))
+        nf = float(np.linalg.norm(f))
+        normA = float(abs(self.A).sum(axis=1).max())
+        return (u, float(np.linalg.norm(self.A @ u - f) / nf),
+                float(np.finfo(float).eps * normA * np.linalg.norm(u) / nf))
 
 
 # ----------------------------------------------------------------- decoder ---
@@ -322,6 +326,7 @@ def audit_solve(out, tol):
     fine = {c: gf.scatter(Sf.ref(source_int(gf, q))[0]) for c, q in enumerate(dev)}
     del Sf
     worst_sg, worst_ph, worst_ref = 0.0, 0.0, 0.0
+    ref_ok, worst_ref_ratio = True, 0.0
     sym_ok, indep_ok = True, True
     for n in cfg['intervals']:
         g = Geom(n)
@@ -331,8 +336,13 @@ def audit_solve(out, tol):
         S = Solver(g)
         s = cfg['fine_intervals'] // n
         for c, q in enumerate(dev):
-            u, resid = S.ref(source_int(g, q))
+            u, resid, floor = S.ref(source_int(g, q))
             worst_ref = max(worst_ref, resid)
+            # DESIGN A7: the residual is round-off-limited and its floor grows like N^2.
+            limit = max(cfg['reference_residual_limit'],
+                        cfg.get('reference_residual_roundoff_factor', 0.0) * floor)
+            ref_ok &= resid <= limit
+            worst_ref_ratio = max(worst_ref_ratio, resid / limit)
             same = g.scatter(u)
             chain = fine[c][::s, ::s]
             for r in [x for x in d['invocations'] if x['intervals'] == n and x['case'] == c]:
@@ -341,8 +351,9 @@ def audit_solve(out, tol):
                 worst_ph = max(worst_ph, abs(rel(field, chain) - r['physical_error']))
     checks['operator_symmetric'] = sym_ok
     checks['operator_independent_assembly'] = indep_ok
-    checks['reference_residual_below_limit'] = worst_ref <= cfg['reference_residual_limit']
+    checks['reference_residual_below_limit'] = bool(ref_ok)
     detail['worst_reference_residual'] = worst_ref
+    detail['worst_reference_residual_over_limit'] = worst_ref_ratio
     checks['same_grid_errors_recomputed_from_saved_fields'] = worst_sg <= tol
     checks['physical_errors_recomputed_from_saved_fields'] = worst_ph <= tol
     detail['worst_same_grid_difference'] = worst_sg

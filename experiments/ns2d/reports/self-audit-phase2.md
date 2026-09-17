@@ -26,3 +26,24 @@ the audit, and are explained under claim 4.
 - Whether the rank-capped bank materially biased the *head's* training (the head was trained
   against a 128-dimensional effective span while nominally 256): a full-rank rerun answers it.
 - Claim 6 by value, until a job on a mismatching node reports `value_worst_rel`.
+
+## Addendum — `ns203` (job 3787319, the §A4 rerun) and `ns202` (job 3783797)
+
+Still a written self-audit (Codex quota-blocked until 2026-09-19 11:33). Mechanical check:
+`audit_phase2.py` → `artifacts/ns203/audit.json` (67 checks, **all match**) and
+`artifacts/ns202/audit.json` (67 checks, the same six oracle-formula MISMATCH rows as `ns201`,
+≤ 1.04e-2 relative, explained by claim 4 above — `ns202` ran before §A4).
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 11 | `ns203`'s bank has numerical rank 256 = R at every mesh; B-RANKCAP and B-ORTH pass | `gates.B-RANKCAP`, `gates.B-ORTH_N{64,128,256}.rank`, `.cond_Rb` | audit recomputes the NumPy bank from the pickled weights and its SVD rank: 256 at all three meshes; κ(R_b)=44.4 | verified |
+| 12 | H-ORACLE FAILS at every mesh: oracle median 0.2034/0.2026/0.2024 vs POD-16 0.2417/0.2404/0.2402, ratio 1.19 (bar 2.0) | `oracle.{N}.oracle_median`, `.podK_median`, `gates.H-ORACLE_N{N}` | audit recomputes ‖G h(z) − u‖/n₀ exactly at the saved codes on the 48 archived states (worst rel. diff 2.3e-14 at 256²), the medians, and the pass rule | verified — this is the §A4 pre-registered negative |
+| 13 | The whitened-formula contamination is gone | `oracle.{N}.formula_vs_field_worst_rel` = 2.5e-14 / 3.2e-14 / 4.7e-14 | audit's exact recomputation agrees with the reported field-space values to 2.3e-14 | verified |
+| 14 | B-DATA passes by hash at 64², 128², 256² (train and dev) on `pax050` | `gates.B-DATA_*` (`mode=hash`) | read from the JSON; hashes equal Phase 1's (`pax105`) | verified (hash); the §A4 value path was not exercised on this node |
+| 15 | The failure is generalisation, not capacity: training-recon median 0.050 vs held-out oracle median 0.202 (ratio 4.0); at t=0 the oracle beats POD-16 by 1.63×, on evolved times by 1.19× | `training.recon_rel_l2_median`; `oracle.256.per_state_{oracle,podK}` reshaped (64 cases × 6 times) | `generate_ns2d.py` computes the per-time medians and the ratio from the per-state lists; the audit checks those lists equal the npz arrays element-wise; the training median is the driver's own number (claim 9 caveat) | verified for the held-out side; the training side is not independently recomputable |
+| 16 | The oracle fit is converged: LM median 39 iterations, no budget exits | `oracle.{N}.oracle_iters_median`, `.oracle_reasons` | read from the JSON (`oracle_reasons` has two keys, neither a budget exit); not recomputed | reported, not verified |
+| 17 | `ns202` (K=32, R=512, g_hidden=128): rank 128 at every mesh, B-FLOOR fails (ratio 3.7–3.9), H-ORACLE fails (0.118 vs POD-32 0.139, ratio 1.18) | `artifacts/ns202/result.json` gates | audit recomputes rank 128, the floors, the medians and every pass rule; the six oracle-formula rows mismatch by ≤1.04e-2 as for `ns201` | verified; retracted attempt, shown for the record |
+
+**Open after this addendum.** Whether K=32 (`ns204`, job 3787320) also fails H-ORACLE with a
+full-rank bank; whether a lower-dimensional family or more trajectories would close the 4.0×
+held-out/training gap (a new pre-registration, not done).

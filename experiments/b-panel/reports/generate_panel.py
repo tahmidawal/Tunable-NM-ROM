@@ -216,6 +216,33 @@ def section(W, au, tag):
         W(f"**({v['cost']}, {v['error']})** — admissible subjects: " + (', '.join(f'`{a}`' for a in v['admissible']) or 'none')
           + '; all subjects: ' + (', '.join(f'`{a}`' for a in v['all']) or 'none')
           + '; reduced subjects only (post-hoc, DESIGN §A4): ' + (', '.join(f'`{a}`' for a in v.get('reduced_only', [])) or 'none') + '\n')
+    fams = {x['arm']: x['family'] for x in au['arms']}
+    W('### The nonlinear manifold against the classical one (post-hoc, DESIGN §A4)\n')
+    lines = []
+    for tag, human in (('gpu_all', 'worst over ALL output times'), ('gpu_evolved', 'worst over EVOLVED times')):
+        ro = au['nondominated'][tag].get('reduced_only') or []
+        pods = [a_ for a_ in ro if fams.get(a_) == 'pod']
+        roms = [a_ for a_ in ro if fams.get(a_) in ('rom', 'fast')]
+        lines.append(f"- On **{human}**, the reduced-only frontier holds {len(roms)} correction-ladder "
+                     f"point(s) and {len(pods)} POD rank(s)"
+                     + (f" — POD enters only at {', '.join('k′=' + str(by_arm(au, a_)['k']) for a_ in pods)}."
+                        if pods else ', and **no POD rank appears on it at all**.'))
+    W('\n'.join(lines) + '\n')
+    pod = [x for x in au['arms'] if x['family'] == 'pod' and x['admissible']]
+    rom = [x for x in au['arms'] if x['family'] in ('rom', 'fast') and x['admissible']]
+    if pod and rom:
+        br = min(rom, key=lambda z: z['worst_evolved_percent'])
+        beat = [x for x in pod if x['worst_evolved_percent'] <= br['worst_evolved_percent']
+                and x['median_gpu_ms'] <= br['median_gpu_ms']]
+        W(f"\nThe head ablation reported that no POD rank up to $k'=128$ matched the neural head. That holds "
+          f"here and does not extend: " +
+          (f"at {', '.join(chr(36) + chr(107) + chr(39) + '=' + str(x['k']) + chr(36) for x in beat)} — "
+           f"{'a rank' if len(beat) == 1 else 'ranks'} that ablation never ran — POD beats the best correction-ladder point on **both** axes "
+           f"({', '.join(f"`{x['arm']}` {f(x['worst_evolved_percent'])} % at {f(x['median_gpu_ms'], 0)} ms" for x in beat)}, "
+           f"against `{br['arm']}` {f(br['worst_evolved_percent'])} % at {f(br['median_gpu_ms'], 0)} ms), from a "
+           f"solve whose convergence is established above."
+           if beat else "no POD rank in this job is both cheaper and at least as accurate as the best "
+                        "correction-ladder point on the evolved metric.") + '\n')
     W('### Ladders\n')
     hdr = ['ladder', 'rungs', 'worst evolved %', 'worst all %', 'GPU ms', 'monotone evolved', 'monotone all', 'all converged', 'non-dominated converged points', 'error span', 'cost span']
     rows = []

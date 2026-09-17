@@ -1,0 +1,40 @@
+{
+  "mode": "train",
+  "checks": {
+    "complete": true,
+    "backend_gpu": true,
+    "x64": true,
+    "precision_highest": true,
+    "development_cohort_reproduced": true,
+    "cohort_hashes_recorded": true,
+    "cohorts_disjoint": true,
+    "centres_in_omega": true,
+    "operator_independent_assembly": true,
+    "operator_symmetric": true,
+    "operator_positive_definite_lambda1_within_1pct": true,
+    "gates_recorded_pass": true,
+    "bank_floors_reproduced": true,
+    "bank_selection_reproduced": true,
+    "basis_codes_match_checkpoint": true,
+    "checkpoint_and_basis_hashes": true,
+    "head_stored_code_errors_reproduced": true,
+    "correction_bases_orthonormal_in_field_metric": true
+  },
+  "detail": {
+    "cohort_max_abs_difference": 0.0,
+    "lambda1": 38.69402590414886,
+    "lambda1_relative_difference": 0.0035045228018918367,
+    "bank_rank": {
+      "smooth_R256": 16,
+      "smooth_R512": 32,
+      "sdf_R256": 16,
+      "sdf_R512": 32,
+      "enrich_R512": 34,
+      "smooth_ff128s2_R512": 32
+    },
+    "worst_bank_floor_relative_difference": 1.4285533374278405e-14,
+    "worst_stored_code_relative_difference": 2.1899819650930187e-15,
+    "worst_basis_orthonormality_error": 1.0699602057826098e-14
+  },
+  "passed": true
+}

@@ -210,6 +210,23 @@ def main():
                  + f". Mesh audits: bank orthogonality {result['mesh_audits']['bank']['orthogonality']:.1e}, POD orthogonality {result['mesh_audits']['pod']['orthogonality']:.1e}, "
                  f"sine-mode transfer error {result['mesh_audits']['pod']['sine_mode_transfer_error']:.1e}, POD K min eigenvalue {result['mesh_audits']['pod']['stiffness_min_eigenvalue']:.3f}.", '']
         sections.append('\n'.join(text))
+    # "The answer, up front": one generated row per mesh.
+    up = ['## The answer, up front', '',
+          '| mesh | cheapest head rung | top rung `linear_bank64` | top rung vs cheapest head | POD at matched rank 64 | direct DST FOM | degenerate curve (D1-D4) |',
+          '|---|---|---|---|---|---|:---:|']
+    for n, rows, vd in meshes:
+        heads = {k: v for k, v in rows.items() if v['family'] == 'head rung'}
+        cheap = min(heads.values(), key=lambda r: r['median_gpu_ms'])
+        lb, pod, dst = rows['linear_bank64'], rows.get('pod_k64'), rows['dst']
+        up.append(f"| {n}² | `{cheap['subject']}` {pct(cheap['worst_energy_state'])} % at {ms(cheap['median_gpu_ms'])} ms | "
+                  f"{pct(lb['worst_energy_state'])} % at {ms(lb['median_gpu_ms'])} ms | "
+                  f"{cheap['median_gpu_ms'] / lb['median_gpu_ms']:.0f}× cheaper and {cheap['worst_energy_state'] / lb['worst_energy_state']:.2f}× more accurate | "
+                  + (f"{pct(pod['worst_energy_state'])} % at {ms(pod['median_gpu_ms'])} ms | " if pod else 'n/a | ')
+                  + f"{pct(dst['worst_energy_state'])} % at {ms(dst['median_gpu_ms'])} ms | **{vd['all']}** |")
+    up += ['', 'The top rung of the correction ladder — the full learned bank evolved linearly, with no head — is at every '
+           'mesh both the most accurate rung (within the integrator tie band of DESIGN §10 A2) and by two orders of magnitude '
+           'the cheapest, so the accuracy-cost curve over correction rank $q$ is degenerate, as it is on heat. No ROM arm beats '
+           'the direct full-order solver on accuracy, and POD-Galerkin at the same rank as the learned bank is reported beside it.', '']
     out = LANE / 'reports'
     figure(meshes, out / '2026-09-17-w-ladder.png')
     (out / 'summary.json').write_text(json.dumps(summary, indent=1) + '\n')
@@ -241,7 +258,7 @@ def main():
                 '- **D1–D4, H-mono:** the pre-registered criteria of `DESIGN.md` §4.',
                 '- **consistency checks:** agreement between arms that should coincide mathematically (same manifold in different coordinates; the $q=32$ rung against the RK4-stepped bank; the stepped bank against exact modal propagation).',
                 '- **development cohort:** cases opened for design; the final paper cohort stays sealed.']
-    (out / '2026-09-17-w-ladder.md').write_text('\n'.join(head + sections + glossary) + '\n')
+    (out / '2026-09-17-w-ladder.md').write_text('\n'.join(head + up + sections + glossary) + '\n')
     print(out / '2026-09-17-w-ladder.md', len(summary), 'summary rows')
 
 

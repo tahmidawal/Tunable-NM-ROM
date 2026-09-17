@@ -103,11 +103,12 @@ cp -r __CACHE__/train __CACHE__/validation __CACHE__/refinement __CACHE__/DATA.s
 find out data/diagnosis-cohort -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
-    for token, value in (('__JOBNAME__', spec['job_name']), ('__REMOTE__', remote), ('__CACHE__', CACHE),
-                         ('__SPEC__', spec_name), ('__HOURS__', spec['time']), ('__EXCLUDE__', EXCLUDE),
-                         ('__GPU__', args.gpu)):
+    tokens = (('__JOBNAME__', spec['job_name']), ('__REMOTE__', remote), ('__CACHE__', CACHE),
+              ('__SPEC__', spec_name), ('__HOURS__', spec['time']), ('__EXCLUDE__', EXCLUDE), ('__GPU__', args.gpu))
+    for token, value in tokens:
+        assert script.count(token) >= 1, token
         script = script.replace(token, value)
-    assert '__' not in script.replace('__pycache__', ''), script
+    assert not any(token in script for token, _ in tokens), script
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'
                 for p in sorted(out.rglob('*')) if p.is_file()]

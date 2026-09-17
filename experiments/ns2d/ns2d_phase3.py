@@ -49,6 +49,7 @@ NTOL, LTOL = float(E('NTOL', '1e-11')), float(E('LTOL', '1e-9'))
 EXPECT = E('EXPECT_HASHES', '')
 TQ_STATES = int(E('TQ_STATES', '32'))
 T_CHUNK = int(E('T_CHUNK', '256'))
+T_BLOCK = int(E('T_BLOCK', '16'))
 SMOKE = int(E('SMOKE', '0'))
 OUT = Path(E('OUT', 'output'))
 NSTEPS = int(round(T / DT))
@@ -167,7 +168,8 @@ def main():
                               RES_STARTS=RES_STARTS, RES_BUDGET=RES_BUDGET, RES_SEED=RES_SEED,
                               IC_BUDGET=IC_BUDGET, STEP_BUDGET=STEP_BUDGET, GTOL=GTOL, DT=DT, T=T,
                               OUT_EVERY=OUT_EVERY, NOUT=NOUT, EVAL_IDX=EVAL_IDX, N_TRAIN=N_TRAIN,
-                              N_DEV=N_DEV, SEEDS=SEEDS, NTOL=NTOL, LTOL=LTOL, T_CHUNK=T_CHUNK),
+                              N_DEV=N_DEV, SEEDS=SEEDS, NTOL=NTOL, LTOL=LTOL, T_CHUNK=T_CHUNK,
+                              T_BLOCK=T_BLOCK),
                   timing_contract=('dense initial vorticity on device to NOUT dense device fields, '
                                    'block_until_ready; identical for every ROM arm and the FOM ladder; '
                                    'the bank, tensor, directions and POD are built untimed'),
@@ -227,17 +229,25 @@ def main():
     M_neural = 4 * (K + max(Q_LADDER))
     pod_ks = sorted(set(PODK + ([K + q for q in Q_LADDER if q > 0] if MATCHED_POD else [])))
     M_pod = 4 * max(pod_ks)
-    Phi_n, lam_n, _ = RM.fourier_modes(N, M_neural)
-    Phi_p, lam_p, _ = RM.fourier_modes(N, M_pod)
+    Phi_n, lam_n, ids_n = RM.fourier_modes(N, M_neural)
+    Phi_p, lam_p, ids_p = RM.fourier_modes(N, M_pod)
     t0 = time.perf_counter()
-    T_n = RM.build_T(Phi_n, G, N, chunk=T_CHUNK)
+    T_n = RM.build_T_fft(ids_n, G, N, block=T_BLOCK)
     t_tn = time.perf_counter() - t0
-    T_n_rev = RM.build_T(Phi_n, G, N, chunk=T_CHUNK * 2 if not SMOKE else 64, reverse=True)
+    T_n_rev = RM.build_T_fft(ids_n, G, N, block=max(1, T_BLOCK // 2), reverse=True)
     tb = float(np.linalg.norm(T_n - T_n_rev) / np.linalg.norm(T_n))
     del T_n_rev
     gate(report, 'R-TB', tb <= 1e-12, rel=tb, M=M_neural, R=R, seconds=t_tn, bytes=int(T_n.nbytes))
+    # R-TFFT: the FFT projection against the INDEPENDENT direct (M, n) matmul build, on a
+    # small sub-block (the direct build costs 24 n M R^2 and is unaffordable at full size --
+    # that is exactly why the FFT route exists).  DESIGN 2nd amendment A3.
+    sub_M, sub_R = min(32, M_neural), min(16, R)
+    t_direct = RM.build_T(Phi_n[:, :sub_M], G[:, :sub_R], N, chunk=T_CHUNK)
+    t_fft = T_n[:sub_M, :sub_R, :sub_R]
+    tf = float(np.linalg.norm(t_direct - t_fft) / np.linalg.norm(t_direct))
+    gate(report, 'R-TFFT', tf <= 1e-12, rel=tf, sub_M=sub_M, sub_R=sub_R)
     t0 = time.perf_counter()
-    T_p = RM.build_T(Phi_p, Vpod, N, chunk=T_CHUNK)
+    T_p = RM.build_T_fft(ids_p, Vpod, N, block=T_BLOCK)
     report['tensor'] = dict(neural=dict(M=M_neural, R=R, seconds=t_tn, bytes=int(T_n.nbytes)),
                             pod=dict(M=M_pod, k=int(Vpod.shape[1]), seconds=time.perf_counter() - t0,
                                      bytes=int(T_p.nbytes)))

@@ -259,3 +259,27 @@ The stored numbers of job 3780151 are re-evaluated under this rule by `audit_pha
 (recorded as `passed_A2` beside the original verdict); the driver uses the ratio rule from
 commit §A2 onward. The scheme is unchanged; only the gate arithmetic is amended, and the
 original verdict is kept in the JSON.
+
+## §A3 (2026-09-17, before Phase 3) — the advection tensor is projected with FFTs, and the pre-registered ladder is therefore affordable
+
+The residual's test modes are, by the frozen contract, the lowest real Fourier modes, which
+are exact eigenvectors of $\Delta_h$. Projecting any field on them is therefore an **FFT**, not
+a dense $(M,n)$ matmul. The direct build costs $24\,n\,M\,R^2$ FLOPs — $4.7\times10^{14}$ at
+$n=256^2$, $M=1152$, $R=512$, which is hours of A100 time and would have forced the top rung
+to be cut. The FFT route costs $O(24\,n\,R^2 + R^2 n\log n)$ and measures **2.3 s at
+$N=256$, $M=256$, $R=128$ on the (slow, shared) local GB10**, so the full $q=256$, $R=512$
+tensor is minutes on an A100.
+
+This changes **no science**: the two builds are the same exact quantity. `build_T` (direct) is
+retained as the independent reference, and the new gate
+
+- **R-TFFT**: the FFT build against the direct $(M,n)$-matmul build on a $32\times16\times16$
+  sub-block, $\le10^{-12}$ relative,
+
+is asserted in-job beside R-TB (two block orders) and R-TQ (against the dense full-grid
+oracle). Verified locally before the amendment: direct vs FFT $6.6\times10^{-16}$ at
+$N=16$ and $1.1\times10^{-15}$ at $N=32$; tensor vs dense oracle $8.6\times10^{-16}$ and
+$1.8\times10^{-15}$.
+
+**The pre-registered ladder $q\in\{0,16,64,256\}$ and both heads stand unchanged.** No rung is
+cut for cost.

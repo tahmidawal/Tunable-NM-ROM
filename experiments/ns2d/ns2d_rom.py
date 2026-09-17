@@ -62,10 +62,10 @@ def fourier_modes(N, M):
         lam = (2 - 2 * np.cos(2 * PI * kx / N) + 2 - 2 * np.cos(2 * PI * ky / N)) * N * N
         for fn, name in ((np.cos, 'c'), (np.sin, 's')):
             v = fn(ph).ravel()
-            v = v / np.linalg.norm(v)
-            cols.append(v)
+            nrm = np.linalg.norm(v)
+            cols.append(v / nrm)
             lams.append(lam)
-            ids.append((kx, ky, name))
+            ids.append((kx, ky, name, float(nrm)))
             if len(cols) == M:
                 return np.column_stack(cols), np.asarray(lams), ids
     raise ValueError('M too large for N')
@@ -135,6 +135,62 @@ def build_T(Phi, B, N, chunk=256, reverse=False):
             t = coef * Ps[s:e][:, :, None] * Zs[s:e][:, None, :]
             acc = t if acc is None else acc + t
         T += np.asarray(_chunk_T(Phi[s:e], acc))
+    return T
+
+
+def build_T_fft(ids, B, N, block=64, reverse=False):
+    """T[m,j,k] = sum_x phi_m(x) J_A(psi_j, b_k)(x), built with FFTs.
+
+    THE TEST MODES ARE FOURIER MODES, so projecting a field on them is an FFT, not a dense
+    (M, n) matmul.  For mode m = (kx, ky, 'c'|'s') with un-normalised grid norm `nrm`,
+
+        phi_m^T v = Re F[kx, ky] / nrm      (cos),      -Im F[kx, ky] / nrm      (sin),
+        F = fft2(v),
+
+    which is exact, not an approximation.  The direct build (`build_T`) costs
+    24 n M R^2 FLOPs -- 4.7e14 at n = 256^2, M = 1152, R = 512, i.e. hours on an A100.
+    This costs O(24 n R^2 + n log n R^2) and is ~500x cheaper at those sizes, with the SAME
+    output: `build_T` is retained as the independent reference and gate R-TFFT compares them.
+
+    Blocked over the SECOND bank index k; for each k the whole j-axis is done at once, so the
+    peak footprint is one (R, N, N) real plus one (R, N, N//2+1) complex array.
+    """
+    B = jnp.asarray(B, F64)
+    n, R = B.shape
+    M = len(ids)
+    Psi = jax.vmap(lambda col: F.poisson(col.reshape(N, N), N).ravel(), in_axes=1, out_axes=1)(B)
+    kxs = jnp.asarray([i[0] % N for i in ids])
+    kys = jnp.asarray([i[1] % N for i in ids])
+    is_cos = jnp.asarray([1.0 if i[2] == 'c' else 0.0 for i in ids])
+    nrms = jnp.asarray([i[3] for i in ids], F64)
+
+    @jax.jit
+    def rows_for_k(Psi_all, b_k):
+        """J_A(psi_j, b_k) for every j, projected on the M modes -> (M, R)."""
+        Pg = Psi_all.T.reshape(R, N, N)                       # (R, N, N)
+        Zg = b_k.reshape(1, N, N)
+        r = lambda A, di, dj: jnp.roll(jnp.roll(A, -di, 1), -dj, 2)
+        px, mx, py, my = r(Pg, 1, 0), r(Pg, -1, 0), r(Pg, 0, 1), r(Pg, 0, -1)
+        ppp, ppm, pmp, pmm = r(Pg, 1, 1), r(Pg, 1, -1), r(Pg, -1, 1), r(Pg, -1, -1)
+        zx, zmx, zy, zmy = r(Zg, 1, 0), r(Zg, -1, 0), r(Zg, 0, 1), r(Zg, 0, -1)
+        zpp, zpm, zmp, zmm = r(Zg, 1, 1), r(Zg, 1, -1), r(Zg, -1, 1), r(Zg, -1, -1)
+        J = ((px - mx) * (zy - zmy) - (py - my) * (zx - zmx)
+             + px * (zpp - zpm) - mx * (zmp - zmm) - py * (zpp - zmp) + my * (zpm - zmm)
+             + zy * (ppp - pmp) - zmy * (ppm - pmm) - zx * (ppp - ppm) + zmx * (pmp - pmm))
+        J = J * (N * N / 12.0)
+        Fk = jnp.fft.fft2(J)                                   # (R, N, N) complex
+        vals = Fk[:, kxs, kys]                                 # (R, M)
+        proj = (is_cos[None, :] * jnp.real(vals)
+                - (1.0 - is_cos)[None, :] * jnp.imag(vals)) / nrms[None, :]
+        return proj.T                                          # (M, R)
+
+    T = np.zeros((M, R, R))
+    ks = list(range(R))
+    if reverse:
+        ks = ks[::-1]
+    for s0 in range(0, R, block):
+        for k in ks[s0:s0 + block]:
+            T[:, :, k] = np.asarray(rows_for_k(Psi, B[:, k]))
     return T
 
 

@@ -622,7 +622,6 @@ def build_operators():
         macro('nOpResolutionKnob', 'landed (Table~\\ref{tab:resolution})')
     else:
         macro('nOpResolutionKnob', gen('no-second res01, operator resolution knob', 'operator resolution knob'))
-    macro('nOpSeedControl', gen('no-second ctrl01 (job 3783831)', 'operator seed/precision control'))
 
 
 # =========================================================================== T11 linear PDEs

@@ -49,19 +49,18 @@ the intro, related work, setup, limitations and conclusion.
 | App. E glossary | `sections/appendix.tex` | complete |
 | Fig. 2 tunability family | `figures/gen_fig_tunability_family.py` | re-pointed: A rank vs error (b-qxm, no cost axis because its cells span three jobs), B the 256² same-allocation panel (b-panel), C the primary-rule EQ ladder vs dense twins (b-eqtop, provisional); paired JSON with SHA256s; included in §5.1 |
 
-## Placeholders (`\gen{pending: ...}`), from `tables/PENDING.md`
+## Placeholders, from `tables/PENDING.md` (regenerated each build)
 
 | placeholder | waits on |
 |---|---|
-| T5 at 1024² (`\nPanelTenTwentyFour`) | b-panel job 3783817 |
-| T12 seeds, T13 sealed cohort, `\nSeedsStatus`, T2 seeds row | b-seeds |
-| T18 solve layer (`\nLshapeSolve`) | lshape jobs 3784662/3/4 |
-| NS reduced model (`\nNsRom`), T1 NS row | ns2d phases 2–3 |
-| operator resolution knob | LANDED (job 3787189): `fno-large` R-USABLE, so "one accuracy–cost point per trained operator" is withdrawn; abstract sentence 1 changed (user sign-off needed) |
-| operator seed/precision control (`\nOpSeedControl`) | no-second ctrl01, job 3783831 (not cited in prose yet) |
-| T9 top-rung certification status | b-eqtop draw replication, job 3783811 (numbers present, flagged provisional) |
+| T5 at 1024² | b-panel job 3783817 |
+| T12 seeds, T13 sealed cohort, seeds status, T2 seeds row | b-seeds |
+| NS reduced model | ns2d phases 2–3 |
 
-`q = 512` extension: not in any lane's output; not referenced.
+Landed since the first checkpoint and no longer pending: the operator resolution knob (job
+3787189, Table T14c, fired its falsification clause), the operator seed/precision controls
+(job 3783831, Table T14d), the L-shape solve layer (jobs 3784662/3/4/3784910, Tables T18c/T18d;
+$512^2$ still to come), and the EQ draw replication (job 3783811, Table T9d).
 
 ## Numbers with a caveat in the generator
 
@@ -104,7 +103,7 @@ families), T14c (resolution ladder), T17 (offline cost), T19 (solver variants), 
 (NNLS fit vs held-out rho). Abstract sentence 1 was changed by the pre-registered falsification
 clause of the resolution job; the user should confirm the new wording.
 
-## OPEN, needs the coordinator: the b-qxm headline may be withdrawn upstream
+## OPEN: the b-qxm pin (coordinator briefed 2026-09-17, position agreed)
 
 `gen_tables.py` now reads b-qxm's `analysis.json` from the lane's **committed** state
 (`GIT_PINS`, commit `4b9723e8`, 09:40), not its working tree. Reason: the lane's uncommitted
@@ -129,3 +128,18 @@ refuses to patch the span — i.e. a longer ladder, not a refutation of the publ
 result. **I have not assumed either way.** Nothing in the paper was changed on the strength of
 an uncommitted file; the pin keeps the build reproducible and traceable. The coordinator should
 say which state is authoritative, and the pin comes out as soon as the lane commits.
+
+**Coordinator's ruling on the pin (2026-09-17).** Keep it. That working tree belongs to a lane
+agent mid-regeneration, collecting two round-2 extension jobs: the pure-rank ladder extended to
+$q=512$, and a saturation sweep in $M$ at $q=256$. The extended column adds $(512, 1088)$ at
+2.06 tests per unknown — the under-tested case that lane pre-registered as possibly
+uninformative — which does not converge, and the lane's rule then refuses to compute a span
+across a ladder containing a non-converged rung. That is a longer ladder failing at its new top
+rung, not a refutation of the four-rung result. The lane has been asked to confirm or correct
+this, to report the four-rung and extended ladders as separately named objects so a flag cannot
+flip merely because a longer ladder was appended, and to commit once its regeneration is
+coherent. **Until that is relayed: do not soften Contribution 1, §5.2, the abstract or the
+conclusion.** If the four-rung ladder is genuinely overturned, all four are rewritten together.
+
+**Page budget (approved 2026-09-17).** The correction-ladder table stays in the appendix because
+Figure 1 carries the family in the main text; do not trade it back.

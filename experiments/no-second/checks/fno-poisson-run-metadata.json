@@ -1,0 +1,69 @@
+{
+  "source": "Poisson FNO job 3702464, extracted from the parent lane Git archive",
+  "parent_archive_sha256": "b9d14a87ea6f2ed144afdf05a1776c24108c7093bade92e120914c5b42bd95c2",
+  "parent_audit": "experiments/neural-operator-audit/runs/fno_poisson01/field-audit.json",
+  "parent_audit_sha256": "7a31c4524fa1b3d808a98f70000e5601ac7f408a3693d611be60783eb71556fa",
+  "note": "result.json/provenance.json fields the parent field-audit.json does not carry (epoch counts, stop flags, parameter counts, config). Extracted so the report can source the FNO Poisson stop reason and budget instead of asserting them.",
+  "arms": {
+    "fno-small": {
+      "epochs_completed": 496,
+      "best_epoch": 415,
+      "stopped_by_wall_budget": false,
+      "stopped_by_signal": false,
+      "training_seconds": 769.1253756608348,
+      "real_parameter_count": 1192801,
+      "config": {
+        "width": 32,
+        "modes": 16,
+        "layers": 4,
+        "epochs": 500,
+        "patience": 80,
+        "batch_size": 8,
+        "learning_rate": 0.001,
+        "weight_decay": 0.0001,
+        "seed": 20260914
+      },
+      "best_checkpoint_sha256": "3ee1eddb17c37e4791f6ff9693c5ed6937cd20b88b50ca9819f7e36fa5957539"
+    },
+    "fno-medium": {
+      "epochs_completed": 457,
+      "best_epoch": 376,
+      "stopped_by_wall_budget": false,
+      "stopped_by_signal": false,
+      "training_seconds": 1091.840968105942,
+      "real_parameter_count": 5779729,
+      "config": {
+        "width": 48,
+        "modes": 24,
+        "layers": 4,
+        "epochs": 500,
+        "patience": 80,
+        "batch_size": 8,
+        "learning_rate": 0.001,
+        "weight_decay": 0.0001,
+        "seed": 20260914
+      },
+      "best_checkpoint_sha256": "a248ab0b07679d4c81f4dd351af502b67f3a2cf998d5e4ca173a742a05f11221"
+    },
+    "fno-large": {
+      "epochs_completed": 361,
+      "best_epoch": 280,
+      "stopped_by_wall_budget": false,
+      "stopped_by_signal": false,
+      "training_seconds": 1570.7264327998273,
+      "real_parameter_count": 17876673,
+      "config": {
+        "width": 64,
+        "modes": 32,
+        "layers": 4,
+        "epochs": 500,
+        "patience": 80,
+        "batch_size": 8,
+        "learning_rate": 0.001,
+        "weight_decay": 0.0001,
+        "seed": 20260914
+      },
+      "best_checkpoint_sha256": "6397b675f30a8775e48553218ef5361ecd702a899275d2cc4c64142a4dfa861d"
+    }
+  }
+}

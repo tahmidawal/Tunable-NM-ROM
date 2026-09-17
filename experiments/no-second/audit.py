@@ -246,6 +246,21 @@ def audit_timing(root):
                 limitation='same-job, same-GPU timings of this lane\'s arms only; never divide by another job')
 
 
+def manifest_hashes(root):
+    """Expected split hashes derived from the job's own archived data manifest, so the literals
+    at the top of this file cannot silently drift from what the job actually verified."""
+    found = {}
+    for name in ('DATA.sha256', 'DATA-tv.sha256'):
+        path = root / 'data' / name
+        if not path.exists():
+            continue
+        for line in path.read_text().splitlines():
+            digest, rel = line.split('  ', 1)
+            if rel.strip() in ('train/index.json', 'validation/index.json'):
+                found[rel.strip().split('/')[0]] = digest
+    return found
+
+
 def main(attempt):
     run = LANE / 'runs' / attempt
     root = run / 'archive' / attempt
@@ -260,8 +275,14 @@ def main(attempt):
     gpu = re.search(r'\n(NVIDIA [^,]+), ', log).group(1)
     data_verified = int(re.search(r'data_verified=(\d+)', log).group(1))
     pde = spec.get('pde', 'burgers')
+    expected_train = FNO_TRAIN_INDEX if pde == 'burgers' else FNO_POISSON_TRAIN_INDEX
+    expected_validation = FNO_VALIDATION_INDEX if pde == 'burgers' else FNO_POISSON_VALIDATION_INDEX
+    from_manifest = manifest_hashes(root)
+    assert from_manifest, 'no archived data manifest to cross-check the split hashes against'
+    assert from_manifest.get('train') == expected_train, (from_manifest.get('train'), expected_train)
+    assert from_manifest.get('validation') == expected_validation, (from_manifest.get('validation'), expected_validation)
+    assert sha(root / 'data/validation/index.json') == from_manifest['validation']
     rows = json.loads((root / 'data/validation/index.json').read_text())['records']
-    assert sha(root / 'data/validation/index.json') == (FNO_VALIDATION_INDEX if pde == 'burgers' else FNO_POISSON_VALIDATION_INDEX)
     arm_audit = audit_arm if pde == 'burgers' else audit_arm_poisson
     arms = {}
     for folder in sorted((root / 'out').glob(f'{prefix}-*')):
@@ -282,8 +303,8 @@ def main(attempt):
     assert timing['present'] and set(timing['models']) == expected_arms
     result = dict(attempt=attempt, job_id=job_id, gpu=gpu, source_commit=provenance['source_commit'], pde=pde,
                   spec=spec, data_files_verified=data_verified, jax_backend='gpu',
-                  train_index_sha256=FNO_TRAIN_INDEX if pde == 'burgers' else FNO_POISSON_TRAIN_INDEX,
-                  validation_index_sha256=FNO_VALIDATION_INDEX if pde == 'burgers' else FNO_POISSON_VALIDATION_INDEX,
+                  train_index_sha256=expected_train, validation_index_sha256=expected_validation,
+                  split_hashes_cross_checked_against_archived_manifest=True,
                   identical_split_to_fno_job=True, validation_cases=len(rows),
                   arms=arms, capacity_selection=selection, worker_tasks=worker,
                   cohort=cohort, timing=timing,

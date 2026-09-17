@@ -40,6 +40,16 @@ def ms(x):
     return f'{x:.3f}'
 
 
+FNO_POISSON_META = LANE / 'checks/fno-poisson-run-metadata.json'
+
+
+def still_improving(best_epoch, epochs_completed, fraction=0.95):
+    """True when the selected checkpoint sits in the last 5% of the epochs the arm ran, i.e.
+    validation was still improving when the stopping condition fired, so the arm's number is a
+    lower bound on that configuration rather than a converged value."""
+    return bool(best_epoch >= fraction * max(epochs_completed - 1, 1))
+
+
 def capacity_of(config):
     family = config.get('family', 'fno')
     if family == 'unet':
@@ -100,8 +110,8 @@ def poisson_section(attempts, fno_p):
     if not attempts:
         return ''
     jobs = ', '.join(f"`{a['audit']['job_id']}` ({a['audit']['attempt']}, {a['audit']['gpu']}, commit `{a['audit']['source_commit'][:8]}`)" for a in attempts)
-    cap = ['| Run | Operator | Capacity | Network dtype | Real parameters | Epochs run | Best epoch | Training s | Budget s | Ended by | Job |',
-           '| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |']
+    cap = ['| Run | Operator | Capacity | Network dtype | Real parameters | Epochs run | Best epoch | Still improving? | Training s | Budget | Ended by | Job |',
+           '| --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- | --- | --- |']
     acc = ['| Run | Operator | Job | Discrete: median (%) | Discrete: worst (%) | Physical: mean (%) | Physical: median (%) | Physical: p95 (%) | Physical: worst (%) | Cases > 5% (physical) |',
            '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
     for a in attempts:
@@ -109,15 +119,38 @@ def poisson_section(attempts, fno_p):
             if not r.get('complete'):
                 continue
             cap.append(f"| `{arm}` | {FAMILY_LABEL[r['family']]} | {capacity_of(r['config'])} | {r['parameter_dtype'].replace('torch.', '')} | "
-                       f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | {r['training_seconds']:.0f} | "
-                       f"{r['wall_budget_seconds']:.0f} | {r['stop_reason'].replace('_', ' ')} | `{a['audit']['job_id']}` |")
+                       f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | "
+                       f"{'yes' if still_improving(r['best_epoch'], r['epochs_completed']) else 'no'} | {r['training_seconds']:.0f} | "
+                       f"{r['wall_budget_seconds']:.0f} s wall | {r['stop_reason'].replace('_', ' ')} | `{a['audit']['job_id']}` |")
             d, ph = r['discrete'], r['physical_candidate']
             acc.append(f"| `{arm}` | {FAMILY_LABEL[r['family']]} | `{a['audit']['job_id']}` | {pct(d['median'])} | {pct(d['maximum'])} | {pct(ph['mean'])} | "
                        f"{pct(ph['median'])} | {pct(ph['p95'])} | {pct(ph['maximum'])} | {ph['above_threshold_counts']['0.05']} |")
+    meta = json.loads(FNO_POISSON_META.read_text())['arms'] if FNO_POISSON_META.exists() else {}
     for size, r in fno_p['models'].items():
         d, ph = r['discrete'], r['physical_candidate']
         acc.append(f"| `fno-{size}` | FNO (parent lane, other job) | `{fno_p['job_id']}` | {pct(d['median'])} | {pct(d['maximum'])} | {pct(ph['mean'])} | "
                    f"{pct(ph['median'])} | {pct(ph['p95'])} | {pct(ph['maximum'])} | {ph['above_threshold_counts']['0.05']} |")
+        m = meta.get(f'fno-{size}')
+        if m:
+            cap.append(f"| `fno-{size}` | FNO (parent lane, other job) | — | float64 | {m['real_parameter_count']} | "
+                       f"{m['epochs_completed']} | {m['best_epoch']} | "
+                       f"{'yes' if still_improving(m['best_epoch'], m['epochs_completed']) else 'no'} | "
+                       f"{m['training_seconds']:.0f} | {m['config']['epochs']} epoch cap | "
+                       f"{'wall budget' if m['stopped_by_wall_budget'] else 'early stopping'} | `{fno_p['job_id']}` |")
+    meta_all = json.loads(FNO_POISSON_META.read_text())['arms'] if FNO_POISSON_META.exists() else {}
+    early = [k for k, m in meta_all.items() if not m['stopped_by_wall_budget']
+             and m['epochs_completed'] < m['config']['epochs']]
+    if early:
+        names = ', '.join(f"`{k}` ({meta_all[k]['epochs_completed']} epochs, best {meta_all[k]['best_epoch']})"
+                          for k in sorted(early))
+        cap_epochs = meta_all[sorted(early)[0]]['config']['epochs']
+        patience = meta_all[sorted(early)[0]]['config']['patience']
+        fno_contrast = (f" The Poisson FNO, by contrast, **early-stopped** inside the same cap — {names}, "
+                        f"against a {cap_epochs}-epoch cap with patience {patience}, so it had stopped improving "
+                        f"while these U-Net arms had not (source: `checks/fno-poisson-run-metadata.json`, "
+                        f"extracted from that job's own archive).")
+    else:
+        fno_contrast = ''
     # An arm whose best epoch is in the last 5% of the epochs it ran was still improving when
     # its stopping condition fired: its number is a lower bound on the family under this protocol.
     improving = [arm for a in attempts for arm, r in a['audit']['arms'].items()
@@ -130,7 +163,33 @@ def poisson_section(attempts, fno_p):
                  f"selected a checkpoint in the last 5% of the epochs it ran, and the stopping condition was the "
                  f"500-epoch cap, not the wall budget \u2014 the longest arm used {used:.0f} s of its {worst_budget:.0f} s. "
                  f"These numbers are therefore a lower bound on what this family reaches under this protocol, "
-                 f"not a converged result. The Poisson FNO, by contrast, early-stopped inside the same cap.")
+                 f"not a converged result.{fno_contrast}")
+    # ---- pre-registered criterion V1-P (DESIGN §A2), evaluated here rather than asserted ----
+    lane = {arm: r for a in attempts for arm, r in a['audit']['arms'].items() if r.get('complete')}
+    sel = min(lane, key=lambda k: lane[k]['discrete']['mean'])
+    fsel = min(fno_p['models'], key=lambda k: fno_p['models'][k]['discrete']['mean'])
+    v, f = lane[sel]['physical_candidate'], fno_p['models'][fsel]['physical_candidate']
+    wr, mr = v['maximum'] / f['maximum'], v['median'] / f['median']
+    ok = wr <= 1.5 and mr <= 1.5
+    job = next(a['audit']['job_id'] for a in attempts if sel in a['audit']['arms'])
+    verdict_p = (f"\n**Pre-registered criterion V1-P (DESIGN §A2).** The validation-selected U-Net is `{sel}` "
+                 f"(job `{job}`; lowest validation mean against the discrete target), and the FNO reference under "
+                 f"the same rule is `fno-{fsel}`. On the physical-candidate metric: worst {pct(v['maximum'])}% against "
+                 f"{pct(f['maximum'])}% (ratio {wr:.2f}×) and median {pct(v['median'])}% against {pct(f['median'])}% "
+                 f"(ratio {mr:.2f}×), both against the 1.50× bar — **{'pass' if ok else 'fail'}**. The worst-case gap "
+                 f"is the substantive one: every FNO capacity leaves 4 cases above 5%, the selected U-Net leaves "
+                 f"{lane[sel]['physical_candidate']['above_threshold_counts']['0.05']}.")
+    tr = json.loads((LANE / 'runs' / attempts[0]['audit']['attempt'] / 'archive' /
+                     attempts[0]['audit']['attempt'] / 'data/validation/index.json').read_text())
+    rel = tr['records'][0]['reference'].get('target_relative_to_reference')
+    confirmatory = (f"\n**The two metric columns are not independent evidence.** The discrete training target and the "
+                    f"finer physical reference agree to {rel:.2e} relative on these cases — far below every model error "
+                    f"here — so the physical column confirms the discrete one rather than measuring something new. "
+                    f"It is reported because the parent audit reports it, and because that agreement is itself the check "
+                    f"that this dataset does not repeat the known analytic-data inconsistency: the target's own discrete "
+                    f"residual is {tr['records'][0]['reference']['relative_discrete_residual']:.2e}."
+                    ) if rel else ''
+
     return f"""
 
 ## Poisson: U-Net on the Poisson operator-screen dataset
@@ -149,6 +208,8 @@ the parent audit: **discrete** (against the training target) and **physical cand
 {chr(10).join(cap)}{still}
 
 {chr(10).join(acc)}
+{verdict_p}
+{confirmatory}
 """
 
 
@@ -207,18 +268,27 @@ def rows_for(attempts, fno, fno_sha, diagnosis, diagnosis_sha, references=True):
     return rows
 
 
-def capacity_table(attempts):
-    lines = ['| Run | Operator | Capacity | Network dtype | Real parameters | Epochs run | Best epoch | Training s | Budget s | Ended by | Job |',
-             '| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |']
+def capacity_table(attempts, fno):
+    lines = ['| Run | Operator | Capacity | Network dtype | Real parameters | Epochs run | Best epoch | Still improving? | Training s | Budget s | Ended by | Job |',
+             '| --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | --- | --- |']
     for a in attempts:
         audit = a['audit']
         for arm, r in audit['arms'].items():
             if r.get('complete'):
                 lines.append(f"| `{arm}` | {FAMILY_LABEL[r['family']]} | {capacity_of(r['config'])} | {r['parameter_dtype'].replace('torch.', '')} | "
-                             f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | {r['training_seconds']:.0f} | "
+                             f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | "
+                             f"{'yes' if still_improving(r['best_epoch'], r['epochs_completed']) else 'no'} | {r['training_seconds']:.0f} | "
                              f"{r['wall_budget_seconds']:.0f} | {r['stop_reason'].replace('_', ' ')} | `{audit['job_id']}` |")
             else:
-                lines.append(f"| `{arm}` | — | — | — | — | — | — | — | — | incomplete | `{audit['job_id']}` |")
+                lines.append(f"| `{arm}` | — | — | — | — | — | — | — | — | — | incomplete | `{audit['job_id']}` |")
+    # The FNO rows the comparison is against, so its epoch counts and capacities are visible
+    # beside this lane's rather than only its errors.
+    for arm, r in fno['models'].items():
+        lines.append(f"| `{arm}` | FNO (parent lane, other job) | {capacity_of(r['config'])} | float64 | "
+                     f"{r['real_parameter_count']} | {r['epochs_completed']} | {r['best_epoch']} | "
+                     f"{'yes' if still_improving(r['best_epoch'], r['epochs_completed']) else 'no'} | "
+                     f"{r['training_seconds']:.0f} | 3000 | "
+                     f"{'wall budget' if r.get('stopped_by_wall_budget') else 'early stopping'} | `{fno['job_id']}` |")
     return '\n'.join(lines)
 
 
@@ -273,15 +343,22 @@ def cohort_table(attempts, fno, diagnosis):
 
 
 def timing_table(attempts):
-    lines = ['| Run | Job | GPU | Repetitions | Device query, pooled median (ms) | Median of case medians (ms) | Host transfer (ms) | Device + host (ms) |',
-             '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |']
+    """One table per job. Every arm in this lane's screens was timed in its own allocation, so
+    rows from different jobs must not be read against each other any more than against the FNO's."""
+    blocks = []
     for a in attempts:
         t = a['audit']['timing']
-        for arm, r in t.get('models', {}).items():
+        if not t.get('models'):
+            continue
+        lines = [f"**Job `{a['audit']['job_id']}` ({a['audit']['attempt']}, {t['gpu']}) — these rows are mutually comparable:**", '',
+                 '| Run | Repetitions | Device query, pooled median (ms) | Median of case medians (ms) | Host transfer (ms) | Device + host (ms) |',
+                 '| --- | ---: | ---: | ---: | ---: | ---: |']
+        for arm, r in t['models'].items():
             cases, reps = r['repetitions']
-            lines.append(f"| `{arm}` | `{a['audit']['job_id']}` | {t['gpu']} | {cases}×{reps} | {ms(r['device_pooled_median_ms'])} | "
+            lines.append(f"| `{arm}` | {cases}×{reps} | {ms(r['device_pooled_median_ms'])} | "
                          f"{ms(r['device_median_of_case_medians_ms'])} | {ms(r['host_pooled_median_ms'])} | {ms(r['device_plus_host_pooled_median_ms'])} |")
-    return '\n'.join(lines)
+        blocks.append('\n'.join(lines))
+    return '\n\n'.join(blocks)
 
 
 def selected(attempts):
@@ -517,12 +594,72 @@ def build(attempts, fno, launch, diagnosis, control_attempts=()):
             f"- **{FAMILY_LABEL[family]}**, validation-selected arm `{arm}` (job `{audit['job_id']}`): mean "
             f"{pct(v['mean'])}%, median {pct(v['median'])}%, worst {pct(v['maximum'])}% over the 32 validation cases "
             f"(FNO `{fno_sel}`: {pct(fno_val['mean'])}% / {pct(fno_val['median'])}% / {pct(fno_val['maximum'])}%). "
-            f"Pre-registered V1 (within 1.5× of the FNO on worst and median): **{'pass' if v1 else 'fail'}**"
-            + (f"; it is in fact below the FNO on {', '.join(beats)}." if beats else '.')
+            f"Pre-registered V1 (within 1.5× of the FNO on worst and median): **{'pass' if v1 else 'fail'}** "
+            f"(worst ratio {v['maximum'] / fno_val['maximum']:.2f}×, median ratio {v['median'] / fno_val['median']:.2f}×, bar 1.50×)"
+            + (f"; it is below the FNO on {', '.join(beats)}." if beats else '.')
             + (f" On the matched eight cases: worst {pct(c['maximum'])}%, median {pct(c['median'])}% "
-               f"(FNO {pct(fno_coh['maximum'])}%, ROM {pct(rom)}%, efficient FOM `same_nt1e-2_dt005` {pct(fom)}%)." if c else
+               f"(FNO worst {pct(fno_coh['maximum'])}% / median {pct(fno_coh['median'])}%, ROM worst {pct(rom)}%, "
+               f"efficient FOM `same_nt1e-2_dt005` worst {pct(fom)}%)." if c else
                ' The matched cohort was not scored in this job.') + tail_note)
     controls = controls_section(control_attempts, attempts)
+    # ---- fairness disclosures required by DESIGN §A1 finding 17, generated from the data ----
+    # (`sel` and `fno_sel` are already computed above.)
+    lane_arms = [(arm, r) for a in attempts for arm, r in a['audit']['arms'].items() if r.get('complete')]
+    improving = [arm for arm, r in lane_arms if still_improving(r['best_epoch'], r['epochs_completed'])]
+    fno_improving = [arm for arm, r in fno['models'].items() if still_improving(r['best_epoch'], r['epochs_completed'])]
+    by_family = {}
+    for arm, r in lane_arms:
+        by_family.setdefault(r['family'], []).append(r)
+    # Like-for-like: each family's SELECTED arm against the FNO's selected arm, since the
+    # maximum epoch count sits at a different capacity in each family.
+    fno_sel_ep = fno['models'][fno_sel]['epochs_completed']
+    ratios = []
+    for family, (arm, r, _audit) in sorted(sel.items()):
+        ratios.append(f"`{arm}` ran {r['epochs_completed']} epochs "
+                      f"({r['epochs_completed'] / fno_sel_ep:.2f}× `{fno_sel}`'s {fno_sel_ep})")
+    spans = {FAMILY_LABEL[f]: (min(x['real_parameter_count'] for x in rs), max(x['real_parameter_count'] for x in rs))
+             for f, rs in sorted(by_family.items())}
+    fno_span = (min(x['real_parameter_count'] for x in fno['models'].values()),
+                max(x['real_parameter_count'] for x in fno['models'].values()))
+    fairness = f"""**Read these numbers with the following, all pre-registered in DESIGN §A1 finding 17.**
+
+- **Almost nothing here is converged.** {len(improving)} of {len(lane_arms)} arms in this lane, and
+  {len(fno_improving)} of {len(fno['models'])} FNO arms, selected a checkpoint in the last 5% of the epochs they
+  ran — they were still improving when the wall budget cut them off. The "Still improving?" column
+  below marks each one. Every Burgers number here is therefore a lower bound on its configuration
+  at this budget, for the new families **and** for the FNO alike; none is a capacity ceiling.
+- **Equal wall in float32 buys more epochs than float64.** At the same 3000 s per capacity,
+  {'; '.join(ratios)}. That asymmetry favours this lane's families and is a deliberate consequence
+  of holding *compute* equal rather than epochs — it is the protocol working as designed, not a
+  correction applied after the fact.
+- **The capacity ranges are not identical.** {'; '.join(f'{k} spans {lo:,}–{hi:,} real parameters' for k, (lo, hi) in spans.items())},
+  against the FNO's {fno_span[0]:,}–{fno_span[1]:,}. Where a family's best arm sits at the edge of its own
+  range, its optimum may lie outside the range screened.
+- **Nothing was tuned per family.** Learning rate, weight decay, batch size, scheduler and patience
+  were inherited unchanged from the FNO lane; `refine` (one lower-learning-rate retrain of the
+  selected capacity) is the only family-level tuning any family received, and the Transolver's own
+  published recipe was not used. This is what "matched protocol" costs: it is fair, not optimal, for
+  every family including the FNO.
+- **One seed.** Differences between a family's own arms — and between families — are not yet
+  separated from seed variation; the precision and seed controls are a separate job."""
+
+    # Reference quality and metric-shape numbers, read from the archived data, never typed.
+    import numpy as np
+    index = json.loads((attempts[0]['path'].parent / 'archive' / attempts[0]['audit']['attempt']
+                        / 'data/validation/index.json').read_text())
+    margin = index['calibration']['worst_empirical_margin']
+    data_root = attempts[0]['path'].parent / 'archive' / attempts[0]['audit']['attempt'] / 'data/validation'
+    ratios_norm = []
+    for row in index['records']:
+        with np.load(data_root / row['path']) as case:
+            t = case['target']
+        ratios_norm.append(float(np.linalg.norm(t[-1, 0, 1:-1, 1:-1]) / np.linalg.norm(t[0, 0, 1:-1, 1:-1])))
+    decay = float(np.mean(ratios_norm))
+    precision_note = ('the float64 precision control below tests whether the network precision matters'
+                      if control_attempts else
+                      'a float64 precision control and a second-seed control are a separate job, not yet returned')
+    seed_note = ('one seed except where a seed control is shown' if control_attempts else 'a single seed')
+
     today = dt.date.today().isoformat()
     text = f"""# Second and third neural-operator baselines on the Burgers common dataset: U-Net and Transolver
 
@@ -531,8 +668,7 @@ neural-operator comparison on the Burgers common dataset, trained on exactly the
 reference, metric, budget and selection rule the FNO lane used (`no-audit`, job
 `{fno['job_id']}`), and scored on the same 32 held-out validation cases and the same eight
 ROM/FOM diagnosis cases. **The numbers are final for the jobs listed and provisional as
-evidence about neural operators on this problem** (one seed except where a seed control is
-shown, one mesh, one Gaussian continuum family, one bounded wall budget per capacity). No
+evidence about neural operators on this problem** ({seed_note}, one mesh, one Gaussian continuum family, one bounded wall budget per capacity). No
 speed ratio against the FNO, the ROM or the FOM is stated anywhere: those were measured in
 other jobs.
 
@@ -541,13 +677,17 @@ staged code against the committed blob and every data file against its recorded
 checksum manifest, and ended with `ALL-DONE`. Training/validation index SHA256
 `{attempts[0]['audit']['train_index_sha256'][:8]}…` / `{attempts[0]['audit']['validation_index_sha256'][:8]}…`, identical to the FNO job's
 (asserted by the audit). Generated {today} by `reports/generate_report.py` from the audit
-JSONs listed in `summary.json`; no number here is typed.
+JSONs listed in `summary.json`; no number here is typed. The sections below were produced by
+different jobs at different commits (printed with each job); the Burgers screens, the Poisson
+screen and any control job are separate commits of this lane, not one build.
 
 ## Verdict against the pre-registered criteria
 
 {chr(10).join(verdict_lines)}
 
 The eight-case worst is a single case; the per-case arrays are in the audit JSONs.
+
+{fairness}
 
 ## What the models are
 
@@ -588,8 +728,7 @@ flowchart LR
 - **FNO** (parent lane): four Fourier layers, float64/complex128.
 
 The U-Net and Transolver networks run in IEEE float32 with TF32 disabled; features, mask,
-trajectory assembly, loss and every reported error are float64, and the float64 precision
-control below tests whether the network precision matters.
+trajectory assembly, loss and every reported error are float64, and {precision_note}.
 
 ## How accuracy is defined
 
@@ -599,7 +738,19 @@ NumPy from the saved fields:
 $$E(\\text{{case}}) = \\max_{{k=0,\\dots,5}} \\frac{{\\lVert \\hat u(t_k) - u^{{\\mathrm{{ref}}}}(t_k)\\rVert_{{2,\\mathrm{{interior}}}}}}{{\\lVert u^{{\\mathrm{{ref}}}}(t_0)\\rVert_{{2,\\mathrm{{interior}}}}}}.$$
 
 The reference is the Burgers lane's refined 4096-interval, $\\Delta t = 1.5625\\times10^{{-4}}$
-numerical solution restricted to the 256-interval grid.
+numerical solution restricted to the 256-interval grid. That lane's own record calls it
+"empirically calibrated on independent development cases; not a per-case continuum
+certificate", with a worst empirical refinement margin of {margin:.3e} — it is a refined
+numerical solution, not exact truth.
+
+Two properties of this metric are worth stating plainly, because they are easy to misread.
+The denominator is the norm of the **initial** field at every output time, not the norm at that
+time; since these solutions decay (the mean final-to-initial interior norm ratio over the
+validation cases is {decay:.3f}), late-time percentages read smaller than a conventional
+per-time relative error would. And the maximum runs over $k=0,\\dots,5$ where the $t_0$ term is
+identically zero, because every method here returns the supplied state bitwise. Both apply
+identically to the FNO, the ROM and the FOM, so the comparisons are fair; the numbers are just
+not per-time relative errors.
 
 ## Protocol (identical to the FNO arm)
 
@@ -613,7 +764,7 @@ cohort. Epoch counts differ by design: equal compute, not equal epochs.
 
 ## Capacities trained
 
-{capacity_table(attempts)}
+{capacity_table(attempts, fno)}
 
 ## Validation accuracy — 32 held-out cases
 
@@ -640,7 +791,9 @@ timing is not**, which is why no time appears here.
 Measured with the parent lane's `timing.py` protocol (supplied field on device to complete
 trajectory on device, 20-query burn-in per block, synchronisation around every repetition,
 every repetition retained). **These numbers must not be divided by any timing from another
-job**, including the FNO's; the `b-panel` lane owns the same-job panel.
+job** — not the FNO's, and **not each other's**: each screen ran in its own allocation, so the
+tables below are separated by job and only rows inside one table may be compared. The
+`b-panel` lane owns the same-job panel that could compare families.
 
 {timing_table(attempts)}
 
@@ -648,11 +801,10 @@ job**, including the FNO's; the `b-panel` lane owns the same-job panel.
 
 - Each new family is reported at every capacity it was trained at, with the number of epochs it
   reached and what ended the run, under exactly the FNO's budget and selection rule.
-- The comparison is single-seed (plus the seed control where present), one mesh, one Gaussian
-  family, one 3000 s budget per capacity. It is a *protocol-matched* screen, not a capacity
-  ceiling for any family.
-- Runs ended by the wall budget were still improving or plateauing at that budget; the report
-  says which, per arm, in the "Ended by" column.
+- The comparison is {seed_note}, one mesh, one Gaussian family, one 3000 s budget per capacity.
+  It is a *protocol-matched* screen, not a capacity ceiling for any family.
+- Which arms were still improving when their budget ran out is marked per arm in the
+  "Still improving?" column of the capacities table, for this lane and for the FNO alike.
 - No speed claim. Checkpoints (`best.pt`) and the `evaluate`-style entry point
   (`model.predict`) are archived for the same-job panel.
 

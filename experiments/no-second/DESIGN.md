@@ -360,3 +360,37 @@ that each loaded checkpoint's SHA256 equals the one recorded in the correspondin
 the assertion that at rung 256 the reproduced errors equal the already-audited numbers for
 that checkpoint to $\le 10^{-9}$ — i.e. the ladder's top rung must reproduce this lane's own
 published result, or the job is void.
+
+## §A6 — Report audit (2026-09-17, after the three screens) and corrections
+
+Codex remained unavailable (quota until 2026-09-19), so the finished report was audited
+against the raw JSONs by an independent Claude subagent with an adversarial read-only brief;
+findings in `reports/report-audit-2026-09-17.md`. It recomputed every rendered cell, and
+re-derived three arms end-to-end from the raw `.npz` fields without touching `audit.json`.
+
+**Headline: no BLOCKER and no wrong number.** Every figure in every table was traceable and
+correct, the selection rule and the V1 arithmetic were right, no forbidden cross-job ratio
+appeared, and gate G5 held (every arm reported, including the bad ones). Accepted findings and
+what changed — all in the generator, so the fixes are reproducible rather than edited prose:
+
+| # | Severity | Finding | Action |
+| --- | --- | --- | --- |
+| 1 | MAJOR | The report referred to a "control below" that did not exist; `ctrl01` was submitted one minute before the report was generated. | **Accepted.** Every controls reference is now conditional on a control audit existing. |
+| 2 | MAJOR | "The report says which, per arm, in the 'Ended by' column" was false — the column read `wall budget` for all eight arms and distinguished nothing, while 7 of 8 arms were in fact still improving. The "lower bound" caveat was given only to Poisson. | **Accepted, and it is the most substantive fix.** A generated **"Still improving?"** column now marks every arm by the same last-5%-of-epochs test, for this lane **and the FNO**, and a fairness bullet states that 7/8 lane arms and 4/4 FNO arms were still improving, so every Burgers number is a lower bound. |
+| 3 | MAJOR | The pre-registered Poisson criterion V1-P (§A2) was never evaluated and no Poisson arm was named as selected — a favourable pre-registered verdict was simply missing. | **Accepted.** V1-P is now computed and stated: selected `unet-medium`, worst ratio 0.20×, median ratio 0.83× against the 1.50× bar, **pass**. |
+| 4 | MAJOR | §A1 finding 17(d) required disclosing that equal wall in float32 buys more epochs than float64, and the report gave no FNO epoch or parameter counts at all. | **Accepted.** FNO rows (capacity, parameters, epochs, best epoch, still-improving, stop reason) are now in the capacities table, and a fairness bullet states the like-for-like selected-arm ratios (2.84× and 2.35× the FNO's epochs). |
+| 5 | MAJOR | The timing table pooled two jobs under a "Same-job" heading, inviting exactly the cross-job read the caption forbade. | **Accepted.** One table per job, each captioned "these rows are mutually comparable", and the preamble says the screens' timings may not be compared with each other either. |
+| 6 | MAJOR | "The Poisson FNO early-stopped inside the same cap" was a hard-coded string with no source, and the Poisson FNO's parameters/budget/stop reason were typed into the generator — contradicting "no number here is typed", on the very claim that makes the U-Net's Poisson result a lower bound relative to a converged FNO. | **Accepted.** `checks/fno-poisson-run-metadata.json` was extracted from that job's own Git archive (hash-pinned to it) and the contrast is now generated from it with epochs, best epochs, cap and patience quoted. |
+| 7, 8 | MINOR | The verdict's parenthetical put the FNO's cohort *worst* after a worst and a median (on the 8-case median the FNO beats both new families), and the flattering clause led while `tsol-refine`'s tail is 1.46× the FNO's. | **Accepted.** The verdict now quotes FNO worst **and** median, and states both V1 ratios numerically. |
+| 9, 10 | MINOR | The Transolver sweep is unbracketed (its best arm is the smallest screened), and §A1 17(a)/17(b) fairness caveats appeared nowhere in the report; winner margins are inside plausible seed noise. | **Accepted.** The fairness block states the capacity ranges, that nothing was tuned per family, that a best arm at the edge of its range may have its optimum outside it, and that family differences are not yet separated from seed variation. |
+| 11 | MINOR | §A2 said "all 206 train/validation files"; the job verified **196**. | **Corrected here:** the number is 196 (`data_verified=196`; 128 train + 32 validation + 32 physical-reference + 4 index files). §A2's text stands as written, per the append-only rule; this row is the correction. |
+| 12 | MINOR | The metric divides by the *initial* norm, so late-time percentages read smaller than per-time relative errors, and the max includes a $t_0$ term that is identically zero. | **Accepted.** Both are now stated under "How accuracy is defined", with the generated mean final/initial norm ratio. |
+| 13 | MINOR | The reference was described more strongly than its own record. | **Accepted.** The report now quotes the lane's own wording and its worst empirical margin. |
+| 14 | MINOR | The two Poisson metric columns are not independent evidence. | **Accepted.** Stated, with the generated target-vs-reference agreement, and noted as the check that rules out the known analytic-data inconsistency here. |
+| 15 | MINOR | Three different commits were printed but never flagged as different builds. | **Accepted.** Stated in the preamble. |
+| 17 | NOTE | `audit.py` asserts the split hashes against **literals typed into the file**; only the cohort hash is read programmatically. | **Accepted.** The audit now derives the expected train/validation hashes from the archived `DATA.sha256` manifest and cross-checks the literals against it, so a typo in either cannot pass. |
+
+Rejected: none. Findings 16, 18, 19 and 20 were confirmations requiring no change; the auditor
+also verified independently that the split hashes really are the FNO jobs' by streaming the
+parent lane's 1.5 GB archives, and that the batch-1/batch-8 tolerance from §A1 was not
+stretched after seeing data (measured gaps sit 4–1700× inside the pre-registered bar).

@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -22,12 +23,34 @@ CACHE = '/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01'
 CODE = ['families.py', 'model.py', 'train.py', 'dataset.py', 'evaluate_cohort.py', 'timing.py',
         'prepare_diagnosis_cohort.py', 'spectral_conv_f64.py', 'NEURALOPERATOR-LICENSE',
         'smoke_second.py', 'training_smoke_second.py', 'worker_second.py',
-        'resolution.py', 'smoke_resolution.py', 'worker_resolution.py', 'engines_output_field.py']
+        'resolution.py', 'smoke_resolution.py', 'worker_resolution.py', 'engines_output_field.py',
+        'checkpoints.json']  # res01 died in its preamble because this manifest was not staged
 # Every config file is staged (pois01 died in its preamble because an explicit list omitted
 # the Poisson configs).
 CODE += sorted(str(p.relative_to(ROOT / 'experiments/no-second'))
                for p in (ROOT / 'experiments/no-second/configs').rglob('*.json'))
 EXCLUDE = 'pax007'
+
+
+REFERENCE = re.compile(r"""['"]code/([^'"\s{}]+)['"]""")
+
+
+def check_references(out):
+    """Every `code/<path>` literal in any staged Python or JSON file must resolve inside the
+    staged tree, and every staged JSON must parse. pois01 (missing configs) and res01
+    (missing checkpoints.json) both died in their cluster preambles on exactly this omission;
+    this makes the omission a staging-time failure on this machine instead."""
+    missing = []
+    for path in sorted((out / 'code').rglob('*')):
+        if path.suffix not in ('.py', '.json'):
+            continue
+        if path.suffix == '.json':
+            json.loads(path.read_text())
+        for match in REFERENCE.finditer(path.read_text()):
+            if not (out / 'code' / match.group(1)).is_file():
+                missing.append(f"{path.relative_to(out)} -> code/{match.group(1)}")
+    assert not missing, f'staged tree does not contain every referenced file: {missing}'
+    return len(list((out / 'code').rglob('*.json')))
 
 
 def main():
@@ -131,6 +154,7 @@ echo ALL-DONE
         script = script.replace(token, value)
     assert not any(token in script for token, _ in tokens), script
     (out / 'run.sbatch').write_text(script)
+    print(f'referenced-file check passed; {check_references(out)} staged JSON files parsed')
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'
                 for p in sorted(out.rglob('*')) if p.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

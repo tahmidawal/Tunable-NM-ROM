@@ -394,3 +394,24 @@ Rejected: none. Findings 16, 18, 19 and 20 were confirmations requiring no chang
 also verified independently that the split hashes really are the FNO jobs' by streaming the
 parent lane's 1.5 GB archives, and that the batch-1/batch-8 tolerance from §A1 was not
 stretched after seeing data (measured gaps sit 4–1700× inside the pre-registered bar).
+
+## §A7 — res01 preamble failure and the staging guard (2026-09-17)
+
+Job `3783920` (`res01`) failed 59 s in on pax050, exit 1:0. Every preflight and smoke step
+passed (`jax_backend=gpu`, 395 data files and 3/3 checkpoints hash-verified, resolution smoke
+on all rungs, prolongation check 0.0, cohort rebuilt), and then `resolution.py` died on
+`FileNotFoundError: [Errno 2] No such file or directory: 'code/checkpoints.json'`. Cause:
+the stager's explicit file list omitted `checkpoints.json`, the frozen-checkpoint manifest
+§A5 introduced — the same omission class as §A3. **Nothing was evaluated; nothing to
+retract; zero science GPU time**, so it does not count toward the cap (rule 13).
+
+Change: `cluster/stage.py` stages `checkpoints.json` and now runs `check_references()` at
+staging time, which resolves every `code/<path>` literal in every staged `.py`/`.json`
+against the staged tree and JSON-parses every staged JSON; run against the old `res01` tree
+it fires on `code/checkpoints.json`. The science of §A5 is unchanged: `res02` is staged from
+`specs/res02.json`, identical to `res01.json` except `job_name`. Record:
+`runs/res01/FAILURE.json`, `runs/res01/FAILED.md`, `runs/res01/logs-failed/`.
+
+Self-audit substitution (Codex quota until 2026-09-19 11:33): this amendment and the record
+above were checked by the author against the pulled logs; the verbatim error line in
+`FAILURE.json` is copied programmatically from `logs-failed/resolution.log`.

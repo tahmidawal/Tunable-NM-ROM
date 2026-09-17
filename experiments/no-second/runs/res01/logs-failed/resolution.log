@@ -1,0 +1,19 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"prolongation_check": {"max_abs_difference": 0.0, "tolerance": 1e-12, "source": "/cluster/tufts/paralab/tawal01/no_second_20260917/res01/code/engines_output_field.py", "source_sha256": "d69c446f29c168822aa451ff97eac8f9e91872c960680e99b9794d70246135bf"}}
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/no_second_20260917/res01/code/resolution.py", line 227, in <module>
+    main(parser.parse_args())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/no_second_20260917/res01/code/resolution.py", line 130, in main
+    manifest = json.loads(args.checkpoints.read_text())
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/pathlib/_local.py", line 546, in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/pathlib/_abc.py", line 632, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/pathlib/_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'code/checkpoints.json'

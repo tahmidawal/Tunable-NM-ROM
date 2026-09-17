@@ -1,0 +1,60 @@
+{
+  "attempt": "res01",
+  "job_id": "3783920",
+  "job_name": "ctol_nos_res01",
+  "node": "pax050",
+  "accounting": "3783920|ctol_nos_res01|FAILED|00:00:59|1:0|pax050",
+  "state": "FAILED",
+  "elapsed": "00:00:59",
+  "exit_code": "1:0",
+  "source_commit": "dc364c7bf0a7016d2bbe275b73a7804953bef15a",
+  "classification": "preamble death: zero science GPU time; does not count toward the 8-job cap (LANE-PROTOCOL rule 13)",
+  "preflight_passed": {
+    "jax_backend": "gpu",
+    "data_verified": 395,
+    "checkpoints_verified": 3,
+    "torch_cuda": true,
+    "resolution_smoke": "passed",
+    "cohort_rebuilt": 8,
+    "prolongation_check_max_abs_difference": 0.0
+  },
+  "failing_task": "resolution",
+  "failing_command": [
+    "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+    "code/resolution.py",
+    "--checkpoints",
+    "code/checkpoints.json",
+    "--validation-index",
+    "data/validation/index.json",
+    "--cohort-index",
+    "data/diagnosis-cohort/index.json",
+    "--out",
+    "out/resolution",
+    "--repetitions",
+    "30",
+    "--burn-in",
+    "20",
+    "--timing-cases",
+    "8"
+  ],
+  "error_verbatim": "FileNotFoundError: [Errno 2] No such file or directory: 'code/checkpoints.json'",
+  "cause": "cluster/stage.py's explicit CODE list did not include experiments/no-second/checkpoints.json, the frozen-checkpoint manifest that worker_resolution.py passes as --checkpoints code/checkpoints.json; MANIFEST.sha256 of the staged tree has 30 entries and none is checkpoints.json. Same failure class as pois01 (3780224).",
+  "not_the_cause": {
+    "disk": "paralab 92% used, 400G free at job start (df line in 3783920.out); tmp/cache/out all writable",
+    "gpu": "A100 80GB PCIe, jax_backend=gpu, torch cuda True",
+    "checkpoints": "ckpt01 verified 3/3 SHA256 in-job",
+    "data": "395/395 verified"
+  },
+  "fix": "stage.py now stages checkpoints.json, and check_references() resolves every 'code/<path>' literal in every staged .py/.json against the staged tree and JSON-parses every staged JSON at staging time; the guard was run against the old res01 tree and fires on code/checkpoints.json",
+  "resubmitted_as": "res02 (specs/res02.json, identical to res01 except job_name)",
+  "logs_failed": {
+    "3783920.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3783920.out": "b2265b7765188e5285107c5839097d47b06c437f3bed3bceefead974298066c7",
+    "cohort.log": "1e387e70fede5e1decf75449d7e0b1e387cf446951592455e310ee4d6b682726",
+    "resolution-smoke.json": "11b4e60776300e1d520ff10c6efa812cc0f03379d166859ecfe7c884ac13e320",
+    "resolution-smoke.log": "9c1d8904c90b4d4e752f2a01536292d439a928894e45785815e836a0108d2088",
+    "resolution.log": "39ae32d770ac9b297ac8c2960d139b84a68b806730ba0cff7ece969108e08ab1",
+    "worker.json": "d2845d2198418fc905efd144590c867245c1b45c96dec83e0c80de261267d326"
+  },
+  "remote_directory_deleted": "/cluster/tufts/paralab/tawal01/no_second_20260917/res01 (after these logs were pulled)"
+}

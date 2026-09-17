@@ -1,0 +1,58 @@
+{
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "sources": {
+    "dataset.py": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+    "evaluate_cohort.py": "a088ba646caee32a45cd5df49b1f421ee47f5bf222a8a01be2837612803b38a9",
+    "families.py": "11efca39993f7e34421d873a8f3f69a911f5348fe0973b74745e8b0d553b88df",
+    "model.py": "08a5b5ed65ce4ca5e6db8a15d26cfecb803f2470742baa9416f3d73dee25c397",
+    "prepare_diagnosis_cohort.py": "3c6529e355c27ebcd8c8c5affc339c8286b0393703e0d75fc01f6df4c60f0504",
+    "smoke_second.py": "ec171d7fffa4d5c3656f55485644bec615b56ef0fb2b03f6ff976c136c736f45",
+    "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+    "timing.py": "f736bc8dc73a7a28e7a02938f088f5f24851b60e50b2a0cd9f496a278f7a7ecc",
+    "train.py": "5abc9bd77275c40587c3b2fa9f81c17349a925d86bd3f847f86c42875e9578c1",
+    "training_smoke_second.py": "f5546c81f148d244893fbf803bd82aff94daa0cfc88375a418c4485ff9cf7850",
+    "worker_second.py": "ef0ca2d456efef55abe21c1ebda304921bcee1a6199baaeec2c0c190c2c0bb4b"
+  },
+  "config": {
+    "family": "unet",
+    "base": 8,
+    "groups": 8,
+    "dtype": "float32",
+    "epochs": 2,
+    "patience": 2,
+    "batch_size": 2,
+    "warmup_epochs": 1,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914
+  },
+  "config_sha256": "20c4391f9e01e5e646d0b726277bac67e17e14b1ba91de9102c065ea6248c40c",
+  "train_index_sha256": "cb6266f5c647f73f48acd0d3f86c18984486019c2c9fc74cfcff69c9a9ec6d3d",
+  "validation_index_sha256": "c60b36b55875fe00a39de6143c0e03b8f03bbc5d49bd90d413ba4bf60fb2c389",
+  "train_case_ids": [
+    "smoke-unet-train-0",
+    "smoke-unet-train-1",
+    "smoke-unet-train-2",
+    "smoke-unet-train-3"
+  ],
+  "validation_case_ids": [
+    "smoke-unet-validation-0",
+    "smoke-unet-validation-1"
+  ],
+  "job_id": "3780625",
+  "node": "pax049",
+  "seed": 20260914,
+  "pde": "poisson",
+  "mesh": 64,
+  "final_cohort_opened": false,
+  "target": "declared dataset target; physical-reference evaluation is separate",
+  "supplied_input": "sampled field and known physical coefficients; no Gaussian descriptors",
+  "timing": "training resource accounting only; no FOM/ROM speed ratio"
+}

@@ -1,0 +1,50 @@
+{
+  "complete": true,
+  "pde": "burgers",
+  "best_epoch": 1,
+  "family": "unet",
+  "parameter_dtype": "torch.float32",
+  "epochs_completed": 2,
+  "stop_reason": "epoch_cap",
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "stopped_by_early_stopping": false,
+  "stopped_by_epoch_cap": true,
+  "wall_budget_seconds": 7200.0,
+  "warmup_epochs": 1,
+  "validation": {
+    "errors": [
+      [
+        0.0,
+        0.9027479661632335,
+        0.8879678613955916,
+        0.8956194788264839,
+        0.8755984330891088,
+        0.5926973941767242
+      ],
+      [
+        0.0,
+        0.9028458952622861,
+        0.8877673640980095,
+        0.8953870669630047,
+        0.8752700677433113,
+        0.5926583680080207
+      ]
+    ],
+    "mean_case_max": 0.9027969307127598,
+    "median_case_max": 0.9027969307127598,
+    "worst_case_max": 0.9028458952622861,
+    "p95_case_max": 0.9028409988073335,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    },
+    "batched_selection_score": 0.9027969256708535
+  },
+  "parameter_tensor_elements": 486661,
+  "real_parameter_count": 486661,
+  "best_checkpoint_sha256": "b003a84671184ee9d69a987da65c9aa8acaafc8525422ad4e4575a81e3676753",
+  "training_seconds": 0.8658688380382955,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

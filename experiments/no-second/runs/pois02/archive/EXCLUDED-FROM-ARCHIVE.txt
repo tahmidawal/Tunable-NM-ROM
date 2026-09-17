@@ -1,0 +1,13 @@
+--exclude=*/last.pt
+--exclude=*.solver.npz
+--exclude=cache
+--exclude=tmp
+--exclude=data/train
+--exclude=data/refinement
+--exclude=code/__pycache__
+
+OUTPUTS.sha256 entries not archived:
+out/training-smoke/run/last.pt
+out/unet-large/last.pt
+out/unet-medium/last.pt
+out/unet-small/last.pt

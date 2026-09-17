@@ -1,0 +1,1445 @@
+{
+  "calibration": {
+    "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+    "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+  },
+  "complete": true,
+  "count": 32,
+  "dataset_seed": 20260914,
+  "final_cohort": "sealed; unsupported by generator",
+  "intervals": 256,
+  "model_input_contract": "Only input, known-physics parameters and coordinates; generation descriptors are forbidden.",
+  "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+  "pde": "poisson",
+  "records": [
+    {
+      "case_id": "poisson-validation-00000",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4977274285306867,
+        "cx": 0.43101836215453637,
+        "cy": 0.22787272853811727,
+        "width": 0.050396509742664124
+      },
+      "path": "cases/poisson-validation-00000.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00000.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.7383795990777546e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 7.776345238705661e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.077598601474092e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 7.728162613396248e-13,
+        "sha256": "8cccd4780eee6fed1df2fce74c5244ef9767e3e43653edfc846181daeaf979f9",
+        "target_intervals": 256,
+        "target_relative_to_reference": 6.533803522497984e-05
+      },
+      "seed": 81474334,
+      "sha256": "797d24f5733297236f66d455ce95c708cd0d13982a128c30d235c851b2e8eeed",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00001",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7987252704439796,
+        "cx": 0.2393596670317805,
+        "cy": 0.5439475521227733,
+        "width": 0.04492296331074844
+      },
+      "path": "cases/poisson-validation-00001.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00001.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.144828426623818e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 8.447233587917813e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.846265524186732e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 6.591079965620525e-13,
+        "sha256": "7804ae430e60b4dc77cb10a0c7a901212677f39d11a304cf57724e25a60229ea",
+        "target_intervals": 256,
+        "target_relative_to_reference": 7.097944044193948e-05
+      },
+      "seed": 3213349793,
+      "sha256": "2f762e0b7583f51a4460af02ef64c265d0aabd18b67e8f389bfd5ee425548ee3",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00002",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4083286638232575,
+        "cx": 0.15202346782964912,
+        "cy": 0.43170296319314594,
+        "width": 0.09459222506778438
+      },
+      "path": "cases/poisson-validation-00002.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00002.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 6.733937511296983e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.524129079554389e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.753686039929259e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.0093184093958772e-12,
+        "sha256": "ead08ce250221259837faa148f7f805f5c7e75681f5a46557bf688305caaa486",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.800744096893698e-05
+      },
+      "seed": 618523293,
+      "sha256": "6d6cb48ff92bed87c24a89c959bfb5d9e1c9b4efd7bb84030f48436d192c9f04",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00003",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.623759780092207,
+        "cx": 0.5085374260945283,
+        "cy": 0.679680367724579,
+        "width": 0.0317321321631374
+      },
+      "path": "cases/poisson-validation-00003.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00003.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.40046568959271e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.0469717395642721e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.4592719111512304e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 5.240748850279517e-13,
+        "sha256": "7fd3bb8121767461cd66fa252eb2df7dfc4f5e10cbffe8799ccbacbeafa46537",
+        "target_intervals": 256,
+        "target_relative_to_reference": 8.800048705252545e-05
+      },
+      "seed": 3702207097,
+      "sha256": "be2617bfa475ce5af0599dfbbd365c2a7e6e4c497746c6211e20ba09c7080766",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00004",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.492307895825231,
+        "cx": 0.1571812922591857,
+        "cy": 0.16376384966148747,
+        "width": 0.09615753681131432
+      },
+      "path": "cases/poisson-validation-00004.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00004.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.849154916710282e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 5.114606660554605e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.1121526447714265e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 7.066265404843552e-13,
+        "sha256": "897aecd66a08f755b2db6ef29d3dce03266014cb1ee352758b63c868e960ff85",
+        "target_intervals": 256,
+        "target_relative_to_reference": 4.296972908861043e-05
+      },
+      "seed": 4117552440,
+      "sha256": "d0ecc01138a4c6580cef1ac04ed6668eb54cd6bccd2a8b87a884119975abc622",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00005",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9122837693646705,
+        "cx": 0.3887255044033361,
+        "cy": 0.6973310897340269,
+        "width": 0.08227086381941985
+      },
+      "path": "cases/poisson-validation-00005.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00005.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 8.707779476353005e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.2938111311977153e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.918798883573797e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.4452367124483155e-12,
+        "sha256": "6bdbbbefab64842f4d74496739126a38effc9095a19ca3ff9eebef4bd444b2d1",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.6071707957233846e-05
+      },
+      "seed": 3392532663,
+      "sha256": "35ac05462750368f7a84ec7217150c941a80326a40f17770bc7a1a6a4796586d",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00006",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4604282778533617,
+        "cx": 0.3167941062108167,
+        "cy": 0.8360259037260861,
+        "width": 0.07332861674949871
+      },
+      "path": "cases/poisson-validation-00006.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00006.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 5.801674522686116e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 6.621260267890851e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.3996199675234843e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 8.186143716003407e-13,
+        "sha256": "47ab3076944963a041330e18d358f225418fe21f69a11a3103232c54369eb6c7",
+        "target_intervals": 256,
+        "target_relative_to_reference": 5.562745982328727e-05
+      },
+      "seed": 377714778,
+      "sha256": "a1b143df3bd9cf7b69381d616488f8b5af0156524a97f4133ae7cfd39f5f540b",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00007",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3096287852491224,
+        "cx": 0.5803860768063405,
+        "cy": 0.46103167814103563,
+        "width": 0.09452630728228696
+      },
+      "path": "cases/poisson-validation-00007.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00007.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.0789689048786107e-10
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 3.3091558649500815e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.804380172228116e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.7040188402618803e-12,
+        "sha256": "ec94a47a48c9489941ae2f5776a9751c7eed8c8c532b2b31c0ecb4efb935e638",
+        "target_intervals": 256,
+        "target_relative_to_reference": 2.7799126458371202e-05
+      },
+      "seed": 4147128400,
+      "sha256": "9d406fd813418f9e589271f00479df9f52b3010f050c38d4cc578c2fb5a07e5e",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00008",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8734931017036771,
+        "cx": 0.27706109038762416,
+        "cy": 0.49367902866601754,
+        "width": 0.0579990591219068
+      },
+      "path": "cases/poisson-validation-00008.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00008.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 5.7606555939359374e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 6.112472127688476e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.479130354310197e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 9.652766399636314e-13,
+        "sha256": "3976e276d630f49e1b7814f1b51d3a21b99778d3edfd74133f52d95e67f68719",
+        "target_intervals": 256,
+        "target_relative_to_reference": 5.1354818785869966e-05
+      },
+      "seed": 1732748187,
+      "sha256": "47508a89750a4fac32b59583c782e11502a31504b2125b63dca0fcba193a47c4",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00009",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8681161233002137,
+        "cx": 0.3387791043169167,
+        "cy": 0.7640169263179963,
+        "width": 0.0803052518983987
+      },
+      "path": "cases/poisson-validation-00009.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00009.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 7.789924381563567e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 5.050771797738405e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.276217225768997e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.1477745468336874e-12,
+        "sha256": "cfbdaa7c82ef21159f52d990992e2d7e038856f642ce2b0f125e3aa0bcaa380d",
+        "target_intervals": 256,
+        "target_relative_to_reference": 4.243121031218213e-05
+      },
+      "seed": 3844791407,
+      "sha256": "16c9d4a1b5c5b800aa25340b8f4beaa4b94fe2bb90409676cecf5e611ec57ffa",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00010",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7517207730515127,
+        "cx": 0.15981839469733475,
+        "cy": 0.4519977930936744,
+        "width": 0.04028573212277329
+      },
+      "path": "cases/poisson-validation-00010.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00010.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.0365485943944076e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.1785155107100905e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.3890269416858726e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 4.624029147958224e-13,
+        "sha256": "6f9c3e699c2318d19581c06689f7899483df1e73cdf053ad4bbda88865a3ba78",
+        "target_intervals": 256,
+        "target_relative_to_reference": 9.903435076636391e-05
+      },
+      "seed": 2436615036,
+      "sha256": "02aeebcb8f17e405e5864a85caf957e5a94fc4d382a643438f9442d2513e0183",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00011",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9139524789361166,
+        "cx": 0.4641533324391448,
+        "cy": 0.37324691284201883,
+        "width": 0.07599178956640497
+      },
+      "path": "cases/poisson-validation-00011.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00011.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 8.345113480289535e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.2178225392044723e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.9161454459788686e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.410569731473204e-12,
+        "sha256": "d150761607f0d5bb2cf169723c3754b81a233ab3122f910d3f2db8cbad04b7fd",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.5433906739856374e-05
+      },
+      "seed": 3690482876,
+      "sha256": "ec211067d1d08d1f5b97b7705ca739d4abc228f16215ec391c98b7f642abe524",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00012",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.799492315905594,
+        "cx": 0.1854260527959151,
+        "cy": 0.5168906110145527,
+        "width": 0.04464622454827
+      },
+      "path": "cases/poisson-validation-00012.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00012.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.691569442606149e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 9.720263978143598e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.672568041750862e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 5.75594301116806e-13,
+        "sha256": "f25acd320a7a7b9693a91256a900508091b53aac6c787e008196b1b9cd46bc52",
+        "target_intervals": 256,
+        "target_relative_to_reference": 8.167655665051085e-05
+      },
+      "seed": 1128692558,
+      "sha256": "fb664e7b4c83da5b51f570b4a63a70385162a8395fec14077bfbb0db0b8d8ce1",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00013",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8323502459810397,
+        "cx": 0.7713882460692297,
+        "cy": 0.6561817325117705,
+        "width": 0.0298933272937093
+      },
+      "path": "cases/poisson-validation-00013.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00013.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.5990914600366234e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.3568556267631115e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.146042774535298e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 4.1882511712563937e-13,
+        "sha256": "ec50b75c90035cbdf41ecd84663397c9e949988c9fbf165508da1e722db91f48",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.00011405660580605068
+      },
+      "seed": 3792563382,
+      "sha256": "a0a1df09f3f46087652fca347959b51b817deaf463b08ed04e8ffd016b1b245f",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00014",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5968892668597832,
+        "cx": 0.44490955447969993,
+        "cy": 0.7955355463615997,
+        "width": 0.05447470361274015
+      },
+      "path": "cases/poisson-validation-00014.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00014.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 5.0888768798841235e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 7.611444114699064e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.1842191720776833e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 7.943840945391887e-13,
+        "sha256": "92d5752a5d9874fc3143a615d349d2e3f99ef8d023d685395f84fc4bb837165e",
+        "target_intervals": 256,
+        "target_relative_to_reference": 6.395020106707626e-05
+      },
+      "seed": 2804682698,
+      "sha256": "3604787bde9e1147186dd5c87ff1dc2adf81774af0aa629c77b242f23a8d4f76",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00015",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0501977791011907,
+        "cx": 0.43460659497036735,
+        "cy": 0.6642808919669788,
+        "width": 0.09669904900410063
+      },
+      "path": "cases/poisson-validation-00015.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00015.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.151967151358952e-10
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 3.459109955211649e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.790474125717683e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.6745350307113534e-12,
+        "sha256": "fe45dae7dceae9778164450a22ba90b8079c97942a6a63b0e4fb73e3ed5391d8",
+        "target_intervals": 256,
+        "target_relative_to_reference": 2.9058741313035597e-05
+      },
+      "seed": 1741844203,
+      "sha256": "a39d102699484cdeb4ef4fb4ce44790f7b51a6c019b3641a194e1ee8f516a8bf",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00016",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8548939855223896,
+        "cx": 0.7845501024222542,
+        "cy": 0.6787366586052189,
+        "width": 0.022740982125815053
+      },
+      "path": "cases/poisson-validation-00016.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00016.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.9333532526803085e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.865001251128013e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 8.40446713199161e-11
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 3.10871176144508e-13,
+        "sha256": "4c1d05c64b6c131ea6c672b8d9e43f10d265f668f7c4a60147efd4ec44d9d759",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.00015684992264894786
+      },
+      "seed": 4177501382,
+      "sha256": "6d0e24cdad5d4febb5823c992040776e6b37577f687fc61f139a4c6caf5ad06e",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00017",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2182784828639552,
+        "cx": 0.30726548426211164,
+        "cy": 0.7757508240288447,
+        "width": 0.04198584347007652
+      },
+      "path": "cases/poisson-validation-00017.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00017.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.637775950433796e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.0083801620056537e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.5953670467332968e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 6.087781771667608e-13,
+        "sha256": "b0c2b439c42932e776626056c05a5e50f9d003b3953c7f14d0c4d95ef24f47ce",
+        "target_intervals": 256,
+        "target_relative_to_reference": 8.47352286534575e-05
+      },
+      "seed": 1187257886,
+      "sha256": "e15e4c0898fa9e4327ba00168a5042d9ba05231981c48e76bfb14aee7cb8672a",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00018",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.888478629760837,
+        "cx": 0.5109363254703838,
+        "cy": 0.6582540106730237,
+        "width": 0.07671799198949493
+      },
+      "path": "cases/poisson-validation-00018.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00018.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 8.450551465501113e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.2788139444683436e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.8407699492008115e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.384409372212511e-12,
+        "sha256": "c41b84807849aad377f70b1d3c638ec43affc7f2d8f4c2ed396443e661e13b7b",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.59462136578765e-05
+      },
+      "seed": 1349801522,
+      "sha256": "7e18e7e3ed9b8ea9b91fe703d87e076b01977a2b0938ec878da5f41fb2e02a40",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00019",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9641954906311612,
+        "cx": 0.32452213192608104,
+        "cy": 0.6433233748941397,
+        "width": 0.06636437304974156
+      },
+      "path": "cases/poisson-validation-00019.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00019.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 7.135277948925573e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 5.281128615951826e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.054229415258225e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.0946235000819188e-12,
+        "sha256": "1f0f38533baedf50048cd244559eae830d9e170404e02d2faf671882bce9a324",
+        "target_intervals": 256,
+        "target_relative_to_reference": 4.4368281243708646e-05
+      },
+      "seed": 991175835,
+      "sha256": "1a7b92c72a5cdf71b58f0b2de752fe1f5af6736a5394923149b83754298793d1",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00020",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7537852107163667,
+        "cx": 0.46526308789592963,
+        "cy": 0.8423033158818531,
+        "width": 0.09157520617627733
+      },
+      "path": "cases/poisson-validation-00020.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00020.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 6.918208951303268e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.713533092064762e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.00359718320249e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.0549508861986179e-12,
+        "sha256": "0599893524aaa8ffcd3e3e880a3045f50fbeb50f9ea2f13dcef8f81642b0c9f8",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.959871773770799e-05
+      },
+      "seed": 4217179582,
+      "sha256": "e4f1b1f4c966d9e7e72b62f7524471ccb6d36304665be7893186d1671102d790",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00021",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.7417815175562685,
+        "cx": 0.8148515455115892,
+        "cy": 0.7232105805355953,
+        "width": 0.03032728057607685
+      },
+      "path": "cases/poisson-validation-00021.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00021.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.289114267220273e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.5809299547325099e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 9.991448639674723e-11
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 3.539953392392203e-13,
+        "sha256": "9afd875c69c44912fa42553c48c3ff7aa79ae4f2f12bbfccc95efcdb8abf74f5",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.00013289066091789773
+      },
+      "seed": 1947517972,
+      "sha256": "e9f980a23c32635592ec7773ac2cc325af5d4aa58fe01412916e842910ac100a",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00022",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1982155796427594,
+        "cx": 0.3830256397644397,
+        "cy": 0.30027496052088404,
+        "width": 0.04756389357216576
+      },
+      "path": "cases/poisson-validation-00022.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00022.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.601911337584613e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 7.420302046880021e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.1294439494130624e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 7.972958548503469e-13,
+        "sha256": "feef4aab5103d2bab09355af803e10fc48319fafacd02b0bcdbd0c67dfac4cce",
+        "target_intervals": 256,
+        "target_relative_to_reference": 6.234843025927074e-05
+      },
+      "seed": 3049073766,
+      "sha256": "19f1abad450c237443433575a382120b7ae7dbee66ff16f7a1d051424811ad31",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00023",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6711177721558172,
+        "cx": 0.15851490605916838,
+        "cy": 0.7960358923786403,
+        "width": 0.02738922616295085
+      },
+      "path": "cases/poisson-validation-00023.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00023.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.7178020232434075e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 2.108821086346472e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 7.358665345133511e-11
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 2.8031192867427453e-13,
+        "sha256": "71f77388ecfb7fa178940af21399f3485cb6a079e7a93ba9a06af105e59a5bed",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.0001772939376106753
+      },
+      "seed": 4210877757,
+      "sha256": "d42d61306e8e0f3cc6ab3bccf4be8aac42ad267d41a268052a59c76fcb31de9a",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00024",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6168391854094257,
+        "cx": 0.7433205227875046,
+        "cy": 0.7067022534604946,
+        "width": 0.091059473730351
+      },
+      "path": "cases/poisson-validation-00024.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00024.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 8.503592293395973e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 4.466787095028389e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.3698917836015446e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.2194159401501152e-12,
+        "sha256": "fbb202a5c333675284c025ef2a2c6c979eda71f4f8ea579a88a703e110d557c1",
+        "target_intervals": 256,
+        "target_relative_to_reference": 3.7524441608386485e-05
+      },
+      "seed": 3993270748,
+      "sha256": "c9b75e25233b3829e5098e8de56892d20c4023ba28bb4e878c7c859bc42e20cd",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00025",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6906726926497408,
+        "cx": 0.40769561871311466,
+        "cy": 0.5018205754556806,
+        "width": 0.0919059801261972
+      },
+      "path": "cases/poisson-validation-00025.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00025.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.0597720279424037e-10
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 3.409199174616738e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.5018751790623246e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.5956045760632924e-12,
+        "sha256": "994576aa62a2698bc1287bc993f76b46cb4616e2d3c27bb62261bdd87f82d6ee",
+        "target_intervals": 256,
+        "target_relative_to_reference": 2.8639674538166234e-05
+      },
+      "seed": 1889680105,
+      "sha256": "6faf7b37701e8892518c97e86fcc3665745a7d099d74a7cebf5bc363af40d305",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00026",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5354981449743361,
+        "cx": 0.492087945209962,
+        "cy": 0.32487891810560415,
+        "width": 0.06368882231162938
+      },
+      "path": "cases/poisson-validation-00026.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00026.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 7.082050204397655e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 5.231414580770351e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 3.1002186889318363e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.11858130081429e-12,
+        "sha256": "1fef53c67057d5ef2006a7cd7542c0386469443472321b2b029002581cc7e8d6",
+        "target_intervals": 256,
+        "target_relative_to_reference": 4.3951102865057e-05
+      },
+      "seed": 3666247772,
+      "sha256": "33aca20cf187c16ff38e509a497721452a487515a15b16a5ef51e0fbfa0154c9",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00027",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0623104265250198,
+        "cx": 0.7471830207531415,
+        "cy": 0.5835195760000756,
+        "width": 0.05636478617048815
+      },
+      "path": "cases/poisson-validation-00027.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00027.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 5.437471457680397e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 6.650142401206343e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.2907692346871534e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 8.165723297586871e-13,
+        "sha256": "d3c57bbdbc8625b7ce4e3046a74fa605e01c48968562daea090bce25b77f83f5",
+        "target_intervals": 256,
+        "target_relative_to_reference": 5.5872770444420206e-05
+      },
+      "seed": 4243177614,
+      "sha256": "be1968903bb88db21ee756bff073fd74f0157eca59c085cb82688d9e2831e65c",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00028",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5357659950951108,
+        "cx": 0.4380001028987154,
+        "cy": 0.27868587905219316,
+        "width": 0.02145338672856749
+      },
+      "path": "cases/poisson-validation-00028.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00028.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.1582458304192945e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 1.6443758778510798e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 9.497953727883593e-11
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 3.5732314612222655e-13,
+        "sha256": "821a0058675385418496b01e80c8c70e7e50bae4597547c7f19bf60cc1991ab2",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.00013831395640053506
+      },
+      "seed": 2225632927,
+      "sha256": "fb14508b164af1b5e70871f776be63fb7dd4a99ee306927bcd383b4f8bfeb9d8",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00029",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1168243509805302,
+        "cx": 0.3909133830568693,
+        "cy": 0.8098416638742991,
+        "width": 0.0785010764051183
+      },
+      "path": "cases/poisson-validation-00029.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00029.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 6.972509260791837e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 5.551837695123055e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.969586145437913e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 1.0299997126799878e-12,
+        "sha256": "5f1ec729e022f7063190d99e450fe78a2dd2244072f9471884d25a948747ab89",
+        "target_intervals": 256,
+        "target_relative_to_reference": 4.664146590303709e-05
+      },
+      "seed": 2024262731,
+      "sha256": "b0f268d6fd55ef3750763a26e3b22ddc7ebea9b9e87c2bacc9c2a02fbf3f315d",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00030",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0465876447019478,
+        "cx": 0.5364459555358295,
+        "cy": 0.5621453809433308,
+        "width": 0.04446703614258214
+      },
+      "path": "cases/poisson-validation-00030.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00030.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 4.917416386572016e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 6.933877165097285e-07,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 2.2433887963976674e-10
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 7.962889326023045e-13,
+        "sha256": "8e70c7aeaba117dfbb101326eebb6d07052aab2275efc300d854bd8cba4cbabe",
+        "target_intervals": 256,
+        "target_relative_to_reference": 5.826339548034329e-05
+      },
+      "seed": 1691441944,
+      "sha256": "cf46e163048708d8d6543d360df842398ab1d17b43d185cbc064feb8abaf7857",
+      "split": "validation"
+    },
+    {
+      "case_id": "poisson-validation-00031",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8882631964447898,
+        "cx": 0.808299854924923,
+        "cy": 0.32783752457401144,
+        "width": 0.022183898932946994
+      },
+      "path": "cases/poisson-validation-00031.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "empirical_reference_budget_pass": true,
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "path": "physical-reference/poisson-validation-00031.npz",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "reference_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 1.771019433949136e-11
+        },
+        "reference_intervals": 2048,
+        "reference_relative_change": 2.018620978857051e-06,
+        "reference_target_use": "Evaluation only; forbidden as training target under this dataset protocol.",
+        "refinement_checks": {
+          "boundary_max_abs": 0.0,
+          "relative_discrete_residual": 7.690456859878245e-11
+        },
+        "refinement_intervals": 4096,
+        "relative_discrete_residual": 2.8374621651160263e-13,
+        "sha256": "648ef9de3251912f300060f197b614acd3fea6b17e1cb088203139294a8d8fdf",
+        "target_intervals": 256,
+        "target_relative_to_reference": 0.00016978026469957418
+      },
+      "seed": 3560196842,
+      "sha256": "3adbab2bd02acde16c5e3efa9bf588c17bde00b2dcaf35640466fc1e0c2dcf26",
+      "split": "validation"
+    }
+  ],
+  "runtime": {
+    "gpu_type": "NVIDIA A100 80GB PCIe",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "jax_version": "0.10.2",
+    "job_id": "3701314",
+    "matmul_precision": "highest",
+    "numpy_version": "2.5.0",
+    "provenance_note": "Content hashes are authoritative; no cluster git ancestor lookup.",
+    "purpose": "cluster-dataset-generation",
+    "source_commit": "50098e583fdbb4384653d0bdc6a3885a7d9832a8",
+    "source_files": {
+      "experiments/multiresolution-poisson/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "experiments/neural-operator-poisson/dataset.py": "93ebde98b6f8bcf759c07de4dfe00b114b60e91e359bacb0e45d9c00fbf2fe81",
+      "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+    },
+    "utc_started": "2026-09-14T16:50:11.651829+00:00"
+  },
+  "schema": "neural-operator-case-v1",
+  "split": "validation",
+  "target_contract": "Target is the native discrete solution on this mesh; physical-reference sidecars are evaluation-only."
+}

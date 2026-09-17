@@ -1,0 +1,42 @@
+{
+  "spec": {
+    "family": "transolver",
+    "prefix": "tsol",
+    "job_name": "ctol_nos_tsol01",
+    "time": "04:40:00",
+    "arms": [
+      {
+        "name": "small",
+        "config": "code/configs/transolver/small.json"
+      },
+      {
+        "name": "medium",
+        "config": "code/configs/transolver/medium.json"
+      },
+      {
+        "name": "large",
+        "config": "code/configs/transolver/large.json"
+      }
+    ],
+    "refine_learning_rate": 0.0003,
+    "per_arm_seconds": 3000.0,
+    "global_seconds": 15600.0,
+    "reserve_seconds": 900.0,
+    "design": "Transolver capacity screen: equal 3000-second wall budget per capacity with early stopping, then a learning-rate refinement of the validation-selected capacity; matched-cohort scoring and same-job timing"
+  },
+  "capacity_scores": {
+    "small": 0.020063979160881446,
+    "medium": 0.032950048623772515,
+    "large": 0.03341199139083122
+  },
+  "refinement_learning_rate": 0.0003,
+  "per_arm_wall_seconds": 3000.0,
+  "trained": [
+    "small",
+    "medium",
+    "large",
+    "refine"
+  ],
+  "stopped_by_signal": false,
+  "design": "equal wall budget per arm with early stopping; epoch counts differ by design"
+}

@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "kind": "matched ROM/FOM diagnosis cohort",
+  "split": "calibration",
+  "count": 8,
+  "mesh": 256,
+  "complete": true,
+  "reference_index_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2",
+  "train_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+  "reference_setting": {
+    "intervals": 4096,
+    "dt": 0.00015625
+  },
+  "derivation": "restriction of the Burgers lane refined anchor to the training grid; identical references and inputs to the ROM/FOM diagnosis at 256 intervals",
+  "descriptors_are_model_inputs": false,
+  "limitation": "Accuracy on these cases is comparable across jobs; timing is not.",
+  "records": [
+    {
+      "case_id": "burgers-calibration-00000",
+      "split": "calibration",
+      "case_index": 0,
+      "seed": 3824337363,
+      "path": "burgers-calibration-00000.npz",
+      "sha256": "a21a97f9a015cd9a78636ecd997a7ae61164b8af5c52f3739b153f565d91de8c",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00000_L4096_dt0.000156250.npz",
+        "sha256": "324a5745169cecbb2c06864d73fa451acbde3cc0c7c2693b0995feb7b39c7bcd",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00001",
+      "split": "calibration",
+      "case_index": 1,
+      "seed": 2217457785,
+      "path": "burgers-calibration-00001.npz",
+      "sha256": "82181f451a211f0d8258fe22e793b76c0ceb9bc8546df247dd7fceb86b4e3451",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00001_L4096_dt0.000156250.npz",
+        "sha256": "98eebd23e1510e951fec189fd67c2bd908f71972bb48b49cb47fff2e2b9f75ff",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00002",
+      "split": "calibration",
+      "case_index": 2,
+      "seed": 2377967207,
+      "path": "burgers-calibration-00002.npz",
+      "sha256": "ca05d17f29af4aa7b987dfd1ecdb8f8de306ae3ba70f707697da6ebf6b49614f",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00002_L4096_dt0.000156250.npz",
+        "sha256": "02a2a3dfe19481b4b5b7f3d79302140c899e3550c89627a65dd9fdba6493143e",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00003",
+      "split": "calibration",
+      "case_index": 3,
+      "seed": 1144788104,
+      "path": "burgers-calibration-00003.npz",
+      "sha256": "98d4e4de40b7ee9b3787dc95306ca3ea2e8b4f326cc969479a9290ef72d4805b",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00003_L4096_dt0.000156250.npz",
+        "sha256": "f5d7d196e812fdc53ea1428955bfec853325bddd21305a96e4e0a5e7e92a459f",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00004",
+      "split": "calibration",
+      "case_index": 4,
+      "seed": 449598289,
+      "path": "burgers-calibration-00004.npz",
+      "sha256": "51db314aff14af4c8428bebe9531f181aadfeee12c780e6df4e775a836739c7b",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00004_L4096_dt0.000156250.npz",
+        "sha256": "7871f543967180797862ceb9e2775564cc9f7636c0ac58d75d0bb51b78ca9f4f",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00005",
+      "split": "calibration",
+      "case_index": 5,
+      "seed": 135184177,
+      "path": "burgers-calibration-00005.npz",
+      "sha256": "97dbe92689f991158d982d688d4578751151da35112328c6d9255277c325a01a",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00005_L4096_dt0.000156250.npz",
+        "sha256": "e1cabf84c309260f593d425dadbebe0184917b65b04cb37134e56b2ea53def29",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00006",
+      "split": "calibration",
+      "case_index": 6,
+      "seed": 3188012634,
+      "path": "burgers-calibration-00006.npz",
+      "sha256": "3d925b15f9f69c6ab3e65e5440881d52480dfaf9b5b415800d0302850240efec",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00006_L4096_dt0.000156250.npz",
+        "sha256": "0cbb001e83a6b8e4467e06327b54be2994381132fbf51732e3868836860d1f13",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    },
+    {
+      "case_id": "burgers-calibration-00007",
+      "split": "calibration",
+      "case_index": 7,
+      "seed": 3130436725,
+      "path": "burgers-calibration-00007.npz",
+      "sha256": "3056b18d6163fcf481b9ebe8d60b5670f64330f98c4adc7f8c8a5cf03fe18c9f",
+      "mesh": 256,
+      "anchor": {
+        "path": "burgers-calibration-00007_L4096_dt0.000156250.npz",
+        "sha256": "6723deb34dcba3853af28e6baf08861a848ab01ac187aa7d381c5b55c7d184b4",
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "output_intervals": 1024
+      }
+    }
+  ]
+}

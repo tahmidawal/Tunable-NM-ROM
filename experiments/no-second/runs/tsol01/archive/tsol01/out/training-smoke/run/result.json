@@ -1,0 +1,50 @@
+{
+  "complete": true,
+  "pde": "burgers",
+  "best_epoch": 1,
+  "family": "transolver",
+  "parameter_dtype": "torch.float32",
+  "epochs_completed": 2,
+  "stop_reason": "epoch_cap",
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "stopped_by_early_stopping": false,
+  "stopped_by_epoch_cap": true,
+  "wall_budget_seconds": 7200.0,
+  "warmup_epochs": 1,
+  "validation": {
+    "errors": [
+      [
+        0.0,
+        0.8906456308062315,
+        0.8659040349136592,
+        0.9606309274245951,
+        0.879258098526587,
+        0.8134311703756462
+      ],
+      [
+        0.0,
+        0.8905699973303539,
+        0.8657583741544834,
+        0.9602728867827856,
+        0.8788158586641316,
+        0.8129345331722853
+      ]
+    ],
+    "mean_case_max": 0.9604519071036903,
+    "median_case_max": 0.9604519071036903,
+    "worst_case_max": 0.9606309274245951,
+    "p95_case_max": 0.9606130253925046,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    },
+    "batched_selection_score": 0.9604519072676077
+  },
+  "parameter_tensor_elements": 59304,
+  "real_parameter_count": 59304,
+  "best_checkpoint_sha256": "2e89f963a858d28d0daffc39ca495c42c5408130c505a4f01f568ed3bd021440",
+  "training_seconds": 0.6957945479080081,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

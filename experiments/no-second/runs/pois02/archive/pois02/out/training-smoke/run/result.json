@@ -1,0 +1,40 @@
+{
+  "complete": true,
+  "pde": "poisson",
+  "best_epoch": 1,
+  "family": "unet",
+  "parameter_dtype": "torch.float32",
+  "epochs_completed": 2,
+  "stop_reason": "epoch_cap",
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "stopped_by_early_stopping": false,
+  "stopped_by_epoch_cap": true,
+  "wall_budget_seconds": 7200.0,
+  "warmup_epochs": 1,
+  "validation": {
+    "errors": [
+      [
+        0.6992791904388677
+      ],
+      [
+        0.699460614160698
+      ]
+    ],
+    "mean_case_max": 0.6993699022997828,
+    "median_case_max": 0.6993699022997828,
+    "worst_case_max": 0.699460614160698,
+    "p95_case_max": 0.6994515429746065,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    },
+    "batched_selection_score": 0.6993699062238865
+  },
+  "parameter_tensor_elements": 486553,
+  "real_parameter_count": 486553,
+  "best_checkpoint_sha256": "7ca12741d77015ccf1a584c548b2224627620ad637d4fc17f8c4d1bb83a3ea3c",
+  "training_seconds": 0.7119615639094263,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

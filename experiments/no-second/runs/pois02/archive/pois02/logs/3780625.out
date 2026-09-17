@@ -1,0 +1,15 @@
+host=pax049 source_commit=339c026bc9ede20a37d3a02c040a192c8047b143 job=3780625
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB, 575.57.08
+10.235.106.22:/projects/paralab  4.6T  4.2T  432G  91% /cluster/tufts/paralab
+jax_backend=gpu
+data_verified=196
+torch 2.11.0+cu128 cuda True
+{"task": "precision", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/smoke_second.py", "--output", "out/precision.json"], "exit_code": 0, "started_unix": 1789640060.1337836, "ended_unix": 1789640068.8147833, "job_id": "3780625", "remaining_global_seconds": 11991.317056949949}
+{"task": "training-smoke", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/training_smoke_second.py", "--family", "unet", "--pde", "poisson", "--out", "out/training-smoke"], "exit_code": 0, "started_unix": 1789640068.8188443, "ended_unix": 1789640075.2145593, "job_id": "3780625", "remaining_global_seconds": 11984.917282449082}
+{"task": "small", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/unet-poisson/small.json", "--out", "out/unet-small", "--wall-seconds", "7200"], "exit_code": 0, "started_unix": 1789640075.2187192, "ended_unix": 1789640622.9785237, "job_id": "3780625", "remaining_global_seconds": 11437.153317363933}
+{"task": "medium", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/unet-poisson/medium.json", "--out", "out/unet-medium", "--wall-seconds", "7200"], "exit_code": 0, "started_unix": 1789640622.982596, "ended_unix": 1789641305.2060795, "job_id": "3780625", "remaining_global_seconds": 10754.925761885941}
+{"task": "large", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/train.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--config", "code/configs/unet-poisson/large.json", "--out", "out/unet-large", "--wall-seconds", "7200"], "exit_code": 0, "started_unix": 1789641305.2126846, "ended_unix": 1789642926.1922138, "job_id": "3780625", "remaining_global_seconds": 9133.939624545863}
+{"task": "timing", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/timing.py", "--train-index", "data/train/index.json", "--validation-index", "data/validation/index.json", "--runs", "out", "--out", "out/timing", "--pattern", "unet-*", "--repetitions", "30", "--burn-in", "20"], "exit_code": 0, "started_unix": 1789642926.2065198, "ended_unix": 1789642979.282467, "job_id": "3780625", "remaining_global_seconds": 9080.84937196388}
+WORKER FINISHED
+ALL-DONE

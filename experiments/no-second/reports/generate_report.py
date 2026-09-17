@@ -285,13 +285,27 @@ def build(attempts, fno, launch, diagnosis):
     for family, (arm, r, audit) in sel.items():
         v, c = r['fixed_initial'], audit['cohort'].get('models', {}).get(arm, {}).get('fixed_initial')
         v1 = v['maximum'] <= 1.5 * fno_val['maximum'] and v['median'] <= 1.5 * fno_val['median']
+        beats = [k for k, m in (('mean', 'mean'), ('median', 'median'), ('worst', 'maximum'))
+                 if v[m] < fno_val[m]]
+        # The selection rule is the FNO lane's own (validation MEAN case-maximum). It can pick a
+        # checkpoint that is better on average and worse in the tail; say so when it does.
+        family_arms = {k: a for k, a in audit['arms'].items() if a.get('complete')}
+        tail_best = min(family_arms, key=lambda k: family_arms[k]['fixed_initial']['maximum'])
+        tail_note = ''
+        if tail_best != arm:
+            tw = family_arms[tail_best]['fixed_initial']
+            tail_note = (f" **The selection rule optimises the mean, not the tail:** `{tail_best}` has a lower worst "
+                         f"validation case ({pct(tw['maximum'])}% vs {pct(v['maximum'])}%) at a higher mean "
+                         f"({pct(tw['mean'])}% vs {pct(v['mean'])}%), and was not selected. Both are in the tables.")
         verdict_lines.append(
-            f"- **{FAMILY_LABEL[family]}**, validation-selected arm `{arm}` (job `{audit['job_id']}`): worst validation error "
-            f"{pct(v['maximum'])}%, median {pct(v['median'])}% (FNO `{fno_sel}`: {pct(fno_val['maximum'])}% / {pct(fno_val['median'])}%). "
-            f"Pre-registered V1 (within 1.5× of the FNO on both): **{'pass' if v1 else 'fail'}**."
+            f"- **{FAMILY_LABEL[family]}**, validation-selected arm `{arm}` (job `{audit['job_id']}`): mean "
+            f"{pct(v['mean'])}%, median {pct(v['median'])}%, worst {pct(v['maximum'])}% over the 32 validation cases "
+            f"(FNO `{fno_sel}`: {pct(fno_val['mean'])}% / {pct(fno_val['median'])}% / {pct(fno_val['maximum'])}%). "
+            f"Pre-registered V1 (within 1.5× of the FNO on worst and median): **{'pass' if v1 else 'fail'}**"
+            + (f"; it is in fact below the FNO on {', '.join(beats)}." if beats else '.')
             + (f" On the matched eight cases: worst {pct(c['maximum'])}%, median {pct(c['median'])}% "
                f"(FNO {pct(fno_coh['maximum'])}%, ROM {pct(rom)}%, efficient FOM `same_nt1e-2_dt005` {pct(fom)}%)." if c else
-               ' The matched cohort was not scored in this job.'))
+               ' The matched cohort was not scored in this job.') + tail_note)
     controls = ''
     ctrl = [(arm, r, a['audit']) for a in attempts for arm, r in a['audit']['arms'].items()
             if r.get('complete') and (r['parameter_dtype'] == 'torch.float64' or r['seed'] != 20260914)]
@@ -317,8 +331,8 @@ speed ratio against the FNO, the ROM or the FOM is stated anywhere: those were m
 other jobs.
 
 Jobs: {jobs}. Every job printed `jax_backend=gpu` and `torch_backend=cuda`, verified its
-staged code against the committed blob and its data against the Burgers cache's
-`DATA.sha256`, and ended with `ALL-DONE`. Training/validation index SHA256
+staged code against the committed blob and every data file against its recorded
+checksum manifest, and ended with `ALL-DONE`. Training/validation index SHA256
 `{attempts[0]['audit']['train_index_sha256'][:8]}…` / `{attempts[0]['audit']['validation_index_sha256'][:8]}…`, identical to the FNO job's
 (asserted by the audit). Generated {today} by `reports/generate_report.py` from the audit
 JSONs listed in `summary.json`; no number here is typed.

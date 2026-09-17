@@ -1,0 +1,42 @@
+{
+  "spec": {
+    "family": "unet",
+    "prefix": "unet",
+    "job_name": "ctol_nos_unet01",
+    "time": "04:40:00",
+    "arms": [
+      {
+        "name": "small",
+        "config": "code/configs/unet/small.json"
+      },
+      {
+        "name": "medium",
+        "config": "code/configs/unet/medium.json"
+      },
+      {
+        "name": "large",
+        "config": "code/configs/unet/large.json"
+      }
+    ],
+    "refine_learning_rate": 0.0003,
+    "per_arm_seconds": 3000.0,
+    "global_seconds": 15600.0,
+    "reserve_seconds": 900.0,
+    "design": "U-Net capacity screen: equal 3000-second wall budget per capacity with early stopping, then a learning-rate refinement of the validation-selected capacity; matched-cohort scoring and same-job timing"
+  },
+  "capacity_scores": {
+    "small": 0.016046700415646972,
+    "medium": 0.014341287489620803,
+    "large": 0.01702940160005123
+  },
+  "refinement_learning_rate": 0.0003,
+  "per_arm_wall_seconds": 3000.0,
+  "trained": [
+    "small",
+    "medium",
+    "large",
+    "refine"
+  ],
+  "stopped_by_signal": false,
+  "design": "equal wall budget per arm with early stopping; epoch counts differ by design"
+}

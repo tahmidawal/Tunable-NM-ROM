@@ -11,5 +11,5 @@
   "training_in_this_job": false,
   "queue_before": "owned: 3783831 ctrl01 RUNNING; no job in res01",
   "queue_after": "owned: 3783831 RUNNING and 3783920 res01 PENDING \u2014 one job per attempt directory",
-  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged"
+  "pending_rule": "PENDING reason is QOSMaxGRESPerUser: the shared account is at its gres/gpu=10 cap with all nine lanes competing, so this is queue contention on OUR OWN account, not GPU-type scarcity. Resubmitting on another GPU type would NOT help and must not be done; the slot frees when one of the account's running jobs ends (ctrl01 among them). The 3-hour GPU-type escalation rule does not apply to this reason."
 }

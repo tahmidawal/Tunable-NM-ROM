@@ -1,0 +1,60 @@
+{
+  "attempt": "lsh01",
+  "domain": "lshape: (0,1)^2 minus [1/2,1)^2, homogeneous Dirichlet, 5-point FD on the masked grid",
+  "cohorts": {
+    "training": {"seed": 0, "draw": 4608, "count": 3072},
+    "common": {"seed": 20260916, "draw": 512, "count": 256},
+    "development": {"seed": 20260917, "draw": 64, "count": 32}
+  },
+  "centre_rule": "draws whose centre lies in the removed quadrant (c1 >= 1/2 and c2 >= 1/2) are rejected; the accepted prefix of the draw is the cohort",
+  "split_seed": 20260916,
+  "validation_fraction": 0.15,
+  "training_intervals": 256,
+  "floor_intervals": [256, 512],
+  "requested_modes": 257,
+  "mode_seed": 0,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "train_oracle_subsample": 256,
+  "oracle_seed": 20260916,
+  "correction_count": 128,
+  "latents": [16, 32],
+  "bank_arms": [
+    {"arm": "smooth_R256", "factor": "smooth", "R": 256, "n_enrich": 0,
+     "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}},
+    {"arm": "smooth_R512", "factor": "smooth", "R": 512, "n_enrich": 0,
+     "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}},
+    {"arm": "sdf_R256", "factor": "sdf", "R": 256, "n_enrich": 0,
+     "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}},
+    {"arm": "sdf_R512", "factor": "sdf", "R": 512, "n_enrich": 0,
+     "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}},
+    {"arm": "enrich_R512", "factor": "smooth", "R": 512, "n_enrich": 2,
+     "arch": {"n_ff": 64, "ff_scale": 4.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}},
+    {"arm": "smooth_ff128s2_R512", "factor": "smooth", "R": 512, "n_enrich": 0,
+     "arch": {"n_ff": 128, "ff_scale": 2.0, "g_layers": 2, "h_hidden": 128, "h_layers": 2}}
+  ],
+  "bank_phases": [
+    {"tag": "j1", "phase": "joint", "steps": 100000, "lr": 0.001, "seed": 20260916101},
+    {"tag": "b", "phase": "bank", "steps": 40000, "lr": 0.0003, "seed": 20260916102},
+    {"tag": "h", "phase": "head", "steps": 30000, "lr": 0.0003, "seed": 20260916103},
+    {"tag": "j2", "phase": "joint", "steps": 30000, "lr": 0.0001, "seed": 20260916104}
+  ],
+  "head_steps": 150000,
+  "head_lr": 0.001,
+  "head_seed": 20260916201,
+  "training_common": {
+    "source_batch": 64,
+    "point_batch": 4096,
+    "orthogonality_weight": 0.0001,
+    "timing_block_updates": 250,
+    "log_every_updates": 10000,
+    "warmup_fraction": 0.02,
+    "final_learning_rate_fraction": 0.01
+  },
+  "phase_wall_cap_seconds": 1800,
+  "head_wall_cap_seconds": 900,
+  "scope": "offline representation and training diagnostics only; no timed query contract is measured in this job"
+}

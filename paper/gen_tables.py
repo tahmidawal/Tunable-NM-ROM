@@ -405,6 +405,29 @@ def build_panel():
                 macro(f'nPanel{sfx}Fom{nm}Ref', pct(P[x]['worst_reference_percent']))
         best = P['q256_M1088_dense_g1em06']
         macro(f'nPanel{sfx}BestRungErr', pct(best['worst_evolved_percent'])); macro(f'nPanel{sfx}BestRungMs', ms(best['median_gpu_ms'])); macro(f'nPanel{sfx}BestRungAll', pct(best['worst_all_times_percent']))
+        # error against the fine reference: what the knob does to the physical error (review r2, R2)
+        q0d = P['q0_M64_dense_g1em06']
+        macro(f'nPanel{sfx}QzeroRef', pct(q0d['worst_reference_percent'], 2)); macro(f'nPanel{sfx}BestRungRef', pct(best['worst_reference_percent'], 2))
+        macro(f'nPanel{sfx}RefSpan', f"{q0d['worst_reference_percent'] / best['worst_reference_percent']:.2f}")
+        macro(f'nPanel{sfx}RefDiscretisationTwo', pct(P['fft_tight']['worst_reference_percent'], 2))
+        dense_rungs = [f'q{q}_M{Ms[q]}_dense_g1em06' for q in qs if f'q{q}_M{Ms[q]}_dense_g1em06' in P]
+        macro(f'nPanel{sfx}RungsBelowDiscretisation', str(sum(1 for x in dense_rungs if P[x]['worst_reference_percent'] <= P['fft_tight']['worst_reference_percent'])))
+        macro(f'nPanel{sfx}RungCount', str(len(dense_rungs)))
+        rr = [P[x]['worst_reference_percent'] / P['fft_tight']['worst_reference_percent'] for x in dense_rungs]
+        macro(f'nPanel{sfx}RungRefOverDiscMin', f"{min(rr):.2f}"); macro(f'nPanel{sfx}RungRefOverDiscMax', f"{max(rr):.2f}")
+        bref = min(foms, key=lambda x: P[x]['worst_reference_percent'])
+        macro(f'nPanel{sfx}FomBestRefArm', tt(bref)); macro(f'nPanel{sfx}FomBestRef', pct(P[bref]['worst_reference_percent'], 2)); macro(f'nPanel{sfx}FomBestRefMs', ms(P[bref]['median_gpu_ms']))
+        macro(f'nPanel{sfx}FomBestRefEvolved', pct(P[bref]['worst_evolved_percent']))
+        macro(f'nPanel{sfx}FomBestRefCostShare', f"{best['median_gpu_ms'] / P[bref]['median_gpu_ms']:.0f}")
+        # compact main-text ladder: dense and the mesh's first EQ set at tolerance 1e-6, with the vs-reference column
+        tm = []
+        for q in qs:
+            d = P[f'q{q}_M{Ms[q]}_dense_g1em06']; e = P.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', {})
+            tm.append([str(q), str(Ms[q]), pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), pct(d['worst_reference_percent'], 2), ms(d['median_gpu_ms']),
+                       pct(e.get('worst_evolved_percent')) if e else '---', ms(e.get('median_gpu_ms')) if e else '---',
+                       tex_escape(str(rstat.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06') or '---'))])
+        write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
+              f'b-panel job {job}, {mesh}^2, tolerance 1e-6, scheduled M=4(K+q); EQ set = {sets[-1]}')
         if 'pod512_M2048_dense' in P:
             pod = P['pod512_M2048_dense']
             macro(f'nPanel{sfx}PodFiveTwelveErr', pct(pod['worst_evolved_percent'])); macro(f'nPanel{sfx}PodFiveTwelveMs', ms(pod['median_gpu_ms'])); macro(f'nPanel{sfx}PodFiveTwelveAll', pct(pod['worst_all_times_percent']))
@@ -554,6 +577,10 @@ def build_qxm():
         rows_t4.append(['scheduled $M=4(K+q)$', str(q), str(M), pct(v), '---'])
     write('T04_rank_vs_tests.tex', tabular(['ladder', '$q$', '$M$', 'worst evolved \\%', 'GPU ms'],
                                            rows_t4, 'lrrrr'), 'b-qxm; costs only within job ' + wj['job_id'])
+    # compact main-text block: the fixed-M = 1088 ladder inside one job (no vs-reference column exists in this lane)
+    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'worst evolved \\%', 'GPU ms', 'converged'],
+                                          [[str(q), '1088', pct(v), ms(c), yn(cv)] for q, v, c, cv in zip(wj['q'], wj['values'], wj['median_gpu_ms'], wj['converged'])], 'rrrrc', r'\scriptsize'),
+          'b-qxm fixed-M ladder inside job ' + wj['job_id'] + ' (same-grid evolved error; this job carries no fine-reference column)')
     rows_fq = []
     for q in ['0', '16', '32', '64', '128', '256']:
         d = ev['fixed_q'][q]

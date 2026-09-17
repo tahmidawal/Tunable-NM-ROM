@@ -84,10 +84,13 @@ decoder; and a decoder --- a per-node spatial bank from a Fourier-feature
 coordinate network \citep{Tancik2020FourierFeatures} times a small neural
 head with a linear skip, plus nested correction directions --- identified
 against three constraints: cold-start convergence, EQ compatibility, and
-mesh-independent per-node evaluation. Across 2D Burgers, Poisson, heat
-and waves, the trained-once family is monotone in $q$ on Burgers on each
-of three training seeds and, with the test count held fixed so that $q$
-is the only control, meets a bar fixed before any run; its quadrature
+mesh-independent per-node evaluation. Across 2D Burgers, Poisson, heat and waves, the trained-once family is
+monotone in $q$ on Burgers on each of three training seeds and, with the
+test count held fixed so that $q$ is the only control, meets a bar fixed
+before any run, on the same-grid error: against a fine reference every
+rung is within a few percent of the mesh's own discretisation error, so
+the knob moves the reduction error, not the physical error, at the
+meshes we ran; its quadrature
 rules are validated on reachable states, not by their fitting residual;
 and its wins are cost-only and measured in the same job: $\nLshapeNeuralCheaper\times$ and
 $\nLshapeNeuralCheaperFiveTwelve\times$ cheaper than a sparse direct solve
@@ -685,9 +688,41 @@ quadrature rule and the tolerance move cost; the head's training data
 and capacity move the floor and need retraining (Tables~\ref{tab:qxm},
 \ref{tab:knobs}, \ref{tab:training}).
 
+\begin{table}[t]
+\centering
+\caption{The correction ladder on Burgers $256^2$. Top: the fixed-$M$
+ladder inside one job (job \provQxmWithinJob; same-grid evolved error,
+median GPU ms). Bottom: the scheduled ladder $M=4(K+q)$ from the
+same-allocation panel (job \provPanelJob) with dense advection, the error
+against the $4096^2$ reference (``vs ref''), and the replication-selected
+EQ rule per rung with its status (Tables~\ref{tab:tunability},
+\ref{tab:replication}). Against that reference every rung's error is
+$\nPanelRungRefOverDiscMin$--$\nPanelRungRefOverDiscMax\times$ the mesh's
+own discretisation error of $\nPanelRefDiscretisationTwo\,\%$.}
+\label{tab:ladder-main}
+\input{tables/T04m_fixedM_main}\\[3pt]
+\resizebox{\linewidth}{!}{\input{tables/T03m_ladder_main}}
+\end{table}
+
 \paragraph{Rank against test count: the family at fixed $M$.}
 The rank alone moves the error: hold the test count fixed, add correction
-directions, and the error falls at every step while the cost rises. The
+directions, and the error falls at every step while the cost rises
+(Table~\ref{tab:ladder-main}). Three plain sentences on what that error
+is. The ROM approximates the discrete system, so the same-grid error is
+the quantity the knob controls. Against the fine reference the knob moves the error only from
+$\nPanelQzeroRef$ to $\nPanelBestRungRef\,\%$ ($\nPanelRefSpan\times$),
+because at $256^2$ every rung's reference error is
+$\nPanelRungRefOverDiscMin$--$\nPanelRungRefOverDiscMax\times$ the mesh's
+own discretisation error of $\nPanelRefDiscretisationTwo\,\%$: the
+reduction adds little on top of the discretisation. And a same-job full-order setting at $\nPanelFomBestRefMs$\,ms
+reaches $\nPanelFomBestRef\,\%$ against the reference, more accurate
+than every reduced subject at a small fraction of the top rung's cost
+(partly error cancellation between a coarse time step and the spatial
+error); at $1024^2$ the rungs run $\nPanelTenTwentyFourQzeroRef$ to
+$\nPanelTenTwentyFourBestRungRef\,\%$ against the reference
+($\nPanelTenTwentyFourRefSpan\times$) over a discretisation error of
+$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob is a knob on the reduction error, not on the
+physical error at these meshes. The
 crossed grid (Table~\ref{tab:qxm}) runs $q\in\{0,\dots,256\}$ against
 fixed $M\in\{256,1088\}$ and the schedules $M\in\{4,8,16\}(K+q)$ in
 \nQxmJobCount{} jobs whose shared cells agree to $\nQxmAnchorWorstAll$
@@ -838,8 +873,12 @@ numbers are lower bounds (\nOpLaneImproving{} U-Net/Transolver arms and
 Quadrature rules above $q=32$ are marginal; the headline ladder's $M$ was
 chosen after the fact; cross-job spread of an identical cell is
 $\nQxmAnchorSpreadPct\,\%$; the $1024^2$ frontier statement rests on one job and the evolved metric
-(a $512^2$ panel is queued). (vii) No theory: no convergence guarantee and
-no quadrature-error bound on unseen states.
+(a $512^2$ panel is queued). (vii) The knob moves the same-grid error; against the fine reference it
+moves the error only $\nPanelRefSpan\times$ at $256^2$, every rung being
+$\nPanelRungRefOverDiscMin$--$\nPanelRungRefOverDiscMax\times$ the
+discretisation error, and a same-job full-order setting is more accurate
+there (Table~\ref{tab:ladder-main}). (viii) No theory: no
+convergence guarantee and no quadrature-error bound on unseen states.
 
 % =====================================================================
 \section{Conclusion and Future Work}

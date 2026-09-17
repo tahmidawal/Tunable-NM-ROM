@@ -248,3 +248,36 @@ exports `JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest`, asserts
 ## 10. Amendments
 
 (none yet)
+
+### A1 (2026-09-17, before any submission) — independent audit unavailable; local probes; three corrections found by self-audit
+
+**Codex is unavailable** (usage limit until 2026-09-19 11:33; `checks/codex-design.log`) and the
+Claude-family auditor launched in its place died on an API session limit before reading a file.
+Per the protocol notice, the pre-job audit is replaced by a written self-audit,
+`reports/self-audit-design.md`, listing each claim, the code or JSON it rests on and the check
+run. The Codex audit of the final report will be run after 2026-09-19 11:33 if the lane is
+still open. This is a substitution, recorded as such.
+
+**Local probes on the real design** (`checks/probe-fitter.json`; CPU-only, no GPU; the design
+was built once on the GB10 in 156 s, over the sub-minute rule, recorded as a deviation together
+with the 136 s smoke):
+
+- `varpro.bounded_nnls` is **slower with BLAS threads** — 209 s at 1 thread against 585 s at 4
+  for the same $m = 1024$ fit on 8064 rows — so every worker runs single-threaded and the chains
+  run concurrently: `fit_workers` 8 (job 1) / 12 (job 2), `fit_threads` 1, 16 CPUs requested.
+- Cost is about **linear in the rows** (413 s at 16128 rows vs 209 s at 8064, $m = 1024$) and
+  **sub-quadratic in $m$** (299 / 209 / 682 s at $m = 512 / 1024 / 2048$ on 8064 rows; the
+  pass count, not $m^2$, drives it). The §9 sizing stands as an upper bound.
+- **Compression is exact in practice**: on a 17408 × 16384 real design the compressed fit
+  returns the identical support (Jaccard 1.0), weights to $8\times10^{-14}$, the identical
+  relative fit, gram check $8\times10^{-16}$; the CPU QR took 187 s single-threaded.
+
+**Corrections made before submission**, each a defect of mine found while writing the
+self-audit: (1) a reproduction arm whose rule is also the chosen primary rule was silently
+de-duplicated away, which would have failed its fidelity gate as "arm missing" — it is now
+recorded as an alias (`arm_aliases`) and the audit resolves the comparator through it; (2) the
+`max_rom_arms` check was an assertion that would have killed the job after the fit phase — the
+arms are now assembled in declared priority order (primary six, dense four, reproduction two,
+tight extras) and cut at 16 with every dropped arm recorded; (3) the per-rule walltime cap is
+raised from 5400 to 7200 s so that $m = 6144$ on a compressed design is constructible; the
+11 h submission deadline and the 20 h limit are unchanged.

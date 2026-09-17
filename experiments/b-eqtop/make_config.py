@@ -47,7 +47,7 @@ def main():
                          'job ran, to test whether the primary bar is sufficient at the top rung'),
         recertify_tolerance=1e-6,
         candidate_pool=16384, pool_seed=20260917,
-        eq_seconds=5400., fit_workers=8, fit_threads=1,
+        eq_seconds=7200., fit_workers=8, fit_threads=1,
         fit_submission_deadline_seconds=11 * 3600.,
         max_rom_arms=16,
     )

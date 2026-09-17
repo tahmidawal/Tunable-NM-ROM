@@ -444,34 +444,47 @@ def main():
                                   else info['fit']['relative_fit']),
                     rule_source=src, rule_arm=info.get('arm', info.get('population')))
 
-    used = set()
+    # Arms in declared priority order; the list is cut at `max_rom_arms` (never asserted
+    # after ten hours of fitting) and every dropped or aliased arm is recorded.
+    wanted = []                       # (name, tag, builder)
     for q in QS:
         M = 4 * (K + q)
         pick, basis = chosen[('primary', q)]
         if pick is not None:
-            rule, info = rule_of(pick)
-            add(f'q{q}_eq_primary', q, M, 'eq', eq_data(M, rule), m=info['m'],
-                rule_kind=f'{pick[2][0]}:{pick[2][2]}', extra=extra_of(info, pick[2][0]) | dict(basis=basis))
-            used.add(pick[2])
+            wanted.append((f'q{q}_eq_primary', pick[2], ('rule', q, M, pick, basis)))
+    for q in cfg['dense_twins']:
+        wanted.append((f'q{q}_dense', ('dense', q), ('dense', q)))
+    for g in cfg['reproduction_arms']:
+        tag = ('archived', g['q'], 'reachable', g['m'])
+        if (g['q'], 'reachable', g['m']) in archived:
+            wanted.append((g['name'], tag, ('rule', g['q'], 4 * (K + g['q']),
+                                            (archived[tag[1:]][1]['m'], -1, tag, archived[tag[1:]][1]),
+                                            'reproduction')))
     for q in QS:
         M = 4 * (K + q)
         pick, basis = chosen[('tight', q)]
-        if pick is not None and pick[2] not in used:
+        if pick is not None:
+            wanted.append((f'q{q}_eq_tight', pick[2], ('rule', q, M, pick, basis)))
+    report['arm_aliases'], report['arms_dropped'] = {}, []
+    used = {}
+    for name, tag, spec in wanted:
+        if tag in used:
+            report['arm_aliases'][name] = used[tag]      # the same rule already runs under that name
+            continue
+        if len(subjects) >= cfg['max_rom_arms']:
+            report['arms_dropped'].append(name)
+            continue
+        if spec[0] == 'dense':
+            add(name, spec[1], 4 * (K + spec[1]), 'dense', dense_op[spec[1]], rule_kind='dense')
+        else:
+            _, q, M, pick, basis = spec
             rule, info = rule_of(pick)
-            add(f'q{q}_eq_tight', q, M, 'eq', eq_data(M, rule), m=info['m'],
-                rule_kind=f'{pick[2][0]}:{pick[2][2]}', extra=extra_of(info, pick[2][0]) | dict(basis=basis))
-            used.add(pick[2])
-    for g in cfg['reproduction_arms']:              # qrg304's chosen rules at 128 and 256
-        key = (g['q'], 'reachable', g['m'])
-        tag = ('archived', g['q'], 'reachable', g['m'])
-        if key in archived and tag not in used:
-            rule, info = archived[key]
-            add(g['name'], g['q'], 4 * (K + g['q']), 'eq', eq_data(4 * (K + g['q']), rule),
-                m=info['m'], rule_kind='archived:reachable', extra=extra_of(info, 'archived'))
-            used.add(tag)
-    for q in cfg['dense_twins']:
-        add(f'q{q}_dense', q, 4 * (K + q), 'dense', dense_op[q], rule_kind='dense')
-    assert len([s for s in subjects]) <= cfg['max_rom_arms'], len(subjects)
+            add(name, q, M, 'eq', eq_data(M, rule), m=info['m'],
+                rule_kind=f'{pick[2][0]}:{pick[2][2]}',
+                extra=extra_of(info, pick[2][0]) | dict(basis=basis))
+        used[tag] = name
+    print('ARMS', [s['name'] for s in subjects], 'aliases', report['arm_aliases'],
+          'dropped', report['arms_dropped'], flush=True)
 
     foms = {}
     for fs in cfg['fom_settings']:

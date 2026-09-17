@@ -189,6 +189,8 @@ def main():
     gate('every_invocation_paired', all('error' in x and 'gpu_seconds' in x and x['finite'] for x in inv))
     roms = [x for x in inv if x['kind'] == 'rom']
     gate('overdetermined_weak_system', all(x['M'] > x['solved_dimension'] for x in roms))
+    info('no_arm_dropped', not r.get('arms_dropped'), r.get('arms_dropped'))
+    info('arm_aliases', None, r.get('arm_aliases'), 'a reproduction arm that IS the chosen rule runs once under the ladder name')
     gate('every_rom_carries_exit_and_stationarity',
          all(('stop_reasons' in x and 'budget_exits' in x) for x in roms))
     cache = {}
@@ -288,7 +290,7 @@ def main():
     dir_ok = bool(dh['passed'])
     fid = {}
     for arm, spec in (cfg.get('expectations') or {}).items():
-        mine = by.get(arm)
+        mine = by.get(arm) or by.get((r.get('arm_aliases') or {}).get(arm, ''))
         theirs = (cmp_table.get(spec['source']) or {}).get('arms', {}).get(spec['arm'])
         if mine is None or theirs is None:
             fid[arm] = dict(passed=False, detail=dict(reason='arm or comparator missing'))

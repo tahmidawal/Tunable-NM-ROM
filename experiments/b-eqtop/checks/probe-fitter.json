@@ -1,0 +1,89 @@
+{
+ "threads_1": {
+  "mode": "threads",
+  "threads": "1",
+  "rows": 8064,
+  "m": 1024,
+  "fit": 0.0015049202941918702,
+  "support": 1024,
+  "refits": 112,
+  "truncated": false,
+  "stop_reason": "target",
+  "seconds": 208.98431642795913
+ },
+ "threads_4": {
+  "mode": "threads",
+  "threads": "4",
+  "rows": 8064,
+  "m": 1024,
+  "fit": 0.0015049202941918702,
+  "support": 1024,
+  "refits": 112,
+  "truncated": false,
+  "stop_reason": "target",
+  "seconds": 585.3449599340092
+ },
+ "mrows": {
+  "mode": "mrows",
+  "runs": [
+   {
+    "rows": 8064,
+    "m": 512,
+    "fit": 0.1061988319539586,
+    "support": 512,
+    "refits": 59,
+    "truncated": false,
+    "stop_reason": "target",
+    "seconds": 298.5577453089645
+   },
+   {
+    "rows": 8064,
+    "m": 2048,
+    "fit": 7.987683437688341e-05,
+    "support": 2048,
+    "refits": 107,
+    "truncated": false,
+    "stop_reason": "target",
+    "seconds": 682.4240220220527
+   },
+   {
+    "rows": 16128,
+    "m": 1024,
+    "fit": 0.002511858020483281,
+    "support": 1024,
+    "refits": 103,
+    "truncated": false,
+    "stop_reason": "target",
+    "seconds": 413.070350265014
+   }
+  ]
+ },
+ "compress": {
+  "mode": "compress",
+  "rows": 17408,
+  "cols": 16384,
+  "qr_seconds": 186.76013251394033,
+  "unreachable_residual": 5.116678721969707e-05,
+  "gram_check": 8.10998995662853e-16,
+  "full": {
+   "fit": 0.039172024150704386,
+   "support": 1024,
+   "refits": 55,
+   "truncated": false,
+   "stop_reason": "target",
+   "seconds": 254.9673328930512
+  },
+  "compressed": {
+   "fit": 0.03917202415070435,
+   "support": 1024,
+   "refits": 55,
+   "truncated": false,
+   "stop_reason": "target",
+   "seconds": 230.31026369100437
+  },
+  "same_support": true,
+  "jaccard": 1.0,
+  "weight_reldiff": 8.153095766622327e-14
+ },
+ "note": "local CPU-only probes on a REAL L=256 design (static decoder states, q=0 head, M=576 / 1088, 16384-point pool) built once on the GB10 GPU; varpro.bounded_nnls verbatim, block = m/16 except threads probes (block 64)"
+}

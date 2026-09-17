@@ -347,7 +347,7 @@ def singular_columns(xy, count, xp=jnp):
     xi1, xi2 = x - 0.5, y - 0.5
     r = xp.sqrt(xi1 * xi1 + xi2 * xi2)
     phi = xp.arctan2(xi2, xi1)
-    phi = xp.where(phi < 0, phi + 2 * np.pi, phi)
+    phi = xp.where(phi <= 0, phi + 2 * np.pi, phi)   # the ray phi=0 is the inner segment y=1/2, x>1/2
     cut = 16.0 * x * (1.0 - x) * y * (1.0 - y)
     cols = [cut * r ** (2.0 * j / 3.0) * xp.sin((2.0 * j / 3.0) * (phi - np.pi / 2)) for j in range(1, count + 1)]
     return xp.stack(cols, axis=1)

@@ -142,7 +142,7 @@ def singular(xy, count):
     x, y = xy[:, 0], xy[:, 1]
     r = np.sqrt((x - .5) ** 2 + (y - .5) ** 2)
     phi = np.arctan2(y - .5, x - .5)
-    phi = np.where(phi < 0, phi + 2 * np.pi, phi)
+    phi = np.where(phi <= 0, phi + 2 * np.pi, phi)
     cut = 16 * x * (1 - x) * y * (1 - y)
     return np.stack([cut * r ** (2 * j / 3) * np.sin((2 * j / 3) * (phi - np.pi / 2)) for j in range(1, count + 1)], 1)
 

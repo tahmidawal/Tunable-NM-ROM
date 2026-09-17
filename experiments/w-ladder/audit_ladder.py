@@ -129,6 +129,12 @@ def main():
     for gate in gates:
         if gate['intervals'] != n:
             continue
+        if gate['metric'] == 'selected_fit_objective':
+            # Not independently recomputable here: it would require rerunning the 8-start LM fit,
+            # i.e. the driver's own code. The in-job gate covers it; this audit covers the errors.
+            checks['gates'].append(dict(**gate, recomputed=None, relative_difference=None, passed=None,
+                                        note='skipped: fit objective is not recomputable without the solver'))
+            continue
         rows = [r for r in checks['rows'] if r['case'] == gate['case'] and r['method'] == gate['method']]
         if rows:
             rel = abs(rows[0]['recomputed'][gate['metric']] - gate['value']) / abs(gate['value'])
@@ -136,7 +142,7 @@ def main():
     checks['max_error_difference'] = worst
     checks['reference_max_relative_difference'] = max(r['regenerated_vs_saved_relative'] for r in checks['reference'])
     checks['energy_max_difference'] = max([e['difference'] for e in checks['energy']] or [0.])
-    checks['gates_all_passed'] = all(x['passed'] for x in checks['gates'])
+    checks['gates_all_passed'] = all(x['passed'] for x in checks['gates'] if x['passed'] is not None)
     checks['passed'] = bool(worst <= 1e-10 and checks['reference_max_relative_difference'] <= 1e-10 and checks['energy_max_difference'] <= 1e-12 and checks['gates_all_passed'])
     checks['result_sha256'] = hashlib.sha256((out / 'result.json').read_bytes()).hexdigest()
     (run / 'audit.json').write_text(json.dumps(checks, indent=2) + '\n')

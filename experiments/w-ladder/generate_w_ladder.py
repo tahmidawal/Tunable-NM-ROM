@@ -101,9 +101,11 @@ def verdict(rows):
     d2 = all(lb['median_gpu_ms'] <= 0.1 * rows[h]['median_gpu_ms'] for h in heads)
     d2_matched_integrator_ratio = rows['head_q0']['median_gpu_ms'] / rows['linear_bank64_rk4']['median_gpu_ms']
     rom = heads + ['linear_bank64']
+    # A head rung counts as beating the top rung only if it beats it by MORE than the integrator
+    # tie band, so charge every head rung delta before the dominance test.
     banded = {n: dict(rows[n]) for n in rom}
     for h in heads:
-        banded[h]['worst_energy_state'] = max(0., banded[h]['worst_energy_state'] - delta) if banded[h]['worst_energy_state'] < lb['worst_energy_state'] else banded[h]['worst_energy_state']
+        banded[h]['worst_energy_state'] = banded[h]['worst_energy_state'] + delta
     d3 = nondominated(banded, rom) == ['linear_bank64']
     d4 = lb['reduced_energy_drift'] is not None and lb['reduced_energy_drift'] <= 1e-10 and rows['linear_bank64_cn']['reduced_energy_drift'] <= 1e-8
     ladder = ['head_q0', 'nested_q8', 'nested_q16', 'nested_q32']

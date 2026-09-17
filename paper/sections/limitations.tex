@@ -2,47 +2,32 @@
 \section{Limitations}
 \label{sec:limitations}
 
-\begin{itemize}
-\item \textbf{Single seed, single checkpoint, until the seed lane lands.} Every
-  number in this paper rests on one training seed and one checkpoint per PDE.
-  The three-seed repetition and the sealed-cohort evaluation
-  (Tables~\ref{tab:seeds}, \ref{tab:sealed}) are running; the seed lane has
-  also recorded an amendment to its fidelity gate, from $10^{-9}$ to $10^{-3}$
-  relative, made before any of its numbers were read. Until those land, no
-  spread is reported and every endpoint carries this label.
-\item \textbf{Development cohort.} The Burgers numbers are on six opened
-  development cases (and 32 held-out cases for the tuning study); the wave and
-  Poisson numbers on eight and twelve. The L-shape cell shows the tail this
-  understates: worst error on 461 validation sources is two to three times the
-  worst on its 32 development sources.
-\item \textbf{2D only.} No 3D cell is in this paper.
-\item \textbf{No cold-start SMA-NM-ROM comparison.} Reviewer 5mgh asked for the
-  shallow masked autoencoder ROM under the same cold-start protocol; it was not
-  run, and the comparison we do make is against POD-LSPG through our own
-  solver.
-\item \textbf{Operator numbers are lower bounds.} Every neural-operator arm was
-  still improving when its wall budget ended ($\nOpLaneImproving$ arms in the
-  U-Net/Transolver screen, $\nOpFnoImproving$ FNO arms), and none was tuned
-  per family. A reviewer with a larger budget would beat the ROM by more, not
-  less.
-\item \textbf{Quadrature certification is one draw.} Every ``certified'' flag
-  in \S\ref{sec:exp:eq} is a single draw of its candidate pool and fit-state
-  subset; a second draw at $q=64$ moved $\rho_{\max}$ from
-  $\nEqtopQsixtyFourArchivedRho$ to $\nEqtopQsixtyFourRedrawRho$ and flipped
-  the flag. The replication job $\nEqtopPendingJob$ is pending, and until it
-  lands the EQ ladder is ``certified in this draw'' and nothing stronger.
-\item \textbf{The headline ladder is dearer than the scheduled one.} Holding
-  $M$ fixed isolates the rank effect but quotes a more expensive baseline: the
-  fixed-$M$ $q=0$ rung costs $\nQxmFixedQzeroMs$\,ms where the scheduled
-  $M=4(K+q)$ rung costs $\nQxmScheduledQzeroMs$\,ms (different jobs; accuracy
-  identical to $10^{-9}$; costs not to be divided).
-\item \textbf{Pending cells.} The $1024^2$ same-allocation panel, the Poisson
-  $1024^2$ ladder, the L-shape solve layer, the Navier--Stokes reduced model
-  and the operator resolution knob are marked as placeholders where they would
-  appear. The last one is binding: if a trained operator exposes its own
-  accuracy--cost family through evaluation resolution, the framing sentence
-  ``one accuracy--cost point per trained operator'' is withdrawn.
-\item \textbf{No theory.} No convergence guarantee for the cold-start
-  iteration, no bound on the quadrature error on unseen states, no continuum
-  error bound.
-\end{itemize}
+\textbf{Single seed, single checkpoint.} Every number rests on one training
+seed and one checkpoint per PDE. The three-seed repetition and the
+sealed-cohort evaluation (Tables~\ref{tab:seeds}, \ref{tab:sealed}) are
+running; that lane has recorded an amendment to its fidelity gate, from
+$10^{-9}$ to $10^{-3}$ relative, made before any of its numbers were read.
+\textbf{Development cohort.} Burgers numbers are on six opened cases (32
+held-out for the tuning study), wave and Poisson on eight and twelve; the
+L-shape cell shows the tail this understates (worst error on 461 validation
+sources is two to three times the worst on its 32 development sources).
+\textbf{2D only.}
+\textbf{No cold-start SMA-NM-ROM comparison}, which reviewer 5mgh asked for;
+the classical comparison is POD-LSPG through our own solver.
+\textbf{Operator numbers are lower bounds}: $\nOpLaneImproving$
+U-Net/Transolver arms and $\nOpFnoImproving$ FNO arms were still improving at
+their wall budget, and none was tuned per family; a larger budget beats the
+ROM by more.
+\textbf{Quadrature certification is one draw}: a second draw at $q=64$ moved
+$\rho_{\max}$ from $\nEqtopQsixtyFourArchivedRho$ to
+$\nEqtopQsixtyFourRedrawRho$ and flipped the flag; until job
+$\nEqtopPendingJob$ lands the EQ ladder is ``certified in this draw''.
+\textbf{The headline ladder quotes a dearer baseline}: the fixed-$M$ $q=0$
+rung costs $\nQxmFixedQzeroMs$\,ms where the scheduled $M=4(K+q)$ rung costs
+$\nQxmScheduledQzeroMs$\,ms (different jobs, accuracy identical to $10^{-9}$).
+\textbf{Pending cells}: the $1024^2$ panel, the L-shape solve layer, the
+Navier--Stokes reduced model, and the operator resolution knob, which is
+binding---if a trained operator exposes its own accuracy--cost family through
+evaluation resolution, ``one point per trained operator'' is withdrawn.
+\textbf{No theory}: no convergence guarantee for the cold-start iteration, no
+bound on the quadrature error on unseen states, no continuum error bound.

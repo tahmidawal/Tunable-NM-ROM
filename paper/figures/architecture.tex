@@ -47,8 +47,8 @@
 \node[control, right=of exit] (tol) {tolerance, budget};
 \draw[arr] (q) |- ([yshift=1.2mm]lm.east); \draw[arr] (rule) |- ([yshift=-1.2mm]lm.east); \draw[arr] (tol) -- (exit);
 % comparators
-\node[external, below=6mm of out] (cmp) {same-job comparators: Newton (Burgers), DST / CG (Poisson, wave), sparse direct / PCG (L-shape), POD-LSPG, FNO / U-Net / Transolver};
-\node[external, below=of cmp] (metric) {error vs complete query cost, with exit reasons; costs never divided across jobs};
+\node[external, below=5mm of out, text width=6.4cm] (cmp) {same-job comparators: Newton (Burgers); DST / CG (Poisson, heat, wave); sparse direct / PCG (L-shape); POD-LSPG; FNO / U-Net / Transolver};
+\node[external, below=of cmp, text width=6.4cm] (metric) {error against complete query cost, with exit reasons; costs never divided across jobs};
 \draw[arr] (out) -- (cmp); \draw[arr] (cmp) -- (metric);
 % legend
 \begin{scope}[on background layer]

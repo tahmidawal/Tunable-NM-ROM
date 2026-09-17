@@ -139,74 +139,60 @@ fixed across rungs so that $q$ is the only control (\S\ref{sec:exp:qxm}).
 \label{sec:method:weak}
 
 Let $\tests\in\Real^{M\times n}$ collect the $M$ lowest tensor-product sine
-vectors of the square as rows, orthonormal in the discrete inner product. They
-are the eigenvectors of the five-point operator, $\tests\Aop=\rowscale\tests$
-with $\rowscale=\diag(\lambda_1,\dots,\lambda_M)$, and this identity is asserted
-numerically in every job. Given the fully discrete residual $\rfull(\cdot)$ of
-the PDE at hand, the reduced problem solved online is
+vectors of the square, orthonormal in the discrete inner product; they are the
+eigenvectors of the five-point operator, $\tests\Aop=\rowscale\tests$, and this
+identity is asserted numerically in every job. With $\rfull(\cdot)$ the fully
+discrete residual of the PDE at hand, the reduced problem solved online is
 \begin{equation}
   (\latent^{\star},y^{\star})
-  \;=\;
+  =
   \argmin_{\latent,\,y}\;
   \tfrac12\,\norm{\rweak(\latent,y)}_2^2,
   \qquad
-  \rweak(\latent,y) \;=\; \rowscale_\star^{-1}\,\tests\,\rfull\!\big(\umanifold(\latent,y)\big)
-  \;\in\;\Real^{M},
+  \rweak(\latent,y) = \rowscale_\star^{-1}\,\tests\,\rfull\!\big(\umanifold(\latent,y)\big)
+  \in\Real^{M},
   \qquad M>k+q ,
   \label{eq:objective}
 \end{equation}
 with a diagonal row scaling $\rowscale_\star$ stated per PDE in
-Appendix~\ref{app:method}; the scaling changes which solution is selected and is
-part of the method. This is a least-squares Petrov--Galerkin condition with an
-explicit, latent-independent test space and an explicit row norm
-\citep{Carlberg2011LSPG,LeeCarlberg2020}; it is not tangent-space Galerkin and
-the system is overdetermined rather than square.
+Appendix~\ref{app:method}; it changes which solution is selected and is part of
+the method. This is a least-squares Petrov--Galerkin condition with an
+explicit, latent-independent test space \citep{Carlberg2011LSPG,LeeCarlberg2020},
+not tangent Galerkin, and overdetermined rather than square.
 % DISCREPANCY (D2) vs old-submission Eqs. (2)-(3): tangent Galerkin printed
-% there; no implemented path forms J^T K J.  Code followed.  For a LINEAR trial
-% space the two conditions still differ (V^T A^T (AVz-b)=0 vs V^T(AVz-b)=0).
-
-\paragraph{The update.} With $\jac{}=\partial\rweak/\partial(\latent,y)$ from
-forward-mode differentiation through $\head$ \citep{Bradbury2018JAX},
-$H=\jac{}\T\jac{}$ and $g=\jac{}\T\rweak$, each attempt solves the damped normal
-system $(H+\lambda\,\diag(\diag H))\,\delta=-g$ and accepts the step only if it
-is finite, within a fixed trust radius, and strictly decreases the residual
-norm; $\lambda$ is divided by three on acceptance and multiplied by ten on
-rejection. This is damped Levenberg--Marquardt with a monotone accept/reject
-test \citep{Marquardt1963}; there is no line search, and the curvature dropped
-is the residual-weighted second derivative of the head.
-% DISCREPANCY (D8): called "Gauss--Newton" with an undamped update in the old
+% there; no implemented path forms J^T K J.  Code followed.
+Each attempt solves the damped normal system
+$(H+\lambda\,\diag(\diag H))\,\delta=-g$ with $H=\jac{}\T\jac{}$, $g=\jac{}\T\rweak$
+from forward-mode differentiation through $\head$ \citep{Bradbury2018JAX}, and
+accepts the step only if it is finite, within a fixed trust radius, and strictly
+decreases the residual: damped Levenberg--Marquardt with a monotone test
+\citep{Marquardt1963}, no line search.
+% DISCREPANCY (D8): "Gauss--Newton" with an undamped update in the old
 % manuscript; implemented as damped LM with an explicit trust radius.
-
-\paragraph{Stopping, and what it certifies.} Three exit families are recorded
-and never conflated: the scale-free stationarity measure
+Three exit families are recorded and never conflated: the scale-free
+stationarity measure
 \begin{equation}
   \station{\latent}{y}
-  \;=\;
+  =
   \frac{\norm{\jac{}\T\rweak}_2}{\normF{\jac{}}\;\norm{\rweak}_2}
-  \;\le\;\eta_{\mathrm{tol}},
+  \le\eta_{\mathrm{tol}},
   \label{eq:stationarity}
 \end{equation}
-a residual threshold, and the \emph{stalls} (attempt budget exhausted, a
-vanishing step, the damping limit, a non-finite value). Every solve returns its
-exit reason; outputs produced under a stall are reported as early-stopped,
-never as converged. $\station{\latent}{y}\le\eta_{\mathrm{tol}}$ certifies a
-first-order critical point of \eqref{eq:objective} on the frozen manifold and
-nothing more: not a global minimum, nothing about the $n-M$ residual components
-no test sees, and no bound on the field error. One consequence matters for
-reading the tables: for an arm whose reduced fit is \emph{attainable} (a POD
-basis fitted to its own initial condition, or the free bank) the residual falls
-to round-off and the ratio \eqref{eq:stationarity} is $0/0$, so it stops being
-a quality measure across arms of different dimension; we therefore report a
-separate completion status that accepts an attained fit and print the stricter
-flag beside it.
-
-\paragraph{Initialisation.} No query uses the solution it predicts. The elliptic
-solve starts from the cached training code whose stored weak prediction is
-nearest the projected source; the Burgers query fits $(\latent,y)$ to the
-supplied initial field on a fixed $48\times48$ Gauss--Legendre rule that does not
-depend on the query mesh, and every time step is warm-started at the previous
-code (or its linear extrapolation when that has the smaller residual). The
-interpolation of the supplied input is charged to the query.
+a residual threshold, and the stalls (budget exhausted, vanishing step, damping
+limit, non-finite value); outputs produced under a stall are reported as
+early-stopped, never as converged. Stationarity certifies a first-order
+critical point of \eqref{eq:objective} on the frozen manifold and nothing
+more: not a global minimum, nothing about the $n-M$ untested residual
+components, no bound on the field error. For an arm whose reduced fit is
+\emph{attainable} (a POD basis fitted to its own initial condition, the free
+bank) the residual falls to round-off and \eqref{eq:stationarity} is $0/0$, so
+a separate completion status accepts an attained fit and the stricter flag is
+printed beside it. No query uses the solution it predicts: the elliptic solve
+starts from the cached training code nearest the projected source; the Burgers
+query fits $(\latent,y)$ to the supplied initial field on a fixed
+$48\times48$ Gauss--Legendre rule independent of the query mesh, and each time
+step is warm-started at the previous code. The interpolation of the input is
+charged to the query.
 
 \subsection{Precomputed operators, quadrature, and certification}
 \label{sec:method:precomp}
@@ -241,54 +227,42 @@ over states the solver actually reaches on trajectories disjoint from the fit
 and evaluation cases. Second, the fit states must be reachable states too, and
 their \emph{number} binds before the node count does (\S\ref{sec:exp:eq}).
 
-\subsection{What is fixed, and what is chosen at run time}
+\subsection{What is fixed, what is chosen, and how error is reported}
 \label{sec:method:tuning}
 
-Every operating point reported in this paper uses one frozen artefact per PDE:
-the weights $\theta$, the bank $\bank$ and its width $R$, the latent dimension
-$k$, the correction directions $\corr$, the time discretisation and the query
-contract are identical across the family. What is selected at run time is
-\begin{enumerate}
-  \item the correction rank $q$, a prefix of the stored directions;
-  \item the quadrature: dense evaluation, or one of the stored certified rules;
-  \item the stopping tolerance $\eta_{\mathrm{tol}}$ and the attempt budget.
-\end{enumerate}
-The first two are selections among offline-prepared artefacts; only the third
-is a pure run-time number. The test count $M$ is a design parameter of the
-weak problem and is held fixed along the headline ladder; where earlier cells
-raised it with $q$ we say so and report the effect separately
-(\S\ref{sec:exp:qxm}). Nothing is re-optimised at query time, and no
-operating point is reported without its exit-reason distribution.
+Every operating point uses one frozen artefact per PDE: the weights $\theta$,
+the bank $\bank$ and $R$, the latent dimension $k$, the directions $\corr$, the
+time discretisation and the query contract are identical across the family.
+Selected at run time are (i) the correction rank $q$, a prefix of the stored
+directions; (ii) the quadrature, dense or one of the stored certified rules;
+(iii) the stopping tolerance and attempt budget. The first two select among
+offline-prepared artefacts; only the third is a pure run-time number. The test
+count $M$ is a design parameter of the weak problem and is held fixed along the
+headline ladder; where earlier cells raised it with $q$ we say so and report
+the effect separately (\S\ref{sec:exp:qxm}). Nothing is re-optimised at query
+time, and no operating point is reported without its exit reasons.
 % DISCREPANCY (D5) vs old-submission Sec. 5.1: no implemented path applies CG to
 % the projected operator; the k x k damped system is solved directly.
 
-\subsection{The three layers of deployed error}
 \label{sec:method:layers}
-
 Every panel reports three numbers, never one. The \emph{bank floor} is the
 relative error of the orthogonal projection of the truth onto
-$\operatorname{range}\bank$: what no head and no solver can beat. The
+$\operatorname{range}\bank$, what no head and no solver can beat. The
 \emph{best-found} error is the smallest error any point of the augmented
 manifold $\{\bank(\head(\latent)+\corr y)\}$ attains for that case, found by a
-multistart oracle over many restarts and therefore an upper bound on the true
-minimum; it isolates what the parameterisation can reach. The \emph{solved}
-error is what the deployed iteration returns. Their differences assign the
-deployed error to representation, reduction and solver respectively, and a
-lever can only move the layer it acts on: $q$ moves the reduction layer, the
-tolerance and the budget move the solver layer, and nothing at inference moves
-the floor. This is the frame in which every negative result below is legible.
+multistart oracle and therefore an upper bound on the true minimum. The
+\emph{solved} error is what the deployed iteration returns. Their differences
+assign the deployed error to representation, reduction and solver, and a lever
+can only move the layer it acts on: $q$ moves the reduction layer, tolerance
+and budget the solver layer, nothing at inference the floor.
 
-\subsection{What the construction does not provide}
 \label{sec:method:limits}
-
-No accuracy certificate: \eqref{eq:stationarity} is a first-order condition on
-$M$ tested components of an $n$-component residual. No escape from the bank.
-Mesh-dependent offline cost: $\bank$, $\tests$, $B$ and the rules must be rebuilt
-at each resolution even though $\theta$ transfers, and we charge that setup
-separately. Exact preassembly is conditional on a fixed or affinely separable
-linear operator and, for Burgers, on the sign restriction that decoded states can
-violate. No convergence theory for the cold-start iteration and no bound on the
-quadrature error as a function of $m$ on unseen states. And on separable
-constant-coefficient cells the discrete sine transform is a direct solve
-\citep{Swarztrauber1977} that is faster than every reduced model we measure; we
-name it wherever it applies.
+The construction provides no accuracy certificate, no escape from the bank, no
+convergence theory for the cold-start iteration and no bound on the quadrature
+error on unseen states; $\bank$, $\tests$, $B$ and the rules must be rebuilt at
+each resolution even though $\theta$ transfers, and that setup is charged
+separately; exact preassembly is conditional on a fixed or affinely separable
+linear operator and, for Burgers, on a sign restriction decoded states can
+violate; and on separable constant-coefficient cells the discrete sine
+transform is a direct solve \citep{Swarztrauber1977} faster than every reduced
+model we measure.

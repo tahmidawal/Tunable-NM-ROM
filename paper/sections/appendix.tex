@@ -19,6 +19,67 @@ float64 and highest matmul precision before doing any work.}
 
 \begin{table}[h]
 \centering
+\caption{Problem specification. Cohort and reduced sizes are read from the run
+configurations where recorded; the sealed final cohorts have not been opened
+for any cell.}
+\label{tab:problems}
+\input{tables/T01_problems}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Rank against test count (dense advection, budget 600, single seed).
+Top: the pure-rank ladder at fixed $M=\nQxmFixedM$ inside job
+\provQxmWithinJob; bottom: the scheduled ladder, whose cells span two jobs so
+its costs are not printed together. Jobs \provQxmJobs; commit
+\provQxmCommit; checkpoint \provBurgersCkpt.}
+\label{tab:qxm}
+\input{tables/T04_rank_vs_tests}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Three layers of deployed error, worst over each cell's development
+cases: what the bank can express, what the augmented manifold can reach
+(multistart oracle, an upper bound), what the deployed iteration returned. The
+p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
+appears.}
+\label{tab:layers}
+\input{tables/T07_three_layers}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Poisson ladder at $256^2$ and $1024^2$ (one job per mesh:
+\provPlinJobs; never compare costs across meshes; $q=512$ via LM is degenerate
+by construction and its QR twin is the timed top rung).}
+\label{tab:linear}
+\input{tables/T11b_poisson}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Heat 2D, an earlier cell of the same decoder family (job
+\provHeatJob, \provHeatGpu, commit \provHeatCommit; $k=8$, $R=32$, twelve
+development cases, three repetitions; the finest three meshes of a five-rung
+ladder). The linear evolution of the full bank is the $q=R$ rung.}
+\label{tab:heat}
+\input{tables/T11d_heat}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Neural operators on the shared Burgers data: capacity, epochs, whether
+the arm was still improving at its budget, worst and median error on the
+matched eight-case cohort and on the 32 held-out cases. Accuracy is comparable
+across jobs; timing never is, and none is shown. Single seed, one mesh, one
+3000\,s budget per capacity.}
+\label{tab:operators}
+\input{tables/T14_operators}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{Every timed subject of the $256^2$ same-allocation panel (job
 \provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
 an attained initial fit; ``strict'' is the earlier rule that does not.}

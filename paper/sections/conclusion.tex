@@ -3,17 +3,14 @@
 \label{sec:conclusion}
 
 One trained decoder can expose a monotone accuracy--cost family at run time,
-and the control that does it is the number of fixed bank directions the solver
-is allowed to add to the neural head's output. With the test count held fixed,
-that rank alone spans $\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$
-in cost on 2D Burgers, every rung converged, inside one allocation; certified
-quadrature rules and the stopping tolerance then move cost at fixed accuracy.
-The trade exists because the residual is nonlinear in the coefficients; where
-it is linear the corrections are free, the top rung is a linear model and the
-cheapest point, and on waves the learned bank loses to POD at matched rank.
-None of this beats a tuned full-order solver or a well-trained neural operator
-on these 2D problems, and the reduced model's case rests on the mechanism, the
-structural condition and residual-based consistency rather than on winning.
-Two practices carried the work: reporting every result as bank floor,
-best-found and solved error, and certifying quadrature rules on reachable
-states rather than by their fit.
+and the control is the number of fixed bank directions the solver may add to
+the neural head's output: with the test count held fixed, that rank alone spans
+$\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in cost on 2D Burgers,
+every rung converged, inside one allocation, and certified quadrature and the
+tolerance then move cost at fixed accuracy. The trade exists because the
+residual is nonlinear in the coefficients; where it is linear the top rung is
+a linear model and the cheapest point, and the learned bank loses to POD at
+matched rank. None of this beats a tuned full-order solver or a well-trained
+neural operator in 2D; the case for the reduced model rests on the mechanism,
+the structural condition, and two reporting practices---three-layer error and
+certification on reachable states---rather than on winning.

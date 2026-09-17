@@ -10,6 +10,7 @@ PY=/home/tahmid/Dev/.venv/bin/python
 if [[ "${1:-}" == "--figures" ]]; then
   "$PY" figures/gen_fig_tunability_family.py
 fi
+"$PY" gen_paper_md.py >/dev/null
 latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex >/dev/null
 grep -c "pending:" main.log >/dev/null && echo "placeholders in the PDF: $(grep -o 'pending: [^}]*' tables/*.tex | wc -l) (see tables/PENDING.md)" || true
 grep -i "undefined" main.log | grep -v "^\\s*$" | head -20 || true

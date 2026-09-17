@@ -1,20 +1,27 @@
 # Writing status — ICLR 2027 draft
 
-Updated 2026-09-17 (first compiling checkpoint). Build: `./build.sh` in this directory
-(regenerates `tables/` from the lanes' JSON, then `latexmk -pdf main.tex`); PDF at
-`paper/main.pdf` (git-ignored). Style: official ICLR 2027 kit
+Updated 2026-09-17 (second checkpoint: Markdown canonical, main text trimmed to 9 pages,
+family figure re-pointed). Build: `./build.sh` in this directory (regenerates `tables/` and
+`tables-md/` from the lanes' JSON, renders `PAPER.md` from the LaTeX sources, then
+`latexmk -pdf main.tex`); PDF at `paper/main.pdf` (git-ignored).
+
+**Canonical source from now on: `paper/PAPER.md`** (coordinator instruction 2026-09-17). It was
+rendered once from the LaTeX by `gen_paper_md.py`; user edits come back as diffs and are
+reconciled into `PAPER.md`; the LaTeX is a build target that may lag. Section headings in
+`PAPER.md` are numbered exactly as the LaTeX numbers them (2–7 main, A–E appendices) and must
+stay stable so the mirrored document can be matched section by section. Generated tables sit
+behind `<!-- table: Tnn_... -->` comments and are regenerated in place from `tables-md/`;
+prose numbers are in `tables-md/numbers.json`. Style: official ICLR 2027 kit
 (`iclr2027_conference.sty/.bst`, fetched from `media.iclr.cc/Conferences/ICLR2027/iclr-2027-style-files.zip`),
 anonymous, `\iclrfinalcopy` commented out.
 
 ## Page count
 
-25 pages total. Main text (intro through conclusion) ends on **page 13**, against the
-ICLR 2027 submission limit of **9 pages** (10 at camera-ready). References p13–15,
-appendices p16–25. **The main text is ~3.5 pages over; trimming is the first open
-item.** Candidates: move Tables 2 (rank vs tests), 5 (three layers) and 6 (Poisson
-ladder) to the appendix and keep one-line summaries; compress method §3.3–3.5 by a
-third; halve the results prose in §5.1 and §5.6; drop the reviewer paragraph of the
-intro to one sentence.
+24 pages total. Main text (intro through conclusion) now ends on **page 9**, within the
+ICLR 2027 submission limit of 9 pages (10 at camera-ready). References p10–11, appendices
+p12–24. Trim done by moving T1, T4, T7, T11b, T14 to the appendix (T3 and the family figure
+stay in the main text), compressing method §3.3–3.5 into three subsections, and shortening
+the intro, related work, setup, limitations and conclusion.
 
 ## Sections
 
@@ -24,14 +31,14 @@ intro to one sentence.
 | 1 Introduction | `sections/intro.tex` | drafted; three contributions + methodological findings; non-claims; reviewer pointer |
 | 2 Related work | `related-work.tex` | extended (U-Net, PDEBench, Transolver; GNAT, accelerated ECSW; certification paragraph); five new bib entries written from memory, **verify before submission** (Ronneberger 2015, Takamoto 2022, Wu 2024, Carlberg 2013, Chapman 2017) |
 | 3 Method | `methods.tex` | tightened; correction ladder §3.2 first-class; instance derivations + DISCREPANCY record moved to Appendix A (`sections/method-details.tex`) |
-| Fig. 1 architecture | `figures/architecture.tex` | TikZ translation of `architecture.mmd`; compiles; layout needs a visual pass |
+| Fig. 1 architecture | `figures/architecture.tex` | TikZ translation of `architecture.mmd`; comparator row narrowed; `figures/architecture.png` rendered by a standalone compile for the Markdown |
 | 4 Setup | `sections/setup.tex` | drafted; T1 in |
 | 5.1 panel | `sections/results.tex` | drafted from b-panel; losses first |
 | 5.2 rank vs tests | `sections/results.tex` | drafted from b-qxm |
 | 5.3 EQ certification | `sections/results.tex` | drafted from b-eqtop, marked provisional (job 3783811 pending) |
 | 5.4 head ablation + layers + training | `sections/results.tex` | drafted |
 | 5.5 mesh ladder + speed | `sections/results.tex` | drafted |
-| 5.6 linear PDEs (Poisson both meshes, waves, L-shape bank/head) | `sections/results.tex` | drafted; p-linear closed |
+| 5.6 linear PDEs (Poisson both meshes, heat, waves, L-shape bank/head) | `sections/results.tex` | drafted; p-linear closed; heat rows (T11d) generated from the 2026-09-10 heat linear-bank report, job 3511417 |
 | 5.7 operators | `sections/results.tex` | drafted; claim withdrawn as instructed |
 | 6 Limitations | `sections/limitations.tex` | written first; includes single seed + 1e-9→1e-3 gate amendment, 2D only, dev cohort, no SMA cold start, operators as lower bounds, one-draw certification, fixed-M dearer baseline, pending cells |
 | 7 Conclusion | `sections/conclusion.tex` | drafted |
@@ -41,7 +48,7 @@ intro to one sentence.
 | App. C full tables | `sections/appendix.tex` | T4b, T5, T6a/b, T8, T8b, T9b, T9c, T10, T11a, T11c, T12*, T13*, T14b, T15, T16, T18a/b |
 | App. D reviewer map | `sections/appendix.tex` | complete |
 | App. E glossary | `sections/appendix.tex` | complete |
-| Fig. 2 tunability family | `figures/gen_fig_tunability_family.py` | **not yet re-pointed** at b-qxm fixed-M ladder + b-panel same-job panel + b-eqtop cheap arm; still reads the 2026-09-15 cross-job sources and is not included in `main.tex` |
+| Fig. 2 tunability family | `figures/gen_fig_tunability_family.py` | re-pointed: A rank vs error (b-qxm, no cost axis because its cells span three jobs), B the 256² same-allocation panel (b-panel), C the primary-rule EQ ladder vs dense twins (b-eqtop, provisional); paired JSON with SHA256s; included in §5.1 |
 
 ## Placeholders (`\gen{pending: ...}`), from `tables/PENDING.md`
 
@@ -69,10 +76,9 @@ intro to one sentence.
 
 ## Contradictions between sources and the ABSTRACT ledger (reported, not resolved)
 
-1. The abstract says the family collapses to a linear model "on Poisson and heat". The
-   campaign's evidence tables cover Poisson (p-linear) and the reflective wave (w-ladder);
-   no heat run is in this campaign, and the heat collapse rests on an earlier cell that is
-   not tabulated. Either tabulate that cell or change "heat" to "waves" in the abstract.
+1. (Resolved by the coordinator.) The heat collapse is tabulated from the 2026-09-10 heat
+   linear-bank cell (job 3511417, A100-PCIE-40GB) as Table T11d, labelled an earlier cell of
+   the same decoder family; the abstract's "Poisson and heat" stands and waves are added.
 2. The ledger's "EQ rules certify on the primary bar only for q ≤ 64" is superseded by
    b-eqtop's interim report (every rung certifies in one draw, provisional); the paper
    carries the provisional version.

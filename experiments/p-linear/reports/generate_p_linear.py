@@ -72,7 +72,7 @@ def rows_of(d):
             valid = sum(1 for x in sel if x['solver_valid'])
             stat = sum(1 for x in sel if x['stationary'])
             iters = float(np.median([x['jacobians'] for x in sel]))
-        elif kind == 'pa':
+        elif kind in ('pa', 'linear'):
             stat = sum(1 for x in sel if x['reason'] == 4)
             valid = stat
             iters = float(np.median([x['iterations'] for x in sel]))
@@ -144,15 +144,15 @@ def figure(d, rows, crit, path_png, path_json):
         'incumbent R=128': [r for r in rows if r['model'] == 'incumbent'],
         'POD-LSPG (m4)': [r for r in rows if r['name'].startswith('e_pod') and r['rule'] == 'm4'],
         'POD-LSPG (m256)': [r for r in rows if r['name'].startswith('e_pod') and r['rule'] == 'm256'],
-        'head only / free bank': [r for r in rows if r['kind'] == 'pa' and r['model'] == d['config']['models'][0]['id']],
+        'head only / free bank / linear QR': [r for r in rows if r['kind'] in ('pa', 'linear') and r['model'] == d['config']['models'][0]['id']],
         'CG': [r for r in rows if r['kind'] == 'cg'],
         'DST direct': [r for r in rows if r['kind'] == 'fom'],
     }
     palette = {'ladder (m4)': '#1d4ed8', 'ladder (m256)': '#60a5fa', 'incumbent R=128': '#94a3b8',
-               'POD-LSPG (m4)': '#b45309', 'POD-LSPG (m256)': '#f59e0b', 'head only / free bank': '#7c3aed',
+               'POD-LSPG (m4)': '#b45309', 'POD-LSPG (m256)': '#f59e0b', 'head only / free bank / linear QR': '#7c3aed',
                'CG': '#059669', 'DST direct': '#dc2626'}
     markers = {'ladder (m4)': 'o', 'ladder (m256)': 'o', 'incumbent R=128': 's', 'POD-LSPG (m4)': '^',
-               'POD-LSPG (m256)': '^', 'head only / free bank': 'D', 'CG': 'x', 'DST direct': '*'}
+               'POD-LSPG (m256)': '^', 'head only / free bank / linear QR': 'D', 'CG': 'x', 'DST direct': '*'}
     points = []
     for label, grp in groups.items():
         if not grp:

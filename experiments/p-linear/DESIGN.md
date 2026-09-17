@@ -210,3 +210,28 @@ that forms $T = Q^\top u$ carries $\sim 3\times10^{-9}$ of round-off into the re
 prefix **verbatim** rather than rebuilding it, and it is reported as a property of the
 construction. The smoke builds the extension from a 640-source prefix of the fit split
 (mechanics only); the cluster jobs use the whole fit split.
+
+**2026-09-17, §A4 — the top rung is evaluated by a direct linear solve; declared from the
+smoke, before any job.** At $q = R$ the eliminated ladder path is mathematically inert in
+$z$ (its projected operator is round-off) and the smoke showed it *chasing that round-off
+for its whole budget*: 194 Jacobians and 106 ms against 5–7 Jacobians and 7 ms at $q = 256$,
+while landing exactly on the bank floor (0.80923 % worst, both). Charging that iteration to
+the top rung would fail D2 for an artefact, so the pre-registered top rung is implemented as
+the rank-$R$ linear reduced model solved directly — thin QR of $B_M$ offline, one
+projection, one triangular solve and one decode online (`d_linear_qr_m4@new_K32`, same $M$
+as the `m4` top rung) — and D1–D2 use it as the $q = R$ point. The eliminated arm is kept
+and reported as `q512_m4@new_K32` with this caveat; the in-job identity check becomes
+`q512_m4` vs `d_linear_qr_m4` at $10^{-8}$ on the field. The identity-head free-bank LM
+(`d_freebank_m4`) is kept too but is *not* the top rung: it solves the normal equations of
+a $2.6\times10^{7}$-conditioned bank and stopped at its gradient tolerance 4 % above the
+floor (0.845 % vs 0.809 %); it is compared to the direct solve at a $10^{-2}$ tolerance and
+reported as a solver-tolerance finding.
+
+**2026-09-17, §A5 — gate arithmetic and a threshold, from the same smoke.** (a) The
+`dst_direct` same-grid gate compared two round-off-level numbers ($\sim10^{-16}$) as a ratio
+and reported 0.26; a gate now also passes when the absolute difference is
+$\le 10^{-12}$ — only an exact solver's same-grid error can ever use that branch, and every
+other gate passed at $\le 10^{-12}$ relative. (b) The extension orthonormality assertion is
+$10^{-7}$ on a $512\times512$ Gram (the parent's $10^{-8}$ was on $32\times32$); the smoke
+measured $4.6\times10^{-10}$ with the full fit split. Nothing in D1–D3 or the gates' $10^{-9}$
+relative tolerance changes.

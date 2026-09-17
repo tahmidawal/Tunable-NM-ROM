@@ -171,7 +171,7 @@ def main():
                                        cfg['training_intervals'],
                                        subset=cfg.get('extension_sources'))
         assert dinfo['retained_prefix_exact'], dinfo
-        assert dinfo['extension_orthonormality_error'] < 1e-8, dinfo
+        assert dinfo['extension_orthonormality_error'] < 1e-7, dinfo
         L['Cfull'] = Cfull
         R_['directions'].append(dict(model=mid, **dinfo))
         jax.clear_caches()
@@ -257,6 +257,15 @@ def main():
                                         M=int(fops['B'].shape[0]), requested_modes=fb_modes,
                                         trust_radius=ftrust, linear_solve='lu',
                                         operator_sha256=fops['info']['operator_sha256']))
+            # the rank-R linear reduced model, solved directly (DESIGN A4): the top rung
+            lk, Qt, Rr, linfo = L_.make_linear_query(fops['B'], n)
+            name = f'd_linear_qr_{fb_rule}@{mid}'
+            built.append(dict(name=name, kind='linear', model=mid, k=R, kernel=lk, Qt=Qt, Rr=Rr,
+                              B=fops['B'], bank=fops['bank'], ops=fops, family='linear',
+                              M=int(fops['B'].shape[0]), rule=fb_rule, q=R))
+            R_['arm_setup'].append(dict(intervals=n, arm=name, model=mid, family='linear', K=R, R=R,
+                                        requested_modes=fb_modes, degenerate_full_bank=True,
+                                        operator_sha256=fops['info']['operator_sha256'], **linfo))
         save()
 
     # ------------------------------ cheap-corrections rule, incumbent, q=64 gate --
@@ -417,6 +426,9 @@ def main():
             b = built[sub['index']]
             return PA.query_once(b['kernel'], source, b['ops'], b['predictions'], b['codes'],
                                  b['B'], b['bank'])
+        if sub['kind'] == 'linear':
+            b = built[sub['index']]
+            return L_.linear_query_once(b['kernel'], source, b['ops'], b['Qt'], b['Rr'], b['B'], b['bank'])
         if sub['kind'] == 'cg':
             return IC.cg_query(source, cg_kernel, sub['tolerance'])
         return C.fom_query(source, lam)
@@ -486,11 +498,17 @@ def main():
                     continue
                 worst = max(abs(got[c] - e) / max(abs(e), 1e-300)
                             for c, e in zip(entry['cases'], entry[key]) if c in got)
+                worst_abs = max(abs(got[c] - e) for c, e in zip(entry['cases'], entry[key]) if c in got)
+                # an exact solver's same-grid error is round-off on both sides (~1e-16), so
+                # its relative difference is 0/0; the absolute floor covers that case only
                 R_['gates'].append(dict(intervals=n, ours=ours, theirs=theirs, source=g['file'],
                                         reference_job=ref.get('job_id'), metric=key,
                                         worst_relative_difference=worst,
+                                        worst_absolute_difference=worst_abs,
                                         tolerance=cfg['fidelity_tolerance'],
-                                        passed=bool(worst <= cfg['fidelity_tolerance'])))
+                                        absolute_floor=cfg['fidelity_absolute_floor'],
+                                        passed=bool(worst <= cfg['fidelity_tolerance']
+                                                    or worst_abs <= cfg['fidelity_absolute_floor'])))
     for g in R_['gates']:
         print('GATE', g, flush=True)
 

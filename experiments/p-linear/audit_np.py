@@ -120,7 +120,7 @@ def main():
 
     bad = 0
     for x in d['invocations']:
-        if x['kind'] in ('pa', 'rom'):
+        if x['kind'] in ('pa', 'rom', 'linear'):
             bad += int((x['reason'] == 4) != (x['stationarity'] <= cfg['stationarity_tolerance']))
         if x['kind'] == 'ladder':
             bad += int(x['stationary'] != (x['stationarity'] <= cfg['stationarity_tolerance']))

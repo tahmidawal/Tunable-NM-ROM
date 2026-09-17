@@ -167,7 +167,17 @@
     ],
     [
       "q512_m4@new_K32",
+      "d_linear_qr_m4@new_K32",
+      1e-08
+    ],
+    [
       "d_freebank_m4@new_K32",
+      "d_linear_qr_m4@new_K32",
+      0.01
+    ],
+    [
+      "d_freebank_m256@incumbent",
+      "d_linear_qr_m256@incumbent",
       1e-06
     ],
     [
@@ -176,5 +186,6 @@
       1e-12
     ]
   ],
-  "timing_contract": "host source array in to dense nodal field out; every subject in the same job on the same GPU, randomised order, GPU burn-in before every invocation, three repetitions retained"
+  "timing_contract": "host source array in to dense nodal field out; every subject in the same job on the same GPU, randomised order, GPU burn-in before every invocation, three repetitions retained",
+  "fidelity_absolute_floor": 1e-12
 }

@@ -205,6 +205,44 @@ def oracle_projected(head, Rg, Zcand, T, perp2, nu2, V, budget, starts=8, gtol=1
             np.concatenate(reasons).astype(int))
 
 
+def make_linear_query(B, n):
+    """The rank-R linear reduced model solved directly: thin QR of the M x R weak
+    operator offline, then one projection, one triangular solve and one decode online.
+    Mathematically identical to the eliminated ladder at q = R (where the nonlinear
+    iteration is inert) and to the free bank, without either's iteration."""
+    Q, Rr = jnp.linalg.qr(jnp.asarray(B), mode='reduced')
+    Qt = Q.T
+
+    @jax.jit
+    def kernel(source, S, I, J, W, Qt, Rr, B, bank):
+        fm = (S.T @ source[1:-1, 1:-1] @ S)[I, J] * W
+        y = jax.scipy.linalg.solve_triangular(Rr, Qt @ fm, lower=False)
+        field = jnp.pad((bank @ y).reshape(n - 1, n - 1), 1)
+        return field, y, jnp.linalg.norm(B @ y - fm), jnp.linalg.norm(fm)
+    values = np.asarray(jnp.linalg.svd(Rr, compute_uv=False))
+    info = dict(condition_number=float(values[0] / values[-1]), M=int(B.shape[0]), R=int(B.shape[1]),
+                Q_sha256=sha_array(Qt), R_sha256=sha_array(Rr))
+    return kernel, Qt, Rr, info
+
+
+def linear_query_once(kernel, source, ops, Qt, Rr, B, bank):
+    start = time.perf_counter()
+    src = jax.device_put(source)
+    src.block_until_ready()
+    input_end = time.perf_counter()
+    out = kernel(src, ops['S'], ops['I'], ops['J'], ops['W'], Qt, Rr, B, bank)
+    jax.block_until_ready(out)
+    device_end = time.perf_counter()
+    field, y, rn, fmn = jax.device_get(out)
+    end = time.perf_counter()
+    return np.asarray(field), dict(total_seconds=end - start, input_seconds=input_end - start,
+                                   fused_device_seconds=device_end - input_end,
+                                   output_seconds=end - device_end, residual=float(rn),
+                                   iterations=0, reason=4, stationarity=0.0,
+                                   relative_residual=float(rn) / max(float(fmn), 1e-300),
+                                   latent=np.asarray(y).tolist())
+
+
 def non_dominated(points):
     """Indices of the points not dominated on (error, cost), both to be minimised."""
     keep = []

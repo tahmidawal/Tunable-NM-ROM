@@ -1,0 +1,13 @@
+{
+  "attempt": "pois01",
+  "job_id": "3780224",
+  "job_name": "ctol_nos_pois01",
+  "source_commit": "6c49a2ed8a191dc4b7e18ceef0bb882cfd8922d4",
+  "remote": "/cluster/tufts/paralab/tawal01/no_second_20260917/pois01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 03:30:00",
+  "submitted_utc": "2026-09-17T09:29:37.424149+00:00",
+  "queue_before": "owned: 3780138 unet01 RUNNING, 3780139 tsol01 RUNNING; no job in pois01",
+  "queue_after": "owned: 3780138, 3780139 RUNNING and 3780224 pois01 PENDING \u2014 one job per attempt directory",
+  "data": "poisson-data01 re-uploaded from the Git archive of FNO job 3702464 (archive b9d14a87\u2026), 206 files verified on the cluster",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged"
+}

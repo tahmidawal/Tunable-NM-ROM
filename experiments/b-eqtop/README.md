@@ -19,6 +19,7 @@ $\rho$-vs-$m$ law at every rung. Read [`DESIGN.md`](DESIGN.md) first.
 | `make_comparators.py` → `checks/comparators.json` | qrg304's per-arm metrics for the fidelity gates |
 | `smoke_eqtop.py` → `checks/smoke-eqtop.json` | local smoke (64 intervals) with the parent-baseline reproduction |
 | `audit_eqtop.py` | independent NumPy audit, no JAX |
+| `draws.py` | draw / construction / status bookkeeping (DESIGN §A2, §A4) shared by report, export, self-audit, lab entry |
 | `export_rules.py` → `certified-rules/` | the cheapest primary-certified rule per rung as one rule set for other lanes (`PROVENANCE.json`, `SHA256SUMS`, status field) |
 | `checks/self_audit_report.py` → `reports/self-audit-report.md` | script-generated self-audit of the report against the raw JSONs (stands in for Codex while its quota is exhausted) |
 | `make_lab_entry.py` → `checks/lab-entry.md` | the dated lab-log entry, generated from the audits and `summary.json`; `checks/retractions.json` and `checks/open.json` are the explicit lists it appends |
@@ -51,5 +52,21 @@ ssh tufts-login 'cd /cluster/tufts/paralab/tawal01/b_eqtop_20260917/bet101 && sb
   --out experiments/b-eqtop/checks/lab-entry.md --pending "bet301:3783811:DESIGN A2 draw replication"
 ```
 
-State: `bet101` and `bet201` are collected, audited and archived; `bet301` (job 3783811) is running.
-Every certified flag in the report is provisional until it lands (DESIGN §A2, §A3).
+State (2026-09-17, lane closed): `bet101`, `bet201` and `bet301` are collected, audited and archived; the cluster
+namespace is deleted. The draw replication (`bet301`) makes the certification **marginal** at $q = 64, 128, 256$ and
+**confirmed** at $q \le 32$ (DESIGN §A4); `certified-rules/` holds the §A4 export (confirmed constructions at
+$q \le 64$, single-draw rules above the marginal $m$ at $q = 128, 256$). Closing commands:
+
+```bash
+"$PY" experiments/b-eqtop/reports/generate_eqtop.py --j1 experiments/b-eqtop/checks/bet101-audit.json \
+  --j2 experiments/b-eqtop/checks/bet201-audit.json --j3 experiments/b-eqtop/checks/bet301-audit.json \
+  --out experiments/b-eqtop/reports/2026-09-17-b-eqtop
+"$PY" experiments/b-eqtop/export_rules.py --status "final after bet301 (job 3783811): ..."
+"$PY" experiments/b-eqtop/checks/self_audit_report.py
+"$PY" experiments/b-eqtop/make_lab_entry.py --j1 experiments/b-eqtop/checks/bet101-audit.json \
+  --j2 experiments/b-eqtop/checks/bet201-audit.json --j3 experiments/b-eqtop/checks/bet301-audit.json \
+  --report experiments/b-eqtop/reports/2026-09-17-b-eqtop.md --out experiments/b-eqtop/checks/lab-entry.md
+```
+
+`draws.py` is the one place that turns the audit JSONs into draws, constructions, the §A2 status label and the
+§A4 export choice; the report, the export, the self-audit and the lab entry all import it.

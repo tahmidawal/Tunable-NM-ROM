@@ -58,14 +58,24 @@
       "audit": "experiments/b-eqtop/checks/bet101-audit.json",
       "audit_failed_blocking_gates": [],
       "remote_deleted": "2026-09-17T10:47-04:00"
-    }
-  ],
-  "pending": [
+    },
     {
       "attempt": "bet301",
       "job_id": "3783811",
-      "state_at": "2026-09-17T10:47-04:00 RUNNING on pax052 (1h18m)",
-      "purpose": "DESIGN A2 draw replication; every certification claim in the interim report is provisional until it lands"
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "02:09:59",
+      "node": "pax052",
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "archived": "experiments/b-eqtop/artifacts/bet301",
+      "archive_sha256": "52eb6c9f6655fe23a9a28ed80e4e2a5781f32eb3aa10891c847617f0ae9e85c0",
+      "audit": "experiments/b-eqtop/checks/bet301-audit.json",
+      "audit_failed_blocking_gates": [],
+      "remote_deleted": "2026-09-17T11:52-04:00",
+      "note": "no timed phase; 24 replication fits; four BFC-allocator \"ran out of memory trying to allocate 8.50GiB\" warnings in the .err during certification on the 40 GB card, all recovered (every rule certified, archived rules re-certified to 1e-9 relative, ALL-DONE)"
     }
-  ]
+  ],
+  "pending": [],
+  "namespace_deleted": "2026-09-17T11:52-04:00 (whole namespace removed; lane closed)",
+  "used": 3
 }

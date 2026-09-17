@@ -9,8 +9,11 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+import draws as DR  # noqa: E402  (the shared draw / status bookkeeping, DESIGN §A2, §A4)
 
 
 def f(x, d=4):
@@ -31,20 +34,21 @@ def table(header, rows):
     return '\n'.join(out) + '\n'
 
 
-def rule_rows(rules, job, tag='final'):
+def rule_rows(rules, job, tag='final', status_fn=None):
     rows = []
     for x in rules:
         rows.append([x['q'], x['M'], x['source'], x['arm'], x['fit_states'], x['candidates'],
                      x['m'], x['m_target'], sci(x['relative_fit']), f(x['rho_max']), f(x['rho_p95']),
                      f(x['rho_median']), yn(x['certified_primary']), yn(x['certified_tight']),
                      yn(x['certified_secondary']), yn(x['truncated']),
-                     f(x.get('fit_seconds'), 0), job, tag])
+                     f(x.get('fit_seconds'), 0), job,
+                     (status_fn(x) if (status_fn and x['population'] == 'reachable' and not x['truncated']) else tag)])
     return rows
 
 
 RULE_HDR = ['$q$', '$M$', 'source', 'arm', 'fit states', 'pool', '$m$', '$m$ target',
             'NNLS rel. fit', '$\\rho_{\\max}$', '$\\rho_{95}$', '$\\rho_{\\rm med}$',
-            'primary', 'tight', 'secondary', 'truncated', 'fit (s)', 'job', 'status']
+            'primary', 'tight', 'secondary', 'truncated', 'fit (s)', 'job', 'construction status']
 
 
 def main():
@@ -72,11 +76,21 @@ def main():
     tag = ('provisional; bet301 pending' if pending and any(x['attempt'] == 'bet301' for x in pending)
            else ('provisional; ' + ', '.join(x['attempt'] for x in pending) + ' pending' if pending else 'final'))
     summary = []
+    # the draw bookkeeping over every job in this build (DESIGN §A2 / §A4)
+    DRAWS = DR.collect_draws(jobs)
+    CONS = DR.constructions(DRAWS)
+    REPL = bool(C and C.get('replication'))
+
+    def cstatus(rule_like):
+        """Construction status of a rule record (audit `rules[*]` entry or anything with q,
+        m_target, fit_states, scaling)."""
+        return DR.status_of_rule(CONS, rule_like) if REPL else tag
 
     def row(**kw):
         d = dict(kw)
         d['status'] = tag
         d['pending_jobs'] = [x['job_id'] for x in pending]
+        d.setdefault('construction_status', None)
         summary.append(d)
 
     md = []
@@ -93,6 +107,26 @@ def main():
         title = 'the rule-certification curve (the ladder job is not in this build)'
     if pending:
         title += ' (provisional: the draw replication is pending)'
+    verdict_rows = []
+    if REPL:
+        # per rung: the construction the timed ladder ran, its status over every draw, the export
+        lc = {c['q']: c['chosen'] for c in (A['rule_choice'] if A else []) if c['bar'] == 'primary' and c['chosen']}
+        rung_q = sorted({c['q'] for c in CONS})
+        for q in rung_q:
+            ran = None
+            if q in lc:
+                ran = next((d for d in DRAWS if d['q'] == q and d['source_arm'] == lc[q]['arm']
+                            and d['m_target'] == lc[q]['m_target']
+                            and abs(d['rho_max'] - lc[q]['rho_max']) <= 1e-9), None)
+            ran_c = next((c for c in CONS if ran and c['construction'] == ran['construction']), None)
+            exp, basis, note = DR.export_choice(CONS, DRAWS, q, lc.get(q))
+            exp_c = next((c for c in CONS if exp and c['construction'] == exp['construction']), None)
+            verdict_rows.append(dict(q=q, ran=ran, ran_c=ran_c, exp=exp, exp_c=exp_c, basis=basis, note=note))
+        top = verdict_rows[-1]
+        title = ('the primary EQ ladder is monotone as built, but its certification does not survive '
+                 'the draw replication: the top-rung rule is one of '
+                 f"{top['ran_c']['certified_primary_count']}/{top['ran_c']['n']} draws of its construction to "
+                 'meet the bar' if top['ran_c'] and top['ran_c']['marginal'] else title)
     md.append(f'# b-eqtop — {title}\n')
     md.append(f'**State of these numbers: {status}' + ''.join(f" — {x['purpose']}" for x in pending) + '.** ' + (
         'Every rule below is one draw of (candidate pool, fit-state subset). `bet201` showed that a second '
@@ -101,7 +135,14 @@ def main():
         'construction, not a guarantee. The pre-registered replication `bet301` measures that spread; until it '
         'lands, every "certified" flag in this report is **provisional** and is marked so beside the number. '
         'This report does not claim a certified ladder.' if pending else
-        'The draw-replication job is in this build; its spread is in §"How much of $\\rho_{\\max}$ is the draw".')
+        'The draw-replication job `bet301` is in this build. Every certified flag below therefore carries a '
+        '**construction status** computed over every independent draw of the same construction (same $q$, '
+        '$m$ target, fit-state count and row scaling) across `qrg304`, `bet101`, `bet201` and `bet301`: '
+        '`confirmed (k/k)` when every one of at least two draws meets the bar, `marginal at m (k/n)` when some '
+        'do and some do not, `certified in one draw` when the construction was never replicated. The rule '
+        'DESIGN §A2 pre-registered is applied literally: a construction that certifies on some draws and not '
+        'others is *marginal at that m*, whatever its own draw did. The numbers of the timed ladder are final '
+        'as measured with the rules as built; what the replication changes is what "certified" is worth.')
         + '\n')
     md.append('Jobs: ' + '; '.join(
         f"`{j['attempt']}` = {j['job_id']} ({j['question']}), `{j['gpu']}`, source `{j['commit']}`, "
@@ -121,13 +162,59 @@ def main():
                   'fit-state subset move $\\rho_{\\max}$ enough to flip the verdict at the bar. Single-rule '
                   'certifications below are reported as such, and the replication table gives the spread.\n')
 
+    if REPL:
+        md.append('## Verdict per rung after the draw replication (DESIGN §A2 applied literally)\n')
+        md.append('For each rung: the rule the timed ladder ran (`bet101`), how many independent draws of its '
+                  'construction meet the primary bar, the spread of $\\rho_{\\max}$ over those draws, the status '
+                  'the pre-registered rule assigns, and the rule exported to `certified-rules/` under the §A4 '
+                  'policy (cheapest *confirmed* construction; where none exists, the cheapest certified rule '
+                  'above every $m$ found marginal, labelled single-draw).\n')
+        rows = []
+        for v_ in verdict_rows:
+            r_, rc, e_, ec = v_['ran'], v_['ran_c'], v_['exp'], v_['exp_c']
+            rows.append([v_['q'],
+                         f"{r_['label']} $m$={r_['m']}, {r_['fit_states']} st., $\\rho_{{\\max}}$={f(r_['rho_max'])}" if r_ else '—',
+                         f"{rc['certified_primary_count']}/{rc['n']}" if rc else '—',
+                         f"{f(rc['rho_min'])} / {f(rc['rho_median'])} / {f(rc['rho_max_of_draws'])}" if rc else '—',
+                         f"**{rc['status']}**" if rc else '—',
+                         f"{e_['label']} $m$={e_['m']}, {e_['fit_states']} st., $\\rho_{{\\max}}$={f(e_['rho_max'])}" if e_ else 'none',
+                         f"{ec['status']}" if ec else '—',
+                         v_['basis']])
+            row(table='verdict_per_rung', ladder='primary', arm=(r_['source_arm'] if r_ else None), q=v_['q'],
+                m=(r_['m'] if r_ else None), population='reachable', metric='ladder_rule_draws_certifying_primary',
+                value=(rc['certified_primary_count'] / rc['n'] if rc else None),
+                certified_primary=(r_['certified_primary'] if r_ else None), certified_secondary=None,
+                certified_tight=(r_['certified_tight'] if r_ else None), rho_max=(r_['rho_max'] if r_ else None),
+                job_id=(r_['job_id'] if r_ else None), source_sha=(r_['commit'] if r_ else None),
+                construction_status=(rc['status'] if rc else None),
+                draws=(rc['n'] if rc else None), rho_min=(rc['rho_min'] if rc else None),
+                rho_median=(rc['rho_median'] if rc else None), rho_max_of_draws=(rc['rho_max_of_draws'] if rc else None))
+            row(table='verdict_per_rung', ladder='export', arm=(e_['source_arm'] if e_ else None), q=v_['q'],
+                m=(e_['m'] if e_ else None), population='reachable', metric='exported_rule_rho_max',
+                value=(e_['rho_max'] if e_ else None), certified_primary=(e_['certified_primary'] if e_ else None),
+                certified_secondary=None, certified_tight=(e_['certified_tight'] if e_ else None),
+                rho_max=(e_['rho_max'] if e_ else None), job_id=(e_['job_id'] if e_ else None),
+                source_sha=(e_['commit'] if e_ else None), construction_status=(ec['status'] if ec else None),
+                export_basis=v_['basis'])
+        md.append(table(['$q$', 'rule the timed ladder ran', 'draws certifying (primary)',
+                         '$\\rho_{\\max}$ over draws: min / median / max', 'status (§A2)',
+                         'exported rule (§A4)', 'its status', 'basis of the export'], rows))
+        n_conf = sum(1 for v_ in verdict_rows if v_['ran_c'] and v_['ran_c']['confirmed'])
+        n_marg = sum(1 for v_ in verdict_rows if v_['ran_c'] and v_['ran_c']['marginal'])
+        md.append(f"Of the {len(verdict_rows)} rungs the timed ladder ran, the rule's construction is **confirmed at "
+                  f"{n_conf}** and **marginal at {n_marg}**. A marginal rung means: the same recipe, re-drawn, "
+                  "meets the bar only some of the time — the ladder's monotone errors were measured with the "
+                  "draws that happened to pass. No rung's certification at the top three rungs is a property of "
+                  "the construction; it is a property of the draw.\n")
+    DRAWNOTE = (' — in the draws that ran; the construction status per rung is in the table above '
+                '(marginal at $q \\ge 64$)' if REPL else '')
     if A:
         md.append('## Verdict against the pre-registered criteria\n')
         md.append(table(['criterion', 'holds', 'measured'], [
-            ['P1: a primary-certified rule at every rung', yn(v['every_rung_primary_certified']) + PROV,
+            ['P1: a primary-certified rule at every rung', yn(v['every_rung_primary_certified']) + PROV + DRAWNOTE,
              f"rungs without one: {v['rungs_without_primary_rule'] or 'none'}"],
             ['P2: primary ladder monotone on evolved times, all converged, EQ cheaper than its dense twin',
-             yn(v['primary_ladder_passes']) + PROV,
+             yn(v['primary_ladder_passes']) + PROV + DRAWNOTE,
              f"monotone {yn(v['primary_ladder_monotone_evolved'])}; converged "
              f"{yn(lad['primary']['all_converged']) if lad['primary'] else '—'}; cheaper than dense "
              f"{yn(lad['primary']['cheaper_than_dense_where_measured']) if lad['primary'] else '—'}"],
@@ -172,11 +259,14 @@ def main():
                                     ('worst_all_times_percent', d['worst_all_times_percent'][i]),
                                     ('t0_compression_percent', d['worst_t0_compression_percent'][i]),
                                     ('median_gpu_ms', d['median_gpu_ms'][i])):
+                    lr = next((x for x in DRAWS if x['q'] == q and d['m'][i] is not None and x['m'] == d['m'][i]
+                               and d['rho_max'][i] is not None and abs(x['rho_max'] - d['rho_max'][i]) <= 1e-9), None)
                     row(table='ladder', ladder=key, arm=d['arms'][i], q=q, m=d['m'][i],
                         population=d['quadrature'][i], metric=metric, value=val,
                         certified_primary=d['certified_primary'][i], certified_secondary=None,
                         certified_tight=d['certified_tight'][i], rho_max=d['rho_max'][i],
-                        job_id=A['job_id'], source_sha=A['commit'])
+                        job_id=A['job_id'], source_sha=A['commit'],
+                        construction_status=(cstatus(lr['rule']) if (lr and REPL) else None))
             md.append(table(['$q$', '$M$', 'quadrature', '$m$', '$\\rho_{\\max}$', 'primary', 'tight',
                              'worst evolved %', 'worst all-times %', '$t=0$ compression %',
                              'median GPU ms', 'cost / dense twin', 'converged', 'arm'], rows))
@@ -208,27 +298,64 @@ def main():
                          for x in v['top_rung_rho_vs_evolved']]))
 
     # ------------------------------------------------------------- replication
-    if C and C.get('replication'):
+    if REPL:
         md.append('## How much of $\\rho_{\\max}$ is the draw?\n')
+        md.append(f"### The pre-registered replication (`{C['attempt']}`, job {C['job_id']})\n")
         md.append(f"Four independent draws of (candidate pool, fit-state subset) at fixed $(q, m, "
                   f"\\text{{states}}, \\text{{scaling}})$, pre-registered in DESIGN §A2 after `{B['attempt'] if B else 'bet201'}` "
-                  f"showed two draws disagreeing by up to $2.3\\times$. Nothing else differs between the draws.\n")
+                  f"showed two draws disagreeing by up to $2.3\\times$. Nothing else differs between the draws. "
+                  "Each row is one construction; the four $\\rho_{\\max}$ are the four draws in seed order.\n")
         rows = []
         for x in C['replication']:
+            med = float(sorted(x['rho_max'])[len(x['rho_max']) // 2 - 1] + sorted(x['rho_max'])[len(x['rho_max']) // 2]) / 2 \
+                if len(x['rho_max']) % 2 == 0 else float(sorted(x['rho_max'])[len(x['rho_max']) // 2])
             rows.append([x['q'], x['m_target'], x['fit_states'], x['scaling'], x['draws'],
-                         ', '.join(f(r) for r in x['rho_max']), f(x['rho_min']), f(x['rho_max_of_draws']),
+                         ', '.join(f(r) for r in x['rho_max']), f(x['rho_min']), f(med), f(x['rho_max_of_draws']),
                          f(x['rho_mean']), f(x['rho_std']), f(x['spread_ratio'], 2),
                          f"{x['certified_primary_count']}/{x['draws']}",
                          f"{x['certified_tight_count']}/{x['draws']}"])
             for metric, val in (('rho_mean', x['rho_mean']), ('rho_std', x['rho_std']),
+                                ('rho_min', x['rho_min']), ('rho_median', med), ('rho_max_of_draws', x['rho_max_of_draws']),
                                 ('spread_ratio', x['spread_ratio']),
-                                ('certified_primary_fraction', x['certified_primary_count'] / x['draws'])):
+                                ('certified_primary_fraction', x['certified_primary_count'] / x['draws']),
+                                ('certified_tight_fraction', x['certified_tight_count'] / x['draws'])):
                 row(table='replication', ladder=None, arm=x['key'], q=x['q'], m=x['m_target'],
                     population='reachable', metric=metric, value=val, certified_primary=None,
                     certified_secondary=None, certified_tight=None, rho_max=x['rho_mean'],
-                    job_id=C['job_id'], source_sha=C['commit'])
+                    job_id=C['job_id'], source_sha=C['commit'], draws=x['draws'],
+                    construction_status=DR.status_of_rule(CONS, dict(q=x['q'], m_target=x['m_target'],
+                                                                      fit_states=x['fit_states'], scaling=x['scaling'])))
         md.append(table(['$q$', '$m$ target', 'fit states', 'scaling', 'draws', 'each $\\rho_{\\max}$',
-                         'min', 'max', 'mean', 'sd', 'spread', 'certify primary', 'certify tight'], rows))
+                         'min', 'median', 'max', 'mean', 'sd', 'spread', 'certify primary', 'certify tight'], rows))
+        md.append('### Draw-to-draw spread of every construction with more than one draw, over all jobs\n')
+        md.append('The four `bet301` draws together with every other draw of the same construction: `qrg304`\'s '
+                  'archived rule (its pool of 8192; the incumbent fit-state count), `bet101`/`bet201`\'s ordinary '
+                  'arm (this lane\'s pool of 16384, shared by the arms of a rung, each arm drawing its own fit-state '
+                  'subset). At $q \\le 32$ the only replication is `qrg304` against `bet201` (two or three draws). '
+                  '**This table is the paper\'s honesty on certification**: a status of `marginal` means a reader who '
+                  're-draws the pool and the fit states will sometimes get a rule that fails the bar at that $m$.\n')
+        rows = []
+        for c in CONS:
+            if c['n'] < 2:
+                continue
+            rows.append([c['q'], c['m_target'], c['fit_states'], c['scaling'], c['arm'], c['n'],
+                         '; '.join(f"{d['label']}: {f(d['rho_max'])}{'' if d['certified_primary'] else ' ✗'}" for d in c['draws']),
+                         f"{f(c['rho_min'])} / {f(c['rho_median'])} / {f(c['rho_max_of_draws'])}",
+                         f(c['spread_ratio'], 2), f"{c['certified_primary_count']}/{c['n']}",
+                         f"{c['certified_tight_count']}/{c['n']}", f"**{c['status']}**"])
+            for metric, val in (('draws', c['n']), ('rho_min', c['rho_min']), ('rho_median', c['rho_median']),
+                                ('rho_max_of_draws', c['rho_max_of_draws']), ('spread_ratio', c['spread_ratio']),
+                                ('certified_primary_fraction', c['certified_primary_count'] / c['n']),
+                                ('certified_tight_fraction', c['certified_tight_count'] / c['n'])):
+                row(table='spread_all_draws', ladder=None, arm=c['arm'], q=c['q'], m=c['m_target'],
+                    population='reachable', metric=metric, value=val, certified_primary=c['confirmed'],
+                    certified_secondary=None, certified_tight=(c['certified_tight_count'] == c['n']),
+                    rho_max=c['rho_max_of_draws'], job_id=','.join(sorted({d['job_id'] for d in c['draws']})),
+                    source_sha=None, construction_status=c['status'], fit_states=c['fit_states'],
+                    draw_labels=[d['label'] for d in c['draws']], draw_rho_max=[d['rho_max'] for d in c['draws']])
+        md.append(table(['$q$', '$m$ target', 'fit states', 'scaling', 'construction', 'draws',
+                         'each draw: $\\rho_{\\max}$ (✗ = fails primary)', 'min / median / max', 'spread',
+                         'certify primary', 'certify tight', 'status (§A2)'], rows))
 
     # ------------------------------------------------------------------ rules
     md.append('## Table T9 — which rungs certify, and with how many fit states\n')
@@ -236,7 +363,9 @@ def main():
               '`qrg304` produced (the `qrg304` rules re-certified in `bet101` on the same held-out states), and '
               'whether the incumbent construction (`std`, $\\mathrm{clip}(8192/M, 8, 64)$ fit states) reaches '
               'the primary bar at any $m \\le 6144$. The certified flag of every row is '
-              f'**{tag}**: one draw per rule, see the status line at the top.\n')
+              + (f'**{tag}**: one draw per rule, see the status line at the top.\n' if not REPL else
+                 'one draw of its construction; the bracketed **construction status** beside each cell is what '
+                 'that flag is worth over every draw (§"How much of $\\rho_{\\max}$ is the draw").\n'))
     allrules, seen_rule = [], set()
     for j in jobs:
         for x in j['rules']:
@@ -258,7 +387,8 @@ def main():
         def cell(c):
             return ('none' if c is None else
                     f"{c['source']}/{c['arm']} $m$={c['m']}, {c['fit_states']} st., "
-                    f"$\\rho_{{\\max}}$={f(c['rho_max'])}, $\\rho_{{95}}$={f(c['rho_p95'])} ({c['job_id']})")
+                    f"$\\rho_{{\\max}}$={f(c['rho_max'])}, $\\rho_{{95}}$={f(c['rho_p95'])} ({c['job_id']})"
+                    + (f" [{cstatus(c)}]" if REPL else ''))
 
         cells = [q, R_[0]['M'] if R_ else '—']
         for flag in ('certified_primary', 'certified_tight', 'certified_secondary'):
@@ -270,7 +400,8 @@ def main():
                     value=c['fit_states'], certified_primary=c['certified_primary'],
                     certified_secondary=c['certified_secondary'], certified_tight=c['certified_tight'],
                     rho_max=c['rho_max'], job_id=c['job_id'],
-                    source_sha=next(j['commit'] for j in jobs if j['job_id'] == c['job_id']))
+                    source_sha=next(j['commit'] for j in jobs if j['job_id'] == c['job_id']),
+                    construction_status=(cstatus(c) if REPL and c['population'] == 'reachable' else None))
         # the incumbent fit-state count (qrg304 reachable and this lane's `std` share it)
         inc = [x for x in R_ if x['population'] == 'reachable' and x['arm'] in ('std', 'reachable')]
         inc_ok = [x for x in inc if x['certified_primary']]
@@ -293,7 +424,8 @@ def main():
                 population='reachable+static', metric=f'certifies_primary_with_{fs}_fit_states',
                 value=bool(ok), certified_primary=bool(ok), certified_secondary=None, certified_tight=None,
                 rho_max=(ok[0]['rho_max'] if ok else min(x['rho_max'] for x in tried)),
-                job_id=(ok[0]['job_id'] if ok else tried[0]['job_id']), source_sha=None)
+                job_id=(ok[0]['job_id'] if ok else tried[0]['job_id']), source_sha=None,
+                construction_status=(cstatus(ok[0]) if (ok and REPL and ok[0]['population'] == 'reachable') else None))
         plain.append(f"- $q = {q}$ — " + '; '.join(parts) + '.')
     md.append(table(['$q$', '$M$', 'cheapest primary-certified', 'cheapest tight-certified',
                      'cheapest secondary-certified', 'incumbent fit-state count certifies on primary?',
@@ -310,7 +442,7 @@ def main():
               "the anti-correlation stays visible. `qrg304` rows are that job's archived rules re-certified here.\n")
     rows = []
     for j in jobs:
-        rows += rule_rows(j['rules'], j['job_id'], tag)
+        rows += rule_rows(j['rules'], j['job_id'], tag, cstatus if REPL else None)
         for x in j['rules']:
             for metric, val in (('rho_max', x['rho_max']), ('rho_p95', x['rho_p95']),
                                 ('rho_median', x['rho_median']), ('relative_fit', x['relative_fit']),
@@ -320,7 +452,9 @@ def main():
                     certified_primary=x['certified_primary'],
                     certified_secondary=x['certified_secondary'],
                     certified_tight=x['certified_tight'], rho_max=x['rho_max'],
-                    job_id=j['job_id'], source_sha=j['commit'])
+                    job_id=j['job_id'], source_sha=j['commit'], draw_seed=x.get('draw_seed'),
+                    fit_states=x['fit_states'], m_target=x['m_target'],
+                    construction_status=(cstatus(x) if (REPL and x['population'] == 'reachable' and not x['truncated']) else None))
     seen = set()
     dedup = []
     for r_ in rows:
@@ -444,6 +578,9 @@ def main():
         '- **converged** — every step exited on a convergence criterion (no budget exits) and the worst normalised joint gradient is $\\le 10^{-6}$.',
         '- **fft_tight / fft_loose / nt1e-2_dt01** — same-job full-order Newton solves; `fft_tight` is the same-grid reference so its own error is zero.',
         '- **status / provisional** — every rule is one draw of (candidate pool, fit-state subset); a row marked provisional has its certified flag pending the draw-replication job `bet301`, which measures how often the same construction certifies under independent draws. Errors and timings are final as measured.',
+        '- **construction / draw** — a construction is the recipe $(q, m\\ \\text{target}, \\text{fit-state count}, \\text{row scaling})$; a draw is one fitted rule of it with its own random candidate pool and fit-state subset. `qrg304`\'s archived rules are draws on a pool of 8192; this lane\'s ordinary arms share one pool of 16384 per rung and draw their own fit states; `bet301`\'s replication arms redraw both.',
+        '- **construction status** (DESIGN §A2, applied literally) — `confirmed (k/k)`: every one of at least two draws meets the bar; `marginal at m (k/n)`: some draws meet it and some do not, so the certification at that $m$ is a property of the draw, not of the recipe; `certified in one draw`: never replicated; `not certified (0/n)`: no draw meets it.',
+        '- **exported rule / §A4 policy** — per rung, the cheapest confirmed construction (the concrete rule being the one the timed ladder ran if it belongs to it, else this lane\'s ordinary draw); where no construction at the rung is confirmed, the cheapest primary-certified rule at an $m$ above every $m$ found marginal, labelled single-draw. The set is in `certified-rules/` with `PROVENANCE.json`.',
         '- **cross-job fidelity** — a named arm of this job reproducing a named arm of `qrg304` to the declared tolerance: $10^{-9}$ where the direction matrix is bitwise (and always at $q = 0$), $10^{-3}$ otherwise.',
     ]) + '\n')
     text = '\n'.join(md)
@@ -452,6 +589,21 @@ def main():
         report=str(Path(a.out + '.md').name), report_sha256=hashlib.sha256(text.encode()).hexdigest(),
         status=status, pending=pending, jobs=[dict(attempt=j['attempt'], job_id=j['job_id'], commit=j['commit'],
                                                   gpu=j['gpu'], failed_blocking_gates=j['failed']) for j in jobs],
+        verdict_per_rung=[dict(q=v_['q'],
+                               ladder_rule=(dict(label=v_['ran']['label'], arm=v_['ran']['source_arm'], m=v_['ran']['m'],
+                                                 fit_states=v_['ran']['fit_states'], rho_max=v_['ran']['rho_max'],
+                                                 job_id=v_['ran']['job_id']) if v_['ran'] else None),
+                               ladder_rule_status=(v_['ran_c']['status'] if v_['ran_c'] else None),
+                               draws=(v_['ran_c']['n'] if v_['ran_c'] else None),
+                               draws_certifying_primary=(v_['ran_c']['certified_primary_count'] if v_['ran_c'] else None),
+                               rho_min=(v_['ran_c']['rho_min'] if v_['ran_c'] else None),
+                               rho_median=(v_['ran_c']['rho_median'] if v_['ran_c'] else None),
+                               rho_max_of_draws=(v_['ran_c']['rho_max_of_draws'] if v_['ran_c'] else None),
+                               exported_rule=(dict(label=v_['exp']['label'], arm=v_['exp']['source_arm'], m=v_['exp']['m'],
+                                                   fit_states=v_['exp']['fit_states'], rho_max=v_['exp']['rho_max'],
+                                                   job_id=v_['exp']['job_id'], attempt=v_['exp']['attempt']) if v_['exp'] else None),
+                               exported_rule_status=(v_['exp_c']['status'] if v_['exp_c'] else None),
+                               export_basis=v_['basis'], export_note=v_['note']) for v_ in verdict_rows],
         rows=summary), indent=1) + '\n')
     print('wrote', a.out + '.md', 'rows', len(summary))
 

@@ -9,8 +9,11 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import draws as DR  # noqa: E402
 
 
 def f(x, d=4):
@@ -25,6 +28,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--j1', required=True)
     p.add_argument('--j2', default=None)
+    p.add_argument('--j3', default=None, help='the draw-replication audit (bet301); makes this the closing entry')
     p.add_argument('--report', required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--pending', default=None, help='attempt:job_id:purpose of a job not yet in this entry')
@@ -33,6 +37,9 @@ def main():
     PROV = f" [provisional: `{pend['attempt']}` {pend['job_id']} pending]" if pend else ''
     A = json.loads(Path(a.j1).read_text())
     B = json.loads(Path(a.j2).read_text()) if a.j2 and Path(a.j2).exists() else None
+    C = json.loads(Path(a.j3).read_text()) if a.j3 and Path(a.j3).exists() else None
+    S = json.loads((HERE / 'reports/summary.json').read_text())
+    prov = json.loads((HERE / 'certified-rules/PROVENANCE.json').read_text())
     sub = json.loads((HERE / 'checks/submissions.json').read_text())
     v, lad = A['verdict'], A['ladders']
     rep = Path(a.report)
@@ -46,7 +53,40 @@ def main():
                      else f"rungs {v['rungs_without_primary_rule']} not certifiable at m <= 6144; hybrid ladder monotone {yn(v['hybrid_ladder_monotone_evolved'])}"))
     if pend:
         verdict = f'INTERIM ({pend["attempt"]} pending) — ' + verdict + ' in this single draw'
+    VR = {v['q']: v for v in S.get('verdict_per_rung', [])}
+    if C:
+        top = VR[max(VR)]
+        verdict = ('CLOSED — the primary EQ ladder is monotone as built, but its certification does not survive the '
+                   f"draw replication: at $q = {top['q']}$ the ladder's rule is {top['draws_certifying_primary']} of "
+                   f"{top['draws']} draws of its construction to meet the bar ({top['ladder_rule_status']}); "
+                   + '; '.join(f"$q = {q}$ {VR[q]['ladder_rule_status']}" for q in sorted(VR) if q != top['q']))
     out.append(f'### b-eqtop — {verdict}\n')
+    if C:
+        out.append("**Closing entry.** `bet301` (job {jid}, DESIGN §A2, four independent draws of (candidate pool, fit-state subset) "
+                   "at $q \\in \\{{64, 128, 256\\}}$ for the incumbent construction at $m = 1024$ and the 64-fit-state construction at "
+                   "$m = 2048$) landed: `{gpu}`, source `{commit}`, elapsed {el} s, `jax_backend=gpu`, no blocking gate failed, the 18 "
+                   "`qrg304` rules re-certified to {rc:.1e} relative on that card; checksum-collected, NumPy-audited, archived "
+                   "(`experiments/b-eqtop/artifacts/bet301`), the whole cluster namespace deleted. The rule DESIGN §A2 pre-registered is "
+                   "applied literally: a construction that certifies on some draws and not others is *marginal at that $m$*.\n".format(
+                       jid=C['job_id'], gpu=C['gpu'], commit=C['commit'], el=f(C['elapsed_seconds'], 0),
+                       rc=C['checks']['archived_rules_recertify']['detail']['worst_relative_difference']))
+        out.append('**Verdict per rung** (the rule the timed ladder ran in `bet101`; draws = every independent draw of its construction across `qrg304`, `bet101`, `bet201`, `bet301`; the exported rule is `certified-rules/` under the §A4 policy):\n')
+        out.append('| $q$ | ladder rule | draws certifying | $\\rho_{\\max}$ min / median / max | status | exported rule | its status |\n|---|---|---|---|---|---|---|')
+        for q in sorted(VR):
+            v_ = VR[q]; lr, er = v_['ladder_rule'], v_['exported_rule']
+            out.append(f"| {q} | {lr['label']} $m$={lr['m']}, {lr['fit_states']} st., {f(lr['rho_max'])} | {v_['draws_certifying_primary']}/{v_['draws']} | "
+                       f"{f(v_['rho_min'])} / {f(v_['rho_median'])} / {f(v_['rho_max_of_draws'])} | **{v_['ladder_rule_status']}** | "
+                       f"{er['label']} $m$={er['m']}, {er['fit_states']} st., {f(er['rho_max'])} | {v_['exported_rule_status']} |")
+        out.append('')
+        out.append('**The pre-registered replication itself** (`bet301`; four draws per configuration, seed order):\n')
+        out.append('| $q$ | $m$ | fit states | each $\\rho_{\\max}$ | min / max | spread | certify primary | certify tight |\n|---|---|---|---|---|---|---|---|')
+        for x in C['replication']:
+            out.append(f"| {x['q']} | {x['m_target']} | {x['fit_states']} | {', '.join(f(r_) for r_ in x['rho_max'])} | {f(x['rho_min'])} / {f(x['rho_max_of_draws'])} | "
+                       f"{f(x['spread_ratio'], 2)}× | {x['certified_primary_count']}/{x['draws']} | {x['certified_tight_count']}/{x['draws']} |")
+        out.append('')
+        out.append('**Exported rule set** (`experiments/b-eqtop/certified-rules/`, status: ' + prov['status'] + '): '
+                   + '; '.join(f"$q={x['q']}$ `{x['file']}` $m={x['m']}$, $\\rho_{{\\max}}={f(x['held_out']['rho_max'])}$ [{x['construction']['status']}]" for x in prov['rules'])
+                   + '. Superseded and removed: ' + ', '.join(f"`{x['file']}`" for x in prov['superseded']) + '.\n')
     if pend:
         out.append(f"**Interim entry.** `{pend['attempt']}` (job {pend['job_id']}, {pend['purpose']}) is still running. "
                    "DESIGN §A2 showed that the same rule construction at the same $m$ moves $\\rho_{\\max}$ by $0.11\\times$–$2.3\\times$ "
@@ -59,7 +99,7 @@ def main():
                + (f"; job 2 on `{B['gpu']}`, source `{B['commit']}`, elapsed {f(B['elapsed_seconds'],0)} s" if B else '')
                + ". Both printed `jax_backend=gpu`, float64, highest matmul precision; checksum-collected, NumPy-audited, archived as Git chunks, remote directories deleted. Design and amendments: `experiments/b-eqtop/DESIGN.md`. Codex was unavailable (quota) for the pre-job audit; a written self-audit stands in (`experiments/b-eqtop/reports/self-audit-design.md`, DESIGN A1).\n")
     out.append(f"**Failed blocking gates:** job 1 {', '.join(A['failed']) or 'none'}" + (f"; job 2 {', '.join(B['failed']) or 'none'}" if B else '') + '.\n')
-    out.append(f'**Certification at the top rungs**{PROV} (held-out $\\rho_{{\\max}}$ over 512 reachable states, bar 0.116 primary / 0.06 tight; this job\'s rules only; `qrg304` rules re-certified to {A["checks"]["archived_rules_recertify"]["detail"]["worst_relative_difference"]:.1e} relative):\n')
+    out.append(f'**Certification at the top rungs (bet101 draw)**{PROV} (held-out $\\rho_{{\\max}}$ over 512 reachable states, bar 0.116 primary / 0.06 tight; this job\'s rules only; `qrg304` rules re-certified to {A["checks"]["archived_rules_recertify"]["detail"]["worst_relative_difference"]:.1e} relative):\n')
     out.append('| $q$ | arm | $m$ | fit states | NNLS fit | $\\rho_{\\max}$ | $\\rho_{95}$ | primary | tight | fit (s) |\n|---|---|---|---|---|---|---|---|---|---|')
     for x in A['rules']:
         if x['source'] == 'this_job':
@@ -87,6 +127,8 @@ def main():
     out.append('**Gates, job 1:** ' + '; '.join(f"`{k}` {yn(c['passed'])}" for k, c in sorted(A['checks'].items())) + '.\n')
     if B:
         out.append('**Gates, job 2:** ' + '; '.join(f"`{k}` {yn(c['passed'])}" for k, c in sorted(B['checks'].items())) + '.\n')
+    if C:
+        out.append('**Gates, job 3:** ' + '; '.join(f"`{k}` {yn(c['passed'])}" for k, c in sorted(C['checks'].items())) + '.\n')
     retr = HERE / 'checks/retractions.json'
     if retr.exists():
         out.append('**What was wrong and retracted / corrected:**\n')
@@ -99,7 +141,7 @@ def main():
         for line in json.loads(openq.read_text()):
             out.append(f'- {line}')
         out.append('')
-    out.append(f"Source-generated report: `experiments/b-eqtop/reports/{rep.name}` (SHA256 `{sha}`) with `summary.json` and its generator beside it; audits `experiments/b-eqtop/checks/bet101-audit.json`" + (', `bet201-audit.json`' if B else '') + "; self-audit of the report in place of Codex: `experiments/b-eqtop/reports/self-audit-report.md`; archives `experiments/b-eqtop/artifacts/bet101`, `bet201`; exported rule set for `b-panel`: `experiments/b-eqtop/certified-rules/` (`PROVENANCE.json`, `SHA256SUMS`).")
+    out.append(f"Source-generated report: `experiments/b-eqtop/reports/{rep.name}` (SHA256 `{sha}`) with `summary.json` and its generator beside it; audits `experiments/b-eqtop/checks/bet101-audit.json`" + (', `bet201-audit.json`' if B else '') + (', `bet301-audit.json`' if C else '') + "; self-audit of the report in place of Codex: `experiments/b-eqtop/reports/self-audit-report.md`; archives `experiments/b-eqtop/artifacts/bet101`, `bet201`" + (', `bet301`' if C else '') + "; exported rule set for `b-panel`: `experiments/b-eqtop/certified-rules/` (`PROVENANCE.json`, `SHA256SUMS`); the draw bookkeeping shared by report, export, self-audit and this entry: `experiments/b-eqtop/draws.py`. Jobs used: " + f"{sub.get('used', len(sub['submissions']))} of {sub['cap']}, none retracted.")
     Path(a.out).write_text('\n'.join(out) + '\n')
     print('wrote', a.out)
 

@@ -376,3 +376,59 @@ with `PROVENANCE.json` (job id, $m$, fit-state count, $\rho$ values, bars, statu
 `SHA256SUMS`. Its status field says provisional until `bet301` lands.
 
 Job count: three submissions of the cap of eight; none retracted.
+
+### A4 (2026-09-17, after `bet301` landed) — the replication result; §A2 applied; the export policy; the lane closes
+
+**`bet301`** (job 3783811, `NVIDIA A100-PCIE-40GB`, 2 h 10 min, exit 0, `ALL-DONE`, `jax_backend=gpu`, source
+`b2844c60`) was checksum-collected, NumPy-audited (`checks/bet301-audit.json`; no blocking gate failed; the 18
+`qrg304` rules re-certified to $9.1\times10^{-9}$ relative on that card; `collection_pools_bitwise_qrg304` and
+`directions_hash_matches_qrg304` informational-false as on every non-identical GPU), archived as Git chunks
+(`artifacts/bet301`, 1 chunk, 34 MB) and the **whole cluster namespace deleted**. The 24 replication fits all
+reached their target $m$, none truncated. Observed and recorded: the sbatch carried no 80 GB constraint (no timed
+phase), the job landed on a 40 GB card, and the `.err` holds four XLA BFC-allocator "ran out of memory trying to
+allocate 8.50 GiB" warnings during certification — all recovered, every rule certified, gates green.
+
+**What the four draws showed** (held-out $\rho_{\max}$, primary bar 0.116; four draws in seed order):
+
+| $q$ | construction | $m$ | draws | certify | min / median / max |
+|---|---|---|---|---|---|
+| 64 | incumbent `std`, 25 states | 1024 | 0.1420, 0.1509, 0.1587, 0.0670 | **1/4** | 0.0670 / 0.1464 / 0.1587 |
+| 64 | `fs64`, 64 states | 2048 | 0.0459, 0.1036, 0.0134, 0.0108 | **4/4** | 0.0108 / 0.0297 / 0.1036 |
+| 128 | incumbent `std`, 14 states | 1024 | 0.3523, 0.2098, 0.3357, 0.4609 | **0/4** | 0.2098 / 0.3440 / 0.4609 |
+| 128 | `fs64`, 64 states | 2048 | 0.0497, 0.0426, 0.0788, 0.2040 | **3/4** | 0.0426 / 0.0642 / 0.2040 |
+| 256 | incumbent `std`, 8 states | 1024 | 0.6743, 0.5737, 0.7319, 0.5075 | **0/4** | 0.5075 / 0.6240 / 0.7319 |
+| 256 | `fs64`, 64 states | 2048 | 0.1820, 0.1899, 0.1299, 0.2421 | **0/4** | 0.1299 / 0.1860 / 0.2421 |
+
+Within-construction spread $1.4\times$–$9.6\times$. **§A2's rule is applied literally**, counting every independent
+draw of a construction across `qrg304` (pool 8192), `bet101`/`bet201` (this lane's ordinary arms) and `bet301`:
+
+- $q = 256$: the ladder's rule (`bet101` `fs64` $m = 2048$, 0.1074) is **1 of 5** draws to meet the bar →
+  **marginal at $m = 2048$**. The paper may cite $m = 2560$ (`fs64`, 0.0647) only as a *single-draw* rule.
+- $q = 128$: `fs64` $m = 2048$ is **4 of 5** → **marginal at $m = 2048$**.
+- $q = 64$: the ladder's rule (archived incumbent $m = 1024$, 0.0531) is **2 of 6** → **marginal at $m = 1024$**;
+  `fs64` $m = 2048$ is 4 of 5 (the `bet201` draw, 0.1248, fails) → marginal; `std` $m = 2048$ is 2 of 2
+  (0.1120, 0.0583) → confirmed.
+- $q \le 32$: the archived $m = 1024$ rules' constructions are 3/3, 3/3, 2/2 → **confirmed**.
+
+The status "confirmed" therefore holds at three rungs and "marginal" at three; **no rung above $q = 32$ carries a
+certification that is a property of its construction**. The timed ladder's monotone errors stand *as measured
+with the rules as built* — they were measured with the draws that passed.
+
+**Export policy (§A4), computed by `draws.export_choice` and applied by `export_rules.py`**, decided after seeing
+the result and disclosed as such: per rung, (i) the cheapest *confirmed* construction (every one of $\ge 2$ draws
+meets the bar), the concrete rule being the one the timed ladder ran if it belongs to that construction, else this
+lane's ordinary pool-16384 draw; (ii) where no construction at the rung is confirmed, the cheapest primary-certified
+rule at an $m$ above every $m$ found marginal, ties by arm order, labelled `certified in one draw`. Result:
+$q = 0, 16, 32$ unchanged (archived $m = 1024$); $q = 64$ → `bet201` `std` $m = 2048$ (0.0583; confirmed 2/2;
+not run in the timed ladder); $q = 128$ → `bet101` `rhow64` $m = 2319$ (0.0277, tight-certified; one draw);
+$q = 256$ → `bet101` `fs64` $m = 2560$ (0.0647; one draw). The three superseded files are removed from
+`certified-rules/` and listed in `PROVENANCE.json`. Selecting *within* a construction by the best held-out $\rho$
+was deliberately not done (it would select on the certification set); moving to a larger $m$ is a design choice,
+not a selection.
+
+**Report and audit.** `reports/generate_eqtop.py --j1 --j2 --j3` (no `--pending`) writes the final report and
+`summary.json` (status `final`, 1013 rows, a `verdict_per_rung` block, every rule row carrying a
+`construction_status`). Codex remains unavailable; `checks/self_audit_report.py` (21 checks, the replication counts
+recounted from the raw `result.json` outside `draws.py`) stands in, recorded as a substitution.
+
+**Job count:** three of eight (`bet101`, `bet201`, `bet301`); none retracted. The lane closes here.

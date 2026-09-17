@@ -259,3 +259,24 @@ It does not train, does not refit $C$, does not construct new rules at $256^2$, 
 sealed cohorts, does not batch the full-order solver, and does not compare against any number
 from any other job except through the §6 gates. One checkpoint, one training seed, six opened
 development cases.
+
+## A1 — 2026-09-17 00:55, before any job: the Codex audit could not run
+
+The protocol's pre-job Codex audit was launched (`codex exec -s read-only`, prompt in the
+scratchpad, output to `reports/codex-design-audit.md`). It read the design and the parent code
+for ~108 k tokens and then died on `You've hit your usage limit … try again at Sep 19th, 2026
+11:33 AM`; a probe with another model returned `not supported … ChatGPT account`. The Codex
+quota is shared by all nine lanes and is exhausted until after this campaign's useful window.
+The lane proceeds without an independent pre-job audit and records that fact here; a self-audit
+against the eight questions in the prompt is in `reports/self-audit-design.md`, and Codex is
+retried on the final report if the quota returns before the deadline. No number is affected.
+
+## A2 — 2026-09-17 00:55, before any job: smoke deviations declared
+
+The local smoke runs the real driver twice (64 intervals with rules on the 64-grid, then 128
+intervals with those rules TRANSFERRED from 64) on two cases at one repetition, then the audit
+and the report generator on both outputs. Its baseline gate reproduces the consolidated saved
+Burgers case (`consolidated/fixtures/burgers/expected.npz`, the panel's own case 0) to
+$\le10^{-12}$ through the panel's rule-rebuild path from the archived nodes and weights. Two
+driver runs with ~14 and ~8 compiled subjects exceed the sub-minute rule; the excess is a
+recorded deviation, as in the parent lanes.

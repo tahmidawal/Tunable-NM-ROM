@@ -1,0 +1,22 @@
+{
+  "attempt": "smoke128", "intervals": 128, "dt": 0.005,
+  "eval_seed": 7090702, "eval_cases": 1, "eval_fresh_seed": 911702, "eval_fresh_cases": 1,
+  "reference_mesh": 256, "reference_dt": 0.0025,
+  "train_seed": 0, "train_trajectories": 8, "train_state_stride": 2, "snapshot_ntol": 1e-09, "snapshot_ltol": 1e-07,
+  "decoder_code_subsample": 8192, "gauss_jordan_max": 64, "cold_axis_points": 48,
+  "strict": {"ic_budget": 400, "step_budget": 600, "gtol": 1e-06},
+  "ic_gtol": 1e-06, "inner_damping": 1e-10, "tau_y": 0.1, "recon_starts": 4, "recon_budget": 100,
+  "reps": 1, "order_seed": 2, "burn_seconds": 0.05,
+  "directions_file": "directions_qtd02.npz", "rules_mesh": 64,
+  "rules": {"0": {"file": "rule_q0_smoke_m256.npz"}, "4": {"file": "rule_q4_smoke_m320.npz"}},
+  "eq_transfer": {"seed": 20260917, "fit_trajectories": [0, 1], "cert_trajectories": [2], "collect_iters": 4,
+                  "fit_states": 8, "max_fit_rows": 8192, "cert_states": 16, "certify_chunk": 8},
+  "dense_q": [0, 4], "eq_q": [0, 4], "eq_gtols": [1e-06], "pod_ranks": [8],
+  "extra_dense_q": [], "free_bank": false, "fast_arm": null,
+  "same_grid_reference": "fft_tight", "direct_control": null,
+  "fom_settings": [
+    {"name": "fft_tight",   "preconditioner": "fft", "dt": 0.005, "ntol": 1e-06, "ltol": 1e-08},
+    {"name": "nt1e-2_dt01", "preconditioner": "fft", "dt": 0.01,  "ntol": 0.01,  "ltol": 0.5}
+  ],
+  "fidelity_expectations": {}, "fno": false, "purpose": "local smoke, 128 intervals, rules transferred from 64"
+}

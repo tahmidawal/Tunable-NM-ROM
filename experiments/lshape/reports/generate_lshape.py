@@ -358,11 +358,21 @@ def main():
             W(f'`{au["mode"]}` audit: ' + ', '.join(f'`{k}` {"pass" if v else "**FAIL**"}' for k, v in au['checks'].items()) + '.')
             W('')
             d = au['detail']
-            for k in ('worst_bank_floor_relative_difference', 'worst_stored_code_relative_difference',
+            for k in ('worst_bank_floor_relative_difference', 'worst_bank_floor_absolute_difference',
+                      'bank_floor_absolute_limit', 'worst_stored_code_relative_difference',
                       'worst_basis_orthonormality_error', 'worst_same_grid_difference', 'worst_physical_difference',
                       'worst_reference_residual'):
                 if k in d:
                     W(f'- {k}: {d[k]:.3e}')
+            if 'bank_condition' in d:
+                W('- bank cond(G): ' + ', '.join(f'`{k}` {v:.2e}' for k, v in d['bank_condition'].items()))
+                W('')
+                W('  The bank floor is compared across machines (driver on the GPU, audit on the CPU), so its '
+                  'deciding bound is **absolute** and tied to the reporting precision: the difference may not move '
+                  'the last digit of a floor quoted to four decimals in percent. The relative difference is '
+                  'dominated by cond(G) rather than by any error — two NumPy routes (QR and SVD) on identical '
+                  'features agree to 1e-14 — and is retained above only as a conditioning diagnostic '
+                  '(DESIGN.md \u00a7A4).')
             W('')
 
     # ------------------------------------------------------------ figure -----

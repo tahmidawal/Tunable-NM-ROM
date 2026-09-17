@@ -13384,3 +13384,72 @@ Source-generated report: `experiments/b-eqtop/reports/2026-09-17-b-eqtop.md` (SH
 ### b-eqtop — addendum to the closing entry: the 84 timed-ladder rows restored in the final `summary.json`
 
 Addendum, one correction of the deliverable, no number changed: the final `reports/summary.json` at `fc7ca639` had dropped the 84 timed-ladder rows of job 3780164 (evolved 1.8891 → 0.5389 %, 59.1 → 722.2 ms, dense twins and cost ratios) that the interim file at `d6071e3c` carried, and the report's "rebuilt ladders" section was empty — the ladder loop sat under an interim-only branch of the generator. Fixed at `8542c604`: the rows are back, verified identical to the interim values, each carrying `construction_status` (confirmed 3/3, 3/3, 2/2 at  = 0, 16, 32$; marginal at  = 1024$ (2/6),  = 2048$ (4/5),  = 2048$ (1/5) at  = 64, 128, 256$); the report section is restored with the same wording; report SHA256 now `fcfb36bf6ea4f0a5f68229ca7fde2f5a8e415834f38c0c86a924415748463347`; self-audit 21/21.
+
+## 2026-09-17
+
+### no-second — closed: the single-seed U-Net claim survives both its controls; Transolver's control is flagged; lane done, 5/8 jobs
+
+Branch `exp/2026-09-17-no-second`, worktree `worktrees/2026-09-17-no-second`, namespace
+`/cluster/tufts/paralab/tawal01/no_second_20260917/` (now empty). Jobs counted: `unet01`,
+`tsol01`, `pois02`, `ctrl01` (3783831), `res02` = 5 of 8; `pois01`/`res01` were preamble
+deaths with zero GPU time (rule 13, uncounted). No new job was submitted this session; this
+session picked up a killed agent's uncommitted work and finished it.
+
+**What ran.** `ctrl01` (job 3783831, A100, pax105, COMPLETED 0:0, 2h32m52s) had already been
+collected, checksum-verified both sides, independently audited (`audit.json: passed: true`),
+archived as 13 Git parts under `runs/ctrl01/archive-parts/`, and cleaned up remotely (commit
+`b07c9cf6`, previous agent) — reconfirmed intact and the remote namespace still empty. Left
+uncommitted: a rewrite of `controls_section()` in `reports/generate_report.py` (three-spread
+reading of DESIGN §A4, a positive-claim-survival check) and a matching §A9 draft in
+`DESIGN.md`, both numerically correct but the generator itself threw
+`UnboundLocalError: seed_control_note` (used in an f-string before its later assignment) and
+had never actually been run. Fixed by moving the assignment above its use; reran
+`generate_report.py`: 468 rows (was 426, +42 for `ctrl01`'s three arms), report and
+`summary.json` regenerated and match the pre-drafted §A9 numbers exactly.
+
+**What was found (validation-32 / matched-cohort, from `runs/ctrl01/audit.json` via the
+regenerated report):**
+
+| arm | epochs | val mean | val median | val worst | cohort worst | cohort median |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `ctrl-medium-f64` (unet-medium, float64) | 500 | 1.7513% | 1.5104% | 5.2050% | 1.6721% | 1.4963% |
+| `unet-medium` (screen, 3780138) | 1963 | 1.4341% | 1.3169% | 3.9622% | 1.5189% | 1.1724% |
+| `ctrl-medium-seed2` (unet-medium, seed 20260915) | 1969 | 1.4776% | 1.1640% | 3.6412% | 1.5479% | 0.9111% |
+| `ctrl-tsol-small-f64` (tsol-small, float64) | 682 | 2.6394% | 1.8917% | 11.4209% | 3.1329% | 1.6235% |
+| `tsol-small` (screen, 3780139) | 1628 | 2.0064% | 1.4522% | 6.8213% | 2.5273% | 1.4156% |
+
+**Verdict on the single positive claim.** `unet-medium` beats the ROM's matched-cohort worst
+(1.5189% vs 1.8671%, job `3702709`). Both controls stay below the ROM: float64 twin 1.6721%
+(margin 0.1950 pp), second-seed twin 1.5479% (margin 0.3192 pp) — **the claim survives both
+controls**, though the float64 margin is thin. No twin lands on the other side of the ROM.
+`tsol-small` was already above the ROM (2.5273%); its float64 twin is further above
+(3.1329%) — no positive claim rested on it, so nothing to defend. `tsol-refine` (1.5224%,
+below the ROM) has no twin at all and remains a single-seed float32 result.
+
+**Precision/seed reading (DESIGN §A4).** Under the applied family-screen (4-arm) spread rule:
+`ctrl-medium-f64` and `ctrl-medium-seed2` are inside on worst and median; `ctrl-tsol-small-f64`
+is **outside** on worst (+4.5996 pp vs a 3.1385 pp spread) — flagged precision-sensitive.
+Under the stricter 3-capacity-only spread, the U-Net median also flips outside (spread only
+0.0794 pp) — smaller than the seed-to-seed delta itself, i.e. that screen's capacities sit
+inside seed noise on the median. Equal wall-clock is not equal epochs: the float64 twins ran
+0.25× (unet) and 0.42× (tsol) of their parents' epochs in the same 3000s, so the "precision"
+control is confounded with an epoch control by protocol design.
+
+**What was wrong / retracted.** The controls_section rewrite (uncommitted, pre-result) had
+pooled both families and tested only mean/worst — that did not match §A4's literal text and
+was replaced, before any number was reported, by the per-family, worst-or-median reading
+(recorded as the correction inside §A9, not a silent rewrite). The generator itself was never
+actually executed by the killed agent before it died — this session found and fixed the
+`UnboundLocalError` blocking it; the pre-drafted numbers in DESIGN §A9 turned out to be
+correct once the script could run, so nothing scientific was retracted, only the mechanical
+gap between "analysis written" and "report actually generated."
+
+**Codex** unavailable (quota until 2026-09-19 11:33, per coordinator notice); substituted a
+written self-audit, `experiments/no-second/reports/self-audit-controls.md` (15 numbered
+claim→check rows), committed. If reopened after 2026-09-19 11:33, Codex should audit the
+final report against `runs/*/audit.json`.
+
+**What is open.** No second seed of the refined headline arms (`unet-refine`, `tsol-refine`);
+float64 at equal *epochs* rather than equal wall-clock was not tried; no other PDE/mesh
+controls. Lane is closed: nothing pending on the cluster, remote namespace empty, worktree
+committed (`ea812685`), not pushed, not merged.

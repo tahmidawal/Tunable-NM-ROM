@@ -104,8 +104,15 @@ def main():
             wz = max(wz, abs((Z[n + 1] - Z[n]) - dZ) / abs(dZ))
             we = max(we, abs((Eg[n + 1] - Eg[n]) - dE) / abs(dE))
         g = G[f'F-BUDGET_N{N}']
-        check(f'F-BUDGET_N{N}.identity_enstrophy', wz, g['identity_enstrophy'])
-        check(f'F-BUDGET_N{N}.identity_energy', we, g['identity_energy'])
+        # roundoff-level quantities: recomputed with NumPy's own FFT/Laplacian they differ from
+        # the JAX values at their own size, so these are VALUE gates against the threshold
+        # (lane protocol landmine: value gates, not hash gates, across implementations)
+        for nm, v in (('identity_enstrophy', wz), ('identity_energy', we)):
+            ok = v <= 1e-10 and g[nm] <= 1e-10
+            audit['checks'].append(dict(name=f'F-BUDGET_N{N}.{nm}', recomputed=v, reported=g[nm],
+                                        threshold=1e-10, match=ok))
+            audit['all_match'] &= ok
+            print(f'{"ok " if ok else "MISMATCH"} F-BUDGET_N{N}.{nm}: recomputed {v:.3e} reported {g[nm]:.3e} (both <= 1e-10)')
         s0 = d['states_nu0']
         Z0 = 0.5 * np.sum(s0 * s0, axis=(1, 2)) / (N * N)
         E0 = np.array([0.5 * np.sum(poisson(s, N) * s) / (N * N) for s in s0])
@@ -121,10 +128,11 @@ def main():
         Ns = sorted(int(k[1:]) for k in d.files if k.startswith('N'))
         fine = d[f'N{Ns[-1]}']
         errs = [rel(d[f'N{N}'], fine[::Ns[-1] // N, ::Ns[-1] // N]) for N in Ns[:-1]]
+        diffs = [rel(d[f'N{a}'], d[f'N{b}'][::b // a, ::b // a]) for a, b in zip(Ns[:-1], Ns[1:])]
         g = G[f'F-MESH_{tag}']
         for i, e in enumerate(errs):
             check(f'F-MESH_{tag}.errors[{i}]', e, g['errors_vs_finest'][i])
-        for i, o in enumerate(orders(errs)):
+        for i, o in enumerate(orders(diffs)):
             check(f'F-MESH_{tag}.orders[{i}]', o, g['orders'][i])
 
     if (out / 'indep.npz').exists():

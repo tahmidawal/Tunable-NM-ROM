@@ -199,10 +199,15 @@ def gate_mesh(report, phys, nu, tag):
     for N in MESH_NS[:-1]:
         s = Nf // N
         errs.append(F.rel(finals[N], finals[Nf][::s, ::s]))
-    orders = F.observed_order(errs)
+    # Observed order from SUCCESSIVE-level differences ||u_N - u_2N||: using the finest
+    # level as the reference biases a pure second-order error to log2(5) = 2.32 on the last
+    # pair (the reference's own error cancels), which the 16/32/64 smoke exhibited (2.28).
+    diffs = [F.rel(finals[a], finals[b][::b // a, ::b // a]) for a, b in zip(MESH_NS[:-1], MESH_NS[1:])]
+    orders = F.observed_order(diffs)
     np.savez_compressed(OUT / f'mesh_{tag}.npz', **{f'N{N}': v for N, v in finals.items()},
                         nu=nu)
-    return dict(tag=tag, nu=nu, meshes=MESH_NS, errors_vs_finest=errs, orders=orders)
+    return dict(tag=tag, nu=nu, meshes=MESH_NS, errors_vs_finest=errs, successive_diffs=diffs,
+                orders=orders)
 
 
 def gate_indep(report, phys):

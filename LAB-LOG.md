@@ -13725,3 +13725,76 @@ gap) is the coordinator's decision, not a rescue of this one. (3) Codex report a
 **Paths.** `experiments/ns2d/DESIGN.md` (§A6), `experiments/ns2d/reports/2026-09-17-ns2d.md`,
 `experiments/ns2d/reports/summary.json` (504 rows), `experiments/ns2d/reports/self-audit-phase2.md`
 (addendum), `experiments/ns2d/artifacts/{ns101,ns201,ns202,ns203}/`.
+
+## 2026-09-17
+
+### b-lowvisc — the low-viscosity Burgers gate PASSES both legs; training submitted, with F4 (under-resolution) triggered
+
+**What ran.** Branch `exp/2026-09-17-b-lowvisc`, worktree
+`worktrees/2026-09-17-b-lowvisc`, namespace `/cluster/tufts/paralab/tawal01/b_lowvisc_20260917/`.
+Gate job `lvg01` = slurm **3789639** (A100-PCIE-40GB, pax052, COMPLETED 0:0, 45m13s, source
+commit `2cf5dc34`) — both viscosity families in one allocation on one GPU, no trained model.
+Collected with checksums verified on both sides, audited by the independent NumPy route, archived
+as bounded Git chunks at `experiments/b-lowvisc/artifacts/lvg01`, remote attempt directory
+deleted (1.3 GB; paralab at 92 %). Training job `lvt01` = slurm **3804337** submitted (a100, 16 h),
+`squeue` clean before and after, one job per attempt directory.
+
+**What was found.** The low-viscosity cohort *is* the incumbent cohort with ν/10 and nothing else
+changed (descriptors bitwise identical, ν ratio 10 to 3.55e-16), so every comparison is case by case.
+
+* **G-a (POD degradation, bar 2×): PASSES at 12.092×.** POD-512 worst-all-times floor
+  0.6090 % (incumbent) → 7.3643 % (low-viscosity); worst-evolved 0.0670 % → 5.6109 %, i.e. 83.79×.
+  Monotone in rank: 1.092 / 1.157 / 1.773 / 2.293 / 4.051 / 12.092 at k = 16/32/64/128/256/512. The
+  singular spectrum says the same: incumbent σ512/σ1 = 1.85e-06, low-viscosity 4.00e-04.
+* **G-b (full-order cost, bar 1.5×): PASSES at 3.292×** (`nt1e-4_dt005`, 37.13 → 122.21 ms). *Every*
+  one of the eight tuned settings costs more (1.140×–3.292×) and every one needs more Newton
+  iterations (e.g. 56 → 100, 101 → 135). The DESIGN recorded leg (b) as the **weaker** leg before
+  the measurement; it passed anyway, so that prior was too pessimistic.
+* **Validity, both directions:** the incumbent family's POD floors reproduce b-panel job `3780638`'s
+  own best-found column to 1.18e-06 relative (≤2.4e-10 below k=512) and the incumbent L=256
+  discretisation error reproduces its 4.0265 % exactly. This job's measurement is the panel's.
+
+**What is wrong / caveated — read this before using the numbers.**
+
+* **F4 IS TRIGGERED, at 5.171× against a pre-registered 3× bar.** The low-viscosity family's L=256
+  discretisation error against the 4096-interval reference is **20.8206 %** against the incumbent's
+  4.0265 %, and it is still 13.95 % at L=512 and 8.79 % at L=1024. First-order upwinding's numerical
+  viscosity |u|h/2 exceeds the physical ν for most low-viscosity cases at this mesh — DESIGN §3
+  predicted exactly this before the job ran. Per §6 this does **not** stop the lane (the go/no-go is
+  G-a) and the same-grid metric stays well defined, but **the cell is not a paper headline without a
+  finer-mesh confirmation**, and nothing in this job separates "genuinely slower Kolmogorov decay"
+  from "under-resolved operator". Any use of these numbers must carry that sentence.
+* **One audit check fails: `pod_orthonormal_incumbent` = 7.21e-05 against a 1e-8 bar. NOT retracted,
+  and no reported digit moves.** It is a *consequence* of leg (a): the **incumbent** snapshot Gram is
+  numerically rank-deficient at 512 (eigenvalue ratio 3.41e-12), so the Gram-eigenvector route loses
+  orthogonality in the tail. Deviation is 4.06e-09 over the leading 256 modes, 1.28e-05 over the
+  leading 500; recomputing the k=512 floor with the full oblique projector C^T M^-1 C moves it
+  7.87e-07 relative and ≤5.20e-11 at every other rank. The low-viscosity basis, which carries the
+  result, is at 1.05e-09. 83 audit checks, this one failure.
+* **Nothing about the nonlinear manifold is established yet.** Legs (a) and (b) are gates. Criterion
+  P (a reduced subject non-dominated on cost and error against every same-job full-order control and
+  every POD rank, all converged) is untested until the stage-3 panel, and DESIGN A3 records in
+  advance that a dense-quadrature reduced query costs of the order of a full-order Newton step per
+  iteration, so P stays a demanding bar even with leg (b) passing.
+* Four numbers in the report's audit paragraph were hand-typed in the first draft and were replaced
+  by generated ones before commit (the project rule that every prose number comes from a script).
+* Codex unavailable until 2026-09-19 11:33; substituted by a written self-audit
+  (`reports/self-audit-gate.md`, 16 claims + its own weakest points), recorded as DESIGN A1/A5.
+
+**Paths.** DESIGN `experiments/b-lowvisc/DESIGN.md` (amendments A1–A6); report
+`experiments/b-lowvisc/reports/2026-09-17-b-lowvisc.md`; machine-readable
+`experiments/b-lowvisc/reports/summary.json` (169 rows); generator
+`experiments/b-lowvisc/reports/generate_lowvisc.py`; self-audit
+`experiments/b-lowvisc/reports/self-audit-gate.md`; archive
+`experiments/b-lowvisc/artifacts/lvg01/`. Commits `98aadc39`, `63d4e1ca`, `34b72656`.
+
+**Open / next session.** `lvt01` (3804337) is queued, ~16 h, PENDING at submission; per protocol,
+`scancel` and resubmit as h100 → h200 (never l40s for training) if still pending after 3 h, never
+changing the science. When it lands: collect, audit, report the three-layer decomposition (bank
+projection floor / best-found / solved) beside the incumbent's 0.39 / 2.54 / 2.56 % and apply
+**F2** — if all three degrade by at least the POD-512 factor (12.09×), the nonlinear manifold buys
+nothing from the harder regime, the hypothesis is false and the lane stops before the panel. Only
+if F2 does not fire does the stage-3 panel (`lvp01`, pre-registered in A3: fixed M=1088 headline,
+M=256 control, the (256, 2176) cell, no q=512, dense quadrature, 80 GB card) run. Jobs used: 2 of 8.
+The obvious purchase with the reserve: a finer-mesh (L=512) confirmation that answers F4, which is
+the single thing standing between this cell and a paper headline.

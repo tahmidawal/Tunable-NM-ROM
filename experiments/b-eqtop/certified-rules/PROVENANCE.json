@@ -1,0 +1,364 @@
+{
+  "purpose": "the cheapest primary-certified empirical-quadrature rule per rung of the Burgers 256^2 correction ladder, chosen in job bet101 from the qrg304 archive and bet101's own fits (ties by arm order std < fs64 < rhow64, archived first at equal m)",
+  "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending",
+  "status_note": "every rule is one draw of (candidate pool, fit-state subset); bet201 showed the same construction moving rho_max 0.11x-2.3x under a second draw and flipping certification at q=64, m=1024. Until bet301 (the pre-registered replication) lands, \"certified\" means \"this draw met the bar on 512 held-out reachable states\", not \"the construction does\".",
+  "frozen": {
+    "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+    "intervals": 256,
+    "K": 16,
+    "R": 512,
+    "dt": 0.005,
+    "tests_per_unknown": 4,
+    "M": "4(K+q)"
+  },
+  "rho_definition": "|| sum_j w_j Phi(x_j) a(u)(x_j) - Phi^T a(u) || / || Phi^T a(u) ||, q-diag 2026-09-16, on HELD-OUT reachable states",
+  "bars": {
+    "primary": 0.116,
+    "tight": 0.06
+  },
+  "node_convention": "`nodes` are int64 row-major indices into the (L-1)x(L-1) = 255x255 interior grid of the L=256-interval unit square (grid position (i+1, j+1) with (i, j) = unravel_index(node, (L-1, L-1))); `weights` are nonnegative float64. The rule approximates Phi^T a(u) by sum_j w_j Phi(x_j) a(u)(x_j) with Phi the M interior test modes and a(u) the upwind advection; see eqtop.make_rule / eqtop.rho_of_field for the exact reconstruction and eqcert.fit_rule for the driver's use.",
+  "audit": "checks/bet101-audit.json",
+  "result": "artifacts/bet101/result.json",
+  "rules": [
+    {
+      "q": 0,
+      "M": 64,
+      "file": "rule_q0_m1024_qrg304_reachable.npz",
+      "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+      "source_file": "rule_q0_reachable_m1024.npz",
+      "nodes_sha256": "38f047fd716b74af4d4900e80eba99707fb2364ad85de8be0055c740f11b8e3f",
+      "weights_sha256": "7e3d69132816a803bc2c35c38571c2adfb49610f0ff8d095088873327f3813c7",
+      "origin": {
+        "job_id": "3768168",
+        "attempt": "qrg304",
+        "commit": "467a4670f179d9b595bbcadfd5e185abae42bb1b",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "recertified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "source": "archived",
+      "arm": "reachable",
+      "population": "reachable",
+      "m": 1024,
+      "m_target": 1024,
+      "fit_states": 64,
+      "candidate_pool": 8192,
+      "design_rows": 4096,
+      "scaling": "row",
+      "compressed": false,
+      "nnls_relative_fit": 4.579070748408839e-05,
+      "fit_seconds": 71.53070298815146,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.01532598978706036,
+        "rho_p95": 0.008801295807242905,
+        "rho_median": 0.0005002319874611335,
+        "certified_primary": true,
+        "certified_tight": true,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q0_eq_primary",
+        "worst_evolved_percent": 1.8891456982772188,
+        "worst_all_times_percent": 2.562871982659394,
+        "median_gpu_ms": 59.06920204870403,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    },
+    {
+      "q": 16,
+      "M": 128,
+      "file": "rule_q16_m1024_qrg304_reachable.npz",
+      "sha256": "0cbe725993af8f922fa9dd28dc0c2428cc4fefcebcc07bdd104696262806a453",
+      "source_file": "rule_q16_reachable_m1024.npz",
+      "nodes_sha256": "1ee67be4c2d25dcb01c902caf10cb4042ebed9ee1f689e64346448ca8d534a8a",
+      "weights_sha256": "e4e36cedba3a1beca193930edf87cc39eabad4722163ee3ea9fcbc67dfe3bbf3",
+      "origin": {
+        "job_id": "3768168",
+        "attempt": "qrg304",
+        "commit": "467a4670f179d9b595bbcadfd5e185abae42bb1b",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "recertified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "source": "archived",
+      "arm": "reachable",
+      "population": "reachable",
+      "m": 1024,
+      "m_target": 1024,
+      "fit_states": 64,
+      "candidate_pool": 8192,
+      "design_rows": 8192,
+      "scaling": "row",
+      "compressed": false,
+      "nnls_relative_fit": 0.0001900832140397761,
+      "fit_seconds": 146.53903422201984,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.09354875564876645,
+        "rho_p95": 0.027310509798200527,
+        "rho_median": 0.000712288450673613,
+        "certified_primary": true,
+        "certified_tight": false,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q16_eq_primary",
+        "worst_evolved_percent": 1.4269572691480996,
+        "worst_all_times_percent": 2.4805768891442534,
+        "median_gpu_ms": 80.61419357545674,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    },
+    {
+      "q": 32,
+      "M": 192,
+      "file": "rule_q32_m1024_qrg304_reachable.npz",
+      "sha256": "2759dfc934d3acf97e73261cad781bfa89edc3c996931c0897e0fcc5f03c831b",
+      "source_file": "rule_q32_reachable_m1024.npz",
+      "nodes_sha256": "090e231767aef6dfa70fb013d3276060df4bc5067cf1dc77f5408b65874df0f5",
+      "weights_sha256": "3a9b77686310637482c253394921b4033b7a562b76b63561a448fabfcd41f1f4",
+      "origin": {
+        "job_id": "3768168",
+        "attempt": "qrg304",
+        "commit": "467a4670f179d9b595bbcadfd5e185abae42bb1b",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "recertified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "source": "archived",
+      "arm": "reachable",
+      "population": "reachable",
+      "m": 1024,
+      "m_target": 1024,
+      "fit_states": 42,
+      "candidate_pool": 8192,
+      "design_rows": 8064,
+      "scaling": "row",
+      "compressed": false,
+      "nnls_relative_fit": 0.00028879874653553233,
+      "fit_seconds": 154.7052959559951,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.05325016925411126,
+        "rho_p95": 0.022579784543713875,
+        "rho_median": 0.0013902217694165492,
+        "certified_primary": true,
+        "certified_tight": true,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q32_eq_primary",
+        "worst_evolved_percent": 1.2492798968178347,
+        "worst_all_times_percent": 2.3533733560903536,
+        "median_gpu_ms": 97.69528859760612,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    },
+    {
+      "q": 64,
+      "M": 320,
+      "file": "rule_q64_m1024_qrg304_reachable.npz",
+      "sha256": "33f354d3657a60bee44d7d60fda577d18f33df2dcdb2478b26210e56022419ca",
+      "source_file": "rule_q64_reachable_m1024.npz",
+      "nodes_sha256": "63909fd3d37b71d6c5b09a637faf9fc9b815b3d8e476be30f133d68941f52da9",
+      "weights_sha256": "996f0f0df4c4656d0dfa307b60cd77f89411af26694c3438040e3680b70131a3",
+      "origin": {
+        "job_id": "3768168",
+        "attempt": "qrg304",
+        "commit": "467a4670f179d9b595bbcadfd5e185abae42bb1b",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "recertified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "source": "archived",
+      "arm": "reachable",
+      "population": "reachable",
+      "m": 1024,
+      "m_target": 1024,
+      "fit_states": 25,
+      "candidate_pool": 8192,
+      "design_rows": 8000,
+      "scaling": "row",
+      "compressed": false,
+      "nnls_relative_fit": 0.0007118077638159735,
+      "fit_seconds": 159.87138481694274,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.05307530181127055,
+        "rho_p95": 0.023026872909763237,
+        "rho_median": 0.0026961828566790203,
+        "certified_primary": true,
+        "certified_tight": true,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q64_eq_primary",
+        "worst_evolved_percent": 1.2274712856329164,
+        "worst_all_times_percent": 2.1488705448314462,
+        "median_gpu_ms": 120.62536703888327,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    },
+    {
+      "q": 128,
+      "M": 576,
+      "file": "rule_q128_m2048_bet101_fs64.npz",
+      "sha256": "e20f7de733e40f33333001f6837bf7cb90d9fc9688bd8bab27397d2f79e3274c",
+      "source_file": "rule_q128_fs64_m2048.npz",
+      "nodes_sha256": "547d04320e9015e20c6d8e1f78339d2143d2995c3f2323d354011fcdc1db4edd",
+      "weights_sha256": "d9b8adde83bdd3cbe10c6d63892534d84e0fcc004d93c0935ec256a83e541cb7",
+      "origin": {
+        "job_id": "3780164",
+        "attempt": "bet101",
+        "commit": "ace8936e42b3558ccda39ab9cc6ee38a8dec407d",
+        "gpu": "NVIDIA A100 80GB PCIe"
+      },
+      "source": "new",
+      "arm": "fs64",
+      "population": "reachable",
+      "m": 2048,
+      "m_target": 2048,
+      "fit_states": 64,
+      "candidate_pool": 16384,
+      "design_rows": 36864,
+      "scaling": "row",
+      "compressed": true,
+      "nnls_relative_fit": 0.0003522284941771245,
+      "fit_seconds": 2919.5501349349506,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.06690862674859016,
+        "rho_p95": 0.021404083100246617,
+        "rho_median": 0.0005798824716854302,
+        "certified_primary": true,
+        "certified_tight": false,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q128_eq_primary",
+        "worst_evolved_percent": 0.8935527850054529,
+        "worst_all_times_percent": 1.811592916083009,
+        "median_gpu_ms": 246.86968908645213,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "file": "rule_q256_m2048_bet101_fs64.npz",
+      "sha256": "6e4e4de2e097ce84c6018189c6047da6020c8a6fe92b2d0e1bea279d423cddbf",
+      "source_file": "rule_q256_fs64_m2048.npz",
+      "nodes_sha256": "a4ecea2523d41f866efafd4cd7f59fcf12c7b51ebe3ab00420e3f975687e89b5",
+      "weights_sha256": "1d2408a3dc9fb8ec458acb41175ab0f5df31c90ddb9c21473058a258a1c9f8e6",
+      "origin": {
+        "job_id": "3780164",
+        "attempt": "bet101",
+        "commit": "ace8936e42b3558ccda39ab9cc6ee38a8dec407d",
+        "gpu": "NVIDIA A100 80GB PCIe"
+      },
+      "source": "new",
+      "arm": "fs64",
+      "population": "reachable",
+      "m": 2048,
+      "m_target": 2048,
+      "fit_states": 64,
+      "candidate_pool": 16384,
+      "design_rows": 69632,
+      "scaling": "row",
+      "compressed": true,
+      "nnls_relative_fit": 0.0024060839769937488,
+      "fit_seconds": 2650.066833510995,
+      "truncated": false,
+      "held_out": {
+        "states": 512,
+        "rho_max": 0.10736687392180089,
+        "rho_p95": 0.0877716708466162,
+        "rho_median": 0.0035333915563588217,
+        "certified_primary": true,
+        "certified_tight": false,
+        "certified_secondary": true,
+        "bars": {
+          "primary": 0.116,
+          "tight": 0.06
+        },
+        "certified_in": {
+          "job_id": "3780164",
+          "attempt": "bet101"
+        }
+      },
+      "timed_ladder_arm": {
+        "arm": "q256_eq_primary",
+        "worst_evolved_percent": 0.5389317143107647,
+        "worst_all_times_percent": 0.9052751395172368,
+        "median_gpu_ms": 722.2137585049495,
+        "converged": true,
+        "job_id": "3780164"
+      },
+      "status": "provisional: bet301 (job 3783811, the pre-registered draw replication) pending"
+    }
+  ]
+}

@@ -27,7 +27,10 @@ def main():
     p.add_argument('--j2', default=None)
     p.add_argument('--report', required=True)
     p.add_argument('--out', required=True)
+    p.add_argument('--pending', default=None, help='attempt:job_id:purpose of a job not yet in this entry')
     a = p.parse_args()
+    pend = dict(zip(('attempt', 'job_id', 'purpose'), a.pending.split(':', 2))) if a.pending else None
+    PROV = f" [provisional: `{pend['attempt']}` {pend['job_id']} pending]" if pend else ''
     A = json.loads(Path(a.j1).read_text())
     B = json.loads(Path(a.j2).read_text()) if a.j2 and Path(a.j2).exists() else None
     sub = json.loads((HERE / 'checks/submissions.json').read_text())
@@ -41,14 +44,22 @@ def main():
                else ('every rung primary-certified but the primary ladder still regresses'
                      if v['every_rung_primary_certified']
                      else f"rungs {v['rungs_without_primary_rule']} not certifiable at m <= 6144; hybrid ladder monotone {yn(v['hybrid_ladder_monotone_evolved'])}"))
+    if pend:
+        verdict = f'INTERIM ({pend["attempt"]} pending) — ' + verdict + ' in this single draw'
     out.append(f'### b-eqtop — {verdict}\n')
+    if pend:
+        out.append(f"**Interim entry.** `{pend['attempt']}` (job {pend['job_id']}, {pend['purpose']}) is still running. "
+                   "DESIGN §A2 showed that the same rule construction at the same $m$ moves $\\rho_{\\max}$ by $0.11\\times$–$2.3\\times$ "
+                   "under an independent draw of (candidate pool, fit-state subset) and flips certification at $q = 64$, so every "
+                   "certified flag below is a single draw and is **provisional** until that job bounds the spread. No certified "
+                   "ladder is claimed here; a closing entry follows when it lands.\n")
     out.append(f"Worktree `worktrees/2026-09-17-b-eqtop`, branch `exp/2026-09-17-b-eqtop`, forked from `exp/2026-09-16-q-ridge` at `7dc970fc`. Namespace `{sub['namespace']}`. Jobs: "
                + '; '.join(f"`{s['attempt']}` = {s['job_id']} ({s['gpu_request']})" for s in sub['submissions'])
                + f". Job 1 ran on `{A['gpu']}`, source `{A['commit']}`, elapsed {f(A['elapsed_seconds'],0)} s"
                + (f"; job 2 on `{B['gpu']}`, source `{B['commit']}`, elapsed {f(B['elapsed_seconds'],0)} s" if B else '')
                + ". Both printed `jax_backend=gpu`, float64, highest matmul precision; checksum-collected, NumPy-audited, archived as Git chunks, remote directories deleted. Design and amendments: `experiments/b-eqtop/DESIGN.md`. Codex was unavailable (quota) for the pre-job audit; a written self-audit stands in (`experiments/b-eqtop/reports/self-audit-design.md`, DESIGN A1).\n")
     out.append(f"**Failed blocking gates:** job 1 {', '.join(A['failed']) or 'none'}" + (f"; job 2 {', '.join(B['failed']) or 'none'}" if B else '') + '.\n')
-    out.append('**Certification at the top rungs** (held-out $\\rho_{\\max}$, bar 0.116 primary / 0.06 tight; this job\'s rules only):\n')
+    out.append(f'**Certification at the top rungs**{PROV} (held-out $\\rho_{{\\max}}$ over 512 reachable states, bar 0.116 primary / 0.06 tight; this job\'s rules only; `qrg304` rules re-certified to {A["checks"]["archived_rules_recertify"]["detail"]["worst_relative_difference"]:.1e} relative):\n')
     out.append('| $q$ | arm | $m$ | fit states | NNLS fit | $\\rho_{\\max}$ | $\\rho_{95}$ | primary | tight | fit (s) |\n|---|---|---|---|---|---|---|---|---|---|')
     for x in A['rules']:
         if x['source'] == 'this_job':
@@ -65,9 +76,9 @@ def main():
         d = lad.get(key)
         if not d:
             continue
-        out.append(f"**{d['name']}** — monotone evolved **{yn(d['monotone_evolved'])}**, all-times {yn(d['monotone_all_times'])}, converged {yn(d['all_converged'])}, EQ cheaper than dense twin {yn(d['cheaper_than_dense_where_measured'])}; q = {d['q']}; evolved % = {' / '.join(f(e) for e in d['worst_evolved_percent'])}; all-times % = {' / '.join(f(e) for e in d['worst_all_times_percent'])}; median GPU ms = {' / '.join(f(c,0) for c in d['median_gpu_ms'])}; m = {d['m']}; $\\rho_{{\\max}}$ = {' / '.join(f(r) for r in d['rho_max'])}.\n")
+        out.append(f"**{d['name']}**{PROV} — monotone evolved **{yn(d['monotone_evolved'])}**, all-times {yn(d['monotone_all_times'])}, converged {yn(d['all_converged'])}, EQ cheaper than dense twin {yn(d['cheaper_than_dense_where_measured'])}; q = {d['q']}; evolved % = {' / '.join(f(e) for e in d['worst_evolved_percent'])}; all-times % = {' / '.join(f(e) for e in d['worst_all_times_percent'])}; median GPU ms = {' / '.join(f(c,0) for c in d['median_gpu_ms'])}; m = {d['m']}; $\\rho_{{\\max}}$ = {' / '.join(f(r) for r in d['rho_max'])}.\n")
     t = v['top_rung']
-    out.append(f"**Top rung $q={t['q']}$:** primary arm $m={t['primary_rule']}$, $\\rho_{{\\max}}={f(t['primary_rho_max'])}$, evolved {f(t['evolved_percent'])} % vs dense {f(t['dense_evolved_percent'])} %. $\\rho$ against evolved error at $q={t['q']}$: "
+    out.append(f"**Top rung $q={t['q']}$:**{PROV} primary arm $m={t['primary_rule']}$, $\\rho_{{\\max}}={f(t['primary_rho_max'])}$, evolved {f(t['evolved_percent'])} % vs dense {f(t['dense_evolved_percent'])} %. $\\rho$ against evolved error at $q={t['q']}$: "
                + '; '.join(f"{x['arm']} m={x['m']} rho_max={f(x['rho_max'])} -> {f(x['evolved_percent'])} %" for x in v['top_rung_rho_vs_evolved']) + '.\n')
     fid = A.get('fidelity') or {}
     out.append('**Cross-job fidelity vs qrg304:** ' + '; '.join(
@@ -88,7 +99,7 @@ def main():
         for line in json.loads(openq.read_text()):
             out.append(f'- {line}')
         out.append('')
-    out.append(f"Source-generated report: `experiments/b-eqtop/reports/{rep.name}` (SHA256 `{sha}`) with `summary.json` and its generator beside it; audits `experiments/b-eqtop/checks/bet101-audit.json`" + (', `bet201-audit.json`' if B else '') + '.')
+    out.append(f"Source-generated report: `experiments/b-eqtop/reports/{rep.name}` (SHA256 `{sha}`) with `summary.json` and its generator beside it; audits `experiments/b-eqtop/checks/bet101-audit.json`" + (', `bet201-audit.json`' if B else '') + "; self-audit of the report in place of Codex: `experiments/b-eqtop/reports/self-audit-report.md`; archives `experiments/b-eqtop/artifacts/bet101`, `bet201`; exported rule set for `b-panel`: `experiments/b-eqtop/certified-rules/` (`PROVENANCE.json`, `SHA256SUMS`).")
     Path(a.out).write_text('\n'.join(out) + '\n')
     print('wrote', a.out)
 

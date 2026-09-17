@@ -1,0 +1,8 @@
+[
+ "`bet301` (job 3783811): four independent draws at $q \\in \\{64, 128, 256\\}$ for `std` ($m = 1024$) and `fs64` ($m = 2048$). If `fs64` at $q = 256$ certifies in fewer than 4/4 draws, the top rung is reported as *marginal at $m = 2048$* and the paper should cite $m = 2560$ (0.0647) or the draw count; the exported rule set's status field flips only then.",
+ "No tight-certified rule at $q = 256$ (best 0.0647 at `fs64` $m = 2560$; the law puts the crossing near $m \\approx 2650$, an order-of-magnitude statement). One `fs64` fit at $m = 3072$ (~1.5 h CPU, one job) would settle it.",
+ "The sampling noise of $\\rho_{\\max}$ over the 512 held-out states (a second held-out draw) is still unmeasured — self-audit weakness (b).",
+ "At $q = 64$ the certified EQ rung costs $+0.14$ pp evolved error against its dense twin (1.2275 vs 1.0843 %), the largest EQ-vs-dense gap on the ladder; at $q = 256$ it is $+0.02$ pp. Whether a tighter bar at $q = 64$ closes it is untested.",
+ "Codex report audit after 2026-09-19 11:33 if the lane is still open; the written self-audit stands in until then.",
+ "The `b-panel` lane can drop `experiments/b-eqtop/certified-rules/` into its re-run as a second rule set; the status field must be carried with it."
+]

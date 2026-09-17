@@ -19,6 +19,9 @@ $\rho$-vs-$m$ law at every rung. Read [`DESIGN.md`](DESIGN.md) first.
 | `make_comparators.py` → `checks/comparators.json` | qrg304's per-arm metrics for the fidelity gates |
 | `smoke_eqtop.py` → `checks/smoke-eqtop.json` | local smoke (64 intervals) with the parent-baseline reproduction |
 | `audit_eqtop.py` | independent NumPy audit, no JAX |
+| `export_rules.py` → `certified-rules/` | the cheapest primary-certified rule per rung as one rule set for other lanes (`PROVENANCE.json`, `SHA256SUMS`, status field) |
+| `checks/self_audit_report.py` → `reports/self-audit-report.md` | script-generated self-audit of the report against the raw JSONs (stands in for Codex while its quota is exhausted) |
+| `make_lab_entry.py` → `checks/lab-entry.md` | the dated lab-log entry, generated from the audits and `summary.json`; `checks/retractions.json` and `checks/open.json` are the explicit lists it appends |
 | `cluster/` | staging, collection, archive chunking |
 | `reports/generate_eqtop.py` → `reports/2026-09-1x-b-eqtop.md`, `reports/summary.json` | the source-generated report |
 | `artifacts/` | checksum-collected raw archives as bounded Git chunks |
@@ -39,5 +42,14 @@ ssh tufts-login 'cd /cluster/tufts/paralab/tawal01/b_eqtop_20260917/bet101 && sb
   --out experiments/b-eqtop/checks/bet101-audit.json
 "$PY" experiments/b-eqtop/cluster/preserve_archive.py bet101
 "$PY" experiments/b-eqtop/reports/generate_eqtop.py --j1 experiments/b-eqtop/checks/bet101-audit.json \
-  --j2 experiments/b-eqtop/checks/bet201-audit.json --out experiments/b-eqtop/reports/2026-09-17-b-eqtop
+  --j2 experiments/b-eqtop/checks/bet201-audit.json --out experiments/b-eqtop/reports/2026-09-17-b-eqtop \
+  --pending "bet301:3783811:DESIGN A2 draw replication"   # drop --pending and add --j3 once bet301 is audited
+"$PY" experiments/b-eqtop/export_rules.py --status "provisional: bet301 (job 3783811) pending"
+"$PY" experiments/b-eqtop/checks/self_audit_report.py
+"$PY" experiments/b-eqtop/make_lab_entry.py --j1 experiments/b-eqtop/checks/bet101-audit.json \
+  --j2 experiments/b-eqtop/checks/bet201-audit.json --report experiments/b-eqtop/reports/2026-09-17-b-eqtop.md \
+  --out experiments/b-eqtop/checks/lab-entry.md --pending "bet301:3783811:DESIGN A2 draw replication"
 ```
+
+State: `bet101` and `bet201` are collected, audited and archived; `bet301` (job 3783811) is running.
+Every certified flag in the report is provisional until it lands (DESIGN §A2, §A3).

@@ -458,3 +458,12 @@ recomputed by the audit from the fields regardless.
 **A8.2 (2026-09-17, minutes after A8.1).** The `error` block keys are `['absolute_rms_max', 'current_relative_max', 'current_relative_per_time', 'fixed_initial_max', 'fixed_initial_per_time']`;
 not every row carries a reference error there ([]). A8.1 stands: the report derives the column from
 the saved fields against the reference artifacts.
+
+**A8.3 (2026-09-17, closing the A8.1/A8.2 thread).** Which error the per-row `error` block holds is
+settled by the `fft_tight` row itself: its `fixed_initial_max` is 0.040076 (the 64-vs-128-interval
+discretisation error in the smoke; a same-grid error of the same-grid reference would be exactly 0),
+so **the per-row `error` block is the error against the reference** — it is on every row, which is
+what the coordinator's addition (a) asks for. The same-grid column is derived by the audit from each
+row's saved field artifact against the same job's `fft_tight` fields (b-panel's audit route), which
+is how `bpn301`'s summary obtained both `worst_all_times_percent` and `worst_reference_percent`.
+A8 stands; A8.1 and A8.2 were the wrong-key detour, kept as written.

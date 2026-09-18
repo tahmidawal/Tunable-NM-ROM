@@ -86,10 +86,10 @@ directions. Across 2D Burgers, Poisson, heat and waves, the trained-once family'
 scheduled ladder is monotone in $q$ on Burgers on each of three training
 seeds, and its fixed-test-count ladder, where $q$ is the only control,
 meets a bar fixed before any run on one checkpoint, on the same-grid
-error: against a fine reference every
-rung is within a few percent of the mesh's own discretisation error, so
-the knob moves the reduction error, not the physical error, at the
-meshes we ran; its quadrature rules are validated on reachable states, not by their
+error: against a fine reference every rung's
+error is at most $\nPanelRungRefOverDiscMax\times$ the mesh's own
+discretisation error, so the knob moves the reduction error, not the
+physical error, at the meshes we ran; its quadrature rules are validated on reachable states, not by their
 fitting residual, and confirmed on re-draw at $q\le32$ only;
 and its cost results are measured in the same job: on an L-shaped
 Poisson domain, where no fast transform applies, the neural head is

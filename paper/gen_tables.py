@@ -1597,7 +1597,7 @@ def build_offline_and_spec():
          'compact bump $\\times$ Gaussian: half-widths $s_i\\sim U(0.36,0.42)$, centre $c_i\\sim U(s_i{+}0.025,\\,1{-}s_i{-}0.025)$, amplitude $\\sim U(0.7,1.3)$, $\\sigma_i\\sim U(0.12,0.16)$, advective velocity $v_i\\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\\sim U(0.85,1.15)$',
          tt('experiments/multiresolution-wave/audit_dynamics.py:parameter_rows')],
     ]
-    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.6cm}p{4.4cm}p{9.8cm}p{3.0cm}', r'\tiny'),
+    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.6cm}p{4.4cm}p{15cm}p{3.0cm}', r'\tiny'),
           'sampling families transcribed from the generator sources named in the last column')
 
 

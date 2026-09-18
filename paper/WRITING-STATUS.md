@@ -1,5 +1,17 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-17 night — round-2 review applied (current state; everything below is history)
+
+Review round 2 (3/10 at d131ec11) applied item by item, one commit each; disposition in
+`private/REVIEW-ROUND2-DISPOSITION.md`. Claims changed where the review showed them false or
+unsupported (each recorded in `ABSTRACT-2026-09-17.md`): the operator premise; the vs-reference
+error (the knob moves the reduction error, 1.13x physically at 256²); the L-shape reframed (linear
+residual, CG named, POD-128 cheaper than the head); the two ladders separated and the incumbent
+disclosed as a favourable draw; one status vocabulary for quadrature rules; M=1088 pre-registered.
+Main text now carries four tables (ladder with vs-ref, panel summary, L-shape, seeds) and Figure 1;
+Figure 2 stays in Appendix B; main text ends on page 9. Open: title (user decision), no skip
+ablation (C3), thin parabolic leg, tab:sealed until job 3804465 lands, b-qxm unpinned (clean tree).
+
 ## 2026-09-17 late — REBUILT FROM THE OLD SOURCE (current state; everything below is history)
 
 **Release plan (double-blind).** The released/anonymised tree is `paper/` as committed, minus

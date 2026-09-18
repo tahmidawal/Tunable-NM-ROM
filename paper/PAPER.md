@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 20:09; this block is removed before submission).*
+*Status for the reader (generated 2026-09-17 20:11; this block is removed before submission).*
 *Final tables (45): T01, T01b, T02b, T02c, T03, T03b, T03m, T03mb, T04, T04b, T04m, T05, T05b, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T12, T12b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
 *Pending cells: `T13` waits on b-seeds sealed cohort; `seeds sealed` waits on b-seeds sealed cohort; `T2 sealed row` waits on b-seeds sealed cohort. In-flight jobs are listed in Table C.3: sealed cohort 3804465 (b-seeds), NS K=32 arm 3787320 (ns2d), low-viscosity training 3804337 (b-lowvisc), 512² panel 3805065 (b-panel).*
 *Provisional: the three-seed table (T12) until the sealed cohort lands; the 1024² frontier statement in §5.1 until the 512² panel brackets it; the two top EQ rungs are single-draw rules, never certified.*
@@ -32,10 +32,10 @@ directions. Across 2D Burgers, Poisson, heat and waves, the trained-once family'
 scheduled ladder is monotone in $q$ on Burgers on each of three training
 seeds, and its fixed-test-count ladder, where $q$ is the only control,
 meets a bar fixed before any run on one checkpoint, on the same-grid
-error: against a fine reference every
-rung is within a few percent of the mesh's own discretisation error, so
-the knob moves the reduction error, not the physical error, at the
-meshes we ran; its quadrature rules are validated on reachable states, not by their
+error: against a fine reference every rung's
+error is at most $1.13\times$ the mesh's own
+discretisation error, so the knob moves the reduction error, not the
+physical error, at the meshes we ran; its quadrature rules are validated on reachable states, not by their
 fitting residual, and confirmed on re-draw at $q\le32$ only;
 and its cost results are measured in the same job: on an L-shaped
 Poisson domain, where no fast transform applies, the neural head is

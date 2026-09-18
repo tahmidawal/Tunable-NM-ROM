@@ -280,6 +280,32 @@
 \newcommand{\nNsPrevRank}{128}
 \newcommand{\nNsPrevTrainRecon}{20.5576}
 \newcommand{\nNsRom}{not run: the pre-registered gate to it failed (\S\ref{sec:exp:linear})}
+\newcommand{\nNsScaleBandHi}{-0.10}
+\newcommand{\nNsScaleBandLo}{-0.25}
+\newcommand{\nNsScaleGainFirstDoubling}{25}
+\newcommand{\nNsScaleGainFirstMax}{25}
+\newcommand{\nNsScaleGainFirstMin}{13}
+\newcommand{\nNsScaleGainSecondDoubling}{4}
+\newcommand{\nNsScaleGainSecondMax}{8}
+\newcommand{\nNsScaleGainSecondMin}{4}
+\newcommand{\nNsScalePlainNFiveTwelve}{19.8279}
+\newcommand{\nNsScalePlainNOneTwentyEight}{27.4938}
+\newcommand{\nNsScalePlainNTwoFiftySix}{20.6889}
+\newcommand{\nNsScalePlainSlope}{-0.236}
+\newcommand{\nNsScalePlainVerdict}{ambiguous}
+\newcommand{\nNsScaleRegMoveMaxPct}{2.2}
+\newcommand{\nNsScaleRegMovePct}{2.2}
+\newcommand{\nNsScaleRegNFiveTwelve}{19.3892}
+\newcommand{\nNsScaleRegNOneTwentyEight}{26.1095}
+\newcommand{\nNsScaleRegNTwoFiftySix}{21.0204}
+\newcommand{\nNsScaleRegSlope}{-0.215}
+\newcommand{\nNsScaleRegSmallMovePct}{1.3}
+\newcommand{\nNsScaleRegSmallNFiveTwelve}{20.0874}
+\newcommand{\nNsScaleRegSmallNOneTwentyEight}{24.6583}
+\newcommand{\nNsScaleRegSmallNTwoFiftySix}{21.3431}
+\newcommand{\nNsScaleRegSmallSlope}{-0.148}
+\newcommand{\nNsScaleRegSmallVerdict}{ambiguous}
+\newcommand{\nNsScaleRegVerdict}{ambiguous}
 \newcommand{\nNsSingleOverOracle}{1.10}
 \newcommand{\nNsSingleStartMedian}{22.3139}
 \newcommand{\nNsTrainImprovement}{4.1}
@@ -1112,7 +1138,9 @@
 \newcommand{\provNsJob}{3787319}
 \newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$)}
 \newcommand{\provNsPrevJob}{3783796}
-\newcommand{\provNsTwodSummaryPin}{50bf36da}
+\newcommand{\provNsScaleJob}{3808493}
+\newcommand{\provNsScalingBandSource}{ns2d/DESIGN.md §A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous}
+\newcommand{\provNsTwodSummaryPin}{f63de724}
 \newcommand{\provOpCtrlJob}{3783831}
 \newcommand{\provOpJobs}{3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189}
 \newcommand{\provPanelCkpt}{incumbent (gate checkpoint\_unchanged; hash in T2, tuning row)}

@@ -7,4 +7,5 @@
 | lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
-| ns2d | `ns301–ns304` | `3808493, 3808495, 3808498, 3808502` | Navier–Stokes follow-ups (register only; read by no table) |
+| ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
+| ns2d | `ns302–ns304` | `3808495, 3808498, 3808502` | Navier–Stokes follow-ups (running; read by no table) |

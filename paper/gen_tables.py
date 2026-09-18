@@ -94,7 +94,8 @@ IN_FLIGHT = [
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
-    ('ns2d', 'ns301--ns304', '3808493, 3808495, 3808498, 3808502', 'Navier--Stokes follow-ups (register only; read by no table)'),
+    ('ns2d', 'ns301', '3808493', 'Navier--Stokes head-only data-scaling diagnosis (landed; Table~\\ref{tab:ns-scaling})'),
+    ('ns2d', 'ns302--ns304', '3808495, 3808498, 3808502', 'Navier--Stokes follow-ups (running; read by no table)'),
 ]
 
 PROV: dict[str, dict] = {}
@@ -127,7 +128,7 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
-    'ns2d_summary': ('2026-09-17-ns2d', '50bf36da'),
+    'ns2d_summary': ('2026-09-17-ns2d', 'f63de724'),
 }
 
 
@@ -1811,6 +1812,41 @@ def build_pending():
                                      gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, jobs {NS_JOB} (K=16, R=256) and {NS2} (K=32, R=512), full-rank banks; every gate passes except H-ORACLE; oracle values are upper bounds (some held-out fits hit the LM budget)')
         macro('nNsRom', 'not run: the pre-registered gate to it failed (\\S\\ref{sec:exp:linear})')
         macro('nNsKthirtyTwo', 'landed (job ' + NS2 + '): fails the same bar (Table~\\ref{tab:ns})')
+        # ns301 (job 3808493): head-only data-scaling diagnosis on the frozen K=16 bank (DESIGN §A9)
+        NS3 = '3808493'
+        D = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS3:
+                D[r['subject']][r['metric']] = r['value']
+        if D:
+            RN = {'plain': 'plain recipe', 'reg': 'weight decay + early stopping', 'reg_small': 'weight decay, head $4\\times$ smaller'}
+            RM = {'plain': 'Plain', 'reg': 'Reg', 'reg_small': 'RegSmall'}
+            t = []
+            for rc in ['plain', 'reg', 'reg_small']:
+                for nn in (128, 256, 512):
+                    d = D.get(f'n{nn}_{rc}', {})
+                    if not d: continue
+                    t.append([RN[rc], str(nn), pct(100 * d['dev_report.oracle_median']), pct(100 * d['dev_report.podK_median']), f"{d['dev_report.ratio_podK_over_oracle']:.2f}",
+                              f"{d['heldout_over_train_oracle_median']:.1f}", str(int(d['best_step']))])
+                    macro(f'nNsScale{RM[rc]}N{ {128: "OneTwentyEight", 256: "TwoFiftySix", 512: "FiveTwelve"}[nn] }', pct(100 * d['dev_report.oracle_median']))
+                v = D.get(rc, {})
+                t.append([RN[rc] + ' (all $n$)', '---', f"slope {v.get('loglog_slope', float('nan')):.3f}", '---', '---', '---', tex_escape(str(v.get('verdict', '---')))])
+                macro(f'nNsScale{RM[rc]}Slope', f"{v.get('loglog_slope', float('nan')):.3f}"); macro(f'nNsScale{RM[rc]}Verdict', tex_escape(str(v.get('verdict', '---'))))
+                if rc != 'plain' and 'reg_moves_n512_vs_plain_fraction' in v:
+                    macro(f'nNsScale{RM[rc]}MovePct', f"{100 * abs(v['reg_moves_n512_vs_plain_fraction']):.1f}")
+            p = {nn: D[f'n{nn}_plain']['dev_report.oracle_median'] for nn in (128, 256, 512) if f'n{nn}_plain' in D}
+            if len(p) == 3:
+                macro('nNsScaleGainFirstDoubling', f"{100 * (1 - p[256] / p[128]):.0f}"); macro('nNsScaleGainSecondDoubling', f"{100 * (1 - p[512] / p[256]):.0f}")
+            gains1 = [100 * (1 - D[f'n256_{rc}']['dev_report.oracle_median'] / D[f'n128_{rc}']['dev_report.oracle_median']) for rc in ['plain', 'reg', 'reg_small'] if f'n256_{rc}' in D and f'n128_{rc}' in D]
+            gains2 = [100 * (1 - D[f'n512_{rc}']['dev_report.oracle_median'] / D[f'n256_{rc}']['dev_report.oracle_median']) for rc in ['plain', 'reg', 'reg_small'] if f'n512_{rc}' in D and f'n256_{rc}' in D]
+            if gains1: macro('nNsScaleGainFirstMin', f"{min(gains1):.0f}"); macro('nNsScaleGainFirstMax', f"{max(gains1):.0f}")
+            if gains2: macro('nNsScaleGainSecondMin', f"{min(gains2):.0f}"); macro('nNsScaleGainSecondMax', f"{max(gains2):.0f}")
+            moves = [abs(D[rc].get('reg_moves_n512_vs_plain_fraction', 0)) for rc in ['reg', 'reg_small'] if rc in D]
+            if moves: macro('nNsScaleRegMoveMaxPct', f"{100 * max(moves):.1f}")
+            band = BARS['ns_scaling_slope_band']['value']; macro('nNsScaleBandLo', f"{band[0]:.2f}"); macro('nNsScaleBandHi', f"{band[1]:.2f}")
+            macro('provNsScalingBandSource', tex_escape(BARS['ns_scaling_slope_band']['source'])); macro('provNsScaleJob', NS3)
+            write('T11f_ns_scaling.tex', tabular(['recipe', 'training trajectories', 'held-out oracle median \\%', 'POD-16 median \\%', 'POD / oracle', 'held-out / train', 'selected step'],
+                                                 t, 'lrrrrrl', r'\scriptsize'), f'ns2d ns301, job {NS3}: head-only retraining on the frozen K=16 bank; slopes and verdicts from the pre-registered rule (DESIGN A9)')
     if 'nNsKthirtyTwo' not in MACROS:
         macro('nNsKthirtyTwo', gen('ns2d ns204 (job 3787320), K=32 with the full-rank bank', 'NS K=32 arm'))
 

@@ -63,6 +63,29 @@ $\nAblBurgersNeural\,\%$. On Poisson a wider head moves the
 best-found/floor ratio only from $\nPlinHeadRatioPrimary$ to
 $\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
 
+\subsection{Navier--Stokes: the head-only data-scaling diagnosis}
+\label{app:extended:ns-scaling}
+Job \provNsScaleJob{} retrained only the head on the frozen $K=16$,
+$R=256$ bank with 128, 256 and 512 training trajectories under three
+recipes and scored the held-out oracle at $256^2$
+(Table~\ref{tab:ns-scaling}). The pre-registered rule
+(\provNsScalingBandSource) returns ``\nNsScalePlainVerdict'' for every
+recipe; the decelerating slope and the inertness of regularisation lean
+towards a head-limited reading, which the lane does not upgrade beyond
+ambiguous. Caveat, pre-registered: the frozen bank was trained on all 512
+trajectories, so the small-$n$ arms are optimistic.
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes head-only data scaling (job \provNsScaleJob):
+held-out oracle median per recipe and training-set size, POD-16 at
+matched dimension, the held-out/train ratio, the selected training step,
+and the pre-registered log-log slope with its verdict (band
+$\nNsScaleBandLo$ to $\nNsScaleBandHi$).}
+\label{tab:ns-scaling}
+\resizebox{\linewidth}{!}{\input{tables/T11f_ns_scaling}}
+\end{table}
+
 \subsection{The linear cells in full}
 \label{app:extended:linear}
 Poisson at $1024^2$ ($R=512$, $K=32$; Table~\ref{tab:linear}): the middle

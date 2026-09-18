@@ -33,3 +33,4 @@ Review: `review-round2.md` (score 3/10 at `d131ec11`). One line per finding; sta
 | 2.5 | parabolic leg thin (legacy heat cell) | open | title kept by user decision; heat stays a supporting appendix cell with its job named |
 | 4.4 | readability (abstract length, undefined terms, reading box) | partial | abstract shortened and split into one-claim sentences; no "reading this paper" box (page budget) |
 | ns301–ns304 | register | resolved | `f1ecdf8a` |
+| M1 / B6 follow-up | 512² panel brackets the crossover | resolved | bpn401 (job 3805065) folded in: 0 of 31 at 512²; 4.48x/2.92x on shared hardware, 1.82x on H200 separate; flip between 512² and 1024² |

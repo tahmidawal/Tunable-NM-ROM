@@ -11,6 +11,7 @@ disclosed as a favourable draw; one status vocabulary for quadrature rules; M=10
 Main text now carries four tables (ladder with vs-ref, panel summary, L-shape, seeds) and Figure 1;
 Figure 2 stays in Appendix B; main text ends on page 9. Open: title (user decision), no skip
 ablation (C3), thin parabolic leg, tab:sealed until job 3804465 lands, b-qxm unpinned (clean tree).
+b-panel 512² (bpn401) folded in at lane commit d2135501: the main-text panel table has three meshes.
 
 ## 2026-09-17 late — REBUILT FROM THE OLD SOURCE (current state; everything below is history)
 

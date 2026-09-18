@@ -90,7 +90,6 @@ RETRACTED_ATTEMPTS = [
 IN_FLIGHT = [
     ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel, H200 (landed; Tables~\\ref{tab:tunability-tentwentyfour}, \\ref{tab:panel-all-tentwentyfour})'),
     ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables~\\ref{tab:tunability}, \\ref{tab:panel-all})'),
-    ('b-panel', 'bpn401', '3805065', '$512^2$ panel, same GPU model as $256^2$, brackets the frontier crossover (pre-registered in the lane design before submission)'),
     ('b-seeds', 'sealed', '3804465', 'sealed-cohort evaluation of the three seeds (Table~\\ref{tab:sealed})'),
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
@@ -125,8 +124,8 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     # three-seed development summary (e533b48e) and nothing newer.
     'seeds_summary': ('2026-09-17-b-seeds', 'e533b48e'),
     # b-panel closed at 13ddecac (bpn301 = 256^2 with both rule sets, bpn203 = 1024^2)
-    'panel_summary': ('2026-09-17-b-panel', '13ddecac'),
-    'panel_report': ('2026-09-17-b-panel', '13ddecac'),
+    'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
+    'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
     'ns2d_summary': ('2026-09-17-ns2d', '50bf36da'),
 }
@@ -322,8 +321,9 @@ def build_panel():
     macro('provPanelCommit', ' / '.join(hexprefix(c) for c in commits) if commits else '---')
     macro('provPanelCkpt', 'incumbent (gate checkpoint\\_unchanged; hash in T2, tuning row)')
     macro('provPanelJobs', ', '.join(sorted({r['job_id'] for r in rows})))
-    SFX = {256: '', 1024: 'TenTwentyFour'}
-    RST256 = {}
+    SFX = {256: '', 512: 'FiveTwelve', 1024: 'TenTwentyFour'}
+    FSFX = {256: '', 512: 'c', 1024: 'b'}
+    RST256 = {}; RST256_TOP = {}
     Ms = {0: 64, 16: 128, 32: 192, 64: 320, 128: 576, 256: 1088}
     qs = [0, 16, 32, 64, 128, 256]
     REDUCED = ('rom', 'fast', 'pod', 'free')
@@ -341,14 +341,16 @@ def build_panel():
         # transferred rules (eqxfer, 1024^2) carry their 256^2 source rule's verdict; the 256^2 pass runs first
         if mesh == 256:
             RST256 = {int(qk[x]): rst[x] for x in rst if rset.get(x) == 'eqcert' and x.endswith('_g1em06') and qk.get(x) is not None}
+            RST256_TOP = {int(qk[x]): rst[x] for x in rst if rset.get(x) == 'eqtop' and x.endswith('_g1em06') and qk.get(x) is not None}
         else:
             for x in list(rst):
-                if rset.get(x) == 'eqxfer' and rst[x] in ('none', 'marginal (count unavailable)') and qk.get(x) is not None:
-                    rst[x] = RST256.get(int(qk[x]), rst[x])
+                if rset.get(x) in ('eqxfer', 'eqtopxfer') and qk.get(x) is not None:
+                    src = (RST256_TOP if rset[x] == 'eqtopxfer' else RST256).get(int(qk[x]), 'none')
+                    rst[x] = f"transferred, {'primary' if P[x].get('rule_basis') == 'primary' else 'not primary'} at ${mesh}^2$; source {src}"
         macro(f'provPanel{sfx}Job', job); macro(f'provPanel{sfx}Gpu', gpu_of.get(job, '---'))
         macro(f'nPanel{sfx}Mesh', str(mesh))
-        sets = ['eqcert', 'eqtop'] if mesh == 256 else ['eqxfer']
-        SETNAME = {'eqcert': 'EQ, b-eqtop ladder rules', 'eqtop': 'EQ, replication-selected rules', 'eqxfer': 'EQ, rules transferred from $256^2$'}
+        sets = {256: ['eqcert', 'eqtop'], 512: ['eqxfer', 'eqtopxfer'], 1024: ['eqxfer']}[mesh]
+        SETNAME = {'eqcert': 'EQ, b-eqtop ladder rules', 'eqtop': 'EQ, replication-selected rules', 'eqxfer': 'EQ, ladder rules transferred from $256^2$', 'eqtopxfer': 'EQ, replication-selected rules transferred from $256^2$'}
         # ---- T3: the ladders side by side at tolerance 1e-6 (+ the loose tolerance for the last set)
         t3 = []
         for q in qs:
@@ -365,7 +367,7 @@ def build_panel():
         for st_ in sets:
             cols += [SETNAME[st_] + ': evolved \\%', 'all \\%', 'ms', 'rule status']
         cols.append('$t{=}0$ \\%')
-        write(f'T03{"b" if sfx else ""}_tunability.tex', tabular(cols, t3, 'rr' + 'rrr' + 'rrrl' * len(sets) + 'r', r'\tiny'), f'b-panel job {job}, {mesh}^2, tolerance 1e-6')
+        write(f'T03{FSFX[mesh]}_tunability.tex', tabular(cols, t3, 'rr' + 'rrr' + 'rrrl' * len(sets) + 'r', r'\tiny'), f'b-panel job {job}, {mesh}^2, tolerance 1e-6')
         # ---- ladder statistics
         def ladder_stats(suf, ql):
             errs = [P[f'q{q}_M{Ms[q]}_{suf}']['worst_evolved_percent'] for q in ql]
@@ -376,7 +378,7 @@ def build_panel():
         e, c, mono, conv = ladder_stats('dense_g1em06', qs)
         macro(f'nPanel{sfx}DenseErrSpan', f'{e[0]/e[-1]:.2f}'); macro(f'nPanel{sfx}DenseCostSpan', f'{c[-1]/c[0]:.2f}')
         macro(f'nPanel{sfx}DenseMonotone', yn(mono)); macro(f'nPanel{sfx}DenseConverged', yn(conv))
-        SN = {'eqcert': 'Eq', 'eqtop': 'Eqtop', 'eqxfer': 'Eqxfer'}
+        SN = {'eqcert': 'Eq', 'eqtop': 'Eqtop', 'eqxfer': 'Eqxfer', 'eqtopxfer': 'Eqtopxfer'}
         for st_ in sets:
             for tl, tn in [('g1em06', ''), ('g0p001', 'Loose')]:
                 _, _, m_, cv_ = ladder_stats(f'{st_}_{tl}', qs)
@@ -465,6 +467,23 @@ def build_panel():
         macro(f'nPanel{sfx}RungsBelowDiscretisation', str(sum(1 for x in dense_rungs if P[x]['worst_reference_percent'] <= P['fft_tight']['worst_reference_percent'])))
         macro(f'nPanel{sfx}RungCount', str(len(dense_rungs)))
         rr = [P[x]['worst_reference_percent'] / P['fft_tight']['worst_reference_percent'] for x in dense_rungs]
+        disc = P['fft_tight']['worst_reference_percent']
+        redref = [(x, P[x]['worst_reference_percent'] - disc) for x in reduced if P[x].get('worst_reference_percent') is not None]
+        macro(f'nPanel{sfx}ReducedWithRefCount', str(len(redref))); macro(f'nPanel{sfx}ReducedAboveDiscCount', str(sum(1 for _, e in redref if e > 0)))
+        if redref:
+            cx = min(redref, key=lambda t: t[1]); macro(f'nPanel{sfx}ClosestReduced', tt(cx[0])); macro(f'nPanel{sfx}ClosestReducedExcessPp', f"{cx[1]:.4f}")
+        below = [x for x in foms if P[x].get('worst_reference_percent') is not None and P[x]['worst_reference_percent'] < disc and x != 'fft_tight']
+        macro(f'nPanel{sfx}FomBelowDiscList', ', '.join(tt(x) for x in below) if below else 'none'); macro(f'nPanel{sfx}FomBelowDiscCount', str(len(below)))
+        if 'eqtopxfer' in sets:
+            e6 = P.get('q256_M1088_eqtopxfer_g1em06'); d6 = P.get('q256_M1088_dense_g1em06')
+            if e6 and d6:
+                macro(f'nPanel{sfx}EqtopxferQTwoFiftySixTwinSpeedup', f"{d6['median_gpu_ms'] / e6['median_gpu_ms']:.0f}"); macro(f'nPanel{sfx}EqtopxferQTwoFiftySixErr', pct(e6['worst_evolved_percent'])); macro(f'nPanel{sfx}DenseQTwoFiftySixErr', pct(d6['worst_evolved_percent']))
+            a = P.get('q32_M192_eqxfer_g1em06', {}).get('rho_max'); b = P.get('q32_M192_eqtopxfer_g1em06', {}).get('rho_max')
+            if a and b: macro(f'nPanel{sfx}TransferRhoSpreadQthirtyTwo', f"{max(a, b) / min(a, b):.1f}")
+            # the driver gate on same-source rule pairs, from the lane report's per-mesh gate table
+            sec = (rep or '').split(f'## {mesh}')
+            g = re.search(r'\| matched_rule_files_bitwise \| (yes|no) \|', sec[1]) if len(sec) > 1 else None
+            macro(f'nPanel{sfx}MatchedRuleFilesGate', g.group(1) if g else '---')
         macro(f'nPanel{sfx}RungRefOverDiscMin', f"{min(rr):.2f}"); macro(f'nPanel{sfx}RungRefOverDiscMax', f"{max(rr):.2f}")
         bref = min(foms, key=lambda x: P[x]['worst_reference_percent'])
         macro(f'nPanel{sfx}FomBestRefArm', tt(bref)); macro(f'nPanel{sfx}FomBestRef', pct(P[bref]['worst_reference_percent'], 2)); macro(f'nPanel{sfx}FomBestRefMs', ms(P[bref]['median_gpu_ms']))
@@ -477,7 +496,7 @@ def build_panel():
             tm.append([str(q), str(Ms[q]), pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), pct(d['worst_reference_percent'], 2), ms(d['median_gpu_ms']),
                        pct(e.get('worst_evolved_percent')) if e else '---', ms(e.get('median_gpu_ms')) if e else '---',
                        tex_escape(rst.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', 'none'))])
-        write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
+        write(f'T03m{FSFX[mesh]}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
               f'b-panel job {job}, {mesh}^2, tolerance 1e-6, scheduled M=4(K+q); EQ set = {sets[-1]}')
         if mesh == 256:
             LADDER_MAIN_ROWS[:] = tm
@@ -514,18 +533,18 @@ def build_panel():
                        ms(d.get('median_gpu_ms')), ms(d.get('median_host_ms')),
                        yn(d.get('converged')) if isred else '---', yn(d.get('converged_strict')) if isred else '---', yn(adm.get(x)) if isred else '---'])
         cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'device ms', 'complete-query ms', 'conv.', 'strict', 'adm.']
-        write(f'T05{"b" if sfx else ""}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
+        write(f'T05{FSFX[mesh]}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
     # the crossover ratios, both meshes, same-job only
     macro('nPanelCheapestRatioDrop', f"{float(MACROS['nPanelCheapestRatio']) / float(MACROS['nPanelTenTwentyFourCheapestRatio']):.2f}")
     # main-text panel summary: one row per mesh, every ratio inside its own job (review r2, R1)
     tm = []
-    for sfx, mesh in [('', 256), ('TenTwentyFour', 1024)]:
+    for sfx, mesh in [('', 256), ('FiveTwelve', 512), ('TenTwentyFour', 1024)]:
         g = lambda k: MACROS.get(f'nPanel{sfx}{k}', '---')
         tm.append([f'${mesh}^2$', tt(MACROS.get(f'provPanel{sfx}Job', '---')), tex_escape(MACROS.get(f'provPanel{sfx}Gpu', '---')), g('SubjectCount'), g('ReducedCount'),
                    g('ReducedNonDomEvolved'), g('ReducedNonDomAll'), g('CheapestRatio') + '$\\times$', g('CheapestOverFft') + '$\\times$', g('RefSpan') + '$\\times$'])
     write('T05m_panel_summary.tex', tabular(['mesh', 'job', 'GPU', 'timed subjects', 'admissible reduced', 'non-dom.\\ (evolved)', 'non-dom.\\ (all-times)',
                                              'cheapest reduced / cheapest FOM', 'cheapest reduced / converged FFT', 'ladder vs-ref span'], tm, 'llllrrrrrr', r'\scriptsize'),
-          'b-panel, one row per job; ratios formed inside the job only, never across the two GPUs')
+          'b-panel, one row per job; ratios formed inside the job only; 256^2 and 512^2 share the GPU model, 1024^2 does not')
 
 
 # =========================================================================== T4 rank vs tests
@@ -1823,6 +1842,7 @@ def build_problems_and_provenance(mesh):
     def prov(table, lane, job, gpu, commit, ckpt):
         P.append([table, lane, job, gpu, commit, ckpt])
     prov('T3, T5', 'b-panel ($256^2$, bpn301)', MACROS.get('provPanelJob', '---'), MACROS.get('provPanelGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
+    prov('T3c, T5c', 'b-panel ($512^2$, bpn401)', MACROS.get('provPanelFiveTwelveJob', '---'), MACROS.get('provPanelFiveTwelveGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
     prov('T3b, T5b', 'b-panel ($1024^2$, bpn203)', MACROS.get('provPanelTenTwentyFourJob', '---'), MACROS.get('provPanelTenTwentyFourGpu', '---'), MACROS.get('provPanelCommit', '---'), MACROS.get('provPanelCkpt', '---'))
     prov('T4', 'b-qxm', MACROS.get('provQxmJobs', '---'), 'per job', MACROS.get('provQxmCommit', '---'), MACROS.get('provBurgersCkpt', '---'))
     prov('T6a, T7', 'head-ablation (Burgers)', MACROS.get('provAblBurgersJob', '---'), MACROS.get('provAblBurgersGpu', '---'), MACROS.get('provAblBurgersCommit', '---'), MACROS.get('provBurgersCkpt', '---'))

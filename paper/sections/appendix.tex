@@ -234,6 +234,19 @@ Table~\ref{tab:tunability}: different GPU, different job.}
 
 \begin{table}[h]
 \centering
+\caption{The correction ladder at $512^2$ in one allocation (job
+\provPanelFiveTwelveJob, \provPanelFiveTwelveGpu, same checkpoint and GPU
+model as $256^2$), tolerance $10^{-6}$: dense advection beside both
+$256^2$ rule sets transferred to this mesh (each transfer refits on its
+own fit-state draw); the status names whether the transfer passes the
+primary bar here and its source rule's verdict at $256^2$. Milliseconds
+are not comparable with Table~\ref{tab:tunability}: a different job.}
+\label{tab:tunability-fivetwelve}
+\resizebox{\linewidth}{!}{\input{tables/T03c_tunability}}
+\end{table}
+
+\begin{table}[h]
+\centering
 \caption{Every timed subject of the $256^2$ same-allocation panel (job
 \provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
 an attained initial fit; ``strict'' is the earlier rule that does not;
@@ -250,6 +263,15 @@ rule passing a bar).}
 milliseconds are comparable only within this table.}
 \label{tab:panel-all-tentwentyfour}
 \resizebox{\linewidth}{!}{\input{tables/T05b_panel_all}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $512^2$ same-allocation panel (job
+\provPanelFiveTwelveJob). Columns as in Table~\ref{tab:panel-all};
+milliseconds are comparable only within this table.}
+\label{tab:panel-all-fivetwelve}
+\resizebox{\linewidth}{!}{\input{tables/T05c_panel_all}}
 \end{table}
 
 \begin{table}[h]

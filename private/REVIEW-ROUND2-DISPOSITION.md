@@ -35,3 +35,4 @@ Review: `review-round2.md` (score 3/10 at `d131ec11`). One line per finding; sta
 | ns301–ns304 | register | resolved | `f1ecdf8a` |
 | M1 / B6 follow-up | 512² panel brackets the crossover | resolved | bpn401 (job 3805065) folded in: 0 of 31 at 512²; 4.48x/2.92x on shared hardware, 1.82x on H200 separate; flip between 512² and 1024² |
 | B8 follow-up | NS head-only data-scaling diagnosis (ns301) | resolved | folded in at ns2d f63de724; verdict 'ambiguous' kept; T11f |
+| B8 follow-up 2 | NS exploratory q-ladder (ns304) | resolved | folded in at ns2d 46650a1e; T11g/T11h in the extended-results appendix, two sentences in §6.5, all labelled exploratory after a failed phase-2 gate; POD-LSPG more accurate at every rung and cheaper at 5 of 6 (not 'every rung' as the message said — at q=512 both cost about the same); no neural rung non-dominated |

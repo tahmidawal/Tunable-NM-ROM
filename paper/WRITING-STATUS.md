@@ -1,6 +1,26 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-17 night — sealed cohort folded in (current state; everything below is history)
+## 2026-09-17 night — ns304 exploratory ladder folded in (current state; everything below is history)
+
+ns2d committed ns304 (job 3808502, A100 80GB) at 46650a1e; `GIT_PINS` for `ns2d_summary` moved
+from f63de724, and a second pinned source `ns304_result` (the lane's `artifacts/ns304/result.json`)
+supplies the config (K=32, R=512, M_FIXED=2176, 8 cases, 3 reps), the GPU and the lane's
+`residual_energy_captured` per q (26/44/68/92/100 %; a squared-singular-value recomputation gave
+27/46/71/96/100 and was discarded in favour of the lane's field). T11g (per rung: neural worst /
+median / ms / budget exits, manifold-layer median, bank floor, energy, matched POD-LSPG at k'=K+q,
+non-dominated flags) and T11h (FOM tolerance ladder) live in the extended-results appendix under
+"Exploratory ladder after the failed gate (not a phase-3 result)"; two sentences in §6.5. Every
+table, caption, macro comment and sentence carries the label "exploratory after a failed phase-2
+gate". Generated facts: worst evolved 68.77 -> 6.01 % (11.4x for 3.9x cost), monotone in median
+(yes), in worst (no, one inversion q0->q32), zero budget exits; manifold layer 10.55 -> 0.2254 %
+(= bank floor) only at q=R=512; solve layer 2.9–10.8x the manifold layer (median/median — the
+lane's "4–10x" is a different ratio and is not printed); POD-LSPG more accurate at every rung and
+cheaper at 5 of 6 rungs (at q=512 POD-544 53.9 s vs neural 52.6 s — the message's "cheaper at every
+rung" is not what the rows give; the paper says "all but the top"); non-dominated set = six FOM
+settings + pod_k32, 0 neural rungs. Register: ns304 landed; ns302–ns303 running. Page budget kept
+by wording trims in §6.5 and the Limitations (no claim removed).
+
+## 2026-09-17 night — sealed cohort folded in (history)
 
 b-seeds sealed cohort landed at lane commit be9415ab (job 3804465, A100-40GB); `GIT_PINS` moved
 from e533b48e. No pending cell remains. T13 (per-rung sealed vs development seed means with the

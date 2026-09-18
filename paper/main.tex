@@ -13,9 +13,11 @@
 % STATUS FOR THE READER (removed before submission; mirrored in WRITING-STATUS.md)
 %  * Final tables: every T*; no pending cell (T13, the sealed cohort, landed
 %    at lane commit be9415ab, job 3804465).
-%  * In flight, not in any table: lvt01 3804337 (b-lowvisc), ns302--ns304
+%  * In flight, not in any table: lvt01 3804337 (b-lowvisc), ns302--ns303
 %    (ns2d). T12 (three seeds) is now the development-cohort table; the
-%    sealed cohort (T13) is the headline for the scheduled ladder.
+%    sealed cohort (T13) is the headline for the scheduled ladder. ns304
+%    (3808502) is in T11g/T11h and two sentences of 6.5, every one of them
+%    labelled exploratory after a failed phase-2 gate (not phase 3).
 %  * Provisional: the two top EQ rungs are single-draw.
 %  * Open decisions for the user: (1) the headline Burgers metric (worst over
 %    evolved times vs worst over all times) -- both printed; decisive at 1024^2,
@@ -757,7 +759,7 @@ exactly and the top rung is the most accurate and the cheapest point. Poisson at
 $\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at
 flat cost and the top rung $q=R$ lands on the floor at
 $\nPlinTenTwentyFourTopErr\,\%$ as the \emph{cheapest} point
-($\nPlinTenTwentyFourTopMs$\,ms against the exact transform's
+($\nPlinTenTwentyFourTopMs$\,ms; exact transform
 $\nPlinTenTwentyFourDstMs$\,ms); heat and the reflective wave do the
 same (Appendix~\ref{app:extended:linear}). \textbf{The collapse is
 confounded with a weak bank}: on both linear cells the learned bank is
@@ -765,26 +767,29 @@ $\nLinearBankOverPodMin$--$\nLinearBankOverPodMax\times$ worse than a POD
 basis of the same rank, and no reduced arm beats the direct solve on any cell.
 
 \textbf{Navier--Stokes collapses for a different reason.} On 2D
-incompressible flow (a nonlinear residual) the family was gated before
-any ladder ran (Table~\ref{tab:ns}): at $K=16$ and $K=32$ the head's
+incompressible flow (a nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $K=32$ the head's
 held-out oracle beats POD-$K$ by only $\nNsOracleRatio\times$ and
 $\nNsKthirtyTwoOracleRatio\times$ against a pre-registered bar of
 $\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is the more accurate (POD/oracle
 $\nNsKthirtyTwoPodOverOracleTzero$): linear beats nonlinear where the data
-lie in a low-dimensional linear subspace. Retraining the head on the frozen $K=16$ bank with 128, 256 and
-512 trajectories moves the held-out oracle from
+lie in a low-dimensional subspace. Retraining the head on the frozen bank with 128, 256 and
+512 trajectories moves the held-out oracle
 $\nNsScalePlainNOneTwentyEight$ to $\nNsScalePlainNTwoFiftySix$ to
 $\nNsScalePlainNFiveTwelve\,\%$ ($\nNsScaleGainFirstDoubling\,\%$ then
-$\nNsScaleGainSecondDoubling\,\%$ per doubling; regularisation or a
-smaller head moves the 512 value by under $\nNsScaleRegMoveMaxPct\,\%$),
-which the pre-registered rule reads as ``\nNsScalePlainVerdict''
-(Table~\ref{tab:ns-scaling}), leaning towards the head function class,
-the caveat being that the bank saw all 512 trajectories. A trade between rungs
+$\nNsScaleGainSecondDoubling\,\%$ per doubling), read by the
+pre-registered rule as ``\nNsScalePlainVerdict'' (Table~\ref{tab:ns-scaling}),
+the bank having seen all 512 trajectories. An exploratory
+ladder on that failed-gate manifold (Table~\ref{tab:ns-ladder}; not a
+phase-3 result) closes the manifold gap toward the bank floor,
+fully only at $q=R$ where the head no longer matters. POD-LSPG at the same
+dimension is more accurate at every rung and cheaper at all but the top,
+and no neural rung is non-dominated: the falsification clause's named
+outcome for this head. A trade between rungs
 needs a residual nonlinear in the coefficients and a manifold
 that beats POD held-out; Poisson, heat and waves lack the first, this
 cell the second, and Burgers on the square had both yet still lost on
-cost. Whether a reduced solve wins on cost at all is a separate question:
-whether a fast transform exists.
+cost; whether a reduced solve wins on cost at all is decided by the fast
+transform alone.
 
 \begin{table}[t]
 \centering
@@ -795,45 +800,42 @@ POD-128 and the head at $q=64$ (full sets: Table~\ref{tab:lshape-solve}).}
 \resizebox{\linewidth}{!}{\input{tables/T18m_lshape_main}}
 \end{table}
 
-\textbf{On the L-shaped domain reduced models are the cheaper option, and
-POD is cheaper than the head.} This is Poisson, a linear residual: the no-fast-transform case. The
-direct solve's cost climbs with the mesh, at
+\textbf{On the L-shaped domain (Poisson, a linear residual; no fast
+transform) reduced models are cheaper, and POD is cheaper than the
+head.} The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($\nLshapeCheapestFomMsFiveTwelve$\,ms
 at $\nLshapeCheapestFomErrFiveTwelve\,\%$, more accurate than every reduced
-arm), and the reduced arms stay nearly flat (Table~\ref{tab:lshape-main}, a
-cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
+arm), and the reduced arms stay nearly flat (Table~\ref{tab:lshape-main}; cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
 $\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ and
 $\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper, POD-128
 $\nLshapePodCheaperVsCheapestTwoFiftySix\times$ and
 $\nLshapePodCheaperVsCheapestFiveTwelve\times$; the head is non-dominated
-only because it is more accurate, costing
+only on accuracy, costing
 $\nLshapeHeadOverPodCostTwoFiftySix$--$\nLshapeHeadOverPodCostFiveTwelve\,\%$
 more than POD-128 for $\nLshapePodOverHeadErrFiveTwelve\,\%$ less error.
-No reduced arm beats the full-order solves on accuracy at any mesh,
-nothing is claimed beyond $512^2$, and the banks' best-found reconstruction
-degrades from $\nLshapeDevelopmentWorst$ to $\nLshapeValidationWorst\,\%$
-on the validation sources, on which no solve sweep has run (Table~\ref{tab:lshape}).
+No reduced arm beats the full-order solves on accuracy, nothing
+claimed beyond $512^2$, and the banks' reconstruction degrades from
+$\nLshapeDevelopmentWorst$ to $\nLshapeValidationWorst\,\%$ on validation
+sources, unswept (Table~\ref{tab:lshape}).
 
 \FloatBarrier
 % =====================================================================
 \paragraph{Limitations.}
 \label{sec:limitations}
-(i) Every headline rests on one checkpoint per PDE; the Burgers one is a
-favourable draw in development (Table~\ref{tab:seeds}) and the fixed-$M$
-ladder is single-seed; a cold-start solve at $q=0$ can converge to a wrong
-branch, as one sealed case did (\nSealedIncQzero\,\%, Table~\ref{tab:sealed}),
-and $q\ge16$ removed it here, no guarantee it always will. (ii)
-Uniform Cartesian finite differences, 2D only; small development cohorts
-(Table~\ref{tab:problems}). (iii) No cold-start comparison against \citet{KimChoi2022NMROM}; the
-linear skip is not ablated. (iv) Operator numbers are lower bounds (\nOpLaneImproving{}
-U-Net/Transolver and \nOpFnoImproving{} FNO arms still improving);
-quadrature rules above $q=32$ are marginal and transfer draw variance
-(\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$ in $\rho_{\max}$ at
-one rung) is unexplained; cross-job spread of an identical cell is
+(i) One checkpoint per PDE; the Burgers one is a favourable draw in
+development (Table~\ref{tab:seeds}) and the fixed-$M$ ladder is
+single-seed; a cold-start solve at $q=0$ can converge to a wrong branch, as
+one sealed case did (\nSealedIncQzero\,\%, Table~\ref{tab:sealed}); $q\ge16$
+removed it here, with no guarantee. (ii) Uniform Cartesian differences, 2D only; small cohorts
+(Table~\ref{tab:problems}). (iii) No cold-start comparison with \citet{KimChoi2022NMROM}; linear skip
+not ablated. (iv) Operator numbers are lower bounds (\nOpLaneImproving{}
+U-Net/Transolver, \nOpFnoImproving{} FNO arms still improving);
+rules above $q=32$ are marginal and an
+\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$ transfer-draw spread
+in $\rho_{\max}$ is unexplained; cross-job spread of one cell is
 $\nQxmAnchorSpreadPct\,\%$; the $1024^2$ frontier rests on one
-job and the evolved metric. (v) Against the fine reference the knob moves the error only
-$\nPanelRefSpan\times$ at $256^2$. (vi) No theory: no
-convergence guarantee, no quadrature-error bound on unseen states.
+job and the evolved metric. (v) Against the fine reference the knob moves the error
+$\nPanelRefSpan\times$ at $256^2$. (vi) No theory: no convergence guarantee or quadrature-error bound on unseen states.
 
 % =====================================================================
 \section{Conclusion and Future Work}

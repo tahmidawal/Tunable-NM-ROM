@@ -7,4 +7,5 @@
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
 | ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
-| ns2d | `ns302–ns304` | `3808495, 3808498, 3808502` | Navier–Stokes follow-ups (running; read by no table) |
+| ns2d | `ns302–ns303` | `3808495, 3808498` | Navier–Stokes follow-ups (running; read by no table) |
+| ns2d | `ns304` | `3808502` | Navier–Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table \ref{tab:ns-ladder}; exploratory after a failed phase-2 gate) |

@@ -53,6 +53,7 @@ SOURCES = {
     'eqtop_summary': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/summary.json',
     'eqtop_report': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md',
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
+    'ns304_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns304/result.json',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
     'seeds_summary': '2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json',
     'panel1024_summary': '2026-09-17-b-panel/experiments/b-panel/reports/summary-1024.json',
@@ -94,7 +95,8 @@ IN_FLIGHT = [
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
     ('ns2d', 'ns301', '3808493', 'Navier--Stokes head-only data-scaling diagnosis (landed; Table~\\ref{tab:ns-scaling})'),
-    ('ns2d', 'ns302--ns304', '3808495, 3808498, 3808502', 'Navier--Stokes follow-ups (running; read by no table)'),
+    ('ns2d', 'ns302--ns303', '3808495, 3808498', 'Navier--Stokes follow-ups (running; read by no table)'),
+    ('ns2d', 'ns304', '3808502', 'Navier--Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table~\\ref{tab:ns-ladder}; exploratory after a failed phase-2 gate)'),
 ]
 
 PROV: dict[str, dict] = {}
@@ -127,7 +129,9 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
-    'ns2d_summary': ('2026-09-17-ns2d', 'f63de724'),
+    # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e
+    'ns2d_summary': ('2026-09-17-ns2d', '46650a1e'),
+    'ns304_result': ('2026-09-17-ns2d', '46650a1e'),
 }
 
 
@@ -1902,6 +1906,66 @@ def build_pending():
             macro('provNsScalingBandSource', tex_escape(BARS['ns_scaling_slope_band']['source'])); macro('provNsScaleJob', NS3)
             write('T11f_ns_scaling.tex', tabular(['recipe', 'training trajectories', 'held-out oracle median \\%', 'POD-16 median \\%', 'POD / oracle', 'held-out / train', 'selected step'],
                                                  t, 'lrrrrrl', r'\scriptsize'), f'ns2d ns301, job {NS3}: head-only retraining on the frozen K=16 bank; slopes and verdicts from the pre-registered rule (DESIGN A9)')
+        # ns304 (job 3808502): EXPLORATORY q-ladder on the ns204 K=32/R=512 manifold after the failed phase-2 gate (DESIGN §A11).
+        # Every table and macro from it is labelled exploratory; it is not a phase-3 result.
+        NS4 = '3808502'
+        E = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS4:
+                E[r['subject']][r['metric']] = r['value']
+        res = load('ns304_result')
+        if E and res:
+            cfg = res['config']; ck = res['checkpoint']['cfg']
+            K4, R4, M4 = int(ck['K']), int(ck['R']), int(cfg['M_FIXED'])
+            qs4 = [int(q) for q in cfg['Q_LADDER']]
+            macro('provNsExpJob', NS4); macro('provNsExpGpu', tex_escape(res['gpu'])); macro('provNsExpCommit', str(res['commit'])[:8])
+            macro('nNsExpK', str(K4)); macro('nNsExpR', str(R4)); macro('nNsExpM', str(M4)); macro('nNsExpCases', str(int(cfg['CASES']))); macro('nNsExpReps', str(int(cfg['REPS'])))
+            rec = res['directions']['residual_energy_captured']   # the lane's own figure per q
+            energy = {q: 100 * float(rec[str(q)] if isinstance(rec, dict) else rec[qs4.index(q)]) for q in qs4}
+            t = []
+            pod_better_all = True; pod_acc_all = True; pod_cheaper = []
+            for q in qs4:
+                ne = E[f'neural_q{q}']; kp = K4 + q; po = E.get(f'pod_k{kp}', {})
+                ms_n = 1000 * ne['median_seconds']; ms_p = 1000 * po['median_seconds'] if po else None
+                if po and not (po['worst_evolved'] < ne['worst_evolved'] and po['median_seconds'] < ne['median_seconds']):
+                    pod_better_all = False
+                if po and not po['worst_evolved'] < ne['worst_evolved']: pod_acc_all = False
+                if po and po['median_seconds'] < ne['median_seconds']: pod_cheaper.append(q)
+                t.append([str(q), str(kp), pct(100 * ne['worst_evolved']), pct(100 * ne['median_evolved']), ms(ms_n), str(int(ne['budget_exits'])),
+                          pct(100 * ne['decomposition.manifold_median']), pct(100 * ne['decomposition.bank_median']), f"{energy[q]:.0f}",
+                          pct(100 * po['worst_evolved']) if po else '---', pct(100 * po['median_evolved']) if po else '---', ms(ms_p) if po else '---',
+                          yn(ne.get('non_dominated')), yn(po.get('non_dominated')) if po else '---'])
+            write('T11g_ns_ladder.tex', tabular(['$q$', "$k'=K+q$", 'neural worst \\%', 'median \\%', 'ms', 'budget exits', 'manifold layer median \\%', 'bank floor \\%', 'energy \\%',
+                                                  "POD-$k'$ worst \\%", 'median \\%', 'ms', 'neural non-dom.', 'POD non-dom.'], t, 'rrrrrrrrrrrrll', r'\scriptsize'),
+                  f'ns2d ns304, job {NS4} (EXPLORATORY after the failed phase-2 gate): q-ladder on the ns204 K={K4}/R={R4} manifold at fixed M={M4}, matched POD-LSPG in the same job; energy = the lane residual_energy_captured field per q')
+            fr = []
+            for tol in cfg['FOM_NTOLS'] + [cfg['NTOL']]:
+                key = f'fom_ntol{tol:g}' if f'fom_ntol{tol:g}' in E else f'fom_ntol{tol}'
+                d = E.get(key)
+                if d is None: continue
+                fr.append([f'{tol:g}', pct(100 * d['worst_evolved'], 4), pct(100 * d['median_evolved'], 4), ms(1000 * d['median_seconds']), yn(d.get('non_dominated'))])
+            write('T11h_ns_fom.tex', tabular(['Newton tol.', 'worst evolved \\%', 'median \\%', 'ms', 'non-dominated'], fr, 'rrrrl', r'\scriptsize'),
+                  f'ns2d ns304, job {NS4} (EXPLORATORY): the full-order tolerance ladder timed in the same job; the last row is the converged reference')
+            L = E['ladder']
+            macro('nNsExpQzeroWorst', pct(100 * E['neural_q0']['worst_evolved'])); macro('nNsExpTopWorst', pct(100 * E[f'neural_q{qs4[-1]}']['worst_evolved']))
+            macro('nNsExpQzeroMedian', pct(100 * E['neural_q0']['median_evolved'])); macro('nNsExpTopMedian', pct(100 * E[f'neural_q{qs4[-1]}']['median_evolved']))
+            macro('nNsExpGain', f"{L['gain_top_over_q0']:.1f}"); macro('nNsExpCostRatio', f"{L['cost_ratio_top_over_q0']:.1f}")
+            macro('nNsExpMonotoneWorst', yn(L['monotone_worst_evolved'])); macro('nNsExpMonotoneMedian', yn(L['monotone_median_evolved']))
+            macro('nNsExpBankFloor', pct(100 * E['neural_q0']['decomposition.bank_median'])); macro('nNsExpManifoldQzero', pct(100 * E['neural_q0']['decomposition.manifold_median']))
+            macro('nNsExpManifoldTop', pct(100 * E[f'neural_q{qs4[-1]}']['decomposition.manifold_median']))
+            sl = [E[f'neural_q{q}']['median_evolved'] / E[f'neural_q{q}']['decomposition.manifold_median'] for q in qs4]
+            macro('nNsExpSolveOverManifoldMin', f"{min(sl):.1f}"); macro('nNsExpSolveOverManifoldMax', f"{max(sl):.1f}")
+            macro('nNsExpQtop', str(qs4[-1])); macro('nNsExpPodBetterEveryRung', yn(pod_better_all))
+            macro('nNsExpPodMoreAccurateEveryRung', yn(pod_acc_all)); macro('nNsExpPodCheaperCount', str(len(pod_cheaper))); macro('nNsExpRungCount', str(len(qs4)))
+            macro('nNsExpPodCheaperMaxQ', str(max(pod_cheaper)) if pod_cheaper else '---')
+            # energy = the lane's residual_energy_captured, printed as a percentage
+            macro('nNsExpEnergyRule', tex_escape(res['directions']['rule']))
+            nd = [sub for sub, d in E.items() if d.get('non_dominated') is True]
+            macro('nNsExpNonDomNeuralCount', str(sum(1 for x in nd if x.startswith('neural')))); macro('nNsExpNonDomList', ', '.join(tt(x) for x in sorted(nd)))
+            macro('nNsExpBudgetExitsTotal', str(int(sum(E[f'neural_q{q}']['budget_exits'] for q in qs4))))
+            macro('nNsExpEnergyList', ', '.join(f"{energy[q]:.0f}" for q in qs4[1:])); macro('nNsExpQList', ', '.join(str(q) for q in qs4[1:]))
+            f3 = E.get('fom_ntol0.001', {}); macro('nNsExpFomLooseWorst', pct(100 * f3.get('worst_evolved', float('nan')), 4)); macro('nNsExpFomLooseMs', ms(1000 * f3.get('median_seconds', float('nan'))))
+            macro('nNsExpFomRefMs', ms(1000 * E['fom_ntol1e-11']['median_seconds']))
     if 'nNsKthirtyTwo' not in MACROS:
         macro('nNsKthirtyTwo', gen('ns2d ns204 (job 3787320), K=32 with the full-rank bank', 'NS K=32 arm'))
 
@@ -1942,6 +2006,7 @@ def build_problems_and_provenance(mesh):
     prov('T9', 'b-eqtop', MACROS.get('provEqtopJobs', '---'), 'see job list', 'see job list', MACROS.get('provBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Burgers)', MACROS.get('provMeshBurgersJob', '---'), MACROS.get('provMeshBurgersGpu', '---'), MACROS.get('provMeshBurgersCommit', '---'), MACROS.get('provMeshBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
+    prov('T11g, T11h', 'ns2d ns304 (exploratory after a failed phase-2 gate)', MACROS.get('provNsExpJob', '---'), MACROS.get('provNsExpGpu', '---'), MACROS.get('provNsExpCommit', '---'), 'ckpt\\_K32\\_R512 hashed in result.json')
     prov('T11a', 'w-ladder', MACROS.get('provWaveJobs', '---'), 'per job', 'per job', 'frozen-math SHA asserted in job')
     prov('T11d', 'heat linear bank (2026-09-10)', MACROS.get('provHeatJob', '---'), MACROS.get('provHeatGpu', '---'), MACROS.get('provHeatCommit', '---'), 'expanded\\_seed790715 (frozen)')
     prov('T11b, T11c', 'p-linear', MACROS.get('provPlinJobs', '---') + '; head capacity job ' + MACROS.get('provPlinHeadJob', '---'), 'per job', 'per job', 'R=512/K=32 checkpoint (pbh02 primary)')

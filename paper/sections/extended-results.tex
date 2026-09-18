@@ -87,6 +87,62 @@ $\nNsScaleBandLo$ to $\nNsScaleBandHi$).}
 \resizebox{\linewidth}{!}{\input{tables/T11f_ns_scaling}}
 \end{table}
 
+\paragraph{Exploratory ladder after the failed gate (not a phase-3 result).}
+\label{app:extended:ns-ladder}
+Every number in this paragraph and in Tables~\ref{tab:ns-ladder} and
+\ref{tab:ns-fom} is exploratory after a failed phase-2 gate: the
+$K=\nNsExpK$, $R=\nNsExpR$ manifold failed the held-out oracle bar
+(Table~\ref{tab:ns}), so the ladder answers a mechanism question only, not
+the pre-registered phase-3 question. Job \provNsExpJob{} (\provNsExpGpu)
+ran the correction ladder $q\in\{0,\nNsExpQList\}$ at one fixed test
+count $M=\nNsExpM$ on \nNsExpCases{} development cases with
+\nNsExpReps{} timed repetitions, same-job POD-LSPG at every matched
+dimension $k'=K+q$, and a full-order Newton-tolerance ladder in the same
+job. The correction rank closes the manifold gap: the manifold layer's
+median falls from $\nNsExpManifoldQzero$ to $\nNsExpManifoldTop\,\%$,
+the bank floor ($\nNsExpBankFloor\,\%$), but reaches it only at
+$q=R=\nNsExpQtop$, where the head no longer matters; the residual
+directions capture \nNsExpEnergyList\,\% of the head-residual energy at
+$q=\nNsExpQList$. The solved error follows with a solve layer
+\nNsExpSolveOverManifoldMin--\nNsExpSolveOverManifoldMax$\times$ the
+manifold layer (median over median) at every rung, and zero budget exits:
+worst evolved $\nNsExpQzeroWorst\to\nNsExpTopWorst\,\%$
+($\nNsExpGain\times$ for $\nNsExpCostRatio\times$ in cost), monotone in
+the median (\nNsExpMonotoneMedian) but not in the worst
+(\nNsExpMonotoneWorst; one inversion at the first rung). POD-LSPG at the
+same dimension is more accurate at every rung
+(\nNsExpPodMoreAccurateEveryRung) and cheaper at \nNsExpPodCheaperCount{}
+of \nNsExpRungCount{} rungs (all but $q=\nNsExpQtop$, where both cost
+about the same); the non-dominated set on (ms, worst evolved) is
+\nNsExpNonDomList{} --- \nNsExpNonDomNeuralCount{} neural rungs, the
+falsification clause's named outcome for this head. The loosest
+full-order setting that converges reaches $\nNsExpFomLooseWorst\,\%$ at
+$\nNsExpFomLooseMs$\,ms (converged reference $\nNsExpFomRefMs$\,ms).
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes, \textbf{exploratory after a failed phase-2 gate}
+(job \provNsExpJob): the correction ladder on the $K=\nNsExpK$,
+$R=\nNsExpR$ manifold at fixed $M=\nNsExpM$, its three-layer decomposition
+(manifold layer and bank floor, medians over the development cases), the
+share of head-residual energy the $q$ directions capture, and same-job
+POD-LSPG at the matched dimension $k'=K+q$; costs are median ms inside this
+job. ``Non-dom.'' marks membership of the non-dominated set on (ms, worst
+evolved error) over every subject in the job.}
+\label{tab:ns-ladder}
+\resizebox{\linewidth}{!}{\input{tables/T11g_ns_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes, \textbf{exploratory after a failed phase-2 gate}
+(job \provNsExpJob): the full-order Newton-tolerance ladder timed in the
+same job as Table~\ref{tab:ns-ladder}; the last row is the converged
+reference.}
+\label{tab:ns-fom}
+\resizebox{0.7\linewidth}{!}{\input{tables/T11h_ns_fom}}
+\end{table}
+
 \subsection{The linear cells in full}
 \label{app:extended:linear}
 Poisson at $1024^2$ ($R=512$, $K=32$; Table~\ref{tab:linear}): the middle

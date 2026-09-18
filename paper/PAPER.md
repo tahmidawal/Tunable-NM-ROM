@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 22:15; this block is removed before submission).*
-*Final tables (52): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
+*Status for the reader (generated 2026-09-17 22:51; this block is removed before submission).*
+*Final tables (54): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -729,7 +729,7 @@ exactly and the top rung is the most accurate and the cheapest point. Poisson at
 $3.1495\to0.9648 %$ at
 flat cost and the top rung $q=R$ lands on the floor at
 $0.7421 %$ as the *cheapest* point
-($4.42$ ms against the exact transform's
+($4.42$ ms; exact transform
 $3.248$ ms); heat and the reflective wave do the
 same (Appendix F.5). **The collapse is
 confounded with a weak bank**: on both linear cells the learned bank is
@@ -737,26 +737,29 @@ $3.4$–$4.0\times$ worse than a POD
 basis of the same rank, and no reduced arm beats the direct solve on any cell.
 
 **Navier–Stokes collapses for a different reason.** On 2D
-incompressible flow (a nonlinear residual) the family was gated before
-any ladder ran (Table 43): at $K=16$ and $K=32$ the head's
+incompressible flow (a nonlinear residual) the family was gated before any ladder (Table 43): at $K=16$ and $K=32$ the head's
 held-out oracle beats POD-$K$ by only $1.19\times$ and
 $1.15\times$ against a pre-registered bar of
 $2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is the more accurate (POD/oracle
 $0.82$): linear beats nonlinear where the data
-lie in a low-dimensional linear subspace. Retraining the head on the frozen $K=16$ bank with 128, 256 and
-512 trajectories moves the held-out oracle from
+lie in a low-dimensional subspace. Retraining the head on the frozen bank with 128, 256 and
+512 trajectories moves the held-out oracle
 $27.4938$ to $20.6889$ to
 $19.8279 %$ ($25 %$ then
-$4 %$ per doubling; regularisation or a
-smaller head moves the 512 value by under $2.2 %$),
-which the pre-registered rule reads as “ambiguous”
-(Table 47), leaning towards the head function class,
-the caveat being that the bank saw all 512 trajectories. A trade between rungs
+$4 %$ per doubling), read by the
+pre-registered rule as “ambiguous” (Table 47),
+the bank having seen all 512 trajectories. An exploratory
+ladder on that failed-gate manifold (Table 48; not a
+phase-3 result) closes the manifold gap toward the bank floor,
+fully only at $q=R$ where the head no longer matters. POD-LSPG at the same
+dimension is more accurate at every rung and cheaper at all but the top,
+and no neural rung is non-dominated: the falsification clause's named
+outcome for this head. A trade between rungs
 needs a residual nonlinear in the coefficients and a manifold
 that beats POD held-out; Poisson, heat and waves lack the first, this
 cell the second, and Burgers on the square had both yet still lost on
-cost. Whether a reduced solve wins on cost at all is a separate question:
-whether a fast transform exists.
+cost; whether a reduced solve wins on cost at all is decided by the fast
+transform alone.
 
 **Table 3.** L-shaped Poisson, solve layer at $M=257$, one job per mesh
 (complete-query ms; ratios inside each job): the cheapest full-order arm,
@@ -770,45 +773,42 @@ POD-128 and the head at $q=64$ (full sets: Table 44).
 | $256^2$ | `3784663` | 8.39 | sparse direct (SuperLU) | 8.39 | 0.000 | 2.457 | 2.850 | 2.94 / 2.94 | 2.131 | 3.028 | 2.77 / 2.77 | yes |
 | $512^2$ | `3789568` | 36.50 | CG $10^{-2}$ | 29.13 | 0.385 | 2.451 | 4.031 | 9.06 / 7.23 | 2.123 | 4.801 | 7.60 / 6.07 | yes |
 
-**On the L-shaped domain reduced models are the cheaper option, and
-POD is cheaper than the head.** This is Poisson, a linear residual: the no-fast-transform case. The
-direct solve's cost climbs with the mesh, at
+**On the L-shaped domain (Poisson, a linear residual; no fast
+transform) reduced models are cheaper, and POD is cheaper than the
+head.** The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($29.13$ ms
 at $0.385 %$, more accurate than every reduced
-arm), and the reduced arms stay nearly flat (Table 3, a
-cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
+arm), and the reduced arms stay nearly flat (Table 3; cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
 $2.77\times$ and
 $6.07\times$ cheaper, POD-128
 $2.94\times$ and
 $7.23\times$; the head is non-dominated
-only because it is more accurate, costing
+only on accuracy, costing
 $6$–$19 %$
 more than POD-128 for $15 %$ less error.
-No reduced arm beats the full-order solves on accuracy at any mesh,
-nothing is claimed beyond $512^2$, and the banks' best-found reconstruction
-degrades from $6.8$ to $16.7 %$
-on the validation sources, on which no solve sweep has run (Table 46).
+No reduced arm beats the full-order solves on accuracy, nothing
+claimed beyond $512^2$, and the banks' reconstruction degrades from
+$6.8$ to $16.7 %$ on validation
+sources, unswept (Table 46).
 
 \FloatBarrier
 
 **Limitations.**
 
-(i) Every headline rests on one checkpoint per PDE; the Burgers one is a
-favourable draw in development (Table 36) and the fixed-$M$
-ladder is single-seed; a cold-start solve at $q=0$ can converge to a wrong
-branch, as one sealed case did (10.1120 %, Table 37),
-and $q\ge16$ removed it here, no guarantee it always will. (ii)
-Uniform Cartesian finite differences, 2D only; small development cohorts
-(Table 8). (iii) No cold-start comparison against Kim et al. (2022); the
-linear skip is not ablated. (iv) Operator numbers are lower bounds (7 of 8
-U-Net/Transolver and 4 of 4 FNO arms still improving);
-quadrature rules above $q=32$ are marginal and transfer draw variance
-(8.7$\times$ in $\rho_{\max}$ at
-one rung) is unexplained; cross-job spread of an identical cell is
+(i) One checkpoint per PDE; the Burgers one is a favourable draw in
+development (Table 36) and the fixed-$M$ ladder is
+single-seed; a cold-start solve at $q=0$ can converge to a wrong branch, as
+one sealed case did (10.1120 %, Table 37); $q\ge16$
+removed it here, with no guarantee. (ii) Uniform Cartesian differences, 2D only; small cohorts
+(Table 8). (iii) No cold-start comparison with Kim et al. (2022); linear skip
+not ablated. (iv) Operator numbers are lower bounds (7 of 8
+U-Net/Transolver, 4 of 4 FNO arms still improving);
+rules above $q=32$ are marginal and an
+8.7$\times$ transfer-draw spread
+in $\rho_{\max}$ is unexplained; cross-job spread of one cell is
 $14 %$; the $1024^2$ frontier rests on one
-job and the evolved metric. (v) Against the fine reference the knob moves the error only
-$1.13\times$ at $256^2$. (vi) No theory: no
-convergence guarantee, no quadrature-error bound on unseen states.
+job and the evolved metric. (v) Against the fine reference the knob moves the error
+$1.13\times$ at $256^2$. (vi) No theory: no convergence guarantee or quadrature-error bound on unseen states.
 
 ## 7 Conclusion and Future Work
 
@@ -1150,6 +1150,7 @@ float64 and highest matmul precision before doing any work.
 | T9 | b-eqtop | bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290…) | see job list | see job list | 18f0266ae6f04542… |
 | T10 | mesh-ladder (Burgers) | 3711388 | NVIDIA A100-PCIE-40GB | 521cdced6f4d… | 18f0266ae6f0… |
 | T10 | mesh-ladder (Poisson) | 3711389 | NVIDIA A100 80GB PCIe | 521cdced6f4d… | a128e7635c31… |
+| T11g, T11h | ns2d ns304 (exploratory after a failed phase-2 gate) | 3808502 | NVIDIA A100 80GB PCIe | 31e0846f | ckpt_K32_R512 hashed in result.json |
 | T11a | w-ladder | $64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86) | per job | per job | frozen-math SHA asserted in job |
 | T11d | heat linear bank (2026-09-10) | 3511417 | NVIDIA A100-PCIE-40GB | 73fdaa88eb75… | expanded_seed790715 (frozen) |
 | T11b, T11c | p-linear | $256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a437d7360); $1024^2$: job 3783813 (NVIDIA H200, commit 3e411b5ac59d); head capacity job 3783883 | per job | per job | R=512/K=32 checkpoint (pbh02 primary) |
@@ -1187,7 +1188,8 @@ pending in §Table 3.
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
 | ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
-| ns2d | `ns302–ns304` | `3808495, 3808498, 3808502` | Navier–Stokes follow-ups (running; read by no table) |
+| ns2d | `ns302–ns303` | `3808495, 3808498` | Navier–Stokes follow-ups (running; read by no table) |
+| ns2d | `ns304` | `3808502` | Navier–Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table \ref{tab:ns-ladder}; exploratory after a failed phase-2 gate) |
 
 ## E Full tables
 
@@ -2335,6 +2337,73 @@ $-0.25$ to $-0.10$).
 | weight decay, head $4\times$ smaller | 256 | 21.3431 | 22.9610 | 1.08 | 1.8 | 10000 |
 | weight decay, head $4\times$ smaller | 512 | 20.0874 | 22.7726 | 1.13 | 1.6 | 45000 |
 | weight decay, head $4\times$ smaller (all $n$) | — | slope -0.148 | — | — | — | ambiguous |
+
+**Exploratory ladder after the failed gate (not a phase-3 result).**
+
+Every number in this paragraph and in Table 48 and
+Table 49 is exploratory after a failed phase-2 gate: the
+$K=32$, $R=512$ manifold failed the held-out oracle bar
+(Table 43), so the ladder answers a mechanism question only, not
+the pre-registered phase-3 question. Job 3808502 (NVIDIA A100 80GB PCIe)
+ran the correction ladder $q\in\{0,32, 64, 128, 256, 512\}$ at one fixed test
+count $M=2176$ on 8 development cases with
+3 timed repetitions, same-job POD-LSPG at every matched
+dimension $k'=K+q$, and a full-order Newton-tolerance ladder in the same
+job. The correction rank closes the manifold gap: the manifold layer's
+median falls from $10.5493$ to $0.2254 %$,
+the bank floor ($0.2254 %$), but reaches it only at
+$q=R=512$, where the head no longer matters; the residual
+directions capture 26, 44, 68, 92, 100 % of the head-residual energy at
+$q=32, 64, 128, 256, 512$. The solved error follows with a solve layer
+2.9–10.8$\times$ the
+manifold layer (median over median) at every rung, and zero budget exits:
+worst evolved $68.7654\to6.0140 %$
+($11.4\times$ for $3.9\times$ in cost), monotone in
+the median (yes) but not in the worst
+(no; one inversion at the first rung). POD-LSPG at the
+same dimension is more accurate at every rung
+(yes) and cheaper at 5
+of 6 rungs (all but $q=512$, where both cost
+about the same); the non-dominated set on (ms, worst evolved) is
+`fom_ntol0.0001`, `fom_ntol0.001`, `fom_ntol0.003`, `fom_ntol0.03`, `fom_ntol1e-06`, `fom_ntol1e-11`, `pod_k32`{} — 0 neural rungs, the
+falsification clause's named outcome for this head. The loosest
+full-order setting that converges reaches $0.0041 %$ at
+$421.3$ ms (converged reference $1177.7$ ms).
+
+**Table 48.** Navier–Stokes, **exploratory after a failed phase-2 gate**
+(job 3808502): the correction ladder on the $K=32$,
+$R=512$ manifold at fixed $M=2176$, its three-layer decomposition
+(manifold layer and bank floor, medians over the development cases), the
+share of head-residual energy the $q$ directions capture, and same-job
+POD-LSPG at the matched dimension $k'=K+q$; costs are median ms inside this
+job. “Non-dom.” marks membership of the non-dominated set on (ms, worst
+evolved error) over every subject in the job.
+
+<!-- table: T11g_ns_ladder -->
+| $q$ | $k'=K+q$ | neural worst % | median % | ms | budget exits | manifold layer median % | bank floor % | energy % | POD-$k'$ worst % | median % | ms | neural non-dom. | POD non-dom. |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 32 | 68.7654 | 41.3922 | 13387.5 | 0 | 10.5493 | 0.2254 | 0 | 54.6331 | 33.4692 | 212.1 | — | yes |
+| 32 | 64 | 70.7701 | 36.8058 | 16979.1 | 0 | 10.2514 | 0.2254 | 26 | 35.5092 | 19.0979 | 431.0 | — | — |
+| 64 | 96 | 61.5127 | 32.7278 | 21289.9 | 0 | 9.9791 | 0.2254 | 44 | 27.7285 | 13.2380 | 832.7 | — | — |
+| 128 | 160 | 56.5456 | 25.6655 | 29011.5 | 0 | 8.9349 | 0.2254 | 68 | 17.1958 | 8.0974 | 2398.2 | — | — |
+| 256 | 288 | 33.0536 | 13.8903 | 46267.9 | 0 | 4.3136 | 0.2254 | 92 | 9.5434 | 3.9876 | 9963.9 | — | — |
+| 512 | 544 | 6.0140 | 2.4377 | 52592.3 | 0 | 0.2254 | 0.2254 | 100 | 4.1664 | 1.4871 | 53902.5 | — | — |
+
+**Table 49.** Navier–Stokes, **exploratory after a failed phase-2 gate**
+(job 3808502): the full-order Newton-tolerance ladder timed in the
+same job as Table 48; the last row is the converged
+reference.
+
+<!-- table: T11h_ns_fom -->
+| Newton tol. | worst evolved % | median % | ms | non-dominated |
+|---|---|---|---|---|
+| 0.03 | 106.4413 | 95.1088 | 46.7 | yes |
+| 0.01 | 106.4413 | 95.1088 | 47.2 | — |
+| 0.003 | 25.5895 | 7.3378 | 263.2 | yes |
+| 0.001 | 0.0041 | 0.0030 | 421.3 | yes |
+| 0.0001 | 0.0033 | 0.0006 | 425.6 | yes |
+| 1e-06 | 0.0033 | 0.0007 | 477.8 | yes |
+| 1e-11 | 0.0000 | 0.0000 | 1177.7 | yes |
 
 ### F.5 The linear cells in full
 

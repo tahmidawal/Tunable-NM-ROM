@@ -23,6 +23,39 @@ Audit file `audit.json` (SHA256 `41f015e3e6549d2e…`), driver result SHA256 `01
 | ladder `pod` monotone on evolved times | ladders.pod.monotone_evolved | True (28.7250 → 18.7995 → 7.0835 → 1.9464 → 0.7109 → 0.2184) | monotonicity recomputed from the audited per-rung errors |
 | second independent code path agrees | `bpn301-recheck.json` | worst relative difference against the audit 0.0, agrees = True | checks/recheck_headline.py imports neither audit_panel.py, the driver, nor JAX |
 
+## 512² — job `3805065`, attempt `bpn401`, `NVIDIA A100 80GB PCIe`
+
+Audit file `audit.json` (SHA256 `66a0cc311ea3144d…`), driver result SHA256 `c0e3cc300d34ac04…`.
+
+| claim | JSON field | value | check |
+|---|---|---|---|
+| every gate passed | checks[*].passed, failed | 31 passed, 1 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 2 failed; audit failed-list = ['matched_rule_files_bitwise', 'matched_rule_files_bitwise_recomputed'] | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
+| the backend was a GPU | checks['backend_gpu'] | gpu | the job asserts jax_backend=gpu in the preflight or exits 42 |
+| no subject was dropped | dropped | 0 dropped | the OOM-drop rule records every drop; an empty list means every declared subject was timed |
+| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 0 of 31 reduced subjects: none | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
+| most accurate reduced subject | arms[*].worst_evolved_percent | pod512_M2048_dense at 0.3328 % and 11933.9 ms | minimum over admissible reduced arms; errors recomputed from the saved fields |
+| rule sets carried | rules[*].rule_set | eqtopxfer, eqxfer | each rule file SHA256 is checked against inputs/PROVENANCE.json in-job |
+| EQ arms whose construction is not confirmed | arms[*].rule_status | q64_M320_eqxfer_g0p001 (marginal (b-eqtop superseded list)), q64_M320_eqxfer_g1em06 (marginal (b-eqtop superseded list)), q128_M576_eqtopxfer_g0p001 (certified in one draw), q128_M576_eqtopxfer_g1em06 (certified in one draw), q128_M576_eqxfer_g0p001 (blank), q128_M576_eqxfer_g1em06 (blank), q256_M1088_eqtopxfer_g0p001 (certified in one draw), q256_M1088_eqtopxfer_g1em06 (certified in one draw), q256_M1088_eqxfer_g0p001 (blank), q256_M1088_eqxfer_g1em06 (blank) | the status travels from the exporting lane's PROVENANCE.json into every row and caption |
+| ladder `dense` monotone on evolved times | ladders.dense.monotone_evolved | True (2.1376 → 1.5071 → 1.3666 → 1.2015 → 0.9890 → 0.5625) | monotonicity recomputed from the audited per-rung errors |
+| ladder `eq_eqtopxfer_g0p001` monotone on evolved times | ladders.eq_eqtopxfer_g0p001.monotone_evolved | True (2.1387 → 1.4538 → 1.4060 → 1.1995 → 0.9902 → 0.5510) | monotonicity recomputed from the audited per-rung errors |
+| ladder `eq_eqtopxfer_g1em06` monotone on evolved times | ladders.eq_eqtopxfer_g1em06.monotone_evolved | True (2.1378 → 1.4537 → 1.4055 → 1.1994 → 0.9901 → 0.5510) | monotonicity recomputed from the audited per-rung errors |
+| ladder `eq_eqxfer_g0p001` monotone on evolved times | ladders.eq_eqxfer_g0p001.monotone_evolved | False (2.1409 → 1.4917 → 1.3673 → 1.2488 → 0.9895 → 1.8179) | monotonicity recomputed from the audited per-rung errors |
+| ladder `eq_eqxfer_g1em06` monotone on evolved times | ladders.eq_eqxfer_g1em06.monotone_evolved | False (2.1400 → 1.4914 → 1.3672 → 1.2485 → 0.9894 → 1.8204) | monotonicity recomputed from the audited per-rung errors |
+| ladder `pod` monotone on evolved times | ladders.pod.monotone_evolved | True (29.0916 → 19.1988 → 7.2900 → 2.0372 → 0.9578 → 0.3328) | monotonicity recomputed from the audited per-rung errors |
+| transferred rule q = 0 certification | transfer[*].certification | ρ max 0.0185, ρ 95 0.0166, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 16 certification | transfer[*].certification | ρ max 0.0499, ρ 95 0.0370, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 32 certification | transfer[*].certification | ρ max 0.0152, ρ 95 0.0126, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 64 certification | transfer[*].certification | ρ max 0.1303, ρ 95 0.1215, basis none, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 128 certification | transfer[*].certification | ρ max 0.1406, ρ 95 0.1170, basis none, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 256 certification | transfer[*].certification | ρ max 0.3253, ρ 95 0.2925, basis none, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 0 certification | transfer[*].certification | ρ max 0.0186, ρ 95 0.0175, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 16 certification | transfer[*].certification | ρ max 0.0825, ρ 95 0.0350, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 32 certification | transfer[*].certification | ρ max 0.1319, ρ 95 0.0765, basis secondary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 64 certification | transfer[*].certification | ρ max 0.1791, ρ 95 0.1647, basis none, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 128 certification | transfer[*].certification | ρ max 0.0532, ρ 95 0.0259, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| transferred rule q = 256 certification | transfer[*].certification | ρ max 0.0364, ρ 95 0.0231, basis primary, 64 fit states | certified in-job on held-out reachable states disjoint from the fit set and the cases |
+| second independent code path agrees | `bpn401-recheck.json` | worst relative difference against the audit 0.0, agrees = True | checks/recheck_headline.py imports neither audit_panel.py, the driver, nor JAX |
+
 ## 1024² — job `3789572`, attempt `bpn203`, `NVIDIA H200`
 
 Audit file `audit.json` (SHA256 `9090ee219c03e2f7…`), driver result SHA256 `3ea069b81aff8c61…`.

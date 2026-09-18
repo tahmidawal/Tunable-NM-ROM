@@ -312,6 +312,7 @@ def section(W, au, tag):
                          f(lad['monotone_evolved']), f(lad['monotone_all_times']), f(lad['all_converged']),
                          lad['nondominated_converged_points'], f(lad['error_span'], 3), f(lad['cost_span'], 3)])
     W(table(hdr, rows))
+    physical(W, au)
     rule_sets(W, au)
     if au['transfer']:
         W('### Transferred rules (`eqxfer`, DESIGN.md §3.2)\n')
@@ -374,6 +375,24 @@ def rule_sets(W, au):
             W('Rules in this job whose held-out ρ max exceeds the 0.116 primary bar (secondary basis only): '
               + '; '.join(f"`{k}` q = {q}, ρ max {f(r)}" for k, q, r in sec)
               + '. Their arms are timed and reported, and they are the rungs the other set replaces.\n')
+    g = au['checks'].get('matched_rule_files_bitwise') or {}
+    if g.get('passed') is False:
+        pairs = (g.get('detail') or {}).get('pairs', [])
+        xf = {t['q']: t for t in (au.get('transfer') or []) if t.get('rule_set') == sets[0]} if len(sets) > 1 else {}
+        xt = {t['q']: t for t in (au.get('transfer') or []) if t.get('rule_set') == sets[-1]} if len(sets) > 1 else {}
+        W(f"**Gate `matched_rule_files_bitwise` FAILED in this job, on {len(pairs)} pair"
+          f"{'s' if len(pairs) != 1 else ''} ({', '.join(sorted({str(x['q']) for x in pairs}, key=int))} at both tolerances).** "
+          "The gate (DESIGN.md §A8) asserts that two rule sets pointing at the same rule *file* give bitwise identical "
+          "fields. That holds when the file is used at its own mesh; here both sets are **transferred**, and the "
+          "transfer refits each set's weights on its own random draw of fit states, so the two arms ran two different "
+          "transferred rules built from one source file. The failure is therefore a property of the transfer path, "
+          "not of the timed queries, and it is reported as a failed gate rather than re-labelled. What it measures is "
+          "the draw variance of the transfer at fixed source rule: "
+          + '; '.join(f"q = {q}: {sets[0]} ρ max {f(xf[q]['certification']['rho_max'])} ({xf[q]['basis']}) against "
+                      f"{sets[-1]} ρ max {f(xt[q]['certification']['rho_max'])} ({xt[q]['basis']})"
+                      for q in sorted({x['q'] for x in pairs}) if q in xf and q in xt)
+          + ". The affected arms keep their own in-job certification and admissibility; the §7 falsification clause "
+            "is not triggered (it names the 1e-9 fidelity gates, `fft_tight` convergence and the OOM survivors).\n")
     W('### Each rule set against its same-job dense twin\n')
     W('The dense twin of an EQ arm is the `rom` arm at the same q and the same M with the exact advection sum, '
       'timed in this same job at tol 1e-06. The cost ratio below is therefore a within-job quadrature speedup at '
@@ -457,6 +476,43 @@ def prediction(W, au):
             "capped ρ column above is context, not a controlled A/B.\n")
 
 
+def physical(W, au):
+    """Review round 2: the vs-reference (physical) error of every rung and full-order setting, the mesh's
+    discretisation error, and whether any reduced rung sits above it."""
+    disc = au['fom_discretisation_error_percent'] or {}
+    tight = au['checks'].get('same_grid_baseline_present')
+    ref = disc.get('fft_tight')
+    W('### Physical error against the 4096-interval reference, and the discretisation error of this mesh\n')
+    W(f"`worst vs ref %` is measured against the {au.get('reference_mesh') or 'refined'}-interval, Δt = 3.125e-4 "
+      f"reference restricted to this grid; it contains the mesh's own discretisation error, which is the converged "
+      f"`fft_tight` row's value, **{f(ref)} %** (median over cases {f(next((x['median_reference_percent'] for x in au['arms'] if x['arm'] == 'fft_tight'), None))} %). "
+      "A reduced rung whose physical error is above that number is adding error on top of the mesh; one at or below "
+      "it is indistinguishable from the converged same-grid solve in physical terms, and the `worst all %` column then "
+      "says how far from that solve it actually is. Full-order settings with a coarser step (dt 0.01) sit above the "
+      "converged value for the same reason.\n")
+    hdr = ['subject', 'family', 'q / k′', 'rule set', 'rule status', 'tol', 'worst vs ref %', 'median vs ref %',
+           'worst all % (same grid)', 'worst evolved %', 'vs ref − discretisation (pp)', 'above discretisation error']
+    rows = []
+    for x in sorted(au['arms'], key=lambda z: (z['family'] != 'fom', z['worst_reference_percent'])):
+        d = x['worst_reference_percent'] - ref if ref is not None else None
+        rows.append([f"`{x['arm']}`", x['family'], sub_label(x), x.get('rule_set') or '—', x.get('rule_status') or '—',
+                     sci(x['gtol']) if x['gtol'] is not None else '—', f(x['worst_reference_percent']),
+                     f(x['median_reference_percent']), f(x['worst_all_times_percent']), f(x['worst_evolved_percent']),
+                     f(d), f(d > 1e-12) if d is not None else '—'])
+    W(table(hdr, rows))
+    red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free')]
+    above = [x for x in red if ref is not None and x['worst_reference_percent'] > ref + 1e-12]
+    at = [x for x in red if ref is not None and x['worst_reference_percent'] <= ref + 1e-12]
+    W(f"\n{len(above)} of {len(red)} reduced subjects sit **above** the {f(ref)} % discretisation error on worst-vs-reference; "
+      f"{len(at)} sit at or below it"
+      + (": " + ', '.join(f"`{x['arm']}` ({f(x['worst_reference_percent'])} %)" for x in at) if at else '')
+      + ". The closest reduced subjects above it: "
+      + ', '.join(f"`{x['arm']}` (+{f(x['worst_reference_percent'] - ref, 4)} pp)"
+                  for x in sorted(above, key=lambda z: z['worst_reference_percent'])[:5])
+      + ". Full-order settings and their physical error: "
+      + ', '.join(f"`{k}` {f(v)} %" for k, v in sorted(disc.items(), key=lambda kv: kv[1])) + '.\n')
+
+
 def crossover(W, audits):
     """Within-job reduced-versus-full-order cost ratios at each mesh, compared as ratios only."""
     if len(audits) < 2:
@@ -490,6 +546,25 @@ def crossover(W, audits):
                      f(r2, 3) if r2 is not None else '—', f"{len(nred)} ({', '.join(nred) or 'none'})"])
     W(table(hdr, rows))
     ms = sorted(ratios)
+    gpus = {au['intervals']: au['gpu'] for au in audits}
+    shared = [(m1, m2) for i, m1 in enumerate(ms) for m2 in ms[i + 1:] if gpus[m1] == gpus[m2]]
+    if shared:
+        W('\n**Shared-hardware pairs** (DESIGN.md §A11: only these ratios are compared as ratios on the same GPU class; '
+          'every other mesh enters as a ratio only): '
+          + '; '.join(f"{m1}² and {m2}² on `{gpus[m1]}` — cheapest admissible reduced / cheapest same-job FOM "
+                      f"{f(ratios[m1][0], 3)}× → {f(ratios[m2][0], 3)}×, / same-job `fft_tight` "
+                      f"{f(ratios[m1][1], 3)}× → {f(ratios[m2][1], 3)}×, reduced subjects on the admissible frontier "
+                      f"{ratios[m1][2]} → {ratios[m2][2]}" for m1, m2 in shared) + '.\n')
+    if 512 in ratios:
+        r = ratios[512]
+        W(f"\n**§A11 pre-registration, scored (512²).** (i) The count of non-dominated admissible reduced subjects on "
+          f"(median GPU ms, worst evolved %) is **{r[2]}**, i.e. "
+          + ('**0**: the same side of the crossover as 256²; the crossover lies between 512² and 1024².' if r[2] == 0 else '**> 0**: the same side as 1024²; the crossover lies between 256² and 512².')
+          + f" (ii) The same-job cheapest-admissible-reduced / cheapest-FOM ratio is {f(r[0], 3)}× and the ratio to "
+            f"the same-job `fft_tight` is {f(r[1], 3)}×"
+          + (f", against {f(ratios[256][0], 3)}× and {f(ratios[256][1], 3)}× at 256² on the same GPU class" if 256 in ratios else '')
+          + (f", and {f(ratios[1024][0], 3)}× / {f(ratios[1024][1], 3)}× at 1024² (H200, ratio-only)" if 1024 in ratios else '')
+          + '.\n')
     if len(ms) >= 2:
         lo, hi = ms[0], ms[-1]
         a0, a1 = ratios[lo], ratios[hi]

@@ -737,3 +737,51 @@ partition, `--exclude=pax007`, `--time 20:00:00`, staged from commit `7a57f02e`,
 pending `gpu` jobs at submission; per protocol rule 4 it is escalated to H100 → H200 → L40S only if still
 pending after 3 h, science unchanged (an escalation would forfeit the shared-hardware comparison with
 `bpn301`, and is to be recorded here if it happens). Not waited on. Job count: **six of eight**.
+
+## A12 — 2026-09-17 ~20:30, after `bpn401` landed: §A11 scored, one gate failed and what it means, and the
+review-round-2 physical-error column
+
+`bpn401` (job 3805065, A100-80G on `pax105`, 1h32m03s, exit 0, `jax_backend=gpu x64=True precision=highest`,
+`ALL-DONE`) declared and timed all 47 subjects, none dropped. Checksum-collected (`OUTPUTS.sha256` +
+`MANIFEST.sha256` verified remotely and locally), NumPy-audited, re-derived by `checks/recheck_headline.py`
+(worst relative difference against the audit **0.0**), archived as 83 files / 80 chunks whose concatenation
+reproduces the whole-archive SHA256 `0e92d429…`, then the remote attempt directory deleted (namespace empty).
+
+**§A11 scored.** (i) The count of non-dominated admissible reduced subjects on (median GPU ms, worst evolved %)
+at 512² is **0**: the admissible frontier is full-order Newton only (the FNO is not on it either). The crossover
+therefore lies **between 512² and 1024²**. (ii) On shared hardware (A100-80G, `bpn301` and `bpn401`) the
+cheapest-admissible-reduced / cheapest-same-job-FOM ratio goes **4.480× → 2.923×** from 256² to 512², and the
+ratio to the same-job `fft_tight` **0.446× → 0.257×**; 1024² (H200, ratio-only) is 1.818× / 0.153×. The trend is
+monotone in the reduced query's favour across the three meshes and the frontier flips only at 1024².
+
+**A gate failed, reported as failed.** `matched_rule_files_bitwise` (§A8) fails on all six same-file pairs
+(q = 0, 16, 32 at both tolerances). The gate asserts that two sets pointing at one rule file give bitwise
+identical arms; that holds at the rule's own mesh (`bpn301`, passed) but at 512² both sets are transferred and
+the transfer refits each set on its own random draw of 64 fit states, so the arms ran two different transferred
+rules from one source file. The gate is mis-scoped for transferred sets — an amendment-level fact recorded here,
+not a re-labelling: the report prints the gate as failed. Its failure is informative: at q = 32 the same source
+rule transferred as `eqxfer` certifies primary (ρ_max 0.0152) and as `eqtopxfer` only secondary (0.1319) — the
+**transfer's fit-state draw alone moves ρ_max by ~9×** at fixed source rule and fixed mesh. The §7 falsification
+clause is not triggered (no 1e-9 fidelity gate exists at 512²; `fft_tight` converged everywhere; every subject
+survived). A future transferred two-set job should either share one fit-state draw between sets that share a
+file, or declare the gate at-mesh-only; neither change is made retroactively.
+
+**What else the job showed.** The `eqtopxfer` ladder is monotone on evolved times at both tolerances and its
+q = 128 / 256 transfers certify primary at 512² (ρ_max 0.0532 / 0.0364, from the m = 2319 / 2560 single-draw
+sources) where the `eqxfer` set's q ≥ 64 do not (0.1303 / 0.1406 / 0.3253); `eqtopxfer` q = 64 is uncertified
+(0.1791). At q = 256 `eqtopxfer` reaches 0.5510 % evolved at 486 ms against its dense twin's 0.5625 % at 16 220 ms
+(33× cheaper). Every one of these rungs still carries "single-draw" from its source and "primary at 512²" from
+this job, stated separately.
+
+**Review round 2 — the physical column.** The report now carries, for every mesh, a "Physical error against the
+4096-interval reference" section listing `worst vs ref %` and `median vs ref %` for every reduced rung and every
+full-order setting, the mesh's discretisation error (the converged `fft_tight` row: **2.7025 %** at 512²), and a
+flag per subject. At 512² **all 39 reduced subjects sit above the discretisation error**, the closest by
++0.0185 pp (`pod512_M2048_dense`), +0.0207 pp (`free512_M1024_dense`) and +0.0557 pp (`q256_M1088_eqtopxfer_g0p001`);
+the coarse-step full-order settings (dt 0.01) sit above it too (3.30–4.18 %), and `nt1e-2_dt005` sits below it
+(2.0638 %) because its under-resolved solve happens to cancel discretisation error against the reference — a
+reminder that the physical column ranks nothing on its own. No reduced rung is "more physical" than the
+converged same-grid solve at any mesh; the reduced rungs' physical error is the mesh's plus their own.
+
+**Codex** still unavailable; `reports/self-audit-2026-09-17-bpn301-bpn203.md` regenerated over all three jobs.
+Jobs used: **six of eight**. Nothing submitted.

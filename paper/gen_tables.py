@@ -2049,6 +2049,8 @@ def build_problems_and_provenance(mesh):
     prov('T9', 'b-eqtop', MACROS.get('provEqtopJobs', '---'), 'see job list', 'see job list', MACROS.get('provBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Burgers)', MACROS.get('provMeshBurgersJob', '---'), MACROS.get('provMeshBurgersGpu', '---'), MACROS.get('provMeshBurgersCommit', '---'), MACROS.get('provMeshBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
+    prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ')', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
+    prov('T11f', 'ns2d ns301 (head-only data scaling on the frozen K=16 bank)', MACROS.get('provNsScaleJob', '---'), 'per job', 'per job', 'frozen K=16 bank; heads hashed in result.json')
     prov('T11g, T11h', 'ns2d ns304 (exploratory after a failed phase-2 gate)', MACROS.get('provNsExpJob', '---'), MACROS.get('provNsExpGpu', '---'), MACROS.get('provNsExpCommit', '---'), 'ckpt\\_K32\\_R512 hashed in result.json')
     prov('T11a', 'w-ladder', MACROS.get('provWaveJobs', '---'), 'per job', 'per job', 'frozen-math SHA asserted in job')
     prov('T11d', 'heat linear bank (2026-09-10)', MACROS.get('provHeatJob', '---'), MACROS.get('provHeatGpu', '---'), MACROS.get('provHeatCommit', '---'), 'expanded\\_seed790715 (frozen)')

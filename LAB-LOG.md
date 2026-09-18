@@ -14529,3 +14529,53 @@ Branch `exp/2026-09-17-ns2d`; DESIGN §A12; A100 `pax105`, 3 h 37 m, exit 0, `ja
 **Retracted / corrected.** None.
 
 **Open.** ns302 (3808495) running ~3 h 45 m; when it lands the §A9 cell is closed either way.
+
+## 2026-09-17
+
+### b-lowvisc — panel landed: P FAILS (F3), F2 does not fire; POD collapses 12×, the neural head 3–4×; ladder monotone but below the knob bar; lane closed at 3 of 8 jobs
+
+**What ran.** `lvp01` = slurm **3817807** (A100-80G pax049, COMPLETED 0:0, 52 min: 22 min in-job
+`old` residual directions at rank 512 + 29 min panel), namespace `b_lowvisc_20260917/lvp01`, source
+`144f6b29`. 27 subjects in one allocation: fixed M=1088 ladder q∈{0..256}, M=256 control q≤128,
+(256, 2176), POD-LSPG k'∈{16..512}, free512 at M=1024, 8 tuned FOM settings; 3 timed reps. Collected
+with checksums, audited by b-panel's verbatim NumPy audit (0 failed, 0 dropped, every error
+recomputed from saved fields), archived `experiments/b-lowvisc/artifacts/lvp01` (546 MB), remote dir
+deleted. Branch `exp/2026-09-17-b-lowvisc`, final commit after this entry's work (DESIGN A9,
+report, summary.json 3-stage, self-audit rows 24–30).
+
+**Verdicts (one line each).**
+* **P: FAIL.** Non-dominated on (same-job ms, worst evolved %): `nt1e-2_dt01`, `nt1e-3_dt005`,
+  `dense_tight`, `fft_tight` — no reduced subject. `nt1e-3_dt005` (54.9 ms, 0.197 %) beats every
+  reduced subject on both axes (cheapest reduced 300 ms / 8.39 %; most accurate 2864 ms / 6.19 %).
+  F3 as pre-registered: the loss is structural in this discretisation, low viscosity included.
+* **F2: does not fire.** Dev-cohort three layers, incumbent → low-ν: bank floor 0.3918 → 7.4455 %
+  (19.0×), best-found 2.5447 → 11.3934 % (4.48×), solved q=0 M=256 2.5629 → 8.3933 % (3.27×) vs
+  POD-512 12.09×. Linear objects collapse 12–19×; the nonlinear head 3–4×.
+* **Ladder M=1088:** monotone (9.05 → 6.67 %), all converged, error span **1.357× < 2× knob bar**,
+  cost span 3.25×. **M=256 control not monotone** (8.39 → 10.26 %, test-starved at q=128, as b-qxm).
+  (256, 2176) = 6.19 %, the most accurate reduced subject.
+* **Reduced-vs-reduced (the on-thesis positive, no more than that):** every neural rung beats every
+  POD-LSPG rank (best 11.25 % evolved at k'=256; k'=512 is *worse*, 17.78 % vs its own 10.28 %
+  floor — solver-limited) and the free R=512 bank's own solve (7.79 %). Reduced-only frontier is
+  neural from q=64 up.
+* **F4 on every row:** all reduced rungs 17.8–19.4 % against the 4096 reference; `fft_tight` itself
+  20.82 %. Nothing on this mesh is distinguishable against the continuum below that.
+
+**Full tables:** `experiments/b-lowvisc/reports/2026-09-17-b-lowvisc.md` (per-rung same-grid and
+vs-reference worst-evolved, all-times, t=0, ms, convergence, non-dominance; POD-LSPG; free bank;
+FOM grid), `reports/summary.json`.
+
+**What was wrong / caveated.** (1) Low-ν `solved/best-found` at q=0 is **0.737**: the 8-start
+reconstruction oracle found a worse minimum than the PDE solve, so the dev-cohort best-found is an
+upper bound and 4.48× over-states the degradation; solved (3.27×) is the cleaner layer. (2) The
+knob-bar 2× is b-qxm's pre-registration, reported not gated here. (3) Two generator bugs (list
+order vs set; duplicate kw) fixed before commit; nothing numerical. (4) A8.1–A8.3 detour on the
+vs-reference key, kept as written. Nothing retracted from earlier entries.
+
+**Recommendation, not submitted: do NOT run the L=512 F4 confirmation for this cell** (≈ 3 jobs,
+≈ 9 h on 80 GB cards: gate + retrain + panel). It would close a caveat on a cell that fails P for a
+structural reason mesh refinement does not change (the exactly-preconditioned Newton step gets
+relatively cheaper on finer meshes). If the paper wants F4 closed for the reduced-vs-POD statement
+only, the L=512 gate alone (leg (a) at 512, 1 job, ≈ 1 h) is the cheapest honest step. **Lane
+closed** unless the coordinator wants that gate. Jobs used: 3 of 8. Codex audit of the report still
+owed after 2026-09-19 11:33 (A1).

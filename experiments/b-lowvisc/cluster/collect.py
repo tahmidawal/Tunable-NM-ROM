@@ -19,6 +19,7 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/b_lowvisc_20260917'
 # SHA256s are verified on both sides against OUTPUTS.sha256 and recorded beside the chunks.
 # Nothing is excluded from the b-lowvisc gate archive: its largest arrays are the POD audit
 # artifacts (tens of MB), which the independent audit needs and which the chunked archive holds.
+EXCLUDED_BY_KIND = {'lvg': [], 'lvt': ['output/train/sep_coeff_N256_K16_R512.npz']}
 EXCLUDED = []
 
 
@@ -27,6 +28,8 @@ def main():
     p.add_argument('attempt')
     a = p.parse_args()
     assert a.attempt.isalnum()
+    global EXCLUDED
+    EXCLUDED = EXCLUDED_BY_KIND[a.attempt[:3]]
     remote = f'{NAMESPACE}/{a.attempt}'
     out = ROOT / 'experiments/b-lowvisc/runs' / a.attempt / 'archive'
     out.mkdir(parents=True, exist_ok=False)

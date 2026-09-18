@@ -2,6 +2,7 @@
  "lane": "b-lowvisc",
  "generated_from": "runs/lvg01/archive/output/gate/result.json",
  "gate_job": "3789639",
+ "train_job": "3804337",
  "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
  "gpu": "NVIDIA A100-PCIE-40GB",
  "jax": "0.10.2",
@@ -1451,6 +1452,358 @@
    "family": "audit",
    "metric": "failed_pod_orthonormal_incumbent",
    "value": 7.206802549011501e-05
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "bank_floor_test_max_percent",
+   "value": 2.7834281866161534
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "bank_floor_test_max_percent",
+   "value": 0.2997558284690597
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "bank_floor_test_max_percent",
+   "value": 0.3025110399142964
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "bank_floor_test_max_percent",
+   "value": 0.33142508059702996
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "bank_floor_test_max_percent",
+   "value": 0.2537689338689851
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "bank_floor_test_max_percent_ratio",
+   "value": 9.285651594605955
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "bank_floor_test_mean_percent",
+   "value": 0.9766535468658365
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "bank_floor_test_mean_percent",
+   "value": 0.021236444373705938
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "bank_floor_test_mean_percent",
+   "value": 0.02179816010828514
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "bank_floor_test_mean_percent",
+   "value": 0.02170574858921879
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "bank_floor_test_mean_percent",
+   "value": 0.019805126789783387
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "bank_floor_test_mean_percent_ratio",
+   "value": 45.98950415989069
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "best_found_test_max_percent",
+   "value": 5.172642483234339
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "best_found_test_max_percent",
+   "value": 2.765090616792729
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "best_found_test_max_percent",
+   "value": 2.8184037186010573
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "best_found_test_max_percent",
+   "value": 2.573117076676565
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "best_found_test_max_percent",
+   "value": 3.0045716655053227
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "best_found_test_max_percent_ratio",
+   "value": 1.8706954672010592
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "best_found_test_mean_percent",
+   "value": 2.2612297084007005
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "best_found_test_mean_percent",
+   "value": 0.5200570538097191
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "best_found_test_mean_percent",
+   "value": 0.5604041677366687
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "best_found_test_mean_percent",
+   "value": 0.5217635409250426
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "best_found_test_mean_percent",
+   "value": 0.5340527260962983
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "best_found_test_mean_percent_ratio",
+   "value": 4.348041607811841
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "best_found_t0_percent",
+   "value": 2.046887918281186
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "best_found_t0_percent",
+   "value": 1.5020737159575095
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "best_found_t0_percent",
+   "value": 1.593011906909024
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "best_found_t0_percent",
+   "value": 1.4958267040936553
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "best_found_t0_percent",
+   "value": 1.5973128640846712
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "best_found_t0_percent_ratio",
+   "value": 1.362708032592382
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "head_recon_train_mean_percent",
+   "value": 2.31256630969867
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "head_recon_train_mean_percent",
+   "value": 0.7507219122474577
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed1",
+   "metric": "head_recon_train_mean_percent",
+   "value": 0.7615761182560725
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed2",
+   "metric": "head_recon_train_mean_percent",
+   "value": 0.7080713729255117
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "seed3",
+   "metric": "head_recon_train_mean_percent",
+   "value": 0.7712920849939412
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "ratio",
+   "metric": "head_recon_train_mean_percent_ratio",
+   "value": 3.0804566537500873
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "F2",
+   "family": "gate",
+   "metric": "fires_provisional",
+   "value": false
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "F2",
+   "family": "gate",
+   "metric": "pod512_degradation_ratio",
+   "value": 12.09229470095856
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "bank_cond_G",
+   "value": 4168.953069641146
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "bank_cond_G",
+   "value": 26368.625367005006
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "lowvisc",
+   "metric": "bank_gram_sv_ratio_511",
+   "value": 0.00023986837541591172
+  },
+  {
+   "job_id": "2837431",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "train_stage",
+   "family": "incumbent",
+   "metric": "bank_gram_sv_ratio_511",
+   "value": 3.792385784551733e-05
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "audit_train",
+   "family": "audit",
+   "metric": "checks_total",
+   "value": 16
+  },
+  {
+   "job_id": "3804337",
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "arm": "audit_train",
+   "family": "audit",
+   "metric": "checks_failed",
+   "value": 0
   }
  ]
 }

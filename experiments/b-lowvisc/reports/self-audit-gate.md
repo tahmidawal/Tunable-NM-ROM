@@ -43,3 +43,21 @@ Every claim in `2026-09-17-b-lowvisc.md`, the JSON field it rests on, and the ch
   statement, which the report makes, is that the same-grid metric is well defined either way and a
   finer-mesh confirmation is owed before the cell is a headline.
 * **Legs (a) and (b) are gates, not the result.** Criterion P is untested until stage 3.
+
+## Addendum, stage 2 (2026-09-17, `lvt01` = 3804337) — same substitution, same caveat
+
+| # | claim | field it rests on | check run | outcome |
+|---|---|---|---|---|
+| 17 | Recipe unchanged from the incumbent | `sep_burgers_r3*.json/config`, `sep_coeff*.json/config`, `hfit_full.json/config+spec` vs push_r3a / dn256b | `recipe_values_match_incumbent`: every listed key equal | pass |
+| 18 | Only the data changed | `data.fingerprint` (sum, sumsq, shape) vs the incumbent's | inverted gate: shapes equal, sums differ by >1e-3 relative; job-side `generator-parity.json` passed with bounds (0.001, 0.01) | pass |
+| 19 | Training ran to completion, uncapped, on a GPU in f64 | `train.steps_done/time_capped`, `arms.mid.train.steps_done`, `config.backend/x64/matmul_precision` | 300000 / 200000, `gpu`, `True`, `highest` at all three stages | pass |
+| 20 | Checkpoint is the one the job hashed | `TRAIN-SHA256.txt`, `OUTPUTS.sha256`, bytes in `checkpoints/`, `EXCLUDED-SHA256.txt` for the npz | all four agree (`9a481e27…` head, `0856f630…` bank, `9e40fe6a…` npz) | pass |
+| 21 | The three-layer table is like for like | identical JSON fields (`test_span_floor`, `oracle_test`) from identical scripts on the identical 408-state held-out draw | fields read by the same function for all five runs; no number typed | pass |
+| 22 | F2 does not fire (provisional) | `audit.json: f2` | conjunctive over bank floor 9.286×, best-found 1.871×, solved n/a, bar 12.092× | provisional, not firing |
+| 23 | "Manifold below the linear floor" | best-found 5.1726 % (held-out) vs POD-512 7.3643 % (development) | **different cohorts** — flagged inline in the report; the panel is the test | not a paper number yet |
+
+**Weakest points, stated.** Row 23 mixes cohorts and is labelled as such. Row 22 evaluates F2's
+analogue, not F2; the report says *provisional* every time. The oracle best-found uses the truth
+to fit (a representation bound) — it says what the manifold *can* represent, not what the solver
+will find; the incumbent's solved/best-found ratio was 1.007 at $q=0$, but nothing yet says the
+low-viscosity solver will be as benign. F4 is unchanged and applies to every stage-2 number.

@@ -372,3 +372,30 @@ columns. Nothing in `lvg01` changes them. Stage 3 remains conditional on `lvt01`
 checkpoint whose three-layer decomposition is worth panelling; if the low-viscosity bank floor,
 best-found and solved all degrade by at least the POD-512 factor, **F2 fires and the lane stops
 before the panel** with the negative as the deliverable.
+
+**A7 (2026-09-17, after the training job `lvt01` returned, before any panel) — stage 2 collected;
+F2 evaluated on its training-stage analogue and does NOT fire, provisionally.** `lvt01` = slurm
+3804337 (A100, pax142, COMPLETED 0:0, 3h48m) ran stages A–C at the incumbent recipe with the
+viscosity family as the only change; `audit_train.py` (16 checks, 0 failed) confirms the recipe
+field by field, the inverted data fingerprint (same shapes, different sums), and every hash.
+
+* F2 as written in §6 needs the **panel** bank floor / best-found / solved on the development
+  cohort, which do not exist before stage 3. What stage 2 supplies is their like-for-like
+  training-stage analogue on the 408 held-out test states (the incumbent's own test trajectories
+  with $\nu/10$), against the incumbent's own training run (job 2837431) and b-seeds' reseeds.
+* Bank floor (worst held-out) degrades $9.286\times$; best-found (worst held-out) degrades only
+  $1.871\times$ ($2.7651\,\%\to5.1726\,\%$) against the POD-512 factor of $12.092\times$. F2 is
+  conjunctive, so with best-found a factor 6.5 short of the bar it **cannot fire on the solved
+  layer alone**; recorded as *provisionally not firing*, with the panel as the pre-registered
+  evaluation. The stage-3 panel is therefore warranted under §5.
+* The on-thesis observation, recorded with its cohort caveat: on the incumbent family the
+  $K=16$ manifold's best-found ($2.77\,\%$, held-out) sits above the POD-512 floor ($0.61\,\%$,
+  development); on the low-viscosity family it sits below it ($5.17\,\%$ vs $7.36\,\%$). The
+  panel puts both on one cohort in one job; until then this is not a paper number.
+* F4 still travels with every number (A5).
+* Nothing submitted at this amendment; the next job is the coordinator's call. Recommendation
+  recorded: `lvp01` (A3) first, the $L=512$ F4 confirmation second, because a finer-mesh
+  confirmation of a cell that fails P is wasted compute.
+* `collect.py` now excludes the 567 MB extraction npz from the Git archive for training attempts
+  (its SHA256 is verified on both sides and recorded beside the chunks), as its own docstring
+  always said it should; the gate attempt's archive is unaffected.

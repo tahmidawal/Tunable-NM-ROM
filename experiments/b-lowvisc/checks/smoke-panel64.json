@@ -1,0 +1,64 @@
+{
+ "note": "64-interval local smoke of both stages from the staged lvp01 tree (validates no number)",
+ "directions": {
+  "complete": true,
+  "gates": {
+   "evaluation_cohort_matches_gate_job": {
+    "expected": null,
+    "got": "0fcfc23f6d0720be0a675b040228115f0d7ae9334249516aae8c331c7aaf1397",
+    "passed": null
+   },
+   "training_disjoint_from_evaluation": {
+    "passed": true
+   },
+   "snapshot_residual": {
+    "passed": true,
+    "bar": 1e-08,
+    "max_relative_residual": 9.750186574207733e-10
+   },
+   "directions_rank_covers_ladder": {
+    "passed": true,
+    "available_rank": 64,
+    "need": 4
+   },
+   "directions_field_orthonormal": {
+    "passed": true,
+    "deviation": 3.708144902248023e-14
+   }
+  },
+  "rank": 64,
+  "seconds": 29.810607318999246
+ },
+ "panel": {
+  "complete": true,
+  "subjects": [
+   "dense_tight",
+   "fft_tight",
+   "free512_M1024_dense",
+   "nt1e-2_dt005",
+   "nt1e-2_dt01",
+   "nt1e-3_dt005",
+   "nt1e-3_dt01",
+   "nt1e-4_dt005",
+   "nt1e-4_dt01",
+   "pod16_M64_dense",
+   "pod8_M32_dense",
+   "q0_M32_dense_g1em06",
+   "q0_M64_dense_g1em06",
+   "q4_M64_dense_g1em06",
+   "q4_M96_dense_g1em06"
+  ],
+  "invocations": 30,
+  "all_rows_have_error_vs_reference": false,
+  "gates": {
+   "evaluation_cohort_bitwise_abl01": null,
+   "directions_file_sha256": true,
+   "directions_prefix_hashes": true,
+   "direct_reproduces_fft_tight": true,
+   "repetition_output_identical": true,
+   "matched_rule_files_bitwise": null,
+   "fft_tight_converged_everywhere": true
+  },
+  "dropped": []
+ }
+}

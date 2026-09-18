@@ -59,7 +59,7 @@ smoke = dict(cfg, attempt='smoke-panel64', intervals=64, reference_mesh=128, ref
              train_trajectories=4, case_subset=[0, 5], reps=1, burn_seconds=0.05, recon_budget=100, recon_starts=4,
              pod_ranks=[8, 16], order_seed=1, expected_physical_sha256=None, expected_reference_sha256=None,
              q_ladder=[0, 4], residual_snapshots=64, residual_starts=2, residual_budget=50,
-             extra_dense_cells=[[0, 64], [4, 64], [0, 32], [4, 96]], priority_override=None,
+             extra_dense_cells=[[0, 64], [4, 64], [0, 32], [4, 96]], priority_override=[],
              purpose='local smoke, 64 intervals: both stages run end to end; validates no number')
 (HERE / 'config-smoke-panel64.json').write_text(json.dumps(smoke, indent=1) + '\n')
 print('cells', cfg['extra_dense_cells'], '\nsubjects', len(cfg['priority_override']) + len(cfg['fom_settings']))

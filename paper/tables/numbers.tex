@@ -343,24 +343,31 @@
 \newcommand{\nNsDataTrainExtra}{1536}
 \newcommand{\nNsDataTrainN}{2048}
 \newcommand{\nNsDataTrainRecon}{12.3875}
-\newcommand{\nNsExpBankFloor}{0.2254}
+\newcommand{\nNsExpBankFloor}{1.7434}
 \newcommand{\nNsExpBudgetExitsTotal}{0}
 \newcommand{\nNsExpCases}{8}
 \newcommand{\nNsExpCostRatio}{3.9}
 \newcommand{\nNsExpEnergyList}{26, 44, 68, 92, 100}
 \newcommand{\nNsExpEnergyRule}{field-metric POD of eta - h(z*), z* best-found by multi-start LM; nested in q}
+\newcommand{\nNsExpEnstrophyMidMax}{0.97}
+\newcommand{\nNsExpEnstrophyMidMin}{0.95}
+\newcommand{\nNsExpEnstrophyPodThirtyTwo}{1.026}
+\newcommand{\nNsExpEnstrophyQthirtyTwo}{0.990}
+\newcommand{\nNsExpEnstrophyQtop}{0.999}
+\newcommand{\nNsExpEnstrophyQzero}{1.043}
 \newcommand{\nNsExpFomLooseMs}{421.3}
 \newcommand{\nNsExpFomLooseWorst}{0.0041}
 \newcommand{\nNsExpFomRefMs}{1177.7}
 \newcommand{\nNsExpGain}{11.4}
 \newcommand{\nNsExpK}{32}
 \newcommand{\nNsExpM}{2176}
-\newcommand{\nNsExpManifoldQzero}{10.5493}
-\newcommand{\nNsExpManifoldTop}{0.2254}
+\newcommand{\nNsExpManifoldQzero}{16.4787}
+\newcommand{\nNsExpManifoldTop}{1.7434}
 \newcommand{\nNsExpMonotoneMedian}{yes}
 \newcommand{\nNsExpMonotoneWorst}{no}
 \newcommand{\nNsExpNonDomList}{\texttt{fom\_ntol0.0001}, \texttt{fom\_ntol0.001}, \texttt{fom\_ntol0.003}, \texttt{fom\_ntol0.03}, \texttt{fom\_ntol1e-06}, \texttt{fom\_ntol1e-11}, \texttt{pod\_k32}}
 \newcommand{\nNsExpNonDomNeuralCount}{0}
+\newcommand{\nNsExpPerTimeAccumulates}{yes}
 \newcommand{\nNsExpPodBetterEveryRung}{no}
 \newcommand{\nNsExpPodCheaperCount}{5}
 \newcommand{\nNsExpPodCheaperMaxQ}{256}
@@ -372,8 +379,16 @@
 \newcommand{\nNsExpR}{512}
 \newcommand{\nNsExpReps}{3}
 \newcommand{\nNsExpRungCount}{6}
-\newcommand{\nNsExpSolveOverManifoldMax}{10.8}
-\newcommand{\nNsExpSolveOverManifoldMin}{2.9}
+\newcommand{\nNsExpSolveOverManifoldDecreasing}{yes}
+\newcommand{\nNsExpSolveOverManifoldMax}{2.5}
+\newcommand{\nNsExpSolveOverManifoldMedFortyEightMax}{10.8}
+\newcommand{\nNsExpSolveOverManifoldMedFortyEightMin}{2.9}
+\newcommand{\nNsExpSolveOverManifoldMin}{1.4}
+\newcommand{\nNsExpSolveOverManifoldPerTimeFirst}{1.44}
+\newcommand{\nNsExpSolveOverManifoldPerTimeLast}{3.85}
+\newcommand{\nNsExpSolveOverManifoldPerTimeList}{1.44, 1.66, 2.19, 2.89, 3.85}
+\newcommand{\nNsExpSolveOverManifoldQtop}{1.40}
+\newcommand{\nNsExpSolveOverManifoldQzero}{2.51}
 \newcommand{\nNsExpTopMedian}{2.4377}
 \newcommand{\nNsExpTopWorst}{6.0140}
 \newcommand{\nNsFamBankFloorMedian}{0.2774}
@@ -1327,11 +1342,11 @@
 \newcommand{\provNsPrevJob}{3783796}
 \newcommand{\provNsScaleJob}{3808493}
 \newcommand{\provNsScalingBandSource}{ns2d/DESIGN.md §A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous}
-\newcommand{\provNsThreeZeroFourResultPin}{9830d202}
-\newcommand{\provNsThreeZeroThreeResultPin}{9830d202}
-\newcommand{\provNsThreeZeroTwoResultPin}{9830d202}
-\newcommand{\provNsTwodDesignPin}{9830d202}
-\newcommand{\provNsTwodSummaryPin}{9830d202}
+\newcommand{\provNsThreeZeroFourResultPin}{2d70f36a}
+\newcommand{\provNsThreeZeroThreeResultPin}{2d70f36a}
+\newcommand{\provNsThreeZeroTwoResultPin}{2d70f36a}
+\newcommand{\provNsTwodDesignPin}{2d70f36a}
+\newcommand{\provNsTwodSummaryPin}{2d70f36a}
 \newcommand{\provOpCtrlJob}{3783831}
 \newcommand{\provOpJobs}{3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189}
 \newcommand{\provPanelCkpt}{incumbent (gate checkpoint\_unchanged; hash in T2, tuning row)}

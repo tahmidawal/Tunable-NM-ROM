@@ -127,12 +127,12 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
     # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e; ns303 (8-dimensional family) at 5ea1cc30
-    # ns2d lane CLOSED at 9830d202 (ns302 = 4x data also fails H-ORACLE; no phase-3 job ever submitted)
-    'ns2d_summary': ('2026-09-17-ns2d', '9830d202'),
-    'ns304_result': ('2026-09-17-ns2d', '9830d202'),
-    'ns303_result': ('2026-09-17-ns2d', '9830d202'),
-    'ns302_result': ('2026-09-17-ns2d', '9830d202'),
-    'ns2d_design': ('2026-09-17-ns2d', '9830d202'),
+    # ns2d lane CLOSED at 9830d202; §A14 correction at 2d70f36a (ns304 three-layer ratio on a matched statistic)
+    'ns2d_summary': ('2026-09-17-ns2d', '2d70f36a'),
+    'ns304_result': ('2026-09-17-ns2d', '2d70f36a'),
+    'ns303_result': ('2026-09-17-ns2d', '2d70f36a'),
+    'ns302_result': ('2026-09-17-ns2d', '2d70f36a'),
+    'ns2d_design': ('2026-09-17-ns2d', '2d70f36a'),
     # b-lowvisc closed at df92e40d (panel job 3817807; appendix cell under the F4 under-resolution caveat)
     'lowvisc_summary': ('2026-09-17-b-lowvisc', 'df92e40d'),
 }
@@ -2155,11 +2155,11 @@ def build_pending():
                 if po and not po['worst_evolved'] < ne['worst_evolved']: pod_acc_all = False
                 if po and po['median_seconds'] < ne['median_seconds']: pod_cheaper.append(q)
                 t.append([str(q), str(kp), pct(100 * ne['worst_evolved']), pct(100 * ne['median_evolved']), ms(ms_n), str(int(ne['budget_exits'])),
-                          pct(100 * ne['decomposition.manifold_median']), pct(100 * ne['decomposition.bank_median']), f"{energy[q]:.0f}",
+                          pct(100 * ne['threelayer.manifold_medcase_worstT']), pct(100 * ne['threelayer.bank_medcase_worstT']), f"{ne['threelayer.solved_over_manifold_matched']:.2f}", f"{energy[q]:.0f}",
                           pct(100 * po['worst_evolved']) if po else '---', pct(100 * po['median_evolved']) if po else '---', ms(ms_p) if po else '---',
                           yn(ne.get('non_dominated')), yn(po.get('non_dominated')) if po else '---'])
-            write('T11g_ns_ladder.tex', tabular(['$q$', "$k'=K+q$", 'neural worst \\%', 'median \\%', 'ms', 'budget exits', 'manifold layer median \\%', 'bank floor \\%', 'energy \\%',
-                                                  "POD-$k'$ worst \\%", 'median \\%', 'ms', 'neural non-dom.', 'POD non-dom.'], t, 'rrrrrrrrrrrrll', r'\scriptsize'),
+            write('T11g_ns_ladder.tex', tabular(['$q$', "$k'=K+q$", 'neural worst \\%', 'median \\%', 'ms', 'budget exits', 'manifold layer \\%', 'bank floor \\%', 'solved / manifold', 'energy \\%',
+                                                  "POD-$k'$ worst \\%", 'median \\%', 'ms', 'neural non-dom.', 'POD non-dom.'], t, 'rrrrrrrrrrrrrll', r'\scriptsize'),
                   f'ns2d ns304, job {NS4} (EXPLORATORY after the failed phase-2 gate): q-ladder on the ns204 K={K4}/R={R4} manifold at fixed M={M4}, matched POD-LSPG in the same job; energy = the lane residual_energy_captured field per q')
             fr = []
             for tol in cfg['FOM_NTOLS'] + [cfg['NTOL']]:
@@ -2174,10 +2174,24 @@ def build_pending():
             macro('nNsExpQzeroMedian', pct(100 * E['neural_q0']['median_evolved'])); macro('nNsExpTopMedian', pct(100 * E[f'neural_q{qs4[-1]}']['median_evolved']))
             macro('nNsExpGain', f"{L['gain_top_over_q0']:.1f}"); macro('nNsExpCostRatio', f"{L['cost_ratio_top_over_q0']:.1f}")
             macro('nNsExpMonotoneWorst', yn(L['monotone_worst_evolved'])); macro('nNsExpMonotoneMedian', yn(L['monotone_median_evolved']))
-            macro('nNsExpBankFloor', pct(100 * E['neural_q0']['decomposition.bank_median'])); macro('nNsExpManifoldQzero', pct(100 * E['neural_q0']['decomposition.manifold_median']))
-            macro('nNsExpManifoldTop', pct(100 * E[f'neural_q{qs4[-1]}']['decomposition.manifold_median']))
-            sl = [E[f'neural_q{q}']['median_evolved'] / E[f'neural_q{q}']['decomposition.manifold_median'] for q in qs4]
+            # three layers on the MATCHED statistic (median over cases of the worst evolved time, both sides; lane §A14);
+            # the earlier median-over-48-states ratio is kept by the lane as _med48_SECONDARY and printed only as such
+            macro('nNsExpBankFloor', pct(100 * E['neural_q0']['threelayer.bank_medcase_worstT'])); macro('nNsExpManifoldQzero', pct(100 * E['neural_q0']['threelayer.manifold_medcase_worstT']))
+            macro('nNsExpManifoldTop', pct(100 * E[f'neural_q{qs4[-1]}']['threelayer.manifold_medcase_worstT']))
+            sl = [E[f'neural_q{q}']['threelayer.solved_over_manifold_matched'] for q in qs4]
             macro('nNsExpSolveOverManifoldMin', f"{min(sl):.1f}"); macro('nNsExpSolveOverManifoldMax', f"{max(sl):.1f}")
+            macro('nNsExpSolveOverManifoldQzero', f"{sl[0]:.2f}"); macro('nNsExpSolveOverManifoldQtop', f"{sl[-1]:.2f}")
+            macro('nNsExpSolveOverManifoldDecreasing', yn(all(a >= b for a, b in zip(sl, sl[1:])) or (sl[0] > sl[-1] and max(sl) == sl[0])))
+            sl2 = [E[f'neural_q{q}']['threelayer.solved_over_manifold_med48_SECONDARY'] for q in qs4]
+            macro('nNsExpSolveOverManifoldMedFortyEightMin', f"{min(sl2):.1f}"); macro('nNsExpSolveOverManifoldMedFortyEightMax', f"{max(sl2):.1f}")
+            times = ['t0.2', 't0.4', 't0.6', 't0.8', 't1']
+            pt = [E['neural_q0'][f'threelayer.solved_over_manifold_per_time.{tt_}'] for tt_ in times]
+            macro('nNsExpSolveOverManifoldPerTimeList', ', '.join(f"{x:.2f}" for x in pt)); macro('nNsExpSolveOverManifoldPerTimeFirst', f"{pt[0]:.2f}"); macro('nNsExpSolveOverManifoldPerTimeLast', f"{pt[-1]:.2f}")
+            macro('nNsExpPerTimeAccumulates', yn(all(a <= b for a, b in zip(pt, pt[1:]))))
+            en = {q: E[f'neural_q{q}']['enstrophy_ratio_rom_over_ref.median_t1'] for q in qs4}
+            macro('nNsExpEnstrophyQzero', f"{en[0]:.3f}"); macro('nNsExpEnstrophyQthirtyTwo', f"{en[32]:.3f}"); macro('nNsExpEnstrophyQtop', f"{en[qs4[-1]]:.3f}")
+            mid = [en[q] for q in (64, 128, 256)]; macro('nNsExpEnstrophyMidMin', f"{min(mid):.2f}"); macro('nNsExpEnstrophyMidMax', f"{max(mid):.2f}")
+            macro('nNsExpEnstrophyPodThirtyTwo', f"{E['pod_k32']['enstrophy_ratio_rom_over_ref.median_t1']:.3f}")
             macro('nNsExpQtop', str(qs4[-1])); macro('nNsExpPodBetterEveryRung', yn(pod_better_all))
             macro('nNsExpPodMoreAccurateEveryRung', yn(pod_acc_all)); macro('nNsExpPodCheaperCount', str(len(pod_cheaper))); macro('nNsExpRungCount', str(len(qs4)))
             macro('nNsExpPodCheaperMaxQ', str(max(pod_cheaper)) if pod_cheaper else '---')

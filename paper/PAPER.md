@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 09:22; this block is removed before submission).*
+*Status for the reader (generated 2026-09-18 15:43; this block is removed before submission).*
 *Final tables (58): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -2434,14 +2434,26 @@ ran the correction ladder $q\in\{0,32, 64, 128, 256, 512\}$ at one fixed test
 count $M=2176$ on 8 development cases with
 3 timed repetitions, same-job POD-LSPG at every matched
 dimension $k'=K+q$, and a full-order Newton-tolerance ladder in the same
-job. The correction rank closes the manifold gap: the manifold layer's
-median falls from $10.5493$ to $0.2254 %$,
-the bank floor ($0.2254 %$), but reaches it only at
-$q=R=512$, where the head no longer matters; the residual
-directions capture 26, 44, 68, 92, 100 % of the head-residual energy at
-$q=32, 64, 128, 256, 512$. The solved error follows with a solve layer
-2.9–10.8$\times$ the
-manifold layer (median over median) at every rung, and zero budget exits:
+job. The correction rank closes the manifold gap: the manifold layer (median
+over cases of the worst evolved time) falls from $16.4787$
+to $1.7434 %$, the bank floor ($1.7434 %$),
+but reaches it only at $q=R=512$, where the head no longer
+matters; the residual directions capture 26, 44, 68, 92, 100 % of the
+head-residual energy at $q=32, 64, 128, 256, 512$. On the matched statistic (the
+same median-over-cases of the worst evolved time on both sides) the solve
+layer is 1.4–2.5$\times$
+the manifold layer, decreasing with $q$ from
+2.51 at $q=0$ to 1.40
+at $q=R$ (an earlier median over all 48 states, $t=0$ included, gave
+2.9–10.8$\times$
+and is superseded: it compared two different statistics). The loss
+accumulates along the trajectory: at $q=0$ the per-time solved/manifold
+ratio runs 1.44, 1.66, 2.19, 2.89, 3.85 from $t=0.2$ to $t=1$.
+The ROM's enstrophy over the reference at $t=1$ is
+1.043 (median) at $q=0$, 0.990 at
+$q=32$, a deficit of 0.95–0.97 at
+$q=64$–$256$ and 0.999 at $q=R$ (POD-32 control
+1.026). Zero budget exits:
 worst evolved $68.7654\to6.0140 %$
 ($11.4\times$ for $3.9\times$ in cost), monotone in
 the median (yes) but not in the worst
@@ -2458,21 +2470,22 @@ $421.3$ ms (converged reference $1177.7$ ms).
 **Table 49.** Navier–Stokes, **exploratory after a failed phase-2 gate**
 (job 3808502): the correction ladder on the $K=32$,
 $R=512$ manifold at fixed $M=2176$, its three-layer decomposition
-(manifold layer and bank floor, medians over the development cases), the
+(manifold layer and bank floor as the median over cases of the worst
+evolved time, and the solved/manifold ratio on that matched statistic), the
 share of head-residual energy the $q$ directions capture, and same-job
 POD-LSPG at the matched dimension $k'=K+q$; costs are median ms inside this
 job. “Non-dom.” marks membership of the non-dominated set on (ms, worst
 evolved error) over every subject in the job.
 
 <!-- table: T11g_ns_ladder -->
-| $q$ | $k'=K+q$ | neural worst % | median % | ms | budget exits | manifold layer median % | bank floor % | energy % | POD-$k'$ worst % | median % | ms | neural non-dom. | POD non-dom. |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 32 | 68.7654 | 41.3922 | 13387.5 | 0 | 10.5493 | 0.2254 | 0 | 54.6331 | 33.4692 | 212.1 | — | yes |
-| 32 | 64 | 70.7701 | 36.8058 | 16979.1 | 0 | 10.2514 | 0.2254 | 26 | 35.5092 | 19.0979 | 431.0 | — | — |
-| 64 | 96 | 61.5127 | 32.7278 | 21289.9 | 0 | 9.9791 | 0.2254 | 44 | 27.7285 | 13.2380 | 832.7 | — | — |
-| 128 | 160 | 56.5456 | 25.6655 | 29011.5 | 0 | 8.9349 | 0.2254 | 68 | 17.1958 | 8.0974 | 2398.2 | — | — |
-| 256 | 288 | 33.0536 | 13.8903 | 46267.9 | 0 | 4.3136 | 0.2254 | 92 | 9.5434 | 3.9876 | 9963.9 | — | — |
-| 512 | 544 | 6.0140 | 2.4377 | 52592.3 | 0 | 0.2254 | 0.2254 | 100 | 4.1664 | 1.4871 | 53902.5 | — | — |
+| $q$ | $k'=K+q$ | neural worst % | median % | ms | budget exits | manifold layer % | bank floor % | solved / manifold | energy % | POD-$k'$ worst % | median % | ms | neural non-dom. | POD non-dom. |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 32 | 68.7654 | 41.3922 | 13387.5 | 0 | 16.4787 | 1.7434 | 2.51 | 0 | 54.6331 | 33.4692 | 212.1 | — | yes |
+| 32 | 64 | 70.7701 | 36.8058 | 16979.1 | 0 | 15.9678 | 1.7434 | 2.31 | 26 | 35.5092 | 19.0979 | 431.0 | — | — |
+| 64 | 96 | 61.5127 | 32.7278 | 21289.9 | 0 | 14.8960 | 1.7434 | 2.20 | 44 | 27.7285 | 13.2380 | 832.7 | — | — |
+| 128 | 160 | 56.5456 | 25.6655 | 29011.5 | 0 | 13.4634 | 1.7434 | 1.91 | 68 | 17.1958 | 8.0974 | 2398.2 | — | — |
+| 256 | 288 | 33.0536 | 13.8903 | 46267.9 | 0 | 6.8226 | 1.7434 | 2.04 | 92 | 9.5434 | 3.9876 | 9963.9 | — | — |
+| 512 | 544 | 6.0140 | 2.4377 | 52592.3 | 0 | 1.7434 | 1.7434 | 1.40 | 100 | 4.1664 | 1.4871 | 53902.5 | — | — |
 
 **Table 50.** Navier–Stokes, **exploratory after a failed phase-2 gate**
 (job 3808502): the full-order Newton-tolerance ladder timed in the

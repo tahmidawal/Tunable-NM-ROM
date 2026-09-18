@@ -98,14 +98,26 @@ ran the correction ladder $q\in\{0,\nNsExpQList\}$ at one fixed test
 count $M=\nNsExpM$ on \nNsExpCases{} development cases with
 \nNsExpReps{} timed repetitions, same-job POD-LSPG at every matched
 dimension $k'=K+q$, and a full-order Newton-tolerance ladder in the same
-job. The correction rank closes the manifold gap: the manifold layer's
-median falls from $\nNsExpManifoldQzero$ to $\nNsExpManifoldTop\,\%$,
-the bank floor ($\nNsExpBankFloor\,\%$), but reaches it only at
-$q=R=\nNsExpQtop$, where the head no longer matters; the residual
-directions capture \nNsExpEnergyList\,\% of the head-residual energy at
-$q=\nNsExpQList$. The solved error follows with a solve layer
-\nNsExpSolveOverManifoldMin--\nNsExpSolveOverManifoldMax$\times$ the
-manifold layer (median over median) at every rung, and zero budget exits:
+job. The correction rank closes the manifold gap: the manifold layer (median
+over cases of the worst evolved time) falls from $\nNsExpManifoldQzero$
+to $\nNsExpManifoldTop\,\%$, the bank floor ($\nNsExpBankFloor\,\%$),
+but reaches it only at $q=R=\nNsExpQtop$, where the head no longer
+matters; the residual directions capture \nNsExpEnergyList\,\% of the
+head-residual energy at $q=\nNsExpQList$. On the matched statistic (the
+same median-over-cases of the worst evolved time on both sides) the solve
+layer is \nNsExpSolveOverManifoldMin--\nNsExpSolveOverManifoldMax$\times$
+the manifold layer, decreasing with $q$ from
+\nNsExpSolveOverManifoldQzero{} at $q=0$ to \nNsExpSolveOverManifoldQtop{}
+at $q=R$ (an earlier median over all 48 states, $t=0$ included, gave
+\nNsExpSolveOverManifoldMedFortyEightMin--\nNsExpSolveOverManifoldMedFortyEightMax$\times$
+and is superseded: it compared two different statistics). The loss
+accumulates along the trajectory: at $q=0$ the per-time solved/manifold
+ratio runs \nNsExpSolveOverManifoldPerTimeList{} from $t=0.2$ to $t=1$.
+The ROM's enstrophy over the reference at $t=1$ is
+\nNsExpEnstrophyQzero{} (median) at $q=0$, \nNsExpEnstrophyQthirtyTwo{} at
+$q=32$, a deficit of \nNsExpEnstrophyMidMin--\nNsExpEnstrophyMidMax{} at
+$q=64$--$256$ and \nNsExpEnstrophyQtop{} at $q=R$ (POD-32 control
+\nNsExpEnstrophyPodThirtyTwo). Zero budget exits:
 worst evolved $\nNsExpQzeroWorst\to\nNsExpTopWorst\,\%$
 ($\nNsExpGain\times$ for $\nNsExpCostRatio\times$ in cost), monotone in
 the median (\nNsExpMonotoneMedian) but not in the worst
@@ -124,7 +136,8 @@ $\nNsExpFomLooseMs$\,ms (converged reference $\nNsExpFomRefMs$\,ms).
 \caption{Navier--Stokes, \textbf{exploratory after a failed phase-2 gate}
 (job \provNsExpJob): the correction ladder on the $K=\nNsExpK$,
 $R=\nNsExpR$ manifold at fixed $M=\nNsExpM$, its three-layer decomposition
-(manifold layer and bank floor, medians over the development cases), the
+(manifold layer and bank floor as the median over cases of the worst
+evolved time, and the solved/manifold ratio on that matched statistic), the
 share of head-residual energy the $q$ directions capture, and same-job
 POD-LSPG at the matched dimension $k'=K+q$; costs are median ms inside this
 job. ``Non-dom.'' marks membership of the non-dominated set on (ms, worst

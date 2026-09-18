@@ -444,3 +444,13 @@ every family (four fixed-$M$ cells, two POD ranks, the free bank, the eight full
 
 *Criterion P is evaluated on this job's admissible set*, per §6, with F4's caveat on every row.
 Jobs: 3 of 8.
+
+**A8.1 (2026-09-17, minutes after A8, job already queued) — correction to A8's smoke sentence.**
+A8 says the smoke "confirms every row carries" the vs-reference error. The first draft of
+`checks/smoke-panel64.json` tested a *guessed* key name (`error_vs_reference`) and recorded
+`False`; the driver's actual per-invocation keys containing "ref" that are present on every row
+are `[]`, and its per-subject keys are `[]`. The record is corrected to
+the real keys; A8's claim does NOT stand and the report generator must derive the column from the saved fields against the reference artifacts. The job is
+unaffected either way: the driver is `bpn301`'s, whose summary carries `worst_reference_percent`
+for every subject family, and the reference fields are saved as artifacts so the column can be
+recomputed by the audit from the fields regardless.

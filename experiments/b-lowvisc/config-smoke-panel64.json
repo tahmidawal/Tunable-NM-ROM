@@ -1,0 +1,157 @@
+{
+ "intervals": 64,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "reference_mesh": 128,
+ "reference_dt": 0.0025,
+ "train_seed": 0,
+ "train_trajectories": 4,
+ "train_state_stride": 2,
+ "snapshot_ntol": 1e-09,
+ "snapshot_ltol": 1e-07,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "recon_starts": 4,
+ "recon_budget": 100,
+ "reps": 1,
+ "order_seed": 1,
+ "burn_seconds": 0.05,
+ "rules_mesh": 256,
+ "pod_ranks": [
+  8,
+  16
+ ],
+ "free_bank": true,
+ "free_bank_M": 1024,
+ "same_grid_reference": "fft_tight",
+ "direct_control": "dense_tight",
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "dense_tight",
+   "preconditioner": "dense",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "attempt": "smoke-panel64",
+ "lane": "b-lowvisc",
+ "nu_bounds": [
+  0.001,
+  0.01
+ ],
+ "expected_physical_sha256": null,
+ "expected_physical_sha256_source": "lvg01 (job 3789639) families.lowvisc.physical_sha256",
+ "expected_reference_sha256": null,
+ "reference_sha_note": "lvg01 4096-interval low-viscosity reference field hashes; GPU-model dependent, recorded as a probe, not a gate",
+ "snapshot_residual_bar": 1e-08,
+ "directions_file": "directions_lowvisc.npz",
+ "q_ladder": [
+  0,
+  4
+ ],
+ "residual_snapshots": 64,
+ "residual_starts": 2,
+ "residual_budget": 50,
+ "residual_seed": 20260915,
+ "dense_q": [],
+ "eq_q": [],
+ "eq_gtols": [],
+ "rules": {},
+ "extra_rule_sets": [],
+ "extra_dense_q": [],
+ "extra_dense_M": null,
+ "extra_dense_cells": [
+  [
+   0,
+   64
+  ],
+  [
+   4,
+   64
+  ],
+  [
+   0,
+   32
+  ],
+  [
+   4,
+   96
+  ]
+ ],
+ "fidelity_expectations": {},
+ "priority_override": null,
+ "priority_override_note": "DESIGN A3/A8: the headline fixed-M = 1088 column is built first, then POD-LSPG, then the M = 256 control column, the (256, 2176) cell and the free bank; the OOM rule drops from the end",
+ "source_job_ids": {
+  "bpn301": "3780638",
+  "lvg01": "3789639",
+  "lvt01": "3804337",
+  "qtd02": "3757505"
+ },
+ "purpose": "local smoke, 64 intervals: both stages run end to end; validates no number",
+ "case_subset": [
+  0,
+  5
+ ]
+}

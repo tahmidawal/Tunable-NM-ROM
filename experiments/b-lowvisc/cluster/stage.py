@@ -39,7 +39,7 @@ PREAMBLE = '''#!/bin/bash
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:__GPU__:1
-#SBATCH --exclude=__EXCLUDE__
+__CONSTRAINT__#SBATCH --exclude=__EXCLUDE__
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=180G
 #SBATCH --time=__HOURS__
@@ -179,8 +179,56 @@ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
 
+
+# --- the stage-3 panel (DESIGN A3/A8): b-panel's staged module set with this lane's driver ---
+PANEL_CKPT = 'experiments/b-lowvisc/checkpoints/sep_hfit_lowvisc0.pkl'
+PANEL_FILES = [
+    'experiments/b-lowvisc/lv_panel.py',
+    'experiments/b-lowvisc/lv_directions.py',
+    'experiments/b-lowvisc/lv_common.py',
+    'experiments/b-lowvisc/config-panel.json',
+    'experiments/b-lowvisc/cluster/stage.py',
+    'experiments/b-lowvisc/deps/b-panel-speed/fast.py',
+    'experiments/b-lowvisc/deps/b-panel-speed/ladders.py',
+    PANEL_CKPT,
+    'experiments/b-ladder-top/topfix.py',
+    'experiments/q-ridge/eqcert.py',
+    'experiments/cheap-corrections/varpro.py',
+    'experiments/cheap-corrections/directions.py',
+    'experiments/head-ablation/arms.py',
+    'experiments/head-ablation/ladder.py',
+    'experiments/head-ablation/ablation.py',
+    'experiments/mr-burgers2d/engines.py',
+    'experiments/mr-burgers2d/iterative_paths.py',
+    'experiments/mr-burgers2d/accuracy_paths.py',
+    'experiments/separable-decoder/sep_common.py',
+]
+PANEL_BODY = '''
+# bpn301's memory fraction on an 80 GB card; the panel holds every reduced query resident.
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.90
+export PYTHONPATH="$TASK_ROOT/experiments/mr-burgers2d:$TASK_ROOT/experiments/separable-decoder:$TASK_ROOT/experiments/head-ablation:$TASK_ROOT/experiments/cheap-corrections:$TASK_ROOT/experiments/b-ladder-top:$TASK_ROOT/experiments/q-ridge:$TASK_ROOT/experiments/b-lowvisc:$TASK_ROOT/experiments/b-lowvisc/deps/b-panel-speed"
+CKPT="$TASK_ROOT/__CKPT__"
+echo "checkpoint $(sha256sum "$CKPT")"
+
+# ------------------------------- stage 1: the checkpoint's own correction directions ----
+echo "DIRECTIONS $(date -Is)"
+"$PY" experiments/b-lowvisc/lv_directions.py \\
+  --config experiments/b-lowvisc/config-panel.json --checkpoint "$CKPT" --out output/directions
+
+# ---------------------------------------------------------- stage 2: the panel ----
+echo "PANEL $(date -Is)"
+"$PY" experiments/b-lowvisc/lv_panel.py \\
+  --config experiments/b-lowvisc/config-panel.json --checkpoint "$CKPT" \\
+  --inputs output/directions --out output/panel
+
+echo "STAGES DONE $(date -Is)"
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+echo ALL-DONE
+'''
+
 BODIES = {'lvg': (GATE_FILES, GATE_BODY, '6:00:00'),
-          'lvt': (TRAIN_FILES, TRAIN_BODY, '16:00:00')}
+          'lvt': (TRAIN_FILES, TRAIN_BODY, '16:00:00'),
+          'lvp': (PANEL_FILES, PANEL_BODY, '8:00:00')}
 
 
 def main():
@@ -194,6 +242,13 @@ def main():
     # training jobs never run on L40S: 300000 f64 steps would not fit the wall clock (b-seeds A1.4)
     assert kind != 'lvt' or gpu in ('a100', 'h100', 'h200'), f'training runs on a100/h100/h200, not {gpu}'
     seed = int(os.environ.get('SEED0', '0'))
+    # the panel needs an 80 GB card (b-qxm: several large-M subjects do not fit 40 GB); h100/h200 are 80+ GB
+    constraint = '#SBATCH --constraint=a100-80G\n' if (kind == 'lvp' and gpu == 'a100') else ''
+    if kind == 'lvp':
+        assert gpu != 'l40s', 'the panel needs 80 GB'
+        rec = (ROOT / PANEL_CKPT).with_suffix('.sha256').read_text().split()[0]
+        got = hashlib.sha256((ROOT / PANEL_CKPT).read_bytes()).hexdigest()
+        assert got == rec, f'checkpoint differs from the training job record: {got} != {rec}'
 
     out = Path(os.environ.get('STAGE_ROOT', ROOT / 'experiments/b-lowvisc/runs')) / attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -218,7 +273,8 @@ def main():
     (out / 'logs').mkdir()
     script = PREAMBLE + body
     for token, value in (('__ATTEMPT__', attempt), ('__REMOTE__', remote), ('__GPU__', gpu),
-                         ('__HOURS__', hours), ('__EXCLUDE__', EXCLUDE), ('__SEED__', str(seed))):
+                         ('__HOURS__', hours), ('__EXCLUDE__', EXCLUDE), ('__SEED__', str(seed)),
+                         ('__CONSTRAINT__', constraint), ('__CKPT__', PANEL_CKPT)):
         script = script.replace(token, value)
     assert '__' not in script.replace('__pycache__', ''), script
     (out / 'run.sbatch').write_text(script)

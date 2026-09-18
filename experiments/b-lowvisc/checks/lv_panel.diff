@@ -1,0 +1,72 @@
+--- experiments/b-lowvisc/panel_source_bpanel.py	2026-09-17 13:36:43.316558139 -0400
++++ experiments/b-lowvisc/lv_panel.py	2026-09-17 22:14:52.580113528 -0400
+@@ -1,4 +1,11 @@
+-"""b-panel: the paper's central comparison in ONE allocation on ONE GPU, per mesh.
++"""b-lowvisc: `b-panel/panel.py` (job 3780638) with four LV-PATCH edits, none of which touches the
++arithmetic of any arm: (1) the cohort draws go through `lv_common.params_draw` with the viscosity
++bounds from the config; (2) `extra_dense_cells` declares explicit (q, M) cells; (3) those cells enter
++the directions prefix-hash set; (4) every dense strict-tolerance cell shares the one compiled query
++per q -- queries are M-independent, M enters through the operator data at invocation (b-qxm's
++mechanics). Recorded diff: checks/lv_panel.diff. The original docstring follows.
++
++b-panel: the paper's central comparison in ONE allocation on ONE GPU, per mesh.
+ 
+ One job, one GPU, one randomised order, three timed repetitions with burn-in, for the frozen
+ Burgers model (bank G, head h_theta, transferred directions C):
+@@ -47,6 +54,7 @@
+ import eqcert as EC
+ from ablation import pod_basis, radius
+ import fast as F
++import lv_common as LV                      # LV-PATCH 1
+ import ladders as FL
+ 
+ sha_array, sha_file, host, dump = LD.sha_array, LD.sha_file, LD.host, LD.dump
+@@ -140,6 +148,10 @@
+         M = int(cfg['extra_dense_M'])
+         specs.append(dict(name=f'q{q}_M{M}_dense_{gt(strict["gtol"])}', family='rom', q=q, M=M,
+                           quadrature='dense', gtol=strict['gtol'], priority=5))
++    for q, M in cfg.get('extra_dense_cells', []):       # LV-PATCH 2: explicit (q, M) cells
++        q, M = int(q), int(M)
++        specs.append(dict(name=f'q{q}_M{M}_dense_{gt(strict["gtol"])}', family='rom', q=q, M=M,
++                          quadrature='dense', gtol=strict['gtol'], priority=5))
+     if cfg.get('free_bank'):
+         specs.append(dict(name=f'free{R}_M{cfg["free_bank_M"]}_dense', family='free', k=R, M=int(cfg['free_bank_M']),
+                           quadrature='dense', gtol=strict['gtol'], priority=6))
+@@ -231,8 +243,7 @@
+     save()
+ 
+     # ---------------------------------------------------------------- cohort --
+-    physical = np.concatenate((e.params_draw(cfg['eval_seed'], cfg['eval_cases']),
+-                               e.params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
++    physical = LV.cohort(cfg, *cfg['nu_bounds'])          # LV-PATCH 1: same seeds, the config's viscosity bounds
+     roles = ['opened development'] * cfg['eval_cases'] + ['fresh development'] * cfg['eval_fresh_cases']
+     report['physical_sha256'] = sha_array(physical)      # of the FULL draw: params_draw is column-wise
+     if cfg.get('case_subset'):
+@@ -245,7 +256,7 @@
+     want = cfg.get('expected_physical_sha256')
+     report['gates']['evaluation_cohort_bitwise_abl01'] = dict(
+         expected=want, got=report['physical_sha256'], passed=(None if want is None else report['physical_sha256'] == want))
+-    train_physical = e.params_draw(cfg['train_seed'], cfg['train_trajectories'])
++    train_physical = LV.params_draw(cfg['train_seed'], cfg['train_trajectories'], *cfg['nu_bounds'])  # LV-PATCH 1
+     assert not any(np.allclose(t, s) for t in train_physical for s in physical), 'training/eval overlap'
+     report['train_physical_sha256'] = sha_array(train_physical)
+     save()
+@@ -337,7 +348,8 @@
+     got = sha_file(dfile)
+     dz = np.load(dfile)
+     Cnp = np.ascontiguousarray(np.asarray(dz['C']))
+-    QS_ALL = sorted(set(cfg['dense_q']) | set(cfg['eq_q']) | set(cfg.get('extra_dense_q', [])))
++    QS_ALL = sorted(set(cfg['dense_q']) | set(cfg['eq_q']) | set(cfg.get('extra_dense_q', []))
++                    | {int(q) for q, _ in cfg.get('extra_dense_cells', [])})   # LV-PATCH 3
+     prefix = {str(q): sha_array(np.ascontiguousarray(Cnp[:, :q])) for q in QS_ALL}
+     recorded = {k: v for k, v in prefix.items() if k in dprov['prefix_sha256']}
+     # every rung the source recorded must match; a rung it never recorded (smoke q = 4) is reported, not gated
+@@ -617,7 +629,7 @@
+                 dd = dense_data(M)
+                 data = dict(A=dd['A'], lam=dd['lam'], G=G, G5=ops['G5'], Pq=ops['Pq'])
+             if fam == 'rom':
+-                if s['quadrature'] == 'dense' and s['gtol'] == strict['gtol'] and M == 4 * (K + q):
++                if s['quadrature'] == 'dense' and s['gtol'] == strict['gtol']:   # LV-PATCH 4: shared per q, any M
+                     query = dense_query(q)
+                 else:
+                     query = TF.make_query(params, C, K, q, L, dt, trust, s['quadrature'], 'base', Rb=Rb,

@@ -718,3 +718,40 @@ beats the FFT-preconditioned FOM on cost. **No Phase-3 job was ever submitted; t
 never lowered.** The lane's deliverable is a certified FOM and dataset, the floors, this
 negative with its diagnosis, and the exploratory ladder. Jobs used: 9 of 12 (`ns101`, `ns201`,
 `ns202`, `ns203`, `ns204`, `ns301`, `ns302`, `ns303`, `ns304`); namespace empty.
+
+## §A14 (2026-09-18, correction to §A11 after the coordinator's read-only investigation of `ns304`) — the three-layer "solve 4–10× above manifold" compared two different statistics; on a matched statistic the solve layer is 1.4–2.5× above the manifold
+
+**What was wrong.** §A11 (and the §A11 report table) divided `aggregates.median_evolved` — the
+median over the 8 cases of the *worst evolved time* — by `decomposition.manifold_median`, the
+median over all 48 states *including $t=0$*. The $t=0$ compression is far below every evolved
+error, so the denominator was too small and the ratio overstated: 3.9/3.6/3.3/2.9/3.2/10.8 at
+$q=0/32/64/128/256/512$ (the "4–10×" of §A11). The investigation
+(`scratchpad/ns-invest/solve/report.md`, not part of this tree) found it; this session verified
+it independently from the archived per-state arrays (`decomposition.manifold_per_state`
+reshaped (8, 6) against the timed-rep `fixed_per_time` of every invocation).
+
+**Corrected numbers (generated; medcase-worstT on both sides).** solved / manifold =
+**2.51 / 2.31 / 2.20 / 1.91 / 2.04 / 1.40** at $q=0/32/64/128/256/512$; solved / bank =
+23.7 / 21.1 / 18.8 / 14.7 / 8.0 / 1.40. The report now prints the matched ratio as the primary
+three-layer column (`threelayer.solved_over_manifold_matched` in `summary.json`), keeps the
+§A11 number as a labelled secondary column (`…_med48_SECONDARY`), and adds two mechanism rows
+from the archive: the per-time ratio of case-medians, which grows monotonically along the
+trajectory (q=0: 1.44 → 1.66 → 2.19 → 2.89 → 3.85 at $t=0.2\ldots1$; q=512: 1.28 → 1.57), and
+the enstrophy ratio $Z_{\rm rom}/Z_{\rm ref}$ (q=0: 1.043 median, 1.119 worst at $t=1$; q=32:
+0.990; q≥64: a *deficit* 0.95–0.97; q=512: 0.999; POD-32: 1.026 median, 1.158 worst). The
+investigation's per-time figures (1.28→3.36) and enstrophy range (1.04–1.16) use a different
+per-case statistic; the direction and magnitude agree.
+
+**What the archive cannot generate.** The same-solver linear-control ratios the investigation
+reports (POD-32 1.49×, POD-512 1.26×, bank-512 1.37×) need the POD projection floors on the
+reference states, and the POD basis was not saved by the job; they are quoted here from the
+investigation as external numbers, not generated into the report. The bank-span ratio that *is*
+in the archive is the $q=R=512$ rung, 1.40×.
+
+**What changes in the reading.** §A11 point 2 is restated: the solve layer sits **1.4–2.5×**
+(not 4–10×) above the manifold layer, decreasing with $q$; the loss accumulates along the
+trajectory (a slowly growing in-manifold drift, with mild enstrophy excess only at $q\le32$),
+and it is of the same order as the linear controls' loss under the same solver, so the
+correction-rank mechanism and the "POD-LSPG better and cheaper at every rung" conclusion stand
+unchanged; the *size* of the solve penalty was overstated. Nothing else in §A11 or §A13 changes.
+No job was rerun.

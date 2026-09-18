@@ -229,7 +229,7 @@ def headfit(doc, d, job, sha):
     doc.p('Rule: slope $\\le -0.25$ = needs-data; slope $\\ge -0.10$ under every regime = head-limited; otherwise ambiguous. Regularisation "moves it" if the reg regime is $\\ge 10$ % below plain at the largest $n$. Successive slopes show whether the improvement is decelerating.')
 
 
-def phase3(doc, d, job, sha, exploratory=False):
+def phase3(doc, d, job, sha, exploratory=False, fields_dir=None):
     G = d['gates']
     c = d['config']
     ck = d['checkpoint']
@@ -258,7 +258,62 @@ def phase3(doc, d, job, sha, exploratory=False):
                 doc.row(phase=3, mesh=c['N'], subject=f'neural_q{q}', metric=f'decomposition.{m}', value=dq[m], gate=f'decomposition ({tag})', passed=None, job_id=job, source_sha256=sha)
     doc.h(3, f'Correction ladder ({tag}) with POD-LSPG at the matched online dimension $k^\\prime=K+q$ and the three-layer decomposition')
     doc.table(['$q$', '$K+q$', 'worst evolved', 'median evolved', 'worst all times', 'worst $t=0$', 'median ms', 'budget exits', 'POD-LSPG $k^\\prime$ worst evolved', 'POD-LSPG ms', 'layer 1 bank (median)', 'layer 2 manifold (median)', 'manifold worst'], rows)
-    doc.p('Layers: 1 = best possible in the bank span; 2 = best found on the rung\'s own manifold $h(z)+C_q y$ (multi-start LM); 3 = what the ROM solve achieved (the "median evolved" column), all on the same 48 states and normalisation. Layer 3 minus layer 2 is the cost of the weak projection and time stepping; layer 2 minus layer 1 is the cost of the head restriction that $q$ buys back.')
+    doc.p('Layers: 1 = best possible in the bank span; 2 = best found on the rung\'s own manifold $h(z)+C_q y$ (multi-start LM); 3 = what the ROM solve achieved, all on the same 48 states and normalisation. The "(median)" columns above are medians over all 48 states INCLUDING $t=0$ — kept for the record; the matched three-layer ratios are in the next table (DESIGN §A14).')
+    # ---- DESIGN §A14: three-layer ratios on ONE statistic (median over cases of the worst evolved time)
+    REPS = c['REPS']
+    times = d['data'].get('eval_times') or [0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    n_t = len(next(i for i in d['invocations'] if i['rep'] == REPS)['fixed_per_time'])
+    ens = None
+    if fields_dir:
+        ff, rf = np.load(Path(fields_dir) / f'rom_fields_N{c["N"]}.npz'), np.load(Path(fields_dir) / f'reference_N{c["N"]}.npz')
+        Uref = rf['U']
+        ens = {}
+        for key in ff.files:
+            subj, case = key.split('__case')
+            Zr = np.sum(ff[key].reshape(n_t, -1) ** 2, 1) / np.sum(Uref[int(case)].reshape(n_t, -1) ** 2, 1)
+            ens.setdefault(subj, {})[int(case)] = Zr
+    def solved_pt(name):
+        inv = {i['case']: np.asarray(i['fixed_per_time']) for i in d['invocations'] if i['subject'] == name and i['rep'] == REPS}
+        return np.stack([inv[k] for k in sorted(inv)])
+    rows, rows_t, rows_e = [], [], []
+    for q in c['Q_LADDER']:
+        name = f'neural_q{q}'
+        S = solved_pt(name)
+        dq = dec[f'q{q}']
+        Mf = np.asarray(dq['manifold_per_state']).reshape(S.shape)
+        Bf = np.asarray(dq['bank_per_state']).reshape(S.shape)
+        s_m, m_m, b_m = float(np.median(S[:, 1:].max(1))), float(np.median(Mf[:, 1:].max(1))), float(np.median(Bf[:, 1:].max(1)))
+        matched, old48, s_over_b = s_m / m_m, s_m / float(np.median(Mf)), s_m / b_m
+        pt = (np.median(S, 0) / np.median(Mf, 0)).tolist()
+        rows.append([q, sci(b_m), sci(m_m), sci(s_m), fx(matched, 2), fx(s_over_b, 2), fx(old48, 2)])
+        rows_t.append([q] + [fx(v, 2) for v in pt[1:]])
+        for m, v in (('bank_medcase_worstT', b_m), ('manifold_medcase_worstT', m_m), ('solved_medcase_worstT', s_m),
+                     ('solved_over_manifold_matched', matched), ('solved_over_bank_matched', s_over_b), ('solved_over_manifold_med48_SECONDARY', old48)):
+            doc.row(phase=3, mesh=c['N'], subject=name, metric=f'threelayer.{m}', value=v, gate=f'decomposition ({tag})', passed=None, job_id=job, source_sha256=sha)
+        for ti, v in enumerate(pt):
+            doc.row(phase=3, mesh=c['N'], subject=name, metric=f'threelayer.solved_over_manifold_per_time.t{times[ti]:g}', value=float(v), gate=f'decomposition ({tag})', passed=None, job_id=job, source_sha256=sha)
+        if ens and name in ens:
+            E = np.stack([ens[name][k] for k in sorted(ens[name])])
+            rows_e.append([q] + [fx(float(np.median(E[:, ti])), 3) for ti in range(1, n_t)] + [fx(float(E[:, -1].max()), 3)])
+            for ti in range(n_t):
+                doc.row(phase=3, mesh=c['N'], subject=name, metric=f'enstrophy_ratio_rom_over_ref.median_t{times[ti]:g}', value=float(np.median(E[:, ti])), gate=f'mechanism ({tag})', passed=None, job_id=job, source_sha256=sha)
+    doc.h(3, f'Three-layer ratios on ONE statistic — median over the 8 cases of the worst evolved time on both sides ({tag}; DESIGN §A14)')
+    doc.table(['$q$', 'layer 1 bank', 'layer 2 manifold', 'layer 3 solved', '**solved / manifold (matched)**', 'solved / bank (matched)', 'solved / manifold, med48 manifold (secondary, the §A11 statistic)'], rows)
+    doc.p('The secondary column divides the matched solved number by the median over all 48 states including $t=0$ (the statistic §A11 used); it overstates the solve loss because the $t=0$ compression is far below every evolved error. The matched column is the three-layer ratio to quote.')
+    doc.h(3, f'Solved / manifold per output time (ratio of the case-medians at each time; {tag})')
+    doc.table(['$q$'] + [f'$t={times[ti]:g}$' for ti in range(1, n_t)], rows_t)
+    if rows_e:
+        doc.h(3, f'Enstrophy of the ROM state over the reference, $Z_{{\\rm rom}}(t)/Z_{{\\rm ref}}(t)$, median over cases (last column: worst case at $t=1$; {tag})')
+        doc.table(['$q$'] + [f'$t={times[ti]:g}$' for ti in range(1, n_t)] + ['worst at $t=1$'], rows_e)
+        doc.p('A ratio above 1 means the reduced solve carries excess enstrophy the true flow has dissipated; it grows with time in step with the per-time ratio above.')
+    if ens:
+        rows_c = []
+        for name in sorted(k for k in ens if k.startswith('pod_k') or k.startswith('fom_')):
+            E = np.stack([ens[name][k] for k in sorted(ens[name])])
+            rows_c.append([name, fx(float(np.median(E[:, -1])), 3), fx(float(E[:, -1].max()), 3)])
+            doc.row(phase=3, mesh=c['N'], subject=name, metric=f'enstrophy_ratio_rom_over_ref.median_t{times[-1]:g}', value=float(np.median(E[:, -1])), gate=f'mechanism ({tag})', passed=None, job_id=job, source_sha256=sha)
+        if rows_c:
+            doc.table(['control', f'enstrophy ratio at $t={times[-1]:g}$ (median)', 'worst case'], rows_c)
     # ---- POD-LSPG and FOM tables
     rows = [[n, a['K'] if False else n.split('_k')[1], sci(agg[n]['worst_evolved']), sci(agg[n]['median_evolved']), sci(agg[n]['worst_all']), fx(1000 * agg[n]['median_seconds'], 0), agg[n]['budget_exits']] for n in agg if n.startswith('pod_k')]
     for n in agg:
@@ -315,6 +370,8 @@ GLOSSARY = '''## Glossary
 - **Correction rank $q$**: extra linear directions solved jointly with the code; POD-LSPG is the classical linear control.
 - **Non-dominated set**: the subjects no other subject beats on both cost and error at once (Pareto front); a point outside it is dominated.
 - **Layer 1 / 2 / 3**: bank floor / best-found manifold fit / achieved ROM solve, on the same states.
+- **Matched statistic (medcase-worstT)**: median over the cases of the worst error over evolved times, applied to every layer alike; **med48** is the median over all 48 states including $t=0$ and is not comparable with a worst-over-time number.
+- **Enstrophy ratio**: $\\sum\\omega_{\\rm rom}^2/\\sum\\omega_{\\rm ref}^2$ at an output time; excess above 1 is un-dissipated enstrophy in the reduced solve.
 - **Exploratory after a failed gate**: run on a head that did not pass its Phase-2 oracle gate, so it probes a mechanism and is not a paper result.
 - **Budget exits**: LM steps that hit the iteration cap (an unconverged rung is flagged).
 - **CFL**: $\\max|\\mathbf u|\\Delta t/h$; recorded, not a stability limit for the implicit scheme.
@@ -328,6 +385,7 @@ def main():
     p.add_argument('--phase3', nargs='*', default=[])
     p.add_argument('--headfit', nargs='*', default=[])
     p.add_argument('--phase3-exploratory', nargs='*', default=[], help='phase-3 result.json paths to label exploratory (after a failed gate)')
+    p.add_argument('--phase3-fields', default=None, help='directory holding rom_fields_N*.npz and reference_N*.npz for the enstrophy rows')
     p.add_argument('--audit', nargs='*', default=[])
     p.add_argument('--title', default='ns2d — 2D incompressible Navier–Stokes: certified FOM, dataset, bank/head floors, ROM ladder')
     p.add_argument('--status', default='provisional')
@@ -342,7 +400,7 @@ def main():
             d, job, sha = load(s)
             srcs.append([ph, s.split(':')[0], job, sha[:16], yn(d.get('complete')), yn(d.get('all_passed'))])
             if ph == 3:
-                phase3(doc, d, job, sha, exploratory=s.split(':')[0] in a.phase3_exploratory)
+                phase3(doc, d, job, sha, exploratory=s.split(':')[0] in a.phase3_exploratory, fields_dir=a.phase3_fields)
             else:
                 {1: phase1, 2: phase2, '2-headfit': headfit}[ph](doc, d, job, sha)
     doc.md.insert(2, '')

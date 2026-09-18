@@ -1,6 +1,25 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — glance table moved to Appendix A; main text back on 9 pages (current state; everything below is history)
+## 2026-09-18 — secondary comparison against plain CG added (current state; everything below is history)
+
+User request: show the results against the previous submission's comparator (unpreconditioned CG
+at 1e-6) beside the competitive one, as a SECONDARY comparison. New generated table `T21_cg_comparator`
+(extended results, "Against the previous submission's comparator: conjugate gradient"): Poisson
+256²/1024² (p-linear jobs 3780692/3783813): every rung q=0–256, the linear top rung and POD-512 with
+complete-query ms, CG 1e-6 ms and CG/ROM, DST ms and DST/ROM, all same job; L-shape 64²–512² (lshape
+jobs 3784662/3784663/3789568): the reported head (head_sdf_R512_K16, q=0/32/64/128) and POD-128
+against CG at the lane's tightest tolerance (1e-10; no 1e-6 arm exists there), SuperLU and the CPU
+IC(0)-PCG, all same job. Generated macros: Poisson CG-1e-6/ROM 3.7–23.4x, DST faster than every rung
+1.3–4.0x; L-shape CG-1e-10/head 2.9–14.9x. Heat omitted and said so in the caption: its committed CG
+record (mr-heat2d iterative_cg09, job 3529772, commit 1f576c9e) is per-invocation raw timing of an
+earlier decoder family with no aggregated table, and re-aggregating it here would be new analysis.
+Burgers has no CG comparator (Newton FOM), said in the caption. Main text: one sentence in the §6.5
+linear paragraph (3.7–23.4x faster than CG 1e-6 on Poisson in the same job; the transform faster
+still by 1.3–4.0x, hence our comparator) and one clause in the §5 baselines paragraph (the earlier
+comparison against plain CG is kept in the appendix for continuity). Page budget recovered by
+wording only (linear, NS and Limitations paragraphs, the conclusion); no evidence removed.
+
+## 2026-09-18 — glance table moved to Appendix A; main text back on 9 pages (history)
 
 The ICLR 2027 kit allows 9 main-text pages at submission, so the "Experiments at a glance" table
 left §5 and is now the first appendix (Appendix A, Table A.1, exactly as generated); §6 opens with

@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 09:08; this block is removed before submission).*
-*Final tables (57): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
+*Status for the reader (generated 2026-09-18 09:22; this block is removed before submission).*
+*Final tables (58): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -464,7 +464,8 @@ manifold, runs through the same weak objective, tests, solver and stopping rule.
 are always in the same job: preconditioned Newton (Burgers); the direct
 sine transform and tuned CG (Poisson, heat, waves); sparse direct, CG and
 IC(0)-PCG (L-shape). The NM-ROM of Kim et al. (2022) is not run
-under this protocol and is not compared. Every table names its job
+under this protocol and is not compared; the earlier comparison against
+plain CG is kept in Appendix G.6 for continuity. Every table names its job
 id, GPU and checkpoint (Table 6), every solve carries
 its exit reason, and every number is emitted by one generator from
 audited records.
@@ -727,47 +728,50 @@ $3.1495\to0.9648 %$ at
 flat cost, and $q=R$ lands on the floor at $0.7421 %$
 as the *cheapest* point ($4.42$ vs
 $3.248$ ms exact). Heat and the reflective wave
-do likewise (Appendix G.5). **The collapse
+do likewise (Appendix G.5). Against unpreconditioned
+CG at $10^{-6}$, the previous comparator, reduced rungs are
+3.7–23.4$\times$ faster on Poisson in the
+same job; the transform is faster still by
+1.3–4.0$\times$, hence our
+comparator (Appendix G.6). **The collapse
 is confounded with a weak bank**:
 $3.4$–$4.0\times$ worse than a POD
 basis of equal rank on both cells. No reduced arm beats the direct
 solve.
 
-**Navier–Stokes collapses for a different reason.** On 2D
-incompressible flow (nonlinear residual) the family was gated before any ladder (Table 44): at $K=16$ and $K=32$ the head's
+**Navier–Stokes collapses differently.** On 2D
+incompressible flow (nonlinear residual) the family was gated before any ladder (Table 44): at $K=16$ and $32$ the
 held-out oracle beats POD-$K$ by only $1.19\times$ and
 $1.15\times$ against a bar of
 $2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
-$0.82$): linear wins where the data lie in a
-low-dimensional subspace. Retraining the head with 128, 256 and
-512 trajectories moves the oracle
+$0.82$): linear wins where data lie in a
+low-dimensional subspace. Retraining the head on 128–512
+trajectories moves the oracle
 $27.4938$ to $20.6889$ to
-$19.8279 %$ ($25 %$ then
-$4 %$ per doubling; “ambiguous”
+$19.8279 %$ (gains $25 %$ then
+$4 %$; “ambiguous”
 by the pre-registered rule, Table 48; the bank saw all
-512). A family of intrinsic dimension 8 instead of
-14 lowers every error 3.3–4.4$\times$ but
-leaves the head's advantage over POD-16 at 1.39$\times$ and
-the held-out/training gap near 3.8 (Table 44):
-the advantage does not grow as the manifold eases. With
+512). A family of dimension 8 instead of
+14 lowers every error 3.3–4.4$\times$ yet
+leaves the head's edge over POD-16 at 1.39$\times$ and the
+gap near 3.8: the edge does not grow as the manifold eases. With
 $4\times$ the data (2048 trajectories) the gap
-closes from 4.0 to 1.3 because the
-head no longer fits the training data either: the limit moved from
-generalisation to capacity at the same head (ratio 1.46).
-Across $K=16$ and $32$,
+closes from 4.0 to 1.3 as the
+head no longer fits the training data: the limit moved to
+capacity (ratio 1.46). Across $K=16$ and $32$,
 family dimension 14 and 8, and
 128–2048 trajectories, this head class never beats POD-$K$
 by the pre-registered $2.0\times$ on held-out decaying 2D
-Navier–Stokes (ratios 1.15–1.46). An exploratory ladder on that failed-gate
-manifold (Table 49; not a phase-3 result) closes the
+Navier–Stokes (ratios 1.15–1.46). An exploratory ladder on that
+manifold (Table 49; not phase 3) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
-the same dimension is more accurate at every rung and cheaper at all but
-the top, and no neural rung is non-dominated: the falsification clause's
+matched dimension is more accurate at every rung and cheaper below the
+top, no neural rung non-dominated: the falsification clause's
 named outcome. A trade between
 rungs needs a residual nonlinear in the coefficients and a manifold that
 beats POD held-out: Poisson, heat and waves lack the first, this cell the
 second, Burgers had both and still lost on cost. At ten-fold lower viscosity
-(Appendix G.6) linear floors collapse
+(Appendix G.7) linear floors collapse
 $12$–$19\times$ while the head degrades
 $3.3$–$4.5\times$, every neural rung beats
 every POD-LSPG rank, $q\ge64$ is on the
@@ -811,35 +815,32 @@ validation sources (Table 47).
 
 (i) We use one checkpoint per PDE. Burgers' checkpoint is a favourable
 draw in development (Table 37), and the fixed-$M$ ladder uses
-only that single seed. A cold-start solve at $q=0$ can converge to a wrong
+only that seed. A cold-start solve at $q=0$ can converge to a wrong
 branch; one sealed case did (10.1120 %, Table 38).
-Raising $q\ge16$ removed this failure, but that is not a guarantee. (ii) We
-use uniform Cartesian differences, in 2D only. Our cohorts are small
+Raising $q\ge16$ removed it, with no guarantee. (ii) Uniform Cartesian
+differences, 2D only. Our cohorts are small
 (Table 9). The low-viscosity cell is under-resolved. (iii)
-We ran no cold-start comparison with Kim et al. (2022), and we ran
-no skip ablation. (iv) Operator numbers are lower bounds
-(11 of 12 arms are still improving). Quadrature rules above
+We ran no cold-start comparison with Kim et al. (2022) and no
+skip ablation. (iv) Operator numbers are lower bounds
+(11 of 12 arms still improving). Quadrature rules above
 $q=32$ are marginal; one transfer-draw spread in $\rho_{\max}$ is
-8.7$\times$ and remains
-unexplained. One cell shows a cross-job spread of
+8.7$\times$, unexplained. One cell shows a cross-job spread of
 $14 %$. The $1024^2$ frontier rests on one job. (v)
 Against the fine reference the knob moves the error only
-$1.13\times$. (vi) We provide no convergence theory and no
-quadrature-error theory.
+$1.13\times$. (vi) No convergence or quadrature-error theory.
 
 ## 7 Conclusion and Future Work
 
 <!-- section sources: none (prose only) -->
 
-We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs, with a
-deployment-time accuracy/cost family from one model. The rank $q$ and
-three solver knobs span $2.44\times$ in same-grid error for
-$5.16\times$ in cost, on 2D Burgers, in one allocation. It does
+We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs with a
+deployment-time accuracy/cost family per model. Rank $q$ and three
+solver knobs span $2.44\times$ in same-grid error for
+$5.16\times$ in cost on 2D Burgers in one job. It does
 not beat a tuned full-order solver or a neural operator on the same data
-at $256^2$. Where no fast transform applies, reduced models are cheaper,
-and plain POD is cheapest of all. Next, we plan to resolve the
-low-viscosity cell, to test unstructured meshes, and to try another head
-class for Navier–Stokes.
+at $256^2$. Where no fast transform applies reduced models are cheaper,
+plain POD most of all. Next: a resolved low-viscosity cell,
+unstructured meshes, another Navier–Stokes head class.
 
 ## Reproducibility statement
 
@@ -1211,6 +1212,7 @@ float64 and highest matmul precision before doing any work.
 | T9 | b-eqtop | bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290…) | see job list | see job list | 18f0266ae6f04542… |
 | T10 | mesh-ladder (Burgers) | 3711388 | NVIDIA A100-PCIE-40GB | 521cdced6f4d… | 18f0266ae6f0… |
 | T10 | mesh-ladder (Poisson) | 3711389 | NVIDIA A100 80GB PCIe | 521cdced6f4d… | a128e7635c31… |
+| T21 | p-linear + lshape (secondary: previous comparator, CG) | the p-linear and lshape jobs above | per job | per job | same checkpoints as T11b / T18c |
 | T20, T20b | b-lowvisc (appendix; F4 under-resolution caveat) | panel 3817807; gate 3789639; training 3804337 | NVIDIA A100-PCIE-40GB | 2cf5dc34 | low-viscosity checkpoint hashed in the lane summary |
 | T11e | ns2d phase 2 (K=16, K=32, family dimension 8, 2048 trajectories); lane closed, no phase-3 job | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8), 3808495 ($K{=}16$, $R{=}256$, 2048 trajectories); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
 | T11f | ns2d ns301 (head-only data scaling on the frozen K=16 bank) | 3808493 | per job | per job | frozen K=16 bank; heads hashed in result.json |
@@ -2534,7 +2536,74 @@ place the learned bank beats the linear baseline on both axes, at
 $1.003\times$ its own bank floor with no solver iterations
 (Table 46).
 
-### G.6 Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)
+### G.6 Against the previous submission's comparator: conjugate gradient
+
+<!-- section sources: none (prose only) -->
+
+An earlier version of this work compared the reduced solve against
+unpreconditioned conjugate gradient (CG) at tolerance $10^{-6}$. That
+comparison is retained here as a secondary one, same job only
+(Table 51): on Poisson the reduced rungs are
+3.7–23.4$\times$ faster than CG
+$10^{-6}$ in the same job, but the direct transform (DST) solve is faster
+than every rung by 1.3–4.0$\times$,
+which is why the paper compares against the transform. On the L-shaped
+domain, where no transform applies, the lane timed CG at its own
+tolerances (tightest $10^{-10}$) and an IC(0)-preconditioned CG on
+the CPU: the head is 2.9–14.9$\times$
+faster than the tightest CG across $64^2$, $128^2$, $256^2$, $512^2$, and the sparse direct
+solve is the competitive comparator (Table 3).
+
+**Table 51.** Secondary comparison against the previous submission's comparator,
+unpreconditioned CG, beside the competitive one, all inside one job per
+mesh: the reduced rungs (and the linear top rung and POD) with their
+complete-query ms, the CG solve at the tolerance shown, the direct solve
+(DST on the square, SuperLU on the L-shape) and the ratios. Poisson from
+the p-linear jobs, L-shape from the lshape jobs (CG at its own tolerances,
+the tightest shown; the IC(0)-PCG arm runs on the CPU). Burgers has no CG
+comparator (its full-order solver is Newton). Heat is omitted: its
+committed CG record is per-invocation raw timing of an earlier decoder
+family and is not re-aggregated here.
+
+<!-- table: T21_cg_comparator -->
+| mesh | subject | error % | ms | CG tol. | CG ms | CG / ROM | direct | direct ms | direct / ROM | IC(0)-PCG (CPU) ms | PCG / ROM |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| $256^2$ (job 3780692) | $q{=}0$ | 3.1567 | 9.214 | $10^{-6}$ | 38.05 | 4.1 | DST | 2.526 | 0.27 | — | — |
+| $256^2$ (job 3780692) | $q{=}32$ | 2.4699 | 9.537 | $10^{-6}$ | 38.05 | 4.0 | DST | 2.526 | 0.26 | — | — |
+| $256^2$ (job 3780692) | $q{=}64$ | 2.0808 | 9.819 | $10^{-6}$ | 38.05 | 3.9 | DST | 2.526 | 0.26 | — | — |
+| $256^2$ (job 3780692) | $q{=}128$ | 1.5497 | 10.219 | $10^{-6}$ | 38.05 | 3.7 | DST | 2.526 | 0.25 | — | — |
+| $256^2$ (job 3780692) | $q{=}256$ | 0.9689 | 9.658 | $10^{-6}$ | 38.05 | 3.9 | DST | 2.526 | 0.26 | — | — |
+| $256^2$ (job 3780692) | linear top rung ($q{=}R$) | 0.7459 | 3.221 | $10^{-6}$ | 38.05 | 11.8 | DST | 2.526 | 0.78 | — | — |
+| $256^2$ (job 3780692) | POD $k'{=}512$ | 0.1855 | 10.002 | $10^{-6}$ | 38.05 | 3.8 | DST | 2.526 | 0.25 | — | — |
+| $1024^2$ (job 3783813) | $q{=}0$ | 3.1495 | 6.394 | $10^{-6}$ | 103.64 | 16.2 | DST | 3.248 | 0.51 | — | — |
+| $1024^2$ (job 3783813) | $q{=}32$ | 2.4641 | 6.592 | $10^{-6}$ | 103.64 | 15.7 | DST | 3.248 | 0.49 | — | — |
+| $1024^2$ (job 3783813) | $q{=}64$ | 2.0760 | 6.745 | $10^{-6}$ | 103.64 | 15.4 | DST | 3.248 | 0.48 | — | — |
+| $1024^2$ (job 3783813) | $q{=}128$ | 1.5459 | 6.875 | $10^{-6}$ | 103.64 | 15.1 | DST | 3.248 | 0.47 | — | — |
+| $1024^2$ (job 3783813) | $q{=}256$ | 0.9648 | 6.849 | $10^{-6}$ | 103.64 | 15.1 | DST | 3.248 | 0.47 | — | — |
+| $1024^2$ (job 3783813) | linear top rung ($q{=}R$) | 0.7421 | 4.424 | $10^{-6}$ | 103.64 | 23.4 | DST | 3.248 | 0.73 | — | — |
+| $1024^2$ (job 3783813) | POD $k'{=}512$ | 0.1838 | 6.972 | $10^{-6}$ | 103.64 | 14.9 | DST | 3.248 | 0.47 | — | — |
+| $64^2$ (job 3784662) | head $q{=}0$ (head_sdf_R512_K16) | 4.0451 | 2.693 | $10^{-10}$ | 8.25 | 3.1 | SuperLU | 1.282 | 0.48 | 10.22 | 3.8 |
+| $64^2$ (job 3784662) | head $q{=}32$ (head_sdf_R512_K16) | 2.7644 | 2.832 | $10^{-10}$ | 8.25 | 2.9 | SuperLU | 1.282 | 0.45 | 10.22 | 3.6 |
+| $64^2$ (job 3784662) | head $q{=}64$ (head_sdf_R512_K16) | 2.3004 | 2.846 | $10^{-10}$ | 8.25 | 2.9 | SuperLU | 1.282 | 0.45 | 10.22 | 3.6 |
+| $64^2$ (job 3784662) | head $q{=}128$ (head_sdf_R512_K16) | 2.3580 | 2.796 | $10^{-10}$ | 8.25 | 2.9 | SuperLU | 1.282 | 0.46 | 10.22 | 3.7 |
+| $64^2$ (job 3784662) | POD $k'{=}128$ | 2.5913 | 2.711 | $10^{-10}$ | 8.25 | 3.0 | SuperLU | 1.282 | 0.47 | 10.22 | 3.8 |
+| $128^2$ (job 3784662) | head $q{=}0$ (head_sdf_R512_K16) | 3.8965 | 2.673 | $10^{-10}$ | 14.96 | 5.6 | SuperLU | 2.475 | 0.93 | 66.51 | 24.9 |
+| $128^2$ (job 3784662) | head $q{=}32$ (head_sdf_R512_K16) | 2.6261 | 2.789 | $10^{-10}$ | 14.96 | 5.4 | SuperLU | 2.475 | 0.89 | 66.51 | 23.8 |
+| $128^2$ (job 3784662) | head $q{=}64$ (head_sdf_R512_K16) | 2.1643 | 2.806 | $10^{-10}$ | 14.96 | 5.3 | SuperLU | 2.475 | 0.88 | 66.51 | 23.7 |
+| $128^2$ (job 3784662) | head $q{=}128$ (head_sdf_R512_K16) | 2.2217 | 2.868 | $10^{-10}$ | 14.96 | 5.2 | SuperLU | 2.475 | 0.86 | 66.51 | 23.2 |
+| $128^2$ (job 3784662) | POD $k'{=}128$ | 2.4833 | 2.764 | $10^{-10}$ | 14.96 | 5.4 | SuperLU | 2.475 | 0.90 | 66.51 | 24.1 |
+| $256^2$ (job 3784663) | head $q{=}0$ (head_sdf_R512_K16) | 3.8608 | 2.879 | $10^{-10}$ | 28.08 | 9.8 | SuperLU | 8.386 | 2.91 | 484.34 | 168.2 |
+| $256^2$ (job 3784663) | head $q{=}32$ (head_sdf_R512_K16) | 2.5950 | 2.963 | $10^{-10}$ | 28.08 | 9.5 | SuperLU | 8.386 | 2.83 | 484.34 | 163.5 |
+| $256^2$ (job 3784663) | head $q{=}64$ (head_sdf_R512_K16) | 2.1305 | 3.028 | $10^{-10}$ | 28.08 | 9.3 | SuperLU | 8.386 | 2.77 | 484.34 | 159.9 |
+| $256^2$ (job 3784663) | head $q{=}128$ (head_sdf_R512_K16) | 2.2055 | 3.042 | $10^{-10}$ | 28.08 | 9.2 | SuperLU | 8.386 | 2.76 | 484.34 | 159.2 |
+| $256^2$ (job 3784663) | POD $k'{=}128$ | 2.4575 | 2.850 | $10^{-10}$ | 28.08 | 9.9 | SuperLU | 8.386 | 2.94 | 484.34 | 169.9 |
+| $512^2$ (job 3789568) | head $q{=}0$ (head_sdf_R512_K16) | 3.8521 | 4.716 | $10^{-10}$ | 70.12 | 14.9 | SuperLU | 36.505 | 7.74 | 4672.61 | 990.8 |
+| $512^2$ (job 3789568) | head $q{=}32$ (head_sdf_R512_K16) | 2.5875 | 4.812 | $10^{-10}$ | 70.12 | 14.6 | SuperLU | 36.505 | 7.59 | 4672.61 | 971.1 |
+| $512^2$ (job 3789568) | head $q{=}64$ (head_sdf_R512_K16) | 2.1233 | 4.801 | $10^{-10}$ | 70.12 | 14.6 | SuperLU | 36.505 | 7.60 | 4672.61 | 973.3 |
+| $512^2$ (job 3789568) | head $q{=}128$ (head_sdf_R512_K16) | 2.1977 | 4.748 | $10^{-10}$ | 70.12 | 14.8 | SuperLU | 36.505 | 7.69 | 4672.61 | 984.1 |
+| $512^2$ (job 3789568) | POD $k'{=}128$ | 2.4511 | 4.031 | $10^{-10}$ | 70.12 | 17.4 | SuperLU | 36.505 | 9.06 | 4672.61 | 1159.2 |
+
+### G.7 Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)
 
 <!-- section sources: none (prose only) -->
 
@@ -2573,7 +2642,7 @@ error against the reference ($17.98$–$19.44 %$)
 is the discretisation error. 27 subjects, 0
 budget exits.
 
-**Table 51.** Burgers at ten times lower viscosity, panel job 3817807
+**Table 52.** Burgers at ten times lower viscosity, panel job 3817807
 (NVIDIA A100-PCIE-40GB): the neural ladder at fixed $M=1088$, the $M=256$ control and
 the $(256, 2176)$ subject. **F4 applies**: the mesh is under-resolved
 (the converged discrete operator is $19.3$–$20.9 %$ from the
@@ -2598,7 +2667,7 @@ against reduced subjects only.
 | $q=128$, $M=256$ | 10.2614 | 10.2614 | 19.15 | 10.6478 | 658.6 | yes | 0 | no | no |
 | $q=256$, $M=2176$ | 6.1869 | 6.1869 | 18.94 | 10.0347 | 2864.2 | yes | 0 | no | yes |
 
-**Table 52.** The same job as Table 51: POD-LSPG at matched
+**Table 53.** The same job as Table 52: POD-LSPG at matched
 dimension, the free $R=512$ bank and the full-order tolerance/step grid.
 **F4 applies** (under-resolved mesh); the non-dominated set against
 all subjects is `nt1e-2_dt01`, `nt1e-3_dt005`, `dense_tight`, `fft_tight`.

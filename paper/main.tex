@@ -523,7 +523,8 @@ manifold, runs through the same weak objective, tests, solver and stopping rule.
 are always in the same job: preconditioned Newton (Burgers); the direct
 sine transform and tuned CG (Poisson, heat, waves); sparse direct, CG and
 IC(0)-PCG (L-shape). The NM-ROM of \citet{KimChoi2022NMROM} is not run
-under this protocol and is not compared. Every table names its job
+under this protocol and is not compared; the earlier comparison against
+plain CG is kept in Appendix~\ref{app:extended:cg} for continuity. Every table names its job
 id, GPU and checkpoint (Table~\ref{tab:provenance}), every solve carries
 its exit reason, and every number is emitted by one generator from
 audited records.
@@ -775,42 +776,45 @@ $\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at
 flat cost, and $q=R$ lands on the floor at $\nPlinTenTwentyFourTopErr\,\%$
 as the \emph{cheapest} point ($\nPlinTenTwentyFourTopMs$ vs
 $\nPlinTenTwentyFourDstMs$\,ms exact). Heat and the reflective wave
-do likewise (Appendix~\ref{app:extended:linear}). \textbf{The collapse
+do likewise (Appendix~\ref{app:extended:linear}). Against unpreconditioned
+CG at $10^{-6}$, the previous comparator, reduced rungs are
+\nCgPoissonSpeedupMin--\nCgPoissonSpeedupMax$\times$ faster on Poisson in the
+same job; the transform is faster still by
+\nCgPoissonDstFasterMin--\nCgPoissonDstFasterMax$\times$, hence our
+comparator (Appendix~\ref{app:extended:cg}). \textbf{The collapse
 is confounded with a weak bank}:
 $\nLinearBankOverPodMin$--$\nLinearBankOverPodMax\times$ worse than a POD
 basis of equal rank on both cells. No reduced arm beats the direct
 solve.
 
-\textbf{Navier--Stokes collapses for a different reason.} On 2D
-incompressible flow (nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $K=32$ the head's
+\textbf{Navier--Stokes collapses differently.} On 2D
+incompressible flow (nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $32$ the
 held-out oracle beats POD-$K$ by only $\nNsOracleRatio\times$ and
 $\nNsKthirtyTwoOracleRatio\times$ against a bar of
 $\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
-$\nNsKthirtyTwoPodOverOracleTzero$): linear wins where the data lie in a
-low-dimensional subspace. Retraining the head with 128, 256 and
-512 trajectories moves the oracle
+$\nNsKthirtyTwoPodOverOracleTzero$): linear wins where data lie in a
+low-dimensional subspace. Retraining the head on 128--512
+trajectories moves the oracle
 $\nNsScalePlainNOneTwentyEight$ to $\nNsScalePlainNTwoFiftySix$ to
-$\nNsScalePlainNFiveTwelve\,\%$ ($\nNsScaleGainFirstDoubling\,\%$ then
-$\nNsScaleGainSecondDoubling\,\%$ per doubling; ``\nNsScalePlainVerdict''
+$\nNsScalePlainNFiveTwelve\,\%$ (gains $\nNsScaleGainFirstDoubling\,\%$ then
+$\nNsScaleGainSecondDoubling\,\%$; ``\nNsScalePlainVerdict''
 by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
-512). A family of intrinsic dimension \nNsFamDimLow{} instead of
-\nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ but
-leaves the head's advantage over POD-16 at \nNsFamOracleRatio$\times$ and
-the held-out/training gap near \nNsFamHeldoutOverTrain{} (Table~\ref{tab:ns}):
-the advantage does not grow as the manifold eases. With
+512). A family of dimension \nNsFamDimLow{} instead of
+\nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ yet
+leaves the head's edge over POD-16 at \nNsFamOracleRatio$\times$ and the
+gap near \nNsFamHeldoutOverTrain: the edge does not grow as the manifold eases. With
 $\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories) the gap
-closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} because the
-head no longer fits the training data either: the limit moved from
-generalisation to capacity at the same head (ratio \nNsDataOracleRatio).
-Across $K=16$ and $32$,
+closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} as the
+head no longer fits the training data: the limit moved to
+capacity (ratio \nNsDataOracleRatio). Across $K=16$ and $32$,
 family dimension \nNsFamDimBase{} and \nNsFamDimLow, and
 128--\nNsDataTrainN{} trajectories, this head class never beats POD-$K$
 by the pre-registered $\nNsOracleBar\times$ on held-out decaying 2D
-Navier--Stokes (ratios \nNsCellRatioMin--\nNsCellRatioMax). An exploratory ladder on that failed-gate
-manifold (Table~\ref{tab:ns-ladder}; not a phase-3 result) closes the
+Navier--Stokes (ratios \nNsCellRatioMin--\nNsCellRatioMax). An exploratory ladder on that
+manifold (Table~\ref{tab:ns-ladder}; not phase 3) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
-the same dimension is more accurate at every rung and cheaper at all but
-the top, and no neural rung is non-dominated: the falsification clause's
+matched dimension is more accurate at every rung and cheaper below the
+top, no neural rung non-dominated: the falsification clause's
 named outcome. A trade between
 rungs needs a residual nonlinear in the coefficients and a manifold that
 beats POD held-out: Poisson, heat and waves lack the first, this cell the
@@ -856,35 +860,32 @@ validation sources (Table~\ref{tab:lshape}).
 \label{sec:limitations}
 (i) We use one checkpoint per PDE. Burgers' checkpoint is a favourable
 draw in development (Table~\ref{tab:seeds}), and the fixed-$M$ ladder uses
-only that single seed. A cold-start solve at $q=0$ can converge to a wrong
+only that seed. A cold-start solve at $q=0$ can converge to a wrong
 branch; one sealed case did (\nSealedIncQzero\,\%, Table~\ref{tab:sealed}).
-Raising $q\ge16$ removed this failure, but that is not a guarantee. (ii) We
-use uniform Cartesian differences, in 2D only. Our cohorts are small
+Raising $q\ge16$ removed it, with no guarantee. (ii) Uniform Cartesian
+differences, 2D only. Our cohorts are small
 (Table~\ref{tab:problems}). The low-viscosity cell is under-resolved. (iii)
-We ran no cold-start comparison with \citet{KimChoi2022NMROM}, and we ran
-no skip ablation. (iv) Operator numbers are lower bounds
-(\nOpAllImproving{} arms are still improving). Quadrature rules above
+We ran no cold-start comparison with \citet{KimChoi2022NMROM} and no
+skip ablation. (iv) Operator numbers are lower bounds
+(\nOpAllImproving{} arms still improving). Quadrature rules above
 $q=32$ are marginal; one transfer-draw spread in $\rho_{\max}$ is
-\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$ and remains
-unexplained. One cell shows a cross-job spread of
+\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$, unexplained. One cell shows a cross-job spread of
 $\nQxmAnchorSpreadPct\,\%$. The $1024^2$ frontier rests on one job. (v)
 Against the fine reference the knob moves the error only
-$\nPanelRefSpan\times$. (vi) We provide no convergence theory and no
-quadrature-error theory.
+$\nPanelRefSpan\times$. (vi) No convergence or quadrature-error theory.
 
 % =====================================================================
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
 
-We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs, with a
-deployment-time accuracy/cost family from one model. The rank $q$ and
-three solver knobs span $\nQxmErrSpan\times$ in same-grid error for
-$\nQxmCostSpan\times$ in cost, on 2D Burgers, in one allocation. It does
+We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs with a
+deployment-time accuracy/cost family per model. Rank $q$ and three
+solver knobs span $\nQxmErrSpan\times$ in same-grid error for
+$\nQxmCostSpan\times$ in cost on 2D Burgers in one job. It does
 not beat a tuned full-order solver or a neural operator on the same data
-at $256^2$. Where no fast transform applies, reduced models are cheaper,
-and plain POD is cheapest of all. Next, we plan to resolve the
-low-viscosity cell, to test unstructured meshes, and to try another head
-class for Navier--Stokes.
+at $256^2$. Where no fast transform applies reduced models are cheaper,
+plain POD most of all. Next: a resolved low-viscosity cell,
+unstructured meshes, another Navier--Stokes head class.
 
 % =====================================================================
 \section*{Reproducibility statement}\label{sec:repro}

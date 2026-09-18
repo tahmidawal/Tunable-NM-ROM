@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import math
 import statistics
 import sys
 from collections import defaultdict
@@ -1479,6 +1480,75 @@ def build_lowvisc():
     f4 = next((r['value'] for r in rows if r['arm'] == 'F4'), None); macro('nLvFfourDiscRatio', f"{f4:.2f}" if f4 is not None else '---')
 
 
+def build_cg_comparator():
+    """T21: the previous submission's comparator, unpreconditioned CG, beside the competitive one (direct transform or
+    sparse direct), same job only. Secondary comparison; Burgers has no CG comparator (its FOM is Newton); heat is
+    omitted (its committed record is per-invocation raw timing of a different decoder family, not re-aggregated here)."""
+    p = load('plinear_summary'); prep = load('plinear_report'); s = load('lshape_summary')
+    if p is None or s is None:
+        write('T21_cg_comparator.tex', gen('p-linear / lshape', 'T21') + '\n'); return
+    p = [r for r in p if not r.get('retracted')]
+    jobs = {}
+    for m in re.finditer(r'## (\d+) intervals — `(\w+)`, job `(\d+)`, `(NVIDIA [^`]+)`, source `([0-9a-f]+)`', prep or ''):
+        jobs[int(m.group(1))] = m.group(3)
+    hdr = ['mesh', 'subject', 'error \\%', 'ms', 'CG tol.', 'CG ms', 'CG / ROM', 'direct', 'direct ms', 'direct / ROM', 'IC(0)-PCG (CPU) ms', 'PCG / ROM']
+    t = []; sp_p = []; dst_p = []; sp_l = []; pcg_l = []
+    order = ['q0_m4@new_K32', 'q32_m4@new_K32', 'q64_m4@new_K32', 'q128_m4@new_K32', 'q256_m4@new_K32', 'd_linear_qr_m4@new_K32', 'e_pod512_m4@trainset']
+    lab = {'d_linear_qr_m4@new_K32': 'linear top rung ($q{=}R$)', 'e_pod512_m4@trainset': "POD $k'{=}512$"}
+    for mesh in (256, 1024):
+        job = jobs.get(mesh); by = defaultdict(dict); meta = {}
+        for r in p:
+            if r['mesh'] == mesh and (job is None or r['job_id'] == job):
+                by[r['subject']][r['metric']] = r['value']; meta[r['subject']] = r
+        cg = by['cg_1e-06']['median_total_ms']; dst = by['dst_direct']['median_total_ms']
+        for s_ in order:
+            if s_ not in by: continue
+            d = by[s_]; rom = d['median_total_ms']
+            name = lab.get(s_, f"$q{{=}}{meta[s_]['q_or_k']}$")
+            t.append([f'${mesh}^2$ (job {job})', name, pct(100 * d['worst_same_grid']), ms(rom, 3), '$10^{-6}$', ms(cg, 2), f'{cg / rom:.1f}', 'DST', ms(dst, 3), f'{dst / rom:.2f}', '---', '---'])
+            if s_ != 'e_pod512_m4@trainset':
+                sp_p.append(cg / rom); dst_p.append(rom / dst)
+        t.append('MIDRULE')
+    macro('nCgPoissonSpeedupMin', f'{min(sp_p):.1f}'); macro('nCgPoissonSpeedupMax', f'{max(sp_p):.1f}')
+    macro('nCgPoissonDstFasterMin', f'{min(dst_p):.1f}'); macro('nCgPoissonDstFasterMax', f'{max(dst_p):.1f}')
+    macro('nCgPoissonCgMsTwoFiftySix', ms(cg if False else [r for r in p if r['mesh'] == 256 and r['subject'] == 'cg_1e-06' and r['metric'] == 'median_total_ms'][0]['value'], 1))
+    # L-shape: solve layer at M = 257, one job per mesh; CG at its own tolerances (no 1e-6 arm), the tightest shown
+    s_rows = s['rows'] if isinstance(s, dict) else s
+    V = defaultdict(dict); ljobs = {}
+    for r in s_rows:
+        if r.get('test_modes') == 257 and r['metric'] in ('worst_same_grid', 'median_total_ms'):
+            V[(r['mesh'], r['subject'])][r['metric']] = r['value']; ljobs[r['mesh']] = r['job_id']
+    def lname(sub):
+        if sub.startswith('neural_q'):
+            q, h = sub[8:].split('@'); return f'head $q{{=}}{q}$ (' + tex_escape(h) + ')'
+        if sub.startswith('pod'): return "POD $k'{=}" + sub[3:] + "$"
+        return tt(sub)
+    lmeshes = []
+    for mesh in (64, 128, 256, 512):
+        subs = {sub for (m, sub) in V if m == mesh}
+        cgs = sorted([x for x in subs if x.startswith('fom_cg_gpu_r')], key=lambda x: float(x.split('_r')[1]))
+        if not cgs or 'fom_splu' not in subs: continue
+        cgk = cgs[0]; tol = float(cgk.split('_r')[1]); cg = V[(mesh, cgk)]['median_total_ms']; direct = V[(mesh, 'fom_splu')]['median_total_ms']
+        pcgs = sorted([x for x in subs if x.startswith('fom_pcg_ic0')], key=lambda x: float(x.split('_r')[1]))
+        pcg = V[(mesh, pcgs[0])]['median_total_ms'] if pcgs else None
+        rungs = sorted([x for x in subs if x.startswith('neural_q') and x.endswith('@head_sdf_R512_K16')], key=lambda x: int(x[8:].split('@')[0])) + [x for x in ('pod128',) if x in subs]   # the head the paper reports (T18m) and POD-128
+        if not rungs: continue
+        lmeshes.append(mesh)
+        for sub in rungs:
+            d = V[(mesh, sub)]; rom = d['median_total_ms']
+            t.append([f'${mesh}^2$ (job {ljobs[mesh]})', lname(sub), pct(100 * d['worst_same_grid']), ms(rom, 3), f'$10^{{{int(round(math.log10(tol)))}}}$', ms(cg, 2), f'{cg / rom:.1f}', 'SuperLU', ms(direct, 3), f'{direct / rom:.2f}', ms(pcg, 2) if pcg else '---', f'{pcg / rom:.1f}' if pcg else '---'])
+            if sub.startswith('neural_q'):
+                sp_l.append(cg / rom)
+                if pcg: pcg_l.append(pcg / rom)
+        t.append('MIDRULE')
+    t.pop()
+    macro('nCgLshapeSpeedupMin', f'{min(sp_l):.1f}' if sp_l else '---'); macro('nCgLshapeSpeedupMax', f'{max(sp_l):.1f}' if sp_l else '---')
+    macro('nCgLshapePcgRatioMin', f'{min(pcg_l):.1f}' if pcg_l else '---'); macro('nCgLshapePcgRatioMax', f'{max(pcg_l):.1f}' if pcg_l else '---')
+    macro('nCgLshapeMeshes', ', '.join(f'${m}^2$' for m in lmeshes)); macro('nCgLshapeCgTol', '$10^{-10}$' if lmeshes else '---')
+    write('T21_cg_comparator.tex', tabular(hdr, t, 'llrrrrrlrrrr', r'\scriptsize'),
+          'secondary comparison against the previous submission comparator (unpreconditioned CG) beside the competitive one, same job only; Poisson from p-linear, L-shape from lshape (CG at its own tolerances, tightest shown); Burgers has no CG comparator; heat omitted')
+
+
 def build_lshape():
     s = load('lshape_summary'); rep = load('lshape_report')
     if s is None:
@@ -2159,6 +2229,7 @@ def build_problems_and_provenance(mesh):
     prov('T9', 'b-eqtop', MACROS.get('provEqtopJobs', '---'), 'see job list', 'see job list', MACROS.get('provBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Burgers)', MACROS.get('provMeshBurgersJob', '---'), MACROS.get('provMeshBurgersGpu', '---'), MACROS.get('provMeshBurgersCommit', '---'), MACROS.get('provMeshBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
+    prov('T21', 'p-linear + lshape (secondary: previous comparator, CG)', 'the p-linear and lshape jobs above', 'per job', 'per job', 'same checkpoints as T11b / T18c')
     prov('T20, T20b', 'b-lowvisc (appendix; F4 under-resolution caveat)', 'panel ' + MACROS.get('provLvPanelJob', '---') + '; gate ' + MACROS.get('provLvGateJob', '---') + '; training ' + MACROS.get('provLvTrainJob', '---'), MACROS.get('provLvGpu', '---'), MACROS.get('provLvCommit', '---'), 'low-viscosity checkpoint hashed in the lane summary')
     prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ', ' + MACROS.get('nNsDataTrainN', '---') + ' trajectories); lane closed, no phase-3 job', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
     prov('T11f', 'ns2d ns301 (head-only data scaling on the frozen K=16 bank)', MACROS.get('provNsScaleJob', '---'), 'per job', 'per job', 'frozen K=16 bank; heads hashed in result.json')
@@ -2235,6 +2306,7 @@ def main():
     build_speed()
     build_training()
     build_lshape()
+    build_cg_comparator()
     build_lowvisc()
     build_pending()
     build_offline_and_spec()

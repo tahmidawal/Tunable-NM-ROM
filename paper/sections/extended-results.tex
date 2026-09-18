@@ -187,6 +187,38 @@ place the learned bank beats the linear baseline on both axes, at
 $\nLshapeFreeOverFloor\times$ its own bank floor with no solver iterations
 (Table~\ref{tab:lshape-free}).
 
+\subsection{Against the previous submission's comparator: conjugate gradient}
+\label{app:extended:cg}
+An earlier version of this work compared the reduced solve against
+unpreconditioned conjugate gradient (CG) at tolerance $10^{-6}$. That
+comparison is retained here as a secondary one, same job only
+(Table~\ref{tab:cg}): on Poisson the reduced rungs are
+\nCgPoissonSpeedupMin--\nCgPoissonSpeedupMax$\times$ faster than CG
+$10^{-6}$ in the same job, but the direct transform (DST) solve is faster
+than every rung by \nCgPoissonDstFasterMin--\nCgPoissonDstFasterMax$\times$,
+which is why the paper compares against the transform. On the L-shaped
+domain, where no transform applies, the lane timed CG at its own
+tolerances (tightest \nCgLshapeCgTol) and an IC(0)-preconditioned CG on
+the CPU: the head is \nCgLshapeSpeedupMin--\nCgLshapeSpeedupMax$\times$
+faster than the tightest CG across \nCgLshapeMeshes, and the sparse direct
+solve is the competitive comparator (Table~\ref{tab:lshape-main}).
+
+\begin{table}[h]
+\centering
+\caption{Secondary comparison against the previous submission's comparator,
+unpreconditioned CG, beside the competitive one, all inside one job per
+mesh: the reduced rungs (and the linear top rung and POD) with their
+complete-query ms, the CG solve at the tolerance shown, the direct solve
+(DST on the square, SuperLU on the L-shape) and the ratios. Poisson from
+the p-linear jobs, L-shape from the lshape jobs (CG at its own tolerances,
+the tightest shown; the IC(0)-PCG arm runs on the CPU). Burgers has no CG
+comparator (its full-order solver is Newton). Heat is omitted: its
+committed CG record is per-invocation raw timing of an earlier decoder
+family and is not re-aggregated here.}
+\label{tab:cg}
+\resizebox{\linewidth}{!}{\input{tables/T21_cg_comparator}}
+\end{table}
+
 \subsection{Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)}
 \label{app:extended:lowvisc}
 A second Burgers cell (lane b-lowvisc; training job \provLvTrainJob, gate

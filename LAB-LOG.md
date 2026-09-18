@@ -14579,3 +14579,14 @@ relatively cheaper on finer meshes). If the paper wants F4 closed for the reduce
 only, the L=512 gate alone (leg (a) at 512, 1 job, ≈ 1 h) is the cheapest honest step. **Lane
 closed** unless the coordinator wants that gate. Jobs used: 3 of 8. Codex audit of the report still
 owed after 2026-09-19 11:33 (A1).
+
+## 2026-09-17
+
+### b-lowvisc — correction to the previous entry (A9.1)
+
+The previous entry says `nt1e-3_dt005` (54.9 ms, 0.197 %) "beats every reduced subject on both
+axes". It beats every *neural* subject (cheapest neural rung `q0_M256` 300.3 ms); the cheapest
+reduced subject overall is `pod16_M64` at 46.5 ms. The cheapest full-order setting beating *every*
+reduced subject is **`nt1e-2_dt01` at 14.0 ms / 3.895 %** (most accurate reduced: 6.187 %), per
+`summary.json` `P/cheapest_fom_beating_every_reduced_subject`. P: FAIL, unchanged. The generated
+report was right; the hand-written sentence was not. Commit `3672c017` + A9.1.

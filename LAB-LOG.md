@@ -14447,3 +14447,44 @@ recorded in A7: **`lvp01` first** — the A3 panel (fixed M=1088 ladder q∈{0..
 only job that evaluates P and the pre-registered F2 — **then the L=512 F4 confirmation** (≈5 h over
 two jobs), because confirming a cell that fails P is wasted compute. Jobs used: 2 of 8. Report:
 `experiments/b-lowvisc/reports/2026-09-17-b-lowvisc.md`; `summary.json` 213 rows.
+
+## 2026-09-17
+
+### b-lowvisc — stage-3 panel `lvp01` submitted (slurm 3817807, A100-80G); interim, no new numbers
+
+**What ran / was built.** Coordinator approved the A3 panel verbatim plus two recording additions
+(vs-4096-reference column on every row; the non-dominated set by b-panel's rule). Built and
+committed on `exp/2026-09-17-b-lowvisc` (`b501874c`, `144f6b29`, + A8.1): `lv_directions.py` (stage
+1 — the low-viscosity checkpoint's OWN `old` residual directions in-job, `directions.audited` with
+qtd02/b-seeds settings, because directions are a function of the checkpoint and the incumbent panel
+transferred a file computed on the incumbent), `lv_panel.py` (b-panel's `panel.py` with four
+`LV-PATCH` edits recorded in `checks/lv_panel.diff`: low-ν cohort draws, explicit (q, M) cells,
+cells in the prefix-hash set, one shared compiled query per q across M — b-qxm's mechanics),
+`make_panel_config.py` → `config-panel.json` (every shared key from the incumbent panel's config,
+cohort hash and reference probes from `lvg01`; nothing typed), `cluster/stage.py` `lvp` kind
+(`--constraint=a100-80G`, `--mem 180G`, exclude pax007, mem fraction 0.90, 8 h). Subjects: fixed
+M=1088 ladder q∈{0..256}, M=256 control q≤128, (256, 2176), POD-LSPG k'∈{16..512}, free512 at
+M=1024, the 8 tuned FOM settings; 3 timed reps; dense quadrature only; no EQ/fast/FNO/q=512.
+
+**Smoke.** Both stages at 64 intervals from the staged tree (`checks/smoke-panel64.json`):
+directions rank 64, orthonormality 3.7e-14; panel builds/warms/times every family, `PANEL COMPLETE`,
+nothing dropped. Validates no number.
+
+**Submitted.** `lvp01` = slurm **3817807**, PD (Priority) at submission, namespace
+`/cluster/tufts/paralab/tawal01/b_lowvisc_20260917/lvp01`; `squeue` clean before and after, one job
+per attempt dir. Expected wall time ≈ 1 h once running (bpn301: 29 min for 39 reduced subjects;
+here 20 reduced with shared queries, plus ~10–20 min of in-job directions and 6 reference solves).
+Per protocol: still PD after 3 h → scancel, resubmit h100 then h200 (never l40s; 80 GB needed).
+
+**What was wrong.** (1) Smoke config `priority_override: null` crashed stage 2 once locally; fixed
+to `[]` (cluster config unaffected). (2) The first smoke record tested a guessed key name for the
+vs-reference column and wrote `False`; A8 cited it as confirming — corrected in A8.1 with the
+driver's real keys, the record rewritten; the job is unaffected (bpn301's driver, reference fields
+saved as artifacts, column recomputable by the audit).
+
+**Open / next session.** When 3817807 lands: collect (the collector's `lvp` exclusion list needs
+setting — `bank_G.npz`-class artifacts if any), adapt `audit_panel_source_bpanel.py` to this lane
+(no rule sets, no fast/FNO; add the vs-reference column and the non-dominated set), regenerate the
+report/`summary.json`, apply **P** and the pre-registered **F2** on the panel's dev-cohort three
+layers (bank floor / best-found / solved at q=0) beside the incumbent's 0.39 / 2.54 / 2.56 %, with
+F4 on every row. Then the L=512 F4 confirmation decision. Jobs used: 3 of 8.

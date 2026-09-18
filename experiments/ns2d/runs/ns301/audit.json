@@ -1,0 +1,874 @@
+{
+  "source": "experiments/ns2d/runs/ns301/archive/experiments/ns2d/output/result.json",
+  "checks": [
+    {
+      "name": "dev8.physical_max_abs_diff",
+      "recomputed": 0.0,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "B-ORTH_N256.rank",
+      "recomputed": 256.0,
+      "reported": 256.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n128_plain.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.oracle_median",
+      "recomputed": 0.27493800406332347,
+      "reported": 0.27493800406332347,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.podK_median",
+      "recomputed": 0.23575693308509998,
+      "reported": 0.23575693308509998,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.ratio_podK_over_oracle",
+      "recomputed": 0.8574912511214734,
+      "reported": 0.8574912511214734,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.budget_exits",
+      "recomputed": 2.0,
+      "reported": 2.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n128_plain.heldout_over_train_oracle",
+      "recomputed": 16.47831996515213,
+      "reported": 16.47831996515213,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.heldout_over_training_recon",
+      "recomputed": 11.510324619051088,
+      "reported": 11.510324619051088,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_plain.single_start.first48_median_rel_diff",
+      "recomputed": 2.319068839411674e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n128_plain.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n128_reg.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.oracle_median",
+      "recomputed": 0.26109532600353635,
+      "reported": 0.26109532600353635,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.podK_median",
+      "recomputed": 0.23575693308509998,
+      "reported": 0.23575693308509998,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.ratio_podK_over_oracle",
+      "recomputed": 0.9029534794579465,
+      "reported": 0.9029534794579465,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.budget_exits",
+      "recomputed": 10.0,
+      "reported": 10.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n128_reg.heldout_over_train_oracle",
+      "recomputed": 4.6092171758175775,
+      "reported": 4.6092171758175775,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.heldout_over_training_recon",
+      "recomputed": 3.431475514385263,
+      "reported": 3.431475514385263,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg.single_start.first48_median_rel_diff",
+      "recomputed": 3.3424996470554747e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n128_reg.scipy_single_ge_oracle_all_states",
+      "recomputed": 0.0,
+      "reported": 1.0,
+      "match": false,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n128_reg_small.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.oracle_median",
+      "recomputed": 0.2465832851023767,
+      "reported": 0.2465832851023767,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.podK_median",
+      "recomputed": 0.23575693308509998,
+      "reported": 0.23575693308509998,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.ratio_podK_over_oracle",
+      "recomputed": 0.956094542203938,
+      "reported": 0.956094542203938,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.budget_exits",
+      "recomputed": 3.0,
+      "reported": 3.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n128_reg_small.heldout_over_train_oracle",
+      "recomputed": 3.3786380610463618,
+      "reported": 3.3786380610463618,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.heldout_over_training_recon",
+      "recomputed": 2.644291873651033,
+      "reported": 2.644291873651033,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n128_reg_small.single_start.first48_median_rel_diff",
+      "recomputed": 3.1591508652658236e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n128_reg_small.scipy_single_ge_oracle_all_states",
+      "recomputed": 0.0,
+      "reported": 1.0,
+      "match": false,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n256_plain.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.oracle_median",
+      "recomputed": 0.20688908927724206,
+      "reported": 0.20688908927724206,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.podK_median",
+      "recomputed": 0.22961041753567923,
+      "reported": 0.22961041753567923,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.ratio_podK_over_oracle",
+      "recomputed": 1.1098237144250243,
+      "reported": 1.1098237144250243,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.budget_exits",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n256_plain.heldout_over_train_oracle",
+      "recomputed": 6.884563265659097,
+      "reported": 6.884563265659097,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.heldout_over_training_recon",
+      "recomputed": 5.224477219452673,
+      "reported": 5.224477219452673,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_plain.single_start.first48_median_rel_diff",
+      "recomputed": 6.42966657387505e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n256_plain.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n256_reg.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.oracle_median",
+      "recomputed": 0.21020360738564042,
+      "reported": 0.21020360738564042,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.podK_median",
+      "recomputed": 0.22961041753567923,
+      "reported": 0.22961041753567923,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.ratio_podK_over_oracle",
+      "recomputed": 1.0923238682314096,
+      "reported": 1.0923238682314096,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.budget_exits",
+      "recomputed": 9.0,
+      "reported": 9.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n256_reg.heldout_over_train_oracle",
+      "recomputed": 3.2288307636219504,
+      "reported": 3.2288307636219504,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.heldout_over_training_recon",
+      "recomputed": 2.5477937557572155,
+      "reported": 2.5477937557572155,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg.single_start.first48_median_rel_diff",
+      "recomputed": 4.4510419449960894e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n256_reg.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n256_reg_small.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.oracle_median",
+      "recomputed": 0.21343147411373078,
+      "reported": 0.21343147411373078,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.podK_median",
+      "recomputed": 0.22961041753567923,
+      "reported": 0.22961041753567923,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.ratio_podK_over_oracle",
+      "recomputed": 1.0758039248387856,
+      "reported": 1.0758039248387856,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.budget_exits",
+      "recomputed": 6.0,
+      "reported": 6.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n256_reg_small.heldout_over_train_oracle",
+      "recomputed": 1.7896850940727385,
+      "reported": 1.7896850940727385,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.heldout_over_training_recon",
+      "recomputed": 1.3677310287391586,
+      "reported": 1.3677310287391586,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n256_reg_small.single_start.first48_median_rel_diff",
+      "recomputed": 2.4295191574866207e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n256_reg_small.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n512_plain.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.oracle_median",
+      "recomputed": 0.19827937854727684,
+      "reported": 0.19827937854727684,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.podK_median",
+      "recomputed": 0.22772554912425733,
+      "reported": 0.22772554912425733,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.ratio_podK_over_oracle",
+      "recomputed": 1.148508487330968,
+      "reported": 1.148508487330968,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.budget_exits",
+      "recomputed": 4.0,
+      "reported": 4.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n512_plain.heldout_over_train_oracle",
+      "recomputed": 4.126004884317188,
+      "reported": 4.126004884317188,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.heldout_over_training_recon",
+      "recomputed": 3.1905434243352704,
+      "reported": 3.1905434243352704,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_plain.single_start.first48_median_rel_diff",
+      "recomputed": 8.088495458461839e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n512_plain.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n512_reg.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.oracle_median",
+      "recomputed": 0.1938924480024687,
+      "reported": 0.1938924480024687,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.podK_median",
+      "recomputed": 0.22772554912425733,
+      "reported": 0.22772554912425733,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.ratio_podK_over_oracle",
+      "recomputed": 1.1744941665874364,
+      "reported": 1.1744941665874364,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.budget_exits",
+      "recomputed": 5.0,
+      "reported": 5.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n512_reg.heldout_over_train_oracle",
+      "recomputed": 3.0846383949408214,
+      "reported": 3.0846383949408214,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.heldout_over_training_recon",
+      "recomputed": 2.3824322705862206,
+      "reported": 2.3824322705862206,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg.single_start.first48_median_rel_diff",
+      "recomputed": 9.331270928219281e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n512_reg.scipy_single_ge_oracle_all_states",
+      "recomputed": 0.0,
+      "reported": 1.0,
+      "match": false,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "n512_reg_small.bank_floor.first48_worst_rel_diff",
+      "recomputed": 1.5139821880067365e-14,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.oracle_le_single_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.oracle_ge_bank_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.oracle_median",
+      "recomputed": 0.20087431113756227,
+      "reported": 0.20087431113756227,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.podK_median",
+      "recomputed": 0.22772554912425733,
+      "reported": 0.22772554912425733,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.ratio_podK_over_oracle",
+      "recomputed": 1.1336718360582547,
+      "reported": 1.1336718360582547,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.budget_exits",
+      "recomputed": 8.0,
+      "reported": 8.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact-integer"
+    },
+    {
+      "name": "n512_reg_small.heldout_over_train_oracle",
+      "recomputed": 1.5545646645566378,
+      "reported": 1.5545646645566378,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.heldout_over_training_recon",
+      "recomputed": 1.1586934418735761,
+      "reported": 1.1586934418735761,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "n512_reg_small.single_start.first48_median_rel_diff",
+      "recomputed": 4.3171171245542285e-11,
+      "reported": 0.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (independent LM from the same start; local minima may differ per state)"
+    },
+    {
+      "name": "n512_reg_small.scipy_single_ge_oracle_all_states",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "value (the driver oracle must be at least as good as an independent single-start fit)"
+    },
+    {
+      "name": "summary.plain.loglog_slope",
+      "recomputed": -0.23578584946983971,
+      "reported": -0.23578584946983955,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "summary.plain.verdict_matches_A9_rule",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "summary.reg.loglog_slope",
+      "recomputed": -0.2146600095373429,
+      "reported": -0.2146600095373429,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "summary.reg.verdict_matches_A9_rule",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "summary.reg_small.loglog_slope",
+      "recomputed": -0.14789096603317972,
+      "reported": -0.14789096603317975,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    },
+    {
+      "name": "summary.reg_small.verdict_matches_A9_rule",
+      "recomputed": 1.0,
+      "reported": 1.0,
+      "match": true,
+      "rtol": 1e-09,
+      "kind": "exact"
+    }
+  ],
+  "all_match": false,
+  "notes": [
+    "n128_plain: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 2.32e-11, worst 3.72e-02; SciPy better on 1, driver better on 0",
+    "n128_reg: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 3.34e-11, worst 3.79e-02; SciPy better on 1, driver better on 0",
+    "n128_reg_small: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 3.16e-11, worst 1.68e-01; SciPy better on 1, driver better on 0",
+    "n256_plain: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 6.43e-11, worst 2.10e-01; SciPy better on 3, driver better on 1",
+    "n256_reg: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 4.45e-11, worst 1.14e-01; SciPy better on 3, driver better on 2",
+    "n256_reg_small: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 2.43e-11, worst 1.46e-07; SciPy better on 1, driver better on 0",
+    "n512_plain: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 8.09e-11, worst 8.44e-03; SciPy better on 1, driver better on 0",
+    "n512_reg: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 9.33e-11, worst 1.53e-01; SciPy better on 3, driver better on 2",
+    "n512_reg_small: SciPy-LM single-start vs driver single-start on 48 states: median rel diff 4.32e-11, worst 6.30e-02; SciPy better on 4, driver better on 2"
+  ],
+  "n_checks": 107
+}

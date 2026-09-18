@@ -69,3 +69,15 @@ and 3.1–4.7 % (K=32) of the 384 held-out states stopped at the 300-iteration c
 error on those states is an *upper bound* on the best fit; the medians (over 384 states) cannot
 move by more than the rank of ~18 states and the verdicts (ratio 1.19 / 1.15 vs bar 2.0) stand.
 The report now shows the count per mesh. DESIGN §A8 records the correction.
+
+## Addendum 4 — `ns301` (job 3808493, head-only diagnosis, DESIGN §A9/§A10)
+
+Written self-audit; mechanical check `artifacts/ns301/audit.json` (107 checks, 104 match; 3 value-level mismatches explained in §A10 and quantified in `artifacts/ns301/audit_oracle_beaten.json`).
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 23 | Frozen bank rank 256; B-DATA by hash on `pax052` | `gates.B-ORTH_N256`, `gates.B-DATA_*` | audit recomputes the NumPy bank's SVD rank (256); hashes read from the JSON | verified |
+| 24 | Dev-report oracle medians 0.2749/0.2069/0.1983 (plain), 0.2611/0.2102/0.1939 (reg), 0.2466/0.2134/0.2009 (reg_small); POD-16 of the subset 0.2358/0.2296/0.2277 | `arms.*.eval.dev_report.per_state_*` | audit recomputes every median and ratio from the per-state arrays; bank floor on the 48 archived states recomputed exactly (≤1e-9) | verified |
+| 25 | Slopes −0.236/−0.215/−0.148 → "ambiguous" by the §A9 rule; successive slopes −0.41→−0.06, −0.31→−0.12, −0.21→−0.09; reg vs plain at n=512 +2.2 %/−1.3 % | `summary.*`, `arms.*` | audit recomputes the LS slope and the verdict rule; `generate_ns2d.py` computes the successive slopes and the reg fraction from the same medians | verified |
+| 26 | The oracle is a best-found upper bound: an independent SciPy LM beats it on 1/48 audited states in 3 of 9 arms; medians unchanged to 1e-10 | `audit_oracle_beaten.json` | direct recomputation | verified; recorded as a finding |
+| 27 | Train-oracle 0.017–0.129 and training recon 0.024–0.173 per arm | `arms.*.eval.train`, `arms.*.training` | medians and gaps recomputed from per-state arrays; training recon is the driver's own number (training fields not saved) | verified (gap side), reported (recon) |

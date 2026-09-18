@@ -523,3 +523,58 @@ function class / this recipe) cannot interpolate the manifold even when the data
   R-LIN 1.2e-15; weight decay verified to act on the head weights only.
 - Wall-time allocations: ns301 5 h, ns302 12 h, ns303 8 h, ns304 24 h (A100, 180 GB). Jobs
   6–9 of 12. One reserved for Phase 3 on a passing head; two spare.
+
+## §A10 (2026-09-17 ~21:45 EDT, after job 3808493 `ns301`) — reading the head-only diagnosis by the §A9 rule: "ambiguous" under every regime, with a sharply decelerating slope; regularisation does not move it
+
+**Run.** `ns301` (A100 `pax052`, 1 h 45 m, exit 0, `jax_backend=gpu`, `ALL-DONE`, commit
+`31e0846f`): frozen `ns203` bank (rank 256, $\kappa=44.4$; B-DATA by hash), nine arms. Independent
+NumPy/SciPy audit `artifacts/ns301/audit.json`: 107 checks, 104 match; the three value-level
+mismatches are explained below and change nothing.
+
+**Numbers (generated; dev-report = dev cases 0–31, 192 states).**
+
+| $n$ | plain (512×3) | reg (512×3, wd, early stop) | reg_small (128×2, wd, early stop) | POD-16 of the subset |
+|---|---|---|---|---|
+| 128 | 0.2749 (train-oracle 0.0167) | 0.2611 (0.0566) | 0.2466 (0.0730) | 0.2358 |
+| 256 | 0.2069 (0.0301) | 0.2102 (0.0651) | 0.2134 (0.1193) | 0.2296 |
+| 512 | 0.1983 (0.0481) | 0.1939 (0.0629) | 0.2009 (0.1292) | 0.2277 |
+
+Least-squares log-log slopes: **−0.236 / −0.215 / −0.148** — all in the pre-registered
+"ambiguous" band $(-0.25,-0.10)$. Successive slopes: 128→256 **−0.41 / −0.31 / −0.21**,
+256→512 **−0.06 / −0.12 / −0.09** — the second doubling is in or at the "head-limited" band
+for every regime. Regularisation at $n=512$: reg +2.2 %, reg_small −1.3 % versus plain (bar
+≥10 %): **it does not move it**. Early stopping picked 5k–45k of 100k steps for the reg
+regimes, so the plain head's long training is not what hurts.
+
+**Reading.** (1) By the rule as written, the verdict is *ambiguous* for every regime; the lane
+does not upgrade it. (2) The decomposition of the slope says which way it leans: the first
+doubling of data is worth 25–35 %, the second 4–8 %; the improvement is decelerating toward
+zero, which is the head-limited signature. (3) At $n=128$ the head is *worse than linear POD-16*
+of the same 128 trajectories (ratio 0.86–0.96); it overtakes POD-16 only at $n\ge256$ and by
+≤17 %. (4) The train-oracle is 0.017–0.13 against a dev-oracle of 0.19–0.27: more data closes
+the gap mostly by making the training states harder to memorise (train-oracle rises 0.017 →
+0.048 for plain), not by bringing the held-out states down. (5) Weight decay and a 4× smaller
+head trade training fit for nothing on held-out states. Caveat, pre-registered: the frozen
+bank saw all 512 trajectories, so the small-$n$ arms are optimistic — a flat slope is the
+stronger reading, and the observed slope is flattening.
+
+**Implication for the running arms (stated before they land).** Extrapolating the last
+observed slope (−0.06 to −0.12) to $n=2048$ predicts a dev oracle of ≈0.17–0.18 against
+POD-16 ≈0.22, i.e. a ratio ≈1.25–1.35: **ns302 (4× data) is unlikely to reach the 2.0 bar**
+even with the bank retrained jointly, which ns301 could not test. The diagnosis therefore
+leans to (H): the head cannot interpolate a manifold of this intrinsic dimension from this
+kind of sampling, so **ns303 (the 8-dimensional family) is the arm that can pass**, and the
+reserved Phase-3 job stays reserved for whichever of ns302/ns303 passes H-ORACLE — expected
+ns303. If neither passes, the reserved job is *not* spent on a failed head; the cell's
+deliverable is then ns304's exploratory ladder plus this diagnosis, and any further head work
+(a different function class, e.g. a head with latent Fourier features was already ruled out by
+the parent lane; a deeper/wider bank-side change; or a manifold-dimension study) is a new
+pre-registration.
+
+**Audit findings (recorded, not hidden).** For `n128_reg`, `n128_reg_small` and `n512_reg` an
+independent SciPy LM from the driver's own single start beat the driver's 8-start oracle on
+**1 of the 48 audited states** each (that state improved by 3.8 %, 16.8 %, 12.9 %); taking the
+minimum changes the 192-state medians by <1e-10. The oracle remains what §A8 says it is — a
+best-found upper bound — and 1–10 of 192 states per arm are LM budget exits (in the table).
+Everything else (bank floor on the archived states, oracle ≤ single-start and ≥ bank floor on
+every state, all medians, ratios, gaps, slopes, verdicts) matches exactly.

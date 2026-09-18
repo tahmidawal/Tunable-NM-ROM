@@ -193,6 +193,42 @@ def phase2(doc, d, job, sha):
     doc.table(['gate', 'passed'], [[k, yn(g['passed'])] for k, g in G.items()])
 
 
+def headfit(doc, d, job, sha):
+    c = d['config']
+    doc.h(2, f'Phase 2 diagnosis (DESIGN §A9, ns301) — head-only on the frozen $K={c["K"]}$, $R={c["R"]}$ bank of checkpoint `{Path(d["checkpoint"]["path"]).name}` (job {job}, commit `{str(d["commit"])[:12]}`, complete={yn(d.get("complete"))})')
+    doc.p(f'Nested training subsets (the first $n$ trajectories of the gated {c["N_TRAIN"]}-trajectory cohort) × regimes; {c["STEPS"]} steps; '
+          f'selection (reg regimes) on dev cases {c["REPORT_CASES"]}–{c["REPORT_CASES"] + c["SEL_CASES"] - 1}, every reported number on dev cases 0–{c["REPORT_CASES"] - 1} '
+          f'({c["REPORT_CASES"] * len(c["ORACLE_TIMES"])} states); the train-oracle is the same fit on the first {c["TRAIN_ORACLE_CASES"]} training trajectories. '
+          'Caveat (pre-registered): the frozen bank was trained on all trajectories, which biases the small-$n$ arms optimistically.')
+    rows = []
+    for tag, a in d['arms'].items():
+        ev, tr = a['eval']['dev_report'], a['eval']['train']
+        rows.append([a['n_traj'], a['regime'], f"{a['arch']['hidden']}×{a['arch']['layers']}", sci(ev['oracle_median']), sci(ev['podK_median']),
+                     fx(ev['ratio_podK_over_oracle'], 3), sci(tr['oracle_median']), sci(a['training']['recon_rel_l2_median']),
+                     fx(a['heldout_over_train_oracle_median'], 1), a['training']['best_step'], f"{ev['budget_exits']}/{ev['states']}"])
+        for m, v in (('dev_report.oracle_median', ev['oracle_median']), ('dev_report.podK_median', ev['podK_median']),
+                     ('dev_report.ratio_podK_over_oracle', ev['ratio_podK_over_oracle']), ('train.oracle_median', tr['oracle_median']),
+                     ('training.recon_rel_l2_median', a['training']['recon_rel_l2_median']),
+                     ('heldout_over_train_oracle_median', a['heldout_over_train_oracle_median']),
+                     ('dev_select.oracle_median', a['eval']['dev_select']['oracle_median']), ('best_step', a['training']['best_step'])):
+            doc.row(phase='2-headfit', mesh=c['TRAIN_N'], subject=tag, metric=m, value=v, gate='A9-DIAGNOSIS', passed=None, job_id=job, source_sha256=sha)
+    doc.h(3, 'Held-out (dev-report) oracle versus training-subset size, with the train-oracle beside it')
+    doc.table(['$n$ traj', 'regime', 'head', 'dev oracle median', 'POD-$K$ median (same subset)', 'POD-$K$ / oracle', 'train oracle median', 'train recon median', 'dev / train oracle', 'best step', 'LM budget exits'], rows)
+    rows = []
+    for name, sm in d['summary'].items():
+        e512 = d['arms'][f'n{max(sm["n_traj"])}_{name}']['eval']['dev_report']['oracle_median']
+        plain512 = d['arms'][f'n{max(sm["n_traj"])}_plain']['eval']['dev_report']['oracle_median']
+        moved = (plain512 - e512) / plain512
+        pair = [np.log(sm['dev_report_oracle_median'][i + 1] / sm['dev_report_oracle_median'][i]) / np.log(sm['n_traj'][i + 1] / sm['n_traj'][i]) for i in range(len(sm['n_traj']) - 1)]
+        rows.append([name, ', '.join(sci(v) for v in sm['dev_report_oracle_median']), fx(sm['loglog_slope'], 3), ', '.join(fx(float(v), 2) for v in pair), f'{100 * moved:+.1f} %', sm['verdict']])
+        doc.row(phase='2-headfit', mesh=c['TRAIN_N'], subject=name, metric='loglog_slope', value=sm['loglog_slope'], gate='A9-DIAGNOSIS', passed=None, job_id=job, source_sha256=sha)
+        doc.row(phase='2-headfit', mesh=c['TRAIN_N'], subject=name, metric='verdict', value=sm['verdict'], gate='A9-DIAGNOSIS', passed=None, job_id=job, source_sha256=sha)
+        doc.row(phase='2-headfit', mesh=c['TRAIN_N'], subject=name, metric='reg_moves_n512_vs_plain_fraction', value=moved, gate='A9-DIAGNOSIS', passed=None, job_id=job, source_sha256=sha)
+    doc.h(3, 'Pre-registered reading (DESIGN §A9): slope of the dev oracle in $n$')
+    doc.table(['regime', 'dev oracle median at $n$ = ' + ', '.join(str(v) for v in next(iter(d['summary'].values()))['n_traj']), 'log-log slope (LS fit)', 'successive slopes', 'vs plain at largest $n$', 'verdict (§A9 rule)'], rows)
+    doc.p('Rule: slope $\\le -0.25$ = needs-data; slope $\\ge -0.10$ under every regime = head-limited; otherwise ambiguous. Regularisation "moves it" if the reg regime is $\\ge 10$ % below plain at the largest $n$. Successive slopes show whether the improvement is decelerating.')
+
+
 def phase3(doc, d, job, sha):
     G = d['gates']
     c = d['config']
@@ -225,6 +261,8 @@ GLOSSARY = '''## Glossary
 - **Floor**: error of the best projection onto a span (bank or POD); no ROM on that span can do better.
 - **Oracle / single-start**: best latent fit by multi-start LM / the query-time single-start policy.
 - **Held-out / training ratio**: the held-out oracle median divided by the training-reconstruction median; near 1 = the head cannot represent the data (capacity), large = it represents training states but not new ones (generalisation).
+- **Train-oracle / dev-oracle**: the same best-found fit on states of training trajectories / of held-out trajectories; their ratio is the generalisation gap of an arm.
+- **Successive slopes**: log-log slope between consecutive subset sizes; a slope that shrinks toward 0 means more data is helping less and less.
 - **Evolved**: output times $t>0$; the $t=0$ state is the band-limited initial condition and is reported separately because it is much easier to fit.
 - **Worst evolved / worst all times / $t=0$**: error normalised by the initial reference norm, maximised over $t>0$ / over all outputs / at $t=0$ only.
 - **Correction rank $q$**: extra linear directions solved jointly with the code; POD-LSPG is the classical linear control.
@@ -238,6 +276,7 @@ def main():
     p.add_argument('--phase1', nargs='*', default=[])
     p.add_argument('--phase2', nargs='*', default=[])
     p.add_argument('--phase3', nargs='*', default=[])
+    p.add_argument('--headfit', nargs='*', default=[])
     p.add_argument('--audit', nargs='*', default=[])
     p.add_argument('--title', default='ns2d — 2D incompressible Navier–Stokes: certified FOM, dataset, bank/head floors, ROM ladder')
     p.add_argument('--status', default='provisional')
@@ -247,11 +286,11 @@ def main():
     doc.h(1, a.title)
     doc.p(f'Numbers are **{a.status}**. Generated by `generate_ns2d.py` from the run JSONs listed below; nothing is typed by hand. Design and pre-registration: `../DESIGN.md`.')
     srcs = []
-    for ph, specs in ((1, a.phase1), (2, a.phase2), (3, a.phase3)):
+    for ph, specs in ((1, a.phase1), (2, a.phase2), ('2-headfit', a.headfit), (3, a.phase3)):
         for s in specs:
             d, job, sha = load(s)
             srcs.append([ph, s.split(':')[0], job, sha[:16], yn(d.get('complete')), yn(d.get('all_passed'))])
-            {1: phase1, 2: phase2, 3: phase3}[ph](doc, d, job, sha)
+            {1: phase1, 2: phase2, '2-headfit': headfit, 3: phase3}[ph](doc, d, job, sha)
     doc.md.insert(2, '')
     hdr = ['phase', 'source', 'job id', 'sha256 (prefix)', 'complete', 'all gates passed']
     doc.md.insert(3, '| ' + ' | '.join(hdr) + ' |\n|' + '|'.join(['---'] * len(hdr)) + '|\n' + '\n'.join('| ' + ' | '.join(str(c) for c in r) + ' |' for r in srcs) + '\n')

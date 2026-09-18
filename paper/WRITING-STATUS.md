@@ -1,6 +1,23 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — readability pass applied (current state; everything below is history)
+## 2026-09-18 — ns2d closed; the paper is complete on the evidence side (current state; everything below is history)
+
+ns2d closed at 9830d202 (ns302, job 3808495, A100 pax106: the ns203 recipe at 4x the data, 512 gated
++ 1536 extra trajectories, same 14-dimensional family). Every ns2d pin (`ns2d_summary`,
+`ns302/303/304_result`, `ns2d_design`) reads that commit. T11e is final with four settings: K=16,
+K=32, family dimension 8, 2048 trajectories; H-ORACLE fails in all four (generated ratios 1.15–1.46);
+no phase-3 job was ever submitted. Generated ns302 facts: oracle median 16.66 %, POD-16 24.25 %,
+ratio 1.46; B-FLOOR bank 13.84 % vs POD-256 11.57 % (1.20), bank median 3.75 %; H-TRAIN recon
+12.39 % (5.03 % at 512 trajectories); held-out/training gap 1.3 (was 4.0); POD/oracle 0.52 at t=0,
+1.39 on evolved times; 6 budget exits. Reading in the caption and §6.5: more data turned a
+generalisation failure into a capacity failure at the same head. B-DATA's value-path pass is one
+sentence in the T11e caption, nothing more. §6.5 cell-level sentence final; "one arm still running"
+gone; conclusion "Next" adds "another head class for Navier–Stokes". **The in-flight register is
+empty** (the landed entries it still carried moved out; T02 has their provenance) and the appendix
+caption says so. No Limitations NS clause existed to finalise. Page budget kept by compressing the
+two new sentences only.
+
+## 2026-09-18 — readability pass applied (history)
 
 The coordinator's readability pass (scratchpad `readability-pass.md`, on 0366a6b3) is applied in one
 commit: sentence splits and plainer connectives in the abstract, introduction and contributions, the

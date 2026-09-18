@@ -12,7 +12,7 @@
 | T10 | mesh-ladder (Burgers) | 3711388 | NVIDIA A100-PCIE-40GB | 521cdced6f4d… | 18f0266ae6f0… |
 | T10 | mesh-ladder (Poisson) | 3711389 | NVIDIA A100 80GB PCIe | 521cdced6f4d… | a128e7635c31… |
 | T20, T20b | b-lowvisc (appendix; F4 under-resolution caveat) | panel 3817807; gate 3789639; training 3804337 | NVIDIA A100-PCIE-40GB | 2cf5dc34 | low-viscosity checkpoint hashed in the lane summary |
-| T11e | ns2d phase 2 (K=16, K=32, family dimension 8) | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
+| T11e | ns2d phase 2 (K=16, K=32, family dimension 8, 2048 trajectories); lane closed, no phase-3 job | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8), 3808495 ($K{=}16$, $R{=}256$, 2048 trajectories); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
 | T11f | ns2d ns301 (head-only data scaling on the frozen K=16 bank) | 3808493 | per job | per job | frozen K=16 bank; heads hashed in result.json |
 | T11g, T11h | ns2d ns304 (exploratory after a failed phase-2 gate) | 3808502 | NVIDIA A100 80GB PCIe | 31e0846f | ckpt_K32_R512 hashed in result.json |
 | T11a | w-ladder | $64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86) | per job | per job | frozen-math SHA asserted in job |

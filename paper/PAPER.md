@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 00:17; this block is removed before submission).*
+*Status for the reader (generated 2026-09-18 01:11; this block is removed before submission).*
 *Final tables (56): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -746,11 +746,16 @@ by the pre-registered rule, Table 47; the bank saw all
 14 lowers every error 3.3–4.4$\times$ but
 leaves the head's advantage over POD-16 at 1.39$\times$ and
 the held-out/training gap near 3.8 (Table 43):
-the advantage does not grow as the manifold gets easier, and across $K=16$
-and $32$, family dimension 14 and 8, and 128–512
-trajectories this head class never beats POD-$K$ by the pre-registered
-$2.0\times$ on held-out decaying 2D Navier–Stokes (one arm
-still running). An exploratory ladder on that failed-gate
+the advantage does not grow as the manifold gets easier. With
+$4\times$ the data (2048 trajectories) the gap
+closes from 4.0 to 1.3 because the
+head no longer fits the training data either: the limit moved from
+generalisation to capacity at the same head (ratio 1.46).
+Across $K=16$ and $32$,
+family dimension 14 and 8, and
+128–2048 trajectories, this head class never beats POD-$K$
+by the pre-registered $2.0\times$ on held-out decaying 2D
+Navier–Stokes (ratios 1.15–1.46). An exploratory ladder on that failed-gate
 manifold (Table 48; not a phase-3 result) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
 the same dimension is more accurate at every rung and cheaper at all but
@@ -830,7 +835,8 @@ $5.16\times$ in cost, on 2D Burgers, in one allocation. It does
 not beat a tuned full-order solver or a neural operator on the same data
 at $256^2$. Where no fast transform applies, reduced models are cheaper,
 and plain POD is cheapest of all. Next, we plan to resolve the
-low-viscosity cell and to test unstructured meshes.
+low-viscosity cell, to test unstructured meshes, and to try another head
+class for Navier–Stokes.
 
 ## Reproducibility statement
 
@@ -1160,7 +1166,7 @@ float64 and highest matmul precision before doing any work.
 | T10 | mesh-ladder (Burgers) | 3711388 | NVIDIA A100-PCIE-40GB | 521cdced6f4d… | 18f0266ae6f0… |
 | T10 | mesh-ladder (Poisson) | 3711389 | NVIDIA A100 80GB PCIe | 521cdced6f4d… | a128e7635c31… |
 | T20, T20b | b-lowvisc (appendix; F4 under-resolution caveat) | panel 3817807; gate 3789639; training 3804337 | NVIDIA A100-PCIE-40GB | 2cf5dc34 | low-viscosity checkpoint hashed in the lane summary |
-| T11e | ns2d phase 2 (K=16, K=32, family dimension 8) | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
+| T11e | ns2d phase 2 (K=16, K=32, family dimension 8, 2048 trajectories); lane closed, no phase-3 job | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8), 3808495 ($K{=}16$, $R{=}256$, 2048 trajectories); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
 | T11f | ns2d ns301 (head-only data scaling on the frozen K=16 bank) | 3808493 | per job | per job | frozen K=16 bank; heads hashed in result.json |
 | T11g, T11h | ns2d ns304 (exploratory after a failed phase-2 gate) | 3808502 | NVIDIA A100 80GB PCIe | 31e0846f | ckpt_K32_R512 hashed in result.json |
 | T11a | w-ladder | $64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86) | per job | per job | frozen-math SHA asserted in job |
@@ -1188,20 +1194,13 @@ absent.
 | no-second | `pois01` | `3780224` | Poisson U-Net screen | stager omitted a config directory; no training ran; rerun as pois02 |
 | ns2d | `ns202` | `3783797` | Navier–Stokes $K=32$ head | pre-\S A4 attempt on a rank-capped bank; superseded by ns204 |
 
-**Table 7.** Attempts in flight when this version was prepared; the cells they fill are marked
-pending in §Table 3.
+**Table 7.** Attempts in flight when this version was prepared: none; every
+lane this version reads is closed.
 
 <!-- table: T02c_inflight -->
 | lane | attempt | job | what it will add |
 |---|---|---|---|
-| b-panel | `bpn203` | `3789572` | $1024^2$ same-allocation panel, H200 (landed; Tables \ref{tab:tunability-tentwentyfour}, \ref{tab:panel-all-tentwentyfour}) |
-| b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables \ref{tab:tunability}, \ref{tab:panel-all}) |
-| lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
-| b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
-| ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
-| ns2d | `ns302` | `3808495` | Navier–Stokes head at $4\times$ the training data (running; read by no table; the last arm of the cell) |
-| ns2d | `ns303` | `3808498` | Navier–Stokes $K=16$ head on the lower-dimensional family (landed; Table \ref{tab:ns}) |
-| ns2d | `ns304` | `3808502` | Navier–Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table \ref{tab:ns-ladder}; exploratory after a failed phase-2 gate) |
+| — | — | — | none: every lane read by this version is closed |
 
 ## E Full tables
 
@@ -2149,15 +2148,29 @@ is measured below baseline.
 | selected: 2048 traj., $K{=}32$, weak term | 32 | 0.3918 | 2.8289 | 3.1275 | 3.1275 | 55.1 | yes |
 | joint bank$+$head, $R{=}512$ | 32 | 2.8517 | 5.0383 | 5.0471 | 2.4399 | 46.3 | yes |
 
-**Table 43.** Navier–Stokes 2D, phase-2 gates for the $K=16$ head on the
-full-rank $R=256$ bank, the $K=32$ head on the full-rank $R=512$ bank, and
-the same $K=16$ recipe on a family of intrinsic dimension 8
-instead of 14 (3 modes; last row, job
-3808498, A100 (pax105)) (jobs 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); full-order solver and
-dataset certified in job 3780151). Every gate passes except the
-held-out oracle, whose pre-registered bar was a $2.0\times$
-margin over POD at matched dimension (ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320); the ladder and
-timing were therefore never run for any head. On the lower-dimensional
+**Table 43.** Navier–Stokes 2D, phase-2 gates in four settings: the $K=16$
+head on the full-rank $R=256$ bank, the $K=32$ head on the full-rank
+$R=512$ bank, the same $K=16$ recipe on a family of intrinsic dimension
+8 instead of 14 (3 modes; job
+3808498, A100 (pax105)), and the $K=16$ recipe at
+$4\times$ the training data (2048 trajectories:
+512 gated plus 1536 extra, same family;
+last row, job 3808495, A100 (pax106)) (jobs 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8), 3808495 ($K{=}16$, $R{=}256$, 2048 trajectories); full-order
+solver and dataset certified in job 3780151). Every gate passes
+except the held-out oracle, whose pre-registered bar was a
+$2.0\times$ margin over POD at matched dimension
+(ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320); the ratio is 1.15–1.46 across
+the 4 settings, so the ladder and timing were never run for
+any head and the lane closed without a phase-3 job. With
+$4\times$ the data the training reconstruction rises from
+5.0345 to 12.3875 % and the
+held-out/training gap falls from 4.0 to
+1.3: the head no longer fits the training data either,
+so the limit moved from generalisation to capacity at the same head
+(0.52 at $t=0$, 1.39 on
+evolved times). The $4\times$-data arm's B-DATA gate passed
+by the pre-registered value path (a hash mismatch on its node, at
+$10^{-16}$ on the archived trajectories). On the lower-dimensional
 family every error falls 3.3–4.4$\times$ (POD-16
 3.3, oracle 3.8, bank floor 4.4)
 while the ratio stays at 1.39 (1.83
@@ -2165,8 +2178,9 @@ at $t=0$, 1.44 on evolved times) and the
 held-out/training gap at 3.8 against
 4.0. Oracle values are upper bounds:
 12 ($K{=}16$), 18
-($K{=}32$) and 4 (family dimension 8) held-out
-fits at $256^2$ hit the LM budget, which biases the ratio downward, so the
+($K{=}32$), 4 (family dimension 8) and
+6 (2048 trajectories) held-out fits at
+$256^2$ hit the LM budget, which biases the ratio downward, so the
 negative verdict is conservative.
 
 <!-- table: T11e_ns -->
@@ -2179,6 +2193,7 @@ negative verdict is conservative.
 | $128^2$ ($K{=}32$) | 512 | yes | 7.5545 | 5.9861 | yes | 12.1115 | 13.9568 | 1.15 | no |
 | $256^2$ ($K{=}32$) | 512 | yes | 7.5643 | 5.9983 | yes | 12.0948 | 13.9455 | 1.15 | no |
 | $256^2$ (family dim. 8) | 256 | yes | 6.4018 | 6.2295 | yes | 5.2823 | 7.3651 | 1.39 | no |
+| $256^2$ (2048 traj.) | 256 | yes | 13.8371 | 11.5733 | yes | 16.6598 | 24.2492 | 1.46 | no |
 
 **Table 44.** L-shaped Poisson, solve layer at $M=257$ (jobs
 3784662, 3784663, 3789568, one per mesh): the non-dominated set on (complete-query

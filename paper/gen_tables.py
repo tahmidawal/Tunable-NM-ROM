@@ -55,6 +55,7 @@ SOURCES = {
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
     'ns304_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns304/result.json',
     'ns303_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns303/result.json',
+    'ns302_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns302/result.json',
     'ns2d_design': '2026-09-17-ns2d/experiments/ns2d/DESIGN.md',
     'lowvisc_summary': '2026-09-17-b-lowvisc/experiments/b-lowvisc/reports/summary.json',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
@@ -91,15 +92,7 @@ RETRACTED_ATTEMPTS = [
     ('no-second', 'pois01', '3780224', 'Poisson U-Net screen', 'stager omitted a config directory; no training ran; rerun as pois02'),
     ('ns2d', 'ns202', '3783797', 'Navier--Stokes $K=32$ head', 'pre-\\S A4 attempt on a rank-capped bank; superseded by ns204'),
 ]
-IN_FLIGHT = [
-    ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel, H200 (landed; Tables~\\ref{tab:tunability-tentwentyfour}, \\ref{tab:panel-all-tentwentyfour})'),
-    ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables~\\ref{tab:tunability}, \\ref{tab:panel-all})'),
-    ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
-    ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
-    ('ns2d', 'ns301', '3808493', 'Navier--Stokes head-only data-scaling diagnosis (landed; Table~\\ref{tab:ns-scaling})'),
-    ('ns2d', 'ns302', '3808495', 'Navier--Stokes head at $4\\times$ the training data (running; read by no table; the last arm of the cell)'),
-    ('ns2d', 'ns303', '3808498', 'Navier--Stokes $K=16$ head on the lower-dimensional family (landed; Table~\\ref{tab:ns})'),
-    ('ns2d', 'ns304', '3808502', 'Navier--Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table~\\ref{tab:ns-ladder}; exploratory after a failed phase-2 gate)'),
+IN_FLIGHT = [   # empty since 2026-09-18: every lane this version reads is closed (the landed entries moved to T02)
 ]
 
 PROV: dict[str, dict] = {}
@@ -133,10 +126,12 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
     # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e; ns303 (8-dimensional family) at 5ea1cc30
-    'ns2d_summary': ('2026-09-17-ns2d', '5ea1cc30'),
-    'ns304_result': ('2026-09-17-ns2d', '5ea1cc30'),
-    'ns303_result': ('2026-09-17-ns2d', '5ea1cc30'),
-    'ns2d_design': ('2026-09-17-ns2d', '5ea1cc30'),
+    # ns2d lane CLOSED at 9830d202 (ns302 = 4x data also fails H-ORACLE; no phase-3 job ever submitted)
+    'ns2d_summary': ('2026-09-17-ns2d', '9830d202'),
+    'ns304_result': ('2026-09-17-ns2d', '9830d202'),
+    'ns303_result': ('2026-09-17-ns2d', '9830d202'),
+    'ns302_result': ('2026-09-17-ns2d', '9830d202'),
+    'ns2d_design': ('2026-09-17-ns2d', '9830d202'),
     # b-lowvisc closed at df92e40d (panel job 3817807; appendix cell under the F4 under-resolution caveat)
     'lowvisc_summary': ('2026-09-17-b-lowvisc', 'df92e40d'),
 }
@@ -1992,6 +1987,38 @@ def build_pending():
             macro('nNsFamDropPod', f"{pod / p5:.1f}"); macro('nNsFamDropOracle', f"{orc / o5:.1f}"); macro('nNsFamDropFloor', f"{bfl / bf5:.1f}")
             macro('nNsFamBaseOracleRatio', f"{pod / orc:.2f}"); macro('nNsFamBaseGap', f"{gap:.1f}")
             macro('provNsJobs', MACROS.get('provNsJobs', NS_JOB) + f', {NS5} ($K{{=}}16$, $R{{=}}256$, family dimension {d8})')
+        # ns302 (job 3808495): the ns203 recipe at 4x the training data (512 gated + 1536 extra, same 14-dim family)
+        NS6 = '3808495'
+        P6 = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS6:
+                P6[(r['subject'], r['gate'], r['mesh'])][r['metric']] = (r['value'], r['passed'])
+        def v6(sub, gate, mesh, metric):
+            return P6.get((sub, gate, mesh), {}).get(metric, (None, None))
+        r2 = load('ns302_result')
+        if P6 and r2:
+            ntr = int(r2['config']['N_TRAIN']) + int(r2['config'].get('TRAIN_EXTRA', 0))
+            macro('nNsDataTrainN', str(ntr)); macro('nNsDataTrainBase', str(int(r2['config']['N_TRAIN']))); macro('nNsDataTrainExtra', str(int(r2['config'].get('TRAIN_EXTRA', 0))))
+            macro('nNsDataFactor', str(ntr // int(r2['config']['N_TRAIN'])))
+            g = re.search(r"`ns302` \((A100) `(\w+)`", design)
+            macro('provNsDataGpu', (g.group(1) + ' (' + g.group(2) + ')') if g else '---'); macro('provNsDataJob', NS6)
+            o6, ok6 = v6('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.oracle_median'); p6, _ = v6('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.podK_median')
+            b6, bok6 = v6('bank_256', 'B-FLOOR_N256', 256, 'floor.worst_evolved_fixed'); pp6, _ = v6('pod_256', 'B-FLOOR_N256', 256, 'floor.worst_evolved_fixed')
+            rk6, rok6 = v6('bank_R256', 'B-ORTH_N256', 256, 'rank')
+            gt.append('MIDRULE')
+            gt.append([f'$256^2$ ({ntr} traj.)', str(int(rk6)), yn(rok6), pct(100 * b6), pct(100 * pp6), yn(bok6), pct(100 * o6), pct(100 * p6), f"{p6 / o6:.2f}", yn(ok6)])
+            macro('nNsDataOracleMedian', pct(100 * o6)); macro('nNsDataPodMedian', pct(100 * p6)); macro('nNsDataOracleRatio', f"{p6 / o6:.2f}"); macro('nNsDataOraclePass', yn(ok6))
+            macro('nNsDataBankWorst', pct(100 * b6)); macro('nNsDataPodTwoFiftySixWorst', pct(100 * pp6)); macro('nNsDataBankOverPod', f"{b6 / pp6:.2f}")
+            bm6, _ = v6('bank_256', 'B-FLOOR_N256', 256, 'floor.median_case_worst_fixed'); macro('nNsDataBankMedian', pct(100 * bm6))
+            tr6, _ = v6('head_K16_R256', 'H-TRAIN', 256, 'training.recon_rel_l2_median'); macro('nNsDataTrainRecon', pct(100 * tr6)); macro('nNsDataBaseTrainRecon', pct(100 * tr))
+            gap6, _ = v6('head_K16_R256', 'H-ORACLE', 256, 'heldout_oracle_over_training_recon_median'); macro('nNsDataHeldoutOverTrain', f"{gap6:.1f}"); macro('nNsDataBaseGap', f"{gap:.1f}")
+            t06, _ = v6('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.t0'); ev6, _ = v6('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.evolved')
+            macro('nNsDataPodOverOracleTzero', f"{t06:.2f}"); macro('nNsDataPodOverOracleEvolved', f"{ev6:.2f}")
+            bx6, _ = v6('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states'); macro('nNsDataBudgetExits', str(int(bx6)))
+            # the cell-level range of POD-K / oracle over every phase-2 arm at 256^2 (K=16, K=32, family dim 8, 4x data)
+            rat = [pod / orc, p2 / o2, p5 / o5, p6 / o6]
+            macro('nNsCellRatioMin', f"{min(rat):.2f}"); macro('nNsCellRatioMax', f"{max(rat):.2f}"); macro('nNsCellArms', str(len(rat)))
+            macro('provNsJobs', MACROS.get('provNsJobs', NS_JOB) + f', {NS6} ($K{{=}}16$, $R{{=}}256$, {ntr} trajectories)')
         write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-$R$ worst \\%', 'B-FLOOR',
                                       'oracle median \\%', 'POD-$K$ median \\%', 'POD-$K$ / oracle', 'H-ORACLE ($\\ge$2.0)'],
                                      gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, jobs {NS_JOB} (K=16, R=256) and {NS2} (K=32, R=512), full-rank banks; every gate passes except H-ORACLE; oracle values are upper bounds (some held-out fits hit the LM budget)')
@@ -2133,7 +2160,7 @@ def build_problems_and_provenance(mesh):
     prov('T10', 'mesh-ladder (Burgers)', MACROS.get('provMeshBurgersJob', '---'), MACROS.get('provMeshBurgersGpu', '---'), MACROS.get('provMeshBurgersCommit', '---'), MACROS.get('provMeshBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
     prov('T20, T20b', 'b-lowvisc (appendix; F4 under-resolution caveat)', 'panel ' + MACROS.get('provLvPanelJob', '---') + '; gate ' + MACROS.get('provLvGateJob', '---') + '; training ' + MACROS.get('provLvTrainJob', '---'), MACROS.get('provLvGpu', '---'), MACROS.get('provLvCommit', '---'), 'low-viscosity checkpoint hashed in the lane summary')
-    prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ')', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
+    prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ', ' + MACROS.get('nNsDataTrainN', '---') + ' trajectories); lane closed, no phase-3 job', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
     prov('T11f', 'ns2d ns301 (head-only data scaling on the frozen K=16 bank)', MACROS.get('provNsScaleJob', '---'), 'per job', 'per job', 'frozen K=16 bank; heads hashed in result.json')
     prov('T11g, T11h', 'ns2d ns304 (exploratory after a failed phase-2 gate)', MACROS.get('provNsExpJob', '---'), MACROS.get('provNsExpGpu', '---'), MACROS.get('provNsExpCommit', '---'), 'ckpt\\_K32\\_R512 hashed in result.json')
     prov('T11a', 'w-ladder', MACROS.get('provWaveJobs', '---'), 'per job', 'per job', 'frozen-math SHA asserted in job')
@@ -2152,7 +2179,7 @@ def build_problems_and_provenance(mesh):
     def fill(w):   # in-flight notes may name generated macros; substitute their values so the Markdown twin reads them too
         return re.sub(r'\\(n[A-Za-z]+)\{\}', lambda m: MACROS.get(m.group(1), m.group(0)), w)
     write('T02c_inflight.tex', tabular(['lane', 'attempt', 'job', 'what it will add'],
-                                       [[l, tt(a), tt(j), fill(w)] for l, a, j, w in IN_FLIGHT],
+                                       [[l, tt(a), tt(j), fill(w)] for l, a, j, w in IN_FLIGHT] or [['---', '---', '---', 'none: every lane read by this version is closed']],
                                        r'llp{1.6cm}p{7.6cm}', r'\scriptsize'),
           'attempts in flight at the time of writing')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),

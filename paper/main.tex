@@ -17,8 +17,10 @@
 %    first-use glosses and "on one checkpoint" restored; the previous
 %    397-word abstract and Abstract B (~200 words, one line shorter) are in
 %    ABSTRACT-2026-09-17.md for the user to pick.
-%  * In flight, not in any table: ns302 3808495 (ns2d, 4x data, the cell's
-%    last arm). b-lowvisc closed at df92e40d: T20/T20b in the extended-results
+%  * In flight: nothing. ns2d closed at 9830d202 (ns302, 4x data, fails
+%    H-ORACLE at 1.46; no phase-3 job ever submitted); T11e has four
+%    settings and the NS cell-level sentence in 6.5 is final. The paper is
+%    complete on the evidence side. b-lowvisc closed at df92e40d: T20/T20b in the extended-results
 %    appendix under the F4 under-resolution caveat, two sentences in 6.5, one
 %    Limitations clause; not a headline. T12 (three seeds) is now the
 %    development-cohort table; the sealed cohort (T13) is the headline for
@@ -783,11 +785,16 @@ by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
 \nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ but
 leaves the head's advantage over POD-16 at \nNsFamOracleRatio$\times$ and
 the held-out/training gap near \nNsFamHeldoutOverTrain{} (Table~\ref{tab:ns}):
-the advantage does not grow as the manifold gets easier, and across $K=16$
-and $32$, family dimension \nNsFamDimBase{} and \nNsFamDimLow, and 128--512
-trajectories this head class never beats POD-$K$ by the pre-registered
-$\nNsOracleBar\times$ on held-out decaying 2D Navier--Stokes (one arm
-still running). An exploratory ladder on that failed-gate
+the advantage does not grow as the manifold gets easier. With
+$\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories) the gap
+closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} because the
+head no longer fits the training data either: the limit moved from
+generalisation to capacity at the same head (ratio \nNsDataOracleRatio).
+Across $K=16$ and $32$,
+family dimension \nNsFamDimBase{} and \nNsFamDimLow, and
+128--\nNsDataTrainN{} trajectories, this head class never beats POD-$K$
+by the pre-registered $\nNsOracleBar\times$ on held-out decaying 2D
+Navier--Stokes (ratios \nNsCellRatioMin--\nNsCellRatioMax). An exploratory ladder on that failed-gate
 manifold (Table~\ref{tab:ns-ladder}; not a phase-3 result) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
 the same dimension is more accurate at every rung and cheaper at all but
@@ -864,7 +871,8 @@ $\nQxmCostSpan\times$ in cost, on 2D Burgers, in one allocation. It does
 not beat a tuned full-order solver or a neural operator on the same data
 at $256^2$. Where no fast transform applies, reduced models are cheaper,
 and plain POD is cheapest of all. Next, we plan to resolve the
-low-viscosity cell and to test unstructured meshes.
+low-viscosity cell, to test unstructured meshes, and to try another head
+class for Navier--Stokes.
 
 % =====================================================================
 \section*{Reproducibility statement}\label{sec:repro}

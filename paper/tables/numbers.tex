@@ -310,6 +310,28 @@
 \newcommand{\nNsBankWorst}{14.0838}
 \newcommand{\nNsBudgetExitsKsixteen}{12}
 \newcommand{\nNsBudgetExitsKthirtyTwo}{18}
+\newcommand{\nNsCellArms}{4}
+\newcommand{\nNsCellRatioMax}{1.46}
+\newcommand{\nNsCellRatioMin}{1.15}
+\newcommand{\nNsDataBankMedian}{3.7513}
+\newcommand{\nNsDataBankOverPod}{1.20}
+\newcommand{\nNsDataBankWorst}{13.8371}
+\newcommand{\nNsDataBaseGap}{4.0}
+\newcommand{\nNsDataBaseTrainRecon}{5.0345}
+\newcommand{\nNsDataBudgetExits}{6}
+\newcommand{\nNsDataFactor}{4}
+\newcommand{\nNsDataHeldoutOverTrain}{1.3}
+\newcommand{\nNsDataOracleMedian}{16.6598}
+\newcommand{\nNsDataOraclePass}{no}
+\newcommand{\nNsDataOracleRatio}{1.46}
+\newcommand{\nNsDataPodMedian}{24.2492}
+\newcommand{\nNsDataPodOverOracleEvolved}{1.39}
+\newcommand{\nNsDataPodOverOracleTzero}{0.52}
+\newcommand{\nNsDataPodTwoFiftySixWorst}{11.5733}
+\newcommand{\nNsDataTrainBase}{512}
+\newcommand{\nNsDataTrainExtra}{1536}
+\newcommand{\nNsDataTrainN}{2048}
+\newcommand{\nNsDataTrainRecon}{12.3875}
 \newcommand{\nNsExpBankFloor}{0.2254}
 \newcommand{\nNsExpBudgetExitsTotal}{0}
 \newcommand{\nNsExpCases}{8}
@@ -1281,6 +1303,8 @@
 \newcommand{\provMeshPoissonGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provMeshPoissonJob}{3711389}
 \newcommand{\provNsBarSource}{ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320}
+\newcommand{\provNsDataGpu}{A100 (pax106)}
+\newcommand{\provNsDataJob}{3808495}
 \newcommand{\provNsExpCommit}{31e0846f}
 \newcommand{\provNsExpGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provNsExpJob}{3808502}
@@ -1288,14 +1312,15 @@
 \newcommand{\provNsFamJob}{3808498}
 \newcommand{\provNsFomJob}{3780151}
 \newcommand{\provNsJob}{3787319}
-\newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8)}
+\newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8), 3808495 ($K{=}16$, $R{=}256$, 2048 trajectories)}
 \newcommand{\provNsPrevJob}{3783796}
 \newcommand{\provNsScaleJob}{3808493}
 \newcommand{\provNsScalingBandSource}{ns2d/DESIGN.md §A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous}
-\newcommand{\provNsThreeZeroFourResultPin}{5ea1cc30}
-\newcommand{\provNsThreeZeroThreeResultPin}{5ea1cc30}
-\newcommand{\provNsTwodDesignPin}{5ea1cc30}
-\newcommand{\provNsTwodSummaryPin}{5ea1cc30}
+\newcommand{\provNsThreeZeroFourResultPin}{9830d202}
+\newcommand{\provNsThreeZeroThreeResultPin}{9830d202}
+\newcommand{\provNsThreeZeroTwoResultPin}{9830d202}
+\newcommand{\provNsTwodDesignPin}{9830d202}
+\newcommand{\provNsTwodSummaryPin}{9830d202}
 \newcommand{\provOpCtrlJob}{3783831}
 \newcommand{\provOpJobs}{3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189}
 \newcommand{\provPanelCkpt}{incumbent (gate checkpoint\_unchanged; hash in T2, tuning row)}

@@ -90,8 +90,8 @@ absent.}
 
 \begin{table}[h]
 \centering
-\caption{Attempts in flight when this version was prepared; the cells they fill are marked
-pending in \S\ref{sec:limitations}.}
+\caption{Attempts in flight when this version was prepared: none; every
+lane this version reads is closed.}
 \label{tab:inflight}
 \input{tables/T02c_inflight}
 \end{table}
@@ -496,15 +496,29 @@ is measured below baseline.}
 
 \begin{table}[h]
 \centering
-\caption{Navier--Stokes 2D, phase-2 gates for the $K=16$ head on the
-full-rank $R=256$ bank, the $K=32$ head on the full-rank $R=512$ bank, and
-the same $K=16$ recipe on a family of intrinsic dimension \nNsFamDimLow{}
-instead of \nNsFamDimBase{} (\nNsFamLowModes{} modes; last row, job
-\provNsFamJob, \provNsFamGpu) (jobs \provNsJobs; full-order solver and
-dataset certified in job \provNsFomJob). Every gate passes except the
-held-out oracle, whose pre-registered bar was a $\nNsOracleBar\times$
-margin over POD at matched dimension (\provNsBarSource); the ladder and
-timing were therefore never run for any head. On the lower-dimensional
+\caption{Navier--Stokes 2D, phase-2 gates in four settings: the $K=16$
+head on the full-rank $R=256$ bank, the $K=32$ head on the full-rank
+$R=512$ bank, the same $K=16$ recipe on a family of intrinsic dimension
+\nNsFamDimLow{} instead of \nNsFamDimBase{} (\nNsFamLowModes{} modes; job
+\provNsFamJob, \provNsFamGpu), and the $K=16$ recipe at
+$\nNsDataFactor\times$ the training data (\nNsDataTrainN{} trajectories:
+\nNsDataTrainBase{} gated plus \nNsDataTrainExtra{} extra, same family;
+last row, job \provNsDataJob, \provNsDataGpu) (jobs \provNsJobs; full-order
+solver and dataset certified in job \provNsFomJob). Every gate passes
+except the held-out oracle, whose pre-registered bar was a
+$\nNsOracleBar\times$ margin over POD at matched dimension
+(\provNsBarSource); the ratio is \nNsCellRatioMin--\nNsCellRatioMax{} across
+the \nNsCellArms{} settings, so the ladder and timing were never run for
+any head and the lane closed without a phase-3 job. With
+$\nNsDataFactor\times$ the data the training reconstruction rises from
+\nNsDataBaseTrainRecon{} to \nNsDataTrainRecon\,\% and the
+held-out/training gap falls from \nNsDataBaseGap{} to
+\nNsDataHeldoutOverTrain: the head no longer fits the training data either,
+so the limit moved from generalisation to capacity at the same head
+(\nNsDataPodOverOracleTzero{} at $t=0$, \nNsDataPodOverOracleEvolved{} on
+evolved times). The $\nNsDataFactor\times$-data arm's B-DATA gate passed
+by the pre-registered value path (a hash mismatch on its node, at
+$10^{-16}$ on the archived trajectories). On the lower-dimensional
 family every error falls \nNsFamDropMin--\nNsFamDropMax$\times$ (POD-16
 \nNsFamDropPod, oracle \nNsFamDropOracle, bank floor \nNsFamDropFloor)
 while the ratio stays at \nNsFamOracleRatio{} (\nNsFamPodOverOracleTzero{}
@@ -512,8 +526,9 @@ at $t=0$, \nNsFamPodOverOracleEvolved{} on evolved times) and the
 held-out/training gap at \nNsFamHeldoutOverTrain{} against
 \nNsFamBaseGap. Oracle values are upper bounds:
 \nNsBudgetExitsKsixteen{} ($K{=}16$), \nNsBudgetExitsKthirtyTwo{}
-($K{=}32$) and \nNsFamBudgetExits{} (family dimension \nNsFamDimLow) held-out
-fits at $256^2$ hit the LM budget, which biases the ratio downward, so the
+($K{=}32$), \nNsFamBudgetExits{} (family dimension \nNsFamDimLow) and
+\nNsDataBudgetExits{} (\nNsDataTrainN{} trajectories) held-out fits at
+$256^2$ hit the LM budget, which biases the ratio downward, so the
 negative verdict is conservative.}
 \label{tab:ns}
 \resizebox{\linewidth}{!}{\input{tables/T11e_ns}}

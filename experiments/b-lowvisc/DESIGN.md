@@ -467,3 +467,48 @@ what the coordinator's addition (a) asks for. The same-grid column is derived by
 row's saved field artifact against the same job's `fft_tight` fields (b-panel's audit route), which
 is how `bpn301`'s summary obtained both `worst_all_times_percent` and `worst_reference_percent`.
 A8 stands; A8.1 and A8.2 were the wrong-key detour, kept as written.
+
+**A9 (2026-09-17, after the panel `lvp01` = slurm 3817807 returned) — the verdicts. P FAILS (F3);
+F2 does NOT fire; the ladder is monotone but below the knob bar.** All 27 subjects converged
+(zero budget exits), so P was evaluated on the whole panel. The non-dominated set on (same-job
+median GPU ms, same-grid worst-evolved %) is four full-order settings — `nt1e-2_dt01`,
+`nt1e-3_dt005`, `dense_tight`, `fft_tight` — and **no reduced subject of any kind**:
+`nt1e-3_dt005` (54.9 ms, 0.197 %) beats every reduced subject on both axes, the cheapest of which
+is `q0_M256` at 300.3 ms / 8.39 % and the most accurate `q256_M2176` at 2864 ms / 6.19 %. This is
+F3 exactly as §6 and A3 anticipated: leg (b) raised the full-order cost 3.3×, but a dense reduced
+query is 5.5× dearer than a full-order setting 40× more accurate. **The non-dominance loss is
+structural in this discretisation, at low viscosity as at the incumbent's.**
+
+The pre-registered F2 on the development cohort: bank floor 0.3918 → 7.4455 % (19.0×),
+best-found 2.5447 → 11.3934 % (4.48×), solved $q=0$, $M=256$ 2.5629 → 8.3933 % (3.27×) against
+the POD-512 factor 12.09×. F2 needs all three; only the linear bank does. **F2 does not fire** —
+the nonlinear head degrades 3–4× where every linear object degrades 12–19×. A7's provisional
+held-out reading (1.87× on best-found) is superseded and agreed in direction. Caveat recorded:
+the low-viscosity `solved/best-found` is 0.737 — the 8-start reconstruction oracle found a worse
+minimum than the solve did, so the best-found is an upper bound here and 4.48× over-states the
+degradation; the solved layer (3.27×) is the cleaner statement.
+
+Ladders: the fixed $M=1088$ column is monotone in the evolved error (9.05 → 6.67 %), all
+converged, error span 1.357× over a cost span 3.25× — **below the 2× knob bar** (the incumbent's
+$M=1088$ column spanned 2.437×). The $M=256$ control is **not** monotone (8.39 → 10.26 %):
+test-starved at $q=128$, as b-qxm found. $(256, 2176)$ reaches 6.19 % (1.08× better than
+$(256,1088)$ for 1.58× the cost) and is the most accurate reduced subject in the job. Every
+neural rung beats every POD-LSPG rank on the same-grid error (best POD-LSPG 11.25 % evolved at
+$k'=256$; $k'=512$ is worse, 17.78 %, against its own 10.28 % floor — the solver, not the
+subspace) and the free $R=512$ bank's own solve (7.79 %); the reduced-only frontier is neural
+from $q=64$ up. That is the on-thesis positive, and it is a reduced-vs-reduced statement only.
+
+F4 on every row: all reduced rungs sit at 17.8–19.4 % against the 4096-interval reference while
+the same-grid tight solve is 20.82 % from it; nothing on this mesh can be told apart against the
+continuum below that. The audit (`audit_panel_source_bpanel.py`, verbatim, 0 failed checks)
+recomputed every error from the saved fields; the vs-reference worst-evolved column is recomputed
+in `reports/panel_tables.py` from the same fields.
+
+Jobs used: 3 of 8. Recommendation on the $L=512$ F4 confirmation, not submitted: **do not run it
+for this cell.** It would cost a gate + retrain + panel (≈ 1 + 6 + 2 h on 80 GB cards, 3 jobs)
+to resolve a caveat on a cell that fails P for a structural reason no mesh refinement changes —
+the full-order Newton step gets *relatively* cheaper on finer meshes with the exact Helmholtz
+preconditioner. The one thing a finer mesh could change is the reduced-vs-POD comparison, which
+already favours the head here. If the paper wants the F4 caveat closed for the reduced-vs-POD
+statement, the cheapest honest step is the $L=512$ gate alone (leg (a) at 512, one job, ≈ 1 h),
+not a retrain.

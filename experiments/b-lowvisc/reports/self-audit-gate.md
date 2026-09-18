@@ -61,3 +61,19 @@ analogue, not F2; the report says *provisional* every time. The oracle best-foun
 to fit (a representation bound) — it says what the manifold *can* represent, not what the solver
 will find; the incumbent's solved/best-found ratio was 1.007 at $q=0$, but nothing yet says the
 low-viscosity solver will be as benign. F4 is unchanged and applies to every stage-2 number.
+
+## Addendum, stage 3 (2026-09-17, `lvp01` = 3817807) — same substitution, same caveat
+
+| # | claim | field it rests on | check run | outcome |
+|---|---|---|---|---|
+| 24 | Every recorded error is right | `audit-panel.json: checks` (b-panel's verbatim NumPy audit) | recomputed from every saved field against the reference and against `fft_tight`; 0 failed of all checks; repetitions bitwise identical; `dense_tight` reproduces `fft_tight` | pass |
+| 25 | All 27 subjects converged, panel admissible | `arms[*].converged/admissible`, `total_budget_exits`, `max_joint_stationarity` | re-derived by the audit from exit reasons and stationarity | pass |
+| 26 | P fails | `nondominated.gpu_evolved.admissible` = 4 FOM settings | recomputed independently in `panel_tables.py` (set-equal to the audit's) | FAIL, as pre-registered F3 |
+| 27 | F2 does not fire | three_layers rows vs `bpn301-summary.json` (`free512` best-found, `q0_M256` best-found and all-times) | ratios 19.0 / 4.48 / 3.27 vs 12.09; conjunctive | does not fire |
+| 28 | Ladder monotone, below knob bar | `fixed_M1088` rows | span 1.357× < 2 | monotone; bar not met |
+| 29 | vs-reference worst-evolved column | recomputed from fields in `panel_tables.py`; all-times cross-checked against the audit's `worst_reference_percent` | same fields, same norm | pass |
+| 30 | best-found is an upper bound here | `solved_over_best_found` = 0.737 at q=0 | the solve beat the 8-start oracle; stated in the report | caveat carried |
+
+**Weakest points.** Row 27's best-found ratio over-states the degradation (row 30). The knob-bar
+comparison (row 28) uses b-qxm's 2× bar, which was pre-registered for the incumbent, not restated
+in this lane's §6 — it is reported, not gated. F4 applies to every stage-3 number.

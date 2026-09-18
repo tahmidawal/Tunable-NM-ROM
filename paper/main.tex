@@ -21,8 +21,9 @@
 %    experiment with its question, jobs and table/figure refs; appendix
 %    floats are numbered by appendix section (Table E.3, Figure B.1), so a
 %    main-text pointer like "(Table E.5)" is visibly an appendix pointer.
-%    Main-text tables are 1-4 in reading order. The glance table pushes the
-%    end of the main text onto page 10 (allowed for this table only).
+%    Main-text tables are 1-3 in reading order. The glance table is
+%    Appendix A (Table A.1): the ICLR 2027 kit allows 9 main-text pages at
+%    submission, so it could not stay in Section 5.
 %  * In flight: nothing. ns2d closed at 9830d202 (ns302, 4x data, fails
 %    H-ORACLE at 1.46; no phase-3 job ever submitted); T11e has four
 %    settings and the NS cell-level sentence in 6.5 is final. The paper is
@@ -525,35 +526,22 @@ IC(0)-PCG (L-shape). The NM-ROM of \citet{KimChoi2022NMROM} is not run
 under this protocol and is not compared. Every table names its job
 id, GPU and checkpoint (Table~\ref{tab:provenance}), every solve carries
 its exit reason, and every number is emitted by one generator from
-audited records. Table~\ref{tab:glance} lists every experiment with the
-question it answers and where its numbers are.
+audited records.
 
-\begin{table}[htbp]
-\centering
-\caption{Experiments at a glance: one row per experiment, the question it
-answers, the PDE and meshes, the number of cluster jobs (distinct job ids
-in Table~\ref{tab:provenance}) and the lane, and where the full numbers are.
-Every table not in the main text is in Appendices~\ref{app:provenance}
-and \ref{app:tables}; every row's jobs, GPUs and checkpoints are in
-Table~\ref{tab:provenance}.}
-\label{tab:glance}
-\input{tables/T00_glance}
-\end{table}
 
 % =====================================================================
 \section{Numerical Experiments and Results}
 \label{sec:results}
 
-Every result in this section has its full table in
-Appendices~\ref{app:provenance} and \ref{app:tables};
-Table~\ref{tab:glance} maps experiments to tables.
+All results here have full tables in the appendix; Table~\ref{tab:glance}
+maps experiments to question, jobs and tables.
 
 
-We evaluate NM-ROM against an FNO, a U-Net and a Transolver trained on
-the same data, against POD-LSPG, and against tuned full-order solvers in
-the same job; every number is one checkpoint per PDE on opened
-development cases except where three seeds are stated, and costs are
-compared only inside one allocation. The losses come first.
+We test NM-ROM against an FNO, a U-Net and a Transolver on the same
+data, against POD-LSPG, and tuned full-order solvers in the same job;
+every number is one checkpoint per PDE on development cases unless seeds
+are stated, and costs compare only inside one allocation. The losses come
+first.
 
 \subsection{Comparison against Neural Operators and Full-Order Solvers}
 \label{sec:results:operators}\label{sec:exp:panel}
@@ -586,14 +574,14 @@ POD-LSPG, the unrestricted bank, the FNO and full-order Newton.
 \textbf{\nPanelReducedNonDomEvolved{} of the \nPanelReducedCount{}
 admissible reduced subjects are non-dominated} on either metric once the
 full-order controls are in: the most accurate, POD-512 at
-$\nPanelPodFiveTwelveErr\,\%$ and $\nPanelPodFiveTwelveMs$\,ms, is beaten
-on both axes by \nPanelFomBeatingMostAccurate{} same-job full-order
-settings (the cheapest at $\nPanelFomNtThreeFineErr\,\%$,
+$\nPanelPodFiveTwelveErr\,\%$ and $\nPanelPodFiveTwelveMs$\,ms, loses
+on both axes to \nPanelFomBeatingMostAccurate{} same-job full-order
+settings (cheapest $\nPanelFomNtThreeFineErr\,\%$,
 $\nPanelFomNtThreeFineMs$\,ms) and the FNO reaches $\nPanelFnoErr\,\%$ at
-$\nPanelFnoMs$\,ms. At $512^2$ on the same GPU model (job
+$\nPanelFnoMs$\,ms. At $512^2$ on the same GPU (job
 \provPanelFiveTwelveJob) \nPanelFiveTwelveReducedNonDomEvolved{} of
 \nPanelFiveTwelveReducedCount{} are non-dominated, the frontier is
-full-order Newton alone, and POD-512
+Newton alone and POD-512
 ($\nPanelFiveTwelvePodFiveTwelveErr\,\%$) is beaten on both axes by
 \nPanelFiveTwelveFomBeatingMostAccurate{} same-job settings.
 
@@ -617,14 +605,14 @@ U-Net-small $\nOpEightUnetSmall$, Transolver-refine
 $\nOpEightTsolRefine$, \textbf{ROM $\nOpEightRom$}, FNO-large
 $\nOpEightFnoLarge$, efficient full-order solver
 $\nOpEightFomEfficient\,\%$ ($\nOpArmsBeatingRom$ operator arms beat the
-ROM; the FNO's $\nPanelFnoErr\,\%$ above is on the six-case panel cohort).
-An earlier FNO-only finding to the contrary is withdrawn; the comparison
-survives a float64 and a second-seed control
+ROM; the FNO's $\nPanelFnoErr\,\%$ above is on the six-case cohort).
+An earlier FNO-only finding to the contrary is withdrawn; it survives a
+float64 and a second-seed control
 (Appendix~\ref{app:extended:operators}), all but one operator number is
-a lower bound, and on Poisson the gap is larger
-(Table~\ref{tab:operators-poisson}). The operators' own knob, evaluation resolution, is usable for
-\nResUsableList{} only (Table~\ref{tab:resolution}); it moves cost, while
-$q$ moves what the model can represent.
+a lower bound, and the Poisson gap is larger
+(Table~\ref{tab:operators-poisson}). Their own knob, evaluation resolution, is usable for
+\nResUsableList{} only (Table~\ref{tab:resolution}); it moves cost, $q$
+moves what the model can represent.
 
 \begin{figure}[t]
 \centering
@@ -656,9 +644,9 @@ on the square (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
 \subsection{Which Knob to Turn}
 \label{sec:results:tunability}
 
-The rank $q$ is the one deployment-time knob that moves accuracy. The
-quadrature rule and the tolerance move cost. The head's training data
-and capacity move the floor, but need retraining (Tables~\ref{tab:qxm},
+The rank $q$ is the only deployment-time knob moving accuracy. The
+quadrature rule and the tolerance move cost. Training data and head
+capacity move the floor but need retraining (Tables~\ref{tab:qxm},
 \ref{tab:knobs}, \ref{tab:training}).
 
 \begin{table}[htbp]
@@ -694,14 +682,14 @@ coarser solves cancelling against the reference, not better ones; at $1024^2$
 the rungs run $\nPanelTenTwentyFourQzeroRef$ to
 $\nPanelTenTwentyFourBestRungRef\,\%$ over
 $\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob moves the reduction error, not the physical error. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
-in error and \textbf{fails} the pre-registered bar
+and \textbf{fails} the pre-registered bar
 (Table~\ref{tab:qxm}: monotone on evolved, every rung converged, error
 span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
 and cost span $\ge2\times$). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
 inside one job is monotone, every rung converged, spans
 $\nQxmErrSpan\times$ in evolved error for $\nQxmCostSpan\times$ in cost
-with $\nQxmNonDom$ non-dominated points}, and passes. $M=1088$ is the pre-registered pure-rank ladder (the largest fixed
-$M$ holding every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span; raising $M$ at $q=256$
+with $\nQxmNonDom$ non-dominated points} and passes. $M=1088$ is the pre-registered pure-rank ladder (the largest fixed
+$M$ holding every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span; $M$ at $q=256$
 saturates at $M^\star=\nQxmMstarTwoFiftySix$.
 
 Sealed cohort and seeds (Tables~\ref{tab:sealed}, \ref{tab:seeds}). The
@@ -780,18 +768,18 @@ layer costs $\nAblBurgersSolverGapPp$\,pp: the head binds.
 \subsection{Where the Family Collapses: Linear PDEs, Navier--Stokes, and the L-shaped Domain}
 \label{sec:results:collapse}
 
-On the linear PDEs there is no trade. The corrections are solved exactly,
-and the top rung is the most accurate and cheapest point. On Poisson at
-$1024^2$ (Table~\ref{tab:linear}), the rungs run
+On linear PDEs there is no trade. The corrections are solved exactly and
+the top rung is the most accurate and cheapest. On Poisson at
+$1024^2$ (Table~\ref{tab:linear}) the rungs run
 $\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at
 flat cost, and $q=R$ lands on the floor at $\nPlinTenTwentyFourTopErr\,\%$
 as the \emph{cheapest} point ($\nPlinTenTwentyFourTopMs$ vs
 $\nPlinTenTwentyFourDstMs$\,ms exact). Heat and the reflective wave
-behave likewise (Appendix~\ref{app:extended:linear}). \textbf{The collapse
-is confounded with a weak bank}: it is
+do likewise (Appendix~\ref{app:extended:linear}). \textbf{The collapse
+is confounded with a weak bank}:
 $\nLinearBankOverPodMin$--$\nLinearBankOverPodMax\times$ worse than a POD
-basis of the same rank on both cells. No reduced arm beats the direct
-solve on any cell.
+basis of equal rank on both cells. No reduced arm beats the direct
+solve.
 
 \textbf{Navier--Stokes collapses for a different reason.} On 2D
 incompressible flow (nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $K=32$ the head's
@@ -800,7 +788,7 @@ $\nNsKthirtyTwoOracleRatio\times$ against a bar of
 $\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
 $\nNsKthirtyTwoPodOverOracleTzero$): linear wins where the data lie in a
 low-dimensional subspace. Retraining the head with 128, 256 and
-512 trajectories moves the held-out oracle
+512 trajectories moves the oracle
 $\nNsScalePlainNOneTwentyEight$ to $\nNsScalePlainNTwoFiftySix$ to
 $\nNsScalePlainNFiveTwelve\,\%$ ($\nNsScaleGainFirstDoubling\,\%$ then
 $\nNsScaleGainSecondDoubling\,\%$ per doubling; ``\nNsScalePlainVerdict''
@@ -809,7 +797,7 @@ by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
 \nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ but
 leaves the head's advantage over POD-16 at \nNsFamOracleRatio$\times$ and
 the held-out/training gap near \nNsFamHeldoutOverTrain{} (Table~\ref{tab:ns}):
-the advantage does not grow as the manifold gets easier. With
+the advantage does not grow as the manifold eases. With
 $\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories) the gap
 closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} because the
 head no longer fits the training data either: the limit moved from
@@ -830,9 +818,9 @@ second, Burgers had both and still lost on cost. At ten-fold lower viscosity
 (Appendix~\ref{app:extended:lowvisc}) linear floors collapse
 $\nLvLinearCollapseMin$--$\nLvLinearCollapseMax\times$ while the head degrades
 $\nLvNeuralDegradeMin$--$\nLvNeuralDegradeMax\times$, every neural rung beats
-every POD-LSPG rank, $q\ge\nLvReducedOnlyNeuralMinQ$ sits on the
-reduced-only frontier: the manifold's advantage appears where the
-Kolmogorov width is worst. But nothing reduced is on the full-order frontier,
+every POD-LSPG rank, $q\ge\nLvReducedOnlyNeuralMinQ$ is on the
+reduced-only frontier: the manifold's edge appears where the Kolmogorov
+width is worst. Nothing reduced is on the full-order frontier,
 the fixed-$M$ ladder spans \nLvLadderErrSpan{} and the mesh is
 under-resolved (discretisation error $\nLvDiscMin$--$\nLvDiscMax\,\%$):
 reduced-versus-reduced only.

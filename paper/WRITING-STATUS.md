@@ -1,6 +1,16 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — reader map: "Experiments at a glance" + appendix float numbering (current state; everything below is history)
+## 2026-09-18 — glance table moved to Appendix A; main text back on 9 pages (current state; everything below is history)
+
+The ICLR 2027 kit allows 9 main-text pages at submission, so the "Experiments at a glance" table
+left §5 and is now the first appendix (Appendix A, Table A.1, exactly as generated); §6 opens with
+"All results here have full tables in the appendix; Table A.1 maps experiments to question, jobs and
+tables." Main-text tables are 1–3 in order (panels, ladder, L-shape). The three lines the §6
+sentence cost were recovered by wording only (§6 intro, §6.1 panel and operator paragraphs, §6.3
+opening, the rank-vs-test paragraph); nothing was cut. Main text ends on page 9 with the conclusion
+complete; the reproducibility statement opens page 10.
+
+## 2026-09-18 — reader map: "Experiments at a glance" + appendix float numbering (history)
 
 The user read 5573956a and could not find the experiments: 47 tables sat in Appendices D–F with no
 map from the main text, and a main-text pointer "(Table 12)" read like a missing float. Two fixes in

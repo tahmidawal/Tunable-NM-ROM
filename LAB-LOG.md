@@ -14395,3 +14395,55 @@ Counts over the three seeds on the development cohort — `dense_m4` monotone on
 Source-generated report: `experiments/b-seeds/reports/2026-09-17-b-seeds.md` (SHA256 `cf791634c5bf1a1c7511c6db6f77a79bb15afd483eb2d9c9338425b7442371db`), with `summary.json` and the generator beside it; every number above is read from `summary.json`. Raw archives are Git-tracked as bounded chunks under `experiments/b-seeds/artifacts/`. Not pushed; not merged.
 
 Sealed job `final` 3804465 (A100-40GB, 3h37m, `jax_backend=gpu`): collected, audited (34/34 + 3 × 33/33 gates; incumbent hash `18f0266ae6f0…` gated; sealed values ≤ 1 ulp from the declared draw, disjoint, `final_cohort_unopened == false`), archived to `artifacts/final/`, remote directory deleted; `selfaudit_recheck.py` 360 of 360 on the development rows. DESIGN.md A5 records the F2 reading. Jobs used: 4 of 8; nothing further submitted. Open: the Codex report audit after 2026-09-19 11:33, appended as a dated addendum.
+
+## 2026-09-17
+
+### b-lowvisc — stage 2 landed: the K=16 head degrades 1.87× where POD-512 degrades 12.09×; F2 does not fire (provisionally); nothing submitted
+
+**What ran.** `lvt01` = slurm **3804337** (A100-PCIE-40GB, pax142, COMPLETED 0:0, 3h48m, source
+`98aadc39`), namespace `/cluster/tufts/paralab/tawal01/b_lowvisc_20260917/lvt01` — stages A–C
+(`sep_burgers_r3` → `sep_coeff_extract` → `sep_hfit_run`) at the incumbent recipe, K=16, R=512, seed
+0, `BURGERS_NU_LO/HI = 0.001/0.01` the only change; generator parity re-proved on the cluster before
+the first step. Collected with both-side checksums; the 567 MB extraction npz kept out of Git
+(SHA256 recorded beside the chunks); archive `experiments/b-lowvisc/artifacts/lvt01` (51 MB);
+checkpoint `experiments/b-lowvisc/checkpoints/sep_hfit_lowvisc0.pkl` (`9a481e27…`); remote dir
+deleted. `audit_train.py` (NumPy only): 16 checks, 0 failed. Branch `exp/2026-09-17-b-lowvisc`,
+commit after this entry's work: see `git log` (report + A7 + self-audit rows 17–23).
+
+**What was found — the three layers, like for like** (same JSON fields, same scripts, same 408
+held-out states = the incumbent's test trajectories with ν/10; incumbent = its own training run,
+job 2837431; b-seeds reseeds 1/2/3 for spread):
+
+| layer | incumbent | reseeds | low-visc | ratio | POD-512 ratio |
+|---|---|---|---|---|---|
+| bank floor, worst held-out % | 0.2998 | 0.30 / 0.33 / 0.25 | 2.7834 | **9.29×** | 12.09× |
+| best-found, worst held-out % | 2.7651 | 2.82 / 2.57 / 3.00 | 5.1726 | **1.87×** | 12.09× |
+| best-found, mean held-out % | 0.5201 | 0.56 / 0.52 / 0.53 | 2.2612 | 4.35× | 12.09× |
+| best-found at t=0 % | 1.5021 | 1.59 / 1.50 / 1.60 | 2.0469 | 1.36× | 12.09× |
+
+The linear objects (POD-512, the trained R=512 bank) collapse by ~10× under the regime change; the
+nonlinear K=16 head's worst-case representation degrades inside a factor of two. **F2** ("the
+manifold degrades at least as much as POD") is conjunctive over bank floor / best-found / solved at
+≥12.09×; best-found is 6.5× short of the bar, so **F2 does not fire — provisionally**, because the
+pre-registered F2 quantities are *panel* numbers on the development cohort and "solved" does not
+exist before a panel. The stage-3 panel is warranted under DESIGN §5.
+
+**What is wrong / caveated.**
+* **F4 still stands** (low-visc L=256 discretisation error 20.82 % vs 4.03 %, 5.17×): every stage-2
+  number is about the L=256 discrete operator, not the continuous low-ν PDE. Not a headline without
+  an L=512 confirmation.
+* **The tempting sentence mixes cohorts.** "K=16 best-found 5.17 % sits below POD-512's 7.36 % at
+  low viscosity (and above it, 2.77 % vs 0.61 %, on the incumbent)" compares 408 held-out states to
+  the six development cases. Flagged inline in the report; the panel puts both in one job on one
+  cohort. Not a paper number yet.
+* best-found is an oracle (truth supplied to the fit): representation, not the solver. The
+  incumbent's solved/best-found was 1.007 at q=0; nothing yet says the low-ν solver is as benign.
+* Nothing retracted from the gate entry. `collect.py` fixed to exclude the extraction npz from the
+  Git archive for training attempts (docstring had said so; the constant was empty).
+
+**Open / next.** Nothing submitted (coordinator asked for the report first). Recommendation
+recorded in A7: **`lvp01` first** — the A3 panel (fixed M=1088 ladder q∈{0..256}, M=256 control, the
+(256, 2176) cell, POD-LSPG k'∈{16..512}, free bank, tuned FOM grid; one job, 80 GB card, ≈1 h) is the
+only job that evaluates P and the pre-registered F2 — **then the L=512 F4 confirmation** (≈5 h over
+two jobs), because confirming a cell that fails P is wasted compute. Jobs used: 2 of 8. Report:
+`experiments/b-lowvisc/reports/2026-09-17-b-lowvisc.md`; `summary.json` 213 rows.

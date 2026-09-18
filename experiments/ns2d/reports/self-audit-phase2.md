@@ -81,3 +81,16 @@ Written self-audit; mechanical check `artifacts/ns301/audit.json` (107 checks, 1
 | 25 | Slopes −0.236/−0.215/−0.148 → "ambiguous" by the §A9 rule; successive slopes −0.41→−0.06, −0.31→−0.12, −0.21→−0.09; reg vs plain at n=512 +2.2 %/−1.3 % | `summary.*`, `arms.*` | audit recomputes the LS slope and the verdict rule; `generate_ns2d.py` computes the successive slopes and the reg fraction from the same medians | verified |
 | 26 | The oracle is a best-found upper bound: an independent SciPy LM beats it on 1/48 audited states in 3 of 9 arms; medians unchanged to 1e-10 | `audit_oracle_beaten.json` | direct recomputation | verified; recorded as a finding |
 | 27 | Train-oracle 0.017–0.129 and training recon 0.024–0.173 per arm | `arms.*.eval.train`, `arms.*.training` | medians and gaps recomputed from per-state arrays; training recon is the driver's own number (training fields not saved) | verified (gap side), reported (recon) |
+
+## Addendum 5 — `ns304` (job 3808502, exploratory q-ladder on the ns204 manifold, DESIGN §A9/§A11)
+
+Written self-audit; mechanical check `artifacts/ns304/audit.json` (`audit_phase3.py`, NumPy only: 351 checks, **all match** — every per-subject/case error metric recomputed from `rom_fields_N256.npz` against `reference_N256.npz`, every aggregate, the timing medians from the retained reps, and the R-LADDER arithmetic).
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 28 | Job complete: 13 subjects × 8 cases × 4 reps = 416 invocations, no dropped subject, no early exit | log (`INV` lines, `ALL-DONE`), `invocations` in result.json | counted in the log; audit reads every subject×case from the npz | verified |
+| 29 | Ladder worst-evolved 0.688/0.708/0.615/0.566/0.331/0.060; median-evolved monotone; inversion q0→q32; gain 11.4×, cost 3.9× | `aggregates.neural_q*`, `gates.R-LADDER` | audit recomputes from fields; generator re-derives monotonicity from the aggregates | verified |
+| 30 | POD-LSPG at matched k' better and cheaper at every rung; no neural rung in the non-dominated set; FOM ntol 1e-3 (421 ms, 4.1e-5) dominates all ROMs | `aggregates.pod_k*`, `aggregates.fom_*` | audit recomputes the errors; the Pareto set is computed by `generate_ns2d.py` from the same medians | verified |
+| 31 | Decomposition: bank 0.00225, manifold 0.106→0.043→0.0023 (q=0/256/512) on the 48 reference states; energy captured 26/44/68/92/100 % | `decomposition.q*`, `directions.residual_energy_captured` | not independently recomputable without the head (JAX); read from the JSON; formula-vs-field agreement is stored per rung | reported |
+| 32 | Zero LM budget exits in every timed rung (R-CONV) | `aggregates.*.budget_exits` | audit sums the per-invocation reasons | verified |
+| 33 | Train-cohort hash mismatched on `pax105` and passed by the §A4 inferred rule (dev reference by value 3.6e-16) | `gates.R-DATA_*` | read from the JSON | verified (mode recorded) |

@@ -578,3 +578,65 @@ minimum changes the 192-state medians by <1e-10. The oracle remains what §A8 sa
 best-found upper bound — and 1–10 of 192 states per arm are LM budget exits (in the table).
 Everything else (bank floor on the archived states, oracle ≤ single-start and ≥ bank floor on
 every state, all medians, ratios, gaps, slopes, verdicts) matches exactly.
+
+## §A11 (2026-09-17 ~23:00 EDT, after job 3808502 `ns304`) — the exploratory ladder on the ns204 manifold: the correction rank closes the manifold gap to the bank floor, the solved error falls 11× over the ladder but is not monotone at the first rung, and every neural rung is dominated by POD-LSPG and by the full-order solve
+
+**Label.** Everything in this amendment is *exploratory after a failed Phase-2 gate* (§A9): the
+$K=32$, $R=512$ head failed H-ORACLE (§A7), so this ladder probes the correction-rank mechanism
+on a manifold that does not beat linear POD-32. It is not a Phase-3 result of the paper's
+pre-registration and is not reported as one.
+
+**Run.** `ns304` (A100 `pax105`, 3 h 11 m, exit 0, `jax_backend=gpu`, `ALL-DONE`, commit
+`31e0846f`). Complete: 13 subjects × 8 cases × (1 warm + 3 timed) = 416 invocations, all
+present; every machinery gate passed (R-DATA reference by value 3.6e-16; R-BANK κ=141; R-DIR
+rank 512; R-TB 0; R-TFFT 7.1e-16; R-TQ 2.4e-14; R-LIN 3.5e-13 at $M=2176$, tensor 4.56 GB
+built in 11 s; R-CONV: zero budget exits on every rung). The training-cohort hash mismatched
+on `pax105` and passed by the §A4 inferred-from-dev rule (dev reference matched by value). The
+job finished in 3 h because the FFT tensor build and the shared-$M$ device copy made the
+per-rung cost small; nothing was dropped. Independent NumPy audit `artifacts/ns304/audit.json`:
+351 checks, all match.
+
+**Numbers (generated; worst over the 8 dev cases, evolved times; per-query medians of 3 reps).**
+
+| $q$ | $K+q$ | ROM worst evolved | ROM median evolved | ms | POD-LSPG $k'=K+q$ worst evolved | POD ms | layer 2 manifold median |
+|---|---|---|---|---|---|---|---|
+| 0 | 32 | 0.688 | 0.414 | 13 388 | 0.546 | 212 | 0.1055 |
+| 32 | 64 | 0.708 | 0.368 | 16 979 | 0.355 | 431 | 0.1025 |
+| 64 | 96 | 0.615 | 0.327 | 21 290 | 0.277 | 833 | 0.0998 |
+| 128 | 160 | 0.566 | 0.257 | 29 012 | 0.172 | 2 398 | 0.0893 |
+| 256 | 288 | 0.331 | 0.139 | 46 268 | 0.095 | 9 964 | 0.0431 |
+| 512 | 544 | 0.060 | 0.024 | 52 592 | 0.042 | 53 903 | 0.0023 (= bank) |
+
+Layer 1 (bank floor) median 0.00225 on these states; FOM at ntol $10^{-3}$: 421 ms, worst
+evolved 4.1e-5; converged FOM (ntol $10^{-11}$): 1 178 ms.
+
+**Reading.**
+1. *Mechanism (layer 2).* The correction rank does what the paper says it does on the manifold:
+   the best-found fit falls from 0.106 ($q=0$) through 0.089 (128) and 0.043 (256) to the bank
+   floor 0.0023 at $q=R=512$; the residual-direction energy captured is 26/44/68/92/100 % at
+   $q=32/64/128/256/512$. The gap from the $q=0$ manifold to the bank floor is closed **only at
+   $q=R$**, i.e. when the correction spans the whole bank and the head is irrelevant; at
+   $q=256$ it has closed 60 % of the log-gap.
+2. *Solve (layer 3).* The solved worst-evolved error falls 11.4× from $q=0$ to $q=512$ at 3.9×
+   the cost; it is monotone in the *median* but **not in the worst** case: $q=32$ is 3 % worse
+   than $q=0$ (0.708 vs 0.688) — an inversion at the first rung, so `R-LADDER` fails on
+   monotonicity even though the 2× gain bar is exceeded 5×. Layer 3 sits 4–10× above layer 2
+   at every rung (e.g. 0.414 vs 0.106 at $q=0$; 0.024 vs 0.0023 at $q=512$): the weak projection
+   and time stepping cost more than the head restriction does.
+3. *Controls.* POD-LSPG at the matched dimension is better **and** cheaper at every rung
+   (0.546 vs 0.688 at 32 dims for 63× less time; 0.042 vs 0.060 at 544 dims at equal time);
+   the non-dominated set on (ms, worst evolved) contains **no neural rung**: it is
+   `pod_k32` plus the full-order tolerance ladder, and the FOM at ntol $10^{-3}$ (421 ms,
+   4e-5) dominates every reduced model of either kind. This is the falsification clause's
+   named outcome ("if POD-LSPG at $k'$ beats the neural rung at $q=k'-K$ everywhere, the head
+   adds nothing on NS and the report says so") — on this failed-gate manifold, it does.
+4. *Cost.* No reduced model is faster than the FFT-preconditioned Newton–Krylov FOM at 256²
+   (the design said so in advance); the neural rungs are 30–120× slower than the FOM at
+   ntol $10^{-3}$.
+
+**What this does and does not establish.** It establishes that on 2D NS with an exact degree-2
+residual, the correction rank monotonically buys back the manifold restriction (layer 2) and,
+in the median, the solved error — the mechanism exists — but on a head that fails H-ORACLE the
+non-dominated set is linear/full-order only. Whether a head that *passes* H-ORACLE (ns303, if it
+does) changes the non-dominated set is what the reserved Phase-3 job is for. Nothing here is
+a paper Phase-3 number.

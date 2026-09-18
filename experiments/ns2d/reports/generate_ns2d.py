@@ -229,22 +229,69 @@ def headfit(doc, d, job, sha):
     doc.p('Rule: slope $\\le -0.25$ = needs-data; slope $\\ge -0.10$ under every regime = head-limited; otherwise ambiguous. Regularisation "moves it" if the reg regime is $\\ge 10$ % below plain at the largest $n$. Successive slopes show whether the improvement is decelerating.')
 
 
-def phase3(doc, d, job, sha):
+def phase3(doc, d, job, sha, exploratory=False):
     G = d['gates']
     c = d['config']
     ck = d['checkpoint']
-    doc.h(2, f'Phase 3 — ROM ladder, head $K={ck["K"]}$, $R={ck["R"]}$, $N={c["N"]}$ (job {job}, {d.get("gpu")}, commit `{str(d["commit"])[:12]}`, complete={yn(d.get("complete"))})')
+    K, R = ck['K'], ck['R']
+    label = ' — **EXPLORATORY after a failed Phase-2 gate (DESIGN §A9): not a pre-registered Phase-3 result**' if exploratory else ''
+    doc.h(2, f'Phase 3 — ROM ladder, head $K={K}$, $R={R}$, $N={c["N"]}$ (job {job}, commit `{str(d["commit"])[:12]}`, complete={yn(d.get("complete"))}){label}')
     agg = d.get('aggregates', {})
+    dec = d.get('decomposition', {})
+    tag = 'exploratory' if exploratory else 'pre-registered'
+    M_note = f'one fixed test space $M={c["M_FIXED"]}$ for every subject' if c.get('M_FIXED') else 'test space $M=4(K+q)$ per rung, $4k^\\prime$ for POD-LSPG'
+    doc.p(f'Eight development cases, {c["REPS"]} timed repetitions after a warm repetition, {M_note}; errors against the converged same-grid FOM (ntol {c["NTOL"]:g}) timed in the same job. '
+          f'All timings are per 500-step trajectory query on one GPU in this job; no ratio crosses jobs.' + (' **Every number in this section is exploratory: the head failed H-ORACLE (§A7), so this ladder probes the correction-rank mechanism on a manifold that does not beat linear POD-$K$.**' if exploratory else ''))
+    # ---- the ladder with the matched POD-LSPG beside each rung, plus the decomposition
     rows = []
-    for name, a in agg.items():
-        rows.append([name, sci(a['worst_evolved']), sci(a['median_evolved']), sci(a['worst_all']), sci(a['worst_t0']), fx(a['median_seconds'], 3), a['budget_exits'], yn(a['finite'])])
-        for m in ('worst_evolved', 'median_evolved', 'worst_all', 'worst_t0', 'median_seconds'):
-            doc.row(phase=3, mesh=c['N'], subject=name, metric=m, value=a[m], gate='R-LADDER' if name.startswith('neural') else None,
-                    passed=G.get('R-LADDER', {}).get('passed') if name.startswith('neural') else None, job_id=job, source_sha256=sha)
-    doc.table(['subject', 'worst evolved', 'median evolved', 'worst all times', 'worst $t=0$', 'median s', 'budget exits', 'finite'], rows)
+    for q in c['Q_LADDER']:
+        a = agg[f'neural_q{q}']
+        pm = agg.get(f'pod_k{K + q}') if q else agg.get(f'pod_k{K}')
+        dq = dec.get(f'q{q}', {})
+        rows.append([q, K + q, sci(a['worst_evolved']), sci(a['median_evolved']), sci(a['worst_all']), sci(a['worst_t0']), fx(1000 * a['median_seconds'], 0), a['budget_exits'],
+                     sci(pm['worst_evolved']) if pm else '—', fx(1000 * pm['median_seconds'], 0) if pm else '—',
+                     sci(dq.get('bank_median')), sci(dq.get('manifold_median')), sci(dq.get('manifold_worst'))])
+        for m in ('worst_evolved', 'median_evolved', 'worst_all', 'worst_t0', 'median_seconds', 'budget_exits'):
+            doc.row(phase=3, mesh=c['N'], subject=f'neural_q{q}', metric=m, value=a[m], gate=f'R-LADDER ({tag})', passed=G.get('R-LADDER', {}).get('passed'), job_id=job, source_sha256=sha)
+        for m in ('bank_median', 'manifold_median', 'manifold_worst'):
+            if m in dq:
+                doc.row(phase=3, mesh=c['N'], subject=f'neural_q{q}', metric=f'decomposition.{m}', value=dq[m], gate=f'decomposition ({tag})', passed=None, job_id=job, source_sha256=sha)
+    doc.h(3, f'Correction ladder ({tag}) with POD-LSPG at the matched online dimension $k^\\prime=K+q$ and the three-layer decomposition')
+    doc.table(['$q$', '$K+q$', 'worst evolved', 'median evolved', 'worst all times', 'worst $t=0$', 'median ms', 'budget exits', 'POD-LSPG $k^\\prime$ worst evolved', 'POD-LSPG ms', 'layer 1 bank (median)', 'layer 2 manifold (median)', 'manifold worst'], rows)
+    doc.p('Layers: 1 = best possible in the bank span; 2 = best found on the rung\'s own manifold $h(z)+C_q y$ (multi-start LM); 3 = what the ROM solve achieved (the "median evolved" column), all on the same 48 states and normalisation. Layer 3 minus layer 2 is the cost of the weak projection and time stepping; layer 2 minus layer 1 is the cost of the head restriction that $q$ buys back.')
+    # ---- POD-LSPG and FOM tables
+    rows = [[n, a['K'] if False else n.split('_k')[1], sci(agg[n]['worst_evolved']), sci(agg[n]['median_evolved']), sci(agg[n]['worst_all']), fx(1000 * agg[n]['median_seconds'], 0), agg[n]['budget_exits']] for n in agg if n.startswith('pod_k')]
+    for n in agg:
+        if n.startswith('pod_k') or n.startswith('fom_'):
+            for m in ('worst_evolved', 'median_evolved', 'worst_all', 'median_seconds'):
+                doc.row(phase=3, mesh=c['N'], subject=n, metric=m, value=agg[n][m], gate=f'control ({tag})', passed=None, job_id=job, source_sha256=sha)
+    doc.h(3, f'POD-LSPG controls ({tag}), same job')
+    doc.table(['subject', '$k^\\prime$', 'worst evolved', 'median evolved', 'worst all times', 'median ms', 'budget exits'], rows)
+    rows = [[n, f"{float(n.split('ntol')[1]):g}", sci(agg[n]['worst_evolved']), sci(agg[n]['median_evolved']), fx(1000 * agg[n]['median_seconds'], 0)] for n in agg if n.startswith('fom_')]
+    doc.h(3, f'Full-order tolerance ladder ({tag}), same job; the last row is the error reference')
+    doc.table(['subject', 'Newton tol', 'worst evolved', 'median evolved', 'median ms'], rows)
+    # ---- non-dominated set on (median ms, worst evolved)
+    pts = [(n, 1000 * agg[n]['median_seconds'], agg[n]['worst_evolved']) for n in agg]
+    nd = [p for p in pts if not any((o[1] <= p[1] and o[2] <= p[2]) and (o[1] < p[1] or o[2] < p[2]) for o in pts if o is not p)]
+    nd.sort(key=lambda p: p[1])
+    doc.h(3, f'Non-dominated set on (median ms, worst evolved error) over every subject in the job ({tag})')
+    doc.table(['subject', 'median ms', 'worst evolved'], [[n, fx(ms, 0), sci(e)] for n, ms, e in nd])
+    for n, ms, e in nd:
+        doc.row(phase=3, mesh=c['N'], subject=n, metric='non_dominated', value=True, gate=f'pareto ({tag})', passed=None, job_id=job, source_sha256=sha)
+    neural_nd = [n for n, _, _ in nd if n.startswith('neural')]
+    doc.p(f'Neural rungs in the non-dominated set: {", ".join(neural_nd) if neural_nd else "**none** — every neural rung is dominated by a POD-LSPG or full-order setting on both axes"}.')
     if 'R-LADDER' in G:
         g = G['R-LADDER']
-        doc.p(f'Pre-registered verdict: monotone = {yn(g["monotone"])}, gain top/q0 = {fx(g["gain_top_over_q0"], 2)}×, cost top/q0 = {fx(g["cost_ratio_top_over_q0"], 2)}×, **{"PASS" if g["passed"] else "FAIL"}**.')
+        we = g['worst_evolved']
+        mono_med = all(b <= a for a, b in zip([agg[f"neural_q{q}"]["median_evolved"] for q in c['Q_LADDER']][:-1], [agg[f"neural_q{q}"]["median_evolved"] for q in c['Q_LADDER']][1:]))
+        inv = [f'q{c["Q_LADDER"][i]}→q{c["Q_LADDER"][i+1]} ({sci(we[i])}→{sci(we[i+1])})' for i in range(len(we) - 1) if we[i + 1] > we[i]]
+        doc.p(f'R-LADDER ({tag}): monotone in worst evolved = {yn(g["monotone"])}' + (f' (inversions: {", ".join(inv)})' if inv else '') +
+              f'; monotone in median evolved = {yn(mono_med)}; gain top/q0 = {fx(g["gain_top_over_q0"], 2)}×; cost top/q0 = {fx(g["cost_ratio_top_over_q0"], 2)}×; **{"PASS" if g["passed"] else "FAIL"}**' +
+              (' — exploratory: this verdict is not a Phase-3 result of the paper\'s pre-registration.' if exploratory else '.'))
+        doc.row(phase=3, mesh=c['N'], subject='ladder', metric='monotone_worst_evolved', value=g['monotone'], gate=f'R-LADDER ({tag})', passed=g['passed'], job_id=job, source_sha256=sha)
+        doc.row(phase=3, mesh=c['N'], subject='ladder', metric='monotone_median_evolved', value=mono_med, gate=f'R-LADDER ({tag})', passed=g['passed'], job_id=job, source_sha256=sha)
+        doc.row(phase=3, mesh=c['N'], subject='ladder', metric='gain_top_over_q0', value=g['gain_top_over_q0'], gate=f'R-LADDER ({tag})', passed=g['passed'], job_id=job, source_sha256=sha)
+        doc.row(phase=3, mesh=c['N'], subject='ladder', metric='cost_ratio_top_over_q0', value=g['cost_ratio_top_over_q0'], gate=f'R-LADDER ({tag})', passed=g['passed'], job_id=job, source_sha256=sha)
     doc.table(['gate', 'passed'], [[k, yn(g['passed'])] for k, g in G.items()])
 
 
@@ -266,6 +313,9 @@ GLOSSARY = '''## Glossary
 - **Evolved**: output times $t>0$; the $t=0$ state is the band-limited initial condition and is reported separately because it is much easier to fit.
 - **Worst evolved / worst all times / $t=0$**: error normalised by the initial reference norm, maximised over $t>0$ / over all outputs / at $t=0$ only.
 - **Correction rank $q$**: extra linear directions solved jointly with the code; POD-LSPG is the classical linear control.
+- **Non-dominated set**: the subjects no other subject beats on both cost and error at once (Pareto front); a point outside it is dominated.
+- **Layer 1 / 2 / 3**: bank floor / best-found manifold fit / achieved ROM solve, on the same states.
+- **Exploratory after a failed gate**: run on a head that did not pass its Phase-2 oracle gate, so it probes a mechanism and is not a paper result.
 - **Budget exits**: LM steps that hit the iteration cap (an unconverged rung is flagged).
 - **CFL**: $\\max|\\mathbf u|\\Delta t/h$; recorded, not a stability limit for the implicit scheme.
 '''
@@ -277,6 +327,7 @@ def main():
     p.add_argument('--phase2', nargs='*', default=[])
     p.add_argument('--phase3', nargs='*', default=[])
     p.add_argument('--headfit', nargs='*', default=[])
+    p.add_argument('--phase3-exploratory', nargs='*', default=[], help='phase-3 result.json paths to label exploratory (after a failed gate)')
     p.add_argument('--audit', nargs='*', default=[])
     p.add_argument('--title', default='ns2d — 2D incompressible Navier–Stokes: certified FOM, dataset, bank/head floors, ROM ladder')
     p.add_argument('--status', default='provisional')
@@ -290,7 +341,10 @@ def main():
         for s in specs:
             d, job, sha = load(s)
             srcs.append([ph, s.split(':')[0], job, sha[:16], yn(d.get('complete')), yn(d.get('all_passed'))])
-            {1: phase1, 2: phase2, '2-headfit': headfit, 3: phase3}[ph](doc, d, job, sha)
+            if ph == 3:
+                phase3(doc, d, job, sha, exploratory=s.split(':')[0] in a.phase3_exploratory)
+            else:
+                {1: phase1, 2: phase2, '2-headfit': headfit}[ph](doc, d, job, sha)
     doc.md.insert(2, '')
     hdr = ['phase', 'source', 'job id', 'sha256 (prefix)', 'complete', 'all gates passed']
     doc.md.insert(3, '| ' + ' | '.join(hdr) + ' |\n|' + '|'.join(['---'] * len(hdr)) + '|\n' + '\n'.join('| ' + ' | '.join(str(c) for c in r) + ' |' for r in srcs) + '\n')

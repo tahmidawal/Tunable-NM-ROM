@@ -202,7 +202,7 @@ matched eight-case cohort and on the 32 held-out cases. Accuracy is comparable
 across jobs; timing never is, and none is shown. Single seed, one mesh, one
 3000\,s budget per capacity.}
 \label{tab:operators}
-\input{tables/T14_operators}
+\resizebox{\linewidth}{!}{\input{tables/T14_operators}}
 \end{table}
 
 \begin{table}[h]
@@ -313,12 +313,20 @@ Table~\ref{tab:replication}.}
 
 \begin{table}[h]
 \centering
-\caption{Every quadrature rule: NNLS fit residual beside the held-out $\rho$,
-so the anti-correlation stays visible. Bars: primary
+\caption{Every quadrature rule at $q\le32$: NNLS fit residual beside the
+held-out $\rho$, so the anti-correlation stays visible. Bars: primary
 $\rho_{\max}\le\nEqtopBar$, tight $\rho_{\max}\le\nEqtopTightBar$
-(source: \provEqtopBarSource).}
+(source: \provEqtopBarSource). Continued in Table~\ref{tab:eqrules-b}.}
 \label{tab:eqrules}
 \input{tables/T09c_eq_rules_full}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every quadrature rule at $q\ge64$ (continuation of
+Table~\ref{tab:eqrules}; same columns and bars).}
+\label{tab:eqrules-b}
+\input{tables/T09c_eq_rules_full_b}
 \end{table}
 
 \begin{table}[h]
@@ -396,7 +404,9 @@ until the sealed cohort (Table~\ref{tab:sealed}) is opened.}
 \begin{table}[h]
 \centering
 \caption{Development against sealed worst error per rung, difficulty-normalised
-(lane b-seeds).}
+(lane b-seeds). \textbf{Pending}: the sealed-cohort job 3804465 was still
+running when this version was built; the generator fills this table from
+its summary when it lands, and no sentence in the paper depends on it.}
 \label{tab:sealed}
 \input{tables/T13_sealed}
 \end{table}
@@ -450,17 +460,21 @@ $\nTrainArmsEvaluated$ arms pass the pre-registered success criterion. The
 like-for-like retrain does not reproduce the incumbent, so the density verdict
 is measured below baseline.}
 \label{tab:training}
-\input{tables/T16_training}
+\resizebox{\linewidth}{!}{\input{tables/T16_training}}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{Navier--Stokes 2D, phase-2 gates on the $K=16$ head over the full-rank
-$R=256$ bank (job \provNsJob, A100; full-order solver and dataset certified in
-job \provNsFomJob). Every gate passes except the held-out oracle, whose
-pre-registered bar was a $2.0\times$ margin over POD at matched dimension; the
-ladder and timing were therefore never run. The $K=32$ arm on the same bank
-(ns204) is pending.}
+\caption{Navier--Stokes 2D, phase-2 gates for the $K=16$ head on the
+full-rank $R=256$ bank and the $K=32$ head on the full-rank $R=512$ bank
+(jobs \provNsJobs; full-order solver and dataset certified in job
+\provNsFomJob). Every gate passes except the held-out oracle, whose
+pre-registered bar was a $\nNsOracleBar\times$ margin over POD at matched
+dimension (\provNsBarSource); the ladder and timing were therefore never
+run for either head. Oracle values are upper bounds:
+\nNsBudgetExitsKsixteen{} ($K{=}16$) and \nNsBudgetExitsKthirtyTwo{}
+($K{=}32$) held-out fits at $256^2$ hit the LM budget, which biases the
+ratio downward, so the negative verdict is conservative.}
 \label{tab:ns}
 \resizebox{\linewidth}{!}{\input{tables/T11e_ns}}
 \end{table}

@@ -95,6 +95,7 @@ IN_FLIGHT = [
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
+    ('ns2d', 'ns301--ns304', '3808493, 3808495, 3808498, 3808502', 'Navier--Stokes follow-ups (register only; read by no table)'),
 ]
 
 PROV: dict[str, dict] = {}
@@ -1257,8 +1258,9 @@ def build_eqtop():
         if d.get('rho_max') is None: continue
         t.append([str(q), tex_escape(arm), str(m), tex_escape(pop), f"{d['relative_fit']:.2e}" if d.get('relative_fit') is not None else '---',
                   f"{d['rho_max']:.4f}", f"{d['rho_p95']:.4f}" if d.get('rho_p95') is not None else '---', yn(d['_cert']), tt(jb)])
-    write('T09c_eq_rules_full.tex', tabular(['$q$', 'fit arm', '$m$', 'population', 'NNLS rel.\\ fit', '$\\rho_{\\max}$', '$\\rho_{95}$', 'primary', 'job'],
-                                             t, 'rlrlrrrcl', r'\tiny'), f'b-eqtop every rule; PROVISIONAL, {pend_job} pending')
+    cols9 = ['$q$', 'fit arm', '$m$', 'population', 'NNLS rel.\\ fit', '$\\rho_{\\max}$', '$\\rho_{95}$', 'primary', 'job']
+    write('T09c_eq_rules_full.tex', tabular(cols9, [r for r in t if int(r[0]) <= 32], 'rlrlrrrcl', r'\tiny'), 'b-eqtop every rule, q <= 32 (split for the page)')
+    write('T09c_eq_rules_full_b.tex', tabular(cols9, [r for r in t if int(r[0]) >= 64], 'rlrlrrrcl', r'\tiny'), 'b-eqtop every rule, q >= 64 (split for the page)')
 
 
 # =========================================================================== T10 mesh ladder
@@ -1595,7 +1597,7 @@ def build_offline_and_spec():
          'compact bump $\\times$ Gaussian: half-widths $s_i\\sim U(0.36,0.42)$, centre $c_i\\sim U(s_i{+}0.025,\\,1{-}s_i{-}0.025)$, amplitude $\\sim U(0.7,1.3)$, $\\sigma_i\\sim U(0.12,0.16)$, advective velocity $v_i\\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\\sim U(0.85,1.15)$',
          tt('experiments/multiresolution-wave/audit_dynamics.py:parameter_rows')],
     ]
-    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.7cm}p{3.4cm}p{6.2cm}p{2.6cm}', r'\tiny'),
+    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.6cm}p{4.4cm}p{9.8cm}p{3.0cm}', r'\tiny'),
           'sampling families transcribed from the generator sources named in the last column')
 
 

@@ -454,3 +454,7 @@ the real keys; A8's claim does NOT stand and the report generator must derive th
 unaffected either way: the driver is `bpn301`'s, whose summary carries `worst_reference_percent`
 for every subject family, and the reference fields are saved as artifacts so the column can be
 recomputed by the audit from the fields regardless.
+
+**A8.2 (2026-09-17, minutes after A8.1).** The `error` block keys are `['absolute_rms_max', 'current_relative_max', 'current_relative_per_time', 'fixed_initial_max', 'fixed_initial_per_time']`;
+not every row carries a reference error there ([]). A8.1 stands: the report derives the column from
+the saved fields against the reference artifacts.

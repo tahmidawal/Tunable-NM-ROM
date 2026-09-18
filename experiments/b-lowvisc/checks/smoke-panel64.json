@@ -62,7 +62,16 @@
   "vs_reference_column": {
    "per_invocation_keys_present_on_every_row": [],
    "per_subject_keys": [],
-   "note": "first draft of this record tested a GUESSED key name (error_vs_reference) and recorded False; corrected here to the keys the driver actually writes (A8.1)"
+   "note": "first draft of this record tested a GUESSED key name (error_vs_reference) and recorded False; corrected here to the keys the driver actually writes (A8.1)",
+   "per_invocation_error_block_keys": [
+    "absolute_rms_max",
+    "current_relative_max",
+    "current_relative_per_time",
+    "fixed_initial_max",
+    "fixed_initial_per_time"
+   ],
+   "every_row_has_reference_error_in_error_block": false,
+   "reference_keys": []
   }
  }
 }

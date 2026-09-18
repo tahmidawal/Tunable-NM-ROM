@@ -5,7 +5,6 @@
 | b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables \ref{tab:tunability}, \ref{tab:panel-all}) |
 | lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
-| b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
 | ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
 | ns2d | `ns302` | `3808495` | Navier–Stokes head at $4\times$ the training data (running; read by no table; the last arm of the cell) |
 | ns2d | `ns303` | `3808498` | Navier–Stokes $K=16$ head on the lower-dimensional family (landed; Table \ref{tab:ns}) |

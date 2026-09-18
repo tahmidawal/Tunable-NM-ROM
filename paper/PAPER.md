@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 23:14; this block is removed before submission).*
-*Final tables (54): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
+*Status for the reader (generated 2026-09-17 23:30; this block is removed before submission).*
+*Final tables (56): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -633,7 +633,7 @@ and the 2 full-order settings below it
 coarser solves cancelling against the reference, not better ones; at $1024^2$
 the rungs run $3.86$ to
 $2.80 %$ over
-$2.14 %$. The knob moves the reduction error, not the physical error, at these meshes. At fixed $M=256$ the ladder spans only $1.22\times$
+$2.14 %$. The knob moves the reduction error, not the physical error. At fixed $M=256$ the ladder spans only $1.22\times$
 in error and **fails** the pre-registered bar
 (Table 12: monotone on evolved, every rung converged, error
 span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
@@ -679,7 +679,7 @@ monotone; its $q=128$ and $256$ transfers pass the primary bar there
 though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
 the transfer reaches $0.5510 %$ in
 $21\times$ less time than
-its dense twin. Solver knobs alone move cost, not accuracy (Table 26).
+its twin. Solver knobs move cost only (Table 26).
 
 **Validate on reachable states, then re-draw.**
 
@@ -722,25 +722,24 @@ layer costs $0.018$ pp: the head binds.
 
 <!-- section sources: none (prose only) -->
 
-On the linear PDEs there is no trade to make: the corrections are solved
-exactly and the top rung is the most accurate and the cheapest point. Poisson at $1024^2$ (Table 14): the rungs run
+On the linear PDEs there is no trade: the corrections are solved exactly
+and the top rung is the most accurate and cheapest point. Poisson at $1024^2$ (Table 14): the rungs run
 $3.1495\to0.9648 %$ at
-flat cost and the top rung $q=R$ lands on the floor at
-$0.7421 %$ as the *cheapest* point
-($4.42$ ms; exact transform
-$3.248$ ms); heat and the reflective wave do the
-same (Appendix F.5). **The collapse is
-confounded with a weak bank**: on both linear cells the learned bank is
-$3.4$–$4.0\times$ worse than a POD
-basis of the same rank, and no reduced arm beats the direct solve on any cell.
+flat cost and $q=R$ lands on the floor at $0.7421 %$
+as the *cheapest* point ($4.42$ vs
+$3.248$ ms exact); heat and the reflective wave
+likewise (Appendix F.5). **The collapse is
+confounded with a weak bank**, $3.4$–$4.0\times$
+worse than a POD basis of the same rank on both cells, and no reduced arm
+beats the direct solve on any cell.
 
 **Navier–Stokes collapses for a different reason.** On 2D
-incompressible flow (a nonlinear residual) the family was gated before any ladder (Table 43): at $K=16$ and $K=32$ the head's
+incompressible flow (nonlinear residual) the family was gated before any ladder (Table 43): at $K=16$ and $K=32$ the head's
 held-out oracle beats POD-$K$ by only $1.19\times$ and
-$1.15\times$ against a pre-registered bar of
-$2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is the more accurate (POD/oracle
-$0.82$): linear beats nonlinear where the data
-lie in a low-dimensional subspace. Retraining the head with 128, 256 and
+$1.15\times$ against a bar of
+$2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
+$0.82$): linear wins where the data lie in a
+low-dimensional subspace. Retraining the head with 128, 256 and
 512 trajectories moves the held-out oracle
 $27.4938$ to $20.6889$ to
 $19.8279 %$ ($25 %$ then
@@ -750,19 +749,28 @@ by the pre-registered rule, Table 47; the bank saw all
 14 lowers every error 3.3–4.4$\times$ but
 leaves the head's advantage over POD-16 at 1.39$\times$ and
 the held-out/training gap near 3.8 (Table 43):
-the advantage does not grow as the manifold gets easier; across $K=16$
+the advantage does not grow as the manifold gets easier, and across $K=16$
 and $32$, family dimension 14 and 8, and 128–512
-trajectories this head class does not beat POD-$K$ by the pre-registered
-$2.0\times$ on held-out decaying 2D Navier–Stokes (one arm,
-$4\times$ data, still running). An exploratory ladder on that failed-gate
+trajectories this head class never beats POD-$K$ by the pre-registered
+$2.0\times$ on held-out decaying 2D Navier–Stokes (one arm
+still running). An exploratory ladder on that failed-gate
 manifold (Table 48; not a phase-3 result) closes the
-manifold gap toward the bank floor only at $q=R$, where the head no longer
-matters, and POD-LSPG at the same dimension is more accurate at every
-rung and cheaper at all but the top, with no neural rung non-dominated:
-the falsification clause's named outcome for this head. A trade between
+manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
+the same dimension is more accurate at every rung and cheaper at all but
+the top, and no neural rung is non-dominated: the falsification clause's
+named outcome. A trade between
 rungs needs a residual nonlinear in the coefficients and a manifold that
 beats POD held-out: Poisson, heat and waves lack the first, this cell the
-second, Burgers had both and still lost on cost.
+second, Burgers had both and still lost on cost. At ten-fold lower viscosity
+(Appendix F.6) linear floors collapse
+$12$–$19\times$ while the head degrades
+$3.3$–$4.5\times$, every neural rung beats
+every POD-LSPG rank, $q\ge64$ sits on the
+reduced-only frontier: the manifold's advantage appears where the
+Kolmogorov width is worst. But nothing reduced is on the full-order frontier,
+the fixed-$M$ ladder spans 1.36$\times${} and the mesh is
+under-resolved (discretisation error $19.3$–$20.9 %$):
+reduced-versus-reduced only.
 
 **Table 3.** L-shaped Poisson, solve layer at $M=257$, one job per mesh
 (complete-query ms; ratios inside each job): the cheapest full-order arm,
@@ -779,49 +787,49 @@ POD-128 and the head at $q=64$ (full sets: Table 44).
 **On the L-shaped domain (Poisson, a linear residual; no fast
 transform) reduced models are cheaper, POD most of all.** The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($29.13$ ms
-at $0.385 %$, more accurate than every reduced
-arm), and the reduced arms stay nearly flat (Table 3; cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
+at $0.385 %$, more accurate than any reduced
+arm), and the reduced arms stay nearly flat (Table 3). Against the cheapest same-job full-order arm the head at $q=64$ is
 $2.77\times$ and
 $6.07\times$ cheaper, POD-128
 $2.94\times$ and
 $7.23\times$; the head is non-dominated
 only on accuracy
 ($6$–$19 %$
-more cost than POD-128 for $15 %$ less error).
-Nothing is claimed beyond $512^2$, and the banks' reconstruction degrades from
-$6.8$ to $16.7 %$ on validation
-sources, unswept (Table 46).
+more cost than POD-128, $15 %$ less error).
+Nothing is claimed beyond $512^2$; the banks' reconstruction degrades from
+$6.8$ to $16.7 %$ on unswept
+validation sources (Table 46).
 
 \FloatBarrier
 
 **Limitations.**
 
-(i) One checkpoint per PDE; the Burgers one is a favourable draw in
-development (Table 36) and the fixed-$M$ ladder is
+(i) One checkpoint per PDE; Burgers' is a favourable draw in
+development (Table 36), the fixed-$M$ ladder
 single-seed; a cold-start solve at $q=0$ can converge to a wrong branch, as
 one sealed case did (10.1120 %, Table 37); $q\ge16$
-removed it here, with no guarantee. (ii) Uniform Cartesian differences, 2D only; small cohorts
-(Table 8). (iii) No cold-start comparison with Kim et al. (2022); linear skip
-not ablated. (iv) Operator numbers are lower bounds (7 of 8
-U-Net/Transolver, 4 of 4 FNO arms still improving);
-rules above $q=32$ are marginal and an
-8.7$\times$ transfer-draw spread
-in $\rho_{\max}$ is unexplained; cross-job spread of one cell is
+removed it, no guarantee. (ii) Uniform Cartesian differences, 2D only; small cohorts
+(Table 8); low-viscosity cell under-resolved. (iii) No cold-start comparison with Kim et al. (2022), no skip
+ablation. (iv) Operator numbers are lower bounds (11 of 12 arms
+improving);
+rules above $q=32$ are marginal, an
+8.7$\times$ transfer-draw $\rho_{\max}$
+spread unexplained; cross-job spread of one cell
 $14 %$; the $1024^2$ frontier rests on one
-job and the evolved metric. (v) Against the fine reference the knob moves the error
-$1.13\times$ at $256^2$. (vi) No theory: no convergence guarantee or quadrature-error bound on unseen states.
+job. (v) Against the fine reference the knob moves the error only
+$1.13\times$. (vi) No convergence or quadrature-error theory.
 
 ## 7 Conclusion and Future Work
 
 <!-- section sources: none (prose only) -->
 
 We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs with a
-deployment-time accuracy/cost family from one trained model: the rank
+deployment-time accuracy/cost family from one model: the rank
 $q$ and three solver knobs span $2.44\times$ in same-grid error
 for $5.16\times$ in cost on 2D Burgers in one allocation. It does
 not beat a tuned full-order solver or a neural operator on the same data
 at $256^2$; where no fast transform applies reduced models are cheaper,
-plain POD most of all. Next: lower-viscosity Burgers and unstructured
+plain POD most of all. Next: a resolved low-viscosity cell and unstructured
 meshes.
 
 ## Reproducibility statement
@@ -1151,6 +1159,7 @@ float64 and highest matmul precision before doing any work.
 | T9 | b-eqtop | bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290…) | see job list | see job list | 18f0266ae6f04542… |
 | T10 | mesh-ladder (Burgers) | 3711388 | NVIDIA A100-PCIE-40GB | 521cdced6f4d… | 18f0266ae6f0… |
 | T10 | mesh-ladder (Poisson) | 3711389 | NVIDIA A100 80GB PCIe | 521cdced6f4d… | a128e7635c31… |
+| T20, T20b | b-lowvisc (appendix; F4 under-resolution caveat) | panel 3817807; gate 3789639; training 3804337 | NVIDIA A100-PCIE-40GB | 2cf5dc34 | low-viscosity checkpoint hashed in the lane summary |
 | T11e | ns2d phase 2 (K=16, K=32, family dimension 8) | 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); FOM 3780151 | ns303 A100 (pax105); others per job | per job | checkpoints hashed in each result.json |
 | T11f | ns2d ns301 (head-only data scaling on the frozen K=16 bank) | 3808493 | per job | per job | frozen K=16 bank; heads hashed in result.json |
 | T11g, T11h | ns2d ns304 (exploratory after a failed phase-2 gate) | 3808502 | NVIDIA A100 80GB PCIe | 31e0846f | ckpt_K32_R512 hashed in result.json |
@@ -1189,7 +1198,6 @@ pending in §Table 3.
 | b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables \ref{tab:tunability}, \ref{tab:panel-all}) |
 | lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
-| b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
 | ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
 | ns2d | `ns302` | `3808495` | Navier–Stokes head at $4\times$ the training data (running; read by no table; the last arm of the cell) |
 | ns2d | `ns303` | `3808498` | Navier–Stokes $K=16$ head on the lower-dimensional family (landed; Table \ref{tab:ns}) |
@@ -2464,6 +2472,94 @@ costs are not comparable with those above, the free rung $q=R$ is the one
 place the learned bank beats the linear baseline on both axes, at
 $1.003\times$ its own bank floor with no solver iterations
 (Table 45).
+
+### F.6 Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)
+
+<!-- section sources: none (prose only) -->
+
+A second Burgers cell (lane b-lowvisc; training job 3804337, gate
+job 3789639, panel job 3817807 on NVIDIA A100-PCIE-40GB) keeps the
+incumbent recipe and mesh and lowers the viscosity range ten-fold. The
+pre-registered under-resolution clause (F4) applies: the converged
+discrete operator itself sits $19.3$–$20.9 %$ from the
+$4096^2$ reference ($5.17\times$ the incumbent cell's
+discretisation error), so every number below is evidence about reduced
+models against each other on the same discrete system, not about the PDE.
+Two things did happen. Linear reduction collapses: the POD-512 floor
+degrades 12.09$\times${} and the trained linear bank's floor
+19.00$\times${} ($0.3918\to7.4455 %$)
+against the incumbent cell, while the neural head's solved $q=0$ error
+degrades 3.27$\times${} ($2.5629\to8.3933 %$) and its
+best-found 4.48$\times${} (an upper bound here: solved over
+best-found is 0.74); the pre-registered F2 clause
+therefore does not fire (no). And every neural rung of the fixed-$M=1088$ ladder, from
+$q=0$, beats every POD-LSPG rank $k'=16$–$512$ (best
+$11.2540 %$; not monotone past $k'=256$, the $k'=512$ solve
+being solver-limited), and from $q=128$ up also the
+free bank's own solve ($7.7940 %$ at $3174.6$ ms): on
+the reduced-only frontier the neural rungs $q=64, 128, 256$ are
+non-dominated. What did not happen:
+no reduced subject is non-dominated against the full-order grid (criterion
+P fails; the non-dominated set is `nt1e-2_dt01`, `nt1e-3_dt005`, `dense_tight`, `fft_tight`; the cheapest full-order
+setting beating every reduced subject is `nt1e-2_dt01`{} at
+$14.0$ ms and $3.90 %$),
+the fixed-$M$ ladder is monotone and converged but spans only
+1.36$\times${} in error for 3.25$\times${} in cost
+($9.0500\to6.6718 %$, $557.4\to1810.3$ ms),
+so the $2\times$ knob bar is not met, the $M=256$ control is not monotone
+(test-starved at $q=128$, as in the incumbent cell), and every reduced row's
+error against the reference ($17.98$–$19.44 %$)
+is the discretisation error. 27 subjects, 0
+budget exits.
+
+**Table 50.** Burgers at ten times lower viscosity, panel job 3817807
+(NVIDIA A100-PCIE-40GB): the neural ladder at fixed $M=1088$, the $M=256$ control and
+the $(256, 2176)$ subject. **F4 applies**: the mesh is under-resolved
+(the converged discrete operator is $19.3$–$20.9 %$ from the
+$4096^2$ reference), so “vs ref” is the discretisation error and every
+comparison is reduced-versus-reduced on the same discrete system. Costs are
+median device ms inside this job; “non-dom.” against all subjects and
+against reduced subjects only.
+
+<!-- table: T20_lowvisc_ladder -->
+| subject | worst evolved % | all times % | vs ref % | best-found % | device ms | converged | budget exits | non-dom. (all) | non-dom. (reduced only) |
+|---|---|---|---|---|---|---|---|---|---|
+| $q=0$, $M=1088$ | 9.0500 | 9.0500 | 17.98 | 11.3934 | 557.4 | yes | 0 | no | no |
+| $q=16$, $M=1088$ | 8.7562 | 8.7562 | 18.03 | 11.3462 | 681.4 | yes | 0 | no | no |
+| $q=32$, $M=1088$ | 8.6360 | 8.6360 | 18.08 | 11.2022 | 772.2 | yes | 0 | no | no |
+| $q=64$, $M=1088$ | 8.3165 | 8.3165 | 18.36 | 10.9966 | 913.2 | yes | 0 | no | yes |
+| $q=128$, $M=1088$ | 7.6276 | 7.6276 | 18.70 | 10.6478 | 1220.7 | yes | 0 | no | yes |
+| $q=256$, $M=1088$ | 6.6718 | 6.6718 | 19.44 | 10.0347 | 1810.3 | yes | 0 | no | yes |
+| $q=0$, $M=256$ | 8.3933 | 8.3933 | 18.00 | 11.3934 | 300.3 | yes | 0 | no | yes |
+| $q=16$, $M=256$ | 8.4298 | 8.4298 | 17.90 | 11.3462 | 379.8 | yes | 0 | no | no |
+| $q=32$, $M=256$ | 8.7191 | 8.7191 | 17.75 | 11.2022 | 422.7 | yes | 0 | no | no |
+| $q=64$, $M=256$ | 8.9538 | 8.9538 | 18.14 | 10.9966 | 500.6 | yes | 0 | no | no |
+| $q=128$, $M=256$ | 10.2614 | 10.2614 | 19.15 | 10.6478 | 658.6 | yes | 0 | no | no |
+| $q=256$, $M=2176$ | 6.1869 | 6.1869 | 18.94 | 10.0347 | 2864.2 | yes | 0 | no | yes |
+
+**Table 51.** The same job as Table 50: POD-LSPG at matched
+dimension, the free $R=512$ bank and the full-order tolerance/step grid.
+**F4 applies** (under-resolved mesh); the non-dominated set against
+all subjects is `nt1e-2_dt01`, `nt1e-3_dt005`, `dense_tight`, `fft_tight`.
+
+<!-- table: T20b_lowvisc_panel -->
+| subject | worst evolved % | all times % | vs ref % | best-found % | device ms | converged | budget exits | non-dom. (all) | non-dom. (reduced only) |
+|---|---|---|---|---|---|---|---|---|---|
+| POD-LSPG $k'=16$, $M=64$ | 57.9837 | 67.3429 | 60.09 | 67.3429 | 46.5 | yes | 0 | no | yes |
+| POD-LSPG $k'=32$, $M=128$ | 45.6825 | 54.4540 | 47.84 | 54.4539 | 80.2 | yes | 0 | no | yes |
+| POD-LSPG $k'=64$, $M=256$ | 26.2116 | 35.1340 | 28.35 | 35.1339 | 150.1 | yes | 0 | no | yes |
+| POD-LSPG $k'=128$, $M=512$ | 16.4288 | 23.2032 | 23.21 | 23.2019 | 331.2 | yes | 0 | no | no |
+| POD-LSPG $k'=256$, $M=1024$ | 11.2540 | 15.2899 | 21.96 | 15.2670 | 881.2 | yes | 0 | no | no |
+| POD-LSPG $k'=512$, $M=2048$ | 17.7782 | 17.7782 | 24.50 | 10.2797 | 2735.3 | yes | 0 | no | no |
+| free bank $R=512$, $M=1024$ | 7.7940 | 7.7940 | 20.36 | 7.4455 | 3174.6 | yes | 0 | no | no |
+| `nt1e-2_dt01` | 3.8950 | 3.8950 | 19.33 | — | 14.0 | — | — | yes | no |
+| `nt1e-2_dt005` | 5.2542 | 5.2542 | 20.59 | — | 17.8 | — | — | no | no |
+| `nt1e-3_dt01` | 3.2798 | 3.2798 | 19.72 | — | 63.3 | — | — | no | no |
+| `nt1e-3_dt005` | 0.1971 | 0.1971 | 20.86 | — | 54.9 | — | — | yes | no |
+| `nt1e-4_dt01` | 3.2798 | 3.2798 | 19.77 | — | 88.7 | — | — | no | no |
+| `nt1e-4_dt005` | 0.0571 | 0.0571 | 20.81 | — | 123.0 | — | — | no | no |
+| `dense_tight` | 0.0000 | 0.0000 | 20.82 | — | 112.3 | — | — | yes | no |
+| `fft_tight` | 0.0000 | 0.0000 | 20.82 | — | 171.2 | — | — | yes | no |
 
 ## G Glossary
 

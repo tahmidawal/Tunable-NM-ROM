@@ -15,6 +15,7 @@ T8 & fixed-checkpoint tuning & 3712269 & NVIDIA A100 80GB PCIe & d2b93bd4f56d\ld
 T9 & b-eqtop & bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290\ldots) & see job list & see job list & 18f0266ae6f04542\ldots \\
 T10 & mesh-ladder (Burgers) & 3711388 & NVIDIA A100-PCIE-40GB & 521cdced6f4d\ldots & 18f0266ae6f0\ldots \\
 T10 & mesh-ladder (Poisson) & 3711389 & NVIDIA A100 80GB PCIe & 521cdced6f4d\ldots & a128e7635c31\ldots \\
+T20, T20b & b-lowvisc (appendix; F4 under-resolution caveat) & panel 3817807; gate 3789639; training 3804337 & NVIDIA A100-PCIE-40GB & 2cf5dc34 & low-viscosity checkpoint hashed in the lane summary \\
 T11e & ns2d phase 2 (K=16, K=32, family dimension 8) & 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); FOM 3780151 & ns303 A100 (pax105); others per job & per job & checkpoints hashed in each result.json \\
 T11f & ns2d ns301 (head-only data scaling on the frozen K=16 bank) & 3808493 & per job & per job & frozen K=16 bank; heads hashed in result.json \\
 T11g, T11h & ns2d ns304 (exploratory after a failed phase-2 gate) & 3808502 & NVIDIA A100 80GB PCIe & 31e0846f & ckpt\_K32\_R512 hashed in result.json \\

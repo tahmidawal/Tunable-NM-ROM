@@ -56,6 +56,7 @@ SOURCES = {
     'ns304_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns304/result.json',
     'ns303_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns303/result.json',
     'ns2d_design': '2026-09-17-ns2d/experiments/ns2d/DESIGN.md',
+    'lowvisc_summary': '2026-09-17-b-lowvisc/experiments/b-lowvisc/reports/summary.json',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
     'seeds_summary': '2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json',
     'panel1024_summary': '2026-09-17-b-panel/experiments/b-panel/reports/summary-1024.json',
@@ -95,7 +96,6 @@ IN_FLIGHT = [
     ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables~\\ref{tab:tunability}, \\ref{tab:panel-all})'),
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
-    ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
     ('ns2d', 'ns301', '3808493', 'Navier--Stokes head-only data-scaling diagnosis (landed; Table~\\ref{tab:ns-scaling})'),
     ('ns2d', 'ns302', '3808495', 'Navier--Stokes head at $4\\times$ the training data (running; read by no table; the last arm of the cell)'),
     ('ns2d', 'ns303', '3808498', 'Navier--Stokes $K=16$ head on the lower-dimensional family (landed; Table~\\ref{tab:ns})'),
@@ -137,6 +137,8 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'ns304_result': ('2026-09-17-ns2d', '5ea1cc30'),
     'ns303_result': ('2026-09-17-ns2d', '5ea1cc30'),
     'ns2d_design': ('2026-09-17-ns2d', '5ea1cc30'),
+    # b-lowvisc closed at df92e40d (panel job 3817807; appendix cell under the F4 under-resolution caveat)
+    'lowvisc_summary': ('2026-09-17-b-lowvisc', 'df92e40d'),
 }
 
 
@@ -746,6 +748,7 @@ def build_operators():
     fno_arms = sorted({(r['arm'], r['job_id']) for r in rows if r['job_id'] == '3710846' and r.get('epochs')})
     macro('nOpLaneImproving', f"{sum(1 for k in lane_arms if improving(k))} of {len(lane_arms)}")
     macro('nOpFnoImproving', f"{sum(1 for k in fno_arms if improving(k))} of {len(fno_arms)}")
+    macro('nOpAllImproving', f"{sum(1 for k in list(lane_arms) + list(fno_arms) if improving(k))} of {len(lane_arms) + len(fno_arms)}")
     # ---- one-variable controls (precision, seed): each twins a screen arm
     if ctrl8:
         TWIN = {'ctrl-medium-f64': ('unet-medium', '3780138', 'network dtype float64'),
@@ -1401,6 +1404,86 @@ def build_training():
 
 
 # =========================================================================== T18 L-shape
+def build_lowvisc():
+    """b-lowvisc: Burgers 256^2 at ten times lower viscosity, incumbent recipe otherwise. An appendix cell under the
+    pre-registered F4 caveat (the training mesh is under-resolved: the converged discrete operator sits ~20 % from
+    the 4096^2 reference), so every number is reduced-versus-reduced evidence only."""
+    d = load('lowvisc_summary')
+    if not d:
+        write('T20_lowvisc_ladder.tex', gen('b-lowvisc', 'T20') + '\n'); write('T20b_lowvisc_panel.tex', gen('b-lowvisc', 'T20b') + '\n'); return
+    rows = d['rows']; PJ, GJ, TJ = d['panel_job'], d['gate_job'], d['train_job']
+    macro('provLvPanelJob', PJ); macro('provLvGateJob', GJ); macro('provLvTrainJob', TJ); macro('provLvGpu', tex_escape(d['gpu'])); macro('provLvCommit', d['source_commit'][:8])
+    P = defaultdict(dict)
+    for r in rows:
+        if r['job_id'] == PJ:
+            P[(r['arm'], r['family'])][r['metric']] = r['value']
+    def sub(arm): return P.get((arm, 'rom'), P.get((arm, 'fom'), P.get((arm, 'pod'), P.get((arm, 'free'), {}))))
+    # find each subject's row dict regardless of family label
+    S = {}
+    for (arm, fam), m in P.items():
+        if 'worst_evolved_percent' in m: S[arm] = m
+    gate = {m: v for (arm, fam), mm in P.items() if arm == 'P' for m, v in mm.items()}
+    three = {(r['arm'], r['family'], r['metric']): r['value'] for r in rows if r['arm'] == 'three_layers'}   # incumbent rows come from job 3780638, the panel's from the panel job
+    f2 = {m: v for (arm, fam), mm in P.items() if arm == 'F2' for m, v in mm.items()}
+    def row(arm, label):
+        m = S[arm]
+        g = lambda k, f=pct: f(m[k]) if m.get(k) is not None else '---'
+        return [label, pct(m['worst_evolved_percent']), g('worst_all_times_percent'), (pct(m['worst_reference_evolved_percent'], 2) if m.get('worst_reference_evolved_percent') is not None else '---'), g('best_found_percent'), ms(m['median_gpu_ms']),
+                yn(m['converged']), (str(int(m['total_budget_exits'])) if m.get('total_budget_exits') is not None else '---'), yn(arm in gate.get('nondominated_admissible_gpu_evolved', [])), yn(arm in gate.get('nondominated_reduced_only_gpu_evolved', []))]
+    hdr = ['subject', 'worst evolved \\%', 'all times \\%', 'vs ref \\%', 'best-found \\%', 'device ms', 'converged', 'budget exits', 'non-dom.\\ (all)', 'non-dom.\\ (reduced only)']
+    qs = [0, 16, 32, 64, 128, 256]
+    lad = [row(f'q{q}_M1088_dense_g1em06', f'$q={q}$, $M=1088$') for q in qs] + ['MIDRULE'] + \
+          [row(f'q{q}_M256_dense_g1em06', f'$q={q}$, $M=256$') for q in qs if f'q{q}_M256_dense_g1em06' in S] + ['MIDRULE'] + [row('q256_M2176_dense_g1em06', '$q=256$, $M=2176$')]
+    fm = {m: v for (arm, fam), mm in P.items() if arm == 'fixed_M1088' for m, v in mm.items()}
+    fm256 = {m: v for (arm, fam), mm in P.items() if arm == 'fixed_M256' for m, v in mm.items()}
+    write('T20_lowvisc_ladder.tex', tabular(hdr, lad, 'lrrrrrrrll', r'\scriptsize'),
+          f'b-lowvisc panel job {PJ} ({d["gpu"]}): the neural ladder at fixed M=1088, the M=256 control and the (256, 2176) subject; vs ref = error against the 4096^2 reference (F4: the mesh is under-resolved)')
+    pods = [(k, f'pod{k}_M{4 * k}_dense') for k in (16, 32, 64, 128, 256, 512)]
+    pan = [row(a, f"POD-LSPG $k'={k}$, $M={4 * k}$") for k, a in pods if a in S] + [row('free512_M1024_dense', 'free bank $R=512$, $M=1024$')] + ['MIDRULE'] + \
+          [row(a, tt(a)) for a in ('nt1e-2_dt01', 'nt1e-2_dt005', 'nt1e-3_dt01', 'nt1e-3_dt005', 'nt1e-4_dt01', 'nt1e-4_dt005', 'dense_tight', 'fft_tight') if a in S]
+    write('T20b_lowvisc_panel.tex', tabular(hdr, pan, 'lrrrrrrrll', r'\scriptsize'),
+          f'b-lowvisc panel job {PJ}: POD-LSPG at matched dimension, the free bank and the full-order tolerance/step grid, same job as T20 (F4 caveat applies)')
+    # macros
+    ev = lambda a: S[a]['worst_evolved_percent']
+    macro('nLvLadderQzero', pct(ev('q0_M1088_dense_g1em06'))); macro('nLvLadderQtop', pct(ev('q256_M1088_dense_g1em06')))
+    macro('nLvLadderErrSpan', ratio(fm['error_span'])); macro('nLvLadderCostSpan', ratio(fm['cost_span'])); macro('nLvLadderMonotone', yn(fm['monotone_evolved'])); macro('nLvLadderConverged', yn(fm['converged'])); macro('nLvLadderKnobBar', yn(fm['knob_bar_met']))
+    macro('nLvLadderQzeroMs', ms(S['q0_M1088_dense_g1em06']['median_gpu_ms'])); macro('nLvLadderQtopMs', ms(S['q256_M1088_dense_g1em06']['median_gpu_ms']))
+    macro('nLvControlMonotone', yn(fm256['monotone_evolved']))
+    refs = [S[a]['worst_reference_evolved_percent'] for a in (f'q{q}_M1088_dense_g1em06' for q in qs)]
+    macro('nLvLadderRefMin', pct(min(refs), 2)); macro('nLvLadderRefMax', pct(max(refs), 2))
+    foms = [a for a in ('nt1e-2_dt01', 'nt1e-2_dt005', 'nt1e-3_dt01', 'nt1e-3_dt005', 'nt1e-4_dt01', 'nt1e-4_dt005', 'dense_tight', 'fft_tight') if a in S]
+    disc = [S[a]['worst_reference_evolved_percent'] for a in foms]   # every full-order setting's error against the 4096^2 reference (F4)
+    macro('nLvDiscMin', pct(min(disc), 1)); macro('nLvDiscMax', pct(max(disc), 1)); macro('nLvDiscTight', pct(S['fft_tight']['worst_reference_evolved_percent'], 1))
+    macro('nLvAnyReducedNonDom', yn(gate['any_reduced_subject_nondominated'])); macro('nLvAnyNeuralNonDom', yn(gate['any_neural_rung_nondominated']))
+    macro('nLvNonDomCount', str(len(gate['nondominated_admissible_gpu_evolved']))); macro('nLvNonDomList', ', '.join(tt(a) for a in gate['nondominated_admissible_gpu_evolved']))
+    macro('nLvCheapestDominatingFom', tt(gate['cheapest_fom_beating_every_reduced_subject'])); macro('nLvCheapestDominatingFomMs', ms(gate['cheapest_dominating_fom_ms'])); macro('nLvCheapestDominatingFomErr', pct(gate['cheapest_dominating_fom_worst_evolved_percent'], 2))
+    macro('nLvMostAccurateReduced', tt(gate['most_accurate_reduced_subject'])); macro('nLvMostAccurateReducedErr', pct(gate['most_accurate_reduced_worst_evolved_percent'])); macro('nLvMostAccurateReducedMs', ms(S[gate['most_accurate_reduced_subject']]['median_gpu_ms']))
+    macro('nLvAllConverged', yn(gate['all_subjects_converged'])); macro('nLvBudgetExitsTotal', str(int(sum(S[a]['total_budget_exits'] or 0 for a in S))))
+    macro('nLvSubjects', str(len(S)))
+    # three layers against the incumbent cell (ratios from the lane)
+    macro('nLvPodFiveTwelveCollapse', ratio(f2['pod512_degradation_ratio'])); macro('nLvFtwoFires', yn(f2['fires']))
+    macro('nLvBankFloorCollapse', ratio(three[('three_layers', 'ratio', 'bank_floor_ratio')])); macro('nLvBankFloorInc', pct(three[('three_layers', 'incumbent', 'bank_floor_percent')])); macro('nLvBankFloorLow', pct(three[('three_layers', 'lowvisc', 'bank_floor_percent')]))
+    macro('nLvSolvedRatio', ratio(three[('three_layers', 'ratio', 'solved_ratio')])); macro('nLvSolvedInc', pct(three[('three_layers', 'incumbent', 'solved_percent')])); macro('nLvSolvedLow', pct(three[('three_layers', 'lowvisc', 'solved_percent')]))
+    macro('nLvBestFoundRatio', ratio(three[('three_layers', 'ratio', 'best_found_ratio')])); macro('nLvBestFoundInc', pct(three[('three_layers', 'incumbent', 'best_found_percent')])); macro('nLvBestFoundLow', pct(three[('three_layers', 'lowvisc', 'best_found_percent')]))
+    macro('nLvSolvedOverBestFound', f"{three[('three_layers', 'lowvisc', 'solved_over_best_found_q0')]:.2f}")
+    lin = [f2['pod512_degradation_ratio'], three[('three_layers', 'ratio', 'bank_floor_ratio')]]; neu = [three[('three_layers', 'ratio', 'solved_ratio')], three[('three_layers', 'ratio', 'best_found_ratio')]]
+    macro('nLvLinearCollapseMin', f"{min(lin):.0f}"); macro('nLvLinearCollapseMax', f"{max(lin):.0f}"); macro('nLvNeuralDegradeMin', f"{min(neu):.1f}"); macro('nLvNeuralDegradeMax', f"{max(neu):.1f}")
+    # reduced-vs-reduced: from which rung up does every neural rung beat every POD-LSPG rank and the free bank
+    lin_best = min([ev(a) for k, a in pods if a in S] + [ev('free512_M1024_dense')])
+    beats = [q for q in qs if ev(f'q{q}_M1088_dense_g1em06') < lin_best]
+    first = next((q for q in qs if all(ev(f'q{qq}_M1088_dense_g1em06') < lin_best for qq in qs[qs.index(q):])), None)
+    macro('nLvNeuralBeatsLinearFromQ', str(first) if first is not None else 'none'); macro('nLvLinearBestReduced', pct(lin_best))
+    pod_best = min(ev(a) for k, a in pods if a in S)
+    first_pod = next((q for q in qs if all(ev(f'q{qq}_M1088_dense_g1em06') < pod_best for qq in qs[qs.index(q):])), None)
+    macro('nLvNeuralBeatsPodFromQ', str(first_pod) if first_pod is not None else 'none'); macro('nLvPodBestReduced', pct(pod_best))
+    ro = [a for a in gate.get('nondominated_reduced_only_gpu_evolved', []) if a.startswith('q') and '_M1088_' in a]
+    macro('nLvReducedOnlyNeuralQs', ', '.join(a.split('_')[0][1:] for a in ro)); macro('nLvReducedOnlyNeuralMinQ', min((int(a.split('_')[0][1:]) for a in ro), default='---'))
+    pe = [ev(a) for k, a in pods if a in S]; macro('nLvPodMin', pct(min(pe))); macro('nLvPodMax', pct(max(pe)))
+    macro('nLvPodMonotone', yn(all(x > y for x, y in zip(pe, pe[1:])))); macro('nLvFreeBank', pct(ev('free512_M1024_dense'))); macro('nLvFreeBankMs', ms(S['free512_M1024_dense']['median_gpu_ms']))
+    macro('nLvPodFiveTwelveFloor', pct(next(r['value'] for r in rows if r['job_id'] == GJ and r['arm'] == 'pod_k512' and r['metric'] == 'pod_floor_worst_evolved_percent' and r['family'] == 'lowvisc'), 2) if any(r['job_id'] == GJ and r['arm'] == 'pod_k512' and r['metric'] == 'pod_floor_worst_evolved_percent' and r['family'] == 'lowvisc' for r in rows) else '---')
+    f4 = next((r['value'] for r in rows if r['arm'] == 'F4'), None); macro('nLvFfourDiscRatio', f"{f4:.2f}" if f4 is not None else '---')
+
+
 def build_lshape():
     s = load('lshape_summary'); rep = load('lshape_report')
     if s is None:
@@ -2049,6 +2132,7 @@ def build_problems_and_provenance(mesh):
     prov('T9', 'b-eqtop', MACROS.get('provEqtopJobs', '---'), 'see job list', 'see job list', MACROS.get('provBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Burgers)', MACROS.get('provMeshBurgersJob', '---'), MACROS.get('provMeshBurgersGpu', '---'), MACROS.get('provMeshBurgersCommit', '---'), MACROS.get('provMeshBurgersCkpt', '---'))
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
+    prov('T20, T20b', 'b-lowvisc (appendix; F4 under-resolution caveat)', 'panel ' + MACROS.get('provLvPanelJob', '---') + '; gate ' + MACROS.get('provLvGateJob', '---') + '; training ' + MACROS.get('provLvTrainJob', '---'), MACROS.get('provLvGpu', '---'), MACROS.get('provLvCommit', '---'), 'low-viscosity checkpoint hashed in the lane summary')
     prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ')', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
     prov('T11f', 'ns2d ns301 (head-only data scaling on the frozen K=16 bank)', MACROS.get('provNsScaleJob', '---'), 'per job', 'per job', 'frozen K=16 bank; heads hashed in result.json')
     prov('T11g, T11h', 'ns2d ns304 (exploratory after a failed phase-2 gate)', MACROS.get('provNsExpJob', '---'), MACROS.get('provNsExpGpu', '---'), MACROS.get('provNsExpCommit', '---'), 'ckpt\\_K32\\_R512 hashed in result.json')
@@ -2091,6 +2175,7 @@ def main():
     build_speed()
     build_training()
     build_lshape()
+    build_lowvisc()
     build_pending()
     build_offline_and_spec()
     write_ladder_main()

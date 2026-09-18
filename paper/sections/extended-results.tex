@@ -186,3 +186,64 @@ costs are not comparable with those above, the free rung $q=R$ is the one
 place the learned bank beats the linear baseline on both axes, at
 $\nLshapeFreeOverFloor\times$ its own bank floor with no solver iterations
 (Table~\ref{tab:lshape-free}).
+
+\subsection{Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)}
+\label{app:extended:lowvisc}
+A second Burgers cell (lane b-lowvisc; training job \provLvTrainJob, gate
+job \provLvGateJob, panel job \provLvPanelJob{} on \provLvGpu) keeps the
+incumbent recipe and mesh and lowers the viscosity range ten-fold. The
+pre-registered under-resolution clause (F4) applies: the converged
+discrete operator itself sits $\nLvDiscMin$--$\nLvDiscMax\,\%$ from the
+$4096^2$ reference ($\nLvFfourDiscRatio\times$ the incumbent cell's
+discretisation error), so every number below is evidence about reduced
+models against each other on the same discrete system, not about the PDE.
+Two things did happen. Linear reduction collapses: the POD-512 floor
+degrades \nLvPodFiveTwelveCollapse{} and the trained linear bank's floor
+\nLvBankFloorCollapse{} ($\nLvBankFloorInc\to\nLvBankFloorLow\,\%$)
+against the incumbent cell, while the neural head's solved $q=0$ error
+degrades \nLvSolvedRatio{} ($\nLvSolvedInc\to\nLvSolvedLow\,\%$) and its
+best-found \nLvBestFoundRatio{} (an upper bound here: solved over
+best-found is \nLvSolvedOverBestFound); the pre-registered F2 clause
+therefore does not fire (\nLvFtwoFires). And every neural rung of the fixed-$M=1088$ ladder, from
+$q=\nLvNeuralBeatsPodFromQ$, beats every POD-LSPG rank $k'=16$--$512$ (best
+$\nLvPodBestReduced\,\%$; not monotone past $k'=256$, the $k'=512$ solve
+being solver-limited), and from $q=\nLvNeuralBeatsLinearFromQ$ up also the
+free bank's own solve ($\nLvFreeBank\,\%$ at $\nLvFreeBankMs$\,ms): on
+the reduced-only frontier the neural rungs $q=\nLvReducedOnlyNeuralQs$ are
+non-dominated. What did not happen:
+no reduced subject is non-dominated against the full-order grid (criterion
+P fails; the non-dominated set is \nLvNonDomList; the cheapest full-order
+setting beating every reduced subject is \nLvCheapestDominatingFom{} at
+$\nLvCheapestDominatingFomMs$\,ms and $\nLvCheapestDominatingFomErr\,\%$),
+the fixed-$M$ ladder is monotone and converged but spans only
+\nLvLadderErrSpan{} in error for \nLvLadderCostSpan{} in cost
+($\nLvLadderQzero\to\nLvLadderQtop\,\%$, $\nLvLadderQzeroMs\to\nLvLadderQtopMs$\,ms),
+so the $2\times$ knob bar is not met, the $M=256$ control is not monotone
+(test-starved at $q=128$, as in the incumbent cell), and every reduced row's
+error against the reference ($\nLvLadderRefMin$--$\nLvLadderRefMax\,\%$)
+is the discretisation error. \nLvSubjects{} subjects, \nLvBudgetExitsTotal{}
+budget exits.
+
+\begin{table}[h]
+\centering
+\caption{Burgers at ten times lower viscosity, panel job \provLvPanelJob{}
+(\provLvGpu): the neural ladder at fixed $M=1088$, the $M=256$ control and
+the $(256, 2176)$ subject. \textbf{F4 applies}: the mesh is under-resolved
+(the converged discrete operator is $\nLvDiscMin$--$\nLvDiscMax\,\%$ from the
+$4096^2$ reference), so ``vs ref'' is the discretisation error and every
+comparison is reduced-versus-reduced on the same discrete system. Costs are
+median device ms inside this job; ``non-dom.'' against all subjects and
+against reduced subjects only.}
+\label{tab:lowvisc-ladder}
+\resizebox{\linewidth}{!}{\input{tables/T20_lowvisc_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The same job as Table~\ref{tab:lowvisc-ladder}: POD-LSPG at matched
+dimension, the free $R=512$ bank and the full-order tolerance/step grid.
+\textbf{F4 applies} (under-resolved mesh); the non-dominated set against
+all subjects is \nLvNonDomList.}
+\label{tab:lowvisc-panel}
+\resizebox{\linewidth}{!}{\input{tables/T20b_lowvisc_panel}}
+\end{table}

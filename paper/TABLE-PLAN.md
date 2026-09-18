@@ -32,6 +32,7 @@ in flight. `failed` = job failed, diagnosis or resubmission pending. `not run` =
 | T16 | Training study (appendix): data ladder, objective, K, smoothness penalty, with the reproduction caveat | 5mgh originality | inherited (b-head-train) | done (negative) |
 | T17 | SMA-NM-ROM under the same cold-start protocol | R4 | none | **not run** — state as a limitation |
 | T18 | L-shaped Poisson: signed-distance boundary factor, sparse-direct and preconditioned-CG controls, where the direct solver stops applying | R10 | lshape | **done** — solves at 64²/128²/256²/512² (jobs 3784662, 3784663, 3789568), lane commit dc762ed3; head q=64 non-dominated from 256² (2.77×) to 512² (7.60× cheaper than SuperLU) |
+| T20, T20b | Burgers at ten times lower viscosity (appendix cell): fixed-M=1088 neural ladder, M=256 control, POD-LSPG at matched dimension, free bank, full-order tolerance/step grid; three-layer collapse ratios against the incumbent cell | structural-condition discussion, F2/F4 pre-registration | b-lowvisc | **done** — panel job 3817807 (A100-40GB), gate 3789639, training 3804337, lane commit df92e40d; F4 applies (mesh under-resolved, converged operator 19.3–20.9 % from the 4096² reference), so every number is reduced-vs-reduced only; criterion P fails (no reduced subject non-dominated); F2 does not fire (linear floors collapse 12–19x, head 3.3–4.5x); every neural rung beats every POD-LSPG rank, q>=64 on the reduced-only frontier; knob bar not met (1.36x) |
 
 ## What the tables must not claim
 

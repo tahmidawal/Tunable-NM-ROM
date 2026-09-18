@@ -1,6 +1,33 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-17 night — ns303 lower-dimensional family folded in (current state; everything below is history)
+## 2026-09-17 night — b-lowvisc folded in as an appendix cell (current state; everything below is history)
+
+b-lowvisc closed at df92e40d (panel job 3817807, A100-40GB, 27 subjects, 0 budget exits; gate
+3789639; training 3804337). `GIT_PINS['lowvisc_summary']` reads the lane's summary.json at that
+commit. New builder `build_lowvisc()`: T20 (fixed-M=1088 neural ladder, M=256 control, the
+(256, 2176) subject; vs-ref column) and T20b (POD-LSPG k'=16–512, free R=512 bank, full-order
+tolerance/step grid), both with non-dominated flags against all subjects and against reduced
+subjects only; ~55 `nLv*` macros; T02 provenance row; lvt01 removed from the register. Every
+caption, the appendix subsection title and both main-text sentences carry the F4 caveat: the
+converged discrete operator is 19.3–20.9 % from the 4096² reference (5.17x the incumbent cell's
+discretisation error), so everything is reduced-versus-reduced on the same discrete system.
+Generated facts: criterion P fails (non-dominated set = nt1e-2_dt01, nt1e-3_dt005, dense_tight,
+fft_tight; cheapest full-order setting beating every reduced subject nt1e-2_dt01 at 14.0 ms /
+3.90 %); F2 does not fire (POD-512 floor 12.09x, trained bank floor 19.00x, head solved 3.27x,
+best-found 4.48x, solved/best-found 0.74); fixed-M ladder 9.05 → 6.67 % monotone, all converged,
+span 1.36x for 3.25x cost, knob bar not met; M=256 control not monotone; most accurate reduced
+subject q256_M2176 at 6.19 % / 2864 ms; POD-LSPG 57.98 → 11.25 % then 17.78 % at k'=512 (not
+monotone); free bank 7.79 % at 3175 ms. Departures from the lane message, all generated: every
+neural rung (already q=0 at 9.05 %) beats every POD-LSPG rank (best 11.25 %); the free bank's own
+solve is beaten only from q=128; the reduced-only frontier holds q=64/128/256 (M=1088) — the paper
+says "every neural rung beats every POD-LSPG rank and q>=64 sits on the reduced-only frontier".
+Two sentences at the end of the NS paragraph in §6.5, one Limitations clause in (ii), the
+conclusion's "Next" now reads "a resolved low-viscosity cell and unstructured meshes". Page budget
+kept by wording trims on pages 8–9 (linear, NS, L-shape paragraphs and the Limitations; the
+Limitations now read "(vi) No convergence or quadrature-error theory", "(iv) ... 11 of 12 arms
+improving" via a new generated total).
+
+## 2026-09-17 night — ns303 lower-dimensional family folded in (history)
 
 ns2d committed ns303 (job 3808498, A100 pax105) at 5ea1cc30; every ns2d pin (`ns2d_summary`,
 `ns304_result`, new `ns303_result`, new `ns2d_design`) moved to that commit. T11e gains a row block

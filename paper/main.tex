@@ -512,9 +512,12 @@ We report the relative $L^2$ error against the reference of each cell,
 maximised over cases and output times; for Burgers two maxima are
 reported everywhere and neither is chosen, worst over \emph{all} times
 (bounded below by the decoder's compression of the input at $t=0$) and
-worst over the \emph{evolved} times $t>0$. Every cost is the median over repetitions of a completed device
-computation after a burn-in, arms interleaved in a recorded random
-order, in float64; offline setup is charged separately.
+worst over the \emph{evolved} times $t>0$. Every cost is the median over repetitions of a completed computation
+after a burn-in, arms interleaved in a recorded random order, in
+float64; ``device ms'' is the device time with inputs and outputs
+resident, ``complete-query ms'' the host-to-host time charging the dense
+input and output, and every column says which; offline setup is charged
+separately.
 
 \paragraph{Baselines.}
 FNO, a PDEBench-style U-Net and a Transolver are trained on the
@@ -591,7 +594,7 @@ there; why is open.
 \paragraph{Neural operators on the same data.}
 Neural operators trained on the same data are more accurate than the
 reduced model, and the one that was timed against it is also cheaper
-(Table~\ref{tab:operators}). Worst error on the matched eight-case cohort:
+(Table~\ref{tab:operators}). Worst error on the matched \nOpCohortSize-case cohort:
 U-Net-small $\nOpEightUnetSmall$, Transolver-refine
 $\nOpEightTsolRefine$, \textbf{ROM $\nOpEightRom$}, FNO-large
 $\nOpEightFnoLarge$, efficient full-order solver

@@ -471,9 +471,12 @@ We report the relative $L^2$ error against the reference of each cell,
 maximised over cases and output times; for Burgers two maxima are
 reported everywhere and neither is chosen, worst over *all* times
 (bounded below by the decoder's compression of the input at $t=0$) and
-worst over the *evolved* times $t>0$. Every cost is the median over repetitions of a completed device
-computation after a burn-in, arms interleaved in a recorded random
-order, in float64; offline setup is charged separately.
+worst over the *evolved* times $t>0$. Every cost is the median over repetitions of a completed computation
+after a burn-in, arms interleaved in a recorded random order, in
+float64; “device ms” is the device time with inputs and outputs
+resident, “complete-query ms” the host-to-host time charging the dense
+input and output, and every column says which; offline setup is charged
+separately.
 
 **Baselines.**
 FNO, a PDEBench-style U-Net and a Transolver are trained on the
@@ -552,7 +555,7 @@ there; why is open.
 **Neural operators on the same data.**
 Neural operators trained on the same data are more accurate than the
 reduced model, and the one that was timed against it is also cheaper
-(Table 17). Worst error on the matched eight-case cohort:
+(Table 17). Worst error on the matched 8-case cohort:
 U-Net-small $1.4712$, Transolver-refine
 $1.5224$, **ROM $1.8671$**, FNO-large
 $2.4829$, efficient full-order solver
@@ -588,7 +591,7 @@ checkpoint per PDE transferred across $64$–$1024$ intervals, the cached
 reduced solve costs $44.16\to43.58$ ms
 on Burgers while the unknowns grow $264\times$
 (Table 31); the complete host-to-host query grows
-$1.033\times$ through dense input and output. There
+$1.52\times$ through dense input and output. There
 is no crossover against the cheapest same-job full-order arm at any rung
 on the square (FOM/ROM 0.265–0.495{} on Burgers,
 0.063–0.112{} on Poisson), and a kernel port at
@@ -612,7 +615,7 @@ the discretisation error of $4.03 %$) and the
 replication-selected EQ rule's status.
 
 <!-- table: T04m_fixedM_main -->
-| $q$ | $M$ | dense evolved % | all % | vs ref % | GPU ms | EQ evolved % | EQ ms | EQ rule (status) |
+| $q$ | $M$ | dense evolved % | all % | vs ref % | device ms | EQ evolved % | EQ ms | EQ rule (status) |
 |---|---|---|---|---|---|---|---|---|
 | 0 | 1088 | 1.2657 | — | — | 848.0 | — | — | dense, job 3780177 |
 | 64 | 1088 | 1.0593 | — | — | 1359.4 | — | — | dense, job 3780177 |
@@ -1155,7 +1158,7 @@ float64 and highest matmul precision before doing any work.
 | T14, T14c, T14d | no-second (5 of 8 jobs counted; two preamble deaths uncounted) | 3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189 | A100 (per job) | per job | operator checkpoints hash-verified in job |
 | T15 | b-speed | 3745655 (spd01), 3745656 (fine01), 3745913 (comp01) | A100 80GB PCIe | 8fdfbb08 / 94399dd6 | 18f0266ae6f04542… |
 | T16 | b-head-train | 3745912 (training), 3749074 (evaluation) | A100-PCIE-40GB | 0f0c56f7 / 2b9e7ee7 | trained checkpoints hashed in archive |
-| T18, T18c, T18d | lshape | training 3784662; solves 3784662, 3784663, 3789568; free rung 3784910 | NVIDIA A100 80GB PCIe | 1086ccefdcb5… | 7 heads + bases Git-tracked |
+| T18, T18c, T18d | lshape | training 3783786; solves 3784662, 3784663, 3789568; free rung 3784910 | NVIDIA A100 80GB PCIe | 1086ccefdcb5… | 7 heads + bases Git-tracked |
 | T12 | b-seeds (development cohort) | `seed1` = 3783776 (NVIDIA A100 80GB PCIe); `seed2` = 3783777 (NVIDIA A100 80GB PCIe); `seed3` = 3783778 (NVIDIA A100-PCIE-40GB) | per job | per job | three seed checkpoints hashed in summary |
 | T13 | b-seeds (sealed cohort) | **[PENDING: b-seeds sealed cohort]** | — | — | — |
 
@@ -1241,7 +1244,7 @@ variable projection at $q=64$ and $128$. Same error where all converge; the
 block-damped step is the one kept.
 
 <!-- table: T19_solver_variants -->
-| arm | $M$ | worst all-times % | budget exits | all stationary | GPU ms |
+| arm | $M$ | worst all-times % | budget exits | all stationary | device ms |
 |---|---|---|---|---|---|
 | $q{=}64$, joint LM on $(z,y)$ | 320 | 2.1489 | 6 | no | 1119.7 |
 | $q{=}64$, block-damped | 320 | 2.1489 | 0 | yes | 619.2 |
@@ -1270,7 +1273,7 @@ The scheduled ladder's cells span two jobs so its costs are not printed. Jobs G1
 ed431edb498a / 76072bf42014; checkpoint 18f0266ae6f04542….
 
 <!-- table: T04_rank_vs_tests -->
-| ladder | $q$ | $M$ | worst evolved % | GPU ms |
+| ladder | $q$ | $M$ | worst evolved % | device ms |
 |---|---|---|---|---|
 | fixed $M=256$ (job 3780177) | 0 | 256 | 1.2710 | 406.2 |
 | fixed $M=256$ (job 3780177) | 64 | 256 | 1.1255 | 645.6 |
@@ -1309,7 +1312,7 @@ $256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a437d7360); $1024^2$: job
 by construction and its QR twin is the timed top rung).
 
 <!-- table: T11b_poisson -->
-| mesh | subject | $M$ | worst % | median % | total ms | device ms | valid | non-dom. (all) | non-dom. (reduced) |
+| mesh | subject | $M$ | worst % | median % | complete-query ms | device ms | valid | non-dom. (all) | non-dom. (reduced) |
 |---|---|---|---|---|---|---|---|---|---|
 | $256^2$ | $q{=}0$ | 129 | 3.1567 | 0.5080 | 9.214 | 6.703 | 36/36 | no | no |
 | $256^2$ | $q{=}32$ | 257 | 2.4699 | 0.4437 | 9.537 | 6.893 | 36/36 | no | no |
@@ -1352,7 +1355,7 @@ development cases, three repetitions; the finest three meshes of a five-rung
 ladder). The linear evolution of the full bank is the $q=R$ rung.
 
 <!-- table: T11d_heat -->
-| mesh | arm | worst physical % | worst same-grid % | GPU ms | host ms |
+| mesh | arm | worst physical % | worst same-grid % | device ms | complete-query ms |
 |---|---|---|---|---|---|
 | $64^2$ | linear bank, exact modal evolution ($q{=}R$, no head) | 1.675754 | 1.675754 | 0.116167 | 1.146627 |
 | $64^2$ | nonlinear head ($k{=}8$) | 4.559260 | 4.554246 | 12.091245 | 12.540239 |
@@ -1440,7 +1443,7 @@ an attained initial fit; “strict” is the earlier rule that does not;
 rule passing a bar).
 
 <!-- table: T05_panel_all -->
-| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | GPU ms | host ms | conv. | strict | adm. |
+| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. | strict | adm. |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `q0_M256_dense_g1em06` | rom | 0 | 256 | dense | none | 1.2710 | 2.5629 | 2.5629 | 4.0637 | 341.5 | 343.4 | yes | yes | yes |
 | `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 1.8890 | 2.5629 | 2.5629 | 4.5575 | 283.9 | 285.9 | yes | yes | yes |
@@ -1496,7 +1499,7 @@ rule passing a bar).
 milliseconds are comparable only within this table.
 
 <!-- table: T05b_panel_all -->
-| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | GPU ms | host ms | conv. | strict | adm. |
+| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. | strict | adm. |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 2.2886 | 3.8562 | 3.8562 | 3.8562 | 1551.7 | 1562.4 | yes | yes | yes |
 | `q0_M64_eqxfer_g0p001` | rom | 0 | 64 | eq | eqxfer $m{=}934$, confirmed (3 of 3 re-draws) | 2.2925 | 3.8562 | 3.8562 | 3.8562 | 32.2 | 44.4 | yes | yes | yes |
@@ -1548,7 +1551,7 @@ NVIDIA A100 80GB PCIe). Same-grid error against the converged full-order solve;
 “vs ref” against the $4096^2$ reference.
 
 <!-- table: T06a_head_burgers -->
-| arm | dim. | bank floor % | best-found % | solved same-grid % | vs ref % | GPU ms | stationary |
+| arm | dim. | bank floor % | best-found % | solved same-grid % | vs ref % | device ms | stationary |
 |---|---|---|---|---|---|---|---|
 | (a) neural head, EQ | 16 | 0.3918 | 2.5447 | 2.5629 | 4.5546 | 47.6 | yes |
 | (a) neural head, dense | 16 | 0.3918 | 2.5447 | 2.5629 | 4.5575 | 281.7 | yes |
@@ -1590,7 +1593,7 @@ worst error; a cap of 2 is a cliff ($90.3 %$). The full-order
 control at tolerance $10^{-4}$ beats the best ROM setting on both axes.
 
 <!-- table: T08_solver_knobs -->
-| setting | worst % (32 held-out) | GPU ms | early-stopped |
+| setting | worst % (32 held-out) | device ms | early-stopped |
 |---|---|---|---|
 | EQ $m{=}256$, tol $10^{-6}$, cap 180 | 7.245 | 51.0 | 0/96 |
 | EQ $m{=}512$, tol $10^{-8}$ | 6.712 | 64.7 | 0/96 |
@@ -1648,7 +1651,8 @@ Table 30.
 
 **Table 28.** Every quadrature rule: NNLS fit residual beside the held-out $\rho$,
 so the anti-correlation stays visible. Bars: primary
-$\rho_{\max}\le0.116$, tight $\rho_{\max}\le0.06$.
+$\rho_{\max}\le0.116$, tight $\rho_{\max}\le0.06$
+(source: b-eqtop/DESIGN.md §5 (byte-identical from commit 33e8bced, 2026-09-17 01:11, through the pinned 8542c604); origin q-ridge/DESIGN.md amendment A3, commit a1822ae6 (2026-09-16); every b-eqtop job post-dates it).
 
 <!-- table: T09c_eq_rules_full -->
 | $q$ | fit arm | $m$ | population | NNLS rel. fit | $\rho_{\max}$ | $\rho_{95}$ | primary | job |
@@ -1838,7 +1842,7 @@ a128e7635c31…). “efficient FOM” is the cheapest same-job full-order
 arm meeting the 5 % target on that mesh.
 
 <!-- table: T10_mesh_ladder -->
-| PDE | intervals | unknowns | ROM cached ms | ROM device ms | ROM host ms | ROM worst vs ref % | ROM vs same-grid FOM % | efficient FOM | FOM ms | FOM/ROM | ROM meets 5% |
+| PDE | intervals | unknowns | ROM cached ms | ROM device ms | ROM complete-query ms | ROM worst vs ref % | ROM vs same-grid FOM % | efficient FOM | FOM ms | FOM/ROM | ROM meets 5% |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Burgers | 64 | 3,969 | 44.2 | 48.5 | 50.4 | 10.8570 | 5.5018 | `fom_same_nt1e-2` | 12.9 | 0.265 | no |
 | Burgers | 128 | 16,129 | 44.7 | 46.5 | 48.1 | 6.5431 | 2.8939 | `fom_same_nt1e-2` | 14.9 | 0.320 | no |
@@ -1856,7 +1860,7 @@ comparable only within a mesh. The top rung is the learned bank evolved by
 exact modal propagation with no head.
 
 <!-- table: T11a_waves -->
-| mesh | arm | $q$ / $k^\prime$ | worst energy-state % | $t{=}0$ % | GPU ms | complete ms |
+| mesh | arm | $q$ / $k^\prime$ | worst energy-state % | $t{=}0$ % | device ms | complete-query ms |
 |---|---|---|---|---|---|---|
 | $64^2$ | `head_q0` | 0 | 11.2055 | 5.5314 | 184.535 | 185.575 |
 | $64^2$ | `trained_nested40` | 8 | 6.8128 | 4.7478 | 200.232 | 201.072 |
@@ -1901,7 +1905,7 @@ no arm reaches a $2\times$ ratio to the floor. The re-run of the primary
 recipe reproduces it exactly.
 
 <!-- table: T11c_head_capacity -->
-| head | best-found dev. % | best-found / floor | solved $1024^2$ % | total ms |
+| head | best-found dev. % | best-found / floor | solved $1024^2$ % | complete-query ms |
 |---|---|---|---|---|
 | `K32_w128_L2` | 3.1212 | 4.18 | 3.1146 | 12.93 |
 | `K32_w256_L2` | 2.2652 | 3.04 | 2.2600 | 12.84 |
@@ -2012,7 +2016,7 @@ like-for-like retrain does not reproduce the incumbent, so the density verdict
 is measured below baseline.
 
 <!-- table: T16_training -->
-| arm (EQ query) | $K$ | bank floor % | best-found % | solved all % | solved evolved % | GPU ms | conv. |
+| arm (EQ query) | $K$ | bank floor % | best-found % | solved all % | solved evolved % | device ms | conv. |
 |---|---|---|---|---|---|---|---|
 | incumbent (4608 traj., $K{=}16$) | 16 | 0.3918 | 2.5447 | 2.5629 | 1.9002 | 48.7 | yes |
 | 128 traj., $K{=}16$ | 16 | 0.3918 | 12.6496 | 12.6496 | 7.2529 | 45.4 | yes |
@@ -2091,7 +2095,7 @@ only.
 | free rung $q{=}R$ (head_sdf_R512_K16) | free | 0.7791 | 2.583 |
 | sparse direct (SuperLU) | fom | 0.0000 | 8.351 |
 
-**Table 44.** L-shaped Poisson (job 3784662, NVIDIA A100 80GB PCIe): bank floors
+**Table 44.** L-shaped Poisson (job 3783786, NVIDIA A100 80GB PCIe): bank floors
 by boundary factor and rank, and the head layer at $256^2$. The solve layer is
 in Table 42 ($64^2$–$512^2$, one job per mesh){}.
 
@@ -2213,7 +2217,8 @@ $0.020$ pp at every mesh ($256^2$:
 $5.121$ against $5.104 %$),
 and is
 $158$–$42\times$
-cheaper than the cheapest head rung; the head ladder is monotone in $q$
+cheaper than the cheapest head rung on device ms (on complete-query ms
+the dense input and output dominate both, Table 32); the head ladder is monotone in $q$
 (yes{}), cost is not. On waves POD $k'=64$
 reaches $1.502 %$ against the bank's
 $5.121 %$ at the same cost. On the L-shaped domain

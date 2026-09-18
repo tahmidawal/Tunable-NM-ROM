@@ -98,6 +98,11 @@ IN_FLIGHT = [
 ]
 
 PROV: dict[str, dict] = {}
+# pre-registered bars: read from bars.json (each entry names its DESIGN source), never typed here
+BARS = json.loads((HERE / 'bars.json').read_text())
+PROV['bars'] = {'path': str(HERE / 'bars.json'), 'reachable': True, 'sha256': hashlib.sha256((HERE / 'bars.json').read_bytes()).hexdigest()}
+def bar(name):
+    return BARS[name]['value']
 MACROS: dict[str, str] = {}
 PENDING: list[tuple[str, str]] = []   # (macro or table, lane)
 
@@ -471,7 +476,7 @@ def build_panel():
             tm.append([str(q), str(Ms[q]), pct(d['worst_evolved_percent']), pct(d['worst_all_times_percent']), pct(d['worst_reference_percent'], 2), ms(d['median_gpu_ms']),
                        pct(e.get('worst_evolved_percent')) if e else '---', ms(e.get('median_gpu_ms')) if e else '---',
                        tex_escape(rst.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', 'none'))])
-        write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
+        write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
               f'b-panel job {job}, {mesh}^2, tolerance 1e-6, scheduled M=4(K+q); EQ set = {sets[-1]}')
         if mesh == 256:
             LADDER_MAIN_ROWS[:] = tm
@@ -507,7 +512,7 @@ def build_panel():
                        pct(d.get('worst_t0_compression_percent')), pct(d.get('worst_reference_percent')),
                        ms(d.get('median_gpu_ms')), ms(d.get('median_host_ms')),
                        yn(d.get('converged')) if isred else '---', yn(d.get('converged_strict')) if isred else '---', yn(adm.get(x)) if isred else '---'])
-        cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'GPU ms', 'host ms', 'conv.', 'strict', 'adm.']
+        cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'device ms', 'complete-query ms', 'conv.', 'strict', 'adm.']
         write(f'T05{"b" if sfx else ""}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
     # the crossover ratios, both meshes, same-job only
     macro('nPanelCheapestRatioDrop', f"{float(MACROS['nPanelCheapestRatio']) / float(MACROS['nPanelTenTwentyFourCheapestRatio']):.2f}")
@@ -631,12 +636,12 @@ def build_qxm():
         macro('nQxmAnchorMsA', ms(x['a_ms'])); macro('nQxmAnchorMsB', ms(x['b_ms'])); macro('nQxmAnchorJobs', f"{x['a_job']} / {x['b_job']}")
     for (q, M), v in zip(ev['scheduled']['4x']['cells'], ev['scheduled']['4x']['values']):
         rows_t4.append(['scheduled $M=4(K+q)$', str(q), str(M), pct(v), '---'])
-    write('T04_rank_vs_tests.tex', tabular(['ladder', '$q$', '$M$', 'worst evolved \\%', 'GPU ms'],
+    write('T04_rank_vs_tests.tex', tabular(['ladder', '$q$', '$M$', 'worst evolved \\%', 'device ms'],
                                            rows_t4, 'lrrrr'), 'b-qxm; costs only within job ' + wj['job_id'])
     # compact main-text ladder: the fixed-M = 1088 rows (job 3780177; no vs-reference column in that lane) above the
     # scheduled M = 4(K+q) rows of the panel job (with vs-reference and the EQ rule status), one header
     fixed = [[str(q), '1088', pct(v), '---', '---', ms(c), '---', '---', 'dense, job ' + wj['job_id']] for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms'])]
-    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule (status)'],
+    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule (status)'],
                                           fixed + ['MIDRULE'] + LADDER_MAIN_ROWS, 'rrrrrrrrl', r'\scriptsize'),
           'top: b-qxm fixed-M ladder inside job ' + wj['job_id'] + ' (no fine-reference column in that lane); bottom: b-panel scheduled ladder, job 3789570, with vs-reference and the replication-selected EQ rule')
     rows_fq = []
@@ -686,6 +691,7 @@ def build_operators():
                   ('unet-refine', 'UnetRefine'), ('rom', 'Rom'), ('fno-large', 'FnoLarge'),
                   ('same_nt1e-2_dt005', 'FomEfficient'), ('unet-large', 'UnetLarge')]:
         macro(f'nOpEight{nm}', pct(w8(a)))
+    macro('nOpCohortSize', 'diagnosis-8'.split('-')[-1])
     better = [k for k in burg8 if meta[k]['operator'] not in ('ROM', 'FOM') and w8(k[0]) < w8('rom')]
     macro('nOpArmsBeatingRom', str(len(better)))
     macro('nOpEveryFnoWorse', yn(all(w8(k[0]) > w8('rom') for k in burg8 if meta[k]['operator'] == 'FNO')))
@@ -813,7 +819,7 @@ def build_linear():
             rows.append('MIDRULE')
         rows.pop()
         write('T11a_waves.tex', tabular(['mesh', 'arm', '$q$ / $k^\\prime$', 'worst energy-state \\%',
-                                         '$t{=}0$ \\%', 'GPU ms', 'complete ms'], rows, 'llrrrrr', r'\scriptsize'),
+                                         '$t{=}0$ \\%', 'device ms', 'complete-query ms'], rows, 'llrrrrr', r'\scriptsize'),
               'w-ladder; one job per mesh, costs comparable only within a mesh')
         gpus = {}
         if wrep:
@@ -895,7 +901,7 @@ def build_linear():
                 macro(f'nPlin{nm}Dspan', f"{v['D1_span']:.2f}"); macro(f'nPlin{nm}Degenerate', yn(v['D1'] and v['D2_lowest'] and v['D3_fom']))
                 macro(f'nPlin{nm}Monotone', yn(v['monotone'])); macro(f'nPlin{nm}FalsifiedIntent', yn(v['falsified_intent']))
         rows.pop()
-        write('T11b_poisson.tex', tabular(['mesh', 'subject', '$M$', 'worst \\%', 'median \\%', 'total ms', 'device ms', 'valid',
+        write('T11b_poisson.tex', tabular(['mesh', 'subject', '$M$', 'worst \\%', 'median \\%', 'complete-query ms', 'device ms', 'valid',
                                            'non-dom.\\ (all)', 'non-dom.\\ (reduced)'], rows, 'llrrrrrrcc', r'\scriptsize'),
               'p-linear; one job per mesh, never compare costs across meshes')
         # head-capacity appendix table (job plhead1)
@@ -910,7 +916,7 @@ def build_linear():
                 sv = solved.get('a_neural@' + k, {})
                 t.append([tt(k), pct(100 * hc[k]['dev_best_found_worst']), f"{hc[k]['dev_best_found_over_floor']:.2f}",
                           pct(100 * sv['worst_same_grid']) if sv else '---', ms(sv['median_total_ms'], 2) if sv else '---'])
-            write('T11c_head_capacity.tex', tabular(['head', 'best-found dev.\\ \\%', 'best-found / floor', 'solved $1024^2$ \\%', 'total ms'], t, 'lrrrr', r'\scriptsize'),
+            write('T11c_head_capacity.tex', tabular(['head', 'best-found dev.\\ \\%', 'best-found / floor', 'solved $1024^2$ \\%', 'complete-query ms'], t, 'lrrrr', r'\scriptsize'),
                   f"p-linear head capacity, job {mh.group(1) if mh else '---'}")
             macro('nPlinHeadRatioPrimary', f"{hc['K32_w128_L2']['dev_best_found_over_floor']:.2f}")
             best = min(hc, key=lambda k: hc[k]['dev_best_found_over_floor'])
@@ -933,7 +939,7 @@ def build_heat():
     for r in rows:
         if r[1] in lab and r[0] in ('64', '256', '1024'):
             t.append([f'${r[0]}^2$', lab[r[1]], r[4], r[5], r[2], r[3]]); by[(r[0], r[1])] = r
-    write('T11d_heat.tex', tabular(['mesh', 'arm', 'worst physical \\%', 'worst same-grid \\%', 'GPU ms', 'host ms'], t, 'llrrrr', r'\scriptsize'),
+    write('T11d_heat.tex', tabular(['mesh', 'arm', 'worst physical \\%', 'worst same-grid \\%', 'device ms', 'complete-query ms'], t, 'llrrrr', r'\scriptsize'),
           f"heat 2D, earlier cell of the same decoder family, job {m.group(1) if m else '---'}")
     for mesh, nm in [('1024', 'TenTwentyFour'), ('256', 'TwoFiftySix')]:
         lb = by[(mesh, 'Linear bank, exact reduced time evolution')]; nl = by[(mesh, 'Current nonlinear ROM')]; fo = by[(mesh, 'Same-grid direct FOM')]
@@ -964,7 +970,7 @@ def build_head_ablation():
                      pct(r.get('worst_best_found_percent')), pct(r['worst_same_grid_percent']), pct(r['worst_rollout_percent']),
                      ms(r['median_gpu_ms']), yn(r.get('all_stationary')) if r['kind'] == 'rom' else '---'])
     write('T06a_head_burgers.tex', tabular(['arm', 'dim.', 'bank floor \\%', 'best-found \\%', 'solved same-grid \\%',
-                                            'vs ref \\%', 'GPU ms', 'stationary'], rows, 'lrrrrrrc', r'\scriptsize'),
+                                            'vs ref \\%', 'device ms', 'stationary'], rows, 'lrrrrrrc', r'\scriptsize'),
           f"head-ablation Burgers job {a['job_id']}")
     labp = {'a_neural': '(a) neural head', 'a_neural_q32': '(a$+$) head $+$ 32 eliminated corrections', 'b_linear_dec': '(b) linear map (head outputs)',
             'b_linear_truth': '(b) linear map (truth)', 'c_quad_dec': '(c) quadratic map', 'e_pod8': "(e) POD-LSPG $k'{=}8$", 'e_pod16': "(e) POD-LSPG $k'{=}16$",
@@ -1063,7 +1069,7 @@ def build_knobs():
         s = S['validation/' + k]
         rows.append([lab[k], pct(100 * s['worst_fixed_initial_error'], 3), ms(1000 * s['median_gpu_seconds']),
                      str(s['early_stopped_invocations']) + '/' + str(s['invocations'])])
-    write('T08_solver_knobs.tex', tabular(['setting', 'worst \\% (32 held-out)', 'GPU ms', 'early-stopped'], rows, 'lrrr', r'\scriptsize'),
+    write('T08_solver_knobs.tex', tabular(['setting', 'worst \\% (32 held-out)', 'device ms', 'early-stopped'], rows, 'lrrr', r'\scriptsize'),
           f"fixed-checkpoint tuning, validation pass, job {t['provenance']['job_id']}")
     c = S['validation/m512_converged']; g = S['validation/m512_gtol0.001']; cap = S['validation/m512_cap2']
     macro('nTuneTolSavingPct', f"{100*(1-g['median_gpu_seconds']/c['median_gpu_seconds']):.1f}")
@@ -1241,7 +1247,8 @@ def build_eqtop():
         macro('nEqtopStaticWorstRho', f"{worst[1]['rho_max']:.3f}"); macro('nEqtopStaticWorstQ', str(worst[0][0]))
         macro('nEqtopStaticWorstFit', f"{worst[1].get('relative_fit', float('nan')):.1e}")
     # anti-correlation example at q=128: parent static m=2048 has the smaller fit and the larger rho than fs64 m=2048
-    macro('nEqtopBar', '0.116'); macro('nEqtopTightBar', '0.06')
+    macro('nEqtopBar', f"{bar('eqtop_primary_bar'):g}"); macro('nEqtopTightBar', f"{bar('eqtop_tight_bar'):g}")
+    macro('provEqtopBarSource', tex_escape(BARS['eqtop_primary_bar']['source']))
     macro('nEqtopBarOrigin', 'the held-out $\\rho$ of the incumbent $q{=}0$ rule at the state carrying the first-interval penalty, measured in the q-diag cell and adopted as the primary bar in the q-ridge design before any certification job ran; the tight bar was declared before b-eqtop ran')
     # full rules table (appendix)
     t = []
@@ -1265,24 +1272,27 @@ def build_mesh():
         macro(f'provMesh{nm}Job', gf[pde]['job_id']); macro(f'provMesh{nm}Gpu', gf[pde]['gpu']); macro(f'provMesh{nm}Commit', hexprefix(gf[pde]['commit']))
         macro(f'provMesh{nm}Ckpt', hexprefix(gf[pde]['checkpoint_sha256']))
     macro('provPoissonCkptFull', gf['Poisson 2D']['checkpoint_sha256'])
-    rows = []
+    rows = []; HOSTS = {}
     for pde, nm in [('Burgers 2D', 'Burgers'), ('Poisson 2D', 'Poisson')]:
         s = m['summaries'][pde]; cr = {r['intervals']: r for r in s['crossover']['rows']}
         for mesh in s['meshes']:
             t = s['table'][f"{mesh}|{s['rom']}"]; cached = s['cached'][str(mesh)]; c = cr[mesh]
+            HOSTS.setdefault(nm, []).append(1000 * t['host_to_host_seconds']['median'])
             rows.append([nm, str(mesh), f"{(mesh-1)**2:,}", ms(1000 * cached['seconds']['median']),
                          ms(1000 * t['device_seconds']['median']), ms(1000 * t['host_to_host_seconds']['median']),
                          pct(100 * t['worst_error_requested_grid']), pct(100 * t['worst_same_grid_discrepancy']),
                          tt(c['fom_subject']), ms(c['fom_device_ms']), f"{c['speedup_fom_over_rom']:.3f}", yn(t['meets_target'])])
         rows.append('MIDRULE')
     rows.pop()
-    write('T10_mesh_ladder.tex', tabular(['PDE', 'intervals', 'unknowns', 'ROM cached ms', 'ROM device ms', 'ROM host ms', 'ROM worst vs ref \\%',
+    write('T10_mesh_ladder.tex', tabular(['PDE', 'intervals', 'unknowns', 'ROM cached ms', 'ROM device ms', 'ROM complete-query ms', 'ROM worst vs ref \\%',
                                           'ROM vs same-grid FOM \\%', 'efficient FOM', 'FOM ms', 'FOM/ROM', 'ROM meets 5\\%'], rows, 'lrrrrrrrlrrc', r'\tiny'),
           'frozen-checkpoint mesh ladder; one job per PDE')
     for pde, nm in [('Burgers 2D', 'Burgers'), ('Poisson 2D', 'Poisson')]:
         s = m['summaries'][pde]
         macro(f'nMesh{nm}CachedRatio', f"{s['flatness_cached']['ratio_finest_over_coarsest']:.3f}")
-        macro(f'nMesh{nm}CompleteRatio', f"{s['flatness_complete']['ratio_finest_over_coarsest']:.3f}")
+        macro(f'nMesh{nm}DeviceRatio', f"{s['flatness_complete']['ratio_finest_over_coarsest']:.3f}")
+        if HOSTS.get(nm):
+            macro(f'nMesh{nm}CompleteRatio', f"{HOSTS[nm][-1] / HOSTS[nm][0]:.2f}")
         macro(f'nMesh{nm}UnknownGrowth', f"{s['flatness_cached']['unknown_growth']:.0f}")
         macro(f'nMesh{nm}EverFaster', yn(s['crossover']['rom_ever_faster']))
         vals = s['flatness_cached']['values_ms']
@@ -1337,7 +1347,7 @@ def build_training():
         r = arms[k]
         t.append([lab[k], str(r['K']), pct(r['worst_bank_projection_percent']), pct(r['worst_best_found_percent']), pct(r['worst_same_grid_percent']),
                   pct(r['worst_same_grid_evolved_percent']), ms(r['median_gpu_ms']), yn(r['all_stationary'] and r['all_completed'])])
-    write('T16_training.tex', tabular(['arm (EQ query)', '$K$', 'bank floor \\%', 'best-found \\%', 'solved all \\%', 'solved evolved \\%', 'GPU ms', 'conv.'],
+    write('T16_training.tex', tabular(['arm (EQ query)', '$K$', 'bank floor \\%', 'best-found \\%', 'solved all \\%', 'solved evolved \\%', 'device ms', 'conv.'],
                                       t, 'lrrrrrrc', r'\scriptsize'), 'b-head-train evaluation job 3749074')
     macro('nTrainIncumbentBest', pct(arms['incumbent_eq']['worst_best_found_percent'])); macro('nTrainBestRetrained', pct(arms['best_d2048k32w_eq']['worst_best_found_percent']))
     macro('nTrainLikeForLike', pct(arms['d4608k16rec_eq']['worst_best_found_percent']))
@@ -1357,7 +1367,7 @@ def build_lshape():
     for r in s_rows:
         if r['family'] in ('bank', 'head'):
             by[(r['mesh'], r['subject'])][r['metric']] = r['value']
-    job = s_rows[0]['job_id']
+    job = next((r['job_id'] for r in s_rows if r['family'] in ('bank', 'head') and r['mesh'] == 256 and r['subject'].startswith('head_')), s_rows[0]['job_id'])
     m = re.search(r'Training job `(\d+)` on `(NVIDIA [^`]+)`, source commit `([0-9a-f]+)`', rep or '')
     macro('provLshapeJob', job); macro('provLshapeGpu', m.group(2) if m else '---'); macro('provLshapeCommit', hexprefix(m.group(3)) if m else '---')
     banks = ['smooth_R256', 'smooth_R512', 'sdf_R256', 'sdf_R512', 'enrich_R512', 'smooth_ff128s2_R512']
@@ -1438,7 +1448,7 @@ def build_lshape():
         macro(f'nLshapeCheapestFom{nm}', name(cf)); macro(f'nLshapeCheapestFomMs{nm}', ms(c['median_total_ms'], 2)); macro(f'nLshapeCheapestFomErr{nm}', pct(100 * c['worst_same_grid'], 3))
         if hd:
             macro(f'nLshapeNeuralCheaperVsCheapest{nm}', f"{c['median_total_ms'] / hd['median_total_ms']:.2f}")
-            macro(f'nLshapeCheapestFomMoreAccurate{nm}', f"{hd['worst_same_grid'] / c['worst_same_grid']:.1f}" if c['worst_same_grid'] > 0 else 'exact')
+            macro(f'nLshapeCheapestFomMoreAccurate{nm}', f"{hd['worst_same_grid'] / c['worst_same_grid']:.1f}" if c['worst_same_grid'] > 1e-9 else 'exact')
         if pd:
             macro(f'nLshapePodErr{nm}', pct(100 * pd['worst_same_grid'], 3)); macro(f'nLshapePodMs{nm}', ms(pd['median_total_ms'], 3))
             macro(f'nLshapePodCheaper{nm}', f"{sp['median_total_ms'] / pd['median_total_ms']:.2f}"); macro(f'nLshapePodCheaperVsCheapest{nm}', f"{c['median_total_ms'] / pd['median_total_ms']:.2f}")
@@ -1564,7 +1574,7 @@ def build_offline_and_spec():
             r = A.get(arm)
             if r:
                 t.append([lab, str(r['M']), pct(r['worst_same_grid_percent']), str(r['total_budget_exits']), yn(r['all_stationary']), ms(r['median_gpu_ms'])])
-        write('T19_solver_variants.tex', tabular(['arm', '$M$', 'worst all-times \\%', 'budget exits', 'all stationary', 'GPU ms'], t, 'lrrrcr', r'\scriptsize'),
+        write('T19_solver_variants.tex', tabular(['arm', '$M$', 'worst all-times \\%', 'budget exits', 'all stationary', 'device ms'], t, 'lrrrcr', r'\scriptsize'),
               f"cheap-corrections job {cc['job_id']} ({cc['gpu']})")
         macro('provCcladJob', cc['job_id']); macro('provCcladGpu', cc['gpu'])
         j = A.get('q64_m4_dense_joint'); bl = A.get('q64_m4_dense_block')
@@ -1707,7 +1717,8 @@ def build_pending():
         single, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.single_start_median')
         bfl, _ = v('head_K16_R256', 'H-ORACLE_N256', m256, 'oracle.bank_floor_median')
         macro('nNsOracleMedian', pct(100 * orc)); macro('nNsPodSixteenMedian', pct(100 * pod))
-        macro('nNsOracleRatio', f"{pod / orc:.2f}"); macro('nNsOracleBar', '2.0')
+        macro('nNsOracleRatio', f"{pod / orc:.2f}"); macro('nNsOracleBar', f"{bar('ns_oracle_bar'):.1f}")
+        macro('provNsBarSource', tex_escape(BARS['ns_oracle_bar']['source']))
         macro('nNsOraclePass', yn(orc_ok))
         macro('nNsSingleStartMedian', pct(100 * single)); macro('nNsSingleOverOracle', f"{single / orc:.2f}")
         macro('nNsBankFloorMedian', pct(100 * bfl))

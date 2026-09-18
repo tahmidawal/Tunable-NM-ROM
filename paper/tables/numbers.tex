@@ -119,9 +119,9 @@
 \newcommand{\nLshapeCheapestFomErrTwoFiftySix}{0.000}
 \newcommand{\nLshapeCheapestFomFiveTwelve}{CG $10^{-2}$}
 \newcommand{\nLshapeCheapestFomMoreAccurateFiveTwelve}{5.5}
-\newcommand{\nLshapeCheapestFomMoreAccurateOneTwentyEight}{1865299283197.5}
-\newcommand{\nLshapeCheapestFomMoreAccurateSixtyFour}{3274841780618.7}
-\newcommand{\nLshapeCheapestFomMoreAccurateTwoFiftySix}{1039843064605.7}
+\newcommand{\nLshapeCheapestFomMoreAccurateOneTwentyEight}{exact}
+\newcommand{\nLshapeCheapestFomMoreAccurateSixtyFour}{exact}
+\newcommand{\nLshapeCheapestFomMoreAccurateTwoFiftySix}{exact}
 \newcommand{\nLshapeCheapestFomMsFiveTwelve}{29.13}
 \newcommand{\nLshapeCheapestFomMsOneTwentyEight}{2.48}
 \newcommand{\nLshapeCheapestFomMsSixtyFour}{1.28}
@@ -229,7 +229,8 @@
 \newcommand{\nMeshBurgersCachedFirst}{44.16}
 \newcommand{\nMeshBurgersCachedLast}{43.58}
 \newcommand{\nMeshBurgersCachedRatio}{0.987}
-\newcommand{\nMeshBurgersCompleteRatio}{1.033}
+\newcommand{\nMeshBurgersCompleteRatio}{1.52}
+\newcommand{\nMeshBurgersDeviceRatio}{1.033}
 \newcommand{\nMeshBurgersErrFirst}{10.8570}
 \newcommand{\nMeshBurgersErrLast}{3.8847}
 \newcommand{\nMeshBurgersEverFaster}{no}
@@ -238,7 +239,8 @@
 \newcommand{\nMeshPoissonCachedFirst}{2.09}
 \newcommand{\nMeshPoissonCachedLast}{2.02}
 \newcommand{\nMeshPoissonCachedRatio}{0.965}
-\newcommand{\nMeshPoissonCompleteRatio}{1.334}
+\newcommand{\nMeshPoissonCompleteRatio}{2.05}
+\newcommand{\nMeshPoissonDeviceRatio}{1.334}
 \newcommand{\nMeshPoissonErrFirst}{6.1119}
 \newcommand{\nMeshPoissonErrLast}{6.1106}
 \newcommand{\nMeshPoissonEverFaster}{no}
@@ -294,6 +296,7 @@
 \newcommand{\nOfflineTrainSecondsBest}{1459}
 \newcommand{\nOfflineTrainSecondsLikeForLike}{387}
 \newcommand{\nOpArmsBeatingRom}{4}
+\newcommand{\nOpCohortSize}{8}
 \newcommand{\nOpCtrlCount}{3}
 \newcommand{\nOpCtrlMediumFSixtyFour}{1.6721}
 \newcommand{\nOpCtrlMediumFSixtyFourEpochRatio}{0.25}
@@ -895,6 +898,7 @@
 \newcommand{\provBurgersCkptFull}{18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589}
 \newcommand{\provCcladGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provCcladJob}{3734098}
+\newcommand{\provEqtopBarSource}{b-eqtop/DESIGN.md §5 (byte-identical from commit 33e8bced, 2026-09-17 01:11, through the pinned 8542c604); origin q-ridge/DESIGN.md amendment A3, commit a1822ae6 (2026-09-16); every b-eqtop job post-dates it}
 \newcommand{\provEqtopJob}{3780164, 3780165, 3783811}
 \newcommand{\provEqtopJobs}{bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3\ldots); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290\ldots)}
 \newcommand{\provEqtopLadderJob}{3780164}
@@ -906,7 +910,7 @@
 \newcommand{\provLshapeCommit}{1086ccefdcb5\ldots}
 \newcommand{\provLshapeFreeJob}{3784910}
 \newcommand{\provLshapeGpu}{NVIDIA A100 80GB PCIe}
-\newcommand{\provLshapeJob}{3784662}
+\newcommand{\provLshapeJob}{3783786}
 \newcommand{\provLshapeSolveJobs}{3784662, 3784663, 3789568}
 \newcommand{\provMeshBurgersCkpt}{18f0266ae6f0\ldots}
 \newcommand{\provMeshBurgersCommit}{521cdced6f4d\ldots}
@@ -916,6 +920,7 @@
 \newcommand{\provMeshPoissonCommit}{521cdced6f4d\ldots}
 \newcommand{\provMeshPoissonGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provMeshPoissonJob}{3711389}
+\newcommand{\provNsBarSource}{ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320}
 \newcommand{\provNsFomJob}{3780151}
 \newcommand{\provNsJob}{3787319}
 \newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$)}

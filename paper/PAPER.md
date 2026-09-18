@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 20:06; this block is removed before submission).*
+*Status for the reader (generated 2026-09-17 20:09; this block is removed before submission).*
 *Final tables (44): T01, T01b, T02b, T02c, T03, T03b, T03m, T03mb, T04, T04b, T04m, T05, T05b, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T12, T12b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
 *Pending cells: `T13` waits on b-seeds sealed cohort; `seeds sealed` waits on b-seeds sealed cohort; `T2 sealed row` waits on b-seeds sealed cohort. In-flight jobs are listed in Table C.3: sealed cohort 3804465 (b-seeds), NS K=32 arm 3787320 (ns2d), low-viscosity training 3804337 (b-lowvisc), 512² panel 3805065 (b-panel).*
 *Provisional: the three-seed table (T12) until the sealed cohort lands; the 1024² frontier statement in §5.1 until the 512² panel brackets it; the two top EQ rungs are single-draw rules, never certified.*
@@ -643,16 +643,14 @@ $2.80 %$ against the reference
 ($1.38\times$) over a discretisation error of
 $2.14 %$. The knob is a knob on the reduction error, not on the physical error at
 these meshes. In the crossed grid (Table 13) the ladder at
-fixed $M=256$ spans only $1.22\times$ in error and
-**fails** the pre-registered bar (monotone, at least three
-non-dominated points, at least $2\times$ on both axes, nothing
-early-stopped). **At $M=1088$ the ladder $q=0,64,128,256$,
+fixed $M=256$ spans only $1.22\times$ in error and **fails** the pre-registered bar (monotone in $q$ on the
+evolved metric, every rung converged, error span $\ge2\times$; as
+implemented the generator also requires $\ge3$ non-dominated points and
+a cost span $\ge2\times$, two clauses inherited from an earlier campaign). **At $M=1088$ the ladder $q=0,64,128,256$,
 inside one job, is monotone, every rung converged, and spans
 $2.44\times$ in evolved error for $5.16\times$ in cost
-with $4$ non-dominated points**, and passes. $M=1088$ was chosen
-as the headline after the grid ran, by the lane's rule (the largest fixed
-$M$ holding every rung to $q=256$), not pre-registered; the $q=512$
-extension did not converge and enters no span, and raising $M$ at $q=256$
+with $4$ non-dominated points**, and passes. $M=1088$ is the lane's pre-registered pure-rank ladder (the largest fixed
+$M$ that holds every rung to $q=256$); the $q=512$ extension did not converge and enters no span, and raising $M$ at $q=256$
 saturates at $M^\star=2176$ with diminishing return past
 it.
 

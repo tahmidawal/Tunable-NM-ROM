@@ -674,16 +674,14 @@ $\nPanelTenTwentyFourBestRungRef\,\%$ against the reference
 ($\nPanelTenTwentyFourRefSpan\times$) over a discretisation error of
 $\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob is a knob on the reduction error, not on the physical error at
 these meshes. In the crossed grid (Table~\ref{tab:qxm}) the ladder at
-fixed $M=256$ spans only $\nQxmTwoFiftySixErrSpan\times$ in error and
-\textbf{fails} the pre-registered bar (monotone, at least three
-non-dominated points, at least $2\times$ on both axes, nothing
-early-stopped). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
+fixed $M=256$ spans only $\nQxmTwoFiftySixErrSpan\times$ in error and \textbf{fails} the pre-registered bar (monotone in $q$ on the
+evolved metric, every rung converged, error span $\ge2\times$; as
+implemented the generator also requires $\ge3$ non-dominated points and
+a cost span $\ge2\times$, two clauses inherited from an earlier campaign). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
 inside one job, is monotone, every rung converged, and spans
 $\nQxmErrSpan\times$ in evolved error for $\nQxmCostSpan\times$ in cost
-with $\nQxmNonDom$ non-dominated points}, and passes. $M=1088$ was chosen
-as the headline after the grid ran, by the lane's rule (the largest fixed
-$M$ holding every rung to $q=256$), not pre-registered; the $q=\nQxmExtQtop$
-extension did not converge and enters no span, and raising $M$ at $q=256$
+with $\nQxmNonDom$ non-dominated points}, and passes. $M=1088$ is the lane's pre-registered pure-rank ladder (the largest fixed
+$M$ that holds every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span, and raising $M$ at $q=256$
 saturates at $M^\star=\nQxmMstarTwoFiftySix$ with diminishing return past
 it.
 

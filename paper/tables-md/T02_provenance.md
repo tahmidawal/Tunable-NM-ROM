@@ -19,4 +19,4 @@
 | T16 | b-head-train | 3745912 (training), 3749074 (evaluation) | A100-PCIE-40GB | 0f0c56f7 / 2b9e7ee7 | trained checkpoints hashed in archive |
 | T18, T18c, T18d | lshape | training 3783786; solves 3784662, 3784663, 3789568; free rung 3784910 | NVIDIA A100 80GB PCIe | 1086ccefdcb5… | 7 heads + bases Git-tracked |
 | T12 | b-seeds (development cohort) | `seed1` = 3783776 (NVIDIA A100 80GB PCIe); `seed2` = 3783777 (NVIDIA A100 80GB PCIe); `seed3` = 3783778 (NVIDIA A100-PCIE-40GB) | per job | per job | three seed checkpoints hashed in summary |
-| T13 | b-seeds (sealed cohort) | **[PENDING: b-seeds sealed cohort]** | — | — | — |
+| T13 | b-seeds (sealed cohort) | 3804465 | NVIDIA A100-PCIE-40GB | be9415ab | four checkpoints (incumbent + three seeds) hashed in summary |

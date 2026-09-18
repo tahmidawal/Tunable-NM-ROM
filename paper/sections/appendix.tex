@@ -416,8 +416,9 @@ recipe reproduces it exactly.}
 over the six development cases as mean $\pm$ sample standard deviation over
 the \nSeedsCount{} seed checkpoints, beside the incumbent checkpoint re-run in
 each seed's own job (its value is identical in all three jobs). Bottom: the
-per-seed ladder verdicts. Costs are never averaged across jobs. Provisional
-until the sealed cohort (Table~\ref{tab:sealed}) is opened.}
+per-seed ladder verdicts. Costs are never averaged across jobs. This is the
+development cohort; the sealed cohort (Table~\ref{tab:sealed}) is the
+headline.}
 \label{tab:seeds}
 \resizebox{\linewidth}{!}{\input{tables/T12_seeds}}\\[4pt]
 \resizebox{\linewidth}{!}{\input{tables/T12b_seeds_verdicts}}
@@ -425,12 +426,20 @@ until the sealed cohort (Table~\ref{tab:sealed}) is opened.}
 
 \begin{table}[h]
 \centering
-\caption{Development against sealed worst error per rung, difficulty-normalised
-(lane b-seeds). \textbf{Pending}: the sealed-cohort job 3804465 was still
-running when this version was built; the generator fills this table from
-its summary when it lands, and no sentence in the paper depends on it.}
+\caption{The sealed cohort (lane b-seeds, job \nSealedJob, \provSealedGpu),
+opened once after every choice was frozen. Top: per rung of the dense
+$M=4(K+q)$ ladder, the incumbent's sealed worst evolved error and device
+time, the seed mean $\pm$ sample standard deviation on the sealed and the
+development cohort, the lane's sealed-over-development ratio of seed means
+(raw and difficulty-normalised) and the converged count over the
+\nSealedCheckpoints{} checkpoints. Bottom: per-checkpoint verdicts. The
+incumbent's $q=0$ rung is a single sealed case converged to a wrong branch
+(gradient exit, zero budget exits); the pre-registered ratio criterion fails
+at $q=0$ for the incumbent alone (\nSealedCtwoIncQzeroRatio) and the
+convergence criterion fails on \nSealedUnconvergedCells.}
 \label{tab:sealed}
-\input{tables/T13_sealed}
+\resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
+\resizebox{\linewidth}{!}{\input{tables/T13b_sealed_verdicts}}
 \end{table}
 
 \begin{table}[h]

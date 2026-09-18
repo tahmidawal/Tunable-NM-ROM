@@ -1,6 +1,28 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-17 night — round-2 review applied (current state; everything below is history)
+## 2026-09-17 night — sealed cohort folded in (current state; everything below is history)
+
+b-seeds sealed cohort landed at lane commit be9415ab (job 3804465, A100-40GB); `GIT_PINS` moved
+from e533b48e. No pending cell remains. T13 (per-rung sealed vs development seed means with the
+lane's C2/C2n ratios, incumbent sealed values and times) and T13b (per-checkpoint verdicts) are
+generated; the main-text ladder table carries a "sealed evolved %" column beside the development
+column for the scheduled rows (same checkpoint; costs stay per job); the fixed-M rows are unchanged.
+Sealed result: all four checkpoints monotone on both metrics and meet the knob bar; top rung
+0.59–0.68 % across the four. Pre-registered F2 applies: C2/C2n fail at q=0 for the incumbent alone
+(sealed 10.11 % vs development 1.89 %, ratio 5.35; one sealed case converged to a wrong branch,
+gradient exit, zero budget exits; q=16 collapses all four checkpoints to 1.46–1.87 %) → sealed
+numbers are the headline for the scheduled ladder, T12 is demoted to seed variability, and the
+incumbent's development q=0 value (1.8890 %) appears only beside its sealed value, labelled
+development, never as a generalisation figure. C3 fails (seed2 sealed q=64 on budget on one case;
+seed3 development q=256): those rungs are marked unconverged, reported not tuned. Prose: seeds
+paragraph in §6.3 leads with the sealed result; abstract adds "and on a sealed cohort" with the
+top-rung range via macros; Limitations (i) states the wrong-branch cold start at q=0 as a failure
+mode that q>=16 removed here without a general claim. Register: 3804465 out; lvt01 and
+ns302–ns304 remain. Page budget: main text ends on page 9 after trims in §6.2–6.5 and the
+Limitations (no claim removed; wording only). Lane retraction (not the paper's): incomplete lab-log
+entry at 84a537ff.
+
+## 2026-09-17 night — round-2 review applied (history)
 
 Review round 2 (3/10 at d131ec11) applied item by item, one commit each; disposition in
 `private/REVIEW-ROUND2-DISPOSITION.md`. Claims changed where the review showed them false or
@@ -51,7 +73,7 @@ b-panel 13ddecac, b-seeds e533b48e; b-qxm b4e38103 and lshape dc762ed3 are clean
 | b-panel | closed | bpn301 (3789570) = 256² with both rule sets, replaces bpn101; bpn203 (3789572, H200) = 1024². T3, T3b, T5, T5b. Claim mesh-qualified in §1, §5.1, abstract ("at 256²"). bpn401 (3805065, 512²) in flight |
 | b-qxm | closed | pin dropped; §5.2 numbers unchanged; q=512 extension unconverged (one sentence, not plotted); M-saturation at q=256 (one sentence); five jobs in T2 |
 | lshape | closed | 64²–512² solves (T18c); head q=64 2.77× at 256² and 7.60× at 512² cheaper than SuperLU; in abstract, Contribution 3, §5.6, conclusion |
-| b-seeds | development cohort landed | T12 + T12b from e533b48e; sealed cohort (3804465) pending → T13 placeholder |
+| b-seeds | closed | T12 + T12b (development) and T13 + T13b (sealed, job 3804465) from be9415ab; sealed values are the scheduled ladder's headline |
 | b-eqtop, no-second, w-ladder, p-linear, ns2d | unchanged | same summaries as the previous provenance |
 | b-lowvisc | register only | lvt01 (3804337) in T2c; no prose |
 
@@ -59,8 +81,7 @@ Figures: Fig. 2 (architecture) now sits in §3.2 beside eq. (ladder); Appendix B
 table. Figs. 1–3 have standalone captions (what is plotted, lane/job, one takeaway).
 `PAPER.md` opens with an italic "Status for the reader" block (generated; removed before submission).
 
-Remaining PENDING markers: T13 / seeds-sealed / T2 sealed row (b-seeds sealed cohort, job 3804465);
-NS K=32 arm (ns204, job 3787320).
+Remaining PENDING markers: none (T13 landed at be9415ab; ns2d closed at 50bf36da).
 
 Open decisions (user's): headline Burgers metric — now decisive for §5.1 at 1024² (reduced rungs
 non-dominated on evolved only); sign-off on the abstract's opening two sentences (unchanged here).

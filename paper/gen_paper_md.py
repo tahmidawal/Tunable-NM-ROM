@@ -71,6 +71,7 @@ def expand(s, M):
     s = re.sub(r'\\todo' + ARG, r'**[TODO: \1]**', s)
     for _ in range(3):
         s = re.sub(r'\\([A-Za-z]+)(?![A-Za-z])', lambda m: M.get(m.group(1), m.group(0)), s)
+    s = re.sub(r'(?<=[0-9A-Za-z%×])\{\}', '', s)   # the empty group that ends a macro call (\nSeedsCount{})
     # macros can expand INTO a placeholder, so run the placeholder rules again afterwards
     s = re.sub(r'\\gen' + ARG, r'**[PENDING: \1]**', s)
     s = re.sub(r'\\todo' + ARG, r'**[TODO: \1]**', s)
@@ -136,15 +137,16 @@ def status_block():
         f'*Status for the reader (generated {now}; this block is removed before submission).*',
         f'*Final tables ({len(final)}): ' + ', '.join(t.split('_')[0] for t in final) + '.*',
         '*Pending cells: ' + ('; '.join(f'`{a}` waits on {b}' for a, b in pend) if pend else 'none') + '. In-flight jobs are listed in Table C.3: '
-        'sealed cohort 3804465 (b-seeds), NS K=32 arm 3787320 (ns2d), low-viscosity training 3804337 (b-lowvisc), 512² panel 3805065 (b-panel).*',
-        '*Provisional: the three-seed table (T12) until the sealed cohort lands; the 1024² frontier statement in §5.1 until the 512² panel brackets it; '
+        'low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*',
+        '*The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; '
         'the two top EQ rungs are single-draw rules, never certified.*',
         '*Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, '
         'and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; '
         '(2) sign-off on the abstract\'s new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*',
         '*Changed in this pass: b-panel closed (bpn301 replaces bpn101 at 256², bpn203 adds 1024²); L-shape closed at 512² and now in the abstract; '
         'b-qxm pin at 4b9723e8 dropped after the lane committed its regeneration (no number in §5.2 moved); three seeds landed on the development cohort; '
-        'Figure 2 moved into §3.2 beside the equation it draws.*',
+        'Figure 2 moved into §3.2 beside the equation it draws; the sealed cohort landed (be9415ab): sealed values replace the development '
+        'q=0 incumbent value as the headline, the wrong-branch cold start at q=0 is a stated failure mode.*',
         '',
     ]
     return lines

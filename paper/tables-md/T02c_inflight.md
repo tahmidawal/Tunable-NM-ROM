@@ -3,7 +3,6 @@
 |---|---|---|---|
 | b-panel | `bpn203` | `3789572` | $1024^2$ same-allocation panel, H200 (landed; Tables \ref{tab:tunability-tentwentyfour}, \ref{tab:panel-all-tentwentyfour}) |
 | b-panel | `bpn301` | `3789570` | $256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables \ref{tab:tunability}, \ref{tab:panel-all}) |
-| b-seeds | `sealed` | `3804465` | sealed-cohort evaluation of the three seeds (Table \ref{tab:sealed}) |
 | lshape | `lsh07` | `3789568` | L-shape solve at $512^2$ (landed; Table \ref{tab:lshape-solve}) |
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |

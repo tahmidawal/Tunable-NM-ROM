@@ -25,8 +25,8 @@ in flight. `failed` = job failed, diagnosis or resubmission pending. `not run` =
 | T9 | Quadrature rule certification: NNLS fit versus held-out error on reachable states, per rung | R7, 5mgh M8/M9 | b-eqtop | **done** — replication landed (job 3783811): rules confirmed at q ≤ 32, marginal above; top rungs are never called certified |
 | T10 | Mesh ladder, frozen checkpoint, 64 → 1024 | R2, sub-cubic scaling | inherited (mesh-ladder) | done |
 | T11 | Where the family collapses: Poisson ladder with POD and the direct solve; heat linear bank; wave; Navier–Stokes phase-2 gate (T11e) | R14, GwrW G5 | p-linear, w-ladder, ns2d | **done** — Poisson 256²/1024²; wave 64²/256²/1024²; heat from the 2026-09-10 cell; NS CLOSED as a negative at both K=16 (job 3787319, 1.19× vs bar 2.0) and K=32 (job 3787320, ~1.15×); oracle values are upper bounds (some LM budget exits, counts in summary); lane commit 50bf36da |
-| T12 | Seeds: per-rung mean and spread over three training seeds, monotone-seed count | R6 | b-seeds | **done** (development cohort, provisional until T13) — jobs 3783776/3783777/3783778, lane commit e533b48e; T12b per-seed verdicts |
-| T13 | Sealed cohort: development versus sealed worst error per rung, difficulty-normalised | R6, pre-registration | b-seeds | running — sealed job 3804465 |
+| T12 | Seeds: per-rung mean and spread over three training seeds, monotone-seed count | R6 | b-seeds | **done** (development cohort; seed variability, T13 is the headline) — jobs 3783776/3783777/3783778, lane commit e533b48e; T12b per-seed verdicts |
+| T13 | Sealed cohort: development versus sealed worst error per rung, difficulty-normalised | R6, pre-registration | b-seeds | **done** — sealed job 3804465 (A100-40GB), lane commit be9415ab; T13 + T13b; all four checkpoints monotone and meet the knob bar; C2/C2n fail at q=0 for the incumbent alone (wrong-branch solve on one sealed case), C3 fails on seed2 sealed q=64 |
 | T14 | Neural operators on shared data: FNO, U-Net, Transolver capacities, matched cohort against the ROM and the full-order solver | R3, 5mgh M1 | no-second | **done** — U-Net and Transolver beat the ROM; accuracy claim withdrawn |
 | T15 | Speed at parity: fused residual and Jacobian, folded head, block solve | R8 | inherited (b-speed) | done |
 | T16 | Training study (appendix): data ladder, objective, K, smoothness penalty, with the reproduction caveat | 5mgh originality | inherited (b-head-train) | done (negative) |
@@ -40,7 +40,7 @@ in flight. `failed` = job failed, diagnosis or resubmission pending. `not run` =
   at 256².
 - No cost ratio across jobs or GPUs. Same-allocation only, per the timing protocol.
 - No quadrature rule certified by its NNLS fitting residual; only held-out error on reachable states.
-- No performance ratio in the abstract until T12 and T13 exist.
+- No performance ratio in the abstract until T12 and T13 exist (both exist since be9415ab; the abstract carries the sealed top-rung range).
 
 ## Decisions still with the user
 

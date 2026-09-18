@@ -27,7 +27,7 @@ Review: `review-round2.md` (score 3/10 at `d131ec11`). One line per finding; sta
 | B6 | 1024² statement qualifications | resolved | `284e1d24` — all-times 0 of 20 stated; provisional until bpn401; ratios as independent facts |
 | B7 | "every operator number is a lower bound" false; two FNO errors unexplained | resolved | `284e1d24` — "all but one"; the six-case panel cohort named beside the FNO's 7.42 % |
 | B8 / #10 | tab:ns caption stale; upper-bound oracle only in caption | resolved | `f1ecdf8a` / `284e1d24` — caption rewritten for both heads; "oracle values are upper bounds" in §6.5 |
-| #2 | tab:sealed pending box | partial | `f1ecdf8a` — caption states job 3804465 is running and the generator fills the table; the box stays until it lands |
+| #2 | tab:sealed pending box | resolved | `f1ecdf8a` (caption stated the job was running) → sealed cohort folded in at lane commit be9415ab: T13 + T13b generated from job 3804465, pending box gone, sealed values are the scheduled ladder's headline |
 | #19 | overfull boxes, Table 24 too large | partial | `f1ecdf8a` — T09c split, T01b/T14/T16 wrapped; the remaining overfull boxes are inside T01b's transcribed-formula column and the TikZ figure (≤ 150 pt, inside resizebox) |
 | C3 | Contribution 2 asserted, not shown | open | no skip ablation was run; the claim says "design choice, not ablated" |
 | 2.5 | parabolic leg thin (legacy heat cell) | open | title kept by user decision; heat stays a supporting appendix cell with its job named |

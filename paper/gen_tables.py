@@ -90,7 +90,6 @@ RETRACTED_ATTEMPTS = [
 IN_FLIGHT = [
     ('b-panel', 'bpn203', '3789572', '$1024^2$ same-allocation panel, H200 (landed; Tables~\\ref{tab:tunability-tentwentyfour}, \\ref{tab:panel-all-tentwentyfour})'),
     ('b-panel', 'bpn301', '3789570', '$256^2$ re-run carrying both quadrature rule sets (landed; replaces bpn101 wholesale, which is archived, not withdrawn; Tables~\\ref{tab:tunability}, \\ref{tab:panel-all})'),
-    ('b-seeds', 'sealed', '3804465', 'sealed-cohort evaluation of the three seeds (Table~\\ref{tab:sealed})'),
     ('lshape', 'lsh07', '3789568', 'L-shape solve at $512^2$ (landed; Table~\\ref{tab:lshape-solve})'),
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
@@ -123,7 +122,7 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     # (its regenerated span_q_at_M1088 is bit-identical to the pinned value).
     # b-seeds: its working tree is dirty (the lane is still writing up); read the committed
     # three-seed development summary (e533b48e) and nothing newer.
-    'seeds_summary': ('2026-09-17-b-seeds', 'e533b48e'),
+    'seeds_summary': ('2026-09-17-b-seeds', 'be9415ab'),
     # b-panel closed at 13ddecac (bpn301 = 256^2 with both rule sets, bpn203 = 1024^2)
     'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
@@ -279,6 +278,21 @@ def pivot(rows, key='subject', metric='metric', value='value'):
 # replication (job 3783811), keyed by (q, m); the panel's own strings are mapped onto them.
 _EQ_REP: dict | None = None
 LADDER_MAIN_ROWS: list = []   # the 256^2 scheduled-ladder rows, merged with the fixed-M rows in build_qxm
+SEALED_INC: dict = {}         # sealed-cohort incumbent evolved error per rung (b-seeds job 3804465)
+FIXED_MAIN_ROWS: list = []; FIXED_MAIN_JOB = ['---']
+
+
+def write_ladder_main():
+    # merged main-text ladder: the fixed-M rows (b-qxm, development cohort, unchanged) above the scheduled rows of the
+    # panel job, with the sealed-cohort value of the same incumbent checkpoint (job 3804465) beside the development
+    # value; costs stay per job and are never compared across the two
+    sched = []
+    for r in LADDER_MAIN_ROWS:
+        q = int(r[0]); sealed = SEALED_INC.get(q)
+        sched.append(r[:3] + [pct(sealed) if sealed is not None else '---'] + r[3:])
+    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'dev evolved \\%', 'sealed evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule (status)'],
+                                          FIXED_MAIN_ROWS + ['MIDRULE'] + sched, 'rrrrrrrrrl', r'\scriptsize'),
+          'top: b-qxm fixed-M ladder inside job ' + FIXED_MAIN_JOB[0] + ' (development cohort, no fine-reference column in that lane); bottom: b-panel scheduled ladder, job 3789570 (development cohort), with the sealed-cohort value of the same checkpoint from b-seeds job 3804465 beside it, vs-reference and the replication-selected EQ rule')
 def eq_replication_status():
     global _EQ_REP
     if _EQ_REP is None:
@@ -661,10 +675,8 @@ def build_qxm():
                                            rows_t4, 'lrrrr'), 'b-qxm; costs only within job ' + wj['job_id'])
     # compact main-text ladder: the fixed-M = 1088 rows (job 3780177; no vs-reference column in that lane) above the
     # scheduled M = 4(K+q) rows of the panel job (with vs-reference and the EQ rule status), one header
-    fixed = [[str(q), '1088', pct(v), '---', '---', ms(c), '---', '---', 'dense, job ' + wj['job_id']] for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms'])]
-    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'device ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule (status)'],
-                                          fixed + ['MIDRULE'] + LADDER_MAIN_ROWS, 'rrrrrrrrl', r'\scriptsize'),
-          'top: b-qxm fixed-M ladder inside job ' + wj['job_id'] + ' (no fine-reference column in that lane); bottom: b-panel scheduled ladder, job 3789570, with vs-reference and the replication-selected EQ rule')
+    fixed = [[str(q), '1088', pct(v), '---', '---', '---', ms(c), '---', '---', 'dense, job ' + wj['job_id']] for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms'])]
+    FIXED_MAIN_ROWS[:] = fixed; FIXED_MAIN_JOB[0] = wj['job_id']
     rows_fq = []
     for q in ['0', '16', '32', '64', '128', '256']:
         d = ev['fixed_q'][q]
@@ -1710,12 +1722,55 @@ def build_seeds():
     macro('nSeedsFthree', yn(ver.get('F3_recipe_not_reproduced')))
     macro('nSeedsSealedPresent', yn(ver.get('sealed_present')))
     macro('provSeedsJobs', '; '.join(f"{tt(sd)} = {jobs[(sd, a)][0]} ({tex_escape(jobs[(sd, a)][1])})" for sd in seeds for a in attempts if (sd, a) in jobs))
-    # T13: the sealed cohort has not been opened
+    # T13: the sealed cohort (job 3804465), opened once after every choice was frozen
     if not ver.get('sealed_present'):
         write('T13_sealed.tex', gen('b-seeds sealed cohort', 'T13') + '\n')
         macro('nSeedsStatus', 'three seeds landed on the development cohort (Table~\\ref{tab:seeds}); the sealed cohort is ' + gen('b-seeds sealed cohort', 'seeds sealed'))
     else:
-        raise SystemExit('b-seeds sealed rows present: extend build_seeds before reading them')
+        sl = [r for r in rows if r['cohort'] == 'sealed' and r['ladder'] == 'dense_m4']
+        S = defaultdict(dict)
+        for r in sl:
+            S[(r['checkpoint'], r['q'])][r['metric']] = r['value']
+        sjob = {(r['checkpoint']): (r['job_id'], r['gpu']) for r in sl if r['job_id']}
+        cps = ['incumbent'] + seeds
+        C2 = {int(r['q']): r['value'] for r in rows if r['cohort'] == 'verdict' and r['metric'] == 'C2_ratio_seed_mean' and r.get('q') is not None}
+        C2i = {int(r['q']): r['value'] for r in rows if r['cohort'] == 'verdict' and r['metric'] == 'C2_ratio_incumbent' and r.get('q') is not None}
+        C2n = {int(r['q']): r['value'] for r in rows if r['cohort'] == 'verdict' and r['metric'] == 'C2_normalised_ratio_seed_mean' and r.get('q') is not None}
+        def sv(cp, q, m): return S.get((cp, q), {}).get(m)
+        t = []
+        for q in qs:
+            se = [sv(sd, q, 'evolved') for sd in seeds if sv(sd, q, 'evolved') is not None]
+            cv = [sv(sd, q, 'converged') for sd in seeds] + [sv('incumbent', q, 'converged')]
+            dv = seedvals(q, 'evolved')
+            inc_e = sv('incumbent', q, 'evolved'); inc_c = sv('incumbent', q, 'converged')
+            t.append([str(q), str(Mof.get(q, '---')), (pct(inc_e) + ('' if inc_c else ' (unconv.)')) if inc_e is not None else '---', ms(sv('incumbent', q, 'gpu_ms')),
+                      ms_(se), ms_(dv), f"{C2.get(q, float('nan')):.2f}", f"{C2n.get(q, float('nan')):.2f}", f"{sum(1 for c in cv if c)} of {len(cv)}"])
+        write('T13_sealed.tex', tabular(['$q$', '$M$', 'incumbent sealed \\%', 'ms', 'seeds sealed \\%', 'seeds development \\%', 'sealed / dev', 'normalised', 'converged'], t, 'rrrrllrrl', r'\scriptsize'),
+              'b-seeds sealed cohort, job 3804465 (A100-40GB), dense M = 4(K+q); sealed worst evolved error per rung for the incumbent and the seed mean +- sample std beside the development seed mean; C2 ratios from the lane; unconverged rungs marked')
+        per = []
+        for cp in cps:
+            d = S.get((cp, None), {}); jid, gpu = sjob.get(cp, ('---', '---'))
+            per.append([tt(cp), tt(jid), yn(d.get('monotone_evolved')), yn(d.get('monotone_all_times')), yn(d.get('all_converged')), ratio(d.get('error_span_evolved')), ratio(d.get('cost_span')), yn(d.get('knob_bar_passes'))])
+        write('T13b_sealed_verdicts.tex', tabular(['checkpoint', 'job', 'monotone (evolved)', 'monotone (all-times)', 'every rung converged', 'error span', 'cost span', 'knob bar'], per, 'llllllll', r'\scriptsize'),
+              'b-seeds sealed cohort, per-checkpoint ladder verdicts, job 3804465')
+        # macros
+        macro('nSealedJob', '3804465'); macro('provSealedGpu', tex_escape(sjob.get('incumbent', ('---', '---'))[1]))
+        macro('nSealedIncQzero', pct(sv('incumbent', 0, 'evolved'))); macro('nSealedIncQtop', pct(sv('incumbent', 256, 'evolved')))
+        macro('nSealedIncQzeroMs', ms(sv('incumbent', 0, 'gpu_ms'))); macro('nSealedIncQtopMs', ms(sv('incumbent', 256, 'gpu_ms')))
+        di = S.get(('incumbent', None), {}); macro('nSealedIncErrSpan', ratio(di.get('error_span_evolved'))); macro('nSealedIncCostSpan', ratio(di.get('cost_span')))
+        q0s = [sv(sd, 0, 'evolved') for sd in seeds]; macro('nSealedSeedsQzeroMin', pct(min(q0s), 2)); macro('nSealedSeedsQzeroMax', pct(max(q0s), 2))
+        q16 = [sv(cp, 16, 'evolved') for cp in cps]; macro('nSealedAllQsixteenMin', pct(min(q16), 2)); macro('nSealedAllQsixteenMax', pct(max(q16), 2))
+        top = [sv(cp, 256, 'evolved') for cp in cps]; macro('nSealedAllTopMin', pct(min(top), 2)); macro('nSealedAllTopMax', pct(max(top), 2))
+        macro('nSealedCheckpoints', str(len(cps)))
+        macro('nSealedMonotoneCount', str(sum(1 for cp in cps if S.get((cp, None), {}).get('monotone_evolved')))); macro('nSealedKnobBarCount', str(sum(1 for cp in cps if S.get((cp, None), {}).get('knob_bar_passes'))))
+        macro('nSealedCtwoWorstSeedRatio', f"{max(C2.values()):.2f}"); macro('nSealedCtwoWorstSeedRatioQ', str(max(C2, key=C2.get)))
+        macro('nSealedCtwoIncQzeroRatio', f"{C2i.get(0, float('nan')):.2f}"); macro('nSealedCtwoIncWorstRatioExcludingQzero', f"{max(v for q, v in C2i.items() if q != 0):.2f}")
+        macro('nSealedCtwoPass', yn(ver.get('C2_sealed_over_dev_ratio_le_1p5'))); macro('nSealedCtwoNPass', yn(ver.get('C2n_normalised_ratio_le_1p5'))); macro('nSealedCthreePass', yn(ver.get('C3_every_rung_converged_everywhere')))
+        unc = sorted({(cp, int(q)) for (cp, q) in S if q is not None and S[(cp, q)].get('converged') is False})
+        macro('nSealedUnconvergedCells', ', '.join(f"{tt(cp)} at $q={q}$ ({int(S[(cp, q)].get('budget_exits', 0))} budget exits)" for cp, q in unc) if unc else 'none')
+        macro('nSeedsStatus', 'landed on the development cohort (Table~\\ref{tab:seeds}) and on the sealed cohort (Table~\\ref{tab:sealed})')
+        macro('nSeedsSealedIncumbentByQ', ', '.join(pct(sv('incumbent', q, 'evolved'), 2) for q in qs))
+        SEALED_INC.update({q: sv('incumbent', q, 'evolved') for q in qs})
 
 
 def build_pending():
@@ -1861,7 +1916,7 @@ def build_problems_and_provenance(mesh):
          f"$256^2$ (ladder 64--1024)", f"$\\Delta t={fx.get('dt','---')}$, backward Euler, sign-upwind",
          f"$K={fx.get('latent_dimension','---')}$, $R={fx.get('bank_rank','---')}$",
          f"refined $ {ra.get('intervals','---')}^2$, $\\Delta t={ra.get('dt','---')}$" if ra else '---',
-         '6 development cases; 32 held-out (tuning); sealed cohort unopened'],
+         '6 development cases; 32 held-out (tuning); sealed cohort opened once (job 3804465)'],
         ['Poisson 2D', '$-\\Delta u=f$, $(0,1)^2$, $u|_{\\partial\\Omega}=0$', '$256^2$, $1024^2$', 'none (elliptic)',
          '$K=16$, $R=128$ (incumbent); $K=32$, $R=512$', 'exact discrete (DST); 2048$^2$ refinement', '12 development sources'],
         ['Heat 2D', '$u_t=\\kappa\\Delta u$, $(0,1)^2$', '$64^2$--$1024^2$', 'Crank--Nicolson', '$k=8$, $R=32$', 'exact modal', '12 development cases (earlier cell, job 3511417)'],
@@ -1895,7 +1950,7 @@ def build_problems_and_provenance(mesh):
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')
     prov('T18, T18c, T18d', 'lshape', 'training ' + MACROS.get('provLshapeJob', '---') + '; solves ' + MACROS.get('provLshapeSolveJobs', '---') + '; free rung ' + MACROS.get('provLshapeFreeJob', '---'), MACROS.get('provLshapeGpu', '---'), MACROS.get('provLshapeCommit', '---'), '7 heads + bases Git-tracked')
     prov('T12', 'b-seeds (development cohort)', MACROS['provSeedsJobs'] if 'provSeedsJobs' in MACROS else gen('b-seeds', 'T2 seeds row'), 'per job', 'per job', 'three seed checkpoints hashed in summary')
-    prov('T13', 'b-seeds (sealed cohort)', gen('b-seeds sealed cohort', 'T2 sealed row'), '---', '---', '---')
+    prov('T13', 'b-seeds (sealed cohort)', MACROS['nSealedJob'] if 'nSealedJob' in MACROS else gen('b-seeds sealed cohort', 'T2 sealed row'), MACROS.get('provSealedGpu', '---'), MACROS.get('provSeedsSummaryPin', '---'), 'four checkpoints (incumbent + three seeds) hashed in summary')
     write('T02b_retracted.tex', tabular(['lane', 'attempt', 'job', 'what it would have produced', 'why nothing is reported'],
                                         [[l, tt(a), tt(j), w, why] for l, a, j, w, why in RETRACTED_ATTEMPTS],
                                         r'llp{1.6cm}p{3.2cm}p{6.0cm}', r'\scriptsize'),
@@ -1928,6 +1983,7 @@ def main():
     build_lshape()
     build_pending()
     build_offline_and_spec()
+    write_ladder_main()
     # review r2 (N5): "four times the primary bar" generated
     try:
         macro('nEqtopStaticWorstOverBar', f"{float(MACROS['nEqtopStaticWorstRho']) / float(MACROS['nEqtopBar']):.1f}")

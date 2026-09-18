@@ -512,3 +512,12 @@ preconditioner. The one thing a finer mesh could change is the reduced-vs-POD co
 already favours the head here. If the paper wants the F4 caveat closed for the reduced-vs-POD
 statement, the cheapest honest step is the $L=512$ gate alone (leg (a) at 512, one job, ≈ 1 h),
 not a retrain.
+
+**A9.1 (2026-09-17, minutes after A9) — a hand-written sentence corrected by the generated
+report.** A9 says `nt1e-3_dt005` (54.9 ms, 0.197 %) "beats every reduced subject on both axes".
+It beats every *neural* subject (the cheapest neural rung is `q0_M256` at 300.3 ms); the cheapest
+reduced subject overall is `pod16_M64` at 46.5 ms, which it does not undercut. The cheapest
+full-order setting that beats *every* reduced subject on both axes is `nt1e-2_dt01` at 14.0 ms and
+3.895 % (the most accurate reduced subject is 6.187 %), as `summary.json` rows
+`P/cheapest_fom_beating_every_reduced_subject` record. P's verdict is unchanged. The lab-log entry
+of the same hour carries the same slip and is corrected there.

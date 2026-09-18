@@ -1,6 +1,24 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-17 night — ns304 exploratory ladder folded in (current state; everything below is history)
+## 2026-09-17 night — ns303 lower-dimensional family folded in (current state; everything below is history)
+
+ns2d committed ns303 (job 3808498, A100 pax105) at 5ea1cc30; every ns2d pin (`ns2d_summary`,
+`ns304_result`, new `ns303_result`, new `ns2d_design`) moved to that commit. T11e gains a row block
+"$256^2$ (family dim. 8)": the same K=16/R=256 recipe on the 3-mode family; B-ORTH/B-FLOOR/H-TRAIN
+pass, H-ORACLE fails at POD-16/oracle 1.39 (bar 2.0). The family's intrinsic dimensions (14 → 8) are
+parsed by regex from the lane's DESIGN §A12 ("intrinsic dimension from 14 to 8") and the GPU/host
+from the same paragraph, so no number is typed. Generated: oracle median 5.28 %, POD-16 7.37 %,
+held-out/train 3.8 (base 4.0), POD/oracle 1.83 at t=0 and 1.44 on evolved times, bank floor
+median 0.277 % (B-FLOOR 1.03), 4 budget exits; the error drops against ns203 are POD-16 3.3x, oracle
+3.8x, bank floor 4.4x — printed as the 3.3–4.4x range, not "about four-fold". §6.5: one sentence
+(easier manifold lowers every error, leaves the advantage at 1.39x and the gap near 3.8) and the
+cell-level statement (across K=16/32, family dimension 14/8 and 128–512 trajectories this head class
+does not beat POD-K by the pre-registered 2x on held-out decaying 2D NS; one arm, 4x data, still
+running). Register: ns303 landed; ns302 (3808495) stays as the last arm. Page budget: the §6.5
+heading now starts on page 8 after wording trims in §6.2–6.4 (rank-vs-test, quadrature, validate,
+head paragraphs) and §6.5; the conclusion ends page 9.
+
+## 2026-09-17 night — ns304 exploratory ladder folded in (history)
 
 ns2d committed ns304 (job 3808502, A100 80GB) at 46650a1e; `GIT_PINS` for `ns2d_summary` moved
 from f63de724, and a second pinned source `ns304_result` (the lane's `artifacts/ns304/result.json`)

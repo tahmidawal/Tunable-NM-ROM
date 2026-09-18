@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 22:51; this block is removed before submission).*
+*Status for the reader (generated 2026-09-17 23:13; this block is removed before submission).*
 *Final tables (54): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -633,16 +633,15 @@ and the 2 full-order settings below it
 coarser solves cancelling against the reference, not better ones; at $1024^2$
 the rungs run $3.86$ to
 $2.80 %$ over
-$2.14 %$. The knob is a knob on the reduction error, not on the physical error at
-these meshes. At fixed $M=256$ the ladder spans only $1.22\times$
+$2.14 %$. The knob moves the reduction error, not the physical error, at these meshes. At fixed $M=256$ the ladder spans only $1.22\times$
 in error and **fails** the pre-registered bar
-(Table 12; monotone on the evolved metric, every rung
-converged, error span $\ge2\times$, and two generator clauses:
-$\ge3$ non-dominated points, cost span $\ge2\times$). **At $M=1088$ the ladder $q=0,64,128,256$,
-inside one job, is monotone, every rung converged, and spans
+(Table 12: monotone on evolved, every rung converged, error
+span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
+and cost span $\ge2\times$). **At $M=1088$ the ladder $q=0,64,128,256$,
+inside one job is monotone, every rung converged, spans
 $2.44\times$ in evolved error for $5.16\times$ in cost
 with $4$ non-dominated points**, and passes. $M=1088$ is the pre-registered pure-rank ladder (the largest fixed
-$M$ that holds every rung to $q=256$); the $q=512$ extension did not converge and enters no span, and raising $M$ at $q=256$
+$M$ holding every rung to $q=256$); the $q=512$ extension did not converge and enters no span; raising $M$ at $q=256$
 saturates at $M^\star=2176$.
 
 Sealed cohort and seeds (Table 37, Table 36). The
@@ -670,37 +669,36 @@ Quadrature is a cost lever at equal error ($4.77\times$
 at $q=0$, $4.81\times$ at $q=128$) and the
 tolerance $10^{-6}\to10^{-3}$ removes a further
 $27$–$23 %$
-(Table 17). Of the two rule sets, the earlier ladder's
-breaks upward at $q=256$ (its rule is marginal); the replication-selected
-set is monotone at both tolerances and
+(Table 17). The earlier ladder's rule set breaks
+upward at $q=256$; the replication-selected set is monotone at both
+tolerances,
 $4.2$–$5.3\times$ cheaper
 than its dense twins, its $q=128, 256$ rules single-draw
-(Table 2). Transferred to $512^2$ (Table 19) that set
-stays monotone at both tolerances; its $q=128$ and $256$ transfers pass
-the primary bar there although their sources are
-single-draw, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
+(Table 2). Transferred to $512^2$ (Table 19) it stays
+monotone; its $q=128$ and $256$ transfers pass the primary bar there
+though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
 the transfer reaches $0.5510 %$ in
 $21\times$ less time than
 its dense twin. Solver knobs alone move cost, not accuracy (Table 26).
 
 **Validate on reachable states, then re-draw.**
 
-A quadrature rule has to be judged on the states the solver reaches, not
-on how well it fits the states it was built from. The NNLS fit residual predicts nothing about held-out error
+A quadrature rule must be judged on the states the solver reaches, not
+on its fit to the states it was built from. The NNLS fit residual says nothing about held-out error
 (Figure 3: a rule fitting to $1.5e-04$ reaches
 $\rho_{\max}=0.462$ held-out, $4.0\times$
 the primary bar).
 **The pre-registered replication re-drew every construction**
-(Table 32): $\rho_{\max}$ moves by
-$1.4$–$9.6\times$ within one construction, and
-the ladder's rules are **confirmed at $q=0, 16, 32$ and
-marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$**; a single passing rule is not a certificate of its construction — a
-re-draw is (Appendix F.2). One gate failed: same-source rule pairs transferred to
-$512^2$ are not bitwise identical (each transfer refits on its own
+(Table 32): $\rho_{\max}$ moves
+$1.4$–$9.6\times$ within one construction; the
+ladder's rules are **confirmed at $q=0, 16, 32$ and
+marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$**; one passing rule does not certify its construction; a re-draw does
+(Appendix F.2). One gate failed: same-source rule pairs transferred to
+$512^2$ are not bitwise identical (each transfer refits its own
 draw), and one $q=32$ source passes the primary bar in one
-transfer and only the secondary in the other, a
+transfer and only the secondary in the other, an
 $8.7\times$ spread in
-$\rho_{\max}$, measured and unexplained; no falsification clause fired.
+$\rho_{\max}$, unexplained; no falsification clause fired.
 
 ### 6.4 The Head against Linear Maps at Matched Dimension
 
@@ -718,7 +716,7 @@ $17.2966 %$) and loses per millisecond to POD-128
 $5.930$ ms against $5.843$ ms).
 In three layers (Table 13) the reduction layer sits
 $6.5\times$ above the floor and the solver
-layer costs $0.018$ pp: the head is the binding layer.
+layer costs $0.018$ pp: the head binds.
 
 ### 6.5 Where the Family Collapses: Linear PDEs, Navier–Stokes, and the L-shaped Domain
 
@@ -742,24 +740,29 @@ held-out oracle beats POD-$K$ by only $1.19\times$ and
 $1.15\times$ against a pre-registered bar of
 $2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is the more accurate (POD/oracle
 $0.82$): linear beats nonlinear where the data
-lie in a low-dimensional subspace. Retraining the head on the frozen bank with 128, 256 and
+lie in a low-dimensional subspace. Retraining the head with 128, 256 and
 512 trajectories moves the held-out oracle
 $27.4938$ to $20.6889$ to
 $19.8279 %$ ($25 %$ then
-$4 %$ per doubling), read by the
-pre-registered rule as “ambiguous” (Table 47),
-the bank having seen all 512 trajectories. An exploratory
-ladder on that failed-gate manifold (Table 48; not a
-phase-3 result) closes the manifold gap toward the bank floor,
-fully only at $q=R$ where the head no longer matters. POD-LSPG at the same
-dimension is more accurate at every rung and cheaper at all but the top,
-and no neural rung is non-dominated: the falsification clause's named
-outcome for this head. A trade between rungs
-needs a residual nonlinear in the coefficients and a manifold
-that beats POD held-out; Poisson, heat and waves lack the first, this
-cell the second, and Burgers on the square had both yet still lost on
-cost; whether a reduced solve wins on cost at all is decided by the fast
-transform alone.
+$4 %$ per doubling; “ambiguous”
+by the pre-registered rule, Table 47; the bank saw all
+512). A family of intrinsic dimension 8 instead of
+14 lowers every error 3.3–4.4$\times$ but
+leaves the head's advantage over POD-16 at 1.39$\times$ and
+the held-out/training gap near 3.8 (Table 43):
+the advantage does not grow as the manifold gets easier; across $K=16$
+and $32$, family dimension 14 and 8, and 128–512
+trajectories this head class does not beat POD-$K$ by the pre-registered
+$2.0\times$ on held-out decaying 2D Navier–Stokes (one arm,
+$4\times$ data, still running). An exploratory ladder on that failed-gate
+manifold (Table 48; not a phase-3 result) closes the
+manifold gap toward the bank floor only at $q=R$, where the head no longer
+matters, and POD-LSPG at the same dimension is more accurate at every
+rung and cheaper at all but the top, with no neural rung non-dominated:
+the falsification clause's named outcome for this head. A trade between
+rungs needs a residual nonlinear in the coefficients and a manifold that
+beats POD held-out: Poisson, heat and waves lack the first, this cell the
+second, Burgers had both and still lost on cost.
 
 **Table 3.** L-shaped Poisson, solve layer at $M=257$, one job per mesh
 (complete-query ms; ratios inside each job): the cheapest full-order arm,
@@ -774,8 +777,7 @@ POD-128 and the head at $q=64$ (full sets: Table 44).
 | $512^2$ | `3789568` | 36.50 | CG $10^{-2}$ | 29.13 | 0.385 | 2.451 | 4.031 | 9.06 / 7.23 | 2.123 | 4.801 | 7.60 / 6.07 | yes |
 
 **On the L-shaped domain (Poisson, a linear residual; no fast
-transform) reduced models are cheaper, and POD is cheaper than the
-head.** The direct solve's cost climbs with the mesh, at
+transform) reduced models are cheaper, POD most of all.** The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($29.13$ ms
 at $0.385 %$, more accurate than every reduced
 arm), and the reduced arms stay nearly flat (Table 3; cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
@@ -783,11 +785,10 @@ $2.77\times$ and
 $6.07\times$ cheaper, POD-128
 $2.94\times$ and
 $7.23\times$; the head is non-dominated
-only on accuracy, costing
-$6$–$19 %$
-more than POD-128 for $15 %$ less error.
-No reduced arm beats the full-order solves on accuracy, nothing
-claimed beyond $512^2$, and the banks' reconstruction degrades from
+only on accuracy
+($6$–$19 %$
+more cost than POD-128 for $15 %$ less error).
+Nothing is claimed beyond $512^2$, and the banks' reconstruction degrades from
 $6.8$ to $16.7 %$ on validation
 sources, unswept (Table 46).
 
@@ -1188,7 +1189,8 @@ pending in §Table 3.
 | b-eqtop | `bet301` | `3783811` | draw replication (landed; Table \ref{tab:replication}) |
 | b-lowvisc | `lvt01` | `3804337` | low-viscosity Burgers; gate passed, mesh under-resolved (F4) |
 | ns2d | `ns301` | `3808493` | Navier–Stokes head-only data-scaling diagnosis (landed; Table \ref{tab:ns-scaling}) |
-| ns2d | `ns302–ns303` | `3808495, 3808498` | Navier–Stokes follow-ups (running; read by no table) |
+| ns2d | `ns302` | `3808495` | Navier–Stokes head at $4\times$ the training data (running; read by no table; the last arm of the cell) |
+| ns2d | `ns303` | `3808498` | Navier–Stokes $K=16$ head on the lower-dimensional family (landed; Table \ref{tab:ns}) |
 | ns2d | `ns304` | `3808502` | Navier–Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table \ref{tab:ns-ladder}; exploratory after a failed phase-2 gate) |
 
 ## E Full tables
@@ -2138,15 +2140,24 @@ is measured below baseline.
 | joint bank$+$head, $R{=}512$ | 32 | 2.8517 | 5.0383 | 5.0471 | 2.4399 | 46.3 | yes |
 
 **Table 43.** Navier–Stokes 2D, phase-2 gates for the $K=16$ head on the
-full-rank $R=256$ bank and the $K=32$ head on the full-rank $R=512$ bank
-(jobs 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$); full-order solver and dataset certified in job
-3780151). Every gate passes except the held-out oracle, whose
-pre-registered bar was a $2.0\times$ margin over POD at matched
-dimension (ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320); the ladder and timing were therefore never
-run for either head. Oracle values are upper bounds:
-12 ($K{=}16$) and 18
-($K{=}32$) held-out fits at $256^2$ hit the LM budget, which biases the
-ratio downward, so the negative verdict is conservative.
+full-rank $R=256$ bank, the $K=32$ head on the full-rank $R=512$ bank, and
+the same $K=16$ recipe on a family of intrinsic dimension 8
+instead of 14 (3 modes; last row, job
+3808498, A100 (pax105)) (jobs 3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8); full-order solver and
+dataset certified in job 3780151). Every gate passes except the
+held-out oracle, whose pre-registered bar was a $2.0\times$
+margin over POD at matched dimension (ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320); the ladder and
+timing were therefore never run for any head. On the lower-dimensional
+family every error falls 3.3–4.4$\times$ (POD-16
+3.3, oracle 3.8, bank floor 4.4)
+while the ratio stays at 1.39 (1.83
+at $t=0$, 1.44 on evolved times) and the
+held-out/training gap at 3.8 against
+4.0. Oracle values are upper bounds:
+12 ($K{=}16$), 18
+($K{=}32$) and 4 (family dimension 8) held-out
+fits at $256^2$ hit the LM budget, which biases the ratio downward, so the
+negative verdict is conservative.
 
 <!-- table: T11e_ns -->
 | mesh | bank rank | B-ORTH | bank worst % | POD-$R$ worst % | B-FLOOR | oracle median % | POD-$K$ median % | POD-$K$ / oracle | H-ORACLE ($\ge$2.0) |
@@ -2157,6 +2168,7 @@ ratio downward, so the negative verdict is conservative.
 | $64^2$ ($K{=}32$) | 512 | yes | 7.4103 | 6.0761 | yes | 12.1757 | 14.0697 | 1.16 | no |
 | $128^2$ ($K{=}32$) | 512 | yes | 7.5545 | 5.9861 | yes | 12.1115 | 13.9568 | 1.15 | no |
 | $256^2$ ($K{=}32$) | 512 | yes | 7.5643 | 5.9983 | yes | 12.0948 | 13.9455 | 1.15 | no |
+| $256^2$ (family dim. 8) | 256 | yes | 6.4018 | 6.2295 | yes | 5.2823 | 7.3651 | 1.39 | no |
 
 **Table 44.** L-shaped Poisson, solve layer at $M=257$ (jobs
 3784662, 3784663, 3789568, one per mesh): the non-dominated set on (complete-query

@@ -13,11 +13,13 @@
 % STATUS FOR THE READER (removed before submission; mirrored in WRITING-STATUS.md)
 %  * Final tables: every T*; no pending cell (T13, the sealed cohort, landed
 %    at lane commit be9415ab, job 3804465).
-%  * In flight, not in any table: lvt01 3804337 (b-lowvisc), ns302--ns303
-%    (ns2d). T12 (three seeds) is now the development-cohort table; the
-%    sealed cohort (T13) is the headline for the scheduled ladder. ns304
-%    (3808502) is in T11g/T11h and two sentences of 6.5, every one of them
-%    labelled exploratory after a failed phase-2 gate (not phase 3).
+%  * In flight, not in any table: lvt01 3804337 (b-lowvisc), ns302 3808495
+%    (ns2d, 4x data, the cell's last arm). T12 (three seeds) is now the
+%    development-cohort table; the sealed cohort (T13) is the headline for
+%    the scheduled ladder. ns304 (3808502) is in T11g/T11h and two sentences
+%    of 6.5, every one of them labelled exploratory after a failed phase-2
+%    gate (not phase 3). ns303 (3808498, family dimension 8) is the last row
+%    block of T11e and one sentence of 6.5; NS cell-level statement in 6.5.
 %  * Provisional: the two top EQ rungs are single-draw.
 %  * Open decisions for the user: (1) the headline Burgers metric (worst over
 %    evolved times vs worst over all times) -- both printed; decisive at 1024^2,
@@ -665,16 +667,15 @@ and the \nPanelFiveTwelveFomBelowDiscCount{} full-order settings below it
 coarser solves cancelling against the reference, not better ones; at $1024^2$
 the rungs run $\nPanelTenTwentyFourQzeroRef$ to
 $\nPanelTenTwentyFourBestRungRef\,\%$ over
-$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob is a knob on the reduction error, not on the physical error at
-these meshes. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
+$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob moves the reduction error, not the physical error, at these meshes. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
 in error and \textbf{fails} the pre-registered bar
-(Table~\ref{tab:qxm}; monotone on the evolved metric, every rung
-converged, error span $\ge2\times$, and two generator clauses:
-$\ge3$ non-dominated points, cost span $\ge2\times$). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
-inside one job, is monotone, every rung converged, and spans
+(Table~\ref{tab:qxm}: monotone on evolved, every rung converged, error
+span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
+and cost span $\ge2\times$). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
+inside one job is monotone, every rung converged, spans
 $\nQxmErrSpan\times$ in evolved error for $\nQxmCostSpan\times$ in cost
 with $\nQxmNonDom$ non-dominated points}, and passes. $M=1088$ is the pre-registered pure-rank ladder (the largest fixed
-$M$ that holds every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span, and raising $M$ at $q=256$
+$M$ holding every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span; raising $M$ at $q=256$
 saturates at $M^\star=\nQxmMstarTwoFiftySix$.
 
 Sealed cohort and seeds (Tables~\ref{tab:sealed}, \ref{tab:seeds}). The
@@ -702,37 +703,36 @@ Quadrature is a cost lever at equal error ($\nPanelEqSpeedupZero\times$
 at $q=0$, $\nPanelEqSpeedupOneTwoEight\times$ at $q=128$) and the
 tolerance $10^{-6}\to10^{-3}$ removes a further
 $\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$
-(Table~\ref{tab:tunability}). Of the two rule sets, the earlier ladder's
-breaks upward at $q=256$ (its rule is marginal); the replication-selected
-set is monotone at both tolerances and
+(Table~\ref{tab:tunability}). The earlier ladder's rule set breaks
+upward at $q=256$; the replication-selected set is monotone at both
+tolerances,
 $\nPanelEqtopTwinSpeedupMin$--$\nPanelEqtopTwinSpeedupMax\times$ cheaper
 than its dense twins, its $q=\nPanelEqtopSingleDrawQs$ rules single-draw
-(Table~\ref{tab:ladder-main}). Transferred to $512^2$ (Table~\ref{tab:tunability-fivetwelve}) that set
-stays monotone at both tolerances; its $q=128$ and $256$ transfers pass
-the primary bar there although their sources are
-single-draw, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
+(Table~\ref{tab:ladder-main}). Transferred to $512^2$ (Table~\ref{tab:tunability-fivetwelve}) it stays
+monotone; its $q=128$ and $256$ transfers pass the primary bar there
+though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
 the transfer reaches $\nPanelFiveTwelveEqtopxferQTwoFiftySixErr\,\%$ in
 $\nPanelFiveTwelveEqtopxferQTwoFiftySixTwinSpeedup\times$ less time than
 its dense twin. Solver knobs alone move cost, not accuracy (Table~\ref{tab:knobs}).
 
 \paragraph{Validate on reachable states, then re-draw.}
 \label{sec:exp:eq}
-A quadrature rule has to be judged on the states the solver reaches, not
-on how well it fits the states it was built from. The NNLS fit residual predicts nothing about held-out error
+A quadrature rule must be judged on the states the solver reaches, not
+on its fit to the states it was built from. The NNLS fit residual says nothing about held-out error
 (Figure~\ref{fig:cert}: a rule fitting to $\nEqtopStaticWorstFit$ reaches
 $\rho_{\max}=\nEqtopStaticWorstRho$ held-out, $\nEqtopStaticWorstOverBar\times$
 the primary bar).
 \textbf{The pre-registered replication re-drew every construction}
-(Table~\ref{tab:replication}): $\rho_{\max}$ moves by
-$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ within one construction, and
-the ladder's rules are \textbf{confirmed at $q=\nEqtopConfirmedRungs$ and
-marginal at $q=\nEqtopMarginalRungs$}; a single passing rule is not a certificate of its construction --- a
-re-draw is (Appendix~\ref{app:extended:eq}). One gate failed: same-source rule pairs transferred to
-$512^2$ are not bitwise identical (each transfer refits on its own
+(Table~\ref{tab:replication}): $\rho_{\max}$ moves
+$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ within one construction; the
+ladder's rules are \textbf{confirmed at $q=\nEqtopConfirmedRungs$ and
+marginal at $q=\nEqtopMarginalRungs$}; one passing rule does not certify its construction; a re-draw does
+(Appendix~\ref{app:extended:eq}). One gate failed: same-source rule pairs transferred to
+$512^2$ are not bitwise identical (each transfer refits its own
 draw), and one $q=32$ source passes the primary bar in one
-transfer and only the secondary in the other, a
+transfer and only the secondary in the other, an
 $\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo\times$ spread in
-$\rho_{\max}$, measured and unexplained; no falsification clause fired.
+$\rho_{\max}$, unexplained; no falsification clause fired.
 
 \subsection{The Head against Linear Maps at Matched Dimension}
 \label{sec:results:head}
@@ -749,7 +749,7 @@ $\nAblPoissonLinear\,\%$) and loses per millisecond to POD-128
 $\nAblPoissonPodOneTwentyEightMs$\,ms against $\nAblPoissonNeuralMs$\,ms).
 In three layers (Table~\ref{tab:layers}) the reduction layer sits
 $\nAblBurgersReductionOverFloor\times$ above the floor and the solver
-layer costs $\nAblBurgersSolverGapPp$\,pp: the head is the binding layer.
+layer costs $\nAblBurgersSolverGapPp$\,pp: the head binds.
 
 \subsection{Where the Family Collapses: Linear PDEs, Navier--Stokes, and the L-shaped Domain}
 \label{sec:results:collapse}
@@ -772,24 +772,29 @@ held-out oracle beats POD-$K$ by only $\nNsOracleRatio\times$ and
 $\nNsKthirtyTwoOracleRatio\times$ against a pre-registered bar of
 $\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is the more accurate (POD/oracle
 $\nNsKthirtyTwoPodOverOracleTzero$): linear beats nonlinear where the data
-lie in a low-dimensional subspace. Retraining the head on the frozen bank with 128, 256 and
+lie in a low-dimensional subspace. Retraining the head with 128, 256 and
 512 trajectories moves the held-out oracle
 $\nNsScalePlainNOneTwentyEight$ to $\nNsScalePlainNTwoFiftySix$ to
 $\nNsScalePlainNFiveTwelve\,\%$ ($\nNsScaleGainFirstDoubling\,\%$ then
-$\nNsScaleGainSecondDoubling\,\%$ per doubling), read by the
-pre-registered rule as ``\nNsScalePlainVerdict'' (Table~\ref{tab:ns-scaling}),
-the bank having seen all 512 trajectories. An exploratory
-ladder on that failed-gate manifold (Table~\ref{tab:ns-ladder}; not a
-phase-3 result) closes the manifold gap toward the bank floor,
-fully only at $q=R$ where the head no longer matters. POD-LSPG at the same
-dimension is more accurate at every rung and cheaper at all but the top,
-and no neural rung is non-dominated: the falsification clause's named
-outcome for this head. A trade between rungs
-needs a residual nonlinear in the coefficients and a manifold
-that beats POD held-out; Poisson, heat and waves lack the first, this
-cell the second, and Burgers on the square had both yet still lost on
-cost; whether a reduced solve wins on cost at all is decided by the fast
-transform alone.
+$\nNsScaleGainSecondDoubling\,\%$ per doubling; ``\nNsScalePlainVerdict''
+by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
+512). A family of intrinsic dimension \nNsFamDimLow{} instead of
+\nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ but
+leaves the head's advantage over POD-16 at \nNsFamOracleRatio$\times$ and
+the held-out/training gap near \nNsFamHeldoutOverTrain{} (Table~\ref{tab:ns}):
+the advantage does not grow as the manifold gets easier; across $K=16$
+and $32$, family dimension \nNsFamDimBase{} and \nNsFamDimLow, and 128--512
+trajectories this head class does not beat POD-$K$ by the pre-registered
+$\nNsOracleBar\times$ on held-out decaying 2D Navier--Stokes (one arm,
+$4\times$ data, still running). An exploratory ladder on that failed-gate
+manifold (Table~\ref{tab:ns-ladder}; not a phase-3 result) closes the
+manifold gap toward the bank floor only at $q=R$, where the head no longer
+matters, and POD-LSPG at the same dimension is more accurate at every
+rung and cheaper at all but the top, with no neural rung non-dominated:
+the falsification clause's named outcome for this head. A trade between
+rungs needs a residual nonlinear in the coefficients and a manifold that
+beats POD held-out: Poisson, heat and waves lack the first, this cell the
+second, Burgers had both and still lost on cost.
 
 \begin{table}[t]
 \centering
@@ -801,8 +806,7 @@ POD-128 and the head at $q=64$ (full sets: Table~\ref{tab:lshape-solve}).}
 \end{table}
 
 \textbf{On the L-shaped domain (Poisson, a linear residual; no fast
-transform) reduced models are cheaper, and POD is cheaper than the
-head.} The direct solve's cost climbs with the mesh, at
+transform) reduced models are cheaper, POD most of all.} The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($\nLshapeCheapestFomMsFiveTwelve$\,ms
 at $\nLshapeCheapestFomErrFiveTwelve\,\%$, more accurate than every reduced
 arm), and the reduced arms stay nearly flat (Table~\ref{tab:lshape-main}; cross-job trend). Against the cheapest same-job full-order arm the head at $q=64$ is
@@ -810,11 +814,10 @@ $\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ and
 $\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper, POD-128
 $\nLshapePodCheaperVsCheapestTwoFiftySix\times$ and
 $\nLshapePodCheaperVsCheapestFiveTwelve\times$; the head is non-dominated
-only on accuracy, costing
-$\nLshapeHeadOverPodCostTwoFiftySix$--$\nLshapeHeadOverPodCostFiveTwelve\,\%$
-more than POD-128 for $\nLshapePodOverHeadErrFiveTwelve\,\%$ less error.
-No reduced arm beats the full-order solves on accuracy, nothing
-claimed beyond $512^2$, and the banks' reconstruction degrades from
+only on accuracy
+($\nLshapeHeadOverPodCostTwoFiftySix$--$\nLshapeHeadOverPodCostFiveTwelve\,\%$
+more cost than POD-128 for $\nLshapePodOverHeadErrFiveTwelve\,\%$ less error).
+Nothing is claimed beyond $512^2$, and the banks' reconstruction degrades from
 $\nLshapeDevelopmentWorst$ to $\nLshapeValidationWorst\,\%$ on validation
 sources, unswept (Table~\ref{tab:lshape}).
 

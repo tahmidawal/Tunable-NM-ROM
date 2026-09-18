@@ -286,6 +286,31 @@
 \newcommand{\nNsExpSolveOverManifoldMin}{2.9}
 \newcommand{\nNsExpTopMedian}{2.4377}
 \newcommand{\nNsExpTopWorst}{6.0140}
+\newcommand{\nNsFamBankFloorMedian}{0.2774}
+\newcommand{\nNsFamBankMedian}{1.0820}
+\newcommand{\nNsFamBankOverPod}{1.03}
+\newcommand{\nNsFamBankWorst}{6.4018}
+\newcommand{\nNsFamBaseGap}{4.0}
+\newcommand{\nNsFamBaseOracleRatio}{1.19}
+\newcommand{\nNsFamBudgetExits}{4}
+\newcommand{\nNsFamDimBase}{14}
+\newcommand{\nNsFamDimLow}{8}
+\newcommand{\nNsFamDropFloor}{4.4}
+\newcommand{\nNsFamDropMax}{4.4}
+\newcommand{\nNsFamDropMin}{3.3}
+\newcommand{\nNsFamDropOracle}{3.8}
+\newcommand{\nNsFamDropPod}{3.3}
+\newcommand{\nNsFamHeldoutOverTrain}{3.8}
+\newcommand{\nNsFamLowModes}{3}
+\newcommand{\nNsFamLowTrainN}{512}
+\newcommand{\nNsFamOracleMedian}{5.2823}
+\newcommand{\nNsFamOraclePass}{no}
+\newcommand{\nNsFamOracleRatio}{1.39}
+\newcommand{\nNsFamPodMedian}{7.3651}
+\newcommand{\nNsFamPodOverOracleEvolved}{1.44}
+\newcommand{\nNsFamPodOverOracleTzero}{1.83}
+\newcommand{\nNsFamPodTwoFiftySixWorst}{6.2295}
+\newcommand{\nNsFamTrainRecon}{1.3853}
 \newcommand{\nNsHeldoutOverTrain}{4.0}
 \newcommand{\nNsKthirtyTwo}{landed (job 3787320): fails the same bar (Table~\ref{tab:ns})}
 \newcommand{\nNsKthirtyTwoHeldoutOverTrain}{3.2}
@@ -1195,14 +1220,18 @@
 \newcommand{\provNsExpCommit}{31e0846f}
 \newcommand{\provNsExpGpu}{NVIDIA A100 80GB PCIe}
 \newcommand{\provNsExpJob}{3808502}
+\newcommand{\provNsFamGpu}{A100 (pax105)}
+\newcommand{\provNsFamJob}{3808498}
 \newcommand{\provNsFomJob}{3780151}
 \newcommand{\provNsJob}{3787319}
-\newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$)}
+\newcommand{\provNsJobs}{3787319 ($K{=}16$, $R{=}256$), 3787320 ($K{=}32$, $R{=}512$), 3808498 ($K{=}16$, $R{=}256$, family dimension 8)}
 \newcommand{\provNsPrevJob}{3783796}
 \newcommand{\provNsScaleJob}{3808493}
 \newcommand{\provNsScalingBandSource}{ns2d/DESIGN.md §A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous}
-\newcommand{\provNsThreeZeroFourResultPin}{46650a1e}
-\newcommand{\provNsTwodSummaryPin}{46650a1e}
+\newcommand{\provNsThreeZeroFourResultPin}{5ea1cc30}
+\newcommand{\provNsThreeZeroThreeResultPin}{5ea1cc30}
+\newcommand{\provNsTwodDesignPin}{5ea1cc30}
+\newcommand{\provNsTwodSummaryPin}{5ea1cc30}
 \newcommand{\provOpCtrlJob}{3783831}
 \newcommand{\provOpJobs}{3702464, 3702709, 3710846, 3780138, 3780139, 3780625, 3783831, 3787189}
 \newcommand{\provPanelCkpt}{incumbent (gate checkpoint\_unchanged; hash in T2, tuning row)}

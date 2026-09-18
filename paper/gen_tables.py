@@ -54,6 +54,8 @@ SOURCES = {
     'eqtop_report': '2026-09-17-b-eqtop/experiments/b-eqtop/reports/2026-09-17-b-eqtop.md',
     'ns2d_summary': '2026-09-17-ns2d/experiments/ns2d/reports/summary.json',
     'ns304_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns304/result.json',
+    'ns303_result': '2026-09-17-ns2d/experiments/ns2d/artifacts/ns303/result.json',
+    'ns2d_design': '2026-09-17-ns2d/experiments/ns2d/DESIGN.md',
     # pending lanes (absent on disk today; listed so the placeholder names the lane)
     'seeds_summary': '2026-09-17-b-seeds/experiments/b-seeds/reports/summary.json',
     'panel1024_summary': '2026-09-17-b-panel/experiments/b-panel/reports/summary-1024.json',
@@ -95,7 +97,8 @@ IN_FLIGHT = [
     ('b-eqtop', 'bet301', '3783811', 'draw replication (landed; Table~\\ref{tab:replication})'),
     ('b-lowvisc', 'lvt01', '3804337', 'low-viscosity Burgers; gate passed, mesh under-resolved (F4)'),
     ('ns2d', 'ns301', '3808493', 'Navier--Stokes head-only data-scaling diagnosis (landed; Table~\\ref{tab:ns-scaling})'),
-    ('ns2d', 'ns302--ns303', '3808495, 3808498', 'Navier--Stokes follow-ups (running; read by no table)'),
+    ('ns2d', 'ns302', '3808495', 'Navier--Stokes head at $4\\times$ the training data (running; read by no table; the last arm of the cell)'),
+    ('ns2d', 'ns303', '3808498', 'Navier--Stokes $K=16$ head on the lower-dimensional family (landed; Table~\\ref{tab:ns})'),
     ('ns2d', 'ns304', '3808502', 'Navier--Stokes exploratory $q$-ladder on the failed-gate $K=32$ manifold (landed; Table~\\ref{tab:ns-ladder}; exploratory after a failed phase-2 gate)'),
 ]
 
@@ -129,9 +132,11 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
     'panel_report': ('2026-09-17-b-panel', 'd2135501'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
-    # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e
-    'ns2d_summary': ('2026-09-17-ns2d', '46650a1e'),
-    'ns304_result': ('2026-09-17-ns2d', '46650a1e'),
+    # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e; ns303 (8-dimensional family) at 5ea1cc30
+    'ns2d_summary': ('2026-09-17-ns2d', '5ea1cc30'),
+    'ns304_result': ('2026-09-17-ns2d', '5ea1cc30'),
+    'ns303_result': ('2026-09-17-ns2d', '5ea1cc30'),
+    'ns2d_design': ('2026-09-17-ns2d', '5ea1cc30'),
 }
 
 
@@ -1866,6 +1871,44 @@ def build_pending():
             bx1, _ = v('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states'); bx2, _ = v2('head_K32_R512', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states')
             macro('nNsBudgetExitsKsixteen', str(int(bx1)) if bx1 is not None else '---'); macro('nNsBudgetExitsKthirtyTwo', str(int(bx2)) if bx2 is not None else '---')
             macro('provNsJobs', f'{NS_JOB} ($K{{=}}16$, $R{{=}}256$), {NS2} ($K{{=}}32$, $R{{=}}512$)')
+        # ns303 (job 3808498): the same K=16/R=256 recipe on the lower-dimensional family (NMODES=3); the family's
+        # intrinsic dimensions (14 -> 8) are parsed from the lane's DESIGN §A12, the job/GPU from the same paragraph
+        NS5 = '3808498'
+        P5 = defaultdict(dict)
+        for r in n:
+            if str(r.get('job_id')) == NS5:
+                P5[(r['subject'], r['gate'], r['mesh'])][r['metric']] = (r['value'], r['passed'])
+        def v5(sub, gate, mesh, metric):
+            return P5.get((sub, gate, mesh), {}).get(metric, (None, None))
+        design = load('ns2d_design') or ''
+        r3 = load('ns303_result')
+        fam = re.search(r"intrinsic dimension from (\d+) to (\d+)", design)
+        if P5 and fam and r3:
+            d14, d8 = fam.group(1), fam.group(2)
+            macro('nNsFamDimBase', d14); macro('nNsFamDimLow', d8); macro('nNsFamLowModes', str(int(r3['config']['NMODES'])))
+            macro('nNsFamLowTrainN', str(int(r3['config']['N_TRAIN'])))
+            g = re.search(r"`ns303` \((A100) `(\w+)`", design)
+            macro('provNsFamGpu', (g.group(1) + ' (' + g.group(2) + ')') if g else '---'); macro('provNsFamJob', NS5)
+            o5, ok5 = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.oracle_median'); p5, _ = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.podK_median')
+            b5, bok5 = v5('bank_256', 'B-FLOOR_N256', 256, 'floor.worst_evolved_fixed'); pp5, _ = v5('pod_256', 'B-FLOOR_N256', 256, 'floor.worst_evolved_fixed')
+            rk5, rok5 = v5('bank_R256', 'B-ORTH_N256', 256, 'rank')
+            gt.append('MIDRULE')
+            gt.append([f'$256^2$ (family dim.\\ {d8})', str(int(rk5)), yn(rok5), pct(100 * b5), pct(100 * pp5), yn(bok5), pct(100 * o5), pct(100 * p5), f"{p5 / o5:.2f}", yn(ok5)])
+            macro('nNsFamOracleMedian', pct(100 * o5)); macro('nNsFamPodMedian', pct(100 * p5)); macro('nNsFamOracleRatio', f"{p5 / o5:.2f}"); macro('nNsFamOraclePass', yn(ok5))
+            macro('nNsFamBankWorst', pct(100 * b5)); macro('nNsFamPodTwoFiftySixWorst', pct(100 * pp5)); macro('nNsFamBankOverPod', f"{b5 / pp5:.2f}")
+            bm5, _ = v5('bank_256', 'B-FLOOR_N256', 256, 'floor.median_case_worst_fixed'); macro('nNsFamBankMedian', pct(100 * bm5))
+            bf5, _ = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.bank_floor_median'); macro('nNsFamBankFloorMedian', pct(100 * bf5))
+            tr5, _ = v5('head_K16_R256', 'H-TRAIN', 256, 'training.recon_rel_l2_median'); macro('nNsFamTrainRecon', pct(100 * tr5))
+            gap5, _ = v5('head_K16_R256', 'H-ORACLE', 256, 'heldout_oracle_over_training_recon_median'); macro('nNsFamHeldoutOverTrain', f"{gap5:.1f}")
+            t05, _ = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.t0'); ev5, _ = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle_by_time.podK_over_oracle.evolved')
+            macro('nNsFamPodOverOracleTzero', f"{t05:.2f}"); macro('nNsFamPodOverOracleEvolved', f"{ev5:.2f}")
+            bx5, _ = v5('head_K16_R256', 'H-ORACLE_N256', 256, 'oracle.budget_exits_of_states'); macro('nNsFamBudgetExits', str(int(bx5)))
+            # base-family (ns203, same recipe) values for the drop factors: POD-16, oracle, bank floor
+            drops = [pod / p5, orc / o5, bfl / bf5]
+            macro('nNsFamDropMin', f"{min(drops):.1f}"); macro('nNsFamDropMax', f"{max(drops):.1f}")
+            macro('nNsFamDropPod', f"{pod / p5:.1f}"); macro('nNsFamDropOracle', f"{orc / o5:.1f}"); macro('nNsFamDropFloor', f"{bfl / bf5:.1f}")
+            macro('nNsFamBaseOracleRatio', f"{pod / orc:.2f}"); macro('nNsFamBaseGap', f"{gap:.1f}")
+            macro('provNsJobs', MACROS.get('provNsJobs', NS_JOB) + f', {NS5} ($K{{=}}16$, $R{{=}}256$, family dimension {d8})')
         write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-$R$ worst \\%', 'B-FLOOR',
                                       'oracle median \\%', 'POD-$K$ median \\%', 'POD-$K$ / oracle', 'H-ORACLE ($\\ge$2.0)'],
                                      gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, jobs {NS_JOB} (K=16, R=256) and {NS2} (K=32, R=512), full-rank banks; every gate passes except H-ORACLE; oracle values are upper bounds (some held-out fits hit the LM budget)')

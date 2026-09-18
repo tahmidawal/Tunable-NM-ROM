@@ -272,6 +272,7 @@ def pivot(rows, key='subject', metric='metric', value='value'):
 # marginal (k of n draws pass) / none.  The k-of-n verdicts come from the b-eqtop draw
 # replication (job 3783811), keyed by (q, m); the panel's own strings are mapped onto them.
 _EQ_REP: dict | None = None
+LADDER_MAIN_ROWS: list = []   # the 256^2 scheduled-ladder rows, merged with the fixed-M rows in build_qxm
 def eq_replication_status():
     global _EQ_REP
     if _EQ_REP is None:
@@ -472,6 +473,8 @@ def build_panel():
                        tex_escape(rst.get(f'q{q}_M{Ms[q]}_{sets[-1]}_g1em06', 'none'))])
         write(f'T03m{"b" if sfx else ""}_ladder_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule'], tm, 'rrrrrrrrl', r'\scriptsize'),
               f'b-panel job {job}, {mesh}^2, tolerance 1e-6, scheduled M=4(K+q); EQ set = {sets[-1]}')
+        if mesh == 256:
+            LADDER_MAIN_ROWS[:] = tm
         if 'pod512_M2048_dense' in P:
             pod = P['pod512_M2048_dense']
             macro(f'nPanel{sfx}PodFiveTwelveErr', pct(pod['worst_evolved_percent'])); macro(f'nPanel{sfx}PodFiveTwelveMs', ms(pod['median_gpu_ms'])); macro(f'nPanel{sfx}PodFiveTwelveAll', pct(pod['worst_all_times_percent']))
@@ -508,6 +511,15 @@ def build_panel():
         write(f'T05{"b" if sfx else ""}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
     # the crossover ratios, both meshes, same-job only
     macro('nPanelCheapestRatioDrop', f"{float(MACROS['nPanelCheapestRatio']) / float(MACROS['nPanelTenTwentyFourCheapestRatio']):.2f}")
+    # main-text panel summary: one row per mesh, every ratio inside its own job (review r2, R1)
+    tm = []
+    for sfx, mesh in [('', 256), ('TenTwentyFour', 1024)]:
+        g = lambda k: MACROS.get(f'nPanel{sfx}{k}', '---')
+        tm.append([f'${mesh}^2$', tt(MACROS.get(f'provPanel{sfx}Job', '---')), tex_escape(MACROS.get(f'provPanel{sfx}Gpu', '---')), g('SubjectCount'), g('ReducedCount'),
+                   g('ReducedNonDomEvolved'), g('ReducedNonDomAll'), g('CheapestRatio') + '$\\times$', g('CheapestOverFft') + '$\\times$', g('RefSpan') + '$\\times$'])
+    write('T05m_panel_summary.tex', tabular(['mesh', 'job', 'GPU', 'timed subjects', 'admissible reduced', 'non-dom.\\ (evolved)', 'non-dom.\\ (all-times)',
+                                             'cheapest reduced / cheapest FOM', 'cheapest reduced / converged FFT', 'ladder vs-ref span'], tm, 'llllrrrrrr', r'\scriptsize'),
+          'b-panel, one row per job; ratios formed inside the job only, never across the two GPUs')
 
 
 # =========================================================================== T4 rank vs tests
@@ -621,10 +633,12 @@ def build_qxm():
         rows_t4.append(['scheduled $M=4(K+q)$', str(q), str(M), pct(v), '---'])
     write('T04_rank_vs_tests.tex', tabular(['ladder', '$q$', '$M$', 'worst evolved \\%', 'GPU ms'],
                                            rows_t4, 'lrrrr'), 'b-qxm; costs only within job ' + wj['job_id'])
-    # compact main-text block: the fixed-M = 1088 ladder inside one job (no vs-reference column exists in this lane)
-    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'worst evolved \\%', 'GPU ms', 'converged'],
-                                          [[str(q), '1088', pct(v), ms(c), yn(cv)] for q, v, c, cv in zip(wj['q'], wj['values'], wj['median_gpu_ms'], wj['converged'])], 'rrrrc', r'\scriptsize'),
-          'b-qxm fixed-M ladder inside job ' + wj['job_id'] + ' (same-grid evolved error; this job carries no fine-reference column)')
+    # compact main-text ladder: the fixed-M = 1088 rows (job 3780177; no vs-reference column in that lane) above the
+    # scheduled M = 4(K+q) rows of the panel job (with vs-reference and the EQ rule status), one header
+    fixed = [[str(q), '1088', pct(v), '---', '---', ms(c), '---', '---', 'dense, job ' + wj['job_id']] for q, v, c in zip(wj['q'], wj['values'], wj['median_gpu_ms'])]
+    write('T04m_fixedM_main.tex', tabular(['$q$', '$M$', 'dense evolved \\%', 'all \\%', 'vs ref \\%', 'GPU ms', 'EQ evolved \\%', 'EQ ms', 'EQ rule (status)'],
+                                          fixed + ['MIDRULE'] + LADDER_MAIN_ROWS, 'rrrrrrrrl', r'\scriptsize'),
+          'top: b-qxm fixed-M ladder inside job ' + wj['job_id'] + ' (no fine-reference column in that lane); bottom: b-panel scheduled ladder, job 3789570, with vs-reference and the replication-selected EQ rule')
     rows_fq = []
     for q in ['0', '16', '32', '64', '128', '256']:
         d = ev['fixed_q'][q]
@@ -1845,6 +1859,18 @@ def main():
     build_lshape()
     build_pending()
     build_offline_and_spec()
+    # review r2 (N5): "four times the primary bar" generated
+    try:
+        macro('nEqtopStaticWorstOverBar', f"{float(MACROS['nEqtopStaticWorstRho']) / float(MACROS['nEqtopBar']):.1f}")
+    except (KeyError, ValueError, ZeroDivisionError):
+        pass
+    # review r2 (N5): the "three to four times worse" bank/POD ratio on the linear cells, generated
+    try:
+        r1 = float(MACROS['nPlinTenTwentyFourFloor']) / float(MACROS['nPlinTenTwentyFourPodFiveTwelveErr'])
+        r2 = float(MACROS['nWaveBankErrTwoFiftySix']) / float(MACROS['nWavePodErrTwoFiftySix'])
+        macro('nLinearBankOverPodMin', f"{min(r1, r2):.1f}"); macro('nLinearBankOverPodMax', f"{max(r1, r2):.1f}")
+    except (KeyError, ValueError, ZeroDivisionError):
+        pass
     build_problems_and_provenance(mesh)
     try:
         v = [float(MACROS['nEqtopTopDenseMs']), float(MACROS['nPanelBestRungMs']), float(MACROS['nQxmFixedQtopMs'])]

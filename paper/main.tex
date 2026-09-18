@@ -753,18 +753,19 @@ $\rho_{\max}$, unexplained; no falsification clause fired.
 \label{sec:results:head}
 
 At the same latent dimension the neural head is more accurate than any
-linear map in the same bank. Per millisecond, it is not. At matched $k=16$ it is compared with the
-optimal rank-$k$ affine map, a quadratic map, the unrestricted bank and
-POD-LSPG through the same solver (Tables~\ref{tab:head-burgers},
+linear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the
+optimal rank-$k$ affine map, a quadratic map, the free bank and
+POD-LSPG in the same solver (Tables~\ref{tab:head-burgers},
 \ref{tab:head-poisson}). On Burgers the head reaches
-$\nAblBurgersNeural\,\%$ against $\nAblBurgersLinear\,\%$ for the best
-linear map and $\nAblBurgersPodSixteen\,\%$ for POD-16; on Poisson at $1024^2$ it wins per dimension ($\nAblPoissonNeural\,\%$ against
-$\nAblPoissonLinear\,\%$) and loses per millisecond to POD-128
+$\nAblBurgersNeural\,\%$ against $\nAblBurgersLinear\,\%$ (best linear
+map) and $\nAblBurgersPodSixteen\,\%$ (POD-16); on Poisson at $1024^2$ it wins per dimension ($\nAblPoissonNeural\,\%$ against
+$\nAblPoissonLinear\,\%$) and loses per ms to POD-128
 ($\nAblPoissonPodOneTwentyEight\,\%$ at
-$\nAblPoissonPodOneTwentyEightMs$\,ms against $\nAblPoissonNeuralMs$\,ms).
+$\nAblPoissonPodOneTwentyEightMs$ vs $\nAblPoissonNeuralMs$\,ms).
 In three layers (Table~\ref{tab:layers}) the reduction layer sits
-$\nAblBurgersReductionOverFloor\times$ above the floor and the solver
-layer costs $\nAblBurgersSolverGapPp$\,pp: the head binds.
+$\nAblBurgersReductionOverFloor\times$ above the floor, the solver
+layer costs $\nAblBurgersSolverGapPp$\,pp on the all-times metric, where
+the $t=0$ term dominates: the head binds.
 
 \subsection{Where the Family Collapses: Linear PDEs, Navier--Stokes, and the L-shaped Domain}
 \label{sec:results:collapse}

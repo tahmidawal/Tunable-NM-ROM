@@ -1,6 +1,18 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — secondary comparison against plain CG added (current state; everything below is history)
+## 2026-09-18 — NS three-layer correction folded in (ns2d 2d70f36a) (current state; everything below is history)
+
+Every ns2d pin moved to 2d70f36a (lane §A14). The ns304 solve-layer ratio is now the matched
+statistic 1.4–2.5x (2.51 at q=0 → 1.40 at q=R), the old 2.9–10.8x kept only as a superseded
+secondary with the reason (median over 48 states incl. t=0 vs median over cases of the worst evolved
+time); the loss accumulates along the trajectory (per-time ratio 1.44 → 3.85 at q=0) and the t=1
+enstrophy rows are printed; T11g carries the matched layers and a solved/manifold column. Nothing in
+the main text quoted the old ratio. The Burgers head-ablation sentence in §6.4 now qualifies the
+0.018 pp solver gap as all-times / t=0-dominated. Lane-external same-solver control ratios are not in
+the paper. Main text still ends on page 9. (Committed in two steps: b5b1a681 generator + appendix,
+then the main-text qualification and these records.)
+
+## 2026-09-18 — secondary comparison against plain CG added (history)
 
 User request: show the results against the previous submission's comparator (unpreconditioned CG
 at 1e-6) beside the competitive one, as a SECONDARY comparison. New generated table `T21_cg_comparator`

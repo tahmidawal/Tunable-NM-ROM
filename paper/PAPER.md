@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 15:43; this block is removed before submission).*
+*Status for the reader (generated 2026-09-18 15:44; this block is removed before submission).*
 *Final tables (58): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -704,18 +704,19 @@ $\rho_{\max}$, unexplained; no falsification clause fired.
 <!-- section sources: none (prose only) -->
 
 At the same latent dimension the neural head is more accurate than any
-linear map in the same bank. Per millisecond, it is not. At matched $k=16$ it is compared with the
-optimal rank-$k$ affine map, a quadratic map, the unrestricted bank and
-POD-LSPG through the same solver (Table 25,
+linear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the
+optimal rank-$k$ affine map, a quadratic map, the free bank and
+POD-LSPG in the same solver (Table 25,
 Table 26). On Burgers the head reaches
-$2.5629 %$ against $56.9296 %$ for the best
-linear map and $61.6503 %$ for POD-16; on Poisson at $1024^2$ it wins per dimension ($6.0927 %$ against
-$17.2966 %$) and loses per millisecond to POD-128
+$2.5629 %$ against $56.9296 %$ (best linear
+map) and $61.6503 %$ (POD-16); on Poisson at $1024^2$ it wins per dimension ($6.0927 %$ against
+$17.2966 %$) and loses per ms to POD-128
 ($4.3452 %$ at
-$5.930$ ms against $5.843$ ms).
+$5.930$ vs $5.843$ ms).
 In three layers (Table 14) the reduction layer sits
-$6.5\times$ above the floor and the solver
-layer costs $0.018$ pp: the head binds.
+$6.5\times$ above the floor, the solver
+layer costs $0.018$ pp on the all-times metric, where
+the $t=0$ term dominates: the head binds.
 
 ### 6.5 Where the Family Collapses: Linear PDEs, Navier–Stokes, and the L-shaped Domain
 

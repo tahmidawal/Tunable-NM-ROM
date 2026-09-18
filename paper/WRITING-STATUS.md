@@ -1,6 +1,20 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-17 night — b-lowvisc folded in as an appendix cell (current state; everything below is history)
+## 2026-09-18 — readability pass applied (current state; everything below is history)
+
+The coordinator's readability pass (scratchpad `readability-pass.md`, on 0366a6b3) is applied in one
+commit: sentence splits and plainer connectives in the abstract, introduction and contributions, the
+opening paragraph of each results subsection, the Limitations and the conclusion; no macro, number or
+claim changed. **The abstract is now Abstract A** (<= 250 words; final count in the ledger) with the
+first-use glosses and "on one checkpoint" restored; the previous 397-word abstract and **Abstract B**
+(~200 words, one line shorter) are recorded verbatim in `ABSTRACT-2026-09-17.md` for the user to pick.
+Eight terms of art now carry a one-clause gloss at first use (EQ, NNLS, Kolmogorov n-width,
+ladder/rung, sealed cohort, development cohort, POD-LSPG, marginal rule status, same-job); the
+glossary appendix stays. Skipped: the optional "What we do not claim" rewrite (page budget; the list
+is parallel). Limitations (iv) taken with "one transfer-draw spread" for precision. The abstract's
+shrink paid for every split: the main text still ends on page 9 with no evidence dropped.
+
+## 2026-09-17 night — b-lowvisc folded in as an appendix cell (history)
 
 b-lowvisc closed at df92e40d (panel job 3817807, A100-40GB, 27 subjects, 0 budget exits; gate
 3789639; training 3804337). `GIT_PINS['lowvisc_summary']` reads the lane's summary.json at that

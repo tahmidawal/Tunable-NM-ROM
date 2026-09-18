@@ -2,53 +2,45 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-17 23:30; this block is removed before submission).*
+*Status for the reader (generated 2026-09-18 00:17; this block is removed before submission).*
 *Final tables (56): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
+*Abstract: the readability pass's Abstract A (<= 250 words) with first-use glosses; the previous 397-word abstract and Abstract B (~200 words, one line shorter) are in ABSTRACT-2026-09-17.md for the user to pick.*
 *Changed in this pass: b-panel closed (bpn301 replaces bpn101 at 256², bpn203 adds 1024²); L-shape closed at 512² and now in the abstract; b-qxm pin at 4b9723e8 dropped after the lane committed its regeneration (no number in §5.2 moved); three seeds landed on the development cohort; Figure 2 moved into §3.2 beside the equation it draws; the sealed cohort landed (be9415ab): sealed values replace the development q=0 incumbent value as the headline, the wrong-branch cold start at q=0 is a stated failure mode.*
 
 ## Abstract
 
-Neural operators such as Fourier Neural Operators (Li et al., 2021) and
-DeepONets (Lu et al., 2021) deliver one (accuracy, speed) point per
-trained model; at deployment only the evaluation grid can be changed,
-which moves cost but not what the model can represent. We present a non-linear manifold reduced order
-model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs that exposes a
-family of accuracy/cost operating points from a single trained
-decoder, controlled at inference time by one primary knob, the rank $q$ of a
-linear correction the solver may switch on, and three solver-side knobs
-(iteration cap, tolerance, empirical-quadrature sample count). The framework combines a matrix-free least-squares Petrov–Galerkin
-projection of the discrete residual onto fixed weak tests
-(Bradbury et al., 2018), NNLS-based EQ hyper-reduction
-(Hern'andez et al., 2017; Yano & Patera, 2019) validated on the states the
-solver actually reaches, exact boundary enforcement inside the decoder,
-and a separable decoder — a per-node spatial bank from a
-Fourier-feature coordinate network (Tancik et al., 2020)
-times a small neural head with a linear skip, plus nested correction
-directions. Across 2D Burgers, Poisson, heat and waves, the trained-once family's
-scheduled ladder is monotone in $q$ on Burgers on three training seeds
-and on a sealed cohort (top-rung error
+Neural operators (Li et al., 2021; Lu et al., 2021) deliver one (accuracy,
+speed) point per trained model; at deployment only the evaluation grid can change, moving
+cost, not representation. We present a non-linear manifold reduced order
+model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs, exposing a
+family of accuracy/cost points from one decoder, controlled by
+the correction rank $q$ and three solver-side knobs. The framework combines
+a matrix-free least-squares Petrov–Galerkin residual projection
+(Bradbury et al., 2018), empirical-quadrature (EQ) hyper-reduction fitted
+by non-negative least squares (NNLS) (Hern'andez et al., 2017; Yano & Patera, 2019),
+exact boundary enforcement, and a separable decoder: a per-node Fourier-feature
+coordinate-network bank (Tancik et al., 2020) times
+a small head with a linear skip, plus nested corrections. Across 2D
+Burgers, Poisson, heat and waves, the scheduled ladder (one model per
+rank $q$) is monotone in $q$ on Burgers on three seeds and a sealed cohort
+opened once after every choice was frozen (top-rung error
 0.59–0.68 % over 4
-checkpoints), and its fixed-test-count ladder, where $q$ is the only control,
-meets a bar fixed before any run on one checkpoint, on the same-grid
-error: against a fine reference every rung's
-error is at most $1.13\times$ the mesh's own
-discretisation error, so the knob moves the reduction error, not the
-physical error, at the meshes we ran; its quadrature rules are validated on reachable states, not by their
-fitting residual, and confirmed on re-draw at $q\le32$ only;
-and its cost results are same-job: on an L-shaped Poisson domain, where
-no fast transform applies, the head is
+checkpoints); the fixed-test-count ladder meets a pre-registered bar on one
+checkpoint; against a fine reference every rung's error stays within
+$1.13\times$ the discretisation error; the
+quadrature rules are confirmed on re-draw at $q\le32$ only; and the cost
+results, each from one job, show the head
 $2.77\times$ and
 $6.07\times$ cheaper than the cheapest
-full-order solve at $256^2$ and $512^2$, and plain POD-128 cheaper still
-for $15 %$ more error; at $1024^2$ on
-Burgers the cheapest rungs are non-dominated on evolved times. Nothing reduced is on the frontier at $256^2$ or $512^2$, where a
-tuned full-order solver (and at $256^2$ a neural operator trained on the
-same data) is cheaper and more accurate; and on
-Poisson, heat and waves the family collapses to a linear model, which
-says when the nonlinear manifold is worth having.
+full-order solve on L-shaped Poisson at $256^2$ and $512^2$, with
+POD-128 cheaper for $15 %$ more error.
+Nothing reduced is on the frontier at $256^2$ or $512^2$, where a tuned
+full-order solver is cheaper and more accurate; on Poisson, heat and
+waves the family collapses to a linear model, showing when the nonlinear
+manifold pays.
 
 ## 1 Introduction
 
@@ -56,39 +48,41 @@ says when the nonlinear manifold is worth having.
 
 Neural operators for partial differential equations (PDEs)
 (Li et al., 2021; Lu et al., 2021; Kovachki et al., 2023; Li2024PINO, ?; BoulleTownsend2024, ?) have
-become a strong empirical baseline, but each trained model produces
-essentially one (accuracy, wall-clock) operating point: the only
-deployment-time knob, the evaluation grid, moves cost without changing
-what the model can represent (§6.1). Classical Full Order Methods (FOMs)
-(Hughes2000FEM, ?) solved iteratively (HestenesStiefel1952CG, ?)
-expose this knob through their tolerance, and where a fast transform
-applies they are hard to beat on wall-clock.
+become a strong empirical baseline. But each trained model produces
+essentially one (accuracy, wall-clock) operating point. The only
+deployment-time knob is the evaluation grid, and it moves cost without
+changing what the model can represent (§6.1).
+Classical Full Order Methods (FOMs) (Hughes2000FEM, ?), solved
+iteratively (HestenesStiefel1952CG, ?), expose this knob through their
+tolerance. Where a fast transform applies, they are hard to beat on
+wall-clock.
 
 Two families of methods sit on either side of this gap. Neural
 operators and PDE foundation models
 (HerdePoseidon2024, ?; McCabeMPP2024, ?; HaoDPOT2024, ?; Chen2024UnsupervisedNO, ?) deliver fast
-amortised inference but fix what the model can represent at training
-time. Reduced order models (ROMs) address the same problem from the
-opposite direction: linear projection-based ROMs
+amortised inference. But they fix what the model can represent at
+training time. Reduced order models (ROMs) address the same problem from
+the opposite direction. Linear projection-based ROMs
 (Benner et al., 2015; Sirovich, 1987) inherit the FOM's
-guarantees but hit the Kolmogorov $n$-width barrier on
-advection-dominated regimes (Cohen & DeVore, 2015), and non-linear
-manifold ROMs (NM-ROMs) (Lee & Carlberg, 2020; Kim et al., 2022) lift
-this barrier with a learned manifold but have rarely been measured
-head-to-head against neural operators and tuned full-order solvers in
-the same job. The open question is whether a single trained NM-ROM can expose a
-deployment-time accuracy/cost tradeoff that neither alternative offers,
-and where, if anywhere, it is worth having once the comparators are
-measured in the same allocation.
+guarantees. But they hit the Kolmogorov $n$-width barrier on
+advection-dominated regimes (Cohen & DeVore, 2015): no fixed linear
+subspace of modest dimension approximates solutions whose shape moves.
+Non-linear manifold ROMs (NM-ROMs) (Lee & Carlberg, 2020; Kim et al., 2022)
+lift this barrier with a learned manifold. But they have rarely been
+measured head-to-head against neural operators and tuned full-order
+solvers in the same job. The open question is whether a single trained
+NM-ROM can expose a deployment-time accuracy/cost tradeoff that neither
+alternative offers. The second question is where, if anywhere, it is worth
+having, once the comparators are measured in the same allocation.
 
 This paper answers that question with measurements on 2D Burgers,
-Poisson, heat and waves, and the answer is mixed. We present an NM-ROM
+Poisson, heat and waves. The answer is mixed. We present an NM-ROM
 framework whose distinguishing property is a *deployment-time
-accuracy/cost family traced by a single trained model*: at inference,
-one primary knob — the rank $q$ of a linear correction the solver may
-switch on — and three solver-side knobs — the iteration cap, the
-stopping tolerance, and the Empirical Quadrature sample count — trade
-accuracy for cost. The machinery is a decoder that enforces Dirichlet
+accuracy/cost family traced by a single trained model*. At inference, one
+primary knob and three solver-side knobs trade accuracy for cost. The
+primary knob is the rank $q$ of a linear correction the solver may switch
+on. The three solver-side knobs are the iteration cap, the stopping
+tolerance, and the Empirical Quadrature (EQ) sample count. The machinery is a decoder that enforces Dirichlet
 conditions exactly, a damped Levenberg–Marquardt latent solver
 (Marquardt, 1963), Empirical Quadrature
 (Hern'andez et al., 2017; Yano & Patera, 2019) validated on reachable states,
@@ -99,40 +93,41 @@ and a matrix-free JAX implementation (Bradbury et al., 2018).
 1. **A tunable NM-ROM with a deployment-time accuracy/cost
 family from a single trained model, and a matched-dimension
 result.** With the test count $M$ held fixed so that $q$ is the
-only control, the Burgers $256^2$ ladder is monotone with every
-rung converged, spanning $2.44\times$ in same-grid error
-for $5.16\times$ in cost inside one allocation
-(§6.3); at matched $k=16$ inside one bank
-the neural head reaches $2.5629 %$ where the best
-linear map reaches $56.9296 %$ and POD-16
-$61.6503 %$ (§6.4).
+only control, the Burgers $256^2$ ladder (one rung per $q$) is
+monotone with every rung converged, spanning $2.44\times$
+in same-grid error for $5.16\times$ in cost inside one
+allocation (§6.3). At matched $k=16$
+inside one bank, the neural head reaches $2.5629 %$,
+where the best linear map reaches $56.9296 %$ and
+POD-16 reaches $61.6503 %$ (§6.4).
 2. **Architectural choices that make this family
-achievable.** We identify the three constraints a decoder must
-satisfy — cold-start convergence, EQ compatibility, and
-mesh-independent per-node evaluation — and show that a separable
-decoder (coordinate-network bank, head with a linear skip, nested
+achievable.** We identify three constraints a decoder must satisfy:
+cold-start convergence, EQ compatibility, and mesh-independent
+per-node evaluation. We show that a separable decoder
+(coordinate-network bank, head with a linear skip, nested
 corrections) meets all three.
 3. **Precomputed weak operators and validated quadrature that
-make the framework practical.** Exact preassembly of every linear
-term, Empirical Quadrature for the one nonlinear term, and a rule
-that a fitted quadrature is accepted only by its held-out error on
-reachable states and by independent re-draws, never by its fitting
-residual.
+make the framework practical.** Three things make the framework practical: exact
+preassembly of every linear term, Empirical Quadrature for the one
+nonlinear term, and a validation rule. That rule accepts a fitted
+quadrature only by its held-out error on reachable states and by
+independent re-draws, never by its fitting residual.
 4. **Where the family is not worth having, reported as such.**
-At $256^2$ on the square no reduced subject is on the
+At $256^2$ on the square, no reduced subject is on the
 non-dominated set once a tuned full-order solver and a neural
-operator on the same data are in the job; on Poisson, heat and
-waves the top rung is the linear model and also the cheapest
-point; on an L-shaped Poisson domain, where no fast transform
+operator on the same data are in the job. On Poisson, heat and
+waves, the top rung is the linear model and also the cheapest
+point. On an L-shaped Poisson domain, where no fast transform
 applies, reduced models are cheaper than the cheapest same-job
-full-order solve, POD-128 more so than the head
+full-order solve (timed in the same allocation), POD-128 more so
+than the head
 (§6.1, §6.5).
 
 **What we do not claim.** No speedup over an efficient full-order
 solver on the square; no accuracy superiority over neural operators; no
 frontier over POD at every rank; no cost ratio across jobs; no theory;
-and every number is development-cohort evidence
-(§Table 3).
+and every number is development-cohort evidence, from the cases used
+while tuning (§Table 3).
 
 ## 2 Related Work
 
@@ -183,7 +178,7 @@ least-squares Petrov–Galerkin projection (Carlberg et al., 2011) for
 the residual, and compare against an FNO, a U-Net
 (Ronneberger et al., 2015; Takamoto et al., 2022) and a Transolver
 (WuTransolver2024, ?) on identical data at an equal wall budget
-(§6.1). For hyper-reduction we retain classical NNLS-based EQ
+(§6.1). For hyper-reduction we retain classical EQ fitted by non-negative least squares (NNLS)
 (Hern'andez et al., 2017; Yano & Patera, 2019; Lawson & Hanson, 1974) over DEIM
 (Chaturantabut & Sorensen, 2010), ECSW
 (Farhat et al., 2014; Chapman et al., 2017), GNAT
@@ -464,8 +459,8 @@ separately.
 **Baselines.**
 FNO, a PDEBench-style U-Net and a Transolver are trained on the
 identical dataset and split at an equal wall budget; only the FNO is
-timed in the same allocation as the ROM. POD-LSPG runs through the same
-weak objective, tests, solver and stopping rule. Full-order comparators
+timed in the same allocation as the ROM. POD-LSPG, the same projection on a POD basis instead of the trained
+manifold, runs through the same weak objective, tests, solver and stopping rule. Full-order comparators
 are always in the same job: preconditioned Newton (Burgers); the direct
 sine transform and tuned CG (Poisson, heat, waves); sparse direct, CG and
 IC(0)-PCG (L-shape). The NM-ROM of Kim et al. (2022) is not run
@@ -492,12 +487,12 @@ Two plain sentences first. At $256^2$ and $512^2$ a well-tuned
 full-order solver is cheaper and more accurate than every reduced model,
 ours included. At $1024^2$ the cheapest
 quadrature rungs are on the non-dominated set, on the evolved-times
-metric only; the flip lies between $512^2$ and $1024^2$. Three same-job
-facts (Table 1): on one A100 model the cheapest
+metric only. The flip lies between $512^2$ and $1024^2$. Three same-job
+facts follow (Table 1). On one A100 model, the cheapest
 reduced query costs $4.48\times$ the cheapest full-order
-setting at $256^2$ and $2.92\times$ at $512^2$,
-a trend on shared hardware; at $1024^2$ on an H200 it costs
-$1.82\times$, a separate fact.
+setting at $256^2$, and $2.92\times$ at $512^2$;
+this is a trend on shared hardware. At $1024^2$ on an H200, it costs
+$1.82\times$; this is a separate fact.
 
 **Table 1.** The same-allocation panels on Burgers, one job per mesh
 (Table 17, Table 19,
@@ -567,7 +562,7 @@ axis, costs span jobs). **B**: the same-allocation panel (job
 filled markers converged, step line the non-dominated set. **C**:
 the EQ ladder against its dense twins in one job (job
 3780164; rules confirmed at $q=0, 16, 32$,
-marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$).
+marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$, i.e. passing on some re-draws only).
 
 ### 6.2 Best Configurations per Problem and Resolution
 
@@ -576,8 +571,8 @@ marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$).
 The same trained decoder serves every resolution. With one frozen
 checkpoint per PDE transferred across $64$–$1024$ intervals, the cached
 reduced solve costs $44.16\to43.58$ ms
-on Burgers while the unknowns grow $264\times$
-(Table 33); the complete host-to-host query grows
+on Burgers, while the unknowns grow $264\times$
+(Table 33). The complete host-to-host query grows
 $1.52\times$ through dense input and output. There
 is no crossover against the cheapest same-job full-order arm at any rung
 on the square (FOM/ROM 0.265–0.495 on Burgers,
@@ -587,9 +582,9 @@ on the square (FOM/ROM 0.265–0.495 on Burgers,
 
 <!-- section sources: none (prose only) -->
 
-The rank $q$ is the one deployment-time knob that moves accuracy; the
-quadrature rule and the tolerance move cost; the head's training data
-and capacity move the floor and need retraining (Table 12,
+The rank $q$ is the one deployment-time knob that moves accuracy. The
+quadrature rule and the tolerance move cost. The head's training data
+and capacity move the floor, but need retraining (Table 12,
 Table 26, Table 42).
 
 **Table 2.** The correction ladder on Burgers $256^2$: fixed-$M$ inside job
@@ -705,7 +700,7 @@ $\rho_{\max}$, unexplained; no falsification clause fired.
 <!-- section sources: none (prose only) -->
 
 At the same latent dimension the neural head is more accurate than any
-linear map in the same bank; per millisecond it is not. At matched $k=16$ it is compared with the
+linear map in the same bank. Per millisecond, it is not. At matched $k=16$ it is compared with the
 optimal rank-$k$ affine map, a quadratic map, the unrestricted bank and
 POD-LSPG through the same solver (Table 24,
 Table 25). On Burgers the head reaches
@@ -722,16 +717,18 @@ layer costs $0.018$ pp: the head binds.
 
 <!-- section sources: none (prose only) -->
 
-On the linear PDEs there is no trade: the corrections are solved exactly
-and the top rung is the most accurate and cheapest point. Poisson at $1024^2$ (Table 14): the rungs run
+On the linear PDEs there is no trade. The corrections are solved exactly,
+and the top rung is the most accurate and cheapest point. On Poisson at
+$1024^2$ (Table 14), the rungs run
 $3.1495\to0.9648 %$ at
-flat cost and $q=R$ lands on the floor at $0.7421 %$
+flat cost, and $q=R$ lands on the floor at $0.7421 %$
 as the *cheapest* point ($4.42$ vs
-$3.248$ ms exact); heat and the reflective wave
-likewise (Appendix F.5). **The collapse is
-confounded with a weak bank**, $3.4$–$4.0\times$
-worse than a POD basis of the same rank on both cells, and no reduced arm
-beats the direct solve on any cell.
+$3.248$ ms exact). Heat and the reflective wave
+behave likewise (Appendix F.5). **The collapse
+is confounded with a weak bank**: it is
+$3.4$–$4.0\times$ worse than a POD
+basis of the same rank on both cells. No reduced arm beats the direct
+solve on any cell.
 
 **Navier–Stokes collapses for a different reason.** On 2D
 incompressible flow (nonlinear residual) the family was gated before any ladder (Table 43): at $K=16$ and $K=32$ the head's
@@ -804,33 +801,36 @@ validation sources (Table 46).
 
 **Limitations.**
 
-(i) One checkpoint per PDE; Burgers' is a favourable draw in
-development (Table 36), the fixed-$M$ ladder
-single-seed; a cold-start solve at $q=0$ can converge to a wrong branch, as
-one sealed case did (10.1120 %, Table 37); $q\ge16$
-removed it, no guarantee. (ii) Uniform Cartesian differences, 2D only; small cohorts
-(Table 8); low-viscosity cell under-resolved. (iii) No cold-start comparison with Kim et al. (2022), no skip
-ablation. (iv) Operator numbers are lower bounds (11 of 12 arms
-improving);
-rules above $q=32$ are marginal, an
-8.7$\times$ transfer-draw $\rho_{\max}$
-spread unexplained; cross-job spread of one cell
-$14 %$; the $1024^2$ frontier rests on one
-job. (v) Against the fine reference the knob moves the error only
-$1.13\times$. (vi) No convergence or quadrature-error theory.
+(i) We use one checkpoint per PDE. Burgers' checkpoint is a favourable
+draw in development (Table 36), and the fixed-$M$ ladder uses
+only that single seed. A cold-start solve at $q=0$ can converge to a wrong
+branch; one sealed case did (10.1120 %, Table 37).
+Raising $q\ge16$ removed this failure, but that is not a guarantee. (ii) We
+use uniform Cartesian differences, in 2D only. Our cohorts are small
+(Table 8). The low-viscosity cell is under-resolved. (iii)
+We ran no cold-start comparison with Kim et al. (2022), and we ran
+no skip ablation. (iv) Operator numbers are lower bounds
+(11 of 12 arms are still improving). Quadrature rules above
+$q=32$ are marginal; one transfer-draw spread in $\rho_{\max}$ is
+8.7$\times$ and remains
+unexplained. One cell shows a cross-job spread of
+$14 %$. The $1024^2$ frontier rests on one job. (v)
+Against the fine reference the knob moves the error only
+$1.13\times$. (vi) We provide no convergence theory and no
+quadrature-error theory.
 
 ## 7 Conclusion and Future Work
 
 <!-- section sources: none (prose only) -->
 
-We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs with a
-deployment-time accuracy/cost family from one model: the rank
-$q$ and three solver knobs span $2.44\times$ in same-grid error
-for $5.16\times$ in cost on 2D Burgers in one allocation. It does
+We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs, with a
+deployment-time accuracy/cost family from one model. The rank $q$ and
+three solver knobs span $2.44\times$ in same-grid error for
+$5.16\times$ in cost, on 2D Burgers, in one allocation. It does
 not beat a tuned full-order solver or a neural operator on the same data
-at $256^2$; where no fast transform applies reduced models are cheaper,
-plain POD most of all. Next: a resolved low-viscosity cell and unstructured
-meshes.
+at $256^2$. Where no fast transform applies, reduced models are cheaper,
+and plain POD is cheapest of all. Next, we plan to resolve the
+low-viscosity cell and to test unstructured meshes.
 
 ## Reproducibility statement
 

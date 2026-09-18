@@ -14594,3 +14594,19 @@ reduced subject overall is `pod16_M64` at 46.5 ms. The cheapest full-order setti
 reduced subject is **`nt1e-2_dt01` at 14.0 ms / 3.895 %** (most accurate reduced: 6.187 %), per
 `summary.json` `P/cheapest_fom_beating_every_reduced_subject`. P: FAIL, unchanged. The generated
 report was right; the hand-written sentence was not. Commit `3672c017` + A9.1.
+
+## 2026-09-18
+
+### ns2d — LANE CLOSED: ns302 (job 3808495, 4× data = 2048 trajectories, K=16/R=256) FAILS H-ORACLE (POD-16/oracle 1.46; bar 2.0, below 1.5); §A10 prediction (1.25–1.35) scored partially right; the §A9 cell's closing verdict is written (DESIGN §A13); no Phase-3 job was ever submitted; 9 of 12 jobs used
+
+Branch `exp/2026-09-17-ns2d`; A100 `pax106`, 5 h 37 m, exit 0, `jax_backend=gpu`, commit `31e0846f`. Collected with checksums, audited (`artifacts/ns302/audit.json`, 23 checks, all match), chunk-archived, remote dir deleted; namespace `ns_20260917/` is empty. Final report `experiments/ns2d/reports/2026-09-17-ns2d.md` + `summary.json` (940 rows) regenerated and marked FINAL.
+
+**Gates (256²):** B-RANKCAP pass; B-DATA dev passed BY VALUE on `pax106` (hash mismatch, 3.6e-16 — first live use of the §A4 value path), train inferred, extra cohort hash `8b6796aa…` recorded; B-ORTH rank 256, κ 69.8; B-FLOOR pass (bank 0.138 vs POD-256 0.116, ratio 1.20); H-TRAIN pass (recon median 0.124); H-SOLVED pass (0.186); **H-ORACLE FAIL: 0.1666 vs POD-16 0.2425, ratio 1.456, `passes_at_1p5` false**; 6/384 budget exits.
+
+**Per time (medians over 64 dev cases):** oracle 0.036 / 0.138 / 0.228 / 0.229 / 0.200 / 0.166; POD-16 0.018 / 0.273 / 0.306 / 0.275 / 0.225 / 0.197; bank floor 0.001 → 0.032. POD-16/oracle 0.52 at t=0 (linear better), 1.39 evolved. Held-out/training = 1.34: the 4.0× generalisation gap of ns203 is gone because the head now fails to fit the training data too (recon 0.050 → 0.124) — more data turned a generalisation failure into a capacity/optimisation failure at the same head.
+
+**Prediction score.** §A10 predicted 1.25–1.35 at n=2048 from the frozen-bank slope; observed 1.46 — conclusion right (far below 2.0), magnitude under by ~0.1 (the jointly retrained bank, which ns301 could not include).
+
+**Closing verdict (DESIGN §A13).** On decaying 2D NS the separable-bank auto-decoder head does not beat linear POD-K by 2× on held-out states under any variation tried: K=16 (1.19) and K=32 (1.15) at 512 trajectories of the 14-dim family; the 8-dim family (1.39); 2048 trajectories (1.46); head-only on a frozen full-rank bank, 128→512 trajectories with a slope decelerating from −0.4 to −0.06 per doubling, unmoved by weight decay, early stopping or a smaller head. The bank is never the limit. The exploratory ladder on the best manifold (ns304) shows the correction-rank mechanism is real on a degree-2 residual (q buys the manifold back to the bank floor, solved median error falls monotonically, 11× at 3.9× cost) but with one worst-case inversion at the first rung, a solve layer 4–10× above the manifold, and POD-LSPG better and cheaper at every matched dimension — no neural rung non-dominated, no ROM cheaper than the FOM. No Phase-3 job was submitted; the bar was never lowered.
+
+**Retracted / corrected over the lane (for the record):** ns201/ns202 (rank-capped bank, §A4); the whitened-formula oracle contamination (§A4); "no budget exits" (§A8); a shell-mangled §A7 append (re-appended verbatim). **Open:** Codex report audit after 2026-09-19 11:33 if the coordinator wants one; the deliverable stands without it.

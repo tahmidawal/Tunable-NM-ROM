@@ -1,6 +1,23 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — ns2d closed; the paper is complete on the evidence side (current state; everything below is history)
+## 2026-09-18 — reader map: "Experiments at a glance" + appendix float numbering (current state; everything below is history)
+
+The user read 5573956a and could not find the experiments: 47 tables sat in Appendices D–F with no
+map from the main text, and a main-text pointer "(Table 12)" read like a missing float. Two fixes in
+one commit. (1) `T00_glance` — generated, 20 rows in the coordinator's order (fixed-M ladder, rank x
+test count, three seeds, sealed cohort, same-job panels, reference-error column, mesh ladder, speed at
+parity, solver knobs, quadrature certification and re-draw, two rule sets and transfers, neural
+operators, head ablation, three layers, linear PDEs, Navier–Stokes, L-shape, low-viscosity, training
+study, SMA-NM-ROM not run); columns experiment / question / PDE, mesh / jobs (lane) / where; the job
+counts are distinct 7-digit job ids of the named T02 provenance rows, so no number is typed. Placed
+at the end of §5 as Table 1 (page 6), with one sentence at the top of §6 pointing to it and to
+Appendices D–E. (2) "Table 12" was not a float but `\ref{tab:qxm}` rendering an appendix table's
+number; appendix tables and figures are now numbered per appendix section (E.3, B.1) via
+`\@addtoreset` after `\appendix`, so main-text tables read 1–4 in order and every appendix pointer
+is visibly one. Page budget: the glance table (~0.55 page) pushes the Limitations and the conclusion
+onto page 10; nothing else moved and no evidence was removed. Overfull-box count unchanged.
+
+## 2026-09-18 — ns2d closed; the paper is complete on the evidence side (history)
 
 ns2d closed at 9830d202 (ns302, job 3808495, A100 pax106: the ns203 recipe at 4x the data, 512 gated
 + 1536 extra trajectories, same 14-dimensional family). Every ns2d pin (`ns2d_summary`,

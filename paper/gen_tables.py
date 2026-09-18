@@ -2182,6 +2182,39 @@ def build_problems_and_provenance(mesh):
                                        [[l, tt(a), tt(j), fill(w)] for l, a, j, w in IN_FLIGHT] or [['---', '---', '---', 'none: every lane read by this version is closed']],
                                        r'llp{1.6cm}p{7.6cm}', r'\scriptsize'),
           'attempts in flight at the time of writing')
+    # T00: experiments at a glance -- one row per experiment; job counts are the distinct 7-digit job ids of the
+    # provenance rows named, so the only numbers in this table are generated from the same registry as T02
+    def njobs(*keys):
+        ids = set()
+        for row in P:
+            if row[0] in keys:
+                ids |= set(re.findall(r'(?<!\d)\d{7}(?!\d)', str(row[2])))
+        return str(len(ids))
+    R = r'\ref'; Ts = r'Tables~\ref'; T = r'Table~\ref'; F = r'Fig.~\ref'; A = r'App.~\ref'
+    G = [
+        ['Fixed-$M$ correction ladder', 'With $M$ held, does the rank $q$ alone move the error, and by how much?', 'Burgers $256^2$', njobs('T4') + ' (b-qxm)', f'{Ts}{{tab:ladder-main}}, {R}{{tab:qxm}}; {F}{{fig:family}}A'],
+        ['Rank $\\times$ test count', 'Which of $q$ and $M$ carries the error; where does $M$ saturate?', 'Burgers $256^2$', 'same (b-qxm)', f'{Ts}{{tab:qxm}}, {R}{{tab:qxm-fixedq}}'],
+        ['Three-seed retraining', 'Is the ladder a property of one checkpoint?', 'Burgers $256^2$', njobs('T12') + ' (b-seeds)', f'{T}{{tab:seeds}}'],
+        ['Sealed cohort', 'Does the ladder hold on cases opened once, after every choice was frozen?', 'Burgers $256^2$', njobs('T13') + ' (b-seeds)', f'{Ts}{{tab:sealed}}, {R}{{tab:ladder-main}}'],
+        ['Same-job panels', 'Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job?', 'Burgers $256^2$--$1024^2$', njobs('T3, T5', 'T3c, T5c', 'T3b, T5b') + ' (b-panel)', f'{Ts}{{tab:panel-main}}, {R}{{tab:panel-all}}, {R}{{tab:panel-all-fivetwelve}}, {R}{{tab:panel-all-tentwentyfour}}; {F}{{fig:family}}B'],
+        ['Reference-error column', 'Does the knob move the physical error or only the same-grid error?', 'Burgers vs $4096^2$', 'same (b-panel)', f'{Ts}{{tab:ladder-main}}, {R}{{tab:tunability}}, {R}{{tab:tunability-fivetwelve}}, {R}{{tab:tunability-tentwentyfour}}'],
+        ['Mesh ladder', 'How do the cached solve and the complete query scale with mesh at a frozen checkpoint?', 'Burgers, Poisson $64^2$--$1024^2$', njobs('T10') + ' (mesh-ladder)', f'{T}{{tab:mesh}}'],
+        ['Speed at parity', 'What does the fused implementation cost at bit-level agreement?', 'Burgers', njobs('T15') + ' (b-speed)', f'{T}{{tab:speed}}'],
+        ['Solver knobs', 'Which solver knob moves accuracy and which moves cost?', 'Burgers', njobs('T8') + ' (tuning)', f'{T}{{tab:knobs}}'],
+        ['Quadrature certification, re-draw', 'Does the NNLS fit residual predict held-out error; do rules survive re-draws?', 'Burgers $256^2$', njobs('T9') + ' (b-eqtop)', f'{Ts}{{tab:eqcert}}, {R}{{tab:replication}}, {R}{{tab:eqrules}}; {F}{{fig:cert}}'],
+        ['Two rule sets, transfers', 'Do the two rule sets agree in one allocation; do rules transfer to $512^2$?', 'Burgers $256^2$, $512^2$', 'same (b-panel)', f'{Ts}{{tab:eqladder}}, {R}{{tab:tunability-fivetwelve}}; {F}{{fig:family}}C'],
+        ['Neural operators on shared data', 'FNO ($\\times3$), U-Net, Transolver, one-variable controls, and the operators\' own knob', 'Burgers $256^2$; Poisson', njobs('T14, T14c, T14d') + ' (no-second)', f'{Ts}{{tab:operators}}, {R}{{tab:operators-poisson}}, {R}{{tab:op-controls}}, {R}{{tab:resolution}}; {A}{{app:extended:operators}}'],
+        ['Head ablation, matched dimension', 'Is the head better than the best linear, quadratic or POD map in the same bank?', 'Burgers $256^2$; Poisson $1024^2$', njobs('T6a, T7', 'T6b, T7') + ' (head-ablation)', f'{Ts}{{tab:head-burgers}}, {R}{{tab:head-poisson}}, {R}{{tab:head-capacity}}; {A}{{app:extended:head}}'],
+        ['Three-layer decomposition', 'How much of the deployed error is the bank, the head, and the solver?', 'every cell', 'same', f'{T}{{tab:layers}}'],
+        ['Linear PDEs', 'Poisson ladder, heat linear bank, waves: does the family collapse to a linear model?', 'Poisson, heat, waves $64^2$--$1024^2$', njobs('T11b, T11c') + '+' + njobs('T11d') + '+' + njobs('T11a') + ' (p-linear, heat, w-ladder)', f'{Ts}{{tab:linear}}, {R}{{tab:heat}}, {R}{{tab:waves}}; {A}{{app:extended:linear}}'],
+        ['Navier--Stokes', 'Phase-2 gate in four settings; head-only data scaling; exploratory ladder', '2D decaying NS $256^2$', njobs('T11e', 'T11f', 'T11g, T11h') + ' (ns2d)', f'{Ts}{{tab:ns}}, {R}{{tab:ns-scaling}}, {R}{{tab:ns-ladder}}, {R}{{tab:ns-fom}}'],
+        ['L-shaped Poisson', 'Where no fast transform applies, is a reduced solve cheaper than the cheapest full-order solve?', 'L-shape $64^2$--$512^2$', njobs('T18, T18c, T18d') + ' (lshape)', f'{Ts}{{tab:lshape-main}}, {R}{{tab:lshape-solve}}, {R}{{tab:lshape}}, {R}{{tab:lshape-free}}'],
+        ['Low-viscosity Burgers', 'Does the manifold\'s edge over linear reduction grow where the Kolmogorov width is worst? (under-resolved mesh)', 'Burgers $256^2$', njobs('T20, T20b') + ' (b-lowvisc)', f'{Ts}{{tab:lowvisc-ladder}}, {R}{{tab:lowvisc-panel}}; {A}{{app:extended:lowvisc}}'],
+        ['Training study', 'Data density, objective, latent size and smoothness penalty of the head', 'Burgers $256^2$', njobs('T16') + ' (b-head-train)', f'{T}{{tab:training}}; {A}{{app:training-schedule}}'],
+        ['SMA-NM-ROM cold start', 'Not run under this protocol; a stated limitation', '---', '0', f'\\S\\ref{{sec:limitations}}'],
+    ]
+    write('T00_glance.tex', tabular(['experiment', 'question it answers', 'PDE, mesh', 'jobs (lane)', 'where the numbers are'], G, r'@{}p{2.2cm}p{5.1cm}p{2.0cm}p{1.55cm}p{3.05cm}@{}', r'\scriptsize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.9}'),
+          'experiments at a glance; job counts are distinct job ids in the provenance rows named')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),
           'provenance registry; SHA256 of every file read is in tables/provenance.json')
 

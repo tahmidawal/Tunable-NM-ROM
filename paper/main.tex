@@ -17,6 +17,12 @@
 %    first-use glosses and "on one checkpoint" restored; the previous
 %    397-word abstract and Abstract B (~200 words, one line shorter) are in
 %    ABSTRACT-2026-09-17.md for the user to pick.
+%  * Reader map: Table 1 in Section 5 ("Experiments at a glance") lists every
+%    experiment with its question, jobs and table/figure refs; appendix
+%    floats are numbered by appendix section (Table E.3, Figure B.1), so a
+%    main-text pointer like "(Table E.5)" is visibly an appendix pointer.
+%    Main-text tables are 1-4 in reading order. The glance table pushes the
+%    end of the main text onto page 10 (allowed for this table only).
 %  * In flight: nothing. ns2d closed at 9830d202 (ns302, 4x data, fails
 %    H-ORACLE at 1.46; no phase-3 job ever submitted); T11e has four
 %    settings and the NS cell-level sentence in 6.5 is final. The paper is
@@ -519,11 +525,29 @@ IC(0)-PCG (L-shape). The NM-ROM of \citet{KimChoi2022NMROM} is not run
 under this protocol and is not compared. Every table names its job
 id, GPU and checkpoint (Table~\ref{tab:provenance}), every solve carries
 its exit reason, and every number is emitted by one generator from
-audited records.
+audited records. Table~\ref{tab:glance} lists every experiment with the
+question it answers and where its numbers are.
+
+\begin{table}[htbp]
+\centering
+\caption{Experiments at a glance: one row per experiment, the question it
+answers, the PDE and meshes, the number of cluster jobs (distinct job ids
+in Table~\ref{tab:provenance}) and the lane, and where the full numbers are.
+Every table not in the main text is in Appendices~\ref{app:provenance}
+and \ref{app:tables}; every row's jobs, GPUs and checkpoints are in
+Table~\ref{tab:provenance}.}
+\label{tab:glance}
+\input{tables/T00_glance}
+\end{table}
 
 % =====================================================================
 \section{Numerical Experiments and Results}
 \label{sec:results}
+
+Every result in this section has its full table in
+Appendices~\ref{app:provenance} and \ref{app:tables};
+Table~\ref{tab:glance} maps experiments to tables.
+
 
 We evaluate NM-ROM against an FNO, a U-Net and a Transolver trained on
 the same data, against POD-LSPG, and against tuned full-order solvers in
@@ -902,6 +926,12 @@ full responsibility for the content.
 
 \clearpage
 \appendix
+% appendix tables and figures are numbered by appendix section (E.3, B.1, ...) so that a main-text
+% reference like "Table E.3" is visibly a pointer into the appendix, never a missing main-text float
+\setcounter{table}{0}\setcounter{figure}{0}
+\makeatletter\@addtoreset{table}{section}\@addtoreset{figure}{section}\makeatother
+\renewcommand{\thetable}{\Alph{section}.\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
 \input{sections/appendix}
 
 \end{document}

@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 01:11; this block is removed before submission).*
-*Final tables (56): T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
+*Status for the reader (generated 2026-09-18 09:04; this block is removed before submission).*
+*Final tables (57): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -127,7 +127,7 @@ than the head
 solver on the square; no accuracy superiority over neural operators; no
 frontier over POD at every rank; no cost ratio across jobs; no theory;
 and every number is development-cohort evidence, from the cases used
-while tuning (§Table 3).
+while tuning (§Table 4).
 
 ## 2 Related Work
 
@@ -317,7 +317,7 @@ in the coefficients, so $y$ is not eliminated in closed form; we damp the
 $(z,y)$ blocks separately inside one Levenberg–Marquardt step
 (*block-damped* variable projection), which exits stationary
 everywhere where a joint LM leaves $6$ budget exits
-(Table 11).
+(Table 12).
 
 **Solver and exits.**
 Each attempt solves the damped normal system
@@ -419,7 +419,7 @@ $Z$ on the bank-projected states; $C_q$ is then the principal
 components of the head's residual on the training codes. Sizes, cohorts
 and offline cost are in Appendix B; every
 headline uses one checkpoint per PDE, named by hash in
-Table 5.
+Table 6.
 
 ## 5 Experimental Setup and Benchmark Problems
 
@@ -428,8 +428,8 @@ Table 5.
 All full-order comparators and reduced solves are benchmarked in one
 Slurm allocation on one GPU per job to provide a direct
 hardware-to-hardware comparison; *no ratio is ever formed across
-jobs or GPUs*. Table 8 specifies each cell and
-Table 9 the sampled families.
+jobs or GPUs*. Table 9 specifies each cell and
+Table 10 the sampled families.
 
 **Problems.**
 *Burgers (hyperbolic, the hero):* $u_t+u(u_x+u_y)=\nu\Delta u$ on
@@ -465,13 +465,49 @@ are always in the same job: preconditioned Newton (Burgers); the direct
 sine transform and tuned CG (Poisson, heat, waves); sparse direct, CG and
 IC(0)-PCG (L-shape). The NM-ROM of Kim et al. (2022) is not run
 under this protocol and is not compared. Every table names its job
-id, GPU and checkpoint (Table 5), every solve carries
+id, GPU and checkpoint (Table 6), every solve carries
 its exit reason, and every number is emitted by one generator from
-audited records.
+audited records. Table 1 lists every experiment with the
+question it answers and where its numbers are.
+
+**Table 1.** Experiments at a glance: one row per experiment, the question it
+answers, the PDE and meshes, the number of cluster jobs (distinct job ids
+in Table 6) and the lane, and where the full numbers are.
+Every table not in the main text is in Appendices D
+and E; every row's jobs, GPUs and checkpoints are in
+Table 6.
+
+<!-- table: T00_glance -->
+| experiment | question it answers | PDE, mesh | jobs (lane) | where the numbers are |
+|---|---|---|---|---|
+| Fixed-$M$ correction ladder | With $M$ held, does the rank $q$ alone move the error, and by how much? | Burgers $256^2$ | 5 (b-qxm) | Tables \ref{tab:ladder-main}, \ref{tab:qxm}; Fig. \ref{fig:family}A |
+| Rank $\times$ test count | Which of $q$ and $M$ carries the error; where does $M$ saturate? | Burgers $256^2$ | same (b-qxm) | Tables \ref{tab:qxm}, \ref{tab:qxm-fixedq} |
+| Three-seed retraining | Is the ladder a property of one checkpoint? | Burgers $256^2$ | 3 (b-seeds) | Table \ref{tab:seeds} |
+| Sealed cohort | Does the ladder hold on cases opened once, after every choice was frozen? | Burgers $256^2$ | 1 (b-seeds) | Tables \ref{tab:sealed}, \ref{tab:ladder-main} |
+| Same-job panels | Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job? | Burgers $256^2$–$1024^2$ | 3 (b-panel) | Tables \ref{tab:panel-main}, \ref{tab:panel-all}, \ref{tab:panel-all-fivetwelve}, \ref{tab:panel-all-tentwentyfour}; Fig. \ref{fig:family}B |
+| Reference-error column | Does the knob move the physical error or only the same-grid error? | Burgers vs $4096^2$ | same (b-panel) | Tables \ref{tab:ladder-main}, \ref{tab:tunability}, \ref{tab:tunability-fivetwelve}, \ref{tab:tunability-tentwentyfour} |
+| Mesh ladder | How do the cached solve and the complete query scale with mesh at a frozen checkpoint? | Burgers, Poisson $64^2$–$1024^2$ | 2 (mesh-ladder) | Table \ref{tab:mesh} |
+| Speed at parity | What does the fused implementation cost at bit-level agreement? | Burgers | 3 (b-speed) | Table \ref{tab:speed} |
+| Solver knobs | Which solver knob moves accuracy and which moves cost? | Burgers | 1 (tuning) | Table \ref{tab:knobs} |
+| Quadrature certification, re-draw | Does the NNLS fit residual predict held-out error; do rules survive re-draws? | Burgers $256^2$ | 3 (b-eqtop) | Tables \ref{tab:eqcert}, \ref{tab:replication}, \ref{tab:eqrules}; Fig. \ref{fig:cert} |
+| Two rule sets, transfers | Do the two rule sets agree in one allocation; do rules transfer to $512^2$? | Burgers $256^2$, $512^2$ | same (b-panel) | Tables \ref{tab:eqladder}, \ref{tab:tunability-fivetwelve}; Fig. \ref{fig:family}C |
+| Neural operators on shared data | FNO ($\times3$), U-Net, Transolver, one-variable controls, and the operators' own knob | Burgers $256^2$; Poisson | 8 (no-second) | Tables \ref{tab:operators}, \ref{tab:operators-poisson}, \ref{tab:op-controls}, \ref{tab:resolution}; App. \ref{app:extended:operators} |
+| Head ablation, matched dimension | Is the head better than the best linear, quadratic or POD map in the same bank? | Burgers $256^2$; Poisson $1024^2$ | 2 (head-ablation) | Tables \ref{tab:head-burgers}, \ref{tab:head-poisson}, \ref{tab:head-capacity}; App. \ref{app:extended:head} |
+| Three-layer decomposition | How much of the deployed error is the bank, the head, and the solver? | every cell | same | Table \ref{tab:layers} |
+| Linear PDEs | Poisson ladder, heat linear bank, waves: does the family collapse to a linear model? | Poisson, heat, waves $64^2$–$1024^2$ | 3+1+3 (p-linear, heat, w-ladder) | Tables \ref{tab:linear}, \ref{tab:heat}, \ref{tab:waves}; App. \ref{app:extended:linear} |
+| Navier–Stokes | Phase-2 gate in four settings; head-only data scaling; exploratory ladder | 2D decaying NS $256^2$ | 7 (ns2d) | Tables \ref{tab:ns}, \ref{tab:ns-scaling}, \ref{tab:ns-ladder}, \ref{tab:ns-fom} |
+| L-shaped Poisson | Where no fast transform applies, is a reduced solve cheaper than the cheapest full-order solve? | L-shape $64^2$–$512^2$ | 5 (lshape) | Tables \ref{tab:lshape-main}, \ref{tab:lshape-solve}, \ref{tab:lshape}, \ref{tab:lshape-free} |
+| Low-viscosity Burgers | Does the manifold's edge over linear reduction grow where the Kolmogorov width is worst? (under-resolved mesh) | Burgers $256^2$ | 3 (b-lowvisc) | Tables \ref{tab:lowvisc-ladder}, \ref{tab:lowvisc-panel}; App. \ref{app:extended:lowvisc} |
+| Training study | Data density, objective, latent size and smoothness penalty of the head | Burgers $256^2$ | 2 (b-head-train) | Table \ref{tab:training}; App. \ref{app:training-schedule} |
+| SMA-NM-ROM cold start | Not run under this protocol; a stated limitation | — | 0 | \S\ref{sec:limitations} |
 
 ## 6 Numerical Experiments and Results
 
 <!-- section sources: none (prose only) -->
+
+Every result in this section has its full table in
+Appendices D and E;
+Table 1 maps experiments to tables.
 
 We evaluate NM-ROM against an FNO, a U-Net and a Transolver trained on
 the same data, against POD-LSPG, and against tuned full-order solvers in
@@ -488,15 +524,15 @@ full-order solver is cheaper and more accurate than every reduced model,
 ours included. At $1024^2$ the cheapest
 quadrature rungs are on the non-dominated set, on the evolved-times
 metric only. The flip lies between $512^2$ and $1024^2$. Three same-job
-facts follow (Table 1). On one A100 model, the cheapest
+facts follow (Table 2). On one A100 model, the cheapest
 reduced query costs $4.48\times$ the cheapest full-order
 setting at $256^2$, and $2.92\times$ at $512^2$;
 this is a trend on shared hardware. At $1024^2$ on an H200, it costs
 $1.82\times$; this is a separate fact.
 
-**Table 1.** The same-allocation panels on Burgers, one job per mesh
-(Table 17, Table 19,
-Table 18); same-job ratios only; $256^2$ and
+**Table 2.** The same-allocation panels on Burgers, one job per mesh
+(Table 18, Table 20,
+Table 19); same-job ratios only; $256^2$ and
 $512^2$ share the GPU model, $1024^2$ does not.
 
 <!-- table: T05m_panel_summary -->
@@ -507,7 +543,7 @@ $512^2$ share the GPU model, $1024^2$ does not.
 | $1024^2$ | `3789572` | NVIDIA H200 | 30 | 20 | 5 | 0 | 1.82$\times$ | 0.153$\times$ | 1.38$\times$ |
 
 **Nothing reduced is on the frontier at $256^2$ or $512^2$.**
-Table 1 and Figure 1 come from one
+Table 2 and Figure 1 come from one
 allocation on one A100 (job 3789570) holding correction rungs,
 POD-LSPG, the unrestricted bank, the FNO and full-order Newton.
 **0 of the 39
@@ -539,7 +575,7 @@ there; why is open.
 **Neural operators on the same data.**
 Neural operators trained on the same data are more accurate than the
 reduced model, and the one that was timed against it is also cheaper
-(Table 16). Worst error on the matched 8-case cohort:
+(Table 17). Worst error on the matched 8-case cohort:
 U-Net-small $1.4712$, Transolver-refine
 $1.5224$, **ROM $1.8671$**, FNO-large
 $2.4829$, efficient full-order solver
@@ -549,8 +585,8 @@ An earlier FNO-only finding to the contrary is withdrawn; the comparison
 survives a float64 and a second-seed control
 (Appendix F.1), all but one operator number is
 a lower bound, and on Poisson the gap is larger
-(Table 40). The operators' own knob, evaluation resolution, is usable for
-`fno-large`{} only (Table 38); it moves cost, while
+(Table 41). The operators' own knob, evaluation resolution, is usable for
+`fno-large`{} only (Table 39); it moves cost, while
 $q$ moves what the model can represent.
 
 ![Figure 1](figures/fig_tunability_family.png)
@@ -572,11 +608,11 @@ The same trained decoder serves every resolution. With one frozen
 checkpoint per PDE transferred across $64$–$1024$ intervals, the cached
 reduced solve costs $44.16\to43.58$ ms
 on Burgers, while the unknowns grow $264\times$
-(Table 33). The complete host-to-host query grows
+(Table 34). The complete host-to-host query grows
 $1.52\times$ through dense input and output. There
 is no crossover against the cheapest same-job full-order arm at any rung
 on the square (FOM/ROM 0.265–0.495 on Burgers,
-0.063–0.112 on Poisson; Table 41).
+0.063–0.112 on Poisson; Table 42).
 
 ### 6.3 Which Knob to Turn
 
@@ -584,10 +620,10 @@ on the square (FOM/ROM 0.265–0.495 on Burgers,
 
 The rank $q$ is the one deployment-time knob that moves accuracy. The
 quadrature rule and the tolerance move cost. The head's training data
-and capacity move the floor, but need retraining (Table 12,
-Table 26, Table 42).
+and capacity move the floor, but need retraining (Table 13,
+Table 27, Table 43).
 
-**Table 2.** The correction ladder on Burgers $256^2$: fixed-$M$ inside job
+**Table 3.** The correction ladder on Burgers $256^2$: fixed-$M$ inside job
 G2 = 3780177 (top) and scheduled $M=4(K+q)$ in the panel job
 3789570 (bottom), development-cohort errors; the scheduled rows add
 the same checkpoint's sealed-cohort error (b-seeds job 3804465, the
@@ -611,7 +647,7 @@ error $4.03 %$) and the EQ rule's status; costs are per job.
 **Rank against test count: the family at fixed $M$.**
 The rank alone moves the error: hold the test count fixed, add correction
 directions, and the error falls at every step while the cost rises
-(Table 2). The ROM approximates the discrete system,
+(Table 3). The ROM approximates the discrete system,
 so the same-grid error is what the knob controls. Against the fine reference the knob moves the error only from
 $4.56$ to $4.04 %$ ($1.13\times$),
 because at $256^2$ every rung's reference error is
@@ -630,7 +666,7 @@ the rungs run $3.86$ to
 $2.80 %$ over
 $2.14 %$. The knob moves the reduction error, not the physical error. At fixed $M=256$ the ladder spans only $1.22\times$
 in error and **fails** the pre-registered bar
-(Table 12: monotone on evolved, every rung converged, error
+(Table 13: monotone on evolved, every rung converged, error
 span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
 and cost span $\ge2\times$). **At $M=1088$ the ladder $q=0,64,128,256$,
 inside one job is monotone, every rung converged, spans
@@ -639,7 +675,7 @@ with $4$ non-dominated points**, and passes. $M=1088$ is the pre-registered pure
 $M$ holding every rung to $q=256$); the $q=512$ extension did not converge and enters no span; raising $M$ at $q=256$
 saturates at $M^\star=2176$.
 
-Sealed cohort and seeds (Table 37, Table 36). The
+Sealed cohort and seeds (Table 38, Table 37). The
 sealed cohort was opened once, after every choice was frozen; on it all
 4 checkpoints (the incumbent and 3 fresh
 seeds) give a ladder monotone on both metrics, 3 of
@@ -664,17 +700,17 @@ Quadrature is a cost lever at equal error ($4.77\times$
 at $q=0$, $4.81\times$ at $q=128$) and the
 tolerance $10^{-6}\to10^{-3}$ removes a further
 $27$–$23 %$
-(Table 17). The earlier ladder's rule set breaks
+(Table 18). The earlier ladder's rule set breaks
 upward at $q=256$; the replication-selected set is monotone at both
 tolerances,
 $4.2$–$5.3\times$ cheaper
 than its dense twins, its $q=128, 256$ rules single-draw
-(Table 2). Transferred to $512^2$ (Table 19) it stays
+(Table 3). Transferred to $512^2$ (Table 20) it stays
 monotone; its $q=128$ and $256$ transfers pass the primary bar there
 though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
 the transfer reaches $0.5510 %$ in
 $21\times$ less time than
-its twin. Solver knobs move cost only (Table 26).
+its twin. Solver knobs move cost only (Table 27).
 
 **Validate on reachable states, then re-draw.**
 
@@ -684,7 +720,7 @@ on its fit to the states it was built from. The NNLS fit residual says nothing a
 $\rho_{\max}=0.462$ held-out, $4.0\times$
 the primary bar).
 **The pre-registered replication re-drew every construction**
-(Table 32): $\rho_{\max}$ moves
+(Table 33): $\rho_{\max}$ moves
 $1.4$–$9.6\times$ within one construction; the
 ladder's rules are **confirmed at $q=0, 16, 32$ and
 marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$**; one passing rule does not certify its construction; a re-draw does
@@ -702,14 +738,14 @@ $\rho_{\max}$, unexplained; no falsification clause fired.
 At the same latent dimension the neural head is more accurate than any
 linear map in the same bank. Per millisecond, it is not. At matched $k=16$ it is compared with the
 optimal rank-$k$ affine map, a quadratic map, the unrestricted bank and
-POD-LSPG through the same solver (Table 24,
-Table 25). On Burgers the head reaches
+POD-LSPG through the same solver (Table 25,
+Table 26). On Burgers the head reaches
 $2.5629 %$ against $56.9296 %$ for the best
 linear map and $61.6503 %$ for POD-16; on Poisson at $1024^2$ it wins per dimension ($6.0927 %$ against
 $17.2966 %$) and loses per millisecond to POD-128
 ($4.3452 %$ at
 $5.930$ ms against $5.843$ ms).
-In three layers (Table 13) the reduction layer sits
+In three layers (Table 14) the reduction layer sits
 $6.5\times$ above the floor and the solver
 layer costs $0.018$ pp: the head binds.
 
@@ -719,7 +755,7 @@ layer costs $0.018$ pp: the head binds.
 
 On the linear PDEs there is no trade. The corrections are solved exactly,
 and the top rung is the most accurate and cheapest point. On Poisson at
-$1024^2$ (Table 14), the rungs run
+$1024^2$ (Table 15), the rungs run
 $3.1495\to0.9648 %$ at
 flat cost, and $q=R$ lands on the floor at $0.7421 %$
 as the *cheapest* point ($4.42$ vs
@@ -731,7 +767,7 @@ basis of the same rank on both cells. No reduced arm beats the direct
 solve on any cell.
 
 **Navier–Stokes collapses for a different reason.** On 2D
-incompressible flow (nonlinear residual) the family was gated before any ladder (Table 43): at $K=16$ and $K=32$ the head's
+incompressible flow (nonlinear residual) the family was gated before any ladder (Table 44): at $K=16$ and $K=32$ the head's
 held-out oracle beats POD-$K$ by only $1.19\times$ and
 $1.15\times$ against a bar of
 $2.0$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
@@ -741,11 +777,11 @@ low-dimensional subspace. Retraining the head with 128, 256 and
 $27.4938$ to $20.6889$ to
 $19.8279 %$ ($25 %$ then
 $4 %$ per doubling; “ambiguous”
-by the pre-registered rule, Table 47; the bank saw all
+by the pre-registered rule, Table 48; the bank saw all
 512). A family of intrinsic dimension 8 instead of
 14 lowers every error 3.3–4.4$\times$ but
 leaves the head's advantage over POD-16 at 1.39$\times$ and
-the held-out/training gap near 3.8 (Table 43):
+the held-out/training gap near 3.8 (Table 44):
 the advantage does not grow as the manifold gets easier. With
 $4\times$ the data (2048 trajectories) the gap
 closes from 4.0 to 1.3 because the
@@ -756,7 +792,7 @@ family dimension 14 and 8, and
 128–2048 trajectories, this head class never beats POD-$K$
 by the pre-registered $2.0\times$ on held-out decaying 2D
 Navier–Stokes (ratios 1.15–1.46). An exploratory ladder on that failed-gate
-manifold (Table 48; not a phase-3 result) closes the
+manifold (Table 49; not a phase-3 result) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
 the same dimension is more accurate at every rung and cheaper at all but
 the top, and no neural rung is non-dominated: the falsification clause's
@@ -774,9 +810,9 @@ the fixed-$M$ ladder spans 1.36$\times${} and the mesh is
 under-resolved (discretisation error $19.3$–$20.9 %$):
 reduced-versus-reduced only.
 
-**Table 3.** L-shaped Poisson, solve layer at $M=257$, one job per mesh
+**Table 4.** L-shaped Poisson, solve layer at $M=257$, one job per mesh
 (complete-query ms; ratios inside each job): the cheapest full-order arm,
-POD-128 and the head at $q=64$ (full sets: Table 44).
+POD-128 and the head at $q=64$ (full sets: Table 45).
 
 <!-- table: T18m_lshape_main -->
 | mesh | job | sparse direct ms | cheapest FOM | ms | err % | POD-128 err % | ms | $\times$ vs direct / cheapest | head $q{=}64$ err % | ms | $\times$ vs direct / cheapest | head on set |
@@ -790,7 +826,7 @@ POD-128 and the head at $q=64$ (full sets: Table 44).
 transform) reduced models are cheaper, POD most of all.** The direct solve's cost climbs with the mesh, at
 $512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($29.13$ ms
 at $0.385 %$, more accurate than any reduced
-arm), and the reduced arms stay nearly flat (Table 3). Against the cheapest same-job full-order arm the head at $q=64$ is
+arm), and the reduced arms stay nearly flat (Table 4). Against the cheapest same-job full-order arm the head at $q=64$ is
 $2.77\times$ and
 $6.07\times$ cheaper, POD-128
 $2.94\times$ and
@@ -800,19 +836,19 @@ only on accuracy
 more cost than POD-128, $15 %$ less error).
 Nothing is claimed beyond $512^2$; the banks' reconstruction degrades from
 $6.8$ to $16.7 %$ on unswept
-validation sources (Table 46).
+validation sources (Table 47).
 
 \FloatBarrier
 
 **Limitations.**
 
 (i) We use one checkpoint per PDE. Burgers' checkpoint is a favourable
-draw in development (Table 36), and the fixed-$M$ ladder uses
+draw in development (Table 37), and the fixed-$M$ ladder uses
 only that single seed. A cold-start solve at $q=0$ can converge to a wrong
-branch; one sealed case did (10.1120 %, Table 37).
+branch; one sealed case did (10.1120 %, Table 38).
 Raising $q\ge16$ removed this failure, but that is not a guarantee. (ii) We
 use uniform Cartesian differences, in 2D only. Our cohorts are small
-(Table 8). The low-viscosity cell is under-resolved. (iii)
+(Table 9). The low-viscosity cell is under-resolved. (iii)
 We ran no cold-start comparison with Kim et al. (2022), and we ran
 no skip ablation. (iv) Operator numbers are lower bounds
 (11 of 12 arms are still improving). Quadrature rules above
@@ -846,7 +882,7 @@ Every table and every number in the prose is generated by one script
 (`paper/gen_tables.py`) from the machine-readable outputs of the
 runs named in Appendix D; the script records the SHA256
 of every file it reads. Each run's job id, GPU, source commit and
-checkpoint hash are in Table 5. Solver definitions,
+checkpoint hash are in Table 6. Solver definitions,
 stopping rules and exit-reason codes are in §3.2 and
 Appendix A; timing and cohort protocol in
 §5. An anonymised repository with the generator, the
@@ -874,6 +910,11 @@ See `bib-inline.tex` and `main.pdf`; citations in the text are author–year key
 ---
 
 # Appendices
+
+\setcounter{table}{0}\setcounter{figure}{0}
+\makeatletter\@addtoreset{table}{section}\@addtoreset{figure}{section}\makeatother
+\renewcommand{\thetable}{\Alph{section}.\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
 
 ## A Method details
 
@@ -1077,7 +1118,7 @@ criterion divides by $\lVert J_{} \rVert_{F}$ only, applied to a residual alread
 normalised by the target norm; Poisson and Burgers use (3)
 directly. The completion rule that accepts an attained initial fit
 (§3.2) was pre-registered in the panel cell's design before
-the job ran; the stricter flag is printed beside it in Table 20.
+the job ran; the stricter flag is printed beside it in Table 21.
 
 ### A.6 What the method is, stated once
 
@@ -1105,12 +1146,12 @@ the verified discrete solution, not an analytic field.
 
 This appendix lists the per-cell configuration and training cost referenced in
 §4. The problem specification per cell (mesh, $k$, $R$, $M$,
-reference and cohorts) is Table 8 and the sampled families
-Table 9; the offline cost per stage, from the lane records, is
-Table 10; the head-retraining arms on the frozen Burgers bank
-(training-set size, latent dimension and loss terms) are Table 42.
+reference and cohorts) is Table 9 and the sampled families
+Table 10; the offline cost per stage, from the lane records, is
+Table 11; the head-retraining arms on the frozen Burgers bank
+(training-set size, latent dimension and loss terms) are Table 43.
 Every headline uses one checkpoint per PDE, named by hash in
-Table 5.
+Table 6.
 
 ## C Architecture Choices: Evidence from Sweeps
 
@@ -1118,11 +1159,11 @@ Table 5.
 
 This appendix collects the evidence behind the architectural choices in
 §3.4: the matched-dimension head ablation on Burgers and
-Poisson (Table 24, Table 25), the three
-error layers per cell (Table 13), the head-capacity sweep on the
-frozen Poisson bank (Table 35), the head-retraining arms
-(Table 42), and the solver variants for the corrections on
-Burgers (Table 11). The linear skip is a design choice
+Poisson (Table 25, Table 26), the three
+error layers per cell (Table 14), the head-capacity sweep on the
+frozen Poisson bank (Table 36), the head-retraining arms
+(Table 43), and the solver variants for the corrections on
+Burgers (Table 12). The linear skip is a design choice
 adopted for cold-start convergence and is not ablated in this paper.
 
 ![Figure 2](figures/architecture.png)
@@ -1137,17 +1178,17 @@ rank $q$, the stored quadrature rule or dense evaluation, and the
 tolerance), so every point of the family comes from one training run.
 
 Figure 2 draws the pipeline;
-Table 4 lists its blocks, their sizes in the symbols of
+Table 5 lists its blocks, their sizes in the symbols of
 §3.1, and when each is fixed.
 
-**Table 4.** The blocks of Figure 2. “Fixed when” is the colour of
+**Table 5.** The blocks of Figure 2. “Fixed when” is the colour of
 the block in the figure.
 
 ## D Provenance
 
 <!-- section sources: every lane; tables/provenance.json -->
 
-**Table 5.** Provenance of every result table: job id, GPU, source commit and
+**Table 6.** Provenance of every result table: job id, GPU, source commit and
 checkpoint. The SHA256 of every machine-readable file the generator read is in
 `tables/provenance.json`. Every job asserted `jax_backend=gpu`,
 float64 and highest matmul precision before doing any work.
@@ -1179,7 +1220,7 @@ float64 and highest matmul precision before doing any work.
 | T12 | b-seeds (development cohort) | `seed1` = 3783776 (NVIDIA A100 80GB PCIe); `seed2` = 3783777 (NVIDIA A100 80GB PCIe); `seed3` = 3783778 (NVIDIA A100-PCIE-40GB) | per job | per job | three seed checkpoints hashed in summary |
 | T13 | b-seeds (sealed cohort) | 3804465 | NVIDIA A100-PCIE-40GB | be9415ab | four checkpoints (incumbent + three seeds) hashed in summary |
 
-**Table 6.** Attempts that produced no reported number. A retracted attempt contributes no timed
+**Table 7.** Attempts that produced no reported number. A retracted attempt contributes no timed
 row, no gate and no oracle value; it is listed so that it is visibly retracted rather than
 absent.
 
@@ -1194,7 +1235,7 @@ absent.
 | no-second | `pois01` | `3780224` | Poisson U-Net screen | stager omitted a config directory; no training ran; rerun as pois02 |
 | ns2d | `ns202` | `3783797` | Navier–Stokes $K=32$ head | pre-\S A4 attempt on a rank-capped bank; superseded by ns204 |
 
-**Table 7.** Attempts in flight when this version was prepared: none; every
+**Table 8.** Attempts in flight when this version was prepared: none; every
 lane this version reads is closed.
 
 <!-- table: T02c_inflight -->
@@ -1206,7 +1247,7 @@ lane this version reads is closed.
 
 <!-- section sources: every lane (see each table comment) -->
 
-**Table 8.** Problem specification. Cohort and reduced sizes are read from the run
+**Table 9.** Problem specification. Cohort and reduced sizes are read from the run
 configurations where recorded; the sealed final cohorts have not been opened
 for any cell.
 
@@ -1219,7 +1260,7 @@ for any cell.
 | Wave 2D (reflective) | $u_{tt}=c^2\Delta u$, $(0,1)^2$, $u\|_{\partial\Omega}=0$ | $64^2$, $256^2$, $1024^2$ | RK4 on the manifold; exact modal propagation for the bank | $K=32$, $R=64$ | direct DST | 8 development cases |
 | Poisson, L-shape | $-\Delta u=f$, $(0,1)^2\setminus[\tfrac12,1)^2$ | $256^2$, $512^2$ | none | $K\in\{16,32\}$, $R\in\{256,512,514\}$ | sparse direct (SuperLU) | 3072 / 256 / 32 sources (train / selection / development) |
 
-**Table 9.** Sampled problem families, transcribed from the generator sources named
+**Table 10.** Sampled problem families, transcribed from the generator sources named
 in the last column (code constants, not run outputs).
 
 <!-- table: T01b_spec -->
@@ -1231,7 +1272,7 @@ in the last column (code constants, not run outputs).
 | Heat 2D | $u_t=\kappa\Delta u$ on $(0,1)^2$, $\kappa=0.02$ fixed | polynomial-boundary Gaussian family (single_bc_poly_gaussian_v1); Crank–Nicolson $\Delta t=0.025$ | heat linear-bank report, job 3511417 |
 | Wave 2D (reflective) | $u_{tt}=c^2\Delta u$ on $(0,1)^2$, $u=0$ on $\partial\Omega$ | compact bump $\times$ Gaussian: half-widths $s_i\sim U(0.36,0.42)$, centre $c_i\sim U(s_i{+}0.025,\,1{-}s_i{-}0.025)$, amplitude $\sim U(0.7,1.3)$, $\sigma_i\sim U(0.12,0.16)$, advective velocity $v_i\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\sim U(0.85,1.15)$ | `experiments/multiresolution-wave/audit_dynamics.py:parameter_rows` |
 
-**Table 10.** Offline cost per stage, from the lane records: head training on the
+**Table 11.** Offline cost per stage, from the lane records: head training on the
 retrained arms (the incumbent's own training time was not recorded), the
 correction-direction fit, and the NNLS fit of each rule the primary EQ ladder
 ran. Every rule is refit when $m$ changes; nothing is nested.
@@ -1249,7 +1290,7 @@ ran. Every rule is refit when $m$ changes; nothing is nested.
 | certified EQ rule, $q=128$, $m=2048$ (fs64, this_job:reachable) | 2920 | once per rung and rule | b-eqtop job 3780164 |
 | certified EQ rule, $q=256$, $m=2048$ (fs64, this_job:reachable) | 2650 | once per rung and rule | b-eqtop job 3780164 |
 
-**Table 11.** How the corrections are solved on Burgers, one job (job
+**Table 12.** How the corrections are solved on Burgers, one job (job
 3734098, NVIDIA A100 80GB PCIe): joint LM on $(z,y)$, block-damped, and plain
 variable projection at $q=64$ and $128$. Same error where all converge; the
 block-damped step is the one kept.
@@ -1271,13 +1312,13 @@ was fitted to, the vertical axis its worst held-out $\rho$ (9) on
 states the solver actually reaches, with the primary and tight bars drawn.
 Filled markers are rules fitted on reachable states, hollow squares rules
 fitted on static snapshots. Data: every rule of the b-eqtop lane, jobs
-3780164, 3780165, 3783811 (Table 29). What it shows: the fit residual
+3780164, 3780165, 3783811 (Table 30). What it shows: the fit residual
 does not predict the held-out error, and because the same construction
 re-drawn moves by $1.4$–$9.6\times$
-(Table 32), a point below the bar is a passing draw, not a
+(Table 33), a point below the bar is a passing draw, not a
 certified construction.
 
-**Table 12.** Rank against test count (dense advection, budget 600, single seed). Both
+**Table 13.** Rank against test count (dense advection, budget 600, single seed). Both
 fixed-$M$ ladders are shown; the $M=256$ ladder fails the bar and the
 $M=1088$ ladder passes it, and $M=1088$ was chosen after the grid was run.
 The scheduled ladder's cells span two jobs so its costs are not printed. Jobs G1 = 3780175 (NVIDIA A100 80GB PCIe), G2 = 3780177 (NVIDIA A100-PCIE-40GB), S1 = 3780178 (NVIDIA A100-PCIE-40GB), E1 = 3783898 (NVIDIA A100-PCIE-40GB), E2 = 3783899 (NVIDIA A100 80GB PCIe); commit
@@ -1300,7 +1341,7 @@ ed431edb498a / 76072bf42014; checkpoint 18f0266ae6f04542….
 | scheduled $M=4(K+q)$ | 128 | 576 | 0.8930 | — |
 | scheduled $M=4(K+q)$ | 256 | 1088 | 0.5194 | — |
 
-**Table 13.** Three layers of deployed error, worst over each cell's development
+**Table 14.** Three layers of deployed error, worst over each cell's development
 cases: what the bank can express, what the augmented manifold can reach
 (multistart oracle, an upper bound), what the deployed iteration returned. The
 p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
@@ -1318,7 +1359,7 @@ appears.
 | L-shape $256^2$ | `head_sdf_R512_K32` | 0.7766 | 3.1802 | 3.1814 | 4.09 | 0.001 | lshape (untimed) |
 | L-shape $256^2$ | `head_sdf_R512_K16` | 0.7766 | 3.8607 | 3.8608 | 4.97 | 0.000 | lshape (untimed) |
 
-**Table 14.** Poisson ladder at $256^2$ and $1024^2$ (one job per mesh:
+**Table 15.** Poisson ladder at $256^2$ and $1024^2$ (one job per mesh:
 $256^2$: job 3780692 (NVIDIA A100-PCIE-40GB, commit b43a437d7360); $1024^2$: job 3783813 (NVIDIA H200, commit 3e411b5ac59d); never compare costs across meshes; $q=512$ via LM is degenerate
 by construction and its QR twin is the timed top rung).
 
@@ -1360,7 +1401,7 @@ by construction and its QR twin is the timed top rung).
 | $1024^2$ | CG $10^{-4}$ | — | 0.0004 | 0.0001 | 85.988 | 83.437 | 36/36 | no | no |
 | $1024^2$ | CG $10^{-6}$ | — | 0.0000 | 0.0000 | 103.642 | 101.260 | 36/36 | no | no |
 
-**Table 15.** Heat 2D, an earlier cell of the same decoder family (job
+**Table 16.** Heat 2D, an earlier cell of the same decoder family (job
 3511417, NVIDIA A100-PCIE-40GB, commit 73fdaa88eb75…; $k=8$, $R=32$, twelve
 development cases, three repetitions; the finest three meshes of a five-rung
 ladder). The linear evolution of the full bank is the $q=R$ rung.
@@ -1381,7 +1422,7 @@ ladder). The linear evolution of the full bank is the $q=R$ rung.
 | $1024^2$ | same-grid direct solve | 0.000350 | 0.000000 | 1.034563 | 25.068664 |
 | $1024^2$ | coarse ($16^2$) direct solve, interpolated | 2.577910 | 2.578073 | 0.313116 | 24.364979 |
 
-**Table 16.** Neural operators on the shared Burgers data: capacity, epochs, whether
+**Table 17.** Neural operators on the shared Burgers data: capacity, epochs, whether
 the arm was still improving at its budget, worst and median error on the
 matched eight-case cohort and on the 32 held-out cases. Accuracy is comparable
 across jobs; timing never is, and none is shown. Single seed, one mesh, one
@@ -1410,15 +1451,15 @@ across jobs; timing never is, and none is shown. Single seed, one mesh, one
 | `fno-refine` | FNO | 17,877,317 | 688 | yes | 3.2660 | 7.1747 | 1.8810 | `3710846` |
 | `coarse_quarter_dt01` | FOM | — | — | — | 3.6398 | — | — | `3702709` |
 
-**Table 17.** The correction ladder at $256^2$ in one allocation (job
+**Table 18.** The correction ladder at $256^2$ in one allocation (job
 3789570, NVIDIA A100 80GB PCIe, checkpoint incumbent (gate checkpoint_unchanged; hash in T2, tuning row)), tolerance $10^{-6}$:
 dense advection beside two quadrature rule sets, the rules the b-eqtop ladder
-used and the rules its replication selected (§Table 2), with each
+used and the rules its replication selected (§Table 3), with each
 rule's status from that replication; worst error over evolved and over all
 times (%), median GPU ms, and the $t{=}0$ compression bounding the all-times
 metric. “Certified in one draw” is a single passing draw, not a certified
 construction. Every subject of the job, at both tolerances, is in
-Table 20.
+Table 21.
 
 <!-- table: T03_tunability -->
 | $q$ | $M$ | dense: evolved % | all % | ms | EQ, b-eqtop ladder rules: evolved % | all % | ms | rule status | EQ, replication-selected rules: evolved % | all % | ms | rule status | $t{=}0$ % |
@@ -1430,12 +1471,12 @@ Table 20.
 | 128 | 576 | 0.8930 | 1.8116 | 1186.9 | 0.8925 | 1.8116 | 246.5 | marginal (4 of 5 draws pass) | 0.8931 | 1.8116 | 273.5 | single-draw | 1.8116 |
 | 256 | 1088 | 0.5194 | 0.9053 | 3939.8 | 1.0361 | 1.0361 | 697.6 | marginal (1 of 5 draws pass) | 0.5129 | 0.9053 | 746.0 | single-draw | 0.9053 |
 
-**Table 18.** The correction ladder at $1024^2$ in one allocation (job
+**Table 19.** The correction ladder at $1024^2$ in one allocation (job
 3789572, NVIDIA H200, same checkpoint),
 tolerance $10^{-6}$: dense advection beside the quadrature rules transferred
 from $256^2$ (rule status as at $256^2$; the $q\ge64$ rules miss the primary
 bar here, §6.1). Milliseconds are not comparable with
-Table 17: different GPU, different job.
+Table 18: different GPU, different job.
 
 <!-- table: T03b_tunability -->
 | $q$ | $M$ | dense: evolved % | all % | ms | EQ, ladder rules transferred from $256^2$: evolved % | all % | ms | rule status | $t{=}0$ % |
@@ -1447,13 +1488,13 @@ Table 17: different GPU, different job.
 | 128 | 576 | 1.0444 | 3.2858 | 6895.2 | 1.0442 | 3.2858 | 163.7 | transferred, not primary at $1024^2$; source marginal (4 of 5 draws pass) | 3.2858 |
 | 256 | 1088 | 0.5861 | 2.7974 | 22053.9 | 1.8664 | 2.7974 | 502.2 | transferred, not primary at $1024^2$; source marginal (1 of 5 draws pass) | 2.7974 |
 
-**Table 19.** The correction ladder at $512^2$ in one allocation (job
+**Table 20.** The correction ladder at $512^2$ in one allocation (job
 3805065, NVIDIA A100 80GB PCIe, same checkpoint and GPU
 model as $256^2$), tolerance $10^{-6}$: dense advection beside both
 $256^2$ rule sets transferred to this mesh (each transfer refits on its
 own fit-state draw); the status names whether the transfer passes the
 primary bar here and its source rule's verdict at $256^2$. Milliseconds
-are not comparable with Table 17: a different job.
+are not comparable with Table 18: a different job.
 
 <!-- table: T03c_tunability -->
 | $q$ | $M$ | dense: evolved % | all % | ms | EQ, ladder rules transferred from $256^2$: evolved % | all % | ms | rule status | EQ, replication-selected rules transferred from $256^2$: evolved % | all % | ms | rule status | $t{=}0$ % |
@@ -1465,7 +1506,7 @@ are not comparable with Table 17: a different job.
 | 128 | 576 | 0.9890 | 2.6066 | 4541.3 | 0.9894 | 2.6066 | 242.0 | transferred, not primary at $512^2$; source marginal (4 of 5 draws pass) | 0.9901 | 2.6066 | 262.4 | transferred, primary at $512^2$; source single-draw | 2.6066 |
 | 256 | 1088 | 0.5625 | 2.0195 | 16219.9 | 1.8204 | 2.0195 | 686.6 | transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 0.5510 | 2.0195 | 783.3 | transferred, primary at $512^2$; source single-draw | 2.0195 |
 
-**Table 20.** Every timed subject of the $256^2$ same-allocation panel (job
+**Table 21.** Every timed subject of the $256^2$ same-allocation panel (job
 3789570). “conv.” is the pre-registered completion rule that accepts
 an attained initial fit; “strict” is the earlier rule that does not;
 “adm.” is admissibility for the frontier (converged, and for EQ subjects a
@@ -1523,8 +1564,8 @@ rule passing a bar).
 | `nt1e-4_dt005` | fom | — | — | — | — | 0.0338 | 0.0338 | 0.0000 | 4.0320 | 37.0 | 39.0 | — | — | — |
 | `nt1e-4_dt01` | fom | — | — | — | — | 1.5109 | 1.5109 | 0.0000 | 5.1552 | 27.8 | 30.0 | — | — | — |
 
-**Table 21.** Every timed subject of the $1024^2$ same-allocation panel (job
-3789572, H200). Columns as in Table 20;
+**Table 22.** Every timed subject of the $1024^2$ same-allocation panel (job
+3789572, H200). Columns as in Table 21;
 milliseconds are comparable only within this table.
 
 <!-- table: T05b_panel_all -->
@@ -1561,8 +1602,8 @@ milliseconds are comparable only within this table.
 | `nt1e-4_dt005` | fom | — | — | — | — | 0.0343 | 0.0343 | 0.0000 | 2.1281 | 81.3 | 92.5 | — | — | — |
 | `nt1e-4_dt01` | fom | — | — | — | — | 1.6287 | 1.6287 | 0.0000 | 3.7562 | 64.0 | 76.3 | — | — | — |
 
-**Table 22.** Every timed subject of the $512^2$ same-allocation panel (job
-3805065). Columns as in Table 20;
+**Table 23.** Every timed subject of the $512^2$ same-allocation panel (job
+3805065). Columns as in Table 21;
 milliseconds are comparable only within this table.
 
 <!-- table: T05c_panel_all -->
@@ -1617,7 +1658,7 @@ milliseconds are comparable only within this table.
 | `nt1e-4_dt005` | fom | — | — | — | — | 0.0341 | 0.0341 | 0.0000 | 2.6975 | 61.2 | 65.4 | — | — | — |
 | `nt1e-4_dt01` | fom | — | — | — | — | 1.5869 | 1.5869 | 0.0000 | 4.1611 | 48.4 | 52.3 | — | — | — |
 
-**Table 23.** Fixed-$q$ sweeps in the test count $M$ (dense; errors comparable
+**Table 24.** Fixed-$q$ sweeps in the test count $M$ (dense; errors comparable
 across the three b-qxm jobs, costs not shown). The last column restricts the
 span to at least two tests per unknown.
 
@@ -1631,7 +1672,7 @@ span to at least two tests per unknown.
 | 128 | 256, 576, 1088, 1152 | 1.0418 / 0.8930 / 0.8711 / 0.8689 | yes | 1.20$\times$ | 1152 | 1.03$\times$ |
 | 256 | 544, 1088, 2176, 3264, 4352, 6528 | 0.7566 / 0.5194 / 0.3736 / 0.3564 / 0.3523 / 0.3510 | yes | 2.16$\times$ | 6528 | 2.16$\times$ |
 
-**Table 24.** Head ablation, Burgers $256^2$ (job 3711424,
+**Table 25.** Head ablation, Burgers $256^2$ (job 3711424,
 NVIDIA A100 80GB PCIe). Same-grid error against the converged full-order solve;
 “vs ref” against the $4096^2$ reference.
 
@@ -1651,7 +1692,7 @@ NVIDIA A100 80GB PCIe). Same-grid error against the converged full-order solve;
 | FOM Newton, loose | — | — | — | 3.7127 | 2.4737 | 15.4 | — |
 | FOM Newton, tight (reference) | — | — | — | 0.0000 | 4.0265 | 88.7 | — |
 
-**Table 25.** Head ablation, Poisson $1024^2$, $R=128$ (job 3711736,
+**Table 26.** Head ablation, Poisson $1024^2$, $R=128$ (job 3711736,
 NVIDIA A100 80GB PCIe).
 
 <!-- table: T06b_head_poisson -->
@@ -1670,7 +1711,7 @@ NVIDIA A100 80GB PCIe).
 | (d) unrestricted bank ($R{=}128$) | 128 | 2.3148 | 2.3148 | 2.3274 | 5.995 |
 | direct DST | — | — | — | 0.0007 | 4.341 |
 
-**Table 26.** Solver knobs at a fixed Burgers checkpoint on 32 held-out cases (job
+**Table 27.** Solver knobs at a fixed Burgers checkpoint on 32 held-out cases (job
 3712269, NVIDIA A100 80GB PCIe, checkpoint 18f0266ae6f0…). Loosening the
 tolerance from $10^{-8}$ to $10^{-3}$ removes $35.6 %$ of the
 query for a change from $6.712$ to $6.701 %$
@@ -1691,7 +1732,7 @@ control at tolerance $10^{-4}$ beats the best ROM setting on both axes.
 | FOM $128^2$, $\Delta t{=}0.005$ | 9.849 | 21.2 | 0/96 |
 | FOM $64^2$, $\Delta t{=}0.01$ | 16.095 | 14.0 | 0/96 |
 
-**Table 27.** Cold-start iteration-cap sweep on Poisson at $1024$ intervals
+**Table 28.** Cold-start iteration-cap sweep on Poisson at $1024$ intervals
 (local GB10 diagnostic; only ratios transfer). From the nearest training code
 the converged answer is reached at a small cap; from $z=0$ the cap traces a
 monotone curve that looks like an accuracy–cost frontier, every point of
@@ -1719,10 +1760,10 @@ which is dominated by starting well.
 | zero | 20 | 6.09 | 1.24 | 14 | 85.48 |
 | zero | 300 | 6.09 | 1.24 | 14 | 80.89 |
 
-**Table 28.** Cheapest rule passing each bar per rung in its own draw, with its
+**Table 29.** Cheapest rule passing each bar per rung in its own draw, with its
 fit-state count, and the parent lane's rule re-scored on the same held-out
 states. Jobs bet101 = 3780164 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet201 = 3780165 (NVIDIA A100 80GB PCIe, commit ace8936e42b3…); bet301 = 3783811 (NVIDIA A100-PCIE-40GB, commit b2844c607290…). Construction status is in
-Table 32.
+Table 33.
 
 <!-- table: T09b_eq_certification -->
 | $q$ | cheapest rule passing the primary bar (its draw) | cheapest rule passing the tight bar (its draw) | best parent-lane rule, re-scored: primary? |
@@ -1734,10 +1775,10 @@ Table 32.
 | 128 | this_job/fs64, $m{=}2048$, 64 states, $\rho_{\max}{=}0.0669$ | this_job/rhow64, $m{=}2048$, 64 states, $\rho_{\max}{=}0.0472$ | $m{=}2048$, $\rho_{\max}{=}0.1908$, no |
 | 256 | this_job/fs64, $m{=}2048$, 64 states, $\rho_{\max}{=}0.1074$ | — | $m{=}2048$, $\rho_{\max}{=}0.1678$, no |
 
-**Table 29.** Every quadrature rule at $q\le32$: NNLS fit residual beside the
+**Table 30.** Every quadrature rule at $q\le32$: NNLS fit residual beside the
 held-out $\rho$, so the anti-correlation stays visible. Bars: primary
 $\rho_{\max}\le0.116$, tight $\rho_{\max}\le0.06$
-(source: b-eqtop/DESIGN.md §5 (byte-identical from commit 33e8bced, 2026-09-17 01:11, through the pinned 8542c604); origin q-ridge/DESIGN.md amendment A3, commit a1822ae6 (2026-09-16); every b-eqtop job post-dates it). Continued in Table 30.
+(source: b-eqtop/DESIGN.md §5 (byte-identical from commit 33e8bced, 2026-09-17 01:11, through the pinned 8542c604); origin q-ridge/DESIGN.md amendment A3, commit a1822ae6 (2026-09-16); every b-eqtop job post-dates it). Continued in Table 31.
 
 <!-- table: T09c_eq_rules_full -->
 | $q$ | fit arm | $m$ | population | NNLS rel. fit | $\rho_{\max}$ | $\rho_{95}$ | primary | job |
@@ -1800,8 +1841,8 @@ $\rho_{\max}\le0.116$, tight $\rho_{\max}\le0.06$
 | 32 | std | 2628 | this_job:reachable | 1.23e-05 | 0.0058 | 0.0029 | yes | `3780165` |
 | 32 | std | 2675 | this_job:reachable | 1.24e-05 | 0.0062 | 0.0021 | yes | `3780165` |
 
-**Table 30.** Every quadrature rule at $q\ge64$ (continuation of
-Table 29; same columns and bars).
+**Table 31.** Every quadrature rule at $q\ge64$ (continuation of
+Table 30; same columns and bars).
 
 <!-- table: T09c_eq_rules_full_b -->
 | $q$ | fit arm | $m$ | population | NNLS rel. fit | $\rho_{\max}$ | $\rho_{95}$ | primary | job |
@@ -1889,7 +1930,7 @@ Table 29; same columns and bars).
 | 256 | std | 3370 | this_job:reachable | 1.45e-05 | 0.1308 | 0.0685 | no | `3780164` |
 | 256 | std | 3410 | this_job:reachable | 1.43e-05 | 0.1761 | 0.0836 | no | `3780164` |
 
-**Table 31.** The EQ ladder with the cheapest rule passing the primary bar in its
+**Table 32.** The EQ ladder with the cheapest rule passing the primary bar in its
 draw per rung, timed in one allocation (job 3780164, A100 80 GB),
 with its same-job dense twins, and the construction status from the four-draw
 replication (job 3783811): confirmed = every re-draw passes, marginal
@@ -1907,7 +1948,7 @@ $q=32$. Ladder rows read from the lane summary.json (final).
 | 128 | 2048 | 64 | 0.0669 | marginal (4 of 5 draws pass) | 0.8936 | 1.8116 | 246.9 | 0.8930 | 1190.5 | 0.207 |
 | 256 | 2048 | 64 | 0.1074 | marginal (1 of 5 draws pass) | 0.5389 | 0.9053 | 722.2 | 0.5194 | 3915.1 | 0.184 |
 
-**Table 32.** The pre-registered draw replication (job 3783811): four
+**Table 33.** The pre-registered draw replication (job 3783811): four
 independent draws of candidate pool and fit-state subset at fixed $q$, $m$,
 fit-state count and scaling, with the number of draws passing each bar and
 the construction status over every draw of that construction in all three
@@ -1927,7 +1968,7 @@ post-hoc choice the lane discloses.
 | 256 | 1024 | 8 | 0.6743, 0.5737, 0.7319, 0.5075 | 0.5075 / 0.6240 / 0.7319 | 1.44 | 0/4 | 0/4 | marginal (0 of 6 draws pass) |
 | 256 | 2048 | 64 | 0.1820, 0.1899, 0.1299, 0.2421 | 0.1299 / 0.1860 / 0.2421 | 1.86 | 0/4 | 0/4 | marginal (1 of 5 draws pass) |
 
-**Table 33.** Frozen-checkpoint mesh ladder (Burgers job 3711388 on
+**Table 34.** Frozen-checkpoint mesh ladder (Burgers job 3711388 on
 NVIDIA A100-PCIE-40GB, checkpoint 18f0266ae6f0…; Poisson job
 3711389 on NVIDIA A100 80GB PCIe, checkpoint
 a128e7635c31…). “efficient FOM” is the cheapest same-job full-order
@@ -1947,7 +1988,7 @@ arm meeting the 5 % target on that mesh.
 | Poisson | 512 | 261,121 | 1.9 | 2.3 | 3.8 | 6.1106 | 6.1108 | `dst` | 0.2 | 0.079 | no |
 | Poisson | 1024 | 1,046,529 | 2.0 | 3.0 | 6.6 | 6.1106 | 6.1106 | `dst` | 0.3 | 0.112 | no |
 
-**Table 34.** Reflective 2D wave, one job per mesh ($64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86)); costs
+**Table 35.** Reflective 2D wave, one job per mesh ($64^2$: job 3780447 (NVIDIA A100 80GB PCIe, commit 0bb3cc86); $256^2$: job 3783805 (NVIDIA A100-PCIE-40GB, commit 2655bb01); $1024^2$: job 3780450 (NVIDIA A100 80GB PCIe, commit 0bb3cc86)); costs
 comparable only within a mesh. The top rung is the learned bank evolved by
 exact modal propagation with no head.
 
@@ -1991,7 +2032,7 @@ exact modal propagation with no head.
 | $1024^2$ | `rk4_fom` | — | 0.0000 | 0.0000 | 958.007 | 1174.433 |
 | $1024^2$ | `cg_1e-06` | — | 0.6079 | 0.0000 | 1043.368 | 1278.837 |
 
-**Table 35.** Poisson head capacity on the frozen $R=512$ bank (job
+**Table 36.** Poisson head capacity on the frozen $R=512$ bank (job
 3783883, NVIDIA A100-PCIE-40GB): width helps, depth alone does not, and
 no arm reaches a $2\times$ ratio to the floor. The re-run of the primary
 recipe reproduces it exactly.
@@ -2007,13 +2048,13 @@ recipe reproduces it exactly.
 | `K64_w256_L3` | 2.0553 | 2.76 | 2.0549 | 14.12 |
 | `K32_w128_L2_x3` | 2.6428 | 3.54 | 2.6360 | 12.97 |
 
-**Table 36.** Three training seeds on the development cohort (lane b-seeds, jobs
+**Table 37.** Three training seeds on the development cohort (lane b-seeds, jobs
 `seed1` = 3783776 (NVIDIA A100 80GB PCIe); `seed2` = 3783777 (NVIDIA A100 80GB PCIe); `seed3` = 3783778 (NVIDIA A100-PCIE-40GB)). Top: per rung of the dense $M=4(K+q)$ ladder, worst error
 over the six development cases as mean $\pm$ sample standard deviation over
 the 3 seed checkpoints, beside the incumbent checkpoint re-run in
 each seed's own job (its value is identical in all three jobs). Bottom: the
 per-seed ladder verdicts. Costs are never averaged across jobs. This is the
-development cohort; the sealed cohort (Table 37) is the
+development cohort; the sealed cohort (Table 38) is the
 headline.
 
 <!-- table: T12_seeds -->
@@ -2033,7 +2074,7 @@ headline.
 | `seed2` | `3783777` | NVIDIA A100 80GB PCIe | yes | yes | yes | 4.01$\times$ | 10.34$\times$ | yes |
 | `seed3` | `3783778` | NVIDIA A100-PCIE-40GB | yes | yes | no | 3.93$\times$ | 20.97$\times$ | no |
 
-**Table 37.** The sealed cohort (lane b-seeds, job 3804465, NVIDIA A100-PCIE-40GB),
+**Table 38.** The sealed cohort (lane b-seeds, job 3804465, NVIDIA A100-PCIE-40GB),
 opened once after every choice was frozen. Top: per rung of the dense
 $M=4(K+q)$ ladder, the incumbent's sealed worst evolved error and device
 time, the seed mean $\pm$ sample standard deviation on the sealed and the
@@ -2063,7 +2104,7 @@ convergence criterion fails on `seed2` at $q=64$ (3 budget exits).
 | `seed2` | `3804465` | yes | yes | no | 4.81$\times$ | 13.17$\times$ | no |
 | `seed3` | `3804465` | yes | yes | yes | 5.22$\times$ | 14.62$\times$ | yes |
 
-**Table 38.** The operators' own inference-time knob: each validation-selected
+**Table 39.** The operators' own inference-time knob: each validation-selected
 checkpoint evaluated at coarser grids and prolonged back (job 3787189,
 NVIDIA A100 80GB PCIe), with the interpolation floor (a perfect operator's error at that
 rung) and the pre-registered gates ($\ge1.5\times$ own speed at $\le2\times$
@@ -2085,7 +2126,7 @@ own error). Speedups are within one model's own curve, same job.
 | `unet-refine` | 64 | 60.18 | 0.92 | 2.31 | 2.55 | 8.01 | no |
 | `unet-refine` | 32 | 67.65 | 4.02 | 2.30 | 2.56 | 9.00 | no |
 
-**Table 39.** One-variable controls on the validation-selected capacities (job
+**Table 40.** One-variable controls on the validation-selected capacities (job
 3783831): each repeats a screen arm under the identical protocol and
 budget with exactly one variable changed, and is never eligible for capacity
 selection. “vs ROM” is the matched eight-case worst against the ROM's, from
@@ -2098,7 +2139,7 @@ job 3702709; at equal wall clock a float64 twin is also a fewer-epochs twin.
 | `ctrl-medium-seed2` | `unet-medium` | training seed | 1969 vs 1963 (1.00$\times$) | 1.5479 | 1.5189 | below (0.3192 pp) | below |
 | `ctrl-tsol-small-f64` | `tsol-small` | network dtype float64 | 682 vs 1628 (0.42$\times$) | 3.1329 | 2.5273 | above (1.2658 pp) | above |
 
-**Table 40.** U-Net against FNO on the Poisson operator-screen dataset (physical
+**Table 41.** U-Net against FNO on the Poisson operator-screen dataset (physical
 reference). The U-Net arms hit the epoch cap while still improving; the FNO
 early-stopped.
 
@@ -2112,7 +2153,7 @@ early-stopped.
 | `unet-medium` | U-Net | 7,763,041 | 1.68 | 6.02 | `3780625` |
 | `unet-small` | U-Net | 4,368,073 | 2.40 | 12.80 | `3780625` |
 
-**Table 41.** Speed at bit-level parity (jobs 3745655 (spd01), 3745656 (fine01), 3745913 (comp01)): fastest arm whose
+**Table 42.** Speed at bit-level parity (jobs 3745655 (spd01), 3745656 (fine01), 3745913 (comp01)): fastest arm whose
 fields agree with the incumbent to $10^{-12}$ with identical iteration counts
 and exit reasons. The pre-registered $2\times$ target fails at every mesh.
 
@@ -2125,7 +2166,7 @@ and exit reasons. The pre-registered $2\times$ target fails at every mesh.
 | comp01 | 256 | `C1` | 46.627 | 30.723 | 1.518x | 1.482x | 2.562e-13 | FAIL |
 | comp01 | 1024 | `C1` | 49.804 | 33.282 | 1.496x | 1.408x | 7.129e-13 | FAIL |
 
-**Table 42.** Training study on the Burgers head (jobs 3745912 (training), 3749074 (evaluation)): data
+**Table 43.** Training study on the Burgers head (jobs 3745912 (training), 3749074 (evaluation)): data
 density, objective, latent dimension and a joint bank arm, each evaluated
 through the unchanged head-ablation machinery. $0$ of
 $26$ arms pass the pre-registered success criterion. The
@@ -2148,7 +2189,7 @@ is measured below baseline.
 | selected: 2048 traj., $K{=}32$, weak term | 32 | 0.3918 | 2.8289 | 3.1275 | 3.1275 | 55.1 | yes |
 | joint bank$+$head, $R{=}512$ | 32 | 2.8517 | 5.0383 | 5.0471 | 2.4399 | 46.3 | yes |
 
-**Table 43.** Navier–Stokes 2D, phase-2 gates in four settings: the $K=16$
+**Table 44.** Navier–Stokes 2D, phase-2 gates in four settings: the $K=16$
 head on the full-rank $R=256$ bank, the $K=32$ head on the full-rank
 $R=512$ bank, the same $K=16$ recipe on a family of intrinsic dimension
 8 instead of 14 (3 modes; job
@@ -2195,11 +2236,11 @@ negative verdict is conservative.
 | $256^2$ (family dim. 8) | 256 | yes | 6.4018 | 6.2295 | yes | 5.2823 | 7.3651 | 1.39 | no |
 | $256^2$ (2048 traj.) | 256 | yes | 13.8371 | 11.5733 | yes | 16.6598 | 24.2492 | 1.46 | no |
 
-**Table 44.** L-shaped Poisson, solve layer at $M=257$ (jobs
+**Table 45.** L-shaped Poisson, solve layer at $M=257$ (jobs
 3784662, 3784663, 3789568, one per mesh): the non-dominated set on (complete-query
 ms, worst same-grid error) at each mesh, over every reduced and full-order
 subject. The sparse direct solve is exact to round-off. The $512^2$ job's
-first attempt (Table 6) failed a residual gate that is
+first attempt (Table 7) failed a residual gate that is
 unreachable in float64 at that mesh, where the achievable residual floor grows
 like $N^2$; the gate now takes the larger of the two bounds, which changed no
 mesh already run, and the re-run differs from that attempt only by the gate.
@@ -2228,8 +2269,8 @@ mesh already run, and the re-run differs from that attempt only by the gate.
 | $512^2$ | CG $10^{-2}$ | fom | 0.3845 | 29.127 |
 | $512^2$ | sparse direct (SuperLU) | fom | 0.0000 | 36.505 |
 
-**Table 45.** L-shaped Poisson, free rung at $M=1024$ (job 3784910).
-**These costs are not comparable with Table 44**: the
+**Table 46.** L-shaped Poisson, free rung at $M=1024$ (job 3784910).
+**These costs are not comparable with Table 45**: the
 dense projection is charged inside every reduced query here. Non-dominated set
 only.
 
@@ -2242,9 +2283,9 @@ only.
 | free rung $q{=}R$ (head_sdf_R512_K16) | free | 0.7791 | 2.583 |
 | sparse direct (SuperLU) | fom | 0.0000 | 8.351 |
 
-**Table 46.** L-shaped Poisson (job 3783786, NVIDIA A100 80GB PCIe): bank floors
+**Table 47.** L-shaped Poisson (job 3783786, NVIDIA A100 80GB PCIe): bank floors
 by boundary factor and rank, and the head layer at $256^2$. The solve layer is
-in Table 44 ($64^2$–$512^2$, one job per mesh){}.
+in Table 45 ($64^2$–$512^2$, one job per mesh){}.
 
 <!-- table: T18a_lshape_bank -->
 | bank | floor, dev. $256^2$ % | floor, dev. $512^2$ % | floor, common $256^2$ % |
@@ -2276,7 +2317,7 @@ in Table 44 ($64^2$–$512^2$, one job per mesh){}.
 <!-- section sources: none (prose only) -->
 
 Both pre-registered controls were run on the selected U-Net
-(Table 39): its float64 twin lands at
+(Table 40): its float64 twin lands at
 $1.6721 %$ and its second-seed twin at
 $1.5479 %$, both below the ROM, so that comparison is not
 a seed or precision artefact — though the float64 margin is
@@ -2289,7 +2330,7 @@ float32 result. Every operator number is a lower bound
 (7 of 8 of this lane's arms and 4 of 4 FNO arms
 were still improving at their budget). The operators' own knob,
 evaluation resolution, was tested under a pre-registered rule
-(Table 38; speedups are within one model's own curve in
+(Table 39; speedups are within one model's own curve in
 one job and carry no comparison to the ROM or the solver):
 `fno-large`{} is usable — one step, $256\to128$, buys the whole gain
 ($2.12\times$ its own speed at $1.14\times$ its own
@@ -2311,13 +2352,13 @@ number of fit states, not the node count: 14- and 8-state rules at $q=128$
 and $256$ fail at $m=2048$ ($\rho_{\max}=0.1908$,
 $0.1678$) where 64-state rules pass in that draw
 ($0.0669$, $0.1074$;
-Table 28). Rebuilt with the cheapest rule passing the
+Table 29). Rebuilt with the cheapest rule passing the
 primary bar per rung and timed in one allocation, the EQ ladder runs
 $1.8891\to0.5389 %$ at
 $59.1\to722.2$ ms
-(Table 31; offline cost in Table 10). In
+(Table 32; offline cost in Table 11). In
 the replication (pool and fit-state subset, four draws at fixed $q$, $m$,
-fit-state count; Table 32) the rules are confirmed at
+fit-state count; Table 33) the rules are confirmed at
 $q=0, 16, 32$ and marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$ (draws
 passing / draws); at $q=256$ the rule the ladder ran is the only one of
 $1 of 5$ draws of its recipe to meet the bar (re-draws
@@ -2333,11 +2374,11 @@ On Burgers, on the all-times metric no POD rank up to $k'=128$ matches the
 head ($10.1198 %$), while on evolved times POD-128
 reaches $1.9464 %$ against the $q=0$ rung's
 $1.8890 %$ (both on the development cohort; the rung's
-sealed value is $10.1120 %$, Table 37). In three layers (Table 13): floor
+sealed value is $10.1120 %$, Table 38). In three layers (Table 14): floor
 $0.3918 %$, best-found $2.5447 %$, solved
 $2.5629 %$. On Poisson a wider head moves the
 best-found/floor ratio only from $4.18$ to
-$2.76$ (Table 35).
+$2.76$ (Table 36).
 
 ### F.4 Navier–Stokes: the head-only data-scaling diagnosis
 
@@ -2346,14 +2387,14 @@ $2.76$ (Table 35).
 Job 3808493 retrained only the head on the frozen $K=16$,
 $R=256$ bank with 128, 256 and 512 training trajectories under three
 recipes and scored the held-out oracle at $256^2$
-(Table 47). The pre-registered rule
+(Table 48). The pre-registered rule
 (ns2d/DESIGN.md §A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous) returns “ambiguous” for every
 recipe; the decelerating slope and the inertness of regularisation lean
 towards a head-limited reading, which the lane does not upgrade beyond
 ambiguous. Caveat, pre-registered: the frozen bank was trained on all 512
 trajectories, so the small-$n$ arms are optimistic.
 
-**Table 47.** Navier–Stokes head-only data scaling (job 3808493):
+**Table 48.** Navier–Stokes head-only data scaling (job 3808493):
 held-out oracle median per recipe and training-set size, POD-16 at
 matched dimension, the held-out/train ratio, the selected training step,
 and the pre-registered log-log slope with its verdict (band
@@ -2377,10 +2418,10 @@ $-0.25$ to $-0.10$).
 
 **Exploratory ladder after the failed gate (not a phase-3 result).**
 
-Every number in this paragraph and in Table 48 and
-Table 49 is exploratory after a failed phase-2 gate: the
+Every number in this paragraph and in Table 49 and
+Table 50 is exploratory after a failed phase-2 gate: the
 $K=32$, $R=512$ manifold failed the held-out oracle bar
-(Table 43), so the ladder answers a mechanism question only, not
+(Table 44), so the ladder answers a mechanism question only, not
 the pre-registered phase-3 question. Job 3808502 (NVIDIA A100 80GB PCIe)
 ran the correction ladder $q\in\{0,32, 64, 128, 256, 512\}$ at one fixed test
 count $M=2176$ on 8 development cases with
@@ -2407,7 +2448,7 @@ falsification clause's named outcome for this head. The loosest
 full-order setting that converges reaches $0.0041 %$ at
 $421.3$ ms (converged reference $1177.7$ ms).
 
-**Table 48.** Navier–Stokes, **exploratory after a failed phase-2 gate**
+**Table 49.** Navier–Stokes, **exploratory after a failed phase-2 gate**
 (job 3808502): the correction ladder on the $K=32$,
 $R=512$ manifold at fixed $M=2176$, its three-layer decomposition
 (manifold layer and bank floor, medians over the development cases), the
@@ -2426,9 +2467,9 @@ evolved error) over every subject in the job.
 | 256 | 288 | 33.0536 | 13.8903 | 46267.9 | 0 | 4.3136 | 0.2254 | 92 | 9.5434 | 3.9876 | 9963.9 | — | — |
 | 512 | 544 | 6.0140 | 2.4377 | 52592.3 | 0 | 0.2254 | 0.2254 | 100 | 4.1664 | 1.4871 | 53902.5 | — | — |
 
-**Table 49.** Navier–Stokes, **exploratory after a failed phase-2 gate**
+**Table 50.** Navier–Stokes, **exploratory after a failed phase-2 gate**
 (job 3808502): the full-order Newton-tolerance ladder timed in the
-same job as Table 48; the last row is the converged
+same job as Table 49; the last row is the converged
 reference.
 
 <!-- table: T11h_ns_fom -->
@@ -2446,7 +2487,7 @@ reference.
 
 <!-- section sources: none (prose only) -->
 
-Poisson at $1024^2$ ($R=512$, $K=32$; Table 14): the middle
+Poisson at $1024^2$ ($R=512$, $K=32$; Table 15): the middle
 rungs cost a flat
 $6.4$–$6.9$ ms; the
 pre-registered degenerate-curve criterion passes (at $256^2$ only its
@@ -2455,12 +2496,12 @@ $3.17\times$ cheaper than the middle rungs);
 solver effort buys nothing at $q=0$ (floor $0.7421$,
 best-found $3.1139$, solved
 $3.1495 %$ at $M=129$). Heat at $1024^2$ (an
-earlier cell of the same family, Table 15): the bank evolved
+earlier cell of the same family, Table 16): the bank evolved
 linearly reaches $1.68 %$ at
 $0.56$ ms against the head's
 $4.56 %$ at $12.3$ ms, with
 the direct solve at $1.03$ ms. The reflective wave
-(Table 34): the top rung, the bank under exact modal
+(Table 35): the top rung, the bank under exact modal
 propagation with no head, is not strictly the most accurate rung (strict
 reading: no) but matches the $q=32$ rung
 within the pre-registered integrator tie band of
@@ -2469,7 +2510,7 @@ $5.121$ against $5.104 %$),
 and is
 $158$–$42\times$
 cheaper than the cheapest head rung on device ms (on complete-query ms
-the dense input and output dominate both, Table 34); the head ladder is monotone in $q$
+the dense input and output dominate both, Table 35); the head ladder is monotone in $q$
 (yes), cost is not. On waves POD $k'=64$
 reaches $1.502 %$ against the bank's
 $5.121 %$ at the same cost. On the L-shaped domain
@@ -2486,7 +2527,7 @@ $4.031$ ms. In a separate job at $M=1024$, whose
 costs are not comparable with those above, the free rung $q=R$ is the one
 place the learned bank beats the linear baseline on both axes, at
 $1.003\times$ its own bank floor with no solver iterations
-(Table 45).
+(Table 46).
 
 ### F.6 Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)
 
@@ -2527,7 +2568,7 @@ error against the reference ($17.98$–$19.44 %$)
 is the discretisation error. 27 subjects, 0
 budget exits.
 
-**Table 50.** Burgers at ten times lower viscosity, panel job 3817807
+**Table 51.** Burgers at ten times lower viscosity, panel job 3817807
 (NVIDIA A100-PCIE-40GB): the neural ladder at fixed $M=1088$, the $M=256$ control and
 the $(256, 2176)$ subject. **F4 applies**: the mesh is under-resolved
 (the converged discrete operator is $19.3$–$20.9 %$ from the
@@ -2552,7 +2593,7 @@ against reduced subjects only.
 | $q=128$, $M=256$ | 10.2614 | 10.2614 | 19.15 | 10.6478 | 658.6 | yes | 0 | no | no |
 | $q=256$, $M=2176$ | 6.1869 | 6.1869 | 18.94 | 10.0347 | 2864.2 | yes | 0 | no | yes |
 
-**Table 51.** The same job as Table 50: POD-LSPG at matched
+**Table 52.** The same job as Table 51: POD-LSPG at matched
 dimension, the free $R=512$ bank and the full-order tolerance/step grid.
 **F4 applies** (under-resolved mesh); the non-dominated set against
 all subjects is `nt1e-2_dt01`, `nt1e-3_dt005`, `dense_tight`, `fft_tight`.
@@ -2597,7 +2638,7 @@ Written for a reader who knows none of this project's vocabulary.
 - **Development cohort, held-out, sealed cohort** — Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).
 - **Pre-registered** — Declared in a design document before the job ran; every bar, gate and falsification clause in this paper was.
 - **POD-LSPG, $k'$, DST, CG, Newton** — The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
-- **FNO, U-Net, Transolver** — Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost–accuracy control of its own (Table 38), but one that does not change what the model can represent.
+- **FNO, U-Net, Transolver** — Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost–accuracy control of its own (Table 39), but one that does not change what the model can represent.
 - **Checkpoint, frozen, incumbent** — Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
 - **Provisional, pending** — A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
 

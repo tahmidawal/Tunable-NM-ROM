@@ -94,3 +94,14 @@ Written self-audit; mechanical check `artifacts/ns304/audit.json` (`audit_phase3
 | 31 | Decomposition: bank 0.00225, manifold 0.106→0.043→0.0023 (q=0/256/512) on the 48 reference states; energy captured 26/44/68/92/100 % | `decomposition.q*`, `directions.residual_energy_captured` | not independently recomputable without the head (JAX); read from the JSON; formula-vs-field agreement is stored per rung | reported |
 | 32 | Zero LM budget exits in every timed rung (R-CONV) | `aggregates.*.budget_exits` | audit sums the per-invocation reasons | verified |
 | 33 | Train-cohort hash mismatched on `pax105` and passed by the §A4 inferred rule (dev reference by value 3.6e-16) | `gates.R-DATA_*` | read from the JSON | verified (mode recorded) |
+
+## Addendum 6 — `ns303` (job 3808498, 3-mode family, DESIGN §A9/§A12)
+
+Written self-audit; mechanical check `artifacts/ns303/audit.json` (`audit_phase2.py`, NumPy only: 23 checks, all match). The new family has no Phase-1 archived fields, so the audit's reference (first 8 dev trajectories at the six times) was regenerated locally with the certified JAX FOM — `F.params_draw(20260918, 64, 3)[:8]`, `F.make_fom(256, 2e-3, 500, 20)`, ntol 1e-11, ltol 1e-9 — giving `U` of shape (8, 26, 65536) with SHA256 `ae172ad39aa1398c7157c1a94510fc7898d76f4f342f921526acdb433c5e05ce` (25 s on the GB10; not committed, reproducible from the committed code). The NumPy re-implementation of bank, head and error is unchanged; only the fields come from the FOM.
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 34 | Bank rank 256, κ=63.8; new-family hashes dev `81615ae4…`, train `184f97d7…` recorded | `gates.B-ORTH_N256`, `gates.B-DATA_*` | audit recomputes the SVD rank; hashes read | verified |
+| 35 | H-ORACLE FAIL: oracle 0.0528 vs POD-16 0.0737, ratio 1.39; `passes_at_1p5` false | `oracle.256.*`, `gates.H-ORACLE_N256` | audit recomputes ‖G h(z) − u‖/n₀ at the saved codes on the 48 regenerated reference states (worst rel diff 1.6e-14), medians and the pass rule | verified |
+| 36 | t=0 ratio 1.83, evolved 1.44; held-out/training 3.81 | per-state arrays; `training.recon_rel_l2_median` | `generate_ns2d.py` from the per-state lists (audit checks json == npz); training recon is the driver's number | verified (held-out side) |
+| 37 | 4/384 LM budget exits; oracle iters median 22 | `oracle.256.oracle_reasons` | read with the code map (0 = budget) | reported |

@@ -640,3 +640,34 @@ in the median, the solved error — the mechanism exists — but on a head that 
 non-dominated set is linear/full-order only. Whether a head that *passes* H-ORACLE (ns303, if it
 does) changes the non-dominated set is what the reserved Phase-3 job is for. Nothing here is
 a paper Phase-3 number.
+
+## §A12 (2026-09-17 ~23:30 EDT, after job 3808498 `ns303`) — the 8-dimensional family also fails H-ORACLE (POD-16/oracle 1.39, bar 2.0, below the 1.5 marker); no Phase-3 job is submitted; the bar is not lowered
+
+**Run.** `ns303` (A100 `pax105`, 3 h 37 m, exit 0, `jax_backend=gpu`, `ALL-DONE`, commit
+`31e0846f`): 3-mode / 6-amplitude family (`NMODES=3`), 512 trajectories, $K=16$, $R=256$,
+`G_HIDDEN=512`, head 512×3, 100k steps, training mesh only. New-family cohort hashes recorded:
+dev `81615ae4…`, train `184f97d7…` (`mode=recorded-new-family`). Independent NumPy audit
+`artifacts/ns303/audit.json`: 23 checks, all match, against the first-8 dev trajectories of the
+new family regenerated locally from seed 20260918 with the certified FOM (sha `ae172ad3…`,
+25 s on the GB10; the regeneration is recorded in the self-audit and is reproducible from the
+committed code).
+
+**Gates.** B-RANKCAP pass; B-DATA recorded; B-ORTH rank 256, $\kappa=63.8$; B-FLOOR pass (bank
+0.0640 vs POD-256 0.0623, ratio 1.03; bank median 0.0108); H-TRAIN pass (recon median
+**0.0139**); H-SOLVED pass (0.0557, 1.05× oracle); **H-ORACLE FAIL: oracle median 0.0528 vs
+POD-16 median 0.0737, ratio 1.39** (`passes_at_1p5` = false); 4/384 LM budget exits.
+
+**Per time and gap.** $t=0$: oracle 0.0058 vs POD-16 0.0106 (ratio 1.83, the closest any arm
+has come to the bar); evolved: 1.44. Held-out / training = **3.8** (0.0528 / 0.0139) — the same
+gap as the 14-dimensional family (4.0), at an absolute level 4× lower.
+
+**Reading.** Lowering the family's intrinsic dimension from 14 to 8 lowered every error 4×
+(POD-16 0.240 → 0.074, oracle 0.202 → 0.053, bank floor 0.012 → 0.003) but left the *ratio*
+of head to linear at 1.4 and the generalisation gap at 3.8: the head's advantage over POD-$K$
+does not grow when the manifold gets easier; both improve together. Combined with §A10 (data
+slope decelerating to −0.06…−0.12, regularisation inert) and §A7 (K=32 ratio 1.15), the cell's
+finding is that **this auto-decoder head class does not beat linear POD-$K$ by 2× on held-out
+decaying 2D NS at any family dimension or data budget tried**; the one remaining arm, ns302
+(4× data), is predicted at 1.25–1.35 by §A10 and is left to run to completion so the prediction
+is tested rather than assumed. **No Phase-3 job is submitted; the reserved job stays reserved
+for a head that passes; the bar is not lowered.**

@@ -57,9 +57,9 @@ def head(p, z):
     return mlp(p['h'], z) + z @ np.asarray(p['h_lin'])
 
 
-def params_draw(seed, count, nu_lo=1e-3, nu_hi=1e-2):
+def params_draw(seed, count, nmodes=6, nu_lo=1e-3, nu_hi=1e-2):
     r = np.random.default_rng(seed)
-    cols = [r.standard_normal(count) for _ in range(12)]
+    cols = [r.standard_normal(count) for _ in range(2 * nmodes)]
     cols.append(np.exp(r.uniform(np.log(nu_lo), np.log(nu_hi), count)))
     return np.stack(cols, 1)
 
@@ -83,7 +83,7 @@ def main():
 
     # -- the physical parameters of the archived dev8 are the first 8 column-wise draws of the dev seed
     ref_any = np.load(p1 / f'dev8_N{cfg["EVAL_NS"][0]}.npz')
-    phys = params_draw(cfg['SEEDS']['dev'], cfg['N_DEV'])[:8]
+    phys = params_draw(cfg['SEEDS']['dev'], cfg['N_DEV'], cfg.get('NMODES', 6))[:8]   # DESIGN §A9: 3-mode family has 7 columns
     check('dev8.physical_max_abs_diff', float(np.max(np.abs(ref_any['physical'] - phys))), 0.0, atol=1e-15)
 
     # -- the rank cap is structural: the g-track's last layer is linear over g_hidden units

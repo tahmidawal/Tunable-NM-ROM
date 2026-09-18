@@ -229,6 +229,13 @@ def main():
                    TR=TR, F3_recipe_not_reproduced=F3, seeds_present=seeds,
                    sealed_present=sorted(sealed),
                    sealed_job_pending=(final_sub['job_id'] if final_sub and not sealed else None))
+    # the per-rung C2 / C2n ratios as rows of their own, so the amendments and the lab entry can
+    # read them from summary.json instead of the report prose (found missing on 2026-09-17)
+    for q_, rr in ratios.items():
+        for k_, v_ in rr.items():
+            if isinstance(v_, (int, float)) and not isinstance(v_, bool):
+                row(checkpoint='all', cohort='verdict', attempt=None, job_id=None, gpu=None, ladder='dense_m4',
+                    q=int(q_), quadrature='dense', metric=f'C2_{k_}', value=v_, source='generate_b_seeds.py')
     for k, v in verdict.items():
         if not isinstance(v, dict):
             row(checkpoint='all', cohort='verdict', attempt=None, job_id=None, gpu=None, ladder='dense_m4',

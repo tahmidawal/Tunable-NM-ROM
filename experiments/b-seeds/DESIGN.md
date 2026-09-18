@@ -402,3 +402,35 @@ joint stationarity 1.52e-06 and 5.83e-06 against `gtol` 1e-06. It is a budget ex
 Nothing is adjusted in response — the step budget is part of the frozen qtd02 configuration and
 changing it would break comparability — so C1, C3 and C4 are reported as 2 of 3 and the rung is
 reported as unconverged wherever it appears.
+
+**A5 (2026-09-17, after the sealed job 3804465 landed; the sealed record and the F2 reading).** The
+sealed job (`bsd_final`, COMPLETED 0:0, 3h37m, pax143 A100-40GB, `jax_backend=gpu`) ran the incumbent
+(SHA256 `18f0266ae6f0…`, gated `checkpoint_is_the_recorded_one`) and the three seed checkpoints through
+every rung on `params_draw(17092026, 6)`; the audit gated the sealed values against the declared draw
+(≤ 1 ulp), disjointness and `final_cohort_unopened == false` (34/34 and 3 × 33/33 gates). It was
+collected, archived to `artifacts/final/`, and its remote directory deleted. Every number below is read
+from `reports/summary.json` (the per-rung C2 ratios were added to it as rows in this amendment, having
+been found present only in the report prose).
+
+- **C2 fails and C2n fails, at one rung, on the incumbent alone.** The seed means pass both at every
+  rung (worst sealed/dev ratio 1.401, normalised 1.414); the incumbent passes both at every rung
+  $q \ge 16$ (worst 1.307) and fails only at $q = 0$: 1.8890 % on the development cohort,
+  10.1120 % on the sealed one (ratio 5.353, normalised
+  5.337). The raw invocation shows why: on sealed case 4 the incumbent's
+  $q = 0$ solve is fully converged (every step a gradient exit, zero budget exits, the initial fit
+  converged) and lands at 10.8 % at the first output time — a converged wrong branch — while the three
+  seeds on the same case give 2.0–2.9 % and the incumbent itself at $q = 16$ gives 1.4617 %.
+  Under the reading rule fixed in A1.3, both failing means **F2 applies**: the sealed numbers are the
+  headline for T13 and the development numbers are demoted to the seed-variability table. The content
+  of the failure is narrower than F2's wording — one checkpoint at the uncorrected rung — and the report
+  says so beside the numbers; that is not a reason to soften the criterion after the fact.
+- **C3 fails**: seed 2's sealed `old_q64_M320_dense` exits on budget on case 4 (all three reps, joint
+  stationarity 2.86e-06 vs `gtol` 1e-06), in addition to seed 3's development top rung (A4). Both are
+  budget exhaustions under the frozen 600-step cap, reported as unconverged, not tuned.
+- **The sealed ladder is monotone on all four checkpoints** (`monotone_evolved`: {'incumbent': True, 'seed1': True, 'seed2': True, 'seed3': True}); the knob bar on
+  the sealed cohort: {'incumbent': True, 'seed1': True, 'seed2': False, 'seed3': True}; `all_converged`: {'incumbent': True, 'seed1': True, 'seed2': False, 'seed3': True}.
+- C1, C4, TR and F3 are unchanged from A4.
+
+Also recorded: the first attempt to write this amendment crashed (a `KeyError` on a per-rung ratio
+field that `summary.json` did not carry) and the lab-log entry and commit `84a537ff` went in without
+it; the corrected entry follows in the log. Job count: 4 of 8; nothing further is planned.

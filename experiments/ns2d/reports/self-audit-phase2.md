@@ -105,3 +105,15 @@ Written self-audit; mechanical check `artifacts/ns303/audit.json` (`audit_phase2
 | 35 | H-ORACLE FAIL: oracle 0.0528 vs POD-16 0.0737, ratio 1.39; `passes_at_1p5` false | `oracle.256.*`, `gates.H-ORACLE_N256` | audit recomputes ‖G h(z) − u‖/n₀ at the saved codes on the 48 regenerated reference states (worst rel diff 1.6e-14), medians and the pass rule | verified |
 | 36 | t=0 ratio 1.83, evolved 1.44; held-out/training 3.81 | per-state arrays; `training.recon_rel_l2_median` | `generate_ns2d.py` from the per-state lists (audit checks json == npz); training recon is the driver's number | verified (held-out side) |
 | 37 | 4/384 LM budget exits; oracle iters median 22 | `oracle.256.oracle_reasons` | read with the code map (0 = budget) | reported |
+
+## Addendum 7 — `ns302` (job 3808495, 4× data, DESIGN §A9/§A13) — closes the cell
+
+Written self-audit; mechanical check `artifacts/ns302/audit.json` (`audit_phase2.py`, NumPy only: 23 checks, all match, against Phase 1's archived dev8 fields — same family).
+
+| # | claim | rests on | check run | status |
+|---|---|---|---|---|
+| 38 | Bank rank 256, κ=69.8; B-DATA dev passed BY VALUE on `pax106` (hash mismatch, 3.6e-16), train inferred; extra cohort hash `8b6796aa…` recorded | `gates.B-ORTH_N256`, `gates.B-DATA_*` | audit recomputes the SVD rank; gate modes read | verified |
+| 39 | H-ORACLE FAIL: 0.1666 vs POD-16 0.2425, ratio 1.456, `passes_at_1p5` false | `oracle.256.*` | audit recomputes ‖G h(z) − u‖/n₀ on the 48 archived states (1.1e-14), medians, pass rule | verified |
+| 40 | t=0 ratio 0.52, evolved 1.39; held-out/training 1.34 (recon 0.124) | per-state arrays; `training.recon_rel_l2_median` | generator from per-state lists; recon is the driver's number (training fields not saved) | verified (held-out side) |
+| 41 | POD-16 of 2048 trajectories was built by the blocked method of snapshots (`POD_BIG`) | `config`, code path | verified locally vs the GPU path to 7e-15 before submission (§A9); not independently recomputable in-audit (fields not saved) | reported |
+| 42 | §A10 prediction 1.25–1.35 vs observed 1.46 | §A10 text, `gates.H-ORACLE_N256.ratio_podK_over_oracle` | arithmetic | scored: direction right, magnitude under by ~0.1 |

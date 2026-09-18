@@ -671,3 +671,50 @@ decaying 2D NS at any family dimension or data budget tried**; the one remaining
 (4× data), is predicted at 1.25–1.35 by §A10 and is left to run to completion so the prediction
 is tested rather than assumed. **No Phase-3 job is submitted; the reserved job stays reserved
 for a head that passes; the bar is not lowered.**
+
+## §A13 (2026-09-18 ~00:30 EDT, after job 3808495 `ns302`) — 4× data also fails H-ORACLE (ratio 1.46); the §A10 prediction is scored; the §A9 cell and the lane are CLOSED
+
+**Run.** `ns302` (A100 `pax106`, 5 h 37 m, exit 0, `jax_backend=gpu`, `ALL-DONE`, commit
+`31e0846f`): 512 base + 1536 extra trajectories (seed 20260920, hash `8b6796aa…` recorded),
+$K=16$, $R=256$, ns203 recipe with per-step batch 13 312 of 53 248 snapshots. B-DATA on
+`pax106`: the 256² dev hash mismatched and **passed by value** (3.6e-16 on the archived 8
+trajectories — the first live exercise of the §A4 value path), train inferred from dev. Blocked
+POD ran on the 53 248-snapshot Gram as designed. Independent NumPy audit
+`artifacts/ns302/audit.json`: 23 checks, all match (oracle recomputed to 1.1e-14).
+
+**Gates.** B-RANKCAP pass; B-ORTH rank 256, $\kappa=69.8$; B-FLOOR pass (bank 0.138 vs POD-256
+0.116, ratio 1.20; bank median 0.0375); H-TRAIN pass (recon median **0.124**); H-SOLVED pass
+(0.186, 1.12×); **H-ORACLE FAIL: oracle median 0.1666 vs POD-16 median 0.2425, ratio 1.456**,
+`passes_at_1p5` = false; 6/384 budget exits.
+
+**Per time and gap.** $t=0$: oracle 0.0355 vs POD-16 0.0184 (ratio **0.52** — with 2048
+trajectories the linear POD-16 fits the initial family better than the head); evolved: 1.39.
+Held-out / training = **1.34** (0.167 / 0.124): the 4.0× generalisation gap of `ns203` is gone,
+because the head no longer fits the *training* data either (recon 0.050 → 0.124 at 25 instead
+of 100 epochs and 4× the states). More data converted a generalisation failure into a
+capacity/optimisation failure at the same head; the ratio moved 1.19 → 1.46.
+
+**Scoring the §A10 prediction.** Predicted POD-16/oracle ≈ 1.25–1.35 at $n=2048$ from the
+frozen-bank slope; observed **1.46** — direction and conclusion correct (far below 2.0, below
+1.5), magnitude under-predicted by ~0.1, attributable to the jointly retrained bank that ns301
+by construction could not include. Recorded as a partially correct prediction.
+
+**Closing verdict of the §A9 cell (one paragraph, for the paper).** On decaying 2D
+incompressible Navier–Stokes (vorticity–streamfunction, periodic, $\mathrm{Re}\in[100,1000]$,
+certified second-order FOM), the separable-bank auto-decoder head of the Burgers recipe does
+not beat linear POD-$K$ by the pre-registered 2× on held-out states under any variation tried:
+$K=16$ (ratio 1.19) and $K=32$ (1.15) on 512 trajectories of the 14-dimensional family; the
+8-dimensional family (1.39); 2048 trajectories (1.46); and, head-only on a frozen full-rank
+bank, 128→256→512 trajectories with a log-log slope decelerating from −0.4 to −0.06 per
+doubling, unmoved by weight decay, early stopping or a smaller head. The bank is never the
+limit (floor 3–30× below the oracle); the head–linear ratio stays at 1.2–1.5 while absolute
+errors move 4× with the family and the gap moves from generalisation (4.0×) to capacity (1.3×)
+with data. The exploratory ladder on the best manifold shows the correction-rank mechanism is
+real on a degree-2 residual — $q$ buys the manifold back to the bank floor (fully at $q=R$) and
+the solved median error falls monotonically, 11× at 3.9× cost — but with one worst-case
+inversion at the first rung, a solve layer 4–10× above the manifold layer, and POD-LSPG better
+and cheaper at every matched dimension, so no neural rung is non-dominated and no reduced model
+beats the FFT-preconditioned FOM on cost. **No Phase-3 job was ever submitted; the bar was
+never lowered.** The lane's deliverable is a certified FOM and dataset, the floors, this
+negative with its diagnosis, and the exploratory ladder. Jobs used: 9 of 12 (`ns101`, `ns201`,
+`ns202`, `ns203`, `ns204`, `ns301`, `ns302`, `ns303`, `ns304`); namespace empty.

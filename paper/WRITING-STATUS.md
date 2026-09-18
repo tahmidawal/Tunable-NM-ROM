@@ -7,7 +7,7 @@ from e533b48e. No pending cell remains. T13 (per-rung sealed vs development seed
 lane's C2/C2n ratios, incumbent sealed values and times) and T13b (per-checkpoint verdicts) are
 generated; the main-text ladder table carries a "sealed evolved %" column beside the development
 column for the scheduled rows (same checkpoint; costs stay per job); the fixed-M rows are unchanged.
-Sealed result: all four checkpoints monotone on both metrics and meet the knob bar; top rung
+Sealed result: all four checkpoints monotone on both metrics; the lane's per-checkpoint knob bar passes on 3 of 4 (seed2 fails on its unconverged q=64 rung, not on span); top rung
 0.59–0.68 % across the four. Pre-registered F2 applies: C2/C2n fail at q=0 for the incumbent alone
 (sealed 10.11 % vs development 1.89 %, ratio 5.35; one sealed case converged to a wrong branch,
 gradient exit, zero budget exits; q=16 collapses all four checkpoints to 1.46–1.87 %) → sealed

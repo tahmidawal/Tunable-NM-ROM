@@ -678,8 +678,9 @@ saturates at $M^\star=\nQxmMstarTwoFiftySix$.
 Sealed cohort and seeds (Tables~\ref{tab:sealed}, \ref{tab:seeds}). The
 sealed cohort was opened once, after every choice was frozen; on it all
 \nSealedCheckpoints{} checkpoints (the incumbent and \nSeedsCount{} fresh
-seeds) give a ladder monotone on both metrics that meets the knob bar,
-with top-rung errors of \nSealedAllTopMin--\nSealedAllTopMax\,\%. The one
+seeds) give a ladder monotone on both metrics, \nSealedKnobBarCount{} of
+them meeting the knob bar, with top-rung errors of
+\nSealedAllTopMin--\nSealedAllTopMax\,\%. The one
 checkpoint-specific number is the incumbent's uncorrected $q=0$ rung,
 \nSealedIncQzero\,\% sealed against \nPanelQzeroEvolved\,\% in
 development (the seeds: \nSealedSeedsQzeroMin--\nSealedSeedsQzeroMax\,\%):
@@ -690,8 +691,8 @@ fails at $q=0$ for the incumbent alone (\nSealedCtwoIncQzeroRatio; worst
 seed-mean ratio \nSealedCtwoWorstSeedRatio); the sealed numbers are the
 headline and the development table records seed variability (the incumbent
 beats every seed there at $q=\nSeedsIncumbentBetterQs$). Rungs not
-converged everywhere (\nSealedUnconvergedCells{} sealed; one seed at
-$q=256$ in development) are reported as run, not tuned; the fixed-$M$
+converged everywhere (\nSealedUnconvergedCells{} sealed, the one bar
+failure; one seed at $q=256$ in development) are reported as run, not tuned; the fixed-$M$
 ladder, one development-cohort checkpoint, is unchanged.
 
 \paragraph{Quadrature and tolerance move cost.}

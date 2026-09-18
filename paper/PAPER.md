@@ -648,8 +648,9 @@ saturates at $M^\star=2176$.
 Sealed cohort and seeds (Table 37, Table 36). The
 sealed cohort was opened once, after every choice was frozen; on it all
 4 checkpoints (the incumbent and 3 fresh
-seeds) give a ladder monotone on both metrics that meets the knob bar,
-with top-rung errors of 0.59–0.68 %. The one
+seeds) give a ladder monotone on both metrics, 3 of
+them meeting the knob bar, with top-rung errors of
+0.59–0.68 %. The one
 checkpoint-specific number is the incumbent's uncorrected $q=0$ rung,
 10.1120 % sealed against 1.8890 % in
 development (the seeds: 2.15–3.43 %):
@@ -660,8 +661,8 @@ fails at $q=0$ for the incumbent alone (5.35; worst
 seed-mean ratio 1.40); the sealed numbers are the
 headline and the development table records seed variability (the incumbent
 beats every seed there at $q=16, 32, 64, 128$). Rungs not
-converged everywhere (`seed2` at $q=64$ (3 budget exits){} sealed; one seed at
-$q=256$ in development) are reported as run, not tuned; the fixed-$M$
+converged everywhere (`seed2` at $q=64$ (3 budget exits){} sealed, the one bar
+failure; one seed at $q=256$ in development) are reported as run, not tuned; the fixed-$M$
 ladder, one development-cohort checkpoint, is unchanged.
 
 **Quadrature and tolerance move cost.**

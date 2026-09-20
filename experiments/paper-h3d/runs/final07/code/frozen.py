@@ -40,9 +40,7 @@ def stage_inputs(root,source_attempt,destination,cfg):
         original=source/name
         if not original.exists():original=source/'frozen_training'/name
         if not original.exists() and record['config'].get('frozen_input_directory'):
-            # Frozen input paths are relative to the job archive, including for
-            # companion outputs nested under out/seedB.
-            original=run/'archive'/record['config']['frozen_input_directory']/name
+            original=source.parent/record['config']['frozen_input_directory']/name
         assert original.exists(),original
         dest=destination/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest)
         hashes[name]=file_sha(dest);assert hashes[name]==file_sha(original)

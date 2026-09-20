@@ -78,6 +78,8 @@ def pretrain(train_x,train_y,spec,training_cfg,cfg,out,dump,checkpoint,denominat
     learned_errors=np.linalg.norm(learned_projection-snapshots,axis=1)/np.sqrt(dn)
     # Cholesky is a field metric, not an arbitrary coefficient Euclidean norm.
     gram=matrix.T@matrix;root=np.linalg.cholesky(gram)
+    np.savez_compressed(out/'branch_teacher.npz',coefficients=coefficients.T.reshape(batch_count,channels,rank),
+        gram=gram,learned_trunk_projection_errors=learned_errors)
     targets=jnp.asarray(coefficients.T.reshape(batch_count,channels,rank));root=jnp.asarray(root)
     fields=jnp.asarray(x[...,field_indices]);denom=jnp.asarray(dn.reshape(batch_count,channels))
     branch={k:params[k] for k in ['branch','branch_hidden','branch_read']}

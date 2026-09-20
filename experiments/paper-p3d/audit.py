@@ -135,6 +135,9 @@ def audit(out,output=None):
         result['independent_weak_state_audit']=audit_states(out,record)
     else:
         result['stationarity_scope']='Recorded solver stopping counters checked for internal consistency; latent states were not retained for independent gradient recomputation.'
+    if any('pretraining' in entry for entry in record.get('operators',[])):
+        from audit_pretraining import audit as audit_teachers
+        result['independent_pretraining_audit']=audit_teachers(out,record)
     (output or out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
     return result
 

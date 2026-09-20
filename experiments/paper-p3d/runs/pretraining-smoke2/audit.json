@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "native_transfer_maximum_defect": 0.0,
+  "independent_fine_trunk_maximum_defect": 4.336808689942018e-19,
+  "pretraining_used_no_development_data": true,
+  "seconds": 15.000959883094765,
+  "architecture": {
+    "kind": "deeponet3d",
+    "width": 2,
+    "levels": 2,
+    "pool_bins": 2,
+    "rank": 4,
+    "trunk_width": 8,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "backend": "gpu",
+  "x64": true,
+  "independent_teacher_audit": {
+    "passed": true,
+    "recipes": [
+      {
+        "name": "test",
+        "passed": true,
+        "training_cases": 12,
+        "orthogonality": 2.4424906541753444e-15,
+        "weighted_pod_eigen_residual": 5.194694511910107e-16,
+        "gram_relative_defect": 1.339371302495125e-16,
+        "least_squares_normal_defect": 3.150934756484948e-15,
+        "physical_metric_identity_defect": 4.967599934526946e-16,
+        "teacher_projection_worst": 0.1495966382848003,
+        "learned_trunk_projection_worst": 0.9885991306631382
+      }
+    ],
+    "scope": "Independent regenerated training solutions, weighted POD eigenspace, learned-trunk least squares and physical coefficient metric; no retraining or global convergence claim."
+  }
+}

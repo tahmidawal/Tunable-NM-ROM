@@ -1,0 +1,36 @@
+{
+  "spec": {
+    "kind": "deeponet3d",
+    "width": 2,
+    "levels": 2,
+    "pool_bins": 2,
+    "rank": 4,
+    "trunk_width": 8,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "config": {
+    "seed": 920702,
+    "steps": 2,
+    "wall_seconds": 30,
+    "batch_size": 2,
+    "learning_rate": 0.0003,
+    "validation_every": 1,
+    "curve_every": 1
+  },
+  "parameter_count": 1407,
+  "steps_completed": 2,
+  "initialization": "explicit retained pretrained parameters",
+  "best_step": 2,
+  "best_validation_worst": 0.8401978259301435,
+  "seconds": 2.5764527689898387,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

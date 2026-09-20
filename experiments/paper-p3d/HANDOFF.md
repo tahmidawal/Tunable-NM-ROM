@@ -1,6 +1,23 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## Final08 accepted and fully retained; devicecheck09 remains live
+
+Final64 job4028642 completed43m48s on A10080GB pax105. Accepted independent checks: 4736 fields, 128 references, 50 rows, 2304 CG fields with zero failures, and 384 nonlinear states. Frozen assets/configuration and empirical physical-reference refinement pass. All 4939 ordinary archive files (6231387723 bytes) were verified by reading actual Git blobs at `26c73030b89adfa321ede751db2798abf9bcd1b2`; all 3 oversized assets were reconstructed from committed chunks. Exact final08 remote directory is deleted after proof. No final-driven tuning or selection was done.
+
+Generated final rows: `runs/final08/paper-comparisons.json` and raw `archive/out/summary.json`. Relative errors below are maximum-over-final-cases, percent; speedup uses fastest converged efficient CG setting meeting the method field error in the same job. Native nonlinear rows do not beat efficient CG. Transfer nonlinear rows do; POD/DST remain much faster. Every operator direct-transfer failure and alternative frozen transfer rule is retained, with no final-based winner selection.
+
+| N | Method | Worst error (%) | Device median (ms) | CG/method |
+|---|---|---:|---:|---:|
+| 32 | nmrom_K16_q0_dense | 1.398707 | 2.494808 | 0.991226 |
+| 32 | nmrom_K16_q32_dense | 0.740624 | 2.527793 | 0.978292 |
+| 32 | nmrom_K16_q96_dense | 0.264832 | 2.628918 | 0.940660 |
+| 64 | nmrom_K16_q0_dense | 1.392405 | 3.223523 | 1.384611 |
+| 64 | nmrom_K16_q32_dense | 0.731086 | 3.270519 | 1.364715 |
+| 64 | nmrom_K16_q96_dense | 0.262785 | 3.355024 | 1.330341 |
+
+Devicecheck09 is the separate user-requested development reproducibility job, not a second final evaluation. Continue its collection/audit/retention/cleanup before closing the lane. Root owns canonical LAB/manuscript integration.
+
 ## User-requested device confirmation running; final08 audited
 
 **Devicecheck09 job4031708 RUNNING on pax105**, scientific source `f87bbe98c257ca128b6d9516ae5ebff7d2491b48`, literal remote `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/devicecheck09`. Root explicitly authorized this fresh same-device reproducibility job while final08 retention finishes. It reuses only the pre-final replay07 selected bundle and development cohort, with no training or final-driven changes. Both meshes, all operators/NM/POD/DST/CG settings and repetition arrays remain. Guard preflight PASS: one CUDA/JAX GPU, UUID `GPU-7ea87052-7ee2-b522-615d-be66f44238c3`, CUDA_VISIBLE_DEVICES=0, SLURM_JOB_GPUS=7, A10080GB. CUDA driver UUID is verified before and after every timed invocation outside measured boundaries; all checks are recorded and independently audited. Expected completion around18:56–18:59 UTC; collect/audit/deterministic-replay-check/source/retain/actual-Git-readback before exact cleanup. Do not duplicate-submit.

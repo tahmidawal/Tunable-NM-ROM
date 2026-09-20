@@ -1,0 +1,74 @@
+{
+ "attempt": "bfp01",
+ "pde": "poisson2d",
+ "intervals": 255,
+ "fine_intervals": 1023,
+ "incumbent_seed": 0,
+ "incumbent_sources": 3072,
+ "split_seed": 20260916,
+ "validation_fraction": 0.15,
+ "extra_seed": 20260920,
+ "train_sources": 16384,
+ "eval_seed": 7090703,
+ "eval_count": 6,
+ "fresh_seed": 7090732,
+ "fresh_count": 6,
+ "common_seed": 20260916,
+ "holdout_seed": 20260921,
+ "logged_incumbent_floor": 0.007459,
+ "seed": 20260920,
+ "probe_seed": 20260920,
+ "probe_snapshots": 2048,
+ "transplant_codes": 4096,
+ "ridge": 1e-09,
+ "log_every": 250,
+ "floor_gate": 0.001,
+ "pod_ranks": [
+  128,
+  256,
+  512,
+  1024,
+  2048
+ ],
+ "fresh_arch": {
+  "n_ff": 128,
+  "ff_scales": [
+   4.0,
+   8.0,
+   16.0
+  ],
+  "g_layers": 2
+ },
+ "arms": [
+  "pod",
+  "ft512",
+  "cat1024",
+  "cat2048"
+ ],
+ "learned": [
+  {
+   "tag": "ft512",
+   "R": 512,
+   "steps": 6000,
+   "batch": 1024,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.0
+  },
+  {
+   "tag": "cat1024",
+   "R": 1024,
+   "steps": 10000,
+   "batch": 512,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.001
+  },
+  {
+   "tag": "cat2048",
+   "R": 2048,
+   "steps": 8000,
+   "batch": 512,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.001
+  }
+ ]
+}

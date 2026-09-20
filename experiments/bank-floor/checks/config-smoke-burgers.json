@@ -1,0 +1,62 @@
+{
+ "attempt": "smokeb",
+ "pde": "burgers2d",
+ "intervals": 256,
+ "dt": 0.005,
+ "state_stride": 2,
+ "train_trajectories": 6,
+ "incumbent_bank_trajectories": 3,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "holdout_seed": 20260916,
+ "holdout_trajectories": 2,
+ "snapshot_ntol": 1e-09,
+ "snapshot_ltol": 1e-07,
+ "logged_incumbent_floor": 0.003918,
+ "seed": 20260920,
+ "probe_seed": 20260920,
+ "probe_snapshots": 64,
+ "transplant_codes": 64,
+ "ridge": 1e-09,
+ "log_every": 2,
+ "floor_gate": 0.001,
+ "pod_ranks": [
+  16,
+  32
+ ],
+ "fresh_arch": {
+  "n_ff": 128,
+  "ff_scales": [
+   4.0,
+   8.0,
+   16.0
+  ],
+  "g_layers": 2
+ },
+ "arms": [
+  "pod",
+  "ft512",
+  "cat1024"
+ ],
+ "learned": [
+  {
+   "tag": "ft512",
+   "R": 512,
+   "steps": 3,
+   "batch": 32,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.0
+  },
+  {
+   "tag": "cat1024",
+   "R": 640,
+   "steps": 3,
+   "batch": 32,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.001
+  }
+ ],
+ "smoke": true
+}

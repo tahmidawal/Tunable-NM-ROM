@@ -1,0 +1,54 @@
+{
+ "attempt": "smokep",
+ "pde": "poisson2d",
+ "intervals": 255,
+ "fine_intervals": 255,
+ "incumbent_seed": 0,
+ "incumbent_sources": 3072,
+ "split_seed": 20260916,
+ "validation_fraction": 0.15,
+ "extra_seed": 20260920,
+ "train_sources": 2675,
+ "eval_seed": 7090703,
+ "eval_count": 6,
+ "fresh_seed": 7090732,
+ "fresh_count": 6,
+ "common_seed": 20260916,
+ "holdout_seed": 20260921,
+ "logged_incumbent_floor": 0.007459,
+ "seed": 20260920,
+ "probe_seed": 20260920,
+ "probe_snapshots": 64,
+ "transplant_codes": 64,
+ "ridge": 1e-09,
+ "log_every": 2,
+ "floor_gate": 0.001,
+ "pod_ranks": [
+  16,
+  32
+ ],
+ "fresh_arch": {
+  "n_ff": 128,
+  "ff_scales": [
+   4.0,
+   8.0,
+   16.0
+  ],
+  "g_layers": 2
+ },
+ "arms": [
+  "pod",
+  "cat1024"
+ ],
+ "learned": [
+  {
+   "tag": "cat1024",
+   "R": 640,
+   "steps": 3,
+   "batch": 32,
+   "lr_warm": 0.0001,
+   "lr_fresh": 0.001
+  }
+ ],
+ "smoke": true
+}

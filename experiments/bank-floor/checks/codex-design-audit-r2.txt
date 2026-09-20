@@ -1,0 +1,573 @@
+OpenAI Codex v0.155.1
+--------
+workdir: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-bank-floor
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a0c0fe-f56e-73d0-8ec0-b70f2d165a82
+--------
+user
+You are an independent auditor; you cannot run shell commands, everything you need is inlined below. Audit the pre-registration DESIGN and the core code for: (1) leakage between training and held-out cohorts, (2) whether the POD control is truly the optimum of the stated variable-projection loss, (3) numerical pitfalls (Gram-based POD accuracy, ridge bias, Cholesky gradient, rank bound of the g-network whose last layer is linear hidden->R), (4) whether the warm-start assertions would catch the retracted 'warm start never took' failure (there: widen() kept bank columns but randomised new head columns, and an orthonormality penalty calibrated at that broken start dominated), (5) whether gate P1 / stop rules are sound and the controls can fail, (6) what is missing for the online-cost statement, (7) bugs in bf_core.py. Be concrete and brief: numbered findings with severity (blocker/major/minor) and a suggested fix.
+
+===== DESIGN.md =====
+# bank-floor — can a better spatial bank lower the ROM's error floor by 3× at acceptable online cost?
+
+Pre-registration, written 2026-09-20 before any GPU job. Lane of the 2026-09-20 speed-and-accuracy
+campaign (`reports/2026-09-20-speed-accuracy-campaign-protocol.md` on main). Upside lane, not
+load-bearing: arms that clearly fail are stopped, not rescued.
+
+Worktree `worktrees/2026-09-20-bank-floor`, branch `exp/2026-09-20-bank-floor`, forked from
+`exp/2026-09-16-b-head-train` @ `a53b8c9f`. Cluster namespace
+`/cluster/tufts/paralab/tawal01/bankfloor_20260920/`, one directory per job. Budget: ≤ 2 running,
+≤ 8 total GPU jobs.
+
+## Question
+
+The decoder is $u(x;z) = G(x)\,h(z)$ with a frozen spatial bank $G\in\mathbb{R}^{n\times R}$
+(random-Fourier-feature coordinate network times the boundary polynomial). Every online operating
+point, including the full-bank rung $q=R$, is bounded below by the bank projection floor
+
+$$\varepsilon_G(u) = \frac{\lVert u - P_G u\rVert_2}{\lVert u\rVert_2},\qquad P_G = Q Q^{\top},\; Q = \operatorname{orth}(G).$$
+
+Measured incumbents: Burgers 2D (256 intervals) worst $\varepsilon_G$ = 0.392 % at $R=512$ on six
+development cases; Poisson 2D 0.742–0.746 % at $R=512$. The user wants ≤ 0.5 %, ideally ~0.1 %.
+**Can a better bank lower the held-out floor by ≥ 3× without breaking the online cost?**
+
+## Arms (per PDE, all on ONE common training snapshot set)
+
+| arm | bank | how it is obtained |
+|---|---|---|
+| `inc512` | incumbent coordinate network, $R=512$ | frozen, control; must reproduce the logged floor |
+| `pod{256,512,1024,2048}` | grid-bound orthonormal modes | **control that must run**: exact minimiser of the learned arms' own training loss (eigen-decomposition of the unit-normalised snapshot Gram); `podraw*` = classical un-normalised POD beside it |
+| `pod*_sub` | same, from only the incumbent bank's own training subset | positions `inc512` against the optimum on its own data (free: a sub-block of the same Gram) |
+| `ft512` | incumbent network, $R=512$, longer/better-conditioned training | variable-projection fine-tune (below) |
+| `cat1024`, `cat2048` | incumbent network **concatenated** with a fresh RFF coordinate network of $R-512$ columns | variable-projection training of both blocks |
+
+**Variable projection (the "better-conditioned training").** The earlier banks were trained jointly
+with a head and per-snapshot codes, so the bank only ever saw the head's $K$-dimensional image.
+Here the bank is trained against the floor itself, no head and no codes:
+
+$$\mathcal{L}(\theta) = \frac{1}{B}\sum_{i\in\text{batch}} \frac{\lVert u_i - \hat G_\theta\,(\hat G_\theta^{\top}\hat G_\theta + \epsilon I)^{-1}\hat G_\theta^{\top}u_i\rVert^2}{\lVert u_i\rVert^2},$$
+
+$\hat G$ = column-normalised features on the full training grid, $\epsilon = 10^{-9}$ (unit-diagonal
+Gram, so Cholesky is finite in f64 whatever the conditioning; the gauge freedom of $G$ makes an
+orthonormality penalty unnecessary — the penalty is what destroyed the retracted R=1024 arm). Adam,
+cosine schedule, fixed step budget, **final iterate, no checkpoint selection**, so no held-out data
+can leak. The `pod*` control is the global optimum of exactly this loss at $\epsilon=0$ over all
+rank-$R$ subspaces, so `learned / pod` at equal $R$ is the distance to optimal.
+
+**Why concatenation and not `widen`.** `widen` kept the incumbent's bank columns but randomised new
+head columns and then calibrated a penalty at that broken start (amendment A4 of b-head-train,
+RETRACTED). A concatenated bank contains the incumbent's span by construction. Also the g-network's
+last hidden width bounds the rank ($\le$ hidden+1: 1025 Burgers, 513 Poisson), so a wider output
+layer alone cannot reach $R=2048$; the fresh block has hidden width $\max(1024, R-512)$ and
+multi-scale frequencies $\{4, 8, 16\}$.
+
+**Warm-start assertions (hard, in-job, before step 1):** block 0's weight hash equals the incumbent
+checkpoint's; block-0 features equal the incumbent bank to 0.0; and on a fixed probe set the
+concatenated bank's floor is ≤ the incumbent's per snapshot (+1e-9). After training the train-probe
+floor must be below its initial value, otherwise the arm is labelled `training_did_not_take`.
+
+## Data and cohorts (f64, regenerated from seeds on the cluster)
+
+- **Burgers 2D**, 256 intervals, $n=65025$, $dt=0.005$, horizon 0.25. Train: first 1024 trajectories
+  of `common.incumbent_draw()` (the incumbent's own draw; its first 576 are the incumbent bank's
+  training trajectories = the `_sub` subset), every 2nd state (26 per trajectory, 26 624 snapshots),
+  FOM tolerances 1e-9/1e-7 as b-head-train. Held-out: **dev6** = `params_draw(7090702,4)` +
+  `params_draw(911702,2)` at the six output times (the cohort behind 0.3918 %), and **hold64** =
+  `params_draw(20260916,64)`, all 51 states. Disjointness asserted on values.
+- **Poisson 2D**, 255 intervals, $n=64516$. Train: the 2611 fit sources of `bank_R512_S3072`
+  (`source_params(0,3072)`, split seed 20260916) = `_sub`, plus `source_params(20260920, 13773)`,
+  total 16 384. Held-out: **dev12** = `source_params(7090703,6)`+`source_params(7090732,6)`;
+  **common256** = `source_params(20260916,256)` (note: this cohort selected the incumbent among six
+  banks on 09-16, a small bias in the incumbent's favour); **fresh256** = `source_params(20260921,256)`,
+  never used by anything. Learned banks are also scored at 1023 intervals on dev12 (mesh transfer);
+  POD is grid-bound and is scored at 255 only.
+- Sealed/final cohorts are not touched. Nothing is selected on any held-out cohort.
+
+## Numerical guards
+
+Floors use a twice-orthonormalised basis: $R_f=\operatorname{qr}(G)$ (recomputed if non-finite —
+GB10 landmine), SVD of $R_f$, numerical rank by the $\sigma_1 n\,\epsilon_{mach}$ threshold,
+$Q = G V_r\Sigma_r^{-1}$ then one more QR; assert finite and $\lVert Q^\top Q - I\rVert_{\max}<10^{-10}$;
+the residual is formed explicitly ($u - Q Q^\top u$), never as a difference of squares. Effective
+rank and $\kappa$ are reported; `rank_valid` requires rank $=R$. POD via the snapshot Gram is
+accurate while $\sigma_R/\sigma_1 \gg 10^{-8}$; the ratio is reported and asserted $>10^{-7}$.
+The bank is always an explicit jit argument (captured-constant landmine).
+
+## Phase 1 (representation; jobs `bfb01`, `bfp01`, optionally `bfb02` for `cat2048` Burgers)
+
+Report per arm: train-probe floor, held-out floor (worst / median / mean per cohort), rank, $\kappa$,
+training seconds, and the **head-transplant defect**: the incumbent head's decoded fields
+$G_{inc}h(Z)$ on 4096 stored training codes, projected onto the new bank. A defect ≪ the head's
+2.5 % / 3.1 % error means the existing head is reusable on the new bank through the linear re-fit
+$h' = (G'^{+}G_{inc})\,h$ at zero training cost. **Heads are not retrained** (b-head-train did not
+reproduce the incumbent; not this lane's line).
+
+Cost model reported beside each arm: decode $\propto nR$; operator pre-assembly $M\times R$ with
+$M = 4(K+q)$; bank storage $8nR$ bytes.
+
+## Phase 2 (solve + cost; only for arms that pass the Phase-1 gate; ≤ 3 jobs)
+
+For the incumbent and the promoted banks, in ONE allocation per PDE: the full-bank ($q=R$,
+identity head) solved error on the held-out development cohort through the unchanged
+head-ablation machinery; ROM-fast ($q=0$, transplanted head) and ROM-accurate rows beside the named
+FOM and the other required comparators of the protocol (Burgers: tolerance-matched Newton FOM;
+Poisson: DST direct as labelled control, CG as named FOM, coarse-grid FOM at matched accuracy);
+GPU burn-in, synchronised timing, ≥ 5 repetitions, medians, GPU model + UUID. Any EQ rule used on a
+new bank is re-fitted and **certified by held-out $\rho$ on reachable states, never by NNLS fit**;
+an uncertified rung is reported dense.
+
+## Pass bar and stop rules (pre-registered)
+
+- **Gate P1 (promotion):** an arm is promoted to Phase 2 iff its worst held-out floor is ≤ 1/3 of
+  `inc512`'s on the primary cohort (dev6 Burgers; dev12 Poisson) **and** the same direction holds on
+  the large cohort (hold64 / fresh256) with ratio ≤ 1/2.
+- **Lane success:** a promoted bank whose full-bank solved worst error is ≤ 0.5 % (stretch ≤ 0.2 %)
+  with online cost ≤ 4× the incumbent's same-rung cost. Missing it is a result.
+- **Stop an arm** if the warm-start assertion fails (bug, fix once, else drop), if training does not
+  take, or if its held-out floor is > 0.8× the incumbent's after the full budget.
+- **Stop the learned line** if `pod2048` itself fails P1: then no bank of this rank on this data can
+  pass, and the statement "sub-X % needs more than a linear bank of rank ≤ 2048" is the result.
+- If POD passes and the coordinate networks do not, the deliverable is the POD bank (grid-bound:
+  fixed mesh, no mesh transfer) with that limitation stated.
+
+## Controls that must fail / fidelity gates
+
+- `inc512` must reproduce 0.3918 % (Burgers dev6) and 0.7459 % (Poisson dev12, 255 intervals) to
+  1e-3 relative; otherwise the floor routine or the cohort is wrong and nothing is reported.
+- A random (untrained) fresh block of 512 columns alone must give a floor > 5 % (shows the metric
+  is not trivially small at this rank).
+- Train-probe floor of `pod R` must be ≤ every learned arm's train-probe **mean-square** loss at
+  equal $R$ (optimality of the control; a violation means a bug).
+- Independent NumPy re-computation of held-out floors from the saved bases (POD) / re-built banks.
+
+## Deliverables
+
+Table floor vs $R$ vs cost per PDE (generated from JSON); statement on sub-0.5 % / sub-0.2 %
+reachability and its online cost; bank checkpoints under `experiments/bank-floor/ckpt/` (git-ignored)
+with `ckpt/MANIFEST.json` (path, bytes, SHA256, arm, source job) committed as
+`experiments/bank-floor/CKPT-MANIFEST.json`.
+
+## Glossary
+
+- **bank $G$**: the $n\times R$ matrix of spatial basis functions, produced by a coordinate network
+  so it can be evaluated on any mesh; frozen online.
+- **floor**: relative $L^2$ error of the best possible approximation of a true solution inside
+  span($G$); no ROM using that bank can do better.
+- **head**: the network mapping the $K$ latent coordinates to the $R$ bank coefficients.
+- **$q$**: number of extra linear bank directions solved for online (corrections); $q=R$ uses the
+  whole bank.
+- **POD**: proper orthogonal decomposition, the optimal linear basis of given rank for a snapshot set.
+- **variable projection**: eliminating the linear coefficients in closed form so only the basis is
+  trained.
+- **$\rho$**: held-out ratio of quadrature residual error to residual norm, the EQ certification metric.
+- **dev6 / hold64 / dev12 / common256 / fresh256**: held-out parameter cohorts defined above.
+===== bf_core.py =====
+"""PDE-agnostic numerics for the bank-floor lane.
+
+A bank is a list of BLOCKS; each block is a `sep_common` parameter dict of which
+only (B, g, out_scale) are used, and the bank is the column concatenation of the
+blocks' `sep_common.features`. A one-block bank built from an incumbent
+checkpoint is that checkpoint's bank exactly.
+
+Floors are always measured in a twice-orthonormalised basis with an explicit
+residual; large arrays are always explicit jit arguments.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import time
+from pathlib import Path
+
+import numpy as np
+import jax
+jax.config.update('jax_enable_x64', True)
+import jax.numpy as jnp
+import optax
+
+import sep_common as sc
+
+F64 = jnp.float64
+BANK_KEYS = ('B', 'g', 'out_scale')
+
+
+# --------------------------------------------------------------- utilities ---
+
+def sha_array(x):
+    return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
+
+
+def sha_file(p):
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 24), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def weights_sha(tree):
+    h = hashlib.sha256()
+    for x in jax.tree_util.tree_leaves(tree):
+        h.update(np.ascontiguousarray(np.asarray(x)).tobytes())
+    return h.hexdigest()
+
+
+def dump(path, obj):
+    def clean(x):
+        if isinstance(x, dict):
+            return {str(k): clean(v) for k, v in x.items()}
+        if isinstance(x, (list, tuple)):
+            return [clean(v) for v in x]
+        if isinstance(x, np.ndarray):
+            return clean(x.tolist())
+        if isinstance(x, np.floating):
+            x = float(x)
+        if isinstance(x, np.integer):
+            return int(x)
+        if isinstance(x, np.bool_):
+            return bool(x)
+        if isinstance(x, float) and not np.isfinite(x):
+            return None
+        return x
+    Path(path).write_text(json.dumps(clean(obj), indent=2, allow_nan=False) + '\n')
+
+
+def summarise(errors):
+    e = np.asarray(errors, dtype=float).ravel()
+    return dict(worst=float(e.max()), median=float(np.median(e)), mean=float(e.mean()),
+                rms=float(np.sqrt(np.mean(e * e))), count=int(e.size))
+
+
+# ------------------------------------------------------------------- banks ---
+
+def bank_block(params):
+    """The bank-only part of a checkpoint's parameters, as f64 device arrays."""
+    return dict(B=jnp.asarray(params['B'], F64),
+                g=[(jnp.asarray(w, F64), jnp.asarray(b, F64)) for w, b in params['g']],
+                out_scale=jnp.asarray(params['out_scale'], F64))
+
+
+def fresh_block(key, r_feat, n_ff, ff_scales, g_hidden, g_layers, out_scale):
+    p = sc.init_separable(key, 2, r_feat, n_ff=n_ff, g_hidden=g_hidden, g_layers=g_layers,
+                          h_hidden=4, h_layers=1, out_scale=float(out_scale),
+                          ff_scales=list(ff_scales))
+    return bank_block(p)
+
+
+def features(blocks, xy):
+    return jnp.concatenate([sc.features(b, xy) for b in blocks], axis=1)
+
+
+_features_jit = jax.jit(features)
+
+
+def bank_of(blocks, xy, chunk=16384):
+    xy = np.asarray(xy)
+    parts = []
+    for s in range(0, len(xy), chunk):
+        parts.append(_features_jit(blocks, jnp.asarray(xy[s:s + chunk])))
+    G = jnp.concatenate(parts, axis=0)
+    G.block_until_ready()
+    return G
+
+
+def grid(intervals):
+    p = np.arange(1, intervals) / intervals
+    xx, yy = np.meshgrid(p, p, indexing='ij')
+    return np.column_stack((xx.ravel(), yy.ravel()))
+
+
+# ------------------------------------------------ orthonormal basis, guarded --
+
+def _qr_r(G, retries=2):
+    for attempt in range(retries + 1):
+        Rf = jnp.linalg.qr(G, mode='r')
+        if bool(jnp.isfinite(Rf).all()):
+            return Rf, attempt
+        print(f'WARNING: non-finite QR factor, attempt {attempt + 1}', flush=True)
+    raise AssertionError('QR factor non-finite after retries')
+
+
+def orth_basis(G):
+    """Twice-orthonormalised basis of span(G) with a numerical-rank assert.
+
+    Returns (Q (n, rank), info). Never returns a non-finite basis."""
+    G = jnp.asarray(G, F64)
+    assert bool(jnp.isfinite(G).all()), 'bank has non-finite entries'
+    n, R = G.shape
+    Rf, retried = _qr_r(G)
+    _, S, Vt = jnp.linalg.svd(Rf, full_matrices=False)
+    S = np.asarray(S)
+    assert np.isfinite(S).all() and S[0] > 0, 'singular values non-finite'
+    thr = float(S[0] * max(n, R) * np.finfo(float).eps)
+    rank = int((S > thr).sum())
+    assert rank >= 1
+    Q1 = G @ (Vt[:rank].T / jnp.asarray(S[:rank])[None, :])
+    Q, _ = jnp.linalg.qr(Q1)
+    if not bool(jnp.isfinite(Q).all()):
+        Q, _ = jnp.linalg.qr(Q1)
+    assert bool(jnp.isfinite(Q).all()), 'orthonormal basis non-finite'
+    dev = float(jnp.max(jnp.abs(Q.T @ Q - jnp.eye(rank, dtype=F64))))
+    assert dev < 1e-10, f'orthonormality deviation {dev:.2e}'
+    info = dict(columns=int(R), rank=rank, rank_valid=bool(rank == R), rank_threshold=thr,
+                condition_number=float(S[0] / S[-1]), sigma_max=float(S[0]),
+                sigma_min=float(S[-1]), qr_retries=int(retried), orthonormality_deviation=dev)
+    return Q, info
+
+
+@jax.jit
+def _floor_block(Q, U):
+    E = U - (U @ Q) @ Q.T
+    return jnp.sqrt(jnp.sum(E * E, axis=1) / jnp.sum(U * U, axis=1))
+
+
+def floors(Q, U, chunk=1024):
+    """Per-snapshot relative projection floor, explicit residual."""
+    out = []
+    for s in range(0, U.shape[0], chunk):
+        out.append(np.asarray(_floor_block(Q, jnp.asarray(U[s:s + chunk]))))
+    e = np.concatenate(out)
+    assert np.isfinite(e).all(), 'non-finite floor'
+    return e
+
+
+# ----------------------------------------------------------- POD from Gram ---
+
+def gram(U, block=2048):
+    """S x S Gram of device-resident snapshots, blockwise, f64."""
+    S = U.shape[0]
+    Gm = np.zeros((S, S))
+    mm = jax.jit(lambda a, b: a @ b.T)
+    for i in range(0, S, block):
+        Ui = U[i:i + block]
+        for j in range(i, S, block):
+            g = np.asarray(mm(Ui, U[j:j + block]))
+            Gm[i:i + g.shape[0], j:j + g.shape[1]] = g
+            if j > i:
+                Gm[j:j + g.shape[1], i:i + g.shape[0]] = g.T
+    return Gm
+
+
+def pod_from_gram(Gm, U, scale, maxrank, idx=None, block=2048):
+    """Modes of the snapshot set {scale_i * u_i : i in idx} from its Gram sub-block.
+
+    `scale` = 1/||u_i|| gives the optimum of the mean RELATIVE squared error (the
+    learned arms' loss); `scale` = 1 gives classical POD. Returns (Q (n, r), info)."""
+    idx = np.arange(U.shape[0]) if idx is None else np.asarray(idx)
+    s = np.asarray(scale)[idx]
+    Gs = Gm[np.ix_(idx, idx)] * s[:, None] * s[None, :]
+    t0 = time.perf_counter()
+    w, V = jnp.linalg.eigh(jnp.asarray(Gs))
+    w = np.asarray(w)[::-1]
+    V = V[:, ::-1]
+    assert np.isfinite(w).all(), 'Gram eigenvalues non-finite'
+    r = int(min(maxrank, len(idx)))
+    ratio = float(np.sqrt(max(w[r - 1], 0.) / w[0]))
+    assert ratio > 1e-7, f'sigma_r/sigma_1 = {ratio:.2e}: Gram POD unreliable at rank {r}'
+    Wt = np.asarray(V[:, :r]) / np.sqrt(w[:r])[None, :] * s[:, None]        # (|idx|, r)
+    modes = jnp.zeros((U.shape[1], r), F64)
+    acc = jax.jit(lambda m, u, wt: m + u.T @ wt)
+    for a in range(0, len(idx), block):
+        modes = acc(modes, U[jnp.asarray(idx[a:a + block])], jnp.asarray(Wt[a:a + block]))
+    Q, info = orth_basis(modes)
+    info.update(snapshots=int(len(idx)), sigma_ratio_r_over_1=ratio,
+                eigenvalues_head=w[:8].tolist(), energy=float(np.clip(w, 0, None).sum()),
+                tail_energy_fraction={str(k): float(np.clip(w[k:], 0, None).sum()
+                                                    / np.clip(w, 0, None).sum())
+                                      for k in (128, 256, 512, 1024, 2048) if k <= len(w)},
+                seconds=time.perf_counter() - t0)
+    return Q, info
+
+
+# ------------------------------------------------ variable-projection training
+
+def varpro_loss(blocks, xy, Ub, inv_un2, ridge):
+    G = features(blocks, xy)
+    s = jax.lax.stop_gradient(jnp.sqrt(jnp.sum(G * G, axis=0)) + 1e-300)
+    Gn = G / s[None, :]
+    Gm = Gn.T @ Gn + ridge * jnp.eye(Gn.shape[1], dtype=F64)
+    Y = Gn.T @ Ub.T                                              # (R, B)
+    Lc = jnp.linalg.cholesky(Gm)
+    Cc = jax.scipy.linalg.cho_solve((Lc, True), Y)               # (R, B)
+    E = Ub - (Gn @ Cc).T
+    return jnp.mean(inv_un2 * jnp.sum(E * E, axis=1))
+
+
+def train_varpro(blocks, lrs, xy, U, steps, batch, seed, ridge=1e-9, log_every=500, tag='',
+                 probe=None):
+    """Adam on the bank blocks only. `lrs[i]` is block i's peak learning rate
+    (0 freezes it). Fixed budget, final iterate, no selection."""
+    S = U.shape[0]
+    xy = jnp.asarray(xy)
+    inv_un2 = 1.0 / jnp.sum(U * U, axis=1)
+    nb = int(min(batch, S))
+
+    def sched(lr):
+        return optax.warmup_cosine_decay_schedule(0., lr, min(500, steps // 10 + 1), steps, lr * 1e-2)
+    labels = [jax.tree_util.tree_map(lambda _: f'b{i}', b) for i, b in enumerate(blocks)]
+    tx = {f'b{i}': (optax.adam(sched(lr)) if lr > 0 else optax.set_to_zero())
+          for i, lr in enumerate(lrs)}
+    opt = optax.multi_transform(tx, labels)
+    state = opt.init(blocks)
+
+    @jax.jit
+    def step(bl, st, kk, U_, inv_):
+        idx = jax.random.choice(kk, S, shape=(nb,), replace=False)
+        val, gr = jax.value_and_grad(varpro_loss)(bl, xy, U_[idx], inv_[idx], ridge)
+        for g in gr:
+            g['out_scale'] = jnp.zeros_like(g['out_scale'])
+        upd, st = opt.update(gr, st, bl)
+        return optax.apply_updates(bl, upd), st, val
+
+    key = jax.random.PRNGKey(seed)
+    t0 = time.time()
+    curve = []
+    ema = None
+    for i in range(steps):
+        key, kk = jax.random.split(key)
+        blocks, state, val = step(blocks, state, kk, U, inv_un2)
+        if (i + 1) % log_every == 0 or i == 0:
+            v = float(val)
+            assert np.isfinite(v), f'[{tag}] non-finite loss at step {i + 1}'
+            ema = v if ema is None else 0.5 * ema + 0.5 * v
+            row = dict(step=i + 1, batch_loss=v, batch_rms_floor=float(np.sqrt(v)),
+                       seconds=time.time() - t0)
+            if probe is not None and ((i + 1) % (log_every * 10) == 0 or i == 0):
+                row['probe'] = probe(blocks)
+            curve.append(row)
+            print(f'   vp[{tag}] {i + 1:6d}/{steps} rms-floor {np.sqrt(v):.4e} '
+                  f'{row.get("probe", "")} [{time.time() - t0:.0f}s]', flush=True)
+    return blocks, dict(steps=int(steps), batch=nb, lrs=[float(x) for x in lrs], ridge=ridge,
+                        seed=int(seed), seconds=time.time() - t0, curve=curve)
+
+
+# --------------------------------------------------------------- cost model --
+
+def cost_model(n, R, K, n_ref=None):
+    """Analytic online-cost proxies for a bank of rank R on n points."""
+    M_full = 4 * (K + R)
+    return dict(R=int(R), decode_flops_per_field=int(n) * int(R),
+                bank_bytes=8 * int(n) * int(R),
+                full_bank_tests_M=int(M_full), full_bank_operator_entries=int(M_full) * int(R),
+                q0_operator_entries=4 * K * int(R))
+===== sep_common.py excerpt =====
+def bc_poly(xy):
+    x, y = xy[:, 0], xy[:, 1]
+    return 16.0 * x * (1.0 - x) * y * (1.0 - y)
+
+
+def init_mlp(key, sizes):
+    params = []
+    for i in range(len(sizes) - 1):
+        key, k1 = jax.random.split(key)
+        w = jax.random.normal(k1, (sizes[i], sizes[i + 1]), dtype=F64) \
+            * jnp.sqrt(2.0 / sizes[i])
+        params.append((w, jnp.zeros((sizes[i + 1],), dtype=F64)))
+    return params
+
+
+def apply_mlp(params, x):
+    for w, b in params[:-1]:
+        x = jax.nn.silu(x @ w + b)
+    w, b = params[-1]
+    return x @ w + b
+
+
+def init_separable(key, k_lat, r_feat, n_ff=64, ff_scale=4.0,
+                   g_hidden=128, g_layers=2, h_hidden=128, h_layers=2,
+                   out_scale=1.0, ff_scales=None, h_ff=0, h_ff_scale=1.0):
+    """ff_scales (round-2 lever, default OFF): a list of band scales, e.g.
+    [1, 4, 16] -- the n_ff frequencies are split evenly across the bands and
+    each band's B columns are drawn at its own scale (multi-scale Fourier
+    features).  ff_scales=None reproduces the original single-scale init
+    bit-for-bit (same rng draw, same multiplier)."""
+    kb, kg, kh, kl = jax.random.split(key, 4)
+    if ff_scales:
+        n_b = len(ff_scales)
+        split = [n_ff // n_b + (1 if i < n_ff % n_b else 0) for i in range(n_b)]
+        scale_vec = jnp.concatenate([jnp.full((s,), float(sc_), dtype=F64)
+                                     for s, sc_ in zip(split, ff_scales)])
+        B = jax.random.normal(kb, (2, n_ff), dtype=F64) * scale_vec[None, :]
+    else:
+        B = jax.random.normal(kb, (2, n_ff), dtype=F64) * ff_scale  # fixed freqs
+    g_mlp = init_mlp(kg, [2 * n_ff] + [g_hidden] * g_layers + [r_feat])
+    h_in = k_lat + 2 * int(h_ff)          # latent Fourier features (default 0)
+    h_mlp = init_mlp(kh, [h_in] + [h_hidden] * h_layers + [r_feat])
+    h_lin = jax.random.normal(kl, (k_lat, r_feat), dtype=F64) * 0.3
+    # fixed data-scale constant, folded into the FEATURES so every cached bank
+    # carries it (it is x-independent but keeps u ~ O(data) at init)
+    out = dict(B=B, g=g_mlp, h=h_mlp, h_lin=h_lin,
+               out_scale=jnp.asarray(float(out_scale), dtype=F64))
+    if h_ff:
+        key, khb = jax.random.split(key)
+        out["hB"] = (jax.random.normal(khb, (k_lat, int(h_ff)), dtype=F64)
+                     * float(h_ff_scale))
+    return out
+
+
+def features(params, xy):
+    """bc(x) * g~(x): (n_pts, r).  ALL x-dependence of the decoder."""
+    ang = 2.0 * jnp.pi * (xy @ params["B"])
+    ff = jnp.concatenate([jnp.sin(ang), jnp.cos(ang)], axis=-1)
+    return (params["out_scale"] * bc_poly(xy))[..., None] * apply_mlp(params["g"], ff)
+
+
+
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+codex
+I’ll audit the inlined design and code only, without running commands, and distinguish design flaws from checks missing in the supplied code.
+
+codex
+1. **Blocker — POD failure does not justify stopping all rank-2048 banks.** POD minimises **training mean squared relative error**, not held-out worst error. Another rank-2048 subspace can fail to minimise training loss yet pass P1. **Fix:** permit stopping for budget reasons, but retract “no bank of this rank … can pass” and the claimed rank lower bound.
+
+2. **Major — POD is not the exact optimum of the implemented loss.** Normalised-snapshot POD is optimal for the full-training, unregularised projection objective. Learned arms use ridge coefficients, then measure residual **without** the ridge penalty; that objective depends on the bank’s parameterisation as well as its span. POD trained on all snapshots also need not beat another bank on a **train-probe subset**. **Fix:** test optimality using full-training mean squared unregularised floors at equal rank. Describe POD as a lower bound for that objective, not the exact ridge optimum.
+
+3. **Major — `stop_gradient(s)` gives the wrong gradient for the stated normalised ridge loss.** With positive ridge, column scaling is not a gauge symmetry, so omitting the derivative of column normalisation changes the gradient. Differentiating through Cholesky is appropriate here; dropping coefficient derivatives would also be wrong for this residual-only ridge objective. **Fix:** differentiate normalisation and verify directional derivatives on a small, ill-conditioned example.
+
+4. **Major — Numerical guarantees are overstated.** A positive ridge makes the exact Gram positive definite, but does not guarantee finite floating-point Cholesky or reliable gradients. Directions with squared normalised singular values comparable to `1e-9` are substantially suppressed, potentially changing arm rankings. **Fix:** monitor factorisation, coefficient and gradient finiteness; compare ridge loss with QR/SVD projection loss; preregister a ridge-sensitivity check.
+
+5. **Major — Gram POD and basis reconstruction need stronger validation.** `sigma_r/sigma_1 > 1e-7` is only a heuristic: Gram formation squares conditioning, and eigenvalue errors and spectral gaps matter. `G @ V / S` amplifies errors; final orthogonality proves neither accurate span recovery nor POD optimality. **Fix:** validate retained modes with direct/streaming SVD or QR-based methods and reconstruction residuals; form bank bases from the initial QR’s orthogonal factor when practical.
+
+6. **Major — `pod_from_gram` loses POD ordering.** Passing all reconstructed modes through `orth_basis()` applies an SVD rotation. Thus, if callers obtain smaller POD arms by slicing the returned maximum-rank basis, those prefixes are **not necessarily leading POD subspaces**. **Fix:** construct each requested rank separately or preserve ordered modes with an order-preserving orthogonalisation.
+
+7. **Major — “Nothing is selected on held-out data” contradicts P1.** Promotion and stopping explicitly use dev and large held-out cohorts, so these are validation cohorts. `common256` already selected the incumbent; `fresh256` becomes validation once used for promotion. This is not necessarily gradient-training leakage, but it prevents independent final-performance claims. Parameter disjointness assertions and cohort construction are not supplied. **Fix:** label cohort roles honestly, enforce provenance/disjointness in runners, and evaluate final claims on an untouched cohort.
+
+8. **Major — Warm-start checks catch bank corruption, not the historical decoder failure.** The retracted `widen()` could preserve bank hashes, features and projection floors while randomising head outputs, so all proposed initial checks could pass. Concatenation removes that specific head-training path, but does not validate transplantation. **Fix:** assert decoded-field equality after zero-padding the incumbent head at initial concatenation; validate the actual transplanted head afterward. The stated warm-start assertions are absent from `bf_core.py`.
+
+9. **Major — The controls can reject correct implementations.** A random 512-column bank is not mathematically required to exceed 5% error. POD optimality does not hold on arbitrary probes, and a trained arm need not strictly improve a probe already at its attainable floor. **Fix:** use known-answer synthetic projection tests and deliberately unrelated or rank-restricted negative controls; separate optimisation failure from “no measurable improvement,” with numerical tolerances.
+
+10. **Major — Rank limits are recognised but not enforced.** Each block has rank at most `min(R, hidden + 1)`; with the initial zero output bias, at most `min(R, hidden)`. Concatenation adds only independent directions. The proposed widths permit the target ranks but do not guarantee them. `orth_basis()` merely reports `rank_valid`; it does not enforce it. **Fix:** require effective-rank validity for nominal-rank comparisons and promotion, and report per-block and combined ranks.
+
+11. **Major — Online-cost and head-reuse claims remain incomplete.** `cost_model()` gives storage/work proxies, not solve cost: it omits iterations, Jacobians, factorisations, nonlinear quadrature work, cold starts and output reconstruction. “Same rung” is ambiguous when full-bank `q=R` changes dimension. Transplant error on stored codes does not establish accuracy or conditioning on online reachable states. **Fix:** define the exact timed workload and comparator; save repetition arrays and pair cost with accuracy from the same invocation; test transplanted-head accuracy and derivatives on relevant states.
+
+12. **Major/minor — Additional `bf_core.py` issues.** `B` receives Adam updates despite being described as fixed frequencies (**major unless intentional**); only `out_scale` is frozen. Loss checks occur only at logging steps, use the pre-update loss, and can miss a corrupt final update; timing lacks a final synchronisation (**major**). `xy` is captured by the training JIT despite the explicit-array policy (**minor**). **Fix:** freeze or explicitly preregister frequency training, check gradients and final parameters/loss, synchronise before recording elapsed time, and pass `xy` explicitly.
+tokens used
+13,766
+1. **Blocker — POD failure does not justify stopping all rank-2048 banks.** POD minimises **training mean squared relative error**, not held-out worst error. Another rank-2048 subspace can fail to minimise training loss yet pass P1. **Fix:** permit stopping for budget reasons, but retract “no bank of this rank … can pass” and the claimed rank lower bound.
+
+2. **Major — POD is not the exact optimum of the implemented loss.** Normalised-snapshot POD is optimal for the full-training, unregularised projection objective. Learned arms use ridge coefficients, then measure residual **without** the ridge penalty; that objective depends on the bank’s parameterisation as well as its span. POD trained on all snapshots also need not beat another bank on a **train-probe subset**. **Fix:** test optimality using full-training mean squared unregularised floors at equal rank. Describe POD as a lower bound for that objective, not the exact ridge optimum.
+
+3. **Major — `stop_gradient(s)` gives the wrong gradient for the stated normalised ridge loss.** With positive ridge, column scaling is not a gauge symmetry, so omitting the derivative of column normalisation changes the gradient. Differentiating through Cholesky is appropriate here; dropping coefficient derivatives would also be wrong for this residual-only ridge objective. **Fix:** differentiate normalisation and verify directional derivatives on a small, ill-conditioned example.
+
+4. **Major — Numerical guarantees are overstated.** A positive ridge makes the exact Gram positive definite, but does not guarantee finite floating-point Cholesky or reliable gradients. Directions with squared normalised singular values comparable to `1e-9` are substantially suppressed, potentially changing arm rankings. **Fix:** monitor factorisation, coefficient and gradient finiteness; compare ridge loss with QR/SVD projection loss; preregister a ridge-sensitivity check.
+
+5. **Major — Gram POD and basis reconstruction need stronger validation.** `sigma_r/sigma_1 > 1e-7` is only a heuristic: Gram formation squares conditioning, and eigenvalue errors and spectral gaps matter. `G @ V / S` amplifies errors; final orthogonality proves neither accurate span recovery nor POD optimality. **Fix:** validate retained modes with direct/streaming SVD or QR-based methods and reconstruction residuals; form bank bases from the initial QR’s orthogonal factor when practical.
+
+6. **Major — `pod_from_gram` loses POD ordering.** Passing all reconstructed modes through `orth_basis()` applies an SVD rotation. Thus, if callers obtain smaller POD arms by slicing the returned maximum-rank basis, those prefixes are **not necessarily leading POD subspaces**. **Fix:** construct each requested rank separately or preserve ordered modes with an order-preserving orthogonalisation.
+
+7. **Major — “Nothing is selected on held-out data” contradicts P1.** Promotion and stopping explicitly use dev and large held-out cohorts, so these are validation cohorts. `common256` already selected the incumbent; `fresh256` becomes validation once used for promotion. This is not necessarily gradient-training leakage, but it prevents independent final-performance claims. Parameter disjointness assertions and cohort construction are not supplied. **Fix:** label cohort roles honestly, enforce provenance/disjointness in runners, and evaluate final claims on an untouched cohort.
+
+8. **Major — Warm-start checks catch bank corruption, not the historical decoder failure.** The retracted `widen()` could preserve bank hashes, features and projection floors while randomising head outputs, so all proposed initial checks could pass. Concatenation removes that specific head-training path, but does not validate transplantation. **Fix:** assert decoded-field equality after zero-padding the incumbent head at initial concatenation; validate the actual transplanted head afterward. The stated warm-start assertions are absent from `bf_core.py`.
+
+9. **Major — The controls can reject correct implementations.** A random 512-column bank is not mathematically required to exceed 5% error. POD optimality does not hold on arbitrary probes, and a trained arm need not strictly improve a probe already at its attainable floor. **Fix:** use known-answer synthetic projection tests and deliberately unrelated or rank-restricted negative controls; separate optimisation failure from “no measurable improvement,” with numerical tolerances.
+
+10. **Major — Rank limits are recognised but not enforced.** Each block has rank at most `min(R, hidden + 1)`; with the initial zero output bias, at most `min(R, hidden)`. Concatenation adds only independent directions. The proposed widths permit the target ranks but do not guarantee them. `orth_basis()` merely reports `rank_valid`; it does not enforce it. **Fix:** require effective-rank validity for nominal-rank comparisons and promotion, and report per-block and combined ranks.
+
+11. **Major — Online-cost and head-reuse claims remain incomplete.** `cost_model()` gives storage/work proxies, not solve cost: it omits iterations, Jacobians, factorisations, nonlinear quadrature work, cold starts and output reconstruction. “Same rung” is ambiguous when full-bank `q=R` changes dimension. Transplant error on stored codes does not establish accuracy or conditioning on online reachable states. **Fix:** define the exact timed workload and comparator; save repetition arrays and pair cost with accuracy from the same invocation; test transplanted-head accuracy and derivatives on relevant states.
+
+12. **Major/minor — Additional `bf_core.py` issues.** `B` receives Adam updates despite being described as fixed frequencies (**major unless intentional**); only `out_scale` is frozen. Loss checks occur only at logging steps, use the pre-update loss, and can miss a corrupt final update; timing lacks a final synchronisation (**major**). `xy` is captured by the training JIT despite the explicit-array policy (**minor**). **Fix:** freeze or explicitly preregister frequency training, check gradients and final parameters/loss, synchronise before recording elapsed time, and pass `xy` explicitly.

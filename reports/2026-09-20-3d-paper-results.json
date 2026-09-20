@@ -1341,7 +1341,89 @@
       ],
       "source": "1d2010aacff49a77ff7f8fe2c3221b4c6c739dc6",
       "job_id": "3989410",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-06",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "free_R128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_96",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     },
     {
       "pde": "Heat 3D",
@@ -13889,7 +13971,418 @@
       ],
       "source": "e6460d73c7d4d3292c9e9ef313ddb79c88bf59dd",
       "job_id": "3989545",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod32_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod64_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod32_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod64_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Poisson 3D",
@@ -19526,7 +20019,194 @@
       ],
       "source": "7158a27ab493bc1a5d0a8adefe13d4c20933a591",
       "job_id": "3989715",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_weak_qR",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod32_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod64_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Navier\u2013Stokes 3D",
@@ -35767,7 +36447,530 @@
       ],
       "source": "68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b",
       "job_id": "3990494",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_w24_m8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_weak_qR",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod104_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod112_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod128_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod32_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod72_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod80_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w24_m8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w24_m8_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_weak_qR",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod104_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod112_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod128_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod16_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod24_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod32_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod40_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod48_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod72_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod80_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod8_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w16_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Burgers 3D",
@@ -37955,7 +39158,138 @@
       ],
       "source": "dc91edb2c81712fde9d1b05fec7028c47bd213b4",
       "job_id": "3992083",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 33,
+            "method": "fno3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-03",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-03_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt1e-06",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-06_lt1e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "free_R256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_160",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_224",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_96",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q192",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "unet3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     },
     {
       "pde": "Heat 3D",
@@ -54826,7 +56160,558 @@
       ],
       "source": "4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2",
       "job_id": "3990698",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_w16_m6",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod104_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod112_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod128_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod72_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod80_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_w8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w16_m6",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w16_m6_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q8_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod104_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod112_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod128_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod72_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod80_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w8_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Navier\u2013Stokes 3D",
@@ -57731,7 +59616,152 @@
       ],
       "source": "23932ac4eca33075fc43b4e10e9d3ca24ee2a388",
       "job_id": "3993021",
-      "gpu": "NVIDIA A100-PCIE-40GB, 40960 MiB"
+      "gpu": "NVIDIA A100-PCIE-40GB, 40960 MiB",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "fno3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.001",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.002",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.004",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.008",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "free_bank_galerkin",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q16",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_512",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_16",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_48",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     },
     {
       "pde": "Poisson 3D",
@@ -75037,7 +77067,572 @@
       ],
       "source": "a50ce0977373977688d73f82700108a6138b433b",
       "job_id": "3995104",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "deeponet3d_r128_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_w24_m8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_weak_qR",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod104_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod112_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod128_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod32_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod72_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod80_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_w48_s32",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "deeponet3d_r128_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "deeponet3d_r128_w16_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w24_m8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w24_m8_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_weak_qR",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q16_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_eq",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod104_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod112_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod128_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod16_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod24_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod32_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod40_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod48_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod72_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod80_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod8_galerkin",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "transolver3d_w48_s32",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "transolver3d_w48_s32_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w16_native32_interpolate",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Heat 3D",
@@ -92772,7 +95367,586 @@
       ],
       "source": "4ac8b16455f5b71bcdd560df3432cac43b8816d9",
       "job_id": "3995709",
-      "gpu": "NVIDIA A100-PCIE-40GB"
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "deeponet3d_r128_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_w16_m6",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K16_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K32_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_K8_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod104_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod112_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod128_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod32_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod64_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod72_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod80_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "pod96_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_w48_s32",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_w8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "deeponet3d_r128_w16",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "deeponet3d_r128_w16_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "dst_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w16_m6",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "fno3d_w16_m6_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_cn",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "linear_bank_galerkin_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K16_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K32_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q0_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q32_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q64_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q8_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "nmrom_K8_q96_dense_dt_half",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod104_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod112_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod128_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod16_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod24_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod32_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod40_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod48_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod64_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod72_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod80_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod8_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "pod96_exact",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "transolver3d_w48_s32",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "transolver3d_w48_s32_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w8",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          },
+          {
+            "mesh": 64,
+            "method": "unet3d_w8_native_grid_interpolated",
+            "cases": 16,
+            "repetitions_per_case": 3,
+            "invocations": 48
+          }
+        ]
+      }
     },
     {
       "pde": "Burgers 3D",
@@ -95200,7 +98374,152 @@
       ],
       "source": "c026d56b83905293e71268c249b57324c7d01baf",
       "job_id": "3995688",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 33,
+            "method": "deeponet3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fno3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-03",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-03_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt1e-06",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-06_lt1e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "free_R256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_160",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_224",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_96",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q192",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "transolver3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "unet3d",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     },
     {
       "pde": "Burgers 3D",
@@ -97028,7 +100347,117 @@
       ],
       "source": "c026d56b83905293e71268c249b57324c7d01baf",
       "job_id": "3995688",
-      "gpu": "NVIDIA A100 80GB PCIe"
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-02_lt5e-03",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-03_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt1e-06",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-04_lt5e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "fom_nt1e-06_lt1e-01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "free_R256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_192",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "pod_64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q192",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 33,
+            "method": "rom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     },
     {
       "pde": "Navier\u2013Stokes 3D",
@@ -101223,12 +104652,185 @@
       ],
       "source": "8ba0a11ee83aaeb36bb486add6517a51aa921a87",
       "job_id": "3995695",
-      "gpu": "NVIDIA A100 80GB PCIe, 81920 MiB"
+      "gpu": "NVIDIA A100 80GB PCIe, 81920 MiB",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "deeponet3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "deeponet3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.001",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.002",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.004",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.008",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "free_bank_galerkin",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q0",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q16",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "nmrom_q64",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_128",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_256",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_galerkin_512",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_16",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_32",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "pod_weak_48",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     }
   ],
   "provenance": {
     "reports/2026-09-20-3d-paper-inputs.json": "c53599d94d73d2e2508114404c43407bd5066b606bcec078ca355da9bc699754",
-    "reports/generate_3d_paper_results.py": "cd3dc93ceaa4758176e2a17f6f97e8de88a50a2904f1198bd4610823ea50626a",
+    "reports/generate_3d_paper_results.py": "10f32be904cb3cbd8d8d94aff7cdfaa1de4eb1e6d85a86799f89ee562c6a70ea",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/audit-local.json": "13bf18997399042e8f753e81f93da4d688389371de4a748e3237d1e1198d5449",
     "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json": "24a616fd57d33baf30b1cc7f14fd529066baf65d62f4721d725c3dc16325caca",

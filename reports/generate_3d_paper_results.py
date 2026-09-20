@@ -119,6 +119,31 @@ def aggregate(rows):
     return result
 
 
+def audit_invocation_coverage(rows, data, adapter):
+    """No method may silently omit a case or repeated call from its panel."""
+    cfg = data["config"]
+    expected_repetitions = set(range(cfg["repetitions"]))
+    if adapter == "burgers":
+        count = len(cfg["validation_rows"])
+    elif adapter == "ns_trajectory":
+        count = cfg["timed_cases"]
+    else:
+        count = cfg["validation_count"]
+    groups = defaultdict(list)
+    for row in rows:
+        groups[row["mesh"], row["method"]].append((row["case"], row["repetition"]))
+    checks = []
+    for (mesh, method), calls in sorted(groups.items()):
+        cases = {case for case, repetition in calls}
+        assert len(cases) == count, (adapter, method, len(cases), count)
+        expected = {(case, repetition) for case in cases for repetition in expected_repetitions}
+        assert len(set(calls)) == len(calls), (adapter, method, "duplicate invocation identity")
+        assert set(calls) == expected, (adapter, method, "missing/extra repetitions")
+        checks.append(dict(mesh=mesh, method=method, cases=len(cases),
+                           repetitions_per_case=len(expected_repetitions), invocations=len(calls)))
+    return dict(passed=True, checks=checks)
+
+
 def main():
     manifest = read(INPUT)
     provenance = {str(INPUT.relative_to(ROOT)): digest(INPUT),
@@ -195,7 +220,9 @@ def main():
         if data.get("operator_invocations"):
             assert data["operator_complete"] and audit["operator_complete"]
             invocations.extend(data["operator_invocations"])
-        rows = aggregate([normalize(r, entry["adapter"], data) for r in invocations])
+        normalized = [normalize(r, entry["adapter"], data) for r in invocations]
+        coverage = audit_invocation_coverage(normalized, data, entry["adapter"])
+        rows = aggregate(normalized)
         for row in rows:
             flags = []
             for mesh in data.get("meshes", []):
@@ -212,7 +239,7 @@ def main():
                 flags.append("reference refinement failed")
             row["qualification"] = "; ".join(flags) if flags else "development"
         run = dict(entry, rows=rows, source=data.get("commit", data.get("source_commit")),
-                   job_id=data["job_id"], gpu=data["gpu"], audit=audit)
+                   job_id=data["job_id"], gpu=data["gpu"], audit=audit, invocation_coverage=coverage)
         output.append(run)
         lines += [f"## {entry['pde']} — {entry['attempt']}", "",
                   f"**Provisional:** {entry['qualification']}", "",

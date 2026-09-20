@@ -13,6 +13,10 @@ def prepare(cfg,source):
     audit_root=source.parent.parent;audits={}
     for name in ('audit.json','history_audit.json','source_audit.json','teacher_audit.json'):
         value=json.loads((audit_root/name).read_text());assert value['passed'],name
+        if name=='audit.json':
+            assert value['complete'] and value['checks']['all_four_operator_families']['passed'],'Full field audit must have finished'
+        if name=='teacher_audit.json':
+            assert value['complete'] and value['verified_against_complete_collection'],'Early teacher audit must match completed collection bytes'
         audits[name]=file_hash(audit_root/name)
     assert cfg['evaluation_cohort']=='final' and cfg['final_seed_unopened']==202609203 and cfg['timed_cases']==32
     assert {s['kind'] for s in cfg['operators']}=={'fno3d','unet3d','deeponet3d','transolver3d'}

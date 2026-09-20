@@ -12,7 +12,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('collected');p.add_argument('--out',required=True);p.add_argument('--smoke',action='store_true');a=p.parse_args()
     root=Path(a.collected);out=root if a.smoke else root/'output';raw=json.loads((out/'result.json').read_text());cfg=raw['config']
     assets=out/'assets' if cfg['evaluation_cohort']=='development' else root/cfg['frozen_source_directory']/'assets'
-    result=dict(passed=True,checks={},source_commit=raw['source_commit'],job_id=raw['job_id'],scope=__doc__)
+    result=dict(passed=True,complete=False,checks={},source_commit=raw['source_commit'],job_id=raw['job_id'],scope=__doc__)
     def gate(name,passed,**values):
         result['checks'][name]=dict(passed=bool(passed),**values);result['passed'] &= bool(passed)
         Path(a.out).write_text(json.dumps(result,indent=2)+'\n');print(name,json.dumps(result['checks'][name]),flush=True)
@@ -106,6 +106,7 @@ def main():
         reference_disagreement.append(rel(prediction,refs[case]))
     gate('independent_advective_form_reference_probes',max(reference_disagreement)<1e-9,cases=probes,maximum_relative=max(reference_disagreement))
     if not a.smoke:gate('all_four_operator_families',all(any(name.startswith(kind+'_') for name in raw['method_names']) for kind in ('fno3d','unet3d','deeponet3d','transolver3d')))
+    result['complete']=True
     Path(a.out).write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(0 if result['passed'] else 2)
 
 

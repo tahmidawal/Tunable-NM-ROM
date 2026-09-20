@@ -28,6 +28,8 @@ def make_query(spec,n,projected=True):
             x=jnp.concatenate((x,xyz[None]),axis=-1)
         out=M.apply_model(params,x,spec)[0]
         evolved=(jnp.moveaxis(out,-1,0)*scale).reshape(5,3,n,n,n)
+        if spec.get('output_residual_initial',False):
+            evolved=evolved+u0[None]
         if projected:
             evolved=jax.vmap(F.project_field,in_axes=(0,None))(evolved,geom)
         return jnp.concatenate((u0[None],evolved))

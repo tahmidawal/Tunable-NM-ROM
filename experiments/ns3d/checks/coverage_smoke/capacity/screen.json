@@ -1,0 +1,137 @@
+{
+  "complete": false,
+  "stage": "pca2_fixed",
+  "rank": 8,
+  "final_cohort_opened": false,
+  "selection": "rank fixed before augmented training",
+  "POD_seconds": 2.2164051549043506,
+  "POD": {
+    "4": {
+      "train_initial_normalized": {
+        "mean": 0.5732194220460654,
+        "median": 0.5993013061024763,
+        "worst": 0.9848965626819293,
+        "over_5pct": 48,
+        "count": 48
+      },
+      "development_initial_normalized": {
+        "mean": 0.9507117125230734,
+        "median": 0.9469265606326517,
+        "worst": 0.9969857782082314,
+        "over_5pct": 12,
+        "count": 12
+      }
+    },
+    "8": {
+      "train_initial_normalized": {
+        "mean": 0.013346635866938183,
+        "median": 0.013133014559600373,
+        "worst": 0.02497136746566044,
+        "over_5pct": 0,
+        "count": 48
+      },
+      "development_initial_normalized": {
+        "mean": 0.9306261830661545,
+        "median": 0.9267696150077804,
+        "worst": 0.9672713215758498,
+        "over_5pct": 12,
+        "count": 12
+      }
+    }
+  },
+  "bank_curve": [
+    {
+      "step": 1,
+      "relative_mse": 1.3443269546817813,
+      "seconds": 1.7804387439973652
+    },
+    {
+      "step": 3,
+      "relative_mse": 1.3323806495976431,
+      "seconds": 1.792244249023497
+    }
+  ],
+  "bank_training": {
+    "stage": "unrestricted_coefficient_bank",
+    "steps": 3,
+    "requested_steps": 3,
+    "seconds": 1.7958992819767445,
+    "curve": [
+      {
+        "step": 1,
+        "relative_mse": 1.3443269546817813,
+        "seconds": 1.7804387439973652
+      },
+      {
+        "step": 3,
+        "relative_mse": 1.3323806495976431,
+        "seconds": 1.792244249023497
+      }
+    ],
+    "stopping": "step_budget",
+    "coefficient_initialization": "training_field_POD_scores",
+    "objective": "raw field MSE divided by trajectory initial mean-square velocity",
+    "spatial_batch": 1024,
+    "spatial_bank": "learned periodic vector coordinate MLP, not POD substitution"
+  },
+  "whitening": {
+    "condition": 8.223043996500811,
+    "singular_values": [
+      4.719323055248168,
+      2.551562724499594,
+      2.1064309583911145,
+      1.8730392696317715,
+      1.1748817440870256,
+      0.7848649200074365,
+      0.6631810887492422,
+      0.5739143627659542
+    ]
+  },
+  "training_bank_initial_normalized": {
+    "mean": 0.9646684474747392,
+    "median": 0.9686473320954401,
+    "worst": 0.9863734242514085,
+    "over_5pct": 48,
+    "count": 48
+  },
+  "development_bank_initial_normalized": {
+    "mean": 0.9704045545861583,
+    "median": 0.9741057400370288,
+    "worst": 0.9873749602810497,
+    "over_5pct": 12,
+    "count": 12
+  },
+  "projection_nonexpansion": {
+    "passed": true,
+    "raw_error": [
+      5.297148487640856,
+      5.270380512014561,
+      5.243829246379594,
+      5.217493418119926,
+      5.191370936424087,
+      5.165459725087323,
+      5.2627822670491415,
+      5.251354854216023,
+      5.239955237434992,
+      5.228583820118185,
+      5.217240666953289,
+      5.205925844230934
+    ],
+    "projected_error": [
+      5.155547362846415,
+      5.128299446990817,
+      5.10127817604429,
+      5.074482286716319,
+      5.047909690973209,
+      5.021558311530041,
+      5.206767610008662,
+      5.195569821581618,
+      5.184385428361035,
+      5.173214816208347,
+      5.162058033009252,
+      5.15091513317067
+    ],
+    "max_excess": -0.05501071106026334
+  },
+  "heads": {}
+}

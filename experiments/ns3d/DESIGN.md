@@ -299,3 +299,55 @@ Final seed 202609203 stays unopened pending coordinator freeze.
 - **Validation/final:** data for selection/data reserved for frozen evaluation.
 - **Reference budget:** the allowed discrepancy measured under numerical
   refinement, distinct from the reduced model's target error.
+# Shared periodic-translation coverage amendment
+
+The prospective `configs/coverage04.json` experiment increases training coverage
+using exact integer translations of complete periodic trajectories. The table in
+`output/membership.json` fixes each base-case/offset pair before training and is
+identical for the learned bank, coefficient head, POD and every operator. The
+initial trajectory is included for every base case; duplicate offsets for one
+base case are forbidden. Viscosity, component ordering and output times are
+unchanged. Development and final cohorts are unchanged. These translated samples
+are augmentation, not independent physical realizations.
+
+`translation_cohort.verify` checks the parameterized initial family, projection,
+nonlinear operator and complete trajectories against spatial rolling, with
+independent NumPy advective-form/RK4 and production rotational-form/CNAB2 paths.
+The tolerance is fixed in the source before collection. No family parameters
+become model inputs.
+
+The larger bank remains a learned periodic coordinate MLP. The capacity ceiling
+and every training budget are fixed in the configuration. Classical POD uses the
+same augmented snapshots. No POD basis is substituted for learned bank columns.
+Head initialization uses affine PCA of the whitened physical coefficients,
+weighted by inverse initial velocity variance. Its linear skip reproduces this
+affine reconstruction exactly and its nonlinear output starts at zero. Both
+fixed-code and jointly optimized-code recipes are retained under separate names.
+All head representation errors retain the initial-vector normalization; they are
+not online trajectory errors. This amendment does not certify that a larger
+representation meets the accuracy target.
+
+A larger-bank online panel is conditional on the prospective representation
+limits in the configuration. If eligible, the selected head and correction
+directions are frozen for the shared development timing panel; matched-dimension
+POD controls use the same weak objective and smooth test modes. Exact FFT
+extraction evaluates that weak residual on the full grid without storing the
+large quadratic tensor. Initial fitting, evolution and full velocity output are
+charged. This path remains grid-bound. Latent histories and independent
+advective-form residual/Jacobian checks are required before accepting its solver
+status. If the representation gate fails, the omission of this larger online
+panel is recorded explicitly and the earlier negative online panels remain.
+
+All four neural operators also receive an explicitly labelled residual-output
+training variant. They learn the increment $u(t)-u(0)$, using the existing physical
+initial field and viscosity as inputs. Complete inference adds $u(0)$ back and
+charges that operation. All requested output fields and error denominators are
+unchanged. The earlier direct-output variants remain recorded. No corresponding
+change is made to the NM-ROM decoder or its online initial-state fit.
+
+The FOM step ladder is extended to coarser steps that preserve the requested
+output times. Every attempted value and failure is retained. The cheapest
+development configuration passing the existing accuracy target must be frozen
+before final-cohort evaluation; no speed claim can inherit a tighter truth-data
+tolerance as its sole comparator. Training-budget exhaustion does not establish
+convergence for any architecture.

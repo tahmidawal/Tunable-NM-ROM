@@ -1,0 +1,27 @@
+STAGE symmetry_verification
+STAGE base_data_regeneration
+data seed=202609201 1/4 elapsed=2.1
+data seed=202609201 4/4 elapsed=2.2
+data seed=202609202 1/2 elapsed=0.2
+data seed=202609202 2/2 elapsed=0.2
+STAGE shared_training_augmentation
+STAGE coverage_capacity_and_heads
+free_bank_train {'step': 1, 'relative_mse': 1.3443269546817813, 'seconds': 1.8205820779548958}
+free_bank_train {'step': 3, 'relative_mse': 1.3323806495976431, 'seconds': 1.8301548779709265}
+PCA_HEAD {'step': 1, 'relative_mse': 0.019113088613999747, 'seconds': 0.577143642003648}
+PCA_HEAD {'step': 3, 'relative_mse': 0.020140785334570244, 'seconds': 0.5811642450280488}
+PCA_HEAD {'step': 1, 'relative_mse': 0.00632376559402094, 'seconds': 0.6281278050737455}
+PCA_HEAD {'step': 3, 'relative_mse': 0.012122002027948357, 'seconds': 0.6318013010313734}
+STAGE shared_operator_training
+OPERATOR fno3d 1 val_worst 0.05704845743838208 seconds 2.1708088179584593
+OPERATOR fno3d 2 val_worst 0.05703971269970076 seconds 2.1788780729984865
+OPERATOR unet3d 1 val_worst 0.056447363036545586 seconds 1.0944798389682546
+OPERATOR unet3d 2 val_worst 0.05644619413424863 seconds 1.0997955709462985
+OPERATOR deeponet3d 1 val_worst 0.05659218788731021 seconds 1.9731677160598338
+OPERATOR deeponet3d 2 val_worst 0.05659236585289836 seconds 1.9917075370904058
+OPERATOR transolver3d 1 val_worst 0.056615334011663895 seconds 4.314706635079347
+OPERATOR transolver3d 2 val_worst 0.05661112328024997 seconds 4.354739047004841
+STAGE complete_query_development_controls
+TIMED 0 0
+STAGE complete
+ALL-DONE

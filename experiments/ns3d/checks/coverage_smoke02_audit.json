@@ -1,0 +1,148 @@
+{
+  "passed": true,
+  "source_commit": null,
+  "job_id": null,
+  "checks": {
+    "complete_and_final_sealed": {
+      "passed": true
+    },
+    "exact_shared_membership": {
+      "passed": true,
+      "base_cases": 4,
+      "augmented_cases": 8
+    },
+    "learned_coordinate_bank": {
+      "passed": true,
+      "relative": 2.456375854397145e-16
+    },
+    "bank_QR": {
+      "passed": true
+    },
+    "bank_development_fields": {
+      "passed": true
+    },
+    "bank_development_summary": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9704045545861583,
+        "median": 0.9741057400370288,
+        "worst": 0.9873749602810497
+      }
+    },
+    "all_augmented_training_projections": {
+      "passed": true,
+      "snapshots": 48,
+      "maximum_coefficient_relative_error": 2.710184347427266e-16,
+      "maximum_floor_error": 3.3306690738754696e-16
+    },
+    "pca2_fixed_development_reconstruction": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9887499159332077,
+        "median": 0.9926331099479746,
+        "worst": 1.0016994121541358
+      },
+      "stationary_count": 12
+    },
+    "pca2_fixed_fixed_PCA_codes": {
+      "passed": true,
+      "relative_Gram_probe": 1.2039875821548918e-15,
+      "count": 24
+    },
+    "pca3_free_development_reconstruction": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9810421961613511,
+        "median": 0.9848108562237147,
+        "worst": 0.9997108910243397
+      },
+      "stationary_count": 12
+    },
+    "fno3d_shared_recipe": {
+      "passed": true
+    },
+    "unet3d_shared_recipe": {
+      "passed": true
+    },
+    "deeponet3d_shared_recipe": {
+      "passed": true
+    },
+    "transolver3d_shared_recipe": {
+      "passed": true
+    },
+    "operator_precision": {
+      "passed": true,
+      "bad": []
+    },
+    "every_timed_field": {
+      "passed": true,
+      "invocations": 10,
+      "fields": 10,
+      "max_metric_disagreement": 0.0,
+      "failures": []
+    }
+  },
+  "scope": "all membership bytes and saved development fields; independent model reconstruction and invocation metrics",
+  "derived_summary": {
+    "fno3d_increment_raw": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.4906659489497542,
+      "worst_evolved_same_grid": 0.05703885355505849
+    },
+    "fno3d_increment_projected": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.8218839541077614,
+      "worst_evolved_same_grid": 0.057025752834729306
+    },
+    "unet3d_increment_raw": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.6337009835988283,
+      "worst_evolved_same_grid": 0.056445341560978635
+    },
+    "unet3d_increment_projected": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.7471890421584249,
+      "worst_evolved_same_grid": 0.05634538775250107
+    },
+    "deeponet3d_increment_raw": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.8173170499503613,
+      "worst_evolved_same_grid": 0.056591335199426517
+    },
+    "deeponet3d_increment_projected": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.8442619582638144,
+      "worst_evolved_same_grid": 0.05659132012896865
+    },
+    "transolver3d_increment_raw": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.881158048287034,
+      "worst_evolved_same_grid": 0.05661027159409986
+    },
+    "transolver3d_increment_projected": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 0.9714949410408735,
+      "worst_evolved_same_grid": 0.05656209230279595
+    },
+    "fom_dt0.002": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.750043942593038,
+      "worst_evolved_same_grid": 1.5172577202266607e-06
+    },
+    "fom_dt0.004": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.1034790659323335,
+      "worst_evolved_same_grid": 6.831570035709822e-06
+    }
+  }
+}

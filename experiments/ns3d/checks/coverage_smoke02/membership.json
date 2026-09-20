@@ -1,0 +1,79 @@
+{
+  "kind": "shared deterministic periodic integer translations",
+  "base_cases": 4,
+  "augmented_cases": 8,
+  "n": 8,
+  "augmentation_seed": 202609241,
+  "membership": [
+    [
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      5,
+      1,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      6,
+      0
+    ],
+    [
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      2,
+      3,
+      3,
+      4
+    ],
+    [
+      3,
+      0,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      6,
+      2
+    ]
+  ],
+  "membership_sha256": "7698e0a252e36908d80600525caecd48af50fafa9aa85b655af18a3fe426cb8d",
+  "base_states_sha256": "b9ff0d673446f8720de8b8f45fa145395d124064e8445c1286606f3ebd6bb865",
+  "base_parameter_sha256": "8162d2837d495f26bec736889cc255ed7248ca3957aadfcf25826450dad0ac63",
+  "columns": [
+    "base_case",
+    "roll_x",
+    "roll_y",
+    "roll_z"
+  ],
+  "applies_to": [
+    "learned_bank",
+    "nonlinear_head",
+    "POD",
+    "FNO",
+    "U-Net",
+    "DeepONet",
+    "Transolver"
+  ],
+  "viscosity_rule": "base-case viscosity unchanged",
+  "held_out_rule": "development and final cohorts unchanged",
+  "includes_original": true,
+  "snapshots_per_case": 6
+}

@@ -1,0 +1,29 @@
+{
+  "jax_backend": "gpu",
+  "symmetry": {
+    "passed": true,
+    "relative_tolerance": 1e-10,
+    "checks": {
+      "initial_family": 5.657124232620446e-16,
+      "production_projection": 2.769235204247959e-16,
+      "independent_projection": 2.6933672392546333e-16,
+      "production_nonlinearity": 5.983012247316563e-16,
+      "independent_nonlinearity": 4.827057737302417e-16,
+      "production_complete_trajectory": 3.5585799157682073e-16,
+      "independent_complete_trajectory": 3.0177504230226487e-16,
+      "norm_preservation": 0.0
+    },
+    "membership_deterministic": true,
+    "axes": "last three spatial axes only",
+    "n": 12
+  },
+  "PCA": {
+    "kind": "weighted physical-metric affine PCA plus initially zero nonlinear residual",
+    "latent_dimension": 3,
+    "head_width": 12,
+    "initialization_relative_parity": 2.0435077859822308e-16,
+    "weighted_PCA": "inverse trajectory initial mean-square velocity",
+    "code_scale": 21.7141973658792
+  },
+  "seconds": 4.657468799967319
+}

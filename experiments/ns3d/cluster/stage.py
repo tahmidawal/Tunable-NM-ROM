@@ -20,7 +20,9 @@ def main():
     parser.add_argument('attempt')
     parser.add_argument('--config',default='pilot01.json')
     parser.add_argument('--gpu',choices=('a100','h200'),default='a100')
-    parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py'),default='pilot.py')
+    parser.add_argument('--a100-memory',choices=('any','80G'),default='any')
+    parser.add_argument('--hours',type=int,choices=(2,3),default=2)
+    parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py','coverage04.py'),default='pilot.py')
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9]{1,30}',args.attempt):
         raise ValueError('attempt must be a bounded alphanumeric name')
@@ -44,6 +46,7 @@ def main():
         dest=out/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(blob)
         provenance.append(dict(path=name,sha256=digest(dest),bytes=len(blob),source_commit=source))
     remote=REMOTE_ROOT+'/'+args.attempt
+    memory_constraint='#SBATCH --constraint=a100-80G\n' if args.gpu=='a100' and args.a100_memory=='80G' else ''
     (out/'PROVENANCE.json').write_text(json.dumps(provenance,indent=2)+'\n')
     (out/'COMMIT.txt').write_text(source+'\n')
     script=f'''#!/bin/bash
@@ -51,10 +54,10 @@ def main():
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:{args.gpu}:1
-#SBATCH --exclude=pax007
+{memory_constraint}#SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=100G
-#SBATCH --time=02:00:00
+#SBATCH --time={args.hours:02d}:00:00
 #SBATCH --output={remote}/logs/%j.out
 #SBATCH --error={remote}/logs/%j.err
 set -euo pipefail
@@ -84,7 +87,7 @@ exit "$NS3D_EXIT"
     (out/'run.sbatch').write_text(script)
     (out/'logs').mkdir()
     stage=dict(attempt=args.attempt,source_commit=source,local=str(out),remote=remote,
-               config=args.config,gpu=args.gpu,wall_limit_hours=2,driver=args.driver)
+               config=args.config,gpu=args.gpu,a100_memory=args.a100_memory,wall_limit_hours=args.hours,driver=args.driver)
     (out/'stage.json').write_text(json.dumps(stage,indent=2)+'\n')
     manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file()]
     (out/'MANIFEST.sha256').write_text('\n'.join(manifest)+'\n')

@@ -92,7 +92,7 @@ def tensor_checks(G,n,m=32):
                 build_order_error=order_error,test_orthogonality=orth)
 
 
-def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_starts=4,retain_states=False):
+def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_starts=4,retain_states=False,dense_n=None):
     """Complete query: full initial projection, latent fit, evolution, dense output.
 
     All large arrays and model parameters are explicit arguments. Linear endpoint
@@ -104,10 +104,22 @@ def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_start
     def coefficient(w,theta,C):
         return w if linear else D.head(theta,w[:k])+C@w[k:]
 
-    def weak(w,previous,nu,A,T,lam,C,theta):
+    def weak(w,previous,nu,A,T,lam,C,theta,G):
         new=coefficient(w,theta,C)
         mid=(new+previous)/2
-        return (A@(new-previous)-dt*(contract(T,mid)-nu*lam*(A@mid)))/(1+dt*nu*lam/2)
+        if dense_n is None:
+            advection=contract(T,mid)
+        else:
+            # Exact full-grid weak evaluation avoids a cubic-size stored tensor.
+            # Fourier extraction equals projection onto the same smooth tests.
+            # This is grid-bound and is never labelled hyper-reduced.
+            indices,polarization,cosine,geom=T
+            field=(G@mid).reshape(3,dense_n,dense_n,dense_n)
+            spectrum=F.nonlinear(F.fft(field),geom)
+            selected=spectrum[:,indices[:,0],indices[:,1],indices[:,2]]
+            scalar=jnp.einsum('cm,mc->m',selected,polarization)
+            advection=np.sqrt(2*dense_n**3)*jnp.where(cosine,scalar.real,-scalar.imag)
+        return (A@(new-previous)-dt*(advection-nu*lam*(A@mid)))/(1+dt*nu*lam/2)
 
     def cold(w,target,Rb,C,theta):
         return Rb@(coefficient(w,theta,C)-target)
@@ -138,7 +150,7 @@ def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_start
 
         def step(w,_):
             previous=coefficient(w,theta,C)
-            next_w,rn,it,reason,gn=evolve_lm(w,(previous,nu,A,T,lam,C,theta),0.)
+            next_w,rn,it,reason,gn=evolve_lm(w,(previous,nu,A,T,lam,C,theta,G),0.)
             return next_w,(rn,it,reason,gn,next_w) if retain_states else (rn,it,reason,gn)
 
         def block(w,_):

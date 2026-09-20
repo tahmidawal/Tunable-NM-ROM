@@ -1,0 +1,44 @@
+STAGE symmetry_verification
+STAGE base_data_regeneration
+data seed=202609201 1/4 elapsed=2.1
+data seed=202609201 4/4 elapsed=2.2
+data seed=202609202 1/2 elapsed=0.2
+data seed=202609202 2/2 elapsed=0.3
+STAGE shared_training_augmentation
+STAGE coverage_capacity_and_heads
+free_bank_train {'step': 1, 'relative_mse': 1.3443269546817813, 'seconds': 1.7804387439973652}
+free_bank_train {'step': 3, 'relative_mse': 1.3323806495976431, 'seconds': 1.792244249023497}
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/coverage04.py", line 96, in main
+    report['capacity']=capacity(train,dev,cfg,out/'capacity');save();gc.collect();jax.clear_caches()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/coverage04.py", line 59, in capacity
+    candidate,codes,training=HP.train(candidate,codes,ctr,Rb,hcfg,out/(label+'.pkl'),variance,cfg['model_seed']+k)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/head_pca.py", line 43, in train
+    opt=optax.chain(optax.clip_by_global_norm(1.),optax.adam(optax.warmup_cosine_decay_schedule(0.,.001,200,steps,.00002)))
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/optax/schedules/_schedule.py", line 650, in warmup_cosine_decay_schedule
+    cosine_decay_schedule(
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/optax/schedules/_schedule.py", line 372, in cosine_decay_schedule
+    raise ValueError(
+ValueError: The cosine_decay_schedule requires positive decay_steps, got decay_steps=-197.
+
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/coverage04.py", line 156, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/coverage04.py", line 96, in main
+    report['capacity']=capacity(train,dev,cfg,out/'capacity');save();gc.collect();jax.clear_caches()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/coverage04.py", line 59, in capacity
+    candidate,codes,training=HP.train(candidate,codes,ctr,Rb,hcfg,out/(label+'.pkl'),variance,cfg['model_seed']+k)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/head_pca.py", line 43, in train
+    opt=optax.chain(optax.clip_by_global_norm(1.),optax.adam(optax.warmup_cosine_decay_schedule(0.,.001,200,steps,.00002)))
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/optax/schedules/_schedule.py", line 650, in warmup_cosine_decay_schedule
+    cosine_decay_schedule(
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/optax/schedules/_schedule.py", line 372, in cosine_decay_schedule
+    raise ValueError(
+ValueError: The cosine_decay_schedule requires positive decay_steps, got decay_steps=-197.

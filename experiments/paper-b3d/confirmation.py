@@ -31,6 +31,7 @@ def main():
     # Inspect the original finite-budget operators before replacing any recipe.
     invoke('operator_panel.py','--config',args.config,'--training','../training','--out','../out/original','--mode','train',log='../original-operators.log')
     invoke('operator_diagnostic.py','--config',args.config,'--training','../training','--out','../out/original',log='../original-diagnostic.log')
+    invoke('reference_stream.py','--config',args.config,'--out','../out/reference-profile',log='../reference-profile.log')
     configs=[]
     for seed_index in (0,1):
         cfg=copy.deepcopy(base);cfg.pop('confirmation');cfg.pop('wall_time',None)

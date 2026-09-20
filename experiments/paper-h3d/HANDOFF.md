@@ -110,6 +110,47 @@ The diagnostic is intentionally not a timed trajectory panel. Its PCA models liv
 
 The prepared `fno_physical_padding_transfer` flag in `run.py` adds a separately labelled frozen-weight arm that scales padded lattice length with interval count. Preserve original direct-transfer and native-grid interpolation variants. The flag is not enabled in extra03 and therefore contributes no result yet. Independent training-seed confirmation and the prospectively reserved final cohort still require execution after the core diagnostic; no manuscript-ready final comparison is claimed.
 
+<!-- GENERATED_LATEST_COMPARISON -->
+## Audited extra03 comparison
+
+Generated from `runs/extra03/archive/out/result.json` and its summary; job `3995709`, source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`. Independent checks passed for 1408 saved fields, 3936 paired invocations and 82 summary rows. The exact remote attempt is removed. Final data remain unopened.
+
+| Intervals | Method | Median device ms | Worst evolved current-relative error (%) | Nonstationary cases |
+|---:|---|---:|---:|---:|
+| 32 | deeponet3d_r128_w16 | 3.888949 | 21.769232 | 0 |
+| 32 | dst_exact | 1.428323 | 0.000000 | 0 |
+| 32 | fno3d_w16_m6 | 10.638272 | 0.394686 | 0 |
+| 32 | linear_bank_galerkin_exact | 0.186798 | 1.332380 | 0 |
+| 32 | nmrom_K16_q0_dense | 27.043730 | 5.887501 | 0 |
+| 32 | nmrom_K16_q96_dense | 38.168841 | 2.989914 | 0 |
+| 32 | nmrom_K32_q0_dense | 34.770850 | 6.013450 | 0 |
+| 32 | nmrom_K32_q96_dense | 114.343071 | 1.379106 | 0 |
+| 32 | nmrom_K8_q0_dense | 18.938284 | 6.197678 | 0 |
+| 32 | nmrom_K8_q96_dense | 23.915695 | 2.278149 | 0 |
+| 32 | pod128_exact | 0.188729 | 1.244093 | 0 |
+| 32 | transolver3d_w48_s32 | 6.282192 | 1.482594 | 0 |
+| 32 | unet3d_w8 | 4.372963 | 0.318500 | 0 |
+| 64 | deeponet3d_r128_w16 | 11.269504 | 52.511815 | 0 |
+| 64 | deeponet3d_r128_w16_native_grid_interpolated | 4.029098 | 21.790271 | 0 |
+| 64 | dst_exact | 1.590557 | 0.000000 | 0 |
+| 64 | fno3d_w16_m6 | 16.246385 | 17.664133 | 0 |
+| 64 | fno3d_w16_m6_native_grid_interpolated | 10.681196 | 0.989116 | 0 |
+| 64 | linear_bank_galerkin_exact | 0.563960 | 1.316564 | 0 |
+| 64 | nmrom_K16_q0_dense | 28.606119 | 5.844794 | 0 |
+| 64 | nmrom_K16_q96_dense | 40.919275 | 2.962772 | 0 |
+| 64 | nmrom_K32_q0_dense | 37.143028 | 5.968285 | 0 |
+| 64 | nmrom_K32_q96_dense | 113.590225 | 1.355486 | 0 |
+| 64 | nmrom_K8_q0_dense | 20.982162 | 6.147374 | 0 |
+| 64 | nmrom_K8_q96_dense | 24.657854 | 2.262503 | 0 |
+| 64 | pod128_exact | 0.565018 | 1.233758 | 0 |
+| 64 | transolver3d_w48_s32 | 20.827785 | 25.295404 | 0 |
+| 64 | transolver3d_w48_s32_native_grid_interpolated | 6.854193 | 1.276579 | 0 |
+| 64 | unet3d_w8 | 10.960319 | 92.675594 | 0 |
+| 64 | unet3d_w8_native_grid_interpolated | 4.240056 | 0.946824 | 0 |
+
+These are development comparisons on one frozen bank, with separately trained heads. The larger head reaches the linear-bank error floor at substantial query cost; direct DST remains more accurate and the linear bank/POD controls remain much faster. The original weak DeepONet and failed direct-transfer variants are retained. Further head initialization and operator training are development work, not final confirmation.
+<!-- END_GENERATED_LATEST_COMPARISON -->
+
 ## Glossary
 
 - **Bank / head:** learned spatial functions / nonlinear latent-to-coefficient map.

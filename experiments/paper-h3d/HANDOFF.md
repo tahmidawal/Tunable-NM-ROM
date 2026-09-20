@@ -105,3 +105,13 @@ Root owns the canonical LAB-LOG and main reports; this handoff supplies the clos
 - **PCA / SVD:** training-data linear coordinate constructions; here considered only for initializing a head, not replacing the learned spatial bank.
 - **Native grid / transfer:** the training mesh / direct network use on another mesh.
 - **Development / final:** data used for tuning / data reserved until configurations freeze.
+
+## Active continuation preparation
+
+The original pilot and tune02 full-field sidecars are now durable in Git as split tar archives under `retained-fields/{pilot01,tune02}/`, committed at `30d7e58a`. Their manifests describe restoration, every member hash and every chunk hash. Streaming restoration passed for all fields. `git-retention-audit.json` independently read every committed Git blob and verified its actual bytes. Original local sidecars remain intact. Do not remove these retained archives during integration.
+
+`head04.json` is prepared for the next allocation after extra03 is collected and audited. It first measures train/development error of DeepONet and Transolver, including DeepONet's learned trunk-span projection floor; then tests weighted-PCA code/linear-skip initialization for each declared latent dimension on the same frozen learned bank and training data. Every original random-initialized head is compared with explicit four/eight-start fitting. Selected latent states are saved, allowing `audit_head.py` to reconstruct the fields and normalized fitting gradients independently with NumPy/SciPy. After these diagnostics, DeepONet and Transolver continue from their prior selected checkpoints with freshly initialized Adam moments and the new declared cosine schedule. The initial checkpoint remains eligible for selection. This is a two-stage recipe, not independent-seed evidence.
+
+The PCA smoke and independent analytic Jacobian/gradient checks pass. The continuation smoke passes initial-checkpoint selection and saved-weight replay. One preliminary continuation smoke could not initialize CUDA because the shared-memory machine had almost all free memory in file cache; its failure log is retained. Releasing cache for H's own completed archives resolved it. No failed GPU result was used.
+
+Before staging head04, collect extra03 using the commands above, run its full independent panel audit, and check account queue occupancy with root. Frozen-input staging follows retained original input paths for reused earlier operator checkpoints and records each copied path. The staging source must be committed. Final data remain unopened; root owns canonical lab logging and paper reports.

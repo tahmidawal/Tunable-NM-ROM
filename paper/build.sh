@@ -7,6 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 PY=/home/tahmid/Dev/.venv/bin/python
 "$PY" gen_tables.py
+"$PY" gen_campaign_supplement.py
 if [[ "${1:-}" == "--figures" ]]; then
   "$PY" figures/gen_fig_tunability_family.py
 fi

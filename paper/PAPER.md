@@ -2,9 +2,9 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 01:16; this block is removed before submission).*
-*Final tables (59): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
-*Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
+*Status for the reader (generated 2026-09-20 02:56; this block is removed before submission).*
+*Populated tables (67): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
+*Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
 *Abstract: the readability pass's Abstract A (<= 250 words) with first-use glosses; the previous 397-word abstract and Abstract B (~200 words, one line shorter) are in ABSTRACT-2026-09-17.md for the user to pick.*
@@ -1360,7 +1360,8 @@ ed431edb498a / 76072bf42014; checkpoint 18f0266ae6f04542….
 cases: what the bank can express, what the augmented manifold can reach
 (multistart oracle, an upper bound), what the deployed iteration returned. The
 p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
-appears.
+appears here. A separately sourced corrected rerun is reported in
+Table 55.
 
 <!-- table: T07_three_layers -->
 | cell | arm | bank floor % | best-found % | solved % | best/floor | solved $-$ best (pp) | source |
@@ -2559,9 +2560,10 @@ changed the deciding interpretation after observing the coarse-mesh
 results and before the fine-mesh job; that interpretation was not fixed
 before the campaign's observations. The efficient endpoint uses direct
 QR, omitting redundant nonlinear iterations at full correction rank.
-The nonzero-$q$ best-found columns remain retracted under amendment A10:
-their projector was not orthonormal, and the corrected full-cohort
-calculation has not been rerun. The solved ladder is unaffected;
+The historical nonzero-$q$ best-found columns remain retracted under
+amendment A10 because their projector was not orthonormal. A separate
+corrected full-cohort rerun is now independently confirmed in
+Appendix H. The historical solved ladder is unaffected;
 solver effort buys nothing at $q=0$ (floor $0.7421$,
 best-found $3.1139$, solved
 $3.1495 %$ at $M=129$). Heat at $1024^2$ (an
@@ -2785,7 +2787,350 @@ all subjects is `nt1e-2_dt01`, `nt1e-3_dt005`, `dense_tight`, `fft_tight`.
 | `dense_tight` | 0.0000 | 0.0000 | 20.82 | — | 112.3 | — | — | yes | no |
 | `fft_tight` | 0.0000 | 0.0000 | 20.82 | — | 171.2 | — | — | yes | no |
 
-## H Glossary
+## H Corrected Poisson representation diagnostic
+
+<!-- section sources: none (prose only) -->
+
+The nonzero-correction representation fits originally reported by the
+Poisson lane remain retracted under amendment A10. A separate rerun on
+the complete original development cohort now confirms the corrected
+query-metric projection (job 3996320, scientific source
+`5a8d7bc8dea9`, retained evidence pinned at
+`aa9b55ee7e17`). All
+240 case/rank fits meet the recorded stationarity
+criterion; the independent NumPy field and derivative audit passes
+1595 checks. These are untimed, truth-informed
+representation fits on already opened cases. The historical timed
+results, their source pins and the original retraction are unchanged.
+
+Let $R_G$ be the triangular factor of the evaluated bank in the query
+mesh's field norm, and let $Q_q$ have orthonormal columns spanning
+$R_G C_q$. Eliminating the free correction coefficients leaves
+
+$$
+r_q(z)=(I-Q_qQ_q^\top)(R_Gh_\theta(z)-T).
+$$
+
+<!-- equation (11) -->
+
+Here $T$ is the reference field projected into these coordinates.
+The original implementation omitted the required normalization of the
+projector. The corrected finite best-found error is an upper bound on
+the unknown global minimum, while the free-bank floor is a lower bound.
+At $q=R$, direct free-coefficient projection attains that floor and
+removes the redundant nonlinear head.
+
+**Table 55.** Separately confirmed Poisson representation errors (%) on the
+original development sources. Original starts use the unchanged
+nearest-training-code multistart prescription with the repaired projector.
+Best found additionally permits previously retained solved states and the
+preceding rank's best fit as feasible starts. Median summarizes the
+safeguarded errors. Original starts and best found report worst-case
+errors; bank floor is the worst free-bank projection error.
+Stationary counts cases satisfying the normalized-gradient rule, with
+the direct endpoint stationary by construction. None is a new inference
+timing or sealed-test result.
+
+<!-- table: TC_oracle_confirmation -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| Intervals | $R$ | $K$ | $q$ | Original starts | Best found | Median | Bank floor | Stationary |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 256 | 512 | 32 | 0 | 3.1211 | 3.1211 | 0.5050 | 0.7459 | 12/12 |
+| 256 | 512 | 32 | 32 | 2.4554 | 2.4554 | 0.4420 | 0.7459 | 12/12 |
+| 256 | 512 | 32 | 64 | 2.0787 | 2.0787 | 0.4126 | 0.7459 | 12/12 |
+| 256 | 512 | 32 | 128 | 1.5491 | 1.5491 | 0.3194 | 0.7459 | 12/12 |
+| 256 | 512 | 32 | 256 | 0.9688 | 0.9688 | 0.1315 | 0.7459 | 12/12 |
+| 256 | 512 | 32 | 512 | direct | 0.7459 | 0.0580 | 0.7459 | 12/12 |
+| 1024 | 512 | 32 | 0 | 3.1139 | 3.1139 | 0.5049 | 0.7421 | 12/12 |
+| 1024 | 512 | 32 | 32 | 2.4497 | 2.4497 | 0.4421 | 0.7421 | 12/12 |
+| 1024 | 512 | 32 | 64 | 2.0738 | 2.0738 | 0.4127 | 0.7421 | 12/12 |
+| 1024 | 512 | 32 | 128 | 1.5453 | 1.5453 | 0.3194 | 0.7421 | 12/12 |
+| 1024 | 512 | 32 | 256 | 0.9648 | 0.9648 | 0.1315 | 0.7421 | 12/12 |
+| 1024 | 512 | 32 | 512 | direct | 0.7421 | 0.0580 | 0.7421 | 12/12 |
+| 256 | 128 | 16 | 0 | 6.1013 | 6.1013 | 1.2423 | 2.3226 | 12/12 |
+| 256 | 128 | 16 | 32 | 4.6715 | 4.6715 | 0.9365 | 2.3226 | 12/12 |
+| 256 | 128 | 16 | 64 | 3.4336 | 3.4336 | 0.7863 | 2.3226 | 12/12 |
+| 256 | 128 | 16 | 128 | direct | 2.3226 | 0.3684 | 2.3226 | 12/12 |
+| 1024 | 128 | 16 | 0 | 6.0930 | 6.0930 | 1.2421 | 2.3152 | 12/12 |
+| 1024 | 128 | 16 | 32 | 4.6644 | 4.6644 | 0.9362 | 2.3152 | 12/12 |
+| 1024 | 128 | 16 | 64 | 3.4271 | 3.4271 | 0.7860 | 2.3152 | 12/12 |
+| 1024 | 128 | 16 | 128 | direct | 2.3152 | 0.3682 | 2.3152 | 12/12 |
+
+## I Three-dimensional development campaign: internal draft
+
+<!-- section sources: none (prose only) -->
+
+**Provisional evidence, excluded from the abstract and main claims.**
+The following panels are audited development comparisons during an
+ongoing tuning campaign. Their inputs were available for checkpoint or
+configuration selection. The final cohorts remain unopened in this
+snapshot; independent-seed confirmation, final evaluation and the
+remaining accuracy failures are unresolved. Failure to reach an accuracy
+target is retained as a result, and a finite training budget does not
+establish a model family's attainable error floor. No cross-PDE or
+cross-allocation runtime ratio is formed.
+
+Each table pairs accuracy with the cost of the same solver invocation.
+GPU warm-up precedes measurement, parameters use double precision and
+matrix multiplications use the highest-precision setting. Query costs
+include the recorded initialization, solve and requested field output
+with inputs and outputs resident on the GPU; unmeasured host transfers
+are not assigned a cost. Timing summaries retain all repetitions.
+Operator variants include any stated interpolation or incompressibility
+projection in the measured query. Failed direct mesh-transfer variants
+are displayed separately from native-grid prediction followed by
+interpolation; their failure is not an intrinsic impossibility result
+for the operator family.
+
+Stationarity columns report each run's recorded stopping criterion;
+they do not prove a global minimum. The selected Poisson panel has
+independently audited fields and references, but its nonlinear stopping
+summary lacks saved selected latent states for a separate gradient
+reconstruction. The selected Navier–Stokes panel likewise lacks saved
+evolution latent histories. Neither limitation is hidden by a zero
+recorded stopping-failure count.
+
+The weak NM-ROM residual is projected against smooth test functions.
+The learned bank, compressed head and correction rank have sizes
+$R$, $K$ and $q$; $M$ is the actual number of weak tests. The Burgers
+basis completes the degenerate Laplacian eigenvalue shell at its
+requested cutoff, preserving coordinate symmetry. Dense full-grid
+operations remain charged where quadrature has not met its certificate.
+Full-bank Galerkin controls and a full-bank weak least-squares endpoint
+are distinct reduced equations. POD uses the matched training states.
+Efficient classical controls remain in the comparison even when they
+are both faster and more accurate.
+
+**Table 56.** Provisional development panel provenance. Each row names a
+separate GPU allocation. Scientific source identifiers refer to staged
+file contents verified against repository history; snapshot hashes and
+upstream result/audit hashes are in `tables/campaign-provenance.json`.
+
+<!-- table: TC_development_sources -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| PDE | Attempt | Job | GPU | Scientific source |
+| --- | --- | --- | --- | --- |
+| Burgers 3D | b3d004 | 3995688 | A100 80GB PCIe | \texttt{c026d56b8390} |
+| Heat 3D | extra03 | 3995709 | A100-PCIE-40GB | \texttt{4ac8b16455f5} |
+| Poisson 3D | extra03 | 3995104 | A100 80GB PCIe | \texttt{a50ce0977373} |
+| Navier--Stokes 3D | comparison02 | 3993021 | A100-PCIE-40GB | \texttt{23932ac4eca3} |
+
+**Table 57.** Provisional training and query contracts from saved run
+configurations. Grid counts are per spatial axis. Fields are full spatial states, including the initial
+state when requested; vector states include all channels. The number
+of fields is not a count of statistically independent examples. Heads
+lists saved trained candidates; the following panels explicitly identify
+the displayed candidate. All model families share the lane's training
+membership.
+
+<!-- table: TC_development_setup -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| PDE | Training grid | Train cases | Fields/case | Outputs | Channels | $R$ | $K$ | $M$ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Burgers 3D | 33 nodes | 512 | 8 | 51 | 1 | 256 | 32 | 642 |
+| Heat 3D | 32 intervals | 128 | 6 | 6 | 1 | 128 | 8, 16, 32 | 512 |
+| Poisson 3D | 32 intervals | 512 | 1 | 1 | 1 | 128 | 8, 16 | 512 |
+| Navier--Stokes 3D | 32 periodic points | 512 | 6 | 6 | 3 | 512 | 16 | 1024 |
+
+**Table 58.** Provisional operator training records. Budget, done and selected
+are requested, completed and checkpoint-selected optimizer updates;
+batch is examples per update and LR is the initial learning rate.
+Seed records the initializer. Exit records why training stopped.
+Selection uses the recorded development criterion; an update limit is
+not a convergence certificate. Reused training checkpoints may originate
+in an earlier allocation. Compute budgets are recorded, not claimed equal.
+
+<!-- table: TC_development_training -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| PDE | Operator | Parameters | Budget | Done | Selected | Batch | LR | Seed | Exit |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Burgers 3D | fno | 1771431 | 20000 | 20000 | 16100 | 2 | 0.001 | 920310 | steps |
+| Burgers 3D | unet | 89431 | 20000 | 20000 | 17500 | 2 | 0.001 | 920311 | steps |
+| Burgers 3D | deeponet | 1861959 | 30000 | 30000 | 30000 | 2 | 0.001 | 920312 | steps |
+| Burgers 3D | transolver | 564392 | 30000 | 30000 | 29400 | 2 | 0.001 | 920313 | steps |
+| Heat 3D | fno\_w16\_m6 | 1771349 | 20000 | 20000 | 19500 | 4 | 0.001 | 920321 | steps |
+| Heat 3D | unet\_w8 | 89197 | 20000 | 20000 | 20000 | 4 | 0.001 | 920322 | steps |
+| Heat 3D | deeponet\_r128\_w16 | 857749 | 20000 | 20000 | 20000 | 4 | 0.001 | 920323 | steps |
+| Heat 3D | transolver\_w48\_s32 | 562840 | 20000 | 20000 | 20000 | 4 | 0.001 | 920324 | steps |
+| Poisson 3D | fno\_w24\_m8 | 9440953 | 30000 | 30000 | 26750 | 2 | 0.0005 | 920450 | steps |
+| Poisson 3D | unet\_w16 | 354577 | 30000 | 30000 | 28750 | 2 | 0.0005 | 920451 | steps |
+| Poisson 3D | deeponet\_r128\_w16 | 791697 | 30000 | 30000 | 29000 | 2 | 0.001 | 920452 | steps |
+| Poisson 3D | transolver\_w48\_s32 | 561272 | 30000 | 30000 | 29750 | 2 | 0.001 | 920453 | steps |
+| Navier--Stokes 3D | fno | 4196511 | 8000 | 8000 | 7100 | 2 | 0.001 | 202609205 | steps |
+| Navier--Stokes 3D | unet | 89287 | 8000 | 8000 | 7900 | 2 | 0.001 | 202609206 | steps |
+
+FNO is a Fourier neural operator; U-Net is a multiscale convolutional
+model; DeepONet uses an input branch and coordinate trunk; Transolver
+uses learned physics-attention slices. The pinned machine-readable
+training records retain each architecture, normalization, selected
+checkpoint hash and training curve metadata. Burgers operators return
+their trained time knots, pass through the supplied initial state and
+interpolate to the common requested output times. The Navier–Stokes
+case is a periodic interacting three-component flow family; the
+reported panel does not claim turbulent-flow coverage. The selected
+Navier–Stokes timing panel has fewer operator families than the later
+training follow-up, which is not substituted without paired measurements.
+
+### I.1 Burgers 3D: provisional development panel
+
+<!-- section sources: none (prose only) -->
+
+**Provisional:** Audited development data with all four operator families and the same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate trained time knots to the common output times. The newer operator schedules are still under evaluation. Physical refinement covers only two cases; this panel supports same-grid comparisons only.\par
+
+**Table 59.** 33 nodes per axis; 8 development cases per method. Initial-field-normalized evolved error; same-grid reference. Each accuracy/cost pair comes from the same invocation in job 3995688. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.
+
+<!-- table: TC_development_0 -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| Method | Median (\%) | Worst (\%) | GPU ms | p95 ms | NF/NS | Outliers/calls |
+| --- | --- | --- | --- | --- | --- | --- |
+| NM-ROM K32, q0 | 5.7071 | 10.8780 | 186.364 | 230.973 | 0/0 | 0/24 |
+| NM-ROM K32, q64 | 4.9359 | 8.9108 | 267.817 | 325.616 | 0/0 | 0/24 |
+| NM-ROM K32, q128 | 3.3258 | 6.6491 | 353.542 | 428.614 | 0/0 | 0/24 |
+| NM-ROM K32, q192 | 1.3600 | 3.4908 | 418.712 | 620.808 | 0/0 | 0/24 |
+| Full learned bank R256 | 0.8437 | 2.4345 | 316.964 | 317.629 | 0/0 | 0/24 |
+| POD32 | 9.5224 | 22.6947 | 95.738 | 96.211 | 0/0 | 0/24 |
+| POD96 | 1.9855 | 5.5785 | 151.273 | 152.382 | 0/0 | 0/24 |
+| POD160 | 0.7675 | 2.5057 | 224.346 | 225.287 | 0/0 | 0/24 |
+| POD224 | 0.3988 | 1.2100 | 284.540 | 285.347 | 0/0 | 0/24 |
+| POD256 | 0.3292 | 1.0363 | 316.567 | 317.512 | 0/0 | 0/24 |
+| FNO, time interpolation | 1.6413 | 1.9979 | 5.862 | 6.687 | 0/0 | 0/24 |
+| U-Net, time interpolation | 1.6239 | 1.9129 | 2.212 | 2.633 | 0/0 | 0/24 |
+| DeepONet, time interpolation | 7.9145 | 21.1988 | 2.534 | 3.009 | 0/0 | 0/24 |
+| Transolver, time interpolation | 1.8700 | 3.7391 | 3.545 | 3.888 | 0/0 | 0/24 |
+| FOM n1e-02, l5e-01 | 1.2739 | 1.6185 | 16.068 | 16.725 | 0/0 | 0/24 |
+| FOM n1e-02, l5e-03 | 0.0382 | 0.6543 | 17.940 | 20.571 | 0/0 | 0/24 |
+| FOM n1e-03, l5e-01 | 0.4692 | 0.5248 | 19.753 | 21.495 | 0/0 | 0/24 |
+| FOM n1e-04, l5e-01 | 0.0267 | 0.0303 | 32.494 | 34.086 | 0/0 | 0/24 |
+| FOM n1e-04, l1e-06 | 0.0188 | 0.0207 | 37.394 | 41.505 | 0/0 | 0/24 |
+| FOM n1e-06, l1e-01 | 0.0002 | 0.0003 | 48.156 | 50.230 | 0/0 | 0/24 |
+
+\FloatBarrier
+\noindent All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances.\par
+
+![Figure 4](figures/evidence/campaign-2026-09-20/burgers3d-b3d004-n33.pdf.png)
+
+**Figure 4.** Provisional paired development measurements from Table 59. The right panel isolates the fixed-head correction ladder; the left retains classical controls and operator variants. Zero-error direct solves are identified separately rather than clipped onto the logarithmic error axis.
+
+### I.2 Heat 3D: provisional development panel
+
+<!-- section sources: none (prose only) -->
+
+**Provisional:** Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.\par
+
+**Table 60.** 64 intervals per axis; 16 development cases per method. Current-reference-normalized evolved error; same-grid reference. Each accuracy/cost pair comes from the same invocation in job 3995709. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.
+
+<!-- table: TC_development_1 -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| Method | Median (\%) | Worst (\%) | GPU ms | p95 ms | NF/NS | Outliers/calls |
+| --- | --- | --- | --- | --- | --- | --- |
+| NM-ROM K32, q0 | 1.1494 | 5.9683 | 37.143 | 48.919 | 0/0 | 0/48 |
+| NM-ROM K32, q8 | 1.0223 | 5.1921 | 40.126 | 80.283 | 0/0 | 5/48 |
+| NM-ROM K32, q32 | 0.8224 | 4.4151 | 40.445 | 56.685 | 0/0 | 1/48 |
+| NM-ROM K32, q64 | 0.5591 | 3.1815 | 52.322 | 92.258 | 0/0 | 5/48 |
+| NM-ROM K32, q96 | 0.3903 | 1.3555 | 113.590 | 151.651 | 0/0 | 1/48 |
+| Full bank, exact Galerkin | 0.2563 | 1.3166 | 0.564 | 0.766 | 0/0 | 1/48 |
+| Full bank, exact weak | 0.2542 | 1.3113 | 1.495 | 1.694 | 0/0 | 0/48 |
+| POD32 | 3.0811 | 9.3730 | 0.311 | 0.647 | 0/0 | 9/48 |
+| POD128 | 0.1414 | 1.2338 | 0.565 | 0.616 | 0/0 | 0/48 |
+| FNO, direct transfer | 15.1234 | 17.6641 | 16.246 | 17.031 | 0/0 | 0/48 |
+| FNO, native + interpolation | 0.7669 | 0.9891 | 10.681 | 11.592 | 0/0 | 0/48 |
+| U-Net, direct transfer | 75.7115 | 92.6756 | 10.960 | 11.808 | 0/0 | 0/48 |
+| U-Net, native + interpolation | 0.7512 | 0.9468 | 4.240 | 4.764 | 0/0 | 0/48 |
+| DeepONet, direct transfer | 33.8829 | 52.5118 | 11.270 | 12.017 | 0/0 | 0/48 |
+| DeepONet, native + interpolation | 7.0168 | 21.7903 | 4.029 | 4.545 | 0/0 | 0/48 |
+| Transolver, direct transfer | 19.8616 | 25.2954 | 20.828 | 22.118 | 0/0 | 0/48 |
+| Transolver, native + interpolation | 0.9475 | 1.2766 | 6.854 | 7.952 | 0/0 | 0/48 |
+| Direct DST | 0.0000 | 0.0000 | 1.591 | 1.926 | 0/0 | 0/48 |
+
+\FloatBarrier
+\noindent The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted.\par
+
+![Figure 5](figures/evidence/campaign-2026-09-20/heat3d-extra03-n64.pdf.png)
+
+**Figure 5.** Provisional paired development measurements from Table 60. The right panel isolates the fixed-head correction ladder; the left retains classical controls and operator variants. Zero-error direct solves are identified separately rather than clipped onto the logarithmic error axis.
+
+### I.3 Poisson 3D: provisional development panel
+
+<!-- section sources: none (prose only) -->
+
+**Provisional:** Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.\par
+
+**Table 61.** 64 intervals per axis; 16 development cases per method. Relative field error against the same-grid discrete solution. Each accuracy/cost pair comes from the same invocation in job 3995104. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.
+
+<!-- table: TC_development_2 -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| Method | Median (\%) | Worst (\%) | GPU ms | p95 ms | NF/NS | Outliers/calls |
+| --- | --- | --- | --- | --- | --- | --- |
+| NM-ROM K16, q0 | 0.2149 | 0.5726 | 3.390 | 3.965 | 0/0 | 0/48 |
+| NM-ROM K16, q16 | 0.1492 | 0.4580 | 3.435 | 4.269 | 0/0 | 0/48 |
+| NM-ROM K16, q32 | 0.1159 | 0.3215 | 3.301 | 4.113 | 0/0 | 0/48 |
+| NM-ROM K16, q64 | 0.0687 | 0.2001 | 3.465 | 4.269 | 0/0 | 0/48 |
+| NM-ROM K16, q96 | 0.0539 | 0.1598 | 3.566 | 4.219 | 0/0 | 0/48 |
+| Full bank, weak solve | 0.0520 | 0.1444 | 0.944 | 1.049 | 0/0 | 0/48 |
+| Full bank, Galerkin | 0.0530 | 0.1474 | 0.479 | 0.741 | 0/0 | 3/48 |
+| POD16 | 1.8304 | 5.2702 | 0.203 | 0.554 | 0/0 | 5/48 |
+| POD48 | 0.1484 | 0.5576 | 0.287 | 0.403 | 0/0 | 2/48 |
+| POD128 | 0.0066 | 0.0360 | 0.480 | 0.761 | 0/0 | 4/48 |
+| FNO, direct transfer | 16.0680 | 17.1866 | 17.107 | 17.678 | 0/0 | 0/48 |
+| FNO, native + interpolation | 0.2852 | 0.3656 | 11.197 | 11.617 | 0/0 | 0/48 |
+| U-Net, direct transfer | 168.0982 | 219.8928 | 12.157 | 12.513 | 0/0 | 0/48 |
+| U-Net, native + interpolation | 0.2828 | 0.3769 | 4.262 | 4.712 | 0/0 | 0/48 |
+| DeepONet, direct transfer | 16.7244 | 26.8325 | 7.221 | 7.538 | 0/0 | 0/48 |
+| DeepONet, native + interpolation | 2.1141 | 4.2024 | 3.016 | 3.261 | 0/0 | 0/48 |
+| Transolver, direct transfer | 16.9674 | 22.0653 | 12.719 | 13.382 | 0/0 | 0/48 |
+| Transolver, native + interpolation | 0.7201 | 1.0698 | 4.493 | 5.311 | 0/0 | 0/48 |
+| Direct DST | 0.0000 | 0.0000 | 0.220 | 0.501 | 0/0 | 6/48 |
+
+\FloatBarrier
+\noindent The complete audited report retains the K8 ladder, intermediate POD ranks, and failed sampled-quadrature diagnostics. They are not presented as missing experiments.\par
+
+![Figure 6](figures/evidence/campaign-2026-09-20/poisson3d-extra03-n64.pdf.png)
+
+**Figure 6.** Provisional paired development measurements from Table 61. The right panel isolates the fixed-head correction ladder; the left retains classical controls and operator variants. Zero-error direct solves are identified separately rather than clipped onto the logarithmic error axis.
+
+### I.4 Navier–Stokes 3D: provisional development panel
+
+<!-- section sources: none (prose only) -->
+
+**Provisional:** Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.\par
+
+**Table 62.** 32 periodic points per axis; 8 development cases per method. Initial-field-normalized evolved error; same-grid reference. Each accuracy/cost pair comes from the same invocation in job 3993021. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.
+
+<!-- table: TC_development_3 -->
+<!-- Generated from hash-pinned campaign evidence. -->
+| Method | Median (\%) | Worst (\%) | GPU ms | p95 ms | NF/NS | Outliers/calls |
+| --- | --- | --- | --- | --- | --- | --- |
+| NM-ROM K16, q0 | 28.5319 | 50.4758 | 901.362 | 903.780 | 0/0 | 0/24 |
+| NM-ROM K16, q16 | 28.2539 | 49.9583 | 969.484 | 973.404 | 0/0 | 0/24 |
+| NM-ROM K16, q32 | 27.8899 | 49.2381 | 1092.342 | 1096.646 | 0/0 | 0/24 |
+| NM-ROM K16, q64 | 27.0931 | 47.6297 | 1588.925 | 1594.383 | 0/0 | 0/24 |
+| NM-ROM K16, q128 | 25.2664 | 45.3348 | 2226.148 | 2240.061 | 0/0 | 0/24 |
+| Full bank, Galerkin R512 | 13.4503 | 24.2696 | 49.405 | 49.601 | 0/0 | 0/24 |
+| POD16, weak solve | 87.7996 | 91.9857 | 24.465 | 25.741 | 0/0 | 0/24 |
+| POD32, weak solve | 78.1203 | 85.5263 | 27.381 | 28.384 | 0/0 | 0/24 |
+| POD48, weak solve | 67.3545 | 76.1070 | 35.558 | 36.246 | 0/0 | 0/24 |
+| POD128, Galerkin | 34.5481 | 47.3334 | 5.889 | 6.076 | 0/0 | 0/24 |
+| POD256, Galerkin | 24.8410 | 36.0594 | 12.233 | 12.500 | 0/0 | 0/24 |
+| POD512, Galerkin | 15.2837 | 27.7537 | 49.327 | 49.543 | 0/0 | 0/24 |
+| FOM, dt 0.001 | 0.0031 | 0.0051 | 25.763 | 26.674 | 0/0 | 0/24 |
+| FOM, dt 0.002 | 0.0130 | 0.0213 | 13.268 | 13.717 | 0/0 | 0/24 |
+| FOM, dt 0.004 | 0.0524 | 0.0866 | 7.056 | 7.507 | 0/0 | 0/24 |
+| FOM, dt 0.008 | 0.2125 | 0.3598 | 3.936 | 4.361 | 0/0 | 0/24 |
+| FNO, raw | 1.3422 | 1.7664 | 9.554 | 10.080 | 0/0 | 0/24 |
+| FNO, projected | 1.0974 | 1.5121 | 9.596 | 10.390 | 0/0 | 0/24 |
+| U-Net, raw | 3.4540 | 4.6468 | 2.019 | 2.373 | 0/0 | 0/24 |
+| U-Net, projected | 3.0414 | 4.2830 | 2.128 | 2.751 | 0/0 | 1/24 |
+
+\FloatBarrier
+\noindent All timed arms are shown. Full-cohort representation/training-validation diagnostics are retained separately and are not substituted for the measured errors of this timing subset.\par
+
+![Figure 7](figures/evidence/campaign-2026-09-20/ns3d-comparison02-n32.pdf.png)
+
+**Figure 7.** Provisional paired development measurements from Table 62. The right panel isolates the fixed-head correction ladder; the left retains classical controls and operator variants. Zero-error direct solves are identified separately rather than clipped onto the logarithmic error axis.
+
+\FloatBarrier
+
+## J Glossary
 
 <!-- section sources: b-eqtop summary.json (bars) -->
 
@@ -2808,7 +3153,9 @@ Written for a reader who knows none of this project's vocabulary.
 - **Pre-registered, amended** — Declared before the observations used to test a claim; changed later in a dated design amendment. Poisson's deciding falsification interpretation and the wave tie band were amended after earlier observations; their literal and amended readings are reported separately.
 - **Checkpoint recency** — Whether the best validation checkpoint falls near the end of the training budget; a training-progress heuristic, not a convergence proof or a bound on attainable error.
 - **POD-LSPG, $k'$, DST, CG, Newton** — The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
-- **FNO, U-Net, Transolver** — Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost–accuracy control of its own (Table 39), but one that does not change what the model can represent.
+- **FNO, U-Net, DeepONet, Transolver** — Fourier, convolutional, branch–trunk and physics-attention solution-map models. Each is fixed once trained; its evaluation grid is a cost–accuracy control of its own (Table 39), but one that does not change what the model can represent.
+- **GPU median, p95, NF/NS, timing outliers** — Median and ninety-fifth percentile of retained device query times; numbers of cases with nonfinite output or a failure of the recorded stationarity rule; calls above one and a half times their method's median. These summaries are distinct from accuracy or convergence guarantees.
+- **Direct transfer, native plus interpolation, projected operator** — Evaluation of fixed weights on a changed mesh; evaluation on the training mesh followed by charged interpolation; an operator prediction followed by a charged divergence-free projection.
 - **Checkpoint, frozen, incumbent** — Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
 - **Provisional, pending** — A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
 

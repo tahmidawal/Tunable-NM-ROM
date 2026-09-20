@@ -190,7 +190,8 @@ The scheduled ladder's cells span two jobs so its costs are not printed. Jobs \p
 cases: what the bank can express, what the augmented manifold can reach
 (multistart oracle, an upper bound), what the deployed iteration returned. The
 p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
-appears.}
+appears here. A separately sourced corrected rerun is reported in
+Table~\ref{tab:oracle-confirmation}.}
 \label{tab:layers}
 \resizebox{\linewidth}{!}{\input{tables/T07_three_layers}}
 \end{table}
@@ -615,6 +616,8 @@ by boundary factor and rank, and the head layer at $256^2$. The solve layer is
 
 \input{sections/extended-results}
 
+\input{sections/campaign-supplement}
+
 \section{Glossary}
 \label{app:glossary}
 
@@ -638,7 +641,9 @@ Written for a reader who knows none of this project's vocabulary.
 \item[Pre-registered, amended] Declared before the observations used to test a claim; changed later in a dated design amendment. Poisson's deciding falsification interpretation and the wave tie band were amended after earlier observations; their literal and amended readings are reported separately.
 \item[Checkpoint recency] Whether the best validation checkpoint falls near the end of the training budget; a training-progress heuristic, not a convergence proof or a bound on attainable error.
 \item[POD-LSPG, $k'$, DST, CG, Newton] The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
-\item[FNO, U-Net, Transolver] Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost--accuracy control of its own (Table~\ref{tab:resolution}), but one that does not change what the model can represent.
+\item[FNO, U-Net, DeepONet, Transolver] Fourier, convolutional, branch--trunk and physics-attention solution-map models. Each is fixed once trained; its evaluation grid is a cost--accuracy control of its own (Table~\ref{tab:resolution}), but one that does not change what the model can represent.
+\item[GPU median, p95, NF/NS, timing outliers] Median and ninety-fifth percentile of retained device query times; numbers of cases with nonfinite output or a failure of the recorded stationarity rule; calls above one and a half times their method's median. These summaries are distinct from accuracy or convergence guarantees.
+\item[Direct transfer, native plus interpolation, projected operator] Evaluation of fixed weights on a changed mesh; evaluation on the training mesh followed by charged interpolation; an operator prediction followed by a charged divergence-free projection.
 \item[Checkpoint, frozen, incumbent] Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
 \item[Provisional, pending] A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
 \end{description}

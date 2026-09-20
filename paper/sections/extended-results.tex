@@ -177,9 +177,10 @@ changed the deciding interpretation after observing the coarse-mesh
 results and before the fine-mesh job; that interpretation was not fixed
 before the campaign's observations. The efficient endpoint uses direct
 QR, omitting redundant nonlinear iterations at full correction rank.
-The nonzero-$q$ best-found columns remain retracted under amendment A10:
-their projector was not orthonormal, and the corrected full-cohort
-calculation has not been rerun. The solved ladder is unaffected;
+The historical nonzero-$q$ best-found columns remain retracted under
+amendment A10 because their projector was not orthonormal. A separate
+corrected full-cohort rerun is now independently confirmed in
+Appendix~\ref{app:oracle-confirmation}. The historical solved ladder is unaffected;
 solver effort buys nothing at $q=0$ (floor $\nPlinTenTwentyFourFloor$,
 best-found $\nPlinTenTwentyFourBestFoundQzero$, solved
 $\nPlinTenTwentyFourQzeroErr\,\%$ at $M=129$). Heat at $1024^2$ (an

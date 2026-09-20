@@ -41,7 +41,7 @@ SECTION_SOURCES = {
 # ----------------------------------------------------------------------- macros
 def load_macros():
     M = {}
-    for f in ['tables/numbers.tex']:
+    for f in ['tables/numbers.tex', 'tables/campaign-numbers.tex']:
         for m in re.finditer(r'\\newcommand\{\\([A-Za-z]+)\}\{(.*)\}$', (HERE / f).read_text(), re.M):
             M[m.group(1)] = m.group(2)
     # notation macros (macros.tex) and prose shorthands (main.tex), by hand: they are notation, not numbers
@@ -135,9 +135,8 @@ def status_block():
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     lines = [
         f'*Status for the reader (generated {now}; this block is removed before submission).*',
-        f'*Final tables ({len(final)}): ' + ', '.join(t.split('_')[0] for t in final) + '.*',
-        '*Pending cells: ' + ('; '.join(f'`{a}` waits on {b}' for a, b in pend) if pend else 'none') + '. In-flight jobs are listed in Table C.3: '
-        'low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*',
+        f'*Populated tables ({len(final)}): ' + ', '.join(t.split('_')[0] for t in final) + '. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*',
+        '*Pending cells: ' + ('; '.join(f'`{a}` waits on {b}' for a, b in pend) if pend else 'none') + '. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*',
         '*The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; '
         'the two top EQ rungs are single-draw rules, never certified.*',
         '*Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, '

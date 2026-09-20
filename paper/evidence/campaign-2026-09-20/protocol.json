@@ -1,0 +1,1064 @@
+{
+  "status": "development; final cohorts unopened",
+  "provenance": {
+    "reports/2026-09-20-3d-paper-panel-selection.json": "55d1c6425207b9e55ee95a64b568eb31d48458d8a00ab21f61aba43b1cf0066a",
+    "reports/2026-09-20-3d-paper-results.json": "eec3143973f9a2157fee2879d6479c74a85060984610f30a14ad94164dbdbf38",
+    "reports/export_3d_paper_protocol.py": "dcd1ac381b9ea9e72bf2bdce1a6f089229c49ab1db0cba2c8b96d50cd5fbc27f",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/result.json": "2eb87015c4d5893b713f99ff994e40cd302de2766524072aed9ae0505ae6da02",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/result.json": "21b2c3f33fb097e21eaa3dc079d03849f38e7c2c557c1eb9cba1e8485de5414f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json": "44e088449d71c39df9634e4dc1ddc08e7baf9b43876cc41c2b11fe47a9e33f39",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json": "9d4489bedf56a52ad4edc9540ec5cd39b57a8e73e364b3d312663fda3e5dc739"
+  },
+  "setups": [
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "timed_cases": [
+        8
+      ],
+      "repetitions": 3,
+      "f64": true,
+      "precision": "highest",
+      "training_cases": 512,
+      "training_fields_per_case": 8,
+      "outputs_per_query": 51,
+      "components": 1,
+      "bank_rank": 256,
+      "latent_dimensions": [
+        32
+      ],
+      "weak_tests": 642,
+      "requested_weak_tests": 640,
+      "q": [
+        0,
+        64,
+        128,
+        192
+      ],
+      "training_mesh": 33,
+      "mesh_convention": "nodes per axis",
+      "source": "c026d56b83905293e71268c249b57324c7d01baf",
+      "qualification": "Audited development data with all four operator families and the same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate trained time knots to the common output times. The newer operator schedules are still under evaluation. Physical refinement covers only two cases; this panel supports same-grid comparisons only.",
+      "raw_data_contract": null,
+      "raw_output_contract": "seven learned evolved knots plus exact supplied initial field, linear time interpolation to all 51 fields"
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "timed_cases": [
+        16
+      ],
+      "repetitions": 3,
+      "f64": true,
+      "precision": "highest",
+      "training_cases": 128,
+      "training_fields_per_case": 6,
+      "outputs_per_query": 6,
+      "components": 1,
+      "bank_rank": 128,
+      "latent_dimensions": [
+        8,
+        16,
+        32
+      ],
+      "weak_tests": 512,
+      "requested_weak_tests": 512,
+      "q": [
+        0,
+        8,
+        32,
+        64,
+        96
+      ],
+      "training_mesh": 32,
+      "mesh_convention": "intervals per axis",
+      "source": "4ac8b16455f5b71bcdd560df3432cac43b8816d9",
+      "qualification": "Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.",
+      "raw_data_contract": "supplied full interior nodal initial field only; decoder and operators receive no generator descriptors",
+      "raw_output_contract": "all six interior fields, including reconstructed t=0 for ROMs and exact supplied t=0 for DST"
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "timed_cases": [
+        16
+      ],
+      "repetitions": 3,
+      "f64": true,
+      "precision": "highest",
+      "training_cases": 512,
+      "training_fields_per_case": 1,
+      "outputs_per_query": 1,
+      "components": 1,
+      "bank_rank": 128,
+      "latent_dimensions": [
+        8,
+        16
+      ],
+      "weak_tests": 512,
+      "requested_weak_tests": 512,
+      "q": [
+        0,
+        16,
+        32,
+        64,
+        96
+      ],
+      "training_mesh": 32,
+      "mesh_convention": "intervals per axis",
+      "source": "a50ce0977373977688d73f82700108a6138b433b",
+      "qualification": "Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.",
+      "raw_data_contract": "supplied full interior nodal forcing only; no generator descriptors online",
+      "raw_output_contract": "complete interior solution field, zero boundary known to every method"
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "timed_cases": [
+        8
+      ],
+      "repetitions": 3,
+      "f64": true,
+      "precision": "highest",
+      "training_cases": 512,
+      "training_fields_per_case": 6,
+      "outputs_per_query": 6,
+      "components": 3,
+      "bank_rank": 512,
+      "latent_dimensions": [
+        16
+      ],
+      "weak_tests": 1024,
+      "requested_weak_tests": 1024,
+      "q": [
+        0,
+        16,
+        32,
+        64,
+        128
+      ],
+      "training_mesh": 32,
+      "mesh_convention": "periodic points per axis",
+      "source": "23932ac4eca33075fc43b4e10e9d3ca24ee2a388",
+      "qualification": "Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.",
+      "raw_data_contract": null,
+      "raw_output_contract": null
+    }
+  ],
+  "operators": [
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "name": "fno3d",
+      "parameters": 1771431,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 16100,
+      "training_seed": 920310,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          6,
+          6,
+          6
+        ],
+        "depth": 4,
+        "padding": 9
+      },
+      "raw_record": {
+        "name": "fno3d",
+        "spec": {
+          "kind": "fno3d",
+          "width": 16,
+          "modes": [
+            6,
+            6,
+            6
+          ],
+          "depth": 4,
+          "padding": 9
+        },
+        "config": {
+          "steps": 20000,
+          "wall_seconds": 900,
+          "batch_size": 2,
+          "seed": 920310,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 1,
+          "normalization": "fixed supplied initial-field norm"
+        },
+        "parameter_count": 1771431,
+        "steps_completed": 20000,
+        "best_step": 16100,
+        "best_validation_worst": 0.017300396751979755,
+        "seconds": 119.07400278490968,
+        "exit_reason": "steps",
+        "normalization": "fixed supplied initial-field norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "reused": true,
+        "selected_checkpoint_sha256": "8420cf0eb7771e48acca298c5bdff6a8fed1b7395dbfe1e760ce85f3ec7a8e6d"
+      }
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "name": "unet3d",
+      "parameters": 89431,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 17500,
+      "training_seed": 920311,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": false
+      },
+      "raw_record": {
+        "name": "unet3d",
+        "spec": {
+          "kind": "unet3d",
+          "width": 8,
+          "levels": 3,
+          "periodic": false
+        },
+        "config": {
+          "steps": 20000,
+          "wall_seconds": 900,
+          "batch_size": 2,
+          "seed": 920311,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 1,
+          "normalization": "fixed supplied initial-field norm"
+        },
+        "parameter_count": 89431,
+        "steps_completed": 20000,
+        "best_step": 17500,
+        "best_validation_worst": 0.01292580905794002,
+        "seconds": 188.42067520413548,
+        "exit_reason": "steps",
+        "normalization": "fixed supplied initial-field norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "reused": true,
+        "selected_checkpoint_sha256": "6f1de160ff4f73cbc02b5fa57200ba601248fbb87bd697a12ba2880d4f48ef2c"
+      }
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "name": "deeponet3d",
+      "parameters": 1861959,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 30000,
+      "training_seed": 920312,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "deeponet3d",
+        "periodic": false,
+        "coordinate_channels": [
+          1,
+          2,
+          3
+        ],
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 256,
+        "trunk_width": 256
+      },
+      "raw_record": {
+        "name": "deeponet3d",
+        "spec": {
+          "kind": "deeponet3d",
+          "periodic": false,
+          "coordinate_channels": [
+            1,
+            2,
+            3
+          ],
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 256,
+          "trunk_width": 256
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1800,
+          "batch_size": 2,
+          "seed": 920312,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 1,
+          "normalization": "fixed supplied initial-field norm"
+        },
+        "parameter_count": 1861959,
+        "steps_completed": 30000,
+        "best_step": 30000,
+        "best_validation_worst": 0.21198778873586832,
+        "seconds": 445.8961381909903,
+        "exit_reason": "steps",
+        "normalization": "fixed supplied initial-field norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128"
+      }
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "name": "transolver3d",
+      "parameters": 564392,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 29400,
+      "training_seed": 920313,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "transolver3d",
+        "periodic": false,
+        "coordinate_channels": [
+          1,
+          2,
+          3
+        ],
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "coordinate_bounds": [
+          -1,
+          1
+        ]
+      },
+      "raw_record": {
+        "name": "transolver3d",
+        "spec": {
+          "kind": "transolver3d",
+          "periodic": false,
+          "coordinate_channels": [
+            1,
+            2,
+            3
+          ],
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "coordinate_bounds": [
+            -1,
+            1
+          ]
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1800,
+          "batch_size": 2,
+          "seed": 920313,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 1,
+          "normalization": "fixed supplied initial-field norm"
+        },
+        "parameter_count": 564392,
+        "steps_completed": 30000,
+        "best_step": 29400,
+        "best_validation_worst": 0.037390864380483446,
+        "seconds": 640.6756834150292,
+        "exit_reason": "steps",
+        "normalization": "fixed supplied initial-field norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128"
+      }
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "name": "fno3d_w16_m6",
+      "parameters": 1771349,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 19500,
+      "training_seed": 920321,
+      "batch_size": 4,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "depth": 4,
+        "kind": "fno3d",
+        "modes": [
+          6,
+          6,
+          6
+        ],
+        "padding": 9,
+        "width": 16
+      },
+      "raw_record": {
+        "best_step": 19500,
+        "best_validation_worst": 0.003946858213886528,
+        "config": {
+          "batch_size": 4,
+          "components_per_output": 1,
+          "curve_every": 50,
+          "learning_rate": 0.001,
+          "normalization": "current-output norm",
+          "seed": 920321,
+          "steps": 20000,
+          "validation_every": 500,
+          "wall_seconds": 1200
+        },
+        "converged_claim": false,
+        "exit_reason": "steps",
+        "fft_dtype": "complex128",
+        "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+        "name": "fno3d_w16_m6",
+        "normalization": "current-output norm",
+        "output": "five evolved fields in physical units, supplied initial field prepended at inference",
+        "parameter_count": 1771349,
+        "parameter_dtype": "float64",
+        "physical_scale": 0.0936782701056596,
+        "seconds": 189.2536755760666,
+        "spec": {
+          "depth": 4,
+          "kind": "fno3d",
+          "modes": [
+            6,
+            6,
+            6
+          ],
+          "padding": 9,
+          "width": 16
+        },
+        "steps_completed": 20000,
+        "training_parameters_sha256": "c170ee0b6963fd923488d64f1f5fac9247058aaf5a37f71bf0f98eb6a41e423c",
+        "validation_parameters_sha256": "517a7c671e0030d3ecce55b1055db74485c31cb1a7e96f51002ed4ea15e270b1",
+        "reused_checkpoint": true,
+        "original_training_source": "4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2",
+        "checkpoint_sha256": "7b4de48a3d373916adba8714091a82ea82fd7a47f6686423247419b07358ffd5"
+      }
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "name": "unet3d_w8",
+      "parameters": 89197,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 20000,
+      "training_seed": 920322,
+      "batch_size": 4,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "unet3d",
+        "levels": 3,
+        "periodic": false,
+        "width": 8
+      },
+      "raw_record": {
+        "best_step": 20000,
+        "best_validation_worst": 0.003184997681772375,
+        "config": {
+          "batch_size": 4,
+          "components_per_output": 1,
+          "curve_every": 50,
+          "learning_rate": 0.001,
+          "normalization": "current-output norm",
+          "seed": 920322,
+          "steps": 20000,
+          "validation_every": 500,
+          "wall_seconds": 1200
+        },
+        "converged_claim": false,
+        "exit_reason": "steps",
+        "fft_dtype": "complex128",
+        "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+        "name": "unet3d_w8",
+        "normalization": "current-output norm",
+        "output": "five evolved fields in physical units, supplied initial field prepended at inference",
+        "parameter_count": 89197,
+        "parameter_dtype": "float64",
+        "physical_scale": 0.0936782701056596,
+        "seconds": 297.9596133399755,
+        "spec": {
+          "kind": "unet3d",
+          "levels": 3,
+          "periodic": false,
+          "width": 8
+        },
+        "steps_completed": 20000,
+        "training_parameters_sha256": "c170ee0b6963fd923488d64f1f5fac9247058aaf5a37f71bf0f98eb6a41e423c",
+        "validation_parameters_sha256": "517a7c671e0030d3ecce55b1055db74485c31cb1a7e96f51002ed4ea15e270b1",
+        "reused_checkpoint": true,
+        "original_training_source": "4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2",
+        "checkpoint_sha256": "4bdd7697c8af928e662e561d4938a1dbaf9166adcd5ae2cf0c764aaba1bf6136"
+      }
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "name": "deeponet3d_r128_w16",
+      "parameters": 857749,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 20000,
+      "training_seed": 920323,
+      "batch_size": 4,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 128,
+        "trunk_width": 128,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 128,
+          "trunk_width": 128,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ]
+        },
+        "config": {
+          "steps": 20000,
+          "wall_seconds": 1200,
+          "batch_size": 4,
+          "seed": 920323,
+          "learning_rate": 0.001,
+          "validation_every": 500,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        },
+        "parameter_count": 857749,
+        "steps_completed": 20000,
+        "best_step": 20000,
+        "best_validation_worst": 0.21769231772267994,
+        "seconds": 350.84593421872705,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "deeponet3d_r128_w16",
+        "physical_scale": 0.0936782701056596,
+        "training_parameters_sha256": "c170ee0b6963fd923488d64f1f5fac9247058aaf5a37f71bf0f98eb6a41e423c",
+        "validation_parameters_sha256": "517a7c671e0030d3ecce55b1055db74485c31cb1a7e96f51002ed4ea15e270b1",
+        "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+        "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+      }
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "name": "transolver3d_w48_s32",
+      "parameters": 562840,
+      "requested_steps": 20000,
+      "completed_steps": 20000,
+      "selected_step": 20000,
+      "training_seed": 920324,
+      "batch_size": 4,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          -1.0,
+          1.0
+        ]
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            -1.0,
+            1.0
+          ]
+        },
+        "config": {
+          "steps": 20000,
+          "wall_seconds": 1200,
+          "batch_size": 4,
+          "seed": 920324,
+          "learning_rate": 0.001,
+          "validation_every": 500,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        },
+        "parameter_count": 562840,
+        "steps_completed": 20000,
+        "best_step": 20000,
+        "best_validation_worst": 0.01482593938424273,
+        "seconds": 664.1903166230768,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "transolver3d_w48_s32",
+        "physical_scale": 0.0936782701056596,
+        "training_parameters_sha256": "c170ee0b6963fd923488d64f1f5fac9247058aaf5a37f71bf0f98eb6a41e423c",
+        "validation_parameters_sha256": "517a7c671e0030d3ecce55b1055db74485c31cb1a7e96f51002ed4ea15e270b1",
+        "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+        "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+      }
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "name": "fno3d_w24_m8",
+      "parameters": 9440953,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 26750,
+      "training_seed": 920450,
+      "batch_size": 2,
+      "initial_learning_rate": 0.0005,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "fno3d",
+        "width": 24,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 9
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "fno3d",
+          "width": 24,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 9
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "seed": 920450,
+          "learning_rate": 0.0005,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "parameter_count": 9440953,
+        "steps_completed": 30000,
+        "best_step": 26750,
+        "best_validation_worst": 0.0023939220944520882,
+        "seconds": 275.58919103303924,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "fno3d_w24_m8",
+        "scales": {
+          "input": 0.09347530902320836,
+          "output": 0.002004507121105652
+        },
+        "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+        "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+        "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+        "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33"
+      }
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "name": "unet3d_w16",
+      "parameters": 354577,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 28750,
+      "training_seed": 920451,
+      "batch_size": 2,
+      "initial_learning_rate": 0.0005,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "unet3d",
+        "width": 16,
+        "levels": 3,
+        "periodic": false
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "unet3d",
+          "width": 16,
+          "levels": 3,
+          "periodic": false
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "seed": 920451,
+          "learning_rate": 0.0005,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "parameter_count": 354577,
+        "steps_completed": 30000,
+        "best_step": 28750,
+        "best_validation_worst": 0.0019318997012163126,
+        "seconds": 638.0377804501913,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "unet3d_w16",
+        "scales": {
+          "input": 0.09347530902320836,
+          "output": 0.002004507121105652
+        },
+        "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+        "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+        "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+        "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33"
+      }
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "name": "deeponet3d_r128_w16",
+      "parameters": 791697,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 29000,
+      "training_seed": 920452,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 128,
+        "trunk_width": 128,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 128,
+          "trunk_width": 128,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ]
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "learning_rate": 0.001,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "seed": 920452
+        },
+        "parameter_count": 791697,
+        "steps_completed": 30000,
+        "best_step": 29000,
+        "best_validation_worst": 0.0432698895102904,
+        "seconds": 288.52039589593187,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "deeponet3d_r128_w16",
+        "scales": {
+          "input": 0.09347530902320836,
+          "output": 0.002004507121105652
+        },
+        "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+        "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+        "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+        "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33"
+      }
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "name": "transolver3d_w48_s32",
+      "parameters": 561272,
+      "requested_steps": 30000,
+      "completed_steps": 30000,
+      "selected_step": 29750,
+      "training_seed": 920453,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          -1.0,
+          1.0
+        ]
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            -1.0,
+            1.0
+          ]
+        },
+        "config": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "learning_rate": 0.001,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "seed": 920453
+        },
+        "parameter_count": 561272,
+        "steps_completed": 30000,
+        "best_step": 29750,
+        "best_validation_worst": 0.011941213561436457,
+        "seconds": 599.0349857090041,
+        "exit_reason": "steps",
+        "normalization": "current-output norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128",
+        "name": "transolver3d_w48_s32",
+        "scales": {
+          "input": 0.09347530902320836,
+          "output": 0.002004507121105652
+        },
+        "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+        "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+        "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+        "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33"
+      }
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "name": "fno3d",
+      "parameters": 4196511,
+      "requested_steps": 8000,
+      "completed_steps": 8000,
+      "selected_step": 7100,
+      "training_seed": 202609205,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 0
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "fno3d",
+          "width": 16,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 0
+        },
+        "config": {
+          "steps": 8000,
+          "wall_seconds": 900,
+          "batch_size": 2,
+          "seed": 202609205,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 3,
+          "normalization": "initial vector norm"
+        },
+        "parameter_count": 4196511,
+        "steps_completed": 8000,
+        "best_step": 7100,
+        "best_validation_worst": 0.018421486478541103,
+        "seconds": 59.37682510539889,
+        "exit_reason": "steps",
+        "normalization": "initial vector norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128"
+      }
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "name": "unet3d",
+      "parameters": 89287,
+      "requested_steps": 8000,
+      "completed_steps": 8000,
+      "selected_step": 7900,
+      "training_seed": 202609206,
+      "batch_size": 2,
+      "initial_learning_rate": 0.001,
+      "exit_reason": "steps",
+      "spec": {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": true
+      },
+      "raw_record": {
+        "spec": {
+          "kind": "unet3d",
+          "width": 8,
+          "levels": 3,
+          "periodic": true
+        },
+        "config": {
+          "steps": 8000,
+          "wall_seconds": 900,
+          "batch_size": 2,
+          "seed": 202609206,
+          "learning_rate": 0.001,
+          "validation_every": 100,
+          "curve_every": 25,
+          "components_per_output": 3,
+          "normalization": "initial vector norm"
+        },
+        "parameter_count": 89287,
+        "steps_completed": 8000,
+        "best_step": 7900,
+        "best_validation_worst": 0.05278768899268722,
+        "seconds": 90.11166223185137,
+        "exit_reason": "steps",
+        "normalization": "initial vector norm",
+        "converged_claim": false,
+        "parameter_dtype": "float64",
+        "fft_dtype": "complex128"
+      }
+    }
+  ]
+}

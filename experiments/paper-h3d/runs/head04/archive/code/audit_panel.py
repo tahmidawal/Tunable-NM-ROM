@@ -21,10 +21,10 @@ def relative(a,b):
     return np.linalg.norm((a-b).reshape(len(a),-1),axis=1)/np.linalg.norm(b.reshape(len(b),-1),axis=1)
 
 
-def audit(archive,destination,out=None):
-    archive=Path(archive);out=Path(out) if out is not None else archive/'out';d=json.loads((out/'result.json').read_text());cfg=d['config']
+def audit(archive,destination):
+    archive=Path(archive);out=archive/'out';d=json.loads((out/'result.json').read_text());cfg=d['config']
     assert d['complete'] and d['backend']=='gpu' and d['x64'] and d['matmul_precision']=='highest'
-    if d['final_cohort_opened']:assert d['freeze']['verified_before_final_parameter_generation'] and cfg['evaluation_cohort']=='final'
+    assert not d['final_cohort_opened']
     log=(archive/'job.out').read_text();err=(archive/'job.err').read_text()
     assert 'jax_backend=gpu' in log and 'run_exit=0' in log
     assert not re.search(r'captur\w*.{0,30}large.{0,30}constant|RESOURCE_EXHAUSTED|out.of.memory|No space left',log+'\n'+err,re.I)
@@ -36,10 +36,8 @@ def audit(archive,destination,out=None):
         assert hashlib.sha256(blob).hexdigest()==row['sha256']
         assert (archive/row['staged']).read_bytes()==blob
         source_checks+=1
-    cohorts=json.loads((out/'cohorts.json').read_text());params=np.asarray(cohorts.get('evaluation_parameters',cohorts['validation_parameters']))
-    seed=cfg['reserved_final_seed'] if d['final_cohort_opened'] else cfg['validation_seed']
-    count=cfg['reserved_final_count'] if d['final_cohort_opened'] else cfg['validation_count']
-    drawn=np.random.default_rng(seed).random((count,5))*[.3,.3,.3,.05,.4]+[.35,.35,.35,.10,.8]
+    cohorts=json.loads((out/'cohorts.json').read_text());params=np.asarray(cohorts['validation_parameters'])
+    drawn=np.random.default_rng(cfg['validation_seed']).random((cfg['validation_count'],5))*[.3,.3,.3,.05,.4]+[.35,.35,.35,.10,.8]
     np.testing.assert_array_equal(params,drawn)
     train=np.random.default_rng(cfg['train_seed']).random((cfg['train_count'],5))*[.3,.3,.3,.05,.4]+[.35,.35,.35,.10,.8]
     np.testing.assert_array_equal(cohorts['training_parameters'],train)
@@ -61,7 +59,7 @@ def audit(archive,destination,out=None):
     groups={};expected=set()
     for mesh in d['meshes']:
         for name in mesh['methods']:
-            for case in range(count):
+            for case in range(cfg['validation_count']):
                 for rep in range(cfg['repetitions']):expected.add((mesh['intervals'],name,case,rep))
     actual=[]
     for row in d['invocations']:
@@ -72,12 +70,12 @@ def audit(archive,destination,out=None):
         if 'initial_stats' in row:
             initial=np.asarray(row['initial_stats']);steps=np.asarray(row['step_stats']);choice=int(np.argmin(initial[:,3]))
             assert choice==row['selected_initial_start']
-            nonstationary_count=int(initial[choice,2]!=1)+int(np.count_nonzero((steps[:,2]!=1)|(steps[:,5]>cfg['lm_tolerance'])))
-            assert nonstationary_count==row['nonstationary_solves']
+            count=int(initial[choice,2]!=1)+int(np.count_nonzero((steps[:,2]!=1)|(steps[:,5]>cfg['lm_tolerance'])))
+            assert count==row['nonstationary_solves']
     assert len(actual)==len(set(actual)) and set(actual)==expected
     summaries={(r['intervals'],r['method']):r for r in json.loads((out/'summary.json').read_text())['rows']}
     for key,rows in groups.items():
-        for case in range(count):
+        for case in range(cfg['validation_count']):
             repeated=[r for r in rows if r['case']==case]
             for row in repeated[1:]:
                 for norm in ('same_grid','physical'):
@@ -95,11 +93,10 @@ def audit(archive,destination,out=None):
     result=dict(passed=True,source_files_verified=source_checks,independent_scipy_reference_checks=refs,
        independent_refinement=refinement,paired_invocations=len(actual),summary_rows=len(summaries),
        complete_coverage=True,all_repetition_metrics_consistent=True,all_summary_aggregates_recomputed=True,
-       evaluation_case_count=count,repetition_consistency_case_groups=len(groups)*count,
-       final_cohort_opened=d['final_cohort_opened'],source_commit=commit,job_id=d['job_id'],
+       final_cohort_opened=False,source_commit=commit,job_id=d['job_id'],
        scope='archived source vs git blobs, independent full numerical references, every paired invocation/summary; field-error audit retained separately')
     Path(destination).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='independent_scipy_reference_checks'},indent=2))
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('archive');p.add_argument('destination');p.add_argument('--out');a=p.parse_args();audit(a.archive,a.destination,a.out)
+    p=argparse.ArgumentParser();p.add_argument('archive');p.add_argument('destination');a=p.parse_args();audit(a.archive,a.destination)

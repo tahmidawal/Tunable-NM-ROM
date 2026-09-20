@@ -30,8 +30,7 @@ def main():
     companion=None
     if cfg.get('companion_config_file'):
         companion=json.loads((ROOT/LANE/Path(cfg['companion_config_file']).name).read_text())
-        files += [Path(cfg['companion_config_file']).name]
-        if companion.get('evaluation_cohort')=='final':files += [Path(companion['final_freeze_path']).name]
+        files += [Path(cfg['companion_config_file']).name,Path(companion['final_freeze_path']).name]
     for name in files:
         source_name=a.config if name=='config.json' else name
         path=f'{LANE}/{source_name}'

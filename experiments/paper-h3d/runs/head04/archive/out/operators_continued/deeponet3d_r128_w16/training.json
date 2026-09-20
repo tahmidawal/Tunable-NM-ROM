@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ],
+    "kind": "deeponet3d",
+    "levels": 3,
+    "periodic": false,
+    "pool_bins": 4,
+    "rank": 128,
+    "trunk_width": 128,
+    "width": 16
+  },
+  "config": {
+    "steps": 80000,
+    "wall_seconds": 3000,
+    "batch_size": 4,
+    "seed": 920423,
+    "learning_rate": 0.0003,
+    "validation_every": 2000,
+    "curve_every": 100,
+    "components_per_output": 1,
+    "normalization": "current-output norm"
+  },
+  "parameter_count": 857749,
+  "steps_completed": 80000,
+  "best_step": 36000,
+  "best_validation_worst": 0.17909353919693163,
+  "seconds": 1256.913079502061,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "initial_source": {
+    "source_attempt": "extra03",
+    "source_commit": "4ac8b16455f5b71bcdd560df3432cac43b8816d9",
+    "checkpoint_sha256": "019c7aae2853329fe3f92327f19cfc345a3c53d4a182b738195eb00fd1a9350b",
+    "original_training": {
+      "best_step": 20000,
+      "best_validation_worst": 0.21769231772267994,
+      "config": {
+        "batch_size": 4,
+        "components_per_output": 1,
+        "curve_every": 50,
+        "learning_rate": 0.001,
+        "normalization": "current-output norm",
+        "seed": 920323,
+        "steps": 20000,
+        "validation_every": 500,
+        "wall_seconds": 1200
+      },
+      "converged_claim": false,
+      "exit_reason": "steps",
+      "fft_dtype": "complex128",
+      "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+      "name": "deeponet3d_r128_w16",
+      "normalization": "current-output norm",
+      "output": "five evolved fields in physical units, supplied initial field prepended at inference",
+      "parameter_count": 857749,
+      "parameter_dtype": "float64",
+      "physical_scale": 0.0936782701056596,
+      "seconds": 350.84593421872705,
+      "spec": {
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "kind": "deeponet3d",
+        "levels": 3,
+        "periodic": false,
+        "pool_bins": 4,
+        "rank": 128,
+        "trunk_width": 128,
+        "width": 16
+      },
+      "steps_completed": 20000,
+      "training_parameters_sha256": "c170ee0b6963fd923488d64f1f5fac9247058aaf5a37f71bf0f98eb6a41e423c",
+      "validation_parameters_sha256": "517a7c671e0030d3ecce55b1055db74485c31cb1a7e96f51002ed4ea15e270b1",
+      "reused_checkpoint": true,
+      "original_training_source": "4ac8b16455f5b71bcdd560df3432cac43b8816d9",
+      "immediate_reuse_source": "4ac8b16455f5b71bcdd560df3432cac43b8816d9",
+      "checkpoint_sha256": "019c7aae2853329fe3f92327f19cfc345a3c53d4a182b738195eb00fd1a9350b"
+    }
+  },
+  "continuation": "fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate"
+}

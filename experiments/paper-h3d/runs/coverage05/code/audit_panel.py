@@ -72,8 +72,8 @@ def audit(archive,destination,out=None):
         if 'initial_stats' in row:
             initial=np.asarray(row['initial_stats']);steps=np.asarray(row['step_stats']);choice=int(np.argmin(initial[:,3]))
             assert choice==row['selected_initial_start']
-            nonstationary_count=int(initial[choice,2]!=1)+int(np.count_nonzero((steps[:,2]!=1)|(steps[:,5]>cfg['lm_tolerance'])))
-            assert nonstationary_count==row['nonstationary_solves']
+            count=int(initial[choice,2]!=1)+int(np.count_nonzero((steps[:,2]!=1)|(steps[:,5]>cfg['lm_tolerance'])))
+            assert count==row['nonstationary_solves']
     assert len(actual)==len(set(actual)) and set(actual)==expected
     summaries={(r['intervals'],r['method']):r for r in json.loads((out/'summary.json').read_text())['rows']}
     for key,rows in groups.items():
@@ -95,7 +95,6 @@ def audit(archive,destination,out=None):
     result=dict(passed=True,source_files_verified=source_checks,independent_scipy_reference_checks=refs,
        independent_refinement=refinement,paired_invocations=len(actual),summary_rows=len(summaries),
        complete_coverage=True,all_repetition_metrics_consistent=True,all_summary_aggregates_recomputed=True,
-       evaluation_case_count=count,repetition_consistency_case_groups=len(groups)*count,
        final_cohort_opened=d['final_cohort_opened'],source_commit=commit,job_id=d['job_id'],
        scope='archived source vs git blobs, independent full numerical references, every paired invocation/summary; field-error audit retained separately')
     Path(destination).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='independent_scipy_reference_checks'},indent=2))

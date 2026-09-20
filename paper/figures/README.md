@@ -27,6 +27,11 @@ Status labels follow `paper/OUTLINE.md` §0.
 - **Scope:** generic bank/head/correction pipeline. Initialization and solver are PDE-specific; linear corrections may be eliminated. EQ is optional, distinct from correction rank, and is not used by the current 3D/wave panels. No baseline is drawn as a method stage.
 - **Status:** redrawn and synchronized at the user's request on 2026-09-20.
 
+## F1b — Speedup against resolution
+- **Generator:** `gen_fig_speedup_resolution.py`; reads only `../tables/headline-provenance.json`, so it cannot disagree with Table 1.
+- **Encoding:** one colour + marker per problem (validated palette; marker and direct label are the secondary encoding), solid/filled = fast setting, dashed/hollow = accurate setting, 2D and 3D panels, dotted line at FOM parity. Provisional series are labelled in the plot.
+- **New points:** list the audited lane summary in `../headline-intake.json`, run `gen_headline.py --refresh`, rebuild.
+
 ## F2 — Operator parity: preassembled versus full-grid weak evaluation
 - **Generator:** `gen_fig_operator_parity.py`
 - **Supports:** C1, C3.

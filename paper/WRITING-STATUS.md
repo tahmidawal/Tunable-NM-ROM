@@ -1,5 +1,64 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-20 (paper lane) — headline table, resolution figure, failure table — CURRENT HANDOFF
+
+**State.** `main.pdf`: 20 pages, references start on page 9 (main text within nine), 0 overfull
+boxes, 0 undefined references. Previous PDF kept as `main.before-2026-09-20-headline.pdf`.
+Checks: `check_headline.py` PASS, `check_rewrite.py` PASS. The two historical exact-prose checks
+(`check_integrity_repair.py`, `check_campaign_integration.py`) reject any rewrite by design and
+were already failing before this session (see the paragraph below).
+
+**What the main text now shows.** Table 1 (`tables/TH_headline.tex`, from `gen_headline.py`): rows
+problem x mesh, 2D and 3D blocks; column pairs *NM-ROM accurate* and *NM-ROM fast* (error %, speedup
+vs the named FOM), FOM error and FOM name; bold = NM-ROM faster; no milliseconds (times are in
+appendix Table C.3, `TH_headline_times.tex`). Both settings come from one frozen model per row
+(fast = q=0, accurate = largest stored correction rank). Figure 1 (`figures/gen_fig_speedup_resolution.py`)
+plots exactly the table's rows. Table 2 is the reserved nmrom-baselines slot. Table 3
+(`TH_failures.tex`) holds Burgers3D, NS3D and the wave energy-state error. Tables 4-6: fixed-M
+ladder, which-knob table (macros only), dense vs EQ.
+
+**Evidence status in Table 1.** Poisson3D = accepted final08; NS3D = accepted final07 and Burgers3D =
+accepted final (both in Table 3); Heat3D = final08 marked PROVISIONAL (archive retention pending) —
+flip `SOURCES['heat3d']` to the accepted `paper-tables.json` and its status string when the h3d
+lane closes. 2D rows are development cohorts.
+
+**How to drop in lane results (coordinator hands over audited `summary.json` paths).**
+Create `paper/headline-intake.json`:
+
+```json
+{"sources": [{"lane": "hires-poisson", "path": "/abs/path/summary.json", "sha256": "<optional>",
+              "commit": "<lane commit>", "status": "accepted final | development | provisional ..."}]}
+```
+
+Each summary must carry `"schema": "nmrom-headline-rows-v1"` and `"headline_rows": [{"problem":
+"Poisson"|"Heat"|"Burgers"|..., "dim": 2|3, "intervals": 2048, "fast": {"label": "$q=0$",
+"error_pct": .., "ms": ..}, "accurate": {...} or null, "fom": {"name": "CG, rtol $10^{-2}$",
+"error_pct": .., "ms": ..}, "job_id": "..", "cohort": "final"|"development", "status": "..",
+"error_convention": "same-grid"|"refined reference", "timing_scope": "GPU query"|"complete query"}]`;
+optional `"baseline_rows": [{"problem", "method", "error_pct", "ms", "fom_ms"}]` fills Table 2.
+If a lane's summary uses another schema, add a small adapter block in `gen_headline.py` (like the
+existing per-source blocks) rather than hand-copying values. Then
+`gen_headline.py --refresh && ./build.sh && check_headline.py && check_rewrite.py`. The pending row
+for a mesh disappears automatically once a row covers it; the figure picks the point up with no edit.
+The generator asserts the named FOM is at least as accurate as both NM-ROM settings and that both
+come from one job; a lane row violating that must be fixed at the lane, not here.
+
+**Open slots.** hires-poisson (2048^2, 4096^2, 128^3), hires-heat (same), hires-burgers (same),
+nmrom-baselines (Table 2). Nothing was read from those lanes.
+
+**Could not be supported / left open.** (1) No accurate-setting Heat2D row: the audited heat CG
+panel has a single uncorrected NM-ROM setting. (2) Burgers2D accurate setting is slower than Newton
+at every mesh; at 1024^2 no validated q=256 EQ rule exists, so the accurate row is the dense solve
+(0.0037x) and the q=128 EQ point (1.04 %, 0.50x) is quoted in the Figure 1 caption. (3) The named
+FOM is more accurate than the NM-ROM in every row; the campaign bar (<=1 % and >=5x) is met only by
+Poisson2D 1024^2 (0.96 %, 13.9x). (4) Timing dispersion (review issue 8) is still not printed;
+repetitions exist in the snapshots. (5) Nonlinear-head necessity (review issue 6) is stated as a
+limitation, not evidenced. (6) Portable evidence bundle (review issue 10): `gen_headline.py` builds
+from snapshots inside `paper/`, but `gen_tables.py` still reads absolute worktree paths.
+(7) The earlier-model Burgers 14.5x (tight Newton) is kept in Table 1 beside the 1.63x relaxed row,
+as the user asked; it is not quoted in the abstract.
+
+
 **Authoritative location:** `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/paper`.
 All future manuscript edits and builds occur only here, as explicitly required by
 the user. The paper-refresh worktree is a historical source, not an editing target.

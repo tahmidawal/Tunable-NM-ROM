@@ -20,11 +20,13 @@ def stage_inputs(root,source_attempt,destination,cfg):
     source=run/'archive/out';record=json.loads((source/'result.json').read_text())
     assert record['complete'] and not record['final_cohort_opened']
     files=['bank.pkl','bank_curve.json','cohorts.json']
-    for k in cfg['latent_dimensions']:files += [f'head_K{k}.pkl',f'head_K{k}_curve.json']
+    dimensions=cfg['latent_dimensions']+cfg.get('frozen_additional_heads',[])
+    assert len(dimensions)==len(set(dimensions))
+    for k in dimensions:files += [f'head_K{k}.pkl',f'head_K{k}_curve.json']
     for name in cfg.get('frozen_operators',[]):
         files += [f'operators/{name}/adapter.pkl',f'operators/{name}/best.pkl',f'operators/{name}/training.json',f'operators/{name}/curve.json']
     for n in cfg['evaluation_intervals']:
-        for k in cfg['latent_dimensions']:
+        for k in dimensions:
             name=f'eq_N{n}_K{k}.npz'
             if (source/name).exists():files.append(name)
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=False)
@@ -70,7 +72,7 @@ def load(directory,cfg,train_parameters,validation_parameters,out):
     bank=checkpoint('bank.pkl');models=[]
     bank['info']={**bank['info'],'reused_checkpoint':True,'original_training_source':origin['source_commit'],
                   'checkpoint_sha256':origin['files']['bank.pkl']}
-    for k in cfg['latent_dimensions']:
+    for k in cfg['latent_dimensions']+cfg.get('frozen_additional_heads',[]):
         model=checkpoint(f'head_K{k}.pkl');model['codes']=jax.device_put(model['codes']);jax.block_until_ready(model['codes'])
         model['info']={**model['info'],'reused_checkpoint':True,'original_training_source':origin['source_commit'],
                        'checkpoint_sha256':origin['files'][f'head_K{k}.pkl']}

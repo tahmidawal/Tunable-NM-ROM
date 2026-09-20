@@ -577,28 +577,23 @@ common speedup denominator.}
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
 Correction rank changes representation capacity; tolerance and iteration
-limits control numerical work. Table~\ref{tab:controls-main} separates
-these roles. The fixed-test-space Burgers2D ladder spans
+limits control numerical work. EQ sample count controls residual-evaluation cost;
+Table~\ref{tab:figure1-table} compares it with dense evaluation. The fixed-test-space Burgers2D ladder spans
 $\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in runtime.
 A smaller test space gives only $\nQxmTwoFiftySixErrSpan\times$ error
 improvement, which is why test count is not silently varied with rank.
 
 \begin{table}[htbp]
 \centering
-\caption{Meaningful deployment controls. Training parameters and model
-sizes are fixed within each study and reported in the setup.}
-\label{tab:controls-main}
-\small
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{9.5cm}@{}}
-\toprule
-Control & Measured role \\
-\midrule
-Correction rank $q$ & Enlarges the trial space without retraining; can improve accuracy at greater solve cost. \\
-Solver tolerance & Controls convergence; field-error gains plateau when representation error dominates. \\
-Iteration limit & Bounds work; an early-stopped solve retains its numerical status. \\
-EQ sample count & Selects a validated stored quadrature rule where EQ is used; chiefly changes residual cost. \\
-\bottomrule
-\end{tabular}
+\caption{Tabular comparison of dense and empirical-quadrature (EQ)
+residual evaluation on Burgers2D. Error is worst evolved relative $L^2$
+(\%); time is median GPU milliseconds from one allocation. The last
+column is dense time divided by EQ time. Dashes mean that no paired
+dense measurement was collected. Rules at $q=\nEqtopConfirmedRungs$
+have repeated-construction confirmation; higher-rank constructions are
+marginal (Table~\ref{tab:eqladder}).}
+\label{tab:figure1-table}
+\input{tables/TR_figure1_table}
 \end{table}
 
 The separate scheduled Burgers2D ladder was tested after freezing on a
@@ -621,8 +616,10 @@ correction rank: it approximates residual evaluation and is used only
 where validated. Repeated construction confirms the Burgers2D rules
 at $q=\nEqtopConfirmedRungs$; higher-rank rules retain their single-draw
 or marginal qualification. The current 3D results are dense and do not
-establish EQ acceleration. Figure~\ref{fig:family} and the full
-construction diagnostics are in the appendix.
+establish EQ acceleration. Tables~\ref{tab:burgers-comparison},
+\ref{tab:ladder-main} and \ref{tab:figure1-table} separate method
+comparison, correction settings and quadrature cost; full construction
+diagnostics remain in the appendix.
 
 \paragraph{Limitations.}\label{sec:limitations}
 Some comparisons are developmental, cohorts are small, and operator

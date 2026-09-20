@@ -742,12 +742,20 @@ use the same reserved cases, without selection of the better seed.}
 \input{tables/TR_b3d_seeds}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.95\linewidth]{fig_tunability_family}
-\caption{Burgers2D correction and quadrature studies. A: fixed and
-scheduled test counts. B: the paired accuracy--cost comparison.
-C: quadrature and dense residual evaluation. All axes use the recorded
-experiment's error and timing definitions.}
-\label{fig:family}
-\end{figure}
+\caption{Meaningful deployment controls. Training parameters and model
+sizes are fixed within each study and reported in the setup.}
+\label{tab:controls-main}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{9.5cm}@{}}
+\toprule
+Control & Measured role \\
+\midrule
+Correction rank $q$ & Enlarges the trial space without retraining; can improve accuracy at greater solve cost. \\
+Solver tolerance & Controls convergence; field-error gains plateau when representation error dominates. \\
+Iteration limit & Bounds work; an early-stopped solve retains its numerical status. \\
+EQ sample count & Selects a validated stored quadrature rule where EQ is used; chiefly changes residual cost. \\
+\bottomrule
+\end{tabular}
+\end{table}

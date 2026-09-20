@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 14:26; this block is removed before submission).*
-*Populated tables (77): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
+*Status for the reader (generated 2026-09-20 14:40; this block is removed before submission).*
+*Populated tables (78): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -606,14 +606,29 @@ common speedup denominator.
 <!-- section sources: none (prose only) -->
 
 Correction rank changes representation capacity; tolerance and iteration
-limits control numerical work. Table 7 separates
-these roles. The fixed-test-space Burgers2D ladder spans
+limits control numerical work. EQ sample count controls residual-evaluation cost;
+Table 7 compares it with dense evaluation. The fixed-test-space Burgers2D ladder spans
 $2.44\times$ in error for $5.16\times$ in runtime.
 A smaller test space gives only $1.22\times$ error
 improvement, which is why test count is not silently varied with rank.
 
-**Table 7.** Meaningful deployment controls. Training parameters and model
-sizes are fixed within each study and reported in the setup.
+**Table 7.** Tabular comparison of dense and empirical-quadrature (EQ)
+residual evaluation on Burgers2D. Error is worst evolved relative $L^2$
+(%); time is median GPU milliseconds from one allocation. The last
+column is dense time divided by EQ time. Dashes mean that no paired
+dense measurement was collected. Rules at $q=0, 16, 32$
+have repeated-construction confirmation; higher-rank constructions are
+marginal (Table 36).
+
+<!-- table: TR_figure1_table -->
+| Correction rank $q$ | Dense error (%) | Dense ms | EQ error (%) | EQ ms | Dense / EQ |
+|---|---|---|---|---|---|
+| 0 | 1.8890 | 292.87 | 1.8891 | 59.07 | 4.96$\times$ |
+| 16 | — | — | 1.4270 | 80.61 | — |
+| 32 | — | — | 1.2493 | 97.70 | — |
+| 64 | 1.0843 | 624.93 | 1.2275 | 120.63 | 5.18$\times$ |
+| 128 | 0.8930 | 1190.49 | 0.8936 | 246.87 | 4.82$\times$ |
+| 256 | 0.5194 | 3915.14 | 0.5389 | 722.21 | 5.42$\times$ |
 
 The separate scheduled Burgers2D ladder was tested after freezing on a
 held-out cohort: all 4 checkpoints give monotone
@@ -635,8 +650,10 @@ correction rank: it approximates residual evaluation and is used only
 where validated. Repeated construction confirms the Burgers2D rules
 at $q=0, 16, 32$; higher-rank rules retain their single-draw
 or marginal qualification. The current 3D results are dense and do not
-establish EQ acceleration. Figure 7 and the full
-construction diagnostics are in the appendix.
+establish EQ acceleration. Table 2,
+Table 5 and Table 7 separate method
+comparison, correction settings and quadrature cost; full construction
+diagnostics remain in the appendix.
 
 **Limitations.**
 
@@ -716,17 +733,17 @@ are.
 <!-- table: T00_glance -->
 | experiment | question it answers | PDE, mesh | jobs (lane) | where the numbers are |
 |---|---|---|---|---|
-| Fixed-$M$ correction ladder | With $M$ held, does the rank $q$ alone move the error, and by how much? | Burgers $256^2$ | 5 (b-qxm) | Tables \ref{tab:ladder-main}, \ref{tab:qxm}; Fig. \ref{fig:family}A |
+| Fixed-$M$ correction ladder | With $M$ held, does the rank $q$ alone move the error, and by how much? | Burgers $256^2$ | 5 (b-qxm) | Tables \ref{tab:ladder-main}, \ref{tab:qxm} |
 | Rank $\times$ test count | Which of $q$ and $M$ carries the error; where does $M$ saturate? | Burgers $256^2$ | same (b-qxm) | Tables \ref{tab:qxm}, \ref{tab:qxm-fixedq} |
 | Three-seed retraining | Is the ladder a property of one checkpoint? | Burgers $256^2$ | 3 (b-seeds) | Table \ref{tab:seeds} |
 | Sealed cohort | Does the ladder hold on cases opened once, after every choice was frozen? | Burgers $256^2$ | 1 (b-seeds) | Tables \ref{tab:sealed}, \ref{tab:ladder-main} |
-| Same-job panels | Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job? | Burgers $256^2$–$1024^2$ | 3 (b-panel) | Tables \ref{tab:panel-main}, \ref{tab:panel-all}, \ref{tab:panel-all-fivetwelve}, \ref{tab:panel-all-tentwentyfour}; Fig. \ref{fig:family}B |
+| Same-job panels | Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job? | Burgers $256^2$–$1024^2$ | 3 (b-panel) | Tables \ref{tab:panel-main}, \ref{tab:panel-all}, \ref{tab:panel-all-fivetwelve}, \ref{tab:panel-all-tentwentyfour} |
 | Reference-error column | Does the knob move the physical error or only the same-grid error? | Burgers vs $4096^2$ | same (b-panel) | Tables \ref{tab:ladder-main}, \ref{tab:tunability}, \ref{tab:tunability-fivetwelve}, \ref{tab:tunability-tentwentyfour} |
 | Mesh ladder | How do the cached solve and the complete query scale with mesh at a frozen checkpoint? | Burgers, Poisson $64^2$–$1024^2$ | 2 (mesh-ladder) | Table \ref{tab:mesh} |
 | Speed at parity | What does the fused implementation cost at bit-level agreement? | Burgers | 3 (b-speed) | Table \ref{tab:speed} |
 | Solver knobs | Which solver knob moves accuracy and which moves cost? | Burgers | 1 (tuning) | Table \ref{tab:knobs} |
 | Quadrature certification, re-draw | Does the NNLS fit residual predict held-out error; do rules survive re-draws? | Burgers $256^2$ | 3 (b-eqtop) | Tables \ref{tab:eqcert}, \ref{tab:replication}, \ref{tab:eqrules}; Fig. \ref{fig:cert} |
-| Two rule sets, transfers | Do the two rule sets agree in one allocation; do rules transfer to $512^2$? | Burgers $256^2$, $512^2$ | same (b-panel) | Tables \ref{tab:eqladder}, \ref{tab:tunability-fivetwelve}; Fig. \ref{fig:family}C |
+| Two rule sets, transfers | Do the two rule sets agree in one allocation; do rules transfer to $512^2$? | Burgers $256^2$, $512^2$ | same (b-panel) | Tables \ref{tab:eqladder}, \ref{tab:tunability-fivetwelve} |
 | Neural operators on shared data | FNO ($\times3$), U-Net, Transolver, one-variable controls, and the operators' own knob | Burgers $256^2$; Poisson | 8 (no-second) | Tables \ref{tab:operators}, \ref{tab:operators-poisson}, \ref{tab:op-controls}, \ref{tab:resolution}; App. \ref{app:extended:operators} |
 | Head ablation, matched dimension | Is the head better than the best linear, quadratic or POD map in the same bank? | Burgers $256^2$; Poisson $1024^2$ | 2 (head-ablation) | Tables \ref{tab:head-burgers}, \ref{tab:head-poisson}, \ref{tab:head-capacity}; App. \ref{app:extended:head} |
 | Three-layer decomposition | How much of the deployed error is the bank, the head, and the solver? | every cell | same | Table \ref{tab:layers} |
@@ -3157,12 +3174,8 @@ use the same reserved cases, without selection of the better seed.
 | Transolver | 2.017 | 3.489 | 5.246 | 3.509 |
 | FOM | 2.312 | 8.337 | 2.312 | 8.528 |
 
-![Figure 7](figures/fig_tunability_family.png)
-
-**Figure 7.** Burgers2D correction and quadrature studies. A: fixed and
-scheduled test counts. B: the paired accuracy–cost comparison.
-C: quadrature and dense residual evaluation. All axes use the recorded
-experiment's error and timing definitions.
+**Table 72.** Meaningful deployment controls. Training parameters and model
+sizes are fixed within each study and reported in the setup.
 
 ## M Additional analysis of the correction settings
 

@@ -20,6 +20,8 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
+**2026-09-20 — Figure 1 replaced with tables at the user’s request.** The former Burgers accuracy/cost plots are removed from the rendered manuscript. Existing main tables contain the correction-rank and method comparisons; main Table 7 now gives the same-allocation dense/EQ comparison, generated from pinned run data. Missing dense measurements remain blank. Deployment controls move to the appendix. The rebuilt PDF retains nine main pages; numerical and layout checks pass. A fresh Poisson development-only same-device replay is running as job 4031708 with a physical GPU UUID guard; no new replay result is accepted yet.
+
 **2026-09-20 — main experiments reorganized; CG is the main linear-PDE comparator.** At the user's request, root `paper/main.pdf` now places clean 2D and 3D comparison tables, correction settings, L-shaped CG results and deployment controls in the main section. Sparse-direct comparisons are excluded from the main tables. Main 3D inputs are accepted Burgers final (primary and separate second-seed evidence), accepted Poisson replay07 development, Heat extra03 development with CG pending, and NS confirmation06b development. The previous appendix snapshots remain historical. Numerical/source/ratio checks pass; main text is nine pages, full PDF 55 pages.
 
 **2026-09-20 — authoritative paper location changed by explicit user instruction.** All manuscript edits and builds must now occur only in `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/paper`. The latest rewrite from `e3683857` has been copied there, including the identical PDF. The paper-refresh worktree is historical and must no longer be edited as the manuscript. This explicit direction supersedes earlier manuscript worktree/base rules; experiment lanes remain in their own worktrees. The prior root paper copy is preserved in `archives/paper-before-canonical-2026-09-20/paper`.
@@ -15375,3 +15377,13 @@ Imported hash-pinned accepted inputs into `paper/evidence/main-experiments-2026-
 `build.sh` and `check_rewrite.py` pass: 139 historical generated numerical files unchanged, all new source hashes/cohort counts/ratios checked, official ICLR style unchanged, main text through page nine, full PDF 55 pages, no overfull boxes or unresolved references. Visually reviewed all main experiment pages. PDF SHA256 `b23bcf7ddcd4b89ec19dec300197c4de4267788f6ddc3b256e57958307f5b0f3`. Concurrent owners continue NS/P final auditing and Heat development; their unaccepted outputs are not imported. No merge, push or submission.
 
 B owner independently completed authorized verified final-field duplicate relief at `0e4b9a68`: scientific summary bytes unchanged, archived fields recoverable, exact removed paths/hashes/restoration instructions retained. H owns NS/P scheduling commitments and both owners were reactivated on time. No scientific data were discarded by this manuscript task.
+
+## 2026-09-20
+
+### Root — Figure 1 table replacement and same-device replay
+
+Replaced the former three-panel Burgers figure with the existing main correction/method tables and a new source-generated dense/EQ table (Table 7, page 8). The final column is dense runtime divided by EQ runtime, not FOM speedup. Unmeasured dense rows remain dashes; same-allocation provenance is asserted in the generator. Historical numerical tables are preserved; only obsolete figure references changed. Deployment controls now appear in the appendix. No experimental measurements were changed or retracted.
+
+Built only the authoritative root paper directory. `paper/check_rewrite.py` passes: nine main pages, 55 total, no overfull boxes or undefined references. Page 8 was visually reviewed. PDF SHA256: `c7a4f14a9766d84605f678866033660a7ba6b0d2b6ba13f2188ad86a520910aa`.
+
+For the preceding hardware-check request, the Poisson owner submitted development-only devicecheck09 as job `4031708`, source `f87bbe98`, A100 80 GB on pax105. Owner reports preflight passes with exactly one CUDA/JAX GPU, UUID `GPU-7ea87052-7ee2-b522-615d-be66f44238c3`; CUDA-visible index 0 and Slurm physical index 7 are recorded. Physical UUID checks bracket every timed invocation. This job is running, not accepted evidence. Poisson and NS final retention/audits and Heat development continue separately; manuscript snapshots remain unchanged until acceptance.

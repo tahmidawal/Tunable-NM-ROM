@@ -468,3 +468,5 @@ conclusion.** If the four-rung ladder is genuinely overturned, all four are rewr
 
 **Page budget (approved 2026-09-17).** The correction-ladder table stays in the appendix because
 Figure 1 carries the family in the main text; do not trade it back.
+
+**2026-09-20 user override — Figure 1 becomes tables.** The latest explicit request supersedes the older page-budget instruction above. The former three-panel figure is removed from rendering; its rank/method comparisons are in main Tables 5/2 and its dense/EQ comparison is main Table 7. Deployment controls move to the appendix. Nine main pages retained; generated numbers and layout checks pass.

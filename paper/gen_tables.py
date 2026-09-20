@@ -1240,6 +1240,13 @@ def build_eqtop():
     write('T09_eq_ladder.tex', tabular(['$q$', '$m$', 'fit states', '$\\rho_{\\max}$ (this draw)', 'construction status', 'EQ evolved \\%', 'EQ all \\%', 'EQ ms',
                                         'dense evolved \\%', 'dense ms', 'EQ/dense cost'], t, 'rrrrlrrrrrr', r'\scriptsize'),
           f'b-eqtop job {job}; construction status from the draw replication (job 3783811)')
+
+    compact=[]
+    for k in prim:
+        q=Lmeta[k]['q'];eq=L[k];dn=dense.get(q)
+        if dn:assert Lmeta[k]['job_id']==dense_meta[q]['job_id']
+        compact.append([str(q),pct(dn['worst_evolved_percent']) if dn else '---',ms(dn['median_gpu_ms'],2) if dn else '---',pct(eq['worst_evolved_percent']),ms(eq['median_gpu_ms'],2),f"{dn['median_gpu_ms']/eq['median_gpu_ms']:.2f}"+r'$\times$' if dn else '---'])
+    write('TR_figure1_table.tex',tabular(['Correction rank $q$','Dense error (\\%)','Dense ms','EQ error (\\%)','EQ ms','Dense / EQ'],compact,'rrrrrr'),'Tabular replacement for former Figure 1C; source b-eqtop same job '+job+'; no missing dense timing inferred')
     conf = [str(q) for q in sorted(V) if V[q]['ladder_rule_status'].startswith('confirmed')]
     marg = [f"{q} ({V[q]['draws_certifying_primary']}/{V[q]['draws']})" for q in sorted(V) if not V[q]['ladder_rule_status'].startswith('confirmed')]
     macro('nEqtopConfirmedRungs', ', '.join(conf)); macro('nEqtopMarginalRungs', ', '.join(marg))
@@ -2344,17 +2351,17 @@ def build_problems_and_provenance(mesh):
         return str(len(ids))
     R = r'\ref'; Ts = r'Tables~\ref'; T = r'Table~\ref'; F = r'Fig.~\ref'; A = r'App.~\ref'
     G = [
-        ['Fixed-$M$ correction ladder', 'With $M$ held, does the rank $q$ alone move the error, and by how much?', 'Burgers $256^2$', njobs('T4') + ' (b-qxm)', f'{Ts}{{tab:ladder-main}}, {R}{{tab:qxm}}; {F}{{fig:family}}A'],
+        ['Fixed-$M$ correction ladder', 'With $M$ held, does the rank $q$ alone move the error, and by how much?', 'Burgers $256^2$', njobs('T4') + ' (b-qxm)', f'{Ts}{{tab:ladder-main}}, {R}{{tab:qxm}}'],
         ['Rank $\\times$ test count', 'Which of $q$ and $M$ carries the error; where does $M$ saturate?', 'Burgers $256^2$', 'same (b-qxm)', f'{Ts}{{tab:qxm}}, {R}{{tab:qxm-fixedq}}'],
         ['Three-seed retraining', 'Is the ladder a property of one checkpoint?', 'Burgers $256^2$', njobs('T12') + ' (b-seeds)', f'{T}{{tab:seeds}}'],
         ['Sealed cohort', 'Does the ladder hold on cases opened once, after every choice was frozen?', 'Burgers $256^2$', njobs('T13') + ' (b-seeds)', f'{Ts}{{tab:sealed}}, {R}{{tab:ladder-main}}'],
-        ['Same-job panels', 'Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job?', 'Burgers $256^2$--$1024^2$', njobs('T3, T5', 'T3c, T5c', 'T3b, T5b') + ' (b-panel)', f'{Ts}{{tab:panel-main}}, {R}{{tab:panel-all}}, {R}{{tab:panel-all-fivetwelve}}, {R}{{tab:panel-all-tentwentyfour}}; {F}{{fig:family}}B'],
+        ['Same-job panels', 'Is anything reduced on the frontier against POD-LSPG, an FNO, a Newton grid and the direct solve in one job?', 'Burgers $256^2$--$1024^2$', njobs('T3, T5', 'T3c, T5c', 'T3b, T5b') + ' (b-panel)', f'{Ts}{{tab:panel-main}}, {R}{{tab:panel-all}}, {R}{{tab:panel-all-fivetwelve}}, {R}{{tab:panel-all-tentwentyfour}}'],
         ['Reference-error column', 'Does the knob move the physical error or only the same-grid error?', 'Burgers vs $4096^2$', 'same (b-panel)', f'{Ts}{{tab:ladder-main}}, {R}{{tab:tunability}}, {R}{{tab:tunability-fivetwelve}}, {R}{{tab:tunability-tentwentyfour}}'],
         ['Mesh ladder', 'How do the cached solve and the complete query scale with mesh at a frozen checkpoint?', 'Burgers, Poisson $64^2$--$1024^2$', njobs('T10') + ' (mesh-ladder)', f'{T}{{tab:mesh}}'],
         ['Speed at parity', 'What does the fused implementation cost at bit-level agreement?', 'Burgers', njobs('T15') + ' (b-speed)', f'{T}{{tab:speed}}'],
         ['Solver knobs', 'Which solver knob moves accuracy and which moves cost?', 'Burgers', njobs('T8') + ' (tuning)', f'{T}{{tab:knobs}}'],
         ['Quadrature certification, re-draw', 'Does the NNLS fit residual predict held-out error; do rules survive re-draws?', 'Burgers $256^2$', njobs('T9') + ' (b-eqtop)', f'{Ts}{{tab:eqcert}}, {R}{{tab:replication}}, {R}{{tab:eqrules}}; {F}{{fig:cert}}'],
-        ['Two rule sets, transfers', 'Do the two rule sets agree in one allocation; do rules transfer to $512^2$?', 'Burgers $256^2$, $512^2$', 'same (b-panel)', f'{Ts}{{tab:eqladder}}, {R}{{tab:tunability-fivetwelve}}; {F}{{fig:family}}C'],
+        ['Two rule sets, transfers', 'Do the two rule sets agree in one allocation; do rules transfer to $512^2$?', 'Burgers $256^2$, $512^2$', 'same (b-panel)', f'{Ts}{{tab:eqladder}}, {R}{{tab:tunability-fivetwelve}}'],
         ['Neural operators on shared data', 'FNO ($\\times3$), U-Net, Transolver, one-variable controls, and the operators\' own knob', 'Burgers $256^2$; Poisson', njobs('T14, T14c, T14d') + ' (no-second)', f'{Ts}{{tab:operators}}, {R}{{tab:operators-poisson}}, {R}{{tab:op-controls}}, {R}{{tab:resolution}}; {A}{{app:extended:operators}}'],
         ['Head ablation, matched dimension', 'Is the head better than the best linear, quadratic or POD map in the same bank?', 'Burgers $256^2$; Poisson $1024^2$', njobs('T6a, T7', 'T6b, T7') + ' (head-ablation)', f'{Ts}{{tab:head-burgers}}, {R}{{tab:head-poisson}}, {R}{{tab:head-capacity}}; {A}{{app:extended:head}}'],
         ['Three-layer decomposition', 'How much of the deployed error is the bank, the head, and the solver?', 'every cell', 'same', f'{T}{{tab:layers}}'],

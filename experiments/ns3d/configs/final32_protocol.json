@@ -9,5 +9,12 @@
   "required_comparison": "Best available selected augmented-cohort NM-ROM, matched augmented POD, all four augmented operators, and validation-selected cheapest passing FOM; include NM-ROM even if its promotion/accuracy gate fails.",
   "required_freeze": "Record all source/checkpoint/membership hashes, solver settings, correction ranks, test count, model variants, references and timing repetitions before generating any final case.",
   "failure_handling": "Retain and report all failures; no family narrowing, outcome-based final exclusions, target changes, or tuning after final access.",
-  "independent_seed_status": "Pending; capacity05 is warm tuning, not an independent complete training repeat."
+  "independent_seed_status": "Pending; capacity05 is warm tuning, not an independent complete training repeat.",
+  "resumption_amendment": {
+    "utc": "2026-09-20T15:43:14.586872+00:00",
+    "reason": "Overnight agent usage-limit interruption; original selection and completion deadlines missed while final cohort remained unopened.",
+    "planned_freeze_utc": "2026-09-20T18:00:00+00:00",
+    "planned_completion_utc": "2026-09-20T19:00:00+00:00",
+    "family_targets_and_final_count_unchanged": true
+  }
 }

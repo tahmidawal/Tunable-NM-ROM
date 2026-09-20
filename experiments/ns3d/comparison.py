@@ -48,7 +48,7 @@ def raw_projection_check(params,coeff,U,n):
 
 def burn(seconds=1.):
     a=jnp.ones((1024,1024),dtype=jnp.float64)*.001
-    fn=jax.jit(lambda x: x@x+.00001)
+    fn=jax.jit(lambda x: x@x/1024+.00001)
     end=time.monotonic()+seconds
     while time.monotonic()<end:
         a=fn(a);a.block_until_ready()
@@ -74,8 +74,11 @@ def main():
         print('jax_backend=gpu',flush=True);stage('reference_verification')
         report['operator_verification']=V.operator_checks()
         report['reference_verification']=V.reference_checks(cfg['n'],cfg['dt'],cfg['horizon'],cfg['verification_cases'],out/'reference_N32')
+        report['fine_reference_verification']=V.reference_checks(cfg['fine_reference_n'],cfg['fine_reference_dt'],
+            cfg['horizon'],cfg['verification_cases'],out/'reference_N64')
         write(report,result)
-        assert report['operator_verification']['passed'] and report['reference_verification']['passed']
+        assert (report['operator_verification']['passed'] and report['reference_verification']['passed']
+                and report['fine_reference_verification']['passed'])
         n=cfg['n'];k=cfg['k'];geom=F.geometry(n)
         stage('data')
         Utr,report['train_data']=generate(n,cfg['dt'],cfg['horizon'],cfg['train_cases'],cfg['train_seed'],out/'train_data.npz')

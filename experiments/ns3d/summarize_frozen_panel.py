@@ -15,7 +15,7 @@ def summarize(root):
     root=Path(root);out=root/'collected/output'
     raw=json.loads((out/'result.json').read_text());cfg=raw['config']
     assert raw['complete']
-    names=['audit.json','source_audit.json','history_audit.json']
+    names=['audit.json','source_audit.json','history_audit.json','pod_cold_audit.json']
     if raw['evaluation_cohort']=='development':names.append('teacher_audit.json')
     audits={name:json.loads((root/name).read_text()) for name in names}
     assert all(a['passed'] for a in audits.values()),'Every required audit must pass'

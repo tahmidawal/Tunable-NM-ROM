@@ -67,6 +67,11 @@ def main():
             discrepancy=float(np.linalg.norm(reconstructed-expected)/max(np.linalg.norm(expected),1e-300))
             if discrepancy>1e-10:bad.append(key+' decoded endpoints')
             checks.append(dict(method=name,case=case,step='decoded endpoints',residual_error=0.,gradient_error=0.,field_relative=discrepancy))
+            if linear:
+                target=G.T@states[case,0].ravel()
+                initial_relative=float(np.linalg.norm(W[0]-target)/max(np.linalg.norm(target),1e-300))
+                if initial_relative>1e-10:bad.append(key+' exact POD initial projection')
+                checks.append(dict(method=name,case=case,step='exact POD initial projection',residual_error=0.,gradient_error=0.,coefficient_relative=initial_relative))
             if not linear:
                 target=bank_targets[:,case]
                 residual=Rb@(coefficient(W[0])-target);J=Rb@derivative(W[0]);rn,gn=metric(residual,J)

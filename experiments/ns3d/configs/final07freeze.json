@@ -1,0 +1,408 @@
+{
+  "schema": "ns3d-final-freeze-v1",
+  "configuration": {
+    "n": 32,
+    "initial_amplitude": 0.2,
+    "dt": 0.001,
+    "horizon": 0.2,
+    "verification_cases": 4,
+    "train_cases": 512,
+    "dev_cases": 16,
+    "train_seed": 202609201,
+    "dev_seed": 202609202,
+    "final_seed_unopened": 202609203,
+    "model_seed": 202609242,
+    "n_ff": 256,
+    "spatial_batch": 1024,
+    "test_modes": 2048,
+    "q_values": [
+      0,
+      32,
+      64,
+      128,
+      256
+    ],
+    "rom_dt": 0.004,
+    "rom_budget": 120,
+    "fom_dts": [
+      0.002,
+      0.004,
+      0.008,
+      0.01,
+      0.02,
+      0.04
+    ],
+    "timed_cases": 32,
+    "repetitions": 3,
+    "reference_dt": 0.00025,
+    "fine_reference_n": 64,
+    "fine_reference_dt": 0.0005,
+    "operator_train": {
+      "steps": 50000,
+      "wall_seconds": 900,
+      "batch_size": 2,
+      "seed": 202609245,
+      "learning_rate": 0.001,
+      "validation_every": 400,
+      "curve_every": 100,
+      "components_per_output": 3,
+      "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+    },
+    "operators": [
+      {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 0,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": true,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 512,
+        "trunk_width": 512,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "trunk_frequencies": [
+          2.0,
+          4.0,
+          8.0
+        ],
+        "output_residual_initial": true
+      },
+      {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          0.0,
+          1.0
+        ],
+        "output_residual_initial": true
+      }
+    ],
+    "capacity_head_steps": 100000,
+    "capacity_head_seconds": 600,
+    "augmentation_copies": 4,
+    "augmentation_seed": 202609241,
+    "coverage_rank": 1536,
+    "coverage_bank_steps": 200000,
+    "coverage_bank_seconds": 1200,
+    "pod_screen_ranks": [
+      64,
+      128,
+      256,
+      512,
+      1024,
+      1536
+    ],
+    "head_batch": 128,
+    "head_variants": [
+      {
+        "label": "pca64_fixed",
+        "k": 64,
+        "free_codes": false
+      },
+      {
+        "label": "pca64_free",
+        "k": 64,
+        "free_codes": true
+      },
+      {
+        "label": "pca128_fixed",
+        "k": 128,
+        "free_codes": false
+      }
+    ],
+    "rollout_bank_threshold": 0.05,
+    "rollout_head_threshold": 0.08,
+    "larger_rollout_q_values": [
+      0,
+      32,
+      64
+    ],
+    "planned_extended_ladder": {
+      "q_values": [
+        0,
+        32,
+        64,
+        128,
+        256
+      ],
+      "fixed_test_modes": 2048,
+      "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+    },
+    "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases.",
+    "k": 64,
+    "r": 1536,
+    "selected_head": "pca64_free",
+    "bank_hidden_width": 1536,
+    "selected_training_source_commit": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+    "selected_training_job_id": "3997427",
+    "selected_training_config": {
+      "n": 32,
+      "initial_amplitude": 0.2,
+      "dt": 0.001,
+      "horizon": 0.2,
+      "verification_cases": 4,
+      "train_cases": 512,
+      "dev_cases": 16,
+      "train_seed": 202609201,
+      "dev_seed": 202609202,
+      "final_seed_unopened": 202609203,
+      "model_seed": 202609242,
+      "n_ff": 256,
+      "spatial_batch": 1024,
+      "test_modes": 1024,
+      "q_values": [
+        0,
+        16,
+        32,
+        64,
+        128
+      ],
+      "rom_dt": 0.004,
+      "rom_budget": 80,
+      "fom_dts": [
+        0.002,
+        0.004,
+        0.008,
+        0.01,
+        0.02,
+        0.04
+      ],
+      "timed_cases": 8,
+      "repetitions": 3,
+      "reference_dt": 0.00025,
+      "fine_reference_n": 64,
+      "fine_reference_dt": 0.0005,
+      "operator_train": {
+        "steps": 50000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 202609245,
+        "learning_rate": 0.001,
+        "validation_every": 400,
+        "curve_every": 100,
+        "components_per_output": 3,
+        "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+      },
+      "operators": [
+        {
+          "kind": "fno3d",
+          "width": 16,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 0,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "unet3d",
+          "width": 8,
+          "levels": 3,
+          "periodic": true,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 512,
+          "trunk_width": 512,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "trunk_frequencies": [
+            2.0,
+            4.0,
+            8.0
+          ],
+          "output_residual_initial": true
+        },
+        {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            0.0,
+            1.0
+          ],
+          "output_residual_initial": true
+        }
+      ],
+      "capacity_head_steps": 100000,
+      "capacity_head_seconds": 600,
+      "augmentation_copies": 4,
+      "augmentation_seed": 202609241,
+      "coverage_rank": 1536,
+      "coverage_bank_steps": 200000,
+      "coverage_bank_seconds": 1200,
+      "pod_screen_ranks": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        1536
+      ],
+      "head_batch": 128,
+      "head_variants": [
+        {
+          "label": "pca64_fixed",
+          "k": 64,
+          "free_codes": false
+        },
+        {
+          "label": "pca64_free",
+          "k": 64,
+          "free_codes": true
+        },
+        {
+          "label": "pca128_fixed",
+          "k": 128,
+          "free_codes": false
+        }
+      ],
+      "rollout_bank_threshold": 0.05,
+      "rollout_head_threshold": 0.08,
+      "larger_rollout_q_values": [
+        0,
+        32,
+        64
+      ],
+      "planned_extended_ladder": {
+        "q_values": [
+          0,
+          32,
+          64,
+          128,
+          256
+        ],
+        "fixed_test_modes": 2048,
+        "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+      },
+      "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases."
+    },
+    "cold_starts": 8,
+    "gtol": 1e-07,
+    "evaluation_cohort": "final",
+    "reuse_path": "reuse",
+    "operator_projection_variants": [
+      false,
+      true
+    ],
+    "refinement_n": 128,
+    "refinement_dt": 0.00025,
+    "refinement_budget": 0.005,
+    "final_cases_unopened": 32,
+    "physical_accuracy_target": 0.05,
+    "pretraining": {
+      "teacher_seed": 202609270,
+      "teacher_oversampling": 64,
+      "teacher_power_iterations": 2,
+      "trunk_steps": 20000,
+      "trunk_learning_rate": 0.001,
+      "trunk_batch_points": 2048,
+      "trunk_wall_seconds": 300,
+      "branch_steps": 20000,
+      "branch_learning_rate": 0.001,
+      "branch_batch_size": 4,
+      "branch_wall_seconds": 300,
+      "checkpoint_every": 1000
+    },
+    "deep_joint_training": {
+      "steps": 40000,
+      "wall_seconds": 900,
+      "batch_size": 2,
+      "seed": 202609270,
+      "learning_rate": 0.001,
+      "validation_every": 400,
+      "curve_every": 100,
+      "components_per_output": 3,
+      "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+    },
+    "frozen_source_directory": "reuse"
+  },
+  "assets": {
+    "files": {
+      "deeponet3d/best.pkl": "a1f02c4a185b1ce5d432dd824f840d65b9b39ea9ab788d88f4fdf944aab81d44",
+      "dense_weak_operators.npz": "12e5c0a2f0dce30f59170fdd6f3f31dc535f872d87ad76629f76a182bbb82a7f",
+      "dense_weak_test_modes.json": "9b4aef25e54691be09df376c6185a54654e28309bf0d7b337c241e4fc5f4a929",
+      "fno3d/best.pkl": "3149e8d303cd70eed7bc969ecd281c51bbfbe1d3974f181124a8cd80edc26dbd",
+      "frozen_bank.pkl": "8ec5f3e2485291f7ca18d3053eccd061074b0cf00911c8b1a56251402d46033b",
+      "head.pkl": "6350b11dd24ae375b968035017b243b1b8276c7a159a3b8a0c3c33a2a1e2b7b5",
+      "metadata.json": "f962bc9cb18441994660202c537184e2e1fc416ea7df7c4601cadc893c6ae26a",
+      "operator_statistics.pkl": "8bc5d1ba54df5f33f7fb9915a5e068b6c3eb6887864aa96018243aea4a443353",
+      "pod.npz": "faaa9a3e78479c640ef4b52e905008cd653a180406326ded76775bc7a55d9837",
+      "transolver3d/best.pkl": "5e5862c84880689ed6a43726063e096d77934d50bfe2feff26ac793d9dd8f227",
+      "unet3d/best.pkl": "69949501a37493ed1243ae49f151248d46cbf68e69ddb46ed535bf1df5488ee1"
+    },
+    "final_cohort_opened": false
+  },
+  "accepted_development_audit_sha256": {
+    "audit.json": "0d5ac50b7dc9cd314bc0bba9d27138a36eefeece1c7cb0181826b04fa5931f57",
+    "history_audit.json": "7304a428481a86bba7d18377266db57df82dcafae33c8d2524d34ffa38f8dbab",
+    "source_audit.json": "c398864887690d5c2efaa90387f5441168b6fa3a411e0067eb974dd47b9c91fc",
+    "teacher_audit.json": "120c9d48accf36f295bf36a07bada1ce72295735132b9ead160d3c4e652abd19",
+    "pod_cold_audit.json": "c8072a27077662dfd2db86149e3cb859752ac785ebf31b12208f75bd6acb9975"
+  },
+  "asset_manifest_sha256": "b0eb17a551365a870c376d725afbf8c8b4c2325353687bdb6fdd992e71a4dfe9",
+  "selection_source_commit": "71fd208d1ea2258a87147d78a56484993bb7fcf6",
+  "selection_job_id": "4024180",
+  "selection_files": {
+    "result.json": "3e2d8399783418165eae3b507cb255d4551cf04e96c51f814d56b44981a0ea7e",
+    "timing_rows.json": "c5af35fa14fd75d8e312a63aca801fa83fd334f2da3c6609dbe1753c04d92dbf",
+    "timed_fields.npz": "730c7e1e15a8d1af4ad87d9e27fd19e6b3b1baa65f8464d1786cc7acb2e25597"
+  },
+  "cheapest_passing_development_fom": "fom_dt0.01",
+  "final_fields_generated": false,
+  "policy": "Actual offline assets and every solver choice are fixed before final generation; no final-based training, selection or exclusions."
+}

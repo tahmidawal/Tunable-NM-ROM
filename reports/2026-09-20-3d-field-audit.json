@@ -2,7 +2,7 @@
   "passed": true,
   "scope": "One independently recomputed worst-case field per method and mesh; no solver imports or independent retraining.",
   "inputs": {
-    "reports/2026-09-20-3d-paper-inputs.json": "8054bbad75f2e99cbdf1c73697eca6bde7a1de9445ddd8c69ed2b3a5441f30f3",
+    "reports/2026-09-20-3d-paper-inputs.json": "ec800e9a24f6503877a7b3faecd472d10ad10cca44cc4506fd919c8124775404",
     "reports/audit_3d_saved_fields.py": "9550dc90190b597f293ac5f603d63dfbe89cc42f1de81674faeae9d2a08931bc",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-02_case5_rep0.npz": "0159d55a6d43c83c134abaaf9f33f6ee35126ab6586d6f1efb1cabb166fd27c0",
@@ -315,7 +315,97 @@
     "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json": "9d4489bedf56a52ad4edc9540ec5cd39b57a8e73e364b3d312663fda3e5dc739",
     "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timing_rows.json": "986f41189db5eec4a1e0a2d4c07af89d84228fe92db141884d86ca2d05307ed8",
     "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timing_references.npz": "293ad3ccae58b4fe523428e9077c34f8350d3813ddcd64077847757139acc153",
-    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timed_fields.npz": "9d0146a5928f1ae0dc7b2a32dd4a0213b3cd2da5822a805ad2793e313a3d8832"
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timed_fields.npz": "9d0146a5928f1ae0dc7b2a32dd4a0213b3cd2da5822a805ad2793e313a3d8832",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json": "44e088449d71c39df9634e4dc1ddc08e7baf9b43876cc41c2b11fe47a9e33f39",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_deeponet3d_r128_w16.npz": "f7215e79222aa4260e1356dc27ecf21747cfe709a8f01367f3118b0378b27335",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_reference.npz": "ca6c573547bd21807c880113763b70d4b8d4dacfa85047144607dd57d8009f75",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_dst_exact.npz": "fed61569a7e085abd5809f898b18379f1baaca666992e9a2c6e5879ec4809c09",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case5_fno3d_w24_m8.npz": "28b86638a09eb84c436f13a73d6df7cf3a63b97b5f27fc8c8fd5f8bec3aa3a50",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case5_reference.npz": "bec34f4581f7552287de5f43370eb6442719c3ed938c5ee2adf132380868cb8b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_linear_bank_galerkin.npz": "cdb954486a8adef14833ec3e91635beb77073e1cc00fbe93ffd9de44174c06f8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_linear_bank_weak_qR.npz": "759c89005e07645013dc1f2a2dd7a7f961b2b8db07c764a34a71039dacbf4e6f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case12_nmrom_K16_q0_dense.npz": "1bff23f528a2ca78b84770a10afb130e6e5aa5494dfd3f10f14de0f760cd50b3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case12_reference.npz": "fc44743ea454df0805824c96c0581dbb95c30156fff34f3a5c9e9c872aae25fc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case12_nmrom_K16_q0_eq.npz": "213d54395109f39ed06937d5b1a4e60b1f2f68785dae25a6ae274a4382c9e5b0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q16_dense.npz": "d5ddfe2635c314a58b882e5bb2b959b47183682135bd8a8d86d2acef828caf1e",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q16_eq.npz": "3594b0ad4a1351a1e527401c38d03f465dad125216b1e5a0ba471fec58d5442a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case12_nmrom_K16_q32_dense.npz": "856e8eb21a7eca8ca03d310be05855faf4b3cf85fde5603ca278f3f9eb3bb460",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q32_eq.npz": "1edca92f713ffa3caa0fcf7cd9f083be3bb5a9a4d27786b5295d8ab14d76c749",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q64_dense.npz": "d3baa544103c9bc07d52e65ca30bdb09c7ee38377d6035c1802d582148e6b25a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q64_eq.npz": "ccce1f6f4ae3c78ab2ca073fc17fd4fcb87687e9f519b26c61d1471a0f2b7956",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K16_q96_dense.npz": "632ab73fc75cb9116247292a013f71c8fea5eb50e61256da51081834eff4b9a8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case11_nmrom_K16_q96_eq.npz": "34da790ccf4fe29acca1b227b05448af702694858153407395bf7b000b643424",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case11_reference.npz": "9caf739c9ddffac8628b7f3e3cd6e643697d413c40c7297212bfef0fa16e2f40",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q0_dense.npz": "ae94be82e03580f77cd70ed045132cbbcebc9d117a614008465195ea3ff207a1",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q0_eq.npz": "21fc8d8f65f120c88248c1d70490c65a2e4b55912b5bcccca31d31446a31ebad",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q16_dense.npz": "f7893b32ad0d13eee54289dcee85de1e42c6794c2df5d15854b0e5dcb369ee99",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q16_eq.npz": "5f8b58c0056983adb46aabc1098f79c938c19ca3a4767f16c80cfc17156709f0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q32_dense.npz": "eefc189708af596cb56fabb13a63c52ff18b477fc0339df271b287280948b567",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q32_eq.npz": "3fab4c4e2d8e0d126d1fe0df4c9dfc6fa3a0fc6aa377f2f6acae2b3f3708df0f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q64_dense.npz": "f200644a7bdeb9079a0013598f75b3ea74fca4ac99ef01ef5256263544f076e1",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q64_eq.npz": "65649eeeea211a61115df2b498a4041d3de33215981628a0a9ec007bec1213e6",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q96_dense.npz": "afa2714d9ab5a59d8936500e3710468334220dd6757c8ae57a466931b77bf2fe",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_nmrom_K8_q96_eq.npz": "4b9155cd54dd961d6e4a95c6dfdc97598e88016d55f6295908ca41286362a4c1",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod104_galerkin.npz": "b9c9489076df0064d5aa2db7ad165bda661aa46fbc5e2ac9922387a99fc1fa22",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod112_galerkin.npz": "11f0bc4e595884535e3b064658a6b4ca55d3963f81ff45a0e6d99f4e1f4cf8c8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod128_galerkin.npz": "da4f6f1c7993a432ab5ce2f3a8ac13083c49c5ed4c61b0d47e6df9ebfcaf528a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod16_galerkin.npz": "8641c3c067180ca1a82df912745388bcdb39f0c0f576b191cbe94e7a3f7fc48a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod24_galerkin.npz": "73c99688a7c401112195af123d0628c2d18d31a880ee7c080f33fdce7b208d1f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod32_galerkin.npz": "19867c85c0aaa6fb5340d64f92d857dbdf17888dd13b460c6a6ea44f68bd00d6",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod40_galerkin.npz": "e9e5fe4c7f8d18d64f239fddb27d2933423b5e3459eb1a822c881f025ca9ed9c",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod48_galerkin.npz": "c0025bb19361beaa7a1b3066836ad1fc3b64f99fd2a051422fd28a542bcc5cf3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod72_galerkin.npz": "521cebb1e422351cf1a2a589456fdde10723b1ebe5d68c61c15a690f9bdcd000",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_pod80_galerkin.npz": "5818bad4758d9c2234c98ab614f7b9257fd2d097c7b68a8158b54c2e857cc123",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case12_pod8_galerkin.npz": "f138259335ba5cd12e886ae8b2f1352d9b232bf88c469106153c05c858b4bc82",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_transolver3d_w48_s32.npz": "ae5fc338b36cb819f923a47fb5a286590192f33e185fc59418f873d3ec40da92",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N32_case0_unet3d_w16.npz": "e3a7c8f77d46586448371e0a1ea41ce85f9f9c1bb88f9270dbc9249a703a0f12",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_deeponet3d_r128_w16.npz": "ed346a30aad590cf6179f5bda8b0e94b84640780b91e3e5835694c7dcc6b1eeb",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_reference.npz": "739591d45890bdc626c09311b9bfbf55628b135b955d5d3d61dd5dbcc8a3ad8f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_deeponet3d_r128_w16_native32_interpolate.npz": "9817c9f5875b5fbe77f48062c247ec193c7927ac1c58840b38c24b4439ffbc9a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_dst_exact.npz": "86e83da377d6e9ec21acd0fa6bea146b58b291be133136c04c4d9f1ced1b8b63",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case1_fno3d_w24_m8.npz": "2a12d11c54ef89e09c75b615f206e944e2927d2c56c79483d6d386197e57c1b2",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case1_reference.npz": "72aa38744297a26e123bbb5fc3866e9ee065c0e92d8bcb8054f8266ad19343f0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case5_fno3d_w24_m8_native32_interpolate.npz": "380d82ff3352fd85c26936cd101d5416899d6131cb65d44460239df6de8fecf2",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case5_reference.npz": "334735e952244c0487ca1ec5e95c74219a58890efb4b15277a8999f37d54853f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_linear_bank_galerkin.npz": "0684825a6cb41821b0140ef8c84349e4d762ecf54db50fd19a11451cfdd4fde0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_linear_bank_weak_qR.npz": "16ec8438223e4af2f245c29082febc0f3f23ed16eb8ae7a39cf8b8130b1152ae",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q0_dense.npz": "55b10b957965eebae0fe49d1f3ef8f3aeed010b44f32353d6bbb0d7fc5a0e8d0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_reference.npz": "031411ab30ff0ab14d1b067db0974ce9e313f97cfe5f059b89c264570460f9e4",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q0_eq.npz": "4d96cd57b128bb315ac5f9733b6eee68b7d0f67fbfc26660c0c6f7dfedbd4b29",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K16_q16_dense.npz": "331f70e67f407e115ab92d97131245b534f5a4bb023f7c68449da63ffb84ed47",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q16_eq.npz": "a72064f8cba6e0da7f6dce1b0f04e38b70a076dfa3c15311aa086d8b266f75a8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q32_dense.npz": "369ca5fd5f48265a280c0a48b9dc7f7595cbc934b93d9998ad3bb3f385c3f70b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q32_eq.npz": "9e769273cc8995fe8448a9a0192a15f2f8bfd124189ce1f5c50d2be1fb326ee8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K16_q64_dense.npz": "ebed26610b4453844236cee0c81e08b7a6fd328119e9dcce1f7c5ef6879a9be4",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q64_eq.npz": "152fe1fffb42f16f0ff8dc2d21b987b9eeb420fec7d3363ff6066aafd90800b5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K16_q96_dense.npz": "2899c055c15073a44ec0042d29bacc4ad96924a6c8158020998c43fd0133a095",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K16_q96_eq.npz": "2e0e0678c54887c646abab3bf98c8ad6e7eda1bec2998c5a2fd6b7ca27110c8b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q0_dense.npz": "af7bc203132b22ec941ec36de6daa83d41bb4acc7d80dcacd065ee0bb3a3d295",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q0_eq.npz": "d7a2359051c169793e029321dac696f6a79ca2de59d601ba404ef938b04c04f1",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q16_dense.npz": "5e96a5894a46e66cd96a742e0df723b271ff8d95fbfda80990a407348bfc72c3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q16_eq.npz": "feed47ff1883797f30f425ddaffb365c562a2421ea09fa901f75dd507880013d",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q32_dense.npz": "d8b4acf7a04a08dee953066e4aa2da6e7de07c80d695c84d28b47b5a2c254c43",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K8_q32_eq.npz": "8f89278745ab30a1f68755430eea8fd40462535895c34981f1e7635be8457a9a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q64_dense.npz": "1c7dd89607ea232eb10bcc19948ef8ea418accff00b460d47df8d299a7a6a9e3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K8_q64_eq.npz": "50e1991a9be742251656fca5aff775a63123f217314834ad84484958feb03282",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_nmrom_K8_q96_dense.npz": "334cd0fbbfa380379b40a16307f568b3d4fe2c5e9dec6354cd336dd17fbb68fb",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_nmrom_K8_q96_eq.npz": "15bff69ef0c883b4466a29ba6e7c9f1be2faa128709dbbac12942b6c1e1c1f59",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod104_galerkin.npz": "6047148dc10a84e7c885f9930594197230063c3a1535d94d672c7c2b9230b20a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod112_galerkin.npz": "98215e2cdaf702ebab931adc4611c6034debeadae791b26e56f1d91e65fefa7d",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod128_galerkin.npz": "b66f0c0c6201b767f7ae2890027e6ddd5465caca3e117515082cd46cac3033c3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod16_galerkin.npz": "5dd6303121309ab34bc0fce35bdd2dc569fc0d501515268b3b0926fada9bba2b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod24_galerkin.npz": "b6b4a7df7cd4afde5aee21b8ae427e6e4c80c3ee8928d0c4f4746d9d1c6b99de",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod32_galerkin.npz": "ba9ab4ea7a39c11e7515469beabb63105e1ed237a4f4a56b6ab5e2b70581bc52",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod40_galerkin.npz": "8fb11ad6d1b176530767bb3539344f5f46b54b23bbda0acf92523fdb0d6b878f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod48_galerkin.npz": "c56bd2dcd6a12477eda6f82de9dd1475903ead551122ad12b7a37ef3f7f5950a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod72_galerkin.npz": "e369303bf3b3afa57e0f6c9939cbbcc11cf680201d676fbeae2ac4f14d6e670b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_pod80_galerkin.npz": "692baad0bc7aac8fb648685c5911b7bd00cf9f1d251293d8231d7a7c5bd33d72",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case12_pod8_galerkin.npz": "ec8031973487cdc29878073d6de7bed8cba3696c5ddab2e3213fd4b13fee5674",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_transolver3d_w48_s32.npz": "9cbb9e10e0547ea67db7bcfc99ddae2da73615c30adc441df61d6b26ffa7e1ff",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_transolver3d_w48_s32_native32_interpolate.npz": "25ad49ac7b8b968d83a34b3bca9c4cf1af72e808dc7605f2860fa3eb596a2bbe",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case3_unet3d_w16.npz": "a8e7dd830eef32231620c1652e847ffd067b9f614fdd8083dd15980abcf4ae93",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case3_reference.npz": "7b0b1f26c73807f2d0aca8f3409613765dabb7572f617c867e428741356565dc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "2d1fb23eca353c96086d2476b3be3428873ca5b27dad13ccd031b6a4ec70a91b"
   },
   "checks": [
     {
@@ -7059,6 +7149,1606 @@
         "worst_all": 1.3877787807814457e-17,
         "initial_error": 0.0,
         "physical_evolved": 2.7755575615628914e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "deeponet3d_r128_w16",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0432698895102904,
+        "physical_error": 0.042567301897371124
+      },
+      "reported": {
+        "same_grid_error": 0.0432698895102904,
+        "physical_error": 0.04256730189737113
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "dst_exact",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "reported": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "fno3d_w24_m8",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "same_grid_error": 0.0023939220944520874,
+        "physical_error": 0.002931211967924394
+      },
+      "reported": {
+        "same_grid_error": 0.0023939220944520874,
+        "physical_error": 0.002931211967924394
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "linear_bank_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014707472793346048,
+        "physical_error": 0.0031140262582460745
+      },
+      "reported": {
+        "same_grid_error": 0.001470747279334605,
+        "physical_error": 0.0031140262582460745
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "linear_bank_weak_qR",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014503433547919172,
+        "physical_error": 0.0031098899671031556
+      },
+      "reported": {
+        "same_grid_error": 0.0014503433547919174,
+        "physical_error": 0.003109889967103156
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005891574776713949,
+        "physical_error": 0.006145384819655752
+      },
+      "reported": {
+        "same_grid_error": 0.005891574776713949,
+        "physical_error": 0.006145384819655752
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005939309492241535,
+        "physical_error": 0.006268684679585167
+      },
+      "reported": {
+        "same_grid_error": 0.005939309492241536,
+        "physical_error": 0.006268684679585167
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.004603363479350499,
+        "physical_error": 0.005314499993188033
+      },
+      "reported": {
+        "same_grid_error": 0.0046033634793504995,
+        "physical_error": 0.005314499993188035
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005073518702652829,
+        "physical_error": 0.005764006419657912
+      },
+      "reported": {
+        "same_grid_error": 0.00507351870265283,
+        "physical_error": 0.005764006419657912
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0032843579004192876,
+        "physical_error": 0.003992786818782629
+      },
+      "reported": {
+        "same_grid_error": 0.003284357900419288,
+        "physical_error": 0.00399278681878263
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003946533137045039,
+        "physical_error": 0.0048536290687988025
+      },
+      "reported": {
+        "same_grid_error": 0.003946533137045039,
+        "physical_error": 0.004853629068798803
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0020179205092227923,
+        "physical_error": 0.003392621334101404
+      },
+      "reported": {
+        "same_grid_error": 0.0020179205092227923,
+        "physical_error": 0.0033926213341014043
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.004823622591034011,
+        "physical_error": 0.005641578414183627
+      },
+      "reported": {
+        "same_grid_error": 0.004823622591034011,
+        "physical_error": 0.005641578414183629
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.001605230944854038,
+        "physical_error": 0.0031823410570762135
+      },
+      "reported": {
+        "same_grid_error": 0.0016052309448540384,
+        "physical_error": 0.0031823410570762144
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "same_grid_error": 0.005880152133357521,
+        "physical_error": 0.006370140108289729
+      },
+      "reported": {
+        "same_grid_error": 0.005880152133357519,
+        "physical_error": 0.006370140108289727
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.017154189967253642,
+        "physical_error": 0.01672994766956314
+      },
+      "reported": {
+        "same_grid_error": 0.017154189967253645,
+        "physical_error": 0.016729947669563143
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01716052013264622,
+        "physical_error": 0.01674817336282216
+      },
+      "reported": {
+        "same_grid_error": 0.01716052013264622,
+        "physical_error": 0.016748173362822163
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009814569856110079,
+        "physical_error": 0.009963740045841973
+      },
+      "reported": {
+        "same_grid_error": 0.009814569856110079,
+        "physical_error": 0.009963740045841971
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.00993559053950216,
+        "physical_error": 0.010108857529746372
+      },
+      "reported": {
+        "same_grid_error": 0.00993559053950216,
+        "physical_error": 0.010108857529746372
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006149654008021058,
+        "physical_error": 0.0066034740859551196
+      },
+      "reported": {
+        "same_grid_error": 0.006149654008021059,
+        "physical_error": 0.0066034740859551196
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006634004783161144,
+        "physical_error": 0.0070601681986315785
+      },
+      "reported": {
+        "same_grid_error": 0.006634004783161145,
+        "physical_error": 0.007060168198631579
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0034340449270800944,
+        "physical_error": 0.004325989197053574
+      },
+      "reported": {
+        "same_grid_error": 0.0034340449270800944,
+        "physical_error": 0.004325989197053574
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.00520733717427725,
+        "physical_error": 0.005883066376297192
+      },
+      "reported": {
+        "same_grid_error": 0.00520733717427725,
+        "physical_error": 0.005883066376297193
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0020939447568351513,
+        "physical_error": 0.0034330868811536567
+      },
+      "reported": {
+        "same_grid_error": 0.002093944756835152,
+        "physical_error": 0.003433086881153657
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006409535318201541,
+        "physical_error": 0.007018382991066975
+      },
+      "reported": {
+        "same_grid_error": 0.0064095353182015416,
+        "physical_error": 0.007018382991066978
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod104_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0007755222271090224,
+        "physical_error": 0.0028640004812169224
+      },
+      "reported": {
+        "same_grid_error": 0.0007755222271090225,
+        "physical_error": 0.0028640004812169224
+      },
+      "discrepancies": {
+        "same_grid_error": 1.0842021724855044e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod112_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0006852169817401537,
+        "physical_error": 0.002838860562509637
+      },
+      "reported": {
+        "same_grid_error": 0.0006852169817401537,
+        "physical_error": 0.002838860562509637
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod128_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0003698579365226996,
+        "physical_error": 0.0027786448619827398
+      },
+      "reported": {
+        "same_grid_error": 0.0003698579365226997,
+        "physical_error": 0.0027786448619827398
+      },
+      "discrepancies": {
+        "same_grid_error": 1.0842021724855044e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod16_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.05317448368670969,
+        "physical_error": 0.05225823636197941
+      },
+      "reported": {
+        "same_grid_error": 0.0531744836867097,
+        "physical_error": 0.052258236361979425
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod24_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.029594820622433196
+      },
+      "reported": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.0295948206224332
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod32_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.017517097192274268,
+        "physical_error": 0.017524237095226904
+      },
+      "reported": {
+        "same_grid_error": 0.01751709719227427,
+        "physical_error": 0.017524237095226908
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod40_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.008477801878010284,
+        "physical_error": 0.008873697323283832
+      },
+      "reported": {
+        "same_grid_error": 0.008477801878010284,
+        "physical_error": 0.008873697323283834
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod48_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205434
+      },
+      "reported": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205435
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod72_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002365964918878733,
+        "physical_error": 0.003665662158773615
+      },
+      "reported": {
+        "same_grid_error": 0.0023659649188787334,
+        "physical_error": 0.0036656621587736154
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod80_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019804185397035374,
+        "physical_error": 0.003425266608460266
+      },
+      "reported": {
+        "same_grid_error": 0.0019804185397035374,
+        "physical_error": 0.0034252666084602667
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod8_galerkin",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.08889973979783788,
+        "physical_error": 0.08827419541715206
+      },
+      "reported": {
+        "same_grid_error": 0.08889973979783793,
+        "physical_error": 0.08827419541715208
+      },
+      "discrepancies": {
+        "same_grid_error": 4.163336342344337e-17,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "transolver3d_w48_s32",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.011941213561436457,
+        "physical_error": 0.012516539591561463
+      },
+      "reported": {
+        "same_grid_error": 0.011941213561436459,
+        "physical_error": 0.012516539591561465
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "unet3d_w16",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019318997012163128,
+        "physical_error": 0.0033571610826095407
+      },
+      "reported": {
+        "same_grid_error": 0.0019318997012163124,
+        "physical_error": 0.003357161082609542
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 1.3010426069826053e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "deeponet3d_r128_w16",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.268324738458882,
+        "physical_error": 0.2685878441981552
+      },
+      "reported": {
+        "same_grid_error": 0.268324738458882,
+        "physical_error": 0.2685878441981551
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 5.551115123125783e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "deeponet3d_r128_w16_native32_interpolate",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04202374274353499,
+        "physical_error": 0.04180839089084174
+      },
+      "reported": {
+        "same_grid_error": 0.04202374274353499,
+        "physical_error": 0.04180839089084174
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "dst_exact",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0006867163636983678
+      },
+      "reported": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0006867163636983678
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "fno3d_w24_m8",
+      "mesh": 64,
+      "case": 1,
+      "observed": {
+        "same_grid_error": 0.17186592304887224,
+        "physical_error": 0.17239158918715497
+      },
+      "reported": {
+        "same_grid_error": 0.17186592304887224,
+        "physical_error": 0.17239158918715494
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.7755575615628914e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "mesh": 64,
+      "case": 5,
+      "observed": {
+        "same_grid_error": 0.003656476283537556,
+        "physical_error": 0.003525071503619929
+      },
+      "reported": {
+        "same_grid_error": 0.0036564762835375555,
+        "physical_error": 0.00352507150361993
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "linear_bank_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.001474295144122908,
+        "physical_error": 0.0016243024121258942
+      },
+      "reported": {
+        "same_grid_error": 0.0014742951441229079,
+        "physical_error": 0.001624302412125894
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 2.168404344971009e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "linear_bank_weak_qR",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014443036445984739,
+        "physical_error": 0.0015987677776741172
+      },
+      "reported": {
+        "same_grid_error": 0.0014443036445984736,
+        "physical_error": 0.0015987677776741166
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 6.505213034913027e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005725800098865976,
+        "physical_error": 0.005706857743510389
+      },
+      "reported": {
+        "same_grid_error": 0.005725800098865973,
+        "physical_error": 0.005706857743510389
+      },
+      "discrepancies": {
+        "same_grid_error": 2.6020852139652106e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.006521109769040967,
+        "physical_error": 0.006523440494101787
+      },
+      "reported": {
+        "same_grid_error": 0.006521109769040965,
+        "physical_error": 0.0065234404941017865
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.004579973585116499,
+        "physical_error": 0.0046294239879167325
+      },
+      "reported": {
+        "same_grid_error": 0.004579973585116498,
+        "physical_error": 0.004629423987916732
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.006267488575233124,
+        "physical_error": 0.006302489426131044
+      },
+      "reported": {
+        "same_grid_error": 0.0062674885752331206,
+        "physical_error": 0.006302489426131044
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.003214861868976107,
+        "physical_error": 0.003251910910326509
+      },
+      "reported": {
+        "same_grid_error": 0.0032148618689761058,
+        "physical_error": 0.003251910910326509
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3010426069826053e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.007196615270198644,
+        "physical_error": 0.007245302177952921
+      },
+      "reported": {
+        "same_grid_error": 0.007196615270198643,
+        "physical_error": 0.007245302177952923
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002001146961515104,
+        "physical_error": 0.0021126971488643043
+      },
+      "reported": {
+        "same_grid_error": 0.0020011469615151037,
+        "physical_error": 0.0021126971488643034
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.00885228733498248,
+        "physical_error": 0.008906283894310427
+      },
+      "reported": {
+        "same_grid_error": 0.008852287334982478,
+        "physical_error": 0.008906283894310427
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0015980056923646316,
+        "physical_error": 0.0017390628680803337
+      },
+      "reported": {
+        "same_grid_error": 0.0015980056923646313,
+        "physical_error": 0.0017390628680803333
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.012060029671638987,
+        "physical_error": 0.012103996759543335
+      },
+      "reported": {
+        "same_grid_error": 0.012060029671638987,
+        "physical_error": 0.012103996759543332
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01668323714488561,
+        "physical_error": 0.016544357078216162
+      },
+      "reported": {
+        "same_grid_error": 0.016683237144885607,
+        "physical_error": 0.016544357078216162
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.016689210475310915,
+        "physical_error": 0.016553230255982404
+      },
+      "reported": {
+        "same_grid_error": 0.016689210475310915,
+        "physical_error": 0.0165532302559824
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009645477073060786,
+        "physical_error": 0.009617011296752654
+      },
+      "reported": {
+        "same_grid_error": 0.009645477073060781,
+        "physical_error": 0.009617011296752652
+      },
+      "discrepancies": {
+        "same_grid_error": 5.204170427930421e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009913361433967928,
+        "physical_error": 0.009892526403263355
+      },
+      "reported": {
+        "same_grid_error": 0.009913361433967927,
+        "physical_error": 0.009892526403263352
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006046873127942602,
+        "physical_error": 0.006054865895451367
+      },
+      "reported": {
+        "same_grid_error": 0.0060468731279426004,
+        "physical_error": 0.006054865895451366
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.006795243776270205,
+        "physical_error": 0.00686464977584753
+      },
+      "reported": {
+        "same_grid_error": 0.006795243776270203,
+        "physical_error": 0.006864649775847529
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003366135846461512,
+        "physical_error": 0.0034154110911625846
+      },
+      "reported": {
+        "same_grid_error": 0.0033661358464615117,
+        "physical_error": 0.003415411091162584
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.00855158667214448,
+        "physical_error": 0.008616976769513217
+      },
+      "reported": {
+        "same_grid_error": 0.008551586672144477,
+        "physical_error": 0.008616976769513217
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002067151288066951,
+        "physical_error": 0.002169940872177459
+      },
+      "reported": {
+        "same_grid_error": 0.0020671512880669515,
+        "physical_error": 0.0021699408721774583
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.011389712225959409,
+        "physical_error": 0.0114402545375283
+      },
+      "reported": {
+        "same_grid_error": 0.011389712225959405,
+        "physical_error": 0.011440254537528302
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod104_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0007610755710913568,
+        "physical_error": 0.0010241438393214044
+      },
+      "reported": {
+        "same_grid_error": 0.0007610755710913568,
+        "physical_error": 0.0010241438393214042
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.168404344971009e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod112_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0006718071125794466,
+        "physical_error": 0.000958181468820501
+      },
+      "reported": {
+        "same_grid_error": 0.0006718071125794466,
+        "physical_error": 0.0009581814688205008
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.168404344971009e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod128_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0003601994034577653,
+        "physical_error": 0.0007714197955926614
+      },
+      "reported": {
+        "same_grid_error": 0.00036019940345776526,
+        "physical_error": 0.0007714197955926614
+      },
+      "discrepancies": {
+        "same_grid_error": 5.421010862427522e-20,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod16_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.052701683022144195,
+        "physical_error": 0.05246346631174893
+      },
+      "reported": {
+        "same_grid_error": 0.05270168302214418,
+        "physical_error": 0.05246346631174892
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3877787807814457e-17,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod24_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.02968772069337116,
+        "physical_error": 0.029581719175886523
+      },
+      "reported": {
+        "same_grid_error": 0.029687720693371143,
+        "physical_error": 0.029581719175886513
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-17,
+        "physical_error": 1.0408340855860843e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod32_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.017372056597588788,
+        "physical_error": 0.017333880407904
+      },
+      "reported": {
+        "same_grid_error": 0.017372056597588788,
+        "physical_error": 0.017333880407903998
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod40_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.008384449953387422,
+        "physical_error": 0.008401982328433085
+      },
+      "reported": {
+        "same_grid_error": 0.008384449953387422,
+        "physical_error": 0.008401982328433082
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod48_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005575777349884084,
+        "physical_error": 0.005639121917391414
+      },
+      "reported": {
+        "same_grid_error": 0.005575777349884084,
+        "physical_error": 0.005639121917391412
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod72_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0023285196830079217,
+        "physical_error": 0.002439676550273969
+      },
+      "reported": {
+        "same_grid_error": 0.0023285196830079213,
+        "physical_error": 0.0024396765502739687
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod80_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019506249058327174,
+        "physical_error": 0.0020801016044910826
+      },
+      "reported": {
+        "same_grid_error": 0.0019506249058327174,
+        "physical_error": 0.0020801016044910826
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "pod8_galerkin",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0884403274257558,
+        "physical_error": 0.08827962916712753
+      },
+      "reported": {
+        "same_grid_error": 0.08844032742575578,
+        "physical_error": 0.08827962916712753
+      },
+      "discrepancies": {
+        "same_grid_error": 2.7755575615628914e-17,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "transolver3d_w48_s32",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.22065283417182796,
+        "physical_error": 0.22098350782791362
+      },
+      "reported": {
+        "same_grid_error": 0.22065283417182793,
+        "physical_error": 0.22098350782791362
+      },
+      "discrepancies": {
+        "same_grid_error": 2.7755575615628914e-17,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.010698079611190407,
+        "physical_error": 0.010699609475260715
+      },
+      "reported": {
+        "same_grid_error": 0.010698079611190405,
+        "physical_error": 0.010699609475260713
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "unet3d_w16",
+      "mesh": 64,
+      "case": 3,
+      "observed": {
+        "same_grid_error": 2.198927821040429,
+        "physical_error": 2.2000308902910506
+      },
+      "reported": {
+        "same_grid_error": 2.198927821040429,
+        "physical_error": 2.200030890291051
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.440892098500626e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "method": "unet3d_w16_native32_interpolate",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003769003918326056,
+        "physical_error": 0.0035618602578154916
+      },
+      "reported": {
+        "same_grid_error": 0.0037690039183260553,
+        "physical_error": 0.0035618602578154908
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 8.673617379884035e-19
       },
       "passed": true
     }

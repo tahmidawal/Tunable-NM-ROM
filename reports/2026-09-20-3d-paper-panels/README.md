@@ -66,34 +66,39 @@ The complete audited report retains the K8 ladder, intermediate POD ranks, time-
 
 ![Generated paired comparison](heat3d-tune02-n64.png)
 
-## Poisson 3D — tuned02 — 64 intervals per axis
+## Poisson 3D — extra03 — 64 intervals per axis
 
-**Provisional:** Development data. Static head-parameter transfers are included in this implementation's timings; the next paired panel corrects their placement. Direct operator transfer and quadrature certification failed. All measurements below share one allocation.
+**Provisional:** Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.
 
 Each method is evaluated on 16 distinct cases; all timed repetitions are retained. 
 
-Source `68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b`; job `3990494`; GPU `NVIDIA A100 80GB PCIe`. [LaTeX table](poisson3d-tuned02-n64.tex), [CSV](poisson3d-tuned02-n64.csv), [vector figure](poisson3d-tuned02-n64.pdf).
+Source `a50ce0977373977688d73f82700108a6138b433b`; job `3995104`; GPU `NVIDIA A100 80GB PCIe`. [LaTeX table](poisson3d-extra03-n64.tex), [CSV](poisson3d-extra03-n64.csv), [vector figure](poisson3d-extra03-n64.pdf).
 
 | Method | Median error (%) | Worst error (%) | GPU median (ms) | GPU p95 (ms) | NF / NS cases | Outliers / calls |
 | --- | ---: | ---: | ---: | ---: | --- | --- |
-| NM-ROM K16, q0 | 0.2149 | 0.5726 | 3.191 | 3.954 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q16 | 0.1492 | 0.4580 | 3.252 | 4.189 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q32 | 0.1159 | 0.3215 | 3.230 | 3.980 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q64 | 0.0687 | 0.2001 | 3.287 | 3.984 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q96 | 0.0539 | 0.1598 | 3.282 | 4.097 | 0 / 0 | 0 / 48 |
-| Full bank, weak solve | 0.0520 | 0.1444 | 0.894 | 1.021 | 0 / 0 | 1 / 48 |
-| Full bank, Galerkin | 0.0530 | 0.1474 | 0.473 | 0.726 | 0 / 0 | 3 / 48 |
-| POD16 | 1.8304 | 5.2702 | 0.206 | 0.673 | 0 / 0 | 8 / 48 |
-| POD128 | 0.0066 | 0.0360 | 0.465 | 0.764 | 0 / 0 | 5 / 48 |
-| FNO, direct transfer | 16.0680 | 17.1866 | 17.493 | 18.200 | 0 / 0 | 0 / 48 |
-| FNO, native + interpolation | 0.2852 | 0.3656 | 11.579 | 12.243 | 0 / 0 | 0 / 48 |
-| U-Net, direct transfer | 168.0982 | 219.8928 | 11.985 | 12.627 | 0 / 0 | 0 / 48 |
-| U-Net, native + interpolation | 0.2828 | 0.3769 | 4.328 | 4.887 | 0 / 0 | 0 / 48 |
-| Direct DST | 0.0000 | 0.0000 | 0.229 | 0.581 | 0 / 0 | 10 / 48 |
+| NM-ROM K16, q0 | 0.2149 | 0.5726 | 3.390 | 3.965 | 0 / 0 | 0 / 48 |
+| NM-ROM K16, q16 | 0.1492 | 0.4580 | 3.435 | 4.269 | 0 / 0 | 0 / 48 |
+| NM-ROM K16, q32 | 0.1159 | 0.3215 | 3.301 | 4.113 | 0 / 0 | 0 / 48 |
+| NM-ROM K16, q64 | 0.0687 | 0.2001 | 3.465 | 4.269 | 0 / 0 | 0 / 48 |
+| NM-ROM K16, q96 | 0.0539 | 0.1598 | 3.566 | 4.219 | 0 / 0 | 0 / 48 |
+| Full bank, weak solve | 0.0520 | 0.1444 | 0.944 | 1.049 | 0 / 0 | 0 / 48 |
+| Full bank, Galerkin | 0.0530 | 0.1474 | 0.479 | 0.741 | 0 / 0 | 3 / 48 |
+| POD16 | 1.8304 | 5.2702 | 0.203 | 0.554 | 0 / 0 | 5 / 48 |
+| POD48 | 0.1484 | 0.5576 | 0.287 | 0.403 | 0 / 0 | 2 / 48 |
+| POD128 | 0.0066 | 0.0360 | 0.480 | 0.761 | 0 / 0 | 4 / 48 |
+| FNO, direct transfer | 16.0680 | 17.1866 | 17.107 | 17.678 | 0 / 0 | 0 / 48 |
+| FNO, native + interpolation | 0.2852 | 0.3656 | 11.197 | 11.617 | 0 / 0 | 0 / 48 |
+| U-Net, direct transfer | 168.0982 | 219.8928 | 12.157 | 12.513 | 0 / 0 | 0 / 48 |
+| U-Net, native + interpolation | 0.2828 | 0.3769 | 4.262 | 4.712 | 0 / 0 | 0 / 48 |
+| DeepONet, direct transfer | 16.7244 | 26.8325 | 7.221 | 7.538 | 0 / 0 | 0 / 48 |
+| DeepONet, native + interpolation | 2.1141 | 4.2024 | 3.016 | 3.261 | 0 / 0 | 0 / 48 |
+| Transolver, direct transfer | 16.9674 | 22.0653 | 12.719 | 13.382 | 0 / 0 | 0 / 48 |
+| Transolver, native + interpolation | 0.7201 | 1.0698 | 4.493 | 5.311 | 0 / 0 | 0 / 48 |
+| Direct DST | 0.0000 | 0.0000 | 0.220 | 0.501 | 0 / 0 | 6 / 48 |
 
 The complete audited report retains the K8 ladder, intermediate POD ranks, and failed sampled-quadrature diagnostics. They are not presented as missing experiments.
 
-![Generated paired comparison](poisson3d-tuned02-n64.png)
+![Generated paired comparison](poisson3d-extra03-n64.png)
 
 ## Navier–Stokes 3D — comparison02 — 32 periodic points per axis
 

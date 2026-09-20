@@ -73,6 +73,14 @@
         "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/source_audit.json"
       ],
       "qualification": "Audited development comparison with the fixed three-dimensional interacting velocity family and identical training membership. The learned bank and nonlinear head miss the physical accuracy target; these negative results motivate the larger-bank/head experiment. Timed results cover the declared first eight development cases, not the full sixteen used in training validation. Galerkin bank/POD controls solve a different reduced projection from the weak least-squares correction ladder. Initial fitting and dense input/output are charged. No latent state history was saved in this attempt, so evolution stopping records are checked for consistency only. A CUDA delay-kernel warning during operator training preceded timing burn-ins and is retained. Final data remain unopened."
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "adapter": "poisson",
+      "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/audit-local.json",
+      "qualification": "Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder is stationary and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened."
     }
   ]
 }

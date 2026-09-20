@@ -15,6 +15,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+matplotlib.rcParams['svg.hashsalt'] = 'nmrom-3d-paper-panels'
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -91,7 +92,8 @@ def plot(panel, rows):
         axis.legend(fontsize=7, frameon=False)
     fig.suptitle(f"{panel['pde']} — {panel['mesh_label']} — development", fontsize=11)
     for extension in ("pdf", "svg", "png"):
-        fig.savefig(OUT / f"{panel['slug']}.{extension}", dpi=180)
+        metadata = {"CreationDate": None, "ModDate": None} if extension == "pdf" else ({"Date": None} if extension == "svg" else None)
+        fig.savefig(OUT / f"{panel['slug']}.{extension}", dpi=180, metadata=metadata)
     plt.close(fig)
 
 

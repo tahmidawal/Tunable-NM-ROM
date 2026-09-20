@@ -202,11 +202,11 @@
     },
     {
       "pde": "Poisson 3D",
-      "attempt": "tuned02",
+      "attempt": "extra03",
       "mesh": 64,
       "mesh_label": "64 intervals per axis",
-      "slug": "poisson3d-tuned02-n64",
-      "qualification": "Development data. Static head-parameter transfers are included in this implementation's timings; the next paired panel corrects their placement. Direct operator transfer and quadrature certification failed. All measurements below share one allocation.",
+      "slug": "poisson3d-extra03-n64",
+      "qualification": "Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.",
       "methods": [
         {
           "id": "nmrom_K16_q0_dense",
@@ -255,6 +255,12 @@
           "rank": 16
         },
         {
+          "id": "pod48_galerkin",
+          "label": "POD48",
+          "series": "POD",
+          "rank": 48
+        },
+        {
           "id": "pod128_galerkin",
           "label": "POD128",
           "series": "POD",
@@ -279,6 +285,26 @@
           "id": "unet3d_w16_native32_interpolate",
           "label": "U-Net, native + interpolation",
           "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d_r128_w16",
+          "label": "DeepONet, direct transfer",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_r128_w16_native32_interpolate",
+          "label": "DeepONet, native + interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_w48_s32",
+          "label": "Transolver, direct transfer",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_w48_s32_native32_interpolate",
+          "label": "Transolver, native + interpolation",
+          "series": "Transolver"
         },
         {
           "id": "dst_exact",

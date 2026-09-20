@@ -1,0 +1,208 @@
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "checks": [
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 32,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.025,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.05,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 0.01,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    },
+    {
+      "intervals": 64,
+      "setting": {
+        "dt": 0.1,
+        "relative_tolerance": 1e-06,
+        "max_iterations": 500
+      },
+      "exact_prediction_parity": true,
+      "exact_stats_parity": true,
+      "all_steps_converged": true
+    }
+  ],
+  "smoke_seconds": 21.615214920020662,
+  "scope": "one synthetic initial field per mesh; native/fine exact trace parity only; no scientific performance result or final-data access"
+}

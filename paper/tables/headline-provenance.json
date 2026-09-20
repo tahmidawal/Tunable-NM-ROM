@@ -1,5 +1,5 @@
 {
-  "rule": "One frozen model per row. fast = fastest retained setting meeting its stopping rule; accurate = smallest worst-case error. One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.",
+  "rule": "One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.",
   "sources": {
     "paired_cg": {
       "tree": ".",
@@ -570,7 +570,7 @@
       "cases": 32
     },
     {
-      "problem": "Reflective wave 2D, $1024^2$ (dev.)",
+      "problem": "Wave 2D, $1024^2$ (dev.)",
       "setting": "$q=0$",
       "error_pct": 11.338779125919615,
       "fom_error_pct": 4.289035378893795,
@@ -582,7 +582,7 @@
       "displacement_pct": 6.1065974723820435
     },
     {
-      "problem": "Reflective wave 2D, $1024^2$ (dev.)",
+      "problem": "Wave 2D, $1024^2$ (dev.)",
       "setting": "$q=32$",
       "error_pct": 5.116413712803318,
       "fom_error_pct": 4.289035378893795,
@@ -664,6 +664,16 @@
     "nHeadPoissonThreeAccErr": "0.26",
     "nHeadBurgersMidErr": "1.04",
     "nHeadBurgersMidS": "0.50",
+    "nHeadHeatThreeAccErr": "0.75",
+    "nFailBurgersQzero": "16.26",
+    "nFailBurgersAcc": "4.40",
+    "nFailNsQzero": "20.34",
+    "nFailNsAcc": "18.92",
+    "nFailNsTarget": "5",
+    "nFailNsFailing": "31",
+    "nFailNsCases": "32",
+    "nFailWaveQzero": "11.34",
+    "nFailWaveAcc": "5.12",
     "nHeadFasterRows": "10",
     "nHeadRows": "16",
     "nHeadAccFasterSubOne": "3"

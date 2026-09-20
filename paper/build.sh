@@ -10,6 +10,8 @@ PY=/home/tahmid/Dev/.venv/bin/python
 "$PY" gen_campaign_supplement.py
 "$PY" gen_rewrite_tables.py
 "$PY" gen_main_experiments.py
+"$PY" gen_headline.py
+"$PY" figures/gen_fig_speedup_resolution.py
 if [[ "${1:-}" == "--figures" ]]; then
   "$PY" figures/gen_fig_tunability_family.py
 fi

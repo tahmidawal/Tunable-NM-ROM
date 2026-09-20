@@ -18,6 +18,12 @@ def audit(out, record):
     out=Path(out);checks=[]
     metadata={(mesh['intervals'],name):value for mesh in record['meshes']
         for name,value in mesh['methods'].items() if name.startswith('fom_cn_cg_')}
+    if 'iterative_cg_controls' in record['config']:
+        requested = {f"fom_cn_cg_dt{float(setting['dt']):g}_rtol{float(setting['relative_tolerance']):.0e}"
+            for setting in record['config']['iterative_cg_controls']} if record['config'].get('include_linear_controls',True) else set()
+        assert len(requested)==(len(record['config']['iterative_cg_controls']) if record['config'].get('include_linear_controls',True) else 0)
+        for mesh in record['meshes']:
+            assert {name for n,name in metadata if n==mesh['intervals']}==requested
     for row in record['invocations']:
         key=(row['intervals'],row['method'])
         if key not in metadata:continue

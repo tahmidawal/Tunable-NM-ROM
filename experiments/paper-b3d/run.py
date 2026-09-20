@@ -182,7 +182,7 @@ def main():
         report['stage']='representation';save()
         vals=np.concatenate([x[[0,10,25,50]] for x in truths])
         at=vals@Q;fl=np.sum((vals-at@Q.T)**2,axis=1);norm=np.linalg.norm(vals,axis=1)
-        st=starts_for(at,H,Z)
+        st=starts_for(at,H,Z,cfg.get('diagnostic_starts',4))
         for q in cfg['q_ladder']:
             fit=c.make_fit(K,q,cfg['fit_budget'],cfg['gradient_tolerance'])
             best,all_results=tiled_fit(fit,at,fl,st,C[:,:q],Rb,hp,cfg.get('fit_tile',16))

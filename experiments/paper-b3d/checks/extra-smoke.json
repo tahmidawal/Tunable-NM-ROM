@@ -1,0 +1,42 @@
+{
+  "deeponet3d": {
+    "f64": true,
+    "parameters": 1861959,
+    "native_shape": [
+      51,
+      29791
+    ],
+    "interpolation_max": 0.0,
+    "finite_backward": true,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ]
+  },
+  "transolver3d": {
+    "f64": true,
+    "parameters": 564392,
+    "native_shape": [
+      51,
+      29791
+    ],
+    "interpolation_max": 0.0,
+    "finite_backward": true,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ]
+  },
+  "head_candidate": {
+    "bank_unchanged": true,
+    "code_shape": [
+      8,
+      4
+    ],
+    "coefficient_conversion_relative": 2.0338887520104083e-16,
+    "finite_training": true
+  },
+  "backend": "gpu"
+}

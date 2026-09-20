@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import pickle
+import shutil
 import time
 from pathlib import Path
 import numpy as np
@@ -68,6 +69,22 @@ def main():
             shared_operator_source=json.loads(Path('operators/VENDOR.json').read_text()),models=[])
         dump(out/'operator_metadata.json',metadata)
         for model in cfg['operators']:
+            if model.get('reuse'):
+                source=Path('reuse/operators')/model['name']
+                ck=pickle.loads((source/'best.pkl').read_bytes())
+                assert ck['spec']==model['spec'] and ck['config']==model['training']
+                frozen_metadata=json.loads(Path('reuse/operators/operator_metadata.json').read_text())
+                for key in ['training_rows','validation_rows','observed_training_steps','output_steps','scale','nu_center','nu_scale']:
+                    assert np.allclose(metadata[key],frozen_metadata[key],rtol=1e-13,atol=1e-14),(key,'reused operator data contract mismatch')
+                destination=out/model['name'];destination.mkdir(exist_ok=False)
+                for filename in ['best.pkl','training.json','curve.json']:
+                    shutil.copyfile(source/filename,destination/filename)
+                info=json.loads((destination/'training.json').read_text())
+                metadata['models'].append(dict(name=model['name'],**info,reused=True,
+                     selected_checkpoint_sha256=hashlib.sha256((source/'best.pkl').read_bytes()).hexdigest()))
+                dump(out/'operator_metadata.json',metadata)
+                print('OPERATOR REUSED',model['name'],flush=True)
+                continue
             params,info=train(tx,ty,vx,vy,model['spec'],model['training'],out/model['name'],dump,checkpoint,td,vd)
             metadata['models'].append(dict(name=model['name'],**info));dump(out/'operator_metadata.json',metadata)
             del params;jax.clear_caches()

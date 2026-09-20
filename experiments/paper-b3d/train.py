@@ -7,6 +7,8 @@ from __future__ import annotations
 import argparse
 import json
 import pickle
+import hashlib
+import shutil
 import time
 from pathlib import Path
 import numpy as np
@@ -58,6 +60,21 @@ def main():
                          rows=cfg['validation_rows'],steps=cfg['train_steps'])
     np.savez_compressed(out/'physical_inputs.npz',training_nu=raw['nu'][rows],
                          validation_nu=raw['nu'][cfg['validation_rows']])
+    if cfg.get('reuse_attempt'):
+        frozen=Path('reuse/training/checkpoint.pkl')
+        provenance=json.loads(Path('reuse/REUSE.json').read_text())
+        old=pickle.loads(frozen.read_bytes())
+        prior=old['cfg']['training']
+        for name in ['nodes','dt','steps','seed','train_trajectories','train_steps']:
+            assert prior[name]==cfg[name],(name,'frozen checkpoint data contract changed')
+        assert old['training_rows']==rows and old['training_steps']==cfg['train_steps']
+        assert old['cfg']['k']==tc['latent_dimension'] and old['cfg']['r']==tc['rank']
+        shutil.copyfile(frozen,out/'checkpoint.pkl')
+        dump(out/'reuse.json',dict(source=provenance,checkpoint_sha256=hashlib.sha256(frozen.read_bytes()).hexdigest(),
+             regenerated_training_fields_sha256=hashlib.sha256((out/'training_fields.npy').read_bytes()).hexdigest(),
+             data_regenerated_from_seed=True,model_retrained=False))
+        print('FROZEN CHECKPOINT REUSED; data regenerated from seed',flush=True)
+        return
     valid=jnp.asarray(np.concatenate(valid))
     k=tc['latent_dimension'];r=tc['rank'];key=jax.random.PRNGKey(tc['seed']);key,a,b=jax.random.split(key,3)
     scale=float(np.sqrt(np.mean(u*u)))

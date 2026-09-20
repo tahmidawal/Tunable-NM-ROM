@@ -44,6 +44,28 @@ def main():
         recorded=subprocess.check_output(['git','-C',str(ROOT),'show',commit+':'+entry])
         assert data==recorded,(entry,'working file differs from pinned source')
         manifest.append(hashlib.sha256(data).hexdigest()+'  '+str(relative))
+    if cfg.get('reuse_attempt'):
+        previous=EXP/'runs'/cfg['reuse_attempt']
+        summary=json.loads((previous/'summary.json').read_text())
+        assert summary['checksums_passed'] and summary['local_audit']['passed'] and summary['remote_directory_removed']
+        archive=previous/'collected'
+        reused=[('training/checkpoint.pkl','training/checkpoint.pkl'),
+                ('out/operator_metadata.json','operators/operator_metadata.json')]
+        for model in cfg['operators']:
+            if model.get('reuse'):
+                for filename in ['best.pkl','training.json','curve.json']:
+                    reused.append((f"out/{model['name']}/{filename}",f"operators/{model['name']}/{filename}"))
+        source_records=[]
+        for old,new in reused:
+            source=archive/old;relative=Path('reuse')/new;target=stage/relative
+            target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+            digest=hashlib.sha256(target.read_bytes()).hexdigest()
+            source_records.append(dict(source_path=old,path=str(relative),sha256=digest))
+            manifest.append(digest+'  '+str(relative))
+        reuse=dict(attempt=cfg['reuse_attempt'],source_commit=summary['source'],job_id=summary['job_id'],
+                   independently_audited=True,files=source_records,data_synced=False)
+        (stage/'reuse/REUSE.json').write_text(json.dumps(reuse,indent=2)+'\n')
+        manifest.append(hashlib.sha256((stage/'reuse/REUSE.json').read_bytes()).hexdigest()+'  reuse/REUSE.json')
     (stage/'SOURCE.sha256').write_text('\n'.join(manifest)+'\n')
     remote=REMOTE+'/'+attempt
     ssh(['mkdir','-p',REMOTE])
@@ -73,6 +95,13 @@ cd {remote}/code
 sha256sum -c SOURCE.sha256 || exit 43
 $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)" || exit $?
 mkdir -p ../out
+finalize() {{
+    exit_code=$?
+    printf '%s\\n' "$exit_code" > ../EXIT_CODE
+    date -u +%FT%TZ > ../FINISHED_UTC
+    (cd .. && find code out training {'head64' if 'head_candidate' in cfg else ''} -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256)
+}}
+trap finalize EXIT
 date -u +%FT%TZ > ../STARTED_UTC
 {'$PY -u train.py --config '+shlex.quote(args.config)+' --out ../training > ../training.log 2>&1 || exit $?' if 'training' in cfg else ''}
 {'$PY -u reference_diagnostic.py --config '+shlex.quote(args.config)+' --out ../out/reference_screen > ../reference-screen.log 2>&1 || exit $?' if 'operators' in cfg else ''}
@@ -84,10 +113,11 @@ if [ "$code" -eq 0 ]; then
     $PY -u audit.py ../out {'--checkpoint ../training/checkpoint.pkl' if 'training' in cfg else ''} > ../audit.log 2>&1
     code=$?
 fi
+{'if [ "$code" -eq 0 ]; then $PY -u head_candidate.py --config '+shlex.quote(args.config)+' --training ../training --out ../head64 > ../head64-training.log 2>&1; code=$?; fi' if 'head_candidate' in cfg else ''}
+{'if [ "$code" -eq 0 ]; then $PY -u run.py --config ../head64/config.json --checkpoint ../head64/checkpoint.pkl --out ../out/head64 > ../head64-driver.log 2>&1; code=$?; fi' if 'head_candidate' in cfg else ''}
+{'if [ "$code" -eq 0 ]; then $PY -u audit.py ../out/head64 --checkpoint ../head64/checkpoint.pkl > ../head64-audit.log 2>&1; code=$?; fi' if 'head_candidate' in cfg else ''}
 printf '%s\\n' "$code" > ../EXIT_CODE
 date -u +%FT%TZ > ../FINISHED_UTC
-cd ..
-find code out {'training' if 'training' in cfg else ''} -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 exit "$code"
 '''
     (run/'run.sbatch').write_text(script)

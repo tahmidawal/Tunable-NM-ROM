@@ -15,13 +15,20 @@ FILES+=['operators/'+name for name in ['extra_models3d.py','EXTRA_IMPORTS.json',
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--reuse-attempt');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--reuse-attempt')
+    p.add_argument('--reuse-operator',action='append',default=[],metavar='NAME=ATTEMPT')
+    a=p.parse_args()
     assert a.attempt.isalnum(),a.attempt
     out=ROOT/LANE/'runs'/a.attempt;out.mkdir(parents=True,exist_ok=False)
     remote=f'{NAMESPACE}/{a.attempt}'
     commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     proof=[]
     cfg=json.loads((ROOT/LANE/'config.json').read_text())
+    overrides=dict(value.split('=',1) for value in a.reuse_operator)
+    assert len(overrides)==len(a.reuse_operator)
+    assert all(name in [entry['name'] for entry in cfg['operators'] if entry.get('reuse')] and attempt.isalnum()
+               for name,attempt in overrides.items())
+    assert not overrides or a.reuse_attempt
     names=FILES+(['final-freeze.json'] if cfg.get('evaluation_cohort')=='final' else [])
     for name in names:
         path=f'{LANE}/{name}'
@@ -40,13 +47,54 @@ def main():
         cfg=json.loads((out/'code/config.json').read_text())
         assert cfg['reuse_checkpoint_directory']=='checkpoints'
         names=['result.json','cohorts.json','bank.pkl']+[f'head_K{k}.pkl' for k in cfg['latent_dimensions']]
-        names += [f"operators/{entry['name']}/best.pkl" for entry in cfg['operators'] if entry.get('reuse')]
         names += [p.name for p in source.glob('eq_N*_K*.npz')]
         for name in names:
             dest=out/'checkpoints'/name;dest.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(source/name,dest)
             proof.append(dict(path=f'reused:{a.reuse_attempt}/out/{name}',staged=str(dest.relative_to(out)),
                               sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),source_commit=record['source_commit']))
+        origins={}
+        def origin_for(name,checkpoint):
+            wanted=hashlib.sha256(checkpoint.read_bytes()).hexdigest();matches=[]
+            for prior_file in (ROOT/LANE/'runs').glob('*/archive/out/result.json'):
+                prior=json.loads(prior_file.read_text());candidate=prior_file.parent/name
+                attempt_root=prior_file.parents[2]
+                if not (attempt_root/'COLLECTED.json').exists() or not (attempt_root/'audit-local.json').exists():continue
+                if not json.loads((attempt_root/'COLLECTED.json').read_text())['checksums_verified']:continue
+                if not json.loads((attempt_root/'audit-local.json').read_text())['passed']:continue
+                if not prior.get('complete') or prior.get('final_cohort_opened') or not candidate.exists():continue
+                if name.startswith('operators/'):
+                    op=name.split('/')[1]
+                    entries=[entry for entry in prior['config'].get('operators',[]) if entry['name']==op]
+                    freshly_trained=bool(entries) and not entries[0].get('reuse',False)
+                else:freshly_trained=not prior['config'].get('reuse_checkpoint_directory')
+                if freshly_trained and hashlib.sha256(candidate.read_bytes()).hexdigest()==wanted:
+                    matches.append(dict(source_commit=prior['source_commit'],job_id=prior['job_id'],
+                        result_sha256=hashlib.sha256(prior_file.read_bytes()).hexdigest(),checkpoint_sha256=wanted,
+                        attempt=prior_file.parents[2].name))
+            assert len(matches)<=1,('ambiguous original training source',name,matches)
+            return matches[0] if matches else dict(source_commit=None,job_id=None,checkpoint_sha256=wanted,
+                limitation='Original training job not identified; immediate reused source remains hash-pinned.')
+        for name in ['bank.pkl']+[f'head_K{k}.pkl' for k in cfg['latent_dimensions']]:
+            origins[name]=origin_for(name,out/'checkpoints'/name)
+        for entry in cfg['operators']:
+            if not entry.get('reuse'):continue
+            attempt=overrides.get(entry['name'],a.reuse_attempt)
+            previous=ROOT/LANE/'runs'/attempt
+            assert json.loads((previous/'COLLECTED.json').read_text())['checksums_verified']
+            assert json.loads((previous/'audit-local.json').read_text())['passed']
+            src=previous/'archive/out';prior=json.loads((src/'result.json').read_text())
+            assert prior['complete'] and not prior['final_cohort_opened']
+            name=f"operators/{entry['name']}/best.pkl"
+            for source_name,dest_name in [(name,name),('result.json',f"operators/{entry['name']}/SOURCE_RESULT.json")]:
+                dest=out/'checkpoints'/dest_name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src/source_name,dest)
+                proof.append(dict(path=f'reused:{attempt}/out/{source_name}',staged=str(dest.relative_to(out)),
+                    sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),source_commit=prior['source_commit']))
+            origins[name]=origin_for(name,src/name)
+        origin_path=out/'checkpoints'/'ORIGINAL_TRAINING_SOURCES.json'
+        origin_path.write_text(json.dumps(origins,indent=2)+'\n')
+        proof.append(dict(path='generated:original-training-checkpoint-content-matches',staged=str(origin_path.relative_to(out)),
+            sha256=hashlib.sha256(origin_path.read_bytes()).hexdigest()))
     (out/'PROVENANCE.json').write_text(json.dumps(dict(source_commit=commit,files=proof,remote=remote),indent=2)+'\n')
     script='''#!/bin/bash
 #SBATCH --job-name=ctol_p3d_920___ATTEMPT__

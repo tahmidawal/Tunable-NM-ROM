@@ -73,6 +73,7 @@ def run(cfg,out,smoke=False):
     prior=None
     if reuse:
         prior=json.loads((reuse/'result.json').read_text())
+        origins=json.loads((reuse/'ORIGINAL_TRAINING_SOURCES.json').read_text()) if (reuse/'ORIGINAL_TRAINING_SOURCES.json').exists() else {}
         assert prior['complete'] and not prior['final_cohort_opened']
         for key in ['train_seed','validation_seed','train_count','validation_count','train_intervals','bank_rank',
                     'model_seed','bank_minibatch_seed','head_minibatch_seed','bank_width','head_width',
@@ -88,6 +89,7 @@ def run(cfg,out,smoke=False):
         assert C.sha(u)==info['training_matrix_hash']
         C.checkpoint(out/'bank.pkl',cached)
         record['reused_checkpoints']=dict(source_commit=prior['source_commit'],job_id=prior['job_id'],
+            original_training_sources=origins,
             files={str(p.relative_to(reuse)):hashlib.sha256(p.read_bytes()).hexdigest() for p in reuse.rglob('*') if p.is_file()})
     else:
         params,rotation,basis,target,norm2,perp,info=T.train_bank(fields[:,None],cfg,out,validation_fields)
@@ -117,9 +119,16 @@ def run(cfg,out,smoke=False):
                 assert reuse is not None
                 saved=pickle.loads((reuse/'operators'/entry['name']/'best.pkl').read_bytes())
                 assert saved['spec']==entry['spec']
+                assert saved['config']==ocfg,('reused operator training metadata mismatch',entry['name'])
                 op=jax.device_put(saved['params']);jax.block_until_ready(op)
-                oinfo=next(dict(x) for x in prior['operators'] if x['name']==entry['name'])
+                source_record=reuse/'operators'/entry['name']/'SOURCE_RESULT.json'
+                operator_prior=json.loads(source_record.read_text()) if source_record.exists() else prior
+                oinfo=next(dict(x) for x in operator_prior['operators'] if x['name']==entry['name'])
                 assert oinfo['training_input_sha256']==C.sha(train_sources) and oinfo['training_target_sha256']==C.sha(fields)
+                assert oinfo['validation_input_sha256']==C.sha(valid_sources) and oinfo['validation_target_sha256']==C.sha(validation_fields)
+                oinfo['immediate_reuse_source']=dict(source_commit=operator_prior['source_commit'],job_id=operator_prior['job_id'])
+                original=origins.get(f"operators/{entry['name']}/best.pkl")
+                if original:oinfo['original_training_source']=original
                 C.checkpoint(out/'operators'/entry['name']/'best.pkl',saved)
                 C.dump(out/'operators'/entry['name']/'training.json',oinfo)
             else:

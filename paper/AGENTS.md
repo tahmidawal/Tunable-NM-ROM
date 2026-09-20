@@ -17,3 +17,8 @@ Poisson; keep sparse-direct comparisons out of the main tables unless the user
 requests them again. Name the appropriate nonlinear FOM for Burgers and NS rather
 than calling it CG. Label development/final cohorts and never fabricate pending
 CG timings. Keep linear-bank baseline gains separate from nonlinear NM-ROM gains.
+
+Latest presentation preference (2026-09-20): comparison tables in the PDF
+contain NM-ROM and named FOMs only. Keep the appendix compact: method,
+configuration and validation needed for main claims. Full historical and
+operator/POD comparison records remain in the repository, not as PDF dumps.

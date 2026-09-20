@@ -1723,6 +1723,7 @@ def build_lshape():
             d=V[(mesh,257,sub)]
             cg_rows.append([f'${mesh}^2$',label_,pct(100*d['worst_same_grid'],3),ms(d['median_total_ms'],3),f"{c['median_total_ms']/d['median_total_ms']:.2f}"+r'$\times$'])
     write('TR_lshape_cg_main.tex',tabular(['Mesh','Method','Error (\\%)','Complete ms','$S$'],cg_rows,'llrrr'),'CG only; fastest retained GPU CG at each mesh; common denominator; same job')
+    write('TR_lshape_fom_only.tex',tabular(['Mesh','Method','Error (\\%)','Complete ms','$S$'],[r for r in cg_rows if not r[1].startswith('POD')],'llrrr'),'NM-ROM versus CG; unchanged rows from TR_lshape_cg_main')
     # the 256^2 crossover cell keeps its short names (used in the intro and §5.6)
     best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {}); splu = V.get((256, 257, 'fom_splu'), {})
     if best and splu:
@@ -2397,6 +2398,8 @@ def build_clean_comparison():
         assert jobs[arm] == jobs[control] and len(jobs[arm]) == 1
         rows.append([label,pct(x['worst_evolved_percent']),pct(x['worst_all_times_percent']),ms(x['median_gpu_ms'],3),f"{d[control]['median_gpu_ms']/x['median_gpu_ms']:.2f}"+r'$\times$'])
     write('TR_burgers_comparison.tex',tabular(['Method','Evolved error (\\%)','All-times error (\\%)','GPU ms','$S$'],rows,'lrrrr'), 'Burgers 256; common nt1e-3_dt005 denominator; same job '+next(iter(jobs[control])))
+
+    write('TR_burgers_fom_only.tex',tabular(['Method','Evolved error (\\%)','All-times error (\\%)','GPU ms','$S$'],rows[:3],'lrrrr'),'NM-ROM versus Newton; unchanged rows from TR_burgers_comparison')
 
 # =========================================================================== main
 def main():

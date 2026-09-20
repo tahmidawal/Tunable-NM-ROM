@@ -6,6 +6,10 @@
 
 \section{Method details}
 \label{app:method}
+The formulas below give the scalar two-dimensional Dirichlet instances.
+Per-study solver constants apply to these recorded implementations;
+three-dimensional and periodic-vector scope is stated in
+Appendix~\ref{app:main-experiment-details}.
 
 \subsection{Elliptic instance: Poisson}
 \label{app:method:poisson}
@@ -183,23 +187,5 @@ criterion divides by $\normF{\jac{}}$ only, applied to a residual already
 normalised by the target norm; Poisson and Burgers use \eqref{eq:stationarity}
 directly. The completion rule that accepts an attained initial fit
 (\S\ref{sec:method:weak}) was pre-registered in the panel cell's design before
-the job ran; the stricter flag is printed beside it in Table~\ref{tab:panel-all}.
+the job ran; complete exit flags remain in the source records.
 
-\subsection{What the method is, stated once}
-\label{app:method:statements}
-
-For a reader comparing this construction with related descriptions, the
-following hold for every result here. Dirichlet enforcement is a smooth
-polynomial factor folded into the bank, with zero lift, and covers homogeneous
-data only. The projection is least-squares Petrov--Galerkin with a fixed test
-space, not tangent Galerkin; the two differ even for a linear trial space,
-since $V^\top A^\top(AVz-b)=0$ and $V^\top(AVz-b)=0$ are different conditions.
-The heat scheme is Crank--Nicolson and the reduced step is a nonlinear
-least-squares problem, not a linear system in $\latent_{n+1}$; no latent mass
-matrix is formed and no latent ODE is integrated. The quadrature fit targets
-the weak advection term with $M$ rows per snapshot; the requested node count
-$m$, the achieved support and the fit-state count $n_{\text{fit}}$ are three
-different numbers. No conjugate-gradient solve is applied to the projected
-operator. There is no encoder in the deployed path. The update is damped
-Levenberg--Marquardt, not undamped Gauss--Newton. The Poisson ground truth is
-the verified discrete solution, not an analytic field.

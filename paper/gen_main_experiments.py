@@ -20,8 +20,8 @@ def refresh():
  (E/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 def table(name,headers,rows,align):
  lines=[r'% Generated from hash-pinned accepted run records; do not edit.',r'\small',r'\begin{tabular}{@{}'+align+'@{}}',r'\toprule',' & '.join(headers)+r' \\',r'\midrule']
- if name in ('TR_3d_linear','TR_3d_nonlinear'):
-  groups=['Poisson3D (development)','Heat3D (development)'] if name=='TR_3d_linear' else ['Burgers3D (final)','NS3D (development)']
+ if name.startswith(('TR_3d_linear','TR_3d_nonlinear')):
+  groups=['Poisson3D (development)','Heat3D (development)'] if name.startswith('TR_3d_linear') else ['Burgers3D (final)','NS3D (development)']
   lines.insert(4, ' & '+r' \multicolumn{3}{c}{'+groups[0]+'} & '+r'\multicolumn{3}{c}{'+groups[1]+'}'+r' \\')
  lines+=[' & '.join(row)+r' \\' for row in rows];lines += [r'\bottomrule',r'\end{tabular}']
  (HERE/'tables'/f'{name}.tex').write_text('\n'.join(lines)+'\n')
@@ -74,6 +74,7 @@ for name,kinds,names in [('TR_3d_linear',['poisson','heat'],['Poisson3D (dev.)',
  for k in kinds:row+=vals(k,7) if controls[k] else ['---']*3
  rows.append(row)
  table(name,['Method']+[x for _ in kinds for x in ['Error (\\%)','GPU ms','$S$']],rows,'lrrrrrr')
+ table(name+'_fom_only',['Method']+[x for _ in kinds for x in ['Error (\\%)','GPU ms','$S$']],rows[:2]+rows[-1:],'lrrrrrr')
 # Independent Burgers seed results retained beside final primary, not pooled.
 seed={r['method']:r for r in data['burgers']['seed1']['rows']}
 seedrows=[]

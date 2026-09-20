@@ -30,7 +30,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 ## Heat 3D — pilot01
 
-**Provisional:** Development pilot with matched training membership and fixed diffusivity. The learned bank limits accuracy; longer training and operator comparisons are pending. Sampled quadrature arms failed their certificates. Final cohort remains unopened.
+**Provisional:** Development pilot with matched training membership and fixed diffusivity. The learned bank limits accuracy; longer training and operator comparisons are pending. Sampled quadrature arms failed their certificates. Final cohort remains unopened. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `e6460d73c7d4d3292c9e9ef313ddb79c88bf59dd`; job `3989545`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/audit-local.json).
 
@@ -101,7 +101,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 ## Poisson 3D — pilot01
 
-**Provisional:** Development pilot with matched training membership. Bank/head training is incomplete; operator comparisons, independent training seeds and final evaluation are pending. Sampled quadrature arms failed their certificates and remain failure diagnostics.
+**Provisional:** Development pilot with matched training membership. Bank/head training is incomplete; operator comparisons, independent training seeds and final evaluation are pending. Sampled quadrature arms failed their certificates and remain failure diagnostics. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `7158a27ab493bc1a5d0a8adefe13d4c20933a591`; job `3989715`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/audit-local.json).
 
@@ -160,7 +160,7 @@ The empirical reference refinement gate passes: worst discrepancy 0.3871% agains
 
 ## Poisson 3D — tuned02
 
-**Provisional:** Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending.
+**Provisional:** Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b`; job `3990494`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/audit-local.json).
 
@@ -278,7 +278,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 ## Heat 3D — tune02
 
-**Provisional:** Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending.
+**Provisional:** Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2`; job `3990698`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/audit-local.json).
 
@@ -373,7 +373,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 Source `23932ac4eca33075fc43b4e10e9d3ca24ee2a388`; job `3993021`; GPU `NVIDIA A100-PCIE-40GB, 40960 MiB`. [Invocation data](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json) and [independent audit](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/audit.json).
 
-Errors use the initial velocity-field norm, with all three components combined. The evolved metric excludes time zero. Physical error uses Fourier interpolation to the independently refined grid. Total timing includes host transfers; device timing includes initialization, evolution and every requested dense velocity field. Mesh size counts periodic points per axis. The timed cohort is a declared subset of the larger validation cohort; training-validation summaries are not substituted for its measured query errors. Stopping records in this attempt lack saved latent histories and therefore support an internal-consistency check only.
+Errors use the initial velocity-field norm, with all three components combined. The evolved metric excludes time zero. Physical error uses Fourier interpolation to the independently refined grid. Total timing includes host transfers; device timing includes initialization, evolution and every requested dense velocity field. Mesh size counts periodic points per axis. The timed cohort is a declared subset of the larger validation cohort; training-validation summaries are not substituted for its measured query errors. Stopping records lack saved latent histories and support an internal-consistency check only.
 
 | Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
@@ -402,7 +402,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 ## Poisson 3D — extra03
 
-**Provisional:** Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder is stationary and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened.
+**Provisional:** Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder satisfies its recorded stopping checks and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `a50ce0977373977688d73f82700108a6138b433b`; job `3995104`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/audit-local.json).
 
@@ -495,7 +495,7 @@ A missing physical-error or total-time cell means unmeasured, not zero. Physical
 
 ## Heat 3D — extra03
 
-**Provisional:** Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened.
+**Provisional:** Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control.
 
 Source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`; job `3995709`; GPU `NVIDIA A100-PCIE-40GB`. [Invocation data](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/audit-local.json).
 
@@ -646,6 +646,43 @@ Errors use the initial-field norm. The evolved error excludes the initial compre
 | 33 | `rom_q128` | 8 | 1.9470 | 6.8452 | 7.3625 | 7.3625 | — | 377.360 | — | 0 / 0 | 0 / 24 | development |
 | 33 | `rom_q192` | 8 | 0.8437 | 2.4345 | 2.8901 | 2.8901 | — | 391.488 | — | 0 / 0 | 0 / 24 | development |
 | 33 | `rom_q64` | 8 | 2.3985 | 8.2287 | 8.8661 | 8.8661 | — | 301.864 | — | 0 / 0 | 0 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
+## Navier–Stokes 3D — extra03
+
+**Provisional:** Audited new paired development measurements with all four operator families and identical training membership. Independent saved-field, source, reference and sampled latent-history weak-gradient checks pass. The original strict frozen-field replay gate failed and remains failed; no cross-run numerical equivalence or implementation-speed ratio is claimed. The existing learned bank and head remain inaccurate; the larger-bank representation screen also misses its target. These negative results motivate the separately running matched augmentation and capacity experiment. Timed queries cover the declared first eight development cases. Final evaluation remains unopened.
+
+Source `8ba0a11ee83aaeb36bb486add6517a51aa921a87`; job `3995695`; GPU `NVIDIA A100 80GB PCIe, 81920 MiB`. [Invocation data](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/collected/output/result.json) and [independent audit](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/numerical_validity.json).
+
+Errors use the initial velocity-field norm, with all three components combined. The evolved metric excludes time zero. Physical error uses Fourier interpolation to the independently refined grid. Total timing includes host transfers; device timing includes initialization, evolution and every requested dense velocity field. Mesh size counts periodic points per axis. The timed cohort is a declared subset of the larger validation cohort; training-validation summaries are not substituted for its measured query errors. Saved latent histories support the linked independently sampled weak-gradient checks.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `deeponet3d_projected` | 8 | 35.8894 | 44.8450 | 44.8450 | 0.0000 | 44.8449 | 4.372 | 5.240 | 0 / 0 | 0 / 24 | development |
+| 32 | `deeponet3d_raw` | 8 | 36.8223 | 45.3970 | 45.3970 | 0.0000 | 45.3965 | 4.124 | 4.983 | 0 / 0 | 0 / 24 | development |
+| 32 | `fno3d_projected` | 8 | 1.0974 | 1.5121 | 1.5121 | 0.0000 | 1.5183 | 8.970 | 9.867 | 0 / 0 | 1 / 24 | development |
+| 32 | `fno3d_raw` | 8 | 1.3422 | 1.7664 | 1.7664 | 0.0000 | 1.7604 | 8.787 | 9.676 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.001` | 8 | 0.0031 | 0.0051 | 0.0051 | 0.0000 | 0.3651 | 24.712 | 25.737 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.002` | 8 | 0.0130 | 0.0213 | 0.0213 | 0.0000 | 0.3663 | 12.810 | 13.823 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.004` | 8 | 0.0524 | 0.0866 | 0.0866 | 0.0000 | 0.3745 | 6.886 | 7.822 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.008` | 8 | 0.2125 | 0.3598 | 0.3598 | 0.0000 | 0.4711 | 3.893 | 4.760 | 0 / 0 | 0 / 24 | development |
+| 32 | `free_bank_galerkin` | 8 | 13.4503 | 24.2696 | 24.2696 | 17.7985 | 24.2689 | 43.878 | 44.829 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q0` | 8 | 28.5319 | 50.4758 | 53.7445 | 53.7445 | 50.4758 | 779.231 | 781.336 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q128` | 8 | 25.2664 | 45.3348 | 46.7275 | 46.7275 | 45.3345 | 1865.999 | 1868.080 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q16` | 8 | 28.2539 | 49.9583 | 53.1214 | 53.1214 | 49.9583 | 810.785 | 812.945 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q32` | 8 | 27.8899 | 49.2381 | 52.3195 | 52.3195 | 49.2381 | 970.197 | 972.605 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q64` | 8 | 27.0931 | 47.6297 | 50.5176 | 50.5176 | 47.6297 | 1297.298 | 1299.700 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_128` | 8 | 34.5481 | 47.3334 | 50.1174 | 50.1174 | 47.3334 | 5.609 | 6.471 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_256` | 8 | 24.8410 | 36.0594 | 36.0594 | 34.7360 | 36.0592 | 11.294 | 12.129 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_512` | 8 | 15.2837 | 27.7537 | 27.7537 | 21.6223 | 27.7535 | 43.895 | 44.868 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_16` | 8 | 87.7996 | 91.9857 | 94.8670 | 94.8670 | 91.9857 | 25.084 | 26.861 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_32` | 8 | 78.1203 | 85.5263 | 89.3108 | 89.3108 | 85.5263 | 27.511 | 29.203 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_48` | 8 | 67.3545 | 76.1070 | 82.4515 | 82.4515 | 76.1069 | 35.081 | 36.888 | 0 / 0 | 0 / 24 | development |
+| 32 | `transolver3d_projected` | 8 | 1.3773 | 2.0366 | 2.0366 | 0.0000 | 2.0439 | 3.398 | 4.311 | 0 / 0 | 1 / 24 | development |
+| 32 | `transolver3d_raw` | 8 | 2.2017 | 2.9715 | 2.9715 | 0.0000 | 2.9295 | 3.317 | 4.214 | 0 / 0 | 1 / 24 | development |
+| 32 | `unet3d_projected` | 8 | 3.0414 | 4.2830 | 4.2830 | 0.0000 | 4.2809 | 2.094 | 3.006 | 0 / 0 | 0 / 24 | development |
+| 32 | `unet3d_raw` | 8 | 3.4540 | 4.6468 | 4.6468 | 0.0000 | 4.6463 | 1.982 | 2.841 | 0 / 0 | 0 / 24 | development |
 
 A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
 

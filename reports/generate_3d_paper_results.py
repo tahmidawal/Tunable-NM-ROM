@@ -145,6 +145,10 @@ def main():
             p = ROOT / extra_audit
             assert read(p)["passed"], extra_audit
             provenance[extra_audit] = digest(p)
+        for failed_audit in entry.get("retained_failed_audits", []):
+            p = ROOT / failed_audit
+            assert read(p)["passed"] is False, failed_audit
+            provenance[failed_audit] = digest(p)
         if entry["adapter"] == "ns_representation":
             import numpy as np
             artifact = path.parent / "representation_fields.npz"
@@ -230,8 +234,10 @@ def main():
                       "timing includes initialization, evolution and every requested dense velocity field. "
                       "Mesh size counts periodic points per axis. The timed cohort is a declared subset "
                       "of the larger validation cohort; training-validation summaries are not substituted "
-                      "for its measured query errors. Stopping records in this attempt lack saved latent "
-                      "histories and therefore support an internal-consistency check only.", ""]
+                      "for its measured query errors. " +
+                      ("Saved latent histories support the linked independently sampled weak-gradient checks."
+                       if entry.get("latent_history_audited") else
+                       "Stopping records lack saved latent histories and support an internal-consistency check only."), ""]
         else:
             lines += ["Errors use the reference solution norm. There is one stationary output field; "
                       "evolved, initial and all-times terminology does not apply. Total timing includes "

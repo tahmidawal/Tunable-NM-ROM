@@ -126,7 +126,7 @@ def main():
         case_note = f"Each method is evaluated on {cases[0]} distinct cases; all timed repetitions are retained. "
         stem = OUT / panel["slug"]
         with stem.with_suffix(".csv").open("w", newline="") as stream:
-            writer = csv.writer(stream)
+            writer = csv.writer(stream, lineterminator="\n")
             writer.writerow(["method", "median_error_percent", "worst_error_percent", "all_times_worst_percent",
                              "initial_worst_percent", "physical_worst_percent", "gpu_ms_median", "gpu_ms_p95",
                              "nonfinite_cases", "nonstationary_cases", "timing_outliers", "invocations", "status"])

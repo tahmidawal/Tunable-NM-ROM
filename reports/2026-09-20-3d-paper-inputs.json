@@ -14,7 +14,7 @@
       "adapter": "heat",
       "result": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/audit-local.json",
-      "qualification": "Development pilot with matched training membership and fixed diffusivity. The learned bank limits accuracy; longer training and operator comparisons are pending. Sampled quadrature arms failed their certificates. Final cohort remains unopened."
+      "qualification": "Development pilot with matched training membership and fixed diffusivity. The learned bank limits accuracy; longer training and operator comparisons are pending. Sampled quadrature arms failed their certificates. Final cohort remains unopened. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Poisson 3D",
@@ -22,7 +22,7 @@
       "adapter": "poisson",
       "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/audit-local.json",
-      "qualification": "Development pilot with matched training membership. Bank/head training is incomplete; operator comparisons, independent training seeds and final evaluation are pending. Sampled quadrature arms failed their certificates and remain failure diagnostics."
+      "qualification": "Development pilot with matched training membership. Bank/head training is incomplete; operator comparisons, independent training seeds and final evaluation are pending. Sampled quadrature arms failed their certificates and remain failure diagnostics. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Navier\u2013Stokes 3D",
@@ -38,7 +38,7 @@
       "adapter": "poisson",
       "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/audit-local.json",
-      "qualification": "Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending."
+      "qualification": "Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Burgers 3D",
@@ -60,7 +60,7 @@
       "additional_audits": [
         "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/audit-panel.json"
       ],
-      "qualification": "Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending."
+      "qualification": "Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Navier\u2013Stokes 3D",
@@ -80,7 +80,7 @@
       "adapter": "poisson",
       "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/audit-local.json",
-      "qualification": "Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder is stationary and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened."
+      "qualification": "Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder satisfies its recorded stopping checks and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened. Selected latent states were not saved; stationarity is supported by the recorded stopping values and internal consistency only, not an independent weak-gradient reconstruction. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Heat 3D",
@@ -91,7 +91,7 @@
       "additional_audits": [
         "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/audit-panel.json"
       ],
-      "qualification": "Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened."
+      "qualification": "Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened. Finer-grid POD is rebuilt from the same training members and is a mesh-adapted classical control."
     },
     {
       "pde": "Burgers 3D",
@@ -114,6 +114,23 @@
         "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/audit-stationarity-local.json"
       ],
       "qualification": "Audited larger-head development comparison on exactly the same learned spatial bank, training membership and GPU allocation as b3d004. The correction endpoint reaches the unrestricted bank solution, while the compressed head retains a substantial held-out gap. All recorded reduced solves are stationary, with independently sampled Jacobian/gradient and transversality checks. Operators were measured separately in the main b3d004 record on this same allocation, not remeasured here. No full-cohort physical refinement or final acceptance is claimed."
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "extra03",
+      "adapter": "ns_trajectory",
+      "result": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/collected/output/result.json",
+      "invocations": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/collected/output/timing_rows.json",
+      "audit": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/numerical_validity.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/source_audit.json",
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/history_audit.json"
+      ],
+      "retained_failed_audits": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/audit.json"
+      ],
+      "latent_history_audited": true,
+      "qualification": "Audited new paired development measurements with all four operator families and identical training membership. Independent saved-field, source, reference and sampled latent-history weak-gradient checks pass. The original strict frozen-field replay gate failed and remains failed; no cross-run numerical equivalence or implementation-speed ratio is claimed. The existing learned bank and head remain inaccurate; the larger-bank representation screen also misses its target. These negative results motivate the separately running matched augmentation and capacity experiment. Timed queries cover the declared first eight development cases. Final evaluation remains unopened."
     }
   ]
 }

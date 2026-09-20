@@ -41,7 +41,7 @@ All timed arms in the main panel are included. The separately measured larger-he
 
 ## Heat 3D — extra03 — 64 intervals per axis
 
-**Provisional:** Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.
+**Provisional:** Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer.
 
 Each method is evaluated on 16 distinct cases; all timed repetitions are retained. 
 
@@ -74,7 +74,7 @@ The complete audited report retains smaller-head ladders, intermediate POD ranks
 
 ## Poisson 3D — extra03 — 64 intervals per axis
 
-**Provisional:** Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.
+**Provisional:** Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer. The saved stopping records are internally consistent, but selected latent states were not retained for an independent weak-gradient audit.
 
 Each method is evaluated on 16 distinct cases; all timed repetitions are retained. 
 
@@ -106,40 +106,44 @@ The complete audited report retains the K8 ladder, intermediate POD ranks, and f
 
 ![Generated paired comparison](poisson3d-extra03-n64.png)
 
-## Navier–Stokes 3D — comparison02 — 32 periodic points per axis
+## Navier–Stokes 3D — extra03 — 32 periodic points per axis
 
-**Provisional:** Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.
+**Provisional:** Independently audited new paired development measurements with all four operator families. Errors use the initial vector-field norm and exclude time zero. Learned-bank and head accuracy targets fail. Saved latent histories support sampled independent weak-gradient checks. A strict cross-run frozen-field replay gate failed and remains failed; no numerical-equivalence or implementation-speed claim is made. Augmented training and larger-bank tuning remain in progress.
 
 Each method is evaluated on 8 distinct cases; all timed repetitions are retained. 
 
-Source `23932ac4eca33075fc43b4e10e9d3ca24ee2a388`; job `3993021`; GPU `NVIDIA A100-PCIE-40GB, 40960 MiB`. [LaTeX table](ns3d-comparison02-n32.tex), [CSV](ns3d-comparison02-n32.csv), [vector figure](ns3d-comparison02-n32.pdf).
+Source `8ba0a11ee83aaeb36bb486add6517a51aa921a87`; job `3995695`; GPU `NVIDIA A100 80GB PCIe, 81920 MiB`. [LaTeX table](ns3d-extra03-n32.tex), [CSV](ns3d-extra03-n32.csv), [vector figure](ns3d-extra03-n32.pdf).
 
 | Method | Median error (%) | Worst error (%) | GPU median (ms) | GPU p95 (ms) | NF / NS cases | Outliers / calls |
 | --- | ---: | ---: | ---: | ---: | --- | --- |
-| NM-ROM K16, q0 | 28.5319 | 50.4758 | 901.362 | 903.780 | 0 / 0 | 0 / 24 |
-| NM-ROM K16, q16 | 28.2539 | 49.9583 | 969.484 | 973.404 | 0 / 0 | 0 / 24 |
-| NM-ROM K16, q32 | 27.8899 | 49.2381 | 1092.342 | 1096.646 | 0 / 0 | 0 / 24 |
-| NM-ROM K16, q64 | 27.0931 | 47.6297 | 1588.925 | 1594.383 | 0 / 0 | 0 / 24 |
-| NM-ROM K16, q128 | 25.2664 | 45.3348 | 2226.148 | 2240.061 | 0 / 0 | 0 / 24 |
-| Full bank, Galerkin R512 | 13.4503 | 24.2696 | 49.405 | 49.601 | 0 / 0 | 0 / 24 |
-| POD16, weak solve | 87.7996 | 91.9857 | 24.465 | 25.741 | 0 / 0 | 0 / 24 |
-| POD32, weak solve | 78.1203 | 85.5263 | 27.381 | 28.384 | 0 / 0 | 0 / 24 |
-| POD48, weak solve | 67.3545 | 76.1070 | 35.558 | 36.246 | 0 / 0 | 0 / 24 |
-| POD128, Galerkin | 34.5481 | 47.3334 | 5.889 | 6.076 | 0 / 0 | 0 / 24 |
-| POD256, Galerkin | 24.8410 | 36.0594 | 12.233 | 12.500 | 0 / 0 | 0 / 24 |
-| POD512, Galerkin | 15.2837 | 27.7537 | 49.327 | 49.543 | 0 / 0 | 0 / 24 |
-| FOM, dt 0.001 | 0.0031 | 0.0051 | 25.763 | 26.674 | 0 / 0 | 0 / 24 |
-| FOM, dt 0.002 | 0.0130 | 0.0213 | 13.268 | 13.717 | 0 / 0 | 0 / 24 |
-| FOM, dt 0.004 | 0.0524 | 0.0866 | 7.056 | 7.507 | 0 / 0 | 0 / 24 |
-| FOM, dt 0.008 | 0.2125 | 0.3598 | 3.936 | 4.361 | 0 / 0 | 0 / 24 |
-| FNO, raw | 1.3422 | 1.7664 | 9.554 | 10.080 | 0 / 0 | 0 / 24 |
-| FNO, projected | 1.0974 | 1.5121 | 9.596 | 10.390 | 0 / 0 | 0 / 24 |
-| U-Net, raw | 3.4540 | 4.6468 | 2.019 | 2.373 | 0 / 0 | 0 / 24 |
-| U-Net, projected | 3.0414 | 4.2830 | 2.128 | 2.751 | 0 / 0 | 1 / 24 |
+| NM-ROM K16, q0 | 28.5319 | 50.4758 | 779.231 | 781.497 | 0 / 0 | 0 / 24 |
+| NM-ROM K16, q16 | 28.2539 | 49.9583 | 810.785 | 812.390 | 0 / 0 | 0 / 24 |
+| NM-ROM K16, q32 | 27.8899 | 49.2381 | 970.197 | 973.237 | 0 / 0 | 0 / 24 |
+| NM-ROM K16, q64 | 27.0931 | 47.6297 | 1297.298 | 1302.637 | 0 / 0 | 0 / 24 |
+| NM-ROM K16, q128 | 25.2664 | 45.3348 | 1865.999 | 1873.513 | 0 / 0 | 0 / 24 |
+| Full bank, Galerkin R512 | 13.4503 | 24.2696 | 43.878 | 44.156 | 0 / 0 | 0 / 24 |
+| POD16, weak solve | 87.7996 | 91.9857 | 25.084 | 26.989 | 0 / 0 | 0 / 24 |
+| POD32, weak solve | 78.1203 | 85.5263 | 27.511 | 28.055 | 0 / 0 | 0 / 24 |
+| POD48, weak solve | 67.3545 | 76.1070 | 35.081 | 35.300 | 0 / 0 | 0 / 24 |
+| POD128, Galerkin | 34.5481 | 47.3334 | 5.609 | 5.832 | 0 / 0 | 0 / 24 |
+| POD256, Galerkin | 24.8410 | 36.0594 | 11.294 | 11.345 | 0 / 0 | 0 / 24 |
+| POD512, Galerkin | 15.2837 | 27.7537 | 43.895 | 44.105 | 0 / 0 | 0 / 24 |
+| FOM, dt 0.001 | 0.0031 | 0.0051 | 24.712 | 25.475 | 0 / 0 | 0 / 24 |
+| FOM, dt 0.002 | 0.0130 | 0.0213 | 12.810 | 13.163 | 0 / 0 | 0 / 24 |
+| FOM, dt 0.004 | 0.0524 | 0.0866 | 6.886 | 7.224 | 0 / 0 | 0 / 24 |
+| FOM, dt 0.008 | 0.2125 | 0.3598 | 3.893 | 4.227 | 0 / 0 | 0 / 24 |
+| FNO, raw | 1.3422 | 1.7664 | 8.787 | 10.315 | 0 / 0 | 0 / 24 |
+| FNO, projected | 1.0974 | 1.5121 | 8.970 | 12.449 | 0 / 0 | 1 / 24 |
+| U-Net, raw | 3.4540 | 4.6468 | 1.982 | 2.112 | 0 / 0 | 0 / 24 |
+| U-Net, projected | 3.0414 | 4.2830 | 2.094 | 2.212 | 0 / 0 | 0 / 24 |
+| DeepONet, raw | 36.8223 | 45.3970 | 4.124 | 4.362 | 0 / 0 | 0 / 24 |
+| DeepONet, Leray projected | 35.8894 | 44.8450 | 4.372 | 4.600 | 0 / 0 | 0 / 24 |
+| Transolver, raw | 2.2017 | 2.9715 | 3.317 | 4.436 | 0 / 0 | 1 / 24 |
+| Transolver, Leray projected | 1.3773 | 2.0366 | 3.398 | 4.553 | 0 / 0 | 1 / 24 |
 
-All timed arms are shown. Full-cohort representation/training-validation diagnostics are retained separately and are not substituted for the measured errors of this timing subset.
+All timed arms are included; the separate larger-bank snapshot-fit diagnostics remain in the complete archive. Leray projection enforces discrete incompressibility and its online cost is charged.
 
-![Generated paired comparison](ns3d-comparison02-n32.png)
+![Generated paired comparison](ns3d-extra03-n32.png)
 
 ## Glossary
 

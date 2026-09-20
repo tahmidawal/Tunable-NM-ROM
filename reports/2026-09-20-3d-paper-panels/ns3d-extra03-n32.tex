@@ -1,0 +1,37 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & Median (\%) & Worst (\%) & GPU ms & p95 ms & NF/NS & Outliers \\
+\midrule
+NM-ROM K16, q0 & 28.5319 & 50.4758 & 779.231 & 781.497 & 0/0 & 0/24 \\
+NM-ROM K16, q16 & 28.2539 & 49.9583 & 810.785 & 812.390 & 0/0 & 0/24 \\
+NM-ROM K16, q32 & 27.8899 & 49.2381 & 970.197 & 973.237 & 0/0 & 0/24 \\
+NM-ROM K16, q64 & 27.0931 & 47.6297 & 1297.298 & 1302.637 & 0/0 & 0/24 \\
+NM-ROM K16, q128 & 25.2664 & 45.3348 & 1865.999 & 1873.513 & 0/0 & 0/24 \\
+Full bank, Galerkin R512 & 13.4503 & 24.2696 & 43.878 & 44.156 & 0/0 & 0/24 \\
+POD16, weak solve & 87.7996 & 91.9857 & 25.084 & 26.989 & 0/0 & 0/24 \\
+POD32, weak solve & 78.1203 & 85.5263 & 27.511 & 28.055 & 0/0 & 0/24 \\
+POD48, weak solve & 67.3545 & 76.1070 & 35.081 & 35.300 & 0/0 & 0/24 \\
+POD128, Galerkin & 34.5481 & 47.3334 & 5.609 & 5.832 & 0/0 & 0/24 \\
+POD256, Galerkin & 24.8410 & 36.0594 & 11.294 & 11.345 & 0/0 & 0/24 \\
+POD512, Galerkin & 15.2837 & 27.7537 & 43.895 & 44.105 & 0/0 & 0/24 \\
+FOM, dt 0.001 & 0.0031 & 0.0051 & 24.712 & 25.475 & 0/0 & 0/24 \\
+FOM, dt 0.002 & 0.0130 & 0.0213 & 12.810 & 13.163 & 0/0 & 0/24 \\
+FOM, dt 0.004 & 0.0524 & 0.0866 & 6.886 & 7.224 & 0/0 & 0/24 \\
+FOM, dt 0.008 & 0.2125 & 0.3598 & 3.893 & 4.227 & 0/0 & 0/24 \\
+FNO, raw & 1.3422 & 1.7664 & 8.787 & 10.315 & 0/0 & 0/24 \\
+FNO, projected & 1.0974 & 1.5121 & 8.970 & 12.449 & 0/0 & 1/24 \\
+U-Net, raw & 3.4540 & 4.6468 & 1.982 & 2.112 & 0/0 & 0/24 \\
+U-Net, projected & 3.0414 & 4.2830 & 2.094 & 2.212 & 0/0 & 0/24 \\
+DeepONet, raw & 36.8223 & 45.3970 & 4.124 & 4.362 & 0/0 & 0/24 \\
+DeepONet, Leray projected & 35.8894 & 44.8450 & 4.372 & 4.600 & 0/0 & 0/24 \\
+Transolver, raw & 2.2017 & 2.9715 & 3.317 & 4.436 & 0/0 & 1/24 \\
+Transolver, Leray projected & 1.3773 & 2.0366 & 3.398 & 4.553 & 0/0 & 1/24 \\
+\bottomrule
+\end{tabular}
+\caption{Navier–Stokes 3D, 32 periodic points per axis; provisional development comparison. Each method is evaluated on 8 distinct cases; all timed repetitions are retained. Errors are same-grid relative errors. NF/NS counts nonfinite/nonstationary cases; outliers are calls above 1.5 times the method median. Independently audited new paired development measurements with all four operator families. Errors use the initial vector-field norm and exclude time zero. Learned-bank and head accuracy targets fail. Saved latent histories support sampled independent weak-gradient checks. A strict cross-run frozen-field replay gate failed and remains failed; no numerical-equivalence or implementation-speed claim is made. Augmented training and larger-bank tuning remain in progress.}
+\label{tab:ns3d-extra03-n32}
+\end{table}

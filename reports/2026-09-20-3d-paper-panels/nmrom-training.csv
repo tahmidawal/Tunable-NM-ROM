@@ -1,0 +1,12 @@
+pde,attempt,role,mlp_widths,network_parameters,requested_steps,completed_steps,selected_step,model_base_seed,selection,checkpoint
+Burgers 3D,b3d004,bank,"[128, 384, 384, 256]",295936,200000,200000,200000,920201,minimum development projection error,worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/checkpoint.pkl
+Burgers 3D,b3d004,head K32,"[32, 256, 256, 256]",148224,100000,100000,100000,920201,final optimizer iterate,worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/checkpoint.pkl
+Heat 3D,extra03,bank,"[64, 256, 256, 128]",115328,100000,100000,100000,920312,minimum development projection/fit error,worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/bank.pkl
+Heat 3D,extra03,head K8,"[8, 256, 256, 128]",102016,80000,80000,80000,920312,final optimizer iterate,worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K8.pkl
+Heat 3D,extra03,head K16,"[16, 256, 256, 128]",105088,80000,80000,80000,920312,final optimizer iterate,worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K16.pkl
+Heat 3D,extra03,head K32,"[32, 256, 256, 128]",111232,80000,80000,45000,920312,minimum development projection/fit error,worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K32.pkl
+Poisson 3D,extra03,bank,"[128, 256, 256, 128]",131712,150000,150000,150000,920412,minimum development projection/fit error,worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/bank.pkl
+Poisson 3D,extra03,head K8,"[8, 256, 256, 128]",102016,100000,100000,100000,920412,minimum development projection/fit error,worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K8.pkl
+Poisson 3D,extra03,head K16,"[16, 256, 256, 128]",105088,100000,100000,100000,920412,minimum development projection/fit error,worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K16.pkl
+Navier–Stokes 3D,extra03,bank,"[512, 512, 512, 1536]",1313280,12000,12000,12000,202609204,final optimizer iterate,worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/free_bank.pkl
+Navier–Stokes 3D,extra03,head K16,"[16, 512, 512, 512]",542208,30000,30000,30000,202609204,final optimizer iterate,worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/checkpoint.pkl

@@ -96,6 +96,25 @@ def train_head(target,norm2,perpendicular,k,cfg,out,validation=None):
     key=jax.random.PRNGKey(cfg['model_seed']+k);a,b=jax.random.split(key)
     p=C.init_head(a,k,target.shape[1],cfg['head_width'])
     z=.1*jax.random.normal(b,(len(target),k),dtype=jnp.float64)
+    initialization=dict(kind=cfg.get('head_initialization','random_joint_codes'))
+    if initialization['kind']=='weighted_pca_linear_skip':
+        # PCA uses only training targets. Relative-field loss induces the row
+        # weight 1 / norm2; centering and scale are retained for exact replay.
+        y=np.asarray(target);weights=1/np.maximum(np.asarray(norm2),1e-20)
+        mean=np.average(y,axis=0,weights=weights)
+        _,singular,vt=np.linalg.svd((y-mean)*np.sqrt(weights[:,None]),full_matrices=False)
+        axes=vt[:k].T;raw=(y-mean)@axes
+        scale=np.maximum(np.sqrt(np.mean(raw*raw,axis=0)),1e-12)
+        z=jnp.asarray(raw/scale);p['skip']=jnp.asarray(scale[:,None]*axes.T)
+        p['net'][-1]=(jnp.zeros_like(p['net'][-1][0]),jnp.asarray(mean))
+        linear=mean+raw@axes.T
+        np.testing.assert_allclose(np.asarray(C.head(p,z)),linear,rtol=1e-12,atol=1e-12)
+        initialization.update(training_only=True,mean=mean.tolist(),axes=axes.tolist(),code_scale=scale.tolist(),
+            singular_values=singular.tolist(),training_target_sha256=C.sha(y),training_norm2_sha256=C.sha(np.asarray(norm2)),
+            initial_reconstruction_sha256=C.sha(linear))
+        C.checkpoint(out/f'head_K{k}_initial.pkl',dict(params=p,codes=z,initialization=initialization,cfg=cfg))
+    else:
+        assert initialization['kind']=='random_joint_codes',initialization['kind']
     schedule=optax.cosine_decay_schedule(cfg['head_learning_rate'],cfg['head_steps'],alpha=.03)
     opt=optax.adam(schedule);state=opt.init((p,z));batch=min(cfg['head_batch_states'],len(target))
     def objective(pz,targets,norms,perps,idx):
@@ -125,6 +144,16 @@ def train_head(target,norm2,perpendicular,k,cfg,out,validation=None):
                 return error,stats[selected]
             return jax.vmap(one)(targets,norms,perps)
         vargs=tuple(jnp.asarray(validation[name]) for name in ('matrix','target','norm2','perpendicular2'))
+        if cfg.get('head_include_initial_checkpoint',False):
+            errors,stats=validate(*pz,*vargs);errors=np.asarray(errors).reshape(validation['shape']);stats=np.asarray(stats)
+            assert np.isfinite(errors).all() and np.isfinite(stats).all()
+            selected=pz;selected_error=float(np.max(errors[:,1:]));selected_step=0
+            selected_nonstationary=int(np.count_nonzero(stats[:,2]!=1))
+            history.append(dict(step=0,objective=None,seconds=time.perf_counter()-begin,
+                validation_current_error_by_case_time=errors.tolist(),validation_evolved_worst=selected_error,
+                validation_nonstationary_fits=selected_nonstationary,validation_fit_stats=stats.tolist(),selected=True))
+            C.checkpoint(out/f'head_K{k}_selected_partial.pkl',dict(pz=pz,state=state,key=key,step=0,cfg=cfg))
+            C.dump(out/f'head_K{k}_curve.json',history);print('HEAD_INITIAL',k,history[-1],flush=True)
     for it in range(cfg['head_steps']):
         key,sub=jax.random.split(key);pz,state,value=step(pz,state,sub,target,norm2,perpendicular)
         if it==0 or (it+1)%100==0 or (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['head_steps']:history.append(dict(step=it+1,objective=float(value),seconds=time.perf_counter()-begin))
@@ -146,6 +175,7 @@ def train_head(target,norm2,perpendicular,k,cfg,out,validation=None):
     _,sv,vt=np.linalg.svd(residual,full_matrices=False);directions=vt.T
     errors=np.sqrt((np.sum(residual**2,axis=1)+np.asarray(perpendicular))/np.asarray(norm2))
     info=dict(k=k,seconds=time.perf_counter()-begin,steps=cfg['head_steps'],converged_claim=False,
+              initialization=initialization,
               training_error_mean=float(np.mean(errors)),training_error_median=float(np.median(errors)),
               training_error_worst=float(np.max(errors)),correction_singular_values=sv.tolist(),
               correction_rule='SVD of field-orthonormal training reconstruction residuals at jointly learned training codes',

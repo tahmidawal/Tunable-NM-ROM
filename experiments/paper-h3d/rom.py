@@ -177,7 +177,7 @@ def best_found_fields(model,bank,fields,cfg):
     @jax.jit
     def fit(targets,p,codes,matrix,library):
         def single(target):
-            order=jnp.argsort(jnp.sum((library-target)**2,axis=1))[:4]
+            order=jnp.argsort(jnp.sum((library-target)**2,axis=1))[:cfg.get('representation_fit_starts',4)]
             zs,infos=jax.vmap(lambda z:solve(p,matrix,target,z))(codes[order])
             best=jnp.argmin(infos[:,3]);return C.head(p,zs[best]),infos[best]
         return jax.vmap(single)(targets)

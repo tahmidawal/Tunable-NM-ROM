@@ -1,0 +1,148 @@
+{
+  "passed": true,
+  "source_commit": null,
+  "job_id": null,
+  "checks": {
+    "complete_and_final_sealed": {
+      "passed": true
+    },
+    "exact_shared_membership": {
+      "passed": true,
+      "base_cases": 4,
+      "augmented_cases": 8
+    },
+    "learned_coordinate_bank": {
+      "passed": true,
+      "relative": 2.4889508924393e-16
+    },
+    "bank_QR": {
+      "passed": true
+    },
+    "bank_development_fields": {
+      "passed": true
+    },
+    "bank_development_summary": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9704045545861583,
+        "median": 0.9741057400370288,
+        "worst": 0.9873749602810497
+      }
+    },
+    "all_augmented_training_projections": {
+      "passed": true,
+      "snapshots": 48,
+      "maximum_coefficient_relative_error": 2.4501422996948813e-16,
+      "maximum_floor_error": 4.440892098500626e-16
+    },
+    "pca2_initial_development_reconstruction": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9888748203170068,
+        "median": 0.9927605630165528,
+        "worst": 1.001899806890399
+      },
+      "stationary_count": 12
+    },
+    "pca2_initial_stored_training_codes": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9745650990376545,
+        "median": 0.9795905610009155,
+        "worst": 0.997094925882456
+      }
+    },
+    "pca2_initial_fixed_PCA_codes": {
+      "passed": true,
+      "relative_Gram_probe": 1.1247599978861058e-15,
+      "count": 24
+    },
+    "pca2_fixed_development_reconstruction": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9887499159332077,
+        "median": 0.9926331099479746,
+        "worst": 1.0016994121541358
+      },
+      "stationary_count": 12
+    },
+    "pca2_fixed_stored_training_codes": {
+      "passed": true,
+      "summary": {
+        "mean": 0.9745703375768873,
+        "median": 0.9796965586884765,
+        "worst": 0.9971752477346013
+      }
+    },
+    "pca2_fixed_fixed_PCA_codes": {
+      "passed": true,
+      "relative_Gram_probe": 1.1247599978861058e-15,
+      "count": 24
+    },
+    "fno3d_shared_recipe": {
+      "passed": true
+    },
+    "operator_precision": {
+      "passed": true,
+      "bad": []
+    },
+    "every_timed_field": {
+      "passed": true,
+      "invocations": 8,
+      "fields": 8,
+      "max_metric_disagreement": 0.0,
+      "failures": []
+    }
+  },
+  "scope": "all membership bytes and saved development fields; independent model reconstruction and invocation metrics",
+  "derived_summary": {
+    "fno3d_increment_raw": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.1361989891156554,
+      "worst_evolved_same_grid": 0.05703885355505849
+    },
+    "fno3d_increment_projected": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.1559110134840012,
+      "worst_evolved_same_grid": 0.057025752834729306
+    },
+    "nmrom_pca2_fixed_q0": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 9.080803021788597,
+      "worst_evolved_same_grid": 0.9883323916795518
+    },
+    "nmrom_pca2_fixed_q2": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 8.292541955597699,
+      "worst_evolved_same_grid": 0.9723883918923864
+    },
+    "pod_weak_2": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 7.789260009303689,
+      "worst_evolved_same_grid": 0.9920649252971769
+    },
+    "pod_weak_4": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 7.41274596657604,
+      "worst_evolved_same_grid": 0.9918854150730178
+    },
+    "fom_dt0.002": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 2.324621076695621,
+      "worst_evolved_same_grid": 1.5172577202266607e-06
+    },
+    "fom_dt0.004": {
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.4689359813928604,
+      "worst_evolved_same_grid": 6.831570035709822e-06
+    }
+  }
+}

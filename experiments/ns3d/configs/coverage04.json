@@ -10,21 +10,8 @@
   "dev_seed": 202609202,
   "final_seed_unopened": 202609203,
   "model_seed": 202609242,
-  "rank_candidates": [
-    256,
-    512
-  ],
-  "rank_train_worst_target": 0.02,
-  "k": 16,
   "n_ff": 256,
-  "bank_steps": 12000,
-  "bank_seconds": 1200,
-  "bank_batch": 16,
   "spatial_batch": 1024,
-  "head_steps": 30000,
-  "head_seconds": 600,
-  "fit_starts": 4,
-  "fit_budget": 200,
   "test_modes": 1024,
   "q_values": [
     0,
@@ -32,16 +19,6 @@
     32,
     64,
     128
-  ],
-  "pod_weak_ranks": [
-    16,
-    32,
-    48
-  ],
-  "pod_galerkin_ranks": [
-    128,
-    256,
-    512
   ],
   "rom_dt": 0.004,
   "rom_budget": 80,
@@ -131,17 +108,6 @@
       "output_residual_initial": true
     }
   ],
-  "capacity_ranks": [
-    1024,
-    1536
-  ],
-  "capacity_seed": 202609210,
-  "capacity_bank_steps": 100000,
-  "capacity_bank_seconds": 900,
-  "capacity_head_k": [
-    32,
-    64
-  ],
   "capacity_head_steps": 100000,
   "capacity_head_seconds": 600,
   "augmentation_copies": 4,
@@ -181,5 +147,17 @@
     0,
     32,
     64
-  ]
+  ],
+  "planned_extended_ladder": {
+    "q_values": [
+      0,
+      32,
+      64,
+      128,
+      256
+    ],
+    "fixed_test_modes": 2048,
+    "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+  },
+  "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases."
 }

@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--gpu',choices=('a100','h200'),default='a100')
     parser.add_argument('--a100-memory',choices=('any','80G'),default='any')
     parser.add_argument('--hours',type=int,choices=(2,3),default=2)
+    parser.add_argument('--restage-unsubmitted',action='store_true')
     parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py','coverage04.py'),default='pilot.py')
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9]{1,30}',args.attempt):
@@ -36,7 +37,12 @@ def main():
               'experiments/ns2d/ns2d_decoder.py','experiments/ns2d/ns2d_rom.py',
               'experiments/ns2d/ns2d_fom.py','experiments/separable-decoder/sep_common.py']
     out=ROOT/'experiments/ns3d/runs'/args.attempt
-    out.mkdir(parents=True,exist_ok=False)
+    previous_source=None
+    if args.restage_unsubmitted:
+        if not out.is_dir() or any((out/name).exists() for name in ('launch.json','output','collected')):
+            raise RuntimeError('restaging requires an existing attempt without launch or output records')
+        previous_source=(out/'COMMIT.txt').read_text().strip()
+    out.mkdir(parents=True,exist_ok=args.restage_unsubmitted)
     provenance=[]
     for name in files:
         path=ROOT/name
@@ -85,11 +91,12 @@ echo "PILOT_EXIT=$NS3D_EXIT"
 exit "$NS3D_EXIT"
 '''
     (out/'run.sbatch').write_text(script)
-    (out/'logs').mkdir()
+    (out/'logs').mkdir(exist_ok=args.restage_unsubmitted)
     stage=dict(attempt=args.attempt,source_commit=source,local=str(out),remote=remote,
                config=args.config,gpu=args.gpu,a100_memory=args.a100_memory,wall_limit_hours=args.hours,driver=args.driver)
+    if previous_source is not None:stage['replaces_unsubmitted_source']=previous_source
     (out/'stage.json').write_text(json.dumps(stage,indent=2)+'\n')
-    manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file()]
+    manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file() and p!=out/'MANIFEST.sha256']
     (out/'MANIFEST.sha256').write_text('\n'.join(manifest)+'\n')
     print(json.dumps(stage,indent=2))
 

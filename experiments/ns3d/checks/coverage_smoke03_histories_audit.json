@@ -1,0 +1,120 @@
+{
+  "passed": true,
+  "applicable": true,
+  "scope": "Independent advective-form Jacobians for the dense weak NS3D evaluator.\n\nChecks all history hashes; cold and first/middle/last solves for every case and\nweak arm in repetition zero. No JAX or production residual code is imported.\n",
+  "hash_failures": [],
+  "checks": [
+    {
+      "method": "nmrom_pca2_fixed_q0",
+      "case": 0,
+      "step": "cold",
+      "residual_error": 1.1102230246251565e-15,
+      "gradient_error": 4.778471858051211e-16,
+      "normalized_gradient": 1.2104081952342088e-09
+    },
+    {
+      "method": "nmrom_pca2_fixed_q0",
+      "case": 0,
+      "step": 1,
+      "residual_error": 5.041540102057596e-18,
+      "gradient_error": 2.7756151223096622e-14,
+      "normalized_gradient": 4.5018644079883444e-13
+    },
+    {
+      "method": "nmrom_pca2_fixed_q0",
+      "case": 0,
+      "step": 3,
+      "residual_error": 5.366800753803247e-18,
+      "gradient_error": 1.5061821830200758e-14,
+      "normalized_gradient": 5.3528518344513e-13
+    },
+    {
+      "method": "nmrom_pca2_fixed_q0",
+      "case": 0,
+      "step": 5,
+      "residual_error": 2.710505431213761e-18,
+      "gradient_error": 8.080056432234931e-15,
+      "normalized_gradient": 5.527147034874062e-13
+    },
+    {
+      "method": "nmrom_pca2_fixed_q2",
+      "case": 0,
+      "step": "cold",
+      "residual_error": 1.5543122344752192e-15,
+      "gradient_error": 7.505281238341254e-16,
+      "normalized_gradient": 1.5974472116381767e-09
+    },
+    {
+      "method": "nmrom_pca2_fixed_q2",
+      "case": 0,
+      "step": 1,
+      "residual_error": 1.3010426069826053e-17,
+      "gradient_error": 1.0613070521452161e-15,
+      "normalized_gradient": 3.81649503961863e-13
+    },
+    {
+      "method": "nmrom_pca2_fixed_q2",
+      "case": 0,
+      "step": 3,
+      "residual_error": 3.241764495731658e-17,
+      "gradient_error": 5.540951039454497e-14,
+      "normalized_gradient": 3.2964222802092324e-13
+    },
+    {
+      "method": "nmrom_pca2_fixed_q2",
+      "case": 0,
+      "step": 5,
+      "residual_error": 1.452830911130576e-17,
+      "gradient_error": 2.9425199205329355e-14,
+      "normalized_gradient": 4.840341628539749e-13
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 1,
+      "residual_error": 1.3552527156068805e-20,
+      "gradient_error": 1.478672242404558e-16,
+      "normalized_gradient": 1.5200638793141198e-12
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 3,
+      "residual_error": 4.0657581468206416e-20,
+      "gradient_error": 3.16595721817024e-16,
+      "normalized_gradient": 1.3708789355848272e-12
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 5,
+      "residual_error": 2.710505431213761e-20,
+      "gradient_error": 2.6523882726747e-16,
+      "normalized_gradient": 1.5512425212169006e-12
+    },
+    {
+      "method": "pod_weak_4",
+      "case": 0,
+      "step": 1,
+      "residual_error": 1.3552527156068805e-20,
+      "gradient_error": 2.682644580882383e-16,
+      "normalized_gradient": 8.971397602543871e-13
+    },
+    {
+      "method": "pod_weak_4",
+      "case": 0,
+      "step": 3,
+      "residual_error": 0.0,
+      "gradient_error": 4.4113840394523163e-16,
+      "normalized_gradient": 9.219699404262856e-13
+    },
+    {
+      "method": "pod_weak_4",
+      "case": 0,
+      "step": 5,
+      "residual_error": 1.3552527156068805e-20,
+      "gradient_error": 1.2003205712534129e-16,
+      "normalized_gradient": 1.0528127452379289e-12
+    }
+  ]
+}

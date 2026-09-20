@@ -43,21 +43,36 @@ chk('nondominated_sets_match_independent_audit', audit_nd == report_nd,
          report={f'{k}': sorted(v) for k, v in report_nd.items()}))
 
 # ---- 4. recompute worst error and median complete-ms straight from the raw invocations
-worst_dev = 0.0
+# 2026-09-19 (DESIGN.md A11, Codex finding 4): summary.json stores job_id as a STRING and this
+# loop compared it to an int, so every row was skipped and the check passed with zero
+# comparisons. Both sides are now compared as strings, the comparison count is asserted to be
+# the number of matching summary rows, and every mismatch is listed with its key and values.
+worst_dev, n_compared, n_matched, mismatches = 0.0, 0, 0, []
+expected = sum(1 for r in S if r['metric'] in ('worst_same_grid', 'median_total_ms'))
 for att, job in (('lsh03', 3784662), ('lsh04', 3784663), ('lsh06', 3784910), ('lsh07', 3789568)):
     d = json.loads((H / f'artifacts/{att}/result.json').read_text())
     raw = {}
     for x in d['invocations']:
         raw.setdefault((x['intervals'], x['name']), []).append(x)
     for r in S:
-        if r['job_id'] != job or r['metric'] not in ('worst_same_grid', 'median_total_ms'):
+        if str(r['job_id']) != str(job) or r['metric'] not in ('worst_same_grid', 'median_total_ms'):
             continue
         rows = raw[(r['mesh'], r['subject'])]
         v = (max(y['same_grid_error'] for y in rows) if r['metric'] == 'worst_same_grid'
              else float(np.median([y['total_seconds'] for y in rows])) * 1e3)
-        worst_dev = max(worst_dev, abs(v - r['value']) / max(abs(v), 1e-30))
-chk('report_values_recomputed_from_raw_invocations', worst_dev <= 1e-12,
-    dict(worst_relative_difference=worst_dev))
+        rel = abs(v - r['value']) / max(abs(v), 1e-30)
+        n_compared += 1
+        if rel <= 1e-12:
+            n_matched += 1
+        else:
+            mismatches.append(dict(job_id=str(job), mesh=r['mesh'], subject=r['subject'], metric=r['metric'],
+                                   test_modes=r.get('test_modes'), reported=r['value'], recomputed=v,
+                                   relative_difference=rel))
+        worst_dev = max(worst_dev, rel)
+chk('report_values_recomputed_from_raw_invocations',
+    n_compared == expected and n_compared > 0 and not mismatches,
+    dict(comparisons=n_compared, expected_rows=expected, matched=n_matched,
+         worst_relative_difference=worst_dev, mismatches=mismatches))
 
 # ---- 5. the free rung is head-independent and sits on its bank floor
 d6 = json.loads((H / 'artifacts/lsh06/result.json').read_text())

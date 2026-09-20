@@ -5,6 +5,8 @@
   "remote": "/cluster/tufts/paralab/tawal01/paper_h3d_20260920/pilot01",
   "wall_limit": "02:00:00",
   "gpu_request": "a100:1",
-  "status": "submitted",
-  "preflight": "pending until job log records jax_backend=gpu"
+  "status": "RUNNING",
+  "preflight": "job.out contains jax_backend=gpu and x64=True precision=highest",
+  "node": "pax105",
+  "gpu": "NVIDIA A100 80GB PCIe"
 }

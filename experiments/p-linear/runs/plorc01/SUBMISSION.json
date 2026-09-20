@@ -1,0 +1,38 @@
+{
+  "status": "RUNNING",
+  "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+  "config_sha256": "62b1a24086cb7a6d65404979bdf642b0a36e36371c552fee0462a4049da5f6f4",
+  "prepared_utc": "2026-09-20T05:59:06.342380+00:00",
+  "remote": "/cluster/tufts/paralab/tawal01/p_linear_20260917/plorc01",
+  "partition": "gpu",
+  "gpu_request": "a100:1",
+  "memory_request": "100G",
+  "wall_limit": "01:00:00",
+  "estimated_minutes": 20,
+  "models": [
+    "new_K32",
+    "incumbent"
+  ],
+  "intervals": [
+    256,
+    1024
+  ],
+  "original_cases": 12,
+  "final_cohort_opened": false,
+  "retraining": false,
+  "timed_invocations_changed": false,
+  "local_smoke_audit_passed": true,
+  "submission_requires_root_free_slot": true,
+  "job_id": 3996320,
+  "submitted_utc": "2026-09-20T06:04:58.299920+00:00",
+  "queue_before": "3995709 ctol_h3d_920_extra03 RUNNING 21:06 pax051\n3995695 ctol_ns3d_920_extra03 RUNNING 21:26 pax106\n3995688 ctol_paper_b3d004 RUNNING 21:36 pax106\n",
+  "queue_after": "3996320 ctol_plin_plorc01 PENDING 0:00 \n3995709 ctol_h3d_920_extra03 RUNNING 21:07 pax051\n3995695 ctol_ns3d_920_extra03 RUNNING 21:27 pax106\n3995688 ctol_paper_b3d004 RUNNING 21:37 pax106\n",
+  "node": "pax105",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "preflight": {
+    "jax_backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "source_manifest": "verified"
+  }
+}

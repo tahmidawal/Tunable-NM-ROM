@@ -11,8 +11,12 @@ namespace `/cluster/tufts/paralab/tawal01/hires_p_20260920/`. Contract:
 | # | attempt | mesh | job id | GPU | state |
 |---|---|---|---|---|---|
 | 1 | hp2048 | square 2048² | 4049279 | H200 | DONE, audited on cluster, collected, remote deleted. Bar MET (0.965 %, 28.7× vs CG 1e-2) |
-| 2 | hp3d128 | cube 64³ + 128³ | 4051032 | H200 | RUNNING (submitted 2026-09-20) |
-| 3 | hp4096 | square 4096² | 4051236 | H200 | RUNNING; memfrac 0.95; if OOM → split into f64-only and f32-only jobs (DESIGN A4) |
+| 2 | hp3d128 | cube 64³ + 128³ | 4051032 | H200 | DONE, audited, collected, remote deleted. 128³: 0.160 %, 2.70× vs CG 1e-2 → bar MISSED on speed (I/O-bound; 6.8× device) |
+| 3 | hp4096 | square 4096² | 4051236 | H200 | DONE, audited, collected, remote deleted. Bar MET (0.965 %, 41.1× total / 146× device) |
+| 4 | hpl1024 | L-shape 1024² | 4053801 | H200 | RUNNING |
+| 5 | hp3d256 | cube 128³ + 256³ (DST-assembled operator, A7) | — | H200 | STAGED at runs/hp3d256, NOT submitted (account had 6 running). Submit: `cluster/submit.sh hp3d256` |
+| 6 | hpl2048 | L-shape 2048² (2n reference by tight GPU CG, A5) | — | H200 | not staged yet: `stage.py hpl2048 --config config-lshape-2048.json --set lshape --driver hpl_solve.py --audit hpl_audit_np.py --hours 8` |
+| 7 | hp4096b | square 4096² re-measure: f32-I/O twins + q256m8/q384m4 (A6) | — | H200 | not staged yet: `stage.py hp4096b --config config-4096b.json --memfrac 0.95 --hours 6` |
 
 ## How to run
 

@@ -68,6 +68,22 @@ def solve(initial, viscosity, dt, nsteps, out_every):
     return np.stack(result)
 
 
+def solve_cnab2(initial,viscosity,dt,nsteps,out_every):
+    """NumPy advective-form CNAB2, including its Heun startup."""
+    spec=setup(initial.shape[-1]);value=solenoidal(transform(initial),spec)
+    result=[physical(value)];old=None;diffusion=dt*viscosity*spec[1]
+    for step in range(nsteps):
+        current=advective(value,spec)
+        if step==0:
+            predictor=solenoidal((value+dt*current)/(1+diffusion),spec)
+            forcing=.5*(current+advective(predictor,spec))
+        else:forcing=1.5*current-.5*old
+        value=solenoidal(((1-.5*diffusion)*value+dt*forcing)/(1+.5*diffusion),spec)
+        old=current
+        if (step+1)%out_every==0:result.append(physical(value))
+    return np.stack(result)
+
+
 def manufactured(n, t):
     """Analytic u, du/dt, Laplacian and advective derivative for a mixed field."""
     xx = np.arange(n)/n

@@ -1,0 +1,32 @@
+{
+  "prepared_utc": "2026-09-20T16:08:17.439932+00:00",
+  "passed": true,
+  "field_audit_passed": true,
+  "history_audit_passed": true,
+  "history_checks": 9,
+  "max_history_gradient_disagreement": 1.1140280832582541e-12,
+  "teacher_audit_passed": true,
+  "freeze_mutation_guards": {
+    "passed": true,
+    "correct_fixture_accepted": true,
+    "config_mutation_rejected": true,
+    "checkpoint_hash_mutation_rejected": true,
+    "final_parameter_generator_called": false,
+    "scientific_final_freeze": false
+  },
+  "galerkin_parity": {
+    "passed": true,
+    "relative_full_trajectory": 0.0,
+    "linear_max": 0.0,
+    "final_cohort_opened": false
+  },
+  "earlier_full_compilation_smoke_timeout": {
+    "completed": false,
+    "exit_code": 124,
+    "wall_cap_seconds": 55,
+    "reason": "Full method-compilation smoke exceeded the local smoke wall cap; asset and Galerkin checks completed, no final data accessed",
+    "scientific_results": false
+  },
+  "scope": "Tiny implementation checks only; no final data accessed and no larger-grid performance claimed",
+  "pending": "Collect/audit capacity05, select best trained same-cohort head including R1536 incumbent, generate confirmation config and reuse bundle, commit/stage/submit confirmation06; collect/audit and freeze actual assets before final07"
+}

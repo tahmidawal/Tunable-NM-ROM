@@ -1,0 +1,206 @@
+{
+  "checkpoint_replay": {
+    "passed": true,
+    "smoke_only": true
+  },
+  "config": {
+    "n": 6,
+    "k": 2,
+    "r": 8,
+    "selected_head": "smoke_head",
+    "q_values": [
+      0,
+      2
+    ],
+    "test_modes": 32,
+    "rom_dt": 0.0008,
+    "dt": 0.0008,
+    "horizon": 0.004,
+    "rom_budget": 4,
+    "cold_starts": 2,
+    "gtol": 1e-07,
+    "operators": [
+      {
+        "kind": "fno3d",
+        "width": 2,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 0,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "unet3d",
+        "width": 2,
+        "levels": 1,
+        "periodic": true,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "deeponet3d",
+        "width": 2,
+        "levels": 1,
+        "pool_bins": 2,
+        "rank": 4,
+        "trunk_width": 8,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "output_residual_initial": true
+      },
+      {
+        "kind": "transolver3d",
+        "width": 4,
+        "depth": 1,
+        "heads": 1,
+        "slices": 2,
+        "patch": 2,
+        "reference_grid": 2,
+        "mlp_ratio": 2,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          0,
+          1
+        ],
+        "output_residual_initial": true
+      }
+    ],
+    "operator_projection_variants": [
+      true
+    ],
+    "fom_dts": [
+      0.0008
+    ],
+    "reference_dt": 0.0004,
+    "fine_reference_n": 8,
+    "fine_reference_dt": 0.0004,
+    "refinement_n": 12,
+    "refinement_dt": 0.0002,
+    "refinement_budget": 1.0,
+    "dev_seed": 202609311,
+    "timed_cases": 1,
+    "repetitions": 1,
+    "evaluation_cohort": "development",
+    "final_seed_unopened": 202609203,
+    "physical_accuracy_target": 1.0
+  },
+  "source_commit": null,
+  "job_id": null,
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "final_cohort_opened": false,
+  "complete": true,
+  "kind": "NS3D frozen matched comparison",
+  "evaluation_cohort": "development",
+  "cohort_seed": 202609311,
+  "cohort_count": 1,
+  "method_names": [
+    "nmrom_smoke_head_q0",
+    "pod_weak_2",
+    "free_bank_galerkin",
+    "fno3d_increment_projected"
+  ],
+  "limitations": [
+    "Dense full-grid weak evaluation; no hyper-reduction speed claim",
+    "Warm bank lineage is not an independent complete training seed"
+  ],
+  "stage": "complete",
+  "dev_data": {
+    "seed": 202609311,
+    "count": 1,
+    "n": 6,
+    "dt": 0.0008,
+    "horizon": 0.004,
+    "parameter_sha256": "4d6c59dc8544594ca90ca5d94da60f66e3ec0474cff33fce906b208384f53b08",
+    "states_sha256": "740c877cadbfb7302e44c9002de0230944ea4a281fb50869d80ed3196188929a",
+    "records": [
+      {
+        "index": 0,
+        "field_sha256": "740c877cadbfb7302e44c9002de0230944ea4a281fb50869d80ed3196188929a",
+        "energy": [
+          0.011623495462719452,
+          0.011613672825502101,
+          0.011603859425391907,
+          0.011594055256652148,
+          0.01158426031050852,
+          0.011574474578194638
+        ],
+        "divergence": [
+          2.4916679081580815e-16,
+          2.5279465219618567e-16,
+          2.308877852386936e-16,
+          2.511392789671984e-16,
+          2.215305448707091e-16,
+          2.404654471849506e-16
+        ],
+        "initial_component_rms": [
+          0.09560275486607024,
+          0.09543026963109552,
+          0.07071186481484844
+        ]
+      }
+    ],
+    "seconds": 3.7082589539932087
+  },
+  "reference_refinement": [
+    {
+      "case": 0,
+      "errors": [
+        0.30382149015053245,
+        0.30313858841909996,
+        0.30246057867627374,
+        0.3017874291715563,
+        0.3011191078285084,
+        0.3004555827680155
+      ],
+      "passed": true,
+      "fine_sha256": "14c6c3b31ab9b2405f41d1de7a52d1a7106cb940619196de3128e793c3fe1272"
+    }
+  ],
+  "timing_summary": {
+    "nmrom_smoke_head_q0": {
+      "gpu_seconds_median": 0.015128887025639415,
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.99659826974414,
+      "worst_evolved_physical": 0.9977095783109146
+    },
+    "pod_weak_2": {
+      "gpu_seconds_median": 0.012804166995920241,
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.9694168053929252,
+      "worst_evolved_physical": 0.9855750376867423
+    },
+    "free_bank_galerkin": {
+      "gpu_seconds_median": 0.0015856110258027911,
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.9561167407244155,
+      "worst_evolved_physical": 0.9792668217724103
+    },
+    "fno3d_increment_projected": {
+      "gpu_seconds_median": 0.0009557510493323207,
+      "invocations": 1,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.010838394926445404,
+      "worst_evolved_physical": 0.7255340082667859
+    }
+  }
+}

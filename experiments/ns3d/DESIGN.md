@@ -277,28 +277,6 @@ independent NumPy Jacobian audit samples the cold and first/middle/last steps on
 every development case and weak arm; its bounded scope is stated explicitly.
 Final seed 202609203 stays unopened pending coordinator freeze.
 
-## Glossary
-
-- **FOM:** the numerical solver on the full spatial grid.
-- **NM-ROM:** a reduced numerical model constrained by a learned neural decoder.
-- **Bank/head:** learned spatial vector fields/a network mapping latent states
-  to their coefficients.
-- **POD:** a linear basis fitted to the training snapshots.
-- **Correction rank $q$:** extra linear coefficient coordinates solved beside
-  the latent state; **$K$** is latent size, **$R$** bank rank, **$M$** test count.
-- **Leray projection/solenoidal:** removing the velocity's gradient component/
-  divergence-free.
-- **Dealiasing:** removing Fourier modes that would corrupt a quadratic product
-  through finite-grid wraparound.
-- **CNAB2/RK4:** second-order implicit-diffusion/explicit-advection stepping and
-  fourth-order explicit Runge–Kutta stepping.
-- **Weak residual:** momentum mismatch integrated against smooth vector tests.
-- **Tensor:** the precomputed coefficients of quadratic reduced advection.
-- **Whitening:** changing coefficient coordinates so Euclidean distance measures
-  field error; **stationarity** checks the objective's gradient at a fitted code.
-- **Validation/final:** data for selection/data reserved for frozen evaluation.
-- **Reference budget:** the allowed discrepancy measured under numerical
-  refinement, distinct from the reduced model's target error.
 # Shared periodic-translation coverage amendment
 
 The prospective `configs/coverage04.json` experiment increases training coverage
@@ -351,3 +329,75 @@ development configuration passing the existing accuracy target must be frozen
 before final-cohort evaluation; no speed claim can inherit a tighter truth-data
 tolerance as its sole comparator. Training-budget exhaustion does not establish
 convergence for any architecture.
+
+## Resumed confirmation and frozen final evaluation
+
+The original overnight selection deadline was missed during the agent usage-limit
+interruption, while the final cohort remained unopened. The amendment in
+`configs/final32_protocol.json` preserves that missed deadline and the unchanged
+physical family, accuracy targets, final seed and prospective final sample count.
+The next confirmation includes a trained augmented-cohort NM-ROM even if its
+representation promotion gate failed. The trained incumbent competes against
+trained larger-bank heads using minimum worst development representation error;
+all affine initialization candidates and unsuccessful trained candidates remain
+recorded. No weaker head is chosen to enlarge the apparent correction effect.
+
+The proposed DeepONet training repair keeps its coordinate trunk and field branch
+trainable and preserves its online architecture. A seeded randomized range finder
+with stabilized QR power iterations supplies an approximate training-only spatial
+teacher. Its seed, oversampling, power iterations and measured projection errors
+are retained. That projection is not an optimal-rank lower bound. The next stage
+fits branch coefficients in the actual learned-trunk field Gram metric, followed
+by joint training under the original complete-field loss. The three velocity
+components are summed before the per-time vector loss and its nonlinear penalty.
+The original failed checkpoint remains eligible and retained. Only development
+error selects between it and the new candidate. Independent NumPy audits verify
+every training teacher projection, normalization, covariance and branch loss.
+
+The mandatory confirmation prepares and saves the actual learned bank, selected
+head, correction directions, POD bases, weak operators and diffusion matrices.
+The entire correction ladder uses one fixed test count. Classical controls include
+both matched-dimension weak POD and efficient CNAB2 Galerkin evolution in POD and
+in the free learned bank. Their nonlinear terms use the full grid, avoiding large
+quadratic tensors; this does not establish hyper-reduction. Complete field output
+and initial projection/fitting are charged for every method. Four neural operator
+families and the efficient FOM time-step ladder share that allocation and cohort.
+
+The final run requires a Git-committed content-hash freeze after independent
+confirmation field, source, head-gradient and teacher audits. It reloads the saved
+offline arrays, replays an actual development query before drawing any final
+parameters, and requires the fixed field-parity tolerance and matching stopping
+records. No final-time fitting of POD bases, quadrature, correction directions or
+network weights is allowed. All final cases, failures, repetitions and latent
+histories are retained; the final sample cannot select checkpoints or settings.
+
+## Glossary
+
+- **FOM:** the numerical solver on the full spatial grid.
+- **NM-ROM:** a reduced numerical model constrained by a learned neural decoder.
+- **Bank/head:** learned spatial vector fields/a network mapping latent states
+  to their coefficients.
+- **POD:** a linear basis fitted to the training snapshots.
+- **Correction rank $q$:** extra linear coefficient coordinates solved beside
+  the latent state; **$K$** is latent size, **$R$** bank rank, **$M$** test count.
+- **Leray projection/solenoidal:** removing the velocity's gradient component/
+  divergence-free.
+- **Dealiasing:** removing Fourier modes that would corrupt a quadratic product
+  through finite-grid wraparound.
+- **CNAB2/RK4:** second-order implicit-diffusion/explicit-advection stepping and
+  fourth-order explicit Runge–Kutta stepping.
+- **Weak residual:** momentum mismatch integrated against smooth vector tests.
+- **Tensor:** the precomputed coefficients of quadratic reduced advection.
+- **Whitening:** changing coefficient coordinates so Euclidean distance measures
+  field error; **stationarity** checks the objective's gradient at a fitted code.
+- **Validation/final:** data for selection/data reserved for frozen evaluation.
+- **Reference budget:** the allowed discrepancy measured under numerical
+  refinement, distinct from the reduced model's target error.
+- **Randomized teacher:** an approximate linear spatial representation used only
+  to initialize training; the learned neural trunk remains the online model.
+- **Gram metric:** the matrix converting coefficient differences into squared
+  physical field differences.
+- **Frozen offline assets:** saved training-derived matrices and network weights
+  whose content hashes are fixed before the final cases are generated.
+- **Replay:** rerunning an already opened development query from saved assets to
+  check that loading them preserves both fields and stopping decisions.

@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--a100-memory',choices=('any','80G'),default='any')
     parser.add_argument('--hours',type=int,choices=(2,3),default=2)
     parser.add_argument('--restage-unsubmitted',action='store_true')
-    parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py','coverage04.py'),default='pilot.py')
+    parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py','coverage04.py','confirmation06.py','final07.py'),default='pilot.py')
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9]{1,30}',args.attempt):
         raise ValueError('attempt must be a bounded alphanumeric name')
@@ -36,6 +36,11 @@ def main():
               'experiments/ns3d/configs/'+args.config,
               'experiments/ns2d/ns2d_decoder.py','experiments/ns2d/ns2d_rom.py',
               'experiments/ns2d/ns2d_fom.py','experiments/separable-decoder/sep_common.py']
+    config=json.loads((ROOT/'experiments/ns3d/configs'/args.config).read_text())
+    if args.driver=='final07.py':
+        assert config['evaluation_cohort']=='final'
+        freeze=config['final_freeze_path'];assert freeze.startswith('experiments/ns3d/configs/')
+        files.append(freeze)
     out=ROOT/'experiments/ns3d/runs'/args.attempt
     previous_source=None
     if args.restage_unsubmitted:

@@ -215,3 +215,41 @@ def make_galerkin_run(dt,nsteps,out_every):
         _,fields=jax.lax.scan(block,(c0,jnp.zeros_like(c0)),jnp.arange(nsteps//out_every))
         return jnp.concatenate(((G@c0)[None],fields))
     return run
+
+
+def dense_galerkin_linear(G,n):
+    """Physical diffusion projection without a quadratic advection tensor."""
+    geom=F.geometry(n);basis=jnp.asarray(G);blocks=[]
+    for start in range(0,G.shape[1],64):
+        fields=basis[:,start:start+64].T.reshape(-1,3,n,n,n)
+        lap=F.ifft(-geom[1]*F.fft(fields)).reshape(len(fields),-1).T
+        blocks.append(np.asarray(basis.T@lap))
+    return np.concatenate(blocks,axis=1)
+
+
+def make_dense_galerkin_run(dt,nsteps,out_every,n):
+    """Efficient classical CNAB2 control with full-grid nonlinear evaluation."""
+    assert nsteps%out_every==0
+    @jax.jit
+    def run(u0,nu,G,L,geom):
+        c0=G.T@u0.ravel();identity=jnp.eye(L.shape[0])
+        half=jnp.linalg.cholesky(identity-.5*dt*nu*L)
+        full=jnp.linalg.cholesky(identity-dt*nu*L)
+        def solve(factor,b):return jax.scipy.linalg.cho_solve((factor,True),b)
+        def nonlinear(c):
+            field=(G@c).reshape(3,n,n,n)
+            return G.T@F.ifft(F.nonlinear(F.fft(field),geom)).ravel()
+        def step(carry,index):
+            c,old=carry;current=nonlinear(c)
+            def first():
+                pred=solve(full,c+dt*current)
+                return solve(half,c+.5*dt*(nu*(L@c)+current+nonlinear(pred)))
+            def normal():return solve(half,c+.5*dt*nu*(L@c)+dt*(1.5*current-.5*old))
+            new=jax.lax.cond(index==0,first,normal)
+            return (new,current),None
+        def block(carry,index):
+            new,_=jax.lax.scan(step,carry,index*out_every+jnp.arange(out_every))
+            return new,G@new[0]
+        _,fields=jax.lax.scan(block,(c0,jnp.zeros_like(c0)),jnp.arange(nsteps//out_every))
+        return jnp.concatenate(((G@c0)[None],fields))
+    return run

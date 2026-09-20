@@ -1,0 +1,120 @@
+{
+  "configuration": {
+    "n": 6,
+    "k": 2,
+    "r": 8,
+    "selected_head": "smoke_head",
+    "q_values": [
+      0,
+      2
+    ],
+    "test_modes": 32,
+    "rom_dt": 0.0008,
+    "dt": 0.0008,
+    "horizon": 0.004,
+    "rom_budget": 4,
+    "cold_starts": 2,
+    "gtol": 1e-07,
+    "operators": [
+      {
+        "kind": "fno3d",
+        "width": 2,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 0,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "unet3d",
+        "width": 2,
+        "levels": 1,
+        "periodic": true,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "deeponet3d",
+        "width": 2,
+        "levels": 1,
+        "pool_bins": 2,
+        "rank": 4,
+        "trunk_width": 8,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "output_residual_initial": true
+      },
+      {
+        "kind": "transolver3d",
+        "width": 4,
+        "depth": 1,
+        "heads": 1,
+        "slices": 2,
+        "patch": 2,
+        "reference_grid": 2,
+        "mlp_ratio": 2,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          0,
+          1
+        ],
+        "output_residual_initial": true
+      }
+    ],
+    "operator_projection_variants": [
+      true
+    ],
+    "fom_dts": [
+      0.0008
+    ],
+    "reference_dt": 0.0004,
+    "fine_reference_n": 8,
+    "fine_reference_dt": 0.0004,
+    "refinement_n": 12,
+    "refinement_dt": 0.0002,
+    "refinement_budget": 1.0,
+    "dev_seed": 202609311,
+    "timed_cases": 32,
+    "repetitions": 1,
+    "evaluation_cohort": "final",
+    "final_seed_unopened": 202609203,
+    "physical_accuracy_target": 1.0,
+    "frozen_source_directory": "experiments/ns3d/checks/frozen_panel_v2/output",
+    "smoke_fixture_only": true
+  },
+  "final_fields_generated": false,
+  "assets": {
+    "files": {
+      "deeponet3d/best.pkl": "b27080bcbc0207b11a8044296ffceba69fcb809e9750fd2630c7cfe2e60d4875",
+      "dense_weak_operators.npz": "3689cf39dbaca378ccfc1c3b3fff7da568b56709e6799b15519945eae237aea7",
+      "dense_weak_test_modes.json": "9978d1fb60535d6493163fd1d3f4d1655aa2b710c4778bf7c5bd6e244875411a",
+      "fno3d/best.pkl": "ea170fdaf5cbdda2dd7aa0d1eb5ad00cd1983bb5ddfe928ae6550569a35bdf84",
+      "frozen_bank.pkl": "6b5364c4d76e5e52959e02206ef7a302d02ec3199c7d9d5f81a425564e7e19be",
+      "head.pkl": "89609802f6757671c448a630c9c07a362a5da01c05e95b7b007fceeee8c0e1da",
+      "metadata.json": "23aec14c48740b171182a5656c8604c6adf04005e3758df3d5053d722670fef7",
+      "operator_statistics.pkl": "7b942a38f3e26a9d19e8dcd265ba1b6d779b5454164b5d26bf04f9ccb33757ee",
+      "pod.npz": "8218ab2f9b729ef5d193b3913d64a48f24419e92657d11572c29ce37072f9651",
+      "transolver3d/best.pkl": "ea9271e2341f5c3719a3d8d2526d935e406e79da94a2b774fee0c024add69b05",
+      "unet3d/best.pkl": "fa7d25fd7d9c5c70b7f90a029f1071f822f5236928e85d41c554e0b6d153f6fc"
+    },
+    "final_cohort_opened": false
+  },
+  "asset_manifest_sha256": "c63a5d59ff9b950c04f884e2f479de1612903d73ad1b4f2054f000ed8e9e190e",
+  "selection_files": {
+    "result.json": "6a01c0d63845f5bfa69c561d2e4ea3de952aea36eacd153404e64cbd48a57693",
+    "timing_rows.json": "bd2c8fc2ad068fcbe31251d4399cf36e7724ecede1baae6e83b979554f2a9192",
+    "timed_fields.npz": "ca842cf2b47180c9570d180a2bf85d73c3279b92152779181fd6e29ec1822b10"
+  },
+  "smoke_fixture_only": true
+}

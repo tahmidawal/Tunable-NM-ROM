@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "checks": {
+    "training_array_hash": true,
+    "all_training_snapshots": true,
+    "denominator_max_error": 0.0,
+    "teacher_error_max_disagreement": 1.1102230246251565e-16,
+    "learned_error_max_disagreement": 2.220446049250313e-16,
+    "teacher_orthogonality": 1.1102230246251565e-15,
+    "teacher_projected_covariance_relative": 3.4491043258475397e-16,
+    "actual_trunk_gram_relative": 1.545358229027349e-16,
+    "learned_projection_max_normalized_gradient": 6.273319255915345e-17,
+    "trunk_training_loss_disagreement": 2.220446049250313e-16,
+    "branch_vector_loss_disagreement": 0.0,
+    "teacher_vector_summary_disagreement": 0.0,
+    "learned_vector_summary_disagreement": 2.220446049250313e-16
+  },
+  "scope": "NumPy audit of train-only approximate teacher and vector-aware branch loss.",
+  "teacher_status": "Seeded randomized training aid; projection is not an optimal rank floor",
+  "development_targets_used": false,
+  "final_targets_used": false
+}

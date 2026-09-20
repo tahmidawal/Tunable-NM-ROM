@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "checks": {
+    "complete_cohort_record": {
+      "passed": true
+    },
+    "all_frozen_asset_hashes": {
+      "passed": true,
+      "files": 11,
+      "failures": []
+    },
+    "all_model_parameter_precision": {
+      "passed": true,
+      "bad_dtypes": []
+    },
+    "independent_coordinate_bank": {
+      "passed": true,
+      "relative": 2.8168813372093697e-16
+    },
+    "bank_whitening": {
+      "passed": true
+    },
+    "correction_physical_orthogonality": {
+      "passed": true
+    },
+    "POD_orthogonality": {
+      "passed": true
+    },
+    "independent_parameter_draw_and_membership": {
+      "passed": true,
+      "seed": 202609311,
+      "cases": 1
+    },
+    "all_reference_refinement_metrics": {
+      "passed": true,
+      "maximum_disagreement": 0.0,
+      "failed_refinement_cases": 0
+    },
+    "every_timed_field_and_paired_cost": {
+      "passed": true,
+      "invocations": 4,
+      "fields": 4,
+      "maximum_metric_disagreement": 0.0,
+      "failures": []
+    },
+    "full_case_method_repetition_coverage": {
+      "passed": true,
+      "expected": 4
+    },
+    "recorded_stopping_consistency": {
+      "passed": true,
+      "nonstationary_solves": 0,
+      "failures": [],
+      "qualification": "Independent residual/Jacobian probes are reported separately"
+    },
+    "independent_advective_form_reference_probes": {
+      "passed": true,
+      "cases": [
+        0
+      ],
+      "maximum_relative": 3.7390713975298834e-16
+    }
+  },
+  "source_commit": null,
+  "job_id": null,
+  "scope": "Independent complete-field, reference and frozen-model NS3D panel audit."
+}

@@ -134,6 +134,9 @@ def audit(out,output=None):
         independently_regenerated_cohorts=True,checked_physical_refinement_cases=len(refinement),
         complete_cohort_method_repetition_coverage=True,
         limitation='independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof')
+    if cfg.get('physical_device_guard'):
+        from device_guard import audit as audit_device
+        result['physical_device_audit']=audit_device(record)
     if cfg.get('iterative_cg'):
         from audit_cg import audit as audit_iterative_cg
         result['independent_cg_audit']=audit_iterative_cg(out,record)

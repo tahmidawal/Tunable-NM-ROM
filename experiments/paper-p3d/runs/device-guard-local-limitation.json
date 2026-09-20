@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "stage": "JAX CUDA backend initialization before test execution",
+  "reason": "CUDA_ERROR_OUT_OF_MEMORY initializing local GB10 with 1.8GiB immediately free and 113GiB filesystem cache during concurrent final archives; no CPU fallback or numerical result accepted.",
+  "next_validation": "Guarded cluster allocation must pass one-visible-JAX/CUDA GPU, driver UUID matching nvidia-smi, every timed-invocation before/after checks."
+}

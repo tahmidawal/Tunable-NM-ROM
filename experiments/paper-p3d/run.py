@@ -69,6 +69,10 @@ def run(cfg,out,smoke=False):
         data_contract='supplied full interior nodal forcing only; no generator descriptors online',
         output_contract='complete interior solution field, zero boundary known to every method',
         timing_contract='same-invocation accuracy/device/host time; upload, cold solve and dense readout; offline training/setup separate')
+    guard=None
+    if cfg.get('physical_device_guard'):
+        from device_guard import Guard
+        guard=Guard();record['device_guard']=guard.record
     save=lambda:C.dump(out/'result.json',record)
     save();record['verification']=P.verify();save()
     train_p=C.family(cfg['train_seed'],cfg['train_count']);valid_p=C.family(cfg['validation_seed'],cfg['validation_count'])
@@ -295,10 +299,12 @@ def run(cfg,out,smoke=False):
             np.savez_compressed(out/'fields'/f'N{n}_case{case}_reference.npz',forcing=f,same_grid=truth,physical=physical[(n,case)])
             for rep in range(cfg['repetitions']):
                 for name in rng.permutation(list(methods)):
+                    uuid_before=guard.check() if guard else None
                     C.burn(cfg['burn_seconds']);start=time.perf_counter()
                     fj=jax.device_put(f);fj.block_until_ready();uploaded=time.perf_counter()
                     value=methods[name](fj);jax.block_until_ready(value);computed=time.perf_counter()
                     value=jax.device_get(value);finished=time.perf_counter()
+                    uuid_after=guard.check() if guard else None
                     counters=dict(stationary=True,iterations=0)
                     if str(name).startswith('cg_'):
                         pred,cgstats,*cghistory=value
@@ -313,6 +319,7 @@ def run(cfg,out,smoke=False):
                     pred=np.asarray(pred).reshape(truth.shape);finite=bool(np.isfinite(pred).all())
                     row=dict(intervals=n,case=case,repetition=rep,method=str(name),finite=finite,
                         input_ms=(uploaded-start)*1000,device_ms=(computed-uploaded)*1000,total_ms=(finished-start)*1000,**counters)
+                    if guard:row.update(physical_uuid_before=uuid_before,physical_uuid_after=uuid_after)
                     if finite:row.update(same_grid_error=P.error(pred,truth),physical_error=P.error(pred,physical[(n,case)]))
                     if rep==0 or str(name).startswith('cg_'):
                         suffix=f'_rep{rep}' if str(name).startswith('cg_') else ''
@@ -322,6 +329,7 @@ def run(cfg,out,smoke=False):
                         row.update(field_file=str(path.relative_to(out)),field_sha256=C.sha(pred))
                     record['invocations'].append(row)
                 save();print('CASE',n,case,'REP',rep,flush=True)
+    if guard:record['device_guard_final_uuid']=guard.check()
     record.update(status='complete',complete=True,elapsed_seconds=time.perf_counter()-begin);save();summarize(record,out)
 
 

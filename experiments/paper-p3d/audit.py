@@ -138,6 +138,9 @@ def audit(out,output=None):
     if any('pretraining' in entry for entry in record.get('operators',[])):
         from audit_pretraining import audit as audit_teachers
         result['independent_pretraining_audit']=audit_teachers(out,record)
+    if cfg.get('frozen_offline_assets',False):
+        from audit_offline_assets import audit as audit_offline
+        result['independent_frozen_pod_audit']=audit_offline(out,record)
     (output or out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
     return result
 

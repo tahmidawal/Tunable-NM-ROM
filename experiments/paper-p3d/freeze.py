@@ -21,13 +21,15 @@ def configuration(cfg):
 
 
 def checkpoint_names(cfg):
+    from offline_assets import names
     return ['bank.pkl']+[f'head_K{k}.pkl' for k in cfg['latent_dimensions']]+[
-        f"operators/{entry['name']}/best.pkl" for entry in cfg['operators']]
+        f"operators/{entry['name']}/best.pkl" for entry in cfg['operators']]+names(cfg)
 
 
 def prepare(cfg, source):
     assert cfg['evaluation_cohort']=='final' and cfg['final_count']>0
     assert cfg['final_cohort_opened'] is True and cfg['reserved_final_seed']==920499
+    assert cfg.get('frozen_offline_assets') is True,'final POD assets must be frozen from a real development replay'
     assert {x['spec']['kind'] for x in cfg['operators']}=={'fno3d','unet3d','deeponet3d','transolver3d'}
     assert cfg.get('reuse_checkpoint_directory') and all(x.get('reuse') for x in cfg['operators'])
     assert cfg['reserved_final_seed'] not in [cfg['train_seed'],cfg['validation_seed']]
@@ -51,6 +53,7 @@ def verify_final_freeze(cfg):
     assert cfg['final_cohort_opened'] is True and cfg['reserved_final_seed']==920499
     assert {x['spec']['kind'] for x in cfg['operators']}=={'fno3d','unet3d','deeponet3d','transolver3d'}
     assert cfg.get('representation_oracles',True) is False,'final model-selection oracle disabled'
+    assert cfg.get('frozen_offline_assets') is True,'final POD assets cannot be refitted'
     return dict(path=str(path),sha256=digest(path),selection_source_commit=freeze['selection_source_commit'],
                 selection_job_id=freeze['selection_job_id'],verified_before_final_parameter_generation=True)
 

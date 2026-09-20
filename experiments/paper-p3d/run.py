@@ -14,6 +14,7 @@ import common as C
 import train as T
 import shared_rom as S
 import poisson as P
+import offline_assets as A
 from freeze import verify_final_freeze
 
 
@@ -151,6 +152,7 @@ def run(cfg,out,smoke=False):
         print('REFERENCE',case,uncertainty[-1],flush=True)
     record['reference']=dict(intervals=[lo,hi],relative_refinement=uncertainty,threshold=cfg['reference_budget'],
         passed=bool(max(uncertainty)<cfg['reference_budget']),status='empirical continuum-spectral refinement, not a proved error bound');save()
+    pod_assets={}
     for n in cfg['evaluation_intervals']:
         record['status']=f'prepare_mesh_{n}';save();setup=time.perf_counter()
         bank=C.bank_at(params,n,cfg['field_chunk'])@rotation
@@ -158,9 +160,19 @@ def run(cfg,out,smoke=False):
         if cfg.get('retain_solver_states',False):
             np.savez_compressed(out/f'weak_setup_N{n}.npz',bank=bank,operator=a,triples=triples,eigenvalues=lam)
         truths=P.dataset(n,evaluation_p);sources=np.stack([np.asarray(P.source(n,p)) for p in evaluation_p])
-        training=fields if n==cfg['train_intervals'] else P.dataset(n,train_p)
         ranks=sorted(set([cfg['bank_rank']]+[k+q for k in cfg['latent_dimensions'] for q in cfg['q_ladder']]))
-        pod,pod_info=P.pod_basis(training,max(ranks))
+        if final:
+            pod,pod_info=A.load(reuse,out,n)
+            assert pod.shape[1]>=min(max(ranks),pod_info['available_rank'])
+        else:
+            training=fields if n==cfg['train_intervals'] else P.dataset(n,train_p)
+            pod,pod_info=P.pod_basis(training,max(ranks))
+            if cfg.get('frozen_offline_assets',False):
+                A.save(out,n,pod,pod_info)
+                restored,restored_info=A.load(out,out,n)
+                assert np.array_equal(pod,restored) and pod_info==restored_info
+                pod,pod_info=restored,restored_info
+        pod_assets[n]=(pod,pod_info)
         linear,linfo=P.linear_weak(bank,a,projection)
         methods=dict(linear_bank_weak_qR=linear,linear_bank_galerkin=P.galerkin(bank,n))
         metadata={name:dict(kind='linear_control',rank=cfg['bank_rank']) for name in methods}
@@ -170,7 +182,9 @@ def run(cfg,out,smoke=False):
                 metadata[name]=dict(kind='pod',rank=rank)
         if n!=cfg['train_intervals'] and cfg.get('frozen_pod_transfer_control',False):
             from pod_transfer import prolong
-            native=cfg['train_intervals'];native_pod,native_info=P.pod_basis(fields,max(ranks))
+            native=cfg['train_intervals']
+            assert native in pod_assets,'native POD must be prepared before transfer meshes'
+            native_pod,native_info=pod_assets[native]
             frozen_pod=prolong(native_pod,native,n)
             for rank in ranks:
                 if rank>frozen_pod.shape[1]:continue
@@ -203,7 +217,8 @@ def run(cfg,out,smoke=False):
                     metadata[alt]=dict(kind='neural_operator',spec=spec,training_intervals=native,
                         query='restrict supplied nodal forcing to native branch sensors; evaluate the frozen coordinate trunk at requested fine nodes')
         mesh=dict(intervals=n,weak_tests=len(triples),bank_sha256=C.sha(bank),weak_operator_sha256=C.sha(a),
-            weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,linear_endpoint=linfo,quadrature=[],representation=[])
+            weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,
+            pod_assets_frozen_from_development=bool(final),linear_endpoint=linfo,quadrature=[],representation=[])
         qb,rb=np.linalg.qr(bank,mode='reduced')
         for case,truth in enumerate(truths):
             best=qb@(qb.T@truth.reshape(-1));mesh['representation'].append(dict(case=case,kind='bank_projection',error=P.error(best,truth)))

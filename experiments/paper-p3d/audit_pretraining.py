@@ -1,5 +1,7 @@
 """Independent NumPy/SciPy verification of train-only Poisson POD teachers."""
 import pickle
+import hashlib
+import json
 import numpy as np
 from scipy.fft import dstn
 from audit import family,forcing
@@ -12,11 +14,26 @@ def audit(out,record):
     fields=np.stack([dstn(dstn(forcing(n,p),type=1,norm='ortho')/lam,type=1,norm='ortho')
         for p in family(cfg['train_seed'],cfg['train_count'])])
     a=np.arange(1,n)/n*2-1;coords=np.stack(np.meshgrid(a,a,a,indexing='ij'),axis=-1).reshape(-1,3)
-    rows=[]
+    rows=[];reused=[]
     for info in record['operators']:
         if 'pretraining' not in info:continue
         folder=out/'operators'/info['name']/'pretraining'
-        if not folder.exists():continue  # Reused checkpoints retain their original separately audited training archive.
+        if not folder.exists():
+            entry=next(x for x in cfg['operators'] if x['name']==info['name'])
+            assert entry.get('reuse') and info.get('immediate_reuse_source')
+            origin=info['original_training_source'];assert origin['source_commit'] and origin['job_id']
+            name=f"operators/{info['name']}/best.pkl"
+            with (out/name).open('rb') as stream:checksum=hashlib.file_digest(stream,'sha256').hexdigest()
+            assert checksum==origin['checkpoint_sha256']
+            source=out.parent/cfg['reuse_checkpoint_directory']/f"operators/{info['name']}/SOURCE_RESULT.json"
+            with source.open('rb') as stream:source_hash=hashlib.file_digest(stream,'sha256').hexdigest()
+            assert source_hash==record['reused_checkpoints']['files'][f"operators/{info['name']}/SOURCE_RESULT.json"]
+            prior=json.loads(source.read_text());assert prior['complete'] and not prior['final_cohort_opened']
+            prior_info=next(x for x in prior['operators'] if x['name']==info['name'])
+            assert prior_info['pretraining']==info['pretraining']
+            reused.append(dict(name=info['name'],checkpoint_sha256=checksum,original_training_source=origin,
+                scope='Previously audited pretraining archive reused by exact checkpoint and source-result hash; teacher algebra not rerun in this allocation.'))
+            continue
         target=fields.reshape(len(fields),-1)/info['scales']['output'];denominator=np.sum(target*target,axis=1)
         saved=np.load(folder/'training_teacher.npz');q=saved['spatial_basis'];eigen=saved['eigenvalues']
         assert np.allclose(saved['denominators'],denominator,rtol=1e-12,atol=1e-12)
@@ -45,4 +62,4 @@ def audit(out,record):
             weighted_pod_eigen_residual=eigen_defect,gram_relative_defect=gram_defect,
             least_squares_normal_defect=normal_defect,physical_metric_identity_defect=metric_defect,
             teacher_projection_worst=float(max(errors)),learned_trunk_projection_worst=float(max(learned_errors))))
-    return dict(passed=True,recipes=rows,scope='Independent regenerated training solutions, weighted POD eigenspace, learned-trunk least squares and physical coefficient metric; no retraining or global convergence claim.')
+    return dict(passed=True,recipes=rows,reused_pretraining_records=reused,scope='Fresh recipes: independent regenerated training solutions, weighted POD eigenspace, learned-trunk least squares and physical coefficient metric. Reused recipes: exact prior-checkpoint/source-result provenance only. No retraining or global convergence claim.')

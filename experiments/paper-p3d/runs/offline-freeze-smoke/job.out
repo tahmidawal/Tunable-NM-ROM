@@ -1,0 +1,15 @@
+jax_backend=gpu x64=True precision=highest
+BANK {'step': 1, 'relative_mse': 0.8421649745335128, 'seconds': 1.6931595110800117}
+BANK_VALID {'step': 3, 'validation_projection_worst': 0.6995895393078406, 'validation_projection_errors': [0.6995895393078406], 'selected': True, 'seconds': 4.090071831014939}
+HEAD 2 {'step': 1, 'objective': 2947.145415042263, 'seconds': 0.766660465975292}
+HEAD_VALID 2 0.7819607879956033
+REFERENCE 0 0.0013066371434029263
+COMPILED 8 linear_bank_weak_qR 0.134
+COMPILED 8 linear_bank_galerkin 0.054
+COMPILED 8 pod2_galerkin 0.113
+COMPILED 8 pod4_galerkin 0.124
+COMPILED 8 pod8_galerkin 0.078
+COMPILED 8 dst_exact 0.0
+COMPILED 8 nmrom_K2_q0_dense 0.902
+COMPILED 8 nmrom_K2_q2_dense 0.747
+CASE 8 0 REP 0

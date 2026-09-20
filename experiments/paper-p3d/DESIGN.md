@@ -80,6 +80,12 @@ Preserve the fresh 100000-update original DeepONet/Transolver recipe and repeat 
 
 Starting with this amendment, retain selected latent states, recovered coefficients and frozen weak setup arrays for each timed dense ROM case. Independently recompute analytic NumPy head derivatives, coefficient recovery, field reconstruction, and weak gradients using SciPy sine transforms. Earlier field/reference audits remain valid, while their stopping checks are described as checks of recorded counters because they did not retain the latent states needed for a gradient replay. No global optimization claim is made.
 
+## Development amendment A5: freeze classical offline assets
+
+Before the final cohort is opened, the selected bundle receives a real development replay using all selected learned checkpoints and the full comparison panel. That replay builds each mesh's POD basis from the original training members, saves it, reads it back byte-for-byte, and uses the restored array for the recorded Galerkin queries. The final freeze pins those basis arrays and their metadata along with every bank/head/operator checkpoint. Final execution loads the exact POD arrays; it cannot refit them. Deterministic mesh operators and factorizations remain untimed offline setup and use no final labels.
+
+The native mesh remains the primary field-matched comparison. The finer mesh includes both a separately labelled POD basis rebuilt offline from finer solutions of the same training members and a native-trained POD basis prolonged with the known zero boundary. Only the latter is a frozen-data mesh-transfer control. Both are frozen before final evaluation. An independent NumPy/SciPy audit reconstructs one saved field per POD method and mesh with finite-difference Galerkin algebra; it uses an independent SciPy interpolator for the native-basis transfer.
+
 ## Glossary
 
 - NM-ROM: a reduced numerical solver whose field coefficients depend on a smaller neural latent state.

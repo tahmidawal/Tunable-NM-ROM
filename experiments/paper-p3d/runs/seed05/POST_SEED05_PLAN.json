@@ -1,0 +1,25 @@
+{
+  "schema": "poisson3d-post-seed05-selection-v1",
+  "registered_utc": "2026-09-20T15:36:14.000672+00:00",
+  "final_cohort_opened": false,
+  "final_seed": 920499,
+  "final_count": 64,
+  "native_primary_intervals": 32,
+  "transfer_intervals": 64,
+  "selection_metric": "worst native-mesh development relative field error",
+  "primary_nmrom_policy": "Select fixed K16 bank/head using development q=0 error; hold q={0,32,96} and M=512 fixed; retain both independent training-seed panels.",
+  "operator_policy": "Select each architecture/checkpoint using native development error; retain every original/common-schedule candidate. No final-driven model changes.",
+  "pod_initialized_deeponet_confirmation": {
+    "conditional": "Only if this recipe is selected over random initialization.",
+    "independent_initialization_seed": 920752,
+    "training_recipe": "Exact seed05 pretraining and joint-training hyperparameters; only seed changes.",
+    "primary_checkpoint_policy": "Use native development performance after both same-recipe seeds finish."
+  },
+  "final_requirements": [
+    "A real full selected-bundle development replay using exact checkpoint bytes",
+    "Retained native and mesh-adapted POD arrays; native-trained prolongation control separate",
+    "Complete independent states/reference/field/provenance/retention audit",
+    "Commit freeze containing all selected checkpoints, POD arrays/metadata, full config and the real development result hash before drawing any final input",
+    "Final64 once with original thresholds, three repetitions and 0.2 second burn unchanged"
+  ]
+}

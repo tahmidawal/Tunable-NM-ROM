@@ -9,8 +9,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/paper-p3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_p3d_20260920'
-FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','pod_transfer.py','run.py','audit.py','audit_pretraining.py','state_audit.py','trunk_diagnostic.py','freeze.py','cluster/stage.py','cluster/collect.py']
+FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','pod_transfer.py','offline_assets.py','run.py','audit.py','audit_pretraining.py','state_audit.py','trunk_diagnostic.py','freeze.py','cluster/stage.py','cluster/collect.py']
 FILES+=['operators/'+name for name in ['models3d.py','training.py','pretrained_deeponet.py','__init__.py','README.md','IMPORTS.json','LOCAL_EXTENSIONS.json','poisson_adapter.py']]
+FILES+=['audit_offline_assets.py']
 FILES+=['operators/'+name for name in ['extra_models3d.py','EXTRA_IMPORTS.json','upstream/Physics_Attention.py','upstream/LICENSE','upstream/prior_families.py','upstream/PROVENANCE.json']]
 
 
@@ -47,6 +48,8 @@ def main():
         cfg=json.loads((out/'code/config.json').read_text())
         assert cfg['reuse_checkpoint_directory']=='checkpoints'
         names=['result.json','cohorts.json','bank.pkl']+[f'head_K{k}.pkl' for k in cfg['latent_dimensions']]
+        if cfg.get('evaluation_cohort')=='final':
+            names += [f'offline/pod_N{n}.{suffix}' for n in cfg['evaluation_intervals'] for suffix in ('npy','json')]
         names += [p.name for p in source.glob('eq_N*_K*.npz')]
         for name in names:
             dest=out/'checkpoints'/name;dest.parent.mkdir(parents=True,exist_ok=True)

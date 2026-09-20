@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "checked_fields": 19,
+  "checked_references": 2,
+  "checked_summary_rows": 19,
+  "maximum_reference_relative_defect": 5.347991914614642e-16,
+  "maximum_metric_absolute_defect": 0.0,
+  "maximum_forcing_relative_defect": 3.477080955365854e-17,
+  "maximum_physical_reference_defect": 3.6635408256976226e-16,
+  "independently_regenerated_cohorts": true,
+  "checked_physical_refinement_cases": 1,
+  "complete_cohort_method_repetition_coverage": true,
+  "limitation": "independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof",
+  "independent_weak_state_audit": {
+    "passed": true,
+    "checked_states": 4,
+    "checked_meshes": 2,
+    "maximum": {
+      "bank_node_defect": 1.7044969411870475e-15,
+      "weak_operator_defect": 4.451245650130515e-16,
+      "field_relative_defect": 1.1045507679530095e-16,
+      "coefficient_relative_defect": 1.5325372152240696e-15,
+      "full_gradient_absolute_defect": 5.01368330600477e-17,
+      "eliminated_gradient_absolute_defect": 4.3556043510415907e-16
+    },
+    "scope": "Independent analytic NumPy head/Jacobian, full-field coefficient reconstruction, sampled bank-coordinate identity and SciPy sine-transform weak operator/gradient; no global optimality claim."
+  },
+  "independent_frozen_pod_audit": {
+    "passed": true,
+    "checks": [
+      {
+        "intervals": 8,
+        "method": "pod2_galerkin",
+        "case": 0,
+        "relative_field_difference": 5.094558780961931e-16
+      },
+      {
+        "intervals": 8,
+        "method": "pod4_galerkin",
+        "case": 0,
+        "relative_field_difference": 9.602591923587281e-16
+      },
+      {
+        "intervals": 8,
+        "method": "pod8_galerkin",
+        "case": 0,
+        "relative_field_difference": 9.287539833091846e-16
+      },
+      {
+        "intervals": 16,
+        "method": "pod2_galerkin",
+        "case": 0,
+        "relative_field_difference": 2.095542908519385e-15
+      },
+      {
+        "intervals": 16,
+        "method": "pod4_galerkin",
+        "case": 0,
+        "relative_field_difference": 1.9840697372998987e-15
+      },
+      {
+        "intervals": 16,
+        "method": "pod8_galerkin",
+        "case": 0,
+        "relative_field_difference": 4.912924063410115e-16
+      },
+      {
+        "intervals": 16,
+        "method": "pod2_native8_interpolated_basis_galerkin",
+        "case": 0,
+        "relative_field_difference": 3.4595126808452927e-16
+      },
+      {
+        "intervals": 16,
+        "method": "pod4_native8_interpolated_basis_galerkin",
+        "case": 0,
+        "relative_field_difference": 1.2164941176582151e-15
+      },
+      {
+        "intervals": 16,
+        "method": "pod8_native8_interpolated_basis_galerkin",
+        "case": 0,
+        "relative_field_difference": 7.106668827656381e-16
+      }
+    ],
+    "basis_orthogonality": [
+      {
+        "intervals": 8,
+        "maximum_gram_defect": 4.27678725767322e-14
+      },
+      {
+        "intervals": 16,
+        "maximum_gram_defect": 2.398081733190338e-14
+      }
+    ],
+    "tolerance": 1e-08,
+    "final_assets_frozen": false,
+    "scope": "One saved field per POD method/mesh reconstructed through independent finite-difference Galerkin algebra; transferred bases use SciPy interpolation. All saved fields separately receive reference/error/hash audits."
+  }
+}

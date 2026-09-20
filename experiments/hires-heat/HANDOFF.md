@@ -9,3 +9,11 @@ Branch `exp/2026-09-20-hires-heat`, lane dir `experiments/hires-heat/`, cluster 
 
 ## Job ledger (budget: 8 total, 2 running)
 (see bottom of file; appended at each submit/collect)
+
+| job | slurm id | config | GPU | submitted (UTC) | state |
+|---|---|---|---|---|---|
+| h2d-ladder01 | 4051290 | configs/h2d-ladder01.json (audited R=32 checkpoint, q ladder, 256→4096) | H200 pax011 | 2026-09-20 ~23:20 | running |
+| h2d-wide02 | 4051298 | configs/h2d-wide02.json (train R=128 bank + K=8/16 heads, panel 256/1024) | A100 pax105 | 2026-09-20 ~23:20 | running |
+| h3d-profile03 | — | configs/h3d-profile03.json (frozen paper-h3d K32 checkpoint, 64³/128³, stepping + speed arms) | H200 | waiting for a slot | prepared |
+
+Source commit of jobs 1-2: 1cc6920f. Local findings so far (smoke only, not results): the audited 2D bank floor is ~1-1.7 % at t=0 so its ladder cannot reach 1 %; the 3D paper-h3d 0.754 % headline is evolved-times only (t=0 moments fit is 1.9 %, field fit ~1.1 % = bank floor); at K+q=R the corrected ROM coincides with the linear-bank solve.

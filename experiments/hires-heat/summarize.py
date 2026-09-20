@@ -22,7 +22,7 @@ for mesh in res['meshes']:
         elif r['stats'] and r['stats'][0]:
             cg = np.concatenate([np.asarray(x[0]).reshape(-1, 3) for x in r['stats']]); row.update(cg_iterations_per_query=float(cg[:, 0].sum() / len(same)), failures=int((cg[:, 2] != 1).sum()))
         rows.append(row)
-    named = next(r for r in rows if r['method'].endswith('_NAMED')); foms = [r for r in rows if r['method'].startswith('fom_') and not r['failures']]
+    named = next((r for r in rows if r['method'].endswith('_NAMED')), None) or dict(device_ms_median=float('nan')); foms = [r for r in rows if r['method'].startswith('fom_') and not r['failures']]
     coarse = [r for r in rows if r['method'].startswith('coarse') and not r['failures']]
     for r in rows:
         r['speedup_vs_named_fom'] = named['device_ms_median'] / r['device_ms_median']

@@ -214,7 +214,7 @@ def sep2d_directions(model, cfg_train):
 
 
 # ---------------------------------------------------------------- reduced solver
-def lm(head_fn, budget, tol):
+def lm(head_fn, budget, tol, cholesky=False):
     """Damped monotone LM on ||matrix h(z) - target||/||target||. reasons: 0 budget 1 stationary 2 tiny 3 damping."""
     def solve(params, matrix, target, z0, scale=None):
         scale = jnp.maximum(jnp.linalg.norm(target), 1e-14) if scale is None else scale
@@ -229,7 +229,7 @@ def lm(head_fn, budget, tol):
         def body(s):
             z, r, j, value, damping, attempts, accepted, _ = s
             gram = j.T @ j; system = gram + damping * jnp.diag(jnp.maximum(jnp.diag(gram), 1e-12))
-            dz = jnp.linalg.solve(system, -j.T @ r); new = z + dz; rn, jn = parts(new); vn = jnp.dot(rn, rn)
+            dz = jsl.cho_solve((jnp.linalg.cholesky(system), True), -j.T @ r) if cholesky else jnp.linalg.solve(system, -j.T @ r); new = z + dz; rn, jn = parts(new); vn = jnp.dot(rn, rn)
             ok = jnp.isfinite(vn) & (vn < value)
             damping = jnp.where(ok, jnp.maximum(damping / 3, 1e-12), damping * 10)
             reason = jnp.where(jnp.linalg.norm(dz) < 1e-12 * (1 + jnp.linalg.norm(z)), 2,
@@ -272,7 +272,7 @@ def make_stages(model, setup, q, opt):
     E0 = eliminate(setup['rtri'] if opt['init'] == 'field' else setup['a'], D, opt.get('compress', False))
     E1 = eliminate(setup['a'], D, opt.get('compress', False))
     rtri_t = jnp.asarray(setup['rtri'].T)
-    fit0 = lm(head_fn, opt['fit_budget'], opt['tolerance']); fit1 = lm(head_fn, opt['step_budget'], opt['tolerance'])
+    fit0 = lm(head_fn, opt['fit_budget'], opt['tolerance'], opt.get('cholesky', False)); fit1 = lm(head_fn, opt['step_budget'], opt['tolerance'], opt.get('cholesky', False))
     def proj(E, t):   # projected target and the UNCOMPRESSED norm used for LM scaling (compression must not change stopping)
         tp = t - E['qq'] @ (E['qq'].T @ t); scale = jnp.maximum(jnp.linalg.norm(tp), 1e-14)
         return (tp if E['rows'] is None else E['rows'].T @ tp), scale
@@ -306,6 +306,11 @@ def make_stages(model, setup, q, opt):
             targets = jnp.exp(-nu * lam[None] * jnp.asarray(times[1:])[:, None]) * m0[None]
             _, coefs, _, chosen = jax.vmap(lambda t: best_fit(fit1, E1, lib1, t, opt.get('direct_starts', 1), False))(targets)
             return coefs, chosen
+        if opt['stepping'] == 'exact_chain':   # same exact supplied-field targets as 'direct', solved in time order with warm starts
+            targets = jnp.exp(-nu * lam[None] * jnp.asarray(times[1:])[:, None]) * m0[None]
+            def chain(zp, t):
+                tp, scale = proj(E1, t); zn, info = fit1(hp, E1['ap'], tp, zp, scale); return zn, (recover(E1, zn, t), info)
+            _, (coefs, infos) = jax.lax.scan(chain, z, targets); return coefs, infos
         def step(carry, _):
             zp, cp = carry; t = factor * (E1['a'] @ cp)
             zn, info = fit1(hp, E1['ap'], *proj(E1, t)[:1], zp, proj(E1, t)[1]); cn = recover(E1, zn, t)

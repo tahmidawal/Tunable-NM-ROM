@@ -19,21 +19,19 @@
  "cohorts": [
   [
    920311,
-   16
+   4
   ]
  ],
  "meshes": [
-  64,
-  128
+  32
  ],
  "cases_by_mesh": {
-  "64": 16,
-  "128": 16
+  "32": 4
  },
- "repetitions": 5,
- "burn_seconds": 0.15,
+ "repetitions": 1,
+ "burn_seconds": 0.02,
  "audit_intervals": 32,
- "full_audit_cases": 1,
+ "full_audit_cases": 0,
  "reference_budget": 0.0001,
  "rom_defaults": {
   "init": "moments",
@@ -46,71 +44,8 @@
  },
  "rom_arms": [
   {
-   "name": "nmrom_q0_cn",
-   "q": 0
-  },
-  {
-   "name": "nmrom_q32_cn",
-   "q": 32
-  },
-  {
-   "name": "nmrom_q64_cn",
-   "q": 64
-  },
-  {
    "name": "nmrom_q96_cn",
    "q": 96
-  },
-  {
-   "name": "nmrom_q96_cn_1start",
-   "q": 96,
-   "opt": {
-    "starts": 1
-   }
-  },
-  {
-   "name": "nmrom_q96_cn_compress",
-   "q": 96,
-   "opt": {
-    "compress": true
-   }
-  },
-  {
-   "name": "nmrom_q0_exactseq",
-   "q": 0,
-   "opt": {
-    "stepping": "exact_seq"
-   }
-  },
-  {
-   "name": "nmrom_q96_exactseq",
-   "q": 96,
-   "opt": {
-    "stepping": "exact_seq"
-   }
-  },
-  {
-   "name": "nmrom_q0_direct",
-   "q": 0,
-   "opt": {
-    "stepping": "exact_direct"
-   }
-  },
-  {
-   "name": "nmrom_q96_direct",
-   "q": 96,
-   "opt": {
-    "stepping": "exact_direct"
-   }
-  },
-  {
-   "name": "nmrom_q96_direct_1start_compress",
-   "q": 96,
-   "opt": {
-    "stepping": "exact_direct",
-    "starts": 1,
-    "compress": true
-   }
   },
   {
    "name": "nmrom_q96_field_cn",
@@ -191,38 +126,10 @@
   }
  ],
  "linear_bank_inits": [
-  "moments",
   "field"
  ],
- "cg_arms": {
-  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-   "dt": 0.025,
-   "tolerance": 1e-06
-  },
-  "fom_cncg_dt0.025_rtol1e-4": {
-   "dt": 0.025,
-   "tolerance": 0.0001
-  },
-  "fom_cncg_dt0.05_rtol1e-4": {
-   "dt": 0.05,
-   "tolerance": 0.0001
-  },
-  "fom_cncg_dt0.05_rtol1e-2": {
-   "dt": 0.05,
-   "tolerance": 0.01
-  },
-  "fom_cncg_dt0.1_rtol1e-4": {
-   "dt": 0.1,
-   "tolerance": 0.0001
-  },
-  "fom_cncg_dt0.1_rtol1e-2": {
-   "dt": 0.1,
-   "tolerance": 0.01
-  }
- },
- "coarse_intervals": [
-  16,
-  32
- ],
- "coarse_cg": "fom_cncg_dt0.05_rtol1e-4"
+ "cg_arms": {},
+ "coarse_intervals": [],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-4",
+ "local_smoke": true
 }

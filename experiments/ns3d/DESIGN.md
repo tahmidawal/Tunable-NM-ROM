@@ -179,6 +179,53 @@ grid-independent initialization or a deployment speed claim. A later deployment
 panel requires a certified sampled cold-start projection as well as sampled
 online operators, unless it explicitly reports the dense input/output costs.
 
+## A2 — capacity/coverage follow-up and actual comparison panel
+
+The audited pilot in `artifacts/pilot01/` fails the representation target.
+Its free bank itself is substantially worse than same-rank POD on training
+fields, and head refinement closely fits the coefficients available in that
+bank. Further head-only optimization is not the next experiment. The amended
+physical family, output contract, accuracy target and validation cohort are now
+fixed; do not change the flow after seeing this model comparison.
+
+The follow-up expands the prefix-preserving training cohort to 512 trajectories.
+The spatial coordinate network is trained first with unrestricted per-snapshot
+coefficients; the nonlinear head is fitted only after the bank is frozen. This
+keeps the current architecture while removing the low-dimensional head as a
+constraint on bank learning. Compute the training POD rank ladder before bank
+training. Candidate ranks are 256 and 512: choose the smaller if its training
+worst snapshot floor is at most 2%, otherwise use 512 and report any remaining
+capacity miss. POD remains a separate control, not the learned bank. Spatial
+hidden width is at least the requested bank rank; use more fixed periodic
+Fourier features. Initialize free coefficients from training-field POD scores,
+not from hidden family-generator parameters. The first nonlinear head has
+$K=16$. Freeze its bank and preserve the complete training history.
+
+The primary actual-trajectory ladder uses $q=0,16,32$ at a common $M=256$ and
+time step, with like-for-like POD weak least-squares controls at dimensions
+16, 32 and 48. Larger-rank POD and the unrestricted learned bank also receive
+efficient coefficient-Galerkin/CNAB2 controls. Those solve an explicit reduced
+ODE; they are not an underdetermined $M<k$ least-squares objective or a redundant
+latent-plus-full-bank endpoint. The full-bank endpoint is shown as a separate
+control, not presented as part of the fixed-test-count neural ladder.
+
+Use a full-order CNAB2 time-step ladder including accuracy-passing coarse steps.
+Train periodic FNO3D and U-Net3D on exactly the same expanded training data and
+opened validation data. Import the shared heat-lane code by committed content
+hash, with explicit vector packing and initial-norm denominators. Models receive
+only the supplied initial velocity and viscosity. Both raw and solenoidal
+projected outputs can be reported; the projection is charged. Each model saves
+the latest optimizer state, validation-selected checkpoint and learning curve;
+budget termination is not called convergence.
+
+The first matched panel uses the first eight existing validation cases, retains
+all timing repetitions, and includes initial fitting and dense velocity output.
+Report same-grid error against a refined-time solve and a separately named
+finer-grid discrepancy. Save the fields that produced the reported errors.
+Finer-grid references and numerical constraints are checked independently of
+model selection. No final case is opened during this follow-up. No speed ratio
+crosses jobs. Setup, training, compilation and complete-query cost stay separate.
+
 ## Glossary
 
 - **FOM:** the numerical solver on the full spatial grid.

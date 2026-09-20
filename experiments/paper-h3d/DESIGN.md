@@ -44,20 +44,6 @@ At a finer evaluation mesh, additionally time native-training-grid prediction fo
 
 The generic operator module is pinned independently at commit `84d302a706bf06a460d04f419d9c06a6c424932e`. Its independent Fourier-index check, double-precision gradients, odd-grid periodic/Dirichlet shape checks and actual training/validation/checkpoint replay smokes passed. This implementation can be adapted to other PDEs by their owners using explicit field channels, physical normalization and boundary conditions.
 
-## Glossary
-
-- **Bank / head:** learned spatial functions / nonlinear map from small latent vectors to bank coefficients.
-- **$R$, $K$, $q$:** spatial-bank rank, head latent dimension, and additional solved correction dimension.
-- **$M$, $m$:** number of smooth weak tests and number of quadrature samples.
-- **Weak form:** PDE residual integrated against smooth test functions.
-- **DST / CN:** discrete sine transform / Crank--Nicolson time discretization.
-- **POD:** linear basis obtained from training-snapshot singular vectors.
-- **NNLS / quadrature:** nonnegative least-squares weight fit / weighted approximation of an integral or grid sum.
-- **Current-relative / initial-relative:** error divided by the reference norm at that time / by its initial norm.
-- **Stationarity:** small objective gradient; not proof of a globally best representation.
-- **Development / final:** data available for tuning / untouched data reserved for evaluation after selection freezes.
-- **Same-grid / physical reference:** exact evolution of the discrete spatial operator / finer approximation to the continuum PDE.
-
 ## Amendment A2: remaining operator families, before their first training run
 
 The overnight campaign also requests DeepONet and Transolver controls. `extra03.json` adds a CNN-branch DeepONet with a shared learned coordinate trunk and a patchified structured-mesh 3D Transolver. Their exact architectures and upstream provenance are in `operators/README.md` and `operators/upstream/PROVENANCE.json`. They use the same supplied-field/coordinate input, output times, normalization, training cohort and validation cohort as A1. No family-generation descriptor is passed to either operator. The reserved final seed remains unopened.
@@ -89,3 +75,22 @@ The implementation includes an independent affine-reconstruction replay and a fu
 A4 also diagnoses the new DeepONet and Transolver candidates on both training and development fields before further updates. DeepONet receives a separate projection onto its learned trunk span, isolating spatial representation error from branch prediction error. The supplied input, output normalization and training membership stay fixed. The declared continuation restarts Adam with a new cosine schedule from the prior development-selected checkpoint and explicitly retains that checkpoint as a step-zero candidate. It is a documented two-stage optimization recipe, not a fresh independent training seed. Any later seed comparison must reproduce the same complete recipe, including the first stage and validation selection, or be labelled a different recipe. Original weights and curves remain in their immutable attempt archive.
 
 The A3 additional random-initialized head is retained alongside the original two heads for A4's start-count comparison. This makes the initialization comparison available at every candidate latent dimension on the same bank and validation fields. The old and PCA-trained checkpoints remain separately named.
+
+## Glossary
+
+- **Bank / head:** learned spatial functions / nonlinear map from small latent vectors to bank coefficients.
+- **$R$, $K$, $q$:** spatial-bank rank, head latent dimension, and additional solved correction dimension.
+- **$M$, $m$:** number of smooth weak tests and number of quadrature samples.
+- **Weak form:** PDE residual integrated against smooth test functions.
+- **DST / CN:** discrete sine transform / Crank--Nicolson time discretization.
+- **POD:** linear basis obtained from training-snapshot singular vectors.
+- **NNLS / quadrature:** nonnegative least-squares weight fit / weighted approximation of an integral or grid sum.
+- **Current-relative / initial-relative:** error divided by the reference norm at that time / by its initial norm.
+- **Stationarity:** small objective gradient; not proof of a globally best representation.
+- **Development / final:** data available for tuning / untouched data reserved for evaluation after selection freezes.
+- **Same-grid / physical reference:** exact evolution of the discrete spatial operator / finer approximation to the continuum PDE.
+- **PCA / SVD:** linear coordinate constructions from training snapshots; here used to initialize latent coordinates while retaining the learned spatial bank.
+- **Linear skip:** an affine reconstruction path added to the nonlinear head.
+- **Adam / cosine schedule:** the optimizer and the declared evolution of its learning rate.
+- **Warm restart:** continuation from retained weights with new optimizer state and a newly declared learning-rate schedule.
+- **Trunk / branch:** DeepONet coordinate functions and the supplied-field network that predicts their coefficients.

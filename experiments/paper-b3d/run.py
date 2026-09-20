@@ -136,6 +136,7 @@ def main():
         del G
         _,_,_,Phi,lam=b3.test_modes_3d(n,cfg['test_modes'])
         report['actual_test_modes']=len(lam)
+        report['test_mode_construction']='lowest discrete-Laplacian sine eigenmodes; complete the degenerate eigenvalue shell at the nominal cutoff to preserve axis symmetry'
         assert len(lam)>2*max(R,K+max(cfg['q_ladder']))
         report['stage']='references';save()
         fom=b3.make_newton_tol_rollout(n,'fft')

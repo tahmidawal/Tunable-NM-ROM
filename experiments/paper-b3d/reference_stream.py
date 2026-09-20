@@ -18,11 +18,11 @@ def stream(tab,case,nodes,dt,output_nodes=33,output_dt=.005,final_time=.25,retai
     factor=(nodes-1)//(output_nodes-1);stride=int(round(output_dt/dt));steps=int(round(final_time/dt))
     assert factor*(output_nodes-1)==nodes-1 and abs(stride*dt-output_dt)<1e-12 and abs(steps*dt-final_time)<1e-12
     def restriction(u):return np.asarray(u.reshape((nodes-2,)*3)[factor-1::factor,factor-1::factor,factor-1::factor]).ravel()
-    fn=c.make_fom(nodes,dt,1);u=jnp.asarray(initial)
-    before=time.perf_counter();jax.block_until_ready(fn(u,nu,1e-10,1e-11));compile_seconds=time.perf_counter()-before
+    fn,spectrum=c.make_fom(nodes,dt,1,explicit_spectrum=True);u=jnp.asarray(initial)
+    before=time.perf_counter();jax.block_until_ready(fn(u,nu,1e-10,1e-11,spectrum));compile_seconds=time.perf_counter()-before
     burn();before=time.perf_counter();fields=[restriction(u)];iterations=[];residuals=[];worst=-1.;pair=None
     for step in range(1,steps+1):
-        previous=u;answer=fn(u,nu,1e-10,1e-11);jax.block_until_ready(answer)
+        previous=u;answer=fn(u,nu,1e-10,1e-11,spectrum);jax.block_until_ready(answer)
         u=answer[0][1];it=int(answer[1][0]);rn=float(answer[2][0])
         assert np.isfinite(rn) and rn<2e-9
         iterations.append(it);residuals.append(rn)

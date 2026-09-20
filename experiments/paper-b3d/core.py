@@ -141,7 +141,7 @@ def metrics(fields,reference):
                 initial_error=float(err[0]),finite=bool(np.isfinite(f).all()))
 
 
-def make_fom(n,dt=.005,steps=50):
+def make_fom(n,dt=.005,steps=50,explicit_spectrum=False):
     """Tolerance-terminated BE with explicit time step for reference refinement."""
     axis=jnp.arange(1,n-1,dtype=jnp.float64)
     lam=4*(n-1)**2*jnp.sin(jnp.pi*axis/(2*(n-1)))**2
@@ -154,8 +154,8 @@ def make_fom(n,dt=.005,steps=50):
         for axis in range(3):x=dst(x,axis)
         return x
     def residual(u,prev,nu):return u-prev+dt*(b3.upwind_adv_field_3d(u,n)-nu*b3.lap_3d(u,n))
-    def roll(u0,nu,ntol,ltol):
-        def pre(v):return dst3(dst3(v.reshape((n-2,)*3))/(1+dt*nu*lam)).ravel()
+    def roll(u0,nu,ntol,ltol,spectrum):
+        def pre(v):return dst3(dst3(v.reshape((n-2,)*3))/(1+dt*nu*spectrum)).ravel()
         def step(prev,_):
             scale=jnp.maximum(jnp.linalg.norm(prev),1e-300)
             def body(state):
@@ -169,7 +169,9 @@ def make_fom(n,dt=.005,steps=50):
             return u,(u,it,rn/scale)
         _,(fields,it,rn)=jax.lax.scan(step,u0,None,length=steps)
         return jnp.concatenate((u0[None],fields)),it,rn
-    return jax.jit(roll)
+    compiled=jax.jit(roll)
+    if explicit_spectrum:return compiled,lam
+    return jax.jit(lambda u0,nu,ntol,ltol:compiled(u0,nu,ntol,ltol,lam))
 
 
 def make_fom_control(input_nodes, nodes, dt, final_time, output_steps):

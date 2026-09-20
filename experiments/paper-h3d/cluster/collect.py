@@ -21,7 +21,9 @@ def main():
     subprocess.run(['scp','-r',f'tufts-login:{remote}/.',str(local)],check=True)
     subprocess.run(['sha256sum','-c','SOURCE.sha256'],cwd=local,check=True)
     subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
-    subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(ROOT/'experiments/paper-h3d/audit.py'),str(local/'out'),'--destination',str(local.parent/'audit-local.json')],check=True)
+    record=json.loads((local/'out/result.json').read_text())
+    audit_script='audit_head.py' if record['schema']=='heat3d-head-pca-diagnostic-v1' else 'audit.py'
+    subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(ROOT/'experiments/paper-h3d'/audit_script),str(local/'out'),'--destination',str(local.parent/'audit-local.json')],check=True)
     subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
     if a.remove_verified:
         # Only the literal namespace + validated alphanumeric attempt is removed.

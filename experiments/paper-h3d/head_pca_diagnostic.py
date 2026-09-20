@@ -71,17 +71,17 @@ def main():
         models=[(f'pca_K{k}',model)]
         for start_count in cfg['diagnostic_fit_starts']:
             record['status']=f'evaluating_pca_K{k}_starts{start_count}';save()
-            prediction,stats=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count})
+            prediction,stats,latents=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count},return_latents=True)
             metrics=[C.metrics(a,b) for a,b in zip(prediction,valid)]
-            np.savez_compressed(directory/f'validation_starts{start_count}.npz',prediction=prediction,stats=stats)
+            np.savez_compressed(directory/f'validation_starts{start_count}.npz',prediction=prediction,stats=stats,latents=latents)
             row=dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1)))
             record['candidates'][-1]['fits'].append(row);save()
     for model in old_models:
         k=model['info']['k'];record['candidates'].append(dict(name=f'old_random_K{k}',info=model['info'],fits=[]))
         for start_count in cfg['diagnostic_fit_starts']:
-            prediction,stats=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count})
+            prediction,stats,latents=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count},return_latents=True)
             metrics=[C.metrics(a,b) for a,b in zip(prediction,valid)]
-            np.savez_compressed(out/f'old_K{k}_starts{start_count}.npz',prediction=prediction,stats=stats)
+            np.savez_compressed(out/f'old_K{k}_starts{start_count}.npz',prediction=prediction,stats=stats,latents=latents)
             record['candidates'][-1]['fits'].append(dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1))));save()
     for setting in cfg.get('operator_continuations',[]):
         name=setting['name'];old=next(item for item in operator_models if item[0]==name)

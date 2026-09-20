@@ -166,7 +166,7 @@ def bank_galerkin(bank,n,cfg):
     return lambda u:query(u,b,p)
 
 
-def best_found_fields(model,bank,fields,cfg):
+def best_found_fields(model,bank,fields,cfg,return_latents=False):
     """Multistart projection diagnostic using truth; never an online initializer."""
     basis,triangular=np.linalg.qr(bank,mode='reduced')
     targets=np.asarray(fields).reshape(-1,len(bank))@basis
@@ -179,11 +179,12 @@ def best_found_fields(model,bank,fields,cfg):
         def single(target):
             order=jnp.argsort(jnp.sum((library-target)**2,axis=1))[:cfg.get('representation_fit_starts',4)]
             zs,infos=jax.vmap(lambda z:solve(p,matrix,target,z))(codes[order])
-            best=jnp.argmin(infos[:,3]);return C.head(p,zs[best]),infos[best]
+            best=jnp.argmin(infos[:,3]);return C.head(p,zs[best]),infos[best],zs[best]
         return jax.vmap(single)(targets)
-    coef,stats=fit(jnp.asarray(targets),p,codes,mat,library)
+    coef,stats,latents=fit(jnp.asarray(targets),p,codes,mat,library)
     prediction=np.asarray(coef)@bank.T
-    return prediction.reshape(fields.shape),np.asarray(stats).reshape(*fields.shape[:2],5)
+    result=(prediction.reshape(fields.shape),np.asarray(stats).reshape(*fields.shape[:2],5))
+    return (*result,np.asarray(latents).reshape(*fields.shape[:2],-1)) if return_latents else result
 
 
 def verify():

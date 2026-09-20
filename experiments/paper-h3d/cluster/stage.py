@@ -13,7 +13,7 @@ FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/ex
           'operators/upstream/PROVENANCE.json','operators/upstream/Physics_Attention.py',
           'operators/upstream/prior_families.py','operators/upstream/LICENSE']
 FILES += ['frozen.py']
-FILES += ['head_pca_diagnostic.py']
+FILES += ['head_pca_diagnostic.py','audit_head.py']
 
 
 def main():

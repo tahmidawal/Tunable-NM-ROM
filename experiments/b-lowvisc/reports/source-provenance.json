@@ -1,0 +1,1632 @@
+{
+ "stages": {
+  "gate": "3789639",
+  "train": "3804337",
+  "panel": "3817807"
+ },
+ "sources": {
+  "3789639": {
+   "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "manifest": {
+    "path": "experiments/b-lowvisc/runs/lvg01/archive/PROVENANCE.json",
+    "sha256": "06c043f98562001276922ccca5f0acc01ee8ebbefffc8c65664e0ba74c914327"
+   },
+   "commit_record": {
+    "path": "experiments/b-lowvisc/runs/lvg01/archive/COMMIT.txt",
+    "sha256": "3634c9e08482e657778f42b1e1d6fc342b068a294d0175b4eb62e89f79bb7f56"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-lowvisc/gate.py",
+     "sha256": "b92c8d27f296724b166e309fce0959fb227ad47b70626aa691649a9c29f612e8",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/lv_common.py",
+     "sha256": "274b6ec15b78fb655187de7bb57ffcfe2e0fcd132f109dced9cd980a68dcf12b",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/audit_gate.py",
+     "sha256": "4eba209890f6e0b0f0596cdf8b51b034ac7d3b40072595019af58bccc40397e3",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/cluster/stage.py",
+     "sha256": "d3dceeb401519f727a29570e06f9d8e826599e4417c9a947a9d81f26137a5f8e",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/config-gate.json",
+     "sha256": "3bd2ec480fa2b6ee0ddde3827708f8f8d0e8d23c21e5eec9ae655e8fc2a41fe3",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ablation.py",
+     "sha256": "548e351b2c17fb6ff31df80d7bad4c8ec5da84eddf6c75c70ee27734c9091922",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3789639",
+   "result": {
+    "path": "experiments/b-lowvisc/runs/lvg01/archive/output/gate/result.json",
+    "sha256": "e04d4c6199402ccbac0d7179420062fbfb52a787bd8f5bd6871381f6087700b0"
+   }
+  },
+  "3804337": {
+   "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+   "manifest": {
+    "path": "experiments/b-lowvisc/runs/lvt01/archive/PROVENANCE.json",
+    "sha256": "5fe9e4054827591c4d704cb56ef4c5ece6ede7f684f37007e7d9d24f82f5dc3b"
+   },
+   "commit_record": {
+    "path": "experiments/b-lowvisc/runs/lvt01/archive/COMMIT.txt",
+    "sha256": "f4f8d175bc7e2d0e015537a44ad827f0a9a0a450054dd421fba729c70b1b98e6"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-lowvisc/check_generator_parity.py",
+     "sha256": "4fb67502cd8dda0e343fab7cd50b562f4235f253887f9239e03eb79526ab36bf",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_burgers_r3.py",
+     "sha256": "dd48dadea2d2b6365fa39f7de56057c95152b62c921ae69fe1b35b866a7e366c",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_coeff_extract.py",
+     "sha256": "b16e9303609e7f3e7ce0d03f2fe7277ff70644ca5ce961eb191d6cf08b3d1019",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit_run.py",
+     "sha256": "a3c7d951224c2aeb458c735653b8f5fa4b0c25062495ce8ad8bb94239a6a1894",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit.py",
+     "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_solvers.py",
+     "sha256": "19df83828617f230138d75606f45d2f3f9a1e4a3797b8b80e8748bf631da3fa1",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_eq.py",
+     "sha256": "d77c11bd607b768e4043dadb3a5e3126db2256ccff2a09b414ffec61d4ad349d",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_tol.py",
+     "sha256": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+     "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_train_ad.py",
+     "sha256": "fabba550368b9faf16c38c798f298d5de98d107315349f6e57f1f515b4197980",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_common.py",
+     "sha256": "35c5693d05cdad62f68678833abd094cab3f211d8ef96ddca46cbd2c15425a7b",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+     "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/pro_common.py",
+     "sha256": "501551884e6fa6b6ec22b89baeebbe0bdc844928d649903f1e053e57a07c5b7a",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_eq.py",
+     "sha256": "92717e93c8c04c931fb1a19a1d827732e7d360562ba546f27efbb4d5bee8eca8",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_train.py",
+     "sha256": "7d85a2d83cc7172f81b69b76429f585cc083ab4d40590fa774965c9103d44787",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/lv_common.py",
+     "sha256": "274b6ec15b78fb655187de7bb57ffcfe2e0fcd132f109dced9cd980a68dcf12b",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/cluster/stage.py",
+     "sha256": "b4036698dd0c3ba447ec3e5c41ecdd09f2bc5ba02ba6db5a5a06d69a2635af99",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "959ba3af27c03cd46cc90830a59b287874daa53f06c3fa626e9ff6be0728d5aa",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "959ba3af27c03cd46cc90830a59b287874daa53f06c3fa626e9ff6be0728d5aa",
+     "source_commit": "98aadc397060e08cf62fd20d761ed8b9fa9c175f",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3804337",
+   "result": {
+    "path": "experiments/b-lowvisc/runs/lvt01/archive/output/train/hfit_full.json",
+    "sha256": "65fe051a55473bb089d886bc6fe26d348355704f7373aa7e59a22530cefd9d7d"
+   }
+  },
+  "3817807": {
+   "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+   "manifest": {
+    "path": "experiments/b-lowvisc/runs/lvp01/archive/PROVENANCE.json",
+    "sha256": "bc715aa621de65e64f66ae0d9e5bb49300dc8d8c6b67aaf7d5c40a72b8532523"
+   },
+   "commit_record": {
+    "path": "experiments/b-lowvisc/runs/lvp01/archive/COMMIT.txt",
+    "sha256": "58cf4b0e91dfec338cdc99f27a37c8bfe28fc76594a944011f65be5e4270450c"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-lowvisc/lv_panel.py",
+     "sha256": "8e5e903cff326689f7d4ad0eadbf9f391e687e74e34d8058c29e51cdbbb597d7",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/lv_directions.py",
+     "sha256": "f4fd7820530e44ebea11ed23d1d66d564af56f050f4e171012d411a31a691764",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/lv_common.py",
+     "sha256": "274b6ec15b78fb655187de7bb57ffcfe2e0fcd132f109dced9cd980a68dcf12b",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/config-panel.json",
+     "sha256": "85ed7ff76b7446da1fdd876603da618d94c9f8983e829aa3dd76f81bc999ea2e",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/cluster/stage.py",
+     "sha256": "f29bcfdb276e8e3e25a64395104dff80d3d352337611bfc204c3fb1477c77d28",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/b-panel-speed/fast.py",
+     "sha256": "32bead3c144622d98bcf9825bf32954953350a2d4c44234e924ed6c7d6bb159b",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/deps/b-panel-speed/ladders.py",
+     "sha256": "b2b42668af0e47aa65e7ae92d2cddfbcbfff25b6db161acefb79071bcba97bf6",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-lowvisc/checkpoints/sep_hfit_lowvisc0.pkl",
+     "sha256": "9a481e27ae87724d3a3a92c1568de7b44ff7b752b4050fcc61b93c22d5e98f8b",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/topfix.py",
+     "sha256": "da41c550e4d09bd501316171915ebb6fcc95947c752307997b569756ed437a72",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/eqcert.py",
+     "sha256": "0d59f81087ff551d5eed507d6b38a6ec23870ccd882610e6972a98a7e4d6ff92",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/varpro.py",
+     "sha256": "38b32bedb45c9b1cd5c798f64d17880b9953b611f3b5170d5263fd86a0ec5fbe",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/directions.py",
+     "sha256": "4a600c85e00a50a37c9955c76a231af036da48d75b51ac04bc6cc795888e503c",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ablation.py",
+     "sha256": "548e351b2c17fb6ff31df80d7bad4c8ec5da84eddf6c75c70ee27734c9091922",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/accuracy_paths.py",
+     "sha256": "98490defdba74293db47964fde4caba466dafde5f4118a7a54cb984512d90dc0",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "144f6b29b7d159bf771f66df84cffaa4ae0463ee",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3817807",
+   "result": {
+    "path": "experiments/b-lowvisc/runs/lvp01/archive/output/panel/result.json",
+    "sha256": "b42d75e92a2ddd7374db74884ece25697d4ab86826d293b29379691db0e34597"
+   }
+  },
+  "b-seeds-s1": {
+   "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+   "manifest": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s1/archive/PROVENANCE.json",
+    "sha256": "7bfb911e0936fb097d369c0967268143fc053272e0e1a6d41ae351573d9cfd9f"
+   },
+   "commit_record": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s1/archive/COMMIT.txt",
+    "sha256": "d59686b724fbdd7084c7ea7bf474d0ea325f5ebb78133cac6869a46f95e77a09"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-seeds/seeds_run.py",
+     "sha256": "2a6b575d07f72da77dd3a1462e67499703babf0afbe17cf9e3ab823a8cc27b69",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/trajdirs.py",
+     "sha256": "dd0c910c5b75c206f3c7ec05f901d04e5bc2bbdc20b8818341198b065be1faf2",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/cluster/stage.py",
+     "sha256": "1578aa90f05b251367c85e40b9221e14cfba5261d9e4b55b4d8819f78cc8e407",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/q_eqcert.py",
+     "sha256": "6bec0019202d90b3daf9b7490c5e0139e3f65289e4008c0e9bcafd291b8593e5",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/eqcert.py",
+     "sha256": "0d59f81087ff551d5eed507d6b38a6ec23870ccd882610e6972a98a7e4d6ff92",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/ridge.py",
+     "sha256": "869279511faa56e026c3121fb8477844e1e22b7e6f70fcd85c8aef1c3374ea0d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/topfix.py",
+     "sha256": "da41c550e4d09bd501316171915ebb6fcc95947c752307997b569756ed437a72",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/varpro.py",
+     "sha256": "38b32bedb45c9b1cd5c798f64d17880b9953b611f3b5170d5263fd86a0ec5fbe",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/directions.py",
+     "sha256": "4a600c85e00a50a37c9955c76a231af036da48d75b51ac04bc6cc795888e503c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/accuracy_paths.py",
+     "sha256": "98490defdba74293db47964fde4caba466dafde5f4118a7a54cb984512d90dc0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_burgers_r3.py",
+     "sha256": "dd48dadea2d2b6365fa39f7de56057c95152b62c921ae69fe1b35b866a7e366c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_coeff_extract.py",
+     "sha256": "b16e9303609e7f3e7ce0d03f2fe7277ff70644ca5ce961eb191d6cf08b3d1019",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit_run.py",
+     "sha256": "a3c7d951224c2aeb458c735653b8f5fa4b0c25062495ce8ad8bb94239a6a1894",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit.py",
+     "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_solvers.py",
+     "sha256": "19df83828617f230138d75606f45d2f3f9a1e4a3797b8b80e8748bf631da3fa1",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_eq.py",
+     "sha256": "d77c11bd607b768e4043dadb3a5e3126db2256ccff2a09b414ffec61d4ad349d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_tol.py",
+     "sha256": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+     "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_train_ad.py",
+     "sha256": "fabba550368b9faf16c38c798f298d5de98d107315349f6e57f1f515b4197980",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_common.py",
+     "sha256": "35c5693d05cdad62f68678833abd094cab3f211d8ef96ddca46cbd2c15425a7b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+     "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/pro_common.py",
+     "sha256": "501551884e6fa6b6ec22b89baeebbe0bdc844928d649903f1e053e57a07c5b7a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_eq.py",
+     "sha256": "92717e93c8c04c931fb1a19a1d827732e7d360562ba546f27efbb4d5bee8eca8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_train.py",
+     "sha256": "7d85a2d83cc7172f81b69b76429f585cc083ab4d40590fa774965c9103d44787",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-seed1.json",
+     "sha256": "7e7bf7f91f5254d5fa82a5c0e0f00d6f0540d4e5b8f63ee68d16497bb4dc2fc2",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-incumbent.json",
+     "sha256": "9b944a9cc337ee5b9eb8a29b47a51f2cc1ea64c226af73f6a21f3f041f19428b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-eqcert-seed1.json",
+     "sha256": "e87bc69ca3c300d553c8e29391118648185a44bae5988128dc23c8ca6aabb2fa",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3783776",
+   "result_records": [
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s1/train-sep_coeff_N256_K16_R512.json",
+     "sha256": "1ac0b59809ed297c0ee6a29c1c32362f25cbad52389cbf65eb8e0ae7284b5776"
+    },
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s1/train-hfit_full.json",
+     "sha256": "4af7f7bb9205243e41b04b91294e6e74ec24f4bae5b61a976587e0fe0ac1aa76"
+    }
+   ]
+  },
+  "b-seeds-s2": {
+   "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+   "manifest": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s2/archive/PROVENANCE.json",
+    "sha256": "7a62418be126b70f6e45640d97bf3675b21b97b7d1454d801e8485fdaf17e440"
+   },
+   "commit_record": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s2/archive/COMMIT.txt",
+    "sha256": "d59686b724fbdd7084c7ea7bf474d0ea325f5ebb78133cac6869a46f95e77a09"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-seeds/seeds_run.py",
+     "sha256": "2a6b575d07f72da77dd3a1462e67499703babf0afbe17cf9e3ab823a8cc27b69",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/trajdirs.py",
+     "sha256": "dd0c910c5b75c206f3c7ec05f901d04e5bc2bbdc20b8818341198b065be1faf2",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/cluster/stage.py",
+     "sha256": "1578aa90f05b251367c85e40b9221e14cfba5261d9e4b55b4d8819f78cc8e407",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/q_eqcert.py",
+     "sha256": "6bec0019202d90b3daf9b7490c5e0139e3f65289e4008c0e9bcafd291b8593e5",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/eqcert.py",
+     "sha256": "0d59f81087ff551d5eed507d6b38a6ec23870ccd882610e6972a98a7e4d6ff92",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/ridge.py",
+     "sha256": "869279511faa56e026c3121fb8477844e1e22b7e6f70fcd85c8aef1c3374ea0d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/topfix.py",
+     "sha256": "da41c550e4d09bd501316171915ebb6fcc95947c752307997b569756ed437a72",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/varpro.py",
+     "sha256": "38b32bedb45c9b1cd5c798f64d17880b9953b611f3b5170d5263fd86a0ec5fbe",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/directions.py",
+     "sha256": "4a600c85e00a50a37c9955c76a231af036da48d75b51ac04bc6cc795888e503c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/accuracy_paths.py",
+     "sha256": "98490defdba74293db47964fde4caba466dafde5f4118a7a54cb984512d90dc0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_burgers_r3.py",
+     "sha256": "dd48dadea2d2b6365fa39f7de56057c95152b62c921ae69fe1b35b866a7e366c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_coeff_extract.py",
+     "sha256": "b16e9303609e7f3e7ce0d03f2fe7277ff70644ca5ce961eb191d6cf08b3d1019",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit_run.py",
+     "sha256": "a3c7d951224c2aeb458c735653b8f5fa4b0c25062495ce8ad8bb94239a6a1894",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit.py",
+     "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_solvers.py",
+     "sha256": "19df83828617f230138d75606f45d2f3f9a1e4a3797b8b80e8748bf631da3fa1",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_eq.py",
+     "sha256": "d77c11bd607b768e4043dadb3a5e3126db2256ccff2a09b414ffec61d4ad349d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_tol.py",
+     "sha256": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+     "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_train_ad.py",
+     "sha256": "fabba550368b9faf16c38c798f298d5de98d107315349f6e57f1f515b4197980",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_common.py",
+     "sha256": "35c5693d05cdad62f68678833abd094cab3f211d8ef96ddca46cbd2c15425a7b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+     "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/pro_common.py",
+     "sha256": "501551884e6fa6b6ec22b89baeebbe0bdc844928d649903f1e053e57a07c5b7a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_eq.py",
+     "sha256": "92717e93c8c04c931fb1a19a1d827732e7d360562ba546f27efbb4d5bee8eca8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_train.py",
+     "sha256": "7d85a2d83cc7172f81b69b76429f585cc083ab4d40590fa774965c9103d44787",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-seed2.json",
+     "sha256": "d1f749349988884e5a363f63c44dadd67ded9bd1b330eaefdf1870647f4af489",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-incumbent.json",
+     "sha256": "9b944a9cc337ee5b9eb8a29b47a51f2cc1ea64c226af73f6a21f3f041f19428b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-eqcert-seed2.json",
+     "sha256": "ae888cf6fc7316935b60e130015b5c78be266815607e8ceb3a4ea442d66db989",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3783777",
+   "result_records": [
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s2/train-sep_coeff_N256_K16_R512.json",
+     "sha256": "6d5fdefec35289d2cb87d6afd3226d4142e768c422fa40d40fee4e8cfef8fea7"
+    },
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s2/train-hfit_full.json",
+     "sha256": "ae8069ce011ae066fdfd7dab91ea769c7f943a0aa9439625bc23d60f375a23db"
+    }
+   ]
+  },
+  "b-seeds-s3": {
+   "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+   "manifest": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s3/archive/PROVENANCE.json",
+    "sha256": "e416cf933d501f418007d123dbc3fb67640a0da883acf0b2dc70a4c97c2583be"
+   },
+   "commit_record": {
+    "path": "../2026-09-17-b-seeds/experiments/b-seeds/runs/s3/archive/COMMIT.txt",
+    "sha256": "d59686b724fbdd7084c7ea7bf474d0ea325f5ebb78133cac6869a46f95e77a09"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-seeds/seeds_run.py",
+     "sha256": "2a6b575d07f72da77dd3a1462e67499703babf0afbe17cf9e3ab823a8cc27b69",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/trajdirs.py",
+     "sha256": "dd0c910c5b75c206f3c7ec05f901d04e5bc2bbdc20b8818341198b065be1faf2",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/cluster/stage.py",
+     "sha256": "1578aa90f05b251367c85e40b9221e14cfba5261d9e4b55b4d8819f78cc8e407",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/q_eqcert.py",
+     "sha256": "6bec0019202d90b3daf9b7490c5e0139e3f65289e4008c0e9bcafd291b8593e5",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/eqcert.py",
+     "sha256": "0d59f81087ff551d5eed507d6b38a6ec23870ccd882610e6972a98a7e4d6ff92",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/ridge.py",
+     "sha256": "869279511faa56e026c3121fb8477844e1e22b7e6f70fcd85c8aef1c3374ea0d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/topfix.py",
+     "sha256": "da41c550e4d09bd501316171915ebb6fcc95947c752307997b569756ed437a72",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/varpro.py",
+     "sha256": "38b32bedb45c9b1cd5c798f64d17880b9953b611f3b5170d5263fd86a0ec5fbe",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/directions.py",
+     "sha256": "4a600c85e00a50a37c9955c76a231af036da48d75b51ac04bc6cc795888e503c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/accuracy_paths.py",
+     "sha256": "98490defdba74293db47964fde4caba466dafde5f4118a7a54cb984512d90dc0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_burgers_r3.py",
+     "sha256": "dd48dadea2d2b6365fa39f7de56057c95152b62c921ae69fe1b35b866a7e366c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_coeff_extract.py",
+     "sha256": "b16e9303609e7f3e7ce0d03f2fe7277ff70644ca5ce961eb191d6cf08b3d1019",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit_run.py",
+     "sha256": "a3c7d951224c2aeb458c735653b8f5fa4b0c25062495ce8ad8bb94239a6a1894",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_hfit.py",
+     "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_solvers.py",
+     "sha256": "19df83828617f230138d75606f45d2f3f9a1e4a3797b8b80e8748bf631da3fa1",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_eq.py",
+     "sha256": "d77c11bd607b768e4043dadb3a5e3126db2256ccff2a09b414ffec61d4ad349d",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cost-to-tolerance/ctol_tol.py",
+     "sha256": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+     "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/blat_train_ad.py",
+     "sha256": "fabba550368b9faf16c38c798f298d5de98d107315349f6e57f1f515b4197980",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_common.py",
+     "sha256": "35c5693d05cdad62f68678833abd094cab3f211d8ef96ddca46cbd2c15425a7b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/burgers2d-rom-latent-stepping/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+     "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/pro_common.py",
+     "sha256": "501551884e6fa6b6ec22b89baeebbe0bdc844928d649903f1e053e57a07c5b7a",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_eq.py",
+     "sha256": "92717e93c8c04c931fb1a19a1d827732e7d360562ba546f27efbb4d5bee8eca8",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_style.py",
+     "sha256": "6927c0e527b5d30d706ca791a7fa87dab55258e4d62e46ff551deeab5118291c",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/poisson2d-rom-objective/followup/fu_train.py",
+     "sha256": "7d85a2d83cc7172f81b69b76429f585cc083ab4d40590fa774965c9103d44787",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-seed3.json",
+     "sha256": "fcb6acf5406609d971f7093413f78fc3990f36c44bda2420b9133079df65a6fe",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-dev-incumbent.json",
+     "sha256": "9b944a9cc337ee5b9eb8a29b47a51f2cc1ea64c226af73f6a21f3f041f19428b",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/config-eqcert-seed3.json",
+     "sha256": "f4e3faece7e885deb9bb1bbbfca50eb043ffe37a5c557f2d8b4f840b52405a74",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+     "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_autodecoder.py",
+     "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-seeds/deps/multistage-precision/ms_parametric.py",
+     "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+     "source_commit": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3783778",
+   "result_records": [
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s3/train-sep_coeff_N256_K16_R512.json",
+     "sha256": "5a701b3e2170fefd917c1190873091c65864280dc9fc40e48c52546cf10ac829"
+    },
+    {
+     "path": "../2026-09-17-b-seeds/experiments/b-seeds/artifacts/s3/train-hfit_full.json",
+     "sha256": "23fb2e23dda104d35063c29988ad6161a4d34f11476de123112bc5f2de93f68d"
+    }
+   ]
+  },
+  "3780638": {
+   "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+   "manifest": {
+    "path": "../2026-09-17-b-panel/experiments/b-panel/runs/bpn101/archive/PROVENANCE.json",
+    "sha256": "9fb928b0016a7e9b319af14ce744f7dac25d738094a050f4ae765900ea446e5a"
+   },
+   "commit_record": {
+    "path": "../2026-09-17-b-panel/experiments/b-panel/runs/bpn101/archive/COMMIT.txt",
+    "sha256": "7648098ccbd35bc10b84901141dbf70dd6824d75d2996ea42962e766affc7c2d"
+   },
+   "checked_sources": [
+    {
+     "source": "experiments/b-panel/panel.py",
+     "sha256": "b4b54f60ff7bb9c86de56a32963f9a6662604a20b33aafec43ee60cdef27945f",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/cluster/stage.py",
+     "sha256": "0f1da09cfb0cbe2d7f053c9f4276a70079963cfe4003fa606828ecacf2902306",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/speed/fast.py",
+     "sha256": "32bead3c144622d98bcf9825bf32954953350a2d4c44234e924ed6c7d6bb159b",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/speed/ladders.py",
+     "sha256": "b2b42668af0e47aa65e7ae92d2cddfbcbfff25b6db161acefb79071bcba97bf6",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/PROVENANCE.json",
+     "sha256": "077857a02d8de41e0cfe39a6aa77e597561446f8d0dae458279124c77daf6989",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/directions_qtd02.npz",
+     "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/fno_panel.py",
+     "sha256": "069d0f218855657b2ad0966975bf9dcf1b91d7bbe0a487c16d172eeeebc0b9ba",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-ladder-top/topfix.py",
+     "sha256": "da41c550e4d09bd501316171915ebb6fcc95947c752307997b569756ed437a72",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/q-ridge/eqcert.py",
+     "sha256": "0d59f81087ff551d5eed507d6b38a6ec23870ccd882610e6972a98a7e4d6ff92",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/cheap-corrections/varpro.py",
+     "sha256": "38b32bedb45c9b1cd5c798f64d17880b9953b611f3b5170d5263fd86a0ec5fbe",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/arms.py",
+     "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ladder.py",
+     "sha256": "6d4780f7dfebbf360a0bc008dcd939d182967a52134c729253c72058f43c1a5a",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/head-ablation/ablation.py",
+     "sha256": "548e351b2c17fb6ff31df80d7bad4c8ec5da84eddf6c75c70ee27734c9091922",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/engines.py",
+     "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/iterative_paths.py",
+     "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/mr-burgers2d/accuracy_paths.py",
+     "sha256": "98490defdba74293db47964fde4caba466dafde5f4118a7a54cb984512d90dc0",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/sep_common.py",
+     "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/config-256.json",
+     "sha256": "011ee90af6db27af7e7a70e443b6147af8a76c44d5a72fabb80ae73cf9a3aecb",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q0_reachable_m1024.npz",
+     "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q16_reachable_m1024.npz",
+     "sha256": "0cbe725993af8f922fa9dd28dc0c2428cc4fefcebcc07bdd104696262806a453",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q32_reachable_m1024.npz",
+     "sha256": "2759dfc934d3acf97e73261cad781bfa89edc3c996931c0897e0fcc5f03c831b",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q64_reachable_m1024.npz",
+     "sha256": "33f354d3657a60bee44d7d60fda577d18f33df2dcdb2478b26210e56022419ca",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q128_reachable_m2048.npz",
+     "sha256": "4fa5888889feda8876cd61aea9e6bc04a4f436525ed289bc88b4fc84bb70f17c",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz",
+     "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+     "source_commit": "89df5cd18b01d99e630999ddfed5ddf43bba377c",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "2026-09-14-no-audit/experiments/neural-operator-audit/model.py",
+     "sha256": "5322476b55ad6cc2a2be9b310e2f1a5809efc247d83b2785209d04799dc00585",
+     "source_commit": "f3510e88c5d1b304eba21f053bb4f0d5764ba7b8",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "2026-09-14-no-audit/experiments/neural-operator-audit/dataset.py",
+     "sha256": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+     "source_commit": "f3510e88c5d1b304eba21f053bb4f0d5764ba7b8",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "2026-09-14-no-audit/experiments/neural-operator-audit/spectral_conv_f64.py",
+     "sha256": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+     "source_commit": "f3510e88c5d1b304eba21f053bb4f0d5764ba7b8",
+     "git_blob_checked": true,
+     "archive_bytes_checked": true
+    },
+    {
+     "source": "2026-09-14-no-audit/.../runs/fno_burgers02/fno_burgers02/out/fno-large/best.pt",
+     "sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+     "source_commit": "f3510e88c5d1b304eba21f053bb4f0d5764ba7b8",
+     "git_blob_checked": false,
+     "archive_bytes_checked": true
+    }
+   ],
+   "job_id": "3780638",
+   "result": {
+    "path": "../2026-09-17-b-panel/experiments/b-panel/artifacts/bpn101/result.json",
+    "sha256": "a56f51181363873ed2ac8d15d9f4ad6d9584c492cb499721bf59a0eb97dd871b"
+   },
+   "comparator": {
+    "path": "experiments/b-lowvisc/comparators/bpn301-summary.json",
+    "sha256": "52a0d8ec9a56d24fced42f1321faaa2b5a080a5c1da0f91675e37045e011fd38"
+   }
+  },
+  "2837431": {
+   "job_id": "2837431",
+   "source_commit": null,
+   "status": "source commit unavailable in retained run metadata",
+   "manifest": {
+    "path": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256",
+    "sha256": "14000e0d1a2ab4ff63a0f7e24ba29571e0c850ebd1f3da1234caf9ddf58e0c3c"
+   },
+   "result_records": [
+    {
+     "path": "experiments/separable-decoder/runs/dn256b/out/sep_coeff_N256_K16_R512.json",
+     "sha256": "fd624ab7e2b5f3fe7f52d39506d9c0887ecaf26556bb416499638e0c58f83ef1"
+    },
+    {
+     "path": "experiments/separable-decoder/runs/dn256b/out/hfit_dn256b_full.json",
+     "sha256": "2b82ba8776d15f391f885256f12b9a17a5f4c57fce37164aaa64fe728ed7a384"
+    }
+   ]
+  }
+ }
+}

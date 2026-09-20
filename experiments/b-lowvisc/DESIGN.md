@@ -521,3 +521,22 @@ full-order setting that beats *every* reduced subject on both axes is `nt1e-2_dt
 3.895 % (the most accurate reduced subject is 6.187 %), as `summary.json` rows
 `P/cheapest_fom_beating_every_reduced_subject` record. P's verdict is unchanged. The lab-log entry
 of the same hour carries the same slip and is corrected there.
+
+**A10 (2026-09-20, after the independent report audit) — repair source attribution only.**
+The report generator carried the gate job's commit into later training, panel and historical
+comparator rows. That attribution is retracted. `reports/source_provenance.py` reconstructs the
+three stages' actual revisions from retained job records and verifies staged source hashes against
+the named Git objects. It separately checks the historical reseeds and incumbent panel, whose
+comparison filename predates its attempt renaming. The older incumbent extraction/head run has
+no retained run-commit record: its source revision is explicitly unknown, with its manifest and
+result hashes retained. No revision is guessed from a later checkout. An excluded external
+operator checkpoint in the incumbent panel archive is recorded as manifest-only evidence; it is
+not used to certify a Git source revision or any low-viscosity numerical result.
+
+The combined summary now has no single source revision. It exposes revisions by stage and by
+row, plus a hashed provenance catalog. Derived comparisons keep their original primary job
+labels and all contributing source records remain separately identified. The generated report
+explains this correction. `reports/audit_provenance_repair.py` requires exact recursive equality
+with the pre-repair summary after removing only source metadata, and rechecks archive evidence.
+Every numerical value, failed check, physical-resolution caveat, frontier verdict and provisional
+reading is preserved. No new experiment ran and no scientific acceptance gate was relaxed.

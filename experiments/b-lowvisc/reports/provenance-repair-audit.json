@@ -1,0 +1,2756 @@
+{
+ "passed": true,
+ "baseline_commit": "df92e40df68964cf50579a496c00b6cdcb32d5b9",
+ "summary_sha256": "e1e14eab2853dbfec8305774048fdf1ddb7088a732995e6930c46961f23ec5dc",
+ "non_provenance_content_sha256": "022ee5af8a9c64ff0b1985fb79f2cbcc92c9221f1b1913c56876c74b88031b6c",
+ "rows_checked": 555,
+ "corrected_rows": 386,
+ "panel_rows_checked": 338,
+ "unknown_source_rows": [
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_cond_G"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_gram_sv_ratio_511"
+  }
+ ],
+ "corrections": [
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_max_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_floor_test_mean_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_test_max_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_test_mean_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "best_found_t0_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "b-seeds-s1",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s2",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "b-seeds-s3",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "70d4e0e90b5e2e581dbca106c17e5221806bf6a5"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "head_recon_train_mean_percent_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "F2",
+   "metric": "fires_provisional",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "F2",
+   "metric": "pod512_degradation_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_cond_G",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_cond_G",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "3804337",
+   "arm": "train_stage",
+   "metric": "bank_gram_sv_ratio_511",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "2837431",
+   "arm": "train_stage",
+   "metric": "bank_gram_sv_ratio_511",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": null
+  },
+  {
+   "job_id": "3804337",
+   "arm": "audit_train",
+   "metric": "checks_total",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3804337",
+   "arm": "audit_train",
+   "metric": "checks_failed",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "98aadc397060e08cf62fd20d761ed8b9fa9c175f"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q0_M256_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q16_M256_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q32_M256_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q64_M256_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q128_M256_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M1088_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "q256_M2176_dense_g1em06",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod16_M64_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod32_M128_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod64_M256_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod128_M512_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod256_M1024_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "pod512_M2048_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "free512_M1024_dense",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "dense_tight",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fft_tight",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt005",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-2_dt01",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt005",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-3_dt01",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt005",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "worst_all_times_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "worst_t0_compression_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "worst_reference_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "worst_reference_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "median_gpu_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "admissible",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "total_budget_exits",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "nt1e-4_dt01",
+   "metric": "max_joint_stationarity",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M1088",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M1088",
+   "metric": "monotone_evolved",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M1088",
+   "metric": "error_span",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M1088",
+   "metric": "cost_span",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M1088",
+   "metric": "knob_bar_met",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M256",
+   "metric": "converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M256",
+   "metric": "monotone_evolved",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M256",
+   "metric": "error_span",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M256",
+   "metric": "cost_span",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "fixed_M256",
+   "metric": "knob_bar_met",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "nondominated_admissible_gpu_evolved",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "nondominated_admissible_gpu_all_times",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "nondominated_reduced_only_gpu_evolved",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "any_reduced_subject_nondominated",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "any_neural_rung_nondominated",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "all_subjects_converged",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3780638",
+   "arm": "three_layers",
+   "metric": "bank_floor_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "89df5cd18b01d99e630999ddfed5ddf43bba377c"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "bank_floor_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "bank_floor_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3780638",
+   "arm": "three_layers",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "89df5cd18b01d99e630999ddfed5ddf43bba377c"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "best_found_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "best_found_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3780638",
+   "arm": "three_layers",
+   "metric": "solved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "89df5cd18b01d99e630999ddfed5ddf43bba377c"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3780638",
+   "arm": "three_layers",
+   "metric": "solved_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "89df5cd18b01d99e630999ddfed5ddf43bba377c"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_evolved_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_M1088_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "F2",
+   "metric": "pod512_degradation_ratio",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "F2",
+   "metric": "fires",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "three_layers",
+   "metric": "solved_over_best_found_q0",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "cheapest_fom_beating_every_reduced_subject",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "cheapest_dominating_fom_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "cheapest_dominating_fom_worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "cheapest_reduced_subject",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "cheapest_reduced_ms",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "most_accurate_reduced_subject",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "P",
+   "metric": "most_accurate_reduced_worst_evolved_percent",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "directions",
+   "metric": "available_rank",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "directions",
+   "metric": "seconds",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "audit_panel",
+   "metric": "checks_total",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "audit_panel",
+   "metric": "checks_failed",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "panel",
+   "metric": "elapsed_seconds",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  },
+  {
+   "job_id": "3817807",
+   "arm": "panel",
+   "metric": "dropped",
+   "before": "2cf5dc3487764eaad289041b465d33fb3c98b93b",
+   "after": "144f6b29b7d159bf771f66df84cffaa4ae0463ee"
+  }
+ ],
+ "scope": "Exact recursive equality after removing only source_* metadata; archive source hashes and Git objects rechecked. No new GPU or field audit."
+}

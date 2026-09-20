@@ -27,10 +27,11 @@ def nondominated(pts):
     return [a for _, a in sorted(keep)]          # by cost, as the audit orders it
 
 
-def build(commit):
+def build():
     base = LANE / 'runs' / ATTEMPT
     aud = json.loads((base / 'audit-panel.json').read_text())
     res = json.loads((base / 'archive/output/panel/result.json').read_text())
+    commit = res['commit']
     dres = json.loads((base / 'archive/output/directions/directions_result.json').read_text())
     cmp_rows = json.loads((LANE / 'comparators/bpn301-summary.json').read_text())
     cmp_rows = cmp_rows['rows'] if isinstance(cmp_rows, dict) else cmp_rows

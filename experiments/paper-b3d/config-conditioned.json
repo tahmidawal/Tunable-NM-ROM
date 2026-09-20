@@ -1,0 +1,89 @@
+{
+  "nodes": 33,
+  "dt": 0.005,
+  "steps": 50,
+  "seed": 0,
+  "train_trajectories": 512,
+  "validation_rows": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519
+  ],
+  "train_steps": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    35,
+    50
+  ],
+  "final_cohort_unopened": true,
+  "attempt": "b3d006",
+  "workflow": "conditioned_operator.py",
+  "wall_time": "01:15:00",
+  "development_rows": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519,
+    520,
+    521,
+    522,
+    523,
+    524,
+    525,
+    526,
+    527
+  ],
+  "model_seeds": [
+    920312,
+    920412
+  ],
+  "spec": {
+    "kind": "deeponet3d",
+    "periodic": false,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ],
+    "width": 16,
+    "levels": 3,
+    "pool_bins": 4,
+    "rank": 256,
+    "trunk_width": 256
+  },
+  "pretraining": {
+    "trunk_steps": 60000,
+    "trunk_learning_rate": 0.001,
+    "trunk_batch_points": 1024,
+    "trunk_wall_seconds": 900,
+    "branch_steps": 30000,
+    "branch_learning_rate": 0.001,
+    "branch_batch_size": 2,
+    "branch_wall_seconds": 900,
+    "checkpoint_every": 5000
+  },
+  "joint_training": {
+    "steps": 40000,
+    "wall_seconds": 1200,
+    "batch_size": 2,
+    "seed": 920312,
+    "learning_rate": 0.0003,
+    "validation_every": 500,
+    "curve_every": 25,
+    "components_per_output": 1,
+    "normalization": "fixed supplied initial-field norm"
+  }
+}

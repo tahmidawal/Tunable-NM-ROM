@@ -116,6 +116,25 @@ def main():
         params=jax.tree_util.tree_map(jnp.asarray,ck['params'])
         hp={key:params[key] for key in ['h','h_lin']}
         Z=np.asarray(ck['Z_tr']);K=Z.shape[1];R=ck['cfg']['r']
+        if cfg.get('evaluation_kind')=='final':
+            tc=cfg['training']
+            assert ck['cfg']['k']==K==tc['latent_dimension'] and R==tc['rank']
+            assert Z.shape==(cfg['train_trajectories']*len(cfg['train_steps']),K)
+            assert params['B'].shape==(3,tc['fourier_features'])
+            expected_g=[(2*tc['fourier_features'],tc['bank_width']),
+                        (tc['bank_width'],tc['bank_width']),(tc['bank_width'],R)]
+            expected_h=[(K,tc['head_width']),(tc['head_width'],tc['head_width']),(tc['head_width'],R)]
+            assert [tuple(w.shape) for w,b in params['g']]==expected_g
+            assert [tuple(w.shape) for w,b in params['h']]==expected_h
+            assert all(b.shape==(w.shape[1],) for w,b in params['g']+params['h'])
+            assert params['h_lin'].shape==(K,R)
+            frozen_arrays=np.load(Path(offline['directory'])/'bases.npz')
+            assert frozen_arrays['bank'].shape==((cfg['nodes']-2)**3,R)
+            assert frozen_arrays['bank_R'].shape==(R,R)
+            assert frozen_arrays['pod'].shape[0]==(cfg['nodes']-2)**3
+            assert frozen_arrays['pod'].shape[1]>=max(cfg['pod_ranks'])
+            assert np.load(Path(offline['directory'])/'directions.npz')['C'].shape==(R,R)
+            assert len(frozen_arrays['lam'])==642 and cfg['test_modes']==640
         report['verification']=c.verify(params,Z)
         report['inherited_checkpoint_config']=ck['cfg']
         report['stage']='parameters';save()

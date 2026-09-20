@@ -1,0 +1,143 @@
+{
+  "passed": true,
+  "scope": "largest recorded step gradient and initial-fit gradient per method; repeated records deduplicated by value",
+  "checked_states": 13,
+  "max_gradient_discrepancy": 6.305165452111716e-15,
+  "checks": [
+    {
+      "method": "free_R256",
+      "case": 19,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 9.573965343088814e-07,
+      "recorded": 9.573965345382334e-07,
+      "absolute_discrepancy": 2.2935195816099416e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_128",
+      "case": 19,
+      "phase": "evolution",
+      "step": 2,
+      "gradient": 9.046881396078601e-07,
+      "recorded": 9.04688140096728e-07,
+      "absolute_discrepancy": 4.888679242440164e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_192",
+      "case": 19,
+      "phase": "evolution",
+      "step": 2,
+      "gradient": 7.94514726985199e-07,
+      "recorded": 7.94514727150037e-07,
+      "absolute_discrepancy": 1.648380113707256e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_256",
+      "case": 19,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 8.395485729096685e-07,
+      "recorded": 8.395485718310409e-07,
+      "absolute_discrepancy": 1.0786275310222687e-15,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_64",
+      "case": 16,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 9.566341253191109e-07,
+      "recorded": 9.56634125444841e-07,
+      "absolute_discrepancy": 1.2573018255863933e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "rom_q0",
+      "case": 14,
+      "phase": "evolution",
+      "step": 9,
+      "gradient": 9.988107245622914e-07,
+      "recorded": 9.98810724051935e-07,
+      "absolute_discrepancy": 5.103564089620292e-16,
+      "coefficient_jacobian_sigma_min": 0.8677682627743236,
+      "coefficient_jacobian_sigma_max": 2.4481472490804927
+    },
+    {
+      "method": "rom_q0",
+      "case": 0,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 9.816354584667458e-07,
+      "recorded": 9.816354593202679e-07,
+      "absolute_discrepancy": 8.535220666632155e-16
+    },
+    {
+      "method": "rom_q128",
+      "case": 15,
+      "phase": "evolution",
+      "step": 44,
+      "gradient": 9.972815847082147e-07,
+      "recorded": 9.972815901708564e-07,
+      "absolute_discrepancy": 5.462641684752124e-15,
+      "coefficient_jacobian_sigma_min": 0.5154392977112476,
+      "coefficient_jacobian_sigma_max": 2.307560682245544
+    },
+    {
+      "method": "rom_q128",
+      "case": 29,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 9.914198125617275e-07,
+      "recorded": 9.91419812844256e-07,
+      "absolute_discrepancy": 2.825284748313823e-16
+    },
+    {
+      "method": "rom_q192",
+      "case": 0,
+      "phase": "evolution",
+      "step": 6,
+      "gradient": 9.97686875793248e-07,
+      "recorded": 9.976868694880825e-07,
+      "absolute_discrepancy": 6.305165452111716e-15,
+      "coefficient_jacobian_sigma_min": 0.24433874792320978,
+      "coefficient_jacobian_sigma_max": 2.002935626877177
+    },
+    {
+      "method": "rom_q192",
+      "case": 2,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 8.74448224918504e-07,
+      "recorded": 8.744482304354353e-07,
+      "absolute_discrepancy": 5.5169313085943225e-15
+    },
+    {
+      "method": "rom_q64",
+      "case": 5,
+      "phase": "evolution",
+      "step": 24,
+      "gradient": 9.968633356242104e-07,
+      "recorded": 9.968633353693873e-07,
+      "absolute_discrepancy": 2.548230859178782e-16,
+      "coefficient_jacobian_sigma_min": 0.58621757650786,
+      "coefficient_jacobian_sigma_max": 1.8910245198480244
+    },
+    {
+      "method": "rom_q64",
+      "case": 22,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 9.8072485034272e-07,
+      "recorded": 9.807248506933828e-07,
+      "absolute_discrepancy": 3.5066274631733417e-16
+    }
+  ]
+}

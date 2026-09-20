@@ -1,0 +1,26 @@
+jax_backend=gpu f64=True precision=highest
+REFERENCE 1 2 elapsed 17.3
+REFERENCE 2 2 elapsed 17.9
+REPRESENTATION 0 {'q': 0, 'mean': 0.029174377888126355, 'median': 0.023871807478132313, 'worst': 0.05030363422435789, 'stationary': 8, 'n': 8, 'artifact': 'representation_q0.npz'}
+REPRESENTATION 64 {'q': 64, 'mean': 0.02681122451445201, 'median': 0.021973265007383225, 'worst': 0.045804761611551885, 'stationary': 8, 'n': 8, 'artifact': 'representation_q64.npz'}
+REPRESENTATION 128 {'q': 128, 'mean': 0.02125907929818989, 'median': 0.018154240145333192, 'worst': 0.03507067447670334, 'stationary': 8, 'n': 8, 'artifact': 'representation_q128.npz'}
+REPRESENTATION 192 {'q': 192, 'mean': 0.00904024047771572, 'median': 0.009398992000164152, 'worst': 0.010299776079389958, 'stationary': 8, 'n': 8, 'artifact': 'representation_q192.npz'}
+TIMING rom_q128 0 0 386.65 err 0.03205 stationary True
+TIMING rom_q128 1 0 363.81 err 0.01198 stationary True
+TIMING rom_q0 1 0 222.06 err 0.01678 stationary True
+TIMING rom_q0 0 0 235.7 err 0.04855 stationary True
+TIMING pod_192 1 0 241.76 err 0.00443 stationary True
+TIMING pod_192 0 0 242.69 err 0.0062 stationary True
+TIMING pod_256 0 0 309.55 err 0.00444 stationary True
+TIMING pod_256 1 0 310.25 err 0.00231 stationary True
+TIMING rom_q192 0 0 489.11 err 0.00862 stationary True
+TIMING rom_q192 1 0 383.46 err 0.00758 stationary True
+TIMING free_R256 1 0 309.64 err 0.00758 stationary True
+TIMING free_R256 0 0 309.93 err 0.00862 stationary True
+TIMING rom_q64 0 0 311.58 err 0.04399 stationary True
+TIMING rom_q64 1 0 293.96 err 0.01502 stationary True
+TIMING pod_128 1 0 179.06 err 0.0098 stationary True
+TIMING pod_128 0 0 179.28 err 0.01406 stationary True
+TIMING pod_64 1 0 124.04 err 0.03065 stationary True
+TIMING pod_64 0 0 123.78 err 0.04714 stationary True
+COMPLETE 212.64329781290144

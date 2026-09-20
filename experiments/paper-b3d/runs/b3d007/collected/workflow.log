@@ -1,0 +1,22 @@
+START run.py ['--config', '../out/replay-seed0-config.json', '--checkpoint', 'frozen/seed0/checkpoint.pkl', '--out', '../out/replay-seed0']
+DONE run.py
+START operator_panel.py ['--config', '../out/replay-seed0-config.json', '--training', 'unused', '--out', '../out/replay-seed0', '--mode', 'evaluate']
+DONE operator_panel.py
+START run.py ['--config', '../out/replay-seed1-config.json', '--checkpoint', 'frozen/seed1/checkpoint.pkl', '--out', '../out/replay-seed1']
+DONE run.py
+START operator_panel.py ['--config', '../out/replay-seed1-config.json', '--training', 'unused', '--out', '../out/replay-seed1', '--mode', 'evaluate']
+DONE operator_panel.py
+START run.py ['--config', '../out/seed0-config.json', '--checkpoint', 'frozen/seed0/checkpoint.pkl', '--out', '../out/seed0']
+DONE run.py
+START operator_panel.py ['--config', '../out/seed0-config.json', '--training', 'unused', '--out', '../out/seed0', '--mode', 'evaluate']
+DONE operator_panel.py
+START audit.py ['../out/seed0', '--checkpoint', 'frozen/seed0/checkpoint.pkl']
+DONE audit.py
+START run.py ['--config', '../out/seed1-config.json', '--checkpoint', 'frozen/seed1/checkpoint.pkl', '--out', '../out/seed1']
+DONE run.py
+START operator_panel.py ['--config', '../out/seed1-config.json', '--training', 'unused', '--out', '../out/seed1', '--mode', 'evaluate']
+DONE operator_panel.py
+START audit.py ['../out/seed1', '--checkpoint', 'frozen/seed1/checkpoint.pkl']
+DONE audit.py
+START final_references.py ['--panel', '../out/seed0', '--protocol', 'final-reference-protocol.json', '--out', '../out/physical-reference']
+DONE final_references.py

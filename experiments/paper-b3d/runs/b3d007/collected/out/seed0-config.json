@@ -1,0 +1,297 @@
+{
+  "attempt": "b3d007_seed0",
+  "nodes": 33,
+  "dt": 0.005,
+  "steps": 50,
+  "seed": 0,
+  "train_trajectories": 512,
+  "validation_rows": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519,
+    520,
+    521,
+    522,
+    523,
+    524,
+    525,
+    526,
+    527,
+    528,
+    529,
+    530,
+    531,
+    532,
+    533,
+    534,
+    535,
+    536,
+    537,
+    538,
+    539,
+    540,
+    541,
+    542,
+    543
+  ],
+  "train_steps": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    35,
+    50
+  ],
+  "direction_states": 512,
+  "q_ladder": [
+    0,
+    64,
+    128,
+    192
+  ],
+  "pod_ranks": [
+    64,
+    128,
+    192,
+    256
+  ],
+  "test_modes": 640,
+  "fit_budget": 400,
+  "step_budget": 200,
+  "gradient_tolerance": 1e-06,
+  "repetitions": 3,
+  "timing_seed": 20260920,
+  "final_cohort_unopened": false,
+  "refinement_cases": [],
+  "fom_controls": [
+    [
+      0.1,
+      0.5
+    ],
+    [
+      0.05,
+      0.5
+    ],
+    [
+      0.03,
+      0.5
+    ],
+    [
+      0.01,
+      0.5
+    ],
+    [
+      0.001,
+      0.5
+    ],
+    [
+      0.0001,
+      0.5
+    ]
+  ],
+  "training": {
+    "seed": 920201,
+    "latent_dimension": 64,
+    "rank": 256,
+    "bank_width": 384,
+    "head_width": 512,
+    "fourier_features": 64,
+    "fourier_scale": 1.5,
+    "bank_steps": 200000,
+    "head_steps": 300000,
+    "batch_states": 64,
+    "batch_points": 1024,
+    "head_batch": 256,
+    "bank_learning_rate": 0.0003,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 10000,
+    "coefficient_refresh_every": 20000
+  },
+  "fit_tile": 16,
+  "operators": [
+    {
+      "name": "fno3d",
+      "spec": {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          6,
+          6,
+          6
+        ],
+        "depth": 4,
+        "padding": 9
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 920310,
+        "learning_rate": 0.001,
+        "validation_every": 100,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    },
+    {
+      "name": "unet3d",
+      "spec": {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": false
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 920311,
+        "learning_rate": 0.001,
+        "validation_every": 100,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    },
+    {
+      "name": "deeponet3d",
+      "spec": {
+        "kind": "deeponet3d",
+        "periodic": false,
+        "coordinate_channels": [
+          1,
+          2,
+          3
+        ],
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 256,
+        "trunk_width": 256
+      },
+      "training": {
+        "steps": 100000,
+        "wall_seconds": 3600,
+        "batch_size": 2,
+        "seed": 920312,
+        "learning_rate": 0.001,
+        "validation_every": 500,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    },
+    {
+      "name": "transolver3d",
+      "spec": {
+        "kind": "transolver3d",
+        "periodic": false,
+        "coordinate_channels": [
+          1,
+          2,
+          3
+        ],
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "coordinate_bounds": [
+          -1,
+          1
+        ]
+      },
+      "training": {
+        "steps": 100000,
+        "wall_seconds": 3600,
+        "batch_size": 2,
+        "seed": 920313,
+        "learning_rate": 0.001,
+        "validation_every": 500,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    }
+  ],
+  "diagnostic_starts": 8,
+  "training_seed_index": 0,
+  "evaluation_kind": "final",
+  "fom_variants": [
+    {
+      "nodes": 33,
+      "dt": 0.01,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 33,
+      "dt": 0.01,
+      "nonlinear_tolerance": 0.03,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 33,
+      "dt": 0.025,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 33,
+      "dt": 0.025,
+      "nonlinear_tolerance": 0.03,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 33,
+      "dt": 0.05,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 33,
+      "dt": 0.05,
+      "nonlinear_tolerance": 0.03,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 17,
+      "dt": 0.005,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 17,
+      "dt": 0.01,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    },
+    {
+      "nodes": 17,
+      "dt": 0.025,
+      "nonlinear_tolerance": 0.01,
+      "linear_tolerance": 0.5
+    }
+  ],
+  "evaluation_seed": 920399,
+  "frozen_offline": {
+    "directory": "frozen/seed0/offline",
+    "files": {
+      "bases.npz": "1f893c65f1ff26de75a53368f10a761532639e0882e7c8449565e0979028c10e",
+      "directions.npz": "d84a8a577183f33be00ffbf01b640bbe021c3b9d89db5620788999a23fc66b97",
+      "result.json": "f223de38e70432dbe12f38c9a0eae1414e0ec164acbe297d76a1d3712fee4a99"
+    }
+  },
+  "freeze_manifest": "final-freeze.json",
+  "freeze_sha256": "d3d1dbda9e89da8e5d05d651994cd4d8f94ce30e32aa58176bf065cf90c5bb2f"
+}

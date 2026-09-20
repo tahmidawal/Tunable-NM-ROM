@@ -39,6 +39,40 @@
       "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/audit-local.json",
       "qualification": "Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending."
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "adapter": "burgers",
+      "result": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/audit-local.json",
+      "qualification": "Audited matched-training development comparison. All learned models, POD and directions use the same trajectories and eight saved training times. Operator predictions pass through the exact initial field and interpolate the predicted time knots to the requested dense trajectory; their interpolation control is retained. The fixed-head correction ladder improves accuracy but the learned head still has a substantial held-out representation gap. The physical refinement check covers only two development cases and does not establish a full-cohort physical accuracy claim. Independent retraining and final evaluation remain pending.",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/audit-stationarity-local.json"
+      ]
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "adapter": "heat",
+      "result": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/audit-local.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/audit-panel.json"
+      ],
+      "qualification": "Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending."
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "adapter": "ns_trajectory",
+      "result": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json",
+      "invocations": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timing_rows.json",
+      "audit": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/audit.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/source_audit.json"
+      ],
+      "qualification": "Audited development comparison with the fixed three-dimensional interacting velocity family and identical training membership. The learned bank and nonlinear head miss the physical accuracy target; these negative results motivate the larger-bank/head experiment. Timed results cover the declared first eight development cases, not the full sixteen used in training validation. Galerkin bank/POD controls solve a different reduced projection from the weak least-squares correction ladder. Initial fitting and dense input/output are charged. No latent state history was saved in this attempt, so evolution stopping records are checked for consistency only. A CUDA delay-kernel warning during operator training preceded timing burn-ins and is retained. Final data remain unopened."
     }
   ]
 }

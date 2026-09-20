@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & Median (\%) & Worst (\%) & GPU ms & p95 ms & NF/NS & Outliers \\
+\midrule
+NM-ROM K16, q0 & 0.2149 & 0.5726 & 3.191 & 3.954 & 0/0 & 0/48 \\
+NM-ROM K16, q16 & 0.1492 & 0.4580 & 3.252 & 4.189 & 0/0 & 0/48 \\
+NM-ROM K16, q32 & 0.1159 & 0.3215 & 3.230 & 3.980 & 0/0 & 0/48 \\
+NM-ROM K16, q64 & 0.0687 & 0.2001 & 3.287 & 3.984 & 0/0 & 0/48 \\
+NM-ROM K16, q96 & 0.0539 & 0.1598 & 3.282 & 4.097 & 0/0 & 0/48 \\
+Full bank, weak solve & 0.0520 & 0.1444 & 0.894 & 1.021 & 0/0 & 1/48 \\
+Full bank, Galerkin & 0.0530 & 0.1474 & 0.473 & 0.726 & 0/0 & 3/48 \\
+POD16 & 1.8304 & 5.2702 & 0.206 & 0.673 & 0/0 & 8/48 \\
+POD128 & 0.0066 & 0.0360 & 0.465 & 0.764 & 0/0 & 5/48 \\
+FNO, direct transfer & 16.0680 & 17.1866 & 17.493 & 18.200 & 0/0 & 0/48 \\
+FNO, native + interpolation & 0.2852 & 0.3656 & 11.579 & 12.243 & 0/0 & 0/48 \\
+U-Net, direct transfer & 168.0982 & 219.8928 & 11.985 & 12.627 & 0/0 & 0/48 \\
+U-Net, native + interpolation & 0.2828 & 0.3769 & 4.328 & 4.887 & 0/0 & 0/48 \\
+Direct DST & 0.0000 & 0.0000 & 0.229 & 0.581 & 0/0 & 10/48 \\
+\bottomrule
+\end{tabular}
+\caption{Poisson 3D, 64 intervals per axis; provisional development comparison. Each method is evaluated on 16 distinct cases; all timed repetitions are retained. Errors are same-grid relative errors. NF/NS counts nonfinite/nonstationary cases; outliers are calls above 1.5 times the method median. Development data. Static head-parameter transfers are included in this implementation's timings; the next paired panel corrects their placement. Direct operator transfer and quadrature certification failed. All measurements below share one allocation.}
+\label{tab:poisson3d-tuned02-n64}
+\end{table}

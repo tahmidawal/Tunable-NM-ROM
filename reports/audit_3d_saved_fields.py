@@ -15,7 +15,8 @@ MANIFEST = ROOT / 'reports/2026-09-20-3d-paper-inputs.json'
 
 
 def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
 def relative_fields(pred, truth, initial=False):
@@ -50,7 +51,50 @@ def main():
             output['checks'].append(dict(pde=entry['pde'], attempt=entry['attempt'], method='all saved neural reconstruction fields',
                                         observed=observed, reported=reported, discrepancies=discrepancies, passed=passed))
             continue
-        for row in data['invocations']:
+        if adapter == 'ns_trajectory':
+            from scipy.signal import resample
+            records_path = ROOT / entry['invocations']
+            output['inputs'][entry['invocations']] = sha(records_path)
+            records = json.loads(records_path.read_text())
+            reference = path.parent / 'timing_references.npz'
+            prediction = path.parent / 'timed_fields.npz'
+            with np.load(reference) as f:
+                same, fine = f['same_grid'], f['fine_grid']
+            for row in records:
+                groups[row['method']].append(row)
+            with np.load(prediction) as fields:
+                for method, group in sorted(groups.items()):
+                    row = max(group, key=lambda r: max(r['same_grid_errors'][1:]))
+                    case = row['case']
+                    prefix = f'{method}__case{case}'
+                    matches = [key for key in fields.files if key == prefix or key.startswith(prefix + '__')]
+                    selected = []
+                    for key in matches:
+                        pred = fields[key]
+                        h = hashlib.sha256(np.ascontiguousarray(pred).view(np.uint8)).hexdigest()
+                        if h == row['field_sha256']:
+                            selected.append(pred)
+                    assert selected, (method, case)
+                    pred = selected[0]
+                    errors = relative_fields(pred, same[case], initial=True)
+                    lifted = pred
+                    for axis in (-3, -2, -1):
+                        lifted = resample(lifted, fine.shape[axis], axis=axis)
+                    physical = np.linalg.norm((lifted-fine[case]).reshape(len(pred),-1),axis=1)/np.linalg.norm(fine[case,0])
+                    observed = dict(worst_evolved=float(errors[1:].max()), worst_all=float(errors.max()),
+                                    initial_error=float(errors[0]), physical_evolved=float(physical[1:].max()))
+                    reported = dict(worst_evolved=max(row['same_grid_errors'][1:]), worst_all=max(row['same_grid_errors']),
+                                    initial_error=row['same_grid_errors'][0], physical_evolved=max(row['fine_grid_errors'][1:]))
+                    discrepancies = {key: abs(value-reported[key]) for key,value in observed.items()}
+                    passed = all(np.isfinite(v) and v < 1e-11 for v in discrepancies.values())
+                    output['passed'] &= passed
+                    output['checks'].append(dict(pde=entry['pde'],attempt=entry['attempt'],method=method,
+                        mesh=data['config']['n'],case=case,observed=observed,reported=reported,
+                        discrepancies=discrepancies,passed=passed))
+            for artifact in (reference,prediction):
+                output['inputs'][str(artifact.relative_to(ROOT))] = sha(artifact)
+            continue
+        for row in data['invocations'] + data.get('operator_invocations', []):
             groups[row.get('intervals', data['config'].get('nodes')), row['method']].append(row)
         for (mesh, method), group in sorted(groups.items()):
             def score(row):

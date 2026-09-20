@@ -20,7 +20,7 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
-**2026-09-20 — overnight 3D campaign authorized.** The user requested parallel current-NM-ROM/operator comparisons on Burgers, heat, Poisson and Navier–Stokes in three spatial dimensions, then remediation of weak claims still used in the paper. After receiving the exact base/name/budget proposal, the user instructed us to continue and finish within seven to eight hours. The target window is 04:07–12:07 UTC on September 20. The four approved worktrees are `2026-09-20-paper-{b3d,h3d,p3d,ns3d}`, with matching `exp/` branches and `paper_{b3d,h3d,p3d,ns3d}_20260920` cluster namespaces. Exact bases and shared contract are in `reports/2026-09-20-3d-paper-campaign-plan.md`. Four read-only preparation agents completed code/design reviews. All four first pilots were independently audited as diagnostics. Longer Burgers, heat and Poisson comparisons have completed; the tuned Poisson panel is collected/audited and shows a useful dense correction ladder, while classical POD/DST controls remain stronger. Burgers/heat follow-up audits and four-family operator panels are underway. The Navier–Stokes bank/head still needs capacity and training work. F64 FNO, U-Net, DeepONet and Transolver implementations are available; held-out final evaluations remain unopened. The existing manuscript integrity/layout repair is complete at paper-refresh `187e34b6`, without scientific numeric changes. At most four single-GPU jobs may run concurrently; no final 3D comparison panel is accepted yet. The account queue was empty at preflight; the existing cluster is used.
+**2026-09-20 — overnight 3D campaign authorized.** The user requested parallel current-NM-ROM/operator comparisons on Burgers, heat, Poisson and Navier–Stokes in three spatial dimensions, then remediation of weak claims still used in the paper. After receiving the exact base/name/budget proposal, the user instructed us to continue and finish within seven to eight hours. The target window is 04:07–12:07 UTC on September 20. The four approved worktrees are `2026-09-20-paper-{b3d,h3d,p3d,ns3d}`, with matching `exp/` branches and `paper_{b3d,h3d,p3d,ns3d}_20260920` cluster namespaces. Exact bases and shared contract are in `reports/2026-09-20-3d-paper-campaign-plan.md`. Four read-only preparation agents completed code/design reviews. All four first pilots were independently audited as diagnostics. All four first longer comparisons are collected and audited. The tuned Poisson panel shows a useful dense correction ladder, while classical POD/DST controls remain stronger. Heat and Burgers still have head generalization gaps; the current Navier–Stokes bank/head misses its accuracy target. Four next GPU jobs add DeepONet/Transolver and targeted bank/head diagnostics, followed by independent seeds and final testing. The Navier–Stokes bank/head still needs capacity and training work. F64 FNO, U-Net, DeepONet and Transolver implementations are available; held-out final evaluations remain unopened. The existing manuscript integrity/layout repair is complete at paper-refresh `187e34b6`, without scientific numeric changes. At most four single-GPU jobs may run concurrently; no final 3D comparison panel is accepted yet. The account queue was empty at preflight; the existing cluster is used.
 
 **2026-09-19 — experimental scope clarified.** Closing the recent ICLR lanes does not mean the full PDE/dimension/operator programme is complete. Scalar Burgers 3D has a completed bank/head representation screen, with every tested compressed head failing promotion; no accepted rollout, correction-rank ladder or matched operator/FOM cost panel followed. Heat 3D and Poisson 3D have historical CP-based NM-ROM experiments and classical comparisons, but no completed current bank+head+correction campaign. No Navier–Stokes 3D campaign or matched 3D neural-operator comparison was found in the reviewed records. The proposed wider 2D operator comparison programme is also unlaunched. Historical results are not transferred into current paper tables.
 
@@ -15059,3 +15059,70 @@ Selected N64 rows generated from the retained invocation records (the complete t
 These development results retain failed quadrature certificates and failed direct operator resolution transfer. Native-grid prediction plus interpolation is separately charged and labelled. The timed implementation incurs avoidable static head-parameter transfers; the next same-job panel places frozen parameters on device during setup and remeasures every arm. Classical POD/DST controls remain stronger. Final cases are unopened. Root independently recomputed the worst saved field per method/mesh using only NumPy; the expanded generated report now includes this attempt.
 
 Poisson `extra03`, job `3995104`, source `a50ce0977373977688d73f82700108a6138b433b`, config SHA256 `fdbe781595dddce13e4e6c36317c486b0d51a68ae79c58ee3227dee370a48c87`, started on pax105 A100 80 GB at 05:29:52 UTC. It trains DeepONet/Transolver and remeasures all four operators with the frozen NM-ROM/POD/FOM controls. Tuned02 evidence was committed at `712fb235`; the clean launch handoff is `1e163cee5234110a878f2b060aed3fa6eb70f1cc`. Independent retraining and final evaluation remain pending.
+
+
+## 2026-09-20
+
+### Codex — all four first tuned 3D comparison panels collected and audited
+
+The coordinator's explicit-manifest report now contains the audited longer Burgers, heat, Poisson and Navier–Stokes development comparisons as well as their earlier diagnostics. All reported timing/error pairs come from the same invocation. No final cohort is open. The full generated report is `reports/2026-09-20-3d-paper-results.md`; explicit compact panels, CSV/LaTeX tables and vector figures are in `reports/2026-09-20-3d-paper-panels/`, with selection rules in `reports/2026-09-20-3d-paper-panel-selection.json`. These are provisional manuscript material, not completed final generalization evidence.
+
+The report includes 8 explicit attempts and 292 method/mesh rows. Root's solver-independent worst-field audit passes 286 checks; the owners separately verify all saved fields and invocation records.
+
+**Burgers 3D, b3d003, mesh 33**, source `dc91edb2c81712fde9d1b05fec7028c47bd213b4`, job `3992083`, `NVIDIA A100 80GB PCIe`.
+
+| Method | Worst same-grid error (%) | Worst refined-reference error (%) | Median device ms | Nonstationary cases |
+| --- | ---: | ---: | ---: | ---: |
+| `fno3d` | 1.997919 | unmeasured | 5.958943 | 0 |
+| `free_R256` | 2.434515 | unmeasured | 316.893938 | 0 |
+| `pod_256` | 1.036342 | unmeasured | 315.910727 | 0 |
+| `rom_q0` | 10.877975 | unmeasured | 185.964371 | 0 |
+| `rom_q192` | 3.490808 | unmeasured | 417.752027 | 0 |
+| `unet3d` | 1.912903 | unmeasured | 2.242088 | 0 |
+
+Audited matched-training development comparison. All learned models, POD and directions use the same trajectories and eight saved training times. Operator predictions pass through the exact initial field and interpolate the predicted time knots to the requested dense trajectory; their interpolation control is retained. The fixed-head correction ladder improves accuracy but the learned head still has a substantial held-out representation gap. The physical refinement check covers only two development cases and does not establish a full-cohort physical accuracy claim. Independent retraining and final evaluation remain pending.
+
+**Heat 3D, tune02, mesh 64**, source `4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2`, job `3990698`, `NVIDIA A100 80GB PCIe`.
+
+| Method | Worst same-grid error (%) | Worst refined-reference error (%) | Median device ms | Nonstationary cases |
+| --- | ---: | ---: | ---: | ---: |
+| `fno3d_w16_m6_native_grid_interpolated` | 0.989116 | 0.939076 | 7.140024 | 0 |
+| `linear_bank_galerkin_exact` | 1.316564 | 1.311499 | 0.514389 | 0 |
+| `nmrom_K16_q0_dense` | 5.842724 | 5.822259 | 18.392188 | 2 |
+| `nmrom_K16_q96_dense` | 2.962772 | 2.952110 | 24.580931 | 1 |
+| `pod128_exact` | 1.233758 | 1.229809 | 0.507446 | 0 |
+| `unet3d_w8_native_grid_interpolated` | 0.946824 | 0.899564 | 3.319375 | 0 |
+
+Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending.
+
+**Navier–Stokes 3D, comparison02, mesh 32**, source `23932ac4eca33075fc43b4e10e9d3ca24ee2a388`, job `3993021`, `NVIDIA A100-PCIE-40GB, 40960 MiB`.
+
+| Method | Worst same-grid error (%) | Worst refined-reference error (%) | Median device ms | Nonstationary cases |
+| --- | ---: | ---: | ---: | ---: |
+| `fno3d_projected` | 1.512069 | 1.518334 | 9.596132 | 0 |
+| `fom_dt0.008` | 0.359775 | 0.471145 | 3.935941 | 0 |
+| `free_bank_galerkin` | 24.269575 | 24.268916 | 49.404912 | 0 |
+| `nmrom_q0` | 50.475758 | 50.475754 | 901.362392 | 0 |
+| `nmrom_q128` | 45.334791 | 45.334489 | 2226.148030 | 0 |
+| `pod_galerkin_512` | 27.753732 | 27.753502 | 49.326727 | 0 |
+| `unet3d_projected` | 4.282978 | 4.280920 | 2.128413 | 0 |
+
+Audited development comparison with the fixed three-dimensional interacting velocity family and identical training membership. The learned bank and nonlinear head miss the physical accuracy target; these negative results motivate the larger-bank/head experiment. Timed results cover the declared first eight development cases, not the full sixteen used in training validation. Galerkin bank/POD controls solve a different reduced projection from the weak least-squares correction ladder. Initial fitting and dense input/output are charged. No latent state history was saved in this attempt, so evolution stopping records are checked for consistency only. A CUDA delay-kernel warning during operator training preceded timing burn-ins and is retained. Final data remain unopened.
+
+Burgers `b3d003` audit covers 384 ROM/POD/FOM and 48 operator invocations, plus an independent analytic NumPy check of 14 sampled initial/evolution gradients; the maximum gradient disagreement is recorded in `audit-stationarity-local.json`. Archive and all checkpoints are committed at `df968f70` and successors; clean handoff `fedacf9e`. Its exact cluster attempt was removed after checksum verification. The trained K32 head fits training states substantially better than held-out states despite adequate last-layer width; a K64/wider-head candidate and additional fitting starts are now tested on the frozen bank.
+
+Heat `tune02` audit covers 1,312 saved fields, 3,744 paired invocations and 78 summary rows, independent SciPy reference reconstructions and archived source hashes. Clean handoff `24f1ecdf3332b06ce1d55c68ae2f9ebec73342ae`; the exact remote attempt was removed. All trained checkpoints and optimizer states are tracked; the successor is verifying durable retention of the full local field archive before any future cleanup. Some initial fits exhaust their budget; evolved steps are stationary. Its K32 candidate has not materially closed the held-out representation gap; training-code/linear-skip initialization and multistart diagnostics are next.
+
+Navier–Stokes `comparison02` audit covers 160 saved timed fields, 480 invocations, all snapshot-fit gradients, refined reference fields and independent advective/Galerkin tensor probes. The complete archive is retained in tracked chunks with a concatenated-tar hash roundtrip; all original output checksums and source hashes pass. Clean handoff `f5e62b5f6a3769fdd33299f5cfd03c57c383ec56`; exact remote attempt removed. The recorded large NM-ROM errors persist despite stationary local solves. This is a negative result, with a larger-bank/head screen now running on the unchanged family. Evolution stopping claims remain qualified because this attempt did not save latent histories.
+
+### Codex — four next GPU jobs active and legacy oracle repair prepared
+
+Burgers `b3d004`, job `3995688`, source `c026d56b83905293e71268c249b57324c7d01baf`, config `5ddaa8f304172434a2afbd3a00772e6b10824f2dd453ed84534572671bde6143`, runs on pax106. It reuses the audited bank/K32/FNO/U-Net, trains DeepONet/Transolver, then a K64 head candidate with its own complete same-job controls.
+
+Heat `extra03`, job `3995709`, source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`, config `de2e24174b472855d30d646807e2003fa23a876009ce377c5e5f981cf60a5de9`, runs on pax051 A100 40 GB. It trains K32/DeepONet/Transolver, reuses the other frozen models, places weights on device during setup, and reruns the N32/N64 controls. Known-failed EQ timing arms are omitted with their failures retained; larger initialization budgets are explicitly declared.
+
+Navier–Stokes `extra03`, job `3995695`, source `8ba0a11ee83aaeb36bb486add6517a51aa921a87`, runs on pax106 A100 80 GB. It regenerates matching cohorts, screens larger banks/heads using a training-only rank rule, trains DeepONet/Transolver, and reruns all frozen controls with latent histories for independent stopping audits. Any larger-bank failure is retained without suppressing the comparative panel. Integer periodic translations of full training trajectories are identified as a possible subsequent shared augmentation if coverage remains limiting; no running job or fixed family has been changed.
+
+Poisson `extra03`, job `3995104`, remains active as recorded above. Its new operator curves are still improving near their step budget, so a documented longer schedule and independent model seeds are being prepared before final freezing. For heat and Poisson, fixed-padding FNO direct transfer changes the physical padded domain; a separate frozen-weight control preserving physical padding is planned. The failed old transfer remains a measured implementation variant, not an intrinsic limitation of FNO.
+
+The existing Poisson2D lane at `worktrees/2026-09-17-p-linear`, base/current `a366980a`, now has an isolated continuation worker preparing the corrected full-cohort untimed oracle from DESIGN A10. Original solved states are available as feasible starts, so no timed result needs rerunning or changing. It will use the correctly orthonormalized coefficient-space projection and direct full-bank endpoint, preserving the original retracted column. No extra GPU is submitted while the four campaign slots are occupied. No new worktree, merge or push occurred.

@@ -19,7 +19,8 @@ STEM = "2026-09-20-3d-paper-results"
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def read(path):
@@ -36,6 +37,15 @@ def number(value):
 
 def normalize(row, adapter, data):
     finite = bool(row.get("finite", True))
+    if adapter == "ns_trajectory":
+        same, physical = row["same_grid_errors"], row["fine_grid_errors"]
+        stationary = "steps" not in row or (row["cold"][2] == 4 and all(r == 4 for r in row["steps"][2]))
+        return dict(mesh=data["config"]["n"], convention="periodic points per axis",
+            method=row["method"], case=row["case"], repetition=row["repetition"],
+            gpu_ms=1000*row["gpu_seconds"], total_ms=1000*row["with_host_seconds"], finite=finite,
+            evolved=max(same[1:]) if finite else None, all_times=max(same) if finite else None,
+            initial=same[0] if finite else None, physical=max(physical[1:]) if finite else None,
+            stationary=stationary)
     if adapter == "burgers":
         return dict(
             mesh=data["config"]["nodes"], convention="nodes per axis",
@@ -131,6 +141,10 @@ def main():
         assert not data.get("smoke", False)
         for p in (path, audit_path):
             provenance[str(p.relative_to(ROOT))] = digest(p)
+        for extra_audit in entry.get("additional_audits", []):
+            p = ROOT / extra_audit
+            assert read(p)["passed"], extra_audit
+            provenance[extra_audit] = digest(p)
         if entry["adapter"] == "ns_representation":
             import numpy as np
             artifact = path.parent / "representation_fields.npz"
@@ -168,7 +182,16 @@ def main():
                       "Passing the numerical reference checks does not remedy the representation failures above. "
                       "No rollout error, runtime or operator comparison is inferred from these snapshot fits.", ""]
             continue
-        rows = aggregate([normalize(r, entry["adapter"], data) for r in data["invocations"]])
+        if entry.get("invocations"):
+            records_path = ROOT / entry["invocations"]
+            provenance[entry["invocations"]] = digest(records_path)
+            invocations = read(records_path)
+        else:
+            invocations = list(data["invocations"])
+        if data.get("operator_invocations"):
+            assert data["operator_complete"] and audit["operator_complete"]
+            invocations.extend(data["operator_invocations"])
+        rows = aggregate([normalize(r, entry["adapter"], data) for r in invocations])
         for row in rows:
             flags = []
             for mesh in data.get("meshes", []):
@@ -200,6 +223,15 @@ def main():
             lines += ["Errors use each reference field's current norm. Evolved errors exclude the initial "
                       "state. Total timing includes host transfers; GPU timing includes initialization, "
                       "evolution and dense output. Mesh size counts intervals per axis.", ""]
+        elif entry["adapter"] == "ns_trajectory":
+            lines += ["Errors use the initial velocity-field norm, with all three components combined. "
+                      "The evolved metric excludes time zero. Physical error uses Fourier interpolation "
+                      "to the independently refined grid. Total timing includes host transfers; device "
+                      "timing includes initialization, evolution and every requested dense velocity field. "
+                      "Mesh size counts periodic points per axis. The timed cohort is a declared subset "
+                      "of the larger validation cohort; training-validation summaries are not substituted "
+                      "for its measured query errors. Stopping records in this attempt lack saved latent "
+                      "histories and therefore support an internal-consistency check only.", ""]
         else:
             lines += ["Errors use the reference solution norm. There is one stationary output field; "
                       "evolved, initial and all-times terminology does not apply. Total timing includes "

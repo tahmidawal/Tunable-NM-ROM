@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & Median (\%) & Worst (\%) & GPU ms & p95 ms & NF/NS & Outliers \\
+\midrule
+NM-ROM K16, q0 & 1.0804 & 5.8427 & 18.392 & 36.053 & 0/2 & 6/48 \\
+NM-ROM K16, q8 & 1.0426 & 5.2535 & 18.294 & 23.042 & 0/0 & 0/48 \\
+NM-ROM K16, q32 & 0.8752 & 4.8852 & 19.608 & 21.957 & 0/0 & 0/48 \\
+NM-ROM K16, q64 & 0.5892 & 3.9930 & 20.528 & 24.009 & 0/0 & 0/48 \\
+NM-ROM K16, q96 & 0.3697 & 2.9628 & 24.581 & 37.254 & 0/1 & 3/48 \\
+Full bank, exact Galerkin & 0.2563 & 1.3166 & 0.514 & 0.782 & 0/0 & 3/48 \\
+Full bank, exact weak & 0.2542 & 1.3113 & 1.421 & 1.702 & 0/0 & 0/48 \\
+POD16 & 8.6633 & 25.1877 & 0.248 & 0.731 & 0/0 & 12/48 \\
+POD128 & 0.1414 & 1.2338 & 0.507 & 0.758 & 0/0 & 3/48 \\
+FNO, direct transfer & 15.1234 & 17.6641 & 10.981 & 11.366 & 0/0 & 0/48 \\
+FNO, native + interpolation & 0.7669 & 0.9891 & 7.140 & 7.855 & 0/0 & 0/48 \\
+U-Net, direct transfer & 75.7115 & 92.6756 & 7.047 & 7.567 & 0/0 & 0/48 \\
+U-Net, native + interpolation & 0.7512 & 0.9468 & 3.319 & 3.703 & 0/0 & 0/48 \\
+Direct DST & 0.0000 & 0.0000 & 1.329 & 1.757 & 0/0 & 1/48 \\
+\bottomrule
+\end{tabular}
+\caption{Heat 3D, 64 intervals per axis; provisional development comparison. Each method is evaluated on 16 distinct cases; all timed repetitions are retained. Errors are same-grid relative errors. NF/NS counts nonfinite/nonstationary cases; outliers are calls above 1.5 times the method median. Audited development data. Errors use the current reference-field norm and exclude time zero. Some initial fits miss their stopping budget; evolved solves are stationary. Direct operator transfer and all quadrature certificates fail. Native-grid interpolation is charged separately.}
+\label{tab:heat3d-tune02-n64}
+\end{table}

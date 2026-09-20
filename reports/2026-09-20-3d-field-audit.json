@@ -2,8 +2,8 @@
   "passed": true,
   "scope": "One independently recomputed worst-case field per method and mesh; no solver imports or independent retraining.",
   "inputs": {
-    "reports/2026-09-20-3d-paper-inputs.json": "33c8686a2d70c0b3938ed4cacd37d1c71fb4bb2e1e458760179b27e774f2ab6b",
-    "reports/audit_3d_saved_fields.py": "9d9570fd87a054489c68126249f4dd84cdb51c954b52719cfcc5916c4cd75f7c",
+    "reports/2026-09-20-3d-paper-inputs.json": "8054bbad75f2e99cbdf1c73697eca6bde7a1de9445ddd8c69ed2b3a5441f30f3",
+    "reports/audit_3d_saved_fields.py": "9550dc90190b597f293ac5f603d63dfbe89cc42f1de81674faeae9d2a08931bc",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-02_case5_rep0.npz": "0159d55a6d43c83c134abaaf9f33f6ee35126ab6586d6f1efb1cabb166fd27c0",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case5.npz": "1eccda6937db84b5666da7d873c2fcdd0af702891796a1192428f4a8ca2a09f8",
@@ -200,7 +200,122 @@
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_pod8_galerkin.npz": "ec8031973487cdc29878073d6de7bed8cba3696c5ddab2e3213fd4b13fee5674",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case3_unet3d_w16.npz": "a8e7dd830eef32231620c1652e847ffd067b9f614fdd8083dd15980abcf4ae93",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case3_reference.npz": "7b0b1f26c73807f2d0aca8f3409613765dabb7572f617c867e428741356565dc",
-    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "2d1fb23eca353c96086d2476b3be3428873ca5b27dad13ccd031b6a4ec70a91b"
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "2d1fb23eca353c96086d2476b3be3428873ca5b27dad13ccd031b6a4ec70a91b",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/result.json": "06d3ba08e8f1a0d398200eaea2d0f0a27bde0ba31ecf6618230247ac80123db2",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fno3d_case3_rep0.npz": "38440aabc4f62743014a5147741cb73e0998752655982ddcba2bd353b72452c7",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case3.npz": "a5c247625d1c935b6a6b3e436382921594e488d4ff7ccf6a79b50036cb7561bb",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-02_lt5e-01_case2_rep0.npz": "644ff8227cae87ab626d22949c1bc7239784e70a0abd69e635e4e281178a2b62",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case2.npz": "597d763be50b1784aabd333725f452546d2aa4d78281194d38c382f78c26a94d",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-02_lt5e-03_case5_rep0.npz": "04b7ab6bb72ad18fffa70106e5f72724bfbc1d6f27c890620152553e1a96bb4f",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case5.npz": "4ace861c5774742a5902e994e1e9f77d4c4e73cef03e29d4fe83d49297d891b2",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-03_lt5e-01_case7_rep0.npz": "7eb9681c1585f1ce9cbc7f34263265cc130d43d65744dc9aef4341e5116e5b8d",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case7.npz": "90b8a2bb21c342bc8d4cc58bf6a45366561cf2a6f99c14a29cdb963ba41b4794",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-04_lt1e-06_case4_rep0.npz": "f9d710d7c56552f1a63e01503af7f21f0c3ba9ff31bdd7bd37dcfc42d963fa44",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case4.npz": "bda3d7404873dc15eb8e3877dd0b87ce460310b4a3c9721c779c52a57c4a89a6",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-04_lt5e-01_case7_rep0.npz": "ae9baab019318df1722196adb10f739ea97c1bd4e600c0709212e40082165498",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/fom_nt1e-06_lt1e-01_case6_rep0.npz": "d055890ceaa2a30114840786c7e542b1cb8506ab1b9f8492411cc1b7abdcbf70",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case6.npz": "b50e2e7bc8740c98359d1e324100837a27fb34149eeadfd644366d8ed634736f",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/free_R256_case2_rep2.npz": "ef8f56b0eeff1ced5e7fd453b37ad2418f04e0dc2860b6093292b03a0212a797",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/pod_160_case2_rep0.npz": "67a6c41ee1d5bfa9f5e3806e03045fc8aa9a51692472743002d76dcc1bd52217",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/pod_224_case2_rep2.npz": "82d702bd65a9b52a3517717ea2db45179b3200526e60002f30f876f89212b069",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/pod_256_case5_rep1.npz": "eadc2b9a91495211f4cafb6f314dc9cc57d25cc95d5371247917769ba2a5edc0",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/pod_32_case2_rep2.npz": "3d08e35240352b8998f5230a603bcb01b4f8d213fbd748c223b22dc62008e12e",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/pod_96_case2_rep0.npz": "d36b3c72a9fe3493d9831f6693e386159a5c5173bfcc54f1a1abec18199dfb8a",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/rom_q0_case0_rep1.npz": "6b0905ff623df066d689f4e572011d13edad45aee24a9919fb2523175e43facd",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/reference_case0.npz": "1a0991b31d362d4afb14f75d379265b95625a850cce5fb3685813aa752e1c6ed",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/rom_q128_case0_rep0.npz": "3a805bc5879511e5bb1dd3e74b46f892b32b9002d9f54a6d90ace913947fa38c",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/rom_q192_case2_rep0.npz": "5d56de5bfc69c97812fe5ce064bfe64db0778211de508f09bd192cb7f0d0bafd",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/rom_q64_case0_rep1.npz": "cf044ce7f3848cf6a2f20b6b733e5644129bcc057dd35fde51301fb03267ea33",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/unet3d_case3_rep0.npz": "5af92446e5515690b67a58696cb3b895d13931d2fc7d698192e8478d4d27d5dd",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/result.json": "fadbb0e55be594483c4887a079d40c9d31d1e5e7c653da7b3e3eb4501435f35f",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case0_dst_exact.npz": "27770b3835eddc4339cb64961689bf072c50eb6d3c71d6a48b378f5b32260e6d",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case0_reference.npz": "ae92732d16de9b2fc7d7ed9d947e1aa53dc70300d0453df676a1fcdcc1f65f59",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_fno3d_w16_m6.npz": "9470f005df79a07bb2b664daf6fe1ff63bf4dc8e468525cb4ec7831423e417d3",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_reference.npz": "4c4585bc8b418cb52c081296e100610f6a7d0b3d02def66fa0c0168d9da3f6ae",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_linear_bank_cn.npz": "83cd9f5c021c9cf47f747aff4464937f538f75962100ce2bbda297499568ff85",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_linear_bank_exact.npz": "093623dafd3a5fb96985832b99aee3a4f78f789a2fb1eb256a20d27e1c776c71",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_linear_bank_galerkin_exact.npz": "0a029eebb5e3350f823168230aa9ef60f61a6d1bee88ec384cf19149bee6ad16",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q0_dense.npz": "a0a7a823d84352f7543a6dc66f728ea72e326c7e36a9c0b29169c81642b088c6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q0_eq.npz": "3e3a948cc15bc6269d3a172c82e698575f0e0b9ca26bb0da0c0084793434ea35",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_nmrom_K16_q32_dense.npz": "1ab0f265580882d1a9238d7f989d25e82303ce18e57332e12e86b73204094d48",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_reference.npz": "c0898b2960cc50651032ddfe96075c8576da71f5f326c018acc12caf9b8105da",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q32_eq.npz": "f3337b1b817cade23f32a81fef383e1f08f0482b887659c77f03d96f197f700a",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_nmrom_K16_q64_dense.npz": "c3b50ec7f4c938727e77968c82f1e86ee0ec0731e9ad75bb380656c359150bcc",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q64_eq.npz": "3e53fe191eca17a0f087857a57bad7b7a69f9e8c29fe221db60e39c779b9d7e9",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_nmrom_K16_q8_dense.npz": "21552be0b5fed30cba7d16cc1133a8243f58364fe6650e3d3b6d9892923ecb8e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q8_eq.npz": "421c297a14b22bd714f490afabca40f10219f1fd5f5a0529c96b490fb4470d59",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_nmrom_K16_q96_dense.npz": "7943ec4a9b2ce18989f0c5e169a3162d9bce8c5e6bab4c82f32192f7aae36c7f",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case6_nmrom_K16_q96_dense_dt_half.npz": "ef87b3f190264ed73d1fd81c59135291122a054f8bcaeaf7e25952344e4f1e59",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K16_q96_eq.npz": "80644bb6303f0a00bb540e4d56108df8d20c17055f6b54d5f31cb01f9ecc0379",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q0_dense.npz": "103dd67d5cd3c4c8b713f73564b3e82d342d40d808ee35e0f6b70acc5cd2f2fe",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q0_eq.npz": "ca2b7ac6b91cd110704763bac7dbde24f5872aa790059a413a43b853183ccfe9",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q32_dense.npz": "a69479d8ad4a1c258e577cc290333681349716a14a89008a97d1e77213b82ce4",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q32_eq.npz": "cb9119e847cdc4f43de607db406be155e9dea74125fe8e6bc448be244d719f05",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q64_dense.npz": "e75593fcce5b18ab04ef97e1a702ede52d2af8bc9e10aad791680a18c0f5babd",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q64_eq.npz": "9a38f0c071687ded5f4b86ed5f44558a3e2f8360b2882a2dcd8f69caaacb6f0e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q8_dense.npz": "8819ef7fac045b8264b7605237cab663e5bc1e843fa084a37406d32368420c84",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q8_eq.npz": "4dbd89fce3a56f28dfd1a7b8c491156dbefb4d01d48292f517ef6f63e78e6421",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q96_dense.npz": "9b5c55111b707c7844aeb89a055e4375531361ab44f23601b68801c44eb3cbc9",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q96_dense_dt_half.npz": "2e1961d1f9e5c7c2507e9a8b5792593ca5fd1cd53c72647065fa49ea9f9fa8f4",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_nmrom_K8_q96_eq.npz": "723170476612cef396bdfef310b07c46b1abaa99078b61e0d155001ce7c6bb01",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod104_exact.npz": "91e7030cb71faab148cdd3ce5880e9548f3cb563fa5615a201ee7eb7edf148c6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod112_exact.npz": "dfb40822d0692d0c04435532b9bd50d66b2b8f50434844c44d52503dea96eac8",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod128_exact.npz": "3aab3170bf6d5a1f7f7a10ab974cc1d3c31ad077adae436b774bf7a23971069f",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod16_exact.npz": "19c676dce857fb99cf14f4c8abd2dfbea6831386f2fab32bd7e233495f839dd4",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod24_exact.npz": "6bee9122642e396b97538d8594b0ec641864a1cf5d1d8a67b83673933fa065ca",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod40_exact.npz": "0d26ee28120c297942967fb9ed055068400bd4f31e376c5336639750689196ea",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod48_exact.npz": "0d36b875d9b8b08ed6a4237329882e86f025fe3b269c90207faec5824d0f76e3",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod72_exact.npz": "b4b52716a0413e28595941c271687f1b8a1cd866da2b8a10c4bc96b8019a4475",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod80_exact.npz": "648d3caf26eeae753bc24eab7fc96a79ae7f372e9ab9bd0a601cfeba3c3ac570",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_pod8_exact.npz": "ffb1eed281a4b354fe967b44e7e4a41428106587ca8167e7902b78b6673e74b0",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N32_case11_unet3d_w8.npz": "75d6f22f0eebede1db8f9073ae9aa3b40ec72d2105efd18b22b54c6f613f1022",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case0_dst_exact.npz": "83941e52c074528291798b8d62edc15e326754e2a4f48e2d46445ea6385397d6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case0_reference.npz": "e45b6aefda5c5c19b7061ad35d7d4035731913ddf1ff69470c4c1ce52465bbe7",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_fno3d_w16_m6.npz": "d4aff39bce845a61a4464747bad6ce780b364098941a4b6f84f304b6a6284e39",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_reference.npz": "97441479946901c578a7c0006eb8c5cca4faab818f666a6a0c656caf5762b399",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_fno3d_w16_m6_native_grid_interpolated.npz": "c88b1d3b1f1b17371a128c05288ac7f47d3c1642b11b2b7179b9e16c2d932555",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_reference.npz": "ecc460e855188c62ceef6b715b5e4ba365b38fa0da7aa1ca30802e2e628a2c96",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_linear_bank_cn.npz": "fedb92952e4ac319bcace02e4a79cc7033de82f545d86b6b19e6105bd58284fc",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_linear_bank_exact.npz": "97885b346e8db418aa7da04a4bbf88068c2e6c9b0a8a1fce1927a0f1eb8ce6c7",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_linear_bank_galerkin_exact.npz": "c14d9cbc9421a51272d57236ad45f908c984ac842cf4ea77acf34e86563151cf",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q0_dense.npz": "c8654ccbb8ec21336e0614d1d2ee8bf63e56299f1c0fecd650e3de1c9c575311",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q0_eq.npz": "19d9022ac06731a196469b98c9d9b6eacf94877b636b8d9899cb4ca456e4e049",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_nmrom_K16_q32_dense.npz": "5c04702503f9b74d83fe2d026a61dca60fd8f1d95a021f37f58bcd300970f6df",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q32_eq.npz": "a530e7024b2e578c78d149b535c2e4feb5ac9bf99ff435248ec1e71e0856471b",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_nmrom_K16_q64_dense.npz": "5a40584a61956a7284dc2ee5a4ecbebc21d06d11aaa6444a661914c62b8f6585",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q64_eq.npz": "f95cabee2e17207bbad25a8b7337bcb6a1f8772819ebeb2c4ee6cd6c856f6c1e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_nmrom_K16_q8_dense.npz": "5687feafd143417cbdd6d9eb12b3a1ea9ab52a870e95ca4f3d6e044b9f71f431",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q8_eq.npz": "3c7cd32e3b6f009b8154846ce4bc7c362dbeb3d2413245820ba49958dd576a80",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_nmrom_K16_q96_dense.npz": "d00c5012a58508098e619e53232dfee8411305efe44989b7dbf63268d892f911",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case6_nmrom_K16_q96_dense_dt_half.npz": "48f792696dc92999f88a94584968c1b03db807cdebff11221d6062e4fc1e810a",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K16_q96_eq.npz": "06e70b3fa7793213033604e9938aed9937ec1c6c9f78b018db033e763f485338",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q0_dense.npz": "3887d80531d472c6d5793ae0d5c77272c5c4b3d6ea8c5f7d08725b461754c23e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q0_eq.npz": "e2dfa35b6cf8e92494e059308041885733212f42809f4a99c198214c023fd261",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q32_dense.npz": "5b0ca8df2dfbf10a18cf6894219fc437b63eb4bf26184c62e7b7feeb13fdeeb1",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q32_eq.npz": "c9f034667e7e2bed76d8247af0faeabd0622f23bd7b82ac33bf90fa668df9e9f",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q64_dense.npz": "f39ea2c73903df8f66c9479747413ce29b4c0e5aa1deddf49102eaa1ba203d27",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q64_eq.npz": "8c08473303b7578a66edf6b4457b966f66f6f614f0b47202b6a9ee9f1faf4640",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q8_dense.npz": "865e6188f776baa335e3ec32f0f25e9b0e787162d0a24afb98379d88c1e6e4db",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q8_eq.npz": "fd384110dd93c0f2ca76707545072e7905ff9d7ae625bbee82a75dcdd170da33",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q96_dense.npz": "4105d9d97cdfc523794089cf5e5cb677edfabbbd59ecebf48696a16bd41e606a",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q96_dense_dt_half.npz": "ebea80f35972d41699e170e96dd23e571e28eb54186cadd8206afec7e057177d",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_nmrom_K8_q96_eq.npz": "193b8a327e68767e8b926447e0ef5dc9458694894ca1ff46a865e2dfcd96e304",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod104_exact.npz": "59579cd3cea27a9cc54cf1c927b2e5bff5eeec37b25d4bb54f942e585bc97ef5",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod112_exact.npz": "36fa07da973d48fe88dd6f2564dbc9500f4f760f368660a85e2f2fbf3904eba8",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod128_exact.npz": "8d3ef6226a8c43de8a1c3ebb30d4f1596465eee8b6d30fc3f4a5f6c8c22998b1",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod16_exact.npz": "febc9000107f493da74a5e5a8f15fc3789dd59ea842642713c18174b9f821352",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod24_exact.npz": "3124311036b8d77f556ac83a12f325d02e26585a851a7e766724fcc2eb53a33e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod40_exact.npz": "a427886f00c848b04a53fc881f33f596da34962a58b9727d36ad050a5709d0aa",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod48_exact.npz": "b3d3d06d10add7395a88a1dbe5d502bd038caa63d5b86ff4ec61ffea83568019",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod72_exact.npz": "ca851f7f0e9ff5dc8f4b6334cce103222e50dccc5f40b2104c8e98dfaf57a9ae",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod80_exact.npz": "516f554590f55732a9c20f893afcc076ee963ba6057ca275c8d00b57942947da",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_pod8_exact.npz": "9087141b7f9d1141957aea22822abfc28a787646a526105035d5ab94a1459f7f",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_unet3d_w8.npz": "404e20c94b9602a92ff9c03ed3494b31e0e95ad04b28629a8f9b9e9699c00302",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/fields/N64_case11_unet3d_w8_native_grid_interpolated.npz": "1f70fa04cdf591ecc4438019571ff7dbc2664c340dcde0cbe78a0faf86bd7ce2",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json": "9d4489bedf56a52ad4edc9540ec5cd39b57a8e73e364b3d312663fda3e5dc739",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timing_rows.json": "986f41189db5eec4a1e0a2d4c07af89d84228fe92db141884d86ca2d05307ed8",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timing_references.npz": "293ad3ccae58b4fe523428e9077c34f8350d3813ddcd64077847757139acc153",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/timed_fields.npz": "9d0146a5928f1ae0dc7b2a32dd4a0213b3cd2da5822a805ad2793e313a3d8832"
   },
   "checks": [
     {
@@ -3982,6 +4097,2968 @@
       "discrepancies": {
         "same_grid_error": 8.673617379884035e-19,
         "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fno3d",
+      "mesh": 33,
+      "case": 3,
+      "observed": {
+        "worst_evolved": 0.019979193614205994,
+        "worst_all": 0.019979193614205994,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.019979193614205998,
+        "worst_all": 0.019979193614205998,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 3.469446951953614e-18,
+        "worst_all": 3.469446951953614e-18,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-02_lt5e-01",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.016184699253205148,
+        "worst_all": 0.016184699253205148,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.016184699253205148,
+        "worst_all": 0.016184699253205148,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-02_lt5e-03",
+      "mesh": 33,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.006542621191464494,
+        "worst_all": 0.006542621191464494,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.006542621191464495,
+        "worst_all": 0.006542621191464495,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 8.673617379884035e-19,
+        "worst_all": 8.673617379884035e-19,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-03_lt5e-01",
+      "mesh": 33,
+      "case": 7,
+      "observed": {
+        "worst_evolved": 0.005247544238818088,
+        "worst_all": 0.005247544238818088,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.005247544238818088,
+        "worst_all": 0.005247544238818088,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-04_lt1e-06",
+      "mesh": 33,
+      "case": 4,
+      "observed": {
+        "worst_evolved": 0.00020728940003029544,
+        "worst_all": 0.00020728940003029544,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.00020728940003029544,
+        "worst_all": 0.00020728940003029544,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-04_lt5e-01",
+      "mesh": 33,
+      "case": 7,
+      "observed": {
+        "worst_evolved": 0.00030256280252486507,
+        "worst_all": 0.00030256280252486507,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.00030256280252486507,
+        "worst_all": 0.00030256280252486507,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "fom_nt1e-06_lt1e-01",
+      "mesh": 33,
+      "case": 6,
+      "observed": {
+        "worst_evolved": 2.5814534006856445e-06,
+        "worst_all": 2.5814534006856445e-06,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 2.5814534006856445e-06,
+        "worst_all": 2.5814534006856445e-06,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "free_R256",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.024345148549309904,
+        "worst_all": 0.02890078257179073,
+        "initial_error": 0.02890078257179073
+      },
+      "reported": {
+        "worst_evolved": 0.024345148549309904,
+        "worst_all": 0.02890078257179073,
+        "initial_error": 0.02890078257179073
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "pod_160",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.025056532967556205,
+        "worst_all": 0.030153052527134377,
+        "initial_error": 0.030153052527134377
+      },
+      "reported": {
+        "worst_evolved": 0.025056532967556205,
+        "worst_all": 0.030153052527134377,
+        "initial_error": 0.030153052527134377
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "pod_224",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.012099790142932653,
+        "worst_all": 0.015306282685468003,
+        "initial_error": 0.015306282685468003
+      },
+      "reported": {
+        "worst_evolved": 0.012099790142932653,
+        "worst_all": 0.015306282685468003,
+        "initial_error": 0.015306282685468003
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "pod_256",
+      "mesh": 33,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.010363424388308026,
+        "worst_all": 0.010363424388308026,
+        "initial_error": 0.0016255354913453604
+      },
+      "reported": {
+        "worst_evolved": 0.010363424388308028,
+        "worst_all": 0.010363424388308028,
+        "initial_error": 0.0016255354913453607
+      },
+      "discrepancies": {
+        "worst_evolved": 1.734723475976807e-18,
+        "worst_all": 1.734723475976807e-18,
+        "initial_error": 2.168404344971009e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "pod_32",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.2269473494262348,
+        "worst_all": 0.2494243139925587,
+        "initial_error": 0.2494243139925587
+      },
+      "reported": {
+        "worst_evolved": 0.2269473494262348,
+        "worst_all": 0.2494243139925587,
+        "initial_error": 0.2494243139925587
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "pod_96",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.05578454084749578,
+        "worst_all": 0.06698344131386365,
+        "initial_error": 0.06698344131386365
+      },
+      "reported": {
+        "worst_evolved": 0.05578454084749578,
+        "worst_all": 0.06698344131386365,
+        "initial_error": 0.06698344131386365
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "rom_q0",
+      "mesh": 33,
+      "case": 0,
+      "observed": {
+        "worst_evolved": 0.10877975417043889,
+        "worst_all": 0.11597657539766326,
+        "initial_error": 0.11597657539766326
+      },
+      "reported": {
+        "worst_evolved": 0.10877975417043889,
+        "worst_all": 0.11597657539766326,
+        "initial_error": 0.11597657539766326
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "rom_q128",
+      "mesh": 33,
+      "case": 0,
+      "observed": {
+        "worst_evolved": 0.06649092847687392,
+        "worst_all": 0.07118706340446296,
+        "initial_error": 0.07118706340446296
+      },
+      "reported": {
+        "worst_evolved": 0.06649092847687392,
+        "worst_all": 0.07118706340446296,
+        "initial_error": 0.07118706340446296
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "rom_q192",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.03490807716174462,
+        "worst_all": 0.039086569826302216,
+        "initial_error": 0.039086569826302216
+      },
+      "reported": {
+        "worst_evolved": 0.03490807716174462,
+        "worst_all": 0.039086569826302216,
+        "initial_error": 0.039086569826302216
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "rom_q64",
+      "mesh": 33,
+      "case": 0,
+      "observed": {
+        "worst_evolved": 0.0891084950590121,
+        "worst_all": 0.09490814727556686,
+        "initial_error": 0.09490814727556686
+      },
+      "reported": {
+        "worst_evolved": 0.0891084950590121,
+        "worst_all": 0.09490814727556686,
+        "initial_error": 0.09490814727556686
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d003",
+      "method": "unet3d",
+      "mesh": 33,
+      "case": 3,
+      "observed": {
+        "worst_evolved": 0.01912903299664088,
+        "worst_all": 0.01912903299664088,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.019129032996640885,
+        "worst_all": 0.019129032996640885,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 3.469446951953614e-18,
+        "worst_all": 3.469446951953614e-18,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "dst_exact",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0033355411077445004
+      },
+      "reported": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0033355411077445004
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "fno3d_w16_m6",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.003946858213886528,
+        "current_all": 0.003946858213886528,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.006332127541112655
+      },
+      "reported": {
+        "current_evolved": 0.003946858213886528,
+        "current_all": 0.003946858213886528,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.006332127541112655
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_cn",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013314960848908562,
+        "current_all": 0.030635865367964275,
+        "initial_fit": 0.030635865367964275,
+        "physical_evolved": 0.01350658954330243
+      },
+      "reported": {
+        "current_evolved": 0.013314960848908562,
+        "current_all": 0.030635865367964275,
+        "initial_fit": 0.030635865367964275,
+        "physical_evolved": 0.01350658954330243
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013276786353483838,
+        "current_all": 0.030635865367964275,
+        "initial_fit": 0.030635865367964275,
+        "physical_evolved": 0.013654813844973131
+      },
+      "reported": {
+        "current_evolved": 0.013276786353483838,
+        "current_all": 0.030635865367964275,
+        "initial_fit": 0.030635865367964275,
+        "physical_evolved": 0.013654813844973131
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_galerkin_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013323801105533198,
+        "current_all": 0.03058815032424181,
+        "initial_fit": 0.03058815032424181,
+        "physical_evolved": 0.013607455076068961
+      },
+      "reported": {
+        "current_evolved": 0.013323801105533198,
+        "current_all": 0.03058815032424181,
+        "initial_fit": 0.03058815032424181,
+        "physical_evolved": 0.013607455076068961
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.058854505759732556,
+        "current_all": 0.10582245188218235,
+        "initial_fit": 0.10582245188218235,
+        "physical_evolved": 0.05811750662994357
+      },
+      "reported": {
+        "current_evolved": 0.058854505759732556,
+        "current_all": 0.10582245188218235,
+        "initial_fit": 0.10582245188218235,
+        "physical_evolved": 0.05811750662994357
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07345280788948708,
+        "current_all": 0.12234931524791356,
+        "initial_fit": 0.12234931524791356,
+        "physical_evolved": 0.07128598124083022
+      },
+      "reported": {
+        "current_evolved": 0.07345280788948708,
+        "current_all": 0.12234931524791356,
+        "initial_fit": 0.12234931524791356,
+        "physical_evolved": 0.07128598124083022
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 32,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.04932833302938415,
+        "current_all": 0.09233095080783348,
+        "initial_fit": 0.09233095080783348,
+        "physical_evolved": 0.04860672932720706
+      },
+      "reported": {
+        "current_evolved": 0.04932833302938415,
+        "current_all": 0.09233095080783348,
+        "initial_fit": 0.09233095080783348,
+        "physical_evolved": 0.04860672932720706
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06573783554077868,
+        "current_all": 0.11916650699229835,
+        "initial_fit": 0.11916650699229835,
+        "physical_evolved": 0.06363399167117881
+      },
+      "reported": {
+        "current_evolved": 0.06573783554077868,
+        "current_all": 0.11916650699229835,
+        "initial_fit": 0.11916650699229835,
+        "physical_evolved": 0.06363399167117881
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 32,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.04031000327696333,
+        "current_all": 0.07574503361632291,
+        "initial_fit": 0.07574503361632291,
+        "physical_evolved": 0.03983521112648828
+      },
+      "reported": {
+        "current_evolved": 0.04031000327696333,
+        "current_all": 0.07574503361632291,
+        "initial_fit": 0.07574503361632291,
+        "physical_evolved": 0.03983521112648828
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06160925460822399,
+        "current_all": 0.11924148265379057,
+        "initial_fit": 0.11924148265379057,
+        "physical_evolved": 0.0594532150754159
+      },
+      "reported": {
+        "current_evolved": 0.06160925460822399,
+        "current_all": 0.11924148265379057,
+        "initial_fit": 0.11924148265379057,
+        "physical_evolved": 0.0594532150754159
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q8_dense",
+      "mesh": 32,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.05313320198422156,
+        "current_all": 0.1029245440373001,
+        "initial_fit": 0.1029245440373001,
+        "physical_evolved": 0.052395517114417436
+      },
+      "reported": {
+        "current_evolved": 0.05313320198422156,
+        "current_all": 0.1029245440373001,
+        "initial_fit": 0.1029245440373001,
+        "physical_evolved": 0.052395517114417436
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q8_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0678037513133197,
+        "current_all": 0.11440794416622631,
+        "initial_fit": 0.11440794416622631,
+        "physical_evolved": 0.06570531838374456
+      },
+      "reported": {
+        "current_evolved": 0.0678037513133197,
+        "current_all": 0.11440794416622631,
+        "initial_fit": 0.11440794416622631,
+        "physical_evolved": 0.06570531838374456
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 32,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.02989913915587917,
+        "current_all": 0.054636220085678436,
+        "initial_fit": 0.054636220085678436,
+        "physical_evolved": 0.029664562107344757
+      },
+      "reported": {
+        "current_evolved": 0.02989913915587917,
+        "current_all": 0.054636220085678436,
+        "initial_fit": 0.054636220085678436,
+        "physical_evolved": 0.029664562107344757
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_dense_dt_half",
+      "mesh": 32,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.029259998694662767,
+        "current_all": 0.054636220085678436,
+        "initial_fit": 0.054636220085678436,
+        "physical_evolved": 0.02909052829755602
+      },
+      "reported": {
+        "current_evolved": 0.029259998694662767,
+        "current_all": 0.054636220085678436,
+        "initial_fit": 0.054636220085678436,
+        "physical_evolved": 0.02909052829755602
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05448372497370817,
+        "current_all": 0.1182782193990619,
+        "initial_fit": 0.1182782193990619,
+        "physical_evolved": 0.05235818451185796
+      },
+      "reported": {
+        "current_evolved": 0.05448372497370817,
+        "current_all": 0.1182782193990619,
+        "initial_fit": 0.1182782193990619,
+        "physical_evolved": 0.05235818451185796
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06197678443648579,
+        "current_all": 0.11087504753438188,
+        "initial_fit": 0.11087504753438188,
+        "physical_evolved": 0.06135388955013832
+      },
+      "reported": {
+        "current_evolved": 0.06197678443648579,
+        "current_all": 0.11087504753438188,
+        "initial_fit": 0.11087504753438188,
+        "physical_evolved": 0.06135388955013832
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07355996925261649,
+        "current_all": 0.12630232693869217,
+        "initial_fit": 0.12630232693869217,
+        "physical_evolved": 0.0715366350228748
+      },
+      "reported": {
+        "current_evolved": 0.07355996925261649,
+        "current_all": 0.12630232693869217,
+        "initial_fit": 0.12630232693869217,
+        "physical_evolved": 0.0715366350228748
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.04972108470378151,
+        "current_all": 0.09311635431807572,
+        "initial_fit": 0.09311635431807572,
+        "physical_evolved": 0.04919347500156209
+      },
+      "reported": {
+        "current_evolved": 0.04972108470378151,
+        "current_all": 0.09311635431807572,
+        "initial_fit": 0.09311635431807572,
+        "physical_evolved": 0.04919347500156209
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06497814081747569,
+        "current_all": 0.11883333518174383,
+        "initial_fit": 0.11883333518174383,
+        "physical_evolved": 0.06298109664707749
+      },
+      "reported": {
+        "current_evolved": 0.06497814081747569,
+        "current_all": 0.11883333518174383,
+        "initial_fit": 0.11883333518174383,
+        "physical_evolved": 0.06298109664707749
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.037751589169183725,
+        "current_all": 0.07276898985570864,
+        "initial_fit": 0.07276898985570864,
+        "physical_evolved": 0.0374265106737701
+      },
+      "reported": {
+        "current_evolved": 0.037751589169183725,
+        "current_all": 0.07276898985570864,
+        "initial_fit": 0.07276898985570864,
+        "physical_evolved": 0.0374265106737701
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0594467016896837,
+        "current_all": 0.11746606310971032,
+        "initial_fit": 0.11746606310971032,
+        "physical_evolved": 0.057428319209052836
+      },
+      "reported": {
+        "current_evolved": 0.0594467016896837,
+        "current_all": 0.11746606310971032,
+        "initial_fit": 0.11746606310971032,
+        "physical_evolved": 0.057428319209052836
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q8_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06041888192368777,
+        "current_all": 0.10884792872491453,
+        "initial_fit": 0.10884792872491453,
+        "physical_evolved": 0.0597606301789052
+      },
+      "reported": {
+        "current_evolved": 0.06041888192368777,
+        "current_all": 0.10884792872491453,
+        "initial_fit": 0.10884792872491453,
+        "physical_evolved": 0.0597606301789052
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q8_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07224723093098179,
+        "current_all": 0.12486157117379658,
+        "initial_fit": 0.12486157117379658,
+        "physical_evolved": 0.07017738831891085
+      },
+      "reported": {
+        "current_evolved": 0.07224723093098179,
+        "current_all": 0.12486157117379658,
+        "initial_fit": 0.12486157117379658,
+        "physical_evolved": 0.07017738831891085
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.022781493425765804,
+        "current_all": 0.046829384347004274,
+        "initial_fit": 0.046829384347004274,
+        "physical_evolved": 0.022723734055075894
+      },
+      "reported": {
+        "current_evolved": 0.022781493425765804,
+        "current_all": 0.046829384347004274,
+        "initial_fit": 0.046829384347004274,
+        "physical_evolved": 0.022723734055075894
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_dense_dt_half",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.022741750835741426,
+        "current_all": 0.046829384347004274,
+        "initial_fit": 0.046829384347004274,
+        "physical_evolved": 0.022770328590417187
+      },
+      "reported": {
+        "current_evolved": 0.022741750835741426,
+        "current_all": 0.046829384347004274,
+        "initial_fit": 0.046829384347004274,
+        "physical_evolved": 0.022770328590417187
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05473573975163783,
+        "current_all": 0.11430652864655394,
+        "initial_fit": 0.11430652864655394,
+        "physical_evolved": 0.05261517960832878
+      },
+      "reported": {
+        "current_evolved": 0.05473573975163783,
+        "current_all": 0.11430652864655394,
+        "initial_fit": 0.11430652864655394,
+        "physical_evolved": 0.05261517960832878
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod104_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.01648158917843782,
+        "current_all": 0.03236555338291269,
+        "initial_fit": 0.03236555338291269,
+        "physical_evolved": 0.016742869214470827
+      },
+      "reported": {
+        "current_evolved": 0.01648158917843782,
+        "current_all": 0.03236555338291269,
+        "initial_fit": 0.03236555338291269,
+        "physical_evolved": 0.016742869214470827
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod112_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.01366529510333471,
+        "current_all": 0.030836887446263225,
+        "initial_fit": 0.030836887446263225,
+        "physical_evolved": 0.01393813516444805
+      },
+      "reported": {
+        "current_evolved": 0.01366529510333471,
+        "current_all": 0.030836887446263225,
+        "initial_fit": 0.030836887446263225,
+        "physical_evolved": 0.01393813516444805
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod128_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.01244092650080929,
+        "current_all": 0.026741079739696083,
+        "initial_fit": 0.026741079739696083,
+        "physical_evolved": 0.012805553218972672
+      },
+      "reported": {
+        "current_evolved": 0.01244092650080929,
+        "current_all": 0.026741079739696083,
+        "initial_fit": 0.026741079739696083,
+        "physical_evolved": 0.012805553218972672
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod16_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.25298644175277285,
+        "current_all": 0.3649636282553826,
+        "initial_fit": 0.3649636282553826,
+        "physical_evolved": 0.2514297594523649
+      },
+      "reported": {
+        "current_evolved": 0.25298644175277285,
+        "current_all": 0.3649636282553826,
+        "initial_fit": 0.3649636282553826,
+        "physical_evolved": 0.2514297594523649
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod24_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11655548299743156,
+        "current_all": 0.19605732564882747,
+        "initial_fit": 0.19605732564882747,
+        "physical_evolved": 0.11699260817002775
+      },
+      "reported": {
+        "current_evolved": 0.11655548299743156,
+        "current_all": 0.19605732564882747,
+        "initial_fit": 0.19605732564882747,
+        "physical_evolved": 0.11699260817002775
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod40_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0758459786067431,
+        "current_all": 0.12533606665048985,
+        "initial_fit": 0.12533606665048985,
+        "physical_evolved": 0.07550845316929156
+      },
+      "reported": {
+        "current_evolved": 0.0758459786067431,
+        "current_all": 0.12533606665048985,
+        "initial_fit": 0.12533606665048985,
+        "physical_evolved": 0.07550845316929156
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod48_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.04862523291223521,
+        "current_all": 0.09894585289063075,
+        "initial_fit": 0.09894585289063075,
+        "physical_evolved": 0.048286188340850474
+      },
+      "reported": {
+        "current_evolved": 0.04862523291223521,
+        "current_all": 0.09894585289063075,
+        "initial_fit": 0.09894585289063075,
+        "physical_evolved": 0.048286188340850474
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod72_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.03274107860220694,
+        "current_all": 0.06132880572549859,
+        "initial_fit": 0.06132880572549859,
+        "physical_evolved": 0.032533415682308615
+      },
+      "reported": {
+        "current_evolved": 0.03274107860220694,
+        "current_all": 0.06132880572549859,
+        "initial_fit": 0.06132880572549859,
+        "physical_evolved": 0.032533415682308615
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod80_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.026899194439857436,
+        "current_all": 0.05433777594438824,
+        "initial_fit": 0.05433777594438824,
+        "physical_evolved": 0.02676797618050124
+      },
+      "reported": {
+        "current_evolved": 0.026899194439857436,
+        "current_all": 0.05433777594438824,
+        "initial_fit": 0.05433777594438824,
+        "physical_evolved": 0.02676797618050124
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod8_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.39325130222911414,
+        "current_all": 0.5065603243735707,
+        "initial_fit": 0.5065603243735707,
+        "physical_evolved": 0.3916596839567877
+      },
+      "reported": {
+        "current_evolved": 0.39325130222911414,
+        "current_all": 0.5065603243735707,
+        "initial_fit": 0.5065603243735707,
+        "physical_evolved": 0.3916596839567877
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "unet3d_w8",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0031849976817723727,
+        "current_all": 0.0031849976817723727,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.005108704134546163
+      },
+      "reported": {
+        "current_evolved": 0.0031849976817723727,
+        "current_all": 0.0031849976817723727,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.005108704134546163
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "dst_exact",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0008314732922847798
+      },
+      "reported": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0008314732922847798
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "fno3d_w16_m6",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.1766413342281142,
+        "current_all": 0.1766413342281142,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.17768755583377233
+      },
+      "reported": {
+        "current_evolved": 0.1766413342281142,
+        "current_all": 0.1766413342281142,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.17768755583377233
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "fno3d_w16_m6_native_grid_interpolated",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.00989116332001353,
+        "current_all": 0.00989116332001353,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.009390764166391922
+      },
+      "reported": {
+        "current_evolved": 0.00989116332001353,
+        "current_all": 0.00989116332001353,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.009390764166391922
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_cn",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013155480858090351,
+        "current_all": 0.030638865766474205,
+        "initial_fit": 0.030638865766474205,
+        "physical_evolved": 0.01307936915050029
+      },
+      "reported": {
+        "current_evolved": 0.013155480858090351,
+        "current_all": 0.030638865766474205,
+        "initial_fit": 0.030638865766474205,
+        "physical_evolved": 0.01307936915050029
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013113189563988461,
+        "current_all": 0.030638865766474205,
+        "initial_fit": 0.030638865766474205,
+        "physical_evolved": 0.013086801196092422
+      },
+      "reported": {
+        "current_evolved": 0.013113189563988461,
+        "current_all": 0.030638865766474205,
+        "initial_fit": 0.030638865766474205,
+        "physical_evolved": 0.013086801196092422
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "linear_bank_galerkin_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.013165638056179573,
+        "current_all": 0.03059108206822153,
+        "initial_fit": 0.03059108206822153,
+        "physical_evolved": 0.013114989744469657
+      },
+      "reported": {
+        "current_evolved": 0.013165638056179573,
+        "current_all": 0.03059108206822153,
+        "initial_fit": 0.03059108206822153,
+        "physical_evolved": 0.013114989744469657
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05842723999774943,
+        "current_all": 0.10582312002745366,
+        "initial_fit": 0.10582312002745366,
+        "physical_evolved": 0.058222585968969794
+      },
+      "reported": {
+        "current_evolved": 0.05842723999774943,
+        "current_all": 0.10582312002745366,
+        "initial_fit": 0.10582312002745366,
+        "physical_evolved": 0.058222585968969794
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0668414652290464,
+        "current_all": 0.1121732123203728,
+        "initial_fit": 0.1121732123203728,
+        "physical_evolved": 0.06650302572737017
+      },
+      "reported": {
+        "current_evolved": 0.0668414652290464,
+        "current_all": 0.1121732123203728,
+        "initial_fit": 0.1121732123203728,
+        "physical_evolved": 0.06650302572737017
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.048852059209514256,
+        "current_all": 0.09233206063458656,
+        "initial_fit": 0.09233206063458656,
+        "physical_evolved": 0.048648644286104166
+      },
+      "reported": {
+        "current_evolved": 0.048852059209514256,
+        "current_all": 0.09233206063458656,
+        "initial_fit": 0.09233206063458656,
+        "physical_evolved": 0.048648644286104166
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.060001893109912684,
+        "current_all": 0.09668502753722803,
+        "initial_fit": 0.09668502753722803,
+        "physical_evolved": 0.05969017086909388
+      },
+      "reported": {
+        "current_evolved": 0.060001893109912684,
+        "current_all": 0.09668502753722803,
+        "initial_fit": 0.09668502753722803,
+        "physical_evolved": 0.05969017086909388
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.03993002837017896,
+        "current_all": 0.07574645518340112,
+        "initial_fit": 0.07574645518340112,
+        "physical_evolved": 0.0397788534267567
+      },
+      "reported": {
+        "current_evolved": 0.03993002837017896,
+        "current_all": 0.07574645518340112,
+        "initial_fit": 0.07574645518340112,
+        "physical_evolved": 0.0397788534267567
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.058450884697091886,
+        "current_all": 0.0948536779789814,
+        "initial_fit": 0.0948536779789814,
+        "physical_evolved": 0.05814534520382504
+      },
+      "reported": {
+        "current_evolved": 0.058450884697091886,
+        "current_all": 0.0948536779789814,
+        "initial_fit": 0.0948536779789814,
+        "physical_evolved": 0.05814534520382504
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q8_dense",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.05253485846829188,
+        "current_all": 0.10292510220219653,
+        "initial_fit": 0.10292510220219653,
+        "physical_evolved": 0.052332332295743265
+      },
+      "reported": {
+        "current_evolved": 0.05253485846829188,
+        "current_all": 0.10292510220219653,
+        "initial_fit": 0.10292510220219653,
+        "physical_evolved": 0.052332332295743265
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q8_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06281587905765035,
+        "current_all": 0.1019181401477769,
+        "initial_fit": 0.1019181401477769,
+        "physical_evolved": 0.06250780513844618
+      },
+      "reported": {
+        "current_evolved": 0.06281587905765035,
+        "current_all": 0.1019181401477769,
+        "initial_fit": 0.1019181401477769,
+        "physical_evolved": 0.06250780513844618
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.029627718171774255,
+        "current_all": 0.054638684192129326,
+        "initial_fit": 0.054638684192129326,
+        "physical_evolved": 0.029521098617226404
+      },
+      "reported": {
+        "current_evolved": 0.029627718171774255,
+        "current_all": 0.054638684192129326,
+        "initial_fit": 0.054638684192129326,
+        "physical_evolved": 0.029521098617226404
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_dense_dt_half",
+      "mesh": 64,
+      "case": 6,
+      "observed": {
+        "current_evolved": 0.028982449339331258,
+        "current_all": 0.054638684192129326,
+        "initial_fit": 0.054638684192129326,
+        "physical_evolved": 0.02889157754139791
+      },
+      "reported": {
+        "current_evolved": 0.028982449339331258,
+        "current_all": 0.054638684192129326,
+        "initial_fit": 0.054638684192129326,
+        "physical_evolved": 0.02889157754139791
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05043401261592258,
+        "current_all": 0.08932377975755859,
+        "initial_fit": 0.08932377975755859,
+        "physical_evolved": 0.050161335431208834
+      },
+      "reported": {
+        "current_evolved": 0.05043401261592258,
+        "current_all": 0.08932377975755859,
+        "initial_fit": 0.08932377975755859,
+        "physical_evolved": 0.050161335431208834
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06147373515936434,
+        "current_all": 0.110875302156152,
+        "initial_fit": 0.110875302156152,
+        "physical_evolved": 0.06129956668951267
+      },
+      "reported": {
+        "current_evolved": 0.06147373515936434,
+        "current_all": 0.110875302156152,
+        "initial_fit": 0.110875302156152,
+        "physical_evolved": 0.06129956668951267
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07065719032325074,
+        "current_all": 0.11508176477235309,
+        "initial_fit": 0.11508176477235309,
+        "physical_evolved": 0.07034623712028805
+      },
+      "reported": {
+        "current_evolved": 0.07065719032325074,
+        "current_all": 0.11508176477235309,
+        "initial_fit": 0.11508176477235309,
+        "physical_evolved": 0.07034623712028805
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.049261021641160904,
+        "current_all": 0.09311706486149628,
+        "initial_fit": 0.09311706486149628,
+        "physical_evolved": 0.0491045865866828
+      },
+      "reported": {
+        "current_evolved": 0.049261021641160904,
+        "current_all": 0.09311706486149628,
+        "initial_fit": 0.09311706486149628,
+        "physical_evolved": 0.0491045865866828
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06377654399085993,
+        "current_all": 0.10713683125674968,
+        "initial_fit": 0.10713683125674968,
+        "physical_evolved": 0.06346782270902288
+      },
+      "reported": {
+        "current_evolved": 0.06377654399085993,
+        "current_all": 0.10713683125674968,
+        "initial_fit": 0.10713683125674968,
+        "physical_evolved": 0.06346782270902288
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.03738099724945784,
+        "current_all": 0.07277026711228558,
+        "initial_fit": 0.07277026711228558,
+        "physical_evolved": 0.03726314114461319
+      },
+      "reported": {
+        "current_evolved": 0.03738099724945784,
+        "current_all": 0.07277026711228558,
+        "initial_fit": 0.07277026711228558,
+        "physical_evolved": 0.03726314114461319
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.057226618502658345,
+        "current_all": 0.09799247101599576,
+        "initial_fit": 0.09799247101599576,
+        "physical_evolved": 0.05697121603287041
+      },
+      "reported": {
+        "current_evolved": 0.057226618502658345,
+        "current_all": 0.09799247101599576,
+        "initial_fit": 0.09799247101599576,
+        "physical_evolved": 0.05697121603287041
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q8_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05991811919112562,
+        "current_all": 0.1088482434243651,
+        "initial_fit": 0.1088482434243651,
+        "physical_evolved": 0.05973443871529764
+      },
+      "reported": {
+        "current_evolved": 0.05991811919112562,
+        "current_all": 0.1088482434243651,
+        "initial_fit": 0.1088482434243651,
+        "physical_evolved": 0.05973443871529764
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q8_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.06986280222144758,
+        "current_all": 0.11373858818894665,
+        "initial_fit": 0.11373858818894665,
+        "physical_evolved": 0.06954497640362194
+      },
+      "reported": {
+        "current_evolved": 0.06986280222144758,
+        "current_all": 0.11373858818894665,
+        "initial_fit": 0.11373858818894665,
+        "physical_evolved": 0.06954497640362194
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.022625025107642784,
+        "current_all": 0.0468309743071,
+        "initial_fit": 0.0468309743071,
+        "physical_evolved": 0.022541059727243695
+      },
+      "reported": {
+        "current_evolved": 0.022625025107642784,
+        "current_all": 0.0468309743071,
+        "initial_fit": 0.0468309743071,
+        "physical_evolved": 0.022541059727243695
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_dense_dt_half",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.02258187382029314,
+        "current_all": 0.0468309743071,
+        "initial_fit": 0.0468309743071,
+        "physical_evolved": 0.022520173460209732
+      },
+      "reported": {
+        "current_evolved": 0.02258187382029314,
+        "current_all": 0.0468309743071,
+        "initial_fit": 0.0468309743071,
+        "physical_evolved": 0.022520173460209732
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.05201972940650489,
+        "current_all": 0.09312611651931814,
+        "initial_fit": 0.09312611651931814,
+        "physical_evolved": 0.05178176455536787
+      },
+      "reported": {
+        "current_evolved": 0.05201972940650489,
+        "current_all": 0.09312611651931814,
+        "initial_fit": 0.09312611651931814,
+        "physical_evolved": 0.05178176455536787
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod104_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.01662333927933644,
+        "current_all": 0.03271049495222333,
+        "initial_fit": 0.03271049495222333,
+        "physical_evolved": 0.01658923205350547
+      },
+      "reported": {
+        "current_evolved": 0.01662333927933644,
+        "current_all": 0.03271049495222333,
+        "initial_fit": 0.03271049495222333,
+        "physical_evolved": 0.01658923205350547
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod112_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.01351191684143591,
+        "current_all": 0.030908248723439606,
+        "initial_fit": 0.030908248723439606,
+        "physical_evolved": 0.013464992272165107
+      },
+      "reported": {
+        "current_evolved": 0.01351191684143591,
+        "current_all": 0.030908248723439606,
+        "initial_fit": 0.030908248723439606,
+        "physical_evolved": 0.013464992272165107
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod128_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0123375787409869,
+        "current_all": 0.026795339045234786,
+        "initial_fit": 0.026795339045234786,
+        "physical_evolved": 0.012298093265527317
+      },
+      "reported": {
+        "current_evolved": 0.0123375787409869,
+        "current_all": 0.026795339045234786,
+        "initial_fit": 0.026795339045234786,
+        "physical_evolved": 0.012298093265527317
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod16_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.25187737511177116,
+        "current_all": 0.3650824030150834,
+        "initial_fit": 0.3650824030150834,
+        "physical_evolved": 0.2514874579362293
+      },
+      "reported": {
+        "current_evolved": 0.25187737511177116,
+        "current_all": 0.3650824030150834,
+        "initial_fit": 0.3650824030150834,
+        "physical_evolved": 0.2514874579362293
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod24_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11735160454395335,
+        "current_all": 0.19623309309365689,
+        "initial_fit": 0.19623309309365689,
+        "physical_evolved": 0.11744247081779217
+      },
+      "reported": {
+        "current_evolved": 0.11735160454395335,
+        "current_all": 0.19623309309365689,
+        "initial_fit": 0.19623309309365689,
+        "physical_evolved": 0.11744247081779217
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod40_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07560367533296626,
+        "current_all": 0.12509930390126028,
+        "initial_fit": 0.12509930390126028,
+        "physical_evolved": 0.07550436630578101
+      },
+      "reported": {
+        "current_evolved": 0.07560367533296626,
+        "current_all": 0.12509930390126028,
+        "initial_fit": 0.12509930390126028,
+        "physical_evolved": 0.07550436630578101
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod48_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.048685407305649804,
+        "current_all": 0.09961564436754386,
+        "initial_fit": 0.09961564436754386,
+        "physical_evolved": 0.048571424303117255
+      },
+      "reported": {
+        "current_evolved": 0.048685407305649804,
+        "current_all": 0.09961564436754386,
+        "initial_fit": 0.09961564436754386,
+        "physical_evolved": 0.048571424303117255
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod72_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.03219919512898669,
+        "current_all": 0.0611297961628369,
+        "initial_fit": 0.0611297961628369,
+        "physical_evolved": 0.032108251984741716
+      },
+      "reported": {
+        "current_evolved": 0.03219919512898669,
+        "current_all": 0.0611297961628369,
+        "initial_fit": 0.0611297961628369,
+        "physical_evolved": 0.032108251984741716
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod80_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.02669744458685386,
+        "current_all": 0.05439520938699039,
+        "initial_fit": 0.05439520938699039,
+        "physical_evolved": 0.026606590387205656
+      },
+      "reported": {
+        "current_evolved": 0.02669744458685386,
+        "current_all": 0.05439520938699039,
+        "initial_fit": 0.05439520938699039,
+        "physical_evolved": 0.026606590387205656
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "pod8_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.3919389624731366,
+        "current_all": 0.5066079807113126,
+        "initial_fit": 0.5066079807113126,
+        "physical_evolved": 0.39154087425058554
+      },
+      "reported": {
+        "current_evolved": 0.3919389624731366,
+        "current_all": 0.5066079807113126,
+        "initial_fit": 0.5066079807113126,
+        "physical_evolved": 0.39154087425058554
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "unet3d_w8",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.9267559387940968,
+        "current_all": 0.9267559387940968,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.9282747545500385
+      },
+      "reported": {
+        "current_evolved": 0.9267559387940968,
+        "current_all": 0.9267559387940968,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.9282747545500385
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "tune02",
+      "method": "unet3d_w8_native_grid_interpolated",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.009468244253206195,
+        "current_all": 0.009468244253206195,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.00899564018362828
+      },
+      "reported": {
+        "current_evolved": 0.009468244253206195,
+        "current_all": 0.009468244253206195,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.00899564018362828
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fno3d_projected",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.015120686726328821,
+        "worst_all": 0.015120686726328821,
+        "initial_error": 0.0,
+        "physical_evolved": 0.015183339081714412
+      },
+      "reported": {
+        "worst_evolved": 0.015120686726328823,
+        "worst_all": 0.015120686726328823,
+        "initial_error": 0.0,
+        "physical_evolved": 0.01518333908171442
+      },
+      "discrepancies": {
+        "worst_evolved": 1.734723475976807e-18,
+        "worst_all": 1.734723475976807e-18,
+        "initial_error": 0.0,
+        "physical_evolved": 8.673617379884035e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fno3d_raw",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.01766402104932563,
+        "worst_all": 0.01766402104932563,
+        "initial_error": 0.0,
+        "physical_evolved": 0.017603505669587044
+      },
+      "reported": {
+        "worst_evolved": 0.017664021049325632,
+        "worst_all": 0.017664021049325632,
+        "initial_error": 0.0,
+        "physical_evolved": 0.01760350566958705
+      },
+      "discrepancies": {
+        "worst_evolved": 3.469446951953614e-18,
+        "worst_all": 3.469446951953614e-18,
+        "initial_error": 0.0,
+        "physical_evolved": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fom_dt0.001",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 5.07065164084208e-05,
+        "worst_all": 5.07065164084208e-05,
+        "initial_error": 2.441923467998106e-16,
+        "physical_evolved": 0.0034233694748036078
+      },
+      "reported": {
+        "worst_evolved": 5.070651640842079e-05,
+        "worst_all": 5.070651640842079e-05,
+        "initial_error": 2.4419234679981056e-16,
+        "physical_evolved": 0.0034233694748036047
+      },
+      "discrepancies": {
+        "worst_evolved": 6.776263578034403e-21,
+        "worst_all": 6.776263578034403e-21,
+        "initial_error": 4.930380657631324e-32,
+        "physical_evolved": 3.0357660829594124e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fom_dt0.002",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.00021306215148584985,
+        "worst_all": 0.00021306215148584985,
+        "initial_error": 2.441923467998106e-16,
+        "physical_evolved": 0.0034359950957478513
+      },
+      "reported": {
+        "worst_evolved": 0.0002130621514858498,
+        "worst_all": 0.0002130621514858498,
+        "initial_error": 2.4419234679981056e-16,
+        "physical_evolved": 0.0034359950957478505
+      },
+      "discrepancies": {
+        "worst_evolved": 5.421010862427522e-20,
+        "worst_all": 5.421010862427522e-20,
+        "initial_error": 4.930380657631324e-32,
+        "physical_evolved": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fom_dt0.004",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.0008659903839402409,
+        "worst_all": 0.0008659903839402409,
+        "initial_error": 2.441923467998106e-16,
+        "physical_evolved": 0.003545672853473103
+      },
+      "reported": {
+        "worst_evolved": 0.0008659903839402407,
+        "worst_all": 0.0008659903839402407,
+        "initial_error": 2.4419234679981056e-16,
+        "physical_evolved": 0.003545672853473102
+      },
+      "discrepancies": {
+        "worst_evolved": 2.168404344971009e-19,
+        "worst_all": 2.168404344971009e-19,
+        "initial_error": 4.930380657631324e-32,
+        "physical_evolved": 1.3010426069826053e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "fom_dt0.008",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.0035977509349122013,
+        "worst_all": 0.0035977509349122013,
+        "initial_error": 2.441923467998106e-16,
+        "physical_evolved": 0.0047114467195531196
+      },
+      "reported": {
+        "worst_evolved": 0.003597750934912201,
+        "worst_all": 0.003597750934912201,
+        "initial_error": 2.4419234679981056e-16,
+        "physical_evolved": 0.004711446719553117
+      },
+      "discrepancies": {
+        "worst_evolved": 4.336808689942018e-19,
+        "worst_all": 4.336808689942018e-19,
+        "initial_error": 4.930380657631324e-32,
+        "physical_evolved": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "free_bank_galerkin",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.24269574534278404,
+        "worst_all": 0.24269574534278404,
+        "initial_error": 0.17582524249355694,
+        "physical_evolved": 0.24268916157268158
+      },
+      "reported": {
+        "worst_evolved": 0.24269574534278407,
+        "worst_all": 0.24269574534278407,
+        "initial_error": 0.17582524249355697,
+        "physical_evolved": 0.24268916157268172
+      },
+      "discrepancies": {
+        "worst_evolved": 2.7755575615628914e-17,
+        "worst_all": 2.7755575615628914e-17,
+        "initial_error": 2.7755575615628914e-17,
+        "physical_evolved": 1.3877787807814457e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "nmrom_q0",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.5047575802747144,
+        "worst_all": 0.5374448488004687,
+        "initial_error": 0.5374448488004687,
+        "physical_evolved": 0.5047575352535492
+      },
+      "reported": {
+        "worst_evolved": 0.5047575802747145,
+        "worst_all": 0.5374448488004688,
+        "initial_error": 0.5374448488004688,
+        "physical_evolved": 0.5047575352535495
+      },
+      "discrepancies": {
+        "worst_evolved": 1.1102230246251565e-16,
+        "worst_all": 1.1102230246251565e-16,
+        "initial_error": 1.1102230246251565e-16,
+        "physical_evolved": 3.3306690738754696e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "nmrom_q128",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.4533479058181309,
+        "worst_all": 0.46727500775476877,
+        "initial_error": 0.46727500775476877,
+        "physical_evolved": 0.453344891115935
+      },
+      "reported": {
+        "worst_evolved": 0.45334790581813095,
+        "worst_all": 0.4672750077547688,
+        "initial_error": 0.4672750077547688,
+        "physical_evolved": 0.4533448911159353
+      },
+      "discrepancies": {
+        "worst_evolved": 5.551115123125783e-17,
+        "worst_all": 5.551115123125783e-17,
+        "initial_error": 5.551115123125783e-17,
+        "physical_evolved": 2.7755575615628914e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "nmrom_q16",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.4995826258408936,
+        "worst_all": 0.531214438485654,
+        "initial_error": 0.531214438485654,
+        "physical_evolved": 0.49958258684038076
+      },
+      "reported": {
+        "worst_evolved": 0.4995826258408937,
+        "worst_all": 0.5312144384856541,
+        "initial_error": 0.5312144384856541,
+        "physical_evolved": 0.49958258684038104
+      },
+      "discrepancies": {
+        "worst_evolved": 1.1102230246251565e-16,
+        "worst_all": 1.1102230246251565e-16,
+        "initial_error": 1.1102230246251565e-16,
+        "physical_evolved": 2.7755575615628914e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "nmrom_q32",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.49238113119266363,
+        "worst_all": 0.523195119118296,
+        "initial_error": 0.523195119118296,
+        "physical_evolved": 0.4923811103940158
+      },
+      "reported": {
+        "worst_evolved": 0.49238113119266375,
+        "worst_all": 0.5231951191182961,
+        "initial_error": 0.5231951191182961,
+        "physical_evolved": 0.49238111039401605
+      },
+      "discrepancies": {
+        "worst_evolved": 1.1102230246251565e-16,
+        "worst_all": 1.1102230246251565e-16,
+        "initial_error": 1.1102230246251565e-16,
+        "physical_evolved": 2.7755575615628914e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "nmrom_q64",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.47629655409397637,
+        "worst_all": 0.5051759625512334,
+        "initial_error": 0.5051759625512334,
+        "physical_evolved": 0.47629654001795385
+      },
+      "reported": {
+        "worst_evolved": 0.4762965540939764,
+        "worst_all": 0.5051759625512335,
+        "initial_error": 0.5051759625512335,
+        "physical_evolved": 0.47629654001795413
+      },
+      "discrepancies": {
+        "worst_evolved": 5.551115123125783e-17,
+        "worst_all": 1.1102230246251565e-16,
+        "initial_error": 1.1102230246251565e-16,
+        "physical_evolved": 2.7755575615628914e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_galerkin_128",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.47333395174087306,
+        "worst_all": 0.4865574308480959,
+        "initial_error": 0.4865574308480959,
+        "physical_evolved": 0.4733339178665422
+      },
+      "reported": {
+        "worst_evolved": 0.47333395174087317,
+        "worst_all": 0.486557430848096,
+        "initial_error": 0.486557430848096,
+        "physical_evolved": 0.4733339178665425
+      },
+      "discrepancies": {
+        "worst_evolved": 1.1102230246251565e-16,
+        "worst_all": 1.1102230246251565e-16,
+        "initial_error": 1.1102230246251565e-16,
+        "physical_evolved": 2.7755575615628914e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_galerkin_256",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.36059448393087956,
+        "worst_all": 0.36059448393087956,
+        "initial_error": 0.3361082190140027,
+        "physical_evolved": 0.3605921618858415
+      },
+      "reported": {
+        "worst_evolved": 0.3605944839308796,
+        "worst_all": 0.3605944839308796,
+        "initial_error": 0.33610821901400273,
+        "physical_evolved": 0.3605921618858417
+      },
+      "discrepancies": {
+        "worst_evolved": 5.551115123125783e-17,
+        "worst_all": 5.551115123125783e-17,
+        "initial_error": 5.551115123125783e-17,
+        "physical_evolved": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_galerkin_512",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.27753731686634375,
+        "worst_all": 0.27753731686634375,
+        "initial_error": 0.21613067917906492,
+        "physical_evolved": 0.2775350228046711
+      },
+      "reported": {
+        "worst_evolved": 0.2775373168663438,
+        "worst_all": 0.2775373168663438,
+        "initial_error": 0.21613067917906498,
+        "physical_evolved": 0.2775350228046713
+      },
+      "discrepancies": {
+        "worst_evolved": 5.551115123125783e-17,
+        "worst_all": 5.551115123125783e-17,
+        "initial_error": 5.551115123125783e-17,
+        "physical_evolved": 1.6653345369377348e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_weak_16",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.9198573741280832,
+        "worst_all": 0.945447181985527,
+        "initial_error": 0.945447181985527,
+        "physical_evolved": 0.9198569216721416
+      },
+      "reported": {
+        "worst_evolved": 0.919857374128083,
+        "worst_all": 0.9454471819855268,
+        "initial_error": 0.9454471819855268,
+        "physical_evolved": 0.9198569216721414
+      },
+      "discrepancies": {
+        "worst_evolved": 2.220446049250313e-16,
+        "worst_all": 2.220446049250313e-16,
+        "initial_error": 2.220446049250313e-16,
+        "physical_evolved": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_weak_32",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.8552632473445347,
+        "worst_all": 0.8846774137704141,
+        "initial_error": 0.8846774137704141,
+        "physical_evolved": 0.8552627532839343
+      },
+      "reported": {
+        "worst_evolved": 0.8552632473445346,
+        "worst_all": 0.8846774137704139,
+        "initial_error": 0.8846774137704139,
+        "physical_evolved": 0.8552627532839341
+      },
+      "discrepancies": {
+        "worst_evolved": 1.1102230246251565e-16,
+        "worst_all": 2.220446049250313e-16,
+        "initial_error": 2.220446049250313e-16,
+        "physical_evolved": 2.220446049250313e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "pod_weak_48",
+      "mesh": 32,
+      "case": 4,
+      "observed": {
+        "worst_evolved": 0.7610697397336484,
+        "worst_all": 0.8245149809172494,
+        "initial_error": 0.8245149809172494,
+        "physical_evolved": 0.7610687289194881
+      },
+      "reported": {
+        "worst_evolved": 0.7610697397336482,
+        "worst_all": 0.8245149809172492,
+        "initial_error": 0.8245149809172492,
+        "physical_evolved": 0.761068728919488
+      },
+      "discrepancies": {
+        "worst_evolved": 2.220446049250313e-16,
+        "worst_all": 2.220446049250313e-16,
+        "initial_error": 2.220446049250313e-16,
+        "physical_evolved": 1.1102230246251565e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "unet3d_projected",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.04282977504778356,
+        "worst_all": 0.04282977504778356,
+        "initial_error": 0.0,
+        "physical_evolved": 0.04280919840474474
+      },
+      "reported": {
+        "worst_evolved": 0.042829775047783576,
+        "worst_all": 0.042829775047783576,
+        "initial_error": 0.0,
+        "physical_evolved": 0.042809198404744765
+      },
+      "discrepancies": {
+        "worst_evolved": 1.3877787807814457e-17,
+        "worst_all": 1.3877787807814457e-17,
+        "initial_error": 0.0,
+        "physical_evolved": 2.7755575615628914e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "comparison02",
+      "method": "unet3d_raw",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.04646759032073116,
+        "worst_all": 0.04646759032073116,
+        "initial_error": 0.0,
+        "physical_evolved": 0.04646328850474241
+      },
+      "reported": {
+        "worst_evolved": 0.046467590320731174,
+        "worst_all": 0.046467590320731174,
+        "initial_error": 0.0,
+        "physical_evolved": 0.04646328850474244
+      },
+      "discrepancies": {
+        "worst_evolved": 1.3877787807814457e-17,
+        "worst_all": 1.3877787807814457e-17,
+        "initial_error": 0.0,
+        "physical_evolved": 2.7755575615628914e-17
       },
       "passed": true
     }

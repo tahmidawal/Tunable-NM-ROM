@@ -1,0 +1,33 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & Median (\%) & Worst (\%) & GPU ms & p95 ms & NF/NS & Outliers \\
+\midrule
+NM-ROM K16, q0 & 28.5319 & 50.4758 & 901.362 & 903.780 & 0/0 & 0/24 \\
+NM-ROM K16, q16 & 28.2539 & 49.9583 & 969.484 & 973.404 & 0/0 & 0/24 \\
+NM-ROM K16, q32 & 27.8899 & 49.2381 & 1092.342 & 1096.646 & 0/0 & 0/24 \\
+NM-ROM K16, q64 & 27.0931 & 47.6297 & 1588.925 & 1594.383 & 0/0 & 0/24 \\
+NM-ROM K16, q128 & 25.2664 & 45.3348 & 2226.148 & 2240.061 & 0/0 & 0/24 \\
+Full bank, Galerkin R512 & 13.4503 & 24.2696 & 49.405 & 49.601 & 0/0 & 0/24 \\
+POD16, weak solve & 87.7996 & 91.9857 & 24.465 & 25.741 & 0/0 & 0/24 \\
+POD32, weak solve & 78.1203 & 85.5263 & 27.381 & 28.384 & 0/0 & 0/24 \\
+POD48, weak solve & 67.3545 & 76.1070 & 35.558 & 36.246 & 0/0 & 0/24 \\
+POD128, Galerkin & 34.5481 & 47.3334 & 5.889 & 6.076 & 0/0 & 0/24 \\
+POD256, Galerkin & 24.8410 & 36.0594 & 12.233 & 12.500 & 0/0 & 0/24 \\
+POD512, Galerkin & 15.2837 & 27.7537 & 49.327 & 49.543 & 0/0 & 0/24 \\
+FOM, dt 0.001 & 0.0031 & 0.0051 & 25.763 & 26.674 & 0/0 & 0/24 \\
+FOM, dt 0.002 & 0.0130 & 0.0213 & 13.268 & 13.717 & 0/0 & 0/24 \\
+FOM, dt 0.004 & 0.0524 & 0.0866 & 7.056 & 7.507 & 0/0 & 0/24 \\
+FOM, dt 0.008 & 0.2125 & 0.3598 & 3.936 & 4.361 & 0/0 & 0/24 \\
+FNO, raw & 1.3422 & 1.7664 & 9.554 & 10.080 & 0/0 & 0/24 \\
+FNO, projected & 1.0974 & 1.5121 & 9.596 & 10.390 & 0/0 & 0/24 \\
+U-Net, raw & 3.4540 & 4.6468 & 2.019 & 2.373 & 0/0 & 0/24 \\
+U-Net, projected & 3.0414 & 4.2830 & 2.128 & 2.751 & 0/0 & 1/24 \\
+\bottomrule
+\end{tabular}
+\caption{Navier–Stokes 3D, 32 periodic points per axis; provisional development comparison. Each method is evaluated on 8 distinct cases; all timed repetitions are retained. Errors are same-grid relative errors. NF/NS counts nonfinite/nonstationary cases; outliers are calls above 1.5 times the method median. Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.}
+\label{tab:ns3d-comparison02-n32}
+\end{table}

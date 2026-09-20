@@ -245,6 +245,161 @@ Errors use the reference solution norm. There is one stationary output field; ev
 
 A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
 
+## Burgers 3D — b3d003
+
+**Provisional:** Audited matched-training development comparison. All learned models, POD and directions use the same trajectories and eight saved training times. Operator predictions pass through the exact initial field and interpolate the predicted time knots to the requested dense trajectory; their interpolation control is retained. The fixed-head correction ladder improves accuracy but the learned head still has a substantial held-out representation gap. The physical refinement check covers only two development cases and does not establish a full-cohort physical accuracy claim. Independent retraining and final evaluation remain pending.
+
+Source `dc91edb2c81712fde9d1b05fec7028c47bd213b4`; job `3992083`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/out/audit-local.json).
+
+Errors use the initial-field norm. The evolved error excludes the initial compression; all-times and initial errors are also shown. GPU timing begins with the dense input already on device and ends with every requested dense output on device. Host transfers are unmeasured in this attempt. Mesh size counts nodes per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 33 | `fno3d` | 8 | 1.6413 | 1.9979 | 1.9979 | 0.0000 | — | 5.959 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-02_lt5e-01` | 8 | 1.2739 | 1.6185 | 1.6185 | 0.0000 | — | 16.141 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-02_lt5e-03` | 8 | 0.0382 | 0.6543 | 0.6543 | 0.0000 | — | 18.239 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-03_lt5e-01` | 8 | 0.4692 | 0.5248 | 0.5248 | 0.0000 | — | 19.954 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt1e-06` | 8 | 0.0188 | 0.0207 | 0.0207 | 0.0000 | — | 37.326 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt5e-01` | 8 | 0.0267 | 0.0303 | 0.0303 | 0.0000 | — | 32.302 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-06_lt1e-01` | 8 | 0.0002 | 0.0003 | 0.0003 | 0.0000 | — | 48.915 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `free_R256` | 8 | 0.8437 | 2.4345 | 2.8901 | 2.8901 | — | 316.894 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_160` | 8 | 0.7675 | 2.5057 | 3.0153 | 3.0153 | — | 224.232 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_224` | 8 | 0.3988 | 1.2100 | 1.5306 | 1.5306 | — | 284.363 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_256` | 8 | 0.3292 | 1.0363 | 1.2631 | 1.2631 | — | 315.911 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_32` | 8 | 9.5224 | 22.6947 | 24.9424 | 24.9424 | — | 95.765 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_96` | 8 | 1.9855 | 5.5785 | 6.6983 | 6.6983 | — | 150.552 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q0` | 8 | 5.7071 | 10.8780 | 11.7177 | 11.7177 | — | 185.964 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q128` | 8 | 3.3258 | 6.6491 | 7.1187 | 7.1187 | — | 352.971 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q192` | 8 | 1.3600 | 3.4908 | 3.9087 | 3.9087 | — | 417.752 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q64` | 8 | 4.9359 | 8.9108 | 9.4908 | 9.4908 | — | 267.228 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `unet3d` | 8 | 1.6239 | 1.9129 | 1.9129 | 0.0000 | — | 2.242 | — | 0 / 0 | 0 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
+## Heat 3D — tune02
+
+**Provisional:** Audited matched-training development comparison. The spatial bank improved but the nonlinear head has a substantial held-out representation gap; a few initial fits exhaust the declared iteration budget, while evolved solves are stationary. Free-bank/POD controls and neural operators remain stronger than the nonlinear head. Native-grid prediction plus interpolation is distinct from failed direct operator resolution transfer. All sampled quadrature certificates fail. A larger-head candidate, independent training seed and final evaluation remain pending.
+
+Source `4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2`; job `3990698`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/tune02/audit-local.json).
+
+Errors use each reference field's current norm. Evolved errors exclude the initial state. Total timing includes host transfers; GPU timing includes initialization, evolution and dense output. Mesh size counts intervals per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `dst_exact` | 16 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.5119 | 1.319 | 2.694 | 0 / 0 | 0 / 48 | development |
+| 32 | `fno3d_w16_m6` | 16 | 0.2449 | 0.3947 | 0.3947 | 0.0000 | 0.6332 | 7.242 | 8.236 | 0 / 0 | 0 / 48 | development |
+| 32 | `linear_bank_cn` | 16 | 0.2591 | 1.3315 | 3.0636 | 3.0636 | 1.3507 | 0.504 | 2.786 | 0 / 0 | 5 / 48 | development |
+| 32 | `linear_bank_exact` | 16 | 0.2549 | 1.3277 | 3.0636 | 3.0636 | 1.3655 | 0.568 | 2.743 | 0 / 0 | 7 / 48 | development |
+| 32 | `linear_bank_galerkin_exact` | 16 | 0.2568 | 1.3324 | 3.0588 | 3.0588 | 1.3607 | 0.157 | 2.354 | 0 / 0 | 5 / 48 | development |
+| 32 | `nmrom_K16_q0_dense` | 16 | 1.0782 | 5.8855 | 11.0119 | 11.0119 | 5.8118 | 17.226 | 18.218 | 0 / 2 | 6 / 48 | stopping failures |
+| 32 | `nmrom_K16_q0_eq` | 16 | 1.7106 | 7.3453 | 12.2349 | 12.2349 | 7.1286 | 17.620 | 18.797 | 0 / 1 | 5 / 48 | failed EQ certificate; stopping failures |
+| 32 | `nmrom_K16_q32_dense` | 16 | 0.8696 | 4.9328 | 9.2331 | 9.2331 | 4.8607 | 18.406 | 19.573 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q32_eq` | 16 | 1.7638 | 6.5738 | 11.9167 | 11.9167 | 6.3634 | 18.497 | 19.550 | 0 / 1 | 3 / 48 | failed EQ certificate; stopping failures |
+| 32 | `nmrom_K16_q64_dense` | 16 | 0.5815 | 4.0310 | 7.5745 | 7.5745 | 3.9835 | 19.531 | 20.541 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q64_eq` | 16 | 1.8174 | 6.1609 | 11.9241 | 11.9241 | 5.9453 | 20.952 | 22.045 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K16_q8_dense` | 16 | 1.0381 | 5.3133 | 10.2925 | 10.2925 | 5.2396 | 18.065 | 19.188 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q8_eq` | 16 | 1.7395 | 6.7804 | 11.4408 | 11.4408 | 6.5705 | 18.703 | 19.720 | 0 / 1 | 3 / 48 | failed EQ certificate; stopping failures |
+| 32 | `nmrom_K16_q96_dense` | 16 | 0.3673 | 2.9899 | 5.4636 | 5.4636 | 2.9665 | 23.817 | 24.901 | 0 / 1 | 3 / 48 | stopping failures |
+| 32 | `nmrom_K16_q96_dense_dt_half` | 16 | 0.3648 | 2.9260 | 5.4636 | 5.4636 | 2.9091 | 36.514 | 37.688 | 0 / 1 | 0 / 48 | stopping failures |
+| 32 | `nmrom_K16_q96_eq` | 16 | 1.8085 | 5.4484 | 11.8278 | 11.8278 | 5.2358 | 23.846 | 25.012 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K8_q0_dense` | 16 | 1.3934 | 6.1977 | 11.0875 | 11.0875 | 6.1354 | 12.967 | 13.982 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q0_eq` | 16 | 1.9458 | 7.3560 | 12.6302 | 12.6302 | 7.1537 | 12.794 | 13.996 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K8_q32_dense` | 16 | 0.9327 | 4.9721 | 9.3116 | 9.3116 | 4.9193 | 14.352 | 15.462 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q32_eq` | 16 | 1.8236 | 6.4978 | 11.8833 | 11.8833 | 6.2981 | 13.828 | 15.019 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K8_q64_dense` | 16 | 0.6970 | 3.7752 | 7.2769 | 7.2769 | 3.7427 | 14.452 | 15.485 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q64_eq` | 16 | 1.8554 | 5.9447 | 11.7466 | 11.7466 | 5.7428 | 14.174 | 15.220 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K8_q8_dense` | 16 | 1.1850 | 6.0419 | 10.8848 | 10.8848 | 5.9761 | 13.513 | 14.579 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q8_eq` | 16 | 1.8845 | 7.2247 | 12.4862 | 12.4862 | 7.0177 | 13.526 | 14.621 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 32 | `nmrom_K8_q96_dense` | 16 | 0.4060 | 2.2781 | 4.6850 | 4.6850 | 2.2724 | 15.397 | 16.471 | 0 / 1 | 3 / 48 | stopping failures |
+| 32 | `nmrom_K8_q96_dense_dt_half` | 16 | 0.4053 | 2.2742 | 4.6850 | 4.6850 | 2.2770 | 24.010 | 25.150 | 0 / 1 | 0 / 48 | stopping failures |
+| 32 | `nmrom_K8_q96_eq` | 16 | 1.7987 | 5.4736 | 11.4307 | 11.4307 | 5.2615 | 16.707 | 17.734 | 0 / 0 | 3 / 48 | failed EQ certificate |
+| 32 | `pod104_exact` | 16 | 0.2697 | 1.6482 | 3.3966 | 3.3966 | 1.6743 | 0.153 | 2.255 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod112_exact` | 16 | 0.2097 | 1.3665 | 3.0837 | 3.0837 | 1.3938 | 0.152 | 2.221 | 0 / 0 | 7 / 48 | development |
+| 32 | `pod128_exact` | 16 | 0.1431 | 1.2441 | 2.6741 | 2.6741 | 1.2806 | 0.154 | 2.250 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod16_exact` | 16 | 8.6384 | 25.2986 | 36.4964 | 36.4964 | 25.1430 | 0.130 | 2.277 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod24_exact` | 16 | 5.5732 | 11.6555 | 19.6057 | 19.6057 | 11.6993 | 0.131 | 2.214 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod40_exact` | 16 | 2.2006 | 7.5846 | 13.3221 | 13.3221 | 7.5508 | 0.134 | 2.300 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod48_exact` | 16 | 1.3691 | 4.8625 | 9.8946 | 9.8946 | 4.8286 | 0.131 | 2.183 | 0 / 0 | 4 / 48 | development |
+| 32 | `pod72_exact` | 16 | 0.6934 | 3.2741 | 6.1329 | 6.1329 | 3.2533 | 0.138 | 2.362 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod80_exact` | 16 | 0.4948 | 2.6899 | 5.4338 | 5.4338 | 2.6768 | 0.145 | 2.296 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod8_exact` | 16 | 19.9122 | 39.3251 | 50.6560 | 50.6560 | 39.1660 | 0.131 | 2.215 | 0 / 0 | 7 / 48 | development |
+| 32 | `unet3d_w8` | 16 | 0.1697 | 0.3185 | 0.3185 | 0.0000 | 0.5321 | 3.563 | 4.590 | 0 / 0 | 0 / 48 | development |
+| 64 | `dst_exact` | 16 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.1273 | 1.329 | 4.708 | 0 / 0 | 1 / 48 | development |
+| 64 | `fno3d_w16_m6` | 16 | 15.1234 | 17.6641 | 17.6641 | 0.0000 | 17.7688 | 10.981 | 14.020 | 0 / 0 | 0 / 48 | development |
+| 64 | `fno3d_w16_m6_native_grid_interpolated` | 16 | 0.7669 | 0.9891 | 0.9891 | 0.0000 | 0.9391 | 7.140 | 10.252 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_cn` | 16 | 0.2562 | 1.3155 | 3.0639 | 3.0639 | 1.3079 | 1.301 | 5.144 | 0 / 0 | 1 / 48 | development |
+| 64 | `linear_bank_exact` | 16 | 0.2542 | 1.3113 | 3.0639 | 3.0639 | 1.3087 | 1.421 | 5.382 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_galerkin_exact` | 16 | 0.2563 | 1.3166 | 3.0591 | 3.0591 | 1.3115 | 0.514 | 4.369 | 0 / 0 | 3 / 48 | development |
+| 64 | `nmrom_K16_q0_dense` | 16 | 1.0804 | 5.8427 | 11.0119 | 11.0119 | 5.8223 | 18.392 | 21.669 | 0 / 2 | 6 / 48 | stopping failures |
+| 64 | `nmrom_K16_q0_eq` | 16 | 3.3932 | 6.6841 | 11.2389 | 11.2389 | 6.6503 | 18.262 | 21.567 | 0 / 0 | 3 / 48 | failed EQ certificate |
+| 64 | `nmrom_K16_q32_dense` | 16 | 0.8752 | 4.8852 | 9.2332 | 9.2332 | 4.8649 | 19.608 | 22.856 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q32_eq` | 16 | 3.3169 | 6.0002 | 9.9017 | 9.9017 | 5.9690 | 18.941 | 22.156 | 0 / 1 | 3 / 48 | failed EQ certificate; stopping failures |
+| 64 | `nmrom_K16_q64_dense` | 16 | 0.5892 | 3.9930 | 7.5746 | 7.5746 | 3.9779 | 20.528 | 23.742 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q64_eq` | 16 | 3.1830 | 5.8451 | 9.4854 | 9.4854 | 5.8145 | 22.122 | 25.414 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 64 | `nmrom_K16_q8_dense` | 16 | 1.0426 | 5.2535 | 10.2925 | 10.2925 | 5.2332 | 18.294 | 21.583 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q8_eq` | 16 | 3.3969 | 6.2816 | 10.6440 | 10.6440 | 6.2508 | 18.284 | 21.818 | 0 / 2 | 9 / 48 | failed EQ certificate; stopping failures |
+| 64 | `nmrom_K16_q96_dense` | 16 | 0.3697 | 2.9628 | 5.4639 | 5.4639 | 2.9521 | 24.581 | 27.871 | 0 / 1 | 3 / 48 | stopping failures |
+| 64 | `nmrom_K16_q96_dense_dt_half` | 16 | 0.3670 | 2.8982 | 5.4639 | 5.4639 | 2.8892 | 37.969 | 41.157 | 0 / 1 | 0 / 48 | stopping failures |
+| 64 | `nmrom_K16_q96_eq` | 16 | 3.2429 | 5.0434 | 9.8065 | 9.8065 | 5.0161 | 24.898 | 28.202 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 64 | `nmrom_K8_q0_dense` | 16 | 1.3770 | 6.1474 | 11.0875 | 11.0875 | 6.1300 | 13.892 | 17.096 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q0_eq` | 16 | 3.2476 | 7.0657 | 11.5082 | 11.5082 | 7.0346 | 13.238 | 16.510 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 64 | `nmrom_K8_q32_dense` | 16 | 0.9234 | 4.9261 | 9.3117 | 9.3117 | 4.9105 | 15.160 | 18.539 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q32_eq` | 16 | 3.1334 | 6.3777 | 10.7137 | 10.7137 | 6.3468 | 14.529 | 17.865 | 0 / 1 | 3 / 48 | failed EQ certificate; stopping failures |
+| 64 | `nmrom_K8_q64_dense` | 16 | 0.6920 | 3.7381 | 7.2770 | 7.2770 | 3.7263 | 15.455 | 18.727 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q64_eq` | 16 | 3.1646 | 5.7227 | 9.7992 | 9.7992 | 5.6971 | 15.372 | 18.742 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 64 | `nmrom_K8_q8_dense` | 16 | 1.1719 | 5.9918 | 10.8848 | 10.8848 | 5.9734 | 14.317 | 17.628 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q8_eq` | 16 | 3.2001 | 6.9863 | 11.3739 | 11.3739 | 6.9545 | 13.700 | 17.058 | 0 / 0 | 0 / 48 | failed EQ certificate |
+| 64 | `nmrom_K8_q96_dense` | 16 | 0.4037 | 2.2625 | 4.6852 | 4.6852 | 2.2541 | 16.567 | 19.843 | 0 / 1 | 3 / 48 | stopping failures |
+| 64 | `nmrom_K8_q96_dense_dt_half` | 16 | 0.4030 | 2.2582 | 4.6852 | 4.6852 | 2.2520 | 25.735 | 28.927 | 0 / 1 | 0 / 48 | stopping failures |
+| 64 | `nmrom_K8_q96_eq` | 16 | 3.2287 | 5.2020 | 9.9205 | 9.9205 | 5.1782 | 17.956 | 21.348 | 0 / 0 | 3 / 48 | failed EQ certificate |
+| 64 | `pod104_exact` | 16 | 0.2691 | 1.6623 | 3.3620 | 3.3620 | 1.6589 | 0.456 | 4.367 | 0 / 0 | 6 / 48 | development |
+| 64 | `pod112_exact` | 16 | 0.2090 | 1.3512 | 3.0908 | 3.0908 | 1.3465 | 0.479 | 4.256 | 0 / 0 | 5 / 48 | development |
+| 64 | `pod128_exact` | 16 | 0.1414 | 1.2338 | 2.6795 | 2.6795 | 1.2298 | 0.507 | 4.427 | 0 / 0 | 3 / 48 | development |
+| 64 | `pod16_exact` | 16 | 8.6633 | 25.1877 | 36.5082 | 36.5082 | 25.1487 | 0.248 | 4.064 | 0 / 0 | 12 / 48 | development |
+| 64 | `pod24_exact` | 16 | 5.5947 | 11.7352 | 19.6233 | 19.6233 | 11.7442 | 0.263 | 4.073 | 0 / 0 | 7 / 48 | development |
+| 64 | `pod40_exact` | 16 | 2.1906 | 7.5604 | 13.4307 | 13.4307 | 7.5504 | 0.312 | 4.105 | 0 / 0 | 8 / 48 | development |
+| 64 | `pod48_exact` | 16 | 1.3733 | 4.8685 | 9.9616 | 9.9616 | 4.8571 | 0.331 | 4.139 | 0 / 0 | 6 / 48 | development |
+| 64 | `pod72_exact` | 16 | 0.6842 | 3.2199 | 6.1130 | 6.1130 | 3.2108 | 0.386 | 4.223 | 0 / 0 | 8 / 48 | development |
+| 64 | `pod80_exact` | 16 | 0.4886 | 2.6697 | 5.4395 | 5.4395 | 2.6607 | 0.396 | 4.293 | 0 / 0 | 7 / 48 | development |
+| 64 | `pod8_exact` | 16 | 20.0080 | 39.1939 | 50.6608 | 50.6608 | 39.1541 | 0.238 | 4.118 | 0 / 0 | 12 / 48 | development |
+| 64 | `unet3d_w8` | 16 | 75.7115 | 92.6756 | 92.6756 | 0.0000 | 92.8275 | 7.047 | 10.016 | 0 / 0 | 0 / 48 | development |
+| 64 | `unet3d_w8_native_grid_interpolated` | 16 | 0.7512 | 0.9468 | 0.9468 | 0.0000 | 0.8996 | 3.319 | 6.382 | 0 / 0 | 0 / 48 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
+## Navier–Stokes 3D — comparison02
+
+**Provisional:** Audited development comparison with the fixed three-dimensional interacting velocity family and identical training membership. The learned bank and nonlinear head miss the physical accuracy target; these negative results motivate the larger-bank/head experiment. Timed results cover the declared first eight development cases, not the full sixteen used in training validation. Galerkin bank/POD controls solve a different reduced projection from the weak least-squares correction ladder. Initial fitting and dense input/output are charged. No latent state history was saved in this attempt, so evolution stopping records are checked for consistency only. A CUDA delay-kernel warning during operator training preceded timing burn-ins and is retained. Final data remain unopened.
+
+Source `23932ac4eca33075fc43b4e10e9d3ca24ee2a388`; job `3993021`; GPU `NVIDIA A100-PCIE-40GB, 40960 MiB`. [Invocation data](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json) and [independent audit](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/audit.json).
+
+Errors use the initial velocity-field norm, with all three components combined. The evolved metric excludes time zero. Physical error uses Fourier interpolation to the independently refined grid. Total timing includes host transfers; device timing includes initialization, evolution and every requested dense velocity field. Mesh size counts periodic points per axis. The timed cohort is a declared subset of the larger validation cohort; training-validation summaries are not substituted for its measured query errors. Stopping records in this attempt lack saved latent histories and therefore support an internal-consistency check only.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `fno3d_projected` | 8 | 1.0974 | 1.5121 | 1.5121 | 0.0000 | 1.5183 | 9.596 | 10.738 | 0 / 0 | 0 / 24 | development |
+| 32 | `fno3d_raw` | 8 | 1.3422 | 1.7664 | 1.7664 | 0.0000 | 1.7604 | 9.554 | 10.678 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.001` | 8 | 0.0031 | 0.0051 | 0.0051 | 0.0000 | 0.3651 | 25.763 | 26.964 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.002` | 8 | 0.0130 | 0.0213 | 0.0213 | 0.0000 | 0.3663 | 13.268 | 14.397 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.004` | 8 | 0.0524 | 0.0866 | 0.0866 | 0.0000 | 0.3745 | 7.056 | 8.144 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.008` | 8 | 0.2125 | 0.3598 | 0.3598 | 0.0000 | 0.4711 | 3.936 | 5.020 | 0 / 0 | 0 / 24 | development |
+| 32 | `free_bank_galerkin` | 8 | 13.4503 | 24.2696 | 24.2696 | 17.7985 | 24.2689 | 49.405 | 50.631 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q0` | 8 | 28.5319 | 50.4758 | 53.7445 | 53.7445 | 50.4758 | 901.362 | 903.963 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q128` | 8 | 25.2664 | 45.3348 | 46.7275 | 46.7275 | 45.3345 | 2226.148 | 2228.664 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q16` | 8 | 28.2539 | 49.9583 | 53.1214 | 53.1214 | 49.9583 | 969.484 | 972.076 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q32` | 8 | 27.8899 | 49.2381 | 52.3195 | 52.3195 | 49.2381 | 1092.342 | 1094.953 | 0 / 0 | 0 / 24 | development |
+| 32 | `nmrom_q64` | 8 | 27.0931 | 47.6297 | 50.5176 | 50.5176 | 47.6297 | 1588.925 | 1591.515 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_128` | 8 | 34.5481 | 47.3334 | 50.1174 | 50.1174 | 47.3334 | 5.889 | 6.986 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_256` | 8 | 24.8410 | 36.0594 | 36.0594 | 34.7360 | 36.0592 | 12.233 | 13.401 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_galerkin_512` | 8 | 15.2837 | 27.7537 | 27.7537 | 21.6223 | 27.7535 | 49.327 | 50.571 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_16` | 8 | 87.7996 | 91.9857 | 94.8670 | 94.8670 | 91.9857 | 24.465 | 26.554 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_32` | 8 | 78.1203 | 85.5263 | 89.3108 | 89.3108 | 85.5263 | 27.381 | 29.381 | 0 / 0 | 0 / 24 | development |
+| 32 | `pod_weak_48` | 8 | 67.3545 | 76.1070 | 82.4515 | 82.4515 | 76.1069 | 35.558 | 37.642 | 0 / 0 | 0 / 24 | development |
+| 32 | `unet3d_projected` | 8 | 3.0414 | 4.2830 | 4.2830 | 0.0000 | 4.2809 | 2.128 | 3.236 | 0 / 0 | 1 / 24 | development |
+| 32 | `unet3d_raw` | 8 | 3.4540 | 4.6468 | 4.6468 | 0.0000 | 4.6463 | 2.019 | 3.063 | 0 / 0 | 0 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
 ## Glossary
 
 - **NM-ROM / ROM:** a neural-manifold reduced model / a model solving for a smaller state.

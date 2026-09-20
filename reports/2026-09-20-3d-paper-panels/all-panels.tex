@@ -1,0 +1,28 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{booktabs,graphicx,float}
+\usepackage[T1]{fontenc}
+\begin{document}
+\noindent\textbf{3D comparison panels --- provisional development results}
+\par All values are generated from retained, audited invocation records. Final evaluation remains pending.
+\input{burgers3d-b3d003-n33.tex}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{burgers3d-b3d003-n33.pdf}
+\end{figure}
+\clearpage
+\input{heat3d-tune02-n64.tex}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{heat3d-tune02-n64.pdf}
+\end{figure}
+\clearpage
+\input{poisson3d-tuned02-n64.tex}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{poisson3d-tuned02-n64.pdf}
+\end{figure}
+\clearpage
+\input{ns3d-comparison02-n32.tex}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{ns3d-comparison02-n32.pdf}
+\end{figure}
+\clearpage
+\end{document}

@@ -49,7 +49,7 @@ def capacity(Utr,Udev,cfg,out):
     report['training_bank_initial_normalized']=summary(np.sqrt(ptr)/tn)
     report['development_bank_initial_normalized']=summary(np.sqrt(pdev)/vn)
     report['projection_nonexpansion']=raw_projection_check(params,cdev,dev,n);assert report['projection_nonexpansion']['passed']
-    D.checkpoint(out/'frozen_bank.pkl',params,z,cfg,dict(bank=info,rank=rank),extra=dict(bank=G,qr_Q=Q,qr_R=Rb,train_coefficients=ctr))
+    D.checkpoint(out/'frozen_bank.pkl',params,z,{**cfg,'k':64,'r':rank},dict(bank=info,rank=rank,head_status='untrained placeholder; use separately saved selected head'),extra=dict(bank=G,qr_Q=Q,qr_R=Rb,train_coefficients=ctr))
     np.savez_compressed(out/'bank_fields.npz',development_truth=dev,development_prediction=(cdev@G.T).reshape(dev.shape),
         train_floor=np.sqrt(ptr)/tn,development_floor=np.sqrt(pdev)/vn)
     report['heads']={};save()
@@ -60,7 +60,23 @@ def capacity(Utr,Udev,cfg,out):
         center=Rb@np.asarray(candidate['h'][-1][1]);Ydev=cdev@Rb.T
         linear_residual=(Ydev-center)-((Ydev-center)@span)@span.T
         initial_dev=np.sqrt(pdev+np.sum(linear_residual**2,axis=1))/vn
-        hcfg={**cfg,'free_codes':spec['free_codes']}
+        initial_label=f'pca{k}_initial'
+        if initial_label not in report['heads']:
+            initial_fit=D.representation(candidate,G,Rb,cdev,pdev,dev,codes,starts=8,budget=300)
+            initial_prediction=np.asarray(D.head(candidate,jnp.asarray(initial_fit['z'])))@G.T
+            initial_errors=np.linalg.norm(initial_prediction-Xdev,axis=1)/vn
+            initial_coefficient_residual=(np.asarray(D.head(candidate,jnp.asarray(codes)))-ctr)@Rb.T
+            initial_train=np.sqrt(ptr+np.sum(initial_coefficient_residual**2,axis=1))/tn
+            initial_spec=dict(label=initial_label,k=k,free_codes=False,initialization_only=True)
+            initial_record=dict(initialization=initialization,training=dict(steps=0,stage='affine initialization candidate',converged_claim=False),
+                head_initial_normalized=summary(initial_errors),training_stored_code_initial_normalized=summary(initial_train),
+                affine_PCA_development_initial_normalized=summary(initial_dev),error_by_case_time=initial_errors.reshape(len(Udev),6),
+                stationary_count=int(np.sum(initial_fit['stationary'])),fits=initial_fit,configuration=initial_spec,final_cohort_opened=False)
+            report['heads'][initial_label]=initial_record
+            D.checkpoint(out/(initial_label+'.pkl'),candidate,codes,{**cfg,'k':k,'r':rank,'head_variant':initial_label,'free_codes':False},initial_record)
+            np.savez_compressed(out/(initial_label+'_fields.npz'),prediction=initial_prediction.reshape(dev.shape),training_stored_code_error=initial_train,affine_PCA_development_error=initial_dev)
+            save()
+        hcfg={**cfg,'k':k,'r':rank,'head_variant':label,'free_codes':spec['free_codes']}
         candidate,codes,training=HP.train(candidate,codes,ctr,Rb,hcfg,out/(label+'.pkl'),variance,cfg['model_seed']+k)
         code_residual=(np.asarray(D.head(candidate,jnp.asarray(codes)))-ctr)@Rb.T
         train_errors=np.sqrt(ptr+np.sum(code_residual**2,axis=1))/tn

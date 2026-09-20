@@ -1,0 +1,17 @@
+all_raw_output_hashes {"passed": true, "count": 22, "failures": []}
+backend_complete {"passed": true, "stderr_preserved_bytes": 0}
+frozen_artifact_lineage {"passed": true, "count": 9, "inherited_job": "3993021"}
+train_data_regenerated_membership {"passed": true, "states_sha256": "f760030b359381e4347e82c48002144c1795c09b061399bda6d96c453f763b0f", "parameter_sha256": "9f011fd077f94275bbba0aab1d3976fed1c9330147d098558bcf84528cbe9cf2"}
+dev_data_regenerated_membership {"passed": true, "states_sha256": "bfc0d1ed171495cbe78941fdee693832d60094c0e1c6d5af7bcd44addca92e56", "parameter_sha256": "14562aabcb199bb82264bc6be02d8df00459d930d08786a4e5cfdec560db14c5"}
+new_operator_parameter_precision {"passed": true, "bad": []}
+deeponet3d_validation_checkpoint {"passed": true, "best_step": 23200, "best_worst": 0.45396950451295004, "maximum_training_target_replay_error": 2.220446049250313e-16}
+transolver3d_validation_checkpoint {"passed": true, "best_step": 32000, "best_worst": 0.029868401645373324, "maximum_training_target_replay_error": 1.3877787807814457e-17}
+independently_audited_reference_replay {"passed": true, "same_relative": 0.0, "fine_relative": 0.0}
+timed_fields {"passed": true, "fields": 192, "invocations": 576, "maximum_metric_disagreement": 1.5543122344752192e-15, "failures": []}
+frozen_method_replay {"passed": false, "worst_relative": 1.0174604510506514e-08, "count": 160}
+larger_coordinate_bank {"passed": true, "relative": 1.119540005106684e-15}
+larger_bank_initial_normalization {"passed": true, "floor": {"mean": 0.07180512661781258, "median": 0.06961828803271204, "worst": 0.12944642833212489}}
+head_K32_reconstruction {"passed": true, "initial_normalized": {"mean": 0.26905222463915274, "median": 0.2813273807828029, "worst": 0.47417583565828564}}
+head_K32_stationarity_records {"passed": true, "maximum_gradient_disagreement": 4.744621338163196e-16, "fits": 96, "stationary_count": 96}
+head_K64_reconstruction {"passed": true, "initial_normalized": {"mean": 0.2646483471464071, "median": 0.2762623012784686, "worst": 0.49072025339940534}}
+head_K64_stationarity_records {"passed": true, "maximum_gradient_disagreement": 5.466555129169671e-16, "fits": 96, "stationary_count": 96}

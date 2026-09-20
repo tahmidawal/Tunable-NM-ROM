@@ -55,7 +55,7 @@
   "same_grid_target": 0.01,
   "physical_target": 0.02,
   "field_chunk": 8192,
-  "final_cohort_opened": false,
+  "final_cohort_opened": true,
   "bank_wall_seconds": 900,
   "head_wall_seconds": 600,
   "quadrature_row_floor": 0.1,
@@ -193,7 +193,7 @@
   "quadrature_enabled": false,
   "representation_oracles": false,
   "physical_padding_control": true,
-  "evaluation_cohort": "validation",
+  "evaluation_cohort": "final",
   "confirmation_seed_index": 2,
   "final_count": 64,
   "retain_solver_states": true,
@@ -210,5 +210,6 @@
   },
   "frozen_offline_assets": true,
   "frozen_pod_transfer_control": true,
-  "plain_cg_control": true
+  "plain_cg_control": true,
+  "final_freeze_path": "code/final-freeze.json"
 }

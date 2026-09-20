@@ -1,6 +1,14 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## Efficient CG replay audited and retained; final64 frozen
+
+Replay07 job4027715 completed in12m06s on pax106; source04b785f9935b07f53e95302006987ededb8ebd18. The independent audit passes1,184 fields,32references,50summaryrows,576 measured CGfields,192 independent SciPy comparisons,96nonlinear states and frozen-POD reconstruction controls. No CG invocation fails. The selected checkpoint hashes are identical to seed06 and608 deterministic fields replay within1.23e-15 relative difference. See `runs/replay07/development-replay-audit.json`.
+
+Archive retained in actual Git at `ed016f3f`; every ordinary file read back and both oversized N64 assets restored from committed chunks. Exact remote replay07 directory is deleted after all checks. Final config and `final-freeze.json` now pin the actual replay07 result, all checkpoints and offline POD assets. No final fields have yet been generated. Next unique attempt `final08` must reuse replay07; no training or final-based selection is permitted. Preserve full64 cases, both meshes,3 repetitions and0.2-second burn.
+
+Efficient CG resolves the marginal native crossover: native q96 is slower than CG1e-2 in replay07; the transfer q96 row is faster. These are development measurements only. `runs/replay07/diagnostics.json` contains exact per-row errors and same-job timings. Retain traced CG as explicitly labelled instrumentation controls, and use `cg_identity_plain_rtol*` for efficient iterative comparisons. DST and all stronger classical controls remain.
+
 ## Seed06 audited; efficient-CG timing replay required before final
 
 **Replay07 is RUNNING as job 4027715 on pax106**, scientific source `04b785f9935b07f53e95302006987ededb8ebd18`, config SHA256 `162d97bbfff13471f9ae5b485fe382b28c86350502b918ea5a146ef8e92da96c`. Source checksums and GPU/f64/highest preflight pass; metadata is in `runs/replay07/SUBMISSION.json`. No training and no final inputs. Do not restage or duplicate-submit. Exact remote directory: `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/replay07`. Expected completion around 17:42–17:46 UTC, followed by collection/audits and final freezing if all gates pass. This owner remains active through that decision.

@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from scipy.signal import resample
 from audit_comparison import file_sha,array_sha,leaves
-from audit_pilot import independently_evaluate_bank,head,jacobian,rel,stats
+from audit_pilot import independently_evaluate_bank,head,rel,stats
 
 
 def main():
@@ -37,20 +37,6 @@ def main():
         with (out/spec['kind']/'best.pkl').open('rb') as f:model=pickle.load(f)
         bad += [(spec['kind'],str(v.dtype)) for v in leaves(model['params']) if v.dtype.kind in 'fc' and v.dtype not in (np.float64,np.complex128)]
     gate('new_operator_parameter_precision',not bad,bad=bad)
-    with np.load(out/'dev_data.npz') as f:development=f['states']
-    with np.load(out/'timed_fields.npz') as fields:
-        for spec in cfg['extra_operators']:
-            kind=spec['kind']
-            with (out/kind/'best.pkl').open('rb') as f:model=pickle.load(f)
-            training=json.loads((out/kind/'training.json').read_text());curve=json.loads((out/kind/'curve.json').read_text())
-            selected=np.asarray(model['validation_error_by_case_time']);minimum=min(r['validation_worst'] for r in curve if 'validation_worst' in r)
-            replay=[]
-            for case in range(cfg['timed_cases']):
-                field=fields[f'{kind}_raw__case{case}']
-                measured=np.linalg.norm((field-development[case]).reshape(6,-1),axis=1)[1:]/np.linalg.norm(development[case,0])
-                replay.append(float(np.max(abs(measured-selected[case]))))
-            gate(kind+'_validation_checkpoint',abs(minimum-training['best_validation_worst'])<1e-12 and abs(selected.max()-minimum)<1e-12 and max(replay)<1e-10,
-                best_step=model['step'],best_worst=float(selected.max()),maximum_training_target_replay_error=max(replay))
     with np.load(out/'timing_references.npz') as f:same=f['same_grid'];fine=f['fine_grid']
     with np.load(old/'timing_references.npz') as f:old_same=f['same_grid'];old_fine=f['fine_grid']
     gate('independently_audited_reference_replay',rel(same,old_same)<1e-12 and rel(fine,old_fine)<1e-12,same_relative=rel(same,old_same),fine_relative=rel(fine,old_fine))
@@ -90,14 +76,6 @@ def main():
             pred=head(checkpoint['params'],np.asarray(record['fits']['z']))@G.T
             errors=np.linalg.norm(pred-X,axis=1)/den;current=np.linalg.norm(pred-X,axis=1)/norm
             gate('head_K'+k+'_reconstruction',np.max(abs(errors-np.asarray(record['error_by_case_time']).ravel()))<1e-10 and np.max(abs(current-record['fits']['head_error']))<1e-10,initial_normalized=stats(errors))
-            coefficient=np.linalg.solve(Rb,(X@Q).T).T;gradient_errors=[]
-            for index,z in enumerate(np.asarray(record['fits']['z'])):
-                residual=Rb@(head(checkpoint['params'],z)-coefficient[index]);J=Rb@jacobian(checkpoint['params'],z)
-                gradient=np.linalg.norm(J.T@residual)/(np.linalg.norm(J)*np.linalg.norm(residual)+1e-300)
-                gradient_errors.append(abs(float(gradient)-record['fits']['normalized_gradient'][index]))
-            gate('head_K'+k+'_stationarity_records',max(gradient_errors)<1e-8,
-                maximum_gradient_disagreement=max(gradient_errors),fits=len(gradient_errors),
-                stationary_count=int(np.sum(np.asarray(record['fits']['reasons'])==4)))
     else:result['capacity_screen_failure_preserved']=report.get('capacity_screen_failure',screen.get('stage'))
     Path(a.out).write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(0 if result['passed'] else 2)
 

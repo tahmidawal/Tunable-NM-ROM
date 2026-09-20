@@ -6,13 +6,14 @@ namespace `/cluster/tufts/paralab/tawal01/hires_p_20260920/`. Contract:
 
 ## State (update on every change)
 
-- 2026-09-20: design + code committed (`85e323d3`); local N=64 smoke passed (parity, audit,
+- 2026-09-20: design + code committed; local N=64 smoke passed; Codex design audit applied (DESIGN A1, `checks/codex-design-audit.md`).
   audit negative control). Codex design audit running. No GPU job submitted yet.
 
 ## Jobs (budget 8 total, 2 running)
 
 | # | attempt | mesh | job id | GPU | state |
 |---|---|---|---|---|---|
+| 1 | hp2048 | 2048² | 4049279 | H200 | submitted 2026-09-20 |
 
 ## How to run
 
@@ -27,4 +28,4 @@ tens of GB), which writes `audit.json` + strided subsamples and deletes the full
 
 ## Next step
 
-Apply Codex findings → stage/submit `hp2048` → from its memory/timing decide `hp4096` config.
+Collect `hp2048` (job 4049279) → read transfer accuracy + peak memory → finalise `config-4096.json` → submit `hp4096`.

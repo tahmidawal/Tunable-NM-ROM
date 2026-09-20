@@ -647,3 +647,61 @@ Written for a reader who knows none of this project's vocabulary.
 \item[Checkpoint, frozen, incumbent] Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
 \item[Provisional, pending] A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
 \end{description}
+
+
+\section{Paired comparisons against iterative CG}
+\label{app:cg-current}
+These are collected development comparisons. Each row uses its own
+recorded job for both method and CG time. The comparator is the fastest
+retained passing CG setting whose displayed error does not exceed the
+method error; this finite-set selection is not a fixed denominator for
+every row. Poisson and heat use CG tolerance $10^{-2}$ in the main-text
+rows. At the finest wave mesh the uncorrected comparison uses
+$\Delta t=0.005$ and tolerance $10^{-2}$; the corrected and linear-bank
+comparisons use $\Delta t=0.0025$ and tolerance $10^{-6}$.
+The raw setting names and all meshes are retained below.
+
+Heat uses an earlier audited checkpoint. Its error uses the physical
+reference over all requested times; Poisson uses the same-grid steady
+reference. Wave error measures displacement only; the NM-ROM models
+fail their full-state target. GPU time includes initialization, the
+solve and requested resident-device outputs, excluding host transfers.
+The linear-bank rows are baseline measurements and are not nonlinear
+NM-ROM speedups. These iterative comparisons supplement, rather than
+replace, the direct-transform controls in the other tables.
+
+\begin{table}[htbp]
+\centering
+\caption{All collected CG comparisons. Errors are worst relative $L^2$
+percentages, times are medians in milliseconds, and $S$ is CG time divided
+by method time. Settings and source jobs identify every denominator.}
+\label{tab:cg-current-all}
+\resizebox{\linewidth}{!}{\input{tables/TR_cg_all}}
+\end{table}
+
+Timing repetitions remain in the underlying records. Heat's outlier
+counts are in the retained comparison JSON; the Poisson and wave summary
+inputs do not expose counts, so none are inferred from their medians.
+The hash-pinned snapshot and source-file hashes are recorded in
+\texttt{tables/rewrite-provenance.json}.
+
+\section{Detailed Burgers comparison and correction settings}
+\begin{table}[htbp]
+\centering
+\caption{Complete Burgers comparison summary. The ratios in this
+historical diagnostic are explicitly \emph{reduced time divided by FOM
+time}, the inverse of speedup $S$ used in the main text. The evolved and
+all-times non-dominated counts are kept separate.}
+\label{tab:panel-main}
+\resizebox{\linewidth}{!}{\input{tables/T05m_panel_summary}}
+\end{table}
+\begin{table}[htbp]
+\centering
+\caption{Fixed-test-space and scheduled correction studies. The fixed
+study holds $M$ constant; the scheduled study changes it with $q$.
+Development timings and held-out errors originate in different jobs
+and are not combined into a held-out speedup. Quadrature status refers
+to the displayed rule and construction evidence.}
+\label{tab:ladder-detail}
+\resizebox{\linewidth}{!}{\input{tables/T04m_fixedM_main}}
+\end{table}

@@ -1,6 +1,25 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-20 — existing-paper integrity repair (current state)
+The user-authorized positioning rewrite is now in `main.tex` and `main.pdf`. The
+original section order and comparison/configuration/control table roles are retained;
+correction rank is the primary representation control. Paired CG comparisons have
+been added with explicit baseline errors and timings. The linear-bank method is
+labelled as a baseline, and the existing three-dimensional development snapshot
+remains separate from later final evaluations.
+
+Run `./build.sh` followed by the absolute local Python environment on
+`check_rewrite.py` for the current numerical-preservation, provenance, style and
+layout checks. The earlier exact-prose checks below apply to their historical
+commits: `check_campaign_integration.py` deliberately rejects this authorized
+rewrite because its recorded wording no longer matches. Its numerical-preservation
+checks passed before the historical source-hash assertion. The current check
+replaces that editorial-scope check; it does not replace scientific run audits.
+
+Official formatting source: https://iclr.cc/Conferences/2027/AuthorGuidelines
+Style-byte verification: `style-verification.json`. No submission, merge or push
+was performed. The canonical campaign state remains in the root `LAB-LOG.md`.
+
+## Earlier bounded integrity repair (historical)
 
 The authoritative manuscript is `main.tex`, with the user's title and adopted abstract
 preserved. The current correction details and remaining limitations are in the top

@@ -304,6 +304,7 @@ def write_ladder_main():
     # merged main-text ladder: the fixed-M rows (b-qxm, development cohort, unchanged) above the scheduled rows of the
     # panel job, with the sealed-cohort value of the same incumbent checkpoint (job 3804465) beside the development
     # value; costs stay per job and are never compared across the two
+    write('TR_correction_main.tex', tabular(['Correction rank $q$', 'Relative $L^2$ error (\\%)', 'GPU query time (ms)'], [[r[0], r[2], r[6]] for r in FIXED_MAIN_ROWS], 'rrr'), 'fixed test space; same checkpoint and job ' + FIXED_MAIN_JOB[0])
     sched = []
     for r in LADDER_MAIN_ROWS:
         q = int(r[0]); sealed = SEALED_INC.get(q)
@@ -1677,7 +1678,7 @@ def build_lshape():
     macro('nLshapeNeuralMsTrend', ' $\\to$ '.join(trend))
     # review r2 (B4/M2): the cheapest same-job full-order arm, POD-128, and the head, per mesh, dominated or not
     HEAD = 'neural_q64@head_sdf_R512_K16'; POD = 'pod128'
-    tm = []; margins_cheapest = {}
+    tm = []; margins_cheapest = {}; clean_lshape = []
     for mesh, nm in NM:
         foms = [sub for (m, tm_, sub) in V if m == mesh and tm_ == 257 and fam[sub] == 'fom']
         if not foms: continue
@@ -1693,12 +1694,17 @@ def build_lshape():
         if hd and pd:
             macro(f'nLshapeHeadOverPodCost{nm}', f"{100 * (hd['median_total_ms'] / pd['median_total_ms'] - 1):.0f}")
             macro(f'nLshapePodOverHeadErr{nm}', f"{100 * (pd['worst_same_grid'] / hd['worst_same_grid'] - 1):.0f}")
+        if mesh in (256, 512):
+            for label_, entry in [(name(cf), c), ('POD-128', pd), ('NM-ROM $q=64$', hd)]:
+                if entry:
+                    clean_lshape.append([f'${mesh}^2$', label_, pct(100 * entry['worst_same_grid'], 3), ms(entry['median_total_ms'], 3), f"{c['median_total_ms'] / entry['median_total_ms']:.2f}" + r'$\times$'])
         tm.append([f'${mesh}^2$', tt(jobs.get((mesh, 257), '---')), ms(sp['median_total_ms'], 2), name(cf), ms(c['median_total_ms'], 2), pct(100 * c['worst_same_grid'], 3),
                    pct(100 * pd['worst_same_grid'], 3) if pd else '---', ms(pd['median_total_ms'], 3) if pd else '---', f"{sp['median_total_ms'] / pd['median_total_ms']:.2f} / {c['median_total_ms'] / pd['median_total_ms']:.2f}" if pd else '---',
                    pct(100 * hd['worst_same_grid'], 3) if hd else '---', ms(hd['median_total_ms'], 3) if hd else '---', f"{sp['median_total_ms'] / hd['median_total_ms']:.2f} / {c['median_total_ms'] / hd['median_total_ms']:.2f}" if hd else '---',
                    yn(bool(hd.get('nondominated_complete_ms'))) if hd else '---'])
     write('T18m_lshape_main.tex', tabular(['mesh', 'job', 'sparse direct ms', 'cheapest FOM', 'ms', 'err \\%', 'POD-128 err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head $q{=}64$ err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head on set'],
                                          tm, 'llrlrrrrrrrrc', r'\scriptsize'), 'lshape solve layer, M = 257, one job per mesh; complete-query ms; every ratio inside its job; head rows printed even where dominated')
+    write('TR_lshape_main.tex', tabular(['Mesh', 'Method', 'Error (\\%)', 'Complete ms', '$S$'], clean_lshape, 'llrrr'), 'each mesh uses its displayed FOM denominator; complete-query timing; development')
     # the 256^2 crossover cell keeps its short names (used in the intro and §5.6)
     best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {}); splu = V.get((256, 257, 'fom_splu'), {})
     if best and splu:
@@ -2354,10 +2360,31 @@ def build_problems_and_provenance(mesh):
           'provenance registry; SHA256 of every file read is in tables/provenance.json')
 
 
+
+def build_clean_comparison():
+    data = load('panel_summary')
+    d = defaultdict(dict); jobs = defaultdict(set)
+    for r in data['rows']:
+        if r['mesh'] == 256:
+            d[r['subject']][r['metric']] = r['value']
+            jobs[r['subject']].add(r['job_id'])
+    control='nt1e-3_dt005'
+    arms=[(control, r'Newton--Krylov'),
+          ('q0_M64_eqcert_g1em06_fastL4',r'NM-ROM $q=0$'),
+          ('q256_M1088_eqtop_g1em06',r'NM-ROM $q=256$'),
+          ('pod512_M2048_dense','POD-512'),('fno-large','FNO')]
+    rows=[]
+    for arm,label in arms:
+        x=d[arm]
+        assert jobs[arm] == jobs[control] and len(jobs[arm]) == 1
+        rows.append([label,pct(x['worst_evolved_percent']),pct(x['worst_all_times_percent']),ms(x['median_gpu_ms'],3),f"{d[control]['median_gpu_ms']/x['median_gpu_ms']:.2f}"+r'$\times$'])
+    write('TR_burgers_comparison.tex',tabular(['Method','Evolved error (\\%)','All-times error (\\%)','GPU ms','$S$'],rows,'lrrrr'), 'Burgers 256; common nt1e-3_dt005 denominator; same job '+next(iter(jobs[control])))
+
 # =========================================================================== main
 def main():
     OUT.mkdir(exist_ok=True)
     build_panel()
+    build_clean_comparison()
     build_qxm()
     build_operators()
     build_linear()

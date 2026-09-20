@@ -4,27 +4,39 @@ This is an operational handoff for the approved development campaign. New scient
 
 ## Active attempt
 
-- Attempt `b3d003`, Slurm job `3992083`, namespace `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d003`.
-- Scientific source `dc91edb2c81712fde9d1b05fec7028c47bd213b4`; exact frozen configuration and queue checks are in `runs/b3d003/submission.json`.
-- The job started on `pax106`, passed `jax_backend=gpu`, and had empty Slurm stderr at handoff. The two-hour limit and one-GPU contract remain in effect.
-- Stage order: regenerate training data; spatial-bank/head training; independent two-case fine-space/time diagnostic; FNO training; U-Net training; complete same-allocation ROM/POD/FOM panel; operator timing and interpolation controls; NumPy saved-field audit.
-- Monitor `training.log`, `training/bank_projection_curve.json`, `reference-screen.log`, `out/reference_screen/result.json`, `operator-training.log`, `driver.log`, `operator-evaluate.log`, `audit.log`, and `slurm.3992083.err` under the exact attempt directory.
-
-The new spatial optimizer uses a prospectively declared longer budget, exact updates to training coefficients and invertible output-layer whitening. Worst projection error on opened validation snapshots selects its bank checkpoint. Projection and optimizer curves distinguish representation limitation from a poor jointly fitted coefficient vector. Validation fields do not enter gradients or coefficient updates. Keep rejected checkpoints and curves. Operator outputs use only the declared observed training times and interpolate to the full requested trajectory; the truth-knot interpolation control must remain visible beside operator errors.
+- Attempt `b3d004`, Slurm job `3995688`, namespace `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d004`.
+- Scientific source `c026d56b83905293e71268c249b57324c7d01baf`; frozen configuration and queue checks are in `runs/b3d004/submission.json`.
+- Started on `pax106`; `jax_backend=gpu` passed and Slurm stderr was empty at handoff. Four campaign lanes are active, one GPU each. Do not submit another B job while this one remains queued or running.
+- Reuses audited B003 bank, K32 head, FNO and U-Net by manifest, while regenerating all physical training fields from seed. Trains DeepONet and Transolver next. The explicit coordinate channels are `[1,2,3]`; viscosity occupies the last channel.
+- Runs the full K32 ROM/POD/FOM/four-operator panel in `out/`, including interpolation and two-case reference diagnostics. Then trains the K64/wider-head candidate on that same frozen spatial bank and original training fields, and runs its independent complete ROM/POD/FOM panel in `out/head64/` with checkpoint/config/optimizer artifacts in `head64/`.
+- Eight diagnostic fitting starts are used on validation representation states for both heads. Those truth-assisted fits are upper bounds, not globally solved representation floors. The online nearest-code initializer is unchanged.
+- Monitor `training.log`, `operator-training.log`, `driver.log`, `operator-evaluate.log`, `audit.log`, `head64-training.log`, `head64-driver.log`, `head64-audit.log` and `slurm.3995688.err`. Training code has passed a bounded native-grid forward/backward smoke and a tiny head-fit/unchanged-bank check.
 
 ## Collection
 
-Wait until this numeric job is absent from the account queue. From this worktree:
+Wait until the numeric job is absent from the account queue. From this worktree:
 
 ```bash
-/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/cluster/collect.py b3d003
+/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/cluster/collect.py b3d004
 OPENBLAS_NUM_THREADS=8 /home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/audit.py \
-  experiments/paper-b3d/runs/b3d003/collected/out \
-  --checkpoint experiments/paper-b3d/runs/b3d003/collected/training/checkpoint.pkl \
+  experiments/paper-b3d/runs/b3d004/collected/out \
+  --checkpoint experiments/paper-b3d/runs/b3d004/collected/training/checkpoint.pkl \
+  --audit-output audit-local.json
+OPENBLAS_NUM_THREADS=8 /home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/audit.py \
+  experiments/paper-b3d/runs/b3d004/collected/out/head64 \
+  --checkpoint experiments/paper-b3d/runs/b3d004/collected/head64/checkpoint.pkl \
   --audit-output audit-local.json
 ```
 
-The local auditor accepts a distinct output filename so it preserves the remote audit bytes and their checksums. The collector verifies the job's scientific manifest plus a complete post-exit manifest including logs. After successful checksums and auditing, remove only the literal verified remote attempt directory, record that removal, and Git-retain the trained model checkpoints and compact result/provenance files. Dense fields remain in their local archive with checksum retention records. No merging or pushing is authorized.
+Run `audit_stationarity.py` with the same output/checkpoint pairs after the field audits. It independently reconstructs the sine test space, analytic network Jacobian and upwind-advection Jacobian in NumPy, then checks the largest recorded evolution and initialization gradients per method. It also reports the coefficient-Jacobian smallest singular value; inspect the K64/q192 endpoint for near redundancy. This is explicitly a sample, not an all-state stationarity certificate.
+
+The collector verifies both the job's scientific manifest and a complete post-exit manifest including logs. The trap now retains a manifest and exit marker on intermediate failure too. Local audits use distinct filenames, preserving remote audit bytes. Only after successful checksums and auditing remove the literal verified remote attempt directory. Git-retain selected model checkpoints, compact records and provenance; retain dense fields and optimizer states in the checksum-covered local archive. No merging or pushing is authorized.
+
+## Audited B003 panel
+
+Attempt `b3d003`, job `3992083`, is complete, checksum-collected and independently audited; the exact remote directory was removed. Compact records and trained checkpoints were committed at `df968f70`. Its full local archive is `runs/b3d003/collected/`; `summary.json` is generated from raw invocations, and `COLLECTED.json` records disposition. The root report generator can read `collected/out/result.json` and `collected/out/audit-local.json` directly. The later independent analytic stationarity sample is `collected/out/audit-stationarity-local.json` and has its own `LOCAL_AUDITS.sha256`.
+
+The current head has a substantial held-out best-found gap above its learned bank, despite a much smaller training fit gap. This is not a terminal-output rank bottleneck: its final hidden width equals the bank rank. The K64 candidate and increased fitting-start diagnostic address capacity and local-minimum alternatives. FNO, U-Net, higher-rank POD and full-order controls are strong and must remain visible. The generated summary contains exact numbers; do not recopy provisional numbers into paper prose.
 
 ## Previous attempt retained
 

@@ -242,5 +242,159 @@
     "operator_invocations": 48,
     "operator_complete": true
   },
-  "reference_scope": "same-grid benchmark; two-case physical refinement is diagnostic, not a cohort-wide reference certificate"
+  "reference_scope": "same-grid benchmark; two-case physical refinement is diagnostic, not a cohort-wide reference certificate",
+  "independent_stationarity_sample": {
+    "passed": true,
+    "scope": "largest recorded step gradient and initial-fit gradient per method; repeated records deduplicated by value",
+    "checked_states": 14,
+    "max_gradient_discrepancy": 5.162939828673397e-15,
+    "checks": [
+      {
+        "method": "free_R256",
+        "case": 3,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 6.316593624478115e-07,
+        "recorded": 6.31659362340346e-07,
+        "absolute_discrepancy": 1.0746550523787644e-16,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "pod_160",
+        "case": 3,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 9.578262652221268e-07,
+        "recorded": 9.578262653277857e-07,
+        "absolute_discrepancy": 1.0565888984050142e-16,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "pod_224",
+        "case": 3,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 6.957207603730713e-07,
+        "recorded": 6.957207614220684e-07,
+        "absolute_discrepancy": 1.0489970479778924e-15,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "pod_256",
+        "case": 3,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 8.059657307903305e-07,
+        "recorded": 8.0596572943623e-07,
+        "absolute_discrepancy": 1.3541005390403779e-15,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "pod_32",
+        "case": 3,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 8.095146614223371e-07,
+        "recorded": 8.0951466135868e-07,
+        "absolute_discrepancy": 6.365706708500243e-17,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "pod_96",
+        "case": 3,
+        "phase": "evolution",
+        "step": 2,
+        "gradient": 8.147071378267184e-07,
+        "recorded": 8.147071367065809e-07,
+        "absolute_discrepancy": 1.1201375452727681e-15,
+        "coefficient_jacobian_sigma_min": 1.0,
+        "coefficient_jacobian_sigma_max": 1.0
+      },
+      {
+        "method": "rom_q0",
+        "case": 2,
+        "phase": "evolution",
+        "step": 17,
+        "gradient": 9.708911662861934e-07,
+        "recorded": 9.708911647264644e-07,
+        "absolute_discrepancy": 1.5597290101729104e-15,
+        "coefficient_jacobian_sigma_min": 0.9729828318135602,
+        "coefficient_jacobian_sigma_max": 3.103932872878811
+      },
+      {
+        "method": "rom_q0",
+        "case": 0,
+        "phase": "initial",
+        "step": 0,
+        "gradient": 9.244183769132979e-07,
+        "recorded": 9.244183781543618e-07,
+        "absolute_discrepancy": 1.241063886350173e-15
+      },
+      {
+        "method": "rom_q128",
+        "case": 6,
+        "phase": "evolution",
+        "step": 1,
+        "gradient": 9.989663152680467e-07,
+        "recorded": 9.989663122074973e-07,
+        "absolute_discrepancy": 3.060549419963126e-15,
+        "coefficient_jacobian_sigma_min": 0.4390626174673033,
+        "coefficient_jacobian_sigma_max": 3.2298907764962257
+      },
+      {
+        "method": "rom_q128",
+        "case": 2,
+        "phase": "initial",
+        "step": 0,
+        "gradient": 8.892383818079746e-07,
+        "recorded": 8.892383825558918e-07,
+        "absolute_discrepancy": 7.4791728105222e-16
+      },
+      {
+        "method": "rom_q192",
+        "case": 7,
+        "phase": "evolution",
+        "step": 44,
+        "gradient": 9.956109468122105e-07,
+        "recorded": 9.956109416492707e-07,
+        "absolute_discrepancy": 5.162939828673397e-15,
+        "coefficient_jacobian_sigma_min": 0.13129733626737927,
+        "coefficient_jacobian_sigma_max": 3.8699638186956795
+      },
+      {
+        "method": "rom_q192",
+        "case": 2,
+        "phase": "initial",
+        "step": 0,
+        "gradient": 9.815784301521298e-07,
+        "recorded": 9.815784301141338e-07,
+        "absolute_discrepancy": 3.799599218969659e-17
+      },
+      {
+        "method": "rom_q64",
+        "case": 6,
+        "phase": "evolution",
+        "step": 50,
+        "gradient": 9.6289127468879e-07,
+        "recorded": 9.628912700596794e-07,
+        "absolute_discrepancy": 4.629110654435294e-15,
+        "coefficient_jacobian_sigma_min": 0.7165316991052003,
+        "coefficient_jacobian_sigma_max": 2.8305639965819727
+      },
+      {
+        "method": "rom_q64",
+        "case": 6,
+        "phase": "initial",
+        "step": 0,
+        "gradient": 9.343368237752227e-07,
+        "recorded": 9.343368246436339e-07,
+        "absolute_discrepancy": 8.684112118100516e-16
+      }
+    ]
+  }
 }

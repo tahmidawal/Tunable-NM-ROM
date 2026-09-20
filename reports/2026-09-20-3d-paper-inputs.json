@@ -142,6 +142,20 @@
         "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/source-audit.json"
       ],
       "qualification": "Audited independent-initialization development comparison. The same bank/head recipe is retrained; FNO/U-Net retain their earlier budgets, while DeepONet/Transolver receive common longer schedules. All methods share training membership. The uncorrected head varies with initialization; the high-correction endpoint remains accurate. All observed stopping checks pass, but selected latent states were not retained for independent gradient reconstruction in this source revision. Finer-grid POD is an offline mesh-adapted control; frozen neural transfer and native-interpolation variants remain distinct. Physical-domain-preserving FNO padding and native-sensor continuous-trunk DeepONet are separately named controls. Further training-recipe comparison and frozen final testing remain pending."
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "adapter": "ns_trajectory",
+      "result": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/result.json",
+      "invocations": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timing_rows.json",
+      "audit": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/audit.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/source_audit.json",
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/representation_gradient_audit.json"
+      ],
+      "qualification": "Audited development coverage experiment with exact periodic translation augmentation shared by every training method. The larger learned bank and trained heads improve representation but fail the prospective accuracy gate, so no new NM-ROM trajectory was measured in this attempt. The timed table contains all four newly trained incremental-output operator families and efficient FOM controls, with eight development inputs; all head/bank snapshot diagnostics use the full sixteen-case development cohort. Initial-field restoration and optional Leray projection are included in operator query cost. DeepONet remains poor and some operator fits exit on the elapsed-time cap. The table records achieved performance, not an architecture limit. Final cases remain unopened.",
+      "representation_gradients_audited": true
     }
   ]
 }

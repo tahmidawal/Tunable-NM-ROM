@@ -59,7 +59,7 @@ def main():
             reference = path.parent / 'timing_references.npz'
             prediction = path.parent / 'timed_fields.npz'
             with np.load(reference) as f:
-                same, fine = f['same_grid'], f['fine_grid']
+                same, fine = f['same_grid'], f['fine_grid'] if 'fine_grid' in f.files else None
             for row in records:
                 groups[row['method']].append(row)
             with np.load(prediction) as fields:
@@ -77,14 +77,19 @@ def main():
                     assert selected, (method, case)
                     pred = selected[0]
                     errors = relative_fields(pred, same[case], initial=True)
-                    lifted = pred
-                    for axis in (-3, -2, -1):
-                        lifted = resample(lifted, fine.shape[axis], axis=axis)
-                    physical = np.linalg.norm((lifted-fine[case]).reshape(len(pred),-1),axis=1)/np.linalg.norm(fine[case,0])
                     observed = dict(worst_evolved=float(errors[1:].max()), worst_all=float(errors.max()),
-                                    initial_error=float(errors[0]), physical_evolved=float(physical[1:].max()))
+                                    initial_error=float(errors[0]))
                     reported = dict(worst_evolved=max(row['same_grid_errors'][1:]), worst_all=max(row['same_grid_errors']),
-                                    initial_error=row['same_grid_errors'][0], physical_evolved=max(row['fine_grid_errors'][1:]))
+                                    initial_error=row['same_grid_errors'][0])
+                    if fine is not None:
+                        lifted = pred
+                        for axis in (-3, -2, -1):
+                            lifted = resample(lifted, fine.shape[axis], axis=axis)
+                        physical = np.linalg.norm((lifted-fine[case]).reshape(len(pred),-1),axis=1)/np.linalg.norm(fine[case,0])
+                        observed['physical_evolved'] = float(physical[1:].max())
+                        reported['physical_evolved'] = max(row['fine_grid_errors'][1:])
+                    else:
+                        assert 'fine_grid_errors' not in row
                     discrepancies = {key: abs(value-reported[key]) for key,value in observed.items()}
                     passed = all(np.isfinite(v) and v < 1e-11 for v in discrepancies.values())
                     output['passed'] &= passed

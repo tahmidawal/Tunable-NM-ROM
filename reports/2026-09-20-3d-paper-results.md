@@ -732,6 +732,46 @@ Errors use the reference solution norm. There is one stationary output field; ev
 
 A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
 
+## Navier–Stokes 3D — coverage04
+
+**Provisional:** Audited development coverage experiment with exact periodic translation augmentation shared by every training method. The larger learned bank and trained heads improve representation but fail the prospective accuracy gate, so no new NM-ROM trajectory was measured in this attempt. The timed table contains all four newly trained incremental-output operator families and efficient FOM controls, with eight development inputs; all head/bank snapshot diagnostics use the full sixteen-case development cohort. Initial-field restoration and optional Leray projection are included in operator query cost. DeepONet remains poor and some operator fits exit on the elapsed-time cap. The table records achieved performance, not an architecture limit. Final cases remain unopened.
+
+Source `ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f`; job `3997427`; GPU `NVIDIA A100 80GB PCIe, 81920 MiB`. [Invocation data](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/result.json) and [independent audit](../worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/audit.json).
+
+Errors use the initial velocity-field norm, with all three components combined. The evolved metric excludes time zero. This timed panel has a same-grid reference only; physical errors are unmeasured. Total timing includes host transfers; device timing includes initialization, evolution and every requested dense velocity field. Mesh size counts periodic points per axis. The timed cohort is a declared subset of the larger validation cohort; training-validation summaries are not substituted for its measured query errors. Stopping records lack saved latent histories and support an internal-consistency check only.
+
+Untimed representation diagnostics on the full development snapshots follow. They fit known reference states and use the initial vector-field norm, including time zero. Their errors are separate from predicted trajectory errors. Every retained head fit also has an independently reconstructed analytic gradient.
+
+| Representation | Snapshots | Median error (%) | Worst error (%) | Recorded stationary fits |
+| --- | ---: | ---: | ---: | ---: |
+| `Unrestricted learned bank` | 96 | 2.8944 | 7.2422 | — |
+| `pca64_initial` | 96 | 47.5336 | 57.1874 | 96 |
+| `pca64_fixed` | 96 | 10.1021 | 20.9380 | 96 |
+| `pca64_free` | 96 | 7.8467 | 17.5927 | 96 |
+| `pca128_initial` | 96 | 28.7805 | 38.4874 | 96 |
+| `pca128_fixed` | 96 | 9.2146 | 18.5492 | 96 |
+
+The predeclared new NM-ROM rollout eligibility gate was **failed**. The timed methods below are exactly those measured in this attempt.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `deeponet3d_increment_projected` | 8 | 58.6798 | 64.3294 | 64.3294 | 0.0000 | — | 4.274 | 5.024 | 0 / 0 | 0 / 24 | development |
+| 32 | `deeponet3d_increment_raw` | 8 | 58.6906 | 64.3462 | 64.3462 | 0.0000 | — | 4.070 | 4.834 | 0 / 0 | 0 / 24 | development |
+| 32 | `fno3d_increment_projected` | 8 | 0.2648 | 0.4703 | 0.4703 | 0.0000 | — | 9.089 | 9.846 | 0 / 0 | 0 / 24 | development |
+| 32 | `fno3d_increment_raw` | 8 | 0.3553 | 0.5521 | 0.5521 | 0.0000 | — | 8.913 | 9.695 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.002` | 8 | 0.0130 | 0.0213 | 0.0213 | 0.0000 | — | 12.707 | 13.571 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.004` | 8 | 0.0524 | 0.0866 | 0.0866 | 0.0000 | — | 6.725 | 7.577 | 0 / 0 | 1 / 24 | development |
+| 32 | `fom_dt0.008` | 8 | 0.2125 | 0.3598 | 0.3598 | 0.0000 | — | 3.701 | 4.543 | 0 / 0 | 1 / 24 | development |
+| 32 | `fom_dt0.01` | 8 | 0.3414 | 0.6284 | 0.6284 | 0.0000 | — | 3.102 | 3.949 | 0 / 0 | 2 / 24 | development |
+| 32 | `fom_dt0.02` | 8 | 3.4470 | 49.2171 | 49.2171 | 0.0000 | — | 1.883 | 2.727 | 0 / 0 | 0 / 24 | development |
+| 32 | `fom_dt0.04` | 8 | 19.5296 | 96.6989 | 96.6989 | 0.0000 | — | 1.190 | 2.017 | 0 / 0 | 0 / 24 | development |
+| 32 | `transolver3d_increment_projected` | 8 | 1.9811 | 2.6909 | 2.6909 | 0.0000 | — | 3.277 | 4.070 | 0 / 0 | 0 / 24 | development |
+| 32 | `transolver3d_increment_raw` | 8 | 3.1558 | 3.8863 | 3.8863 | 0.0000 | — | 3.155 | 3.970 | 0 / 0 | 1 / 24 | development |
+| 32 | `unet3d_increment_projected` | 8 | 1.6081 | 2.0441 | 2.0441 | 0.0000 | — | 1.908 | 2.669 | 0 / 0 | 1 / 24 | development |
+| 32 | `unet3d_increment_raw` | 8 | 1.7747 | 2.3063 | 2.3063 | 0.0000 | — | 1.857 | 2.621 | 0 / 0 | 1 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
 ## Glossary
 
 - **NM-ROM / ROM:** a neural-manifold reduced model / a model solving for a smaller state.

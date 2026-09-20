@@ -15250,3 +15250,13 @@ Resumed training submissions use the existing isolated namespaces and the campai
 | b3d / b3d006 | 4018959 | `b1d72e0c4c51624d5dfce0cd80e5e65e75b8c531` |
 
 Navier–Stokes coverage04 is being collected by its resumed owner before the staged larger-bank extension. All final cohorts remain sealed. The previously requested overnight deadline is not retrospectively relabelled as met; the estimates communicated to the user are new operational estimates, contingent on remaining training and audit work.
+
+### Coordinator — user requested results before further implementation
+
+The user explicitly asked to see progress and existing results first. The response distinguishes audited development comparisons from the still-unopened final cohorts. The existing GPU jobs continue; no additional GPU job is launched by this status response.
+
+Navier–Stokes capacity05 is running as job `4019914`, source `4d675dd97c12ea47b90b7ca9720bc9bf0623da7f`. Its larger bank uses the same augmented training membership; all prior failed gates remain unchanged. Coverage04 is independently audited, and its saved representation fits now also have a separate analytic-gradient audit. The generated full report includes its operator/FOM measurements and explicitly untimed bank/head fits; it does not invent a missing NM-ROM rollout.
+
+Burgers retention scope was found to be narrower than complete Git-backed field retention: previous dense scientific arrays were present in full local checksum archives while only selected replay arrays/checkpoints were committed. The owner is adding lossless split archives for all paper-used scientific fields from b3d003/b3d004/b3d005, with exact-content deduplication and per-path restoration checks. Existing local archives remain untouched; numerical audits and measured errors are unchanged.
+
+The manuscript worker reports a passing scoped claim repair and numeric-preservation/build audit, pending its final commit handoff. Final paper results and final evaluations remain incomplete; the missed original overnight target remains explicit.

@@ -112220,11 +112220,2082 @@
           }
         ]
       }
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "adapter": "ns_trajectory",
+      "result": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/result.json",
+      "invocations": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timing_rows.json",
+      "audit": {
+        "passed": true,
+        "source_commit": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+        "job_id": "3997427",
+        "checks": {
+          "raw_checksums": {
+            "passed": true,
+            "count": 39,
+            "failures": []
+          },
+          "gpu_provenance": {
+            "passed": true,
+            "stderr_bytes": 0
+          },
+          "complete_and_final_sealed": {
+            "passed": true
+          },
+          "exact_shared_membership": {
+            "passed": true,
+            "base_cases": 512,
+            "augmented_cases": 2048
+          },
+          "learned_coordinate_bank": {
+            "passed": true,
+            "relative": 1.2767121332902079e-15
+          },
+          "bank_QR": {
+            "passed": true
+          },
+          "projected_bank_numerical_rank": {
+            "passed": true,
+            "numerical_rank": 1536,
+            "requested_rank": 1536,
+            "relative_threshold": 1e-10,
+            "condition": 1893.2941802975033
+          },
+          "bank_development_fields": {
+            "passed": true
+          },
+          "bank_development_summary": {
+            "passed": true,
+            "summary": {
+              "mean": 0.03400541899796624,
+              "median": 0.02894373686728556,
+              "worst": 0.0724223158555626
+            }
+          },
+          "all_augmented_training_projections": {
+            "passed": true,
+            "snapshots": 12288,
+            "maximum_coefficient_relative_error": 1.6024808535406458e-15,
+            "maximum_floor_error": 6.938893903907228e-17
+          },
+          "pca64_initial_development_reconstruction": {
+            "passed": true,
+            "summary": {
+              "mean": 0.4630853439625759,
+              "median": 0.47533617777478443,
+              "worst": 0.5718741887198099
+            },
+            "stationary_count": 96
+          },
+          "pca64_initial_stored_training_codes": {
+            "passed": true,
+            "summary": {
+              "mean": 0.44059916230816015,
+              "median": 0.4448431191563728,
+              "worst": 0.677774956706395
+            }
+          },
+          "pca64_initial_fixed_PCA_codes": {
+            "passed": true,
+            "relative_Gram_probe": 3.75519149042136e-15,
+            "count": 24
+          },
+          "pca64_fixed_development_reconstruction": {
+            "passed": true,
+            "summary": {
+              "mean": 0.10214451951272313,
+              "median": 0.10102052358968505,
+              "worst": 0.20938017848345908
+            },
+            "stationary_count": 96
+          },
+          "pca64_fixed_stored_training_codes": {
+            "passed": true,
+            "summary": {
+              "mean": 0.05682349618875682,
+              "median": 0.05465754357233188,
+              "worst": 0.11851518005805958
+            }
+          },
+          "pca64_fixed_fixed_PCA_codes": {
+            "passed": true,
+            "relative_Gram_probe": 3.75519149042136e-15,
+            "count": 24
+          },
+          "pca64_free_development_reconstruction": {
+            "passed": true,
+            "summary": {
+              "mean": 0.08236189457900234,
+              "median": 0.07846687449855808,
+              "worst": 0.17592726419227148
+            },
+            "stationary_count": 96
+          },
+          "pca64_free_stored_training_codes": {
+            "passed": true,
+            "summary": {
+              "mean": 0.04874011092030528,
+              "median": 0.045074244664861776,
+              "worst": 0.10964695512300013
+            }
+          },
+          "pca128_initial_development_reconstruction": {
+            "passed": true,
+            "summary": {
+              "mean": 0.29263510967252376,
+              "median": 0.2878053434317316,
+              "worst": 0.38487431851036585
+            },
+            "stationary_count": 96
+          },
+          "pca128_initial_stored_training_codes": {
+            "passed": true,
+            "summary": {
+              "mean": 0.2754900098354956,
+              "median": 0.27595331277957713,
+              "worst": 0.43919551170848076
+            }
+          },
+          "pca128_initial_fixed_PCA_codes": {
+            "passed": true,
+            "relative_Gram_probe": 3.0978954475687375e-15,
+            "count": 24
+          },
+          "pca128_fixed_development_reconstruction": {
+            "passed": true,
+            "summary": {
+              "mean": 0.09394689519459715,
+              "median": 0.09214617459383712,
+              "worst": 0.18549241583251555
+            },
+            "stationary_count": 96
+          },
+          "pca128_fixed_stored_training_codes": {
+            "passed": true,
+            "summary": {
+              "mean": 0.04911080370572213,
+              "median": 0.045973781484543286,
+              "worst": 0.10636212011843878
+            }
+          },
+          "pca128_fixed_fixed_PCA_codes": {
+            "passed": true,
+            "relative_Gram_probe": 3.0978954475687375e-15,
+            "count": 24
+          },
+          "fno3d_shared_recipe": {
+            "passed": true
+          },
+          "unet3d_shared_recipe": {
+            "passed": true
+          },
+          "deeponet3d_shared_recipe": {
+            "passed": true
+          },
+          "transolver3d_shared_recipe": {
+            "passed": true
+          },
+          "operator_precision": {
+            "passed": true,
+            "bad": []
+          },
+          "every_timed_field": {
+            "passed": true,
+            "invocations": 336,
+            "fields": 112,
+            "max_metric_disagreement": 4.440892098500626e-16,
+            "failures": []
+          }
+        },
+        "scope": "all membership bytes and saved development fields; independent model reconstruction and invocation metrics",
+        "derived_summary": {
+          "fno3d_increment_raw": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 8.912576478905976,
+            "worst_evolved_same_grid": 0.0055205940787098695
+          },
+          "fno3d_increment_projected": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 9.089472470805049,
+            "worst_evolved_same_grid": 0.004703340360460194
+          },
+          "unet3d_increment_raw": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 1.8573040142655373,
+            "worst_evolved_same_grid": 0.02306287255133155
+          },
+          "unet3d_increment_projected": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 1.9084690138697624,
+            "worst_evolved_same_grid": 0.020440661810952762
+          },
+          "deeponet3d_increment_raw": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 4.0698390221223235,
+            "worst_evolved_same_grid": 0.6434621254738145
+          },
+          "deeponet3d_increment_projected": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 4.274010541848838,
+            "worst_evolved_same_grid": 0.6432941549049475
+          },
+          "transolver3d_increment_raw": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 3.1546219252049923,
+            "worst_evolved_same_grid": 0.038863276936787275
+          },
+          "transolver3d_increment_projected": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 3.276727511547506,
+            "worst_evolved_same_grid": 0.026909225738958265
+          },
+          "fom_dt0.002": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 12.706503504887223,
+            "worst_evolved_same_grid": 0.00021306215148585058
+          },
+          "fom_dt0.004": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 6.724975421093404,
+            "worst_evolved_same_grid": 0.0008659903839402424
+          },
+          "fom_dt0.008": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 3.700616885907948,
+            "worst_evolved_same_grid": 0.003597750934912205
+          },
+          "fom_dt0.01": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 3.101733047515154,
+            "worst_evolved_same_grid": 0.006283990150918635
+          },
+          "fom_dt0.02": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 1.882920041680336,
+            "worst_evolved_same_grid": 0.49217058127993474
+          },
+          "fom_dt0.04": {
+            "invocations": 24,
+            "nonfinite_invocations": 0,
+            "device_ms_median": 1.1903585400432348,
+            "worst_evolved_same_grid": 0.9669885651183122
+          }
+        }
+      },
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/source_audit.json",
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/representation_gradient_audit.json"
+      ],
+      "qualification": "Audited development coverage experiment with exact periodic translation augmentation shared by every training method. The larger learned bank and trained heads improve representation but fail the prospective accuracy gate, so no new NM-ROM trajectory was measured in this attempt. The timed table contains all four newly trained incremental-output operator families and efficient FOM controls, with eight development inputs; all head/bank snapshot diagnostics use the full sixteen-case development cohort. Initial-field restoration and optional Leray projection are included in operator query cost. DeepONet remains poor and some operator fits exit on the elapsed-time cap. The table records achieved performance, not an architecture limit. Final cases remain unopened.",
+      "representation_gradients_audited": true,
+      "rows": [
+        {
+          "mesh": 32,
+          "method": "deeponet3d_increment_projected",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 4.274010541848838,
+          "total_ms_median": 5.023885518312454,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.5959923861525396,
+              "all_times": 0.5959923861525396,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.6432941549049475,
+              "all_times": 0.6432941549049475,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.5398406788640236,
+              "all_times": 0.5398406788640236,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.5673594855126426,
+              "all_times": 0.5673594855126426,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.6107312644213383,
+              "all_times": 0.6107312644213383,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.577604583138017,
+              "all_times": 0.577604583138017,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.5218483469718685,
+              "all_times": 0.5218483469718685,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.6111616436876248,
+              "all_times": 0.6111616436876248,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            4.44602407515049,
+            4.3071971740573645,
+            4.253558814525604,
+            4.318278050050139,
+            4.2971838265657425,
+            4.284488968551159,
+            4.32633189484477,
+            4.27315104752779,
+            4.316149046644568,
+            4.146958002820611,
+            4.240507027134299,
+            4.229702055454254,
+            4.303746158257127,
+            4.239974077790976,
+            4.2165841441601515,
+            4.29092301055789,
+            4.306806018576026,
+            4.277307074517012,
+            4.254895960912108,
+            4.210171056911349,
+            4.274870036169887,
+            4.268921911716461,
+            4.093074006959796,
+            4.091770155355334
+          ],
+          "evolved_worst": 0.6432941549049475,
+          "evolved_median": 0.5867984846452783,
+          "all_times_worst": 0.6432941549049475,
+          "all_times_median": 0.5867984846452783,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "deeponet3d_increment_raw",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 4.0698390221223235,
+          "total_ms_median": 4.833830986171961,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.5961199546983371,
+              "all_times": 0.5961199546983371,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.6434621254738145,
+              "all_times": 0.6434621254738145,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.5399636667916401,
+              "all_times": 0.5399636667916401,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.5677005541320974,
+              "all_times": 0.5677005541320974,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.610978324352687,
+              "all_times": 0.610978324352687,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.5776920110753717,
+              "all_times": 0.5776920110753717,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.522021038540311,
+              "all_times": 0.522021038540311,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.6113359573535531,
+              "all_times": 0.6113359573535531,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            4.310098011046648,
+            4.112752852961421,
+            4.0677550714462996,
+            4.105367930606008,
+            4.086423199623823,
+            4.075384000316262,
+            4.088599933311343,
+            4.0719229727983475,
+            4.096913151443005,
+            4.027128918096423,
+            4.027083050459623,
+            4.033837001770735,
+            4.06067306175828,
+            4.082283936440945,
+            4.030690994113684,
+            4.066084045916796,
+            4.06582304276526,
+            4.0871500968933105,
+            4.046378191560507,
+            4.026868147775531,
+            4.095316166058183,
+            4.065223038196564,
+            3.9965829346328974,
+            4.074782133102417
+          ],
+          "evolved_worst": 0.6434621254738145,
+          "evolved_median": 0.5869059828868544,
+          "all_times_worst": 0.6434621254738145,
+          "all_times_median": 0.5869059828868544,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fno3d_increment_projected",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 9.089472470805049,
+          "total_ms_median": 9.846327477134764,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.0022692392819537804,
+              "all_times": 0.0022692392819537804,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.0033174893558306734,
+              "all_times": 0.0033174893558306734,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.0017354035180727426,
+              "all_times": 0.0017354035180727426,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.003026481427756176,
+              "all_times": 0.003026481427756176,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0032252791074657535,
+              "all_times": 0.0032252791074657535,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.004703340360460194,
+              "all_times": 0.004703340360460194,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.0018967355993078805,
+              "all_times": 0.0018967355993078805,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.002065216701521403,
+              "all_times": 0.002065216701521403,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            9.508216055110097,
+            9.148027980700135,
+            9.226105874404311,
+            9.041093988344073,
+            9.113230975344777,
+            9.09779709763825,
+            9.040247881785035,
+            9.115610038861632,
+            9.106826968491077,
+            9.065601974725723,
+            9.034349117428064,
+            9.03549394570291,
+            9.091242915019393,
+            9.096363093703985,
+            9.063196135684848,
+            9.05029708519578,
+            9.080718038603663,
+            9.087702026590705,
+            8.968072012066841,
+            9.077381109818816,
+            9.116238914430141,
+            9.044951060786843,
+            9.143850998952985,
+            9.134776890277863
+          ],
+          "evolved_worst": 0.004703340360460194,
+          "evolved_median": 0.002647860354854978,
+          "all_times_worst": 0.004703340360460194,
+          "all_times_median": 0.002647860354854978,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fno3d_increment_raw",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 8.912576478905976,
+          "total_ms_median": 9.694793494418263,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.003204013503991435,
+              "all_times": 0.003204013503991435,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.004050370548537303,
+              "all_times": 0.004050370548537303,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.002425586308614334,
+              "all_times": 0.002425586308614334,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.0039024101256953134,
+              "all_times": 0.0039024101256953134,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.004029316366883757,
+              "all_times": 0.004029316366883757,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.0055205940787098695,
+              "all_times": 0.0055205940787098695,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.0026766631106083134,
+              "all_times": 0.0026766631106083134,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.0027858473402816437,
+              "all_times": 0.0027858473402816437,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            9.020521072670817,
+            8.923726854845881,
+            8.990230038762093,
+            9.694063104689121,
+            8.914018049836159,
+            8.85331816971302,
+            8.845576085150242,
+            8.879262022674084,
+            8.931056829169393,
+            8.927549934014678,
+            8.861096808686852,
+            8.869190001860261,
+            8.824566844850779,
+            10.176857933402061,
+            8.841149043291807,
+            8.829118916764855,
+            8.920392021536827,
+            10.645819827914238,
+            8.835287066176534,
+            8.89966613613069,
+            8.911134907975793,
+            8.893496822565794,
+            9.068532148376107,
+            8.969014044851065
+          ],
+          "evolved_worst": 0.0055205940787098695,
+          "evolved_median": 0.003553211814843374,
+          "all_times_worst": 0.0055205940787098695,
+          "all_times_median": 0.003553211814843374,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.002",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 12.706503504887223,
+          "total_ms_median": 13.570680632255971,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.00012478622592480967,
+              "all_times": 0.00012478622592480967,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.00021306215148585058,
+              "all_times": 0.00021306215148585058,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 8.046562343913556e-05,
+              "all_times": 8.046562343913556e-05,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.00010010487595351647,
+              "all_times": 0.00010010487595351647,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0001345070378261105,
+              "all_times": 0.0001345070378261105,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.00014213262439111455,
+              "all_times": 0.00014213262439111455,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 7.716791262362526e-05,
+              "all_times": 7.716791262362526e-05,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.000157870424382146,
+              "all_times": 0.000157870424382146,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            12.821997050195932,
+            12.697616126388311,
+            12.828819919377565,
+            12.703874846920371,
+            12.701831059530377,
+            12.73019309155643,
+            12.709132162854075,
+            12.66821613535285,
+            12.897700071334839,
+            12.731403112411499,
+            12.566567165777087,
+            12.734476942569017,
+            12.700246879830956,
+            12.849157908931375,
+            12.78924010694027,
+            12.676595943048596,
+            12.646355899050832,
+            12.730125803500414,
+            12.819169089198112,
+            12.651348020881414,
+            12.646226910874248,
+            12.806019047275186,
+            12.666210066527128,
+            12.684461893513799
+          ],
+          "evolved_worst": 0.00021306215148585058,
+          "evolved_median": 0.00012964663187546008,
+          "all_times_worst": 0.00021306215148585058,
+          "all_times_median": 0.00012964663187546008,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.004",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 6.724975421093404,
+          "total_ms_median": 7.576547097414732,
+          "timing_outliers": 1,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.0005041050319128685,
+              "all_times": 0.0005041050319128685,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.0008659903839402424,
+              "all_times": 0.0008659903839402424,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.00032480037945250396,
+              "all_times": 0.00032480037945250396,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.00040454660021911815,
+              "all_times": 0.00040454660021911815,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0005440646295152071,
+              "all_times": 0.0005440646295152071,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.000576968095546033,
+              "all_times": 0.000576968095546033,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.00031242017140720017,
+              "all_times": 0.00031242017140720017,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.0006405668890340134,
+              "all_times": 0.0006405668890340134,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            6.807494908571243,
+            6.687293061986566,
+            6.75335805863142,
+            6.759025156497955,
+            6.789294071495533,
+            6.677077850326896,
+            6.748462095856667,
+            10.231680935248733,
+            6.886084098368883,
+            6.69380696490407,
+            6.660879822447896,
+            6.5885239746421576,
+            6.694459822028875,
+            6.775242974981666,
+            8.901841007173061,
+            6.6210508812218904,
+            6.624286994338036,
+            6.71026692725718,
+            6.718233926221728,
+            6.73171691596508,
+            6.687540095299482,
+            6.698443088680506,
+            6.749982014298439,
+            6.8014999851584435
+          ],
+          "evolved_worst": 0.0008659903839402424,
+          "evolved_median": 0.0005240848307140379,
+          "all_times_worst": 0.0008659903839402424,
+          "all_times_median": 0.0005240848307140379,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.008",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 3.700616885907948,
+          "total_ms_median": 4.542608512565494,
+          "timing_outliers": 1,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.0020403985745105005,
+              "all_times": 0.0020403985745105005,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.003597750934912205,
+              "all_times": 0.003597750934912205,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.0013117478482238916,
+              "all_times": 0.0013117478482238916,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.001638068009771433,
+              "all_times": 0.001638068009771433,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0022093970842265932,
+              "all_times": 0.0022093970842265932,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.0023603962468156285,
+              "all_times": 0.0023603962468156285,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.001262159896594154,
+              "all_times": 0.001262159896594154,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.0026152097562483685,
+              "all_times": 0.0026152097562483685,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            3.7733609788119793,
+            3.7100580520927906,
+            3.7523601204156876,
+            3.7099479231983423,
+            10.10043709538877,
+            3.754087956622243,
+            3.6833968479186296,
+            3.6029720213264227,
+            3.6493861116468906,
+            3.6647149827331305,
+            3.6579901352524757,
+            4.381858976557851,
+            3.6483309231698513,
+            3.7049578968435526,
+            3.635128028690815,
+            3.725409973412752,
+            3.687463002279401,
+            3.6932879593223333,
+            3.6819111555814743,
+            3.704171860590577,
+            3.706974908709526,
+            3.6652020644396544,
+            3.697061911225319,
+            3.7665870040655136
+          ],
+          "evolved_worst": 0.003597750934912205,
+          "evolved_median": 0.0021248978293685467,
+          "all_times_worst": 0.003597750934912205,
+          "all_times_median": 0.0021248978293685467,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.01",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 3.101733047515154,
+          "total_ms_median": 3.9490200579166412,
+          "timing_outliers": 2,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.0032580653675518966,
+              "all_times": 0.0032580653675518966,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.006283990150918635,
+              "all_times": 0.006283990150918635,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.002083357952980631,
+              "all_times": 0.002083357952980631,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.002619141654506563,
+              "all_times": 0.002619141654506563,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0035696318632642476,
+              "all_times": 0.0035696318632642476,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.0037929553941935014,
+              "all_times": 0.0037929553941935014,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.0019904570913994767,
+              "all_times": 0.0019904570913994767,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.004231891044701744,
+              "all_times": 0.004231891044701744,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            3.2592611387372017,
+            10.500154923647642,
+            3.132744925096631,
+            3.1146761029958725,
+            3.0213010031729937,
+            2.9910621233284473,
+            3.0893529765307903,
+            3.1405799090862274,
+            9.21950489282608,
+            3.2583270221948624,
+            3.072907915338874,
+            3.049053018912673,
+            3.1060860492289066,
+            3.115135943517089,
+            3.004804952070117,
+            3.051288891583681,
+            3.0908179469406605,
+            3.079765010625124,
+            3.022673074156046,
+            3.1201948877424,
+            3.097336972132325,
+            3.097380045801401,
+            3.1348769553005695,
+            3.1573569867759943
+          ],
+          "evolved_worst": 0.006283990150918635,
+          "evolved_median": 0.0034138486154080723,
+          "all_times_worst": 0.006283990150918635,
+          "all_times_median": 0.0034138486154080723,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.02",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 1.882920041680336,
+          "total_ms_median": 2.7266049291938543,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.025704754207315734,
+              "all_times": 0.025704754207315734,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.49217058127993474,
+              "all_times": 0.49217058127993474,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.014127808060574064,
+              "all_times": 0.014127808060574064,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.024228010430475778,
+              "all_times": 0.024228010430475778,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.0432352148595668,
+              "all_times": 0.0432352148595668,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.09409887592339075,
+              "all_times": 0.09409887592339075,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.01409401103939097,
+              "all_times": 0.01409401103939097,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.15084225020459846,
+              "all_times": 0.15084225020459846,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            2.031448995694518,
+            1.8368579912930727,
+            1.8388640601187944,
+            1.8693320453166962,
+            1.912018982693553,
+            1.9562479574233294,
+            1.86582887545228,
+            1.9429400563240051,
+            1.9304549787193537,
+            1.904783071950078,
+            1.8757970537990332,
+            1.8070200458168983,
+            1.8524809274822474,
+            1.8996901344507933,
+            1.8322840332984924,
+            1.8339131493121386,
+            1.9113218877464533,
+            1.821617130190134,
+            1.8763600382953882,
+            1.892732921987772,
+            1.8863901495933533,
+            1.8794499337673187,
+            1.91277707926929,
+            2.025577938184142
+          ],
+          "evolved_worst": 0.49217058127993474,
+          "evolved_median": 0.034469984533441266,
+          "all_times_worst": 0.49217058127993474,
+          "all_times_median": 0.034469984533441266,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "fom_dt0.04",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 1.1903585400432348,
+          "total_ms_median": 2.0168779883533716,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.17759698204170488,
+              "all_times": 0.17759698204170488,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.9669885651183122,
+              "all_times": 0.9669885651183122,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.1144438550780813,
+              "all_times": 0.1144438550780813,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.1479956508145124,
+              "all_times": 0.1479956508145124,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.21299472461303276,
+              "all_times": 0.21299472461303276,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.33739850812284927,
+              "all_times": 0.33739850812284927,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.11320408359829036,
+              "all_times": 0.11320408359829036,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.4689418763764675,
+              "all_times": 0.4689418763764675,
+              "initial": 0.0,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            1.1841598898172379,
+            1.2379400432109833,
+            1.180144026875496,
+            1.1577210389077663,
+            1.2379048857837915,
+            1.1842530220746994,
+            1.1964640580117702,
+            1.2325330171734095,
+            1.219186931848526,
+            1.1343760415911674,
+            1.197444973513484,
+            1.1480769608169794,
+            1.1378740891814232,
+            1.222789054736495,
+            1.1723949573934078,
+            1.1418219655752182,
+            1.2299548834562302,
+            1.157101010903716,
+            1.1741321068257093,
+            1.2257709167897701,
+            1.2471789959818125,
+            1.1669069062918425,
+            1.2167019303888083,
+            1.312911044806242
+          ],
+          "evolved_worst": 0.9669885651183122,
+          "evolved_median": 0.19529585332736882,
+          "all_times_worst": 0.9669885651183122,
+          "all_times_median": 0.19529585332736882,
+          "initial_worst": 0.0,
+          "initial_median": 0.0,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "transolver3d_increment_projected",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 3.276727511547506,
+          "total_ms_median": 4.069578135386109,
+          "timing_outliers": 0,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.019499347612166106,
+              "all_times": 0.019499347612166106,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.0210776632651763,
+              "all_times": 0.0210776632651763,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.014913518698844367,
+              "all_times": 0.014913518698844367,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.02012239609555485,
+              "all_times": 0.02012239609555485,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.02114709365171541,
+              "all_times": 0.02114709365171541,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.026909225738958265,
+              "all_times": 0.026909225738958265,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.015357086636694349,
+              "all_times": 0.015357086636694349,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.014664310494817716,
+              "all_times": 0.014664310494817716,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            4.263448994606733,
+            3.4325190354138613,
+            3.289163112640381,
+            3.264291910454631,
+            3.3288500271737576,
+            3.317740047350526,
+            3.289479063823819,
+            3.3157668076455593,
+            3.386943833902478,
+            3.2065180130302906,
+            3.2349429093301296,
+            3.2563209533691406,
+            3.3396570943295956,
+            3.2436170149594545,
+            3.2334139104932547,
+            3.190660150721669,
+            3.0924109742045403,
+            3.0947779305279255,
+            3.201431129127741,
+            3.324186196550727,
+            3.262114943936467,
+            3.1658229418098927,
+            3.3175719436258078,
+            3.3066740725189447
+          ],
+          "evolved_worst": 0.026909225738958265,
+          "evolved_median": 0.019810871853860476,
+          "all_times_worst": 0.026909225738958265,
+          "all_times_median": 0.019810871853860476,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "transolver3d_increment_raw",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 3.1546219252049923,
+          "total_ms_median": 3.9701430359855294,
+          "timing_outliers": 1,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.030906671259063094,
+              "all_times": 0.030906671259063094,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.03275768965434941,
+              "all_times": 0.03275768965434941,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.024586551854063835,
+              "all_times": 0.024586551854063835,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.03220998244599102,
+              "all_times": 0.03220998244599102,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.032705766011683526,
+              "all_times": 0.032705766011683526,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.038863276936787275,
+              "all_times": 0.038863276936787275,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.026251430268703187,
+              "all_times": 0.026251430268703187,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.025989962442777494,
+              "all_times": 0.025989962442777494,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            4.17923997156322,
+            5.16407610848546,
+            3.1535730231553316,
+            3.3916139509528875,
+            3.144690068438649,
+            3.1717070378363132,
+            3.239220939576626,
+            3.1544629018753767,
+            3.205306828022003,
+            3.2627128530293703,
+            3.0502239242196083,
+            3.12152411788702,
+            3.3070649951696396,
+            3.1062958296388388,
+            3.103971015661955,
+            3.154780948534608,
+            3.04582086391747,
+            3.1583288218826056,
+            3.281836863607168,
+            3.012659028172493,
+            3.0340421944856644,
+            3.29600996337831,
+            3.142281901091337,
+            3.1289239414036274
+          ],
+          "evolved_worst": 0.038863276936787275,
+          "evolved_median": 0.03155832685252706,
+          "all_times_worst": 0.038863276936787275,
+          "all_times_median": 0.03155832685252706,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "unet3d_increment_projected",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 1.9084690138697624,
+          "total_ms_median": 2.66899645794183,
+          "timing_outliers": 1,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.016038454593097475,
+              "all_times": 0.016038454593097475,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.020440661810952762,
+              "all_times": 0.020440661810952762,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.01038718694270153,
+              "all_times": 0.01038718694270153,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.01339871156284453,
+              "all_times": 0.01339871156284453,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.017194571489895644,
+              "all_times": 0.017194571489895644,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.0163091785026802,
+              "all_times": 0.0163091785026802,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.009710467197024947,
+              "all_times": 0.009710467197024947,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.016123540577629936,
+              "all_times": 0.016123540577629936,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            1.8951529636979103,
+            1.9722399301826954,
+            1.9319988787174225,
+            1.8059059511870146,
+            1.9367160275578499,
+            1.964217983186245,
+            1.827373867854476,
+            1.9623320549726486,
+            1.9612768664956093,
+            3.055552951991558,
+            1.892148982733488,
+            1.8851710483431816,
+            1.8179069738835096,
+            1.984116854146123,
+            1.8896670080721378,
+            1.823249040171504,
+            1.9137191120535135,
+            1.9340910948812962,
+            1.8139160238206387,
+            1.9032189156860113,
+            1.9525489769876003,
+            1.838308060541749,
+            1.884058816358447,
+            1.986767863854766
+          ],
+          "evolved_worst": 0.020440661810952762,
+          "evolved_median": 0.016080997585363705,
+          "all_times_worst": 0.020440661810952762,
+          "all_times_median": 0.016080997585363705,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        },
+        {
+          "mesh": 32,
+          "method": "unet3d_increment_raw",
+          "cases": 8,
+          "invocations": 24,
+          "gpu_ms_median": 1.8573040142655373,
+          "total_ms_median": 2.6207733899354935,
+          "timing_outliers": 1,
+          "nonfinite_cases": 0,
+          "nonstationary_cases": 0,
+          "per_case": [
+            {
+              "case": 0,
+              "evolved": 0.017563166489128187,
+              "all_times": 0.017563166489128187,
+              "initial": 2.564534329319944e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 1,
+              "evolved": 0.02306287255133155,
+              "all_times": 0.02306287255133155,
+              "initial": 2.4419234679981056e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 2,
+              "evolved": 0.011682177677931428,
+              "all_times": 0.011682177677931428,
+              "initial": 2.5604608650769784e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 3,
+              "evolved": 0.014708663696306941,
+              "all_times": 0.014708663696306941,
+              "initial": 2.4303082744815633e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 4,
+              "evolved": 0.018585841009953974,
+              "all_times": 0.018585841009953974,
+              "initial": 2.4654119289227187e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 5,
+              "evolved": 0.017931512167253402,
+              "all_times": 0.017931512167253402,
+              "initial": 2.555841558284256e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 6,
+              "evolved": 0.01103379701615491,
+              "all_times": 0.01103379701615491,
+              "initial": 2.4931685712653284e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            },
+            {
+              "case": 7,
+              "evolved": 0.018357857949365376,
+              "all_times": 0.018357857949365376,
+              "initial": 2.4962393041943846e-16,
+              "physical": null,
+              "finite": true,
+              "stationary": true
+            }
+          ],
+          "gpu_ms_repetitions": [
+            1.8865391612052917,
+            1.9391279201954603,
+            1.8564080819487572,
+            1.7578769475221634,
+            1.8011368811130524,
+            1.888887956738472,
+            1.850638072937727,
+            1.8620360642671585,
+            1.932318089529872,
+            1.7353380098938942,
+            1.8137639854103327,
+            1.8391329795122147,
+            1.7406190745532513,
+            1.8594448920339346,
+            1.8287261482328176,
+            1.7606248147785664,
+            1.8581999465823174,
+            1.9101318903267384,
+            1.7726079095155,
+            1.852052053436637,
+            1.8815340008586645,
+            3.4834060352295637,
+            1.8683229573071003,
+            1.8964610062539577
+          ],
+          "evolved_worst": 0.02306287255133155,
+          "evolved_median": 0.017747339328190795,
+          "all_times_worst": 0.02306287255133155,
+          "all_times_median": 0.017747339328190795,
+          "initial_worst": 2.564534329319944e-16,
+          "initial_median": 2.4947039377298565e-16,
+          "physical_worst": null,
+          "physical_median": null,
+          "qualification": "development"
+        }
+      ],
+      "source": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+      "job_id": "3997427",
+      "gpu": "NVIDIA A100 80GB PCIe, 81920 MiB",
+      "invocation_coverage": {
+        "passed": true,
+        "checks": [
+          {
+            "mesh": 32,
+            "method": "deeponet3d_increment_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "deeponet3d_increment_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_increment_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fno3d_increment_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.002",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.004",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.008",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.01",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.02",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "fom_dt0.04",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_increment_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "transolver3d_increment_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_increment_projected",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          },
+          {
+            "mesh": 32,
+            "method": "unet3d_increment_raw",
+            "cases": 8,
+            "repetitions_per_case": 3,
+            "invocations": 24
+          }
+        ]
+      }
     }
   ],
   "provenance": {
-    "reports/2026-09-20-3d-paper-inputs.json": "2e69471aa4074f93fa4efd82012fea9ce76e94ec9852846910b79f3c1e50f2b4",
-    "reports/generate_3d_paper_results.py": "10f32be904cb3cbd8d8d94aff7cdfaa1de4eb1e6d85a86799f89ee562c6a70ea",
+    "reports/2026-09-20-3d-paper-inputs.json": "b1c765034a178455913af6eca2d308e407efac3c2ecacbad2a54637951943368",
+    "reports/generate_3d_paper_results.py": "a84ff474f75a101a563d650e65c94be57e5a4dd5e82257974b670f207f3f3033",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/audit-local.json": "13bf18997399042e8f753e81f93da4d688389371de4a748e3237d1e1198d5449",
     "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json": "24a616fd57d33baf30b1cc7f14fd529066baf65d62f4721d725c3dc16325caca",
@@ -112265,6 +114336,11 @@
     "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/extra03/collected/output/timing_rows.json": "2e8df74d036d7c283713290e796613f5fcffa5830513602b76dbde602d14774b",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/result.json": "d7726fa13131c4605c633890715503d108abad5a01400cb5f2edba4a6e43c6f9",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/audit-local.json": "e2ccddb8027ecbe52bdaaba26465a9e3574252791ee36f0b115e261f6385f4f5",
-    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/source-audit.json": "8666acaaa2e19b5486399b257a39443757392de30d6c57d3d730c6d67901c24f"
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/source-audit.json": "8666acaaa2e19b5486399b257a39443757392de30d6c57d3d730c6d67901c24f",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/result.json": "fe66c70c59f592acc28a4b41c8f87296d6812d3f46f96f22aa14f0432f296c99",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/audit.json": "c9ddb4da88dc736d47d51467d88d23d6bd3cefcb00182fd60315fc7e7652b43a",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/source_audit.json": "64779d1512268e317f15107a7c6cbb8ffc7ca74574050191f56dd3bcc057cde6",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/representation_gradient_audit.json": "b799640bf726ff1768fdb1e45e1f926c06e8a0d2bbb35a2154c1617237965005",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timing_rows.json": "4c218632c4659034b8d72cfc29085315e8a0bb607bd47df2c9afa1d116fc9b2b"
   }
 }

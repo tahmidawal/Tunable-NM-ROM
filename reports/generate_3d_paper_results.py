@@ -38,13 +38,14 @@ def number(value):
 def normalize(row, adapter, data):
     finite = bool(row.get("finite", True))
     if adapter == "ns_trajectory":
-        same, physical = row["same_grid_errors"], row["fine_grid_errors"]
+        same, physical = row["same_grid_errors"], row.get("fine_grid_errors")
         stationary = "steps" not in row or (row["cold"][2] == 4 and all(r == 4 for r in row["steps"][2]))
         return dict(mesh=data["config"]["n"], convention="periodic points per axis",
             method=row["method"], case=row["case"], repetition=row["repetition"],
             gpu_ms=1000*row["gpu_seconds"], total_ms=1000*row["with_host_seconds"], finite=finite,
             evolved=max(same[1:]) if finite else None, all_times=max(same) if finite else None,
-            initial=same[0] if finite else None, physical=max(physical[1:]) if finite else None,
+            initial=same[0] if finite else None,
+            physical=max(physical[1:]) if finite and physical is not None else None,
             stationary=stationary)
     if adapter == "burgers":
         return dict(
@@ -256,8 +257,11 @@ def main():
                       "evolution and dense output. Mesh size counts intervals per axis.", ""]
         elif entry["adapter"] == "ns_trajectory":
             lines += ["Errors use the initial velocity-field norm, with all three components combined. "
-                      "The evolved metric excludes time zero. Physical error uses Fourier interpolation "
-                      "to the independently refined grid. Total timing includes host transfers; device "
+                      "The evolved metric excludes time zero. " +
+                      ("Physical error uses Fourier interpolation to the independently refined grid. "
+                       if any(r["physical_worst"] is not None for r in rows) else
+                       "This timed panel has a same-grid reference only; physical errors are unmeasured. ") +
+                      "Total timing includes host transfers; device "
                       "timing includes initialization, evolution and every requested dense velocity field. "
                       "Mesh size counts periodic points per axis. The timed cohort is a declared subset "
                       "of the larger validation cohort; training-validation summaries are not substituted "
@@ -265,6 +269,26 @@ def main():
                       ("Saved latent histories support the linked independently sampled weak-gradient checks."
                        if entry.get("latent_history_audited") else
                        "Stopping records lack saved latent histories and support an internal-consistency check only."), ""]
+            capacity = data.get("capacity")
+            if capacity:
+                records = [("Unrestricted learned bank", capacity["development_bank_initial_normalized"], None)]
+                records += [(name, record["head_initial_normalized"], record["stationary_count"])
+                            for name, record in capacity["heads"].items()]
+                lines += ["Untimed representation diagnostics on the full development snapshots follow. "
+                          "They fit known reference states and use the initial vector-field norm, including time zero. "
+                          "Their errors are separate from predicted trajectory errors. " +
+                          ("Every retained head fit also has an independently reconstructed analytic gradient."
+                           if entry.get("representation_gradients_audited") else
+                           "Stationarity counts are recorded solver exits, not independently reconstructed gradients."), "",
+                          "| Representation | Snapshots | Median error (%) | Worst error (%) | Recorded stationary fits |",
+                          "| --- | ---: | ---: | ---: | ---: |"]
+                for name, values, stationary in records:
+                    lines.append(f"| `{name}` | {values['count']} | {pct(values['median'])} | "
+                                 f"{pct(values['worst'])} | {stationary if stationary is not None else '—'} |")
+                gate = data["larger_rollout_gate"]
+                lines += ["", f"The predeclared new NM-ROM rollout eligibility gate was "
+                          f"**{'passed' if gate['eligible'] else 'failed'}**. "
+                          "The timed methods below are exactly those measured in this attempt.", ""]
         else:
             lines += ["Errors use the reference solution norm. There is one stationary output field; "
                       "evolved, initial and all-times terminology does not apply. Total timing includes "

@@ -2,8 +2,8 @@
   "passed": true,
   "scope": "One independently recomputed worst-case field per method and mesh; no solver imports or independent retraining.",
   "inputs": {
-    "reports/2026-09-20-3d-paper-inputs.json": "2e69471aa4074f93fa4efd82012fea9ce76e94ec9852846910b79f3c1e50f2b4",
-    "reports/audit_3d_saved_fields.py": "9550dc90190b597f293ac5f603d63dfbe89cc42f1de81674faeae9d2a08931bc",
+    "reports/2026-09-20-3d-paper-inputs.json": "1b8961641efd84a9e516e2ac37040741e1eb369501c115cf5afa2fc02952f68d",
+    "reports/audit_3d_saved_fields.py": "634cd0ea2d2ad36e8e8a7a9d7f68b0d4ef64afdc1ebe355d7b36037e853882c1",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-02_case5_rep0.npz": "0159d55a6d43c83c134abaaf9f33f6ee35126ab6586d6f1efb1cabb166fd27c0",
     "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case5.npz": "1eccda6937db84b5666da7d873c2fcdd0af702891796a1192428f4a8ca2a09f8",
@@ -587,7 +587,11 @@
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/fields/N64_case0_transolver3d_w48_s32_native32_interpolate.npz": "36ef066421f559dbe6bbc26e4f644294483333b080f4b138ceac744f20d6d39f",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/fields/N64_case3_unet3d_w16.npz": "c68809d3cbe83994260368e7e7c215279598780fc3b556baa7574f4a0166c0a9",
     "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/fields/N64_case3_reference.npz": "7b0b1f26c73807f2d0aca8f3409613765dabb7572f617c867e428741356565dc",
-    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "7455c24116f7e75455dade61653abe900f88e41b5108f1a5e573e118ee809a00"
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "7455c24116f7e75455dade61653abe900f88e41b5108f1a5e573e118ee809a00",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/result.json": "fe66c70c59f592acc28a4b41c8f87296d6812d3f46f96f22aa14f0432f296c99",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timing_rows.json": "4c218632c4659034b8d72cfc29085315e8a0bb607bd47df2c9afa1d116fc9b2b",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timing_references.npz": "1f146a9c8e4722c195cde432d832e449839493ccb86c4c5da452f63a6b24e3b3",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/collected/output/timed_fields.npz": "bad3df77f817ff7b02d2f049eff008165460e414bfc73bee345c982b9788aef9"
   },
   "checks": [
     {
@@ -13152,6 +13156,328 @@
       "discrepancies": {
         "same_grid_error": 5.204170427930421e-18,
         "physical_error": 1.3010426069826053e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "deeponet3d_increment_projected",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.6432941549049477,
+        "worst_all": 0.6432941549049477,
+        "initial_error": 2.4419234679981066e-16
+      },
+      "reported": {
+        "worst_evolved": 0.6432941549049475,
+        "worst_all": 0.6432941549049475,
+        "initial_error": 2.4419234679981056e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 2.220446049250313e-16,
+        "worst_all": 2.220446049250313e-16,
+        "initial_error": 9.860761315262648e-32
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "deeponet3d_increment_raw",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.6434621254738148,
+        "worst_all": 0.6434621254738148,
+        "initial_error": 2.4419234679981066e-16
+      },
+      "reported": {
+        "worst_evolved": 0.6434621254738145,
+        "worst_all": 0.6434621254738145,
+        "initial_error": 2.4419234679981056e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 2.220446049250313e-16,
+        "worst_all": 2.220446049250313e-16,
+        "initial_error": 9.860761315262648e-32
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fno3d_increment_projected",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.004703340360460194,
+        "worst_all": 0.004703340360460194,
+        "initial_error": 2.555841558284256e-16
+      },
+      "reported": {
+        "worst_evolved": 0.004703340360460194,
+        "worst_all": 0.004703340360460194,
+        "initial_error": 2.555841558284256e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fno3d_increment_raw",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.0055205940787098695,
+        "worst_all": 0.0055205940787098695,
+        "initial_error": 2.555841558284256e-16
+      },
+      "reported": {
+        "worst_evolved": 0.0055205940787098695,
+        "worst_all": 0.0055205940787098695,
+        "initial_error": 2.555841558284256e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.002",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.00021306215148585067,
+        "worst_all": 0.00021306215148585067,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.00021306215148585058,
+        "worst_all": 0.00021306215148585058,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 8.131516293641283e-20,
+        "worst_all": 8.131516293641283e-20,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.004",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.0008659903839402427,
+        "worst_all": 0.0008659903839402427,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.0008659903839402424,
+        "worst_all": 0.0008659903839402424,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 3.2526065174565133e-19,
+        "worst_all": 3.2526065174565133e-19,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.008",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.0035977509349122065,
+        "worst_all": 0.0035977509349122065,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.003597750934912205,
+        "worst_all": 0.003597750934912205,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 1.3010426069826053e-18,
+        "worst_all": 1.3010426069826053e-18,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.01",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.006283990150918637,
+        "worst_all": 0.006283990150918637,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.006283990150918635,
+        "worst_all": 0.006283990150918635,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 1.734723475976807e-18,
+        "worst_all": 1.734723475976807e-18,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.02",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.4921705812799349,
+        "worst_all": 0.4921705812799349,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.49217058127993474,
+        "worst_all": 0.49217058127993474,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 1.6653345369377348e-16,
+        "worst_all": 1.6653345369377348e-16,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "fom_dt0.04",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.9669885651183125,
+        "worst_all": 0.9669885651183125,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.9669885651183122,
+        "worst_all": 0.9669885651183122,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 3.3306690738754696e-16,
+        "worst_all": 3.3306690738754696e-16,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "transolver3d_increment_projected",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.026909225738958265,
+        "worst_all": 0.026909225738958265,
+        "initial_error": 2.555841558284256e-16
+      },
+      "reported": {
+        "worst_evolved": 0.026909225738958265,
+        "worst_all": 0.026909225738958265,
+        "initial_error": 2.555841558284256e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "transolver3d_increment_raw",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.038863276936787275,
+        "worst_all": 0.038863276936787275,
+        "initial_error": 2.555841558284256e-16
+      },
+      "reported": {
+        "worst_evolved": 0.038863276936787275,
+        "worst_all": 0.038863276936787275,
+        "initial_error": 2.555841558284256e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "unet3d_increment_projected",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.02044066181095277,
+        "worst_all": 0.02044066181095277,
+        "initial_error": 2.4419234679981066e-16
+      },
+      "reported": {
+        "worst_evolved": 0.020440661810952762,
+        "worst_all": 0.020440661810952762,
+        "initial_error": 2.4419234679981056e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 6.938893903907228e-18,
+        "worst_all": 6.938893903907228e-18,
+        "initial_error": 9.860761315262648e-32
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "coverage04",
+      "method": "unet3d_increment_raw",
+      "mesh": 32,
+      "case": 1,
+      "observed": {
+        "worst_evolved": 0.02306287255133156,
+        "worst_all": 0.02306287255133156,
+        "initial_error": 2.4419234679981066e-16
+      },
+      "reported": {
+        "worst_evolved": 0.02306287255133155,
+        "worst_all": 0.02306287255133155,
+        "initial_error": 2.4419234679981056e-16
+      },
+      "discrepancies": {
+        "worst_evolved": 6.938893903907228e-18,
+        "worst_all": 6.938893903907228e-18,
+        "initial_error": 9.860761315262648e-32
       },
       "passed": true
     }

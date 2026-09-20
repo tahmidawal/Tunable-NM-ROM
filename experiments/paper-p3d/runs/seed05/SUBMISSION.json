@@ -1,0 +1,14 @@
+{
+  "job_id": 4019009,
+  "source_commit": "59651088953df04f78e4193210ec400d6cf50f1f",
+  "config_sha256": "35ca44f62b0cb0fc3055e0abe15ae7d97fcb7122848e1c69c3dccf7dadbe159f",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_p3d_20260920/seed05",
+  "submitted_utc": "2026-09-20T15:26:59.921933+00:00",
+  "requested_gpu": "a100",
+  "wall_limit": "02:00:00",
+  "final_cohort_opened": false,
+  "queue_before": "4018959 ctol_paper_b3d006 RUNNING 0:41 pax051\n4018922 ctol_h3d_920_coverage05 RUNNING 1:14 pax105\n",
+  "queue_after": "4019009 ctol_p3d_920_seed05 RUNNING 0:00 pax052\n4018959 ctol_paper_b3d006 RUNNING 0:42 pax051\n4018922 ctol_h3d_920_coverage05 RUNNING 1:15 pax105\n",
+  "scontrol": "JobId=4019009 JobName=ctol_p3d_920_seed05\n   UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A\n   Priority=699 Nice=0 Account=default QOS=normal\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-09-20T11:26:59 EligibleTime=2026-09-20T11:26:59\n   AccrueTime=2026-09-20T11:26:59\n   StartTime=2026-09-20T11:27:00 EndTime=2026-09-20T13:27:00 Deadline=N/A\n   PreemptEligibleTime=2026-09-20T11:27:00 PreemptTime=None\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-20T11:27:00 Scheduler=Main\n   Partition=gpu AllocNode:Sid=login-p02:2739603\n   ReqNodeList=(null) ExcNodeList=pax007\n   NodeList=pax052\n   BatchHost=pax052\n   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)\n   Command=/cluster/tufts/paralab/tawal01/paper_p3d_20260920/seed05/run.sbatch\n   WorkDir=/cluster/home/tawal01\n   StdErr=/cluster/tufts/paralab/tawal01/paper_p3d_20260920/seed05/job.err\n   StdIn=/dev/null\n   StdOut=/cluster/tufts/paralab/tawal01/paper_p3d_20260920/seed05/job.out\n   Power=\n   TresPerNode=gres/gpu:a100:1\n   TresPerTask=cpu:8\n   \n\n",
+  "source_checksums_verified": true
+}

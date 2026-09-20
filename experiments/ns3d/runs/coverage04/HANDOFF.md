@@ -128,8 +128,12 @@ Its longer correction ladder remeasures every rung at one fixed larger test
 count. A missed exploratory gate must still lead to an explicitly negative,
 bounded final NM-ROM measurement under the final-panel requirement above.
 
-After this attempt is quiescent, checksum-collected, source-verified and audited,
-stage the committed future source in its own unsubmitted attempt:
+The future source has already been staged locally at `runs/capacity05`, pinned
+to `4d675dd97c12ea47b90b7ca9720bc9bf0623da7f`. Its source manifest passed locally.
+It has no reuse checkpoint bundle yet, has not been transferred, and has not
+been submitted. The first command below is the recorded staging command; do
+not rerun it against the existing staged attempt. After this live attempt is
+quiescent, checksum-collected, source-verified and audited, run the second:
 
 ```bash
 /home/tahmid/Dev/.venv/bin/python experiments/ns3d/cluster/stage.py capacity05 \

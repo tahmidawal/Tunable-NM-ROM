@@ -1,0 +1,506 @@
+jax_backend=gpu f64=True precision=highest
+REFERENCE 1 528 elapsed 51.6
+REFERENCE 9 528 elapsed 53.1
+REFERENCE 17 528 elapsed 54.4
+REFERENCE 25 528 elapsed 55.8
+REFERENCE 33 528 elapsed 57.2
+REFERENCE 41 528 elapsed 58.7
+REFERENCE 49 528 elapsed 60.1
+REFERENCE 57 528 elapsed 61.4
+REFERENCE 65 528 elapsed 62.9
+REFERENCE 73 528 elapsed 64.3
+REFERENCE 81 528 elapsed 65.8
+REFERENCE 89 528 elapsed 67.2
+REFERENCE 97 528 elapsed 68.7
+REFERENCE 105 528 elapsed 70.1
+REFERENCE 113 528 elapsed 71.5
+REFERENCE 121 528 elapsed 73.0
+REFERENCE 129 528 elapsed 74.3
+REFERENCE 137 528 elapsed 75.9
+REFERENCE 145 528 elapsed 77.3
+REFERENCE 153 528 elapsed 78.8
+REFERENCE 161 528 elapsed 80.1
+REFERENCE 169 528 elapsed 81.6
+REFERENCE 177 528 elapsed 83.0
+REFERENCE 185 528 elapsed 84.4
+REFERENCE 193 528 elapsed 85.9
+REFERENCE 201 528 elapsed 87.5
+REFERENCE 209 528 elapsed 88.9
+REFERENCE 217 528 elapsed 90.5
+REFERENCE 225 528 elapsed 92.0
+REFERENCE 233 528 elapsed 93.6
+REFERENCE 241 528 elapsed 95.0
+REFERENCE 249 528 elapsed 96.5
+REFERENCE 257 528 elapsed 97.9
+REFERENCE 265 528 elapsed 99.3
+REFERENCE 273 528 elapsed 100.8
+REFERENCE 281 528 elapsed 102.3
+REFERENCE 289 528 elapsed 103.8
+REFERENCE 297 528 elapsed 105.2
+REFERENCE 305 528 elapsed 106.7
+REFERENCE 313 528 elapsed 108.3
+REFERENCE 321 528 elapsed 109.9
+REFERENCE 329 528 elapsed 111.3
+REFERENCE 337 528 elapsed 112.8
+REFERENCE 345 528 elapsed 114.4
+REFERENCE 353 528 elapsed 115.8
+REFERENCE 361 528 elapsed 117.3
+REFERENCE 369 528 elapsed 118.7
+REFERENCE 377 528 elapsed 120.2
+REFERENCE 385 528 elapsed 121.7
+REFERENCE 393 528 elapsed 123.2
+REFERENCE 401 528 elapsed 124.7
+REFERENCE 409 528 elapsed 126.2
+REFERENCE 417 528 elapsed 127.8
+REFERENCE 425 528 elapsed 129.3
+REFERENCE 433 528 elapsed 130.7
+REFERENCE 441 528 elapsed 132.3
+REFERENCE 449 528 elapsed 133.8
+REFERENCE 457 528 elapsed 135.4
+REFERENCE 465 528 elapsed 136.9
+REFERENCE 473 528 elapsed 138.4
+REFERENCE 481 528 elapsed 139.9
+REFERENCE 489 528 elapsed 141.4
+REFERENCE 497 528 elapsed 143.0
+REFERENCE 505 528 elapsed 144.5
+REFERENCE 513 528 elapsed 146.4
+REFERENCE 521 528 elapsed 150.9
+REFERENCE 528 528 elapsed 154.9
+DIRECTIONS complete 196.4
+REPRESENTATION 0 {'q': 0, 'mean': 0.025706431129464316, 'median': 0.021872929138261298, 'worst': 0.09606283682734844, 'stationary': 64, 'n': 64, 'artifact': 'representation_q0.npz'}
+REPRESENTATION 64 {'q': 64, 'mean': 0.023345960721867995, 'median': 0.019789887471723423, 'worst': 0.08866067920273954, 'stationary': 64, 'n': 64, 'artifact': 'representation_q64.npz'}
+REPRESENTATION 128 {'q': 128, 'mean': 0.018942752382836568, 'median': 0.015307139703255227, 'worst': 0.07362529029555274, 'stationary': 64, 'n': 64, 'artifact': 'representation_q128.npz'}
+REPRESENTATION 192 {'q': 192, 'mean': 0.009954360397595516, 'median': 0.00974964861546853, 'worst': 0.02890078257179076, 'stationary': 64, 'n': 64, 'artifact': 'representation_q192.npz'}
+TIMING rom_q128 2 2 378.85 err 0.06845 stationary True
+TIMING rom_q128 3 2 334.28 err 0.01215 stationary True
+TIMING rom_q128 11 1 372.89 err 0.02982 stationary True
+TIMING rom_q128 0 0 375.0 err 0.03066 stationary True
+TIMING rom_q128 4 2 374.02 err 0.03087 stationary True
+TIMING rom_q128 1 0 329.92 err 0.00973 stationary True
+TIMING rom_q128 8 2 336.34 err 0.04567 stationary True
+TIMING rom_q128 9 2 391.16 err 0.0462 stationary True
+TIMING rom_q128 2 0 378.47 err 0.06845 stationary True
+TIMING rom_q128 10 0 339.15 err 0.01396 stationary True
+TIMING rom_q128 5 1 387.64 err 0.02396 stationary True
+TIMING rom_q128 1 1 330.33 err 0.00973 stationary True
+TIMING rom_q128 3 0 336.16 err 0.01215 stationary True
+TIMING rom_q128 14 2 366.3 err 0.038 stationary True
+TIMING rom_q128 9 1 390.36 err 0.0462 stationary True
+TIMING rom_q128 5 2 388.63 err 0.02396 stationary True
+TIMING rom_q128 5 0 388.56 err 0.02396 stationary True
+TIMING rom_q128 7 0 364.0 err 0.01498 stationary True
+TIMING rom_q128 1 2 329.59 err 0.00973 stationary True
+TIMING rom_q128 2 1 379.53 err 0.06845 stationary True
+TIMING rom_q128 15 0 374.28 err 0.03301 stationary True
+TIMING rom_q128 0 2 375.76 err 0.03066 stationary True
+TIMING rom_q128 8 0 338.44 err 0.04567 stationary True
+TIMING rom_q128 7 2 364.44 err 0.01498 stationary True
+TIMING rom_q128 6 2 329.61 err 0.01399 stationary True
+TIMING rom_q128 14 1 368.32 err 0.038 stationary True
+TIMING rom_q128 6 1 328.89 err 0.01399 stationary True
+TIMING rom_q128 7 1 365.01 err 0.01498 stationary True
+TIMING rom_q128 13 2 379.7 err 0.02932 stationary True
+TIMING rom_q128 15 1 376.29 err 0.03301 stationary True
+TIMING rom_q128 0 1 376.34 err 0.03066 stationary True
+TIMING rom_q128 13 1 379.04 err 0.02932 stationary True
+TIMING rom_q128 3 1 336.58 err 0.01215 stationary True
+TIMING rom_q128 12 0 318.87 err 0.00626 stationary True
+TIMING rom_q128 4 1 374.94 err 0.03087 stationary True
+TIMING rom_q128 10 2 341.88 err 0.01396 stationary True
+TIMING rom_q128 14 0 367.14 err 0.038 stationary True
+TIMING rom_q128 4 0 375.74 err 0.03087 stationary True
+TIMING rom_q128 8 1 337.22 err 0.04567 stationary True
+TIMING rom_q128 9 0 391.01 err 0.0462 stationary True
+TIMING rom_q128 6 0 330.0 err 0.01399 stationary True
+TIMING rom_q128 11 0 374.93 err 0.02982 stationary True
+TIMING rom_q128 12 2 318.08 err 0.00626 stationary True
+TIMING rom_q128 11 2 374.72 err 0.02982 stationary True
+TIMING rom_q128 13 0 379.11 err 0.02932 stationary True
+TIMING rom_q128 15 2 377.12 err 0.03301 stationary True
+TIMING rom_q128 12 1 319.06 err 0.00626 stationary True
+TIMING rom_q128 10 1 339.69 err 0.01396 stationary True
+TIMING rom_q0 14 2 229.83 err 0.0531 stationary True
+TIMING rom_q0 12 1 215.22 err 0.00754 stationary True
+TIMING rom_q0 6 1 206.54 err 0.02019 stationary True
+TIMING rom_q0 5 1 235.13 err 0.03172 stationary True
+TIMING rom_q0 7 2 221.42 err 0.02122 stationary True
+TIMING rom_q0 3 0 209.13 err 0.01693 stationary True
+TIMING rom_q0 15 1 220.42 err 0.05348 stationary True
+TIMING rom_q0 4 1 226.31 err 0.04309 stationary True
+TIMING rom_q0 8 2 210.95 err 0.06676 stationary True
+TIMING rom_q0 6 0 207.08 err 0.02019 stationary True
+TIMING rom_q0 14 1 229.66 err 0.0531 stationary True
+TIMING rom_q0 7 1 220.85 err 0.02122 stationary True
+TIMING rom_q0 6 2 206.4 err 0.02019 stationary True
+TIMING rom_q0 9 2 231.7 err 0.07163 stationary True
+TIMING rom_q0 13 2 233.34 err 0.04429 stationary True
+TIMING rom_q0 9 0 231.96 err 0.07163 stationary True
+TIMING rom_q0 10 0 211.63 err 0.01967 stationary True
+TIMING rom_q0 11 1 225.28 err 0.03706 stationary True
+TIMING rom_q0 14 0 229.91 err 0.0531 stationary True
+TIMING rom_q0 4 2 226.47 err 0.04309 stationary True
+TIMING rom_q0 12 2 214.77 err 0.00754 stationary True
+TIMING rom_q0 0 0 241.16 err 0.04565 stationary True
+TIMING rom_q0 1 0 202.67 err 0.01407 stationary True
+TIMING rom_q0 3 2 209.11 err 0.01693 stationary True
+TIMING rom_q0 2 2 227.91 err 0.08988 stationary True
+TIMING rom_q0 8 0 211.25 err 0.06676 stationary True
+TIMING rom_q0 0 2 240.59 err 0.04565 stationary True
+TIMING rom_q0 3 1 209.26 err 0.01693 stationary True
+TIMING rom_q0 4 0 226.39 err 0.04309 stationary True
+TIMING rom_q0 15 0 221.5 err 0.05348 stationary True
+TIMING rom_q0 5 2 234.48 err 0.03172 stationary True
+TIMING rom_q0 2 1 228.19 err 0.08988 stationary True
+TIMING rom_q0 10 1 211.08 err 0.01967 stationary True
+TIMING rom_q0 15 2 221.07 err 0.05348 stationary True
+TIMING rom_q0 9 1 231.6 err 0.07163 stationary True
+TIMING rom_q0 11 0 225.75 err 0.03706 stationary True
+TIMING rom_q0 10 2 211.44 err 0.01967 stationary True
+TIMING rom_q0 13 0 233.21 err 0.04429 stationary True
+TIMING rom_q0 8 1 210.72 err 0.06676 stationary True
+TIMING rom_q0 12 0 215.12 err 0.00754 stationary True
+TIMING rom_q0 7 0 220.63 err 0.02122 stationary True
+TIMING rom_q0 2 0 228.49 err 0.08988 stationary True
+TIMING rom_q0 1 2 202.5 err 0.01407 stationary True
+TIMING rom_q0 5 0 235.46 err 0.03172 stationary True
+TIMING rom_q0 1 1 202.78 err 0.01407 stationary True
+TIMING rom_q0 0 1 240.8 err 0.04565 stationary True
+TIMING rom_q0 13 1 232.86 err 0.04429 stationary True
+TIMING rom_q0 11 2 225.42 err 0.03706 stationary True
+TIMING pod_192 2 1 240.39 err 0.01567 stationary True
+TIMING pod_192 7 0 240.66 err 0.00443 stationary True
+TIMING pod_192 6 0 240.3 err 0.00156 stationary True
+TIMING pod_192 2 2 240.57 err 0.01567 stationary True
+TIMING pod_192 6 2 240.21 err 0.00156 stationary True
+TIMING pod_192 7 1 240.62 err 0.00443 stationary True
+TIMING pod_192 10 2 240.94 err 0.00213 stationary True
+TIMING pod_192 1 1 240.71 err 0.00281 stationary True
+TIMING pod_192 7 2 239.82 err 0.00443 stationary True
+TIMING pod_192 1 2 240.56 err 0.00281 stationary True
+TIMING pod_192 13 1 240.04 err 0.00829 stationary True
+TIMING pod_192 8 0 240.55 err 0.01433 stationary True
+TIMING pod_192 11 1 240.56 err 0.01327 stationary True
+TIMING pod_192 14 0 240.87 err 0.0076 stationary True
+TIMING pod_192 4 0 239.74 err 0.00731 stationary True
+TIMING pod_192 15 0 240.5 err 0.01074 stationary True
+TIMING pod_192 4 2 240.14 err 0.00731 stationary True
+TIMING pod_192 12 0 240.95 err 0.00315 stationary True
+TIMING pod_192 8 2 240.17 err 0.01433 stationary True
+TIMING pod_192 10 1 240.15 err 0.00213 stationary True
+TIMING pod_192 11 2 240.24 err 0.01327 stationary True
+TIMING pod_192 13 0 241.09 err 0.00829 stationary True
+TIMING pod_192 5 0 240.03 err 0.01311 stationary True
+TIMING pod_192 9 0 240.44 err 0.00909 stationary True
+TIMING pod_192 15 2 240.13 err 0.01074 stationary True
+TIMING pod_192 5 1 240.35 err 0.01311 stationary True
+TIMING pod_192 15 1 240.57 err 0.01074 stationary True
+TIMING pod_192 12 1 239.87 err 0.00315 stationary True
+TIMING pod_192 2 0 240.44 err 0.01567 stationary True
+TIMING pod_192 8 1 240.8 err 0.01433 stationary True
+TIMING pod_192 0 2 240.13 err 0.0062 stationary True
+TIMING pod_192 1 0 240.72 err 0.00281 stationary True
+TIMING pod_192 0 1 240.45 err 0.0062 stationary True
+TIMING pod_192 6 1 240.96 err 0.00156 stationary True
+TIMING pod_192 0 0 240.53 err 0.0062 stationary True
+TIMING pod_192 4 1 240.99 err 0.00731 stationary True
+TIMING pod_192 9 2 240.95 err 0.00909 stationary True
+TIMING pod_192 3 2 241.99 err 0.00195 stationary True
+TIMING pod_192 9 1 240.31 err 0.00909 stationary True
+TIMING pod_192 3 1 241.43 err 0.00195 stationary True
+TIMING pod_192 14 2 240.45 err 0.0076 stationary True
+TIMING pod_192 14 1 241.63 err 0.0076 stationary True
+TIMING pod_192 12 2 240.81 err 0.00315 stationary True
+TIMING pod_192 3 0 241.15 err 0.00195 stationary True
+TIMING pod_192 5 2 241.15 err 0.01311 stationary True
+TIMING pod_192 11 0 241.43 err 0.01327 stationary True
+TIMING pod_192 10 0 240.39 err 0.00213 stationary True
+TIMING pod_192 13 2 241.11 err 0.00829 stationary True
+TIMING pod_256 11 1 309.18 err 0.01136 stationary True
+TIMING pod_256 15 1 310.39 err 0.00638 stationary True
+TIMING pod_256 11 2 309.22 err 0.01136 stationary True
+TIMING pod_256 6 1 310.38 err 0.00094 stationary True
+TIMING pod_256 0 2 310.12 err 0.00444 stationary True
+TIMING pod_256 15 0 310.05 err 0.00638 stationary True
+TIMING pod_256 8 0 309.65 err 0.00774 stationary True
+TIMING pod_256 2 2 310.1 err 0.01007 stationary True
+TIMING pod_256 15 2 310.09 err 0.00638 stationary True
+TIMING pod_256 4 1 310.13 err 0.00428 stationary True
+TIMING pod_256 2 0 309.8 err 0.01007 stationary True
+TIMING pod_256 10 2 309.9 err 0.00125 stationary True
+TIMING pod_256 13 0 310.62 err 0.00508 stationary True
+TIMING pod_256 12 0 310.11 err 0.00195 stationary True
+TIMING pod_256 4 0 309.53 err 0.00428 stationary True
+TIMING pod_256 8 2 310.75 err 0.00774 stationary True
+TIMING pod_256 7 1 309.29 err 0.00231 stationary True
+TIMING pod_256 11 0 310.16 err 0.01136 stationary True
+TIMING pod_256 14 2 309.43 err 0.00422 stationary True
+TIMING pod_256 10 1 310.22 err 0.00125 stationary True
+TIMING pod_256 13 1 310.33 err 0.00508 stationary True
+TIMING pod_256 1 0 310.32 err 0.00172 stationary True
+TIMING pod_256 0 0 309.18 err 0.00444 stationary True
+TIMING pod_256 8 1 309.73 err 0.00774 stationary True
+TIMING pod_256 9 2 309.74 err 0.00624 stationary True
+TIMING pod_256 6 0 310.26 err 0.00094 stationary True
+TIMING pod_256 7 2 310.16 err 0.00231 stationary True
+TIMING pod_256 14 1 310.81 err 0.00422 stationary True
+TIMING pod_256 14 0 309.71 err 0.00422 stationary True
+TIMING pod_256 12 1 311.06 err 0.00195 stationary True
+TIMING pod_256 2 1 309.75 err 0.01007 stationary True
+TIMING pod_256 6 2 310.74 err 0.00094 stationary True
+TIMING pod_256 4 2 310.04 err 0.00428 stationary True
+TIMING pod_256 1 1 310.59 err 0.00172 stationary True
+TIMING pod_256 12 2 309.6 err 0.00195 stationary True
+TIMING pod_256 0 1 310.04 err 0.00444 stationary True
+TIMING pod_256 9 0 310.61 err 0.00624 stationary True
+TIMING pod_256 7 0 310.6 err 0.00231 stationary True
+TIMING pod_256 9 1 309.83 err 0.00624 stationary True
+TIMING pod_256 10 0 310.51 err 0.00125 stationary True
+TIMING pod_256 5 0 310.57 err 0.01036 stationary True
+TIMING pod_256 1 2 309.8 err 0.00172 stationary True
+TIMING pod_256 13 2 309.79 err 0.00508 stationary True
+TIMING pod_256 3 0 310.32 err 0.00108 stationary True
+TIMING pod_256 3 1 310.54 err 0.00108 stationary True
+TIMING pod_256 5 1 310.45 err 0.01036 stationary True
+TIMING pod_256 3 2 310.4 err 0.00108 stationary True
+TIMING pod_256 5 2 309.99 err 0.01036 stationary True
+TIMING rom_q192 7 0 381.18 err 0.00805 stationary True
+TIMING rom_q192 12 1 351.52 err 0.0051 stationary True
+TIMING rom_q192 11 1 383.62 err 0.01784 stationary True
+TIMING rom_q192 15 1 352.07 err 0.01259 stationary True
+TIMING rom_q192 5 1 386.62 err 0.0179 stationary True
+TIMING rom_q192 5 0 386.65 err 0.0179 stationary True
+TIMING rom_q192 5 2 386.87 err 0.0179 stationary True
+TIMING rom_q192 1 2 372.39 err 0.00513 stationary True
+TIMING rom_q192 13 2 413.65 err 0.01139 stationary True
+TIMING rom_q192 7 1 381.93 err 0.00805 stationary True
+TIMING rom_q192 15 2 353.31 err 0.01259 stationary True
+TIMING rom_q192 4 0 372.98 err 0.01235 stationary True
+TIMING rom_q192 11 0 384.52 err 0.01784 stationary True
+TIMING rom_q192 3 1 384.14 err 0.00509 stationary True
+TIMING rom_q192 9 2 365.27 err 0.01333 stationary True
+TIMING rom_q192 1 0 371.68 err 0.00513 stationary True
+TIMING rom_q192 9 0 366.05 err 0.01333 stationary True
+TIMING rom_q192 2 0 393.3 err 0.02435 stationary True
+TIMING rom_q192 2 2 392.14 err 0.02435 stationary True
+TIMING rom_q192 4 2 373.47 err 0.01235 stationary True
+TIMING rom_q192 15 0 352.29 err 0.01259 stationary True
+TIMING rom_q192 14 0 377.64 err 0.01047 stationary True
+TIMING rom_q192 14 1 378.14 err 0.01047 stationary True
+TIMING rom_q192 11 2 386.1 err 0.01784 stationary True
+TIMING rom_q192 2 1 391.81 err 0.02435 stationary True
+TIMING rom_q192 3 0 384.0 err 0.00509 stationary True
+TIMING rom_q192 0 0 396.96 err 0.00882 stationary True
+TIMING rom_q192 6 1 354.61 err 0.00355 stationary True
+TIMING rom_q192 12 0 353.45 err 0.0051 stationary True
+TIMING rom_q192 12 2 352.08 err 0.0051 stationary True
+TIMING rom_q192 10 2 381.44 err 0.00481 stationary True
+TIMING rom_q192 6 0 355.26 err 0.00355 stationary True
+TIMING rom_q192 7 2 382.47 err 0.00805 stationary True
+TIMING rom_q192 3 2 385.66 err 0.00509 stationary True
+TIMING rom_q192 8 2 373.96 err 0.01728 stationary True
+TIMING rom_q192 9 1 365.05 err 0.01333 stationary True
+TIMING rom_q192 13 0 413.47 err 0.01139 stationary True
+TIMING rom_q192 0 2 398.13 err 0.00882 stationary True
+TIMING rom_q192 8 0 373.31 err 0.01728 stationary True
+TIMING rom_q192 10 0 381.73 err 0.00481 stationary True
+TIMING rom_q192 8 1 372.54 err 0.01728 stationary True
+TIMING rom_q192 4 1 374.19 err 0.01235 stationary True
+TIMING rom_q192 14 2 377.59 err 0.01047 stationary True
+TIMING rom_q192 0 1 398.66 err 0.00882 stationary True
+TIMING rom_q192 1 1 372.36 err 0.00513 stationary True
+TIMING rom_q192 10 1 382.36 err 0.00481 stationary True
+TIMING rom_q192 13 1 413.63 err 0.01139 stationary True
+TIMING rom_q192 6 2 354.41 err 0.00355 stationary True
+TIMING free_R256 3 2 310.24 err 0.00509 stationary True
+TIMING free_R256 1 1 310.32 err 0.00513 stationary True
+TIMING free_R256 14 2 311.02 err 0.01047 stationary True
+TIMING free_R256 4 2 310.03 err 0.01235 stationary True
+TIMING free_R256 13 0 310.05 err 0.01139 stationary True
+TIMING free_R256 0 0 311.33 err 0.00882 stationary True
+TIMING free_R256 3 0 309.92 err 0.00509 stationary True
+TIMING free_R256 0 2 310.47 err 0.00882 stationary True
+TIMING free_R256 11 2 309.86 err 0.01784 stationary True
+TIMING free_R256 5 0 310.64 err 0.0179 stationary True
+TIMING free_R256 14 1 309.9 err 0.01047 stationary True
+TIMING free_R256 8 1 310.56 err 0.01728 stationary True
+TIMING free_R256 13 2 310.75 err 0.01139 stationary True
+TIMING free_R256 9 2 309.99 err 0.01333 stationary True
+TIMING free_R256 11 1 309.57 err 0.01784 stationary True
+TIMING free_R256 6 1 310.64 err 0.00355 stationary True
+TIMING free_R256 5 2 310.03 err 0.0179 stationary True
+TIMING free_R256 12 1 310.6 err 0.0051 stationary True
+TIMING free_R256 7 1 309.84 err 0.00805 stationary True
+TIMING free_R256 7 2 309.94 err 0.00805 stationary True
+TIMING free_R256 2 0 310.08 err 0.02435 stationary True
+TIMING free_R256 7 0 310.71 err 0.00805 stationary True
+TIMING free_R256 1 0 309.76 err 0.00513 stationary True
+TIMING free_R256 8 2 310.26 err 0.01728 stationary True
+TIMING free_R256 0 1 309.61 err 0.00882 stationary True
+TIMING free_R256 9 1 309.95 err 0.01333 stationary True
+TIMING free_R256 10 2 309.84 err 0.00481 stationary True
+TIMING free_R256 4 0 310.52 err 0.01235 stationary True
+TIMING free_R256 15 0 309.83 err 0.01259 stationary True
+TIMING free_R256 10 0 309.42 err 0.00481 stationary True
+TIMING free_R256 6 0 310.52 err 0.00355 stationary True
+TIMING free_R256 12 2 310.34 err 0.0051 stationary True
+TIMING free_R256 14 0 310.12 err 0.01047 stationary True
+TIMING free_R256 15 1 311.23 err 0.01259 stationary True
+TIMING free_R256 2 1 310.46 err 0.02435 stationary True
+TIMING free_R256 15 2 310.34 err 0.01259 stationary True
+TIMING free_R256 2 2 309.36 err 0.02435 stationary True
+TIMING free_R256 5 1 310.26 err 0.0179 stationary True
+TIMING free_R256 1 2 310.15 err 0.00513 stationary True
+TIMING free_R256 8 0 310.53 err 0.01728 stationary True
+TIMING free_R256 9 0 310.08 err 0.01333 stationary True
+TIMING free_R256 13 1 310.19 err 0.01139 stationary True
+TIMING free_R256 12 0 309.8 err 0.0051 stationary True
+TIMING free_R256 11 0 310.27 err 0.01784 stationary True
+TIMING free_R256 4 1 309.79 err 0.01235 stationary True
+TIMING free_R256 6 2 310.29 err 0.00355 stationary True
+TIMING free_R256 3 1 310.55 err 0.00509 stationary True
+TIMING free_R256 10 1 310.19 err 0.00481 stationary True
+TIMING rom_q64 0 1 316.46 err 0.04022 stationary True
+TIMING rom_q64 4 0 300.39 err 0.0397 stationary True
+TIMING rom_q64 14 2 302.13 err 0.04845 stationary True
+TIMING rom_q64 12 2 266.17 err 0.00711 stationary True
+TIMING rom_q64 4 1 300.09 err 0.0397 stationary True
+TIMING rom_q64 0 2 316.76 err 0.04022 stationary True
+TIMING rom_q64 0 0 316.55 err 0.04022 stationary True
+TIMING rom_q64 1 0 264.66 err 0.01258 stationary True
+TIMING rom_q64 13 0 308.14 err 0.0383 stationary True
+TIMING rom_q64 2 2 305.7 err 0.08229 stationary True
+TIMING rom_q64 11 0 298.67 err 0.0341 stationary True
+TIMING rom_q64 8 1 273.25 err 0.05708 stationary True
+TIMING rom_q64 8 2 273.68 err 0.05708 stationary True
+TIMING rom_q64 3 1 271.91 err 0.01555 stationary True
+TIMING rom_q64 15 0 294.93 err 0.04395 stationary True
+TIMING rom_q64 11 1 297.14 err 0.0341 stationary True
+TIMING rom_q64 1 2 263.89 err 0.01258 stationary True
+TIMING rom_q64 10 0 277.26 err 0.01779 stationary True
+TIMING rom_q64 2 0 302.55 err 0.08229 stationary True
+TIMING rom_q64 12 1 266.57 err 0.00711 stationary True
+TIMING rom_q64 3 2 271.92 err 0.01555 stationary True
+TIMING rom_q64 14 0 301.58 err 0.04845 stationary True
+TIMING rom_q64 5 0 311.79 err 0.02922 stationary True
+TIMING rom_q64 10 1 278.86 err 0.01779 stationary True
+TIMING rom_q64 4 2 301.91 err 0.0397 stationary True
+TIMING rom_q64 12 0 266.79 err 0.00711 stationary True
+TIMING rom_q64 5 1 310.96 err 0.02922 stationary True
+TIMING rom_q64 9 1 304.65 err 0.06588 stationary True
+TIMING rom_q64 13 1 307.57 err 0.0383 stationary True
+TIMING rom_q64 7 1 292.64 err 0.01874 stationary True
+TIMING rom_q64 9 0 304.75 err 0.06588 stationary True
+TIMING rom_q64 8 0 273.56 err 0.05708 stationary True
+TIMING rom_q64 7 2 292.45 err 0.01874 stationary True
+TIMING rom_q64 7 0 292.82 err 0.01874 stationary True
+TIMING rom_q64 1 1 263.14 err 0.01258 stationary True
+TIMING rom_q64 13 2 308.96 err 0.0383 stationary True
+TIMING rom_q64 5 2 310.27 err 0.02922 stationary True
+TIMING rom_q64 6 0 269.66 err 0.01806 stationary True
+TIMING rom_q64 6 1 270.72 err 0.01806 stationary True
+TIMING rom_q64 2 1 302.36 err 0.08229 stationary True
+TIMING rom_q64 11 2 297.56 err 0.0341 stationary True
+TIMING rom_q64 9 2 304.05 err 0.06588 stationary True
+TIMING rom_q64 10 2 277.25 err 0.01779 stationary True
+TIMING rom_q64 15 1 293.34 err 0.04395 stationary True
+TIMING rom_q64 6 2 270.22 err 0.01806 stationary True
+TIMING rom_q64 15 2 293.26 err 0.04395 stationary True
+TIMING rom_q64 3 0 270.51 err 0.01555 stationary True
+TIMING rom_q64 14 1 301.71 err 0.04845 stationary True
+TIMING pod_128 0 2 178.0 err 0.01406 stationary True
+TIMING pod_128 0 1 177.99 err 0.01406 stationary True
+TIMING pod_128 7 0 178.51 err 0.0098 stationary True
+TIMING pod_128 2 1 178.39 err 0.03291 stationary True
+TIMING pod_128 6 2 178.6 err 0.00376 stationary True
+TIMING pod_128 14 0 178.39 err 0.01613 stationary True
+TIMING pod_128 2 2 179.05 err 0.03291 stationary True
+TIMING pod_128 14 1 178.1 err 0.01613 stationary True
+TIMING pod_128 10 1 178.59 err 0.00477 stationary True
+TIMING pod_128 15 1 178.65 err 0.01832 stationary True
+TIMING pod_128 8 1 178.61 err 0.03147 stationary True
+TIMING pod_128 6 0 178.78 err 0.00376 stationary True
+TIMING pod_128 0 0 179.09 err 0.01406 stationary True
+TIMING pod_128 8 0 178.25 err 0.03147 stationary True
+TIMING pod_128 9 1 178.17 err 0.02134 stationary True
+TIMING pod_128 9 2 178.28 err 0.02134 stationary True
+TIMING pod_128 2 0 178.62 err 0.03291 stationary True
+TIMING pod_128 4 2 178.62 err 0.01413 stationary True
+TIMING pod_128 5 0 178.58 err 0.02372 stationary True
+TIMING pod_128 8 2 178.48 err 0.03147 stationary True
+TIMING pod_128 12 2 177.97 err 0.00678 stationary True
+TIMING pod_128 12 1 178.37 err 0.00678 stationary True
+TIMING pod_128 3 2 179.95 err 0.0037 stationary True
+TIMING pod_128 10 0 178.81 err 0.00477 stationary True
+TIMING pod_128 3 0 180.33 err 0.0037 stationary True
+TIMING pod_128 15 0 178.59 err 0.01832 stationary True
+TIMING pod_128 10 2 178.1 err 0.00477 stationary True
+TIMING pod_128 3 1 179.93 err 0.0037 stationary True
+TIMING pod_128 1 0 178.71 err 0.00614 stationary True
+TIMING pod_128 1 1 178.56 err 0.00614 stationary True
+TIMING pod_128 6 1 178.58 err 0.00376 stationary True
+TIMING pod_128 12 0 178.85 err 0.00678 stationary True
+TIMING pod_128 7 2 178.91 err 0.0098 stationary True
+TIMING pod_128 7 1 178.56 err 0.0098 stationary True
+TIMING pod_128 13 2 177.79 err 0.01573 stationary True
+TIMING pod_128 13 0 178.74 err 0.01573 stationary True
+TIMING pod_128 9 0 178.63 err 0.02134 stationary True
+TIMING pod_128 13 1 178.7 err 0.01573 stationary True
+TIMING pod_128 4 0 179.06 err 0.01413 stationary True
+TIMING pod_128 4 1 179.32 err 0.01413 stationary True
+TIMING pod_128 14 2 178.4 err 0.01613 stationary True
+TIMING pod_128 15 2 178.8 err 0.01832 stationary True
+TIMING pod_128 5 2 178.25 err 0.02372 stationary True
+TIMING pod_128 5 1 178.7 err 0.02372 stationary True
+TIMING pod_128 1 2 178.55 err 0.00614 stationary True
+TIMING pod_128 11 2 179.83 err 0.02925 stationary True
+TIMING pod_128 11 0 180.2 err 0.02925 stationary True
+TIMING pod_128 11 1 180.36 err 0.02925 stationary True
+TIMING pod_64 5 1 122.91 err 0.05472 stationary True
+TIMING pod_64 0 0 122.92 err 0.04714 stationary True
+TIMING pod_64 10 2 123.0 err 0.02077 stationary True
+TIMING pod_64 9 1 122.81 err 0.0612 stationary True
+TIMING pod_64 3 0 124.02 err 0.01532 stationary True
+TIMING pod_64 15 1 123.16 err 0.05901 stationary True
+TIMING pod_64 7 1 123.11 err 0.03065 stationary True
+TIMING pod_64 10 0 123.12 err 0.02077 stationary True
+TIMING pod_64 8 2 123.26 err 0.07934 stationary True
+TIMING pod_64 12 2 122.75 err 0.0215 stationary True
+TIMING pod_64 3 2 123.44 err 0.01532 stationary True
+TIMING pod_64 4 2 123.08 err 0.04258 stationary True
+TIMING pod_64 2 1 122.6 err 0.09242 stationary True
+TIMING pod_64 0 1 123.41 err 0.04714 stationary True
+TIMING pod_64 6 1 123.17 err 0.01116 stationary True
+TIMING pod_64 11 2 123.34 err 0.08448 stationary True
+TIMING pod_64 14 1 122.82 err 0.04845 stationary True
+TIMING pod_64 13 1 123.01 err 0.04868 stationary True
+TIMING pod_64 11 0 122.85 err 0.08448 stationary True
+TIMING pod_64 4 0 123.15 err 0.04258 stationary True
+TIMING pod_64 14 0 123.12 err 0.04845 stationary True
+TIMING pod_64 15 0 123.4 err 0.05901 stationary True
+TIMING pod_64 9 0 122.62 err 0.0612 stationary True
+TIMING pod_64 8 1 122.83 err 0.07934 stationary True
+TIMING pod_64 9 2 122.81 err 0.0612 stationary True
+TIMING pod_64 8 0 123.1 err 0.07934 stationary True
+TIMING pod_64 15 2 123.17 err 0.05901 stationary True
+TIMING pod_64 7 0 123.37 err 0.03065 stationary True
+TIMING pod_64 1 0 123.28 err 0.01798 stationary True
+TIMING pod_64 13 0 123.52 err 0.04868 stationary True
+TIMING pod_64 0 2 122.97 err 0.04714 stationary True
+TIMING pod_64 1 2 122.91 err 0.01798 stationary True
+TIMING pod_64 6 2 122.92 err 0.01116 stationary True
+TIMING pod_64 6 0 123.26 err 0.01116 stationary True
+TIMING pod_64 2 0 123.14 err 0.09242 stationary True
+TIMING pod_64 7 2 123.38 err 0.03065 stationary True
+TIMING pod_64 12 1 123.46 err 0.0215 stationary True
+TIMING pod_64 5 2 123.49 err 0.05472 stationary True
+TIMING pod_64 5 0 122.77 err 0.05472 stationary True
+TIMING pod_64 2 2 122.99 err 0.09242 stationary True
+TIMING pod_64 13 2 122.88 err 0.04868 stationary True
+TIMING pod_64 10 1 123.06 err 0.02077 stationary True
+TIMING pod_64 4 1 122.78 err 0.04258 stationary True
+TIMING pod_64 14 2 122.95 err 0.04845 stationary True
+TIMING pod_64 3 1 124.24 err 0.01532 stationary True
+TIMING pod_64 11 1 123.48 err 0.08448 stationary True
+TIMING pod_64 1 1 123.29 err 0.01798 stationary True
+TIMING pod_64 12 0 122.85 err 0.0215 stationary True
+COMPLETE 1085.8397106849588

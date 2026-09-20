@@ -24,12 +24,19 @@ def main():
     expected=family(freeze['final_parameter_seed'],freeze['final_cases']);checks=[]
     for seed in (0,1):
         panel=out/f'seed{seed}';result=json.loads((panel/'result.json').read_text());tab=np.load(panel/'parameters.npz')
-        for key,value in expected.items():assert np.array_equal(tab[key],value),(seed,key)
+        discrepancies={}
+        for key,value in expected.items():
+            discrepancies[key]=float(np.max(np.abs(tab[key]-value)))
+            # Independent CPU exp/log differs by one ulp between machines.
+            # Direct random draws remain exact; the derived viscosity uses a fixed ulp allowance.
+            if key=='nu':assert np.allclose(tab[key],value,rtol=8*np.finfo(float).eps,atol=0),(seed,key)
+            else:assert np.array_equal(tab[key],value),(seed,key)
         assert np.array_equal(tab['parameter_rows'],np.arange(freeze['final_cases']))
         assert np.all(tab['parameter_seeds']==freeze['final_parameter_seed'])
         assert result['config']['freeze_sha256']==record['freeze_sha256'] and result['actual_test_modes']==642
         assert json.loads((out/f'replay-seed{seed}/replay-audit.json').read_text())['passed']
-        checks.append(dict(seed=seed,membership_passed=True,freeze_passed=True,replay_passed=True))
+        checks.append(dict(seed=seed,membership_passed=True,freeze_passed=True,replay_passed=True,
+                           parameter_discrepancies=discrepancies))
     for key in np.load(out/'seed0/parameters.npz').files:
         assert np.array_equal(np.load(out/'seed0/parameters.npz')[key],np.load(out/'seed1/parameters.npz')[key])
     physical=out/'physical-reference';ref=json.loads((physical/'result.json').read_text());maximum=0.;count=0

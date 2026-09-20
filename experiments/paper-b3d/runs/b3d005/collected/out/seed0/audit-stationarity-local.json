@@ -1,0 +1,143 @@
+{
+  "passed": true,
+  "scope": "largest recorded step gradient and initial-fit gradient per method; repeated records deduplicated by value",
+  "checked_states": 13,
+  "max_gradient_discrepancy": 1.0333485589696665e-14,
+  "checks": [
+    {
+      "method": "free_R256",
+      "case": 11,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 8.670043696224433e-07,
+      "recorded": 8.670043690353326e-07,
+      "absolute_discrepancy": 5.871107229939512e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_128",
+      "case": 11,
+      "phase": "evolution",
+      "step": 2,
+      "gradient": 8.423247580160321e-07,
+      "recorded": 8.423247579634937e-07,
+      "absolute_discrepancy": 5.2538383223750453e-17,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_192",
+      "case": 13,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 9.635844513576844e-07,
+      "recorded": 9.635844527262282e-07,
+      "absolute_discrepancy": 1.3685437213404846e-15,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_256",
+      "case": 13,
+      "phase": "evolution",
+      "step": 1,
+      "gradient": 8.274654815357899e-07,
+      "recorded": 8.274654798065185e-07,
+      "absolute_discrepancy": 1.7292714425326864e-15,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "pod_64",
+      "case": 3,
+      "phase": "evolution",
+      "step": 2,
+      "gradient": 9.787578080925215e-07,
+      "recorded": 9.787578090399666e-07,
+      "absolute_discrepancy": 9.474451032612718e-16,
+      "coefficient_jacobian_sigma_min": 1.0,
+      "coefficient_jacobian_sigma_max": 1.0
+    },
+    {
+      "method": "rom_q0",
+      "case": 13,
+      "phase": "evolution",
+      "step": 12,
+      "gradient": 9.986272500072468e-07,
+      "recorded": 9.986272519335573e-07,
+      "absolute_discrepancy": 1.9263104701844683e-15,
+      "coefficient_jacobian_sigma_min": 1.035203750481312,
+      "coefficient_jacobian_sigma_max": 2.2481449618380154
+    },
+    {
+      "method": "rom_q0",
+      "case": 4,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 9.85915161763858e-07,
+      "recorded": 9.859151616984996e-07,
+      "absolute_discrepancy": 6.53583327595627e-17
+    },
+    {
+      "method": "rom_q128",
+      "case": 12,
+      "phase": "evolution",
+      "step": 24,
+      "gradient": 9.98668405360242e-07,
+      "recorded": 9.986684079125481e-07,
+      "absolute_discrepancy": 2.5523061464462595e-15,
+      "coefficient_jacobian_sigma_min": 0.5994829278748173,
+      "coefficient_jacobian_sigma_max": 2.040506461741321
+    },
+    {
+      "method": "rom_q128",
+      "case": 14,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 9.887809286634185e-07,
+      "recorded": 9.887809297059117e-07,
+      "absolute_discrepancy": 1.0424932113715186e-15
+    },
+    {
+      "method": "rom_q192",
+      "case": 5,
+      "phase": "evolution",
+      "step": 23,
+      "gradient": 9.931396797161142e-07,
+      "recorded": 9.93139678169437e-07,
+      "absolute_discrepancy": 1.5466770794886689e-15,
+      "coefficient_jacobian_sigma_min": 0.21884344234377318,
+      "coefficient_jacobian_sigma_max": 2.6632252301765806
+    },
+    {
+      "method": "rom_q192",
+      "case": 13,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 6.780558132023819e-07,
+      "recorded": 6.78055810157203e-07,
+      "absolute_discrepancy": 3.0451789483440126e-15
+    },
+    {
+      "method": "rom_q64",
+      "case": 10,
+      "phase": "evolution",
+      "step": 39,
+      "gradient": 9.94181181727983e-07,
+      "recorded": 9.941811920614687e-07,
+      "absolute_discrepancy": 1.0333485589696665e-14,
+      "coefficient_jacobian_sigma_min": 0.7831053229801398,
+      "coefficient_jacobian_sigma_max": 1.9849894834724355
+    },
+    {
+      "method": "rom_q64",
+      "case": 14,
+      "phase": "initial",
+      "step": 0,
+      "gradient": 8.998924392974881e-07,
+      "recorded": 8.998924405376915e-07,
+      "absolute_discrepancy": 1.2402034067548811e-15
+    }
+  ]
+}

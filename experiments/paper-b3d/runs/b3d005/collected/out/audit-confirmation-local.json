@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "seeds": [
+    {
+      "seed": 0,
+      "training_cases": 512,
+      "development_cases": 16,
+      "checkpoint_sha256": "00c22a0a8544eda7e0802c5ec3a1e632a3cec5f9835e67630aa9b20070f67ff6",
+      "parameter_discrepancies": {
+        "B": 0.0,
+        "c": 0.0,
+        "w": 0.0,
+        "rho": 0.0,
+        "A": 0.0,
+        "nu": 1.3877787807814457e-17
+      }
+    },
+    {
+      "seed": 1,
+      "training_cases": 512,
+      "development_cases": 16,
+      "checkpoint_sha256": "7c0c0e437a03eb769e018776b20fe20f7a7114042c78a4704c87c75abfd78d81",
+      "parameter_discrepancies": {
+        "B": 0.0,
+        "c": 0.0,
+        "w": 0.0,
+        "rho": 0.0,
+        "A": 0.0,
+        "nu": 1.3877787807814457e-17
+      }
+    }
+  ],
+  "shared_training_and_development_membership": true,
+  "maximum_initial_field_discrepancy": 8.881784197001252e-16,
+  "streamed_references": [
+    {
+      "nodes": 65,
+      "dt": 0.0025,
+      "independent_worst_step_defect": 2.977442140550995e-11,
+      "artifact_sha256": "9698b1f9c2e6bf503ea86ad1eb8be14772e5678685c8be35c26f1c4fdb977814"
+    },
+    {
+      "nodes": 129,
+      "dt": 0.0025,
+      "independent_worst_step_defect": 2.910684296715316e-11,
+      "artifact_sha256": "4bd938f8db9b1442eec1c5efd59b27f8e29aa4019a1a63d15ff0e5145f835c81"
+    },
+    {
+      "nodes": 129,
+      "dt": 0.00125,
+      "independent_worst_step_defect": 3.063477159354295e-13,
+      "artifact_sha256": "cd87ea134557c5bf4a0e6bd3515e90ed23ca7e88f01eefabe32a05e07a7b4192"
+    }
+  ],
+  "spatial_refinement_maximum": 0.019829116922065636,
+  "time_refinement_maximum": 0.002543310188732554,
+  "spatial_budget": 0.005,
+  "time_budget": 0.001,
+  "spatial_gate_passed": false,
+  "time_gate_passed": false,
+  "final_cohort_unopened": true,
+  "scope": "all training/development random membership and opened initial fields; worst recorded native residual pair per streamed reference; refinement differences on saved common nodes"
+}

@@ -1,0 +1,43 @@
+{
+  "spec": {
+    "kind": "transolver3d",
+    "periodic": false,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ],
+    "width": 48,
+    "depth": 4,
+    "heads": 4,
+    "slices": 32,
+    "patch": 2,
+    "reference_grid": 4,
+    "mlp_ratio": 2,
+    "coordinate_bounds": [
+      -1,
+      1
+    ]
+  },
+  "config": {
+    "steps": 30000,
+    "wall_seconds": 1800,
+    "batch_size": 2,
+    "seed": 920313,
+    "learning_rate": 0.001,
+    "validation_every": 100,
+    "curve_every": 25,
+    "components_per_output": 1,
+    "normalization": "fixed supplied initial-field norm"
+  },
+  "parameter_count": 564392,
+  "steps_completed": 30000,
+  "best_step": 29400,
+  "best_validation_worst": 0.037390864380483446,
+  "seconds": 640.6756834150292,
+  "exit_reason": "steps",
+  "normalization": "fixed supplied initial-field norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

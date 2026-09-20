@@ -20,6 +20,8 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
+**2026-09-20 — earlier Burgers tight-FOM comparison restored to main Table 2.** The user requested the larger historical speed ratio. The paper now includes the source-generated earlier fine-grid panel alongside the relaxed comparator, explicitly distinguishing baseline tolerances, unequal errors, development cases and permitted stalled exits. It is not labelled CG or a final stationary result. Main text remains nine pages.
+
 **2026-09-20 — Figure 1 replaced with tables at the user’s request.** The former Burgers accuracy/cost plots are removed from the rendered manuscript. Existing main tables contain the correction-rank and method comparisons; main Table 7 now gives the same-allocation dense/EQ comparison, generated from pinned run data. Missing dense measurements remain blank. Deployment controls move to the appendix. The rebuilt PDF retains nine main pages; numerical and layout checks pass. A fresh Poisson development-only same-device replay is running as job 4031708 with a physical GPU UUID guard; no new replay result is accepted yet.
 
 **2026-09-20 — main experiments reorganized; CG is the main linear-PDE comparator.** At the user's request, root `paper/main.pdf` now places clean 2D and 3D comparison tables, correction settings, L-shaped CG results and deployment controls in the main section. Sparse-direct comparisons are excluded from the main tables. Main 3D inputs are accepted Burgers final (primary and separate second-seed evidence), accepted Poisson replay07 development, Heat extra03 development with CG pending, and NS confirmation06b development. The previous appendix snapshots remain historical. Numerical/source/ratio checks pass; main text is nine pages, full PDF 55 pages.
@@ -15387,3 +15389,25 @@ Replaced the former three-panel Burgers figure with the existing main correction
 Built only the authoritative root paper directory. `paper/check_rewrite.py` passes: nine main pages, 55 total, no overfull boxes or undefined references. Page 8 was visually reviewed. PDF SHA256: `c7a4f14a9766d84605f678866033660a7ba6b0d2b6ba13f2188ad86a520910aa`.
 
 For the preceding hardware-check request, the Poisson owner submitted development-only devicecheck09 as job `4031708`, source `f87bbe98`, A100 80 GB on pax105. Owner reports preflight passes with exactly one CUDA/JAX GPU, UUID `GPU-7ea87052-7ee2-b522-615d-be66f44238c3`; CUDA-visible index 0 and Slurm physical index 7 are recorded. Physical UUID checks bracket every timed invocation. This job is running, not accepted evidence. Poisson and NS final retention/audits and Heat development continue separately; manuscript snapshots remain unchanged until acceptance.
+
+## 2026-09-20
+
+### Root — dimensional coverage clarification and incoming lane closures
+
+Read the authoritative manuscript to answer the user’s dimensional-coverage question. Main Table 1 includes 2D Poisson/heat/wave CG comparisons; Table 2 is Burgers2D; Tables 3–4 include Poisson/heat/Burgers/NS3D. Table 7 only replaces the Burgers2D dense/EQ plot and is not an all-PDE dimensional comparison. The main presentation does not provide a complete matched 2D/3D method panel for every PDE. No manuscript measurements changed during this clarification.
+
+Incoming owner closures, not yet imported into the manuscript: Poisson final64 accepted at f1c28751909c7e7941b424528856d9cbcdf9a262; additional devicecheck09 job4031708 accepted/cleaned at 9b7c638b8247365e36a66425bfaf976bf822ab18, with all timed calls on one guarded physical UUID. NS final07 accepted/cleaned at a104a637c0a2c59693a5efe95e187066709ed22f, with exact-runtime scalar-exp audit qualification preserved; generated summary and full closure are in its runs/final07 directory. Heat development06 accepted/cleaned and final selection frozen at06cb6d01; pre-submission staging caught a nested seedB asset-path bug, so final07 was never submitted and the owner is preparing final08 without changing the frozen scientific selection. Root paper still uses its previously pinned development snapshots pending integration.
+
+### Root — clarify which current main-table comparisons favor NM-ROM
+
+Read generated main tables to distinguish speed against CG, accuracy against neural operators, and simultaneous improvements. Current Poisson2D and L-shaped Poisson show faster NM-ROM with higher error than CG; Heat2D fine-grid speed is from an earlier checkpoint and wave displacement speed does not establish full-state success. Current Poisson3D development corrected NM-ROM beats FNO/U-Net/Transolver on both displayed axes, but not POD or CG. Burgers2D beats the displayed FNO in error while slower; Burgers3D and NS3D provide no overall NM-ROM win. No new result or paper modification in this clarification; incoming accepted final snapshots must remain distinguished from the current PDF development rows.
+
+### Root — recover the earlier Burgers FOM speed comparison
+
+Located the user-recalled Burgers fine-grid speedup in reports/2026-09-11-iterative-fom-multiresolution.md, including its generated fastest-passing-FOM table and protocol. Correct the prior conversational omission: this older development experiment did report a speed win against a tested passing FOM, under a common accuracy target rather than equal measured error. The ROM stall qualification, small development cohort, frozen older configuration, and Newton–BiCGStab comparator remain essential. It is not plain CG and is not a final stationary current-panel result. No numerical report or manuscript edits made during this provenance answer.
+
+### Root — retain requested tight-FOM Burgers comparison transparently
+
+Added the earlier fine-grid Burgers development comparison to main Table 2 on page 6. Generator reads a hash-pinned extraction of the original iterative06 result JSON, retaining every case/repetition and named comparator. Snapshot includes source hash, scientific commit, checkpoint hash and job metadata; provenance and table generated in paper/tables. Tight and relaxed comparators appear together; no measurements changed or removed. Caption records distinct allocations/reference conventions, numerical tolerances, common accuracy target and stalled ROM exits. This prevents treating the tight-baseline ratio as a fastest-passing or equal-error speedup.
+
+Rebuilt root paper only; numerical/layout checks pass, historical numerical tables preserved, nine main pages and 55 total. Page 6 visually reviewed. PDF SHA256: `db34b9540286eaee5e475bd3229eda686e4c2c5210f697490903765dcfc06c96`.

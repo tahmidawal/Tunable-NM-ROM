@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 14:40; this block is removed before submission).*
-*Populated tables (78): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
+*Status for the reader (generated 2026-09-20 16:15; this block is removed before submission).*
+*Populated tables (79): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -469,11 +469,13 @@ corrected model improves same-grid error, but does not beat the
 full-order solver in accuracy or runtime. On the separate matched
 operator cohort, U-Net and Transolver also outperform the ROM in
 accuracy (Table 21); missing paired timings for that
-cohort are not filled from another run. The higher-resolution Burgers
-panels are retained in Table 69.
+cohort are not filled from another run. The earlier $1024^2$ paired study below also reports speed against a
+tight Newton control; relaxing that control substantially reduces the gain.
+These development solves permit stalls and do not establish stationarity.
+The newer high-resolution panels remain in Table 69.
 
-**Table 2.** Burgers2D at $256^2$, development. Worst evolved and all-times
-errors use the initial-field norm. Every speedup uses the displayed
+**Table 2.** Burgers2D development comparisons. Upper panel: $256^2$. Worst evolved and all-times
+errors use the initial-field norm. Upper-panel speedups use the displayed
 Newton–BiCGStab control: nonlinear tolerance $10^{-3}$,
 $\Delta t=0.005$. Faster FOM settings remain in the full panel. The
 corrected EQ rule is single-draw; the uncorrected rule has repeated
@@ -487,6 +489,13 @@ construction confirmation.
 | NM-ROM $q=256$ | 0.5129 | 0.9053 | 746.020 | 0.04$\times$ |
 | POD-512 | 0.2184 | 0.6125 | 2790.828 | 0.01$\times$ |
 | FNO | 7.4164 | 7.4164 | 7.183 | 4.43$\times$ |
+
+<!-- table: TR_burgers_iterative -->
+| Method | Error (\%) | GPU ms | FOM/NM-ROM |
+| --- | --- | --- | --- |
+| NM-ROM | 3.908 | 41.677 | --- |
+| Tight Newton--BiCGStab | 2.142 | 605.747 | 14.53$\times$ |
+| Relaxed Newton--BiCGStab | 2.390 | 68.044 | 1.63$\times$ |
 
 **Three-dimensional problems.**
 Table 3 and Table 4 put the

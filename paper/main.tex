@@ -471,19 +471,32 @@ corrected model improves same-grid error, but does not beat the
 full-order solver in accuracy or runtime. On the separate matched
 operator cohort, U-Net and Transolver also outperform the ROM in
 accuracy (Table~\ref{tab:operators}); missing paired timings for that
-cohort are not filled from another run. The higher-resolution Burgers
-panels are retained in Table~\ref{tab:panel-main}.
+cohort are not filled from another run. The earlier $1024^2$ paired study below also reports speed against a
+tight Newton control; relaxing that control substantially reduces the gain.
+These development solves permit stalls and do not establish stationarity.
+The newer high-resolution panels remain in Table~\ref{tab:panel-main}.
 
 \begin{table}[htbp]
 \centering
-\caption{Burgers2D at $256^2$, development. Worst evolved and all-times
-errors use the initial-field norm. Every speedup uses the displayed
+\caption{Burgers2D development comparisons. Upper panel: $256^2$. Worst evolved and all-times
+errors use the initial-field norm. Upper-panel speedups use the displayed
 Newton--BiCGStab control: nonlinear tolerance $10^{-3}$,
 $\Delta t=0.005$. Faster FOM settings remain in the full panel. The
 corrected EQ rule is single-draw; the uncorrected rule has repeated
 construction confirmation.}
 \label{tab:burgers-comparison}
 \input{tables/TR_burgers_comparison}
+\par\smallskip
+{\small Earlier $1024^2$ development panel (separate allocation):}\par
+\input{tables/TR_burgers_iterative}
+\par\smallskip
+\parbox{\linewidth}{\footnotesize Lower panel: four cases, three repeats,
+job 3534502; initial-normalised worst error against a refined reference.
+Both FOMs use $\Delta t=0.005$ and FFT preconditioning. Tight nonlinear/linear
+ tolerances are $10^{-6}/10^{-8}$; relaxed are $10^{-2}/0.5$.
+Both methods meet the $5\%$ accuracy target, with unequal measured errors;
+NM-ROM permits stalled exits. FOM/NM-ROM divides each FOM time by the
+NM-ROM time in this lower panel.}
 \end{table}
 
 \paragraph{Three-dimensional problems.}

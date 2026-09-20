@@ -1,0 +1,136 @@
+{
+  "passed": true,
+  "iterative_cg_audit": {
+    "passed": true,
+    "independent_saved_trajectory_checks": [],
+    "scope": "NumPy stencil, every retained time-step true residual, declared stops/caps and all invocation counters; failed solves remain explicitly counted"
+  },
+  "source_files_verified": 40,
+  "independent_scipy_reference_checks": [
+    {
+      "intervals": 32,
+      "case": 0,
+      "same_grid_reference_relative": 6.090503098707171e-16,
+      "physical_reference_relative": 3.321025360509746e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "same_grid_reference_relative": 6.284424147208868e-16,
+      "physical_reference_relative": 3.552339530387662e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "same_grid_reference_relative": 6.449895607403078e-16,
+      "physical_reference_relative": 4.961766337830774e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "same_grid_reference_relative": 7.087307891045083e-16,
+      "physical_reference_relative": 4.362434690071739e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "same_grid_reference_relative": 6.633561779688558e-16,
+      "physical_reference_relative": 3.789942713476149e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "same_grid_reference_relative": 5.31658098533541e-16,
+      "physical_reference_relative": 3.649006999897779e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "same_grid_reference_relative": 7.683180794827087e-16,
+      "physical_reference_relative": 3.515417951760935e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "same_grid_reference_relative": 7.363232846160383e-16,
+      "physical_reference_relative": 4.361265831662719e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "same_grid_reference_relative": 7.375656877610225e-16,
+      "physical_reference_relative": 3.838363593870401e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "same_grid_reference_relative": 6.290133868567821e-16,
+      "physical_reference_relative": 4.0657539412443015e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "same_grid_reference_relative": 6.846105828189046e-16,
+      "physical_reference_relative": 3.491635084210974e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "same_grid_reference_relative": 4.651930655897363e-16,
+      "physical_reference_relative": 3.859427499711082e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "same_grid_reference_relative": 6.658082005825204e-16,
+      "physical_reference_relative": 3.8046672866027855e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "same_grid_reference_relative": 5.261285864719008e-16,
+      "physical_reference_relative": 3.708011313165681e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "same_grid_reference_relative": 4.749482906118969e-16,
+      "physical_reference_relative": 3.3617273115427005e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "same_grid_reference_relative": 6.447111511555123e-16,
+      "physical_reference_relative": 3.7939484784048494e-16
+    }
+  ],
+  "independent_refinement": [
+    6.974858094049739e-08,
+    1.5897896395139332e-08,
+    2.4929015534226955e-08,
+    9.56032983981728e-08,
+    2.2889238630169438e-08,
+    2.0624512482171938e-08,
+    1.778895091606812e-08,
+    1.481766336546488e-08,
+    1.0408988536278492e-07,
+    3.7527499286889635e-08,
+    9.233169447530089e-08,
+    1.739263734016677e-08,
+    6.044641718172723e-08,
+    3.04279994817206e-08,
+    1.4357451639190357e-07,
+    3.880682930441465e-08
+  ],
+  "paired_invocations": 192,
+  "summary_rows": 12,
+  "complete_coverage": true,
+  "all_repetition_metrics_consistent": true,
+  "all_summary_aggregates_recomputed": true,
+  "evaluation_case_count": 16,
+  "repetition_consistency_case_groups": 192,
+  "final_cohort_opened": false,
+  "source_commit": "439624643bbaca29c9fdc8435edfa218aa2ca565",
+  "job_id": "4028921",
+  "scope": "archived source vs git blobs, independent full numerical references, every paired invocation/summary; field-error audit retained separately"
+}

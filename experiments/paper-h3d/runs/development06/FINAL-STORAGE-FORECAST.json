@@ -1,0 +1,85 @@
+{
+  "schema": "heat3d-storage-forecast-v1",
+  "final_fields_accessed": false,
+  "basis": "Recorded development NPZ bytes scaled by reserved final case count; unchanged selected methods and checkpoint artifacts. Actual compression can vary on final inputs.",
+  "rows": [
+    {
+      "cohort": "primary",
+      "selected_methods_by_mesh": {
+        "32": [
+          "linear_bank_cn",
+          "linear_bank_exact",
+          "pod32_exact",
+          "pod64_exact",
+          "pod96_exact",
+          "pod128_exact",
+          "linear_bank_galerkin_exact",
+          "dst_exact",
+          "fom_cn_cg_dt0.025_rtol1e-04",
+          "fom_cn_cg_dt0.025_rtol1e-06",
+          "fom_cn_cg_dt0.05_rtol1e-04",
+          "fom_cn_cg_dt0.1_rtol1e-02",
+          "fom_cn_cg_dt0.1_rtol1e-04",
+          "fno3d_w16_m6",
+          "unet3d_w8",
+          "deeponet3d_r128_w16",
+          "transolver3d_w48_s32",
+          "nmrom_K32_q0_dense",
+          "nmrom_K32_q32_dense",
+          "nmrom_K32_q64_dense",
+          "nmrom_K32_q96_dense",
+          "nmrom_K32_q96_dense_dt_half"
+        ],
+        "64": [
+          "linear_bank_cn",
+          "linear_bank_exact",
+          "pod32_exact",
+          "pod64_exact",
+          "pod96_exact",
+          "pod128_exact",
+          "linear_bank_galerkin_exact",
+          "dst_exact",
+          "fom_cn_cg_dt0.025_rtol1e-04",
+          "fom_cn_cg_dt0.05_rtol1e-04",
+          "fom_cn_cg_dt0.1_rtol1e-02",
+          "fom_cn_cg_dt0.1_rtol1e-04",
+          "fno3d_w16_m6_physical_padding_transfer",
+          "unet3d_w8_native_grid_interpolated",
+          "deeponet3d_r128_w16_native_sensors_continuous_trunk",
+          "transolver3d_w48_s32_native_grid_interpolated",
+          "nmrom_K32_q0_dense",
+          "nmrom_K32_q32_dense",
+          "nmrom_K32_q64_dense",
+          "nmrom_K32_q96_dense",
+          "nmrom_K32_q96_dense_dt_half"
+        ]
+      },
+      "development_selected_field_bytes": 6289002901,
+      "development_selected_files": 720,
+      "nonfield_bytes_upper_bound": 337770494,
+      "estimated_final_output_bytes": 25493782098.0
+    },
+    {
+      "cohort": "seedB",
+      "selected_methods_by_mesh": {
+        "32": [
+          "fno3d_w16_m6",
+          "unet3d_w8",
+          "deeponet3d_r128_w16",
+          "transolver3d_w48_s32",
+          "nmrom_K32_q0_dense",
+          "nmrom_K32_q32_dense",
+          "nmrom_K32_q64_dense",
+          "nmrom_K32_q96_dense"
+        ]
+      },
+      "development_selected_field_bytes": 219526834,
+      "development_selected_files": 144,
+      "nonfield_bytes_upper_bound": 33037861,
+      "estimated_final_output_bytes": 911145197.0
+    }
+  ],
+  "estimated_final_output_bytes": 26404927295.0,
+  "estimated_three_copy_peak_bytes": 79214781885.0,
+  "three_copy_peak_with_15_percent_margin_bytes": 91096999167.75
+}

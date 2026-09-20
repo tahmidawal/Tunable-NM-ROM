@@ -26,6 +26,7 @@
 \input{macros}
 \input{tables/numbers}
 \input{tables/campaign-numbers}
+\input{tables/headline-numbers}
 
 % short-hands used in prose
 \newcommand{\corr}{C_q}
@@ -42,27 +43,31 @@
 
 % =====================================================================
 \begin{abstract}
-A reduced-order PDE solver should allow a practitioner to choose an
-accuracy and computational cost after training. We present a nonlinear
-manifold reduced-order model (NM-ROM) that provides this choice through
-nested correction directions added to a frozen decoder. Correction rank
-changes the trial space without retraining; solver tolerance and,
-where applicable, empirical quadrature control the cost of the reduced
+A reduced-order PDE solver should let a practitioner choose accuracy and
+cost after training. We present a nonlinear-manifold reduced-order model
+(NM-ROM) that provides this choice from one frozen decoder: nested
+correction directions enlarge the trial space without retraining, while
+solver tolerance and empirical quadrature set the cost of the reduced
 solve. The architecture combines a learned spatial bank with a small
-nonlinear coefficient map, exact boundary enforcement, and matrix-free
-weak residual projection. Linear operators are precomputed, while
-validated quadrature reduces the cost of nonlinear residual evaluation.
-Experiments on elliptic, parabolic and hyperbolic problems compare the
-resulting accuracy--cost tradeoff with named full-order solvers;
-the main comparisons report error and cost against each named FOM. On Burgers, a fixed-test-space
-correction ladder spans $\nQxmErrSpan\times$ in same-grid error for
-$\nQxmCostSpan\times$ in runtime; a separate scheduled ladder is tested
-across training seeds and a held-out cohort. Acceleration depends on the
-comparator and resolution: selected reduced solves are faster than
-iterative full-order methods, while the efficient FOM remains stronger
-in several cases. These results establish deployment-time tunability and delimit
-its practical benefit, rather than a universal speed advantage.
-
+nonlinear coefficient map, exact boundary enforcement and matrix-free
+weak residual projection; linear operators are preassembled and
+validated quadrature reduces nonlinear residual evaluation. Every
+comparison pairs an accurate and a fast setting of the same model with a
+named full-order solver in one GPU allocation. On two-dimensional
+Poisson at $\nHeadPoissonMesh$ the accurate setting reaches
+$\nHeadPoissonAccErr\,\%$ error $\nHeadPoissonAccS\times$ faster than
+conjugate gradients, and the fast setting is $\nHeadPoissonFastS\times$
+faster; on an L-shaped domain the accurate setting is
+$\nHeadLshapeAccS\times$ faster; on held-out three-dimensional Poisson it
+reaches $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
+On Burgers the fast setting is $\nHeadBurgersFastS\times$ faster than
+Newton--BiCGStab at $1024^2$, and a correction ladder lowers same-grid
+error $\nQxmErrSpan\times$ for $\nQxmCostSpan\times$ the runtime; the
+accurate Burgers setting is slower than the full-order solver.
+Fast-setting speedup grows with resolution in every problem measured.
+The named solvers remain more accurate at their tolerances.
+Three-dimensional Burgers, Navier--Stokes and the full wave state miss
+their targets and are reported as the method's present limits.
 \end{abstract}
 
 % =====================================================================
@@ -101,10 +106,13 @@ and empirical quadrature reduces residual-evaluation cost where its
 validation permits. All online coefficients are determined from the
 weak PDE residual, without access to the reference solution.
 
-Our experiments ask whether this mechanism improves accuracy, what it
-costs, and when it is competitive with established solvers. The comparisons in this paper use full-order solvers. Full-order timings name both the algorithm and its settings:
-each linear-PDE speedup is measured against the displayed CG setting. The main section includes two- and three-dimensional experiments,
-with held-out final results distinguished from development comparisons.
+Our experiments measure what this mechanism delivers against full-order
+solvers. Table~\ref{tab:headline} reports, for every problem and mesh,
+the error and the speedup of an accurate and a fast setting of one
+frozen model against a named solver timed in the same allocation;
+Figure~\ref{fig:speedup} shows how the speedup changes with resolution,
+and Table~\ref{tab:failures} lists the problems on which the method
+misses its target.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -121,8 +129,8 @@ in the reduced representation.
 \item \textbf{A practical weak-form implementation and paired evaluation.}
 Precomputed linear operators, matrix-free differentiation and validated
 empirical quadrature make the online solve measurable against
-full-order solvers. Paired accuracy and runtime measurements
-identify the PDEs, settings and resolutions where acceleration occurs.
+full-order solvers, and paired accuracy and runtime measurements show
+where the reduced solve is faster.
 \end{enumerate}
 
 \section{Related Work}\label{sec:related}
@@ -261,8 +269,9 @@ Crank--Nicolson; the reduced step substitutes the manifold into the fully
 discrete equation \emph{before} projecting and solves
 $\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$
 (Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
-a linear system; at $q=R$ the trajectory is the exact modal propagation
-of the bank coefficients.
+a linear system; at $q=R$ the step is the linear recurrence
+\eqref{eq:heat-endpoint}. Reflective waves use an explicit latent
+integration instead (Appendix~\ref{app:method:wave}).
 
 \paragraph{Hyperbolic (Burgers).}
 For $u_t+u(u_x+u_y)=\nu\Delta u$ with a sign-upwind stencil and backward
@@ -375,27 +384,24 @@ recorded offline costs are retained with the source evidence described there.
 \label{sec:setup}
 
 \paragraph{Problems and references.}
-The completed two-dimensional study includes viscous Burgers, Poisson,
-heat, reflective waves and incompressible Navier--Stokes. Poisson is
-also tested on an L-shaped domain using a CG full-order comparator. Table~\ref{tab:problems} gives meshes and cohorts;
-Table~\ref{tab:spec} specifies the sampled families. Burgers provides
-the principal correction-rank study. Poisson, heat and waves test the
-benefit of nonlinear restriction for linear equations. Navier--Stokes
-and lower-viscosity Burgers test its limitations. The three-dimensional comparisons are included in the main results;
-evaluation scope and reproducibility details are retained in the appendix.
+The two-dimensional problems are Poisson on the square and on an
+L-shaped domain, heat, viscous Burgers and reflective waves; the
+three-dimensional problems are Poisson, heat, Burgers and incompressible
+Navier--Stokes. Table~\ref{tab:problems} gives the two-dimensional meshes
+and cohorts, Table~\ref{tab:spec} the sampled families and
+Table~\ref{tab:config3d} the three-dimensional configurations. Burgers
+provides the correction-rank study.
 
 \paragraph{Accuracy.}
 We report worst relative $L^2$ error over the stated cases and requested
-times, in percent. Poisson uses the steady reference norm; heat and
-wave displacement use the current reference norm. Burgers uses the
-initial-field norm and distinguishes all-times error, including input
-compression, from evolved-times error. Wave displacement alone does not
-establish velocity or energy accuracy. Same-grid error measures reduction
+times, in percent. Poisson uses the steady reference norm and heat the
+current reference norm; Burgers and Navier--Stokes use the initial-field
+norm over evolved times; waves use the energy-state error over
+displacement and velocity. Same-grid error measures reduction
 error relative to the converged discrete solution. Error against a
 refined reference also includes discretisation error; the two are never
-interchanged. Development results and held-out tests are labelled
-separately. Settings for a held-out test are fixed before its cases are
-accessed.
+interchanged. Settings for a held-out (final) cohort are fixed before its
+cases are accessed; all other cohorts are development cohorts.
 
 \paragraph{Timing and speedup.}
 Every accuracy--runtime pair comes from the same solver invocation.
@@ -404,236 +410,231 @@ of retained repetitions. GPU query time includes initialization, the
 solve or rollout, and requested device outputs. Complete-query time
 additionally includes host transfers and is labelled separately.
 Training and compilation are offline costs. Speedup is
-$S=T_{\mathrm{FOM}}/T_{\mathrm{method}}$, using measurements from the same
-allocation. Each table identifies the FOM algorithm, tolerance and error.
-Where a table selects the fastest tested passing FOM with no greater
-error than a method, that selection and the possibly differing
-denominators are explicit. A speedup is not an accuracy-equivalence
-claim. Nonconverged solves and failed accuracy targets remain visible;
-only settings satisfying the stated numerical checks enter a frontier.
+$S=T_{\mathrm{FOM}}/T_{\mathrm{method}}$ with both times from the same
+allocation; each table names the FOM algorithm and shows its error.
+Solves that miss their stopping rule are reported as such and do not
+enter a speedup.
 
 \paragraph{Baselines.}
-The main linear-PDE comparisons use CG, including the L-shaped domain.
-Burgers uses Newton--BiCGStab and Navier--Stokes uses the recorded CNAB2
-time integrator; these nonlinear evolution problems are not relabelled
-as CG solves. The main result tables compare NM-ROM only with these
-full-order solvers. Full solver configurations, checkpoint identities and numerical audits
-are retained with the source evidence. The appendix contains method,
-configuration and validation details needed to interpret the main comparisons.
+Linear problems are compared with conjugate gradients (CG), including the
+L-shaped domain and the CG solve inside each Crank--Nicolson (CN) heat
+step. Burgers is compared with Newton--BiCGStab and Navier--Stokes with
+its CNAB2 time integrator. The named FOM of a row is that solver at its
+fastest tested setting that is at least as accurate as the accurate
+NM-ROM setting.
 
 \section{Numerical Experiments and Results}\label{sec:results}
 
-We first compare accuracy and runtime across problems, then examine
-settings from a single trained model and the controls that produce
-them. Errors are percentages and costs are median query times.
-Speedup $S=T_{\mathrm{FOM}}/T_{\mathrm{method}}$ is always against the
-named comparator measured in the same allocation. Tables identify
-final and development cohorts; a development result is not a final
-accuracy claim.
+Table~\ref{tab:headline} is the headline comparison; the subsections
+that follow give the settings behind it and the controls that move a
+frozen model between them.
 
-\subsection{Comparison against Full-Order Solvers}
+\subsection{Accuracy and Speed against Full-Order Solvers}
 \label{sec:results:operators}\label{sec:exp:panel}
 
-\paragraph{Two-dimensional problems.}
-Table~\ref{tab:cg-main} compares NM-ROM with CG on Poisson, heat and
-reflective waves. Increasing resolution can improve the speed ratio
-because the reduced computation grows more slowly than the full-grid
-iteration. Correction improves Poisson and wave displacement accuracy,
-but its runtime cost differs substantially between the two problems.
-The measured CG solutions remain more accurate than the corresponding
-NM-ROM settings. Wave displacement gains do not imply a passing
-velocity or energy error.
-
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Two-dimensional NM-ROM versus CG: collected development
-results. $N$ is intervals per axis. Error is worst relative $L^2$ (\%);
-time is median GPU query time (ms). Each row uses the fastest tested
-passing CG with no greater displayed error. Poisson and heat use
-relative tolerance $10^{-2}$; wave time steps and tolerances are listed
-in Appendix~\ref{app:cg-current}. Heat uses an earlier audited checkpoint;
-wave NM-ROM fails its full-state target.}
-\label{tab:cg-main}
-\resizebox{\linewidth}{!}{\input{tables/TR_cg_main}}
+\caption{NM-ROM against the named full-order solver at every measured
+problem and mesh. \textbf{Both NM-ROM columns of a row come from one
+frozen model}: \emph{fast} is the uncorrected setting ($q=0$) and
+\emph{accurate} the largest stored correction rank; no network is
+retrained between them. Error is the worst relative $L^2$ error over the
+cohort (\%). Speedup is the FOM's median time divided by the NM-ROM's in
+the same GPU allocation, \textbf{bold} where the NM-ROM is faster. The
+FOM is the named iterative solver at its fastest tested setting that is at
+least as accurate as the accurate setting. $^{f}$\,held-out final cohort
+(all others development); $^{p}$\,provisional, archive retention pending;
+$^{r}$\,error against a refined reference, which includes discretisation
+error (all others same-grid); $^{c}$\,complete-query time with host
+transfers (all others GPU query). The earlier Burgers model has one
+setting, may exit on a stall, and is shown against relaxed
+($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
+tolerances. Dashes mark settings not measured and rows reserved for runs
+in progress. Times and settings: Table~\ref{tab:headline-times}.}
+\label{tab:headline}
+\resizebox{\linewidth}{!}{\input{tables/TH_headline}}
 \end{table}
 
-On Burgers, Table~\ref{tab:burgers-comparison} compares NM-ROM with
-Newton--BiCGStab. At $256^2$, correction improves same-grid error,
-but NM-ROM does not beat the displayed FOM in accuracy or runtime.
-The earlier $1024^2$ paired study below also reports speed against a
-tight Newton control; relaxing that control substantially reduces the gain.
-These development solves permit stalls and do not establish stationarity.
-The full tested high-resolution panels remain in the source records.
-
-\begin{table}[htbp]
+\begin{figure}[t]
 \centering
-\caption{Burgers2D development comparisons. Upper panel: $256^2$. Worst evolved and all-times
-errors use the initial-field norm. Upper-panel speedups use the displayed
-Newton--BiCGStab control: nonlinear tolerance $10^{-3}$,
-$\Delta t=0.005$. Faster FOM settings remain in the full panel. The
-corrected EQ rule is single-draw; the uncorrected rule has repeated
-construction confirmation.}
-\label{tab:burgers-comparison}
-\input{tables/TR_burgers_fom_only}
-\par\smallskip
-{\small Earlier $1024^2$ development panel (separate allocation):}\par
-\input{tables/TR_burgers_iterative}
-\par\smallskip
-\parbox{\linewidth}{\footnotesize Lower panel: four cases, three repeats,
-job 3534502; initial-normalised worst error against a refined reference.
-Both FOMs use $\Delta t=0.005$ and FFT preconditioning. Tight nonlinear/linear
- tolerances are $10^{-6}/10^{-8}$; relaxed are $10^{-2}/0.5$.
-Both methods meet the $5\%$ accuracy target, with unequal measured errors;
-NM-ROM permits stalled exits. FOM/NM-ROM divides each FOM time by the
-NM-ROM time in this lower panel.}
+\includegraphics[width=\linewidth]{fig_speedup_resolution}
+\caption{Speedup over the named FOM against mesh, plotted from the rows
+of Table~\ref{tab:headline}. The accurate Burgers setting at $1024^2$
+evaluates the residual densely because no quadrature rule is validated
+there at $q=256$; with the validated $q=128$ rule the error is
+$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$.}
+\label{fig:speedup}
+\end{figure}
+
+\paragraph{Linear problems.}
+On Poisson the accurate setting reaches $\nHeadPoissonAccErr\,\%$ error and
+is $\nHeadPoissonAccS\times$ faster than CG at $\nHeadPoissonMesh$; the
+corrections cost little speed because they are eliminated analytically
+(\S\ref{sec:method:weak}). On the
+L-shaped domain, where no fast transform applies, the accurate setting is
+$\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. Heat crosses
+CG between $256^2$ and $1024^2$ and is $\nHeadHeatFastS\times$ faster at
+the finest mesh. In three dimensions the held-out Poisson cohort gives
+$\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$;
+three-dimensional heat reaches $\nHeadHeatThreeAccErr\,\%$ and is slower
+than CG at both meshes.
+
+\paragraph{Burgers.}
+The reduced solve costs the same at every mesh, so the fast setting
+passes Newton--BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
+faster at $1024^2$ with $\nHeadBurgersFastErr\,\%$ error. The accurate
+setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and is slower than the
+FOM at every mesh (\S\ref{sec:results:tunability} gives the cost of each
+rank).
+
+\paragraph{Resolution.}
+Figure~\ref{fig:speedup} shows the pattern common to all problems: the
+NM-ROM query time grows more slowly with the mesh than the iterative
+FOM's, so fast-setting speedup rises with resolution in every series.
+
+\begin{table}[t]
+\centering
+\caption{Comparison with other nonlinear-manifold ROMs on shared data
+(reserved; rows are filled from the audited comparison run).}
+\label{tab:nmrom-baselines}
+\input{tables/TH_nmrom_baselines}
 \end{table}
 
-\paragraph{Three-dimensional problems.}
-Tables~\ref{tab:3d-linear-main} and \ref{tab:3d-nonlinear-main} put the
-same comparisons in the main results. Each column block uses one
-allocation and one stated reference convention. The Poisson CG control
-uses the efficient solver without timed audit-history recording.
-Heat's accepted error/runtime panel is shown, with CG speedups left
-unreported until its paired CG measurements are incorporated. Evaluation scope is stated in
-Appendix~\ref{app:main-experiment-details}.
+\paragraph{Where the method currently fails.}
+\label{sec:results:failures}
+Table~\ref{tab:failures} collects the three problems that miss their
+targets; they are excluded from Table~\ref{tab:headline}. On
+three-dimensional Burgers the corrections cut the held-out worst error
+from $\nFailBurgersQzero\,\%$ to $\nFailBurgersAcc\,\%$, but the FOM is more
+accurate and faster, and the refined-reference check fails, so only
+same-grid reduction error is established. On three-dimensional
+Navier--Stokes the corrections lower the worst error only from
+$\nFailNsQzero\,\%$ to $\nFailNsAcc\,\%$; \nFailNsFailing{} of
+\nFailNsCases{} held-out cases miss the $\nFailNsTarget\,\%$ target. On reflective waves the fast setting is faster than
+CG but its energy-state error, which includes velocity, is
+$\nFailWaveQzero\,\%$; corrections bring it to $\nFailWaveAcc\,\%$, still
+above CG's, at a cost that removes the speedup. The three-dimensional
+solves evaluate the residual densely.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Three-dimensional linear PDEs, development: Poisson (left) and
-heat (right), $32$ intervals per axis. Errors are worst same-grid
-relative $L^2$ percentages; heat uses current-normalised evolved error.
-Corrected ranks are $q=96$ for both, with latent dimensions $16$ and
-$32$ respectively. Poisson speedup is against
-CG at relative tolerance $10^{-2}$. Heat CG is pending (---).}
-\label{tab:3d-linear-main}
-\input{tables/TR_3d_linear_fom_only}
+\caption{Problems on which the method misses its target. Error is the
+worst same-grid relative $L^2$ error (\%) over evolved times; the wave
+error is the energy-state error over displacement and velocity.
+Speedup is against the named FOM in the same allocation.}
+\label{tab:failures}
+\input{tables/TH_failures}
 \end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{Three-dimensional nonlinear PDEs: Burgers final (left,
-$33$ nodes per axis) and Navier--Stokes development (right,
-$32$ periodic points per axis). Errors are worst evolved same-grid
-relative $L^2$ percentages, normalised by the initial field.
-Corrected ranks are $q=192$ and $256$.
-Burgers uses Newton--BiCGStab with $\Delta t=0.01$, nonlinear tolerance
-$10^{-2}$ and inner tolerance $0.5$; NS uses CNAB2 with
-$\Delta t=0.01$. Every $S$ uses that block's displayed FOM.}
-\label{tab:3d-nonlinear-main}
-\input{tables/TR_3d_nonlinear_fom_only}
-\end{table}
-
-Burgers3D is the frozen primary-seed result on reserved cases. Its
-correction ladder reduces error on every case for both evaluated
-initializations, but the displayed FOM remains faster and more accurate.
-The refined-reference checks fail the prospective physical-error
-budgets, so this result establishes same-grid accuracy only. The second
-initialization and all timing repetitions remain in the source records
-described in Appendix~\ref{app:main-experiment-details}. Navier--Stokes
-shows a smaller correction benefit and misses its accuracy target.
-Its displayed data are development measurements, pending final
-confirmation.
 
 \subsection{Best Configurations per Problem and Resolution}
 \label{sec:results:best}
 
-The uncorrected and corrected rows use the same trained model within
-each problem. They represent different deployment settings, not
-separately trained fast and accurate networks. Architecture, correction
-ordering and numerical protocol are fixed before final testing.
-Table~\ref{tab:ladder-main} isolates correction rank on Burgers2D with
-the residual test space held constant; increasing the rank spends more
-runtime to reduce error. A setting is called a passing fast setting
-only if it meets the declared numerical and accuracy requirements.
+Table~\ref{tab:headline-times} lists, for every row of
+Table~\ref{tab:headline}, the correction rank and residual evaluation of
+both settings with their measured times. Moving between them changes
+only deployment arguments. Table~\ref{tab:ladder-main} shows the
+intermediate settings on Burgers with the residual test space held
+fixed: each added block of correction directions lowers the error and
+raises the cost.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Burgers2D correction settings from one frozen model at $256^2$.
-The test count is fixed at $M=\nQxmFixedM$; residual evaluation is dense.
-Errors are worst evolved same-grid percentages on development cases,
-and times are paired median GPU query times. All rows meet the
-numerical stopping rule.}
+\caption{Burgers2D correction settings from one frozen model at $256^2$,
+test count fixed at $M=\nQxmFixedM$, dense residual. Errors are worst
+evolved same-grid percentages on development cases; times are paired
+median GPU query times. All rows meet the stopping rule.}
 \label{tab:ladder-main}
 \input{tables/TR_correction_main}
 \end{table}
 
-L-shaped Poisson provides a separate geometry comparison, using CG
-throughout Table~\ref{tab:lshape-main}. At the finer mesh, the NM-ROM
-is faster at larger error than CG. Complete-query timing here includes input and output transfer,
-so it is not mixed with the resident-device timings above.
-
-\begin{table}[htbp]
-\centering
-\caption{L-shaped Poisson versus CG, development. Error is worst
-same-grid relative $L^2$ (\%). Complete-query time includes host
-transfers. Each mesh uses its displayed CG tolerance and runtime as a
-common speedup denominator.}
-\label{tab:lshape-main}
-\input{tables/TR_lshape_fom_only}
-\end{table}
-
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
-Correction rank changes representation capacity; tolerance and iteration
-limits control numerical work. EQ sample count controls residual-evaluation cost;
-Table~\ref{tab:figure1-table} compares it with dense evaluation. The fixed-test-space Burgers2D ladder spans
-$\nQxmErrSpan\times$ in error for $\nQxmCostSpan\times$ in runtime.
-A smaller test space gives only $\nQxmTwoFiftySixErrSpan\times$ error
-improvement, which is why test count is not silently varied with rank.
+Table~\ref{tab:knobs-main} summarises the deployment-time controls of a
+frozen model. Correction rank is the accuracy control: with the test
+space fixed, the Burgers2D ladder lowers the error $\nQxmErrSpan\times$
+for $\nQxmCostSpan\times$ the runtime (with a smaller test space the
+same ranks give $\nQxmTwoFiftySixErrSpan\times$, so test count is held
+fixed along the ladder). Empirical quadrature and the stopping tolerance
+are cost controls: they lower the runtime at little or no change in
+error (Table~\ref{tab:figure1-table}). The iteration cap
+is a safeguard, not a control; a truncated solve fails.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
-\caption{Tabular comparison of dense and empirical-quadrature (EQ)
-residual evaluation on Burgers2D. Error is worst evolved relative $L^2$
-(\%); time is median GPU milliseconds from one allocation. The last
-column is dense time divided by EQ time. Dashes mean that no paired
-dense measurement was collected. Rules at $q=\nEqtopConfirmedRungs$
-have repeated-construction confirmation; higher-rank constructions are
-marginal (Table~\ref{tab:eqladder}).}
+\caption{Which knob to turn, measured on Burgers2D from frozen models.
+Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
+dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
+and cap: 32 held-out validation cases (Table~\ref{tab:knobs}),
+stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.}
+\label{tab:knobs-main}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Knob & Turn it to & Effect on error & Effect on cost \\
+\midrule
+Correction rank $q$ & $0\to256$ & $\nQxmErrSpan\times$ lower & $\nQxmCostSpan\times$ higher \\
+Empirical quadrature & dense $\to$ stored rule & Table~\ref{tab:figure1-table} & $\nPanelEqSpeedupZero\times$ lower at $256^2$, $\nPanelTenTwentyFourEqSpeedupZero\times$ at $1024^2$ \\
+Stopping tolerance & looser & $\nTuneTolErrConverged\to\nTuneTolErrLoose\,\%$ & $\nTuneTolSavingPct\,\%$ lower \\
+Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Dense and empirical-quadrature (EQ) residual evaluation on
+Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
+median GPU milliseconds from one allocation; the last column is dense
+time over EQ time. Dashes: no paired dense measurement. Rules at
+$q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
+higher-rank rules pass some (Table~\ref{tab:eqladder}).}
 \label{tab:figure1-table}
 \input{tables/TR_figure1_table}
 \end{table}
 
-The separate scheduled Burgers2D ladder was tested after freezing on a
-held-out cohort: all \nSealedCheckpoints{} checkpoints give monotone
-error reduction, with top-rank errors of
-$\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$;
-\nSealedKnobBarCount{} meet the full pre-registered criterion.
-The incumbent's uncorrected solve reaches
-$\nSealedIncQzero\,\%$ on a difficult held-out case, which remains in
-the reported maximum. Table~\ref{tab:sealed} retains every checkpoint.
-
-\paragraph{Representation and numerical cost.}
-\label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-EQ is distinct from
-correction rank: it approximates residual evaluation and is used only
-where validated. Repeated construction confirms the Burgers2D rules
-at $q=\nEqtopConfirmedRungs$; higher-rank rules retain their single-draw
-or marginal qualification. The current 3D results are dense and do not
-establish EQ acceleration. Tables~\ref{tab:burgers-comparison},
-\ref{tab:ladder-main} and \ref{tab:figure1-table} separate method
-comparison, correction settings and quadrature cost; construction validation is retained in the appendix.
+A separate ladder, in which the test count follows a fixed schedule
+$M=4(k+q)$, was evaluated once on a sealed held-out cohort after every
+choice was frozen. All \nSealedCheckpoints{} checkpoints (the original
+model and three retrained seeds) give monotone error reduction with
+top-rank errors of $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, and
+\nSealedKnobBarCount{} of \nSealedCheckpoints{} meet the pre-registered
+secondary criterion, the \emph{knob bar}: converged settings spanning at
+least $2\times$ in error and $2\times$ in cost. Two stricter
+pre-registered checks fail: the sealed-to-development error ratio at
+$q=0$ for the original model, whose uncorrected solve converges to a
+wrong branch on one sealed case ($\nSealedIncQzero\,\%$, kept in the
+reported maximum), and universal convergence, which fails on
+\nSealedUnconvergedCells. Table~\ref{tab:sealed} retains every
+checkpoint and verdict.
 
 \paragraph{Limitations.}\label{sec:limitations}
-Some comparisons are developmental and cohorts are small. The fixed-test-space Burgers2D study has one
-checkpoint; its scheduled study and Burgers3D have separate seed checks.
-Nonlinear initialization can fail, and same-grid improvement does not
-remove discretisation error. Wave full-state accuracy, NS accuracy and
-Burgers3D physical refinement remain limitations. These results do not
-establish a universal speedup or convergence guarantee.
+\label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
+Speedups are against the named iterative solvers; on the square, direct
+sine-transform solvers are faster than CG and are not the comparator,
+and the named FOM is more accurate than the NM-ROM in every row.
+Except where marked final, cohorts are small development cohorts, and
+timings are medians without dispersion. The fixed-test-space
+rank study uses one checkpoint; the multi-seed study changes the test
+count with the rank, so it does not replicate that intervention. FOM
+comparisons do not isolate the nonlinear head's contribution over the
+linear span of the same bank. Quadrature rules are validated on a finite
+set of reached states, not certified globally, and none is used in three
+dimensions. The reduced nonlinear solve can converge to a wrong branch,
+and lower same-grid error does not remove discretisation error.
 
+\FloatBarrier
 \section{Conclusion and Future Work}\label{sec:conclusion}
 
-We presented a tunable NM-ROM whose nested corrections change
-approximation capacity after training. The learned bank and nonlinear
-head support a compact weak-form solve, while precomputation and
-validated quadrature control its evaluation cost. The experiments
-separate correction-rank accuracy gains from numerical stopping effects
-and measure runtime against explicitly named baselines. Burgers supplies
-the clearest tuning evidence; the linear and nonlinear FOM comparisons delimit the current
-method's accuracy and cost. Future work concerns more reliable nonlinear
-initialization, resolved advection-dominated tests and extension beyond
-structured meshes.
+We presented an NM-ROM whose nested corrections change approximation
+capacity after training. From one frozen model, the accurate setting is
+$\nHeadPoissonAccS\times$ faster than CG on Poisson at
+$\nHeadPoissonMesh$ with $\nHeadPoissonAccErr\,\%$ error, the fast Burgers
+setting is $\nHeadBurgersFastS\times$ faster than Newton--BiCGStab at
+$1024^2$, and fast-setting speedup grows with resolution in every
+problem measured. Accurate nonlinear solves remain slower than the FOM,
+and three problems miss their targets (Table~\ref{tab:failures}). Future
+work is a cheaper high-rank nonlinear solve, quadrature in three
+dimensions, reliable nonlinear initialization and unstructured meshes.
 
 \section*{Reproducibility statement}\label{sec:repro}
 Tables and numerical prose are generated from retained run records by

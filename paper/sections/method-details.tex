@@ -6,9 +6,12 @@
 
 \section{Method details}
 \label{app:method}
-The formulas below give the scalar two-dimensional Dirichlet instances.
-Per-study solver constants apply to these recorded implementations;
-three-dimensional and periodic-vector scope is stated in
+The generic overdetermined problem \eqref{eq:objective} is instantiated
+differently per PDE. Poisson, heat and Burgers below are fully discrete
+weak least-squares problems; the wave arm (\S\ref{app:method:wave}) is an
+explicit second-order latent integration and is not an instance of
+\eqref{eq:objective}. Formulas are for the scalar two-dimensional
+Dirichlet case; three-dimensional and periodic-vector scope is stated in
 Appendix~\ref{app:main-experiment-details}.
 
 \subsection{Elliptic instance: Poisson}
@@ -80,9 +83,25 @@ the \emph{decoded current state} at every step: carrying the quantity the
 previous step already made small freezes the recursion and reproduces a
 one-step solution to round-off. And $\latent_{n+1}$ enters through $\head$, so
 the step is a nonlinear least-squares problem, not a linear solve.
-At $q=R$ the step is linear in the coefficients and the whole trajectory is the
-exact modal propagation of the bank coefficients, with no head and no
-iteration; this is the ``top rung'' of the heat and wave ladders. The deployed
+With corrections, $c_n=\head(\latent_n)+\corr y_n$ replaces $\head(\latent_n)$:
+\begin{equation}
+  (\latent_{n+1},y_{n+1})=\argmin_{\latent,y}
+  \norm{B_0\big(\head(\latent)+\corr y\big)-D\,B_0\,c_n}_2 ,
+  \label{eq:heat-step-corrected}
+\end{equation}
+where $y$ is eliminated as in \eqref{eq:varpro} and the \emph{complete}
+previous coefficients $c_n$, corrections included, are carried into the next
+step. At $q=R$ the head is redundant and the step is the linear
+least-squares recurrence
+\begin{equation}
+  c_{n+1}=B_0^{+}D\,B_0\,c_n,
+  \label{eq:heat-endpoint}
+\end{equation}
+with $B_0^{+}$ the pseudo-inverse ($M\ge R$; the numerical rank of $B_0$ is
+checked) and $c_0$ fitted to the supplied initial field. This endpoint is
+the weak Crank--Nicolson propagation of the bank coefficients, with no head
+and no iteration. It is the ``top rung'' of the heat ladder and the
+linear-bank baseline of the text. The deployed
 path factors the damped normal matrix by Cholesky; a variant assembles the Gram
 matrix $S=B_0\T B_0$ offline and forms $H=\dhead\T S\dhead$ directly, which is
 exact and is reported as an algebraic ablation of the same step.
@@ -132,6 +151,55 @@ $10^{-11}$ relative on sign-satisfying states) and do not time in this paper.
 Time stepping uses a fixed substep count per output interval; each step is
 warm-started at the previous code, and the linear extrapolation is used instead
 when, and only when, its residual norm is smaller.
+
+\paragraph{Block-damped step.}
+With $\jac{}=[\jac{\latent}\;\;\jac{y}]$ the Jacobian of
+\eqref{eq:burgers-step} in $(\latent,y)$, obtained in one forward-mode pass,
+each iteration solves
+\begin{equation}
+  \Big(\jac{}\T\jac{}+\lambda\,D_{\latent}+\varepsilon\,D_{y}\Big)
+  \begin{bmatrix}\delta\latent\\ \delta y\end{bmatrix}=-\jac{}\T\rweakn{n},
+  \qquad \norm{\delta\latent}\le\Delta ,
+  \label{eq:block-damped}
+\end{equation}
+where $D_{\latent}=\diag(\diag(\jac{\latent}\T\jac{\latent}),0)$ carries the
+Levenberg--Marquardt damping on the latent block only,
+$D_{y}=\diag(0,I)$ with a fixed small ridge $\varepsilon$, and $\Delta$ is
+the $q=0$ trust radius. The correction step is therefore an undamped
+Gauss--Newton step on the current linearisation, not throttled by a radius
+calibrated for the latent code. The step is accepted only if the residual
+decreases; otherwise $\lambda$ grows as in \S\ref{app:method:codes}.
+Table~\ref{tab:solver-variants} compares it with joint damping and with
+variable projection.
+
+\subsection{Second-order instance: reflective waves}
+\label{app:method:wave}
+
+For $u_{tt}=c^2\Delta u$ the bank is mass-orthonormal and the $R$ weak
+tests are the bank itself, so projection is Galerkin with stiffness
+$K=\bank\T M_h\Aop\bank$, $M_h$ the diagonal mass matrix. Writing the coefficients as
+$a(\latent,y)=\head(\latent)+\corr y$ and differentiating twice in time,
+$\ddot a=\dhead\,\ddot\latent+\head''(\latent)[\dot\latent,\dot\latent]+\corr\ddot y$,
+the projected equation $\ddot a=-c^2Ka$ becomes a linear least-squares
+problem for the joint acceleration,
+\begin{equation}
+  \big[\,\dhead(\latent)\;\;\corr\,\big]
+  \begin{pmatrix}\ddot\latent\\ \ddot y\end{pmatrix}
+  = -\Big(c^2K\,a+\head''(\latent)[\dot\latent,\dot\latent]\Big),
+  \label{eq:wave-accel}
+\end{equation}
+whose curvature term $\head''[\dot\latent,\dot\latent]$ is a
+forward-over-forward derivative of the head. The first-order system in
+$(\latent,y,\dot\latent,\dot y)$ is advanced with classical RK4 at a fixed
+step, one solve of \eqref{eq:wave-accel} per stage; there is no implicit
+residual minimisation and no stationarity exit. Initial coordinates and
+velocities are obtained from the supplied displacement and velocity. At $q=R$
+the head is dropped and $\ddot a=-c^2Ka$ is propagated exactly through the
+eigendecomposition $K=V\Lambda V\T$,
+$a(t)=V\big(\cos(\omega t)\,\hat a_0+\omega^{-1}\sin(\omega t)\,\hat b_0\big)$,
+$\omega=c\sqrt{\Lambda}$. The iterative full-order comparator uses implicit
+midpoint with CG. The error reported in Table~\ref{tab:failures} is the
+energy-state error over displacement and velocity.
 
 \subsection{Empirical quadrature: the fit and the counts}
 \label{app:method:eq}

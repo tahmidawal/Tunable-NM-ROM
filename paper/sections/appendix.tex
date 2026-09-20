@@ -25,9 +25,8 @@ independently and are not stages of this pipeline.}
 
 \section{Experimental configuration and reproducibility}
 \label{app:training-schedule}\label{app:provenance}
-The problem families and configurations below identify the two-dimensional
-studies. Three-dimensional meshes, correction ranks, reference conventions
-and FOM settings are stated beside their main results. Within each study,
+Tables~\ref{tab:problems} and \ref{tab:spec} identify the two-dimensional
+studies and Table~\ref{tab:config3d} the three-dimensional ones. Within each study,
 training precedes evaluation and the selected bank, head and correction
 directions remain frozen. Deployment changes reduced coordinates, not
 network weights. Recorded training configurations and available offline
@@ -54,41 +53,52 @@ in the last column (code constants, not run outputs).}
 \end{table}
 
 
-\subsection{CG settings and timing}
-\label{app:cg-current}
-The main two-dimensional rows use the fastest retained passing CG setting
-whose measured error does not exceed the NM-ROM error. This is a selection
-from a finite tested set. Poisson and heat use relative tolerance $10^{-2}$.
-At the finest wave mesh, the uncorrected comparison uses $\Delta t=0.005$
-and tolerance $10^{-2}$; the corrected comparison uses $\Delta t=0.0025$
-and tolerance $10^{-6}$. Heat uses an earlier audited checkpoint. Wave
-displacement alone fails to establish the full-state target.
+\subsection{Headline settings, times and timing protocol}
+\label{app:cg-current}\label{app:main-experiment-details}
+Table~\ref{tab:headline-times} gives the settings and measured times
+behind every row of Table~\ref{tab:headline}. Every cost and error come
+from the same invocation. Timings use GPU warm-up and synchronisation,
+double precision and the highest matrix-multiplication precision; all
+repetitions, including outliers, enter the median, and no time is
+borrowed from another allocation. Requested full fields and
+initialisation are charged; host transfer is included only where the
+table says complete query. The Poisson and three-dimensional heat CG comparators are
+unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
+\texttt{expanded\_seed790715}; Table~\ref{tab:problems} separates that
+checkpoint's lineage from the job that produced the printed
+measurements.
 
-Every reported cost and error come from the same invocation. Timings use
-GPU warm-up and synchronization, double precision, and the highest matrix
-multiplication precision. All repetitions, including outliers, remain in
-the median; no time is borrowed from a different allocation. Requested
-full fields and initialization are charged. Host transfer is included only
-where the main caption labels complete-query cost. Tight and relaxed Burgers
-controls are separate named baselines, not interchangeable accuracy matches.
+\begin{table}[htbp]
+\centering
+\caption{Supporting data for Table~\ref{tab:headline}: the two settings
+of each frozen model, median times (ms), timing scope, allocation and
+evidence status. ``EQ'' and ``dense'' name the Burgers residual
+evaluation; ``single'' marks models measured at one setting.}
+\label{tab:headline-times}
+\resizebox{\linewidth}{!}{\input{tables/TH_headline_times}}
+\end{table}
 
-\subsection{Three-dimensional evaluation scope}
-\label{app:main-experiment-details}
-Burgers uses its frozen primary seed on the reserved final cohort. The
-main Poisson, heat and Navier--Stokes rows retain their explicitly labelled
-development snapshots; later evaluations require separate integration.
-The Burgers final refinement check fails its physical-error budget, so its
-table establishes same-grid reduction error only. Navier--Stokes misses
-its accuracy target. Neither result is evidence of a universal speedup.
-Heat CG remains absent from the displayed snapshot; no ratio is inferred.
+\begin{table}[htbp]
+\centering
+\caption{Three-dimensional configurations, read from the run records.
+Domains are the unit cube with homogeneous Dirichlet data, except
+Navier--Stokes, which is periodic. $^{p}$\,provisional: numerical audits
+pass, archive retention pending. Burgers and Navier--Stokes appear in
+Table~\ref{tab:failures}.}
+\label{tab:config3d}
+\resizebox{\linewidth}{!}{\input{tables/TH_config3d}}
+\end{table}
 
-Scalar three-dimensional Poisson, heat and Burgers extend their spatial
-operators across all three axes. Navier--Stokes uses periodic vector fields,
-incompressibility projection and the recorded CNAB2 time integrator;
-its FOM is not a CG solve. The reflective-wave NM-ROM uses its recorded
-latent time integration, while its iterative FOM comparator uses implicit
-midpoint. The scalar Dirichlet formulas in Appendix~\ref{app:method} do not
-replace these PDE-specific implementations.
+Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
+($u_t=\nu\Delta u$, Gaussian initial fields) and scalar Burgers
+($u_t+u(u_x+u_y+u_z)=\nu\Delta u$, backward Euler, sign-upwind) are posed
+on the unit cube with zero Dirichlet walls and extend the operators of
+Appendix~\ref{app:method} across three axes. Navier--Stokes uses
+periodic vector fields, an incompressibility projection and the CNAB2
+integrator; its FOM is not a CG solve. Poisson, Navier--Stokes and
+Burgers are evaluated on held-out final cohorts whose settings were frozen
+beforehand; the heat final cohort has passed its numerical audits and is
+marked provisional until its archive is retained.
 
 \subsection{Source records}
 The accompanying source package retains the full experiment archive,
@@ -102,8 +112,10 @@ the displayed values through these machine-readable manifests:
 \item \texttt{tables/rewrite-provenance.json}: paired CG comparisons.
 \item \texttt{tables/burgers-iterative-provenance.json}: the earlier
 fine-grid Burgers tight and relaxed controls.
-\item \texttt{tables/main-experiments-provenance.json}: the displayed
-three-dimensional snapshots and named FOM denominators.
+\item \texttt{tables/headline-provenance.json}: every row of
+Tables~\ref{tab:headline}, \ref{tab:headline-times}, \ref{tab:failures} and
+\ref{tab:config3d} and every point of Figure~\ref{fig:speedup}, with the
+commit and SHA256 of each source record.
 \end{itemize}
 Each manifest records source hashes; its corresponding evidence retains
 solver configuration, checkpoint identity and allocation metadata. Development
@@ -154,6 +166,15 @@ block-damped step is the one kept.}
 \input{tables/T19_solver_variants}
 \end{table}
 
+
+\begin{table}[htbp]
+\centering
+\caption{Solver-side controls on Burgers2D, 32 held-out validation cases,
+one allocation: stopping tolerance, EQ node count $m$ and iteration cap,
+with full-order settings for scale.}
+\label{tab:knobs}
+\input{tables/T08_solver_knobs}
+\end{table}
 
 \paragraph{Reading the validation tables.}
 Correction rank $q$ is the number of added coefficient directions;

@@ -8,8 +8,14 @@ files=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'paper/ta
 preserved=[p for p in files if Path(p).name.startswith(('T','numbers'))]
 changed=[p for p in preserved if (R/p).read_bytes()!=old(p)]
 reference_only={'paper/tables/T00_glance.tex','paper/tables-md/T00_glance.md'}
-assert not set(changed)-reference_only,changed
-for path in changed:
+# 2026-09-20 review fix: Heat2D setup rows now separate checkpoint lineage from the measured job (one row each).
+heat_provenance={'paper/tables/T01_problems.tex','paper/tables-md/T01_problems.md','paper/tables/T01b_spec.tex','paper/tables-md/T01b_spec.md'}
+assert not set(changed)-reference_only-heat_provenance,changed
+for path in set(changed)&heat_provenance:
+    a=old(path).decode().splitlines();b=(R/path).read_text().splitlines()
+    diff=[i for i,(x,y) in enumerate(zip(a,b)) if x!=y]
+    assert len(a)==len(b) and len(diff)==1 and 'Heat 2D' in a[diff[0]] and '3529772' in b[diff[0]],path
+for path in set(changed)&reference_only:
     before=old(path).decode()
     cleaned=re.sub(r'; Fig\.[~ ]\\ref\{fig:family\}[ABC]', '', before)
     assert (R/path).read_text()==cleaned,path
@@ -41,11 +47,12 @@ for kind, source in experiment['sources'].items():
 assert 'fig_tunability_family' not in (P/'sections/appendix.tex').read_text()
 assert 'fig:family' not in (P/'main.tex').read_text()
 assert 'sparse direct' not in (P/'tables/TR_lshape_cg_main.tex').read_text()
-for name in ('TR_burgers_fom_only','TR_3d_linear_fom_only','TR_3d_nonlinear_fom_only','TR_lshape_fom_only'):
+# 2026-09-20 headline restructure: one error/speedup table replaces the per-problem FOM tables in the main text.
+for name in ('TH_headline','TH_failures','TH_nmrom_baselines','TR_correction_main','TR_figure1_table'):
  assert r'\input{tables/'+name+'}' in s
  table_text=(P/'tables'/f'{name}.tex').read_text()
  assert not any(x in table_text for x in ('POD','FNO','U-Net','DeepONet','Transolver'))
-for label in ('tab:3d-linear-main','tab:3d-nonlinear-main','tab:cg-main','tab:lshape-main'):
+for label in ('tab:headline','tab:failures','fig:speedup','tab:ladder-main'):
  assert label in s.split(r'\bibliographystyle')[0]
-report=dict(passed=True,baseline=BASE,preserved_generated_files=len(preserved),historical_numeric_changes=[],obsolete_figure_reference_removals=changed,paired_cg_rows=len(cg['rows']),main_3d_method_rows=11,retained_3d_method_rows=sum(len(x) for x in experiment['selected'].values()),main_3d_source_hashes={k:v['sha256'] for k,v in experiment['sources'].items()},main_text_last_page=refs[0],pdf_pages=len([p for p in pages if p.strip()]),abstract_source_words=len(abstract.split()),overfull_boxes=0,undefined_references=0,official_style=style,pdf_sha256=hashlib.sha256((P/'main.pdf').read_bytes()).hexdigest(),visually_reviewed_pages=[6,7,14,18],legacy_exact_prose_check='Not applicable to the authorized rewrite; preserved historical numerical checks passed before its old source-hash assertion.',scope='FOM-only comparison tables; accepted B3D final plus P/H/NS development snapshots. Compact method/configuration/validation appendix; full historical evidence retained in repository.')
+report=dict(passed=True,baseline=BASE,preserved_generated_files=len(preserved),historical_numeric_changes=[],obsolete_figure_reference_removals=changed,paired_cg_rows=len(cg['rows']),main_3d_method_rows=11,retained_3d_method_rows=sum(len(x) for x in experiment['selected'].values()),main_3d_source_hashes={k:v['sha256'] for k,v in experiment['sources'].items()},main_text_last_page=refs[0],pdf_pages=len([p for p in pages if p.strip()]),abstract_source_words=len(abstract.split()),overfull_boxes=0,undefined_references=0,official_style=style,pdf_sha256=hashlib.sha256((P/'main.pdf').read_bytes()).hexdigest(),visually_reviewed_pages=[5,6,7,8],legacy_exact_prose_check='Not applicable to the authorized rewrite; preserved historical numerical checks passed before its old source-hash assertion.',scope='Headline error/speedup table (gen_headline.py): accepted P3D/NS3D/B3D finals, provisional H3D final, 2D development rows; failures in their own table. Compact method/configuration/validation appendix; full historical evidence retained in repository.')
 (P/'rewrite-verification.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

@@ -63,26 +63,29 @@ def main():
         validation_target=vt,validation_norm2=vn,validation_perpendicular2=validation['perpendicular2'],validation_matrix=rb)
     np.savez_compressed(out/'reference.npz',validation=valid)
     C.dump(out/'cohorts.json',dict(train_sha256=C.sha(trainp),validation_sha256=C.sha(valp),training_parameters=trainp.tolist(),validation_parameters=valp.tolist(),reserved_final_seed=cfg['reserved_final_seed'],final_cohort_opened=False))
-    for k in cfg['diagnostic_latent_dimensions']:
-        directory=out/f'pca_K{k}';directory.mkdir()
-        record['status']=f'training_pca_K{k}';save()
-        model=T.train_head(target,norm2,perp,k,cfg,directory,validation)
-        record['candidates'].append(dict(name=f'pca_K{k}',info=model['info'],fits=[]));save()
-        models=[(f'pca_K{k}',model)]
+    candidates=[(f'pca_K{k}',k,'weighted_pca_linear_skip') for k in cfg['diagnostic_latent_dimensions']]
+    candidates += [(f'matched_random_K{k}',k,'random_joint_codes') for k in cfg.get('diagnostic_random_control_dimensions',[])]
+    for name,k,initialization in candidates:
+        directory=out/name;directory.mkdir()
+        record['status']=f'training_{name}';save()
+        model=T.train_head(target,norm2,perp,k,{**cfg,'head_initialization':initialization},directory,validation)
+        record['candidates'].append(dict(name=name,info=model['info'],fits=[],newly_trained=True,
+            checkpoint_relative_path=f'{name}/head_K{k}.pkl'));save()
         for start_count in cfg['diagnostic_fit_starts']:
-            record['status']=f'evaluating_pca_K{k}_starts{start_count}';save()
+            record['status']=f'evaluating_{name}_starts{start_count}';save()
             prediction,stats,latents=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count},return_latents=True)
             metrics=[C.metrics(a,b) for a,b in zip(prediction,valid)]
             np.savez_compressed(directory/f'validation_starts{start_count}.npz',prediction=prediction,stats=stats,latents=latents)
-            row=dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1)))
+            row=dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1)),field_file=f'{name}/validation_starts{start_count}.npz')
             record['candidates'][-1]['fits'].append(row);save()
     for model in old_models:
-        k=model['info']['k'];record['candidates'].append(dict(name=f'old_random_K{k}',info=model['info'],fits=[]))
+        k=model['info']['k'];record['candidates'].append(dict(name=f'old_random_K{k}',info=model['info'],fits=[],newly_trained=False,
+            checkpoint_relative_path=f'head_K{k}.pkl'))
         for start_count in cfg['diagnostic_fit_starts']:
             prediction,stats,latents=R.best_found_fields(model,bank,valid,{**cfg,'representation_fit_starts':start_count},return_latents=True)
             metrics=[C.metrics(a,b) for a,b in zip(prediction,valid)]
             np.savez_compressed(out/f'old_K{k}_starts{start_count}.npz',prediction=prediction,stats=stats,latents=latents)
-            record['candidates'][-1]['fits'].append(dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1))));save()
+            record['candidates'][-1]['fits'].append(dict(starts=start_count,metrics=metrics,nonstationary_fits=int(np.count_nonzero(stats[...,2]!=1)),field_file=f'old_K{k}_starts{start_count}.npz'));save()
     for setting in cfg.get('operator_continuations',[]):
         name=setting['name'];old=next(item for item in operator_models if item[0]==name)
         _,spec,params,physical_scale,old_info=old;record['status']=f'continuing_{name}';save()

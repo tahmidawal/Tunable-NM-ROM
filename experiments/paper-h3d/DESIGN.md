@@ -84,6 +84,8 @@ Before any final generation, reserve a cohort of $64$ trajectories at the existi
 
 Two additional frozen-weight controls are prepared for a subsequent paired panel. For FNO, preserve the padded physical domain size by scaling the padded lattice length with the interval count; retain the original fixed-padding direct transfer and native-grid interpolation. For DeepONet, restrict the supplied fine initial field to the native branch sensor grid and evaluate the frozen coordinate trunk directly at every requested fine point. This retains the trained branch input convention without interpolating its output. Full input handling and dense output remain charged. These separately labelled variants do not replace any earlier failed transfer result. Neither flag was active in extra03. DeepONet initialization and native application are checked against the pinned original source, and fine predictions restricted to native nodes must agree with native predictions.
 
+The A4 head diagnostic additionally trains one fresh random-initialized control at $K=16$ with exactly the same update schedule, checkpoint spacing, loss, seeds and development-selection rule as its PCA-initialized counterpart. This separates initialization from the longer budget and checkpoint-selection differences relative to the archived heads. Its checkpoint and fits remain separately labelled.
+
 ## Glossary
 
 - **Bank / head:** learned spatial functions / nonlinear map from small latent vectors to bank coefficients.

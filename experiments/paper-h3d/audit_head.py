@@ -42,21 +42,21 @@ def audit(out,destination):
         np.testing.assert_allclose(target,selected,rtol=2e-10,atol=2e-11)
     failures=[];fields=0;states=0;gradient_max=0.;reconstruction_max=0.
     for candidate in record['candidates']:
-        k=candidate['info']['k'];new=candidate['name'].startswith('pca_')
-        directory=out/f'pca_K{k}' if new else out
-        saved=pickle.loads((directory/f'head_K{k}.pkl').read_bytes());p=saved['params']
-        if new:
+        k=candidate['info']['k'];directory=(out/candidate['checkpoint_relative_path']).parent
+        saved=pickle.loads((out/candidate['checkpoint_relative_path']).read_bytes());p=saved['params']
+        if candidate['info'].get('initialization',{}).get('kind')=='weighted_pca_linear_skip':
             initial=pickle.loads((directory/f'head_K{k}_initial.pkl').read_bytes());ini=initial['initialization']
             target=a['training_target'];mean=np.average(target,axis=0,weights=1/a['training_norm2'])
             np.testing.assert_allclose(ini['mean'],mean,rtol=2e-12,atol=2e-12)
             axes=np.asarray(ini['axes']);scale=np.asarray(ini['code_scale'])
             np.testing.assert_allclose(initial['codes'],((target-mean)@axes)/scale,rtol=2e-11,atol=2e-11)
             np.testing.assert_allclose(initial['params']['skip'],scale[:,None]*axes.T,rtol=1e-12,atol=1e-12)
+        if candidate['newly_trained']:
             curve=json.loads((directory/f'head_K{k}_curve.json').read_text());assert curve[0]['step']==0
             expected=min(row['validation_evolved_worst'] for row in curve if 'validation_evolved_worst' in row)
             np.testing.assert_allclose(candidate['info']['validation_evolved_worst'],expected,rtol=1e-12)
         for fit in candidate['fits']:
-            path=directory/f'validation_starts{fit["starts"]}.npz' if new else out/f'old_K{k}_starts{fit["starts"]}.npz'
+            path=out/fit['field_file']
             data=np.load(path);prediction=data['prediction'];stats=data['stats'];latents=data['latents']
             for case in range(len(truth)):
                 pflat=prediction[case].reshape(len(truth[case]),-1);tflat=truth[case].reshape(len(truth[case]),-1)

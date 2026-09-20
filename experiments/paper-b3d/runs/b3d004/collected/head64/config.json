@@ -1,0 +1,96 @@
+{
+  "attempt": "b3d004_head64",
+  "nodes": 33,
+  "dt": 0.005,
+  "steps": 50,
+  "seed": 0,
+  "train_trajectories": 512,
+  "validation_rows": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519
+  ],
+  "train_steps": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    35,
+    50
+  ],
+  "direction_states": 512,
+  "q_ladder": [
+    0,
+    64,
+    128,
+    192
+  ],
+  "pod_ranks": [
+    64,
+    128,
+    192,
+    256
+  ],
+  "test_modes": 640,
+  "fit_budget": 400,
+  "step_budget": 200,
+  "gradient_tolerance": 1e-06,
+  "repetitions": 3,
+  "timing_seed": 20260920,
+  "final_cohort_unopened": true,
+  "refinement_cases": [],
+  "fom_controls": [
+    [
+      0.01,
+      0.5
+    ],
+    [
+      0.001,
+      0.5
+    ],
+    [
+      0.0001,
+      0.5
+    ],
+    [
+      1e-06,
+      0.1
+    ],
+    [
+      0.01,
+      0.005
+    ],
+    [
+      0.0001,
+      1e-06
+    ]
+  ],
+  "training": {
+    "seed": 920321,
+    "latent_dimension": 64,
+    "rank": 256,
+    "bank_width": 384,
+    "head_width": 512,
+    "fourier_features": 64,
+    "fourier_scale": 1.5,
+    "bank_steps": 200000,
+    "head_steps": 300000,
+    "batch_states": 64,
+    "batch_points": 1024,
+    "head_batch": 256,
+    "bank_learning_rate": 0.0003,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 10000,
+    "coefficient_refresh_every": 20000
+  },
+  "fit_tile": 16,
+  "diagnostic_starts": 8,
+  "candidate_parent_checkpoint_sha256": "b773bfefa0d23332006e5c7683881a02a8007ebb7df3efa1acec7f8211bd4e88"
+}

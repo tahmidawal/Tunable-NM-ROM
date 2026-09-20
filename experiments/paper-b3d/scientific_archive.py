@@ -60,7 +60,8 @@ def excluded(path):
 
 def create(attempt):
     run=EXP/'runs'/attempt;source=run/'collected';target=run/'scientific-archive'
-    assert (source/'COLLECTION.sha256').exists() and (source/'OUTPUTS.sha256').exists()
+    assert (source/'OUTPUTS.sha256').exists()
+    source_manifest='COLLECTION.sha256' if (source/'COLLECTION.sha256').exists() else 'OUTPUTS.sha256'
     target.mkdir(exist_ok=False);files=[];omitted=[];seen={};writer=SplitWriter(target)
     with tarfile.open(fileobj=writer,mode='w|',format=tarfile.PAX_FORMAT) as archive:
         for path in sorted(source.rglob('*')):
@@ -82,7 +83,7 @@ def create(attempt):
             if len(files)%100==0:print('ARCHIVE',attempt,len(files),writer.tell(),flush=True)
     writer.close()
     manifest=dict(schema='lossless-scientific-tar-split-v1',attempt=attempt,source_collection=str(source),
-        source_collection_sha256=digest(source/'COLLECTION.sha256'),files=files,excluded=omitted,
+        source_collection_manifest=source_manifest,source_collection_sha256=digest(source/source_manifest),files=files,excluded=omitted,
         parts=writer.parts,archive_sha256=writer.total.hexdigest(),archive_bytes=writer.tell(),
         retained_uncompressed_file_bytes=sum(v['bytes'] for v in files),
         scope='all original timed predictions, references, raw invocation records, scientific metadata, source and selected checkpoints; listed training/optimizer caches remain local-only')

@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "complete": true,
+  "scope": "Audit exact fixed-seed membership separately from platform exp rounding.",
+  "checks": {
+    "independent_local_probe_reproduction": true,
+    "fixed_seed_and_count": true,
+    "exact_uniform_draws_and_log_bounds": true,
+    "exact_cluster_parameter_reproduction": true,
+    "recorded_parameter_hash": true
+  },
+  "acceptance": "Exact independent cluster-runtime parameter replay and recorded hash, plus bitwise identical independent RNG draws and log/exponent inputs; no floating-point acceptance tolerance is introduced",
+  "strict_local_bitwise_passed": false,
+  "qualification": "The original strict local parameter gate is retained as failed. Two NumPy CPU implementations round scalar exp differently; all original data and final query results are retained unchanged.",
+  "differences": [
+    {
+      "case": 7,
+      "component": 5,
+      "recorded": 0.005465286838072933,
+      "local": 0.005465286838072934,
+      "signed_difference": -8.673617379884035e-19,
+      "correctly_rounded_decimal_exp": 0.005465286838072934,
+      "cluster_minus_correctly_rounded_ulps": -1
+    },
+    {
+      "case": 11,
+      "component": 5,
+      "recorded": 0.0026992883880233923,
+      "local": 0.0026992883880233927,
+      "signed_difference": -4.336808689942018e-19,
+      "correctly_rounded_decimal_exp": 0.0026992883880233927,
+      "cluster_minus_correctly_rounded_ulps": -1
+    }
+  ],
+  "parameter_sha256": "6746568d220c9242a58e2813e83f5c020a51ec89cbab65294856f1c634a58b25",
+  "probe_source_commit": "05ced5bb4fb7e52431c213c86b0e42cacee255ce",
+  "probe_source_sha256": "0eb7ecedc34dbe839ba5cdd2425d2c2350ecb0166b0fe4e72817739280145148",
+  "probe_files_sha256": {
+    "parameter_probe_local.json": "96b78bb9265471f453a328d7045d5a203e5a24e8fb0c7f9d664f2da9a02fbdb4",
+    "parameter_probe_cluster.json": "49513ac6b6b882ec9e62f20d7994513f7fe7ed96570b053b8f5f118203d519a7"
+  },
+  "runtimes": {
+    "local": {
+      "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+      "machine": "aarch64",
+      "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
+      "numpy": "2.4.4"
+    },
+    "cluster": {
+      "platform": "Linux-5.14.0-570.60.1+21.1.el9_6_ciq.x86_64-x86_64-with-glibc2.34",
+      "machine": "x86_64",
+      "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+      "numpy": "2.5.0"
+    }
+  }
+}

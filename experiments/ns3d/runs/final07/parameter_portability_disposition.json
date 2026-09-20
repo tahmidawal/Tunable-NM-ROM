@@ -1,0 +1,12 @@
+{
+  "original_audit": "audit_strict_local.json",
+  "original_sha256": "7bfbbfb39199580a89aef343ea6a59ceabf54c77a4f1ccde5ee685edd6d9d41f",
+  "original_auditor_source_commit": "7681447fe74efb6c2755bb19304174d6867533e7",
+  "original_auditor_source_sha256": "c3a7cd95388d6b3b1050ffc9cc643ff85cf6219220032b1ae0a622ca3df377d9",
+  "failed_gates": [
+    "independent_parameter_draw_and_membership"
+  ],
+  "action": "Retain strict-local failure; rerun full unchanged numerical checks with exact independently verified cluster-runtime parameter replay",
+  "parameter_runtime_audit": "parameter_runtime_audit.json",
+  "no_data_models_solver_config_or_query_replay_tolerance_changed": true
+}

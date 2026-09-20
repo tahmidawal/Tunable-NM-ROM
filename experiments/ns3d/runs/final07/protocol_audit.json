@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "complete": true,
+  "scope": "Independently bind final outputs to the precommitted model/config freeze.",
+  "checks": {
+    "precommitted_complete_configuration": {
+      "passed": true
+    },
+    "preobserved_real_replay": {
+      "passed": true,
+      "largest_field_relative_difference": 1.708940116073986e-15,
+      "final_access_utc": "2026-09-20T17:36:18.902251+00:00"
+    },
+    "exact_development_selection_bytes": {
+      "passed": true,
+      "failures": []
+    },
+    "development_only_control_selection": {
+      "passed": true
+    },
+    "development_audits_committed_before_final": {
+      "passed": true,
+      "files": 5,
+      "failures": []
+    },
+    "reserved_complete_final_membership": {
+      "passed": true
+    }
+  },
+  "source_commit": "7681447fe74efb6c2755bb19304174d6867533e7",
+  "job_id": "4027788"
+}

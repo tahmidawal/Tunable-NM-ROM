@@ -9,8 +9,7 @@ import ns3d_independent as I
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('collected');p.add_argument('--out',required=True);p.add_argument('--smoke',action='store_true')
-    p.add_argument('--parameter-runtime-audit');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('collected');p.add_argument('--out',required=True);p.add_argument('--smoke',action='store_true');a=p.parse_args()
     root=Path(a.collected);out=root if a.smoke else root/'output';raw=json.loads((out/'result.json').read_text());cfg=raw['config']
     assets=out/'assets' if cfg['evaluation_cohort']=='development' else root/cfg['frozen_source_directory']/'assets'
     result=dict(passed=True,complete=False,checks={},source_commit=raw['source_commit'],job_id=raw['job_id'],scope=__doc__)
@@ -60,14 +59,7 @@ def main():
     rng=np.random.default_rng(raw['cohort_seed']);draws=[]
     for _ in range(len(states)):
         center=rng.uniform(0,1,3);draws.append([*center,rng.uniform(.12,.24),rng.uniform(.6,1.4),np.exp(rng.uniform(np.log(.002),np.log(.01)))])
-    strict_local=bool(np.array_equal(parameters,np.asarray(draws)));runtime_verified=False;runtime_record=None
-    if a.parameter_runtime_audit:
-        runtime_path=Path(a.parameter_runtime_audit);runtime_record=json.loads(runtime_path.read_text())
-        assert runtime_record['passed'] and runtime_record['complete']
-        runtime_verified=bool(runtime_record['parameter_sha256']==array_sha(parameters)==raw['dev_data']['parameter_sha256'] and all(runtime_record['checks'].values()))
-        result['parameter_runtime_audit']=dict(path=str(runtime_path),sha256=file_sha(runtime_path),qualification=runtime_record['qualification'])
-    gate('independent_parameter_draw_and_membership',(strict_local or runtime_verified) and raw['dev_data']['states_sha256']==array_sha(states),
-         seed=raw['cohort_seed'],cases=len(states),strict_local_bitwise_passed=strict_local,exact_cluster_runtime_verified=runtime_verified)
+    gate('independent_parameter_draw_and_membership',np.array_equal(parameters,np.asarray(draws)) and raw['dev_data']['states_sha256']==array_sha(states),seed=raw['cohort_seed'],cases=len(states))
     with np.load(out/'timing_references.npz') as f:refs=f['same_grid'];fine=f['fine']
     refinement_errors=[]
     for case in range(len(states)):

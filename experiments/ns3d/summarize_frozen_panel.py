@@ -18,6 +18,7 @@ def summarize(root):
     names=['audit.json','source_audit.json','history_audit.json','pod_cold_audit.json']
     if raw['evaluation_cohort']=='development':names.append('teacher_audit.json')
     if raw['evaluation_cohort']=='final':names.append('protocol_audit.json')
+    if (root/'parameter_runtime_audit.json').exists():names.append('parameter_runtime_audit.json')
     audits={name:json.loads((root/name).read_text()) for name in names}
     assert all(a['passed'] and a.get('complete',True) for a in audits.values()),'Every required audit must finish and pass'
     assert 'all_four_operator_families' in audits['audit.json']['checks'],'Field audit incomplete'
@@ -81,6 +82,8 @@ def summarize(root):
         accuracy_statistic='Per-case maximum across repetitions; evolved excludes the initial field, all-times includes it',
         ratio_scope='Same-job FOM/model timing ratio; matched-target claims require the separate accuracy, reference and stationarity flag',
         limitations=raw['limitations'],audits={name:digest(root/name) for name in names},
+        audit_qualifications=[audits['parameter_runtime_audit.json']['qualification']] if 'parameter_runtime_audit.json' in audits else [],
+        retained_audit_dispositions={name:digest(root/name) for name in ('audit_strict_local.json','parameter_portability_disposition.json') if (root/name).exists()},
         raw_files={name:digest(out/name) for name in ('result.json','timing_rows.json','timed_fields.npz')},rows=rows)
 
 

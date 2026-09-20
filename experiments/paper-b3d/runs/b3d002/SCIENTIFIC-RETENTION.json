@@ -1,46 +1,66 @@
 {
   "status": "scientific retention upgrade complete",
-  "prior_retention_record_sha256": "538cb3552ec0e92cb602fbd5d964b6752e0bff7e4e802fb0ca42f345e9697147",
+  "prior_retention_record_sha256": null,
   "scientific_archive": "scientific-archive/manifest.json",
   "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
-  "source_commit": "7528fba6",
+  "source_commit": "bb0fe9ed",
   "all_scientific_fields_durably_retained": true,
   "full_original_collection_untouched": true,
   "original_collection_manifest": "COLLECTION.sha256",
   "excluded": [
+    {
+      "path": "code/__pycache__/audit.cpython-312.pyc",
+      "bytes": 10731,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-312.pyc",
+      "bytes": 20984,
+      "reason": "Python bytecode cache"
+    },
     {
       "path": "code/__pycache__/core.cpython-313.pyc",
       "bytes": 20830,
       "reason": "Python bytecode cache"
     },
     {
+      "path": "code/__pycache__/run.cpython-312.pyc",
+      "bytes": 29389,
+      "reason": "Python bytecode cache"
+    },
+    {
       "path": "code/__pycache__/run.cpython-313.pyc",
-      "bytes": 30705,
+      "bytes": 29493,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/__pycache__/train.cpython-313.pyc",
-      "bytes": 24939,
+      "path": "code/__pycache__/smoke.cpython-312.pyc",
+      "bytes": 5701,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/operators/__pycache__/__init__.cpython-313.pyc",
-      "bytes": 246,
+      "path": "code/__pycache__/smoke_training.cpython-312.pyc",
+      "bytes": 2689,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/operators/__pycache__/extra_models3d.cpython-313.pyc",
-      "bytes": 18280,
+      "path": "code/__pycache__/train.cpython-312.pyc",
+      "bytes": 17846,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/operators/__pycache__/models3d.cpython-313.pyc",
-      "bytes": 11335,
+      "path": "code/cluster/__pycache__/collect.cpython-312.pyc",
+      "bytes": 2499,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/operators/__pycache__/training.cpython-313.pyc",
-      "bytes": 9740,
+      "path": "code/cluster/__pycache__/stage.cpython-312.pyc",
+      "bytes": 7134,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-312.pyc",
+      "bytes": 90306,
       "reason": "Python bytecode cache"
     },
     {
@@ -49,19 +69,14 @@
       "reason": "Python bytecode cache"
     },
     {
-      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
-      "bytes": 6622,
+      "path": "code/vendor/__pycache__/block_lm.cpython-312.pyc",
+      "bytes": 6711,
       "reason": "Python bytecode cache"
     },
     {
-      "path": "out/deeponet3d/latest.pkl",
-      "bytes": 44690918,
-      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
-    },
-    {
-      "path": "out/transolver3d/latest.pkl",
-      "bytes": 13557532,
-      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
+      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
+      "bytes": 6622,
+      "reason": "Python bytecode cache"
     },
     {
       "path": "training/training_fields.npy",

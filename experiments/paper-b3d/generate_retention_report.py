@@ -1,15 +1,36 @@
-# Burgers 3D scientific evidence retention
+"""Generate retention tables only from completed committed-byte restore audits."""
+import hashlib
+import json
+from pathlib import Path
+
+EXP=Path(__file__).resolve().parent
+
+
+def main():
+    rows=[]
+    for run in sorted((EXP/'runs').glob('b3d*')):
+        path=run/'scientific-archive/git-restore-audit.json'
+        if not path.exists():continue
+        proof=json.loads(path.read_text());assert proof['passed']
+        manifest=json.loads((run/'scientific-archive/manifest.json').read_text())
+        record=dict(status='scientific retention upgrade complete',
+            prior_retention_record_sha256=hashlib.sha256((run/'RETENTION.json').read_bytes()).hexdigest() if (run/'RETENTION.json').exists() else None,
+            scientific_archive='scientific-archive/manifest.json',actual_git_restore_audit='scientific-archive/git-restore-audit.json',
+            source_commit=proof['commit'],all_scientific_fields_durably_retained=True,full_original_collection_untouched=True,
+            original_collection_manifest=manifest.get('source_collection_manifest','COLLECTION.sha256'),excluded=manifest['excluded'],
+            historical_scope='prior local-only dense-field statements described retention before this supplement and remain as history; experimental acceptance or failure is unchanged')
+        (run/'SCIENTIFIC-RETENTION.json').write_text(json.dumps(record,indent=2)+'\n')
+        rows.append((run.name,proof))
+    text='''# Burgers 3D scientific evidence retention
 
 This supplement records completed lossless retention upgrades. Every original scientific prediction/reference field, raw paired record, source file and selected checkpoint is recoverable from the committed split archives below; each experiment retains its original numerical acceptance or failure status.
 
 | Attempt | Files restored | Parts | Tar bytes | Restored file bytes | Git source |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `b3d001` | 305 | 20 | 1292953600 | 3329907285 | `bb0fe9ed` |
-| `b3d002` | 57 | 18 | 1144094720 | 1144048620 | `bb0fe9ed` |
-| `b3d003` | 281 | 67 | 4464558080 | 4960468563 | `7528fba6` |
-| `b3d004` | 494 | 99 | 6598512640 | 8098799891 | `7528fba6` |
-| `b3d005` | 1395 | 208 | 13926707200 | 17994878053 | `7528fba6` |
-
+'''
+    for attempt,proof in rows:
+        text+=f"| `{attempt}` | {proof['files']} | {proof['parts']} | {proof['archive_bytes']} | {proof['restored_file_bytes']} | `{proof['commit']}` |\n"
+    text+='''
 The verifier reconstructs every file byte stream directly from the pinned Git blobs, checks every file SHA256, checks each split part and the concatenated tar checksum, and validates hard links for identical contents. It does not rely on ignored local field files as proof. Original `RETENTION.json` records retain their historical scope; each attempt's `SCIENTIFIC-RETENTION.json` links the correction. The earliest pilot has its original output manifest but no subsequent full-collection manifest; that narrower original checksum scope is explicit in its archive manifest.
 
 To verify an archive from this worktree, replace the attempt and Git source with the corresponding table entries:
@@ -33,3 +54,9 @@ Regenerable training arrays and optimizer continuation states are explicitly lis
 - **SHA256:** a checksum used to detect any change in file content.
 - **Git source:** the commit containing the exact archived bytes used by the restore audit.
 - **Optimizer continuation state:** training bookkeeping needed to resume optimization; distinct from the selected trained prediction model.
+'''
+    (EXP/'SCIENTIFIC-RETENTION.md').write_text(text)
+    print(json.dumps(dict(attempts=len(rows),restored_files=sum(p['files'] for _,p in rows)),indent=2))
+
+
+if __name__=='__main__':main()

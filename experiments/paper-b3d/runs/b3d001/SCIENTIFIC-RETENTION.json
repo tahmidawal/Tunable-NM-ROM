@@ -1,0 +1,68 @@
+{
+  "status": "scientific retention upgrade complete",
+  "prior_retention_record_sha256": null,
+  "scientific_archive": "scientific-archive/manifest.json",
+  "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
+  "source_commit": "bb0fe9ed",
+  "all_scientific_fields_durably_retained": true,
+  "full_original_collection_untouched": true,
+  "original_collection_manifest": "OUTPUTS.sha256",
+  "excluded": [
+    {
+      "path": "code/__pycache__/audit.cpython-312.pyc",
+      "bytes": 8813,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-312.pyc",
+      "bytes": 15753,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-313.pyc",
+      "bytes": 15647,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/run.cpython-312.pyc",
+      "bytes": 25664,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/smoke.cpython-312.pyc",
+      "bytes": 5701,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/cluster/__pycache__/collect.cpython-312.pyc",
+      "bytes": 2391,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/cluster/__pycache__/stage.cpython-312.pyc",
+      "bytes": 6590,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-312.pyc",
+      "bytes": 90306,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-313.pyc",
+      "bytes": 89009,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-312.pyc",
+      "bytes": 6711,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
+      "bytes": 6622,
+      "reason": "Python bytecode cache"
+    }
+  ],
+  "historical_scope": "prior local-only dense-field statements described retention before this supplement and remain as history; experimental acceptance or failure is unchanged"
+}

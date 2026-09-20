@@ -1,6 +1,14 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## P lane complete — final64 and additional same-device replay accepted
+
+User-requested devicecheck09 job4031708 completed12m17s on pax105. Independent audit verifies all 2400 timed invocations used physical UUID `GPU-7ea87052-7ee2-b522-615d-be66f44238c3` before and after timing, one visible CUDA/JAX GPU, CUDA_VISIBLE_DEVICES=0 and SLURM_JOB_GPUS=7. All 1184 fields plus CG/state/POD/source audits pass. The selected checkpoints are unchanged; 608 deterministic development fields match pre-final replay07 within 8.823e-16 relative difference. No retraining or final-based selection occurred.
+
+Archive actual-Git retained at `03168478ac31f91997cff82fe7c8e2b46c697c63`: 1288 ordinary files (1757143055 bytes) read back, plus both oversized assets restored from committed chunks. Exact devicecheck09 remote directory deleted after proof; no P jobs remain. `runs/devicecheck09/paper-comparisons.json` provides fresh same-job development comparisons and full baseline records. These are reproducibility evidence, not replacements for accepted final64 at final08. Final64 acceptance remains `f1c28751909c7e7941b424528856d9cbcdf9a262`; its immutable scientific source is `f18533034cbdf3c7027073e57f091200bd622e8f`.
+
+Root owns canonical LAB, reports and manuscript integration. No merge or push performed. All P checkpoint/source/JSON/archive materializations remain. If shared storage relief becomes necessary, `retention-audit.json` for each accepted attempt already maps every ordinary archive path to SHA256/bytes and exact Git commit; oversized assets have committed chunk manifests. P has not removed any such local materializations, so a future bounded relief must verify exact restorable Git blobs and retain those mappings.
+
 ## Final08 accepted and fully retained; devicecheck09 remains live
 
 Final64 job4028642 completed43m48s on A10080GB pax105. Accepted independent checks: 4736 fields, 128 references, 50 rows, 2304 CG fields with zero failures, and 384 nonlinear states. Frozen assets/configuration and empirical physical-reference refinement pass. All 4939 ordinary archive files (6231387723 bytes) were verified by reading actual Git blobs at `26c73030b89adfa321ede751db2798abf9bcd1b2`; all 3 oversized assets were reconstructed from committed chunks. Exact final08 remote directory is deleted after proof. No final-driven tuning or selection was done.

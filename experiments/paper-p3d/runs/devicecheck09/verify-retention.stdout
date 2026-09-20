@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "commit": "03168478ac31f91997cff82fe7c8e2b46c697c63",
+  "attempt": "devicecheck09",
+  "ordinary_committed_files": 1288,
+  "ordinary_bytes": 1757143055,
+  "restored_large_files": [
+    {
+      "path": "archive/out/offline/pod_N64.npy",
+      "bytes": 256048256,
+      "sha256": "20f5940de9e37faf58c1aa7db47d6f1442c5c76e715542a6d19516325ac1117b",
+      "chunks": 4,
+      "restored_from_committed_blobs": true
+    },
+    {
+      "path": "archive/out/weak_setup_N64.npz",
+      "bytes": 245732775,
+      "sha256": "5f845e814dc2cd6d70c5edd76c4bc0b30f05cb809f7a37e702dcb318af6460e1",
+      "chunks": 4,
+      "restored_from_committed_blobs": true
+    }
+  ],
+  "scope": "Every non-cache archive file read from Git and compared by SHA256, or reconstructed from committed chunks and compared in a separate temporary directory."
+}

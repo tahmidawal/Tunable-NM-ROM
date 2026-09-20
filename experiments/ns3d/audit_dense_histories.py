@@ -4,7 +4,7 @@ Checks all history hashes; cold and first/middle/last solves for every case and
 weak arm in repetition zero. No JAX or production residual code is imported.
 """
 from __future__ import annotations
-import argparse,json,pickle
+import argparse,json,pickle,time
 from pathlib import Path
 import numpy as np
 from scipy.fft import fftn,ifftn
@@ -40,6 +40,10 @@ def main():
         return np.sqrt(2*n**3)*np.where(cosine,scalar.real,-scalar.imag)
     with np.load(out/'dev_data.npz') as f:states=f['states'];parameters=f['parameters']
     rows=json.loads((out/'timing_rows.json').read_text());checks=[];bad=[]
+    initial=states[:,0].reshape(len(states),-1).T
+    bank_targets=np.linalg.solve(bank['extra']['qr_R'],bank['extra']['qr_Q'].T@initial)
+    physical_corrections=bank['extra']['bank']@C[:,:max(cfg['q_values'])]
+    linear_cached={};started=time.monotonic()
     metric=lambda r,J:(float(np.linalg.norm(r)),float(np.linalg.norm(J.T@r)/(np.linalg.norm(J)*np.linalg.norm(r)+1e-300)))
     with np.load(out/'latent_histories.npz') as histories,np.load(out/'timed_fields.npz') as fields:
         for row in rows:
@@ -50,7 +54,9 @@ def main():
             linear=name.startswith('pod_weak_')
             if linear:
                 q=int(name.split('_')[-1]);G=P[:,:q];Q=G;Rb=np.eye(q);cor=None
-                hG=tf(G.T.reshape(q,3,n,n,n));AA=extract(hG).T
+                if q not in linear_cached:
+                    hG=tf(G.T.reshape(q,3,n,n,n));linear_cached[q]=extract(hG).T
+                AA=linear_cached[q]
             else:
                 q=int(name.rsplit('q',1)[-1]);G=bank['extra']['bank'];Q=bank['extra']['qr_Q'];Rb=bank['extra']['qr_R'];cor=C[:,:q];AA=A
             coefficient=lambda w:w if linear else head(hp,w[:k])+cor@w[k:]
@@ -61,8 +67,8 @@ def main():
             discrepancy=float(np.linalg.norm(reconstructed-expected)/max(np.linalg.norm(expected),1e-300))
             if discrepancy>1e-10:bad.append(key+' decoded endpoints')
             checks.append(dict(method=name,case=case,step='decoded endpoints',residual_error=0.,gradient_error=0.,field_relative=discrepancy))
-            target=np.linalg.solve(Rb,Q.T@states[case,0].ravel())
             if not linear:
+                target=bank_targets[:,case]
                 residual=Rb@(coefficient(W[0])-target);J=Rb@derivative(W[0]);rn,gn=metric(residual,J)
                 checks.append(dict(method=name,case=case,step='cold',residual_error=abs(rn-row['cold'][0]),gradient_error=abs(gn-row['cold'][3]),normalized_gradient=gn))
             for step in sorted({0,(len(W)-2)//2,len(W)-2}):
@@ -71,7 +77,8 @@ def main():
                 gradients=np.stack([inv(1j*wave[d]*uh) for d in range(3)])
                 # Independent derivative of -(u dot grad)u, batched only over
                 # tangent directions, rather than the production rotational form.
-                tangents=(.5*G@Jc).T.reshape(Jc.shape[1],3,n,n,n);dadv=[]
+                physical_jacobian=G if linear else np.concatenate((G@Jc[:,:k],physical_corrections[:,:q]),axis=1)
+                tangents=(.5*physical_jacobian).T.reshape(Jc.shape[1],3,n,n,n);dadv=[]
                 for start in range(0,len(tangents),8):
                     du=tangents[start:start+8];duh=tf(du);value=np.zeros_like(du)
                     for d in range(3):
@@ -82,6 +89,7 @@ def main():
                 dlinear=AA@Jc;J=(dlinear-dt*dN+.5*dt*nu*lam[:,None]*dlinear)/den[:,None]
                 rn,gn=metric(residual,J)
                 checks.append(dict(method=name,case=case,step=step+1,residual_error=abs(rn-row['steps'][0][step]),gradient_error=abs(gn-row['steps'][3][step]),normalized_gradient=gn))
+            print('AUDITED_HISTORY',name,case,'checks',len(checks),'seconds',time.monotonic()-started,flush=True)
     result=dict(passed=not bad and all(r['residual_error']<1e-8 and r['gradient_error']<1e-8 for r in checks),
         applicable=True,scope=__doc__,hash_failures=bad,checks=checks)
     Path(a.out).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='checks'}))

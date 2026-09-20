@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "applicable": true,
+  "scope": "Independent advective-form Jacobians for the dense weak NS3D evaluator.\n\nChecks all history hashes; cold and first/middle/last solves for every case and\nweak arm in repetition zero. No JAX or production residual code is imported.\n",
+  "hash_failures": [],
+  "checks": [
+    {
+      "method": "nmrom_smoke_head_q0",
+      "case": 0,
+      "step": "decoded endpoints",
+      "residual_error": 0.0,
+      "gradient_error": 0.0,
+      "field_relative": 3.216709699793504e-16
+    },
+    {
+      "method": "nmrom_smoke_head_q0",
+      "case": 0,
+      "step": "cold",
+      "residual_error": 0.0,
+      "gradient_error": 1.1714412555531648e-16,
+      "normalized_gradient": 1.2328491573899415e-08
+    },
+    {
+      "method": "nmrom_smoke_head_q0",
+      "case": 0,
+      "step": 1,
+      "residual_error": 1.0343966351869516e-17,
+      "gradient_error": 1.1140280832582541e-12,
+      "normalized_gradient": 5.0487506088011595e-12
+    },
+    {
+      "method": "nmrom_smoke_head_q0",
+      "case": 0,
+      "step": 3,
+      "residual_error": 1.9312351197398048e-18,
+      "gradient_error": 9.622079437574002e-13,
+      "normalized_gradient": 4.3179924332992804e-12
+    },
+    {
+      "method": "nmrom_smoke_head_q0",
+      "case": 0,
+      "step": 5,
+      "residual_error": 5.353248226647178e-19,
+      "gradient_error": 1.1067649426240992e-12,
+      "normalized_gradient": 5.554474765837765e-12
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": "decoded endpoints",
+      "residual_error": 0.0,
+      "gradient_error": 0.0,
+      "field_relative": 0.0
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 1,
+      "residual_error": 6.776263578034403e-21,
+      "gradient_error": 1.4639157860797063e-16,
+      "normalized_gradient": 6.366354261841255e-13
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 3,
+      "residual_error": 2.0328790734103208e-20,
+      "gradient_error": 1.4491605385891498e-16,
+      "normalized_gradient": 2.3377638460406175e-13
+    },
+    {
+      "method": "pod_weak_2",
+      "case": 0,
+      "step": 5,
+      "residual_error": 6.776263578034403e-21,
+      "gradient_error": 2.0975532166113255e-17,
+      "normalized_gradient": 1.0606182611151342e-12
+    }
+  ]
+}

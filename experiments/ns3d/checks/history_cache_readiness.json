@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": {
+    "checks/frozen_panel_v2/cached_history_audit.json": {
+      "passed": true,
+      "checks": 9,
+      "maximum_residual_disagreement": 1.0343966351869516e-17,
+      "maximum_gradient_disagreement": 1.1140280832582541e-12
+    },
+    "checks/cached_capacity05_history_audit.json": {
+      "passed": true,
+      "checks": 18,
+      "maximum_residual_disagreement": 2.220446049250313e-16,
+      "maximum_gradient_disagreement": 5.1612351387993076e-14
+    }
+  },
+  "legacy_fixture_limitation": "dense_history_smoke lacks timed_fields.npz needed by later endpoint reconstruction checks; complete capacity05_smoke used instead",
+  "numerical_tolerances_unchanged": true
+}

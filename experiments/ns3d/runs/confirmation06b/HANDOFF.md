@@ -21,3 +21,20 @@ Joint Deep training is still running, with its saved best at the first update an
 No local numerical audits remain running. Next actions: monitor the training/panel job; collect all outputs, reuse, staged sources and logs with checksums; run source, complete-field and history audits plus final-byte teacher verification; archive and actual-Git verify; prepare/commit actual final asset/config freeze; stage and submit a fresh final07 job with real development replay before any final draw. Final seed202609203/count32 remain unopened.
 
 Agent rotation: Heat owner is inactive after clean handoff5f2ef00e. B owner is active for B0074021709 and will return its slot after its local audit work; reactivate `/root/heat3d_iterative_cg` then. Arrange B reactivation around17:40–18:00 or sooner on exit; its allocation cap is18:02. Parent controls cross-lane scheduling.
+
+## Storage relief and audit readiness at 17:03 UTC
+
+Parent approved releasing duplicate materializations in this NS tree. `runs/archived_materialization_release.json` records every removed path, size, SHA-256, immutable archive commit and per-file restoration command. The committed archives and all active/final input assets remain intact; all small result, configuration, source and audit files remain materialized. The completed source record gives the exact bytes released. Both archive manifests and every archived Git part were checked for availability before each removal, and each removed file was checksum-matched to its verified archive.
+
+To restore an individual file, execute its `restore_command` in the manifest from the NS worktree root. To restore a complete accepted collection:
+
+```bash
+cat experiments/ns3d/artifacts/coverage04/collection.tar.part* | tar -xf - -C experiments/ns3d/runs/coverage04/collected
+cat experiments/ns3d/artifacts/capacity05/collection.tar.part* | tar -xf - -C experiments/ns3d/runs/capacity05/collected
+```
+
+Check free disk before materializing a complete archive. Source-generated paper rows use retained result/audit JSON; binary re-audits require restoration first.
+
+The independent dense-history auditor now caches immutable correction tangents, POD projections and initial targets, retaining exactly the same selected residual/Jacobian checks and fixed tolerances. Both the frozen-asset tiny panel and the positive-correction capacity smoke pass all checks. Per-case audit progress is printed so the full development/final audit duration can be estimated. The old `dense_history_smoke` fixture lacks timed endpoint fields and is not suitable for the later endpoint check; the complete `capacity05_smoke` fixture was used instead.
+
+The GPU job has finished joint training, prepared frozen offline assets, and reached actual checkpoint replay. No final cases have been opened.

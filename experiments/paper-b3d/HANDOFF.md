@@ -1,13 +1,23 @@
 # Burgers 3D confirmation and final-evaluation handoff
 
-B005 is fully collected and independently audited development evidence. B006 is training the bounded, two-seed conditioned DeepONet candidate. Final parameters and fields remain unopened. The original overnight deadline was missed during the session interruption; completion is still pending.
+B005 is fully collected and independently audited development evidence. B006 is independently audited, durably retained and rejected as a weaker common operator recipe. B007 is running the frozen final workflow; reserved cases remain unopened until both real development replays pass. The original overnight deadline was missed during the session interruption; completion is still pending.
 
 ## Active attempt
 
-- Job `4018959`, attempt `b3d006`, source `b1d72e0c4c51624d5dfce0cd80e5e65e75b8c531`; config SHA `04c623ef311c996e91401a711969665bda4e1867eac170e5d5a450064ade9a1e`. Remote: `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d006`.
-- GPU preflight passed on pax051 (A100 40 GB). All original training data were regenerated from seed. The first seed has completed trunk and branch pretraining and entered joint training. The requested wall limit is 75 minutes; estimate 35–55 minutes total once allocated. Do not submit another Burgers job while this one is queued or running.
-- Monitor `workflow.log`, `slurm.4018959.err`, `out/seed{0,1}/metadata.json`, `out/seed{0,1}/development.json` and `out/complete.json`.
-- Both seeds receive the same unchanged learned DeepONet architecture, train-only relative-error-weighted POD trunk supervision, branch supervision in the learned-trunk Gram metric, then joint training. The original fresh 100k-step DeepONet runs remain retained. Select this candidate recipe only if it improves expanded-development worst error for both seeds. Never select the better seed using final data.
+- Job `4021709`, attempt `b3d007`, scientific source `5eb99849c062f72c5dd9f6422f30928a14a0301d`; config SHA `e8ca941d120e36c6c38409597fa24e43380d4fa1d518d87043eb43f4090bf299`. Remote: `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d007`.
+- Freeze SHA `d3d1dbda9e89da8e5d05d651994cd4d8f94ce30e32aa58176bf065cf90c5bb2f`. GPU preflight passed on pax106, an A100 allocation. Requested wall limit: two hours. The actual startup log says `jax_backend=gpu`.
+- Both frozen real development replays run first. No reserved input may be generated unless both `out/replay-seed{0,1}/replay-audit.json` gates pass and `out/replay-complete.json` is written.
+- Then both 32-case seed panels run with all four frozen operators and the complete classical control set, followed by the prospectively frozen streamed reference checks. Monitor `workflow.log`, `out/replay-seed{0,1}-driver.log`, `out/seed{0,1}-driver.log`, `out/seed{0,1}-operators.log`, `out/physical-reference.log`, Slurm stderr, and finally `out/complete.json`.
+- No second Burgers allocation may be queued or running while this job is active.
+
+B006's two complete, independently audited conditioned DeepONet candidates are rejected by the common-recipe selection rule:
+
+| Seed | Original 100k worst (%) | Conditioned worst (%) |
+| ---: | ---: | ---: |
+| 0 | 14.953016 | 17.427401 |
+| 1 | 13.880043 | 16.118442 |
+
+Both original long-schedule DeepONets remain frozen. The candidate architecture was unchanged and its training teachers used training data only. B006 job 4018959 exited successfully, both checksum manifests and the independent NumPy/source audits pass, its scientific split archive passes actual-Git restoration, and its exact remote directory is removed. Its original local collection remains intact.
 
 ## B005 accepted evidence
 
@@ -38,23 +48,13 @@ Full local arrays and optimizer states remain in the checksum-covered collected 
 
 ## Required next work
 
-After B006 exits, run its exact checksum collector, `audit_conditioned.py` with `config-conditioned.json`, and `audit_source.py`. Retain its complete local archive and selected checkpoint/teacher records before deleting only the verified literal attempt directory. Then:
+First observe both real development replay results. If either fails, retain the failed gate and verify that the reserved cohort is still unopened; do not loosen the declared replay threshold. If both pass, monitor completion of both final panels and every prospective reference case without changing any frozen solver, model, rank, tolerance or row rule.
 
-```bash
-/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/prepare_final.py --confirmation b3d005 --conditioned b3d006 --attempt b3d007
-```
+After B007 exits, checksum-collect its exact directory. The two final checkpoint paths are `collected/code/frozen/seed{0,1}/checkpoint.pkl`; the final panel paths are `collected/out/seed{0,1}`. Run both `audit.py` field checks with distinct `audit-local.json` output files, both `audit_stationarity.py` checks, `audit_contract.py collected/out`, and `audit_source.py b3d007`. The strengthened contract audit requires all reserved cases and every reference level, checks frozen hash links and all initial fields, and independently recomputes the full refinement/discretization discrepancy arrays.
 
-The preparer does not import a PDE or draw inputs. It freezes both checkpoints, all four operator recipes, every selected POD/bank/direction asset, the solver configuration, K/R architecture and basis shapes, the physical-reference protocol hash, and the final count/seed. If the conditioned recipe fails the common two-seed selection rule, both original 100k DeepONets are retained automatically.
+Only after successful numerical/source audits, create an accurate `COLLECTED.json` and run `summarize_attempt.py b3d007`. Preserve the full collected directory. Use `retain_attempt.py` for compact records and `scientific_archive.py create/verify` for every scientific array, committing all split parts before verifying actual Git bytes. Regenerate `SCIENTIFIC-RETENTION.md` with `generate_retention_report.py`. Use `git -c gc.auto=0` for commits to avoid an unrequested shared-repository repack. After durable retention is verified, `cluster/cleanup.py b3d007` removes only the literal verified completed directory.
 
-Retain every `assets` entry from the resulting `config-final.json` in Git, then commit source/configuration/freeze and stage with:
-
-```bash
-/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/cluster/stage_frozen.py --config config-final.json
-```
-
-`final_campaign.py` first replays real opened rows 512 and 519 for both seeds using frozen offline arrays and checkpoints. Both field/iteration/stopping-reason gates must pass before the process opens any final seed. Only then does it generate the prospective 32-case seed 920399 once per frozen panel, compare both seeds/all controls in the same allocation, and run the prospectively frozen streamed physical-reference checks. The physical refinement thresholds must never be loosened after access. No offline fitting occurs during final query evaluation.
-
-Final acceptance requires checksum collection, both `audit.py` field checks, both `audit_stationarity.py` checks, `audit_contract.py` membership/freeze/reference checks and `audit_source.py`, plus actual retention and exact remote cleanup. `audit_contract.py` allows only a fixed machine-roundoff bound for the derived viscosity exp/log; all direct random draws and between-seed memberships remain exact. The expanded-development audit observed that same CPU-library discrepancy before final access.
+The prospective final seed is 920399 with 32 cases, and primary training seed index zero was selected before final access. The actual test count is fixed at 642. Empirical spatial/time refinement thresholds remain unchanged even if they fail; the primary result stays a same-grid comparison. Neither a failed physical-reference gate nor a negative method comparison is a failed numerical audit.
 
 The coordinator owns canonical LAB-LOG.md and main paper reports. No merge or push is authorized. Untracked `checks/conditioned/{joint,pretraining}` are preserved from the previous owner; do not remove them.
 

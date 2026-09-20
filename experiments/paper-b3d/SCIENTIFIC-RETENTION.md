@@ -9,6 +9,7 @@ This supplement records completed lossless retention upgrades. Every original sc
 | `b3d003` | 281 | 67 | 4464558080 | 4960468563 | `7528fba6` |
 | `b3d004` | 494 | 99 | 6598512640 | 8098799891 | `7528fba6` |
 | `b3d005` | 1395 | 208 | 13926707200 | 17994878053 | `7528fba6` |
+| `b3d006` | 142 | 13 | 813783040 | 872116976 | `5eb99849` |
 
 The verifier reconstructs every file byte stream directly from the pinned Git blobs, checks every file SHA256, checks each split part and the concatenated tar checksum, and validates hard links for identical contents. It does not rely on ignored local field files as proof. Original `RETENTION.json` records retain their historical scope; each attempt's `SCIENTIFIC-RETENTION.json` links the correction. The earliest pilot has its original output manifest but no subsequent full-collection manifest; that narrower original checksum scope is explicit in its archive manifest.
 

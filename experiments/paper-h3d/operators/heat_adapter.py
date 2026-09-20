@@ -44,3 +44,18 @@ def native_engine(params,spec,scale,native_intervals,evaluation_intervals):
             y=(1-w)*jnp.take(y,left,axis=axis)+w*jnp.take(y,left+1,axis=axis)
         return jnp.concatenate((u0[None],y),axis=0)
     return lambda u0:query(u0,params,jnp.asarray(scale))
+
+
+def native_sensor_deeponet_engine(params,spec,scale,native_intervals,evaluation_intervals):
+    """Keep the branch sensor grid fixed and evaluate the coordinate trunk directly."""
+    from . import extra_models3d as E
+    assert spec['kind']=='deeponet3d' and evaluation_intervals%native_intervals==0
+    stride=evaluation_intervals//native_intervals
+    @jax.jit
+    def query(u0,p,scale):
+        coarse=u0[stride-1::stride,stride-1::stride,stride-1::stride]
+        coefficients=E.deeponet_coefficients(p,(coarse/scale)[None,...,None],spec)
+        trunk=E.deeponet_trunk(p,coordinates(evaluation_intervals)[None],spec)
+        values=jnp.einsum('bcr,bxyzr->bxyzc',coefficients,trunk,precision='highest')/jnp.sqrt(trunk.shape[-1])+p['bias']
+        return jnp.concatenate((u0[None],jnp.moveaxis(values[0]*scale,-1,0)),axis=0)
+    return lambda u0:query(u0,params,jnp.asarray(scale))

@@ -80,6 +80,10 @@ The A3 additional random-initialized head is retained alongside the original two
 
 Before any final generation, reserve a cohort of $64$ trajectories at the existing reserved final seed. The final model checkpoints, solver settings, rung list, operator recipes and analysis rules must be frozen before that cohort is generated. This count is prospective; it does not open final inputs or authorize checkpoint selection using them. Final errors, failure counts and all declared methods will be reported without deleting difficult cases. Independent training-seed evidence must distinguish the complete training recipe from a head-only repeat on a shared spatial bank.
 
+## Prospective transfer controls
+
+Two additional frozen-weight controls are prepared for a subsequent paired panel. For FNO, preserve the padded physical domain size by scaling the padded lattice length with the interval count; retain the original fixed-padding direct transfer and native-grid interpolation. For DeepONet, restrict the supplied fine initial field to the native branch sensor grid and evaluate the frozen coordinate trunk directly at every requested fine point. This retains the trained branch input convention without interpolating its output. Full input handling and dense output remain charged. These separately labelled variants do not replace any earlier failed transfer result. Neither flag was active in extra03. DeepONet initialization and native application are checked against the pinned original source, and fine predictions restricted to native nodes must agree with native predictions.
+
 ## Glossary
 
 - **Bank / head:** learned spatial functions / nonlinear map from small latent vectors to bank coefficients.

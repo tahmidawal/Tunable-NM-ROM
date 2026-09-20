@@ -54,6 +54,23 @@ def _trunk_features(coords, spec):
     return jnp.concatenate(features,axis=-1)
 
 
+def deeponet_coefficients(params,fields,spec):
+    """Fixed-sensor branch; separated so a native branch can use a finer trunk."""
+    h=fields
+    for block in params['branch']:
+        for p in block:h=jax.nn.gelu(_convolve(p,h,spec.get('periodic',False)),approximate=False)
+        h=_pool2(h,spec.get('periodic',False))
+    h=_adaptive_pool(h,spec.get('pool_bins',4)).reshape(fields.shape[0],-1)
+    h=jax.nn.gelu(_linear(params['branch_hidden'],h),approximate=False)
+    return _linear(params['branch_read'],h).reshape(fields.shape[0],-1,spec.get('rank',128))
+
+
+def deeponet_trunk(params,coords,spec):
+    trunk=_trunk_features(coords,spec)
+    for p in params['trunk'][:-1]:trunk=jnp.tanh(_linear(p,trunk))
+    return _linear(params['trunk'][-1],trunk)
+
+
 def init_physics(key, width, heads, slices):
     assert width%heads==0
     keys=iter(jax.random.split(key,9));dim=width//heads
@@ -137,16 +154,8 @@ def _patches(fields, coords, spec):
 def apply_extra(params, x, spec):
     fields,coords=_split_channels(x,spec)
     if spec['kind']=='deeponet3d':
-        h=fields
-        for block in params['branch']:
-            for p in block:h=jax.nn.gelu(_convolve(p,h,spec.get('periodic',False)),approximate=False)
-            h=_pool2(h,spec.get('periodic',False))
-        h=_adaptive_pool(h,spec.get('pool_bins',4)).reshape(x.shape[0],-1)
-        h=jax.nn.gelu(_linear(params['branch_hidden'],h),approximate=False)
-        coeff=_linear(params['branch_read'],h).reshape(x.shape[0],-1,spec.get('rank',128))
-        trunk=_trunk_features(coords,spec)
-        for p in params['trunk'][:-1]:trunk=jax.nn.tanh(_linear(p,trunk))
-        trunk=_linear(params['trunk'][-1],trunk)
+        coeff=deeponet_coefficients(params,fields,spec)
+        trunk=deeponet_trunk(params,coords,spec)
         return jnp.einsum('bcr,bxyzr->bxyzc',coeff,trunk,precision='highest')/jnp.sqrt(trunk.shape[-1])+params['bias']
     if spec['kind']=='transolver3d':
         h,pads=_patches(fields,coords,spec)

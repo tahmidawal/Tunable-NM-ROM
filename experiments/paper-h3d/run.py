@@ -131,6 +131,12 @@ def run(cfg,out,smoke=False):
                     training_intervals=cfg['train_intervals'],resolution_transfer=True,original_model=spec,
                     transfer_rule='preserve padded physical domain size by scaling padded grid length with interval count; frozen weights')
             if n!=cfg['train_intervals'] and n%cfg['train_intervals']==0:
+                if cfg.get('deeponet_native_sensor_transfer',False) and spec['kind']=='deeponet3d':
+                    transfer_name=name+'_native_sensors_continuous_trunk'
+                    methods[transfer_name]=OH.native_sensor_deeponet_engine(op,spec,scale,cfg['train_intervals'],n)
+                    metadata[transfer_name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,
+                        training_intervals=cfg['train_intervals'],resolution_transfer=True,
+                        input_restriction='nested native sensor grid for the frozen CNN branch',readout='frozen coordinate trunk evaluated directly on all requested fine-grid points; dense output charged')
                 native_name=name+'_native_grid_interpolated'
                 methods[native_name]=OH.native_engine(op,spec,scale,cfg['train_intervals'],n)
                 metadata[native_name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,

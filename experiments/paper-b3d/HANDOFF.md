@@ -9,7 +9,7 @@ B007 is complete, independently audited and accepted for same-grid comparisons. 
 - Complete scientific archive and compact-record commit: `3f12a29b0cbcd95a98f5ded9cc065b3d217b9719`.
 - Actual-Git restore/retention proof commit: `478abf856a89c6f985c0b753669c7c62d604e625`.
 - Exact remote `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d007` is removed after verification. `runs/b3d007/COLLECTED.json` records the guarded cleanup and unchanged neighboring queue. No Burgers job remains active.
-- Original local collected outputs and scientific archive parts remain intact. Any later storage reclamation needs an explicit updated scope from the coordinator and a durable record linking the verified restoration proof.
+- The coordinator explicitly authorized removal of duplicate materialized final NPZ fields after renewed archive-byte verification. Only the untracked final field files listed in `runs/b3d007/FIELD-RECLAMATION.json` were reclaimed. All archive parts/Git blobs, checkpoints, offline assets, metadata, individually tracked examples and development fields remain intact. Original full-collection checks and full-field audits require restoring the listed missing fields first.
 
 ## Paper inputs and interpretation
 
@@ -35,11 +35,27 @@ Recheck the complete final archive from this worktree with:
 /home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/scientific_archive.py verify b3d007 --commit 3f12a29b0cbcd95a98f5ded9cc065b3d217b9719
 ```
 
-To materialize files elsewhere, concatenate the scientific parts in lexical order and extract the tar into a new directory; the manifest paths are relative to `collected`. Preserve original archives and check hashes before using restored arrays.
+The tested helper restores selected reclaimed fields directly from the pinned Git bytes, including files represented by archive hard links. It checks requested file hashes plus every archive part and the concatenated archive checksum. For example:
+
+```bash
+/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/materialized_fields.py restore --path out/seed0/rom_q192_case29_rep2.npz --destination experiments/paper-b3d/checks/restored-fields
+```
+
+To rematerialize every reclaimed field in its original location:
+
+```bash
+/home/tahmid/Dev/.venv/bin/python experiments/paper-b3d/materialized_fields.py restore --all-removed --destination experiments/paper-b3d/runs/b3d007/collected
+```
+
+The exact path/hash/byte list, authorization and renewed reconstruction proof are in `FIELD-RECLAMATION.json`. `POST-RECLAMATION-AUDIT.json` checks that all other original scientific files and local archive parts remain unchanged. `checks/field-restore-test/restore-audit.json` records successful restoration of a final NM-ROM prediction, a hard-link FOM duplicate and a fine reference; only those temporary test copies were then cleaned up. Paper summary and acceptance records are unchanged.
+
+Alternatively, concatenate the scientific parts in lexical order and extract the tar into a new directory; manifest paths are relative to `collected`. Preserve archives and check hashes before using restored arrays. The historical `RETENTION.json` retains its original snapshot; the generated `SCIENTIFIC-RETENTION.json` now explicitly records the changed local materialization state.
 
 ## Remaining coordination
 
 The Burgers final experiment, checksummed collection, independent audits, durable scientific retention and exact remote cleanup are complete. The coordinator owns canonical LAB-LOG.md, main reports and paper integration. No merge or push occurred. Do not change frozen settings or reuse this final cohort for model selection. Future empirical-quadrature or larger-grid studies need their own explicit development/final protocol.
+
+The storage-only follow-up changed no scientific result or accepted configuration. It reclaimed only verified duplicate final field binaries so the other approved lanes could finish collection.
 
 Preserve the pre-existing untracked `checks/conditioned/joint/` and `checks/conditioned/pretraining/` directories. B005/B006 development and rejected-candidate records remain available with their original acceptance status. The original overnight completion window was missed during the earlier usage-limit interruption; this final panel was completed during the resumed authorized work.
 
@@ -53,3 +69,4 @@ Preserve the pre-existing untracked `checks/conditioned/joint/` and `checks/cond
 - **Empirical refinement:** observed change after refining space or time, not a rigorous continuum-error certificate.
 - **Empirical quadrature:** a fitted sparse integration rule; not used in this final panel.
 - **Hard-link duplicate:** a separately named file restored from an earlier archive entry with exactly identical bytes.
+- **Materialized field:** an ordinary filesystem copy of an archived field; reclaimed copies can be restored with the helper above.

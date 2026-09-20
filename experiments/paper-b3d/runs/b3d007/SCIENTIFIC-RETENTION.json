@@ -5,7 +5,7 @@
   "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
   "source_commit": "3f12a29b0cbcd95a98f5ded9cc065b3d217b9719",
   "all_scientific_fields_durably_retained": true,
-  "full_original_collection_untouched": true,
+  "full_original_collection_untouched": false,
   "original_collection_manifest": "COLLECTION.sha256",
   "excluded": [
     {
@@ -64,5 +64,8 @@
       "reason": "Python bytecode cache"
     }
   ],
-  "historical_scope": "prior local-only dense-field statements described retention before this supplement and remain as history; experimental acceptance or failure is unchanged"
+  "historical_scope": "prior local-only dense-field statements described retention before this supplement and remain as history; experimental acceptance or failure is unchanged",
+  "post_archive_materialization_change": "FIELD-RECLAMATION.json",
+  "materialization_scope": "only listed duplicate final field NPZs reclaimed after renewed actual-Git reconstruction and local byte-hash checks; checkpoints, metadata, tracked assets and all archive parts/Git blobs preserved",
+  "restoration_helper": "experiments/paper-b3d/materialized_fields.py restore --all-removed --destination <new-directory>"
 }

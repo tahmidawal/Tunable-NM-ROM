@@ -183,3 +183,19 @@ accurate = `rom_q96_leandst64`, fast = `rom_q0_leandst64`. Parity limits: `lean6
 integers; local $16^3$ smoke measured $8\times10^{-16}$, $1\times10^{-15}$, $8\times10^{-8}$. Audit:
 `hp3d_audit_np.py` (own seven-point stencil-residual check of the SciPy references). 5 reps × 12
 sources, same timing contract as 2D but on interior arrays (paper-p3d's scope).
+
+**A3 (2026-09-20, before the 3D job) — Codex audit of the 3D driver applied**
+(`checks/codex-3d-audit.md`; it confirmed the DST projection identity, the trilinear
+interpolation and the restriction). Applied: the audit recomputes parity from the saved fields
+instead of trusting the driver, checks the exact (case, repetition) set of an independently
+constructed required-arm list, checks the checkpoint hashes against the accepted `final08`
+hashes pinned in `config-3d.json`, excludes any non-stationary / non-converged subject from
+matched selections, reports a fast-arm verdict, and keeps the fields when a gate fails; the
+one-start arm is renamed `onestart64` and its parity row is `null` (not applicable), not "passed";
+the retained kernel's in-kernel full gradient is gated; stationarity is required on every
+repetition; parity integers include the total LM attempts over all starts. Stated, not changed:
+subjects download different small auxiliary outputs (≤ a few hundred floats) beside the field, and
+the parent CG carries one timed true-residual evaluation — both negligible against a $127^3$ field
+copy, both in the record. Memory: `common.phi` materialises a $127^3\times512\times3$ f64
+intermediate (≈ 25 GB) on the device at $128^3$; the job runs on an H200 (141 GB) with 240 G host.
+$256^3$ would need a chunked assembly and is not attempted with this driver.

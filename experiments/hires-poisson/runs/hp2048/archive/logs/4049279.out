@@ -1,0 +1,29 @@
+host=pax008 source_commit=0c92c025766c065a843aacf940ed2f77c98c9a74
+NVIDIA H200, GPU-aaf512b7-e3e2-7531-dd67-71a6810293b4, 143771 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  443G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCES 9.0
+DIRECTIONS 7b556726166e 18.3
+ASSEMBLY GATE {'intervals': 64, 'operator_relative': 5.29536949789963e-16, 'bank_relative': 1.2755328627205165e-15, 'floor_chunked': [0.0011924582387793793, 0.00039899408062893924, 0.0005392060874467061], 'floor_direct_lstsq': [0.0011924582507275498, 0.00039899408116375536, 0.0005392060568941743], 'floor_max_abs_difference': 3.05525317502095e-11, 'trust_matches': True, 'passed': True}
+BANK 8.426438622176647 floor worst 0.007419412501196744
+WARMUP 31 35.8
+TIMED 0 211.2
+TIMED 1 313.4
+TIMED 2 415.1
+TIMED 3 517.1
+TIMED 4 619.0
+PARITY {'candidate': 'rom_q0_lean64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 3.8784113977386464e-16, 'integers_identical': True, 'limit': 1e-12, 'passed': True}
+PARITY {'candidate': 'rom_q0_lean32', 'baseline': 'rom_q0_retained', 'worst_field_relative': 1.1339484467344819e-07, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q64_lean64', 'baseline': 'rom_q64_retained', 'worst_field_relative': 1.0347320324914416e-13, 'integers_identical': True, 'limit': 1e-12, 'passed': True}
+PARITY {'candidate': 'rom_q64_lean32', 'baseline': 'rom_q64_retained', 'worst_field_relative': 3.0180634918610996e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q128_lean64', 'baseline': 'rom_q128_retained', 'worst_field_relative': 2.1052292078100443e-13, 'integers_identical': True, 'limit': 1e-12, 'passed': True}
+PARITY {'candidate': 'rom_q128_lean32', 'baseline': 'rom_q128_retained', 'worst_field_relative': 3.956707461243839e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean64', 'baseline': 'rom_q256_retained', 'worst_field_relative': 2.1962703907593207e-13, 'integers_identical': True, 'limit': 1e-12, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean32', 'baseline': 'rom_q256_retained', 'worst_field_relative': 3.756411481147048e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q512_linear_lean32', 'baseline': 'rom_q512_linear_lean64', 'worst_field_relative': 2.9412253074783212e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+GATES {'assembly': True, 'parity_coverage': True, 'parity': True, 'diagnostics_coverage': True, 'solver_validity': True, 'deterministic': True}
+HIRES SOLVE COMPLETE
+AUDIT PASSED {'driver_gates': True, 'final_uuid_matches': True, 'deterministic': True, 'coverage': True, 'parity_present_and_passed': True, 'diagnostics_present_and_valid': True, 'verdict_computable': True} 3720 checks; worst difference 0.0
+VERDICT {'arm': 'rom_q256_lean64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.00964588388010944, 'speedup_total': 28.72577516314283, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': False, 'speed_bar_5x': True, 'bar_met': True}
+ALL-DONE

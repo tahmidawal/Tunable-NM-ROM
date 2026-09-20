@@ -174,8 +174,8 @@ def main():
         for q in cfg['q_ladder']:
             fn = P.engine(model, bank, operator, projection, indices, q, cfg)
             subjects.append(dict(name=f'rom_q{q}_retained', family='nm-rom', q=q, kind='rom',
-                                 fn=lambda f, fn=fn: (lambda v: (v[0], v[1], v[2], jnp.zeros(K), v[1][7]))(fn(f))))
-            for vname, proj, st in (('lean', projj, None), ('leandst', None, None), ('leandst1', None, 1)):
+                                 fn=lambda f, fn=fn: (lambda v: (v[0], v[1], v[2], v[1][5], v[1][7]))(fn(f))))
+            for vname, proj, st in (('lean', projj, None), ('leandst', None, None), ('onestart', None, 1)):
                 query, mats, library, codes, scale, p = lean_engine(model, n, triples, lam, operator, q, cfg,
                                                                     projection=proj, starts=st)
                 for prec, bk in (('64', bankj), ('32', bank32)):
@@ -199,6 +199,7 @@ def main():
         for nc in cfg['coarse_intervals']:
             if nc >= n:
                 continue
+            assert n % nc == 0
             s_ = n // nc
             clam = C.eigenvalues(nc)
             cd = jax.jit(lambda f, clam, s_=s_, nc=nc: trilinear_up(
@@ -227,9 +228,14 @@ def main():
                        fused_device_seconds=done - up, output_seconds=end - done)
             if sub['kind'] in ('rom', 'lean'):
                 field, stats, coef, z, its = value
+                full_ok = True
+                if sub['kind'] == 'rom':          # parent kernel: its full-gradient diagnostic is gated
+                    row['full_gradient'] = float(z)
+                    full_ok = bool(float(z) <= cfg['lm_tolerance'])
                 row.update(attempts=int(stats[0]), accepted=int(stats[1]), reason=int(stats[2]),
                            weak_residual=float(stats[3]), lm_gradient=float(stats[4]),
-                           stationary=bool(int(stats[2]) == 1 and stats[4] <= cfg['lm_tolerance']),
+                           total_attempts_all_starts=int(its),
+                           stationary=bool(int(stats[2]) == 1 and stats[4] <= cfg['lm_tolerance'] and full_ok),
                            coefficients=np.asarray(coef).tolist())
             elif sub['kind'] == 'cg':
                 field, stats = value
@@ -277,21 +283,23 @@ def main():
                 first.setdefault((x['name'], x['case']), x)
         for q in cfg['q_ladder']:
             for v, limit, same_solver in (('lean64', 1e-12, True), ('leandst64', 1e-10, True),
-                                          ('leandst32', 1e-4, True), ('leandst164', None, False)):
+                                          ('leandst32', 1e-4, True), ('onestart64', None, False)):
                 worst, ints = 0.0, True
                 for case in range(len(dev)):
                     xa, xb = first[(f'rom_q{q}_{v}', case)], first[(f'rom_q{q}_retained', case)]
                     worst = max(worst, rel(np.load(out / 'fields' / xa['saved_field']),
                                            np.load(out / 'fields' / xb['saved_field'])))
-                    ints = ints and all(xa[k] == xb[k] for k in ('attempts', 'accepted', 'reason'))
+                    ints = ints and all(xa[k] == xb[k] for k in ('attempts', 'accepted', 'reason', 'total_attempts_all_starts'))
                 R_['parity'].append(dict(intervals=n, candidate=f'rom_q{q}_{v}', baseline=f'rom_q{q}_retained',
                                          worst_field_relative=worst, integers_identical=ints, limit=limit,
                                          same_solver=same_solver,
-                                         passed=bool(limit is None or (worst <= limit and ints))))
+                                         passed=(None if limit is None else bool(worst <= limit and ints))))
                 print('PARITY', R_['parity'][-1], flush=True)
         for (name, case), x in first.items():
             if 'stationary' in x:
-                R_['diagnostics'].append(dict(intervals=n, name=name, case=case, valid=bool(x['stationary'])))
+                rows = [v for v in R_['invocations'] if v['intervals'] == n and v['name'] == name and v['case'] == case]
+                R_['diagnostics'].append(dict(intervals=n, name=name, case=case,
+                                              valid=bool(all(v['stationary'] for v in rows))))
             elif 'cg_converged' in x:
                 rows = [v for v in R_['invocations'] if v['intervals'] == n and v['name'] == name and v['case'] == case]
                 R_['diagnostics'].append(dict(intervals=n, name=name, case=case,
@@ -301,7 +309,7 @@ def main():
         save()
     stats = jax.devices()[0].memory_stats() or {}
     R_['device_memory'] = {k: int(v) for k, v in stats.items() if k in ('peak_bytes_in_use', 'bytes_limit')}
-    gates = dict(parity=bool(R_['parity']) and all(p['passed'] for p in R_['parity']),
+    gates = dict(parity=bool(R_['parity']) and all(p['passed'] for p in R_['parity'] if p['passed'] is not None),
                  solver_validity=bool(R_['diagnostics']) and all(d['valid'] for d in R_['diagnostics']),
                  deterministic=all(x['matches_saved_field'] for x in R_['invocations']))
     R_['gates'] = gates

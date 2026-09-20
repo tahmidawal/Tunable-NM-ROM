@@ -203,7 +203,7 @@ def main():
                  headline_variant=lean, verdict=verdict, selections=selections, table=table,
                  result_sha256=hashlib.sha256((out / 'result.json').read_bytes()).hexdigest())
     (out / 'audit.json').write_text(json.dumps(audit, indent=2) + '\n')
-    if a.delete_fields:
+    if a.delete_fields and audit['passed']:          # failed gates keep the evidence
         for p in (out / 'fields').glob('*.npy'):
             p.unlink()
         (out / 'fields').rmdir()

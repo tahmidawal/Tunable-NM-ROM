@@ -16,6 +16,8 @@ import numpy as np
 from scipy.fft import dstn
 
 HEADLINE = 'leandst64'
+VARIANTS = ('retained', 'lean64', 'leandst64', 'leandst32', 'onestart64')
+PARITY = dict(lean64=1e-12, leandst64=1e-10, leandst32=1e-4)
 
 
 def family(seed, count):
@@ -61,7 +63,9 @@ def main():
     dev = family(cfg['cohort_seed'], cfg['cohort_draw'])[:cfg['case_count']]
     seed_match = float(np.max(np.abs(dev - np.asarray(R['cohort']['parameters']))))
     assert seed_match < 1e-12
+    assert R['checkpoint_sha256'] == cfg['accepted_checkpoint_sha256'], 'not the accepted checkpoint'
     (out / 'sub').mkdir(exist_ok=True)
+    parity_np = []
     inv = R['invocations']
     checks, worst_diff, refres, meshes = 0, 0.0, [], {}
     for n in cfg['meshes']:
@@ -94,6 +98,17 @@ def main():
                         checks += 2
                 rec[(name, case)] = (es, ep)
                 np.save(out / 'sub' / f'N{n}_{name}_case{case}.npy', u[::stride, ::stride, ::stride])
+        # parity recomputed here from the saved fields, not read from the driver
+        for q in cfg['q_ladder']:
+            for v, limit in PARITY.items():
+                worst = 0.0
+                for case in range(len(dev)):
+                    fa = next(x for x in inv if x['intervals'] == n and x['case'] == case and x['name'] == f'rom_q{q}_{v}')
+                    fb = next(x for x in inv if x['intervals'] == n and x['case'] == case and x['name'] == f'rom_q{q}_retained')
+                    worst = max(worst, rel(np.load(out / 'fields' / fa['saved_field']),
+                                           np.load(out / 'fields' / fb['saved_field'])))
+                parity_np.append(dict(intervals=n, q=q, variant=v, worst_field_relative=worst, limit=limit,
+                                      passed=bool(worst <= limit)))
         table = {}
         for name in sorted({x['name'] for x in inv if x['intervals'] == n}):
             rows = [x for x in inv if x['intervals'] == n and x['name'] == name]
@@ -111,12 +126,19 @@ def main():
                 median_output_ms=1e3 * float(np.median([x['output_seconds'] for x in rows])),
                 median_iterations=(float(np.median([x['iterations'] for x in rows])) if 'iterations' in rows[0] else None),
                 median_lm_attempts=(float(np.median([x['attempts'] for x in rows])) if 'attempts' in rows[0] else None))
-        coverage = all(name in table and table[name]['cases'] == len(dev)
-                       and table[name]['repetitions_per_case'] >= cfg['repetitions']
-                       for name in R['declared_subjects'][str(n)])
+        required = [f'rom_q{q}_{v}' for q in cfg['q_ladder'] for v in VARIANTS] + \
+                   [f"rom_q{R['R']}_linear", 'dst_direct'] + [f'cg_{t:g}' for t in cfg['cg_tolerances']] + \
+                   [f'coarse{nc}_dst' for nc in cfg['coarse_intervals'] if nc < n] + \
+                   [f'coarse{nc}_cg_{t:g}' for nc in cfg['coarse_intervals'] if nc < n for t in cfg['coarse_cg_tolerances']]
+        want = {(c, r) for c in range(len(dev)) for r in range(cfg['repetitions'])}
+        coverage = all({(x['case'], x['rep']) for x in inv if x['intervals'] == n and x['name'] == name} == want
+                       for name in required)
+        valid = {name for name in table
+                 if all(x.get('stationary', True) and x.get('cg_converged', True)
+                        for x in inv if x['intervals'] == n and x['name'] == name)}
 
         def pick(fams, bound):
-            ok = [k for k, v in table.items() if v['family'] in fams and v['worst_physical'] <= bound]
+            ok = [k for k, v in table.items() if v['family'] in fams and k in valid and v['worst_physical'] <= bound]
             return min(ok, key=lambda k: table[k]['median_total_ms']) if ok else None
         selections = []
         for name, r in table.items():
@@ -141,6 +163,9 @@ def main():
                        stretch_bar_0p5pct=bool(head['worst_same_grid'] <= 0.005),
                        speed_bar_5x=bool(head['named_cg_1e-2']['speedup_total'] >= 5.0))
         verdict['bar_met'] = bool(verdict['accuracy_bar_1pct'] and verdict['speed_bar_5x'])
+        fast = next(x for x in selections if x['rom'] == f'rom_q0_{HEADLINE}')
+        verdict['fast_arm'] = dict(arm=fast['rom'], worst_same_grid=fast['worst_same_grid'],
+                                   speedup_total=fast['named_cg_1e-2']['speedup_total'])
         meshes[str(n)] = dict(coverage=coverage, verdict=verdict, selections=selections, table=table,
                               mesh=next(m for m in R['meshes'] if m['intervals'] == n))
         print('VERDICT', n, verdict, flush=True)
@@ -148,14 +173,15 @@ def main():
     gates = dict(driver_gates=bool(R.get('gates')) and all(R['gates'].values()),
                  final_uuid_matches=R['device_guard_final_uuid'] == R['gpu_uuid'],
                  deterministic=not unstable, coverage=all(m['coverage'] for m in meshes.values()),
-                 parity_present_and_passed=bool(R['parity']) and all(p['passed'] for p in R['parity']))
+                 parity_recomputed=bool(parity_np) and all(p['passed'] for p in parity_np))
     audit = dict(passed=all(gates.values()), gates=gates, job_id=R['job_id'], commit=R['commit'],
                  gpu=R['gpu'], gpu_uuid=R['gpu_uuid'], error_checks=checks, worst_error_difference=worst_diff,
-                 reference_checks=refres, nondeterministic_subjects=unstable, parity=R['parity'],
+                 reference_checks=refres, nondeterministic_subjects=unstable, parity=parity_np,
+                 driver_parity=R['parity'],
                  device_memory=R.get('device_memory'), headline_variant=HEADLINE, meshes=meshes,
                  result_sha256=hashlib.sha256((out / 'result.json').read_bytes()).hexdigest())
     (out / 'audit.json').write_text(json.dumps(audit, indent=2) + '\n')
-    if a.delete_fields:
+    if a.delete_fields and audit['passed']:          # failed gates keep the evidence
         for p in (out / 'fields').glob('*.npy'):
             p.unlink()
         (out / 'fields').rmdir()

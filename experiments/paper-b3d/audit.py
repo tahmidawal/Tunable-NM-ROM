@@ -44,6 +44,7 @@ def main():
             res=f[step]-f[step-1]+dt*(adv-float(a['nu'])*lap)
             max_defect=max(max_defect,float(np.linalg.norm(res)/np.linalg.norm(f[step-1])))
         assert np.isfinite(f).all()
+    checked_controls=set()
     for row in r['invocations']:
         a=np.load(root/row['artifact']);f=a['fields'];ref=refs[row['case']]
         assert f.shape==ref.shape and np.isfinite(f).all()
@@ -64,6 +65,26 @@ def main():
             rank=int(method[4:]);decoded=a['states']@bases['pod'][:,:rank].T
         else:
             assert method.startswith('fom_');decoded=f
+            if 'native_fields' in a.files and row['artifact'] not in checked_controls:
+                checked_controls.add(row['artifact']);native=a['native_fields'];nn=row['nodes'];dd=row['dt']
+                for step in range(1,len(native)):
+                    adv,lap=stencil(native[step],nn)
+                    residual=native[step]-native[step-1]+dd*(adv-float(np.load(root/f"reference_case{row['case']}.npz")['nu'])*lap)
+                    relative=float(np.linalg.norm(residual)/np.linalg.norm(native[step-1]))
+                    assert abs(relative-a['residuals'][step-1])<1e-11
+                assert row['converged']==bool(np.max(a['residuals'])<=row['nonlinear_tolerance']*(1+1e-6))
+                knots=native
+                if nn!=n:
+                    knots=np.pad(native.reshape((len(native),)+(nn-2,)*3),[(0,0),(1,1),(1,1),(1,1)])
+                    positions=np.linspace(0,nn-1,n)[1:-1];low=np.floor(positions).astype(int);fraction=positions-low
+                    for axis in (1,2,3):
+                        shape=[1]*4;shape[axis]=len(positions);weight=fraction.reshape(shape)
+                        knots=np.take(knots,low,axis=axis)*(1-weight)+np.take(knots,low+1,axis=axis)*weight
+                    knots=knots.reshape(len(native),-1)
+                weights=np.stack([np.interp(np.arange(cfg['steps']+1)*dt,np.arange(len(native))*dd,v)
+                                  for v in np.eye(len(native))],axis=1)
+                reconstructed=weights@knots;reconstructed[0]=ref[0]
+                assert np.max(np.abs(reconstructed-f))<1e-11
         max_decode=max(max_decode,float(np.linalg.norm(decoded-f)/max(np.linalg.norm(f),1e-300)))
         if 'gradients' in row:
             assert np.array_equal(a['gradients'],row['gradients'])
@@ -86,7 +107,7 @@ def main():
         err=np.linalg.norm(refs[row['case']]-reduced,axis=1)/np.linalg.norm(reduced[0])
         assert np.max(np.abs(err-np.asarray(row['error_fixed_initial'])))<1e-12
     assert max_defect<2e-9 and max_metric<1e-12 and max_decode<1e-10
-    expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+len(cfg.get('fom_controls',[0,1,2])))*len(refs)*cfg['repetitions']
+    expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+len(cfg.get('fom_controls',[0,1,2]))+len(cfg.get('fom_variants',[])))*len(refs)*cfg['repetitions']
     if r['complete']:
         assert len(r['invocations'])==expected,(len(r['invocations']),expected)
     operator_count=0

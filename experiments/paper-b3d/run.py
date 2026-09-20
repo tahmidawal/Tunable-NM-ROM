@@ -76,18 +76,25 @@ def main():
     parser.add_argument('--checkpoint',default='inputs/refined_checkpoint.pkl')
     args=parser.parse_args()
     cfg=json.loads(Path(args.config).read_text())
+    if cfg.get('evaluation_kind')=='final':
+        freeze=Path(cfg['freeze_manifest'])
+        assert freeze.exists() and sha(freeze)==cfg['freeze_sha256']
+        frozen=json.loads(freeze.read_text())
+        assert frozen['final_parameter_seed']==cfg['evaluation_seed']
+        assert frozen['final_cases']==len(cfg['validation_rows'])
+        assert sha(args.checkpoint) in frozen['checkpoint_sha256']
     out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
     report=dict(config=cfg,job_id=os.environ.get('SLURM_JOB_ID'),commit=os.environ.get('SOURCE_COMMIT'),
                 gpu=jax.devices()[0].device_kind,backend=jax.default_backend(),
                 x64=bool(jax.config.jax_enable_x64),precision=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'),
                 checkpoint_sha256=sha(args.checkpoint),stage='starting',complete=False,
                 references=[],representation=[],invocations=[],setup=[],
-                final_cohort_unopened=True,comparison_scope='development, POD training subset unmatched to inherited network',
+                final_cohort_unopened=cfg.get('evaluation_kind')!='final',comparison_scope='development, POD training subset unmatched to inherited network',
                 timing_contract='dense initial interior field on GPU to all 51 dense interior fields on GPU; initial fitting included',
                 vendor=json.loads(Path('VENDOR.json').read_text()))
     save=lambda:dump(out/'result.json',report)
     if 'training' in cfg:
-        report['comparison_scope']='development, all newly learned components use identical original 512 training trajectories and eight saved training times'
+        report['comparison_scope']=cfg.get('evaluation_kind','development')+', all learned components use identical original 512 training trajectories and eight saved training times'
     save()
     start=time.perf_counter()
     try:
@@ -107,6 +114,11 @@ def main():
         assert len(set(rows))==len(rows) and max(train_rows)<512 and min(val_rows)>=512
         raw=b3.draw_param_table(cfg['seed'],max(rows)+1)
         tab={key:(value[rows] if isinstance(value,np.ndarray) else value) for key,value in raw.items()}
+        if 'evaluation_seed' in cfg:
+            evaluation=b3.draw_param_table(cfg['evaluation_seed'],len(val_rows))
+            for key,value in tab.items():
+                if isinstance(value,np.ndarray):
+                    value[len(train_rows):]=evaluation[key]
         tab['m']=len(rows)
         tab['s_star']=b3.peak_on_reference_grid(tab)
         np.savez_compressed(out/'parameters.npz',**tab,original_rows=np.asarray(rows))
@@ -244,6 +256,27 @@ def main():
                            artifact=artifact,iterations=it.tolist(),nonlinear_tolerance=ntol,linear_tolerance=ltol,
                            converged=bool(np.max(rn)<=ntol*(1+1e-6)),**met))
                     save()
+        for variant in cfg.get('fom_variants',[]):
+            nn=variant['nodes'];dd=variant['dt'];ntol=variant['nonlinear_tolerance'];ltol=variant['linear_tolerance']
+            name=f'fom_n{nn}_dt{dd:g}_nt{ntol:.0e}_lt{ltol:.0e}'
+            control=c.make_fom_control(n,nn,dd,dt*steps,steps)
+            for _ in range(2):jax.block_until_ready(control(jnp.asarray(initials[0]),viscosities[0],ntol,ltol))
+            for case in rng.permutation(len(truths)):
+                case=int(case);u0=jnp.asarray(initials[case]);nu=viscosities[case]
+                for rep in range(cfg['repetitions']):
+                    burn();before=time.perf_counter();answer=control(u0,nu,ntol,ltol);jax.block_until_ready(answer)
+                    gpu_ms=(time.perf_counter()-before)*1000
+                    fields,native,it,rn=host(answer);artifact=f'{name}_case{case}_rep0.npz'
+                    if rep==0:np.savez_compressed(out/artifact,fields=fields,native_fields=native,iterations=it,residuals=rn)
+                    else:
+                        previous=np.load(out/artifact)
+                        assert all(np.array_equal(previous[key],value) for key,value in
+                            [('fields',fields),('native_fields',native),('iterations',it),('residuals',rn)])
+                    report['invocations'].append(dict(method=name,case=case,row=val_rows[case],repetition=rep,gpu_ms=gpu_ms,
+                        artifact=artifact,iterations=it.tolist(),nodes=nn,dt=dd,nonlinear_tolerance=ntol,linear_tolerance=ltol,
+                        interpolation_charged=True,converged=bool(np.max(rn)<=ntol*(1+1e-6)),**c.metrics(fields,truths[case])))
+                    save()
+            del control;jax.clear_caches()
         for name,linear,k,q,B,Cq in subjects:
             began=time.perf_counter()
             data=c.data_for_basis(B,Phi,lam,Cq,Rb,Z,H)

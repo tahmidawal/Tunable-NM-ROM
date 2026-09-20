@@ -49,7 +49,10 @@ def main():
         summary=json.loads((previous/'summary.json').read_text())
         assert summary['checksums_passed'] and summary['local_audit']['passed'] and summary['remote_directory_removed']
         archive=previous/'collected'
-        reused=[('training/checkpoint.pkl','training/checkpoint.pkl'),
+        checkpoint_path=cfg.get('reuse_checkpoint_path','training/checkpoint.pkl')
+        if checkpoint_path!='training/checkpoint.pkl':
+            assert json.loads((archive/'out/head64/audit-local.json').read_text())['passed']
+        reused=[(checkpoint_path,'training/checkpoint.pkl'),
                 ('out/operator_metadata.json','operators/operator_metadata.json')]
         for model in cfg['operators']:
             if model.get('reuse'):
@@ -79,7 +82,7 @@ def main():
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
-#SBATCH --time=02:00:00
+#SBATCH --time={cfg.get('wall_time','02:00:00')}
 #SBATCH --output={remote}/slurm.%j.out
 #SBATCH --error={remote}/slurm.%j.err
 set -uo pipefail
@@ -103,6 +106,7 @@ finalize() {{
 }}
 trap finalize EXIT
 date -u +%FT%TZ > ../STARTED_UTC
+{'$PY -u confirmation.py --config '+shlex.quote(args.config)+' > ../confirmation.log 2>&1; exit $?' if cfg.get('confirmation') else ''}
 {'$PY -u train.py --config '+shlex.quote(args.config)+' --out ../training > ../training.log 2>&1 || exit $?' if 'training' in cfg else ''}
 {'$PY -u reference_diagnostic.py --config '+shlex.quote(args.config)+' --out ../out/reference_screen > ../reference-screen.log 2>&1 || exit $?' if 'operators' in cfg else ''}
 {'$PY -u operator_panel.py --config '+shlex.quote(args.config)+' --training ../training --out ../out --mode train > ../operator-training.log 2>&1 || exit $?' if 'operators' in cfg else ''}

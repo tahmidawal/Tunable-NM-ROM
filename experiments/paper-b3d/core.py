@@ -170,3 +170,37 @@ def make_fom(n,dt=.005,steps=50):
         _,(fields,it,rn)=jax.lax.scan(step,u0,None,length=steps)
         return jnp.concatenate((u0[None],fields)),it,rn
     return jax.jit(roll)
+
+
+def make_fom_control(input_nodes, nodes, dt, final_time, output_steps):
+    """Supplied fine-grid initial field to the common dense output contract.
+
+    Spatial restriction, zero-Dirichlet trilinear reconstruction and temporal
+    interpolation are all inside the timed query. The exact supplied initial
+    field is returned at time zero, matching the operator contract.
+    """
+    steps=int(round(final_time/dt))
+    assert abs(steps*dt-final_time)<1e-12
+    assert (input_nodes-1)%(nodes-1)==0
+    factor=(input_nodes-1)//(nodes-1)
+    fom=make_fom(nodes,dt,steps)
+    eye=np.eye(steps+1)
+    weight=jnp.asarray(np.stack([np.interp(np.linspace(0,final_time,output_steps+1),
+        np.linspace(0,final_time,steps+1),eye[:,j]) for j in range(steps+1)],axis=1))
+    if nodes!=input_nodes:
+        axis=jnp.linspace(0,nodes-1,input_nodes)[1:-1]
+        coordinates=jnp.stack(jnp.meshgrid(axis,axis,axis,indexing='ij'))
+    def query(u0,nu,ntol,ltol):
+        initial=u0.reshape((input_nodes-2,)*3)
+        initial=initial if factor==1 else initial[factor-1::factor,factor-1::factor,factor-1::factor]
+        native,iterations,residuals=fom(initial.ravel(),nu,ntol,ltol)
+        if nodes!=input_nodes:
+            def reconstruct(u):
+                padded=jnp.pad(u.reshape((nodes-2,)*3),1)
+                return jax.scipy.ndimage.map_coordinates(padded,coordinates,order=1,mode='constant').ravel()
+            knots=jax.vmap(reconstruct)(native)
+        else:
+            knots=native
+        fields=(weight@knots).at[0].set(u0)
+        return fields,native,iterations,residuals
+    return jax.jit(query)

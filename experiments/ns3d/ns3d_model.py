@@ -73,6 +73,7 @@ def train_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
     key=jax.random.PRNGKey(seed)
     kp,kz=jax.random.split(key)
     p=init(kp,k_lat,r_feat,width=width)
+    p['out_scale']=jnp.sqrt(jnp.mean(U*U))
     # A deterministic field-only initialization preserves neighboring snapshots.
     # It initializes free latent codes only; G remains a learned coordinate MLP.
     init_start=time.monotonic()

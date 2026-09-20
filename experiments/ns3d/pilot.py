@@ -108,9 +108,19 @@ def main():
             raise RuntimeError('operator verification failed; training not permitted')
         report['stage']='reference_verification'
         write(report,result)
-        report['reference_verification']=V.reference_checks(config['n'],config['dt'],config['horizon'],
-                                                            count=config['verification_cases'],outdir=out)
-        write(report,result)
+        report['requested_config']=dict(config)
+        report['reference_attempts']=[]
+        for candidate_n in config['reference_mesh_candidates']:
+            attempt=V.reference_checks(candidate_n,config['dt'],config['horizon'],
+                                       count=config['verification_cases'],outdir=out/f'reference_N{candidate_n}')
+            report['reference_attempts'].append(attempt)
+            report['reference_verification']=attempt
+            write(report,result)
+            if attempt['passed']:
+                config=dict(config,n=candidate_n)
+                report['config']=config
+                write(config,out/'effective_config.json')
+                break
         if not report['reference_verification']['passed']:
             raise RuntimeError('physical reference budget failed; training not permitted')
         n=config['n'];k=config['k'];rank=config['rank']

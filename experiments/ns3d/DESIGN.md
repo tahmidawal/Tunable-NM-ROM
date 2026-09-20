@@ -162,6 +162,11 @@ the report must identify this amended family, and cannot claim coverage of the
 original stronger flow or of turbulence generally. The amendment is selected
 solely from numerical resolution feasibility before bank/head comparisons.
 The full four-case cluster reference gate still has to pass before training.
+The first passing mesh in the prospective sequence $N=32,40,48$ is used, each
+checked against its doubled mesh. Stop on the first pass; preserve all failed
+resolution attempts. If none passes, the job stops without training. This
+selection uses only the independent verification cohort, never reconstruction
+or operator-model performance. Persist requested and effective configurations.
 For every reference case, record peak and RMS speed, CFL, the separate nonlinear
 and viscous RHS norms, and the whole-horizon discrepancy obtained by removing
 advection and using exact viscous Fourier evolution. This diagnoses how much

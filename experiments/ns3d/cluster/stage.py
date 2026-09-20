@@ -81,11 +81,11 @@ exit "$NS3D_EXIT"
 '''
     (out/'run.sbatch').write_text(script)
     (out/'logs').mkdir()
-    manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file()]
-    (out/'MANIFEST.sha256').write_text('\n'.join(manifest)+'\n')
     stage=dict(attempt=args.attempt,source_commit=source,local=str(out),remote=remote,
                config=args.config,gpu=args.gpu,wall_limit_hours=2)
     (out/'stage.json').write_text(json.dumps(stage,indent=2)+'\n')
+    manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file()]
+    (out/'MANIFEST.sha256').write_text('\n'.join(manifest)+'\n')
     print(json.dumps(stage,indent=2))
 
 

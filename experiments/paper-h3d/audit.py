@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 
-def audit(out):
+def audit(out, destination=None):
     out=Path(out);record=json.loads((out/'result.json').read_text());failures=[];checked=0
     assert record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
     def metric(a,b):
@@ -47,10 +47,10 @@ def audit(out):
     result=dict(passed=not failures,checked_fields=checked,failures=failures,complete=record['complete'],
                 final_cohort_opened=record['final_cohort_opened'],
                 scope='independent NumPy field metrics, hashes and invocation integrity; not a global solver-optimum proof')
-    (out/'audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    (Path(destination) if destination else out/'audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
     if failures:raise SystemExit(1)
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('out');audit(p.parse_args().out)
+    p=argparse.ArgumentParser();p.add_argument('out');p.add_argument('--destination');a=p.parse_args();audit(a.out,a.destination)

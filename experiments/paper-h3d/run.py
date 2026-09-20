@@ -36,13 +36,31 @@ def run(cfg,out,smoke=False):
     record['status']='generating_training_data';save()
     data=C.dataset(cfg['train_intervals'],train_p,cfg)
     record['status']='training_bank';save()
-    params,rotation,basis,target,norm2,perpendicular,bank_info=T.train_bank(data,cfg,out)
+    validation_training_mesh=C.dataset(cfg['train_intervals'],valid_p,cfg)
+    params,rotation,basis,target,norm2,perpendicular,bank_info=T.train_bank(data,cfg,out,
+              validation_training_mesh if cfg.get('bank_validation_selection',False) else None)
     record['bank']=bank_info;save();models=[]
     for k in cfg['latent_dimensions']:
         record['status']=f'training_head_K{k}';save()
         model=T.train_head(target,norm2,perpendicular,k,cfg,out);models.append(model)
         record['heads'].append(model['info']);save()
-    del data
+    operator_models=[]
+    if cfg.get('operators'):
+        from operators import training as OT
+        from operators import heat_adapter as OH
+        scale=float(np.sqrt(np.mean(data[:,0]**2)))
+        train_x,train_y=OH.arrays(data,scale);valid_x,valid_y=OH.arrays(validation_training_mesh,scale)
+        record['operators']=[]
+        for setting in cfg['operators']:
+            name=setting['name'];spec=setting['model'];record['status']=f'training_{name}';save()
+            op,info=OT.train(train_x,train_y,valid_x,valid_y,spec,setting['training'],out/'operators'/name,C.dump,C.checkpoint)
+            info.update(name=name,physical_scale=scale,training_parameters_sha256=C.sha(train_p),validation_parameters_sha256=C.sha(valid_p),
+                        input='supplied initial field divided by training RMS, plus three coordinate channels',
+                        output='five evolved fields in physical units, supplied initial field prepended at inference')
+            record['operators'].append(info);operator_models.append((name,spec,op,scale,info));save()
+            C.checkpoint(out/'operators'/name/'adapter.pkl',dict(params=op,spec=spec,physical_scale=scale,info=info))
+        del train_x,train_y,valid_x,valid_y
+    del data,validation_training_mesh
 
     # Finer continuum-spectral references: empirical refinement remains visible.
     record['status']='reference_refinement';save()
@@ -72,6 +90,17 @@ def run(cfg,out,smoke=False):
         lam_full=C.eigenvalues(n);times=jnp.asarray(cfg['times']);nu=cfg['diffusivity']
         methods['dst_exact']=lambda u,lf=lam_full:C.propagate(u,lf,times,nu)
         metadata['dst_exact']=dict(kind='full_order')
+        for name,spec,op,scale,info in operator_models:
+            from operators import heat_adapter as OH
+            methods[name]=OH.engine(op,spec,scale,n)
+            metadata[name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,
+                                training_intervals=cfg['train_intervals'],resolution_transfer=n!=cfg['train_intervals'])
+            if n!=cfg['train_intervals'] and n%cfg['train_intervals']==0:
+                native_name=name+'_native_grid_interpolated'
+                methods[native_name]=OH.native_engine(op,spec,scale,cfg['train_intervals'],n)
+                metadata[native_name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,
+                    training_intervals=cfg['train_intervals'],resolution_transfer=False,
+                    input_restriction='nested nodal sampling',readout='trilinear interpolation with explicit zero boundary nodes; dense output charged')
         mesh=dict(intervals=n,bank_sha256=C.sha(bank),weak_operator_sha256=C.sha(a),weak_tests=len(triples),
                   weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,quadrature=[],representation=[])
         for model in models:
@@ -187,5 +216,9 @@ if __name__=='__main__':
                    bank_rank=8,latent_dimensions=[2],bank_steps=3,head_steps=3,weak_tests=32,q_ladder=[0,2],
                    bank_width=16,head_width=16,fourier_features=4,bank_batch_states=4,bank_batch_points=64,
                    quadrature_candidates=128,quadrature_fit_rows=64,quadrature_decoder_snapshots=4,
-                   repetitions=1,burn_seconds=.001,lm_budget=8,times=[0.,.1,.2],field_chunk=1024)
+                   repetitions=1,burn_seconds=.001,lm_budget=8,times=[0.,.1,.2],field_chunk=1024,
+                   bank_coefficient_refit_every=1,checkpoint_every=1)
+        for setting in cfg.get('operators',[]):
+            setting['model'].update(width=2,modes=[2,2,2],depth=1,padding=1,levels=2)
+            setting['training'].update(steps=3,wall_seconds=20,batch_size=2,validation_every=2)
     run(cfg,Path(args.out),args.smoke)

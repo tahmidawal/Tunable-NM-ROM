@@ -12,11 +12,17 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--remove-verified',action='store_true');a=p.parse_args()
     assert a.attempt.isalnum()
     remote=f'{NS}/{a.attempt}';local=ROOT/'experiments/paper-h3d/runs'/a.attempt/'archive'
+    queued=subprocess.check_output(['ssh','tufts-login','squeue -h -u tawal01 -o \"%i %j\"'],text=True)
+    submitted=ROOT/'experiments/paper-h3d/runs'/a.attempt/'SUBMITTED.json'
+    if submitted.exists():
+        job=str(json.loads(submitted.read_text())['job_id'])
+        assert job not in [line.split()[0] for line in queued.splitlines()], 'job is still queued'
     local.mkdir(parents=True,exist_ok=False)
     subprocess.run(['scp','-r',f'tufts-login:{remote}/.',str(local)],check=True)
     subprocess.run(['sha256sum','-c','SOURCE.sha256'],cwd=local,check=True)
     subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
-    subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(ROOT/'experiments/paper-h3d/audit.py'),str(local/'out')],check=True)
+    subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(ROOT/'experiments/paper-h3d/audit.py'),str(local/'out'),'--destination',str(local.parent/'audit-local.json')],check=True)
+    subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
     if a.remove_verified:
         # Only the literal namespace + validated alphanumeric attempt is removed.
         subprocess.run(['ssh','tufts-login',f'rm -rf -- {remote}'],check=True)

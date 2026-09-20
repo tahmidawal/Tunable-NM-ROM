@@ -7,7 +7,7 @@ import optax
 import common as C
 
 
-def train_bank(fields, cfg, out):
+def train_bank(fields, cfg, out, validation_fields=None):
     u=np.asarray(fields).reshape(-1,np.prod(fields.shape[-3:]))
     n=cfg['train_intervals']; x=jnp.asarray(C.coords(n)); data=jnp.asarray(u)
     k0,k1=jax.random.split(jax.random.PRNGKey(cfg['model_seed']))
@@ -20,7 +20,8 @@ def train_bank(fields, cfg, out):
 
     def objective(pz,values,points,rows,cols,norms):
         p,z=pz; g=C.features(p,points[cols]); pred=z[rows]@g.T
-        loss=jnp.mean((pred-values[rows[:,None],cols[None,:]])**2/norms[rows,None])
+        per_state=jnp.mean((pred-values[rows[:,None],cols[None,:]])**2/norms[rows,None],axis=1)
+        loss=jnp.mean(per_state)+cfg.get("bank_tail_weight",0.)*jnp.mean(per_state**2)
         normalized=g/jnp.maximum(p['scale'],1e-20)
         gram=normalized.T@normalized/len(cols)
         return loss+1e-6*jnp.mean((gram-jnp.eye(g.shape[1]))**2),loss
@@ -31,26 +32,56 @@ def train_bank(fields, cfg, out):
         rows=jax.random.randint(a,(b,),0,values.shape[0]);cols=jax.random.randint(bkey,(m,),0,points.shape[0])
         (_,loss),grads=jax.value_and_grad(objective,has_aux=True)(pz,values,points,rows,cols,norms)
         grads[0]['freq']=jnp.zeros_like(grads[0]['freq']);grads[0]['scale']=jnp.zeros_like(grads[0]['scale'])
+        if cfg.get('bank_gradient_clip'):
+            factor=jnp.minimum(1.,cfg['bank_gradient_clip']/jnp.maximum(optax.global_norm(grads),1e-30))
+            grads=jax.tree_util.tree_map(lambda v:v*factor,grads)
         updates,state=opt.update(grads,state,pz)
         return optax.apply_updates(pz,updates),state,loss
 
     key=jax.random.PRNGKey(cfg['bank_minibatch_seed']); pz=(p,eta); history=[]; begin=time.perf_counter()
+    selected=None; selected_error=float('inf'); selected_step=None
     C.checkpoint(out/'bank_partial.pkl',dict(pz=pz,state=state,key=key,step=0,cfg=cfg))
     for it in range(cfg['bank_steps']):
         key,sub=jax.random.split(key);pz,state,loss=step(pz,state,sub,data,x,norms)
-        if it==0 or (it+1)%100==0:
+        if it==0 or (it+1)%100==0 or (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['bank_steps']:
+            assert np.isfinite(float(loss)), f'nonfinite bank loss at {it+1}'
             history.append(dict(step=it+1,relative_mse=float(loss),seconds=time.perf_counter()-begin))
+        if cfg.get('bank_coefficient_refit_every',0) and (it+1)%cfg['bank_coefficient_refit_every']==0:
+            gfit=C.bank_at(pz[0],n,cfg['field_chunk']);qfit,rfit=np.linalg.qr(gfit,mode='reduced')
+            fitted=np.linalg.solve(rfit,(u@qfit).T).T
+            # Exact training-only free coefficients remove auto-decoder code lag.
+            # Reset their Adam moments after this discontinuous update; retain
+            # spatial-bank moments and the optimizer step count.
+            pz=(pz[0],jnp.asarray(fitted));adam=state[0]
+            adam=adam._replace(mu=(adam.mu[0],jnp.zeros_like(pz[1])),nu=(adam.nu[0],jnp.zeros_like(pz[1])))
+            state=(adam,*state[1:])
+            history[-1]['training_coefficient_refit']=True
+            history[-1]['coefficient_refit_finite']=bool(np.isfinite(fitted).all())
+            assert np.isfinite(fitted).all()
+            del gfit,qfit,rfit,fitted
         if (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['bank_steps']:
             C.checkpoint(out/'bank_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
+            if validation_fields is not None:
+                candidate=C.bank_at(pz[0],n,cfg['field_chunk']);qb,_=np.linalg.qr(candidate,mode='reduced')
+                val=np.asarray(validation_fields).reshape(-1,len(candidate));vnorm=np.sum(val*val,axis=1)
+                ve=np.sqrt(np.maximum(vnorm-np.sum((val@qb)**2,axis=1),0.)/vnorm)
+                vby=ve.reshape(validation_fields.shape[:2]);worst=float(np.max(vby[:,1:]))
+                history[-1].update(validation_projection_evolved_worst=worst,validation_projection_by_time=vby.tolist())
+                if worst<selected_error:
+                    selected=pz;selected_error=worst;selected_step=it+1
+                    C.checkpoint(out/'bank_selected_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
+                del candidate,qb
             C.dump(out/'bank_curve.json',history)
             print('BANK',history[-1],flush=True)
+    if selected is not None:pz=selected
     params,eta=pz;g=C.bank_at(params,n,cfg['field_chunk'])
     q,r=np.linalg.qr(g,mode='reduced');sv=np.linalg.svd(r,compute_uv=False)
     assert sv[-1]>sv[0]*1e-12, ('bank rank deficient',sv.tolist())
     rotation=np.linalg.solve(r,np.eye(len(r)))
     target=u@q; norm2=np.sum(u*u,axis=1)
     perpendicular=np.maximum(norm2-np.sum(target*target,axis=1),0.)
-    info=dict(seconds=time.perf_counter()-begin,steps=cfg['bank_steps'],basis_hash=C.sha(q),
+    info=dict(seconds=time.perf_counter()-begin,steps=cfg['bank_steps'],selected_step=selected_step,
+              validation_projection_evolved_worst=selected_error if selected is not None else None,basis_hash=C.sha(q),
               condition_number=float(sv[0]/sv[-1]),orthogonality=float(np.max(np.abs(q.T@q-np.eye(len(r))))),
               training_projection_mean=float(np.mean(np.sqrt(perpendicular/norm2))),
               training_projection_worst=float(np.max(np.sqrt(perpendicular/norm2))),
@@ -81,7 +112,7 @@ def train_head(target,norm2,perpendicular,k,cfg,out):
     pz=(p,z);key=jax.random.PRNGKey(cfg['head_minibatch_seed']+k);history=[];begin=time.perf_counter()
     for it in range(cfg['head_steps']):
         key,sub=jax.random.split(key);pz,state,value=step(pz,state,sub,target,norm2,perpendicular)
-        if it==0 or (it+1)%100==0:history.append(dict(step=it+1,objective=float(value),seconds=time.perf_counter()-begin))
+        if it==0 or (it+1)%100==0 or (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['head_steps']:history.append(dict(step=it+1,objective=float(value),seconds=time.perf_counter()-begin))
         if (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['head_steps']:
             C.checkpoint(out/f'head_K{k}_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
             C.dump(out/f'head_K{k}_curve.json',history);print('HEAD',k,history[-1],flush=True)

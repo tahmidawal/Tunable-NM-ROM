@@ -8,18 +8,19 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/paper-h3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_h3d_20260920'
-FILES=['DESIGN.md','config.json','common.py','train.py','rom.py','run.py','audit.py','cluster/stage.py','cluster/collect.py']
+FILES=['DESIGN.md','config.json','common.py','train.py','rom.py','run.py','audit.py','cluster/stage.py','cluster/collect.py','operators/__init__.py','operators/models3d.py','operators/training.py','operators/heat_adapter.py','operators/smoke.py','operators/train_smoke.py','operators/README.md']
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('attempt');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--config',default='config.json');a=p.parse_args()
     assert a.attempt.isalnum(),a.attempt
     out=ROOT/LANE/'runs'/a.attempt;out.mkdir(parents=True,exist_ok=False)
     remote=f'{NAMESPACE}/{a.attempt}'
     commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     proof=[]
     for name in FILES:
-        path=f'{LANE}/{name}'
+        source_name=a.config if name=='config.json' else name
+        path=f'{LANE}/{source_name}'
         blob=subprocess.check_output(['git','-C',str(ROOT),'show',f'{commit}:{path}'])
         assert blob==(ROOT/path).read_bytes(),f'uncommitted source: {path}'
         dest=out/'code'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(blob)

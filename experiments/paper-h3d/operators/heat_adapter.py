@@ -25,3 +25,22 @@ def engine(params,spec,scale,n):
         y=M.apply_model(p,x,spec)[0]*scale
         return jnp.concatenate((u0[None],jnp.moveaxis(y,-1,0)),axis=0)
     return lambda u0:query(u0,params,jnp.asarray(scale))
+
+
+def native_engine(params,spec,scale,native_intervals,evaluation_intervals):
+    """Charge native-grid prediction and nodally aligned zero-wall interpolation."""
+    assert evaluation_intervals%native_intervals==0
+    stride=evaluation_intervals//native_intervals
+    @jax.jit
+    def query(u0,p,scale):
+        coarse=u0[stride-1::stride,stride-1::stride,stride-1::stride]
+        x=jnp.concatenate((coarse[...,None]/scale,coordinates(native_intervals)),axis=-1)[None]
+        y=jnp.moveaxis(M.apply_model(p,x,spec)[0]*scale,-1,0)
+        y=jnp.pad(y,((0,0),(1,1),(1,1),(1,1)))
+        position=jnp.arange(1,evaluation_intervals,dtype=jnp.float64)*native_intervals/evaluation_intervals
+        left=jnp.floor(position).astype(jnp.int32);weight=position-left
+        for axis in (1,2,3):
+            shape=[1]*4;shape[axis]=len(position);w=weight.reshape(shape)
+            y=(1-w)*jnp.take(y,left,axis=axis)+w*jnp.take(y,left+1,axis=axis)
+        return jnp.concatenate((u0[None],y),axis=0)
+    return lambda u0:query(u0,params,jnp.asarray(scale))

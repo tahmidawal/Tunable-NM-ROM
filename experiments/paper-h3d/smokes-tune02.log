@@ -1,0 +1,29 @@
+jax_backend=gpu x64=True precision=highest
+BANK {'step': 1, 'relative_mse': 0.7358107209895486, 'seconds': 1.6284286030568182, 'training_coefficient_refit': True, 'coefficient_refit_finite': True, 'validation_projection_evolved_worst': 0.7723206748274638, 'validation_projection_by_time': [[0.804520650436633, 0.7723206748274638, 0.7415515278248549]]}
+BANK {'step': 1, 'relative_mse': 0.7358107209895486, 'seconds': 1.6284286030568182, 'training_coefficient_refit': True, 'coefficient_refit_finite': True, 'validation_projection_evolved_worst': 0.7700767245054143, 'validation_projection_by_time': [[0.8026770900276459, 0.7700767245054143, 0.7389151279392098]]}
+BANK {'step': 1, 'relative_mse': 0.7358107209895486, 'seconds': 1.6284286030568182, 'training_coefficient_refit': True, 'coefficient_refit_finite': True, 'validation_projection_evolved_worst': 0.7691719624180738, 'validation_projection_by_time': [[0.801888467141852, 0.7691719624180738, 0.7379055721471613]]}
+HEAD 2 {'step': 1, 'objective': 1.1525163718240639, 'seconds': 1.015689522959292}
+HEAD 2 {'step': 1, 'objective': 1.1525163718240639, 'seconds': 1.015689522959292}
+HEAD 2 {'step': 1, 'objective': 1.1525163718240639, 'seconds': 1.015689522959292}
+OPERATOR fno3d 1 val_worst 0.9858103116754555 seconds 2.3999389819800854
+OPERATOR fno3d 2 val_worst 0.984850338529515 seconds 2.4121802530717105
+OPERATOR fno3d 3 val_worst 0.9845047542614344 seconds 2.4266367830568925
+OPERATOR unet3d 1 val_worst 0.9997721431048857 seconds 1.5166979180648923
+OPERATOR unet3d 2 val_worst 0.999333743796716 seconds 1.5312687039840966
+OPERATOR unet3d 3 val_worst 0.9991742110148361 seconds 1.5407806200673804
+REFERENCE 0 0.0005917340401036399
+COMPILED 8 linear_bank_cn 0.25
+COMPILED 8 linear_bank_exact 0.001
+COMPILED 8 pod2_exact 0.217
+COMPILED 8 pod4_exact 0.193
+COMPILED 8 pod8_exact 0.062
+COMPILED 8 linear_bank_galerkin_exact 0.073
+COMPILED 8 dst_exact 0.0
+COMPILED 8 fno3d_w16_m6 0.255
+COMPILED 8 unet3d_w8 0.199
+COMPILED 8 nmrom_K2_q0_dense 1.32
+COMPILED 8 nmrom_K2_q0_eq 0.91
+COMPILED 8 nmrom_K2_q2_dense 1.085
+COMPILED 8 nmrom_K2_q2_eq 0.93
+COMPILED 8 nmrom_K2_q2_dense_dt_half 0.901
+CASE 8 0 REP 0

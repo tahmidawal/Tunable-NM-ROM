@@ -135,7 +135,7 @@
     "head_K2_curve.json": "11ea5a84fefedd6feb4105a03dee91ec2367a2d1cdf0c9e4b84f32632ccd4bf4",
     "operators/fno3d_w16_m6/adapter.pkl": "be3a0c4d1d836c0c26119c330578688d493dc6d28ccab1e003c536ff31f67993",
     "operators/unet3d_w8/adapter.pkl": "c3cf061c93d3421b70f79f73fdbb9b22c359accc534a8c2bc62c15e4b16ed565",
-    "eq_N8_K2.npz": "1073244b77cf0fff2884ed043c28c56a0cd1699f01f230d01e5effa5fa187a4a"
+    "eq_N8_K2.npz": "017bc525c336120991e4283e7987873c9fcc6ff49e95329a5a2946a34e0ffa59"
   },
   "bank": {
     "seconds": 4.0144950420362875,
@@ -262,7 +262,7 @@
     {
       "intervals": 8,
       "bank_sha256": "b18c04b7fd2d08c5b34a73365ccf85e2dfb0beeef39802c54390c5700448081c",
-      "weak_operator_sha256": "aa04773f73c1c7cca27ca31df7823148f671533c0518fd39c046815997bc4d83",
+      "weak_operator_sha256": "34a0aa17bc5c76d1a41d9bdff70e003ffe71aa63fc90e3b03922c12285f5b440",
       "weak_tests": 32,
       "weak_singular_values": [
         0.04042552288666201,
@@ -281,22 +281,9 @@
       },
       "quadrature": [
         {
-          "candidate_count": 128,
-          "positive_support": 57,
-          "source": "decoder-output snapshots, NNLS positive weights, random candidate grid nodes",
-          "fit_rows": 64,
-          "row_scale_floor": 0.1,
-          "seconds": 0.000726307975128293,
-          "scaled_fit_norm": 0.24539616661511607,
-          "training_moment_error_max": 0.597884876416426,
-          "weights_hash": "dd27c3406a7a5d034dba3e6f05a2ae19227f4da58375694e708ad10861d825a4",
-          "indices_hash": "e3677f86f15ea3ede5d631944038b8332ee5df9fd3cae4d3cbcac524667840a2",
           "k": 2,
-          "validation_moment_errors": [
-            1.0527079601950715
-          ],
-          "certificate_threshold": 0.01,
-          "certified": false
+          "certified": true,
+          "source": "synthetic full-grid identity fixture"
         }
       ],
       "representation": [

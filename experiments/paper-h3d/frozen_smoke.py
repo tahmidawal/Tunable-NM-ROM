@@ -56,5 +56,6 @@ for model in models:
     assert reuse is not None and reuse[2]['reused_rule']
     assert F.quadrature(inputs,origin,n,k,g+1e-12,a,test,truths,cfg,out) is None
     assert F.quadrature(inputs,origin,n,k,g,a,test,truths,{**cfg,'weak_tests':cfg['weak_tests']+1},out) is None
+C.dump(inputs/'ORIGIN.json',origin)
 C.dump(out/'audit.json',dict(passed=True,device_residency=True,checkpoint_replay=errors,original_rule_bitwise_reused=original_rule_reused,exact_quadrature_reuse=True,changed_bank_rejected=True,changed_test_count_rejected=True))
 print('FROZEN_REPLAY_PASS',errors,flush=True)

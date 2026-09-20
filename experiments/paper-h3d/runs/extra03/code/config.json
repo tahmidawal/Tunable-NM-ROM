@@ -1,0 +1,154 @@
+{
+  "schema": "paper-heat3d-additional-operators-v3",
+  "train_intervals": 32,
+  "evaluation_intervals": [
+    32,
+    64
+  ],
+  "reference_intervals": [
+    64,
+    128
+  ],
+  "train_count": 128,
+  "validation_count": 16,
+  "train_seed": 920310,
+  "validation_seed": 920311,
+  "reserved_final_seed": 920399,
+  "model_seed": 920312,
+  "bank_minibatch_seed": 920313,
+  "head_minibatch_seed": 920314,
+  "timing_seed": 920315,
+  "quadrature_seed": 920316,
+  "diffusivity": 0.02,
+  "times": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+  ],
+  "dt": 0.025,
+  "bank_rank": 128,
+  "latent_dimensions": [
+    8,
+    16
+  ],
+  "bank_steps": 100000,
+  "head_steps": 80000,
+  "bank_batch_states": 64,
+  "bank_batch_points": 2048,
+  "head_batch_states": 128,
+  "bank_learning_rate": 0.001,
+  "head_learning_rate": 0.0005,
+  "checkpoint_every": 5000,
+  "fourier_features": 32,
+  "fourier_scale": 1.5,
+  "bank_width": 256,
+  "head_width": 256,
+  "weak_tests": 512,
+  "q_ladder": [
+    0,
+    8,
+    32,
+    64,
+    96
+  ],
+  "quadrature_candidates": 2048,
+  "quadrature_decoder_snapshots": 64,
+  "quadrature_fit_rows": 8192,
+  "quadrature_certificate": 0.01,
+  "lm_budget": 120,
+  "lm_tolerance": 1e-06,
+  "initial_starts": 4,
+  "repetitions": 3,
+  "burn_seconds": 0.2,
+  "reference_budget": 0.0001,
+  "field_chunk": 8192,
+  "final_cohort_opened": false,
+  "bank_validation_selection": true,
+  "bank_tail_weight": 0.1,
+  "bank_coefficient_refit_every": 5000,
+  "quadrature_scale_floor": 0.1,
+  "operators": [
+    {
+      "name": "deeponet3d_r128_w16",
+      "model": {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 128,
+        "trunk_width": 128,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 1200,
+        "batch_size": 4,
+        "seed": 920323,
+        "learning_rate": 0.001,
+        "validation_every": 500,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      }
+    },
+    {
+      "name": "transolver3d_w48_s32",
+      "model": {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          -1.0,
+          1.0
+        ]
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 1200,
+        "batch_size": 4,
+        "seed": 920324,
+        "learning_rate": 0.001,
+        "validation_every": 500,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      }
+    }
+  ],
+  "bank_gradient_clip": 1.0,
+  "frozen_source_attempt": "tune02",
+  "frozen_input_directory": "inputs/tune02",
+  "frozen_operators": [
+    "fno3d_w16_m6",
+    "unet3d_w8"
+  ],
+  "initial_lm_budget": 600,
+  "include_uncertified_quadrature": false,
+  "additional_latent_dimensions": [
+    32
+  ],
+  "head_validation_fit_budget": 400,
+  "head_validation_fit_tolerance": 1e-08,
+  "head_validation_starts": 4,
+  "representation_fit_budget": 400,
+  "representation_fit_tolerance": 1e-08
+}

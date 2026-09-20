@@ -8,13 +8,13 @@
   "wall_limit_hours": 2,
   "job_id": 3989800,
   "job_name": "ns3d_pilot01",
-  "status_at_handoff": "RUNNING",
+  "status_at_handoff": "COMPLETED",
   "observed_utc": "2026-09-20T04:38:49.523367+00:00",
   "node": "pax106",
   "gpu_verified": "NVIDIA A100 80GB PCIe",
   "gpu_preflight_seen": true,
   "final_cohort_opened": false,
-  "results_collected": false,
+  "results_collected": true,
   "commands": {
     "stage": "/home/tahmid/Dev/.venv/bin/python experiments/ns3d/cluster/stage.py pilot01 --gpu a100",
     "submit": "ssh tufts-login 'cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/pilot01 && sbatch --parsable run.sbatch'",
@@ -31,5 +31,7 @@
     "Adopt the heat agent shared f64 FNO3D/U-Net3D with dataset_adapter.py; periodic vector contract.",
     "Prepare a certified sampled cold-start projection before any mesh-independent deployment claim.",
     "Freeze validation selection before opening the separate final cohort."
-  ]
+  ],
+  "independent_audit_passed": true,
+  "remote_deleted": true
 }

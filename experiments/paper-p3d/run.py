@@ -74,7 +74,9 @@ def run(cfg,out,smoke=False):
     if reuse:
         prior=json.loads((reuse/'result.json').read_text())
         assert prior['complete'] and not prior['final_cohort_opened']
-        for key in ['train_seed','validation_seed','train_count','validation_count','train_intervals','bank_rank']:
+        for key in ['train_seed','validation_seed','train_count','validation_count','train_intervals','bank_rank',
+                    'model_seed','bank_minibatch_seed','head_minibatch_seed','bank_width','head_width',
+                    'fourier_features','fourier_scale']:
             assert cfg[key]==prior['config'][key],('checkpoint cohort/architecture mismatch',key)
         old_cohorts=json.loads((reuse/'cohorts.json').read_text())
         assert old_cohorts['train_sha256']==C.sha(train_p) and old_cohorts['validation_sha256']==C.sha(valid_p)

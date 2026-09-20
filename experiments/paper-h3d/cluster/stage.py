@@ -16,6 +16,7 @@ FILES += ['frozen.py']
 FILES += ['head_pca_diagnostic.py','audit_head.py','audit_panel.py']
 FILES += ['coverage_train.py','audit_coverage.py','operators/pretrained_deeponet.py','final_freeze.py','audit_states.py']
 FILES += ['audit_pretraining.py','iterative_cg.py','audit_cg.py','archive_storage.py','retain_fields.py','panel_selection.py']
+FILES += ['prepare_selected_final.py']
 
 
 def main():

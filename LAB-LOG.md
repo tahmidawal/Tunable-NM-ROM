@@ -15160,3 +15160,7 @@ The concurrency limit is four simultaneously allocated single GPUs; a strict com
 ### Coordinator — refreshed development manuscript panels
 
 The explicit input manifest now contains 9 independently audited attempts and 372 aggregate rows, including Poisson extra03 with all four operator families. The compact export contains 4 same-allocation panels and 71 rows. Its LaTeX/PDF rebuild passed with 4 pages and no overfull boxes or undefined references; the new Poisson page was visually inspected. PDF SHA256 `fc3ca7f78ec81ba27c758bfff96d1f7e4140b3134b1277da867dd24b1f399eba`. Tables, CSVs and figures remain explicitly provisional development material; all final cohorts are still unopened. Runtime ratios across jobs remain disallowed.
+
+### Coordinator — generated setup and training records
+
+`reports/export_3d_paper_protocol.py` now generates experimental-setup and recorded operator-training tables from the explicitly selected raw results. It exports 4 setups and 10 operator recipes, distinguishing requested, completed and validation-selected updates and retaining full source metadata. Reused training records are not attributed to the query-timing allocation. One reporting correction: the selected Burgers attempt records an actual weak-test count of 642; the configured requested test count used in earlier shorthand is not the actual count. The numerical results are unchanged, and the generated setup table uses the actual count.

@@ -1,0 +1,265 @@
+{
+ "device": "NVIDIA GB10",
+ "results": [
+  {
+   "kind": "stream_sum",
+   "M": 544,
+   "R": 512,
+   "ms": 6.149,
+   "GB": 1.141,
+   "GBps": 185.5
+  },
+  {
+   "kind": "stream_sum",
+   "M": 544,
+   "R": 256,
+   "ms": 1.546,
+   "GB": 0.285,
+   "GBps": 184.5
+  },
+  {
+   "kind": "stream_sum",
+   "M": 128,
+   "R": 512,
+   "ms": 1.487,
+   "GB": 0.268,
+   "GBps": 180.5
+  },
+  {
+   "kind": "residual",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "dtype": "float64",
+   "ms": 6.093,
+   "GB": 1.141
+  },
+  {
+   "kind": "jacfwd",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "ms": 52.843,
+   "flop_GF": 9.13
+  },
+  {
+   "kind": "analytic_res+jac",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "ms": 6.057,
+   "rel_vs_jacfwd": 5.527873654103241e-16
+  },
+  {
+   "kind": "lm_iter_as_written",
+   "M": 544,
+   "R": 512,
+   "T": 32,
+   "ms": 65.03,
+   "note": "fun(zn) + evaluate(zn)=[fun + jacfwd] (XLA may CSE the primal inside jacfwd)"
+  },
+  {
+   "kind": "lm_iter_analytic",
+   "M": 544,
+   "R": 512,
+   "T": 32,
+   "ms": 12.15,
+   "note": "trial residual (1 pass) + fused residual+Jacobian (1 pass)"
+  },
+  {
+   "kind": "residual",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 128,
+   "T": 160,
+   "dtype": "float64",
+   "ms": 6.136,
+   "GB": 1.141
+  },
+  {
+   "kind": "jacfwd",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 128,
+   "T": 160,
+   "ms": 468.74,
+   "flop_GF": 45.63
+  },
+  {
+   "kind": "analytic_res+jac",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 128,
+   "T": 160,
+   "ms": 8.556,
+   "rel_vs_jacfwd": 8.595973742724779e-16
+  },
+  {
+   "kind": "lm_iter_as_written",
+   "M": 544,
+   "R": 512,
+   "T": 160,
+   "ms": 481.012,
+   "note": "fun(zn) + evaluate(zn)=[fun + jacfwd] (XLA may CSE the primal inside jacfwd)"
+  },
+  {
+   "kind": "lm_iter_analytic",
+   "M": 544,
+   "R": 512,
+   "T": 160,
+   "ms": 14.691,
+   "note": "trial residual (1 pass) + fused residual+Jacobian (1 pass)"
+  },
+  {
+   "kind": "residual",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 512,
+   "T": 544,
+   "dtype": "float64",
+   "ms": 7.365,
+   "GB": 1.141
+  },
+  {
+   "kind": "jacfwd",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 512,
+   "T": 544,
+   "ms": 460.161,
+   "flop_GF": 155.16
+  },
+  {
+   "kind": "analytic_res+jac",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 512,
+   "T": 544,
+   "ms": 8.927,
+   "rel_vs_jacfwd": 1.0692616632177118e-15
+  },
+  {
+   "kind": "lm_iter_as_written",
+   "M": 544,
+   "R": 512,
+   "T": 544,
+   "ms": 474.891,
+   "note": "fun(zn) + evaluate(zn)=[fun + jacfwd] (XLA may CSE the primal inside jacfwd)"
+  },
+  {
+   "kind": "lm_iter_analytic",
+   "M": 544,
+   "R": 512,
+   "T": 544,
+   "ms": 16.292,
+   "note": "trial residual (1 pass) + fused residual+Jacobian (1 pass)"
+  },
+  {
+   "kind": "residual",
+   "M": 544,
+   "R": 256,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "dtype": "float64",
+   "ms": 1.855,
+   "GB": 0.285
+  },
+  {
+   "kind": "residual",
+   "M": 128,
+   "R": 512,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "dtype": "float64",
+   "ms": 1.695,
+   "GB": 0.268
+  },
+  {
+   "kind": "residual",
+   "M": 544,
+   "R": 512,
+   "K": 32,
+   "q": 0,
+   "T": 32,
+   "dtype": "float32",
+   "ms": 3.818,
+   "GB": 0.57
+  },
+  {
+   "kind": "precontracted",
+   "M": 544,
+   "d": 32,
+   "res_ms": 0.754,
+   "jacfwd_ms": 0.577,
+   "GB": 0.0045
+  },
+  {
+   "kind": "precontracted",
+   "M": 544,
+   "d": 96,
+   "res_ms": 0.83,
+   "jacfwd_ms": 3.993,
+   "GB": 0.0401
+  },
+  {
+   "kind": "precontracted",
+   "M": 544,
+   "d": 160,
+   "res_ms": 1.366,
+   "jacfwd_ms": 15.115,
+   "GB": 0.1114
+  },
+  {
+   "kind": "precontracted",
+   "M": 544,
+   "d": 288,
+   "res_ms": 2.149,
+   "jacfwd_ms": 76.057,
+   "GB": 0.361
+  },
+  {
+   "kind": "eq_sampled",
+   "M": 2176,
+   "R": 512,
+   "m": 1024,
+   "T": 32,
+   "res_ms": 0.979,
+   "jacfwd_ms": 4.135,
+   "MB": 93.3
+  },
+  {
+   "kind": "eq_sampled",
+   "M": 2176,
+   "R": 512,
+   "m": 2048,
+   "T": 32,
+   "res_ms": 1.354,
+   "jacfwd_ms": 6.44,
+   "MB": 186.6
+  },
+  {
+   "kind": "eq_sampled",
+   "M": 2176,
+   "R": 512,
+   "m": 4096,
+   "T": 32,
+   "res_ms": 2.349,
+   "jacfwd_ms": 10.694,
+   "MB": 373.3
+  }
+ ]
+}

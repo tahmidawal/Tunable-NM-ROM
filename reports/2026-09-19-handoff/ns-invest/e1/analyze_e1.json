@@ -1,0 +1,978 @@
+{
+ "A_head282x64": {
+  "tag": "A (head cohort 282/64)",
+  "ntr": 282,
+  "ndev": 64,
+  "n_train_states": 7332,
+  "pod_energy_16_32_64": [
+   0.8906221236259164,
+   0.9584001595954124,
+   0.9863265279143574
+  ],
+  "pod16": {
+   "floor_all": 0.23889678712934725,
+   "floor_worst_evolved": 0.31940568530628405,
+   "floor_t0": 0.05648215459487009,
+   "floor_evolved": 0.2678809323118614,
+   "per_time": [
+    0.0565,
+    0.2781,
+    0.3066,
+    0.2748,
+    0.2349,
+    0.2001
+   ],
+   "own_norm_all": 0.2976720187318335
+  },
+  "pod32": {
+   "floor_all": 0.14114899222766888,
+   "floor_worst_evolved": 0.22020181226649144,
+   "floor_t0": 0.02420728711157049,
+   "floor_evolved": 0.161036248257579,
+   "per_time": [
+    0.0242,
+    0.1263,
+    0.1966,
+    0.1946,
+    0.1707,
+    0.1359
+   ],
+   "own_norm_all": 0.17250474030608226
+  },
+  "pod64": {
+   "floor_all": 0.07078482627226587,
+   "floor_worst_evolved": 0.12721189005829658,
+   "floor_t0": 0.01299751581564179,
+   "floor_evolved": 0.08889324006833121,
+   "per_time": [
+    0.013,
+    0.0485,
+    0.1094,
+    0.1218,
+    0.1012,
+    0.0884
+   ],
+   "own_norm_all": 0.08910783155865551
+  },
+  "coverage": {
+   "same_time_all": 0.6441020026280095,
+   "same_time_t0": 0.7418110506080368,
+   "same_time_evolved": 0.6049820624956541,
+   "per_time": [
+    0.7418,
+    0.7351,
+    0.6869,
+    0.5985,
+    0.5107,
+    0.4629
+   ],
+   "any_time_all": 0.5860975830052594,
+   "same_time_own_norm": 0.7441195188240107
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.9262,
+   0.8613,
+   0.8062,
+   0.7589,
+   0.7179
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.9035,
+   0.8018,
+   0.6808,
+   0.588,
+   0.5135
+  ],
+  "norm_ratio_T_median": 0.716584604136842,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.17699385712111484,
+   "coverage_same_time_all": 0.44626431792085464
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": false
+  }
+ },
+ "A": {
+  "tag": "A",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.8961520655233789,
+   0.9621471319768423,
+   0.9886746043399289
+  ],
+  "pod16": {
+   "floor_all": 0.2370196700062583,
+   "floor_worst_evolved": 0.33055298888757456,
+   "floor_t0": 0.0770684383194074,
+   "floor_evolved": 0.26528207568331186,
+   "per_time": [
+    0.0771,
+    0.2918,
+    0.3109,
+    0.2642,
+    0.2207,
+    0.1769
+   ],
+   "own_norm_all": 0.28821911750480783
+  },
+  "pod32": {
+   "floor_all": 0.13791859028621806,
+   "floor_worst_evolved": 0.20893257726900993,
+   "floor_t0": 0.03992129545519089,
+   "floor_evolved": 0.15402559565511081,
+   "per_time": [
+    0.0399,
+    0.1323,
+    0.2043,
+    0.1825,
+    0.1539,
+    0.1328
+   ],
+   "own_norm_all": 0.16557483078822682
+  },
+  "pod64": {
+   "floor_all": 0.07143465687919687,
+   "floor_worst_evolved": 0.13726240645999252,
+   "floor_t0": 0.01820173818644042,
+   "floor_evolved": 0.08848783500824607,
+   "per_time": [
+    0.0182,
+    0.0569,
+    0.1226,
+    0.1195,
+    0.0891,
+    0.0731
+   ],
+   "own_norm_all": 0.08828275315179601
+  },
+  "coverage": {
+   "same_time_all": 0.6648541715725123,
+   "same_time_t0": 0.8191617984939465,
+   "same_time_evolved": 0.6363805277950714,
+   "per_time": [
+    0.8192,
+    0.8056,
+    0.7593,
+    0.6323,
+    0.569,
+    0.4916
+   ],
+   "any_time_all": 0.602600570509213,
+   "same_time_own_norm": 0.7900887019692047
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.9196,
+   0.8486,
+   0.7868,
+   0.7323,
+   0.6834
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.8935,
+   0.7795,
+   0.6693,
+   0.588,
+   0.5279
+  ],
+  "norm_ratio_T_median": 0.7265201031303734,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.2789996101848552,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.16691828071180398,
+   "coverage_same_time_all": 0.4721265496531518
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": false
+  },
+  "meta": {
+   "T": 1.0,
+   "dt": 0.002,
+   "nsteps": 500,
+   "out_every": 20,
+   "forced": false,
+   "cols": [
+    "a1..a6",
+    "b1..b6",
+    "nu"
+   ],
+   "P": 13
+  },
+  "worst_newton_residual": 1.4621299431841276e-15,
+  "gen_seconds": 33.228687047958374,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "B": {
+  "tag": "B",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.8380829931488212,
+   0.9682905092224517,
+   0.9949037905877953
+  ],
+  "pod16": {
+   "floor_all": 0.23472708550972687,
+   "floor_worst_evolved": 0.31747323007509287,
+   "floor_t0": 0.2232058512338114,
+   "floor_evolved": 0.24923854071267335,
+   "per_time": [
+    0.2232,
+    0.259,
+    0.2669,
+    0.2831,
+    0.2267,
+    0.1876
+   ],
+   "own_norm_all": 0.3299100900207045
+  },
+  "pod32": {
+   "floor_all": 0.11417428933782255,
+   "floor_worst_evolved": 0.14210551612122527,
+   "floor_t0": 0.12121268868010185,
+   "floor_evolved": 0.10975498180888746,
+   "per_time": [
+    0.1212,
+    0.1364,
+    0.1322,
+    0.1094,
+    0.0928,
+    0.0647
+   ],
+   "own_norm_all": 0.14495566916144742
+  },
+  "pod64": {
+   "floor_all": 0.03572284554827903,
+   "floor_worst_evolved": 0.06585768907141928,
+   "floor_t0": 0.02081408202128466,
+   "floor_evolved": 0.04797290414678963,
+   "per_time": [
+    0.0208,
+    0.0584,
+    0.057,
+    0.042,
+    0.0357,
+    0.0277
+   ],
+   "own_norm_all": 0.05917822757829598
+  },
+  "coverage": {
+   "same_time_all": 0.3625359960623834,
+   "same_time_t0": 0.17037067779011583,
+   "same_time_evolved": 0.4076397335042102,
+   "per_time": [
+    0.1704,
+    0.3582,
+    0.4174,
+    0.4393,
+    0.4076,
+    0.3675
+   ],
+   "any_time_all": 0.28616748310786444,
+   "same_time_own_norm": 0.6032855993721904
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.8234,
+   0.6955,
+   0.5982,
+   0.5215,
+   0.4594
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.7078,
+   0.5274,
+   0.4099,
+   0.3282,
+   0.2689
+  ],
+  "norm_ratio_T_median": 0.518216033103276,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.3660826925187516,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.07867106259905021,
+   "coverage_same_time_all": 0.1229242911367198
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": false
+  },
+  "meta": {
+   "T": 1.5,
+   "dt": 0.002,
+   "nsteps": 750,
+   "out_every": 30,
+   "forced": false,
+   "cols": [
+    "Gamma~U[0.5,1.5]",
+    "d~U[0.15,0.25]",
+    "theta~U[0,2pi)",
+    "U_b~U[0,0.5]",
+    "phi~U[0,2pi)",
+    "nu"
+   ],
+   "P": 6
+  },
+  "worst_newton_residual": 3.440162199403622e-15,
+  "gen_seconds": 46.82249450683594,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "B2": {
+  "tag": "B2",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.762662126179949,
+   0.9293583042996086,
+   0.9864601109152202
+  ],
+  "pod16": {
+   "floor_all": 0.34457407124486594,
+   "floor_worst_evolved": 0.3859582957861577,
+   "floor_t0": 0.37304873687322554,
+   "floor_evolved": 0.3259250767129027,
+   "per_time": [
+    0.373,
+    0.3418,
+    0.3667,
+    0.3285,
+    0.3024,
+    0.281
+   ],
+   "own_norm_all": 0.4671574607933298
+  },
+  "pod32": {
+   "floor_all": 0.19648192024094469,
+   "floor_worst_evolved": 0.2028534550517517,
+   "floor_t0": 0.24323633087709134,
+   "floor_evolved": 0.1742790690766591,
+   "per_time": [
+    0.2432,
+    0.2009,
+    0.1893,
+    0.1566,
+    0.1588,
+    0.1435
+   ],
+   "own_norm_all": 0.24686499055208294
+  },
+  "pod64": {
+   "floor_all": 0.07232025897873876,
+   "floor_worst_evolved": 0.10859051787366931,
+   "floor_t0": 0.049456129385413994,
+   "floor_evolved": 0.07993184758210507,
+   "per_time": [
+    0.0495,
+    0.1086,
+    0.0884,
+    0.0777,
+    0.0705,
+    0.0596
+   ],
+   "own_norm_all": 0.10927754869195405
+  },
+  "coverage": {
+   "same_time_all": 0.2437901615756956,
+   "same_time_t0": 0.200364499879505,
+   "same_time_evolved": 0.26665153785053997,
+   "per_time": [
+    0.2004,
+    0.2285,
+    0.2667,
+    0.2825,
+    0.2876,
+    0.2858
+   ],
+   "any_time_all": 0.20650843230596294,
+   "same_time_own_norm": 0.33750199474617926
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.8484,
+   0.7357,
+   0.6476,
+   0.5766,
+   0.5182
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.7256,
+   0.5561,
+   0.4424,
+   0.3609,
+   0.3001
+  ],
+  "norm_ratio_T_median": 0.5477787038539659,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.4188879302856068,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.08203746394642994,
+   "coverage_same_time_all": 0.1377021437727231
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": true,
+   "both": false,
+   "floor_worst_pass": true
+  },
+  "meta": {
+   "T": 1.5,
+   "dt": 0.002,
+   "nsteps": 750,
+   "out_every": 30,
+   "forced": false,
+   "sigma": 0.06,
+   "nu_hi": 0.003,
+   "cols": [
+    "Gamma~U[0.5,1.5]",
+    "d~U[0.15,0.25]",
+    "theta~U[0,2pi)",
+    "nu~logU[1e-3,3e-3]"
+   ],
+   "P": 4
+  },
+  "worst_newton_residual": 2.5186674322542527e-14,
+  "gen_seconds": 50.70959973335266,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "B3": {
+  "tag": "B3",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.6948086204951762,
+   0.8969780813495225,
+   0.9815312219760189
+  ],
+  "pod16": {
+   "floor_all": 0.3772223066406643,
+   "floor_worst_evolved": 0.4596955882823177,
+   "floor_t0": 0.33645477775134547,
+   "floor_evolved": 0.40174907635656476,
+   "per_time": [
+    0.3365,
+    0.4062,
+    0.4376,
+    0.4065,
+    0.3777,
+    0.3302
+   ],
+   "own_norm_all": 0.5530116228460713
+  },
+  "pod32": {
+   "floor_all": 0.23824492882232068,
+   "floor_worst_evolved": 0.27763565525261713,
+   "floor_t0": 0.2454427068325667,
+   "floor_evolved": 0.22232277163102465,
+   "per_time": [
+    0.2454,
+    0.2604,
+    0.2452,
+    0.236,
+    0.1863,
+    0.1506
+   ],
+   "own_norm_all": 0.2898411369534928
+  },
+  "pod64": {
+   "floor_all": 0.08300930908095526,
+   "floor_worst_evolved": 0.14269101318115673,
+   "floor_t0": 0.05178954170815109,
+   "floor_evolved": 0.09364357976841614,
+   "per_time": [
+    0.0518,
+    0.1427,
+    0.1156,
+    0.0929,
+    0.0745,
+    0.0574
+   ],
+   "own_norm_all": 0.12886379546417845
+  },
+  "coverage": {
+   "same_time_all": 0.44901565461889337,
+   "same_time_t0": 0.200364499879505,
+   "same_time_evolved": 0.49533091128999396,
+   "per_time": [
+    0.2004,
+    0.4431,
+    0.5136,
+    0.5302,
+    0.4864,
+    0.4525
+   ],
+   "any_time_all": 0.33560439872160136,
+   "same_time_own_norm": 0.6629601938910381
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.8513,
+   0.74,
+   0.6528,
+   0.5822,
+   0.5239
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.7317,
+   0.5627,
+   0.4494,
+   0.3681,
+   0.3072
+  ],
+  "norm_ratio_T_median": 0.5541971124071942,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.47410238352668177,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.09385689302377373,
+   "coverage_same_time_all": 0.1402682274215295
+  },
+  "verdict": {
+   "floor_pass": true,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": true
+  },
+  "meta": {
+   "T": 1.5,
+   "dt": 0.002,
+   "nsteps": 750,
+   "out_every": 30,
+   "forced": false,
+   "sigma": 0.06,
+   "nu_hi": 0.003,
+   "cols": [
+    "Gamma~U[0.5,1.5]",
+    "d~U[0.15,0.25]",
+    "theta~U[0,2pi)",
+    "U_b~U[0,0.5]",
+    "phi~U[0,2pi)",
+    "nu~logU[1e-3,3e-3]"
+   ],
+   "P": 6
+  },
+  "worst_newton_residual": 6.960993952581055e-14,
+  "gen_seconds": 52.04900026321411,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "C": {
+  "tag": "C",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.7196177104258895,
+   0.8321451068623182,
+   0.9166668515415295
+  ],
+  "pod16": {
+   "floor_all": 0.3181913851236011,
+   "floor_worst_evolved": 0.5464593864605181,
+   "floor_t0": 0.14688110200411808,
+   "floor_evolved": 0.3594658219799596,
+   "per_time": [
+    0.1469,
+    0.4557,
+    0.5171,
+    0.3773,
+    0.3071,
+    0.2785
+   ],
+   "own_norm_all": 0.5943388204919817
+  },
+  "pod32": {
+   "floor_all": 0.24659388631762588,
+   "floor_worst_evolved": 0.3952574579754731,
+   "floor_t0": 0.03230006218273537,
+   "floor_evolved": 0.29531222536763524,
+   "per_time": [
+    0.0323,
+    0.3021,
+    0.3773,
+    0.3219,
+    0.2511,
+    0.2396
+   ],
+   "own_norm_all": 0.4550144106086893
+  },
+  "pod64": {
+   "floor_all": 0.16179901100430938,
+   "floor_worst_evolved": 0.28858838709705725,
+   "floor_t0": 0.01862873161465783,
+   "floor_evolved": 0.19498818445497612,
+   "per_time": [
+    0.0186,
+    0.1354,
+    0.2733,
+    0.2571,
+    0.1909,
+    0.1713
+   ],
+   "own_norm_all": 0.30960506016000866
+  },
+  "coverage": {
+   "same_time_all": 0.45086365795101635,
+   "same_time_t0": 0.04599913634158852,
+   "same_time_evolved": 0.49269394758694707,
+   "per_time": [
+    0.046,
+    0.6256,
+    0.6542,
+    0.5317,
+    0.411,
+    0.3946
+   ],
+   "any_time_all": 0.3448422316066444,
+   "same_time_own_norm": 0.8408330536415924
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.8763,
+   0.6749,
+   0.5504,
+   0.5043,
+   0.503
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.8254,
+   0.4619,
+   0.2875,
+   0.2179,
+   0.1787
+  ],
+  "norm_ratio_T_median": 0.4227755635425142,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.4451053445566772,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.1464512238040261,
+   "coverage_same_time_all": 0.13633331254163994
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": true
+  },
+  "meta": {
+   "T": 1.0,
+   "dt": 0.002,
+   "nsteps": 500,
+   "out_every": 20,
+   "forced": true,
+   "cols": [
+    "U_d~U[0.5,1.5]",
+    "alpha~U[0,2pi)",
+    "eps~U[0.2,0.6]",
+    "chi1~U[0,2pi)",
+    "chi2~U[0,2pi)",
+    "nu"
+   ],
+   "P": 6
+  },
+  "worst_newton_residual": 1.1887199634191715e-12,
+  "gen_seconds": 40.74656009674072,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "D": {
+  "tag": "D",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.9985398810058823,
+   0.9995642700606163,
+   0.9999441323618347
+  ],
+  "pod16": {
+   "floor_all": 0.020361907552119033,
+   "floor_worst_evolved": 0.028538439471840333,
+   "floor_t0": 0.02290252929379874,
+   "floor_evolved": 0.0202916886859918,
+   "per_time": [
+    0.0229,
+    0.0235,
+    0.0204,
+    0.0179,
+    0.0178,
+    0.0245
+   ],
+   "own_norm_all": 0.02724864440937859
+  },
+  "pod32": {
+   "floor_all": 0.009051656353771063,
+   "floor_worst_evolved": 0.015818616896613163,
+   "floor_t0": 0.008466780269792987,
+   "floor_evolved": 0.009233911776513802,
+   "per_time": [
+    0.0085,
+    0.0071,
+    0.0091,
+    0.0092,
+    0.0103,
+    0.0151
+   ],
+   "own_norm_all": 0.011529856113927752
+  },
+  "pod64": {
+   "floor_all": 0.003769667803698187,
+   "floor_worst_evolved": 0.008500696528551791,
+   "floor_t0": 0.003494421654406816,
+   "floor_evolved": 0.003935856160603128,
+   "per_time": [
+    0.0035,
+    0.0027,
+    0.0039,
+    0.0052,
+    0.0047,
+    0.0085
+   ],
+   "own_norm_all": 0.004499861719429531
+  },
+  "coverage": {
+   "same_time_all": 0.0378031273874813,
+   "same_time_t0": 0.025526937992734727,
+   "same_time_evolved": 0.04125959575493572,
+   "per_time": [
+    0.0255,
+    0.0413,
+    0.0391,
+    0.041,
+    0.0421,
+    0.0466
+   ],
+   "any_time_all": 0.03028576076496866,
+   "same_time_own_norm": 0.05085636365570921
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.9303,
+   0.875,
+   0.8275,
+   0.7865,
+   0.7505
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.7637,
+   0.6441,
+   0.568,
+   0.5139,
+   0.4725
+  ],
+  "norm_ratio_T_median": 0.6873754892944699,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.15734783625490387,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.009234360621422305,
+   "coverage_same_time_all": 0.017073015250697807
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": true,
+   "both": false,
+   "floor_worst_pass": false
+  },
+  "meta": {
+   "T": 1.0,
+   "dt": 0.002,
+   "nsteps": 500,
+   "out_every": 20,
+   "forced": false,
+   "cols": [
+    "delta~U[0.03,0.06]",
+    "eps1~logU[0.02,0.1]",
+    "chi1~U[0,2pi)",
+    "r=eps2/eps1~U[0,0.5]",
+    "chi2~U[0,2pi)",
+    "nu"
+   ],
+   "P": 6
+  },
+  "worst_newton_residual": 1.4551156922739378e-16,
+  "gen_seconds": 27.384235620498657,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ },
+ "E": {
+  "tag": "E",
+  "ntr": 128,
+  "ndev": 32,
+  "n_train_states": 3328,
+  "pod_energy_16_32_64": [
+   0.9822942009450014,
+   0.9934617045122335,
+   0.9984212436766589
+  ],
+  "pod16": {
+   "floor_all": 0.0775606423960795,
+   "floor_worst_evolved": 0.13289982413625706,
+   "floor_t0": 0.021039976478225163,
+   "floor_evolved": 0.09200647134755754,
+   "per_time": [
+    0.021,
+    0.0548,
+    0.117,
+    0.1329,
+    0.1175,
+    0.1107
+   ],
+   "own_norm_all": 0.08885713383718843
+  },
+  "pod32": {
+   "floor_all": 0.04123403726892784,
+   "floor_worst_evolved": 0.09024876272412254,
+   "floor_t0": 0.0109700620415026,
+   "floor_evolved": 0.05770721521869596,
+   "per_time": [
+    0.011,
+    0.0283,
+    0.0714,
+    0.0878,
+    0.0797,
+    0.0588
+   ],
+   "own_norm_all": 0.0479611244327608
+  },
+  "pod64": {
+   "floor_all": 0.018312517682103728,
+   "floor_worst_evolved": 0.056011206249630394,
+   "floor_t0": 0.005426876874030085,
+   "floor_evolved": 0.029167810637147858,
+   "per_time": [
+    0.0054,
+    0.0127,
+    0.0392,
+    0.0552,
+    0.0527,
+    0.0376
+   ],
+   "own_norm_all": 0.022075069423561175
+  },
+  "coverage": {
+   "same_time_all": 0.4972392339795665,
+   "same_time_t0": 0.536848281017287,
+   "same_time_evolved": 0.4807914250987997,
+   "per_time": [
+    0.5368,
+    0.5379,
+    0.5215,
+    0.5078,
+    0.4605,
+    0.4212
+   ],
+   "any_time_all": 0.4444240088953298,
+   "same_time_own_norm": 0.5576668904947382
+  },
+  "energy_ratio_per_time_median": [
+   1.0,
+   0.9348,
+   0.8748,
+   0.8204,
+   0.7712,
+   0.7266
+  ],
+  "enstrophy_ratio_per_time_median": [
+   1.0,
+   0.9272,
+   0.8561,
+   0.7852,
+   0.7186,
+   0.6638
+  ],
+  "norm_ratio_T_median": 0.8147631186914079,
+  "newton_per_step": {
+   "mean": 2.0,
+   "max": 2,
+   "frac_gt2": 0.0
+  },
+  "cfl": 0.2593732561323568,
+  "aligned_not_preregistered": {
+   "pod16_floor_all": 0.04166549020574006,
+   "coverage_same_time_all": 0.14742117628949203
+  },
+  "verdict": {
+   "floor_pass": false,
+   "coverage_pass": false,
+   "both": false,
+   "floor_worst_pass": false
+  },
+  "meta": {
+   "T": 1.0,
+   "dt": 0.002,
+   "nsteps": 500,
+   "out_every": 20,
+   "forced": false,
+   "cols": [
+    "a1..a3",
+    "b1..b3",
+    "nu"
+   ],
+   "P": 7
+  },
+  "worst_newton_residual": 3.0193778176028906e-16,
+  "gen_seconds": 29.494022369384766,
+  "seeds": [
+   20260917,
+   20260918
+  ]
+ }
+}

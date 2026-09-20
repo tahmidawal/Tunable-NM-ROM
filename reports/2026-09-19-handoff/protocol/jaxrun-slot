@@ -1,0 +1,17 @@
+#!/bin/bash
+# jaxrun-slot: take one of THREE shared local-GPU slots (all agents share these locks), run the command, release.
+# Usage: source /etc/profile.d/jax-mem.sh; JAX_DEFAULT_MATMUL_PRECISION=highest /path/jaxrun-slot jaxrun /home/tahmid/Dev/.venv/bin/python script.py ...
+while true; do
+  for i in 1 2 3; do
+    exec {fd}>"/tmp/claude-jaxrun-slot-$i.lock"
+    if flock -n "$fd"; then
+      echo "[jaxrun-slot] slot $i acquired at $(date +%H:%M:%S)" >&2
+      "$@"; rc=$?
+      flock -u "$fd"; exec {fd}>&-
+      echo "[jaxrun-slot] slot $i released rc=$rc" >&2
+      exit $rc
+    fi
+    exec {fd}>&-
+  done
+  sleep 20
+done

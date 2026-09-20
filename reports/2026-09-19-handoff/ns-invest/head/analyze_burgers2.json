@@ -1,0 +1,123 @@
+{
+ "K": 16,
+ "R": 512,
+ "n_train_states": 131072,
+ "n_traj": 4608,
+ "n_test_states": 408,
+ "bank_floor_test_median_n0": 0.00010762914570857674,
+ "bank_floor_test_median_own": 0.00014698036571352978,
+ "train_recon_median_own_norm": 0.006136919299217154,
+ "R2_params_to_codes_deg1_cv": 0.5445885237176097,
+ "R2_params_to_codes_deg2_cv": 0.6932035996502748,
+ "R2_params_to_codes_deg3_cv": 0.7532610396839161,
+ "R2_codes_to_params_deg1_cv": 0.521582212641228,
+ "R2_codes_to_params_deg2_cv": 0.73254893143221,
+ "Ztr_sv_norm": [
+  1.0,
+  0.8624,
+  0.5993,
+  0.4603,
+  0.3948,
+  0.3551,
+  0.3345,
+  0.3014,
+  0.2866,
+  0.2843,
+  0.2715,
+  0.2565,
+  0.2543,
+  0.2493,
+  0.2366,
+  0.2246
+ ],
+ "Ztr_participation_ratio": 6.09594269721141,
+ "code_step_median": 0.22681534304315995,
+ "code_nn_other_traj_median": 0.30591686840879917,
+ "code_norm_median": 1.1355992444362377,
+ "coverage": {
+  "nn_any_time_median": 0.08638435966291466,
+  "nn_same_time_median": 0.1379058003769682,
+  "nn_same_time_t0_median": 0.2020008515200318,
+  "nn_same_time_tlate_median": 0.10769453556516792,
+  "seconds": 64.15423583984375
+ },
+ "podK_inside_bank_test_median": {
+  "16": 0.0507486601363798,
+  "32": 0.019219350101533885,
+  "64": 0.005527522394067379
+ },
+ "head_oracle_test_median_n0": 0.0037466750641119476,
+ "head_oracle_t0_median": 0.017695051932640794,
+ "oracle_states": 102,
+ "oracle_protocol": "1 nearest-code start, 60 LM iterations, every 4th test state (light)",
+ "head_oracle_tlate_median": 0.0027002219188286547,
+ "ratio_lin16_over_oracle": 13.544985692109506,
+ "oracle_seconds": 488.83709692955017,
+ "mahalanobis_train_q50_q95_q99": [
+  3.39,
+  6.69,
+  8.43
+ ],
+ "mahalanobis_oracle_q50_q95_max": [
+  2.99,
+  4.36,
+  6.92
+ ],
+ "oracle_nn_train_code_median": 0.291102019154133,
+ "oracle_nn_over_train_nn_other": 0.9515723035093672,
+ "R2_residual_vs_params_deg1_cv8": -1.6387289272245171,
+ "R2_residual_vs_params_deg2_cv8": -2.348381129882052,
+ "jac_local_dim_median": {
+  "0.1": 5.5,
+  "0.01": 13.0
+ },
+ "param_regression": {
+  "poly_deg1": {
+   "median": 0.4217192182320443,
+   "lam": 1e-08,
+   "t0": 0.7918421814726962,
+   "tlate": 0.3652976293195633
+  },
+  "poly_deg2": {
+   "median": 0.2878022554956345,
+   "lam": 0.0001,
+   "t0": 0.6625861541793541,
+   "tlate": 0.2258445392797547
+  },
+  "poly_deg3": {
+   "median": 0.20714471727300676,
+   "lam": 0.0001,
+   "t0": 0.5439107766988198,
+   "tlate": 0.17376619891392156
+  },
+  "krr_rbf_6000_states": {
+   "median": 0.060502653647702576,
+   "gamma": 0.5,
+   "lam": 0.01
+  },
+  "learning_curve": {
+   "72": {
+    "poly3": 0.4192884966921515,
+    "krr": 0.24621161368978062,
+    "n_states": 2052
+   },
+   "144": {
+    "poly3": 0.25918049139072885,
+    "krr": 0.14352499645502315,
+    "n_states": 4075
+   },
+   "288": {
+    "poly3": 0.22838635976244137,
+    "krr": 0.11433404386498536,
+    "n_states": 8170
+   },
+   "576": {
+    "poly3": 0.20831171477208982,
+    "krr": 0.07417632616546846,
+    "n_states": 16420
+   }
+  }
+ },
+ "quadratic_manifold_K16_linear_encoder_median": 0.02754665120108983,
+ "cubic_manifold_K16_linear_encoder_median": 0.012834182561330336
+}

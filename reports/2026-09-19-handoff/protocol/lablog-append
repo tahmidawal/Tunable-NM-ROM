@@ -1,0 +1,13 @@
+#!/bin/bash
+# lablog-append <entry-file>: atomically append a prepared entry to the canonical LAB-LOG.md on main and commit it there.
+# Nine agents share the log; this serialises them. Never edit LAB-LOG.md any other way.
+set -euo pipefail
+ROOT=/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude
+ENTRY="$1"; test -s "$ENTRY"
+exec 9>/tmp/claude-lablog.lock; flock -w 1800 9
+printf '\n' >> "$ROOT/LAB-LOG.md"; cat "$ENTRY" >> "$ROOT/LAB-LOG.md"
+git -C "$ROOT" add LAB-LOG.md
+git -C "$ROOT" commit -q -m "LAB-LOG: $(head -1 "$ENTRY" | sed 's/^#* *//' | cut -c1-70)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Pigf6iVeGjo2XHb1pgrCVn" && echo "appended and committed"

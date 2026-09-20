@@ -4,11 +4,11 @@
   "panels": [
     {
       "pde": "Burgers 3D",
-      "attempt": "b3d003",
+      "attempt": "b3d004",
       "mesh": 33,
       "mesh_label": "33 nodes per axis",
-      "slug": "burgers3d-b3d003-n33",
-      "qualification": "Audited development data, same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate the trained time knots to the common output times. Physical refinement covers only two cases; this panel supports same-grid comparisons only.",
+      "slug": "burgers3d-b3d004-n33",
+      "qualification": "Audited development data with all four operator families and the same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate trained time knots to the common output times. The newer operator schedules are still under evaluation. Physical refinement covers only two cases; this panel supports same-grid comparisons only.",
       "methods": [
         {
           "id": "rom_q0",
@@ -80,6 +80,16 @@
           "series": "U-Net"
         },
         {
+          "id": "deeponet3d",
+          "label": "DeepONet, time interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d",
+          "label": "Transolver, time interpolation",
+          "series": "Transolver"
+        },
+        {
           "id": "fom_nt1e-02_lt5e-01",
           "label": "FOM n1e-02, l5e-01",
           "series": "FOM"
@@ -110,44 +120,44 @@
           "series": "FOM"
         }
       ],
-      "omissions": "All timed method arms in this attempt are included. Representation fits and the two-case refinement screen are retained in the complete source records. FOM labels identify nonlinear (n) and inner linear (l) tolerances."
+      "omissions": "All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances."
     },
     {
       "pde": "Heat 3D",
-      "attempt": "tune02",
+      "attempt": "extra03",
       "mesh": 64,
       "mesh_label": "64 intervals per axis",
-      "slug": "heat3d-tune02-n64",
-      "qualification": "Audited development data. Errors use the current reference-field norm and exclude time zero. Some initial fits miss their stopping budget; evolved solves are stationary. Direct operator transfer and all quadrature certificates fail. Native-grid interpolation is charged separately.",
+      "slug": "heat3d-extra03-n64",
+      "qualification": "Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.",
       "methods": [
         {
-          "id": "nmrom_K16_q0_dense",
-          "label": "NM-ROM K16, q0",
-          "series": "NM-ROM K16",
+          "id": "nmrom_K32_q0_dense",
+          "label": "NM-ROM K32, q0",
+          "series": "NM-ROM K32",
           "rank": 0
         },
         {
-          "id": "nmrom_K16_q8_dense",
-          "label": "NM-ROM K16, q8",
-          "series": "NM-ROM K16",
+          "id": "nmrom_K32_q8_dense",
+          "label": "NM-ROM K32, q8",
+          "series": "NM-ROM K32",
           "rank": 8
         },
         {
-          "id": "nmrom_K16_q32_dense",
-          "label": "NM-ROM K16, q32",
-          "series": "NM-ROM K16",
+          "id": "nmrom_K32_q32_dense",
+          "label": "NM-ROM K32, q32",
+          "series": "NM-ROM K32",
           "rank": 32
         },
         {
-          "id": "nmrom_K16_q64_dense",
-          "label": "NM-ROM K16, q64",
-          "series": "NM-ROM K16",
+          "id": "nmrom_K32_q64_dense",
+          "label": "NM-ROM K32, q64",
+          "series": "NM-ROM K32",
           "rank": 64
         },
         {
-          "id": "nmrom_K16_q96_dense",
-          "label": "NM-ROM K16, q96",
-          "series": "NM-ROM K16",
+          "id": "nmrom_K32_q96_dense",
+          "label": "NM-ROM K32, q96",
+          "series": "NM-ROM K32",
           "rank": 96
         },
         {
@@ -161,10 +171,10 @@
           "series": "Full learned bank"
         },
         {
-          "id": "pod16_exact",
-          "label": "POD16",
+          "id": "pod32_exact",
+          "label": "POD32",
           "series": "POD",
-          "rank": 16
+          "rank": 32
         },
         {
           "id": "pod128_exact",
@@ -193,12 +203,32 @@
           "series": "U-Net"
         },
         {
+          "id": "deeponet3d_r128_w16",
+          "label": "DeepONet, direct transfer",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_r128_w16_native_grid_interpolated",
+          "label": "DeepONet, native + interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_w48_s32",
+          "label": "Transolver, direct transfer",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_w48_s32_native_grid_interpolated",
+          "label": "Transolver, native + interpolation",
+          "series": "Transolver"
+        },
+        {
           "id": "dst_exact",
           "label": "Direct DST",
           "series": "FOM"
         }
       ],
-      "omissions": "The complete audited report retains the K8 ladder, intermediate POD ranks, time-step and failed sampled-quadrature diagnostics."
+      "omissions": "The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted."
     },
     {
       "pde": "Poisson 3D",

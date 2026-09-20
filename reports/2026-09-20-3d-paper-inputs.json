@@ -81,6 +81,39 @@
       "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/result.json",
       "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/audit-local.json",
       "qualification": "Audited development comparison with all four operator families and matched training membership. All static weights reside on the GPU during setup. The dense K16 correction ladder is stationary and improves accuracy, but stronger POD and unrestricted linear-bank controls remain faster and more accurate. DeepONet/Transolver training still improves near the declared budget; longer common schedules and independent seeds are running. Native-grid interpolation and failed direct mesh-transfer variants remain distinct; fixed FNO padding changes the physical padded domain and a corrected-domain control is pending. Failed quadrature certificates remain diagnostics. Final cases are unopened."
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "adapter": "heat",
+      "result": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/audit-local.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/audit-panel.json"
+      ],
+      "qualification": "Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened."
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "adapter": "burgers",
+      "result": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/audit-local.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/audit-stationarity-local.json"
+      ],
+      "qualification": "Audited development comparison adding DeepONet and Transolver to the matched frozen-bank/head panel. The recorded training budgets are finite and both newer operators receive longer fresh schedules next. Static checkpoint reuse is hash-pinned. Every recorded reduced solve is stationary and sampled NumPy weak-gradient checks pass. Independent initialization, expanded development inputs, cheaper full-order controls and final evaluation are pending."
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004-head64",
+      "adapter": "burgers",
+      "result": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/result.json",
+      "audit": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/audit-local.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/audit-stationarity-local.json"
+      ],
+      "qualification": "Audited larger-head development comparison on exactly the same learned spatial bank, training membership and GPU allocation as b3d004. The correction endpoint reaches the unrestricted bank solution, while the compressed head retains a substantial held-out gap. All recorded reduced solves are stationary, with independently sampled Jacobian/gradient and transversality checks. Operators were measured separately in the main b3d004 record on this same allocation, not remeasured here. No full-cohort physical refinement or final acceptance is claimed."
     }
   ]
 }

@@ -36,7 +36,7 @@ def setup(entry, data, normalized):
                     outputs_per_query=cfg["steps"]+1, components=1,
                     bank_rank=cfg["training"]["rank"],
                     latent_dimensions=[cfg["training"]["latent_dimension"]],
-                    weak_tests=data["actual_test_modes"], q=cfg["q_ladder"],
+                    weak_tests=data["actual_test_modes"], requested_weak_tests=cfg["test_modes"], q=cfg["q_ladder"],
                     training_mesh=cfg["nodes"], mesh_convention="nodes per axis")
     if entry["adapter"] == "ns_trajectory":
         rows = read(ROOT / entry["invocations"])
@@ -45,7 +45,7 @@ def setup(entry, data, normalized):
         return dict(common, training_cases=cfg["train_cases"],
                     training_fields_per_case=outputs, outputs_per_query=outputs,
                     components=3, bank_rank=data["selected_rank"],
-                    latent_dimensions=[cfg["k"]], weak_tests=cfg["test_modes"],
+                    latent_dimensions=[cfg["k"]], weak_tests=cfg["test_modes"], requested_weak_tests=cfg["test_modes"],
                     q=cfg["q_values"], training_mesh=cfg["n"],
                     mesh_convention="periodic points per axis")
     assert entry["adapter"] in {"heat", "poisson"}
@@ -53,7 +53,8 @@ def setup(entry, data, normalized):
     return dict(common, training_cases=cfg["train_count"],
                 training_fields_per_case=outputs, outputs_per_query=outputs,
                 components=1, bank_rank=cfg["bank_rank"],
-                latent_dimensions=cfg["latent_dimensions"], weak_tests=cfg["weak_tests"],
+                latent_dimensions=sorted({head["k"] for head in data["heads"]}),
+                weak_tests=cfg["weak_tests"], requested_weak_tests=cfg["weak_tests"],
                 q=cfg["q_ladder"], training_mesh=cfg["train_intervals"],
                 mesh_convention="intervals per axis")
 
@@ -106,7 +107,9 @@ def main():
     report += ["", "A field means a complete spatial state; a vector state includes all velocity components. "
         "Time-zero fields are included in the counts when requested. Operators may pass through the supplied "
         "initial field and interpolate trained output times, as specified by the corresponding panel. "
-        "The counts describe training membership, not statistically independent state samples.", "",
+        "The counts describe training membership, not statistically independent state samples. "
+        "Weak-test counts use the actual basis size; Burgers completes the degenerate Laplacian "
+        "eigenvalue shell at the cutoff to preserve coordinate symmetry. The JSON also retains the requested count.", "",
         "| PDE | Operator | Parameters | Requested updates | Completed updates | Selected update | Batch | Initial learning rate | Training seed | Exit |",
         "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |"]
     for r in operators:

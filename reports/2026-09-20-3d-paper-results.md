@@ -493,6 +493,162 @@ Errors use the reference solution norm. There is one stationary output field; ev
 
 A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
 
+## Heat 3D — extra03
+
+**Provisional:** Audited development comparison with all four operator families and identical training membership. Larger initial-fit budgets resolve the earlier stopping failures; every recorded reduced fit and evolved solve is stationary. The larger head improves the high-correction endpoint while a substantial held-out head gap remains. POD, unrestricted linear-bank and native FNO/U-Net controls remain stronger. DeepONet is still inaccurate at its first training budget, and longer operator training plus matched head-initialization controls are in preparation. Failed direct transfer variants remain explicit, and prior failed quadrature certificates are not promoted. Final cases remain unopened.
+
+Source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`; job `3995709`; GPU `NVIDIA A100-PCIE-40GB`. [Invocation data](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/audit-local.json).
+
+Errors use each reference field's current norm. Evolved errors exclude the initial state. Total timing includes host transfers; GPU timing includes initialization, evolution and dense output. Mesh size counts intervals per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `deeponet3d_r128_w16` | 16 | 7.1651 | 21.7692 | 21.7692 | 0.0000 | 21.5236 | 3.889 | 5.107 | 0 / 0 | 0 / 48 | development |
+| 32 | `dst_exact` | 16 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.5119 | 1.428 | 2.816 | 0 / 0 | 0 / 48 | development |
+| 32 | `fno3d_w16_m6` | 16 | 0.2449 | 0.3947 | 0.3947 | 0.0000 | 0.6332 | 10.638 | 11.818 | 0 / 0 | 0 / 48 | development |
+| 32 | `linear_bank_cn` | 16 | 0.2591 | 1.3315 | 3.0636 | 3.0636 | 1.3507 | 0.641 | 2.939 | 0 / 0 | 4 / 48 | development |
+| 32 | `linear_bank_exact` | 16 | 0.2549 | 1.3277 | 3.0636 | 3.0636 | 1.3655 | 0.628 | 2.880 | 0 / 0 | 8 / 48 | development |
+| 32 | `linear_bank_galerkin_exact` | 16 | 0.2568 | 1.3324 | 3.0588 | 3.0588 | 1.3607 | 0.187 | 2.429 | 0 / 0 | 6 / 48 | development |
+| 32 | `nmrom_K16_q0_dense` | 16 | 1.0782 | 5.8875 | 11.0118 | 11.0118 | 5.8138 | 27.044 | 28.212 | 0 / 0 | 6 / 48 | development |
+| 32 | `nmrom_K16_q32_dense` | 16 | 0.8696 | 4.9327 | 9.2331 | 9.2331 | 4.8606 | 30.205 | 31.403 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q64_dense` | 16 | 0.5815 | 4.0309 | 7.5745 | 7.5745 | 3.9834 | 31.477 | 32.749 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q8_dense` | 16 | 1.0381 | 5.3133 | 10.2925 | 10.2925 | 5.2396 | 28.285 | 29.423 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q96_dense` | 16 | 0.3673 | 2.9899 | 5.4636 | 5.4636 | 2.9665 | 38.169 | 39.275 | 0 / 0 | 3 / 48 | development |
+| 32 | `nmrom_K16_q96_dense_dt_half` | 16 | 0.3648 | 2.9260 | 5.4636 | 5.4636 | 2.9091 | 56.154 | 57.420 | 0 / 0 | 3 / 48 | development |
+| 32 | `nmrom_K32_q0_dense` | 16 | 1.1486 | 6.0134 | 10.6852 | 10.6852 | 5.9374 | 34.771 | 35.907 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K32_q32_dense` | 16 | 0.8215 | 4.4533 | 8.1773 | 8.1773 | 4.3894 | 38.699 | 39.927 | 0 / 0 | 2 / 48 | development |
+| 32 | `nmrom_K32_q64_dense` | 16 | 0.5582 | 3.2137 | 5.9582 | 5.9582 | 3.1793 | 48.712 | 49.977 | 0 / 0 | 4 / 48 | development |
+| 32 | `nmrom_K32_q8_dense` | 16 | 1.0209 | 5.2288 | 9.3616 | 9.3616 | 5.1613 | 35.713 | 36.871 | 0 / 0 | 8 / 48 | development |
+| 32 | `nmrom_K32_q96_dense` | 16 | 0.3991 | 1.3791 | 3.1001 | 3.1001 | 1.3922 | 114.343 | 115.557 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K32_q96_dense_dt_half` | 16 | 0.3961 | 1.3713 | 3.1001 | 3.1001 | 1.3996 | 147.204 | 148.455 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q0_dense` | 16 | 1.3933 | 6.1977 | 11.0875 | 11.0875 | 6.1354 | 18.938 | 20.062 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q32_dense` | 16 | 0.9327 | 4.9721 | 9.3116 | 9.3116 | 4.9193 | 22.023 | 23.203 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q64_dense` | 16 | 0.6969 | 3.7752 | 7.2769 | 7.2769 | 3.7427 | 21.872 | 23.059 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q8_dense` | 16 | 1.1850 | 6.0419 | 10.8848 | 10.8848 | 5.9761 | 19.733 | 20.981 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K8_q96_dense` | 16 | 0.4060 | 2.2781 | 4.6849 | 4.6849 | 2.2724 | 23.916 | 25.156 | 0 / 0 | 3 / 48 | development |
+| 32 | `nmrom_K8_q96_dense_dt_half` | 16 | 0.4053 | 2.2742 | 4.6849 | 4.6849 | 2.2770 | 37.631 | 38.780 | 0 / 0 | 3 / 48 | development |
+| 32 | `pod104_exact` | 16 | 0.2697 | 1.6482 | 3.3966 | 3.3966 | 1.6743 | 0.185 | 2.539 | 0 / 0 | 4 / 48 | development |
+| 32 | `pod112_exact` | 16 | 0.2097 | 1.3665 | 3.0837 | 3.0837 | 1.3938 | 0.182 | 2.446 | 0 / 0 | 7 / 48 | development |
+| 32 | `pod128_exact` | 16 | 0.1431 | 1.2441 | 2.6741 | 2.6741 | 1.2806 | 0.189 | 2.485 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod16_exact` | 16 | 8.6384 | 25.2986 | 36.4964 | 36.4964 | 25.1430 | 0.143 | 2.425 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod24_exact` | 16 | 5.5732 | 11.6555 | 19.6057 | 19.6057 | 11.6993 | 0.148 | 2.491 | 0 / 0 | 6 / 48 | development |
+| 32 | `pod32_exact` | 16 | 3.0942 | 9.4366 | 16.6338 | 16.6338 | 9.3574 | 0.161 | 2.502 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod40_exact` | 16 | 2.2006 | 7.5846 | 13.3221 | 13.3221 | 7.5508 | 0.156 | 2.426 | 0 / 0 | 4 / 48 | development |
+| 32 | `pod48_exact` | 16 | 1.3691 | 4.8625 | 9.8946 | 9.8946 | 4.8286 | 0.158 | 2.534 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod64_exact` | 16 | 0.8393 | 3.5288 | 6.8345 | 6.8345 | 3.5194 | 0.162 | 2.463 | 0 / 0 | 7 / 48 | development |
+| 32 | `pod72_exact` | 16 | 0.6934 | 3.2741 | 6.1329 | 6.1329 | 3.2533 | 0.164 | 2.392 | 0 / 0 | 6 / 48 | development |
+| 32 | `pod80_exact` | 16 | 0.4948 | 2.6899 | 5.4338 | 5.4338 | 2.6768 | 0.171 | 2.449 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod8_exact` | 16 | 19.9122 | 39.3251 | 50.6560 | 50.6560 | 39.1660 | 0.141 | 2.417 | 0 / 0 | 8 / 48 | development |
+| 32 | `pod96_exact` | 16 | 0.3322 | 1.7675 | 3.7157 | 3.7157 | 1.7851 | 0.178 | 2.432 | 0 / 0 | 8 / 48 | development |
+| 32 | `transolver3d_w48_s32` | 16 | 1.0619 | 1.4826 | 1.4826 | 0.0000 | 1.5419 | 6.282 | 7.527 | 0 / 0 | 0 / 48 | development |
+| 32 | `unet3d_w8` | 16 | 0.1697 | 0.3185 | 0.3185 | 0.0000 | 0.5321 | 4.373 | 5.490 | 0 / 0 | 0 / 48 | development |
+| 64 | `deeponet3d_r128_w16` | 16 | 33.8829 | 52.5118 | 52.5118 | 0.0000 | 52.4733 | 11.270 | 16.165 | 0 / 0 | 0 / 48 | development |
+| 64 | `deeponet3d_r128_w16_native_grid_interpolated` | 16 | 7.0168 | 21.7903 | 21.7903 | 0.0000 | 21.7279 | 4.029 | 8.881 | 0 / 0 | 0 / 48 | development |
+| 64 | `dst_exact` | 16 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.1273 | 1.591 | 6.717 | 0 / 0 | 0 / 48 | development |
+| 64 | `fno3d_w16_m6` | 16 | 15.1234 | 17.6641 | 17.6641 | 0.0000 | 17.7688 | 16.246 | 21.129 | 0 / 0 | 0 / 48 | development |
+| 64 | `fno3d_w16_m6_native_grid_interpolated` | 16 | 0.7669 | 0.9891 | 0.9891 | 0.0000 | 0.9391 | 10.681 | 15.538 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_cn` | 16 | 0.2562 | 1.3155 | 3.0639 | 3.0639 | 1.3079 | 1.452 | 7.166 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_exact` | 16 | 0.2542 | 1.3113 | 3.0639 | 3.0639 | 1.3087 | 1.495 | 7.155 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_galerkin_exact` | 16 | 0.2563 | 1.3166 | 3.0591 | 3.0591 | 1.3115 | 0.564 | 6.273 | 0 / 0 | 1 / 48 | development |
+| 64 | `nmrom_K16_q0_dense` | 16 | 1.0804 | 5.8448 | 11.0119 | 11.0119 | 5.8243 | 28.606 | 33.459 | 0 / 0 | 6 / 48 | development |
+| 64 | `nmrom_K16_q32_dense` | 16 | 0.8751 | 4.8851 | 9.2332 | 9.2332 | 4.8647 | 31.391 | 36.263 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q64_dense` | 16 | 0.5892 | 3.9929 | 7.5747 | 7.5747 | 3.9778 | 33.687 | 38.640 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q8_dense` | 16 | 1.0426 | 5.2535 | 10.2925 | 10.2925 | 5.2332 | 29.963 | 34.782 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q96_dense` | 16 | 0.3697 | 2.9628 | 5.4639 | 5.4639 | 2.9521 | 40.919 | 45.855 | 0 / 0 | 2 / 48 | development |
+| 64 | `nmrom_K16_q96_dense_dt_half` | 16 | 0.3670 | 2.8982 | 5.4639 | 5.4639 | 2.8892 | 64.886 | 69.897 | 0 / 0 | 2 / 48 | development |
+| 64 | `nmrom_K32_q0_dense` | 16 | 1.1494 | 5.9683 | 10.6852 | 10.6852 | 5.9471 | 37.143 | 42.045 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K32_q32_dense` | 16 | 0.8224 | 4.4151 | 8.1774 | 8.1774 | 4.3959 | 40.445 | 45.528 | 0 / 0 | 1 / 48 | development |
+| 64 | `nmrom_K32_q64_dense` | 16 | 0.5591 | 3.1815 | 5.9583 | 5.9583 | 3.1683 | 52.322 | 57.222 | 0 / 0 | 5 / 48 | development |
+| 64 | `nmrom_K32_q8_dense` | 16 | 1.0223 | 5.1921 | 9.3616 | 9.3616 | 5.1727 | 40.126 | 45.088 | 0 / 0 | 5 / 48 | development |
+| 64 | `nmrom_K32_q96_dense` | 16 | 0.3903 | 1.3555 | 3.1004 | 3.1004 | 1.3466 | 113.590 | 118.610 | 0 / 0 | 1 / 48 | development |
+| 64 | `nmrom_K32_q96_dense_dt_half` | 16 | 0.3869 | 1.3588 | 3.1004 | 3.1004 | 1.3538 | 154.194 | 159.203 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q0_dense` | 16 | 1.3768 | 6.1474 | 11.0875 | 11.0875 | 6.1300 | 20.982 | 26.005 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q32_dense` | 16 | 0.9234 | 4.9261 | 9.3117 | 9.3117 | 4.9105 | 23.500 | 28.484 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q64_dense` | 16 | 0.6919 | 3.7381 | 7.2770 | 7.2770 | 3.7263 | 23.519 | 28.523 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q8_dense` | 16 | 1.1719 | 5.9918 | 10.8848 | 10.8848 | 5.9735 | 22.046 | 26.908 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K8_q96_dense` | 16 | 0.4037 | 2.2625 | 4.6851 | 4.6851 | 2.2541 | 24.658 | 29.569 | 0 / 0 | 3 / 48 | development |
+| 64 | `nmrom_K8_q96_dense_dt_half` | 16 | 0.4030 | 2.2582 | 4.6851 | 4.6851 | 2.2520 | 40.888 | 45.769 | 0 / 0 | 2 / 48 | development |
+| 64 | `pod104_exact` | 16 | 0.2691 | 1.6623 | 3.3620 | 3.3620 | 1.6589 | 0.533 | 6.117 | 0 / 0 | 3 / 48 | development |
+| 64 | `pod112_exact` | 16 | 0.2090 | 1.3512 | 3.0908 | 3.0908 | 1.3465 | 0.553 | 6.068 | 0 / 0 | 6 / 48 | development |
+| 64 | `pod128_exact` | 16 | 0.1414 | 1.2338 | 2.6795 | 2.6795 | 1.2298 | 0.565 | 6.149 | 0 / 0 | 0 / 48 | development |
+| 64 | `pod16_exact` | 16 | 8.6633 | 25.1877 | 36.5082 | 36.5082 | 25.1487 | 0.244 | 5.904 | 0 / 0 | 10 / 48 | development |
+| 64 | `pod24_exact` | 16 | 5.5947 | 11.7352 | 19.6233 | 19.6233 | 11.7442 | 0.298 | 5.906 | 0 / 0 | 13 / 48 | development |
+| 64 | `pod32_exact` | 16 | 3.0811 | 9.3730 | 16.6440 | 16.6440 | 9.3524 | 0.311 | 6.035 | 0 / 0 | 9 / 48 | development |
+| 64 | `pod40_exact` | 16 | 2.1906 | 7.5604 | 13.4307 | 13.4307 | 7.5504 | 0.345 | 5.891 | 0 / 0 | 12 / 48 | development |
+| 64 | `pod48_exact` | 16 | 1.3733 | 4.8685 | 9.9616 | 9.9616 | 4.8571 | 0.354 | 6.025 | 0 / 0 | 11 / 48 | development |
+| 64 | `pod64_exact` | 16 | 0.8208 | 3.5334 | 6.8850 | 6.8850 | 3.5268 | 0.395 | 6.081 | 0 / 0 | 7 / 48 | development |
+| 64 | `pod72_exact` | 16 | 0.6842 | 3.2199 | 6.1130 | 6.1130 | 3.2108 | 0.472 | 6.044 | 0 / 0 | 6 / 48 | development |
+| 64 | `pod80_exact` | 16 | 0.4886 | 2.6697 | 5.4395 | 5.4395 | 2.6607 | 0.462 | 6.064 | 0 / 0 | 7 / 48 | development |
+| 64 | `pod8_exact` | 16 | 20.0080 | 39.1939 | 50.6608 | 50.6608 | 39.1541 | 0.210 | 5.855 | 0 / 0 | 6 / 48 | development |
+| 64 | `pod96_exact` | 16 | 0.3259 | 1.7569 | 3.7168 | 3.7168 | 1.7521 | 0.499 | 6.156 | 0 / 0 | 3 / 48 | development |
+| 64 | `transolver3d_w48_s32` | 16 | 19.8616 | 25.2954 | 25.2954 | 0.0000 | 25.2677 | 20.828 | 25.703 | 0 / 0 | 0 / 48 | development |
+| 64 | `transolver3d_w48_s32_native_grid_interpolated` | 16 | 0.9475 | 1.2766 | 1.2766 | 0.0000 | 1.2793 | 6.854 | 11.721 | 0 / 0 | 0 / 48 | development |
+| 64 | `unet3d_w8` | 16 | 75.7115 | 92.6756 | 92.6756 | 0.0000 | 92.8275 | 10.960 | 15.834 | 0 / 0 | 0 / 48 | development |
+| 64 | `unet3d_w8_native_grid_interpolated` | 16 | 0.7512 | 0.9468 | 0.9468 | 0.0000 | 0.8996 | 4.240 | 9.116 | 0 / 0 | 0 / 48 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
+## Burgers 3D — b3d004
+
+**Provisional:** Audited development comparison adding DeepONet and Transolver to the matched frozen-bank/head panel. The recorded training budgets are finite and both newer operators receive longer fresh schedules next. Static checkpoint reuse is hash-pinned. Every recorded reduced solve is stationary and sampled NumPy weak-gradient checks pass. Independent initialization, expanded development inputs, cheaper full-order controls and final evaluation are pending.
+
+Source `c026d56b83905293e71268c249b57324c7d01baf`; job `3995688`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/audit-local.json).
+
+Errors use the initial-field norm. The evolved error excludes the initial compression; all-times and initial errors are also shown. GPU timing begins with the dense input already on device and ends with every requested dense output on device. Host transfers are unmeasured in this attempt. Mesh size counts nodes per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 33 | `deeponet3d` | 8 | 7.9145 | 21.1988 | 21.1988 | 0.0000 | — | 2.534 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fno3d` | 8 | 1.6413 | 1.9979 | 1.9979 | 0.0000 | — | 5.862 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-02_lt5e-01` | 8 | 1.2739 | 1.6185 | 1.6185 | 0.0000 | — | 16.068 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-02_lt5e-03` | 8 | 0.0382 | 0.6543 | 0.6543 | 0.0000 | — | 17.940 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-03_lt5e-01` | 8 | 0.4692 | 0.5248 | 0.5248 | 0.0000 | — | 19.753 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt1e-06` | 8 | 0.0188 | 0.0207 | 0.0207 | 0.0000 | — | 37.394 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt5e-01` | 8 | 0.0267 | 0.0303 | 0.0303 | 0.0000 | — | 32.494 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-06_lt1e-01` | 8 | 0.0002 | 0.0003 | 0.0003 | 0.0000 | — | 48.156 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `free_R256` | 8 | 0.8437 | 2.4345 | 2.8901 | 2.8901 | — | 316.964 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_160` | 8 | 0.7675 | 2.5057 | 3.0153 | 3.0153 | — | 224.346 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_224` | 8 | 0.3988 | 1.2100 | 1.5306 | 1.5306 | — | 284.540 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_256` | 8 | 0.3292 | 1.0363 | 1.2631 | 1.2631 | — | 316.567 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_32` | 8 | 9.5224 | 22.6947 | 24.9424 | 24.9424 | — | 95.738 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_96` | 8 | 1.9855 | 5.5785 | 6.6983 | 6.6983 | — | 151.273 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q0` | 8 | 5.7071 | 10.8780 | 11.7177 | 11.7177 | — | 186.364 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q128` | 8 | 3.3258 | 6.6491 | 7.1187 | 7.1187 | — | 353.542 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q192` | 8 | 1.3600 | 3.4908 | 3.9087 | 3.9087 | — | 418.712 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q64` | 8 | 4.9359 | 8.9108 | 9.4908 | 9.4908 | — | 267.817 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `transolver3d` | 8 | 1.8700 | 3.7391 | 3.7391 | 0.0000 | — | 3.545 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `unet3d` | 8 | 1.6239 | 1.9129 | 1.9129 | 0.0000 | — | 2.212 | — | 0 / 0 | 0 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
+## Burgers 3D — b3d004-head64
+
+**Provisional:** Audited larger-head development comparison on exactly the same learned spatial bank, training membership and GPU allocation as b3d004. The correction endpoint reaches the unrestricted bank solution, while the compressed head retains a substantial held-out gap. All recorded reduced solves are stationary, with independently sampled Jacobian/gradient and transversality checks. Operators were measured separately in the main b3d004 record on this same allocation, not remeasured here. No full-cohort physical refinement or final acceptance is claimed.
+
+Source `c026d56b83905293e71268c249b57324c7d01baf`; job `3995688`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/result.json) and [independent audit](../worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/out/head64/audit-local.json).
+
+Errors use the initial-field norm. The evolved error excludes the initial compression; all-times and initial errors are also shown. GPU timing begins with the dense input already on device and ends with every requested dense output on device. Host transfers are unmeasured in this attempt. Mesh size counts nodes per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 33 | `fom_nt1e-02_lt5e-01` | 8 | 1.2739 | 1.6185 | 1.6185 | 0.0000 | — | 16.355 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-02_lt5e-03` | 8 | 0.0382 | 0.6543 | 0.6543 | 0.0000 | — | 18.485 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-03_lt5e-01` | 8 | 0.4692 | 0.5248 | 0.5248 | 0.0000 | — | 20.118 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt1e-06` | 8 | 0.0188 | 0.0207 | 0.0207 | 0.0000 | — | 37.846 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-04_lt5e-01` | 8 | 0.0267 | 0.0303 | 0.0303 | 0.0000 | — | 33.015 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `fom_nt1e-06_lt1e-01` | 8 | 0.0002 | 0.0003 | 0.0003 | 0.0000 | — | 49.690 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `free_R256` | 8 | 0.8437 | 2.4345 | 2.8901 | 2.8901 | — | 316.996 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_128` | 8 | 1.1931 | 3.2911 | 3.9585 | 3.9585 | — | 181.896 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_192` | 8 | 0.5316 | 1.5671 | 1.9458 | 1.9458 | — | 245.275 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_256` | 8 | 0.3292 | 1.0363 | 1.2631 | 1.2631 | — | 316.447 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `pod_64` | 8 | 3.6615 | 9.2416 | 10.8059 | 10.8059 | — | 124.724 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q0` | 8 | 2.6471 | 8.9875 | 9.6063 | 9.6063 | — | 225.324 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q128` | 8 | 1.9470 | 6.8452 | 7.3625 | 7.3625 | — | 377.360 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q192` | 8 | 0.8437 | 2.4345 | 2.8901 | 2.8901 | — | 391.488 | — | 0 / 0 | 0 / 24 | development |
+| 33 | `rom_q64` | 8 | 2.3985 | 8.2287 | 8.8661 | 8.8661 | — | 301.864 | — | 0 / 0 | 0 / 24 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
 ## Glossary
 
 - **NM-ROM / ROM:** a neural-manifold reduced model / a model solving for a smaller state.

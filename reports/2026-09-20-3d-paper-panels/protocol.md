@@ -7,18 +7,22 @@ The original run configuration and saved training record supply every numeric ce
 | PDE | Training cases | Fields / training case | Outputs / query | Components | Training grid | Bank R | Heads K | Weak tests M | Correction ranks q |
 | --- | ---: | ---: | ---: | ---: | --- | ---: | --- | ---: | --- |
 | Burgers 3D | 512 | 8 | 51 | 1 | 33 nodes per axis | 256 | 32 | 642 | 0, 64, 128, 192 |
-| Heat 3D | 128 | 6 | 6 | 1 | 32 intervals per axis | 128 | 8, 16 | 512 | 0, 8, 32, 64, 96 |
+| Heat 3D | 128 | 6 | 6 | 1 | 32 intervals per axis | 128 | 8, 16, 32 | 512 | 0, 8, 32, 64, 96 |
 | Poisson 3D | 512 | 1 | 1 | 1 | 32 intervals per axis | 128 | 8, 16 | 512 | 0, 16, 32, 64, 96 |
 | Navier–Stokes 3D | 512 | 6 | 6 | 3 | 32 periodic points per axis | 512 | 16 | 1024 | 0, 16, 32, 64, 128 |
 
-A field means a complete spatial state; a vector state includes all velocity components. Time-zero fields are included in the counts when requested. Operators may pass through the supplied initial field and interpolate trained output times, as specified by the corresponding panel. The counts describe training membership, not statistically independent state samples.
+A field means a complete spatial state; a vector state includes all velocity components. Time-zero fields are included in the counts when requested. Operators may pass through the supplied initial field and interpolate trained output times, as specified by the corresponding panel. The counts describe training membership, not statistically independent state samples. Weak-test counts use the actual basis size; Burgers completes the degenerate Laplacian eigenvalue shell at the cutoff to preserve coordinate symmetry. The JSON also retains the requested count.
 
 | PDE | Operator | Parameters | Requested updates | Completed updates | Selected update | Batch | Initial learning rate | Training seed | Exit |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | Burgers 3D | `fno3d` | 1771431 | 20000 | 20000 | 16100 | 2 | 0.001 | 920310 | steps |
 | Burgers 3D | `unet3d` | 89431 | 20000 | 20000 | 17500 | 2 | 0.001 | 920311 | steps |
+| Burgers 3D | `deeponet3d` | 1861959 | 30000 | 30000 | 30000 | 2 | 0.001 | 920312 | steps |
+| Burgers 3D | `transolver3d` | 564392 | 30000 | 30000 | 29400 | 2 | 0.001 | 920313 | steps |
 | Heat 3D | `fno3d_w16_m6` | 1771349 | 20000 | 20000 | 19500 | 4 | 0.001 | 920321 | steps |
 | Heat 3D | `unet3d_w8` | 89197 | 20000 | 20000 | 20000 | 4 | 0.001 | 920322 | steps |
+| Heat 3D | `deeponet3d_r128_w16` | 857749 | 20000 | 20000 | 20000 | 4 | 0.001 | 920323 | steps |
+| Heat 3D | `transolver3d_w48_s32` | 562840 | 20000 | 20000 | 20000 | 4 | 0.001 | 920324 | steps |
 | Poisson 3D | `fno3d_w24_m8` | 9440953 | 30000 | 30000 | 26750 | 2 | 0.0005 | 920450 | steps |
 | Poisson 3D | `unet3d_w16` | 354577 | 30000 | 30000 | 28750 | 2 | 0.0005 | 920451 | steps |
 | Poisson 3D | `deeponet3d_r128_w16` | 791697 | 30000 | 30000 | 29000 | 2 | 0.001 | 920452 | steps |

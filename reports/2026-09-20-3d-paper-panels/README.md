@@ -4,67 +4,73 @@ These generated tables and vector figures are provisional development material. 
 
 Explicit diagnostic panels. Show a fixed-head correction ladder, the full learned-bank control, POD controls at the latent and full-bank dimensions, all measured operator variants, and full-order controls. No timing or error optimum is selected automatically.
 
-## Burgers 3D — b3d003 — 33 nodes per axis
+## Burgers 3D — b3d004 — 33 nodes per axis
 
-**Provisional:** Audited development data, same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate the trained time knots to the common output times. Physical refinement covers only two cases; this panel supports same-grid comparisons only.
+**Provisional:** Audited development data with all four operator families and the same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate trained time knots to the common output times. The newer operator schedules are still under evaluation. Physical refinement covers only two cases; this panel supports same-grid comparisons only.
 
 Each method is evaluated on 8 distinct cases; all timed repetitions are retained. 
 
-Source `dc91edb2c81712fde9d1b05fec7028c47bd213b4`; job `3992083`; GPU `NVIDIA A100 80GB PCIe`. [LaTeX table](burgers3d-b3d003-n33.tex), [CSV](burgers3d-b3d003-n33.csv), [vector figure](burgers3d-b3d003-n33.pdf).
+Source `c026d56b83905293e71268c249b57324c7d01baf`; job `3995688`; GPU `NVIDIA A100 80GB PCIe`. [LaTeX table](burgers3d-b3d004-n33.tex), [CSV](burgers3d-b3d004-n33.csv), [vector figure](burgers3d-b3d004-n33.pdf).
 
 | Method | Median error (%) | Worst error (%) | GPU median (ms) | GPU p95 (ms) | NF / NS cases | Outliers / calls |
 | --- | ---: | ---: | ---: | ---: | --- | --- |
-| NM-ROM K32, q0 | 5.7071 | 10.8780 | 185.964 | 230.676 | 0 / 0 | 0 / 24 |
-| NM-ROM K32, q64 | 4.9359 | 8.9108 | 267.228 | 324.793 | 0 / 0 | 0 / 24 |
-| NM-ROM K32, q128 | 3.3258 | 6.6491 | 352.971 | 427.954 | 0 / 0 | 0 / 24 |
-| NM-ROM K32, q192 | 1.3600 | 3.4908 | 417.752 | 619.396 | 0 / 0 | 0 / 24 |
-| Full learned bank R256 | 0.8437 | 2.4345 | 316.894 | 317.808 | 0 / 0 | 0 / 24 |
-| POD32 | 9.5224 | 22.6947 | 95.765 | 96.092 | 0 / 0 | 0 / 24 |
-| POD96 | 1.9855 | 5.5785 | 150.552 | 151.571 | 0 / 0 | 0 / 24 |
-| POD160 | 0.7675 | 2.5057 | 224.232 | 224.922 | 0 / 0 | 0 / 24 |
-| POD224 | 0.3988 | 1.2100 | 284.363 | 285.417 | 0 / 0 | 0 / 24 |
-| POD256 | 0.3292 | 1.0363 | 315.911 | 317.242 | 0 / 0 | 0 / 24 |
-| FNO, time interpolation | 1.6413 | 1.9979 | 5.959 | 6.426 | 0 / 0 | 0 / 24 |
-| U-Net, time interpolation | 1.6239 | 1.9129 | 2.242 | 2.508 | 0 / 0 | 0 / 24 |
-| FOM n1e-02, l5e-01 | 1.2739 | 1.6185 | 16.141 | 16.597 | 0 / 0 | 0 / 24 |
-| FOM n1e-02, l5e-03 | 0.0382 | 0.6543 | 18.239 | 21.011 | 0 / 0 | 0 / 24 |
-| FOM n1e-03, l5e-01 | 0.4692 | 0.5248 | 19.954 | 21.066 | 0 / 0 | 0 / 24 |
-| FOM n1e-04, l5e-01 | 0.0267 | 0.0303 | 32.302 | 34.894 | 0 / 0 | 0 / 24 |
-| FOM n1e-04, l1e-06 | 0.0188 | 0.0207 | 37.326 | 41.866 | 0 / 0 | 0 / 24 |
-| FOM n1e-06, l1e-01 | 0.0002 | 0.0003 | 48.915 | 50.783 | 0 / 0 | 0 / 24 |
+| NM-ROM K32, q0 | 5.7071 | 10.8780 | 186.364 | 230.973 | 0 / 0 | 0 / 24 |
+| NM-ROM K32, q64 | 4.9359 | 8.9108 | 267.817 | 325.616 | 0 / 0 | 0 / 24 |
+| NM-ROM K32, q128 | 3.3258 | 6.6491 | 353.542 | 428.614 | 0 / 0 | 0 / 24 |
+| NM-ROM K32, q192 | 1.3600 | 3.4908 | 418.712 | 620.808 | 0 / 0 | 0 / 24 |
+| Full learned bank R256 | 0.8437 | 2.4345 | 316.964 | 317.629 | 0 / 0 | 0 / 24 |
+| POD32 | 9.5224 | 22.6947 | 95.738 | 96.211 | 0 / 0 | 0 / 24 |
+| POD96 | 1.9855 | 5.5785 | 151.273 | 152.382 | 0 / 0 | 0 / 24 |
+| POD160 | 0.7675 | 2.5057 | 224.346 | 225.287 | 0 / 0 | 0 / 24 |
+| POD224 | 0.3988 | 1.2100 | 284.540 | 285.347 | 0 / 0 | 0 / 24 |
+| POD256 | 0.3292 | 1.0363 | 316.567 | 317.512 | 0 / 0 | 0 / 24 |
+| FNO, time interpolation | 1.6413 | 1.9979 | 5.862 | 6.687 | 0 / 0 | 0 / 24 |
+| U-Net, time interpolation | 1.6239 | 1.9129 | 2.212 | 2.633 | 0 / 0 | 0 / 24 |
+| DeepONet, time interpolation | 7.9145 | 21.1988 | 2.534 | 3.009 | 0 / 0 | 0 / 24 |
+| Transolver, time interpolation | 1.8700 | 3.7391 | 3.545 | 3.888 | 0 / 0 | 0 / 24 |
+| FOM n1e-02, l5e-01 | 1.2739 | 1.6185 | 16.068 | 16.725 | 0 / 0 | 0 / 24 |
+| FOM n1e-02, l5e-03 | 0.0382 | 0.6543 | 17.940 | 20.571 | 0 / 0 | 0 / 24 |
+| FOM n1e-03, l5e-01 | 0.4692 | 0.5248 | 19.753 | 21.495 | 0 / 0 | 0 / 24 |
+| FOM n1e-04, l5e-01 | 0.0267 | 0.0303 | 32.494 | 34.086 | 0 / 0 | 0 / 24 |
+| FOM n1e-04, l1e-06 | 0.0188 | 0.0207 | 37.394 | 41.505 | 0 / 0 | 0 / 24 |
+| FOM n1e-06, l1e-01 | 0.0002 | 0.0003 | 48.156 | 50.230 | 0 / 0 | 0 / 24 |
 
-All timed method arms in this attempt are included. Representation fits and the two-case refinement screen are retained in the complete source records. FOM labels identify nonlinear (n) and inner linear (l) tolerances.
+All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances.
 
-![Generated paired comparison](burgers3d-b3d003-n33.png)
+![Generated paired comparison](burgers3d-b3d004-n33.png)
 
-## Heat 3D — tune02 — 64 intervals per axis
+## Heat 3D — extra03 — 64 intervals per axis
 
-**Provisional:** Audited development data. Errors use the current reference-field norm and exclude time zero. Some initial fits miss their stopping budget; evolved solves are stationary. Direct operator transfer and all quadrature certificates fail. Native-grid interpolation is charged separately.
+**Provisional:** Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.
 
 Each method is evaluated on 16 distinct cases; all timed repetitions are retained. 
 
-Source `4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2`; job `3990698`; GPU `NVIDIA A100 80GB PCIe`. [LaTeX table](heat3d-tune02-n64.tex), [CSV](heat3d-tune02-n64.csv), [vector figure](heat3d-tune02-n64.pdf).
+Source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`; job `3995709`; GPU `NVIDIA A100-PCIE-40GB`. [LaTeX table](heat3d-extra03-n64.tex), [CSV](heat3d-extra03-n64.csv), [vector figure](heat3d-extra03-n64.pdf).
 
 | Method | Median error (%) | Worst error (%) | GPU median (ms) | GPU p95 (ms) | NF / NS cases | Outliers / calls |
 | --- | ---: | ---: | ---: | ---: | --- | --- |
-| NM-ROM K16, q0 | 1.0804 | 5.8427 | 18.392 | 36.053 | 0 / 2 | 6 / 48 |
-| NM-ROM K16, q8 | 1.0426 | 5.2535 | 18.294 | 23.042 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q32 | 0.8752 | 4.8852 | 19.608 | 21.957 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q64 | 0.5892 | 3.9930 | 20.528 | 24.009 | 0 / 0 | 0 / 48 |
-| NM-ROM K16, q96 | 0.3697 | 2.9628 | 24.581 | 37.254 | 0 / 1 | 3 / 48 |
-| Full bank, exact Galerkin | 0.2563 | 1.3166 | 0.514 | 0.782 | 0 / 0 | 3 / 48 |
-| Full bank, exact weak | 0.2542 | 1.3113 | 1.421 | 1.702 | 0 / 0 | 0 / 48 |
-| POD16 | 8.6633 | 25.1877 | 0.248 | 0.731 | 0 / 0 | 12 / 48 |
-| POD128 | 0.1414 | 1.2338 | 0.507 | 0.758 | 0 / 0 | 3 / 48 |
-| FNO, direct transfer | 15.1234 | 17.6641 | 10.981 | 11.366 | 0 / 0 | 0 / 48 |
-| FNO, native + interpolation | 0.7669 | 0.9891 | 7.140 | 7.855 | 0 / 0 | 0 / 48 |
-| U-Net, direct transfer | 75.7115 | 92.6756 | 7.047 | 7.567 | 0 / 0 | 0 / 48 |
-| U-Net, native + interpolation | 0.7512 | 0.9468 | 3.319 | 3.703 | 0 / 0 | 0 / 48 |
-| Direct DST | 0.0000 | 0.0000 | 1.329 | 1.757 | 0 / 0 | 1 / 48 |
+| NM-ROM K32, q0 | 1.1494 | 5.9683 | 37.143 | 48.919 | 0 / 0 | 0 / 48 |
+| NM-ROM K32, q8 | 1.0223 | 5.1921 | 40.126 | 80.283 | 0 / 0 | 5 / 48 |
+| NM-ROM K32, q32 | 0.8224 | 4.4151 | 40.445 | 56.685 | 0 / 0 | 1 / 48 |
+| NM-ROM K32, q64 | 0.5591 | 3.1815 | 52.322 | 92.258 | 0 / 0 | 5 / 48 |
+| NM-ROM K32, q96 | 0.3903 | 1.3555 | 113.590 | 151.651 | 0 / 0 | 1 / 48 |
+| Full bank, exact Galerkin | 0.2563 | 1.3166 | 0.564 | 0.766 | 0 / 0 | 1 / 48 |
+| Full bank, exact weak | 0.2542 | 1.3113 | 1.495 | 1.694 | 0 / 0 | 0 / 48 |
+| POD32 | 3.0811 | 9.3730 | 0.311 | 0.647 | 0 / 0 | 9 / 48 |
+| POD128 | 0.1414 | 1.2338 | 0.565 | 0.616 | 0 / 0 | 0 / 48 |
+| FNO, direct transfer | 15.1234 | 17.6641 | 16.246 | 17.031 | 0 / 0 | 0 / 48 |
+| FNO, native + interpolation | 0.7669 | 0.9891 | 10.681 | 11.592 | 0 / 0 | 0 / 48 |
+| U-Net, direct transfer | 75.7115 | 92.6756 | 10.960 | 11.808 | 0 / 0 | 0 / 48 |
+| U-Net, native + interpolation | 0.7512 | 0.9468 | 4.240 | 4.764 | 0 / 0 | 0 / 48 |
+| DeepONet, direct transfer | 33.8829 | 52.5118 | 11.270 | 12.017 | 0 / 0 | 0 / 48 |
+| DeepONet, native + interpolation | 7.0168 | 21.7903 | 4.029 | 4.545 | 0 / 0 | 0 / 48 |
+| Transolver, direct transfer | 19.8616 | 25.2954 | 20.828 | 22.118 | 0 / 0 | 0 / 48 |
+| Transolver, native + interpolation | 0.9475 | 1.2766 | 6.854 | 7.952 | 0 / 0 | 0 / 48 |
+| Direct DST | 0.0000 | 0.0000 | 1.591 | 1.926 | 0 / 0 | 0 / 48 |
 
-The complete audited report retains the K8 ladder, intermediate POD ranks, time-step and failed sampled-quadrature diagnostics.
+The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted.
 
-![Generated paired comparison](heat3d-tune02-n64.png)
+![Generated paired comparison](heat3d-extra03-n64.png)
 
 ## Poisson 3D — extra03 — 64 intervals per axis
 

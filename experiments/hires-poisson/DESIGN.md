@@ -199,3 +199,14 @@ the parent CG carries one timed true-residual evaluation — both negligible aga
 copy, both in the record. Memory: `common.phi` materialises a $127^3\times512\times3$ f64
 intermediate (≈ 25 GB) on the device at $128^3$; the job runs on an H200 (141 GB) with 240 G host.
 $256^3$ would need a chunked assembly and is not attempted with this driver.
+
+**A4 (2026-09-20, after `hp2048`, before `hp4096`) — looser CG tolerances added; memory plan.**
+`hp2048` (job 4049279) showed the named comparator CG $10^{-2}$ is itself ~20× more accurate
+than the accurate ROM arm (0.049 % vs 0.965 % worst physical), so "fastest tested CG with error
+$\le$ the ROM's" was trivially the named one. To make that selection meaningful — in the
+comparator's favour — `hp4096` adds CG at $10^{-1}$ and $3\times10^{-2}$. The named FOM and the bar
+are unchanged. Memory: `hp2048` peaked at 60.5 GB with three bank copies; at $4096^2$ the f64
+(68.7 GB) and f32 (34.4 GB) chunked banks are both kept, the retained single-bank baseline is not
+(parity carried by `hp2048`, same kernels, as pre-stated), rows per chunk 128, and the XLA client
+memory fraction is raised to 0.95 (limit ≈ 134 GB). If it OOMs, the fallback is two jobs (f64-only,
+f32-only), each self-contained. CG $10^{-6}$ is restricted to 3 sources (ineligible as comparator).

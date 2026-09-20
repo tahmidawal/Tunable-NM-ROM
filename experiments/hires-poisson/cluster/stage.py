@@ -50,7 +50,7 @@ TASK_ROOT=__REMOTE__
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
-export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export XLA_PYTHON_CLIENT_PREALLOCATE=false XLA_PYTHON_CLIENT_MEM_FRACTION=__MEMFRAC__
 export XDG_CACHE_HOME="$TASK_ROOT/cache" MPLCONFIGDIR="$TASK_ROOT/cache/matplotlib"
 export TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"
@@ -80,6 +80,7 @@ def main():
     p.add_argument('--extra', nargs='*', default=[], help='extra repo-relative files to stage')
     p.add_argument('--set', default='2d', choices=['2d', '3d'], help='which parent file set to stage')
     p.add_argument('--subsample', type=int, default=256)
+    p.add_argument('--memfrac', default='0.75', help='XLA client memory fraction (0.95 for the 4096^2 bank)')
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--gpu', default='h200', choices=['a100', 'h100', 'h200', 'l40s'])
     p.add_argument('--mem', default='240G')
@@ -109,7 +110,7 @@ def main():
     for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', a.gpu),
                          ('__HOURS__', f'{a.hours:02d}'), ('__MEM__', a.mem),
                          ('__DRIVER__', a.driver), ('__AUDIT__', a.audit),
-                         ('__CONFIG__', a.config), ('__SUB__', str(a.subsample))):
+                         ('__CONFIG__', a.config), ('__SUB__', str(a.subsample)), ('__MEMFRAC__', a.memfrac)):
         script = script.replace(token, value)
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{hashlib.sha256(q.read_bytes()).hexdigest()}  {q.relative_to(out)}'

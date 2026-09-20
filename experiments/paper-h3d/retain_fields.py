@@ -1,5 +1,5 @@
 """Byte-exact split-tar retention and streaming restoration audit of saved fields."""
-import argparse, hashlib, io, json, tarfile
+import argparse, hashlib, io, json, subprocess, tarfile
 from pathlib import Path
 
 BLOCK=64*1024*1024
@@ -57,10 +57,35 @@ def verify(destination):
     (destination/'restoration-audit.json').write_text(json.dumps(audit,indent=2)+'\n');print(json.dumps(audit),flush=True)
 
 
+def verify_git(destination,commit):
+    root=Path(__file__).resolve().parents[2]
+    commit=subprocess.check_output(['git','rev-parse',commit],cwd=root,text=True).strip()
+    manifest=json.loads((destination/'manifest.json').read_text());rows=[]
+    process=subprocess.Popen(['git','cat-file','--batch'],cwd=root,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+    try:
+        for row in manifest['chunks']:
+            path=(destination/row['path']).relative_to(root).as_posix()
+            process.stdin.write(f'{commit}:{path}\n'.encode());process.stdin.flush()
+            oid,kind,size=process.stdout.readline().decode().split();assert kind=='blob' and int(size)==row['bytes']
+            left=int(size);h=hashlib.sha256()
+            while left:
+                block=process.stdout.read(min(left,8*1024*1024));assert block;left-=len(block);h.update(block)
+            assert process.stdout.read(1)==b'\n' and h.hexdigest()==row['sha256']
+            rows.append(dict(path=path,git_blob=oid,sha256=h.hexdigest(),bytes=int(size)))
+        process.stdin.close();assert process.wait()==0
+    finally:
+        if process.poll() is None:process.terminate();process.wait()
+    result=dict(passed=True,commit=commit,actual_git_blob_bytes_verified=True,chunks=rows)
+    (destination/'git-retention-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    print(destination.name,len(rows),'ACTUAL_GIT_BLOBS_PASS',flush=True)
+
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--verify-only',action='store_true');args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--verify-only',action='store_true');p.add_argument('--verify-git');args=p.parse_args()
     assert args.attempt.isalnum();root=Path(__file__).resolve().parent
     source=root/'runs'/args.attempt/'archive/out/fields';destination=root/'retained-fields'/args.attempt
+    if args.verify_git:
+        verify_git(destination,args.verify_git);return
     if not args.verify_only:
         assert source.is_dir();destination.mkdir(parents=True,exist_ok=False);rows=[]
         writer=SplitWriter(destination)

@@ -29,6 +29,7 @@ def head(p,z):
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('run');parser.add_argument('--checkpoint',default='inputs/refined_checkpoint.pkl')
+    parser.add_argument('--audit-output',default='audit.json')
     args=parser.parse_args();root=Path(args.run);r=json.loads((root/'result.json').read_text());cfg=r['config']
     assert r['backend']=='gpu' and r['x64'] and r['precision']=='highest'
     assert hashlib.sha256(Path(args.checkpoint).read_bytes()).hexdigest()==r['checkpoint_sha256']
@@ -111,7 +112,7 @@ def main():
                 max_reference_defect=max_defect,max_metric_discrepancy=max_metric,max_decode_discrepancy=max_decode,
                 final_cohort_unopened=r['final_cohort_unopened'],comparison_scope=r['comparison_scope'],
                 operator_invocations=operator_count,operator_complete=r.get('operator_complete',False))
-    (root/'audit.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps(output,indent=2))
+    (root/args.audit_output).write_text(json.dumps(output,indent=2)+'\n');print(json.dumps(output,indent=2))
 
 
 if __name__=='__main__':

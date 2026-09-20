@@ -116,7 +116,7 @@ def run(cfg,out,smoke=False):
         bank=C.bank_at(params,n,cfg['field_chunk'])@rotation
         test,a,lam,triples=R.assemble(bank,n,cfg['weak_tests'])
         truths=C.dataset(n,valid_p,cfg)
-        methods={};pod={};pod_info=dict(status='not repeated in independent-seed accuracy confirmation')
+        cg_traces={};methods={};pod={};pod_info=dict(status='not repeated in independent-seed accuracy confirmation')
         if cfg.get('include_linear_controls',True):
             training=C.dataset(n,train_p,cfg)
             ranks=sorted(set([cfg['bank_rank']]+[model['info']['k']+q for model in models for q in cfg['q_ladder']]))
@@ -132,6 +132,8 @@ def run(cfg,out,smoke=False):
             import iterative_cg as ICG
             cg_methods,cg_metadata=ICG.methods(n,cfg)
             methods.update(cg_methods);metadata.update(cg_metadata)
+            cg_traces={name:ICG.engine(n,cfg,meta['dt'],meta['relative_tolerance'],meta['max_iterations'],retain_trace=True)
+                for name,meta in cg_metadata.items()}
         for name,spec,op,scale,info in operator_models:
             from operators import heat_adapter as OH
             methods[name]=OH.engine(op,spec,scale,n)
@@ -248,7 +250,14 @@ def run(cfg,out,smoke=False):
                     if rep==0:
                         path=out/'fields'/f'N{n}_case{case}_{name}.npz'
                         payload=dict(prediction=pred)
-                        if isinstance(value,dict):payload.update(cg_stats=cg_stats,cg_states=value['cg_states'])
+                        if isinstance(value,dict):
+                            trace_start=time.perf_counter()
+                            trace=jax.device_get(cg_traces[name](u))
+                            np.testing.assert_array_equal(trace['prediction'],pred)
+                            np.testing.assert_array_equal(trace['cg_stats'],cg_stats)
+                            payload.update(cg_stats=cg_stats,cg_states=trace['cg_states'])
+                            row.update(cg_untimed_trace_exact_parity=True,
+                                cg_untimed_trace_seconds=time.perf_counter()-trace_start)
                         if isinstance(value,tuple) and isinstance(coefficients,dict):
                             payload.update(coefficients);payload.update(initial_stats=initial_stats,step_stats=step_stats)
                         np.savez_compressed(path,**payload)

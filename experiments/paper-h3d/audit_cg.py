@@ -32,6 +32,7 @@ def audit(out, record):
         assert row['cg_failed_steps']==row['nonstationary_solves']==int(np.count_nonzero(~expected))
         np.testing.assert_array_equal(stats[:,4],(stats[:,0]>=meta['max_iterations'])&~expected)
         if 'field_file' not in row:continue
+        assert row['cg_untimed_trace_exact_parity'] is True and row['cg_untimed_trace_seconds']>=0
         payload=np.load(out/row['field_file']);states=payload['cg_states'];n=row['intervals']
         np.testing.assert_array_equal(stats,payload['cg_stats'])
         initial=np.load(out/'fields'/f'N{n}_case{row["case"]}_reference.npz')['same_grid'][0]
@@ -47,7 +48,7 @@ def audit(out, record):
             residuals.append(np.linalg.norm(residual)/max(np.linalg.norm(rhs),1e-300))
         np.testing.assert_allclose(stats[:,1],residuals,rtol=2e-7,atol=3e-14)
         checks.append(dict(intervals=n,case=row['case'],method=row['method'],
-            steps=len(stats),max_residual_difference=float(np.max(np.abs(stats[:,1]-residuals))),
+            steps=len(stats),untimed_trace_exact_parity_verified=True,max_residual_difference=float(np.max(np.abs(stats[:,1]-residuals))),
             failed_steps=row['cg_failed_steps']))
     return dict(passed=True,independent_saved_trajectory_checks=checks,
         scope='NumPy stencil, every retained time-step true residual, declared stops/caps and all invocation counters; failed solves remain explicitly counted')

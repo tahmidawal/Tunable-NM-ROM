@@ -17,7 +17,11 @@ checks=[]
 fixture=tempfile.TemporaryDirectory();out=Path(fixture.name);(out/'fields').mkdir()
 record=dict(config=cfg,meshes=[dict(intervals=n,methods={})],invocations=[])
 for dt,tol,cap in [(.025,1e-12,100),(.05,1e-2,100),(.025,1e-12,1)]:
-    result=jax.device_get(I.engine(n,cfg,dt,tol,cap)(u));states=result['cg_states'];stats=result['cg_stats']
+    timed=jax.device_get(I.engine(n,cfg,dt,tol,cap)(u))
+    assert set(timed)=={'prediction','cg_stats'}
+    result=jax.device_get(I.engine(n,cfg,dt,tol,cap,retain_trace=True)(u));states=result['cg_states'];stats=result['cg_stats']
+    np.testing.assert_array_equal(timed['prediction'],result['prediction'])
+    np.testing.assert_array_equal(timed['cg_stats'],result['cg_stats'])
     alpha=cfg['diffusivity']*dt/2;res=[]
     for old,new in zip(states[:-1],states[1:]):
         rhs=old-alpha*laplacian(old,n)
@@ -34,7 +38,7 @@ for dt,tol,cap in [(.025,1e-12,100),(.05,1e-2,100),(.025,1e-12,1)]:
     field='fields/'+name+'.npz';np.savez(out/field,**result)
     counters=dict(intervals=n,case=0,method=name,cg_stats=stats.tolist(),cg_iterations=int(sum(stats[:,0])),
         cg_failed_steps=int(sum(stats[:,2]!=1)),nonstationary_solves=int(sum(stats[:,2]!=1)))
-    record['invocations'].extend([dict(**counters,field_file=field),dict(**counters)])
+    record['invocations'].extend([dict(**counters,field_file=field,cg_untimed_trace_exact_parity=True,cg_untimed_trace_seconds=0.),dict(**counters)])
     checks.append(dict(dt=dt,tolerance=tol,cap=cap,modal_relative_error=error,stats=stats.tolist()))
 zero=jax.device_get(I.engine(n,cfg,.025,1e-6,100)(np.zeros_like(u)))
 assert np.all(zero['cg_stats'][:,0]==0) and np.all(zero['cg_stats'][:,2]==1)

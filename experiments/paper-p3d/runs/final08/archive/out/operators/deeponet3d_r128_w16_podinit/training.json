@@ -1,0 +1,200 @@
+{
+  "spec": {
+    "kind": "deeponet3d",
+    "width": 16,
+    "levels": 3,
+    "pool_bins": 4,
+    "rank": 128,
+    "trunk_width": 128,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "config": {
+    "steps": 40000,
+    "wall_seconds": 1200,
+    "batch_size": 2,
+    "seed": 920752,
+    "learning_rate": 0.0003,
+    "validation_every": 500,
+    "curve_every": 50,
+    "components_per_output": 1
+  },
+  "parameter_count": 791697,
+  "steps_completed": 40000,
+  "initialization": "explicit retained pretrained parameters",
+  "best_step": 40000,
+  "best_validation_worst": 0.01806744992706619,
+  "seconds": 382.77881261287257,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "pretraining": {
+    "schema": "train-only-deeponet-pod-initialization-v1",
+    "config": {
+      "trunk_steps": 60000,
+      "trunk_learning_rate": 0.001,
+      "trunk_batch_points": 1024,
+      "trunk_wall_seconds": 900,
+      "branch_steps": 30000,
+      "branch_learning_rate": 0.001,
+      "branch_batch_size": 2,
+      "branch_wall_seconds": 900,
+      "checkpoint_every": 5000
+    },
+    "spec": {
+      "kind": "deeponet3d",
+      "width": 16,
+      "levels": 3,
+      "pool_bins": 4,
+      "rank": 128,
+      "trunk_width": 128,
+      "periodic": false,
+      "coordinate_channels": [
+        -3,
+        -2,
+        -1
+      ]
+    },
+    "seed": 920752,
+    "training_cases": 512,
+    "training_snapshots": 512,
+    "training_array_sha256": "c00a95f258a324d22c2254fc882d85c1cb4f28fdf7ccdbedfd1fcb81851e3fba",
+    "teacher": "relative-field-error weighted POD of identical training outputs only",
+    "trunk": {
+      "steps_completed": 60000,
+      "best_step": 60000,
+      "best_training_loss": 3.6127545659315815e-05,
+      "seconds": 36.05223572161049,
+      "curve": [
+        {
+          "step": 1,
+          "training_weighted_trunk_loss": 0.8176844311867173,
+          "selected": true,
+          "seconds": 3.8795050499029458
+        },
+        {
+          "step": 5000,
+          "training_weighted_trunk_loss": 0.00042184148382738587,
+          "selected": true,
+          "seconds": 6.560362791642547
+        },
+        {
+          "step": 10000,
+          "training_weighted_trunk_loss": 0.0001474720503282364,
+          "selected": true,
+          "seconds": 9.235904501751065
+        },
+        {
+          "step": 15000,
+          "training_weighted_trunk_loss": 0.00010052481328439855,
+          "selected": true,
+          "seconds": 11.949030843563378
+        },
+        {
+          "step": 20000,
+          "training_weighted_trunk_loss": 0.00011403836038664278,
+          "selected": false,
+          "seconds": 14.625934318639338
+        },
+        {
+          "step": 25000,
+          "training_weighted_trunk_loss": 7.804288871379943e-05,
+          "selected": true,
+          "seconds": 17.317211666610092
+        },
+        {
+          "step": 30000,
+          "training_weighted_trunk_loss": 5.687723169163651e-05,
+          "selected": true,
+          "seconds": 20.010859661735594
+        },
+        {
+          "step": 35000,
+          "training_weighted_trunk_loss": 5.2083070563979426e-05,
+          "selected": true,
+          "seconds": 22.70345673756674
+        },
+        {
+          "step": 40000,
+          "training_weighted_trunk_loss": 5.0711845492157924e-05,
+          "selected": true,
+          "seconds": 25.33151897182688
+        },
+        {
+          "step": 45000,
+          "training_weighted_trunk_loss": 4.073164163667729e-05,
+          "selected": true,
+          "seconds": 27.961554367560893
+        },
+        {
+          "step": 50000,
+          "training_weighted_trunk_loss": 3.7977717331769795e-05,
+          "selected": true,
+          "seconds": 30.59859345294535
+        },
+        {
+          "step": 55000,
+          "training_weighted_trunk_loss": 3.6740508093141254e-05,
+          "selected": true,
+          "seconds": 33.21747573791072
+        },
+        {
+          "step": 60000,
+          "training_weighted_trunk_loss": 3.6127545659315815e-05,
+          "selected": true,
+          "seconds": 36.031580990646034
+        }
+      ],
+      "selection": "minimum full training weighted trunk loss"
+    },
+    "branch": {
+      "steps_completed": 30000,
+      "best_step": 30000,
+      "best_training_relative_mse": 1.3524803556631407e-05,
+      "seconds": 215.0854464401491,
+      "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+    },
+    "teacher_projection_error": {
+      "mean": 5.774109360461861e-05,
+      "median": 5.842593301961997e-05,
+      "worst": 0.00012646047461207371
+    },
+    "learned_trunk_projection_error": {
+      "mean": 0.00534487925769358,
+      "median": 0.004984786029458531,
+      "worst": 0.013389224907155177
+    },
+    "learned_trunk_numerical_rank": 128,
+    "seconds": 259.5878676478751,
+    "development_data_used": false,
+    "final_data_used": false,
+    "online_architecture_changed": false,
+    "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+  },
+  "name": "deeponet3d_r128_w16_podinit",
+  "scales": {
+    "input": 0.09347530902320836,
+    "output": 0.002004507121105652
+  },
+  "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+  "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+  "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+  "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33",
+  "immediate_reuse_source": {
+    "source_commit": "04b785f9935b07f53e95302006987ededb8ebd18",
+    "job_id": "4027715"
+  },
+  "original_training_source": {
+    "source_commit": "38ef2031f3ad182fed873e004ba1fc0dc972f812",
+    "job_id": "4025641",
+    "result_sha256": "3f5e10323a4f7336b6771c74030db4663a539bd602d1e579b485268c263f1465",
+    "checkpoint_sha256": "dd362fdb552dde923d4ef507ea06c124e0b061c9ff04862b174d4379a3bb2224",
+    "attempt": "seed06"
+  }
+}

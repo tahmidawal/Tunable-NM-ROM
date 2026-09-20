@@ -1,6 +1,14 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## User-requested device confirmation running; final08 audited
+
+**Devicecheck09 job4031708 RUNNING on pax105**, scientific source `f87bbe98c257ca128b6d9516ae5ebff7d2491b48`, literal remote `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/devicecheck09`. Root explicitly authorized this fresh same-device reproducibility job while final08 retention finishes. It reuses only the pre-final replay07 selected bundle and development cohort, with no training or final-driven changes. Both meshes, all operators/NM/POD/DST/CG settings and repetition arrays remain. Guard preflight PASS: one CUDA/JAX GPU, UUID `GPU-7ea87052-7ee2-b522-615d-be66f44238c3`, CUDA_VISIBLE_DEVICES=0, SLURM_JOB_GPUS=7, A10080GB. CUDA driver UUID is verified before and after every timed invocation outside measured boundaries; all checks are recorded and independently audited. Expected completion around18:56–18:59 UTC; collect/audit/deterministic-replay-check/source/retain/actual-Git-readback before exact cleanup. Do not duplicate-submit.
+
+Local GB10 guard smoke could not initialize JAX CUDA under immediate free-memory pressure from simultaneous archives; no numerical output or CPU fallback was accepted. Cluster guard preflight passed. Limitation is retained in `runs/device-guard-local-limitation.json`.
+
+Final08 completed43m48s with0:0 and full field/CG/state/POD/source audits pass. Final retention and exact cleanup are in progress; no further model selection is allowed. Generated same-job comparison rows are `runs/final08/paper-comparisons.json`; root alone owns manuscript/report integration.
+
 ## Final08 RUNNING — immutable final cohort opened
 
 **Final08 job4028642 is RUNNING on pax105, NVIDIA A10080GB PCIe**, source `f18533034cbdf3c7027073e57f091200bd622e8f`, config SHA256 `ba0e1bd17bb658d9bfc9a82de327842230f72a2f7de3dbd3e30c6a20fd6a6a84`. Literal remote `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/final08`. Source/checkpoint/POD hashes and GPU/f64/highest preflight pass. The committed freeze verified before generating the64 reserved final cases; reference generation has completed. No tuning or repeated final selection is permitted. Do not restage or submit another P job.

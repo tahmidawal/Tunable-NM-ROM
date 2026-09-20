@@ -1,6 +1,14 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## Final08 RUNNING — immutable final cohort opened
+
+**Final08 job4028642 is RUNNING on pax105, NVIDIA A10080GB PCIe**, source `f18533034cbdf3c7027073e57f091200bd622e8f`, config SHA256 `ba0e1bd17bb658d9bfc9a82de327842230f72a2f7de3dbd3e30c6a20fd6a6a84`. Literal remote `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/final08`. Source/checkpoint/POD hashes and GPU/f64/highest preflight pass. The committed freeze verified before generating the64 reserved final cases; reference generation has completed. No tuning or repeated final selection is permitted. Do not restage or submit another P job.
+
+Started approximately17:51 UTC; expected completion18:35–18:40 UTC. Collect/audit/source-check/chunk/commit/actual-Git-readback before exact remote deletion, using the documented collection workflow below. Compare against efficient `cg_identity_plain_rtol*` and preserve the traced controls/DST/classical negatives. The current owner remains responsible until a named waiting-slot handoff is confirmed. Reactivate no later than18:30 UTC if the slot is temporarily released.
+
+The staged oversized POD input is already actual-Git retained in replay07 chunks; `runs/final08/STAGED_LARGE_INPUTS.json` pins its exact hash and retained manifest. Its local staged duplicate is ignored to avoid committing another oversized blob. Final collection must chunk oversized files, including the archived staged input, with `retain_large.py` as usual. All live/final assets must remain until actual-Git verification. Source freeze and final config remain immutable.
+
 ## Efficient CG replay audited and retained; final64 frozen
 
 Replay07 job4027715 completed in12m06s on pax106; source04b785f9935b07f53e95302006987ededb8ebd18. The independent audit passes1,184 fields,32references,50summaryrows,576 measured CGfields,192 independent SciPy comparisons,96nonlinear states and frozen-POD reconstruction controls. No CG invocation fails. The selected checkpoint hashes are identical to seed06 and608 deterministic fields replay within1.23e-15 relative difference. See `runs/replay07/development-replay-audit.json`.

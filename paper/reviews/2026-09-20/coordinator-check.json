@@ -1,0 +1,31 @@
+{
+  "role": "Author/coordinator cross-check, NOT an independent reviewer",
+  "pdf_unchanged": true,
+  "checks": [
+    {
+      "table": "TR_burgers_fom_only",
+      "numeric_rows_preserved": 3,
+      "passed": true
+    },
+    {
+      "table": "TR_lshape_fom_only",
+      "numeric_rows_preserved": 6,
+      "passed": true
+    },
+    {
+      "table": "TR_3d_linear_fom_only",
+      "numeric_rows_preserved": 3,
+      "passed": true
+    },
+    {
+      "table": "TR_3d_nonlinear_fom_only",
+      "numeric_rows_preserved": 3,
+      "passed": true
+    }
+  ],
+  "findings": [
+    "The published snapshots remain development records for Poisson/heat/NS despite later separately completed lane work; integration requires source-specific acceptance and fresh generation.",
+    "Removing optional diagnostics should not remove the definitions needed to interpret included PDEs; concise replacements can satisfy the five-page appendix goal.",
+    "No evidence from these format checks establishes scientific sufficiency or acceptance."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "agent": "/root/burgers3d_resume_final",
+  "role": "Independent reproducibility review; prior experiment ownership disclosed",
+  "assessment": "Not yet submission-ready on reproducibility",
+  "confidence": "4/5",
+  "findings": [
+    [
+      "P1",
+      "Verified portability gap; artifact availability not established",
+      "Public reproduction and portable build are missing",
+      "PDF pp.8,17; main.tex:638\u2013643; appendix.tex:93\u2013111; build.sh:8; gen_tables.py:34,151\u2013172",
+      "The PDF lists local manifests without access instructions. Build requires an absolute Python path and sibling worktrees. Provide an anonymous versioned artifact, a complete relative-path evidence bundle and reproduction commands; do not infer that unseen uploads do not exist."
+    ],
+    [
+      "P1",
+      "Verified omission",
+      "3D experiments lack essential definitions",
+      "PDF pp.6\u20137,17; main.tex:500\u2013535; appendix.tex:75\u201391",
+      "Specify source/initial-condition families, ranges, domain, NS equation/discretization, horizons/outputs, training/evaluation counts/seeds and k/R/M. A compact four-row table and NS paragraph suffice."
+    ],
+    [
+      "P1",
+      "Verified omission",
+      "Training and correction recipes are not reconstructible",
+      "PDF pp.3\u20135,14\u201317; main.tex:179\u2013209,327\u2013337,363\u2013371",
+      "State common loss/normalization, coordinate features, architecture, initialization, optimizer/schedule and checkpoint selection. Give correction equations/metrics; keep full schedules in artifact."
+    ],
+    [
+      "P1",
+      "Verified overstatement",
+      "Full preregistered criterion is confused with secondary knob bar",
+      "PDF p.8 lines398\u2013401; p.18 Table D.1; main.tex:597\u2013604",
+      "The three passing entries concern secondary C4. Source design reports incumbent sealed-ratio C2 failure and universal-convergence C3 failure. Replace full criterion with secondary knob criterion, define it and retain strict failures; numbers need not change."
+    ],
+    [
+      "P2",
+      "Verified omission",
+      "Numerical protocol is incomplete",
+      "PDF pp.3,15\u201317; main.tex:276\u2013289; method-details.tex:175\u2013190; appendix.tex:57\u201373",
+      "Supply panel thresholds, caps, initial guesses, block damping, preconditioner, GPU and repetitions. Clarify aggregation and the displayed coarser wave setting; Poisson3D uses identity preconditioning."
+    ],
+    [
+      "P2",
+      "Verified omission",
+      "L-shaped implementation is not specified by square formulas",
+      "PDF pp.3,7,16\u201317; main.tex:185\u2013195,560\u2013573",
+      "State the signed-distance boundary factor and masked-domain eigenmode tests, selected dimensions and homogeneous conditions on every segment. The square factor does not enforce interior cut boundaries."
+    ],
+    [
+      "P2",
+      "Verified documentation mismatch",
+      "Heat2D setup pointers do not identify the displayed measurement",
+      "PDF pp.6,16\u201317; T01_problems.tex:10; T01b_spec.tex:11",
+      "Setup names job3511417; current CG table comes from3529772 and a continuum-spectral refined reference. Distinguish checkpoint lineage from timing job and specify reference/cohort/family. Not evidence of false heat numbers."
+    ],
+    [
+      "P3",
+      "Verified graphical omission",
+      "Diagram omits direct PDE-input dependency of residual",
+      "PDF p.16 Figure B.1; architecture.tex:23\u201336",
+      "Inputs currently feed only initialization. Add source/parameters dependency into the reduced solve while retaining the compact layout."
+    ]
+  ],
+  "resolved": [
+    "All four displayed 3D snapshots match their committed Git sources.",
+    "Nonlinear heat recurrence, weak fixed-test residual, EQ counts/refitting and named timing conventions are clearer.",
+    "Failures and development/final scope remain visible; universal superiority withdrawn."
+  ],
+  "qualification": "Internal retention is not sufficient publication-facing reproducibility. These findings largely need concise documentation and artifact packaging, not restoration of all comparison tables."
+}

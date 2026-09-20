@@ -1,0 +1,70 @@
+{
+  "agent": "/root/review_experiments",
+  "assessment": "Weak reject / substantial revision, approximately 4/10",
+  "confidence": "4/5",
+  "findings": [
+    [
+      "High",
+      "Missing evidence",
+      "Fixed-test causal evidence is one development checkpoint",
+      "PDF pp.7\u20138,18; Table5 and D.1",
+      "The sealed multi-seed schedule changes test count with rank. Repeat fixed-M on independent frozen cohorts or narrowly distinguish the two claims; define the preregistered criterion."
+    ],
+    [
+      "High",
+      "Missing evidence",
+      "FOM-only comparisons cannot isolate nonlinear restriction",
+      "PDF pp.1\u20132,5\u20138; main.tex:117\u2013128,377\u2013384,606\u2013615",
+      "Use a small same-bank internal ablation or state nonlinear necessity is unproven. FOM-only external comparisons need not change."
+    ],
+    [
+      "High",
+      "Scope limitation",
+      "CG gains are not gains against the strongest applicable FOM",
+      "PDF pp.5\u20137; Tables1,6; appendix C.1",
+      "Identify the tested preconditioner/tolerance set, explicitly limit claims to named CG controls and avoid unsupported cross-allocation scaling attribution."
+    ],
+    [
+      "High/medium",
+      "Configuration omission; arithmetic verified",
+      "Earlier Burgers speed panel needs its own full configuration",
+      "PDF p.6 Table2; gen_rewrite_tables.py:63\u201380",
+      "Twelve-call raw-source recomputation confirms both tight and relaxed ratios. Add q/M/m and checkpoint/stopping distinctions; do not use the historical permissive-stall result as corrected stationary-ladder evidence."
+    ],
+    [
+      "High",
+      "Verified omission",
+      "Essential 3D experimental definitions absent",
+      "PDF pp.6\u20137,16\u201317; Tables3\u20134,C.1\u2013C.2",
+      "Add compact family, parameter-range, horizon/output, cohort, bank/test-size and training-selection details. Current configuration tables are 2D only."
+    ],
+    [
+      "Medium",
+      "Verified scope mismatch",
+      "Announced problem coverage exceeds PDF evidence",
+      "PDF p.5; main.tex:377\u2013385",
+      "NS2D and low-viscosity Burgers are named without displayed outcomes; wave3D is absent and Heat3D lacks FOM. Narrow setup promises or give precise supporting records."
+    ],
+    [
+      "Medium",
+      "Missing uncertainty/generalization evidence",
+      "Near-break-even timings have no dispersion",
+      "PDF pp.6,8,18; Table3",
+      "Report timing IQR/paired interval, cases and repeats; timing repeats are not training seeds. Keep development labels and source-only seed evidence distinctions."
+    ],
+    [
+      "High",
+      "Limitation of practical evidence",
+      "Nonlinear cases do not establish useful physical speed advantage",
+      "PDF pp.7\u20138; Table4 and limitations",
+      "Burgers3D fails physical refinement, NS and wave miss targets, and efficient FOMs dominate current nonlinear panels. Position as a tunability study unless a prospective physically resolved nonlinear win is obtained."
+    ]
+  ],
+  "resolved": [
+    "Sampled ratios and source hashes match.",
+    "No old universal dominance or 324x claim.",
+    "Stalls, wrong branches, failed targets, development/final distinctions and timing conventions are disclosed.",
+    "Correction rank replaces unsupported solver-cap tunability claims."
+  ],
+  "qualification": "No verified fabrication or arithmetic defect; review concerns inference and missing publication-facing evidence."
+}

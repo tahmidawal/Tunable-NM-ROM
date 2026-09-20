@@ -1,0 +1,76 @@
+{
+  "status": "Review findings, not fixes or new experimental results",
+  "reviewed_commit": "e6f07fe5",
+  "issues": [
+    {
+      "priority": "Must fix \u2014 verified overstatement",
+      "issue": "Secondary success criterion is labelled the full preregistered criterion",
+      "evidence": "Reproducibility review, independently checked by coordinator: main.tex:601; b-seeds DESIGN.md:188\u2013200,415\u2013432; PDF Table D.1.",
+      "action": "Replace full criterion with secondary knob criterion; define it and explicitly preserve failed sealed-ratio and universal-convergence checks.",
+      "work": "Precise prose correction; no measured value changes."
+    },
+    {
+      "priority": "Must fix",
+      "issue": "Method scope and missing time-dependent equations",
+      "evidence": "Math review: PDF pp.3,14\u201317; wave curvature/RK4 arm differs from the general fully discrete residual; corrected heat equations absent.",
+      "action": "Add actual wave and corrected-heat formulas; qualify the general method and heat endpoint; specify the block-damped update.",
+      "work": "Source audit and concise writing; no new benchmark implied."
+    },
+    {
+      "priority": "Must fix \u2014 verified documentation mismatch",
+      "issue": "Heat2D measurement provenance and reference convention",
+      "evidence": "T01_problems.tex:10 and T01b_spec.tex:11 name3511417; rewrite-provenance.json Heat rows name3529772.",
+      "action": "Regenerate configuration rows from the displayed run, separate lineage/measurement identifiers and label refined-reference error.",
+      "work": "Source-driven table/caption correction."
+    },
+    {
+      "priority": "Must fix",
+      "issue": "Missing experimental definitions and stale coverage promises",
+      "evidence": "Experiment review: PDF pp.5\u20137,16\u201317; no complete 3D family/cohort/configuration table; NS2D and low-viscosity outcomes announced but not shown.",
+      "action": "Generate a compact configuration table from each displayed source and narrow the setup to supported cases.",
+      "work": "Evidence integration and writing."
+    },
+    {
+      "priority": "Must fix",
+      "issue": "Historical Burgers comparison must identify its method/configuration",
+      "evidence": "Experiment reviewer independently verifies tight/relaxed ratios from original paired calls; PDF p.6 lower Table2 lacks full older-ROM configuration.",
+      "action": "Keep both named comparisons and their unequal-error/stall caveats; add the old checkpoint, q/M/m, and stopping-contract distinction.",
+      "work": "Caption/source annotation, not replacement of measured numbers."
+    },
+    {
+      "priority": "Must fix",
+      "issue": "Nonlinear-head contribution exceeds what FOM-only evidence isolates",
+      "evidence": "Math and experiment reviews agree: reduction versus FOM does not identify benefit over linear enrichment inside the same bank.",
+      "action": "Keep FOM-only external tables; narrow the contribution, or choose a small same-bank internal ablation if demonstrating nonlinear necessity is essential.",
+      "work": "Claim revision now; optional additional evidence requires a separate decision."
+    },
+    {
+      "priority": "Must fix",
+      "issue": "Fixed-rank causal study and multi-seed scheduled study support different claims",
+      "evidence": "Experiment review: main Table5 fixes M on one development checkpoint; sealed Table D.1 changes M with q.",
+      "action": "Define success rules and keep the two claims separate. Strong generalization of rank-only tuning needs prospectively frozen fixed-M replication.",
+      "work": "Writing now; new run only if stronger claim is retained."
+    },
+    {
+      "priority": "Important",
+      "issue": "Timing uncertainty and comparator scope",
+      "evidence": "Experiment review: near-break-even ratios lack uncertainty; named CG is not the fastest applicable FOM guarantee.",
+      "action": "Add compact timing dispersion and case/repeat counts, identify tested CG/preconditioner controls, and limit speed claims to those baselines.",
+      "work": "Generate uncertainty from retained repetitions where available; disclose unavailable counts."
+    },
+    {
+      "priority": "Important",
+      "issue": "Rank, skip and EQ guarantees need qualification",
+      "evidence": "Math review: QR rank assumptions omitted, linear skip does not guarantee descent, finite-state EQ check is not a global error certificate.",
+      "action": "State rank tests/fallbacks and empirical validation scope. Describe conditioning as motivation, not guarantee.",
+      "work": "Method clarification from implementation."
+    },
+    {
+      "priority": "Important",
+      "issue": "Portable evidence and geometry/input dependencies",
+      "evidence": "Reproducibility review: absolute-path build, no artifact entry point, missing L-shape factor/tests and source/parameter arrow in diagram.",
+      "action": "Prepare relative-path evidence/build instructions; add concise geometry details and input dependency; publishing artifact needs separate authorization.",
+      "work": "Packaging and compact method/diagram fixes."
+    }
+  ]
+}

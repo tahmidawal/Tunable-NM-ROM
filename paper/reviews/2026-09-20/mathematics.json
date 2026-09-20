@@ -1,0 +1,63 @@
+{
+  "agent": "/root/review_math",
+  "assessment": "Weak reject / major revision",
+  "confidence": "4/5",
+  "findings": [
+    [
+      "High",
+      "Missing evidence",
+      "Nonlinear-head benefit is not isolated",
+      "PDF pp.1\u20132,6\u20138; main.tex:112\u2013145,415\u2013422,540\u2013557",
+      "FOM comparisons show reduction benefit, not benefit over nested linear enrichment. Add a compact same-bank internal ablation or narrow the contribution."
+    ],
+    [
+      "High",
+      "Verified omission/scope mismatch",
+      "Wave and corrected heat formulations are incomplete",
+      "PDF pp.3,14,16\u201317; main.tex:225\u2013267; method-details.tex:57\u201388",
+      "The retained wave arm uses continuous acceleration with a decoder-curvature term and RK4, rather than the common fully discrete overdetermined objective; its q32 setting is square. State the actual wave formulation and corrected heat recurrence. This does not establish a code error."
+    ],
+    [
+      "High/medium",
+      "Missing assumptions",
+      "Heat exact modal propagation is ambiguous",
+      "PDF pp.3,14; main.tex:257\u2013265; method-details.tex:83\u201388",
+      "Distinguish projected Crank\u2013Nicolson powers from the exponential of a reduced continuous generator. Exact physical modal propagation requires appropriate invariance; specify which operator is propagated."
+    ],
+    [
+      "Medium",
+      "Verified omission",
+      "Correction construction and rank assumptions are missing",
+      "PDF pp.3,14, equations2,6",
+      "Specify per-PDE coefficient metric, snapshots, ordering, full-span completion and rank fallback. Nesting guarantees only monotonic globally minimized objective, not local-solver/full-state errors."
+    ],
+    [
+      "Medium",
+      "Missing qualification",
+      "EQ certification scope is finite-state empirical validation",
+      "PDF pp.4,15,18; equations10\u201311, Table D.2",
+      "Dense-solver reachable-state checks do not establish all EQ-optimizer states or derivative fidelity. Specify what confirmed means and retain actual-returned-state checks or limitations."
+    ],
+    [
+      "Medium",
+      "Verified omission",
+      "Block-damped Burgers update is not reconstructible",
+      "PDF pp.3,15,18; main.tex:267\u2013292",
+      "The displayed scalar damping equation does not define separate block damping or elimination. Give the actual block update and distinguish it from Poisson exact elimination."
+    ],
+    [
+      "Medium/low",
+      "Mathematical overstatement",
+      "Linear skip does not guarantee a usable descent direction",
+      "PDF p.4; main.tex:317\u2013331",
+      "The nonlinear derivative can cancel the skip and projection can annihilate it. Describe conditioning as motivation and state actual rank checks."
+    ]
+  ],
+  "resolved": [
+    "Nonlinear heat recurrence replaces the old linear-latent derivation.",
+    "Fixed-test weak least squares is distinguished from tangent Galerkin.",
+    "Poisson constant-projector elimination is correct under full-rank assumptions.",
+    "Online resizing of NNLS, projected CG and universal superiority are no longer claimed."
+  ],
+  "qualification": "No false reported numerical values established; missing assumptions and publication-facing evidence are distinguished from code errors."
+}

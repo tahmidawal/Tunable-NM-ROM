@@ -1,0 +1,17 @@
+Reading additional input from stdin...
+OpenAI Codex v0.155.1
+--------
+workdir: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-nmrom-baselines
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a0c113-dc92-7910-b1b6-1ab9f1472366
+--------
+user
+You are an independent auditor. Read experiments/nmrom-baselines/DESIGN.md, and kimae.py, lspg.py, gate_kim2d.py, family.py in experiments/nmrom-baselines/, and the paper text at experiments/nmrom-baselines/refs/kim2022-arxiv-2009.11990v2.txt (Sections 3.2, 4, 6.2). Audit adversarially and concisely: (1) does the JAX implementation faithfully implement Kim et al. 2022 shallow masked autoencoder (mask construction, M2, init, normalisation, training protocol), NM-LSPG Gauss-Newton and NM-LSPG-HR (gappy POD residual, greedy oversampling, active-path subnet)? List every deviation and whether it could bias the reproduction gate up or down. (2) Bugs: indexing/ordering of the 2D FOM (backward differences, Dirichlet), the neighbour table vs loc ordering in the HR residual, the error metric, dtype handling, the plateau/early-stopping logic, greedy_samples. (3) Is the pre-registered gate (median of 3 seeds <= 1.5% and LS-LSPG control >= 10%) sound and can the controls fail? (4) Fairness risks in the planned comparison on the shared Burgers family (DESIGN.md Section 3 and family.py): data leakage, tuning on validation, metric mismatches, timing/memory methodology. Give a numbered list of findings with severity (blocker/major/minor) and concrete fixes. Do not modify files.
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+codex
+I’ll check the code against the paper and pre-registered design, then rank discrepancies, bugs, and fairness risks by severity. I’ll keep the audit read-only.

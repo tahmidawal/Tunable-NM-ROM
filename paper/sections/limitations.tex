@@ -1,0 +1,40 @@
+% sections/limitations.tex -- written before the results, not after.
+\section{Limitations}
+\label{sec:limitations}
+
+\textbf{One checkpoint per PDE; three seeds on one ladder only.} Every
+headline rests on one training seed and one checkpoint per PDE. The Burgers
+scheduled ladder was repeated on \nSeedsCount{} seeds
+(Table~\ref{tab:seeds}): monotone on \nSeedsMonotoneEvolved{} of
+\nSeedsCount, meeting the knob bar on \nSeedsKnobBar{} of \nSeedsCount{}
+(\nSeedsUnconvergedCells{} did not converge), spans
+\nSeedsErrSpanMin--\nSeedsErrSpanMax{} in error. That lane amended its
+fidelity gate from $10^{-9}$ to $10^{-3}$ relative before reading any number,
+and its sealed cohort is not yet opened.
+\textbf{Development cohort}: six opened Burgers cases (32 held-out for the
+tuning study), eight wave and twelve Poisson.
+\textbf{2D only}; Navier--Stokes has a certified full-order solver but its
+reduced model failed its pre-registered gate at $K=16$ (\S\ref{sec:exp:linear}).
+\textbf{No cold-start comparison against a shallow masked-autoencoder ROM}; the
+classical comparison is POD-LSPG through our own solver, and the linear skip is
+a design choice, not ablated. \textbf{No theory}: no convergence guarantee, no
+quadrature-error bound on unseen states, no continuum error bound.
+\textbf{Operator errors are budget-limited}: \nOpLaneImproving{}
+U-Net/Transolver arms and \nOpFnoImproving{} FNO arms have recent best
+checkpoints, a heuristic rather than a convergence test, and none was
+tuned per family. The U-Net comparison survives
+a float64 and a second-seed control, but that margin is
+$\nOpCtrlMediumFSixtyFourMargin$\,pp and the float64 twins ran a quarter to half
+the epochs at equal wall clock; the Transolver arm below the ROM has no twin.
+\textbf{Quadrature rules above $q=32$ are marginal} (\S\ref{sec:exp:eq}).
+\textbf{The headline ladder was chosen after the fact}: $M=1088$ was selected
+after the crossed grid ran and the $M=256$ ladder fails the same bar.
+\textbf{Cross-job spread} of an identical cell is $\nQxmAnchorSpreadPct\,\%$.
+
+\textbf{The $1024^2$ frontier statement} rests on one job, on the evolved
+metric only, and on rules transferred from $256^2$; a $512^2$ panel on the
+$256^2$ GPU model is queued to bracket it (Table~\ref{tab:inflight}).
+
+\paragraph{Pending cells.} Not in this draft, and no result sentence depends on
+them: the sealed cohort (\nSeedsStatus); the Navier--Stokes $K=32$ arm
+(\nNsKthirtyTwo).

@@ -1,0 +1,16 @@
+% Generated from the paired CG run-report snapshot; do not edit.
+\small
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Problem & Method & Error (\%) & GPU ms & CG error (\%) & CG ms & $S$ \\
+\midrule
+Poisson & NM-ROM, $q=0$ & 3.1495 & 3.9406 & 0.0722 & 60.0170 & 15.23$\times$ \\
+Poisson & NM-ROM, $q=256$ & 0.9648 & 4.3188 & 0.0722 & 60.0170 & 13.90$\times$ \\
+Poisson & Linear-bank ROM & 0.7421 & 1.8300 & 0.0722 & 60.0170 & 32.80$\times$ \\
+Wave & NM-ROM, $q=0$ & 6.1066 & 192.4624 & 5.1413 & 583.0259 & 3.03$\times$ \\
+Wave & NM-ROM, $q=32$ & 2.8094 & 2529.4450 & 0.4010 & 1043.3681 & 0.41$\times$ \\
+Wave & Linear-bank ROM & 2.8192 & 4.5624 & 0.4010 & 1043.3681 & 228.69$\times$ \\
+Heat & NM-ROM & 4.5555 & 12.2062 & 0.7707 & 59.1780 & 4.85$\times$ \\
+Heat & Linear-bank ROM & 1.6758 & 0.8381 & 0.7707 & 59.1780 & 70.61$\times$ \\
+\bottomrule
+\end{tabular}

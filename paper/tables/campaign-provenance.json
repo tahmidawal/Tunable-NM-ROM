@@ -1,0 +1,75 @@
+{
+  "manifest": {
+    "status": "audited development; final 3D cohorts unopened",
+    "sources": {
+      "results.json": {
+        "repository_path": "reports/2026-09-20-3d-paper-results.json",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "ad7067a94593ac740cb49ef88f92e37d995eb16e940a18452b4694ae25c36126"
+      },
+      "selection.json": {
+        "repository_path": "reports/2026-09-20-3d-paper-panel-selection.json",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "869a0d03c2082f89f95fc676e08ea6c2152619f08ef124f740fe0aeb43f6c2e1"
+      },
+      "protocol.json": {
+        "repository_path": "reports/2026-09-20-3d-paper-panels/protocol.json",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "570a6e3348c4bc31c095a0b2d32fdd76f1c1e6c1c144333562f0a5e4c9ab3689"
+      },
+      "oracle.json": {
+        "repository_path": "experiments/p-linear/reports/oracle-confirmation.json",
+        "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+        "sha256": "1e02a38cac6c2e8b562cfe030d4911bc852f163e8447fdcae851f68622357e4b"
+      },
+      "oracle-audit.json": {
+        "repository_path": "experiments/p-linear/artifacts/plorc01/audit.json",
+        "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+        "sha256": "4a95c583284738bfe19482b1fd9e01fbf07225916af3c93308dc7e4dd3fac8d6"
+      },
+      "oracle-provenance-audit.json": {
+        "repository_path": "experiments/p-linear/artifacts/plorc01/provenance-audit.json",
+        "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+        "sha256": "3d416681178e736540005b36a8fde149728bd011a9d105897a01be10c376d25c"
+      },
+      "oracle-restore-audit.json": {
+        "repository_path": "experiments/p-linear/artifacts/plorc01/restore-audit.json",
+        "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+        "sha256": "d8d33d0c9c8f84d4b52187a9a557e1c56c69dc48277fc186a9e1f30ae37453e8"
+      },
+      "burgers3d-b3d004-n33.pdf": {
+        "repository_path": "reports/2026-09-20-3d-paper-panels/burgers3d-b3d004-n33.pdf",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "04288652db6c4b889016fcaeb68635a5c78b3083433539cb43b9c23c2573186b"
+      },
+      "heat3d-extra03-n64.pdf": {
+        "repository_path": "reports/2026-09-20-3d-paper-panels/heat3d-extra03-n64.pdf",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "8dd252b8dcbe0dbadad16475a4ed3584a7d99016738d93e78eb26e67ed2e6bde"
+      },
+      "poisson3d-extra03-n64.pdf": {
+        "repository_path": "reports/2026-09-20-3d-paper-panels/poisson3d-extra03-n64.pdf",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "2e5ba5e8357e3a1fd2258279e614a72523208c3a64fb9bd08df12847f8099b7a"
+      },
+      "ns3d-extra03-n32.pdf": {
+        "repository_path": "reports/2026-09-20-3d-paper-panels/ns3d-extra03-n32.pdf",
+        "commit": "57ac3fc30d3136265e58cad4d746ea0bc28a2bf3",
+        "sha256": "64777aa85c1868d4c4da0ed84a003dfc1a3f4dca780c4c7f1963bc2bb0b1c800"
+      }
+    }
+  },
+  "audit": {
+    "passed": true,
+    "oracle_rows": 20,
+    "oracle_fits": 240,
+    "independent_oracle_checks": 1595,
+    "development_rows": 81,
+    "development_panels": 4,
+    "operator_training_records": 16,
+    "nmrom_training_records": 11,
+    "snapshot_manifest_sha256": "acf936df1a0e164cadd9de9d6bb5d4282c0b12ac63dd4614f709b162aa3501f1",
+    "status": "development only; final confirmation pending",
+    "interpretation": "paired measured errors; no cross-job ratios or optimality claim"
+  }
+}

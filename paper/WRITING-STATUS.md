@@ -1,0 +1,463 @@
+# Writing status — ICLR 2027 draft
+
+**Authoritative location:** `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/paper`.
+All future manuscript edits and builds occur only here, as explicitly required by
+the user. The paper-refresh worktree is a historical source, not an editing target.
+The pre-migration root copy is preserved under `archives/paper-before-canonical-2026-09-20/`.
+
+The user-authorized positioning rewrite is now in `main.tex` and `main.pdf`. The
+original section order and comparison/configuration/control table roles are retained;
+correction rank is the primary representation control. Paired CG comparisons have
+been added with explicit baseline errors and timings. The linear-bank method is
+labelled as a baseline, and the existing three-dimensional development snapshot
+remains separate from later final evaluations.
+
+Run `./build.sh` followed by the absolute local Python environment on
+`check_rewrite.py` for the current numerical-preservation, provenance, style and
+layout checks. The earlier exact-prose checks below apply to their historical
+commits: `check_campaign_integration.py` deliberately rejects this authorized
+rewrite because its recorded wording no longer matches. Its numerical-preservation
+checks passed before the historical source-hash assertion. The current check
+replaces that editorial-scope check; it does not replace scientific run audits.
+
+Official formatting source: https://iclr.cc/Conferences/2027/AuthorGuidelines
+Style-byte verification: `style-verification.json`. No submission, merge or push
+was performed. The canonical campaign state remains in the root `LAB-LOG.md`.
+
+## Earlier bounded integrity repair (historical)
+
+The authoritative manuscript is `main.tex`, with the user's title and adopted abstract
+preserved. The current correction details and remaining limitations are in the top
+section of `ABSTRACT-2026-09-17.md`. Existing scientific values are unchanged; the new
+linear-protocol table distinguishes literal and amended criteria. Low-viscosity
+provenance is pinned to the repaired summary with separate gate/training/panel sources.
+Unsupported operator lower-bound and NS causal-capacity wording is removed, and
+exploratory NS phase-three coverage is stated correctly. Poisson oracle retractions,
+wave amendment history, and low-viscosity exceptions remain visible.
+
+The separate three-dimensional campaign is ongoing and is not yet part of this paper.
+Historical statements below that the entire experimental programme is complete are
+superseded. The current PDF passes the existing submission page limit; exact build
+and numerical-preservation checks are in `integrity-repair-2026-09-20.json`, generated
+by `check_integrity_repair.py`. Source-report repairs outside this tree and user
+publication/merge choices remain outside this bounded manuscript repair.
+
+## 2026-09-19 — b-panel admissibility corrected to DESIGN §5 (b-panel 25434a27) (history)
+
+Every b-panel pin moved to 25434a27 (lane §A13). The lane's audit had checked its convergence rule
+against each arm's own gradient tolerance, so the 1e-3 arms counted as converged and entered the
+admissible frontiers and ratios; DESIGN §5 requires 1e-6 stationarity at every step, or a
+residual-rule exit. `admissible` (= `admissible_design5`) and the `nondominated_*_admissible` /
+`_reduced_only` rows are now §5; `converged` is `converged_design5`; the pre-A13 flags survive as
+`*_own_gtol` and define nothing. `gen_tables.py` and `figures/gen_fig_tunability_family.py` read
+`converged_design5`; no other generator key changed.
+
+Numbers that moved (all generated): admissible reduced 39→27 (256²), 31→23 (512²), 20→16 (1024²);
+reduced arms on the 1024² (GPU ms, worst evolved) frontier 5→3, the survivors q0/q16/q32 eqxfer at
+1e-6; 1024² cheapest admissible reduced / cheapest same-job FOM 1.82→2.27x and vs fft_tight
+0.153→0.191x. 256² and 512² ratios (4.48x / 2.92x) and both "nothing reduced is on the frontier"
+verdicts are unchanged. Figure 2B now plots 36 admissible subjects at 256² (was 48); its frontier is
+unchanged. The loose ladders' all-converged verdicts flip to "no" (not quoted anywhere).
+
+Text: §6.1's opener states the generated 1024² count, its counts and the ratio were already macros;
+§5 states the admissibility rule; the three appendix panel tables carry "adm. (§5)" and a
+superseded "adm. (own tol.)" column, with the 1e-3 arms kept and the correction plus the commit in
+the tab:panel-all caption; an "Admissible" glossary entry; §6.3's tolerance saving says those arms
+are not admissible. The abstract quotes no 1024² count or ratio (verified) and Limitations never
+mentioned the 1e-3 arms. Three lines recovered by wording for the page budget (a §6 sentence that
+restated §5's baseline list, the duplicated "make the framework practical" in contribution 2, and
+the 1024² paragraph's opening clause); main text ends on page 9.
+
+## 2026-09-18 — NS three-layer correction folded in (ns2d 2d70f36a) (history)
+
+Every ns2d pin moved to 2d70f36a (lane §A14). The ns304 solve-layer ratio is now the matched
+statistic 1.4–2.5x (2.51 at q=0 → 1.40 at q=R), the old 2.9–10.8x kept only as a superseded
+secondary with the reason (median over 48 states incl. t=0 vs median over cases of the worst evolved
+time); the loss accumulates along the trajectory (per-time ratio 1.44 → 3.85 at q=0) and the t=1
+enstrophy rows are printed; T11g carries the matched layers and a solved/manifold column. Nothing in
+the main text quoted the old ratio. The Burgers head-ablation sentence in §6.4 now qualifies the
+0.018 pp solver gap as all-times / t=0-dominated. Lane-external same-solver control ratios are not in
+the paper. Main text still ends on page 9. (Committed in two steps: b5b1a681 generator + appendix,
+then the main-text qualification and these records.)
+
+## 2026-09-18 — secondary comparison against plain CG added (history)
+
+User request: show the results against the previous submission's comparator (unpreconditioned CG
+at 1e-6) beside the competitive one, as a SECONDARY comparison. New generated table `T21_cg_comparator`
+(extended results, "Against the previous submission's comparator: conjugate gradient"): Poisson
+256²/1024² (p-linear jobs 3780692/3783813): every rung q=0–256, the linear top rung and POD-512 with
+complete-query ms, CG 1e-6 ms and CG/ROM, DST ms and DST/ROM, all same job; L-shape 64²–512² (lshape
+jobs 3784662/3784663/3789568): the reported head (head_sdf_R512_K16, q=0/32/64/128) and POD-128
+against CG at the lane's tightest tolerance (1e-10; no 1e-6 arm exists there), SuperLU and the CPU
+IC(0)-PCG, all same job. Generated macros: Poisson CG-1e-6/ROM 3.7–23.4x, DST faster than every rung
+1.3–4.0x; L-shape CG-1e-10/head 2.9–14.9x. Heat omitted and said so in the caption: its committed CG
+record (mr-heat2d iterative_cg09, job 3529772, commit 1f576c9e) is per-invocation raw timing of an
+earlier decoder family with no aggregated table, and re-aggregating it here would be new analysis.
+Burgers has no CG comparator (Newton FOM), said in the caption. Main text: one sentence in the §6.5
+linear paragraph (3.7–23.4x faster than CG 1e-6 on Poisson in the same job; the transform faster
+still by 1.3–4.0x, hence our comparator) and one clause in the §5 baselines paragraph (the earlier
+comparison against plain CG is kept in the appendix for continuity). Page budget recovered by
+wording only (linear, NS and Limitations paragraphs, the conclusion); no evidence removed.
+
+## 2026-09-18 — glance table moved to Appendix A; main text back on 9 pages (history)
+
+The ICLR 2027 kit allows 9 main-text pages at submission, so the "Experiments at a glance" table
+left §5 and is now the first appendix (Appendix A, Table A.1, exactly as generated); §6 opens with
+"All results here have full tables in the appendix; Table A.1 maps experiments to question, jobs and
+tables." Main-text tables are 1–3 in order (panels, ladder, L-shape). The three lines the §6
+sentence cost were recovered by wording only (§6 intro, §6.1 panel and operator paragraphs, §6.3
+opening, the rank-vs-test paragraph); nothing was cut. Main text ends on page 9 with the conclusion
+complete; the reproducibility statement opens page 10.
+
+## 2026-09-18 — reader map: "Experiments at a glance" + appendix float numbering (history)
+
+The user read 5573956a and could not find the experiments: 47 tables sat in Appendices D–F with no
+map from the main text, and a main-text pointer "(Table 12)" read like a missing float. Two fixes in
+one commit. (1) `T00_glance` — generated, 20 rows in the coordinator's order (fixed-M ladder, rank x
+test count, three seeds, sealed cohort, same-job panels, reference-error column, mesh ladder, speed at
+parity, solver knobs, quadrature certification and re-draw, two rule sets and transfers, neural
+operators, head ablation, three layers, linear PDEs, Navier–Stokes, L-shape, low-viscosity, training
+study, SMA-NM-ROM not run); columns experiment / question / PDE, mesh / jobs (lane) / where; the job
+counts are distinct 7-digit job ids of the named T02 provenance rows, so no number is typed. Placed
+at the end of §5 as Table 1 (page 6), with one sentence at the top of §6 pointing to it and to
+Appendices D–E. (2) "Table 12" was not a float but `\ref{tab:qxm}` rendering an appendix table's
+number; appendix tables and figures are now numbered per appendix section (E.3, B.1) via
+`\@addtoreset` after `\appendix`, so main-text tables read 1–4 in order and every appendix pointer
+is visibly one. Page budget: the glance table (~0.55 page) pushes the Limitations and the conclusion
+onto page 10; nothing else moved and no evidence was removed. Overfull-box count unchanged.
+
+## 2026-09-18 — ns2d closed; the paper is complete on the evidence side (history)
+
+ns2d closed at 9830d202 (ns302, job 3808495, A100 pax106: the ns203 recipe at 4x the data, 512 gated
++ 1536 extra trajectories, same 14-dimensional family). Every ns2d pin (`ns2d_summary`,
+`ns302/303/304_result`, `ns2d_design`) reads that commit. T11e is final with four settings: K=16,
+K=32, family dimension 8, 2048 trajectories; H-ORACLE fails in all four (generated ratios 1.15–1.46);
+no phase-3 job was ever submitted. Generated ns302 facts: oracle median 16.66 %, POD-16 24.25 %,
+ratio 1.46; B-FLOOR bank 13.84 % vs POD-256 11.57 % (1.20), bank median 3.75 %; H-TRAIN recon
+12.39 % (5.03 % at 512 trajectories); held-out/training gap 1.3 (was 4.0); POD/oracle 0.52 at t=0,
+1.39 on evolved times; 6 budget exits. Reading in the caption and §6.5: more data turned a
+generalisation failure into a capacity failure at the same head. B-DATA's value-path pass is one
+sentence in the T11e caption, nothing more. §6.5 cell-level sentence final; "one arm still running"
+gone; conclusion "Next" adds "another head class for Navier–Stokes". **The in-flight register is
+empty** (the landed entries it still carried moved out; T02 has their provenance) and the appendix
+caption says so. No Limitations NS clause existed to finalise. Page budget kept by compressing the
+two new sentences only.
+
+## 2026-09-18 — readability pass applied (history)
+
+The coordinator's readability pass (scratchpad `readability-pass.md`, on 0366a6b3) is applied in one
+commit: sentence splits and plainer connectives in the abstract, introduction and contributions, the
+opening paragraph of each results subsection, the Limitations and the conclusion; no macro, number or
+claim changed. **The abstract is now Abstract A** (<= 250 words; final count in the ledger) with the
+first-use glosses and "on one checkpoint" restored; the previous 397-word abstract and **Abstract B**
+(~200 words, one line shorter) are recorded verbatim in `ABSTRACT-2026-09-17.md` for the user to pick.
+Eight terms of art now carry a one-clause gloss at first use (EQ, NNLS, Kolmogorov n-width,
+ladder/rung, sealed cohort, development cohort, POD-LSPG, marginal rule status, same-job); the
+glossary appendix stays. Skipped: the optional "What we do not claim" rewrite (page budget; the list
+is parallel). Limitations (iv) taken with "one transfer-draw spread" for precision. The abstract's
+shrink paid for every split: the main text still ends on page 9 with no evidence dropped.
+
+## 2026-09-17 night — b-lowvisc folded in as an appendix cell (history)
+
+b-lowvisc closed at df92e40d (panel job 3817807, A100-40GB, 27 subjects, 0 budget exits; gate
+3789639; training 3804337). `GIT_PINS['lowvisc_summary']` reads the lane's summary.json at that
+commit. New builder `build_lowvisc()`: T20 (fixed-M=1088 neural ladder, M=256 control, the
+(256, 2176) subject; vs-ref column) and T20b (POD-LSPG k'=16–512, free R=512 bank, full-order
+tolerance/step grid), both with non-dominated flags against all subjects and against reduced
+subjects only; ~55 `nLv*` macros; T02 provenance row; lvt01 removed from the register. Every
+caption, the appendix subsection title and both main-text sentences carry the F4 caveat: the
+converged discrete operator is 19.3–20.9 % from the 4096² reference (5.17x the incumbent cell's
+discretisation error), so everything is reduced-versus-reduced on the same discrete system.
+Generated facts: criterion P fails (non-dominated set = nt1e-2_dt01, nt1e-3_dt005, dense_tight,
+fft_tight; cheapest full-order setting beating every reduced subject nt1e-2_dt01 at 14.0 ms /
+3.90 %); F2 does not fire (POD-512 floor 12.09x, trained bank floor 19.00x, head solved 3.27x,
+best-found 4.48x, solved/best-found 0.74); fixed-M ladder 9.05 → 6.67 % monotone, all converged,
+span 1.36x for 3.25x cost, knob bar not met; M=256 control not monotone; most accurate reduced
+subject q256_M2176 at 6.19 % / 2864 ms; POD-LSPG 57.98 → 11.25 % then 17.78 % at k'=512 (not
+monotone); free bank 7.79 % at 3175 ms. Departures from the lane message, all generated: every
+neural rung (already q=0 at 9.05 %) beats every POD-LSPG rank (best 11.25 %); the free bank's own
+solve is beaten only from q=128; the reduced-only frontier holds q=64/128/256 (M=1088) — the paper
+says "every neural rung beats every POD-LSPG rank and q>=64 sits on the reduced-only frontier".
+Two sentences at the end of the NS paragraph in §6.5, one Limitations clause in (ii), the
+conclusion's "Next" now reads "a resolved low-viscosity cell and unstructured meshes". Page budget
+kept by wording trims on pages 8–9 (linear, NS, L-shape paragraphs and the Limitations; the
+Limitations now read "(vi) No convergence or quadrature-error theory", "(iv) ... 11 of 12 arms
+improving" via a new generated total).
+
+## 2026-09-17 night — ns303 lower-dimensional family folded in (history)
+
+ns2d committed ns303 (job 3808498, A100 pax105) at 5ea1cc30; every ns2d pin (`ns2d_summary`,
+`ns304_result`, new `ns303_result`, new `ns2d_design`) moved to that commit. T11e gains a row block
+"$256^2$ (family dim. 8)": the same K=16/R=256 recipe on the 3-mode family; B-ORTH/B-FLOOR/H-TRAIN
+pass, H-ORACLE fails at POD-16/oracle 1.39 (bar 2.0). The family's intrinsic dimensions (14 → 8) are
+parsed by regex from the lane's DESIGN §A12 ("intrinsic dimension from 14 to 8") and the GPU/host
+from the same paragraph, so no number is typed. Generated: oracle median 5.28 %, POD-16 7.37 %,
+held-out/train 3.8 (base 4.0), POD/oracle 1.83 at t=0 and 1.44 on evolved times, bank floor
+median 0.277 % (B-FLOOR 1.03), 4 budget exits; the error drops against ns203 are POD-16 3.3x, oracle
+3.8x, bank floor 4.4x — printed as the 3.3–4.4x range, not "about four-fold". §6.5: one sentence
+(easier manifold lowers every error, leaves the advantage at 1.39x and the gap near 3.8) and the
+cell-level statement (across K=16/32, family dimension 14/8 and 128–512 trajectories this head class
+does not beat POD-K by the pre-registered 2x on held-out decaying 2D NS; one arm, 4x data, still
+running). Register: ns303 landed; ns302 (3808495) stays as the last arm. Page budget: the §6.5
+heading now starts on page 8 after wording trims in §6.2–6.4 (rank-vs-test, quadrature, validate,
+head paragraphs) and §6.5; the conclusion ends page 9.
+
+## 2026-09-17 night — ns304 exploratory ladder folded in (history)
+
+ns2d committed ns304 (job 3808502, A100 80GB) at 46650a1e; `GIT_PINS` for `ns2d_summary` moved
+from f63de724, and a second pinned source `ns304_result` (the lane's `artifacts/ns304/result.json`)
+supplies the config (K=32, R=512, M_FIXED=2176, 8 cases, 3 reps), the GPU and the lane's
+`residual_energy_captured` per q (26/44/68/92/100 %; a squared-singular-value recomputation gave
+27/46/71/96/100 and was discarded in favour of the lane's field). T11g (per rung: neural worst /
+median / ms / budget exits, manifold-layer median, bank floor, energy, matched POD-LSPG at k'=K+q,
+non-dominated flags) and T11h (FOM tolerance ladder) live in the extended-results appendix under
+"Exploratory ladder after the failed gate (not a phase-3 result)"; two sentences in §6.5. Every
+table, caption, macro comment and sentence carries the label "exploratory after a failed phase-2
+gate". Generated facts: worst evolved 68.77 -> 6.01 % (11.4x for 3.9x cost), monotone in median
+(yes), in worst (no, one inversion q0->q32), zero budget exits; manifold layer 10.55 -> 0.2254 %
+(= bank floor) only at q=R=512; solve layer 2.9–10.8x the manifold layer (median/median — the
+lane's "4–10x" is a different ratio and is not printed); POD-LSPG more accurate at every rung and
+cheaper at 5 of 6 rungs (at q=512 POD-544 53.9 s vs neural 52.6 s — the message's "cheaper at every
+rung" is not what the rows give; the paper says "all but the top"); non-dominated set = six FOM
+settings + pod_k32, 0 neural rungs. Register: ns304 landed; ns302–ns303 running. Page budget kept
+by wording trims in §6.5 and the Limitations (no claim removed).
+
+## 2026-09-17 night — sealed cohort folded in (history)
+
+b-seeds sealed cohort landed at lane commit be9415ab (job 3804465, A100-40GB); `GIT_PINS` moved
+from e533b48e. No pending cell remains. T13 (per-rung sealed vs development seed means with the
+lane's C2/C2n ratios, incumbent sealed values and times) and T13b (per-checkpoint verdicts) are
+generated; the main-text ladder table carries a "sealed evolved %" column beside the development
+column for the scheduled rows (same checkpoint; costs stay per job); the fixed-M rows are unchanged.
+Sealed result: all four checkpoints monotone on both metrics; the lane's per-checkpoint knob bar passes on 3 of 4 (seed2 fails on its unconverged q=64 rung, not on span); top rung
+0.59–0.68 % across the four. Pre-registered F2 applies: C2/C2n fail at q=0 for the incumbent alone
+(sealed 10.11 % vs development 1.89 %, ratio 5.35; one sealed case converged to a wrong branch,
+gradient exit, zero budget exits; q=16 collapses all four checkpoints to 1.46–1.87 %) → sealed
+numbers are the headline for the scheduled ladder, T12 is demoted to seed variability, and the
+incumbent's development q=0 value (1.8890 %) appears only beside its sealed value, labelled
+development, never as a generalisation figure. C3 fails (seed2 sealed q=64 on budget on one case;
+seed3 development q=256): those rungs are marked unconverged, reported not tuned. Prose: seeds
+paragraph in §6.3 leads with the sealed result; abstract adds "and on a sealed cohort" with the
+top-rung range via macros; Limitations (i) states the wrong-branch cold start at q=0 as a failure
+mode that q>=16 removed here without a general claim. Register: 3804465 out; lvt01 and
+ns302–ns304 remain. Page budget: main text ends on page 9 after trims in §6.2–6.5 and the
+Limitations (no claim removed; wording only). Lane retraction (not the paper's): incomplete lab-log
+entry at 84a537ff.
+
+## 2026-09-17 night — round-2 review applied (history)
+
+Review round 2 (3/10 at d131ec11) applied item by item, one commit each; disposition in
+`private/REVIEW-ROUND2-DISPOSITION.md`. Claims changed where the review showed them false or
+unsupported (each recorded in `ABSTRACT-2026-09-17.md`): the operator premise; the vs-reference
+error (the knob moves the reduction error, 1.13x physically at 256²); the L-shape reframed (linear
+residual, CG named, POD-128 cheaper than the head); the two ladders separated and the incumbent
+disclosed as a favourable draw; one status vocabulary for quadrature rules; M=1088 pre-registered.
+Main text now carries four tables (ladder with vs-ref, panel summary, L-shape, seeds) and Figure 1;
+Figure 2 stays in Appendix B; main text ends on page 9. Open: title (user decision), no skip
+ablation (C3), thin parabolic leg, tab:sealed until job 3804465 lands, b-qxm unpinned (clean tree).
+b-panel 512² (bpn401) folded in at lane commit d2135501: the main-text panel table has three meshes.
+ns2d ns301 head-only data-scaling diagnosis folded in at f63de724 (one sentence in §6.5, T11f in the appendix; verdict kept at 'ambiguous').
+
+## 2026-09-17 late — REBUILT FROM THE OLD SOURCE (current state; everything below is history)
+
+**Release plan (double-blind).** The released/anonymised tree is `paper/` as committed, minus
+nothing; `private/` at the worktree root (the previous submission's source, its style file, the
+reviewer map, the review dispositions) is excluded and is never mirrored. `main.tex`'s header
+comment is stripped at release.
+
+User direction: keep the wording, style and title of the previous paper; update with the current
+architecture and the new results. `main.tex` is now the old NeurIPS `main.tex`
+(`private/old-neurips-main.tex`, archived outside the release tree) with the ICLR 2027 kit, the user-approved
+two-word title change (see `ABSTRACT-2026-09-17.md`), the same section order and voice, and only
+the overturned sentences rewritten. Details, derivations and every full table live in the
+appendices (`sections/appendix.tex`, `sections/method-details.tex`); the inline bibliography is
+`bib-inline.tex` (the old 74 entries plus 13 new ones). `main.tex` is canonical; `PAPER.md` is
+regenerated from it by `gen_paper_md.py` and no longer carries the bibliography.
+
+Status for the reader is a comment block at the top of `main.tex` (removed before submission):
+pending T13 / seeds-sealed (job 3804465) only (ns2d closed at 50bf36da: K=32 fails the same bar); in flight lvt01
+(3804337) and bpn401 (3805065); Figure 2 sits in Appendix B for the page budget; provisional T12 until T13, the 1024² frontier statement until
+bpn401, the two top EQ rungs single-draw; open user decisions: headline Burgers metric (decisive
+at 1024²), and the abstract keeps the old opening two sentences.
+
+Coordinator notes carried over: the L-shape is Poisson (linear residual) and is written as the
+no-fast-transform case; the committed seeds summary shows the incumbent better than every seed at
+q=16–128 on the evolved metric, so "incumbent inside the seed spread" was not written; the bpn301
+recheck lists 48 arms (message said 47).
+
+## 2026-09-17 evening — reader-ready pass (this is the current state; sections below are history)
+
+Lanes read in this build, all from **committed** lane state (`GIT_PINS` in `gen_tables.py` pins
+b-panel 13ddecac, b-seeds e533b48e; b-qxm b4e38103 and lshape dc762ed3 are clean trees):
+
+| lane | state | what the paper reads |
+|---|---|---|
+| b-panel | closed | bpn301 (3789570) = 256² with both rule sets, replaces bpn101; bpn203 (3789572, H200) = 1024². T3, T3b, T5, T5b. Claim mesh-qualified in §1, §5.1, abstract ("at 256²"). bpn401 (3805065, 512²) in flight |
+| b-qxm | closed | pin dropped; §5.2 numbers unchanged; q=512 extension unconverged (one sentence, not plotted); M-saturation at q=256 (one sentence); five jobs in T2 |
+| lshape | closed | 64²–512² solves (T18c); head q=64 2.77× at 256² and 7.60× at 512² cheaper than SuperLU; in abstract, Contribution 3, §5.6, conclusion |
+| b-seeds | closed | T12 + T12b (development) and T13 + T13b (sealed, job 3804465) from be9415ab; sealed values are the scheduled ladder's headline |
+| b-eqtop, no-second, w-ladder, p-linear, ns2d | unchanged | same summaries as the previous provenance |
+| b-lowvisc | register only | lvt01 (3804337) in T2c; no prose |
+
+Figures: Fig. 2 (architecture) now sits in §3.2 beside eq. (ladder); Appendix B keeps the block
+table. Figs. 1–3 have standalone captions (what is plotted, lane/job, one takeaway).
+`PAPER.md` opens with an italic "Status for the reader" block (generated; removed before submission).
+
+Remaining PENDING markers: none (T13 landed at be9415ab; ns2d closed at 50bf36da).
+
+Open decisions (user's): headline Burgers metric — now decisive for §5.1 at 1024² (reduced rungs
+non-dominated on evolved only); sign-off on the abstract's opening two sentences (unchanged here).
+
+Coordinator notes: (1) the L-shape is Poisson, residual linear in the coefficients — written as the
+no-fast-transform case, not "nonlinear residual + manifold"; (2) the committed seeds summary shows
+the incumbent *better* than every seed at q=16–128 (evolved), so "incumbent inside the seed spread
+at every rung" was not written; (3) bpn301 recheck JSON lists 48 arms, the message said 47.
+
+Updated 2026-09-17 (third checkpoint: round-1 review addressed; see `REVIEW-ROUND1-DISPOSITION.md`). Build: `./build.sh` in this directory (regenerates `tables/` and
+`tables-md/` from the lanes' JSON, renders `PAPER.md` from the LaTeX sources, then
+`latexmk -pdf main.tex`); PDF at `paper/main.pdf` (git-ignored).
+
+**Canonical source from now on: `paper/PAPER.md`** (coordinator instruction 2026-09-17). It was
+rendered once from the LaTeX by `gen_paper_md.py`; user edits come back as diffs and are
+reconciled into `PAPER.md`; the LaTeX is a build target that may lag. Section headings in
+`PAPER.md` are numbered exactly as the LaTeX numbers them (2–7 main, A–E appendices) and must
+stay stable so the mirrored document can be matched section by section. Generated tables sit
+behind `<!-- table: Tnn_... -->` comments and are regenerated in place from `tables-md/`;
+prose numbers are in `tables-md/numbers.json`. Style: official ICLR 2027 kit
+(`iclr2027_conference.sty/.bst`, fetched from `media.iclr.cc/Conferences/ICLR2027/iclr-2027-style-files.zip`),
+anonymous, `\iclrfinalcopy` commented out.
+
+## Page count (superseded: after the 2026-09-17 evening pass the main text runs to page 10; the rebuild from the old source addresses the budget)
+
+26 pages total. Main text (intro through conclusion) ends on **page 9** (reproducibility statement opens page 10), within the
+ICLR 2027 submission limit of 9 pages (10 at camera-ready). References p10–11, appendices
+p12–24. Trim done by moving T1, T4, T7, T11b, T14 to the appendix (T3 and the family figure
+stay in the main text), compressing method §3.3–3.5 into three subsections, and shortening
+the intro, related work, setup, limitations and conclusion.
+
+## Sections
+
+| section | file | state |
+|---|---|---|
+| Abstract | `main.tex` | revision 2 of `ABSTRACT-2026-09-17.md`, verbatim |
+| 1 Introduction | `sections/intro.tex` | drafted; three contributions + methodological findings; non-claims; reviewer pointer |
+| 2 Related work | `related-work.tex` | extended (U-Net, PDEBench, Transolver; GNAT, accelerated ECSW; certification paragraph); five new bib entries verified 2026-09-17 against dblp/Springer (Ronneberger et al. 2015, MICCAI pp. 234–241), NeurIPS 2022 D&B proceedings (Takamoto et al.), PMLR v235 (Wu et al. 2024), JCP 242:623–647 (Carlberg et al. 2013) and IJNME 109(12):1623–1654 (Chapman et al. 2017) |
+| 3 Method | `methods.tex` | tightened; correction ladder §3.2 first-class; instance derivations + DISCREPANCY record moved to Appendix A (`sections/method-details.tex`) |
+| Fig. 1 architecture | `figures/architecture.tex` | TikZ translation of `architecture.mmd`; comparator row narrowed; `figures/architecture.png` rendered by a standalone compile for the Markdown |
+| 4 Setup | `sections/setup.tex` | drafted; T1 in |
+| 5.1 panel | `sections/results.tex` | drafted from b-panel; losses first |
+| 5.2 rank vs tests | `sections/results.tex` | drafted from b-qxm |
+| 5.3 EQ certification | `sections/results.tex` | drafted from b-eqtop, marked provisional (job 3783811 pending) |
+| 5.4 head ablation + layers + training | `sections/results.tex` | drafted |
+| 5.5 mesh ladder + speed | `sections/results.tex` | drafted |
+| 5.6 linear PDEs (Poisson both meshes, heat, waves, L-shape bank/head) | `sections/results.tex` | drafted; p-linear closed; heat rows (T11d) generated from the 2026-09-10 heat linear-bank report, job 3511417 |
+| 5.7 operators | `sections/results.tex` | drafted; claim withdrawn as instructed |
+| 6 Limitations | `sections/limitations.tex` | written first; includes single seed + 1e-9→1e-3 gate amendment, 2D only, dev cohort, no SMA cold start, operators as lower bounds, one-draw certification, fixed-M dearer baseline, pending cells |
+| 7 Conclusion | `sections/conclusion.tex` | drafted |
+| Reproducibility / AI-use statements | `main.tex` | present (AI-use is required by ICLR 2027) |
+| App. A method details | `sections/method-details.tex` | complete |
+| App. B provenance (T2) | generated | complete for landed lanes |
+| App. C full tables | `sections/appendix.tex` | T4b, T5, T6a/b, T8, T8b, T9b, T9c, T10, T11a, T11c, T12*, T13*, T14b, T15, T16, T18a/b |
+| App. D reviewer map | removed for double-blind; the private map stays in `REVIEWER-RESPONSE-MAP.md` |
+| App. E glossary | `sections/appendix.tex` | complete |
+| Fig. 2 tunability family | `figures/gen_fig_tunability_family.py` | re-pointed: A rank vs error (b-qxm, no cost axis because its cells span three jobs), B the 256² same-allocation panel (b-panel), C the primary-rule EQ ladder vs dense twins (b-eqtop, provisional); paired JSON with SHA256s; included in §5.1 |
+
+## Placeholders, from `tables/PENDING.md` (regenerated each build)
+
+| placeholder | waits on |
+|---|---|
+| T5 at 1024² | b-panel **bpn203, job 3789572** (H200, running). Earlier attempts retracted: bpn201/3783817 config-parsing bug, bpn202/3787247 OOM in an untimed diagnostic — both listed in the retracted-attempts table, not deleted |
+| T12 seeds, T13 sealed cohort, seeds status, T2 seeds row | b-seeds |
+| NS K=32 arm | ns2d ns204, job 3787320 (the K=16 arm CLOSED as a pre-registered negative: H-ORACLE ratio 1.19 vs bar 2.0, job 3787319; phase 3 never submitted; T11e generated; ns202/3783797 retracted and listed in T02b) |
+
+Also running: b-panel **bpn301, job 3789570**, the 256² re-run carrying both quadrature rule
+sets (it will put the certified-EQ cheap arm beside the dense ladder in one allocation), and the
+L-shape solve at 512² (job 3789568). When they land, the provenance rows must carry the live job
+ids, and the retracted attempts stay in Table `T02b`.
+
+Landed since the first checkpoint and no longer pending: the operator resolution knob (job
+3787189, Table T14c, fired its falsification clause), the operator seed/precision controls
+(job 3783831, Table T14d), the L-shape solve layer (jobs 3784662/3/4/3784910, Tables T18c/T18d;
+$512^2$ still to come), and the EQ draw replication (job 3783811, Table T9d).
+
+## Numbers with a caveat in the generator
+
+- T15 (speed) is parsed from the lane's generated Markdown table (`2026-09-16-b-speed.md`),
+  because its `result.json` lives only inside chunked Git archives; the audit JSONs are
+  hashed in `tables/provenance.json`.
+- b-speed job ids in T2 are typed from the lab-log entry, not read from JSON.
+- Sizes in T1 (problem spec) come from the tuning config for Burgers; the Poisson/wave/
+  L-shape rows are typed from the lanes' reports (they carry no numbers that appear in prose).
+- `\nEqtopBar`/`\nEqtopTightBar` (0.116 / 0.06) are typed constants of the pre-registered design.
+
+## Contradictions between sources and the ABSTRACT ledger (reported, not resolved)
+
+1. (Resolved by the coordinator.) The heat collapse is tabulated from the 2026-09-10 heat
+   linear-bank cell (job 3511417, A100-PCIE-40GB) as Table T11d, labelled an earlier cell of
+   the same decoder family; the abstract's "Poisson and heat" stands and waves are added.
+2. The ledger's "EQ rules certify on the primary bar only for q ≤ 64" is superseded by
+   b-eqtop's interim report (every rung certifies in one draw, provisional); the paper
+   carries the provisional version.
+3. The b-panel EQ ladder is not monotone at q = 256 (secondary rules), while the abstract
+   says "the family is monotone". The dense fixed-M ladder is monotone (b-qxm) and the
+   primary-rule EQ ladder is monotone in the b-eqtop draw; the paper says exactly that.
+4. The lab log's b-speed entry calls 1024² "the crossover reached (0.98–1.01×)" against
+   the cheapest fair Newton control, while the mesh ladder reports no crossover at any
+   rung against the cheapest target-meeting FOM. Different comparators; the paper cites
+   only the mesh ladder and the parity speedup.
+5. The p-linear q>0 best-found oracle is retracted by the lane (mis-scaled); the
+   generator skips every row flagged `retracted` and the three-layer table uses only
+   the q = 0 oracle.
+
+## Open decisions (user's)
+
+- Burgers headline metric (evolved vs all-times): both printed everywhere; none chosen.
+- Whether to keep "heat" in the abstract (item 1 above).
+
+## Round-1 review (commit 8dd88495) — status
+
+Disposition per finding in `REVIEW-ROUND1-DISPOSITION.md`. New generated artefacts: T01b (sampling
+families), T14c (resolution ladder), T17 (offline cost), T19 (solver variants), Fig. 3
+(NNLS fit vs held-out rho). Abstract sentence 1 was changed by the pre-registered falsification
+clause of the resolution job; the user should confirm the new wording.
+
+## RESOLVED 2026-09-17 evening: the b-qxm pin (lane committed b4e38103; pin dropped; history kept below)
+
+`gen_tables.py` now reads b-qxm's `analysis.json` from the lane's **committed** state
+(`GIT_PINS`, commit `4b9723e8`, 09:40), not its working tree. Reason: the lane's uncommitted
+working tree (modified 13:43, alongside `generate_xm.py`, `summary.json` and both figures —
+it is mid-regeneration for "round 2") reverses the paper's headline:
+
+| field | lane commit 4b9723e8 (what the paper uses) | lane working tree (uncommitted) |
+|---|---|---|
+| `span_q_at_M1088` | 2.4368 | `null` |
+| `fixed1088_all_converged` | true | false |
+| `fixed1088_passes_tunability_bar` | true | `null` |
+| `fixed1088_within_job` | job 3780177, 4 rungs | `null` |
+| `headline` | fixed-M ladder (M = 1088, pure rank) | scheduled ladder |
+| `rank_claim_false` | false | **true** |
+| `unavailable_reason` | — | "a rung is not converged; the span is not patched" |
+
+The paper's Contribution 1, §5.2, the abstract's "meets a bar fixed before any run" and the
+conclusion all rest on the committed reading. The working-tree reading would withdraw them.
+A plausible benign explanation is that the fixed-$M$ column was extended to $q=512$, where
+$(512, 1088)$ is only 2.06 tests per unknown and does not converge, so the lane's own rule
+refuses to patch the span — i.e. a longer ladder, not a refutation of the published four-rung
+result. **I have not assumed either way.** Nothing in the paper was changed on the strength of
+an uncommitted file; the pin keeps the build reproducible and traceable. The coordinator should
+say which state is authoritative, and the pin comes out as soon as the lane commits.
+
+**Coordinator's ruling on the pin (2026-09-17).** Keep it. That working tree belongs to a lane
+agent mid-regeneration, collecting two round-2 extension jobs: the pure-rank ladder extended to
+$q=512$, and a saturation sweep in $M$ at $q=256$. The extended column adds $(512, 1088)$ at
+2.06 tests per unknown — the under-tested case that lane pre-registered as possibly
+uninformative — which does not converge, and the lane's rule then refuses to compute a span
+across a ladder containing a non-converged rung. That is a longer ladder failing at its new top
+rung, not a refutation of the four-rung result. The lane has been asked to confirm or correct
+this, to report the four-rung and extended ladders as separately named objects so a flag cannot
+flip merely because a longer ladder was appended, and to commit once its regeneration is
+coherent. **Until that is relayed: do not soften Contribution 1, §5.2, the abstract or the
+conclusion.** If the four-rung ladder is genuinely overturned, all four are rewritten together.
+
+**Page budget (approved 2026-09-17).** The correction-ladder table stays in the appendix because
+Figure 1 carries the family in the main text; do not trade it back.

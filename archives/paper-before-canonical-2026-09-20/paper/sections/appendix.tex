@@ -1,0 +1,636 @@
+\section{Experiments at a Glance}
+\label{app:glance}
+Table~\ref{tab:glance} lists every experiment in the paper with the
+question it answers, the PDE and meshes, the number of cluster jobs and
+the lane, and where its full numbers are; every row's jobs, GPUs and
+checkpoints are in Table~\ref{tab:provenance}.
+
+\begin{table}[h]
+\centering
+\caption{Experiments at a glance: one row per experiment, the question it
+answers, the PDE and meshes, the number of cluster jobs (distinct job ids
+in Table~\ref{tab:provenance}) and the lane, and where the full numbers
+are.}
+\label{tab:glance}
+\input{tables/T00_glance}
+\end{table}
+
+% sections/appendix.tex
+\input{sections/method-details}
+
+\section{Per-cell Training Schedule}
+\label{app:training-schedule}
+
+This appendix lists the per-cell configuration and training cost referenced in
+\S\ref{sec:impl}. The problem specification per cell (mesh, $k$, $R$, $M$,
+reference and cohorts) is Table~\ref{tab:problems} and the sampled families
+Table~\ref{tab:spec}; the offline cost per stage, from the lane records, is
+Table~\ref{tab:offline}; the head-retraining arms on the frozen Burgers bank
+(training-set size, latent dimension and loss terms) are Table~\ref{tab:training}.
+Every headline uses one checkpoint per PDE, named by hash in
+Table~\ref{tab:provenance}.
+
+\section{Architecture Choices: Evidence from Sweeps}
+\label{app:arch}
+
+This appendix collects the evidence behind the architectural choices in
+\S\ref{sec:decoder}: the matched-dimension head ablation on Burgers and
+Poisson (Tables~\ref{tab:head-burgers}, \ref{tab:head-poisson}), the three
+error layers per cell (Table~\ref{tab:layers}), the head-capacity sweep on the
+frozen Poisson bank (Table~\ref{tab:head-capacity}), the head-retraining arms
+(Table~\ref{tab:training}), and the solver variants for the corrections on
+Burgers (Table~\ref{tab:solver-variants}). The linear skip is a design choice
+adopted for cold-start convergence and is not ablated in this paper.
+\begin{figure}[h]
+\centering
+\resizebox{0.9\linewidth}{!}{\input{figures/architecture}}
+\caption{NM-ROM pipeline. Colour says when each quantity is fixed:
+purple, trained once and frozen for every result; blue, assembled
+offline once per mesh; orange, computed inside the timed query; green,
+chosen at run time among artefacts that already exist; grey, supplied,
+or a comparator. This is a schematic, not a measurement. The only things
+that change between operating points are the three green controls (the
+rank $q$, the stored quadrature rule or dense evaluation, and the
+tolerance), so every point of the family comes from one training run.}
+\label{fig:arch}
+\end{figure}
+
+Figure~\ref{fig:arch} draws the pipeline;
+Table~\ref{tab:arch-blocks} lists its blocks, their sizes in the symbols of
+\S\ref{sec:method:manifold}, and when each is fixed.
+
+\begin{table}[h]
+\centering
+\caption{The blocks of Figure~\ref{fig:arch}. ``Fixed when'' is the colour of
+the block in the figure.}
+\label{tab:arch-blocks}
+{\scriptsize
+\begin{tabular}{llll}
+\toprule
+block & what it is & size & fixed when \\
+\midrule
+coordinate net $g_\phi$ & random-Fourier-feature MLP, evaluated per node & $R$ outputs per node & trained once \\
+bank $\bank$ & $\bcmask(x)\,g_\phi(x)\T$ at the mesh nodes, \eqref{eq:bank} & $n\times R$ & assembled once per mesh \\
+head $\head$ & two-layer SiLU MLP plus a linear skip & $k\to R$ & trained once \\
+code library $Z$ & auto-decoder codes of the training states & $k$ per state & trained once \\
+tests $\tests$ & the first $M$ sine modes & $M\times n$ & fixed per run \\
+linear operator $B$ & $\tests\Aop\bank$ & $M\times R$ & assembled once per mesh \\
+corrections $\corr$ & PCA of the head residual on the training codes, nested in $q$ & $R\times q$ & once per checkpoint \\
+quadrature rules & NNLS fit on reachable states, one rule per $m$, validated by held-out $\rho$ & $m$ nodes & once per checkpoint \\
+solve & damped LM on $(\latent,y)$ (Burgers); $y$ eliminated exactly (linear PDEs) & $k+q$ unknowns & inside the timed query \\
+controls & rank $q$; stored rule or dense; tolerance and budget & --- & chosen at run time \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{Provenance}
+\label{app:provenance}
+
+\begin{table}[h]
+\centering
+\caption{Provenance of every result table: job id, GPU, source commit and
+checkpoint. The SHA256 of every machine-readable file the generator read is in
+\texttt{tables/provenance.json}. Every job asserted \texttt{jax\_backend=gpu},
+float64 and highest matmul precision before doing any work.}
+\label{tab:provenance}
+\resizebox{\linewidth}{!}{\input{tables/T02_provenance}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Attempts that produced no reported number. A retracted attempt contributes no timed
+row, no gate and no oracle value; it is listed so that it is visibly retracted rather than
+absent.}
+\label{tab:retracted}
+\resizebox{\linewidth}{!}{\input{tables/T02b_retracted}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Attempts in flight when this version was prepared: none; every
+lane this version reads is closed.}
+\label{tab:inflight}
+\input{tables/T02c_inflight}
+\end{table}
+
+\section{Full tables}
+\label{app:tables}
+
+\begin{table}[h]
+\centering
+\caption{Problem specification. Cohort and reduced sizes are read from the run
+configurations where recorded; the sealed final cohorts have not been opened
+for any cell.}
+\label{tab:problems}
+\resizebox{\linewidth}{!}{\input{tables/T01_problems}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Sampled problem families, transcribed from the generator sources named
+in the last column (code constants, not run outputs).}
+\label{tab:spec}
+\resizebox{\linewidth}{!}{\input{tables/T01b_spec}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Offline cost per stage, from the lane records: head training on the
+retrained arms (the incumbent's own training time was not recorded), the
+correction-direction fit, and the NNLS fit of each rule the primary EQ ladder
+ran. Every rule is refit when $m$ changes; nothing is nested.}
+\label{tab:offline}
+\resizebox{\linewidth}{!}{\input{tables/T17_offline_cost}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{How the corrections are solved on Burgers, one job (job
+\provCcladJob, \provCcladGpu): joint LM on $(z,y)$, block-damped, and plain
+variable projection at $q=64$ and $128$. Same error where all converge; the
+block-damped step is the one kept.}
+\label{tab:solver-variants}
+\input{tables/T19_solver_variants}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\linewidth]{fig_eq_certification}
+\caption{Quadrature rules: fit residual against held-out error. Each point is
+one fitted rule; the horizontal axis is its NNLS fit residual on the states it
+was fitted to, the vertical axis its worst held-out $\rho$ \eqref{eq:rho} on
+states the solver actually reaches, with the primary and tight bars drawn.
+Filled markers are rules fitted on reachable states, hollow squares rules
+fitted on static snapshots. Data: every rule of the b-eqtop lane, jobs
+\provEqtopJob{} (Table~\ref{tab:eqrules}). What it shows: the fit residual
+does not predict the held-out error, and because the same construction
+re-drawn moves by $\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$
+(Table~\ref{tab:replication}), a point below the bar is a passing draw, not a
+certified construction.}
+\label{fig:cert}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Rank against test count (dense advection, budget 600, single seed). Both
+fixed-$M$ ladders are shown; the $M=256$ ladder fails the bar and the
+$M=1088$ ladder passes it, and $M=1088$ was chosen after the grid was run.
+The scheduled ladder's cells span two jobs so its costs are not printed. Jobs \provQxmJobs; commit
+\provQxmCommit; checkpoint \provBurgersCkpt.}
+\label{tab:qxm}
+\input{tables/T04_rank_vs_tests}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Three layers of deployed error, worst over each cell's development
+cases: what the bank can express, what the augmented manifold can reach
+(multistart oracle, an upper bound), what the deployed iteration returned. The
+p-linear $q>0$ oracle was mis-scaled and is retracted; only its $q=0$ oracle
+appears.}
+\label{tab:layers}
+\resizebox{\linewidth}{!}{\input{tables/T07_three_layers}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Poisson ladder at $256^2$ and $1024^2$ (one job per mesh:
+\provPlinJobs; never compare costs across meshes; $q=512$ via LM is degenerate
+by construction and its QR twin is the timed top rung).}
+\label{tab:linear}
+\resizebox{\linewidth}{!}{\input{tables/T11b_poisson}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Heat 2D, an earlier cell of the same decoder family (job
+\provHeatJob, \provHeatGpu, commit \provHeatCommit; $k=8$, $R=32$, twelve
+development cases, three repetitions; the finest three meshes of a five-rung
+ladder). The linear evolution of the full bank is the $q=R$ rung.}
+\label{tab:heat}
+\input{tables/T11d_heat}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Neural operators on the shared Burgers data: capacity, epochs, whether
+the arm was still improving at its budget, worst and median error on the
+matched eight-case cohort and on the 32 held-out cases. Accuracy is comparable
+across jobs; timing never is, and none is shown. Single seed, one mesh, one
+3000\,s budget per capacity.}
+\label{tab:operators}
+\resizebox{\linewidth}{!}{\input{tables/T14_operators}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The correction ladder at $256^2$ in one allocation (job
+\provPanelJob, \provPanelGpu, checkpoint \provPanelCkpt), tolerance $10^{-6}$:
+dense advection beside two quadrature rule sets, the rules the b-eqtop ladder
+used and the rules its replication selected (\S\ref{sec:exp:eq}), with each
+rule's status from that replication; worst error over evolved and over all
+times (\%), median GPU ms, and the $t{=}0$ compression bounding the all-times
+metric. ``Certified in one draw'' is a single passing draw, not a certified
+construction. Every subject of the job, at both tolerances, is in
+Table~\ref{tab:panel-all}.}
+\label{tab:tunability}
+\resizebox{\linewidth}{!}{\input{tables/T03_tunability}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The correction ladder at $1024^2$ in one allocation (job
+\provPanelTenTwentyFourJob, \provPanelTenTwentyFourGpu, same checkpoint),
+tolerance $10^{-6}$: dense advection beside the quadrature rules transferred
+from $256^2$ (rule status as at $256^2$; the $q\ge64$ rules miss the primary
+bar here, \S\ref{sec:exp:panel}). Milliseconds are not comparable with
+Table~\ref{tab:tunability}: different GPU, different job.}
+\label{tab:tunability-tentwentyfour}
+\resizebox{\linewidth}{!}{\input{tables/T03b_tunability}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The correction ladder at $512^2$ in one allocation (job
+\provPanelFiveTwelveJob, \provPanelFiveTwelveGpu, same checkpoint and GPU
+model as $256^2$), tolerance $10^{-6}$: dense advection beside both
+$256^2$ rule sets transferred to this mesh (each transfer refits on its
+own fit-state draw); the status names whether the transfer passes the
+primary bar here and its source rule's verdict at $256^2$. Milliseconds
+are not comparable with Table~\ref{tab:tunability}: a different job.}
+\label{tab:tunability-fivetwelve}
+\resizebox{\linewidth}{!}{\input{tables/T03c_tunability}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $256^2$ same-allocation panel (job
+\provPanelJob). ``conv.\ (\S5)'' is the pre-registered completion rule as
+written --- stationarity $10^{-6}$ at every step, or a residual-rule exit,
+with an attained initial fit accepted; ``strict'' is the earlier rule that
+does not accept it, tested against the arm's own tolerance (so a
+$10^{-3}$ arm can be strict and still not converged under \S5);
+``adm.\ (\S5)'' is admissibility for a frontier or a
+ratio (converged under that rule, and for EQ subjects a rule passing a
+bar). ``adm.\ (own tol.)'' is the superseded flag: it tested each arm
+against its own tolerance and so admitted the \nPanelLooseArmCount{} arms
+run at $10^{-3}$, which the rule as written does not
+(\nPanelLooseAdmissibleCount{} of \nPanelLooseArmCount{} pass it). Those
+arms are kept here with all their numbers but are not admissible, which
+moves the admissible reduced count at this mesh from
+\nPanelReducedCountOwnGtol{} to \nPanelReducedCount{}. The correction is
+the panel pre-registration's \S A13, and every panel number in this paper
+is read from that lane at commit \provPanelSummaryPin.}
+\label{tab:panel-all}
+\resizebox{\linewidth}{!}{\input{tables/T05_panel_all}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $1024^2$ same-allocation panel (job
+\provPanelTenTwentyFourJob, H200). Columns as in Table~\ref{tab:panel-all};
+milliseconds are comparable only within this table. The \S5 rule takes the
+admissible reduced count from \nPanelTenTwentyFourReducedCountOwnGtol{} to
+\nPanelTenTwentyFourReducedCount{} and the reduced subjects on the (GPU ms,
+worst evolved) frontier from
+\nPanelTenTwentyFourReducedNonDomEvolvedOwnGtol{} to
+\nPanelTenTwentyFourReducedNonDomEvolved{}
+(\nPanelTenTwentyFourNonDomReducedList).}
+\label{tab:panel-all-tentwentyfour}
+\resizebox{\linewidth}{!}{\input{tables/T05b_panel_all}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every timed subject of the $512^2$ same-allocation panel (job
+\provPanelFiveTwelveJob). Columns as in Table~\ref{tab:panel-all};
+milliseconds are comparable only within this table. The \S5 rule takes the
+admissible reduced count from \nPanelFiveTwelveReducedCountOwnGtol{} to
+\nPanelFiveTwelveReducedCount{}; nothing reduced is on the frontier under
+either flag.}
+\label{tab:panel-all-fivetwelve}
+\resizebox{\linewidth}{!}{\input{tables/T05c_panel_all}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Fixed-$q$ sweeps in the test count $M$ (dense; errors comparable
+across the three b-qxm jobs, costs not shown). The last column restricts the
+span to at least two tests per unknown.}
+\label{tab:qxm-fixedq}
+\resizebox{\linewidth}{!}{\input{tables/T04b_fixed_q}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Head ablation, Burgers $256^2$ (job \provAblBurgersJob,
+\provAblBurgersGpu). Same-grid error against the converged full-order solve;
+``vs ref'' against the $4096^2$ reference.}
+\label{tab:head-burgers}
+\resizebox{\linewidth}{!}{\input{tables/T06a_head_burgers}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Head ablation, Poisson $1024^2$, $R=128$ (job \provAblPoissonJob,
+\provAblPoissonGpu).}
+\label{tab:head-poisson}
+\input{tables/T06b_head_poisson}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Solver knobs at a fixed Burgers checkpoint on 32 held-out cases (job
+\provTuneJob, \provTuneGpu, checkpoint \provTuneCkpt). Loosening the
+tolerance from $10^{-8}$ to $10^{-3}$ removes $\nTuneTolSavingPct\,\%$ of the
+query for a change from $\nTuneTolErrConverged$ to $\nTuneTolErrLoose\,\%$
+worst error; a cap of 2 is a cliff ($\nTuneCapTwoErr\,\%$). The full-order
+control at tolerance $10^{-4}$ beats the best ROM setting on both axes.}
+\label{tab:knobs}
+\input{tables/T08_solver_knobs}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Cold-start iteration-cap sweep on Poisson at $\nColdMesh$ intervals
+(local GB10 diagnostic; only ratios transfer). From the nearest training code
+the converged answer is reached at a small cap; from $z=0$ the cap traces a
+monotone curve that looks like an accuracy--cost frontier, every point of
+which is dominated by starting well.}
+\label{tab:coldstart}
+\input{tables/T08b_cold_start}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Cheapest rule passing each bar per rung in its own draw, with its
+fit-state count, and the parent lane's rule re-scored on the same held-out
+states. Jobs \provEqtopJobs. Construction status is in
+Table~\ref{tab:replication}.}
+\label{tab:eqcert}
+\input{tables/T09b_eq_certification}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every quadrature rule at $q\le32$: NNLS fit residual beside the
+held-out $\rho$, so the anti-correlation stays visible. Bars: primary
+$\rho_{\max}\le\nEqtopBar$, tight $\rho_{\max}\le\nEqtopTightBar$
+(source: \provEqtopBarSource). Continued in Table~\ref{tab:eqrules-b}.}
+\label{tab:eqrules}
+\input{tables/T09c_eq_rules_full}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Every quadrature rule at $q\ge64$ (continuation of
+Table~\ref{tab:eqrules}; same columns and bars).}
+\label{tab:eqrules-b}
+\input{tables/T09c_eq_rules_full_b}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The EQ ladder with the cheapest rule passing the primary bar in its
+draw per rung, timed in one allocation (job \provEqtopLadderJob, A100 80\,GB),
+with its same-job dense twins, and the construction status from the four-draw
+replication (job \provEqtopRepJob): confirmed = every re-draw passes, marginal
+= only the listed fraction does. Errors are as measured with these rules
+(SHA256-identified); they are not properties of the construction above
+$q=32$. Ladder rows read from the \provEqtopLadderSource.}
+\label{tab:eqladder}
+\resizebox{\linewidth}{!}{\input{tables/T09_eq_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The pre-registered draw replication (job \provEqtopRepJob): four
+independent draws of candidate pool and fit-state subset at fixed $q$, $m$,
+fit-state count and scaling, with the number of draws passing each bar and
+the construction status over every draw of that construction in all three
+jobs. Withdrawn by these data: the parent lane's extrapolated crossing node
+count; the inherited fit-state convention for $q\ge128$ (0 of 6 draws pass);
+``64 states is uniformly better'' (1 of 5 at $q=256$); and the interim rule
+export at $q\ge64$, superseded by rules chosen by moving up in $m$, a
+post-hoc choice the lane discloses.}
+\label{tab:replication}
+\resizebox{\linewidth}{!}{\input{tables/T09d_replication}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Frozen-checkpoint mesh ladder (Burgers job \provMeshBurgersJob on
+\provMeshBurgersGpu, checkpoint \provMeshBurgersCkpt; Poisson job
+\provMeshPoissonJob on \provMeshPoissonGpu, checkpoint
+\provMeshPoissonCkpt). ``efficient FOM'' is the cheapest same-job full-order
+arm meeting the 5\,\% target on that mesh.}
+\label{tab:mesh}
+\resizebox{\linewidth}{!}{\input{tables/T10_mesh_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Reflective 2D wave, one job per mesh (\provWaveJobs); costs
+comparable only within a mesh. The top rung is the learned bank evolved by
+exact modal propagation with no head.}
+\label{tab:waves}
+\input{tables/T11a_waves}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Poisson head capacity on the frozen $R=512$ bank (job
+\provPlinHeadJob, \provPlinHeadGpu): width helps, depth alone does not, and
+no arm reaches a $2\times$ ratio to the floor. The re-run of the primary
+recipe reproduces it exactly.}
+\label{tab:head-capacity}
+\input{tables/T11c_head_capacity}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Three training seeds on the development cohort (lane b-seeds, jobs
+\provSeedsJobs). Top: per rung of the dense $M=4(K+q)$ ladder, worst error
+over the six development cases as mean $\pm$ sample standard deviation over
+the \nSeedsCount{} seed checkpoints, beside the incumbent checkpoint re-run in
+each seed's own job (its value is identical in all three jobs). Bottom: the
+per-seed ladder verdicts. Costs are never averaged across jobs. This is the
+development cohort; the sealed cohort (Table~\ref{tab:sealed}) is the
+headline.}
+\label{tab:seeds}
+\resizebox{\linewidth}{!}{\input{tables/T12_seeds}}\\[4pt]
+\resizebox{\linewidth}{!}{\input{tables/T12b_seeds_verdicts}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The sealed cohort (lane b-seeds, job \nSealedJob, \provSealedGpu),
+opened once after every choice was frozen. Top: per rung of the dense
+$M=4(K+q)$ ladder, the incumbent's sealed worst evolved error and device
+time, the seed mean $\pm$ sample standard deviation on the sealed and the
+development cohort, the lane's sealed-over-development ratio of seed means
+(raw and difficulty-normalised) and the converged count over the
+\nSealedCheckpoints{} checkpoints. Bottom: per-checkpoint verdicts. The
+incumbent's $q=0$ rung is a single sealed case converged to a wrong branch
+(gradient exit, zero budget exits); the pre-registered ratio criterion fails
+at $q=0$ for the incumbent alone (\nSealedCtwoIncQzeroRatio) and the
+convergence criterion fails on \nSealedUnconvergedCells.}
+\label{tab:sealed}
+\resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
+\resizebox{\linewidth}{!}{\input{tables/T13b_sealed_verdicts}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The operators' own inference-time knob: each validation-selected
+checkpoint evaluated at coarser grids and prolonged back (job \provResJob,
+\provResGpu), with the interpolation floor (a perfect operator's error at that
+rung) and the pre-registered gates ($\ge1.5\times$ own speed at $\le2\times$
+own error). Speedups are within one model's own curve, same job.}
+\label{tab:resolution}
+\input{tables/T14c_resolution}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{One-variable controls on the validation-selected capacities (job
+\provOpCtrlJob): each repeats a screen arm under the identical protocol and
+budget with exactly one variable changed, and is never eligible for capacity
+selection. ``vs ROM'' is the matched eight-case worst against the ROM's, from
+job 3702709; at equal wall clock a float64 twin is also a fewer-epochs twin.}
+\label{tab:op-controls}
+\resizebox{\linewidth}{!}{\input{tables/T14d_controls}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{U-Net against FNO on the Poisson operator-screen dataset (physical
+reference). The U-Net arms hit the epoch cap while still improving; the FNO
+early-stopped.}
+\label{tab:operators-poisson}
+\input{tables/T14b_operators_poisson}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Speed at bit-level parity (jobs \provSpeedJobs): fastest arm whose
+fields agree with the incumbent to $10^{-12}$ with identical iteration counts
+and exit reasons. The pre-registered $2\times$ target fails at every mesh.}
+\label{tab:speed}
+\input{tables/T15_speed}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Training study on the Burgers head (jobs \provTrainJobs): data
+density, objective, latent dimension and a joint bank arm, each evaluated
+through the unchanged head-ablation machinery. $\nTrainArmsPassing$ of
+$\nTrainArmsEvaluated$ arms pass the pre-registered success criterion. The
+like-for-like retrain does not reproduce the incumbent, so the density verdict
+is measured below baseline.}
+\label{tab:training}
+\resizebox{\linewidth}{!}{\input{tables/T16_training}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes 2D, phase-2 gates in four settings: the $K=16$
+head on the full-rank $R=256$ bank, the $K=32$ head on the full-rank
+$R=512$ bank, the same $K=16$ recipe on a family of intrinsic dimension
+\nNsFamDimLow{} instead of \nNsFamDimBase{} (\nNsFamLowModes{} modes; job
+\provNsFamJob, \provNsFamGpu), and the $K=16$ recipe at
+$\nNsDataFactor\times$ the training data (\nNsDataTrainN{} trajectories:
+\nNsDataTrainBase{} gated plus \nNsDataTrainExtra{} extra, same family;
+last row, job \provNsDataJob, \provNsDataGpu) (jobs \provNsJobs; full-order
+solver and dataset certified in job \provNsFomJob). Every gate passes
+except the held-out oracle, whose pre-registered bar was a
+$\nNsOracleBar\times$ margin over POD at matched dimension
+(\provNsBarSource); the ratio is \nNsCellRatioMin--\nNsCellRatioMax{} across
+the \nNsCellArms{} settings, so the ladder and timing were never run for
+any head and the lane closed without a phase-3 job. With
+$\nNsDataFactor\times$ the data the training reconstruction rises from
+\nNsDataBaseTrainRecon{} to \nNsDataTrainRecon\,\% and the
+held-out/training gap falls from \nNsDataBaseGap{} to
+\nNsDataHeldoutOverTrain: the head no longer fits the training data either,
+so the limit moved from generalisation to capacity at the same head
+(\nNsDataPodOverOracleTzero{} at $t=0$, \nNsDataPodOverOracleEvolved{} on
+evolved times). The $\nNsDataFactor\times$-data arm's B-DATA gate passed
+by the pre-registered value path (a hash mismatch on its node, at
+$10^{-16}$ on the archived trajectories). On the lower-dimensional
+family every error falls \nNsFamDropMin--\nNsFamDropMax$\times$ (POD-16
+\nNsFamDropPod, oracle \nNsFamDropOracle, bank floor \nNsFamDropFloor)
+while the ratio stays at \nNsFamOracleRatio{} (\nNsFamPodOverOracleTzero{}
+at $t=0$, \nNsFamPodOverOracleEvolved{} on evolved times) and the
+held-out/training gap at \nNsFamHeldoutOverTrain{} against
+\nNsFamBaseGap. Oracle values are upper bounds:
+\nNsBudgetExitsKsixteen{} ($K{=}16$), \nNsBudgetExitsKthirtyTwo{}
+($K{=}32$), \nNsFamBudgetExits{} (family dimension \nNsFamDimLow) and
+\nNsDataBudgetExits{} (\nNsDataTrainN{} trajectories) held-out fits at
+$256^2$ hit the LM budget, which biases the ratio downward, so the
+negative verdict is conservative.}
+\label{tab:ns}
+\resizebox{\linewidth}{!}{\input{tables/T11e_ns}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{L-shaped Poisson, solve layer at $M=257$ (jobs
+\provLshapeSolveJobs, one per mesh): the non-dominated set on (complete-query
+ms, worst same-grid error) at each mesh, over every reduced and full-order
+subject. The sparse direct solve is exact to round-off. The $512^2$ job's
+first attempt (Table~\ref{tab:retracted}) failed a residual gate that is
+unreachable in float64 at that mesh, where the achievable residual floor grows
+like $N^2$; the gate now takes the larger of the two bounds, which changed no
+mesh already run, and the re-run differs from that attempt only by the gate.}
+\label{tab:lshape-solve}
+\input{tables/T18c_lshape_solve}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{L-shaped Poisson, free rung at $M=1024$ (job \provLshapeFreeJob).
+\textbf{These costs are not comparable with Table~\ref{tab:lshape-solve}}: the
+dense projection is charged inside every reduced query here. Non-dominated set
+only.}
+\label{tab:lshape-free}
+\input{tables/T18d_lshape_free}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{L-shaped Poisson (job \provLshapeJob, \provLshapeGpu): bank floors
+by boundary factor and rank, and the head layer at $256^2$. The solve layer is
+\nLshapeSolve{}.}
+\label{tab:lshape}
+\input{tables/T18a_lshape_bank}\\[4pt]
+\input{tables/T18b_lshape_head}
+\end{table}
+
+\input{sections/extended-results}
+
+\section{Glossary}
+\label{app:glossary}
+
+Written for a reader who knows none of this project's vocabulary.
+
+\begin{description}[style=nextline,leftmargin=0pt]
+\item[Bank, head, latent code ($\bank$, $\head$, $\latent$; $R$, $k$)] The fixed spatial functions the decoder combines (width $R$); the small network that maps $k$ latent numbers to their coefficients; the $k$ numbers solved for per query.
+\item[Correction rank $q$, rung, ladder, $\corr$] The number of fixed extra bank directions the solver may add to the head's output; one value of $q$; the sequence of rungs; the matrix of directions, a nested prefix chosen offline. $q=0$ is the head alone, $q=R$ the linear model on the bank.
+\item[Test count $M$, weak tests, row scaling] How many sine test functions the residual is averaged against; the functions; the diagonal weights on those averaged equations. All three change which solution is selected.
+\item[$m$, EQ, rule, NNLS, fit states, reachable states] Quadrature node count; empirical quadrature, evaluating a sum over all nodes by a weighted sum over $m$ of them; one fitted instance; the non-negative least-squares fit; the states used to fit a rule; states the solver actually visits, as opposed to stored snapshots.
+\item[$\rho$, primary and tight bars, confirmed, marginal] The rule's relative error on the projected advection term on held-out reachable states; $\rho_{\max}\le\nEqtopBar$ and $\le\nEqtopTightBar$; a construction every one of whose re-draws passes; one only some of whose re-draws pass. Never the NNLS fit residual, and never a single draw.
+\item[Dense] Evaluating the advection term at every interior node, exactly.
+\item[Evolved vs all-times metric, $t{=}0$ compression] Worst error over output times $t>0$; over all output times including $t=0$; the error at $t=0$ alone, which is the decoder's reconstruction of the supplied initial field and bounds the all-times metric from below.
+\item[Same-grid, reference, physical error] Error against the converged full-order solve on the same mesh (isolates the reduction); against a much finer solve (includes the mesh's own discretisation error); the cell's declared accuracy metric.
+\item[Three layers: bank floor, best-found, solved] Error of the best linear projection onto the bank (what nothing at inference can beat); the smallest error any point of the augmented manifold attains, found by a multistart oracle (an upper bound on the true minimum); the error the deployed iteration returns.
+\item[Stationary, budget exit, early-stopped, converged, strict] The solve met the normalised-gradient tolerance; it hit its iteration cap; any output produced under a cap or stall; the pre-registered completion rule that also accepts an attained initial fit whose residual is at round-off; the earlier rule that does not.
+\item[Admissible] Eligible for a frontier or a ratio: converged under the completion rule as written, with stationarity $10^{-6}$ at every step or a residual-rule exit, and for a quadrature subject a rule that passes its bar. Arms run at the loose tolerance $10^{-3}$ are reported everywhere but are not admissible.
+\item[Non-dominated, frontier, error span, cost span] A point nothing else beats on both axes; the set of such points; ratio of largest to smallest error among a ladder's non-dominated converged points; the same for cost. The tunability bar: monotone, at least three non-dominated points, at least $2\times$ on both spans, nothing early-stopped.
+\item[Same-allocation, same-job, cross-job] Two measurements inside one cluster allocation on one GPU, which may be divided; two from different allocations, which may not.
+\item[Development cohort, held-out, sealed cohort] Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).
+\item[Pre-registered] Declared in a design document before the job ran; every bar, gate and falsification clause in this paper was.
+\item[POD-LSPG, $k'$, DST, CG, Newton] The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
+\item[FNO, U-Net, Transolver] Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost--accuracy control of its own (Table~\ref{tab:resolution}), but one that does not change what the model can represent.
+\item[Checkpoint, frozen, incumbent] Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.
+\item[Provisional, pending] A number that is real but rests on one draw, one seed or an unfinished replication; a placeholder for a run that has not landed.
+\end{description}

@@ -1,0 +1,520 @@
+{
+  "status": "development; final cohorts unopened",
+  "selection_rule": "Explicit diagnostic panels. Show a fixed-head correction ladder, the full learned-bank control, POD controls at the latent and full-bank dimensions, all measured operator variants, and full-order controls. No timing or error optimum is selected automatically.",
+  "panels": [
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d004",
+      "mesh": 33,
+      "mesh_label": "33 nodes per axis",
+      "slug": "burgers3d-b3d004-n33",
+      "qualification": "Audited development data with all four operator families and the same training membership. Errors use the initial-field norm and exclude time zero. Operator predictions interpolate trained time knots to the common output times. The newer operator schedules are still under evaluation. Physical refinement covers only two cases; this panel supports same-grid comparisons only.",
+      "methods": [
+        {
+          "id": "rom_q0",
+          "label": "NM-ROM K32, q0",
+          "series": "NM-ROM K32",
+          "rank": 0
+        },
+        {
+          "id": "rom_q64",
+          "label": "NM-ROM K32, q64",
+          "series": "NM-ROM K32",
+          "rank": 64
+        },
+        {
+          "id": "rom_q128",
+          "label": "NM-ROM K32, q128",
+          "series": "NM-ROM K32",
+          "rank": 128
+        },
+        {
+          "id": "rom_q192",
+          "label": "NM-ROM K32, q192",
+          "series": "NM-ROM K32",
+          "rank": 192
+        },
+        {
+          "id": "free_R256",
+          "label": "Full learned bank R256",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "pod_32",
+          "label": "POD32",
+          "series": "POD",
+          "rank": 32
+        },
+        {
+          "id": "pod_96",
+          "label": "POD96",
+          "series": "POD",
+          "rank": 96
+        },
+        {
+          "id": "pod_160",
+          "label": "POD160",
+          "series": "POD",
+          "rank": 160
+        },
+        {
+          "id": "pod_224",
+          "label": "POD224",
+          "series": "POD",
+          "rank": 224
+        },
+        {
+          "id": "pod_256",
+          "label": "POD256",
+          "series": "POD",
+          "rank": 256
+        },
+        {
+          "id": "fno3d",
+          "label": "FNO, time interpolation",
+          "series": "FNO"
+        },
+        {
+          "id": "unet3d",
+          "label": "U-Net, time interpolation",
+          "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d",
+          "label": "DeepONet, time interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d",
+          "label": "Transolver, time interpolation",
+          "series": "Transolver"
+        },
+        {
+          "id": "fom_nt1e-02_lt5e-01",
+          "label": "FOM n1e-02, l5e-01",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_nt1e-02_lt5e-03",
+          "label": "FOM n1e-02, l5e-03",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_nt1e-03_lt5e-01",
+          "label": "FOM n1e-03, l5e-01",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_nt1e-04_lt5e-01",
+          "label": "FOM n1e-04, l5e-01",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_nt1e-04_lt1e-06",
+          "label": "FOM n1e-04, l1e-06",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_nt1e-06_lt1e-01",
+          "label": "FOM n1e-06, l1e-01",
+          "series": "FOM"
+        }
+      ],
+      "omissions": "All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances.",
+      "nmrom_assets": {
+        "checkpoint": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/checkpoint.pkl",
+        "reuse_record": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/reuse.json",
+        "original_checkpoint": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/checkpoint.pkl",
+        "bank_curve": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/bank_curve.json",
+        "head_info": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/head_info.json"
+      }
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "extra03",
+      "mesh": 64,
+      "mesh_label": "64 intervals per axis",
+      "slug": "heat3d-extra03-n64",
+      "qualification": "Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer.",
+      "methods": [
+        {
+          "id": "nmrom_K32_q0_dense",
+          "label": "NM-ROM K32, q0",
+          "series": "NM-ROM K32",
+          "rank": 0
+        },
+        {
+          "id": "nmrom_K32_q8_dense",
+          "label": "NM-ROM K32, q8",
+          "series": "NM-ROM K32",
+          "rank": 8
+        },
+        {
+          "id": "nmrom_K32_q32_dense",
+          "label": "NM-ROM K32, q32",
+          "series": "NM-ROM K32",
+          "rank": 32
+        },
+        {
+          "id": "nmrom_K32_q64_dense",
+          "label": "NM-ROM K32, q64",
+          "series": "NM-ROM K32",
+          "rank": 64
+        },
+        {
+          "id": "nmrom_K32_q96_dense",
+          "label": "NM-ROM K32, q96",
+          "series": "NM-ROM K32",
+          "rank": 96
+        },
+        {
+          "id": "linear_bank_galerkin_exact",
+          "label": "Full bank, exact Galerkin",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "linear_bank_exact",
+          "label": "Full bank, exact weak",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "pod32_exact",
+          "label": "POD32",
+          "series": "POD",
+          "rank": 32
+        },
+        {
+          "id": "pod128_exact",
+          "label": "POD128",
+          "series": "POD",
+          "rank": 128
+        },
+        {
+          "id": "fno3d_w16_m6",
+          "label": "FNO, direct transfer",
+          "series": "FNO"
+        },
+        {
+          "id": "fno3d_w16_m6_native_grid_interpolated",
+          "label": "FNO, native + interpolation",
+          "series": "FNO"
+        },
+        {
+          "id": "unet3d_w8",
+          "label": "U-Net, direct transfer",
+          "series": "U-Net"
+        },
+        {
+          "id": "unet3d_w8_native_grid_interpolated",
+          "label": "U-Net, native + interpolation",
+          "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d_r128_w16",
+          "label": "DeepONet, direct transfer",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_r128_w16_native_grid_interpolated",
+          "label": "DeepONet, native + interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_w48_s32",
+          "label": "Transolver, direct transfer",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_w48_s32_native_grid_interpolated",
+          "label": "Transolver, native + interpolation",
+          "series": "Transolver"
+        },
+        {
+          "id": "dst_exact",
+          "label": "Direct DST",
+          "series": "FOM"
+        }
+      ],
+      "omissions": "The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/bank.pkl",
+        "heads": [
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K8.pkl",
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K16.pkl",
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K32.pkl"
+        ]
+      }
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "extra03",
+      "mesh": 64,
+      "mesh_label": "64 intervals per axis",
+      "slug": "poisson3d-extra03-n64",
+      "qualification": "Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer. The saved stopping records are internally consistent, but selected latent states were not retained for an independent weak-gradient audit.",
+      "methods": [
+        {
+          "id": "nmrom_K16_q0_dense",
+          "label": "NM-ROM K16, q0",
+          "series": "NM-ROM K16",
+          "rank": 0
+        },
+        {
+          "id": "nmrom_K16_q16_dense",
+          "label": "NM-ROM K16, q16",
+          "series": "NM-ROM K16",
+          "rank": 16
+        },
+        {
+          "id": "nmrom_K16_q32_dense",
+          "label": "NM-ROM K16, q32",
+          "series": "NM-ROM K16",
+          "rank": 32
+        },
+        {
+          "id": "nmrom_K16_q64_dense",
+          "label": "NM-ROM K16, q64",
+          "series": "NM-ROM K16",
+          "rank": 64
+        },
+        {
+          "id": "nmrom_K16_q96_dense",
+          "label": "NM-ROM K16, q96",
+          "series": "NM-ROM K16",
+          "rank": 96
+        },
+        {
+          "id": "linear_bank_weak_qR",
+          "label": "Full bank, weak solve",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "linear_bank_galerkin",
+          "label": "Full bank, Galerkin",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "pod16_galerkin",
+          "label": "POD16",
+          "series": "POD",
+          "rank": 16
+        },
+        {
+          "id": "pod48_galerkin",
+          "label": "POD48",
+          "series": "POD",
+          "rank": 48
+        },
+        {
+          "id": "pod128_galerkin",
+          "label": "POD128",
+          "series": "POD",
+          "rank": 128
+        },
+        {
+          "id": "fno3d_w24_m8",
+          "label": "FNO, direct transfer",
+          "series": "FNO"
+        },
+        {
+          "id": "fno3d_w24_m8_native32_interpolate",
+          "label": "FNO, native + interpolation",
+          "series": "FNO"
+        },
+        {
+          "id": "unet3d_w16",
+          "label": "U-Net, direct transfer",
+          "series": "U-Net"
+        },
+        {
+          "id": "unet3d_w16_native32_interpolate",
+          "label": "U-Net, native + interpolation",
+          "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d_r128_w16",
+          "label": "DeepONet, direct transfer",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_r128_w16_native32_interpolate",
+          "label": "DeepONet, native + interpolation",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_w48_s32",
+          "label": "Transolver, direct transfer",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_w48_s32_native32_interpolate",
+          "label": "Transolver, native + interpolation",
+          "series": "Transolver"
+        },
+        {
+          "id": "dst_exact",
+          "label": "Direct DST",
+          "series": "FOM"
+        }
+      ],
+      "omissions": "The complete audited report retains the K8 ladder, intermediate POD ranks, and failed sampled-quadrature diagnostics. They are not presented as missing experiments.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/bank.pkl",
+        "heads": [
+          "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K8.pkl",
+          "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K16.pkl"
+        ]
+      }
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "extra03",
+      "mesh": 32,
+      "mesh_label": "32 periodic points per axis",
+      "slug": "ns3d-extra03-n32",
+      "qualification": "Independently audited new paired development measurements with all four operator families. Errors use the initial vector-field norm and exclude time zero. Learned-bank and head accuracy targets fail. Saved latent histories support sampled independent weak-gradient checks. A strict cross-run frozen-field replay gate failed and remains failed; no numerical-equivalence or implementation-speed claim is made. Augmented training and larger-bank tuning remain in progress.",
+      "methods": [
+        {
+          "id": "nmrom_q0",
+          "label": "NM-ROM K16, q0",
+          "series": "NM-ROM K16",
+          "rank": 0
+        },
+        {
+          "id": "nmrom_q16",
+          "label": "NM-ROM K16, q16",
+          "series": "NM-ROM K16",
+          "rank": 16
+        },
+        {
+          "id": "nmrom_q32",
+          "label": "NM-ROM K16, q32",
+          "series": "NM-ROM K16",
+          "rank": 32
+        },
+        {
+          "id": "nmrom_q64",
+          "label": "NM-ROM K16, q64",
+          "series": "NM-ROM K16",
+          "rank": 64
+        },
+        {
+          "id": "nmrom_q128",
+          "label": "NM-ROM K16, q128",
+          "series": "NM-ROM K16",
+          "rank": 128
+        },
+        {
+          "id": "free_bank_galerkin",
+          "label": "Full bank, Galerkin R512",
+          "series": "Full learned bank"
+        },
+        {
+          "id": "pod_weak_16",
+          "label": "POD16, weak solve",
+          "series": "POD",
+          "rank": 16
+        },
+        {
+          "id": "pod_weak_32",
+          "label": "POD32, weak solve",
+          "series": "POD",
+          "rank": 32
+        },
+        {
+          "id": "pod_weak_48",
+          "label": "POD48, weak solve",
+          "series": "POD",
+          "rank": 48
+        },
+        {
+          "id": "pod_galerkin_128",
+          "label": "POD128, Galerkin",
+          "series": "POD",
+          "rank": 128
+        },
+        {
+          "id": "pod_galerkin_256",
+          "label": "POD256, Galerkin",
+          "series": "POD",
+          "rank": 256
+        },
+        {
+          "id": "pod_galerkin_512",
+          "label": "POD512, Galerkin",
+          "series": "POD",
+          "rank": 512
+        },
+        {
+          "id": "fom_dt0.001",
+          "label": "FOM, dt 0.001",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_dt0.002",
+          "label": "FOM, dt 0.002",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_dt0.004",
+          "label": "FOM, dt 0.004",
+          "series": "FOM"
+        },
+        {
+          "id": "fom_dt0.008",
+          "label": "FOM, dt 0.008",
+          "series": "FOM"
+        },
+        {
+          "id": "fno3d_raw",
+          "label": "FNO, raw",
+          "series": "FNO"
+        },
+        {
+          "id": "fno3d_projected",
+          "label": "FNO, projected",
+          "series": "FNO"
+        },
+        {
+          "id": "unet3d_raw",
+          "label": "U-Net, raw",
+          "series": "U-Net"
+        },
+        {
+          "id": "unet3d_projected",
+          "label": "U-Net, projected",
+          "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d_raw",
+          "label": "DeepONet, raw",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_projected",
+          "label": "DeepONet, Leray projected",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_raw",
+          "label": "Transolver, raw",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_projected",
+          "label": "Transolver, Leray projected",
+          "series": "Transolver"
+        }
+      ],
+      "omissions": "All timed arms are included; the separate larger-bank snapshot-fit diagnostics remain in the complete archive. Leray projection enforces discrete incompressibility and its online cost is charged.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/free_bank.pkl",
+        "head": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/checkpoint.pkl"
+      },
+      "bank_rank_checkpoint": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/free_bank.pkl",
+      "inherited_operator_training_sources": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json"
+      ]
+    }
+  ]
+}

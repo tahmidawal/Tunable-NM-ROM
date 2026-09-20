@@ -1,0 +1,205 @@
+% ===========================================================================
+% sections/method-details.tex -- Appendix A: per-PDE instances, solver
+% constants, exit codes, the NNLS fit, and the record of discrepancies between
+% Moved verbatim (lightly re-flowed) from the 2026-09-16 methods.tex.
+% ===========================================================================
+
+\section{Method details}
+\label{app:method}
+
+\subsection{Elliptic instance: Poisson}
+\label{app:method:poisson}
+
+For $\Aop u=f$ we take $\rowscale_\star=\rowscale$, so the weak residual is
+\begin{equation}
+  \rweak(\latent,y)
+  \;=\;\rowscale^{-1}\tests(\Aop\umanifold-f)
+  \;=\; B_0\,\big(\head(\latent)+\corr y\big) - b_0,
+  \qquad
+  B_0=\tests\bank,\quad b_0=\rowscale^{-1}\tests f .
+  \label{eq:poisson-residual}
+\end{equation}
+Because the retained tests are orthonormal and $\Aop u^{\star}=f$, this residual
+is exactly the tested error $\tests(\umanifold-u^{\star})$, so the minimised
+objective is the squared discrete $L^2$ error of the reduced state in the
+retained modes; this holds only for the modes $\tests$ retains.
+
+\paragraph{Analytically eliminated corrections.} Let $B_0\corr=Q\mathcal{R}$ be
+a thin QR factorisation. $Q$ does not depend on $\latent$, so the inner
+minimisation over $y$ has the closed form
+$\mathcal{R}y=Q\T(b_0-B_0\head(\latent))$ and the minimised value is
+\begin{equation}
+  \min_{y}\norm{B_0(\head(\latent)+\corr y)-b_0}
+  \;=\;
+  \norm{B_\perp \head(\latent)-b_\perp},
+  \qquad
+  B_\perp=(I-QQ\T)B_0,\quad b_\perp=(I-QQ\T)b_0 .
+  \label{eq:varpro}
+\end{equation}
+The LM iteration runs on $\latent$ alone with the deflated operator, and $y$ is
+recovered by one triangular solve. Because the projector is constant the
+elimination introduces no approximation and $B_\perp\dhead$ is the exact
+Jacobian of the eliminated residual; the only dropped derivative anywhere in
+the elliptic solve is the head curvature. At $q=R$ the deflated operator is
+zero, the latent problem is degenerate by construction, and the model is the
+linear least-squares solve $\min_y\norm{B_0 y-b_0}$; the timed top rung is that
+QR solve, not an LM iteration on a zero Jacobian. We report the reduced
+stationarity of the deflated problem, the augmented stationarity of the full
+problem, the backward error of the triangular recovery and the numerical rank
+of $B_0\corr$.
+% solves the k x k damped system by Gauss-Jordan with symmetric diagonal scaling
+% and a backward-error gate with a charged general-solve fallback.
+
+\subsection{Parabolic instance: heat}
+\label{app:method:heat}
+
+The semi-discrete heat equation $\dot u=-\kappa\Aop u$ is advanced with
+Crank--Nicolson,
+$(I+\tfrac{\Delta t\kappa}{2}\Aop)u^{n+1}=(I-\tfrac{\Delta t\kappa}{2}\Aop)u^{n}$,
+% Implemented: Crank-Nicolson (heat_core.cn_factor).
+and the reduced step substitutes the manifold into the fully discrete equation
+\emph{before} projecting. With $u^{n}=\umanifold(\latent_n)$, projecting with
+$\tests$ and row-scaling by $\rowscale_\star=I+\tfrac{\Delta t\kappa}{2}\rowscale$
+gives
+\begin{equation}
+  \rweakn{n}(\latent)
+  \;=\;
+  B_0\,\head(\latent) \;-\; D\,B_0\,\head(\latent_n),
+  \qquad
+  D=\diag\!\left(\frac{1-\tfrac{\Delta t\kappa}{2}\lambda_i}
+                      {1+\tfrac{\Delta t\kappa}{2}\lambda_i}\right),
+  \label{eq:heat-step}
+\end{equation}
+and $\latent_{n+1}=\argmin_{\latent}\norm{\rweakn{n}(\latent)}_2$, warm-started
+at $\latent_n$. Two points are structural. The right-hand side is built from
+the \emph{decoded current state} at every step: carrying the quantity the
+previous step already made small freezes the recursion and reproduces a
+one-step solution to round-off. And $\latent_{n+1}$ enters through $\head$, so
+the step is a nonlinear least-squares problem, not a linear solve.
+At $q=R$ the step is linear in the coefficients and the whole trajectory is the
+exact modal propagation of the bank coefficients, with no head and no
+iteration; this is the ``top rung'' of the heat and wave ladders. The deployed
+path factors the damped normal matrix by Cholesky; a variant assembles the Gram
+matrix $S=B_0\T B_0$ offline and forms $H=\dhead\T S\dhead$ directly, which is
+exact and is reported as an algebraic ablation of the same step.
+
+\subsection{Nonlinear advection: Burgers}
+\label{app:method:burgers}
+
+The full-order problem is $u_t+u(u_x+u_y)=\nu\Delta u$ with the non-conservative
+sign-upwind stencil
+\begin{equation}
+  N(u)_{ij} \;=\; u_{ij}\,\big(\delta_x u + \delta_y u\big)_{ij},
+  \qquad
+  (\delta_x u)_{ij} = N\!\cdot\!
+  \begin{cases}
+    u_{ij}-u_{i-1,j}, & u_{ij}>0,\\[2pt]
+    u_{i+1,j}-u_{ij}, & u_{ij}\le 0,
+  \end{cases}
+  \label{eq:upwind}
+\end{equation}
+$\delta_y$ analogous and switching on the same centre value, ghost zeros on all
+four walls, and backward Euler in time,
+$\rfull_n(u)=u-u^{n}+\Delta t\big(N(u)-\nu\Delta_h u\big)$. Projecting and row
+scaling by $\rowscale_\star=I+\Delta t\,\nu\rowscale$ gives, with
+$c=\head(\latent)+\corr y$,
+\begin{equation}
+  \rweakn{n}
+  \;=\;
+  \big(I+\Delta t\,\nu\rowscale\big)^{-1}
+  \Big[\,
+    B_0c-B_0c_n
+    \;+\;\Delta t\,\big(\,\widehat{N}(c)+\nu\rowscale B_0c\,\big)
+  \Big],
+  \label{eq:burgers-step}
+\end{equation}
+where the diffusion term is exact and the row scaling is the diagonal of the
+linearised implicit operator in the modal basis, the modal form of the
+Helmholtz preconditioner the full-order Newton solver uses. Only
+$\widehat{N}(c)\approx\tests N(\bank c)$ requires a choice: dense evaluation at
+every interior node, the sampled rule
+$\widehat{N}(c)=\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(\bank c)$ with the sign
+switch retained at the retained nodes, or the precomputed quadratic form
+$\tfrac12 c\T Q c$ with $Q$ the symmetrised tensor
+$T_{iab}=\sum_x\tests_{ix}\bank_{xa}(DG)_{xb}$, which is an identity only where
+$u>0$ at every stencil node of every trial state the solver visits. The last is
+an algebraic route we verified in-job (residual and Jacobian parity below
+$10^{-11}$ relative on sign-satisfying states) and do not time in this paper.
+Time stepping uses a fixed substep count per output interval; each step is
+warm-started at the previous code, and the linear extrapolation is used instead
+when, and only when, its residual norm is smaller.
+
+\subsection{Empirical quadrature: the fit and the counts}
+\label{app:method:eq}
+
+A fitted rule with support $\mathcal S$ and weights $w$ is scored by the
+held-out relative error of the projected advection term,
+\begin{equation}
+  \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
+  \quad
+  \rho_{\max}\le\nEqtopBar\ \text{(primary bar)},\quad \rho_{\max}\le\nEqtopTightBar\ \text{(tight)},
+  \label{eq:rho}
+\end{equation}
+over the held-out reachable states described below; the primary bar is
+\nEqtopBarOrigin. A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
+$n_{\text{fit}}$ stored codes $c^{(\ell)}$ we evaluate the decoded state, form
+the per-node contributions $N_i(\bank c^{(\ell)})$ and the exact full-grid
+target $\tests N(\bank c^{(\ell)})$, and solve
+\begin{equation}
+  \min_{w\ge 0}\;
+  \norm{\,\mathcal{G}\,w-\beta\,}_2,
+  \qquad
+  \mathcal{G}_{(\ell,i),\,c}=\tests_{i,c}\,N_c\big(\bank c^{(\ell)}\big),
+  \qquad
+  \beta_{(\ell,i)}=\big[\tests N(\bank c^{(\ell)})\big]_i ,
+  \label{eq:nnls}
+\end{equation}
+rows normalised by their Euclidean norms, support grown greedily by the
+Lawson--Hanson criterion with an exact non-negative refit after each addition
+and a hard cap of $m$ nodes, padded to the requested count if the support
+saturates. Three counts are separated: the requested node count $m$, the
+achieved support, and the number of fit states $n_{\text{fit}}$. In the
+certification cell the fit states are reachable states (states of the dense
+solver's own converged per-step trajectory on fit trajectories), the held-out
+states are 512 reachable states per rung from certification trajectories
+disjoint from both the fit and the evaluation cases, and $\rho$ of
+\eqref{eq:rho} is evaluated on those. A deployed rule is a stored triple: node
+indices, weights, and the cached $m\times5\times R$ bank block.
+% rows per snapshot; linear terms are exact; selecting m selects a stored rule.
+% separated here.
+
+\subsection{Solver constants and exit codes}
+\label{app:method:codes}
+
+Damping starts at $\lambda_0=10^{-6}$ (Poisson, Burgers) or $10^{-4}$ (heat);
+$\lambda\leftarrow\max(\lambda/3,10^{-12})$ on acceptance and
+$\min(10\lambda,\lambda_{\max})$ on rejection; the trust radius is taken from the
+spread of the training codes. Exit codes differ per cell and are reported per
+cell. Burgers: 4 stationarity, 1 residual, 2 tiny step, 3 rejected at
+$\lambda\ge10^{14}$, 0 budget. Poisson: 6 stationarity, 2 relative residual, 1
+stall, 3 damping limit, 5 non-finite initial value, 0 budget. Heat: 1
+stationarity, 2 tiny step, 3 damping limit, 4 non-finite, 0 budget. The heat
+criterion divides by $\normF{\jac{}}$ only, applied to a residual already
+normalised by the target norm; Poisson and Burgers use \eqref{eq:stationarity}
+directly. The completion rule that accepts an attained initial fit
+(\S\ref{sec:method:weak}) was pre-registered in the panel cell's design before
+the job ran; the stricter flag is printed beside it in Table~\ref{tab:panel-all}.
+
+\subsection{What the method is, stated once}
+\label{app:method:statements}
+
+For a reader comparing this construction with related descriptions, the
+following hold for every result here. Dirichlet enforcement is a smooth
+polynomial factor folded into the bank, with zero lift, and covers homogeneous
+data only. The projection is least-squares Petrov--Galerkin with a fixed test
+space, not tangent Galerkin; the two differ even for a linear trial space,
+since $V^\top A^\top(AVz-b)=0$ and $V^\top(AVz-b)=0$ are different conditions.
+The heat scheme is Crank--Nicolson and the reduced step is a nonlinear
+least-squares problem, not a linear system in $\latent_{n+1}$; no latent mass
+matrix is formed and no latent ODE is integrated. The quadrature fit targets
+the weak advection term with $M$ rows per snapshot; the requested node count
+$m$, the achieved support and the fit-state count $n_{\text{fit}}$ are three
+different numbers. No conjugate-gradient solve is applied to the projected
+operator. There is no encoder in the deployed path. The update is damped
+Levenberg--Marquardt, not undamped Gauss--Newton. The Poisson ground truth is
+the verified discrete solution, not an analytic field.

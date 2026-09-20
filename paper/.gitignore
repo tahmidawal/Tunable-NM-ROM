@@ -1,0 +1,14 @@
+# latexmk build products
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.synctex.gz
+
+# generated figures are evidence, not build products
+!figures/*.pdf
+!evidence/campaign-2026-09-20/*.pdf

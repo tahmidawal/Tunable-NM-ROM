@@ -1,0 +1,60 @@
+% figures/architecture.tex -- TikZ translation of figures/architecture.mmd.
+% Colour encodes WHEN a quantity is fixed: trained once (purple), assembled
+% offline per mesh (blue), solved inside the timed query (orange), chosen at
+% deployment among existing artefacts (green), supplied or comparator (grey).
+\begin{tikzpicture}[
+  font=\scriptsize, node distance=3mm and 4mm,
+  box/.style={draw, rounded corners=1.5pt, align=center, inner sep=2.5pt, minimum height=5.5mm, line width=0.6pt},
+  trained/.style={box, fill=violet!12, draw=violet!70!black},
+  offline/.style={box, fill=blue!10, draw=blue!60!black},
+  solved/.style={box, fill=orange!18, draw=orange!70!black},
+  control/.style={box, fill=green!14, draw=green!50!black},
+  external/.style={box, fill=black!6, draw=black!55},
+  arr/.style={-{Latex[length=1.6mm]}, line width=0.5pt},
+  darr/.style={arr, dashed},
+  grp/.style={draw=black!35, rounded corners=3pt, inner sep=3pt, dashed}
+]
+% training
+\node[trained] (snap) {snapshots};
+\node[trained, right=of snap] (ad) {auto-decoder fit\\$g_\phi$, $h_\theta$, codes $Z$};
+\node[trained, right=of ad] (gphi) {coordinate net $g_\phi$};
+\node[trained, below=of gphi] (hth) {head $h_\theta$\\MLP $+$ linear skip};
+\node[trained, below=of hth] (zlib) {code library $Z$};
+\draw[arr] (snap) -- (ad); \draw[arr] (ad) -- (gphi); \draw[arr] (ad) |- (hth); \draw[arr] (ad) |- (zlib);
+% offline
+\node[offline, right=9mm of gphi] (bank) {bank $\bank=\bcmask(x)\,g_\phi(x)\T$\\$n\times R$};
+\node[offline, right=of bank] (blin) {linear operator\\$B=\tests\Aop\bank$};
+\node[offline, below=of blin] (corr) {corrections $\corr$\\PCA of head residual};
+\node[offline, below=of corr] (eqf) {EQ rules, one per $m$\\NNLS on reachable states\\certified by held-out $\rho$};
+\node[offline, above=of blin] (tests) {tests $\tests$: $M$ sine modes};
+\draw[arr] (gphi) -- (bank); \draw[arr] (bank) -- (blin); \draw[arr] (bank) |- (corr); \draw[arr] (bank) |- (eqf);
+\draw[arr] (tests) -- (blin); \draw[arr] (hth) -| ([xshift=-2mm]corr.west) -- (corr.west);
+\draw[arr] (zlib) -| ([xshift=-2mm]eqf.west) -- (eqf.west);
+% query
+\node[external, right=9mm of blin] (in) {input field (supplied)};
+\node[solved, below=of in] (proj) {fit $(\latent_0,y_0)$\\mesh-independent rule};
+\node[solved, below=of proj] (lm) {damped LM on $(\latent,y)$\\$\min\|\rweak(\latent,y)\|$, $M>k+q$\\cached operators};
+\node[solved, below=of lm] (dec) {decode $u=\bank(h_\theta(\latent^\star)+\corr y^\star)$};
+\node[external, below=of dec] (out) {requested dense fields (charged)};
+\node[solved, right=of lm] (exit) {exit reason,\\$\eta=\frac{\|J^\top r\|}{\|J\|_F\|r\|}$};
+\draw[arr] (in) -- (proj); \draw[arr] (proj) -- (lm); \draw[arr] (lm) -- (dec); \draw[arr] (dec) -- (out); \draw[arr] (lm) -- (exit);
+\draw[arr] (blin) -- (in.west |- blin.east) -- ++(0,0) |- ([yshift=1mm]lm.west);
+\draw[darr] (corr.east) -- ([yshift=0mm]lm.west);
+\draw[darr] (eqf.east) -- ([yshift=-1.5mm]lm.west);
+% controls
+\node[control, right=of dec, yshift=-1mm] (q) {rank $q$};
+\node[control, right=of q] (rule) {stored rule / dense};
+\node[control, right=of exit] (tol) {tolerance, budget};
+\draw[arr] (q) |- ([yshift=1.2mm]lm.east); \draw[arr] (rule) |- ([yshift=-1.2mm]lm.east); \draw[arr] (tol) -- (exit);
+% comparators
+\node[external, below=5mm of out, text width=6.4cm] (cmp) {same-job comparators: Newton (Burgers); DST / CG (Poisson, heat, wave); sparse direct / PCG (L-shape); POD-LSPG; FNO / U-Net / Transolver};
+\node[external, below=of cmp, text width=6.4cm] (metric) {error against complete query cost, with exit reasons; costs never divided across jobs};
+\draw[arr] (out) -- (cmp); \draw[arr] (cmp) -- (metric);
+% legend
+\begin{scope}[on background layer]
+\node[grp, fit=(snap)(ad)(gphi)(hth)(zlib), label={[font=\scriptsize\itshape]above:trained once}] {};
+\node[grp, fit=(bank)(blin)(corr)(eqf)(tests), label={[font=\scriptsize\itshape]above:offline, once per mesh}] {};
+\node[grp, fit=(in)(proj)(lm)(dec)(out)(exit), label={[font=\scriptsize\itshape]above:timed query}] {};
+\node[grp, fit=(q)(rule)(tol), label={[font=\scriptsize\itshape]below:chosen at run time}] {};
+\end{scope}
+\end{tikzpicture}

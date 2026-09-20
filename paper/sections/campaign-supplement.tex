@@ -1,0 +1,178 @@
+\clearpage
+\section{Corrected Poisson representation diagnostic}
+\label{app:oracle-confirmation}
+
+The nonzero-correction representation fits originally reported by the
+Poisson lane remain retracted under amendment A10. A separate rerun on
+the complete original development cohort now confirms the corrected
+query-metric projection (job \provOracleConfirmationJob, scientific source
+\texttt{\provOracleConfirmationSource}, retained evidence pinned at
+\texttt{\provOracleConfirmationPin}). All
+\nOracleConfirmationFits{} case/rank fits meet the recorded stationarity
+criterion; the independent NumPy field and derivative audit passes
+\nOracleConfirmationChecks{} checks. These are untimed, truth-informed
+representation fits on already opened cases. The historical timed
+results, their source pins and the original retraction are unchanged.
+
+Let $R_G$ be the triangular factor of the evaluated bank in the query
+mesh's field norm, and let $Q_q$ have orthonormal columns spanning
+$R_G C_q$. Eliminating the free correction coefficients leaves
+\begin{equation}
+ r_q(z)=(I-Q_qQ_q^\top)(R_Gh_\theta(z)-T).
+\end{equation}
+Here $T$ is the reference field projected into these coordinates.
+The original implementation omitted the required normalization of the
+projector. The corrected finite best-found error is an upper bound on
+the unknown global minimum, while the free-bank floor is a lower bound.
+At $q=R$, direct free-coefficient projection attains that floor and
+removes the redundant nonlinear head.
+
+\begin{table}[h]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Separately confirmed Poisson representation errors (\%) on the
+original development sources. Original starts use the unchanged
+nearest-training-code multistart prescription with the repaired projector.
+Best found additionally permits previously retained solved states and the
+preceding rank's best fit as feasible starts. Median summarizes the
+safeguarded errors. Original starts and best found report worst-case
+errors; bank floor is the worst free-bank projection error.
+Stationary counts cases satisfying the normalized-gradient rule, with
+the direct endpoint stationary by construction. None is a new inference
+timing or sealed-test result.}
+\label{tab:oracle-confirmation}
+\resizebox{\linewidth}{!}{\input{tables/TC_oracle_confirmation}}
+\end{table}
+
+\clearpage
+\section{Three-dimensional development comparisons}
+\label{app:campaign-development}
+
+\textbf{Provisional evidence, excluded from the abstract and main claims.}
+The following panels are audited development comparisons during an
+ongoing tuning campaign. Their inputs were available for checkpoint or
+configuration selection. These tables preserve the recorded development snapshot; later frozen
+final evaluations are not included here. Independent-seed confirmation
+and final evaluation must be distinguished from checkpoint selection. Failure to reach an accuracy
+target is retained as a result, and a finite training budget does not
+establish a model family's attainable error floor. No cross-PDE or
+cross-allocation runtime ratio is formed.
+
+Each table pairs accuracy with the cost of the same solver invocation.
+GPU warm-up precedes measurement, parameters use double precision and
+matrix multiplications use the highest-precision setting. Query costs
+include the recorded initialization, solve and requested field output
+with inputs and outputs resident on the GPU; unmeasured host transfers
+are not assigned a cost. Timing summaries retain all repetitions.
+Operator variants include any stated interpolation or incompressibility
+projection in the measured query. Failed direct mesh-transfer variants
+are displayed separately from native-grid prediction followed by
+interpolation; their failure is not an intrinsic impossibility result
+for the operator family.
+
+Stationarity columns report each run's recorded stopping criterion;
+they do not prove a global minimum. The selected Poisson panel has
+independently audited fields and references, but its nonlinear stopping
+summary lacks saved selected latent states for a separate gradient
+reconstruction. The selected Navier--Stokes panel retains histories for
+sampled independent weak-gradient checks. Its new paired measurements
+pass the numerical-validity audit, but a separate strict cross-run
+frozen-field replay gate failed and remains failed. This supports neither
+cross-run equivalence nor an implementation-speed ratio. A zero recorded
+stopping-failure count does not remove these qualifications.
+
+The weak NM-ROM residual is projected against smooth test functions.
+The learned bank, compressed head and correction rank have sizes
+$R$, $K$ and $q$; $M$ is the actual number of weak tests. The Burgers
+basis completes the degenerate Laplacian eigenvalue shell at its
+requested cutoff, preserving coordinate symmetry. Dense full-grid
+operations remain charged where quadrature has not met its certificate.
+Full-bank Galerkin controls and a full-bank weak least-squares endpoint
+are distinct reduced equations. On the native grid, POD uses the matched
+training states. On finer heat and Poisson meshes, POD is rebuilt offline
+from the same training members; these mesh-adapted controls are distinct
+from transferring frozen neural weights.
+Efficient classical controls remain in the comparison even when they
+are both faster and more accurate.
+
+\begin{table}[h]
+\centering
+\caption{Provisional development panel provenance. Each row names a
+separate GPU allocation. Scientific source identifiers refer to staged
+file contents verified against repository history; snapshot hashes and
+upstream result/audit hashes are in \texttt{tables/campaign-provenance.json}.}
+\label{tab:campaign-sources}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_sources}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Provisional training and query contracts from saved run
+configurations. Grid counts are per spatial axis. Fields are full spatial states, including the initial
+state when requested; vector states include all channels. The number
+of fields is not a count of statistically independent examples. Heads
+lists saved trained candidates; the following panels explicitly identify
+the displayed candidate. All model families share the lane's training
+membership.}
+\label{tab:campaign-setup}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_setup}}
+\end{table}
+
+\clearpage
+\begin{table}[h]
+\centering
+\caption{Provisional operator training records. Budget, done and selected
+are requested, completed and checkpoint-selected optimizer updates;
+batch is examples per update and LR is the initial learning rate.
+Seed records the initializer. Exit records why training stopped.
+Selection uses the recorded development criterion; an update limit is
+not a convergence certificate. Reused training checkpoints may originate
+in an earlier allocation. Compute budgets are recorded, not claimed equal.}
+\label{tab:campaign-training}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_training}}
+\end{table}
+
+FNO is a Fourier neural operator; U-Net is a multiscale convolutional
+model; DeepONet uses an input branch and coordinate trunk; Transolver
+uses learned physics-attention slices. The pinned machine-readable
+training records retain each architecture, normalization, selected
+checkpoint hash and training curve metadata. Burgers operators return
+their trained time knots, pass through the supplied initial state and
+interpolate to the common requested output times. The Navier--Stokes
+case is a periodic interacting three-component flow family; the
+reported panel does not claim turbulent-flow coverage. Each selected
+panel now includes paired measurements for all four operator families.
+
+\clearpage
+\begin{table}[h]
+\centering
+\caption{Provisional NM-ROM architecture and training records, derived
+from saved checkpoints and their original training metadata. MLP widths
+list input, hidden and output sizes of each multilayer perceptron. Head
+parameter counts include its linear skip; optimized training codes and
+fixed Fourier, scale and whitening assets are excluded. Budget, done
+and selected are requested, completed and checkpoint-selected updates.
+Base seed initializes the recipe; stage-specific key splits and sampling
+seeds are retained in the pinned configuration. Selected updates follow
+the recorded development criterion or the final optimizer iterate, as
+specified in the machine-readable protocol. Update limits do not
+certify convergence. Reused checkpoints retain their original training
+record rather than inheriting the query allocation's budget.}
+\label{tab:campaign-nmrom-training}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_nmrom}}
+\end{table}
+
+The coordinate network supplies the spatial bank, which is frozen while
+the compressed coefficient head is trained. The head's optimized
+training codes are offline fitting variables, not an encoder or online
+inputs. The vector bank's output groups all velocity components;
+its terminal width therefore differs from the number of bank functions.
+Correction directions and query-mesh solver assets are prepared offline.
+Changing correction rank within a reported ladder leaves all neural
+weights frozen. The pinned protocol records checkpoint content hashes,
+full training configurations and the source of reused training metadata.
+
+\input{sections/campaign-panels-generated}
+
+\FloatBarrier

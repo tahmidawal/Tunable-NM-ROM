@@ -58,28 +58,11 @@ def run(cfg,out,smoke=False):
     record['status']='generating_training_data';save()
     fields=P.dataset(cfg['train_intervals'],train_p)
     record['status']='training_bank';save()
-    validation_fields=P.dataset(cfg['train_intervals'],valid_p)
-    params,rotation,basis,target,norm2,perp,info=T.train_bank(fields[:,None],cfg,out,validation_fields)
+    params,rotation,basis,target,norm2,perp,info=T.train_bank(fields[:,None],cfg,out)
     record['bank']=info;save();models=[]
-    vu=validation_fields.reshape(len(validation_fields),-1);vt=vu@basis;vn=np.sum(vu*vu,axis=1);vp=np.maximum(vn-np.sum(vt*vt,axis=1),0)
     for k in cfg['latent_dimensions']:
         record['status']=f'training_head_K{k}';save()
-        model=T.train_head(target,norm2,perp,k,cfg,out,(vt,vn,vp));models.append(model);record['heads'].append(model['info']);save()
-    operator_models=[];record['operators']=[]
-    if cfg.get('operators'):
-        from operators import poisson_adapter as O
-        from operators import training as OT
-        train_sources=np.stack([np.asarray(P.source(cfg['train_intervals'],p)) for p in train_p])
-        valid_sources=np.stack([np.asarray(P.source(cfg['train_intervals'],p)) for p in valid_p])
-        scales=dict(input=float(np.sqrt(np.mean(train_sources**2))),output=float(np.sqrt(np.mean(fields**2))))
-        tx,ty=O.arrays(train_sources,fields,scales);vx,vy=O.arrays(valid_sources,validation_fields,scales)
-        for i,entry in enumerate(cfg['operators']):
-            record['status']='training_'+entry['name'];save()
-            ocfg={**cfg['operator_training'],'seed':cfg['operator_training']['seed']+i}
-            op,oinfo=OT.train(tx,ty,vx,vy,entry['spec'],ocfg,out/'operators'/entry['name'],C.dump,C.checkpoint)
-            oinfo.update(name=entry['name'],scales=scales,training_input_sha256=C.sha(train_sources),training_target_sha256=C.sha(fields),
-                validation_input_sha256=C.sha(valid_sources),validation_target_sha256=C.sha(validation_fields))
-            record['operators'].append(oinfo);operator_models.append((entry['name'],op,entry['spec'],scales));save()
+        model=T.train_head(target,norm2,perp,k,cfg,out);models.append(model);record['heads'].append(model['info']);save()
     record['status']='reference_refinement';save()
     lo,hi=cfg['reference_intervals'];physical={};uncertainty=[]
     for case,p in enumerate(valid_p):
@@ -106,14 +89,6 @@ def run(cfg,out,smoke=False):
                 metadata[name]=dict(kind='pod',rank=rank)
         full_lam=C.eigenvalues(n);methods['dst_exact']=lambda f,l=full_lam:P.solve_dst(f,l)
         metadata['dst_exact']=dict(kind='full_order')
-        for name,op,spec,scales in operator_models:
-            methods[name]=O.engine(op,spec,scales,n)
-            metadata[name]=dict(kind='neural_operator',spec=spec,training_intervals=cfg['train_intervals'],frozen_mesh_transfer=n!=cfg['train_intervals'])
-            if n!=cfg['train_intervals']:
-                native=cfg['train_intervals'];alt=f'{name}_native{native}_interpolate'
-                methods[alt]=O.native_interpolated(op,spec,scales,n,native)
-                metadata[alt]=dict(kind='neural_operator',spec=spec,training_intervals=native,
-                    query='restrict supplied nodal forcing, predict on native mesh, trilinear interpolate with zero boundary')
         mesh=dict(intervals=n,weak_tests=len(triples),bank_sha256=C.sha(bank),weak_operator_sha256=C.sha(a),
             weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,linear_endpoint=linfo,quadrature=[],representation=[])
         qb,rb=np.linalg.qr(bank,mode='reduced')
@@ -122,10 +97,8 @@ def run(cfg,out,smoke=False):
         for model in models:
             k=model['info']['k'];decoded=np.asarray(C.head(model['params'],model['codes']))
             try:
-                inverse_tests=cfg.get('quadrature_use_inverse_tests',False)
-                indices,weighted,eq=S.fit_quadrature(bank,projection if inverse_tests else test,decoded,cfg)
-                sampled=weighted if inverse_tests else weighted/lam[None,:]
-                eq['fit_test_normalization']='inverse eigenvalue' if inverse_tests else 'unscaled sine'
+                indices,weighted,eq=S.fit_quadrature(bank,test,decoded,cfg)
+                sampled=weighted/lam[None,:]
                 exact=sources.reshape(len(sources),-1)@projection
                 approx=sources.reshape(len(sources),-1)[:,indices]@sampled
                 errors=np.linalg.norm(approx-exact,axis=1)/np.maximum(np.linalg.norm(exact,axis=1),1e-300)
@@ -188,6 +161,5 @@ if __name__=='__main__':
         cfg.update(train_intervals=8,evaluation_intervals=[8],reference_intervals=[8,16],train_count=12,validation_count=1,
             bank_rank=8,latent_dimensions=[2],bank_steps=3,head_steps=3,weak_tests=32,q_ladder=[0,2],bank_width=16,head_width=16,
             fourier_features=4,bank_batch_states=4,bank_batch_points=64,quadrature_candidates=128,quadrature_fit_rows=64,
-            quadrature_decoder_snapshots=4,repetitions=1,burn_seconds=.001,lm_budget=8,field_chunk=1024,oracle_starts=2,
-            checkpoint_every=3,operators=[])
+            quadrature_decoder_snapshots=4,repetitions=1,burn_seconds=.001,lm_budget=8,field_chunk=1024,oracle_starts=2)
     run(cfg,Path(args.out),args.smoke)

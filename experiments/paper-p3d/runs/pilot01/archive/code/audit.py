@@ -15,7 +15,7 @@ def sha(a):
 def error(a,b):return float(np.linalg.norm(np.asarray(a).reshape(-1)-np.asarray(b).reshape(-1))/np.linalg.norm(b))
 
 
-def audit(out,output=None):
+def audit(out):
     record=json.loads((out/'result.json').read_text());summary=json.loads((out/'summary.json').read_text())
     assert record['complete'] and record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
     assert not record['final_cohort_opened'];checked=0;references={};max_reference_defect=0.;max_metric_defect=0.
@@ -46,9 +46,9 @@ def audit(out,output=None):
     result=dict(passed=True,checked_fields=checked,checked_references=len(references),checked_summary_rows=len(summary['rows']),
         maximum_reference_relative_defect=max_reference_defect,maximum_metric_absolute_defect=max_metric_defect,
         limitation='independent field/reference/aggregation audit; no independent retraining or global-optimality proof')
-    (output or out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+    (out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
     return result
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('out');p.add_argument('--output');args=p.parse_args();audit(Path(args.out),Path(args.output) if args.output else None)
+    p=argparse.ArgumentParser();p.add_argument('out');args=p.parse_args();audit(Path(args.out))

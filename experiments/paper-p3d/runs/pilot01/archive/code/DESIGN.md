@@ -34,20 +34,6 @@ Time complete cold queries in one allocation: upload supplied forcing, weak proj
 
 The owner independently recomputes saved field errors and verifies representative outputs, then checksum-collects the exact attempt and removes it only after verification. The root coordinator owns the canonical lab log. No final-cohort opening, worktree merge or public-paper claim happens automatically from a successful pilot.
 
-## Development amendment A1: diagnostic tuning and matched operators
-
-Registered after collecting the first pilot and before submitting the second attempt. The archived pilot remains unchanged, including its failed quadrature certificates and target misses. Its independent field/reference audit is retained separately from the remotely checksummed files. That pilot used only a few seconds of actual bank/head updates; its finite update counts did not establish optimization convergence.
-
-The next bank has rank 128, coordinate width 256 and 64 Fourier features. Allocate up to 150000 updates or 900 elapsed seconds to the bank, and 100000 updates or 600 seconds to each width-256 head with latent dimensions 8 and 16. Every 10000 updates retain optimizer state and measure development bank projection or best-found head reconstruction. Select the bank by smallest worst development projection error and each head by smallest worst development reconstruction error; record full curves and all stopping statistics. These are explicit model-selection operations on development data. Final data remain unopened. All 512 training and 16 development members are unchanged from the pilot.
-
-Evaluate frozen models at 32 and 64 intervals, with fixed smooth-test count $M=512$ and correction ranks $q\in\{0,16,32,64,96\}$. Retain exact free-bank and POD controls and the exact DST solver. The transfer bank is evaluated continuously from frozen coordinate weights; POD is rebuilt from the same training members on the stated grid and its offline construction is recorded.
-
-The original NNLS fit gave nearly vanishing decoder moments excessive influence through its row normalization. A retained CPU diagnostic varies only the documented normalization floor and confirms its effect on the fit. The new fit uses the actual inverse-eigenvalue-scaled smooth tests, a common floor of one tenth the largest decoder moment, $m=4M$ candidates and 4096 fitting rows. The unchanged 1% held-out forcing-moment certificate decides whether this path supports a quadrature claim. Failed sampled paths remain in the results with that flag.
-
-Train a four-layer FNO with width 24, eight Fourier modes per signed-axis block and nine zero-padding points, and a three-level nonperiodic U-Net with base width 16. Every network is three-spatial-dimensional and uses float64 parameters/activations and complex128 Fourier arithmetic. Common primitives are imported by committed content hash from the heat lane. Each receives the supplied forcing plus known coordinates, with separate input/output normalization scales computed on the same training fields. Its target is the complete interior solution field; the shared zero boundary is exact by convention. No generating descriptors are supplied. Each operator receives at most 30000 updates or 1500 elapsed seconds, with batch size two and validation every 250 steps; select minimum worst development field error and retain all curves, selected parameters and latest optimizer state. These budgets are declared training budgets, not an assertion of matched parameter count or optimization convergence.
-
-At the second mesh, report direct frozen-network evaluation and a separately named native-mesh prediction followed by boundary-aware trilinear interpolation. The latter includes restriction of the supplied forcing and interpolation within the timed query. This distinguishes physical receptive-field/padding changes from interpolation at fixed native inference resolution. All NM-ROM, operator, classical and direct-transform timings are collected together in one GPU allocation after training.
-
 ## Glossary
 
 - NM-ROM: a reduced numerical solver whose field coefficients depend on a smaller neural latent state.

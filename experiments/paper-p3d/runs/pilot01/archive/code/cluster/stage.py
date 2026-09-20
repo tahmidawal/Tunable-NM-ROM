@@ -9,7 +9,6 @@ ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/paper-p3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_p3d_20260920'
 FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','run.py','audit.py','cluster/stage.py','cluster/collect.py']
-FILES+=['operators/'+name for name in ['models3d.py','training.py','__init__.py','README.md','IMPORTS.json','poisson_adapter.py']]
 
 
 def main():

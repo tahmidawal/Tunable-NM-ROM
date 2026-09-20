@@ -25,7 +25,7 @@ def fit_quadrature(bank,test,decoded,cfg):
     mat=(fields[:,indices,None]*test[None,indices,:]).transpose(0,2,1).reshape(-1,count)
     rhs=exact.reshape(-1)
     # Common row scaling by each test's decoder-output RMS, with a global floor.
-    scale=np.maximum(np.sqrt(np.mean(exact**2,axis=0)),np.max(np.abs(exact))*cfg.get('quadrature_row_floor',1e-5))
+    scale=np.maximum(np.sqrt(np.mean(exact**2,axis=0)),np.max(np.abs(exact))*1e-5)
     scales=np.tile(scale,len(take));mat=mat/scales[:,None];rhs=rhs/scales
     rows=np.sort(rng.choice(len(rhs),min(cfg['quadrature_fit_rows'],len(rhs)),replace=False))
     begin=time.perf_counter()
@@ -36,7 +36,6 @@ def fit_quadrature(bank,test,decoded,cfg):
     return indices,weighted,dict(candidate_count=count,positive_support=int(np.count_nonzero(weights>0)),
             source='decoder-output snapshots, NNLS positive weights, random candidate grid nodes',
             fit_rows=len(rows),seconds=time.perf_counter()-begin,scaled_fit_norm=float(rnorm),
-            row_floor=cfg.get('quadrature_row_floor',1e-5),
             training_moment_error_max=float(max(relative)),weights_hash=C.sha(weights),indices_hash=C.sha(indices))
 
 

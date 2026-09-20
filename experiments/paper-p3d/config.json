@@ -1,8 +1,14 @@
 {
-  "schema": "paper-poisson3d-pilot-v1",
+  "schema": "paper-poisson3d-tuned-operators-v2",
   "train_intervals": 32,
-  "evaluation_intervals": [32],
-  "reference_intervals": [64, 128],
+  "evaluation_intervals": [
+    32,
+    64
+  ],
+  "reference_intervals": [
+    64,
+    128
+  ],
   "train_count": 512,
   "validation_count": 16,
   "train_seed": 920410,
@@ -13,28 +19,37 @@
   "head_minibatch_seed": 920414,
   "timing_seed": 920415,
   "quadrature_seed": 920416,
-  "bank_rank": 64,
-  "latent_dimensions": [8,16],
-  "bank_steps": 6000,
-  "head_steps": 8000,
+  "bank_rank": 128,
+  "latent_dimensions": [
+    8,
+    16
+  ],
+  "bank_steps": 150000,
+  "head_steps": 100000,
   "bank_batch_states": 64,
   "bank_batch_points": 2048,
   "head_batch_states": 128,
   "bank_learning_rate": 0.001,
   "head_learning_rate": 0.0005,
-  "checkpoint_every": 1000,
-  "fourier_features": 32,
+  "checkpoint_every": 10000,
+  "fourier_features": 64,
   "fourier_scale": 1.5,
-  "bank_width": 128,
-  "head_width": 128,
-  "weak_tests": 256,
-  "q_ladder": [0,8,16,32],
-  "quadrature_candidates": 1024,
+  "bank_width": 256,
+  "head_width": 256,
+  "weak_tests": 512,
+  "q_ladder": [
+    0,
+    16,
+    32,
+    64,
+    96
+  ],
+  "quadrature_candidates": 2048,
   "quadrature_decoder_snapshots": 16,
-  "quadrature_fit_rows": 2048,
+  "quadrature_fit_rows": 4096,
   "quadrature_certificate": 0.01,
   "lm_budget": 160,
-  "lm_tolerance": 0.000001,
+  "lm_tolerance": 1e-06,
   "initial_starts": 3,
   "oracle_starts": 4,
   "repetitions": 3,
@@ -43,5 +58,44 @@
   "same_grid_target": 0.01,
   "physical_target": 0.02,
   "field_chunk": 8192,
-  "final_cohort_opened": false
+  "final_cohort_opened": false,
+  "bank_wall_seconds": 900,
+  "head_wall_seconds": 600,
+  "quadrature_row_floor": 0.1,
+  "quadrature_use_inverse_tests": true,
+  "operators": [
+    {
+      "name": "fno3d_w24_m8",
+      "spec": {
+        "kind": "fno3d",
+        "width": 24,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 9
+      }
+    },
+    {
+      "name": "unet3d_w16",
+      "spec": {
+        "kind": "unet3d",
+        "width": 16,
+        "levels": 3,
+        "periodic": false
+      }
+    }
+  ],
+  "operator_training": {
+    "steps": 30000,
+    "wall_seconds": 1500,
+    "batch_size": 2,
+    "seed": 920450,
+    "learning_rate": 0.0005,
+    "validation_every": 250,
+    "curve_every": 50,
+    "components_per_output": 1
+  }
 }

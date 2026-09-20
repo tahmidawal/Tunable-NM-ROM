@@ -212,7 +212,12 @@ def run(cfg,out,smoke=False):
             metadata[name]=dict(kind='full_order',solver='matrix-free CG',preconditioner='identity',
                 relative_tolerance=tol,absolute_tolerance=0.,max_iterations=cap,initial_guess='zero',
                 stopping='recursive residual; timed true-residual certification',
-                output='complete interior field',matvecs='iterations + one final residual stencil')
+                output='complete interior field',matvecs='iterations + one final residual stencil',
+                timed_iteration_history=True,comparison_role='instrumentation control')
+            if cfg.get('plain_cg_control',False):
+                plain=name.replace('cg_identity_','cg_identity_plain_')
+                methods[plain]=CG.engine(n,tol,cap,retain_history=False)
+                metadata[plain]={**metadata[name],'timed_iteration_history':False,'comparison_role':'efficient iterative CG baseline'}
         for name,op,spec,scales in operator_models:
             methods[name]=O.engine(op,spec,scales,n)
             metadata[name]=dict(kind='neural_operator',spec=spec,training_intervals=cfg['train_intervals'],frozen_mesh_transfer=n!=cfg['train_intervals'])
@@ -296,10 +301,10 @@ def run(cfg,out,smoke=False):
                     value=jax.device_get(value);finished=time.perf_counter()
                     counters=dict(stationary=True,iterations=0)
                     if str(name).startswith('cg_'):
-                        pred,cgstats,cghistory=value
+                        pred,cgstats,*cghistory=value
                         meta=metadata[name]
                         counters=CG.counters(cgstats,meta['relative_tolerance'],meta['max_iterations'])
-                        counters['cg_iteration_history']=np.asarray(cghistory)[:counters['iterations']].tolist()
+                        if cghistory:counters['cg_iteration_history']=np.asarray(cghistory[0])[:counters['iterations']].tolist()
                     elif isinstance(value,tuple):
                         pred,stats,coef,starts,*latent=value
                         counters=dict(stationary=bool(int(stats[2])==1 and stats[5]<=cfg['lm_tolerance']),iterations=int(stats[7]),

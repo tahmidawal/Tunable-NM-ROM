@@ -35,9 +35,11 @@ def prepare(cfg, source):
     assert cfg['reserved_final_seed'] not in [cfg['train_seed'],cfg['validation_seed']]
     prior=json.loads((source/'result.json').read_text())
     assert prior['complete'] and not prior['final_cohort_opened']
+    assert cfg.get('plain_cg_control') is True and prior['config'].get('plain_cg_control') is True,'efficient CG needs a real paired development replay'
     assert cfg.get('iterative_cg') and cfg['iterative_cg']==prior['config'].get('iterative_cg'), 'CG settings must have a real paired development replay'
     for mesh in prior['meshes']:
         assert {f'cg_identity_rtol{tol:.0e}' for tol in cfg['iterative_cg']['relative_tolerances']} <= set(mesh['methods'])
+        assert {f'cg_identity_plain_rtol{tol:.0e}' for tol in cfg['iterative_cg']['relative_tolerances']} <= set(mesh['methods'])
     return dict(schema='poisson3d-final-freeze-v1',configuration=configuration(cfg),
         checkpoint_sha256={name:digest(source/name) for name in checkpoint_names(cfg)},
         selection_result_sha256=digest(source/'result.json'),selection_source_commit=prior['source_commit'],
@@ -51,6 +53,7 @@ def verify_final_freeze(cfg):
     assert freeze['final_fields_generated'] is False
     source=Path(cfg['reuse_checkpoint_directory'])
     assert freeze['selection_result_sha256']==digest(source/'result.json')
+    assert cfg.get('plain_cg_control') is True and json.loads((source/'result.json').read_text())['config'].get('plain_cg_control') is True
     prior=json.loads((source/'result.json').read_text())
     assert cfg.get('iterative_cg') and cfg['iterative_cg']==prior['config'].get('iterative_cg'), 'CG settings lack paired development replay'
     assert freeze['checkpoint_sha256']=={name:digest(source/name) for name in checkpoint_names(cfg)}

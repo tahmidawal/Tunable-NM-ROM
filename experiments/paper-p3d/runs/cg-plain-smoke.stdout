@@ -1,0 +1,137 @@
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 0.001306637143402813
+COMPILED 8 linear_bank_weak_qR 0.146
+COMPILED 8 linear_bank_galerkin 0.069
+COMPILED 8 pod2_galerkin 0.105
+COMPILED 8 pod4_galerkin 0.073
+COMPILED 8 pod8_galerkin 0.06
+COMPILED 8 dst_exact 0.0
+COMPILED 8 cg_identity_rtol1e-02 0.097
+COMPILED 8 cg_identity_plain_rtol1e-02 0.087
+COMPILED 8 cg_identity_rtol1e-04 0.103
+COMPILED 8 cg_identity_plain_rtol1e-04 0.095
+COMPILED 8 cg_identity_rtol1e-06 0.085
+COMPILED 8 cg_identity_plain_rtol1e-06 0.079
+COMPILED 8 nmrom_K2_q0_dense 0.809
+COMPILED 8 nmrom_K2_q2_dense 0.766
+CASE 8 0 REP 0
+CASE 8 0 REP 1
+{
+  "passed": true,
+  "checked_fields": 20,
+  "checked_references": 1,
+  "checked_summary_rows": 14,
+  "maximum_reference_relative_defect": 3.1252813710184914e-16,
+  "maximum_metric_absolute_defect": 0.0,
+  "maximum_forcing_relative_defect": 3.477080955365854e-17,
+  "maximum_physical_reference_defect": 5.37727466618712e-16,
+  "independently_regenerated_cohorts": true,
+  "checked_physical_refinement_cases": 1,
+  "complete_cohort_method_repetition_coverage": true,
+  "limitation": "independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof",
+  "independent_cg_audit": {
+    "passed": true,
+    "checked_invocation_fields": 12,
+    "independent_scipy_replays": 6,
+    "failed_invocations": 0,
+    "maximum_true_residual_absolute_defect": 1.734723475976807e-18,
+    "independent_saved_coefficient_history_replays": [
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      },
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      },
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      }
+    ],
+    "scipy_comparisons": [
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_plain_rtol1e-04",
+        "iterations": 18,
+        "saved_iterations": 18,
+        "iteration_count_matches": true,
+        "timed_iteration_history": false,
+        "field_relative_difference": 2.0849087433662887e-16,
+        "spd_residual_difference_bound": 0.00036516866185997625
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_plain_rtol1e-02",
+        "iterations": 12,
+        "saved_iterations": 12,
+        "iteration_count_matches": true,
+        "timed_iteration_history": false,
+        "field_relative_difference": 2.0409736313274487e-16,
+        "spd_residual_difference_bound": 0.023118104928482697
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-06",
+        "iterations": 23,
+        "saved_iterations": 23,
+        "iteration_count_matches": true,
+        "timed_iteration_history": true,
+        "field_relative_difference": 2.1474662612932958e-16,
+        "spd_residual_difference_bound": 3.7320892728251717e-06
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-04",
+        "iterations": 18,
+        "saved_iterations": 18,
+        "iteration_count_matches": true,
+        "timed_iteration_history": true,
+        "field_relative_difference": 2.0849087433662887e-16,
+        "spd_residual_difference_bound": 0.00036516866185997625
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-02",
+        "iterations": 12,
+        "saved_iterations": 12,
+        "iteration_count_matches": true,
+        "timed_iteration_history": true,
+        "field_relative_difference": 2.0409736313274487e-16,
+        "spd_residual_difference_bound": 0.023118104928482697
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_plain_rtol1e-06",
+        "iterations": 23,
+        "saved_iterations": 23,
+        "iteration_count_matches": true,
+        "timed_iteration_history": false,
+        "field_relative_difference": 2.1474662612932958e-16,
+        "spd_residual_difference_bound": 3.7320892728251717e-06
+      }
+    ],
+    "iteration_scope": "Traced control: saved coefficient/recurrence trajectories independently replayed for repetition zero. Efficient untraced CG: true residuals checked on every measured field; independent SciPy iteration counts and SPD residual-based field bounds checked per case. Counts may differ between finite-precision tolerance-stopped trajectories; every difference is reported.",
+    "preconditioner": "identity; constant diagonal Jacobi changes only scaling for this constant-coefficient stencil"
+  },
+  "independent_weak_state_audit": {
+    "passed": true,
+    "checked_states": 2,
+    "checked_meshes": 1,
+    "maximum": {
+      "bank_node_defect": 1.358652380187235e-15,
+      "weak_operator_defect": 3.9252251125850245e-16,
+      "field_relative_defect": 1.200709317409921e-16,
+      "coefficient_relative_defect": 1.021159761205319e-15,
+      "full_gradient_absolute_defect": 3.031684442944831e-17,
+      "eliminated_gradient_absolute_defect": 3.804109669413788e-17
+    },
+    "scope": "Independent analytic NumPy head/Jacobian, full-field coefficient reconstruction, sampled bank-coordinate identity and SciPy sine-transform weak operator/gradient; no global optimality claim."
+  }
+}

@@ -1,0 +1,775 @@
+{
+  "schema": "poisson3d-native-development-selection-v1",
+  "sources": {
+    "extra03": {
+      "result_sha256": "44e088449d71c39df9634e4dc1ddc08e7baf9b43876cc41c2b11fe47a9e33f39",
+      "source_commit": "a50ce0977373977688d73f82700108a6138b433b",
+      "job_id": "3995104"
+    },
+    "seed04": {
+      "result_sha256": "d7726fa13131c4605c633890715503d108abad5a01400cb5f2edba4a6e43c6f9",
+      "source_commit": "99befa2a4a7152df74b3086255bc2f47efbb5b70",
+      "job_id": "3996479"
+    },
+    "seed05": {
+      "result_sha256": "2e2034b58fbb58c18058ef78eba279853816de54af1b0eb8500cad56d92197ad",
+      "source_commit": "59651088953df04f78e4193210ec400d6cf50f1f",
+      "job_id": "4019009"
+    },
+    "seed06": {
+      "result_sha256": "3f5e10323a4f7336b6771c74030db4663a539bd602d1e579b485268c263f1465",
+      "source_commit": "38ef2031f3ad182fed873e004ba1fc0dc972f812",
+      "job_id": "4025641"
+    }
+  },
+  "candidate_roms": [
+    {
+      "attempt": "extra03",
+      "error": 0.005891574776713949,
+      "checkpoint_identity": [
+        "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+        "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+      ]
+    },
+    {
+      "attempt": "seed04",
+      "error": 0.009703844919982533,
+      "checkpoint_identity": [
+        "3f1337234e01c6c24825064ded38c2908d2946e4e6d44df696675251aaf6605c",
+        "458a549259746f7ab042d9dcf5cc8c2a791b302027dd26a7b201b4e4772f67cc"
+      ]
+    },
+    {
+      "attempt": "seed05",
+      "error": 0.005891574776714012,
+      "checkpoint_identity": [
+        "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+        "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+      ]
+    },
+    {
+      "attempt": "seed06",
+      "error": 0.005891574776714028,
+      "checkpoint_identity": [
+        "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+        "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+      ]
+    }
+  ],
+  "candidate_operators": {
+    "fno3d": [
+      {
+        "attempt": "extra03",
+        "name": "fno3d_w24_m8",
+        "error": 0.0023939220944520874,
+        "entry": {
+          "name": "fno3d_w24_m8",
+          "spec": {
+            "kind": "fno3d",
+            "width": 24,
+            "modes": [
+              8,
+              8,
+              8
+            ],
+            "depth": 4,
+            "padding": 9
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "147024108ae3f26ef7cfd80be0d514ba01c9596916b8bd60297168342ad05c11"
+      },
+      {
+        "attempt": "seed04",
+        "name": "fno3d_w24_m8",
+        "error": 0.002365559714807757,
+        "entry": {
+          "name": "fno3d_w24_m8",
+          "spec": {
+            "kind": "fno3d",
+            "width": 24,
+            "modes": [
+              8,
+              8,
+              8
+            ],
+            "depth": 4,
+            "padding": 9
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920550,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "6d97b72da12f585ab996a2aa548d5cd1da2f7a12d480ce694f7fbd6f149990ac"
+      },
+      {
+        "attempt": "seed05",
+        "name": "fno3d_w24_m8",
+        "error": 0.0023939220944520874,
+        "entry": {
+          "name": "fno3d_w24_m8",
+          "spec": {
+            "kind": "fno3d",
+            "width": 24,
+            "modes": [
+              8,
+              8,
+              8
+            ],
+            "depth": 4,
+            "padding": 9
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920450,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "147024108ae3f26ef7cfd80be0d514ba01c9596916b8bd60297168342ad05c11"
+      },
+      {
+        "attempt": "seed06",
+        "name": "fno3d_w24_m8",
+        "error": 0.002365559714807757,
+        "entry": {
+          "name": "fno3d_w24_m8",
+          "spec": {
+            "kind": "fno3d",
+            "width": 24,
+            "modes": [
+              8,
+              8,
+              8
+            ],
+            "depth": 4,
+            "padding": 9
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920550,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "6d97b72da12f585ab996a2aa548d5cd1da2f7a12d480ce694f7fbd6f149990ac"
+      }
+    ],
+    "unet3d": [
+      {
+        "attempt": "extra03",
+        "name": "unet3d_w16",
+        "error": 0.0019318997012163124,
+        "entry": {
+          "name": "unet3d_w16",
+          "spec": {
+            "kind": "unet3d",
+            "width": 16,
+            "levels": 3,
+            "periodic": false
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+      },
+      {
+        "attempt": "seed04",
+        "name": "unet3d_w16",
+        "error": 0.0023101272127165388,
+        "entry": {
+          "name": "unet3d_w16",
+          "spec": {
+            "kind": "unet3d",
+            "width": 16,
+            "levels": 3,
+            "periodic": false
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920551,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "980a6b2fae4d5c5b834669f4b465dd6720b9c4853d4fee085b458a550f501aee"
+      },
+      {
+        "attempt": "seed05",
+        "name": "unet3d_w16",
+        "error": 0.0019318997012163124,
+        "entry": {
+          "name": "unet3d_w16",
+          "spec": {
+            "kind": "unet3d",
+            "width": 16,
+            "levels": 3,
+            "periodic": false
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920451,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+      },
+      {
+        "attempt": "seed06",
+        "name": "unet3d_w16",
+        "error": 0.0019318997012163124,
+        "entry": {
+          "name": "unet3d_w16",
+          "spec": {
+            "kind": "unet3d",
+            "width": 16,
+            "levels": 3,
+            "periodic": false
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920451,
+            "learning_rate": 0.0005,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+      }
+    ],
+    "deeponet3d": [
+      {
+        "attempt": "extra03",
+        "name": "deeponet3d_r128_w16",
+        "error": 0.0432698895102904,
+        "entry": {
+          "name": "deeponet3d_r128_w16",
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 128,
+            "trunk_width": 128,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "learning_rate": 0.001,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1,
+            "seed": 920452
+          }
+        },
+        "checkpoint_identity": "d3804ee91befabc28875b398d8d427c4e56c0e9466ba39c48733a0eb3c5d12e2"
+      },
+      {
+        "attempt": "seed04",
+        "name": "deeponet3d_r128_w16",
+        "error": 0.03568320309338429,
+        "entry": {
+          "name": "deeponet3d_r128_w16",
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 128,
+            "trunk_width": 128,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "training": {
+            "steps": 100000,
+            "wall_seconds": 1800,
+            "batch_size": 2,
+            "seed": 920552,
+            "learning_rate": 0.001,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "a1057fe1f5f7c3537effd3aa84d4927d97fb67b27723034929356731fa3983a8"
+      },
+      {
+        "attempt": "seed05",
+        "name": "deeponet3d_r128_w16",
+        "error": 0.029004953884662083,
+        "entry": {
+          "name": "deeponet3d_r128_w16",
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 128,
+            "trunk_width": 128,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "training": {
+            "steps": 100000,
+            "wall_seconds": 1800,
+            "batch_size": 2,
+            "seed": 920452,
+            "learning_rate": 0.001,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "af6ce042b44d26b82e33e4ed1703cfe5bc17cd653ac2a720b0aaa22cebe9d02c"
+      },
+      {
+        "attempt": "seed05",
+        "name": "deeponet3d_r128_w16_podinit",
+        "error": 0.018383094169882274,
+        "entry": {
+          "name": "deeponet3d_r128_w16_podinit",
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 128,
+            "trunk_width": 128,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "training": {
+            "steps": 40000,
+            "wall_seconds": 1200,
+            "batch_size": 2,
+            "seed": 920652,
+            "learning_rate": 0.0003,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "pretraining": {
+            "trunk_steps": 60000,
+            "trunk_learning_rate": 0.001,
+            "trunk_batch_points": 1024,
+            "trunk_wall_seconds": 900,
+            "branch_steps": 30000,
+            "branch_learning_rate": 0.001,
+            "branch_batch_size": 2,
+            "branch_wall_seconds": 900,
+            "checkpoint_every": 5000
+          }
+        },
+        "checkpoint_identity": "60852999115503cfed57e7020ef17775c7540861a1669177c5a091ad97eedaef"
+      },
+      {
+        "attempt": "seed06",
+        "name": "deeponet3d_r128_w16_podinit",
+        "error": 0.018067449927066187,
+        "entry": {
+          "name": "deeponet3d_r128_w16_podinit",
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 128,
+            "trunk_width": 128,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "training": {
+            "steps": 40000,
+            "wall_seconds": 1200,
+            "batch_size": 2,
+            "seed": 920752,
+            "learning_rate": 0.0003,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "pretraining": {
+            "trunk_steps": 60000,
+            "trunk_learning_rate": 0.001,
+            "trunk_batch_points": 1024,
+            "trunk_wall_seconds": 900,
+            "branch_steps": 30000,
+            "branch_learning_rate": 0.001,
+            "branch_batch_size": 2,
+            "branch_wall_seconds": 900,
+            "checkpoint_every": 5000
+          },
+          "reuse": false
+        },
+        "checkpoint_identity": "dd362fdb552dde923d4ef507ea06c124e0b061c9ff04862b174d4379a3bb2224"
+      }
+    ],
+    "transolver3d": [
+      {
+        "attempt": "extra03",
+        "name": "transolver3d_w48_s32",
+        "error": 0.011941213561436459,
+        "entry": {
+          "name": "transolver3d_w48_s32",
+          "spec": {
+            "kind": "transolver3d",
+            "width": 48,
+            "depth": 4,
+            "heads": 4,
+            "slices": 32,
+            "patch": 2,
+            "reference_grid": 4,
+            "mlp_ratio": 2,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "coordinate_bounds": [
+              -1.0,
+              1.0
+            ]
+          },
+          "training": {
+            "steps": 30000,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "learning_rate": 0.001,
+            "validation_every": 250,
+            "curve_every": 50,
+            "components_per_output": 1,
+            "seed": 920453
+          }
+        },
+        "checkpoint_identity": "0cc0cfe016e4c9a3045b9d81505ccc64ecf4f4c1a9b3f7a8d4367557fed5c7aa"
+      },
+      {
+        "attempt": "seed04",
+        "name": "transolver3d_w48_s32",
+        "error": 0.007639276863254466,
+        "entry": {
+          "name": "transolver3d_w48_s32",
+          "spec": {
+            "kind": "transolver3d",
+            "width": 48,
+            "depth": 4,
+            "heads": 4,
+            "slices": 32,
+            "patch": 2,
+            "reference_grid": 4,
+            "mlp_ratio": 2,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "coordinate_bounds": [
+              -1.0,
+              1.0
+            ]
+          },
+          "training": {
+            "steps": 100000,
+            "wall_seconds": 2700,
+            "batch_size": 2,
+            "seed": 920553,
+            "learning_rate": 0.001,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "2315bca5a0ffe6213b4bb343df9ab722f79b8259b654c5521f57a06a328e22ea"
+      },
+      {
+        "attempt": "seed05",
+        "name": "transolver3d_w48_s32",
+        "error": 0.005304713320162671,
+        "entry": {
+          "name": "transolver3d_w48_s32",
+          "spec": {
+            "kind": "transolver3d",
+            "width": 48,
+            "depth": 4,
+            "heads": 4,
+            "slices": 32,
+            "patch": 2,
+            "reference_grid": 4,
+            "mlp_ratio": 2,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "coordinate_bounds": [
+              -1.0,
+              1.0
+            ]
+          },
+          "training": {
+            "steps": 100000,
+            "wall_seconds": 2700,
+            "batch_size": 2,
+            "seed": 920453,
+            "learning_rate": 0.001,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          }
+        },
+        "checkpoint_identity": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46"
+      },
+      {
+        "attempt": "seed06",
+        "name": "transolver3d_w48_s32",
+        "error": 0.005304713320162674,
+        "entry": {
+          "name": "transolver3d_w48_s32",
+          "spec": {
+            "kind": "transolver3d",
+            "width": 48,
+            "depth": 4,
+            "heads": 4,
+            "slices": 32,
+            "patch": 2,
+            "reference_grid": 4,
+            "mlp_ratio": 2,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "coordinate_bounds": [
+              -1.0,
+              1.0
+            ]
+          },
+          "training": {
+            "steps": 100000,
+            "wall_seconds": 2700,
+            "batch_size": 2,
+            "seed": 920453,
+            "learning_rate": 0.001,
+            "validation_every": 500,
+            "curve_every": 50,
+            "components_per_output": 1
+          },
+          "reuse": true
+        },
+        "checkpoint_identity": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46"
+      }
+    ]
+  },
+  "selected_rom": {
+    "attempt": "seed06",
+    "error": 0.005891574776714028,
+    "checkpoint_identity": [
+      "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+      "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+    ]
+  },
+  "selected_operators": {
+    "fno3d": {
+      "attempt": "seed06",
+      "name": "fno3d_w24_m8",
+      "error": 0.002365559714807757,
+      "entry": {
+        "name": "fno3d_w24_m8",
+        "spec": {
+          "kind": "fno3d",
+          "width": 24,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 9
+        },
+        "training": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "seed": 920550,
+          "learning_rate": 0.0005,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "reuse": true
+      },
+      "checkpoint_identity": "6d97b72da12f585ab996a2aa548d5cd1da2f7a12d480ce694f7fbd6f149990ac"
+    },
+    "unet3d": {
+      "attempt": "seed06",
+      "name": "unet3d_w16",
+      "error": 0.0019318997012163124,
+      "entry": {
+        "name": "unet3d_w16",
+        "spec": {
+          "kind": "unet3d",
+          "width": 16,
+          "levels": 3,
+          "periodic": false
+        },
+        "training": {
+          "steps": 30000,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "seed": 920451,
+          "learning_rate": 0.0005,
+          "validation_every": 250,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "reuse": true
+      },
+      "checkpoint_identity": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+    },
+    "deeponet3d": {
+      "attempt": "seed06",
+      "name": "deeponet3d_r128_w16_podinit",
+      "error": 0.018067449927066187,
+      "entry": {
+        "name": "deeponet3d_r128_w16_podinit",
+        "spec": {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 128,
+          "trunk_width": 128,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ]
+        },
+        "training": {
+          "steps": 40000,
+          "wall_seconds": 1200,
+          "batch_size": 2,
+          "seed": 920752,
+          "learning_rate": 0.0003,
+          "validation_every": 500,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "pretraining": {
+          "trunk_steps": 60000,
+          "trunk_learning_rate": 0.001,
+          "trunk_batch_points": 1024,
+          "trunk_wall_seconds": 900,
+          "branch_steps": 30000,
+          "branch_learning_rate": 0.001,
+          "branch_batch_size": 2,
+          "branch_wall_seconds": 900,
+          "checkpoint_every": 5000
+        },
+        "reuse": false
+      },
+      "checkpoint_identity": "dd362fdb552dde923d4ef507ea06c124e0b061c9ff04862b174d4379a3bb2224"
+    },
+    "transolver3d": {
+      "attempt": "seed06",
+      "name": "transolver3d_w48_s32",
+      "error": 0.005304713320162674,
+      "entry": {
+        "name": "transolver3d_w48_s32",
+        "spec": {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            -1.0,
+            1.0
+          ]
+        },
+        "training": {
+          "steps": 100000,
+          "wall_seconds": 2700,
+          "batch_size": 2,
+          "seed": 920453,
+          "learning_rate": 0.001,
+          "validation_every": 500,
+          "curve_every": 50,
+          "components_per_output": 1
+        },
+        "reuse": true
+      },
+      "checkpoint_identity": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46"
+    }
+  },
+  "metric": "worst native N32 development relative L2 field error",
+  "final_cohort_opened": false,
+  "timing_policy": "Selection compares accuracy only. Timing ratios require the subsequent real selected-bundle panel."
+}

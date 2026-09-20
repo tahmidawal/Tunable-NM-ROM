@@ -1,6 +1,14 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
 
+## Seed06 audited; efficient-CG timing replay required before final
+
+Seed06 completed as job 4025641 in 22m20s and is independently audited and Git-retained at `fb5dc0fc340239f5a9dabc64ea15b0604c4b0a18`. Every ordinary archived file was read back from Git; both large N64 POD/setup artifacts were restored from committed chunks. The exact remote directory is deleted. Evidence is in `runs/seed06/`: numerical/state/CG/POD/teacher/source/retention audits, generated diagnostics, selected bundle and `CG_TIMING_PLAN.json`. The new DeepONet seed wins native development selection, and every selected model is now present in seed06's real panel.
+
+The remaining fairness issue is **timed CG history instrumentation**: the native nonlinear/CG speed margin is small, so a traced implementation must not manufacture the headline crossover. `plain_cg_control: true` adds an otherwise identical CG path that returns only the field and small stopping counters; `cg_identity_plain_rtol*` are the efficient iterative baselines, and `cg_identity_rtol*` retain full histories as explicitly labelled instrumentation controls. Both still include true-residual certification and save every measured field. The efficient path gets independent per-invocation true-residual/error/hash checks and per-case SciPy iteration comparisons/rigorous SPD field bounds. Traced controls additionally get exact saved-coefficient trajectory replay. CPU/GPU smoke evidence and the final-freeze guard are in `runs/cg-plain-*` and `runs/cg-efficient-freeze-guard.json`.
+
+The next unique attempt is **replay07**, fully reused selected checkpoints from seed06, no training, both meshes, all operators/NM/POD/DST/CG controls and frozen POD assets. Source/configuration is ready to stage with `cluster/stage.py replay07 --reuse-attempt seed06`. The real paired overhead measurement must pass all audits before final freezing; compare to the efficient untraced CG rows. The final-freeze gate rejects the traced-only seed06 as a selection source for an efficient-CG final panel. Final64 seed 920499 remains unopened.
+
 ## Seed05 collected; selected-bundle independent confirmation prepared
 
 **Seed06 is now RUNNING as job 4025641 on pax144 (A100 40GB), source `38ef2031f3ad182fed873e004ba1fc0dc972f812`, config SHA256 `339ea937d1a8650ad5ad0703558b81354cf3985a0a07de4dc2d1913fa82a1857`.** Direct staging checksums, before/after queue and GPU/f64/highest preflight are in `runs/seed06/SUBMISSION.json`. Do not restage or resubmit this attempt. Its exact namespace directory is `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/seed06`. Collect this attempt when it completes, then follow the conditional selected-bundle replay/final-freeze steps below.

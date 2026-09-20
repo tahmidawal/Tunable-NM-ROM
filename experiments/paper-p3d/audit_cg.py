@@ -42,6 +42,7 @@ def audit(out,record):
     assert spec['preconditioner']=='identity' and spec['relative_tolerances']==[1e-2,1e-4,1e-6]
     for mesh in record['meshes']:
         expected={f'cg_identity_rtol{tol:.0e}' for tol in spec['relative_tolerances']}
+        if record['config'].get('plain_cg_control',False):expected|={name.replace('cg_identity_','cg_identity_plain_') for name in list(expected)}
         assert expected=={name for name in mesh['methods'] if name.startswith('cg_')}
     for row in record['invocations']:
         if not row['method'].startswith('cg_'):continue
@@ -62,13 +63,15 @@ def audit(out,record):
             ('iteration_cap' if k>=cap else 'true_residual_failed'))
         assert row['cg_stopping_reason']==reason
         failed+=not passed
-        history=np.asarray(row['cg_iteration_history']).reshape(-1,5)
-        assert len(history)==k
-        if k:
+        traced='_plain_' not in row['method']
+        assert ('cg_iteration_history' in row)==traced
+        history=np.asarray(row.get('cg_iteration_history',[])).reshape(-1,5)
+        if traced:assert len(history)==k
+        if traced and k:
             assert np.all(history[:,2]>tol**2*np.vdot(f,f))
             assert abs(np.sqrt(history[-1,4]/np.vdot(f,f))-row['cg_recursive_relative_residual'])<1e-12
         if row['repetition']==0:
-            history_checks.append(replay_history(f,pred,history,n,tol,cap))
+            if traced:history_checks.append(replay_history(f,pred,history,n,tol,cap))
             count=[0]
             def callback(x):count[0]+=1
             op=LinearOperator((f.size,f.size),matvec=lambda x:stencil(x.reshape(f.shape),n).ravel(),dtype=np.float64)
@@ -80,7 +83,7 @@ def audit(out,record):
             assert difference<=bound+1e-12
             assert info>=0
             scipy_checks.append(dict(intervals=n,case=row['case'],method=row['method'],iterations=count[0],
-                saved_iterations=k,field_relative_difference=difference,spd_residual_difference_bound=bound))
+                saved_iterations=k,iteration_count_matches=(count[0]==k),timed_iteration_history=traced,field_relative_difference=difference,spd_residual_difference_bound=bound))
             replays+=1
         checked+=1
     for row in json.loads((out/'summary.json').read_text())['rows']:
@@ -93,5 +96,5 @@ def audit(out,record):
     return dict(passed=True,checked_invocation_fields=checked,independent_scipy_replays=replays,
         failed_invocations=failed,maximum_true_residual_absolute_defect=maxdefect,
         independent_saved_coefficient_history_replays=history_checks,scipy_comparisons=scipy_checks,
-        iteration_scope='Every saved CG coefficient/recurrence trajectory independently replayed for repetition zero; SciPy tolerance-stopped solutions may follow a different finite-precision trajectory and are checked against the SPD residual bound.',
+        iteration_scope='Traced control: saved coefficient/recurrence trajectories independently replayed for repetition zero. Efficient untraced CG: true residuals checked on every measured field; independent SciPy iteration counts and SPD residual-based field bounds checked per case. Counts may differ between finite-precision tolerance-stopped trajectories; every difference is reported.',
         preconditioner='identity; constant diagonal Jacobi changes only scaling for this constant-coefficient stencil')

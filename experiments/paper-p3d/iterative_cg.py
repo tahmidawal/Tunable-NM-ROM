@@ -15,7 +15,7 @@ def settings(cfg, n):
     return [(f'cg_identity_rtol{tol:.0e}',float(tol),cap) for tol in tolerances]
 
 
-def engine(n, rtol, maxiter):
+def engine(n, rtol, maxiter, retain_history=True):
     @jax.jit
     def solve(f):
         f=jnp.asarray(f,dtype=jnp.float64)
@@ -30,17 +30,18 @@ def engine(n, rtol, maxiter):
             alpha=jnp.where(healthy,rho/pap,0.)
             x=x+alpha*p;r=r-alpha*ap;newrho=jnp.vdot(r,r)
             beta=jnp.where(rho>0,newrho/rho,0.)
-            history=history.at[k].set(jnp.array([alpha,beta,rho,pap,newrho]))
+            if retain_history:history=history.at[k].set(jnp.array([alpha,beta,rho,pap,newrho]))
             return x,r,r+beta*p,newrho,k+1,healthy&jnp.isfinite(newrho),history
         x,r,p,rho,k,healthy,history=jax.lax.while_loop(condition,step,
-            (jnp.zeros_like(f),f,f,norm2,jnp.int32(0),jnp.bool_(True),jnp.zeros((maxiter,5),dtype=jnp.float64)))
+            (jnp.zeros_like(f),f,f,norm2,jnp.int32(0),jnp.bool_(True),jnp.zeros((maxiter if retain_history else 0,5),dtype=jnp.float64)))
         # Timed true-residual certification, independent of recurrence stopping.
         residual=f-C.negative_laplacian(x,n)
         denom=jnp.maximum(jnp.sqrt(norm2),jnp.finfo(jnp.float64).tiny)
         true=jnp.linalg.norm(residual)/denom
         recursive=jnp.sqrt(rho)/denom
         converged=healthy&jnp.isfinite(true)&(true<=rtol)
-        return x,jnp.array([k,true,recursive,converged,k>=maxiter,healthy,k+1],dtype=jnp.float64),history
+        stats=jnp.array([k,true,recursive,converged,k>=maxiter,healthy,k+1],dtype=jnp.float64)
+        return (x,stats,history) if retain_history else (x,stats)
     return solve
 
 

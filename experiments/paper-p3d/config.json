@@ -1,5 +1,5 @@
 {
-  "schema": "paper-poisson3d-cg-independent-podinit-v6",
+  "schema": "paper-poisson3d-efficient-cg-replay-v7",
   "train_intervals": 32,
   "evaluation_intervals": [
     32,
@@ -143,7 +143,7 @@
         "branch_wall_seconds": 900,
         "checkpoint_every": 5000
       },
-      "reuse": false
+      "reuse": true
     },
     {
       "name": "transolver3d_w48_s32",
@@ -209,5 +209,6 @@
     "max_iterations_per_interval": 4
   },
   "frozen_offline_assets": true,
-  "frozen_pod_transfer_control": true
+  "frozen_pod_transfer_control": true,
+  "plain_cg_control": true
 }

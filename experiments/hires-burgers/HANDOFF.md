@@ -11,7 +11,9 @@
   accurate-rung kernel + Φ-free dense truth, `hires.py` driver, `audit_hires.py`,
   `cluster/{stage,collect}.py`). b-speed kernels and b-eqtop rules were ALREADY in the fork
   point byte-identical (DESIGN §3) — nothing copied.
-- Jobs used: 0 / 8. Running: none.
+- Local smoke 64² passes every phase (three runs); hfast vs audited base 3.4e-14–5.5e-14, identical integers.
+- Codex design audit recorded: `reports/codex-design-audit-2026-09-20.md` (23 findings, dispositions applied).
+- Jobs used: 1 / 8. Running: `hb2k01` = 4054951 (H200 pax008, 2048², source b66a59bd).
 
 ## How to run a job
 
@@ -35,3 +37,6 @@ See the bottom of this file's job table.
 
 | attempt | job id | mesh | GPU | state | summary |
 |---|---|---|---|---|---|
+| hb2k01 | 4054951 | 2048² | H200 (pax008) | RUNNING since 2026-09-20 | — |
+
+Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage `hb4k01` with `config-4096.json --mem 400G` once the early phases are seen to work and the account has < 6 running.

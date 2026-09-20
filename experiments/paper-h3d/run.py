@@ -122,6 +122,14 @@ def run(cfg,out,smoke=False):
             methods[name]=OH.engine(op,spec,scale,n)
             metadata[name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,
                                 training_intervals=cfg['train_intervals'],resolution_transfer=n!=cfg['train_intervals'])
+            if cfg.get('fno_physical_padding_transfer',False) and spec['kind']=='fno3d' and n!=cfg['train_intervals']:
+                padding=int(round(n/cfg['train_intervals']*(cfg['train_intervals']-1+spec.get('padding',0))))-(n-1)
+                assert padding>=0
+                transfer_spec={**spec,'padding':padding};transfer_name=name+'_physical_padding_transfer'
+                methods[transfer_name]=OH.engine(op,transfer_spec,scale,n)
+                metadata[transfer_name]=dict(kind='neural_operator',model=transfer_spec,parameter_count=info['parameter_count'],physical_scale=scale,
+                    training_intervals=cfg['train_intervals'],resolution_transfer=True,original_model=spec,
+                    transfer_rule='preserve padded physical domain size by scaling padded grid length with interval count; frozen weights')
             if n!=cfg['train_intervals'] and n%cfg['train_intervals']==0:
                 native_name=name+'_native_grid_interpolated'
                 methods[native_name]=OH.native_engine(op,spec,scale,cfg['train_intervals'],n)

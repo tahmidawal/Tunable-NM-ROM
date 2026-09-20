@@ -72,9 +72,14 @@
   "quadrature_scale_floor": 0.1,
   "operators": [],
   "bank_gradient_clip": 1.0,
-  "frozen_source_attempt": "tune02",
-  "frozen_input_directory": "inputs/tune02",
-  "frozen_operators": [],
+  "frozen_source_attempt": "extra03",
+  "frozen_input_directory": "inputs/extra03",
+  "frozen_operators": [
+    "fno3d_w16_m6",
+    "unet3d_w8",
+    "deeponet3d_r128_w16",
+    "transolver3d_w48_s32"
+  ],
   "initial_lm_budget": 600,
   "include_uncertified_quadrature": false,
   "additional_latent_dimensions": [],
@@ -95,5 +100,35 @@
     4,
     8
   ],
-  "representation_fit_starts": 4
+  "representation_fit_starts": 4,
+  "operator_continuations": [
+    {
+      "name": "deeponet3d_r128_w16",
+      "training": {
+        "steps": 80000,
+        "wall_seconds": 3000,
+        "batch_size": 4,
+        "seed": 920423,
+        "learning_rate": 0.0003,
+        "validation_every": 2000,
+        "curve_every": 100,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      }
+    },
+    {
+      "name": "transolver3d_w48_s32",
+      "training": {
+        "steps": 80000,
+        "wall_seconds": 3000,
+        "batch_size": 4,
+        "seed": 920424,
+        "learning_rate": 0.0003,
+        "validation_every": 2000,
+        "curve_every": 100,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      }
+    }
+  ]
 }

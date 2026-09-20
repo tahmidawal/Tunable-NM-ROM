@@ -1,0 +1,31 @@
+{
+  "spec": {
+    "kind": "unet3d",
+    "width": 2,
+    "levels": 2,
+    "periodic": false
+  },
+  "config": {
+    "steps": 3,
+    "wall_seconds": 30,
+    "batch_size": 2,
+    "seed": 73,
+    "learning_rate": 0.001,
+    "validation_every": 1,
+    "curve_every": 1
+  },
+  "parameter_count": 1423,
+  "steps_completed": 3,
+  "best_step": 0,
+  "best_validation_worst": 0.9998413095414583,
+  "seconds": 1.8154766510706395,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "initial_source": {
+    "test": "retained initial parameters"
+  },
+  "continuation": "fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate"
+}

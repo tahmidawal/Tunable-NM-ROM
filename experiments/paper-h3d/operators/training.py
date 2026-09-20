@@ -9,7 +9,7 @@ import optax
 from . import models3d as M
 
 
-def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_denominators=None,valid_denominators=None):
+def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_denominators=None,valid_denominators=None,initial_params=None,initial_source=None):
     """Arrays are BXYZC; output channels pack (time,component), component fastest.
 
     cfg declares steps, wall_seconds, batch_size, seed, learning_rate,
@@ -20,7 +20,8 @@ def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_den
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     x=jnp.asarray(train_x,dtype=jnp.float64);y=jnp.asarray(train_y,dtype=jnp.float64)
     vx=jnp.asarray(valid_x,dtype=jnp.float64);vy=jnp.asarray(valid_y,dtype=jnp.float64)
-    params=M.init_model(jax.random.PRNGKey(cfg['seed']),spec,x.shape[-1],y.shape[-1])
+    params=(M.init_model(jax.random.PRNGKey(cfg['seed']),spec,x.shape[-1],y.shape[-1])
+            if initial_params is None else jax.device_put(initial_params))
     assert all(p.dtype==jnp.float64 for p in jax.tree_util.tree_leaves(params))
     channels=cfg.get('components_per_output',1);nt=y.shape[-1]//channels
     schedule=optax.cosine_decay_schedule(cfg['learning_rate'],cfg['steps'],alpha=.03)
@@ -47,6 +48,15 @@ def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_den
     @jax.jit
     def evaluate(p,a,b,d):return errors(M.apply_model(p,a,spec),b,d)
     best=float('inf');best_params=None;curve=[];start=time.perf_counter();exit_reason='steps'
+    if initial_params is not None:
+        e=np.concatenate([np.asarray(evaluate(params,vx[i:i+1],vy[i:i+1],vdn[i:i+1])) for i in range(len(vx))])
+        assert np.isfinite(e).all()
+        best=float(np.max(np.sqrt(e)));best_params=params;best_step=0
+        checkpoint(out/'best.pkl',dict(params=params,spec=spec,config=cfg,step=0,
+            validation_error_by_case_time=np.sqrt(e),selection='minimum worst validation error including frozen warm-start checkpoint',initial_source=initial_source))
+        curve.append(dict(step=0,validation_worst=best,validation_case_median=float(np.median(np.max(np.sqrt(e),axis=1))),
+            validation_error_by_case_time=np.sqrt(e).tolist(),selected=True,seconds=time.perf_counter()-start))
+        dump(out/'curve.json',curve)
     for it in range(cfg['steps']):
         key,sub=jax.random.split(key);params,state,value=step(params,state,sub,x,y,dn)
         if it==0 or (it+1)%cfg.get('curve_every',50)==0:
@@ -72,5 +82,7 @@ def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_den
     info=dict(spec=spec,config=cfg,parameter_count=M.parameter_count(params),steps_completed=it+1,
               best_step=best_step,best_validation_worst=best,seconds=time.perf_counter()-start,
               exit_reason=exit_reason,normalization=cfg.get('normalization','current-output norm' if train_denominators is None else 'explicit per-case/time squared norm'),converged_claim=False,parameter_dtype='float64',fft_dtype='complex128')
+    if initial_params is not None:
+        info.update(initial_source=initial_source,continuation='fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate')
     dump(out/'training.json',info)
     return best_params,info

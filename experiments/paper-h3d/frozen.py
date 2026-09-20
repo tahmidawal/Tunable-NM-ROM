@@ -28,16 +28,23 @@ def stage_inputs(root,source_attempt,destination,cfg):
             name=f'eq_N{n}_K{k}.npz'
             if (source/name).exists():files.append(name)
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=False)
-    hashes={}
+    hashes={};copied_paths={}
     for name in files:
-        dest=destination/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source/name,dest)
-        hashes[name]=file_sha(dest);assert hashes[name]==file_sha(source/name)
+        original=source/name
+        if not original.exists():original=source/'frozen_training'/name
+        if not original.exists() and record['config'].get('frozen_input_directory'):
+            original=source.parent/record['config']['frozen_input_directory']/name
+        assert original.exists(),original
+        dest=destination/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest)
+        hashes[name]=file_sha(dest);assert hashes[name]==file_sha(original)
+        copied_paths[name]=str(original.relative_to(run/'archive'))
     # Small derived descriptor; original raw result remains in its immutable archive.
     info=dict(source_attempt=source_attempt,source_commit=record['source_commit'],job_id=record['job_id'],
               original_result_sha256=file_sha(source/'result.json'),config=record['config'],files=hashes,
               bank=record['bank'],heads=record['heads'],operators=record.get('operators',[]),
               meshes=[{k:m[k] for k in ('intervals','bank_sha256','weak_operator_sha256','weak_tests','quadrature')} for m in record['meshes']],
               independent_source_audit=json.loads((run/'audit-local.json').read_text()),
+              copied_from_original_archive_paths=copied_paths,
               copied_training_fields=False)
     (destination/'ORIGIN.json').write_text(json.dumps(info,indent=2,allow_nan=False)+'\n')
     return info

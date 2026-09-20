@@ -1,0 +1,63 @@
+E0920 02:04:26.386170 1245353 platform_util.cc:270] Failed to create stream executor for device CUDA:0: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/xla_bridge.py", line 826, in backends
+    backend = _init_backend(platform)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/xla_bridge.py", line 910, in _init_backend
+    backend = registration.factory()
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/xla_bridge.py", line 563, in make_pjrt_c_api_client
+    return xla_client.make_c_api_client(plugin_name, updated_options, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jaxlib/xla_client.py", line 158, in make_c_api_client
+    return _xla.get_c_api_client(
+           ^^^^^^^^^^^^^^^^^^^^^^
+jax.errors.JaxRuntimeError: INTERNAL: no supported devices found for platform CUDA
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/operators/continuation_smoke.py", line 14, in <module>
+    p=M.init_model(jax.random.PRNGKey(23),spec,4,1)
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/random.py", line 285, in PRNGKey
+    return _return_prng_keys(True, _key('PRNGKey', seed, impl))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/random.py", line 229, in _key
+    return prng.random_seed(seed, impl=impl)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/prng.py", line 564, in random_seed
+    seeds_arr = jnp.asarray(np.int64(seeds))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/numpy/array_constructors.py", line 452, in asarray
+    return array(a, dtype=dtype, copy=bool(copy), order=order, device=device,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/numpy/array_constructors.py", line 205, in array
+    return lax.stage(object)
+           ^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/lax/lax.py", line 1604, in stage
+    return stage_p.bind(x)
+           ^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/core.py", line 641, in bind
+    return self.bind_with_trace(prev_trace, args, avals, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/lax/lax.py", line 5311, in _stage_bind_with_trace
+    return trace.stage_value(args[0])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/core.py", line 1210, in stage_value
+    return self.process_primitive(stage_p, [val], {})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/core.py", line 1221, in process_primitive
+    return primitive.impl(*args, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/lax/lax.py", line 5301, in _stage_impl
+    return dispatch.apply_primitive(stage_p, x)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/dispatch.py", line 89, in apply_primitive
+    outs = fun(*args)
+           ^^^^^^^^^^
+RuntimeError: Unable to initialize backend 'cuda': INTERNAL: no supported devices found for platform CUDA (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

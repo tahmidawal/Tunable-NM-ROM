@@ -1,0 +1,144 @@
+{
+  "n": 32,
+  "initial_amplitude": 0.2,
+  "dt": 0.001,
+  "horizon": 0.2,
+  "verification_cases": 4,
+  "train_cases": 512,
+  "dev_cases": 16,
+  "train_seed": 202609201,
+  "dev_seed": 202609202,
+  "final_seed_unopened": 202609203,
+  "model_seed": 202609204,
+  "rank_candidates": [
+    256,
+    512
+  ],
+  "rank_train_worst_target": 0.02,
+  "k": 16,
+  "n_ff": 256,
+  "bank_steps": 12000,
+  "bank_seconds": 1200,
+  "bank_batch": 16,
+  "spatial_batch": 1024,
+  "head_steps": 30000,
+  "head_seconds": 600,
+  "fit_starts": 4,
+  "fit_budget": 200,
+  "test_modes": 1024,
+  "q_values": [
+    0,
+    16,
+    32,
+    64,
+    128
+  ],
+  "pod_weak_ranks": [
+    16,
+    32,
+    48
+  ],
+  "pod_galerkin_ranks": [
+    128,
+    256,
+    512
+  ],
+  "rom_dt": 0.004,
+  "rom_budget": 80,
+  "fom_dts": [
+    0.001,
+    0.002,
+    0.004,
+    0.008
+  ],
+  "timed_cases": 8,
+  "repetitions": 3,
+  "reference_dt": 0.00025,
+  "fine_reference_n": 64,
+  "fine_reference_dt": 0.0005,
+  "operator_train": {
+    "steps": 32000,
+    "wall_seconds": 1200,
+    "batch_size": 2,
+    "seed": 202609208,
+    "learning_rate": 0.001,
+    "validation_every": 400,
+    "curve_every": 100,
+    "components_per_output": 3,
+    "normalization": "initial vector norm"
+  },
+  "operators": [
+    {
+      "kind": "fno3d",
+      "width": 16,
+      "modes": [
+        8,
+        8,
+        8
+      ],
+      "depth": 4,
+      "padding": 0
+    },
+    {
+      "kind": "unet3d",
+      "width": 8,
+      "levels": 3,
+      "periodic": true
+    }
+  ],
+  "reuse_path": "reuse",
+  "extra_operators": [
+    {
+      "kind": "deeponet3d",
+      "width": 16,
+      "levels": 3,
+      "pool_bins": 4,
+      "rank": 512,
+      "trunk_width": 512,
+      "periodic": true,
+      "coordinate_channels": [
+        -3,
+        -2,
+        -1
+      ],
+      "trunk_frequencies": [
+        2.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "kind": "transolver3d",
+      "width": 48,
+      "depth": 4,
+      "heads": 4,
+      "slices": 32,
+      "patch": 2,
+      "reference_grid": 4,
+      "mlp_ratio": 2,
+      "periodic": true,
+      "coordinate_channels": [
+        -3,
+        -2,
+        -1
+      ],
+      "coordinate_bounds": [
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "capacity_ranks": [
+    1024,
+    1536
+  ],
+  "capacity_seed": 202609210,
+  "capacity_bank_steps": 100000,
+  "capacity_bank_seconds": 900,
+  "capacity_head_k": [
+    32,
+    64
+  ],
+  "capacity_head_steps": 100000,
+  "capacity_head_seconds": 600
+}

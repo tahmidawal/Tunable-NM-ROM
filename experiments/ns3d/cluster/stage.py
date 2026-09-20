@@ -20,7 +20,7 @@ def main():
     parser.add_argument('attempt')
     parser.add_argument('--config',default='pilot01.json')
     parser.add_argument('--gpu',choices=('a100','h200'),default='a100')
-    parser.add_argument('--driver',choices=('pilot.py','comparison.py'),default='pilot.py')
+    parser.add_argument('--driver',choices=('pilot.py','comparison.py','extra03.py'),default='pilot.py')
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9]{1,30}',args.attempt):
         raise ValueError('attempt must be a bounded alphanumeric name')
@@ -28,7 +28,7 @@ def main():
         raise ValueError('config must be an existing named JSON')
     source=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     files=[str(p.relative_to(ROOT)) for p in sorted((ROOT/'experiments/ns3d').glob('*.py'))]
-    files += [str(p.relative_to(ROOT)) for p in sorted((ROOT/'experiments/ns3d/operators').glob('*')) if p.is_file()]
+    files += [str(p.relative_to(ROOT)) for p in sorted((ROOT/'experiments/ns3d/operators').rglob('*')) if p.is_file() and '__pycache__' not in p.parts]
     files += ['experiments/ns3d/DESIGN.md','experiments/ns3d/cluster/stage.py',
               'experiments/ns3d/configs/'+args.config,
               'experiments/ns2d/ns2d_decoder.py','experiments/ns2d/ns2d_rom.py',

@@ -18,7 +18,7 @@
     3990494
   ],
   "command": "ssh tufts-login \"cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02 && sbatch --parsable run.sbatch\"",
-  "observed_state": "RUNNING",
+  "observed_state": "COMPLETED",
   "node": "pax051",
   "gpu_verified": "NVIDIA A100-PCIE-40GB",
   "gpu_preflight_seen": true,
@@ -47,5 +47,11 @@
     "Choose targeted bank/head/operator refinement on development only if time allows. Freeze all selections before drawing final seed202609203.",
     "Main coordinator owns canonical LAB-LOG and reports; send source/job/audit/number facts for its append. Ask user whether to merge worktrees at campaign completion, never merge automatically."
   ],
-  "collection_example": "scp -r tufts-login:/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02/output <local-collected>/; preserve logs, OUTPUTS.sha256 and source manifests too"
+  "collection_example": "scp -r tufts-login:/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02/output <local-collected>/; preserve logs, OUTPUTS.sha256 and source manifests too",
+  "elapsed": "00:22:36",
+  "exit_code": "0:0",
+  "independent_audit": "audit.json",
+  "independent_audit_passed": true,
+  "collection_checksums_passed": true,
+  "remote_cleanup_pending": true
 }

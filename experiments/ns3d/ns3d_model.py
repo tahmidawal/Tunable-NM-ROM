@@ -153,13 +153,13 @@ def whiten(G,U,rcond=1e-10):
                                     singular_values=singular.tolist())
 
 
-def train_head(params,z,C,Rb,steps,seconds,seed,checkpoint_path,config,lr=.001):
+def train_head(params,z,C,Rb,steps,seconds,seed,checkpoint_path,config,lr=.001,snapshot_variance=None):
     # Only the h and h_lin leaves are trained, preserving the spatial bank exactly.
     base=params
     hp=dict(h=params['h'],h_lin=params['h_lin'])
     targets=jnp.asarray(C)@jnp.asarray(Rb).T
     metric=jnp.asarray(Rb)
-    scale=jnp.mean(targets*targets)
+    scale=jnp.mean(targets*targets) if snapshot_variance is None else jnp.asarray(snapshot_variance)[:,None]*(3*config['n']**3)/Rb.shape[0]
     schedule=optax.warmup_cosine_decay_schedule(0.,lr,min(100,steps//10+1),steps,lr*.01)
     opt=optax.adam(schedule)
     hz=(hp,jnp.asarray(z))
@@ -169,7 +169,7 @@ def train_head(params,z,C,Rb,steps,seconds,seed,checkpoint_path,config,lr=.001):
         h,z=hz
         # h_theta is a nonlinear MLP plus the unchanged linear skip form.
         pred=S.apply_mlp(h['h'],z)+z@h['h_lin']
-        return jnp.mean((pred@metric.T-target)**2)/scale
+        return jnp.mean((pred@metric.T-target)**2/scale)
 
     @jax.jit
     def update(hz,state,target,metric,scale):
@@ -263,7 +263,7 @@ def pod_gpu(U,maxrank):
 
 def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
                     pod_scores,batch=16,width=512,n_ff=256,lr=.001,callback=None,
-                    spatial_batch=1024):
+                    spatial_batch=1024,snapshot_variance=None):
     """Learn spatial bank with unrestricted coefficients before fitting a head.
 
     The POD scores initialize coefficients only. Spatial fields remain a learned
@@ -272,6 +272,7 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
     U=jnp.asarray(U,dtype=jnp.float64).reshape(len(U),-1)
     params=init(jax.random.PRNGKey(seed),k_lat,r_feat,width=width,n_ff=n_ff)
     scale=jnp.mean(U*U)
+    fitting_scale=scale if snapshot_variance is None else jnp.asarray(snapshot_variance)[:,None]
     params['out_scale']=jnp.sqrt(scale)
     normalization=float(jnp.sqrt(scale*U.shape[1]))
     coefficients=jnp.asarray(pod_scores[:,:r_feat]/normalization)
@@ -285,7 +286,8 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
         ff=jnp.concatenate((jnp.sin(angle),jnp.cos(angle)),axis=-1)
         raw=p['out_scale']*S.apply_mlp(p['g'],ff)
         G=raw.reshape(len(points),3,r_feat).transpose(1,0,2).reshape(3*len(points),r_feat)
-        return jnp.mean((c[indices]@G.T-values)**2)/scale
+        denominator=scale if scale.ndim==0 else scale[indices]
+        return jnp.mean((c[indices]@G.T-values)**2/denominator)
     @jax.jit
     def update(pc,state,values,indices,points,scale):
         value,grad=jax.value_and_grad(loss)(pc,values,indices,points,scale)
@@ -299,7 +301,7 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
         ids=np.sort(rng.choice(len(U),min(batch,len(U)),replace=False))
         positions=np.sort(rng.choice(n**3,min(spatial_batch,n**3),replace=False))
         values=U3[ids][:,:,positions].reshape(len(ids),-1)
-        pc,state,value=update(pc,state,values,jnp.asarray(ids),xy[positions],scale)
+        pc,state,value=update(pc,state,values,jnp.asarray(ids),xy[positions],fitting_scale)
         if step==0 or (step+1)%100==0 or step+1==steps:
             row=dict(step=step+1,relative_mse=float(value),seconds=time.monotonic()-start)
             if not np.isfinite(row['relative_mse']):
@@ -316,7 +318,7 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
               seconds=time.monotonic()-start,curve=curve,
               stopping='step_budget' if step+1==steps else 'wall_budget',
               coefficient_initialization='training_field_POD_scores',
-              objective='raw field MSE with spatial point minibatches',spatial_batch=spatial_batch,
+              objective='raw field MSE with spatial point minibatches' if snapshot_variance is None else 'raw field MSE divided by trajectory initial mean-square velocity',spatial_batch=spatial_batch,
               spatial_bank='learned periodic vector coordinate MLP, not POD substitution')
     checkpoint(checkpoint_path,params,coefficients,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),info)
     return params,np.asarray(z),info,np.asarray(coefficients)

@@ -92,7 +92,7 @@ def tensor_checks(G,n,m=32):
                 build_order_error=order_error,test_orthogonality=orth)
 
 
-def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_starts=4):
+def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_starts=4,retain_states=False):
     """Complete query: full initial projection, latent fit, evolution, dense output.
 
     All large arrays and model parameters are explicit arguments. Linear endpoint
@@ -139,7 +139,7 @@ def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_start
         def step(w,_):
             previous=coefficient(w,theta,C)
             next_w,rn,it,reason,gn=evolve_lm(w,(previous,nu,A,T,lam,C,theta),0.)
-            return next_w,(rn,it,reason,gn)
+            return next_w,(rn,it,reason,gn,next_w) if retain_states else (rn,it,reason,gn)
 
         def block(w,_):
             next_w,info=jax.lax.scan(step,w,None,length=out_every)
@@ -147,6 +147,9 @@ def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_start
 
         _,(fields,info)=jax.lax.scan(block,w,None,length=nsteps//out_every)
         fields=jnp.concatenate((initial[None],fields))
+        if retain_states:
+            history=jnp.concatenate((w[None],info[4].reshape(nsteps,-1)))
+            return fields,cold_info,tuple(x.reshape(-1) for x in info[:4]),history
         return fields,cold_info,tuple(x.reshape(-1) for x in info)
     return run
 

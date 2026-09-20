@@ -22,6 +22,10 @@ def make_query(spec,n,projected=True):
         inputs=jnp.concatenate((u0,jnp.broadcast_to(nu,(1,n,n,n))),axis=0)
         inputs=(inputs-mean[0])/std[0]
         x=jnp.moveaxis(inputs,0,-1)[None]
+        if spec['kind'] in ('deeponet3d','transolver3d'):
+            axis=jnp.arange(n,dtype=jnp.float64)/n
+            xyz=jnp.stack(jnp.meshgrid(axis,axis,axis,indexing='ij'),axis=-1)
+            x=jnp.concatenate((x,xyz[None]),axis=-1)
         out=M.apply_model(params,x,spec)[0]
         evolved=(jnp.moveaxis(out,-1,0)*scale).reshape(5,3,n,n,n)
         if projected:

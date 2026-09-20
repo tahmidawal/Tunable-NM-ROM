@@ -233,6 +233,50 @@ Finer-grid references and numerical constraints are checked independently of
 model selection. No final case is opened during this follow-up. No speed ratio
 crosses jobs. Setup, training, compilation and complete-query cost stay separate.
 
+## A3 — four-operator coverage and bounded larger-bank diagnosis
+
+The completed comparison02 panel is retained as a development result. Its current
+bank/head miss the declared accuracy target. The larger-bank follow-up keeps the
+physical family, all data membership, output times and physical tolerances fixed.
+A training-only POD screen examines ranks 1024 and 1536, choosing the first whose
+mean initial-normalized snapshot error is at most 2%, or the larger rank otherwise.
+This is capacity guidance; POD optimality in average unweighted squared error is
+not a lower bound on a learned bank's worst initial-normalized error. Both training
+and development floors are recorded with their exact denominators.
+
+The selected new coordinate bank is learned with unrestricted coefficients using
+mean squared field error divided by each trajectory's initial mean-square velocity.
+No generator parameters are model inputs. Training is bounded by 100000 updates
+and 900 seconds; two independent head fits with latent dimensions 32 and 64 have
+terminal hidden width equal to the new bank rank and at most 100000 updates/600
+seconds each. All budgets are caps, not convergence declarations. Full bank
+projection, head reconstruction, stationarity, hidden widths and histories are
+saved. The larger bank is a representation screen; no costly large tensor is
+assembled until its measured accuracy warrants a subsequent rollout job.
+
+The extra03 allocation also trains the frozen shared CNN-branch DeepONet3D and
+patchified structured-mesh Transolver3D implementations from heat commit
+5933b3706c119e8ffbcfdf98db3940464af7b4fc. File hashes and upstream MIT license
+are retained in operators/. The NS adapter appends explicit endpoint-excluded
+unit-cube coordinates as the final three channels, alongside the supplied velocity
+and viscosity. DeepONet uses a 512-dimensional trunk with hidden width 512;
+Transolver uses width 48, four blocks/heads, 32 slices and cubic patches of side 2.
+Their exact configurations and separate training budgets are recorded. They use
+the same 512 training/16 development trajectories as the existing FNO/U-Net and
+NM-ROM. Original FNO/U-Net weights remain frozen in this comparison.
+
+The complete panel remeasures all four operators, the frozen R512 neural ladder,
+POD controls and efficient FOM time-step ladder in one new allocation. Checkpoint
+weights and static operator arrays are transferred to the GPU once before timing;
+all are explicit JIT arguments. Dense initial fitting, requested vector outputs
+and selected solenoidal post-projection remain charged. Data are regenerated from
+seed and checked against the original cohort hashes; source artifacts are reused
+only through their SHA256 manifest. The old panel is preserved byte-for-byte.
+All online latent states and per-step stopping records are now retained. An
+independent NumPy Jacobian audit samples the cold and first/middle/last steps on
+every development case and weak arm; its bounded scope is stated explicitly.
+Final seed 202609203 stays unopened pending coordinator freeze.
+
 ## Glossary
 
 - **FOM:** the numerical solver on the full spatial grid.

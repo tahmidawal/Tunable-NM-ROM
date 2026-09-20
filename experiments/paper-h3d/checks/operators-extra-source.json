@@ -1,0 +1,20 @@
+{
+  "shared_source_commit": "5933b3706c119e8ffbcfdf98db3940464af7b4fc",
+  "files": {
+    "models3d.py": "5e46697332a93c32189ca9d5d854263a065ac6a0a519aa9eddf92f86b947104b",
+    "extra_models3d.py": "83c9a376376876314680bae594f171c96c62b8d0fad9360b44eb2e5ba6ab8254",
+    "training.py": "8fd78e5807915c83a5399cf90fbe406f4bdee8e6fc2a57772f39da1328ddfa36",
+    "README.md": "d5f2cea015b26014c06216df3927b73e31de1d769a7f817c7c0d45f1f398f1bf",
+    "upstream/LICENSE": "2c919cd03fa823bf7eefc00a957ff8324c865cd22aa5285e563dc4b558084f25",
+    "upstream/PROVENANCE.json": "5436091532a84557619ab6f3bf0741310ef6604091ed4a8d55a3783bbc30ff93",
+    "upstream/Physics_Attention.py": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36",
+    "upstream/prior_families.py": "11efca39993f7e34421d873a8f3f69a911f5348fe0973b74745e8b0d553b88df"
+  },
+  "fno_unet_previous_source": "84d302a706bf06a460d04f419d9c06a6c424932e",
+  "api": "init_model(key,spec,in_channels,out_channels); apply_model(params,x,spec); BXYZC float64",
+  "new_kinds": [
+    "deeponet3d",
+    "transolver3d"
+  ],
+  "coordinate_channels": "Explicitly supplied; default last three. Transolver coordinate_bounds must match those channels."
+}

@@ -1,0 +1,52 @@
+{
+  "native_grid_backward": true,
+  "direct_transfer_shape": [
+    6,
+    63,
+    63,
+    63
+  ],
+  "training": {
+    "spec": {
+      "kind": "transolver3d",
+      "width": 48,
+      "depth": 4,
+      "heads": 4,
+      "slices": 32,
+      "patch": 2,
+      "reference_grid": 4,
+      "mlp_ratio": 2,
+      "periodic": false,
+      "coordinate_channels": [
+        -3,
+        -2,
+        -1
+      ],
+      "coordinate_bounds": [
+        -1.0,
+        1.0
+      ]
+    },
+    "config": {
+      "steps": 2,
+      "wall_seconds": 40,
+      "batch_size": 1,
+      "seed": 920324,
+      "learning_rate": 0.001,
+      "validation_every": 1,
+      "curve_every": 1,
+      "components_per_output": 1,
+      "normalization": "current-output norm"
+    },
+    "parameter_count": 562840,
+    "steps_completed": 2,
+    "best_step": 2,
+    "best_validation_worst": 0.9139246947242725,
+    "seconds": 19.02239098807331,
+    "exit_reason": "steps",
+    "normalization": "current-output norm",
+    "converged_claim": false,
+    "parameter_dtype": "float64",
+    "fft_dtype": "complex128"
+  }
+}

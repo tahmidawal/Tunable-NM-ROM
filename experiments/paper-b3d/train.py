@@ -48,6 +48,17 @@ def main():
             print('TRAIN DATA',row+1,len(rows),round(time.perf_counter()-begin,2),flush=True)
             dump(out/'data_progress.json',dict(rows=records,seconds=time.perf_counter()-begin))
     u.flush();dump(out/'data_progress.json',dict(rows=records,seconds=time.perf_counter()-begin,complete=True))
+    valid=[]
+    for row in cfg['validation_rows']:
+        u0=b3.blob_ic_3d(n,raw,row,coords)[idx];nu=float(raw['nu'][row])
+        fields,its,rn=host(fom(jnp.asarray(u0),nu,1e-10,1e-11))
+        assert reference_audit(fields,nu,n,cfg['dt'])<2e-9
+        valid.append(fields[cfg['train_steps']])
+    np.savez_compressed(out/'validation_observed.npz',fields=np.asarray(valid),
+                         rows=cfg['validation_rows'],steps=cfg['train_steps'])
+    np.savez_compressed(out/'physical_inputs.npz',training_nu=raw['nu'][rows],
+                         validation_nu=raw['nu'][cfg['validation_rows']])
+    valid=jnp.asarray(np.concatenate(valid))
     k=tc['latent_dimension'];r=tc['rank'];key=jax.random.PRNGKey(tc['seed']);key,a,b=jax.random.split(key,3)
     scale=float(np.sqrt(np.mean(u*u)))
     params=b3.init_separable_3d(a,k,r,n_ff=tc['fourier_features'],ff_scale=tc['fourier_scale'],
@@ -71,13 +82,50 @@ def main():
         grad[0]['B']=jnp.zeros_like(grad[0]['B']);grad[0]['out_scale']=jnp.zeros_like(grad[0]['out_scale'])
         update,state=opt.update(grad,state,pz)
         return optax.apply_updates(pz,update),state,value
-    curve=[];begin=time.perf_counter()
+    curve=[];begin=time.perf_counter();projections=[];best_projection=float('inf')
+    def refresh(pz,state,iteration):
+        """Exact training coefficients, invertible bank whitening, optimizer reset.
+
+        No validation field enters any gradient or coefficient refresh. Validation
+        projection error selects the spatial checkpoint only.
+        """
+        nonlocal best_projection
+        gp,eta=pz
+        G=np.concatenate([np.asarray(b3.features(gp,x[s:s+2048])) for s in range(0,len(x),2048)])
+        Q,Rb=np.linalg.qr(G,mode='reduced');sv=np.linalg.svd(Rb,compute_uv=False)
+        assert sv[-1]>sv[0]*1e-12
+        q=jnp.asarray(Q);target=np.asarray(data@q);vt=np.asarray(valid@q)
+        tn=np.asarray(jnp.sum(data*data,axis=1));vn=np.asarray(jnp.sum(valid*valid,axis=1))
+        tf=np.sqrt(np.maximum(tn-np.sum(target*target,axis=1),0)/tn)
+        vf=np.sqrt(np.maximum(vn-np.sum(vt*vt,axis=1),0)/vn)
+        whitening=jnp.asarray(np.linalg.inv(Rb)*np.sqrt(len(x))*scale)
+        gp=dict(gp);gp['g']=list(gp['g']);w,b=gp['g'][-1];gp['g'][-1]=(w@whitening,b@whitening)
+        eta=jnp.asarray(target/(np.sqrt(len(x))*scale));pz=(gp,eta)
+        state=opt.init(pz)
+        # Reset Adam moments after changing coordinates, retain global LR time.
+        state=(*state[:-1],state[-1]._replace(count=jnp.asarray(iteration,dtype=jnp.int32)))
+        record=dict(step=iteration,training_mean=float(tf.mean()),training_worst=float(tf.max()),
+                    validation_mean=float(vf.mean()),validation_worst=float(vf.max()),
+                    seconds=time.perf_counter()-begin,condition_before_whitening=float(sv[0]/sv[-1]))
+        selected=record['validation_worst']<best_projection;record['selected']=selected
+        if selected:
+            best_projection=record['validation_worst']
+            checkpoint(out/'bank_selected.pkl',dict(params=gp,info=record,config=cfg))
+        projections.append(record);dump(out/'bank_projection_curve.json',projections)
+        print('BANK REFRESH',record,flush=True)
+        return pz,state
+    if tc.get('coefficient_refresh_every'):pz,state=refresh(pz,state,0)
     for it in range(tc['bank_steps']):
         key,sub=jax.random.split(key);pz,state,value=step(pz,state,sub,data,x,norms)
         if it==0 or (it+1)%100==0 or it+1==tc['bank_steps']:curve.append(dict(step=it+1,objective=float(value),seconds=time.perf_counter()-begin))
         if (it+1)%tc['checkpoint_every']==0 or it+1==tc['bank_steps']:
             checkpoint(out/'bank_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
             dump(out/'bank_curve.json',curve);print('BANK',curve[-1],flush=True)
+        if tc.get('coefficient_refresh_every') and ((it+1)%tc['coefficient_refresh_every']==0 or it+1==tc['bank_steps']):
+            pz,state=refresh(pz,state,it+1)
+    if tc.get('coefficient_refresh_every'):
+        selected=pickle.loads((out/'bank_selected.pkl').read_bytes())
+        pz=(jax.tree_util.tree_map(jnp.asarray,selected['params']),pz[1])
     gp,eta=pz;params.update(gp)
     G=np.concatenate([np.asarray(b3.features(gp,x[s:s+2048])) for s in range(0,len(idx),2048)])
     Q,Rb=np.linalg.qr(G,mode='reduced');sv=np.linalg.svd(Rb,compute_uv=False)
@@ -86,6 +134,7 @@ def main():
     floor=np.maximum(norm2-np.sum(target*target,axis=1),0.)
     bank_info=dict(seconds=time.perf_counter()-begin,rank=r,condition=float(sv[0]/sv[-1]),
         mean_relative_projection=float(np.mean(np.sqrt(floor/norm2))),worst_relative_projection=float(np.max(np.sqrt(floor/norm2))))
+    if tc.get('coefficient_refresh_every'):bank_info['selection']=selected['info']
     dump(out/'bank_info.json',bank_info);print('BANK FLOOR',bank_info,flush=True)
     checkpoint(out/'bank.pkl',dict(params=gp,Q=Q,Rb=Rb,cfg=cfg,info=bank_info))
     del G,eta,state,pz,data

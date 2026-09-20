@@ -36,6 +36,7 @@ def main():
     manifest=[]
     for entry in files:
         relative=Path(entry).relative_to('experiments/paper-b3d')
+        if relative.parts[0] in ['runs','checks']:continue
         if relative.name=='.gitignore':continue
         source=ROOT/entry;target=stage/relative
         target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
@@ -74,8 +75,11 @@ $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flus
 mkdir -p ../out
 date -u +%FT%TZ > ../STARTED_UTC
 {'$PY -u train.py --config '+shlex.quote(args.config)+' --out ../training > ../training.log 2>&1 || exit $?' if 'training' in cfg else ''}
+{'$PY -u reference_diagnostic.py --config '+shlex.quote(args.config)+' --out ../out/reference_screen > ../reference-screen.log 2>&1 || exit $?' if 'operators' in cfg else ''}
+{'$PY -u operator_panel.py --config '+shlex.quote(args.config)+' --training ../training --out ../out --mode train > ../operator-training.log 2>&1 || exit $?' if 'operators' in cfg else ''}
 $PY -u run.py --config {shlex.quote(args.config)} --out ../out {'--checkpoint ../training/checkpoint.pkl' if 'training' in cfg else ''} > ../driver.log 2>&1
 code=$?
+{'if [ "$code" -eq 0 ]; then $PY -u operator_panel.py --config '+shlex.quote(args.config)+' --training ../training --out ../out --mode evaluate > ../operator-evaluate.log 2>&1; code=$?; fi' if 'operators' in cfg else ''}
 if [ "$code" -eq 0 ]; then
     $PY -u audit.py ../out {'--checkpoint ../training/checkpoint.pkl' if 'training' in cfg else ''} > ../audit.log 2>&1
     code=$?

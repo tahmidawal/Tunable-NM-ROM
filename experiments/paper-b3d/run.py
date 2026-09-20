@@ -57,6 +57,18 @@ def starts_for(target,H,Z,count=4):
     return starts
 
 
+def tiled_fit(fit, target, floor, starts, C, R, hp, tile=16):
+    """Bound compiler batch size; repeat the last state only in a discarded pad."""
+    values=[]
+    for begin in range(0,len(target),tile):
+        count=min(tile,len(target)-begin)
+        indices=np.minimum(np.arange(begin,begin+tile),len(target)-1)
+        result=host(fit(jnp.asarray(target[indices]),jnp.asarray(floor[indices]),
+                        jnp.asarray(starts[indices]),jnp.asarray(C),jnp.asarray(R),hp))
+        values.append(jax.tree_util.tree_map(lambda a:a[:count],result))
+    return jax.tree_util.tree_map(lambda *a:np.concatenate(a,axis=0),*values)
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--config',required=True)
@@ -142,8 +154,8 @@ def main():
         target=targets[selected];ff=floor[selected]
         initial_starts=starts_for(target,H,Z)
         fit0=c.make_fit(K,0,cfg['fit_budget'],cfg['gradient_tolerance'])
-        selected_fit,all_fit=host(fit0(jnp.asarray(target),jnp.asarray(ff),jnp.asarray(initial_starts),
-                                    jnp.zeros((R,0)),jnp.asarray(Rb),hp))
+        selected_fit,all_fit=tiled_fit(fit0,target,ff,initial_starts,np.zeros((R,0)),Rb,hp,
+                                      cfg.get('fit_tile',16))
         zfit=selected_fit[0][:,:K]
         rho=target-np.asarray(b3.head(hp,jnp.asarray(zfit)))@Rb.T
         _,s,Ct=np.linalg.svd(rho,full_matrices=False)
@@ -173,7 +185,7 @@ def main():
         st=starts_for(at,H,Z)
         for q in cfg['q_ladder']:
             fit=c.make_fit(K,q,cfg['fit_budget'],cfg['gradient_tolerance'])
-            best,all_results=host(fit(jnp.asarray(at),jnp.asarray(fl),jnp.asarray(st),jnp.asarray(C[:,:q]),jnp.asarray(Rb),hp))
+            best,all_results=tiled_fit(fit,at,fl,st,C[:,:q],Rb,hp,cfg.get('fit_tile',16))
             errors=best[1]/np.maximum(norm,1e-300)
             name=f'representation_q{q}.npz'
             np.savez_compressed(out/name,states=best[0],errors=errors,iterations=best[2],reasons=best[3],gradients=best[4],

@@ -88,9 +88,29 @@ def main():
     expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+len(cfg.get('fom_controls',[0,1,2])))*len(refs)*cfg['repetitions']
     if r['complete']:
         assert len(r['invocations'])==expected,(len(r['invocations']),expected)
+    operator_count=0
+    if 'operators' in cfg:
+        observed=np.asarray(cfg['train_steps']);eye=np.eye(len(observed))
+        weights=np.stack([np.interp(np.arange(cfg['steps']+1),observed,eye[:,j]) for j in range(len(observed))],axis=1)
+        for row in r.get('operator_invocations',[])+r.get('interpolation_controls',[]):
+            a=np.load(root/row['artifact']);f=a['fields'];ref=refs[row['case']]
+            assert f.shape==ref.shape and np.isfinite(f).all()
+            assert np.array_equal(a['knots'][0],ref[0])
+            recomposed=weights@a['knots']
+            assert np.linalg.norm(recomposed-f)/np.linalg.norm(f)<1e-12
+            err=np.linalg.norm(f-ref,axis=1)/np.linalg.norm(ref[0])
+            assert np.max(np.abs(err-np.asarray(row['error_fixed_initial'])))<1e-12
+            assert abs(err[1:].max()-row['worst_evolved'])<1e-12
+            if 'method' in row:
+                assert row['gpu_ms']>0 and np.isfinite(row['gpu_ms']);operator_count+=1
+            else:assert np.array_equal(a['knots'],ref[observed])
+        if r.get('operator_complete'):
+            assert operator_count==len(cfg['operators'])*len(refs)*cfg['repetitions']
+            assert len(r['interpolation_controls'])==len(refs)
     output=dict(passed=True,complete=bool(r['complete']),invocations=len(r['invocations']),expected_invocations=expected,
                 max_reference_defect=max_defect,max_metric_discrepancy=max_metric,max_decode_discrepancy=max_decode,
-                final_cohort_unopened=r['final_cohort_unopened'],comparison_scope=r['comparison_scope'])
+                final_cohort_unopened=r['final_cohort_unopened'],comparison_scope=r['comparison_scope'],
+                operator_invocations=operator_count,operator_complete=r.get('operator_complete',False))
     (root/'audit.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps(output,indent=2))
 
 

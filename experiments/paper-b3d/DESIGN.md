@@ -54,6 +54,16 @@ Repeated identical full-field outputs may share an artifact only after every ret
 
 The next independent comparison job must train FNO3D and U-Net3D on these exact original training rows, the same observed training times and physical input fields plus viscosity. It must evaluate all requested output times and include the current learned ROM, POD and tuned FOM in one allocation. DeepONet, Transolver, independent training seeds and sealed evaluation remain unfinished until measured.
 
+## Third-attempt implementation and optimization amendment
+
+The second attempt's fresh spatial bank remained underfit under its short optimization budget. Its training projection and head fitting errors are retained as development diagnostics, without comparing training tails to the inherited checkpoint's validation tail. The subsequent full panel stalled compiling a large batched multistart projection. The replacement uses fixed tiles of sixteen states, padding only the final tile and discarding the repeated states; this changes batching, not the objective or starts. The second attempt is retained as an incomplete attempt, including its checkpoints, source and logs.
+
+`config-operators.json` prospectively declares a longer spatial-bank optimization budget with periodic exact least-squares updates of all training coefficient vectors. Each update applies an invertible QR whitening to the learned output layer, resets Adam moments after the coordinate change, and preserves the global learning-rate schedule. Validation fields never enter these updates or gradients. Worst projection error on the same opened validation rows and observed times selects the spatial checkpoint; all projection and optimizer curves are retained. The nonlinear head is then trained on coefficients of that selected learned bank. Neither finite budget is a convergence claim.
+
+The operator implementation is imported byte-for-byte from heat source `84d302a706bf06a460d04f419d9c06a6c424932e`, with hashes in `operators/VENDOR.json`. The FNO and U-Net receive the supplied initial interior field, supplied viscosity, and fixed grid coordinates. Training-only physical scales normalize these inputs. Their outputs represent the seven evolved observed training times. The supplied initial field is prepended exactly, and piecewise-linear time interpolation produces the complete fifty-one-field query contract. A separate truth-knot interpolation control exposes the error caused by this output parameterization. No extra temporal truth data is supplied to the operators. Every output error uses the supplied initial field's norm. Validation checkpoint selection uses only the observed evolved times; the full trajectory comparison reports every requested time.
+
+Both operator models receive separately declared finite training budgets, and their full training curves, actual steps, wall exits and validation-selected checkpoints are preserved. They are not parameter-count-matched to one another or the ROM. Their query timings include input preparation, interpolation and dense output, within the same allocation as the ROM, POD and tolerance-tuned FOM. Spatial/time reference refinement remains a development diagnostic; the sealed final cohort remains unopened.
+
 ## Glossary
 
 - **Bank/head:** learned spatial features / neural map from latent state to coefficients.
@@ -68,3 +78,6 @@ The next independent comparison job must train FNO3D and U-Net3D on these exact 
 - **Same-grid:** measured against a converged discretized solve on the query mesh.
 - **Dense quadrature:** evaluating the weak nonlinear functional on the complete interior grid.
 - **Invocation:** one complete solver call, supplying both its measured cost and its returned field errors.
+- **Whitening:** an invertible change of bank coordinates that makes their grid inner products equal and leaves the represented spatial span unchanged.
+- **Observed knot / interpolation:** a time with a training output field / combining adjacent time outputs to produce fields between them.
+- **FNO / U-Net:** a Fourier neural operator / a convolutional encoder and decoder with skip connections.

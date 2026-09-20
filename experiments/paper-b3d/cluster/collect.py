@@ -20,4 +20,8 @@ if not manifest.exists():
     cmd='cd '+shlex.quote(remote)+" && find "+dirs+" -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum"
     manifest.write_bytes(subprocess.check_output(['ssh','tufts-login',cmd]))
 subprocess.run(['sha256sum','--quiet','-c','OUTPUTS.sha256'],cwd=target,check=True)
+# Capture final post-exit log bytes too, without rewriting the job's manifest.
+full='cd '+shlex.quote(remote)+" && find . -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum"
+(target/'COLLECTION.sha256').write_bytes(subprocess.check_output(['ssh','tufts-login',full]))
+subprocess.run(['sha256sum','--quiet','-c','COLLECTION.sha256'],cwd=target,check=True)
 print(json.dumps(dict(collected=str(target),checksums_passed=True,remote_removal_pending=remote),indent=2))

@@ -1,0 +1,53 @@
+{
+  "spec": {
+    "kind": "fno3d",
+    "width": 24,
+    "modes": [
+      8,
+      8,
+      8
+    ],
+    "depth": 4,
+    "padding": 9
+  },
+  "config": {
+    "steps": 30000,
+    "wall_seconds": 1500,
+    "batch_size": 2,
+    "seed": 920550,
+    "learning_rate": 0.0005,
+    "validation_every": 250,
+    "curve_every": 50,
+    "components_per_output": 1
+  },
+  "parameter_count": 9440953,
+  "steps_completed": 30000,
+  "best_step": 29000,
+  "best_validation_worst": 0.002365559714807757,
+  "seconds": 281.0866837957874,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "name": "fno3d_w24_m8",
+  "scales": {
+    "input": 0.09347530902320836,
+    "output": 0.002004507121105652
+  },
+  "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+  "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+  "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+  "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33",
+  "immediate_reuse_source": {
+    "source_commit": "99befa2a4a7152df74b3086255bc2f47efbb5b70",
+    "job_id": "3996479"
+  },
+  "original_training_source": {
+    "source_commit": "99befa2a4a7152df74b3086255bc2f47efbb5b70",
+    "job_id": "3996479",
+    "result_sha256": "d7726fa13131c4605c633890715503d108abad5a01400cb5f2edba4a6e43c6f9",
+    "checkpoint_sha256": "6d97b72da12f585ab996a2aa548d5cd1da2f7a12d480ce694f7fbd6f149990ac",
+    "attempt": "seed04"
+  }
+}

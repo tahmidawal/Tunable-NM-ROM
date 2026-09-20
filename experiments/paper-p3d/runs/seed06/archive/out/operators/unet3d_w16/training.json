@@ -1,0 +1,48 @@
+{
+  "spec": {
+    "kind": "unet3d",
+    "width": 16,
+    "levels": 3,
+    "periodic": false
+  },
+  "config": {
+    "steps": 30000,
+    "wall_seconds": 1500,
+    "batch_size": 2,
+    "seed": 920451,
+    "learning_rate": 0.0005,
+    "validation_every": 250,
+    "curve_every": 50,
+    "components_per_output": 1
+  },
+  "parameter_count": 354577,
+  "steps_completed": 30000,
+  "best_step": 28750,
+  "best_validation_worst": 0.0019318997012163126,
+  "seconds": 638.0377804501913,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "name": "unet3d_w16",
+  "scales": {
+    "input": 0.09347530902320836,
+    "output": 0.002004507121105652
+  },
+  "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+  "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+  "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+  "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33",
+  "immediate_reuse_source": {
+    "source_commit": "59651088953df04f78e4193210ec400d6cf50f1f",
+    "job_id": "4019009"
+  },
+  "original_training_source": {
+    "source_commit": "68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b",
+    "job_id": "3990494",
+    "result_sha256": "41ef9749a80327dda52f02645f16cca8af7a2149cc29bd0c454fac164d191ec5",
+    "checkpoint_sha256": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f",
+    "attempt": "tuned02"
+  }
+}

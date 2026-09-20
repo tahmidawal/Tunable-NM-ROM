@@ -70,17 +70,22 @@ def load(directory,cfg,train_parameters,validation_parameters,out):
         dest=Path(out)/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(directory/name,dest)
         return value
     bank=checkpoint('bank.pkl');models=[]
-    bank['info']={**bank['info'],'reused_checkpoint':True,'original_training_source':origin['source_commit'],
+    bank['info']={**bank['info'],'reused_checkpoint':True,'original_training_source':origin['bank'].get('original_training_source',origin['source_commit']),
+                  'immediate_reuse_source':origin['source_commit'],
                   'checkpoint_sha256':origin['files']['bank.pkl']}
     for k in cfg['latent_dimensions']+cfg.get('frozen_additional_heads',[]):
         model=checkpoint(f'head_K{k}.pkl');model['codes']=jax.device_put(model['codes']);jax.block_until_ready(model['codes'])
-        model['info']={**model['info'],'reused_checkpoint':True,'original_training_source':origin['source_commit'],
+        original_head=next(h for h in origin['heads'] if h['k']==k)
+        model['info']={**model['info'],'reused_checkpoint':True,'original_training_source':original_head.get('original_training_source',origin['source_commit']),
+                       'immediate_reuse_source':origin['source_commit'],
                        'checkpoint_sha256':origin['files'][f'head_K{k}.pkl']}
         models.append(model)
     operators=[]
     for name in cfg.get('frozen_operators',[]):
         item=checkpoint(f'operators/{name}/adapter.pkl')
-        info={**item['info'],'reused_checkpoint':True,'original_training_source':origin['source_commit'],
+        original_operator=next(o for o in origin['operators'] if o['name']==name)
+        info={**item['info'],'reused_checkpoint':True,'original_training_source':original_operator.get('original_training_source',origin['source_commit']),
+              'immediate_reuse_source':origin['source_commit'],
               'checkpoint_sha256':origin['files'][f'operators/{name}/adapter.pkl']}
         operators.append((name,item['spec'],item['params'],item['physical_scale'],info))
     for name in origin['files']:

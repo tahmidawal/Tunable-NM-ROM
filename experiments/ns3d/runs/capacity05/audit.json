@@ -1,0 +1,202 @@
+{
+  "passed": true,
+  "source_commit": "4d675dd97c12ea47b90b7ca9720bc9bf0623da7f",
+  "job_id": "4019914",
+  "checks": {
+    "raw_checksums": {
+      "passed": true,
+      "count": 24,
+      "failures": []
+    },
+    "gpu_provenance": {
+      "passed": true,
+      "stderr_bytes": 0
+    },
+    "complete_and_final_sealed": {
+      "passed": true
+    },
+    "exact_shared_membership": {
+      "passed": true,
+      "base_cases": 512,
+      "augmented_cases": 2048
+    },
+    "learned_coordinate_bank": {
+      "passed": true,
+      "relative": 1.925790710060848e-15
+    },
+    "bank_QR": {
+      "passed": true
+    },
+    "projected_bank_numerical_rank": {
+      "passed": true,
+      "numerical_rank": 3072,
+      "requested_rank": 3072,
+      "relative_threshold": 1e-10,
+      "condition": 119915260.3844006
+    },
+    "same_cohort_operator_checkpoint_reuse": {
+      "passed": true,
+      "failures": [],
+      "source_job": "3997427"
+    },
+    "warm_expansion_physical_columns_and_rank": {
+      "passed": true,
+      "old_column_relative": 1.2767121332902079e-15,
+      "old_rank": 1536,
+      "new_rank": 3072,
+      "measured_initial_rank": 3072,
+      "initial_condition": 4937584.433584682,
+      "initial_full_rank": true,
+      "interpretation": "initialization rank is measured; only the final trained full-rank bank is eligible for capacity acceptance"
+    },
+    "bank_development_fields": {
+      "passed": true
+    },
+    "bank_development_summary": {
+      "passed": true,
+      "summary": {
+        "mean": 0.029678520943735204,
+        "median": 0.02535667192459297,
+        "worst": 0.063169602709814
+      }
+    },
+    "all_augmented_training_projections": {
+      "passed": true,
+      "snapshots": 12288,
+      "maximum_coefficient_relative_error": 4.656163009109715e-11,
+      "maximum_floor_error": 6.837932997605378e-13
+    },
+    "pca128_initial_development_reconstruction": {
+      "passed": true,
+      "summary": {
+        "mean": 0.29266740563136495,
+        "median": 0.2878267124615093,
+        "worst": 0.3848894838934358
+      },
+      "stationary_count": 96
+    },
+    "pca128_initial_stored_training_codes": {
+      "passed": true,
+      "summary": {
+        "mean": 0.27551093024576706,
+        "median": 0.2759652883213165,
+        "worst": 0.4391654348546727
+      }
+    },
+    "pca128_initial_fixed_PCA_codes": {
+      "passed": true,
+      "relative_Gram_probe": 1.2386768270917625e-11,
+      "count": 24
+    },
+    "fno3d_shared_recipe": {
+      "passed": true
+    },
+    "unet3d_shared_recipe": {
+      "passed": true
+    },
+    "deeponet3d_shared_recipe": {
+      "passed": true
+    },
+    "transolver3d_shared_recipe": {
+      "passed": true
+    },
+    "operator_precision": {
+      "passed": true,
+      "bad": []
+    },
+    "every_timed_field": {
+      "passed": true,
+      "invocations": 168,
+      "fields": 56,
+      "max_metric_disagreement": 1.1102230246251565e-16,
+      "failures": []
+    }
+  },
+  "scope": "all membership bytes and saved development fields; independent model reconstruction and invocation metrics",
+  "derived_summary": {
+    "fno3d_increment_raw": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 8.738197037018836,
+      "worst_evolved_same_grid": 0.004050370548537303
+    },
+    "fno3d_increment_projected": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 8.88843450229615,
+      "worst_evolved_same_grid": 0.0033174893558306734
+    },
+    "unet3d_increment_raw": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.8586179940029979,
+      "worst_evolved_same_grid": 0.02306287255133155
+    },
+    "unet3d_increment_projected": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.9177255453541875,
+      "worst_evolved_same_grid": 0.020440661810952762
+    },
+    "deeponet3d_increment_raw": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 4.105873988009989,
+      "worst_evolved_same_grid": 0.6434621254738145
+    },
+    "deeponet3d_increment_projected": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 4.252280457876623,
+      "worst_evolved_same_grid": 0.6432941549049475
+    },
+    "transolver3d_increment_raw": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 3.212873009033501,
+      "worst_evolved_same_grid": 0.032757689654349414
+    },
+    "transolver3d_increment_projected": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 3.2887235283851624,
+      "worst_evolved_same_grid": 0.021077663265176308
+    },
+    "fom_dt0.002": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 12.736639473587275,
+      "worst_evolved_same_grid": 0.00021306215148585058
+    },
+    "fom_dt0.004": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 6.7308006109669805,
+      "worst_evolved_same_grid": 0.0008659903839402424
+    },
+    "fom_dt0.008": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 3.7293110508471727,
+      "worst_evolved_same_grid": 0.003597750934912205
+    },
+    "fom_dt0.01": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 3.1580529175698757,
+      "worst_evolved_same_grid": 0.006283990150918635
+    },
+    "fom_dt0.02": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.9480879418551922,
+      "worst_evolved_same_grid": 0.49217058127993474
+    },
+    "fom_dt0.04": {
+      "invocations": 12,
+      "nonfinite_invocations": 0,
+      "device_ms_median": 1.2339380336925387,
+      "worst_evolved_same_grid": 0.9669885651183122
+    }
+  }
+}

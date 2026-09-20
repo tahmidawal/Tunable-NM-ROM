@@ -1,0 +1,49 @@
+host=pax010 source_commit=c6d5eb6c367da20825cb6c9d76d1efa3b3e11f00
+NVIDIA H200, GPU-744df6ce-73c5-9d32-f055-7bb568e0a92b, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  4.2T  443G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+MESH 64 floor worst 0.0014315615280811917 11.6
+WARMUP 64 26 23.4
+TIMED 64 0 123.2
+TIMED 64 1 201.4
+TIMED 64 2 281.6
+TIMED 64 3 362.4
+TIMED 64 4 443.9
+PARITY {'intervals': 64, 'candidate': 'rom_q0_lean64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q0_leandst64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 9.85358457844868e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q0_leandst32', 'baseline': 'rom_q0_retained', 'worst_field_relative': 9.117166478477062e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q0_onestart64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 7.642501205878703e-05, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 64, 'candidate': 'rom_q32_lean64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q32_leandst64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 8.611107664756374e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q32_leandst32', 'baseline': 'rom_q32_retained', 'worst_field_relative': 8.926994042036875e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q32_onestart64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0010791232894138217, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 64, 'candidate': 'rom_q96_lean64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q96_leandst64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 6.850983848772383e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q96_leandst32', 'baseline': 'rom_q96_retained', 'worst_field_relative': 8.963329086602507e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 64, 'candidate': 'rom_q96_onestart64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 4.4157887097821525e-06, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+MESH 128 floor worst 0.0014297659454250067 489.5
+WARMUP 128 29 21.6
+TIMED 128 0 628.0
+TIMED 128 1 724.4
+TIMED 128 2 820.9
+TIMED 128 3 917.6
+TIMED 128 4 1014.2
+PARITY {'intervals': 128, 'candidate': 'rom_q0_lean64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_leandst64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 7.118838617305892e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_leandst32', 'baseline': 'rom_q0_retained', 'worst_field_relative': 8.940690672595004e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_onestart64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 5.928005396863825e-05, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_lean64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_leandst64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 7.957951954616029e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_leandst32', 'baseline': 'rom_q32_retained', 'worst_field_relative': 8.872775291782636e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_onestart64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0010793042257636425, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_lean64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_leandst64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 4.752514759482718e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_leandst32', 'baseline': 'rom_q96_retained', 'worst_field_relative': 8.553438479539773e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_onestart64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 4.7810752995902e-06, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+GATES {'parity': True, 'solver_validity': True, 'deterministic': True}
+HIRES 3D COMPLETE
+VERDICT 64 {'arm': 'rom_q96_leandst64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.001598005692364618, 'speedup_total': 1.567272327817224, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': True, 'speed_bar_5x': False, 'bar_met': False, 'fast_arm': {'arm': 'rom_q0_leandst64', 'worst_same_grid': 0.005450840330364521, 'speedup_total': 1.558575469636139}}
+VERDICT 128 {'arm': 'rom_q96_leandst64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.0015965075226329934, 'speedup_total': 2.6999841733535046, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': True, 'speed_bar_5x': False, 'bar_met': False, 'fast_arm': {'arm': 'rom_q0_leandst64', 'worst_same_grid': 0.005454752416100777, 'speedup_total': 2.6594490597149356}}
+AUDIT PASSED {'driver_gates': True, 'final_uuid_matches': True, 'deterministic': True, 'coverage': True, 'parity_recomputed': True} 6600 1.0321226795495604e-16
+ALL-DONE

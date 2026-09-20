@@ -34,6 +34,14 @@ SET3D = [f'{P3D}/common.py', f'{P3D}/poisson.py', f'{P3D}/shared_rom.py', f'{P3D
          f'{P3D}/runs/final08/checkpoints/bank.pkl', f'{P3D}/runs/final08/checkpoints/head_K16.pkl',
          f'{LANE}/cluster/stage.py']
 
+LSH = f'{LANE}/lshape'
+SETL = ['experiments/separable-decoder/sep_common.py', 'experiments/mr-burgers2d/engines.py',
+        'experiments/head-ablation/arms.py', 'experiments/cost-to-tolerance/ctol_tol.py',
+        f'{LSH}/lsh_core.py', f'{LSH}/models.json', f'{LSH}/IMPORTS.json',
+        f'{LSH}/head_sdf_R512_K16.pkl', f'{LSH}/head_sdf_R512_K16-basis.npz',
+        f'{LSH}/head_sdf_R512_K32.pkl', f'{LSH}/head_sdf_R512_K32-basis.npz',
+        f'{LANE}/cluster/stage.py']
+
 SCRIPT = '''#!/bin/bash
 #SBATCH --job-name=hp___ATTEMPT__
 #SBATCH --partition=gpu
@@ -78,7 +86,7 @@ def main():
     p.add_argument('--driver', default='hp_solve.py')
     p.add_argument('--audit', default='hp_audit_np.py')
     p.add_argument('--extra', nargs='*', default=[], help='extra repo-relative files to stage')
-    p.add_argument('--set', default='2d', choices=['2d', '3d'], help='which parent file set to stage')
+    p.add_argument('--set', default='2d', choices=['2d', '3d', 'lshape'], help='which parent file set to stage')
     p.add_argument('--subsample', type=int, default=256)
     p.add_argument('--memfrac', default='0.75', help='XLA client memory fraction (0.95 for the 4096^2 bank)')
     p.add_argument('--hours', type=int, default=6)
@@ -92,7 +100,7 @@ def main():
     (out / 'logs').mkdir()
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
-    files = list(dict.fromkeys((COMMON if a.set == '2d' else SET3D) + [f'{LANE}/{a.driver}', f'{LANE}/{a.audit}',
+    files = list(dict.fromkeys({'2d': COMMON, '3d': SET3D, 'lshape': SETL}[a.set] + [f'{LANE}/{a.driver}', f'{LANE}/{a.audit}',
                                          f'{LANE}/{a.config}'] + a.extra))
     proof = []
     for name in files:

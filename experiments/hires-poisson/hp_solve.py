@@ -81,6 +81,11 @@ def main():
                    coarse_intervals=[16, 32], ladder_q=[0, 32, 256], eval_count=2,
                    fresh_count=1, cg_tolerances=[1e-2, 1e-6], retained_baseline=True,
                    keep_f64=True, keep_f32=True)
+        if cfg.get('io32_subjects'):
+            cfg['io32_subjects'] = ['rom_q0_lean64', 'rom_q256_lean32', 'rom_q512_linear_lean64',
+                                    'dst_direct', 'cg_0.01', 'coarse16_dst']
+        if cfg.get('extra_ladder'):
+            cfg['extra_ladder'] = [dict(q=32, m_factor=8)]
     n = int(cfg['intervals'])
     assert jax.default_backend() == 'gpu', jax.default_backend()
     assert jax.config.jax_enable_x64 and os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
@@ -181,7 +186,11 @@ def main():
 
     # ------------------------------------------------------------------ bank --
     ladder = [q for q in cfg['ladder_q'] if q < Rw]
-    requests = {q: 4 * (K + q) for q in ladder}
+    arms = [(f'q{q}', q, 4 * (K + q)) for q in ladder]
+    # speed/accuracy-loop arms (DESIGN A6): same query, another rung or another test count
+    arms += [(f"q{e['q']}m{e['m_factor']}", e['q'], e['m_factor'] * (K + e['q']))
+             for e in cfg.get('extra_ladder', [])]
+    requests = {label: req for label, _, req in arms}
     requests['linear'] = 4 * (K + Rw)
     maxmode = 0
     for req in requests.values():
@@ -206,8 +215,9 @@ def main():
 
     # ------------------------------------------------------------------ arms --
     subjects = []
-    for q in ladder:
-        ops = H.make_ops(bank, params, codes, n, requests[q])
+    io32 = set(cfg.get('io32_subjects', []))
+    for label, q, req in arms:
+        ops = H.make_ops(bank, params, codes, n, req)
         M = int(ops['B'].shape[0])
         assert M > K + q, (M, K, q)
         engine = CC.prepare_correction(ops, codes, Cfull, q, cfg['retained'])
@@ -215,14 +225,14 @@ def main():
         kern = H.make_lean(ops, engine, cfg['retained'], q)
         diag = H.make_diagnose(ops, engine, q)
         for vname, chunks in variants:
-            subjects.append(dict(name=f'rom_q{q}_{vname}', kind='lean', q=q, M=M, ops=ops,
+            subjects.append(dict(name=f'rom_{label}_{vname}', kind='lean', q=q, M=M, ops=ops,
                                  engine=engine, kernel=kern, chunks=chunks, diag=diag,
                                  family='nm-rom', variant=vname))
         if single is not None:
-            subjects.append(dict(name=f'rom_q{q}_retained', kind='retained', q=q, M=M,
+            subjects.append(dict(name=f'rom_{label}_retained', kind='retained', q=q, M=M,
                                  ops={**ops, 'bank': single}, engine=engine, family='nm-rom',
                                  variant='retained'))
-        R_['arm_setup'].append(dict(q=q, M=M, requested_modes=requests[q],
+        R_['arm_setup'].append(dict(label=label, q=q, M=M, requested_modes=req,
                                     operator_sha256=ops['info']['operator_sha256'],
                                     **{k: engine['info'][k] for k in
                                        ('linear_rank', 'linear_condition_number',
@@ -252,10 +262,36 @@ def main():
             subjects.append(dict(name=f'coarse{nc}_cg_{tol:g}', kind='fn', family='coarse-cg',
                                  coarse_intervals=nc, tolerance=tol,
                                  fn=lambda s, ck=ck, tol=tol: ck(s, jnp.asarray(tol))))
+    # labelled f32-I/O contract (DESIGN A6): the SAME subject with a host f32 source in and a
+    # host f32 field out; both casts run on the device inside the timed interval.
+    to64 = jax.jit(lambda x: x.astype(jnp.float64))
+    to32 = jax.jit(lambda x: x.astype(jnp.float32))
+    for sub in list(subjects):
+        if sub['name'] in io32:
+            subjects.append({**sub, 'name': sub['name'] + '_io32', 'io32': True,
+                             'family': sub['family'] + '-io32', 'base': sub['name']})
+    assert io32 <= {s['name'] for s in subjects}, io32 - {s['name'] for s in subjects}
+    sources32 = [np.asarray(s_, dtype=np.float32) for s_ in sources] if io32 else None
     R_['declared_subjects'] = [s['name'] for s in subjects]
     save()
 
     def invoke(sub, source):
+        hooks = dict(pre=to64, post=to32) if sub.get('io32') else {}
+        if sub['kind'] == 'lean':
+            return H.lean_query(source, sub['ops'], sub['engine'], sub['kernel'], sub['chunks'], **hooks)
+        if sub['kind'] == 'linear':
+            return H.linear_query(source, sub['ops'], sub['kernel'], sub['Qt'], sub['Rr'],
+                                  sub['chunks'], **hooks)
+        if sub['kind'] == 'fn':
+            field, row, extra = H.generic_query(source, sub['fn'], **hooks)
+            if extra is not None:
+                count, true, recursive, converged = extra
+                row.update(iterations=int(count), true_relative_residual=float(true),
+                           cg_converged=bool(converged))
+            return field, row
+        return invoke_plain(sub, source)
+
+    def invoke_plain(sub, source):
         if sub['kind'] == 'lean':
             return H.lean_query(source, sub['ops'], sub['engine'], sub['kernel'], sub['chunks'])
         if sub['kind'] == 'retained':
@@ -272,7 +308,7 @@ def main():
 
     t = time.perf_counter()
     for sub in subjects:
-        invoke(sub, sources[0])
+        invoke(sub, (sources32 if sub.get('io32') else sources)[0])
     R_['compile_warmup_seconds'] = time.perf_counter() - t
     print('WARMUP', len(subjects), round(time.perf_counter() - t, 1), flush=True)
 
@@ -287,7 +323,7 @@ def main():
                     continue
                 C.burn(cfg['burn_seconds'])
                 assert gpu_uuid() == uuid0
-                field, row = invoke(sub, sources[case])
+                field, row = invoke(sub, (sources32 if sub.get('io32') else sources)[case])
                 assert gpu_uuid() == uuid0
                 assert np.isfinite(field).all(), sub['name']
                 h = H.sha_array(field)
@@ -365,8 +401,8 @@ def main():
         return np.load(out / 'fields' / first[(name, case)]['saved_field'])
 
     base_variant = 'retained' if single is not None else variants[0][0]
-    for q in ladder + [Rw]:
-        tag = f'rom_q{q}_linear' if q == Rw else f'rom_q{q}'
+    for label, q in [(lb, qq) for lb, qq, _ in arms] + [(f'q{Rw}_linear', Rw)]:
+        tag = f'rom_{label}'
         for vname, _ in variants:
             if q == Rw and base_variant == 'retained':
                 ref_name = f'{tag}_{variants[0][0]}'
@@ -388,10 +424,18 @@ def main():
                                      worst_field_relative=worst, integers_identical=ints,
                                      limit=limit, passed=bool(worst <= limit and ints)))
             print('PARITY', R_['parity'][-1], flush=True)
+    for sub in subjects:                      # labelled f32-I/O arms against their f64-I/O twins
+        if not sub.get('io32'):
+            continue
+        worst = max(C.relative(load(sub['name'], case), load(sub['base'], case)) for case in range(len(dev)))
+        R_['parity'].append(dict(candidate=sub['name'], baseline=sub['base'], worst_field_relative=worst,
+                                 integers_identical=None, limit=cfg['parity']['io32_field'],
+                                 passed=bool(worst <= cfg['parity']['io32_field'])))
+        print('PARITY', R_['parity'][-1], flush=True)
     stats = jax.devices()[0].memory_stats() or {}
     R_['device_memory'] = {k: int(v) for k, v in stats.items()
                            if k in ('peak_bytes_in_use', 'bytes_limit', 'bytes_in_use')}
-    expected_parity = (len(ladder) + 1) * len(variants) - (0 if single is not None else len(ladder)) - 1
+    expected_parity = (len(arms) + 1) * len(variants) - (0 if single is not None else len(arms)) - 1 + len(io32)
     gates = dict(
         assembly=R_['assembly_gate']['passed'],
         parity_coverage=len(R_['parity']) == expected_parity,

@@ -210,3 +210,28 @@ are unchanged. Memory: `hp2048` peaked at 60.5 GB with three bank copies; at $40
 (parity carried by `hp2048`, same kernels, as pre-stated), rows per chunk 128, and the XLA client
 memory fraction is raised to 0.95 (limit ≈ 134 GB). If it OOMs, the fallback is two jobs (f64-only,
 f32-only), each self-contained. CG $10^{-6}$ is restricted to 3 sources (ineligible as comparator).
+
+**A5 (2026-09-20, before the L-shape jobs) — L-shaped domain at $1024^2$ and $2048^2$,
+`hpl_solve.py`.** Source: `worktrees/2026-09-17-lshape` @ `d80fed7a`; `lsh_core.py` and the two
+**primary** checkpoints (`head_sdf_R512_K16`, the model behind the orientation number 2.12 % /
+6.07× at $512^2$, and `head_sdf_R512_K32`) are copied verbatim into `lshape/` with hashes in
+`lshape/IMPORTS.json`. One mesh per job (own directory). Unchanged from the lshape lane: ROM kernel,
+$M=257$ lowest discrete eigenmodes of the L-shape operator (shift-invert Lanczos on SuperLU) as
+tests, ladder $q\in\{0,32,64,128\}$ from the stored correction basis, LM budget 300, SuperLU
+reference with two refinements and the round-off-aware residual gate (lshape A7), GPU CG, CPU
+IC(0)-PCG. Headline model/arms fixed now: `head_sdf_R512_K16`, accurate = top rung `q=128`,
+fast = `q=0`, variant `lean`. New: `lean` kernel (in-kernel full-gradient diagnostic removed;
+parity $10^{-12}$ + identical integers vs `retained`); named FOM GPU CG $10^{-2}$ plus
+$10^{-1}, 3\times10^{-2}, 10^{-4}$; SuperLU direct (CPU) and IC(0)-PCG $10^{-2}$ (CPU) as labelled
+controls; coarse-grid controls on L-shaped $n_c\in\{64,128,256,512\}$ meshes from the
+point-sampled source — CPU SuperLU + host bilinear interpolation, and GPU CG($10^{-2},10^{-4}$) +
+device bilinear interpolation, masked to the domain; 12 development sources (the first 12 of the
+lshape lane's opened development cohort) × 5 repetitions; UUID guard; physical reference = SuperLU
+on $2n$. **Expected in advance:** this checkpoint's best rung was 2.1–2.2 % at $512^2$, so the 1 %
+accuracy bar will very likely be MISSED on the L-shape regardless of speed; the job measures how
+the speedup over CG scales and reports the miss. Omitted and said so: POD-LSPG (3072 sparse solves
+per mesh) and the $q=R$ free-bank rung (needs $M>R$; 1024 eigenpairs at $2048^2$ is out of
+budget). G-FOM-5 (tight CG $10^{-10}$ vs direct reference, $\le10^{-8}$) runs once per source outside
+the timed loop. Audit `hpl_audit_np.py` does not re-factorise: it verifies the saved same-grid and
+$2n$ references by its own matrix-free masked stencil residual against its own regenerated
+sources (round-off-aware limit), then recomputes every error.

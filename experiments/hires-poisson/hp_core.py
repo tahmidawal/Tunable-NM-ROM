@@ -214,21 +214,25 @@ def make_diagnose(ops, engine, count):
     return diagnose
 
 
-def lean_query(host_source, ops, engine, kernel, chunks):
+def lean_query(host_source, ops, engine, kernel, chunks, pre=None, post=None):
     start = time.perf_counter()
     source = jax.device_put(host_source)
     source.block_until_ready()
     input_end = time.perf_counter()
     cache = engine['cache']
+    if pre is not None:
+        source = pre(source)
     out = kernel(source, chunks, ops['S'], ops['I'], ops['J'], ops['W'], ops['params'],
                  cache['predictions'], cache['codes'], engine['Q'], engine['R'], engine['C'],
                  ops['B'])
+    if post is not None:
+        out = (post(out[0]),) + tuple(out[1:])
     jax.block_until_ready(out)
     device_end = time.perf_counter()
     field, answer, stats, index, y = jax.device_get(out)
     end = time.perf_counter()
     z, res, initial, njac, accepted, attempts, reason = answer
-    return np.asarray(field), dict(
+    return np.asarray(field, dtype=np.float64), dict(
         total_seconds=end - start, input_seconds=input_end - start,
         fused_device_seconds=device_end - input_end, output_seconds=end - device_end,
         latent=np.asarray(z).tolist(), correction_coefficients=np.asarray(y).tolist(),
@@ -254,17 +258,21 @@ def make_linear(B, n):
                                 M=int(B.shape[0]))
 
 
-def linear_query(host_source, ops, kernel, Qt, Rr, chunks):
+def linear_query(host_source, ops, kernel, Qt, Rr, chunks, pre=None, post=None):
     start = time.perf_counter()
     source = jax.device_put(host_source)
     source.block_until_ready()
     input_end = time.perf_counter()
+    if pre is not None:
+        source = pre(source)
     out = kernel(source, chunks, ops['S'], ops['I'], ops['J'], ops['W'], Qt, Rr)
+    if post is not None:
+        out = (post(out[0]),) + tuple(out[1:])
     jax.block_until_ready(out)
     device_end = time.perf_counter()
     field, y = jax.device_get(out)
     end = time.perf_counter()
-    return np.asarray(field), dict(total_seconds=end - start, input_seconds=input_end - start,
+    return np.asarray(field, dtype=np.float64), dict(total_seconds=end - start, input_seconds=input_end - start,
                                    fused_device_seconds=device_end - input_end,
                                    output_seconds=end - device_end, reason=4, attempts=0,
                                    accepted=0, jacobians=0,
@@ -299,18 +307,22 @@ def make_coarse(n, nc, cg_kernel=None):
     return (dst_kernel, lam) if cg_kernel is None else (cg_wrap, None)
 
 
-def generic_query(host_source, fn):
+def generic_query(host_source, fn, pre=None, post=None):
     """host source in -> host f64 nodal field out, same scope as every other subject."""
     start = time.perf_counter()
     source = jax.device_put(host_source)
     source.block_until_ready()
     input_end = time.perf_counter()
+    if pre is not None:
+        source = pre(source)
     out = fn(source)
+    if post is not None:
+        out = (post(out[0]),) + tuple(out[1:]) if isinstance(out, tuple) else post(out)
     jax.block_until_ready(out)
     device_end = time.perf_counter()
     out = jax.device_get(out)
     end = time.perf_counter()
     field, extra = (out if isinstance(out, tuple) else (out, None))
-    return np.asarray(field), dict(total_seconds=end - start, input_seconds=input_end - start,
+    return np.asarray(field, dtype=np.float64), dict(total_seconds=end - start, input_seconds=input_end - start,
                                    fused_device_seconds=device_end - input_end,
                                    output_seconds=end - device_end), extra

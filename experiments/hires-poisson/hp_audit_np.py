@@ -153,27 +153,28 @@ def main():
         return min(ok, key=lambda k: full[k]['median_total_ms']) if ok else None
 
     selections = []
-    rom_names = [k for k in full if full[k]['family'] in ('nm-rom', 'linear-rom')]
-    for name in rom_names:
-        r = full[name]
-        row = dict(rom=name, q=r['q'], worst_same_grid=r['worst_same_grid'],
-                   worst_physical=r['worst_physical'], median_total_ms=r['median_total_ms'],
-                   median_device_ms=r['median_device_ms'])
-        for label, fam in (('named_cg_1e-2', None), ('fastest_cg_matched', ('cg',)),
-                           ('fastest_coarse_matched', ('coarse-dst', 'coarse-cg')),
-                           ('dst_direct', None)):
-            if label == 'named_cg_1e-2':
-                k = 'cg_0.01' if 'cg_0.01' in full else None
-            elif label == 'dst_direct':
-                k = 'dst_direct' if 'dst_direct' in full else None
-            else:
-                k = pick([c for c in full if full[c]['family'] in fam], r['worst_physical'])
-            row[label] = None if k is None else dict(
-                comparator=k, worst_physical=full[k]['worst_physical'],
-                median_total_ms=full[k]['median_total_ms'],
-                speedup_total=full[k]['median_total_ms'] / r['median_total_ms'],
-                speedup_device=full[k]['median_device_ms'] / r['median_device_ms'])
-        selections.append(row)
+    for suffix in ('', '-io32'):                 # f64-I/O contract, then the labelled f32-I/O one
+        tail = '_io32' if suffix else ''
+        for name in [k for k in full if full[k]['family'] in ('nm-rom' + suffix, 'linear-rom' + suffix)]:
+            r = full[name]
+            row = dict(rom=name, q=r['q'], io_contract='f32' if suffix else 'f64',
+                       worst_same_grid=r['worst_same_grid'], worst_physical=r['worst_physical'],
+                       median_total_ms=r['median_total_ms'], median_device_ms=r['median_device_ms'])
+            for label, fam in (('named_cg_1e-2', None), ('fastest_cg_matched', ('cg' + suffix,)),
+                               ('fastest_coarse_matched', ('coarse-dst' + suffix, 'coarse-cg' + suffix)),
+                               ('dst_direct', None)):
+                if label == 'named_cg_1e-2':
+                    k = 'cg_0.01' + tail if 'cg_0.01' + tail in full else None
+                elif label == 'dst_direct':
+                    k = 'dst_direct' + tail if 'dst_direct' + tail in full else None
+                else:
+                    k = pick([c for c in full if full[c]['family'] in fam], r['worst_physical'])
+                row[label] = None if k is None else dict(
+                    comparator=k, worst_physical=full[k]['worst_physical'],
+                    median_total_ms=full[k]['median_total_ms'],
+                    speedup_total=full[k]['median_total_ms'] / r['median_total_ms'],
+                    speedup_device=full[k]['median_device_ms'] / r['median_device_ms'])
+            selections.append(row)
     head = next((x for x in selections if x['rom'] == f'rom_q256_{lean}'), None)
     verdict = None
     if head is not None and head['named_cg_1e-2'] is not None:

@@ -9,11 +9,14 @@ import retain_fields as R
 
 def require_fields(out):
     """Fail clearly instead of silently skipping intentionally pruned raw fields."""
-    out=Path(out);marker=out.parent.parent/'RAW-FIELD-STORAGE.json'
-    if not marker.exists():return
+    out=Path(out)
+    marker=next((base/'RAW-FIELD-STORAGE.json' for base in [out.parent.parent,out.parent.parent.parent]
+                 if (base/'RAW-FIELD-STORAGE.json').exists()),None)
+    if marker is None:return
     storage=json.loads(marker.read_text())
     source=Path(__file__).resolve().parent/storage['source_relative']
-    missing=[row['path'] for row in storage['files'] if not (source/row['path']).is_file()]
+    missing=[row['path'] for row in storage['files']
+             if (source/row['path']).resolve().is_relative_to(out.resolve()) and not (source/row['path']).is_file()]
     if missing:
         raise RuntimeError(f"{len(missing)} raw field duplicates are archived in verified Git storage. Restore before this audit: {storage['restore_command']}")
 

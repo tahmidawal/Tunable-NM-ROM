@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "selector_positive": [
+    "fields/a.npz",
+    "seedB/fields/b.npz"
+  ],
+  "selector_negative": [
+    "bank.pkl",
+    "pod_N64.pkl",
+    "frozen_training/a.npz",
+    "seedB/offline.npz",
+    "fields/a.json",
+    "fields/sub/a.npz",
+    "/fields/a.npz",
+    "fields/../bank.npz"
+  ],
+  "guard_checks": [
+    "missing companion correctly blocked",
+    "missing companion correctly blocked",
+    "materialized companion remains auditable independently"
+  ],
+  "actual_development_selected_files": 1462,
+  "actual_development_selected_bytes": 13285856256,
+  "scientific_bytes_removed": false
+}

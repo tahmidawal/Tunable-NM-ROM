@@ -1,0 +1,42 @@
+source_commit=575af7a504d5b8ca5873584bbdc67ba790e40fcf job_id=4033346
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100-PCIE-40GB, GPU-d7baad5d-04eb-b8a5-fd26-36215a6e6855, 40960 MiB, 575.57.08
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.30:/projects/paralab  4.6T  4.2T  443G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+JobId=4033346 JobName=ctol_h3d_920_final08
+   UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A
+   Priority=699 Nice=0 Account=default QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   DerivedExitCode=0:0
+   RunTime=00:02:07 TimeLimit=02:00:00 TimeMin=N/A
+   SubmitTime=2026-09-20T15:17:43 EligibleTime=2026-09-20T15:17:43
+   AccrueTime=2026-09-20T15:17:43
+   StartTime=2026-09-20T15:17:43 EndTime=2026-09-20T17:17:43 Deadline=N/A
+   PreemptEligibleTime=2026-09-20T15:17:43 PreemptTime=None
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-20T15:17:43 Scheduler=Main
+   Partition=gpu AllocNode:Sid=login-p01:1818849
+   ReqNodeList=(null) ExcNodeList=pax007
+   NodeList=pax144
+   BatchHost=pax144
+   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1
+   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   JOB_GRES=gpu:a100:1
+     Nodes=pax144 CPU_IDs=6-11,14-15 Mem=65536 GRES=gpu:a100:1(IDX:1)
+   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08/run.sbatch
+   WorkDir=/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08
+   StdErr=/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08/job.err
+   StdIn=/dev/null
+   StdOut=/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08/job.out
+   Power=
+   TresPerNode=gres/gpu:a100:1
+   TresPerTask=cpu:8
+   
+

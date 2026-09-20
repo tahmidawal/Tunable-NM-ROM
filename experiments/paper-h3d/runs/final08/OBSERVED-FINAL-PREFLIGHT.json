@@ -1,0 +1,25 @@
+{
+  "source_commit": "575af7a504d5b8ca5873584bbdc67ba790e40fcf",
+  "job_id": "4033346",
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "final_cohort_opened": true,
+  "evaluation_cohort": "final",
+  "freeze": {
+    "path": "code/final-primary-freeze.json",
+    "sha256": "802951e56fdca5f9bbfb04390d393f894eb4748e15d792610bc2675d12e00786",
+    "selection_source_commit": "439624643bbaca29c9fdc8435edfa218aa2ca565",
+    "selection_job_id": "4028921",
+    "verified_before_final_parameter_generation": true,
+    "companion_verified_before_first_draw": {
+      "path": "code/final-robustness-freeze.json",
+      "sha256": "c1aa6799eedfe6caa36d4dad88fa839b18b4ee5f733b5441c5ab05530be35341",
+      "selection_source_commit": "439624643bbaca29c9fdc8435edfa218aa2ca565",
+      "selection_job_id": "4028921",
+      "verified_before_final_parameter_generation": true,
+      "companion_verified_before_first_draw": null
+    }
+  }
+}

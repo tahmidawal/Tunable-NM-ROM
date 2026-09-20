@@ -109,6 +109,28 @@ def main():
                     h, J = head_jacobian(p, z)
                     raw = Rg @ h - T[c]
                     residual = raw - Q @ (Q.T @ raw)
+                    # Validate the represented field and all retained starts, not only
+                    # the gradient of a potentially unrelated selected latent.
+                    feasible = h - solve_triangular(Rg, Q @ (Q.T @ raw))
+                    coefficient_defect = np.linalg.norm(Rg @ (coefficient - feasible)) / np.sqrt(nu2[c])
+                    residual_defect = np.linalg.norm(residual - np.asarray(row['selected_residual'])) / np.sqrt(nu2[c])
+                    start_norms = []
+                    for start in row['all_latents']:
+                        start_head, _ = head_jacobian(p, np.asarray(start))
+                        start_raw = Rg @ start_head - T[c]
+                        start_norms.append(np.linalg.norm(start_raw - Q @ (Q.T @ start_raw)))
+                    start_norms = np.asarray(start_norms)
+                    starts_defect = np.max(np.abs(start_norms - np.asarray(row['residual_norms']))) / np.sqrt(nu2[c])
+                    original_count = result['config']['recon_starts']
+                    original_error = np.sqrt(np.min(start_norms[:original_count]) ** 2 + perp2[c]) / np.sqrt(nu2[c])
+                    check(f'{n}:{mid}:q{q}:case{c}:feasible_coefficient', coefficient_defect < 2e-7,
+                          relative_field_defect=float(coefficient_defect))
+                    check(f'{n}:{mid}:q{q}:case{c}:all_start_objectives',
+                          residual_defect < 2e-7 and starts_defect < 2e-7 and
+                          abs(original_error - row['original_starts_error']) < 2e-7 and
+                          np.array_equal(z, np.asarray(row['all_latents'][row['selected']])),
+                          relative_residual_defect=float(residual_defect),
+                          maximum_relative_start_norm_defect=float(starts_defect))
                     Jr = Rg @ J
                     Jr -= Q @ (Q.T @ Jr)
                     g = np.linalg.norm(Jr.T @ residual) / (np.linalg.norm(Jr) * np.linalg.norm(residual) + 1e-300)

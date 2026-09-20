@@ -387,3 +387,8 @@ are recorded in `config-oracle.json`; any failed check remains reported. The old
 columns remain retracted in their original records. A new generated confirmation artifact
 will provide corrected columns with their own source and result hashes after collection.
 This is an opened development cohort, with no final-cohort or generalization claim.
+
+**2026-09-20, §A12 — full original-cohort confirmation collected and independently audited.**
+Job `3996320` ran source `5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e` on `NVIDIA A100 80GB PCIe`. All 240 case/rank fits across both frozen checkpoints and original meshes passed 1595 independent NumPy checks; the maximum decoded-field discrepancy was $1.005258e-10$. The audit also checks every retained multistart objective, selected coefficient feasibility, derivatives, stationarity, nested brackets and direct full-bank endpoints. All historical result hashes remain unchanged.
+
+The generated supplement `reports/2026-09-20-poisson-oracle-confirmation.md` provides the corrected columns and separate original-start versus safeguarded fits. The A10 historical columns remain retracted; these new values are finite best-found representation bounds on an already opened development cohort. No timed solver result, checkpoint, generalization claim or D1–D3 criterion changed. The complete source/output archive was checksum-collected, reconstructed from its bounded tracked chunk, and reverified before the exact remote attempt was deleted. Root coordinates the canonical lab-log update and any manuscript integration.

@@ -1,0 +1,2342 @@
+{
+  "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+  "job_id": "3996320",
+  "result_sha256": "394f942a0e9300d554c705e6d9481bc760bf6eed442f35f65189dbac684b91c1",
+  "audit_sha256": "4a95c583284738bfe19482b1fd9e01fbf07225916af3c93308dc7e4dd3fac8d6",
+  "rows": [
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 0,
+      "original_retracted": false,
+      "old_worst": 0.031211215560714028,
+      "original_starts_worst": 0.0312112155607192,
+      "corrected_worst": 0.0312112155607192,
+      "corrected_median": 0.005050015725485801,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.007665420602310618,
+          "original_starts_error": 0.007665420602313304,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.004910999848363438,
+          "original_starts_error": 0.004910999848363438,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.004095775720117946,
+          "original_starts_error": 0.004095775720117946,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0034130403358648884,
+          "original_starts_error": 0.0034130403358648884,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.00443808679595536,
+          "original_starts_error": 0.00443808679595536,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.0312112155607192,
+          "original_starts_error": 0.0312112155607192,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.005189031602608166,
+          "original_starts_error": 0.005189031602608166,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_767",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006688983737664142,
+          "original_starts_error": 0.006688983737664142,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.005708966873541748,
+          "original_starts_error": 0.005708966873541748,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_262",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.005345214019114836,
+          "original_starts_error": 0.005345214019114836,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_817",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0034602768858568683,
+          "original_starts_error": 0.0034602768858568683,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_753",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.002789789021601544,
+          "original_starts_error": 0.0027897890216173143,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m4@new_K32",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 32,
+      "original_retracted": true,
+      "old_worst": 0.02455493849386803,
+      "original_starts_worst": 0.02455446821899556,
+      "corrected_worst": 0.02455446821899556,
+      "corrected_median": 0.004420238178228772,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.005981945284256084,
+          "original_starts_error": 0.005981945284263039,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m256@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0047068415491892165,
+          "original_starts_error": 0.0047068415491892165,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.003953132144509412,
+          "original_starts_error": 0.003953132144509412,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0032362166126481953,
+          "original_starts_error": 0.0032362166126481953,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_193",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.004087004638735868,
+          "original_starts_error": 0.004087004638735868,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.02455446821899556,
+          "original_starts_error": 0.02455446821899556,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.004133634807268328,
+          "original_starts_error": 0.004133634807268328,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_612",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006255464598865606,
+          "original_starts_error": 0.006255464598865606,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.005312635550248609,
+          "original_starts_error": 0.005312635550248609,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_262",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.005195777027946391,
+          "original_starts_error": 0.005195777028169594,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0031497460561665416,
+          "original_starts_error": 0.0031497460561665416,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1441",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0026478467902558553,
+          "original_starts_error": 0.0026478467902558553,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_305",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 64,
+      "original_retracted": true,
+      "old_worst": 0.020787354900733503,
+      "original_starts_worst": 0.020786543995093654,
+      "corrected_worst": 0.020786543995093654,
+      "corrected_median": 0.0041262463218850005,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.005427151433530085,
+          "original_starts_error": 0.005427151433535934,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0043864962987651464,
+          "original_starts_error": 0.0043864962987651464,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.003750734401131728,
+          "original_starts_error": 0.003750734401131728,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.00307129797605493,
+          "original_starts_error": 0.00307129797605493,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0037106942743637323,
+          "original_starts_error": 0.0037106942743637323,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.020786543995093654,
+          "original_starts_error": 0.020786543995093654,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0038659963450048546,
+          "original_starts_error": 0.0038659963450048546,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_612",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.00563356949778213,
+          "original_starts_error": 0.00563356949778213,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.004881133301161255,
+          "original_starts_error": 0.0048811333011631736,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0050703022253086785,
+          "original_starts_error": 0.0050703022253969325,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.002926466184932169,
+          "original_starts_error": 0.002926466184948241,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.002503271431601741,
+          "original_starts_error": 0.002503271431601741,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1950",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 128,
+      "original_retracted": true,
+      "old_worst": 0.015492571976653236,
+      "original_starts_worst": 0.015491049146283171,
+      "corrected_worst": 0.015491049146283171,
+      "corrected_median": 0.0031942398217847424,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.004545704692446846,
+          "original_starts_error": 0.004545704692477344,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0033498229037904497,
+          "original_starts_error": 0.0033498229037904497,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0029717346067747404,
+          "original_starts_error": 0.0029717346067747404,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2421",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0024282357066021097,
+          "original_starts_error": 0.0024282357066021097,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0030328734549614367,
+          "original_starts_error": 0.0030328734549614367,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_854",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.015491049146283171,
+          "original_starts_error": 0.015491049146283171,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0030386567397790347,
+          "original_starts_error": 0.003038656739784402,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.004498864014355663,
+          "original_starts_error": 0.004498864014355663,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.003998967998793231,
+          "original_starts_error": 0.00399896799879536,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.00427532543748668,
+          "original_starts_error": 0.00427532543748668,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_447",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0022065586792861455,
+          "original_starts_error": 0.002206558679307918,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0020912319103361943,
+          "original_starts_error": 0.002091231910347133,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 256,
+      "original_retracted": true,
+      "old_worst": 0.009691378696175685,
+      "original_starts_worst": 0.009688190569646258,
+      "corrected_worst": 0.009688190569646258,
+      "corrected_median": 0.001314877115263007,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.002095671249686219,
+          "original_starts_error": 0.0020956712497460683,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0012242512000679416,
+          "original_starts_error": 0.0012242512001071316,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0012362775306089314,
+          "original_starts_error": 0.0012362775306089314,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2242",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0010521124053542836,
+          "original_starts_error": 0.0010521124053842557,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0013933779905773026,
+          "original_starts_error": 0.00139337799060396,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.009688190569646258,
+          "original_starts_error": 0.009688190569646258,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0013521513372575422,
+          "original_starts_error": 0.0013521513372575422,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1670",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.0018967206280976535,
+          "original_starts_error": 0.0018967206281078175,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.002006868274234038,
+          "original_starts_error": 0.0020068682742356496,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0012776028932684719,
+          "original_starts_error": 0.0012776028933250518,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0010675789875181007,
+          "original_starts_error": 0.001067578987520056,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0009209055031735463,
+          "original_starts_error": 0.0009209055031735463,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2545",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 512,
+      "original_retracted": true,
+      "old_worst": 0.0074624057044688835,
+      "original_starts_worst": 0.0074586040907576034,
+      "corrected_worst": 0.0074586040907576034,
+      "corrected_median": 0.0005803702198088324,
+      "bank_floor_worst": 0.0074586040907576034,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.001166487593319247,
+          "original_starts_error": 0.001166487593319247,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.00040272716345971264,
+          "original_starts_error": 0.00040272716345971264,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0005429143254974888,
+          "original_starts_error": 0.0005429143254974888,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.00039823923216832807,
+          "original_starts_error": 0.00039823923216832807,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0006387916603090787,
+          "original_starts_error": 0.0006387916603090787,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.0074586040907576034,
+          "original_starts_error": 0.0074586040907576034,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0006178261141201758,
+          "original_starts_error": 0.0006178261141201758,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.0009205123311348901,
+          "original_starts_error": 0.0009205123311348901,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0009246290848735898,
+          "original_starts_error": 0.0009246290848735898,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0003360362503957876,
+          "original_starts_error": 0.0003360362503957876,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0005364008584093506,
+          "original_starts_error": 0.0005364008584093506,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.00033963573328883636,
+          "original_starts_error": 0.00033963573328883636,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 0,
+      "original_retracted": false,
+      "old_worst": 0.031139456176071913,
+      "original_starts_worst": 0.031139456176085212,
+      "corrected_worst": 0.031139456176085212,
+      "corrected_median": 0.005048927526391708,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.007655086464640979,
+          "original_starts_error": 0.007655086464643737,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0049118597628413155,
+          "original_starts_error": 0.0049118597628413155,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.004094487434429543,
+          "original_starts_error": 0.004094487434429543,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0034138987153041083,
+          "original_starts_error": 0.0034138987153041083,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.00443586427598144,
+          "original_starts_error": 0.00443586427598144,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.031139456176085212,
+          "original_starts_error": 0.031139456176085212,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0051859952899421,
+          "original_starts_error": 0.0051859952899421,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_767",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006684486813794632,
+          "original_starts_error": 0.006684486813794632,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.005701575087306476,
+          "original_starts_error": 0.005701575087306476,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_262",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.00534529864632684,
+          "original_starts_error": 0.00534529864632684,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_817",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0034578683014767813,
+          "original_starts_error": 0.0034578683014767813,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_753",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0027896166906250103,
+          "original_starts_error": 0.0027896166906407633,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m4@new_K32",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 32,
+      "original_retracted": true,
+      "old_worst": 0.24224570259755376,
+      "original_starts_worst": 0.024496816257668884,
+      "corrected_worst": 0.024496816257668884,
+      "corrected_median": 0.004420609832543811,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.005975888879243889,
+          "original_starts_error": 0.005975888879250849,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m256@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.004707702456043976,
+          "original_starts_error": 0.004707702456043976,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.003951978636010068,
+          "original_starts_error": 0.003951978636010068,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.003237121294094646,
+          "original_starts_error": 0.003237121294094646,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_193",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.004085351859337145,
+          "original_starts_error": 0.004085351859337145,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.024496816257668884,
+          "original_starts_error": 0.024496816257668884,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.004133517209043644,
+          "original_starts_error": 0.004133517209043644,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_612",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006251064974131009,
+          "original_starts_error": 0.006251064974131009,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.00530668104496898,
+          "original_starts_error": 0.00530668104496898,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_262",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0051958479312949266,
+          "original_starts_error": 0.005195847931518179,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0031478289680932888,
+          "original_starts_error": 0.0031478289680932888,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1441",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.002647615714469411,
+          "original_starts_error": 0.002647615714469411,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_305",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 64,
+      "original_retracted": true,
+      "old_worst": 0.3232066656721913,
+      "original_starts_worst": 0.020737970950765364,
+      "corrected_worst": 0.020737970950765364,
+      "corrected_median": 0.004126853453255847,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.0054224527354676715,
+          "original_starts_error": 0.005422452735473426,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.004387312989653401,
+          "original_starts_error": 0.004387312989653401,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0037497888118541364,
+          "original_starts_error": 0.0037497888118541364,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_144",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0030722004448894727,
+          "original_starts_error": 0.0030722004448894727,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0037092403184269987,
+          "original_starts_error": 0.0037092403184269987,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1970",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.020737970950765364,
+          "original_starts_error": 0.020737970950765364,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0038663939168582925,
+          "original_starts_error": 0.0038663939168582925,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_612",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.005629791628556268,
+          "original_starts_error": 0.005629791628556268,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0048760581781010425,
+          "original_starts_error": 0.0048760581781028675,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.005070344938860739,
+          "original_starts_error": 0.005070344938950139,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0029249393568779873,
+          "original_starts_error": 0.002924939356894058,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0025029668291207097,
+          "original_starts_error": 0.0025029668291227875,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 128,
+      "original_retracted": true,
+      "old_worst": 0.38148243832411655,
+      "original_starts_worst": 0.015452747442583901,
+      "corrected_worst": 0.015452747442583901,
+      "corrected_median": 0.0031943572691616757,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.00454367407397279,
+          "original_starts_error": 0.004543674074002913,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0033502888799994174,
+          "original_starts_error": 0.0033502888799994174,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1935",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0029709063871107134,
+          "original_starts_error": 0.0029709063871107134,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2421",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0024290957531753494,
+          "original_starts_error": 0.0024290957531753494,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1201",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0030318647178649225,
+          "original_starts_error": 0.0030318647178649225,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_854",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.015452747442583901,
+          "original_starts_error": 0.015452747442583901,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.003038425658323934,
+          "original_starts_error": 0.003038425658329401,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.004495847154871663,
+          "original_starts_error": 0.004495847154871663,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2362",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0039940572353159955,
+          "original_starts_error": 0.003994057235318014,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.004275418704254914,
+          "original_starts_error": 0.004275418704254914,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_447",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0022056643440384136,
+          "original_starts_error": 0.0022056643440601627,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.002090907824073112,
+          "original_starts_error": 0.0020909078240840128,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q128_m4@new_K32",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 256,
+      "original_retracted": true,
+      "old_worst": 0.4376942669846622,
+      "original_starts_worst": 0.009647574869253614,
+      "corrected_worst": 0.009647574869253614,
+      "corrected_median": 0.0013145541856878489,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.0020941827958580943,
+          "original_starts_error": 0.0020941827959172973,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0012243441268573654,
+          "original_starts_error": 0.0012243441268964157,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0012364101633356855,
+          "original_starts_error": 0.0012364101633356855,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2242",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0010525443947081885,
+          "original_starts_error": 0.001052544394734036,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0013930282339382387,
+          "original_starts_error": 0.001393028233965634,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.009647574869253614,
+          "original_starts_error": 0.009647574869253614,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_1730",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.0013516439698631187,
+          "original_starts_error": 0.0013516439698632854,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.0018959450781029698,
+          "original_starts_error": 0.0018959450781034664,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0020050408487293898,
+          "original_starts_error": 0.0020050408487305668,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0012774644015125791,
+          "original_starts_error": 0.0012774644015689485,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.001067254962803651,
+          "original_starts_error": 0.0010672549628060603,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q256_m4@new_K32",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0009207597528474766,
+          "original_starts_error": 0.0009207597528474766,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_2545",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "new_K32",
+      "R": 512,
+      "K": 32,
+      "q": 512,
+      "original_retracted": true,
+      "old_worst": 0.4574962067206096,
+      "original_starts_worst": 0.007421272848643252,
+      "corrected_worst": 0.007421272848643252,
+      "corrected_median": 0.0005801042377773484,
+      "bank_floor_worst": 0.007421272848643252,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.0011647026522111643,
+          "original_starts_error": 0.0011647026522111643,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.00040273749714101717,
+          "original_starts_error": 0.00040273749714101717,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0005428819720837238,
+          "original_starts_error": 0.0005428819720837238,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.00039819482326500623,
+          "original_starts_error": 0.00039819482326500623,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0006385160873573191,
+          "original_starts_error": 0.0006385160873573191,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.007421272848643252,
+          "original_starts_error": 0.007421272848643252,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.000617326503470973,
+          "original_starts_error": 0.000617326503470973,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.0009204322010629536,
+          "original_starts_error": 0.0009204322010629536,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0009236371161889641,
+          "original_starts_error": 0.0009236371161889641,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.00033602274374856236,
+          "original_starts_error": 0.00033602274374856236,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0005361891933209843,
+          "original_starts_error": 0.0005361891933209843,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0003396087727638172,
+          "original_starts_error": 0.0003396087727638172,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 0,
+      "original_retracted": false,
+      "old_worst": 0.06101345949040761,
+      "original_starts_worst": 0.061013459490405736,
+      "corrected_worst": 0.061013459490405736,
+      "corrected_median": 0.012422991159727087,
+      "bank_floor_worst": 0.02322647906564556,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.014818080426363404,
+          "original_starts_error": 0.014818080426363404,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_76",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.013026636103103898,
+          "original_starts_error": 0.013026636103103898,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_419",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.011216521823230132,
+          "original_starts_error": 0.011216521823230132,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_9",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0058775884588764295,
+          "original_starts_error": 0.0058775884588764295,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_42",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.011819346216350278,
+          "original_starts_error": 0.011819346216351096,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.061013459490405736,
+          "original_starts_error": 0.061013459490405736,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_331",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.016394773521716716,
+          "original_starts_error": 0.016394773521716716,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_235",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.01421248489615199,
+          "original_starts_error": 0.01421248489615199,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_432",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.021782777070841374,
+          "original_starts_error": 0.021782777070841374,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_64",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.009333907062780094,
+          "original_starts_error": 0.009333907062783687,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.009291040297527725,
+          "original_starts_error": 0.009291040297527725,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_8",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.009867981896587929,
+          "original_starts_error": 0.009867981896587929,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_141",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 32,
+      "original_retracted": true,
+      "old_worst": 0.04671612321877049,
+      "original_starts_worst": 0.046715085457594605,
+      "corrected_worst": 0.04671508545752945,
+      "corrected_median": 0.00936492741738568,
+      "bank_floor_worst": 0.02322647906564556,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.01084753614154578,
+          "original_starts_error": 0.010847536141550644,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.011465788008289155,
+          "original_starts_error": 0.011465788008290336,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.008580266784766461,
+          "original_starts_error": 0.008580266784766461,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_177",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.004610279749722584,
+          "original_starts_error": 0.004610279749722584,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_161",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.008789241945285802,
+          "original_starts_error": 0.008789241945290358,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.04671508545752945,
+          "original_starts_error": 0.046715085457594605,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.011225711124757428,
+          "original_starts_error": 0.011225711124757428,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_235",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.009882006751239182,
+          "original_starts_error": 0.009882006751239182,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_390",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.015743986611803488,
+          "original_starts_error": 0.015743986611803488,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_251",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.00849067113416578,
+          "original_starts_error": 0.008490671134166091,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.008243008991314114,
+          "original_starts_error": 0.008243008991314114,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_454",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.008847848083532178,
+          "original_starts_error": 0.008847848083532178,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_232",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 64,
+      "original_retracted": true,
+      "old_worst": 0.03433815116641428,
+      "original_starts_worst": 0.03433583615495984,
+      "corrected_worst": 0.03433583615495984,
+      "corrected_median": 0.007863101323453338,
+      "bank_floor_worst": 0.02322647906564556,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.008991979156492858,
+          "original_starts_error": 0.008991979156492858,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_389",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.010346583436769868,
+          "original_starts_error": 0.010346583436773709,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.006922596727109731,
+          "original_starts_error": 0.006922596727113853,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0037315193683683024,
+          "original_starts_error": 0.0037315193683683024,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_161",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.00686436846514753,
+          "original_starts_error": 0.0068643684651768285,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.03433583615495984,
+          "original_starts_error": 0.03433583615495984,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_62",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.009152174365198988,
+          "original_starts_error": 0.009152174365198988,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_225",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.008152236389320456,
+          "original_starts_error": 0.008152236389320456,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_390",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.01275961786395369,
+          "original_starts_error": 0.01275961786395369,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_381",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0070329577314548865,
+          "original_starts_error": 0.007032957731462211,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.006713719261466714,
+          "original_starts_error": 0.00671371926146929,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.007573966257586219,
+          "original_starts_error": 0.007573966257586219,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_429",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 256,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 128,
+      "original_retracted": true,
+      "old_worst": 0.02323071050815996,
+      "original_starts_worst": 0.02322647906564556,
+      "corrected_worst": 0.02322647906564556,
+      "corrected_median": 0.00368446194705305,
+      "bank_floor_worst": 0.02322647906564556,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.0036922085502182063,
+          "original_starts_error": 0.0036922085502182063,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.005467220081759669,
+          "original_starts_error": 0.005467220081759669,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.003676715343887894,
+          "original_starts_error": 0.003676715343887894,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0019768735239687235,
+          "original_starts_error": 0.0019768735239687235,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0033936738143625985,
+          "original_starts_error": 0.0033936738143625985,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.02322647906564556,
+          "original_starts_error": 0.02322647906564556,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.004973617964510819,
+          "original_starts_error": 0.004973617964510819,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006370755018309218,
+          "original_starts_error": 0.006370755018309218,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.009454512753708344,
+          "original_starts_error": 0.009454512753708344,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0015633653175754312,
+          "original_starts_error": 0.0015633653175754312,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.002707000007030478,
+          "original_starts_error": 0.002707000007030478,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0017247808713813594,
+          "original_starts_error": 0.0017247808713813594,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 0,
+      "original_retracted": false,
+      "old_worst": 0.060930480881891395,
+      "original_starts_worst": 0.060930480881888925,
+      "corrected_worst": 0.060930480881888925,
+      "corrected_median": 0.012421137010576531,
+      "bank_floor_worst": 0.02315180348912099,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.01479634680015196,
+          "original_starts_error": 0.01479634680015196,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_76",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0130289302925198,
+          "original_starts_error": 0.0130289302925198,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_419",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.011214184864994453,
+          "original_starts_error": 0.011214184864994453,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_9",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.005877971436159412,
+          "original_starts_error": 0.005877971436159412,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_42",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.011813343728633265,
+          "original_starts_error": 0.011813343728634166,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.060930480881888925,
+          "original_starts_error": 0.060930480881888925,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_331",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.01637895753967959,
+          "original_starts_error": 0.01637895753967959,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_235",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.014209707237155393,
+          "original_starts_error": 0.014209707237155393,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_432",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.021758668449163476,
+          "original_starts_error": 0.021758668449163476,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_64",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.009334306808047284,
+          "original_starts_error": 0.009334306808050963,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q0_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.009282606750190393,
+          "original_starts_error": 0.009282606750190393,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_8",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.009866470225743804,
+          "original_starts_error": 0.009866470225743804,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_141",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 32,
+      "original_retracted": true,
+      "old_worst": 0.5083079590382916,
+      "original_starts_worst": 0.046643755979824675,
+      "corrected_worst": 0.046643755979759643,
+      "corrected_median": 0.009361737034521507,
+      "bank_floor_worst": 0.02315180348912099,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.010832941370693693,
+          "original_starts_error": 0.010832941370698556,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.011468071249649783,
+          "original_starts_error": 0.01146807124965096,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.00857893530063851,
+          "original_starts_error": 0.00857893530063851,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_177",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.004610873597955804,
+          "original_starts_error": 0.004610873597955804,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_161",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.008786643574851807,
+          "original_starts_error": 0.00878664357485647,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.046643755979759643,
+          "original_starts_error": 0.046643755979824675,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.01121569829140401,
+          "original_starts_error": 0.01121569829140401,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_235",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.009877071195718092,
+          "original_starts_error": 0.009877071195718092,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_390",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.015729895361506933,
+          "original_starts_error": 0.015729895361506933,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_251",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.00849100011556821,
+          "original_starts_error": 0.008491000115568548,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q32_m4@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.0082364984078933,
+          "original_starts_error": 0.0082364984078933,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_454",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.008846402873324923,
+          "original_starts_error": 0.008846402873324923,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_232",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 64,
+      "original_retracted": true,
+      "old_worst": 0.7417855054667316,
+      "original_starts_worst": 0.0342708862163528,
+      "corrected_worst": 0.0342708862163528,
+      "corrected_median": 0.00786021807311707,
+      "bank_floor_worst": 0.02315180348912099,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.008980072567436794,
+          "original_starts_error": 0.008980072567436794,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_389",
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.010348607173832071,
+          "original_starts_error": 0.010348607173835902,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.006920964635100587,
+          "original_starts_error": 0.006920964635104671,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.0037323190910422688,
+          "original_starts_error": 0.0037323190910422688,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_161",
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.006862452885316417,
+          "original_starts_error": 0.006862452885345871,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.0342708862163528,
+          "original_starts_error": 0.0342708862163528,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_62",
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.009144598171902179,
+          "original_starts_error": 0.009144598171902179,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_225",
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.00814750703523733,
+          "original_starts_error": 0.00814750703523733,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_390",
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.012750999077542461,
+          "original_starts_error": 0.012750999077542461,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_381",
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.007033479266134856,
+          "original_starts_error": 0.007033479266142272,
+          "direct_endpoint": false,
+          "selected_start": "previous_q_best",
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.006707187431879865,
+          "original_starts_error": 0.006707187431882584,
+          "direct_endpoint": false,
+          "selected_start": "retained_solve:q64_m256@incumbent",
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.00757292911099681,
+          "original_starts_error": 0.00757292911099681,
+          "direct_endpoint": false,
+          "selected_start": "nearest_code_429",
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    },
+    {
+      "intervals": 1024,
+      "model": "incumbent",
+      "R": 128,
+      "K": 16,
+      "q": 128,
+      "original_retracted": true,
+      "old_worst": 0.852809959415431,
+      "original_starts_worst": 0.02315180348912099,
+      "corrected_worst": 0.02315180348912099,
+      "corrected_median": 0.003681610458607513,
+      "bank_floor_worst": 0.02315180348912099,
+      "stationary": 12,
+      "cases": 12,
+      "per_case": [
+        {
+          "case": 0,
+          "error": 0.0036868192927955435,
+          "original_starts_error": 0.0036868192927955435,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 1,
+          "error": 0.0054679855452619604,
+          "original_starts_error": 0.0054679855452619604,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 2,
+          "error": 0.0036764016244194824,
+          "original_starts_error": 0.0036764016244194824,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 3,
+          "error": 0.001976446742535159,
+          "original_starts_error": 0.001976446742535159,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 4,
+          "error": 0.0033928962250326495,
+          "original_starts_error": 0.0033928962250326495,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 5,
+          "error": 0.02315180348912099,
+          "original_starts_error": 0.02315180348912099,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 6,
+          "error": 0.004968160313595506,
+          "original_starts_error": 0.004968160313595506,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 7,
+          "error": 0.006366995917526439,
+          "original_starts_error": 0.006366995917526439,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 8,
+          "error": 0.0094439998078343,
+          "original_starts_error": 0.0094439998078343,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 9,
+          "error": 0.0015632171593915624,
+          "original_starts_error": 0.0015632171593915624,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 10,
+          "error": 0.002706283623744025,
+          "original_starts_error": 0.002706283623744025,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        },
+        {
+          "case": 11,
+          "error": 0.0017246016676947323,
+          "original_starts_error": 0.0017246016676947323,
+          "direct_endpoint": true,
+          "selected_start": null,
+          "stationary": true
+        }
+      ],
+      "original_result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+      "job_id": "3996320"
+    }
+  ],
+  "original_results": [
+    {
+      "attempt": "plin256",
+      "result_sha256": "befaedf4db824021a1fcc0b4c04a66af36745825caa1d76b4ab6e6edc0397586",
+      "unchanged": true
+    },
+    {
+      "attempt": "plin1024b",
+      "result_sha256": "aa3693fe2c2a55240694f4c6dbd255a7300b70d29fc43059bcf558937f79a858",
+      "unchanged": true
+    }
+  ],
+  "old_timed_results_unchanged": true,
+  "global_minimum_proven": false
+}

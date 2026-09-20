@@ -72,6 +72,10 @@ refinement arm on the frozen bank only if underfitting is measured. The bank is
 learned; POD is a separate control, never a replacement labelled neural.
 Train the bank/head/codes, then use field-metric coefficient training for
 bounded head refinement. Persist learning curves, durations and checkpoints.
+Free training codes are initialized from POD scores computed solely from the
+training velocity snapshots, then optimized jointly. This initializes latent
+coordinates; every spatial bank column still comes from the learned coordinate
+MLP. No family-generator coordinates are used as training or prediction inputs.
 
 Whitening uses a thin QR with a finite, full-rank check. Held-out multistart
 latent fits are best-found estimates, not mathematical oracle guarantees.
@@ -141,6 +145,34 @@ The inherited 2D wrappers cannot be used unchanged: output channels, endpoint
 convention, coordinates, masks, padding and all convolution axes must be ported.
 Final configurations freeze on validation before the reserved cohort is opened.
 Independent finalist seeds and held-out field audits precede paper claims.
+
+## A1 — reference-screen amendment before any scientific training
+
+The original unscaled-potential family failed the one-case local spatial
+refinement smoke; its full measured record remains in
+`checks/local_reference.json`. Independent RHS, manufactured-solution,
+projection and energy checks passed, so this is a resolution failure, not
+evidence of a learned-model failure. No scientific model was trained on it.
+
+For the bounded overnight benchmark, the initial vector potential amplitude is
+now multiplied by 0.2, the pilot mesh is $N=32$, and the refined mesh is $N=64$.
+All original parameter ranges, horizon, output times, physical target and
+reference-error budget stay fixed. This lowers the flow's Reynolds numbers;
+the report must identify this amended family, and cannot claim coverage of the
+original stronger flow or of turbulence generally. The amendment is selected
+solely from numerical resolution feasibility before bank/head comparisons.
+The full four-case cluster reference gate still has to pass before training.
+For every reference case, record peak and RMS speed, CFL, the separate nonlinear
+and viscous RHS norms, and the whole-horizon discrepancy obtained by removing
+advection and using exact viscous Fourier evolution. This diagnoses how much
+nonlinear interaction remains after the amplitude change. It does not select a
+family by neural/POD performance.
+
+Dense full-input contractions used by the first pilot are charged in every
+complete query and labelled dense diagnostics. They do not establish
+grid-independent initialization or a deployment speed claim. A later deployment
+panel requires a certified sampled cold-start projection as well as sampled
+online operators, unless it explicitly reports the dense input/output costs.
 
 ## Glossary
 

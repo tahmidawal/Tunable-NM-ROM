@@ -35,6 +35,7 @@ def audit(out,output=None):
         if 'field_file' not in row:continue
         pred=np.load(out/row['field_file'])['prediction'];assert sha(pred)==row['field_sha256']
         assert pred.dtype==np.dtype('float64')
+        assert row['finite']==bool(np.isfinite(pred).all())
         if row['finite']:
             for metric,truth in [('same_grid_error','same_grid'),('physical_error','physical')]:
                 observed=error(pred,references[key][truth]);defect=abs(observed-row[metric]);max_metric_defect=max(max_metric_defect,defect)
@@ -61,7 +62,7 @@ def audit(out,output=None):
                 assert abs(value-row[key])<1e-12,(row['method'],key,value,row[key])
             for case in cases:
                 repeated=[r['same_grid_error'] for r in records if r['case']==case and r['finite']]
-                assert max(repeated)-min(repeated)<1e-12
+                if repeated:assert max(repeated)-min(repeated)<1e-12
     result=dict(passed=True,checked_fields=checked,checked_references=len(references),checked_summary_rows=len(summary['rows']),
         maximum_reference_relative_defect=max_reference_defect,maximum_metric_absolute_defect=max_metric_defect,
         limitation='independent field/reference/aggregation audit; no independent retraining or global-optimality proof')

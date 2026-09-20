@@ -32,6 +32,7 @@ def audit(pretraining,cases,points,components=3):
     for layer in model['trunk'][:-1]:trunk=np.tanh(trunk@layer['w']+layer['b'])
     trunk=trunk@model['trunk'][-1]['w']+model['trunk'][-1]['b'];matrix=trunk/np.sqrt(rank)
     trunk_loss=float(np.mean(np.sum((trunk-basis*np.sqrt(points))**2*(values/np.sum(values)),axis=-1)))
+    gram_root=np.linalg.cholesky(gram)
     covariance=np.zeros((rank,rank));h=hashlib.sha256();maximum_teacher=0.;maximum_learned=0.;maximum_stationarity=0.;maximum_denominator=0.;offset=0;branch_errors=[];actual_teacher=[];actual_learned=[]
     for case,(channels_last,denominator) in enumerate(cases):
         h.update(np.ascontiguousarray(channels_last).tobytes());snapshot=np.moveaxis(channels_last,-1,0).reshape(-1,points);channels=len(snapshot);den=np.repeat(denominator,components)
@@ -41,7 +42,7 @@ def audit(pretraining,cases,points,components=3):
         residual=target[case]@matrix.T+model['bias'][:,None]-snapshot;le=np.sqrt(np.sum(residual*residual,axis=1)/den)
         maximum_learned=max(maximum_learned,float(np.max(abs(le-learned_error[offset:offset+channels]))))
         maximum_stationarity=max(maximum_stationarity,float(np.linalg.norm(residual@matrix)/(np.linalg.norm(residual)*np.linalg.norm(matrix)+1e-300)))
-        difference=(prediction[case]-target[case])@np.linalg.cholesky(gram);e=np.sum(difference*difference,axis=1)/den
+        difference=(prediction[case]-target[case])@gram_root;e=np.sum(difference*difference,axis=1)/den
         branch_errors.extend(e.reshape(-1,components).sum(axis=1));actual_teacher.extend(np.sqrt((te*te).reshape(-1,components).sum(axis=1)));actual_learned.extend(np.sqrt((le*le).reshape(-1,components).sum(axis=1)));offset+=channels
     checks=dict(training_array_hash=h.hexdigest()==info['training_array_sha256'],all_training_snapshots=offset==info['training_snapshots'],
         denominator_max_error=maximum_denominator,teacher_error_max_disagreement=maximum_teacher,learned_error_max_disagreement=maximum_learned,

@@ -1,0 +1,36 @@
+{
+  "full_git_verification": {
+    "passed": true,
+    "actual_git_blob_bytes_verified": true,
+    "commit": "14ccd937e4f319cf6a65260004ff9540d9facf99",
+    "files": 2,
+    "bytes": 154,
+    "restored_member": null,
+    "complete_manifest_sha256": "3d2cdb4fa6700de2d176ea8bd0ab4218db31ca8f9e00ad5e7125fc7ae9648973",
+    "proof": "Every ordinary Git blob and reconstructed large-file chunk stream independently matches the original SHA256 and size."
+  },
+  "corrupt_original_rejected": true,
+  "archive/small.bin": {
+    "passed": true,
+    "actual_git_blob_bytes_verified": true,
+    "commit": "14ccd937e4f319cf6a65260004ff9540d9facf99",
+    "files": 1,
+    "bytes": 26,
+    "restored_member": "archive/small.bin",
+    "complete_manifest_sha256": "3d2cdb4fa6700de2d176ea8bd0ab4218db31ca8f9e00ad5e7125fc7ae9648973",
+    "proof": "Every ordinary Git blob and reconstructed large-file chunk stream independently matches the original SHA256 and size."
+  },
+  "archive/large.bin": {
+    "passed": true,
+    "actual_git_blob_bytes_verified": true,
+    "commit": "14ccd937e4f319cf6a65260004ff9540d9facf99",
+    "files": 1,
+    "bytes": 128,
+    "restored_member": "archive/large.bin",
+    "complete_manifest_sha256": "3d2cdb4fa6700de2d176ea8bd0ab4218db31ca8f9e00ad5e7125fc7ae9648973",
+    "proof": "Every ordinary Git blob and reconstructed large-file chunk stream independently matches the original SHA256 and size."
+  },
+  "../outside_rejected": true,
+  "/absolute_rejected": true,
+  "passed": true
+}

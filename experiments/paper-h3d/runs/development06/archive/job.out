@@ -1,0 +1,332 @@
+COMMIT.txt: OK
+PROVENANCE.json: OK
+code/DESIGN.md: OK
+code/archive_storage.py: OK
+code/audit.py: OK
+code/audit_cg.py: OK
+code/audit_coverage.py: OK
+code/audit_head.py: OK
+code/audit_panel.py: OK
+code/audit_pretraining.py: OK
+code/audit_states.py: OK
+code/cluster/collect.py: OK
+code/cluster/stage.py: OK
+code/common.py: OK
+code/config.json: OK
+code/coverage_train.py: OK
+code/developmentB.json: OK
+code/final_freeze.py: OK
+code/frozen.py: OK
+code/head_pca_diagnostic.py: OK
+code/iterative_cg.py: OK
+code/operators/README.md: OK
+code/operators/__init__.py: OK
+code/operators/extra_models3d.py: OK
+code/operators/extra_smoke.py: OK
+code/operators/extra_train_smoke.py: OK
+code/operators/heat_adapter.py: OK
+code/operators/models3d.py: OK
+code/operators/pretrained_deeponet.py: OK
+code/operators/smoke.py: OK
+code/operators/train_smoke.py: OK
+code/operators/training.py: OK
+code/operators/upstream/LICENSE: OK
+code/operators/upstream/PROVENANCE.json: OK
+code/operators/upstream/Physics_Attention.py: OK
+code/operators/upstream/prior_families.py: OK
+code/panel_selection.py: OK
+code/prepare_selected_final.py: OK
+code/retain_fields.py: OK
+code/rom.py: OK
+code/run.py: OK
+code/train.py: OK
+inputs/coverage05_seedA/ORIGIN.json: OK
+inputs/coverage05_seedA/bank.pkl: OK
+inputs/coverage05_seedA/bank_curve.json: OK
+inputs/coverage05_seedA/cohorts.json: OK
+inputs/coverage05_seedA/head_K16.pkl: OK
+inputs/coverage05_seedA/head_K16_curve.json: OK
+inputs/coverage05_seedA/head_K32.pkl: OK
+inputs/coverage05_seedA/head_K32_curve.json: OK
+inputs/coverage05_seedA/operators/deeponet3d_r128_w16/adapter.pkl: OK
+inputs/coverage05_seedA/operators/deeponet3d_r128_w16/best.pkl: OK
+inputs/coverage05_seedA/operators/deeponet3d_r128_w16/curve.json: OK
+inputs/coverage05_seedA/operators/deeponet3d_r128_w16/training.json: OK
+inputs/coverage05_seedA/operators/fno3d_w16_m6/adapter.pkl: OK
+inputs/coverage05_seedA/operators/fno3d_w16_m6/best.pkl: OK
+inputs/coverage05_seedA/operators/fno3d_w16_m6/curve.json: OK
+inputs/coverage05_seedA/operators/fno3d_w16_m6/training.json: OK
+inputs/coverage05_seedA/operators/transolver3d_w48_s32/adapter.pkl: OK
+inputs/coverage05_seedA/operators/transolver3d_w48_s32/best.pkl: OK
+inputs/coverage05_seedA/operators/transolver3d_w48_s32/curve.json: OK
+inputs/coverage05_seedA/operators/transolver3d_w48_s32/training.json: OK
+inputs/coverage05_seedA/operators/unet3d_w8/adapter.pkl: OK
+inputs/coverage05_seedA/operators/unet3d_w8/best.pkl: OK
+inputs/coverage05_seedA/operators/unet3d_w8/curve.json: OK
+inputs/coverage05_seedA/operators/unet3d_w8/training.json: OK
+inputs/coverage05_seedB/ORIGIN.json: OK
+inputs/coverage05_seedB/bank.pkl: OK
+inputs/coverage05_seedB/bank_curve.json: OK
+inputs/coverage05_seedB/cohorts.json: OK
+inputs/coverage05_seedB/head_K16.pkl: OK
+inputs/coverage05_seedB/head_K16_curve.json: OK
+inputs/coverage05_seedB/head_K32.pkl: OK
+inputs/coverage05_seedB/head_K32_curve.json: OK
+inputs/coverage05_seedB/operators/deeponet3d_r128_w16/adapter.pkl: OK
+inputs/coverage05_seedB/operators/deeponet3d_r128_w16/best.pkl: OK
+inputs/coverage05_seedB/operators/deeponet3d_r128_w16/curve.json: OK
+inputs/coverage05_seedB/operators/deeponet3d_r128_w16/training.json: OK
+inputs/coverage05_seedB/operators/fno3d_w16_m6/adapter.pkl: OK
+inputs/coverage05_seedB/operators/fno3d_w16_m6/best.pkl: OK
+inputs/coverage05_seedB/operators/fno3d_w16_m6/curve.json: OK
+inputs/coverage05_seedB/operators/fno3d_w16_m6/training.json: OK
+inputs/coverage05_seedB/operators/transolver3d_w48_s32/adapter.pkl: OK
+inputs/coverage05_seedB/operators/transolver3d_w48_s32/best.pkl: OK
+inputs/coverage05_seedB/operators/transolver3d_w48_s32/curve.json: OK
+inputs/coverage05_seedB/operators/transolver3d_w48_s32/training.json: OK
+inputs/coverage05_seedB/operators/unet3d_w8/adapter.pkl: OK
+inputs/coverage05_seedB/operators/unet3d_w8/best.pkl: OK
+inputs/coverage05_seedB/operators/unet3d_w8/curve.json: OK
+inputs/coverage05_seedB/operators/unet3d_w8/training.json: OK
+run.sbatch: OK
+source_commit=439624643bbaca29c9fdc8435edfa218aa2ca565 job_id=4028921
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB, 575.57.08
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.24:/projects/paralab  4.6T  4.2T  394G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 6.974858092552493e-08
+REFERENCE 1 1.589789641153914e-08
+REFERENCE 2 2.492901552557855e-08
+REFERENCE 3 9.560329840922526e-08
+REFERENCE 4 2.2889238644575374e-08
+REFERENCE 5 2.0624512451658506e-08
+REFERENCE 6 1.778895096445761e-08
+REFERENCE 7 1.4817663336211028e-08
+REFERENCE 8 1.0408988531836921e-07
+REFERENCE 9 3.7527499306204084e-08
+REFERENCE 10 9.2331694500511e-08
+REFERENCE 11 1.73926372946263e-08
+REFERENCE 12 6.044641716934641e-08
+REFERENCE 13 3.04279994942639e-08
+REFERENCE 14 1.4357451635716137e-07
+REFERENCE 15 3.880682925569466e-08
+COMPILED 32 linear_bank_cn 0.602
+COMPILED 32 linear_bank_exact 0.001
+COMPILED 32 pod16_exact 0.254
+COMPILED 32 pod32_exact 0.315
+COMPILED 32 pod48_exact 0.363
+COMPILED 32 pod64_exact 0.43
+COMPILED 32 pod80_exact 0.505
+COMPILED 32 pod96_exact 0.475
+COMPILED 32 pod112_exact 0.544
+COMPILED 32 pod128_exact 0.184
+COMPILED 32 linear_bank_galerkin_exact 0.124
+COMPILED 32 dst_exact 0.0
+COMPILED 32 fom_cn_cg_dt0.025_rtol1e-02 0.713
+COMPILED 32 fom_cn_cg_dt0.025_rtol1e-04 0.383
+COMPILED 32 fom_cn_cg_dt0.025_rtol1e-06 0.376
+COMPILED 32 fom_cn_cg_dt0.05_rtol1e-02 0.396
+COMPILED 32 fom_cn_cg_dt0.05_rtol1e-04 0.38
+COMPILED 32 fom_cn_cg_dt0.05_rtol1e-06 0.471
+COMPILED 32 fom_cn_cg_dt0.1_rtol1e-02 0.388
+COMPILED 32 fom_cn_cg_dt0.1_rtol1e-04 0.484
+COMPILED 32 fom_cn_cg_dt0.1_rtol1e-06 0.37
+COMPILED 32 fno3d_w16_m6 1.174
+COMPILED 32 unet3d_w8 2.279
+COMPILED 32 deeponet3d_r128_w16 1.899
+COMPILED 32 transolver3d_w48_s32 3.624
+COMPILED 32 nmrom_K16_q0_dense 5.095
+COMPILED 32 nmrom_K16_q32_dense 2.213
+COMPILED 32 nmrom_K16_q64_dense 2.231
+COMPILED 32 nmrom_K16_q96_dense 2.297
+COMPILED 32 nmrom_K16_q96_dense_dt_half 1.791
+COMPILED 32 nmrom_K32_q0_dense 5.302
+COMPILED 32 nmrom_K32_q32_dense 1.746
+COMPILED 32 nmrom_K32_q64_dense 1.774
+COMPILED 32 nmrom_K32_q96_dense 1.861
+COMPILED 32 nmrom_K32_q96_dense_dt_half 1.818
+CASE 32 0 REP 0
+CASE 32 0 REP 1
+CASE 32 0 REP 2
+CASE 32 1 REP 0
+CASE 32 1 REP 1
+CASE 32 1 REP 2
+CASE 32 2 REP 0
+CASE 32 2 REP 1
+CASE 32 2 REP 2
+CASE 32 3 REP 0
+CASE 32 3 REP 1
+CASE 32 3 REP 2
+CASE 32 4 REP 0
+CASE 32 4 REP 1
+CASE 32 4 REP 2
+CASE 32 5 REP 0
+CASE 32 5 REP 1
+CASE 32 5 REP 2
+CASE 32 6 REP 0
+CASE 32 6 REP 1
+CASE 32 6 REP 2
+CASE 32 7 REP 0
+CASE 32 7 REP 1
+CASE 32 7 REP 2
+CASE 32 8 REP 0
+CASE 32 8 REP 1
+CASE 32 8 REP 2
+CASE 32 9 REP 0
+CASE 32 9 REP 1
+CASE 32 9 REP 2
+CASE 32 10 REP 0
+CASE 32 10 REP 1
+CASE 32 10 REP 2
+CASE 32 11 REP 0
+CASE 32 11 REP 1
+CASE 32 11 REP 2
+CASE 32 12 REP 0
+CASE 32 12 REP 1
+CASE 32 12 REP 2
+CASE 32 13 REP 0
+CASE 32 13 REP 1
+CASE 32 13 REP 2
+CASE 32 14 REP 0
+CASE 32 14 REP 1
+CASE 32 14 REP 2
+CASE 32 15 REP 0
+CASE 32 15 REP 1
+CASE 32 15 REP 2
+COMPILED 64 linear_bank_cn 0.501
+COMPILED 64 linear_bank_exact 0.001
+COMPILED 64 pod16_exact 0.264
+COMPILED 64 pod32_exact 0.33
+COMPILED 64 pod48_exact 0.393
+COMPILED 64 pod64_exact 0.426
+COMPILED 64 pod80_exact 0.463
+COMPILED 64 pod96_exact 0.467
+COMPILED 64 pod112_exact 0.604
+COMPILED 64 pod128_exact 0.201
+COMPILED 64 linear_bank_galerkin_exact 0.139
+COMPILED 64 dst_exact 0.001
+COMPILED 64 fom_cn_cg_dt0.025_rtol1e-02 0.646
+COMPILED 64 fom_cn_cg_dt0.025_rtol1e-04 0.459
+COMPILED 64 fom_cn_cg_dt0.025_rtol1e-06 0.447
+COMPILED 64 fom_cn_cg_dt0.05_rtol1e-02 0.485
+COMPILED 64 fom_cn_cg_dt0.05_rtol1e-04 0.4
+COMPILED 64 fom_cn_cg_dt0.05_rtol1e-06 0.451
+COMPILED 64 fom_cn_cg_dt0.1_rtol1e-02 0.469
+COMPILED 64 fom_cn_cg_dt0.1_rtol1e-04 0.416
+COMPILED 64 fom_cn_cg_dt0.1_rtol1e-06 0.438
+COMPILED 64 fno3d_w16_m6 1.269
+COMPILED 64 fno3d_w16_m6_physical_padding_transfer 0.823
+COMPILED 64 fno3d_w16_m6_native_grid_interpolated 1.039
+COMPILED 64 unet3d_w8 1.344
+COMPILED 64 unet3d_w8_native_grid_interpolated 0.608
+COMPILED 64 deeponet3d_r128_w16 2.169
+COMPILED 64 deeponet3d_r128_w16_native_sensors_continuous_trunk 1.113
+COMPILED 64 deeponet3d_r128_w16_native_grid_interpolated 1.234
+COMPILED 64 transolver3d_w48_s32 3.582
+COMPILED 64 transolver3d_w48_s32_native_grid_interpolated 1.133
+COMPILED 64 nmrom_K16_q0_dense 1.709
+COMPILED 64 nmrom_K16_q32_dense 1.677
+COMPILED 64 nmrom_K16_q64_dense 1.759
+COMPILED 64 nmrom_K16_q96_dense 1.637
+COMPILED 64 nmrom_K16_q96_dense_dt_half 1.703
+COMPILED 64 nmrom_K32_q0_dense 1.628
+COMPILED 64 nmrom_K32_q32_dense 1.718
+COMPILED 64 nmrom_K32_q64_dense 1.779
+COMPILED 64 nmrom_K32_q96_dense 1.673
+COMPILED 64 nmrom_K32_q96_dense_dt_half 1.715
+CASE 64 0 REP 0
+CASE 64 0 REP 1
+CASE 64 0 REP 2
+CASE 64 1 REP 0
+CASE 64 1 REP 1
+CASE 64 1 REP 2
+CASE 64 2 REP 0
+CASE 64 2 REP 1
+CASE 64 2 REP 2
+CASE 64 3 REP 0
+CASE 64 3 REP 1
+CASE 64 3 REP 2
+CASE 64 4 REP 0
+CASE 64 4 REP 1
+CASE 64 4 REP 2
+CASE 64 5 REP 0
+CASE 64 5 REP 1
+CASE 64 5 REP 2
+CASE 64 6 REP 0
+CASE 64 6 REP 1
+CASE 64 6 REP 2
+CASE 64 7 REP 0
+CASE 64 7 REP 1
+CASE 64 7 REP 2
+CASE 64 8 REP 0
+CASE 64 8 REP 1
+CASE 64 8 REP 2
+CASE 64 9 REP 0
+CASE 64 9 REP 1
+CASE 64 9 REP 2
+CASE 64 10 REP 0
+CASE 64 10 REP 1
+CASE 64 10 REP 2
+CASE 64 11 REP 0
+CASE 64 11 REP 1
+CASE 64 11 REP 2
+CASE 64 12 REP 0
+CASE 64 12 REP 1
+CASE 64 12 REP 2
+CASE 64 13 REP 0
+CASE 64 13 REP 1
+CASE 64 13 REP 2
+CASE 64 14 REP 0
+CASE 64 14 REP 1
+CASE 64 14 REP 2
+CASE 64 15 REP 0
+CASE 64 15 REP 1
+CASE 64 15 REP 2
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 6.974858092552493e-08
+REFERENCE 1 1.589789641153914e-08
+REFERENCE 2 2.492901552557855e-08
+REFERENCE 3 9.560329840922526e-08
+REFERENCE 4 2.2889238644575374e-08
+REFERENCE 5 2.0624512451658506e-08
+REFERENCE 6 1.778895096445761e-08
+REFERENCE 7 1.4817663336211028e-08
+REFERENCE 8 1.0408988531836921e-07
+REFERENCE 9 3.7527499306204084e-08
+REFERENCE 10 9.2331694500511e-08
+REFERENCE 11 1.73926372946263e-08
+REFERENCE 12 6.044641716934641e-08
+REFERENCE 13 3.04279994942639e-08
+REFERENCE 14 1.4357451635716137e-07
+REFERENCE 15 3.880682925569466e-08
+COMPILED 32 fno3d_w16_m6 1.33
+COMPILED 32 unet3d_w8 1.388
+COMPILED 32 deeponet3d_r128_w16 1.887
+COMPILED 32 transolver3d_w48_s32 3.615
+COMPILED 32 nmrom_K16_q0_dense 5.484
+COMPILED 32 nmrom_K16_q32_dense 2.278
+COMPILED 32 nmrom_K16_q64_dense 2.208
+COMPILED 32 nmrom_K16_q96_dense 2.302
+COMPILED 32 nmrom_K32_q0_dense 5.16
+COMPILED 32 nmrom_K32_q32_dense 1.798
+COMPILED 32 nmrom_K32_q64_dense 1.788
+COMPILED 32 nmrom_K32_q96_dense 1.824
+CASE 32 0 REP 0
+CASE 32 1 REP 0
+CASE 32 2 REP 0
+CASE 32 3 REP 0
+CASE 32 4 REP 0
+CASE 32 5 REP 0
+CASE 32 6 REP 0
+CASE 32 7 REP 0
+CASE 32 8 REP 0
+CASE 32 9 REP 0
+CASE 32 10 REP 0
+CASE 32 11 REP 0
+CASE 32 12 REP 0
+CASE 32 13 REP 0
+CASE 32 14 REP 0
+CASE 32 15 REP 0
+run_exit=0

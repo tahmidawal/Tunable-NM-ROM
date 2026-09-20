@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "tolerance_absolute": 1e-10,
+  "final_data_generated": false,
+  "source_result_sha256": "9d0c0fbf9cf493347410d2c97f28eed850eb76355ffa19e39a4e8ffb449f67de",
+  "replay_result_sha256": "dec0dc2cf5fdb6795f8f53ae251666da45bae7ff3d1b3846e1c8d5da16e2c11e",
+  "source_commit": "91d60ace229bbd4a27001b312ced73ebac225d86",
+  "replay_commit": "439624643bbaca29c9fdc8435edfa218aa2ca565",
+  "source_job_id": "4018922",
+  "replay_job_id": "4028921",
+  "checkpoint_sha256": {
+    "bank.pkl": "f1eb51a185b079f02321288e53dda7603771f7254db37487cf75ddb13a144745",
+    "head_K16.pkl": "b450dadee94fb82da1b63b2ee80602912b7b0b455e1b603fdabac265f92029af",
+    "head_K32.pkl": "adba0720b6f3e9902f4d33807bf3ebc6cd8d387ff59c1195174fd75ecf86331c",
+    "operators/fno3d_w16_m6/adapter.pkl": "44c4fa55b092c5da7d4d14bd7af3eb50b36c60ae020736f3ed081078f86a09d4",
+    "operators/unet3d_w8/adapter.pkl": "04210ee1049fd8f10e191e6c0b8bd37cd344e6520069d1714cdeed50c9d31324",
+    "operators/deeponet3d_r128_w16/adapter.pkl": "5f4ad080c094976e5c0dece81dd26201724bf0d15a0d7705fdb4a1a7e2d2cc39",
+    "operators/transolver3d_w48_s32/adapter.pkl": "54d1c4e88ac39ecb72ce249cffeaceb9da28d94c99198f45f6d52b8719979025"
+  },
+  "checks": [
+    {
+      "kind": "head_best_found_fields",
+      "k": 16,
+      "maximum_absolute_difference": 2.9347048879566073e-15,
+      "cases": 16
+    },
+    {
+      "kind": "head_best_found_fields",
+      "k": 32,
+      "maximum_absolute_difference": 3.069545756895914e-15,
+      "cases": 16
+    },
+    {
+      "kind": "operator_native_fields",
+      "name": "fno3d_w16_m6",
+      "maximum_absolute_difference": 0.0,
+      "cases": 16
+    },
+    {
+      "kind": "operator_native_fields",
+      "name": "unet3d_w8",
+      "maximum_absolute_difference": 0.0,
+      "cases": 16
+    },
+    {
+      "kind": "operator_native_fields",
+      "name": "deeponet3d_r128_w16",
+      "maximum_absolute_difference": 0.0,
+      "cases": 16
+    },
+    {
+      "kind": "operator_native_fields",
+      "name": "transolver3d_w48_s32",
+      "maximum_absolute_difference": 3.3306690738754696e-16,
+      "cases": 16
+    }
+  ],
+  "scope": "real native development inference and truth-assisted representation replay on unchanged checkpoint bytes; not a cross-job runtime comparison"
+}

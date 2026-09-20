@@ -1,0 +1,50 @@
+OPERATOR transolver3d 1 val_worst 1.0123629154637837 seconds 3.8737466540187597
+OPERATOR transolver3d 2 val_worst 1.011434070915682 seconds 3.901068340986967
+[
+  {
+    "kind": "transolver3d",
+    "adapter_defect": 5.421010862427522e-20,
+    "independent_interpolation_defect": 2.710505431213761e-20,
+    "pickle_replay": true,
+    "training": {
+      "spec": {
+        "kind": "transolver3d",
+        "width": 2,
+        "rank": 4,
+        "trunk_width": 8,
+        "levels": 2,
+        "pool_bins": 2,
+        "depth": 1,
+        "heads": 2,
+        "slices": 4,
+        "patch": 2,
+        "reference_grid": 2,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "config": {
+        "steps": 2,
+        "wall_seconds": 30,
+        "batch_size": 1,
+        "seed": 99,
+        "learning_rate": 0.001,
+        "validation_every": 1,
+        "components_per_output": 1
+      },
+      "parameter_count": 377,
+      "steps_completed": 2,
+      "best_step": 2,
+      "best_validation_worst": 1.011434070915682,
+      "seconds": 3.90110805304721,
+      "exit_reason": "steps",
+      "normalization": "current-output norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128"
+    }
+  }
+]

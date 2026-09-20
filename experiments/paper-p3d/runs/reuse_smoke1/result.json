@@ -1,0 +1,635 @@
+{
+  "schema": "paper-poisson3d-result-v1",
+  "config": {
+    "schema": "paper-poisson3d-tuned-operators-v2",
+    "train_intervals": 8,
+    "evaluation_intervals": [
+      8
+    ],
+    "reference_intervals": [
+      8,
+      16
+    ],
+    "train_count": 12,
+    "validation_count": 1,
+    "train_seed": 920410,
+    "validation_seed": 920411,
+    "reserved_final_seed": 920499,
+    "model_seed": 920412,
+    "bank_minibatch_seed": 920413,
+    "head_minibatch_seed": 920414,
+    "timing_seed": 920415,
+    "quadrature_seed": 920416,
+    "bank_rank": 8,
+    "latent_dimensions": [
+      2
+    ],
+    "bank_steps": 3,
+    "head_steps": 3,
+    "bank_batch_states": 4,
+    "bank_batch_points": 64,
+    "head_batch_states": 128,
+    "bank_learning_rate": 0.001,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 3,
+    "fourier_features": 4,
+    "fourier_scale": 1.5,
+    "bank_width": 16,
+    "head_width": 16,
+    "weak_tests": 32,
+    "q_ladder": [
+      0,
+      2
+    ],
+    "quadrature_candidates": 128,
+    "quadrature_decoder_snapshots": 4,
+    "quadrature_fit_rows": 64,
+    "quadrature_certificate": 0.01,
+    "lm_budget": 8,
+    "lm_tolerance": 1e-06,
+    "initial_starts": 3,
+    "oracle_starts": 2,
+    "repetitions": 1,
+    "burn_seconds": 0.001,
+    "reference_budget": 0.0001,
+    "same_grid_target": 0.01,
+    "physical_target": 0.02,
+    "field_chunk": 1024,
+    "final_cohort_opened": false,
+    "bank_wall_seconds": 900,
+    "head_wall_seconds": 600,
+    "quadrature_row_floor": 0.1,
+    "quadrature_use_inverse_tests": true,
+    "operators": [],
+    "operator_training": {
+      "steps": 30000,
+      "wall_seconds": 1500,
+      "batch_size": 2,
+      "seed": 920450,
+      "learning_rate": 0.0005,
+      "validation_every": 250,
+      "curve_every": 50,
+      "components_per_output": 1
+    },
+    "reuse_checkpoint_directory": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/smoke2"
+  },
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "jax_version": "0.10.1",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "smoke": false,
+  "complete": true,
+  "status": "complete",
+  "final_cohort_opened": false,
+  "bank": {
+    "basis_hash": "b28a5577eb7757566d227fec5039c296b72e20ea84962479f3b936f607da7f14",
+    "best_step": 3,
+    "condition_number": 18.431355309129444,
+    "converged_claim": false,
+    "exit_reason": "steps",
+    "orthogonality": 9.992007221626409e-16,
+    "seconds": 3.8308359819930047,
+    "steps": 3,
+    "training_matrix_hash": "8645a5e85702c654463d93810650f334a59103731b0fe9acc8ee3846851d9296",
+    "training_projection_mean": 0.6588184353823682,
+    "training_projection_worst": 0.7205424135538709,
+    "validation_projection_worst": 0.6995895393078406
+  },
+  "heads": [
+    {
+      "best_step": 3,
+      "converged_claim": false,
+      "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+      "correction_singular_values": [
+        0.8876533474749542,
+        0.17682287798383434,
+        0.0886726530374568,
+        0.0359593286475056,
+        0.02794930335562215,
+        0.01227906444748233,
+        0.005673889071647757,
+        0.001856436075963577
+      ],
+      "direction_hash": "d09ee9774fa0bcc3880cb4853401b9748c8fb1c5bcd86e755ff17f259311e2f9",
+      "exit_reason": "steps",
+      "k": 2,
+      "seconds": 1.7041462920606136,
+      "steps": 3,
+      "training_error_mean": 6.4566646647437445,
+      "training_error_median": 5.369100427191943,
+      "training_error_worst": 19.00116743321743,
+      "validation_best_found_worst": 0.7819607879956034
+    }
+  ],
+  "meshes": [
+    {
+      "intervals": 8,
+      "weak_tests": 32,
+      "bank_sha256": "c224cb5e38b75a30df61b59be50550c7ca391417889656d1303a3ba57df144c1",
+      "weak_operator_sha256": "00f37cac7d6fa81a4dfce2325a19eea9eae05bdf397ac213d049cc0c23df6d2c",
+      "weak_singular_values": [
+        0.036862277668739084,
+        0.031007247563070457,
+        0.028811388926312582,
+        0.022817490588002098,
+        0.016404675409238546,
+        0.00886776505951463,
+        0.008700486629978832,
+        0.0065525655719131035
+      ],
+      "pod": {
+        "available_rank": 12,
+        "retained_rank": 8,
+        "orthogonality": 5.051514762044462e-14,
+        "training_hash": "8645a5e85702c654463d93810650f334a59103731b0fe9acc8ee3846851d9296"
+      },
+      "linear_endpoint": {
+        "condition_number": 5.625625148528911,
+        "solver": "thin QR plus triangular solve"
+      },
+      "quadrature": [
+        {
+          "candidate_count": 128,
+          "positive_support": 64,
+          "source": "decoder-output snapshots, NNLS positive weights, random candidate grid nodes",
+          "fit_rows": 64,
+          "seconds": 0.0008120199199765921,
+          "scaled_fit_norm": 0.0,
+          "row_floor": 0.1,
+          "training_moment_error_max": 0.1824983799534975,
+          "weights_hash": "d9209c2b811f3aa4203d7f382db41f10d8cf58e47fbc8bfce4914d533c98cc0a",
+          "indices_hash": "8eaeb1a671b22f13b7be35903950293e12949c948c7fd75b036dd484e2e6bb51",
+          "fit_test_normalization": "inverse eigenvalue",
+          "k": 2,
+          "validation_forcing_moment_errors": [
+            0.3097379648124042
+          ],
+          "threshold": 0.01,
+          "certified": false
+        }
+      ],
+      "representation": [
+        {
+          "case": 0,
+          "kind": "bank_projection",
+          "error": 0.6995895393078406
+        },
+        {
+          "case": 0,
+          "k": 2,
+          "q": 0,
+          "kind": "best_found_augmented",
+          "error": 0.7819607879956034,
+          "stats": [
+            6.0,
+            6.0,
+            1.0,
+            0.4888959941701136,
+            2.4979229319425465e-10,
+            2.4979226454640603e-10,
+            0.0,
+            13.0
+          ],
+          "stationary": true
+        },
+        {
+          "case": 0,
+          "k": 2,
+          "q": 2,
+          "kind": "best_found_augmented",
+          "error": 0.7070385201348874,
+          "stats": [
+            9.0,
+            9.0,
+            1.0,
+            0.36819857531851063,
+            5.917765431978697e-10,
+            2.0701435975150495e-11,
+            0.0,
+            67.0
+          ],
+          "stationary": true
+        }
+      ],
+      "setup_seconds": 3.1727494719671085,
+      "methods": {
+        "linear_bank_weak_qR": {
+          "kind": "linear_control",
+          "rank": 8
+        },
+        "linear_bank_galerkin": {
+          "kind": "linear_control",
+          "rank": 8
+        },
+        "pod2_galerkin": {
+          "kind": "pod",
+          "rank": 2
+        },
+        "pod4_galerkin": {
+          "kind": "pod",
+          "rank": 4
+        },
+        "pod8_galerkin": {
+          "kind": "pod",
+          "rank": 8
+        },
+        "dst_exact": {
+          "kind": "full_order"
+        },
+        "nmrom_K2_q0_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_projection": "dense grid-dependent diagnostic"
+        },
+        "nmrom_K2_q0_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_projection": "NNLS sampled weak moments",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_projection": "dense grid-dependent diagnostic"
+        },
+        "nmrom_K2_q2_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_projection": "NNLS sampled weak moments",
+          "quadrature_certified": false
+        }
+      }
+    }
+  ],
+  "invocations": [
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q0_eq",
+      "finite": true,
+      "input_ms": 0.5635389825329185,
+      "device_ms": 1.285078004002571,
+      "total_ms": 2.473580068908632,
+      "stationary": true,
+      "iterations": 15,
+      "selected_stats": [
+        5.0,
+        5.0,
+        1.0,
+        0.5966573105088147,
+        6.358321941773899e-08,
+        6.358321936301185e-08,
+        1.0,
+        15.0
+      ],
+      "all_starts_stats": [
+        [
+          5.0,
+          5.0,
+          1.0,
+          0.5966573105088944,
+          9.124538444459377e-08
+        ],
+        [
+          5.0,
+          5.0,
+          1.0,
+          0.5966573105088147,
+          6.358321941773899e-08
+        ],
+        [
+          5.0,
+          5.0,
+          1.0,
+          0.5966573105099318,
+          2.530759064721398e-07
+        ]
+      ],
+      "same_grid_error": 0.8044574808978588,
+      "physical_error": 0.8001844708464156,
+      "field_file": "fields/N8_case0_nmrom_K2_q0_eq.npz",
+      "field_sha256": "f848e774da86cbe7d1e432ef6d583f2bc818c222e452ff9702ebacd5d1190e12"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod4_galerkin",
+      "finite": true,
+      "input_ms": 0.7468829862773418,
+      "device_ms": 0.5074910586699843,
+      "total_ms": 1.631063991226256,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 0.13656625857952512,
+      "physical_error": 0.13014877396265065,
+      "field_file": "fields/N8_case0_pod4_galerkin.npz",
+      "field_sha256": "8ba351b05477cd6946d1c62a3e590128d21b3c4e56271fc92592e05303eb0899"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q2_eq",
+      "finite": true,
+      "input_ms": 0.7104190299287438,
+      "device_ms": 1.4625989133492112,
+      "total_ms": 3.3240800257772207,
+      "stationary": false,
+      "iterations": 24,
+      "selected_stats": [
+        8.0,
+        3.0,
+        0.0,
+        0.9469274409362111,
+        0.0018796739940967584,
+        3.900029789492599e-05,
+        1.0,
+        24.0
+      ],
+      "all_starts_stats": [
+        [
+          8.0,
+          8.0,
+          1.0,
+          0.9469503010808242,
+          9.948194375076869e-07
+        ],
+        [
+          8.0,
+          3.0,
+          0.0,
+          0.9469274409362111,
+          0.0018796739940967584
+        ],
+        [
+          8.0,
+          4.0,
+          0.0,
+          0.9479991713501937,
+          0.017562805197373053
+        ]
+      ],
+      "same_grid_error": 0.8086005738313546,
+      "physical_error": 0.8078345147619498,
+      "field_file": "fields/N8_case0_nmrom_K2_q2_eq.npz",
+      "field_sha256": "b2d9991360804b43f71d4465df34a3f72e193aad05ebe4d6a505cf6a664ab1b5"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "linear_bank_weak_qR",
+      "finite": true,
+      "input_ms": 0.7132829632610083,
+      "device_ms": 0.4795549903064966,
+      "total_ms": 1.701176050119102,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 1.046572053359307,
+      "physical_error": 1.063056181909095,
+      "field_file": "fields/N8_case0_linear_bank_weak_qR.npz",
+      "field_sha256": "18e62dd6a5e6ed51d8eed4ddc161d5ea13aedebca3b708f1bc294fd89124fadf"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q2_dense",
+      "finite": true,
+      "input_ms": 0.7718759588897228,
+      "device_ms": 1.848120940849185,
+      "total_ms": 3.1495830044150352,
+      "stationary": false,
+      "iterations": 24,
+      "selected_stats": [
+        8.0,
+        8.0,
+        0.0,
+        0.9379281770756973,
+        7.5859688912238714e-06,
+        1.8494862278344526e-07,
+        0.0,
+        24.0
+      ],
+      "all_starts_stats": [
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.9379281770756973,
+          7.5859688912238714e-06
+        ],
+        [
+          8.0,
+          3.0,
+          0.0,
+          0.9396243190230534,
+          0.02233685680007571
+        ],
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.9379281770807542,
+          8.026826004772223e-06
+        ]
+      ],
+      "same_grid_error": 0.8788034369013737,
+      "physical_error": 0.8851861984444488,
+      "field_file": "fields/N8_case0_nmrom_K2_q2_dense.npz",
+      "field_sha256": "989b49eafb5a0f7540c402f58f97e0a86febfbe2a1c63885efa2f02248211183"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod8_galerkin",
+      "finite": true,
+      "input_ms": 0.5229630041867495,
+      "device_ms": 0.3641450311988592,
+      "total_ms": 1.2642779620364308,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 0.07979736616536483,
+      "physical_error": 0.07782933609021969,
+      "field_file": "fields/N8_case0_pod8_galerkin.npz",
+      "field_sha256": "2562cdaccf764a8657faaba90cf1d64910d04e6df3ff451b010b81bc284bb3fd"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod2_galerkin",
+      "finite": true,
+      "input_ms": 0.6471229717135429,
+      "device_ms": 0.35761797334998846,
+      "total_ms": 1.3961029471829534,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 0.44273006415396066,
+      "physical_error": 0.4252533624704481,
+      "field_file": "fields/N8_case0_pod2_galerkin.npz",
+      "field_sha256": "1449ebd8b44ed167e7c371cb9a6f00fe465749fa8250aeb7058340760dd705aa"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "linear_bank_galerkin",
+      "finite": true,
+      "input_ms": 0.5077619571238756,
+      "device_ms": 0.35646604374051094,
+      "total_ms": 1.2194779701530933,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 0.8865125485245808,
+      "physical_error": 0.8822180445297931,
+      "field_file": "fields/N8_case0_linear_bank_galerkin.npz",
+      "field_sha256": "254403da6a5fb835952abafb2de555f7bd700a7066918057066beef76e6d6017"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "dst_exact",
+      "finite": true,
+      "input_ms": 0.6744359852746129,
+      "device_ms": 0.26302505284547806,
+      "total_ms": 1.2147900415584445,
+      "stationary": true,
+      "iterations": 0,
+      "same_grid_error": 0.0,
+      "physical_error": 0.04945194079018679,
+      "field_file": "fields/N8_case0_dst_exact.npz",
+      "field_sha256": "8e2490ee2437f723100863648a8e9461c9d977e7663f9c2af1f093c906b69f83"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q0_dense",
+      "finite": true,
+      "input_ms": 0.7256349781528115,
+      "device_ms": 1.4860390219837427,
+      "total_ms": 2.6179159758612514,
+      "stationary": true,
+      "iterations": 17,
+      "selected_stats": [
+        6.0,
+        6.0,
+        1.0,
+        0.6323325917876641,
+        1.5778788665937144e-07,
+        1.577878866498448e-07,
+        0.0,
+        17.0
+      ],
+      "all_starts_stats": [
+        [
+          6.0,
+          6.0,
+          1.0,
+          0.6323325917876641,
+          1.5778788665937144e-07
+        ],
+        [
+          5.0,
+          5.0,
+          1.0,
+          0.6323325917979715,
+          7.42642257902282e-07
+        ],
+        [
+          6.0,
+          6.0,
+          1.0,
+          0.6323325917890099,
+          3.0603617113492593e-07
+        ]
+      ],
+      "same_grid_error": 0.8771116929922231,
+      "physical_error": 0.8790509916161179,
+      "field_file": "fields/N8_case0_nmrom_K2_q0_dense.npz",
+      "field_sha256": "11c3a8bbc61c82e2031e458a5ab2319c44990b7ad597f153164c2b5f65f06fbe"
+    }
+  ],
+  "data_contract": "supplied full interior nodal forcing only; no generator descriptors online",
+  "output_contract": "complete interior solution field, zero boundary known to every method",
+  "timing_contract": "same-invocation accuracy/device/host time; upload, cold solve and dense readout; offline training/setup separate",
+  "verification": {
+    "dst_scipy": 2.387291690891489e-16,
+    "sparse_direct": 6.142736858147999e-16,
+    "sparse_stencil": 1.5230451577055505e-16,
+    "residual": 4.431378222362908e-16,
+    "manufactured_discrete": 5.07535403613091e-16,
+    "weak_inverse_identity": 7.085518360837567e-16,
+    "actual_augmented_engine": 1.4028179402713143e-14,
+    "direct_QR_endpoint": 6.046787760536511e-16,
+    "continuum_errors": [
+      0.022763183732059447,
+      0.005639343813059034,
+      0.001406644836500982
+    ],
+    "refinement_ratios": [
+      4.0364951112480005,
+      4.009074406505381
+    ],
+    "passed": true
+  },
+  "reused_checkpoints": {
+    "source_commit": null,
+    "job_id": null,
+    "files": {
+      "head_K2.pkl": "ab75923bc5dd2187282438957e54bfee3e94d975231b20fdf1a27eebc9529459",
+      "audit.json": "7fe427cdf85e1b8bd521d2e2df643685b5a5bd5dde1ac6edaaa4de8d6572711d",
+      "bank_partial.pkl": "400d4eca0d07c39401593c66a14cbc83f93bbe0e39e27ac5d9d244fbbc1833c0",
+      "head_K2_best_training.pkl": "22b6077a315243878339728e3681af9d47b8ea821f51c5b460bc4f360a469eee",
+      "result.json": "8bc94fdf8042743d32a1e866acc354cb2a92e39a1a0c6906ba1cd1991ab79e92",
+      "training_coordinates.npz": "420c6cbe858fba7b22e6dabd6d602cb802e7050b4ebaeb5e7e07f65fce57fbbe",
+      "summary.json": "b23cbae509f30f714c7079669a47de7401ad5b90abef891eda6647bbf883ab94",
+      "bank.pkl": "f1959303c73b5d70457fd3895ae2fcdca16b6dcf652dbdd4476f5ca15bc1f1b3",
+      "bank_best_training.pkl": "5af906929a7a1616c2f7fcc292bd2c154e9e0cfeab10491a35f1aeb09a610904",
+      "head_K2_curve.json": "aab5660c289f9d4154f1de21a69a3d680e825def1c152d3717e34103ee750da4",
+      "bank_curve.json": "c9b141020dd3c90fdcfb053982183f9414201ff55ec71e9735066afdc6da89af",
+      "eq_N8_K2.npz": "d7ee8a723ec7d94a650ae8c144080351a76f7b6e844fe3f589f520d639a54cb2",
+      "head_K2_partial.pkl": "ce4119773707642dffdb7949eb037a205001a37bbac2115d12a9f5514e32d7ce",
+      "cohorts.json": "9465bebea941338ea12859363d6849eb27a6e73bf06f108bb539a50ae1d4d176",
+      "fields/N8_case0_nmrom_K2_q0_eq.npz": "a9f08e42d5abc2a6772715995c8fe01472691495b80f833022cdebd04be08c4a",
+      "fields/N8_K2_q0_oracle_case0.npz": "54d569ee4d4193daffb490f950a388a976f05f2d34a1bfbf6097524e45c5a3a8",
+      "fields/N8_case0_nmrom_K2_q0_dense.npz": "d1ee3af1e0b1c60189c327a61577fc90e3e192642c98034b97e4ba47e15b7a81",
+      "fields/N8_case0_reference.npz": "36a7e4b317766abd5aef7ead0943df83ac824a69be445cf2b80770f0d7ab93f9",
+      "fields/N8_case0_linear_bank_galerkin.npz": "e4ab144d080c38b58bfa1339af45e5b044f4a5f68e55e5d70406a53667284ae2",
+      "fields/N8_case0_nmrom_K2_q2_eq.npz": "0e6b68462d9c30047dfa00c2f475226fa5828b46d8eded79a31963ef355bc77a",
+      "fields/N8_case0_linear_bank_weak_qR.npz": "d8a3b25bca56aefa20a2e46cde901e2be465a86289065dd828fb6c558329d7a9",
+      "fields/N8_K2_q2_oracle_case0.npz": "e88d4a525479e5ecfc32c54d5ec281ac8119eb049f97fd7519ee1dd59ad674b5",
+      "fields/N8_case0_pod2_galerkin.npz": "2285f5a08b0ca54539babb069ac74664c4b407da5111a98e2f800361970c356f",
+      "fields/N8_case0_nmrom_K2_q2_dense.npz": "c6af337b8fa38d3ab759c707a3acaf8c9eda664c6700509306b8f0666a40808e",
+      "fields/N8_case0_dst_exact.npz": "aceb2203a1df778d91f912f8aff4e214476698ac50175b0a3322db58fc7e0cfa",
+      "fields/N8_case0_pod8_galerkin.npz": "847d380b70ba8b1b9fc4f773e7e82f4c6562299c13753f570838d8d335bd618c",
+      "fields/N8_case0_pod4_galerkin.npz": "21a8fd916b53587b00d0cada39be1b6a9d4155e63804612f4bf628536dc8a95f"
+    }
+  },
+  "operators": [],
+  "reference": {
+    "intervals": [
+      8,
+      16
+    ],
+    "relative_refinement": [
+      0.0013066371434029478
+    ],
+    "threshold": 0.0001,
+    "passed": false,
+    "status": "empirical continuum-spectral refinement, not a proved error bound"
+  },
+  "elapsed_seconds": 14.867404199088924
+}

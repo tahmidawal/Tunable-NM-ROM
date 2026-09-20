@@ -1,5 +1,5 @@
 {
-  "schema": "paper-poisson3d-tuned-operators-v2",
+  "schema": "paper-poisson3d-complete-operators-v3",
   "train_intervals": 32,
   "evaluation_intervals": [
     32,
@@ -76,7 +76,8 @@
         ],
         "depth": 4,
         "padding": 9
-      }
+      },
+      "reuse": true
     },
     {
       "name": "unet3d_w16",
@@ -85,6 +86,67 @@
         "width": 16,
         "levels": 3,
         "periodic": false
+      },
+      "reuse": true
+    },
+    {
+      "name": "deeponet3d_r128_w16",
+      "spec": {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 128,
+        "trunk_width": 128,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "training": {
+        "steps": 30000,
+        "wall_seconds": 1500,
+        "batch_size": 2,
+        "learning_rate": 0.001,
+        "validation_every": 250,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "seed": 920452
+      }
+    },
+    {
+      "name": "transolver3d_w48_s32",
+      "spec": {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          -1.0,
+          1.0
+        ]
+      },
+      "training": {
+        "steps": 30000,
+        "wall_seconds": 1500,
+        "batch_size": 2,
+        "learning_rate": 0.001,
+        "validation_every": 250,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "seed": 920453
       }
     }
   ],
@@ -97,5 +159,6 @@
     "validation_every": 250,
     "curve_every": 50,
     "components_per_output": 1
-  }
+  },
+  "reuse_checkpoint_directory": "checkpoints"
 }

@@ -48,7 +48,7 @@ def engine(model,bank,operator,projection,indices,q,cfg):
         assert sv[-1]>sv[0]*1e-12,('correction rank deficiency',q,sv)
         reduced=operator-qq@(qq.T@operator)
     else:qq=np.zeros((len(operator),0));rr=np.zeros((0,0));reduced=operator
-    p=model['params'];codes=jnp.asarray(model['codes'])
+    p=jax.device_put(model['params']);codes=jnp.asarray(model['codes'])
     library=C.head(p,codes)@jnp.asarray(reduced).T
     fit=S.lm(C.head,cfg['lm_budget'],cfg['lm_tolerance'])
 
@@ -68,6 +68,7 @@ def engine(model,bank,operator,projection,indices,q,cfg):
         return bank@coef,info,coef,stats
     args=(p,jnp.asarray(bank),jnp.asarray(operator),jnp.asarray(reduced),jnp.asarray(qq),jnp.asarray(rr),
           jnp.asarray(directions),jnp.asarray(projection),jnp.asarray(indices),library,codes)
+    jax.block_until_ready(args)
     return lambda f:query(f,*args)
 
 

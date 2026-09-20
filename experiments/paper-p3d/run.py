@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import pickle
+import hashlib
 import time
 from pathlib import Path
 import numpy as np
@@ -59,12 +61,37 @@ def run(cfg,out,smoke=False):
     fields=P.dataset(cfg['train_intervals'],train_p)
     record['status']='training_bank';save()
     validation_fields=P.dataset(cfg['train_intervals'],valid_p)
-    params,rotation,basis,target,norm2,perp,info=T.train_bank(fields[:,None],cfg,out,validation_fields)
+    reuse=Path(cfg['reuse_checkpoint_directory']) if cfg.get('reuse_checkpoint_directory') else None
+    prior=None
+    if reuse:
+        prior=json.loads((reuse/'result.json').read_text())
+        assert prior['complete'] and not prior['final_cohort_opened']
+        for key in ['train_seed','validation_seed','train_count','validation_count','train_intervals','bank_rank']:
+            assert cfg[key]==prior['config'][key],('checkpoint cohort/architecture mismatch',key)
+        old_cohorts=json.loads((reuse/'cohorts.json').read_text())
+        assert old_cohorts['train_sha256']==C.sha(train_p) and old_cohorts['validation_sha256']==C.sha(valid_p)
+        cached=pickle.loads((reuse/'bank.pkl').read_bytes())
+        params,rotation,info=cached['params'],cached['rotation'],cached['info']
+        basis=C.bank_at(params,cfg['train_intervals'],cfg['field_chunk'])@rotation
+        u=fields.reshape(len(fields),-1);target=u@basis;norm2=np.sum(u*u,axis=1)
+        perp=np.maximum(norm2-np.sum(target*target,axis=1),0.)
+        assert C.sha(u)==info['training_matrix_hash']
+        C.checkpoint(out/'bank.pkl',cached)
+        record['reused_checkpoints']=dict(source_commit=prior['source_commit'],job_id=prior['job_id'],
+            files={str(p.relative_to(reuse)):hashlib.sha256(p.read_bytes()).hexdigest() for p in reuse.rglob('*') if p.is_file()})
+    else:
+        params,rotation,basis,target,norm2,perp,info=T.train_bank(fields[:,None],cfg,out,validation_fields)
     record['bank']=info;save();models=[]
     vu=validation_fields.reshape(len(validation_fields),-1);vt=vu@basis;vn=np.sum(vu*vu,axis=1);vp=np.maximum(vn-np.sum(vt*vt,axis=1),0)
     for k in cfg['latent_dimensions']:
         record['status']=f'training_head_K{k}';save()
-        model=T.train_head(target,norm2,perp,k,cfg,out,(vt,vn,vp));models.append(model);record['heads'].append(model['info']);save()
+        if reuse:
+            model=pickle.loads((reuse/f'head_K{k}.pkl').read_bytes())
+            C.checkpoint(out/f'head_K{k}.pkl',model)
+        else:model=T.train_head(target,norm2,perp,k,cfg,out,(vt,vn,vp))
+        model={**model,'params':jax.device_put(model['params']),'codes':jax.device_put(model['codes'])}
+        jax.block_until_ready((model['params'],model['codes']))
+        models.append(model);record['heads'].append(model['info']);save()
     operator_models=[];record['operators']=[]
     if cfg.get('operators'):
         from operators import poisson_adapter as O
@@ -75,8 +102,17 @@ def run(cfg,out,smoke=False):
         tx,ty=O.arrays(train_sources,fields,scales);vx,vy=O.arrays(valid_sources,validation_fields,scales)
         for i,entry in enumerate(cfg['operators']):
             record['status']='training_'+entry['name'];save()
-            ocfg={**cfg['operator_training'],'seed':cfg['operator_training']['seed']+i}
-            op,oinfo=OT.train(tx,ty,vx,vy,entry['spec'],ocfg,out/'operators'/entry['name'],C.dump,C.checkpoint)
+            ocfg=entry.get('training',{**cfg['operator_training'],'seed':cfg['operator_training']['seed']+i})
+            if entry.get('reuse'):
+                assert reuse is not None
+                saved=pickle.loads((reuse/'operators'/entry['name']/'best.pkl').read_bytes())
+                assert saved['spec']==entry['spec']
+                op=jax.device_put(saved['params']);jax.block_until_ready(op)
+                oinfo=next(dict(x) for x in prior['operators'] if x['name']==entry['name'])
+                assert oinfo['training_input_sha256']==C.sha(train_sources) and oinfo['training_target_sha256']==C.sha(fields)
+                C.checkpoint(out/'operators'/entry['name']/'best.pkl',saved)
+                C.dump(out/'operators'/entry['name']/'training.json',oinfo)
+            else:op,oinfo=OT.train(tx,ty,vx,vy,entry['spec'],ocfg,out/'operators'/entry['name'],C.dump,C.checkpoint)
             oinfo.update(name=entry['name'],scales=scales,training_input_sha256=C.sha(train_sources),training_target_sha256=C.sha(fields),
                 validation_input_sha256=C.sha(valid_sources),validation_target_sha256=C.sha(validation_fields))
             record['operators'].append(oinfo);operator_models.append((entry['name'],op,entry['spec'],scales));save()
@@ -123,7 +159,18 @@ def run(cfg,out,smoke=False):
             k=model['info']['k'];decoded=np.asarray(C.head(model['params'],model['codes']))
             try:
                 inverse_tests=cfg.get('quadrature_use_inverse_tests',False)
-                indices,weighted,eq=S.fit_quadrature(bank,projection if inverse_tests else test,decoded,cfg)
+                old_mesh=next((x for x in prior['meshes'] if x['intervals']==n),None) if prior else None
+                quadrature_keys=['weak_tests','quadrature_seed','quadrature_candidates','quadrature_decoder_snapshots',
+                    'quadrature_fit_rows','quadrature_row_floor','quadrature_use_inverse_tests']
+                cache_valid=(old_mesh is not None and old_mesh['bank_sha256']==C.sha(bank)
+                    and old_mesh['weak_operator_sha256']==C.sha(a)
+                    and all(cfg.get(key)==prior['config'].get(key) for key in quadrature_keys))
+                cached_eq=reuse/f'eq_N{n}_K{k}.npz' if reuse else None
+                if cache_valid and cached_eq.exists():
+                    z=np.load(cached_eq);indices=z['indices'];weighted=z['weighted_tests']
+                    eq=dict(next(x for x in old_mesh['quadrature'] if x['k']==k))
+                    eq.update(reused_from_job=prior['job_id'],exact_bank_and_operator_hashes_matched=True)
+                else:indices,weighted,eq=S.fit_quadrature(bank,projection if inverse_tests else test,decoded,cfg)
                 sampled=weighted if inverse_tests else weighted/lam[None,:]
                 eq['fit_test_normalization']='inverse eigenvalue' if inverse_tests else 'unscaled sine'
                 exact=sources.reshape(len(sources),-1)@projection

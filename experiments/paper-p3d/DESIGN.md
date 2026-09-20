@@ -48,6 +48,16 @@ Train a four-layer FNO with width 24, eight Fourier modes per signed-axis block 
 
 At the second mesh, report direct frozen-network evaluation and a separately named native-mesh prediction followed by boundary-aware trilinear interpolation. The latter includes restriction of the supplied forcing and interpolation within the timed query. This distinguishes physical receptive-field/padding changes from interpolation at fixed native inference resolution. All NM-ROM, operator, classical and direct-transform timings are collected together in one GPU allocation after training.
 
+## Development amendment A2: complete four-family operator comparison
+
+Registered while the second development panel completes, before training either added operator or opening final data. Preserve its learned bank, both heads, FNO and U-Net checkpoints and their original training records. Regenerate all training and development fields from the original seeds, and require exact membership and training-array hashes before reusing those checkpoints. Every method is measured again in the same new GPU allocation, so no cost ratio combines jobs.
+
+Add a DeepONet with a three-level width-16 convolutional branch and a width-128, rank-128 coordinate trunk; add a structured three-dimensional Transolver with width 48, four blocks, four attention heads, 32 physics slices and patch size two. This Transolver implements normalized slicing, token self-attention and deslicing from the MIT-licensed upstream Physics Attention equations; it is not generic attention relabelled as Transolver. Its JAX adaptation and explicit coordinate conventions have independent equation and primitive checks. Exact imported source hashes and upstream attribution are retained. Each network receives the identical supplied forcing plus three known coordinate channels; output is the full solution, with separate native prediction/interpolation and direct transfer rows at the finer mesh.
+
+Each added operator uses up to 30000 updates or 1500 seconds, batch size two, initial learning rate $10^{-3}$ under the shared cosine schedule, and minimum worst development-error selection every 250 updates. The current NM-ROM and existing operators already reach useful development accuracy, while both stronger linear controls and failed quadrature paths remain in the complete panel. Additional bank/head optimization and independent training initializations are later validation continuations; no final result or convergence claim follows automatically from this comparison. No grid-scaling claim is made from two meshes alone.
+
+Frozen model weights are placed on the GPU once and synchronized during setup, with explicit array arguments to compiled queries. Earlier NumPy-selected head checkpoints could incur repeated small weight transfers during queries; their archived timings describe that implementation and are not pooled with the corrected panel. Input forcing upload, solution computation and full output transfer remain charged. Frozen quadrature is reused only when bank, weak-operator, mesh and fitting-configuration hashes match exactly; its forcing-moment certificate is recomputed on the regenerated development fields. A failed certificate remains failed.
+
 ## Glossary
 
 - NM-ROM: a reduced numerical solver whose field coefficients depend on a smaller neural latent state.

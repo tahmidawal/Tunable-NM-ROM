@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import shutil
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[3]
@@ -10,10 +11,11 @@ LANE='experiments/paper-p3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_p3d_20260920'
 FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','run.py','audit.py','cluster/stage.py','cluster/collect.py']
 FILES+=['operators/'+name for name in ['models3d.py','training.py','__init__.py','README.md','IMPORTS.json','poisson_adapter.py']]
+FILES+=['operators/'+name for name in ['extra_models3d.py','EXTRA_IMPORTS.json','upstream/Physics_Attention.py','upstream/LICENSE','upstream/prior_families.py','upstream/PROVENANCE.json']]
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('attempt');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--reuse-attempt');a=p.parse_args()
     assert a.attempt.isalnum(),a.attempt
     out=ROOT/LANE/'runs'/a.attempt;out.mkdir(parents=True,exist_ok=False)
     remote=f'{NAMESPACE}/{a.attempt}'
@@ -26,6 +28,23 @@ def main():
         dest=out/'code'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(blob)
         proof.append(dict(path=path,staged=str(dest.relative_to(out)),sha256=hashlib.sha256(blob).hexdigest()))
     (out/'COMMIT.txt').write_text(commit+'\n')
+    if a.reuse_attempt:
+        assert a.reuse_attempt.isalnum()
+        previous=ROOT/LANE/'runs'/a.reuse_attempt
+        collected=json.loads((previous/'COLLECTED.json').read_text())
+        assert collected['checksums_verified']
+        assert json.loads((previous/'audit-local.json').read_text())['passed']
+        source=previous/'archive/out';record=json.loads((source/'result.json').read_text())
+        cfg=json.loads((out/'code/config.json').read_text())
+        assert cfg['reuse_checkpoint_directory']=='checkpoints'
+        names=['result.json','cohorts.json','bank.pkl']+[f'head_K{k}.pkl' for k in cfg['latent_dimensions']]
+        names += [f"operators/{entry['name']}/best.pkl" for entry in cfg['operators'] if entry.get('reuse')]
+        names += [p.name for p in source.glob('eq_N*_K*.npz')]
+        for name in names:
+            dest=out/'checkpoints'/name;dest.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(source/name,dest)
+            proof.append(dict(path=f'reused:{a.reuse_attempt}/out/{name}',staged=str(dest.relative_to(out)),
+                              sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),source_commit=record['source_commit']))
     (out/'PROVENANCE.json').write_text(json.dumps(dict(source_commit=commit,files=proof,remote=remote),indent=2)+'\n')
     script='''#!/bin/bash
 #SBATCH --job-name=ctol_p3d_920___ATTEMPT__

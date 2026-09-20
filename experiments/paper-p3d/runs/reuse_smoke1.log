@@ -1,0 +1,13 @@
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 0.0013066371434029478
+COMPILED 8 linear_bank_weak_qR 0.127
+COMPILED 8 linear_bank_galerkin 0.051
+COMPILED 8 pod2_galerkin 0.118
+COMPILED 8 pod4_galerkin 0.094
+COMPILED 8 pod8_galerkin 0.045
+COMPILED 8 dst_exact 0.0
+COMPILED 8 nmrom_K2_q0_dense 0.776
+COMPILED 8 nmrom_K2_q0_eq 0.608
+COMPILED 8 nmrom_K2_q2_dense 0.799
+COMPILED 8 nmrom_K2_q2_eq 0.652
+CASE 8 0 REP 0

@@ -28,6 +28,10 @@ def audit(out,output=None):
             exact=dstn(dstn(z['forcing'],type=1,norm='ortho')/lam,type=1,norm='ortho')
             defect=error(exact,z['same_grid']);max_reference_defect=max(max_reference_defect,defect)
             assert defect<1e-11,defect
+        if row['method'].startswith('nmrom_'):
+            stats=np.asarray(row['selected_stats']);starts=np.asarray(row['all_starts_stats'])
+            assert row['stationary']==bool(int(stats[2])==1 and stats[5]<=record['config']['lm_tolerance'])
+            assert row['iterations']==int(np.sum(starts[:,0]))
         if 'field_file' not in row:continue
         pred=np.load(out/row['field_file'])['prediction'];assert sha(pred)==row['field_sha256']
         assert pred.dtype==np.dtype('float64')
@@ -42,7 +46,22 @@ def audit(out,output=None):
         assert np.array_equal([r['device_ms'] for r in records],row['device_ms_repetitions'])
         assert abs(np.median(row['device_ms_repetitions'])-row['device_ms_median'])<1e-12
         cases={r['case']:r for r in records};finite=[r for r in cases.values() if r['finite']]
-        if finite:assert abs(max(r['same_grid_error'] for r in finite)-row['same_grid_error_worst'])<1e-12
+        assert row['cases']==len(cases)
+        assert row['nonfinite_cases']==len(cases)-len(finite)
+        assert row['nonstationary_cases']==sum(not r['stationary'] for r in cases.values())
+        assert row['cases_above_same_grid_target']==sum(r['same_grid_error']>record['config']['same_grid_target'] for r in finite)
+        times=np.asarray([r['device_ms'] for r in records]);assert np.all(times>0)
+        assert row['timing_outliers_above_1p5_median']==int(np.count_nonzero(times>1.5*np.median(times)))
+        assert abs(np.median([r['total_ms'] for r in records])-row['total_ms_median'])<1e-12
+        if finite:
+            errors=np.asarray([r['same_grid_error'] for r in finite])
+            for key,value in [('same_grid_error_worst',np.max(errors)),('same_grid_error_mean',np.mean(errors)),
+                              ('same_grid_error_median',np.median(errors)),
+                              ('physical_error_worst',max(r['physical_error'] for r in finite))]:
+                assert abs(value-row[key])<1e-12,(row['method'],key,value,row[key])
+            for case in cases:
+                repeated=[r['same_grid_error'] for r in records if r['case']==case and r['finite']]
+                assert max(repeated)-min(repeated)<1e-12
     result=dict(passed=True,checked_fields=checked,checked_references=len(references),checked_summary_rows=len(summary['rows']),
         maximum_reference_relative_defect=max_reference_defect,maximum_metric_absolute_defect=max_metric_defect,
         limitation='independent field/reference/aggregation audit; no independent retraining or global-optimality proof')

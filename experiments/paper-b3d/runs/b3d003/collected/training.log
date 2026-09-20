@@ -1,0 +1,60 @@
+jax_backend=gpu fresh bank/head training f64
+TRAIN DATA 32 512 6.82
+TRAIN DATA 64 512 12.56
+TRAIN DATA 96 512 18.37
+TRAIN DATA 128 512 23.95
+TRAIN DATA 160 512 29.69
+TRAIN DATA 192 512 35.35
+TRAIN DATA 224 512 41.56
+TRAIN DATA 256 512 47.43
+TRAIN DATA 288 512 53.11
+TRAIN DATA 320 512 59.14
+TRAIN DATA 352 512 64.93
+TRAIN DATA 384 512 70.48
+TRAIN DATA 416 512 76.27
+TRAIN DATA 448 512 82.02
+TRAIN DATA 480 512 87.82
+TRAIN DATA 512 512 93.46
+BANK REFRESH {'step': 0, 'training_mean': 0.14543138339576633, 'training_worst': 0.3965064348249389, 'validation_mean': 0.146891417791777, 'validation_worst': 0.23663431140608884, 'seconds': 8.15644191391766, 'condition_before_whitening': 179.46167583376103, 'selected': True}
+BANK {'step': 10000, 'objective': 0.0011303678944365252, 'seconds': 20.365012218011543}
+BANK {'step': 20000, 'objective': 0.001559021936875564, 'seconds': 25.84804731584154}
+BANK REFRESH {'step': 20000, 'training_mean': 0.011528380932224285, 'training_worst': 0.05445317919537443, 'validation_mean': 0.012498505094833991, 'validation_worst': 0.033724592432777395, 'seconds': 26.568839063867927, 'condition_before_whitening': 31.85803555662745, 'selected': True}
+BANK {'step': 30000, 'objective': 0.004254322363786251, 'seconds': 31.982753701973706}
+BANK {'step': 40000, 'objective': 0.005076789400580757, 'seconds': 37.49322690698318}
+BANK REFRESH {'step': 40000, 'training_mean': 0.029932060723215612, 'training_worst': 0.10020859419164568, 'validation_mean': 0.032552359979805386, 'validation_worst': 0.07838413522134008, 'seconds': 38.193813011050224, 'condition_before_whitening': 113.65721498677546, 'selected': False}
+BANK {'step': 50000, 'objective': 0.026666346632426417, 'seconds': 43.48571944492869}
+BANK {'step': 60000, 'objective': 0.024257487564611605, 'seconds': 48.92285270895809}
+BANK REFRESH {'step': 60000, 'training_mean': 0.050601053449753006, 'training_worst': 0.15241017460707074, 'validation_mean': 0.052169419976332794, 'validation_worst': 0.10647570011436135, 'seconds': 49.59821216203272, 'condition_before_whitening': 235.5385497789812, 'selected': False}
+BANK {'step': 70000, 'objective': 0.012559295081013076, 'seconds': 54.90853647585027}
+BANK {'step': 80000, 'objective': 0.03911219649214507, 'seconds': 60.3259241450578}
+BANK REFRESH {'step': 80000, 'training_mean': 0.04821703945752237, 'training_worst': 0.13784010502921334, 'validation_mean': 0.048870501994233234, 'validation_worst': 0.10614092612354149, 'seconds': 61.036162125878036, 'condition_before_whitening': 384.1182906537412, 'selected': False}
+BANK {'step': 90000, 'objective': 0.007349158292504136, 'seconds': 66.45723771397024}
+BANK {'step': 100000, 'objective': 0.00373552276759823, 'seconds': 71.93558537401259}
+BANK REFRESH {'step': 100000, 'training_mean': 0.02878555415682392, 'training_worst': 0.09374356405481953, 'validation_mean': 0.030007199154670997, 'validation_worst': 0.07549141705274186, 'seconds': 72.68232878204435, 'condition_before_whitening': 104.43848043927272, 'selected': False}
+BANK {'step': 110000, 'objective': 0.2479285565924349, 'seconds': 77.90746671101078}
+BANK {'step': 120000, 'objective': 0.0025223739158354466, 'seconds': 83.23821072094142}
+BANK REFRESH {'step': 120000, 'training_mean': 0.01840574067316434, 'training_worst': 0.0704426497005039, 'validation_mean': 0.019301388527006753, 'validation_worst': 0.05609058996774734, 'seconds': 83.98246665089391, 'condition_before_whitening': 48.0044226009855, 'selected': False}
+BANK {'step': 130000, 'objective': 0.0016833345134796393, 'seconds': 89.36505654803477}
+BANK {'step': 140000, 'objective': 0.0011576349806300902, 'seconds': 94.8780022598803}
+BANK REFRESH {'step': 140000, 'training_mean': 0.017552938303049596, 'training_worst': 0.06754079489355605, 'validation_mean': 0.018844903717342598, 'validation_worst': 0.056158170107545445, 'seconds': 95.57252008095384, 'condition_before_whitening': 25.89876634136206, 'selected': False}
+BANK {'step': 150000, 'objective': 0.0005105033286938745, 'seconds': 100.86994279990904}
+BANK {'step': 160000, 'objective': 0.00022749376293570387, 'seconds': 106.2173620229587}
+BANK REFRESH {'step': 160000, 'training_mean': 0.01235484979902161, 'training_worst': 0.05312401692596015, 'validation_mean': 0.01329269878386937, 'validation_worst': 0.0393382404917969, 'seconds': 106.9026795309037, 'condition_before_whitening': 5.845716039546368, 'selected': False}
+BANK {'step': 170000, 'objective': 0.00020797162486374448, 'seconds': 112.1835489468649}
+BANK {'step': 180000, 'objective': 0.00018355056221272016, 'seconds': 117.54746771999635}
+BANK REFRESH {'step': 180000, 'training_mean': 0.009964919280997488, 'training_worst': 0.0456514314530658, 'validation_mean': 0.010796813473716405, 'validation_worst': 0.032471054160345555, 'seconds': 118.21764694596641, 'condition_before_whitening': 3.762241065246761, 'selected': True}
+BANK {'step': 190000, 'objective': 0.00014131268056984377, 'seconds': 123.5207772939466}
+BANK {'step': 200000, 'objective': 0.00014851104149540172, 'seconds': 128.91151043889113}
+BANK REFRESH {'step': 200000, 'training_mean': 0.008765236673763811, 'training_worst': 0.042138717427374316, 'validation_mean': 0.009545392723998822, 'validation_worst': 0.02890078257178823, 'seconds': 129.592257988872, 'condition_before_whitening': 3.0109322885926595, 'selected': True}
+BANK FLOOR {'seconds': 130.2864333188627, 'rank': 256, 'condition': 1.0000000000000677, 'mean_relative_projection': 0.008765236673762902, 'worst_relative_projection': 0.042138717427374316, 'selection': {'condition_before_whitening': 3.0109322885926595, 'seconds': 129.592257988872, 'selected': True, 'step': 200000, 'training_mean': 0.008765236673763811, 'training_worst': 0.042138717427374316, 'validation_mean': 0.009545392723998822, 'validation_worst': 0.02890078257178823}}
+HEAD {'step': 10000, 'objective': 0.0003807557824167054, 'seconds': 8.342337117996067}
+HEAD {'step': 20000, 'objective': 0.0002731835790961225, 'seconds': 13.228773317998275}
+HEAD {'step': 30000, 'objective': 0.00026633215456502895, 'seconds': 18.102428874000907}
+HEAD {'step': 40000, 'objective': 0.0002359887101312518, 'seconds': 22.989760074065998}
+HEAD {'step': 50000, 'objective': 0.00023861700913037354, 'seconds': 27.858927237102762}
+HEAD {'step': 60000, 'objective': 0.00021049226697322557, 'seconds': 32.72678555897437}
+HEAD {'step': 70000, 'objective': 0.0002100560927416074, 'seconds': 37.59807780897245}
+HEAD {'step': 80000, 'objective': 0.00023047643021452047, 'seconds': 42.5322396310512}
+HEAD {'step': 90000, 'objective': 0.00019209458778837732, 'seconds': 47.461307822028175}
+HEAD {'step': 100000, 'objective': 0.00017474489385907102, 'seconds': 52.41061298502609}
+TRAIN COMPLETE

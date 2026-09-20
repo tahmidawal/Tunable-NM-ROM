@@ -17,8 +17,9 @@ def summarize(root):
     assert raw['complete']
     names=['audit.json','source_audit.json','history_audit.json','pod_cold_audit.json']
     if raw['evaluation_cohort']=='development':names.append('teacher_audit.json')
+    if raw['evaluation_cohort']=='final':names.append('protocol_audit.json')
     audits={name:json.loads((root/name).read_text()) for name in names}
-    assert all(a['passed'] for a in audits.values()),'Every required audit must pass'
+    assert all(a['passed'] and a.get('complete',True) for a in audits.values()),'Every required audit must finish and pass'
     assert 'all_four_operator_families' in audits['audit.json']['checks'],'Field audit incomplete'
     records=json.loads((out/'timing_rows.json').read_text());rows=[]
     reference_passed=all(x['passed'] for x in raw['reference_refinement'])

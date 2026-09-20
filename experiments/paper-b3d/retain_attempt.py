@@ -38,7 +38,7 @@ def main():
     retention=dict(full_local_archive=str(archive),checksums='collected/COLLECTION.sha256',
         scientific_checksums='collected/OUTPUTS.sha256',git_retained=records,
         dense_arrays_and_optimizer_states='retained in the complete local checksum-covered archive; no original file is removed',
-        final_replay_assets='exact basis/direction arrays and repetition-zero development rows 512 and 519 retained in Git')
+        final_replay_assets='exact basis/direction arrays and repetition-zero examples at solver slots 512 and 519 retained in Git; each panel metadata identifies development versus final membership. Complete replay/prediction/reference fields are retained by the separate scientific split archive')
     target=run/'RETENTION.json';target.write_text(json.dumps(retention,indent=2)+'\n')
     subprocess.run(['git','-C',str(root),'add','-f','--',*[str(p.relative_to(root)) for p in kept],str(target.relative_to(root))],check=True)
     print(json.dumps(dict(files=len(records),bytes=sum(v['bytes'] for v in records),retention=str(target)),indent=2))

@@ -1,0 +1,96 @@
+{
+  "source_commit": "91d60ace229bbd4a27001b312ced73ebac225d86",
+  "job_id": "4018922",
+  "audit_passed": true,
+  "scope": "Development representation and operator inference diagnostics; no ROM trajectory timing or CG comparison.",
+  "rows": [
+    {
+      "seed": "seedA",
+      "train_count": 512,
+      "bank_evolved_worst": 0.007213418275352863,
+      "heads": [
+        {
+          "name": "random_K16",
+          "evolved_worst": 0.018646896648891305,
+          "nonstationary_fits": 0
+        },
+        {
+          "name": "random_K32",
+          "evolved_worst": 0.016082642536390475,
+          "nonstationary_fits": 1
+        }
+      ],
+      "operators": [
+        {
+          "name": "fno3d_w16_m6",
+          "worst_all_times": 0.0022382856010605334
+        },
+        {
+          "name": "unet3d_w8",
+          "worst_all_times": 0.002790909426199086
+        },
+        {
+          "name": "deeponet3d_r128_w16",
+          "worst_all_times": 0.06421636164091736
+        },
+        {
+          "name": "transolver3d_w48_s32",
+          "worst_all_times": 0.007557583113138594
+        }
+      ]
+    },
+    {
+      "seed": "seedB",
+      "train_count": 512,
+      "bank_evolved_worst": 0.006996131452076602,
+      "heads": [
+        {
+          "name": "random_K16",
+          "evolved_worst": 0.017690957770566305,
+          "nonstationary_fits": 0
+        },
+        {
+          "name": "random_K32",
+          "evolved_worst": 0.014897268457475708,
+          "nonstationary_fits": 0
+        }
+      ],
+      "operators": [
+        {
+          "name": "fno3d_w16_m6",
+          "worst_all_times": 0.0024298146962764586
+        },
+        {
+          "name": "unet3d_w8",
+          "worst_all_times": 0.0035211358261290635
+        },
+        {
+          "name": "deeponet3d_r128_w16",
+          "worst_all_times": 0.10724092759252313
+        },
+        {
+          "name": "transolver3d_w48_s32",
+          "worst_all_times": 0.00905094348231608
+        }
+      ]
+    },
+    {
+      "seed": "control128",
+      "train_count": 128,
+      "bank_evolved_worst": 0.013014569785634715,
+      "heads": [
+        {
+          "name": "random_K16",
+          "evolved_worst": 0.06009357259739405,
+          "nonstationary_fits": 0
+        },
+        {
+          "name": "random_K32",
+          "evolved_worst": 0.04586218433246772,
+          "nonstationary_fits": 1
+        }
+      ],
+      "operators": []
+    }
+  ]
+}

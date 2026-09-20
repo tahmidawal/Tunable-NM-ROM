@@ -1,0 +1,115 @@
+{
+  "passed": true,
+  "source_commit": "91d60ace229bbd4a27001b312ced73ebac225d86",
+  "job_id": "4018922",
+  "complete": true,
+  "final_cohort_opened": false,
+  "seeds": [
+    {
+      "seed": "seedA",
+      "head_audit": {
+        "passed": true,
+        "complete": true,
+        "final_cohort_opened": false,
+        "checked_fields": 32,
+        "checked_fit_states": 192,
+        "reconstruction_max_absolute_difference": 1.5543122344752192e-15,
+        "gradient_max_absolute_difference": 1.5767314743990052e-16,
+        "source_files_verified": 33,
+        "independent_reference_max_absolute_difference": 5.551115123125783e-16,
+        "independent_training_coordinate_max_absolute_difference": 2.1316282072803006e-14,
+        "scope": "independent NumPy/SciPy PCA initialization, selected-checkpoint field errors, decoded fields and analytic normalized fitting gradients; operator diagnostics await a full paired panel"
+      },
+      "pretraining": {
+        "passed": true,
+        "recipes": [
+          {
+            "name": "deeponet3d_r128_w16",
+            "passed": true,
+            "training_cases": 512,
+            "training_output_snapshots": 2560,
+            "weighted_pod_eigen_residual": 3.3224989804752424e-13,
+            "orthogonality": 7.730479700818194e-09,
+            "gram_relative_defect": 8.049199173851717e-16,
+            "least_squares_normal_defect": 1.9204236999921696e-15,
+            "physical_metric_identity_defect": 2.749346125633758e-16
+          }
+        ],
+        "scope": "regenerated training heat solutions, weighted POD teacher, learned trunk least squares and field Gram metric; no development/final teacher"
+      },
+      "bank_reconstruction_max_absolute_difference": 5.395694741699986e-15,
+      "operator_development_fields_checked": [
+        "fno3d_w16_m6",
+        "unet3d_w8",
+        "deeponet3d_r128_w16",
+        "transolver3d_w48_s32"
+      ],
+      "all_checkpoint_hashes_verified": true
+    },
+    {
+      "seed": "seedB",
+      "head_audit": {
+        "passed": true,
+        "complete": true,
+        "final_cohort_opened": false,
+        "checked_fields": 32,
+        "checked_fit_states": 192,
+        "reconstruction_max_absolute_difference": 1.887379141862766e-15,
+        "gradient_max_absolute_difference": 2.1013811590274505e-16,
+        "source_files_verified": 33,
+        "independent_reference_max_absolute_difference": 5.551115123125783e-16,
+        "independent_training_coordinate_max_absolute_difference": 2.3092638912203256e-14,
+        "scope": "independent NumPy/SciPy PCA initialization, selected-checkpoint field errors, decoded fields and analytic normalized fitting gradients; operator diagnostics await a full paired panel"
+      },
+      "pretraining": {
+        "passed": true,
+        "recipes": [
+          {
+            "name": "deeponet3d_r128_w16",
+            "passed": true,
+            "training_cases": 512,
+            "training_output_snapshots": 2560,
+            "weighted_pod_eigen_residual": 3.3224989804752424e-13,
+            "orthogonality": 7.730479700818194e-09,
+            "gram_relative_defect": 7.091917593647051e-16,
+            "least_squares_normal_defect": 1.6570809527021274e-15,
+            "physical_metric_identity_defect": 0.0
+          }
+        ],
+        "scope": "regenerated training heat solutions, weighted POD teacher, learned trunk least squares and field Gram metric; no development/final teacher"
+      },
+      "bank_reconstruction_max_absolute_difference": 1.3294270198582758e-14,
+      "operator_development_fields_checked": [
+        "fno3d_w16_m6",
+        "unet3d_w8",
+        "deeponet3d_r128_w16",
+        "transolver3d_w48_s32"
+      ],
+      "all_checkpoint_hashes_verified": true
+    },
+    {
+      "seed": "control128",
+      "head_audit": {
+        "passed": true,
+        "complete": true,
+        "final_cohort_opened": false,
+        "checked_fields": 32,
+        "checked_fit_states": 192,
+        "reconstruction_max_absolute_difference": 2.220446049250313e-15,
+        "gradient_max_absolute_difference": 1.6294685108371245e-16,
+        "source_files_verified": 33,
+        "independent_reference_max_absolute_difference": 5.551115123125783e-16,
+        "independent_training_coordinate_max_absolute_difference": 2.1316282072803006e-14,
+        "scope": "independent NumPy/SciPy PCA initialization, selected-checkpoint field errors, decoded fields and analytic normalized fitting gradients; operator diagnostics await a full paired panel"
+      },
+      "pretraining": {
+        "passed": true,
+        "recipes": []
+      },
+      "bank_reconstruction_max_absolute_difference": 5.674416015191697e-15,
+      "operator_development_fields_checked": [],
+      "all_checkpoint_hashes_verified": true
+    }
+  ],
+  "scope": "independent source/cohort/bank/fields/analytic fitting gradients; training evidence only, no trajectory timing claim"
+}

@@ -1,0 +1,63 @@
+{
+  "spec": {
+    "kind": "transolver3d",
+    "width": 48,
+    "depth": 4,
+    "heads": 4,
+    "slices": 32,
+    "patch": 2,
+    "reference_grid": 4,
+    "mlp_ratio": 2,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ],
+    "coordinate_bounds": [
+      -1.0,
+      1.0
+    ]
+  },
+  "config": {
+    "steps": 100000,
+    "wall_seconds": 2700,
+    "batch_size": 2,
+    "seed": 920453,
+    "learning_rate": 0.001,
+    "validation_every": 500,
+    "curve_every": 50,
+    "components_per_output": 1
+  },
+  "parameter_count": 561272,
+  "steps_completed": 100000,
+  "initialization": "fresh random",
+  "best_step": 99000,
+  "best_validation_worst": 0.005304713320162671,
+  "seconds": 2498.7107358099893,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "name": "transolver3d_w48_s32",
+  "scales": {
+    "input": 0.09347530902320836,
+    "output": 0.002004507121105652
+  },
+  "training_input_sha256": "f3519705b5c93a7fa6fc7304220a8518e8cf5159ee2aa218d3d78b2c320dafa6",
+  "training_target_sha256": "922b657d8c32cfd8fce06baff4150c03f43452d0ae037dd7842ac7791c43e4cd",
+  "validation_input_sha256": "e6e16d36c89b4906ef93d505affea8cb23ae9a040aafafb06e67d1c2473215f7",
+  "validation_target_sha256": "619ff8d176fe0aaf447a4e1c7d762cb51a64f4bfa861fdcb5820d29659ebbd33",
+  "immediate_reuse_source": {
+    "source_commit": "38ef2031f3ad182fed873e004ba1fc0dc972f812",
+    "job_id": "4025641"
+  },
+  "original_training_source": {
+    "source_commit": "59651088953df04f78e4193210ec400d6cf50f1f",
+    "job_id": "4019009",
+    "result_sha256": "2e2034b58fbb58c18058ef78eba279853816de54af1b0eb8500cad56d92197ad",
+    "checkpoint_sha256": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46",
+    "attempt": "seed05"
+  }
+}

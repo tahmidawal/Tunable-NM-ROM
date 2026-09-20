@@ -19,7 +19,18 @@ def panel(path):
             worst_all=max(v['worst_all'] for v in selected),worst_evolved=max(case_errors),median_evolved=float(np.median(case_errors)),
             case_worst_evolved=[dict(case=case,error=error) for case,error in zip(cases,case_errors)],
             stationary_or_converged=None if all(v is None for v in accepted) else sum(bool(v) for v in accepted)))
-    return dict(scope=r['comparison_scope'],rows=rows,source_result_sha256=hashlib.sha256((path/'result.json').read_bytes()).hexdigest(),
+    ladder=[next(row for row in rows if row['method']==f'rom_q{q}') for q in r['config']['q_ladder']]
+    case_ids=[entry['case'] for entry in ladder[0]['case_worst_evolved']]
+    assert all([entry['case'] for entry in row['case_worst_evolved']]==case_ids for row in ladder)
+    case_errors=np.asarray([[entry['error'] for entry in row['case_worst_evolved']] for row in ladder])
+    correction_ladder=dict(q=r['config']['q_ladder'],cases=len(case_ids),
+        cases_with_nonincreasing_error=int(np.sum(np.all(np.diff(case_errors,axis=0)<=0,axis=0))),
+        worst_error_nonincreasing=bool(np.all(np.diff([row['worst_evolved'] for row in ladder])<=0)),
+        endpoint_worst_error_reduction=ladder[0]['worst_evolved']/ladder[-1]['worst_evolved'],
+        endpoint_median_cost_ratio=ladder[-1]['median_ms']/ladder[0]['median_ms'],
+        definition='worst evolved fixed-initial error per case across all timing repetitions; exact nonincreasing comparisons across the frozen correction ranks')
+    return dict(scope=r['comparison_scope'],rows=rows,correction_ladder=correction_ladder,
+        source_result_sha256=hashlib.sha256((path/'result.json').read_bytes()).hexdigest(),
         source=r['commit'],job_id=r['job_id'],backend=r['backend'],gpu=r['gpu'],bank_floor=r.get('bank_floor'),
         representation=r.get('representation'),evaluation_kind=r['config'].get('evaluation_kind','development'),
         evaluation_seed=r['config'].get('evaluation_seed',r['config']['seed']),actual_test_modes=r['actual_test_modes'],

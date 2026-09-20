@@ -4,6 +4,21 @@ from pathlib import Path
 import numpy as np
 
 
+def file_hash(path):
+    h=hashlib.sha256()
+    with path.open('rb') as f:
+        while block:=f.read(8*1024**2):h.update(block)
+    return h.hexdigest()
+
+
+INPUT_FILES=('train_data.npz','confirmation_statistics.pkl','membership.json',
+    'deeponet_candidate/pretraining/pretraining.json',
+    'deeponet_candidate/pretraining/training_teacher.npz',
+    'deeponet_candidate/pretraining/branch_teacher.npz',
+    'deeponet_candidate/pretraining/branch_selected_coefficients.npz',
+    'deeponet_candidate/pretraining/trunk_selected.pkl')
+
+
 def audit(pretraining,cases,points,components=3):
     pretraining=Path(pretraining);info=json.loads((pretraining/'pretraining.json').read_text());spec=info['spec'];rank=spec['rank']
     with np.load(pretraining/'training_teacher.npz') as f:basis=f['spatial_basis'];values=f['eigenvalues'];dn=f['denominators'];teacher_error=f['projection_errors']
@@ -40,8 +55,18 @@ def audit(pretraining,cases,points,components=3):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('collected');p.add_argument('--out',required=True);a=p.parse_args();out=Path(a.collected)/'output'
+    p=argparse.ArgumentParser();p.add_argument('collected');p.add_argument('--out',required=True)
+    p.add_argument('--verify-existing',help='Reuse a completed numerical audit only after every immutable input byte matches the final checksum-collected files')
+    a=p.parse_args();out=Path(a.collected)/'output'
     raw=json.loads((out/'result.json').read_text());cfg=raw['config'];membership=json.loads((out/'membership.json').read_text())['membership']
+    hashes={name:file_hash(out/name) for name in INPUT_FILES}
+    config_hash=hashlib.sha256(json.dumps(cfg,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    if a.verify_existing:
+        result=json.loads(Path(a.verify_existing).read_text());assert result['passed'] and result['complete']
+        assert result['input_sha256']==hashes and result['configuration_sha256']==config_hash
+        assert raw['complete'],'Only a completed panel can accept the earlier audit'
+        result['verified_against_complete_collection']=True
+        Path(a.out).write_text(json.dumps(result,indent=2)+'\n');print('Every audited input matches the complete collection');return
     with np.load(out/'train_data.npz') as f:base=f['states']
     with (out/'confirmation_statistics.pkl').open('rb') as f:stats=pickle.load(f)
     def cases():
@@ -49,7 +74,9 @@ def main():
             states=np.roll(base[case],(dx,dy,dz),axis=(-3,-2,-1));increment=(states[1:]-states[0])/stats['output_scale']
             y=np.ascontiguousarray(np.moveaxis(increment.reshape(15,cfg['n'],cfg['n'],cfg['n']),0,-1));den=np.repeat(np.sum(states[0]**2)/stats['output_scale']**2,5)
             yield y,den
-    result=audit(out/'deeponet_candidate/pretraining',cases(),cfg['n']**3);Path(a.out).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 2)
+    result=audit(out/'deeponet_candidate/pretraining',cases(),cfg['n']**3)
+    result.update(complete=True,input_sha256=hashes,configuration_sha256=config_hash,verified_against_complete_collection=bool(raw['complete']))
+    Path(a.out).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 2)
 
 
 if __name__=='__main__':main()

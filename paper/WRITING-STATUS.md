@@ -5,6 +5,13 @@ All future manuscript edits and builds occur only here, as explicitly required b
 the user. The paper-refresh worktree is a historical source, not an editing target.
 The pre-migration root copy is preserved under `archives/paper-before-canonical-2026-09-20/`.
 
+The main experiment section now includes the two-dimensional CG and Burgers
+comparisons, three-dimensional method tables, correction settings and L-shaped CG
+results. Sparse-direct baselines are excluded from the main tables. Burgers3D uses
+accepted final evidence; Poisson/heat/NS use labelled development snapshots. Heat
+CG remains unreported until the paired panel is accepted. Detailed diagnostics and
+prior comparator studies remain supplementary.
+
 The user-authorized positioning rewrite is now in `main.tex` and `main.pdf`. The
 original section order and comparison/configuration/control table roles are retained;
 correction rank is the primary representation control. Paired CG comparisons have

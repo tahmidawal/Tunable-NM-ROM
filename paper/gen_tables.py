@@ -1705,6 +1705,17 @@ def build_lshape():
     write('T18m_lshape_main.tex', tabular(['mesh', 'job', 'sparse direct ms', 'cheapest FOM', 'ms', 'err \\%', 'POD-128 err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head $q{=}64$ err \\%', 'ms', '$\\times$ vs direct / cheapest', 'head on set'],
                                          tm, 'llrlrrrrrrrrc', r'\scriptsize'), 'lshape solve layer, M = 257, one job per mesh; complete-query ms; every ratio inside its job; head rows printed even where dominated')
     write('TR_lshape_main.tex', tabular(['Mesh', 'Method', 'Error (\\%)', 'Complete ms', '$S$'], clean_lshape, 'llrrr'), 'each mesh uses its displayed FOM denominator; complete-query timing; development')
+
+    cg_rows=[]
+    for mesh in (256,512):
+        candidates=[sub for (m,t,sub) in V if m==mesh and t==257 and sub.startswith('fom_cg_gpu_r')]
+        reference=min(candidates,key=lambda sub: V[(mesh,257,sub)]['median_total_ms'])
+        c=V[(mesh,257,reference)]
+        for label_,sub in [('CG $'+reference.split('_r')[1]+'$',reference),('NM-ROM $q=0$','neural_q0@head_sdf_R512_K16'),('NM-ROM $q=64$',HEAD),('POD-128',POD)]:
+            if (mesh,257,sub) not in V:continue
+            d=V[(mesh,257,sub)]
+            cg_rows.append([f'${mesh}^2$',label_,pct(100*d['worst_same_grid'],3),ms(d['median_total_ms'],3),f"{c['median_total_ms']/d['median_total_ms']:.2f}"+r'$\times$'])
+    write('TR_lshape_cg_main.tex',tabular(['Mesh','Method','Error (\\%)','Complete ms','$S$'],cg_rows,'llrrr'),'CG only; fastest retained GPU CG at each mesh; common denominator; same job')
     # the 256^2 crossover cell keeps its short names (used in the intro and §5.6)
     best = V.get((256, 257, 'neural_q64@head_sdf_R512_K16'), {}); splu = V.get((256, 257, 'fom_splu'), {})
     if best and splu:

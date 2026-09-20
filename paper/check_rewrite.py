@@ -23,5 +23,18 @@ cg=json.loads((P/'evidence/paired-cg-2026-09-20/results.json').read_text())
 for r in cg['rows']:
  assert abs(r['cg_ms']/r['method_ms']-r['speedup'])<1e-10
  assert r['cg_error_pct']<=r['error_pct']
-report=dict(passed=True,baseline=BASE,preserved_generated_files=len(preserved),historical_numeric_changes=changed,paired_cg_rows=len(cg['rows']),main_text_last_page=refs[0],pdf_pages=len([p for p in pages if p.strip()]),abstract_source_words=len(abstract.split()),overfull_boxes=0,undefined_references=0,official_style=style,pdf_sha256=hashlib.sha256((P/'main.pdf').read_bytes()).hexdigest(),visually_reviewed_pages=[1,6,7,8,9],legacy_exact_prose_check='Not applicable to the authorized rewrite; preserved historical numerical checks passed before its old source-hash assertion.',scope='Editorial rewrite and paired-CG integration; existing 3D development snapshot retained, later final experiments not imported.')
+experiment=json.loads((P/'tables/main-experiments-provenance.json').read_text())
+for kind, source in experiment['sources'].items():
+ raw=(P/'evidence/main-experiments-2026-09-20'/f'{kind}.json').read_bytes()
+ assert hashlib.sha256(raw).hexdigest()==source['sha256']
+ rows=experiment['selected'][kind]
+ assert len(rows)==(7 if kind=='heat' else 8)
+ for row in rows:
+  assert row['cases']==(32 if kind=='burgers' else 8 if kind=='ns' else 16)
+  if kind=='heat':assert row['speedup'] is None
+  else:assert abs(rows[-1]['ms']/row['ms']-row['speedup'])<1e-12
+assert 'sparse direct' not in (P/'tables/TR_lshape_cg_main.tex').read_text()
+for label in ('tab:3d-linear-main','tab:3d-nonlinear-main','tab:cg-main','tab:lshape-main'):
+ assert label in s.split(r'\bibliographystyle')[0]
+report=dict(passed=True,baseline=BASE,preserved_generated_files=len(preserved),historical_numeric_changes=changed,paired_cg_rows=len(cg['rows']),main_3d_method_rows=sum(len(x) for x in experiment['selected'].values()),main_3d_source_hashes={k:v['sha256'] for k,v in experiment['sources'].items()},main_text_last_page=refs[0],pdf_pages=len([p for p in pages if p.strip()]),abstract_source_words=len(abstract.split()),overfull_boxes=0,undefined_references=0,official_style=style,pdf_sha256=hashlib.sha256((P/'main.pdf').read_bytes()).hexdigest(),visually_reviewed_pages=[6,7,8,9],legacy_exact_prose_check='Not applicable to the authorized rewrite; preserved historical numerical checks passed before its old source-hash assertion.',scope='Main experiments cleaned and expanded: CG-only main linear-PDE baselines; accepted B3D final plus P/H/NS development snapshots. Historical alternatives remain supplementary.')
 (P/'rewrite-verification.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

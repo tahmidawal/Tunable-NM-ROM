@@ -9,3 +9,11 @@ canonical root `LAB-LOG.md` before work, and append there when finished. Experim
 worktrees supply read-only evidence. Generate numerical tables from retained source
 records; rebuild `main.pdf` here after manuscript changes. This explicit user
 instruction overrides earlier instructions locating the manuscript in paper-refresh.
+
+Main experiment presentation follows the older paper: readable comparison tables,
+selected settings, and meaningful deployment controls in the main section. Use CG
+as the main full-order comparator for applicable linear PDEs, including L-shaped
+Poisson; keep sparse-direct comparisons out of the main tables unless the user
+requests them again. Name the appropriate nonlinear FOM for Burgers and NS rather
+than calling it CG. Label development/final cohorts and never fabricate pending
+CG timings. Keep linear-bank baseline gains separate from nonlinear NM-ROM gains.

@@ -705,3 +705,49 @@ to the displayed rule and construction evidence.}
 \label{tab:ladder-detail}
 \resizebox{\linewidth}{!}{\input{tables/T04m_fixedM_main}}
 \end{table}
+
+\section{Main three-dimensional experiment records}
+\label{app:main-experiment-details}
+The main-paper tables are generated from the accepted snapshots listed
+in \texttt{tables/main-experiments-provenance.json}. Burgers uses the
+prospectively selected primary seed on the frozen final cohort;
+Poisson and Navier--Stokes use their later accepted development panels.
+Heat uses its audited development error/runtime panel while the paired
+CG measurement is pending. The earlier three-dimensional supplement
+retains its original snapshot and is not the source of the new main
+comparison tables.
+
+Within each column block, every method and its FOM come from the same
+allocation, with the recorded requested outputs. Poisson CG uses its
+efficient path without timed audit histories; separate replay checks
+verify residuals and stopping. No method's field error is taken from a
+different invocation to improve its ratio. All repeated calls remain in
+the evidence, and the maximum field error retains the worst repetition.
+The fixed FOM denominator is a timing reference, not a claim that every
+method attains the same accuracy as the FOM.
+
+For Burgers the main table uses the original, frozen primary seed;
+the second independent initialization is shown below. For NS, all
+learned methods and POD share the augmented training family, but their
+training budgets differ. Its bank/head is a warm training lineage, not
+independent seed replication. POD dimensions and correction ranks are
+stated in the main captions rather than treated as interchangeable.
+
+\begin{table}[htbp]
+\centering
+\caption{Burgers3D final seed comparison. Errors are worst evolved
+same-grid percentages; times are median GPU milliseconds. Both seeds
+use the same reserved cases, without selection of the better seed.}
+\label{tab:b3d-final-seeds}
+\input{tables/TR_b3d_seeds}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{fig_tunability_family}
+\caption{Burgers2D correction and quadrature studies. A: fixed and
+scheduled test counts. B: the paired accuracy--cost comparison.
+C: quadrature and dense residual evaluation. All axes use the recorded
+experiment's error and timing definitions.}
+\label{fig:family}
+\end{figure}

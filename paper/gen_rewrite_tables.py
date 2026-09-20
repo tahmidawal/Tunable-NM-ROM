@@ -52,10 +52,10 @@ if __name__=='__main__':
     for r in d['rows']:
         problem=r['problem'].replace('Reflective wave2D','Wave').replace('2D','')
         vals=[f"{r[k]:.4f}" for k in ['error_pct','method_ms','cg_error_pct','cg_ms']]+[f"{r['speedup']:.2f}"+r'$\times$']
-        if r['intervals']==1024: rows.append([problem,label(r)]+vals)
+        if r['intervals'] in (256,1024) and not r['method'].startswith(('linear','d_linear')): rows.append([problem,str(r['intervals']),label(r)]+vals)
         full.append([problem,str(r['intervals']),label(r)]+vals+[esc(r['cg']),r'\texttt{'+r['job_id']+'}'])
     headers=['Problem','Method','Error (\\%)','GPU ms','CG error (\\%)','CG ms','$S$']
-    table('TR_cg_main',headers,rows,'llrrrrr')
+    table('TR_cg_main',['Problem','$N$']+headers[1:],rows,'lllrrrrr')
     table('TR_cg_all',['Problem','$N$','Method']+headers[2:]+['CG setting','Job'],full,'lllr rrrrll'.replace(' ',''))
     (HERE/'tables/rewrite-provenance.json').write_text(json.dumps(dict(snapshot=meta,source_sha256=d['source_sha256'],rows=d['rows']),indent=2)+'\n')
     print(f'Paired CG tables: {len(rows)} main rows; {len(full)} appendix rows; hashes and ratios verified.')

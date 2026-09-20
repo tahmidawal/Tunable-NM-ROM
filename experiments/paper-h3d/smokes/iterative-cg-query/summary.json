@@ -1,0 +1,156 @@
+{
+  "schema": "paper-heat3d-summary-v1",
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "complete": true,
+  "smoke": true,
+  "rows": [
+    {
+      "intervals": 8,
+      "method": "dst_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.26795605663210154,
+      "device_ms_repetitions": [
+        0.26795605663210154
+      ],
+      "total_ms_median": 1.0720320278778672,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.0,
+      "same_grid_current_evolved_worst": 0.0,
+      "physical_current_evolved_worst": 0.04879765982155594,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "fom_cn_cg_dt0.025_rtol1e-04",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 1.3825339265167713,
+      "device_ms_repetitions": [
+        1.3825339265167713
+      ],
+      "total_ms_median": 7.509474991820753,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.00024372253331172528,
+      "same_grid_current_evolved_worst": 0.00024372253331172528,
+      "physical_current_evolved_worst": 0.04859521326112193,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0,
+      "cg_iterations_median": 16.0,
+      "cg_iterations_repetitions": [
+        16
+      ],
+      "cg_failed_steps_repetitions": [
+        0
+      ],
+      "cg_true_relative_residual_worst": 2.640955066579079e-05
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_cn",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.99854392465204,
+      "device_ms_repetitions": [
+        0.99854392465204
+      ],
+      "total_ms_median": 3.7922030314803123,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 4.441702563652017,
+      "same_grid_current_evolved_worst": 4.441702563652017,
+      "physical_current_evolved_worst": 4.537527622079239,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.5518000107258558,
+      "device_ms_repetitions": [
+        0.5518000107258558
+      ],
+      "total_ms_median": 7.333121029660106,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 4.441781342192597,
+      "same_grid_current_evolved_worst": 4.441781342192597,
+      "physical_current_evolved_worst": 4.537608525260928,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_galerkin_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.20166707690805197,
+      "device_ms_repetitions": [
+        0.20166707690805197
+      ],
+      "total_ms_median": 3.0097420094534755,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.9803263294885891,
+      "same_grid_current_evolved_worst": 0.9803263294885891,
+      "physical_current_evolved_worst": 0.9792517639365307,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K1_q0_dense",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 6.45089999306947,
+      "device_ms_repetitions": [
+        6.45089999306947
+      ],
+      "total_ms_median": 13.816964928992093,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 1.0022710994215913,
+      "same_grid_current_evolved_worst": 1.0022710994215913,
+      "physical_current_evolved_worst": 1.0024405702432224,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod1_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.15344296116381884,
+      "device_ms_repetitions": [
+        0.15344296116381884
+      ],
+      "total_ms_median": 1.1382570955902338,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.5262699978761044,
+      "same_grid_current_evolved_worst": 0.5262699978761044,
+      "physical_current_evolved_worst": 0.5175095980900596,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "pod4_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.14851393643766642,
+      "device_ms_repetitions": [
+        0.14851393643766642
+      ],
+      "total_ms_median": 1.4452229952439666,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.3399356358345476,
+      "same_grid_current_evolved_worst": 0.3399356358345476,
+      "physical_current_evolved_worst": 0.33224665957938876,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    }
+  ],
+  "final_cohort_opened": false,
+  "interpretation": "development comparison; convergence, physical-reference qualification and EQ certification remain separate"
+}

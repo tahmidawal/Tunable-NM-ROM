@@ -12,6 +12,12 @@ The timed engine carries only the current field and requested output buffer; it 
 
 The bounded GPU smoke `cg_smoke.py` passes independent SciPy modal-CN and NumPy true-residual comparisons, including capped failure and zero-RHS cases; numerical evidence is in `smokes/iterative-cg.json`. This verifies implementation only. No new heat allocation or final-data access occurred during this addition.
 
+## Current resumed ownership
+
+The heat owner resumed after the CG implementation handoff and continues the existing approved campaign. Coverage05 remains the only live heat allocation. The next steps remain collection and independent audit, complete output retention with actual Git-blob verification, exact remote cleanup, then paired development and final freeze. Final data remain unopened.
+
+An additional complete driver smoke now exercises the timed CG dispatch, untimed exact trace replay, saved fields and counters together with ROM/POD/DST controls. Field and residual audits pass; its generated evidence lives in `smokes/iterative-cg-query-{field,residual}-audit.json`. This is implementation verification only. The earlier larger smoke hit its declared local wall cap during multi-arm compilation, before any timed invocation; its incomplete record/log and explicit timeout disposition remain under `smokes/iterative-cg-panel*`.
+
 ## Resume here
 
 Coverage05 job `4018922` is running on pax105 A100 80 GB, submitted after the overnight jobs had completed and the queue was empty. Its immutable source commit is `91d60ace229bbd4a27001b312ced73ebac225d86`. Its unique directory is `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/coverage05`. GPU/f64/highest preflight passed. Queue checks before and after submission are retained in the session record; the account cap is four allocated single GPUs and one live job per PDE lane. No other heat job may be submitted until this one completes.

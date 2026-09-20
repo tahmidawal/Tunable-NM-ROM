@@ -1,0 +1,19 @@
+jax_backend=gpu x64=True precision=highest
+BANK {'step': 1, 'relative_mse': 0.6860700149823911, 'seconds': 3.931065108976327, 'training_coefficient_refit': True, 'coefficient_refit_finite': True}
+BANK {'step': 2, 'relative_mse': 0.5210379019217773, 'seconds': 7.066062152036466, 'training_coefficient_refit': True, 'coefficient_refit_finite': True}
+BANK {'step': 3, 'relative_mse': 0.5982934176550381, 'seconds': 9.859065109980293, 'training_coefficient_refit': True, 'coefficient_refit_finite': True}
+HEAD 2 {'step': 1, 'objective': 1.1525357962427767, 'seconds': 1.9776786839356646}
+HEAD 2 {'step': 2, 'objective': 1.141087335282055, 'seconds': 1.9857286469778046}
+HEAD 2 {'step': 3, 'objective': 1.146937516804945, 'seconds': 1.9928512329934165}
+REFERENCE 0 0.0005917340401036366
+COMPILED 8 linear_bank_cn 0.707
+COMPILED 8 linear_bank_exact 0.001
+COMPILED 8 pod2_exact 0.541
+COMPILED 8 pod4_exact 0.519
+COMPILED 8 pod8_exact 0.239
+COMPILED 8 linear_bank_galerkin_exact 0.265
+COMPILED 8 dst_exact 0.0
+COMPILED 8 fom_cn_cg_dt0.025_rtol1e-04 0.653
+COMPILED 8 nmrom_K2_q0_dense 4.192
+COMPILED 8 nmrom_K2_q0_eq 2.995
+COMPILED 8 nmrom_K2_q2_dense 3.098

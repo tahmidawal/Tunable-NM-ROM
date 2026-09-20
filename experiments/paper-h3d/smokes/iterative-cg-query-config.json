@@ -1,0 +1,73 @@
+{
+  "schema": "paper-heat3d-pilot-v1",
+  "train_intervals": 8,
+  "evaluation_intervals": [
+    8
+  ],
+  "reference_intervals": [
+    8,
+    16
+  ],
+  "train_count": 4,
+  "validation_count": 1,
+  "train_seed": 920310,
+  "validation_seed": 920311,
+  "reserved_final_seed": 920399,
+  "model_seed": 920312,
+  "bank_minibatch_seed": 920313,
+  "head_minibatch_seed": 920314,
+  "timing_seed": 920315,
+  "quadrature_seed": 920316,
+  "diffusivity": 0.02,
+  "times": [
+    0.0,
+    0.1,
+    0.2
+  ],
+  "dt": 0.025,
+  "bank_rank": 4,
+  "latent_dimensions": [
+    1
+  ],
+  "bank_steps": 3,
+  "head_steps": 3,
+  "bank_batch_states": 4,
+  "bank_batch_points": 64,
+  "head_batch_states": 128,
+  "bank_learning_rate": 0.001,
+  "head_learning_rate": 0.0005,
+  "checkpoint_every": 1,
+  "fourier_features": 2,
+  "fourier_scale": 1.5,
+  "bank_width": 8,
+  "head_width": 8,
+  "weak_tests": 8,
+  "q_ladder": [
+    0
+  ],
+  "quadrature_candidates": 1024,
+  "quadrature_decoder_snapshots": 16,
+  "quadrature_fit_rows": 2048,
+  "quadrature_certificate": 0.01,
+  "lm_budget": 8,
+  "lm_tolerance": 1e-06,
+  "initial_starts": 2,
+  "repetitions": 1,
+  "burn_seconds": 0.001,
+  "reference_budget": 0.0001,
+  "field_chunk": 1024,
+  "final_cohort_opened": false,
+  "operators": [],
+  "iterative_cg_controls": [
+    {
+      "dt": 0.025,
+      "relative_tolerance": 0.0001,
+      "max_iterations": 100
+    }
+  ],
+  "retain_solver_states": true,
+  "bank_coefficient_refit_every": 1,
+  "fit_quadrature": false,
+  "include_half_step_control": false,
+  "representation_oracles": false
+}

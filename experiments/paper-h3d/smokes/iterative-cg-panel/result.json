@@ -1,0 +1,379 @@
+{
+  "schema": "paper-heat3d-result-v1",
+  "config": {
+    "schema": "paper-heat3d-pilot-v1",
+    "train_intervals": 8,
+    "evaluation_intervals": [
+      8
+    ],
+    "reference_intervals": [
+      8,
+      16
+    ],
+    "train_count": 4,
+    "validation_count": 1,
+    "train_seed": 920310,
+    "validation_seed": 920311,
+    "reserved_final_seed": 920399,
+    "model_seed": 920312,
+    "bank_minibatch_seed": 920313,
+    "head_minibatch_seed": 920314,
+    "timing_seed": 920315,
+    "quadrature_seed": 920316,
+    "diffusivity": 0.02,
+    "times": [
+      0.0,
+      0.1,
+      0.2
+    ],
+    "dt": 0.025,
+    "bank_rank": 8,
+    "latent_dimensions": [
+      2
+    ],
+    "bank_steps": 3,
+    "head_steps": 3,
+    "bank_batch_states": 4,
+    "bank_batch_points": 64,
+    "head_batch_states": 128,
+    "bank_learning_rate": 0.001,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 1,
+    "fourier_features": 4,
+    "fourier_scale": 1.5,
+    "bank_width": 16,
+    "head_width": 16,
+    "weak_tests": 32,
+    "q_ladder": [
+      0,
+      2
+    ],
+    "quadrature_candidates": 128,
+    "quadrature_decoder_snapshots": 4,
+    "quadrature_fit_rows": 64,
+    "quadrature_certificate": 0.01,
+    "lm_budget": 8,
+    "lm_tolerance": 1e-06,
+    "initial_starts": 2,
+    "repetitions": 1,
+    "burn_seconds": 0.001,
+    "reference_budget": 0.0001,
+    "field_chunk": 1024,
+    "final_cohort_opened": false,
+    "operators": [],
+    "iterative_cg_controls": [
+      {
+        "dt": 0.025,
+        "relative_tolerance": 0.0001,
+        "max_iterations": 100
+      }
+    ],
+    "retain_solver_states": true,
+    "bank_coefficient_refit_every": 1
+  },
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "jax_version": "0.10.1",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "smoke": true,
+  "complete": false,
+  "status": "compile_mesh_8",
+  "final_cohort_opened": false,
+  "evaluation_cohort": "development",
+  "verification": {
+    "heat": {
+      "dst_scipy": 2.9383378160673517e-16,
+      "dst_inverse": 3.9386138572695386e-16,
+      "stencil_diagonal": 2.7374365752497654e-16,
+      "continuum_mode": 2.2022240857803085e-16,
+      "weak_stencil": 1.0555867508864955e-15,
+      "passed": true
+    },
+    "rom": {
+      "nonlinear_fit_error": 2.19824158875781e-14,
+      "linear_cn_error": 2.220446049250313e-16,
+      "augmented_carry_error": 7.438494264988549e-15,
+      "cn_refinement_ratio": 4.001819568187369,
+      "advances_after_first_output": true,
+      "passed": true
+    }
+  },
+  "bank": {
+    "seconds": 9.875045706983656,
+    "steps": 3,
+    "selected_step": null,
+    "validation_projection_evolved_worst": null,
+    "basis_hash": "289e57cf9b3e31037d29298a01ca8cb41ea6ccbf779180d250dd81d23c0611be",
+    "condition_number": 10.800637504817175,
+    "orthogonality": 8.881784197001252e-16,
+    "training_projection_mean": 0.8132776942454322,
+    "training_projection_worst": 0.8883000172498817,
+    "training_matrix_hash": "bc9b1f55af03bf132dab1e3c08ff6f7153795f33acaf5745a458a577b62e581d",
+    "converged_claim": false
+  },
+  "heads": [
+    {
+      "k": 2,
+      "seconds": 2.9575037289178,
+      "steps": 3,
+      "converged_claim": false,
+      "initialization": {
+        "kind": "random_joint_codes"
+      },
+      "training_error_mean": 1.0129397603896353,
+      "training_error_median": 1.011026498646643,
+      "training_error_worst": 1.0478996331190582,
+      "correction_singular_values": [
+        3.1355958549630194,
+        0.9560217762376301,
+        0.6256800262204938,
+        0.4044276443072124,
+        0.20485606227685066,
+        0.06904315090019876,
+        0.028427002379446044,
+        0.011053020069755271
+      ],
+      "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+      "direction_hash": "9a92275a0ce11985279f945bb55493e27977a22d88cfc4ba834e5fb4a0975e57"
+    }
+  ],
+  "meshes": [
+    {
+      "intervals": 8,
+      "bank_sha256": "4650f9b6bdeae539da04bed691a67be67770895813c874c4fe56880f6f3085b9",
+      "weak_operator_sha256": "09943a3a341de9f1563e95320e94217193501de9908ecda7f8938722261cc11b",
+      "weak_tests": 32,
+      "weak_singular_values": [
+        0.04042482394641734,
+        0.03366938185292258,
+        0.024198979305250945,
+        0.018173158174391753,
+        0.016573831395103798,
+        0.012156047194687455,
+        0.011117453695607214,
+        0.00821308665955756
+      ],
+      "pod": {
+        "available_rank": 12,
+        "training_hash": "bc9b1f55af03bf132dab1e3c08ff6f7153795f33acaf5745a458a577b62e581d",
+        "orthogonality": 1.0258460747536446e-13
+      },
+      "quadrature": [
+        {
+          "candidate_count": 128,
+          "positive_support": 58,
+          "source": "decoder-output snapshots, NNLS positive weights, random candidate grid nodes",
+          "fit_rows": 64,
+          "row_scale_floor": 1e-05,
+          "seconds": 0.0015284899855032563,
+          "scaled_fit_norm": 0.28778845615740783,
+          "training_moment_error_max": 0.5873750979990314,
+          "weights_hash": "c83eb4fe55eb0c0a973ea647917132070e67d3d689fe26dc89b8ce4eb585768b",
+          "indices_hash": "e3677f86f15ea3ede5d631944038b8332ee5df9fd3cae4d3cbcac524667840a2",
+          "k": 2,
+          "validation_moment_errors": [
+            1.1163615938409646
+          ],
+          "certificate_threshold": 0.01,
+          "certified": false,
+          "reused_rule": false
+        }
+      ],
+      "representation": [
+        {
+          "case": 0,
+          "k": 2,
+          "head_best_found": {
+            "current_by_time": [
+              0.9269357763311964,
+              0.9100980049745391,
+              0.8942614111529672
+            ],
+            "initial_by_time": [
+              0.9269357763311964,
+              0.7729208254278673,
+              0.6609101041307083
+            ],
+            "current_evolved": 0.9100980049745391,
+            "current_all": 0.9269357763311964,
+            "initial_evolved": 0.7729208254278673,
+            "initial_all": 0.9269357763311964,
+            "initial_fit": 0.9269357763311964,
+            "energy": [
+              0.3333444238769851,
+              0.3327372162859076,
+              0.3284144445042369
+            ]
+          },
+          "fit_stats": [
+            [
+              13.0,
+              11.0,
+              1.0,
+              0.7781521758706272,
+              2.6249490059501345e-10
+            ],
+            [
+              22.0,
+              9.0,
+              2.0,
+              0.7611799983271387,
+              2.867494068584702e-09
+            ],
+            [
+              10.0,
+              10.0,
+              1.0,
+              0.7484291694646237,
+              1.1239254180996812e-10
+            ]
+          ],
+          "nonstationary_fits": 1
+        },
+        {
+          "case": 0,
+          "bank_projection": {
+            "current_by_time": [
+              0.8019344589407982,
+              0.7692380087080338,
+              0.7379900319526398
+            ],
+            "initial_by_time": [
+              0.8019344589407982,
+              0.6532923634501714,
+              0.5454166564521624
+            ],
+            "current_evolved": 0.7692380087080338,
+            "current_all": 0.8019344589407982,
+            "initial_evolved": 0.6532923634501714,
+            "initial_all": 0.8019344589407982,
+            "initial_fit": 0.8019344589407982,
+            "energy": [
+              0.848098783262134,
+              0.6997497580641846,
+              0.5910434681683117
+            ]
+          }
+        }
+      ],
+      "setup_seconds": 5.61843540892005,
+      "methods": {
+        "linear_bank_cn": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": false,
+          "construction": "frozen learned spatial bank evaluated on requested mesh"
+        },
+        "linear_bank_exact": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": false,
+          "construction": "frozen learned spatial bank evaluated on requested mesh"
+        },
+        "pod2_exact": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": true,
+          "construction": "POD rebuilt on requested mesh from identical seeded training trajectories; not frozen native-grid weights"
+        },
+        "pod4_exact": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": true,
+          "construction": "POD rebuilt on requested mesh from identical seeded training trajectories; not frozen native-grid weights"
+        },
+        "pod8_exact": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": true,
+          "construction": "POD rebuilt on requested mesh from identical seeded training trajectories; not frozen native-grid weights"
+        },
+        "linear_bank_galerkin_exact": {
+          "kind": "linear_control",
+          "offline_mesh_adaptation": false,
+          "construction": "frozen learned spatial bank evaluated on requested mesh"
+        },
+        "dst_exact": {
+          "kind": "full_order"
+        },
+        "fom_cn_cg_dt0.025_rtol1e-04": {
+          "kind": "full_order",
+          "algorithm": "Crank-Nicolson; counted matrix-free CG",
+          "spatial_operator": "seven-point finite-difference negative Laplacian; homogeneous Dirichlet",
+          "dt": 0.025,
+          "relative_tolerance": 0.0001,
+          "absolute_tolerance": 0.0,
+          "max_iterations": 100,
+          "preconditioner": "identity; Jacobi is a scalar on this uniform constant-coefficient grid",
+          "warm_start": "previous full-grid time-step solution",
+          "stopping": "true residual norm divided by RHS norm",
+          "stats_columns": [
+            "iterations",
+            "true_relative_residual",
+            "converged",
+            "breakdown",
+            "iteration_cap_reached",
+            "residual_restarts"
+          ],
+          "retains_all_step_fields": "separate untimed trace replay with exact timed-output/statistics parity",
+          "timed_outputs": "requested output fields and small per-step solver counters only",
+          "setup": "no factorization, transform, or fitted preconditioner"
+        },
+        "nmrom_K2_q0_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q0_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q2_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense_dt_half": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "dt": 0.0125
+        }
+      }
+    }
+  ],
+  "invocations": [],
+  "data_contract": "supplied full interior nodal initial field only; decoder and operators receive no generator descriptors",
+  "output_contract": "all six interior fields, including reconstructed t=0 for ROMs and exact supplied t=0 for DST",
+  "timing_contract": "synchronized device query and complete host query; input upload, cold fit, latent evolution, dense readout and host output copy; setup/training separate",
+  "head_parameter_residency": {
+    "placement": "explicit device_put and synchronization during setup",
+    "all_device_arrays": true
+  },
+  "operators": [],
+  "reference": {
+    "intervals": [
+      8,
+      16
+    ],
+    "current_relative_refinement": [
+      0.0005917340401036366
+    ],
+    "threshold": 0.0001,
+    "passed": false,
+    "status": "empirical continuum spectral refinement; not a proved error bound"
+  }
+}

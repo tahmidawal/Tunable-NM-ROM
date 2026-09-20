@@ -1,0 +1,64 @@
+32 0.01 [35.0, 0.0095735362524957, 0.00957353625249574, 1.0, 0.0, 1.0, 36.0] 0 35 4.71639351846555e-07
+32 0.0001 [64.0, 8.532972929107501e-05, 8.532972929079459e-05, 1.0, 0.0, 1.0, 65.0] 0 64 4.307927416954519e-09
+32 1e-06 [83.0, 9.69819362219439e-07, 9.698193617114184e-07, 1.0, 0.0, 1.0, 84.0] 0 83 5.0634759088653746e-11
+64 0.01 [80.0, 0.009967127730024164, 0.009967127730024325, 1.0, 0.0, 1.0, 81.0] 0 80 3.874295052153987e-08
+64 0.0001 [136.0, 9.60612807557159e-05, 9.606128075503332e-05, 1.0, 0.0, 1.0, 137.0] 0 136 3.69407768977568e-10
+64 1e-06 [175.0, 9.748021870633493e-07, 9.74802188269984e-07, 1.0, 0.0, 1.0, 176.0] 0 175 3.895567067590778e-12
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "rows": [
+    {
+      "intervals": 32,
+      "tolerance": 0.01,
+      "cap": 128,
+      "iterations": 35,
+      "independent_field_relative_defect": 4.71639351846555e-07,
+      "true_relative_residual": 0.009573536252495704
+    },
+    {
+      "intervals": 32,
+      "tolerance": 0.0001,
+      "cap": 128,
+      "iterations": 64,
+      "independent_field_relative_defect": 4.307927416954519e-09,
+      "true_relative_residual": 8.532972929107509e-05
+    },
+    {
+      "intervals": 32,
+      "tolerance": 1e-06,
+      "cap": 128,
+      "iterations": 83,
+      "independent_field_relative_defect": 5.0634759088653746e-11,
+      "true_relative_residual": 9.698193622194397e-07
+    },
+    {
+      "intervals": 64,
+      "tolerance": 0.01,
+      "cap": 256,
+      "iterations": 80,
+      "independent_field_relative_defect": 3.874295052153987e-08,
+      "true_relative_residual": 0.009967127730024236
+    },
+    {
+      "intervals": 64,
+      "tolerance": 0.0001,
+      "cap": 256,
+      "iterations": 136,
+      "independent_field_relative_defect": 3.69407768977568e-10,
+      "true_relative_residual": 9.606128075571643e-05
+    },
+    {
+      "intervals": 64,
+      "tolerance": 1e-06,
+      "cap": 256,
+      "iterations": 175,
+      "independent_field_relative_defect": 3.895567067590778e-12,
+      "true_relative_residual": 9.748021870633544e-07
+    }
+  ],
+  "smoke_seconds": 7.123634631047025,
+  "timing_claim": false
+}
+

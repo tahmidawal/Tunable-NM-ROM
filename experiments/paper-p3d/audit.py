@@ -107,10 +107,14 @@ def audit(out,output=None):
         assert len(records)==row['invocations']
         assert np.array_equal([r['device_ms'] for r in records],row['device_ms_repetitions'])
         assert abs(np.median(row['device_ms_repetitions'])-row['device_ms_median'])<1e-12
-        cases={r['case']:r for r in records};finite=[r for r in cases.values() if r['finite']]
+        cases={r['case']:r for r in records}
+        if row['method'].startswith('cg_'):
+            cases={case:max((r for r in records if r['case']==case),key=lambda r:r.get('same_grid_error',float('inf'))) for case in cases}
+        finite=[r for r in cases.values() if r['finite']]
         assert row['cases']==len(cases)
         assert row['nonfinite_cases']==len(cases)-len(finite)
-        assert row['nonstationary_cases']==sum(not r['stationary'] for r in cases.values())
+        expected_nonstationary=sum(any(not r['stationary'] for r in records if r['case']==case) for case in cases) if row['method'].startswith('cg_') else sum(not r['stationary'] for r in cases.values())
+        assert row['nonstationary_cases']==expected_nonstationary
         assert row['cases_above_same_grid_target']==sum(r['same_grid_error']>record['config']['same_grid_target'] for r in finite)
         times=np.asarray([r['device_ms'] for r in records]);assert np.all(times>0)
         assert row['timing_outliers_above_1p5_median']==int(np.count_nonzero(times>1.5*np.median(times)))
@@ -119,11 +123,11 @@ def audit(out,output=None):
             errors=np.asarray([r['same_grid_error'] for r in finite])
             for key,value in [('same_grid_error_worst',np.max(errors)),('same_grid_error_mean',np.mean(errors)),
                               ('same_grid_error_median',np.median(errors)),
-                              ('physical_error_worst',max(r['physical_error'] for r in finite))]:
+                              ('physical_error_worst',max(r['physical_error'] for r in (records if row['method'].startswith('cg_') else finite) if r['finite']))]:
                 assert abs(value-row[key])<1e-12,(row['method'],key,value,row[key])
             for case in cases:
                 repeated=[r['same_grid_error'] for r in records if r['case']==case and r['finite']]
-                if repeated:assert max(repeated)-min(repeated)<1e-12
+                if repeated and not row['method'].startswith('cg_'):assert max(repeated)-min(repeated)<1e-12
     result=dict(passed=True,checked_fields=checked,checked_references=len(references),checked_summary_rows=len(summary['rows']),
         maximum_reference_relative_defect=max_reference_defect,maximum_metric_absolute_defect=max_metric_defect,
         maximum_forcing_relative_defect=max_forcing_defect,maximum_physical_reference_defect=max_physical_defect,

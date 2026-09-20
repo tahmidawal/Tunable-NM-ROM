@@ -25,6 +25,8 @@ def summarize(record,out):
     rows=[]
     for (n,name),group in sorted(groups.items()):
         times=np.asarray([r['device_ms'] for r in group]);median=float(np.median(times));cases={r['case']:r for r in group}
+        if name.startswith('cg_'):
+            cases={case:max((r for r in group if r['case']==case),key=lambda r:r.get('same_grid_error',float('inf'))) for case in cases}
         finite=[r for r in cases.values() if r['finite']]
         rows.append(dict(intervals=n,method=name,cases=len(cases),invocations=len(group),device_ms_median=median,
               device_ms_repetitions=times.tolist(),total_ms_median=float(np.median([r['total_ms'] for r in group])),
@@ -36,7 +38,10 @@ def summarize(record,out):
               nonfinite_cases=len(cases)-len(finite),nonstationary_cases=sum(not r['stationary'] for r in cases.values()),
               cases_above_same_grid_target=sum(r['same_grid_error']>record['config']['same_grid_target'] for r in finite)))
         if name.startswith('cg_'):
-            rows[-1].update(cg_failed_invocations=sum(not r['cg_converged'] for r in group),
+            rows[-1].update(error_repetition_policy='worst same-grid repetition per case; all failures retained',
+                nonstationary_cases=sum(any(not r['stationary'] for r in group if r['case']==case) for case in cases),
+                physical_error_worst=max((r['physical_error'] for r in group if r['finite']),default=None),
+                cg_failed_invocations=sum(not r['cg_converged'] for r in group),
                 cg_iterations_repetitions=[r['iterations'] for r in group],
                 cg_iterations_median=float(np.median([r['iterations'] for r in group])),
                 cg_true_relative_residual_worst=max(r['cg_true_relative_residual'] for r in group))
@@ -291,9 +296,10 @@ def run(cfg,out,smoke=False):
                     value=jax.device_get(value);finished=time.perf_counter()
                     counters=dict(stationary=True,iterations=0)
                     if str(name).startswith('cg_'):
-                        pred,cgstats=value
+                        pred,cgstats,cghistory=value
                         meta=metadata[name]
                         counters=CG.counters(cgstats,meta['relative_tolerance'],meta['max_iterations'])
+                        counters['cg_iteration_history']=np.asarray(cghistory)[:counters['iterations']].tolist()
                     elif isinstance(value,tuple):
                         pred,stats,coef,starts,*latent=value
                         counters=dict(stationary=bool(int(stats[2])==1 and stats[5]<=cfg['lm_tolerance']),iterations=int(stats[7]),

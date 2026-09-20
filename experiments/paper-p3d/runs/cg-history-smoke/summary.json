@@ -1,0 +1,269 @@
+{
+  "schema": "paper-poisson3d-summary-v1",
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "complete": true,
+  "smoke": true,
+  "rows": [
+    {
+      "intervals": 8,
+      "method": "cg_identity_rtol1e-02",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.8140795398503542,
+      "device_ms_repetitions": [
+        0.9128720266744494,
+        0.715287053026259
+      ],
+      "total_ms_median": 6.168607505969703,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.0017732204215133085,
+      "same_grid_error_median": 0.0017732204215133085,
+      "same_grid_error_worst": 0.0017732204215133085,
+      "physical_error_worst": 0.04956861428471878,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 0,
+      "error_repetition_policy": "worst same-grid repetition per case; all failures retained",
+      "cg_failed_invocations": 0,
+      "cg_iterations_repetitions": [
+        12,
+        12
+      ],
+      "cg_iterations_median": 12.0,
+      "cg_true_relative_residual_worst": 0.005787543795870864
+    },
+    {
+      "intervals": 8,
+      "method": "cg_identity_rtol1e-04",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.755486951675266,
+      "device_ms_repetitions": [
+        0.9026009356603026,
+        0.6083729676902294
+      ],
+      "total_ms_median": 4.4164800201542675,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 2.665406986886446e-05,
+      "same_grid_error_median": 2.665406986886446e-05,
+      "same_grid_error_worst": 2.665406986886446e-05,
+      "physical_error_worst": 0.04945527036470617,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 0,
+      "error_repetition_policy": "worst same-grid repetition per case; all failures retained",
+      "cg_failed_invocations": 0,
+      "cg_iterations_repetitions": [
+        18,
+        18
+      ],
+      "cg_iterations_median": 18.0,
+      "cg_true_relative_residual_worst": 9.142261407766401e-05
+    },
+    {
+      "intervals": 8,
+      "method": "cg_identity_rtol1e-06",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 2.559927001129836,
+      "device_ms_repetitions": [
+        1.0869060643017292,
+        4.0329479379579425
+      ],
+      "total_ms_median": 6.501891009975225,
+      "timing_outliers_above_1p5_median": 1,
+      "same_grid_error_mean": 2.6257118007359953e-07,
+      "same_grid_error_median": 2.6257118007359953e-07,
+      "same_grid_error_worst": 2.6257118007359953e-07,
+      "physical_error_worst": 0.04945195083379663,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 0,
+      "error_repetition_policy": "worst same-grid repetition per case; all failures retained",
+      "cg_failed_invocations": 0,
+      "cg_iterations_repetitions": [
+        23,
+        23
+      ],
+      "cg_iterations_median": 23.0,
+      "cg_true_relative_residual_worst": 9.343555388305944e-07
+    },
+    {
+      "intervals": 8,
+      "method": "dst_exact",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.29299454763531685,
+      "device_ms_repetitions": [
+        0.28454605489969254,
+        0.30144304037094116
+      ],
+      "total_ms_median": 4.3259430094622076,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.0,
+      "same_grid_error_median": 0.0,
+      "same_grid_error_worst": 0.0,
+      "physical_error_worst": 0.04945194079018679,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_galerkin",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.31122652580961585,
+      "device_ms_repetitions": [
+        0.3312990302219987,
+        0.291154021397233
+      ],
+      "total_ms_median": 6.332673016004264,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.8865125485245808,
+      "same_grid_error_median": 0.8865125485245808,
+      "same_grid_error_worst": 0.8865125485245808,
+      "physical_error_worst": 0.8822180445297931,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_weak_qR",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 1.7629119683988392,
+      "device_ms_repetitions": [
+        0.38557196967303753,
+        3.140251967124641
+      ],
+      "total_ms_median": 4.220710485242307,
+      "timing_outliers_above_1p5_median": 1,
+      "same_grid_error_mean": 1.0465720533593064,
+      "same_grid_error_median": 1.0465720533593064,
+      "same_grid_error_worst": 1.0465720533593064,
+      "physical_error_worst": 1.063056181909094,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_dense",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 2.1036830148659647,
+      "device_ms_repetitions": [
+        1.6922230133786798,
+        2.5151430163532495
+      ],
+      "total_ms_median": 4.769243474584073,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.8771116929922228,
+      "same_grid_error_median": 0.8771116929922228,
+      "same_grid_error_worst": 0.8771116929922228,
+      "physical_error_worst": 0.8790509916161174,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 1.391092489939183,
+      "device_ms_repetitions": [
+        1.4136129757389426,
+        1.3685720041394234
+      ],
+      "total_ms_median": 4.812691535335034,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.8788034369013711,
+      "same_grid_error_median": 0.8788034369013711,
+      "same_grid_error_worst": 0.8788034369013711,
+      "physical_error_worst": 0.885186198444446,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 1,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod2_galerkin",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.3249555011279881,
+      "device_ms_repetitions": [
+        0.35261199809610844,
+        0.29729900415986776
+      ],
+      "total_ms_median": 6.790462008211762,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.44273006415396066,
+      "same_grid_error_median": 0.44273006415396066,
+      "same_grid_error_worst": 0.44273006415396066,
+      "physical_error_worst": 0.42525336247044804,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod4_galerkin",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 2.131331479176879,
+      "device_ms_repetitions": [
+        1.0066659888252616,
+        3.2559969695284963
+      ],
+      "total_ms_median": 3.208301030099392,
+      "timing_outliers_above_1p5_median": 1,
+      "same_grid_error_mean": 0.13656625857952526,
+      "same_grid_error_median": 0.13656625857952526,
+      "same_grid_error_worst": 0.13656625857952526,
+      "physical_error_worst": 0.13014877396265084,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod8_galerkin",
+      "cases": 1,
+      "invocations": 2,
+      "device_ms_median": 0.31336303800344467,
+      "device_ms_repetitions": [
+        0.2806750126183033,
+        0.34605106338858604
+      ],
+      "total_ms_median": 5.670867452863604,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.07979736616536551,
+      "same_grid_error_median": 0.07979736616536551,
+      "same_grid_error_worst": 0.07979736616536551,
+      "physical_error_worst": 0.07782933609022039,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    }
+  ],
+  "reference": {
+    "intervals": [
+      8,
+      16
+    ],
+    "relative_refinement": [
+      0.0013066371434029263
+    ],
+    "threshold": 0.0001,
+    "passed": false,
+    "status": "empirical continuum-spectral refinement, not a proved error bound"
+  },
+  "final_cohort_opened": false,
+  "evaluation_cohort": "validation",
+  "interpretation": "one initialization; training convergence, stationarity and physical-reference qualification remain separate"
+}

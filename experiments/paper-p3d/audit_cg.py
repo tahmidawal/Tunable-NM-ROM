@@ -12,8 +12,32 @@ def stencil(u,n):
     return n*n*out
 
 
+
+def replay_history(f,pred,history,n,tol,cap):
+    history=np.asarray(history,dtype=float).reshape(-1,5)
+    k=len(history);threshold=tol**2*np.vdot(f,f)
+    x=np.zeros_like(f);r=f.copy();p=f.copy();rho=float(np.vdot(r,r));maximum=0.
+    for index,(alpha,beta,oldrho,pap,newrho) in enumerate(history):
+        assert oldrho>threshold,('iteration after tolerance satisfied',index)
+        ap=stencil(p,n);observed_pap=float(np.vdot(p,ap))
+        defect=abs(observed_pap-pap)/max(abs(pap),1e-300);maximum=max(maximum,defect)
+        assert defect<1e-7,('matrix-vector/history mismatch',index,defect)
+        assert abs(rho-oldrho)/max(abs(oldrho),1e-300)<1e-7
+        if pap>0:
+            assert abs(alpha-oldrho/pap)<1e-12*max(abs(alpha),1e-300)
+        else:assert alpha==0.
+        assert abs(beta-newrho/oldrho)<1e-12*max(abs(beta),1e-300)
+        x=x+alpha*p;r=r-alpha*ap
+        rho=float(np.vdot(r,r));assert abs(rho-newrho)/max(abs(newrho),1e-300)<1e-7
+        p=r+beta*p
+    defect=float(np.linalg.norm(x-pred)/max(np.linalg.norm(pred),1e-300))
+    assert defect<1e-9,('saved-coefficient trajectory replay',defect)
+    if k and k<cap:assert history[-1,4]<=threshold
+    return dict(field_relative_defect=defect,maximum_history_pap_relative_defect=maximum)
+
+
 def audit(out,record):
-    checked=0;replays=0;maxdefect=0.;failed=0
+    checked=0;replays=0;maxdefect=0.;failed=0;history_checks=[];scipy_checks=[]
     spec=record['config']['iterative_cg']
     assert spec['preconditioner']=='identity' and spec['relative_tolerances']==[1e-2,1e-4,1e-6]
     for mesh in record['meshes']:
@@ -38,14 +62,25 @@ def audit(out,record):
             ('iteration_cap' if k>=cap else 'true_residual_failed'))
         assert row['cg_stopping_reason']==reason
         failed+=not passed
+        history=np.asarray(row['cg_iteration_history']).reshape(-1,5)
+        assert len(history)==k
+        if k:
+            assert np.all(history[:,2]>tol**2*np.vdot(f,f))
+            assert abs(np.sqrt(history[-1,4]/np.vdot(f,f))-row['cg_recursive_relative_residual'])<1e-12
         if row['repetition']==0:
+            history_checks.append(replay_history(f,pred,history,n,tol,cap))
             count=[0]
             def callback(x):count[0]+=1
             op=LinearOperator((f.size,f.size),matvec=lambda x:stencil(x.reshape(f.shape),n).ravel(),dtype=np.float64)
             reference,info=cg(op,f.ravel(),rtol=tol,atol=0.,maxiter=cap,callback=callback)
-            assert count[0]==k,(count[0],k)
-            assert np.linalg.norm(reference.reshape(f.shape)-pred)/max(np.linalg.norm(pred),1e-300)<1e-9
-            assert (info==0)==(row['cg_recursive_relative_residual']<=tol)
+            cpu=reference.reshape(f.shape);cpu_residual=f-stencil(cpu,n)
+            difference=float(np.linalg.norm(cpu-pred)/max(np.linalg.norm(pred),1e-300))
+            lambda_min=12*n*n*np.sin(np.pi/(2*n))**2
+            bound=float((np.linalg.norm(f-stencil(pred,n))+np.linalg.norm(cpu_residual))/lambda_min/max(np.linalg.norm(pred),1e-300))
+            assert difference<=bound+1e-12
+            assert info>=0
+            scipy_checks.append(dict(intervals=n,case=row['case'],method=row['method'],iterations=count[0],
+                saved_iterations=k,field_relative_difference=difference,spd_residual_difference_bound=bound))
             replays+=1
         checked+=1
     for row in json.loads((out/'summary.json').read_text())['rows']:
@@ -57,4 +92,6 @@ def audit(out,record):
         assert row['cg_true_relative_residual_worst']==max(r['cg_true_relative_residual'] for r in group)
     return dict(passed=True,checked_invocation_fields=checked,independent_scipy_replays=replays,
         failed_invocations=failed,maximum_true_residual_absolute_defect=maxdefect,
+        independent_saved_coefficient_history_replays=history_checks,scipy_comparisons=scipy_checks,
+        iteration_scope='Every saved CG coefficient/recurrence trajectory independently replayed for repetition zero; SciPy tolerance-stopped solutions may follow a different finite-precision trajectory and are checked against the SPD residual bound.',
         preconditioner='identity; constant diagonal Jacobi changes only scaling for this constant-coefficient stencil')

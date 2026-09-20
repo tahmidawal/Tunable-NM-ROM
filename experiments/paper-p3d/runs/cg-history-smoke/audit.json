@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "checked_fields": 14,
+  "checked_references": 1,
+  "checked_summary_rows": 11,
+  "maximum_reference_relative_defect": 3.1252813710184914e-16,
+  "maximum_metric_absolute_defect": 0.0,
+  "maximum_forcing_relative_defect": 3.477080955365854e-17,
+  "maximum_physical_reference_defect": 6.342175817625173e-16,
+  "independently_regenerated_cohorts": true,
+  "checked_physical_refinement_cases": 1,
+  "complete_cohort_method_repetition_coverage": true,
+  "limitation": "independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof",
+  "independent_cg_audit": {
+    "passed": true,
+    "checked_invocation_fields": 6,
+    "independent_scipy_replays": 3,
+    "failed_invocations": 0,
+    "maximum_true_residual_absolute_defect": 1.734723475976807e-18,
+    "independent_saved_coefficient_history_replays": [
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      },
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      },
+      {
+        "field_relative_defect": 0.0,
+        "maximum_history_pap_relative_defect": 5.034381082570048e-16
+      }
+    ],
+    "scipy_comparisons": [
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-04",
+        "iterations": 18,
+        "saved_iterations": 18,
+        "field_relative_difference": 2.0849087433662887e-16,
+        "spd_residual_difference_bound": 0.00036516866185997625
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-06",
+        "iterations": 23,
+        "saved_iterations": 23,
+        "field_relative_difference": 2.1474662612932958e-16,
+        "spd_residual_difference_bound": 3.7320892728251717e-06
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "cg_identity_rtol1e-02",
+        "iterations": 12,
+        "saved_iterations": 12,
+        "field_relative_difference": 2.0409736313274487e-16,
+        "spd_residual_difference_bound": 0.023118104928482697
+      }
+    ],
+    "iteration_scope": "Every saved CG coefficient/recurrence trajectory independently replayed for repetition zero; SciPy tolerance-stopped solutions may follow a different finite-precision trajectory and are checked against the SPD residual bound.",
+    "preconditioner": "identity; constant diagonal Jacobi changes only scaling for this constant-coefficient stencil"
+  },
+  "independent_weak_state_audit": {
+    "passed": true,
+    "checked_states": 2,
+    "checked_meshes": 1,
+    "maximum": {
+      "bank_node_defect": 1.358652380187235e-15,
+      "weak_operator_defect": 3.9252251125850245e-16,
+      "field_relative_defect": 1.200709317409921e-16,
+      "coefficient_relative_defect": 1.0397386056870746e-15,
+      "full_gradient_absolute_defect": 4.586693997293877e-17,
+      "eliminated_gradient_absolute_defect": 3.6871344193979694e-16
+    },
+    "scope": "Independent analytic NumPy head/Jacobian, full-field coefficient reconstruction, sampled bank-coordinate identity and SciPy sine-transform weak operator/gradient; no global optimality claim."
+  }
+}

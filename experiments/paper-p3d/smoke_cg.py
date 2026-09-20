@@ -8,7 +8,9 @@ import iterative_cg as CG
 import run
 import audit
 
-out=Path(__file__).parent/'runs/cg-smoke'
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--out',required=True);args=parser.parse_args()
+out=Path(args.out);assert not out.exists()
 cfg=json.loads(Path(__file__).with_name('config.json').read_text())
 cfg.pop('reuse_checkpoint_directory',None)
 cfg.update(train_intervals=8,evaluation_intervals=[8],reference_intervals=[8,16],train_count=12,validation_count=1,
@@ -18,9 +20,9 @@ cfg.update(train_intervals=8,evaluation_intervals=[8],reference_intervals=[8,16]
     checkpoint_every=3,operators=[],pod_ranks=[2,4,8],frozen_offline_assets=False,frozen_pod_transfer_control=False)
 run.run(cfg,out,smoke=True)
 audit.audit(out,out/'audit.json')
-f=jnp.zeros((7,7,7));zero,stats=CG.engine(8,1e-6,32)(f);jax.block_until_ready(stats)
+f=jnp.zeros((7,7,7));zero,stats,_=CG.engine(8,1e-6,32)(f);jax.block_until_ready(stats)
 assert np.array_equal(zero,np.zeros((7,7,7))) and stats[0]==0 and stats[3]==1
 f=jnp.asarray(np.random.default_rng(317).normal(size=(7,7,7)))
-x,stats=CG.engine(8,1e-6,1)(f);jax.block_until_ready(stats)
+x,stats,_=CG.engine(8,1e-6,1)(f);jax.block_until_ready(stats)
 assert stats[0]==1 and stats[3]==0 and stats[4]==1
 (out/'edge-checks.json').write_text(json.dumps(dict(zero_rhs_passed=True,iteration_cap_failure_retained=True))+'\n')

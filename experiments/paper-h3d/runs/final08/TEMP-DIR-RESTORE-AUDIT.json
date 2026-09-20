@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "commit": "1ec3f0309c992a89ef925ba14c0871072e14f751",
+  "method": "git archive of DIRECT-RETENTION.json, archive/ and large-artifacts/ at the commit into a temporary directory under the lane; chunked files rebuilt by concatenation; every manifest row compared by size and SHA256; the job's own SOURCE.sha256 and OUTPUTS.sha256 then checked with sha256sum -c against the restored bytes; temporary directory removed afterwards.",
+  "files": 3594,
+  "bytes": 26822257989,
+  "rebuilt_large_files": 2,
+  "manifest_sha256": "9b8650d1d1a4921b2557f1c3d1ba070f0b4ccd6b2bfe460b69253871d6622686",
+  "source_sha256_check": {"returncode": 0, "lines": 92},
+  "outputs_sha256_check": {"returncode": 0, "lines": 3496}
+}

@@ -1,8 +1,19 @@
 # Heat3D coverage and frozen final comparison handoff
 
-Coverage05 training and the complete development06 paired CG/ROM/operator comparison are accepted, independently audited and retained in actual Git bytes. The reserved final cohort is now open in final08. Root alone owns the canonical LAB-LOG and the manuscript at the root `paper/` directory.
+Coverage05 training, the complete development06 paired CG/ROM/operator comparison, and the reserved-cohort final08 comparison are accepted, independently audited and retained in actual Git bytes; every Heat remote directory has been removed. Root alone owns the canonical LAB-LOG and the manuscript at the root `paper/` directory.
 
-## Resume here — final08 numerical audits pass; complete Git retention needs space
+## Current status — final08 ACCEPTED, retained and remotely cleaned (2026-09-20 22:56 UTC)
+
+The storage blocker below is resolved (about 1.2 TB free locally). The documented four-step closure was executed exactly; no number changed and no GPU work was run.
+
+1. `direct_retention.py final08 --stage`: fresh `GIT-STAGING-STORAGE-GATE.json` passes. The complete archive commit is `1ec3f0309c992a89ef925ba14c0871072e14f751` (all 3,594 non-cache files of `DIRECT-RETENTION.json`, two oversized files as chunks under `large-artifacts/`).
+2. `direct_retention.py final08 --verify 1ec3f030…` passes for all 3,594 files / 26,822,257,989 bytes read from actual Git blobs (`runs/final08/DIRECT-RETENTION-AUDIT.json`). An additional independent restoration (`git archive` of that commit into a temporary directory under the lane, chunk concatenation, per-row size/SHA256 against the manifest, then `sha256sum -c` of the job's own `SOURCE.sha256` and `OUTPUTS.sha256` on the restored bytes) also passes; see `runs/final08/TEMP-DIR-RESTORE-AUDIT.json`. The temporary directory was removed. Proofs are committed at `de34c750`.
+3. The remote `SOURCE.sha256`/`OUTPUTS.sha256` matched the retained copies, `squeue` showed no job for the account before and after, and only `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08` was removed (`runs/final08/REMOTE-CLEANUP-PROOF.log`). `COLLECTED.json` now records `removed=true`, `actual_git_blob_bytes_verified=true`, `complete_archive_commit`.
+4. `paper_tables.py final08` (no preview flag) wrote the accepted `runs/final08/paper-tables.{json,csv}`; `ladder_diagnostics.py final08` now reports `status=accepted`. The accepted JSON differs from the preview only in `status` and `archive_commit`: all 51 rows and both source hashes are identical and the CSV is byte-identical. The historical `paper-tables-pending-retention.{json,csv}` preview is preserved unchanged (SHA256 `a0e9aca2…7e89`), as this handoff required; downstream documents that cite the pending file should now cite `paper-tables.json`.
+
+The older Burgers duplicate-field relief plan (`37f92a5d`) was not needed and was not executed. Raw local originals under `runs/final08/archive/` remain materialized. Nothing was merged or pushed. Remaining for root: canonical manuscript/report integration of the accepted path.
+
+## Superseded — final08 numerical audits pass; complete Git retention needs space
 
 The final job `4033346` completed `0:0` in `00:59:37`. Both primary 64-case meshes and the independent-seed 64-case native panel are complete. Scientific source remains `575af7a504d5b8ca5873584bbdc67ba790e40fcf`, A100 PCIe 40 GB on pax144, UUID `GPU-d7baad5d-04eb-b8a5-fd26-36215a6e6855`. All six collector audits pass: primary/seedB fields, analytic states, source/reference/timing panels, and the primary CG trajectory audit. Checksums passed both before and after auditing. Every original remains under `runs/final08/archive/` and at the exact remote `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/final08`. **No remote cleanup or complete scientific Git-archive acceptance has occurred.** There is no remaining Heat GPU job or local collector process.
 

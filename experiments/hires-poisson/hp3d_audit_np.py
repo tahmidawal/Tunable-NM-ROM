@@ -99,7 +99,8 @@ def main():
                 rec[(name, case)] = (es, ep)
                 np.save(out / 'sub' / f'N{n}_{name}_case{case}.npy', u[::stride, ::stride, ::stride])
         # parity recomputed here from the saved fields, not read from the driver
-        for q in cfg['q_ladder']:
+        dense = n <= cfg.get('dense_projection_max', 128)
+        for q in (cfg['q_ladder'] if dense else []):
             for v, limit in PARITY.items():
                 worst = 0.0
                 for case in range(len(dev)):
@@ -126,8 +127,9 @@ def main():
                 median_output_ms=1e3 * float(np.median([x['output_seconds'] for x in rows])),
                 median_iterations=(float(np.median([x['iterations'] for x in rows])) if 'iterations' in rows[0] else None),
                 median_lm_attempts=(float(np.median([x['attempts'] for x in rows])) if 'attempts' in rows[0] else None))
-        required = [f'rom_q{q}_{v}' for q in cfg['q_ladder'] for v in VARIANTS] + \
-                   [f"rom_q{R['R']}_linear", 'dst_direct'] + [f'cg_{t:g}' for t in cfg['cg_tolerances']] + \
+        variants = VARIANTS if dense else ('leandst64', 'leandst32', 'onestart64')
+        required = [f'rom_q{q}_{v}' for q in cfg['q_ladder'] for v in variants] + \
+                   ([f"rom_q{R['R']}_linear"] if dense else []) + [f"rom_q{R['R']}_lineardst", 'dst_direct'] + [f'cg_{t:g}' for t in cfg['cg_tolerances']] + \
                    [f'coarse{nc}_dst' for nc in cfg['coarse_intervals'] if nc < n] + \
                    [f'coarse{nc}_cg_{t:g}' for nc in cfg['coarse_intervals'] if nc < n for t in cfg['coarse_cg_tolerances']]
         want = {(c, r) for c in range(len(dev)) for r in range(cfg['repetitions'])}

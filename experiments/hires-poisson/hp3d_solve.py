@@ -120,7 +120,7 @@ def main():
     out = Path(a.out)
     (out / 'fields').mkdir(parents=True, exist_ok=True)
     if a.smoke:
-        cfg.update(meshes=[16], repetitions=1, burn_seconds=0.001, case_count=2,
+        cfg.update(meshes=[16, 32], dense_projection_max=16, repetitions=1, burn_seconds=0.001, case_count=2,
                    coarse_intervals=[8], cg_tolerances=[1e-2, 1e-6])
     assert jax.default_backend() == 'gpu' and len(jax.devices()) == 1
     assert jax.config.jax_enable_x64 and os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
@@ -157,14 +157,35 @@ def main():
         same = [reference(n, f) for f in sources]
         fine = [C.restrict(reference(2 * n, np.asarray(P.source(2 * n, p))), 2 * n, n) for p in dev]
         bank = C.bank_at(bankck['params'], n, cfg['field_chunk']) @ np.asarray(bankck['rotation'])
-        test, operator, projection, lam, triples = P.assemble(bank, n, cfg['weak_tests'])
-        del test
-        qb, rb = np.linalg.qr(bank, mode='reduced')
-        floor = [rel(qb @ (qb.T @ u.ravel()), u) for u in same]
-        del qb
-        bankj, projj = jnp.asarray(bank), jnp.asarray(projection)
+        dense = n <= cfg.get('dense_projection_max', 128)
+        bankj = jnp.asarray(bank)
+        # DST assembly (A7): the weak operator from one DST-I per bank column, never the
+        # dense (n-1)^3 x M test matrix (68 GB at 256^3). Gated against `poisson.assemble`.
+        triples = C.modes(cfg['weak_tests'], n)
+        lam = np.asarray(C.mode_eigenvalues(n, triples))
+        ti, tj, tk = (jnp.asarray(triples[:, ax] - 1) for ax in range(3))
+        col = jax.jit(lambda g: C.dst3(g.reshape((n - 1,) * 3))[ti, tj, tk] / n ** 1.5)
+        operator_dst = np.stack([np.asarray(col(bankj[:, r])) for r in range(bankj.shape[1])], axis=1)
+        assembly = dict(route='dst')
+        if dense:
+            test, operator, projection, lam_d, triples_d = P.assemble(bank, n, cfg['weak_tests'])
+            del test
+            assert np.array_equal(triples_d, triples) and np.allclose(lam_d, lam, rtol=1e-14, atol=0)
+            assembly = dict(route='dense (parent) for retained/lean; dst gated against it',
+                            dst_vs_dense_operator_relative=rel(operator_dst, operator))
+            assert assembly['dst_vs_dense_operator_relative'] <= 1e-11, assembly
+            projj = jnp.asarray(projection)
+        else:
+            operator, projection, projj = operator_dst, None, None
+        rfac = np.linalg.qr(bank, mode='r')
+        import scipy.linalg as sla
+        floor = []
+        for u in same:
+            t_ = sla.solve_triangular(rfac.T, bank.T @ u.ravel(), lower=True)
+            floor.append(float(np.sqrt(max(0.0, 1.0 - float(t_ @ t_) / float(u.ravel() @ u.ravel())))))
         bank32 = bankj.astype(jnp.float32)
         R_['meshes'].append(dict(intervals=n, unknowns=(n - 1) ** 3, weak_tests=int(len(triples)),
+                                 assembly=assembly, dense_projection=bool(dense),
                                  bank_sha256=sha(bank), bank_floor=floor, bank_floor_worst=max(floor),
                                  discretisation_error=[rel(s_, f_) for s_, f_ in zip(same, fine)],
                                  setup_seconds=time.perf_counter() - t0))
@@ -172,10 +193,11 @@ def main():
         subjects = []
         indices = np.arange((n - 1) ** 3)
         for q in cfg['q_ladder']:
-            fn = P.engine(model, bank, operator, projection, indices, q, cfg)
-            subjects.append(dict(name=f'rom_q{q}_retained', family='nm-rom', q=q, kind='rom',
-                                 fn=lambda f, fn=fn: (lambda v: (v[0], v[1], v[2], v[1][5], v[1][7]))(fn(f))))
-            for vname, proj, st in (('lean', projj, None), ('leandst', None, None), ('onestart', None, 1)):
+            if dense:
+                fn = P.engine(model, bank, operator, projection, indices, q, cfg)
+                subjects.append(dict(name=f'rom_q{q}_retained', family='nm-rom', q=q, kind='rom',
+                                     fn=lambda f, fn=fn: (lambda v: (v[0], v[1], v[2], v[1][5], v[1][7]))(fn(f))))
+            for vname, proj, st in ((('lean', projj, None),) if dense else ()) + (('leandst', None, None), ('onestart', None, 1)):
                 query, mats, library, codes, scale, p = lean_engine(model, n, triples, lam, operator, q, cfg,
                                                                     projection=proj, starts=st)
                 for prec, bk in (('64', bankj), ('32', bank32)):
@@ -188,8 +210,15 @@ def main():
                         return query(f, p, bk, aa, ap_, qq, rr, dd, proj, library, codes, scale)
                     subjects.append(dict(name=f'rom_q{q}_{vname}{prec}', family='nm-rom', q=q, kind='lean',
                                          fn=run, operator=operator, starts=st))
-        lin, linfo = P.linear_weak(bank, operator, projection)
-        subjects.append(dict(name=f'rom_q{Rw}_linear', family='linear-rom', q=Rw, kind='fn', fn=lin))
+        if dense:
+            lin, linfo = P.linear_weak(bank, operator, projection)
+            subjects.append(dict(name=f'rom_q{Rw}_linear', family='linear-rom', q=Rw, kind='fn', fn=lin))
+        qq_l, rr_l = np.linalg.qr(operator, mode='reduced')
+        scale_l = jnp.asarray(1.0 / (n ** 1.5 * lam))
+        lin_dst = jax.jit(lambda f, bank, qq, rr, scale: bank @ jsl.solve_triangular(
+            rr, qq.T @ (C.dst3(f)[ti, tj, tk] * scale), lower=False))
+        subjects.append(dict(name=f'rom_q{Rw}_lineardst', family='linear-rom', q=Rw, kind='fn',
+                             fn=lambda f, a_=(bankj, jnp.asarray(qq_l), jnp.asarray(rr_l), scale_l): lin_dst(f, *a_)))
         lamj = C.eigenvalues(n)
         subjects.append(dict(name='dst_direct', family='direct-control', kind='fn',
                              fn=lambda f, lamj=lamj: P.solve_dst(f, lamj)))
@@ -281,7 +310,14 @@ def main():
         for x in R_['invocations']:
             if x['intervals'] == n:
                 first.setdefault((x['name'], x['case']), x)
-        for q in cfg['q_ladder']:
+        if dense:
+            worst = max(rel(np.load(out / 'fields' / first[(f'rom_q{Rw}_lineardst', c)]['saved_field']),
+                            np.load(out / 'fields' / first[(f'rom_q{Rw}_linear', c)]['saved_field']))
+                        for c in range(len(dev)))
+            R_['parity'].append(dict(intervals=n, candidate=f'rom_q{Rw}_lineardst', baseline=f'rom_q{Rw}_linear',
+                                     worst_field_relative=worst, integers_identical=True, limit=1e-10,
+                                     same_solver=True, passed=bool(worst <= 1e-10)))
+        for q in (cfg['q_ladder'] if dense else []):
             for v, limit, same_solver in (('lean64', 1e-12, True), ('leandst64', 1e-10, True),
                                           ('leandst32', 1e-4, True), ('onestart64', None, False)):
                 worst, ints = 0.0, True
@@ -304,7 +340,7 @@ def main():
                 rows = [v for v in R_['invocations'] if v['intervals'] == n and v['name'] == name and v['case'] == case]
                 R_['diagnostics'].append(dict(intervals=n, name=name, case=case,
                                               valid=bool(all(v['cg_converged'] for v in rows))))
-        del bankj, bank32, projj, subjects
+        del bankj, bank32, projj, subjects, bank, operator, projection
         jax.clear_caches()
         save()
     stats = jax.devices()[0].memory_stats() or {}

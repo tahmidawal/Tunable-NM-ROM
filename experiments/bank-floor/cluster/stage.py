@@ -42,7 +42,7 @@ SCRIPT = '''#!/bin/bash
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:GPU:1
 #SBATCH --exclude=pax007
-#SBATCH --cpus-per-task=8
+CONSTRAINT#SBATCH --cpus-per-task=8
 #SBATCH --mem=MEM
 #SBATCH --time=TIME
 #SBATCH --output=REMOTE/logs/%j.out
@@ -76,6 +76,7 @@ def main():
     ap.add_argument('--gpu', default='a100')
     ap.add_argument('--time', default='10:00:00')
     ap.add_argument('--mem', default='120G')
+    ap.add_argument('--constraint', default='')
     ap.add_argument('--extra', nargs='*', default=[], help='extra committed files to stage')
     ap.add_argument('--cmd', default=None, help='override command')
     a = ap.parse_args()
@@ -100,6 +101,7 @@ def main():
     (out / 'logs').mkdir()
     (out / 'run.sbatch').write_text(
         SCRIPT.replace('CMD', a.cmd or kind['cmd']).replace('PYPATH', PYPATH)
+        .replace('CONSTRAINT', f'#SBATCH --constraint={a.constraint}\n' if a.constraint else '')
         .replace('ATTEMPT', a.attempt).replace('REMOTE', remote).replace('GPU', a.gpu)
         .replace('MEM', a.mem).replace('TIME', a.time))
     manifest = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(out)}'

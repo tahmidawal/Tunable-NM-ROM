@@ -234,7 +234,7 @@ def main():
         rmax = max(cfg['pod_ranks'])
         for name, scale, idx in (('pod', 1. / un, None), ('podraw', np.ones(S), None),
                                  ('pod_sub', 1. / un, sub), ('podraw_sub', np.ones(S), sub)):
-            Qall, info = K.pod_from_gram(Gm, U, scale, rmax, idx=idx)
+            Qall, info = K.pod_from_gram(Gm, U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
             assert info['rank'] == min(rmax, len(np.arange(S) if idx is None else idx)), info
             for rk in cfg['pod_ranks']:
                 if rk > Qall.shape[1]:

@@ -184,7 +184,7 @@ def gram(U, block=2048):
     return Gm
 
 
-def pod_from_gram(Gm, U, scale, maxrank, idx=None, block=2048):
+def pod_from_gram(Gm, U, scale, maxrank, idx=None, block=2048, ranks=()):
     """Modes of the snapshot set {scale_i * u_i : i in idx} from its Gram sub-block.
 
     `scale` = 1/||u_i|| gives the optimum of the mean RELATIVE squared error (the
@@ -216,12 +216,12 @@ def pod_from_gram(Gm, U, scale, maxrank, idx=None, block=2048):
                 raw_mode_orthonormality_deviation=float(
                     jnp.max(jnp.abs(modes.T @ modes - jnp.eye(r, dtype=F64)))),
                 eigen_tail_mean_sq={str(k): float(np.clip(w[k:], 0, None).sum() / len(idx))
-                                    for k in (128, 256, 512, 1024, 2048) if k <= r})
+                                    for k in ranks if k <= r})
     info.update(snapshots=int(len(idx)), sigma_ratio_r_over_1=ratio,
                 eigenvalues_head=w[:8].tolist(), energy=float(np.clip(w, 0, None).sum()),
                 tail_energy_fraction={str(k): float(np.clip(w[k:], 0, None).sum()
                                                     / np.clip(w, 0, None).sum())
-                                      for k in (128, 256, 512, 1024, 2048) if k <= len(w)},
+                                      for k in ranks if k <= len(w)},
                 seconds=time.perf_counter() - t0)
     return Q, info
 

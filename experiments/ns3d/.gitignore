@@ -1,1 +1,5 @@
 runs/*/collected/
+
+# Staged checkpoints are restored from the durable audited source archive.
+runs/*/reuse/**
+!runs/*/reuse/REUSE.json

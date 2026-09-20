@@ -1,0 +1,54 @@
+{
+  "source_attempt": "coverage04",
+  "source_commit": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+  "source_job": "3997427",
+  "source_audit_passed": true,
+  "source_audits": {
+    "fields": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/audit.json",
+      "sha256": "c9ddb4da88dc736d47d51467d88d23d6bd3cefcb00182fd60315fc7e7652b43a",
+      "passed": true
+    },
+    "histories": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/history_audit.json",
+      "sha256": "1ae9f0a35cb6a86af3e50d47ac74b76d19898e2b2e0de0d5c0a990810f6664c4",
+      "passed": true
+    },
+    "source": {
+      "path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/coverage04/source_audit.json",
+      "sha256": "64779d1512268e317f15107a7c6cbb8ffc7ca74574050191f56dd3bcc057cde6",
+      "passed": true
+    }
+  },
+  "files": [
+    {
+      "path": "result.json",
+      "sha256": "fe66c70c59f592acc28a4b41c8f87296d6812d3f46f96f22aa14f0432f296c99"
+    },
+    {
+      "path": "operator_statistics.pkl",
+      "sha256": "8bc5d1ba54df5f33f7fb9915a5e068b6c3eb6887864aa96018243aea4a443353"
+    },
+    {
+      "path": "capacity/frozen_bank.pkl",
+      "sha256": "8ec5f3e2485291f7ca18d3053eccd061074b0cf00911c8b1a56251402d46033b"
+    },
+    {
+      "path": "fno3d/best.pkl",
+      "sha256": "3149e8d303cd70eed7bc969ecd281c51bbfbe1d3974f181124a8cd80edc26dbd"
+    },
+    {
+      "path": "unet3d/best.pkl",
+      "sha256": "69949501a37493ed1243ae49f151248d46cbf68e69ddb46ed535bf1df5488ee1"
+    },
+    {
+      "path": "deeponet3d/best.pkl",
+      "sha256": "a3f6af678a5b0630505d988d9c04975caceb2363313a980fc8345c9ae8635bb8"
+    },
+    {
+      "path": "transolver3d/best.pkl",
+      "sha256": "5e5862c84880689ed6a43726063e096d77934d50bfe2feff26ac793d9dd8f227"
+    }
+  ],
+  "scope": "same-cohort learned-bank warm expansion and frozen operator reuse; no new independent full training seed"
+}

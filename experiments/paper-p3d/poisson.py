@@ -65,7 +65,8 @@ def engine(model,bank,operator,projection,indices,q,cfg):
         jac=jnp.concatenate((a@jax.jacfwd(C.head,argnums=1)(p,z),a@directions),axis=1)
         fullgrad=jnp.linalg.norm(jac.T@residual)/(jnp.maximum(jnp.linalg.norm(jac),1e-30)*jnp.maximum(jnp.linalg.norm(target),1e-14))
         info=jnp.concatenate((stats[which],fullgrad[None],which[None],jnp.sum(stats[:,0])[None]))
-        return bank@coef,info,coef,stats
+        values=(bank@coef,info,coef,stats)
+        return (*values,z) if cfg.get('retain_solver_states',False) else values
     args=(p,jnp.asarray(bank),jnp.asarray(operator),jnp.asarray(reduced),jnp.asarray(qq),jnp.asarray(rr),
           jnp.asarray(directions),jnp.asarray(projection),jnp.asarray(indices),library,codes)
     jax.block_until_ready(args)

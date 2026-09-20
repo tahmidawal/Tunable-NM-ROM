@@ -1,0 +1,24 @@
+{
+  "historical_import_manifests_remain_historical": true,
+  "extensions": [
+    {
+      "path": "training.py",
+      "base_commit": "84d302a706bf06a460d04f419d9c06a6c424932e",
+      "base_path": "experiments/paper-h3d/operators/training.py",
+      "current_sha256": "0596ee2b95a226bda2082fa2ef5ad7def9c00189a126d82ba6d91d1a464b9aaf",
+      "change": "Optional initial_params argument; fresh-initialization arithmetic and schedules unchanged. Initialized variant records explicit initialization."
+    },
+    {
+      "path": "extra_models3d.py",
+      "base_commit": "5a04db6b2e327306642afb17d57cbe5654c0d80e",
+      "base_path": "experiments/paper-h3d/operators/extra_models3d.py",
+      "current_sha256": "a3921f33d3f77060a25914cbc26f82a650b6e300b1acd9332ae92520119bf8ef",
+      "change": "Exact shared split branch/trunk helpers; native inference unchanged."
+    },
+    {
+      "path": "pretrained_deeponet.py",
+      "current_sha256": "8829334ff6eb8ae05489f99dde625432ba289caf61a48770ebc17a3612e787f8",
+      "change": "New train-only weighted POD supervision, actual-trunk Gram metric branch pretraining, original trainable architecture."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "native_transfer_maximum_defect": 0.0,
+  "independent_fine_trunk_maximum_defect": 4.336808689942018e-19,
+  "pretraining_used_no_development_data": true,
+  "seconds": 15.486969516030513,
+  "architecture": {
+    "kind": "deeponet3d",
+    "width": 2,
+    "levels": 2,
+    "pool_bins": 2,
+    "rank": 4,
+    "trunk_width": 8,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "backend": "gpu",
+  "x64": true
+}

@@ -130,6 +130,11 @@ def audit(out,output=None):
         independently_regenerated_cohorts=True,checked_physical_refinement_cases=len(refinement),
         complete_cohort_method_repetition_coverage=True,
         limitation='independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof')
+    if cfg.get('retain_solver_states',False):
+        from state_audit import audit as audit_states
+        result['independent_weak_state_audit']=audit_states(out,record)
+    else:
+        result['stationarity_scope']='Recorded solver stopping counters checked for internal consistency; latent states were not retained for independent gradient recomputation.'
     (output or out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
     return result
 

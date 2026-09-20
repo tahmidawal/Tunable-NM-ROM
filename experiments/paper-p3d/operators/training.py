@@ -9,7 +9,7 @@ import optax
 from . import models3d as M
 
 
-def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_denominators=None,valid_denominators=None):
+def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_denominators=None,valid_denominators=None,initial_params=None):
     """Arrays are BXYZC; output channels pack (time,component), component fastest.
 
     cfg declares steps, wall_seconds, batch_size, seed, learning_rate,
@@ -20,7 +20,7 @@ def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_den
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     x=jnp.asarray(train_x,dtype=jnp.float64);y=jnp.asarray(train_y,dtype=jnp.float64)
     vx=jnp.asarray(valid_x,dtype=jnp.float64);vy=jnp.asarray(valid_y,dtype=jnp.float64)
-    params=M.init_model(jax.random.PRNGKey(cfg['seed']),spec,x.shape[-1],y.shape[-1])
+    params=M.init_model(jax.random.PRNGKey(cfg['seed']),spec,x.shape[-1],y.shape[-1]) if initial_params is None else jax.device_put(initial_params)
     assert all(p.dtype==jnp.float64 for p in jax.tree_util.tree_leaves(params))
     channels=cfg.get('components_per_output',1);nt=y.shape[-1]//channels
     schedule=optax.cosine_decay_schedule(cfg['learning_rate'],cfg['steps'],alpha=.03)
@@ -70,6 +70,7 @@ def train(train_x,train_y,valid_x,valid_y,spec,cfg,out,dump,checkpoint,train_den
             if time.perf_counter()-start>=cfg['wall_seconds']:
                 exit_reason='wall_budget';break
     info=dict(spec=spec,config=cfg,parameter_count=M.parameter_count(params),steps_completed=it+1,
+              initialization='fresh random' if initial_params is None else 'explicit retained pretrained parameters',
               best_step=best_step,best_validation_worst=best,seconds=time.perf_counter()-start,
               exit_reason=exit_reason,normalization=cfg.get('normalization','current-output norm' if train_denominators is None else 'explicit per-case/time squared norm'),converged_claim=False,parameter_dtype='float64',fft_dtype='complex128')
     dump(out/'training.json',info)

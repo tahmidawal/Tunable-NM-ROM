@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "checked_fields": 8,
+  "checked_references": 1,
+  "checked_summary_rows": 8,
+  "maximum_reference_relative_defect": 2.9374415428191477e-16,
+  "maximum_metric_absolute_defect": 0.0,
+  "maximum_forcing_relative_defect": 1.0539695280194612e-16,
+  "maximum_physical_reference_defect": 5.37727466618712e-16,
+  "independently_regenerated_cohorts": true,
+  "checked_physical_refinement_cases": 1,
+  "complete_cohort_method_repetition_coverage": true,
+  "limitation": "independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof",
+  "independent_weak_state_audit": {
+    "passed": true,
+    "checked_states": 2,
+    "checked_meshes": 1,
+    "maximum": {
+      "bank_node_defect": 1.9007254981705914e-15,
+      "weak_operator_defect": 5.277287901765121e-16,
+      "field_relative_defect": 1.296876058487804e-16,
+      "coefficient_relative_defect": 8.099230419220118e-15,
+      "full_gradient_absolute_defect": 5.18714506569061e-17,
+      "eliminated_gradient_absolute_defect": 1.0179119446652844e-15
+    },
+    "scope": "Independent analytic NumPy head/Jacobian, full-field coefficient reconstruction, sampled bank-coordinate identity and SciPy sine-transform weak operator/gradient; no global optimality claim."
+  }
+}

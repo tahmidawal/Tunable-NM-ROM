@@ -1,0 +1,177 @@
+{
+  "schema": "paper-poisson3d-summary-v1",
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "complete": true,
+  "smoke": true,
+  "rows": [
+    {
+      "intervals": 8,
+      "method": "dst_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.3463219618424773,
+      "device_ms_repetitions": [
+        0.3463219618424773
+      ],
+      "total_ms_median": 1.406952040269971,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.0,
+      "same_grid_error_median": 0.0,
+      "same_grid_error_worst": 0.0,
+      "physical_error_worst": 0.0494519407901867,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_galerkin",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.45627402141690254,
+      "device_ms_repetitions": [
+        0.45627402141690254
+      ],
+      "total_ms_median": 1.8648580880835652,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.8093939007059064,
+      "same_grid_error_median": 0.8093939007059064,
+      "same_grid_error_worst": 0.8093939007059064,
+      "physical_error_worst": 0.8010433288735914,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_weak_qR",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.4690270870923996,
+      "device_ms_repetitions": [
+        0.4690270870923996
+      ],
+      "total_ms_median": 1.588200917467475,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 1.8647298259920908,
+      "same_grid_error_median": 1.8647298259920908,
+      "same_grid_error_worst": 1.8647298259920908,
+      "physical_error_worst": 1.9122614640467959,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_dense",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 1.5205199597403407,
+      "device_ms_repetitions": [
+        1.5205199597403407
+      ],
+      "total_ms_median": 3.5381949273869395,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 1.2747629475963234,
+      "same_grid_error_median": 1.2747629475963234,
+      "same_grid_error_worst": 1.2747629475963234,
+      "physical_error_worst": 1.2944039064779649,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 1.8480090657249093,
+      "device_ms_repetitions": [
+        1.8480090657249093
+      ],
+      "total_ms_median": 3.851509070955217,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.8096363243248137,
+      "same_grid_error_median": 0.8096363243248137,
+      "same_grid_error_worst": 0.8096363243248137,
+      "physical_error_worst": 0.8088833379927535,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod2_galerkin",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.3462409367784858,
+      "device_ms_repetitions": [
+        0.3462409367784858
+      ],
+      "total_ms_median": 1.3386469800025225,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.44273006415396066,
+      "same_grid_error_median": 0.44273006415396066,
+      "same_grid_error_worst": 0.44273006415396066,
+      "physical_error_worst": 0.42525336247044804,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod4_galerkin",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.4154579946771264,
+      "device_ms_repetitions": [
+        0.4154579946771264
+      ],
+      "total_ms_median": 2.1677559707313776,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.13656625857952512,
+      "same_grid_error_median": 0.13656625857952512,
+      "same_grid_error_worst": 0.13656625857952512,
+      "physical_error_worst": 0.13014877396265068,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod8_galerkin",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.3798740217462182,
+      "device_ms_repetitions": [
+        0.3798740217462182
+      ],
+      "total_ms_median": 1.3029029360041022,
+      "timing_outliers_above_1p5_median": 0,
+      "same_grid_error_mean": 0.07979736616536483,
+      "same_grid_error_median": 0.07979736616536483,
+      "same_grid_error_worst": 0.07979736616536483,
+      "physical_error_worst": 0.07782933609021968,
+      "nonfinite_cases": 0,
+      "nonstationary_cases": 0,
+      "cases_above_same_grid_target": 1
+    }
+  ],
+  "reference": {
+    "intervals": [
+      8,
+      16
+    ],
+    "relative_refinement": [
+      0.0013066371434028348
+    ],
+    "threshold": 0.0001,
+    "passed": false,
+    "status": "empirical continuum-spectral refinement, not a proved error bound"
+  },
+  "final_cohort_opened": false,
+  "evaluation_cohort": "validation",
+  "interpretation": "one initialization; training convergence, stationarity and physical-reference qualification remain separate"
+}

@@ -122,7 +122,14 @@ def run(cfg,out,smoke=False):
                 assert oinfo['training_input_sha256']==C.sha(train_sources) and oinfo['training_target_sha256']==C.sha(fields)
                 C.checkpoint(out/'operators'/entry['name']/'best.pkl',saved)
                 C.dump(out/'operators'/entry['name']/'training.json',oinfo)
-            else:op,oinfo=OT.train(tx,ty,vx,vy,entry['spec'],ocfg,out/'operators'/entry['name'],C.dump,C.checkpoint)
+            else:
+                initial=None;pretraining=None
+                if entry.get('pretraining'):
+                    from operators.pretrained_deeponet import pretrain
+                    initial,pretraining=pretrain(tx,ty,entry['spec'],ocfg,entry['pretraining'],
+                        out/'operators'/entry['name']/'pretraining',C.dump,C.checkpoint)
+                op,oinfo=OT.train(tx,ty,vx,vy,entry['spec'],ocfg,out/'operators'/entry['name'],C.dump,C.checkpoint,initial_params=initial)
+                if pretraining:oinfo['pretraining']=pretraining
             oinfo.update(name=entry['name'],scales=scales,training_input_sha256=C.sha(train_sources),training_target_sha256=C.sha(fields),
                 validation_input_sha256=C.sha(valid_sources),validation_target_sha256=C.sha(validation_fields))
             record['operators'].append(oinfo);operator_models.append((entry['name'],op,entry['spec'],scales));save()
@@ -139,6 +146,8 @@ def run(cfg,out,smoke=False):
         record['status']=f'prepare_mesh_{n}';save();setup=time.perf_counter()
         bank=C.bank_at(params,n,cfg['field_chunk'])@rotation
         test,a,projection,lam,triples=P.assemble(bank,n,cfg['weak_tests'])
+        if cfg.get('retain_solver_states',False):
+            np.savez_compressed(out/f'weak_setup_N{n}.npz',bank=bank,operator=a,triples=triples,eigenvalues=lam)
         truths=P.dataset(n,evaluation_p);sources=np.stack([np.asarray(P.source(n,p)) for p in evaluation_p])
         training=fields if n==cfg['train_intervals'] else P.dataset(n,train_p)
         ranks=sorted(set([cfg['bank_rank']]+[k+q for k in cfg['latent_dimensions'] for q in cfg['q_ladder']]))
@@ -167,6 +176,11 @@ def run(cfg,out,smoke=False):
                     metadata[alt]=dict(kind='neural_operator',spec=physical_spec,training_spec=spec,
                         training_intervals=native,frozen_mesh_transfer=True,
                         query='frozen weights, Fourier padded-domain physical length preserved')
+                if spec['kind']=='deeponet3d' and cfg.get('deeponet_native_sensor_control',False):
+                    alt=f'{name}_native{native}_continuous_trunk'
+                    methods[alt]=O.native_sensor_deeponet(op,spec,scales,n,native)
+                    metadata[alt]=dict(kind='neural_operator',spec=spec,training_intervals=native,
+                        query='restrict supplied nodal forcing to native branch sensors; evaluate the frozen coordinate trunk at requested fine nodes')
         mesh=dict(intervals=n,weak_tests=len(triples),bank_sha256=C.sha(bank),weak_operator_sha256=C.sha(a),
             weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,linear_endpoint=linfo,quadrature=[],representation=[])
         qb,rb=np.linalg.qr(bank,mode='reduced')
@@ -210,7 +224,7 @@ def run(cfg,out,smoke=False):
                 oracle_cfg={**cfg,'initial_starts':cfg['oracle_starts'],'lm_budget':max(240,cfg['lm_budget']),'lm_tolerance':min(1e-9,cfg['lm_tolerance'])}
                 oracle=P.engine(model,bank,rb,qb,np.arange(len(bank)),q,oracle_cfg)
                 for case,truth in enumerate(truths):
-                    best,stats,coef,_=jax.device_get(oracle(jnp.asarray(truth)))
+                    best,stats,coef,*_=jax.device_get(oracle(jnp.asarray(truth)))
                     mesh['representation'].append(dict(case=case,k=k,q=q,kind='best_found_augmented',error=P.error(best,truth),
                         stats=np.asarray(stats).tolist(),stationary=bool(int(stats[2])==1 and stats[5]<=oracle_cfg['lm_tolerance'])))
                     if case==0:np.savez_compressed(out/'fields'/f'N{n}_K{k}_q{q}_oracle_case0.npz',prediction=best,stats=stats,coefficients=coef)
@@ -229,7 +243,7 @@ def run(cfg,out,smoke=False):
                     value=jax.device_get(value);finished=time.perf_counter()
                     counters=dict(stationary=True,iterations=0)
                     if isinstance(value,tuple):
-                        pred,stats,coef,starts=value
+                        pred,stats,coef,starts,*latent=value
                         counters=dict(stationary=bool(int(stats[2])==1 and stats[5]<=cfg['lm_tolerance']),iterations=int(stats[7]),
                             selected_stats=np.asarray(stats).tolist(),all_starts_stats=np.asarray(starts).tolist())
                     else:pred=value
@@ -238,7 +252,9 @@ def run(cfg,out,smoke=False):
                         input_ms=(uploaded-start)*1000,device_ms=(computed-uploaded)*1000,total_ms=(finished-start)*1000,**counters)
                     if finite:row.update(same_grid_error=P.error(pred,truth),physical_error=P.error(pred,physical[(n,case)]))
                     if rep==0:
-                        path=out/'fields'/f'N{n}_case{case}_{name}.npz';np.savez_compressed(path,prediction=pred)
+                        path=out/'fields'/f'N{n}_case{case}_{name}.npz'
+                        state=dict(coefficients=coef,latent=latent[0]) if isinstance(value,tuple) and latent else {}
+                        np.savez_compressed(path,prediction=pred,**state)
                         row.update(field_file=str(path.relative_to(out)),field_sha256=C.sha(pred))
                     record['invocations'].append(row)
                 save();print('CASE',n,case,'REP',rep,flush=True)

@@ -57,3 +57,19 @@ def native_interpolated(params,spec,scales,n,native):
     matrix=jnp.asarray(interpolation_matrix(native,n))
     jax.block_until_ready((params,inscale,outscale,matrix))
     return lambda forcing:query(forcing,matrix,params,inscale,outscale)
+
+
+def native_sensor_deeponet(params,spec,scales,n,native):
+    """Fixed native forcing sensors with direct evaluation of the learned trunk."""
+    from . import extra_models3d as E
+    assert spec['kind']=='deeponet3d' and n%native==0;stride=n//native
+    params=jax.device_put(params);inscale=jnp.asarray(scales['input']);outscale=jnp.asarray(scales['output'])
+    jax.block_until_ready((params,inscale,outscale))
+    @jax.jit
+    def query(forcing,p,inscale,outscale):
+        coarse=forcing[stride-1::stride,stride-1::stride,stride-1::stride]
+        coefficients=E.deeponet_coefficients(p,(coarse/inscale)[None,...,None],spec)
+        trunk=E.deeponet_trunk(p,coordinates(n)[None],spec)
+        values=jnp.einsum('bcr,bxyzr->bxyzc',coefficients,trunk,precision='highest')/jnp.sqrt(trunk.shape[-1])+p['bias']
+        return values[0,...,0]*outscale
+    return lambda forcing:query(forcing,params,inscale,outscale)

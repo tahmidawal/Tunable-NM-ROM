@@ -104,6 +104,12 @@ The PCA smoke and independent analytic Jacobian/gradient checks pass. The contin
 
 Before staging head04, collect extra03 using the commands above, run its full independent panel audit, and check account queue occupancy with root. Frozen-input staging follows retained original input paths for reused earlier operator checkpoints and records each copied path. The staging source must be committed. Final data remain unopened; root owns canonical lab logging and paper reports.
 
+## After head04 completes
+
+The diagnostic is intentionally not a timed trajectory panel. Its PCA models live under `out/pca_K*/head_K*.pkl`, and continued operator adapters under `out/operators_continued/<name>/adapter.pkl`; the original frozen models remain under the original root paths. A next paired panel must explicitly stage the selected replacement paths, preserving per-model training lineage and bank/cohort hashes. Do not run the ordinary frozen loader on head04 as if it were a standard complete panel: its result schema has candidates and operator diagnostics instead of mesh/invocation tables. Reusing extra03 as a base and overlaying audited head04 replacements is a suitable construction. Retain original and replacement input hashes, source commits, recipes and selected-step records. A replacement head must refit its own decoder-output quadrature weights; do not silently reuse an old head's rule just because the bank hash is unchanged. If sampled initialization is omitted, label it untested for that new head and retain the dense complete-query comparison.
+
+The prepared `fno_physical_padding_transfer` flag in `run.py` adds a separately labelled frozen-weight arm that scales padded lattice length with interval count. Preserve original direct-transfer and native-grid interpolation variants. The flag is not enabled in extra03 and therefore contributes no result yet. Independent training-seed confirmation and the prospectively reserved final cohort still require execution after the core diagnostic; no manuscript-ready final comparison is claimed.
+
 ## Glossary
 
 - **Bank / head:** learned spatial functions / nonlinear latent-to-coefficient map.

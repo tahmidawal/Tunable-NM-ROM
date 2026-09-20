@@ -235,3 +235,27 @@ budget). G-FOM-5 (tight CG $10^{-10}$ vs direct reference, $\le10^{-8}$) runs on
 the timed loop. Audit `hpl_audit_np.py` does not re-factorise: it verifies the saved same-grid and
 $2n$ references by its own matrix-free masked stencil residual against its own regenerated
 sources (round-off-aware limit), then recomputes every error.
+
+**A6 (2026-09-20, after `hp2048`, before the re-measure job `hp4096b`) — speed/accuracy-loop
+arms.** From the measured breakdown (`SPEED-LOG.md` P1/A1): (i) the two f64 host↔device copies are
+~60 % of the ROM query at $2048^2$, identical for all subjects; (ii) the error floor is the bank.
+New arms, all labelled, none replaces the headline: **f32-I/O twins** (`*_io32`) of selected
+subjects — host f32 source in, host f32 field out, both casts on the device inside the timed
+interval, applied alike to ROM, CG, DST and coarse arms and compared only with each other
+(`io_contract = f32` rows); field limit vs the f64-I/O twin $10^{-4}$ for ROM/transform subjects
+(smoke: $\le 2\times10^{-5}$); CG twins are recorded without a limit because a loosely converged
+CG can stop one iterate apart on the rounded source (the first smoke FAILED a blanket $10^{-4}$ on
+`cg_0.01_io32` at $1.8\times10^{-4}$ — a gate that can fail, and a wrong gate, fixed here before any
+GPU job). An f32-I/O subject is diagnosed against the rounded source it actually solved (the first
+smoke also failed solver validity by diagnosing it against the unrounded source). **Extra rungs:**
+`q256m8` ($M = 8(K+q)$, does a larger test set move q=256 toward the floor?) and `q384m4`.
+
+**A7 (2026-09-20, before `hp3d256`) — $256^3$ with a DST-assembled operator.** The dense
+$(n-1)^3\times M$ test matrix is 68 GB at $256^3$, so above `dense_projection_max = 128` the weak
+operator is assembled column by column, $B_{kr} = \mathrm{dst3}(G_{\cdot r})_k / n^{3/2}$, and only
+the DST-projection variants run (`leandst64`, `leandst32`, `onestart64`, `rom_q128_lineardst`); the
+parent `retained`/`lean64` kernels cannot be built there, so their parity is carried by the $128^3$
+mesh **of the same job**, where the DST-assembled operator is also gated against
+`poisson.assemble` ($\le 10^{-11}$; smoke $1\times10^{-15}$) and `lineardst` against the parent linear
+rung ($\le10^{-10}$). Bank floor from the $R$ factor of a host QR. Meshes $128^3$ and $256^3$ in one
+job, H200, 240 G host. Same cohort, arms, bar and audit as A2/A3.

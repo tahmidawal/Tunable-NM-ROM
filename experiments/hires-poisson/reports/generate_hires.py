@@ -137,6 +137,36 @@ def main():
             md.append(table_md(rows, lambda r: r['family'] in ('nm-rom', 'linear-rom')))
             md.append('\nComparators and controls in the same job:\n')
             md.append(table_md(rows, lambda r: r['family'] not in ('nm-rom', 'linear-rom')))
+    for attempt in ATTEMPTS_L:
+        p = LANE / 'runs' / attempt / 'archive' / 'output' / 'audit.json'
+        if not p.exists():
+            continue
+        a = json.loads(p.read_text())
+        n = a['intervals']
+        label = f'L-shape {n}²'
+        status = 'audited (development sources)' if a['passed'] else 'AUDIT GATES FAILED'
+        summary['sources'].append(dict(attempt=attempt, path=str(p.relative_to(LANE)), sha256=sha(p),
+                                       job_id=a['job_id'], commit=a['commit'], gpu=a['gpu'],
+                                       gpu_uuid=a['gpu_uuid'], audit_passed=a['passed'], gates=a['gates'],
+                                       error_checks=a['error_checks'],
+                                       peak_device_bytes=(a.get('device_memory') or {}).get('peak_bytes_in_use')))
+        v = a['verdict']
+        summary['verdicts'].append(dict(attempt=attempt, mesh=label, **v))
+        floor = next(m['bank_floor']['worst'] for m in a['arm_setup'] if m['model'] == a['headline_model'])
+        summary['bank_floor'].append(dict(attempt=attempt, mesh=label, worst=floor))
+        summary['parity'] += [dict(attempt=attempt, **x) for x in a['parity']]
+        rows = rows_for(a['table'], a['selections'], None, label, a['job_id'], a['gpu'], status)
+        summary['rows'] += [dict(attempt=attempt, **r) for r in rows]
+        md.append(f"## {label} — `{attempt}`, job `{a['job_id']}`, {a['gpu']}, source `{a['commit'][:12]}`\n")
+        md.append(f"Audit: **{'passed' if a['passed'] else 'FAILED'}** ({a['error_checks']} recomputed errors). "
+                  f"Bank floor worst {pct(floor)} % (`{a['headline_model']}`). Bar (accurate arm `{v['arm']}` vs "
+                  f"`cg_0.01`): worst same-grid {pct(v['worst_same_grid'])} %, speedup {v['speedup_total']:.2f}× → "
+                  f"**{'BAR MET' if v['bar_met'] else 'BAR MISSED'}**; fast arm `{v['fast_arm']['arm']}` "
+                  f"{pct(v['fast_arm']['worst_same_grid'])} % / {v['fast_arm']['speedup_total']:.2f}×. "
+                  f"The `× vs DST` column is against the CPU sparse-direct solve on this domain.\n")
+        md.append(table_md(rows, lambda r: r['family'] == 'nm-rom'))
+        md.append('\nComparators and controls in the same job:\n')
+        md.append(table_md(rows, lambda r: r['family'] != 'nm-rom'))
     OUT.mkdir(exist_ok=True)
     (OUT / 'summary.json').write_text(json.dumps(summary, indent=1) + '\n')
     (OUT / 'tables.generated.md').write_text('\n'.join(md) + '\n')

@@ -190,7 +190,7 @@ def main():
                  final_uuid_matches=R['device_guard_final_uuid'] == R['gpu_uuid'],
                  deterministic=not unstable,
                  coverage=bool(coverage) and all(c['ok'] for c in coverage),
-                 parity_present_and_passed=bool(R['parity']) and all(p['passed'] for p in R['parity']),
+                 parity_present_and_passed=bool(R['parity']) and all(p['passed'] for p in R['parity'] if p['passed'] is not None),
                  diagnostics_present_and_valid=bool(R['diagnostics'])
                                                and all(d['valid'] for d in R['diagnostics']),
                  verdict_computable=verdict is not None)

@@ -9,7 +9,7 @@ src = next(s for s in S['sources'] if s['attempt'] == attempt)
 for v in [v for v in S['verdicts'] if v['attempt'] == attempt]:
     rows = {r['subject']: r for r in S['rows'] if r['attempt'] == attempt and r['mesh'] == v['mesh']}
     acc, floor = rows[v['arm']], next(b for b in S['bank_floor'] if b['attempt'] == attempt and b['mesh'] == v['mesh'])
-    fast = rows[v['arm'].replace('q256', 'q0').replace('q96', 'q0')]
+    fast = rows[v['arm'].replace('q256', 'q0').replace('q96', 'q0').replace('q128', 'q0')]
     sp = acc['speedups']
 
     def f(k):

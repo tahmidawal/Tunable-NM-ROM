@@ -1,0 +1,143 @@
+{
+  "schema": "train-only-deeponet-pod-initialization-v1",
+  "config": {
+    "trunk_steps": 60000,
+    "trunk_learning_rate": 0.001,
+    "trunk_batch_points": 1024,
+    "trunk_wall_seconds": 900,
+    "branch_steps": 30000,
+    "branch_learning_rate": 0.001,
+    "branch_batch_size": 2,
+    "branch_wall_seconds": 900,
+    "checkpoint_every": 5000
+  },
+  "spec": {
+    "kind": "deeponet3d",
+    "periodic": false,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ],
+    "width": 16,
+    "levels": 3,
+    "pool_bins": 4,
+    "rank": 256,
+    "trunk_width": 256
+  },
+  "seed": 920312,
+  "training_cases": 512,
+  "training_snapshots": 3584,
+  "training_array_sha256": "dc5fced50f06077f6a1db9558d25be9b26aaa2f646995beb6dd0cc766ae0f38b",
+  "teacher": "relative-field-error weighted POD of identical training outputs only",
+  "trunk": {
+    "steps_completed": 60000,
+    "best_step": 60000,
+    "best_training_loss": 0.00023310049390920658,
+    "seconds": 36.68154286686331,
+    "curve": [
+      {
+        "step": 1,
+        "training_weighted_trunk_loss": 0.9995876035037529,
+        "selected": true,
+        "seconds": 4.517935917712748
+      },
+      {
+        "step": 5000,
+        "training_weighted_trunk_loss": 0.0014528977430787434,
+        "selected": true,
+        "seconds": 7.165975057054311
+      },
+      {
+        "step": 10000,
+        "training_weighted_trunk_loss": 0.0007496113831179285,
+        "selected": true,
+        "seconds": 9.88235375797376
+      },
+      {
+        "step": 15000,
+        "training_weighted_trunk_loss": 0.0005034350710035105,
+        "selected": true,
+        "seconds": 12.538728742860258
+      },
+      {
+        "step": 20000,
+        "training_weighted_trunk_loss": 0.00041251519085638475,
+        "selected": true,
+        "seconds": 15.23290417296812
+      },
+      {
+        "step": 25000,
+        "training_weighted_trunk_loss": 0.00035756247442326377,
+        "selected": true,
+        "seconds": 17.907149299047887
+      },
+      {
+        "step": 30000,
+        "training_weighted_trunk_loss": 0.0003217296603907836,
+        "selected": true,
+        "seconds": 20.598110415041447
+      },
+      {
+        "step": 35000,
+        "training_weighted_trunk_loss": 0.00028426557755081833,
+        "selected": true,
+        "seconds": 23.279721565078944
+      },
+      {
+        "step": 40000,
+        "training_weighted_trunk_loss": 0.0002668193060928742,
+        "selected": true,
+        "seconds": 25.9508110540919
+      },
+      {
+        "step": 45000,
+        "training_weighted_trunk_loss": 0.0002513374142814267,
+        "selected": true,
+        "seconds": 28.623038748744875
+      },
+      {
+        "step": 50000,
+        "training_weighted_trunk_loss": 0.0002416680266477914,
+        "selected": true,
+        "seconds": 31.30084611289203
+      },
+      {
+        "step": 55000,
+        "training_weighted_trunk_loss": 0.0002359515190644936,
+        "selected": true,
+        "seconds": 33.986658352892846
+      },
+      {
+        "step": 60000,
+        "training_weighted_trunk_loss": 0.00023310049390920658,
+        "selected": true,
+        "seconds": 36.655210548080504
+      }
+    ],
+    "selection": "minimum full training weighted trunk loss"
+  },
+  "branch": {
+    "steps_completed": 30000,
+    "best_step": 30000,
+    "best_training_relative_mse": 0.0004148380369895381,
+    "seconds": 222.3797415806912,
+    "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+  },
+  "teacher_projection_error": {
+    "mean": 0.0022620586586022478,
+    "median": 0.0017916454466524988,
+    "worst": 0.009281878274736423
+  },
+  "learned_trunk_projection_error": {
+    "mean": 0.01038259771534948,
+    "median": 0.008317981084349984,
+    "worst": 0.043792410504256814
+  },
+  "learned_trunk_numerical_rank": 256,
+  "seconds": 276.93767514592037,
+  "development_data_used": false,
+  "final_data_used": false,
+  "online_architecture_changed": false,
+  "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+}

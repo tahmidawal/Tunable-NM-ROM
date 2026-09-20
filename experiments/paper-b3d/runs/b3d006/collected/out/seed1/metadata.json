@@ -1,0 +1,187 @@
+{
+  "name": "deeponet3d",
+  "spec": {
+    "kind": "deeponet3d",
+    "periodic": false,
+    "coordinate_channels": [
+      1,
+      2,
+      3
+    ],
+    "width": 16,
+    "levels": 3,
+    "pool_bins": 4,
+    "rank": 256,
+    "trunk_width": 256
+  },
+  "config": {
+    "steps": 40000,
+    "wall_seconds": 1200,
+    "batch_size": 2,
+    "seed": 920412,
+    "learning_rate": 0.0003,
+    "validation_every": 500,
+    "curve_every": 25,
+    "components_per_output": 1,
+    "normalization": "fixed supplied initial-field norm"
+  },
+  "parameter_count": 1861959,
+  "steps_completed": 40000,
+  "initialization": "explicit retained pretrained parameters",
+  "best_step": 35500,
+  "best_validation_worst": 0.1611844199733508,
+  "seconds": 545.0887793321162,
+  "exit_reason": "steps",
+  "normalization": "fixed supplied initial-field norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "pretraining": {
+    "schema": "train-only-deeponet-pod-initialization-v1",
+    "config": {
+      "trunk_steps": 60000,
+      "trunk_learning_rate": 0.001,
+      "trunk_batch_points": 1024,
+      "trunk_wall_seconds": 900,
+      "branch_steps": 30000,
+      "branch_learning_rate": 0.001,
+      "branch_batch_size": 2,
+      "branch_wall_seconds": 900,
+      "checkpoint_every": 5000
+    },
+    "spec": {
+      "kind": "deeponet3d",
+      "periodic": false,
+      "coordinate_channels": [
+        1,
+        2,
+        3
+      ],
+      "width": 16,
+      "levels": 3,
+      "pool_bins": 4,
+      "rank": 256,
+      "trunk_width": 256
+    },
+    "seed": 920412,
+    "training_cases": 512,
+    "training_snapshots": 3584,
+    "training_array_sha256": "dc5fced50f06077f6a1db9558d25be9b26aaa2f646995beb6dd0cc766ae0f38b",
+    "teacher": "relative-field-error weighted POD of identical training outputs only",
+    "trunk": {
+      "steps_completed": 60000,
+      "best_step": 60000,
+      "best_training_loss": 0.0002266093215017285,
+      "seconds": 32.7221794500947,
+      "curve": [
+        {
+          "step": 1,
+          "training_weighted_trunk_loss": 0.8464001263746469,
+          "selected": true,
+          "seconds": 1.2214932069182396
+        },
+        {
+          "step": 5000,
+          "training_weighted_trunk_loss": 0.0013578079993595005,
+          "selected": true,
+          "seconds": 3.814407492056489
+        },
+        {
+          "step": 10000,
+          "training_weighted_trunk_loss": 0.0007274699773805731,
+          "selected": true,
+          "seconds": 6.43878011405468
+        },
+        {
+          "step": 15000,
+          "training_weighted_trunk_loss": 0.0004899389730476732,
+          "selected": true,
+          "seconds": 9.055175176821649
+        },
+        {
+          "step": 20000,
+          "training_weighted_trunk_loss": 0.00041276015999212136,
+          "selected": true,
+          "seconds": 11.676497059874237
+        },
+        {
+          "step": 25000,
+          "training_weighted_trunk_loss": 0.0003536867793193417,
+          "selected": true,
+          "seconds": 14.29657751088962
+        },
+        {
+          "step": 30000,
+          "training_weighted_trunk_loss": 0.00030485604018328167,
+          "selected": true,
+          "seconds": 16.926342790015042
+        },
+        {
+          "step": 35000,
+          "training_weighted_trunk_loss": 0.00028195086442032714,
+          "selected": true,
+          "seconds": 19.529673701152205
+        },
+        {
+          "step": 40000,
+          "training_weighted_trunk_loss": 0.0002573245275037669,
+          "selected": true,
+          "seconds": 22.17744515510276
+        },
+        {
+          "step": 45000,
+          "training_weighted_trunk_loss": 0.00024335582971516049,
+          "selected": true,
+          "seconds": 24.79773258185014
+        },
+        {
+          "step": 50000,
+          "training_weighted_trunk_loss": 0.00023460037355954184,
+          "selected": true,
+          "seconds": 27.44480347400531
+        },
+        {
+          "step": 55000,
+          "training_weighted_trunk_loss": 0.0002296005166965423,
+          "selected": true,
+          "seconds": 30.055709848180413
+        },
+        {
+          "step": 60000,
+          "training_weighted_trunk_loss": 0.0002266093215017285,
+          "selected": true,
+          "seconds": 32.695523623842746
+        }
+      ],
+      "selection": "minimum full training weighted trunk loss"
+    },
+    "branch": {
+      "steps_completed": 30000,
+      "best_step": 30000,
+      "best_training_relative_mse": 0.00042574506160676043,
+      "seconds": 218.40557596366853,
+      "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+    },
+    "teacher_projection_error": {
+      "mean": 0.0022620586586022478,
+      "median": 0.0017916454466524988,
+      "worst": 0.009281878274736423
+    },
+    "learned_trunk_projection_error": {
+      "mean": 0.010246417592125356,
+      "median": 0.008199017160890247,
+      "worst": 0.040659581521092794
+    },
+    "learned_trunk_numerical_rank": 256,
+    "seconds": 268.7599633904174,
+    "development_data_used": false,
+    "final_data_used": false,
+    "online_architecture_changed": false,
+    "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+  },
+  "model_seed_index": 1,
+  "scale": 0.19325997813876442,
+  "nu_center": 0.03763411522392493,
+  "nu_scale": 0.024325800884896814,
+  "final_cohort_unopened": true
+}

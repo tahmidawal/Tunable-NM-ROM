@@ -1,0 +1,255 @@
+{
+  "complete": true,
+  "status": "Accepted negative development experiment; no trained capacity replacement",
+  "source_commit": "4d675dd97c12ea47b90b7ca9720bc9bf0623da7f",
+  "job_id": "4019914",
+  "gpu": "NVIDIA A100 80GB PCIe, 81920 MiB",
+  "configuration": {
+    "n": 32,
+    "initial_amplitude": 0.2,
+    "dt": 0.001,
+    "horizon": 0.2,
+    "verification_cases": 4,
+    "train_cases": 512,
+    "dev_cases": 16,
+    "train_seed": 202609201,
+    "dev_seed": 202609202,
+    "final_seed_unopened": 202609203,
+    "model_seed": 202609262,
+    "n_ff": 256,
+    "spatial_batch": 1024,
+    "test_modes": 2048,
+    "rom_dt": 0.004,
+    "rom_budget": 80,
+    "fom_dts": [
+      0.002,
+      0.004,
+      0.008,
+      0.01,
+      0.02,
+      0.04
+    ],
+    "timed_cases": 4,
+    "repetitions": 3,
+    "reference_dt": 0.00025,
+    "fine_reference_n": 64,
+    "fine_reference_dt": 0.0005,
+    "operator_train": {
+      "steps": 50000,
+      "wall_seconds": 900,
+      "batch_size": 2,
+      "seed": 202609245,
+      "learning_rate": 0.001,
+      "validation_every": 400,
+      "curve_every": 100,
+      "components_per_output": 3,
+      "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+    },
+    "operators": [
+      {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 0,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": true,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 512,
+        "trunk_width": 512,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "trunk_frequencies": [
+          2.0,
+          4.0,
+          8.0
+        ],
+        "output_residual_initial": true
+      },
+      {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          0.0,
+          1.0
+        ],
+        "output_residual_initial": true
+      }
+    ],
+    "capacity_head_steps": 100000,
+    "capacity_head_seconds": 600,
+    "augmentation_copies": 4,
+    "augmentation_seed": 202609241,
+    "coverage_rank": 3072,
+    "coverage_bank_steps": 150000,
+    "coverage_bank_seconds": 1500,
+    "pod_screen_ranks": [
+      1536,
+      2048,
+      3072
+    ],
+    "head_batch": 128,
+    "head_variants": [
+      {
+        "label": "pca128_fixed",
+        "k": 128,
+        "free_codes": false
+      },
+      {
+        "label": "pca128_free",
+        "k": 128,
+        "free_codes": true
+      }
+    ],
+    "rollout_bank_threshold": 0.05,
+    "rollout_head_threshold": 0.08,
+    "larger_rollout_q_values": [
+      0,
+      32,
+      64,
+      128,
+      256
+    ],
+    "planned_extended_ladder": {
+      "q_values": [
+        0,
+        32,
+        64,
+        128,
+        256
+      ],
+      "fixed_test_modes": 2048,
+      "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+    },
+    "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases.",
+    "bank_hidden_width": 1536,
+    "warm_bank_checkpoint": "reuse/capacity/frozen_bank.pkl",
+    "reuse_path": "reuse",
+    "head_training_bank_threshold": 0.05,
+    "training_lineage": "Warm expansion of the coverage04 learned spatial bank on identical augmented membership; fresh optimizer/new columns/training RNG; not an independent complete training seed.",
+    "final_cases_unopened": 32
+  },
+  "final_cohort_opened": false,
+  "bank_rank": 3072,
+  "bank_development": {
+    "mean": 0.02967852094371162,
+    "median": 0.025356671924587355,
+    "worst": 0.06316960270993194,
+    "over_5pct": 10,
+    "count": 96
+  },
+  "bank_training_projection": {
+    "mean": 0.02772802615469137,
+    "median": 0.023715848333402918,
+    "worst": 0.07758541312982532,
+    "over_5pct": 799,
+    "count": 12288
+  },
+  "bank_condition": 119915260.3844006,
+  "initial_bank_condition": 4937584.433584682,
+  "POD_development": {
+    "1536": {
+      "mean": 0.030246349511368124,
+      "median": 0.025881126337960025,
+      "worst": 0.07425546143254977,
+      "over_5pct": 12,
+      "count": 96
+    },
+    "2048": {
+      "mean": 0.02127043450247977,
+      "median": 0.01795758303947997,
+      "worst": 0.05510324498248649,
+      "over_5pct": 3,
+      "count": 96
+    },
+    "3072": {
+      "mean": 0.012575035277247465,
+      "median": 0.009831554281140648,
+      "worst": 0.038407465598290856,
+      "over_5pct": 0,
+      "count": 96
+    }
+  },
+  "heads": {
+    "pca128_initial": {
+      "training_steps": 0,
+      "development": {
+        "mean": 0.29266740563136495,
+        "median": 0.2878267124615131,
+        "worst": 0.3848894838934347,
+        "over_5pct": 96,
+        "count": 96
+      }
+    }
+  },
+  "skipped_head_training": {
+    "pca128_fixed": {
+      "reason": "bank floor exceeds configured head-training eligibility threshold",
+      "threshold": 0.05
+    },
+    "pca128_free": {
+      "reason": "bank floor exceeds configured head-training eligibility threshold",
+      "threshold": 0.05
+    }
+  },
+  "audit_gates": 21,
+  "all_training_projection_audit": {
+    "passed": true,
+    "snapshots": 12288,
+    "maximum_coefficient_relative_error": 4.656163009109715e-11,
+    "maximum_floor_error": 6.837932997605378e-13
+  },
+  "timed_field_audit": {
+    "passed": true,
+    "invocations": 168,
+    "fields": 56,
+    "max_metric_disagreement": 1.1102230246251565e-16,
+    "failures": []
+  },
+  "history_applicable": false,
+  "archive_commit": "fc7386c2",
+  "archive_verified_bytes": 14485995520,
+  "exact_remote_deleted": true,
+  "limitations": [
+    "Warm extension, not an independent full training seed",
+    "POD figures are independently reconstructed fixed-basis projection metrics, not a universal optimality claim",
+    "No trained head and no NM rollout in this attempt"
+  ],
+  "successor": {
+    "attempt": "confirmation06b",
+    "job_id": 4024180,
+    "source_commit": "71fd208d1ea2258a87147d78a56484993bb7fcf6",
+    "model": "Previously accepted coverage04 R1536/K64 trained pca64_free incumbent"
+  }
+}

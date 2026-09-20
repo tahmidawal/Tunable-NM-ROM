@@ -107,8 +107,11 @@ def verify(root, run, commit, restore_member=None):
             try:
                 if row['chunks']:
                     for chunk in row['chunks']:
-                        h, n = reader.read(safe_path(run, chunk['path']), sink=handle, combined=digest)
+                        chunk_path = safe_path(run, chunk['path'])
+                        h, n = reader.read(chunk_path, sink=handle, combined=digest)
                         assert (h, n) == (chunk['sha256'], chunk['bytes'])
+                        if chunk_path.exists():
+                            assert (sha(chunk_path), chunk_path.stat().st_size) == (h, n)
                         size += n
                     actual = digest.hexdigest(), size
                 else:

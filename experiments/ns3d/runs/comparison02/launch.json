@@ -1,0 +1,21 @@
+{
+  "attempt": "comparison02",
+  "source_commit": "23932ac4eca33075fc43b4e10e9d3ca24ee2a388",
+  "local": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02",
+  "config": "comparison02.json",
+  "gpu": "a100",
+  "wall_limit_hours": 2,
+  "driver": "comparison.py",
+  "job_id": 3993021,
+  "submitted_utc": "2026-09-20T05:13:07.450601+00:00",
+  "job_name": "ctol_ns3d_920_comparison02",
+  "state_at_submission": "submitted",
+  "staging": "direct scp to paralab; SHA256 source manifest verified before sbatch",
+  "pre_submit_other_jobs": [
+    3992083,
+    3990698,
+    3990494
+  ],
+  "command": "ssh tufts-login \"cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02 && sbatch --parsable run.sbatch\""
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "backend": "gpu",
+  "whole_rollout_discrepancy": 0.0,
+  "profile": {
+    "nodes": 9,
+    "dt": 0.0025,
+    "steps": 4,
+    "output_nodes": 5,
+    "output_dt": 0.005,
+    "nu": 0.034790544050625996,
+    "seconds": 0.0885448349872604,
+    "compile_seconds": 0.3884560620645061,
+    "worst_step": 1,
+    "maximum_relative_residual": 8.382412881323095e-12,
+    "numpy_worst_step_residual": 8.382412899732297e-12,
+    "audit_scope": "independent NumPy residual at largest recorded step residual; every iteration/residual retained",
+    "output_contract": "exact nodal restriction at every original output time; full fine trajectory not retained"
+  }
+}

@@ -785,3 +785,76 @@ converged same-grid solve at any mesh; the reduced rungs' physical error is the 
 
 **Codex** still unavailable; `reports/self-audit-2026-09-17-bpn301-bpn203.md` regenerated over all three jobs.
 Jobs used: **six of eight**. Nothing submitted.
+
+## A13 — 2026-09-19 ~21:30, after the Codex report audit: the convergence flag corrected to §5 as written, the
+§A5.2 scoring re-keyed, two counterfactuals recomputed, two phrasings withdrawn
+
+**This amendment supersedes the affected sentences of §A10–§A12; it does not edit them.** The Codex audit of the
+lane's report (`reports/codex-report-audit-2026-09-19.md`, run 2026-09-19 after the shared quota returned; its 15
+sampled numbers and all 123 timing medians matched the JSONs) made four findings. All four are accepted.
+
+**Finding 1 — the defect.** §5 above defines a converged query with a *fixed* gradient threshold: every time step
+$g\le10^{-6}$ unless it exited on the residual rule, the initial fit $g\le10^{-6}$ or its relative residual at round-off.
+`audit_panel.py` (line 180 at `d2135501`) evaluated that rule against each invocation's **own** `gtol`, so the twelve
+1e-3 arms per job at 256² and 512² and the six at 1024² were flagged converged at 1e-3 and entered the admissible
+frontiers and ratios. No amendment authorised that; it was a coding error, present since `bpn101`. Verified
+independently before any file was changed: `checks/verify_design5.py` re-derives both flags from the raw
+`step_joint_stationarity`, `stop_reasons` and `ic_*` fields of the three accepted jobs' `result.json` without importing
+`audit_panel.py` (`checks/design5-verification.json`). Counterexample of record: `q0_M64_eqxfer_g0p001` at 1024², maximum
+per-step stationarity 0.000994712, every exit on the gradient rule (reason [4]) — converged at its own
+tolerance, not under §5.
+
+**The rule now applied, everywhere.** `converged_design5` (§5 as written, fixed $10^{-6}$) is the primary flag and is
+the one that defines `admissible`; the as-implemented flag is retained as `converged_own_gtol` / `admissible_own_gtol`, a
+labelled secondary column that defines nothing. Non-dominated sets on all four metric pairs, the reduced-only sets of
+§A4, the ladders' `all_converged`, the same-job ratios and every headline count are recomputed under §5 by
+`audit_panel.py` (rerun over the retained fields; every numeric field of every arm is byte-identical to the pre-A13
+audits, only the flag keys changed) and by `reports/generate_panel.py`. The 1e-3 arms stay in every table with their
+own numbers and are marked not admissible under §5; their errors, costs and certifications stand as measurements.
+
+| mesh | job | reduced | 1e-3 arms | admissible reduced (pre-A13 → §5) | reduced on the (GPU ms, worst evolved %) frontier | cheapest admissible reduced | / cheapest same-job FOM | / same-job `fft_tight` |
+|---|---|---|---|---|---|---|---|---|
+| 256² | `3789570` | 39 | 12 | 39 → **27** | 0 → **0** | `q0_M64_eqcert_g1em06_fastL4` → `q0_M64_eqcert_g1em06_fastL4` | 4.480× → **4.480×** | 0.446× → **0.446×** |
+| 512² | `3805065` | 39 | 12 | 31 → **23** | 0 → **0** | `q0_M64_eqxfer_g1em06_fastL4` → `q0_M64_eqxfer_g1em06_fastL4` | 2.923× → **2.923×** | 0.257× → **0.257×** |
+| 1024² | `3789572` | 24 | 6 | 20 → **16** | 5 → **3** | `q0_M64_eqxfer_g0p001` → `q0_M64_eqxfer_g1em06` | 1.818× → **2.272×** | 0.153× → **0.191×** |
+
+The 1024² survivors are `q0_M64_eqxfer_g1em06`, `q16_M128_eqxfer_g1em06`, `q32_M192_eqxfer_g1em06` — the 1e-6 transferred rules at q = 0, 16, 32. The 256² and 512² ratios do not move
+because their cheapest admissible reduced arm was already a 1e-6 `fast` kernel. **Superseded sentences:** §A10's and
+§A12's "five" non-dominated admissible reduced subjects at 1024² (now three); §A11 (ii)'s and §A12's 1024² ratio pair
+1.818× / 0.153× (now the bold values above); the report's earlier "0 of 39", "0 of 31", "5 of 20" and "1.818×". The §A11
+question's answer is unchanged — 0 at 256², 0 at 512², > 0 at 1024² — and the crossover statement "between 512² and
+1024²" stands under §5, on the same hardware caveat as before (the 1024² job is an H200; the factor-of-N sentences in
+the report are ratios of within-job ratios across GPU classes and now say so).
+
+**Finding 2 — the §A5.2 scoring at 512² is withdrawn.** `generate_panel.py` keyed the six historical capped
+transfers (1024², `eqxfer`, `clip(8192/M, 8, 64)`, completed by `bpn202` before its crash — the same refit `bpn201`
+ran) by q alone, so at 512² it printed them against both rule sets as twelve comparisons ("6 of 12"), named four
+rungs, and pronounced the prediction "did not hold". §A5.2 named two qrg304 (`eqxfer`) transfers at 1024² in `bpn201`
+and nothing else. The scoring is now keyed by (mesh, rule set, q, fit-state regime): at 512² it states that the
+prediction is out of scope and prints only that job's uncapped transfers; at 1024² it scores §A5.2 on the capped
+records (both named rungs uncertified — the predicted outcome held) and states separately, as a changed experiment
+under §A7 and not a scoring, that the uncapped refit with 64 fit states still left q = 128 secondary and q = 256
+uncertified, so fit-state starvation is not shown to be a sufficient explanation at that mesh.
+
+**Finding 3 — two counterfactuals were false.** The 512² and 1024² sections asserted that removing
+`free512_M1024_dense` makes `pod256_M1024_dense` non-dominated on the all-times metric. The sentence was templated,
+not computed. It is now computed by re-deriving the frontier over the admissible reduced subjects without the bank:
+at 512² and 1024² POD-256 stays dominated and the report names the remaining dominator (under §5 these are the 1e-6
+arms `q256_M1088_eqtopxfer_g1em06` and `q128_M576_eqxfer_g1em06`; under the pre-A13 flag the audit found the 1e-3
+twins); at 256² the statement about `pod512_M2048_dense` was and is correct.
+
+**Finding 4 — wording.** "Indistinguishable from the converged same-grid solve in physical terms" compared one
+worst-over-cases scalar and now says so; "loses weight mass" reported a count of strictly positive weights and now
+says so.
+
+**Also disclosed in the report, at the audit's request** (a new "Retractions, corrections and disclosures" section,
+generated): §A1's missing pre-job Codex audit; §A3's withdrawal of the frozen-state transfer collector; and that the
+512² acceptance in §A12 rests on a post-data reading of §7's narrower clause while §6 says every gate must pass — a
+disclosed exception, not an unqualified pre-registered pass.
+
+**Machine-readable.** `reports/summary.json` now carries, per row, `admissible` (= §5, the field the paper reads),
+`admissible_design5` (explicit alias), `admissible_own_gtol` (pre-A13), `converged_design5`, `converged_own_gtol`,
+`converged_strict`; the frontier rows are `nondominated_<pair>_admissible` (§5), `_reduced_only` (§5),
+`_admissible_own_gtol`, `_reduced_only_own_gtol`, `_all`; a top-level `admissibility` block states the rule and the
+key map. `checks/recheck_headline.py` was rerun against the re-audited JSONs. No job was submitted; jobs used remain
+**six of eight**.

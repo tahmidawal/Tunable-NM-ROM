@@ -1,0 +1,1801 @@
+{
+  "schema": "paper-heat3d-result-v1",
+  "config": {
+    "schema": "paper-heat3d-tuning-operators-v2",
+    "train_intervals": 8,
+    "evaluation_intervals": [
+      8
+    ],
+    "reference_intervals": [
+      8,
+      16
+    ],
+    "train_count": 4,
+    "validation_count": 1,
+    "train_seed": 920310,
+    "validation_seed": 920311,
+    "reserved_final_seed": 920399,
+    "model_seed": 920312,
+    "bank_minibatch_seed": 920313,
+    "head_minibatch_seed": 920314,
+    "timing_seed": 920315,
+    "quadrature_seed": 920316,
+    "diffusivity": 0.02,
+    "times": [
+      0.0,
+      0.1,
+      0.2
+    ],
+    "dt": 0.025,
+    "bank_rank": 8,
+    "latent_dimensions": [
+      2
+    ],
+    "bank_steps": 3,
+    "head_steps": 3,
+    "bank_batch_states": 4,
+    "bank_batch_points": 64,
+    "head_batch_states": 128,
+    "bank_learning_rate": 0.001,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 1,
+    "fourier_features": 4,
+    "fourier_scale": 1.5,
+    "bank_width": 16,
+    "head_width": 16,
+    "weak_tests": 32,
+    "q_ladder": [
+      0,
+      2
+    ],
+    "quadrature_candidates": 128,
+    "quadrature_decoder_snapshots": 4,
+    "quadrature_fit_rows": 64,
+    "quadrature_certificate": 0.01,
+    "lm_budget": 8,
+    "lm_tolerance": 1e-06,
+    "initial_starts": 2,
+    "repetitions": 1,
+    "burn_seconds": 0.001,
+    "reference_budget": 0.0001,
+    "field_chunk": 1024,
+    "final_cohort_opened": false,
+    "bank_validation_selection": true,
+    "bank_tail_weight": 0.1,
+    "bank_coefficient_refit_every": 1,
+    "quadrature_scale_floor": 0.1,
+    "operators": [
+      {
+        "name": "fno3d_w16_m6",
+        "model": {
+          "kind": "fno3d",
+          "width": 2,
+          "modes": [
+            2,
+            2,
+            2
+          ],
+          "depth": 1,
+          "padding": 1,
+          "levels": 2
+        },
+        "training": {
+          "steps": 3,
+          "wall_seconds": 20,
+          "batch_size": 2,
+          "seed": 920321,
+          "learning_rate": 0.001,
+          "validation_every": 2,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        }
+      },
+      {
+        "name": "unet3d_w8",
+        "model": {
+          "kind": "unet3d",
+          "width": 2,
+          "levels": 2,
+          "periodic": false,
+          "modes": [
+            2,
+            2,
+            2
+          ],
+          "depth": 1,
+          "padding": 1
+        },
+        "training": {
+          "steps": 3,
+          "wall_seconds": 20,
+          "batch_size": 2,
+          "seed": 920322,
+          "learning_rate": 0.001,
+          "validation_every": 2,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        }
+      }
+    ]
+  },
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "jax_version": "0.10.1",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "smoke": true,
+  "complete": true,
+  "status": "complete",
+  "final_cohort_opened": false,
+  "verification": {
+    "heat": {
+      "dst_scipy": 2.9383378160673517e-16,
+      "dst_inverse": 3.9386138572695386e-16,
+      "stencil_diagonal": 2.7374365752497654e-16,
+      "continuum_mode": 2.273104143188119e-16,
+      "weak_stencil": 1.035201800467555e-15,
+      "passed": true
+    },
+    "rom": {
+      "nonlinear_fit_error": 2.19824158875781e-14,
+      "linear_cn_error": 2.220446049250313e-16,
+      "augmented_carry_error": 7.438494264988549e-15,
+      "cn_refinement_ratio": 4.001819568187369,
+      "advances_after_first_output": true,
+      "passed": true
+    }
+  },
+  "bank": {
+    "seconds": 4.0144950420362875,
+    "steps": 3,
+    "selected_step": 3,
+    "validation_projection_evolved_worst": 0.7691719624180738,
+    "basis_hash": "e6aca925539fd53973f630b49c3e5fd3daa541c73d3ee521d8cfb26b0a76c9a4",
+    "condition_number": 10.803033910721204,
+    "orthogonality": 8.881784197001252e-16,
+    "training_projection_mean": 0.8131801422034747,
+    "training_projection_worst": 0.8882863299309546,
+    "training_matrix_hash": "f1b5220bb27d05f2ddfa5910331749054283010afad70d5ac2ebf65222688068",
+    "converged_claim": false
+  },
+  "heads": [
+    {
+      "k": 2,
+      "seconds": 1.4837600069586188,
+      "steps": 3,
+      "converged_claim": false,
+      "training_error_mean": 1.012932177038731,
+      "training_error_median": 1.0110258692031924,
+      "training_error_worst": 1.047877173120582,
+      "correction_singular_values": [
+        3.136213272857839,
+        0.9562130333137955,
+        0.6257357965420758,
+        0.40445096289989785,
+        0.20482551601466636,
+        0.06903933662846835,
+        0.028440431931343817,
+        0.0110119137136834
+      ],
+      "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+      "direction_hash": "5b14ae3300d8b015350eba22cba8057f3f7cb2d28d9f88e822dc4d5946abb5fc"
+    }
+  ],
+  "meshes": [
+    {
+      "intervals": 8,
+      "bank_sha256": "b18c04b7fd2d08c5b34a73365ccf85e2dfb0beeef39802c54390c5700448081c",
+      "weak_operator_sha256": "aa04773f73c1c7cca27ca31df7823148f671533c0518fd39c046815997bc4d83",
+      "weak_tests": 32,
+      "weak_singular_values": [
+        0.04042552288666201,
+        0.0336695418276256,
+        0.024195941607877677,
+        0.018177870867252068,
+        0.016573790660873163,
+        0.012157514970625968,
+        0.011115606237768057,
+        0.008212000340819802
+      ],
+      "pod": {
+        "available_rank": 12,
+        "training_hash": "f1b5220bb27d05f2ddfa5910331749054283010afad70d5ac2ebf65222688068",
+        "orthogonality": 2.531308496145357e-14
+      },
+      "quadrature": [
+        {
+          "candidate_count": 128,
+          "positive_support": 57,
+          "source": "decoder-output snapshots, NNLS positive weights, random candidate grid nodes",
+          "fit_rows": 64,
+          "row_scale_floor": 0.1,
+          "seconds": 0.000726307975128293,
+          "scaled_fit_norm": 0.24539616661511607,
+          "training_moment_error_max": 0.597884876416426,
+          "weights_hash": "dd27c3406a7a5d034dba3e6f05a2ae19227f4da58375694e708ad10861d825a4",
+          "indices_hash": "e3677f86f15ea3ede5d631944038b8332ee5df9fd3cae4d3cbcac524667840a2",
+          "k": 2,
+          "validation_moment_errors": [
+            1.0527079601950715
+          ],
+          "certificate_threshold": 0.01,
+          "certified": false
+        }
+      ],
+      "representation": [
+        {
+          "case": 0,
+          "k": 2,
+          "head_best_found": {
+            "current_by_time": [
+              0.9270743863470262,
+              0.9102761368946968,
+              0.8944793757300167
+            ],
+            "initial_by_time": [
+              0.9270743863470262,
+              0.773072107894163,
+              0.661071192364549
+            ],
+            "current_evolved": 0.9102761368946968,
+            "current_all": 0.9270743863470262,
+            "initial_evolved": 0.773072107894163,
+            "initial_all": 0.9270743863470262,
+            "initial_fit": 0.9270743863470262,
+            "energy": [
+              0.33309835901398366,
+              0.33250399855683443,
+              0.32819619684275136
+            ]
+          },
+          "fit_stats": [
+            [
+              19.0,
+              11.0,
+              1.0,
+              0.7786669480397558,
+              1.2617285059836963e-10
+            ],
+            [
+              10.0,
+              10.0,
+              1.0,
+              0.7617700977016452,
+              1.9757791475188952e-10
+            ],
+            [
+              9.0,
+              9.0,
+              1.0,
+              0.749081135052373,
+              3.394723784632123e-10
+            ]
+          ],
+          "nonstationary_fits": 0
+        },
+        {
+          "case": 0,
+          "bank_projection": {
+            "current_by_time": [
+              0.801888467141852,
+              0.7691719624180736,
+              0.7379055721471611
+            ],
+            "initial_by_time": [
+              0.801888467141852,
+              0.6532362721801396,
+              0.5453542358465793
+            ],
+            "current_evolved": 0.7691719624180736,
+            "current_all": 0.801888467141852,
+            "initial_evolved": 0.6532362721801396,
+            "initial_all": 0.801888467141852,
+            "initial_fit": 0.801888467141852,
+            "energy": [
+              0.8482740644627647,
+              0.6999239037545224,
+              0.591205261285635
+            ]
+          }
+        }
+      ],
+      "setup_seconds": 2.0956342190038413,
+      "methods": {
+        "linear_bank_cn": {
+          "kind": "linear_control"
+        },
+        "linear_bank_exact": {
+          "kind": "linear_control"
+        },
+        "pod2_exact": {
+          "kind": "linear_control"
+        },
+        "pod4_exact": {
+          "kind": "linear_control"
+        },
+        "pod8_exact": {
+          "kind": "linear_control"
+        },
+        "linear_bank_galerkin_exact": {
+          "kind": "linear_control"
+        },
+        "dst_exact": {
+          "kind": "full_order"
+        },
+        "fno3d_w16_m6": {
+          "kind": "neural_operator",
+          "model": {
+            "kind": "fno3d",
+            "width": 2,
+            "modes": [
+              2,
+              2,
+              2
+            ],
+            "depth": 1,
+            "padding": 1,
+            "levels": 2
+          },
+          "parameter_count": 294,
+          "physical_scale": 0.1010502167298064,
+          "training_intervals": 8,
+          "resolution_transfer": false
+        },
+        "unet3d_w8": {
+          "kind": "neural_operator",
+          "model": {
+            "kind": "unet3d",
+            "width": 2,
+            "levels": 2,
+            "periodic": false,
+            "modes": [
+              2,
+              2,
+              2
+            ],
+            "depth": 1,
+            "padding": 1
+          },
+          "parameter_count": 1426,
+          "physical_scale": 0.1010502167298064,
+          "training_intervals": 8,
+          "resolution_transfer": false
+        },
+        "nmrom_K2_q0_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q0_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q2_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense_dt_half": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "dt": 0.0125
+        }
+      }
+    }
+  ],
+  "invocations": [
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "linear_bank_exact",
+      "input_ms": 0.5948190810158849,
+      "device_ms": 0.537905958481133,
+      "total_ms": 1.711864024400711,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          1.9262245567143585,
+          1.7436833384995556,
+          1.5497545530978756
+        ],
+        "initial_by_time": [
+          1.9262245567143585,
+          1.4808615752493601,
+          1.1453568613056861
+        ],
+        "current_evolved": 1.7436833384995556,
+        "current_all": 1.9262245567143585,
+        "initial_evolved": 1.4808615752493601,
+        "initial_all": 1.9262245567143585,
+        "initial_fit": 1.9262245567143585,
+        "energy": [
+          9.5960184145825,
+          5.8887442275983855,
+          3.686046113349881
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.9262245567143585,
+          1.7670823609351376,
+          1.5788170217485473
+        ],
+        "initial_by_time": [
+          1.9262245567143585,
+          1.476685788805927,
+          1.1407689624572415
+        ],
+        "current_evolved": 1.7670823609351376,
+        "current_all": 1.9262245567143585,
+        "initial_evolved": 1.476685788805927,
+        "initial_all": 1.9262245567143585,
+        "initial_fit": 1.9262245567143585,
+        "energy": [
+          9.5960184145825,
+          5.8887442275983855,
+          3.686046113349881
+        ]
+      },
+      "field_file": "fields/N8_case0_linear_bank_exact.npz",
+      "field_sha256": "96309112a344647d384b8e7c5fd3c818eaaeaadf8cd5fbe76ec5533c0ebb4bbf"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "linear_bank_cn",
+      "input_ms": 0.4839219618588686,
+      "device_ms": 0.3808500478044152,
+      "total_ms": 1.1559569975361228,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          1.9262245567143585,
+          1.7443210461636658,
+          1.550905127232744
+        ],
+        "initial_by_time": [
+          1.9262245567143585,
+          1.4814031625635085,
+          1.146207201107675
+        ],
+        "current_evolved": 1.7443210461636658,
+        "current_all": 1.9262245567143585,
+        "initial_evolved": 1.4814031625635085,
+        "initial_all": 1.9262245567143585,
+        "initial_fit": 1.9262245567143585,
+        "energy": [
+          9.5960184145825,
+          5.893186695463729,
+          3.691596118326787
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.9262245567143585,
+          1.7677338927632331,
+          1.5800047047815649
+        ],
+        "initial_by_time": [
+          1.9262245567143585,
+          1.4772302500108898,
+          1.1416271188633607
+        ],
+        "current_evolved": 1.7677338927632331,
+        "current_all": 1.9262245567143585,
+        "initial_evolved": 1.4772302500108898,
+        "initial_all": 1.9262245567143585,
+        "initial_fit": 1.9262245567143585,
+        "energy": [
+          9.5960184145825,
+          5.893186695463729,
+          3.691596118326787
+        ]
+      },
+      "field_file": "fields/N8_case0_linear_bank_cn.npz",
+      "field_sha256": "b8950e845297c596be50fa9e43f988a685226653c1fa34fcd03d642489dc4076"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q0_eq",
+      "input_ms": 0.4339860752224922,
+      "device_ms": 3.9884980069473386,
+      "total_ms": 5.992923048324883,
+      "finite": true,
+      "initial_stats": [
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.9277462738896187,
+          3.374660005651325e-05
+        ],
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.92774627329568,
+          2.9651910349960648e-05
+        ]
+      ],
+      "step_stats": [
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011950988054972859,
+          5.408616485309813e-07,
+          5.408616486835581e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011850922730583396,
+          4.212671516926224e-07,
+          4.2126715172406293e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011803002015892013,
+          3.193630320122305e-07,
+          3.193630321425163e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011798366896218786,
+          2.3638527555496053e-07,
+          2.363852756264048e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011829801227508485,
+          1.7092987121423972e-07,
+          1.709298712632997e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011891505526367818,
+          1.2054896696422354e-07,
+          1.2054896693658033e-07
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.011978877940435308,
+          8.260152925096461e-08,
+          8.260152946982579e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.012088306571295242,
+          5.471331031539697e-08,
+          5.471331025287456e-08
+        ]
+      ],
+      "selected_initial_start": 1,
+      "initial_stationary": false,
+      "nonstationary_solves": 1,
+      "full_gradient_worst": 5.408616486835581e-07,
+      "attempted_iterations": 32,
+      "same_grid": {
+        "current_by_time": [
+          1.1033476143615133,
+          1.0572508815041397,
+          1.0087416508333522
+        ],
+        "initial_by_time": [
+          1.1033476143615133,
+          0.8978936549139904,
+          0.745517520021015
+        ],
+        "current_evolved": 1.0572508815041397,
+        "current_all": 1.1033476143615133,
+        "initial_evolved": 0.8978936549139904,
+        "initial_all": 1.1033476143615133,
+        "initial_fit": 1.1033476143615133,
+        "energy": [
+          1.3621732512187588,
+          0.9685189287910885,
+          0.7160988590010112
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.1033476143615135,
+          1.0600201521304133,
+          1.0102821276323823
+        ],
+        "initial_by_time": [
+          1.1033476143615135,
+          0.8858198854243073,
+          0.7299759748294897
+        ],
+        "current_evolved": 1.0600201521304133,
+        "current_all": 1.1033476143615135,
+        "initial_evolved": 0.8858198854243073,
+        "initial_all": 1.1033476143615135,
+        "initial_fit": 1.1033476143615135,
+        "energy": [
+          1.3621732512187588,
+          0.9685189287910885,
+          0.7160988590010112
+        ]
+      },
+      "field_file": "fields/N8_case0_nmrom_K2_q0_eq.npz",
+      "field_sha256": "a3848d327ab3c7f2bd425f7ddf1d3681d3fe9177c1c1d3fc8981c11e9477c3a3"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q0_dense",
+      "input_ms": 0.5066900048404932,
+      "device_ms": 4.35203593224287,
+      "total_ms": 5.829049972817302,
+      "finite": true,
+      "initial_stats": [
+        [
+          7.0,
+          7.0,
+          1.0,
+          0.8792569623018243,
+          1.8566030966003207e-07
+        ],
+        [
+          7.0,
+          7.0,
+          1.0,
+          0.8792569623018824,
+          2.918909788918822e-07
+        ]
+      ],
+      "step_stats": [
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.0156038873338689,
+          4.776448605087222e-08,
+          4.776448630307613e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.015554886538273185,
+          4.758288823895808e-08,
+          4.75828881853721e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.01552536428222091,
+          4.752851279247228e-08,
+          4.752851267586107e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.015515330500102655,
+          4.762928899536116e-08,
+          4.762928907555416e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.01552471531218137,
+          4.791689551692914e-08,
+          4.791689558158076e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.015553367944304498,
+          4.842372234697121e-08,
+          4.8423722310129905e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.015601056688723906,
+          4.917987357490895e-08,
+          4.917987364423914e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.015667470102183896,
+          5.0210523371543983e-08,
+          5.021052337238414e-08
+        ]
+      ],
+      "selected_initial_start": 0,
+      "initial_stationary": true,
+      "nonstationary_solves": 0,
+      "full_gradient_worst": 5.021052337238414e-08,
+      "attempted_iterations": 30,
+      "same_grid": {
+        "current_by_time": [
+          0.9431375946722007,
+          0.9205986371932986,
+          0.9003699192138322
+        ],
+        "initial_by_time": [
+          0.9431375946722007,
+          0.7818387191906002,
+          0.665424639420098
+        ],
+        "current_evolved": 0.9205986371932986,
+        "current_all": 0.9431375946722007,
+        "initial_evolved": 0.7818387191906002,
+        "initial_all": 0.9431375946722007,
+        "initial_fit": 0.9431375946722007,
+        "energy": [
+          0.5684847542608693,
+          0.4781182512712434,
+          0.41218376139065194
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          0.9431375946722007,
+          0.9187256770489657,
+          0.8967511708306678
+        ],
+        "initial_by_time": [
+          0.9431375946722007,
+          0.7677452851667671,
+          0.6479445614272994
+        ],
+        "current_evolved": 0.9187256770489657,
+        "current_all": 0.9431375946722007,
+        "initial_evolved": 0.7677452851667671,
+        "initial_all": 0.9431375946722007,
+        "initial_fit": 0.9431375946722007,
+        "energy": [
+          0.5684847542608693,
+          0.4781182512712434,
+          0.41218376139065194
+        ]
+      },
+      "field_file": "fields/N8_case0_nmrom_K2_q0_dense.npz",
+      "field_sha256": "af45dc2245ee15078eb3aafb67651921f36ab0e6da2176f935a6db83d2a30199"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "unet3d_w8",
+      "input_ms": 0.6164830410853028,
+      "device_ms": 1.0152360191568732,
+      "total_ms": 2.001113025471568,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.0,
+          0.9991742110148361,
+          0.9979656617534562
+        ],
+        "initial_by_time": [
+          0.0,
+          0.8485707601847018,
+          0.7375534504815242
+        ],
+        "current_evolved": 0.9991742110148361,
+        "current_all": 0.9991742110148361,
+        "initial_evolved": 0.8485707601847018,
+        "initial_all": 0.8485707601847018,
+        "initial_fit": 0.0,
+        "energy": [
+          2.3762849911892916,
+          1.462830798569547e-05,
+          3.231123666416483e-05
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          8.137493161797963e-17,
+          0.9991325885999436,
+          0.9978552111883523
+        ],
+        "initial_by_time": [
+          8.137493161797963e-17,
+          0.8349383861981584,
+          0.7209969478851901
+        ],
+        "current_evolved": 0.9991325885999436,
+        "current_all": 0.9991325885999436,
+        "initial_evolved": 0.8349383861981584,
+        "initial_all": 0.8349383861981584,
+        "initial_fit": 8.137493161797963e-17,
+        "energy": [
+          2.3762849911892916,
+          1.462830798569547e-05,
+          3.231123666416483e-05
+        ]
+      },
+      "field_file": "fields/N8_case0_unet3d_w8.npz",
+      "field_sha256": "d2b0cf6079bdda0c4d6d6d749e50c9f582d92d2f34ffc668ccac3c6afdbfa557"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q2_dense_dt_half",
+      "input_ms": 0.3139059990644455,
+      "device_ms": 5.797434016130865,
+      "total_ms": 6.739087053574622,
+      "finite": true,
+      "initial_stats": [
+        [
+          8.0,
+          4.0,
+          0.0,
+          0.9397261028667041,
+          0.00590810459091891
+        ],
+        [
+          8.0,
+          4.0,
+          0.0,
+          0.9398503882293963,
+          0.006579414575251633
+        ]
+      ],
+      "step_stats": [
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.024348932463328216,
+          1.672765073347171e-07,
+          2.4820658958237618e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.02474493461199734,
+          1.5033297128866534e-07,
+          2.2034525654697152e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.025156371051913755,
+          1.4003746859496672e-07,
+          2.0267949648968497e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.025582265261203375,
+          1.3584171454739626e-07,
+          1.9407935845095465e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.026021674945441643,
+          1.3687277670459284e-07,
+          1.929864527319848e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.026473684948577648,
+          1.420728239900621e-07,
+          1.9764442804025722e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.026937401517033003,
+          1.50429760323757e-07,
+          2.0643711328475734e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.02741194766540284,
+          1.6113626293646048e-07,
+          2.181020876684652e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.02789645946087299,
+          1.736313549508335e-07,
+          2.3176820049649364e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.028390083093760853,
+          1.8756927973229123e-07,
+          2.4689196369476493e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.028891972637674294,
+          2.0276663947898344e-07,
+          2.6316893145122938e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.0294012884279645,
+          2.1915389888676163e-07,
+          2.804566300165664e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.0299171960040718,
+          2.3673863839422213e-07,
+          2.987177448052731e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.030438865572096185,
+          2.5557994082023104e-07,
+          3.1798141302870216e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.030965471950072605,
+          2.757712551353522e-07,
+          3.383177868795266e-08
+        ],
+        [
+          2.0,
+          2.0,
+          1.0,
+          0.031496194961251014,
+          2.9742920794084547e-07,
+          3.59821791135472e-08
+        ]
+      ],
+      "selected_initial_start": 0,
+      "initial_stationary": false,
+      "nonstationary_solves": 1,
+      "full_gradient_worst": 3.59821791135472e-08,
+      "attempted_iterations": 48,
+      "same_grid": {
+        "current_by_time": [
+          1.0336848682591648,
+          0.9916573634454734,
+          0.9497564457179982
+        ],
+        "initial_by_time": [
+          1.0336848682591648,
+          0.8421869114165795,
+          0.7019240946883732
+        ],
+        "current_evolved": 0.9916573634454734,
+        "current_all": 1.0336848682591648,
+        "initial_evolved": 0.8421869114165795,
+        "initial_all": 1.0336848682591648,
+        "initial_fit": 1.0336848682591648,
+        "energy": [
+          2.303897723245067,
+          1.792178807857165,
+          1.4283449067339946
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.0336848682591648,
+          0.9927151196158773,
+          0.951646377642755
+        ],
+        "initial_by_time": [
+          1.0336848682591648,
+          0.8295755432099807,
+          0.687608909642614
+        ],
+        "current_evolved": 0.9927151196158773,
+        "current_all": 1.0336848682591648,
+        "initial_evolved": 0.8295755432099807,
+        "initial_all": 1.0336848682591648,
+        "initial_fit": 1.0336848682591648,
+        "energy": [
+          2.303897723245067,
+          1.792178807857165,
+          1.4283449067339946
+        ]
+      },
+      "field_file": "fields/N8_case0_nmrom_K2_q2_dense_dt_half.npz",
+      "field_sha256": "65773ddb41ecdcd03333eaa44a24238e37cdde3cdd31bd6ab41d2004cd954939"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q2_dense",
+      "input_ms": 0.5421459209173918,
+      "device_ms": 5.464921006932855,
+      "total_ms": 7.21744098700583,
+      "finite": true,
+      "initial_stats": [
+        [
+          8.0,
+          4.0,
+          0.0,
+          0.9397261028667041,
+          0.00590810459091891
+        ],
+        [
+          8.0,
+          4.0,
+          0.0,
+          0.9398503882293963,
+          0.006579414575251633
+        ]
+      ],
+      "step_stats": [
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.04920039853664496,
+          3.2396197827615572e-09,
+          4.724255416610996e-10
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.05085779937635152,
+          4.981215042041694e-09,
+          7.077894685138886e-10
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.0526295570447199,
+          7.1978774440140305e-09,
+          9.954297832279445e-10
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.05450111303465649,
+          9.52243571179676e-09,
+          1.2806647722651013e-09
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.05645855177626872,
+          1.2163854856546089e-08,
+          1.590026434590675e-09
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.05848834201668606,
+          1.540188205928061e-08,
+          1.9562514763142475e-09
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.06057717722472403,
+          1.9540082108631828e-08,
+          2.4113628303029464e-09
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.06271189414968638,
+          2.491353974994378e-08,
+          2.987506626162507e-09
+        ]
+      ],
+      "selected_initial_start": 0,
+      "initial_stationary": false,
+      "nonstationary_solves": 1,
+      "full_gradient_worst": 2.987506626162507e-09,
+      "attempted_iterations": 40,
+      "same_grid": {
+        "current_by_time": [
+          1.0336848682591648,
+          0.9916182923291578,
+          0.9496903467840064
+        ],
+        "initial_by_time": [
+          1.0336848682591648,
+          0.8421537294083695,
+          0.7018752438123289
+        ],
+        "current_evolved": 0.9916182923291578,
+        "current_all": 1.0336848682591648,
+        "initial_evolved": 0.8421537294083695,
+        "initial_all": 1.0336848682591648,
+        "initial_fit": 1.0336848682591648,
+        "energy": [
+          2.303897723245067,
+          1.7921722716845956,
+          1.4284181770351176
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.0336848682591648,
+          0.9926751624741759,
+          0.9515783450879406
+        ],
+        "initial_by_time": [
+          1.0336848682591648,
+          0.8295421524950847,
+          0.6875597529475064
+        ],
+        "current_evolved": 0.9926751624741759,
+        "current_all": 1.0336848682591648,
+        "initial_evolved": 0.8295421524950847,
+        "initial_all": 1.0336848682591648,
+        "initial_fit": 1.0336848682591648,
+        "energy": [
+          2.303897723245067,
+          1.7921722716845956,
+          1.4284181770351176
+        ]
+      },
+      "field_file": "fields/N8_case0_nmrom_K2_q2_dense.npz",
+      "field_sha256": "3e7f8492a585449182d6713d1262d4d26b6243f71ec3d798d01558d830bbb133"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "dst_exact",
+      "input_ms": 0.510401907376945,
+      "device_ms": 0.3631060244515538,
+      "total_ms": 1.298661925829947,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_by_time": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_evolved": 0.0,
+        "initial_all": 0.0,
+        "initial_fit": 0.0,
+        "energy": [
+          2.3762849911892916,
+          1.7139265969639457,
+          1.297939133181956
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          8.137493161797963e-17,
+          0.03372131076030161,
+          0.0487976598215559
+        ],
+        "initial_by_time": [
+          8.137493161797963e-17,
+          0.028179660145152444,
+          0.035258586016083386
+        ],
+        "current_evolved": 0.0487976598215559,
+        "current_all": 0.0487976598215559,
+        "initial_evolved": 0.035258586016083386,
+        "initial_all": 0.035258586016083386,
+        "initial_fit": 8.137493161797963e-17,
+        "energy": [
+          2.3762849911892916,
+          1.7139265969639457,
+          1.297939133181956
+        ]
+      },
+      "field_file": "fields/N8_case0_dst_exact.npz",
+      "field_sha256": "9afa77246a9bf66b5730f11f81b86e4eaa9bf510e85d7f8959492bcd06c6e4bb"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod2_exact",
+      "input_ms": 0.4299379652366042,
+      "device_ms": 0.2888489980250597,
+      "total_ms": 1.143700908869505,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.5763509769662359,
+          0.5256876347770704,
+          0.49219308023933006
+        ],
+        "initial_by_time": [
+          0.5763509769662359,
+          0.44645183086681267,
+          0.363758712895805
+        ],
+        "current_evolved": 0.5256876347770704,
+        "current_all": 0.5763509769662359,
+        "initial_evolved": 0.44645183086681267,
+        "initial_all": 0.5763509769662359,
+        "initial_fit": 0.5763509769662359,
+        "energy": [
+          1.5869295766959282,
+          1.236780801557325,
+          0.9638921133839405
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          0.5763509769662359,
+          0.5168731598295131,
+          0.48369335389363266
+        ],
+        "initial_by_time": [
+          0.5763509769662359,
+          0.4319319045952905,
+          0.34949101629117296
+        ],
+        "current_evolved": 0.5168731598295131,
+        "current_all": 0.5763509769662359,
+        "initial_evolved": 0.4319319045952905,
+        "initial_all": 0.5763509769662359,
+        "initial_fit": 0.5763509769662359,
+        "energy": [
+          1.5869295766959282,
+          1.236780801557325,
+          0.9638921133839405
+        ]
+      },
+      "field_file": "fields/N8_case0_pod2_exact.npz",
+      "field_sha256": "922119a4535ffcaa5ffcbb25c971e4ee3945bc89d323c6bcfe89947d3e6b4b94"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod8_exact",
+      "input_ms": 0.2684970386326313,
+      "device_ms": 0.22907298989593983,
+      "total_ms": 0.8529480546712875,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.3693726813669763,
+          0.32008933508292226,
+          0.28011547420796035
+        ],
+        "initial_by_time": [
+          0.3693726813669763,
+          0.2718429352999965,
+          0.2070212858550131
+        ],
+        "current_evolved": 0.32008933508292226,
+        "current_all": 0.3693726813669763,
+        "initial_evolved": 0.2718429352999965,
+        "initial_all": 0.3693726813669763,
+        "initial_fit": 0.3693726813669763,
+        "energy": [
+          2.052073749769949,
+          1.5370143121646542,
+          1.1951705016357088
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          0.3693726813669763,
+          0.3099028380791515,
+          0.26760659727424196
+        ],
+        "initial_by_time": [
+          0.3693726813669763,
+          0.25897441286207545,
+          0.1933582524852398
+        ],
+        "current_evolved": 0.3099028380791515,
+        "current_all": 0.3693726813669763,
+        "initial_evolved": 0.25897441286207545,
+        "initial_all": 0.3693726813669763,
+        "initial_fit": 0.3693726813669763,
+        "energy": [
+          2.052073749769949,
+          1.5370143121646542,
+          1.1951705016357088
+        ]
+      },
+      "field_file": "fields/N8_case0_pod8_exact.npz",
+      "field_sha256": "d8904ba72577809669926be349a48091b07b78fb40af5eb441ed6d2379512d75"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "fno3d_w16_m6",
+      "input_ms": 0.4417139571160078,
+      "device_ms": 0.9946930222213268,
+      "total_ms": 1.8513849936425686,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.0,
+          0.9717165420441082,
+          0.9845047542614344
+        ],
+        "initial_by_time": [
+          0.0,
+          0.825251728553846,
+          0.7276050733500813
+        ],
+        "current_evolved": 0.9845047542614344,
+        "current_all": 0.9845047542614344,
+        "initial_evolved": 0.825251728553846,
+        "initial_all": 0.825251728553846,
+        "initial_fit": 0.0,
+        "energy": [
+          2.3762849911892916,
+          0.0016274579829409163,
+          0.0005317692686017283
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          8.137493161797963e-17,
+          0.9714613636899664,
+          0.9841863821495643
+        ],
+        "initial_by_time": [
+          8.137493161797963e-17,
+          0.8118145604576356,
+          0.7111205811461779
+        ],
+        "current_evolved": 0.9841863821495643,
+        "current_all": 0.9841863821495643,
+        "initial_evolved": 0.8118145604576356,
+        "initial_all": 0.8118145604576356,
+        "initial_fit": 8.137493161797963e-17,
+        "energy": [
+          2.3762849911892916,
+          0.0016274579829409163,
+          0.0005317692686017283
+        ]
+      },
+      "field_file": "fields/N8_case0_fno3d_w16_m6.npz",
+      "field_sha256": "b7af423a662cfe6d12d3494c288725644c800ec557a9c9dc7878a38a44a84353"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "nmrom_K2_q2_eq",
+      "input_ms": 0.46214601024985313,
+      "device_ms": 4.883814021013677,
+      "total_ms": 6.823103060014546,
+      "finite": true,
+      "initial_stats": [
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.9249088045599153,
+          2.7915579334223538e-06
+        ],
+        [
+          8.0,
+          8.0,
+          0.0,
+          0.9249088046864222,
+          7.21980018956479e-06
+        ]
+      ],
+      "step_stats": [
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.03345233810765921,
+          3.65775441938528e-08,
+          1.0054122402517573e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.03361027344510867,
+          5.581642205218335e-08,
+          1.512528596404597e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.0336529912373198,
+          7.231522718498789e-08,
+          1.931266512066469e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.03361035786608462,
+          8.169976237223613e-08,
+          2.1493338925721214e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.033523030182596725,
+          8.150405867066271e-08,
+          2.1109715869806302e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.033439703201894606,
+          7.217547416768989e-08,
+          1.8391660179512124e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.03341252175332312,
+          5.684338054869244e-08,
+          1.4240213636547805e-08
+        ],
+        [
+          3.0,
+          3.0,
+          1.0,
+          0.03349098209530471,
+          3.981420160012446e-08,
+          9.79802668450417e-09
+        ]
+      ],
+      "selected_initial_start": 0,
+      "initial_stationary": false,
+      "nonstationary_solves": 1,
+      "full_gradient_worst": 2.1493338925721214e-08,
+      "attempted_iterations": 40,
+      "same_grid": {
+        "current_by_time": [
+          1.2969150671517637,
+          1.2928824638280485,
+          1.258697392304842
+        ],
+        "initial_by_time": [
+          1.2969150671517637,
+          1.098008978880408,
+          0.9302490460196615
+        ],
+        "current_evolved": 1.2928824638280485,
+        "current_all": 1.2969150671517637,
+        "initial_evolved": 1.098008978880408,
+        "initial_all": 1.2969150671517637,
+        "initial_fit": 1.2969150671517637,
+        "energy": [
+          3.632614621892568,
+          2.8185589508067572,
+          2.16113286556073
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          1.2969150671517637,
+          1.301611736253701,
+          1.2713091728985908
+        ],
+        "initial_by_time": [
+          1.2969150671517637,
+          1.0877090937921485,
+          0.9185801940010239
+        ],
+        "current_evolved": 1.301611736253701,
+        "current_all": 1.301611736253701,
+        "initial_evolved": 1.0877090937921485,
+        "initial_all": 1.2969150671517637,
+        "initial_fit": 1.2969150671517637,
+        "energy": [
+          3.632614621892568,
+          2.8185589508067572,
+          2.16113286556073
+        ]
+      },
+      "field_file": "fields/N8_case0_nmrom_K2_q2_eq.npz",
+      "field_sha256": "aad5743451def4dc000280359861e76ac61b277b06c3fa969be6562825ded456"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "pod4_exact",
+      "input_ms": 0.4201929550617933,
+      "device_ms": 0.2529299817979336,
+      "total_ms": 0.9680039947852492,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.38853793249102253,
+          0.3399356358345476,
+          0.31963878975931737
+        ],
+        "initial_by_time": [
+          0.38853793249102253,
+          0.28869784441394963,
+          0.23623126659538748
+        ],
+        "current_evolved": 0.3399356358345476,
+        "current_all": 0.38853793249102253,
+        "initial_evolved": 0.28869784441394963,
+        "initial_all": 0.38853793249102253,
+        "initial_fit": 0.38853793249102253,
+        "energy": [
+          2.017556909864821,
+          1.5142954973313532,
+          1.1476614693665548
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          0.38853793249102253,
+          0.33224665957938876,
+          0.3174687948986843
+        ],
+        "initial_by_time": [
+          0.38853793249102253,
+          0.27764632335500566,
+          0.2293860167329781
+        ],
+        "current_evolved": 0.33224665957938876,
+        "current_all": 0.38853793249102253,
+        "initial_evolved": 0.27764632335500566,
+        "initial_all": 0.38853793249102253,
+        "initial_fit": 0.38853793249102253,
+        "energy": [
+          2.017556909864821,
+          1.5142954973313532,
+          1.1476614693665548
+        ]
+      },
+      "field_file": "fields/N8_case0_pod4_exact.npz",
+      "field_sha256": "dcf0dc48ec597955b7f43883b447de79ed80234e2ef7affc79e8044d75d7cd03"
+    },
+    {
+      "intervals": 8,
+      "case": 0,
+      "repetition": 0,
+      "method": "linear_bank_galerkin_exact",
+      "input_ms": 0.4329939838498831,
+      "device_ms": 0.20780903287231922,
+      "total_ms": 1.0186289437115192,
+      "finite": true,
+      "nonstationary_solves": 0,
+      "same_grid": {
+        "current_by_time": [
+          0.801888467141852,
+          0.778909228258344,
+          0.7673238088415482
+        ],
+        "initial_by_time": [
+          0.801888467141852,
+          0.6615058601910295,
+          0.5670959879053667
+        ],
+        "current_evolved": 0.778909228258344,
+        "current_all": 0.801888467141852,
+        "initial_evolved": 0.6615058601910295,
+        "initial_all": 0.801888467141852,
+        "initial_fit": 0.801888467141852,
+        "energy": [
+          0.8482740644627648,
+          0.5101312550050948,
+          0.3285706930347434
+        ]
+      },
+      "physical": {
+        "current_by_time": [
+          0.801888467141852,
+          0.7739025821163232,
+          0.7593518984769497
+        ],
+        "initial_by_time": [
+          0.801888467141852,
+          0.6467219469762646,
+          0.5486671763939535
+        ],
+        "current_evolved": 0.7739025821163232,
+        "current_all": 0.801888467141852,
+        "initial_evolved": 0.6467219469762646,
+        "initial_all": 0.801888467141852,
+        "initial_fit": 0.801888467141852,
+        "energy": [
+          0.8482740644627648,
+          0.5101312550050948,
+          0.3285706930347434
+        ]
+      },
+      "field_file": "fields/N8_case0_linear_bank_galerkin_exact.npz",
+      "field_sha256": "a55a36e0f05b828f4dd2bc1f56bf96541483368236ed4868e49eb2f1c6f2f11e"
+    }
+  ],
+  "data_contract": "supplied full interior nodal initial field only; decoder and operators receive no generator descriptors",
+  "output_contract": "all six interior fields, including reconstructed t=0 for ROMs and exact supplied t=0 for DST",
+  "timing_contract": "synchronized device query and complete host query; input upload, cold fit, latent evolution, dense readout and host output copy; setup/training separate",
+  "operators": [
+    {
+      "spec": {
+        "kind": "fno3d",
+        "width": 2,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 1,
+        "levels": 2
+      },
+      "config": {
+        "steps": 3,
+        "wall_seconds": 20,
+        "batch_size": 2,
+        "seed": 920321,
+        "learning_rate": 0.001,
+        "validation_every": 2,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      },
+      "parameter_count": 294,
+      "steps_completed": 3,
+      "best_step": 3,
+      "best_validation_worst": 0.9845047542614344,
+      "seconds": 2.4266542070545256,
+      "exit_reason": "steps",
+      "normalization": "current-output norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128",
+      "name": "fno3d_w16_m6",
+      "physical_scale": 0.1010502167298064,
+      "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+      "validation_parameters_sha256": "5ba9f9b0152abc26ce0cfc0afbfc79642800e3f576f77e2bab7c72726815f55b",
+      "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+      "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+    },
+    {
+      "spec": {
+        "kind": "unet3d",
+        "width": 2,
+        "levels": 2,
+        "periodic": false,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 1
+      },
+      "config": {
+        "steps": 3,
+        "wall_seconds": 20,
+        "batch_size": 2,
+        "seed": 920322,
+        "learning_rate": 0.001,
+        "validation_every": 2,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      },
+      "parameter_count": 1426,
+      "steps_completed": 3,
+      "best_step": 3,
+      "best_validation_worst": 0.9991742110148361,
+      "seconds": 1.5407992280088365,
+      "exit_reason": "steps",
+      "normalization": "current-output norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128",
+      "name": "unet3d_w8",
+      "physical_scale": 0.1010502167298064,
+      "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+      "validation_parameters_sha256": "5ba9f9b0152abc26ce0cfc0afbfc79642800e3f576f77e2bab7c72726815f55b",
+      "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+      "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+    }
+  ],
+  "reference": {
+    "intervals": [
+      8,
+      16
+    ],
+    "current_relative_refinement": [
+      0.0005917340401036399
+    ],
+    "threshold": 0.0001,
+    "passed": false,
+    "status": "empirical continuum spectral refinement; not a proved error bound"
+  },
+  "elapsed_seconds": 31.456180604058318
+}

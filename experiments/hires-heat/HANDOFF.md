@@ -17,3 +17,4 @@ Branch `exp/2026-09-20-hires-heat`, lane dir `experiments/hires-heat/`, cluster 
 | h3d-profile03 | — | configs/h3d-profile03.json (frozen paper-h3d K32 checkpoint, 64³/128³, stepping + speed arms) | H200 | waiting for a slot | prepared |
 
 Source commit of jobs 1-2: 1cc6920f. Local findings so far (smoke only, not results): the audited 2D bank floor is ~1-1.7 % at t=0 so its ladder cannot reach 1 %; the 3D paper-h3d 0.754 % headline is evolved-times only (t=0 moments fit is 1.9 %, field fit ~1.1 % = bank floor); at K+q=R the corrected ROM coincides with the linear-bank solve.
+| h2d-wide02 | 4051298 | CANCELLED by owner after 25 min: bank trained in 58 s (validation projection floor 0.114 %), then XLA stalled >20 min compiling the head step because `train.py` closed the jit over the training arrays (the CLAUDE.md captured-constant landmine, my port's fault). No results used. Fixed: arrays are jit arguments. Counts as job 2 of 8. | A100 | | cancelled |

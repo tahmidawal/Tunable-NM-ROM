@@ -78,16 +78,16 @@ def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
     z = .1 * jax.random.normal(b, (len(target), k), dtype=jnp.float64)
     opt = optax.adam(optax.cosine_decay_schedule(cfg['head_learning_rate'], cfg['head_steps'], alpha=.03)); state = opt.init((p, z))
     batch = min(cfg['head_batch_states'], len(target))
-    def objective(pz, idx):
+    def objective(pz, idx, target, norm2, perp):   # data are explicit jit ARGUMENTS (captured constants stalled XLA for >20 min in job 4051298)
         p, z = pz; e = (jnp.sum((C.mlp_head(p, z[idx]) - target[idx]) ** 2, axis=1) + perp[idx]) / norm2[idx]
         return jnp.mean(e) + .1 * jnp.mean(e ** 2)
     @jax.jit
-    def step(pz, state, key):
-        value, grad = jax.value_and_grad(objective)(pz, jax.random.randint(key, (batch,), 0, len(target)))
+    def step(pz, state, key, target, norm2, perp):
+        value, grad = jax.value_and_grad(objective)(pz, jax.random.randint(key, (batch,), 0, len(target)), target, norm2, perp)
         update, state = opt.update(grad, state, pz); return optax.apply_updates(pz, update), state, value
     solve = C.lm(C.mlp_head, 400, 1e-8); eye = jnp.eye(target.shape[1]); vt, vn, vp = map(jnp.asarray, (vtarget, vnorm2, vperp))
     @jax.jit
-    def validate(p, z):
+    def validate(p, z, vt, vn, vp):
         lib = C.mlp_head(p, z)
         def one(t, nrm, pp):
             zs, st = jax.vmap(lambda s: solve(p, eye, t, s))(z[jnp.argsort(jnp.sum((lib - t) ** 2, axis=1))[:4]])
@@ -95,9 +95,9 @@ def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
         return jax.vmap(one)(vt, vn, vp)
     key = jax.random.PRNGKey(cfg['model_seed'] + 200 + k); pz = (p, z); best = (np.inf, None, None); begin = time.perf_counter()
     for it in range(cfg['head_steps']):
-        key, sub = jax.random.split(key); pz, state, value = step(pz, state, sub)
+        key, sub = jax.random.split(key); pz, state, value = step(pz, state, sub, target, norm2, perp)
         if (it + 1) % cfg['checkpoint_every'] == 0 or it + 1 == cfg['head_steps']:
-            worst = float(jnp.max(validate(*pz))); rec = dict(k=k, step=it + 1, objective=float(value), validation_best_found_worst=worst, seconds=time.perf_counter() - begin)
+            worst = float(jnp.max(validate(*pz, vt, vn, vp))); rec = dict(k=k, step=it + 1, objective=float(value), validation_best_found_worst=worst, seconds=time.perf_counter() - begin)
             log.append(rec); print('HEAD', rec, flush=True)
             if worst < best[0]: best = (worst, pz, it + 1)
     p, z = best[1]; resid = np.asarray(target) - np.asarray(C.mlp_head(p, z)); _, sv, vtm = np.linalg.svd(resid, full_matrices=False)

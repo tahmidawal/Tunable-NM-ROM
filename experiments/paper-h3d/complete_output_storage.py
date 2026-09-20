@@ -87,6 +87,8 @@ def main():
                             target.write(block)
                 assert f.stat().st_size == selected[member.name]['bytes'] and R.sha(f) == selected[member.name]['sha256']
                 restored.append(member.name)
+                if len(restored) == len(selected):
+                    break
         assert set(restored) == set(selected)
         print('VERIFIED_FIELD_MEMBERS_RESTORED', len(restored))
 

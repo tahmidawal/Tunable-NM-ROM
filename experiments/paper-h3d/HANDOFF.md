@@ -12,6 +12,12 @@ The timed engine carries only the current field and requested output buffer; it 
 
 The bounded GPU smoke `cg_smoke.py` passes independent SciPy modal-CN and NumPy true-residual comparisons, including capped failure and zero-RHS cases; numerical evidence is in `smokes/iterative-cg.json`. This verifies implementation only. No new heat allocation or final-data access occurred during this addition.
 
+## Storage and resumed ownership
+
+The heat owner resumed at 16:59 UTC. Coverage05 remains live and the next heat job still waits for its completion. Burgers final collector needs another owner activation when job `4021709` exits or around 17:40–18:00 UTC; NS and Poisson owners are active. Coordinate a training-wait slot rotation instead of leaving a completed lane unattended.
+
+Root approved reclaiming only old duplicate field binaries to reserve storage for Burgers collection. `archive_storage.py` freshly verified complete actual Git blob bytes, every archive member through streaming restoration, and each raw file's bytes/hash before removing raw `fields/` materializations from pilot01, tune02 and extra03. Exact removed paths/hashes and restore commands are in each run's `RAW-FIELD-STORAGE.json`; generated totals are in `runs/STORAGE-RELIEF.json`. All small result/audit/source/config/checkpoint files and all committed archive chunks/Git bytes remain intact. Existing generated numeric tables remain usable. Full-field and solver-state audits now fail clearly with the restoration command when their raw materialization has been pruned; do not misinterpret this as lost scientific data or a numerical retraction. Restore only when disk budget permits, optionally selecting one `--member` for inspection.
+
 ## Current slot handoff — reactivate this heat owner before 17:45 UTC
 
 Heat owner `/root/heat3d_iterative_cg` is releasing its agent slot around 16:43 UTC so the already-running Burgers final can be collected. This is a training wait, not a completed heat campaign. `/root/ns3d_resume_final` confirmed it remains active and will immediately reactivate `/root/burgers3d_resume_final` for B007 job `4021709`, using that lane's `decf442d` handoff. NS will instruct Burgers to arrange heat reactivation before 17:45 UTC. If the slot remains occupied, NS or Poisson must rotate a waiting owner; do not leave heat unowned at completion.

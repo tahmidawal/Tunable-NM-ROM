@@ -9,7 +9,10 @@ from audit_coverage import bank_at
 
 
 def audit(out,destination):
-    out=Path(out);record=json.loads((out/'result.json').read_text());cfg=record['config']
+    out=Path(out)
+    from archive_storage import require_fields
+    require_fields(out)
+    record=json.loads((out/'result.json').read_text());cfg=record['config']
     assert record['complete'] and cfg['retain_solver_states']
     saved=pickle.loads((out/'bank.pkl').read_bytes());checks=[];maxgrad=0.;maxcoef=0.
     for mesh in record['meshes']:

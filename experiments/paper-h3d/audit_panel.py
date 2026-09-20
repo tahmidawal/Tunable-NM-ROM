@@ -22,7 +22,10 @@ def relative(a,b):
 
 
 def audit(archive,destination,out=None):
-    archive=Path(archive);out=Path(out) if out is not None else archive/'out';d=json.loads((out/'result.json').read_text());cfg=d['config']
+    archive=Path(archive);out=Path(out) if out is not None else archive/'out'
+    from archive_storage import require_fields
+    require_fields(out)
+    d=json.loads((out/'result.json').read_text());cfg=d['config']
     assert d['complete'] and d['backend']=='gpu' and d['x64'] and d['matmul_precision']=='highest'
     if d['final_cohort_opened']:assert d['freeze']['verified_before_final_parameter_generation'] and cfg['evaluation_cohort']=='final'
     log=(archive/'job.out').read_text();err=(archive/'job.err').read_text()

@@ -7,7 +7,10 @@ import numpy as np
 
 
 def audit(out, destination=None):
-    out=Path(out);record=json.loads((out/'result.json').read_text());failures=[];checked=0
+    out=Path(out)
+    from archive_storage import require_fields
+    require_fields(out)
+    record=json.loads((out/'result.json').read_text());failures=[];checked=0
     assert record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
     def metric(a,b):
         a=a.reshape(len(a),-1);b=b.reshape(len(b),-1)

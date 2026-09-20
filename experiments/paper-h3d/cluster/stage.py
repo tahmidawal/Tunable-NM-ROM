@@ -15,7 +15,7 @@ FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/ex
 FILES += ['frozen.py']
 FILES += ['head_pca_diagnostic.py','audit_head.py','audit_panel.py']
 FILES += ['coverage_train.py','audit_coverage.py','operators/pretrained_deeponet.py','final_freeze.py','audit_states.py']
-FILES += ['audit_pretraining.py','iterative_cg.py','audit_cg.py']
+FILES += ['audit_pretraining.py','iterative_cg.py','audit_cg.py','archive_storage.py','retain_fields.py']
 
 
 def main():

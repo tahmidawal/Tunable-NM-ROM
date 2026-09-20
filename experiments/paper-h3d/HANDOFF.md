@@ -1,6 +1,6 @@
 # Heat3D tuning and operator handoff
 
-Both the initial pilot and tune02 are complete, checksum-collected and independently audited. The frozen-checkpoint four-operator panel extra03 is running; no final cohort has been opened.
+The pilot, tune02 and the complete four-operator extra03 panel are checksum-collected and independently audited. The head-initialization and longer-operator diagnostic head04 is running; final data remain unopened.
 
 ## Additional operator extension completed
 
@@ -12,7 +12,9 @@ Meaningful bounded checks are retained in `checks/operators-extra-smoke.json`, `
 
 `extra03.json` is the submitted same-cohort H configuration with the two new operators, the frozen earlier operators, and NM-ROM/POD/free-bank/DST controls measured again in its own allocation. Its source and active job are listed below; current resource cap remains one GPU job per PDE and four in total. Increasing data/bank capacity or further head/operator training requires a recorded development amendment, not opening the final cohort. No additional local GPU process remains active after this handoff.
 
-Active job: `3995709`, `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/extra03`, source `4ac8b16455f5b71bcdd560df3432cac43b8816d9`; config SHA256 `de2e24174b472855d30d646807e2003fa23a876009ce377c5e5f981cf60a5de9`. One GPU on `pax051`, `NVIDIA A100-PCIE-40GB`. GPU/f64/highest preflight and frozen-input/cohort gates passed. Static checkpoint parameters were uploaded during setup. Do not compare this allocation's wall clock with tune02's different GPU.
+Active job: `3997378`, `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/head04`, source `ceebd1481d4e36151cece5236e5132c26496d4a6`; config SHA256 `288bd0dd43fb6be00d4113bff03061f65413e95238a2a94cfd6892782b6b3297`. One GPU on `pax105`, NVIDIA A100 80GB PCIe. GPU/f64/highest preflight and frozen-input/cohort gates passed. Its source/input tree is immutable. `runs/head04/PREFLIGHT.log` preserves the initial log snapshot.
+
+The following extra03 commands describe the completed collection. Resume the active diagnostic using the newer section below.
 
 ## Resume here
 
@@ -100,15 +102,23 @@ The original pilot and tune02 full-field sidecars are now durable in Git as spli
 
 `head04.json` is prepared for the next allocation after extra03 is collected and audited. It first measures train/development error of DeepONet and Transolver, including DeepONet's learned trunk-span projection floor; then tests weighted-PCA code/linear-skip initialization for each declared latent dimension on the same frozen learned bank and training data. Every original random-initialized head is compared with explicit four/eight-start fitting. Selected latent states are saved, allowing `audit_head.py` to reconstruct the fields and normalized fitting gradients independently with NumPy/SciPy. After these diagnostics, DeepONet and Transolver continue from their prior selected checkpoints with freshly initialized Adam moments and the new declared cosine schedule. The initial checkpoint remains eligible for selection. This is a two-stage recipe, not independent-seed evidence.
 
-The PCA smoke and independent analytic Jacobian/gradient checks pass. The continuation smoke passes initial-checkpoint selection and saved-weight replay. One preliminary continuation smoke could not initialize CUDA because the shared-memory machine had almost all free memory in file cache; its failure log is retained. Releasing cache for H's own completed archives resolved it. No failed GPU result was used.
+A fresh random-initialized control uses the same extended head schedule and checkpoint-selection rule as its PCA counterpart. The PCA smoke and independent analytic Jacobian/gradient checks pass. The continuation smoke passes initial-checkpoint selection and saved-weight replay. One preliminary continuation smoke could not initialize CUDA because the shared-memory machine had almost all free memory in file cache; its failure log is retained. Releasing cache for H's own completed archives resolved it. No failed GPU result was used.
 
 Before staging head04, collect extra03 using the commands above, run its full independent panel audit, and check account queue occupancy with root. Frozen-input staging follows retained original input paths for reused earlier operator checkpoints and records each copied path. The staging source must be committed. Final data remain unopened; root owns canonical lab logging and paper reports.
+
+## Resume active head04
+
+Monitor `head04/job.out`, `head04/job.err` and `head04/out/result.json` in the exact namespace. The result first records full-field training/development operator diagnostics and the DeepONet trunk-span projection floor, then trains PCA-initialized heads and a schedule-matched random-initialized control. It retains selected latent states and performs explicit start-count diagnostics on every new and original head. The two longer operator continuations follow. Initial diagnostic values are live development information, not accepted final results.
+
+After the job leaves the queue, run `/home/tahmid/Dev/.venv/bin/python experiments/paper-h3d/cluster/collect.py head04 --remove-verified`. The collector recognizes the diagnostic schema and dispatches `audit_head.py`, which verifies original source against Git blobs, regenerates seeded train/development fields with SciPy, checks PCA initialization, decoded fields, selected-checkpoint metrics and independent analytic fitting gradients. Do not run the standard `audit_panel.py` on this diagnostic schema. Preserve all new checkpoints, curves and field sidecars before releasing the worktree.
+
+Root owns the canonical LAB-LOG and final primary selection. Freeze the primary checkpoint/recipe using development data only. Independent training-seed models are separate robustness evidence and cannot replace the primary based on final performance. Prefer comparing frozen seed checkpoints in the same final allocation; otherwise retain primary same-job cost comparisons and use cross-job seed runs for accuracy only. The precommitted final cohort remains unopened.
 
 ## After head04 completes
 
 The diagnostic is intentionally not a timed trajectory panel. Its PCA models live under `out/pca_K*/head_K*.pkl`, and continued operator adapters under `out/operators_continued/<name>/adapter.pkl`; the original frozen models remain under the original root paths. A next paired panel must explicitly stage the selected replacement paths, preserving per-model training lineage and bank/cohort hashes. If a PCA candidate selects step zero, its nonlinear output layer is still zero: label it an affine linear control, not an improved learned nonlinear manifold. Do not run the ordinary frozen loader on head04 as if it were a standard complete panel: its result schema has candidates and operator diagnostics instead of mesh/invocation tables. Reusing extra03 as a base and overlaying audited head04 replacements is a suitable construction. Retain original and replacement input hashes, source commits, recipes and selected-step records. A replacement head must refit its own decoder-output quadrature weights; do not silently reuse an old head's rule just because the bank hash is unchanged. If sampled initialization is omitted, label it untested for that new head and retain the dense complete-query comparison.
 
-The prepared `fno_physical_padding_transfer` flag in `run.py` adds a separately labelled frozen-weight arm that scales padded lattice length with interval count. Preserve original direct-transfer and native-grid interpolation variants. The flag is not enabled in extra03 and therefore contributes no result yet. Independent training-seed confirmation and the prospectively reserved final cohort still require execution after the core diagnostic; no manuscript-ready final comparison is claimed.
+The prepared `deeponet_native_sensor_transfer` flag keeps native branch sensors while evaluating the continuous trunk directly at fine query points. Shared helpers are at commit `5a04db6b`, in `operators/extra_models3d.py`: `deeponet_coefficients` and `deeponet_trunk`. Their native behavior is bitwise identical to the pinned original. The prepared `fno_physical_padding_transfer` flag in `run.py` adds a separately labelled frozen-weight arm that scales padded lattice length with interval count. Preserve original direct-transfer and native-grid interpolation variants. The flag is not enabled in extra03 and therefore contributes no result yet. Independent training-seed confirmation and the prospectively reserved final cohort still require execution after the core diagnostic; no manuscript-ready final comparison is claimed.
 
 <!-- GENERATED_LATEST_COMPARISON -->
 ## Audited extra03 comparison

@@ -159,18 +159,6 @@ def run(cfg,out,smoke=False):
             if rank<=pod.shape[1]:
                 name=f'pod{rank}_galerkin';methods[name]=P.galerkin(pod[:,:rank],n)
                 metadata[name]=dict(kind='pod',rank=rank)
-        if n!=cfg['train_intervals'] and cfg.get('frozen_pod_transfer_control',False):
-            from pod_transfer import prolong
-            native=cfg['train_intervals'];native_pod,native_info=P.pod_basis(fields,max(ranks))
-            frozen_pod=prolong(native_pod,native,n)
-            for rank in ranks:
-                if rank>frozen_pod.shape[1]:continue
-                name=f'pod{rank}_native{native}_interpolated_basis_galerkin'
-                methods[name]=P.galerkin(frozen_pod[:,:rank],n)
-                metadata[name]=dict(kind='pod',rank=rank,training_intervals=native,frozen_mesh_transfer=True,
-                    native_training_hash=native_info['training_hash'],
-                    basis_transfer='boundary-aware trilinear prolongation of frozen native POD; no finer training solution fields',
-                    online='Galerkin solve on requested mesh with supplied forcing and full-field readout')
         full_lam=C.eigenvalues(n);methods['dst_exact']=lambda f,l=full_lam:P.solve_dst(f,l)
         metadata['dst_exact']=dict(kind='full_order')
         for name,op,spec,scales in operator_models:

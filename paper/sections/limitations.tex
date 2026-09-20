@@ -19,9 +19,10 @@ reduced model failed its pre-registered gate at $K=16$ (\S\ref{sec:exp:linear}).
 classical comparison is POD-LSPG through our own solver, and the linear skip is
 a design choice, not ablated. \textbf{No theory}: no convergence guarantee, no
 quadrature-error bound on unseen states, no continuum error bound.
-\textbf{Operator numbers are lower bounds}: \nOpLaneImproving{}
-U-Net/Transolver arms and \nOpFnoImproving{} FNO arms were still improving at
-their wall budget, and none was tuned per family. The U-Net comparison survives
+\textbf{Operator errors are budget-limited}: \nOpLaneImproving{}
+U-Net/Transolver arms and \nOpFnoImproving{} FNO arms have recent best
+checkpoints, a heuristic rather than a convergence test, and none was
+tuned per family. The U-Net comparison survives
 a float64 and a second-seed control, but that margin is
 $\nOpCtrlMediumFSixtyFourMargin$\,pp and the float64 twins ran a quarter to half
 the epochs at equal wall clock; the Transolver arm below the ROM has no twin.

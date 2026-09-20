@@ -252,7 +252,7 @@ direct solve at $\nHeatFomMsTenTwentyFour$\,ms. The reflective wave
 (Table~\ref{tab:waves}): the top rung, the bank under exact modal propagation
 with no head, is not strictly the most accurate rung (strict reading:
 \nWaveTopStrictBestTwoFiftySix{}) but matches the $q=32$ rung within the
-pre-registered integrator tie band of $\nWaveTieBandPpTwoFiftySix$\,pp at every
+amended integrator tie band of $\nWaveTieBandPpTwoFiftySix$\,pp at every
 mesh ($256^2$: $\nWaveBankErrTwoFiftySix$ against
 $\nWaveQthirtytwoErrTwoFiftySix\,\%$), and is
 $\nWaveBankOverHeadCostSixtyFour$--$\nWaveBankOverHeadCostTenTwentyFour\times$
@@ -346,9 +346,10 @@ $\nOpCtrlMediumFSixtyFourMargin$\,pp and, at equal wall clock, the float64 twins
 ran $\nOpCtrlMediumFSixtyFourEpochRatio$--$\nOpCtrlTsolSmallFSixtyFourEpochRatio\times$
 of their parents' epochs, so precision is confounded with an epoch effect. The
 Transolver arm below the ROM has no twin and remains a single-seed float32
-result. Every operator number is a lower bound (\nOpLaneImproving{} of this
-lane's arms and \nOpFnoImproving{} FNO arms were still improving at their
-budget); on Poisson the gap is larger (Table~\ref{tab:operators-poisson}).
+result. These are achieved finite-budget errors (\nOpLaneImproving{} of this
+lane's arms and \nOpFnoImproving{} FNO arms have recent best checkpoints,
+a heuristic rather than a convergence test); on Poisson the gap is larger
+(Table~\ref{tab:operators-poisson}).
 The operators' own knob, evaluation resolution, was tested under a
 pre-registered rule (Table~\ref{tab:resolution}; speedups are within one
 model's own curve in one job and carry no comparison to the ROM or the solver):

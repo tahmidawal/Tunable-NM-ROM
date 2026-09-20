@@ -24,16 +24,16 @@
 %    Main-text tables are 1-3 in reading order. The glance table is
 %    Appendix A (Table A.1): the ICLR 2027 kit allows 9 main-text pages at
 %    submission, so it could not stay in Section 5.
-%  * In flight: nothing. ns2d closed at 9830d202 (ns302, 4x data, fails
-%    H-ORACLE at 1.46; no phase-3 job ever submitted); T11e has four
-%    settings and the NS cell-level sentence in 6.5 is final. The paper is
-%    complete on the evidence side. b-lowvisc closed at df92e40d: T20/T20b in the extended-results
+%  * Existing 2D tables are complete; the separate 3D development campaign
+%    is not yet incorporated. NS has no confirmatory ladder on a passing
+%    head; ns304 is exploratory phase 3 after the failed phase-2 gate.
+%    b-lowvisc provenance was repaired at 5760a7e2: T20/T20b in the extended-results
 %    appendix under the F4 under-resolution caveat, two sentences in 6.5, one
 %    Limitations clause; not a headline. T12 (three seeds) is now the
 %    development-cohort table; the sealed cohort (T13) is the headline for
 %    the scheduled ladder. ns304 (3808502) is in T11g/T11h and two sentences
 %    of 6.5, every one of them labelled exploratory after a failed phase-2
-%    gate (not phase 3). ns303 (3808498, family dimension 8) is the last row
+%    gate. ns303 (3808498, family dimension 8) is the last row
 %    block of T11e and one sentence of 6.5; NS cell-level statement in 6.5.
 %  * Provisional: the two top EQ rungs are single-draw.
 %  * Open decisions for the user: (1) the headline Burgers metric (worst over
@@ -610,10 +610,10 @@ $\nOpEightTsolRefine$, \textbf{ROM $\nOpEightRom$}, FNO-large
 $\nOpEightFnoLarge$, efficient full-order solver
 $\nOpEightFomEfficient\,\%$ ($\nOpArmsBeatingRom$ operator arms beat the
 ROM; the FNO's $\nPanelFnoErr\,\%$ above is on the six-case cohort).
-An earlier FNO-only finding to the contrary is withdrawn; it survives a
-float64 and a second-seed control
-(Appendix~\ref{app:extended:operators}), all but one operator number is
-a lower bound, and the Poisson gap is larger
+An earlier FNO-only finding to the contrary is withdrawn. The U-Net
+comparison survives float64 and second-seed controls
+(Appendix~\ref{app:extended:operators}); these are achieved finite-budget
+errors. The Poisson gap is larger
 (Table~\ref{tab:operators-poisson}). Their own knob, evaluation resolution, is usable for
 \nResUsableList{} only (Table~\ref{tab:resolution}); it moves cost, $q$
 moves what the model can represent.
@@ -773,14 +773,15 @@ the $t=0$ term dominates: the head binds.
 \subsection{Where the Family Collapses: Linear PDEs, Navier--Stokes, and the L-shaped Domain}
 \label{sec:results:collapse}
 
-On linear PDEs there is no trade. The corrections are solved exactly and
-the top rung is the most accurate and cheapest. On Poisson at
+On linear PDEs the full bank removes the nonlinear solve. On Poisson the
+top rung is the most accurate and cheapest. At
 $1024^2$ (Table~\ref{tab:linear}) the rungs run
 $\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at
 flat cost, and $q=R$ lands on the floor at $\nPlinTenTwentyFourTopErr\,\%$
 as the \emph{cheapest} point ($\nPlinTenTwentyFourTopMs$ vs
 $\nPlinTenTwentyFourDstMs$\,ms exact). Heat and the reflective wave
-do likewise (Appendix~\ref{app:extended:linear}). Against unpreconditioned
+show similar cost collapse, with a small wave accuracy exception
+(Appendix~\ref{app:extended:linear}). Against unpreconditioned
 CG at $10^{-6}$, the previous comparator, reduced rungs are
 \nCgPoissonSpeedupMin--\nCgPoissonSpeedupMax$\times$ faster on Poisson in the
 same job; the transform is faster still by
@@ -792,7 +793,7 @@ basis of equal rank on both cells. No reduced arm beats the direct
 solve.
 
 \textbf{Navier--Stokes collapses differently.} On 2D
-incompressible flow (nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $32$ the
+incompressible flow the confirmatory ladder gate failed (Table~\ref{tab:ns}): at $K=16$ and $32$ the
 held-out oracle beats POD-$K$ by only $\nNsOracleRatio\times$ and
 $\nNsKthirtyTwoOracleRatio\times$ against a bar of
 $\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
@@ -805,17 +806,16 @@ $\nNsScaleGainSecondDoubling\,\%$; ``\nNsScalePlainVerdict''
 by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
 512). A family of dimension \nNsFamDimLow{} instead of
 \nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ yet
-leaves the head's edge over POD-16 at \nNsFamOracleRatio$\times$ and the
-gap near \nNsFamHeldoutOverTrain: the edge does not grow as the manifold eases. With
-$\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories) the gap
-closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} as the
-head no longer fits the training data: the limit moved to
-capacity (ratio \nNsDataOracleRatio). Across $K=16$ and $32$,
+leaves the head's edge over POD-16 at \nNsFamOracleRatio$\times$.
+With $\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories),
+that ratio reaches \nNsDataOracleRatio. Training and held-out errors
+use different normalisations; their ratio cannot establish a shift
+from generalisation to capacity limits. Across $K=16$ and $32$,
 family dimension \nNsFamDimBase{} and \nNsFamDimLow, and
 128--\nNsDataTrainN{} trajectories, this head class never beats POD-$K$
 by the pre-registered $\nNsOracleBar\times$ on held-out decaying 2D
 Navier--Stokes (ratios \nNsCellRatioMin--\nNsCellRatioMax). An exploratory ladder on that
-manifold (Table~\ref{tab:ns-ladder}; not phase 3) closes the
+failed manifold (Table~\ref{tab:ns-ladder}) closes the
 manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
 matched dimension is more accurate at every rung and cheaper below the
 top, no neural rung non-dominated: the falsification clause's
@@ -870,8 +870,8 @@ Raising $q\ge16$ removed it, with no guarantee. (ii) Uniform Cartesian
 differences, 2D only. Our cohorts are small
 (Table~\ref{tab:problems}). The low-viscosity cell is under-resolved. (iii)
 We ran no cold-start comparison with \citet{KimChoi2022NMROM} and no
-skip ablation. (iv) Operator numbers are lower bounds
-(\nOpAllImproving{} arms still improving). Quadrature rules above
+skip ablation. (iv) Operator errors are budget-limited
+(\nOpAllImproving{} arms have recent best checkpoints). Quadrature rules above
 $q=32$ are marginal; one transfer-draw spread in $\rho_{\max}$ is
 \nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$, unexplained. One cell shows a cross-job spread of
 $\nQxmAnchorSpreadPct\,\%$. The $1024^2$ frontier rests on one job. (v)

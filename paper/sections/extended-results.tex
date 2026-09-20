@@ -14,9 +14,13 @@ twins ran
 $\nOpCtrlMediumFSixtyFourEpochRatio$--$\nOpCtrlTsolSmallFSixtyFourEpochRatio\times$
 of their parents' epochs, so precision is confounded with an epoch effect.
 The Transolver arm below the ROM has no twin and remains a single-seed
-float32 result. Every operator number is a lower bound
-(\nOpLaneImproving{} of this lane's arms and \nOpFnoImproving{} FNO arms
-were still improving at their budget). The operators' own knob,
+float32 result, under the historical protocol's explicit precision exception.
+These are achieved finite-budget errors, not bounds on attainable accuracy.
+For \nOpLaneImproving{} of this lane's arms and \nOpFnoImproving{} FNO arms,
+the best validation checkpoint lies in the final five percent of training;
+this recency heuristic establishes neither convergence nor future improvement.
+Selection minimises mean case-maximum validation error, which need not
+minimise the worst case. The operators' own knob,
 evaluation resolution, was tested under a pre-registered rule
 (Table~\ref{tab:resolution}; speedups are within one model's own curve in
 one job and carry no comparison to the ROM or the solver):
@@ -74,7 +78,9 @@ recipes and scored the held-out oracle at $256^2$
 recipe; the decelerating slope and the inertness of regularisation lean
 towards a head-limited reading, which the lane does not upgrade beyond
 ambiguous. Caveat, pre-registered: the frozen bank was trained on all 512
-trajectories, so the small-$n$ arms are optimistic.
+trajectories, so the small-$n$ arms are optimistic. The reported
+held-out/train ratios use different error normalisations and cannot
+quantify a generalisation gap or establish a capacity bottleneck.
 
 \begin{table}[h]
 \centering
@@ -82,12 +88,13 @@ trajectories, so the small-$n$ arms are optimistic.
 held-out oracle median per recipe and training-set size, POD-16 at
 matched dimension, the held-out/train ratio, the selected training step,
 and the pre-registered log-log slope with its verdict (band
-$\nNsScaleBandLo$ to $\nNsScaleBandHi$).}
+$\nNsScaleBandLo$ to $\nNsScaleBandHi$). The held-out/train column is a
+historical mixed-normalisation ratio, not a generalisation-gap estimate.}
 \label{tab:ns-scaling}
 \resizebox{\linewidth}{!}{\input{tables/T11f_ns_scaling}}
 \end{table}
 
-\paragraph{Exploratory ladder after the failed gate (not a phase-3 result).}
+\paragraph{Exploratory phase-3 ladder after the failed phase-2 gate.}
 \label{app:extended:ns-ladder}
 Every number in this paragraph and in Tables~\ref{tab:ns-ladder} and
 \ref{tab:ns-fom} is exploratory after a failed phase-2 gate: the
@@ -161,9 +168,18 @@ reference.}
 Poisson at $1024^2$ ($R=512$, $K=32$; Table~\ref{tab:linear}): the middle
 rungs cost a flat
 $\nPlinTenTwentyFourMidMsMin$--$\nPlinTenTwentyFourMidMsMax$\,ms; the
-pre-registered degenerate-curve criterion passes (at $256^2$ only its
-literal cost-span clause fails, because the top rung is
-$\nPlinTwoFiftySixTopOverMidCost\times$ cheaper than the middle rungs);
+literal degenerate-curve criterion passes. At $256^2$ its cost-span
+clause fails because the top rung is
+$\nPlinTwoFiftySixTopOverMidCost\times$ cheaper than the middle rungs.
+The literal falsification therefore fires there; the amended
+interpretation does not (Table~\ref{tab:linear-protocol}). Amendment A8
+changed the deciding interpretation after observing the coarse-mesh
+results and before the fine-mesh job; that interpretation was not fixed
+before the campaign's observations. The efficient endpoint uses direct
+QR, omitting redundant nonlinear iterations at full correction rank.
+The nonzero-$q$ best-found columns remain retracted under amendment A10:
+their projector was not orthonormal, and the corrected full-cohort
+calculation has not been rerun. The solved ladder is unaffected;
 solver effort buys nothing at $q=0$ (floor $\nPlinTenTwentyFourFloor$,
 best-found $\nPlinTenTwentyFourBestFoundQzero$, solved
 $\nPlinTenTwentyFourQzeroErr\,\%$ at $M=129$). Heat at $1024^2$ (an
@@ -175,8 +191,8 @@ the direct solve at $\nHeatFomMsTenTwentyFour$\,ms. The reflective wave
 (Table~\ref{tab:waves}): the top rung, the bank under exact modal
 propagation with no head, is not strictly the most accurate rung (strict
 reading: \nWaveTopStrictBestTwoFiftySix{}) but matches the $q=32$ rung
-within the pre-registered integrator tie band of
-$\nWaveTieBandPpTwoFiftySix$\,pp at every mesh ($256^2$:
+within the amended integrator tie band at every mesh ($256^2$:
+$\nWaveTieBandPpTwoFiftySix$\,pp,
 $\nWaveBankErrTwoFiftySix$ against $\nWaveQthirtytwoErrTwoFiftySix\,\%$),
 and is
 $\nWaveBankOverHeadCostSixtyFour$--$\nWaveBankOverHeadCostTenTwentyFour\times$
@@ -184,7 +200,28 @@ cheaper than the cheapest head rung on device ms (on complete-query ms
 the dense input and output dominate both, Table~\ref{tab:waves}); the head ladder is monotone in $q$
 (\nWaveHeadLadderMonotoneTwoFiftySix{}), cost is not. On waves POD $k'=64$
 reaches $\nWavePodErrTwoFiftySix\,\%$ against the bank's
-$\nWaveBankErrTwoFiftySix\,\%$ at the same cost. On the L-shaped domain
+$\nWaveBankErrTwoFiftySix\,\%$ at the same cost. Amendment A2 introduced
+the wave tie band after a local pilot showed a strict head advantage,
+before the cluster jobs. It is an empirical difference between worst
+errors, not a uniform bound on each trajectory's integration error.
+The strict accuracy criterion fails at every mesh; the amended one
+passes (Table~\ref{tab:linear-protocol}). Conserving reduced energy does
+not certify trajectory accuracy.
+
+\begin{table}[h]
+\centering
+\caption{Literal and amended linear-PDE criteria. Wave rows ask whether
+the linear endpoint is at least as accurate as every head rung; the
+amended test permits the listed tie band. Poisson rows ask whether the
+collapse claim is falsified; the observed quantity is the full ladder's
+maximum/minimum query-cost ratio. Amendments followed earlier
+observations, as described in the text; ``yes'' has the meaning of the
+criterion in its row.}
+\label{tab:linear-protocol}
+\input{tables/T11i_linear_protocol}
+\end{table}
+
+On the L-shaped domain
 the sparse direct solve costs $\nLshapeSpluMsSixtyFour$,
 $\nLshapeSpluMsOneTwentyEight$, $\nLshapeSpluMsTwoFiftySix$,
 $\nLshapeSpluMsFiveTwelve$\,ms at $64^2$, $128^2$, $256^2$, $512^2$; at
@@ -242,6 +279,13 @@ discrete operator itself sits $\nLvDiscMin$--$\nLvDiscMax\,\%$ from the
 $4096^2$ reference ($\nLvFfourDiscRatio\times$ the incumbent cell's
 discretisation error), so every number below is evidence about reduced
 models against each other on the same discrete system, not about the PDE.
+The source commits differ by stage: gate \texttt{\provLvGateCommit},
+training \texttt{\provLvTrainCommit}, panel \texttt{\provLvPanelCommit}.
+The repaired provenance catalog retains hashes for historical incumbent
+training records whose source commit could not be recovered; those
+records do not inherit a later job's source label. A POD orthogonality
+audit failed; the lane retained the bounded oblique-projection check as
+an explicit exception, not an all-checks-pass validation.
 Two things did happen. Linear reduction collapses: the POD-512 floor
 degrades \nLvPodFiveTwelveCollapse{} and the trained linear bank's floor
 \nLvBankFloorCollapse{} ($\nLvBankFloorInc\to\nLvBankFloorLow\,\%$)

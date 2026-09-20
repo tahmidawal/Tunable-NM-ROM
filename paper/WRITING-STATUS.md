@@ -1,6 +1,24 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-19 — b-panel admissibility corrected to DESIGN §5 (b-panel 25434a27) (current state; everything below is history)
+## 2026-09-20 — existing-paper integrity repair (current state)
+
+The authoritative manuscript is `main.tex`, with the user's title and adopted abstract
+preserved. The current correction details and remaining limitations are in the top
+section of `ABSTRACT-2026-09-17.md`. Existing scientific values are unchanged; the new
+linear-protocol table distinguishes literal and amended criteria. Low-viscosity
+provenance is pinned to the repaired summary with separate gate/training/panel sources.
+Unsupported operator lower-bound and NS causal-capacity wording is removed, and
+exploratory NS phase-three coverage is stated correctly. Poisson oracle retractions,
+wave amendment history, and low-viscosity exceptions remain visible.
+
+The separate three-dimensional campaign is ongoing and is not yet part of this paper.
+Historical statements below that the entire experimental programme is complete are
+superseded. The current PDF passes the existing submission page limit; exact build
+and numerical-preservation checks are in `integrity-repair-2026-09-20.json`, generated
+by `check_integrity_repair.py`. Source-report repairs outside this tree and user
+publication/merge choices remain outside this bounded manuscript repair.
+
+## 2026-09-19 — b-panel admissibility corrected to DESIGN §5 (b-panel 25434a27) (history)
 
 Every b-panel pin moved to 25434a27 (lane §A13). The lane's audit had checked its convergence rule
 against each arm's own gradient tolerance, so the 1e-3 arms counted as converged and entered the

@@ -213,8 +213,8 @@ ladder). The linear evolution of the full bank is the $q=R$ rung.}
 
 \begin{table}[h]
 \centering
-\caption{Neural operators on the shared Burgers data: capacity, epochs, whether
-the arm was still improving at its budget, worst and median error on the
+\caption{Neural operators on the shared Burgers data: capacity, epochs,
+checkpoint-recency flag (historically ``still improving''), worst and median error on the
 matched eight-case cohort and on the 32 held-out cases. Accuracy is comparable
 across jobs; timing never is, and none is shown. Single seed, one mesh, one
 3000\,s budget per capacity.}
@@ -505,7 +505,7 @@ job 3702709; at equal wall clock a float64 twin is also a fewer-epochs twin.}
 \begin{table}[h]
 \centering
 \caption{U-Net against FNO on the Poisson operator-screen dataset (physical
-reference). The U-Net arms hit the epoch cap while still improving; the FNO
+reference). The U-Net arms hit the epoch cap with recent best checkpoints; the FNO
 early-stopped.}
 \label{tab:operators-poisson}
 \input{tables/T14b_operators_poisson}
@@ -546,13 +546,16 @@ solver and dataset certified in job \provNsFomJob). Every gate passes
 except the held-out oracle, whose pre-registered bar was a
 $\nNsOracleBar\times$ margin over POD at matched dimension
 (\provNsBarSource); the ratio is \nNsCellRatioMin--\nNsCellRatioMax{} across
-the \nNsCellArms{} settings, so the ladder and timing were never run for
-any head and the lane closed without a phase-3 job. With
+the \nNsCellArms{} settings. No confirmatory ladder on a passing head
+was run; the exploratory phase-3 ladder after this failed gate is in
+Table~\ref{tab:ns-ladder}. With
 $\nNsDataFactor\times$ the data the training reconstruction rises from
 \nNsDataBaseTrainRecon{} to \nNsDataTrainRecon\,\% and the
-held-out/training gap falls from \nNsDataBaseGap{} to
-\nNsDataHeldoutOverTrain: the head no longer fits the training data either,
-so the limit moved from generalisation to capacity at the same head
+held-out/training ratio falls from \nNsDataBaseGap{} to
+\nNsDataHeldoutOverTrain. These are mixed-normalisation ratios:
+training and held-out errors use different denominators, so the
+change does not establish a shift from generalisation to capacity limits.
+The held-out POD/oracle ratios remain comparable
 (\nNsDataPodOverOracleTzero{} at $t=0$, \nNsDataPodOverOracleEvolved{} on
 evolved times). The $\nNsDataFactor\times$-data arm's B-DATA gate passed
 by the pre-registered value path (a hash mismatch on its node, at
@@ -561,13 +564,14 @@ family every error falls \nNsFamDropMin--\nNsFamDropMax$\times$ (POD-16
 \nNsFamDropPod, oracle \nNsFamDropOracle, bank floor \nNsFamDropFloor)
 while the ratio stays at \nNsFamOracleRatio{} (\nNsFamPodOverOracleTzero{}
 at $t=0$, \nNsFamPodOverOracleEvolved{} on evolved times) and the
-held-out/training gap at \nNsFamHeldoutOverTrain{} against
+held-out/training ratio at \nNsFamHeldoutOverTrain{} against
 \nNsFamBaseGap. Oracle values are upper bounds:
 \nNsBudgetExitsKsixteen{} ($K{=}16$), \nNsBudgetExitsKthirtyTwo{}
 ($K{=}32$), \nNsFamBudgetExits{} (family dimension \nNsFamDimLow) and
 \nNsDataBudgetExits{} (\nNsDataTrainN{} trajectories) held-out fits at
 $256^2$ hit the LM budget, which biases the ratio downward, so the
-negative verdict is conservative.}
+result establishes failure to clear the gate with the available fits,
+not a proof that the globally best manifold fit cannot clear it.}
 \label{tab:ns}
 \resizebox{\linewidth}{!}{\input{tables/T11e_ns}}
 \end{table}
@@ -627,8 +631,9 @@ Written for a reader who knows none of this project's vocabulary.
 \item[Admissible] Eligible for a frontier or a ratio: converged under the completion rule as written, with stationarity $10^{-6}$ at every step or a residual-rule exit, and for a quadrature subject a rule that passes its bar. Arms run at the loose tolerance $10^{-3}$ are reported everywhere but are not admissible.
 \item[Non-dominated, frontier, error span, cost span] A point nothing else beats on both axes; the set of such points; ratio of largest to smallest error among a ladder's non-dominated converged points; the same for cost. The tunability bar: monotone, at least three non-dominated points, at least $2\times$ on both spans, nothing early-stopped.
 \item[Same-allocation, same-job, cross-job] Two measurements inside one cluster allocation on one GPU, which may be divided; two from different allocations, which may not.
-\item[Development cohort, held-out, sealed cohort] Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).
-\item[Pre-registered] Declared in a design document before the job ran; every bar, gate and falsification clause in this paper was.
+\item[Development cohort, held-out, sealed cohort] Cases opened for diagnosis or selection; cases excluded from training, which may still be used for validation; cases opened once after choices are frozen. The Burgers sealed cohort has been opened and is reported in Table~\ref{tab:sealed}.
+\item[Pre-registered, amended] Declared before the observations used to test a claim; changed later in a dated design amendment. Poisson's deciding falsification interpretation and the wave tie band were amended after earlier observations; their literal and amended readings are reported separately.
+\item[Checkpoint recency] Whether the best validation checkpoint falls near the end of the training budget; a training-progress heuristic, not a convergence proof or a bound on attainable error.
 \item[POD-LSPG, $k'$, DST, CG, Newton] The classical linear reduced model on a snapshot basis of rank $k'$ solved through the same weak objective; the direct discrete sine transform solve, exact for separable constant-coefficient operators on a rectangle; conjugate gradients; the full-order nonlinear iteration for Burgers.
 \item[FNO, U-Net, Transolver] Three neural-operator families. Each is fixed once trained; its evaluation grid is a cost--accuracy control of its own (Table~\ref{tab:resolution}), but one that does not change what the model can represent.
 \item[Checkpoint, frozen, incumbent] Saved network weights; unchanged for every result; the one Burgers checkpoint every cell shares.

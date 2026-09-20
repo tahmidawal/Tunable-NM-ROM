@@ -137,8 +137,14 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     'ns303_result': ('2026-09-17-ns2d', '2d70f36a'),
     'ns302_result': ('2026-09-17-ns2d', '2d70f36a'),
     'ns2d_design': ('2026-09-17-ns2d', '2d70f36a'),
-    # b-lowvisc closed at df92e40d (panel job 3817807; appendix cell under the F4 under-resolution caveat)
-    'lowvisc_summary': ('2026-09-17-b-lowvisc', 'df92e40d'),
+    # Provenance repair only: scientific values unchanged; source commits are per stage.
+    'lowvisc_summary': ('2026-09-17-b-lowvisc', '5760a7e256ef3c003956bef7a185a86c88b823b6'),
+    'nosecond_summary': ('2026-09-17-no-second', 'ea812685e7386e6af631a646e996c5428794f560'),
+    'plinear_summary': ('2026-09-17-p-linear', 'a366980a46ce79741f7c1e12f576887678efcc6d'),
+    'plinear_report': ('2026-09-17-p-linear', 'a366980a46ce79741f7c1e12f576887678efcc6d'),
+    'plinear_verdicts': ('2026-09-17-p-linear', 'a366980a46ce79741f7c1e12f576887678efcc6d'),
+    'wladder_summary': ('2026-09-17-w-ladder', '9b84d0556888ebc052b52bd165a61dcd56b2b53d'),
+    'wladder_report': ('2026-09-17-w-ladder', '9b84d0556888ebc052b52bd165a61dcd56b2b53d'),
 }
 
 
@@ -861,6 +867,7 @@ def build_operators():
 
 # =========================================================================== T11 linear PDEs
 def build_linear():
+    protocol_rows = []
     # ---- waves
     w = load('wladder_summary'); wrep = load('wladder_report')
     if w is None:
@@ -906,6 +913,9 @@ def build_linear():
             macro(f'nWaveMidRungMs{nm}', ms(by[(mesh, 'nested_q32')]['median_gpu_ms']))
             macro(f'nWaveTieBandPp{nm}', f"{100*v['tie_band_delta']:.3f}" if v.get('tie_band_delta') is not None else '---')
             macro(f'nWaveTopWithinBand{nm}', yn(v.get('D1_accuracy'))); macro(f'nWaveTopStrictBest{nm}', yn(v.get('D1_strict')))
+            protocol_rows.append(['wave', f'${mesh}^2$', 'top-rung accuracy (D1)',
+                                  yn(v['D1_strict']), yn(v['D1_accuracy']),
+                                  f"{100*v['tie_band_delta']:.3f} pp tie band"])
             macro(f'nWaveHeadLadderMonotone{nm}', yn(v.get('H_mono_ladder')))
             q32 = by[(mesh, 'nested_q32')]
             macro(f'nWaveQthirtytwoErr{nm}', pct(100 * q32['worst_energy_state'], 3))
@@ -966,6 +976,9 @@ def build_linear():
                 v = verd[str(mesh)]
                 macro(f'nPlin{nm}Dspan', f"{v['D1_span']:.2f}"); macro(f'nPlin{nm}Degenerate', yn(v['D1'] and v['D2_lowest'] and v['D3_fom']))
                 macro(f'nPlin{nm}Monotone', yn(v['monotone'])); macro(f'nPlin{nm}FalsifiedIntent', yn(v['falsified_intent']))
+                protocol_rows.append(['Poisson', f'${mesh}^2$', 'falsification fires',
+                                      yn(v['falsified_literal']), yn(v['falsified_intent']),
+                                      f"{v['D1_span']:.2f} cost span"])
         rows.pop()
         write('T11b_poisson.tex', tabular(['mesh', 'subject', '$M$', 'worst \\%', 'median \\%', 'complete-query ms', 'device ms', 'valid',
                                            'non-dom.\\ (all)', 'non-dom.\\ (reduced)'], rows, 'llrrrrrrcc', r'\scriptsize'),
@@ -988,6 +1001,10 @@ def build_linear():
             best = min(hc, key=lambda k: hc[k]['dev_best_found_over_floor'])
             macro('nPlinHeadRatioBest', f"{hc[best]['dev_best_found_over_floor']:.2f}"); macro('nPlinHeadBestArm', tt(best))
             if verd and 'head' in verd: macro('nPlinHeadMaxDrop', f"{100*verd['head']['H2_max_drop']:.1f}")
+    write('T11i_linear_protocol.tex', tabular(
+        ['PDE', 'mesh', 'criterion', 'literal', 'amended', 'observed quantity'],
+        protocol_rows, 'lllccl', r'\scriptsize'),
+        'Poisson DESIGN A8 and wave DESIGN A2: amended interpretations informed by earlier observations')
 
 
 # =========================================================================== T11d heat (earlier cell)
@@ -1433,7 +1450,11 @@ def build_lowvisc():
     if not d:
         write('T20_lowvisc_ladder.tex', gen('b-lowvisc', 'T20') + '\n'); write('T20b_lowvisc_panel.tex', gen('b-lowvisc', 'T20b') + '\n'); return
     rows = d['rows']; PJ, GJ, TJ = d['panel_job'], d['gate_job'], d['train_job']
-    macro('provLvPanelJob', PJ); macro('provLvGateJob', GJ); macro('provLvTrainJob', TJ); macro('provLvGpu', tex_escape(d['gpu'])); macro('provLvCommit', d['source_commit'][:8])
+    macro('provLvPanelJob', PJ); macro('provLvGateJob', GJ); macro('provLvTrainJob', TJ); macro('provLvGpu', tex_escape(d['gpu']))
+    for stage in ('gate', 'train', 'panel'):
+        macro('provLv' + stage.title() + 'Commit', d['source_commits'][stage][:8])
+    macro('provLvCommit', '; '.join(stage + ' ' + d['source_commits'][stage][:8]
+                                  for stage in ('gate', 'train', 'panel')))
     P = defaultdict(dict)
     for r in rows:
         if r['job_id'] == PJ:
@@ -2117,7 +2138,7 @@ def build_pending():
         write('T11e_ns.tex', tabular(['mesh', 'bank rank', 'B-ORTH', 'bank worst \\%', 'POD-$R$ worst \\%', 'B-FLOOR',
                                       'oracle median \\%', 'POD-$K$ median \\%', 'POD-$K$ / oracle', 'H-ORACLE ($\\ge$2.0)'],
                                      gt, 'lrcrrcrrrc', r'\scriptsize'), f'ns2d phase 2, jobs {NS_JOB} (K=16, R=256) and {NS2} (K=32, R=512), full-rank banks; every gate passes except H-ORACLE; oracle values are upper bounds (some held-out fits hit the LM budget)')
-        macro('nNsRom', 'not run: the pre-registered gate to it failed (\\S\\ref{sec:exp:linear})')
+        macro('nNsRom', 'confirmatory campaign not run; exploratory ladder in Table~\\ref{tab:ns-ladder}')
         macro('nNsKthirtyTwo', 'landed (job ' + NS2 + '): fails the same bar (Table~\\ref{tab:ns})')
         # ns301 (job 3808493): head-only data-scaling diagnosis on the frozen K=16 bank (DESIGN §A9)
         NS3 = '3808493'
@@ -2155,7 +2176,7 @@ def build_pending():
             write('T11f_ns_scaling.tex', tabular(['recipe', 'training trajectories', 'held-out oracle median \\%', 'POD-16 median \\%', 'POD / oracle', 'held-out / train', 'selected step'],
                                                  t, 'lrrrrrl', r'\scriptsize'), f'ns2d ns301, job {NS3}: head-only retraining on the frozen K=16 bank; slopes and verdicts from the pre-registered rule (DESIGN A9)')
         # ns304 (job 3808502): EXPLORATORY q-ladder on the ns204 K=32/R=512 manifold after the failed phase-2 gate (DESIGN §A11).
-        # Every table and macro from it is labelled exploratory; it is not a phase-3 result.
+        # Every table and macro is exploratory phase 3 after a failed phase-2 gate.
         NS4 = '3808502'
         E = defaultdict(dict)
         for r in n:
@@ -2270,12 +2291,15 @@ def build_problems_and_provenance(mesh):
     prov('T10', 'mesh-ladder (Poisson)', MACROS.get('provMeshPoissonJob', '---'), MACROS.get('provMeshPoissonGpu', '---'), MACROS.get('provMeshPoissonCommit', '---'), MACROS.get('provMeshPoissonCkpt', '---'))
     prov('T21', 'p-linear + lshape (secondary: previous comparator, CG)', 'the p-linear and lshape jobs above', 'per job', 'per job', 'same checkpoints as T11b / T18c')
     prov('T20, T20b', 'b-lowvisc (appendix; F4 under-resolution caveat)', 'panel ' + MACROS.get('provLvPanelJob', '---') + '; gate ' + MACROS.get('provLvGateJob', '---') + '; training ' + MACROS.get('provLvTrainJob', '---'), MACROS.get('provLvGpu', '---'), MACROS.get('provLvCommit', '---'), 'low-viscosity checkpoint hashed in the lane summary')
-    prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ', ' + MACROS.get('nNsDataTrainN', '---') + ' trajectories); lane closed, no phase-3 job', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
+    prov('T11e', 'ns2d phase 2 (K=16, K=32, family dimension ' + MACROS.get('nNsFamDimLow', '---') + ', ' + MACROS.get('nNsDataTrainN', '---') + ' trajectories); no confirmatory ladder; exploratory ladder in T11g', MACROS.get('provNsJobs', '---') + '; FOM ' + MACROS.get('provNsFomJob', '---'), 'ns303 ' + MACROS.get('provNsFamGpu', '---') + '; others per job', 'per job', 'checkpoints hashed in each result.json')
     prov('T11f', 'ns2d ns301 (head-only data scaling on the frozen K=16 bank)', MACROS.get('provNsScaleJob', '---'), 'per job', 'per job', 'frozen K=16 bank; heads hashed in result.json')
     prov('T11g, T11h', 'ns2d ns304 (exploratory after a failed phase-2 gate)', MACROS.get('provNsExpJob', '---'), MACROS.get('provNsExpGpu', '---'), MACROS.get('provNsExpCommit', '---'), 'ckpt\\_K32\\_R512 hashed in result.json')
     prov('T11a', 'w-ladder', MACROS.get('provWaveJobs', '---'), 'per job', 'per job', 'frozen-math SHA asserted in job')
     prov('T11d', 'heat linear bank (2026-09-10)', MACROS.get('provHeatJob', '---'), MACROS.get('provHeatGpu', '---'), MACROS.get('provHeatCommit', '---'), 'expanded\\_seed790715 (frozen)')
     prov('T11b, T11c', 'p-linear', MACROS.get('provPlinJobs', '---') + '; head capacity job ' + MACROS.get('provPlinHeadJob', '---'), 'per job', 'per job', 'R=512/K=32 checkpoint (pbh02 primary)')
+    prov('T11i', 'p-linear A8 + w-ladder A2 (literal/amended criteria)',
+         'same jobs as T11a and T11b', 'per job', 'pinned in tables/provenance.json',
+         'existing verdict records; no new solve')
     prov('T14, T14c, T14d', 'no-second (5 of 8 jobs counted; two preamble deaths uncounted)', MACROS.get('provOpJobs', '---'), 'A100 (per job)', 'per job', 'operator checkpoints hash-verified in job')
     prov('T15', 'b-speed', MACROS.get('provSpeedJobs', '---'), 'A100 80GB PCIe', '8fdfbb08 / 94399dd6', MACROS.get('provBurgersCkpt', '---'))
     prov('T16', 'b-head-train', MACROS.get('provTrainJobs', '---'), 'A100-PCIE-40GB', '0f0c56f7 / 2b9e7ee7', 'trained checkpoints hashed in archive')

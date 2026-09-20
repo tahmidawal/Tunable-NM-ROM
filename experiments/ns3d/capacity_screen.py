@@ -30,7 +30,7 @@ def run(Utr,Udev,cfg,out):
     report['selected_rank']=rank;report['stage']='free_bank';save()
     initial_variance=trnorm**2/(3*n**3)
     params,z,info,coeff=D.train_free_bank(train,n,32,rank,cfg['capacity_seed'],cfg['capacity_bank_steps'],cfg['capacity_bank_seconds'],out/'free_bank.pkl',scores,
-         batch=16,width=rank,n_ff=256,spatial_batch=1024,snapshot_variance=initial_variance,
+         batch=16,width=rank,n_ff=256,spatial_batch=1024,snapshot_variance=initial_variance,checkpoint_every=2000,
          callback=lambda curve:(report.update(bank_curve=curve),save()))
     report['bank_training']=info;G=np.asarray(D.bank(params,D.coords(n),F.geometry(n),n));Q,Rb,ctr,ptr,whitening=D.whiten(G,train)
     Xdev=dev.reshape(len(dev),-1);cdev=np.linalg.solve(Rb,(Xdev@Q).T).T;pdev=np.sum((Xdev-cdev@G.T)**2,axis=1)

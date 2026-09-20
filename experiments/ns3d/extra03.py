@@ -77,7 +77,12 @@ def main():
         vd=np.repeat(np.sum(dvds['initial']**2,axis=(1,2,3,4))[:,None]/statistics['output_scale']**2,5,1)
         stage('larger_bank_head_screen')
         from capacity_screen import run as capacity_run
-        report['capacity_screen']=capacity_run(Utr,Udev,cfg,out/'capacity');write(report,result)
+        try:
+            report['capacity_screen']=capacity_run(Utr,Udev,cfg,out/'capacity')
+        except Exception as capacity_error:
+            report['capacity_screen_failure']=dict(error=str(capacity_error),traceback=traceback.format_exc())
+            print('CAPACITY_SCREEN_FAILED',report['capacity_screen_failure'],flush=True)
+        write(report,result)
         stage('new_operator_training');op_models=[];report['operators']=[]
         for index,spec in enumerate(cfg['extra_operators']):
             training=dict(cfg['operator_train'],seed=cfg['operator_train']['seed']+index)

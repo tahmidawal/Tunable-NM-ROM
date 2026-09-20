@@ -263,7 +263,7 @@ def pod_gpu(U,maxrank):
 
 def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
                     pod_scores,batch=16,width=512,n_ff=256,lr=.001,callback=None,
-                    spatial_batch=1024,snapshot_variance=None):
+                    spatial_batch=1024,snapshot_variance=None,checkpoint_every=100):
     """Learn spatial bank with unrestricted coefficients before fitting a head.
 
     The POD scores initialize coefficients only. Spatial fields remain a learned
@@ -307,8 +307,9 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
             if not np.isfinite(row['relative_mse']):
                 raise RuntimeError('nonfinite free-bank training')
             curve.append(row);print('free_bank_train',row,flush=True)
-            checkpoint(checkpoint_path,*pc,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),
-                       dict(stage='unrestricted_coefficient_bank',curve=curve,complete=False))
+            if step==0 or (step+1)%checkpoint_every==0 or step+1==steps:
+                checkpoint(checkpoint_path,*pc,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),
+                           dict(stage='unrestricted_coefficient_bank',curve=curve,complete=False))
             if callback is not None:callback(curve)
             if row['seconds']>=seconds:break
     params,coefficients=pc

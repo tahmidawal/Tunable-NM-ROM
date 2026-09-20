@@ -17,7 +17,7 @@ def write(path,value):Path(path).write_text(json.dumps(value,indent=2)+'\n')
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--confirmation',default='b3d005');p.add_argument('--conditioned')
-    p.add_argument('--attempt',default='b3d007');args=p.parse_args()
+    p.add_argument('--attempt',default='b3d007');p.add_argument('--check-only',action='store_true');args=p.parse_args()
     run=EXP/'runs'/args.confirmation;collected=run/'collected';accept=json.loads((run/'COLLECTED.json').read_text())
     assert accept['checksums_passed'] and accept['independent_audit_passed']
     protocol=json.loads((EXP/'final-reference-protocol.json').read_text());assert protocol['cases']==32
@@ -92,6 +92,11 @@ def main():
         checkpoint_sha256=checkpoints,offline_artifact_hashes=offline_hashes,replay_rows=replay_rows,
         replay_gate=dict(maximum_absolute_field_discrepancy=1e-8,identical_iterations=True,identical_reasons=True),
         physical_reference_protocol=protocol,physical_reference_protocol_sha256=digest(EXP/'final-reference-protocol.json'),seeds=seeds,assets=assets)
+    if args.check_only:
+        print(json.dumps(dict(checked=True,assets=len(assets),checkpoint_sha256=checkpoints,
+            conditioned_selected=use_conditioned,final_cohort_unopened=True,
+            scope='real checkpoint architecture, basis/direction shapes, saved audit gates, metadata and all asset hashes; no freeze file written and no input generated'),indent=2))
+        return
     name='final-freeze.json';write(EXP/name,freeze)
     config=dict(attempt=args.attempt,workflow='final_campaign.py',wall_time='02:00:00',
         freeze_manifest=name,freeze_sha256=digest(EXP/name),assets=assets)

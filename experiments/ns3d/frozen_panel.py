@@ -140,6 +140,7 @@ def evaluate(cfg,assets,out,seed,count,report=None,smoke_methods=None):
         backend=jax.default_backend(),x64=bool(jax.config.jax_enable_x64),precision=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'),
         final_cohort_opened=cfg['evaluation_cohort']=='final',complete=False,kind='NS3D frozen matched comparison',
         evaluation_cohort=cfg['evaluation_cohort'],cohort_seed=seed,cohort_count=count,method_names=[x[0] for x in panel],
+        timing_scope=dict(gpu='Device initial field to complete device trajectory and diagnostics',with_host='Host initial field to complete host trajectory and diagnostics; input transfer, query and output transfer from the same invocation'),
         limitations=['Dense full-grid weak evaluation; no hyper-reduction speed claim','Warm bank lineage is not an independent complete training seed'])
     def stage(name):report['stage']=name;write(report,out/'result.json');print('STAGE',name,flush=True)
     stage('evaluation_data_generation')
@@ -169,8 +170,9 @@ def evaluate(cfg,assets,out,seed,count,report=None,smoke_methods=None):
             burn(1.);order=np.roll(np.arange(len(panel)),case+repetition)
             if repetition%2:order=order[::-1]
             for order_index,index in enumerate(order):
-                name,kind,fn,args=panel[index];start=time.perf_counter();value=fn(u0,nu,*args);jax.block_until_ready(value);gpu=time.perf_counter()-start
-                host=jax.tree_util.tree_map(np.asarray,value);field=(host[0] if kind=='weak' else host).reshape(6,3,n,n,n);total=time.perf_counter()-start
+                name,kind,fn,args=panel[index];host_start=time.perf_counter();query_u0=jax.device_put(states[case,0]);query_u0.block_until_ready();input_seconds=time.perf_counter()-host_start
+                start=time.perf_counter();value=fn(query_u0,nu,*args);jax.block_until_ready(value);gpu=time.perf_counter()-start
+                host=jax.tree_util.tree_map(np.asarray,value);field=(host[0] if kind=='weak' else host).reshape(6,3,n,n,n);total=time.perf_counter()-host_start
                 finite=bool(np.isfinite(field).all());key=f'{name}__case{case}'
                 if repetition and sha(fields[key])!=sha(field):key+=f'__rep{repetition}'
                 fields[key]=field;errors=None;physical=None
@@ -180,7 +182,7 @@ def evaluate(cfg,assets,out,seed,count,report=None,smoke_methods=None):
                     physical=np.linalg.norm((lifted-fine[case]).reshape(6,-1),axis=1)/np.linalg.norm(fine[case,0])
                     if not np.isfinite(errors).all() or not np.isfinite(physical).all():finite=False;errors=None;physical=None
                 row=dict(case=case,repetition=repetition,order_index=order_index,method=name,kind=kind,gpu_seconds=gpu,with_host_seconds=total,
-                    field_sha256=sha(field),finite=finite,same_grid_errors=errors,physical_errors=physical)
+                    input_transfer_seconds=input_seconds,field_sha256=sha(field),finite=finite,same_grid_errors=errors,physical_errors=physical)
                 if kind=='weak':
                     metadata_finite=all(np.isfinite(np.asarray(x)).all() for x in (*host[1],*host[2]))
                     row.update(cold=finite_metadata(host[1]),steps=finite_metadata(host[2]),weak_metadata_finite=bool(metadata_finite),state_sha256=sha(host[3]));histories[f'{name}__case{case}__rep{repetition}']=host[3]

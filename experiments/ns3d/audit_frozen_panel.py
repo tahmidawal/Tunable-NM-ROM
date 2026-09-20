@@ -39,10 +39,22 @@ def main():
     G=bank['extra']['bank'];Q=bank['extra']['qr_Q'];Rb=bank['extra']['qr_R'];computed=independently_evaluate_bank(bank['params'],cfg['n'])
     gate('independent_coordinate_bank',rel(computed,G)<1e-10,relative=rel(computed,G));del computed
     gate('bank_whitening',rel(Q@Rb,G)<1e-10 and rel(Q.T@Q,np.eye(cfg['r']))<1e-10)
-    with np.load(assets/'dense_weak_operators.npz') as f:C=f['C']
+    with np.load(assets/'dense_weak_operators.npz') as f:ops={key:f[key] for key in f};C=ops['C']
     metric=Rb@C;gate('correction_physical_orthogonality',np.max(abs(metric.T@metric-np.eye(cfg['r'])))<1e-7)
     with np.load(assets/'pod.npz') as f:P=f['basis']
     gate('POD_orthogonality',np.max(abs(P.T@P-np.eye(P.shape[1])))<1e-7)
+    ids=json.loads((assets/'dense_weak_test_modes.json').read_text());waves=np.asarray([x['wave'] for x in ids]);index=waves%cfg['n'];pol=np.asarray([x['polarization'] for x in ids]);cosine=np.asarray([x['kind']=='cos' for x in ids]);spec=I.setup(cfg['n'])
+    operator_errors=[];probe_rng=np.random.default_rng(202609321)
+    for basis,A,L in ((G,ops['A'],None),(P,ops['pod_A'],ops['pod_L']),(Q,None,ops['free_L'])):
+        for _ in range(8):
+            c=probe_rng.normal(size=basis.shape[1]);field=(basis@c).reshape(3,cfg['n'],cfg['n'],cfg['n']);spectrum=I.transform(field)
+            if A is not None:
+                value=spectrum[:,index[:,0],index[:,1],index[:,2]];scalar=np.einsum('cm,mc->m',value,pol)
+                expected=np.sqrt(2*cfg['n']**3)*np.where(cosine,scalar.real,-scalar.imag);operator_errors.append(rel(A@c,expected))
+            if L is not None:
+                expected=basis.T@I.physical(-spec[1]*spectrum).ravel();operator_errors.append(rel(L@c,expected))
+    gate('independent_weak_and_Galerkin_linear_probes',max(operator_errors)<1e-10 and np.allclose(ops['lam'],4*np.pi**2*np.sum(waves*waves,axis=1),rtol=1e-13,atol=1e-13),
+        maximum_relative=max(operator_errors),checks=len(operator_errors),seed=202609321,scope='Eight random full-coefficient probes per saved linear map, and every Fourier Laplacian eigenvalue')
     with np.load(out/'dev_data.npz') as f:states=f['states'];parameters=f['parameters']
     rng=np.random.default_rng(raw['cohort_seed']);draws=[]
     for _ in range(len(states)):

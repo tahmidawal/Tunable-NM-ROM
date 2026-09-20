@@ -68,6 +68,23 @@ def channels_to_trajectories(channels,initial):
     return np.concatenate((initial[:,None],evolved),axis=1)
 
 
+def common_model_arrays(dataset,statistics):
+    """H-lane common JAX model API: (batch,x,y,z,channels), no hidden parameters."""
+    inputs=raw_inputs(dataset['initial'],dataset['viscosity'])
+    inputs=(inputs-statistics['input_mean'])/statistics['input_std']
+    targets=targets_to_channels(dataset['targets'])/statistics['output_scale']
+    return (np.ascontiguousarray(np.moveaxis(inputs,1,-1)),
+            np.ascontiguousarray(np.moveaxis(targets,1,-1)))
+
+
+def common_prediction_to_trajectories(prediction,initial,statistics):
+    """Undo BXYZC/output scaling, append supplied t0, then apply optional projection
+    outside this adapter with its cost explicitly included in the timed query.
+    """
+    channels=np.moveaxis(prediction,-1,1)*statistics['output_scale']
+    return channels_to_trajectories(channels,initial)
+
+
 def relative_errors(prediction,target,initial):
     if prediction.shape != target.shape or prediction.ndim != 6:
         raise ValueError('trajectory shapes differ')
@@ -90,6 +107,11 @@ def self_check():
     inputs=raw_inputs(states[:,0],np.asarray([[.002],[.01]]))
     assert inputs.shape == (2,4,4,4,4)
     assert np.all(inputs[0,3] == .002)
+    dataset=dict(initial=states[:,0],viscosity=np.asarray([[.002],[.01]]),targets=target)
+    stats=training_statistics(dataset)
+    xx,yy=common_model_arrays(dataset,stats)
+    assert xx.shape==(2,4,4,4,4) and yy.shape==(2,4,4,4,15)
+    assert np.allclose(common_prediction_to_trajectories(yy,states[:,0],stats),states)
     return dict(passed=True,checks=['channel/frame roundtrip','initial-norm velocity metric',
                                    'viscosity-only parameter input'])
 

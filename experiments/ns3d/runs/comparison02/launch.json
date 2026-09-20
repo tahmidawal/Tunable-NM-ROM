@@ -17,5 +17,35 @@
     3990698,
     3990494
   ],
-  "command": "ssh tufts-login \"cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02 && sbatch --parsable run.sbatch\""
+  "command": "ssh tufts-login \"cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02 && sbatch --parsable run.sbatch\"",
+  "observed_state": "RUNNING",
+  "node": "pax051",
+  "gpu_verified": "NVIDIA A100-PCIE-40GB",
+  "gpu_preflight_seen": true,
+  "observed_operator_gates_passed": true,
+  "physical_reference_gates_at_handoff": "in progress",
+  "final_cohort_opened": false,
+  "interpretation_notes": [
+    "Original raw JSON timing summaries inherit generic summary() key over_5pct. That key merely counts seconds >0.05 and has no accuracy or timing-outlier meaning. Omit it in paper timing tables, preserve raw bytes, retain this erratum, and recompute declared timing outliers from repetition arrays.",
+    "The independent Galerkin control is an explicit coefficient ODE with CNAB2; it is separate from, and not the full-bank endpoint of, the fixed-M weak least-squares NM-ROM objective.",
+    "Snapshot representation head_fit uses current-state vector norm; head_initial_normalized uses initial velocity norm over each trajectory. All timed trajectory errors use the initial velocity norm.",
+    "All dense initial fitting/projection and dense output evaluation are timed. This does not establish grid-independent cold initialization.",
+    "One training seed on opened development data. Training caps indicate budget termination, not convergence. Final seed has never been drawn.",
+    "The shared operator modules are unchanged bytes from H commit84d302a706bf06a460d04f419d9c06a6c424932e, with per-file hashes in operators/PROVENANCE.json.",
+    "Every timing row retains cost, errors computed from the same invocation, field SHA256, and LM stop records where applicable. First-repetition fields are saved; any later field with different SHA256 is also saved under __repN.",
+    "Timed LM records include all per-step norms/iterations/reasons/normalized gradients but only requested output-time fields, not latent state history. A later frozen verification replay can retain full latent state history for independent per-step gradient audit if needed before paper acceptance."
+  ],
+  "next_steps": [
+    "Monitor only job3993021; one queued/running NS job maximum. Do not cancel or submit duplicate attempt.",
+    "Inspect N32 and N64-versus-N128 reference gates. Training is programmatically forbidden unless both pass.",
+    "Read train-only POD floor ladder and selected rank, free-bank and head learning curves, then actual rollout/operator results. Physical family is frozen.",
+    "When quiescent, obtain squeue/sacct status; collect output, logs, manifests, source hashes and original OUTPUTS.sha256 directly from the exact namespace. On scheduler timeout generate a new clearly labelled partial-file checksum manifest after the job stops.",
+    "Verify all hashes, preserve full checkpoints, data seeds, fields, repetition arrays and partial failures in tracked split archive; then delete only the completed comparison02 namespace.",
+    "Extend NumPy audit_pilot.py for new outputs: independently reconstruct bank/head, check initial-normalized metrics, verify full N64 reference norm versus N128, audit saved timed-field hashes and per-invocation same-grid/finer-grid errors, check all f64 leaves, and compare exact Galerkin/weak tensors to independent advective NS RHS.",
+    "Verify reason/gradient summaries including failures instead of discarding unsuccessful solves. Treat all negative or budget-limited models as such.",
+    "Generate all table numbers from JSON with units, medians, worst errors, declared outlier/failure counts, exact reference names and no cross-job timing ratios.",
+    "Choose targeted bank/head/operator refinement on development only if time allows. Freeze all selections before drawing final seed202609203.",
+    "Main coordinator owns canonical LAB-LOG and reports; send source/job/audit/number facts for its append. Ask user whether to merge worktrees at campaign completion, never merge automatically."
+  ],
+  "collection_example": "scp -r tufts-login:/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/comparison02/output <local-collected>/; preserve logs, OUTPUTS.sha256 and source manifests too"
 }

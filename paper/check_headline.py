@@ -20,8 +20,7 @@ for r in prov['rows']:
         series[(r['problem'], r['dim'], s)].append((r['intervals'], x['speedup']))
     if r['fast'] and r['accurate']:
         assert r['accurate']['error_pct'] <= r['fast']['error_pct']
-    if r['source'] == 'heat3d': assert r['status'].startswith('provisional')
-    if r['source'] == 'poisson3d': assert r['status'] == 'accepted final'
+    if r['source'] in ('heat3d', 'poisson3d'): assert r['status'] == 'accepted final' and r['cohort'] == 'final'
 tex = (P / 'tables/TH_headline.tex').read_text()
 assert tex.count(r'\textbf{') == bold, (tex.count(r'\textbf{'), bold)
 assert not re.search(r'\bms\b', tex), 'no milliseconds in the headline table'

@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 18:55; this block is removed before submission).*
+*Status for the reader (generated 2026-09-20 18:58; this block is removed before submission).*
 *Populated tables (88): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -430,7 +430,7 @@ cohort (%). Speedup is the FOM's median time divided by the NM-ROM's in
 the same GPU allocation, **bold** where the NM-ROM is faster. The
 FOM is the named iterative solver at its fastest tested setting that is at
 least as accurate as the accurate setting. $^{f}$ held-out final cohort
-(all others development); $^{p}$ provisional, archive retention pending;
+(all others development);
 $^{r}$ error against a refined reference, which includes discretisation
 error (all others same-grid); $^{c}$ complete-query time with host
 transfers (all others GPU query). The earlier Burgers model has one
@@ -459,8 +459,8 @@ in progress. Times and settings: Table 9.
 | Burgers 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-burgers lane |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
-| Heat 3D (provisional) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
-| Heat 3D (provisional) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
+| Heat 3D (accepted final) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
+| Heat 3D (accepted final) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
 | Poisson 3D | 128^3 | — | — | — | — | — | pending: hires-poisson lane |
 | Heat 3D | 128^3 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 3D | 128^3 | — | — | — | — | — | pending: hires-burgers lane |
@@ -1067,13 +1067,12 @@ evaluation; “single” marks models measured at one setting.
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | 3534502 | development |
 | Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | 4028642 | accepted final |
 | Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | 4028642 | accepted final |
-| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | 4033346 | provisional |
-| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | 4033346 | provisional |
+| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | 4033346 | accepted final |
+| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | 4033346 | accepted final |
 
 **Table 10.** Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except
-Navier–Stokes, which is periodic. $^{p}$ provisional: numerical audits
-pass, archive retention pending. Burgers and Navier–Stokes appear in
+Navier–Stokes, which is periodic. Burgers and Navier–Stokes appear in
 Table 3.
 
 <!-- table: TH_config3d -->
@@ -1081,7 +1080,7 @@ Table 3.
 | --- | --- | --- | --- | --- | --- | --- |
 | Burgers 3D | 33^3 nodes | 32 final | 0, 192 | Newton–BiCGStab, \Delta t=0.01 | dense | job \texttt{4021709} |
 | Poisson 3D | 32^3, 64^3 | 64 final | 0, 32, 96 (k=16) | CG, rtol 10^{-2}, no preconditioner | dense | job \texttt{4028642} |
-| Heat 3D^{p} | 32^3, 64^3 | 64 final | 0, 32, 64, 96 (k=32) | CN–CG, \Delta t=0.05, rtol 10^{-4}, warm start | dense | job \texttt{4033346} |
+| Heat 3D | 32^3, 64^3 | 64 final | 0, 32, 64, 96 (k=32) | CN–CG, \Delta t=0.05, rtol 10^{-4}, warm start | dense | job \texttt{4033346} |
 | Navier–Stokes 3D | 32^3 periodic | 32 final | 0, 32, 64, 128, 256 (k=64, R=1536, M=2048) | CNAB2, \Delta t=0.01 | dense | job \texttt{4027788} |
 
 Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
@@ -1090,10 +1089,8 @@ Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
 on the unit cube with zero Dirichlet walls and extend the operators of
 Appendix A across three axes. Navier–Stokes uses
 periodic vector fields, an incompressibility projection and the CNAB2
-integrator; its FOM is not a CG solve. Poisson, Navier–Stokes and
-Burgers are evaluated on held-out final cohorts whose settings were frozen
-beforehand; the heat final cohort has passed its numerical audits and is
-marked provisional until its archive is retained.
+integrator; its FOM is not a CG solve. All four three-dimensional problems are evaluated on held-out final
+cohorts whose settings were frozen beforehand.
 
 \subsection{Source records}
 The accompanying source package retains the full experiment archive,

@@ -17,8 +17,8 @@
 | Burgers 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-burgers lane |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
-| Heat 3D (provisional) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
-| Heat 3D (provisional) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
+| Heat 3D (accepted final) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
+| Heat 3D (accepted final) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
 | Poisson 3D | 128^3 | — | — | — | — | — | pending: hires-poisson lane |
 | Heat 3D | 128^3 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 3D | 128^3 | — | — | — | — | — | pending: hires-burgers lane |

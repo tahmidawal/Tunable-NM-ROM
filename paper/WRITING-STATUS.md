@@ -18,9 +18,10 @@ plots exactly the table's rows. Table 2 is the reserved nmrom-baselines slot. Ta
 ladder, which-knob table (macros only), dense vs EQ.
 
 **Evidence status in Table 1.** Poisson3D = accepted final08; NS3D = accepted final07 and Burgers3D =
-accepted final (both in Table 3); Heat3D = final08 marked PROVISIONAL (archive retention pending) —
-flip `SOURCES['heat3d']` to the accepted `paper-tables.json` and its status string when the h3d
-lane closes. 2D rows are development cohorts.
+accepted final (both in Table 3); Heat3D = **accepted final08** since the coordinator's 2026-09-20 notice (`paper-tables.json`, SHA256
+`e0319cbc…0041`, read as the committed blob at h3d closure `f15c7232`, archive commit `1ec3f030`;
+rows byte-identical to the earlier pending preview, only the status changed). No provisional mark
+remains in Table 1, Figure 1, Table C.4 or any caption. 2D rows are development cohorts.
 
 **How to drop in lane results (coordinator hands over audited `summary.json` paths).**
 Create `paper/headline-intake.json`:
@@ -45,6 +46,9 @@ come from one job; a lane row violating that must be fixed at the lane, not here
 
 **Open slots.** hires-poisson (2048^2, 4096^2, 128^3), hires-heat (same), hires-burgers (same),
 nmrom-baselines (Table 2). Nothing was read from those lanes.
+`reports/2026-09-20-paper-ideation-handoff.md` still lists Heat3D as provisional: its generator hard-codes
+the pending file name, the status string and a retention-blocker section, so it needs more than a path
+change and was left for the root session (not a `paper/` file).
 
 **Could not be supported / left open.** (1) No accurate-setting Heat2D row: the audited heat CG
 panel has a single uncorrected NM-ROM setting. (2) Burgers2D accurate setting is slower than Newton

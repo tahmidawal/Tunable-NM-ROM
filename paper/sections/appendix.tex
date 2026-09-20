@@ -82,8 +82,7 @@ evaluation; ``single'' marks models measured at one setting.}
 \centering
 \caption{Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except
-Navier--Stokes, which is periodic. $^{p}$\,provisional: numerical audits
-pass, archive retention pending. Burgers and Navier--Stokes appear in
+Navier--Stokes, which is periodic. Burgers and Navier--Stokes appear in
 Table~\ref{tab:failures}.}
 \label{tab:config3d}
 \resizebox{\linewidth}{!}{\input{tables/TH_config3d}}
@@ -95,10 +94,8 @@ Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
 on the unit cube with zero Dirichlet walls and extend the operators of
 Appendix~\ref{app:method} across three axes. Navier--Stokes uses
 periodic vector fields, an incompressibility projection and the CNAB2
-integrator; its FOM is not a CG solve. Poisson, Navier--Stokes and
-Burgers are evaluated on held-out final cohorts whose settings were frozen
-beforehand; the heat final cohort has passed its numerical audits and is
-marked provisional until its archive is retained.
+integrator; its FOM is not a CG solve. All four three-dimensional problems are evaluated on held-out final
+cohorts whose settings were frozen beforehand.
 
 \subsection{Source records}
 The accompanying source package retains the full experiment archive,

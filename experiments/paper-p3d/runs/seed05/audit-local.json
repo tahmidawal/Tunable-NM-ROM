@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "checked_fields": 608,
+  "checked_references": 32,
+  "checked_summary_rows": 38,
+  "maximum_reference_relative_defect": 7.637563663211995e-16,
+  "maximum_metric_absolute_defect": 2.220446049250313e-15,
+  "maximum_forcing_relative_defect": 4.696364824938291e-17,
+  "maximum_physical_reference_defect": 4.883482778704202e-16,
+  "independently_regenerated_cohorts": true,
+  "checked_physical_refinement_cases": 16,
+  "complete_cohort_method_repetition_coverage": true,
+  "limitation": "independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof",
+  "independent_weak_state_audit": {
+    "passed": true,
+    "checked_states": 96,
+    "checked_meshes": 2,
+    "maximum": {
+      "bank_node_defect": 3.8926682477558344e-13,
+      "weak_operator_defect": 1.0200211711595292e-15,
+      "field_relative_defect": 4.1000816265305846e-16,
+      "coefficient_relative_defect": 1.223208067572867e-15,
+      "full_gradient_absolute_defect": 1.2206594118987437e-16,
+      "eliminated_gradient_absolute_defect": 6.045977181900163e-16
+    },
+    "scope": "Independent analytic NumPy head/Jacobian, full-field coefficient reconstruction, sampled bank-coordinate identity and SciPy sine-transform weak operator/gradient; no global optimality claim."
+  },
+  "independent_pretraining_audit": {
+    "passed": true,
+    "recipes": [
+      {
+        "name": "deeponet3d_r128_w16_podinit",
+        "passed": true,
+        "training_cases": 512,
+        "orthogonality": 3.613027548254877e-07,
+        "weighted_pod_eigen_residual": 5.433568107962923e-12,
+        "gram_relative_defect": 6.948269305089744e-16,
+        "least_squares_normal_defect": 1.1795945254308503e-15,
+        "physical_metric_identity_defect": 3.9714723072110703e-16,
+        "teacher_projection_worst": 0.00012646047461207382,
+        "learned_trunk_projection_worst": 0.013480895059624584
+      }
+    ],
+    "reused_pretraining_records": [],
+    "scope": "Fresh recipes: independent regenerated training solutions, weighted POD eigenspace, learned-trunk least squares and physical coefficient metric. Reused recipes: exact prior-checkpoint/source-result provenance only. No retraining or global convergence claim."
+  }
+}

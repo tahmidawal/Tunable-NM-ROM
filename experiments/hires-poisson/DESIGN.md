@@ -162,3 +162,24 @@ application against $\ge 87$ iterations, < 1.2 % of CG device time, in the ROM's
 parent's audited CG is kept unmodified and the bias is declared here. At $4096^2$ the retained
 baseline cannot fit (Codex: 171.7 GB with all three copies); parity there is carried by the
 $2048^2$ job of the same kernels, as already stated in gate 3.
+
+**A2 (2026-09-20, before the 3D job) — 3D arm of the lane, `hp3d_solve.py`.** Same question at
+$128^3$ for the accepted Poisson3D checkpoint of `experiments/paper-p3d`
+(`runs/final08/checkpoints/{bank,head_K16}.pkl`; trained at $32^3$, $R{=}128$, $K{=}16$, 512
+sine tests, three nearest-code starts, LM budget 160, gradient stop $10^{-6}$ — all unchanged). One
+job carries $64^3$ (the mesh the orientation number 0.263 % / 1.33× comes from, as the in-job
+anchor) and $128^3$. Cohort: the first 12 sources of paper-p3d's **development** (validation-seed
+920411) draw; the accepted final cohort is not reused and nothing is tuned. Arms per mesh:
+`rom_q{0,32,96}` in variants `retained` (the unchanged `poisson.engine`, in-kernel diagnostic
+included), `lean64` (diagnostic removed from the timed kernel), `leandst64` (additionally the
+dense $M\times n^3$ source projection replaced by one DST-I + gather; identity
+$(\phi^\top f/n^3)_k = \mathrm{dst3}(f)_k/n^{3/2}$), `leandst32` (f32 decode, labelled),
+`leandst1` (one start instead of three — a different solver setting, labelled, not a parity arm);
+`rom_q128_linear`; CG $10^{-2}$ (named), $10^{-4}$, $10^{-6}$ (paper-p3d's plain CG without history,
+cap $40n$ iterations); `dst_direct` control; coarse DST / CG($10^{-2},10^{-4}$) on
+$n_c\in\{16,32,64\}$ with trilinear zero-boundary interpolation (charged). Headline arms fixed now:
+accurate = `rom_q96_leandst64`, fast = `rom_q0_leandst64`. Parity limits: `lean64` $10^{-12}$,
+`leandst64` $10^{-10}$ (FFT vs matmul round-off through the LM), `leandst32` $10^{-4}$, identical LM
+integers; local $16^3$ smoke measured $8\times10^{-16}$, $1\times10^{-15}$, $8\times10^{-8}$. Audit:
+`hp3d_audit_np.py` (own seven-point stencil-residual check of the SciPy references). 5 reps × 12
+sources, same timing contract as 2D but on interior arrays (paper-p3d's scope).

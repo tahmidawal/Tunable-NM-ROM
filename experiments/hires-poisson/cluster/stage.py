@@ -29,6 +29,11 @@ COMMON = [f'{CELL}/core.py', f'{CELL}/speed_core.py', f'{CELL}/kernel_solver.py'
           'experiments/p-linear/checkpoints/primary_K32-basis.npz',
           f'{LANE}/hp_core.py', f'{LANE}/hp_audit_np.py', f'{LANE}/cluster/stage.py']
 
+P3D = 'experiments/paper-p3d'
+SET3D = [f'{P3D}/common.py', f'{P3D}/poisson.py', f'{P3D}/shared_rom.py', f'{P3D}/iterative_cg.py',
+         f'{P3D}/runs/final08/checkpoints/bank.pkl', f'{P3D}/runs/final08/checkpoints/head_K16.pkl',
+         f'{LANE}/cluster/stage.py']
+
 SCRIPT = '''#!/bin/bash
 #SBATCH --job-name=hp___ATTEMPT__
 #SBATCH --partition=gpu
@@ -58,7 +63,7 @@ df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 cd "$TASK_ROOT/code"
 "$PY" __DRIVER__ --config __CONFIG__ --out ../output
-"$PY" __AUDIT__ ../output --subsample 256 --delete-fields
+"$PY" __AUDIT__ ../output --subsample __SUB__ --delete-fields
 cd "$TASK_ROOT"
 rm -rf cache tmp
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
@@ -73,6 +78,8 @@ def main():
     p.add_argument('--driver', default='hp_solve.py')
     p.add_argument('--audit', default='hp_audit_np.py')
     p.add_argument('--extra', nargs='*', default=[], help='extra repo-relative files to stage')
+    p.add_argument('--set', default='2d', choices=['2d', '3d'], help='which parent file set to stage')
+    p.add_argument('--subsample', type=int, default=256)
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--gpu', default='h200', choices=['a100', 'h100', 'h200', 'l40s'])
     p.add_argument('--mem', default='240G')
@@ -84,7 +91,7 @@ def main():
     (out / 'logs').mkdir()
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
-    files = list(dict.fromkeys(COMMON + [f'{LANE}/{a.driver}', f'{LANE}/{a.audit}',
+    files = list(dict.fromkeys((COMMON if a.set == '2d' else SET3D) + [f'{LANE}/{a.driver}', f'{LANE}/{a.audit}',
                                          f'{LANE}/{a.config}'] + a.extra))
     proof = []
     for name in files:
@@ -102,7 +109,7 @@ def main():
     for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', a.gpu),
                          ('__HOURS__', f'{a.hours:02d}'), ('__MEM__', a.mem),
                          ('__DRIVER__', a.driver), ('__AUDIT__', a.audit),
-                         ('__CONFIG__', a.config)):
+                         ('__CONFIG__', a.config), ('__SUB__', str(a.subsample))):
         script = script.replace(token, value)
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{hashlib.sha256(q.read_bytes()).hexdigest()}  {q.relative_to(out)}'

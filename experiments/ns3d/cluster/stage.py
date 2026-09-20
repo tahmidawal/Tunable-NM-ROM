@@ -20,6 +20,7 @@ def main():
     parser.add_argument('attempt')
     parser.add_argument('--config',default='pilot01.json')
     parser.add_argument('--gpu',choices=('a100','h200'),default='a100')
+    parser.add_argument('--driver',choices=('pilot.py','comparison.py'),default='pilot.py')
     args=parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9]{1,30}',args.attempt):
         raise ValueError('attempt must be a bounded alphanumeric name')
@@ -27,6 +28,7 @@ def main():
         raise ValueError('config must be an existing named JSON')
     source=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     files=[str(p.relative_to(ROOT)) for p in sorted((ROOT/'experiments/ns3d').glob('*.py'))]
+    files += [str(p.relative_to(ROOT)) for p in sorted((ROOT/'experiments/ns3d/operators').glob('*')) if p.is_file()]
     files += ['experiments/ns3d/DESIGN.md','experiments/ns3d/cluster/stage.py',
               'experiments/ns3d/configs/'+args.config,
               'experiments/ns2d/ns2d_decoder.py','experiments/ns2d/ns2d_rom.py',
@@ -72,7 +74,7 @@ df -h /cluster/tufts/paralab
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export PYTHONPATH="$TASK_ROOT/experiments/ns3d:$TASK_ROOT/experiments/ns2d:$TASK_ROOT/experiments/separable-decoder"
 set +e
-"$PY" experiments/ns3d/pilot.py --config experiments/ns3d/configs/{args.config} --out output
+"$PY" experiments/ns3d/{args.driver} --config experiments/ns3d/configs/{args.config} --out output
 NS3D_EXIT=$?
 set -e
 find output -type f -print0 | sort -z | xargs -0 -r sha256sum > OUTPUTS.sha256
@@ -82,7 +84,7 @@ exit "$NS3D_EXIT"
     (out/'run.sbatch').write_text(script)
     (out/'logs').mkdir()
     stage=dict(attempt=args.attempt,source_commit=source,local=str(out),remote=remote,
-               config=args.config,gpu=args.gpu,wall_limit_hours=2)
+               config=args.config,gpu=args.gpu,wall_limit_hours=2,driver=args.driver)
     (out/'stage.json').write_text(json.dumps(stage,indent=2)+'\n')
     manifest=[f'{digest(p)}  {p.relative_to(out)}' for p in sorted(out.rglob('*')) if p.is_file()]
     (out/'MANIFEST.sha256').write_text('\n'.join(manifest)+'\n')

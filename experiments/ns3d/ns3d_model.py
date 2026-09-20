@@ -199,16 +199,33 @@ def train_head(params,z,C,Rb,steps,seconds,seed,checkpoint_path,config,lr=.001):
 
 
 def representation(params,G,Rb,coeff,perp,truth,Z,starts=4,budget=200):
-    fn=lambda z:head(params,z)
-    z,rn,it,reason=oracle_fit(fn,jnp.asarray(Rb),coeff,Z,n_starts=starts,budget=budget,
-                             gtol=1e-7,chunk=8)
+    # Explicit parameter arguments avoid capturing large head weights in XLA.
+    from ns2d_rom import make_lm
+    theta={name:params[name] for name in ('h','h_lin')}
+    def residual(z,c,metric,theta):
+        return metric@(head(theta,z)-c)
+    lm=make_lm(residual,budget,gtol=1e-7)
+    Hrot=np.asarray(head(theta,jnp.asarray(Z)))@np.asarray(Rb).T
+    hn=np.sum(Hrot*Hrot,axis=1)
+    def one(c,metric,theta,codes,rotated,norms):
+        scores=norms-2*rotated@(metric@c)
+        initial=codes[jnp.argsort(scores)[:starts]]
+        result=jax.vmap(lambda z0:lm(z0,(c,metric,theta),0.))(initial)
+        index=jnp.argmin(result[1])
+        return tuple(a[index] for a in result)
+    fit=jax.jit(jax.vmap(one,in_axes=(0,None,None,None,None,None)))
+    batches=[]
+    for s in range(0,len(coeff),8):
+        batches.append(tuple(np.asarray(a) for a in fit(jnp.asarray(coeff[s:s+8]),jnp.asarray(Rb),
+                              theta,jnp.asarray(Z),jnp.asarray(Hrot),jnp.asarray(hn))))
+    z,rn,it,reason,gradient=tuple(np.concatenate([b[i] for b in batches]) for i in range(5))
     initial_norms=np.linalg.norm(np.asarray(truth).reshape(len(truth),-1),axis=1)
     bank_error=np.sqrt(perp)/initial_norms
     total=np.sqrt(perp+rn*rn)/initial_norms
     if np.any(total+1e-12<bank_error):
         raise RuntimeError('head fit below bank projection floor')
     return dict(bank_error=bank_error,head_error=total,z=z,iterations=it,reasons=reason,
-                stationary=np.asarray(reason)==4)
+                stationary=np.asarray(reason)==4,normalized_gradient=gradient)
 
 
 def correction_directions(params,Rb,C,Z):
@@ -229,3 +246,77 @@ def pod(U,maxrank):
     basis=X.T@V[:,ids]/np.sqrt(eig[ids])[None,:]
     basis,_=np.linalg.qr(basis,mode='reduced')
     return basis,np.sqrt(np.maximum(eig[ids],0.))
+
+
+def pod_gpu(U,maxrank):
+    """Exact snapshot-Gram POD with GPU eigensolve; return basis and scores."""
+    X=jnp.asarray(U,dtype=jnp.float64).reshape(len(U),-1)
+    values,vectors=jnp.linalg.eigh(X@X.T)
+    ids=jnp.argsort(values)[::-1][:maxrank]
+    eig=values[ids]
+    if float(eig[-1]) <= float(eig[0])*1e-13:
+        raise RuntimeError('requested POD rank exceeds measured snapshot rank')
+    scores=vectors[:,ids]*jnp.sqrt(eig)[None,:]
+    basis=(X.T@vectors[:,ids])/jnp.sqrt(eig)[None,:]
+    return np.asarray(basis),np.asarray(scores),np.asarray(jnp.sqrt(eig))
+
+
+def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
+                    pod_scores,batch=16,width=512,n_ff=256,lr=.001,callback=None,
+                    spatial_batch=1024):
+    """Learn spatial bank with unrestricted coefficients before fitting a head.
+
+    The POD scores initialize coefficients only. Spatial fields remain a learned
+    periodic vector MLP followed by the exact solenoidal projection.
+    """
+    U=jnp.asarray(U,dtype=jnp.float64).reshape(len(U),-1)
+    params=init(jax.random.PRNGKey(seed),k_lat,r_feat,width=width,n_ff=n_ff)
+    scale=jnp.mean(U*U)
+    params['out_scale']=jnp.sqrt(scale)
+    normalization=float(jnp.sqrt(scale*U.shape[1]))
+    coefficients=jnp.asarray(pod_scores[:,:r_feat]/normalization)
+    xy=coords(n)
+    U3=U.reshape(len(U),3,n**3)
+    opt=optax.adam(optax.warmup_cosine_decay_schedule(0.,lr,min(300,steps//10+1),steps,lr*.02))
+    pc=(params,coefficients);state=opt.init(pc)
+    def loss(pc,values,indices,points,scale):
+        p,c=pc
+        angle=2*jnp.pi*(points@p['B'])
+        ff=jnp.concatenate((jnp.sin(angle),jnp.cos(angle)),axis=-1)
+        raw=p['out_scale']*S.apply_mlp(p['g'],ff)
+        G=raw.reshape(len(points),3,r_feat).transpose(1,0,2).reshape(3*len(points),r_feat)
+        return jnp.mean((c[indices]@G.T-values)**2)/scale
+    @jax.jit
+    def update(pc,state,values,indices,points,scale):
+        value,grad=jax.value_and_grad(loss)(pc,values,indices,points,scale)
+        grad[0]['B']=jnp.zeros_like(grad[0]['B'])
+        grad[0]['out_scale']=jnp.zeros_like(grad[0]['out_scale'])
+        updates,state=opt.update(grad,state,pc)
+        return optax.apply_updates(pc,updates),state,value
+    rng=np.random.default_rng(seed+1)
+    start=time.monotonic();curve=[]
+    for step in range(steps):
+        ids=np.sort(rng.choice(len(U),min(batch,len(U)),replace=False))
+        positions=np.sort(rng.choice(n**3,min(spatial_batch,n**3),replace=False))
+        values=U3[ids][:,:,positions].reshape(len(ids),-1)
+        pc,state,value=update(pc,state,values,jnp.asarray(ids),xy[positions],scale)
+        if step==0 or (step+1)%100==0 or step+1==steps:
+            row=dict(step=step+1,relative_mse=float(value),seconds=time.monotonic()-start)
+            if not np.isfinite(row['relative_mse']):
+                raise RuntimeError('nonfinite free-bank training')
+            curve.append(row);print('free_bank_train',row,flush=True)
+            checkpoint(checkpoint_path,*pc,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),
+                       dict(stage='unrestricted_coefficient_bank',curve=curve,complete=False))
+            if callback is not None:callback(curve)
+            if row['seconds']>=seconds:break
+    params,coefficients=pc
+    scores=pod_scores[:,:k_lat]
+    z=.25*scores/max(float(np.sqrt(np.mean(scores*scores))),1e-12)
+    info=dict(stage='unrestricted_coefficient_bank',steps=step+1,requested_steps=steps,
+              seconds=time.monotonic()-start,curve=curve,
+              stopping='step_budget' if step+1==steps else 'wall_budget',
+              coefficient_initialization='training_field_POD_scores',
+              objective='raw field MSE with spatial point minibatches',spatial_batch=spatial_batch,
+              spatial_bank='learned periodic vector coordinate MLP, not POD substitution')
+    checkpoint(checkpoint_path,params,coefficients,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),info)
+    return params,np.asarray(z),info,np.asarray(coefficients)

@@ -149,3 +149,54 @@ def make_run(dt,nsteps,out_every,k,q,linear=False,budget=80,gtol=1e-7,cold_start
         fields=jnp.concatenate((initial[None],fields))
         return fields,cold_info,tuple(x.reshape(-1) for x in info)
     return run
+
+
+def build_galerkin(G,n):
+    """Exact quadratic Galerkin operators in an orthonormal solenoidal basis.
+
+    These classical controls have no least-squares residual with M=k. They
+    integrate the coefficient ODE with CNAB2, rather than manufacturing a slow
+    fully implicit FOM. The pressure projection is orthogonal to the tests.
+    """
+    fields=jnp.asarray(G.T.reshape(G.shape[1],3,n,n,n))
+    geom=F.geometry(n)
+    omega=jax.vmap(lambda u:F.ifft(1j*F.cross(geom[0],F.fft(u))))(fields)
+    lap=jax.vmap(lambda u:F.ifft(-geom[1]*F.fft(u)))(fields).reshape(G.shape[1],-1).T
+    linear=np.asarray(jnp.asarray(G).T@lap)
+    @jax.jit
+    def column(G,fields,one_omega):
+        product=jax.vmap(lambda u:F.cross(u,one_omega))(fields)
+        return G.T@product.reshape(fields.shape[0],-1).T
+    rank=G.shape[1]
+    tensor=np.empty((rank,rank,rank),dtype=np.float64)
+    for k in range(rank):
+        tensor[:,:,k]=np.asarray(column(jnp.asarray(G),fields,omega[k]))
+    return linear,tensor
+
+
+def make_galerkin_run(dt,nsteps,out_every):
+    assert nsteps%out_every==0
+    @jax.jit
+    def run(u0,nu,G,L,T):
+        c0=G.T@u0.ravel()
+        identity=jnp.eye(L.shape[0])
+        half=jnp.linalg.cholesky(identity-.5*dt*nu*L)
+        full=jnp.linalg.cholesky(identity-dt*nu*L)
+        def solve(factor,b):
+            return jax.scipy.linalg.cho_solve((factor,True),b)
+        def step(carry,index):
+            c,old=carry
+            current=contract(T,c)
+            def first():
+                pred=solve(full,c+dt*current)
+                return solve(half,c+.5*dt*(nu*(L@c)+current+contract(T,pred)))
+            def normal():
+                return solve(half,c+.5*dt*nu*(L@c)+dt*(1.5*current-.5*old))
+            new=jax.lax.cond(index==0,first,normal)
+            return (new,current),None
+        def block(carry,index):
+            new,_=jax.lax.scan(step,carry,index*out_every+jnp.arange(out_every))
+            return new,G@new[0]
+        _,fields=jax.lax.scan(block,(c0,jnp.zeros_like(c0)),jnp.arange(nsteps//out_every))
+        return jnp.concatenate(((G@c0)[None],fields))
+    return run

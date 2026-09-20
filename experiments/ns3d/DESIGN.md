@@ -200,13 +200,20 @@ hidden width is at least the requested bank rank; use more fixed periodic
 Fourier features. Initialize free coefficients from training-field POD scores,
 not from hidden family-generator parameters. The first nonlinear head has
 $K=16$. Freeze its bank and preserve the complete training history.
+For efficiency, this pretraining fits raw vector-field values on spatial point
+minibatches. Full Leray/cutoff projection is applied when evaluating the learned
+bank and throughout reduced assembly. Since the truth is already in this
+orthogonal projected space, projection cannot increase field error for fixed
+coefficients. Verify that inequality explicitly on held-out fields. The
+pretraining objective is reported as raw-field MSE, not projected-field MSE;
+refit coefficients in the projected bank's full field metric before head fitting.
 
-The primary actual-trajectory ladder uses $q=0,16,32$ at a common $M=256$ and
+The primary actual-trajectory ladder uses $q=0,16,32,64,128$ at a common $M=1024$ and
 time step, with like-for-like POD weak least-squares controls at dimensions
 16, 32 and 48. Larger-rank POD and the unrestricted learned bank also receive
 efficient coefficient-Galerkin/CNAB2 controls. Those solve an explicit reduced
 ODE; they are not an underdetermined $M<k$ least-squares objective or a redundant
-latent-plus-full-bank endpoint. The full-bank endpoint is shown as a separate
+latent-plus-full-bank endpoint. The unrestricted-bank solve is shown as a separate
 control, not presented as part of the fixed-test-count neural ladder.
 
 Use a full-order CNAB2 time-step ladder including accuracy-passing coarse steps.

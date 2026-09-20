@@ -1,0 +1,24 @@
+{
+  "first_smoke": {
+    "status": "failed",
+    "reason": "Two-step versus four-step temporal ratio did not clear the preselected 3.5 bound; no scientific job was launched.",
+    "configuration": {
+      "horizon": 0.01,
+      "steps": [
+        2,
+        4
+      ]
+    },
+    "raw_log_retention": "Initial terminal traceback retained in session; log was replaced on rerun; exact errors were not printed."
+  },
+  "revised_temporal_check": {
+    "reason": "Use more steps to assess the asymptotic CNAB2 order after the startup step. All dynamics, independent solve, and acceptance threshold unchanged.",
+    "horizon": 0.2,
+    "steps": [
+      8,
+      16
+    ],
+    "result_file": "result.json"
+  },
+  "scope": "tiny smoke only; physical family and paper cohorts unchanged"
+}

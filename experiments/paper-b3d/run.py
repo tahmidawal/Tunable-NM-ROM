@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import pickle
+import shutil
 import time
 import traceback
 from pathlib import Path
@@ -76,6 +77,15 @@ def main():
     parser.add_argument('--checkpoint',default='inputs/refined_checkpoint.pkl')
     args=parser.parse_args()
     cfg=json.loads(Path(args.config).read_text())
+    offline=cfg.get('frozen_offline')
+    if offline:
+        assert set(offline['files'])=={'bases.npz','directions.npz','result.json'}
+        for name,digest in offline['files'].items():
+            assert sha(Path(offline['directory'])/name)==digest
+        previous=json.loads((Path(offline['directory'])/'result.json').read_text())
+        assert previous['checkpoint_sha256']==sha(args.checkpoint)
+        for key in ['nodes','dt','steps','seed','train_trajectories','train_steps','test_modes']:
+            assert previous['config'][key]==cfg[key],(key,'frozen offline contract mismatch')
     if cfg.get('evaluation_kind')=='final':
         freeze=Path(cfg['freeze_manifest'])
         assert freeze.exists() and sha(freeze)==cfg['freeze_sha256']
@@ -83,6 +93,8 @@ def main():
         assert frozen['final_parameter_seed']==cfg['evaluation_seed']
         assert frozen['final_cases']==len(cfg['validation_rows'])
         assert sha(args.checkpoint) in frozen['checkpoint_sha256']
+        assert offline is not None,'Final evaluation must reuse frozen offline bases/directions'
+        assert offline['files'] in frozen['offline_artifact_hashes']
     out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
     report=dict(config=cfg,job_id=os.environ.get('SLURM_JOB_ID'),commit=os.environ.get('SOURCE_COMMIT'),
                 gpu=jax.devices()[0].device_kind,backend=jax.default_backend(),
@@ -109,9 +121,9 @@ def main():
         report['stage']='parameters';save()
         n=cfg['nodes'];steps=cfg['steps'];dt=cfg['dt']
         assert b3.DT==dt and b3.NUM_STEPS==steps
-        train_rows=list(range(cfg['train_trajectories']))
+        train_rows=[] if offline else list(range(cfg['train_trajectories']))
         val_rows=cfg['validation_rows'];rows=train_rows+val_rows
-        assert len(set(rows))==len(rows) and max(train_rows)<512 and min(val_rows)>=512
+        assert len(set(rows))==len(rows) and (not train_rows or max(train_rows)<512) and min(val_rows)>=512
         raw=b3.draw_param_table(cfg['seed'],max(rows)+1)
         tab={key:(value[rows] if isinstance(value,np.ndarray) else value) for key,value in raw.items()}
         if 'evaluation_seed' in cfg:
@@ -121,11 +133,18 @@ def main():
                     value[len(train_rows):]=evaluation[key]
         tab['m']=len(rows)
         tab['s_star']=b3.peak_on_reference_grid(tab)
-        np.savez_compressed(out/'parameters.npz',**tab,original_rows=np.asarray(rows))
+        parameter_seeds=np.full(len(rows),cfg['seed'],dtype=np.int64);parameter_rows=np.asarray(rows,dtype=np.int64)
+        if 'evaluation_seed' in cfg:
+            parameter_seeds[len(train_rows):]=cfg['evaluation_seed'];parameter_rows[len(train_rows):]=np.arange(len(val_rows))
+        np.savez_compressed(out/'parameters.npz',**tab,original_rows=np.asarray(rows),parameter_seeds=parameter_seeds,parameter_rows=parameter_rows)
         coords=b3.grid_coords_3d(n);idx=b3.interior_indices_3d(n)
         G=np.concatenate([np.asarray(b3.features(params,jnp.asarray(coords[idx[s:s+2048]])))
                           for s in range(0,len(idx),2048)])
         Q,Rb=np.linalg.qr(G,mode='reduced')
+        if offline:
+            frozen_basis=np.load(Path(offline['directory'])/'bases.npz')
+            Q=frozen_basis['bank'];Rb=frozen_basis['bank_R']
+            assert np.linalg.norm(Q.T@Q-np.eye(R))<1e-9
         singular=np.linalg.svd(Rb,compute_uv=False)
         rank=int(np.sum(singular>np.finfo(float).eps*max(G.shape)*singular[0]))
         assert rank==R
@@ -148,7 +167,8 @@ def main():
             independent=reference_audit(f,nu,n,dt)
             assert np.isfinite(f).all() and independent<2e-9,(row,independent)
             record=dict(row=row,max_relative_residual=float(np.max(rn)),numpy_max_relative_residual=independent,
-                        iterations=it.tolist(),nu=nu,role='train' if local<len(train_rows) else 'validation')
+                        iterations=it.tolist(),nu=nu,role='train' if local<len(train_rows) else cfg.get('evaluation_kind','validation'),
+                        parameter_seed=int(parameter_seeds[local]),parameter_row=int(parameter_rows[local]))
             if local<len(train_rows):
                 Utrain.append(f[cfg['train_steps']])
             else:
@@ -159,39 +179,49 @@ def main():
             report['references'].append(record)
             if local%8==0 or local==len(rows)-1:
                 save();print('REFERENCE',local+1,len(rows),'elapsed',round(time.perf_counter()-start,1),flush=True)
-        U=np.concatenate(Utrain);del Utrain
-        targets=U@Q;floor=np.sum((U-targets@Q.T)**2,axis=1)
-        np.savez_compressed(out/'training_fields.npz',fields=U,steps=cfg['train_steps'],rows=train_rows)
-        report['stage']='directions';save()
-        selected=np.linspace(0,len(targets)-1,min(cfg['direction_states'],len(targets)),dtype=int)
-        target=targets[selected];ff=floor[selected]
-        initial_starts=starts_for(target,H,Z)
-        fit0=c.make_fit(K,0,cfg['fit_budget'],cfg['gradient_tolerance'])
-        selected_fit,all_fit=tiled_fit(fit0,target,ff,initial_starts,np.zeros((R,0)),Rb,hp,
-                                      cfg.get('fit_tile',16))
-        zfit=selected_fit[0][:,:K]
-        rho=target-np.asarray(b3.head(hp,jnp.asarray(zfit)))@Rb.T
-        _,s,Ct=np.linalg.svd(rho,full_matrices=False)
-        C=Ct.T
-        assert C.shape==(R,R) and np.linalg.norm(C.T@C-np.eye(R))<1e-10
-        np.savez_compressed(out/'directions.npz',C=C,singular_values=s,selected=selected,fit_states=selected_fit[0],
-                            fit_errors=selected_fit[1],fit_iterations=selected_fit[2],fit_reasons=selected_fit[3],
-                            fit_gradients=selected_fit[4],all_errors=all_fit[1],all_gradients=all_fit[4])
-        print('DIRECTIONS complete',round(time.perf_counter()-start,1),flush=True)
-        report['directions']=dict(training_states=len(selected),stationary=int(np.sum(selected_fit[4]<=cfg['gradient_tolerance'])),
-                                  total=len(selected),singular_values=s.tolist())
-        report['stage']='POD';save()
-        maxrank=max(cfg['pod_ranks'])
-        width=min(maxrank+24,min(U.shape))
-        uj=jnp.asarray(U);omega=jnp.asarray(np.random.default_rng(20260920).normal(size=(len(U),width)))
-        podq=jnp.linalg.qr(uj.T@omega,mode='reduced')[0]
-        for _ in range(2):
-            podq=jnp.linalg.qr(uj.T@(uj@podq),mode='reduced')[0]
-        _,ps,pvt=jnp.linalg.svd(uj@podq,full_matrices=False)
-        POD=np.asarray(podq@pvt.T[:,:maxrank])
-        assert np.linalg.norm(POD.T@POD-np.eye(maxrank))<1e-9
-        np.savez_compressed(out/'bases.npz',bank=Q,bank_R=Rb,pod=POD,pod_singular=np.asarray(ps),lam=lam)
-        del uj,omega,podq,pvt,U
+        if offline:
+            source=Path(offline['directory'])
+            C=np.load(source/'directions.npz')['C'];POD=frozen_basis['pod']
+            assert C.shape==(R,R) and np.linalg.norm(C.T@C-np.eye(R))<1e-10
+            assert np.array_equal(frozen_basis['lam'],lam)
+            assert POD.shape[1]>=max(cfg['pod_ranks'])
+            for name in ['bases.npz','directions.npz']:shutil.copyfile(source/name,out/name)
+            report['directions']=previous['directions'];report['frozen_offline']=offline
+            report['stage']='frozen offline loaded';save()
+        else:
+            U=np.concatenate(Utrain);del Utrain
+            targets=U@Q;floor=np.sum((U-targets@Q.T)**2,axis=1)
+            np.savez_compressed(out/'training_fields.npz',fields=U,steps=cfg['train_steps'],rows=train_rows)
+            report['stage']='directions';save()
+            selected=np.linspace(0,len(targets)-1,min(cfg['direction_states'],len(targets)),dtype=int)
+            target=targets[selected];ff=floor[selected]
+            initial_starts=starts_for(target,H,Z)
+            fit0=c.make_fit(K,0,cfg['fit_budget'],cfg['gradient_tolerance'])
+            selected_fit,all_fit=tiled_fit(fit0,target,ff,initial_starts,np.zeros((R,0)),Rb,hp,
+                                          cfg.get('fit_tile',16))
+            zfit=selected_fit[0][:,:K]
+            rho=target-np.asarray(b3.head(hp,jnp.asarray(zfit)))@Rb.T
+            _,s,Ct=np.linalg.svd(rho,full_matrices=False)
+            C=Ct.T
+            assert C.shape==(R,R) and np.linalg.norm(C.T@C-np.eye(R))<1e-10
+            np.savez_compressed(out/'directions.npz',C=C,singular_values=s,selected=selected,fit_states=selected_fit[0],
+                                fit_errors=selected_fit[1],fit_iterations=selected_fit[2],fit_reasons=selected_fit[3],
+                                fit_gradients=selected_fit[4],all_errors=all_fit[1],all_gradients=all_fit[4])
+            print('DIRECTIONS complete',round(time.perf_counter()-start,1),flush=True)
+            report['directions']=dict(training_states=len(selected),stationary=int(np.sum(selected_fit[4]<=cfg['gradient_tolerance'])),
+                                      total=len(selected),singular_values=s.tolist())
+            report['stage']='POD';save()
+            maxrank=max(cfg['pod_ranks'])
+            width=min(maxrank+24,min(U.shape))
+            uj=jnp.asarray(U);omega=jnp.asarray(np.random.default_rng(20260920).normal(size=(len(U),width)))
+            podq=jnp.linalg.qr(uj.T@omega,mode='reduced')[0]
+            for _ in range(2):
+                podq=jnp.linalg.qr(uj.T@(uj@podq),mode='reduced')[0]
+            _,ps,pvt=jnp.linalg.svd(uj@podq,full_matrices=False)
+            POD=np.asarray(podq@pvt.T[:,:maxrank])
+            assert np.linalg.norm(POD.T@POD-np.eye(maxrank))<1e-9
+            np.savez_compressed(out/'bases.npz',bank=Q,bank_R=Rb,pod=POD,pod_singular=np.asarray(ps),lam=lam)
+            del uj,omega,podq,pvt,U
         report['stage']='representation';save()
         vals=np.concatenate([x[[0,10,25,50]] for x in truths])
         at=vals@Q;fl=np.sum((vals-at@Q.T)**2,axis=1);norm=np.linalg.norm(vals,axis=1)

@@ -27,9 +27,12 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('attempt');a=p.parse_args();root=Path(__file__).parent/'runs'/a.attempt
     collected=json.loads((root/'COLLECTED.json').read_text());assert collected['checksums_passed'] and collected['independent_audit_passed']
     out=root/'collected/out'
-    result=panel(out)
+    result=panel(out if (out/'result.json').exists() else out/'seed0')
     result.update(checksums_passed=collected['checksums_passed'],remote_directory_removed=collected['remote_directory_removed'])
     if (out/'head64/result.json').exists():result['head64']=panel(out/'head64')
+    if (out/'seed1/result.json').exists():
+        result['seed1']=panel(out/'seed1')
+        result['seed_reporting']='seed0 is the original-bank primary recipe; seed1 is an independent initialization confirmation, not a selected best seed'
     (root/'summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:result[k] for k in ['job_id','source','checksums_passed','remote_directory_removed']},indent=2))
 

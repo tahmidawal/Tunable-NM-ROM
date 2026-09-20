@@ -1,0 +1,8 @@
+jax_backend=gpu f64=True precision=highest
+REFERENCE 1 1 elapsed 4.2
+REPRESENTATION 0 {'q': 0, 'mean': 0.964183278382018, 'median': 0.9641142347666286, 'worst': 0.9714933677046842, 'stationary': 4, 'n': 4, 'artifact': 'representation_q0.npz'}
+TIMING free_R4 0 0 25.16 err 0.7903 stationary True
+TIMING pod_2 0 0 18.41 err 0.87293 stationary True
+TIMING rom_q0 0 0 127.1 err 0.94409 stationary False
+COMPLETE 12.54216087399982
+FROZEN OFFLINE SMOKE PASS

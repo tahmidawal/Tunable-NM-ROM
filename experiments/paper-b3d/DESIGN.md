@@ -44,6 +44,16 @@ All scripts/configuration/checkpoint hashes, source commit, seed, grid, GPU, Slu
 
 Diagnose bank floor, initial compression, best-found fit and solved rollout separately. If bank capacity is limiting, train a larger learned bank; if the head is limiting, test early-state coverage and per-state relative loss before another architecture search. New FNO/U-Net ports and fair shared-training panels follow the first verified pilot. Remaining operator families, repeated seeds, quadrature, a second resolution and sealed final evaluation remain explicit backlog until actually completed.
 
+## Exploratory amendment after the first development pilot
+
+The first pilot's bank floor, remaining head error and dense query cost motivate a fresh learned bank with larger rank and a better-conditioned relative-loss training objective. `config-train.json` is the frozen second-attempt configuration. It uses the full original training membership for every new learned component and the original eight training output times, with extra early-time coverage already included. The coordinate-bank last hidden layer is wider than its output rank. Spatial Fourier features, nonlinear hidden layers and boundary masking remain the B3D learned architecture. The two-stage optimizer recipe is adapted from the independently implemented heat trainer at `e6460d73`; no heat data or PDE is imported.
+
+Head training uses relative reconstruction error plus a relative-error tail penalty. PCA initializes latent training codes and the head's linear skip only; it does not replace the learned spatial bank. Every checkpoint and learning curve is retained; a finite training budget is not labelled convergence. The pilot keeps one head latent dimension and evaluates nested correction ranks at a fixed weak-space size, with matched-dimension POD controls and the unrestricted bank endpoint. New loose-inner-tolerance FOM controls address the first pilot's incomplete classical tuning. Two development cases receive time, space, and combined reference refinements before any physical-accuracy interpretation. Model choice remains exploratory on the same opened validation cohort. Sealed final cases remain untouched.
+
+Repeated identical full-field outputs may share an artifact only after every returned array is compared bit-for-bit; each invocation still records its own timing and achieved accuracy. This avoids retaining multiple identical copies while keeping cost and accuracy coupled.
+
+The next independent comparison job must train FNO3D and U-Net3D on these exact original training rows, the same observed training times and physical input fields plus viscosity. It must evaluate all requested output times and include the current learned ROM, POD and tuned FOM in one allocation. DeepONet, Transolver, independent training seeds and sealed evaluation remain unfinished until measured.
+
 ## Glossary
 
 - **Bank/head:** learned spatial features / neural map from latent state to coefficients.

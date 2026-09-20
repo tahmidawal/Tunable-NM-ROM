@@ -74,6 +74,8 @@ def main():
                 timing_contract='dense initial interior field on GPU to all 51 dense interior fields on GPU; initial fitting included',
                 vendor=json.loads(Path('VENDOR.json').read_text()))
     save=lambda:dump(out/'result.json',report)
+    if 'training' in cfg:
+        report['comparison_scope']='development, all newly learned components use identical original 512 training trajectories and eight saved training times'
     save()
     start=time.perf_counter()
     try:
@@ -181,6 +183,26 @@ def main():
                  worst=float(np.max(errors)),stationary=int(np.sum(best[4]<=cfg['gradient_tolerance'])),n=len(errors),artifact=name))
             save();print('REPRESENTATION',q,report['representation'][-1],flush=True)
         report['bank_floor']=dict(mean=float(np.mean(np.sqrt(fl)/norm)),worst=float(np.max(np.sqrt(fl)/norm)))
+        report['refinement']=[]
+        for case in cfg.get('refinement_cases',[]):
+            local=len(train_rows)+case;nu=viscosities[case]
+            for label,nn,dd,ss in [('time_half',n,dt/2,steps*2),('space_fine',2*(n-1)+1,dt,steps),
+                                  ('space_time_fine',2*(n-1)+1,dt/2,steps*2)]:
+                xx=b3.grid_coords_3d(nn);ii=b3.interior_indices_3d(nn)
+                uu=b3.blob_ic_3d(nn,tab,local,xx)[ii]
+                fn=c.make_fom(nn,dd,ss)
+                ff,its,rns=host(fn(jnp.asarray(uu),nu,1e-10,1e-11))
+                defect=reference_audit(ff,nu,nn,dd)
+                assert defect<2e-9 and np.isfinite(ff).all()
+                physical=ff.reshape((ss+1,)+(nn-2,)*3)
+                temporal=physical[::int(round(dt/dd))]
+                restricted=temporal if nn==n else temporal[:,1::2,1::2,1::2]
+                restricted=restricted.reshape(truths[case].shape)
+                artifact=f'refinement_{label}_case{case}.npz'
+                np.savez_compressed(out/artifact,fields=ff,restricted=restricted,nu=nu,iterations=its,residuals=rns)
+                report['refinement'].append(dict(case=case,label=label,nodes=nn,dt=dd,steps=ss,artifact=artifact,
+                    numpy_max_relative_residual=defect,**c.metrics(truths[case],restricted)))
+                save();print('REFINEMENT',report['refinement'][-1]['label'],case,report['refinement'][-1]['worst_evolved'],flush=True)
         report['stage']='timing';save()
         subjects=[]
         for q in cfg['q_ladder']:
@@ -190,8 +212,8 @@ def main():
             subjects.append((f'pod_{rank}',True,0,rank,POD[:,:rank],np.zeros((rank,0))))
         rng=np.random.default_rng(cfg['timing_seed']);rng.shuffle(subjects)
         # Controls run in the same allocation and return the identical dense time grid.
-        for ntol,ltol in [(1e-2,5e-3),(1e-4,1e-6),(1e-6,1e-8)]:
-            name=f'fom_nt{ntol:.0e}'
+        for ntol,ltol in cfg.get('fom_controls',[(1e-2,5e-3),(1e-4,1e-6),(1e-6,1e-8)]):
+            name=f'fom_nt{ntol:.0e}' if 'fom_controls' not in cfg else f'fom_nt{ntol:.0e}_lt{ltol:.0e}'
             for _ in range(2):
                 jax.block_until_ready(fom(jnp.asarray(initials[0]),viscosities[0],ntol,ltol))
             for case in rng.permutation(len(truths)):
@@ -200,7 +222,12 @@ def main():
                     burn();before=time.perf_counter();result=fom(u0,nu,ntol,ltol);jax.block_until_ready(result)
                     gpu_ms=(time.perf_counter()-before)*1000
                     f,it,rn=host(result);met=c.metrics(f,truths[case]);artifact=f'{name}_case{case}_rep{rep}.npz'
-                    np.savez_compressed(out/artifact,fields=f,iterations=it,residuals=rn)
+                    canonical=out/f'{name}_case{case}_rep0.npz'
+                    if rep and canonical.exists():
+                        previous=np.load(canonical)
+                        if all(np.array_equal(previous[key],value) for key,value in [('fields',f),('iterations',it),('residuals',rn)]):
+                            artifact=canonical.name
+                    if not (out/artifact).exists():np.savez_compressed(out/artifact,fields=f,iterations=it,residuals=rn)
                     report['invocations'].append(dict(method=name,case=case,row=val_rows[case],repetition=rep,gpu_ms=gpu_ms,
                            artifact=artifact,iterations=it.tolist(),nonlinear_tolerance=ntol,linear_tolerance=ltol,
                            converged=bool(np.max(rn)<=ntol*(1+1e-6)),**met))
@@ -222,7 +249,12 @@ def main():
                 gpu_ms=(time.perf_counter()-before)*1000
                 f,w,it,reason,grad,rn,ic=host(result)
                 met=c.metrics(f,truths[case]);artifact=f'{name}_case{case}_rep{rep}.npz'
-                np.savez_compressed(out/artifact,fields=f,states=w,iterations=it,reasons=reason,gradients=grad,residuals=rn,initial_fit=ic)
+                arrays=dict(fields=f,states=w,iterations=it,reasons=reason,gradients=grad,residuals=rn,initial_fit=ic)
+                previous_path=next(iter(out.glob(f'{name}_case{case}_rep*.npz')),None)
+                if previous_path is not None:
+                    previous=np.load(previous_path)
+                    if all(np.array_equal(previous[key],value) for key,value in arrays.items()):artifact=previous_path.name
+                if not (out/artifact).exists():np.savez_compressed(out/artifact,**arrays)
                 row=dict(method=name,case=case,row=val_rows[case],repetition=rep,gpu_ms=gpu_ms,artifact=artifact,
                          iterations=it.tolist(),reasons=reason.tolist(),gradients=grad.tolist(),initial_fit=ic.tolist(),
                          stationary=bool(np.all(grad<=cfg['gradient_tolerance']) and ic[2]<=cfg['gradient_tolerance']),**met)

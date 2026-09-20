@@ -139,3 +139,34 @@ def metrics(fields,reference):
     return dict(error_fixed_initial=err.tolist(),error_current_relative=current.tolist(),
                 worst_all=float(err.max()),worst_evolved=float(err[1:].max()),
                 initial_error=float(err[0]),finite=bool(np.isfinite(f).all()))
+
+
+def make_fom(n,dt=.005,steps=50):
+    """Tolerance-terminated BE with explicit time step for reference refinement."""
+    axis=jnp.arange(1,n-1,dtype=jnp.float64)
+    lam=4*(n-1)**2*jnp.sin(jnp.pi*axis/(2*(n-1)))**2
+    lam=lam[:,None,None]+lam[None,:,None]+lam[None,None,:]
+    def dst(x,axis):
+        x=jnp.moveaxis(x,axis,-1);zero=jnp.zeros(x.shape[:-1]+(1,),dtype=x.dtype)
+        odd=jnp.concatenate((zero,x,zero,-x[...,::-1]),axis=-1)
+        return jnp.moveaxis(-jnp.fft.rfft(odd,axis=-1).imag[...,1:n-1]/jnp.sqrt(2*(n-1)), -1,axis)
+    def dst3(x):
+        for axis in range(3):x=dst(x,axis)
+        return x
+    def residual(u,prev,nu):return u-prev+dt*(b3.upwind_adv_field_3d(u,n)-nu*b3.lap_3d(u,n))
+    def roll(u0,nu,ntol,ltol):
+        def pre(v):return dst3(dst3(v.reshape((n-2,)*3))/(1+dt*nu*lam)).ravel()
+        def step(prev,_):
+            scale=jnp.maximum(jnp.linalg.norm(prev),1e-300)
+            def body(state):
+                u,it,rn=state;r=residual(u,prev,nu)
+                jv=lambda v:jax.jvp(lambda v:residual(v,prev,nu),(u,),(v,))[1]
+                du,_=jax.scipy.sparse.linalg.bicgstab(jv,-r,tol=ltol,maxiter=b3.LIN_MAXITER,M=pre)
+                u=u+du
+                return u,it+1,jnp.linalg.norm(residual(u,prev,nu))
+            u,it,rn=jax.lax.while_loop(lambda s:(s[2]>ntol*scale)&(s[1]<b3.MAX_NEWTON),body,
+                (prev,jnp.int32(0),jnp.linalg.norm(residual(prev,prev,nu))))
+            return u,(u,it,rn/scale)
+        _,(fields,it,rn)=jax.lax.scan(step,u0,None,length=steps)
+        return jnp.concatenate((u0[None],fields)),it,rn
+    return jax.jit(roll)

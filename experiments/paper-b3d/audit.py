@@ -70,8 +70,22 @@ def main():
             station=bool(np.all(a['gradients']<=cfg['gradient_tolerance']) and a['initial_fit'][2]<=cfg['gradient_tolerance'])
             assert station==row['stationary']
         assert row['gpu_ms']>0 and np.isfinite(row['gpu_ms'])
+    for row in r.get('refinement',[]):
+        a=np.load(root/row['artifact']);f=a['fields'];nu=float(a['nu']);nn=row['nodes'];dd=row['dt']
+        defect=0.
+        for step in range(1,len(f)):
+            adv,lap=stencil(f[step],nn)
+            residual=f[step]-f[step-1]+dd*(adv-nu*lap)
+            defect=max(defect,float(np.linalg.norm(residual)/np.linalg.norm(f[step-1])))
+        assert defect<2e-9 and abs(defect-row['numpy_max_relative_residual'])<1e-12
+        shaped=f.reshape((row['steps']+1,)+(nn-2,)*3)[::int(round(dt/dd))]
+        reduced=shaped if nn==n else shaped[:,1::2,1::2,1::2]
+        reduced=reduced.reshape(refs[row['case']].shape)
+        assert np.array_equal(reduced,a['restricted'])
+        err=np.linalg.norm(refs[row['case']]-reduced,axis=1)/np.linalg.norm(reduced[0])
+        assert np.max(np.abs(err-np.asarray(row['error_fixed_initial'])))<1e-12
     assert max_defect<2e-9 and max_metric<1e-12 and max_decode<1e-10
-    expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+3)*len(refs)*cfg['repetitions']
+    expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+len(cfg.get('fom_controls',[0,1,2])))*len(refs)*cfg['repetitions']
     if r['complete']:
         assert len(r['invocations'])==expected,(len(r['invocations']),expected)
     output=dict(passed=True,complete=bool(r['complete']),invocations=len(r['invocations']),expected_invocations=expected,

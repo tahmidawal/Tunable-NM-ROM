@@ -46,6 +46,7 @@ def main():
     (stage/'SOURCE.sha256').write_text('\n'.join(manifest)+'\n')
     remote=REMOTE+'/'+attempt
     ssh(['mkdir','-p',REMOTE])
+    print('REMOTE DISK\n'+ssh(['df','-h',REMOTE]),flush=True)
     ssh(['mkdir',remote])
     subprocess.run(['scp','-qr',str(stage),'tufts-login:'+remote+'/code'],check=True)
     script=f'''#!/bin/bash
@@ -72,16 +73,17 @@ sha256sum -c SOURCE.sha256 || exit 43
 $PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)" || exit $?
 mkdir -p ../out
 date -u +%FT%TZ > ../STARTED_UTC
-$PY -u run.py --config {shlex.quote(args.config)} --out ../out > ../driver.log 2>&1
+{'$PY -u train.py --config '+shlex.quote(args.config)+' --out ../training > ../training.log 2>&1 || exit $?' if 'training' in cfg else ''}
+$PY -u run.py --config {shlex.quote(args.config)} --out ../out {'--checkpoint ../training/checkpoint.pkl' if 'training' in cfg else ''} > ../driver.log 2>&1
 code=$?
 if [ "$code" -eq 0 ]; then
-    $PY -u audit.py ../out > ../audit.log 2>&1
+    $PY -u audit.py ../out {'--checkpoint ../training/checkpoint.pkl' if 'training' in cfg else ''} > ../audit.log 2>&1
     code=$?
 fi
 printf '%s\\n' "$code" > ../EXIT_CODE
 date -u +%FT%TZ > ../FINISHED_UTC
 cd ..
-find code out -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+find code out {'training' if 'training' in cfg else ''} -type f ! -path '*/__pycache__/*' -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 exit "$code"
 '''
     (run/'run.sbatch').write_text(script)

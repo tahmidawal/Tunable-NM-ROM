@@ -1,0 +1,153 @@
+{
+  "scope": "development, POD training subset unmatched to inherited network",
+  "rows": [
+    {
+      "method": "fom_nt1e-02",
+      "n": 24,
+      "median_ms": 17.9297934519127,
+      "worst_all": 0.006542621191464495,
+      "worst_evolved": 0.006542621191464495,
+      "median_evolved": 0.00038198772015588986,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "fom_nt1e-04",
+      "n": 24,
+      "median_ms": 38.131467532366514,
+      "worst_all": 0.000207289400030292,
+      "worst_evolved": 0.000207289400030292,
+      "median_evolved": 0.00018791813195155328,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "fom_nt1e-06",
+      "n": 24,
+      "median_ms": 91.75258199684322,
+      "worst_all": 3.10254600316864e-06,
+      "worst_evolved": 3.10254600316864e-06,
+      "median_evolved": 1.935201403223842e-09,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "free_R128",
+      "n": 24,
+      "median_ms": 143.34817044436932,
+      "worst_all": 0.07033401293778474,
+      "worst_evolved": 0.059695230350302414,
+      "median_evolved": 0.02022819476051995,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "pod_128",
+      "n": 24,
+      "median_ms": 142.68398901913315,
+      "worst_all": 0.060555014949749957,
+      "worst_evolved": 0.053034392072948425,
+      "median_evolved": 0.018758391449263494,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "pod_32",
+      "n": 24,
+      "median_ms": 91.62497404031456,
+      "worst_all": 0.20859591439992475,
+      "worst_evolved": 0.19139834599395456,
+      "median_evolved": 0.10449931447132642,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "pod_64",
+      "n": 24,
+      "median_ms": 109.70430448651314,
+      "worst_all": 0.10895493693894943,
+      "worst_evolved": 0.10061268051523545,
+      "median_evolved": 0.04911631639336431,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "pod_96",
+      "n": 24,
+      "median_ms": 138.37471045553684,
+      "worst_all": 0.07520450373913233,
+      "worst_evolved": 0.0655824027244865,
+      "median_evolved": 0.028233680452513066,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "rom_q0",
+      "n": 24,
+      "median_ms": 162.8556124633178,
+      "worst_all": 0.14501626721593674,
+      "worst_evolved": 0.12976163480514086,
+      "median_evolved": 0.045930465813741925,
+      "stationary_or_converged": 21
+    },
+    {
+      "method": "rom_q32",
+      "n": 24,
+      "median_ms": 193.750865990296,
+      "worst_all": 0.11987633068593358,
+      "worst_evolved": 0.10662359475480898,
+      "median_evolved": 0.03965346623563697,
+      "stationary_or_converged": 24
+    },
+    {
+      "method": "rom_q64",
+      "n": 24,
+      "median_ms": 237.3521204572171,
+      "worst_all": 0.09345284753090287,
+      "worst_evolved": 0.08211106223580467,
+      "median_evolved": 0.030091428727911065,
+      "stationary_or_converged": 24
+    }
+  ],
+  "bank_floor": {
+    "mean": 0.021097961731752688,
+    "worst": 0.07033401293778473
+  },
+  "representation": [
+    {
+      "q": 0,
+      "mean": 0.04490187510155928,
+      "median": 0.04256095430549556,
+      "worst": 0.1450162672159368,
+      "stationary": 31,
+      "n": 32,
+      "artifact": "representation_q0.npz"
+    },
+    {
+      "q": 32,
+      "mean": 0.03801924192987071,
+      "median": 0.03674586197757346,
+      "worst": 0.11987633068593369,
+      "stationary": 32,
+      "n": 32,
+      "artifact": "representation_q32.npz"
+    },
+    {
+      "q": 64,
+      "mean": 0.029503499793072784,
+      "median": 0.02815333690645694,
+      "worst": 0.09345284753090277,
+      "stationary": 32,
+      "n": 32,
+      "artifact": "representation_q64.npz"
+    }
+  ],
+  "source": "1d2010aacff49a77ff7f8fe2c3221b4c6c739dc6",
+  "job_id": "3989410",
+  "full_archive": "experiments/paper-b3d/runs/b3d001/collected",
+  "remote_directory_removed": true,
+  "checksums_passed": true,
+  "local_audit": {
+    "passed": true,
+    "complete": true,
+    "invocations": 264,
+    "expected_invocations": 264,
+    "max_reference_defect": 9.79419750687266e-11,
+    "max_metric_discrepancy": 8.326672684688674e-17,
+    "max_decode_discrepancy": 8.978342126119406e-16,
+    "final_cohort_unopened": true,
+    "comparison_scope": "development, POD training subset unmatched to inherited network"
+  }
+}

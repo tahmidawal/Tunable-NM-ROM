@@ -15,9 +15,47 @@ def sha(a):
 def error(a,b):return float(np.linalg.norm(np.asarray(a).reshape(-1)-np.asarray(b).reshape(-1))/np.linalg.norm(b))
 
 
+def family(seed,count):
+    unit=np.random.default_rng(seed).random((count,5))
+    return unit*np.array([.3,.3,.3,.05,.4])+np.array([.35,.35,.35,.10,.8])
+
+
+def forcing(n,p):
+    a=np.arange(1,n,dtype=np.float64)/n
+    x,y,z=np.meshgrid(a,a,a,indexing='ij')
+    mask=64*x*(1-x)*y*(1-y)*z*(1-z)
+    return p[4]*mask*np.exp(-((x-p[0])**2+(y-p[1])**2+(z-p[2])**2)/(2*p[3]**2))
+
+
+def continuum_spectral(n,p):
+    one=(np.pi*np.arange(1,n))**2
+    lam=one[:,None,None]+one[None,:,None]+one[None,None,:]
+    return dstn(dstn(forcing(n,p),type=1,norm='ortho')/lam,type=1,norm='ortho')
+
+
+def restrict(a,coarse):
+    fine=a.shape[0]+1;assert fine%coarse==0
+    stride=fine//coarse
+    return a[stride-1::stride,stride-1::stride,stride-1::stride]
+
+
 def audit(out,output=None):
     record=json.loads((out/'result.json').read_text());summary=json.loads((out/'summary.json').read_text())
     assert record['complete'] and record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
+    cfg=record['config'];cohorts=json.loads((out/'cohorts.json').read_text())
+    for role in ['train','validation']:
+        parameters=family(cfg[role+'_seed'],cfg[role+'_count'])
+        stored=cohorts['training_parameters' if role=='train' else 'validation_parameters']
+        assert np.array_equal(parameters,stored)
+        assert sha(parameters)==cohorts[role+'_sha256']
+    evaluation=family(cfg['reserved_final_seed'],cfg['final_count']) if record['final_cohort_opened'] else family(cfg['validation_seed'],cfg['validation_count'])
+    if 'evaluation_parameters' in cohorts:
+        assert np.array_equal(evaluation,cohorts['evaluation_parameters']) and sha(evaluation)==cohorts['evaluation_sha256']
+    expected={(mesh['intervals'],name,case,rep) for mesh in record['meshes'] for name in mesh['methods']
+              for case in range(len(evaluation)) for rep in range(cfg['repetitions'])}
+    observed=[(r['intervals'],r['method'],r['case'],r['repetition']) for r in record['invocations']]
+    assert len(observed)==len(expected) and set(observed)==expected,'incomplete or repeated method/cohort/repetition coverage'
+    assert {mesh['intervals'] for mesh in record['meshes']}==set(cfg['evaluation_intervals'])
     if record['final_cohort_opened']:
         from freeze import digest, configuration, checkpoint_names
         assert record['evaluation_cohort']=='final'
@@ -29,11 +67,21 @@ def audit(out,output=None):
         assert freeze['configuration']==configuration(record['config'])
         assert freeze['checkpoint_sha256']=={name:digest(out/name) for name in checkpoint_names(record['config'])}
         assert freeze['selection_result_sha256']==record['reused_checkpoints']['files']['result.json']
-    checked=0;references={};max_reference_defect=0.;max_metric_defect=0.
+    checked=0;references={};max_reference_defect=0.;max_metric_defect=0.;max_forcing_defect=0.;max_physical_defect=0.
+    physical={};refinement={}
     for row in record['invocations']:
         n=row['intervals'];case=row['case'];key=(n,case)
         if key not in references:
             z=np.load(out/'fields'/f'N{n}_case{case}_reference.npz');references[key]={k:z[k] for k in z.files}
+            source_defect=error(forcing(n,evaluation[case]),z['forcing']);max_forcing_defect=max(max_forcing_defect,source_defect)
+            assert source_defect<1e-12
+            if case not in refinement:
+                lo,hi=cfg['reference_intervals'];high=continuum_spectral(hi,evaluation[case]);low=continuum_spectral(lo,evaluation[case])
+                refinement[case]=error(low,restrict(high,lo))
+                assert abs(refinement[case]-record['reference']['relative_refinement'][case])<1e-12
+                for mesh in cfg['evaluation_intervals']:physical[(mesh,case)]=restrict(high,mesh).copy()
+            physical_defect=error(physical[key],z['physical']);max_physical_defect=max(max_physical_defect,physical_defect)
+            assert physical_defect<1e-12
             k=np.arange(1,n);one=4*n*n*np.sin(np.pi*k/(2*n))**2
             lam=one[:,None,None]+one[None,:,None]+one[None,None,:]
             exact=dstn(dstn(z['forcing'],type=1,norm='ortho')/lam,type=1,norm='ortho')
@@ -52,6 +100,8 @@ def audit(out,output=None):
                 observed=error(pred,references[key][truth]);defect=abs(observed-row[metric]);max_metric_defect=max(max_metric_defect,defect)
                 assert defect<1e-12,(metric,defect)
         checked+=1
+    assert record['reference']['passed']==bool(max(refinement.values())<cfg['reference_budget'])
+    assert record['reference']['threshold']==cfg['reference_budget']
     for row in summary['rows']:
         records=[r for r in record['invocations'] if r['intervals']==row['intervals'] and r['method']==row['method']]
         assert len(records)==row['invocations']
@@ -76,7 +126,10 @@ def audit(out,output=None):
                 if repeated:assert max(repeated)-min(repeated)<1e-12
     result=dict(passed=True,checked_fields=checked,checked_references=len(references),checked_summary_rows=len(summary['rows']),
         maximum_reference_relative_defect=max_reference_defect,maximum_metric_absolute_defect=max_metric_defect,
-        limitation='independent field/reference/aggregation audit; no independent retraining or global-optimality proof')
+        maximum_forcing_relative_defect=max_forcing_defect,maximum_physical_reference_defect=max_physical_defect,
+        independently_regenerated_cohorts=True,checked_physical_refinement_cases=len(refinement),
+        complete_cohort_method_repetition_coverage=True,
+        limitation='independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof')
     (output or out/'audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
     return result
 

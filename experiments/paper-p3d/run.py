@@ -14,6 +14,7 @@ import common as C
 import train as T
 import shared_rom as S
 import poisson as P
+from freeze import verify_final_freeze
 
 
 def summarize(record,out):
@@ -34,8 +35,9 @@ def summarize(record,out):
               cases_above_same_grid_target=sum(r['same_grid_error']>record['config']['same_grid_target'] for r in finite)))
     C.dump(out/'summary.json',dict(schema='paper-poisson3d-summary-v1',source_commit=record['source_commit'],
         job_id=record['job_id'],gpu=record['gpu'],complete=record['complete'],smoke=record['smoke'],rows=rows,
-        reference=record.get('reference'),final_cohort_opened=False,
-        interpretation='single-seed development pilot; training convergence, stationarity and physical-reference qualification remain separate'))
+        reference=record.get('reference'),final_cohort_opened=record['final_cohort_opened'],
+        evaluation_cohort=record.get('evaluation_cohort','validation'),
+        interpretation='one initialization; training convergence, stationarity and physical-reference qualification remain separate'))
 
 
 def run(cfg,out,smoke=False):
@@ -44,19 +46,25 @@ def run(cfg,out,smoke=False):
     assert jax.config.jax_enable_x64 and os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')=='highest'
     assert cfg['bank_width']>=cfg['bank_rank']
     print('jax_backend=gpu x64=True precision=highest',flush=True)
+    final=cfg.get('evaluation_cohort','validation')=='final'
+    freeze=verify_final_freeze(cfg) if final else None
     begin=time.perf_counter()
     record=dict(schema='paper-poisson3d-result-v1',config=cfg,source_commit=os.environ.get('SOURCE_COMMIT'),
         job_id=os.environ.get('SLURM_JOB_ID'),gpu=jax.devices()[0].device_kind,jax_version=jax.__version__,
         backend='gpu',x64=True,matmul_precision='highest',smoke=smoke,complete=False,status='verification',
-        final_cohort_opened=False,bank={},heads=[],meshes=[],invocations=[],
+        final_cohort_opened=final,evaluation_cohort='final' if final else 'validation',freeze=freeze,
+        bank={},heads=[],meshes=[],invocations=[],
         data_contract='supplied full interior nodal forcing only; no generator descriptors online',
         output_contract='complete interior solution field, zero boundary known to every method',
         timing_contract='same-invocation accuracy/device/host time; upload, cold solve and dense readout; offline training/setup separate')
     save=lambda:C.dump(out/'result.json',record)
     save();record['verification']=P.verify();save()
     train_p=C.family(cfg['train_seed'],cfg['train_count']);valid_p=C.family(cfg['validation_seed'],cfg['validation_count'])
+    evaluation_p=C.family(cfg['reserved_final_seed'],cfg['final_count']) if final else valid_p
     C.dump(out/'cohorts.json',dict(training_parameters=train_p.tolist(),validation_parameters=valid_p.tolist(),
-        train_sha256=C.sha(train_p),validation_sha256=C.sha(valid_p),reserved_final_seed=cfg['reserved_final_seed'],final_cohort_opened=False))
+        evaluation_parameters=evaluation_p.tolist(),evaluation_sha256=C.sha(evaluation_p),
+        evaluation_cohort='final' if final else 'validation',train_sha256=C.sha(train_p),validation_sha256=C.sha(valid_p),
+        reserved_final_seed=cfg['reserved_final_seed'],final_cohort_opened=final))
     record['status']='generating_training_data';save()
     fields=P.dataset(cfg['train_intervals'],train_p)
     record['status']='training_bank';save()
@@ -118,7 +126,7 @@ def run(cfg,out,smoke=False):
             record['operators'].append(oinfo);operator_models.append((entry['name'],op,entry['spec'],scales));save()
     record['status']='reference_refinement';save()
     lo,hi=cfg['reference_intervals'];physical={};uncertainty=[]
-    for case,p in enumerate(valid_p):
+    for case,p in enumerate(evaluation_p):
         low=P.dataset(lo,np.asarray([p]),True)[0];high=P.dataset(hi,np.asarray([p]),True)[0]
         uncertainty.append(P.error(low,C.restrict(high,hi,lo)))
         for n in cfg['evaluation_intervals']:physical[(n,case)]=C.restrict(high,hi,n).copy()
@@ -129,7 +137,7 @@ def run(cfg,out,smoke=False):
         record['status']=f'prepare_mesh_{n}';save();setup=time.perf_counter()
         bank=C.bank_at(params,n,cfg['field_chunk'])@rotation
         test,a,projection,lam,triples=P.assemble(bank,n,cfg['weak_tests'])
-        truths=P.dataset(n,valid_p);sources=np.stack([np.asarray(P.source(n,p)) for p in valid_p])
+        truths=P.dataset(n,evaluation_p);sources=np.stack([np.asarray(P.source(n,p)) for p in evaluation_p])
         training=fields if n==cfg['train_intervals'] else P.dataset(n,train_p)
         ranks=sorted(set([cfg['bank_rank']]+[k+q for k in cfg['latent_dimensions'] for q in cfg['q_ladder']]))
         pod,pod_info=P.pod_basis(training,max(ranks))
@@ -150,6 +158,13 @@ def run(cfg,out,smoke=False):
                 methods[alt]=O.native_interpolated(op,spec,scales,n,native)
                 metadata[alt]=dict(kind='neural_operator',spec=spec,training_intervals=native,
                     query='restrict supplied nodal forcing, predict on native mesh, trilinear interpolate with zero boundary')
+                if spec['kind']=='fno3d' and cfg.get('physical_padding_control',False):
+                    physical_spec=O.physical_padding_spec(spec,native,n)
+                    alt=f'{name}_physical_padding{physical_spec["padding"]}'
+                    methods[alt]=O.engine(op,physical_spec,scales,n)
+                    metadata[alt]=dict(kind='neural_operator',spec=physical_spec,training_spec=spec,
+                        training_intervals=native,frozen_mesh_transfer=True,
+                        query='frozen weights, Fourier padded-domain physical length preserved')
         mesh=dict(intervals=n,weak_tests=len(triples),bank_sha256=C.sha(bank),weak_operator_sha256=C.sha(a),
             weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,linear_endpoint=linfo,quadrature=[],representation=[])
         qb,rb=np.linalg.qr(bank,mode='reduced')
@@ -158,6 +173,7 @@ def run(cfg,out,smoke=False):
         for model in models:
             k=model['info']['k'];decoded=np.asarray(C.head(model['params'],model['codes']))
             try:
+                if not cfg.get('quadrature_enabled',True):raise RuntimeError('quadrature disabled prospectively; dense confirmation panel')
                 inverse_tests=cfg.get('quadrature_use_inverse_tests',False)
                 old_mesh=next((x for x in prior['meshes'] if x['intervals']==n),None) if prior else None
                 quadrature_keys=['weak_tests','quadrature_seed','quadrature_candidates','quadrature_decoder_snapshots',
@@ -188,6 +204,7 @@ def run(cfg,out,smoke=False):
                 if indices is not None:
                     name=f'nmrom_K{k}_q{q}_eq';methods[name]=P.engine(model,bank,a,sampled,indices,q,cfg)
                     metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_projection='NNLS sampled weak moments',quadrature_certified=eq['certified'])
+                if not cfg.get('representation_oracles',True):continue
                 oracle_cfg={**cfg,'initial_starts':cfg['oracle_starts'],'lm_budget':max(240,cfg['lm_budget']),'lm_tolerance':min(1e-9,cfg['lm_tolerance'])}
                 oracle=P.engine(model,bank,rb,qb,np.arange(len(bank)),q,oracle_cfg)
                 for case,truth in enumerate(truths):

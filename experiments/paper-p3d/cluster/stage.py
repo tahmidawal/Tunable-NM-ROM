@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/paper-p3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_p3d_20260920'
-FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','run.py','audit.py','cluster/stage.py','cluster/collect.py']
+FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','run.py','audit.py','freeze.py','cluster/stage.py','cluster/collect.py']
 FILES+=['operators/'+name for name in ['models3d.py','training.py','__init__.py','README.md','IMPORTS.json','poisson_adapter.py']]
 FILES+=['operators/'+name for name in ['extra_models3d.py','EXTRA_IMPORTS.json','upstream/Physics_Attention.py','upstream/LICENSE','upstream/prior_families.py','upstream/PROVENANCE.json']]
 
@@ -21,7 +21,9 @@ def main():
     remote=f'{NAMESPACE}/{a.attempt}'
     commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     proof=[]
-    for name in FILES:
+    cfg=json.loads((ROOT/LANE/'config.json').read_text())
+    names=FILES+(['final-freeze.json'] if cfg.get('evaluation_cohort')=='final' else [])
+    for name in names:
         path=f'{LANE}/{name}'
         blob=subprocess.check_output(['git','-C',str(ROOT),'show',f'{commit}:{path}'])
         assert blob==(ROOT/path).read_bytes(),f'uncommitted source: {path}'

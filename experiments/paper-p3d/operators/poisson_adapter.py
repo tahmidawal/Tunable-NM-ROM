@@ -5,6 +5,13 @@ import jax.numpy as jnp
 from . import models3d as M
 
 
+def physical_padding_spec(spec,native,n):
+    """Preserve (interior count + zero padding) / intervals across meshes."""
+    assert spec['kind']=='fno3d' and n%native==0
+    padded=(native-1+spec['padding'])*(n//native)
+    return {**spec,'padding':padded-(n-1)}
+
+
 def coordinates(n):
     a=jnp.arange(1,n,dtype=jnp.float64)/n
     return jnp.stack(jnp.meshgrid(a,a,a,indexing='ij'),axis=-1)*2-1

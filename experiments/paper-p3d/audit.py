@@ -18,7 +18,18 @@ def error(a,b):return float(np.linalg.norm(np.asarray(a).reshape(-1)-np.asarray(
 def audit(out,output=None):
     record=json.loads((out/'result.json').read_text());summary=json.loads((out/'summary.json').read_text())
     assert record['complete'] and record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
-    assert not record['final_cohort_opened'];checked=0;references={};max_reference_defect=0.;max_metric_defect=0.
+    if record['final_cohort_opened']:
+        from freeze import digest, configuration, checkpoint_names
+        assert record['evaluation_cohort']=='final'
+        assert record['freeze']['verified_before_final_parameter_generation']
+        assert all(entry.get('reuse') for entry in record['config']['operators'])
+        freeze_path=out.parent/record['config']['final_freeze_path']
+        freeze=json.loads(freeze_path.read_text())
+        assert digest(freeze_path)==record['freeze']['sha256']
+        assert freeze['configuration']==configuration(record['config'])
+        assert freeze['checkpoint_sha256']=={name:digest(out/name) for name in checkpoint_names(record['config'])}
+        assert freeze['selection_result_sha256']==record['reused_checkpoints']['files']['result.json']
+    checked=0;references={};max_reference_defect=0.;max_metric_defect=0.
     for row in record['invocations']:
         n=row['intervals'];case=row['case'];key=(n,case)
         if key not in references:

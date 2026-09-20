@@ -1,5 +1,5 @@
 {
-  "schema": "paper-poisson3d-complete-operators-v3",
+  "schema": "paper-poisson3d-confirmation-v4",
   "train_intervals": 32,
   "evaluation_intervals": [
     32,
@@ -14,14 +14,13 @@
   "train_seed": 920410,
   "validation_seed": 920411,
   "reserved_final_seed": 920499,
-  "model_seed": 920412,
-  "bank_minibatch_seed": 920413,
-  "head_minibatch_seed": 920414,
-  "timing_seed": 920415,
+  "model_seed": 920512,
+  "bank_minibatch_seed": 920513,
+  "head_minibatch_seed": 920514,
+  "timing_seed": 920515,
   "quadrature_seed": 920416,
   "bank_rank": 128,
   "latent_dimensions": [
-    8,
     16
   ],
   "bank_steps": 150000,
@@ -39,9 +38,7 @@
   "weak_tests": 512,
   "q_ladder": [
     0,
-    16,
     32,
-    64,
     96
   ],
   "quadrature_candidates": 2048,
@@ -77,7 +74,16 @@
         "depth": 4,
         "padding": 9
       },
-      "reuse": true
+      "training": {
+        "steps": 30000,
+        "wall_seconds": 1500,
+        "batch_size": 2,
+        "seed": 920550,
+        "learning_rate": 0.0005,
+        "validation_every": 250,
+        "curve_every": 50,
+        "components_per_output": 1
+      }
     },
     {
       "name": "unet3d_w16",
@@ -87,7 +93,16 @@
         "levels": 3,
         "periodic": false
       },
-      "reuse": true
+      "training": {
+        "steps": 30000,
+        "wall_seconds": 1500,
+        "batch_size": 2,
+        "seed": 920551,
+        "learning_rate": 0.0005,
+        "validation_every": 250,
+        "curve_every": 50,
+        "components_per_output": 1
+      }
     },
     {
       "name": "deeponet3d_r128_w16",
@@ -106,14 +121,14 @@
         ]
       },
       "training": {
-        "steps": 30000,
-        "wall_seconds": 1500,
+        "steps": 100000,
+        "wall_seconds": 1800,
         "batch_size": 2,
+        "seed": 920552,
         "learning_rate": 0.001,
-        "validation_every": 250,
+        "validation_every": 500,
         "curve_every": 50,
-        "components_per_output": 1,
-        "seed": 920452
+        "components_per_output": 1
       }
     },
     {
@@ -139,14 +154,14 @@
         ]
       },
       "training": {
-        "steps": 30000,
-        "wall_seconds": 1500,
+        "steps": 100000,
+        "wall_seconds": 2700,
         "batch_size": 2,
+        "seed": 920553,
         "learning_rate": 0.001,
-        "validation_every": 250,
+        "validation_every": 500,
         "curve_every": 50,
-        "components_per_output": 1,
-        "seed": 920453
+        "components_per_output": 1
       }
     }
   ],
@@ -160,5 +175,9 @@
     "curve_every": 50,
     "components_per_output": 1
   },
-  "reuse_checkpoint_directory": "checkpoints"
+  "quadrature_enabled": false,
+  "representation_oracles": false,
+  "physical_padding_control": true,
+  "evaluation_cohort": "validation",
+  "confirmation_seed_index": 1
 }

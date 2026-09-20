@@ -686,6 +686,52 @@ Errors use the initial velocity-field norm, with all three components combined. 
 
 A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
 
+## Poisson 3D — seed04
+
+**Provisional:** Audited independent-initialization development comparison. The same bank/head recipe is retrained; FNO/U-Net retain their earlier budgets, while DeepONet/Transolver receive common longer schedules. All methods share training membership. The uncorrected head varies with initialization; the high-correction endpoint remains accurate. All observed stopping checks pass, but selected latent states were not retained for independent gradient reconstruction in this source revision. Finer-grid POD is an offline mesh-adapted control; frozen neural transfer and native-interpolation variants remain distinct. Physical-domain-preserving FNO padding and native-sensor continuous-trunk DeepONet are separately named controls. Further training-recipe comparison and frozen final testing remain pending.
+
+Source `99befa2a4a7152df74b3086255bc2f47efbb5b70`; job `3996479`; GPU `NVIDIA A100 80GB PCIe`. [Invocation data](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/result.json) and [independent audit](../worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/audit-local.json).
+
+Errors use the reference solution norm. There is one stationary output field; evolved, initial and all-times terminology does not apply. Total timing includes host transfers. Mesh size counts intervals per axis.
+
+| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| 32 | `deeponet3d_r128_w16` | 16 | 1.3221 | 3.5683 | — | — | 3.4966 | 2.778 | 3.573 | 0 / 0 | 0 / 48 | development |
+| 32 | `dst_exact` | 16 | 0.0000 | 0.0000 | — | — | 0.2759 | 0.181 | 1.917 | 0 / 0 | 5 / 48 | development |
+| 32 | `fno3d_w24_m8` | 16 | 0.1349 | 0.2366 | — | — | 0.4144 | 11.209 | 12.096 | 0 / 0 | 0 / 48 | development |
+| 32 | `linear_bank_galerkin` | 16 | 0.0463 | 0.1443 | — | — | 0.3083 | 0.218 | 2.018 | 0 / 0 | 6 / 48 | development |
+| 32 | `linear_bank_weak_qR` | 16 | 0.0457 | 0.1421 | — | — | 0.3081 | 0.255 | 1.989 | 0 / 0 | 6 / 48 | development |
+| 32 | `nmrom_K16_q0_dense` | 16 | 0.2281 | 0.9704 | — | — | 0.9909 | 2.487 | 3.319 | 0 / 0 | 3 / 48 | development |
+| 32 | `nmrom_K16_q32_dense` | 16 | 0.1021 | 0.6571 | — | — | 0.6968 | 2.670 | 3.537 | 0 / 0 | 0 / 48 | development |
+| 32 | `nmrom_K16_q96_dense` | 16 | 0.0483 | 0.1765 | — | — | 0.3244 | 2.589 | 3.470 | 0 / 0 | 0 / 48 | development |
+| 32 | `pod112_galerkin` | 16 | 0.0117 | 0.0685 | — | — | 0.2839 | 0.210 | 1.981 | 0 / 0 | 5 / 48 | development |
+| 32 | `pod128_galerkin` | 16 | 0.0067 | 0.0370 | — | — | 0.2779 | 0.215 | 1.877 | 0 / 0 | 6 / 48 | development |
+| 32 | `pod16_galerkin` | 16 | 1.8426 | 5.3174 | — | — | 5.2258 | 0.181 | 1.891 | 0 / 0 | 9 / 48 | development |
+| 32 | `pod48_galerkin` | 16 | 0.1506 | 0.5672 | — | — | 0.6383 | 0.191 | 2.066 | 0 / 0 | 10 / 48 | development |
+| 32 | `transolver3d_w48_s32` | 16 | 0.5089 | 0.7639 | — | — | 0.7735 | 4.162 | 5.065 | 0 / 0 | 0 / 48 | development |
+| 32 | `unet3d_w16` | 16 | 0.1644 | 0.2310 | — | — | 0.3761 | 3.871 | 4.789 | 0 / 0 | 0 / 48 | development |
+| 64 | `deeponet3d_r128_w16` | 16 | 25.7708 | 42.8642 | — | — | 42.9014 | 6.996 | 8.332 | 0 / 0 | 0 / 48 | development |
+| 64 | `deeponet3d_r128_w16_native32_interpolate` | 16 | 1.2770 | 3.5146 | — | — | 3.4922 | 2.583 | 3.956 | 0 / 0 | 0 / 48 | development |
+| 64 | `dst_exact` | 16 | 0.0000 | 0.0000 | — | — | 0.0687 | 0.221 | 2.616 | 0 / 0 | 8 / 48 | development |
+| 64 | `fno3d_w24_m8` | 16 | 15.7351 | 16.7537 | — | — | 16.8054 | 17.353 | 18.721 | 0 / 0 | 0 / 48 | development |
+| 64 | `fno3d_w24_m8_native32_interpolate` | 16 | 0.2755 | 0.3679 | — | — | 0.3541 | 11.430 | 12.854 | 0 / 0 | 0 / 48 | development |
+| 64 | `fno3d_w24_m8_physical_padding17` | 16 | 0.9433 | 1.0835 | — | — | 1.1082 | 19.794 | 21.170 | 0 / 0 | 0 / 48 | development |
+| 64 | `linear_bank_galerkin` | 16 | 0.0482 | 0.1409 | — | — | 0.1558 | 0.478 | 2.751 | 0 / 0 | 4 / 48 | development |
+| 64 | `linear_bank_weak_qR` | 16 | 0.0474 | 0.1385 | — | — | 0.1539 | 0.942 | 3.327 | 0 / 0 | 2 / 48 | development |
+| 64 | `nmrom_K16_q0_dense` | 16 | 0.2358 | 0.9596 | — | — | 0.9596 | 3.144 | 4.573 | 0 / 0 | 1 / 48 | development |
+| 64 | `nmrom_K16_q32_dense` | 16 | 0.1054 | 0.6450 | — | — | 0.6451 | 3.217 | 4.611 | 0 / 0 | 0 / 48 | development |
+| 64 | `nmrom_K16_q96_dense` | 16 | 0.0498 | 0.1726 | — | — | 0.1849 | 3.371 | 4.809 | 0 / 0 | 0 / 48 | development |
+| 64 | `pod112_galerkin` | 16 | 0.0115 | 0.0672 | — | — | 0.0958 | 0.441 | 2.760 | 0 / 0 | 2 / 48 | development |
+| 64 | `pod128_galerkin` | 16 | 0.0066 | 0.0360 | — | — | 0.0771 | 0.476 | 2.864 | 0 / 0 | 4 / 48 | development |
+| 64 | `pod16_galerkin` | 16 | 1.8304 | 5.2702 | — | — | 5.2463 | 0.204 | 2.682 | 0 / 0 | 8 / 48 | development |
+| 64 | `pod48_galerkin` | 16 | 0.1484 | 0.5576 | — | — | 0.5639 | 0.285 | 2.720 | 0 / 0 | 7 / 48 | development |
+| 64 | `transolver3d_w48_s32` | 16 | 5.5317 | 7.2965 | — | — | 7.2610 | 12.442 | 13.839 | 0 / 0 | 0 / 48 | development |
+| 64 | `transolver3d_w48_s32_native32_interpolate` | 16 | 0.5088 | 0.7859 | — | — | 0.7616 | 4.337 | 5.731 | 0 / 0 | 0 / 48 | development |
+| 64 | `unet3d_w16` | 16 | 293.1485 | 532.3332 | — | — | 532.5369 | 11.889 | 13.294 | 0 / 0 | 0 / 48 | development |
+| 64 | `unet3d_w16_native32_interpolate` | 16 | 0.2949 | 0.3791 | — | — | 0.3629 | 4.016 | 5.460 | 0 / 0 | 0 / 48 | development |
+
+A missing physical-error or total-time cell means unmeasured, not zero. Physical errors require the attempt's separate reference-refinement qualification. A passing numerical audit verifies the recorded experiment; it does not establish good predictive accuracy, convergence of training or a competitive method.
+
 ## Glossary
 
 - **NM-ROM / ROM:** a neural-manifold reduced model / a model solving for a smaller state.

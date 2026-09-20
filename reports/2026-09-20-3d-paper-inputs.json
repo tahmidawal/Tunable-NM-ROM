@@ -131,6 +131,17 @@
       ],
       "latent_history_audited": true,
       "qualification": "Audited new paired development measurements with all four operator families and identical training membership. Independent saved-field, source, reference and sampled latent-history weak-gradient checks pass. The original strict frozen-field replay gate failed and remains failed; no cross-run numerical equivalence or implementation-speed ratio is claimed. The existing learned bank and head remain inaccurate; the larger-bank representation screen also misses its target. These negative results motivate the separately running matched augmentation and capacity experiment. Timed queries cover the declared first eight development cases. Final evaluation remains unopened."
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "seed04",
+      "adapter": "poisson",
+      "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/audit-local.json",
+      "additional_audits": [
+        "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/seed04/source-audit.json"
+      ],
+      "qualification": "Audited independent-initialization development comparison. The same bank/head recipe is retrained; FNO/U-Net retain their earlier budgets, while DeepONet/Transolver receive common longer schedules. All methods share training membership. The uncorrected head varies with initialization; the high-correction endpoint remains accurate. All observed stopping checks pass, but selected latent states were not retained for independent gradient reconstruction in this source revision. Finer-grid POD is an offline mesh-adapted control; frozen neural transfer and native-interpolation variants remain distinct. Physical-domain-preserving FNO padding and native-sensor continuous-trunk DeepONet are separately named controls. Further training-recipe comparison and frozen final testing remain pending."
     }
   ]
 }

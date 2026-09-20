@@ -15222,3 +15222,31 @@ The user requested a progress update after the overnight window. At the recorded
 | Navier–Stokes / coverage04 | 3997427 | COMPLETED | 0:0 | 01:17:40 |
 
 The coordinator reported the interruption and unresolved scientific weaknesses to the user, then resumed the authorized Burgers, heat and Poisson work in their existing isolated trees. The Navier–Stokes extension is queued for the next agent slot; GPU scheduling remains bounded by the campaign cap. Final dataset access remains gated by actual frozen-checkpoint development replay and recorded configuration hashes. No merger or external publication occurred. The remaining manuscript claim review is pinned in `reports/2026-09-20-manuscript-claim-audit.json`; final integration must dispose of its scope corrections.
+
+### Coordinator — resumed tuning jobs and independent Poisson seed audit
+
+Poisson seed04 is independently audited, durably retained at `78e7fa05`, and removed from its exact completed remote directory. Main tables now contain 14 explicit attempts and 546 aggregate rows; the separate coordinator field audit passes 540 checks. The generator now also verifies every method's complete declared case-by-repetition product, with no duplicate invocation identities.
+
+| Poisson seed04 native method | Cases | Worst error (%) | Median GPU ms | Nonstationary cases |
+| --- | ---: | ---: | ---: | ---: |
+| deeponet3d_r128_w16 | 16 | 3.568320 | 2.777997 | 0 |
+| fno3d_w24_m8 | 16 | 0.236556 | 11.208564 | 0 |
+| nmrom_K16_q0_dense | 16 | 0.970384 | 2.487391 | 0 |
+| nmrom_K16_q32_dense | 16 | 0.657139 | 2.669560 | 0 |
+| nmrom_K16_q96_dense | 16 | 0.176472 | 2.588632 | 0 |
+| transolver3d_w48_s32 | 16 | 0.763928 | 4.162263 | 0 |
+| unet3d_w16 | 16 | 0.231013 | 3.870987 | 0 |
+
+These are development errors from one independent model initialization. Their observed stopping checks are internally consistent; this source revision still lacks selected latent states for an independent weak-gradient reconstruction. Classical linear controls remain in the full table and are stronger. No final result is inferred from these rows.
+
+Heat head04 has independently checked 224 fields and 1344 fitting states, with maximum analytic-gradient difference 2.1717694563235787e-16. Complete outputs are retained at `a2216043`, restored from actual Git bytes and removed from the completed remote attempt. Handoff `91569da5` repairs an audit variable-shadowing bug that could skip repetition-equality checks. The stronger tune02/extra03 checks pass; all raw measured values remain unchanged.
+
+Resumed training submissions use the existing isolated namespaces and the campaign GPU cap:
+
+| Lane / attempt | Job | Source |
+| --- | --- | --- |
+| h3d / coverage05 | 4018922 | `91d60ace229bbd4a27001b312ced73ebac225d86` |
+| p3d / seed05 | 4019009 | `59651088953df04f78e4193210ec400d6cf50f1f` |
+| b3d / b3d006 | 4018959 | `b1d72e0c4c51624d5dfce0cd80e5e65e75b8c531` |
+
+Navier–Stokes coverage04 is being collected by its resumed owner before the staged larger-bank extension. All final cohorts remain sealed. The previously requested overnight deadline is not retrospectively relabelled as met; the estimates communicated to the user are new operational estimates, contingent on remaining training and audit work.

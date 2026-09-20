@@ -58,6 +58,11 @@ def main():
              'the job asserts jax_backend=gpu in the preflight or exits 42'),
             ('no subject was dropped', 'dropped', f"{len(au['dropped'])} dropped",
              'the OOM-drop rule records every drop; an empty list means every declared subject was timed'),
+            ('admissibility rule', "admissibility_rule, arms[*].admissible / admissible_own_gtol",
+             f"{(au.get('admissibility_rule') or {}).get('primary', 'pre-A13 own-gtol flag')}; reduced admissible under §5: "
+             f"{sum(1 for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible'])}, under the "
+             f"pre-A13 own-tolerance flag: {sum(1 for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x.get('admissible_own_gtol'))}",
+             'checks/verify_design5.py re-derives both flags from result.json without importing audit_panel.py (DESIGN §A13)'),
             ('reduced subjects on the admissible frontier', "nondominated.gpu_evolved.admissible",
              f"{len(nred)} of {len(red)} reduced subjects: {', '.join(x['arm'] for x in nred) or 'none'}",
              'domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent)'),

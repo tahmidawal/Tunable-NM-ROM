@@ -4,14 +4,15 @@ The lane protocol asks for an independent Codex audit of the final report agains
 
 ## 256² — job `3789570`, attempt `bpn301`, `NVIDIA A100 80GB PCIe`
 
-Audit file `audit.json` (SHA256 `41f015e3e6549d2e…`), driver result SHA256 `011e1470a3d52432…`.
+Audit file `audit.json` (SHA256 `db6e65867d530e96…`), driver result SHA256 `011e1470a3d52432…`.
 
 | claim | JSON field | value | check |
 |---|---|---|---|
-| every gate passed | checks[*].passed, failed | 43 passed, 0 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 0 failed; audit failed-list = none | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
+| every gate passed | checks[*].passed, failed | 43 passed, 1 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 0 failed; audit failed-list = none | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
 | the backend was a GPU | checks['backend_gpu'] | gpu | the job asserts jax_backend=gpu in the preflight or exits 42 |
 | no subject was dropped | dropped | 0 dropped | the OOM-drop rule records every drop; an empty list means every declared subject was timed |
-| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 0 of 39 reduced subjects: none | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
+| admissibility rule | admissibility_rule, arms[*].admissible / admissible_own_gtol | converged_design5: DESIGN.md §5 as written — every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity; reduced admissible under §5: 27, under the pre-A13 own-tolerance flag: 39 | checks/verify_design5.py re-derives both flags from result.json without importing audit_panel.py (DESIGN §A13) |
+| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 0 of 27 reduced subjects: none | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
 | most accurate reduced subject | arms[*].worst_evolved_percent | pod512_M2048_dense at 0.2184 % and 2790.8 ms | minimum over admissible reduced arms; errors recomputed from the saved fields |
 | rule sets carried | rules[*].rule_set | eqcert, eqtop | each rule file SHA256 is checked against inputs/PROVENANCE.json in-job |
 | EQ arms whose construction is not confirmed | arms[*].rule_status | q64_M320_eqcert_g0p001 (marginal (b-eqtop superseded list)), q64_M320_eqcert_g1em06 (marginal (b-eqtop superseded list)), q128_M576_eqcert_g0p001 (blank), q128_M576_eqcert_g1em06 (blank), q128_M576_eqtop_g0p001 (certified in one draw), q128_M576_eqtop_g1em06 (certified in one draw), q256_M1088_eqcert_g0p001 (blank), q256_M1088_eqcert_g1em06 (blank), q256_M1088_eqtop_g0p001 (certified in one draw), q256_M1088_eqtop_g1em06 (certified in one draw) | the status travels from the exporting lane's PROVENANCE.json into every row and caption |
@@ -25,14 +26,15 @@ Audit file `audit.json` (SHA256 `41f015e3e6549d2e…`), driver result SHA256 `01
 
 ## 512² — job `3805065`, attempt `bpn401`, `NVIDIA A100 80GB PCIe`
 
-Audit file `audit.json` (SHA256 `66a0cc311ea3144d…`), driver result SHA256 `c0e3cc300d34ac04…`.
+Audit file `audit.json` (SHA256 `2271c10c1a7ea1b9…`), driver result SHA256 `c0e3cc300d34ac04…`.
 
 | claim | JSON field | value | check |
 |---|---|---|---|
-| every gate passed | checks[*].passed, failed | 31 passed, 1 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 2 failed; audit failed-list = ['matched_rule_files_bitwise', 'matched_rule_files_bitwise_recomputed'] | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
+| every gate passed | checks[*].passed, failed | 31 passed, 2 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 2 failed; audit failed-list = ['matched_rule_files_bitwise', 'matched_rule_files_bitwise_recomputed'] | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
 | the backend was a GPU | checks['backend_gpu'] | gpu | the job asserts jax_backend=gpu in the preflight or exits 42 |
 | no subject was dropped | dropped | 0 dropped | the OOM-drop rule records every drop; an empty list means every declared subject was timed |
-| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 0 of 31 reduced subjects: none | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
+| admissibility rule | admissibility_rule, arms[*].admissible / admissible_own_gtol | converged_design5: DESIGN.md §5 as written — every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity; reduced admissible under §5: 23, under the pre-A13 own-tolerance flag: 31 | checks/verify_design5.py re-derives both flags from result.json without importing audit_panel.py (DESIGN §A13) |
+| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 0 of 23 reduced subjects: none | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
 | most accurate reduced subject | arms[*].worst_evolved_percent | pod512_M2048_dense at 0.3328 % and 11933.9 ms | minimum over admissible reduced arms; errors recomputed from the saved fields |
 | rule sets carried | rules[*].rule_set | eqtopxfer, eqxfer | each rule file SHA256 is checked against inputs/PROVENANCE.json in-job |
 | EQ arms whose construction is not confirmed | arms[*].rule_status | q64_M320_eqxfer_g0p001 (marginal (b-eqtop superseded list)), q64_M320_eqxfer_g1em06 (marginal (b-eqtop superseded list)), q128_M576_eqtopxfer_g0p001 (certified in one draw), q128_M576_eqtopxfer_g1em06 (certified in one draw), q128_M576_eqxfer_g0p001 (blank), q128_M576_eqxfer_g1em06 (blank), q256_M1088_eqtopxfer_g0p001 (certified in one draw), q256_M1088_eqtopxfer_g1em06 (certified in one draw), q256_M1088_eqxfer_g0p001 (blank), q256_M1088_eqxfer_g1em06 (blank) | the status travels from the exporting lane's PROVENANCE.json into every row and caption |
@@ -58,14 +60,15 @@ Audit file `audit.json` (SHA256 `66a0cc311ea3144d…`), driver result SHA256 `c0
 
 ## 1024² — job `3789572`, attempt `bpn203`, `NVIDIA H200`
 
-Audit file `audit.json` (SHA256 `9090ee219c03e2f7…`), driver result SHA256 `3ea069b81aff8c61…`.
+Audit file `audit.json` (SHA256 `465a0917a406523c…`), driver result SHA256 `3ea069b81aff8c61…`.
 
 | claim | JSON field | value | check |
 |---|---|---|---|
-| every gate passed | checks[*].passed, failed | 29 passed, 2 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 0 failed; audit failed-list = none | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
+| every gate passed | checks[*].passed, failed | 29 passed, 3 not applicable (no two rule sets share a file; no cross-job comparator at this mesh), 0 failed; audit failed-list = none | recomputed by audit_panel.py from the saved fields, not read from the driver verdict |
 | the backend was a GPU | checks['backend_gpu'] | gpu | the job asserts jax_backend=gpu in the preflight or exits 42 |
 | no subject was dropped | dropped | 0 dropped | the OOM-drop rule records every drop; an empty list means every declared subject was timed |
-| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 5 of 20 reduced subjects: q0_M64_eqxfer_g0p001, q0_M64_eqxfer_g1em06, q16_M128_eqxfer_g0p001, q32_M192_eqxfer_g0p001, q32_M192_eqxfer_g1em06 | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
+| admissibility rule | admissibility_rule, arms[*].admissible / admissible_own_gtol | converged_design5: DESIGN.md §5 as written — every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity; reduced admissible under §5: 16, under the pre-A13 own-tolerance flag: 20 | checks/verify_design5.py re-derives both flags from result.json without importing audit_panel.py (DESIGN §A13) |
+| reduced subjects on the admissible frontier | nondominated.gpu_evolved.admissible | 3 of 16 reduced subjects: q0_M64_eqxfer_g1em06, q16_M128_eqxfer_g1em06, q32_M192_eqxfer_g1em06 | domination recomputed in audit_panel.nondominated over (median_gpu_ms, worst_evolved_percent) |
 | most accurate reduced subject | arms[*].worst_evolved_percent | free512_M1024_dense at 0.5108 % and 13514.6 ms | minimum over admissible reduced arms; errors recomputed from the saved fields |
 | rule sets carried | rules[*].rule_set | eqxfer | each rule file SHA256 is checked against inputs/PROVENANCE.json in-job |
 | EQ arms whose construction is not confirmed | arms[*].rule_status | q64_M320_eqxfer_g0p001 (marginal (b-eqtop superseded list)), q64_M320_eqxfer_g1em06 (marginal (b-eqtop superseded list)), q128_M576_eqxfer_g0p001 (blank), q128_M576_eqxfer_g1em06 (blank), q256_M1088_eqxfer_g0p001 (blank), q256_M1088_eqxfer_g1em06 (blank) | the status travels from the exporting lane's PROVENANCE.json into every row and caption |

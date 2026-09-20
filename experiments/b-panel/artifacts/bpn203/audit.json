@@ -8,6 +8,11 @@
   "attempt": "bpn203",
   "intervals": 1024,
   "dt": 0.005,
+  "admissibility_rule": {
+    "primary": "converged_design5: DESIGN.md \u00a75 as written \u2014 every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity",
+    "secondary": "converged_own_gtol: the same rule against each invocation's own gtol (1e-6 or 1e-3) \u2014 the flag the report carried before DESIGN \u00a7A13 (2026-09-19); kept as a labelled secondary column, defines nothing"
+  },
+  "design5_gtol": 1e-06,
   "mem_fraction": "0.90",
   "elapsed_seconds": 5559.703346743016,
   "K": 16,
@@ -236,7 +241,20 @@
     "convergence_flags_reproduced": {
       "passed": true,
       "detail": [],
-      "note": null
+      "note": "the driver's converged / converged_strict flags (own-gtol rule) reproduce from the raw per-step quantities"
+    },
+    "design5_flag_differs_from_own_gtol": {
+      "passed": null,
+      "detail": [
+        "q0_M64_eqxfer_g0p001",
+        "q128_M576_eqxfer_g0p001",
+        "q16_M128_eqxfer_g0p001",
+        "q256_M1088_eqxfer_g0p001",
+        "q32_M192_eqxfer_g0p001",
+        "q64_M320_eqxfer_g0p001"
+      ],
+      "note": "reduced subjects converged at their own gtol but not under DESIGN \u00a75's fixed 1e-6 (DESIGN \u00a7A13)",
+      "blocking": false
     },
     "cross_job_fidelity": {
       "passed": null,
@@ -380,7 +398,8 @@
       "max_step_stationarity": 9.92609711356223e-07,
       "max_ic_stationarity": 8.178531061664483e-07,
       "max_ic_relative_residual": 0.02908463141788835,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -388,6 +407,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.854892662374063,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -528,14 +549,17 @@
       "max_step_stationarity": 0.0009947115635679646,
       "max_ic_stationarity": 0.00023981029955185798,
       "max_ic_relative_residual": 0.029084669970213185,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
       "exit_reason_counts": {
         "4": 900
       },
-      "admissible": true,
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.854892662374063,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -676,7 +700,8 @@
       "max_step_stationarity": 9.791691053574563e-07,
       "max_ic_stationarity": 8.178531061664483e-07,
       "max_ic_relative_residual": 0.02908463141788835,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -684,6 +709,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.854892662374063,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -824,7 +851,8 @@
       "max_step_stationarity": 9.95826111354626e-07,
       "max_ic_stationarity": 9.006466048853177e-07,
       "max_ic_relative_residual": 0.028399640438840187,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -832,6 +860,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.805255237659274,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -972,14 +1002,17 @@
       "max_step_stationarity": 0.0009951551495290425,
       "max_ic_stationarity": 9.006466048853177e-07,
       "max_ic_relative_residual": 0.028399640438840187,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
       "exit_reason_counts": {
         "4": 900
       },
-      "admissible": true,
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.805255237659274,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1120,7 +1153,8 @@
       "max_step_stationarity": 9.8885703692083e-07,
       "max_ic_stationarity": 9.006466048853177e-07,
       "max_ic_relative_residual": 0.028399640438840187,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -1128,6 +1162,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.805255237659274,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1268,7 +1304,8 @@
       "max_step_stationarity": 9.833388479924323e-07,
       "max_ic_stationarity": 7.941799141127249e-07,
       "max_ic_relative_residual": 0.02712059714545546,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -1276,6 +1313,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.711895087702779,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1416,14 +1455,17 @@
       "max_step_stationarity": 0.0009915424616406664,
       "max_ic_stationarity": 7.941799141127249e-07,
       "max_ic_relative_residual": 0.02712059714545546,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
       "exit_reason_counts": {
         "4": 900
       },
-      "admissible": true,
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.711895087702779,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1564,7 +1606,8 @@
       "max_step_stationarity": 9.610653105992057e-07,
       "max_ic_stationarity": 7.941799141127249e-07,
       "max_ic_relative_residual": 0.02712059714545546,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -1572,6 +1615,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.711895087702779,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1712,7 +1757,8 @@
       "max_step_stationarity": 9.962658443658093e-07,
       "max_ic_stationarity": 6.486046025176308e-07,
       "max_ic_relative_residual": 0.02514386726296101,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -1720,6 +1766,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.573873658026198,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -1860,7 +1908,8 @@
       "max_step_stationarity": 0.0009849996515012792,
       "max_ic_stationarity": 6.486046025176308e-07,
       "max_ic_relative_residual": 0.02514386726296101,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -1868,6 +1917,8 @@
         "4": 900
       },
       "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
       "best_found_percent": 3.573873658026198,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2008,7 +2059,8 @@
       "max_step_stationarity": 9.980982457032316e-07,
       "max_ic_stationarity": 6.486046025176308e-07,
       "max_ic_relative_residual": 0.02514386726296101,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2016,6 +2068,8 @@
         "4": 900
       },
       "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
       "best_found_percent": 3.573873658026198,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2156,7 +2210,8 @@
       "max_step_stationarity": 9.932669407729699e-07,
       "max_ic_stationarity": 5.439167768772289e-07,
       "max_ic_relative_residual": 0.020592878903828837,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2164,6 +2219,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.279060585790033,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2304,14 +2361,17 @@
       "max_step_stationarity": 0.0009909603119398977,
       "max_ic_stationarity": 5.439167768772289e-07,
       "max_ic_relative_residual": 0.020592878903828837,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
       "exit_reason_counts": {
         "4": 900
       },
-      "admissible": true,
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.279060585790033,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2452,7 +2512,8 @@
       "max_step_stationarity": 9.960169337862407e-07,
       "max_ic_stationarity": 5.439167768772289e-07,
       "max_ic_relative_residual": 0.020592878903828837,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2460,6 +2521,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 3.279060585790033,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2600,7 +2663,8 @@
       "max_step_stationarity": 9.968095655380067e-07,
       "max_ic_stationarity": 1.3007541477542573e-07,
       "max_ic_relative_residual": 0.010970386804500718,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2608,6 +2672,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 2.768794694738832,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2748,7 +2814,8 @@
       "max_step_stationarity": 0.0009944987600486576,
       "max_ic_stationarity": 1.3007541477542573e-07,
       "max_ic_relative_residual": 0.010970386804500718,
-      "converged": true,
+      "converged_design5": false,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2756,6 +2823,8 @@
         "4": 900
       },
       "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
       "best_found_percent": 2.768794694738832,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -2896,7 +2965,8 @@
       "max_step_stationarity": 9.938690548280434e-07,
       "max_ic_stationarity": 1.3007541477542573e-07,
       "max_ic_relative_residual": 0.010970386804500718,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -2904,6 +2974,8 @@
         "4": 900
       },
       "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
       "best_found_percent": 2.768794694738832,
       "best_found_kind": "head manifold best-found",
       "bank_projection_percent": 2.2593000004958874,
@@ -3044,7 +3116,8 @@
       "max_step_stationarity": 9.930432448054284e-07,
       "max_ic_stationarity": 0.0,
       "max_ic_relative_residual": 0.0,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": true,
       "completed": true,
       "total_budget_exits": 0,
@@ -3052,6 +3125,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 61.928500496791,
       "best_found_kind": "POD span projection",
       "bank_projection_percent": null,
@@ -3192,7 +3267,8 @@
       "max_step_stationarity": 9.828159863492896e-07,
       "max_ic_stationarity": 0.17678329313085794,
       "max_ic_relative_residual": 1.453991958348357e-18,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": false,
       "completed": true,
       "total_budget_exits": 0,
@@ -3200,6 +3276,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 47.640993036544195,
       "best_found_kind": "POD span projection",
       "bank_projection_percent": null,
@@ -3340,7 +3418,8 @@
       "max_step_stationarity": 9.835059266862266e-07,
       "max_ic_stationarity": 0.125126329031189,
       "max_ic_relative_residual": 1.1722457932157821e-17,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": false,
       "completed": true,
       "total_budget_exits": 0,
@@ -3348,6 +3427,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 20.599072563119673,
       "best_found_kind": "POD span projection",
       "bank_projection_percent": null,
@@ -3488,7 +3569,8 @@
       "max_step_stationarity": 9.971902461365315e-07,
       "max_ic_stationarity": 0.08857935848330656,
       "max_ic_relative_residual": 5.5258094769722106e-18,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": false,
       "completed": true,
       "total_budget_exits": 0,
@@ -3496,6 +3578,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 10.733626341095222,
       "best_found_kind": "POD span projection",
       "bank_projection_percent": null,
@@ -3636,7 +3720,8 @@
       "max_step_stationarity": 9.984729521506245e-07,
       "max_ic_stationarity": 0.0626989790274674,
       "max_ic_relative_residual": 1.5273743146256536e-17,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": false,
       "completed": true,
       "total_budget_exits": 0,
@@ -3644,6 +3729,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 4.141000621218763,
       "best_found_kind": "POD span projection",
       "bank_projection_percent": null,
@@ -3784,7 +3871,8 @@
       "max_step_stationarity": 9.944841631832446e-07,
       "max_ic_stationarity": 0.1477825716747654,
       "max_ic_relative_residual": 2.1479320956210215e-15,
-      "converged": true,
+      "converged_design5": true,
+      "converged_own_gtol": true,
       "converged_strict": false,
       "completed": true,
       "total_budget_exits": 0,
@@ -3792,6 +3880,8 @@
         "4": 900
       },
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": 2.2593000004958874,
       "best_found_kind": "bank projection (all R coefficients)",
       "bank_projection_percent": 2.2593000004958874,
@@ -3932,12 +4022,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4078,12 +4171,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4224,12 +4320,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4370,12 +4469,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4516,12 +4618,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4662,12 +4767,15 @@
       "max_step_stationarity": null,
       "max_ic_stationarity": null,
       "max_ic_relative_residual": null,
-      "converged": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
       "converged_strict": null,
       "completed": null,
       "total_budget_exits": null,
       "exit_reason_counts": null,
       "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
       "best_found_percent": null,
       "best_found_kind": null,
       "bank_projection_percent": null,
@@ -4716,7 +4824,15 @@
         6895.231453585438,
         22053.852356038988
       ],
-      "converged": [
+      "converged_design5": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "converged_own_gtol": [
         true,
         true,
         true,
@@ -4732,9 +4848,18 @@
         true,
         true
       ],
+      "admissible_own_gtol": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
       "monotone_evolved": true,
       "monotone_all_times": true,
       "all_converged": true,
+      "all_converged_own_gtol": true,
       "nondominated_converged_points": 6,
       "error_span": 3.9048826919970865,
       "cost_span": 14.21240725939863
@@ -4780,7 +4905,15 @@
         128.25032649561763,
         277.22591150086373
       ],
-      "converged": [
+      "converged_design5": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "converged_own_gtol": [
         true,
         true,
         true,
@@ -4789,6 +4922,14 @@
         true
       ],
       "admissible": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "admissible_own_gtol": [
         true,
         true,
         true,
@@ -4798,10 +4939,11 @@
       ],
       "monotone_evolved": false,
       "monotone_all_times": true,
-      "all_converged": true,
-      "nondominated_converged_points": 4,
-      "error_span": 2.1952433970332996,
-      "cost_span": 3.9792795216426415
+      "all_converged": false,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 0,
+      "error_span": null,
+      "cost_span": null
     },
     "eq_eqxfer_g1em06": {
       "arms": [
@@ -4844,7 +4986,15 @@
         163.68364496156573,
         502.20657500904053
       ],
-      "converged": [
+      "converged_design5": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "converged_own_gtol": [
         true,
         true,
         true,
@@ -4860,9 +5010,18 @@
         true,
         false
       ],
+      "admissible_own_gtol": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        false
+      ],
       "monotone_evolved": false,
       "monotone_all_times": true,
       "all_converged": true,
+      "all_converged_own_gtol": true,
       "nondominated_converged_points": 4,
       "error_span": 2.194262476077456,
       "cost_span": 4.064666866701956
@@ -4903,7 +5062,14 @@
         1760.633202502504,
         4897.626731428318
       ],
-      "converged": [
+      "converged_design5": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "converged_own_gtol": [
         true,
         true,
         true,
@@ -4917,9 +5083,17 @@
         true,
         true
       ],
+      "admissible_own_gtol": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
       "monotone_evolved": true,
       "monotone_all_times": true,
       "all_converged": true,
+      "all_converged_own_gtol": true,
       "nondominated_converged_points": 5,
       "error_span": 26.577291212837917,
       "cost_span": 24.71335343254144
@@ -4941,7 +5115,20 @@
         "nt1e-4_dt005",
         "fft_tight"
       ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "nt1e-4_dt01",
+        "nt1e-4_dt005",
+        "fft_tight"
+      ],
       "reduced_only": [
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "q128_M576_eqxfer_g1em06",
+        "free512_M1024_dense"
+      ],
+      "reduced_only_own_gtol": [
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",
@@ -4965,6 +5152,14 @@
       ],
       "admissible": [
         "nt1e-2_dt01",
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "nt1e-4_dt005",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",
@@ -4974,6 +5169,13 @@
         "fft_tight"
       ],
       "reduced_only": [
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "q128_M576_eqxfer_g1em06",
+        "free512_M1024_dense"
+      ],
+      "reduced_only_own_gtol": [
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",
@@ -4999,7 +5201,20 @@
         "nt1e-4_dt005",
         "fft_tight"
       ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "nt1e-4_dt01",
+        "nt1e-4_dt005",
+        "fft_tight"
+      ],
       "reduced_only": [
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "q128_M576_eqxfer_g1em06",
+        "free512_M1024_dense"
+      ],
+      "reduced_only_own_gtol": [
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",
@@ -5023,6 +5238,14 @@
       ],
       "admissible": [
         "nt1e-2_dt01",
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "nt1e-4_dt005",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",
@@ -5032,6 +5255,13 @@
         "fft_tight"
       ],
       "reduced_only": [
+        "q0_M64_eqxfer_g1em06",
+        "q16_M128_eqxfer_g1em06",
+        "q32_M192_eqxfer_g1em06",
+        "q128_M576_eqxfer_g1em06",
+        "free512_M1024_dense"
+      ],
+      "reduced_only_own_gtol": [
         "q0_M64_eqxfer_g0p001",
         "q0_M64_eqxfer_g1em06",
         "q16_M128_eqxfer_g0p001",

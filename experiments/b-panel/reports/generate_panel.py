@@ -25,7 +25,8 @@ METRICS = ('worst_all_times_percent', 'median_all_times_percent', 'worst_evolved
            'worst_t0_compression_percent', 'worst_reference_percent', 'median_reference_percent', 'median_gpu_ms',
            'median_host_ms', 'median_iterations', 'max_iterations', 'total_budget_exits', 'max_joint_stationarity',
            'max_step_stationarity', 'max_ic_stationarity', 'max_ic_relative_residual', 'best_found_percent',
-           'solved_over_best_found', 'converged', 'converged_strict', 'admissible', 'rho_max', 'rho_p95', 'rule_basis',
+           'solved_over_best_found', 'converged_design5', 'converged_own_gtol', 'converged_strict', 'admissible',
+           'admissible_own_gtol', 'rho_max', 'rho_p95', 'rule_basis',
            'rule_set', 'rule_status', 'rule_m', 'rule_source_lane', 'rule_source_job', 'rule_fit_states', 'rule_file_sha256')
 
 
@@ -51,6 +52,20 @@ def table(header, rows):
 
 def by_arm(au, name):
     return next((x for x in au['arms'] if x['arm'] == name), None)
+
+
+def nondominated(rows, ck, ek):
+    """Same rule as audit_panel.nondominated, re-stated here so counterfactual frontiers are computed, not asserted."""
+    pts = [(r['arm'], r[ck], r[ek]) for r in rows if r.get(ck) is not None and r.get(ek) is not None]
+    return [a for a, c, e in pts if not any(c2 <= c and e2 <= e and (c2 < c or e2 < e) for b, c2, e2 in pts if b != a)]
+
+
+REDUCED = ('rom', 'fast', 'pod', 'free')
+
+
+def loose_arms(au):
+    """Reduced subjects converged at their own tolerance but not under DESIGN §5's fixed 1e-6 (DESIGN §A13)."""
+    return [x for x in au['arms'] if x['family'] in REDUCED and x.get('converged_own_gtol') and not x.get('converged_design5')]
 
 
 def sub_label(x):
@@ -157,7 +172,7 @@ def section(W, au, tag):
     W('### Every subject\n')
     hdr = ['subject', 'family', 'q / k′', 'M', 'quad.', 'm', 'rule set', 'rule basis', 'rule status', 'tol', 'worst all %', 'worst evolved %',
            'median evolved %', 't=0 %', 'worst vs ref %', 'best-found %', 'solved/best-found', 'GPU ms',
-           'complete ms', 'med it', 'max it', 'budget exits', 'conv.', 'strict', 'admissible']
+           'complete ms', 'med it', 'max it', 'budget exits', 'conv. (§5)', 'conv. (own tol)', 'strict', 'admissible (§5)', 'admissible (own tol, pre-A13)']
     rows = []
     for x in au['arms']:
         rows.append([f"`{x['arm']}`", x['family'], sub_label(x), f(x['M']), x['quadrature'] or ('—' if x['family'] != 'fom' else f"ntol {sci(x['ntol'])} dt {x['dt']}"),
@@ -165,12 +180,26 @@ def section(W, au, tag):
                      sci(x['gtol']) if x['gtol'] is not None else '—', f(x['worst_all_times_percent']), f(x['worst_evolved_percent']),
                      f(x['median_evolved_percent']), f(x['worst_t0_compression_percent']), f(x['worst_reference_percent']),
                      f(x.get('best_found_percent')), f(x.get('solved_over_best_found'), 5), f(x['median_gpu_ms'], 3), f(x['median_host_ms'], 3), f(x['median_iterations'], 1), f(x['max_iterations']),
-                     f(x['total_budget_exits']), f(x['converged']), f(x['converged_strict']), f(x['admissible'])])
+                     f(x['total_budget_exits']), f(x['converged_design5']), f(x['converged_own_gtol']), f(x['converged_strict']),
+                     f(x['admissible']), f(x['admissible_own_gtol'])])
     W(table(hdr, rows))
-    split = [x for x in au['arms'] if x['kind'] == 'rom' and x['converged'] and not x['converged_strict']]
+    lo = loose_arms(au)
+    W(f"**Admissibility is DESIGN.md §5 as written (DESIGN §A13, 2026-09-19).** `conv. (§5)` applies the pre-registered rule "
+      f"with its fixed threshold — every time step's normalised joint gradient ≤ 1e-6 unless the step exited on the residual "
+      f"rule — to every reduced subject whatever tolerance it was run at, and it is the flag that defines `admissible`. "
+      f"`conv. (own tol)` is the flag the report carried until §A13: the same rule evaluated against each query's own "
+      f"stopping tolerance, which let the 1e-3 arms count as converged at 1e-3. "
+      + (f"{len(lo)} reduced subjects are converged at their own tolerance and **not under §5**: "
+         + ', '.join(f"`{x['arm']}`" for x in lo)
+         + f". They stay in every table with their own numbers and are excluded from every admissible frontier and ratio below; "
+           f"under the pre-A13 flag {sum(1 for x in au['arms'] if x['family'] in REDUCED and x['admissible_own_gtol'])} of the "
+           f"{sum(1 for x in au['arms'] if x['family'] in REDUCED)} reduced subjects were admissible, under §5 "
+           f"{sum(1 for x in au['arms'] if x['family'] in REDUCED and x['admissible'])} are."
+         if lo else 'No reduced subject in this job changes flag between the two rules.') + '\n')
+    split = [x for x in au['arms'] if x['kind'] == 'rom' and x['converged_design5'] and not x['converged_strict']]
     if split:
         W('### The subjects that converge under this lane\'s rule and not under the stricter one\n')
-        W(f"{len(split)} reduced subjects carry `converged = yes` and `strict = no`: "
+        W(f"{len(split)} reduced subjects carry `conv. (§5) = yes` and `strict = no`: "
           + ', '.join(f"`{x['arm']}`" for x in split) + ". This is not a solver failure and it is not a flag "
           "to read past, so here is exactly what fails, why no iteration budget can fix it, and whether the "
           "error would move if it were fixed.\n")
@@ -219,9 +248,9 @@ def section(W, au, tag):
           "zero budget exits, and lands on its own projection floor. Where POD beats the ladder below, it does "
           "so from a fully converged solve.\n")
     W('### Why a reduced subject is or is not converged\n')
-    hdr = ['subject', 'exit reasons (0 budget / 1 residual / 2 tiny step / 4 gradient)', 'worst step gradient', 'worst IC gradient', 'worst IC relative residual', 'converged', 'strict']
-    W(table(hdr, [[f"`{x['arm']}`", json.dumps(x['exit_reason_counts']), sci(x['max_joint_stationarity']), sci(x['max_ic_stationarity']),
-                   sci(x['max_ic_relative_residual']), f(x['converged']), f(x['converged_strict'])]
+    hdr = ['subject', 'tol', 'exit reasons (0 budget / 1 residual / 2 tiny step / 4 gradient)', 'worst step gradient', 'worst IC gradient', 'worst IC relative residual', 'converged (§5, ≤ 1e-6)', 'converged (own tol)', 'strict']
+    W(table(hdr, [[f"`{x['arm']}`", sci(x['gtol']), json.dumps(x['exit_reason_counts']), sci(x['max_step_stationarity']), sci(x['max_ic_stationarity']),
+                   sci(x['max_ic_relative_residual']), f(x['converged_design5']), f(x['converged_own_gtol']), f(x['converged_strict'])]
                   for x in au['arms'] if x['kind'] == 'rom']))
     W('### What is on the frontier\n')
     nd_adm = set(au['nondominated']['gpu_evolved']['admissible'])
@@ -231,8 +260,12 @@ def section(W, au, tag):
                    and best_red and x['worst_evolved_percent'] <= best_red['worst_evolved_percent']
                    and x['median_gpu_ms'] <= best_red['median_gpu_ms']]
     n_red_front = sum(1 for a_ in nd_adm if (by_arm(au, a_) or {}).get('family') in ('rom', 'fast', 'pod', 'free'))
-    W(f"On (median GPU ms, worst evolved %) over admissible subjects, **{n_red_front} of the "
-      f"{len(red)} reduced subjects are non-dominated**. " +
+    nd_own = set(au['nondominated']['gpu_evolved'].get('admissible_own_gtol') or [])
+    red_own = [x for x in au['arms'] if x['family'] in REDUCED and x['admissible_own_gtol']]
+    n_red_front_own = sum(1 for a_ in nd_own if (by_arm(au, a_) or {}).get('family') in REDUCED)
+    W(f"On (median GPU ms, worst evolved %) over admissible subjects (DESIGN §5), **{n_red_front} of the "
+      f"{len(red)} reduced subjects are non-dominated** (pre-A13 own-tolerance flag, for the record: "
+      f"{n_red_front_own} of {len(red_own)}). " +
       (f"The most accurate reduced subject is `{best_red['arm']}` at {f(best_red['worst_evolved_percent'])} % and "
        f"{f(best_red['median_gpu_ms'], 1)} ms; " +
        (f"the full-order settings that are **both cheaper and at least as accurate** are "
@@ -241,9 +274,11 @@ def section(W, au, tag):
        if best_red else '') + '\n')
     W('### Non-dominated sets\n')
     for key, v in au['nondominated'].items():
-        W(f"**({v['cost']}, {v['error']})** — admissible subjects: " + (', '.join(f'`{a}`' for a in v['admissible']) or 'none')
+        W(f"**({v['cost']}, {v['error']})** — admissible subjects (§5): " + (', '.join(f'`{a}`' for a in v['admissible']) or 'none')
           + '; all subjects: ' + (', '.join(f'`{a}`' for a in v['all']) or 'none')
-          + '; reduced subjects only (post-hoc, DESIGN §A4): ' + (', '.join(f'`{a}`' for a in v.get('reduced_only', [])) or 'none') + '\n')
+          + '; reduced subjects only (post-hoc, DESIGN §A4; §5-admissible): ' + (', '.join(f'`{a}`' for a in v.get('reduced_only', [])) or 'none')
+          + '; *pre-A13 own-tolerance flag, for the record* — admissible: ' + (', '.join(f'`{a}`' for a in v.get('admissible_own_gtol', [])) or 'none')
+          + '; reduced only: ' + (', '.join(f'`{a}`' for a in v.get('reduced_only_own_gtol', [])) or 'none') + '\n')
     fams = {x['arm']: x['family'] for x in au['arms']}
     W('### The nonlinear manifold against the classical one (post-hoc, DESIGN §A4)\n')
     lines = []
@@ -280,13 +315,30 @@ def section(W, au, tag):
                    and x['worst_all_times_percent'] <= top['worst_all_times_percent']]
         if killers:
             k0 = min(killers, key=lambda z: z['worst_all_times_percent'])
+            # The counterfactual is COMPUTED (DESIGN §A13): the frontier is re-derived over the
+            # admissible reduced subjects with the unrestricted bank removed. An earlier draft
+            # asserted that removing the bank makes `top` non-dominated; the Codex audit showed
+            # that at 512² and 1024² other arms still dominate it.
+            cand = [x for x in au['arms'] if x['family'] in REDUCED and x['admissible'] and x['family'] != 'free']
+            without = nondominated(cand, 'median_gpu_ms', 'worst_all_times_percent')
+            still = [x for x in cand if x['arm'] != top['arm'] and x['median_gpu_ms'] <= top['median_gpu_ms']
+                     and x['worst_all_times_percent'] <= top['worst_all_times_percent']
+                     and (x['median_gpu_ms'] < top['median_gpu_ms'] or x['worst_all_times_percent'] < top['worst_all_times_percent'])]
+            s0 = min(still, key=lambda z: z['worst_all_times_percent']) if still else None
             W(f"\nWorth stating because it is easy to get wrong when the frontier is re-derived from a "
               f"subset: on the all-times metric `{top['arm']}` is **not** on the reduced frontier, because "
               f"`{k0['arm']}` is both cheaper ({f(k0['median_gpu_ms'], 1)} ms against "
               f"{f(top['median_gpu_ms'], 1)} ms) and more accurate ({f(k0['worst_all_times_percent'])} % "
               f"against {f(top['worst_all_times_percent'])} %). Drop the unrestricted-bank endpoint from the "
-              f"candidate set and `{top['arm']}` becomes non-dominated at the expensive end; keep it and it "
-              f"does not. The set above is over every admissible reduced subject.\n")
+              f"candidate set and re-derive the frontier over the remaining {len(cand)} admissible reduced subjects: "
+              + (f"`{top['arm']}` **becomes non-dominated** at the expensive end (the re-derived set is "
+                 + ', '.join(f'`{z}`' for z in sorted(without, key=lambda z: by_arm(au, z)['median_gpu_ms'])) + ')'
+                 if top['arm'] in without else
+                 f"`{top['arm']}` **stays dominated** — by `{s0['arm']}` ({f(s0['median_gpu_ms'], 1)} ms, "
+                 f"{f(s0['worst_all_times_percent'])} %)"
+                 + (f" and {len(still) - 1} other admissible reduced subject{'s' if len(still) > 2 else ''}" if len(still) > 1 else '')
+                 + f"; the re-derived set is " + ', '.join(f'`{z}`' for z in sorted(without, key=lambda z: by_arm(au, z)['median_gpu_ms'])))
+              + ". The set above is over every admissible reduced subject.\n")
     pod = [x for x in au['arms'] if x['family'] == 'pod' and x['admissible']]
     rom = [x for x in au['arms'] if x['family'] in ('rom', 'fast') and x['admissible']]
     if pod and rom:
@@ -303,15 +355,17 @@ def section(W, au, tag):
            if beat else "no POD rank in this job is both cheaper and at least as accurate as the best "
                         "correction-ladder point on the evolved metric.") + '\n')
     W('### Ladders\n')
-    hdr = ['ladder', 'rungs', 'worst evolved %', 'worst all %', 'GPU ms', 'monotone evolved', 'monotone all', 'all converged', 'non-dominated converged points', 'error span', 'cost span']
+    hdr = ['ladder', 'rungs', 'worst evolved %', 'worst all %', 'GPU ms', 'monotone evolved', 'monotone all', 'all converged (§5)', 'all converged (own tol)', 'non-dominated admissible points (§5)', 'error span', 'cost span']
     rows = []
     for name, lad in au['ladders'].items():
         if lad:
             rows.append([name, ' / '.join(map(str, lad['q_or_k'])), ' / '.join(f(v) for v in lad['worst_evolved_percent']),
                          ' / '.join(f(v) for v in lad['worst_all_times_percent']), ' / '.join(f(v, 0) for v in lad['median_gpu_ms']),
-                         f(lad['monotone_evolved']), f(lad['monotone_all_times']), f(lad['all_converged']),
+                         f(lad['monotone_evolved']), f(lad['monotone_all_times']), f(lad['all_converged']), f(lad.get('all_converged_own_gtol')),
                          lad['nondominated_converged_points'], f(lad['error_span'], 3), f(lad['cost_span'], 3)])
     W(table(hdr, rows))
+    W('A 1e-3 ladder is by construction never `all converged (§5)`: its rungs stop at 1e-3 and §5 asks for 1e-6. '
+      'Its error and cost columns are its own measurements and stand; only its admissibility is withheld.\n')
     physical(W, au)
     rule_sets(W, au)
     if au['transfer']:
@@ -396,7 +450,10 @@ def rule_sets(W, au):
     W('### Each rule set against its same-job dense twin\n')
     W('The dense twin of an EQ arm is the `rom` arm at the same q and the same M with the exact advection sum, '
       'timed in this same job at tol 1e-06. The cost ratio below is therefore a within-job quadrature speedup at '
-      'fixed model and fixed test space; the error columns say what that speedup costs in accuracy.\n')
+      'fixed model and fixed test space; the error columns say what that speedup costs in accuracy. For the 1e-3 EQ rows '
+      'the ratio also includes the change of stopping tolerance (1e-3 against the twin\'s 1e-6), so it is not a pure '
+      'quadrature ratio; the matched-tolerance quadrature ratio is the 1e-6 row of the same set and q. The 1e-3 rows are '
+      'not admissible under DESIGN §5 (§A13) and are shown for what they measure.\n')
     hdr = ['set', 'q', 'M', 'tol', 'm', 'rule status', 'EQ GPU ms', 'dense GPU ms', 'dense / EQ (speedup)',
            'EQ evolved %', 'dense evolved %', 'EQ − dense evolved (pp)', 'EQ all %', 'dense all %']
     rows = []
@@ -419,61 +476,86 @@ def rule_sets(W, au):
 
 
 def prediction(W, au):
-    """Score DESIGN.md §A5.2's recorded prediction about the transferred top rungs."""
+    """Score DESIGN.md §A5.2's recorded prediction about the transferred top rungs.
+
+    The prediction was about ONE experiment: the qrg304 (`eqxfer`) rules transferred to 1024² in
+    `bpn201` under the capped fit-state convention clip(8192/M, 8, 64), at q = 128 and 256. The
+    historical capped records (six 1024² `eqxfer` transfers completed by `bpn202` before its crash,
+    the same capped refit `bpn201` ran) are keyed by (mesh, rule set, q, fit-state regime), so they
+    are compared only with transfers of the same mesh and rule set. An earlier draft keyed them by q
+    alone and duplicated the six records against both 512² rule sets (Codex audit, 2026-09-19; DESIGN §A13).
+    """
     t = au.get('transfer') or []
     if not t:
         return
     W('### The §A5.2 prediction, scored\n')
-    W('Before `bpn201` returned, DESIGN.md §A5.2 predicted that the **top two transferred rungs (q = 128, 256) '
-      'would come back uncertified**, because the then-current convention `clip(8192/M, 8, 64)` would fit them on '
-      '14 and 8 reachable states — b-eqtop\'s fit-state-starvation diagnosis, not anything about the mesh. '
-      '`bpn201` (retracted) and `bpn202` (failed) both ran that capped refit; its per-rung values are read '
-      'here from the archived `artifacts/bpn202-failed/FAILURE.json` and appear in the second table below, '
-      'never typed into prose. **This job is not the same test**: DESIGN.md §A7 retired the cap, so every '
-      'rung here is fitted on the full configured fit-state count, which is the change §A5.2 said would be made '
-      'and smoked first. The table below is what the uncapped refit gives; it measures the remedy, not the '
-      'prediction.\n')
-    hdr = ['q', 'M', 'fit states used', 'fit states available', 'fit-state rule', 'support m', 'nonzero m',
+    hdr = ['rule set', 'q', 'M', 'fit states used', 'fit states available', 'fit-state rule', 'support m', 'nonzero m',
            'ρ max', 'ρ 95', 'basis', 'certified primary', 'bar']
-    W(table(hdr, [[x['q'], x['M'], x['fit_states_used'], x['fit_states_available'], x['fit_state_rule'],
+    W('Every transferred rule in this job, fitted under the uncapped convention DESIGN.md §A7 introduced:\n')
+    W(table(hdr, [[f"`{x.get('rule_set')}`", x['q'], x['M'], x['fit_states_used'], x['fit_states_available'], x['fit_state_rule'],
                    x['m_support'], x['m'], f(x['certification']['rho_max']), f(x['certification']['rho_p95']),
-                   x['basis'], f(x['certified_primary']), f(x['rho_bar'])] for x in t]))
+                   x['basis'], f(x['certified_primary']), f(x['rho_bar'])] for x in sorted(t, key=lambda z: (str(z.get('rule_set')), z['q']))]))
     cap_file = Path(__file__).resolve().parents[1] / 'artifacts/bpn202-failed/FAILURE.json'
+    HIST_MESH, HIST_SET, HIST_REGIME = 1024, 'eqxfer', 'capped clip(8192/M, 8, 64)'
     cap = {}
     if cap_file.exists():
-        cap = {c['q']: c for c in json.loads(cap_file.read_text())['completed_before_crash']['rule_transfers']}
-    rows = [[x['q'], (cap.get(x['q']) or {}).get('fit_states', '—'), f((cap.get(x['q']) or {}).get('rho_max')),
-             (cap.get(x['q']) or {}).get('basis', '—'), x['fit_states_used'],
-             f(x['certification']['rho_max']), x['basis'], f(x['certified_primary'])] for x in t]
-    n_cap = sum(1 for x in t if (cap.get(x['q']) or {}).get('rho_max', 1e9) <= x['rho_bar'])
-    W('\nAgainst the capped refit the retracted attempts recorded (archived in `artifacts/bpn201-retracted/` and '
-      '`artifacts/bpn202-failed/`; those values enter no other table):\n')
+        fj = json.loads(cap_file.read_text())
+        assert 'config-1024' in fj['config'] and 'XFER eqxfer' in fj['stdout_verbatim'], fj['config']
+        cap = {(HIST_MESH, HIST_SET, c['q'], HIST_REGIME): c for c in fj['completed_before_crash']['rule_transfers']}
+    here = {(au['intervals'], x.get('rule_set'), x['q'], 'uncapped (A7)'): x for x in t}
+    comparable = [(k, cap.get((HIST_MESH, HIST_SET, k[2], HIST_REGIME))) for k in sorted(here, key=lambda k: (str(k[1]), k[2]))
+                  if k[0] == HIST_MESH and k[1] == HIST_SET]
+    W(f"\nDESIGN.md §A5.2, written before `bpn201` returned, predicted that the **`{HIST_SET}` transfers at q = 128 and 256 "
+      f"at {HIST_MESH}² would come back uncertified** under the then-current capped convention `clip(8192/M, 8, 64)` (14 and 8 "
+      f"fit states) — b-eqtop's fit-state-starvation diagnosis. `bpn201` crashed before its transfers were recorded; `bpn202` "
+      f"ran the identical capped refit and completed all six transfers before its own (unrelated) crash, so its archived "
+      f"`artifacts/bpn202-failed/FAILURE.json` holds the capped values of record. Those {len(cap)} records are "
+      f"({HIST_MESH}², `{HIST_SET}`, {HIST_REGIME}) and are compared below only with this job's transfers of the same mesh "
+      f"and rule set.\n")
+    if not comparable:
+        sets = sorted({str(x.get('rule_set')) for x in t})
+        W(f"**This job is {au['intervals']}² and carries the rule set{'s' if len(sets) > 1 else ''} "
+          + ', '.join(f'`{k}`' for k in sets)
+          + f"; the prediction concerned {HIST_MESH}² `{HIST_SET}`, so it is not scored here** — a different mesh has a different "
+            "reachable population and a different rule set is a different rule. What this job's transfers show about the "
+            "fit-state regime is reported in the transfer table above and in the rule-set section, as observed.\n")
+        return
+    rows = [[k[2], (c or {}).get('fit_states', '—'), f((c or {}).get('rho_max')), (c or {}).get('basis', '—'),
+             here[k]['fit_states_used'], f(here[k]['certification']['rho_max']), here[k]['basis'], f(here[k]['certified_primary'])]
+            for k, c in comparable]
+    W(f"\nCapped ({HIST_REGIME}, `bpn202`, values of record for `bpn201`'s design) against uncapped (this job), "
+      f"{HIST_MESH}² `{HIST_SET}` only — the capped values enter no other table:\n")
     W(table(['q', 'capped fit states (bpn202)', 'capped ρ max', 'capped basis', 'uncapped fit states (this job)',
              'uncapped ρ max', 'uncapped basis', 'certified primary'], rows))
-    good = [x for x in t if x['certified_primary']]
-    named = [x for x in t if x['q'] in (128, 256)]
-    W(f"\n{len(good)} of {len(t)} transferred rungs certify on the primary bar in this job under the uncapped "
-      f"count, against {n_cap} of {len(t)} under the capped one. Rungs still not primary-certified: "
-      + (', '.join(f"q = {x['q']} (ρ max {f(x['certification']['rho_max'])}, basis {x['basis']})"
-                   for x in t if not x['certified_primary']) or 'none') + '.\n')
+    n_cap = sum(1 for k, c in comparable if c and c['rho_max'] <= here[k]['rho_bar'])
+    n_unc = sum(1 for k, c in comparable if here[k]['certified_primary'])
+    W(f"\n{n_unc} of {len(comparable)} `{HIST_SET}` transfers certify on the primary bar under the uncapped count, against "
+      f"{n_cap} of {len(comparable)} under the capped one. Rungs still not primary-certified here: "
+      + (', '.join(f"q = {k[2]} (ρ max {f(here[k]['certification']['rho_max'])}, basis {here[k]['basis']})"
+                   for k, c in comparable if not here[k]['certified_primary']) or 'none') + '.\n')
+    named_cap = [(k, c) for k, c in comparable if k[2] in (128, 256) and c]
+    named = [k for k, c in comparable if k[2] in (128, 256)]
+    if named_cap:
+        held = [k for k, c in named_cap if c['rho_max'] > here[k]['rho_bar']]
+        W(f"\n**Scoring §A5.2 on the experiment it was about** (capped refit, {HIST_MESH}² `{HIST_SET}`, q = "
+          + ', '.join(str(k[2]) for k, c in named_cap) + "): "
+          + ', '.join(f"q = {k[2]}: {c['basis']} (ρ max {f(c['rho_max'])} against the {f(here[k]['rho_bar'])} bar, {c['fit_states']} fit states)"
+                      for k, c in named_cap)
+          + f". The predicted outcome **{'held' if len(held) == len(named_cap) else 'did not hold'}**: {len(held)} of the "
+            f"{len(named_cap)} named rungs were uncertified under the capped convention.\n")
     if named:
-        held = [x for x in named if not x['certified_primary']]
-        W(f"\n**Scoring §A5.2.** The two rungs it named (q = "
-          + ', '.join(str(x['q']) for x in named) + ") came back "
-          + ', '.join(f"q = {x['q']}: {x['basis']} (ρ max {f(x['certification']['rho_max'])} against the "
-                      f"{f(x['rho_bar'])} bar)" for x in named)
-          + f". The predicted **outcome** therefore {'held' if len(held) == len(named) else 'did not hold'}: "
-          + f"{len(held)} of the {len(named)} named rungs are not primary-certified. "
-            "Its **mechanism** does not survive this job, and that is the part to carry forward: §A5.2 blamed the "
-            "fit-state starvation b-eqtop identified, and DESIGN.md §A7 removed exactly that — every rung here is "
-          + f"fitted on {named[0]['fit_states_used']} states, not the "
-          + ' and '.join(str((cap.get(x['q']) or {}).get('fit_states', '?')) for x in named)
-          + " the capped convention gave — yet the "
-            "same rungs still miss the bar. Fit-state starvation is therefore not a sufficient explanation for the "
-            "top transferred rungs at this mesh; what remains is the transfer itself (the mapped support loses "
-            + f"weight mass: see the support m against nonzero m column) and the {au['intervals']}\u00b2 reachable population. "
-            "The comparison needs that care: the capped and uncapped refits are not the same experiment, so the "
-            "capped ρ column above is context, not a controlled A/B.\n")
+        miss = [k for k in named if not here[k]['certified_primary']]
+        W(f"\n**What the uncapped refit adds, stated separately because it is a changed experiment (DESIGN §A7), not a "
+          f"scoring of §A5.2.** With {here[named[0]]['fit_states_used']} fit states at every rung the same two rungs came back "
+          + ', '.join(f"q = {k[2]}: {here[k]['basis']} (ρ max {f(here[k]['certification']['rho_max'])})" for k in named)
+          + f" — {len(miss)} of {len(named)} still not primary-certified. Raising the fit-state count to "
+          f"{here[named[0]]['fit_states_used']} therefore did not by itself deliver primary certification at this mesh, so "
+          "fit-state starvation is not shown to be a sufficient explanation for the top transferred rungs; the mapped support "
+          "kept a strictly positive weight on only "
+          + ', '.join(f"{here[k]['m']} of {here[k]['m_support']} nodes (q = {k[2]})" for k in named)
+          + " — a support count, not a measure of the weights — and the " + f"{au['intervals']}² reachable population "
+          "differs from the rule's. The capped and uncapped refits differ in mesh-independent ways (fit-state count) and "
+          "were run in different jobs, so the capped column is context, not a controlled A/B.\n")
 
 
 def physical(W, au):
@@ -486,10 +568,11 @@ def physical(W, au):
     W(f"`worst vs ref %` is measured against the {au.get('reference_mesh') or 'refined'}-interval, Δt = 3.125e-4 "
       f"reference restricted to this grid; it contains the mesh's own discretisation error, which is the converged "
       f"`fft_tight` row's value, **{f(ref)} %** (median over cases {f(next((x['median_reference_percent'] for x in au['arms'] if x['arm'] == 'fft_tight'), None))} %). "
-      "A reduced rung whose physical error is above that number is adding error on top of the mesh; one at or below "
-      "it is indistinguishable from the converged same-grid solve in physical terms, and the `worst all %` column then "
-      "says how far from that solve it actually is. Full-order settings with a coarser step (dt 0.01) sit above the "
-      "converged value for the same reason.\n")
+      "A reduced rung whose physical error is above that number has a larger worst-case error against the reference than "
+      "the converged same-grid solve; one at or below it has a worst-case reference error no larger than that solve's. This "
+      "compares one worst-over-cases scalar per subject and nothing more — it does not say the two solutions are alike, and "
+      "the `worst all %` column says how far from the converged same-grid solve the rung actually is. Full-order settings "
+      "with a coarser step (dt 0.01) sit above the converged value because their own time-stepping error adds to the mesh's.\n")
     hdr = ['subject', 'family', 'q / k′', 'rule set', 'rule status', 'tol', 'worst vs ref %', 'median vs ref %',
            'worst all % (same grid)', 'worst evolved %', 'vs ref − discretisation (pp)', 'above discretisation error']
     rows = []
@@ -525,10 +608,12 @@ def crossover(W, audits):
       'relative to the full-order solver they must beat, as the mesh is refined.\n')
     hdr = ['mesh', 'job', 'GPU', 'cheapest admissible reduced', 'its GPU ms', 'its evolved %',
            'cheapest full-order', 'its GPU ms', 'its evolved %', 'reduced / cheapest FOM',
-           'converged FOM `fft_tight` ms', 'reduced / `fft_tight`', 'reduced subjects on the admissible frontier']
+           'converged FOM `fft_tight` ms', 'reduced / `fft_tight`', 'reduced subjects on the admissible frontier (§5)',
+           'pre-A13 flag: cheapest admissible reduced, ratio / FOM, ratio / `fft_tight`, frontier count']
     rows, ratios = [], {}
     for au in audits:
         red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible']]
+        red_own = [x for x in au['arms'] if x['family'] in REDUCED and x['admissible_own_gtol']]
         fom = [x for x in au['arms'] if x['family'] == 'fom']
         if not red or not fom:
             continue
@@ -540,10 +625,15 @@ def crossover(W, audits):
         r1 = cr['median_gpu_ms'] / cf['median_gpu_ms']
         r2 = cr['median_gpu_ms'] / tight['median_gpu_ms'] if tight else None
         ratios[au['intervals']] = (r1, r2, len(nred))
+        cro = min(red_own, key=lambda z: z['median_gpu_ms']) if red_own else None
+        nd_own = set(au['nondominated']['gpu_evolved'].get('admissible_own_gtol') or [])
+        own_txt = (f"`{cro['arm']}`, {f(cro['median_gpu_ms'] / cf['median_gpu_ms'], 3)}×, "
+                   f"{f(cro['median_gpu_ms'] / tight['median_gpu_ms'], 3) if tight else '—'}×, "
+                   f"{sum(1 for x in red_own if x['arm'] in nd_own)}" if cro else '—')
         rows.append([f"{au['intervals']}²", f"`{au['job_id']}`", au['gpu'], f"`{cr['arm']}`", f(cr['median_gpu_ms'], 1),
                      f(cr['worst_evolved_percent']), f"`{cf['arm']}`", f(cf['median_gpu_ms'], 1),
                      f(cf['worst_evolved_percent']), f(r1, 3), f(tight['median_gpu_ms'], 1) if tight else '—',
-                     f(r2, 3) if r2 is not None else '—', f"{len(nred)} ({', '.join(nred) or 'none'})"])
+                     f(r2, 3) if r2 is not None else '—', f"{len(nred)} ({', '.join(nred) or 'none'})", own_txt])
     W(table(hdr, rows))
     ms = sorted(ratios)
     gpus = {au['intervals']: au['gpu'] for au in audits}
@@ -573,7 +663,55 @@ def crossover(W, audits):
           f"query's favour — and from {f(a0[1], 3)}× to {f(a1[1], 3)}× the converged `fft_tight` solve of its own "
           f"job, a factor of {f(a0[1] / a1[1], 2)}. The frontier follows: {a0[2]} reduced subjects are "
           f"non-dominated at {lo}², {a1[2]} at {hi}². That is the crossover this lane was built to measure, and it "
-          f"is visible only in the ratios — not in the raw milliseconds, which are different GPUs.\n")
+          f"is visible only in the ratios — not in the raw milliseconds, which are different GPUs. The two factors are "
+          f"ratios of within-job ratios taken on different GPU classes ({gpus[lo]} against {gpus[hi]}); normalising by the "
+          f"same-job full-order solve removes the raw-millisecond comparison but not the hardware dependence, so they are "
+          f"a trend indicator, not a hardware-independent number.\n")
+
+
+def retractions(W, audits):
+    """What was wrong, withdrawn or waived, in one place (Codex audit 2026-09-19 asked for it). Counts are read
+    from the audit JSONs (the pre-A13 flags are carried as `*_own_gtol`), nothing typed."""
+    W('## Retractions, corrections and disclosures\n')
+    W('- **`bpn201` retracted, `bpn202` failed** (DESIGN §A6, §A7): a config-parsing crash and an out-of-memory in the untimed '
+      'reconstruction diagnostic; neither produced a timed number. `bpn203` is the 1024² job of record. `bpn101` is superseded '
+      'by `bpn301`, not withdrawn (§A5.1).')
+    W('- **The frozen-state transfer collector was withdrawn before job 2** (DESIGN §A3): qrg304\'s fixed-iterate collector '
+      'returned one frozen state at 1024², so the transferred rules\' fit and certification populations are the production '
+      'dense query\'s converged per-step states instead. This is a disclosed change to how transferred rules are certified, '
+      'made after the smoke and before any transfer was used.')
+    W('- **The pre-job Codex audit did not run** (DESIGN §A1): the shared quota was exhausted; `reports/self-audit-design.md` '
+      'stood in for it. The Codex audit of this report ran on 2026-09-19 and its findings are what §A13 corrects.')
+    W('- **A gate failed at 512² and the job was kept** (DESIGN §A12): `matched_rule_files_bitwise` fails on all six same-file '
+      'pairs because the transfer refits each rule set on its own draw of fit states. §6 says every gate must pass for a '
+      'number to enter the report; §A12 kept the 512² numbers by reading §7\'s narrower falsification clause and recorded '
+      'the reason after the data arrived. The 512² acceptance is therefore a disclosed post-data exception, not an '
+      'unqualified pre-registered pass; the gate is printed as failed and its failure is informative (draw variance of the '
+      'transfer at fixed source rule).')
+    parts = []
+    for au in audits:
+        red = [x for x in au['arms'] if x['family'] in REDUCED]
+        a5 = [x for x in red if x['admissible']]
+        ao = [x for x in red if x['admissible_own_gtol']]
+        nd5 = set(au['nondominated']['gpu_evolved']['admissible'])
+        ndo = set(au['nondominated']['gpu_evolved'].get('admissible_own_gtol') or [])
+        parts.append(f"{au['intervals']}² admissible reduced {len(ao)} → {len(a5)} of {len(red)}, on the (GPU ms, worst evolved %) "
+                     f"frontier {sum(1 for x in ao if x['arm'] in ndo)} → {sum(1 for x in a5 if x['arm'] in nd5)}")
+    W('- **The convergence flag was evaluated against the wrong threshold until 2026-09-19** (DESIGN §A13, Codex finding 1): '
+      '`audit_panel.py` applied §5\'s rule against each query\'s own tolerance instead of the fixed 1e-6 the section '
+      'states, so the 1e-3 arms were admissible. Corrected here; the affected arms keep their numbers and lose eligibility: '
+      + '; '.join(parts) + '. Every frontier, count and ratio in this report is the corrected one; the pre-A13 values are '
+      'carried beside them, labelled.')
+    W('- **The §A5.2 scoring at 512² was withdrawn** (DESIGN §A13, Codex finding 2): the generator keyed the six historical '
+      '1024² `eqxfer` capped transfers by q alone and compared them against both 512² rule sets, printing twelve comparisons '
+      'and a verdict the prediction never covered. The scoring is now keyed by (mesh, rule set, q, fit-state regime) and is '
+      'stated only at 1024² `eqxfer`, the experiment §A5.2 was about.')
+    W('- **Two counterfactual frontier sentences were false** (DESIGN §A13, Codex finding 3): the 512² and 1024² sections said '
+      'that removing the unrestricted bank makes `pod256_M1024_dense` non-dominated; other arms still dominate it. The '
+      'counterfactual is now computed and names the remaining dominator; the 256² statement about `pod512_M2048_dense` stands.')
+    W('- **Two phrasings over-reached** (DESIGN §A13, Codex finding 4): "indistinguishable from the converged same-grid solve '
+      'in physical terms" (one worst-case scalar was compared) and "loses weight mass" (a support count was reported). Both '
+      'now say what was measured.\n')
 
 
 def glossary(W):
@@ -597,9 +735,11 @@ def glossary(W):
         ('GPU ms / complete ms', 'median time from the input resident on the GPU to the six outputs resident on the GPU / the same including the input upload and output download.'),
         ('med it / max it', 'median and maximum Levenberg–Marquardt iterations per time step (Newton iterations for `fom` rows are in the audit).'),
         ('budget exits', 'time steps that hit the 600-iteration cap.'),
-        ('conv.', 'DESIGN.md §5: every exit regular, every step gradient ≤ tol or residual at tolerance, initial fit gradient ≤ tol or its residual at round-off.'),
-        ('strict', 'btq201\'s rule: every gradient ≤ tol regardless of residual; differs from conv. only for attained (square) initial fits.'),
-        ('admissible', 'eligible for the reported frontier: converged reduced subjects with certified rules, parity-passing `fast`, and all `fom` / `fno` rows.'),
+        ('conv. (§5)', 'DESIGN.md §5 as written, the primary flag: every exit regular, every step gradient ≤ 1e-6 (fixed, whatever tolerance the query ran at) or residual-rule exit, initial fit gradient ≤ 1e-6 or its residual at round-off.'),
+        ('conv. (own tol)', 'the same rule evaluated against each query\'s own stopping tolerance (1e-6 or 1e-3); the flag the report carried before DESIGN §A13 (2026-09-19), kept as a labelled secondary column; it defines nothing.'),
+        ('strict', 'btq201\'s rule: every gradient ≤ the query\'s own tol regardless of residual; differs from conv. (own tol) only for attained (square) initial fits.'),
+        ('admissible (§5)', 'eligible for the reported frontier: reduced subjects converged under §5 with certified rules, parity-passing `fast`, and all `fom` / `fno` rows. This is the `admissible` field of summary.json.'),
+        ('admissible (own tol, pre-A13)', 'the same eligibility computed from conv. (own tol); `admissible_own_gtol` in summary.json; shown for the record only.'),
         ('non-dominated', 'no other subject in the same job is both cheaper and more accurate.'),
         ('dense twin', 'for an EQ arm, the arm at the same q and the same M with the exact (dense) advection sum, timed in the same job at tol 1e-06; `dense / EQ` is the within-job quadrature speedup at fixed model and test space.'),
         ('fit states', 'the number of reachable states the rule\'s weights were fitted on. b-eqtop found this, not the node count m, to be the binding constraint on whether a rule certifies.'),
@@ -629,10 +769,20 @@ def main():
       'audit JSONs named at the end. Numbers are development-cohort (six opened cases), one checkpoint, one training '
       'seed; the sealed cohorts are untouched. **Status: provisional as paper claims until the coordinator assembles T5.**\n')
     W('The 256\u00b2 table below is `bpn301`\u2019s and **replaces `bpn101`\u2019s wholesale** (DESIGN.md \u00a7A5.1): `bpn301` re-ran the whole panel \u2014 every full-order control, POD rank, dense rung and the FNO \u2014 in one allocation while carrying both quadrature rule sets as arms, so the two sets are compared in-allocation rather than across jobs. `bpn101` is not withdrawn; it stays in `artifacts/bpn101/` as the record of what the superseded rules gave. The 1024\u00b2 table is `bpn203`\u2019s, the third attempt at that mesh; `bpn201` and `bpn202` are retracted and produced no timed number (DESIGN.md \u00a7A6, \u00a7A7).\n')
+    W('**Admissibility (DESIGN.md §5, corrected in §A13 on 2026-09-19).** Every count, frontier and ratio in this report '
+      'is over subjects admissible under DESIGN §5 as written: a reduced subject is converged only if every time step\'s '
+      'normalised joint gradient is ≤ 1e-6 (or the step exited on the residual rule), whatever stopping tolerance the '
+      'query ran at. The report carried, until §A13, a flag evaluated against each query\'s own tolerance, which let the '
+      '1e-3 arms count as converged at 1e-3; the Codex audit of 2026-09-19 found it. The pre-A13 flag is kept beside the '
+      'corrected one in every table as `admissible (own tol, pre-A13)` / `admissible_own_gtol`, and the affected arms keep '
+      'their measured numbers; only their eligibility changes. The corrected headlines follow.\n')
     for au in audits:
         red = [x for x in au['arms'] if x['family'] in ('rom', 'fast', 'pod', 'free') and x['admissible']]
+        red_own = [x for x in au['arms'] if x['family'] in REDUCED and x['admissible_own_gtol']]
         nd = set(au['nondominated']['gpu_evolved']['admissible'])
+        nd_own = set(au['nondominated']['gpu_evolved'].get('admissible_own_gtol') or [])
         nred = sum(1 for x in red if x['arm'] in nd)
+        nred_own = sum(1 for x in red_own if x['arm'] in nd_own)
         best = min(red, key=lambda z: z['worst_evolved_percent']) if red else None
         beats = [x for x in au['arms'] if x['family'] == 'fom' and best
                  and x['worst_evolved_percent'] <= best['worst_evolved_percent']
@@ -648,7 +798,7 @@ def main():
         front_desc = ' plus '.join(fseen) if fseen else 'empty'
         W(f"**Headline, {au['intervals']}² (job `{au['job_id']}`, one allocation, one GPU): "
           f"{nred} of the {len(red)} reduced-order subjects are non-dominated on (median GPU ms, worst "
-          f"evolved %).** The most accurate reduced "
+          f"evolved %)** (pre-A13 own-tolerance flag: {nred_own} of {len(red_own)}). The most accurate reduced "
           f"subject is `{best['arm']}` at {f(best['worst_evolved_percent'])} % and {f(best['median_gpu_ms'], 1)} ms"
           + (f", and {len(beats)} of the same job's full-order settings are **both cheaper and at least as "
              f"accurate** — cheapest `{cheapest['arm']}` at {f(cheapest['worst_evolved_percent'])} % and "
@@ -676,23 +826,42 @@ def main():
                     summary.append(dict(mesh=au['intervals'], subject=x['arm'], family=x['family'],
                                         q_or_k=(x['q'] if x['q'] is not None else x['k']), M=x['M'], quadrature=x['quadrature'],
                                         rule_set=x.get('rule_set'), rule_m=x.get('rule_m'), rule_basis=x.get('rule_basis'),
-                                        rule_status=x.get('rule_status'), admissible=x.get('admissible'),
-                                        converged=x.get('converged'),
+                                        rule_status=x.get('rule_status'),
+                                        # `admissible` is DESIGN §5 (A13); `admissible_own_gtol` is the pre-A13 flag
+                                        admissible=x.get('admissible'), admissible_design5=x.get('admissible_design5'),
+                                        admissible_own_gtol=x.get('admissible_own_gtol'),
+                                        converged_design5=x.get('converged_design5'), converged_own_gtol=x.get('converged_own_gtol'),
+                                        converged_strict=x.get('converged_strict'),
                                         tol=x['gtol'], metric=mkey, value=x[mkey], job_id=au['job_id'], source_sha=au['result_sha256']))
         for key, v in au['nondominated'].items():
-            for which in ('admissible', 'all', 'reduced_only'):
+            for which in ('admissible', 'all', 'reduced_only', 'admissible_own_gtol', 'reduced_only_own_gtol'):
                 if v.get(which) is not None:
                     summary.append(dict(mesh=au['intervals'], subject='*', family='*', q_or_k=None, M=None, quadrature=None,
                                         tol=None, metric=f'nondominated_{key}_{which}', value=v[which],
                                         job_id=au['job_id'], source_sha=au['result_sha256']))
     crossover(W, audits)
+    retractions(W, audits)
     glossary(W)
     W('---\n')
     W('Generated by `experiments/b-panel/reports/generate_panel.py` from: ' + ', '.join(
         f"`{Path(x).name}` (SHA256 `{hashlib.sha256(Path(x).read_bytes()).hexdigest()[:16]}…`, job {au['job_id']})"
         for x, au in zip(a.audit, audits)) + '.\n')
     (od / f'{a.stem}.md').write_text('\n'.join(lines))
-    (od / 'summary.json').write_text(json.dumps(dict(stem=a.stem, rows=summary), indent=2) + '\n')
+    meta = dict(
+        admissibility_rule='DESIGN.md §5 as written (fixed 1e-6), made primary by DESIGN §A13 on 2026-09-19',
+        row_flags=dict(admissible='primary: DESIGN §5 admissibility (== admissible_design5); the paper reads this',
+                       admissible_design5='explicit alias of admissible',
+                       admissible_own_gtol='secondary, pre-A13: the same eligibility from the own-tolerance flag; for the record only',
+                       converged_design5='DESIGN §5 convergence, fixed 1e-6', converged_own_gtol='pre-A13 flag (own gtol)',
+                       converged_strict='btq201 strict rule (own gtol, no residual exception)'),
+        nondominated_metrics=dict(primary=[f'nondominated_{k}_admissible' for k in ('gpu_all', 'gpu_evolved', 'complete_all', 'complete_evolved')],
+                                  reduced_only=[f'nondominated_{k}_reduced_only' for k in ('gpu_all', 'gpu_evolved', 'complete_all', 'complete_evolved')],
+                                  pre_a13=[f'nondominated_{k}_{w}' for k in ('gpu_all', 'gpu_evolved', 'complete_all', 'complete_evolved')
+                                           for w in ('admissible_own_gtol', 'reduced_only_own_gtol')],
+                                  unfiltered=[f'nondominated_{k}_all' for k in ('gpu_all', 'gpu_evolved', 'complete_all', 'complete_evolved')]),
+        audits=[dict(job_id=au['job_id'], intervals=au['intervals'], attempt=au['attempt'], result_sha256=au['result_sha256'],
+                     admissibility_rule=au.get('admissibility_rule')) for au in audits])
+    (od / 'summary.json').write_text(json.dumps(dict(stem=a.stem, admissibility=meta, rows=summary), indent=2) + '\n')
     print('WROTE', od / f'{a.stem}.md', len(summary), 'summary rows')
 
 

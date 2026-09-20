@@ -20,6 +20,17 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 IC_RESIDUAL_FLOOR = 1e-10
+# DESIGN.md §5 fixes the gradient threshold of the convergence rule at 1e-6 for EVERY reduced
+# subject, whatever tolerance the query was run at. Until 2026-09-19 (DESIGN §A13) this file
+# evaluated the rule against each invocation's own `gtol`, so the 1e-3 arms were flagged
+# converged at 1e-3; the Codex report audit caught it. `converged_design5` is now the primary
+# flag and defines `admissible`; the as-implemented flag is kept as `converged_own_gtol`.
+DESIGN5_GTOL = 1e-6
+ADMISSIBILITY_RULE = dict(
+    primary='converged_design5: DESIGN.md §5 as written — every time step g <= 1e-6 or residual-rule exit, '
+            'initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity',
+    secondary='converged_own_gtol: the same rule against each invocation\'s own gtol (1e-6 or 1e-3) — the flag the '
+              'report carried before DESIGN §A13 (2026-09-19); kept as a labelled secondary column, defines nothing')
 PAIRS = {'gpu_all': ('median_gpu_ms', 'worst_all_times_percent'),
          'gpu_evolved': ('median_gpu_ms', 'worst_evolved_percent'),
          'complete_all': ('median_host_ms', 'worst_all_times_percent'),
@@ -173,21 +184,32 @@ def main():
         info('fno_phase_present', False, str(tj), 'no FNO timing file: the FNO phase did not run or failed')
 
     # ------------------------------------------------ convergence re-derived --
-    dev = []
-    for x in roms:
+    def design5(x, gtol):
+        """DESIGN.md §5 (i)-(iii) with gradient threshold `gtol`."""
         reasons = x['stop_reasons']
         gj = np.asarray(x['step_joint_stationarity'], dtype=float)
-        gtol = x['gtol']
         step_ok = all(rr in (1, 2, 4) for rr in reasons)
         step_grad_ok = all((g <= gtol * (1 + 1e-7)) or (rr == 1) for g, rr in zip(gj, reasons))
         ic_ok = (x['ic_reason'] in (1, 2, 4)) and ((x['ic_joint_stationarity'] <= gtol * (1 + 1e-7))
                                                    or (x['ic_relative_residual'] <= IC_RESIDUAL_FLOOR))
-        conv = bool(step_ok and step_grad_ok and ic_ok)
+        return bool(step_ok and step_grad_ok and ic_ok)
+
+    dev = []
+    for x in roms:
+        gtol = x['gtol']
+        step_ok = all(rr in (1, 2, 4) for rr in x['stop_reasons'])
+        conv5 = design5(x, DESIGN5_GTOL)            # the pre-registered rule, fixed threshold
+        conv_own = design5(x, gtol)                 # the rule against the query's own gtol (pre-A13 flag)
         strict = bool(x['worst_joint_stationarity'] <= gtol * (1 + 1e-7) and step_ok and x['ic_reason'] in (1, 2, 4))
-        if conv != x['converged'] or strict != x['converged_strict']:
+        # the driver's own `converged` is the own-gtol flag; it and `converged_strict` must reproduce
+        if conv_own != x['converged'] or strict != x['converged_strict']:
             dev.append(dict(name=x['name'], case=x['case'], rep=x['rep']))
-        x['converged_audit'], x['converged_strict_audit'] = conv, strict
-    gate('convergence_flags_reproduced', not dev, dev[:5])
+        x['converged_design5_audit'], x['converged_own_gtol_audit'], x['converged_strict_audit'] = conv5, conv_own, strict
+    gate('convergence_flags_reproduced', not dev, dev[:5],
+         'the driver\'s converged / converged_strict flags (own-gtol rule) reproduce from the raw per-step quantities')
+    info('design5_flag_differs_from_own_gtol',
+         None, sorted({x['name'] for x in roms if x['converged_own_gtol_audit'] and not x['converged_design5_audit']}),
+         'reduced subjects converged at their own gtol but not under DESIGN §5\'s fixed 1e-6 (DESIGN §A13)')
 
     # ------------------------------------------------ per-subject rows --------
     setup = {s['arm']: s for s in r['arm_setup'] if 'arm' in s}
@@ -197,7 +219,7 @@ def main():
             arm=x['name'], kind=x['kind'], family=x['family'], q=x.get('q'), k=x.get('k'), M=x.get('M'), m=x.get('m'),
             quadrature=x.get('quadrature'), gtol=x.get('gtol'), dt=x.get('dt'), solved_dimension=x.get('solved_dimension'),
             rule_kind=x.get('rule_kind'), gpu_ms=[], host_ms=[], case_ref={}, case_all={}, case_ev={}, case_t0={},
-            per_time={}, iters=[], maxit=[], stat=[], stepstat=[], icstat=[], icrel=[], conv=[], strict=[], comp=[], be=[], exits=[],
+            per_time={}, iters=[], maxit=[], stat=[], stepstat=[], icstat=[], icrel=[], conv5=[], convo=[], strict=[], comp=[], be=[], exits=[],
             ntol=x.get('ntol'), ltol=x.get('ltol'), preconditioner=x.get('preconditioner'), newton=[]))
         t['gpu_ms'].append(x['gpu_seconds'] * 1e3)
         t['host_ms'].append(x['host_seconds'] * 1e3)
@@ -213,7 +235,8 @@ def main():
             t['stepstat'].append(float(np.max(x['step_joint_stationarity'])))
             t['icstat'].append(x['ic_joint_stationarity'])
             t['icrel'].append(x['ic_relative_residual'])
-            t['conv'].append(x['converged_audit'])
+            t['conv5'].append(x['converged_design5_audit'])
+            t['convo'].append(x['converged_own_gtol_audit'])
             t['strict'].append(x['converged_strict_audit'])
             t['comp'].append(x['completed'])
             t['be'].append(x['budget_exits'])
@@ -225,15 +248,18 @@ def main():
     for name, t in table.items():
         s = setup.get(name, {})
         rule = s.get('rule') or {}
-        conv = bool(all(t['conv'])) if t['conv'] else None
+        conv5 = bool(all(t['conv5'])) if t['conv5'] else None
+        convo = bool(all(t['convo'])) if t['convo'] else None
         basis = rule.get('basis')
         certified = (basis in ('primary', 'secondary')) if t['quadrature'] == 'eq' else None
-        if t['kind'] in ('fom', 'fno'):
-            admissible = True
-        elif t['family'] == 'fast':
-            admissible = bool(conv) and fast_ok and (certified is not False)
-        else:
-            admissible = bool(conv) and (certified is not False)
+
+        def adm(conv):
+            if t['kind'] in ('fom', 'fno'):
+                return True
+            if t['family'] == 'fast':
+                return bool(conv) and fast_ok and (certified is not False)
+            return bool(conv) and (certified is not False)
+        admissible, admissible_own = adm(conv5), adm(convo)
         rows.append(dict(
             arm=name, kind=t['kind'], family=t['family'], q=t['q'], k=t['k'], M=t['M'], m=t['m'],
             quadrature=t['quadrature'], gtol=t['gtol'], dt=t['dt'], solved_dimension=t['solved_dimension'],
@@ -265,11 +291,13 @@ def main():
             max_step_stationarity=(float(np.max(t['stepstat'])) if t['stepstat'] else None),
             max_ic_stationarity=(float(np.max(t['icstat'])) if t['icstat'] else None),
             max_ic_relative_residual=(float(np.max(t['icrel'])) if t['icrel'] else None),
-            converged=conv, converged_strict=(bool(all(t['strict'])) if t['strict'] else None),
+            converged_design5=conv5, converged_own_gtol=convo,
+            converged_strict=(bool(all(t['strict'])) if t['strict'] else None),
             completed=(bool(all(t['comp'])) if t['comp'] else None),
             total_budget_exits=(int(np.sum(t['be'])) if t['be'] else None),
             exit_reason_counts=({str(k): int(v) for k, v in zip(*np.unique(t['exits'], return_counts=True))} if t['exits'] else None),
-            admissible=bool(admissible)))
+            # `admissible` is defined by DESIGN §5 (converged_design5); the pre-A13 flag is kept beside it
+            admissible=bool(admissible), admissible_design5=bool(admissible), admissible_own_gtol=bool(admissible_own)))
     for row in rows:
         row.pop('median_of_case_median_gpu_ms', None)
     floors = {}
@@ -343,8 +371,11 @@ def main():
         ndr = [x for x in adm if x['arm'] in nd]
         return dict(arms=[x['arm'] for x in lad], q_or_k=[x['q'] if x['q'] is not None else x['k'] for x in lad],
                     worst_evolved_percent=ev, worst_all_times_percent=al, median_gpu_ms=cost,
-                    converged=[x['converged'] for x in lad], admissible=[x['admissible'] for x in lad],
-                    monotone_evolved=mono(ev), monotone_all_times=mono(al), all_converged=bool(all(x['converged'] for x in lad)),
+                    converged_design5=[x['converged_design5'] for x in lad], converged_own_gtol=[x['converged_own_gtol'] for x in lad],
+                    admissible=[x['admissible'] for x in lad], admissible_own_gtol=[x['admissible_own_gtol'] for x in lad],
+                    monotone_evolved=mono(ev), monotone_all_times=mono(al),
+                    all_converged=bool(all(x['converged_design5'] for x in lad)),
+                    all_converged_own_gtol=bool(all(x['converged_own_gtol'] for x in lad)),
                     nondominated_converged_points=len(ndr),
                     error_span=(max(x['worst_evolved_percent'] for x in ndr) / max(min(x['worst_evolved_percent'] for x in ndr), 1e-300) if ndr else None),
                     cost_span=(max(x['median_gpu_ms'] for x in ndr) / max(min(x['median_gpu_ms'] for x in ndr), 1e-300) if ndr else None))
@@ -364,13 +395,16 @@ def main():
     nd = {}
     reduced_fams = {'rom', 'fast', 'pod', 'free'}
     for tag, (ck_, ek) in PAIRS.items():
-        adm = [x for x in rows if x['admissible']]
+        adm = [x for x in rows if x['admissible']]                 # DESIGN §5 (primary)
+        adm_own = [x for x in rows if x['admissible_own_gtol']]    # pre-A13 flag (secondary, labelled)
         nd[tag] = dict(cost=ck_, error=ek, all=nondominated(rows, ck_, ek),
                        admissible=nondominated(adm, ck_, ek),
+                       admissible_own_gtol=nondominated(adm_own, ck_, ek),
                        # DESIGN.md A4, added after seeing job 1: the frontier among REDUCED
                        # subjects only, which is what "does the nonlinear manifold beat POD"
                        # asks. It changes no pre-registered criterion and is labelled post-hoc.
-                       reduced_only=nondominated([x for x in adm if x['family'] in reduced_fams], ck_, ek))
+                       reduced_only=nondominated([x for x in adm if x['family'] in reduced_fams], ck_, ek),
+                       reduced_only_own_gtol=nondominated([x for x in adm_own if x['family'] in reduced_fams], ck_, ek))
     # the FOM controls' own reference error (the mesh's discretisation error) for context
     disc = {x['arm']: x['worst_reference_percent'] for x in rows if x['family'] == 'fom'}
 
@@ -379,6 +413,7 @@ def main():
     out = dict(result=str(Path(a.result).resolve()), reference_mesh=cfg.get('reference_mesh'),
                result_sha256=hashlib.sha256(Path(a.result).read_bytes()).hexdigest(),
                job_id=r.get('job_id'), commit=r.get('commit'), gpu=r.get('gpu'), attempt=attempt, intervals=L, dt=dt,
+               admissibility_rule=ADMISSIBILITY_RULE, design5_gtol=DESIGN5_GTOL,
                mem_fraction=r.get('mem_fraction'), elapsed_seconds=r.get('elapsed_seconds'), K=K, R=r['R'],
                output_times=r['output_times'], checks=checks, failed=sorted(fail), arms=rows, ladders=ladders,
                nondominated=nd, fom_discretisation_error_percent=disc, dropped=r['dropped'], rules=r['rules'],
@@ -390,7 +425,8 @@ def main():
                compile_warmup=r.get('compile_warmup'), timed_subjects=r.get('timed_subjects'))
     Path(a.out).write_text(json.dumps(out, indent=2) + '\n')
     print(json.dumps(dict(failed=sorted(fail), arms=len(rows), dropped=len(r['dropped']),
-                          nondominated_gpu_evolved_admissible=nd['gpu_evolved']['admissible']), indent=2))
+                          nondominated_gpu_evolved_admissible=nd['gpu_evolved']['admissible'],
+                          nondominated_gpu_evolved_admissible_own_gtol=nd['gpu_evolved']['admissible_own_gtol']), indent=2))
     print('AUDIT WROTE', a.out)
 
 

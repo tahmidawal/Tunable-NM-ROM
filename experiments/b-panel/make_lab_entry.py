@@ -51,18 +51,18 @@ def main():
                  f"failed gates: {', '.join(au['failed']) or 'none'}; dropped by the OOM rule: "
                  f"{', '.join(d['name'] for d in au['dropped']) or 'none'}.")
         L.append('')
-        L.append('| subject | family | q / k′ | quad. | rule set | basis | rule status | tol | worst all % | worst evolved % | t=0 % | vs ref % | GPU ms | complete ms | med it | budget exits | converged | strict | admissible |')
-        L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
+        L.append('| subject | family | q / k′ | quad. | rule set | basis | rule status | tol | worst all % | worst evolved % | t=0 % | vs ref % | GPU ms | complete ms | med it | budget exits | converged (§5) | converged (own tol) | strict | admissible (§5) | admissible (own tol, pre-A13) |')
+        L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         for x in au['arms']:
             qk = x['q'] if x['q'] is not None else (x['k'] if x['k'] is not None else '—')
             L.append(f"| `{x['arm']}` | {x['family']} | {qk} | {x['quadrature'] or '—'} | {x.get('rule_set') or '—'} | {x['rule_basis'] or '—'} | {x.get('rule_status') or '—'} | "
                      f"{('%.0e' % x['gtol']) if x['gtol'] is not None else '—'} | {f(x['worst_all_times_percent'])} | "
                      f"{f(x['worst_evolved_percent'])} | {f(x['worst_t0_compression_percent'])} | {f(x['worst_reference_percent'])} | "
                      f"{f(x['median_gpu_ms'], 3)} | {f(x['median_host_ms'], 3)} | {f(x['median_iterations'], 1)} | "
-                     f"{f(x['total_budget_exits'])} | {f(x['converged'])} | {f(x['converged_strict'])} | {f(x['admissible'])} |")
+                     f"{f(x['total_budget_exits'])} | {f(x['converged_design5'])} | {f(x['converged_own_gtol'])} | {f(x['converged_strict'])} | {f(x['admissible'])} | {f(x['admissible_own_gtol'])} |")
         L.append('')
         for key, v in au['nondominated'].items():
-            L.append(f"Non-dominated ({v['cost']}, {v['error']}), admissible: " + (', '.join(f'`{s}`' for s in v['admissible']) or 'none') + '.')
+            L.append(f"Non-dominated ({v['cost']}, {v['error']}), admissible (DESIGN §5): " + (', '.join(f'`{s}`' for s in v['admissible']) or 'none') + '; pre-A13 own-tolerance flag: ' + (', '.join(f'`{s}`' for s in v.get('admissible_own_gtol', [])) or 'none') + '.')
         L.append('')
         for name, lad in au['ladders'].items():
             if lad:

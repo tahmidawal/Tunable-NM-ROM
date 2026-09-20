@@ -12,11 +12,17 @@ The timed engine carries only the current field and requested output buffer; it 
 
 The bounded GPU smoke `cg_smoke.py` passes independent SciPy modal-CN and NumPy true-residual comparisons, including capped failure and zero-RHS cases; numerical evidence is in `smokes/iterative-cg.json`. This verifies implementation only. No new heat allocation or final-data access occurred during this addition.
 
-## Current resumed ownership
+## Current slot handoff — reactivate this heat owner before 17:45 UTC
 
-The heat owner resumed after the CG implementation handoff and continues the existing approved campaign. Coverage05 remains the only live heat allocation. The next steps remain collection and independent audit, complete output retention with actual Git-blob verification, exact remote cleanup, then paired development and final freeze. Final data remain unopened.
+Heat owner `/root/heat3d_iterative_cg` is releasing its agent slot around 16:43 UTC so the already-running Burgers final can be collected. This is a training wait, not a completed heat campaign. `/root/ns3d_resume_final` confirmed it remains active and will immediately reactivate `/root/burgers3d_resume_final` for B007 job `4021709`, using that lane's `decf442d` handoff. NS will instruct Burgers to arrange heat reactivation before 17:45 UTC. If the slot remains occupied, NS or Poisson must rotate a waiting owner; do not leave heat unowned at completion.
 
-An additional complete driver smoke now exercises the timed CG dispatch, untimed exact trace replay, saved fields and counters together with ROM/POD/DST controls. Field and residual audits pass; its generated evidence lives in `smokes/iterative-cg-query-{field,residual}-audit.json`. This is implementation verification only. The earlier larger smoke hit its declared local wall cap during multi-arm compilation, before any timed invocation; its incomplete record/log and explicit timeout disposition remain under `smokes/iterative-cg-panel*`.
+Coverage05 remains the only live heat allocation: job `4018922`, immutable source `91d60ace229bbd4a27001b312ced73ebac225d86`, remote `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/coverage05`, node pax105. At 16:40 UTC it had run about 75 minutes and seedA Transolver was at its late training checkpoints. SeedB and the original-data control follow in the same driver. Its first compile took roughly 16 minutes; the preserved logs showed a slow-compilation warning, not a captured-large-constant warning. The job has a three-hour wall limit ending about 18:27 UTC. Monitor for completion before then. No final cohort has been accessed and no next heat job has been staged or submitted.
+
+All prospective CG controls and checks are committed. The next primary `developmentA.json` now has nine counted CG arms, while DST remains present. Source stages include `iterative_cg.py` and `audit_cg.py`; the latter additionally requires every configured CG arm. No live source/configuration was modified.
+
+An additional complete driver smoke exercises timed CG dispatch, separate untimed exact trace replay, saved fields and counters with ROM/POD/DST controls. Field and residual audits pass; evidence is `smokes/iterative-cg-query-{field,residual}-audit.json`. The earlier larger smoke hit its declared local wall cap during multi-arm compilation before any timed invocation; its incomplete record/log and timeout disposition remain under `smokes/iterative-cg-panel*`. Both are implementation diagnostics, not paper results.
+
+Resume sequence: collect coverage05 WITHOUT immediate remote removal, independently audit all seeds; retain complete output with `retain_fields.py coverage05 --all-output`; commit and verify actual Git blobs; then remove only the exact completed remote directory and update `COLLECTED.json`. Stage/run `developmentA.json` plus seedB with CG/NM-ROM/POD/operators/DST in one job. Independently audit all fields/states/counters and actual frozen development replay, choose the primary head only from development, and perform the existing unopened final protocol. Preserve the primary CG configurations in the final freeze and keep all failed/negative arms visible. Root alone updates canonical LAB; report exact commits and findings to root.
 
 ## Resume here
 
@@ -32,10 +38,10 @@ Head04 passed the independent field/PCA/reference/analytic-gradient audit. Its f
 
 The exact configuration is `coverage05.json`. The driver trains two fresh bank/head/operator seeds, plus an NM-ROM-only original-data control. SeedA was designated primary before submission; seedB is independent initialization robustness. All methods in the primary/robustness cohorts receive the same training members and six-time heat trajectory contract. The original training draw is an exactly checked prefix, not an assumed extension. No seed is selected using final results.
 
-After coverage05 ends, collect with:
+After coverage05 ends, collect with (defer remote cleanup until actual Git retention is verified):
 
 ```bash
-OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 /home/tahmid/Dev/.venv/bin/python experiments/paper-h3d/cluster/collect.py coverage05 --remove-verified
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 /home/tahmid/Dev/.venv/bin/python experiments/paper-h3d/cluster/collect.py coverage05
 /home/tahmid/Dev/.venv/bin/python experiments/paper-h3d/retain_fields.py coverage05 --all-output
 ```
 

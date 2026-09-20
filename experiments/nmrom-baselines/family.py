@@ -286,7 +286,7 @@ def main():
             p0 = kimae.init(jax.random.PRNGKey(int(v['seed'])), n, K, M1, M2, idx, valid, tdt)
             Xn = (D / sc).astype(np.float32 if bytes_ == 4 else np.float64)
             del D
-            p, info = kimae.train(p0, jnp.asarray(Xn[perm[nva:]]), jnp.asarray(Xn[perm[:nva]]), idx, valid, act, batch=240, micro=micro,
+            p, info = kimae.train(p0, jnp.asarray(Xn[perm[nva:]]), jnp.asarray(Xn[perm[:nva]]), idx, valid, act, ny=m, b=v['b'], db=v['db'], batch=240, micro=micro,
                                   max_epochs=int(v['max_epochs']), wall_seconds=float(v['wall']), seed=int(v['seed']),
                                   lr0=float(v['lr']), lr_patience=int(v['patience']), tag=name)
             del Xn, p0

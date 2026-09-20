@@ -147,7 +147,7 @@ def main():
             Xn = Dc / sc
             p0 = kimae.init(jax.random.PRNGKey(1000 * seed + c), n, a.ns, M1, M2, idx, valid, tdt)
             p, info = kimae.train(p0, jnp.asarray(Xn[tr], tdt), jnp.asarray(Xn[va], tdt), idx, valid, act,
-                                  batch=240, micro=240, max_epochs=a.max_epochs, wall_seconds=a.train_wall,
+                                  ny=m, b=a.b, db=a.db, batch=240, micro=240, max_epochs=a.max_epochs, wall_seconds=a.train_wall,
                                   seed=seed, tag=f'seed{seed}-{name}')
             np.save(out / f'history_seed{seed}_{name}.npy', info.pop('history'))
             rec['train'][name] = info

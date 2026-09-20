@@ -39,9 +39,10 @@ def mask_tables(nx, ny, b, db):
     lo = np.where(iy > 0, np.arange(n) - 1, np.arange(n)) * db
     hi = np.where(iy < ny - 1, np.arange(n) + 1, np.arange(n)) * db + b
     w = b + 2 * db
-    cols = lo[:, None] + np.arange(w)[None]
+    # the stored window always starts at (i-1)*db so that it is a strided window of the hidden vector
+    cols = ((np.arange(n) - 1) * db)[:, None] + np.arange(w)[None]
     idx[:, :w] = cols
-    valid[:, :w] = cols < hi[:, None]
+    valid[:, :w] = (cols >= lo[:, None]) & (cols < hi[:, None])
     # x-neighbour blocks (i-ny, i+ny); skip the part already covered by the middle block
     for k, (has, start) in enumerate(((ix > 0, (np.arange(n) - ny) * db),
                                       (ix < nx - 1, (np.arange(n) + ny) * db))):
@@ -92,8 +93,26 @@ def hidden(p, z, act):
 
 
 def decode(p, z, idx, act):
-    """Normalised decoder output for one latent vector; W2 is already zero where invalid."""
+    """Normalised decoder output for one latent vector; W2 is already zero where invalid.
+    Gather form: used for sub-networks and online queries (small or forward-mode only)."""
     return jnp.einsum('np,np->n', p['W2'], hidden(p, z, act)[idx])
+
+
+def masked_out(W2, h, ny, b, db):
+    """(S*W2) h without gather/scatter, for training: every stored window is a run of b/db (+2)
+    consecutive length-db blocks of h, so it is a sum of sliced products. XLA's scatter-add (the
+    gather's transpose) took > 20 min per epoch on an A100 at n=3364; slices transpose to pads."""
+    n = W2.shape[0]; c = b // db
+    assert c * db == b and W2.shape[1] == 3 * b + 2 * db
+    Hb = h.reshape(n - 1 + c, db)
+    Hm = jnp.pad(Hb, ((1, 1), (0, 0)))
+    Hq = jnp.pad(Hb, ((ny, ny), (0, 0)))
+    Wm = W2[:, :b + 2 * db].reshape(n, c + 2, db)
+    Wu = W2[:, b + 2 * db:2 * b + 2 * db].reshape(n, c, db)
+    Wd = W2[:, 2 * b + 2 * db:].reshape(n, c, db)
+    out = sum(jnp.sum(Wm[:, k] * Hm[k:k + n], 1) for k in range(c + 2))
+    out = out + sum(jnp.sum(Wu[:, k] * Hq[k:k + n], 1) + jnp.sum(Wd[:, k] * Hq[2 * ny + k:2 * ny + k + n], 1) for k in range(c))
+    return out
 
 
 def n_params(p, valid):
@@ -105,7 +124,7 @@ def n_params(p, valid):
 
 # ---------------------------------------------------------------- training
 
-def make_train(act, micro):
+def make_train(act, micro, ny, b, db):
     """Adam epoch over shuffled batches with micro-batch gradient accumulation.
 
     Returns epoch(p, opt, X, perm, lr, step0, idx, W2valid) and evalloss(p, X, idx); the index
@@ -113,7 +132,7 @@ def make_train(act, micro):
     X is the normalised snapshot matrix (N, n); perm is (nbatch, batch) int32.
     """
     def loss_rows(p, xb, idx):
-        rec = jax.vmap(lambda x: decode(p, encode(p, x, act), idx, act))(xb)
+        rec = jax.vmap(lambda x: masked_out(p['W2'], hidden(p, encode(p, x, act), act), ny, b, db))(xb)
         return jnp.sum((rec - xb) ** 2)
 
     def batch_grad(p, xb, idx):
@@ -166,7 +185,7 @@ def make_train(act, micro):
     return epoch, tail, evalloss
 
 
-def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_seconds, seed,
+def train(p, Xtr, Xva, idx, valid, act, *, ny, b, db, batch, micro, max_epochs, wall_seconds, seed,
           lr0=1e-3, lr_factor=.1, lr_patience=10, stop_patience=200, min_lr=1e-8, log=print, tag=''):
     """The paper's protocol: Adam, lr 1e-3, x0.1 when the TRAINING loss stagnates for 10 epochs
     (torch ReduceLROnPlateau defaults: relative threshold 1e-4), early stop when the VALIDATION
@@ -180,7 +199,7 @@ def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_second
     N = Xtr.shape[0]
     batch = min(batch, N); micro = min(micro, batch)
     assert batch % micro == 0
-    epoch, tail, evalloss = make_train(act, micro)
+    epoch, tail, evalloss = make_train(act, micro, ny, b, db)
     nb = N // batch                                  # full batches; the ragged tail is a separate step (torch drop_last=False)
     lr, best_tr, bad_tr, best_va, bad_va, best_p = lr0, np.inf, 0, np.inf, 0, p
     hist, t0, step, reason = [], time.monotonic(), 1, 'max_epochs'

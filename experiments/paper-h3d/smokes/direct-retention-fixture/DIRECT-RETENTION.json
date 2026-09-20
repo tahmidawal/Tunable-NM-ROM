@@ -1,0 +1,44 @@
+{
+  "schema": "heat3d-direct-git-retention-v1",
+  "original_files_unchanged": true,
+  "scope": "Every collected archive file except cache/tmp/__pycache__; no scientific files omitted.",
+  "files": [
+    {
+      "path": "archive/large.bin",
+      "bytes": 128,
+      "sha256": "471fb943aa23c511f6f72f8d1652d9c880cfa392ad80503120547703e56a2be5",
+      "chunks": [
+        {
+          "path": "large-artifacts/fe07cd170d17f7ee7df5b6fa78c7747c881e68c172df25b99276ef459a35214f/part00000",
+          "bytes": 32,
+          "sha256": "630dcd2966c4336691125448bbb25b4ff412a49c732db2c8abc1b8581bd710dd"
+        },
+        {
+          "path": "large-artifacts/fe07cd170d17f7ee7df5b6fa78c7747c881e68c172df25b99276ef459a35214f/part00001",
+          "bytes": 32,
+          "sha256": "72dbb7336c76780023f83da4c355f2eeea85733b13d3477697917790c1229084"
+        },
+        {
+          "path": "large-artifacts/fe07cd170d17f7ee7df5b6fa78c7747c881e68c172df25b99276ef459a35214f/part00002",
+          "bytes": 32,
+          "sha256": "ca2a4fe727faaecf16ecd130a86e0885c5540c05375340445071c0657555fd42"
+        },
+        {
+          "path": "large-artifacts/fe07cd170d17f7ee7df5b6fa78c7747c881e68c172df25b99276ef459a35214f/part00003",
+          "bytes": 32,
+          "sha256": "4d8d274ff7e176af977a95a0055c8c5f3478d38640343a060cee893e56f39957"
+        }
+      ]
+    },
+    {
+      "path": "archive/small.bin",
+      "bytes": 26,
+      "sha256": "b49c31e7b6a4bb41c403e104fe54ffb301527d8afb78d3c3109fdb1082df8d30",
+      "chunks": []
+    }
+  ],
+  "bytes": 154,
+  "chunk_limit": 32,
+  "root_relative": "experiments/paper-h3d/smokes/direct-retention-fixture",
+  "restore_command": "Use direct_retention.py ATTEMPT --restore COMMIT --member archive/RELATIVE_PATH"
+}

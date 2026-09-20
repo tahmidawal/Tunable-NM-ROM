@@ -1,0 +1,172 @@
+{
+ "attempt": "smoke64",
+ "allow_cpu_smoke": false,
+ "intervals": 64,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "case_subset": [
+  0,
+  4
+ ],
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "population": {
+  "mesh": 64,
+  "fit_trajectories": [
+   0,
+   1
+  ],
+  "cert_trajectories": [
+   8
+  ],
+  "fit_states": 24,
+  "seed": 20260920
+ },
+ "target_chunk": 8,
+ "restrict_to": 64,
+ "fast_arm_q0": "C1",
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "lat32",
+     "parts": [
+      {
+       "lattice": 32
+      }
+     ],
+     "base": true
+    }
+   ]
+  },
+  {
+   "q": 4,
+   "M": 80,
+   "gtols": [
+    1e-06,
+    0.001
+   ],
+   "solvers": [
+    "lu",
+    "chol"
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "lat32",
+     "parts": [
+      {
+       "lattice": 32
+      }
+     ],
+     "base": true
+    },
+    {
+     "name": "mix",
+     "parts": [
+      {
+       "lattice": 16
+      },
+      {
+       "random": 400,
+       "seed": 3
+      }
+     ],
+     "refit": "state",
+     "control": true
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 10,
+ "dense_deadline_seconds": 100000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c32_nt1e-4_dt005",
+   "mesh": 32,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q4_M80_lat32_g0p001_fast"
+ ],
+ "reps": 2,
+ "order_seed": 1,
+ "burn_seconds": 0.02,
+ "profile_arms": [
+  "q4_M80_lat32_g0p001_fast"
+ ],
+ "reference": {
+  "mesh": 128,
+  "dt": 0.0025,
+  "ntol": 1e-11,
+  "ltol": 1e-09,
+  "cases": [
+   0
+  ],
+  "deadline_seconds": 100000,
+  "accept_residual": 2e-11
+ },
+ "parity_bar": 1e-09,
+ "required_reps": 2,
+ "local_smoke_waives_cohort_hash": true,
+ "keep_for_reference": [
+  "fft_tight",
+  "nt1e",
+  "c32",
+  "lat32_g0p001_fast"
+ ]
+}

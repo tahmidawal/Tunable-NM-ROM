@@ -1,0 +1,405 @@
+{
+ "attempt": "hb2k01",
+ "intervals": 2048,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "population": {
+  "mesh": 512,
+  "fit_trajectories": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "cert_trajectories": [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "fit_states": 128,
+  "seed": 20260920
+ },
+ "target_chunk": 8,
+ "restrict_to": 256,
+ "fast_arm_q0": "C1",
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001,
+    1e-06
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "xfer",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+       "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+       "mesh": 256,
+       "status": "confirmed (3/3) at 256^2"
+      }
+     ],
+     "refit": "state",
+     "base": true
+    },
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+       "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+       "mesh": 256,
+       "status": "confirmed (3/3) at 256^2"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 128,
+   "M": 576,
+   "gtols": [
+    0.001,
+    1e-06
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "xfer",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+       "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ],
+     "refit": "state",
+     "base": true
+    },
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+       "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 544,
+   "gtols": [
+    0.001,
+    1e-06
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "xfer",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ],
+     "refit": "state",
+     "base": true
+    },
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.001,
+    1e-06
+   ],
+   "solvers": [
+    "lu",
+    "chol"
+   ],
+   "dense": true,
+   "rules": [
+    {
+     "name": "xfer",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ],
+     "refit": "state",
+     "base": true
+    },
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    },
+    {
+     "name": "badfit",
+     "parts": [
+      {
+       "file": "rules/rule_q256_reachable_m2048.npz",
+       "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+       "mesh": 256,
+       "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+      }
+     ],
+     "refit": "state",
+     "control": false
+    },
+    {
+     "name": "bad0",
+     "parts": [
+      {
+       "file": "rules/rule_q256_reachable_m2048.npz",
+       "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+       "mesh": 256,
+       "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+      }
+     ],
+     "control": true
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c1024_nt1e-4_dt005",
+   "mesh": 1024,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "c512_nt1e-4_dt005",
+   "mesh": 512,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "nt1e-4_dt005",
+  "q0_M64_xfer_g0p001_fast",
+  "q256_M1088_xfer_g0p001_fast",
+  "q256_M544_xfer_g0p001_fast",
+  "q128_M576_xfer_g0p001_fast",
+  "q256_M1088_scaled_g0p001_fast",
+  "q256_M1088_lat64_g0p001_fast"
+ ],
+ "reps": 5,
+ "order_seed": 20260920,
+ "burn_seconds": 0.25,
+ "profile_arms": [
+  "q256_M1088_xfer_g0p001_fast",
+  "q256_M1088_xfer_g1em06_fast",
+  "q256_M544_xfer_g0p001_fast",
+  "q128_M576_xfer_g0p001_fast",
+  "q256_M1088_lat64_g0p001_fast",
+  "q256_M1088_scaled_g0p001_fast"
+ ],
+ "reference": {
+  "mesh": 8192,
+  "dt": 0.0003125,
+  "ntol": 1e-11,
+  "ltol": 1e-09,
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "deadline_seconds": 50000,
+  "accept_residual": 2e-11
+ },
+ "purpose": "DESIGN.md: first job. Does corrected accuracy survive frozen-weight transfer to 2048^2; rule transfer + certification; first same-allocation panel vs Newton-BiCGStab; profile of the accurate rung.",
+ "rule_notes": {
+  "scaled": "b-eqtop nodes at the same physical points, weights multiplied by (L/256)^2, NO refit",
+  "xfer": "same support, NNLS weight refit on 128 fit states, per-state scaling",
+  "lat64": "uniform 63x63 interior sub-lattice, equal weights",
+  "bad0": "CONTROL: the historically regressing q-ridge rule with its ORIGINAL weights scaled by (L/256)^2; expected to fail the certificate and to regress",
+  "badfit": "the same support with weights refit; labelled separately, not a control"
+ },
+ "parity_bar": 1e-09,
+ "fom_notes": "audited = iterative_paths.make_fom (the named comparator of every earlier panel; it also records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic: the FOM at its best. Both are reported; speedups are quoted against the FASTER of the two at each tolerance."
+}

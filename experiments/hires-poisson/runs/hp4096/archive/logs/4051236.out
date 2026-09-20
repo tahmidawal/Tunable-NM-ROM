@@ -1,0 +1,25 @@
+host=pax011 source_commit=4ef296c34ccf367b0bcd9d038c7c35b462a78276
+NVIDIA H200, GPU-1fd35deb-68c1-9288-ccdc-d263a762ecde, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  4.2T  443G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCES 35.3
+DIRECTIONS 7b556726166e 44.3
+ASSEMBLY GATE {'intervals': 64, 'operator_relative': 5.298228266587376e-16, 'bank_relative': 1.2758355793425024e-15, 'floor_chunked': [0.0011924582380822158, 0.0003989940819958692, 0.0005392060808647022], 'floor_direct_lstsq': [0.0011924582507275498, 0.00039899408116375536, 0.0005392060568941743], 'floor_max_abs_difference': 2.3970527819605625e-11, 'trust_matches': True, 'passed': True}
+BANK 10.091153724119067 floor worst 0.007418947498652935
+WARMUP 32 43.2
+TIMED 0 506.8
+TIMED 1 826.5
+TIMED 2 1144.7
+TIMED 3 1463.1
+TIMED 4 1782.7
+PARITY {'candidate': 'rom_q0_lean32', 'baseline': 'rom_q0_lean64', 'worst_field_relative': 1.1620902057885787e-07, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q64_lean32', 'baseline': 'rom_q64_lean64', 'worst_field_relative': 2.9975155786848357e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q128_lean32', 'baseline': 'rom_q128_lean64', 'worst_field_relative': 3.9959107286331316e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean32', 'baseline': 'rom_q256_lean64', 'worst_field_relative': 3.7640187954617574e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q512_linear_lean32', 'baseline': 'rom_q512_linear_lean64', 'worst_field_relative': 2.9305042354739993e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+GATES {'assembly': True, 'parity_coverage': True, 'parity': True, 'diagnostics_coverage': True, 'solver_validity': True, 'deterministic': True}
+HIRES SOLVE COMPLETE
+AUDIT PASSED {'driver_gates': True, 'final_uuid_matches': True, 'deterministic': True, 'coverage': True, 'parity_present_and_passed': True, 'diagnostics_present_and_valid': True, 'verdict_computable': True} 3750 checks; worst difference 0.0
+VERDICT {'arm': 'rom_q256_lean64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.009645378401525611, 'speedup_total': 41.08216703443935, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': False, 'speed_bar_5x': True, 'bar_met': True}
+ALL-DONE

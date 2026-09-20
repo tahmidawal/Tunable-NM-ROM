@@ -78,6 +78,7 @@ def engine(model,bank,a,lam,projection,indices,q,cfg,dt=None):
     else:qq=np.zeros((a.shape[0],0));rr=np.zeros((0,0));ap=a
     params=model['params'];codes=jnp.asarray(model['codes']);library=C.head(params,codes)@jnp.asarray(ap).T
     fit=lm(C.head,cfg['lm_budget'],cfg['lm_tolerance'])
+    initial_fit=lm(C.head,cfg.get('initial_lm_budget',cfg['lm_budget']),cfg['lm_tolerance'])
     nsteps=round(cfg['times'][-1]/dt);stride=round((cfg['times'][1]-cfg['times'][0])/dt)
     assert np.allclose(np.arange(len(cfg['times']))*stride*dt,cfg['times'])
 
@@ -86,7 +87,7 @@ def engine(model,bank,a,lam,projection,indices,q,cfg,dt=None):
         target=projection.T@u0.reshape(-1)[indices]
         projected=target-qq@(qq.T@target)
         order=jnp.argsort(jnp.sum((library-projected)**2,axis=1))[:cfg['initial_starts']]
-        zs,stats=jax.vmap(lambda z:fit(params,ap,projected,z))(codes[order])
+        zs,stats=jax.vmap(lambda z:initial_fit(params,ap,projected,z))(codes[order])
         which=jnp.argmin(stats[:,3]);z=zs[which]
         def recover(z,target):
             h=C.head(params,z)
@@ -170,7 +171,9 @@ def best_found_fields(model,bank,fields,cfg):
     basis,triangular=np.linalg.qr(bank,mode='reduced')
     targets=np.asarray(fields).reshape(-1,len(bank))@basis
     p=model['params'];codes=jnp.asarray(model['codes']);mat=jnp.asarray(triangular)
-    library=C.head(p,codes)@mat.T;solve=lm(C.head,max(160,cfg['lm_budget']),min(1e-9,cfg['lm_tolerance']))
+    library=C.head(p,codes)@mat.T
+    solve=lm(C.head,cfg.get('representation_fit_budget',max(160,cfg['lm_budget'])),
+             cfg.get('representation_fit_tolerance',min(1e-9,cfg['lm_tolerance'])))
     @jax.jit
     def fit(targets,p,codes,matrix,library):
         def single(target):

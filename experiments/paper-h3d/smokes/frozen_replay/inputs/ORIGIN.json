@@ -1,0 +1,480 @@
+{
+  "source_attempt": "tiny_fixture",
+  "source_commit": null,
+  "job_id": null,
+  "original_result_sha256": "c60a256ae826dad017c9a1a9543e4f89a61b3ad84af4e0b3f096e4487a55302d",
+  "config": {
+    "schema": "paper-heat3d-tuning-operators-v2",
+    "train_intervals": 8,
+    "evaluation_intervals": [
+      8
+    ],
+    "reference_intervals": [
+      8,
+      16
+    ],
+    "train_count": 4,
+    "validation_count": 1,
+    "train_seed": 920310,
+    "validation_seed": 920311,
+    "reserved_final_seed": 920399,
+    "model_seed": 920312,
+    "bank_minibatch_seed": 920313,
+    "head_minibatch_seed": 920314,
+    "timing_seed": 920315,
+    "quadrature_seed": 920316,
+    "diffusivity": 0.02,
+    "times": [
+      0.0,
+      0.1,
+      0.2
+    ],
+    "dt": 0.025,
+    "bank_rank": 8,
+    "latent_dimensions": [
+      2
+    ],
+    "bank_steps": 3,
+    "head_steps": 3,
+    "bank_batch_states": 4,
+    "bank_batch_points": 64,
+    "head_batch_states": 128,
+    "bank_learning_rate": 0.001,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 1,
+    "fourier_features": 4,
+    "fourier_scale": 1.5,
+    "bank_width": 16,
+    "head_width": 16,
+    "weak_tests": 32,
+    "q_ladder": [
+      0,
+      2
+    ],
+    "quadrature_candidates": 128,
+    "quadrature_decoder_snapshots": 4,
+    "quadrature_fit_rows": 64,
+    "quadrature_certificate": 0.01,
+    "lm_budget": 8,
+    "lm_tolerance": 1e-06,
+    "initial_starts": 2,
+    "repetitions": 1,
+    "burn_seconds": 0.001,
+    "reference_budget": 0.0001,
+    "field_chunk": 1024,
+    "final_cohort_opened": false,
+    "bank_validation_selection": true,
+    "bank_tail_weight": 0.1,
+    "bank_coefficient_refit_every": 1,
+    "quadrature_scale_floor": 0.1,
+    "operators": [
+      {
+        "name": "fno3d_w16_m6",
+        "model": {
+          "kind": "fno3d",
+          "width": 2,
+          "modes": [
+            2,
+            2,
+            2
+          ],
+          "depth": 1,
+          "padding": 1,
+          "levels": 2
+        },
+        "training": {
+          "steps": 3,
+          "wall_seconds": 20,
+          "batch_size": 2,
+          "seed": 920321,
+          "learning_rate": 0.001,
+          "validation_every": 2,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        }
+      },
+      {
+        "name": "unet3d_w8",
+        "model": {
+          "kind": "unet3d",
+          "width": 2,
+          "levels": 2,
+          "periodic": false,
+          "modes": [
+            2,
+            2,
+            2
+          ],
+          "depth": 1,
+          "padding": 1
+        },
+        "training": {
+          "steps": 3,
+          "wall_seconds": 20,
+          "batch_size": 2,
+          "seed": 920322,
+          "learning_rate": 0.001,
+          "validation_every": 2,
+          "curve_every": 50,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        }
+      }
+    ],
+    "frozen_operators": [
+      "fno3d_w16_m6",
+      "unet3d_w8"
+    ]
+  },
+  "files": {
+    "bank.pkl": "bd814c89f14277b831c1c904fb50d909b712652436f6737253c738373691b8ff",
+    "bank_curve.json": "214813b92f138b4068059e64d7aeef0c8d910d12c9ad4cd9a35200bc22dd462e",
+    "cohorts.json": "363050b9076b239f5cda4ed9ed9d480cc84dd81b31b7ee0cf01281e5ad5d11a0",
+    "head_K2.pkl": "80f920fa567383e183a8a6a7f3ec1d3cd815569e8ddf566d766c99b7124ffb4d",
+    "head_K2_curve.json": "11ea5a84fefedd6feb4105a03dee91ec2367a2d1cdf0c9e4b84f32632ccd4bf4",
+    "operators/fno3d_w16_m6/adapter.pkl": "be3a0c4d1d836c0c26119c330578688d493dc6d28ccab1e003c536ff31f67993",
+    "operators/unet3d_w8/adapter.pkl": "c3cf061c93d3421b70f79f73fdbb9b22c359accc534a8c2bc62c15e4b16ed565",
+    "eq_N8_K2.npz": "1073244b77cf0fff2884ed043c28c56a0cd1699f01f230d01e5effa5fa187a4a"
+  },
+  "bank": {
+    "seconds": 4.0144950420362875,
+    "steps": 3,
+    "selected_step": 3,
+    "validation_projection_evolved_worst": 0.7691719624180738,
+    "basis_hash": "e6aca925539fd53973f630b49c3e5fd3daa541c73d3ee521d8cfb26b0a76c9a4",
+    "condition_number": 10.803033910721204,
+    "orthogonality": 8.881784197001252e-16,
+    "training_projection_mean": 0.8131801422034747,
+    "training_projection_worst": 0.8882863299309546,
+    "training_matrix_hash": "f1b5220bb27d05f2ddfa5910331749054283010afad70d5ac2ebf65222688068",
+    "converged_claim": false
+  },
+  "heads": [
+    {
+      "k": 2,
+      "seconds": 1.4837600069586188,
+      "steps": 3,
+      "converged_claim": false,
+      "training_error_mean": 1.012932177038731,
+      "training_error_median": 1.0110258692031924,
+      "training_error_worst": 1.047877173120582,
+      "correction_singular_values": [
+        3.136213272857839,
+        0.9562130333137955,
+        0.6257357965420758,
+        0.40445096289989785,
+        0.20482551601466636,
+        0.06903933662846835,
+        0.028440431931343817,
+        0.0110119137136834
+      ],
+      "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+      "direction_hash": "5b14ae3300d8b015350eba22cba8057f3f7cb2d28d9f88e822dc4d5946abb5fc"
+    }
+  ],
+  "operators": [
+    {
+      "spec": {
+        "kind": "fno3d",
+        "width": 2,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 1,
+        "levels": 2
+      },
+      "config": {
+        "steps": 3,
+        "wall_seconds": 20,
+        "batch_size": 2,
+        "seed": 920321,
+        "learning_rate": 0.001,
+        "validation_every": 2,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      },
+      "parameter_count": 294,
+      "steps_completed": 3,
+      "best_step": 3,
+      "best_validation_worst": 0.9845047542614344,
+      "seconds": 2.4266542070545256,
+      "exit_reason": "steps",
+      "normalization": "current-output norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128",
+      "name": "fno3d_w16_m6",
+      "physical_scale": 0.1010502167298064,
+      "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+      "validation_parameters_sha256": "5ba9f9b0152abc26ce0cfc0afbfc79642800e3f576f77e2bab7c72726815f55b",
+      "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+      "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+    },
+    {
+      "spec": {
+        "kind": "unet3d",
+        "width": 2,
+        "levels": 2,
+        "periodic": false,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 1
+      },
+      "config": {
+        "steps": 3,
+        "wall_seconds": 20,
+        "batch_size": 2,
+        "seed": 920322,
+        "learning_rate": 0.001,
+        "validation_every": 2,
+        "curve_every": 50,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      },
+      "parameter_count": 1426,
+      "steps_completed": 3,
+      "best_step": 3,
+      "best_validation_worst": 0.9991742110148361,
+      "seconds": 1.5407992280088365,
+      "exit_reason": "steps",
+      "normalization": "current-output norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128",
+      "name": "unet3d_w8",
+      "physical_scale": 0.1010502167298064,
+      "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+      "validation_parameters_sha256": "5ba9f9b0152abc26ce0cfc0afbfc79642800e3f576f77e2bab7c72726815f55b",
+      "input": "supplied initial field divided by training RMS, plus three coordinate channels",
+      "output": "five evolved fields in physical units, supplied initial field prepended at inference"
+    }
+  ],
+  "meshes": [
+    {
+      "intervals": 8,
+      "bank_sha256": "b18c04b7fd2d08c5b34a73365ccf85e2dfb0beeef39802c54390c5700448081c",
+      "weak_operator_sha256": "aa04773f73c1c7cca27ca31df7823148f671533c0518fd39c046815997bc4d83",
+      "weak_tests": 32,
+      "weak_singular_values": [
+        0.04042552288666201,
+        0.0336695418276256,
+        0.024195941607877677,
+        0.018177870867252068,
+        0.016573790660873163,
+        0.012157514970625968,
+        0.011115606237768057,
+        0.008212000340819802
+      ],
+      "pod": {
+        "available_rank": 12,
+        "training_hash": "f1b5220bb27d05f2ddfa5910331749054283010afad70d5ac2ebf65222688068",
+        "orthogonality": 2.531308496145357e-14
+      },
+      "quadrature": [
+        {
+          "candidate_count": 128,
+          "positive_support": 57,
+          "source": "decoder-output snapshots, NNLS positive weights, random candidate grid nodes",
+          "fit_rows": 64,
+          "row_scale_floor": 0.1,
+          "seconds": 0.000726307975128293,
+          "scaled_fit_norm": 0.24539616661511607,
+          "training_moment_error_max": 0.597884876416426,
+          "weights_hash": "dd27c3406a7a5d034dba3e6f05a2ae19227f4da58375694e708ad10861d825a4",
+          "indices_hash": "e3677f86f15ea3ede5d631944038b8332ee5df9fd3cae4d3cbcac524667840a2",
+          "k": 2,
+          "validation_moment_errors": [
+            1.0527079601950715
+          ],
+          "certificate_threshold": 0.01,
+          "certified": false
+        }
+      ],
+      "representation": [
+        {
+          "case": 0,
+          "k": 2,
+          "head_best_found": {
+            "current_by_time": [
+              0.9270743863470262,
+              0.9102761368946968,
+              0.8944793757300167
+            ],
+            "initial_by_time": [
+              0.9270743863470262,
+              0.773072107894163,
+              0.661071192364549
+            ],
+            "current_evolved": 0.9102761368946968,
+            "current_all": 0.9270743863470262,
+            "initial_evolved": 0.773072107894163,
+            "initial_all": 0.9270743863470262,
+            "initial_fit": 0.9270743863470262,
+            "energy": [
+              0.33309835901398366,
+              0.33250399855683443,
+              0.32819619684275136
+            ]
+          },
+          "fit_stats": [
+            [
+              19.0,
+              11.0,
+              1.0,
+              0.7786669480397558,
+              1.2617285059836963e-10
+            ],
+            [
+              10.0,
+              10.0,
+              1.0,
+              0.7617700977016452,
+              1.9757791475188952e-10
+            ],
+            [
+              9.0,
+              9.0,
+              1.0,
+              0.749081135052373,
+              3.394723784632123e-10
+            ]
+          ],
+          "nonstationary_fits": 0
+        },
+        {
+          "case": 0,
+          "bank_projection": {
+            "current_by_time": [
+              0.801888467141852,
+              0.7691719624180736,
+              0.7379055721471611
+            ],
+            "initial_by_time": [
+              0.801888467141852,
+              0.6532362721801396,
+              0.5453542358465793
+            ],
+            "current_evolved": 0.7691719624180736,
+            "current_all": 0.801888467141852,
+            "initial_evolved": 0.6532362721801396,
+            "initial_all": 0.801888467141852,
+            "initial_fit": 0.801888467141852,
+            "energy": [
+              0.8482740644627647,
+              0.6999239037545224,
+              0.591205261285635
+            ]
+          }
+        }
+      ],
+      "setup_seconds": 2.0956342190038413,
+      "methods": {
+        "linear_bank_cn": {
+          "kind": "linear_control"
+        },
+        "linear_bank_exact": {
+          "kind": "linear_control"
+        },
+        "pod2_exact": {
+          "kind": "linear_control"
+        },
+        "pod4_exact": {
+          "kind": "linear_control"
+        },
+        "pod8_exact": {
+          "kind": "linear_control"
+        },
+        "linear_bank_galerkin_exact": {
+          "kind": "linear_control"
+        },
+        "dst_exact": {
+          "kind": "full_order"
+        },
+        "fno3d_w16_m6": {
+          "kind": "neural_operator",
+          "model": {
+            "kind": "fno3d",
+            "width": 2,
+            "modes": [
+              2,
+              2,
+              2
+            ],
+            "depth": 1,
+            "padding": 1,
+            "levels": 2
+          },
+          "parameter_count": 294,
+          "physical_scale": 0.1010502167298064,
+          "training_intervals": 8,
+          "resolution_transfer": false
+        },
+        "unet3d_w8": {
+          "kind": "neural_operator",
+          "model": {
+            "kind": "unet3d",
+            "width": 2,
+            "levels": 2,
+            "periodic": false,
+            "modes": [
+              2,
+              2,
+              2
+            ],
+            "depth": 1,
+            "padding": 1
+          },
+          "parameter_count": 1426,
+          "physical_scale": 0.1010502167298064,
+          "training_intervals": 8,
+          "resolution_transfer": false
+        },
+        "nmrom_K2_q0_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q0_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 0,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "quadrature_certified": null
+        },
+        "nmrom_K2_q2_eq": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "NNLS sampled",
+          "quadrature_certified": false
+        },
+        "nmrom_K2_q2_dense_dt_half": {
+          "kind": "nonlinear_rom",
+          "k": 2,
+          "q": 2,
+          "cold_start": "dense diagnostic",
+          "dt": 0.0125
+        }
+      }
+    }
+  ],
+  "copied_training_fields": false
+}

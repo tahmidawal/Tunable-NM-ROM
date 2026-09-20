@@ -12,6 +12,7 @@ FILES=['DESIGN.md','config.json','common.py','train.py','rom.py','run.py','audit
 FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/extra_train_smoke.py',
           'operators/upstream/PROVENANCE.json','operators/upstream/Physics_Attention.py',
           'operators/upstream/prior_families.py','operators/upstream/LICENSE']
+FILES += ['frozen.py']
 
 
 def main():
@@ -30,6 +31,12 @@ def main():
         proof.append(dict(path=path,staged=str(dest.relative_to(out)),sha256=hashlib.sha256(blob).hexdigest()))
     (out/'COMMIT.txt').write_text(commit+'\n')
     (out/'PROVENANCE.json').write_text(json.dumps(dict(source_commit=commit,files=proof,remote=remote),indent=2)+'\n')
+    cfg=json.loads((out/'code/config.json').read_text())
+    if cfg.get('frozen_source_attempt'):
+        import sys
+        sys.path.insert(0,str(ROOT/LANE))
+        import frozen
+        frozen.stage_inputs(ROOT,cfg['frozen_source_attempt'],out/cfg['frozen_input_directory'],cfg)
     script='''#!/bin/bash
 #SBATCH --job-name=ctol_h3d_920___ATTEMPT__
 #SBATCH --partition=gpu

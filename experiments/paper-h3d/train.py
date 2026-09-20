@@ -91,7 +91,7 @@ def train_bank(fields, cfg, out, validation_fields=None):
     return params,rotation,q,target,norm2,perpendicular,info
 
 
-def train_head(target,norm2,perpendicular,k,cfg,out):
+def train_head(target,norm2,perpendicular,k,cfg,out,validation=None):
     target=jnp.asarray(target);norm2=jnp.asarray(norm2);perpendicular=jnp.asarray(perpendicular)
     key=jax.random.PRNGKey(cfg['model_seed']+k);a,b=jax.random.split(key)
     p=C.init_head(a,k,target.shape[1],cfg['head_width'])
@@ -110,12 +110,38 @@ def train_head(target,norm2,perpendicular,k,cfg,out):
         update,state=opt.update(grad,state,pz)
         return optax.apply_updates(pz,update),state,value
     pz=(p,z);key=jax.random.PRNGKey(cfg['head_minibatch_seed']+k);history=[];begin=time.perf_counter()
+    selected=None;selected_error=float('inf');selected_step=None;selected_nonstationary=None
+    if validation is not None:
+        import rom as R
+        solve=R.lm(C.head,cfg.get('head_validation_fit_budget',400),cfg.get('head_validation_fit_tolerance',1e-8))
+        @jax.jit
+        def validate(params,codes,matrix,targets,norms,perps):
+            library=C.head(params,codes)@matrix.T
+            def one(target,norm,perp):
+                order=jnp.argsort(jnp.sum((library-target)**2,axis=1))[:cfg.get('head_validation_starts',4)]
+                zs,stats=jax.vmap(lambda start:solve(params,matrix,target,start))(codes[order])
+                selected=jnp.argmin(stats[:,3]);difference=matrix@C.head(params,zs[selected])-target
+                error=jnp.sqrt((jnp.sum(difference**2)+perp)/jnp.maximum(norm,1e-20))
+                return error,stats[selected]
+            return jax.vmap(one)(targets,norms,perps)
+        vargs=tuple(jnp.asarray(validation[name]) for name in ('matrix','target','norm2','perpendicular2'))
     for it in range(cfg['head_steps']):
         key,sub=jax.random.split(key);pz,state,value=step(pz,state,sub,target,norm2,perpendicular)
         if it==0 or (it+1)%100==0 or (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['head_steps']:history.append(dict(step=it+1,objective=float(value),seconds=time.perf_counter()-begin))
         if (it+1)%cfg['checkpoint_every']==0 or it+1==cfg['head_steps']:
             C.checkpoint(out/f'head_K{k}_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
+            if validation is not None:
+                errors,stats=validate(*pz,*vargs);errors=np.asarray(errors).reshape(validation['shape']);stats=np.asarray(stats)
+                assert np.isfinite(errors).all() and np.isfinite(stats).all()
+                worst=float(np.max(errors[:,1:]));nonstationary=int(np.count_nonzero(stats[:,2]!=1))
+                chosen=worst<selected_error
+                history[-1].update(validation_current_error_by_case_time=errors.tolist(),validation_evolved_worst=worst,
+                    validation_nonstationary_fits=nonstationary,validation_fit_stats=stats.tolist(),selected=chosen)
+                if chosen:
+                    selected=pz;selected_error=worst;selected_step=it+1;selected_nonstationary=nonstationary
+                    C.checkpoint(out/f'head_K{k}_selected_partial.pkl',dict(pz=pz,state=state,key=key,step=it+1,cfg=cfg))
             C.dump(out/f'head_K{k}_curve.json',history);print('HEAD',k,history[-1],flush=True)
+    if selected is not None:pz=selected
     p,z=pz;prediction=np.asarray(C.head(p,z));residual=np.asarray(target)-prediction
     _,sv,vt=np.linalg.svd(residual,full_matrices=False);directions=vt.T
     errors=np.sqrt((np.sum(residual**2,axis=1)+np.asarray(perpendicular))/np.asarray(norm2))
@@ -124,5 +150,10 @@ def train_head(target,norm2,perpendicular,k,cfg,out):
               training_error_worst=float(np.max(errors)),correction_singular_values=sv.tolist(),
               correction_rule='SVD of field-orthonormal training reconstruction residuals at jointly learned training codes',
               direction_hash=C.sha(directions))
+    if validation is not None:
+        info.update(selected_step=selected_step,validation_selection='minimum worst evolved current-relative best-found fit on fixed development fields',
+            validation_evolved_worst=selected_error,validation_nonstationary_fits=selected_nonstationary,
+            validation_fit_budget=cfg.get('head_validation_fit_budget',400),validation_fit_tolerance=cfg.get('head_validation_fit_tolerance',1e-8),
+            validation_fit_starts=cfg.get('head_validation_starts',4))
     C.checkpoint(out/f'head_K{k}.pkl',dict(params=p,codes=z,directions=directions,info=info,cfg=cfg))
     return dict(params=p,codes=z,directions=directions,info=info)

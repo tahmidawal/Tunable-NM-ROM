@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "device_residency": true,
+  "checkpoint_replay": [
+    {
+      "method": "fno3d_w16_m6",
+      "replay_relative": 8.148926253915806e-17
+    },
+    {
+      "method": "unet3d_w8",
+      "replay_relative": 8.138521220896414e-17
+    },
+    {
+      "method": "nmrom_K2_q2_dense",
+      "replay_relative": 7.286452042400666e-16
+    }
+  ],
+  "original_rule_bitwise_reused": true,
+  "exact_quadrature_reuse": true,
+  "changed_bank_rejected": true,
+  "changed_test_count_rejected": true
+}

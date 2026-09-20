@@ -60,7 +60,7 @@
   "quadrature_certificate": 0.01,
   "lm_budget": 120,
   "lm_tolerance": 1e-06,
-  "initial_starts": 2,
+  "initial_starts": 4,
   "repetitions": 3,
   "burn_seconds": 0.2,
   "reference_budget": 0.0001,
@@ -134,5 +134,21 @@
       }
     }
   ],
-  "bank_gradient_clip": 1.0
+  "bank_gradient_clip": 1.0,
+  "frozen_source_attempt": "tune02",
+  "frozen_input_directory": "inputs/tune02",
+  "frozen_operators": [
+    "fno3d_w16_m6",
+    "unet3d_w8"
+  ],
+  "initial_lm_budget": 600,
+  "include_uncertified_quadrature": false,
+  "additional_latent_dimensions": [
+    32
+  ],
+  "head_validation_fit_budget": 400,
+  "head_validation_fit_tolerance": 1e-08,
+  "head_validation_starts": 4,
+  "representation_fit_budget": 400,
+  "representation_fit_tolerance": 1e-08
 }

@@ -37,20 +37,47 @@ def run(cfg,out,smoke=False):
     data=C.dataset(cfg['train_intervals'],train_p,cfg)
     record['status']='training_bank';save()
     validation_training_mesh=C.dataset(cfg['train_intervals'],valid_p,cfg)
-    params,rotation,basis,target,norm2,perpendicular,bank_info=T.train_bank(data,cfg,out,
-              validation_training_mesh if cfg.get('bank_validation_selection',False) else None)
-    record['bank']=bank_info;save();models=[]
-    for k in cfg['latent_dimensions']:
-        record['status']=f'training_head_K{k}';save()
-        model=T.train_head(target,norm2,perpendicular,k,cfg,out);models.append(model)
-        record['heads'].append(model['info']);save()
-    operator_models=[]
+    frozen_origin=None
+    if cfg.get('frozen_input_directory'):
+        import frozen as F
+        bank_saved,models,operator_models,frozen_origin,reuse=F.load(cfg['frozen_input_directory'],cfg,train_p,valid_p,out)
+        params,rotation,bank_info=bank_saved['params'],bank_saved['rotation'],bank_saved['info']
+        record['frozen_checkpoints']=reuse
+        record['bank']=bank_info;record['heads']=[model['info'] for model in models];save()
+        if cfg.get('additional_latent_dimensions'):
+            frozen_basis=C.bank_at(params,cfg['train_intervals'],cfg['field_chunk'])@rotation
+            assert np.max(np.abs(frozen_basis.T@frozen_basis-np.eye(cfg['bank_rank'])))<1e-9
+            u=data.reshape(-1,len(frozen_basis));target=u@frozen_basis;norm2=np.sum(u*u,axis=1)
+            perpendicular=np.maximum(norm2-np.sum(target**2,axis=1),0.)
+            qb,rb=np.linalg.qr(frozen_basis,mode='reduced');v=validation_training_mesh.reshape(-1,len(frozen_basis))
+            vt=v@qb;vn=np.sum(v*v,axis=1)
+            validation=dict(matrix=rb,target=vt,norm2=vn,perpendicular2=np.maximum(vn-np.sum(vt*vt,axis=1),0.),shape=validation_training_mesh.shape[:2])
+            for k in cfg['additional_latent_dimensions']:
+                assert k not in [m['info']['k'] for m in models]
+                record['status']=f'training_new_head_K{k}_frozen_bank';save()
+                model=T.train_head(target,norm2,perpendicular,k,cfg,out,validation);models.append(model)
+                record['heads'].append(model['info']);save()
+    else:
+        params,rotation,basis,target,norm2,perpendicular,bank_info=T.train_bank(data,cfg,out,
+                  validation_training_mesh if cfg.get('bank_validation_selection',False) else None)
+        record['bank']=bank_info;save();models=[]
+        for k in cfg['latent_dimensions']:
+            record['status']=f'training_head_K{k}';save()
+            model=T.train_head(target,norm2,perpendicular,k,cfg,out);models.append(model)
+            record['heads'].append(model['info']);save()
+        operator_models=[]
+    for model in models:
+        model['params']=jax.device_put(model['params']);model['codes']=jax.device_put(model['codes'])
+        jax.block_until_ready((model['params'],model['codes']))
+    record['head_parameter_residency']=dict(placement='explicit device_put and synchronization during setup',
+         all_device_arrays=all(isinstance(a,jax.Array) for model in models for a in jax.tree_util.tree_leaves((model['params'],model['codes']))))
+    assert record['head_parameter_residency']['all_device_arrays']
+    record['operators']=[item[-1] for item in operator_models]
     if cfg.get('operators'):
         from operators import training as OT
         from operators import heat_adapter as OH
         scale=float(np.sqrt(np.mean(data[:,0]**2)))
         train_x,train_y=OH.arrays(data,scale);valid_x,valid_y=OH.arrays(validation_training_mesh,scale)
-        record['operators']=[]
         for setting in cfg['operators']:
             name=setting['name'];spec=setting['model'];record['status']=f'training_{name}';save()
             op,info=OT.train(train_x,train_y,valid_x,valid_y,spec,setting['training'],out/'operators'/name,C.dump,C.checkpoint)
@@ -82,7 +109,7 @@ def run(cfg,out,smoke=False):
         test,a,lam,triples=R.assemble(bank,n,cfg['weak_tests'])
         truths=C.dataset(n,valid_p,cfg)
         training=C.dataset(n,train_p,cfg)
-        ranks=sorted(set([cfg['bank_rank']]+[k+q for k in cfg['latent_dimensions'] for q in cfg['q_ladder']]))
+        ranks=sorted(set([cfg['bank_rank']]+[model['info']['k']+q for model in models for q in cfg['q_ladder']]))
         pod,pod_info=R.pod_models(training,n,ranks,cfg);del training
         methods=R.linear_weak(bank,a,lam,test,cfg);methods.update(pod)
         methods['linear_bank_galerkin_exact']=R.bank_galerkin(bank,n,cfg)
@@ -111,12 +138,18 @@ def run(cfg,out,smoke=False):
                          fit_stats=fit_stats[case].tolist(),nonstationary_fits=int(np.count_nonzero(fit_stats[case,:,2]!=1))))
             np.savez_compressed(out/'fields'/f'N{n}_K{k}_best_found.npz',prediction=best,stats=fit_stats)
             try:
-                indices,weights,eq=R.fit_quadrature(bank,test,decoded,cfg)
-                exact=np.asarray([u[0].reshape(-1)@test for u in truths]);sample=np.asarray([u[0].reshape(-1)[indices]@weights for u in truths])
-                errors=np.linalg.norm(sample-exact,axis=1)/np.maximum(np.linalg.norm(exact,axis=1),1e-300)
-                eq.update(k=k,validation_moment_errors=errors.tolist(),certificate_threshold=cfg['quadrature_certificate'],
-                          certified=bool(max(errors)<cfg['quadrature_certificate']))
-                np.savez_compressed(out/f'eq_N{n}_K{k}.npz',indices=indices,weighted_tests=weights)
+                reused=None
+                if frozen_origin is not None:
+                    reused=F.quadrature(cfg['frozen_input_directory'],frozen_origin,n,k,bank,a,test,truths,cfg,out)
+                if reused is not None:
+                    indices,weights,eq=reused
+                else:
+                    indices,weights,eq=R.fit_quadrature(bank,test,decoded,cfg)
+                    exact=np.asarray([u[0].reshape(-1)@test for u in truths]);sample=np.asarray([u[0].reshape(-1)[indices]@weights for u in truths])
+                    errors=np.linalg.norm(sample-exact,axis=1)/np.maximum(np.linalg.norm(exact,axis=1),1e-300)
+                    eq.update(k=k,validation_moment_errors=errors.tolist(),certificate_threshold=cfg['quadrature_certificate'],
+                              certified=bool(max(errors)<cfg['quadrature_certificate']),reused_rule=False)
+                    np.savez_compressed(out/f'eq_N{n}_K{k}.npz',indices=indices,weighted_tests=weights)
             except (RuntimeError,ValueError) as exc:
                 eq=dict(k=k,certified=False,error=str(exc));indices=None;weights=None
             mesh['quadrature'].append(eq)
@@ -125,7 +158,7 @@ def run(cfg,out,smoke=False):
                 name=f'nmrom_K{k}_q{q}_dense'
                 methods[name]=R.engine(model,bank,a,lam,test,np.arange(len(bank)),q,cfg)
                 metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_start='dense diagnostic',quadrature_certified=None)
-                if indices is not None:
+                if indices is not None and (eq['certified'] or cfg.get('include_uncertified_quadrature',True)):
                     name=f'nmrom_K{k}_q{q}_eq'
                     methods[name]=R.engine(model,bank,a,lam,weights,indices,q,cfg)
                     metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_start='NNLS sampled',quadrature_certified=eq['certified'])

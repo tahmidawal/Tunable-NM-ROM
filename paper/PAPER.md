@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 01:11; this block is removed before submission).*
+*Status for the reader (generated 2026-09-20 01:16; this block is removed before submission).*
 *Final tables (59): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -1077,7 +1077,7 @@ held-out relative error of the projected advection term,
 
 $$
 \rho(u)=\frac{\lVert \sum_{i\in\mathcal S}w_iP_{:,i}N_i(u)-P N(u) \rVert_2}{\lVert P N(u) \rVert_2},
-  \qquad
+  \quad
   \rho_{\max}\le0.116\ \text{(primary bar)},\quad \rho_{\max}\le0.06\ \text{(tight)},
 $$
 
@@ -1200,8 +1200,10 @@ the block in the figure.
 
 **Table 6.** Provenance of every result table: job id, GPU, source commit and
 checkpoint. The SHA256 of every machine-readable file the generator read is in
-`tables/provenance.json`. Every job asserted `jax_backend=gpu`,
-float64 and highest matmul precision before doing any work.
+`tables/provenance.json`. Full-order and reduced solver results
+require the GPU backend, float64 and highest matmul precision. The
+historical operator precision exception is disclosed in
+Appendix G.1.
 
 <!-- table: T02_provenance -->
 | table | lane | job id(s) | GPU | commit | checkpoint |
@@ -1260,8 +1262,9 @@ lane this version reads is closed.
 <!-- section sources: every lane (see each table comment) -->
 
 **Table 9.** Problem specification. Cohort and reduced sizes are read from the run
-configurations where recorded; the sealed final cohorts have not been opened
-for any cell.
+configurations where recorded. The Burgers sealed cohort has been opened
+and is reported in Table 38; other rows describe their
+recorded development and validation cohorts.
 
 <!-- table: T01_problems -->
 | PDE | equation, domain, boundary | meshes | time stepping | reduced sizes | reference | cohorts |

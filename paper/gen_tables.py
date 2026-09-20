@@ -223,6 +223,7 @@ LAST_MD: dict[str, str] = {}   # name -> markdown, filled by tabular() and consu
 def tex2md(cell: str) -> str:
     """LaTeX table-cell text -> GitHub-flavoured Markdown (math kept as $...$)."""
     c = str(cell)
+    c = re.sub(r'\\path\{([^{}]*)\}', lambda m: '`' + m.group(1) + '`', c)
     c = re.sub(r'\\texttt\{((?:[^{}]|\{[^{}]*\})*)\}', lambda m: '`' + m.group(1).replace('\\_', '_').replace('\\%', '%').replace('\\&', '&').replace('\\#', '#') + '`', c)
     c = re.sub(r'\\textbf\{([^{}]*)\}', r'**\1**', c)
     c = re.sub(r'\\emph\{([^{}]*)\}', r'*\1*', c)
@@ -1822,17 +1823,17 @@ def build_offline_and_spec():
     spec = [
         ['Burgers 2D', '$u_t+u(u_x+u_y)=\\nu\\Delta u$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
          '$u_0=a\\exp(-\\lvert x-c\\rvert^2/2w^2)$, $c_i\\sim U(0.15,0.85)$, $w\\sim U(0.05,0.20)$, $a\\sim U(0.5,2)$; $\\nu\\sim\\log U(0.01,0.1)$; outputs $t\\in\\{0.05,\\dots,0.25\\}$',
-         tt('experiments/mr-burgers2d/engines.py:params_draw')],
+         r'\path{experiments/mr-burgers2d/engines.py:params_draw}'],
         ['Poisson 2D', '$-\\Delta u=f$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
          '$f=a\\exp(-\\lvert x-c\\rvert^2/2w^2)$, $c_i\\sim U(0.15,0.85)$, $w\\sim\\log U(0.02,0.1)$, $a\\sim U(0.5,2)$',
-         tt('multistage-precision/ms_parametric.py:sample_params')],
-        ['Poisson, L-shape', 'same source family on $(0,1)^2\\setminus[\\tfrac12,1)^2$', 'as above; sources centred in the removed quadrant rejected', tt('experiments/lshape')],
+         r'\path{multistage-precision/ms_parametric.py:sample_params}'],
+        ['Poisson, L-shape', 'same source family on $(0,1)^2\\setminus[\\tfrac12,1)^2$', 'as above; sources centred in the removed quadrant rejected', r'\path{experiments/lshape}'],
         ['Heat 2D', '$u_t=\\kappa\\Delta u$ on $(0,1)^2$, $\\kappa=0.02$ fixed', 'polynomial-boundary Gaussian family (single\\_bc\\_poly\\_gaussian\\_v1); Crank--Nicolson $\\Delta t=0.025$', 'heat linear-bank report, job 3511417'],
         ['Wave 2D (reflective)', '$u_{tt}=c^2\\Delta u$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
          'compact bump $\\times$ Gaussian: half-widths $s_i\\sim U(0.36,0.42)$, centre $c_i\\sim U(s_i{+}0.025,\\,1{-}s_i{-}0.025)$, amplitude $\\sim U(0.7,1.3)$, $\\sigma_i\\sim U(0.12,0.16)$, advective velocity $v_i\\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\\sim U(0.85,1.15)$',
-         tt('experiments/multiresolution-wave/audit_dynamics.py:parameter_rows')],
+         r'\path{experiments/multiresolution-wave/audit_dynamics.py:parameter_rows}'],
     ]
-    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'p{1.6cm}p{4.4cm}p{15cm}p{3.0cm}', r'\tiny'),
+    write('T01b_spec.tex', tabular(['PDE', 'equation and boundary', 'sampled family (transcribed from the generator source)', 'source'], spec, r'@{}p{1.4cm}p{2.7cm}p{6.0cm}p{2.55cm}@{}', r'\scriptsize\def\UrlBreaks{\do\/\do\-\do\_\do\.\do\:}'),
           'sampling families transcribed from the generator sources named in the last column')
 
 
@@ -2347,7 +2348,7 @@ def build_problems_and_provenance(mesh):
         ['Training study', 'Data density, objective, latent size and smoothness penalty of the head', 'Burgers $256^2$', njobs('T16') + ' (b-head-train)', f'{T}{{tab:training}}; {A}{{app:training-schedule}}'],
         ['SMA-NM-ROM cold start', 'Not run under this protocol; a stated limitation', '---', '0', f'\\S\\ref{{sec:limitations}}'],
     ]
-    write('T00_glance.tex', tabular(['experiment', 'question it answers', 'PDE, mesh', 'jobs (lane)', 'where the numbers are'], G, r'@{}p{2.2cm}p{5.1cm}p{2.0cm}p{1.55cm}p{3.05cm}@{}', r'\scriptsize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.9}'),
+    write('T00_glance.tex', tabular(['experiment', 'question it answers', 'PDE, mesh', 'jobs (lane)', 'where the numbers are'], G, r'@{}p{2.0cm}p{4.7cm}p{1.8cm}p{1.55cm}p{3.05cm}@{}', r'\scriptsize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.9}'),
           'experiments at a glance; job counts are distinct job ids in the provenance rows named')
     write('T02_provenance.tex', tabular(['table', 'lane', 'job id(s)', 'GPU', 'commit', 'checkpoint'], P, r'lp{2.3cm}p{3.6cm}p{2.2cm}p{2cm}p{2.6cm}', r'\tiny'),
           'provenance registry; SHA256 of every file read is in tables/provenance.json')

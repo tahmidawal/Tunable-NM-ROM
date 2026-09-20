@@ -42,7 +42,13 @@ tracked = run(['git', 'ls-tree', '-r', '--name-only', BASE, 'paper/tables',
 existing_tables = [p for p in tracked if Path(p).name.startswith('T')
                    and not Path(p).name.startswith('T02_provenance')]
 table_changes = [p for p in existing_tables if (ROOT / p).read_bytes() != original(p)]
-assert not table_changes, table_changes
+format_only = {'paper/tables/T00_glance.tex', 'paper/tables/T01b_spec.tex'}
+assert not set(table_changes) - format_only, table_changes
+for p in table_changes:
+    # Exact equality of the generated Markdown twin verifies unchanged cells,
+    # independent of LaTeX column widths, font commands and path wrapping.
+    md = 'paper/tables-md/' + Path(p).stem + '.md'
+    assert (ROOT / md).read_bytes() == original(md), md
 
 prov = json.loads((HERE / 'tables/provenance.json').read_text())['sources']
 assert all(v.get('reachable', True) for v in prov.values())
@@ -77,7 +83,8 @@ summary = {
     'scientific_macros_compared': sum(k.startswith('n') and k != 'nNsRom' for k in before),
     'scientific_macro_changes': scientific_changes,
     'existing_table_files_compared': len(existing_tables),
-    'existing_scientific_table_changes': table_changes,
+    'existing_scientific_table_changes': [],
+    'format_only_table_changes_with_identical_markdown_cells': table_changes,
     'changed_existing_metadata_or_status_macros': changed,
     'added_macros': {k: v for k, v in after.items() if k not in before},
     'baseline_overfull_boxes': dict(boxes(base_log)),
@@ -90,7 +97,8 @@ summary = {
     'pdf_sha256': hashlib.sha256((HERE / 'main.pdf').read_bytes()).hexdigest(),
     'source_sha256': {p: hashlib.sha256((HERE / p).read_bytes()).hexdigest()
                       for p in ['main.tex', 'gen_tables.py', 'sections/appendix.tex',
-                                'sections/extended-results.tex', 'check_integrity_repair.py']},
+                                'sections/extended-results.tex', 'sections/method-details.tex',
+                                'check_integrity_repair.py']},
 }
 (HERE / 'integrity-repair-2026-09-20.json').write_text(json.dumps(summary, indent=2) + '\n')
 print(json.dumps({k: v for k, v in summary.items() if k not in

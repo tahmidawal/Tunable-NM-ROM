@@ -65,7 +65,7 @@ Table~\ref{tab:arch-blocks} lists its blocks, their sizes in the symbols of
 the block in the figure.}
 \label{tab:arch-blocks}
 {\scriptsize
-\begin{tabular}{llll}
+\begin{tabular}{@{}p{2.3cm}p{6.1cm}p{1.6cm}p{2.5cm}@{}}
 \toprule
 block & what it is & size & fixed when \\
 \midrule
@@ -90,8 +90,10 @@ controls & rank $q$; stored rule or dense; tolerance and budget & --- & chosen a
 \centering
 \caption{Provenance of every result table: job id, GPU, source commit and
 checkpoint. The SHA256 of every machine-readable file the generator read is in
-\texttt{tables/provenance.json}. Every job asserted \texttt{jax\_backend=gpu},
-float64 and highest matmul precision before doing any work.}
+\texttt{tables/provenance.json}. Full-order and reduced solver results
+require the GPU backend, float64 and highest matmul precision. The
+historical operator precision exception is disclosed in
+Appendix~\ref{app:extended:operators}.}
 \label{tab:provenance}
 \resizebox{\linewidth}{!}{\input{tables/T02_provenance}}
 \end{table}
@@ -119,8 +121,9 @@ lane this version reads is closed.}
 \begin{table}[h]
 \centering
 \caption{Problem specification. Cohort and reduced sizes are read from the run
-configurations where recorded; the sealed final cohorts have not been opened
-for any cell.}
+configurations where recorded. The Burgers sealed cohort has been opened
+and is reported in Table~\ref{tab:sealed}; other rows describe their
+recorded development and validation cohorts.}
 \label{tab:problems}
 \resizebox{\linewidth}{!}{\input{tables/T01_problems}}
 \end{table}
@@ -208,7 +211,7 @@ by construction and its QR twin is the timed top rung).}
 development cases, three repetitions; the finest three meshes of a five-rung
 ladder). The linear evolution of the full bank is the $q=R$ rung.}
 \label{tab:heat}
-\input{tables/T11d_heat}
+\resizebox{\linewidth}{!}{\input{tables/T11d_heat}}
 \end{table}
 
 \begin{table}[h]

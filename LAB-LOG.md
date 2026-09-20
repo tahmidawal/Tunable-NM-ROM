@@ -14901,3 +14901,28 @@ maximum; no new job was launched from root and no cancellation occurred.
 Root independently inspected the live queue and logs: both pilots are on A100 GPUs; GPU backend and f64/highest gates passed. These are development panels with final cohorts unopened. The first heat training finished quickly and its representation diagnostics motivate additional capacity/training tuning. A successor worker owns the heat tree and will collect/audit the pilot, tune the bank/head and implement reusable f64 FNO3D/U-Net3D controls for the four lanes. The original heat and Poisson implementation workers returned after submission to respect the agent concurrency limit. Root writes only reports and this canonical log.
 
 Navier–Stokes rejected its original coarse family during reference refinement before training. Its amended prospective amplitude/resolution selection preserves the failed setting and tests the material effect of nonlinear advection. No NS scientific result is accepted yet.
+
+
+## 2026-09-20
+
+### Codex — first Burgers3D pilot audited and generated tables retained
+
+The first retained-checkpoint pilot was checksum-collected, independently audited, and its exact remote directory removed by the owner. Generated full table and machine-readable per-case/repetition records are `reports/2026-09-20-3d-paper-results.{md,json}`, from `reports/generate_3d_paper_results.py` and explicit input manifest. No automatic best-attempt selection is performed.
+
+| Method | Median device query ms | Worst evolved initial-normalized error (%) | Nonstationary cases |
+| --- | ---: | ---: | ---: |
+| `fom_nt1e-02` | 17.929793452 | 0.654262119 | 0 |
+| `fom_nt1e-04` | 38.131467532 | 0.020728940 | 0 |
+| `fom_nt1e-06` | 91.752581997 | 0.000310255 | 0 |
+| `free_R128` | 143.348170444 | 5.969523035 | 0 |
+| `pod_128` | 142.683989019 | 5.303439207 | 0 |
+| `pod_32` | 91.624974040 | 19.139834599 | 0 |
+| `pod_64` | 109.704304487 | 10.061268052 | 0 |
+| `pod_96` | 138.374710456 | 6.558240272 | 0 |
+| `rom_q0` | 162.855612463 | 12.976163481 | 1 |
+| `rom_q32` | 193.750865990 | 10.662359475 | 0 |
+| `rom_q64` | 237.352120457 | 8.211106224 | 0 |
+
+Every repetition is retained; errors above are maxima over evolved outputs and repeated calls for each case, then the worst case. All-times and initial compression appear separately in the generated report. POD/direction membership is smaller than the retained neural checkpoint training set, so these numbers cannot establish a matched-training neural advantage. Device-resident dense input/output timing includes initialization, but host transfers and a physical-refinement panel were not measured. No final cohort was opened.
+
+A fresh matched-training Burgers bank/head attempt, `b3d002` / job `3989876`, is running from source `1bb277b1ac82bad5219f13dbfbe948d936be33a2`; checkout bookkeeping `716901fe`. Its new bank and head train quickly. The live training projection diagnostic remains poor; a completed trajectory audit must precede any interpretation, and the next owner should allocate substantially more monitored bank optimization before final selection. The first heat and Poisson pilots likewise diagnose learned-bank limitations; reusable f64 FNO3D/U-Net3D implementation and longer training are in progress in their owner trees. NS passed its amended reference gate but its small-bank representation pilot is negative; capacity/data ladders and actual comparative rollouts are next. Existing failed designs remain retained.

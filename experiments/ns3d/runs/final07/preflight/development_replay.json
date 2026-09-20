@@ -1,0 +1,217 @@
+{
+  "passed": true,
+  "relative_tolerance": 1e-08,
+  "checks": [
+    {
+      "method": "nmrom_pca64_free_q0",
+      "field_relative_difference": 1.2381075511940628e-15,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "nmrom_pca64_free_q32",
+      "field_relative_difference": 1.3192416245176887e-15,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "nmrom_pca64_free_q64",
+      "field_relative_difference": 1.2769287852103942e-15,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "nmrom_pca64_free_q128",
+      "field_relative_difference": 1.4534645747303097e-15,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "nmrom_pca64_free_q256",
+      "field_relative_difference": 1.708940116073986e-15,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_weak_64",
+      "field_relative_difference": 2.621843670708283e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_galerkin_64",
+      "field_relative_difference": 2.427599105303456e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_weak_96",
+      "field_relative_difference": 2.759908896014641e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_galerkin_96",
+      "field_relative_difference": 2.8918598751924865e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_weak_128",
+      "field_relative_difference": 2.6069637873626957e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_galerkin_128",
+      "field_relative_difference": 2.7136596408110854e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_weak_192",
+      "field_relative_difference": 2.954596655696137e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_galerkin_192",
+      "field_relative_difference": 3.020451275679801e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_weak_320",
+      "field_relative_difference": 3.2411096871125734e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "pod_galerkin_320",
+      "field_relative_difference": 3.3218115502459125e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "free_bank_galerkin",
+      "field_relative_difference": 3.0964328243923216e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fno3d_increment_raw",
+      "field_relative_difference": 3.411649326781932e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fno3d_increment_projected",
+      "field_relative_difference": 3.4352705402413214e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "unet3d_increment_raw",
+      "field_relative_difference": 4.132105346850908e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "unet3d_increment_projected",
+      "field_relative_difference": 3.5327707536815254e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "deeponet3d_increment_raw",
+      "field_relative_difference": 4.28396616452269e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "deeponet3d_increment_projected",
+      "field_relative_difference": 3.8353023479569523e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "transolver3d_increment_raw",
+      "field_relative_difference": 4.468740663661801e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "transolver3d_increment_projected",
+      "field_relative_difference": 3.9507886670088677e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.002",
+      "field_relative_difference": 2.647419842010676e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.004",
+      "field_relative_difference": 2.6036187228690975e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.008",
+      "field_relative_difference": 2.611105791136413e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.01",
+      "field_relative_difference": 2.614487040081366e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.02",
+      "field_relative_difference": 3.944204323243098e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    },
+    {
+      "method": "fom_dt0.04",
+      "field_relative_difference": 4.726082671027841e-16,
+      "expected_numerical_failure": false,
+      "identical_stopping": true,
+      "passed": true
+    }
+  ],
+  "final_cohort_opened": false
+}

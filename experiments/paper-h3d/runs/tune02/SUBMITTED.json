@@ -5,6 +5,9 @@
   "remote": "/cluster/tufts/paralab/tawal01/paper_h3d_20260920/tune02",
   "wall_limit": "02:00:00",
   "gpu_request": "a100:1",
-  "status": "PENDING",
-  "config_sha256": "db3ba6452aa35b544ed0699a6b1a2f9aa6eb25c52acefe283af2c3b0327baf7e"
+  "status": "RUNNING",
+  "config_sha256": "db3ba6452aa35b544ed0699a6b1a2f9aa6eb25c52acefe283af2c3b0327baf7e",
+  "node": "pax106",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "preflight": "jax_backend=gpu; x64=True precision=highest; stderr empty at launch inspection"
 }

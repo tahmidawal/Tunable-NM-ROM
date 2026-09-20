@@ -130,6 +130,9 @@ def audit(out,output=None):
         independently_regenerated_cohorts=True,checked_physical_refinement_cases=len(refinement),
         complete_cohort_method_repetition_coverage=True,
         limitation='independent field/cohort/discrete and physical reference/aggregation audit; no independent retraining or global-optimality proof')
+    if cfg.get('iterative_cg'):
+        from audit_cg import audit as audit_iterative_cg
+        result['independent_cg_audit']=audit_iterative_cg(out,record)
     if cfg.get('retain_solver_states',False):
         from state_audit import audit as audit_states
         result['independent_weak_state_audit']=audit_states(out,record)

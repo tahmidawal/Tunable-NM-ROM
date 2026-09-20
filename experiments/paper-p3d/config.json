@@ -223,5 +223,14 @@
   "final_count": 64,
   "retain_solver_states": true,
   "deeponet_native_sensor_control": true,
-  "reuse_checkpoint_directory": "checkpoints"
+  "reuse_checkpoint_directory": "checkpoints",
+  "iterative_cg": {
+    "preconditioner": "identity",
+    "relative_tolerances": [
+      0.01,
+      0.0001,
+      1e-06
+    ],
+    "max_iterations_per_interval": 4
+  }
 }

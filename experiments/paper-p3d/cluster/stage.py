@@ -11,7 +11,7 @@ LANE='experiments/paper-p3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_p3d_20260920'
 FILES=['DESIGN.md','config.json','IMPORTS.json','common.py','train.py','shared_rom.py','poisson.py','pod_transfer.py','offline_assets.py','run.py','audit.py','audit_pretraining.py','state_audit.py','trunk_diagnostic.py','freeze.py','cluster/stage.py','cluster/collect.py']
 FILES+=['operators/'+name for name in ['models3d.py','training.py','pretrained_deeponet.py','__init__.py','README.md','IMPORTS.json','LOCAL_EXTENSIONS.json','poisson_adapter.py']]
-FILES+=['audit_offline_assets.py']
+FILES+=['audit_offline_assets.py','iterative_cg.py','audit_cg.py']
 FILES+=['operators/'+name for name in ['extra_models3d.py','EXTRA_IMPORTS.json','upstream/Physics_Attention.py','upstream/LICENSE','upstream/prior_families.py','upstream/PROVENANCE.json']]
 
 

@@ -14,6 +14,7 @@ import common as C
 import train as T
 import shared_rom as S
 import poisson as P
+import iterative_cg as CG
 import offline_assets as A
 from freeze import verify_final_freeze
 
@@ -34,6 +35,11 @@ def summarize(record,out):
               physical_error_worst=max(r['physical_error'] for r in finite) if finite else None,
               nonfinite_cases=len(cases)-len(finite),nonstationary_cases=sum(not r['stationary'] for r in cases.values()),
               cases_above_same_grid_target=sum(r['same_grid_error']>record['config']['same_grid_target'] for r in finite)))
+        if name.startswith('cg_'):
+            rows[-1].update(cg_failed_invocations=sum(not r['cg_converged'] for r in group),
+                cg_iterations_repetitions=[r['iterations'] for r in group],
+                cg_iterations_median=float(np.median([r['iterations'] for r in group])),
+                cg_true_relative_residual_worst=max(r['cg_true_relative_residual'] for r in group))
     C.dump(out/'summary.json',dict(schema='paper-poisson3d-summary-v1',source_commit=record['source_commit'],
         job_id=record['job_id'],gpu=record['gpu'],complete=record['complete'],smoke=record['smoke'],rows=rows,
         reference=record.get('reference'),final_cohort_opened=record['final_cohort_opened'],
@@ -196,6 +202,12 @@ def run(cfg,out,smoke=False):
                     online='Galerkin solve on requested mesh with supplied forcing and full-field readout')
         full_lam=C.eigenvalues(n);methods['dst_exact']=lambda f,l=full_lam:P.solve_dst(f,l)
         metadata['dst_exact']=dict(kind='full_order')
+        for name,tol,cap in CG.settings(cfg,n):
+            methods[name]=CG.engine(n,tol,cap)
+            metadata[name]=dict(kind='full_order',solver='matrix-free CG',preconditioner='identity',
+                relative_tolerance=tol,absolute_tolerance=0.,max_iterations=cap,initial_guess='zero',
+                stopping='recursive residual; timed true-residual certification',
+                output='complete interior field',matvecs='iterations + one final residual stencil')
         for name,op,spec,scales in operator_models:
             methods[name]=O.engine(op,spec,scales,n)
             metadata[name]=dict(kind='neural_operator',spec=spec,training_intervals=cfg['train_intervals'],frozen_mesh_transfer=n!=cfg['train_intervals'])
@@ -278,7 +290,11 @@ def run(cfg,out,smoke=False):
                     value=methods[name](fj);jax.block_until_ready(value);computed=time.perf_counter()
                     value=jax.device_get(value);finished=time.perf_counter()
                     counters=dict(stationary=True,iterations=0)
-                    if isinstance(value,tuple):
+                    if str(name).startswith('cg_'):
+                        pred,cgstats=value
+                        meta=metadata[name]
+                        counters=CG.counters(cgstats,meta['relative_tolerance'],meta['max_iterations'])
+                    elif isinstance(value,tuple):
                         pred,stats,coef,starts,*latent=value
                         counters=dict(stationary=bool(int(stats[2])==1 and stats[5]<=cfg['lm_tolerance']),iterations=int(stats[7]),
                             selected_stats=np.asarray(stats).tolist(),all_starts_stats=np.asarray(starts).tolist())
@@ -287,9 +303,10 @@ def run(cfg,out,smoke=False):
                     row=dict(intervals=n,case=case,repetition=rep,method=str(name),finite=finite,
                         input_ms=(uploaded-start)*1000,device_ms=(computed-uploaded)*1000,total_ms=(finished-start)*1000,**counters)
                     if finite:row.update(same_grid_error=P.error(pred,truth),physical_error=P.error(pred,physical[(n,case)]))
-                    if rep==0:
-                        path=out/'fields'/f'N{n}_case{case}_{name}.npz'
-                        state=dict(coefficients=coef,latent=latent[0]) if isinstance(value,tuple) and latent else {}
+                    if rep==0 or str(name).startswith('cg_'):
+                        suffix=f'_rep{rep}' if str(name).startswith('cg_') else ''
+                        path=out/'fields'/f'N{n}_case{case}_{name}{suffix}.npz'
+                        state=dict(coefficients=coef,latent=latent[0]) if str(name).startswith('nmrom_') and latent else {}
                         np.savez_compressed(path,prediction=pred,**state)
                         row.update(field_file=str(path.relative_to(out)),field_sha256=C.sha(pred))
                     record['invocations'].append(row)

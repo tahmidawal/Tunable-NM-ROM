@@ -1,27 +1,35 @@
-# Poisson3D tuned comparison handoff
+# Poisson3D complete-operator comparison handoff
 
-The first pilot is complete, checksum collected, independently audited and retained in commit `68fd0cca`; its exact cluster directory was removed. It is an accepted diagnostic, with unsuccessful model-accuracy and quadrature outcomes retained. The generated cross-PDE paper table is maintained by the root coordinator from its archived JSONs. The local audit checked 416 fields, 16 SciPy DST references and 26 summary rows; see `runs/pilot01/audit-local.json` and the unchanged remote checksums under `runs/pilot01/archive/`.
+The longer NM-ROM/FNO/U-Net development panel is complete, checksum collected and independently audited. Its immutable original output is `runs/tuned02/archive/out`, local independent audit is `runs/tuned02/audit-local.json`, and source-generated diagnostics are `runs/tuned02/diagnostics.json`. The exact completed cluster directory has been removed. The root coordinator owns the generated main report and canonical lab log.
 
-The next active job is **3990494**, attempt `tuned02`, scientific source `68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b`, submitted `2026-09-20T04:49:34.330974+00:00`. Exact source/configuration checksums and cluster namespace are in `runs/tuned02/SUBMISSION.json` and `PROVENANCE.json`. It requests one A100 for two hours, with its own directory and GPU/f64/highest gates. There is no second P3D GPU job. Final data remain unopened.
+The active additional-operator job is **3995104**, attempt `extra03`, source `a50ce0977373977688d73f82700108a6138b433b`, config SHA256 `fdbe781595dddce13e4e6c36317c486b0d51a68ae79c58ee3227dee370a48c87`, submitted `2026-09-20T05:29:52.432424+00:00`. It runs on an A100 in `/cluster/tufts/paralab/tawal01/paper_p3d_20260920/extra03` with GPU/f64/highest preflight verified. Its source, reused checkpoint and configuration manifest is `runs/extra03/PROVENANCE.json`. No other P3D GPU job exists; final data remain unopened.
 
-This job trains a fresh learned rank-128 bank with materially increased optimization budget and validation checkpoint selection, then latent-8/16 heads. It trains the frozen H-lane FNO3D and U-Net3D implementation on the same 512 training and 16 development forcing/solution members. It evaluates the full correction ladder and classical controls together with both operators at 32/64 intervals, preserving full output costs and repetitions. At 64, direct operator transfer and native-32 prediction followed by boundary-aware interpolation are separate methods. Protocol amendment A1 and `config.json` give the exact prospective budgets, criteria and quadrature repair; no numerical success is presumed.
+The audited tuned model now meets the prescribed same-grid development target on its latent-16 dense head and improves further through correction enrichment. Its bank and unrestricted linear endpoint are substantially stronger than the first pilot. Dimension-matched small POD controls are worse than the head, but the strongest POD and direct DST controls are more accurate and cheaper than NM-ROM. Both quadrature certificates still fail their unchanged threshold. Those sampled rows remain diagnostic and cannot support deployment claims.
 
-Meaningful local checks passed: the actual validation-checkpoint NM-ROM pipeline and independent output/reference audit in `runs/smoke2`, and two-step actual training, validation selection, checkpoint replay, task-adapter parity and independently checked boundary-aware nodal interpolation for both operator families in `runs/operator_smoke1/audit.json`. Every smoke was a bounded local jaxrun under one minute. Imported primitive code and SHA256 provenance live in `operators/IMPORTS.json` (H source `84d302a7`).
+The native-mesh FNO and U-Net are accurate. Direct frozen evaluation at the finer mesh deteriorates sharply, while native-mesh prediction followed by boundary-aware interpolation remains accurate. These are different methods, explicitly preserved as separate positive and negative rows. The new job reuses both operator checkpoints and all NM-ROM checkpoints, regenerates the identical data from seed, checks the training-array and membership hashes, adds DeepONet and actual physics-attention Transolver, and remeasures every model/control in that one allocation. All frozen parameters are placed on the GPU once before timing. The earlier NumPy-selected head parameters could incur avoidable repeated transfers; archived timings remain valid for that implementation and are never pooled with this corrected panel.
+
+Meaningful bounded local checks passed for both added operator families: actual training and validation selection, saved checkpoint replay, forcing-adapter parity, and independent SciPy verification of zero-boundary interpolation. The whole frozen NM-ROM replay and independent audit also pass; retained evidence lives in `runs/{deeponet_smoke1,transolver_smoke1,reuse_smoke1}`. Imported source and license hashes are in `operators/EXTRA_IMPORTS.json`; common upstream source is H commit `5933b3706c119e8ffbcfdf98db3940464af7b4fc`.
 
 Monitor with:
 
 ```bash
-ssh tufts-login 'squeue -u tawal01; tail -30 /cluster/tufts/paralab/tawal01/paper_p3d_20260920/tuned02/job.out; tail -15 /cluster/tufts/paralab/tawal01/paper_p3d_20260920/tuned02/job.err'
+ssh tufts-login 'squeue -u tawal01; tail -25 /cluster/tufts/paralab/tawal01/paper_p3d_20260920/extra03/job.out; tail -15 /cluster/tufts/paralab/tawal01/paper_p3d_20260920/extra03/job.err'
 ```
 
-The run saves partial optimizer state, selected checkpoints, bank/head validation curves and operator curves before evaluation. Selected bank/head checkpoints can differ from the latest iteration. Inspect validation accuracy, training-versus-bank floors and continuation slopes before deciding further capacity/optimization changes; all comparisons remain development evidence. No convergence is asserted from a finite budget. The failed pilot quadrature rows stay archived. Tuned sampled rows require the unchanged held-out forcing-moment certificate before supporting a deployment claim.
-
-When this job ends successfully, from this worktree run:
+When the active job has finished successfully, collect from this worktree:
 
 ```bash
-/home/tahmid/Dev/.venv/bin/python experiments/paper-p3d/cluster/collect.py tuned02 --remove-verified
+OPENBLAS_NUM_THREADS=8 /home/tahmid/Dev/.venv/bin/python experiments/paper-p3d/cluster/collect.py extra03 --remove-verified
 ```
 
-The collector refuses live account-queue membership, verifies source/output checksums and basic job logs, writes an independent audit to `audit-local.json` outside the checksummed output tree, then rechecks the original manifest before deleting only the literal verified remote attempt. An incomplete job must be preserved through a separate recovery workflow. Do not overwrite remotely checksummed `audit.json` with a local recomputation.
+The collector refuses active account-queue membership, verifies original source/output manifests, recomputes all saved-field errors with independent SciPy DST references and checks every summary/count/counter, then rechecks the original manifest before deleting only the literal completed attempt. The local audit never overwrites the original remotely checksummed evidence. Failed or interrupted jobs require separate retained recovery.
 
-After this development comparison, remaining campaign work is validation-based model tuning if still weak, a second initialization seed when feasible, and a frozen selection followed by one untouched final cohort. DeepONet/Transolver are explicit backlog. Neural superiority over the free linear bank, POD or DST is not assumed. No merge or push is authorized. Root owns the canonical LAB-LOG and main reports; this worker writes only the P3D tree/namespace.
+For a fresh checkout, the sole large tuned checkpoint is stored in verified chunks. Restore it with:
+
+```bash
+/home/tahmid/Dev/.venv/bin/python experiments/paper-p3d/runs/tuned02/large-artifacts/restore.py
+```
+
+The existing full file remains on disk, byte-identical to the original output manifest; only that redundant large file is ignored, while all chunks and their manifest are tracked.
+
+Remaining campaign priorities after the additional operators finish: inspect the actual four-family errors and validation curves; improve any materially weak learned baselines under documented development-only changes; consider a short bank/head continuation because their last selected checkpoints were still improving; run independent initialization seeds for frozen finalists; coordinate selection with the root before opening the untouched final cohort. The finer scaling panel is deferred until shared device matrices and a small selected rung set avoid unnecessary memory duplication. A failed quadrature certificate, negative operator transfer, or stronger classical control is retained, never relabelled as a success. No merge or push is authorized. Root owns main reports and the canonical log; this worker writes only this approved P3D tree and namespace.

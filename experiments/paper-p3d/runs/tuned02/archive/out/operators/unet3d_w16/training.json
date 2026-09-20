@@ -1,0 +1,28 @@
+{
+  "spec": {
+    "kind": "unet3d",
+    "width": 16,
+    "levels": 3,
+    "periodic": false
+  },
+  "config": {
+    "steps": 30000,
+    "wall_seconds": 1500,
+    "batch_size": 2,
+    "seed": 920451,
+    "learning_rate": 0.0005,
+    "validation_every": 250,
+    "curve_every": 50,
+    "components_per_output": 1
+  },
+  "parameter_count": 354577,
+  "steps_completed": 30000,
+  "best_step": 28750,
+  "best_validation_worst": 0.0019318997012163126,
+  "seconds": 638.0377804501913,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

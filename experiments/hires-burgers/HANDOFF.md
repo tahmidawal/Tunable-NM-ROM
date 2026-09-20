@@ -13,7 +13,8 @@
   point byte-identical (DESIGN §3) — nothing copied.
 - Local smoke 64² passes every phase (three runs); hfast vs audited base 3.4e-14–5.5e-14, identical integers.
 - Codex design audit recorded: `reports/codex-design-audit-2026-09-20.md` (23 findings, dispositions applied).
-- Jobs used: 1 / 8. Running: `hb2k01` = 4054951 (H200 pax008, 2048², source b66a59bd).
+- Jobs used: 2 / 8. Running: `hb2k01` = 4054951 (H200 pax008, 2048², source b66a59bd); `hb4k01` = 4055954 (H200 pax010, 4096², source c0c007de, --mem 320G).
+- hb2k01 early answer (log lines, NOT yet audited): q=0 2.37 % evolved; q=128/M=576 1.075 %; q=256/M=544 0.88 %; q=256/M=1088 0.5915 % with b-eqtop weights merely scaled by (L/256)², 0.598 % with the 63×63 lattice; control bad0 1.04 %; zero stalled exits; c1024 coarse FOM 0.417 % same-grid.
 
 ## How to run a job
 
@@ -38,5 +39,6 @@ See the bottom of this file's job table.
 | attempt | job id | mesh | GPU | state | summary |
 |---|---|---|---|---|---|
 | hb2k01 | 4054951 | 2048² | H200 (pax008) | RUNNING since 2026-09-20 | — |
+| hb4k01 | 4055954 | 4096² | H200 (pax010) | RUNNING since 2026-09-20 | — |
 
 Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage `hb4k01` with `config-4096.json --mem 400G` once the early phases are seen to work and the account has < 6 running.

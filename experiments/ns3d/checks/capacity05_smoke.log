@@ -1,0 +1,18 @@
+STAGE symmetry_verification
+STAGE base_data_regeneration
+data seed=202609201 1/4 elapsed=2.1
+data seed=202609201 4/4 elapsed=2.2
+data seed=202609202 1/2 elapsed=0.2
+data seed=202609202 2/2 elapsed=0.2
+STAGE shared_training_augmentation
+STAGE coverage_capacity_and_heads
+free_bank_train {'step': 1, 'relative_mse': 0.9674199298892927, 'seconds': 1.9083088099723682}
+free_bank_train {'step': 3, 'relative_mse': 0.9702517609262552, 'seconds': 1.9174848269904032}
+PCA_HEAD {'step': 1, 'relative_mse': 0.050247246443374055, 'seconds': 0.6473007460590452}
+PCA_HEAD {'step': 3, 'relative_mse': 0.04891172197947151, 'seconds': 0.650760684045963}
+STAGE shared_operator_training
+STAGE complete_query_development_controls
+STAGE larger_dense_weak_rollout_assembly
+TIMED 0 0
+STAGE complete
+ALL-DONE

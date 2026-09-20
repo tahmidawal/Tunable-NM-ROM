@@ -1,0 +1,13 @@
+{
+  "protocol": "Prospective held-out final sample count; no final cases generated or accessed",
+  "fixed_utc": "2026-09-20T07:08:46.304608+00:00",
+  "final_seed": 202609203,
+  "final_cases": 32,
+  "selection_uses": "development only",
+  "freeze_deadline_utc": "2026-09-20T10:00:00+00:00",
+  "completion_target_utc": "2026-09-20T12:07:00+00:00",
+  "required_comparison": "Best available selected augmented-cohort NM-ROM, matched augmented POD, all four augmented operators, and validation-selected cheapest passing FOM; include NM-ROM even if its promotion/accuracy gate fails.",
+  "required_freeze": "Record all source/checkpoint/membership hashes, solver settings, correction ranks, test count, model variants, references and timing repetitions before generating any final case.",
+  "failure_handling": "Retain and report all failures; no family narrowing, outcome-based final exclusions, target changes, or tuning after final access.",
+  "independent_seed_status": "Pending; capacity05 is warm tuning, not an independent complete training repeat."
+}

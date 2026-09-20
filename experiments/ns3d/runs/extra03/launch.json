@@ -19,7 +19,7 @@
     "all four operators remeasured together after new operator training",
     "per-step latent states retained for bounded independent Jacobian audit"
   ],
-  "observed_state": "RUNNING",
+  "observed_state": "COMPLETED",
   "node": "pax106",
   "gpu_preflight_seen": true,
   "stage_at_handoff": "larger_bank_head_screen",
@@ -34,6 +34,8 @@
   "archive_roundtrip_passed": true,
   "current_paired_numerical_validity_passed": true,
   "strict_cross_run_replay_passed": false,
-  "remote_removed": false,
-  "completed_scheduler": "COMPLETED 0:0"
+  "remote_removed": true,
+  "completed_scheduler": "COMPLETED 0:0",
+  "remote_removed_utc": "2026-09-20T07:04:14.870327+00:00",
+  "cleanup_basis": "Archive committed at 83b596d3; all raw/source/independent current measurement audits pass; strict cross-run replay gate remains failed and qualified separately."
 }

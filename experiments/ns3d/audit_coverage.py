@@ -44,6 +44,34 @@ def main():
     computed=independently_evaluate_bank(bank['params'],cfg['n'])
     gate('learned_coordinate_bank',rel(computed,G)<1e-10,relative=rel(computed,G));del computed
     gate('bank_QR',rel(Q@Rb,G)<1e-10 and rel(Q.T@Q,np.eye(Q.shape[1]))<1e-10)
+    singular=np.linalg.svd(Rb,compute_uv=False)
+    measured_rank=int(np.sum(singular>singular[0]*1e-10))
+    gate('projected_bank_numerical_rank',measured_rank==G.shape[1] and np.allclose(singular,screen['whitening']['singular_values'],rtol=1e-8,atol=1e-12),
+        numerical_rank=measured_rank,requested_rank=G.shape[1],relative_threshold=1e-10,condition=float(singular[0]/singular[-1]))
+    if cfg.get('reuse_path'):
+        reuse=Path(cfg['reuse_path']) if a.smoke else root/'reuse'
+        manifest=json.loads((reuse/'REUSE.json').read_text())
+        failures=[entry['path'] for entry in manifest['files'] if file_sha(reuse/entry['path'])!=entry['sha256']]
+        prior=json.loads((reuse/'result.json').read_text())
+        membership_keys=['membership_sha256','base_states_sha256','base_parameter_sha256','augmented_states_sha256']
+        same=all(raw['augmentation'][key]==prior['augmentation'][key] for key in membership_keys)
+        same &= raw['dev_data']['states_sha256']==prior['dev_data']['states_sha256']
+        for spec in cfg['operators']:
+            if file_sha(out/spec['kind']/'best.pkl')!=file_sha(reuse/spec['kind']/'best.pkl'):failures.append(spec['kind'])
+        gate('same_cohort_operator_checkpoint_reuse',not failures and same and manifest==raw['reuse'],failures=failures,source_job=prior['job_id'])
+        with (reuse/'capacity/frozen_bank.pkl').open('rb') as f:previous=pickle.load(f)
+        with (cap/'initial_expanded_bank.pkl').open('rb') as f:initial=pickle.load(f)
+        initial_G=independently_evaluate_bank(initial['params'],cfg['n']);old_G=previous['extra']['bank'];old_rank=old_G.shape[1]
+        difference=rel(initial_G[:,:old_rank],old_G)
+        initial_R=np.linalg.qr(initial_G,mode='r');initial_singular=np.linalg.svd(initial_R,compute_uv=False)
+        initial_rank=int(np.sum(initial_singular>initial_singular[0]*1e-10));saved=screen['warm_initialization']['initial_whitening']
+        rank_agreement=(initial_rank==initial_G.shape[1])==saved['passed']
+        if saved['passed']:rank_agreement &= np.allclose(initial_singular,saved['singular_values'],rtol=1e-8,atol=1e-12)
+        gate('warm_expansion_physical_columns_and_rank',difference<1e-10 and rank_agreement,
+            old_column_relative=difference,old_rank=old_rank,new_rank=initial_G.shape[1],measured_initial_rank=initial_rank,
+            initial_condition=float(initial_singular[0]/initial_singular[-1]),initial_full_rank=initial_rank==initial_G.shape[1],
+            interpretation='initialization rank is measured; only the final trained full-rank bank is eligible for capacity acceptance')
+        del initial_G,initial_R,previous,initial
     X=dev.reshape(-1,G.shape[0]);den=np.repeat(np.linalg.norm(dev[:,0].reshape(len(dev),-1),axis=1),6)
     bank_prediction=(X@Q)@Q.T;floor=np.linalg.norm(X-bank_prediction,axis=1)/den
     with np.load(cap/'bank_fields.npz') as f:

@@ -1,0 +1,58 @@
+{
+  "prepared_utc": "2026-09-20T07:08:05.135736+00:00",
+  "status": "prepared, not submitted; coverage04 still running",
+  "config": "configs/capacity05.json",
+  "training_lineage": "Warm expansion of the coverage04 learned spatial bank on identical augmented membership; fresh optimizer/new columns/training RNG; not an independent complete training seed.",
+  "measurements_from_smoke": {
+    "projected_bank_numerical_rank": {
+      "passed": true,
+      "numerical_rank": 16,
+      "requested_rank": 16,
+      "relative_threshold": 1e-10,
+      "condition": 21.671511966120114
+    },
+    "same_cohort_operator_checkpoint_reuse": {
+      "passed": true,
+      "failures": [],
+      "source_job": null
+    },
+    "warm_expansion_physical_columns_and_rank": {
+      "passed": true,
+      "old_column_relative": 2.4889508924393e-16,
+      "old_rank": 8,
+      "new_rank": 16,
+      "measured_initial_rank": 16,
+      "initial_condition": 21.912242021004843,
+      "initial_full_rank": true,
+      "interpretation": "initialization rank is measured; only the final trained full-rank bank is eligible for capacity acceptance"
+    }
+  },
+  "all_smoke_fields_passed": true,
+  "all_smoke_histories_passed": true,
+  "history_probes": 14,
+  "max_history_gradient_disagreement": 5.1612351387993076e-14,
+  "memory_estimate_gib": {
+    "augmented_fields": 9.0,
+    "each_bank_or_Q_or_POD": 2.25,
+    "free_coefficients": 0.28125,
+    "head_metric": 0.0703125,
+    "forbidden_quadratic_weak_tensor": 144.0
+  },
+  "runtime_estimate": {
+    "bank_cap_seconds": 1500,
+    "head_cap_seconds_each": 600,
+    "estimated_total_minutes": [
+      60,
+      90
+    ],
+    "requested_safety_limit_hours": 2,
+    "qualification": "Planning estimate from lower-rank training rate; higher-rank QR/POD/projection and dense-query costs remain unmeasured. All actual costs and cap exits must be retained."
+  },
+  "requirements": [
+    "coverage04 complete and independent field/history/source checks pass before checkpoint reuse",
+    "all reused file content hashes and regenerated membership must match",
+    "final matched panel includes augmented NM-ROM even if representation gate fails",
+    "independent complete training seed remains pending",
+    "final cohort remains sealed"
+  ]
+}

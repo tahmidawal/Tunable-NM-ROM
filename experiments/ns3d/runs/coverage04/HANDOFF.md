@@ -54,6 +54,10 @@ four augmented operators plus efficient FOM controls in a bounded final panel.
 Preserve and report accuracy/stationarity failures. Do not compare an old
 512-case NM-ROM only against new augmented operators, and do not omit the newest
 NM-ROM merely because it loses. The earlier panel remains a separate comparison.
+The prospective final cohort size is fixed in `configs/final32_protocol.json`
+before any draw. All final model/solver choices and hashes must freeze using
+development data by the recorded selection deadline. The record also preserves
+the mandatory matched negative NM-ROM comparison and the pending seed repeat.
 
 The prospective next q extension is recorded in `planned_extended_ladder`:
 remeasure the entire longer ladder at one fixed sufficiently large M when the
@@ -99,3 +103,62 @@ Do not alter raw JSON or lower an audit tolerance after observing a failure.
 Root owns the canonical lab log and main paper reports. Send audited numbers,
 source/job hashes, all failures and remaining work to root. No merges or pushes
 are authorized; the user's later merge decision remains necessary.
+
+## Prepared capacity extension
+
+`configs/capacity05.json` prepares a larger learned-bank warm expansion on this
+exact augmented membership. It is not submitted and must not modify this live
+attempt. Its machine-readable readiness record, calculated memory estimates,
+bounded runtime estimate and independent smoke results are in
+`checks/capacity05_readiness.json`. These are estimates and tiny implementation
+checks, not larger-grid scientific results.
+
+`expand_bank.py` retains the old coordinate MLP features and copies terminal
+weights with explicit component-by-column indexing. It checks actual old
+Leray-projected physical columns and measures the new bank's singular spectrum
+after projection and QR whitening. New coefficients start at zero, while old
+coefficients use the previous physical projection coefficients. The optimizer
+and new-column RNG restart. This is a declared warm capacity extension, not an
+independent complete training-seed repeat. Final trained whitening must pass;
+width or output dimension alone never certifies bank rank.
+
+The extension preserves initialized affine PCA as a competing head. Its trained
+heads run only when the larger bank passes their prospective bank-floor gate.
+Its longer correction ladder remeasures every rung at one fixed larger test
+count. A missed exploratory gate must still lead to an explicitly negative,
+bounded final NM-ROM measurement under the final-panel requirement above.
+
+After this attempt is quiescent, checksum-collected, source-verified and audited,
+stage the committed future source in its own unsubmitted attempt:
+
+```bash
+/home/tahmid/Dev/.venv/bin/python experiments/ns3d/cluster/stage.py capacity05 \
+  --driver coverage04.py --config capacity05.json --gpu a100 --a100-memory 80G \
+  --hours 2
+/home/tahmid/Dev/.venv/bin/python experiments/ns3d/prepare_capacity_reuse.py \
+  experiments/ns3d/runs/coverage04/collected experiments/ns3d/runs/capacity05 \
+  --audit experiments/ns3d/runs/coverage04/audit.json \
+  --history-audit experiments/ns3d/runs/coverage04/history_audit.json \
+  --source-audit experiments/ns3d/runs/coverage04/source_audit.json
+```
+
+The helper verifies all reused output hashes and the audit gates, copies the
+bank and every selected operator checkpoint into `reuse/`, records source
+lineage, and rebuilds the attempt manifest. It copies no data. The driver
+regenerates base data and checks exact augmented/development hashes and training
+statistics before reusing operators. Transfer this complete staged directory
+directly to its paralab path. Check disk and the full account queue before and
+after submission; keep at most one NS job and the global campaign cap. Record
+the actual job, source commit and GPU preflight in a new launch record.
+
+The updated `audit_coverage.py` additionally verifies final projected numerical
+rank, independent initial expanded-bank columns/rank, and byte-identical reused
+operator weights. Collect the new `reuse/` directory with the future result so
+these lineage checks remain possible. Archive the full source/output/reuse
+bundle and retain any failed conditioning, accuracy or stationarity outcome.
+
+The prior extra03 archive is committed and its exact completed remote directory
+has been deleted. Its strict cross-run replay audit remains failed, unchanged.
+`runs/extra03/numerical_validity.json` separately qualifies its independently
+checked new paired measurements; no implementation-speed or cross-run parity
+claim follows from those measurements.

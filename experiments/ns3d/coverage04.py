@@ -18,7 +18,7 @@ import dataset_adapter as A
 import operator_adapter as O
 from operators import training as OT
 from comparison import projection_floor,raw_projection_check,burn
-from extra03 import with_coordinates
+from extra03 import with_coordinates,file_hash,load
 from pilot import generate,write,summary,sha
 
 
@@ -39,9 +39,17 @@ def capacity(Utr,Udev,cfg,out):
         save()
     np.savez_compressed(out/'pod.npz',basis=P,singular=singular)
     del P;gc.collect();report['stage']='free_bank';save()
+    warm=None;width=cfg.get('bank_hidden_width',rank)
+    if cfg.get('warm_bank_checkpoint'):
+        from expand_bank import expand
+        previous=load(cfg['warm_bank_checkpoint']);assert previous['params']['g'][-1][0].shape[0]==width
+        warm=expand(previous,rank,cfg['model_seed'],n,dev);report['warm_initialization']=warm[2];save()
+        D.checkpoint(out/'initial_expanded_bank.pkl',warm[0],np.empty((0,64)),{**cfg,'k':64,'r':rank},warm[2])
+        del previous
     params,z,info,_=D.train_free_bank(train,n,64,rank,cfg['model_seed'],cfg['coverage_bank_steps'],cfg['coverage_bank_seconds'],out/'free_bank.pkl',scores,
-        batch=16,width=rank,n_ff=cfg['n_ff'],spatial_batch=1024,snapshot_variance=variance,checkpoint_every=5000,
+        batch=16,width=width,n_ff=cfg['n_ff'],spatial_batch=1024,snapshot_variance=variance,checkpoint_every=5000,warm_start=warm,
         callback=lambda curve:(report.update(bank_curve=curve),save()))
+    del warm
     report['bank_training']=info
     G=np.asarray(D.bank(params,D.coords(n),F.geometry(n),n));Q,Rb,ctr,ptr,whitening=D.whiten(G,train)
     Xdev=dev.reshape(len(dev),-1);cdev=np.linalg.solve(Rb,(Xdev@Q).T).T;pdev=np.sum((Xdev-cdev@G.T)**2,axis=1)
@@ -76,6 +84,9 @@ def capacity(Utr,Udev,cfg,out):
             D.checkpoint(out/(initial_label+'.pkl'),candidate,codes,{**cfg,'k':k,'r':rank,'head_variant':initial_label,'free_codes':False},initial_record)
             np.savez_compressed(out/(initial_label+'_fields.npz'),prediction=initial_prediction.reshape(dev.shape),training_stored_code_error=initial_train,affine_PCA_development_error=initial_dev)
             save()
+        if cfg.get('head_training_bank_threshold') is not None and report['development_bank_initial_normalized']['worst']>cfg['head_training_bank_threshold']:
+            report.setdefault('skipped_head_training',{})[label]=dict(reason='bank floor exceeds configured head-training eligibility threshold',threshold=cfg['head_training_bank_threshold'])
+            save();continue
         hcfg={**cfg,'k':k,'r':rank,'head_variant':label,'free_codes':spec['free_codes']}
         candidate,codes,training=HP.train(candidate,codes,ctr,Rb,hcfg,out/(label+'.pkl'),variance,cfg['model_seed']+k)
         code_residual=(np.asarray(D.head(candidate,jnp.asarray(codes)))-ctr)@Rb.T
@@ -111,6 +122,12 @@ def main():
         report['gpu']=subprocess.check_output(['nvidia-smi','--query-gpu=name,memory.total','--format=csv,noheader'],text=True).strip()
         assert report['backend']=='gpu' and report['x64'] and report['precision']=='highest'
         assert cfg['initial_amplitude']==F.INITIAL_AMPLITUDE
+        if cfg.get('reuse_path'):
+            reuse=Path(cfg['reuse_path']);report['reuse']=json.loads((reuse/'REUSE.json').read_text())
+            for entry in report['reuse']['files']:assert file_hash(reuse/entry['path'])==entry['sha256'],entry['path']
+            prior=json.loads((reuse/'result.json').read_text());assert prior['complete']
+            for key in ['n','dt','horizon','initial_amplitude','train_cases','dev_cases','train_seed','dev_seed','augmentation_copies','augmentation_seed','operators']:
+                assert cfg[key]==prior['config'][key],key
         stage('symmetry_verification');report['symmetry']=TC.verify();assert report['symmetry']['passed'];save()
         n=cfg['n'];h=cfg['horizon'];stage('base_data_regeneration')
         base,report['train_data']=generate(n,cfg['dt'],h,cfg['train_cases'],cfg['train_seed'],out/'train_data.npz')
@@ -118,23 +135,40 @@ def main():
         params=F.parameters(cfg['train_seed'],len(base));table=TC.membership(len(base),n,cfg['augmentation_copies'],cfg['augmentation_seed'])
         report['augmentation']=TC.manifest(table,n,cfg['augmentation_seed'],base,params);write(report['augmentation'],out/'membership.json')
         stage('shared_training_augmentation');train=TC.augment(base,table);report['augmentation']['augmented_states_sha256']=sha(train);del base;gc.collect();save()
+        if cfg.get('reuse_path'):
+            for key in ['membership_sha256','base_states_sha256','base_parameter_sha256','augmented_states_sha256']:
+                assert report['augmentation'][key]==prior['augmentation'][key],key
+            assert report['dev_data']['states_sha256']==prior['dev_data']['states_sha256']
         stage('coverage_capacity_and_heads')
         report['capacity']=capacity(train,dev,cfg,out/'capacity');save();gc.collect();jax.clear_caches()
         stage('shared_operator_training')
         trds=dict(initial=train[:,0],viscosity=params[table[:,0],-1:],targets=train[:,1:]-train[:,0,None])
         dvds=dict(initial=dev[:,0],viscosity=F.parameters(cfg['dev_seed'],len(dev))[:,-1:],targets=dev[:,1:]-dev[:,0,None])
         statistics=A.training_statistics(trds);O.checkpoint(out/'operator_statistics.pkl',statistics)
-        tx,ty=A.common_model_arrays(trds,statistics);vx,vy=A.common_model_arrays(dvds,statistics)
-        td=np.repeat(np.sum(trds['initial']**2,axis=(1,2,3,4))[:,None]/statistics['output_scale']**2,5,1)
-        vd=np.repeat(np.sum(dvds['initial']**2,axis=(1,2,3,4))[:,None]/statistics['output_scale']**2,5,1)
-        del train,trds;gc.collect();models=[];report['operators']=[]
-        for index,spec in enumerate(cfg['operators']):
-            assert spec['output_residual_initial']
-            extra=spec['kind'] in ('deeponet3d','transolver3d')
-            xx=with_coordinates(tx) if extra else tx;vv=with_coordinates(vx) if extra else vx
-            model,info=OT.train(xx,ty,vv,vy,spec,{**cfg['operator_train'],'seed':cfg['operator_train']['seed']+index},out/spec['kind'],lambda path,obj:write(obj,path),O.checkpoint,td,vd)
-            models.append((spec,model));report['operators'].append(info);save();del xx,vv;gc.collect()
-        del tx,ty,vx,vy,td,vd;gc.collect();jax.clear_caches()
+        models=[];report['operators']=[]
+        if cfg.get('reuse_path'):
+            previous_statistics=load(reuse/'operator_statistics.pkl')
+            assert all(np.allclose(statistics[key],previous_statistics[key],rtol=1e-13,atol=1e-13) for key in statistics)
+            import shutil
+            for spec,info in zip(cfg['operators'],prior['operators'],strict=True):
+                assert spec==info['spec'];checkpoint=load(reuse/spec['kind']/'best.pkl');assert checkpoint['spec']==spec
+                models.append((spec,jax.tree_util.tree_map(jax.device_put,checkpoint['params'])));report['operators'].append({**info,'reused_from_job':prior['job_id']})
+                destination=out/spec['kind'];destination.mkdir();shutil.copy2(reuse/spec['kind']/'best.pkl',destination/'best.pkl')
+                write(report['operators'][-1],destination/'training.json')
+            del train,trds,dvds;gc.collect();save()
+        else:
+            tx,ty=A.common_model_arrays(trds,statistics);vx,vy=A.common_model_arrays(dvds,statistics)
+            td=np.repeat(np.sum(trds['initial']**2,axis=(1,2,3,4))[:,None]/statistics['output_scale']**2,5,1)
+            vd=np.repeat(np.sum(dvds['initial']**2,axis=(1,2,3,4))[:,None]/statistics['output_scale']**2,5,1)
+            del train,trds;gc.collect()
+            for index,spec in enumerate(cfg['operators']):
+                assert spec['output_residual_initial']
+                extra=spec['kind'] in ('deeponet3d','transolver3d')
+                xx=with_coordinates(tx) if extra else tx;vv=with_coordinates(vx) if extra else vx
+                model,info=OT.train(xx,ty,vv,vy,spec,{**cfg['operator_train'],'seed':cfg['operator_train']['seed']+index},out/spec['kind'],lambda path,obj:write(obj,path),O.checkpoint,td,vd)
+                models.append((spec,model));report['operators'].append(info);save();del xx,vv;gc.collect()
+            del tx,ty,vx,vy,td,vd;gc.collect()
+        jax.clear_caches()
         stage('complete_query_development_controls');geom=F.geometry(n);methods=[]
         for spec,model in models:
             for projected in (False,True):

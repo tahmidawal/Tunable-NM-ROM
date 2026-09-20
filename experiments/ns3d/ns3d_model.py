@@ -263,7 +263,7 @@ def pod_gpu(U,maxrank):
 
 def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
                     pod_scores,batch=16,width=512,n_ff=256,lr=.001,callback=None,
-                    spatial_batch=1024,snapshot_variance=None,checkpoint_every=100):
+                    spatial_batch=1024,snapshot_variance=None,checkpoint_every=100,warm_start=None):
     """Learn spatial bank with unrestricted coefficients before fitting a head.
 
     The POD scores initialize coefficients only. Spatial fields remain a learned
@@ -276,6 +276,10 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
     params['out_scale']=jnp.sqrt(scale)
     normalization=float(jnp.sqrt(scale*U.shape[1]))
     coefficients=jnp.asarray(pod_scores[:,:r_feat]/normalization)
+    if warm_start is not None:
+        params,coefficients,warm_metadata=warm_start
+        params=jax.tree_util.tree_map(jax.device_put,params);coefficients=jnp.asarray(coefficients)
+        assert coefficients.shape==(len(U),r_feat)
     xy=coords(n)
     U3=U.reshape(len(U),3,n**3)
     opt=optax.adam(optax.warmup_cosine_decay_schedule(0.,lr,min(300,steps//10+1),steps,lr*.02))
@@ -321,5 +325,8 @@ def train_free_bank(U,n,k_lat,r_feat,seed,steps,seconds,checkpoint_path,
               coefficient_initialization='training_field_POD_scores',
               objective='raw field MSE with spatial point minibatches' if snapshot_variance is None else 'raw field MSE divided by trajectory initial mean-square velocity',spatial_batch=spatial_batch,
               spatial_bank='learned periodic vector coordinate MLP, not POD substitution')
+    if warm_start is not None:
+        info['coefficient_initialization']='retained old-bank physical projection coefficients plus zero new coefficients'
+        info['warm_start']=warm_metadata
     checkpoint(checkpoint_path,params,coefficients,dict(n=n,k=k_lat,r=r_feat,seed=seed,width=width,n_ff=n_ff),info)
     return params,np.asarray(z),info,np.asarray(coefficients)

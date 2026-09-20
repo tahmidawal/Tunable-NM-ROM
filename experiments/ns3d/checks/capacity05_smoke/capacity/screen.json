@@ -1,0 +1,644 @@
+{
+  "complete": true,
+  "stage": "complete",
+  "rank": 16,
+  "final_cohort_opened": false,
+  "selection": "rank fixed before augmented training",
+  "POD_seconds": 2.5576126370579004,
+  "POD": {
+    "4": {
+      "train_initial_normalized": {
+        "mean": 0.5732194220460654,
+        "median": 0.5993013061024763,
+        "worst": 0.9848965626819293,
+        "over_5pct": 48,
+        "count": 48
+      },
+      "development_initial_normalized": {
+        "mean": 0.9507117125230734,
+        "median": 0.9469265606326517,
+        "worst": 0.9969857782082314,
+        "over_5pct": 12,
+        "count": 12
+      }
+    },
+    "8": {
+      "train_initial_normalized": {
+        "mean": 0.013346635866938183,
+        "median": 0.013133014559600375,
+        "worst": 0.024971367465660442,
+        "over_5pct": 0,
+        "count": 48
+      },
+      "development_initial_normalized": {
+        "mean": 0.9306261830661545,
+        "median": 0.9267696150077804,
+        "worst": 0.9672713215758498,
+        "over_5pct": 12,
+        "count": 12
+      }
+    },
+    "16": {
+      "train_initial_normalized": {
+        "mean": 9.415664043465768e-05,
+        "median": 0.00010550726198337403,
+        "worst": 0.0001820063375299527,
+        "over_5pct": 0,
+        "count": 48
+      },
+      "development_initial_normalized": {
+        "mean": 0.9266540850533852,
+        "median": 0.9231817058648701,
+        "worst": 0.9616954571828601,
+        "over_5pct": 12,
+        "count": 12
+      }
+    }
+  },
+  "warm_initialization": {
+    "previous_rank": 8,
+    "new_rank": 16,
+    "hidden_width": 8,
+    "physical_old_column_relative": 0.0,
+    "physical_old_column_max_absolute": 0.0,
+    "physical_old_columns_byte_identical": true,
+    "physical_column_tolerance": 1e-10,
+    "terminal_layout": "component,bank-column",
+    "rank_rule": "numerical rank/conditioning of projected bank measured before any capacity acceptance",
+    "initial_whitening": {
+      "passed": true,
+      "numerical_rank": 16,
+      "relative_singular_threshold": 1e-10,
+      "condition": 21.912242021004868,
+      "singular_values": [
+        5.525947750070986,
+        3.3116705090115905,
+        2.7122121880164105,
+        2.6362693228336225,
+        2.3793448310234506,
+        2.0212365688722724,
+        1.391345981885825,
+        1.2391361626951394,
+        1.0522691713157186,
+        0.8999942790529702,
+        0.7539167735315263,
+        0.6104671280196375,
+        0.46021103792135387,
+        0.37121763840359734,
+        0.339710402616991,
+        0.2521854105469383
+      ]
+    }
+  },
+  "bank_curve": [
+    {
+      "step": 1,
+      "relative_mse": 0.9674199298892927,
+      "seconds": 1.9083088099723682
+    },
+    {
+      "step": 3,
+      "relative_mse": 0.9702517609262552,
+      "seconds": 1.9174848269904032
+    }
+  ],
+  "bank_training": {
+    "stage": "unrestricted_coefficient_bank",
+    "steps": 3,
+    "requested_steps": 3,
+    "seconds": 1.9224817008944228,
+    "curve": [
+      {
+        "step": 1,
+        "relative_mse": 0.9674199298892927,
+        "seconds": 1.9083088099723682
+      },
+      {
+        "step": 3,
+        "relative_mse": 0.9702517609262552,
+        "seconds": 1.9174848269904032
+      }
+    ],
+    "stopping": "step_budget",
+    "coefficient_initialization": "retained old-bank physical projection coefficients plus zero new coefficients",
+    "objective": "raw field MSE divided by trajectory initial mean-square velocity",
+    "spatial_batch": 1024,
+    "spatial_bank": "learned periodic vector coordinate MLP, not POD substitution",
+    "warm_start": {
+      "previous_rank": 8,
+      "new_rank": 16,
+      "hidden_width": 8,
+      "physical_old_column_relative": 0.0,
+      "physical_old_column_max_absolute": 0.0,
+      "physical_old_columns_byte_identical": true,
+      "physical_column_tolerance": 1e-10,
+      "terminal_layout": "component,bank-column",
+      "rank_rule": "numerical rank/conditioning of projected bank measured before any capacity acceptance",
+      "initial_whitening": {
+        "passed": true,
+        "numerical_rank": 16,
+        "relative_singular_threshold": 1e-10,
+        "condition": 21.912242021004868,
+        "singular_values": [
+          5.525947750070986,
+          3.3116705090115905,
+          2.7122121880164105,
+          2.6362693228336225,
+          2.3793448310234506,
+          2.0212365688722724,
+          1.391345981885825,
+          1.2391361626951394,
+          1.0522691713157186,
+          0.8999942790529702,
+          0.7539167735315263,
+          0.6104671280196375,
+          0.46021103792135387,
+          0.37121763840359734,
+          0.339710402616991,
+          0.2521854105469383
+        ]
+      }
+    }
+  },
+  "whitening": {
+    "condition": 21.671511966120114,
+    "singular_values": [
+      5.473430633641634,
+      3.2859285244090706,
+      2.682449798266851,
+      2.621680262250971,
+      2.362897716463496,
+      2.0051058082869755,
+      1.3844034133233813,
+      1.2321568914665753,
+      1.0467860529886766,
+      0.8945436651707226,
+      0.7464302657193951,
+      0.6052065020901937,
+      0.4567446576557776,
+      0.3698216231540188,
+      0.3394844139063125,
+      0.25256339484750545
+    ]
+  },
+  "training_bank_initial_normalized": {
+    "mean": 0.9230801366709486,
+    "median": 0.9319386259779427,
+    "worst": 0.958919554923477,
+    "over_5pct": 48,
+    "count": 48
+  },
+  "development_bank_initial_normalized": {
+    "mean": 0.9468841149709656,
+    "median": 0.9507170156253265,
+    "worst": 0.96978559847614,
+    "over_5pct": 12,
+    "count": 12
+  },
+  "projection_nonexpansion": {
+    "passed": true,
+    "raw_error": [
+      5.18538713068846,
+      5.157273528185903,
+      5.129393216774819,
+      5.1017454305829535,
+      5.074328563257444,
+      5.047140995137151,
+      5.224733130678977,
+      5.212541709717968,
+      5.200405034738306,
+      5.188323490320017,
+      5.17629710203873,
+      5.16432587540255
+    ],
+    "projected_error": [
+      5.002370353050631,
+      4.974204689116021,
+      4.946263666591492,
+      4.9185466495934165,
+      4.891052166675129,
+      4.863778743309096,
+      5.1140128582571505,
+      5.102515407057768,
+      5.091008986463625,
+      5.079494319666258,
+      5.067971806407579,
+      5.056441863074001
+    ],
+    "max_excess": -0.10788401232854916
+  },
+  "heads": {
+    "pca2_initial": {
+      "initialization": {
+        "kind": "weighted physical-metric affine PCA plus initially zero nonlinear residual",
+        "latent_dimension": 2,
+        "head_width": 16,
+        "initialization_relative_parity": 6.088892611198984e-16,
+        "weighted_PCA": "inverse trajectory initial mean-square velocity",
+        "code_scale": 3.4780555664748896
+      },
+      "training": {
+        "steps": 0,
+        "stage": "affine initialization candidate",
+        "converged_claim": false
+      },
+      "head_initial_normalized": {
+        "mean": 0.9805873122099849,
+        "median": 0.98453728185636,
+        "worst": 1.0041886547517576,
+        "over_5pct": 12,
+        "count": 12
+      },
+      "training_stored_code_initial_normalized": {
+        "mean": 0.951309569187547,
+        "median": 0.9599968832324026,
+        "worst": 0.9970240910811848,
+        "over_5pct": 48,
+        "count": 48
+      },
+      "affine_PCA_development_initial_normalized": {
+        "mean": 0.9805873122099849,
+        "median": 0.98453728185636,
+        "worst": 1.0041886547517578,
+        "over_5pct": 12,
+        "count": 12
+      },
+      "error_by_case_time": [
+        [
+          0.9754952017608894,
+          0.9701571083385151,
+          0.9648642539306393,
+          0.9596164573675879,
+          0.9544133809682652,
+          0.9492546854726623
+        ],
+        [
+          1.0041886547517576,
+          1.0020553745621237,
+          0.9999277353582192,
+          0.9978058332231977,
+          0.9956896988341296,
+          0.9935793619518306
+        ]
+      ],
+      "stationary_count": 12,
+      "fits": {
+        "bank_error": [
+          0.9425657932829857,
+          0.9420661807981404,
+          0.9415647203724615,
+          0.9410615431515158,
+          0.9405567698112811,
+          0.9400505203743728,
+          0.96978559847614,
+          0.969604199968151,
+          0.9694138116008604,
+          0.9692144809106183,
+          0.969006257208366,
+          0.9687891938372634
+        ],
+        "head_error": [
+          0.9754952017608894,
+          0.975133323550816,
+          0.9747725671576598,
+          0.9744130371614853,
+          0.9740548327174723,
+          0.9736980502773793,
+          1.0041886547517578,
+          1.0041254398353074,
+          1.0040608632222794,
+          1.0039949745210988,
+          1.0039278229609883,
+          1.003859457394097
+        ],
+        "z": [
+          [
+            -0.33409368209243884,
+            -0.1087513196834651
+          ],
+          [
+            -0.3344401774613896,
+            -0.10960886760140752
+          ],
+          [
+            -0.33476258518783136,
+            -0.1104337550223539
+          ],
+          [
+            -0.33506127462797514,
+            -0.11122657083629599
+          ],
+          [
+            -0.33533659371577834,
+            -0.11198787444849133
+          ],
+          [
+            -0.33558888960148753,
+            -0.11271822705525948
+          ],
+          [
+            -0.026674660163257282,
+            0.21255948950727502
+          ],
+          [
+            -0.027741933645888468,
+            0.21340626576854838
+          ],
+          [
+            -0.028783818561785978,
+            0.21424534665536513
+          ],
+          [
+            -0.029800460155130663,
+            0.215076682441474
+          ],
+          [
+            -0.030792000982317415,
+            0.21590022723390187
+          ],
+          [
+            -0.031758591271297036,
+            0.21671593927646685
+          ]
+        ],
+        "iterations": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "reasons": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "stationary": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "normalized_gradient": [
+          1.1405222386047752e-13,
+          1.1487754362523394e-13,
+          1.1568013859361635e-13,
+          1.1634777475080412e-13,
+          1.1705446596726952e-13,
+          1.1793946886115095e-13,
+          1.287511773012869e-13,
+          1.2965938868145093e-13,
+          1.302962886678137e-13,
+          1.3048822157902907e-13,
+          1.3011216313769764e-13,
+          1.3088792669581454e-13
+        ]
+      },
+      "configuration": {
+        "label": "pca2_initial",
+        "k": 2,
+        "free_codes": false,
+        "initialization_only": true
+      },
+      "final_cohort_opened": false
+    },
+    "pca2_fixed": {
+      "initialization": {
+        "kind": "weighted physical-metric affine PCA plus initially zero nonlinear residual",
+        "latent_dimension": 2,
+        "head_width": 16,
+        "initialization_relative_parity": 6.088892611198984e-16,
+        "weighted_PCA": "inverse trajectory initial mean-square velocity",
+        "code_scale": 3.4780555664748896
+      },
+      "training": {
+        "steps": 3,
+        "requested_steps": 3,
+        "seconds": 0.6543557429686189,
+        "curve": [
+          {
+            "step": 1,
+            "relative_mse": 0.050247246443374055,
+            "seconds": 0.6473007460590452
+          },
+          {
+            "step": 3,
+            "relative_mse": 0.04891172197947151,
+            "seconds": 0.650760684045963
+          }
+        ],
+        "stopping": "steps",
+        "batch": 4,
+        "objective": "mean squared physical coefficient error / trajectory initial mean-square velocity",
+        "converged_claim": false,
+        "free_codes": false
+      },
+      "head_initial_normalized": {
+        "mean": 0.9806605679732919,
+        "median": 0.9846006090217005,
+        "worst": 1.0037736058845939,
+        "over_5pct": 12,
+        "count": 12
+      },
+      "training_stored_code_initial_normalized": {
+        "mean": 0.9513512474007838,
+        "median": 0.9603933620250114,
+        "worst": 0.9972417647879012,
+        "over_5pct": 48,
+        "count": 48
+      },
+      "affine_PCA_development_initial_normalized": {
+        "mean": 0.9805873122099849,
+        "median": 0.98453728185636,
+        "worst": 1.0041886547517578,
+        "over_5pct": 12,
+        "count": 12
+      },
+      "error_by_case_time": [
+        [
+          0.9760563820050293,
+          0.9707223553759056,
+          0.9654335469608654,
+          0.9601897752164162,
+          0.9549907021219142,
+          0.9498359880869272
+        ],
+        [
+          1.0037736058845939,
+          1.001636456219194,
+          0.9995049349490116,
+          0.9973791377916842,
+          0.9952590950295901,
+          0.9931448360383718
+        ]
+      ],
+      "stationary_count": 12,
+      "fits": {
+        "bank_error": [
+          0.9425657932829857,
+          0.9420661807981404,
+          0.9415647203724615,
+          0.9410615431515158,
+          0.9405567698112811,
+          0.9400505203743728,
+          0.96978559847614,
+          0.969604199968151,
+          0.9694138116008604,
+          0.9692144809106183,
+          0.969006257208366,
+          0.9687891938372634
+        ],
+        "head_error": [
+          0.9760563820050293,
+          0.9757014699030516,
+          0.9753477063301164,
+          0.9749951951497593,
+          0.9746440349132455,
+          0.9742943214686548,
+          1.003773605884594,
+          1.0037056560828044,
+          1.0036363151986287,
+          1.0035656324039988,
+          1.003493656432444,
+          1.0034204356466532
+        ],
+        "z": [
+          [
+            -0.3297458017214635,
+            -0.10929354635743808
+          ],
+          [
+            -0.3300788649941845,
+            -0.11013841275865838
+          ],
+          [
+            -0.3303882166761119,
+            -0.11095070079455778
+          ],
+          [
+            -0.3306742171923495,
+            -0.11173099690942633
+          ],
+          [
+            -0.33093720615264866,
+            -0.11247985820524611
+          ],
+          [
+            -0.3311775225337668,
+            -0.11319784364269
+          ],
+          [
+            -0.025429363038826803,
+            0.21535020155455925
+          ],
+          [
+            -0.02646859698275737,
+            0.21621309559458424
+          ],
+          [
+            -0.027482683991596008,
+            0.21706823292291919
+          ],
+          [
+            -0.028471771832544825,
+            0.21791556211143526
+          ],
+          [
+            -0.029436005450184898,
+            0.21875503563504994
+          ],
+          [
+            -0.03037553730312147,
+            0.21958661016245257
+          ]
+        ],
+        "iterations": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "reasons": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "stationary": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "normalized_gradient": [
+          3.8076650483167265e-08,
+          3.8387491203848484e-08,
+          3.862730872985017e-08,
+          3.885582014318819e-08,
+          3.9102064444250426e-08,
+          3.933725004366873e-08,
+          7.53273522768281e-10,
+          7.771979089716275e-10,
+          8.014210858041295e-10,
+          8.258970156277772e-10,
+          8.505798505433363e-10,
+          8.75423278672314e-10
+        ]
+      },
+      "configuration": {
+        "label": "pca2_fixed",
+        "k": 2,
+        "free_codes": false
+      },
+      "final_cohort_opened": false
+    }
+  }
+}

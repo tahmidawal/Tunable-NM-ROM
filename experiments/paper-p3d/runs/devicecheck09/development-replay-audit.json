@@ -1,0 +1,3670 @@
+{
+  "passed": true,
+  "selection_job": "4027715",
+  "replay_job": "4031708",
+  "selection_result_sha256": "01e73e9f388bbe7149acc9bf3525560ffdb20848dac5aeb76fa1fffc017dc358",
+  "replay_result_sha256": "abead6ae7e56cf7f55d62540f3bb4973a234fd434a7fa9cd5a06cca2ec76cafa",
+  "checkpoint_sha256": {
+    "bank.pkl": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+    "head_K16.pkl": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01",
+    "operators/fno3d_w24_m8/best.pkl": "6d97b72da12f585ab996a2aa548d5cd1da2f7a12d480ce694f7fbd6f149990ac",
+    "operators/unet3d_w16/best.pkl": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f",
+    "operators/deeponet3d_r128_w16_podinit/best.pkl": "dd362fdb552dde923d4ef507ea06c124e0b061c9ff04862b174d4379a3bb2224",
+    "operators/transolver3d_w48_s32/best.pkl": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46"
+  },
+  "checked_fields": 608,
+  "max_relative_field_difference": 8.823262624708859e-16,
+  "field_tolerance": 1e-10,
+  "comparisons": [
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 8.50876310181367e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 2.069349271348864e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 5.765845955037566e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.345372489852064e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 7.460316331207084e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.3845260315350907e-16
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 0,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.54543757027088e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.928656384749345e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.9914413259426115e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.535459852220795e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.981961557377592e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3780182974665183e-16
+    },
+    {
+      "intervals": 32,
+      "case": 1,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.455480311820526e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 4.1206812183501723e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 3.939273371057495e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3322819586858373e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 2.861841619759577e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.751003907148597e-16
+    },
+    {
+      "intervals": 32,
+      "case": 2,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 2.0780712258806423e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.782025268892301e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.099929640019996e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.5977172714966614e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.372194413358038e-16
+    },
+    {
+      "intervals": 32,
+      "case": 3,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 4.184064783599387e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.9628240285703087e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3474929143577817e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8535889305172946e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.416816899125285e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.120553554178581e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.5624038034662477e-16
+    },
+    {
+      "intervals": 32,
+      "case": 4,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.098745144291803e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 7.077389090438268e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8193882032986918e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3415765842528601e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.637813616514593e-16
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 5,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.9160714927765534e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 2.9376879203620763e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.629521421545971e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 1.820438333338693e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.868655418895238e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7726013431038403e-16
+    },
+    {
+      "intervals": 32,
+      "case": 6,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3276629393895446e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.076593977803536e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.753709386790045e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.0502781992446913e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.298209894852061e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3364057598758772e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8141852259856617e-16
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 7,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.775665061936814e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.069419242420424e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.475058888128236e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.74253979596364e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 6.486828944331337e-16
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 8,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.400304329107694e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.052444689049812e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.495685756456622e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 3.9459618250723976e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 6.049362292469375e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3594822016435406e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8092041251268702e-16
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 9,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.9976518344996106e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 7.040378237921093e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.690433011613992e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 7.195228586314909e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 5.041169966795825e-16
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 10,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3835259657234064e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3540226698039401e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.644862419754235e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.896741757203512e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.639338995549095e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.8173309390467095e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.85248720977623e-16
+    },
+    {
+      "intervals": 32,
+      "case": 11,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.9076398949235083e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.929625216808917e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.810660994317498e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3645930283592202e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 7.165613964502381e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.3570260992976602e-16
+    },
+    {
+      "intervals": 32,
+      "case": 12,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.8711722272138777e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7295640282115362e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.217765051821298e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3775188983798762e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.1958486766606934e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.2728387621895345e-16
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 13,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 4.160626069672242e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.261301739905526e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.847698710960128e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7863278392713756e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.1806780778049814e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.3432026769774076e-16
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 14,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7110535741789462e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.475292751235021e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.361091562950386e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.7338751565336063e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.0975231416438477e-16
+    },
+    {
+      "intervals": 32,
+      "case": 15,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.257520116227606e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.034601609898179e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 8.572585950652765e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 2.1401452181177603e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.7214983951859182e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 4.8591805022221225e-17
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.587884057583593e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 7.013422495111259e-16
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 0,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 7.896794000281805e-17
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.565826277829456e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.247617328178158e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.585161291587943e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8834551559279023e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 8.247946003390939e-17
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.380467735928163e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.689074190771409e-16
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 8.56931991439877e-17
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 1,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 8.413779052974543e-17
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.50465226250325e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 7.982134802347843e-17
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.088675883201845e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.1882083109991746e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.753577077901754e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.003102041706622e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 2.0865840637883628e-16
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 2,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.425729146878378e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 7.406282942343588e-17
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 8.59915115022993e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 4.053737803083888e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.498658873860107e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8507865042865702e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.8137015062950733e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.0193377181200657e-16
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 3,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.8916574848934867e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.5788044485829996e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.4904429118275983e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.900807328274941e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.5045753529779463e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 4.776822802782106e-16
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 6.359590713232932e-17
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 4,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.128169992051251e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 2.6067700191861634e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 6.229349391210329e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.814479650599264e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.951144902462895e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.5521909749102168e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 3.5908937003172724e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.5327885043650911e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.421612857774573e-16
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 5,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.6566627397571578e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.000125110879794e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.124315086315832e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.7780111506389033e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.5250871288313924e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.405896434181941e-16
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 9.462520191284467e-17
+    },
+    {
+      "intervals": 64,
+      "case": 6,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 8.165335412093085e-17
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.784000008340033e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.3194172186227717e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.760499762894983e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.117184483256274e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.91102548644873e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.532750633389211e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.008660710323229e-16
+    },
+    {
+      "intervals": 64,
+      "case": 7,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.155629134371118e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.608095556048321e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.3058480942799766e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.5588344698085907e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.4959085937586878e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 9.924206429153218e-17
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7317692638519488e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.2503719848318507e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.140656629163252e-16
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 8,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 5.099648111015238e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.3332731790318343e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 9.992863481871475e-17
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.0387598453880012e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.5421841721532234e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.538705153080131e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.5392969640169881e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 3.902184907447341e-16
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 9,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.6567793007826448e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.4248926328870664e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.684126644135511e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.993793467373055e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 8.74008993684496e-17
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 6.732698081216423e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.989826194270929e-16
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 10,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 3.787520067624926e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7935974831681016e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.6140591513785807e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.9525553764086892e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.821409305619098e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 2.0837156762462825e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.827372622391654e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.796526362059161e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.436761168953661e-16
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 11,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.246953739351059e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 8.823262624708859e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 2.0554501560803995e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 4.432735994211723e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.546001096582266e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 8.87528186222874e-17
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.621751219081648e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.1985367547731416e-16
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 12,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.4885039761866703e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.490162765742004e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.8205937686928796e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.9922891525265773e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.142187456857795e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.371761480371096e-16
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 5.4193923833334787e-17
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 13,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.7566806543483137e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 1.8431818552484342e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 5.658910121808411e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 5.538070912063414e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 3.2215566368330894e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.7250039240198068e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 1.2047858416280657e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 4.197088933511784e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.5338136267027493e-16
+    },
+    {
+      "intervals": 64,
+      "case": 14,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod48_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod16_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 6.666081406190013e-17
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "fno3d_w24_m8_physical_padding17",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "fno3d_w24_m8",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "unet3d_w16",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "deeponet3d_r128_w16_podinit_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "transolver3d_w48_s32",
+      "relative_field_difference": 1.5731259145366408e-16
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod112_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "linear_bank_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod112_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod128_native32_interpolated_basis_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "dst_exact",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod128_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "nmrom_K16_q0_dense",
+      "relative_field_difference": 4.907498080008379e-16
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod16_galerkin",
+      "relative_field_difference": 9.74885871783406e-17
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "deeponet3d_r128_w16_podinit_native32_continuous_trunk",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "nmrom_K16_q32_dense",
+      "relative_field_difference": 4.461504751802668e-16
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "deeponet3d_r128_w16_podinit",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "unet3d_w16_native32_interpolate",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "linear_bank_weak_qR",
+      "relative_field_difference": 2.47014199763138e-16
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "pod48_galerkin",
+      "relative_field_difference": 0.0
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "transolver3d_w48_s32_native32_interpolate",
+      "relative_field_difference": 1.46219860192361e-16
+    },
+    {
+      "intervals": 64,
+      "case": 15,
+      "method": "nmrom_K16_q96_dense",
+      "relative_field_difference": 3.240401387012066e-16
+    }
+  ],
+  "cg_policy": "Independently audited per invocation; no cross-GPU trajectory identity assumed.",
+  "timing_policy": "No cross-job runtime comparisons."
+}

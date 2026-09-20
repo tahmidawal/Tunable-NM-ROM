@@ -1,0 +1,222 @@
+COMMIT.txt: OK
+PROVENANCE.json: OK
+checkpoints/ORIGINAL_TRAINING_SOURCES.json: OK
+checkpoints/bank.pkl: OK
+checkpoints/cohorts.json: OK
+checkpoints/head_K16.pkl: OK
+checkpoints/operators/deeponet3d_r128_w16_podinit/SOURCE_RESULT.json: OK
+checkpoints/operators/deeponet3d_r128_w16_podinit/best.pkl: OK
+checkpoints/operators/fno3d_w24_m8/SOURCE_RESULT.json: OK
+checkpoints/operators/fno3d_w24_m8/best.pkl: OK
+checkpoints/operators/transolver3d_w48_s32/SOURCE_RESULT.json: OK
+checkpoints/operators/transolver3d_w48_s32/best.pkl: OK
+checkpoints/operators/unet3d_w16/SOURCE_RESULT.json: OK
+checkpoints/operators/unet3d_w16/best.pkl: OK
+checkpoints/result.json: OK
+code/DESIGN.md: OK
+code/IMPORTS.json: OK
+code/audit.py: OK
+code/audit_cg.py: OK
+code/audit_offline_assets.py: OK
+code/audit_pretraining.py: OK
+code/cluster/collect.py: OK
+code/cluster/stage.py: OK
+code/common.py: OK
+code/config.json: OK
+code/device_guard.py: OK
+code/freeze.py: OK
+code/iterative_cg.py: OK
+code/offline_assets.py: OK
+code/operators/EXTRA_IMPORTS.json: OK
+code/operators/IMPORTS.json: OK
+code/operators/LOCAL_EXTENSIONS.json: OK
+code/operators/README.md: OK
+code/operators/__init__.py: OK
+code/operators/extra_models3d.py: OK
+code/operators/models3d.py: OK
+code/operators/poisson_adapter.py: OK
+code/operators/pretrained_deeponet.py: OK
+code/operators/training.py: OK
+code/operators/upstream/LICENSE: OK
+code/operators/upstream/PROVENANCE.json: OK
+code/operators/upstream/Physics_Attention.py: OK
+code/operators/upstream/prior_families.py: OK
+code/pod_transfer.py: OK
+code/poisson.py: OK
+code/run.py: OK
+code/shared_rom.py: OK
+code/state_audit.py: OK
+code/train.py: OK
+code/trunk_diagnostic.py: OK
+run.sbatch: OK
+source_commit=f87bbe98c257ca128b6d9516ae5ebff7d2491b48 job_id=4031708
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-7ea87052-7ee2-b522-615d-be66f44238c3, 81920 MiB, 575.57.08
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.20:/projects/paralab  4.6T  4.2T  406G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+DEVICE_GUARD {'physical_uuid': 'GPU-7ea87052-7ee2-b522-615d-be66f44238c3', 'environment': {'CUDA_VISIBLE_DEVICES': '0', 'SLURM_JOB_GPUS': '7', 'SLURM_STEP_GPUS': None, 'SLURM_JOB_ID': '4031708'}, 'nvidia_smi_inventory': 'GPU-7ea87052-7ee2-b522-615d-be66f44238c3, NVIDIA A100 80GB PCIe, 00000000:D6:00.0\n', 'jax_devices': ['cuda:0'], 'cuda_visible_device_count': 1, 'checks_outside_timing': True, 'policy': 'CUDA driver UUID before and after every timed invocation; exactly one CUDA/JAX visible GPU.'}
+REFERENCE 0 4.838319413248344e-09
+REFERENCE 1 1.1762766926563641e-09
+REFERENCE 2 2.329730332377079e-08
+REFERENCE 3 3.488288943522048e-09
+REFERENCE 4 9.769061932010652e-09
+REFERENCE 5 4.143616377671926e-08
+REFERENCE 6 5.5637579214262556e-08
+REFERENCE 7 1.4613640475753565e-08
+REFERENCE 8 1.9916581192656874e-08
+REFERENCE 9 2.8432886085941436e-08
+REFERENCE 10 1.732077231630105e-08
+REFERENCE 11 8.518910553814729e-09
+REFERENCE 12 1.2907597966223365e-08
+REFERENCE 13 2.3944209534125434e-08
+REFERENCE 14 4.150535129547667e-08
+REFERENCE 15 2.2381837944638078e-08
+COMPILED 32 linear_bank_weak_qR 0.467
+COMPILED 32 linear_bank_galerkin 0.309
+COMPILED 32 pod16_galerkin 0.148
+COMPILED 32 pod48_galerkin 0.177
+COMPILED 32 pod112_galerkin 0.372
+COMPILED 32 pod128_galerkin 0.187
+COMPILED 32 dst_exact 0.0
+COMPILED 32 cg_identity_rtol1e-02 0.337
+COMPILED 32 cg_identity_plain_rtol1e-02 0.234
+COMPILED 32 cg_identity_rtol1e-04 0.327
+COMPILED 32 cg_identity_plain_rtol1e-04 0.249
+COMPILED 32 cg_identity_rtol1e-06 0.299
+COMPILED 32 cg_identity_plain_rtol1e-06 0.239
+COMPILED 32 fno3d_w24_m8 1.253
+COMPILED 32 unet3d_w16 1.829
+COMPILED 32 deeponet3d_r128_w16_podinit 1.657
+COMPILED 32 transolver3d_w48_s32 3.624
+COMPILED 32 nmrom_K16_q0_dense 4.136
+COMPILED 32 nmrom_K16_q32_dense 1.568
+COMPILED 32 nmrom_K16_q96_dense 1.736
+CASE 32 0 REP 0
+CASE 32 0 REP 1
+CASE 32 0 REP 2
+CASE 32 1 REP 0
+CASE 32 1 REP 1
+CASE 32 1 REP 2
+CASE 32 2 REP 0
+CASE 32 2 REP 1
+CASE 32 2 REP 2
+CASE 32 3 REP 0
+CASE 32 3 REP 1
+CASE 32 3 REP 2
+CASE 32 4 REP 0
+CASE 32 4 REP 1
+CASE 32 4 REP 2
+CASE 32 5 REP 0
+CASE 32 5 REP 1
+CASE 32 5 REP 2
+CASE 32 6 REP 0
+CASE 32 6 REP 1
+CASE 32 6 REP 2
+CASE 32 7 REP 0
+CASE 32 7 REP 1
+CASE 32 7 REP 2
+CASE 32 8 REP 0
+CASE 32 8 REP 1
+CASE 32 8 REP 2
+CASE 32 9 REP 0
+CASE 32 9 REP 1
+CASE 32 9 REP 2
+CASE 32 10 REP 0
+CASE 32 10 REP 1
+CASE 32 10 REP 2
+CASE 32 11 REP 0
+CASE 32 11 REP 1
+CASE 32 11 REP 2
+CASE 32 12 REP 0
+CASE 32 12 REP 1
+CASE 32 12 REP 2
+CASE 32 13 REP 0
+CASE 32 13 REP 1
+CASE 32 13 REP 2
+CASE 32 14 REP 0
+CASE 32 14 REP 1
+CASE 32 14 REP 2
+CASE 32 15 REP 0
+CASE 32 15 REP 1
+CASE 32 15 REP 2
+COMPILED 64 linear_bank_weak_qR 0.537
+COMPILED 64 linear_bank_galerkin 0.156
+COMPILED 64 pod16_galerkin 0.226
+COMPILED 64 pod48_galerkin 0.421
+COMPILED 64 pod112_galerkin 0.541
+COMPILED 64 pod128_galerkin 0.098
+COMPILED 64 pod16_native32_interpolated_basis_galerkin 0.122
+COMPILED 64 pod48_native32_interpolated_basis_galerkin 0.082
+COMPILED 64 pod112_native32_interpolated_basis_galerkin 0.098
+COMPILED 64 pod128_native32_interpolated_basis_galerkin 0.091
+COMPILED 64 dst_exact 0.0
+COMPILED 64 cg_identity_rtol1e-02 0.402
+COMPILED 64 cg_identity_plain_rtol1e-02 0.306
+COMPILED 64 cg_identity_rtol1e-04 0.312
+COMPILED 64 cg_identity_plain_rtol1e-04 0.313
+COMPILED 64 cg_identity_rtol1e-06 0.314
+COMPILED 64 cg_identity_plain_rtol1e-06 0.32
+COMPILED 64 fno3d_w24_m8 2.041
+COMPILED 64 fno3d_w24_m8_native32_interpolate 1.38
+COMPILED 64 fno3d_w24_m8_physical_padding17 0.974
+COMPILED 64 unet3d_w16 1.443
+COMPILED 64 unet3d_w16_native32_interpolate 0.462
+COMPILED 64 deeponet3d_r128_w16_podinit 1.801
+COMPILED 64 deeponet3d_r128_w16_podinit_native32_interpolate 0.752
+COMPILED 64 deeponet3d_r128_w16_podinit_native32_continuous_trunk 1.091
+COMPILED 64 transolver3d_w48_s32 3.623
+COMPILED 64 transolver3d_w48_s32_native32_interpolate 1.185
+COMPILED 64 nmrom_K16_q0_dense 1.517
+COMPILED 64 nmrom_K16_q32_dense 0.935
+COMPILED 64 nmrom_K16_q96_dense 0.988
+CASE 64 0 REP 0
+CASE 64 0 REP 1
+CASE 64 0 REP 2
+CASE 64 1 REP 0
+CASE 64 1 REP 1
+CASE 64 1 REP 2
+CASE 64 2 REP 0
+CASE 64 2 REP 1
+CASE 64 2 REP 2
+CASE 64 3 REP 0
+CASE 64 3 REP 1
+CASE 64 3 REP 2
+CASE 64 4 REP 0
+CASE 64 4 REP 1
+CASE 64 4 REP 2
+CASE 64 5 REP 0
+CASE 64 5 REP 1
+CASE 64 5 REP 2
+CASE 64 6 REP 0
+CASE 64 6 REP 1
+CASE 64 6 REP 2
+CASE 64 7 REP 0
+CASE 64 7 REP 1
+CASE 64 7 REP 2
+CASE 64 8 REP 0
+CASE 64 8 REP 1
+CASE 64 8 REP 2
+CASE 64 9 REP 0
+CASE 64 9 REP 1
+CASE 64 9 REP 2
+CASE 64 10 REP 0
+CASE 64 10 REP 1
+CASE 64 10 REP 2
+CASE 64 11 REP 0
+CASE 64 11 REP 1
+CASE 64 11 REP 2
+CASE 64 12 REP 0
+CASE 64 12 REP 1
+CASE 64 12 REP 2
+CASE 64 13 REP 0
+CASE 64 13 REP 1
+CASE 64 13 REP 2
+CASE 64 14 REP 0
+CASE 64 14 REP 1
+CASE 64 14 REP 2
+CASE 64 15 REP 0
+CASE 64 15 REP 1
+CASE 64 15 REP 2
+run_exit=0

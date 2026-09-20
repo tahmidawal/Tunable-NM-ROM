@@ -17,7 +17,7 @@ from frozen_panel import prepare_assets,evaluate
 def main():
     p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('--out',required=True);a=p.parse_args()
     cfg=json.loads(Path(a.config).read_text());out=Path(a.out);out.mkdir(parents=True,exist_ok=True);reuse=Path(cfg['reuse_path'])
-    record=json.loads((reuse/'REUSE.json').read_text());assert all(file_hash(reuse[x['path']])==x['sha256'] for x in record['files'])
+    record=json.loads((reuse/'REUSE.json').read_text());assert all(file_hash(reuse/x['path'])==x['sha256'] for x in record['files'])
     assert cfg['evaluation_cohort']=='development' and jax.default_backend()=='gpu' and jax.config.jax_enable_x64
     report=dict(complete=False,final_cohort_opened=False,config=cfg,source_commit=os.environ.get('SOURCE_COMMIT'),job_id=os.environ.get('SLURM_JOB_ID'),
         gpu=subprocess.check_output(['nvidia-smi','--query-gpu=name,memory.total','--format=csv,noheader'],text=True).strip())

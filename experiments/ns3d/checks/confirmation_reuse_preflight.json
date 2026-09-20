@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "source_statement": "assert all((file_hash(reuse / x['path']) == x['sha256'] for x in record['files']))",
+  "files": 10,
+  "actual_retained_checkpoint_bytes": true
+}

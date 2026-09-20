@@ -1,0 +1,26 @@
+{
+  "status": "prepared_not_submitted",
+  "source_commit": "5a8d7bc8dea9fcdfcdc74de197541ccdec4a886e",
+  "config_sha256": "62b1a24086cb7a6d65404979bdf642b0a36e36371c552fee0462a4049da5f6f4",
+  "prepared_utc": "2026-09-20T05:59:06.342380+00:00",
+  "remote": "/cluster/tufts/paralab/tawal01/p_linear_20260917/plorc01",
+  "partition": "gpu",
+  "gpu_request": "a100:1",
+  "memory_request": "100G",
+  "wall_limit": "01:00:00",
+  "estimated_minutes": 20,
+  "models": [
+    "new_K32",
+    "incumbent"
+  ],
+  "intervals": [
+    256,
+    1024
+  ],
+  "original_cases": 12,
+  "final_cohort_opened": false,
+  "retraining": false,
+  "timed_invocations_changed": false,
+  "local_smoke_audit_passed": true,
+  "submission_requires_root_free_slot": true
+}

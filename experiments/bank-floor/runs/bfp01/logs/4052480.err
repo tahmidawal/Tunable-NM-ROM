@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp01/experiments/bank-floor/bf_rep.py", line 333, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp01/experiments/bank-floor/bf_rep.py", line 237, in main
+    Qall, info = K.pod_from_gram(Gm, U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp01/experiments/bank-floor/bf_core.py", line 202, in pod_from_gram
+    assert ratio > 1e-7, f'sigma_r/sigma_1 = {ratio:.2e}: Gram POD unreliable at rank {r}'
+           ^^^^^^^^^^^^
+AssertionError: sigma_r/sigma_1 = 1.11e-08: Gram POD unreliable at rank 2048

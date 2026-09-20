@@ -184,44 +184,69 @@ def gram(U, block=2048):
     return Gm
 
 
-def pod_from_gram(Gm, U, scale, maxrank, idx=None, block=2048, ranks=()):
-    """Modes of the snapshot set {scale_i * u_i : i in idx} from its Gram sub-block.
+def pod_deflated(U, scale, maxrank, idx=None, ranks=(), stage_ratio=1e-5, block=2048):
+    """POD of {scale_i u_i : i in idx} by the snapshot Gram WITH DEFLATION.
 
-    `scale` = 1/||u_i|| gives the optimum of the mean RELATIVE squared error (the
-    learned arms' loss); `scale` = 1 gives classical POD. Returns (Q (n, r), info)."""
+    A single Gram eigen-decomposition squares the conditioning and is unreliable once
+    sigma_r / sigma_1 < ~1e-7 (job 4052480 died on exactly that assert: Poisson 2D has
+    sigma_2048 / sigma_1 = 1.1e-8). So each stage accepts only the modes with
+    sigma_k / sigma_stage_1 > stage_ratio, removes them from the snapshots explicitly, and
+    the next stage works on the well-scaled residual. Columns stay in descending order, so
+    the first r columns span the leading rank-r POD subspace (nested prefixes).
+
+    `scale` = 1/||u_i|| gives the optimum of the mean RELATIVE squared error; 1 = classical POD.
+    Known-answer data: `tail_mean_sq[r]` = (residual energy after r modes) / snapshot count,
+    from stage traces minus accepted eigenvalues (never from sums of tiny eigenvalues)."""
     idx = np.arange(U.shape[0]) if idx is None else np.asarray(idx)
-    s = np.asarray(scale)[idx]
-    Gs = Gm[np.ix_(idx, idx)] * s[:, None] * s[None, :]
     t0 = time.perf_counter()
-    w, V = jnp.linalg.eigh(jnp.asarray(Gs))
-    w = np.asarray(w)[::-1]
-    V = V[:, ::-1]
-    assert np.isfinite(w).all(), 'Gram eigenvalues non-finite'
-    r = int(min(maxrank, len(idx)))
-    ratio = float(np.sqrt(max(w[r - 1], 0.) / w[0]))
-    assert ratio > 1e-7, f'sigma_r/sigma_1 = {ratio:.2e}: Gram POD unreliable at rank {r}'
-    Wt = np.asarray(V[:, :r]) / np.sqrt(w[:r])[None, :] * s[:, None]        # (|idx|, r)
-    modes = jnp.zeros((U.shape[1], r), F64)
+    Ur = U[jnp.asarray(idx)] * jnp.asarray(np.asarray(scale)[idx])[:, None]
+    S, n = Ur.shape
+    r_goal = int(min(maxrank, S))
+    Q = jnp.zeros((n, 0), F64)
+    tails, stages = {}, []
+    defl = jax.jit(lambda ur, q: ur - (ur @ q) @ q.T, donate_argnums=0)
     acc = jax.jit(lambda m, u, wt: m + u.T @ wt)
-    for a in range(0, len(idx), block):
-        modes = acc(modes, U[jnp.asarray(idx[a:a + block])], jnp.asarray(Wt[a:a + block]))
-    # ORDER-PRESERVING orthonormalisation (plain QR, twice): the first r columns span the
-    # leading rank-r POD subspace, so lower ranks are prefixes. orth_basis() would rotate them.
-    Q, _ = jnp.linalg.qr(modes)
-    Q, _ = jnp.linalg.qr(Q)
+    total = None
+    while Q.shape[1] < r_goal:
+        Gs = gram(Ur, block)
+        tr = float(np.trace(Gs))
+        total = tr if total is None else total
+        w, V = jnp.linalg.eigh(jnp.asarray(Gs))
+        del Gs
+        w = np.asarray(w)[::-1]
+        V = np.asarray(V[:, ::-1])
+        assert np.isfinite(w).all() and w[0] > 0, 'Gram eigenvalues non-finite'
+        good = int((np.sqrt(np.clip(w, 0, None) / w[0]) > stage_ratio).sum())
+        take = int(min(good, r_goal - Q.shape[1]))
+        assert take >= 1
+        off = int(Q.shape[1])
+        csum = np.concatenate(([0.], np.cumsum(w[:take])))
+        for k in ranks:
+            if off <= k <= off + take:
+                tails[str(k)] = dict(mean_sq=float(max(tr - csum[k - off], 0.) / S),
+                                     stage=len(stages), resolvable=bool((tr - csum[k - off]) / tr > 1e-8))
+        Wt = V[:, :take] / np.sqrt(w[:take])[None, :]
+        modes = jnp.zeros((n, take), F64)
+        for a_ in range(0, S, block):
+            modes = acc(modes, Ur[a_:a_ + block], jnp.asarray(Wt[a_:a_ + block]))
+        for _ in range(2):                                        # twice is enough
+            modes = modes - Q @ (Q.T @ modes)
+            modes, _r = jnp.linalg.qr(modes)                      # order-preserving
+        Q = jnp.concatenate([Q, modes], axis=1)
+        Ur = defl(Ur, modes)
+        stages.append(dict(offset=off, accepted=take, trace=tr, sigma_first=float(np.sqrt(w[0])),
+                           sigma_last_accepted=float(np.sqrt(w[take - 1]))))
+        print(f'   pod stage {len(stages)}: +{take} modes (total {Q.shape[1]}), '
+              f'sigma {np.sqrt(w[0]):.3e} -> {np.sqrt(w[take - 1]):.3e} [{time.perf_counter() - t0:.0f}s]',
+              flush=True)
+    del Ur
+    r = int(Q.shape[1])
     assert bool(jnp.isfinite(Q).all()), 'POD basis non-finite'
     dev = float(jnp.max(jnp.abs(Q.T @ Q - jnp.eye(r, dtype=F64))))
     assert dev < 1e-10, f'POD orthonormality deviation {dev:.2e}'
-    info = dict(columns=r, rank=r, rank_valid=True, orthonormality_deviation=dev,
-                raw_mode_orthonormality_deviation=float(
-                    jnp.max(jnp.abs(modes.T @ modes - jnp.eye(r, dtype=F64)))),
-                eigen_tail_mean_sq={str(k): float(np.clip(w[k:], 0, None).sum() / len(idx))
-                                    for k in ranks if k <= r})
-    info.update(snapshots=int(len(idx)), sigma_ratio_r_over_1=ratio,
-                eigenvalues_head=w[:8].tolist(), energy=float(np.clip(w, 0, None).sum()),
-                tail_energy_fraction={str(k): float(np.clip(w[k:], 0, None).sum()
-                                                    / np.clip(w, 0, None).sum())
-                                      for k in ranks if k <= len(w)},
+    info = dict(columns=r, rank=r, rank_valid=True, orthonormality_deviation=dev, snapshots=int(S),
+                stages=stages, tail_mean_sq=tails, energy=total,
+                sigma_ratio_r_over_1=float(stages[-1]['sigma_last_accepted'] / stages[0]['sigma_first']),
                 seconds=time.perf_counter() - t0)
     return Q, info
 

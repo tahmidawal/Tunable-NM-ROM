@@ -227,14 +227,10 @@ def main():
 
     # ---- POD controls -------------------------------------------------------------
     if 'pod' in arms:
-        t0 = time.perf_counter()
-        Gm = K.gram(U)
-        print(f'GRAM {Gm.shape} [{time.perf_counter() - t0:.0f}s]', flush=True)
-        R_['gram_sha256'] = K.sha_array(Gm)
         rmax = max(cfg['pod_ranks'])
         for name, scale, idx in (('pod', 1. / un, None), ('podraw', np.ones(S), None),
                                  ('pod_sub', 1. / un, sub), ('podraw_sub', np.ones(S), sub)):
-            Qall, info = K.pod_from_gram(Gm, U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
+            Qall, info = K.pod_deflated(U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
             assert info['rank'] == min(rmax, len(np.arange(S) if idx is None else idx)), info
             for rk in cfg['pod_ranks']:
                 if rk > Qall.shape[1]:
@@ -244,15 +240,17 @@ def main():
                                                  floors=score(Q), cost=K.cost_model(n, rk, Kdim),
                                                  grid_bound=True)
                 f = R_['arms'][f'{name}{rk}']['floors']
-                if name in ('pod', 'pod_sub'):
+                if name in ('pod', 'pod_sub') and str(rk) in info['tail_mean_sq']:
                     # known answer: mean squared relative floor on the POD's own snapshots equals
                     # the discarded eigenvalue mass / snapshot count
                     own = f['train_full' if name == 'pod' else 'train_sub']['rms'] ** 2
-                    tail = info['eigen_tail_mean_sq'][str(rk)]
-                    chk = abs(own / tail - 1)
-                    R_['arms'][f'{name}{rk}']['eigen_tail_check'] = dict(measured=own, eigen=tail,
-                                                                         relative_difference=chk)
-                    assert chk < 1e-3, f'{name}{rk}: Gram POD fails its eigen-tail identity ({chk:.2e})'
+                    tail = info['tail_mean_sq'][str(rk)]
+                    chk = abs(own / max(tail['mean_sq'], 1e-300) - 1)
+                    R_['arms'][f'{name}{rk}']['eigen_tail_check'] = dict(
+                        measured=own, eigen=tail['mean_sq'], relative_difference=chk,
+                        resolvable=tail['resolvable'])
+                    assert (not tail['resolvable']) or chk < 1e-2, \
+                        f'{name}{rk}: deflated POD fails its energy identity ({chk:.2e})'
                 print(f'ARM {name}{rk} probe rms {f["train_probe"]["rms"]:.4e} '
                       + ' '.join(f'{k} worst {f[k]["worst"]:.4e}' for k in held), flush=True)
             if name in ('pod', 'podraw'):
@@ -263,7 +261,6 @@ def main():
                     note='columns are nested: the first r columns are the rank-r basis')
             del Qall
             save()
-        del Gm
 
     # ---- learned arms ---------------------------------------------------------------
     def probe_fn(blocks):

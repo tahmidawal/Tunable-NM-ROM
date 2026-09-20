@@ -95,7 +95,8 @@ def build_bank(params, n, rows_per_chunk, eval_rows, maxmode, truth=None, keep64
             chunks32.append(G.astype(jnp.float32))
         if keep64:
             chunks64.append(G)
-        G.block_until_ready()
+        # bound the in-flight work: every consumer of this chunk finishes before the next
+        jax.block_until_ready((T, rfac[-1], gtu, G))
         del G
     Rg = qr_r(jnp.concatenate(rfac, axis=0))
     values = np.asarray(jnp.linalg.svd(Rg, compute_uv=False))
@@ -182,9 +183,9 @@ def make_lean(ops, engine, cfg, count):
 
 
 def make_diagnose(ops, engine, count):
-    """Untimed post-query validation: the quantities `correction_core` computes in-kernel."""
+    """Untimed post-query validation: every quantity `correction_core` computes in-kernel."""
     @jax.jit
-    def diagnose(source, z, y, S, I, J, W, params, Q, Cq, B, Bp):
+    def diagnose(source, z, y, S, I, J, W, params, Q, R, Cq, B, Bp):
         f = ops['project'](source, S, I, J, W)
         fp = f - Q @ (Q.T @ f) if count else f
         h = sc.head(params, z)
@@ -199,7 +200,17 @@ def make_diagnose(ops, engine, count):
         Jr = Bp @ D
         rr = Bp @ h - fp
         red = jnp.linalg.norm(Jr.T @ rr) / (jnp.linalg.norm(Jr) * jnp.linalg.norm(rr) + 1e-300)
-        return full, red, jnp.linalg.norm(residual), jnp.linalg.norm(f)
+        if count:
+            rhs = Q.T @ (f - B @ h)
+            recovery = jnp.linalg.norm(R @ y - rhs) / (jnp.linalg.norm(R) * jnp.linalg.norm(y)
+                                                     + jnp.linalg.norm(rhs) + 1e-300)
+        else:
+            recovery = jnp.asarray(0.)
+        reconstruct = jnp.linalg.norm(residual - rr) / (jnp.linalg.norm(f)
+                                                        + jnp.linalg.norm(B @ h) + 1e-300)
+        singular = jnp.linalg.svd(Jr, compute_uv=False)
+        rank = jnp.sum(singular > singular[0] * max(Jr.shape) * jnp.finfo(jnp.float64).eps)
+        return full, red, jnp.linalg.norm(residual), jnp.linalg.norm(f), recovery, reconstruct, rank
     return diagnose
 
 
@@ -256,7 +267,8 @@ def linear_query(host_source, ops, kernel, Qt, Rr, chunks):
     return np.asarray(field), dict(total_seconds=end - start, input_seconds=input_end - start,
                                    fused_device_seconds=device_end - input_end,
                                    output_seconds=end - device_end, reason=4, attempts=0,
-                                   accepted=0, jacobians=0)
+                                   accepted=0, jacobians=0,
+                                   linear_coefficients=np.asarray(y).tolist())
 
 
 # ------------------------------------------------------- coarse-grid controls --

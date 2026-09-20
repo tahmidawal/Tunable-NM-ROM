@@ -139,3 +139,26 @@ being reported until explained in an amendment.
 ## Amendments
 
 (none yet)
+
+**A1 (2026-09-20, before any GPU job) — independent Codex audit applied.** Codex CLI
+(gpt-6-astra, read-only; its sandbox could not execute commands here, so the files were inlined
+into the prompt) returned eight findings; record in `checks/codex-design-audit.md`. Applied:
+(1) gates now control acceptance — the driver writes `COMPLETE` only if assembly, parity (with a
+coverage count), solver validity (with coverage) and determinism all pass, and the audit's
+`passed` is the conjunction of its gates, never a constant; (2) the f32 parity limit in
+`config-2048.json` is the pre-registered $10^{-4}$ (the first commit still carried $10^{-5}$);
+(3) the audit now computes the protocol selections and the bar verdict itself, on the full
+12-source cohort only — a subject restricted to fewer sources is ineligible as a comparator;
+(4) an **assembly gate** compares the chunked build against the parent `core.assemble` at 64
+intervals in every job (operator $\le10^{-11}$, bank $\le10^{-13}$, chunked projection floor vs a
+direct NumPy least-squares floor $\le10^{-7}$) — the first version of this gate demanded bitwise
+bank equality and FAILED on the smoke ($1.3\times10^{-15}$, different evaluation chunking), so it
+can fail; (5) the untimed diagnostics restore every retained check (correction-recovery backward
+error, residual reconstruction, projected-Jacobian rank, LM backward error), run for every
+variant, and the linear rung gets a normal-equation stationarity check; (8) chunk consumers are
+synchronised before the next chunk is built. Not changed, stated instead: (7) the parent CG
+kernel evaluates one extra true-residual stencil inside its timed region (one operator
+application against $\ge 87$ iterations, < 1.2 % of CG device time, in the ROM's favour); the
+parent's audited CG is kept unmodified and the bias is declared here. At $4096^2$ the retained
+baseline cannot fit (Codex: 171.7 GB with all three copies); parity there is carried by the
+$2048^2$ job of the same kernels, as already stated in gate 3.

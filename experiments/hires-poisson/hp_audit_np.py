@@ -59,6 +59,7 @@ def main():
     out = Path(a.out)
     R = json.loads((out / 'result.json').read_text())
     assert R['complete'] and R['backend'] == 'gpu' and R['x64']
+    assert R['matmul_precision'] == 'highest'
     cfg, n = R['config'], R['intervals']
     dev = np.concatenate((params(cfg['eval_seed'], cfg['eval_count']),
                           params(cfg['fresh_seed'], cfg['fresh_count'])))
@@ -88,7 +89,9 @@ def main():
             path = out / 'fields' / rows[0]['saved_field']
             u = np.load(path)
             h = hashlib.sha256(np.ascontiguousarray(u).tobytes()).hexdigest()
-            assert any(x['field_sha256'] == h for x in rows), (name, case)
+            assert rows[0]['field_sha256'] == h, (name, case)
+            for x in rows:                      # recorded flag must agree with the real hash
+                assert x['matches_saved_field'] == (x['field_sha256'] == h), (name, case)
             assert u.shape == (n + 1, n + 1) and u.dtype == np.float64 and np.isfinite(u).all()
             assert not u[0].any() and not u[-1].any() and not u[:, 0].any() and not u[:, -1].any()
             es, ep = rel(u, same), rel(u, fine)
@@ -129,22 +132,84 @@ def main():
             exit_reasons=sorted({x['reason'] for x in rows if 'reason' in x}),
             all_cg_converged=(all(x['cg_converged'] for x in rows)
                               if 'cg_converged' in rows[0] else None))
-    audit = dict(passed=True, intervals=n, job_id=R['job_id'], commit=R['commit'], gpu=R['gpu'],
-                 gpu_uuid=R['gpu_uuid'], final_uuid_matches=R['device_guard_final_uuid'] == R['gpu_uuid'],
+    # ---- coverage: every declared subject, every case it was allowed, >= 5 repetitions ----
+    limit = cfg.get('slow_subject_cases', {})
+    coverage = []
+    for name in R['declared_subjects']:
+        want = min(limit.get(name, len(dev)), len(dev))
+        got = table.get(name, dict(cases=0, repetitions_per_case=0))
+        coverage.append(dict(name=name, cases=got['cases'], expected_cases=want,
+                             repetitions=got['repetitions_per_case'],
+                             ok=bool(got['cases'] == want
+                                     and got['repetitions_per_case'] >= cfg['repetitions'])))
+
+    # ---- protocol selections, on the FULL cohort only (restricted subjects are ineligible) ----
+    full = {k: v for k, v in table.items() if v['cases'] == len(dev)}
+    lean = 'lean64' if any(k.endswith('lean64') for k in full) else 'lean32'
+    Rw = R['checkpoint']['R']
+
+    def pick(names, bound):
+        ok = [k for k in names if full[k]['worst_physical'] <= bound]
+        return min(ok, key=lambda k: full[k]['median_total_ms']) if ok else None
+
+    selections = []
+    rom_names = [k for k in full if full[k]['family'] in ('nm-rom', 'linear-rom')]
+    for name in rom_names:
+        r = full[name]
+        row = dict(rom=name, q=r['q'], worst_same_grid=r['worst_same_grid'],
+                   worst_physical=r['worst_physical'], median_total_ms=r['median_total_ms'],
+                   median_device_ms=r['median_device_ms'])
+        for label, fam in (('named_cg_1e-2', None), ('fastest_cg_matched', ('cg',)),
+                           ('fastest_coarse_matched', ('coarse-dst', 'coarse-cg')),
+                           ('dst_direct', None)):
+            if label == 'named_cg_1e-2':
+                k = 'cg_0.01' if 'cg_0.01' in full else None
+            elif label == 'dst_direct':
+                k = 'dst_direct' if 'dst_direct' in full else None
+            else:
+                k = pick([c for c in full if full[c]['family'] in fam], r['worst_physical'])
+            row[label] = None if k is None else dict(
+                comparator=k, worst_physical=full[k]['worst_physical'],
+                median_total_ms=full[k]['median_total_ms'],
+                speedup_total=full[k]['median_total_ms'] / r['median_total_ms'],
+                speedup_device=full[k]['median_device_ms'] / r['median_device_ms'])
+        selections.append(row)
+    head = next((x for x in selections if x['rom'] == f'rom_q256_{lean}'), None)
+    verdict = None
+    if head is not None and head['named_cg_1e-2'] is not None:
+        verdict = dict(arm=head['rom'], comparator='cg_0.01',
+                       worst_same_grid=head['worst_same_grid'],
+                       speedup_total=head['named_cg_1e-2']['speedup_total'],
+                       accuracy_bar_1pct=bool(head['worst_same_grid'] <= 0.01),
+                       stretch_bar_0p5pct=bool(head['worst_same_grid'] <= 0.005),
+                       speed_bar_5x=bool(head['named_cg_1e-2']['speedup_total'] >= 5.0))
+        verdict['bar_met'] = bool(verdict['accuracy_bar_1pct'] and verdict['speed_bar_5x'])
+
+    gates = dict(driver_gates=bool(R.get('gates')) and all(R['gates'].values()),
+                 final_uuid_matches=R['device_guard_final_uuid'] == R['gpu_uuid'],
+                 deterministic=not unstable,
+                 coverage=bool(coverage) and all(c['ok'] for c in coverage),
+                 parity_present_and_passed=bool(R['parity']) and all(p['passed'] for p in R['parity']),
+                 diagnostics_present_and_valid=bool(R['diagnostics'])
+                                               and all(d['valid'] for d in R['diagnostics']),
+                 verdict_computable=verdict is not None)
+    audit = dict(passed=all(gates.values()), gates=gates, intervals=n, job_id=R['job_id'],
+                 commit=R['commit'], gpu=R['gpu'], gpu_uuid=R['gpu_uuid'],
                  cohort_seed_regeneration_max_abs=seed_match, error_checks=checks,
                  worst_error_difference=worst_diff, reference_checks=refres,
                  nondeterministic_subjects=unstable, subsample_stride=stride,
-                 parity=R['parity'], all_parity_passed=all(p['passed'] for p in R['parity']),
-                 all_lean_stationary=all(d['stationary'] for d in R['diagnostics']),
-                 bank=R['bank'], table=table,
+                 coverage=coverage, parity=R['parity'], bank=R['bank'],
+                 assembly_gate=R.get('assembly_gate'), device_memory=R.get('device_memory'),
+                 headline_variant=lean, verdict=verdict, selections=selections, table=table,
                  result_sha256=hashlib.sha256((out / 'result.json').read_bytes()).hexdigest())
-    assert audit['final_uuid_matches']
     (out / 'audit.json').write_text(json.dumps(audit, indent=2) + '\n')
     if a.delete_fields:
         for p in (out / 'fields').glob('*.npy'):
             p.unlink()
         (out / 'fields').rmdir()
-    print('AUDIT PASSED', checks, 'checks; worst difference', worst_diff, flush=True)
+    print('AUDIT', 'PASSED' if audit['passed'] else 'FAILED', gates, checks,
+          'checks; worst difference', worst_diff, flush=True)
+    print('VERDICT', verdict, flush=True)
 
 
 if __name__ == '__main__':

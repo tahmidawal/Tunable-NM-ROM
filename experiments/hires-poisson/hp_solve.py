@@ -77,7 +77,7 @@ def main():
     (out / 'fields').mkdir(parents=True, exist_ok=True)
     if a.smoke:
         cfg.update(intervals=64, repetitions=1, burn_seconds=0.001, cg_maxiter=4000,
-                   attempt='smoke', extension_sources=640, rows_per_chunk=16, eval_rows=8,
+                   attempt='smoke', extension_sources=512, rows_per_chunk=16, eval_rows=8,
                    coarse_intervals=[16, 32], ladder_q=[0, 32, 256], eval_count=2,
                    fresh_count=1, cg_tolerances=[1e-2, 1e-6], retained_baseline=True,
                    keep_f64=True, keep_f32=True)
@@ -154,6 +154,30 @@ def main():
     jax.clear_caches()
     print('DIRECTIONS', dinfo['directions_sha256'][:12], round(time.perf_counter() - begin, 1),
           flush=True)
+
+    # ------------------- assembly gate: chunked build vs `core.assemble` (small mesh) --
+    ng = int(cfg.get('assembly_gate_intervals', 64))
+    base = C.assemble(params, codes, ng, 257, 10)
+    Ig, Jg, _ = H.mode_set(ng, 257)
+    sm = np.stack([reference(p_, ng)[1:-1, 1:-1] for p_ in dev[:3]])
+    gb = H.build_bank(params, ng, 8, 4, int(max(Ig.max(), Jg.max())) + 1, truth=sm)
+    gops = H.make_ops(gb, params, codes, ng, 257)
+    Gs = np.asarray(base['bank'])
+    direct = [float(np.linalg.norm(u.ravel() - Gs @ np.linalg.lstsq(Gs, u.ravel(), rcond=None)[0])
+                    / np.linalg.norm(u)) for u in sm]
+    gate = dict(intervals=ng,
+                operator_relative=C.relative(np.asarray(gops['B']), np.asarray(base['B'])),
+                bank_relative=C.relative(np.concatenate([np.asarray(c) for c in gb['chunks64']]), Gs),
+                floor_chunked=gb['floor'].tolist(), floor_direct_lstsq=direct,
+                floor_max_abs_difference=float(np.max(np.abs(gb['floor'] - np.asarray(direct)))),
+                trust_matches=bool(abs(gops['info']['trust_delta'] - base['info']['trust_delta']) < 1e-12))
+    gate['passed'] = bool(gate['operator_relative'] <= 1e-11 and gate['bank_relative'] <= 1e-13
+                          and gate['floor_max_abs_difference'] <= 1e-7 and gate['trust_matches'])
+    R_['assembly_gate'] = gate
+    print('ASSEMBLY GATE', gate, flush=True)
+    assert gate['passed'], gate
+    del base, gb, gops, Gs
+    jax.clear_caches()
 
     # ------------------------------------------------------------------ bank --
     ladder = [q for q in cfg['ladder_q'] if q < Rw]
@@ -275,7 +299,7 @@ def main():
                 drop = ('starts', 'projected_jacobian_singular_values', 'augmented_latent',
                         'initial_latent', 'initial_correction_coefficients')
                 if rep:            # the solved state is kept once per (subject, case)
-                    drop += ('latent', 'correction_coefficients')
+                    drop += ('latent', 'correction_coefficients', 'linear_coefficients')
                 slim = {k: v for k, v in row.items() if k not in drop}
                 R_['invocations'].append(dict(
                     case=case, rep=rep, name=sub['name'], family=sub['family'],
@@ -292,22 +316,49 @@ def main():
     first = {}
     for x in R_['invocations']:
         first.setdefault((x['name'], x['case']), x)
+    lim = cfg['retained']
     for sub in subjects:
-        if sub['kind'] != 'lean' or sub['variant'] != variants[0][0]:
-            continue
         for case in range(len(dev)):
+            if (sub['name'], case) not in first:
+                continue
             x = first[(sub['name'], case)]
-            e, o = sub['engine'], sub['ops']
-            full, red, rn, fn_ = jax.device_get(sub['diag'](
-                jnp.asarray(sources[case]), jnp.asarray(x['latent']),
-                jnp.asarray(x['correction_coefficients']), o['S'], o['I'], o['J'], o['W'],
-                o['params'], e['Q'], e['C'], o['B'], e['Bp']))
-            R_['diagnostics'].append(dict(
-                name=sub['name'], case=case, full_stationarity=float(full),
-                reduced_stationarity=float(red), weak_residual=float(rn),
-                weak_source_norm=float(fn_),
-                stationary=bool(full <= cfg['retained']['stationarity_tolerance']
-                                and red <= cfg['retained']['stationarity_tolerance'])))
+            if sub['kind'] == 'lean':
+                e, o = sub['engine'], sub['ops']
+                full, red, rn, fn_, rec, recon, rank = jax.device_get(sub['diag'](
+                    jnp.asarray(sources[case]), jnp.asarray(x['latent']),
+                    jnp.asarray(x['correction_coefficients']), o['S'], o['I'], o['J'], o['W'],
+                    o['params'], e['Q'], e['R'], e['C'], o['B'], e['Bp']))
+                ok = bool(full <= lim['stationarity_tolerance'] and red <= lim['stationarity_tolerance']
+                          and rec <= lim['linear_backward_error_limit']
+                          and x['max_linear_backward_error'] <= lim['linear_backward_error_limit']
+                          and recon <= lim['residual_reconstruction_limit'] and int(rank) == K)
+                R_['diagnostics'].append(dict(
+                    name=sub['name'], case=case, full_stationarity=float(full),
+                    reduced_stationarity=float(red), weak_residual=float(rn),
+                    weak_source_norm=float(fn_), linear_recovery_backward_error=float(rec),
+                    residual_reconstruction_scaled=float(recon), projected_jacobian_rank=int(rank),
+                    lm_max_linear_backward_error=x['max_linear_backward_error'], valid=ok))
+            elif sub['kind'] == 'linear':
+                o = sub['ops']
+                fm = o['project'](jnp.asarray(sources[case]), o['S'], o['I'], o['J'], o['W'])
+                y = jnp.asarray(x['linear_coefficients'])
+                r = o['B'] @ y - fm
+                normal = float(jnp.linalg.norm(o['B'].T @ r)
+                               / (jnp.linalg.norm(o['B']) * jnp.linalg.norm(r) + 1e-300))
+                R_['diagnostics'].append(dict(name=sub['name'], case=case,
+                                              normal_equation_stationarity=normal,
+                                              weak_residual=float(jnp.linalg.norm(r)),
+                                              valid=bool(normal <= 1e-8)))
+            elif sub['kind'] == 'retained':
+                R_['diagnostics'].append(dict(name=sub['name'], case=case,
+                                              valid=bool(x['solver_valid'])))
+            elif 'cg_converged' in x:
+                rows = [v for v in R_['invocations'] if v['name'] == sub['name'] and v['case'] == case]
+                R_['diagnostics'].append(dict(name=sub['name'], case=case,
+                                              valid=bool(all(v['cg_converged'] for v in rows))))
+            else:
+                R_['diagnostics'].append(dict(name=sub['name'], case=case, valid=True,
+                                              note='direct transform: finiteness asserted at run time'))
 
     # --------------------------------------------------------------- parity ----
     def load(name, case):
@@ -337,11 +388,25 @@ def main():
                                      worst_field_relative=worst, integers_identical=ints,
                                      limit=limit, passed=bool(worst <= limit and ints)))
             print('PARITY', R_['parity'][-1], flush=True)
+    stats = jax.devices()[0].memory_stats() or {}
+    R_['device_memory'] = {k: int(v) for k, v in stats.items()
+                           if k in ('peak_bytes_in_use', 'bytes_limit', 'bytes_in_use')}
+    expected_parity = (len(ladder) + 1) * len(variants) - (0 if single is not None else len(ladder)) - 1
+    gates = dict(
+        assembly=R_['assembly_gate']['passed'],
+        parity_coverage=len(R_['parity']) == expected_parity,
+        parity=all(p['passed'] for p in R_['parity']),
+        diagnostics_coverage=len(R_['diagnostics']) == len(first),
+        solver_validity=all(d['valid'] for d in R_['diagnostics']),
+        deterministic=all(x['matches_saved_field'] for x in R_['invocations']))
+    R_['gates'] = gates
+    print('GATES', gates, flush=True)
     R_['device_guard_final_uuid'] = gpu_uuid()
     R_['elapsed_seconds'] = time.perf_counter() - begin
     R_['complete'] = True
     save()
-    (out / 'COMPLETE').write_text('complete\n')
+    (out / ('COMPLETE' if all(gates.values()) else 'COMPLETE-WITH-FAILED-GATES')).write_text(
+        json.dumps(gates) + '\n')
     print('HIRES SOLVE COMPLETE', flush=True)
 
 

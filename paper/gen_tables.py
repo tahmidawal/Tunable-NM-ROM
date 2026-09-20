@@ -148,6 +148,14 @@ GIT_PINS: dict[str, tuple[str, str]] = {
 }
 
 
+def heat2d_measurement_job():
+    """Job of the PRINTED Heat2D CG measurements (paired-CG snapshot), distinct from the checkpoint-lineage cell."""
+    rows = json.loads((HERE / 'evidence/paired-cg-2026-09-20/results.json').read_text())['rows']
+    jobs = {r['job_id'] for r in rows if r['problem'] == 'Heat2D'}
+    assert len(jobs) == 1
+    return jobs.pop()
+
+
 def load(key: str):
     if key in GIT_PINS:
         import subprocess
@@ -1853,7 +1861,7 @@ def build_offline_and_spec():
          '$f=a\\exp(-\\lvert x-c\\rvert^2/2w^2)$, $c_i\\sim U(0.15,0.85)$, $w\\sim\\log U(0.02,0.1)$, $a\\sim U(0.5,2)$',
          r'\path{multistage-precision/ms_parametric.py:sample_params}'],
         ['Poisson, L-shape', 'same source family on $(0,1)^2\\setminus[\\tfrac12,1)^2$', 'as above; sources centred in the removed quadrant rejected', r'\path{experiments/lshape}'],
-        ['Heat 2D', '$u_t=\\kappa\\Delta u$ on $(0,1)^2$, $\\kappa=0.02$ fixed', 'polynomial-boundary Gaussian family (single\\_bc\\_poly\\_gaussian\\_v1); Crank--Nicolson $\\Delta t=0.025$', 'heat linear-bank report, job 3511417'],
+        ['Heat 2D', '$u_t=\\kappa\\Delta u$ on $(0,1)^2$, $\\kappa=0.02$ fixed', 'polynomial-boundary Gaussian family (single\\_bc\\_poly\\_gaussian\\_v1); Crank--Nicolson $\\Delta t=0.025$', 'checkpoint \\path{expanded_seed790715} (lineage: linear-bank cell, job 3511417); printed CG measurements: job ' + heat2d_measurement_job()],
         ['Wave 2D (reflective)', '$u_{tt}=c^2\\Delta u$ on $(0,1)^2$, $u=0$ on $\\partial\\Omega$',
          'compact bump $\\times$ Gaussian: half-widths $s_i\\sim U(0.36,0.42)$, centre $c_i\\sim U(s_i{+}0.025,\\,1{-}s_i{-}0.025)$, amplitude $\\sim U(0.7,1.3)$, $\\sigma_i\\sim U(0.12,0.16)$, advective velocity $v_i\\sim U(-0.5,0.5)$ (zero every fourth case); speed $c\\sim U(0.85,1.15)$',
          r'\path{experiments/multiresolution-wave/audit_dynamics.py:parameter_rows}'],
@@ -2292,7 +2300,7 @@ def build_problems_and_provenance(mesh):
          '6 development cases; 32 held-out (tuning); sealed cohort opened once (job 3804465)'],
         ['Poisson 2D', '$-\\Delta u=f$, $(0,1)^2$, $u|_{\\partial\\Omega}=0$', '$256^2$, $1024^2$', 'none (elliptic)',
          '$K=16$, $R=128$ (incumbent); $K=32$, $R=512$', 'exact discrete (DST); 2048$^2$ refinement', '12 development sources'],
-        ['Heat 2D', '$u_t=\\kappa\\Delta u$, $(0,1)^2$', '$64^2$--$1024^2$', 'Crank--Nicolson', '$k=8$, $R=32$', 'exact modal', '12 development cases (earlier cell, job 3511417)'],
+        ['Heat 2D', '$u_t=\\kappa\\Delta u$, $(0,1)^2$', '$64^2$--$1024^2$', 'Crank--Nicolson', '$k=8$, $R=32$', 'refined-grid reference ($1024^2$/$2048^2$ pair); error includes discretisation', '12 development cases, 3 repetitions; measured in job ' + heat2d_measurement_job() + '; checkpoint lineage: earlier cell, job 3511417'],
         ['Wave 2D (reflective)', '$u_{tt}=c^2\\Delta u$, $(0,1)^2$, $u|_{\\partial\\Omega}=0$', '$64^2$, $256^2$, $1024^2$', 'RK4 on the manifold; exact modal propagation for the bank',
          '$K=32$, $R=64$', 'direct DST', '8 development cases'],
         ['Poisson, L-shape', '$-\\Delta u=f$, $(0,1)^2\\setminus[\\tfrac12,1)^2$', '$256^2$, $512^2$', 'none', '$K\\in\\{16,32\\}$, $R\\in\\{256,512,514\\}$',

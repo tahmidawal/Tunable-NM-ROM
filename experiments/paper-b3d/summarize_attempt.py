@@ -12,14 +12,18 @@ def panel(path):
     for method in sorted({v['method'] for v in raw}):
         selected=[v for v in raw if v['method']==method];times=np.asarray([v['gpu_ms'] for v in selected]);median=float(np.median(times))
         accepted=[v.get('stationary',v.get('converged')) for v in selected]
-        case_errors=[max(v['worst_evolved'] for v in selected if v['case']==case) for case in sorted({v['case'] for v in selected})]
+        cases=sorted({v['case'] for v in selected})
+        case_errors=[max(v['worst_evolved'] for v in selected if v['case']==case) for case in cases]
         rows.append(dict(method=method,n=len(selected),cases=len(case_errors),median_ms=median,
             timing_outliers_above_1p5_median=int(np.sum(times>1.5*median)),timing_repetitions_ms=times.tolist(),
             worst_all=max(v['worst_all'] for v in selected),worst_evolved=max(case_errors),median_evolved=float(np.median(case_errors)),
+            case_worst_evolved=[dict(case=case,error=error) for case,error in zip(cases,case_errors)],
             stationary_or_converged=None if all(v is None for v in accepted) else sum(bool(v) for v in accepted)))
     return dict(scope=r['comparison_scope'],rows=rows,source_result_sha256=hashlib.sha256((path/'result.json').read_bytes()).hexdigest(),
         source=r['commit'],job_id=r['job_id'],backend=r['backend'],gpu=r['gpu'],bank_floor=r.get('bank_floor'),
-        representation=r.get('representation'),local_audit=json.loads((path/'audit-local.json').read_text()),
+        representation=r.get('representation'),evaluation_kind=r['config'].get('evaluation_kind','development'),
+        evaluation_seed=r['config'].get('evaluation_seed',r['config']['seed']),actual_test_modes=r['actual_test_modes'],
+        local_audit=json.loads((path/'audit-local.json').read_text()),
         stationarity_audit=json.loads((path/'audit-stationarity-local.json').read_text()),final_cohort_unopened=r['final_cohort_unopened'])
 
 
@@ -33,6 +37,19 @@ def main():
     if (out/'seed1/result.json').exists():
         result['seed1']=panel(out/'seed1')
         result['seed_reporting']='seed0 is the original-bank primary recipe; seed1 is an independent initialization confirmation, not a selected best seed'
+    if (out/'freeze.json').exists():
+        freeze=json.loads((out/'freeze.json').read_text())
+        physical=json.loads((out/'physical-reference/result.json').read_text())
+        result['final_evaluation']=dict(
+            complete=json.loads((out/'complete.json').read_text()),
+            freeze_sha256=hashlib.sha256((out/'freeze.json').read_bytes()).hexdigest(),
+            primary_seed_index=freeze['primary_seed_index'],parameter_seed=freeze['final_parameter_seed'],cases=freeze['final_cases'],
+            replay_audits=[json.loads((out/f'replay-seed{seed}/replay-audit.json').read_text()) for seed in (0,1)],
+            contract_audit=json.loads((out/'audit-contract-local.json').read_text()),
+            physical_reference=dict(protocol=physical['protocol'],
+                physical_reference_gate_passed=physical['physical_reference_gate_passed'],
+                comparisons=physical['comparisons'],
+                source_result_sha256=hashlib.sha256((out/'physical-reference/result.json').read_bytes()).hexdigest()))
     (root/'summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:result[k] for k in ['job_id','source','checksums_passed','remote_directory_removed']},indent=2))
 

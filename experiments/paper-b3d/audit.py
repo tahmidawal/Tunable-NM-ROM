@@ -51,6 +51,9 @@ def main():
         err=np.linalg.norm(f-ref,axis=1)/np.linalg.norm(ref[0])
         discrepancy=float(np.max(np.abs(err-np.asarray(row['error_fixed_initial']))))
         max_metric=max(max_metric,discrepancy)
+        current=np.linalg.norm(f-ref,axis=1)/np.maximum(np.linalg.norm(ref,axis=1),1e-300)
+        max_metric=max(max_metric,float(np.max(np.abs(current-np.asarray(row['error_current_relative'])))))
+        assert abs(err[0]-row['initial_error'])<1e-12 and row['finite']
         assert abs(err.max()-row['worst_all'])<1e-12
         assert abs(err[1:].max()-row['worst_evolved'])<1e-12
         method=row['method']
@@ -65,14 +68,22 @@ def main():
             rank=int(method[4:]);decoded=a['states']@bases['pod'][:,:rank].T
         else:
             assert method.startswith('fom_');decoded=f
-            if 'native_fields' in a.files and row['artifact'] not in checked_controls:
-                checked_controls.add(row['artifact']);native=a['native_fields'];nn=row['nodes'];dd=row['dt']
+            if row['artifact'] not in checked_controls:
+                checked_controls.add(row['artifact'])
+                native=a['native_fields'] if 'native_fields' in a.files else f
+                nn=row.get('nodes',n);dd=row.get('dt',dt)
+                assert len(a['residuals'])==len(native)-1
                 for step in range(1,len(native)):
                     adv,lap=stencil(native[step],nn)
                     residual=native[step]-native[step-1]+dd*(adv-float(np.load(root/f"reference_case{row['case']}.npz")['nu'])*lap)
                     relative=float(np.linalg.norm(residual)/np.linalg.norm(native[step-1]))
                     assert abs(relative-a['residuals'][step-1])<1e-11
                 assert row['converged']==bool(np.max(a['residuals'])<=row['nonlinear_tolerance']*(1+1e-6))
+            assert np.array_equal(a['iterations'],row['iterations'])
+            assert len(a['iterations'])==len(a['residuals'])
+            assert row['converged']==bool(np.max(a['residuals'])<=row['nonlinear_tolerance']*(1+1e-6))
+            if 'native_fields' in a.files:
+                native=a['native_fields'];nn=row['nodes'];dd=row['dt']
                 knots=native
                 if nn!=n:
                     knots=np.pad(native.reshape((len(native),)+(nn-2,)*3),[(0,0),(1,1),(1,1),(1,1)])
@@ -89,6 +100,10 @@ def main():
         if 'gradients' in row:
             assert np.array_equal(a['gradients'],row['gradients'])
             assert np.array_equal(a['iterations'],row['iterations'])
+            assert np.array_equal(a['reasons'],row['reasons'])
+            assert np.array_equal(a['initial_fit'],row['initial_fit'])
+            assert all(a[key].shape==(cfg['steps'],) for key in ('iterations','reasons','gradients','residuals'))
+            assert all(np.isfinite(a[key]).all() for key in ('gradients','residuals','initial_fit'))
             station=bool(np.all(a['gradients']<=cfg['gradient_tolerance']) and a['initial_fit'][2]<=cfg['gradient_tolerance'])
             assert station==row['stationary']
         assert row['gpu_ms']>0 and np.isfinite(row['gpu_ms'])
@@ -110,6 +125,14 @@ def main():
     expected=(len(cfg['q_ladder'])+1+len(cfg['pod_ranks'])+len(cfg.get('fom_controls',[0,1,2]))+len(cfg.get('fom_variants',[])))*len(refs)*cfg['repetitions']
     if r['complete']:
         assert len(r['invocations'])==expected,(len(r['invocations']),expected)
+        names={f'rom_q{q}' for q in cfg['q_ladder']}|{f'free_R{ck["cfg"]["r"]}'}|{f'pod_{rank}' for rank in cfg['pod_ranks']}
+        if 'fom_controls' in cfg:
+            names|={f'fom_nt{ntol:.0e}_lt{ltol:.0e}' for ntol,ltol in cfg['fom_controls']}
+        else:names|={f'fom_nt{tol:.0e}' for tol in (1e-2,1e-4,1e-6)}
+        names|={f'fom_n{v["nodes"]}_dt{v["dt"]:g}_nt{v["nonlinear_tolerance"]:.0e}_lt{v["linear_tolerance"]:.0e}' for v in cfg.get('fom_variants',[])}
+        required={(name,case,rep) for name in names for case in refs for rep in range(cfg['repetitions'])}
+        actual=[(v['method'],v['case'],v['repetition']) for v in r['invocations']]
+        assert len(actual)==len(set(actual)) and set(actual)==required,'Missing or duplicate paired solver calls'
     operator_count=0
     if 'operators' in cfg:
         observed=np.asarray(cfg['train_steps']);eye=np.eye(len(observed))
@@ -122,6 +145,8 @@ def main():
             assert np.linalg.norm(recomposed-f)/np.linalg.norm(f)<1e-12
             err=np.linalg.norm(f-ref,axis=1)/np.linalg.norm(ref[0])
             assert np.max(np.abs(err-np.asarray(row['error_fixed_initial'])))<1e-12
+            current=np.linalg.norm(f-ref,axis=1)/np.maximum(np.linalg.norm(ref,axis=1),1e-300)
+            assert np.max(np.abs(current-np.asarray(row['error_current_relative'])))<1e-12
             assert abs(err[1:].max()-row['worst_evolved'])<1e-12
             if 'method' in row:
                 assert row['gpu_ms']>0 and np.isfinite(row['gpu_ms']);operator_count+=1
@@ -129,10 +154,16 @@ def main():
         if r.get('operator_complete'):
             assert operator_count==len(cfg['operators'])*len(refs)*cfg['repetitions']
             assert len(r['interpolation_controls'])==len(refs)
+            required={(model['name'],case,rep) for model in cfg['operators'] for case in refs for rep in range(cfg['repetitions'])}
+            actual=[(v['method'],v['case'],v['repetition']) for v in r['operator_invocations']]
+            assert len(actual)==len(set(actual)) and set(actual)==required,'Missing or duplicate paired operator calls'
     output=dict(passed=True,complete=bool(r['complete']),invocations=len(r['invocations']),expected_invocations=expected,
+                audit_script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 max_reference_defect=max_defect,max_metric_discrepancy=max_metric,max_decode_discrepancy=max_decode,
                 final_cohort_unopened=r['final_cohort_unopened'],comparison_scope=r['comparison_scope'],
-                operator_invocations=operator_count,operator_complete=r.get('operator_complete',False))
+                operator_invocations=operator_count,operator_complete=r.get('operator_complete',False),
+                independently_checked_fom_histories=len(checked_controls),
+                stopping_history_scope='every saved FOM residual recomputed; every recorded iteration, ROM stop reason and initial-fit history matched to its saved arrays')
     (root/args.audit_output).write_text(json.dumps(output,indent=2)+'\n');print(json.dumps(output,indent=2))
 
 

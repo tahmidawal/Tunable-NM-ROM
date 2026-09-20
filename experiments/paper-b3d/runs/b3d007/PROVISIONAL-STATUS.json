@@ -1,0 +1,223 @@
+{
+  "observed_utc": "2026-09-20T16:56:35.022954+00:00",
+  "job_id": "4021709",
+  "source_commit": "5eb99849c062f72c5dd9f6422f30928a14a0301d",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d007",
+  "state": "PROVISIONAL monitoring snapshot only; acceptance requires both seed panels, all references, independent local audits, checksum collection, verified Git retention and remote cleanup",
+  "scope": "final, all learned components use identical original 512 training trajectories and eight saved training times",
+  "source_result_sha256": "6f6bc98f5215fa6fe25f7f7f08055de47eaad24640e3ae75d57c5ba3a58f4ba0",
+  "primary_seed_index": 0,
+  "primary_panel_complete": true,
+  "operator_complete": true,
+  "cluster_audit": {
+    "passed": true,
+    "complete": true,
+    "invocations": 2304,
+    "expected_invocations": 2304,
+    "max_reference_defect": 9.994454671394354e-11,
+    "max_metric_discrepancy": 0.0,
+    "max_decode_discrepancy": 6.495237728958046e-16,
+    "final_cohort_unopened": false,
+    "comparison_scope": "final, all learned components use identical original 512 training trajectories and eight saved training times",
+    "operator_invocations": 384,
+    "operator_complete": true
+  },
+  "rows": [
+    {
+      "method": "deeponet3d",
+      "invocations": 96,
+      "worst_evolved": 0.20575243058802434,
+      "median_gpu_ms": 2.57785152643919,
+      "stationary_or_converged": null
+    },
+    {
+      "method": "fno3d",
+      "invocations": 96,
+      "worst_evolved": 0.023775030602196465,
+      "median_gpu_ms": 6.071512587368488,
+      "stationary_or_converged": null
+    },
+    {
+      "method": "fom_n17_dt0.005_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.10072506716356132,
+      "median_gpu_ms": 14.670256990939379,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n17_dt0.01_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.08156143245336997,
+      "median_gpu_ms": 7.902700453996658,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n17_dt0.025_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.08765842224858354,
+      "median_gpu_ms": 4.67038294300437,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.01_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.02311813545648998,
+      "median_gpu_ms": 8.336570113897324,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.01_nt3e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.36585260908869216,
+      "median_gpu_ms": 6.546914461068809,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.025_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.04984350749071581,
+      "median_gpu_ms": 5.3464334923774,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.025_nt3e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.049846911628453054,
+      "median_gpu_ms": 4.129273118451238,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.05_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.10492544818206574,
+      "median_gpu_ms": 4.523501498624682,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_n33_dt0.05_nt3e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.10492544818206574,
+      "median_gpu_ms": 3.4631005255505443,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt1e-01_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.823421969065639,
+      "median_gpu_ms": 3.0322924721986055,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt1e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.11429126512115628,
+      "median_gpu_ms": 16.070332610979676,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt1e-03_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.011377864982239411,
+      "median_gpu_ms": 18.296391470357776,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt1e-04_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.000666498813995533,
+      "median_gpu_ms": 30.517723876982927,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt3e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.5899771128153559,
+      "median_gpu_ms": 4.041502485051751,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "fom_nt5e-02_lt5e-01",
+      "invocations": 96,
+      "worst_evolved": 0.6782105869433549,
+      "median_gpu_ms": 3.26727912761271,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "free_R256",
+      "invocations": 96,
+      "worst_evolved": 0.04398729673439134,
+      "median_gpu_ms": 311.3762345165014,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "pod_128",
+      "invocations": 96,
+      "worst_evolved": 0.07405076795399468,
+      "median_gpu_ms": 179.22517750412226,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "pod_192",
+      "invocations": 96,
+      "worst_evolved": 0.035471638995404974,
+      "median_gpu_ms": 242.5187504850328,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "pod_256",
+      "invocations": 96,
+      "worst_evolved": 0.025614177858775004,
+      "median_gpu_ms": 310.9885355224833,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "pod_64",
+      "invocations": 96,
+      "worst_evolved": 0.18988616187908025,
+      "median_gpu_ms": 123.57060401700437,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "rom_q0",
+      "invocations": 96,
+      "worst_evolved": 0.162625104019396,
+      "median_gpu_ms": 219.16114503983408,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "rom_q128",
+      "invocations": 96,
+      "worst_evolved": 0.12017997578870192,
+      "median_gpu_ms": 366.579054039903,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "rom_q192",
+      "invocations": 96,
+      "worst_evolved": 0.04398729638956904,
+      "median_gpu_ms": 364.67678810004145,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "rom_q64",
+      "invocations": 96,
+      "worst_evolved": 0.14683509444768858,
+      "median_gpu_ms": 293.4036925435066,
+      "stationary_or_converged": 96
+    },
+    {
+      "method": "transolver3d",
+      "invocations": 96,
+      "worst_evolved": 0.02016686383194478,
+      "median_gpu_ms": 3.4889314556494355,
+      "stationary_or_converged": null
+    },
+    {
+      "method": "unet3d",
+      "invocations": 96,
+      "worst_evolved": 0.02451190157057289,
+      "median_gpu_ms": 2.115173963829875,
+      "stationary_or_converged": null
+    }
+  ]
+}

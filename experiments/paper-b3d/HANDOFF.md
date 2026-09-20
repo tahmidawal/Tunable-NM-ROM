@@ -1,12 +1,12 @@
 # Burgers 3D confirmation and final-evaluation handoff
 
-B005 is fully collected and independently audited development evidence. B006 is independently audited, durably retained and rejected as a weaker common operator recipe. B007 is running the frozen final workflow; reserved cases remain unopened until both real development replays pass. The original overnight deadline was missed during the session interruption; completion is still pending.
+B005 is fully collected and independently audited development evidence. B006 is independently audited, durably retained and rejected as a weaker common operator recipe. B007 passed both real development replay gates and opened the prospectively frozen final cohort; the final paired panels are now running. The original overnight deadline was missed during the session interruption; completion is still pending.
 
 ## Active attempt
 
 - Job `4021709`, attempt `b3d007`, scientific source `5eb99849c062f72c5dd9f6422f30928a14a0301d`; config SHA `e8ca941d120e36c6c38409597fa24e43380d4fa1d518d87043eb43f4090bf299`. Remote: `/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d007`.
 - Freeze SHA `d3d1dbda9e89da8e5d05d651994cd4d8f94ce30e32aa58176bf065cf90c5bb2f`. GPU preflight passed on pax106, an A100 allocation. Requested wall limit: two hours. The actual startup log says `jax_backend=gpu`.
-- Both frozen real development replays run first. No reserved input may be generated unless both `out/replay-seed{0,1}/replay-audit.json` gates pass and `out/replay-complete.json` is written.
+- Both frozen real development replays passed before final access. Their complete records are `out/replay-seed{0,1}/replay-audit.json`, with the joint gate in `out/replay-complete.json`. No frozen setting has changed.
 - Then both 32-case seed panels run with all four frozen operators and the complete classical control set, followed by the prospectively frozen streamed reference checks. Monitor `workflow.log`, `out/replay-seed{0,1}-driver.log`, `out/seed{0,1}-driver.log`, `out/seed{0,1}-operators.log`, `out/physical-reference.log`, Slurm stderr, and finally `out/complete.json`.
 - No second Burgers allocation may be queued or running while this job is active.
 
@@ -48,7 +48,7 @@ Full local arrays and optimizer states remain in the checksum-covered collected 
 
 ## Required next work
 
-First observe both real development replay results. If either fails, retain the failed gate and verify that the reserved cohort is still unopened; do not loosen the declared replay threshold. If both pass, monitor completion of both final panels and every prospective reference case without changing any frozen solver, model, rank, tolerance or row rule.
+Both real development replay gates have passed. Monitor completion of both final panels and every prospective reference case without changing any frozen solver, model, rank, tolerance or row rule. All final values remain provisional until complete numerical and provenance audits pass.
 
 After B007 exits, checksum-collect its exact directory. The two final checkpoint paths are `collected/code/frozen/seed{0,1}/checkpoint.pkl`; the final panel paths are `collected/out/seed{0,1}`. Run both `audit.py` field checks with distinct `audit-local.json` output files, both `audit_stationarity.py` checks, `audit_contract.py collected/out`, and `audit_source.py b3d007`. The strengthened contract audit requires all reserved cases and every reference level, checks frozen hash links and all initial fields, and independently recomputes the full refinement/discretization discrepancy arrays.
 

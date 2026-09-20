@@ -206,6 +206,9 @@ def run(cfg,out,smoke=False):
         for case,truth in enumerate(truths):
             projection=(truth.reshape(len(truth),-1)@qb)@qb.T
             mesh['representation'].append(dict(case=case,bank_projection=C.metrics(projection,truth)))
+        from panel_selection import filter_methods
+        methods,metadata=filter_methods(methods,metadata,n,cfg)
+        cg_traces={name:value for name,value in cg_traces.items() if name in methods}
         mesh['setup_seconds']=time.perf_counter()-setup_begin
         mesh['methods']=metadata;record['meshes'].append(mesh);save()
         # Compilation is outside timings and warmed queries are never selected as minima.

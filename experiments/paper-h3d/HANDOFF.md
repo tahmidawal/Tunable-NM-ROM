@@ -12,6 +12,12 @@ The timed engine carries only the current field and requested output buffer; it 
 
 The bounded GPU smoke `cg_smoke.py` passes independent SciPy modal-CN and NumPy true-residual comparisons, including capped failure and zero-RHS cases; numerical evidence is in `smokes/iterative-cg.json`. This verifies implementation only. No new heat allocation or final-data access occurred during this addition.
 
+## Approved prospective final selection
+
+Root approved retaining the full development sweep while freezing only the passing non-dominated CG settings needed for declared targets and one development-selected transfer rule per operator in the final panel. The primary seed, native/fine meshes, selected NM-ROM correction ladder, POD/linear/DST controls and reserved final count stay intact. Do not prune final results after seeing them. `DESIGN.md` records the deterministic rule before the new development timings exist.
+
+After development06 collection/retention and both actual frozen replays, save the replay audits as `runs/development06/audit-frozen-replay-{primary,seedB}.json`. Then run `/home/tahmid/Dev/.venv/bin/python experiments/paper-h3d/prepare_selected_final.py --attempt development06`. It requires all eight audit records, writes `final-selection.json`, both configs and both freeze records, and refuses overwrites. Review and commit those concrete outputs before staging `finalA.json`. Per-mesh maps are enforced during query construction and independently audited. The selection record's hash is bound into both configs; its bytes are included in staged provenance. `smokes/selection-protocol.json` verifies this workflow using synthetic metadata/byte fixtures only; it generated no final parameters or fields.
+
 ## Storage and resumed ownership
 
 The heat owner resumed at 16:59 UTC. Coverage05 remains live and the next heat job still waits for its completion. Burgers final collector needs another owner activation when job `4021709` exits or around 17:40–18:00 UTC; NS and Poisson owners are active. Coordinate a training-wait slot rotation instead of leaving a completed lane unattended.

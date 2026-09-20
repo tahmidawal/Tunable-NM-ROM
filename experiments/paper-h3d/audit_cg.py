@@ -23,7 +23,10 @@ def audit(out, record):
             for setting in record['config']['iterative_cg_controls']} if record['config'].get('include_linear_controls',True) else set()
         assert len(requested)==(len(record['config']['iterative_cg_controls']) if record['config'].get('include_linear_controls',True) else 0)
         for mesh in record['meshes']:
-            assert {name for n,name in metadata if n==mesh['intervals']}==requested
+            selected = set(record['config'].get('cg_methods_by_mesh',{}).get(str(mesh['intervals']),requested))
+            assert selected<=requested
+            if record['config'].get('include_linear_controls',True):assert selected
+            assert {name for n,name in metadata if n==mesh['intervals']}==selected
     for row in record['invocations']:
         key=(row['intervals'],row['method'])
         if key not in metadata:continue

@@ -28,6 +28,13 @@ def gates(cfg):
 def prepare(cfg,source):
     gates(cfg);source=Path(source);record=json.loads((source/'result.json').read_text())
     assert record['complete'] and not record['final_cohort_opened']
+    from panel_selection import validate_against_development
+    validate_against_development(cfg,record)
+    if cfg.get('final_selection_report_file'):
+        selection=Path(__file__).resolve().parent/Path(cfg['final_selection_report_file']).name
+        assert digest(selection)==cfg['final_selection_report_sha256']
+        role='seedB' if cfg.get('confirmation_role')=='independent_seed_accuracy' else 'primary'
+        assert json.loads(selection.read_text())['source_result_sha256'][role]==digest(source/'result.json')
     if cfg.get('confirmation_role')=='independent_seed_accuracy':
         assert cfg.get('primary_freeze_sha256') and not cfg.get('include_linear_controls',True)
         assert record['config']['seed_role'].startswith('independent initialization')
@@ -43,6 +50,8 @@ def prepare(cfg,source):
 def verify(cfg):
     gates(cfg);path=Path(cfg['final_freeze_path']);f=json.loads(path.read_text())
     assert f['configuration']==configuration(cfg) and f['final_fields_generated'] is False
+    if cfg.get('final_selection_report_file'):
+        assert digest(Path(cfg['final_selection_report_file']))==cfg['final_selection_report_sha256']
     source=Path(cfg['frozen_input_directory']);origin=json.loads((source/'ORIGIN.json').read_text())
     assert origin['original_result_sha256']==f['selection_result_sha256']
     assert f['checkpoint_sha256']=={name:digest(source/name) for name in names(cfg)}

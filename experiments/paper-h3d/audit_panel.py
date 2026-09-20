@@ -63,6 +63,8 @@ def audit(archive,destination,out=None):
     assert d['reference']['passed']==bool(max(refinement)<cfg['reference_budget'])
     groups={};expected=set()
     for mesh in d['meshes']:
+        if 'operator_methods_by_mesh' in cfg:
+            assert {name for name,meta in mesh['methods'].items() if meta['kind']=='neural_operator'}==set(cfg['operator_methods_by_mesh'][str(mesh['intervals'])])
         for name in mesh['methods']:
             for case in range(count):
                 for rep in range(cfg['repetitions']):expected.add((mesh['intervals'],name,case,rep))

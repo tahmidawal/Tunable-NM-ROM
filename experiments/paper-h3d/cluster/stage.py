@@ -15,7 +15,7 @@ FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/ex
 FILES += ['frozen.py']
 FILES += ['head_pca_diagnostic.py','audit_head.py','audit_panel.py']
 FILES += ['coverage_train.py','audit_coverage.py','operators/pretrained_deeponet.py','final_freeze.py','audit_states.py']
-FILES += ['audit_pretraining.py','iterative_cg.py','audit_cg.py','archive_storage.py','retain_fields.py']
+FILES += ['audit_pretraining.py','iterative_cg.py','audit_cg.py','archive_storage.py','retain_fields.py','panel_selection.py']
 
 
 def main():
@@ -27,6 +27,7 @@ def main():
     proof=[]
     cfg=json.loads((ROOT/LANE/a.config).read_text())
     files=FILES+([Path(cfg['final_freeze_path']).name] if cfg.get('evaluation_cohort')=='final' else [])
+    if cfg.get('final_selection_report_file'):files += [Path(cfg['final_selection_report_file']).name]
     companion=None
     if cfg.get('companion_config_file'):
         companion=json.loads((ROOT/LANE/Path(cfg['companion_config_file']).name).read_text())

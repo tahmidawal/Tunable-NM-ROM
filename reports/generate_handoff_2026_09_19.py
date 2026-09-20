@@ -27,6 +27,48 @@ LANES = [  # lane, worktree slug, what it answers
     ('b-lowvisc', '2026-09-17-b-lowvisc', 'Burgers at ten times lower viscosity (T20)'),
 ]
 
+AUDIT_DIR = ROOT / 'reports' / '2026-09-19-handoff' / 'codex-audits'
+# lane -> (what the audit found, what was done about it). Prose only; every number in this file is generated.
+AUDIT_OUTCOME = {
+ 'b-panel': ('Convergence was evaluated against each arm\'s own tolerance, so loose-tolerance arms counted as '
+   'converged where DESIGN §5 requires the tight one at every step. Also: the prediction scoring counted six '
+   'historical rule transfers twice, and two counterfactual frontier sentences named dominators that do not dominate.',
+   'FIXED in the lane (DESIGN §A13, commit `25434a27`) and re-pinned in the paper (`10498e2e`). The pre-registered '
+   'rule is now the primary admissibility flag, the old flag is kept beside it and labelled, the loose arms stay in '
+   'every table marked not admissible, and every numeric field was confirmed byte-identical after the re-audit.'),
+ 'lshape': ('The lane\'s own raw-number verification script compared an integer job id to string job ids and so '
+   'made zero comparisons while reporting pass. Also: the retracted first attempt completed six head arms rather '
+   'than seven and its same-seed rerun selected a different bank from a near tie; one sentence said the development '
+   'cohort selected nothing, but the free rung\'s test-mode count was chosen on it; a bank rank is printed as 514 '
+   'rather than 512; the reduced-only frontier on the secondary cost definition is missing.',
+   'The verification defect is FIXED (commit `d80fed7a`): 244 comparisons, 244 matched, worst relative difference 0.0 '
+   '— the reported numbers were correct, the check was vacuous. The remaining items are OPEN (the agent hit a model '
+   'usage limit); none of them is a number in the paper.'),
+ 'b-qxm': ('Twelve saturation rows cite the wrong job id.', 'OPEN.'),
+ 'b-seeds': ('The report\'s check-count section counts every recorded check as passed rather than counting passes.',
+   'OPEN.'),
+ 'ns2d': ('"No Phase-3 job was ever submitted" is literally incorrect: the exploratory ladder is recorded with '
+   'phase 3 and a job id, and is labelled exploratory everywhere else. Two requested trace rows could not be '
+   'completed from the summary provenance alone.', 'OPEN; wording, not a number.'),
+ 'b-eqtop': ('No numerical mismatch among the sampled values. Three labelling defects: the report calls the '
+   'tight-ladder monotonicity check by the wrong pre-registered criterion name; one rule\'s construction status is '
+   'borrowed from a different population (static rules are excluded from the draw collection but keyed without it); '
+   'and one status reads "confirmed 3 of 3" where that count belongs to the primary bar, not the tight one.', 'OPEN.'),
+}
+
+def audits():
+    rows = []
+    for lane, _slug, _what in LANES:
+        f = AUDIT_DIR / f'{lane}.md'
+        if f.exists():
+            words = len(f.read_text().split())
+            found, done = AUDIT_OUTCOME.get(lane, ('see the copied report', 'OPEN'))
+            rows.append(f'| `{lane}` | audited ({words} words) | {found} | {done} |')
+        else:
+            rows.append(f'| `{lane}` | not completed | Codex\'s container sandbox failed to start (`bwrap: loopback: '
+                        f'Failed RTM_NEWADDR`); reruns without that sandbox were still in progress. | Re-run: see §10. |')
+    return '\n'.join(rows)
+
 def lane_rows():
     out = []
     for lane, slug, what in LANES:
@@ -153,6 +195,23 @@ number except where stated.
   resolution knob works); the L-shape is a linear Poisson cell and is not written as a neural-manifold win;
   quadrature rules are labelled confirmed / single-draw / marginal / none, never "certified in one draw".
 
+## 4b. Independent Codex audits of the lane reports (2026-09-19)
+
+Every closed lane's report was audited by Codex (`gpt-6-astra`, a different model family) against its own raw
+artifacts: fifteen sampled numbers traced to `summary.json` and then to the artifact JSON, every verdict checked
+against the DESIGN gate it claims (including amendments dated after the data landed), a cross-job cost-ratio
+check, retraction completeness, and the three weakest claims. The completed audits are copied verbatim to
+`reports/2026-09-19-handoff/codex-audits/`, with the prompt template beside them.
+
+| lane | audit | what it found | status |
+|---|---|---|---|
+{audits()}
+
+Two of these were worth the exercise: the b-panel admissibility defect changed a headline count and a cost ratio
+in the paper, and the lshape verification defect meant a check had been passing without comparing anything (its
+numbers proved correct when the check was repaired). The rest are wording, provenance or reporting defects that
+do not move a number the paper prints.
+
 ## 5. The Navier–Stokes investigation (2026-09-18)
 
 Four read-only Fable agents examined why the NS cell fails. Their reports, scripts and JSON are under
@@ -210,6 +269,22 @@ confirmation (project rule).
 4. The writer agent works only in the paper worktree; after each of its commits re-sync `paper/` on main
    with rsync excluding `private/` and build artifacts.
 5. Codex: `codex exec -s read-only -C <worktree> -o <out.md> - < prompt.txt`; read-only, no jobs.
+
+## 10. Re-running the independent audits
+
+Codex's own container sandbox failed on this machine on 2026-09-19 (`bwrap: loopback: Failed RTM_NEWADDR:
+Operation not permitted`) and returned empty audits for the lanes marked not completed in §4b. The batch was
+re-run with `--sandbox danger-full-access` instead, with the lane worktree checked with `git status` before and
+after each audit and any change reverted; every completed lane came back clean. To finish the remaining lanes:
+
+```
+cd <lane worktree>
+codex exec --sandbox danger-full-access --skip-git-repo-check -o <out>.md - < AUDIT-PROMPT-TEMPLATE.txt
+```
+
+with the template at `reports/2026-09-19-handoff/codex-audits/AUDIT-PROMPT-TEMPLATE.txt`, edited for the lane
+name. Prefer the sandboxed form (`-s read-only`) if bubblewrap works again; check with a one-line probe first.
+An audit is worth about twenty minutes per lane.
 
 ## 9. Standing rules that bit this campaign
 

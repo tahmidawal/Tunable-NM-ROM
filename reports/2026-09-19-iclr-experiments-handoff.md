@@ -4,7 +4,7 @@ What was run for the ICLR 2027 submission, where every result lives, what was re
 investigations into the Navier–Stokes failure found, and the pre-registered experiments the next session
 should launch. Numbers in this file are final for the closed lanes and are read by
 `reports/generate_handoff_2026_09_19.py` from the lane records and the paper's own macros; nothing here
-is typed. Generated 2026-09-19; main at `bfcb0b6b 2026-09-18 15:41:07 -0400`; paper worktree at `d094ad00 2026-09-18 15:44:48 -0400`.
+is typed. Generated 2026-09-19; main at `ca98220f 2026-09-19 21:23:16 -0400`; paper worktree at `10498e2e 2026-09-19 21:37:00 -0400`.
 
 ## 1. Read this first
 
@@ -27,13 +27,13 @@ is typed. Generated 2026-09-19; main at `bfcb0b6b 2026-09-18 15:41:07 -0400`; pa
 | lane | worktree | HEAD (commit, date) | dirty files | summary.json size | answers |
 |---|---|---|---|---|---|
 | `b-qxm` | `worktrees/2026-09-17-b-qxm` | b4e38103 2026-09-17 18:15:33 -0400 | 0 | 512 rows | rank vs test count; fixed-M ladder (T4) |
-| `b-panel` | `worktrees/2026-09-17-b-panel` | d2135501 2026-09-17 20:17:54 -0400 | 0 | 3009 rows | same-job panels 256/512/1024 (T3, T5) |
+| `b-panel` | `worktrees/2026-09-17-b-panel` | 25434a27 2026-09-19 21:23:11 -0400 | 0 | 3261 rows | same-job panels 256/512/1024 (T3, T5) |
 | `b-eqtop` | `worktrees/2026-09-17-b-eqtop` | 8542c604 2026-09-17 12:08:20 -0400 | 0 | 1106 rows | quadrature certification and re-draw (T9) |
 | `b-seeds` | `worktrees/2026-09-17-b-seeds` | be9415ab 2026-09-17 22:00:00 -0400 | 0 | 1978 rows | three seeds and the sealed cohort (T12, T13) |
 | `no-second` | `worktrees/2026-09-17-no-second` | ea812685 2026-09-17 12:26:19 -0400 | 0 | 468 rows | neural operators on shared Burgers data (T14) |
 | `p-linear` | `worktrees/2026-09-17-p-linear` | a366980a 2026-09-17 11:00:08 -0400 | 0 | 597 rows | Poisson ladder with POD and direct solve (T11b) |
 | `w-ladder` | `worktrees/2026-09-17-w-ladder` | 9b84d055 2026-09-17 09:58:42 -0400 | 0 | 891 rows | reflective waves (T11a) |
-| `lshape` | `worktrees/2026-09-17-lshape` | dc762ed3 2026-09-17 18:17:29 -0400 | 0 | 1013 rows | L-shaped Poisson, four meshes (T18) |
+| `lshape` | `worktrees/2026-09-17-lshape` | d80fed7a 2026-09-19 21:25:22 -0400 | 0 | 1013 rows | L-shaped Poisson, four meshes (T18) |
 | `ns2d` | `worktrees/2026-09-17-ns2d` | 2d70f36a 2026-09-18 15:41:07 -0400 | 0 | 1055 rows | Navier-Stokes phase 2 in four settings, head-only scaling, exploratory ladder (T11e-h) |
 | `b-lowvisc` | `worktrees/2026-09-17-b-lowvisc` | df92e40d 2026-09-17 23:22:39 -0400 | 0 | 555 rows | Burgers at ten times lower viscosity (T20) |
 
@@ -122,6 +122,32 @@ number except where stated.
 - Paper: the old premise "neural operators have no deployment knob" was withdrawn (the large FNO's
   resolution knob works); the L-shape is a linear Poisson cell and is not written as a neural-manifold win;
   quadrature rules are labelled confirmed / single-draw / marginal / none, never "certified in one draw".
+
+## 4b. Independent Codex audits of the lane reports (2026-09-19)
+
+Every closed lane's report was audited by Codex (`gpt-6-astra`, a different model family) against its own raw
+artifacts: fifteen sampled numbers traced to `summary.json` and then to the artifact JSON, every verdict checked
+against the DESIGN gate it claims (including amendments dated after the data landed), a cross-job cost-ratio
+check, retraction completeness, and the three weakest claims. The completed audits are copied verbatim to
+`reports/2026-09-19-handoff/codex-audits/`, with the prompt template beside them.
+
+| lane | audit | what it found | status |
+|---|---|---|---|
+| `b-qxm` | audited (1829 words) | Twelve saturation rows cite the wrong job id. | OPEN. |
+| `b-panel` | audited (1690 words) | Convergence was evaluated against each arm's own tolerance, so loose-tolerance arms counted as converged where DESIGN §5 requires the tight one at every step. Also: the prediction scoring counted six historical rule transfers twice, and two counterfactual frontier sentences named dominators that do not dominate. | FIXED in the lane (DESIGN §A13, commit `25434a27`) and re-pinned in the paper (`10498e2e`). The pre-registered rule is now the primary admissibility flag, the old flag is kept beside it and labelled, the loose arms stay in every table marked not admissible, and every numeric field was confirmed byte-identical after the re-audit. |
+| `b-eqtop` | audited (1703 words) | No numerical mismatch among the sampled values. Three labelling defects: the report calls the tight-ladder monotonicity check by the wrong pre-registered criterion name; one rule's construction status is borrowed from a different population (static rules are excluded from the draw collection but keyed without it); and one status reads "confirmed 3 of 3" where that count belongs to the primary bar, not the tight one. | OPEN. |
+| `b-seeds` | audited (1805 words) | The report's check-count section counts every recorded check as passed rather than counting passes. | OPEN. |
+| `no-second` | not completed | Codex's container sandbox failed to start (`bwrap: loopback: Failed RTM_NEWADDR`); reruns without that sandbox were still in progress. | Re-run: see §10. |
+| `p-linear` | not completed | Codex's container sandbox failed to start (`bwrap: loopback: Failed RTM_NEWADDR`); reruns without that sandbox were still in progress. | Re-run: see §10. |
+| `w-ladder` | not completed | Codex's container sandbox failed to start (`bwrap: loopback: Failed RTM_NEWADDR`); reruns without that sandbox were still in progress. | Re-run: see §10. |
+| `lshape` | audited (2146 words) | The lane's own raw-number verification script compared an integer job id to string job ids and so made zero comparisons while reporting pass. Also: the retracted first attempt completed six head arms rather than seven and its same-seed rerun selected a different bank from a near tie; one sentence said the development cohort selected nothing, but the free rung's test-mode count was chosen on it; a bank rank is printed as 514 rather than 512; the reduced-only frontier on the secondary cost definition is missing. | The verification defect is FIXED (commit `d80fed7a`): 244 comparisons, 244 matched, worst relative difference 0.0 — the reported numbers were correct, the check was vacuous. The remaining items are OPEN (the agent hit a model usage limit); none of them is a number in the paper. |
+| `ns2d` | audited (1841 words) | "No Phase-3 job was ever submitted" is literally incorrect: the exploratory ladder is recorded with phase 3 and a job id, and is labelled exploratory everywhere else. Two requested trace rows could not be completed from the summary provenance alone. | OPEN; wording, not a number. |
+| `b-lowvisc` | not completed | Codex's container sandbox failed to start (`bwrap: loopback: Failed RTM_NEWADDR`); reruns without that sandbox were still in progress. | Re-run: see §10. |
+
+Two of these were worth the exercise: the b-panel admissibility defect changed a headline count and a cost ratio
+in the paper, and the lshape verification defect meant a check had been passing without comparing anything (its
+numbers proved correct when the check was repaired). The rest are wording, provenance or reporting defects that
+do not move a number the paper prints.
 
 ## 5. The Navier–Stokes investigation (2026-09-18)
 
@@ -216,6 +242,22 @@ confirmation (project rule).
 4. The writer agent works only in the paper worktree; after each of its commits re-sync `paper/` on main
    with rsync excluding `private/` and build artifacts.
 5. Codex: `codex exec -s read-only -C <worktree> -o <out.md> - < prompt.txt`; read-only, no jobs.
+
+## 10. Re-running the independent audits
+
+Codex's own container sandbox failed on this machine on 2026-09-19 (`bwrap: loopback: Failed RTM_NEWADDR:
+Operation not permitted`) and returned empty audits for the lanes marked not completed in §4b. The batch was
+re-run with `--sandbox danger-full-access` instead, with the lane worktree checked with `git status` before and
+after each audit and any change reverted; every completed lane came back clean. To finish the remaining lanes:
+
+```
+cd <lane worktree>
+codex exec --sandbox danger-full-access --skip-git-repo-check -o <out>.md - < AUDIT-PROMPT-TEMPLATE.txt
+```
+
+with the template at `reports/2026-09-19-handoff/codex-audits/AUDIT-PROMPT-TEMPLATE.txt`, edited for the lane
+name. Prefer the sandboxed form (`-s read-only`) if bubblewrap works again; check with a one-line probe first.
+An audit is worth about twenty minutes per lane.
 
 ## 9. Standing rules that bit this campaign
 

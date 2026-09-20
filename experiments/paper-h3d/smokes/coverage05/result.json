@@ -1,0 +1,859 @@
+{
+  "schema": "heat3d-coverage-training-v1",
+  "config": {
+    "schema": "heat3d-matched-coverage-training-v1",
+    "train_intervals": 8,
+    "evaluation_intervals": [
+      8
+    ],
+    "reference_intervals": [
+      8,
+      16
+    ],
+    "train_count": 4,
+    "validation_count": 2,
+    "train_seed": 920310,
+    "validation_seed": 920311,
+    "reserved_final_seed": 920399,
+    "model_seed": 920312,
+    "bank_minibatch_seed": 920313,
+    "head_minibatch_seed": 920314,
+    "timing_seed": 920315,
+    "quadrature_seed": 920316,
+    "diffusivity": 0.02,
+    "times": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "dt": 0.025,
+    "bank_rank": 4,
+    "latent_dimensions": [
+      2
+    ],
+    "bank_steps": 2,
+    "head_steps": 2,
+    "bank_batch_states": 4,
+    "bank_batch_points": 64,
+    "head_batch_states": 4,
+    "bank_learning_rate": 0.001,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 1,
+    "fourier_features": 4,
+    "fourier_scale": 1.5,
+    "bank_width": 8,
+    "head_width": 8,
+    "weak_tests": 512,
+    "q_ladder": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "quadrature_candidates": 2048,
+    "quadrature_decoder_snapshots": 64,
+    "quadrature_fit_rows": 8192,
+    "quadrature_certificate": 0.01,
+    "lm_budget": 120,
+    "lm_tolerance": 1e-06,
+    "initial_starts": 4,
+    "repetitions": 3,
+    "burn_seconds": 0.2,
+    "reference_budget": 0.0001,
+    "field_chunk": 8192,
+    "final_cohort_opened": false,
+    "bank_validation_selection": true,
+    "bank_tail_weight": 0.1,
+    "bank_coefficient_refit_every": 1,
+    "quadrature_scale_floor": 0.1,
+    "operators": [
+      {
+        "name": "deeponet3d_r128_w16",
+        "model": {
+          "kind": "deeponet3d",
+          "width": 2,
+          "levels": 1,
+          "pool_bins": 2,
+          "rank": 4,
+          "trunk_width": 8,
+          "periodic": false,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ]
+        },
+        "training": {
+          "steps": 1,
+          "wall_seconds": 1500,
+          "batch_size": 2,
+          "seed": 920523,
+          "learning_rate": 0.0003,
+          "validation_every": 1,
+          "curve_every": 100,
+          "components_per_output": 1,
+          "normalization": "current-output norm"
+        },
+        "pretraining": {
+          "trunk_steps": 1,
+          "trunk_learning_rate": 0.001,
+          "trunk_batch_points": 32,
+          "trunk_wall_seconds": 900,
+          "branch_steps": 1,
+          "branch_learning_rate": 0.001,
+          "branch_batch_size": 2,
+          "branch_wall_seconds": 900,
+          "checkpoint_every": 1,
+          "source_implementation_commit": "8b1a7105"
+        }
+      }
+    ],
+    "bank_gradient_clip": 1.0,
+    "initial_lm_budget": 600,
+    "include_uncertified_quadrature": false,
+    "head_validation_fit_budget": 12,
+    "head_validation_fit_tolerance": 1e-08,
+    "head_validation_starts": 4,
+    "representation_fit_budget": 12,
+    "representation_fit_tolerance": 1e-08,
+    "driver": "coverage_train.py",
+    "head_initialization": "random_joint_codes",
+    "head_include_initial_checkpoint": true,
+    "representation_fit_starts": 4,
+    "reserved_final_count": 64,
+    "fno_physical_padding_transfer": true,
+    "deeponet_native_sensor_transfer": true,
+    "seeds": [
+      {
+        "name": "seedA",
+        "role": "prospectively primary training initialization; hyperparameters chosen only on development",
+        "operator_seed_offset": 0,
+        "overrides": {
+          "model_seed": 920512,
+          "bank_minibatch_seed": 920513,
+          "head_minibatch_seed": 920514
+        }
+      },
+      {
+        "name": "seedB",
+        "role": "independent initialization robustness; not a replacement primary chosen from final results",
+        "operator_seed_offset": 100,
+        "overrides": {
+          "model_seed": 920612,
+          "bank_minibatch_seed": 920613,
+          "head_minibatch_seed": 920614
+        }
+      }
+    ]
+  },
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "complete": true,
+  "final_cohort_opened": false,
+  "seeds": [
+    {
+      "directory": "seedA",
+      "role": "prospectively primary training initialization; hyperparameters chosen only on development",
+      "config": {
+        "schema": "heat3d-matched-coverage-training-v1",
+        "train_intervals": 8,
+        "evaluation_intervals": [
+          8
+        ],
+        "reference_intervals": [
+          8,
+          16
+        ],
+        "train_count": 4,
+        "validation_count": 2,
+        "train_seed": 920310,
+        "validation_seed": 920311,
+        "reserved_final_seed": 920399,
+        "model_seed": 920512,
+        "bank_minibatch_seed": 920513,
+        "head_minibatch_seed": 920514,
+        "timing_seed": 920315,
+        "quadrature_seed": 920316,
+        "diffusivity": 0.02,
+        "times": [
+          0.0,
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5
+        ],
+        "dt": 0.025,
+        "bank_rank": 4,
+        "latent_dimensions": [
+          2
+        ],
+        "bank_steps": 2,
+        "head_steps": 2,
+        "bank_batch_states": 4,
+        "bank_batch_points": 64,
+        "head_batch_states": 4,
+        "bank_learning_rate": 0.001,
+        "head_learning_rate": 0.0005,
+        "checkpoint_every": 1,
+        "fourier_features": 4,
+        "fourier_scale": 1.5,
+        "bank_width": 8,
+        "head_width": 8,
+        "weak_tests": 512,
+        "q_ladder": [
+          0,
+          32,
+          64,
+          96
+        ],
+        "quadrature_candidates": 2048,
+        "quadrature_decoder_snapshots": 64,
+        "quadrature_fit_rows": 8192,
+        "quadrature_certificate": 0.01,
+        "lm_budget": 120,
+        "lm_tolerance": 1e-06,
+        "initial_starts": 4,
+        "repetitions": 3,
+        "burn_seconds": 0.2,
+        "reference_budget": 0.0001,
+        "field_chunk": 8192,
+        "final_cohort_opened": false,
+        "bank_validation_selection": true,
+        "bank_tail_weight": 0.1,
+        "bank_coefficient_refit_every": 1,
+        "quadrature_scale_floor": 0.1,
+        "operators": [
+          {
+            "name": "deeponet3d_r128_w16",
+            "model": {
+              "kind": "deeponet3d",
+              "width": 2,
+              "levels": 1,
+              "pool_bins": 2,
+              "rank": 4,
+              "trunk_width": 8,
+              "periodic": false,
+              "coordinate_channels": [
+                -3,
+                -2,
+                -1
+              ]
+            },
+            "training": {
+              "steps": 1,
+              "wall_seconds": 1500,
+              "batch_size": 2,
+              "seed": 920523,
+              "learning_rate": 0.0003,
+              "validation_every": 1,
+              "curve_every": 100,
+              "components_per_output": 1,
+              "normalization": "current-output norm"
+            },
+            "pretraining": {
+              "trunk_steps": 1,
+              "trunk_learning_rate": 0.001,
+              "trunk_batch_points": 32,
+              "trunk_wall_seconds": 900,
+              "branch_steps": 1,
+              "branch_learning_rate": 0.001,
+              "branch_batch_size": 2,
+              "branch_wall_seconds": 900,
+              "checkpoint_every": 1,
+              "source_implementation_commit": "8b1a7105"
+            }
+          }
+        ],
+        "bank_gradient_clip": 1.0,
+        "initial_lm_budget": 600,
+        "include_uncertified_quadrature": false,
+        "head_validation_fit_budget": 12,
+        "head_validation_fit_tolerance": 1e-08,
+        "head_validation_starts": 4,
+        "representation_fit_budget": 12,
+        "representation_fit_tolerance": 1e-08,
+        "driver": "coverage_train.py",
+        "head_initialization": "random_joint_codes",
+        "head_include_initial_checkpoint": true,
+        "representation_fit_starts": 4,
+        "reserved_final_count": 64,
+        "fno_physical_padding_transfer": true,
+        "deeponet_native_sensor_transfer": true,
+        "seed_role": "prospectively primary training initialization; hyperparameters chosen only on development"
+      },
+      "bank": {
+        "seconds": 2.831685016048141,
+        "steps": 2,
+        "selected_step": 1,
+        "validation_projection_evolved_worst": 0.8919386546297497,
+        "basis_hash": "49dfcadc647de8790d9b91afd2b8931e4a2843797b0d016e165ba06e39253802",
+        "condition_number": 9.08780363637617,
+        "orthogonality": 1.3322676295501878e-15,
+        "training_projection_mean": 0.9202898489179788,
+        "training_projection_worst": 0.9721635013525728,
+        "training_matrix_hash": "877804528bab2e1d197677286c4f7e58ce33693d3f74b84448afbb1b013b005f",
+        "converged_claim": false
+      },
+      "heads": [
+        {
+          "k": 2,
+          "seconds": 2.069862602977082,
+          "steps": 2,
+          "converged_claim": false,
+          "initialization": {
+            "kind": "random_joint_codes"
+          },
+          "training_error_mean": 1.0088868463939396,
+          "training_error_median": 1.0065529451208097,
+          "training_error_worst": 1.0689895767066375,
+          "correction_singular_values": [
+            2.6493543810293048,
+            0.8000503138468784,
+            0.2795081408139827,
+            0.1643628019388126
+          ],
+          "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+          "direction_hash": "dc750caa7c4589e1c1065486329917dbe174158acd84a546fd7fea5d5f93dbba",
+          "selected_step": 0,
+          "validation_selection": "minimum worst evolved current-relative best-found fit on fixed development fields",
+          "validation_evolved_worst": 0.9863443962003771,
+          "validation_nonstationary_fits": 3,
+          "validation_fit_budget": 12,
+          "validation_fit_tolerance": 1e-08,
+          "validation_fit_starts": 4
+        }
+      ],
+      "operators": [
+        {
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 2,
+            "levels": 1,
+            "pool_bins": 2,
+            "rank": 4,
+            "trunk_width": 8,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "config": {
+            "steps": 1,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920523,
+            "learning_rate": 0.0003,
+            "validation_every": 1,
+            "curve_every": 100,
+            "components_per_output": 1,
+            "normalization": "current-output norm"
+          },
+          "parameter_count": 771,
+          "steps_completed": 1,
+          "best_step": 1,
+          "best_validation_worst": 1.0008671436452274,
+          "seconds": 2.805218332912773,
+          "exit_reason": "steps",
+          "normalization": "current-output norm",
+          "converged_claim": false,
+          "parameter_dtype": "float64",
+          "fft_dtype": "complex128",
+          "initial_source": {
+            "schema": "train-only-deeponet-pod-initialization-v1",
+            "config": {
+              "trunk_steps": 1,
+              "trunk_learning_rate": 0.001,
+              "trunk_batch_points": 32,
+              "trunk_wall_seconds": 900,
+              "branch_steps": 1,
+              "branch_learning_rate": 0.001,
+              "branch_batch_size": 2,
+              "branch_wall_seconds": 900,
+              "checkpoint_every": 1,
+              "source_implementation_commit": "8b1a7105"
+            },
+            "spec": {
+              "kind": "deeponet3d",
+              "width": 2,
+              "levels": 1,
+              "pool_bins": 2,
+              "rank": 4,
+              "trunk_width": 8,
+              "periodic": false,
+              "coordinate_channels": [
+                -3,
+                -2,
+                -1
+              ]
+            },
+            "seed": 920523,
+            "training_cases": 4,
+            "training_snapshots": 20,
+            "training_array_sha256": "46c0201e6cd1bdba65cf89468157a920cbef26fbe22fa562a18d2cea032dac80",
+            "teacher": "relative-field-error weighted POD of identical training outputs only",
+            "trunk": {
+              "steps_completed": 1,
+              "best_step": 1,
+              "best_training_loss": 1.411155910013407,
+              "seconds": 1.0747179860481992,
+              "curve": [
+                {
+                  "step": 1,
+                  "training_weighted_trunk_loss": 1.411155910013407,
+                  "selected": true,
+                  "seconds": 1.0714604650856927
+                }
+              ],
+              "selection": "minimum full training weighted trunk loss"
+            },
+            "branch": {
+              "steps_completed": 1,
+              "best_step": 1,
+              "best_training_relative_mse": 0.1376303295549844,
+              "seconds": 1.994462632923387,
+              "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+            },
+            "teacher_projection_error": {
+              "mean": 0.10047381737646843,
+              "median": 0.08931065860340877,
+              "worst": 0.18608185571102512
+            },
+            "learned_trunk_projection_error": {
+              "mean": 0.9278057106730134,
+              "median": 0.9253154595330992,
+              "worst": 0.9723798122769326
+            },
+            "learned_trunk_numerical_rank": 4,
+            "seconds": 5.56473248405382,
+            "development_data_used": false,
+            "final_data_used": false,
+            "online_architecture_changed": false,
+            "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+          },
+          "continuation": "fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate",
+          "name": "deeponet3d_r128_w16",
+          "physical_scale": 0.1010502167298064,
+          "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+          "validation_parameters_sha256": "ce2c4edad03fb008535b24a06dcbf57b527e826858a2f9add3dfd2b19cc15a84",
+          "input": "supplied initial field divided by training RMS plus three coordinate channels; no generator descriptors",
+          "output": "five evolved fields in physical units; exact supplied initial field prepended at inference",
+          "training_error_by_case_time": [
+            [
+              0.9995109002901179,
+              0.999395950656303,
+              0.9998391822420702,
+              0.9989060997397768,
+              1.0001149730823162
+            ],
+            [
+              0.9998886224260427,
+              0.9992197675527629,
+              0.9994185795312072,
+              0.9986777942959562,
+              0.9990270233506986
+            ],
+            [
+              0.9994967902828148,
+              0.9998423164973651,
+              0.9992065559728487,
+              0.998125101375544,
+              0.9995426323558646
+            ],
+            [
+              0.998753975261253,
+              0.9999497757878669,
+              1.0005077807129115,
+              0.9979249508768981,
+              0.999606836267242
+            ]
+          ],
+          "development_error_by_case_time": [
+            [
+              0.9993068229160269,
+              0.9996931069606282,
+              1.000210166183788,
+              0.9988651239873513,
+              1.0001207000530818
+            ],
+            [
+              0.9994649890551132,
+              0.9998316468150281,
+              0.9999509648737016,
+              0.9995487437182599,
+              1.0008671436452272
+            ]
+          ]
+        }
+      ],
+      "frozen_manifest_sha256": "e98acb3ec081cb03cd25b03351da61aea08913d54ac67b4b89b60cd447b69c33"
+    },
+    {
+      "directory": "seedB",
+      "role": "independent initialization robustness; not a replacement primary chosen from final results",
+      "config": {
+        "schema": "heat3d-matched-coverage-training-v1",
+        "train_intervals": 8,
+        "evaluation_intervals": [
+          8
+        ],
+        "reference_intervals": [
+          8,
+          16
+        ],
+        "train_count": 4,
+        "validation_count": 2,
+        "train_seed": 920310,
+        "validation_seed": 920311,
+        "reserved_final_seed": 920399,
+        "model_seed": 920612,
+        "bank_minibatch_seed": 920613,
+        "head_minibatch_seed": 920614,
+        "timing_seed": 920315,
+        "quadrature_seed": 920316,
+        "diffusivity": 0.02,
+        "times": [
+          0.0,
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5
+        ],
+        "dt": 0.025,
+        "bank_rank": 4,
+        "latent_dimensions": [
+          2
+        ],
+        "bank_steps": 2,
+        "head_steps": 2,
+        "bank_batch_states": 4,
+        "bank_batch_points": 64,
+        "head_batch_states": 4,
+        "bank_learning_rate": 0.001,
+        "head_learning_rate": 0.0005,
+        "checkpoint_every": 1,
+        "fourier_features": 4,
+        "fourier_scale": 1.5,
+        "bank_width": 8,
+        "head_width": 8,
+        "weak_tests": 512,
+        "q_ladder": [
+          0,
+          32,
+          64,
+          96
+        ],
+        "quadrature_candidates": 2048,
+        "quadrature_decoder_snapshots": 64,
+        "quadrature_fit_rows": 8192,
+        "quadrature_certificate": 0.01,
+        "lm_budget": 120,
+        "lm_tolerance": 1e-06,
+        "initial_starts": 4,
+        "repetitions": 3,
+        "burn_seconds": 0.2,
+        "reference_budget": 0.0001,
+        "field_chunk": 8192,
+        "final_cohort_opened": false,
+        "bank_validation_selection": true,
+        "bank_tail_weight": 0.1,
+        "bank_coefficient_refit_every": 1,
+        "quadrature_scale_floor": 0.1,
+        "operators": [
+          {
+            "name": "deeponet3d_r128_w16",
+            "model": {
+              "kind": "deeponet3d",
+              "width": 2,
+              "levels": 1,
+              "pool_bins": 2,
+              "rank": 4,
+              "trunk_width": 8,
+              "periodic": false,
+              "coordinate_channels": [
+                -3,
+                -2,
+                -1
+              ]
+            },
+            "training": {
+              "steps": 1,
+              "wall_seconds": 1500,
+              "batch_size": 2,
+              "seed": 920623,
+              "learning_rate": 0.0003,
+              "validation_every": 1,
+              "curve_every": 100,
+              "components_per_output": 1,
+              "normalization": "current-output norm"
+            },
+            "pretraining": {
+              "trunk_steps": 1,
+              "trunk_learning_rate": 0.001,
+              "trunk_batch_points": 32,
+              "trunk_wall_seconds": 900,
+              "branch_steps": 1,
+              "branch_learning_rate": 0.001,
+              "branch_batch_size": 2,
+              "branch_wall_seconds": 900,
+              "checkpoint_every": 1,
+              "source_implementation_commit": "8b1a7105"
+            }
+          }
+        ],
+        "bank_gradient_clip": 1.0,
+        "initial_lm_budget": 600,
+        "include_uncertified_quadrature": false,
+        "head_validation_fit_budget": 12,
+        "head_validation_fit_tolerance": 1e-08,
+        "head_validation_starts": 4,
+        "representation_fit_budget": 12,
+        "representation_fit_tolerance": 1e-08,
+        "driver": "coverage_train.py",
+        "head_initialization": "random_joint_codes",
+        "head_include_initial_checkpoint": true,
+        "representation_fit_starts": 4,
+        "reserved_final_count": 64,
+        "fno_physical_padding_transfer": true,
+        "deeponet_native_sensor_transfer": true,
+        "seed_role": "independent initialization robustness; not a replacement primary chosen from final results"
+      },
+      "bank": {
+        "seconds": 2.2373787940014154,
+        "steps": 2,
+        "selected_step": 2,
+        "validation_projection_evolved_worst": 0.838736476549382,
+        "basis_hash": "a389cc79fc4a9e1d9f76539d11227193ab93b816db7646ff82edbdc712b022ae",
+        "condition_number": 17.31526446219547,
+        "orthogonality": 1.1102230246251565e-15,
+        "training_projection_mean": 0.8072834279868765,
+        "training_projection_worst": 0.9408343044544476,
+        "training_matrix_hash": "877804528bab2e1d197677286c4f7e58ce33693d3f74b84448afbb1b013b005f",
+        "converged_claim": false
+      },
+      "heads": [
+        {
+          "k": 2,
+          "seconds": 1.4806211750255898,
+          "steps": 2,
+          "converged_claim": false,
+          "initialization": {
+            "kind": "random_joint_codes"
+          },
+          "training_error_mean": 0.9921800895089042,
+          "training_error_median": 0.9955678824574572,
+          "training_error_worst": 1.008958790350094,
+          "correction_singular_values": [
+            3.5888215055902224,
+            0.7224469029398335,
+            0.5501869917949678,
+            0.19212905319282333
+          ],
+          "correction_rule": "SVD of field-orthonormal training reconstruction residuals at jointly learned training codes",
+          "direction_hash": "48f84dd3b2bf47b2bd1d834e38a12fbf77f4f2d3df68c0350fa50ee6e7a9a0e4",
+          "selected_step": 2,
+          "validation_selection": "minimum worst evolved current-relative best-found fit on fixed development fields",
+          "validation_evolved_worst": 0.9360776618008261,
+          "validation_nonstationary_fits": 7,
+          "validation_fit_budget": 12,
+          "validation_fit_tolerance": 1e-08,
+          "validation_fit_starts": 4
+        }
+      ],
+      "operators": [
+        {
+          "spec": {
+            "kind": "deeponet3d",
+            "width": 2,
+            "levels": 1,
+            "pool_bins": 2,
+            "rank": 4,
+            "trunk_width": 8,
+            "periodic": false,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ]
+          },
+          "config": {
+            "steps": 1,
+            "wall_seconds": 1500,
+            "batch_size": 2,
+            "seed": 920623,
+            "learning_rate": 0.0003,
+            "validation_every": 1,
+            "curve_every": 100,
+            "components_per_output": 1,
+            "normalization": "current-output norm"
+          },
+          "parameter_count": 771,
+          "steps_completed": 1,
+          "best_step": 1,
+          "best_validation_worst": 0.9997167358113196,
+          "seconds": 1.6117202260065824,
+          "exit_reason": "steps",
+          "normalization": "current-output norm",
+          "converged_claim": false,
+          "parameter_dtype": "float64",
+          "fft_dtype": "complex128",
+          "initial_source": {
+            "schema": "train-only-deeponet-pod-initialization-v1",
+            "config": {
+              "trunk_steps": 1,
+              "trunk_learning_rate": 0.001,
+              "trunk_batch_points": 32,
+              "trunk_wall_seconds": 900,
+              "branch_steps": 1,
+              "branch_learning_rate": 0.001,
+              "branch_batch_size": 2,
+              "branch_wall_seconds": 900,
+              "checkpoint_every": 1,
+              "source_implementation_commit": "8b1a7105"
+            },
+            "spec": {
+              "kind": "deeponet3d",
+              "width": 2,
+              "levels": 1,
+              "pool_bins": 2,
+              "rank": 4,
+              "trunk_width": 8,
+              "periodic": false,
+              "coordinate_channels": [
+                -3,
+                -2,
+                -1
+              ]
+            },
+            "seed": 920623,
+            "training_cases": 4,
+            "training_snapshots": 20,
+            "training_array_sha256": "46c0201e6cd1bdba65cf89468157a920cbef26fbe22fa562a18d2cea032dac80",
+            "teacher": "relative-field-error weighted POD of identical training outputs only",
+            "trunk": {
+              "steps_completed": 1,
+              "best_step": 1,
+              "best_training_loss": 1.0961230663569483,
+              "seconds": 0.7147798279765993,
+              "curve": [
+                {
+                  "step": 1,
+                  "training_weighted_trunk_loss": 1.0961230663569483,
+                  "selected": true,
+                  "seconds": 0.709213285939768
+                }
+              ],
+              "selection": "minimum full training weighted trunk loss"
+            },
+            "branch": {
+              "steps_completed": 1,
+              "best_step": 1,
+              "best_training_relative_mse": 0.08568466977994876,
+              "seconds": 1.3171581429196522,
+              "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+            },
+            "teacher_projection_error": {
+              "mean": 0.10047381737646843,
+              "median": 0.08931065860340877,
+              "worst": 0.18608185571102512
+            },
+            "learned_trunk_projection_error": {
+              "mean": 0.9558170211137144,
+              "median": 0.9600299552857121,
+              "worst": 0.9878429076143714
+            },
+            "learned_trunk_numerical_rank": 4,
+            "seconds": 4.53241328895092,
+            "development_data_used": false,
+            "final_data_used": false,
+            "online_architecture_changed": false,
+            "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+          },
+          "continuation": "fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate",
+          "name": "deeponet3d_r128_w16",
+          "physical_scale": 0.1010502167298064,
+          "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+          "validation_parameters_sha256": "ce2c4edad03fb008535b24a06dcbf57b527e826858a2f9add3dfd2b19cc15a84",
+          "input": "supplied initial field divided by training RMS plus three coordinate channels; no generator descriptors",
+          "output": "five evolved fields in physical units; exact supplied initial field prepended at inference",
+          "training_error_by_case_time": [
+            [
+              0.9996940590738341,
+              0.9995999663546633,
+              0.9995346030082354,
+              0.9995164003196998,
+              0.9997263659611372
+            ],
+            [
+              1.0003165253077433,
+              1.0000858286393761,
+              1.000376041373002,
+              1.0006622687308522,
+              0.9996982551740123
+            ],
+            [
+              0.9997412822533732,
+              0.9996020948698132,
+              0.9989281647503221,
+              0.9995590559116724,
+              0.9996330944203896
+            ],
+            [
+              0.9994520663175239,
+              0.9996276482146256,
+              0.9990497169369625,
+              0.9990311785487798,
+              0.9995386441931938
+            ]
+          ],
+          "development_error_by_case_time": [
+            [
+              0.9996723956477134,
+              0.999639323458114,
+              0.9995340269838723,
+              0.9993112768101853,
+              0.9997167358113194
+            ],
+            [
+              0.9996811785222307,
+              0.999493132801336,
+              0.9994936243534918,
+              0.9993632766316325,
+              0.999282194459392
+            ]
+          ]
+        }
+      ],
+      "frozen_manifest_sha256": "c8f44787a6eba8ba0fc16fea9c8bbbb425ebff982c7f991ede90f462b1987928"
+    }
+  ],
+  "status": "complete",
+  "verification": {
+    "heat": {
+      "dst_scipy": 2.9383378160673517e-16,
+      "dst_inverse": 3.9386138572695386e-16,
+      "stencil_diagonal": 2.7374365752497654e-16,
+      "continuum_mode": 2.2022240857803085e-16,
+      "weak_stencil": 1.0555867508864955e-15,
+      "passed": true
+    },
+    "rom": {
+      "nonlinear_fit_error": 2.19824158875781e-14,
+      "linear_cn_error": 2.220446049250313e-16,
+      "augmented_carry_error": 7.438494264988549e-15,
+      "cn_refinement_ratio": 4.001819568187369,
+      "advances_after_first_output": true,
+      "passed": true
+    }
+  }
+}

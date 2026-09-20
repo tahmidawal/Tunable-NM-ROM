@@ -1,0 +1,139 @@
+{
+  "schema": "heat3d-matched-coverage-training-v1",
+  "train_intervals": 8,
+  "evaluation_intervals": [
+    8
+  ],
+  "reference_intervals": [
+    8,
+    16
+  ],
+  "train_count": 4,
+  "validation_count": 2,
+  "train_seed": 920310,
+  "validation_seed": 920311,
+  "reserved_final_seed": 920399,
+  "model_seed": 920312,
+  "bank_minibatch_seed": 920313,
+  "head_minibatch_seed": 920314,
+  "timing_seed": 920315,
+  "quadrature_seed": 920316,
+  "diffusivity": 0.02,
+  "times": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+  ],
+  "dt": 0.025,
+  "bank_rank": 4,
+  "latent_dimensions": [
+    2
+  ],
+  "bank_steps": 2,
+  "head_steps": 2,
+  "bank_batch_states": 4,
+  "bank_batch_points": 64,
+  "head_batch_states": 4,
+  "bank_learning_rate": 0.001,
+  "head_learning_rate": 0.0005,
+  "checkpoint_every": 1,
+  "fourier_features": 4,
+  "fourier_scale": 1.5,
+  "bank_width": 8,
+  "head_width": 8,
+  "weak_tests": 512,
+  "q_ladder": [
+    0,
+    32,
+    64,
+    96
+  ],
+  "quadrature_candidates": 2048,
+  "quadrature_decoder_snapshots": 64,
+  "quadrature_fit_rows": 8192,
+  "quadrature_certificate": 0.01,
+  "lm_budget": 120,
+  "lm_tolerance": 1e-06,
+  "initial_starts": 4,
+  "repetitions": 3,
+  "burn_seconds": 0.2,
+  "reference_budget": 0.0001,
+  "field_chunk": 8192,
+  "final_cohort_opened": false,
+  "bank_validation_selection": true,
+  "bank_tail_weight": 0.1,
+  "bank_coefficient_refit_every": 1,
+  "quadrature_scale_floor": 0.1,
+  "operators": [
+    {
+      "name": "deeponet3d_r128_w16",
+      "model": {
+        "kind": "deeponet3d",
+        "width": 2,
+        "levels": 1,
+        "pool_bins": 2,
+        "rank": 4,
+        "trunk_width": 8,
+        "periodic": false,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ]
+      },
+      "training": {
+        "steps": 1,
+        "wall_seconds": 1500,
+        "batch_size": 2,
+        "seed": 920523,
+        "learning_rate": 0.0003,
+        "validation_every": 1,
+        "curve_every": 100,
+        "components_per_output": 1,
+        "normalization": "current-output norm"
+      },
+      "pretraining": {
+        "trunk_steps": 1,
+        "trunk_learning_rate": 0.001,
+        "trunk_batch_points": 32,
+        "trunk_wall_seconds": 900,
+        "branch_steps": 1,
+        "branch_learning_rate": 0.001,
+        "branch_batch_size": 2,
+        "branch_wall_seconds": 900,
+        "checkpoint_every": 1,
+        "source_implementation_commit": "8b1a7105"
+      }
+    }
+  ],
+  "bank_gradient_clip": 1.0,
+  "initial_lm_budget": 600,
+  "include_uncertified_quadrature": false,
+  "head_validation_fit_budget": 12,
+  "head_validation_fit_tolerance": 1e-08,
+  "head_validation_starts": 4,
+  "representation_fit_budget": 12,
+  "representation_fit_tolerance": 1e-08,
+  "driver": "coverage_train.py",
+  "head_initialization": "random_joint_codes",
+  "head_include_initial_checkpoint": true,
+  "representation_fit_starts": 4,
+  "reserved_final_count": 64,
+  "fno_physical_padding_transfer": true,
+  "deeponet_native_sensor_transfer": true,
+  "seeds": [
+    {
+      "name": "seedA",
+      "role": "prospectively primary training initialization; hyperparameters chosen only on development",
+      "operator_seed_offset": 0,
+      "overrides": {
+        "model_seed": 920512,
+        "bank_minibatch_seed": 920513,
+        "head_minibatch_seed": 920514
+      }
+    }
+  ]
+}

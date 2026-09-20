@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "recipes": [
+    {
+      "name": "deeponet3d_r128_w16",
+      "passed": true,
+      "training_cases": 4,
+      "training_output_snapshots": 20,
+      "weighted_pod_eigen_residual": 3.990603572677953e-16,
+      "orthogonality": 1.5543122344752192e-15,
+      "gram_relative_defect": 7.084781845613046e-17,
+      "least_squares_normal_defect": 1.1207905385548543e-15,
+      "physical_metric_identity_defect": 2.661109941908097e-16
+    }
+  ],
+  "scope": "regenerated training heat solutions, weighted POD teacher, learned trunk least squares and field Gram metric; no development/final teacher"
+}

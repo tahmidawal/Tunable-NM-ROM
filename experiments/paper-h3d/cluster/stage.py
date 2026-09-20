@@ -14,6 +14,8 @@ FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/ex
           'operators/upstream/prior_families.py','operators/upstream/LICENSE']
 FILES += ['frozen.py']
 FILES += ['head_pca_diagnostic.py','audit_head.py','audit_panel.py']
+FILES += ['coverage_train.py','audit_coverage.py','operators/pretrained_deeponet.py','final_freeze.py','audit_states.py']
+FILES += ['audit_pretraining.py']
 
 
 def main():
@@ -23,7 +25,13 @@ def main():
     remote=f'{NAMESPACE}/{a.attempt}'
     commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     proof=[]
-    for name in FILES:
+    cfg=json.loads((ROOT/LANE/a.config).read_text())
+    files=FILES+([Path(cfg['final_freeze_path']).name] if cfg.get('evaluation_cohort')=='final' else [])
+    companion=None
+    if cfg.get('companion_config_file'):
+        companion=json.loads((ROOT/LANE/Path(cfg['companion_config_file']).name).read_text())
+        files += [Path(cfg['companion_config_file']).name,Path(companion['final_freeze_path']).name]
+    for name in files:
         source_name=a.config if name=='config.json' else name
         path=f'{LANE}/{source_name}'
         blob=subprocess.check_output(['git','-C',str(ROOT),'show',f'{commit}:{path}'])
@@ -38,6 +46,9 @@ def main():
         sys.path.insert(0,str(ROOT/LANE))
         import frozen
         frozen.stage_inputs(ROOT,cfg['frozen_source_attempt'],out/cfg['frozen_input_directory'],cfg)
+        if companion is not None:
+            assert companion['frozen_input_directory']!=cfg['frozen_input_directory']
+            frozen.stage_inputs(ROOT,companion['frozen_source_attempt'],out/companion['frozen_input_directory'],companion)
     script='''#!/bin/bash
 #SBATCH --job-name=ctol_h3d_920___ATTEMPT__
 #SBATCH --partition=gpu
@@ -73,6 +84,12 @@ find out -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo "run_exit=$RUN_STATUS"
 exit "$RUN_STATUS"
 '''.replace('__REMOTE__',remote).replace('__ATTEMPT__',a.attempt).replace('__DRIVER__',cfg.get('driver','run.py'))
+    if cfg.get('driver')=='coverage_train.py':script=script.replace('#SBATCH --time=02:00:00','#SBATCH --time=03:00:00')
+    if companion is not None:
+        assert companion['confirmation_role']=='independent_seed_accuracy'
+        first='RUN_STATUS=$?\nset -e'
+        second='RUN_STATUS=$?\nif [ "$RUN_STATUS" -eq 0 ]; then\n  "$PY" code/run.py --config '+cfg['companion_config_file']+' --out out/seedB\n  RUN_STATUS=$?\nfi\nset -e'
+        assert first in script;script=script.replace(first,second)
     (out/'run.sbatch').write_text(script)
     source=[]
     for f in sorted(out.rglob('*')):

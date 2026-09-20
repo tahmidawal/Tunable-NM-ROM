@@ -1,0 +1,162 @@
+{
+  "spec": {
+    "kind": "deeponet3d",
+    "width": 2,
+    "levels": 1,
+    "pool_bins": 2,
+    "rank": 4,
+    "trunk_width": 8,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "config": {
+    "steps": 1,
+    "wall_seconds": 1500,
+    "batch_size": 2,
+    "seed": 920623,
+    "learning_rate": 0.0003,
+    "validation_every": 1,
+    "curve_every": 100,
+    "components_per_output": 1,
+    "normalization": "current-output norm"
+  },
+  "parameter_count": 771,
+  "steps_completed": 1,
+  "best_step": 1,
+  "best_validation_worst": 0.9997167358113196,
+  "seconds": 1.6117202260065824,
+  "exit_reason": "steps",
+  "normalization": "current-output norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "initial_source": {
+    "schema": "train-only-deeponet-pod-initialization-v1",
+    "config": {
+      "trunk_steps": 1,
+      "trunk_learning_rate": 0.001,
+      "trunk_batch_points": 32,
+      "trunk_wall_seconds": 900,
+      "branch_steps": 1,
+      "branch_learning_rate": 0.001,
+      "branch_batch_size": 2,
+      "branch_wall_seconds": 900,
+      "checkpoint_every": 1,
+      "source_implementation_commit": "8b1a7105"
+    },
+    "spec": {
+      "kind": "deeponet3d",
+      "width": 2,
+      "levels": 1,
+      "pool_bins": 2,
+      "rank": 4,
+      "trunk_width": 8,
+      "periodic": false,
+      "coordinate_channels": [
+        -3,
+        -2,
+        -1
+      ]
+    },
+    "seed": 920623,
+    "training_cases": 4,
+    "training_snapshots": 20,
+    "training_array_sha256": "46c0201e6cd1bdba65cf89468157a920cbef26fbe22fa562a18d2cea032dac80",
+    "teacher": "relative-field-error weighted POD of identical training outputs only",
+    "trunk": {
+      "steps_completed": 1,
+      "best_step": 1,
+      "best_training_loss": 1.0961230663569483,
+      "seconds": 0.7147798279765993,
+      "curve": [
+        {
+          "step": 1,
+          "training_weighted_trunk_loss": 1.0961230663569483,
+          "selected": true,
+          "seconds": 0.709213285939768
+        }
+      ],
+      "selection": "minimum full training weighted trunk loss"
+    },
+    "branch": {
+      "steps_completed": 1,
+      "best_step": 1,
+      "best_training_relative_mse": 0.08568466977994876,
+      "seconds": 1.3171581429196522,
+      "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+    },
+    "teacher_projection_error": {
+      "mean": 0.10047381737646843,
+      "median": 0.08931065860340877,
+      "worst": 0.18608185571102512
+    },
+    "learned_trunk_projection_error": {
+      "mean": 0.9558170211137144,
+      "median": 0.9600299552857121,
+      "worst": 0.9878429076143714
+    },
+    "learned_trunk_numerical_rank": 4,
+    "seconds": 4.53241328895092,
+    "development_data_used": false,
+    "final_data_used": false,
+    "online_architecture_changed": false,
+    "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+  },
+  "continuation": "fresh Adam moments and declared new cosine schedule from selected prior checkpoint; initial checkpoint remains a candidate",
+  "name": "deeponet3d_r128_w16",
+  "physical_scale": 0.1010502167298064,
+  "training_parameters_sha256": "cf53f54408fa3dad877c157f0c99ae2f39cb54595cad98aa3a44928a53b9353e",
+  "validation_parameters_sha256": "ce2c4edad03fb008535b24a06dcbf57b527e826858a2f9add3dfd2b19cc15a84",
+  "input": "supplied initial field divided by training RMS plus three coordinate channels; no generator descriptors",
+  "output": "five evolved fields in physical units; exact supplied initial field prepended at inference",
+  "training_error_by_case_time": [
+    [
+      0.9996940590738341,
+      0.9995999663546633,
+      0.9995346030082354,
+      0.9995164003196998,
+      0.9997263659611372
+    ],
+    [
+      1.0003165253077433,
+      1.0000858286393761,
+      1.000376041373002,
+      1.0006622687308522,
+      0.9996982551740123
+    ],
+    [
+      0.9997412822533732,
+      0.9996020948698132,
+      0.9989281647503221,
+      0.9995590559116724,
+      0.9996330944203896
+    ],
+    [
+      0.9994520663175239,
+      0.9996276482146256,
+      0.9990497169369625,
+      0.9990311785487798,
+      0.9995386441931938
+    ]
+  ],
+  "development_error_by_case_time": [
+    [
+      0.9996723956477134,
+      0.999639323458114,
+      0.9995340269838723,
+      0.9993112768101853,
+      0.9997167358113194
+    ],
+    [
+      0.9996811785222307,
+      0.999493132801336,
+      0.9994936243534918,
+      0.9993632766316325,
+      0.999282194459392
+    ]
+  ]
+}

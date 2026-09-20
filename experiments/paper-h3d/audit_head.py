@@ -16,7 +16,8 @@ def audit(out,destination):
     out=Path(out);record=json.loads((out/'result.json').read_text())
     assert record['complete'] and not record['final_cohort_opened']
     assert record['backend']=='gpu' and record['x64'] and record['matmul_precision']=='highest'
-    archive=out.parent;log=(archive/'job.out').read_text();err=(archive/'job.err').read_text()
+    archive=next(p for p in out.parents if (p/'PROVENANCE.json').exists())
+    log=(archive/'job.out').read_text();err=(archive/'job.err').read_text()
     assert 'jax_backend=gpu' in log and 'run_exit=0' in log
     assert not re.search(r'captur\w*.{0,30}large.{0,30}constant|RESOURCE_EXHAUSTED|out.of.memory|No space left',log+'\n'+err,re.I)
     provenance=json.loads((archive/'PROVENANCE.json').read_text());assert provenance['source_commit']==record['source_commit']

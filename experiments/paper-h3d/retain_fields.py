@@ -81,9 +81,10 @@ def verify_git(destination,commit):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--verify-only',action='store_true');p.add_argument('--verify-git');args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--verify-only',action='store_true');p.add_argument('--verify-git');p.add_argument('--all-output',action='store_true');args=p.parse_args()
     assert args.attempt.isalnum();root=Path(__file__).resolve().parent
-    source=root/'runs'/args.attempt/'archive/out/fields';destination=root/'retained-fields'/args.attempt
+    source=root/'runs'/args.attempt/'archive/out';source=source if args.all_output else source/'fields'
+    destination=root/'retained-fields'/args.attempt
     if args.verify_git:
         verify_git(destination,args.verify_git);return
     if not args.verify_only:
@@ -95,9 +96,9 @@ def main():
                 relative=path.relative_to(source).as_posix();rows.append(dict(path=relative,bytes=path.stat().st_size,sha256=sha(path)))
                 archive.add(path,arcname=relative,recursive=False)
         writer.close();chunks=[dict(path=p.name,bytes=p.stat().st_size,sha256=sha(p)) for p in sorted(destination.glob('part*.bin'))]
-        manifest=dict(schema='heat3d-retained-fields-v1',attempt=args.attempt,source_relative=f'runs/{args.attempt}/archive/out/fields',
+        manifest=dict(schema='heat3d-retained-fields-v1',attempt=args.attempt,source_relative=source.relative_to(root).as_posix(),
             format='concatenate parts in manifest order to obtain a POSIX tar archive; all members are relative field paths',
-            original_outputs_manifest_sha256=sha(source.parent.parent/'OUTPUTS.sha256'),files=rows,chunks=chunks,tar_sha256=writer.total.hexdigest())
+            original_outputs_manifest_sha256=sha(root/'runs'/args.attempt/'archive/OUTPUTS.sha256'),files=rows,chunks=chunks,tar_sha256=writer.total.hexdigest())
         (destination/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     verify(destination)
 if __name__=='__main__':main()

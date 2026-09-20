@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "seed": "seedA",
+      "bank_max_absolute_difference": 2.0001361678012586e-15,
+      "gradient_max_absolute_difference": 1.6497739047676016e-16,
+      "multioutput_deeponet_pretraining_completed": true
+    },
+    {
+      "seed": "seedB",
+      "bank_max_absolute_difference": 5.421010862427522e-15,
+      "gradient_max_absolute_difference": 2.7863995832877464e-16,
+      "multioutput_deeponet_pretraining_completed": true
+    }
+  ],
+  "scope": "bounded smoke: two training seeds, bank reconstruction, selected-head analytic fitting gradients and five-output DeepONet pretraining"
+}

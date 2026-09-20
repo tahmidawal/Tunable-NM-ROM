@@ -1,0 +1,72 @@
+{
+  "schema": "train-only-deeponet-pod-initialization-v1",
+  "config": {
+    "trunk_steps": 1,
+    "trunk_learning_rate": 0.001,
+    "trunk_batch_points": 32,
+    "trunk_wall_seconds": 900,
+    "branch_steps": 1,
+    "branch_learning_rate": 0.001,
+    "branch_batch_size": 2,
+    "branch_wall_seconds": 900,
+    "checkpoint_every": 1,
+    "source_implementation_commit": "8b1a7105"
+  },
+  "spec": {
+    "kind": "deeponet3d",
+    "width": 2,
+    "levels": 1,
+    "pool_bins": 2,
+    "rank": 4,
+    "trunk_width": 8,
+    "periodic": false,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "seed": 920523,
+  "training_cases": 4,
+  "training_snapshots": 20,
+  "training_array_sha256": "260e3de1b917ab1ca29ae05571e0e488f9d8bc032977a5825fe5f1d47b72cc3c",
+  "teacher": "relative-field-error weighted POD of identical training outputs only",
+  "trunk": {
+    "steps_completed": 1,
+    "best_step": 1,
+    "best_training_loss": 1.4111559100134068,
+    "seconds": 1.020299570984207,
+    "curve": [
+      {
+        "step": 1,
+        "training_weighted_trunk_loss": 1.4111559100134068,
+        "selected": true,
+        "seconds": 1.0149076379602775
+      }
+    ],
+    "selection": "minimum full training weighted trunk loss"
+  },
+  "branch": {
+    "steps_completed": 1,
+    "best_step": 1,
+    "best_training_relative_mse": 0.1376303295549844,
+    "seconds": 2.035115368082188,
+    "selection": "minimum full training coefficient error in actual learned-trunk field Gram metric"
+  },
+  "teacher_projection_error": {
+    "mean": 0.1004738173764684,
+    "median": 0.08931065860340873,
+    "worst": 0.18608185571102515
+  },
+  "learned_trunk_projection_error": {
+    "mean": 0.9278057106730134,
+    "median": 0.9253154595330992,
+    "worst": 0.9723798122769325
+  },
+  "learned_trunk_numerical_rank": 4,
+  "seconds": 5.466419867938384,
+  "development_data_used": false,
+  "final_data_used": false,
+  "online_architecture_changed": false,
+  "following_stage": "joint end-to-end fine-tuning with original field loss; all trunk and branch weights trainable"
+}

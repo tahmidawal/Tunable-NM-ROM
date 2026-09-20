@@ -17,7 +17,11 @@ def stage_inputs(root,source_attempt,destination,cfg):
     run=Path(root)/'experiments/paper-h3d/runs'/source_attempt
     assert json.loads((run/'COLLECTED.json').read_text())['checksums_verified']
     assert json.loads((run/'audit-local.json').read_text())['passed']
-    source=run/'archive/out';record=json.loads((source/'result.json').read_text())
+    source=run/'archive/out'
+    if cfg.get('frozen_source_seed'):
+        assert cfg['frozen_source_seed'] in ('seedA','seedB','control128')
+        source=source/cfg['frozen_source_seed']
+    record=json.loads((source/'result.json').read_text())
     assert record['complete'] and not record['final_cohort_opened']
     files=['bank.pkl','bank_curve.json','cohorts.json']
     dimensions=cfg['latent_dimensions']+cfg.get('frozen_additional_heads',[])
@@ -26,6 +30,7 @@ def stage_inputs(root,source_attempt,destination,cfg):
     for name in cfg.get('frozen_operators',[]):
         files += [f'operators/{name}/adapter.pkl',f'operators/{name}/best.pkl',f'operators/{name}/training.json',f'operators/{name}/curve.json']
     for n in cfg['evaluation_intervals']:
+        if (source/f'pod_N{n}.pkl').exists():files.append(f'pod_N{n}.pkl')
         for k in dimensions:
             name=f'eq_N{n}_K{k}.npz'
             if (source/name).exists():files.append(name)
@@ -42,6 +47,7 @@ def stage_inputs(root,source_attempt,destination,cfg):
         copied_paths[name]=str(original.relative_to(run/'archive'))
     # Small derived descriptor; original raw result remains in its immutable archive.
     info=dict(source_attempt=source_attempt,source_commit=record['source_commit'],job_id=record['job_id'],
+              source_seed=cfg.get('frozen_source_seed'),
               original_result_sha256=file_sha(source/'result.json'),config=record['config'],files=hashes,
               bank=record['bank'],heads=record['heads'],operators=record.get('operators',[]),
               meshes=[{k:m[k] for k in ('intervals','bank_sha256','weak_operator_sha256','weak_tests','quadrature')} for m in record['meshes']],
@@ -59,7 +65,9 @@ def load(directory,cfg,train_parameters,validation_parameters,out):
     for name,expected in origin['files'].items():assert file_sha(directory/name)==expected,(name,'frozen checkpoint hash')
     physical_keys=('train_intervals','train_count','train_seed','validation_count','validation_seed','diffusivity','times',
                    'bank_rank','latent_dimensions','fourier_features','fourier_scale','bank_width','head_width')
-    for key in physical_keys:assert cfg[key]==origin['config'][key],(key,'frozen scientific configuration differs')
+    for key in physical_keys:
+        if key=='latent_dimensions':assert set(cfg[key])<=set(origin['config'][key]),(key,'unknown frozen head')
+        else:assert cfg[key]==origin['config'][key],(key,'frozen scientific configuration differs')
     cohorts=json.loads((directory/'cohorts.json').read_text())
     assert C.sha(train_parameters)==cohorts['train_sha256']
     assert C.sha(validation_parameters)==cohorts['validation_sha256']
@@ -89,6 +97,7 @@ def load(directory,cfg,train_parameters,validation_parameters,out):
               'checkpoint_sha256':origin['files'][f'operators/{name}/adapter.pkl']}
         operators.append((name,item['spec'],item['params'],item['physical_scale'],info))
     for name in origin['files']:
+        if name.startswith('pod_N') and name.endswith('.pkl'):shutil.copy2(directory/name,Path(out)/name)
         if name.endswith('_curve.json') or name.endswith('/curve.json') or name.endswith('/training.json'):
             dest=Path(out)/'frozen_training'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(directory/name,dest)
     info={k:origin[k] for k in ('source_attempt','source_commit','job_id','original_result_sha256','files','copied_training_fields')}

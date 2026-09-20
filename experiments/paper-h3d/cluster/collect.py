@@ -22,8 +22,14 @@ def main():
     subprocess.run(['sha256sum','-c','SOURCE.sha256'],cwd=local,check=True)
     subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
     record=json.loads((local/'out/result.json').read_text())
-    audit_script='audit_head.py' if record['schema']=='heat3d-head-pca-diagnostic-v1' else 'audit.py'
+    audit_script={'heat3d-head-pca-diagnostic-v1':'audit_head.py','heat3d-coverage-training-v1':'audit_coverage.py'}.get(record['schema'],'audit.py')
     subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(ROOT/'experiments/paper-h3d'/audit_script),str(local/'out'),'--destination',str(local.parent/'audit-local.json')],check=True)
+    if record['schema']=='paper-heat3d-result-v1' and record['config'].get('retain_solver_states'):
+        for label,output in [('primary',local/'out')]+([('seedB',local/'out/seedB')] if record['config'].get('companion_config_file') else []):
+            prefix='/home/tahmid/Dev/.venv/bin/python';lane=ROOT/'experiments/paper-h3d'
+            if label=='seedB':subprocess.run([prefix,str(lane/'audit.py'),str(output),'--destination',str(local.parent/f'audit-field-{label}.json')],check=True)
+            subprocess.run([prefix,str(lane/'audit_states.py'),str(output),'--destination',str(local.parent/f'audit-states-{label}.json')],check=True)
+            subprocess.run([prefix,str(lane/'audit_panel.py'),str(local),str(local.parent/f'audit-panel-{label}.json'),'--out',str(output)],check=True)
     subprocess.run(['sha256sum','-c','OUTPUTS.sha256'],cwd=local,check=True)
     if a.remove_verified:
         # Only the literal namespace + validated alphanumeric attempt is removed.

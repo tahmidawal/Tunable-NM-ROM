@@ -103,10 +103,11 @@ def engine(model,bank,a,lam,projection,indices,q,cfg,dt=None):
             residual=a@coef-target;d=jax.jacfwd(C.head,argnums=1)(params,znew)
             fullj=jnp.concatenate((a@d,a@directions),axis=1)
             fullgrad=jnp.linalg.norm(fullj.T@residual)/(jnp.maximum(jnp.linalg.norm(fullj),1e-30)*jnp.maximum(jnp.linalg.norm(target),1e-14))
-            return (znew,coef),(coef,jnp.concatenate((info,fullgrad[None])))
-        _,(all_coef,infos)=jax.lax.scan(step,(z,coef),None,length=nsteps)
+            return (znew,coef),(coef,jnp.concatenate((info,fullgrad[None])),znew)
+        _,(all_coef,infos,all_z)=jax.lax.scan(step,(z,coef),None,length=nsteps)
         saved=jnp.concatenate((initial_coef[None],all_coef[stride-1::stride]))
-        return saved@bank.T,stats,infos,saved
+        payload=dict(initial_latents=zs,initial_coefficient=initial_coef,step_latents=all_z,step_coefficients=all_coef) if cfg.get('retain_solver_states',False) else saved
+        return saved@bank.T,stats,infos,payload
     args=(params,jnp.asarray(bank),jnp.asarray(a),jnp.asarray(ap),jnp.asarray(qq),jnp.asarray(rr),jnp.asarray(directions),
           jnp.asarray(projection),jnp.asarray(indices),library,codes,jnp.asarray(lam))
     return lambda u0:query(u0,*args)
@@ -129,8 +130,23 @@ def linear_weak(bank,a,lam,test,cfg):
                 linear_bank_exact=lambda u:query(u,*base,jnp.asarray(exact)))
 
 
-def pod_models(train_fields,n,ranks,cfg):
+def pod_models(train_fields,n,ranks,cfg,artifact_path=None):
     u=np.asarray(train_fields).reshape(-1,(n-1)**3)
+    import pickle
+    from pathlib import Path
+    cached=None
+    if artifact_path is not None and Path(artifact_path).exists():
+        cached=pickle.loads(Path(artifact_path).read_bytes())
+        assert cached['training_hash']==C.sha(u) and cached['intervals']==n
+        assert cached['times']==cfg['times'] and cached['diffusivity']==cfg['diffusivity']
+        assert set(ranks)<=set(cached['ranks'])
+        @jax.jit
+        def cached_query(u,basis,maps):return (maps@(basis.T@u.reshape(-1)))@basis.T
+        out={}
+        for rank in ranks:
+            b=jnp.asarray(cached['basis'][:,:rank]);p=jnp.asarray(cached['maps'][rank])
+            out[f'pod{rank}_exact']=lambda u,b=b,p=p:cached_query(u,b,p)
+        return out,{**cached['info'],'reused_frozen_training_artifact':True}
     # Snapshot Gram keeps the SVD on the smaller sample axis; no neural-bank substitution.
     gram=u@u.T;values,vectors=np.linalg.eigh(gram);order=np.argsort(values)[::-1]
     values=values[order];vectors=vectors[:,order]
@@ -143,14 +159,19 @@ def pod_models(train_fields,n,ranks,cfg):
     def query(u,basis,maps):
         y=basis.T@u.reshape(-1)
         return (maps@y)@basis.T
-    out={}
+    out={};stored_maps={}
     for rank in ranks:
         r=min(rank,maxrank)
         if r!=rank:continue
         maps=np.stack([scipy.linalg.expm(-cfg['diffusivity']*t*operator[:r,:r]) for t in cfg['times']])
+        stored_maps[rank]=maps
         b=jnp.asarray(basis[:,:r]);p=jnp.asarray(maps)
         out[f'pod{rank}_exact']=lambda u,b=b,p=p:query(u,b,p)
-    return out,dict(available_rank=limit,training_hash=C.sha(u),orthogonality=float(np.max(np.abs(basis.T@basis-np.eye(maxrank)))))
+    info=dict(available_rank=limit,training_hash=C.sha(u),orthogonality=float(np.max(np.abs(basis.T@basis-np.eye(maxrank)))))
+    if artifact_path is not None:
+        C.checkpoint(Path(artifact_path),dict(basis=basis,maps=stored_maps,training_hash=info['training_hash'],
+            intervals=n,times=cfg['times'],diffusivity=cfg['diffusivity'],ranks=list(stored_maps),info=info))
+    return out,info
 
 
 def bank_galerkin(bank,n,cfg):

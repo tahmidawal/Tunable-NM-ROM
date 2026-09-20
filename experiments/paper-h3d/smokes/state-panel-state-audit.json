@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "source_commit": null,
+  "job_id": null,
+  "checks": [
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_dense",
+      "case": 0,
+      "cold_starts": 2,
+      "evolved_states": 20
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense",
+      "case": 0,
+      "cold_starts": 2,
+      "evolved_states": 20
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense_dt_half",
+      "case": 0,
+      "cold_starts": 2,
+      "evolved_states": 40
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense",
+      "case": 1,
+      "cold_starts": 2,
+      "evolved_states": 20
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_dense",
+      "case": 1,
+      "cold_starts": 2,
+      "evolved_states": 20
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense_dt_half",
+      "case": 1,
+      "cold_starts": 2,
+      "evolved_states": 40
+    }
+  ],
+  "maximum_gradient_absolute_difference": 2.520324988154575e-15,
+  "maximum_coefficient_absolute_difference": 1.5543122344752192e-15,
+  "independent_weak_moments": "SciPy orthonormal DST, exact smooth sine-test coefficient extraction",
+  "final_cohort_opened": false
+}

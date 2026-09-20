@@ -19,20 +19,27 @@ def run(cfg,out,smoke=False):
     assert jax.config.jax_enable_x64 and os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')=='highest'
     print('jax_backend=gpu x64=True precision=highest',flush=True)
     begin=time.perf_counter()
+    final=cfg.get('evaluation_cohort')=='final'
+    if final:
+        from final_freeze import verify
+        freeze=verify(cfg)
     record=dict(schema='paper-heat3d-result-v1',config=cfg,source_commit=os.environ.get('SOURCE_COMMIT'),
                 job_id=os.environ.get('SLURM_JOB_ID'),gpu=jax.devices()[0].device_kind,jax_version=jax.__version__,
                 backend=jax.default_backend(),x64=True,matmul_precision='highest',smoke=smoke,complete=False,
-                status='verification',final_cohort_opened=False,verification={},bank={},heads=[],meshes=[],invocations=[],
+                status='verification',final_cohort_opened=final,evaluation_cohort='final' if final else 'development',verification={},bank={},heads=[],meshes=[],invocations=[],
                 data_contract='supplied full interior nodal initial field only; decoder and operators receive no generator descriptors',
                 output_contract='all six interior fields, including reconstructed t=0 for ROMs and exact supplied t=0 for DST',
                 timing_contract='synchronized device query and complete host query; input upload, cold fit, latent evolution, dense readout and host output copy; setup/training separate')
     save=lambda:C.dump(out/'result.json',record)
     save();record['verification']['heat']=C.verify(cfg);record['verification']['rom']=R.verify();save()
     train_p=C.family(cfg['train_seed'],cfg['train_count']);valid_p=C.family(cfg['validation_seed'],cfg['validation_count'])
+    evaluation_p=C.family(cfg['reserved_final_seed'],cfg['reserved_final_count']) if final else valid_p
+    if final:record['freeze']=freeze
     assert not any(np.array_equal(a,b) for a in train_p for b in valid_p)
     C.dump(out/'cohorts.json',dict(training_parameters=train_p.tolist(),validation_parameters=valid_p.tolist(),
              train_sha256=C.sha(train_p),validation_sha256=C.sha(valid_p),reserved_final_seed=cfg['reserved_final_seed'],
-             final_cohort_opened=False))
+             evaluation_parameters=evaluation_p.tolist(),evaluation_cohort='final' if final else 'development',
+             final_cohort_opened=final))
     record['status']='generating_training_data';save()
     data=C.dataset(cfg['train_intervals'],train_p,cfg)
     record['status']='training_bank';save()
@@ -88,6 +95,7 @@ def run(cfg,out,smoke=False):
             C.checkpoint(out/'operators'/name/'adapter.pkl',dict(params=op,spec=spec,physical_scale=scale,info=info))
         del train_x,train_y,valid_x,valid_y
     del data,validation_training_mesh
+    valid_p=evaluation_p
 
     # Finer continuum-spectral references: empirical refinement remains visible.
     record['status']='reference_refinement';save()
@@ -108,20 +116,24 @@ def run(cfg,out,smoke=False):
         bank=C.bank_at(params,n,cfg['field_chunk'])@rotation
         test,a,lam,triples=R.assemble(bank,n,cfg['weak_tests'])
         truths=C.dataset(n,valid_p,cfg)
-        training=C.dataset(n,train_p,cfg)
-        ranks=sorted(set([cfg['bank_rank']]+[model['info']['k']+q for model in models for q in cfg['q_ladder']]))
-        pod,pod_info=R.pod_models(training,n,ranks,cfg);del training
-        methods=R.linear_weak(bank,a,lam,test,cfg);methods.update(pod)
-        methods['linear_bank_galerkin_exact']=R.bank_galerkin(bank,n,cfg)
-        metadata={name:dict(kind='linear_control') for name in methods}
+        methods={};pod={};pod_info=dict(status='not repeated in independent-seed accuracy confirmation')
+        if cfg.get('include_linear_controls',True):
+            training=C.dataset(n,train_p,cfg)
+            ranks=sorted(set([cfg['bank_rank']]+[model['info']['k']+q for model in models for q in cfg['q_ladder']]))
+            pod,pod_info=R.pod_models(training,n,ranks,cfg,out/f'pod_N{n}.pkl');del training
+            methods=R.linear_weak(bank,a,lam,test,cfg);methods.update(pod)
+            methods['linear_bank_galerkin_exact']=R.bank_galerkin(bank,n,cfg)
+        metadata={name:dict(kind='linear_control',offline_mesh_adaptation=name.startswith('pod'),
+            construction=('POD rebuilt on requested mesh from identical seeded training trajectories; not frozen native-grid weights' if name.startswith('pod') else 'frozen learned spatial bank evaluated on requested mesh')) for name in methods}
         lam_full=C.eigenvalues(n);times=jnp.asarray(cfg['times']);nu=cfg['diffusivity']
-        methods['dst_exact']=lambda u,lf=lam_full:C.propagate(u,lf,times,nu)
-        metadata['dst_exact']=dict(kind='full_order')
+        if cfg.get('include_linear_controls',True):
+            methods['dst_exact']=lambda u,lf=lam_full:C.propagate(u,lf,times,nu)
+            metadata['dst_exact']=dict(kind='full_order')
         for name,spec,op,scale,info in operator_models:
             from operators import heat_adapter as OH
             methods[name]=OH.engine(op,spec,scale,n)
             metadata[name]=dict(kind='neural_operator',model=spec,parameter_count=info['parameter_count'],physical_scale=scale,
-                                training_intervals=cfg['train_intervals'],resolution_transfer=n!=cfg['train_intervals'])
+                                training_intervals=cfg['train_intervals'],resolution_transfer=n!=cfg['train_intervals'],offline_mesh_adaptation=False)
             if cfg.get('fno_physical_padding_transfer',False) and spec['kind']=='fno3d' and n!=cfg['train_intervals']:
                 padding=int(round(n/cfg['train_intervals']*(cfg['train_intervals']-1+spec.get('padding',0))))-(n-1)
                 assert padding>=0
@@ -146,12 +158,14 @@ def run(cfg,out,smoke=False):
                   weak_singular_values=np.linalg.svd(a,compute_uv=False).tolist(),pod=pod_info,quadrature=[],representation=[])
         for model in models:
             k=model['info']['k'];decoded=np.asarray(C.head(model['params'],model['codes']))
-            best,fit_stats=R.best_found_fields(model,bank,truths,cfg)
-            for case,truth in enumerate(truths):
-                mesh['representation'].append(dict(case=case,k=k,head_best_found=C.metrics(best[case],truth),
-                         fit_stats=fit_stats[case].tolist(),nonstationary_fits=int(np.count_nonzero(fit_stats[case,:,2]!=1))))
-            np.savez_compressed(out/'fields'/f'N{n}_K{k}_best_found.npz',prediction=best,stats=fit_stats)
+            if cfg.get('representation_oracles',True):
+                best,fit_stats,fit_latents=R.best_found_fields(model,bank,truths,cfg,return_latents=True)
+                for case,truth in enumerate(truths):
+                    mesh['representation'].append(dict(case=case,k=k,head_best_found=C.metrics(best[case],truth),
+                             fit_stats=fit_stats[case].tolist(),nonstationary_fits=int(np.count_nonzero(fit_stats[case,:,2]!=1))))
+                np.savez_compressed(out/'fields'/f'N{n}_K{k}_best_found.npz',prediction=best,stats=fit_stats,latents=fit_latents)
             try:
+                if not cfg.get('fit_quadrature',True):raise RuntimeError('sampled cold-start not evaluated for this frozen head; dense complete-query comparison only')
                 reused=None
                 if frozen_origin is not None:
                     reused=F.quadrature(cfg['frozen_input_directory'],frozen_origin,n,k,bank,a,test,truths,cfg,out)
@@ -178,9 +192,10 @@ def run(cfg,out,smoke=False):
                     metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_start='NNLS sampled',quadrature_certified=eq['certified'])
             # Half-step diagnostic for the highest nonredundant correction rung.
             q=max(q for q in cfg['q_ladder'] if k+q<=cfg['bank_rank'])
-            name=f'nmrom_K{k}_q{q}_dense_dt_half'
-            methods[name]=R.engine(model,bank,a,lam,test,np.arange(len(bank)),q,cfg,dt=cfg['dt']/2)
-            metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_start='dense diagnostic',dt=cfg['dt']/2)
+            if cfg.get('include_half_step_control',True):
+                name=f'nmrom_K{k}_q{q}_dense_dt_half'
+                methods[name]=R.engine(model,bank,a,lam,test,np.arange(len(bank)),q,cfg,dt=cfg['dt']/2)
+                metadata[name]=dict(kind='nonlinear_rom',k=k,q=q,cold_start='dense diagnostic',dt=cfg['dt']/2)
             # Orthonormal bank projection is only a diagnostic, never a deployed neural model.
         qb,rb=np.linalg.qr(bank,mode='reduced')
         for case,truth in enumerate(truths):
@@ -222,7 +237,11 @@ def run(cfg,out,smoke=False):
                     if finite:
                         row.update(same_grid=C.metrics(pred,truth),physical=C.metrics(pred,physical[(n,case)]))
                     if rep==0:
-                        path=out/'fields'/f'N{n}_case{case}_{name}.npz';np.savez_compressed(path,prediction=pred)
+                        path=out/'fields'/f'N{n}_case{case}_{name}.npz'
+                        payload=dict(prediction=pred)
+                        if isinstance(value,tuple) and isinstance(coefficients,dict):
+                            payload.update(coefficients);payload.update(initial_stats=initial_stats,step_stats=step_stats)
+                        np.savez_compressed(path,**payload)
                         row['field_file']=str(path.relative_to(out));row['field_sha256']=C.sha(pred)
                     record['invocations'].append(row)
                 save();print('CASE',n,case,'REP',rep,flush=True)
@@ -249,7 +268,7 @@ def summarize(record,out):
                           cases_with_nonstationary_solves=sum(r['nonstationary_solves']>0 for r in cases.values())))
     C.dump(out/'summary.json',dict(schema='paper-heat3d-summary-v1',source_commit=record['source_commit'],
              job_id=record['job_id'],gpu=record['gpu'],complete=record['complete'],smoke=record['smoke'],rows=table,
-             final_cohort_opened=False,interpretation='development pilot; convergence, physical-reference qualification and EQ certification remain separate'))
+             final_cohort_opened=record['final_cohort_opened'],interpretation=('frozen final cohort' if record['final_cohort_opened'] else 'development comparison')+'; convergence, physical-reference qualification and EQ certification remain separate'))
 
 
 if __name__=='__main__':

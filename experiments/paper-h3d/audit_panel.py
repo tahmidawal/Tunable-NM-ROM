@@ -92,7 +92,14 @@ def audit(archive,destination,out=None):
              time_outliers_above_1p5_median=int(np.count_nonzero(times>1.5*med)))
         for name,value in expected_values.items():np.testing.assert_allclose(s[name],value,rtol=1e-13,atol=1e-13)
         np.testing.assert_array_equal(s['device_ms_repetitions'],times)
-    result=dict(passed=True,source_files_verified=source_checks,independent_scipy_reference_checks=refs,
+        if 'cg_stats' in rows[0]:
+            np.testing.assert_array_equal(s['cg_iterations_repetitions'],[r['cg_iterations'] for r in rows])
+            np.testing.assert_array_equal(s['cg_failed_steps_repetitions'],[r['cg_failed_steps'] for r in rows])
+            assert s['cg_iterations_median']==float(np.median([r['cg_iterations'] for r in rows]))
+            assert s['cg_true_relative_residual_worst']==max(v[1] for r in rows for v in r['cg_stats'])
+    from audit_cg import audit as audit_cg
+    cg_audit=audit_cg(out,d)
+    result=dict(passed=True,iterative_cg_audit=cg_audit,source_files_verified=source_checks,independent_scipy_reference_checks=refs,
        independent_refinement=refinement,paired_invocations=len(actual),summary_rows=len(summaries),
        complete_coverage=True,all_repetition_metrics_consistent=True,all_summary_aggregates_recomputed=True,
        evaluation_case_count=count,repetition_consistency_case_groups=len(groups)*count,

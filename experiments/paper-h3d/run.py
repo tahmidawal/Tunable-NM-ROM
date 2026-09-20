@@ -129,6 +129,9 @@ def run(cfg,out,smoke=False):
         if cfg.get('include_linear_controls',True):
             methods['dst_exact']=lambda u,lf=lam_full:C.propagate(u,lf,times,nu)
             metadata['dst_exact']=dict(kind='full_order')
+            import iterative_cg as ICG
+            cg_methods,cg_metadata=ICG.methods(n,cfg)
+            methods.update(cg_methods);metadata.update(cg_metadata)
         for name,spec,op,scale,info in operator_models:
             from operators import heat_adapter as OH
             methods[name]=OH.engine(op,spec,scale,n)
@@ -219,7 +222,13 @@ def run(cfg,out,smoke=False):
                     start=time.perf_counter();u=jax.device_put(truth[0]);u.block_until_ready();input_end=time.perf_counter()
                     value=method(u);jax.block_until_ready(value);device_end=time.perf_counter()
                     value=jax.device_get(value);finish=time.perf_counter()
-                    if isinstance(value,tuple):
+                    if isinstance(value,dict):
+                        pred=value['prediction'];cg_stats=np.asarray(value['cg_stats'])
+                        counters=dict(cg_stats=cg_stats.tolist(),
+                            cg_iterations=int(np.sum(cg_stats[:,0])),
+                            cg_failed_steps=int(np.count_nonzero(cg_stats[:,2]!=1)),
+                            nonstationary_solves=int(np.count_nonzero(cg_stats[:,2]!=1)))
+                    elif isinstance(value,tuple):
                         pred,initial_stats,step_stats,coefficients=value
                         initial_stats=np.asarray(initial_stats);step_stats=np.asarray(step_stats)
                         chosen=int(np.argmin(initial_stats[:,3]))
@@ -239,6 +248,7 @@ def run(cfg,out,smoke=False):
                     if rep==0:
                         path=out/'fields'/f'N{n}_case{case}_{name}.npz'
                         payload=dict(prediction=pred)
+                        if isinstance(value,dict):payload.update(cg_stats=cg_stats,cg_states=value['cg_states'])
                         if isinstance(value,tuple) and isinstance(coefficients,dict):
                             payload.update(coefficients);payload.update(initial_stats=initial_stats,step_stats=step_stats)
                         np.savez_compressed(path,**payload)
@@ -266,6 +276,11 @@ def summarize(record,out):
                           physical_current_evolved_worst=max(r['physical']['current_evolved'] for r in finite) if finite else None,
                           nonfinite_cases=len(cases)-len(finite),
                           cases_with_nonstationary_solves=sum(r['nonstationary_solves']>0 for r in cases.values())))
+        if 'cg_stats' in rows[0]:
+            table[-1].update(cg_iterations_median=float(np.median([r['cg_iterations'] for r in rows])),
+                cg_iterations_repetitions=[r['cg_iterations'] for r in rows],
+                cg_failed_steps_repetitions=[r['cg_failed_steps'] for r in rows],
+                cg_true_relative_residual_worst=max(s[1] for r in rows for s in r['cg_stats']))
     C.dump(out/'summary.json',dict(schema='paper-heat3d-summary-v1',source_commit=record['source_commit'],
              job_id=record['job_id'],gpu=record['gpu'],complete=record['complete'],smoke=record['smoke'],rows=table,
              final_cohort_opened=record['final_cohort_opened'],interpretation=('frozen final cohort' if record['final_cohort_opened'] else 'development comparison')+'; convergence, physical-reference qualification and EQ certification remain separate'))

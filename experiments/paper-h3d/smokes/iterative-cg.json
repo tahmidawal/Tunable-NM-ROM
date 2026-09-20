@@ -1,0 +1,143 @@
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "checks": [
+    {
+      "dt": 0.025,
+      "tolerance": 1e-12,
+      "cap": 100,
+      "modal_relative_error": 3.2190217578523803e-12,
+      "stats": [
+        [
+          8.0,
+          8.726971869453412e-13,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          8.512607881639972e-13,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          8.235710414560818e-13,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          7.903239908492033e-13,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "dt": 0.05,
+      "tolerance": 0.01,
+      "cap": 100,
+      "modal_relative_error": 0.0030514709396060277,
+      "stats": [
+        [
+          2.0,
+          0.0017291147702212975,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.001560412155393594,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "dt": 0.025,
+      "tolerance": 1e-12,
+      "cap": 1,
+      "modal_relative_error": 0.019888147914126516,
+      "stats": [
+        [
+          1.0,
+          0.006082673686180305,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.005670276933113045,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.005280150808647803,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.004916187982864041,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "zero_rhs_passed": true,
+  "independent_audit": {
+    "passed": true,
+    "independent_saved_trajectory_checks": [
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "fom_cn_cg_dt0.025_rtol1e-12_cap100",
+        "steps": 4,
+        "max_residual_difference": 1.5811224103227982e-18,
+        "failed_steps": 0
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "fom_cn_cg_dt0.05_rtol1e-02_cap100",
+        "steps": 2,
+        "max_residual_difference": 8.673617379884035e-19,
+        "failed_steps": 0
+      },
+      {
+        "intervals": 8,
+        "case": 0,
+        "method": "fom_cn_cg_dt0.025_rtol1e-12_cap1",
+        "steps": 4,
+        "max_residual_difference": 5.204170427930421e-18,
+        "failed_steps": 4
+      }
+    ],
+    "scope": "NumPy stencil, every retained time-step true residual, declared stops/caps and all invocation counters; failed solves remain explicitly counted"
+  }
+}

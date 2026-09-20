@@ -99,5 +99,37 @@
   "representation_oracles": true,
   "fit_quadrature": false,
   "evaluation_cohort": "development",
-  "companion_config_file": "code/developmentB.json"
+  "companion_config_file": "code/developmentB.json",
+  "iterative_cg_controls": [
+    {
+      "dt": 0.025,
+      "relative_tolerance": 0.01,
+      "max_iterations": 500
+    },
+    {
+      "dt": 0.025,
+      "relative_tolerance": 0.0001,
+      "max_iterations": 500
+    },
+    {
+      "dt": 0.025,
+      "relative_tolerance": 1e-06,
+      "max_iterations": 500
+    },
+    {
+      "dt": 0.05,
+      "relative_tolerance": 0.01,
+      "max_iterations": 500
+    },
+    {
+      "dt": 0.05,
+      "relative_tolerance": 0.0001,
+      "max_iterations": 500
+    },
+    {
+      "dt": 0.05,
+      "relative_tolerance": 1e-06,
+      "max_iterations": 500
+    }
+  ]
 }

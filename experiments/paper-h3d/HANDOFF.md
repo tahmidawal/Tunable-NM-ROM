@@ -2,6 +2,16 @@
 
 The earlier pilot, tune02, extra03 and head04 diagnostics are collected and independently audited. Coverage05 is running. Final data remain unopened. Root alone owns the canonical LAB-LOG and main reports.
 
+## Iterative-CG comparator added prospectively
+
+The user explicitly requested iterative CG comparisons after the direct-DST table. `developmentA.json` now includes six full-grid Crank–Nicolson/CG arms: ROM-matched time step and one output-aligned coarser step, each at three declared tolerances. The exact numeric settings live in the configuration; no new measured result is claimed. `prepare_development.py` regenerates this same ladder. Preserve these controls in the primary final config after development-only review; the final freeze hashes all settings. SeedB remains an accuracy-only confirmation without duplicate classical controls. Coverage05's live staged source is unchanged; collect it with its original provenance.
+
+`iterative_cg.py` uses a seven-point Dirichlet stencil, previous-step warm starts, and identity preconditioning. The uniform Jacobi diagonal is a scalar, so it cannot improve conditioning; this is explicitly unpreconditioned CG, not a claim about the best multigrid-preconditioned solver. Residual recurrence stopping is verified against the true residual, with restart if needed. Every invocation retains iterations, residuals, convergence/breakdown/cap flags and restarts. All first-repetition step fields are saved for `audit_cg.py`'s independent NumPy stencil/residual checks. `audit_panel.py` automatically invokes it and validates summary counters; staged provenance includes both new files. Existing metrics/field audits apply to the returned predictions. Failed solves remain counted and must not be selected as valid comparators.
+
+The same timed invocation returns the output fields and audit states, so device and total timings include their production and host extraction respectively, consistently with existing saved ROM solver-state instrumentation. Full step-state retention increases archive size; budget the paralab space before staging and preserve/checksum the complete output. DST remains a separate method. Compare each CG time-step/tolerance row to ROMs from that same job and mesh; keep FOM error beside its speedup and never substitute CG's tightest tolerance for an accuracy-matched baseline.
+
+The bounded GPU smoke `cg_smoke.py` passes independent SciPy modal-CN and NumPy true-residual comparisons, including capped failure and zero-RHS cases; numerical evidence is in `smokes/iterative-cg.json`. This verifies implementation only. No new heat allocation or final-data access occurred during this addition.
+
 ## Resume here
 
 Coverage05 job `4018922` is running on pax105 A100 80 GB, submitted after the overnight jobs had completed and the queue was empty. Its immutable source commit is `91d60ace229bbd4a27001b312ced73ebac225d86`. Its unique directory is `/cluster/tufts/paralab/tawal01/paper_h3d_20260920/coverage05`. GPU/f64/highest preflight passed. Queue checks before and after submission are retained in the session record; the account cap is four allocated single GPUs and one live job per PDE lane. No other heat job may be submitted until this one completes.
@@ -51,3 +61,9 @@ Pilot01, tune02 and extra03 raw outputs, source manifests, full field audits and
 - **Development/final:** tuning data and a cohort reserved until all configurations and model bytes are frozen.
 - **Seed robustness:** variation between independent training initializations under the same recipe; distinct from variation across final inputs.
 - **Teacher pretraining:** training-only supervision of the same DeepONet branch/trunk, followed by joint learning; the POD teacher is absent at inference.
+
+- **CG:** conjugate gradients, an iterative solver for the symmetric positive-definite linear system in each full-grid heat step.
+- **Crank–Nicolson (CN):** a second-order time discretization; even converged CG retains its time-discretization error relative to exact semidiscrete propagation.
+- **True relative residual:** norm of the independently evaluated linear-system residual divided by the right-hand-side norm; distinct from trajectory relative L2 error.
+- **Warm start:** the previous full-grid solution initializes the next linear solve.
+- **Iteration cap / breakdown / restart:** maximum allowed iterations, invalid CG curvature or arithmetic, and a new residual recurrence after a failed true-residual stopping check.

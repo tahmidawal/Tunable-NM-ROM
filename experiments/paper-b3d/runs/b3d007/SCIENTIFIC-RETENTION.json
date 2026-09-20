@@ -1,0 +1,68 @@
+{
+  "status": "scientific retention upgrade complete",
+  "prior_retention_record_sha256": "f482510685e7e8aa2f646be4a4b0e8b5ab7f83195039f6c999fe7087530450b7",
+  "scientific_archive": "scientific-archive/manifest.json",
+  "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
+  "source_commit": "3f12a29b0cbcd95a98f5ded9cc065b3d217b9719",
+  "all_scientific_fields_durably_retained": true,
+  "full_original_collection_untouched": true,
+  "original_collection_manifest": "COLLECTION.sha256",
+  "excluded": [
+    {
+      "path": "code/__pycache__/audit.cpython-313.pyc",
+      "bytes": 16513,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-313.pyc",
+      "bytes": 24224,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/reference_stream.cpython-313.pyc",
+      "bytes": 8140,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/run.cpython-313.pyc",
+      "bytes": 39707,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/train.cpython-313.pyc",
+      "bytes": 24939,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/__init__.cpython-313.pyc",
+      "bytes": 246,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/extra_models3d.cpython-313.pyc",
+      "bytes": 18760,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/models3d.cpython-313.pyc",
+      "bytes": 11335,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/training.cpython-313.pyc",
+      "bytes": 9954,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-313.pyc",
+      "bytes": 89009,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
+      "bytes": 6622,
+      "reason": "Python bytecode cache"
+    }
+  ],
+  "historical_scope": "prior local-only dense-field statements described retention before this supplement and remain as history; experimental acceptance or failure is unchanged"
+}

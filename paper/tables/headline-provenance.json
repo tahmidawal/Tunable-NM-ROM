@@ -1,0 +1,672 @@
+{
+  "rule": "One frozen model per row. fast = fastest retained setting meeting its stopping rule; accurate = smallest worst-case error. One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.",
+  "sources": {
+    "paired_cg": {
+      "tree": ".",
+      "path": "paper/evidence/paired-cg-2026-09-20/results.json",
+      "commit": null,
+      "status": "development; paired CG snapshot",
+      "sha256": "c9e2966d0a0523150e35ef2d30873529255d899a10ee584eec76ad9efbaf08c8",
+      "read": "existing hash-pinned paper snapshot"
+    },
+    "burgers_iter": {
+      "tree": ".",
+      "path": "paper/evidence/burgers-iterative-2026-09-11/results.json",
+      "commit": null,
+      "status": "development; earlier model",
+      "sha256": "8e5fe13d13d0289681004e4f76d219c2d3493f5f3a7d7ebf3ab1577a8f522c10",
+      "read": "existing hash-pinned paper snapshot"
+    },
+    "burgers3d": {
+      "tree": ".",
+      "path": "paper/evidence/main-experiments-2026-09-20/burgers.json",
+      "commit": null,
+      "status": "accepted final",
+      "sha256": "0586f24cb3461fb0d8cf3b444cb9510f20627f033c1e0231a020a02eec4b3455",
+      "read": "existing hash-pinned paper snapshot"
+    },
+    "lshape": {
+      "tree": "worktrees/2026-09-17-lshape",
+      "path": "experiments/lshape/reports/summary.json",
+      "commit": "d80fed7a85a44064890085e381296ecfd902fa9c",
+      "status": "development",
+      "sha256": "aae5229584d4c88566df5101867752e4a8dada201255c42ceb60045835371623",
+      "read": "committed blob"
+    },
+    "burgers_panel": {
+      "tree": "worktrees/2026-09-17-b-panel",
+      "path": "experiments/b-panel/reports/summary.json",
+      "commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+      "status": "development",
+      "sha256": "faad5b6265ebd306559855679cbdb5a07c1b45e93c3c2ad419ceaa92ce4b5abf",
+      "read": "committed blob"
+    },
+    "wave": {
+      "tree": "worktrees/2026-09-17-w-ladder",
+      "path": "experiments/w-ladder/reports/summary.json",
+      "commit": "9b84d0556888ebc052b52bd165a61dcd56b2b53d",
+      "status": "development",
+      "sha256": "5cbae5c721b4a7d180feaf9a8fef15d8a5d2840077f51b5deb91375d9ba61250",
+      "read": "committed blob"
+    },
+    "poisson3d": {
+      "tree": "worktrees/2026-09-20-paper-p3d",
+      "path": "experiments/paper-p3d/runs/final08/paper-comparisons.json",
+      "commit": "26c73030b89adfa321ede751db2798abf9bcd1b2",
+      "status": "accepted final",
+      "sha256": "48fad9067babede53918a07ca1168ad9dfbcf44196de41e0c332062a16479a97",
+      "read": "committed blob"
+    },
+    "heat3d": {
+      "tree": "worktrees/2026-09-20-paper-h3d",
+      "path": "experiments/paper-h3d/runs/final08/paper-tables-pending-retention.json",
+      "commit": "6a6c668b02e81d767a0ceb14a078a5745b629c3d",
+      "status": "PROVISIONAL final: numerical audits pass, archive retention pending",
+      "sha256": "a0e9aca275f6f267ccbc49194ce18cbdabca41d223e7d84283c8d470629a7e89",
+      "read": "committed blob"
+    },
+    "ns3d": {
+      "tree": "worktrees/2026-09-20-paper-ns3d",
+      "path": "experiments/ns3d/runs/final07/paper_summary.json",
+      "commit": "3f4e12d6134da21cf82e5259c2990c8ab625b4c6",
+      "status": "accepted final",
+      "sha256": "5c01c13c9e326a63821dec434fdc651c540ac3a19424bdd604744df88b408e7e",
+      "read": "committed blob"
+    }
+  },
+  "rows": [
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1567468474549267,
+        "ms": 6.7030745558440685,
+        "speedup": 3.3253067456640246
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.968850419215881,
+        "ms": 7.121342001482844,
+        "speedup": 3.1299969911002545
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.15274307683271274,
+        "ms": 22.289779037237167
+      },
+      "source": "paired_cg",
+      "job_id": "3780692",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1495039123511046,
+        "ms": 3.9406470023095608,
+        "speedup": 15.230242482252532
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9647906290076345,
+        "ms": 4.318764549680054,
+        "speedup": 13.89680050665934
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.07220757966955461,
+        "ms": 60.017009382136166
+      },
+      "source": "paired_cg",
+      "job_id": "3783813",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Poisson, L-shape",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.8608496739056593,
+        "ms": 2.878709463402629,
+        "speedup": 4.044737152642725
+      },
+      "accurate": {
+        "label": "$q=64$",
+        "error_pct": 2.130548143759591,
+        "ms": 3.0282585648819804,
+        "speedup": 3.8449897420640498
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.637361448170308,
+        "ms": 11.643623118288815
+      },
+      "source": "lshape",
+      "job_id": "3784663",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "complete query",
+      "note": ""
+    },
+    {
+      "problem": "Poisson, L-shape",
+      "dim": 2,
+      "intervals": 512,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.8520647297506585,
+        "ms": 4.716053954325616,
+        "speedup": 6.176130590034533
+      },
+      "accurate": {
+        "label": "$q=64$",
+        "error_pct": 2.1232983314622316,
+        "ms": 4.800847033038735,
+        "speedup": 6.0670471046288705
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.3845242627555538,
+        "ms": 29.12696509156376
+      },
+      "source": "lshape",
+      "job_id": "3789568",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "complete query",
+      "note": ""
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 64,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.559260371319415,
+        "ms": 11.226765462197363,
+        "speedup": 0.22302384595833427
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 1.5860306094822634,
+        "ms": 2.503836411051452
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.555681208224373,
+        "ms": 11.341399629600346,
+        "speedup": 0.6118243600736881
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 0.9254642451452146,
+        "ms": 6.938944570720196
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.555479479880739,
+        "ms": 12.206228449940681,
+        "speedup": 4.848179130967018
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 0.7706845902824921,
+        "ms": 59.1779820388183
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 1.8891456982792685,
+        "ms": 40.35864432808012,
+        "arm": "q0_M64_eqcert_g1em06_fastL4",
+        "speedup": 0.7876313363478396
+      },
+      "accurate": {
+        "label": "$q=256$, EQ",
+        "error_pct": 0.5129194368597558,
+        "ms": 746.0200455971062,
+        "arm": "q256_M1088_eqtop_g1em06",
+        "speedup": 0.042609757141137336
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $10^{-3}$",
+        "error_pct": 0.04889766354765399,
+        "ms": 31.787732965312898,
+        "arm": "nt1e-3_dt005"
+      },
+      "source": "burgers_panel",
+      "job_id": "3789570",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "intervals": 512,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 2.139992785875173,
+        "ms": 40.491704479791224,
+        "arm": "q0_M64_eqxfer_g1em06_fastL4",
+        "speedup": 1.30681761154721
+      },
+      "accurate": {
+        "label": "$q=256$, EQ",
+        "error_pct": 0.5509721660506048,
+        "ms": 783.3276834571734,
+        "arm": "q256_M1088_eqtopxfer_g1em06",
+        "speedup": 0.06755189897313166
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $10^{-3}$",
+        "error_pct": 0.051606745250106834,
+        "ms": 52.91527253575623,
+        "arm": "nt1e-3_dt005"
+      },
+      "source": "burgers_panel",
+      "job_id": "3805065",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 2.2912840655657516,
+        "ms": 40.26987950783223,
+        "arm": "q0_M64_eqxfer_g1em06",
+        "speedup": 2.0191597673133193
+      },
+      "accurate": {
+        "label": "$q=256$, dense",
+        "error_pct": 0.5860844308137502,
+        "ms": 22053.852356038988,
+        "arm": "q256_M1088_dense_g1em06",
+        "speedup": 0.0036869440868685472
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $10^{-4}$",
+        "error_pct": 0.03428094698588521,
+        "ms": 81.31132053676993,
+        "arm": "nt1e-4_dt005"
+      },
+      "source": "burgers_panel",
+      "job_id": "3789572",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Burgers (earlier model)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 3.9076203252235464,
+        "ms": 41.676780325360596,
+        "speedup": 1.6326515366583647
+      },
+      "accurate": null,
+      "fom": {
+        "name": "Newton--BiCGStab, relaxed",
+        "error_pct": 2.3899365244885784,
+        "ms": 68.04365944117308
+      },
+      "source": "burgers_iter",
+      "job_id": "3534502",
+      "cohort": "development",
+      "status": "development; earlier model, stalled exits permitted",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Burgers (earlier model)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 3.9076203252235464,
+        "ms": 41.676780325360596,
+        "speedup": 14.534399953617983
+      },
+      "accurate": null,
+      "fom": {
+        "name": "Newton--BiCGStab, tight",
+        "error_pct": 2.1416109568868054,
+        "ms": 605.7469940278679
+      },
+      "source": "burgers_iter",
+      "job_id": "3534502",
+      "cohort": "development",
+      "status": "development; earlier model, stalled exits permitted",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Poisson",
+      "dim": 3,
+      "intervals": 32,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.398706785845361,
+        "ms": 2.4948082864284515,
+        "speedup": 0.9912259498727033
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.2648324881147418,
+        "ms": 2.6289180386811495,
+        "speedup": 0.9406602553139782
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.15655376030406967,
+        "ms": 2.472918713465333
+      },
+      "source": "poisson3d",
+      "job_id": "4028642",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Poisson",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3924048766358852,
+        "ms": 3.2235232647508383,
+        "speedup": 1.3846112009113518
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.26278484925919676,
+        "ms": 3.355023916810751,
+        "speedup": 1.330341162818037
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.1143233155290821,
+        "ms": 4.46332641877234
+      },
+      "source": "poisson3d",
+      "job_id": "4028642",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Heat",
+      "dim": 3,
+      "intervals": 32,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.561584941191253,
+        "ms": 38.352411007508636,
+        "speedup": 0.13461852544831637
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.7617815535839739,
+        "ms": 77.7792395092547,
+        "speedup": 0.06637947413466633
+      },
+      "fom": {
+        "name": "CN--CG, rtol $10^{-4}$",
+        "error_pct": 0.324568746473869,
+        "ms": 5.16294501721859
+      },
+      "source": "heat3d",
+      "job_id": "4033346",
+      "cohort": "final",
+      "status": "provisional",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": ""
+    },
+    {
+      "problem": "Heat",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.5471978124578238,
+        "ms": 40.37753585726023,
+        "speedup": 0.2685883598009542
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.7542092089366933,
+        "ms": 85.4373979382217,
+        "speedup": 0.12693429798210296
+      },
+      "fom": {
+        "name": "CN--CG, rtol $10^{-4}$",
+        "error_pct": 0.3373665591596981,
+        "ms": 10.84493612870574
+      },
+      "source": "heat3d",
+      "job_id": "4033346",
+      "cohort": "final",
+      "status": "provisional",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": ""
+    }
+  ],
+  "failures": [
+    {
+      "problem": "Burgers 3D, $33^3$ (final)",
+      "setting": "$q=0$",
+      "error_pct": 16.2625104019396,
+      "fom_error_pct": 2.311813545648998,
+      "speedup": 0.03803854060162942,
+      "fom": "Newton--BiCGStab",
+      "metric": "same-grid, evolved",
+      "source": "burgers3d"
+    },
+    {
+      "problem": "Burgers 3D, $33^3$ (final)",
+      "setting": "$q=192$",
+      "error_pct": 4.398729638956904,
+      "fom_error_pct": 2.311813545648998,
+      "speedup": 0.022860161068464713,
+      "fom": "Newton--BiCGStab",
+      "metric": "same-grid, evolved",
+      "source": "burgers3d"
+    },
+    {
+      "problem": "Navier--Stokes 3D, $32^3$ (final)",
+      "setting": "$q=0$",
+      "error_pct": 20.342782168262456,
+      "fom_error_pct": 2.4721868253352373,
+      "speedup": 0.002519349734607152,
+      "fom": "CNAB2",
+      "metric": "same-grid, evolved",
+      "source": "ns3d",
+      "failing": 31,
+      "cases": 32
+    },
+    {
+      "problem": "Navier--Stokes 3D, $32^3$ (final)",
+      "setting": "$q=256$",
+      "error_pct": 18.921443575015136,
+      "fom_error_pct": 2.4721868253352373,
+      "speedup": 0.0006830351235588038,
+      "fom": "CNAB2",
+      "metric": "same-grid, evolved",
+      "source": "ns3d",
+      "failing": 31,
+      "cases": 32
+    },
+    {
+      "problem": "Reflective wave 2D, $1024^2$ (dev.)",
+      "setting": "$q=0$",
+      "error_pct": 11.338779125919615,
+      "fom_error_pct": 4.289035378893795,
+      "speedup": 3.0292975123046113,
+      "fom": "midpoint--CG",
+      "fom_arm": "cgdt_0.005_tol_0.01",
+      "metric": "energy-state (displacement and velocity)",
+      "source": "wave",
+      "displacement_pct": 6.1065974723820435
+    },
+    {
+      "problem": "Reflective wave 2D, $1024^2$ (dev.)",
+      "setting": "$q=32$",
+      "error_pct": 5.116413712803318,
+      "fom_error_pct": 4.289035378893795,
+      "speedup": 0.23049558802335104,
+      "fom": "midpoint--CG",
+      "fom_arm": "cgdt_0.005_tol_0.01",
+      "metric": "energy-state (displacement and velocity)",
+      "source": "wave",
+      "displacement_pct": 2.8094300105452796
+    }
+  ],
+  "pending": [
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "meshes": [
+        2048,
+        4096
+      ],
+      "lane": "hires-poisson"
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "meshes": [
+        2048,
+        4096
+      ],
+      "lane": "hires-heat"
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "meshes": [
+        2048,
+        4096
+      ],
+      "lane": "hires-burgers"
+    },
+    {
+      "problem": "Poisson",
+      "dim": 3,
+      "meshes": [
+        128
+      ],
+      "lane": "hires-poisson"
+    },
+    {
+      "problem": "Heat",
+      "dim": 3,
+      "meshes": [
+        128
+      ],
+      "lane": "hires-heat"
+    },
+    {
+      "problem": "Burgers",
+      "dim": 3,
+      "meshes": [
+        128
+      ],
+      "lane": "hires-burgers"
+    }
+  ],
+  "macros": {
+    "nHeadPoissonAccErr": "0.96",
+    "nHeadPoissonAccS": "13.9",
+    "nHeadPoissonFastS": "15.2",
+    "nHeadPoissonMesh": "1024^2",
+    "nHeadLshapeAccS": "6.07",
+    "nHeadLshapeAccErr": "2.12",
+    "nHeadHeatFastS": "4.85",
+    "nHeadHeatFastErr": "4.56",
+    "nHeadBurgersFastS": "2.02",
+    "nHeadBurgersFastErr": "2.29",
+    "nHeadBurgersAccErr": "0.51",
+    "nHeadBurgersAccS": "0.043",
+    "nHeadPoissonThreeAccS": "1.33",
+    "nHeadPoissonThreeAccErr": "0.26",
+    "nHeadBurgersMidErr": "1.04",
+    "nHeadBurgersMidS": "0.50",
+    "nHeadFasterRows": "10",
+    "nHeadRows": "16",
+    "nHeadAccFasterSubOne": "3"
+  },
+  "intake_schema": "nmrom-headline-rows-v1"
+}

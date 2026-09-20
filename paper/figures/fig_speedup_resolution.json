@@ -1,0 +1,254 @@
+{
+  "evidence": "headline-provenance.json",
+  "evidence_sha256": "713d44c2adeceb8f2dd35058a41dace4626e6ce4214495383e7753397816640b",
+  "series": {
+    "2D|Burgers|accurate": [
+      {
+        "intervals": 256,
+        "speedup": 0.042609757141137336,
+        "error_pct": 0.5129194368597558,
+        "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "status": "development",
+        "job_id": "3789570",
+        "source": "burgers_panel"
+      },
+      {
+        "intervals": 512,
+        "speedup": 0.06755189897313166,
+        "error_pct": 0.5509721660506048,
+        "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "status": "development",
+        "job_id": "3805065",
+        "source": "burgers_panel"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 0.0036869440868685472,
+        "error_pct": 0.5860844308137502,
+        "fom": "Newton--BiCGStab, tol $10^{-4}$",
+        "status": "development",
+        "job_id": "3789572",
+        "source": "burgers_panel"
+      }
+    ],
+    "2D|Burgers|fast": [
+      {
+        "intervals": 256,
+        "speedup": 0.7876313363478396,
+        "error_pct": 1.8891456982792685,
+        "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "status": "development",
+        "job_id": "3789570",
+        "source": "burgers_panel"
+      },
+      {
+        "intervals": 512,
+        "speedup": 1.30681761154721,
+        "error_pct": 2.139992785875173,
+        "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "status": "development",
+        "job_id": "3805065",
+        "source": "burgers_panel"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 2.0191597673133193,
+        "error_pct": 2.2912840655657516,
+        "fom": "Newton--BiCGStab, tol $10^{-4}$",
+        "status": "development",
+        "job_id": "3789572",
+        "source": "burgers_panel"
+      }
+    ],
+    "2D|Heat|fast": [
+      {
+        "intervals": 64,
+        "speedup": 0.22302384595833427,
+        "error_pct": 4.559260371319415,
+        "fom": "CN--CG, rtol $10^{-2}$",
+        "status": "development; earlier checkpoint, one setting",
+        "job_id": "3529772",
+        "source": "paired_cg"
+      },
+      {
+        "intervals": 256,
+        "speedup": 0.6118243600736881,
+        "error_pct": 4.555681208224373,
+        "fom": "CN--CG, rtol $10^{-2}$",
+        "status": "development; earlier checkpoint, one setting",
+        "job_id": "3529772",
+        "source": "paired_cg"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 4.848179130967018,
+        "error_pct": 4.555479479880739,
+        "fom": "CN--CG, rtol $10^{-2}$",
+        "status": "development; earlier checkpoint, one setting",
+        "job_id": "3529772",
+        "source": "paired_cg"
+      }
+    ],
+    "2D|Poisson|accurate": [
+      {
+        "intervals": 256,
+        "speedup": 3.1299969911002545,
+        "error_pct": 0.968850419215881,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3780692",
+        "source": "paired_cg"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 13.89680050665934,
+        "error_pct": 0.9647906290076345,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3783813",
+        "source": "paired_cg"
+      }
+    ],
+    "2D|Poisson|fast": [
+      {
+        "intervals": 256,
+        "speedup": 3.3253067456640246,
+        "error_pct": 3.1567468474549267,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3780692",
+        "source": "paired_cg"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 15.230242482252532,
+        "error_pct": 3.1495039123511046,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3783813",
+        "source": "paired_cg"
+      }
+    ],
+    "2D|Poisson, L-shape|accurate": [
+      {
+        "intervals": 256,
+        "speedup": 3.8449897420640498,
+        "error_pct": 2.130548143759591,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3784663",
+        "source": "lshape"
+      },
+      {
+        "intervals": 512,
+        "speedup": 6.0670471046288705,
+        "error_pct": 2.1232983314622316,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3789568",
+        "source": "lshape"
+      }
+    ],
+    "2D|Poisson, L-shape|fast": [
+      {
+        "intervals": 256,
+        "speedup": 4.044737152642725,
+        "error_pct": 3.8608496739056593,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3784663",
+        "source": "lshape"
+      },
+      {
+        "intervals": 512,
+        "speedup": 6.176130590034533,
+        "error_pct": 3.8520647297506585,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "3789568",
+        "source": "lshape"
+      }
+    ],
+    "3D|Heat|accurate": [
+      {
+        "intervals": 32,
+        "speedup": 0.06637947413466633,
+        "error_pct": 0.7617815535839739,
+        "fom": "CN--CG, rtol $10^{-4}$",
+        "status": "provisional",
+        "job_id": "4033346",
+        "source": "heat3d"
+      },
+      {
+        "intervals": 64,
+        "speedup": 0.12693429798210296,
+        "error_pct": 0.7542092089366933,
+        "fom": "CN--CG, rtol $10^{-4}$",
+        "status": "provisional",
+        "job_id": "4033346",
+        "source": "heat3d"
+      }
+    ],
+    "3D|Heat|fast": [
+      {
+        "intervals": 32,
+        "speedup": 0.13461852544831637,
+        "error_pct": 1.561584941191253,
+        "fom": "CN--CG, rtol $10^{-4}$",
+        "status": "provisional",
+        "job_id": "4033346",
+        "source": "heat3d"
+      },
+      {
+        "intervals": 64,
+        "speedup": 0.2685883598009542,
+        "error_pct": 1.5471978124578238,
+        "fom": "CN--CG, rtol $10^{-4}$",
+        "status": "provisional",
+        "job_id": "4033346",
+        "source": "heat3d"
+      }
+    ],
+    "3D|Poisson|accurate": [
+      {
+        "intervals": 32,
+        "speedup": 0.9406602553139782,
+        "error_pct": 0.2648324881147418,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "accepted final",
+        "job_id": "4028642",
+        "source": "poisson3d"
+      },
+      {
+        "intervals": 64,
+        "speedup": 1.330341162818037,
+        "error_pct": 0.26278484925919676,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "accepted final",
+        "job_id": "4028642",
+        "source": "poisson3d"
+      }
+    ],
+    "3D|Poisson|fast": [
+      {
+        "intervals": 32,
+        "speedup": 0.9912259498727033,
+        "error_pct": 1.398706785845361,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "accepted final",
+        "job_id": "4028642",
+        "source": "poisson3d"
+      },
+      {
+        "intervals": 64,
+        "speedup": 1.3846112009113518,
+        "error_pct": 1.3924048766358852,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "accepted final",
+        "job_id": "4028642",
+        "source": "poisson3d"
+      }
+    ]
+  },
+  "note": "Development, final and provisional cohorts are mixed across series; each point carries its status. Points within a series share one frozen model; FOM settings are those of the headline table."
+}

@@ -1,0 +1,18 @@
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Job | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | 3780692 | development |
+| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | 3783813 | development |
+| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | 3784663 | development |
+| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | 3789568 | development |
+| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | 3529772 | development |
+| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | 3529772 | development |
+| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | 3529772 | development |
+| Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | 3789570 | development |
+| Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | 3805065 | development |
+| Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | 3789572 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | 3534502 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | 3534502 | development |
+| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | 4028642 | accepted final |
+| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | 4028642 | accepted final |
+| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | 4033346 | provisional |
+| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | 4033346 | provisional |

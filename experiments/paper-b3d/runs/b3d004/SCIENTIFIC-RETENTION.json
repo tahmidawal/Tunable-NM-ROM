@@ -1,0 +1,72 @@
+{
+  "status": "scientific retention upgrade complete",
+  "prior_retention_record_sha256": "538cb3552ec0e92cb602fbd5d964b6752e0bff7e4e802fb0ca42f345e9697147",
+  "scientific_archive": "scientific-archive/manifest.json",
+  "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
+  "source_commit": "7528fba6",
+  "all_scientific_fields_durably_retained": true,
+  "full_original_collection_untouched": true,
+  "excluded": [
+    {
+      "path": "code/__pycache__/core.cpython-313.pyc",
+      "bytes": 20830,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/run.cpython-313.pyc",
+      "bytes": 30705,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/train.cpython-313.pyc",
+      "bytes": 24939,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/__init__.cpython-313.pyc",
+      "bytes": 246,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/extra_models3d.cpython-313.pyc",
+      "bytes": 18280,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/models3d.cpython-313.pyc",
+      "bytes": 11335,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/training.cpython-313.pyc",
+      "bytes": 9740,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-313.pyc",
+      "bytes": 89009,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
+      "bytes": 6622,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "out/deeponet3d/latest.pkl",
+      "bytes": 44690918,
+      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
+    },
+    {
+      "path": "out/transolver3d/latest.pkl",
+      "bytes": 13557532,
+      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
+    },
+    {
+      "path": "training/training_fields.npy",
+      "bytes": 976191616,
+      "reason": "regenerable dense training cache; retained in original local collection"
+    }
+  ],
+  "historical_scope": "the prior local-only dense-field statement described retention before this supplement; it is preserved as history"
+}

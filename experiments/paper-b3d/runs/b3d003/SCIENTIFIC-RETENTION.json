@@ -1,0 +1,157 @@
+{
+  "status": "scientific retention upgrade complete",
+  "prior_retention_record_sha256": "fea099f5de3bc8a86481a790437f39e4efb4e47b019a9e748aa9687afa93a895",
+  "scientific_archive": "scientific-archive/manifest.json",
+  "actual_git_restore_audit": "scientific-archive/git-restore-audit.json",
+  "source_commit": "7528fba6",
+  "all_scientific_fields_durably_retained": true,
+  "full_original_collection_untouched": true,
+  "excluded": [
+    {
+      "path": "code/__pycache__/audit.cpython-312.pyc",
+      "bytes": 13192,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/audit_partial.cpython-312.pyc",
+      "bytes": 4829,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-312.pyc",
+      "bytes": 20984,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/core.cpython-313.pyc",
+      "bytes": 20830,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/operator_panel.cpython-312.pyc",
+      "bytes": 12406,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/reference_diagnostic.cpython-312.pyc",
+      "bytes": 4647,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/run.cpython-312.pyc",
+      "bytes": 30591,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/run.cpython-313.pyc",
+      "bytes": 30642,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/smoke.cpython-312.pyc",
+      "bytes": 5701,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/smoke_fit_tiles.cpython-312.pyc",
+      "bytes": 4038,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/smoke_operators.cpython-312.pyc",
+      "bytes": 5762,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/smoke_training.cpython-312.pyc",
+      "bytes": 2689,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/train.cpython-312.pyc",
+      "bytes": 23509,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/__pycache__/train.cpython-313.pyc",
+      "bytes": 23394,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/cluster/__pycache__/collect.cpython-312.pyc",
+      "bytes": 2892,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/cluster/__pycache__/stage.cpython-312.pyc",
+      "bytes": 8120,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/__init__.cpython-312.pyc",
+      "bytes": 233,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/__init__.cpython-313.pyc",
+      "bytes": 246,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/models3d.cpython-312.pyc",
+      "bytes": 11222,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/models3d.cpython-313.pyc",
+      "bytes": 11076,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/training.cpython-312.pyc",
+      "bytes": 9720,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/operators/__pycache__/training.cpython-313.pyc",
+      "bytes": 9740,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-312.pyc",
+      "bytes": 90306,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/b3d_common.cpython-313.pyc",
+      "bytes": 89009,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-312.pyc",
+      "bytes": 6711,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "code/vendor/__pycache__/block_lm.cpython-313.pyc",
+      "bytes": 6622,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "out/fno3d/latest.pkl",
+      "bytes": 42517436,
+      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
+    },
+    {
+      "path": "out/unet3d/latest.pkl",
+      "bytes": 2149987,
+      "reason": "optimizer continuation state; selected trained checkpoints are retained separately"
+    },
+    {
+      "path": "training/training_fields.npy",
+      "bytes": 976191616,
+      "reason": "regenerable dense training cache; retained in original local collection"
+    }
+  ],
+  "historical_scope": "the prior local-only dense-field statement described retention before this supplement; it is preserved as history"
+}

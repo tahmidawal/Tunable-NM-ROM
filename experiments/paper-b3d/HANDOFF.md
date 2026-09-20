@@ -34,7 +34,7 @@ The bank has rank 256 and the head dimension is 64. The actual fixed test count 
 
 The streamed opened-case spatial discrepancy is 1.982912% versus the unchanged 0.500000% budget. The time discrepancy is 0.254331% versus 0.100000%. Both gates fail and remain explicit. The independent native residual-pair audit passes. The primary final comparison must therefore remain same-grid.
 
-Full local arrays and optimizer states remain in the checksum-covered collected directory. Compact records, trained checkpoints, exact POD/bank/direction arrays, and the two development replay cases are retained in Git using `retain_attempt.py`; `RETENTION.json` lists every retained byte hash. B005 remote cleanup is recorded separately in `COLLECTED.json` and must be checked there.
+Full local arrays and optimizer states remain in the checksum-covered collected directory. In addition to the compact checkpoint/replay records, every scientific field from B003, B004 and B005 is now durably retained in committed lossless split archives with complete actual-Git restore/hash audits. `SCIENTIFIC-RETENTION.md` and each run's `SCIENTIFIC-RETENTION.json` link the evidence; earlier local-only retention records remain as history. B005 remote cleanup is recorded separately in `COLLECTED.json` and must be checked there.
 
 ## Required next work
 

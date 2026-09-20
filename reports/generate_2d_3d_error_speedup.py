@@ -217,7 +217,7 @@ def main():
         writer.writeheader()
         writer.writerows(ROWS)
     lines = ['# Relative L2 error and FOM speed: both dimensions',
-             'This generated inventory covers completed NM-ROM comparisons in both dimensions and the matched three-dimensional operator panels. Development results remain provisional; no final three-dimensional cohort has been opened.',
+             'This generated inventory covers completed NM-ROM comparisons in both dimensions and the matched three-dimensional operator panels. These included runs are development measurements, not final-cohort results. The user-selected iterative-CG comparison is available in [the companion table](2026-09-20-iterative-cg-comparisons.md); the named baselines in this inventory remain unchanged.',
              r'Errors are percentages. Each row uses its explicitly stated norm and reference convention; they must not be treated as one common cross-PDE metric. Speedup is $T_{\mathrm{FOM}}/T_{\mathrm{method}}$: above one means faster, below one means slower.',
              output['selection'],
              'Costs are median device times except L-shaped Poisson, which uses complete-query times to include its CPU direct solver. Every ratio is within a job. Source error medians, timing arrays/outlier counts where available, and full source metadata are preserved in the JSON. Summary-only sources do not supply a new outlier count here.',

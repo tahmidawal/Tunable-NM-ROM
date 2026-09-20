@@ -1,6 +1,12 @@
 # Heat3D coverage and frozen final comparison handoff
 
-The earlier pilot, tune02, extra03 and head04 diagnostics are collected and independently audited. Coverage05 is running. Final data remain unopened. Root alone owns the canonical LAB-LOG and main reports.
+The earlier pilot, tune02, extra03 and head04 diagnostics are collected and independently audited. Coverage05 completed successfully and its complete output passed the independent audit. Final data remain unopened. Root alone owns the canonical LAB-LOG and main reports.
+
+## Latest state — 2026-09-20 17:55 UTC
+
+Coverage05 job `4018922` completed `0:0` in `02:23:24`. The collector verified original source/output checksums and `audit-local.json` passes all three seed/control records, including independent references, fields, bank reconstruction, fitted-state gradients, checkpoint selection and teacher pretraining. Generated training diagnostics are in `runs/coverage05/TRAINING-SUMMARY.json`; they are not ROM rollout or CG runtime results. Complete output is retained at archive commit `5b056237` (streamed restoration passed); all seventeen actual Git chunk blobs now pass verification, and only the exact completed coverage05 remote directory has been removed. Development06 submission follows.
+
+Burgers owner is collecting B007 and expects to finish around 18:00–18:10. NS owner is inactive with final07 `4027788` running and must be reactivated at 18:10–18:20, or on earlier exit, from `ba213c6f837e66359bfb25cb14e09b96c7f5348d` and `experiments/ns3d/runs/final07/HANDOFF.md`. Poisson owner returned its slot after final08 `4028642` GPU/freeze preflight; Heat accepted reactivation responsibility no later than 18:30 UTC, earlier on exit. P source is `f18533034cbdf3c7027073e57f091200bd622e8f`, durable HANDOFF commit `0ae6f38f`; final completion estimated 18:35–18:40. Coordinate with root before rotating an occupied owner. Current shared free space is about 120 GiB while B collection/retention proceeds.
 
 ## Iterative-CG comparator added prospectively
 

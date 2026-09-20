@@ -87,9 +87,9 @@
 % =====================================================================
 \begin{abstract}
 
-Neural operators \citep{Li2020FNO,Lu2021DeepONet} deliver one (accuracy,
-speed) point per trained model; at deployment only the evaluation grid can change, moving
-cost, not representation. We present a non-linear manifold reduced order
+At a fixed evaluation grid and inference procedure, each frozen neural
+operator \citep{Li2020FNO,Lu2021DeepONet} supplies one accuracy/cost
+point; changing resolution can change both error and cost. We present a non-linear manifold reduced order
 model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs, exposing a
 family of accuracy/cost points from one decoder, controlled by
 the correction rank $q$ and three solver-side knobs. The framework combines
@@ -99,8 +99,8 @@ by non-negative least squares (NNLS) \citep{Hernandez2017EQ,YanoPatera2019LPEQ},
 exact boundary enforcement, and a separable decoder: a per-node Fourier-feature
 coordinate-network bank \citep{Tancik2020FourierFeatures} times
 a small head with a linear skip, plus nested corrections. Across 2D
-Burgers, Poisson, heat and waves, the scheduled ladder (one model per
-rank $q$) is monotone in $q$ on Burgers on three seeds and a sealed cohort
+Burgers, Poisson, heat and waves, the scheduled ladder (one frozen decoder,
+a prescribed test-count schedule) is monotone in $q$ on Burgers on three seeds and a sealed cohort
 opened once after every choice was frozen (top-rung error
 \nSealedAllTopMin--\nSealedAllTopMax\,\% over \nSealedCheckpoints{}
 checkpoints); the fixed-test-count ladder meets a pre-registered bar on one
@@ -125,10 +125,10 @@ manifold pays.
 
 Neural operators for partial differential equations (PDEs)
 \citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,Li2024PINO,BoulleTownsend2024} have
-become a strong empirical baseline. But each trained model produces
-essentially one (accuracy, wall-clock) operating point. The only
-deployment-time knob is the evaluation grid, and it moves cost without
-changing what the model can represent (\S\ref{sec:results:operators}).
+become a strong empirical baseline. At a fixed grid and inference
+procedure, each frozen model supplies one accuracy/cost point.
+Changing evaluation resolution can move both accuracy and cost
+(\S\ref{sec:results:operators}).
 Classical Full Order Methods (FOMs) \citep{Hughes2000FEM}, solved
 iteratively \citep{HestenesStiefel1952CG}, expose this knob through their
 tolerance. Where a fast transform applies, they are hard to beat on
@@ -140,23 +140,24 @@ operators and PDE foundation models
 amortised inference. But they fix what the model can represent at
 training time. Reduced order models (ROMs) address the same problem from
 the opposite direction. Linear projection-based ROMs
-\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's
-guarantees. But they hit the Kolmogorov $n$-width barrier on
+\citep{BennerGugercinWillcox2015,Sirovich1987POD} restrict the full-order
+equations to a lower-dimensional trial space. But they hit the Kolmogorov $n$-width barrier on
 advection-dominated regimes \citep{CohenDeVore2015}: no fixed linear
 subspace of modest dimension approximates solutions whose shape moves.
 Non-linear manifold ROMs (NM-ROMs) \citep{LeeCarlberg2020,KimChoi2022NMROM}
 lift this barrier with a learned manifold. But they have rarely been
 measured head-to-head against neural operators and tuned full-order
 solvers in the same job. The open question is whether a single trained
-NM-ROM can expose a deployment-time accuracy/cost tradeoff that neither
-alternative offers. The second question is where, if anywhere, it is worth
+NM-ROM can expose a useful correction-rank accuracy/cost tradeoff
+against these alternatives. The second question is where, if anywhere, it is worth
 having, once the comparators are measured in the same allocation.
 
 This paper answers that question with measurements on 2D Burgers,
 Poisson, heat and waves. The answer is mixed. We present an NM-ROM
 framework whose distinguishing property is a \emph{deployment-time
-accuracy/cost family traced by a single trained model}. At inference, one
-primary knob and three solver-side knobs trade accuracy for cost. The
+accuracy/cost family traced by a single trained model}. At inference,
+correction rank changes the trial space; solver settings control numerical
+accuracy and cost. The
 primary knob is the rank $q$ of a linear correction the solver may switch
 on. The three solver-side knobs are the iteration cap, the stopping
 tolerance, and the Empirical Quadrature (EQ) sample count. The machinery is a decoder that enforces Dirichlet
@@ -175,7 +176,7 @@ and a matrix-free JAX implementation \citep{Bradbury2018JAX}.
       in same-grid error for $\nQxmCostSpan\times$ in cost inside one
       allocation (\S\ref{sec:results:tunability}). At matched $k=16$
       inside one bank, the neural head reaches $\nAblBurgersNeural\,\%$,
-      where the best linear map reaches $\nAblBurgersLinear\,\%$ and
+      where the fitted affine comparator reaches $\nAblBurgersLinear\,\%$ and
       POD-16 reaches $\nAblBurgersPodSixteen\,\%$ (\S\ref{sec:results:head}).
 \item \textbf{Architectural choices that make this family
       achievable.} We identify three constraints a decoder must satisfy:
@@ -244,8 +245,8 @@ Neural-operator surrogates
 \citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,LiGeoFNO2023,TranFFNO2023,Cao2021GalerkinTransformer,LiOFormer2023,HaoGNOT2023,WuTransolver2024,WangLNO2024,WenGAOT2025,HuLinearNO2025,Shikhman2026BoundaryIndexed}
 and PDE foundation models
 \citep{HerdePoseidon2024,McCabeMPP2024,HaoDPOT2024,HolzschuhPDETransformer2025}
-deliver one fixed (accuracy, speed) point per trained model and
-typically approximate boundary conditions via penalty terms, with
+supply a fixed operating point when grid and inference procedure are held
+fixed, and typically approximate boundary conditions via penalty terms, with
 partial fixes via distance functions or hard constraints
 \citep{SukumarSrivastava2022,BerroneBC2022,BrechtHardConstraints2023,WangBENO2024,LippePDERefiner2023};
 hybrid solver-in-the-loop methods
@@ -618,8 +619,8 @@ comparison survives float64 and second-seed controls
 (Appendix~\ref{app:extended:operators}); these are achieved finite-budget
 errors. The Poisson gap is larger
 (Table~\ref{tab:operators-poisson}). Their own knob, evaluation resolution, is usable for
-\nResUsableList{} only (Table~\ref{tab:resolution}); it moves cost, $q$
-moves what the model can represent.
+\nResUsableList{} only (Table~\ref{tab:resolution}); resolution changes
+measured error and cost, while $q$ changes the ROM trial space.
 
 \begin{figure}[t]
 \centering
@@ -651,10 +652,11 @@ on the square (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
 \subsection{Which Knob to Turn}
 \label{sec:results:tunability}
 
-The rank $q$ is the only deployment-time knob moving accuracy. The
-quadrature rule and the tolerance move cost. Training data and head
-capacity move the floor but need retraining (Tables~\ref{tab:qxm},
-\ref{tab:knobs}, \ref{tab:training}).
+At fixed grid and residual test space, rank $q$ changes the trial space.
+Test count and solver settings can also affect numerical error. In the
+measured accurate regime, tolerance and certified quadrature chiefly
+change cost; training data and head capacity require retraining
+(Tables~\ref{tab:qxm}, \ref{tab:knobs}, \ref{tab:training}).
 
 \begin{table}[htbp]
 \centering
@@ -688,7 +690,8 @@ and the \nPanelFiveTwelveFomBelowDiscCount{} full-order settings below it
 coarser solves cancelling against the reference, not better ones; at $1024^2$
 the rungs run $\nPanelTenTwentyFourQzeroRef$ to
 $\nPanelTenTwentyFourBestRungRef\,\%$ over
-$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob moves the reduction error, not the physical error. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
+$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. Correction rank chiefly changes reduction error here; discretisation
+limits the gain against the fine reference. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
 and \textbf{fails} the pre-registered bar
 (Table~\ref{tab:qxm}: monotone on evolved, every rung converged, error
 span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
@@ -734,7 +737,8 @@ monotone; its $q=128$ and $256$ transfers pass the primary bar there
 though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
 the transfer reaches $\nPanelFiveTwelveEqtopxferQTwoFiftySixErr\,\%$ in
 $\nPanelFiveTwelveEqtopxferQTwoFiftySixTwinSpeedup\times$ less time than
-its twin. Solver knobs move cost only (Table~\ref{tab:knobs}).
+its twin. Solver knobs chiefly change cost in these accurate comparisons
+(Table~\ref{tab:knobs}); changed numerical settings can also change error.
 
 \paragraph{Validate on reachable states, then re-draw.}
 \label{sec:exp:eq}
@@ -758,12 +762,13 @@ $\rho_{\max}$, unexplained; no falsification clause fired.
 \subsection{The Head against Linear Maps at Matched Dimension}
 \label{sec:results:head}
 
-At the same latent dimension the neural head is more accurate than any
-linear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the
-optimal rank-$k$ affine map, a quadratic map, the free bank and
+At matched $k=16$, the Burgers neural head outperforms the tested affine
+and POD comparators in achieved error, without a per-millisecond
+advantage. Comparisons use a training-fitted rank-$k$ affine map,
+a quadratic map, the free bank and
 POD-LSPG in the same solver (Tables~\ref{tab:head-burgers},
 \ref{tab:head-poisson}). On Burgers the head reaches
-$\nAblBurgersNeural\,\%$ against $\nAblBurgersLinear\,\%$ (best linear
+$\nAblBurgersNeural\,\%$ against $\nAblBurgersLinear\,\%$ (fitted affine
 map) and $\nAblBurgersPodSixteen\,\%$ (POD-16); on Poisson at $1024^2$ it wins per dimension ($\nAblPoissonNeural\,\%$ against
 $\nAblPoissonLinear\,\%$) and loses per ms to POD-128
 ($\nAblPoissonPodOneTwentyEight\,\%$ at

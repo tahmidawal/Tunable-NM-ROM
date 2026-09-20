@@ -1,0 +1,236 @@
+{
+  "status": "disposed in manuscript; provisional development refresh remains separate",
+  "source": "worktrees/2026-09-16-paper-refresh/paper/main.tex",
+  "source_sha256": "bbc85b7e3ab29ce1d774b97797181e384e1b4eb1c371072bbf45ccc014ca19c5",
+  "source_commit": "ac4d010b2d53f2d14e0f4a5ef987911794b56e72",
+  "findings": [
+    {
+      "id": "operator_resolution_scope",
+      "line": 91,
+      "source_excerpt": "at deployment only the evaluation grid can change, moving\ncost, not representation.",
+      "issue": "Overgeneralizes operator deployment choices and understates measured resolution-dependent accuracy. Existing resolution experiments already show accuracy/cost movement.",
+      "proposed_direction": "State the controlled comparison: at a fixed evaluation grid and inference procedure, each frozen operator contributes one operating point; resolution changes can change both numerical error and cost.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "operator_resolution_scope",
+          "before": "Neural operators \\citep{Li2020FNO,Lu2021DeepONet} deliver one (accuracy,\nspeed) point per trained model; at deployment only the evaluation grid can change, moving\ncost, not representation.",
+          "after": "At a fixed evaluation grid and inference procedure, each frozen neural\noperator \\citep{Li2020FNO,Lu2021DeepONet} supplies one accuracy/cost\npoint; changing resolution can change both error and cost."
+        },
+        {
+          "finding": "operator_resolution_scope",
+          "before": "become a strong empirical baseline. But each trained model produces\nessentially one (accuracy, wall-clock) operating point. The only\ndeployment-time knob is the evaluation grid, and it moves cost without\nchanging what the model can represent (\\S\\ref{sec:results:operators}).",
+          "after": "become a strong empirical baseline. At a fixed grid and inference\nprocedure, each frozen model supplies one accuracy/cost point.\nChanging evaluation resolution can move both accuracy and cost\n(\\S\\ref{sec:results:operators})."
+        },
+        {
+          "finding": "operator_resolution_scope",
+          "before": "NM-ROM can expose a deployment-time accuracy/cost tradeoff that neither\nalternative offers.",
+          "after": "NM-ROM can expose a useful correction-rank accuracy/cost tradeoff\nagainst these alternatives."
+        },
+        {
+          "finding": "operator_resolution_scope",
+          "before": "deliver one fixed (accuracy, speed) point per trained model and\ntypically approximate boundary conditions",
+          "after": "supply a fixed operating point when grid and inference procedure are held\nfixed, and typically approximate boundary conditions"
+        },
+        {
+          "finding": "operator_resolution_scope",
+          "before": "\\nResUsableList{} only (Table~\\ref{tab:resolution}); it moves cost, $q$\nmoves what the model can represent.",
+          "after": "\\nResUsableList{} only (Table~\\ref{tab:resolution}); resolution changes\nmeasured error and cost, while $q$ changes the ROM trial space."
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    },
+    {
+      "id": "scheduled_ladder_checkpoint",
+      "line": 102,
+      "source_excerpt": "the scheduled ladder (one model per\nrank $q$)",
+      "issue": "Can imply separately trained models for different correction ranks, contradicting the frozen-decoder design.",
+      "proposed_direction": "Describe one frozen decoder with a prescribed test-count schedule; correction directions/solver assets are prepared offline but network weights do not retrain across the ladder.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "scheduled_ladder_checkpoint",
+          "before": "Burgers, Poisson, heat and waves, the scheduled ladder (one model per\nrank $q$)",
+          "after": "Burgers, Poisson, heat and waves, the scheduled ladder (one frozen decoder,\na prescribed test-count schedule)"
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    },
+    {
+      "id": "linear_rom_guarantees",
+      "line": 142,
+      "source_excerpt": "Linear projection-based ROMs\n\\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's\nguarantees.",
+      "issue": "Unqualified guarantee inheritance is not established; reduced stability and approximation depend on projection and trial space.",
+      "proposed_direction": "Say linear projection ROMs restrict the full-order equations to a lower-dimensional trial space.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "linear_rom_guarantees",
+          "before": "\\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's\nguarantees.",
+          "after": "\\citep{BennerGugercinWillcox2015,Sirovich1987POD} restrict the full-order\nequations to a lower-dimensional trial space."
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    },
+    {
+      "id": "only_accuracy_control",
+      "line": 654,
+      "source_excerpt": "The rank $q$ is the only deployment-time knob moving accuracy.",
+      "issue": "The paper itself measures an effect of test count and records numerical failures under changed solver budgets; exclusivity exceeds evidence.",
+      "proposed_direction": "At a fixed grid and residual test space, correction rank changes the trial space. Describe tolerance and certified quadrature as numerical-cost controls in the measured accurate regime.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "only_accuracy_control",
+          "before": "accuracy/cost family traced by a single trained model}. At inference, one\nprimary knob and three solver-side knobs trade accuracy for cost.",
+          "after": "accuracy/cost family traced by a single trained model}. At inference,\ncorrection rank changes the trial space; solver settings control numerical\naccuracy and cost."
+        },
+        {
+          "finding": "only_accuracy_control",
+          "before": "The rank $q$ is the only deployment-time knob moving accuracy. The\nquadrature rule and the tolerance move cost. Training data and head\ncapacity move the floor but need retraining (Tables~\\ref{tab:qxm},\n\\ref{tab:knobs}, \\ref{tab:training}).",
+          "after": "At fixed grid and residual test space, rank $q$ changes the trial space.\nTest count and solver settings can also affect numerical error. In the\nmeasured accurate regime, tolerance and certified quadrature chiefly\nchange cost; training data and head capacity require retraining\n(Tables~\\ref{tab:qxm}, \\ref{tab:knobs}, \\ref{tab:training})."
+        },
+        {
+          "finding": "only_accuracy_control",
+          "before": "Solver knobs move cost only (Table~\\ref{tab:knobs}).",
+          "after": "Solver knobs chiefly change cost in these accurate comparisons\n(Table~\\ref{tab:knobs}); changed numerical settings can also change error."
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    },
+    {
+      "id": "any_linear_map",
+      "line": 761,
+      "source_excerpt": "At the same latent dimension the neural head is more accurate than any\nlinear map in the same bank.",
+      "issue": "Universal claim exceeds tested comparators and conflates a training-optimal affine fit with held-out worst-case optimality.",
+      "proposed_direction": "Limit to the tested Burgers affine/quadratic/POD comparators and achieved fits; do not claim superiority over every possible linear subspace.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "any_linear_map",
+          "before": "where the best linear map reaches",
+          "after": "where the fitted affine comparator reaches"
+        },
+        {
+          "finding": "any_linear_map",
+          "before": "At the same latent dimension the neural head is more accurate than any\nlinear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the\noptimal rank-$k$ affine map, a quadratic map, the free bank and",
+          "after": "At matched $k=16$, the Burgers neural head outperforms the tested affine\nand POD comparators in achieved error, without a per-millisecond\nadvantage. Comparisons use a training-fitted rank-$k$ affine map,\na quadratic map, the free bank and"
+        },
+        {
+          "finding": "any_linear_map",
+          "before": "$\\nAblBurgersNeural\\,\\%$ against $\\nAblBurgersLinear\\,\\%$ (best linear\nmap)",
+          "after": "$\\nAblBurgersNeural\\,\\%$ against $\\nAblBurgersLinear\\,\\%$ (fitted affine\nmap)"
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    },
+    {
+      "id": "reduction_vs_physical",
+      "line": 691,
+      "source_excerpt": "The knob moves the reduction error, not the physical error.",
+      "issue": "Categorical denial conflicts with the preceding measured physical error variation. Discretization limits physical gains, rather than making them identically absent.",
+      "proposed_direction": "Say correction rank chiefly changes reduction error in these panels, while discretization error limits the gain against the fine reference.",
+      "status": "repaired; measured values unchanged",
+      "edits": [
+        {
+          "finding": "reduction_vs_physical",
+          "before": "The knob moves the reduction error, not the physical error.",
+          "after": "Correction rank chiefly changes reduction error here; discretisation\nlimits the gain against the fine reference."
+        }
+      ],
+      "evidence_scope": "Existing manuscript measurements and algebra; no new literature or empirical result."
+    }
+  ],
+  "scope": "Targeted internal review grounded in retained experiments and mathematical scope; not a new literature survey. Preserve title and all measured numeric cells, with any necessary abstract wording correction recorded explicitly.",
+  "upstream_audit_sha256": "bb6adc4f441144a2e07ee40560761224832c0f1b72d953d52cea905624e65988",
+  "repaired_source": "paper/main.tex",
+  "repaired_source_sha256": "cd07450425ddc3fa84d6d4ccb61d2e8b5b1dd884fea21b216aa61b4e22ec7750",
+  "abstract_unchanged": false,
+  "abstract_before_sha256": "36536669aab93ff3b7ca452ea17355f9ea6b586d8b5ea0bbae37cd753d82155b",
+  "abstract_after_sha256": "1c11a535c93b448f92fefdca55f66468354e381c731a485ba44f23f2ffe3d323",
+  "abstract_changes": [
+    {
+      "finding": "operator_resolution_scope",
+      "before": "Neural operators \\citep{Li2020FNO,Lu2021DeepONet} deliver one (accuracy,\nspeed) point per trained model; at deployment only the evaluation grid can change, moving\ncost, not representation.",
+      "after": "At a fixed evaluation grid and inference procedure, each frozen neural\noperator \\citep{Li2020FNO,Lu2021DeepONet} supplies one accuracy/cost\npoint; changing resolution can change both error and cost."
+    },
+    {
+      "finding": "scheduled_ladder_checkpoint",
+      "before": "Burgers, Poisson, heat and waves, the scheduled ladder (one model per\nrank $q$)",
+      "after": "Burgers, Poisson, heat and waves, the scheduled ladder (one frozen decoder,\na prescribed test-count schedule)"
+    }
+  ],
+  "all_wording_edits": [
+    {
+      "finding": "operator_resolution_scope",
+      "before": "Neural operators \\citep{Li2020FNO,Lu2021DeepONet} deliver one (accuracy,\nspeed) point per trained model; at deployment only the evaluation grid can change, moving\ncost, not representation.",
+      "after": "At a fixed evaluation grid and inference procedure, each frozen neural\noperator \\citep{Li2020FNO,Lu2021DeepONet} supplies one accuracy/cost\npoint; changing resolution can change both error and cost."
+    },
+    {
+      "finding": "scheduled_ladder_checkpoint",
+      "before": "Burgers, Poisson, heat and waves, the scheduled ladder (one model per\nrank $q$)",
+      "after": "Burgers, Poisson, heat and waves, the scheduled ladder (one frozen decoder,\na prescribed test-count schedule)"
+    },
+    {
+      "finding": "operator_resolution_scope",
+      "before": "become a strong empirical baseline. But each trained model produces\nessentially one (accuracy, wall-clock) operating point. The only\ndeployment-time knob is the evaluation grid, and it moves cost without\nchanging what the model can represent (\\S\\ref{sec:results:operators}).",
+      "after": "become a strong empirical baseline. At a fixed grid and inference\nprocedure, each frozen model supplies one accuracy/cost point.\nChanging evaluation resolution can move both accuracy and cost\n(\\S\\ref{sec:results:operators})."
+    },
+    {
+      "finding": "linear_rom_guarantees",
+      "before": "\\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's\nguarantees.",
+      "after": "\\citep{BennerGugercinWillcox2015,Sirovich1987POD} restrict the full-order\nequations to a lower-dimensional trial space."
+    },
+    {
+      "finding": "operator_resolution_scope",
+      "before": "NM-ROM can expose a deployment-time accuracy/cost tradeoff that neither\nalternative offers.",
+      "after": "NM-ROM can expose a useful correction-rank accuracy/cost tradeoff\nagainst these alternatives."
+    },
+    {
+      "finding": "only_accuracy_control",
+      "before": "accuracy/cost family traced by a single trained model}. At inference, one\nprimary knob and three solver-side knobs trade accuracy for cost.",
+      "after": "accuracy/cost family traced by a single trained model}. At inference,\ncorrection rank changes the trial space; solver settings control numerical\naccuracy and cost."
+    },
+    {
+      "finding": "any_linear_map",
+      "before": "where the best linear map reaches",
+      "after": "where the fitted affine comparator reaches"
+    },
+    {
+      "finding": "operator_resolution_scope",
+      "before": "deliver one fixed (accuracy, speed) point per trained model and\ntypically approximate boundary conditions",
+      "after": "supply a fixed operating point when grid and inference procedure are held\nfixed, and typically approximate boundary conditions"
+    },
+    {
+      "finding": "only_accuracy_control",
+      "before": "The rank $q$ is the only deployment-time knob moving accuracy. The\nquadrature rule and the tolerance move cost. Training data and head\ncapacity move the floor but need retraining (Tables~\\ref{tab:qxm},\n\\ref{tab:knobs}, \\ref{tab:training}).",
+      "after": "At fixed grid and residual test space, rank $q$ changes the trial space.\nTest count and solver settings can also affect numerical error. In the\nmeasured accurate regime, tolerance and certified quadrature chiefly\nchange cost; training data and head capacity require retraining\n(Tables~\\ref{tab:qxm}, \\ref{tab:knobs}, \\ref{tab:training})."
+    },
+    {
+      "finding": "reduction_vs_physical",
+      "before": "The knob moves the reduction error, not the physical error.",
+      "after": "Correction rank chiefly changes reduction error here; discretisation\nlimits the gain against the fine reference."
+    },
+    {
+      "finding": "only_accuracy_control",
+      "before": "Solver knobs move cost only (Table~\\ref{tab:knobs}).",
+      "after": "Solver knobs chiefly change cost in these accurate comparisons\n(Table~\\ref{tab:knobs}); changed numerical settings can also change error."
+    },
+    {
+      "finding": "any_linear_map",
+      "before": "At the same latent dimension the neural head is more accurate than any\nlinear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the\noptimal rank-$k$ affine map, a quadratic map, the free bank and",
+      "after": "At matched $k=16$, the Burgers neural head outperforms the tested affine\nand POD comparators in achieved error, without a per-millisecond\nadvantage. Comparisons use a training-fitted rank-$k$ affine map,\na quadratic map, the free bank and"
+    },
+    {
+      "finding": "any_linear_map",
+      "before": "$\\nAblBurgersNeural\\,\\%$ against $\\nAblBurgersLinear\\,\\%$ (best linear\nmap)",
+      "after": "$\\nAblBurgersNeural\\,\\%$ against $\\nAblBurgersLinear\\,\\%$ (fitted affine\nmap)"
+    },
+    {
+      "finding": "operator_resolution_scope",
+      "before": "\\nResUsableList{} only (Table~\\ref{tab:resolution}); it moves cost, $q$\nmoves what the model can represent.",
+      "after": "\\nResUsableList{} only (Table~\\ref{tab:resolution}); resolution changes\nmeasured error and cost, while $q$ changes the ROM trial space."
+    }
+  ],
+  "title_unchanged": true
+}

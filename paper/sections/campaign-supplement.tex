@@ -75,9 +75,12 @@ Stationarity columns report each run's recorded stopping criterion;
 they do not prove a global minimum. The selected Poisson panel has
 independently audited fields and references, but its nonlinear stopping
 summary lacks saved selected latent states for a separate gradient
-reconstruction. The selected Navier--Stokes panel likewise lacks saved
-evolution latent histories. Neither limitation is hidden by a zero
-recorded stopping-failure count.
+reconstruction. The selected Navier--Stokes panel retains histories for
+sampled independent weak-gradient checks. Its new paired measurements
+pass the numerical-validity audit, but a separate strict cross-run
+frozen-field replay gate failed and remains failed. This supports neither
+cross-run equivalence nor an implementation-speed ratio. A zero recorded
+stopping-failure count does not remove these qualifications.
 
 The weak NM-ROM residual is projected against smooth test functions.
 The learned bank, compressed head and correction rank have sizes
@@ -86,7 +89,10 @@ basis completes the degenerate Laplacian eigenvalue shell at its
 requested cutoff, preserving coordinate symmetry. Dense full-grid
 operations remain charged where quadrature has not met its certificate.
 Full-bank Galerkin controls and a full-bank weak least-squares endpoint
-are distinct reduced equations. POD uses the matched training states.
+are distinct reduced equations. On the native grid, POD uses the matched
+training states. On finer heat and Poisson meshes, POD is rebuilt offline
+from the same training members; these mesh-adapted controls are distinct
+from transferring frozen neural weights.
 Efficient classical controls remain in the comparison even when they
 are both faster and more accurate.
 
@@ -135,9 +141,37 @@ checkpoint hash and training curve metadata. Burgers operators return
 their trained time knots, pass through the supplied initial state and
 interpolate to the common requested output times. The Navier--Stokes
 case is a periodic interacting three-component flow family; the
-reported panel does not claim turbulent-flow coverage. The selected
-Navier--Stokes timing panel has fewer operator families than the later
-training follow-up, which is not substituted without paired measurements.
+reported panel does not claim turbulent-flow coverage. Each selected
+panel now includes paired measurements for all four operator families.
+
+\clearpage
+\begin{table}[h]
+\centering
+\caption{Provisional NM-ROM architecture and training records, derived
+from saved checkpoints and their original training metadata. MLP widths
+list input, hidden and output sizes of each multilayer perceptron. Head
+parameter counts include its linear skip; optimized training codes and
+fixed Fourier, scale and whitening assets are excluded. Budget, done
+and selected are requested, completed and checkpoint-selected updates.
+Base seed initializes the recipe; stage-specific key splits and sampling
+seeds are retained in the pinned configuration. Selected updates follow
+the recorded development criterion or the final optimizer iterate, as
+specified in the machine-readable protocol. Update limits do not
+certify convergence. Reused checkpoints retain their original training
+record rather than inheriting the query allocation's budget.}
+\label{tab:campaign-nmrom-training}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_nmrom}}
+\end{table}
+
+The coordinate network supplies the spatial bank, which is frozen while
+the compressed coefficient head is trained. The head's optimized
+training codes are offline fitting variables, not an encoder or online
+inputs. The vector bank's output groups all velocity components;
+its terminal width therefore differs from the number of bank functions.
+Correction directions and query-mesh solver assets are prepared offline.
+Changing correction rank within a reported ladder leaves all neural
+weights frozen. The pinned protocol records checkpoint content hashes,
+full training configurations and the source of reused training metadata.
 
 \input{sections/campaign-panels-generated}
 

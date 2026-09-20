@@ -120,7 +120,14 @@
           "series": "FOM"
         }
       ],
-      "omissions": "All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances."
+      "omissions": "All timed arms in the main panel are included. The separately measured larger-head candidate on the same allocation is retained in the complete report, alongside representation and limited refinement diagnostics. FOM labels identify nonlinear (n) and inner linear (l) tolerances.",
+      "nmrom_assets": {
+        "checkpoint": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/checkpoint.pkl",
+        "reuse_record": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d004/collected/training/reuse.json",
+        "original_checkpoint": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/checkpoint.pkl",
+        "bank_curve": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/bank_curve.json",
+        "head_info": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d003/collected/training/head_info.json"
+      }
     },
     {
       "pde": "Heat 3D",
@@ -128,7 +135,7 @@
       "mesh": 64,
       "mesh_label": "64 intervals per axis",
       "slug": "heat3d-extra03-n64",
-      "qualification": "Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.",
+      "qualification": "Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer.",
       "methods": [
         {
           "id": "nmrom_K32_q0_dense",
@@ -228,7 +235,15 @@
           "series": "FOM"
         }
       ],
-      "omissions": "The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted."
+      "omissions": "The complete audited report retains smaller-head ladders, intermediate POD ranks and time-step diagnostics. Failed sampled-quadrature certificates remain in the earlier attempt and are not promoted.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/bank.pkl",
+        "heads": [
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K8.pkl",
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K16.pkl",
+          "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/extra03/archive/out/head_K32.pkl"
+        ]
+      }
     },
     {
       "pde": "Poisson 3D",
@@ -236,7 +251,7 @@
       "mesh": 64,
       "mesh_label": "64 intervals per axis",
       "slug": "poisson3d-extra03-n64",
-      "qualification": "Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.",
+      "qualification": "Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer. The saved stopping records are internally consistent, but selected latent states were not retained for an independent weak-gradient audit.",
       "methods": [
         {
           "id": "nmrom_K16_q0_dense",
@@ -342,15 +357,22 @@
           "series": "FOM"
         }
       ],
-      "omissions": "The complete audited report retains the K8 ladder, intermediate POD ranks, and failed sampled-quadrature diagnostics. They are not presented as missing experiments."
+      "omissions": "The complete audited report retains the K8 ladder, intermediate POD ranks, and failed sampled-quadrature diagnostics. They are not presented as missing experiments.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/bank.pkl",
+        "heads": [
+          "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K8.pkl",
+          "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/extra03/archive/out/head_K16.pkl"
+        ]
+      }
     },
     {
       "pde": "Navier\u2013Stokes 3D",
-      "attempt": "comparison02",
+      "attempt": "extra03",
       "mesh": 32,
       "mesh_label": "32 periodic points per axis",
-      "slug": "ns3d-comparison02-n32",
-      "qualification": "Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.",
+      "slug": "ns3d-extra03-n32",
+      "qualification": "Independently audited new paired development measurements with all four operator families. Errors use the initial vector-field norm and exclude time zero. Learned-bank and head accuracy targets fail. Saved latent histories support sampled independent weak-gradient checks. A strict cross-run frozen-field replay gate failed and remains failed; no numerical-equivalence or implementation-speed claim is made. Augmented training and larger-bank tuning remain in progress.",
       "methods": [
         {
           "id": "nmrom_q0",
@@ -462,9 +484,37 @@
           "id": "unet3d_projected",
           "label": "U-Net, projected",
           "series": "U-Net"
+        },
+        {
+          "id": "deeponet3d_raw",
+          "label": "DeepONet, raw",
+          "series": "DeepONet"
+        },
+        {
+          "id": "deeponet3d_projected",
+          "label": "DeepONet, Leray projected",
+          "series": "DeepONet"
+        },
+        {
+          "id": "transolver3d_raw",
+          "label": "Transolver, raw",
+          "series": "Transolver"
+        },
+        {
+          "id": "transolver3d_projected",
+          "label": "Transolver, Leray projected",
+          "series": "Transolver"
         }
       ],
-      "omissions": "All timed arms are shown. Full-cohort representation/training-validation diagnostics are retained separately and are not substituted for the measured errors of this timing subset."
+      "omissions": "All timed arms are included; the separate larger-bank snapshot-fit diagnostics remain in the complete archive. Leray projection enforces discrete incompressibility and its online cost is charged.",
+      "nmrom_assets": {
+        "bank": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/free_bank.pkl",
+        "head": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/checkpoint.pkl"
+      },
+      "bank_rank_checkpoint": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/free_bank.pkl",
+      "inherited_operator_training_sources": [
+        "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/comparison02/collected/output/result.json"
+      ]
     }
   ]
 }

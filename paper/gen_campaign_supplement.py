@@ -198,10 +198,25 @@ def main():
                    o['training_seed'], tex(o['exit_reason'])] for o in protocol['operators']]
     table('TC_development_training', ['PDE', 'Operator', 'Parameters', 'Budget', 'Done', 'Selected',
                                      'Batch', 'LR', 'Seed', 'Exit'], train_rows, 'llrrrrrrrl')
+    nmrom_rows = []
+    for record in protocol['nmrom']:
+        assert record['completed_steps'] <= record['requested_steps']
+        assert record['selected_step'] <= record['completed_steps']
+        assert record['network_parameters'] > 0
+        assert record['checkpoint'] in protocol['provenance']
+        nmrom_rows.append([
+            tex(record['pde']), tex(record['role']),
+            '$' + r'\!\to\!'.join(map(str, record['mlp_widths'])) + '$',
+            record['network_parameters'], record['requested_steps'],
+            record['completed_steps'], record['selected_step'], record['model_base_seed'],
+        ])
+    table('TC_development_nmrom', ['PDE', 'Part', 'MLP widths', 'Parameters',
+          'Budget', 'Done', 'Selected', 'Base seed'], nmrom_rows, 'lllrrrrr')
     (HERE / 'sections/campaign-panels-generated.tex').write_text('\n'.join(sections) + '\n')
     check = dict(passed=True, oracle_rows=len(oracle_rows), oracle_fits=int(macros['nOracleConfirmationFits']),
                  independent_oracle_checks=len(audit['checks']), development_rows=selected_count,
                  development_panels=len(selection['panels']), operator_training_records=len(train_rows),
+                 nmrom_training_records=len(nmrom_rows),
                  snapshot_manifest_sha256=sha((EVIDENCE / 'manifest.json').read_bytes()),
                  status='development only; final confirmation pending',
                  interpretation='paired measured errors; no cross-job ratios or optimality claim')

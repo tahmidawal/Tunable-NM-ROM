@@ -21,7 +21,7 @@
 \clearpage
 \subsection{Heat 3D: provisional development panel}
 \label{app:campaign:1}
-\textbf{Provisional:} Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately.\par
+\textbf{Provisional:} Audited development data with all four operator families. Errors use the current reference-field norm and exclude time zero. All recorded fits and evolved solves are stationary. The larger head improves the high-correction endpoint but retains a generalization gap; improved initialization and longer operator schedules are under evaluation. Failed direct transfer variants are retained; native-grid interpolation is charged separately. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer.\par
 \begin{table}[h]
 \centering
 \small
@@ -41,7 +41,7 @@
 \clearpage
 \subsection{Poisson 3D: provisional development panel}
 \label{app:campaign:2}
-\textbf{Provisional:} Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation.\par
+\textbf{Provisional:} Audited development data with all four operator families. Static weights are placed on the GPU during setup. New operator curves are still improving and longer common schedules are under evaluation. Direct transfer variants and quadrature certificates fail; preserved-domain FNO padding is a pending control. Every measured pair below shares one allocation. Finer-grid POD is rebuilt offline from the same training members; it is a mesh-adapted classical control, not frozen-weight transfer. The saved stopping records are internally consistent, but selected latent states were not retained for an independent weak-gradient audit.\par
 \begin{table}[h]
 \centering
 \small
@@ -61,20 +61,20 @@
 \clearpage
 \subsection{Navier--Stokes 3D: provisional development panel}
 \label{app:campaign:3}
-\textbf{Provisional:} Audited negative development result on a fixed interacting three-dimensional flow family. Errors use the initial vector norm and exclude time zero. Projected operator variants charge the divergence-free projection; raw outputs are separate diagnostics. Full-bank/POD Galerkin controls are distinct reduced equations from the weak correction objective. Evolution stopping records have no saved latent history in this attempt.\par
+\textbf{Provisional:} Independently audited new paired development measurements with all four operator families. Errors use the initial vector-field norm and exclude time zero. Learned-bank and head accuracy targets fail. Saved latent histories support sampled independent weak-gradient checks. A strict cross-run frozen-field replay gate failed and remains failed; no numerical-equivalence or implementation-speed claim is made. Augmented training and larger-bank tuning remain in progress.\par
 \begin{table}[h]
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\caption{32 periodic points per axis; 8 development cases per method. Initial-field-normalized evolved error; same-grid reference. Each accuracy/cost pair comes from the same invocation in job 3993021. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.}
+\caption{32 periodic points per axis; 8 development cases per method. Initial-field-normalized evolved error; same-grid reference. Each accuracy/cost pair comes from the same invocation in job 3995695. NF/NS counts nonfinite/nonstationary cases; outliers count calls above $1.5$ times the method median.}
 \label{tab:campaign:3}
 \resizebox{\linewidth}{!}{\input{tables/TC_development_3}}
 \end{table}
 \FloatBarrier
-\noindent All timed arms are shown. Full-cohort representation/training-validation diagnostics are retained separately and are not substituted for the measured errors of this timing subset.\par
+\noindent All timed arms are included; the separate larger-bank snapshot-fit diagnostics remain in the complete archive. Leray projection enforces discrete incompressibility and its online cost is charged.\par
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{evidence/campaign-2026-09-20/ns3d-comparison02-n32.pdf}
+\includegraphics[width=\linewidth]{evidence/campaign-2026-09-20/ns3d-extra03-n32.pdf}
 \caption{Provisional paired development measurements from Table~\ref{tab:campaign:3}. The right panel isolates the fixed-head correction ladder; the left retains classical controls and operator variants. Zero-error direct solves are identified separately rather than clipped onto the logarithmic error axis.}
 \label{fig:campaign:3}
 \end{figure}

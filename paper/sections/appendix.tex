@@ -43,15 +43,18 @@ Burgers (Table~\ref{tab:solver-variants}). The linear skip is a design choice
 adopted for cold-start convergence and is not ablated in this paper.
 \begin{figure}[h]
 \centering
-\resizebox{0.9\linewidth}{!}{\input{figures/architecture}}
-\caption{NM-ROM pipeline. Colour says when each quantity is fixed:
-purple, trained once and frozen for every result; blue, assembled
-offline once per mesh; orange, computed inside the timed query; green,
-chosen at run time among artefacts that already exist; grey, supplied,
-or a comparator. This is a schematic, not a measurement. The only things
-that change between operating points are the three green controls (the
-rank $q$, the stored quadrature rule or dense evaluation, and the
-tolerance), so every point of the family comes from one training run.}
+\resizebox{\linewidth}{!}{\input{figures/architecture}}
+\caption{NM-ROM from training to prediction. Blue components are prepared
+before the query and remain frozen; orange boxes compute the online solution.
+The inputs initialize reduced coordinates, which are adjusted to minimize the
+weak PDE residual before reconstructing the requested fields. Initialization
+and the reduced solver are PDE-specific; linear-PDE corrections can be
+eliminated analytically. Time-dependent problems repeat the reduced step,
+with reconstruction at requested output times. Empirical quadrature (EQ)
+is an optional residual evaluation, used in the Burgers2D EQ panels;
+the current 3D and wave panels do not use it. Correction rank changes the
+representation, whereas EQ changes residual evaluation. Baselines are evaluated
+independently and are not stages of this pipeline.}
 \label{fig:arch}
 \end{figure}
 
@@ -61,8 +64,7 @@ Table~\ref{tab:arch-blocks} lists its blocks, their sizes in the symbols of
 
 \begin{table}[h]
 \centering
-\caption{The blocks of Figure~\ref{fig:arch}. ``Fixed when'' is the colour of
-the block in the figure.}
+\caption{The blocks of Figure~\ref{fig:arch}. ``Fixed when'' distinguishes training, preparation and online work.}
 \label{tab:arch-blocks}
 {\scriptsize
 \begin{tabular}{@{}p{2.3cm}p{6.1cm}p{1.6cm}p{2.5cm}@{}}
@@ -76,7 +78,7 @@ code library $Z$ & auto-decoder codes of the training states & $k$ per state & t
 tests $\tests$ & the first $M$ sine modes & $M\times n$ & fixed per run \\
 linear operator $B$ & $\tests\Aop\bank$ & $M\times R$ & assembled once per mesh \\
 corrections $\corr$ & PCA of the head residual on the training codes, nested in $q$ & $R\times q$ & once per checkpoint \\
-quadrature rules & NNLS fit on reachable states, one rule per $m$, validated by held-out $\rho$ & $m$ nodes & once per checkpoint \\
+quadrature rules & NNLS fit on reachable states, one rule per mesh and test space, validated by held-out $\rho$ & $m$ nodes & prepared offline \\
 solve & damped LM on $(\latent,y)$ (Burgers); $y$ eliminated exactly (linear PDEs) & $k+q$ unknowns & inside the timed query \\
 controls & rank $q$; stored rule or dense; tolerance and budget & --- & chosen at run time \\
 \bottomrule

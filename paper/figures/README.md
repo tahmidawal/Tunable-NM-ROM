@@ -22,12 +22,10 @@ Status labels follow `paper/OUTLINE.md` §0.
 ## F1 — Architecture and data flow
 - **File:** `architecture.mmd` (mermaid; no numbers, so no generator).
 - **Supports:** C1, C2.
-- **Encoding:** `classDef` colour by *when a quantity is fixed* — trained (purple),
-  offline per-mesh assembly (blue), solved inside the timed query (orange), deployment-time
-  control (green), supplied or comparator (grey). This is the distinction the previous
-  submission blurred, so the diagram is built around it rather than around boxes-and-arrows
-  of the network.
-- **Status:** **exists.**
+- **Encoding:** blue for trained/prepared components frozen online, orange for online computation, grey for inputs and the optional evaluation choice. One left-to-right online flow; dashed arrows show reuse of prepared components.
+- **Print source:** `architecture.tex`; standalone export: `architecture-standalone.pdf` and `architecture.png`. Mermaid and TikZ describe the same stages.
+- **Scope:** generic bank/head/correction pipeline. Initialization and solver are PDE-specific; linear corrections may be eliminated. EQ is optional, distinct from correction rank, and is not used by the current 3D/wave panels. No baseline is drawn as a method stage.
+- **Status:** redrawn and synchronized at the user's request on 2026-09-20.
 
 ## F2 — Operator parity: preassembled versus full-grid weak evaluation
 - **Generator:** `gen_fig_operator_parity.py`

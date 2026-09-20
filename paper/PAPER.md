@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 16:15; this block is removed before submission).*
+*Status for the reader (generated 2026-09-20 16:26; this block is removed before submission).*
 *Populated tables (79): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -1015,21 +1015,23 @@ adopted for cold-start convergence and is not ablated in this paper.
 
 ![Figure 1](figures/architecture.png)
 
-**Figure 1.** NM-ROM pipeline. Colour says when each quantity is fixed:
-purple, trained once and frozen for every result; blue, assembled
-offline once per mesh; orange, computed inside the timed query; green,
-chosen at run time among artefacts that already exist; grey, supplied,
-or a comparator. This is a schematic, not a measurement. The only things
-that change between operating points are the three green controls (the
-rank $q$, the stored quadrature rule or dense evaluation, and the
-tolerance), so every point of the family comes from one training run.
+**Figure 1.** NM-ROM from training to prediction. Blue components are prepared
+before the query and remain frozen; orange boxes compute the online solution.
+The inputs initialize reduced coordinates, which are adjusted to minimize the
+weak PDE residual before reconstructing the requested fields. Initialization
+and the reduced solver are PDE-specific; linear-PDE corrections can be
+eliminated analytically. Time-dependent problems repeat the reduced step,
+with reconstruction at requested output times. Empirical quadrature (EQ)
+is an optional residual evaluation, used in the Burgers2D EQ panels;
+the current 3D and wave panels do not use it. Correction rank changes the
+representation, whereas EQ changes residual evaluation. Baselines are evaluated
+independently and are not stages of this pipeline.
 
 Figure 1 draws the pipeline;
 Table 9 lists its blocks, their sizes in the symbols of
 §3.1, and when each is fixed.
 
-**Table 9.** The blocks of Figure 1. “Fixed when” is the colour of
-the block in the figure.
+**Table 9.** The blocks of Figure 1. “Fixed when” distinguishes training, preparation and online work.
 
 ## E Provenance
 

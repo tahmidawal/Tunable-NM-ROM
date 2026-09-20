@@ -1,0 +1,143 @@
+{
+ "model": {
+  "kind": "mlp",
+  "bank": "smokewide/bank.pkl",
+  "head": "smokewide/head_K8.pkl"
+ },
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 64
+ },
+ "cohorts": [
+  [
+   790711,
+   4
+  ],
+  [
+   790716,
+   8
+  ]
+ ],
+ "meshes": [
+  32
+ ],
+ "cases_by_mesh": {
+  "32": 2
+ },
+ "repetitions": 2,
+ "burn_seconds": 0.3,
+ "audit_intervals": 32,
+ "full_audit_cases": 2,
+ "reference_budget": 0.0001,
+ "rom_defaults": {
+  "init": "moments",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "rom_arms": [
+  {
+   "name": "nmrom_q0_cn",
+   "q": 0
+  },
+  {
+   "name": "nmrom_q12_field_cn",
+   "q": 12,
+   "opt": {
+    "init": "field"
+   }
+  },
+  {
+   "name": "nmrom_q12_field_direct",
+   "q": 12,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct"
+   }
+  }
+ ],
+ "linear_bank_inits": [
+  "field",
+  "moments"
+ ],
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  }
+ },
+ "coarse_intervals": [
+  16
+ ],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-3",
+ "training": {
+  "d": 2,
+  "family": "mr2d",
+  "train_intervals": 32,
+  "times": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5
+  ],
+  "diffusivity": 0.02,
+  "train_seed": 791000,
+  "train_count": 24,
+  "validation_seed": 791001,
+  "validation_count": 4,
+  "model_seed": 791002,
+  "fourier_features": 32,
+  "fourier_scale": 1.5,
+  "bank_width": 256,
+  "bank_rank": 24,
+  "head_width": 256,
+  "latent_dimensions": [
+   8
+  ],
+  "bank_steps": 600,
+  "head_steps": 600,
+  "bank_batch_states": 64,
+  "bank_batch_points": 2048,
+  "head_batch_states": 128,
+  "bank_learning_rate": 0.001,
+  "head_learning_rate": 0.0005,
+  "bank_tail_weight": 0.1,
+  "bank_gradient_clip": 1.0,
+  "refit_every": 200,
+  "checkpoint_every": 300
+ },
+ "local_smoke": true
+}

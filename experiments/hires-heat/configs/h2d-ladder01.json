@@ -1,0 +1,162 @@
+{
+ "model": {
+  "kind": "sep2d",
+  "checkpoint": "sep2d/expanded_seed790715.pkl"
+ },
+ "sep2d_training": {
+  "train_intervals": 64,
+  "times": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5
+  ],
+  "diffusivity": 0.02,
+  "train_draws": [
+   [
+    790710,
+    32
+   ],
+   [
+    790713,
+    128
+   ]
+  ]
+ },
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "per_axis": 8
+ },
+ "cohorts": [
+  [
+   790711,
+   4
+  ],
+  [
+   790716,
+   8
+  ]
+ ],
+ "meshes": [
+  256,
+  1024,
+  2048,
+  4096
+ ],
+ "cases_by_mesh": {
+  "256": 12,
+  "1024": 12,
+  "2048": 12,
+  "4096": 12
+ },
+ "repetitions": 5,
+ "burn_seconds": 0.15,
+ "audit_intervals": 256,
+ "full_audit_cases": 2,
+ "reference_budget": 0.0001,
+ "rom_defaults": {
+  "init": "field",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 1,
+  "mean_start": true,
+  "fit_budget": 80,
+  "step_budget": 30,
+  "tolerance": 1e-05
+ },
+ "rom_arms": [
+  {
+   "name": "nmrom_q0_cn",
+   "q": 0
+  },
+  {
+   "name": "nmrom_q4_cn",
+   "q": 4
+  },
+  {
+   "name": "nmrom_q8_cn",
+   "q": 8
+  },
+  {
+   "name": "nmrom_q16_cn",
+   "q": 16
+  },
+  {
+   "name": "nmrom_q24_cn",
+   "q": 24
+  },
+  {
+   "name": "nmrom_q0_exactseq",
+   "q": 0,
+   "opt": {
+    "stepping": "exact_seq"
+   }
+  },
+  {
+   "name": "nmrom_q24_exactseq",
+   "q": 24,
+   "opt": {
+    "stepping": "exact_seq"
+   }
+  },
+  {
+   "name": "nmrom_q0_direct",
+   "q": 0,
+   "opt": {
+    "stepping": "exact_direct"
+   }
+  },
+  {
+   "name": "nmrom_q24_direct",
+   "q": 24,
+   "opt": {
+    "stepping": "exact_direct"
+   }
+  }
+ ],
+ "linear_bank_inits": [
+  "field"
+ ],
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  }
+ },
+ "coarse_intervals": [
+  16,
+  32,
+  64
+ ],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-3"
+}

@@ -1,0 +1,78 @@
+{
+ "model": {
+  "kind": "mlp",
+  "bank": "h3d_primary/bank.pkl",
+  "head": "h3d_primary/head_K32.pkl"
+ },
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 512
+ },
+ "cohorts": [
+  [
+   920399,
+   64
+  ]
+ ],
+ "meshes": [
+  32
+ ],
+ "cases_by_mesh": {
+  "32": 64
+ },
+ "repetitions": 1,
+ "burn_seconds": 0.02,
+ "audit_intervals": 32,
+ "full_audit_cases": 0,
+ "reference_budget": 0.0001,
+ "rom_defaults": {
+  "init": "moments",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "rom_arms": [
+  {
+   "name": "nmrom_q0_cn",
+   "q": 0
+  },
+  {
+   "name": "nmrom_q96_cn",
+   "q": 96
+  },
+  {
+   "name": "nmrom_q96_cn_compress",
+   "q": 96,
+   "opt": {
+    "compress": true
+   }
+  },
+  {
+   "name": "nmrom_q96_direct_1start_compress",
+   "q": 96,
+   "opt": {
+    "stepping": "exact_direct",
+    "starts": 1,
+    "compress": true
+   }
+  }
+ ],
+ "linear_bank_inits": [
+  "moments"
+ ],
+ "cg_arms": {},
+ "coarse_intervals": [],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-4",
+ "local_smoke": true
+}

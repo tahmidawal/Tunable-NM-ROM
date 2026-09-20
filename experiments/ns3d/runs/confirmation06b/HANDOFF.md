@@ -1,4 +1,6 @@
-# NS3D incumbent confirmation is running
+# NS3D incumbent confirmation is complete and accepted
+
+Latest state at 17:34 UTC: the complete development panel is audited, archived and verified from actual Git bytes; the exact completed remote directory is removed. The frozen final successor is submitted as job4027788. Its current handoff is `runs/final07/HANDOFF.md`; the chronology below preserves the earlier running state.
 
 Job **4024180**, source **71fd208d1ea2258a87147d78a56484993bb7fcf6**, launched at 16:36 UTC September 20, is running on an A100 80 GB GPU at pax106. The first driver checkpoint preflight passed and shared training-data regeneration began. The earlier job 4023444 failed in 26 seconds on a path-indexing typo before any data or training; its source/logs and complete failure record are durably retained under `runs/confirmation06` and `artifacts/confirmation06`, and its exact remote directory was removed after copying/checking the successor's immutable reuse files.
 

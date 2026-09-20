@@ -1,0 +1,37 @@
+{
+  "attempt": "hp2048",
+  "intervals": 2048,
+  "training_intervals": 255,
+  "eval_seed": 7090703,
+  "eval_count": 6,
+  "fresh_seed": 7090732,
+  "fresh_count": 6,
+  "model": {
+    "id": "new_K32",
+    "checkpoint": "checkpoints/primary_K32.pkl",
+    "basis": "checkpoints/primary_K32-basis.npz",
+    "training": {"seed": 0, "draw_count": 3072,
+                 "fit_split": {"split_seed": 20260916, "validation_fraction": 0.15}}
+  },
+  "ladder_q": [0, 64, 128, 256],
+  "rows_per_chunk": 256,
+  "eval_rows": 64,
+  "keep_f64": true,
+  "keep_f32": true,
+  "retained_baseline": true,
+  "cg_tolerances": [0.01, 0.001, 0.0001, 1e-06],
+  "cg_maxiter": 100000,
+  "coarse_intervals": [64, 128, 256, 512],
+  "coarse_cg_tolerances": [0.01, 0.0001],
+  "repetitions": 5,
+  "order_seed": 920001,
+  "burn_seconds": 0.1,
+  "parity": {"f64_field": 1e-12, "f32_field": 1e-5},
+  "retained": {
+    "online_preset": {"budget": 300, "tau": 0.0, "stationarity_stop": 1e-06, "starts": 1,
+                      "requested_modes": 256},
+    "stationarity_tolerance": 1e-06,
+    "linear_backward_error_limit": 1e-12,
+    "residual_reconstruction_limit": 1e-10
+  }
+}

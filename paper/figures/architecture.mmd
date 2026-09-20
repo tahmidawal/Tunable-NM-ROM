@@ -13,6 +13,7 @@ flowchart TB
     SOLVE["Reduced solve<br/>Weak residual minimization<br/>Adjust z and y"]
     OUTPUT["Reconstruct<br/>u = G[h(z) + C_q y]<br/>Requested solution fields"]
     INPUT --> INIT --> SOLVE --> OUTPUT
+    INPUT -->|"inputs also enter the weak residual directly<br/>source f, PDE parameters, boundary data"| SOLVE
   end
   PREP -.-> INIT
   PREP -.-> SOLVE
@@ -24,6 +25,7 @@ flowchart TB
   class TRAIN,PREP frozen;
   class INIT,SOLVE,OUTPUT online;
   class INPUT,EQ neutral;
+%% The PDE inputs feed the solve twice: through the initial coordinates and directly through the residual.
 %% z: nonlinear coordinates; y: correction coefficients; q: correction count.
 %% Linear-PDE correction coefficients may be eliminated analytically.
 %% Time-dependent problems repeat the reduced step; reconstruction is at requested times.

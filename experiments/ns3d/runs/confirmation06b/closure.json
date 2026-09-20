@@ -1,0 +1,38 @@
+{
+  "status": "accepted_development_evidence",
+  "source_commit": "71fd208d1ea2258a87147d78a56484993bb7fcf6",
+  "job_id": "4024180",
+  "cohort_count": 8,
+  "cohort_seed": 202609202,
+  "method_count": 30,
+  "paired_invocations": 720,
+  "distinct_saved_fields": 240,
+  "history_checks": 360,
+  "pod_cold_checks": 120,
+  "archive_commit": "bf11ef03570e6e5135f15ab64aa27a43453a9dbe",
+  "archive_bytes": 14464552960,
+  "archive_parts": 216,
+  "exact_remote_deleted": true,
+  "passed_audits": [
+    "checksum_audit",
+    "input_checksum_audit",
+    "source_audit",
+    "audit",
+    "history_audit",
+    "pod_cold_audit",
+    "teacher_audit",
+    "git_archive_audit"
+  ],
+  "summary_file": "paper_summary.json",
+  "final_successor_job": 4027788,
+  "final_successor_source": "7681447fe74efb6c2755bb19304174d6867533e7",
+  "limitations": [
+    "NM physical target failed in development",
+    "Small correction improvement; no strong knob gain",
+    "No NM runtime advantage",
+    "DeepONet remains inaccurate after bounded training repair",
+    "One warm training lineage; not independent seed replication",
+    "Dense full-grid online path"
+  ],
+  "utc": "2026-09-20T17:36:01.459942+00:00"
+}

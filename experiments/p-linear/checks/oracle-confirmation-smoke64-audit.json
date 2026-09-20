@@ -1,0 +1,163 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "complete",
+      "passed": true
+    },
+    {
+      "name": "precision",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:checkpoint",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:metric_hash",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:metric_equations",
+      "passed": true,
+      "gram_relative_defect": 2.8068547725215463e-15,
+      "target_relative_defect": 3.939509783649795e-16
+    },
+    {
+      "name": "64:new_K32:q0:projector",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case0:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case0:gradient",
+      "passed": true,
+      "normalized_gradient": 4.5250595093427555e-08,
+      "jacobian_relative_defect": 5.24904082917592e-16
+    },
+    {
+      "name": "64:new_K32:q0:case0:start_selection",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case0:stationarity",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case1:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case1:gradient",
+      "passed": true,
+      "normalized_gradient": 6.457204971725261e-08,
+      "jacobian_relative_defect": 3.845852614204531e-16
+    },
+    {
+      "name": "64:new_K32:q0:case1:start_selection",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:case1:stationarity",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q0:summary",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:projector",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case0:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case0:gradient",
+      "passed": true,
+      "normalized_gradient": 6.568130089555942e-08,
+      "jacobian_relative_defect": 4.804533752094651e-16
+    },
+    {
+      "name": "64:new_K32:q32:case0:start_selection",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case0:stationarity",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case1:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case1:gradient",
+      "passed": true,
+      "normalized_gradient": 6.60269515745861e-08,
+      "jacobian_relative_defect": 3.492257307124545e-16
+    },
+    {
+      "name": "64:new_K32:q32:case1:start_selection",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:case1:stationarity",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:nested_best_found",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q32:summary",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q512:projector",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q512:case0:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:endpoint:case0",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q512:case1:error",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:endpoint:case1",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q512:nested_best_found",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:q512:summary",
+      "passed": true
+    },
+    {
+      "name": "64:new_K32:independent_full_field",
+      "passed": true,
+      "maximum_absolute_defect": 2.7092653370319048e-11
+    }
+  ],
+  "cases": 6,
+  "maximum_defects": {
+    "objective": 8.951173136040325e-16,
+    "jacobian": 5.24904082917592e-16,
+    "gradient": 1.1174227067386336e-14,
+    "full_field": 2.7092653370319048e-11
+  },
+  "full_bank_audit": true,
+  "result_sha256": "5eb6261cc43da284b46b5b9f54b47f76b043e7b0a62f2e6bfcf69b7c836e7998",
+  "seconds": 0.11299471801612526,
+  "scope": "Independent NumPy decoder, SiLU derivatives, saved coefficient objective, endpoint, brackets and optional regenerated full fields. Finite best-found fit; no global optimum guarantee."
+}

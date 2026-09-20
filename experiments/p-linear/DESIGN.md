@@ -360,3 +360,30 @@ bracket check per rung, marks every $q > 0$ value from the collected jobs **inva
 statement. The correct column requires re-running the untimed oracle with the fixed code
 (a fifth cluster job, `plorc`, ~5 min at each mesh; not launched — the coordinator decides
 whether the column is worth a job). The three-layer picture at $q = 0$ stands as reported.
+
+**2026-09-20, §A11 — full-cohort corrected oracle confirmation prepared before its
+results are observed.** The overnight coordinator authorized remediation of the A10
+retraction. `plin_oracle.py` uses the original frozen checkpoints, all original development
+sources, meshes and correction ranks. It regenerates the original nested direction recipe
+from the recorded training seed and retained prefix. No checkpoint is trained and no timed
+solver invocation or historical result is replaced. The original result hashes and saved
+solved states are extracted by `reports/prepare_oracle_history.py`.
+
+Every correction projector is orthonormalized in the **query** metric. The nonlinear
+residual has bank dimension rather than full-grid dimension, avoiding the A7 Jacobian
+allocation. At the full-bank endpoint the head is redundant; direct triangular projection
+returns the free-bank floor with no nonlinear iteration. The original multistart result
+is retained separately. Additional starts from each retained solved latent at the same
+rank and from the preceding rank safeguard the reported best-found fit and its nested
+bracket. These truth-informed fits are untimed representation diagnostics, never online
+queries or training examples. They are finite optimization upper bounds on the minimum
+representation error, **not proven global minima**.
+
+`oracle_audit_np.py` imports no JAX or driver: it recomputes the coefficient objective,
+explicit SiLU derivatives, normalized gradient, endpoint identity, per-case brackets and
+the summary from saved states. The full audit regenerates the physical source and decoded
+fields independently in NumPy/SciPy, streaming the bank to limit memory. Acceptance checks
+are recorded in `config-oracle.json`; any failed check remains reported. The old invalid
+columns remain retracted in their original records. A new generated confirmation artifact
+will provide corrected columns with their own source and result hashes after collection.
+This is an opened development cohort, with no final-cohort or generalization claim.

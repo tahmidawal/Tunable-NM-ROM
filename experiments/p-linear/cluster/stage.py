@@ -42,13 +42,20 @@ HEAD = COMMON + [f'{LANE}/plin_head.py',
                  f'{LANE}/checkpoints/bankarm_head.pkl',
                  f'{LANE}/references/pbh02-reference.json']
 
+ORACLE = COMMON + [f'{LANE}/plin_solve.py', f'{LANE}/plin_oracle.py',
+                    f'{LANE}/oracle_audit_np.py',
+                    'experiments/p-bank-head/pbh_audit_np.py',
+                    f'{LANE}/references/oracle-history.json']
+
 BODY = {
     'solve': '''"$PY" plin_solve.py --config __CONFIG__ --out ../output''',
     'head': '''"$PY" plin_head.py --config __CONFIG__ --out ../output''',
+    'oracle': '''"$PY" plin_oracle.py --config __CONFIG__ --out ../output
+"$PY" oracle_audit_np.py .. --out ../output/audit.json --full-bank''',
 }
 
 SCRIPT = '''#!/bin/bash
-#SBATCH --job-name=plin___ATTEMPT__
+#SBATCH --job-name=ctol_plin___ATTEMPT__
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:__GPU__:1
@@ -84,7 +91,7 @@ echo ALL-DONE
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode', choices=['solve', 'head'])
+    p.add_argument('mode', choices=['solve', 'head', 'oracle'])
     p.add_argument('attempt')
     p.add_argument('--config', required=True, help='config file name inside experiments/p-linear')
     p.add_argument('--hours', type=int, default=8)
@@ -98,7 +105,7 @@ def main():
     (out / 'logs').mkdir()
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
-    files = {'solve': SOLVE, 'head': HEAD}[a.mode] + [f'{LANE}/{a.config}']
+    files = {'solve': SOLVE, 'head': HEAD, 'oracle': ORACLE}[a.mode] + [f'{LANE}/{a.config}']
     proof = []
     for name in files:
         content = (ROOT / name).read_bytes()

@@ -6,6 +6,7 @@ independently hashed from committed Git bytes before remote cleanup is allowed.
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -135,6 +136,13 @@ def verify(root, run, commit, restore_member=None):
 
 def stage(root, run):
     value = json.loads((run/'DIRECT-RETENTION.json').read_text())
+    blobs = {b['sha256']: b['bytes'] for row in value['files'] for b in (row['chunks'] or [row])}
+    required = sum(blobs.values()) * 1.15
+    free = shutil.disk_usage(run).free
+    gate = dict(passed=required < free, with_15_percent_margin_bytes=required, local_free_bytes=free,
+                scope='Conservative complete unique-blob budget before staging; existing Git blobs only reduce the cost.')
+    (run/'GIT-STAGING-STORAGE-GATE.json').write_text(json.dumps(gate, indent=2)+'\n')
+    assert gate['passed'], f'Insufficient staging headroom: need {required:.0f} bytes, have {free}; preserve raw and remote archives.'
     paths = [run/'DIRECT-RETENTION.json']
     for row in value['files']:
         paths.extend(safe_path(run, c['path']) for c in row['chunks']) if row['chunks'] else paths.append(safe_path(run, row['path']))

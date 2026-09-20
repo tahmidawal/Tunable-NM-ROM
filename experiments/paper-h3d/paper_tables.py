@@ -18,13 +18,15 @@ def passing(row):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('attempt')
+    parser.add_argument('--pending-retention', action='store_true', help='Explicitly labeled numerically audited preview; does not accept or remove the remote archive.')
     args = parser.parse_args()
     assert args.attempt.isalnum()
     lane = Path(__file__).resolve().parent
     run = lane/'runs'/args.attempt
     collected = json.loads((run/'COLLECTED.json').read_text())
-    assert collected['checksums_verified'] and collected['removed']
-    assert collected['actual_git_blob_bytes_verified']
+    assert collected['checksums_verified']
+    if not args.pending_retention:
+        assert collected['removed'] and collected['actual_git_blob_bytes_verified']
     for name in ['audit-local.json', 'audit-states-primary.json', 'audit-panel-primary.json',
                  'audit-field-seedB.json', 'audit-states-seedB.json', 'audit-panel-seedB.json']:
         assert json.loads((run/name).read_text())['passed'], name
@@ -89,10 +91,12 @@ def main():
         NM_ROM='Nonlinear-manifold reduced-order model with a learned bank and latent head; q counts added bank correction directions.',
         evolved_times='The five requested output times after the supplied initial time; initial-field compression is separately retained in raw results.')
     result = dict(schema='heat3d-audited-paper-rows-v1', attempt=args.attempt, source=sources,
-                  archive_commit=collected['complete_archive_commit'], rows=rows, glossary=glossary,
+                  status='numerically_audited_pending_complete_git_retention' if args.pending_retention else 'accepted',
+                  archive_commit=collected.get('complete_archive_commit'), rows=rows, glossary=glossary,
                   comparator_policy='Descriptive error-matched comparison within each completed cohort. Final ratios use only prospectively frozen CG arms; all rows remain visible and no model selection or retraining uses final fields. Direct DST remains visible. CG uses identity preconditioning and warm starts, with independent true-residual audits.')
-    (run/'paper-tables.json').write_text(json.dumps(result, indent=2)+'\n')
-    with (run/'paper-tables.csv').open('w', newline='') as stream:
+    stem = 'paper-tables-pending-retention' if args.pending_retention else 'paper-tables'
+    (run/(stem+'.json')).write_text(json.dumps(result, indent=2)+'\n')
+    with (run/(stem+'.csv')).open('w', newline='') as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
     print('PAPER_ROWS_GENERATED', len(rows), uuids[0])
 

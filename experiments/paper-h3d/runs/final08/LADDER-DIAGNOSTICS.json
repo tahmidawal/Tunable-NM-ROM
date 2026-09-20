@@ -1,0 +1,232 @@
+{
+  "schema": "heat3d-fixed-ladder-diagnostics-v1",
+  "attempt": "final08",
+  "status": "numerically_audited_pending_complete_git_retention",
+  "final_based_selection": false,
+  "source_result_sha256": {
+    "primary": "3f1fbef95586fc53e78e605bbb4140d8faafe4a8da27017a23e985bee6db8f17",
+    "seedB": "100a21f06e8e4c1db4d7e137cf2faf365114c78640299698dc28f13932f64a4d"
+  },
+  "panels": [
+    {
+      "cohort": "primary",
+      "intervals": 32,
+      "points": [
+        {
+          "q": 0,
+          "method": "nmrom_K32_q0_dense",
+          "median_rel_l2": 0.003364206959064916,
+          "worst_rel_l2": 0.01561584941191253,
+          "device_ms": 38.352411007508636,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 32,
+          "method": "nmrom_K32_q32_dense",
+          "median_rel_l2": 0.0028052021199066078,
+          "worst_rel_l2": 0.014288642293411471,
+          "device_ms": 41.983284056186676,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 64,
+          "method": "nmrom_K32_q64_dense",
+          "median_rel_l2": 0.002349879979974811,
+          "worst_rel_l2": 0.011232529790455593,
+          "device_ms": 49.32728339917958,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 96,
+          "method": "nmrom_K32_q96_dense",
+          "median_rel_l2": 0.0021050037819506017,
+          "worst_rel_l2": 0.00761781553583974,
+          "device_ms": 77.7792395092547,
+          "nonstationary_cases": 0
+        }
+      ],
+      "transitions": [
+        {
+          "q_from": 0,
+          "q_to": 32,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -0.00010787257396480143,
+          "largest_error_ratio": 0.9346393813543117
+        },
+        {
+          "q_from": 32,
+          "q_to": 64,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -7.96240225050752e-05,
+          "largest_error_ratio": 0.9483498479476645
+        },
+        {
+          "q_from": 64,
+          "q_to": 96,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -5.655523483660829e-05,
+          "largest_error_ratio": 0.9648530557442188
+        }
+      ],
+      "worst_error_monotone": true,
+      "median_error_monotone": true,
+      "every_case_monotone": true,
+      "worst_error_improvement_factor": 2.049911728427162,
+      "median_error_improvement_factor": 1.5981952089166669,
+      "device_cost_factor": 2.028014340324708
+    },
+    {
+      "cohort": "primary",
+      "intervals": 64,
+      "points": [
+        {
+          "q": 0,
+          "method": "nmrom_K32_q0_dense",
+          "median_rel_l2": 0.0033563095920569963,
+          "worst_rel_l2": 0.01547197812457824,
+          "device_ms": 40.37753585726023,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 32,
+          "method": "nmrom_K32_q32_dense",
+          "median_rel_l2": 0.0028245426647839035,
+          "worst_rel_l2": 0.014062454269115116,
+          "device_ms": 44.52977213077247,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 64,
+          "method": "nmrom_K32_q64_dense",
+          "median_rel_l2": 0.002357341835243487,
+          "worst_rel_l2": 0.011017042536295178,
+          "device_ms": 52.210225723683834,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 96,
+          "method": "nmrom_K32_q96_dense",
+          "median_rel_l2": 0.002094098348932864,
+          "worst_rel_l2": 0.007542092089366933,
+          "device_ms": 85.4373979382217,
+          "nonstationary_cases": 0
+        }
+      ],
+      "transitions": [
+        {
+          "q_from": 0,
+          "q_to": 32,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -0.00017497033380278575,
+          "largest_error_ratio": 0.9173876228482669
+        },
+        {
+          "q_from": 32,
+          "q_to": 64,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -0.00010782726048432726,
+          "largest_error_ratio": 0.9418213307976585
+        },
+        {
+          "q_from": 64,
+          "q_to": 96,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -6.878149844398765e-05,
+          "largest_error_ratio": 0.96523520997235
+        }
+      ],
+      "worst_error_monotone": true,
+      "median_error_monotone": true,
+      "every_case_monotone": true,
+      "worst_error_improvement_factor": 2.0514172912832893,
+      "median_error_improvement_factor": 1.6027468785156844,
+      "device_cost_factor": 2.1159636447418153
+    },
+    {
+      "cohort": "seedB",
+      "intervals": 32,
+      "points": [
+        {
+          "q": 0,
+          "method": "nmrom_K32_q0_dense",
+          "median_rel_l2": 0.0031847725392405188,
+          "worst_rel_l2": 0.014922442884331907,
+          "device_ms": 36.55062150210142,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 32,
+          "method": "nmrom_K32_q32_dense",
+          "median_rel_l2": 0.0027669855437902164,
+          "worst_rel_l2": 0.011574843790373676,
+          "device_ms": 41.3622404448688,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 64,
+          "method": "nmrom_K32_q64_dense",
+          "median_rel_l2": 0.002325279311420951,
+          "worst_rel_l2": 0.009370322537866738,
+          "device_ms": 49.39452139660716,
+          "nonstationary_cases": 0
+        },
+        {
+          "q": 96,
+          "method": "nmrom_K32_q96_dense",
+          "median_rel_l2": 0.0019045392829084371,
+          "worst_rel_l2": 0.007921651749949446,
+          "device_ms": 86.64072304964066,
+          "nonstationary_cases": 0
+        }
+      ],
+      "transitions": [
+        {
+          "q_from": 0,
+          "q_to": 32,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -0.00017913271075352833,
+          "largest_error_ratio": 0.9396293077378665
+        },
+        {
+          "q_from": 32,
+          "q_to": 64,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -0.00011563834326530566,
+          "largest_error_ratio": 0.928835630220792
+        },
+        {
+          "q_from": 64,
+          "q_to": 96,
+          "regressing_cases": [],
+          "improving_cases": 64,
+          "largest_absolute_error_increase": -6.469067256577809e-05,
+          "largest_error_ratio": 0.9565688246410302
+        }
+      ],
+      "worst_error_monotone": true,
+      "median_error_monotone": true,
+      "every_case_monotone": true,
+      "worst_error_improvement_factor": 1.8837539638658236,
+      "median_error_improvement_factor": 1.6722010240592293,
+      "device_cost_factor": 2.3704309116784614
+    }
+  ],
+  "glossary": {
+    "q": "Prospectively fixed number of bank correction directions.",
+    "median_rel_l2": "Median across query cases of maximum evolved-time current-relative L2 error.",
+    "worst_rel_l2": "Maximum across cases and evolved times of current-relative L2 error.",
+    "device_ms": "Median synchronized same-allocation query time, in milliseconds.",
+    "regressing_cases": "Zero-based case IDs whose evolved-time error increases by more than an absolute 1e-12 error fraction at this fixed q transition.",
+    "every_case_monotone": "Every query case is nonincreasing at every declared adjacent q transition; this is stronger than a monotone median or worst.",
+    "device_cost_factor": "Highest-q median query time divided by q0 median query time; a within-job comparison.",
+    "improvement_factor": "q0 aggregate error divided by highest-q aggregate error; larger values mean more aggregate error reduction."
+  }
+}

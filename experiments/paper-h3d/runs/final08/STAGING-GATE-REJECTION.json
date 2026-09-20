@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "insufficient_space_rejected_before_any_git_add": true,
+  "stderr": "Traceback (most recent call last):\n  File \"/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/direct_retention.py\", line 177, in <module>\n    if __name__ == '__main__': main()\n                               ^^^^^^\n  File \"/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/direct_retention.py\", line 169, in main\n    elif args.stage: stage(root, run)\n                     ^^^^^^^^^^^^^^^^\n  File \"/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/direct_retention.py\", line 145, in stage\n    assert gate['passed'], f'Insufficient staging headroom: need {required:.0f} bytes, have {free}; preserve raw and remote archives.'\n           ~~~~^^^^^^^^^^\nAssertionError: Insufficient staging headroom: need 30240944413 bytes, have 7465029632; preserve raw and remote archives.\n"
+}

@@ -37,6 +37,9 @@ def _convolve(p, x, periodic=False):
 
 
 def init_model(key, spec, in_channels, out_channels):
+    if spec['kind'] in ('deeponet3d', 'transolver3d'):
+        from .extra_models3d import init_extra
+        return init_extra(key, spec, in_channels, out_channels)
     keys=iter(jax.random.split(key,100));width=spec['width'];kind=spec['kind']
     if kind=='fno3d':
         modes=tuple(spec['modes']);layers=[]
@@ -76,6 +79,9 @@ def spectral_convolve(weights, x, modes):
 
 def apply_model(params, x, spec):
     assert x.dtype==jnp.float64
+    if spec['kind'] in ('deeponet3d', 'transolver3d'):
+        from .extra_models3d import apply_extra
+        return apply_extra(params, x, spec)
     if spec['kind']=='fno3d':
         nx,ny,nz=x.shape[1:4];pad=spec.get('padding',0)
         h=_linear(params['lift'],x)

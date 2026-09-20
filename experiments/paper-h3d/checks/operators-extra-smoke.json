@@ -1,0 +1,34 @@
+{
+  "jax_backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "numpy_physics_relative": 1.6808808671318164e-16,
+  "upstream_structured_3d_relative": 2.0112737175957585e-16,
+  "checks": [
+    {
+      "kind": "deeponet3d",
+      "periodic": false,
+      "parameters": 4650,
+      "loss": 0.039998159601728124
+    },
+    {
+      "kind": "deeponet3d",
+      "periodic": true,
+      "parameters": 4650,
+      "loss": 0.03999938937053712
+    },
+    {
+      "kind": "transolver3d",
+      "periodic": false,
+      "parameters": 1562,
+      "loss": 0.052488573763000805
+    },
+    {
+      "kind": "transolver3d",
+      "periodic": true,
+      "parameters": 1562,
+      "loss": 0.05276255442062521
+    }
+  ],
+  "patch_roundtrip": true
+}

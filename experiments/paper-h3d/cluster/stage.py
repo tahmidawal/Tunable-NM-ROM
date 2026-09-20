@@ -9,6 +9,9 @@ ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/paper-h3d'
 NAMESPACE='/cluster/tufts/paralab/tawal01/paper_h3d_20260920'
 FILES=['DESIGN.md','config.json','common.py','train.py','rom.py','run.py','audit.py','cluster/stage.py','cluster/collect.py','operators/__init__.py','operators/models3d.py','operators/training.py','operators/heat_adapter.py','operators/smoke.py','operators/train_smoke.py','operators/README.md']
+FILES += ['operators/extra_models3d.py','operators/extra_smoke.py','operators/extra_train_smoke.py',
+          'operators/upstream/PROVENANCE.json','operators/upstream/Physics_Attention.py',
+          'operators/upstream/prior_families.py','operators/upstream/LICENSE']
 
 
 def main():

@@ -220,5 +220,7 @@ if __name__=='__main__':
                    bank_coefficient_refit_every=1,checkpoint_every=1)
         for setting in cfg.get('operators',[]):
             setting['model'].update(width=2,modes=[2,2,2],depth=1,padding=1,levels=2)
+            if setting['model']['kind'] in ('deeponet3d','transolver3d'):
+                setting['model'].update(rank=4,trunk_width=8,pool_bins=2,heads=2,slices=4,patch=2,reference_grid=2)
             setting['training'].update(steps=3,wall_seconds=20,batch_size=2,validation_every=2)
     run(cfg,Path(args.out),args.smoke)

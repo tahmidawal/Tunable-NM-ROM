@@ -36,8 +36,8 @@ Metric $\max_n \lVert\tilde x(t_n)-x(t_n)\rVert_2/\lVert x(t_n)\rVert_2$, larger
 (published < 1 %, tolerance ×1.5 for unpublished details: activation choice, scaling, GN stopping rule,
 f32 PyTorch vs JAX initialisation streams) **and** the LS-LSPG control at $n_s=5$ ≥ 10 % (published ≈ 35 %),
 so a pass cannot come from an easy problem. HR gate (secondary, gates only the HR arm): NM-LSPG-HR at
-55/58 ≤ 2 %. Paper-ambiguity variants allowed if the first attempt fails, at most three, all reported:
-activation swish↔sigmoid, per-feature↔global scaling, f32↔f64 training. If none passes, the lane says so
+55/58 ≤ 2 %. Paper-ambiguity variants if the first attempt fails: a fixed sequence of at most three attempts *including the first*
+(Section 6, finding 3), all reported. If none passes, the lane says so
 and no Kim-baseline number is used in any comparison.
 
 Unimplemented/unknown details, declared: their residual-snapshot source for $\Phi_r$ is not stated in
@@ -96,7 +96,7 @@ sampling; we evaluate the same sub-network densely on GPU).
 - POD-LSPG at matched K on our family must be worse than NM arms; if not, say the family does not
   discriminate.
 - Mask tables are tested against the paper's dense construction (`test_mask.py`).
-- HR parity: with all rows sampled and a full-rank basis the HR path must reproduce NM-LSPG to 1e-8.
+- HR parity: the active-path sub-network residual rows must equal the sampled rows of the full residual to 1e-9 (asserted in every HR build). The all-rows/full-basis rollout control first written here was not implemented (audit finding 12).
 - NumPy audit recomputes every reported error from saved fields.
 
 ## 5. Stop rules and budget
@@ -104,6 +104,35 @@ sampling; we evaluate the same sub-network densely on GPU).
 ≤ 2 running, ≤ 8 total GPU jobs: J1 gate; J2 tuning sweep 128²; J3–J5 final 128²/256²/512²; 3 spare.
 Stop the Kim arm if the gate fails after three variants. Cut (B) unless J1–J5 finish with > 1 day left.
 Missing the bar or losing to a baseline is reported as such.
+
+## 6. Independent audit and amendments (before any GPU job)
+
+Codex CLI 0.155.1 (`gpt-6-astra`, `--sandbox read-only`). First run could not read files (its bubblewrap sandbox cannot
+start on this box: `checks/codex-design-audit-01-blocked-sandbox.txt`); the sandbox was **not** loosened — the files were
+inlined into the prompt instead (`checks/codex-design-audit-02.txt`, 22 findings). Dispositions:
+
+| # | finding | disposition |
+|---|---|---|
+| 1 | diverged seeds dropped from the gate median | **fixed**: exactly three distinct seeds, diverged = ∞ |
+| 2 | broken LS control could pass; 34–38 % is LS-LSPG-**HR** | **fixed**: control must be finite and converged (GN cap hits ≤ 1 % of steps); the label now says our control is LS-LSPG without HR |
+| 3 | variants after seeing the test error are selection | **amended**: fixed sequence, the original attempt counts as one of three — attempt 1 swish / per-feature / f32; attempt 2 swish / global / f32; attempt 3 sigmoid / per-feature / f32. A pass on attempt 2 or 3 is reported as an *adapted* reproduction, all attempts printed |
+| 4 | HR gate not computed, downstream not bound | **fixed**: `gate.hr_passed` written; `family.py --gate` refuses to run unless the gate passed and `kimae.py`/`lspg.py` hashes equal the gate's; HR arms only if `hr_passed` |
+| 5 | normalisation is an interpretation | **declared**: $x_n=(x-x_{ref})/s$, $s_i=\max|x-x_{ref}|_i$ over the AE fitting split (range within $[-1,1]$, not affine min–max); $x_{ref}(\mu)=x_0(\mu)$ is our reading of their $x_{ref}(\mu)$; family floor $10^{-3}\max s$ is a tuned adaptation; scaling statistics now come from the fitting split only |
+| 6 | mask API wrong for $\delta b>b$ | **fixed**: assert $0<\delta b\le b$; $b=100,\delta b=10$ is inferred from $M_2=33730$ (not unique; declared) |
+| 7 | "Kaiming" variant unknown | **declared**: PyTorch `nn.Linear` default, fan-in $M_2$ for the pruned layer |
+| 8 | ragged last batch dropped; budget included compile | **fixed**: tail batch is a separate Adam step; wall budget starts after the first epoch; non-finite validation stops the run; `truncated` recorded |
+| 9 | dtype metadata | **fixed**: dtype strings validated, integer Adam step, `highest` asserted in the gate, training/online dtype recorded separately. f32 training is a declared reproduction exception (PyTorch default); online LSPG is f64 |
+| 10 | GN may silently fail | **partly fixed**: cap hits and last step norms reported per arm; plain GN without damping is the published algorithm and is kept |
+| 11–12 | symmetric test problem hides ordering bugs; parity coverage | **accepted as limitation** for the gate problem; the family residual is the project's own `engines.residual`, and sub-network rows are checked against it on asymmetric states in every HR build |
+| 13–14 | residual-snapshot source, sampler parity | **declared adaptations**; sampled-basis singular values recorded |
+| 15 | "projection floor" is not a lower bound | **fixed**: renamed *autoencode error* |
+| 16 | POD had only the zero reference | **fixed**: POD-LSPG runs with both reference conventions; POD beating NM is a result, not a failed control |
+| 17 | checkpoint leakage unguarded | **limitation**: the frozen checkpoint's training draws (4608 trajectories, other seed stream) cannot be regenerated here; b-panel's descriptor-distance gate covered its cohort, not this one. Stated in the report |
+| 18 | HR re-selected per mesh | **amended**: HR (basis, samples) is re-selected per mesh on the tuning subset — extra tuning in the baseline's favour, declared |
+| 19 | `ours_q256` solves 272 unknowns | **fixed**: `solved_dimension` printed for every arm |
+| 20 | timing outputs not audited | **fixed**: timed outputs are saved and must be bit-identical across repetitions; the collector recomputes their errors; minima (≥5 reps, ≥4 cases, ≥0.25 s burn) asserted |
+| 21 | memory contamination | **fixed/limited**: every subject is an outer-jitted query so XLA memory analysis exists for all; inactive subjects live on the host during training; process peak is labelled whole-process |
+| 22 | f32 saved fields | **fixed** for $L\le256$ (f64); 512² saves f32 with a stated audit tolerance |
 
 ## Glossary
 

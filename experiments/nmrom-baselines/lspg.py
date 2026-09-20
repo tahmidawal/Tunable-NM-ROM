@@ -29,7 +29,11 @@ def make_rollout(resfun, nsteps, max_it=20, tol=1e-8, save_every=1, keep_residua
             return z + dz, it + 1, jnp.linalg.norm(dz), jnp.linalg.norm(r)
         z, it, dn, rn = jax.lax.while_loop(cond, body, (zprev, jnp.int32(0), jnp.asarray(1e30, zprev.dtype),
                                                        jnp.asarray(0., zprev.dtype)))
+        # it: GN iterations; dn: norm of the LAST step taken (the stopping quantity; > tol*(1+|z|) means the
+        # cap was hit or the step went non-finite); rn: residual norm at the iterate BEFORE the last step.
         return z, it, dn, rn
+
+    assert nsteps % save_every == 0
 
     def rollout(z0, args):
         def block(z, _):

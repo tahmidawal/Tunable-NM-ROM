@@ -27,7 +27,8 @@ def main():
     ap.add_argument('--train-wall', type=float, default=3000., help='seconds per autoencoder')
     ap.add_argument('--act', default='swish')
     ap.add_argument('--scale', default='feature', choices=['feature', 'global'])
-    ap.add_argument('--train-dtype', default='float32')
+    ap.add_argument('--train-dtype', default='float32', choices=['float32', 'float64'])
+    ap.add_argument('--attempt', type=int, default=1, help='1 = pre-registered recipe; 2,3 = declared paper-ambiguity variants')
     ap.add_argument('--hr', type=int, nargs='*', default=[55, 58, 51, 54, 44, 47, 40, 40, 60, 60],
                     help='pairs: residual basis, samples')
     ap.add_argument('--allow-cpu', action='store_true')
@@ -40,6 +41,7 @@ def main():
     print(f'jax_backend={backend}', flush=True)
     if backend != 'gpu' and not a.allow_cpu:
         sys.exit(42)
+    assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
     sys.path.insert(0, str(HERE))
     import kimae, lspg
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
@@ -92,7 +94,8 @@ def main():
     def maxrel(approx, truth):   # larger of u and v, max over n>=1 (paper: n in N(Nt))
         e = [np.max(np.linalg.norm((approx - truth)[1:, s], axis=1) / np.linalg.norm(truth[1:, s], axis=1))
              for s in (slice(0, n), slice(n, 2 * n))]
-        return dict(u=float(e[0]), v=float(e[1]), max=float(max(e)))
+        e = [float(x) if np.isfinite(x) else float('inf') for x in e]
+        return dict(u=e[0], v=e[1], max=max(e))
 
     # ------------------------------------------------------------ data, reference x_ref(mu) = x_0(mu)
     D = np.concatenate([snaps[mu] - snaps[mu][:1] for mu in mus_train])       # (6004, 2n)
@@ -123,7 +126,8 @@ def main():
     Zls, (it, dn, rn) = ls_roll(jnp.zeros(2 * a.ns), (jnp.asarray(ref), *Phij))
     Zls = np.asarray(Zls)
     ls_field = ref + np.concatenate((Zls[:, :a.ns] @ Phi[0].T, Zls[:, a.ns:] @ Phi[1].T), 1)
-    results['ls_lspg'] = dict(error=maxrel(ls_field, truth), gn_iterations_max=int(np.max(it)),
+    results['ls_lspg'] = dict(error=maxrel(ls_field, truth), gn_iterations_max=int(np.max(it)), gn_cap_hits=int(np.sum(np.asarray(it) >= 20)),
+                              last_step_norm_max=float(np.max(dn)),
                               finite=bool(np.isfinite(ls_field).all()))
     proj = ref + np.concatenate(((truth - ref)[:, :n] @ Phi[0] @ Phi[0].T, (truth - ref)[:, n:] @ Phi[1] @ Phi[1].T), 1)
     results['ls_projection'] = maxrel(proj, truth)
@@ -170,7 +174,8 @@ def main():
         t0 = time.perf_counter(); Z, (it, dn, rn) = roll(z0, args); Z.block_until_ready(); tq = time.perf_counter() - t0
         field = np.asarray(decv(Z, args))
         rec['nm_lspg'] = dict(error=maxrel(field, truth), seconds_warm=tq, gn_iterations_mean=float(np.mean(it)),
-                              gn_iterations_max=int(np.max(it)), finite=bool(np.isfinite(field).all()),
+                              gn_iterations_max=int(np.max(it)), gn_cap_hits=int(np.sum(np.asarray(it) >= 20)),
+                              last_step_norm_max=float(np.max(dn)), finite=bool(np.isfinite(field).all()),
                               ic_error=float(np.linalg.norm(field[0] - truth[0]) / np.linalg.norm(truth[0])))
         print(f'NM-LSPG seed={seed}', rec['nm_lspg'], 'projection', rec['nm_projection'], flush=True)
         np.savez(out / f'fields_seed{seed}.npz', nm_lspg=field, Z=np.asarray(Z))
@@ -224,7 +229,8 @@ def main():
                 t0 = time.perf_counter(); Zh, _ = hroll(z0, hargs); Zh.block_until_ready(); th = time.perf_counter() - t0
                 fh = np.asarray(decv(Zh, args))
                 rec['hr'].append(dict(subnet_parity=parity, residual_basis=nr, samples=nz, nodes_evaluated=int(need.size),
-                                      active_hidden=[subs[0][2], subs[1][2]], error=maxrel(fh, truth) if np.isfinite(fh).all() else None,
+                                      active_hidden=[subs[0][2], subs[1][2]], error=maxrel(fh, truth), finite=bool(np.isfinite(fh).all()),
+                                      sampled_basis_singular_values=[float(x) for x in np.linalg.svd(Phir[rows], compute_uv=False)[[0, -1]]],
                                       seconds_warm=th, gn_iterations_mean=float(np.mean(ith))))
                 print(f'NM-LSPG-HR seed={seed}', rec['hr'][-1], flush=True)
                 if (nr, nz) == (a.hr[0], a.hr[1]):
@@ -232,11 +238,24 @@ def main():
         results['seeds'].append(rec)
         (out / 'summary.json').write_text(json.dumps(results, indent=2, default=str) + '\n')
 
-    errs = [r['nm_lspg']['error']['max'] for r in results['seeds'] if r['nm_lspg']['finite']]
-    med = float(np.median(errs)) if errs else None
-    results['gate'] = dict(rule='median over seeds of NM-LSPG max relative error <= 1.5 % AND LS-LSPG control >= 10 %',
-                           nm_lspg_median=med, ls_lspg=results['ls_lspg']['error']['max'],
-                           passed=bool(med is not None and med <= .015 and results['ls_lspg']['error']['max'] >= .10))
+    # Gate decision (DESIGN.md Section 2). A seed that diverges counts as infinite error; the control must be a
+    # numerically valid solve; exactly three distinct seeds are required for a decision.
+    seeds_ok = len(set(a.seeds)) == 3 and len(a.seeds) == 3
+    errs = [r['nm_lspg']['error']['max'] if r['nm_lspg']['finite'] else float('inf') for r in results['seeds']]
+    med = float(np.median(errs)) if len(errs) == 3 else float('inf')
+    ls = results['ls_lspg']
+    ls_valid = bool(ls['finite'] and np.isfinite(ls['error']['max']) and ls['gn_cap_hits'] <= .01 * a.nt)
+    hr_errs = [next((h['error']['max'] if h['finite'] else float('inf') for h in r.get('hr', [])
+                     if (h['residual_basis'], h['samples']) == (55, 58)), float('inf')) for r in results['seeds']]
+    hr_med = float(np.median(hr_errs)) if len(hr_errs) == 3 else float('inf')
+    passed = bool(seeds_ok and med <= .015 and ls_valid and ls['error']['max'] >= .10)
+    results['gate'] = dict(rule='median over exactly three distinct seeds of NM-LSPG max relative error <= 1.5 % (diverged seed = inf) '
+                                'AND a converged, finite LS-LSPG control >= 10 %; HR gate: median NM-LSPG-HR (55 basis / 58 samples) <= 2 %',
+                           note='published 34-38 % is LS-LSPG-HR; this control is LS-LSPG without HR (their Fig. 13 shows LS-LSPG >> NM-LSPG at n_s=5)',
+                           attempt=a.attempt, seeds=a.seeds, nm_lspg_errors=errs, nm_lspg_median=med, ls_lspg=ls['error']['max'], ls_valid=ls_valid,
+                           hr_errors=hr_errs, hr_median=hr_med, passed=passed, hr_passed=bool(passed and hr_med <= .02),
+                           recipe=dict(act=a.act, scale=a.scale, train_dtype=a.train_dtype, b=a.b, db=a.db, ns=a.ns, nx=a.nx, nt=a.nt,
+                                       online_dtype='float64'))
     results['source_sha256'] = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in ('gate_kim2d.py', 'kimae.py', 'lspg.py')}
     results['provenance'] = dict(job_id=os.environ.get('SLURM_JOB_ID'), gpu=str(jax.devices()[0].device_kind), backend=backend,
                                  commit=os.environ.get('SOURCE_COMMIT'), jax=jax.__version__,

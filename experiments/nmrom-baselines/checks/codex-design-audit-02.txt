@@ -1,0 +1,1630 @@
+OpenAI Codex v0.155.1
+--------
+workdir: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-nmrom-baselines/experiments/nmrom-baselines
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a0c114-b9e1-7ac1-9f26-27f54478f87e
+--------
+user
+You are an independent auditor. Your sandbox cannot run shell commands here, so every file is inlined below; do not try to read the disk. Audit adversarially and concisely: (1) does the JAX implementation faithfully implement Kim et al. 2022 shallow masked autoencoder (mask construction, M2, init, normalisation, training protocol), NM-LSPG Gauss-Newton and NM-LSPG-HR (gappy POD residual, greedy oversampling, active-path subnet)? List every deviation and whether it could bias the reproduction gate up or down. (2) Bugs: indexing/ordering of the 2D FOM (backward differences, Dirichlet), the neighbour table vs loc ordering in the HR residual, the error metric, dtype handling, the plateau/early-stopping logic, greedy_samples. (3) Is the pre-registered gate (median of 3 seeds <= 1.5% and LS-LSPG control >= 10%) sound and can the controls fail? (4) Fairness risks in the planned comparison on the shared Burgers family (DESIGN.md Section 3 and family.py): data leakage, tuning on validation, metric mismatches, timing/memory methodology. Give a numbered list of findings with severity (blocker/major/minor) and concrete fixes.
+
+===== FILE DESIGN.md =====
+# nmrom-baselines — is our NM-ROM better than other nonlinear-manifold ROMs?
+
+Lane of the 2026-09-20 speed-and-accuracy campaign (`reports/2026-09-20-speed-accuracy-campaign-protocol.md`
+on `main` is the binding contract). Worktree `worktrees/2026-09-20-nmrom-baselines`, branch
+`exp/2026-09-20-nmrom-baselines` (fork `exp/2026-09-14-no-audit` @ `f3510e88`), cluster namespace
+`/cluster/tufts/paralab/tawal01/nmrombase_20260920/`. This file was written before any GPU job.
+
+## 1. Question
+
+There is no evidence either way on whether the project's bank+head+correction NM-ROM is better than
+published nonlinear-manifold ROMs. This lane implements, in JAX,
+
+- **(A) Kim, Choi, Widemann, Zohdi 2022** (JCP 451:110841, arXiv 2009.11990): shallow masked (sparse)
+  autoencoder, LSPG projection, Gauss–Newton, gappy-POD hyper-reduction with an active-path sub-network;
+- **(B) Lee & Carlberg 2020** convolutional autoencoder + LSPG — *only if time permits; first thing cut.*
+
+and compares them with the frozen checkpoint `sep_hfit_dense_mid_N256_dense.pkl` (K=16, R=512,
+sha256 `18f0266a…d6b589`) on the shared Burgers 2D family at 128², 256², 512² intervals.
+
+## 2. Gate (nothing from a baseline is used unless it passes)
+
+Reproduce Kim et al. Section 6.2: vector 2D Burgers, $Re=10^4$, $\Omega=[0,1]^2$, $t\in[0,2]$, zero
+Dirichlet, $u_0=v_0=\mu\sin 2\pi x\sin 2\pi y$ on $[0,\tfrac12]^2$, $n_x=n_y=60$ (3364 interior nodes per
+component), backward differences for advection, central for diffusion, backward Euler $n_t=1500$;
+training $\mu\in\{0.9,0.95,1.05,1.1\}$ (6004 snapshots, 10 % validation), test $\mu=1$; two autoencoders
+(u and v), $n_s=5$ each, $M_1=6728$, $M_2=33730$ (which fixes $b=100,\ \delta b=10$ since
+$M_2=(n-1)\delta b+b$), Adam lr $10^{-3}$, ×0.1 on a 10-epoch training-loss plateau, batch 240, ≤ 10 000
+epochs, stop after 200 epochs without validation improvement, Kaiming (PyTorch default) initialisation.
+Reference state $x_{ref}(\mu)=x_0(\mu)$, $\hat x_0=h(0)$; per-feature scaling to $[-1,1]$.
+
+Published numbers: NM-LSPG "less than 1 %" maximum relative error at $n_s=5,n_{train}=4$ (their Fig. 14);
+NM-LSPG-HR 0.93–0.98 % (Table 3, 55 residual basis / 58 samples best); LS-LSPG-HR 34–38 %.
+Metric $\max_n \lVert\tilde x(t_n)-x(t_n)\rVert_2/\lVert x(t_n)\rVert_2$, larger of u and v.
+
+**Pre-registered pass rule:** median over three training seeds of the NM-LSPG (no HR) error ≤ **1.5 %**
+(published < 1 %, tolerance ×1.5 for unpublished details: activation choice, scaling, GN stopping rule,
+f32 PyTorch vs JAX initialisation streams) **and** the LS-LSPG control at $n_s=5$ ≥ 10 % (published ≈ 35 %),
+so a pass cannot come from an easy problem. HR gate (secondary, gates only the HR arm): NM-LSPG-HR at
+55/58 ≤ 2 %. Paper-ambiguity variants allowed if the first attempt fails, at most three, all reported:
+activation swish↔sigmoid, per-feature↔global scaling, f32↔f64 training. If none passes, the lane says so
+and no Kim-baseline number is used in any comparison.
+
+Unimplemented/unknown details, declared: their residual-snapshot source for $\Phi_r$ is not stated in
+detail; we use the NM-LSPG residuals at converged steps on the four training parameters. Their timing is a
+CPU NumPy/PyTorch implementation; ours is GPU JAX, so **their speed-ups are not a reproduction target**.
+
+## 3. Comparison on the shared Burgers family (only after the gate)
+
+Family (`experiments/mr-burgers2d/engines.py`, sha `820039e5…`): scalar
+$u_t+u(u_x+u_y)=\nu\Delta u$, Gaussian bump IC with 5 descriptors, $\nu\in[0.01,0.1]$ log-uniform,
+$T=0.25$, sign-upwind + backward Euler, $\Delta t=0.005$ (50 steps), zero Dirichlet, state = $(L-1)^2$ interior.
+Split = the shared neural-operator protocol (`dataset_seed=20260914`, `pde_seed_code=22`): **128 train,
+32 validation** parameter draws, regenerated from seed on the cluster and value-checked against the
+read-only cache index (`pilot-data01`, index sha256 train `5333584b…`, validation `468b9e70…`).
+The final cohort stays sealed. Inside train, cases 0–111 fit the autoencoder and cases 112–127 are the
+**tuning subset** on which every hyper-parameter choice is made; validation cases are never used to choose.
+
+Baseline training data (as the method prescribes): all 51 same-grid FOM states of each fit trajectory at the
+target mesh (5712 snapshots), Newton 1e-9 / BiCGStab 1e-7.
+
+**Metric:** fixed-initial relative error against the same-grid reference FOM (`fft_tight`: dt 0.005, Newton
+1e-6, linear 1e-8), $\max$ over the five evolved output times $t\in\{.05,…,.25\}$ and over the 32 validation
+cases ("worst evolved same-grid"); median, all-times value and projection (autoencode-only) error reported
+beside it.
+
+**Arms per mesh** (K = 8, 16, 32): Kim NM-LSPG; Kim NM-LSPG-HR (their online algorithm); POD-LSPG at the
+same K (linear control — must be clearly worse than the nonlinear arms, or the family is too easy to
+discriminate); our ROM q=0 (fast) and q=256 dense (accurate), K=16 only (one frozen checkpoint exists);
+FOM `fft_tight` and `nt1e-4_dt005`. No coarse-grid/refined-reference arm: this lane's question is
+reduced-vs-reduced on the same grid; FOM rows are printed so nobody reads a reduced-vs-reduced win as a
+win over the full-order solve.
+
+**Fair tuning (documented sweep, tuning subset only, at 128², K=16, then frozen for all meshes):**
+reference state {IC, zero}; scaling {per-feature, global}; mask $(b,\delta b)$ ∈ {(100,10),(50,5),(200,20)};
+encoder width $M_1$ ∈ {2n (published), 4096, 1024}; lr {1e-3, 3e-4}; plateau patience {10, 50}; GN cap {20};
+HR (basis, samples) grid. Selected by worst evolved LSPG error on the tuning subset.
+The published $M_1=2n$ dense encoder needs $2n^2$ weights: 5.2e8 at 128², **8.5e9 at 256² (34 GB f32 before
+Adam state) and 1.4e11 at 512²** — the prescribed recipe stops fitting an 80 GB GPU at 256². That is a
+reported finding; the capped-$M_1$ variant is what runs above 128², labelled as our adaptation.
+
+**Timing:** one allocation per mesh; every arm, our ROM and the FOMs interleaved in a fresh random order
+per (repetition, case); 0.25 s GPU burn-in before every invocation; `block_until_ready` around device-to-
+device timing (supplied field on GPU → six dense fields on GPU); ≥ 5 retained repetitions × 6 cases; medians;
+GPU model and UUID recorded. Peak memory = XLA memory analysis of each compiled query (arguments + outputs
++ temporaries) and process-level `peak_bytes_in_use` as a cross-check. Training time and the mesh at which a
+baseline stops fitting/training within its wall budget are recorded per arm.
+
+Speed mandate: applies to our ROM's arm, which other lanes own; here our ROM runs the b-panel production
+query (`topfix.make_query`, vendored from `exp/2026-09-17-b-panel` @ `25434a27`) unchanged. Advantage not
+implemented for the baselines is listed in the report (e.g. their CPU sub-network is tuned for sparse
+sampling; we evaluate the same sub-network densely on GPU).
+
+## 4. Controls that must fail on real data
+
+- LS-LSPG at the gate must be ≥ 10 % (published 35 %).
+- POD-LSPG at matched K on our family must be worse than NM arms; if not, say the family does not
+  discriminate.
+- Mask tables are tested against the paper's dense construction (`test_mask.py`).
+- HR parity: with all rows sampled and a full-rank basis the HR path must reproduce NM-LSPG to 1e-8.
+- NumPy audit recomputes every reported error from saved fields.
+
+## 5. Stop rules and budget
+
+≤ 2 running, ≤ 8 total GPU jobs: J1 gate; J2 tuning sweep 128²; J3–J5 final 128²/256²/512²; 3 spare.
+Stop the Kim arm if the gate fails after three variants. Cut (B) unless J1–J5 finish with > 1 day left.
+Missing the bar or losing to a baseline is reported as such.
+
+## Glossary
+
+- **NM-ROM** nonlinear-manifold reduced-order model: the state is a decoder output $x_{ref}+g(\hat x)$.
+- **LSPG** least-squares Petrov–Galerkin: each time step minimises the full discrete residual norm over $\hat x$.
+- **HR** hyper-reduction: the residual is evaluated only at sampled rows and fitted to a residual POD basis.
+- **K / $n_s$** latent dimension. **$M_1,M_2$** encoder/decoder hidden widths. **$b,\delta b$** mask block width/shift.
+- **Same-grid error** error against the full-order solve on the same mesh and time step.
+- **Evolved times** the requested output times after $t=0$. **Tuning subset** 16 training cases held out from fitting.
+- **FOM** full-order model. **POD** proper orthogonal decomposition (linear basis).
+
+===== FILE kimae.py =====
+"""Shallow masked autoencoder of Kim, Choi, Widemann, Zohdi (JCP 451:110841, 2022) in JAX.
+
+Encoder  h(x) = We2 swish(We1 x + be1)            (dense, hidden width M1)
+Decoder  g(z) = (S * W2) swish(W1 z + b1)         (hidden width M2=(n-1)*db+b, no output bias)
+
+S is the 2D mask of their Section 3.2: a 1D building matrix whose row i has ones in the
+b columns starting at i*db; the 2D row is the union of the building rows of the 5-point
+stencil neighbours. Row i therefore has (at most) three contiguous blocks: the y-neighbour
+union [i-1, i+1] of width b+2db and the two x-neighbour blocks of width b. The masked
+product is stored as per-row value/index tables (n, P), P = 3b+2db, so the layer costs
+n*P multiply-adds and a sub-network for a handful of outputs is a plain row gather.
+
+All large arrays are function arguments; nothing here closes a jit over data.
+"""
+from __future__ import annotations
+import time
+import numpy as np
+import jax
+import jax.numpy as jnp
+
+
+def swish(x):
+    return x * jax.nn.sigmoid(x)
+
+
+ACT = {'swish': swish, 'sigmoid': jax.nn.sigmoid}
+
+
+def mask_tables(nx, ny, b, db):
+    """Index/validity tables of the 2D mask for an nx*ny interior grid, C order (i=ix*ny+iy)."""
+    n = nx * ny
+    M2 = (n - 1) * db + b
+    P = 3 * b + 2 * db
+    ix, iy = np.divmod(np.arange(n), ny)
+    idx = np.zeros((n, P), np.int32)
+    valid = np.zeros((n, P), bool)
+    # middle block: union of rows i-1, i, i+1 when those are grid (y) neighbours
+    lo = np.where(iy > 0, np.arange(n) - 1, np.arange(n)) * db
+    hi = np.where(iy < ny - 1, np.arange(n) + 1, np.arange(n)) * db + b
+    w = b + 2 * db
+    cols = lo[:, None] + np.arange(w)[None]
+    idx[:, :w] = cols
+    valid[:, :w] = cols < hi[:, None]
+    # x-neighbour blocks (i-ny, i+ny); skip the part already covered by the middle block
+    for k, (has, start) in enumerate(((ix > 0, (np.arange(n) - ny) * db),
+                                      (ix < nx - 1, (np.arange(n) + ny) * db))):
+        cols = start[:, None] + np.arange(b)[None]
+        ok = has[:, None] & ((cols < lo[:, None]) | (cols >= hi[:, None])) & (cols >= 0)
+        if k == 1:   # tiny grids only: do not list a column already in the i-ny block
+            first = (np.arange(n) - ny) * db
+            ok &= ~((ix > 0)[:, None] & (cols >= first[:, None]) & (cols < first[:, None] + b))
+        idx[:, w + k * b:w + (k + 1) * b] = np.where(ok, cols, 0)
+        valid[:, w + k * b:w + (k + 1) * b] = ok
+    idx = np.where(valid, idx, 0)
+    assert idx.max() < M2 and idx.min() >= 0
+    return idx, valid, M2
+
+
+def dense_mask(nx, ny, b, db):
+    """Reference construction exactly as the paper words it; test use only."""
+    n = nx * ny
+    M2 = (n - 1) * db + b
+    B = np.zeros((n, M2), bool)
+    for i in range(n):
+        B[i, i * db:i * db + b] = True
+    S = B.copy()
+    for i in range(n):
+        ix, iy = divmod(i, ny)
+        if iy > 0: S[i] |= B[i - 1]
+        if iy < ny - 1: S[i] |= B[i + 1]
+        if ix > 0: S[i] |= B[i - ny]
+        if ix < nx - 1: S[i] |= B[i + ny]
+    return S
+
+
+def init(key, n, K, M1, M2, idx, valid, dtype):
+    """PyTorch nn.Linear default (Kaiming-uniform a=sqrt5): U(-1/sqrt(fan_in), 1/sqrt(fan_in))."""
+    k = jax.random.split(key, 6)
+    u = lambda kk, shape, fan: jax.random.uniform(kk, shape, dtype, -1., 1.) / float(np.sqrt(fan))
+    return dict(We1=u(k[0], (M1, n), n), be1=u(k[1], (M1,), n), We2=u(k[2], (K, M1), M1),
+                W1=u(k[3], (M2, K), K), b1=u(k[4], (M2,), K),
+                W2=u(k[5], idx.shape, M2) * jnp.asarray(valid, dtype))
+
+
+def encode(p, xn, act):
+    return p['We2'] @ act(p['We1'] @ xn + p['be1'])
+
+
+def hidden(p, z, act):
+    return act(p['W1'] @ z + p['b1'])
+
+
+def decode(p, z, idx, act):
+    """Normalised decoder output for one latent vector; W2 is already zero where invalid."""
+    return jnp.einsum('np,np->n', p['W2'], hidden(p, z, act)[idx])
+
+
+def n_params(p, valid):
+    dense = sum(int(np.prod(p[k].shape)) for k in ('We1', 'be1', 'We2', 'W1', 'b1'))
+    return dict(encoder=int(np.prod(p['We1'].shape) + p['be1'].size + np.prod(p['We2'].shape)),
+                decoder=int(np.prod(p['W1'].shape) + p['b1'].size + valid.sum()),
+                total=int(dense + valid.sum()))
+
+
+# ---------------------------------------------------------------- training
+
+def make_train(act, micro):
+    """Adam epoch over shuffled batches with micro-batch gradient accumulation.
+
+    Returns epoch(p, opt, X, perm, lr, step0, idx, W2valid) and evalloss(p, X, idx); the index
+    table is an argument, never a captured constant (334 MB at 512 intervals).
+    X is the normalised snapshot matrix (N, n); perm is (nbatch, batch) int32.
+    """
+    def loss_rows(p, xb, idx):
+        rec = jax.vmap(lambda x: decode(p, encode(p, x, act), idx, act))(xb)
+        return jnp.sum((rec - xb) ** 2)
+
+    def batch_grad(p, xb, idx):
+        nb = xb.shape[0]
+        m = min(micro, nb)
+        assert nb % m == 0
+        chunks = xb.reshape(nb // m, m, -1)
+        def body(acc, c):
+            l, g = jax.value_and_grad(loss_rows)(p, c, idx)
+            return (acc[0] + l, jax.tree_util.tree_map(jnp.add, acc[1], g)), None
+        zero = (jnp.zeros((), xb.dtype), jax.tree_util.tree_map(jnp.zeros_like, p))
+        (l, g), _ = jax.lax.scan(body, zero, chunks)
+        scale = 1. / (nb * xb.shape[1])          # MSE over elements, as torch MSELoss
+        return l * scale, jax.tree_util.tree_map(lambda a: a * scale, g)
+
+    def adam(p, opt, g, lr, t, b1=.9, b2=.999, eps=1e-8):
+        m = jax.tree_util.tree_map(lambda m, g: b1 * m + (1 - b1) * g, opt[0], g)
+        v = jax.tree_util.tree_map(lambda v, g: b2 * v + (1 - b2) * g * g, opt[1], g)
+        c1, c2 = 1 - b1 ** t, 1 - b2 ** t
+        p = jax.tree_util.tree_map(lambda p, m, v: p - lr * (m / c1) / (jnp.sqrt(v / c2) + eps), p, m, v)
+        return p, (m, v)
+
+    @jax.jit
+    def epoch(p, opt, X, perm, lr, step0, idx, W2valid):
+        def body(carry, rows):
+            p, opt, t = carry
+            l, g = batch_grad(p, X[rows], idx)
+            g['W2'] = g['W2'] * W2valid            # pruned weights stay exactly zero
+            p, opt = adam(p, opt, g, lr, t)
+            return (p, opt, t + 1), l
+        (p, opt, _), losses = jax.lax.scan(body, (p, opt, step0), perm)
+        return p, opt, jnp.mean(losses)
+
+    @jax.jit
+    def evalloss(p, X, idx):
+        m = min(micro, X.shape[0])
+        nfull = (X.shape[0] // m) * m
+        tot = jax.lax.map(lambda c: loss_rows(p, c, idx), X[:nfull].reshape(-1, m, X.shape[1])).sum()
+        if nfull < X.shape[0]:
+            tot = tot + loss_rows(p, X[nfull:], idx)
+        return tot / (X.shape[0] * X.shape[1])
+
+    return epoch, evalloss
+
+
+def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_seconds, seed,
+          lr0=1e-3, lr_factor=.1, lr_patience=10, stop_patience=200, min_lr=1e-8, log=print, tag=''):
+    """The paper's protocol: Adam, lr 1e-3, x0.1 when the TRAINING loss stagnates for 10 epochs
+    (torch ReduceLROnPlateau defaults: relative threshold 1e-4), early stop when the VALIDATION
+    loss has not improved for 200 epochs, at most max_epochs. The best-validation weights are kept.
+    A wall budget is an addition of this lane; when it binds the run is reported as truncated.
+    """
+    dtype = Xtr.dtype
+    idxj, validj = jnp.asarray(idx), jnp.asarray(valid, dtype)
+    opt = (jax.tree_util.tree_map(jnp.zeros_like, p), jax.tree_util.tree_map(jnp.zeros_like, p))
+    rng = np.random.default_rng(seed)
+    N = Xtr.shape[0]
+    batch = min(batch, N); micro = min(micro, batch)
+    assert batch % micro == 0
+    epoch, evalloss = make_train(act, micro)
+    nb = N // batch                                  # drop the ragged tail each epoch
+    lr, best_tr, bad_tr, best_va, bad_va, best_p = lr0, np.inf, 0, np.inf, 0, p
+    hist, t0, step, reason = [], time.monotonic(), 1, 'max_epochs'
+    for ep in range(max_epochs):
+        perm = jnp.asarray(rng.permutation(N)[:nb * batch].reshape(nb, batch).astype(np.int32))
+        p, opt, ltr = epoch(p, opt, Xtr, perm, jnp.asarray(lr, dtype), jnp.asarray(step, dtype), idxj, validj)
+        step += nb
+        ltr, lva = float(ltr), float(evalloss(p, Xva, idxj))
+        hist.append((ep, lr, ltr, lva, time.monotonic() - t0))
+        if not np.isfinite(ltr):
+            reason = 'nonfinite'; break
+        if ltr < best_tr * (1 - 1e-4): best_tr, bad_tr = ltr, 0
+        else: bad_tr += 1
+        if bad_tr > lr_patience:
+            lr, bad_tr = max(lr * lr_factor, min_lr), 0
+        if lva < best_va: best_va, bad_va, best_p = lva, 0, p
+        else: bad_va += 1
+        if ep % 25 == 0 or bad_va == 0 and ep % 5 == 0:
+            log(f'{tag} ep={ep} lr={lr:.1e} train={ltr:.4e} val={lva:.4e} best={best_va:.4e} t={hist[-1][4]:.0f}s')
+        if bad_va >= stop_patience:
+            reason = 'early_stop'; break
+        if time.monotonic() - t0 > wall_seconds:
+            reason = 'wall_budget'; break
+    return best_p, dict(stop_reason=reason, epochs=len(hist), best_val=best_va, final_lr=lr,
+                        seconds=time.monotonic() - t0, history=np.asarray(hist))
+
+
+# ---------------------------------------------------------------- hyper-reduction helpers
+
+def pod_basis(R, nr):
+    """Left singular vectors of a (n, N) snapshot matrix through the N*N Gram in f64."""
+    R = np.asarray(R, np.float64)
+    if R.shape[1] <= R.shape[0]:
+        w, V = np.linalg.eigh(R.T @ R)
+        order = np.argsort(w)[::-1][:nr]
+        U = R @ (V[:, order] / np.sqrt(np.maximum(w[order], 1e-300)))
+    else:
+        w, V = np.linalg.eigh(R @ R.T)
+        U = V[:, np.argsort(w)[::-1][:nr]]
+    U, _ = np.linalg.qr(U)
+    return U
+
+
+def greedy_samples(Phi, nz):
+    """Oversampled greedy selection minimising the gappy reconstruction error of the basis
+    columns (Carlberg et al. GNAT Algorithm 3 / Choi et al. SNS Algorithm 5 style)."""
+    n, nr = Phi.shape
+    assert nz >= nr
+    per = [nz // nr + (1 if j < nz % nr else 0) for j in range(nr)]
+    chosen = []
+    for j in range(nr):
+        for _ in range(per[j]):
+            if j == 0 or not chosen:
+                r = np.abs(Phi[:, 0]).copy()
+            else:
+                Z = Phi[chosen]
+                c = np.linalg.lstsq(Z[:, :j], Z[:, j], rcond=None)[0]
+                r = np.abs(Phi[:, j] - Phi[:, :j] @ c)
+            r[chosen] = -1.
+            chosen.append(int(np.argmax(r)))
+    assert len(set(chosen)) == nz
+    return np.asarray(sorted(chosen))
+
+
+def subnet(p, idx, valid, rows):
+    """Active-path sub-network computing decoder outputs `rows` only (their Section 4.4.1)."""
+    rows = np.asarray(rows)
+    sub_idx, sub_valid = np.asarray(idx)[rows], np.asarray(valid)[rows]
+    active = np.unique(sub_idx[sub_valid])
+    remap = np.searchsorted(active, np.where(sub_valid, sub_idx, active[0]))
+    return dict(W1=p['W1'][active], b1=p['b1'][active], W2=p['W2'][rows]), jnp.asarray(remap.astype(np.int32)), int(active.size)
+
+===== FILE lspg.py =====
+"""Backward-Euler LSPG time stepping on a trial manifold, Gauss-Newton as published.
+
+x_n = argmin_z || r(D(z); D(z_{n-1})) ||_2^2, started from z_{n-1} (Kim et al. 2022, Eq. 3.8;
+Lee & Carlberg 2020). `resfun(z, zprev, args)` returns the (possibly hyper-reduced, already
+left-multiplied by (Z^T Phi_r)^+) residual vector. Plain Gauss-Newton, no line search; the
+Jacobian is formed by forward mode over the latent directions and the step by thin QR.
+"""
+import jax
+import jax.numpy as jnp
+
+
+def make_rollout(resfun, nsteps, max_it=20, tol=1e-8, save_every=1, keep_residuals=False, jac_batch=None):
+    def gn_step(z, zprev, args):
+        r, lin = jax.linearize(lambda q: resfun(q, zprev, args), z)
+        eye = jnp.eye(z.size, dtype=z.dtype)
+        # jac_batch bounds the memory of the decoder tangent gather (n*P per latent direction)
+        J = jax.vmap(lin, out_axes=1)(eye) if jac_batch is None else jax.lax.map(lin, eye, batch_size=jac_batch).T
+        Q, R = jnp.linalg.qr(J)
+        dz = -jax.scipy.linalg.solve_triangular(R, Q.T @ r)
+        return dz, r
+
+    def solve(zprev, args):
+        def cond(s):
+            z, it, dn, _ = s
+            return (it < max_it) & (dn > tol * (1. + jnp.linalg.norm(z))) & jnp.isfinite(dn)
+        def body(s):
+            z, it, _, _ = s
+            dz, r = gn_step(z, zprev, args)
+            return z + dz, it + 1, jnp.linalg.norm(dz), jnp.linalg.norm(r)
+        z, it, dn, rn = jax.lax.while_loop(cond, body, (zprev, jnp.int32(0), jnp.asarray(1e30, zprev.dtype),
+                                                       jnp.asarray(0., zprev.dtype)))
+        return z, it, dn, rn
+
+    def rollout(z0, args):
+        def block(z, _):
+            def one(z, _):
+                z2, it, dn, rn = solve(z, args)
+                out = (it, dn, rn) + ((resfun(z2, z, args),) if keep_residuals else ())
+                return z2, out
+            z, out = jax.lax.scan(one, z, None, length=save_every)
+            return z, (z, out)
+        _, (Z, out) = jax.lax.scan(block, z0, None, length=nsteps // save_every)
+        return jnp.concatenate((z0[None], Z)), out
+    return rollout
+
+===== FILE gate_kim2d.py =====
+"""Reproduction gate: Kim et al. 2022, Section 6.2 (2D viscous Burgers, Re=1e4, 60x60, nt=1500).
+
+Published targets (arXiv 2009.11990v2): NM-LSPG at n_s=5 reaches "less than 1 % maximum relative
+error" with n_train=4 (Fig. 14); NM-LSPG-HR 0.93-0.98 % (Table 3, 55/58 basis/samples best);
+LS-LSPG-HR 34-38 %. Error = max_n ||x~(t_n)-x(t_n)||_2/||x(t_n)||_2, larger of u and v, mu=1.
+
+Everything is written to --out; fields are saved so the errors can be recomputed with NumPy.
+"""
+from __future__ import annotations
+import argparse, json, os, sys, time, hashlib
+from pathlib import Path
+import numpy as np
+
+HERE = Path(__file__).resolve().parent
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--out', required=True)
+    ap.add_argument('--nx', type=int, default=60)
+    ap.add_argument('--nt', type=int, default=1500)
+    ap.add_argument('--ns', type=int, default=5)
+    ap.add_argument('--b', type=int, default=100)
+    ap.add_argument('--db', type=int, default=10)
+    ap.add_argument('--seeds', type=int, nargs='+', default=[0, 1, 2])
+    ap.add_argument('--max-epochs', type=int, default=10000)
+    ap.add_argument('--train-wall', type=float, default=3000., help='seconds per autoencoder')
+    ap.add_argument('--act', default='swish')
+    ap.add_argument('--scale', default='feature', choices=['feature', 'global'])
+    ap.add_argument('--train-dtype', default='float32')
+    ap.add_argument('--hr', type=int, nargs='*', default=[55, 58, 51, 54, 44, 47, 40, 40, 60, 60],
+                    help='pairs: residual basis, samples')
+    ap.add_argument('--allow-cpu', action='store_true')
+    a = ap.parse_args()
+
+    import jax
+    jax.config.update('jax_enable_x64', True)
+    import jax.numpy as jnp
+    backend = jax.default_backend()
+    print(f'jax_backend={backend}', flush=True)
+    if backend != 'gpu' and not a.allow_cpu:
+        sys.exit(42)
+    sys.path.insert(0, str(HERE))
+    import kimae, lspg
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    act = kimae.ACT[a.act]
+    nx = a.nx; m = nx - 2; n = m * m; dx = 1. / (nx - 1); dt = 2. / a.nt; Re = 1e4
+    tdt = jnp.float32 if a.train_dtype == 'float32' else jnp.float64
+
+    # ------------------------------------------------------------ FOM
+    def f(x):
+        u, v = x[:n].reshape(m, m), x[n:].reshape(m, m)
+        def rhs(w):
+            p = jnp.pad(w, 1)
+            c, xm, xp, ym, yp = p[1:-1, 1:-1], p[:-2, 1:-1], p[2:, 1:-1], p[1:-1, :-2], p[1:-1, 2:]
+            return -u * (c - xm) / dx - v * (c - ym) / dx + (xm + xp + ym + yp - 4 * c) / (Re * dx * dx)
+        return jnp.concatenate((rhs(u).ravel(), rhs(v).ravel()))
+
+    def res(x, prev):
+        return x - prev - dt * f(x)
+
+    def fom_step(prev, _):
+        def cond(s): return (s[2] > 1e-11 * jnp.maximum(jnp.linalg.norm(prev), 1e-30)) & (s[1] < 30)
+        def body(s):
+            x, it, _ = s
+            r, lin = jax.linearize(lambda q: res(q, prev), x)
+            d, _ = jax.scipy.sparse.linalg.gmres(lin, -r, tol=1e-12, atol=0., restart=40, maxiter=20)
+            x = x + d
+            return x, it + 1, jnp.linalg.norm(res(x, prev))
+        x, it, rn = jax.lax.while_loop(cond, body, (prev, jnp.int32(0), jnp.linalg.norm(res(prev, prev))))
+        return x, (x, it, rn / jnp.maximum(jnp.linalg.norm(prev), 1e-30))
+
+    fom = jax.jit(lambda x0: jax.lax.scan(fom_step, x0, None, length=a.nt)[1])
+
+    def ic(mu):
+        g = np.arange(1, nx - 1) * dx
+        X, Y = np.meshgrid(g, g, indexing='ij')
+        w = np.where((X <= .5) & (Y <= .5), mu * np.sin(2 * np.pi * X) * np.sin(2 * np.pi * Y), 0.)
+        return np.concatenate((w.ravel(), w.ravel()))
+
+    mus_train, mu_test = [.9, .95, 1.05, 1.1], 1.0
+    snaps = {}
+    for mu in mus_train + [mu_test]:
+        t0 = time.perf_counter()
+        X, it, rn = jax.tree_util.tree_map(np.asarray, fom(jnp.asarray(ic(mu))))
+        snaps[mu] = np.concatenate((ic(mu)[None], X))
+        print(f'FOM mu={mu} {time.perf_counter()-t0:.1f}s newton_max={it.max()} relres_max={rn.max():.2e}', flush=True)
+        assert np.isfinite(X).all() and rn.max() < 1e-9
+    t0 = time.perf_counter(); fom(jnp.asarray(ic(mu_test)))[0].block_until_ready()
+    fom_seconds = time.perf_counter() - t0
+
+    def maxrel(approx, truth):   # larger of u and v, max over n>=1 (paper: n in N(Nt))
+        e = [np.max(np.linalg.norm((approx - truth)[1:, s], axis=1) / np.linalg.norm(truth[1:, s], axis=1))
+             for s in (slice(0, n), slice(n, 2 * n))]
+        return dict(u=float(e[0]), v=float(e[1]), max=float(max(e)))
+
+    # ------------------------------------------------------------ data, reference x_ref(mu) = x_0(mu)
+    D = np.concatenate([snaps[mu] - snaps[mu][:1] for mu in mus_train])       # (6004, 2n)
+    rng = np.random.default_rng(20260920)
+    perm = rng.permutation(D.shape[0]); nva = D.shape[0] // 10
+    va, tr = perm[:nva], perm[nva:]
+    idx, valid, M2 = kimae.mask_tables(m, m, a.b, a.db)
+    M1 = 2 * n
+    print(f'n={n} M1={M1} M2={M2} P={idx.shape[1]} nnz={valid.sum()} train={tr.size} val={va.size}', flush=True)
+    idxj = jnp.asarray(idx)
+    ref = snaps[mu_test][0]
+    truth = snaps[mu_test]
+    results = dict(config=vars(a), n=n, M1=M1, M2=M2, fom_seconds_warm=fom_seconds,
+                   published=dict(nm_lspg='<1 % (Fig. 14, n_s=5, n_train=4)', nm_lspg_hr_percent=[.93, .94, .95, .97, .97, .98],
+                                  ls_lspg_hr_percent=[34.38, 37.73, 37.84, 37.95, 37.96, 37.97]), seeds=[])
+
+    # ------------------------------------------------------------ LS-LSPG control (POD n_s per component)
+    def pod(Dc):
+        w, V = np.linalg.eigh(Dc.T @ Dc)
+        return V[:, ::-1][:, :a.ns]
+    Phi = [pod(D[:, :n]), pod(D[:, n:])]
+    Phij = [jnp.asarray(P) for P in Phi]
+    def ls_res(z, zp, args):
+        refj, Pu, Pv = args
+        dec = lambda q: refj + jnp.concatenate((Pu @ q[:a.ns], Pv @ q[a.ns:]))
+        return res(dec(z), dec(zp))
+    ls_roll = jax.jit(lspg.make_rollout(ls_res, a.nt))
+    Zls, (it, dn, rn) = ls_roll(jnp.zeros(2 * a.ns), (jnp.asarray(ref), *Phij))
+    Zls = np.asarray(Zls)
+    ls_field = ref + np.concatenate((Zls[:, :a.ns] @ Phi[0].T, Zls[:, a.ns:] @ Phi[1].T), 1)
+    results['ls_lspg'] = dict(error=maxrel(ls_field, truth), gn_iterations_max=int(np.max(it)),
+                              finite=bool(np.isfinite(ls_field).all()))
+    proj = ref + np.concatenate(((truth - ref)[:, :n] @ Phi[0] @ Phi[0].T, (truth - ref)[:, n:] @ Phi[1] @ Phi[1].T), 1)
+    results['ls_projection'] = maxrel(proj, truth)
+    print('LS-LSPG', results['ls_lspg'], 'LS projection', results['ls_projection'], flush=True)
+    np.savez(out / 'fields_common.npz', truth=truth, ls_lspg=ls_field)
+
+    # ------------------------------------------------------------ autoencoders per seed
+    for seed in a.seeds:
+        rec = dict(seed=seed, train={})
+        P, SC = [], []
+        for c, name in enumerate('uv'):
+            Dc = D[:, c * n:(c + 1) * n]
+            if a.scale == 'feature':
+                sc = np.abs(Dc[tr]).max(0); sc = np.where(sc > 1e-12 * sc.max(), sc, 1.)
+            else:
+                sc = np.full(n, np.abs(Dc[tr]).max())
+            Xn = Dc / sc
+            p0 = kimae.init(jax.random.PRNGKey(1000 * seed + c), n, a.ns, M1, M2, idx, valid, tdt)
+            p, info = kimae.train(p0, jnp.asarray(Xn[tr], tdt), jnp.asarray(Xn[va], tdt), idx, valid, act,
+                                  batch=240, micro=240, max_epochs=a.max_epochs, wall_seconds=a.train_wall,
+                                  seed=seed, tag=f'seed{seed}-{name}')
+            np.save(out / f'history_seed{seed}_{name}.npy', info.pop('history'))
+            rec['train'][name] = info
+            print(f'TRAINED seed={seed} {name}', info, flush=True)
+            P.append(jax.tree_util.tree_map(lambda w: jnp.asarray(w, jnp.float64), p)); SC.append(jnp.asarray(sc))
+            import pickle
+            with open(out / f'ae_seed{seed}_{name}.pkl', 'wb') as fh:
+                pickle.dump(dict(params=jax.tree_util.tree_map(np.asarray, p), scale=sc), fh)
+
+        def dec_full(z, args):
+            refj, pu, pv, su, sv, ix = args
+            return refj + jnp.concatenate((kimae.decode(pu, z[:a.ns], ix, act) * su, kimae.decode(pv, z[a.ns:], ix, act) * sv))
+        args = (jnp.asarray(ref), P[0], P[1], SC[0], SC[1], idxj)
+        # nonlinear projection error (their Eq. 6.2 uses g(h(.)); reported with the max-rel metric too)
+        enc = jax.jit(jax.vmap(lambda x, args: jnp.concatenate((kimae.encode(args[1], x[:n] / args[3], act),
+                                                                  kimae.encode(args[2], x[n:] / args[4], act))), (0, None)))
+        decv = jax.jit(jax.vmap(dec_full, (0, None)))
+        Zp = enc(jnp.asarray(truth - ref), args)
+        rec['nm_projection'] = maxrel(np.asarray(decv(Zp, args)), truth)
+        z0 = enc(jnp.zeros((1, 2 * n)), args)[0]
+        nm_res = lambda z, zp, args: res(dec_full(z, args), dec_full(zp, args))
+        roll = jax.jit(lspg.make_rollout(nm_res, a.nt))
+        Z, (it, dn, rn) = roll(z0, args); Z.block_until_ready()
+        t0 = time.perf_counter(); Z, (it, dn, rn) = roll(z0, args); Z.block_until_ready(); tq = time.perf_counter() - t0
+        field = np.asarray(decv(Z, args))
+        rec['nm_lspg'] = dict(error=maxrel(field, truth), seconds_warm=tq, gn_iterations_mean=float(np.mean(it)),
+                              gn_iterations_max=int(np.max(it)), finite=bool(np.isfinite(field).all()),
+                              ic_error=float(np.linalg.norm(field[0] - truth[0]) / np.linalg.norm(truth[0])))
+        print(f'NM-LSPG seed={seed}', rec['nm_lspg'], 'projection', rec['nm_projection'], flush=True)
+        np.savez(out / f'fields_seed{seed}.npz', nm_lspg=field, Z=np.asarray(Z))
+
+        # ---------------- hyper-reduction: residual snapshots from NM-LSPG on the training parameters
+        if a.hr:
+            rollr = jax.jit(lspg.make_rollout(nm_res, a.nt, keep_residuals=True))
+            Rs = []
+            for mu in mus_train:
+                am = (jnp.asarray(snaps[mu][0]),) + args[1:]
+                _, o = rollr(z0, am)
+                Rs.append(np.asarray(o[3]).reshape(-1, 2 * n))
+            Rs = np.concatenate(Rs).T
+            rec['hr'] = []
+            nbr = neighbour_table(m)
+            for nr, nz in zip(a.hr[::2], a.hr[1::2]):
+                Phir = kimae.pod_basis(Rs, nr)
+                rows = kimae.greedy_samples(Phir, nz)
+                pinv = jnp.asarray(np.linalg.pinv(Phir[rows]))
+                comp, node = np.divmod(rows, n)
+                need = np.unique(np.concatenate((node, nbr[node][nbr[node] >= 0].ravel())))
+                pos = np.full(n + 1, need.size, np.int64); pos[need] = np.arange(need.size)   # sentinel -> zero slot
+                loc = jnp.asarray(np.stack([pos[node]] + [pos[np.where(nbr[node, k] >= 0, nbr[node, k], n)] for k in range(4)], 1))
+                subs = [kimae.subnet(P[c], idx, valid, need) for c in range(2)]
+                compj = jnp.asarray(comp)
+                hargs = (jnp.asarray(ref)[jnp.asarray(np.concatenate((need, need + n)))], subs[0][0], subs[1][0],
+                         SC[0][need], SC[1][need], subs[0][1], subs[1][1], loc, compj, pinv)
+                def hr_raw(z, zp, h):
+                    refn, pu, pv, su, sv, iu, iv, loc, comp, pinv = h
+                    k = su.size
+                    def nodes(q):
+                        u = refn[:k] + kimae.decode(pu, q[:a.ns], iu, act) * su
+                        v = refn[k:] + kimae.decode(pv, q[a.ns:], iv, act) * sv
+                        return jnp.concatenate((u, jnp.zeros(1))), jnp.concatenate((v, jnp.zeros(1)))
+                    u, v = nodes(z); up, vp = nodes(zp)
+                    def rhs(w):
+                        c, xm, xp, ym, yp = (w[loc[:, j]] for j in range(5))
+                        return -u[loc[:, 0]] * (c - xm) / dx - v[loc[:, 0]] * (c - ym) / dx + (xm + xp + ym + yp - 4 * c) / (Re * dx * dx)
+                    ru = u[loc[:, 0]] - up[loc[:, 0]] - dt * rhs(u)
+                    rv = v[loc[:, 0]] - vp[loc[:, 0]] - dt * rhs(v)
+                    return jnp.where(comp == 0, ru, rv)
+                hr_res = lambda z, zp, h: h[-1] @ hr_raw(z, zp, h)
+                # control: sampled rows of the full residual == sub-network residual (active paths are exact)
+                kmid = a.nt // 2
+                full_rows = np.asarray(nm_res(Z[kmid], Z[kmid - 1], args))[rows]
+                sub_rows = np.asarray(hr_raw(Z[kmid], Z[kmid - 1], hargs))
+                parity = float(np.max(np.abs(full_rows - sub_rows)) / max(np.max(np.abs(full_rows)), 1e-300))
+                assert parity < 1e-9, parity
+                hroll = jax.jit(lspg.make_rollout(hr_res, a.nt))
+                Zh, (ith, _, _) = hroll(z0, hargs); Zh.block_until_ready()
+                t0 = time.perf_counter(); Zh, _ = hroll(z0, hargs); Zh.block_until_ready(); th = time.perf_counter() - t0
+                fh = np.asarray(decv(Zh, args))
+                rec['hr'].append(dict(subnet_parity=parity, residual_basis=nr, samples=nz, nodes_evaluated=int(need.size),
+                                      active_hidden=[subs[0][2], subs[1][2]], error=maxrel(fh, truth) if np.isfinite(fh).all() else None,
+                                      seconds_warm=th, gn_iterations_mean=float(np.mean(ith))))
+                print(f'NM-LSPG-HR seed={seed}', rec['hr'][-1], flush=True)
+                if (nr, nz) == (a.hr[0], a.hr[1]):
+                    np.savez(out / f'fields_seed{seed}_hr.npz', nm_lspg_hr=fh)
+        results['seeds'].append(rec)
+        (out / 'summary.json').write_text(json.dumps(results, indent=2, default=str) + '\n')
+
+    errs = [r['nm_lspg']['error']['max'] for r in results['seeds'] if r['nm_lspg']['finite']]
+    med = float(np.median(errs)) if errs else None
+    results['gate'] = dict(rule='median over seeds of NM-LSPG max relative error <= 1.5 % AND LS-LSPG control >= 10 %',
+                           nm_lspg_median=med, ls_lspg=results['ls_lspg']['error']['max'],
+                           passed=bool(med is not None and med <= .015 and results['ls_lspg']['error']['max'] >= .10))
+    results['source_sha256'] = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in ('gate_kim2d.py', 'kimae.py', 'lspg.py')}
+    results['provenance'] = dict(job_id=os.environ.get('SLURM_JOB_ID'), gpu=str(jax.devices()[0].device_kind), backend=backend,
+                                 commit=os.environ.get('SOURCE_COMMIT'), jax=jax.__version__,
+                                 matmul=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'))
+    (out / 'summary.json').write_text(json.dumps(results, indent=2, default=str) + '\n')
+    print('GATE', results['gate'], flush=True)
+
+
+def neighbour_table(m):
+    """(n,4) interior indices of x-1, x+1, y-1, y+1 neighbours in C order; -1 on the boundary."""
+    i = np.arange(m * m); ix, iy = np.divmod(i, m)
+    return np.stack((np.where(ix > 0, i - m, -1), np.where(ix < m - 1, i + m, -1),
+                     np.where(iy > 0, i - 1, -1), np.where(iy < m - 1, i + 1, -1)), 1)
+
+
+if __name__ == '__main__':
+    main()
+
+===== FILE family.py =====
+"""Kim et al. NM-LSPG(-HR) baselines, POD-LSPG control, the frozen project ROM and the FOMs on the
+shared Burgers 2D family, one mesh per job.  See DESIGN.md Section 3.
+
+  family.py --config <json> --out output [--cache <pilot-data01>]
+
+Config: intervals, cohort ('tune' | 'validation'), variants [ {name,K,ref,scale,b,db,M1,lr,patience,
+seed,max_epochs,wall,dtype,hr:[[nr,nz],...]} ], pod_ks, rom_qs, timing {reps,cases,burn}.
+Hyper-parameters are only ever chosen on the tuning subset (train cases 112-127).
+"""
+from __future__ import annotations
+import argparse, hashlib, json, os, pickle, sys, time
+from pathlib import Path
+import numpy as np
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+PROTO = dict(dataset_seed=20260914, pde_seed_code=22, split_codes=dict(calibration=0, train=1, validation=2),
+             counts=dict(train=128, validation=32))
+INDEX_SHA = dict(train='5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49',
+                 validation='468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad')
+CKPT = ROOT / 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl'
+CKPT_SHA = '18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589'
+FIT, TUNE = np.arange(0, 112), np.arange(112, 128)
+DT, STEPS, KEEP = .005, 50, 10
+
+
+def sha_file(p):
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for blk in iter(lambda: f.read(1 << 22), b''):
+            h.update(blk)
+    return h.hexdigest()
+
+
+def case_seed(split, index):
+    return int(np.random.SeedSequence([PROTO['dataset_seed'], PROTO['pde_seed_code'],
+                                       PROTO['split_codes'][split], index]).generate_state(1, dtype=np.uint32)[0])
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--config', required=True)
+    ap.add_argument('--out', required=True)
+    ap.add_argument('--cache', default='/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01')
+    ap.add_argument('--allow-cpu', action='store_true')
+    a = ap.parse_args()
+    cfg = json.loads(Path(a.config).read_text())
+    import jax
+    jax.config.update('jax_enable_x64', True)
+    import jax.numpy as jnp
+    backend = jax.default_backend()
+    print(f'jax_backend={backend}', flush=True)
+    if backend != 'gpu' and not a.allow_cpu:
+        sys.exit(42)
+    assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
+    for d in ('experiments/mr-burgers2d', 'experiments/separable-decoder', 'experiments/nmrom-baselines/vendor'):
+        sys.path.insert(0, str(ROOT / d))
+    sys.path.insert(0, str(HERE))
+    import engines as e, iterative_paths as ip, kimae, lspg
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    L = int(cfg['intervals']); m = L - 1; n = m * m
+    act = kimae.ACT['swish']
+    host = lambda t: jax.tree_util.tree_map(np.asarray, t)
+    gpu_uuid = os.popen('nvidia-smi --query-gpu=name,uuid --format=csv,noheader').read().strip()
+    report = dict(config=cfg, intervals=L, n=n, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
+                  backend=backend, gpu=str(jax.devices()[0].device_kind), gpu_uuid=gpu_uuid, jax=jax.__version__,
+                  x64=True, matmul='highest', gates={}, arms={}, training={}, dropped=[],
+                  source_sha256={str(p.relative_to(ROOT)): sha_file(p) for p in
+                                 [HERE / 'family.py', HERE / 'kimae.py', HERE / 'lspg.py', ROOT / 'experiments/mr-burgers2d/engines.py',
+                                  ROOT / 'experiments/mr-burgers2d/iterative_paths.py']})
+    save = lambda: (out / 'summary.json').write_text(json.dumps(report, indent=1, default=float) + '\n')
+    T0 = time.monotonic()
+
+    # ------------------------------------------------------------------ the shared split, from seed
+    phys = {s: np.stack([e.params_draw(case_seed(s, i), 1)[0] for i in range(PROTO['counts'][s])]) for s in ('train', 'validation')}
+    cache = Path(a.cache)
+    for s in ('train', 'validation'):
+        ip_ = cache / s / 'index.json'
+        if ip_.exists():
+            got = sha_file(ip_)
+            recs = json.loads(ip_.read_text())['records']
+            desc = np.array([[r['generation_descriptors'][k] for k in ('cx', 'cy', 'width', 'amplitude', 'nu')] for r in recs])
+            seeds_ok = all(r['seed'] == case_seed(s, i) for i, r in enumerate(recs))
+            dev = float(np.max(np.abs(desc - phys[s]) / np.abs(phys[s])))
+            report['gates'][f'split_{s}_matches_cache'] = dict(passed=bool(got == INDEX_SHA[s] and seeds_ok and dev < 1e-12),
+                                                              index_sha256=got, expected=INDEX_SHA[s], seeds_equal=seeds_ok,
+                                                              max_relative_descriptor_deviation=dev)
+            assert report['gates'][f'split_{s}_matches_cache']['passed'], report['gates']
+        else:
+            report['gates'][f'split_{s}_matches_cache'] = dict(passed=None, note='cache index not present; draws are from the protocol seeds only')
+    save()
+    cohort_name = cfg['cohort']
+    assert cohort_name in ('tune', 'validation')
+    eval_phys = phys['train'][TUNE] if cohort_name == 'tune' else phys['validation']
+    tune_phys = phys['train'][TUNE]
+
+    # ------------------------------------------------------------------ snapshots (all 51 states) and references
+    fomq, _ = e.make_fom(L, DT, None, .25, DT)
+    def trajectories(P):
+        rows = []
+        for p in P:
+            f, it, rn = host(fomq(jnp.asarray(e.initial(L, p)), float(p[4]), 1e-9, 1e-7))
+            assert np.isfinite(f).all() and rn.max() < 1e-7, rn.max()
+            rows.append(f[:, 1:-1, 1:-1].reshape(STEPS + 1, n))
+        return np.stack(rows)
+    t0 = time.perf_counter()
+    U_fit = trajectories(phys['train'][FIT])                       # (112, 51, n)
+    U_tune = trajectories(tune_phys)
+    report['snapshots'] = dict(fit=list(U_fit.shape), seconds=time.perf_counter() - t0,
+                               sha256=hashlib.sha256(np.ascontiguousarray(U_fit[:, ::10]).tobytes()).hexdigest())
+    del fomq; jax.clear_caches()
+    ref_q, ref_pre = ip.make_fom(L, DT, 'fft')
+    def reference(P):
+        return np.stack([host(ref_q(jnp.asarray(e.initial(L, p)), float(p[4]), 1e-6, 1e-8, *ref_pre)[0]) for p in P])
+    REF = reference(eval_phys)                                     # (cases, 6, L+1, L+1)
+    REF_tune = REF if cohort_name == 'tune' else reference(tune_phys)
+    print(f'DATA {time.monotonic()-T0:.0f}s fit={U_fit.shape} ref={REF.shape}', flush=True)
+    np.savez(out / 'reference.npz', reference=REF, physical=eval_phys)
+
+    def errors(fields, ref):
+        """fixed-initial relative error per case and time: ||f-ref||_interior / ||ref(t=0)||_interior"""
+        d = (fields - ref)[:, :, 1:-1, 1:-1].reshape(ref.shape[0], ref.shape[1], -1)
+        e_ = np.linalg.norm(d, axis=2) / np.linalg.norm(ref[:, 0, 1:-1, 1:-1].reshape(ref.shape[0], -1), axis=1)[:, None]
+        return dict(worst_evolved=float(e_[:, 1:].max()), median_evolved=float(np.median(e_[:, 1:].max(1))),
+                    worst_all_times=float(e_.max()), worst_t0=float(e_[:, 0].max()),
+                    per_case_evolved=e_[:, 1:].max(1).tolist(), finite=bool(np.isfinite(e_).all()))
+
+    pad = lambda V: jnp.pad(V.reshape(-1, m, m), ((0, 0), (1, 1), (1, 1)))
+
+    def fom_res(u, prev, nu):
+        return e.residual(u, prev, nu, DT, L)
+
+    def run_cases(query, qargs, P):
+        fields, its = [], []
+        for p in P:
+            f, it = query(jnp.asarray(e.initial(L, p)), float(p[4]), qargs)
+            fields.append(np.asarray(f)); its.append(np.asarray(it))
+        return np.stack(fields), np.stack(its)
+
+    def mem_of(jitted, *args):
+        try:
+            ma = jitted.lower(*args).compile().memory_analysis()
+            return dict(temp=int(ma.temp_size_in_bytes), arguments=int(ma.argument_size_in_bytes), output=int(ma.output_size_in_bytes),
+                        total=int(ma.temp_size_in_bytes + ma.argument_size_in_bytes + ma.output_size_in_bytes))
+        except Exception as exc:     # noqa: BLE001
+            return dict(error=str(exc)[:200])
+
+    subjects = {}     # name -> (jitted query(u0, nu, args)->(fields, its), args)
+
+    # ------------------------------------------------------------------ POD-LSPG control
+    Xfit = U_fit.reshape(-1, n)
+    t0 = time.perf_counter()
+    Gm = np.asarray(jax.jit(lambda X: X @ X.T)(jnp.asarray(Xfit)))
+    w, V = np.linalg.eigh(Gm)
+    order = np.argsort(w)[::-1][:max(cfg.get('pod_ks', [16]) + [8])]
+    PhiAll = np.asarray(jax.jit(lambda X, C: X.T @ C)(jnp.asarray(Xfit), jnp.asarray(V[:, order] / np.sqrt(w[order]))))
+    PhiAll, _ = np.linalg.qr(PhiAll)
+    report['pod'] = dict(seconds=time.perf_counter() - t0, orthonormality=float(np.abs(PhiAll.T @ PhiAll - np.eye(PhiAll.shape[1])).max()))
+    del Gm
+
+    def make_pod_query():
+        res = lambda z, zp, A: fom_res(A['Phi'] @ z, A['Phi'] @ zp, A['nu'])
+        roll = lspg.make_rollout(res, STEPS, max_it=cfg.get('gn_cap', 20), save_every=KEEP)
+        def query(u0, nu, A):
+            z0 = A['Phi'].T @ u0[1:-1, 1:-1].reshape(-1)
+            Z, o = roll(z0, dict(A, nu=nu))
+            return pad(Z @ A['Phi'].T), o[0].reshape(-1)
+        return jax.jit(query)
+    podq = make_pod_query()
+    for k in cfg.get('pod_ks', []):
+        A = dict(Phi=jnp.asarray(PhiAll[:, :k]))
+        F, its = run_cases(podq, A, eval_phys)
+        report['arms'][f'pod_lspg_K{k}'] = dict(family='pod_lspg', K=k, cohort=cohort_name, **errors(F, REF), gn_mean=float(its.mean()))
+        subjects[f'pod_lspg_K{k}'] = (podq, A)
+        if cohort_name == 'validation': np.savez(out / f'fields_pod_lspg_K{k}.npz', fields=F.astype(np.float32))
+        print('POD-LSPG', k, report['arms'][f'pod_lspg_K{k}']['worst_evolved'], flush=True); save()
+
+    # ------------------------------------------------------------------ Kim et al. arms
+    nbr = np.stack((np.where(np.arange(n) // m > 0, np.arange(n) - m, -1), np.where(np.arange(n) // m < m - 1, np.arange(n) + m, -1),
+                    np.where(np.arange(n) % m > 0, np.arange(n) - 1, -1), np.where(np.arange(n) % m < m - 1, np.arange(n) + 1, -1)), 1)
+
+    def make_nm_query(K, ref_mode, jac_batch):
+        def dec(z, A):   # interior state
+            return A['ref'] + kimae.decode(A['p'], z, A['idx'], act) * A['scale']
+        res = lambda z, zp, A: fom_res(dec(z, A), dec(zp, A), A['nu'])
+        roll = lspg.make_rollout(res, STEPS, max_it=cfg.get('gn_cap', 20), save_every=KEEP, jac_batch=jac_batch)
+        def query(u0, nu, A):
+            ui = u0[1:-1, 1:-1].reshape(-1)
+            ref = ui if ref_mode == 'ic' else jnp.zeros_like(ui)
+            z0 = kimae.encode(A['p'], (ui - ref) / A['scale'], act)
+            B = dict(A, ref=ref, nu=nu)
+            Z, o = roll(z0, B)
+            return pad(jax.lax.map(lambda z: dec(z, B), Z)), o[0].reshape(-1)
+        def rollout_residuals(u0, nu, A):
+            ui = u0[1:-1, 1:-1].reshape(-1)
+            ref = ui if ref_mode == 'ic' else jnp.zeros_like(ui)
+            z0 = kimae.encode(A['p'], (ui - ref) / A['scale'], act)
+            B = dict(A, ref=ref, nu=nu)
+            Z, o = lspg.make_rollout(res, STEPS, max_it=cfg.get('gn_cap', 20), save_every=1, jac_batch=jac_batch)(z0, B)
+            R = jax.lax.map(lambda zz: res(zz[1], zz[0], B), (Z[:-1], Z[1:]))
+            return R, Z
+        def project(U, u0, A):   # autoencode the true states: the manifold's own floor
+            ui = u0[1:-1, 1:-1].reshape(-1)
+            ref = ui if ref_mode == 'ic' else jnp.zeros_like(ui)
+            B = dict(A, ref=ref)
+            return pad(jax.lax.map(lambda x: dec(kimae.encode(A['p'], (x - ref) / A['scale'], act), B), U))
+        return jax.jit(query), jax.jit(rollout_residuals), jax.jit(project)
+
+    def make_hr_query(K, ref_mode):
+        def nodes(z, H):
+            return jnp.concatenate((H['refn'] + kimae.decode(H['sub'], z, H['remap'], act) * H['scalen'], jnp.zeros(1)))
+        def raw(z, zp, H):
+            u, up = nodes(z, H), nodes(zp, H)
+            c, xm, xp, ym, yp = (u[H['loc'][:, j]] for j in range(5))
+            adv = c * L * (jnp.where(c > 0, c - xm, xp - c) + jnp.where(c > 0, c - ym, yp - c))
+            lap = L ** 2 * (xm + xp + ym + yp - 4 * c)
+            return c - up[H['loc'][:, 0]] + DT * (adv - H['nu'] * lap)
+        res = lambda z, zp, H: H['pinv'] @ raw(z, zp, H)
+        roll = lspg.make_rollout(res, STEPS, max_it=cfg.get('gn_cap', 20), save_every=KEEP)
+        def query(u0, nu, H):
+            ui = u0[1:-1, 1:-1].reshape(-1)
+            ref = ui if ref_mode == 'ic' else jnp.zeros_like(ui)
+            z0 = kimae.encode(H['p'], (ui - ref) / H['scale'], act)
+            Z, o = roll(z0, dict(H, refn=ref[H['need']], nu=nu))
+            full = jax.lax.map(lambda z: ref + kimae.decode(H['p'], z, H['idx'], act) * H['scale'], Z)
+            return pad(full), o[0].reshape(-1)
+        return jax.jit(query), raw
+
+    for v in cfg['variants']:
+        name, K = v['name'], int(v['K'])
+        t_arm = time.monotonic()
+        try:
+            idx, valid, M2 = kimae.mask_tables(m, m, v['b'], v['db'])
+            M1 = 2 * n if v['M1'] == '2n' else int(v['M1'])
+            tdt = jnp.float32 if v.get('dtype', 'float32') == 'float32' else jnp.float64
+            bytes_ = 4 if tdt == jnp.float32 else 8
+            need_gb = (M1 * n * bytes_ * 4 + idx.size * bytes_ * 4) / 1e9
+            D = U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)
+            D = D.reshape(-1, n)
+            if v['scale'] == 'feature':
+                sc = np.abs(D).max(0); sc = np.maximum(sc, float(v.get('scale_floor', 1e-3)) * sc.max())
+            else:
+                sc = np.full(n, np.abs(D).max())
+            rng = np.random.default_rng(20260920 + int(v['seed']))
+            perm = rng.permutation(D.shape[0]); nva = D.shape[0] // 10
+            micro = max(d for d in (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 30, 40, 48, 60, 80, 120, 240)
+                        if d * idx.size * bytes_ <= float(cfg.get('micro_bytes', 5e9)) or d == 1)
+            print(f'ARM {name}: n={n} K={K} M1={M1} M2={M2} nnz={int(valid.sum())} micro={micro} weights+adam~{need_gb:.1f}GB', flush=True)
+            p0 = kimae.init(jax.random.PRNGKey(int(v['seed'])), n, K, M1, M2, idx, valid, tdt)
+            Xn = (D / sc).astype(np.float32 if bytes_ == 4 else np.float64)
+            del D
+            p, info = kimae.train(p0, jnp.asarray(Xn[perm[nva:]]), jnp.asarray(Xn[perm[:nva]]), idx, valid, act, batch=240, micro=micro,
+                                  max_epochs=int(v['max_epochs']), wall_seconds=float(v['wall']), seed=int(v['seed']),
+                                  lr0=float(v['lr']), lr_patience=int(v['patience']), tag=name)
+            del Xn, p0
+            hist = info.pop('history'); np.save(out / f'history_{name}.npy', hist)
+            info.update(params=kimae.n_params(p, valid), M1=M1, M2=M2, micro=micro, dtype=str(np.dtype(tdt)),
+                        seconds_per_epoch=float(info['seconds'] / max(info['epochs'], 1)))
+            report['training'][name] = info
+            print('TRAINED', name, {k: info[k] for k in ('stop_reason', 'epochs', 'best_val', 'seconds')}, flush=True); save()
+            with open(out / f'ae_{name}.pkl', 'wb') as fh:
+                pickle.dump(dict(params=host(p), scale=sc, variant=v), fh)
+            A = dict(p=jax.tree_util.tree_map(lambda w_: jnp.asarray(w_, jnp.float64), p), scale=jnp.asarray(sc), idx=jnp.asarray(idx))
+            jac_batch = None if n * idx.shape[1] * K * 8 < 6e9 else max(1, int(6e9 // (n * idx.shape[1] * 8)))
+            nmq, nmres, nmproj = make_nm_query(K, v['ref'], jac_batch)
+            # manifold floor (autoencode the truth) on the evaluation cohort
+            PF = np.stack([np.asarray(nmproj(jnp.asarray(REF[c][:, 1:-1, 1:-1].reshape(6, n)), jnp.asarray(REF[c][0]), A)) for c in range(len(REF))])
+            F, its = run_cases(nmq, A, eval_phys)
+            arm = dict(family='kim_nm_lspg', K=K, cohort=cohort_name, variant=v, **errors(F, REF), gn_mean=float(its.mean()), gn_max=int(its.max()),
+                       projection=errors(PF, REF), jac_batch=jac_batch)
+            report['arms'][name] = arm; subjects[name] = (nmq, A)
+            if cohort_name == 'validation': np.savez(out / f'fields_{name}.npz', fields=F.astype(np.float32))
+            print('NM-LSPG', name, 'worst_evolved', arm['worst_evolved'], 'projection', arm['projection']['worst_evolved'], flush=True); save()
+
+            # ---------------- hyper-reduction (their online algorithm); grid chosen on the tuning subset only
+            if v.get('hr'):
+                rcases = phys['train'][FIT][::max(1, len(FIT) // int(cfg.get('hr_residual_cases', 16)))]
+                Rs = np.concatenate([np.asarray(nmres(jnp.asarray(e.initial(L, p_)), float(p_[4]), A)[0]) for p_ in rcases]).T
+                hrq, hraw = make_hr_query(K, v['ref'])
+                best = None
+                for nr, nz in v['hr']:
+                    Phir = kimae.pod_basis(Rs, nr)
+                    rows = kimae.greedy_samples(Phir, nz)
+                    need = np.unique(np.concatenate((rows, nbr[rows][nbr[rows] >= 0].ravel())))
+                    pos = np.full(n + 1, need.size, np.int64); pos[need] = np.arange(need.size)
+                    loc = np.stack([pos[rows]] + [pos[np.where(nbr[rows, j] >= 0, nbr[rows, j], n)] for j in range(4)], 1)
+                    sub, remap, nact = kimae.subnet(A['p'], idx, valid, need)
+                    H = dict(p=A['p'], scale=A['scale'], idx=A['idx'], sub=sub, remap=remap, scalen=A['scale'][need], need=jnp.asarray(need),
+                             loc=jnp.asarray(loc), pinv=jnp.asarray(np.linalg.pinv(Phir[rows])))
+                    # control: sub-network rows reproduce the full residual rows
+                    p_ = tune_phys[0]; ui = jnp.asarray(e.initial(L, p_))[1:-1, 1:-1].reshape(-1)
+                    refv = ui if v['ref'] == 'ic' else jnp.zeros_like(ui)
+                    za, zb = jnp.full(K, .1), jnp.full(K, -.05)
+                    fullr = fom_res(refv + kimae.decode(A['p'], za, A['idx'], act) * A['scale'],
+                                    refv + kimae.decode(A['p'], zb, A['idx'], act) * A['scale'], float(p_[4]))[jnp.asarray(rows)]
+                    subr = hraw(za, zb, dict(H, refn=refv[H['need']], nu=float(p_[4])))
+                    parity = float(jnp.max(jnp.abs(fullr - subr)) / jnp.max(jnp.abs(fullr)))
+                    assert parity < 1e-9, parity
+                    Ft, itst = run_cases(hrq, H, tune_phys)
+                    et = errors(Ft, REF_tune)
+                    hname = f'{name}_hr{nr}x{nz}'
+                    report['arms'][hname] = dict(family='kim_nm_lspg_hr', K=K, cohort='tune', residual_basis=nr, samples=nz,
+                                                 nodes_evaluated=int(need.size), active_hidden=nact, subnet_parity=parity, **et, gn_mean=float(itst.mean()))
+                    print('NM-LSPG-HR (tune)', hname, et['worst_evolved'], flush=True); save()
+                    if et['finite'] and (best is None or et['worst_evolved'] < best[0]):
+                        best = (et['worst_evolved'], hname, H, nr, nz)
+                if best is not None:
+                    _, hname, H, nr, nz = best
+                    report['arms'][name]['hr_selected'] = hname
+                    subjects[name + '_hr'] = (hrq, H)
+                    if cohort_name == 'validation':
+                        Fh, ith = run_cases(hrq, H, eval_phys)
+                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, cohort='validation', residual_basis=nr, samples=nz,
+                                                            selected_on='tune', **errors(Fh, REF), gn_mean=float(ith.mean()))
+                        np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(np.float32))
+                        print('NM-LSPG-HR (validation)', name, report['arms'][name + '_hr']['worst_evolved'], flush=True)
+                del Rs
+            report['arms'][name]['arm_seconds'] = time.monotonic() - t_arm
+            save()
+        except Exception as exc:   # noqa: BLE001 - an arm that does not fit is a result, not a crash
+            msg = str(exc)
+            if 'RESOURCE_EXHAUSTED' in msg or 'out of memory' in msg.lower() or 'Out of memory' in msg:
+                report['dropped'].append(dict(name=name, reason='OOM', detail=msg[:400], seconds=time.monotonic() - t_arm))
+                print('DROPPED (OOM)', name, flush=True); jax.clear_caches(); save()
+            else:
+                raise
+    del U_fit, Xfit
+
+    # ------------------------------------------------------------------ the frozen project ROM (K=16, R=512)
+    if cfg.get('rom_qs') is not None and len(cfg['rom_qs']):
+        import arms as AR, topfix as TF
+        assert sha_file(CKPT) == CKPT_SHA
+        ck = pickle.load(open(CKPT, 'rb'))
+        params = jax.tree_util.tree_map(jnp.asarray, ck['params'])
+        Zold = np.asarray(ck['Z_tr']); K0 = Zold.shape[1]; R0 = int(np.asarray(ck['params']['h_lin']).shape[1])
+        bank = AR.CoordBank(params, K0, R0); G = bank.on_grid(L); Qb, Rb = AR.whiten(G)
+        Cfull = jnp.asarray(np.load(HERE / 'vendor/directions_qtd02.npz')['C'])
+        trust = .01 * float(np.max(np.linalg.norm(Zold - Zold.mean(0), axis=1)))
+        Zsub = Zold[::max(1, len(Zold) // 8192)]
+        for q in cfg['rom_qs']:
+            M = 4 * (K0 + q)
+            ph, lm, _ = e.modes(L, M); P_ = jnp.asarray(ph)
+            data = dict(A=P_.T @ G, lam=jnp.asarray(lm), G=G, Phi=P_)
+            head = TF.corrected_head(params, Cfull[:, :q], K0)
+            cold, cinfo = AR.build_cold(bank, head, np.concatenate((Zsub, np.zeros((len(Zsub), q))), 1), 48)
+            tq = TF.make_query(params, Cfull[:, :q], K0, q, L, DT, trust, 'dense', 'base', Rb=Rb, ic_budget=400, step_budget=600,
+                               gtol=1e-6, ic_gtol=1e-6, linear='gj' if K0 + q <= 64 else 'lu', inner_damping=1e-10, tau_y=.1)
+            romq = (lambda u0, nu, D_, _tq=tq: (lambda r: (r[0], r[1]))(_tq(u0, nu, D_[0], D_[1])))
+            F, its = run_cases(romq, (data, cold), eval_phys)
+            nm_ = f'ours_q{q}'
+            report['arms'][nm_] = dict(family='ours', K=K0, R=R0, q=q, M=M, cohort=cohort_name, **errors(F, REF), iterations_mean=float(its.mean()),
+                                       checkpoint_sha256=CKPT_SHA, query='topfix.make_query dense base, b-panel 25434a27 settings')
+            subjects[nm_] = (romq, (data, cold))
+            if cohort_name == 'validation': np.savez(out / f'fields_{nm_}.npz', fields=F.astype(np.float32))
+            print('OURS', nm_, report['arms'][nm_]['worst_evolved'], flush=True); save()
+
+    # ------------------------------------------------------------------ FOMs
+    for fname, (ntol, ltol) in dict(fom_fft_tight=(1e-6, 1e-8), fom_nt1e4_dt005=(1e-4, 1e-6)).items():
+        fq = (lambda u0, nu, A_, _n=ntol, _l=ltol: (lambda r: (r[0], r[1]))(ref_q(u0, nu, _n, _l, *A_)))
+        F, its = run_cases(fq, ref_pre, eval_phys)
+        report['arms'][fname] = dict(family='fom', ntol=ntol, ltol=ltol, dt=DT, cohort=cohort_name, **errors(F, REF), newton_total_mean=float(its.sum(1).mean()))
+        subjects[fname] = (fq, ref_pre)
+    save()
+
+    # ------------------------------------------------------------------ timing, one allocation, interleaved
+    tcfg = cfg.get('timing')
+    if tcfg:
+        names = list(subjects)
+        rng = np.random.default_rng(20260920)
+        burn = jax.jit(lambda x: x @ x); bx = jnp.eye(512)
+        def burn_in(sec):
+            until = time.perf_counter() + sec
+            while time.perf_counter() < until: burn(bx).block_until_ready()
+        U0 = [jax.device_put(np.array(e.initial(L, p_))) for p_ in eval_phys[:tcfg['cases']]]
+        for nm_ in names:      # compile/warm every subject; record compiled-memory analysis
+            q_, A_ = subjects[nm_]
+            t0 = time.perf_counter(); jax.block_until_ready(q_(U0[0], float(eval_phys[0, 4]), A_))
+            report['arms'][nm_]['compile_seconds'] = time.perf_counter() - t0
+            if hasattr(q_, 'lower'):
+                report['arms'][nm_]['memory_analysis'] = mem_of(q_, U0[0], float(eval_phys[0, 4]), A_)
+            report['arms'][nm_]['argument_bytes'] = int(sum(x.nbytes for x in jax.tree_util.tree_leaves(A_) if hasattr(x, 'nbytes')))
+        rows = []
+        for rep in range(tcfg['reps']):
+            for c in range(tcfg['cases']):
+                for i in rng.permutation(len(names)):
+                    q_, A_ = subjects[names[i]]
+                    burn_in(tcfg['burn'])
+                    jax.block_until_ready(U0[c])
+                    t0 = time.perf_counter(); r = q_(U0[c], float(eval_phys[c, 4]), A_); jax.block_until_ready(r); gpu_s = time.perf_counter() - t0
+                    t1 = time.perf_counter(); _ = np.asarray(r[0]); host_s = time.perf_counter() - t1
+                    rows.append((names[i], rep, c, gpu_s, host_s))
+        for nm_ in names:
+            g = np.array([r[3] for r in rows if r[0] == nm_]); h = np.array([r[4] for r in rows if r[0] == nm_])
+            report['arms'][nm_]['timing'] = dict(gpu_ms_median=float(np.median(g) * 1e3), gpu_ms_min=float(g.min() * 1e3), gpu_ms_max=float(g.max() * 1e3),
+                                                 fields_to_host_ms_median=float(np.median(h) * 1e3), invocations=int(g.size))
+        report['timing_rows'] = [dict(arm=r[0], rep=r[1], case=r[2], gpu_seconds=r[3], host_seconds=r[4]) for r in rows]
+        report['timing_contract'] = ('supplied dense initial field resident on GPU -> six dense (L+1)^2 fields resident on GPU, block_until_ready; '
+                                     f"{tcfg['burn']} s GPU burn-in before every invocation; fresh random subject order per (repetition, case)")
+        try:
+            report['process_peak_bytes'] = int(jax.devices()[0].memory_stats()['peak_bytes_in_use'])
+        except Exception:   # noqa: BLE001
+            pass
+    report['wall_seconds'] = time.monotonic() - T0
+    save()
+    print('DONE', flush=True)
+
+
+if __name__ == '__main__':
+    main()
+
+===== PAPER EXCERPT Section 3.2 (lines 380-480) =====
+the masked shallow neural network has a sparser structure than the unmasked one.
+
+
+
+in the following way:
+
+                                             xnormal = xscale       (x − xref )
+where x is a column vector of the dataset matrix X and       denotes the element-wise product. xscale and
+xref are directly computed from the dataset along each feature direction such that xnormal ranges either
+[−1, 1] or [0, 1].
+    After data normalization, an autoencoder can be trained to learn the identity mapping with the normal-
+ized dataset. Now, a normalized encoder maps from a high dimensional normalized input xnormal ∈ RNs to
+a low dimensional latent vector x̂ ∈ Rns in the form:
+
+                                                    x̂ = en (xnormal )
+and a normalized decoder maps from the low dimensional latent vector x̂ ∈ Rns to a reconstructed normalized
+input x̃normal ∈ RNs in the form:
+
+                                                    x̃normal = de (x̂) .
+Next, the encoder E and the decoder D can be written by
+                                            E (x) = en (xscale      (x − xref ))
+                                            D (x̂) = xref + de (x̂)      xscale
+where and denote the element-wise product and division, respectively. Moreover, the row-wise product
+of xscale and the first layer weight matrix of en yields the scaled encoder h. Likewise, the row-wise division
+of xscale and the last layer weight matrix of de gives us the scaled decoder g. Finally, the encoder E and
+the decoder D are given by
+                                                  E (x) = h (x − xref )
+                                                 D (x̂) = xref + g (x̂) .
+We set the decoder D (x̂) = xref + g (x̂) as the nonlinear manifold solution representation discussed in
+Section 3.
+    The scaled decoder g can be written in the form
+                                               g (x̂) = W 2 σ (W 1 x̂ + b1 )
+                                                              8
+where W 1 and W 2 are weight matrices, b1 is a bias vector, and σ is an element-wise activation function. The
+decoder can have more than two hidden layers (i.e., deep network). However, we use the single layer decoder
+(i.e., shallow network) because the Jacobian computation of the multiple hidden layer decoder involves
+multiple matrix-matrix multiplications. The output layer of the decoder g is fully-connected as depicted in
+Fig. 3 (a) (i.e., W 2 is a dense matrix), which means all nodes in the previous layer are required to compute
+even one element of the output vector. We apply a sparsity mask on the output layer of the decoder. Then,
+sampling a subset of the output vector doesn’t need all nodes in the previous layer as depicted in Fig. 3 (b).
+Thus, more speed-up can be achieved by a hyper-reduction technique that is described in Section 4. For
+example, the orange color nodes in Fig. 3 show the required nodes when the first and the last elements of
+the output are selected, which are represented as solid orange disks. To create a sparsely connected layer,
+we use a mask matrix S which contains either zero or one as shown in Fig. 4. By element-wise product
+S W 2 , a sparse weight matrix is obtained. The mask matrix S is constructed to reflect local connectivity
+as in the Laplacian operator approximated by the central difference scheme in Finite Difference Method.
+The autoencoder composed of the encoder and the sparse decoder is trained by using custom pruning in
+PyTorch [55] pruning module.
+
+
+
+
+              (a) Mask matrix for 1D Burgers equation            (b) Mask matrix for 2D Burgers equation
+
+    Fig. 4. Mask matrix. Note that the mask matrices have the analogical structure to the ones of Mass matrix that arises
+from a numerical discretization, such as the finite element or difference method, with 1D or 2D diffusion equations.
+
+     In the autoencoder, the number of learnable parameters (i.e., weights and bias) is determined by the
+number of nodes in the hidden layers in the encoder and the decoder, dimension of latent vector, and the
+sparsity in the mask matrix. The sparsity is determined by how many nodes in the hidden layer are used
+to compute one element of the output and how many nodes in the hidden layer are shared for neighboring
+elements of the output. To generate a mask matrix for 1D problem, we use two variables b and δb, where
+b denotes the number of nodes in the hidden layer to compute one output element (width of the block in
+each row in Fig. 4(a)) and δb denotes the amount by which the block shifts. For example, at the ith row,
+j ∈ {(i − 1)db, (i − 1)db + 1, · · · , (i − 1)db + b}th column is one and the others are zero. For a mask of the 2D
+problem, we create a building matrix in the same way as the mask matrix for 1D problem. Then, we add
+all rows neighboring ith row (e.g., 5-point stencil for 2D and 7-point stencil for 3D) to ith row and change
+nonzero values to one. Note that the mask matrix for 2D problem as in Fig. 4(b) looks similar to 2D finite
+difference Laplacian operator.
+     There is no way to determine these hyper-parameters a priori. If the number of learnable parameters
+is not enough, the decoder is not able to represent the nonlinear manifold well. On the other hand, too
+many learnable parameters may result in over-fitting, so the decoder is not able to generalize well, which
+means the trained decoder can’t be used for problems whose data is unseen, i.e., the predictive case. To
+avoid over-fitting, there are two options to consider. In the first option, one first divides the data into two
+sets, i.e., train and test sets. Then, the autoencoder is trained using the train set only and is tested for
+the generalization ability using the test set. If the mean squared error on the test and train sets are very
+different, the over-fitting occurs and we should reduce the number of learnable parameters [39].
+     The second option of avoiding the overfitting is to use Akaike’s information criteria (AIC) which is given
+by
+                                                                    Nw
+                                                    AIC = ln(e) + 2
+                                                                    N
+            kX−X̃k2
+where e =     2N
+                  F
+                    , Nw is the total number of learnable parameters, and N is the number of elements in
+the data set matrix (i.e., X). If one minimizes only the first term of AIC, then an over-fit network will be
+                                                           9
+obtained. On the other hand, if one minimizes only the second term of AIC, i.e., Nw = 0, then the network
+will not fit the training distribution. Therefore, the minimum of AIC helps train a model that is not over-fit
+and generalizes well. [45, 39]. However, finding the minimum of AIC requires a lot more training processes
+than the first option above. Because of randomness in training, e.g., the random initialization of weights and
+bias in neural networks and SGD optimization method, e will be different for every training process even
+with the same Nw and the dataset matrix. Therefore, AIC needs to be averaged over several training for
+each Nw to find the minimum of AIC.
+     Because of the practicality of the first option of avoiding the overfitting over the second option, we use
+the first option in our numerical experiments. For example, as shown in Fig. 5, the mean squares error on
+the test and train data sets are very close. This implies that the trained autoencoder is not over-fit.
+
+
+     100                                         100                                         100
+===== PAPER EXCERPT Section 4 (lines 555-700) =====
+                                    Ns ×nr
+where Φr := [φr,1 , . . . , φr,nr ] ∈ R      , ns ≤ nr  Ns , denotes the residual basis matrix and r̂ ∈ Rnr
+denotes the generalized coordinates of the nonlinear residual term. Here, r̃ represents a residual vector
+function, e.g., the backward Euler residual, r̃nBE , defined in Eq. (2.9). The GNAT-SNS method uses the SVD
+of the FOM solution snapshot matrix to construct Φr , which reduces computational cost by avoiding another
+POD to a nonlinear residual term snapshots. The hyper-reduction method solves the following least-squares
+problem to obtain the generalized coordinates r̂:
+                                                        1                  2
+(4.2)                                   r̂ := argmin       Z T (r̃ − Φr v̂) .
+                                               v̂∈Rnr   2                  2
+
+where Z T := [ep1 , . . . , epnz ]T ∈ Rnz ×Ns , ns ≤ nr ≤ nz  Ns , is the sampling matrix and epi is the pi th
+column of the identity matrix I Ns ∈ RNs ×Ns . The solution to Eq. (4.2) is given as
+
+                                              r̂ = (Z T Φr )† Z T r̃,
+where the Moore–Penrose inverse of a matrix A ∈ Rnz ×nr with full column rank is defined as A† :=
+(AT A)−1 AT . Therefore, Eq. (4.1) becomes
+(4.3)                                        r̃ ≈ Pr̃,
+where P := Φr (Z T Φr )† Z T is the oblique projection matrix. The projection matrix has a pseudo-inverse
+instead of the inverse because it allows the oversampling, i.e., nr < nz . The hyper-reduction method does not
+construct the sampling matrix Z. Instead, it maintains the sampling indices {p1 , . . . , pnf } and corresponding
+rows of Φr and r̃. This enables hyper-reduced ROMs to achieve a speed-up when it is applied to nonlinear
+problems.
+    The sampling indices (i.e., Z) can be determined by Algorithm 3 of [13] for computational fluid dynamics
+                                                        11
+problems and Algorithm 5 of [11] for other problems. These two algorithms take greedy procedure to
+minimize the error in the gappy reconstruction of the POD basis vectors Φr . These sampling algorithms for
+the hyper-reduction method allows oversampling (i.e., nz > nr ), resulting in solving least-squares problems
+in the greedy procedure. These selection algorithms can be viewed as the extension of Algorithm 1 in [14]
+(i.e., a row pivoted LU decomposition) to the oversampling case. The nonlinear residual term projection
+error associated with these sampling algorithms is presented in Appendix D of [13]. That is,
+
+                                        kr̃ − Pr̃k2 ≤ kR−1 k2 kr̃ − Φr ΦTr r̃k2
+where R is the triangular factor from the QR factorization of Z T Φr (i.e., Z T Φr = QR). For more details,
+please refer to [19]2 .
+    4.2. Hyper-reduction for LS-ROM. We present formulations of LS-Galerkin-HR and LS-LSPG-HR.
+For numerical examples, LS-LSPG-HR is only implemented.
+    4.2.1. LS-Galerkin-HR. We denote the hyper-reduced linear subspace Galerkin as LS-Galerkin-HR.
+The LS-Galerkin-HR method approximates the nonlinear residual term with the gappy POD procedure as
+in Section 4.1. Therefore, the LS-Galerkin-HR method replaces the residual in (2.7) with Pr̃(v̂, x̂, t; µ) given
+by Eq. (4.3). Thus, it minimizes the following least-squares problem:
+(4.4)                              ˙ = argmink(Z T Φr )† Z T r̃(v̂, x̂, t; µ)k2
+                                   x̂                                             2
+                                            v̂∈Rns
+with x̂(0; µ) = x̂0 (µ). The solution to Eq. (4.4) leads to the following reduced ODE:
+(4.5) x̂˙ = ((Z T Φr )† Z T Φ)† ((Z T Φr )T Z T Φr )−1 (Z T Φr )T Z T f (xref + Φx̂, t; µ), x̂(0; µ) = x̂0 (µ).
+     Applying a time integrator to Eq. (4.5) leads to a fully discretized reduced system, denoted as the
+reduced O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator
+is applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time
+step. If an explicit time integrator is applied, time marching updates can be applied.
+     Note that the operator ((Z T Φr )† Z T Φ)† ((Z T Φr )T Z T Φr )−1 (Z T Φr )T can be pre-computed once for all.
+We avoid constructing the sampling matrix Z. For example, the operator Z T Φr can be computed simply
+by extracting only the selected rows of Φr . For the term, Z T f , only the nonlinear term elements that are
+selected by the sampling matrix need to be computed. This implies that we have to keep track of the rows
+of Φ that are needed to compute the selected nonlinear term elements, which is usually a larger set than the
+rows that are selected solely by the sampling matrix, i.e., Z T Φ, as in the 5-point stencil or 7-point stencil
+in the finite difference method.
+   4.2.2. LS-LSPG-HR. We denote the hyper-reduced linear subspace LSPG as LS-LSPG-HR. The LS-
+LSPG-HR method approximates the nonlinear residual term with the gappy POD procedure as in Section 4.1.
+Therefore, the LS-LSPG-HR method replaces the residual in (2.10) with Pr̃(v̂, x̂, t; µ) given by Eq. (4.3).
+Thus, it minimizes the following least-squares problem:
+                                            1                                       2
+                             x̂n = argmin       (Z T Φr )† Z T r̃nBE (v̂; x̂n−1 , µ) ,
+                                    v̂∈Rns  2                                       2
+
+with x̂(0; µ) = x̂0 (µ). Note that the pseudo-inverse (Z T Φr )† can be pre-computed once for all. Due
+to the definition of r̃nBE in Eq. (2.9), the sampling matrix Z needs to be applied to the following terms:
+Φ(x̂n − x̂n−1 ) and f (xref + Φx̂n , t; µ) at every time step. The first term Z T Φ can be precomputed by
+extracting the selected rows of the basis matrix. For the second term, only the nonlinear term elements that
+are selected by the sampling matrix need to be computed. This implies that we have to keep track of the
+rows of Φ that are needed to compute the selected nonlinear term elements, which is usually a larger set
+than the rows that are selected solely by the sampling matrix, i.e., Z T Φ, as in the 5-point stencil or 7-point
+stencil in the finite difference method.
+     4.3. Hyper-reduction for NM-ROM. There are two layers of nonlinear terms in the NM-ROM:
+(i) the nonlinear term in the original governing equations, i.e., f in Eq. (2.1), and (ii) the decoder, which
+
+  2 In this paper, GNAT-SNS in [19] is re-named as LS-LSPG-HR to emphasize the difference between the LS-ROMs and
+
+NM-ROMs.
+                                                          12
+is nonlinear function of the generalized coordinates, i.e., g in Eq. (3.1) and appears in the definition of
+residuals both for Galerkin and Petrov–Galerkin cases. The first layer nonlinear term can be treated in the
+same way as the LS-ROMs (see Sections 4.2.1 and 4.2.2). Now, it is the second layer nonlinear term that
+requires a special attention. For example, the Jacobian of the decoder needs to be evaluated at every solver
+iteration. Because the cost of computing the Jacobian scales with the number of learnable parameters in
+the decoder, we cannot expect much speed-up. As we did in the hyper-reduction process of the LS-ROMs,
+we have to avoid computing all the entries of the decoder or its Jacobian because they scale with the full
+order model size. This will be achieved by constructing a subnet that computes only the relevant outputs,
+which is discussed in Section 4.4. First, we state the hyper-reduced NM-ROMs, i.e., the NM-Galerkin-HR in
+Section 4.3.1 and the NM-LSPG-HR in Section 4.3.2. At last, the flop count estimate comparison between
+non-hyper-reduced and hyper-reduced models are shown at the end of Section 4.4 and their derivations are
+shown in Appendix B.
+
+    4.3.1. NM-Galerkin-HR. Now, we apply the hyper-reduction to the NM-Galerkin method. We de-
+note the hyper-reduced nonlinear manifold Galerkin as NM-Galerkin-HR. The NM-Galerkin-HR method
+approximates the nonlinear residual term with the gappy POD procedure as in Section 4.1. Therefore,
+the NM-Galerkin-HR method replaces the residual in (3.5) with Pr̃(v̂, x̂, t; µ) given by Eq. (4.3). Thus, it
+minimizes the following least-squares problem:
+(4.6)                              ˙ = argmink(Z T Φr )† Z T r̃(v̂, x̂, t; µ)k2
+                                  x̂                                             2
+                                             v̂∈Rns
+with x̂(0; µ) = x̂0 (µ). The solution to Eq. (4.6) leads to the NM-Galerkin-HR
+(4.7)           ˙ = ((Z T Φr )† Z T J g (x̂))† (Z T Φr )† Z T f (xref + g(x̂), t; µ), x̂(0; µ) = x̂0 (µ).
+               x̂
+    Applying a time integrator to Eq. (4.7) leads to a fully discretized reduced system, denoted as the
+reduced O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator
+is applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time
+step. If an explicit time integrator is applied, time marching updates will solve the system.
+    Note that the pseudo inverse, (Z T Φr )† , can be pre-computed once for all by extracting only the selected
+rows of Φr . However, the term, Z T J g (x̂), cannot be precomputed because J g needs to be updated every
+time x̂ is updated. Fortunately, we need to compute only the selected rows of J g by the sampling matrix
+Z. Similarly, for the term, Z T f , only the nonlinear term elements that are selected by the sampling matrix
+need to be computed. This implies that we have to keep track of the outputs of g that are needed to compute
+the selected nonlinear term elements, which is usually a larger set than the outputs that are selected solely
+by the sampling matrix, i.e., Z T g, as in the 5-point stencil or 7-point stencil in the finite difference method.
+
+     4.3.2. NM-LSPG-HR. We apply the hyper-reduction to the NM-LSPG method discussed in Section
+3.4. The hyper-reduction procedure for the nonlinear residual function after the trial manifold projection is
+the same as the one in Section 4.1, i.e., we replace the residual defined in (3.7) with Pr̃nBE and plug it into
+the minimization problem in Eq. (3.8). Then, the minimization problem becomes
+                                             1                                       2
+                            x̂n = argmin         (Z T Φr )† Z T r̃nBE (v̂; x̂n−1 , µ) .
+                                   v̂∈Rns    2                                       2
+
+Note that the pseudo-inverse (Z T Φr )† can be pre-computed once for all. Due to the definition of r̃nBE
+in Eq. (3.7), the sampling matrix Z needs to be applied the following two terms: g (x̂n ) − g (x̂n−1 ) and
+f (xref + g (x̂n ) , t; µ) at every time step. The first term, Z T (g (x̂n ) − g (x̂n−1 )), requires to compute only
+the selected outputs of the decoder. Furthermore, for the second term, only the nonlinear term elements
+that are selected by the sampling matrix need to be computed. This implies that we have to keep track of
+the outputs of g that are needed to compute the selected nonlinear term elements by the sampling matrix,
+which is usually a larger set than the outputs that are selected solely by the sampling matrix, i.e., Z T g, as
+in the 5-point stencil or 7-point stencil in the finite difference method. Therefore, we build a subnet that
+computes only the outputs of the decoder that is required to compute the elements of the nonlinear term, f .
+Then, with the same subnet, the outputs required for the first term, Z T (g (x̂n ) − g (x̂n−1 )), can be extracted
+from the same subnet. The construction of the subnet is explained in Section 4.4.1.
+
+                                                           13
+     4.4. Efficient Hyper-Reduction Decoder Computation. In the NM-LSPG-HR method, the resid-
+ual is evaluated at the sampling points given by the hyper-reduction. We use “sample points” and “hyper-
+reduction indices” interchangeably throughout the paper. Evaluating the decoder and its Jacobian can be
+done efficiently by restricting the computation to the active paths of the outputs required to compute the
+selected residual elements. For example, active paths of the sparse decoder are shown in orange color in
+Fig. 3(b). The costs of computing the decoder and its Jacobian scale piecewise-linearly with the number
+of sample points because the slopes of the costs of computing the decoder and its Jacobian vs the number
+of sample points are different depending on how many nodes in hidden layer are shared for each sample
+point (see Fig. 6). The distribution of the hyper-reduction indices determines the number of overlapping
+===== PAPER EXCERPT Section 6.2 text (lines 1349-1412, 1438-1456) =====
+   For a time integrator, we use the backward Euler scheme with time step size ∆t = n2t , where nt is the
+number of time steps. We set nx = 60, ny = 60, and nt = 1500.
+     For the training process, we collect solution snapshots associated with the parameter µ ∈ Dtrain =
+{0.9, 0.95, 1.05, 1.1} such that ntrain = 4 at which the FOM is solved. Then, the number of train data points
+is ntrain · (nt + 1) = 6004 and 10% of the train data are used for validation purpose. We employ the Adam
+optimizer [37] with the SGD and the initial learning rate of 0.001, which decreases by a factor of 10 when a
+training loss stagnates for 10 successive training epochs. Here, we have two autoencoders. One for U vector
+and the other for V vector. The reason why we have such two autoencoders is that we can use less memory
+for training process compared to one autoencoder for (U T , V T )T vector and train both of them at the same
+                                                                           24
+time. We set the number of nodes in hidden layer in the encoder, M1 = 6728, and the number of nodes
+in hidden layer in the decoder, M2 = 33730. The weights and bias of the autoencoder are initialized via
+Kaiming initialization [32] as in the first numerical example. The size of the batch is 240 and the maximum
+number of epochs is 10, 000. The training process is stopped if the loss on the validation dataset stagnates
+for 200 epochs.
+     After the training is done, the NM-ROMs and LS-ROMs solve the Eq. (6.4) with the target parameter
+µ = 1 ,which is not included in the train dataset for training the autoencoder and the linear subspace. Fig. 13
+shows the relative error versus the reduced dimension ns for both NM-ROMs and LS-ROMs. It also shows
+the projection errors for LS-ROMs and NM-ROMs, which are defined in (6.1) and (6.2). These are the lower
+bounds for LS-ROMs and NM-ROMs, respectively. As expected the relative errors for the NM-ROMs are
+lower than the ones for the LS-ROMs. We even observe that the relative errors of NM-LSPG are even lower
+than the lower bounds of LS-ROMs. One notable observation is that NM-Galerkin is not able to achieve
+a good accuracy, while the NM-LSPG does. Another observation is that LS-ROMs struggle more for this
+problem than the 1D invisid Burgers’ equations, e.g., some LS-ROMs fail to converge.
+
+
+
+      100                                                       100
+
+
+
+     10-1                                                      10-1
+
+
+
+     10-2                                                      10-2
+
+
+
+     10-3                                                      10-3
+               5          10           15         20                      5          10           15        20
+
+                   (a) State variable, u                                      (b) State variable, v
+
+
+   Fig. 13. 2D Burgers’ equation. Relative errors vs reduced dimensions. A maximum relative error that is 1 means the
+ROM failed to solve the problem.
+
+      To see the trends regarding the number of training parameter instances, we increase the number of
+parameters starting from ntrain = 2 with the fixed reduced dimension ns = 5 to achieve less than 1%
+maximum relative error for NM-ROMs. In Fig. 14, we observe that ntrain = 4 is enough.
+      Both NM-Galerkin and LS-ROMs without a hyper-reduction do not achieve any speed-up with respect
+to the corresponding FOM simulation. For example, the FOM simulation takes 140.67 seconds, while the
+NM-Galerkin, NM-LSPG, LS-Galerkin, and LS-LSPG with ns = 5 takes 143.41, 78.22, 519.12 and 2193.70
+seconds, respectively. Although NM-LSPG is able to achieve a speed-up, it is not considerable. Therefore,
+the hyper-reduction is essential to achieve a considerable speed-up with a reasonable accuracy.
+      We compute the maximum relative error by choosing the larger of the two errors between the maximum
+relative error of u and the maximum relative error of v. We vary the number of residual basis and residual
+samples, with the fixed number of training parameter instances ntrain = 4 and the reduced dimension ns = 5,
+and measure the wall-clock time. The results are shown in Table 3. Although the LS-LSPG-HR can achieve
+better speedup than the NM-LSPG-HR, the relative error of the LS-LSPG-HR is too large to be reasonable,
+e.g., the relative errors of around 37%. On the other hand, the NM-LSPG-HR achieves much better accuracy,
+i.e., a relative error of around 1%, than the LS-LSPG-HR with a good speedup, i.e., a speedup of higher
+than 11.
+                                                       Table 3
+    The top 6 maximum relative errors and wall-clock times at different numbers of residual basis and samples which range
+from 40 to 60.
+
+                                               NM-LSPG-HR                                               LS-LSPG-HR
+   Residual basis              55      56        51    53    54              44         59       53       53    53           53     53
+  Residual samples             58      59        54    56    57              47         59       58       59    56           55     53
+ Max. rel. error (%)          0.93    0.94      0.95  0.97  0.97            0.98       34.38   37.73    37.84 37.95        37.96   37.97
+ Wall-clock time (sec)       12.15    12.35    12.09 12.14 12.29           12.01       5.26     5.02     4.86  5.05         4.75   7.18
+       Speed-up              11.58    11.39    11.63 11.58 11.44           11.71       26.76   28.02    28.95 27.83        29.61   19.58
+
+
+      Fig. 15 shows solutions at the last time step of FOM, NM-LSPG-HR, and LS-LSPG-HR with the reduced
+dimension being ns = 5. For NM-LSPG-HR, 55 residual basis dimension and 58 residual samples are used
+and for LS-LSPG-HR, 59 residual basis dimension and 59 residual samples are used. Both FOM and NM-
+LSPG-HR show good agreement in their solutions, while the LS-LSPG-HR is not able to achieve a good
+accuracy. In fact, the NM-LSPG-HR is able to achieve an accuracy as good as the NM-LSPG for some
+combinations of the small number of residual basis and residual samples as in Section 6.1.
+      We look into the numerical tests to see the generalization capability of the NM-LSPG and NM-LSPG-HR,
+
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+codex
+I’ll audit the inlined code against the excerpts, separating definite bugs from paper details the excerpts do not establish. I won’t access the disk or run commands.
+codex
+**Verdict:** the core decoder, full-residual LSPG objective, gappy weighting and active-path subnet are structurally consistent with the excerpts. **The gate is not reliable as implemented**, and the comparison has material fairness risks. This is a static audit; omitted paper algorithms, imported engines and checkpoint provenance cannot be certified.
+
+Here, **↑** means easier to pass or an apparently better result; **↓** means harder to pass or an apparently worse result.
+
+1. **Blocker — Failed seeds are discarded from the gate.**  
+   `errs` includes only finite NM trajectories. One successful seed and two divergent seeds can therefore pass. `--seeds` also permits fewer than three seeds or duplicate seeds.  
+   **Fix:** require exactly three distinct, predeclared seeds; assign failed runs infinite error and retain them in the median. Record failures separately. **Bias: ↑.**
+
+2. **Blocker — A broken linear control can satisfy the gate.**  
+   The final rule ignores `ls_lspg['finite']` and all convergence diagnostics. An infinite LS error satisfies `>= .10`; finite output from unconverged GN can also qualify. Moreover, the cited 34–38% values are **LS-LSPG-HR**, whereas the implemented control is **LS-LSPG without HR**.  
+   **Fix:** require a numerically valid control and compare each method with its corresponding published result. Treat control divergence as inconclusive, not proof that the problem is suitably difficult. **Bias: ↑.**
+
+3. **Major — The pass rule is a screening criterion, not strong reproduction evidence.**  
+   Three seeds and a relaxed 1.5% threshold provide limited evidence about training reliability. Trying variants after observing error at the paper’s test parameter selects on that test. Reporting every attempt improves transparency but does not remove selection bias. A large LS error also cannot establish that the correct PDE was implemented.  
+   **Fix:** distinguish the original preregistered result from subsequent adapted results; fix the variant sequence and seed sets beforehand, report all three errors and convergence outcomes. Define whether “three variants” includes the original attempt. **Bias: adaptation search ↑; relaxation ↑.**
+
+4. **Blocker — The secondary HR gate and downstream gate enforcement are absent.**  
+   `gate_kim2d.py` never computes an HR pass decision. `family.py` never loads or verifies either gate, and does not bind its configuration to an accepted reproduction. A failed HR method can enter the comparison.  
+   **Fix:** save explicit full and HR gate decisions, including the designated 55/58 configuration, seed aggregation and failure policy. Require their configuration/source hashes in comparison jobs. **Bias: ↑.**
+
+5. **Major — Normalisation is an interpretation, not an established reproduction.**  
+   The code divides IC-subtracted data by maximum absolute magnitude. This bounds fitting values within `[-1,1]`; it is not affine min–max scaling that generally reaches both endpoints. The excerpt describes featurewise dataset-derived reference/scaling, which does not independently establish the code’s per-trajectory IC reference convention. Global scaling is explicitly an adaptation.  
+   Gate near-zero features use scale `1`, while family training uses a relative floor of `1e-3`; these impose different feature weighting.  
+   **Fix:** specify the exact reference and normalisation equations, establish the paper convention from source/code, and label alternatives. Fit all scaling statistics using the AE fitting partition. **Bias: either direction.**
+
+6. **Minor — Mask construction is correct for the declared masks, but its general API is incorrect.**  
+   With the supplied `b,db`, the tables implement the union of self and four geometric-neighbour building rows, remove overlapping entries, and give **M2 = 33,730** for 3,364 nodes. However, when `db > b`, the middle interval fills gaps between building blocks that should remain zero. Also, M2 alone does not uniquely determine `b=100,db=10`. The paper’s inclusive endpoint notation conflicts with its description of block width, so that convention deserves explicit documentation.  
+   **Fix:** assert `0 < db <= b`, or construct an exact union for arbitrary inputs. Test rectangular grids, boundaries and overlapping blocks against an independently specified mask. **Bias: none at current settings; otherwise either direction.**
+
+7. **Major — Initialisation is distributionally faithful to a specific PyTorch default, not proven faithful to unspecified “Kaiming”.**  
+   The implementation matches `nn.Linear`’s uniform bounds, including **fan-in M2 for the subsequently masked output layer**. That is appropriate if the paper initialised a dense linear layer and then pruned it. It does not establish the particular Kaiming variant used by the authors. Packed storage also changes the random-number stream, without inherently biasing the distribution. The decoder has the stated single hidden layer and no output bias.  
+   **Fix:** document this conditional match; establish activation, encoder bias convention and exact initializer where possible. **Bias: unresolved choices either direction.**
+
+8. **Major — Training differs from the stated protocol in consequential ways.**  
+   The gate drops **124 of 5,404 fitting snapshots each epoch**; standard non-dropping batches would use them. A 3,000-second budget can truncate training long before the paper’s stopping rule. Compilation is included in that budget. Adam accumulation and elementwise MSE otherwise look consistent.  
+   `bad_tr > patience` reproduces PyTorch’s “exceeds patience” convention, but means reduction after 11 bad epochs for patience 10, not literally 10. The added minimum LR and exact-improvement validation rule are further choices. Only training loss is checked for finiteness; invalid validation loss can leave unusable “best” weights.  
+   **Fix:** handle the last batch, separate compilation from training budget, reject nonfinite validation, and distinguish completed from truncated reproductions. **Bias: truncation usually ↓; other choices either direction.**
+
+9. **Major — Dtype metadata overstates what runs in f64.**  
+   Both drivers enable x64, but default AE training is explicitly f32; casting trained weights to f64 does not recover training precision. This also conflicts with the repository’s blanket f64 rule unless declared as a reproduction exception. The gate records matmul precision without enforcing `highest`; the family enforces it. Invalid dtype strings silently select f64. Adam’s step counter is floating point.  
+   **Fix:** validate dtype choices, assert precision in both drivers, record training and inference precision separately, and use an integer optimizer step. Treat f32 as an explicit experimental variant. **Bias: either direction; training memory/time favour f32.**
+
+10. **Major — GN can silently return an unsuccessful solve.**  
+    The QR update correctly solves the linearised least-squares problem when the Jacobian has full column rank. However, there is no rank handling, final stationarity check or failure status. Hitting 20 iterations is accepted; a nonfinite step terminates the loop and propagates the bad state. Reported `rn` belongs to the state **before the last update**. Step-size stopping is sensitive to latent scaling and cannot alone establish minimisation.  
+    **Fix:** recompute final residual and `J.T @ r`, return explicit convergence/rank/cap status, and require valid solves for gates. Document any damping or rank-revealing fallback as an algorithmic choice. Assert `nsteps % save_every == 0`; otherwise rollout silently drops steps. **Bias: either direction; silent early termination can improve apparent speed.**
+
+11. **Major — The FOM indexing appears correct, but the test problem can conceal indexing errors.**  
+    `meshgrid(indexing='ij')`, C-order flattening, first-axis `xm`, second-axis `ym`, velocity assignment, zero padding and backward differences are mutually consistent. The grid has 58² interior nodes and spacing `1/59`. There is **no evident backward-difference or Dirichlet indexing bug**.  
+    However, equal, spatially symmetric initial components make this a weak axis/component-ordering test. The FOM ignores GMRES status, although its final residual assertion provides useful protection. Imported family operators are absent, so cross-engine fidelity remains unverified.  
+    **Fix:** test unequal, asymmetric synthetic components against an independent NumPy stencil, including corners and edges; retain linear-solver status and final FOM residuals.
+
+12. **Major — Neighbour/`loc` ordering is correct, but parity coverage is insufficient.**  
+    Both neighbour tables use `[xm,xp,ym,yp]`; `loc` prepends the centre, matching both HR residuals. Sorting `need` is correctly compensated by `pos`. Boundary sentinels map to appended zeros, and component selection in the gate is consistent.  
+    Existing parity tests cover only one state pair per configuration. The declared all-rows/full-basis rollout control is not implemented.  
+    **Fix:** test random asymmetric states, boundary samples and Jacobian parity; then test full-sampling equivalence on a small problem. With a square orthonormal full basis, the gappy objective should equal the full residual norm. Use absolute-plus-relative tolerances near zero.
+
+13. **Major — HR weighting/subnet are faithful; residual-basis construction is not established.**  
+    `pinv(Phir[rows]) @ sampled_residual` implements the stated gappy objective when `Phir` is orthonormal. Restricting hidden units to those connected to needed outputs is an exact active-path subnet.  
+    Using only **converged NM-LSPG residuals** is an unverified offline choice; these need not represent residuals encountered during GN iterations. The gate also uses one joint vector residual basis: the supplied excerpt does not establish whether Table 3’s counts use that convention.  
+    **Fix:** establish snapshot source and component convention; otherwise label them adaptations. Measure held-out residual reconstruction and conditioning. Save residual-basis and sampling artifacts. **Bias: either direction, often worse HR robustness.**
+
+14. **Major — `pod_basis` and `greedy_samples` lack numerical safeguards and verified algorithm parity.**  
+    Gram eigendecomposition squares the condition number. Clamping eigenvalues to `1e-300` does not resolve numerical rank; subsequent QR can introduce arbitrary completion directions. The sampler lacks `nz <= n`, effective-rank and conditioning checks. It redistributes samples by column and recomputes the fit after each added sample; the excerpts do not establish that this exactly implements either cited algorithm.  
+    **Fix:** use rank-revealing SVD or validated truncated eigendecomposition, reject insufficient rank, enforce `K <= nr <= nz <= n`, and record singular values of the sampled basis. Port one cited algorithm literally and compare selected indices on fixtures, including oversampled cases. **Bias: either direction.**
+
+15. **Major — Metrics are mostly implemented correctly, but “projection floor” is misleading.**  
+    Gate `maxrel` computes the stated evolved-time instantaneous relative error, separately for u/v and then takes the larger. Family `errors` implements the declared fixed-initial denominator and five evolved outputs. These are different metrics and cannot share thresholds. Neither is inherently wrong.  
+    Autoencoding the truth is **not generally a lower bound** on error achievable on the decoder manifold: the encoder need not return its nearest point. Python `max` can also obscure a NaN in one component; nonfinite handling should be explicit.  
+    **Fix:** rename this “autoencoder reconstruction error”, or solve a latent closest-point problem. Save the timewise errors and state the time-zero exclusion and denominator beside each result.
+
+16. **Major — The linear comparison is disadvantaged by unequal reference choices.**  
+    Family POD uses uncentred absolute snapshots, zero reference and a projected IC. Kim can select an IC reference, preserving the supplied IC outside its K latent coordinates. Thus matched K does not imply matched representation conditions. A good POD result also does not establish that the family is “too easy”; it may show that the nonlinear implementation is worse.  
+    **Fix:** tune/report POD with corresponding zero and IC-reference conventions and valid solves. Treat POD beating NM as a legitimate result, not a failed control. **Bias: favours nonlinear arms.**
+
+17. **Major — Data separation is partly sound, but checkpoint leakage and validation selection remain unguarded.**  
+    The explicit FIT/TUNE split keeps tuning cases out of Kim snapshot fitting. However, frozen checkpoint hashes establish identity, not absence of training or tuning exposure to validation. In family training, scaling uses the internal AE validation snapshots before splitting; random neighbouring-time validation also provides weak evidence of trajectory generalisation. All supplied variants can be evaluated on validation, with no locked selection manifest.  
+    **Fix:** audit training/selection provenance for the checkpoint and vendored artifacts; fit preprocessing on the internal fitting split; freeze selected variants before validation. If historical validation informed development, reserve claims for the sealed final cohort. **Bias: leakage/selection ↑.**
+
+18. **Major — The implementation does not enforce the promised frozen cross-mesh tuning.**  
+    HR configurations are selected anew on the tuning subset at every mesh, contrary to “tune at 128², K=16, then freeze”. Other variant choices remain unrestricted configuration inputs. The proposed Cartesian sweep is also large relative to the job budget, inviting undocumented pruning or unequal training opportunity.  
+    **Fix:** publish an explicit finite sweep, selection rule and budget; load a frozen selected configuration for later meshes. If mesh-specific HR tuning is intended, amend and label the protocol before results. **Bias: extra tuning ↑; unequal truncation can disadvantage Kim.**
+
+19. **Major — Shared references and capacity labels need qualification.**  
+    Training and reference trajectories use different engines/tolerances; reference generation has no explicit finite/convergence assertions. Imported code is unavailable here. The identical `fft_tight` reference arm has zero error by construction, not demonstrated physical accuracy. Also, `ours_q256` has **272 solved coordinates**, so describing it simply as “K=16” hides materially greater online freedom.  
+    **Fix:** verify cross-engine residual/trajectory agreement and a tightened reference; report latent, correction and total solved dimensions, parameters and offline data separately. Present both cost–accuracy and matched-capacity comparisons. **Bias: unqualified labels favour ours.**
+
+20. **Major — Timing has good structure but violates the same-invocation measurement rule.**  
+    Random interleaving, synchronization and retained repetitions are strengths. However, errors come from earlier calls, while timed outputs are not audited or retained. Repetition/case/burn-in minima are not enforced. A 0.25-second 512² identity-matrix workload does not establish stable GPU clocks. “Compile time” is measured after earlier evaluation already compiled the arm. Gate timings omit dense reconstruction, unlike family timings.  
+    **Fix:** derive accuracy and convergence from timed invocations; enforce the timing configuration, validate clock stability, separate first compilation from warm execution, and label gate timing scope. **Bias: either direction; unmatched scope can favour HR.**
+
+21. **Major — Memory and feasibility measurements are contaminated.**  
+    Process peak spans data generation, training and accumulated subjects; it cannot cross-check an individual query’s peak. All variant models remain resident, so later OOMs may reflect previous arms. Python wrappers prevent `memory_analysis` for ours and FOMs. The estimate ignores alias subtraction and may omit captured constants; the training estimate omits substantial workspace and retained best weights.  
+    **Fix:** measure each arm in an isolated worker on the same allocation with equivalent outer-jitted query boundaries; report persistent model, query workspace, outputs and training peak separately. Diagnose OOMs with the arm loaded alone. **Bias: later arms appear less feasible; incomplete accounting can favour ours.**
+
+22. **Minor — Saved artifacts do not support every promised audit.**  
+    Family fields are downcast to f32 before saving despite f64 error computation. Only the first gate HR configuration saves fields, although all report errors. Projection fields and several solver diagnostics are absent; vendor hashes and the binding gate artifact are not recorded.  
+    **Fix:** save original-precision fields or exact sufficient error data for every reported row, alongside convergence status, selected samples/bases and complete dependency provenance. Require independent error recomputation before accepting results.
+tokens used
+35,755
+**Verdict:** the core decoder, full-residual LSPG objective, gappy weighting and active-path subnet are structurally consistent with the excerpts. **The gate is not reliable as implemented**, and the comparison has material fairness risks. This is a static audit; omitted paper algorithms, imported engines and checkpoint provenance cannot be certified.
+
+Here, **↑** means easier to pass or an apparently better result; **↓** means harder to pass or an apparently worse result.
+
+1. **Blocker — Failed seeds are discarded from the gate.**  
+   `errs` includes only finite NM trajectories. One successful seed and two divergent seeds can therefore pass. `--seeds` also permits fewer than three seeds or duplicate seeds.  
+   **Fix:** require exactly three distinct, predeclared seeds; assign failed runs infinite error and retain them in the median. Record failures separately. **Bias: ↑.**
+
+2. **Blocker — A broken linear control can satisfy the gate.**  
+   The final rule ignores `ls_lspg['finite']` and all convergence diagnostics. An infinite LS error satisfies `>= .10`; finite output from unconverged GN can also qualify. Moreover, the cited 34–38% values are **LS-LSPG-HR**, whereas the implemented control is **LS-LSPG without HR**.  
+   **Fix:** require a numerically valid control and compare each method with its corresponding published result. Treat control divergence as inconclusive, not proof that the problem is suitably difficult. **Bias: ↑.**
+
+3. **Major — The pass rule is a screening criterion, not strong reproduction evidence.**  
+   Three seeds and a relaxed 1.5% threshold provide limited evidence about training reliability. Trying variants after observing error at the paper’s test parameter selects on that test. Reporting every attempt improves transparency but does not remove selection bias. A large LS error also cannot establish that the correct PDE was implemented.  
+   **Fix:** distinguish the original preregistered result from subsequent adapted results; fix the variant sequence and seed sets beforehand, report all three errors and convergence outcomes. Define whether “three variants” includes the original attempt. **Bias: adaptation search ↑; relaxation ↑.**
+
+4. **Blocker — The secondary HR gate and downstream gate enforcement are absent.**  
+   `gate_kim2d.py` never computes an HR pass decision. `family.py` never loads or verifies either gate, and does not bind its configuration to an accepted reproduction. A failed HR method can enter the comparison.  
+   **Fix:** save explicit full and HR gate decisions, including the designated 55/58 configuration, seed aggregation and failure policy. Require their configuration/source hashes in comparison jobs. **Bias: ↑.**
+
+5. **Major — Normalisation is an interpretation, not an established reproduction.**  
+   The code divides IC-subtracted data by maximum absolute magnitude. This bounds fitting values within `[-1,1]`; it is not affine min–max scaling that generally reaches both endpoints. The excerpt describes featurewise dataset-derived reference/scaling, which does not independently establish the code’s per-trajectory IC reference convention. Global scaling is explicitly an adaptation.  
+   Gate near-zero features use scale `1`, while family training uses a relative floor of `1e-3`; these impose different feature weighting.  
+   **Fix:** specify the exact reference and normalisation equations, establish the paper convention from source/code, and label alternatives. Fit all scaling statistics using the AE fitting partition. **Bias: either direction.**
+
+6. **Minor — Mask construction is correct for the declared masks, but its general API is incorrect.**  
+   With the supplied `b,db`, the tables implement the union of self and four geometric-neighbour building rows, remove overlapping entries, and give **M2 = 33,730** for 3,364 nodes. However, when `db > b`, the middle interval fills gaps between building blocks that should remain zero. Also, M2 alone does not uniquely determine `b=100,db=10`. The paper’s inclusive endpoint notation conflicts with its description of block width, so that convention deserves explicit documentation.  
+   **Fix:** assert `0 < db <= b`, or construct an exact union for arbitrary inputs. Test rectangular grids, boundaries and overlapping blocks against an independently specified mask. **Bias: none at current settings; otherwise either direction.**
+
+7. **Major — Initialisation is distributionally faithful to a specific PyTorch default, not proven faithful to unspecified “Kaiming”.**  
+   The implementation matches `nn.Linear`’s uniform bounds, including **fan-in M2 for the subsequently masked output layer**. That is appropriate if the paper initialised a dense linear layer and then pruned it. It does not establish the particular Kaiming variant used by the authors. Packed storage also changes the random-number stream, without inherently biasing the distribution. The decoder has the stated single hidden layer and no output bias.  
+   **Fix:** document this conditional match; establish activation, encoder bias convention and exact initializer where possible. **Bias: unresolved choices either direction.**
+
+8. **Major — Training differs from the stated protocol in consequential ways.**  
+   The gate drops **124 of 5,404 fitting snapshots each epoch**; standard non-dropping batches would use them. A 3,000-second budget can truncate training long before the paper’s stopping rule. Compilation is included in that budget. Adam accumulation and elementwise MSE otherwise look consistent.  
+   `bad_tr > patience` reproduces PyTorch’s “exceeds patience” convention, but means reduction after 11 bad epochs for patience 10, not literally 10. The added minimum LR and exact-improvement validation rule are further choices. Only training loss is checked for finiteness; invalid validation loss can leave unusable “best” weights.  
+   **Fix:** handle the last batch, separate compilation from training budget, reject nonfinite validation, and distinguish completed from truncated reproductions. **Bias: truncation usually ↓; other choices either direction.**
+
+9. **Major — Dtype metadata overstates what runs in f64.**  
+   Both drivers enable x64, but default AE training is explicitly f32; casting trained weights to f64 does not recover training precision. This also conflicts with the repository’s blanket f64 rule unless declared as a reproduction exception. The gate records matmul precision without enforcing `highest`; the family enforces it. Invalid dtype strings silently select f64. Adam’s step counter is floating point.  
+   **Fix:** validate dtype choices, assert precision in both drivers, record training and inference precision separately, and use an integer optimizer step. Treat f32 as an explicit experimental variant. **Bias: either direction; training memory/time favour f32.**
+
+10. **Major — GN can silently return an unsuccessful solve.**  
+    The QR update correctly solves the linearised least-squares problem when the Jacobian has full column rank. However, there is no rank handling, final stationarity check or failure status. Hitting 20 iterations is accepted; a nonfinite step terminates the loop and propagates the bad state. Reported `rn` belongs to the state **before the last update**. Step-size stopping is sensitive to latent scaling and cannot alone establish minimisation.  
+    **Fix:** recompute final residual and `J.T @ r`, return explicit convergence/rank/cap status, and require valid solves for gates. Document any damping or rank-revealing fallback as an algorithmic choice. Assert `nsteps % save_every == 0`; otherwise rollout silently drops steps. **Bias: either direction; silent early termination can improve apparent speed.**
+
+11. **Major — The FOM indexing appears correct, but the test problem can conceal indexing errors.**  
+    `meshgrid(indexing='ij')`, C-order flattening, first-axis `xm`, second-axis `ym`, velocity assignment, zero padding and backward differences are mutually consistent. The grid has 58² interior nodes and spacing `1/59`. There is **no evident backward-difference or Dirichlet indexing bug**.  
+    However, equal, spatially symmetric initial components make this a weak axis/component-ordering test. The FOM ignores GMRES status, although its final residual assertion provides useful protection. Imported family operators are absent, so cross-engine fidelity remains unverified.  
+    **Fix:** test unequal, asymmetric synthetic components against an independent NumPy stencil, including corners and edges; retain linear-solver status and final FOM residuals.
+
+12. **Major — Neighbour/`loc` ordering is correct, but parity coverage is insufficient.**  
+    Both neighbour tables use `[xm,xp,ym,yp]`; `loc` prepends the centre, matching both HR residuals. Sorting `need` is correctly compensated by `pos`. Boundary sentinels map to appended zeros, and component selection in the gate is consistent.  
+    Existing parity tests cover only one state pair per configuration. The declared all-rows/full-basis rollout control is not implemented.  
+    **Fix:** test random asymmetric states, boundary samples and Jacobian parity; then test full-sampling equivalence on a small problem. With a square orthonormal full basis, the gappy objective should equal the full residual norm. Use absolute-plus-relative tolerances near zero.
+
+13. **Major — HR weighting/subnet are faithful; residual-basis construction is not established.**  
+    `pinv(Phir[rows]) @ sampled_residual` implements the stated gappy objective when `Phir` is orthonormal. Restricting hidden units to those connected to needed outputs is an exact active-path subnet.  
+    Using only **converged NM-LSPG residuals** is an unverified offline choice; these need not represent residuals encountered during GN iterations. The gate also uses one joint vector residual basis: the supplied excerpt does not establish whether Table 3’s counts use that convention.  
+    **Fix:** establish snapshot source and component convention; otherwise label them adaptations. Measure held-out residual reconstruction and conditioning. Save residual-basis and sampling artifacts. **Bias: either direction, often worse HR robustness.**
+
+14. **Major — `pod_basis` and `greedy_samples` lack numerical safeguards and verified algorithm parity.**  
+    Gram eigendecomposition squares the condition number. Clamping eigenvalues to `1e-300` does not resolve numerical rank; subsequent QR can introduce arbitrary completion directions. The sampler lacks `nz <= n`, effective-rank and conditioning checks. It redistributes samples by column and recomputes the fit after each added sample; the excerpts do not establish that this exactly implements either cited algorithm.  
+    **Fix:** use rank-revealing SVD or validated truncated eigendecomposition, reject insufficient rank, enforce `K <= nr <= nz <= n`, and record singular values of the sampled basis. Port one cited algorithm literally and compare selected indices on fixtures, including oversampled cases. **Bias: either direction.**
+
+15. **Major — Metrics are mostly implemented correctly, but “projection floor” is misleading.**  
+    Gate `maxrel` computes the stated evolved-time instantaneous relative error, separately for u/v and then takes the larger. Family `errors` implements the declared fixed-initial denominator and five evolved outputs. These are different metrics and cannot share thresholds. Neither is inherently wrong.  
+    Autoencoding the truth is **not generally a lower bound** on error achievable on the decoder manifold: the encoder need not return its nearest point. Python `max` can also obscure a NaN in one component; nonfinite handling should be explicit.  
+    **Fix:** rename this “autoencoder reconstruction error”, or solve a latent closest-point problem. Save the timewise errors and state the time-zero exclusion and denominator beside each result.
+
+16. **Major — The linear comparison is disadvantaged by unequal reference choices.**  
+    Family POD uses uncentred absolute snapshots, zero reference and a projected IC. Kim can select an IC reference, preserving the supplied IC outside its K latent coordinates. Thus matched K does not imply matched representation conditions. A good POD result also does not establish that the family is “too easy”; it may show that the nonlinear implementation is worse.  
+    **Fix:** tune/report POD with corresponding zero and IC-reference conventions and valid solves. Treat POD beating NM as a legitimate result, not a failed control. **Bias: favours nonlinear arms.**
+
+17. **Major — Data separation is partly sound, but checkpoint leakage and validation selection remain unguarded.**  
+    The explicit FIT/TUNE split keeps tuning cases out of Kim snapshot fitting. However, frozen checkpoint hashes establish identity, not absence of training or tuning exposure to validation. In family training, scaling uses the internal AE validation snapshots before splitting; random neighbouring-time validation also provides weak evidence of trajectory generalisation. All supplied variants can be evaluated on validation, with no locked selection manifest.  
+    **Fix:** audit training/selection provenance for the checkpoint and vendored artifacts; fit preprocessing on the internal fitting split; freeze selected variants before validation. If historical validation informed development, reserve claims for the sealed final cohort. **Bias: leakage/selection ↑.**
+
+18. **Major — The implementation does not enforce the promised frozen cross-mesh tuning.**  
+    HR configurations are selected anew on the tuning subset at every mesh, contrary to “tune at 128², K=16, then freeze”. Other variant choices remain unrestricted configuration inputs. The proposed Cartesian sweep is also large relative to the job budget, inviting undocumented pruning or unequal training opportunity.  
+    **Fix:** publish an explicit finite sweep, selection rule and budget; load a frozen selected configuration for later meshes. If mesh-specific HR tuning is intended, amend and label the protocol before results. **Bias: extra tuning ↑; unequal truncation can disadvantage Kim.**
+
+19. **Major — Shared references and capacity labels need qualification.**  
+    Training and reference trajectories use different engines/tolerances; reference generation has no explicit finite/convergence assertions. Imported code is unavailable here. The identical `fft_tight` reference arm has zero error by construction, not demonstrated physical accuracy. Also, `ours_q256` has **272 solved coordinates**, so describing it simply as “K=16” hides materially greater online freedom.  
+    **Fix:** verify cross-engine residual/trajectory agreement and a tightened reference; report latent, correction and total solved dimensions, parameters and offline data separately. Present both cost–accuracy and matched-capacity comparisons. **Bias: unqualified labels favour ours.**
+
+20. **Major — Timing has good structure but violates the same-invocation measurement rule.**  
+    Random interleaving, synchronization and retained repetitions are strengths. However, errors come from earlier calls, while timed outputs are not audited or retained. Repetition/case/burn-in minima are not enforced. A 0.25-second 512² identity-matrix workload does not establish stable GPU clocks. “Compile time” is measured after earlier evaluation already compiled the arm. Gate timings omit dense reconstruction, unlike family timings.  
+    **Fix:** derive accuracy and convergence from timed invocations; enforce the timing configuration, validate clock stability, separate first compilation from warm execution, and label gate timing scope. **Bias: either direction; unmatched scope can favour HR.**
+
+21. **Major — Memory and feasibility measurements are contaminated.**  
+    Process peak spans data generation, training and accumulated subjects; it cannot cross-check an individual query’s peak. All variant models remain resident, so later OOMs may reflect previous arms. Python wrappers prevent `memory_analysis` for ours and FOMs. The estimate ignores alias subtraction and may omit captured constants; the training estimate omits substantial workspace and retained best weights.  
+    **Fix:** measure each arm in an isolated worker on the same allocation with equivalent outer-jitted query boundaries; report persistent model, query workspace, outputs and training peak separately. Diagnose OOMs with the arm loaded alone. **Bias: later arms appear less feasible; incomplete accounting can favour ours.**
+
+22. **Minor — Saved artifacts do not support every promised audit.**  
+    Family fields are downcast to f32 before saving despite f64 error computation. Only the first gate HR configuration saves fields, although all report errors. Projection fields and several solver diagnostics are absent; vendor hashes and the binding gate artifact are not recorded.  
+    **Fix:** save original-precision fields or exact sufficient error data for every reported row, alongside convergence status, selected samples/bases and complete dependency provenance. Require independent error recomputation before accepting results.
+exit=0

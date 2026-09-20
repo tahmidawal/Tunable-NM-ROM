@@ -43,6 +43,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--cache', default='/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01')
     ap.add_argument('--allow-cpu', action='store_true')
+    ap.add_argument('--gate', help='summary.json of the accepted Kim reproduction gate; required unless --smoke')
+    ap.add_argument('--smoke', action='store_true')
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     import jax
@@ -68,6 +70,21 @@ def main():
                   source_sha256={str(p.relative_to(ROOT)): sha_file(p) for p in
                                  [HERE / 'family.py', HERE / 'kimae.py', HERE / 'lspg.py', ROOT / 'experiments/mr-burgers2d/engines.py',
                                   ROOT / 'experiments/mr-burgers2d/iterative_paths.py']})
+    for p_ in sorted(x for x in (HERE / 'vendor').glob('*') if x.is_file()):
+        report['source_sha256'][str(p_.relative_to(ROOT))] = sha_file(p_)
+    if a.smoke:
+        report['gate_binding'] = dict(smoke=True, note='no result of a smoke run may be reported')
+        hr_allowed = True
+    else:
+        g = json.loads(Path(a.gate).read_text())
+        assert g['gate']['passed'], 'Kim reproduction gate has not passed: no Kim arm may be run for the comparison'
+        hr_allowed = bool(g['gate']['hr_passed'])
+        report['gate_binding'] = dict(gate_sha256=sha_file(a.gate), gate=g['gate'], gate_job=g['provenance']['job_id'],
+                                      kimae_matches_gate=bool(g['source_sha256']['kimae.py'] == sha_file(HERE / 'kimae.py')),
+                                      lspg_matches_gate=bool(g['source_sha256']['lspg.py'] == sha_file(HERE / 'lspg.py')))
+        assert report['gate_binding']['kimae_matches_gate'] and report['gate_binding']['lspg_matches_gate'], 'code changed since the gate'
+        tc = cfg.get('timing')
+        assert tc is None or (tc['reps'] >= 5 and tc['cases'] >= 4 and tc['burn'] >= .25)
     save = lambda: (out / 'summary.json').write_text(json.dumps(report, indent=1, default=float) + '\n')
     T0 = time.monotonic()
 
@@ -105,13 +122,17 @@ def main():
         return np.stack(rows)
     t0 = time.perf_counter()
     U_fit = trajectories(phys['train'][FIT])                       # (112, 51, n)
-    U_tune = trajectories(tune_phys)
     report['snapshots'] = dict(fit=list(U_fit.shape), seconds=time.perf_counter() - t0,
                                sha256=hashlib.sha256(np.ascontiguousarray(U_fit[:, ::10]).tobytes()).hexdigest())
     del fomq; jax.clear_caches()
     ref_q, ref_pre = ip.make_fom(L, DT, 'fft')
     def reference(P):
-        return np.stack([host(ref_q(jnp.asarray(e.initial(L, p)), float(p[4]), 1e-6, 1e-8, *ref_pre)[0]) for p in P])
+        rows = []
+        for p in P:
+            f, it, rn = host(ref_q(jnp.asarray(e.initial(L, p)), float(p[4]), 1e-6, 1e-8, *ref_pre)[:3])
+            assert np.isfinite(f).all() and rn.max() <= 1e-6 and it.max() < 20, (rn.max(), it.max())
+            rows.append(f)
+        return np.stack(rows)
     REF = reference(eval_phys)                                     # (cases, 6, L+1, L+1)
     REF_tune = REF if cohort_name == 'tune' else reference(tune_phys)
     print(f'DATA {time.monotonic()-T0:.0f}s fit={U_fit.shape} ref={REF.shape}', flush=True)
@@ -125,6 +146,8 @@ def main():
                     worst_all_times=float(e_.max()), worst_t0=float(e_[:, 0].max()),
                     per_case_evolved=e_[:, 1:].max(1).tolist(), finite=bool(np.isfinite(e_).all()))
 
+    fdt = np.float64 if L <= 256 else np.float32       # 512: f32 storage, audit tolerance stated in the collector
+    report['saved_field_dtype'] = str(np.dtype(fdt))
     pad = lambda V: jnp.pad(V.reshape(-1, m, m), ((0, 0), (1, 1), (1, 1)))
 
     def fom_res(u, prev, nu):
@@ -158,22 +181,33 @@ def main():
     report['pod'] = dict(seconds=time.perf_counter() - t0, orthonormality=float(np.abs(PhiAll.T @ PhiAll - np.eye(PhiAll.shape[1])).max()))
     del Gm
 
-    def make_pod_query():
-        res = lambda z, zp, A: fom_res(A['Phi'] @ z, A['Phi'] @ zp, A['nu'])
+    def make_pod_query(ref_mode):
+        res = lambda z, zp, A: fom_res(A['ref'] + A['Phi'] @ z, A['ref'] + A['Phi'] @ zp, A['nu'])
         roll = lspg.make_rollout(res, STEPS, max_it=cfg.get('gn_cap', 20), save_every=KEEP)
         def query(u0, nu, A):
-            z0 = A['Phi'].T @ u0[1:-1, 1:-1].reshape(-1)
-            Z, o = roll(z0, dict(A, nu=nu))
-            return pad(Z @ A['Phi'].T), o[0].reshape(-1)
+            ui = u0[1:-1, 1:-1].reshape(-1)
+            ref = ui if ref_mode == 'ic' else jnp.zeros_like(ui)
+            z0 = A['Phi'].T @ (ui - ref)
+            Z, o = roll(z0, dict(A, nu=nu, ref=ref))
+            return pad(ref + Z @ A['Phi'].T), o[0].reshape(-1)
         return jax.jit(query)
-    podq = make_pod_query()
-    for k in cfg.get('pod_ks', []):
-        A = dict(Phi=jnp.asarray(PhiAll[:, :k]))
-        F, its = run_cases(podq, A, eval_phys)
-        report['arms'][f'pod_lspg_K{k}'] = dict(family='pod_lspg', K=k, cohort=cohort_name, **errors(F, REF), gn_mean=float(its.mean()))
-        subjects[f'pod_lspg_K{k}'] = (podq, A)
-        if cohort_name == 'validation': np.savez(out / f'fields_pod_lspg_K{k}.npz', fields=F.astype(np.float32))
-        print('POD-LSPG', k, report['arms'][f'pod_lspg_K{k}']['worst_evolved'], flush=True); save()
+    # the linear control gets both reference conventions the Kim arms may use (audit finding 16)
+    Dic = (U_fit - U_fit[:, :1]).reshape(-1, n)
+    Gi = np.asarray(jax.jit(lambda X: X @ X.T)(jnp.asarray(Dic)))
+    wi, Vi = np.linalg.eigh(Gi); oi = np.argsort(wi)[::-1][:PhiAll.shape[1]]
+    PhiIC = np.linalg.qr(np.asarray(jax.jit(lambda X, C: X.T @ C)(jnp.asarray(Dic), jnp.asarray(Vi[:, oi] / np.sqrt(wi[oi])))))[0]
+    del Dic, Gi
+    for ref_mode, Pm in (('zero', PhiAll), ('ic', PhiIC)):
+        podq = make_pod_query(ref_mode)
+        for k in cfg.get('pod_ks', []):
+            A = dict(Phi=jnp.asarray(Pm[:, :k]))
+            F, its = run_cases(podq, A, eval_phys)
+            nm_ = f'pod_lspg_{ref_mode}_K{k}'
+            report['arms'][nm_] = dict(family='pod_lspg', K=k, solved_dimension=k, reference=ref_mode, cohort=cohort_name, **errors(F, REF),
+                                       gn_mean=float(its.mean()), gn_cap_hits=int((its >= cfg.get('gn_cap', 20)).sum()))
+            subjects[nm_] = (podq, host(A))
+            if cohort_name == 'validation': np.savez(out / f'fields_{nm_}.npz', fields=F.astype(fdt))
+            print('POD-LSPG', ref_mode, k, report['arms'][nm_]['worst_evolved'], flush=True); save()
 
     # ------------------------------------------------------------------ Kim et al. arms
     nbr = np.stack((np.where(np.arange(n) // m > 0, np.arange(n) - m, -1), np.where(np.arange(n) // m < m - 1, np.arange(n) + m, -1),
@@ -232,17 +266,20 @@ def main():
         try:
             idx, valid, M2 = kimae.mask_tables(m, m, v['b'], v['db'])
             M1 = 2 * n if v['M1'] == '2n' else int(v['M1'])
+            assert v.get('dtype', 'float32') in ('float32', 'float64')
             tdt = jnp.float32 if v.get('dtype', 'float32') == 'float32' else jnp.float64
             bytes_ = 4 if tdt == jnp.float32 else 8
             need_gb = (M1 * n * bytes_ * 4 + idx.size * bytes_ * 4) / 1e9
             D = U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)
             D = D.reshape(-1, n)
-            if v['scale'] == 'feature':
-                sc = np.abs(D).max(0); sc = np.maximum(sc, float(v.get('scale_floor', 1e-3)) * sc.max())
-            else:
-                sc = np.full(n, np.abs(D).max())
             rng = np.random.default_rng(20260920 + int(v['seed']))
             perm = rng.permutation(D.shape[0]); nva = D.shape[0] // 10
+            Dfit = D[np.sort(perm[nva:])]
+            if v['scale'] == 'feature':
+                sc = np.abs(Dfit).max(0); sc = np.maximum(sc, float(v.get('scale_floor', 1e-3)) * sc.max())
+            else:
+                sc = np.full(n, np.abs(Dfit).max())
+            del Dfit
             micro = max(d for d in (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 30, 40, 48, 60, 80, 120, 240)
                         if d * idx.size * bytes_ <= float(cfg.get('micro_bytes', 5e9)) or d == 1)
             print(f'ARM {name}: n={n} K={K} M1={M1} M2={M2} nnz={int(valid.sum())} micro={micro} weights+adam~{need_gb:.1f}GB', flush=True)
@@ -267,13 +304,14 @@ def main():
             PF = np.stack([np.asarray(nmproj(jnp.asarray(REF[c][:, 1:-1, 1:-1].reshape(6, n)), jnp.asarray(REF[c][0]), A)) for c in range(len(REF))])
             F, its = run_cases(nmq, A, eval_phys)
             arm = dict(family='kim_nm_lspg', K=K, cohort=cohort_name, variant=v, **errors(F, REF), gn_mean=float(its.mean()), gn_max=int(its.max()),
-                       projection=errors(PF, REF), jac_batch=jac_batch)
-            report['arms'][name] = arm; subjects[name] = (nmq, A)
-            if cohort_name == 'validation': np.savez(out / f'fields_{name}.npz', fields=F.astype(np.float32))
-            print('NM-LSPG', name, 'worst_evolved', arm['worst_evolved'], 'projection', arm['projection']['worst_evolved'], flush=True); save()
+                       autoencode=errors(PF, REF), jac_batch=jac_batch, solved_dimension=K,
+                       gn_cap_hits=int((its >= cfg.get('gn_cap', 20)).sum()), training_dtype=v.get('dtype', 'float32'), online_dtype='float64')
+            report['arms'][name] = arm; subjects[name] = (nmq, host(A))
+            if cohort_name == 'validation': np.savez(out / f'fields_{name}.npz', fields=F.astype(fdt))
+            print('NM-LSPG', name, 'worst_evolved', arm['worst_evolved'], 'autoencode', arm['autoencode']['worst_evolved'], flush=True); save()
 
             # ---------------- hyper-reduction (their online algorithm); grid chosen on the tuning subset only
-            if v.get('hr'):
+            if v.get('hr') and hr_allowed:
                 rcases = phys['train'][FIT][::max(1, len(FIT) // int(cfg.get('hr_residual_cases', 16)))]
                 Rs = np.concatenate([np.asarray(nmres(jnp.asarray(e.initial(L, p_)), float(p_[4]), A)[0]) for p_ in rcases]).T
                 hrq, hraw = make_hr_query(K, v['ref'])
@@ -307,14 +345,15 @@ def main():
                 if best is not None:
                     _, hname, H, nr, nz = best
                     report['arms'][name]['hr_selected'] = hname
-                    subjects[name + '_hr'] = (hrq, H)
+                    subjects[name + '_hr'] = (hrq, host(H))
                     if cohort_name == 'validation':
                         Fh, ith = run_cases(hrq, H, eval_phys)
                         report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, cohort='validation', residual_basis=nr, samples=nz,
                                                             selected_on='tune', **errors(Fh, REF), gn_mean=float(ith.mean()))
-                        np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(np.float32))
+                        np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(fdt))
                         print('NM-LSPG-HR (validation)', name, report['arms'][name + '_hr']['worst_evolved'], flush=True)
                 del Rs
+            del A
             report['arms'][name]['arm_seconds'] = time.monotonic() - t_arm
             save()
         except Exception as exc:   # noqa: BLE001 - an arm that does not fit is a result, not a crash
@@ -345,18 +384,18 @@ def main():
             cold, cinfo = AR.build_cold(bank, head, np.concatenate((Zsub, np.zeros((len(Zsub), q))), 1), 48)
             tq = TF.make_query(params, Cfull[:, :q], K0, q, L, DT, trust, 'dense', 'base', Rb=Rb, ic_budget=400, step_budget=600,
                                gtol=1e-6, ic_gtol=1e-6, linear='gj' if K0 + q <= 64 else 'lu', inner_damping=1e-10, tau_y=.1)
-            romq = (lambda u0, nu, D_, _tq=tq: (lambda r: (r[0], r[1]))(_tq(u0, nu, D_[0], D_[1])))
+            romq = jax.jit(lambda u0, nu, D_, _tq=tq: _tq(u0, nu, D_[0], D_[1])[:2])
             F, its = run_cases(romq, (data, cold), eval_phys)
             nm_ = f'ours_q{q}'
-            report['arms'][nm_] = dict(family='ours', K=K0, R=R0, q=q, M=M, cohort=cohort_name, **errors(F, REF), iterations_mean=float(its.mean()),
+            report['arms'][nm_] = dict(family='ours', K=K0, R=R0, q=q, M=M, solved_dimension=K0 + q, cohort=cohort_name, **errors(F, REF), iterations_mean=float(its.mean()),
                                        checkpoint_sha256=CKPT_SHA, query='topfix.make_query dense base, b-panel 25434a27 settings')
             subjects[nm_] = (romq, (data, cold))
-            if cohort_name == 'validation': np.savez(out / f'fields_{nm_}.npz', fields=F.astype(np.float32))
+            if cohort_name == 'validation': np.savez(out / f'fields_{nm_}.npz', fields=F.astype(fdt))
             print('OURS', nm_, report['arms'][nm_]['worst_evolved'], flush=True); save()
 
     # ------------------------------------------------------------------ FOMs
     for fname, (ntol, ltol) in dict(fom_fft_tight=(1e-6, 1e-8), fom_nt1e4_dt005=(1e-4, 1e-6)).items():
-        fq = (lambda u0, nu, A_, _n=ntol, _l=ltol: (lambda r: (r[0], r[1]))(ref_q(u0, nu, _n, _l, *A_)))
+        fq = jax.jit(lambda u0, nu, A_, _n=ntol, _l=ltol: ref_q(u0, nu, _n, _l, *A_)[:2])
         F, its = run_cases(fq, ref_pre, eval_phys)
         report['arms'][fname] = dict(family='fom', ntol=ntol, ltol=ltol, dt=DT, cohort=cohort_name, **errors(F, REF), newton_total_mean=float(its.sum(1).mean()))
         subjects[fname] = (fq, ref_pre)
@@ -372,10 +411,12 @@ def main():
             until = time.perf_counter() + sec
             while time.perf_counter() < until: burn(bx).block_until_ready()
         U0 = [jax.device_put(np.array(e.initial(L, p_))) for p_ in eval_phys[:tcfg['cases']]]
+        subjects = {k: (q_, jax.device_put(A_)) for k, (q_, A_) in subjects.items()}
+        first_out = {}
         for nm_ in names:      # compile/warm every subject; record compiled-memory analysis
             q_, A_ = subjects[nm_]
             t0 = time.perf_counter(); jax.block_until_ready(q_(U0[0], float(eval_phys[0, 4]), A_))
-            report['arms'][nm_]['compile_seconds'] = time.perf_counter() - t0
+            report['arms'][nm_]['first_timing_call_seconds'] = time.perf_counter() - t0   # may include recompilation; not a compile time
             if hasattr(q_, 'lower'):
                 report['arms'][nm_]['memory_analysis'] = mem_of(q_, U0[0], float(eval_phys[0, 4]), A_)
             report['arms'][nm_]['argument_bytes'] = int(sum(x.nbytes for x in jax.tree_util.tree_leaves(A_) if hasattr(x, 'nbytes')))
@@ -389,6 +430,13 @@ def main():
                     t0 = time.perf_counter(); r = q_(U0[c], float(eval_phys[c, 4]), A_); jax.block_until_ready(r); gpu_s = time.perf_counter() - t0
                     t1 = time.perf_counter(); _ = np.asarray(r[0]); host_s = time.perf_counter() - t1
                     rows.append((names[i], rep, c, gpu_s, host_s))
+                    fld = np.asarray(r[0])
+                    key = (names[i], c)
+                    if key not in first_out:
+                        first_out[key] = fld
+                        np.save(out / f'timed_{names[i]}_case{c}.npy', fld.astype(fdt))
+                    else:
+                        assert np.array_equal(first_out[key], fld, equal_nan=True), ('timed repetitions differ', key)
         for nm_ in names:
             g = np.array([r[3] for r in rows if r[0] == nm_]); h = np.array([r[4] for r in rows if r[0] == nm_])
             report['arms'][nm_]['timing'] = dict(gpu_ms_median=float(np.median(g) * 1e3), gpu_ms_min=float(g.min() * 1e3), gpu_ms_max=float(g.max() * 1e3),

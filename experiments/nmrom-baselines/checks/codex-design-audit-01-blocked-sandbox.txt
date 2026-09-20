@@ -15,3 +15,33 @@ You are an independent auditor. Read experiments/nmrom-baselines/DESIGN.md, and 
 warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
 codex
 I’ll check the code against the paper and pre-registered design, then rank discrepancies, bugs, and fairness risks by severity. I’ll keep the audit read-only.
+mcp: codex/list_mcp_resource_templates started
+mcp: codex/list_mcp_resources started
+mcp: codex/list_mcp_resource_templates (completed)
+mcp: codex/list_mcp_resources (completed)
+codex
+I couldn’t read the files: both read attempts failed before execution with:
+
+```text
+bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
+```
+
+**The audit is blocked; I have no verified findings.** Reporting implementation deviations or bugs without inspecting the code would be speculation.
+
+Please attach the six requested files and canonical `LAB-LOG.md`, or rerun this request with working shell access. I can then provide the numbered severity-ranked audit, including bias direction and concrete fixes.
+
+No files were modified.
+tokens used
+17,806
+I couldn’t read the files: both read attempts failed before execution with:
+
+```text
+bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
+```
+
+**The audit is blocked; I have no verified findings.** Reporting implementation deviations or bugs without inspecting the code would be speculation.
+
+Please attach the six requested files and canonical `LAB-LOG.md`, or rerun this request with working shell access. I can then provide the numbered severity-ranked audit, including bias direction and concrete fixes.
+
+No files were modified.
+exit=0

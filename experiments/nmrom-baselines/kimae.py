@@ -28,6 +28,7 @@ ACT = {'swish': swish, 'sigmoid': jax.nn.sigmoid}
 
 def mask_tables(nx, ny, b, db):
     """Index/validity tables of the 2D mask for an nx*ny interior grid, C order (i=ix*ny+iy)."""
+    assert 0 < db <= b, 'blocks of neighbouring rows must overlap or touch (audit finding 6)'
     n = nx * ny
     M2 = (n - 1) * db + b
     P = 3 * b + 2 * db
@@ -117,8 +118,7 @@ def make_train(act, micro):
 
     def batch_grad(p, xb, idx):
         nb = xb.shape[0]
-        m = min(micro, nb)
-        assert nb % m == 0
+        m = max(d for d in range(1, min(micro, nb) + 1) if nb % d == 0)
         chunks = xb.reshape(nb // m, m, -1)
         def body(acc, c):
             l, g = jax.value_and_grad(loss_rows)(p, c, idx)
@@ -131,7 +131,8 @@ def make_train(act, micro):
     def adam(p, opt, g, lr, t, b1=.9, b2=.999, eps=1e-8):
         m = jax.tree_util.tree_map(lambda m, g: b1 * m + (1 - b1) * g, opt[0], g)
         v = jax.tree_util.tree_map(lambda v, g: b2 * v + (1 - b2) * g * g, opt[1], g)
-        c1, c2 = 1 - b1 ** t, 1 - b2 ** t
+        tf = t.astype(lr.dtype)
+        c1, c2 = 1 - b1 ** tf, 1 - b2 ** tf
         p = jax.tree_util.tree_map(lambda p, m, v: p - lr * (m / c1) / (jnp.sqrt(v / c2) + eps), p, m, v)
         return p, (m, v)
 
@@ -147,6 +148,13 @@ def make_train(act, micro):
         return p, opt, jnp.mean(losses)
 
     @jax.jit
+    def tail(p, opt, xb, lr, t, idx, W2valid):
+        l, g = batch_grad(p, xb, idx)
+        g['W2'] = g['W2'] * W2valid
+        p, opt = adam(p, opt, g, lr, t)
+        return p, opt, l
+
+    @jax.jit
     def evalloss(p, X, idx):
         m = min(micro, X.shape[0])
         nfull = (X.shape[0] // m) * m
@@ -155,7 +163,7 @@ def make_train(act, micro):
             tot = tot + loss_rows(p, X[nfull:], idx)
         return tot / (X.shape[0] * X.shape[1])
 
-    return epoch, evalloss
+    return epoch, tail, evalloss
 
 
 def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_seconds, seed,
@@ -172,17 +180,25 @@ def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_second
     N = Xtr.shape[0]
     batch = min(batch, N); micro = min(micro, batch)
     assert batch % micro == 0
-    epoch, evalloss = make_train(act, micro)
-    nb = N // batch                                  # drop the ragged tail each epoch
+    epoch, tail, evalloss = make_train(act, micro)
+    nb = N // batch                                  # full batches; the ragged tail is a separate step (torch drop_last=False)
     lr, best_tr, bad_tr, best_va, bad_va, best_p = lr0, np.inf, 0, np.inf, 0, p
     hist, t0, step, reason = [], time.monotonic(), 1, 'max_epochs'
     for ep in range(max_epochs):
-        perm = jnp.asarray(rng.permutation(N)[:nb * batch].reshape(nb, batch).astype(np.int32))
-        p, opt, ltr = epoch(p, opt, Xtr, perm, jnp.asarray(lr, dtype), jnp.asarray(step, dtype), idxj, validj)
+        order = rng.permutation(N).astype(np.int32)
+        p, opt, ltr = epoch(p, opt, Xtr, jnp.asarray(order[:nb * batch].reshape(nb, batch)), jnp.asarray(lr, dtype),
+                            jnp.asarray(step, jnp.int32), idxj, validj)
         step += nb
-        ltr, lva = float(ltr), float(evalloss(p, Xva, idxj))
+        ltr = float(ltr) * nb * batch
+        if N > nb * batch:
+            p, opt, lt = tail(p, opt, Xtr[jnp.asarray(order[nb * batch:])], jnp.asarray(lr, dtype), jnp.asarray(step, jnp.int32), idxj, validj)
+            step += 1
+            ltr += float(lt) * (N - nb * batch)
+        ltr, lva = ltr / N, float(evalloss(p, Xva, idxj))
+        if ep == 0:
+            t0 = time.monotonic()                     # the wall budget excludes compilation (first epoch)
         hist.append((ep, lr, ltr, lva, time.monotonic() - t0))
-        if not np.isfinite(ltr):
+        if not (np.isfinite(ltr) and np.isfinite(lva)):
             reason = 'nonfinite'; break
         if ltr < best_tr * (1 - 1e-4): best_tr, bad_tr = ltr, 0
         else: bad_tr += 1
@@ -196,7 +212,7 @@ def train(p, Xtr, Xva, idx, valid, act, *, batch, micro, max_epochs, wall_second
             reason = 'early_stop'; break
         if time.monotonic() - t0 > wall_seconds:
             reason = 'wall_budget'; break
-    return best_p, dict(stop_reason=reason, epochs=len(hist), best_val=best_va, final_lr=lr,
+    return best_p, dict(stop_reason=reason, truncated=bool(reason == 'wall_budget'), epochs=len(hist), best_val=best_va, final_lr=lr,
                         seconds=time.monotonic() - t0, history=np.asarray(hist))
 
 
@@ -220,7 +236,7 @@ def greedy_samples(Phi, nz):
     """Oversampled greedy selection minimising the gappy reconstruction error of the basis
     columns (Carlberg et al. GNAT Algorithm 3 / Choi et al. SNS Algorithm 5 style)."""
     n, nr = Phi.shape
-    assert nz >= nr
+    assert nr <= nz <= n
     per = [nz // nr + (1 if j < nz % nr else 0) for j in range(nr)]
     chosen = []
     for j in range(nr):

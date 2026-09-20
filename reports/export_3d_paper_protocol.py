@@ -164,7 +164,10 @@ def main():
             provenance[name] = sha(source)
             inherited = read(source)["operators"]
             infos.extend(inherited["models"] if isinstance(inherited, dict) else inherited)
-        assert len({info["spec"]["kind"] for info in infos}) == len(infos)
+        # Separate training variants of one family may legitimately coexist.
+        identities = [(info.get("name", info["spec"]["kind"]),
+                       json.dumps(info["config"], sort_keys=True)) for info in infos]
+        assert len(set(identities)) == len(infos)
         for info in infos:
             assert info["parameter_dtype"] == "float64" and info["fft_dtype"] == "complex128"
             cfg = info["config"]

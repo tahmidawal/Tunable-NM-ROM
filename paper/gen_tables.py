@@ -123,8 +123,12 @@ GIT_PINS: dict[str, tuple[str, str]] = {
     # three-seed development summary (e533b48e) and nothing newer.
     'seeds_summary': ('2026-09-17-b-seeds', 'be9415ab'),
     # b-panel closed at 13ddecac (bpn301 = 256^2 with both rule sets, bpn203 = 1024^2)
-    'panel_summary': ('2026-09-17-b-panel', 'd2135501'),
-    'panel_report': ('2026-09-17-b-panel', 'd2135501'),
+    # §A13 correction at 25434a27: the convergence/admissibility flag is DESIGN §5 as written
+    # (fixed 1e-6 at every step), so the 1e-3 arms are no longer admissible; `admissible` and the
+    # `nondominated_*_admissible` / `_reduced_only` rows are the §5 flags, `converged` is now
+    # `converged_design5` (the pre-A13 flag survives as `*_own_gtol` and defines nothing).
+    'panel_summary': ('2026-09-17-b-panel', '25434a27'),
+    'panel_report': ('2026-09-17-b-panel', '25434a27'),
     # ns2d closed at 50bf36da (ns204 = K=32 also fails H-ORACLE; oracle budget-exit counts carried)
     # ns304 (exploratory ladder after the failed phase-2 gate) committed at 46650a1e; ns303 (8-dimensional family) at 5ea1cc30
     # ns2d lane CLOSED at 9830d202; §A14 correction at 2d70f36a (ns304 three-layer ratio on a matched statistic)
@@ -395,7 +399,8 @@ def build_panel():
             errs = [P[f'q{q}_M{Ms[q]}_{suf}']['worst_evolved_percent'] for q in ql]
             cost = [P[f'q{q}_M{Ms[q]}_{suf}']['median_gpu_ms'] for q in ql]
             mono = all(errs[i] >= errs[i + 1] for i in range(len(errs) - 1))
-            conv = all(P[f'q{q}_M{Ms[q]}_{suf}']['converged'] for q in ql)
+            # DESIGN §5 as written (fixed 1e-6 at every step), the lane's primary flag since §A13
+            conv = all(P[f'q{q}_M{Ms[q]}_{suf}']['converged_design5'] for q in ql)
             return errs, cost, mono, conv
         e, c, mono, conv = ladder_stats('dense_g1em06', qs)
         macro(f'nPanel{sfx}DenseErrSpan', f'{e[0]/e[-1]:.2f}'); macro(f'nPanel{sfx}DenseCostSpan', f'{c[-1]/c[0]:.2f}')
@@ -448,6 +453,14 @@ def build_panel():
         foms = [x for x in subjects if fam[x] == 'fom']
         macro(f'nPanel{sfx}SubjectCount', str(len(subjects))); macro(f'nPanel{sfx}ReducedAllCount', str(len(reduced)))
         macro(f'nPanel{sfx}ReducedCount', str(len(adm_red)))
+        # DESIGN §5 admissibility (lane §A13): the loose-tolerance arms are timed and tabulated but
+        # are not admissible, because §5 requires 1e-6 stationarity (or a residual-rule exit) at every step
+        tol = {r['subject']: r.get('tol') for r in R}
+        loose = [x for x in reduced if tol.get(x) == 1e-3]
+        macro(f'nPanel{sfx}LooseArmCount', str(len(loose)))
+        macro(f'nPanel{sfx}LooseAdmissibleCount', str(sum(1 for x in loose if adm.get(x))))
+        macro(f'nPanel{sfx}ReducedNotAdmissibleCount', str(len(reduced) - len(adm_red)))
+        macro(f'nPanel{sfx}ReducedCountOwnGtol', str(sum(1 for x in reduced if P[x].get('admissible_own_gtol'))))
         nd = P.get('*', {})
         nd_e = nd.get('nondominated_gpu_evolved_admissible') or []; nd_a = nd.get('nondominated_gpu_all_admissible') or []
         macro(f'nPanel{sfx}ReducedNonDomEvolved', str(sum(1 for x in nd_e if x in reduced)))
@@ -460,11 +473,21 @@ def build_panel():
         macro(f'nPanel{sfx}ReducedOnlyFrontierPod', str(sum(1 for x in ndr if fam[x] == 'pod')))
         ndr_e = nd.get('nondominated_gpu_evolved_reduced_only') or []
         macro(f'nPanel{sfx}ReducedOnlyFrontierEvolvedPod', str(sum(1 for x in ndr_e if fam[x] == 'pod')))
+        # the same frontier under the pre-A13 (own-tolerance) flag, kept so the correction's
+        # superseded count is itself generated and never typed
+        nd_e_og = nd.get('nondominated_gpu_evolved_admissible_own_gtol') or []
+        macro(f'nPanel{sfx}ReducedNonDomEvolvedOwnGtol', str(sum(1 for x in nd_e_og if x in reduced)))
         # cheapest admissible reduced against the cheapest full-order setting of the same job, and against fft_tight
         cheap_r = min(adm_red, key=lambda x: P[x]['median_gpu_ms']); cheap_f = min(foms, key=lambda x: P[x]['median_gpu_ms'])
         macro(f'nPanel{sfx}CheapestReduced', tt(cheap_r)); macro(f'nPanel{sfx}CheapestReducedMs', ms(P[cheap_r]['median_gpu_ms'])); macro(f'nPanel{sfx}CheapestReducedErr', pct(P[cheap_r]['worst_evolved_percent']))
         macro(f'nPanel{sfx}CheapestFom', tt(cheap_f)); macro(f'nPanel{sfx}CheapestFomMs', ms(P[cheap_f]['median_gpu_ms'])); macro(f'nPanel{sfx}CheapestFomErr', pct(P[cheap_f]['worst_evolved_percent']))
         macro(f'nPanel{sfx}CheapestRatio', f"{P[cheap_r]['median_gpu_ms'] / P[cheap_f]['median_gpu_ms']:.2f}")
+        # same ratio under the pre-A13 flag (generated, so the superseded value is never typed)
+        og_red = [x for x in reduced if P[x].get('admissible_own_gtol')]
+        if og_red:
+            cr_og = min(og_red, key=lambda x: P[x]['median_gpu_ms'])
+            macro(f'nPanel{sfx}CheapestRatioOwnGtol', f"{P[cr_og]['median_gpu_ms'] / P[cheap_f]['median_gpu_ms']:.2f}")
+            macro(f'nPanel{sfx}CheapestOverFftOwnGtol', f"{P[cr_og]['median_gpu_ms'] / P['fft_tight']['median_gpu_ms']:.3f}")
         macro(f'nPanel{sfx}CheapestOverFft', f"{P[cheap_r]['median_gpu_ms'] / P['fft_tight']['median_gpu_ms']:.3f}")
         # the most accurate reduced subject and the same-job FOM settings that beat it on both axes
         acc_r = min(adm_red, key=lambda x: P[x]['worst_evolved_percent'])
@@ -538,7 +561,7 @@ def build_panel():
         macro(f'nPanel{sfx}QzeroAll', pct(P['q0_M64_dense_g1em06']['worst_all_times_percent']))
         if 'q0_M64_eqcert_g1em06_fastL4' in P: macro(f'nPanel{sfx}FastMs', ms(P['q0_M64_eqcert_g1em06_fastL4']['median_gpu_ms']))
         macro(f'nPanel{sfx}RefDiscretisation', pct(P['fft_tight']['worst_reference_percent']))
-        strict_no = [x for x in reduced if P[x].get('converged') and not P[x].get('converged_strict')]
+        strict_no = [x for x in reduced if P[x].get('converged_design5') and not P[x].get('converged_strict')]
         macro(f'nPanel{sfx}StrictNoCount', str(len(strict_no)))
         icres = [P[x].get('max_ic_relative_residual') for x in strict_no if P[x].get('max_ic_relative_residual') is not None]
         macro(f'nPanel{sfx}StrictNoIcResidualMax', f'{max(icres):.1e}' if icres else '---')
@@ -553,9 +576,11 @@ def build_panel():
                        tex_escape(rule), pct(d.get('worst_evolved_percent')), pct(d.get('worst_all_times_percent')),
                        pct(d.get('worst_t0_compression_percent')), pct(d.get('worst_reference_percent')),
                        ms(d.get('median_gpu_ms')), ms(d.get('median_host_ms')),
-                       yn(d.get('converged')) if isred else '---', yn(d.get('converged_strict')) if isred else '---', yn(adm.get(x)) if isred else '---'])
-        cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'device ms', 'complete-query ms', 'conv.', 'strict', 'adm.']
-        write(f'T05{FSFX[mesh]}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
+                       yn(d.get('converged_design5')) if isred else '---', yn(d.get('converged_strict')) if isred else '---',
+                       yn(adm.get(x)) if isred else '---', yn(d.get('admissible_own_gtol')) if isred else '---'])
+        cols = ['subject', 'family', '$q$ / $k^\\prime$', '$M$', 'quad.', 'rule', 'evolved \\%', 'all \\%', '$t{=}0$ \\%', 'vs ref \\%', 'device ms', 'complete-query ms',
+                'conv.\\ (\\S5)', 'strict', 'adm.\\ (\\S5)', 'adm.\\ (own tol.)']
+        write(f'T05{FSFX[mesh]}_panel_all.tex', tabular(cols, t5, 'lllllp{3.2cm}rrrrrrcccc', r'\tiny'), f'b-panel job {job}, {mesh}^2')
     # the crossover ratios, both meshes, same-job only
     macro('nPanelCheapestRatioDrop', f"{float(MACROS['nPanelCheapestRatio']) / float(MACROS['nPanelTenTwentyFourCheapestRatio']):.2f}")
     # main-text panel summary: one row per mesh, every ratio inside its own job (review r2, R1)
@@ -564,7 +589,7 @@ def build_panel():
         g = lambda k: MACROS.get(f'nPanel{sfx}{k}', '---')
         tm.append([f'${mesh}^2$', tt(MACROS.get(f'provPanel{sfx}Job', '---')), tex_escape(MACROS.get(f'provPanel{sfx}Gpu', '---')), g('SubjectCount'), g('ReducedCount'),
                    g('ReducedNonDomEvolved'), g('ReducedNonDomAll'), g('CheapestRatio') + '$\\times$', g('CheapestOverFft') + '$\\times$', g('RefSpan') + '$\\times$'])
-    write('T05m_panel_summary.tex', tabular(['mesh', 'job', 'GPU', 'timed subjects', 'admissible reduced', 'non-dom.\\ (evolved)', 'non-dom.\\ (all-times)',
+    write('T05m_panel_summary.tex', tabular(['mesh', 'job', 'GPU', 'timed subjects', 'admissible reduced (\\S5)', 'non-dom.\\ (evolved)', 'non-dom.\\ (all-times)',
                                              'cheapest reduced / cheapest FOM', 'cheapest reduced / converged FFT', 'ladder vs-ref span'], tm, 'llllrrrrrr', r'\scriptsize'),
           'b-panel, one row per job; ratios formed inside the job only; 256^2 and 512^2 share the GPU model, 1024^2 does not')
 

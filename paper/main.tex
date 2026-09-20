@@ -180,10 +180,9 @@ and a matrix-free JAX implementation \citep{Bradbury2018JAX}.
       per-node evaluation. We show that a separable decoder
       (coordinate-network bank, head with a linear skip, nested
       corrections) meets all three.
-\item \textbf{Precomputed weak operators and validated quadrature that
-      make the framework practical.} Three things make the framework practical: exact
-      preassembly of every linear term, Empirical Quadrature for the one
-      nonlinear term, and a validation rule. That rule accepts a fitted
+\item \textbf{Precomputed weak operators and validated quadrature.}
+      Exact preassembly of every linear term, Empirical Quadrature for
+      the one nonlinear term, and a validation rule that accepts a fitted
       quadrature only by its held-out error on reachable states and by
       independent re-draws, never by its fitting residual.
 \item \textbf{Where the family is not worth having, reported as such.}
@@ -513,7 +512,10 @@ after a burn-in, arms interleaved in a recorded random order, in
 float64; ``device ms'' is the device time with inputs and outputs
 resident, ``complete-query ms'' the host-to-host time charging the dense
 input and output, and every column says which; offline setup is charged
-separately.
+separately. Only \emph{admissible} solves --- stationarity $10^{-6}$ at
+every step or a residual-rule exit, with a passing quadrature rule ---
+enter a frontier or a ratio, so the $10^{-3}$ arms are reported but never
+counted (Table~\ref{tab:panel-all}).
 
 \paragraph{Baselines.}
 FNO, a PDEBench-style U-Net and a Transolver are trained on the
@@ -538,9 +540,7 @@ All results here have full tables in the appendix; Table~\ref{tab:glance}
 maps experiments to question, jobs and tables.
 
 
-We test NM-ROM against an FNO, a U-Net and a Transolver on the same
-data, against POD-LSPG, and tuned full-order solvers in the same job;
-every number is one checkpoint per PDE on development cases unless seeds
+Every number is one checkpoint per PDE on development cases unless seeds
 are stated, and costs compare only inside one allocation. The losses come
 first.
 
@@ -549,21 +549,25 @@ first.
 
 Two plain sentences first. At $256^2$ and $512^2$ a well-tuned
 full-order solver is cheaper and more accurate than every reduced model,
-ours included. At $1024^2$ the cheapest
-quadrature rungs are on the non-dominated set, on the evolved-times
-metric only. The flip lies between $512^2$ and $1024^2$. Three same-job
-facts follow (Table~\ref{tab:panel-main}). On one A100 model, the cheapest
-reduced query costs $\nPanelCheapestRatio\times$ the cheapest full-order
-setting at $256^2$, and $\nPanelFiveTwelveCheapestRatio\times$ at $512^2$;
-this is a trend on shared hardware. At $1024^2$ on an H200, it costs
-$\nPanelTenTwentyFourCheapestRatio\times$; this is a separate fact.
+ours included. At $1024^2$ \nPanelTenTwentyFourReducedNonDomEvolved{} of
+the \nPanelTenTwentyFourReducedCount{} admissible reduced subjects, the
+cheapest quadrature rungs, are on the non-dominated set, on the
+evolved-times metric only; the flip lies between $512^2$ and $1024^2$.
+The same-job costs follow (Table~\ref{tab:panel-main}): on one A100
+model the cheapest reduced query costs $\nPanelCheapestRatio\times$ the
+cheapest full-order setting at $256^2$ and
+$\nPanelFiveTwelveCheapestRatio\times$ at $512^2$, a trend on shared
+hardware; at $1024^2$ on an H200 it costs
+$\nPanelTenTwentyFourCheapestRatio\times$, a separate fact.
 
 \begin{table}[htbp]
 \centering
 \caption{The same-allocation panels on Burgers, one job per mesh
 (Tables~\ref{tab:tunability}, \ref{tab:tunability-fivetwelve},
 \ref{tab:tunability-tentwentyfour}); same-job ratios only; $256^2$ and
-$512^2$ share the GPU model, $1024^2$ does not.}
+$512^2$ share the GPU model, $1024^2$ does not. ``Admissible'' is the
+\S\ref{sec:setup} rule; the $10^{-3}$ arms are timed in
+Table~\ref{tab:panel-all} but counted nowhere here.}
 \label{tab:panel-main}
 \resizebox{\linewidth}{!}{\input{tables/T05m_panel_summary}}
 \end{table}
@@ -587,10 +591,9 @@ Newton alone and POD-512
 \nPanelFiveTwelveFomBeatingMostAccurate{} same-job settings.
 
 \paragraph{At $1024^2$ the statement is mesh-qualified.}
-On one H200 (job \provPanelTenTwentyFourJob),
-\nPanelTenTwentyFourReducedNonDomEvolved{} of the
-\nPanelTenTwentyFourReducedCount{} admissible reduced subjects are
-non-dominated on (GPU ms, worst \evolved\ error): the $q=0$, $16$ and
+On one H200 (job \provPanelTenTwentyFourJob) the
+\nPanelTenTwentyFourReducedNonDomEvolved{} reduced subjects
+non-dominated on (GPU ms, worst \evolved\ error) are the $q=0$, $16$ and
 $32$ rungs with rules transferred from $256^2$. On \alltimes\ none is at
 either mesh, because the $t=0$ compression
 ($\nPanelTenTwentyFourFrontierTzeroMin$--$\nPanelTenTwentyFourFrontierTzeroMax\,\%$
@@ -621,8 +624,8 @@ moves what the model can represent.
 \caption{The family on Burgers $256^2$. \textbf{A}: worst evolved error
 against $q$ for the fixed-$M$ and scheduled ladders (b-qxm; no cost
 axis, costs span jobs). \textbf{B}: the same-allocation panel (job
-\provPanelJob), every timed subject on (GPU ms, worst evolved error),
-filled markers converged, step line the non-dominated set. \textbf{C}:
+\provPanelJob), every admissible subject on (GPU ms, worst evolved
+error), step line the non-dominated set. \textbf{C}:
 the EQ ladder against its dense twins in one job (job
 \provEqtopLadderJob; rules confirmed at $q=\nEqtopConfirmedRungs$,
 marginal at $q=\nEqtopMarginalRungs$, i.e.\ passing on some re-draws only).}
@@ -718,7 +721,7 @@ Quadrature is a cost lever at equal error ($\nPanelEqSpeedupZero\times$
 at $q=0$, $\nPanelEqSpeedupOneTwoEight\times$ at $q=128$) and the
 tolerance $10^{-6}\to10^{-3}$ removes a further
 $\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$
-(Table~\ref{tab:tunability}). The earlier ladder's rule set breaks
+(Table~\ref{tab:tunability}; those arms are not admissible). The earlier ladder's rule set breaks
 upward at $q=256$; the replication-selected set is monotone at both
 tolerances,
 $\nPanelEqtopTwinSpeedupMin$--$\nPanelEqtopTwinSpeedupMax\times$ cheaper

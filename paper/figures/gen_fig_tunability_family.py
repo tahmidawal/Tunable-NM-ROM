@@ -107,7 +107,9 @@ def panel_b(ax, s):
         f = fam[sub]; col, mk = style[f]
         if f == 'rom' and ('eqcert' in sub or 'eqtop' in sub):
             col = C_EQ
-        conv = d.get('converged'); conv = True if conv is None else bool(conv)
+        # DESIGN §5 as written (fixed 1e-6 at every step), the lane's primary flag since its §A13;
+        # the loose-tolerance arms are not admissible under it and are filtered out above
+        conv = d.get('converged_design5'); conv = True if conv is None else bool(conv)
         p = {'subject': sub, 'family': f, 'cost_ms': d['median_gpu_ms'], 'err': d['worst_evolved_percent'],
              'err_all': d.get('worst_all_times_percent'), 'converged': conv}
         pts.append(p)

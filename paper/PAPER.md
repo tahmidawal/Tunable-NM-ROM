@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-18 15:44; this block is removed before submission).*
+*Status for the reader (generated 2026-09-19 21:36; this block is removed before submission).*
 *Final tables (58): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21.*
 *Pending cells: none. In-flight jobs are listed in Table C.3: low-viscosity training 3804337 (b-lowvisc), NS head-only data scaling ns302–ns304 (ns2d).*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -106,10 +106,9 @@ cold-start convergence, EQ compatibility, and mesh-independent
 per-node evaluation. We show that a separable decoder
 (coordinate-network bank, head with a linear skip, nested
 corrections) meets all three.
-3. **Precomputed weak operators and validated quadrature that
-make the framework practical.** Three things make the framework practical: exact
-preassembly of every linear term, Empirical Quadrature for the one
-nonlinear term, and a validation rule. That rule accepts a fitted
+3. **Precomputed weak operators and validated quadrature.**
+Exact preassembly of every linear term, Empirical Quadrature for
+the one nonlinear term, and a validation rule that accepts a fitted
 quadrature only by its held-out error on reachable states and by
 independent re-draws, never by its fitting residual.
 4. **Where the family is not worth having, reported as such.**
@@ -454,7 +453,10 @@ after a burn-in, arms interleaved in a recorded random order, in
 float64; “device ms” is the device time with inputs and outputs
 resident, “complete-query ms” the host-to-host time charging the dense
 input and output, and every column says which; offline setup is charged
-separately.
+separately. Only *admissible* solves — stationarity $10^{-6}$ at
+every step or a residual-rule exit, with a passing quadrature rule —
+enter a frontier or a ratio, so the $10^{-3}$ arms are reported but never
+counted (Table 21).
 
 **Baselines.**
 FNO, a PDEBench-style U-Net and a Transolver are trained on the
@@ -477,9 +479,7 @@ audited records.
 All results here have full tables in the appendix; Table 4
 maps experiments to question, jobs and tables.
 
-We test NM-ROM against an FNO, a U-Net and a Transolver on the same
-data, against POD-LSPG, and tuned full-order solvers in the same job;
-every number is one checkpoint per PDE on development cases unless seeds
+Every number is one checkpoint per PDE on development cases unless seeds
 are stated, and costs compare only inside one allocation. The losses come
 first.
 
@@ -489,32 +489,36 @@ first.
 
 Two plain sentences first. At $256^2$ and $512^2$ a well-tuned
 full-order solver is cheaper and more accurate than every reduced model,
-ours included. At $1024^2$ the cheapest
-quadrature rungs are on the non-dominated set, on the evolved-times
-metric only. The flip lies between $512^2$ and $1024^2$. Three same-job
-facts follow (Table 1). On one A100 model, the cheapest
-reduced query costs $4.48\times$ the cheapest full-order
-setting at $256^2$, and $2.92\times$ at $512^2$;
-this is a trend on shared hardware. At $1024^2$ on an H200, it costs
-$1.82\times$; this is a separate fact.
+ours included. At $1024^2$ 3 of
+the 16 admissible reduced subjects, the
+cheapest quadrature rungs, are on the non-dominated set, on the
+evolved-times metric only; the flip lies between $512^2$ and $1024^2$.
+The same-job costs follow (Table 1): on one A100
+model the cheapest reduced query costs $4.48\times$ the
+cheapest full-order setting at $256^2$ and
+$2.92\times$ at $512^2$, a trend on shared
+hardware; at $1024^2$ on an H200 it costs
+$2.27\times$, a separate fact.
 
 **Table 1.** The same-allocation panels on Burgers, one job per mesh
 (Table 18, Table 20,
 Table 19); same-job ratios only; $256^2$ and
-$512^2$ share the GPU model, $1024^2$ does not.
+$512^2$ share the GPU model, $1024^2$ does not. “Admissible” is the
+§5 rule; the $10^{-3}$ arms are timed in
+Table 21 but counted nowhere here.
 
 <!-- table: T05m_panel_summary -->
-| mesh | job | GPU | timed subjects | admissible reduced | non-dom. (evolved) | non-dom. (all-times) | cheapest reduced / cheapest FOM | cheapest reduced / converged FFT | ladder vs-ref span |
+| mesh | job | GPU | timed subjects | admissible reduced (\S5) | non-dom. (evolved) | non-dom. (all-times) | cheapest reduced / cheapest FOM | cheapest reduced / converged FFT | ladder vs-ref span |
 |---|---|---|---|---|---|---|---|---|---|
-| $256^2$ | `3789570` | NVIDIA A100 80GB PCIe | 48 | 39 | 0 | 0 | 4.48$\times$ | 0.446$\times$ | 1.13$\times$ |
-| $512^2$ | `3805065` | NVIDIA A100 80GB PCIe | 48 | 31 | 0 | 0 | 2.92$\times$ | 0.257$\times$ | 1.36$\times$ |
-| $1024^2$ | `3789572` | NVIDIA H200 | 30 | 20 | 5 | 0 | 1.82$\times$ | 0.153$\times$ | 1.38$\times$ |
+| $256^2$ | `3789570` | NVIDIA A100 80GB PCIe | 48 | 27 | 0 | 0 | 4.48$\times$ | 0.446$\times$ | 1.13$\times$ |
+| $512^2$ | `3805065` | NVIDIA A100 80GB PCIe | 48 | 23 | 0 | 0 | 2.92$\times$ | 0.257$\times$ | 1.36$\times$ |
+| $1024^2$ | `3789572` | NVIDIA H200 | 30 | 16 | 3 | 0 | 2.27$\times$ | 0.191$\times$ | 1.38$\times$ |
 
 **Nothing reduced is on the frontier at $256^2$ or $512^2$.**
 Table 1 and Figure 1 come from one
 allocation on one A100 (job 3789570) holding correction rungs,
 POD-LSPG, the unrestricted bank, the FNO and full-order Newton.
-**0 of the 39
+**0 of the 27
 admissible reduced subjects are non-dominated** on either metric once the
 full-order controls are in: the most accurate, POD-512 at
 $0.2184 %$ and $2790.8$ ms, loses
@@ -523,16 +527,15 @@ settings (cheapest $0.0489 %$,
 $31.8$ ms) and the FNO reaches $7.4164 %$ at
 $7.2$ ms. At $512^2$ on the same GPU (job
 3805065) 0 of
-31 are non-dominated, the frontier is
+23 are non-dominated, the frontier is
 Newton alone and POD-512
 ($0.3328 %$) is beaten on both axes by
 4 same-job settings.
 
 **At $1024^2$ the statement is mesh-qualified.**
-On one H200 (job 3789572),
-5 of the
-20 admissible reduced subjects are
-non-dominated on (GPU ms, worst *evolved* error): the $q=0$, $16$ and
+On one H200 (job 3789572) the
+3 reduced subjects
+non-dominated on (GPU ms, worst *evolved* error) are the $q=0$, $16$ and
 $32$ rungs with rules transferred from $256^2$. On *all-times* none is at
 either mesh, because the $t=0$ compression
 ($3.71$–$3.86 %$
@@ -562,8 +565,8 @@ moves what the model can represent.
 **Figure 1.** The family on Burgers $256^2$. **A**: worst evolved error
 against $q$ for the fixed-$M$ and scheduled ladders (b-qxm; no cost
 axis, costs span jobs). **B**: the same-allocation panel (job
-3789570), every timed subject on (GPU ms, worst evolved error),
-filled markers converged, step line the non-dominated set. **C**:
+3789570), every admissible subject on (GPU ms, worst evolved
+error), step line the non-dominated set. **C**:
 the EQ ladder against its dense twins in one job (job
 3780164; rules confirmed at $q=0, 16, 32$,
 marginal at $q=64 (2/6), 128 (4/5), 256 (1/5)$, i.e. passing on some re-draws only).
@@ -668,7 +671,7 @@ Quadrature is a cost lever at equal error ($4.77\times$
 at $q=0$, $4.81\times$ at $q=128$) and the
 tolerance $10^{-6}\to10^{-3}$ removes a further
 $27$–$23 %$
-(Table 18). The earlier ladder's rule set breaks
+(Table 18; those arms are not admissible). The earlier ladder's rule set breaks
 upward at $q=256$; the replication-selected set is monotone at both
 tolerances,
 $4.2$–$5.3\times$ cheaper
@@ -1515,156 +1518,177 @@ are not comparable with Table 18: a different job.
 | 256 | 1088 | 0.5625 | 2.0195 | 16219.9 | 1.8204 | 2.0195 | 686.6 | transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 0.5510 | 2.0195 | 783.3 | transferred, primary at $512^2$; source single-draw | 2.0195 |
 
 **Table 21.** Every timed subject of the $256^2$ same-allocation panel (job
-3789570). “conv.” is the pre-registered completion rule that accepts
-an attained initial fit; “strict” is the earlier rule that does not;
-“adm.” is admissibility for the frontier (converged, and for EQ subjects a
-rule passing a bar).
+3789570). “conv. (§5)” is the pre-registered completion rule as
+written — stationarity $10^{-6}$ at every step, or a residual-rule exit,
+with an attained initial fit accepted; “strict” is the earlier rule that
+does not accept it, tested against the arm's own tolerance (so a
+$10^{-3}$ arm can be strict and still not converged under §5);
+“adm. (§5)” is admissibility for a frontier or a
+ratio (converged under that rule, and for EQ subjects a rule passing a
+bar). “adm. (own tol.)” is the superseded flag: it tested each arm
+against its own tolerance and so admitted the 12 arms
+run at $10^{-3}$, which the rule as written does not
+(0 of 12 pass it). Those
+arms are kept here with all their numbers but are not admissible, which
+moves the admissible reduced count at this mesh from
+39 to 27. The correction is
+the panel pre-registration's § A13, and every panel number in this paper
+is read from that lane at commit 25434a27.
 
 <!-- table: T05_panel_all -->
-| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. | strict | adm. |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `q0_M256_dense_g1em06` | rom | 0 | 256 | dense | none | 1.2710 | 2.5629 | 2.5629 | 4.0637 | 341.5 | 343.4 | yes | yes | yes |
-| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 1.8890 | 2.5629 | 2.5629 | 4.5575 | 283.9 | 285.9 | yes | yes | yes |
-| `q0_M64_eqcert_g0p001` | rom | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8898 | 2.5628 | 2.5628 | 4.5521 | 43.6 | 45.8 | yes | yes | yes |
-| `q0_M64_eqcert_g1em06` | rom | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 59.5 | 61.7 | yes | yes | yes |
-| `q0_M64_eqtop_g0p001` | rom | 0 | 64 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8898 | 2.5628 | 2.5628 | 4.5521 | 43.4 | 45.5 | yes | yes | yes |
-| `q0_M64_eqtop_g1em06` | rom | 0 | 64 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 58.6 | 60.6 | yes | yes | yes |
-| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.3985 | 2.4806 | 2.4806 | 4.1065 | 360.8 | 362.8 | yes | yes | yes |
-| `q16_M128_eqcert_g0p001` | rom | 16 | 128 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4272 | 2.4806 | 2.4806 | 4.1136 | 63.3 | 65.3 | yes | yes | yes |
-| `q16_M128_eqcert_g1em06` | rom | 16 | 128 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4270 | 2.4806 | 2.4806 | 4.1145 | 81.7 | 83.8 | yes | yes | yes |
-| `q16_M128_eqtop_g0p001` | rom | 16 | 128 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4272 | 2.4806 | 2.4806 | 4.1136 | 62.1 | 64.2 | yes | yes | yes |
-| `q16_M128_eqtop_g1em06` | rom | 16 | 128 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4270 | 2.4806 | 2.4806 | 4.1145 | 81.1 | 83.3 | yes | yes | yes |
-| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.2336 | 2.3534 | 2.3534 | 4.0814 | 434.7 | 437.0 | yes | yes | yes |
-| `q32_M192_eqcert_g0p001` | rom | 32 | 192 | eq | eqcert $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2497 | 2.3534 | 2.3534 | 4.0805 | 73.7 | 75.7 | yes | yes | yes |
-| `q32_M192_eqcert_g1em06` | rom | 32 | 192 | eq | eqcert $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2493 | 2.3534 | 2.3534 | 4.0818 | 96.4 | 98.4 | yes | yes | yes |
-| `q32_M192_eqtop_g0p001` | rom | 32 | 192 | eq | eqtop $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2497 | 2.3534 | 2.3534 | 4.0805 | 74.1 | 76.2 | yes | yes | yes |
-| `q32_M192_eqtop_g1em06` | rom | 32 | 192 | eq | eqtop $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2493 | 2.3534 | 2.3534 | 4.0818 | 97.8 | 99.8 | yes | yes | yes |
-| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.0843 | 2.1489 | 2.1489 | 4.1013 | 621.1 | 623.0 | yes | yes | yes |
-| `q64_M320_eqcert_g0p001` | rom | 64 | 320 | eq | eqcert $m{=}1024$, marginal (2 of 6 draws pass) | 1.2278 | 2.1489 | 2.1489 | 4.0836 | 90.8 | 92.6 | yes | yes | yes |
-| `q64_M320_eqcert_g1em06` | rom | 64 | 320 | eq | eqcert $m{=}1024$, marginal (2 of 6 draws pass) | 1.2275 | 2.1489 | 2.1489 | 4.0855 | 119.7 | 121.8 | yes | yes | yes |
-| `q64_M320_eqtop_g0p001` | rom | 64 | 320 | eq | eqtop $m{=}2048$, confirmed (2 of 2 re-draws) | 1.0841 | 2.1489 | 2.1489 | 4.1008 | 113.9 | 116.0 | yes | yes | yes |
-| `q64_M320_eqtop_g1em06` | rom | 64 | 320 | eq | eqtop $m{=}2048$, confirmed (2 of 2 re-draws) | 1.0840 | 2.1489 | 2.1489 | 4.1027 | 148.9 | 151.0 | yes | yes | yes |
-| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 0.8930 | 1.8116 | 1.8116 | 4.0797 | 1186.9 | 1189.0 | yes | yes | yes |
-| `q128_M576_eqcert_g0p001` | rom | 128 | 576 | eq | eqcert $m{=}2048$, marginal (4 of 5 draws pass) | 0.8926 | 1.8116 | 1.8116 | 4.0791 | 189.3 | 191.5 | yes | yes | yes |
-| `q128_M576_eqcert_g1em06` | rom | 128 | 576 | eq | eqcert $m{=}2048$, marginal (4 of 5 draws pass) | 0.8925 | 1.8116 | 1.8116 | 4.0809 | 246.5 | 248.6 | yes | yes | yes |
-| `q128_M576_eqtop_g0p001` | rom | 128 | 576 | eq | eqtop $m{=}2319$, single-draw | 0.8932 | 1.8116 | 1.8116 | 4.0787 | 205.1 | 207.2 | yes | yes | yes |
-| `q128_M576_eqtop_g1em06` | rom | 128 | 576 | eq | eqtop $m{=}2319$, single-draw | 0.8931 | 1.8116 | 1.8116 | 4.0806 | 273.5 | 275.3 | yes | yes | yes |
-| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5194 | 0.9053 | 0.9053 | 4.0391 | 3939.8 | 3942.0 | yes | yes | yes |
-| `q256_M1088_eqcert_g0p001` | rom | 256 | 1088 | eq | eqcert $m{=}2048$, marginal (1 of 5 draws pass) | 1.0324 | 1.0324 | 0.9053 | 4.0322 | 429.6 | 431.6 | yes | yes | yes |
-| `q256_M1088_eqcert_g1em06` | rom | 256 | 1088 | eq | eqcert $m{=}2048$, marginal (1 of 5 draws pass) | 1.0361 | 1.0361 | 0.9053 | 4.0332 | 697.6 | 699.7 | yes | yes | yes |
-| `q256_M1088_eqtop_g0p001` | rom | 256 | 1088 | eq | eqtop $m{=}2560$, single-draw | 0.5129 | 0.9053 | 0.9053 | 4.0355 | 466.4 | 468.6 | yes | yes | yes |
-| `q256_M1088_eqtop_g1em06` | rom | 256 | 1088 | eq | eqtop $m{=}2560$, single-draw | 0.5129 | 0.9053 | 0.9053 | 4.0365 | 746.0 | 748.4 | yes | yes | yes |
-| `q0_M64_eqcert_g1em06_fastL4` | fast | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 40.4 | 42.5 | yes | yes | yes |
-| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 28.7250 | 61.6503 | 61.6503 | 61.6503 | 46.8 | 48.8 | yes | yes | yes |
-| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 18.7995 | 47.0681 | 47.0681 | 47.0681 | 81.0 | 82.9 | yes | no | yes |
-| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.0835 | 19.8156 | 19.8156 | 19.8156 | 145.7 | 147.7 | yes | no | yes |
-| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 1.9464 | 10.1198 | 10.1198 | 10.1198 | 331.6 | 333.5 | yes | no | yes |
-| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 0.7109 | 3.7698 | 3.7698 | 4.0362 | 898.8 | 901.2 | yes | no | yes |
-| `pod512_M2048_dense` | pod | 512 | 2048 | dense | none | 0.2184 | 0.6125 | 0.6125 | 4.0266 | 2790.8 | 2794.3 | yes | no | yes |
-| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.4471 | 0.6027 | 0.6027 | 4.0423 | 2439.6 | 2441.9 | yes | no | yes |
-| `fno-large` | fno | — | — | — | — | 7.4164 | 7.4164 | 0.0000 | 5.7495 | 7.2 | 7.4 | — | — | — |
-| `dense_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 4.0265 | 63.9 | 65.8 | — | — | — |
-| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 4.0265 | 90.4 | 92.5 | — | — | — |
-| `nt1e-2_dt005` | fom | — | — | — | — | 3.7127 | 3.7127 | 0.0000 | 2.4737 | 15.7 | 17.7 | — | — | — |
-| `nt1e-2_dt01` | fom | — | — | — | — | 3.1999 | 3.1999 | 0.0000 | 3.6168 | 9.0 | 11.0 | — | — | — |
-| `nt1e-3_dt005` | fom | — | — | — | — | 0.0489 | 0.0489 | 0.0000 | 4.0399 | 31.8 | 34.2 | — | — | — |
-| `nt1e-3_dt01` | fom | — | — | — | — | 1.5179 | 1.5179 | 0.0000 | 5.1761 | 19.7 | 21.7 | — | — | — |
-| `nt1e-4_dt005` | fom | — | — | — | — | 0.0338 | 0.0338 | 0.0000 | 4.0320 | 37.0 | 39.0 | — | — | — |
-| `nt1e-4_dt01` | fom | — | — | — | — | 1.5109 | 1.5109 | 0.0000 | 5.1552 | 27.8 | 30.0 | — | — | — |
+| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. (\S5) | strict | adm. (\S5) | adm. (own tol.) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q0_M256_dense_g1em06` | rom | 0 | 256 | dense | none | 1.2710 | 2.5629 | 2.5629 | 4.0637 | 341.5 | 343.4 | yes | yes | yes | yes |
+| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 1.8890 | 2.5629 | 2.5629 | 4.5575 | 283.9 | 285.9 | yes | yes | yes | yes |
+| `q0_M64_eqcert_g0p001` | rom | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8898 | 2.5628 | 2.5628 | 4.5521 | 43.6 | 45.8 | no | yes | no | yes |
+| `q0_M64_eqcert_g1em06` | rom | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 59.5 | 61.7 | yes | yes | yes | yes |
+| `q0_M64_eqtop_g0p001` | rom | 0 | 64 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8898 | 2.5628 | 2.5628 | 4.5521 | 43.4 | 45.5 | no | yes | no | yes |
+| `q0_M64_eqtop_g1em06` | rom | 0 | 64 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 58.6 | 60.6 | yes | yes | yes | yes |
+| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.3985 | 2.4806 | 2.4806 | 4.1065 | 360.8 | 362.8 | yes | yes | yes | yes |
+| `q16_M128_eqcert_g0p001` | rom | 16 | 128 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4272 | 2.4806 | 2.4806 | 4.1136 | 63.3 | 65.3 | no | yes | no | yes |
+| `q16_M128_eqcert_g1em06` | rom | 16 | 128 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4270 | 2.4806 | 2.4806 | 4.1145 | 81.7 | 83.8 | yes | yes | yes | yes |
+| `q16_M128_eqtop_g0p001` | rom | 16 | 128 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4272 | 2.4806 | 2.4806 | 4.1136 | 62.1 | 64.2 | no | yes | no | yes |
+| `q16_M128_eqtop_g1em06` | rom | 16 | 128 | eq | eqtop $m{=}1024$, confirmed (3 of 3 re-draws) | 1.4270 | 2.4806 | 2.4806 | 4.1145 | 81.1 | 83.3 | yes | yes | yes | yes |
+| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.2336 | 2.3534 | 2.3534 | 4.0814 | 434.7 | 437.0 | yes | yes | yes | yes |
+| `q32_M192_eqcert_g0p001` | rom | 32 | 192 | eq | eqcert $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2497 | 2.3534 | 2.3534 | 4.0805 | 73.7 | 75.7 | no | yes | no | yes |
+| `q32_M192_eqcert_g1em06` | rom | 32 | 192 | eq | eqcert $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2493 | 2.3534 | 2.3534 | 4.0818 | 96.4 | 98.4 | yes | yes | yes | yes |
+| `q32_M192_eqtop_g0p001` | rom | 32 | 192 | eq | eqtop $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2497 | 2.3534 | 2.3534 | 4.0805 | 74.1 | 76.2 | no | yes | no | yes |
+| `q32_M192_eqtop_g1em06` | rom | 32 | 192 | eq | eqtop $m{=}1024$, confirmed (2 of 2 re-draws) | 1.2493 | 2.3534 | 2.3534 | 4.0818 | 97.8 | 99.8 | yes | yes | yes | yes |
+| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.0843 | 2.1489 | 2.1489 | 4.1013 | 621.1 | 623.0 | yes | yes | yes | yes |
+| `q64_M320_eqcert_g0p001` | rom | 64 | 320 | eq | eqcert $m{=}1024$, marginal (2 of 6 draws pass) | 1.2278 | 2.1489 | 2.1489 | 4.0836 | 90.8 | 92.6 | no | yes | no | yes |
+| `q64_M320_eqcert_g1em06` | rom | 64 | 320 | eq | eqcert $m{=}1024$, marginal (2 of 6 draws pass) | 1.2275 | 2.1489 | 2.1489 | 4.0855 | 119.7 | 121.8 | yes | yes | yes | yes |
+| `q64_M320_eqtop_g0p001` | rom | 64 | 320 | eq | eqtop $m{=}2048$, confirmed (2 of 2 re-draws) | 1.0841 | 2.1489 | 2.1489 | 4.1008 | 113.9 | 116.0 | no | yes | no | yes |
+| `q64_M320_eqtop_g1em06` | rom | 64 | 320 | eq | eqtop $m{=}2048$, confirmed (2 of 2 re-draws) | 1.0840 | 2.1489 | 2.1489 | 4.1027 | 148.9 | 151.0 | yes | yes | yes | yes |
+| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 0.8930 | 1.8116 | 1.8116 | 4.0797 | 1186.9 | 1189.0 | yes | yes | yes | yes |
+| `q128_M576_eqcert_g0p001` | rom | 128 | 576 | eq | eqcert $m{=}2048$, marginal (4 of 5 draws pass) | 0.8926 | 1.8116 | 1.8116 | 4.0791 | 189.3 | 191.5 | no | yes | no | yes |
+| `q128_M576_eqcert_g1em06` | rom | 128 | 576 | eq | eqcert $m{=}2048$, marginal (4 of 5 draws pass) | 0.8925 | 1.8116 | 1.8116 | 4.0809 | 246.5 | 248.6 | yes | yes | yes | yes |
+| `q128_M576_eqtop_g0p001` | rom | 128 | 576 | eq | eqtop $m{=}2319$, single-draw | 0.8932 | 1.8116 | 1.8116 | 4.0787 | 205.1 | 207.2 | no | yes | no | yes |
+| `q128_M576_eqtop_g1em06` | rom | 128 | 576 | eq | eqtop $m{=}2319$, single-draw | 0.8931 | 1.8116 | 1.8116 | 4.0806 | 273.5 | 275.3 | yes | yes | yes | yes |
+| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5194 | 0.9053 | 0.9053 | 4.0391 | 3939.8 | 3942.0 | yes | yes | yes | yes |
+| `q256_M1088_eqcert_g0p001` | rom | 256 | 1088 | eq | eqcert $m{=}2048$, marginal (1 of 5 draws pass) | 1.0324 | 1.0324 | 0.9053 | 4.0322 | 429.6 | 431.6 | no | yes | no | yes |
+| `q256_M1088_eqcert_g1em06` | rom | 256 | 1088 | eq | eqcert $m{=}2048$, marginal (1 of 5 draws pass) | 1.0361 | 1.0361 | 0.9053 | 4.0332 | 697.6 | 699.7 | yes | yes | yes | yes |
+| `q256_M1088_eqtop_g0p001` | rom | 256 | 1088 | eq | eqtop $m{=}2560$, single-draw | 0.5129 | 0.9053 | 0.9053 | 4.0355 | 466.4 | 468.6 | no | yes | no | yes |
+| `q256_M1088_eqtop_g1em06` | rom | 256 | 1088 | eq | eqtop $m{=}2560$, single-draw | 0.5129 | 0.9053 | 0.9053 | 4.0365 | 746.0 | 748.4 | yes | yes | yes | yes |
+| `q0_M64_eqcert_g1em06_fastL4` | fast | 0 | 64 | eq | eqcert $m{=}1024$, confirmed (3 of 3 re-draws) | 1.8891 | 2.5629 | 2.5629 | 4.5529 | 40.4 | 42.5 | yes | yes | yes | yes |
+| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 28.7250 | 61.6503 | 61.6503 | 61.6503 | 46.8 | 48.8 | yes | yes | yes | yes |
+| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 18.7995 | 47.0681 | 47.0681 | 47.0681 | 81.0 | 82.9 | yes | no | yes | yes |
+| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.0835 | 19.8156 | 19.8156 | 19.8156 | 145.7 | 147.7 | yes | no | yes | yes |
+| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 1.9464 | 10.1198 | 10.1198 | 10.1198 | 331.6 | 333.5 | yes | no | yes | yes |
+| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 0.7109 | 3.7698 | 3.7698 | 4.0362 | 898.8 | 901.2 | yes | no | yes | yes |
+| `pod512_M2048_dense` | pod | 512 | 2048 | dense | none | 0.2184 | 0.6125 | 0.6125 | 4.0266 | 2790.8 | 2794.3 | yes | no | yes | yes |
+| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.4471 | 0.6027 | 0.6027 | 4.0423 | 2439.6 | 2441.9 | yes | no | yes | yes |
+| `fno-large` | fno | — | — | — | — | 7.4164 | 7.4164 | 0.0000 | 5.7495 | 7.2 | 7.4 | — | — | — | — |
+| `dense_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 4.0265 | 63.9 | 65.8 | — | — | — | — |
+| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 4.0265 | 90.4 | 92.5 | — | — | — | — |
+| `nt1e-2_dt005` | fom | — | — | — | — | 3.7127 | 3.7127 | 0.0000 | 2.4737 | 15.7 | 17.7 | — | — | — | — |
+| `nt1e-2_dt01` | fom | — | — | — | — | 3.1999 | 3.1999 | 0.0000 | 3.6168 | 9.0 | 11.0 | — | — | — | — |
+| `nt1e-3_dt005` | fom | — | — | — | — | 0.0489 | 0.0489 | 0.0000 | 4.0399 | 31.8 | 34.2 | — | — | — | — |
+| `nt1e-3_dt01` | fom | — | — | — | — | 1.5179 | 1.5179 | 0.0000 | 5.1761 | 19.7 | 21.7 | — | — | — | — |
+| `nt1e-4_dt005` | fom | — | — | — | — | 0.0338 | 0.0338 | 0.0000 | 4.0320 | 37.0 | 39.0 | — | — | — | — |
+| `nt1e-4_dt01` | fom | — | — | — | — | 1.5109 | 1.5109 | 0.0000 | 5.1552 | 27.8 | 30.0 | — | — | — | — |
 
 **Table 22.** Every timed subject of the $1024^2$ same-allocation panel (job
 3789572, H200). Columns as in Table 21;
-milliseconds are comparable only within this table.
+milliseconds are comparable only within this table. The §5 rule takes the
+admissible reduced count from 20 to
+16 and the reduced subjects on the (GPU ms,
+worst evolved) frontier from
+5 to
+3
+(`q0_M64_eqxfer_g1em06`, `q16_M128_eqxfer_g1em06`, `q32_M192_eqxfer_g1em06`).
 
 <!-- table: T05b_panel_all -->
-| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. | strict | adm. |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 2.2886 | 3.8562 | 3.8562 | 3.8562 | 1551.7 | 1562.4 | yes | yes | yes |
-| `q0_M64_eqxfer_g0p001` | rom | 0 | 64 | eq | eqxfer $m{=}934$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 2.2925 | 3.8562 | 3.8562 | 3.8562 | 32.2 | 44.4 | yes | yes | yes |
-| `q0_M64_eqxfer_g1em06` | rom | 0 | 64 | eq | eqxfer $m{=}934$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 2.2913 | 3.8562 | 3.8562 | 3.8562 | 40.3 | 51.4 | yes | yes | yes |
-| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.5398 | 3.8071 | 3.8071 | 3.8071 | 1949.1 | 1960.6 | yes | yes | yes |
-| `q16_M128_eqxfer_g0p001` | rom | 16 | 128 | eq | eqxfer $m{=}918$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 1.5277 | 3.8071 | 3.8071 | 3.8071 | 48.4 | 60.7 | yes | yes | yes |
-| `q16_M128_eqxfer_g1em06` | rom | 16 | 128 | eq | eqxfer $m{=}918$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 1.5273 | 3.8071 | 3.8071 | 3.8071 | 59.6 | 70.5 | yes | yes | yes |
-| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.4482 | 3.7140 | 3.7140 | 3.7140 | 2382.9 | 2393.5 | yes | yes | yes |
-| `q32_M192_eqxfer_g0p001` | rom | 32 | 192 | eq | eqxfer $m{=}972$, transferred, primary at $1024^2$; source confirmed (2 of 2 re-draws) | 1.4488 | 3.7140 | 3.7140 | 3.7140 | 57.6 | 69.2 | yes | yes | yes |
-| `q32_M192_eqxfer_g1em06` | rom | 32 | 192 | eq | eqxfer $m{=}972$, transferred, primary at $1024^2$; source confirmed (2 of 2 re-draws) | 1.4487 | 3.7140 | 3.7140 | 3.7140 | 72.0 | 83.0 | yes | yes | yes |
-| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.2739 | 3.5773 | 3.5773 | 3.5773 | 3565.6 | 3581.8 | yes | yes | yes |
-| `q64_M320_eqxfer_g0p001` | rom | 64 | 320 | eq | eqxfer $m{=}942$, transferred, not primary at $1024^2$; source marginal (2 of 6 draws pass) | 1.2763 | 3.5773 | 3.5773 | 3.5773 | 64.4 | 76.5 | yes | yes | no |
-| `q64_M320_eqxfer_g1em06` | rom | 64 | 320 | eq | eqxfer $m{=}942$, transferred, not primary at $1024^2$; source marginal (2 of 6 draws pass) | 1.2762 | 3.5773 | 3.5773 | 3.5773 | 84.0 | 94.5 | yes | yes | no |
-| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 1.0444 | 3.2858 | 3.2858 | 3.2858 | 6895.2 | 6909.1 | yes | yes | yes |
-| `q128_M576_eqxfer_g0p001` | rom | 128 | 576 | eq | eqxfer $m{=}1713$, transferred, not primary at $1024^2$; source marginal (4 of 5 draws pass) | 1.0443 | 3.2858 | 3.2858 | 3.2858 | 128.3 | 139.2 | yes | yes | yes |
-| `q128_M576_eqxfer_g1em06` | rom | 128 | 576 | eq | eqxfer $m{=}1713$, transferred, not primary at $1024^2$; source marginal (4 of 5 draws pass) | 1.0442 | 3.2858 | 3.2858 | 3.2858 | 163.7 | 175.4 | yes | yes | yes |
-| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5861 | 2.7974 | 2.7974 | 2.7974 | 22053.9 | 22066.3 | yes | yes | yes |
-| `q256_M1088_eqxfer_g0p001` | rom | 256 | 1088 | eq | eqxfer $m{=}1658$, transferred, not primary at $1024^2$; source marginal (1 of 5 draws pass) | 1.8655 | 2.7974 | 2.7974 | 2.7974 | 277.2 | 290.1 | yes | yes | no |
-| `q256_M1088_eqxfer_g1em06` | rom | 256 | 1088 | eq | eqxfer $m{=}1658$, transferred, not primary at $1024^2$; source marginal (1 of 5 draws pass) | 1.8664 | 2.7974 | 2.7974 | 2.7974 | 502.2 | 515.1 | yes | yes | no |
-| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 29.2793 | 61.9285 | 61.9285 | 61.9285 | 198.2 | 209.6 | yes | yes | yes |
-| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 19.4088 | 47.6410 | 47.6410 | 47.6410 | 391.2 | 402.5 | yes | no | yes |
-| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.4077 | 20.5994 | 20.5994 | 20.5994 | 741.6 | 752.9 | yes | no | yes |
-| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 2.1609 | 10.7339 | 10.7339 | 10.7339 | 1760.6 | 1773.0 | yes | no | yes |
-| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 1.1017 | 4.1416 | 4.1416 | 4.1416 | 4897.6 | 4911.4 | yes | no | yes |
-| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.5108 | 2.4466 | 2.4466 | 2.4466 | 13514.6 | 13529.0 | yes | no | yes |
-| `fno-large` | fno | — | — | — | — | 6.2657 | 6.2657 | 0.0000 | 5.6472 | 58.9 | 71.0 | — | — | — |
-| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.1416 | 210.9 | 222.2 | — | — | — |
-| `nt1e-2_dt005` | fom | — | — | — | — | 4.2628 | 4.2628 | 0.0000 | 2.3899 | 31.1 | 42.7 | — | — | — |
-| `nt1e-2_dt01` | fom | — | — | — | — | 3.4582 | 3.4582 | 0.0000 | 2.8919 | 17.7 | 29.3 | — | — | — |
-| `nt1e-4_dt005` | fom | — | — | — | — | 0.0343 | 0.0343 | 0.0000 | 2.1281 | 81.3 | 92.5 | — | — | — |
-| `nt1e-4_dt01` | fom | — | — | — | — | 1.6287 | 1.6287 | 0.0000 | 3.7562 | 64.0 | 76.3 | — | — | — |
+| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. (\S5) | strict | adm. (\S5) | adm. (own tol.) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 2.2886 | 3.8562 | 3.8562 | 3.8562 | 1551.7 | 1562.4 | yes | yes | yes | yes |
+| `q0_M64_eqxfer_g0p001` | rom | 0 | 64 | eq | eqxfer $m{=}934$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 2.2925 | 3.8562 | 3.8562 | 3.8562 | 32.2 | 44.4 | no | yes | no | yes |
+| `q0_M64_eqxfer_g1em06` | rom | 0 | 64 | eq | eqxfer $m{=}934$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 2.2913 | 3.8562 | 3.8562 | 3.8562 | 40.3 | 51.4 | yes | yes | yes | yes |
+| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.5398 | 3.8071 | 3.8071 | 3.8071 | 1949.1 | 1960.6 | yes | yes | yes | yes |
+| `q16_M128_eqxfer_g0p001` | rom | 16 | 128 | eq | eqxfer $m{=}918$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 1.5277 | 3.8071 | 3.8071 | 3.8071 | 48.4 | 60.7 | no | yes | no | yes |
+| `q16_M128_eqxfer_g1em06` | rom | 16 | 128 | eq | eqxfer $m{=}918$, transferred, primary at $1024^2$; source confirmed (3 of 3 re-draws) | 1.5273 | 3.8071 | 3.8071 | 3.8071 | 59.6 | 70.5 | yes | yes | yes | yes |
+| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.4482 | 3.7140 | 3.7140 | 3.7140 | 2382.9 | 2393.5 | yes | yes | yes | yes |
+| `q32_M192_eqxfer_g0p001` | rom | 32 | 192 | eq | eqxfer $m{=}972$, transferred, primary at $1024^2$; source confirmed (2 of 2 re-draws) | 1.4488 | 3.7140 | 3.7140 | 3.7140 | 57.6 | 69.2 | no | yes | no | yes |
+| `q32_M192_eqxfer_g1em06` | rom | 32 | 192 | eq | eqxfer $m{=}972$, transferred, primary at $1024^2$; source confirmed (2 of 2 re-draws) | 1.4487 | 3.7140 | 3.7140 | 3.7140 | 72.0 | 83.0 | yes | yes | yes | yes |
+| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.2739 | 3.5773 | 3.5773 | 3.5773 | 3565.6 | 3581.8 | yes | yes | yes | yes |
+| `q64_M320_eqxfer_g0p001` | rom | 64 | 320 | eq | eqxfer $m{=}942$, transferred, not primary at $1024^2$; source marginal (2 of 6 draws pass) | 1.2763 | 3.5773 | 3.5773 | 3.5773 | 64.4 | 76.5 | no | yes | no | no |
+| `q64_M320_eqxfer_g1em06` | rom | 64 | 320 | eq | eqxfer $m{=}942$, transferred, not primary at $1024^2$; source marginal (2 of 6 draws pass) | 1.2762 | 3.5773 | 3.5773 | 3.5773 | 84.0 | 94.5 | yes | yes | no | no |
+| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 1.0444 | 3.2858 | 3.2858 | 3.2858 | 6895.2 | 6909.1 | yes | yes | yes | yes |
+| `q128_M576_eqxfer_g0p001` | rom | 128 | 576 | eq | eqxfer $m{=}1713$, transferred, not primary at $1024^2$; source marginal (4 of 5 draws pass) | 1.0443 | 3.2858 | 3.2858 | 3.2858 | 128.3 | 139.2 | no | yes | no | yes |
+| `q128_M576_eqxfer_g1em06` | rom | 128 | 576 | eq | eqxfer $m{=}1713$, transferred, not primary at $1024^2$; source marginal (4 of 5 draws pass) | 1.0442 | 3.2858 | 3.2858 | 3.2858 | 163.7 | 175.4 | yes | yes | yes | yes |
+| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5861 | 2.7974 | 2.7974 | 2.7974 | 22053.9 | 22066.3 | yes | yes | yes | yes |
+| `q256_M1088_eqxfer_g0p001` | rom | 256 | 1088 | eq | eqxfer $m{=}1658$, transferred, not primary at $1024^2$; source marginal (1 of 5 draws pass) | 1.8655 | 2.7974 | 2.7974 | 2.7974 | 277.2 | 290.1 | no | yes | no | no |
+| `q256_M1088_eqxfer_g1em06` | rom | 256 | 1088 | eq | eqxfer $m{=}1658$, transferred, not primary at $1024^2$; source marginal (1 of 5 draws pass) | 1.8664 | 2.7974 | 2.7974 | 2.7974 | 502.2 | 515.1 | yes | yes | no | no |
+| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 29.2793 | 61.9285 | 61.9285 | 61.9285 | 198.2 | 209.6 | yes | yes | yes | yes |
+| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 19.4088 | 47.6410 | 47.6410 | 47.6410 | 391.2 | 402.5 | yes | no | yes | yes |
+| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.4077 | 20.5994 | 20.5994 | 20.5994 | 741.6 | 752.9 | yes | no | yes | yes |
+| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 2.1609 | 10.7339 | 10.7339 | 10.7339 | 1760.6 | 1773.0 | yes | no | yes | yes |
+| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 1.1017 | 4.1416 | 4.1416 | 4.1416 | 4897.6 | 4911.4 | yes | no | yes | yes |
+| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.5108 | 2.4466 | 2.4466 | 2.4466 | 13514.6 | 13529.0 | yes | no | yes | yes |
+| `fno-large` | fno | — | — | — | — | 6.2657 | 6.2657 | 0.0000 | 5.6472 | 58.9 | 71.0 | — | — | — | — |
+| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.1416 | 210.9 | 222.2 | — | — | — | — |
+| `nt1e-2_dt005` | fom | — | — | — | — | 4.2628 | 4.2628 | 0.0000 | 2.3899 | 31.1 | 42.7 | — | — | — | — |
+| `nt1e-2_dt01` | fom | — | — | — | — | 3.4582 | 3.4582 | 0.0000 | 2.8919 | 17.7 | 29.3 | — | — | — | — |
+| `nt1e-4_dt005` | fom | — | — | — | — | 0.0343 | 0.0343 | 0.0000 | 2.1281 | 81.3 | 92.5 | — | — | — | — |
+| `nt1e-4_dt01` | fom | — | — | — | — | 1.6287 | 1.6287 | 0.0000 | 3.7562 | 64.0 | 76.3 | — | — | — | — |
 
 **Table 23.** Every timed subject of the $512^2$ same-allocation panel (job
 3805065). Columns as in Table 21;
-milliseconds are comparable only within this table.
+milliseconds are comparable only within this table. The §5 rule takes the
+admissible reduced count from 31 to
+23; nothing reduced is on the frontier under
+either flag.
 
 <!-- table: T05c_panel_all -->
-| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. | strict | adm. |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `q0_M256_dense_g1em06` | rom | 0 | 256 | dense | none | 1.3761 | 3.2836 | 3.2836 | 3.2836 | 1175.7 | 1179.7 | yes | yes | yes |
-| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 2.1376 | 3.2836 | 3.2836 | 3.7578 | 923.2 | 927.3 | yes | yes | yes |
-| `q0_M64_eqtopxfer_g0p001` | rom | 0 | 64 | eq | eqtopxfer $m{=}914$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1387 | 3.2836 | 3.2836 | 3.7448 | 43.8 | 47.5 | yes | yes | yes |
-| `q0_M64_eqtopxfer_g1em06` | rom | 0 | 64 | eq | eqtopxfer $m{=}914$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1378 | 3.2836 | 3.2836 | 3.7449 | 59.1 | 62.9 | yes | yes | yes |
-| `q0_M64_eqxfer_g0p001` | rom | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1409 | 3.2836 | 3.2836 | 3.7681 | 44.1 | 48.3 | yes | yes | yes |
-| `q0_M64_eqxfer_g1em06` | rom | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1400 | 3.2836 | 3.2836 | 3.7681 | 58.0 | 61.9 | yes | yes | yes |
-| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.5071 | 3.2248 | 3.2248 | 3.2248 | 1190.8 | 1194.9 | yes | yes | yes |
-| `q16_M128_eqtopxfer_g0p001` | rom | 16 | 128 | eq | eqtopxfer $m{=}879$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4538 | 3.2248 | 3.2248 | 3.2248 | 62.5 | 66.3 | yes | yes | yes |
-| `q16_M128_eqtopxfer_g1em06` | rom | 16 | 128 | eq | eqtopxfer $m{=}879$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4537 | 3.2248 | 3.2248 | 3.2248 | 79.2 | 83.1 | yes | yes | yes |
-| `q16_M128_eqxfer_g0p001` | rom | 16 | 128 | eq | eqxfer $m{=}911$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4917 | 3.2248 | 3.2248 | 3.2248 | 62.5 | 66.7 | yes | yes | yes |
-| `q16_M128_eqxfer_g1em06` | rom | 16 | 128 | eq | eqxfer $m{=}911$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4914 | 3.2248 | 3.2248 | 3.2248 | 79.6 | 83.7 | yes | yes | yes |
-| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.3666 | 3.1172 | 3.1172 | 3.1172 | 1502.4 | 1506.1 | yes | yes | yes |
-| `q32_M192_eqtopxfer_g0p001` | rom | 32 | 192 | eq | eqtopxfer $m{=}848$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.4060 | 3.1172 | 3.1172 | 3.1172 | 72.1 | 75.9 | yes | yes | yes |
-| `q32_M192_eqtopxfer_g1em06` | rom | 32 | 192 | eq | eqtopxfer $m{=}848$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.4055 | 3.1172 | 3.1172 | 3.1172 | 93.9 | 97.5 | yes | yes | yes |
-| `q32_M192_eqxfer_g0p001` | rom | 32 | 192 | eq | eqxfer $m{=}973$, transferred, primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.3673 | 3.1172 | 3.1172 | 3.1172 | 74.4 | 78.6 | yes | yes | yes |
-| `q32_M192_eqxfer_g1em06` | rom | 32 | 192 | eq | eqxfer $m{=}973$, transferred, primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.3672 | 3.1172 | 3.1172 | 3.1172 | 96.7 | 100.8 | yes | yes | yes |
-| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.2015 | 2.9565 | 2.9565 | 3.0133 | 2221.7 | 2225.7 | yes | yes | yes |
-| `q64_M320_eqtopxfer_g0p001` | rom | 64 | 320 | eq | eqtopxfer $m{=}1898$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.1995 | 2.9565 | 2.9565 | 3.0056 | 115.1 | 119.1 | yes | yes | no |
-| `q64_M320_eqtopxfer_g1em06` | rom | 64 | 320 | eq | eqtopxfer $m{=}1898$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.1994 | 2.9565 | 2.9565 | 3.0069 | 150.2 | 154.0 | yes | yes | no |
-| `q64_M320_eqxfer_g0p001` | rom | 64 | 320 | eq | eqxfer $m{=}937$, transferred, not primary at $512^2$; source marginal (2 of 6 draws pass) | 1.2488 | 2.9565 | 2.9565 | 3.0135 | 89.8 | 93.7 | yes | yes | no |
-| `q64_M320_eqxfer_g1em06` | rom | 64 | 320 | eq | eqxfer $m{=}937$, transferred, not primary at $512^2$; source marginal (2 of 6 draws pass) | 1.2485 | 2.9565 | 2.9565 | 3.0149 | 120.8 | 125.1 | yes | yes | no |
-| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 0.9890 | 2.6066 | 2.6066 | 2.9236 | 4541.3 | 4545.3 | yes | yes | yes |
-| `q128_M576_eqtopxfer_g0p001` | rom | 128 | 576 | eq | eqtopxfer $m{=}2152$, transferred, primary at $512^2$; source single-draw | 0.9902 | 2.6066 | 2.6066 | 2.9224 | 200.1 | 204.1 | yes | yes | yes |
-| `q128_M576_eqtopxfer_g1em06` | rom | 128 | 576 | eq | eqtopxfer $m{=}2152$, transferred, primary at $512^2$; source single-draw | 0.9901 | 2.6066 | 2.6066 | 2.9237 | 262.4 | 266.3 | yes | yes | yes |
-| `q128_M576_eqxfer_g0p001` | rom | 128 | 576 | eq | eqxfer $m{=}1644$, transferred, not primary at $512^2$; source marginal (4 of 5 draws pass) | 0.9895 | 2.6066 | 2.6066 | 2.9188 | 188.4 | 192.4 | yes | yes | no |
-| `q128_M576_eqxfer_g1em06` | rom | 128 | 576 | eq | eqxfer $m{=}1644$, transferred, not primary at $512^2$; source marginal (4 of 5 draws pass) | 0.9894 | 2.6066 | 2.6066 | 2.9200 | 242.0 | 245.9 | yes | yes | no |
-| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5625 | 2.0195 | 2.0195 | 2.7611 | 16219.9 | 16224.4 | yes | yes | yes |
-| `q256_M1088_eqtopxfer_g0p001` | rom | 256 | 1088 | eq | eqtopxfer $m{=}2438$, transferred, primary at $512^2$; source single-draw | 0.5510 | 2.0195 | 2.0195 | 2.7581 | 486.3 | 490.4 | yes | yes | yes |
-| `q256_M1088_eqtopxfer_g1em06` | rom | 256 | 1088 | eq | eqtopxfer $m{=}2438$, transferred, primary at $512^2$; source single-draw | 0.5510 | 2.0195 | 2.0195 | 2.7602 | 783.3 | 787.8 | yes | yes | yes |
-| `q256_M1088_eqxfer_g0p001` | rom | 256 | 1088 | eq | eqxfer $m{=}1663$, transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 1.8179 | 2.0195 | 2.0195 | 2.7920 | 395.7 | 399.9 | yes | yes | no |
-| `q256_M1088_eqxfer_g1em06` | rom | 256 | 1088 | eq | eqxfer $m{=}1663$, transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 1.8204 | 2.0195 | 2.0195 | 2.7969 | 686.6 | 690.7 | yes | yes | no |
-| `q0_M64_eqxfer_g1em06_fastL4` | fast | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1400 | 3.2836 | 3.2836 | 3.7681 | 40.5 | 44.4 | yes | yes | yes |
-| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 29.0916 | 61.8330 | 61.8330 | 61.8330 | 127.5 | 131.5 | yes | yes | yes |
-| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 19.1988 | 47.4440 | 47.4440 | 47.4440 | 247.8 | 251.7 | yes | yes | yes |
-| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.2900 | 20.3198 | 20.3198 | 20.3198 | 488.5 | 492.5 | yes | no | yes |
-| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 2.0372 | 10.5346 | 10.5346 | 10.5346 | 1206.7 | 1210.7 | yes | no | yes |
-| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 0.9578 | 4.0010 | 4.0010 | 4.0010 | 3488.2 | 3492.8 | yes | no | yes |
-| `pod512_M2048_dense` | pod | 512 | 2048 | dense | none | 0.3328 | 0.6579 | 0.6579 | 2.7209 | 11933.9 | 11941.1 | yes | no | yes |
-| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.4912 | 1.8046 | 1.8046 | 2.7232 | 10019.3 | 10024.2 | yes | no | yes |
-| `fno-large` | fno | — | — | — | — | 6.6169 | 6.6169 | 0.0000 | 5.6812 | 22.5 | 23.2 | — | — | — |
-| `dense_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.7025 | 147.4 | 151.4 | — | — | — |
-| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.7025 | 157.7 | 161.8 | — | — | — |
-| `nt1e-2_dt005` | fom | — | — | — | — | 4.0614 | 4.0614 | 0.0000 | 2.0638 | 24.4 | 28.3 | — | — | — |
-| `nt1e-2_dt01` | fom | — | — | — | — | 3.3550 | 3.3550 | 0.0000 | 3.3046 | 13.9 | 17.8 | — | — | — |
-| `nt1e-3_dt005` | fom | — | — | — | — | 0.0516 | 0.0516 | 0.0000 | 2.7116 | 52.9 | 56.5 | — | — | — |
-| `nt1e-3_dt01` | fom | — | — | — | — | 1.5893 | 1.5893 | 0.0000 | 4.1814 | 33.7 | 37.7 | — | — | — |
-| `nt1e-4_dt005` | fom | — | — | — | — | 0.0341 | 0.0341 | 0.0000 | 2.6975 | 61.2 | 65.4 | — | — | — |
-| `nt1e-4_dt01` | fom | — | — | — | — | 1.5869 | 1.5869 | 0.0000 | 4.1611 | 48.4 | 52.3 | — | — | — |
+| subject | family | $q$ / $k^\prime$ | $M$ | quad. | rule | evolved % | all % | $t{=}0$ % | vs ref % | device ms | complete-query ms | conv. (\S5) | strict | adm. (\S5) | adm. (own tol.) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q0_M256_dense_g1em06` | rom | 0 | 256 | dense | none | 1.3761 | 3.2836 | 3.2836 | 3.2836 | 1175.7 | 1179.7 | yes | yes | yes | yes |
+| `q0_M64_dense_g1em06` | rom | 0 | 64 | dense | none | 2.1376 | 3.2836 | 3.2836 | 3.7578 | 923.2 | 927.3 | yes | yes | yes | yes |
+| `q0_M64_eqtopxfer_g0p001` | rom | 0 | 64 | eq | eqtopxfer $m{=}914$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1387 | 3.2836 | 3.2836 | 3.7448 | 43.8 | 47.5 | no | yes | no | yes |
+| `q0_M64_eqtopxfer_g1em06` | rom | 0 | 64 | eq | eqtopxfer $m{=}914$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1378 | 3.2836 | 3.2836 | 3.7449 | 59.1 | 62.9 | yes | yes | yes | yes |
+| `q0_M64_eqxfer_g0p001` | rom | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1409 | 3.2836 | 3.2836 | 3.7681 | 44.1 | 48.3 | no | yes | no | yes |
+| `q0_M64_eqxfer_g1em06` | rom | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1400 | 3.2836 | 3.2836 | 3.7681 | 58.0 | 61.9 | yes | yes | yes | yes |
+| `q16_M128_dense_g1em06` | rom | 16 | 128 | dense | none | 1.5071 | 3.2248 | 3.2248 | 3.2248 | 1190.8 | 1194.9 | yes | yes | yes | yes |
+| `q16_M128_eqtopxfer_g0p001` | rom | 16 | 128 | eq | eqtopxfer $m{=}879$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4538 | 3.2248 | 3.2248 | 3.2248 | 62.5 | 66.3 | no | yes | no | yes |
+| `q16_M128_eqtopxfer_g1em06` | rom | 16 | 128 | eq | eqtopxfer $m{=}879$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4537 | 3.2248 | 3.2248 | 3.2248 | 79.2 | 83.1 | yes | yes | yes | yes |
+| `q16_M128_eqxfer_g0p001` | rom | 16 | 128 | eq | eqxfer $m{=}911$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4917 | 3.2248 | 3.2248 | 3.2248 | 62.5 | 66.7 | no | yes | no | yes |
+| `q16_M128_eqxfer_g1em06` | rom | 16 | 128 | eq | eqxfer $m{=}911$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 1.4914 | 3.2248 | 3.2248 | 3.2248 | 79.6 | 83.7 | yes | yes | yes | yes |
+| `q32_M192_dense_g1em06` | rom | 32 | 192 | dense | none | 1.3666 | 3.1172 | 3.1172 | 3.1172 | 1502.4 | 1506.1 | yes | yes | yes | yes |
+| `q32_M192_eqtopxfer_g0p001` | rom | 32 | 192 | eq | eqtopxfer $m{=}848$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.4060 | 3.1172 | 3.1172 | 3.1172 | 72.1 | 75.9 | no | yes | no | yes |
+| `q32_M192_eqtopxfer_g1em06` | rom | 32 | 192 | eq | eqtopxfer $m{=}848$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.4055 | 3.1172 | 3.1172 | 3.1172 | 93.9 | 97.5 | yes | yes | yes | yes |
+| `q32_M192_eqxfer_g0p001` | rom | 32 | 192 | eq | eqxfer $m{=}973$, transferred, primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.3673 | 3.1172 | 3.1172 | 3.1172 | 74.4 | 78.6 | no | yes | no | yes |
+| `q32_M192_eqxfer_g1em06` | rom | 32 | 192 | eq | eqxfer $m{=}973$, transferred, primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.3672 | 3.1172 | 3.1172 | 3.1172 | 96.7 | 100.8 | yes | yes | yes | yes |
+| `q64_M320_dense_g1em06` | rom | 64 | 320 | dense | none | 1.2015 | 2.9565 | 2.9565 | 3.0133 | 2221.7 | 2225.7 | yes | yes | yes | yes |
+| `q64_M320_eqtopxfer_g0p001` | rom | 64 | 320 | eq | eqtopxfer $m{=}1898$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.1995 | 2.9565 | 2.9565 | 3.0056 | 115.1 | 119.1 | no | yes | no | no |
+| `q64_M320_eqtopxfer_g1em06` | rom | 64 | 320 | eq | eqtopxfer $m{=}1898$, transferred, not primary at $512^2$; source confirmed (2 of 2 re-draws) | 1.1994 | 2.9565 | 2.9565 | 3.0069 | 150.2 | 154.0 | yes | yes | no | no |
+| `q64_M320_eqxfer_g0p001` | rom | 64 | 320 | eq | eqxfer $m{=}937$, transferred, not primary at $512^2$; source marginal (2 of 6 draws pass) | 1.2488 | 2.9565 | 2.9565 | 3.0135 | 89.8 | 93.7 | no | yes | no | no |
+| `q64_M320_eqxfer_g1em06` | rom | 64 | 320 | eq | eqxfer $m{=}937$, transferred, not primary at $512^2$; source marginal (2 of 6 draws pass) | 1.2485 | 2.9565 | 2.9565 | 3.0149 | 120.8 | 125.1 | yes | yes | no | no |
+| `q128_M576_dense_g1em06` | rom | 128 | 576 | dense | none | 0.9890 | 2.6066 | 2.6066 | 2.9236 | 4541.3 | 4545.3 | yes | yes | yes | yes |
+| `q128_M576_eqtopxfer_g0p001` | rom | 128 | 576 | eq | eqtopxfer $m{=}2152$, transferred, primary at $512^2$; source single-draw | 0.9902 | 2.6066 | 2.6066 | 2.9224 | 200.1 | 204.1 | no | yes | no | yes |
+| `q128_M576_eqtopxfer_g1em06` | rom | 128 | 576 | eq | eqtopxfer $m{=}2152$, transferred, primary at $512^2$; source single-draw | 0.9901 | 2.6066 | 2.6066 | 2.9237 | 262.4 | 266.3 | yes | yes | yes | yes |
+| `q128_M576_eqxfer_g0p001` | rom | 128 | 576 | eq | eqxfer $m{=}1644$, transferred, not primary at $512^2$; source marginal (4 of 5 draws pass) | 0.9895 | 2.6066 | 2.6066 | 2.9188 | 188.4 | 192.4 | no | yes | no | no |
+| `q128_M576_eqxfer_g1em06` | rom | 128 | 576 | eq | eqxfer $m{=}1644$, transferred, not primary at $512^2$; source marginal (4 of 5 draws pass) | 0.9894 | 2.6066 | 2.6066 | 2.9200 | 242.0 | 245.9 | yes | yes | no | no |
+| `q256_M1088_dense_g1em06` | rom | 256 | 1088 | dense | none | 0.5625 | 2.0195 | 2.0195 | 2.7611 | 16219.9 | 16224.4 | yes | yes | yes | yes |
+| `q256_M1088_eqtopxfer_g0p001` | rom | 256 | 1088 | eq | eqtopxfer $m{=}2438$, transferred, primary at $512^2$; source single-draw | 0.5510 | 2.0195 | 2.0195 | 2.7581 | 486.3 | 490.4 | no | yes | no | yes |
+| `q256_M1088_eqtopxfer_g1em06` | rom | 256 | 1088 | eq | eqtopxfer $m{=}2438$, transferred, primary at $512^2$; source single-draw | 0.5510 | 2.0195 | 2.0195 | 2.7602 | 783.3 | 787.8 | yes | yes | yes | yes |
+| `q256_M1088_eqxfer_g0p001` | rom | 256 | 1088 | eq | eqxfer $m{=}1663$, transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 1.8179 | 2.0195 | 2.0195 | 2.7920 | 395.7 | 399.9 | no | yes | no | no |
+| `q256_M1088_eqxfer_g1em06` | rom | 256 | 1088 | eq | eqxfer $m{=}1663$, transferred, not primary at $512^2$; source marginal (1 of 5 draws pass) | 1.8204 | 2.0195 | 2.0195 | 2.7969 | 686.6 | 690.7 | yes | yes | no | no |
+| `q0_M64_eqxfer_g1em06_fastL4` | fast | 0 | 64 | eq | eqxfer $m{=}922$, transferred, primary at $512^2$; source confirmed (3 of 3 re-draws) | 2.1400 | 3.2836 | 3.2836 | 3.7681 | 40.5 | 44.4 | yes | yes | yes | yes |
+| `pod16_M64_dense` | pod | 16 | 64 | dense | none | 29.0916 | 61.8330 | 61.8330 | 61.8330 | 127.5 | 131.5 | yes | yes | yes | yes |
+| `pod32_M128_dense` | pod | 32 | 128 | dense | none | 19.1988 | 47.4440 | 47.4440 | 47.4440 | 247.8 | 251.7 | yes | yes | yes | yes |
+| `pod64_M256_dense` | pod | 64 | 256 | dense | none | 7.2900 | 20.3198 | 20.3198 | 20.3198 | 488.5 | 492.5 | yes | no | yes | yes |
+| `pod128_M512_dense` | pod | 128 | 512 | dense | none | 2.0372 | 10.5346 | 10.5346 | 10.5346 | 1206.7 | 1210.7 | yes | no | yes | yes |
+| `pod256_M1024_dense` | pod | 256 | 1024 | dense | none | 0.9578 | 4.0010 | 4.0010 | 4.0010 | 3488.2 | 3492.8 | yes | no | yes | yes |
+| `pod512_M2048_dense` | pod | 512 | 2048 | dense | none | 0.3328 | 0.6579 | 0.6579 | 2.7209 | 11933.9 | 11941.1 | yes | no | yes | yes |
+| `free512_M1024_dense` | free | 512 | 1024 | dense | none | 0.4912 | 1.8046 | 1.8046 | 2.7232 | 10019.3 | 10024.2 | yes | no | yes | yes |
+| `fno-large` | fno | — | — | — | — | 6.6169 | 6.6169 | 0.0000 | 5.6812 | 22.5 | 23.2 | — | — | — | — |
+| `dense_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.7025 | 147.4 | 151.4 | — | — | — | — |
+| `fft_tight` | fom | — | — | — | — | 0.0000 | 0.0000 | 0.0000 | 2.7025 | 157.7 | 161.8 | — | — | — | — |
+| `nt1e-2_dt005` | fom | — | — | — | — | 4.0614 | 4.0614 | 0.0000 | 2.0638 | 24.4 | 28.3 | — | — | — | — |
+| `nt1e-2_dt01` | fom | — | — | — | — | 3.3550 | 3.3550 | 0.0000 | 3.3046 | 13.9 | 17.8 | — | — | — | — |
+| `nt1e-3_dt005` | fom | — | — | — | — | 0.0516 | 0.0516 | 0.0000 | 2.7116 | 52.9 | 56.5 | — | — | — | — |
+| `nt1e-3_dt01` | fom | — | — | — | — | 1.5893 | 1.5893 | 0.0000 | 4.1814 | 33.7 | 37.7 | — | — | — | — |
+| `nt1e-4_dt005` | fom | — | — | — | — | 0.0341 | 0.0341 | 0.0000 | 2.6975 | 61.2 | 65.4 | — | — | — | — |
+| `nt1e-4_dt01` | fom | — | — | — | — | 1.5869 | 1.5869 | 0.0000 | 4.1611 | 48.4 | 52.3 | — | — | — | — |
 
 **Table 24.** Fixed-$q$ sweeps in the test count $M$ (dense; errors comparable
 across the three b-qxm jobs, costs not shown). The last column restricts the
@@ -2721,6 +2745,7 @@ Written for a reader who knows none of this project's vocabulary.
 - **Same-grid, reference, physical error** — Error against the converged full-order solve on the same mesh (isolates the reduction); against a much finer solve (includes the mesh's own discretisation error); the cell's declared accuracy metric.
 - **Three layers: bank floor, best-found, solved** — Error of the best linear projection onto the bank (what nothing at inference can beat); the smallest error any point of the augmented manifold attains, found by a multistart oracle (an upper bound on the true minimum); the error the deployed iteration returns.
 - **Stationary, budget exit, early-stopped, converged, strict** — The solve met the normalised-gradient tolerance; it hit its iteration cap; any output produced under a cap or stall; the pre-registered completion rule that also accepts an attained initial fit whose residual is at round-off; the earlier rule that does not.
+- **Admissible** — Eligible for a frontier or a ratio: converged under the completion rule as written, with stationarity $10^{-6}$ at every step or a residual-rule exit, and for a quadrature subject a rule that passes its bar. Arms run at the loose tolerance $10^{-3}$ are reported everywhere but are not admissible.
 - **Non-dominated, frontier, error span, cost span** — A point nothing else beats on both axes; the set of such points; ratio of largest to smallest error among a ladder's non-dominated converged points; the same for cost. The tunability bar: monotone, at least three non-dominated points, at least $2\times$ on both spans, nothing early-stopped.
 - **Same-allocation, same-job, cross-job** — Two measurements inside one cluster allocation on one GPU, which may be divided; two from different allocations, which may not.
 - **Development cohort, held-out, sealed cohort** — Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).

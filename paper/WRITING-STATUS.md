@@ -1,6 +1,32 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-18 — NS three-layer correction folded in (ns2d 2d70f36a) (current state; everything below is history)
+## 2026-09-19 — b-panel admissibility corrected to DESIGN §5 (b-panel 25434a27) (current state; everything below is history)
+
+Every b-panel pin moved to 25434a27 (lane §A13). The lane's audit had checked its convergence rule
+against each arm's own gradient tolerance, so the 1e-3 arms counted as converged and entered the
+admissible frontiers and ratios; DESIGN §5 requires 1e-6 stationarity at every step, or a
+residual-rule exit. `admissible` (= `admissible_design5`) and the `nondominated_*_admissible` /
+`_reduced_only` rows are now §5; `converged` is `converged_design5`; the pre-A13 flags survive as
+`*_own_gtol` and define nothing. `gen_tables.py` and `figures/gen_fig_tunability_family.py` read
+`converged_design5`; no other generator key changed.
+
+Numbers that moved (all generated): admissible reduced 39→27 (256²), 31→23 (512²), 20→16 (1024²);
+reduced arms on the 1024² (GPU ms, worst evolved) frontier 5→3, the survivors q0/q16/q32 eqxfer at
+1e-6; 1024² cheapest admissible reduced / cheapest same-job FOM 1.82→2.27x and vs fft_tight
+0.153→0.191x. 256² and 512² ratios (4.48x / 2.92x) and both "nothing reduced is on the frontier"
+verdicts are unchanged. Figure 2B now plots 36 admissible subjects at 256² (was 48); its frontier is
+unchanged. The loose ladders' all-converged verdicts flip to "no" (not quoted anywhere).
+
+Text: §6.1's opener states the generated 1024² count, its counts and the ratio were already macros;
+§5 states the admissibility rule; the three appendix panel tables carry "adm. (§5)" and a
+superseded "adm. (own tol.)" column, with the 1e-3 arms kept and the correction plus the commit in
+the tab:panel-all caption; an "Admissible" glossary entry; §6.3's tolerance saving says those arms
+are not admissible. The abstract quotes no 1024² count or ratio (verified) and Limitations never
+mentioned the 1e-3 arms. Three lines recovered by wording for the page budget (a §6 sentence that
+restated §5's baseline list, the duplicated "make the framework practical" in contribution 2, and
+the 1024² paragraph's opening clause); main text ends on page 9.
+
+## 2026-09-18 — NS three-layer correction folded in (ns2d 2d70f36a) (history)
 
 Every ns2d pin moved to 2d70f36a (lane §A14). The ns304 solve-layer ratio is now the matched
 statistic 1.4–2.5x (2.51 at q=0 → 1.40 at q=R), the old 2.9–10.8x kept only as a superseded

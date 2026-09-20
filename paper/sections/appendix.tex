@@ -265,10 +265,22 @@ are not comparable with Table~\ref{tab:tunability}: a different job.}
 \begin{table}[h]
 \centering
 \caption{Every timed subject of the $256^2$ same-allocation panel (job
-\provPanelJob). ``conv.'' is the pre-registered completion rule that accepts
-an attained initial fit; ``strict'' is the earlier rule that does not;
-``adm.'' is admissibility for the frontier (converged, and for EQ subjects a
-rule passing a bar).}
+\provPanelJob). ``conv.\ (\S5)'' is the pre-registered completion rule as
+written --- stationarity $10^{-6}$ at every step, or a residual-rule exit,
+with an attained initial fit accepted; ``strict'' is the earlier rule that
+does not accept it, tested against the arm's own tolerance (so a
+$10^{-3}$ arm can be strict and still not converged under \S5);
+``adm.\ (\S5)'' is admissibility for a frontier or a
+ratio (converged under that rule, and for EQ subjects a rule passing a
+bar). ``adm.\ (own tol.)'' is the superseded flag: it tested each arm
+against its own tolerance and so admitted the \nPanelLooseArmCount{} arms
+run at $10^{-3}$, which the rule as written does not
+(\nPanelLooseAdmissibleCount{} of \nPanelLooseArmCount{} pass it). Those
+arms are kept here with all their numbers but are not admissible, which
+moves the admissible reduced count at this mesh from
+\nPanelReducedCountOwnGtol{} to \nPanelReducedCount{}. The correction is
+the panel pre-registration's \S A13, and every panel number in this paper
+is read from that lane at commit \provPanelSummaryPin.}
 \label{tab:panel-all}
 \resizebox{\linewidth}{!}{\input{tables/T05_panel_all}}
 \end{table}
@@ -277,7 +289,13 @@ rule passing a bar).}
 \centering
 \caption{Every timed subject of the $1024^2$ same-allocation panel (job
 \provPanelTenTwentyFourJob, H200). Columns as in Table~\ref{tab:panel-all};
-milliseconds are comparable only within this table.}
+milliseconds are comparable only within this table. The \S5 rule takes the
+admissible reduced count from \nPanelTenTwentyFourReducedCountOwnGtol{} to
+\nPanelTenTwentyFourReducedCount{} and the reduced subjects on the (GPU ms,
+worst evolved) frontier from
+\nPanelTenTwentyFourReducedNonDomEvolvedOwnGtol{} to
+\nPanelTenTwentyFourReducedNonDomEvolved{}
+(\nPanelTenTwentyFourNonDomReducedList).}
 \label{tab:panel-all-tentwentyfour}
 \resizebox{\linewidth}{!}{\input{tables/T05b_panel_all}}
 \end{table}
@@ -286,7 +304,10 @@ milliseconds are comparable only within this table.}
 \centering
 \caption{Every timed subject of the $512^2$ same-allocation panel (job
 \provPanelFiveTwelveJob). Columns as in Table~\ref{tab:panel-all};
-milliseconds are comparable only within this table.}
+milliseconds are comparable only within this table. The \S5 rule takes the
+admissible reduced count from \nPanelFiveTwelveReducedCountOwnGtol{} to
+\nPanelFiveTwelveReducedCount{}; nothing reduced is on the frontier under
+either flag.}
 \label{tab:panel-all-fivetwelve}
 \resizebox{\linewidth}{!}{\input{tables/T05c_panel_all}}
 \end{table}
@@ -603,6 +624,7 @@ Written for a reader who knows none of this project's vocabulary.
 \item[Same-grid, reference, physical error] Error against the converged full-order solve on the same mesh (isolates the reduction); against a much finer solve (includes the mesh's own discretisation error); the cell's declared accuracy metric.
 \item[Three layers: bank floor, best-found, solved] Error of the best linear projection onto the bank (what nothing at inference can beat); the smallest error any point of the augmented manifold attains, found by a multistart oracle (an upper bound on the true minimum); the error the deployed iteration returns.
 \item[Stationary, budget exit, early-stopped, converged, strict] The solve met the normalised-gradient tolerance; it hit its iteration cap; any output produced under a cap or stall; the pre-registered completion rule that also accepts an attained initial fit whose residual is at round-off; the earlier rule that does not.
+\item[Admissible] Eligible for a frontier or a ratio: converged under the completion rule as written, with stationarity $10^{-6}$ at every step or a residual-rule exit, and for a quadrature subject a rule that passes its bar. Arms run at the loose tolerance $10^{-3}$ are reported everywhere but are not admissible.
 \item[Non-dominated, frontier, error span, cost span] A point nothing else beats on both axes; the set of such points; ratio of largest to smallest error among a ladder's non-dominated converged points; the same for cost. The tunability bar: monotone, at least three non-dominated points, at least $2\times$ on both spans, nothing early-stopped.
 \item[Same-allocation, same-job, cross-job] Two measurements inside one cluster allocation on one GPU, which may be divided; two from different allocations, which may not.
 \item[Development cohort, held-out, sealed cohort] Cases opened and used for diagnosis; cases never used for selection; cases to be opened once, at the end, with every choice frozen (unopened for every cell here).

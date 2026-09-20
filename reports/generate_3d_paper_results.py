@@ -119,7 +119,7 @@ def main():
         "They are provisional paper material: tuning, operator comparisons and independent final evaluation "
         "must be assessed per attempt before a row supports a manuscript claim.", "",
         "The explicit input manifest controls which attempts appear; no best run is selected automatically. "
-        "Errors and timings are recomputed from the same invocation records. "
+        "Timed comparisons derive errors and costs from the same invocation records; untimed snapshot fits are separated explicitly. "
         "Every table retains unsuccessful methods and reports failure counts.", ""]
     for entry in manifest["runs"]:
         path = ROOT / entry["result"]
@@ -131,7 +131,59 @@ def main():
         assert not data.get("smoke", False)
         for p in (path, audit_path):
             provenance[str(p.relative_to(ROOT))] = digest(p)
+        if entry["adapter"] == "ns_representation":
+            import numpy as np
+            artifact = path.parent / "representation_fields.npz"
+            provenance[str(artifact.relative_to(ROOT))] = digest(artifact)
+            with np.load(artifact) as f:
+                truth = f["truth"].reshape(len(f["truth"]), -1)
+                pred = f["prediction"].reshape(truth.shape)
+                norms = np.linalg.norm(truth, axis=1)
+                errors = {f"Learned bank R{data['config']['rank']} projection": f["bank_error"],
+                          f"Neural head K{data['config']['k']} best-found fit": np.linalg.norm(pred-truth, axis=1)/norms}
+                for rank in data['config']['pod_ranks']:
+                    basis = f['pod_basis'][:, :rank]
+                    errors[f"POD-{rank} projection"] = np.linalg.norm(truth-(truth@basis)@basis.T, axis=1)/norms
+                rows = [dict(method=name, states=len(values), error_median=float(np.median(values)),
+                             error_worst=float(np.max(values)), states_above_target=int(np.count_nonzero(values > .05)))
+                        for name, values in errors.items()]
+            run = dict(entry, rows=rows, source=data['source_commit'], job_id=data['job_id'], gpu=data['gpu'], audit=audit)
+            output.append(run)
+            lines += [f"## {entry['pde']} — {entry['attempt']}", "",
+                      f"**Provisional:** {entry['qualification']}", "",
+                      f"Source `{run['source']}`; job `{run['job_id']}`; GPU `{run['gpu']}`. "
+                      f"[Records](../{entry['result']}) and [independent audit](../{entry['audit']}).", "",
+                      f"The table contains {data['config']['dev_cases']} validation trajectories on a "
+                      f"{data['config']['n']}³ periodic grid, with {len(truth)//data['config']['dev_cases']} snapshots per trajectory. "
+                      "Snapshots from the same trajectory are correlated. Errors here use each snapshot's own velocity norm; "
+                      "they must not be confused with the campaign's initial-normalized predicted-trajectory metric.", "",
+                      "| Representation | Snapshots | Median error (%) | Worst error (%) | Snapshots above declared target | Status |",
+                      "| --- | ---: | ---: | ---: | ---: | --- |"]
+            for row in rows:
+                lines.append(f"| {row['method']} | {row['states']} | {pct(row['error_median'])} | "
+                             f"{pct(row['error_worst'])} | {row['states_above_target']} | failed representation target |")
+            gate = data['reference_verification']['gates']['physical_reference_budget']
+            lines += ["", f"The empirical reference refinement gate passes: worst discrepancy "
+                      f"{pct(gate['worst_total_discrepancy'])}% against a declared {pct(gate['budget'])}% budget. "
+                      "Passing the numerical reference checks does not remedy the representation failures above. "
+                      "No rollout error, runtime or operator comparison is inferred from these snapshot fits.", ""]
+            continue
         rows = aggregate([normalize(r, entry["adapter"], data) for r in data["invocations"]])
+        for row in rows:
+            flags = []
+            for mesh in data.get("meshes", []):
+                if mesh["intervals"] != row["mesh"]:
+                    continue
+                metadata = mesh.get("methods", {}).get(row["method"], {})
+                if metadata.get("quadrature_certified") is False:
+                    flags.append("failed EQ certificate")
+            if row["nonstationary_cases"]:
+                flags.append("stopping failures")
+            if row["nonfinite_cases"]:
+                flags.append("nonfinite output")
+            if data.get("reference", {}).get("passed") is False:
+                flags.append("reference refinement failed")
+            row["qualification"] = "; ".join(flags) if flags else "development"
         run = dict(entry, rows=rows, source=data.get("commit", data.get("source_commit")),
                    job_id=data["job_id"], gpu=data["gpu"], audit=audit)
         output.append(run)
@@ -152,15 +204,15 @@ def main():
             lines += ["Errors use the reference solution norm. There is one stationary output field; "
                       "evolved, initial and all-times terminology does not apply. Total timing includes "
                       "host transfers. Mesh size counts intervals per axis.", ""]
-        lines += ["| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls |",
-                  "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"]
+        lines += ["| Mesh | Method | Cases | Error median (%) | Error worst (%) | All-times worst (%) | Initial worst (%) | Physical worst (%) | GPU median (ms) | Total median (ms) | Nonfinite / nonstationary cases | Timing outliers / calls | Status |",
+                  "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |"]
         for row in rows:
             lines.append(f"| {row['mesh']} | `{row['method']}` | {row['cases']} | "
                 f"{pct(row['evolved_median'])} | {pct(row['evolved_worst'])} | "
                 f"{pct(row['all_times_worst'])} | {pct(row['initial_worst'])} | "
                 f"{pct(row['physical_worst'])} | {number(row['gpu_ms_median'])} | "
                 f"{number(row['total_ms_median'])} | {row['nonfinite_cases']} / "
-                f"{row['nonstationary_cases']} | {row['timing_outliers']} / {row['invocations']} |")
+                f"{row['nonstationary_cases']} | {row['timing_outliers']} / {row['invocations']} | {row['qualification']} |")
         lines += ["", "A missing physical-error or total-time cell means unmeasured, not zero. "
                   "Physical errors require the attempt's separate reference-refinement qualification. "
                   "A passing numerical audit verifies the recorded experiment; it does not establish "
@@ -174,12 +226,15 @@ def main():
         "- **Dense / EQ:** full-grid contractions / sampled empirical quadrature; an EQ name alone does not mean its accuracy certificate passed.",
         "- **Free bank / Galerkin / weak:** unrestricted bank coefficients / projection against the basis / residual projection against smooth tests.",
         "- **Mesh / cases / calls:** grid size per spatial axis under the stated convention / distinct inputs / timed solver invocations including repetitions.",
-        "- **Error median / worst:** median or maximum over distinct cases of each case's largest evolved error; the largest value across repeated calls is retained.",
+        "- **Error median / worst:** median or maximum over distinct cases of each case's largest evolved error, or stationary solution error for Poisson; the largest value across repeated calls is retained.",
         "- **All-times / initial:** maximum including time zero / error from compressing the initial field.",
         "- **Physical error:** discrepancy against the independently refined reference; a refinement test is empirical, not a proved continuum bound.",
         "- **GPU / total median:** median elapsed milliseconds on the device / including recorded host transfers. Timings may only be compared within a job and matching output contract.",
         "- **Nonfinite / nonstationary cases:** inputs with an invalid output in any repeat / a failed declared numerical stopping check in any repeat.",
         "- **Timing outliers:** calls slower than one and a half times that method's median; every measured time remains in the machine-readable output.",
+        "- **Status / certificate:** a row's remaining qualification / the declared held-out check that sampled quadrature reproduces the required moments accurately enough.",
+        "- **Representation / snapshot / projection:** the fields a model can express / one saved state at one time / the nearest field in a linear basis under the stated norm. A best-found neural fit uses numerical optimization and is not a proof of global optimality.",
+        "- **Snapshots above declared target:** saved states exceeding the representation accuracy threshold fixed in that experiment's design; these are not independent trajectory counts.",
         "- **Provisional / development / final cohort:** not accepted as a final paper claim / data available during selection / independent data reserved until configurations freeze.",
         "- **Source / job / audit:** pinned scientific code revision / cluster allocation identifier / independent validation record.", ""]
     (REPORTS / (STEM + ".md")).write_text("\n".join(lines))

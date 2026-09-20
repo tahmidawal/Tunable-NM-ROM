@@ -39,7 +39,7 @@ The source/job checks performed here pass.
 - The within-job direct-solver and POD comparisons remain distinct from cross-mesh scaling. The head-capacity job does not justify comparing its timings to the fine-mesh job on another GPU.
 - Further work: recompute the corrected oracle and diagnose the learned bank/head gap. The algebraic linear limit is supported without claiming a neural advantage over the linear controls.
 
-This audit does not mark open findings resolved. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
+Remaining methodological findings are not resolved by aggregate agreement. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
 
 ## Glossary
 

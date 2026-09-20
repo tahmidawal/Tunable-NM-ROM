@@ -2,7 +2,7 @@
 
 Audited from retained records on September 20. This audit recomputes aggregates independently of the lane generator and reviews the documented protocol; it does not rerun solvers or independently validate every saved field.
 
-Source checkout: `df92e40df68964cf50579a496c00b6cdcb32d5b9`. Numeric checks: **108/108 pass**. Provenance checks: **0/297 pass**. Methodological findings remain open below.
+Source checkout: `5760a7e256ef3c003956bef7a185a86c88b823b6`. Numeric checks: **108/108 pass**. Provenance checks: **297/297 pass**. Methodological findings remain open below.
 
 ## Verified-number sample
 
@@ -29,19 +29,17 @@ Values retain the units of their named metric; percentage metrics are explicitly
 ## Mismatches and provenance
 
 No numerical mismatch was found among the recomputed aggregates.
-
-The following provenance failures affect repeated rows:
-- Job `3817807`: summary row source_commit equals panel result commit; reported `2cf5dc3487764eaad289041b465d33fb3c98b93b`, expected `144f6b29b7d159bf771f66df84cffaa4ae0463ee`.
+The source/job checks performed here pass.
 
 ## Gate history, comparisons, retractions and weakest claims
 
 - The mesh-refinement failure remains explicit. Reduced-versus-reduced comparisons on this mesh do not establish continuum-accurate low-viscosity performance.
 - The report records a failed POD orthogonality audit check and bounds its effect using an oblique projector. This is a disclosed exception, not a clean all-checks-pass record.
 - The main panel fails its full-order-frontier criterion; the reduced-only frontier and the correction-ladder span answer different questions. Retain these separate verdicts.
-- The summary generator carries the gate job's source commit into training and panel rows. Check the provenance failures below against each job's actual result commit; numerical agreement does not cure incorrect provenance.
+- The source-label inheritance bug was repaired in commit 5760a7e256ef3c003956bef7a185a86c88b823b6. Gate, training and panel sources are now attributed separately, and the panel labels are rechecked here against its retained result. The lane's source catalog traces archived bytes to Git objects; historical incumbent-training records lacking a recoverable run commit are explicitly marked unknown with retained artifact hashes. The combined report must not invent one shared scientific source commit.
 - Further work: a resolved refinement confirmation with the same physical family and fair tuned FOM controls, then any claim of a nonlinear advantage beyond the reduced-model comparison.
 
-This audit does not mark open findings resolved. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
+Remaining methodological findings are not resolved by aggregate agreement. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
 
 ## Glossary
 

@@ -39,7 +39,7 @@ The source/job checks performed here pass.
 - Most arms ended at wall budgets, with the still-improving label based on checkpoint recency. This is a heuristic, not a convergence proof. Describe achieved finite-budget errors; calling errors a lower bound on attainable error is mathematically misleading.
 - Further work: validation-selected continuations and independent seeds, plus a same-allocation ROM/operator/FOM panel. The reported operator resolution knob must remain in the paper; the earlier no-knob premise was withdrawn.
 
-This audit does not mark open findings resolved. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
+Remaining methodological findings are not resolved by aggregate agreement. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
 
 ## Glossary
 

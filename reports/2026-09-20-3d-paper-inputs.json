@@ -7,6 +7,38 @@
       "result": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json",
       "audit": "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/audit-local.json",
       "qualification": "Development diagnostic: retained network and smaller POD/direction training subset are unmatched; physical refinement and operator comparisons are absent. Dense initialization and dense nonlinear evaluation are charged. Final cohort remains unopened."
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "adapter": "heat",
+      "result": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/audit-local.json",
+      "qualification": "Development pilot with matched training membership and fixed diffusivity. The learned bank limits accuracy; longer training and operator comparisons are pending. Sampled quadrature arms failed their certificates. Final cohort remains unopened."
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "adapter": "poisson",
+      "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/audit-local.json",
+      "qualification": "Development pilot with matched training membership. Bank/head training is incomplete; operator comparisons, independent training seeds and final evaluation are pending. Sampled quadrature arms failed their certificates and remain failure diagnostics."
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "pilot01",
+      "adapter": "ns_representation",
+      "result": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/pilot01/collected/output/result.json",
+      "audit": "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/pilot01/collected/audit.json",
+      "qualification": "Representation-only development pilot: the small learned bank and POD controls have large held-out errors. These are fits to known reference snapshots, not predicted trajectories or timed solution queries. Larger banks, more data, operator baselines and final evaluation are pending. The pretraining amplitude amendment and failed original resolution setting remain documented in the lane design."
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "adapter": "poisson",
+      "result": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/result.json",
+      "audit": "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/audit-local.json",
+      "qualification": "Audited development comparison with matched training membership. Dense correction ladders improve same-grid accuracy, but POD and DST remain stronger controls. Native-grid operator prediction with interpolation and direct resolution transfer are separate methods; direct transfer fails. Sampled quadrature certificates fail. These implementation timings include avoidable static head-parameter transfers; the next paired panel places all frozen weights on the GPU during setup. Independent retraining and final evaluation remain pending."
     }
   ]
 }

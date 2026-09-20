@@ -39,7 +39,7 @@ The source/job checks performed here pass.
 - The retained-value gate was changed after a failed job under amendment A4 to handle tied initializers. Preserve the failure and the field/objective parity evidence; do not describe every original gate as having passed.
 - Further work: initial/velocity representation and physical trajectory accuracy. Energy conservation alone does not establish accurate wave propagation. The linear-bank result is near the best corrected head in accuracy, not uniformly strictly more accurate.
 
-This audit does not mark open findings resolved. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
+Remaining methodological findings are not resolved by aggregate agreement. Full-field audits already retained by the lane are supporting evidence, not new independent field checks performed here. Any altered claim must be applied to the manuscript and its source report before submission.
 
 ## Glossary
 

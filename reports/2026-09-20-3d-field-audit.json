@@ -1,0 +1,3989 @@
+{
+  "passed": true,
+  "scope": "One independently recomputed worst-case field per method and mesh; no solver imports or independent retraining.",
+  "inputs": {
+    "reports/2026-09-20-3d-paper-inputs.json": "33c8686a2d70c0b3938ed4cacd37d1c71fb4bb2e1e458760179b27e774f2ab6b",
+    "reports/audit_3d_saved_fields.py": "9d9570fd87a054489c68126249f4dd84cdb51c954b52719cfcc5916c4cd75f7c",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/result.json": "5b4afc4db50d4af9c5e9d0fdaa0dbcbd63f03436ad4d2e45265c184fe6a2d409",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-02_case5_rep0.npz": "0159d55a6d43c83c134abaaf9f33f6ee35126ab6586d6f1efb1cabb166fd27c0",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case5.npz": "1eccda6937db84b5666da7d873c2fcdd0af702891796a1192428f4a8ca2a09f8",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-04_case4_rep0.npz": "f4a2b438d2974b59f2e116a1ea318155b8971c5468046b4b00461e20dff9339d",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case4.npz": "244cc505c13a852d85a7fd1b3d5501f43d203b9c1185d1e6e718bc5aea9d953b",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/fom_nt1e-06_case6_rep0.npz": "ee0a3f17fd745c0e3824971c288db72cac31b49d23e003219b2a93bddd640a5d",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case6.npz": "ae3df37c58fc75f1f0f8518809afadb0d0ec933023a86c9f0f8ec246007eea4a",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/free_R128_case2_rep2.npz": "936a793885229514fbe3f8cee234006752076251381f45df92970ef5e88c90e8",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/reference_case2.npz": "7b71e623b957157eb9ff6f5ec6f75936ebc79335283b0dcf0e7eef084f5bc43b",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/pod_128_case2_rep2.npz": "7b1c5cbe25db277ac154b1244b8dd9065b86f55b93a2d09dc2b9137dd1dc8b3d",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/pod_32_case2_rep0.npz": "5f144b9b91d2246d21bd552bed14b5054595e51b2a37dcd14b470e46bef7b52a",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/pod_64_case2_rep0.npz": "a043f2d3c227e50df81861bf7e72e8c76a7e0d07e919fe27b935cd093c0e3040",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/pod_96_case2_rep1.npz": "41fa383a60bc71757164dcb57a7bf2366d0e7bfdc76dce88f1a2e0b2baa03747",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/rom_q0_case2_rep2.npz": "e43028406f05b29a5087ed59a2c4e3c20d490d133845277186ae522da836a5e3",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/rom_q32_case2_rep0.npz": "2e6136b43a2d737ce123af6650c6fcb49e6878ed7f21ebf36c5b9a242242efac",
+    "worktrees/2026-09-20-paper-b3d/experiments/paper-b3d/runs/b3d001/collected/out/rom_q64_case2_rep1.npz": "9cd78f82ed7ae920a7c146d17bafa81b1d92972b91a7cc17472f3a7f3334c7cf",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/result.json": "24a616fd57d33baf30b1cc7f14fd529066baf65d62f4721d725c3dc16325caca",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case0_dst_exact.npz": "27770b3835eddc4339cb64961689bf072c50eb6d3c71d6a48b378f5b32260e6d",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case0_reference.npz": "ae92732d16de9b2fc7d7ed9d947e1aa53dc70300d0453df676a1fcdcc1f65f59",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_linear_bank_cn.npz": "d146eee60268d9ddf3196d29ade89dbe39abace59ddcbd376b37e3234bc79ad0",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_reference.npz": "4c4585bc8b418cb52c081296e100610f6a7d0b3d02def66fa0c0168d9da3f6ae",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_linear_bank_exact.npz": "f1ae6ba6ed259b344555e5ccb2504b8cad9e01df859a58e828e8aa438c4cd175",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_linear_bank_galerkin_exact.npz": "2543a559c2fbaa7553c5cb5dcc9ce3cc02aa1d91b5b1a8a4c8686917a804fad6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K16_q0_dense.npz": "750ccb49641dfba36029d915b293cb8cda396548ddb2fb67a20593b82249e1c6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K16_q0_eq.npz": "52e0ea8f54c41e14400e7281a6a8883594c9be02c1f12c6cdc0355004085ad33",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_reference.npz": "d77a86f7063c174bb06809ce210900a682d4072b2b31b6b8c997e33ea2dd5640",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K16_q16_dense.npz": "f8d2e3addd8033139049980ef796c342a864f8f8f5c952cd66a6eb811877ed08",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K16_q16_eq.npz": "f270f233c57f2c5af94197dbeaecc9f2542aec2fca73fedca4f97f5770a2da28",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K16_q32_dense.npz": "b7633dc285f86e27b6a7c8a7f25c30a27ef643a998a866f6a70ec3f142cc6296",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K16_q32_dense_dt_half.npz": "a8fea5ea25931fc25f7084f3ebb60aeabf277280376e6649231f5a3050bb5bdd",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K16_q32_eq.npz": "becbfa3005c2e2733225a934377044d4db4ac33c2f6dfc3f9c17ac0596b9f3ed",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K16_q8_dense.npz": "962e5da4f2af8d444a8438fc2774768810d7db71d39c0a18c43bd4d23e1051ca",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K16_q8_eq.npz": "6d1560e798e4c3b1c247bf0e58a065228f594db2be68badeb08dd702cc31be32",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K8_q0_dense.npz": "32a8ea5a12944ed682312c08e9a994babcbe52e1dd7959558cc85640e5f15731",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K8_q0_eq.npz": "4f1588c2daaba2a2cb784d324e73372d5a947882b199a86a20fa3f75a4fc60a1",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K8_q16_dense.npz": "2e525415f19163a7c0ad04327ebce83498dc8b70d987fc4610f63fc24f9cf2dc",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K8_q16_eq.npz": "d58cfd77110d6a5b95c5af0ef1a4e1105d6cda9f79fa129c546b536d9a903523",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K8_q32_dense.npz": "77e4164e3248c0ad973ad19c58366f3773693b8ba4b1cdebfe28eb0851e5975e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K8_q32_dense_dt_half.npz": "751a34ba504bf60a33cf27ce6537cd14792af9350b1fd2572f5ee86427698513",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K8_q32_eq.npz": "8e98644f13b7bc2cb63112611b907f7469986fb17a44d588c3d862842ac2bb3c",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_nmrom_K8_q8_dense.npz": "2281c63ab85028504acb532747afd9ed13fdef9c36d5b2914022b64b50279603",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case9_nmrom_K8_q8_eq.npz": "9c20b281e5ac04824456c30406bf44e6922e2a5038018f0f8f74aaa1a6751301",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod16_exact.npz": "54ba3eab539a874889c1ec55a4e0b8296c20b9fdc443f5793b87fb41165c4630",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod24_exact.npz": "6bee9122642e396b97538d8594b0ec641864a1cf5d1d8a67b83673933fa065ca",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod32_exact.npz": "1abceb229316843d8e9ed1789a7f087e4d7ee12c438f8c23f1ab0bbf82d79db8",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod40_exact.npz": "2651a58774fc453a6f26a85a24be7ccd86ea78759afc4b91a0640f0dba36fbf4",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod48_exact.npz": "0d36b875d9b8b08ed6a4237329882e86f025fe3b269c90207faec5824d0f76e3",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod64_exact.npz": "d726e55a64bd73f6b815d1af1c7084a4a2bd1664dc13104de8c161af16cb7957",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N32_case11_pod8_exact.npz": "ffb1eed281a4b354fe967b44e7e4a41428106587ca8167e7902b78b6673e74b0",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case0_dst_exact.npz": "83941e52c074528291798b8d62edc15e326754e2a4f48e2d46445ea6385397d6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case0_reference.npz": "e45b6aefda5c5c19b7061ad35d7d4035731913ddf1ff69470c4c1ce52465bbe7",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_linear_bank_cn.npz": "1011b6e1155261d2b64935abb37def1a71f7fd2f2af7253ff050abaca607bdd6",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_reference.npz": "ecc460e855188c62ceef6b715b5e4ba365b38fa0da7aa1ca30802e2e628a2c96",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_linear_bank_exact.npz": "cd25383cd7bd34517c2055c7f871e555c4905bb0a0748d388eb44d3bc2ae0fbe",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_linear_bank_galerkin_exact.npz": "35d9c1da9ab5309691b4d3945056ce9d53d4cf15877fbc0701a81426fc7bc45a",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K16_q0_dense.npz": "a016c8290fffb3f658f29ea61d11d6a5b35cd7eaa321edf1afbdbac6c81272cd",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_nmrom_K16_q0_eq.npz": "6f4f21ff21cf6c224e91042ad3a76ff34009acc83ce99c15ce49125ca93f7ce1",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_reference.npz": "fbe869e0c110ab1866f2292a4fd5267dd1d78321c16f20d595f56fe6c1b7777c",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K16_q16_dense.npz": "f7b987f95fc44cf04eb5739c62d71d27642ba1c4d1cf2c09cb8725d12aa20344",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case7_nmrom_K16_q16_eq.npz": "cab01ddb4c586ee0a52078bf2563ebacdc817cccd29d5ab7dde44f956cdcdd0e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case7_reference.npz": "808ee87f55cb44ee4cdaf0d6554d5e094c3b24d3511f32e38087d00a1c0c5e51",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K16_q32_dense.npz": "84ba33cb82064139381cf53c2cd60d2dfc6d018da1403360f64eca1dce712a15",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K16_q32_dense_dt_half.npz": "6d93e46af59aa11b7441c27881e7e6a9ca803922c8c487d94062c8529ff512fd",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case7_nmrom_K16_q32_eq.npz": "1ba72dbf1d27a281a7fe281da2af7a7ec0774280d2bb1d61d747c21d3ba9cd3e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K16_q8_dense.npz": "cc0d1c1cccdf860720b99e53865c7ffc40bc7127dd5c59f05fb30320529e6d43",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_nmrom_K16_q8_eq.npz": "ed01142b1e82dcaae1b7f1935bcc013ffc695c69ef7946a730aeb4f117f1388e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K8_q0_dense.npz": "f9b0c27248be599e973221b67243c4f90f7e87211fdf8d600663860328fafa99",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_nmrom_K8_q0_eq.npz": "5873f62351ca8e4e6078266429697e35c0e4badc844f7d10580a74ff67bc5fb8",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K8_q16_dense.npz": "f8f4107ffd6669ec0c0ed30fa32b4ee8c9e4f6bcbfd58a54c4dffc2c89842aee",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_nmrom_K8_q16_eq.npz": "562e2a2780a89f5129d61de26ec09e6aead40da5849a8506df6738bb6458877c",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K8_q32_dense.npz": "412c438112af9ecb8594e39cfa78ab94e065dbc9e7721b184ecc1b5fbc98f141",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K8_q32_dense_dt_half.npz": "0487d6911074b497ebad695918e8ce8d83b461994422ffdb6045364a33dcd674",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case7_nmrom_K8_q32_eq.npz": "1e23730f3596f8f013d42a50c525600bfc54b049b03c48e2a07d25a511c51197",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_nmrom_K8_q8_dense.npz": "7532b3a199941cc4224f6a7f1e86b88fd3ade2543d3b393a97fc8dfd5073dbaa",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case4_nmrom_K8_q8_eq.npz": "cf2041d4c08fe30d8bb8f8e11008b58e669bf76186d1b39ddfc3dabdb5a774c8",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod16_exact.npz": "febc9000107f493da74a5e5a8f15fc3789dd59ea842642713c18174b9f821352",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod24_exact.npz": "3124311036b8d77f556ac83a12f325d02e26585a851a7e766724fcc2eb53a33e",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod32_exact.npz": "b68ac529a8dfc439540307d497524df0293449f2dabafe5f7175c5e6fbc5bcca",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod40_exact.npz": "a427886f00c848b04a53fc881f33f596da34962a58b9727d36ad050a5709d0aa",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod48_exact.npz": "b3d3d06d10add7395a88a1dbe5d502bd038caa63d5b86ff4ec61ffea83568019",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod64_exact.npz": "5300575cf259d9c99f0dd675dcea926e3fcc400a20dacabdb3c3fa1113926878",
+    "worktrees/2026-09-20-paper-h3d/experiments/paper-h3d/runs/pilot01/archive/out/fields/N64_case11_pod8_exact.npz": "9087141b7f9d1141957aea22822abfc28a787646a526105035d5ab94a1459f7f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/result.json": "239d66a0bb365cc20059f62607194b4b4cfd831111bdf6c64c52990b7f7cf848",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_dst_exact.npz": "fed61569a7e085abd5809f898b18379f1baaca666992e9a2c6e5879ec4809c09",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_reference.npz": "ca6c573547bd21807c880113763b70d4b8d4dacfa85047144607dd57d8009f75",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_linear_bank_galerkin.npz": "805f26a0ba3e3bb42f4f5b7c5042bda852b56f150cda4330eebcafd1d4c86b57",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_linear_bank_weak_qR.npz": "7c63a549a6adc5694b4150bcd413bb6ad840ae1cc66109c1e1a9cfc9eb104514",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K16_q0_dense.npz": "503a624c4cdf10467b76f99b47e6eedb31f3eb73e95a66d35af02e1f144bd598",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K16_q0_eq.npz": "b9d0701fd238cb5323bcdc473d141a7abd357f7e478e469a75bd91c5e6fe7530",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_reference.npz": "fc44743ea454df0805824c96c0581dbb95c30156fff34f3a5c9e9c872aae25fc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K16_q16_dense.npz": "d9767f466196a834fea492e16a956c70cf94e561b5fc3cff3e3c67c38775f4bd",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K16_q16_eq.npz": "eaac448469975dccdbd037ef5e40ab55694fc57956d4ba398dcc13ddb7cbf2c0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K16_q32_dense.npz": "111c9d4f45488f19d31cacd60a3d18b8be25d386dbe18214a9fd629a28b57cb0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K16_q32_eq.npz": "41d9746edc65c0d52fcae9c65ffcb82772d81c5896765be93b126b0e6a8aca15",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K16_q8_dense.npz": "82d825230aaaae562e4e744c3c5e4d3921445fd2570417ad1dce31fa862545fe",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K16_q8_eq.npz": "199f6ca2a1eb750cd409a1ae220d48aff8200476fa47afba96e4a743971d1aae",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K8_q0_dense.npz": "a754a6cdbad5129e447d553cf790f68cb39a0d5ce161a0b16e47ca23efcd8c78",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K8_q0_eq.npz": "790feb6c437b3c3f62a27373b9f61efdaf08cb4a8c15c88bf07d0ba98e828ff7",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K8_q16_dense.npz": "df47db072fa8cac6ba1edf7dbd23f5853f36ca8039e990d350e5e0910c370199",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K8_q16_eq.npz": "d4867bd0e48f605d3188dbadec596ee4536da4093488eb1a7c322e60aacfae98",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K8_q32_dense.npz": "6e77176ace7185cc9925f2d03e53ab9d9733cc06ed0a45f700f0911593c67416",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K8_q32_eq.npz": "8600c0d64397f0f0368a0a65097d6cd0617a5d506dacfdabb8ca0488b72ec67f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_nmrom_K8_q8_dense.npz": "759729989e8813c22204ebd2487ea1b6526e41bad469646f83a720fa9a64c5a9",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_nmrom_K8_q8_eq.npz": "0548961eca75cfbf59342a7c0778560b18b8ef39b749e4f97f012e90f2d17626",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod16_galerkin.npz": "6bcbd26a067202384335be957cb43994983b521cb41a0d3e5323aeb13f43ffe5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod24_galerkin.npz": "73c99688a7c401112195af123d0628c2d18d31a880ee7c080f33fdce7b208d1f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod32_galerkin.npz": "1d0b021362ced8df17b9f0fb7baadad73ec0cbbd64500c72edcc6df8cb577b3d",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod40_galerkin.npz": "1f9fa2c3f81971d12634f124a7910648dcfa67930d95a65b15cd261c63c5c704",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod48_galerkin.npz": "c0025bb19361beaa7a1b3066836ad1fc3b64f99fd2a051422fd28a542bcc5cf3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case0_pod64_galerkin.npz": "f0afbfae1a90fde7a711365f97b62ad4c19d0bb3c8892622f48b58870d0f10d3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/pilot01/archive/out/fields/N32_case12_pod8_galerkin.npz": "f138259335ba5cd12e886ae8b2f1352d9b232bf88c469106153c05c858b4bc82",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/pilot01/collected/output/result.json": "946e2d88940fac8209e36274939ab1015232dd255b689bcb5570dca8be8902bc",
+    "worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/pilot01/collected/output/representation_fields.npz": "542ab2aff3301f96453164d4d5d105134d7f07c12a2f22e8c3e13ddbb1956aa0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/result.json": "41ef9749a80327dda52f02645f16cca8af7a2149cc29bd0c454fac164d191ec5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_dst_exact.npz": "fed61569a7e085abd5809f898b18379f1baaca666992e9a2c6e5879ec4809c09",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_reference.npz": "ca6c573547bd21807c880113763b70d4b8d4dacfa85047144607dd57d8009f75",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case5_fno3d_w24_m8.npz": "28b86638a09eb84c436f13a73d6df7cf3a63b97b5f27fc8c8fd5f8bec3aa3a50",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case5_reference.npz": "bec34f4581f7552287de5f43370eb6442719c3ed938c5ee2adf132380868cb8b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_linear_bank_galerkin.npz": "cdb954486a8adef14833ec3e91635beb77073e1cc00fbe93ffd9de44174c06f8",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_linear_bank_weak_qR.npz": "759c89005e07645013dc1f2a2dd7a7f961b2b8db07c764a34a71039dacbf4e6f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case12_nmrom_K16_q0_dense.npz": "66facc22b2f60463dfa0a964c021722ddf204e689c38e0a17b9600e073d156e9",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case12_reference.npz": "fc44743ea454df0805824c96c0581dbb95c30156fff34f3a5c9e9c872aae25fc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case12_nmrom_K16_q0_eq.npz": "1b36f47d13e67226ac1682cc7818d78f377eef79c95126e869018c551b80cdb7",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q16_dense.npz": "c4b3f6e4c0cb0f7361d3b4db1ae87c0f12731561ea2cb474b134fed22862113f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q16_eq.npz": "5086ae41dc0e3d656ab89a70c735500eb0d38490faf35b8d18577db9ddf319be",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case12_nmrom_K16_q32_dense.npz": "7accdeaef2320324a71925abc63f0b52eac1749138d748d91a78ba732599852e",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q32_eq.npz": "fae8b40d0ec05c886dcee862ac06c51bd8e54dc124014af918668223cc039f5d",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q64_dense.npz": "2eb96eb3f325717a140a6c86387d1bc4d57ddf8b494d2ed61efcb7b904150549",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q64_eq.npz": "d4039d4c98520b185372d77aa3beb3fc936ea94c475be91479782d488efaa43a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K16_q96_dense.npz": "b6498cbf7113570d614039b7640602a8fa0379a867a95a6edb4900f2a6c2e4ee",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case11_nmrom_K16_q96_eq.npz": "46cd839170149c1afa95c9746e43d5ae05d21d5fee6bf617596d3044a156cd9f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case11_reference.npz": "9caf739c9ddffac8628b7f3e3cd6e643697d413c40c7297212bfef0fa16e2f40",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q0_dense.npz": "cfff3fa19266701db217472fdbfe952b76a367ab05cd2a0c651e7d47bf4ed516",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q0_eq.npz": "4e3ad51337226c8fecb7f0089529b84aec2d90cd6df2287241db1c45ac7c0e31",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q16_dense.npz": "9475d2da4c949e0e2126a30cb777ce8152a2d529979cf398575a046bc0d8f676",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q16_eq.npz": "2d846d20207495dd3897fe5c8972726981efd42159bb5eb3686ef950913c5a5d",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q32_dense.npz": "f2d8f672e6a77d7d833f6cf303a3405a0e14158478cfd4afc5bb7363cad744fc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q32_eq.npz": "4b84726de93be20b1805792bf375b0f71f6f55cf89d125d883fe9462a97bbc16",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q64_dense.npz": "38f432efd89ccadc2e44a9f8f1c5d6ca1ca10254be931ebee1a59e91c62e3341",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q64_eq.npz": "1625d3215d6bbd57ed5a50a08a60c21bda9029c3d149ed92154bff3704da4cb0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q96_dense.npz": "c8af5a041d86b9c18f80d8ec18fe7284fc939a2913c531d81f9b8d323853bf0e",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_nmrom_K8_q96_eq.npz": "b70e52f95ac17d527400e09487be797ee61c08f9feac6a86719813e0fb9c7238",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod104_galerkin.npz": "b9c9489076df0064d5aa2db7ad165bda661aa46fbc5e2ac9922387a99fc1fa22",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod112_galerkin.npz": "36c651dccb00c209fbee4a3c3e86ab95a69b8553a37e8a8fc290078ab6ab9a00",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod128_galerkin.npz": "da4f6f1c7993a432ab5ce2f3a8ac13083c49c5ed4c61b0d47e6df9ebfcaf528a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod16_galerkin.npz": "6bcbd26a067202384335be957cb43994983b521cb41a0d3e5323aeb13f43ffe5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod24_galerkin.npz": "73c99688a7c401112195af123d0628c2d18d31a880ee7c080f33fdce7b208d1f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod32_galerkin.npz": "b58daac5bc2006ed36c15001048a04f4aff9e1a5bbf8b51b5b22cf11b5b66967",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod40_galerkin.npz": "e9e5fe4c7f8d18d64f239fddb27d2933423b5e3459eb1a822c881f025ca9ed9c",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod48_galerkin.npz": "c0025bb19361beaa7a1b3066836ad1fc3b64f99fd2a051422fd28a542bcc5cf3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod72_galerkin.npz": "5af389256251d88a2262a8681510c2a3d34f5b2310a65db5c509b7aed4404771",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_pod80_galerkin.npz": "5818bad4758d9c2234c98ab614f7b9257fd2d097c7b68a8158b54c2e857cc123",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case12_pod8_galerkin.npz": "f138259335ba5cd12e886ae8b2f1352d9b232bf88c469106153c05c858b4bc82",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N32_case0_unet3d_w16.npz": "e3a7c8f77d46586448371e0a1ea41ce85f9f9c1bb88f9270dbc9249a703a0f12",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_dst_exact.npz": "86e83da377d6e9ec21acd0fa6bea146b58b291be133136c04c4d9f1ced1b8b63",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_reference.npz": "739591d45890bdc626c09311b9bfbf55628b135b955d5d3d61dd5dbcc8a3ad8f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case1_fno3d_w24_m8.npz": "2a12d11c54ef89e09c75b615f206e944e2927d2c56c79483d6d386197e57c1b2",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case1_reference.npz": "72aa38744297a26e123bbb5fc3866e9ee065c0e92d8bcb8054f8266ad19343f0",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case5_fno3d_w24_m8_native32_interpolate.npz": "380d82ff3352fd85c26936cd101d5416899d6131cb65d44460239df6de8fecf2",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case5_reference.npz": "334735e952244c0487ca1ec5e95c74219a58890efb4b15277a8999f37d54853f",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_linear_bank_galerkin.npz": "bae2bea81aced9ba99b6534699c52d0890507654b7e05af26b06f78c7badff00",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_linear_bank_weak_qR.npz": "16ec8438223e4af2f245c29082febc0f3f23ed16eb8ae7a39cf8b8130b1152ae",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q0_dense.npz": "537e3978fadec93fa0dada124a40a4d52a86fec66852a4359c948cb69bb0e258",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_reference.npz": "031411ab30ff0ab14d1b067db0974ce9e313f97cfe5f059b89c264570460f9e4",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q0_eq.npz": "ef3adbdc55c763aa1750356e048945fa20f9a5466e15798c1518b5304bf04ea6",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K16_q16_dense.npz": "198d2071638ff1458f8ffd756f7efd767e4d7b3a083e69219b87ee59c2f47399",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q16_eq.npz": "8ded2446eff57e924b2d48c42450b97bbdd067cf543d627e45a2fd9285ba7148",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q32_dense.npz": "8e042781acd791d79cc1efb79fe9d24caeb026defe2c7cae9ef981af3de90ec5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q32_eq.npz": "4b32ff1602f9d12a4146d33152f6ee37914e78a667c221a0d99ad143c0fa5f1b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K16_q64_dense.npz": "91a532777ea74b347f26afc5495a766fb9ea0670f3883e69e195f39f85353e70",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q64_eq.npz": "3810eea2dc2f016f069d4b9c1ea93c934329d9ecea9596b09116b606b3a45c13",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K16_q96_dense.npz": "189a884e6ac2e19f5839c6f0b138c27fa6e5f85278913e95d7d9abdf250910eb",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K16_q96_eq.npz": "b1dd43ecaae2fd523c18de293d4ba7dd50c09ea708deede941a32f77792d63b5",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q0_dense.npz": "cd3484d66ad2ec4f28c655a2bfe6dfb85ec72297547c67e95cf265ec5f7e5013",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q0_eq.npz": "7b1a25baf6988802710c463a9fe99d6055d79d3db820524b576d10acabf83fe2",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q16_dense.npz": "cc5f1219282da732921b20e419945f39213be9cbe698724a34cf983f1c5562cb",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q16_eq.npz": "5565725b89e0ff6d9c6eff40658eceb1a6c319f1c401e062b1b670d99ebecc14",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q32_dense.npz": "de687be0f421b924ce5c7d3ac6de508d1be9455d9e197684a3617b05e31581f3",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K8_q32_eq.npz": "430d7a6fc46aab862b2683c9052e06fa13e4209d7be73b2e5cda9d9b108ed87b",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q64_dense.npz": "cca6342c8153b4d5b00ad3842e17e46cf69130158b39394e4b335444fd06ed89",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K8_q64_eq.npz": "ca5be7fcb3d1679a00c791abedba07af3cc00aff12b143e0b7461d9a550ddcfd",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_nmrom_K8_q96_dense.npz": "72ea31e223c931b60c4285008b2d6a7cdc67f4d317572b88bb5f38b3b9e13563",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_nmrom_K8_q96_eq.npz": "83286de86fbbf8e24c87f77cbe8b5785576d3dc7e1ad9dd83c4378e905d61b94",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod104_galerkin.npz": "6047148dc10a84e7c885f9930594197230063c3a1535d94d672c7c2b9230b20a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod112_galerkin.npz": "1f7dbe20b8dbf76c9d782aa51f4b4f0b6b061fa4f319ca477b7f1b0dd6469491",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod128_galerkin.npz": "0245ebec9fcdc494c4d9505ef8b6b2f9687d62797720f424bd3d340eb4ec27be",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod16_galerkin.npz": "af36320a389ee4726f3da0d90de12ed19b0d83d4b416ab70420832935af7c55c",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod24_galerkin.npz": "b6b4a7df7cd4afde5aee21b8ae427e6e4c80c3ee8928d0c4f4746d9d1c6b99de",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod32_galerkin.npz": "ba9ab4ea7a39c11e7515469beabb63105e1ed237a4f4a56b6ab5e2b70581bc52",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod40_galerkin.npz": "1b03d7abd0f8679fcc72513e8154481f2c07f4c40339d4d969f4413730423150",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod48_galerkin.npz": "c56bd2dcd6a12477eda6f82de9dd1475903ead551122ad12b7a37ef3f7f5950a",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod72_galerkin.npz": "e08a6d8e45ff8082fe339716078649cb69dad03dbd06b129aa0df2ba78b52fae",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_pod80_galerkin.npz": "692baad0bc7aac8fb648685c5911b7bd00cf9f1d251293d8231d7a7c5bd33d72",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case12_pod8_galerkin.npz": "ec8031973487cdc29878073d6de7bed8cba3696c5ddab2e3213fd4b13fee5674",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case3_unet3d_w16.npz": "a8e7dd830eef32231620c1652e847ffd067b9f614fdd8083dd15980abcf4ae93",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case3_reference.npz": "7b0b1f26c73807f2d0aca8f3409613765dabb7572f617c867e428741356565dc",
+    "worktrees/2026-09-20-paper-p3d/experiments/paper-p3d/runs/tuned02/archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz": "2d1fb23eca353c96086d2476b3be3428873ca5b27dad13ccd031b6a4ec70a91b"
+  },
+  "checks": [
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "fom_nt1e-02",
+      "mesh": 33,
+      "case": 5,
+      "observed": {
+        "worst_evolved": 0.006542621191464494,
+        "worst_all": 0.006542621191464494,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.006542621191464495,
+        "worst_all": 0.006542621191464495,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 8.673617379884035e-19,
+        "worst_all": 8.673617379884035e-19,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "fom_nt1e-04",
+      "mesh": 33,
+      "case": 4,
+      "observed": {
+        "worst_evolved": 0.00020728940003029203,
+        "worst_all": 0.00020728940003029203,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 0.000207289400030292,
+        "worst_all": 0.000207289400030292,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 2.710505431213761e-20,
+        "worst_all": 2.710505431213761e-20,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "fom_nt1e-06",
+      "mesh": 33,
+      "case": 6,
+      "observed": {
+        "worst_evolved": 3.10254600316864e-06,
+        "worst_all": 3.10254600316864e-06,
+        "initial_error": 0.0
+      },
+      "reported": {
+        "worst_evolved": 3.10254600316864e-06,
+        "worst_all": 3.10254600316864e-06,
+        "initial_error": 0.0
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "free_R128",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.059695230350302414,
+        "worst_all": 0.07033401293778474,
+        "initial_error": 0.07033401293778474
+      },
+      "reported": {
+        "worst_evolved": 0.059695230350302414,
+        "worst_all": 0.07033401293778474,
+        "initial_error": 0.07033401293778474
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "pod_128",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.053034392072948425,
+        "worst_all": 0.060555014949749957,
+        "initial_error": 0.060555014949749957
+      },
+      "reported": {
+        "worst_evolved": 0.053034392072948425,
+        "worst_all": 0.060555014949749957,
+        "initial_error": 0.060555014949749957
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "pod_32",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.19139834599395456,
+        "worst_all": 0.20859591439992475,
+        "initial_error": 0.20859591439992475
+      },
+      "reported": {
+        "worst_evolved": 0.19139834599395456,
+        "worst_all": 0.20859591439992475,
+        "initial_error": 0.20859591439992475
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "pod_64",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.10061268051523545,
+        "worst_all": 0.10895493693894943,
+        "initial_error": 0.10895493693894943
+      },
+      "reported": {
+        "worst_evolved": 0.10061268051523545,
+        "worst_all": 0.10895493693894943,
+        "initial_error": 0.10895493693894943
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "pod_96",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.0655824027244865,
+        "worst_all": 0.07520450373913233,
+        "initial_error": 0.07520450373913233
+      },
+      "reported": {
+        "worst_evolved": 0.0655824027244865,
+        "worst_all": 0.07520450373913233,
+        "initial_error": 0.07520450373913233
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "rom_q0",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.12976163480514086,
+        "worst_all": 0.14501626721593674,
+        "initial_error": 0.14501626721593674
+      },
+      "reported": {
+        "worst_evolved": 0.12976163480514086,
+        "worst_all": 0.14501626721593674,
+        "initial_error": 0.14501626721593674
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "rom_q32",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.10662359475480898,
+        "worst_all": 0.11987633068593358,
+        "initial_error": 0.11987633068593358
+      },
+      "reported": {
+        "worst_evolved": 0.10662359475480898,
+        "worst_all": 0.11987633068593358,
+        "initial_error": 0.11987633068593358
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Burgers 3D",
+      "attempt": "b3d001",
+      "method": "rom_q64",
+      "mesh": 33,
+      "case": 2,
+      "observed": {
+        "worst_evolved": 0.08211106223580467,
+        "worst_all": 0.09345284753090287,
+        "initial_error": 0.09345284753090287
+      },
+      "reported": {
+        "worst_evolved": 0.08211106223580467,
+        "worst_all": 0.09345284753090287,
+        "initial_error": 0.09345284753090287
+      },
+      "discrepancies": {
+        "worst_evolved": 0.0,
+        "worst_all": 0.0,
+        "initial_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "dst_exact",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0033355411077445004
+      },
+      "reported": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0033355411077445004
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_cn",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09753897379692478,
+        "current_all": 0.1659755795694041,
+        "initial_fit": 0.1659755795694041,
+        "physical_evolved": 0.09708459407930467
+      },
+      "reported": {
+        "current_evolved": 0.09753897379692478,
+        "current_all": 0.1659755795694041,
+        "initial_fit": 0.1659755795694041,
+        "physical_evolved": 0.09708459407930467
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09751185272293057,
+        "current_all": 0.1659755795694041,
+        "initial_fit": 0.1659755795694041,
+        "physical_evolved": 0.09705495700474946
+      },
+      "reported": {
+        "current_evolved": 0.09751185272293057,
+        "current_all": 0.1659755795694041,
+        "initial_fit": 0.1659755795694041,
+        "physical_evolved": 0.09705495700474946
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_galerkin_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09620190616268731,
+        "current_all": 0.15381345965827908,
+        "initial_fit": 0.15381345965827908,
+        "physical_evolved": 0.09517508007078965
+      },
+      "reported": {
+        "current_evolved": 0.09620190616268731,
+        "current_all": 0.15381345965827908,
+        "initial_fit": 0.15381345965827908,
+        "physical_evolved": 0.09517508007078965
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11929996944883593,
+        "current_all": 0.19503316152040961,
+        "initial_fit": 0.19503316152040961,
+        "physical_evolved": 0.11854196933662058
+      },
+      "reported": {
+        "current_evolved": 0.11929996944883593,
+        "current_all": 0.19503316152040961,
+        "initial_fit": 0.19503316152040961,
+        "physical_evolved": 0.11854196933662058
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7272903491198434,
+        "current_all": 0.7314312378159136,
+        "initial_fit": 0.7314312378159136,
+        "physical_evolved": 0.7269379625025628
+      },
+      "reported": {
+        "current_evolved": 0.7272903491198434,
+        "current_all": 0.7314312378159136,
+        "initial_fit": 0.7314312378159136,
+        "physical_evolved": 0.7269379625025628
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09830034570787832,
+        "current_all": 0.16608095825708813,
+        "initial_fit": 0.16608095825708813,
+        "physical_evolved": 0.09770298969501728
+      },
+      "reported": {
+        "current_evolved": 0.09830034570787832,
+        "current_all": 0.16608095825708813,
+        "initial_fit": 0.16608095825708813,
+        "physical_evolved": 0.09770298969501728
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7280830010087157,
+        "current_all": 0.7333296555723002,
+        "initial_fit": 0.7333296555723002,
+        "physical_evolved": 0.7277270178415982
+      },
+      "reported": {
+        "current_evolved": 0.7280830010087157,
+        "current_all": 0.7333296555723002,
+        "initial_fit": 0.7333296555723002,
+        "physical_evolved": 0.7277270178415982
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09726281056163542,
+        "current_all": 0.16103241349860367,
+        "initial_fit": 0.16103241349860367,
+        "physical_evolved": 0.09674872641195324
+      },
+      "reported": {
+        "current_evolved": 0.09726281056163542,
+        "current_all": 0.16103241349860367,
+        "initial_fit": 0.16103241349860367,
+        "physical_evolved": 0.09674872641195324
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_dense_dt_half",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09722247234501874,
+        "current_all": 0.16103241349860367,
+        "initial_fit": 0.16103241349860367,
+        "physical_evolved": 0.0967112371123431
+      },
+      "reported": {
+        "current_evolved": 0.09722247234501874,
+        "current_all": 0.16103241349860367,
+        "initial_fit": 0.16103241349860367,
+        "physical_evolved": 0.0967112371123431
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7279578163647851,
+        "current_all": 0.7335373039182339,
+        "initial_fit": 0.7335373039182339,
+        "physical_evolved": 0.7276025946834799
+      },
+      "reported": {
+        "current_evolved": 0.7279578163647851,
+        "current_all": 0.7335373039182339,
+        "initial_fit": 0.7335373039182339,
+        "physical_evolved": 0.7276025946834799
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.10858581567015893,
+        "current_all": 0.17849328393599057,
+        "initial_fit": 0.17849328393599057,
+        "physical_evolved": 0.10791771616449647
+      },
+      "reported": {
+        "current_evolved": 0.10858581567015893,
+        "current_all": 0.17849328393599057,
+        "initial_fit": 0.17849328393599057,
+        "physical_evolved": 0.10791771616449647
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7278959992383083,
+        "current_all": 0.7323936512299669,
+        "initial_fit": 0.7323936512299669,
+        "physical_evolved": 0.727545300317058
+      },
+      "reported": {
+        "current_evolved": 0.7278959992383083,
+        "current_all": 0.7323936512299669,
+        "initial_fit": 0.7323936512299669,
+        "physical_evolved": 0.727545300317058
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.15887323820895535,
+        "current_all": 0.26090920665178025,
+        "initial_fit": 0.26090920665178025,
+        "physical_evolved": 0.15754098149945772
+      },
+      "reported": {
+        "current_evolved": 0.15887323820895535,
+        "current_all": 0.26090920665178025,
+        "initial_fit": 0.26090920665178025,
+        "physical_evolved": 0.15754098149945772
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7426574131033186,
+        "current_all": 0.7457652821337908,
+        "initial_fit": 0.7457652821337908,
+        "physical_evolved": 0.7423258791956981
+      },
+      "reported": {
+        "current_evolved": 0.7426574131033186,
+        "current_all": 0.7457652821337908,
+        "initial_fit": 0.7457652821337908,
+        "physical_evolved": 0.7423258791956981
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.10565475901126066,
+        "current_all": 0.17557002995997195,
+        "initial_fit": 0.17557002995997195,
+        "physical_evolved": 0.10509595190509054
+      },
+      "reported": {
+        "current_evolved": 0.10565475901126066,
+        "current_all": 0.17557002995997195,
+        "initial_fit": 0.17557002995997195,
+        "physical_evolved": 0.10509595190509054
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7435370518825195,
+        "current_all": 0.746838325445995,
+        "initial_fit": 0.746838325445995,
+        "physical_evolved": 0.7432117265791038
+      },
+      "reported": {
+        "current_evolved": 0.7435370518825195,
+        "current_all": 0.746838325445995,
+        "initial_fit": 0.746838325445995,
+        "physical_evolved": 0.7432117265791038
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09910733120932544,
+        "current_all": 0.1663086389462239,
+        "initial_fit": 0.1663086389462239,
+        "physical_evolved": 0.09858698432027582
+      },
+      "reported": {
+        "current_evolved": 0.09910733120932544,
+        "current_all": 0.1663086389462239,
+        "initial_fit": 0.1663086389462239,
+        "physical_evolved": 0.09858698432027582
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_dense_dt_half",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0990351887429159,
+        "current_all": 0.1663086389462239,
+        "initial_fit": 0.1663086389462239,
+        "physical_evolved": 0.09851331910727208
+      },
+      "reported": {
+        "current_evolved": 0.0990351887429159,
+        "current_all": 0.1663086389462239,
+        "initial_fit": 0.1663086389462239,
+        "physical_evolved": 0.09851331910727208
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7445272025665649,
+        "current_all": 0.7478568809882252,
+        "initial_fit": 0.7478568809882252,
+        "physical_evolved": 0.7442057836845571
+      },
+      "reported": {
+        "current_evolved": 0.7445272025665649,
+        "current_all": 0.7478568809882252,
+        "initial_fit": 0.7478568809882252,
+        "physical_evolved": 0.7442057836845571
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_dense",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11529890462295136,
+        "current_all": 0.19731290158692433,
+        "initial_fit": 0.19731290158692433,
+        "physical_evolved": 0.11447276523469088
+      },
+      "reported": {
+        "current_evolved": 0.11529890462295136,
+        "current_all": 0.19731290158692433,
+        "initial_fit": 0.19731290158692433,
+        "physical_evolved": 0.11447276523469088
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_eq",
+      "mesh": 32,
+      "case": 9,
+      "observed": {
+        "current_evolved": 0.7438247295693204,
+        "current_all": 0.7462075924979474,
+        "initial_fit": 0.7462075924979474,
+        "physical_evolved": 0.7434277143205531
+      },
+      "reported": {
+        "current_evolved": 0.7438247295693204,
+        "current_all": 0.7462075924979474,
+        "initial_fit": 0.7462075924979474,
+        "physical_evolved": 0.7434277143205531
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod16_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.25298644175277285,
+        "current_all": 0.3649636282553826,
+        "initial_fit": 0.3649636282553826,
+        "physical_evolved": 0.2514297594523649
+      },
+      "reported": {
+        "current_evolved": 0.25298644175277285,
+        "current_all": 0.3649636282553826,
+        "initial_fit": 0.3649636282553826,
+        "physical_evolved": 0.2514297594523649
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod24_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11655548299743156,
+        "current_all": 0.19605732564882747,
+        "initial_fit": 0.19605732564882747,
+        "physical_evolved": 0.11699260817002775
+      },
+      "reported": {
+        "current_evolved": 0.11655548299743156,
+        "current_all": 0.19605732564882747,
+        "initial_fit": 0.19605732564882747,
+        "physical_evolved": 0.11699260817002775
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod32_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09436582239803182,
+        "current_all": 0.16633774366392456,
+        "initial_fit": 0.16633774366392456,
+        "physical_evolved": 0.09357419847579178
+      },
+      "reported": {
+        "current_evolved": 0.09436582239803182,
+        "current_all": 0.16633774366392456,
+        "initial_fit": 0.16633774366392456,
+        "physical_evolved": 0.09357419847579178
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod40_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.0758459786067431,
+        "current_all": 0.12533606665048985,
+        "initial_fit": 0.12533606665048985,
+        "physical_evolved": 0.07550845316929156
+      },
+      "reported": {
+        "current_evolved": 0.0758459786067431,
+        "current_all": 0.12533606665048985,
+        "initial_fit": 0.12533606665048985,
+        "physical_evolved": 0.07550845316929156
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod48_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.04862523291223521,
+        "current_all": 0.09894585289063075,
+        "initial_fit": 0.09894585289063075,
+        "physical_evolved": 0.048286188340850474
+      },
+      "reported": {
+        "current_evolved": 0.04862523291223521,
+        "current_all": 0.09894585289063075,
+        "initial_fit": 0.09894585289063075,
+        "physical_evolved": 0.048286188340850474
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod64_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.03528819819683549,
+        "current_all": 0.06527683030033325,
+        "initial_fit": 0.06527683030033325,
+        "physical_evolved": 0.03519438717454481
+      },
+      "reported": {
+        "current_evolved": 0.03528819819683549,
+        "current_all": 0.06527683030033325,
+        "initial_fit": 0.06527683030033325,
+        "physical_evolved": 0.03519438717454481
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod8_exact",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.39325130222911414,
+        "current_all": 0.5065603243735707,
+        "initial_fit": 0.5065603243735707,
+        "physical_evolved": 0.3916596839567877
+      },
+      "reported": {
+        "current_evolved": 0.39325130222911414,
+        "current_all": 0.5065603243735707,
+        "initial_fit": 0.5065603243735707,
+        "physical_evolved": 0.3916596839567877
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "dst_exact",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0008314732922847798
+      },
+      "reported": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0008314732922847798
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_cn",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09692114485873753,
+        "current_all": 0.16598129928631797,
+        "initial_fit": 0.16598129928631797,
+        "physical_evolved": 0.09679601828561409
+      },
+      "reported": {
+        "current_evolved": 0.09692114485873753,
+        "current_all": 0.16598129928631797,
+        "initial_fit": 0.16598129928631797,
+        "physical_evolved": 0.09679601828561409
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09689207868788872,
+        "current_all": 0.16598129928631797,
+        "initial_fit": 0.16598129928631797,
+        "physical_evolved": 0.09676623508473786
+      },
+      "reported": {
+        "current_evolved": 0.09689207868788872,
+        "current_all": 0.16598129928631797,
+        "initial_fit": 0.16598129928631797,
+        "physical_evolved": 0.09676623508473786
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_galerkin_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09595071076201064,
+        "current_all": 0.1538163166237173,
+        "initial_fit": 0.1538163166237173,
+        "physical_evolved": 0.0956813900052518
+      },
+      "reported": {
+        "current_evolved": 0.09595071076201064,
+        "current_all": 0.1538163166237173,
+        "initial_fit": 0.1538163166237173,
+        "physical_evolved": 0.0956813900052518
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.1186588428272145,
+        "current_all": 0.19503598045245032,
+        "initial_fit": 0.19503598045245032,
+        "physical_evolved": 0.11846331507016138
+      },
+      "reported": {
+        "current_evolved": 0.1186588428272145,
+        "current_all": 0.19503598045245032,
+        "initial_fit": 0.19503598045245032,
+        "physical_evolved": 0.11846331507016138
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 64,
+      "case": 4,
+      "observed": {
+        "current_evolved": 0.9140018864796201,
+        "current_all": 0.9196539162810312,
+        "initial_fit": 0.9196539162810312,
+        "physical_evolved": 0.9139609022898442
+      },
+      "reported": {
+        "current_evolved": 0.9140018864796201,
+        "current_all": 0.9196539162810312,
+        "initial_fit": 0.9196539162810312,
+        "physical_evolved": 0.9139609022898442
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09777086708615605,
+        "current_all": 0.16608504590013648,
+        "initial_fit": 0.16608504590013648,
+        "physical_evolved": 0.09761197490220072
+      },
+      "reported": {
+        "current_evolved": 0.09777086708615605,
+        "current_all": 0.16608504590013648,
+        "initial_fit": 0.16608504590013648,
+        "physical_evolved": 0.09761197490220072
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 64,
+      "case": 7,
+      "observed": {
+        "current_evolved": 0.9151719508228885,
+        "current_all": 0.9197876992325229,
+        "initial_fit": 0.9197876992325229,
+        "physical_evolved": 0.9151304635298227
+      },
+      "reported": {
+        "current_evolved": 0.9151719508228885,
+        "current_all": 0.9197876992325229,
+        "initial_fit": 0.9197876992325229,
+        "physical_evolved": 0.9151304635298227
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09668149748571617,
+        "current_all": 0.16103754401288417,
+        "initial_fit": 0.16103754401288417,
+        "physical_evolved": 0.09654253726116219
+      },
+      "reported": {
+        "current_evolved": 0.09668149748571617,
+        "current_all": 0.16103754401288417,
+        "initial_fit": 0.16103754401288417,
+        "physical_evolved": 0.09654253726116219
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_dense_dt_half",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09664332043156497,
+        "current_all": 0.16103754401288417,
+        "initial_fit": 0.16103754401288417,
+        "physical_evolved": 0.09650501607338374
+      },
+      "reported": {
+        "current_evolved": 0.09664332043156497,
+        "current_all": 0.16103754401288417,
+        "initial_fit": 0.16103754401288417,
+        "physical_evolved": 0.09650501607338374
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 64,
+      "case": 7,
+      "observed": {
+        "current_evolved": 0.9156050159121093,
+        "current_all": 0.9201571693244215,
+        "initial_fit": 0.9201571693244215,
+        "physical_evolved": 0.9155646832654084
+      },
+      "reported": {
+        "current_evolved": 0.9156050159121093,
+        "current_all": 0.9201571693244215,
+        "initial_fit": 0.9201571693244215,
+        "physical_evolved": 0.9155646832654084
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.10804151650550273,
+        "current_all": 0.1784961981182755,
+        "initial_fit": 0.1784961981182755,
+        "physical_evolved": 0.1078673432903045
+      },
+      "reported": {
+        "current_evolved": 0.10804151650550273,
+        "current_all": 0.1784961981182755,
+        "initial_fit": 0.1784961981182755,
+        "physical_evolved": 0.1078673432903045
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_eq",
+      "mesh": 64,
+      "case": 4,
+      "observed": {
+        "current_evolved": 0.9146597849923809,
+        "current_all": 0.9194298099627151,
+        "initial_fit": 0.9194298099627151,
+        "physical_evolved": 0.9146201337077939
+      },
+      "reported": {
+        "current_evolved": 0.9146597849923809,
+        "current_all": 0.9194298099627151,
+        "initial_fit": 0.9194298099627151,
+        "physical_evolved": 0.9146201337077939
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.1578702853659195,
+        "current_all": 0.2609100204281134,
+        "initial_fit": 0.2609100204281134,
+        "physical_evolved": 0.15753588960112266
+      },
+      "reported": {
+        "current_evolved": 0.1578702853659195,
+        "current_all": 0.2609100204281134,
+        "initial_fit": 0.2609100204281134,
+        "physical_evolved": 0.15753588960112266
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 64,
+      "case": 4,
+      "observed": {
+        "current_evolved": 0.9074883414517475,
+        "current_all": 0.9142814904275611,
+        "initial_fit": 0.9142814904275611,
+        "physical_evolved": 0.9074454532374471
+      },
+      "reported": {
+        "current_evolved": 0.9074883414517475,
+        "current_all": 0.9142814904275611,
+        "initial_fit": 0.9142814904275611,
+        "physical_evolved": 0.9074454532374471
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.10504816146003795,
+        "current_all": 0.17557281649674114,
+        "initial_fit": 0.17557281649674114,
+        "physical_evolved": 0.10490241660158678
+      },
+      "reported": {
+        "current_evolved": 0.10504816146003795,
+        "current_all": 0.17557281649674114,
+        "initial_fit": 0.17557281649674114,
+        "physical_evolved": 0.10490241660158678
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 64,
+      "case": 4,
+      "observed": {
+        "current_evolved": 0.9103300372744463,
+        "current_all": 0.9182751365054087,
+        "initial_fit": 0.9182751365054087,
+        "physical_evolved": 0.910283396455968
+      },
+      "reported": {
+        "current_evolved": 0.9103300372744463,
+        "current_all": 0.9182751365054087,
+        "initial_fit": 0.9182751365054087,
+        "physical_evolved": 0.910283396455968
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09850134548213652,
+        "current_all": 0.1663123803215066,
+        "initial_fit": 0.1663123803215066,
+        "physical_evolved": 0.09836154056733835
+      },
+      "reported": {
+        "current_evolved": 0.09850134548213652,
+        "current_all": 0.1663123803215066,
+        "initial_fit": 0.1663123803215066,
+        "physical_evolved": 0.09836154056733835
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_dense_dt_half",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09842503962666159,
+        "current_all": 0.1663123803215066,
+        "initial_fit": 0.1663123803215066,
+        "physical_evolved": 0.09828477953082501
+      },
+      "reported": {
+        "current_evolved": 0.09842503962666159,
+        "current_all": 0.1663123803215066,
+        "initial_fit": 0.1663123803215066,
+        "physical_evolved": 0.09828477953082501
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 64,
+      "case": 7,
+      "observed": {
+        "current_evolved": 0.9125743970279132,
+        "current_all": 0.9178740562785487,
+        "initial_fit": 0.9178740562785487,
+        "physical_evolved": 0.9125312049887394
+      },
+      "reported": {
+        "current_evolved": 0.9125743970279132,
+        "current_all": 0.9178740562785487,
+        "initial_fit": 0.9178740562785487,
+        "physical_evolved": 0.9125312049887394
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_dense",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11451477431511069,
+        "current_all": 0.19731475847293617,
+        "initial_fit": 0.19731475847293617,
+        "physical_evolved": 0.11430431298631677
+      },
+      "reported": {
+        "current_evolved": 0.11451477431511069,
+        "current_all": 0.19731475847293617,
+        "initial_fit": 0.19731475847293617,
+        "physical_evolved": 0.11430431298631677
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_eq",
+      "mesh": 64,
+      "case": 4,
+      "observed": {
+        "current_evolved": 0.9096466607722509,
+        "current_all": 0.916836796128129,
+        "initial_fit": 0.916836796128129,
+        "physical_evolved": 0.9096013202226312
+      },
+      "reported": {
+        "current_evolved": 0.9096466607722509,
+        "current_all": 0.916836796128129,
+        "initial_fit": 0.916836796128129,
+        "physical_evolved": 0.9096013202226312
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod16_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.25187737511177116,
+        "current_all": 0.3650824030150834,
+        "initial_fit": 0.3650824030150834,
+        "physical_evolved": 0.2514874579362293
+      },
+      "reported": {
+        "current_evolved": 0.25187737511177116,
+        "current_all": 0.3650824030150834,
+        "initial_fit": 0.3650824030150834,
+        "physical_evolved": 0.2514874579362293
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod24_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.11735160454395335,
+        "current_all": 0.19623309309365689,
+        "initial_fit": 0.19623309309365689,
+        "physical_evolved": 0.11744247081779217
+      },
+      "reported": {
+        "current_evolved": 0.11735160454395335,
+        "current_all": 0.19623309309365689,
+        "initial_fit": 0.19623309309365689,
+        "physical_evolved": 0.11744247081779217
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod32_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.09373045944085714,
+        "current_all": 0.16643958053474664,
+        "initial_fit": 0.16643958053474664,
+        "physical_evolved": 0.09352406497060586
+      },
+      "reported": {
+        "current_evolved": 0.09373045944085714,
+        "current_all": 0.16643958053474664,
+        "initial_fit": 0.16643958053474664,
+        "physical_evolved": 0.09352406497060586
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod40_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.07560367533296626,
+        "current_all": 0.12509930390126028,
+        "initial_fit": 0.12509930390126028,
+        "physical_evolved": 0.07550436630578101
+      },
+      "reported": {
+        "current_evolved": 0.07560367533296626,
+        "current_all": 0.12509930390126028,
+        "initial_fit": 0.12509930390126028,
+        "physical_evolved": 0.07550436630578101
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod48_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.048685407305649804,
+        "current_all": 0.09961564436754386,
+        "initial_fit": 0.09961564436754386,
+        "physical_evolved": 0.048571424303117255
+      },
+      "reported": {
+        "current_evolved": 0.048685407305649804,
+        "current_all": 0.09961564436754386,
+        "initial_fit": 0.09961564436754386,
+        "physical_evolved": 0.048571424303117255
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod64_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.035334222583942844,
+        "current_all": 0.06531996434026109,
+        "initial_fit": 0.06531996434026109,
+        "physical_evolved": 0.03526843646385914
+      },
+      "reported": {
+        "current_evolved": 0.035334222583942844,
+        "current_all": 0.06531996434026109,
+        "initial_fit": 0.06531996434026109,
+        "physical_evolved": 0.03526843646385914
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Heat 3D",
+      "attempt": "pilot01",
+      "method": "pod8_exact",
+      "mesh": 64,
+      "case": 11,
+      "observed": {
+        "current_evolved": 0.3919389624731366,
+        "current_all": 0.5066079807113126,
+        "initial_fit": 0.5066079807113126,
+        "physical_evolved": 0.39154087425058554
+      },
+      "reported": {
+        "current_evolved": 0.3919389624731366,
+        "current_all": 0.5066079807113126,
+        "initial_fit": 0.5066079807113126,
+        "physical_evolved": 0.39154087425058554
+      },
+      "discrepancies": {
+        "current_evolved": 0.0,
+        "current_all": 0.0,
+        "initial_fit": 0.0,
+        "physical_evolved": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "dst_exact",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "reported": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04362914274248204,
+        "physical_error": 0.04252660832933457
+      },
+      "reported": {
+        "same_grid_error": 0.043629142742482044,
+        "physical_error": 0.042526608329334574
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "linear_bank_weak_qR",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04168842453592013,
+        "physical_error": 0.04152462365400901
+      },
+      "reported": {
+        "same_grid_error": 0.04168842453592013,
+        "physical_error": 0.04152462365400902
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.06436558860281193,
+        "physical_error": 0.06404991978608872
+      },
+      "reported": {
+        "same_grid_error": 0.06436558860281194,
+        "physical_error": 0.06404991978608872
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3877787807814457e-17,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.6915495095873936,
+        "physical_error": 0.6910723832407751
+      },
+      "reported": {
+        "same_grid_error": 0.6915495095873937,
+        "physical_error": 0.6910723832407751
+      },
+      "discrepancies": {
+        "same_grid_error": 1.1102230246251565e-16,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0495183553119645,
+        "physical_error": 0.04921966724825993
+      },
+      "reported": {
+        "same_grid_error": 0.04951835531196452,
+        "physical_error": 0.049219667248259935
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3877787807814457e-17,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.691256799038849,
+        "physical_error": 0.690788425659994
+      },
+      "reported": {
+        "same_grid_error": 0.6912567990388491,
+        "physical_error": 0.6907884256599939
+      },
+      "discrepancies": {
+        "same_grid_error": 1.1102230246251565e-16,
+        "physical_error": 1.1102230246251565e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04491809706710796,
+        "physical_error": 0.044720875702168275
+      },
+      "reported": {
+        "same_grid_error": 0.044918097067107976,
+        "physical_error": 0.04472087570216828
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3877787807814457e-17,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.6912429642984158,
+        "physical_error": 0.690773818623557
+      },
+      "reported": {
+        "same_grid_error": 0.6912429642984159,
+        "physical_error": 0.690773818623557
+      },
+      "discrepancies": {
+        "same_grid_error": 1.1102230246251565e-16,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.053205906467745846,
+        "physical_error": 0.05290269229608447
+      },
+      "reported": {
+        "same_grid_error": 0.05320590646774585,
+        "physical_error": 0.05290269229608448
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K16_q8_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.691238626508909,
+        "physical_error": 0.6907658638386381
+      },
+      "reported": {
+        "same_grid_error": 0.6912386265089091,
+        "physical_error": 0.6907658638386381
+      },
+      "discrepancies": {
+        "same_grid_error": 1.1102230246251565e-16,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0811681356049034,
+        "physical_error": 0.08082506247957125
+      },
+      "reported": {
+        "same_grid_error": 0.08116813560490341,
+        "physical_error": 0.08082506247957126
+      },
+      "discrepancies": {
+        "same_grid_error": 1.3877787807814457e-17,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.7856470502674533,
+        "physical_error": 0.7853311321793581
+      },
+      "reported": {
+        "same_grid_error": 0.7856470502674535,
+        "physical_error": 0.785331132179358
+      },
+      "discrepancies": {
+        "same_grid_error": 2.220446049250313e-16,
+        "physical_error": 1.1102230246251565e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04809940963553883,
+        "physical_error": 0.04775974085447062
+      },
+      "reported": {
+        "same_grid_error": 0.04809940963553884,
+        "physical_error": 0.04775974085447063
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.7836137572979706,
+        "physical_error": 0.7832852361212199
+      },
+      "reported": {
+        "same_grid_error": 0.7836137572979708,
+        "physical_error": 0.78328523612122
+      },
+      "discrepancies": {
+        "same_grid_error": 2.220446049250313e-16,
+        "physical_error": 1.1102230246251565e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.04423683947760929,
+        "physical_error": 0.04396372158724926
+      },
+      "reported": {
+        "same_grid_error": 0.04423683947760931,
+        "physical_error": 0.04396372158724926
+      },
+      "discrepancies": {
+        "same_grid_error": 2.0816681711721685e-17,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.7838007453124773,
+        "physical_error": 0.7834715778489634
+      },
+      "reported": {
+        "same_grid_error": 0.7838007453124772,
+        "physical_error": 0.7834715778489634
+      },
+      "discrepancies": {
+        "same_grid_error": 1.1102230246251565e-16,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.05471467671470334,
+        "physical_error": 0.0541487371203449
+      },
+      "reported": {
+        "same_grid_error": 0.05471467671470335,
+        "physical_error": 0.054148737120344896
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "nmrom_K8_q8_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.7839544857409921,
+        "physical_error": 0.7836241545834447
+      },
+      "reported": {
+        "same_grid_error": 0.7839544857409921,
+        "physical_error": 0.7836241545834448
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.1102230246251565e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod16_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0531744836867097,
+        "physical_error": 0.05225823636197942
+      },
+      "reported": {
+        "same_grid_error": 0.053174483686709705,
+        "physical_error": 0.052258236361979425
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod24_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.029594820622433196
+      },
+      "reported": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.0295948206224332
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod32_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01751709719227427,
+        "physical_error": 0.01752423709522691
+      },
+      "reported": {
+        "same_grid_error": 0.017517097192274275,
+        "physical_error": 0.017524237095226915
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod40_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.008477801878010286,
+        "physical_error": 0.008873697323283834
+      },
+      "reported": {
+        "same_grid_error": 0.008477801878010286,
+        "physical_error": 0.008873697323283835
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod48_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205434
+      },
+      "reported": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205435
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod64_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0026167400849861004,
+        "physical_error": 0.0038256546686650187
+      },
+      "reported": {
+        "same_grid_error": 0.0026167400849861004,
+        "physical_error": 0.003825654668665019
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "pilot01",
+      "method": "pod8_galerkin",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.08889973979783788,
+        "physical_error": 0.08827419541715206
+      },
+      "reported": {
+        "same_grid_error": 0.08889973979783793,
+        "physical_error": 0.08827419541715208
+      },
+      "discrepancies": {
+        "same_grid_error": 4.163336342344337e-17,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Navier\u2013Stokes 3D",
+      "attempt": "pilot01",
+      "method": "all saved neural reconstruction fields",
+      "observed": {
+        "mean": 0.7430200187214018,
+        "median": 0.6826807469468019,
+        "worst": 0.9944884910953358
+      },
+      "reported": {
+        "mean": 0.7430200187214018,
+        "median": 0.6826807469468018,
+        "worst": 0.9944884910953358
+      },
+      "discrepancies": {
+        "mean": 0.0,
+        "median": 1.1102230246251565e-16,
+        "worst": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "dst_exact",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "reported": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0027586184194922647
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "fno3d_w24_m8",
+      "mesh": 32,
+      "case": 5,
+      "observed": {
+        "same_grid_error": 0.0023939220944520874,
+        "physical_error": 0.002931211967924394
+      },
+      "reported": {
+        "same_grid_error": 0.0023939220944520874,
+        "physical_error": 0.002931211967924394
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "linear_bank_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014707472793346048,
+        "physical_error": 0.0031140262582460745
+      },
+      "reported": {
+        "same_grid_error": 0.001470747279334605,
+        "physical_error": 0.0031140262582460745
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "linear_bank_weak_qR",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014503433547919172,
+        "physical_error": 0.0031098899671031556
+      },
+      "reported": {
+        "same_grid_error": 0.0014503433547919174,
+        "physical_error": 0.003109889967103156
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005891574776713945,
+        "physical_error": 0.006145384819655733
+      },
+      "reported": {
+        "same_grid_error": 0.005891574776713945,
+        "physical_error": 0.006145384819655734
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005939309492241532,
+        "physical_error": 0.006268684679585154
+      },
+      "reported": {
+        "same_grid_error": 0.0059393094922415325,
+        "physical_error": 0.006268684679585154
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.004603363479350542,
+        "physical_error": 0.0053144999931880686
+      },
+      "reported": {
+        "same_grid_error": 0.004603363479350543,
+        "physical_error": 0.00531449999318807
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005073518702652766,
+        "physical_error": 0.005764006419657852
+      },
+      "reported": {
+        "same_grid_error": 0.0050735187026527675,
+        "physical_error": 0.005764006419657853
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0032843579004192785,
+        "physical_error": 0.003992786818782638
+      },
+      "reported": {
+        "same_grid_error": 0.003284357900419279,
+        "physical_error": 0.003992786818782638
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003946533137045039,
+        "physical_error": 0.00485362906879879
+      },
+      "reported": {
+        "same_grid_error": 0.00394653313704504,
+        "physical_error": 0.004853629068798792
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002017920509222784,
+        "physical_error": 0.003392621334101409
+      },
+      "reported": {
+        "same_grid_error": 0.0020179205092227845,
+        "physical_error": 0.00339262133410141
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.004823622591034003,
+        "physical_error": 0.0056415784141836366
+      },
+      "reported": {
+        "same_grid_error": 0.004823622591034004,
+        "physical_error": 0.005641578414183639
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0016052309448540327,
+        "physical_error": 0.003182341057076191
+      },
+      "reported": {
+        "same_grid_error": 0.001605230944854033,
+        "physical_error": 0.0031823410570761914
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 32,
+      "case": 11,
+      "observed": {
+        "same_grid_error": 0.005880152133357533,
+        "physical_error": 0.006370140108289712
+      },
+      "reported": {
+        "same_grid_error": 0.005880152133357533,
+        "physical_error": 0.0063701401082897095
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01715418996725363,
+        "physical_error": 0.01672994766956317
+      },
+      "reported": {
+        "same_grid_error": 0.01715418996725364,
+        "physical_error": 0.016729947669563174
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.017160520132646226,
+        "physical_error": 0.01674817336282213
+      },
+      "reported": {
+        "same_grid_error": 0.01716052013264623,
+        "physical_error": 0.016748173362822135
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009814569856110034,
+        "physical_error": 0.009963740045841891
+      },
+      "reported": {
+        "same_grid_error": 0.009814569856110034,
+        "physical_error": 0.009963740045841891
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009935590539502137,
+        "physical_error": 0.010108857529746334
+      },
+      "reported": {
+        "same_grid_error": 0.009935590539502138,
+        "physical_error": 0.010108857529746338
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006149654008021079,
+        "physical_error": 0.006603474085955228
+      },
+      "reported": {
+        "same_grid_error": 0.006149654008021079,
+        "physical_error": 0.006603474085955228
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0066340047831611685,
+        "physical_error": 0.007060168198631593
+      },
+      "reported": {
+        "same_grid_error": 0.0066340047831611685,
+        "physical_error": 0.007060168198631596
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0034340449270800974,
+        "physical_error": 0.004325989197053523
+      },
+      "reported": {
+        "same_grid_error": 0.003434044927080098,
+        "physical_error": 0.004325989197053524
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005207337174277234,
+        "physical_error": 0.0058830663762971715
+      },
+      "reported": {
+        "same_grid_error": 0.005207337174277235,
+        "physical_error": 0.005883066376297173
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002093944756835126,
+        "physical_error": 0.0034330868811536168
+      },
+      "reported": {
+        "same_grid_error": 0.0020939447568351266,
+        "physical_error": 0.0034330868811536176
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.00640953531820155,
+        "physical_error": 0.007018382991066976
+      },
+      "reported": {
+        "same_grid_error": 0.006409535318201553,
+        "physical_error": 0.007018382991066977
+      },
+      "discrepancies": {
+        "same_grid_error": 2.6020852139652106e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod104_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0007755222271090224,
+        "physical_error": 0.0028640004812169224
+      },
+      "reported": {
+        "same_grid_error": 0.0007755222271090225,
+        "physical_error": 0.0028640004812169224
+      },
+      "discrepancies": {
+        "same_grid_error": 1.0842021724855044e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod112_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0006852169817401537,
+        "physical_error": 0.0028388605625096174
+      },
+      "reported": {
+        "same_grid_error": 0.0006852169817401537,
+        "physical_error": 0.002838860562509618
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod128_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0003698579365226996,
+        "physical_error": 0.0027786448619827398
+      },
+      "reported": {
+        "same_grid_error": 0.0003698579365226997,
+        "physical_error": 0.0027786448619827398
+      },
+      "discrepancies": {
+        "same_grid_error": 1.0842021724855044e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod16_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0531744836867097,
+        "physical_error": 0.05225823636197942
+      },
+      "reported": {
+        "same_grid_error": 0.053174483686709705,
+        "physical_error": 0.052258236361979425
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 6.938893903907228e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod24_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.029594820622433196
+      },
+      "reported": {
+        "same_grid_error": 0.029930128671648848,
+        "physical_error": 0.0295948206224332
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod32_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01751709719227427,
+        "physical_error": 0.017524237095226915
+      },
+      "reported": {
+        "same_grid_error": 0.01751709719227428,
+        "physical_error": 0.017524237095226915
+      },
+      "discrepancies": {
+        "same_grid_error": 6.938893903907228e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod40_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.008477801878010284,
+        "physical_error": 0.008873697323283832
+      },
+      "reported": {
+        "same_grid_error": 0.008477801878010284,
+        "physical_error": 0.008873697323283834
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod48_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205434
+      },
+      "reported": {
+        "same_grid_error": 0.005672276118361249,
+        "physical_error": 0.006382860582205435
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod72_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0023659649188787282,
+        "physical_error": 0.0036656621587736376
+      },
+      "reported": {
+        "same_grid_error": 0.0023659649188787282,
+        "physical_error": 0.003665662158773638
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod80_galerkin",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019804185397035374,
+        "physical_error": 0.003425266608460266
+      },
+      "reported": {
+        "same_grid_error": 0.0019804185397035374,
+        "physical_error": 0.0034252666084602667
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod8_galerkin",
+      "mesh": 32,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.08889973979783788,
+        "physical_error": 0.08827419541715206
+      },
+      "reported": {
+        "same_grid_error": 0.08889973979783793,
+        "physical_error": 0.08827419541715208
+      },
+      "discrepancies": {
+        "same_grid_error": 4.163336342344337e-17,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "unet3d_w16",
+      "mesh": 32,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019318997012163128,
+        "physical_error": 0.0033571610826095407
+      },
+      "reported": {
+        "same_grid_error": 0.0019318997012163124,
+        "physical_error": 0.003357161082609542
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 1.3010426069826053e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "dst_exact",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0006867163636983678
+      },
+      "reported": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0006867163636983678
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "fno3d_w24_m8",
+      "mesh": 64,
+      "case": 1,
+      "observed": {
+        "same_grid_error": 0.17186592304887224,
+        "physical_error": 0.17239158918715497
+      },
+      "reported": {
+        "same_grid_error": 0.17186592304887224,
+        "physical_error": 0.17239158918715494
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.7755575615628914e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "fno3d_w24_m8_native32_interpolate",
+      "mesh": 64,
+      "case": 5,
+      "observed": {
+        "same_grid_error": 0.003656476283537556,
+        "physical_error": 0.003525071503619929
+      },
+      "reported": {
+        "same_grid_error": 0.0036564762835375555,
+        "physical_error": 0.00352507150361993
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "linear_bank_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014742951441229077,
+        "physical_error": 0.0016243024121259033
+      },
+      "reported": {
+        "same_grid_error": 0.0014742951441229072,
+        "physical_error": 0.0016243024121259026
+      },
+      "discrepancies": {
+        "same_grid_error": 4.336808689942018e-19,
+        "physical_error": 6.505213034913027e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "linear_bank_weak_qR",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0014443036445984739,
+        "physical_error": 0.0015987677776741172
+      },
+      "reported": {
+        "same_grid_error": 0.0014443036445984736,
+        "physical_error": 0.0015987677776741166
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 6.505213034913027e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q0_dense",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.005725800098865932,
+        "physical_error": 0.005706857743510349
+      },
+      "reported": {
+        "same_grid_error": 0.00572580009886593,
+        "physical_error": 0.005706857743510349
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q0_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0065211097690409826,
+        "physical_error": 0.0065234404941018
+      },
+      "reported": {
+        "same_grid_error": 0.00652110976904098,
+        "physical_error": 0.006523440494101799
+      },
+      "discrepancies": {
+        "same_grid_error": 2.6020852139652106e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q16_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0045799735851165075,
+        "physical_error": 0.00462942398791674
+      },
+      "reported": {
+        "same_grid_error": 0.004579973585116506,
+        "physical_error": 0.004629423987916739
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q16_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0062674885752331405,
+        "physical_error": 0.006302489426131066
+      },
+      "reported": {
+        "same_grid_error": 0.006267488575233138,
+        "physical_error": 0.006302489426131066
+      },
+      "discrepancies": {
+        "same_grid_error": 2.6020852139652106e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q32_dense",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0032148618689761227,
+        "physical_error": 0.0032519109103265366
+      },
+      "reported": {
+        "same_grid_error": 0.0032148618689761205,
+        "physical_error": 0.003251910910326537
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-18,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q32_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.007196615270198639,
+        "physical_error": 0.007245302177952917
+      },
+      "reported": {
+        "same_grid_error": 0.007196615270198636,
+        "physical_error": 0.007245302177952917
+      },
+      "discrepancies": {
+        "same_grid_error": 2.6020852139652106e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q64_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0020011469615151415,
+        "physical_error": 0.002112697148864334
+      },
+      "reported": {
+        "same_grid_error": 0.0020011469615151406,
+        "physical_error": 0.0021126971488643334
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q64_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.008852287334982474,
+        "physical_error": 0.00890628389431042
+      },
+      "reported": {
+        "same_grid_error": 0.008852287334982473,
+        "physical_error": 0.00890628389431042
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q96_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.001598005692364628,
+        "physical_error": 0.0017390628680803199
+      },
+      "reported": {
+        "same_grid_error": 0.0015980056923646279,
+        "physical_error": 0.0017390628680803194
+      },
+      "discrepancies": {
+        "same_grid_error": 2.168404344971009e-19,
+        "physical_error": 4.336808689942018e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K16_q96_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.012060029671638987,
+        "physical_error": 0.012103996759543337
+      },
+      "reported": {
+        "same_grid_error": 0.012060029671638984,
+        "physical_error": 0.012103996759543333
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q0_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.01668323714488556,
+        "physical_error": 0.0165443570782161
+      },
+      "reported": {
+        "same_grid_error": 0.016683237144885555,
+        "physical_error": 0.016544357078216096
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q0_eq",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.016689210475310832,
+        "physical_error": 0.016553230255982324
+      },
+      "reported": {
+        "same_grid_error": 0.01668921047531083,
+        "physical_error": 0.01655323025598232
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q16_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009645477073060843,
+        "physical_error": 0.009617011296752723
+      },
+      "reported": {
+        "same_grid_error": 0.00964547707306084,
+        "physical_error": 0.009617011296752721
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q16_eq",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.009913361433967847,
+        "physical_error": 0.009892526403263274
+      },
+      "reported": {
+        "same_grid_error": 0.009913361433967847,
+        "physical_error": 0.00989252640326327
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q32_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.006046873127942546,
+        "physical_error": 0.006054865895451262
+      },
+      "reported": {
+        "same_grid_error": 0.006046873127942545,
+        "physical_error": 0.00605486589545126
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 2.6020852139652106e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q32_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.006795243776270157,
+        "physical_error": 0.006864649775847466
+      },
+      "reported": {
+        "same_grid_error": 0.006795243776270155,
+        "physical_error": 0.006864649775847465
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q64_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003366135846461483,
+        "physical_error": 0.0034154110911625434
+      },
+      "reported": {
+        "same_grid_error": 0.003366135846461483,
+        "physical_error": 0.0034154110911625425
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q64_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0085515866721444,
+        "physical_error": 0.008616976769513134
+      },
+      "reported": {
+        "same_grid_error": 0.008551586672144397,
+        "physical_error": 0.008616976769513134
+      },
+      "discrepancies": {
+        "same_grid_error": 3.469446951953614e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q96_dense",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0020671512880669073,
+        "physical_error": 0.0021699408721773863
+      },
+      "reported": {
+        "same_grid_error": 0.0020671512880669064,
+        "physical_error": 0.0021699408721773863
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "nmrom_K8_q96_eq",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.011389712225959412,
+        "physical_error": 0.0114402545375283
+      },
+      "reported": {
+        "same_grid_error": 0.01138971222595941,
+        "physical_error": 0.0114402545375283
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod104_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0007610755710913568,
+        "physical_error": 0.0010241438393214044
+      },
+      "reported": {
+        "same_grid_error": 0.0007610755710913568,
+        "physical_error": 0.0010241438393214042
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 2.168404344971009e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod112_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0006718071125794478,
+        "physical_error": 0.0009581814688205017
+      },
+      "reported": {
+        "same_grid_error": 0.0006718071125794477,
+        "physical_error": 0.0009581814688205017
+      },
+      "discrepancies": {
+        "same_grid_error": 1.0842021724855044e-19,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod128_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.00036019940345776466,
+        "physical_error": 0.0007714197955927064
+      },
+      "reported": {
+        "same_grid_error": 0.00036019940345776466,
+        "physical_error": 0.000771419795592706
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.2526065174565133e-19
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod16_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.05270168302214418,
+        "physical_error": 0.05246346631174893
+      },
+      "reported": {
+        "same_grid_error": 0.05270168302214418,
+        "physical_error": 0.05246346631174892
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.3877787807814457e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod24_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.02968772069337116,
+        "physical_error": 0.029581719175886523
+      },
+      "reported": {
+        "same_grid_error": 0.029687720693371143,
+        "physical_error": 0.029581719175886513
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-17,
+        "physical_error": 1.0408340855860843e-17
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod32_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.017372056597588788,
+        "physical_error": 0.017333880407904
+      },
+      "reported": {
+        "same_grid_error": 0.017372056597588788,
+        "physical_error": 0.017333880407903998
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 3.469446951953614e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod40_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.00838444995338742,
+        "physical_error": 0.008401982328433083
+      },
+      "reported": {
+        "same_grid_error": 0.008384449953387422,
+        "physical_error": 0.008401982328433082
+      },
+      "discrepancies": {
+        "same_grid_error": 1.734723475976807e-18,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod48_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.005575777349884084,
+        "physical_error": 0.005639121917391414
+      },
+      "reported": {
+        "same_grid_error": 0.005575777349884084,
+        "physical_error": 0.005639121917391412
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 1.734723475976807e-18
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod72_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.002328519683007918,
+        "physical_error": 0.0024396765502739796
+      },
+      "reported": {
+        "same_grid_error": 0.002328519683007918,
+        "physical_error": 0.0024396765502739796
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod80_galerkin",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.0019506249058327174,
+        "physical_error": 0.0020801016044910826
+      },
+      "reported": {
+        "same_grid_error": 0.0019506249058327174,
+        "physical_error": 0.0020801016044910826
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "pod8_galerkin",
+      "mesh": 64,
+      "case": 12,
+      "observed": {
+        "same_grid_error": 0.0884403274257558,
+        "physical_error": 0.08827962916712753
+      },
+      "reported": {
+        "same_grid_error": 0.08844032742575578,
+        "physical_error": 0.08827962916712753
+      },
+      "discrepancies": {
+        "same_grid_error": 2.7755575615628914e-17,
+        "physical_error": 0.0
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "unet3d_w16",
+      "mesh": 64,
+      "case": 3,
+      "observed": {
+        "same_grid_error": 2.198927821040429,
+        "physical_error": 2.2000308902910506
+      },
+      "reported": {
+        "same_grid_error": 2.198927821040429,
+        "physical_error": 2.200030890291051
+      },
+      "discrepancies": {
+        "same_grid_error": 0.0,
+        "physical_error": 4.440892098500626e-16
+      },
+      "passed": true
+    },
+    {
+      "pde": "Poisson 3D",
+      "attempt": "tuned02",
+      "method": "unet3d_w16_native32_interpolate",
+      "mesh": 64,
+      "case": 0,
+      "observed": {
+        "same_grid_error": 0.003769003918326056,
+        "physical_error": 0.0035618602578154916
+      },
+      "reported": {
+        "same_grid_error": 0.0037690039183260553,
+        "physical_error": 0.0035618602578154908
+      },
+      "discrepancies": {
+        "same_grid_error": 8.673617379884035e-19,
+        "physical_error": 8.673617379884035e-19
+      },
+      "passed": true
+    }
+  ]
+}

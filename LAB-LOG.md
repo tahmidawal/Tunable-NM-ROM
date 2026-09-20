@@ -20,7 +20,7 @@ The dated chronology below preserves the earlier findings and retractions; the o
 
 ## Read this first
 
-**2026-09-20 — overnight 3D campaign authorized.** The user requested parallel current-NM-ROM/operator comparisons on Burgers, heat, Poisson and Navier–Stokes in three spatial dimensions, then remediation of weak claims still used in the paper. After receiving the exact base/name/budget proposal, the user instructed us to continue and finish within seven to eight hours. The target window is 04:07–12:07 UTC on September 20. The four approved worktrees are `2026-09-20-paper-{b3d,h3d,p3d,ns3d}`, with matching `exp/` branches and `paper_{b3d,h3d,p3d,ns3d}_20260920` cluster namespaces. Exact bases and shared contract are in `reports/2026-09-20-3d-paper-campaign-plan.md`. Four read-only preparation agents completed code/design reviews. Burgers has completed its first diagnostic pilot and is being audited/tuned; heat, Poisson and Navier–Stokes pilots are running. Neural-operator implementation is underway. At most four single-GPU jobs may run concurrently; no new numerical result is accepted yet. The account queue was empty at preflight; the existing cluster is used.
+**2026-09-20 — overnight 3D campaign authorized.** The user requested parallel current-NM-ROM/operator comparisons on Burgers, heat, Poisson and Navier–Stokes in three spatial dimensions, then remediation of weak claims still used in the paper. After receiving the exact base/name/budget proposal, the user instructed us to continue and finish within seven to eight hours. The target window is 04:07–12:07 UTC on September 20. The four approved worktrees are `2026-09-20-paper-{b3d,h3d,p3d,ns3d}`, with matching `exp/` branches and `paper_{b3d,h3d,p3d,ns3d}_20260920` cluster namespaces. Exact bases and shared contract are in `reports/2026-09-20-3d-paper-campaign-plan.md`. Four read-only preparation agents completed code/design reviews. All four first pilots were independently audited as diagnostics. Longer Burgers, heat and Poisson comparisons have completed; the tuned Poisson panel is collected/audited and shows a useful dense correction ladder, while classical POD/DST controls remain stronger. Burgers/heat follow-up audits and four-family operator panels are underway. The Navier–Stokes bank/head still needs capacity and training work. F64 FNO, U-Net, DeepONet and Transolver implementations are available; held-out final evaluations remain unopened. The existing manuscript integrity/layout repair is complete at paper-refresh `187e34b6`, without scientific numeric changes. At most four single-GPU jobs may run concurrently; no final 3D comparison panel is accepted yet. The account queue was empty at preflight; the existing cluster is used.
 
 **2026-09-19 — experimental scope clarified.** Closing the recent ICLR lanes does not mean the full PDE/dimension/operator programme is complete. Scalar Burgers 3D has a completed bank/head representation screen, with every tested compressed head failing promotion; no accepted rollout, correction-rank ladder or matched operator/FOM cost panel followed. Heat 3D and Poisson 3D have historical CP-based NM-ROM experiments and classical comparisons, but no completed current bank+head+correction campaign. No Navier–Stokes 3D campaign or matched 3D neural-operator comparison was found in the reviewed records. The proposed wider 2D operator comparison programme is also unlaunched. Historical results are not transferred into current paper tables.
 
@@ -14926,3 +14926,136 @@ The first retained-checkpoint pilot was checksum-collected, independently audite
 Every repetition is retained; errors above are maxima over evolved outputs and repeated calls for each case, then the worst case. All-times and initial compression appear separately in the generated report. POD/direction membership is smaller than the retained neural checkpoint training set, so these numbers cannot establish a matched-training neural advantage. Device-resident dense input/output timing includes initialization, but host transfers and a physical-refinement panel were not measured. No final cohort was opened.
 
 A fresh matched-training Burgers bank/head attempt, `b3d002` / job `3989876`, is running from source `1bb277b1ac82bad5219f13dbfbe948d936be33a2`; checkout bookkeeping `716901fe`. Its new bank and head train quickly. The live training projection diagnostic remains poor; a completed trajectory audit must precede any interpretation, and the next owner should allocate substantially more monitored bank optimization before final selection. The first heat and Poisson pilots likewise diagnose learned-bank limitations; reusable f64 FNO3D/U-Net3D implementation and longer training are in progress in their owner trees. NS passed its amended reference gate but its small-bank representation pilot is negative; capacity/data ladders and actual comparative rollouts are next. Existing failed designs remain retained.
+
+
+## 2026-09-20
+
+### Codex — heat and Poisson pilot fields audited; longer matched comparisons launched
+
+**Heat 3D**, source `e6460d73c7d4d3292c9e9ef313ddb79c88bf59dd`, job `3989545`: retained generated invocation tables are in `reports/2026-09-20-3d-paper-results.md`. The owner independently checked saved fields and numerical references; parsed audit follows (artifact paths in the explicit input manifest).
+```json
+{
+  "passed": true,
+  "checked_fields": 992,
+  "failures": [],
+  "complete": true,
+  "final_cohort_opened": false,
+  "scope": "independent NumPy field metrics, hashes and invocation integrity; not a global solver-optimum proof"
+}
+```
+The original source/output checksum manifests were rechecked after a separate local audit, and the exact completed cluster attempt was removed. This is accepted diagnostic evidence, not a final competitive model. All observed dense nonlinear solves passed their stopping checks; bank accuracy and sampled quadrature remain inadequate. Final data are unopened.
+
+**Poisson 3D**, source `7158a27ab493bc1a5d0a8adefe13d4c20933a591`, job `3989715`: retained generated invocation tables are in `reports/2026-09-20-3d-paper-results.md`. The owner independently checked saved fields and numerical references; parsed audit follows (artifact paths in the explicit input manifest).
+```json
+{
+  "passed": true,
+  "checked_fields": 416,
+  "checked_references": 16,
+  "checked_summary_rows": 26,
+  "maximum_reference_relative_defect": 7.637563663211996e-16,
+  "maximum_metric_absolute_defect": 3.3306690738754696e-16,
+  "limitation": "independent field/reference/aggregation audit; no independent retraining or global-optimality proof"
+}
+```
+The original source/output checksum manifests were rechecked after a separate local audit, and the exact completed cluster attempt was removed. This is accepted diagnostic evidence, not a final competitive model. All observed dense nonlinear solves passed their stopping checks; bank accuracy and sampled quadrature remain inadequate. Final data are unopened.
+
+Poisson longer-training/operator comparison launch metadata:
+```json
+{
+  "job_id": 3990494,
+  "source_commit": "68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b",
+  "config_sha256": "27d653109855dd35004fc44ab5a9205742f1ea23a8fabe9d1546e9250785418c",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_p3d_20260920/tuned02",
+  "submitted_utc": "2026-09-20T04:49:34.330974+00:00",
+  "requested_gpu": "a100",
+  "wall_limit": "02:00:00",
+  "final_cohort_opened": false
+}
+```
+The shared f64 FNO3D/U-Net3D implementation was frozen and tested at heat commit `84d302a706bf06a460d04f419d9c06a6c424932e`. The PDE adapters preserve input/output and cohort contracts; native-resolution prediction plus boundary-aware interpolation is a separate control. Root independently recomputes one worst-case field per method and mesh with `reports/audit_3d_saved_fields.py`, without importing the solver; the generated audit records this bounded scope. No final seed selection or cross-job timing comparison was performed.
+
+
+## 2026-09-20
+
+### Codex — existing low-viscosity provenance repaired; manuscript integrity pass underway
+
+The isolated low-viscosity worker fixed the generator's inherited source labels and regenerated the lane at `5760a7e256ef3c003956bef7a185a86c88b823b6`. Its retained repair audit checks 555 summary rows; all content excluding source metadata is exactly unchanged. 386 source labels changed, and 338 panel labels were checked. 8 historical incumbent-training rows lack a recoverable run source commit and now say so explicitly, retaining result/manifest hashes. Gate, training and panel source commits are separate; a combined source commit is intentionally null. The paper worker is updating its summary pin and rendering these distinct sources.
+
+Source artifacts: `worktrees/2026-09-17-b-lowvisc/experiments/b-lowvisc/reports/{source-provenance.json,provenance-repair-audit.json}`. Numerical low-viscosity results, failed physical refinement, oblique-projection exception and failed full-order-frontier verdict remain unchanged. Root is rerunning the existing independent aggregate/provenance audit after the repair; the original failed audit remains in this log and Git history.
+
+A separate worker owns only the existing paper-refresh tree and is correcting unqualified capacity diagnoses, post-observation acceptance-rule descriptions and operator convergence/lower-bound wording. These are claim corrections, not new measurements. Current 3D pilot rows are kept in the generated development report, not silently promoted to manuscript headline evidence. No new worktree, GPU allocation, merge or push was needed for this provenance repair.
+
+
+## 2026-09-20
+
+### Codex — manuscript integrity/layout repair and corrected historical audit complete
+
+The existing paper-refresh owner completed scientific wording, provenance and layout repairs at `187e34b6bdac6946647db019b54b34f3feb4d5b4` (integrity predecessor `987eb51f3284920a3dabb25c90821cae54cedde5`). The independent repair audit reports:
+
+```json
+{
+  "passed": true,
+  "scientific_macros_compared": 1310,
+  "scientific_macro_changes": {},
+  "existing_table_files_compared": 115,
+  "existing_scientific_table_changes": [],
+  "current_overfull_boxes": {},
+  "undefined_references_or_commands": false,
+  "main_text_ends_on_page": 9,
+  "pdf_pages": 41,
+  "pdf_sha256": "958be9f12581be31c3192f54a01b247e89a3ce1a7f6410fda2e1605e6aaa7425"
+}
+```
+
+The authoritative manuscript remains `worktrees/2026-09-16-paper-refresh/paper/main.tex`; the untracked root copy is not updated. Two existing tables changed formatting only, with identical generated Markdown cell contents. The manuscript now discloses the Poisson/wave acceptance-rule amendments and literal outcomes, qualifies the NS capacity diagnosis because train/held-out normalization differed, restores the distinction between exploratory and confirmatory NS ladders, and describes operator achieved-budget errors without claiming optimization convergence or attainable-error lower bounds. Historical f32 exceptions and opened cohorts are explicitly scoped. The corrected Poisson oracle remains retracted pending a full-cohort rerun.
+
+Root reran the independent existing-paper audit after low-viscosity provenance repair: all 1,071 numeric checks pass and no provenance mismatch remains across the four audited lanes. The eight unrecoverable historical source commits remain explicitly unknown. The original 297 failed provenance checks and their cause are preserved earlier in the chronology; no scientific numeric value was changed. No merge or push occurred.
+
+### Codex — longer 3D comparisons and shared operator implementations
+
+Heat `tune02`, job `3990698`, source `4a93e5868acf83cbe07d84e6c451dc50ffbd9ea2`, has completed; owner collection/audit is underway. Burgers `b3d002` was preserved and safely cancelled by explicit numeric job ID after its large batched representation compilation stalled; it has no reduced-trajectory result. Its replacement `b3d003`, job `3992083`, source `dc91edb2c81712fde9d1b05fec7028c47bd213b4`, used checked tiled fitting and completed with exit zero. Owner checksum collection and audit are pending, so live results are not accepted into the generated tables yet.
+
+Navier–Stokes `comparison02`, job `3993021`, source `23932ac4eca33075fc43b4e10e9d3ca24ee2a388`, is running on an A100 40 GB. Its reference refinements passed, but larger-bank/head snapshot diagnostics still have substantial errors. The current POD worst-case projection error is evidence of high rank demand, not a proof that every learned rank-matched bank must miss the worst-case accuracy target; an overstrong interim worker interpretation was corrected before report inclusion. A capacity/head screen is being prepared with the family fixed. Generic `over_5pct` keys attached to timing summaries count seconds above a fixed cutoff and are not accuracy statistics; reports will recompute timing outliers from raw repetitions and preserve this erratum.
+
+The shared f64 DeepONet/Transolver implementation is frozen at heat commit `5933b3706c119e8ffbcfdf98db3940464af7b4fc`, with upstream source/license and independent attention parity checks retained. The earlier FNO/U-Net training implementation is unchanged apart from model dispatch. PDE adapters preserve physical input information, component/time packing, boundary conditions and train/validation membership. Static frozen parameters are transferred to the GPU once during setup in new panels.
+
+### Codex — tuned Poisson3D panel accepted as development evidence
+
+Poisson `tuned02`, job `3990494`, source `68fd0cca50c44b8c866986d1fcbf44d9ee8b4c1b`, was checksum-collected, independently audited, committed and its exact remote attempt removed. Parsed owner audit:
+
+```json
+{
+  "passed": true,
+  "checked_fields": 1184,
+  "checked_references": 32,
+  "checked_summary_rows": 74,
+  "maximum_reference_relative_defect": 7.637563663211995e-16,
+  "maximum_metric_absolute_defect": 2.220446049250313e-15,
+  "limitation": "independent field/reference/aggregation audit; no independent retraining or global-optimality proof"
+}
+```
+
+Selected N64 rows generated from the retained invocation records (the complete table is in `reports/2026-09-20-3d-paper-results.md`):
+
+| Method | Worst same-grid error (%) | Median device ms | Nonstationary cases |
+| --- | ---: | ---: | ---: |
+| `dst_exact` | 0.000000 | 0.228828 | 0 |
+| `fno3d_w24_m8` | 17.186592 | 17.493256 | 0 |
+| `fno3d_w24_m8_native32_interpolate` | 0.365648 | 11.579343 | 0 |
+| `pod104_galerkin` | 0.076108 | 0.426528 | 0 |
+| `pod112_galerkin` | 0.067181 | 0.445751 | 0 |
+| `pod128_galerkin` | 0.036020 | 0.464611 | 0 |
+| `pod16_galerkin` | 5.270168 | 0.205586 | 0 |
+| `pod24_galerkin` | 2.968772 | 0.225935 | 0 |
+| `pod32_galerkin` | 1.737206 | 0.245563 | 0 |
+| `pod40_galerkin` | 0.838445 | 0.267412 | 0 |
+| `pod48_galerkin` | 0.557578 | 0.283445 | 0 |
+| `pod72_galerkin` | 0.232852 | 0.345328 | 0 |
+| `pod80_galerkin` | 0.195062 | 0.357450 | 0 |
+| `pod8_galerkin` | 8.844033 | 0.198099 | 0 |
+| `unet3d_w16` | 219.892782 | 11.985015 | 0 |
+| `unet3d_w16_native32_interpolate` | 0.376900 | 4.327794 | 0 |
+
+These development results retain failed quadrature certificates and failed direct operator resolution transfer. Native-grid prediction plus interpolation is separately charged and labelled. The timed implementation incurs avoidable static head-parameter transfers; the next same-job panel places frozen parameters on device during setup and remeasures every arm. Classical POD/DST controls remain stronger. Final cases are unopened. Root independently recomputed the worst saved field per method/mesh using only NumPy; the expanded generated report now includes this attempt.
+
+Poisson `extra03`, job `3995104`, source `a50ce0977373977688d73f82700108a6138b433b`, config SHA256 `fdbe781595dddce13e4e6c36317c486b0d51a68ae79c58ee3227dee370a48c87`, started on pax105 A100 80 GB at 05:29:52 UTC. It trains DeepONet/Transolver and remeasures all four operators with the frozen NM-ROM/POD/FOM controls. Tuned02 evidence was committed at `712fb235`; the clean launch handoff is `1e163cee5234110a878f2b060aed3fa6eb70f1cc`. Independent retraining and final evaluation remain pending.

@@ -1,0 +1,35 @@
+{
+  "attempt": "pilot01",
+  "source_commit": "72ddfef3c53708f4dce68ab44e6d542eb08c33cb",
+  "local": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-20-paper-ns3d/experiments/ns3d/runs/pilot01",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/pilot01",
+  "config": "pilot01.json",
+  "gpu": "a100",
+  "wall_limit_hours": 2,
+  "job_id": 3989800,
+  "job_name": "ns3d_pilot01",
+  "status_at_handoff": "RUNNING",
+  "observed_utc": "2026-09-20T04:38:49.523367+00:00",
+  "node": "pax106",
+  "gpu_verified": "NVIDIA A100 80GB PCIe",
+  "gpu_preflight_seen": true,
+  "final_cohort_opened": false,
+  "results_collected": false,
+  "commands": {
+    "stage": "/home/tahmid/Dev/.venv/bin/python experiments/ns3d/cluster/stage.py pilot01 --gpu a100",
+    "submit": "ssh tufts-login 'cd /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/pilot01 && sbatch --parsable run.sbatch'",
+    "queue": "ssh tufts-login 'squeue -j 3989800 -o \"%.18i %.20j %.9T %.10M %.20R\"'",
+    "log": "ssh tufts-login 'tail -30 /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/pilot01/logs/3989800.out'",
+    "error_log": "ssh tufts-login 'tail -30 /cluster/tufts/paralab/tawal01/paper_ns3d_20260920/pilot01/logs/3989800.err'"
+  },
+  "next_steps": [
+    "Let the single bounded job finish; no duplicate NS job.",
+    "Collect output, logs, source manifest and OUTPUTS.sha256; verify hashes before remote cleanup.",
+    "Audit every reference case and field metrics independently; live values are provisional.",
+    "Check bank/head floors and learning curves before allocating targeted refinement.",
+    "Use reduced_operators.npz and checkpoint.pkl for q/POD/free-bank trajectories and matched FOM costs.",
+    "Adopt the heat agent shared f64 FNO3D/U-Net3D with dataset_adapter.py; periodic vector contract.",
+    "Prepare a certified sampled cold-start projection before any mesh-independent deployment claim.",
+    "Freeze validation selection before opening the separate final cohort."
+  ]
+}

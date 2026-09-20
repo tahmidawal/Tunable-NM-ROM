@@ -1,0 +1,76 @@
+{
+  "backend": "gpu",
+  "f64": true,
+  "training": {
+    "curve": [
+      {
+        "step": 1,
+        "relative_mse": 1.1092241665502816,
+        "seconds": 2.9208350050030276
+      },
+      {
+        "step": 3,
+        "relative_mse": 1.090418969060279,
+        "seconds": 2.9280646699480712
+      }
+    ],
+    "steps": 3,
+    "requested_steps": 3,
+    "seconds": 2.9348726369207725,
+    "stopping": "step_budget",
+    "stage": "joint_bank_head",
+    "code_initialization": "training_field_POD_scores",
+    "code_init_seconds": 0.5541048441082239
+  },
+  "head": {
+    "curve": [
+      {
+        "step": 1,
+        "relative_mse": 3.2543552837171554,
+        "seconds": 0.4669810050399974
+      },
+      {
+        "step": 5,
+        "relative_mse": 2.9275887811987173,
+        "seconds": 0.4695568730821833
+      }
+    ],
+    "steps": 5,
+    "requested_steps": 5,
+    "seconds": 0.47824819304514676,
+    "stopping": "step_budget",
+    "stage": "head_refine"
+  },
+  "whitening": {
+    "condition": 3.0827480353834855,
+    "singular_values": [
+      3.10053639191188,
+      2.4887157108387115,
+      2.2949364369315317,
+      1.951020108346634,
+      1.7791612170556776,
+      1.6223323017374152,
+      1.2809180069275738,
+      1.0057702920654628
+    ]
+  },
+  "tensor": {
+    "passed": true,
+    "contraction_errors": [
+      8.650292648627237e-16,
+      9.444374473467266e-16,
+      6.223949805459713e-16
+    ],
+    "jacobian_errors": [
+      7.50694468737422e-16,
+      9.445155402147857e-16,
+      5.408852547644761e-16
+    ],
+    "build_order_error": 0.0,
+    "test_orthogonality": 7.514567372200556e-17
+  },
+  "max_divergence": 2.3263093929530367e-16,
+  "frozen_frequencies": true,
+  "correction_orthogonality": 1.4096138740524541e-15,
+  "passed": true
+}

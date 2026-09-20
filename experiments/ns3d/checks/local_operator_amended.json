@@ -1,0 +1,63 @@
+{
+  "gates": {
+    "projector": {
+      "passed": true,
+      "idempotence": 9.914568404498049e-17,
+      "divergence": 2.322335686770073e-16
+    },
+    "independent_advection": {
+      "passed": true,
+      "relative": 7.943407309998785e-16
+    },
+    "energy_advection": {
+      "passed": true,
+      "relative_transfer": 3.364129055147604e-17
+    },
+    "projection_negative_control": {
+      "passed": true,
+      "unprojected_divergence": 21.475933729730585
+    },
+    "third_axis_negative_control": {
+      "passed": true,
+      "relative_rhs_difference": 0.8884031600022899
+    },
+    "manufactured_temporal_order": {
+      "passed": true,
+      "errors": [
+        7.901629224274813e-07,
+        2.031148924056581e-07,
+        5.150710188384584e-08
+      ],
+      "orders": [
+        1.9598541288740279,
+        1.9794527497805035
+      ]
+    },
+    "advection_sign_negative_control": {
+      "passed": true,
+      "wrong_sign_error": 0.6890876792243288,
+      "correct_error": 2.031148924056581e-07
+    },
+    "independent_trajectory": {
+      "passed": true,
+      "relative": 2.841886919734997e-16
+    },
+    "genuine_3d": {
+      "passed": true,
+      "component_rms": [
+        0.1402266532239867,
+        0.14022599669641872,
+        0.09387472630355
+      ],
+      "directional_derivative_norms": [
+        1.7431427459213924,
+        1.7431537675207118,
+        1.64094945793983
+      ],
+      "nonlinear_rhs_over_state": 3.6881025156900287,
+      "evolved_relative_change": 0.03698248265476576
+    }
+  },
+  "seconds": 6.32564115524292,
+  "passed": true
+}

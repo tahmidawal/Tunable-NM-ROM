@@ -45,7 +45,7 @@ def main():
     (out/'PROVENANCE.json').write_text(json.dumps(provenance,indent=2)+'\n')
     (out/'COMMIT.txt').write_text(source+'\n')
     script=f'''#!/bin/bash
-#SBATCH --job-name=ctol_ns3d_920_{args.attempt}
+#SBATCH --job-name=ns3d_{args.attempt}
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --gres=gpu:{args.gpu}:1

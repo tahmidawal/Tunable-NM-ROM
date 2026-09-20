@@ -9,13 +9,21 @@ from extra03 import file_hash
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--coverage',required=True);p.add_argument('--capacity',required=True);p.add_argument('--output',required=True);p.add_argument('--config',required=True);a=p.parse_args()
-    sources=[Path(a.coverage),Path(a.capacity)];raws=[];candidates=[]
-    for source in sources:
-        for name in ('audit.json','history_audit.json','source_audit.json'):
-            assert json.loads((source.parent/name).read_text())['passed'],(source,name)
+    p=argparse.ArgumentParser();p.add_argument('--coverage',required=True);p.add_argument('--capacity',required=True);p.add_argument('--output',required=True);p.add_argument('--config',required=True)
+    p.add_argument('--exclude-untrained-capacity',action='store_true',help='Use only the accepted incumbent while separately auditing a capacity attempt that produced no trained head')
+    a=p.parse_args();sources=[Path(a.coverage),Path(a.capacity)];raws=[];candidates=[];audit_status=[]
+    for source_index,source in enumerate(sources):
         raw=json.loads((source/'output/result.json').read_text());assert raw['complete'] and not raw['final_cohort_opened'];raws.append(raw)
         screen=json.loads((source/'output/capacity/screen.json').read_text())
+        excluded=source_index==1 and a.exclude_untrained_capacity
+        if excluded:
+            assert not any(record['training']['steps']>0 for record in screen['heads'].values()),'A trained candidate cannot be excluded by this operational shortcut'
+            required=('checksum_audit.json','source_audit.json')
+        else:required=('audit.json','history_audit.json','source_audit.json')
+        for name in required:assert json.loads((source.parent/name).read_text())['passed'],(source,name)
+        if not excluded:assert 'derived_summary' in json.loads((source.parent/'audit.json').read_text()),'Field audit is not complete'
+        audit_status.append(dict(source=str(source),required_audits=list(required),excluded_no_trained_model=excluded,
+            numerical_audit_status='separate pending audit; no model or claimed numerical result reused' if excluded else 'passed'))
         for name,record in screen['heads'].items():
             candidates.append(dict(source=str(source),head=name,trained=record['training']['steps']>0,
                 bank_rank=screen['rank'],k=record['configuration']['k'],worst=record['head_initial_normalized']['worst']))
@@ -32,7 +40,7 @@ def main():
     coverage=sources[0]/'output';copy(coverage/'operator_statistics.pkl','operator_statistics.pkl')
     for spec in raws[0]['config']['operators']:copy(coverage/spec['kind']/'best.pkl',spec['kind']+'/best.pkl')
     record=dict(files=entries,candidates=candidates,selected=selected,selection='minimum worst development error among all trained same-cohort heads; affine candidates recorded separately',
-        source_jobs=[raw['job_id'] for raw in raws],source_commits=[raw['source_commit'] for raw in raws],
+        source_jobs=[raw['job_id'] for raw in raws],source_commits=[raw['source_commit'] for raw in raws],source_audit_status=audit_status,
         augmentation=raws[0]['augmentation'],operator_records=raws[0]['operators'],final_cohort_opened=False)
     (out/'REUSE.json').write_text(json.dumps(record,indent=2)+'\n')
     cfg={**raws[0]['config'],'k':selected['k'],'r':selected['bank_rank'],'coverage_rank':selected['bank_rank'],'selected_head':selected['head'],

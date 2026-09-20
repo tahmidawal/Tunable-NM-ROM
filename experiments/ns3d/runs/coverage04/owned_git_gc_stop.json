@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-20T16:18:40.572799+00:00",
+  "signal": "SIGTERM",
+  "processes": [
+    {
+      "pid": 1714741,
+      "command": "/usr/lib/git-core/git pack-objects --local --delta-base-offset /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/.git/objects/pack/.tmp-1714740-pack --keep-true-parents --honor-pack-keep --non-empty --all --reflog --indexed-objects --unpacked --incremental "
+    },
+    {
+      "pid": 1714739,
+      "command": "/usr/lib/git-core/git gc --auto --no-quiet "
+    }
+  ],
+  "scope": "Only automatic Git housekeeping initiated by this NS archive commit; no GPU or experiment process",
+  "reason": "Release CPU/RAM and temporary pack space for accepted experiment collection/audits"
+}

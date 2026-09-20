@@ -76,6 +76,10 @@ A4 also diagnoses the new DeepONet and Transolver candidates on both training an
 
 The A3 additional random-initialized head is retained alongside the original two heads for A4's start-count comparison. This makes the initialization comparison available at every candidate latent dimension on the same bank and validation fields. The old and PCA-trained checkpoints remain separately named.
 
+## Prospective final confirmation size
+
+Before any final generation, reserve a cohort of $64$ trajectories at the existing reserved final seed. The final model checkpoints, solver settings, rung list, operator recipes and analysis rules must be frozen before that cohort is generated. This count is prospective; it does not open final inputs or authorize checkpoint selection using them. Final errors, failure counts and all declared methods will be reported without deleting difficult cases. Independent training-seed evidence must distinguish the complete training recipe from a head-only repeat on a shared spatial bank.
+
 ## Glossary
 
 - **Bank / head:** learned spatial functions / nonlinear map from small latent vectors to bank coefficients.

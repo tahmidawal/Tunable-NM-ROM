@@ -1,5 +1,5 @@
 {
-  "schema": "paper-poisson3d-confirmation-v5",
+  "schema": "paper-poisson3d-cg-independent-podinit-v6",
   "train_intervals": 32,
   "evaluation_intervals": [
     32,
@@ -78,7 +78,7 @@
         "steps": 30000,
         "wall_seconds": 1500,
         "batch_size": 2,
-        "seed": 920450,
+        "seed": 920550,
         "learning_rate": 0.0005,
         "validation_every": 250,
         "curve_every": 50,
@@ -107,7 +107,7 @@
       "reuse": true
     },
     {
-      "name": "deeponet3d_r128_w16",
+      "name": "deeponet3d_r128_w16_podinit",
       "spec": {
         "kind": "deeponet3d",
         "width": 16,
@@ -123,15 +123,27 @@
         ]
       },
       "training": {
-        "steps": 100000,
-        "wall_seconds": 1800,
+        "steps": 40000,
+        "wall_seconds": 1200,
         "batch_size": 2,
-        "seed": 920452,
-        "learning_rate": 0.001,
+        "seed": 920752,
+        "learning_rate": 0.0003,
         "validation_every": 500,
         "curve_every": 50,
         "components_per_output": 1
-      }
+      },
+      "pretraining": {
+        "trunk_steps": 60000,
+        "trunk_learning_rate": 0.001,
+        "trunk_batch_points": 1024,
+        "trunk_wall_seconds": 900,
+        "branch_steps": 30000,
+        "branch_learning_rate": 0.001,
+        "branch_batch_size": 2,
+        "branch_wall_seconds": 900,
+        "checkpoint_every": 5000
+      },
+      "reuse": false
     },
     {
       "name": "transolver3d_w48_s32",
@@ -164,45 +176,8 @@
         "validation_every": 500,
         "curve_every": 50,
         "components_per_output": 1
-      }
-    },
-    {
-      "name": "deeponet3d_r128_w16_podinit",
-      "spec": {
-        "kind": "deeponet3d",
-        "width": 16,
-        "levels": 3,
-        "pool_bins": 4,
-        "rank": 128,
-        "trunk_width": 128,
-        "periodic": false,
-        "coordinate_channels": [
-          -3,
-          -2,
-          -1
-        ]
       },
-      "training": {
-        "steps": 40000,
-        "wall_seconds": 1200,
-        "batch_size": 2,
-        "seed": 920652,
-        "learning_rate": 0.0003,
-        "validation_every": 500,
-        "curve_every": 50,
-        "components_per_output": 1
-      },
-      "pretraining": {
-        "trunk_steps": 60000,
-        "trunk_learning_rate": 0.001,
-        "trunk_batch_points": 1024,
-        "trunk_wall_seconds": 900,
-        "branch_steps": 30000,
-        "branch_learning_rate": 0.001,
-        "branch_batch_size": 2,
-        "branch_wall_seconds": 900,
-        "checkpoint_every": 5000
-      }
+      "reuse": true
     }
   ],
   "operator_training": {
@@ -219,7 +194,7 @@
   "representation_oracles": false,
   "physical_padding_control": true,
   "evaluation_cohort": "validation",
-  "confirmation_seed_index": 0,
+  "confirmation_seed_index": 2,
   "final_count": 64,
   "retain_solver_states": true,
   "deeponet_native_sensor_control": true,
@@ -232,5 +207,7 @@
       1e-06
     ],
     "max_iterations_per_interval": 4
-  }
+  },
+  "frozen_offline_assets": true,
+  "frozen_pod_transfer_control": true
 }

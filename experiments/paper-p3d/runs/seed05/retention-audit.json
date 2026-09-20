@@ -1,0 +1,3622 @@
+{
+  "passed": true,
+  "commit": "f47d97bcad52e59317c57573e2e0631c468bb653",
+  "attempt": "seed05",
+  "ordinary_committed_files": 718,
+  "ordinary_bytes": 1200159936,
+  "restored_large_files": [
+    {
+      "path": "archive/out/weak_setup_N64.npz",
+      "bytes": 245732775,
+      "sha256": "5f845e814dc2cd6d70c5edd76c4bc0b30f05cb809f7a37e702dcb318af6460e1",
+      "chunks": 4,
+      "restored_from_committed_blobs": true
+    }
+  ],
+  "ignored_disposable_cache_files": [
+    "archive/code/__pycache__/common.cpython-313.pyc",
+    "archive/code/__pycache__/freeze.cpython-313.pyc",
+    "archive/code/__pycache__/poisson.cpython-313.pyc",
+    "archive/code/__pycache__/shared_rom.cpython-313.pyc",
+    "archive/code/__pycache__/train.cpython-313.pyc",
+    "archive/code/operators/__pycache__/__init__.cpython-313.pyc",
+    "archive/code/operators/__pycache__/extra_models3d.cpython-313.pyc",
+    "archive/code/operators/__pycache__/models3d.cpython-313.pyc",
+    "archive/code/operators/__pycache__/poisson_adapter.cpython-313.pyc",
+    "archive/code/operators/__pycache__/pretrained_deeponet.cpython-313.pyc",
+    "archive/code/operators/__pycache__/training.cpython-313.pyc"
+  ],
+  "ordinary_file_hashes": [
+    {
+      "path": "archive/COMMIT.txt",
+      "bytes": 41,
+      "sha256": "375d3667ee008f9778a67d46f2b0125c190cec1812970c77ea3fca8b507eaa50"
+    },
+    {
+      "path": "archive/OUTPUTS.sha256",
+      "bytes": 76321,
+      "sha256": "0d043d2d614088da51fb51b6f465c020e71e8023ec505eaedff690602a6bb5ea"
+    },
+    {
+      "path": "archive/PROVENANCE.json",
+      "bytes": 8592,
+      "sha256": "959d633f5773c19c0b0cf36069a2433b450c308212748c4a6a1bef832f738fce"
+    },
+    {
+      "path": "archive/SOURCE.sha256",
+      "bytes": 3838,
+      "sha256": "f27fa1ea00eaf347c05466e7613f1a82a71aefe179496341f85b5b4d59392fae"
+    },
+    {
+      "path": "archive/checkpoints/bank.pkl",
+      "bytes": 1188781,
+      "sha256": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63"
+    },
+    {
+      "path": "archive/checkpoints/cohorts.json",
+      "bytes": 75842,
+      "sha256": "c1125866c432404ed9a21923462dead2ee9eee4da44bc4f0412183d300a62940"
+    },
+    {
+      "path": "archive/checkpoints/eq_N32_K16.npz",
+      "bytes": 5954308,
+      "sha256": "f6ad04ec703d2df83c67e71321ba94be39cc03d77a7330d40e83da284813e6a1"
+    },
+    {
+      "path": "archive/checkpoints/eq_N32_K8.npz",
+      "bytes": 6033188,
+      "sha256": "73ee895d753c25306ed0a0b275913f4f32f5348bd6adb2f1390c17fba8f0b72c"
+    },
+    {
+      "path": "archive/checkpoints/eq_N64_K16.npz",
+      "bytes": 5628956,
+      "sha256": "85705dc375ec7f67c4be8d51a3d8966c4816b3bb564c7342036e58877d7369cf"
+    },
+    {
+      "path": "archive/checkpoints/eq_N64_K8.npz",
+      "bytes": 5635714,
+      "sha256": "99f4e514ec4fa8e7833b83ca493197d4c5b3d9a2f1a0835490d1258b166b80c8"
+    },
+    {
+      "path": "archive/checkpoints/head_K16.pkl",
+      "bytes": 1040980,
+      "sha256": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+    },
+    {
+      "path": "archive/checkpoints/operators/fno3d_w24_m8/best.pkl",
+      "bytes": 75529079,
+      "sha256": "147024108ae3f26ef7cfd80be0d514ba01c9596916b8bd60297168342ad05c11"
+    },
+    {
+      "path": "archive/checkpoints/operators/unet3d_w16/best.pkl",
+      "bytes": 2838268,
+      "sha256": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+    },
+    {
+      "path": "archive/checkpoints/result.json",
+      "bytes": 3078807,
+      "sha256": "44e088449d71c39df9634e4dc1ddc08e7baf9b43876cc41c2b11fe47a9e33f39"
+    },
+    {
+      "path": "archive/code/DESIGN.md",
+      "bytes": 20034,
+      "sha256": "c0d29ef627da46d3ba91d9e8c27a09c4a1bc4a307a1e212c64eda8a4f916b5cd"
+    },
+    {
+      "path": "archive/code/IMPORTS.json",
+      "bytes": 689,
+      "sha256": "eacda9f92f4c4b3e98e1a02d40e50689f8a443959f4cac88954960be97e2a48e"
+    },
+    {
+      "path": "archive/code/audit.py",
+      "bytes": 9332,
+      "sha256": "3b4822d67b8f39865e281a82c266ae799c7626cab74e4145d053636f8bd31143"
+    },
+    {
+      "path": "archive/code/audit_pretraining.py",
+      "bytes": 3621,
+      "sha256": "2f07e0550b116b739e876467caa24acb78c7bcde7333e1d4ddc11f4ef6040181"
+    },
+    {
+      "path": "archive/code/cluster/collect.py",
+      "bytes": 2101,
+      "sha256": "4d0f8f9c1dcacd333302a7a3a4d0572aea9da7a2fff68e52813256976eca6c83"
+    },
+    {
+      "path": "archive/code/cluster/stage.py",
+      "bytes": 5035,
+      "sha256": "3d4fa4bb5ff1ed58247e28a0d89f582559dcb532e594859cc62a9832874afc74"
+    },
+    {
+      "path": "archive/code/common.py",
+      "bytes": 6490,
+      "sha256": "4ffad76a550e8b7aac64114174f30ea4ff2e278de06a259304bcd14010292d6f"
+    },
+    {
+      "path": "archive/code/config.json",
+      "bytes": 5164,
+      "sha256": "35ca44f62b0cb0fc3055e0abe15ae7d97fcb7122848e1c69c3dccf7dadbe159f"
+    },
+    {
+      "path": "archive/code/freeze.py",
+      "bytes": 3370,
+      "sha256": "3b1efcdbd79fef918f30cc687f7af063ee778a5454fe79ea7c1982260bd72d10"
+    },
+    {
+      "path": "archive/code/operators/EXTRA_IMPORTS.json",
+      "bytes": 2090,
+      "sha256": "8e906b424646c3d496cf677963debea3f141f3cd83590bad2f91bab31533c783"
+    },
+    {
+      "path": "archive/code/operators/IMPORTS.json",
+      "bytes": 1147,
+      "sha256": "17c39b2fd82d6d87eef6d7a1f82a734678b79680fc05703461229bb0b7b81fce"
+    },
+    {
+      "path": "archive/code/operators/LOCAL_EXTENSIONS.json",
+      "bytes": 1155,
+      "sha256": "0ece0bb2c9a4ea1c070fd1789ca1a0b60e199ae472b6584d1ff1e0b47b210c61"
+    },
+    {
+      "path": "archive/code/operators/README.md",
+      "bytes": 8077,
+      "sha256": "d5f2cea015b26014c06216df3927b73e31de1d769a7f817c7c0d45f1f398f1bf"
+    },
+    {
+      "path": "archive/code/operators/__init__.py",
+      "bytes": 58,
+      "sha256": "0960d0e81b29fc04979aad5de89bf8bb8570416c3ba7d85fd85aee1968b09e6a"
+    },
+    {
+      "path": "archive/code/operators/extra_models3d.py",
+      "bytes": 9020,
+      "sha256": "a3921f33d3f77060a25914cbc26f82a650b6e300b1acd9332ae92520119bf8ef"
+    },
+    {
+      "path": "archive/code/operators/models3d.py",
+      "bytes": 5826,
+      "sha256": "5e46697332a93c32189ca9d5d854263a065ac6a0a519aa9eddf92f86b947104b"
+    },
+    {
+      "path": "archive/code/operators/poisson_adapter.py",
+      "bytes": 3467,
+      "sha256": "7a695f130ec9b3f1ce370d85623fd1ecd316d926777174678eae3e4ef649e702"
+    },
+    {
+      "path": "archive/code/operators/pretrained_deeponet.py",
+      "bytes": 8623,
+      "sha256": "7b6e6fdddfe8bb352e22e1d8bf7e831edf0a093c9417bc36b8cc14d32e8c2b14"
+    },
+    {
+      "path": "archive/code/operators/training.py",
+      "bytes": 5153,
+      "sha256": "0596ee2b95a226bda2082fa2ef5ad7def9c00189a126d82ba6d91d1a464b9aaf"
+    },
+    {
+      "path": "archive/code/operators/upstream/LICENSE",
+      "bytes": 1084,
+      "sha256": "2c919cd03fa823bf7eefc00a957ff8324c865cd22aa5285e563dc4b558084f25"
+    },
+    {
+      "path": "archive/code/operators/upstream/PROVENANCE.json",
+      "bytes": 471,
+      "sha256": "5436091532a84557619ab6f3bf0741310ef6604091ed4a8d55a3783bbc30ff93"
+    },
+    {
+      "path": "archive/code/operators/upstream/Physics_Attention.py",
+      "bytes": 7992,
+      "sha256": "f7feffd40e21863a2bd5809d9548a3417a7221a817f9e675ea969712c1d45a36"
+    },
+    {
+      "path": "archive/code/operators/upstream/prior_families.py",
+      "bytes": 12230,
+      "sha256": "11efca39993f7e34421d873a8f3f69a911f5348fe0973b74745e8b0d553b88df"
+    },
+    {
+      "path": "archive/code/poisson.py",
+      "bytes": 7536,
+      "sha256": "d3901e4074e0653cf3f4b4668e480d5277130f9bcc1ecec56ba952ccb9da1610"
+    },
+    {
+      "path": "archive/code/run.py",
+      "bytes": 21249,
+      "sha256": "0f043085279ffeff7dbb58fd76bc6450ea7c360a8b26ea1934be40b6d2b94dc5"
+    },
+    {
+      "path": "archive/code/shared_rom.py",
+      "bytes": 12340,
+      "sha256": "d1d2df2ca2457d6c5e7ccc3f0a1035fe4d0b8bab71a86b67e9c320309a0daf98"
+    },
+    {
+      "path": "archive/code/state_audit.py",
+      "bytes": 4942,
+      "sha256": "6d0516fa1e84ba79acd72e5877b2b8a45f8ae0b656de5422e78122d3c5d03181"
+    },
+    {
+      "path": "archive/code/train.py",
+      "bytes": 9300,
+      "sha256": "81d34403d276bb5ae4e485773fcff27832e4bdfe43c16f050751516b926a9869"
+    },
+    {
+      "path": "archive/code/trunk_diagnostic.py",
+      "bytes": 3683,
+      "sha256": "5330d0b7f66d0c559182a95bbf678ae004bae5ae0ccc15ac439392160c8d70ca"
+    },
+    {
+      "path": "archive/job.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "archive/job.out",
+      "bytes": 46822,
+      "sha256": "a27200e22602d1e5edcb47da0b485f5eeb7ed3ae3525509238ba73b7176d2195"
+    },
+    {
+      "path": "archive/out/bank.pkl",
+      "bytes": 1188781,
+      "sha256": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63"
+    },
+    {
+      "path": "archive/out/cohorts.json",
+      "bytes": 78283,
+      "sha256": "24cbc058e95a8e8a8295f32d75f1e19a135d37a12fc6b3b931a134645ce78d6b"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_deeponet3d_r128_w16.npz",
+      "bytes": 225899,
+      "sha256": "1fd28b3979ac8d4e2f41f5e188fb8154d959f7baf7df1bbccb90ae765e222050"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225849,
+      "sha256": "cb2192d66a8d404c87500f1cfa7097f9603fc50e66a236f233a9c69beea68edb"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_dst_exact.npz",
+      "bytes": 225665,
+      "sha256": "fed61569a7e085abd5809f898b18379f1baaca666992e9a2c6e5879ec4809c09"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_fno3d_w24_m8.npz",
+      "bytes": 225722,
+      "sha256": "9bbb094d1dc35244843980a23b087b0a1126596c9350aa9e47e611283eebe2ac"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_linear_bank_galerkin.npz",
+      "bytes": 225717,
+      "sha256": "a3a7c967570222553cd14e20a7245b344423688fcdf6112d3a907f1f1ee6bb4d"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_linear_bank_weak_qR.npz",
+      "bytes": 225722,
+      "sha256": "7ff10b3977e5dd25c29dad10d3c58929bd739b4dd5f2e8a7faef55db9890bdec"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_nmrom_K16_q0_dense.npz",
+      "bytes": 227229,
+      "sha256": "588d6c78633dee48346789336859632e6a53184ea82eb4905b1842c0308ab097"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_nmrom_K16_q32_dense.npz",
+      "bytes": 227217,
+      "sha256": "1e43750fef742eaa03ebbcf7f4fde2bb51f3ba9602c742d5bb1ab6b4fdd1f5b1"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_nmrom_K16_q96_dense.npz",
+      "bytes": 227303,
+      "sha256": "15344f18b1bb4cb8eb69dc9d85d2b0a63108f15c0d281e40544d13e27de16cf2"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_pod112_galerkin.npz",
+      "bytes": 225711,
+      "sha256": "11f0bc4e595884535e3b064658a6b4ca55d3963f81ff45a0e6d99f4e1f4cf8c8"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_pod128_galerkin.npz",
+      "bytes": 225755,
+      "sha256": "88be9a66ce56dc9b2b0259fc82271a91deda2447769b0e07e4a0dcc7bf1653bd"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_pod16_galerkin.npz",
+      "bytes": 225568,
+      "sha256": "8641c3c067180ca1a82df912745388bcdb39f0c0f576b191cbe94e7a3f7fc48a"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_pod48_galerkin.npz",
+      "bytes": 225624,
+      "sha256": "6e55e41707923a82d42880e7cf5369510a78a07d53dac55fbd82f410a0f62b89"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_reference.npz",
+      "bytes": 681240,
+      "sha256": "3b296422c96b780a44c765ea1baa1b70d68e632631baf40600691f8f68434d36"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_transolver3d_w48_s32.npz",
+      "bytes": 225730,
+      "sha256": "aaf8ca05692f59b04dc9a9fb1c8eb17acbdd15f3f270cc19736297cbde474661"
+    },
+    {
+      "path": "archive/out/fields/N32_case0_unet3d_w16.npz",
+      "bytes": 225679,
+      "sha256": "e3a7c8f77d46586448371e0a1ea41ce85f9f9c1bb88f9270dbc9249a703a0f12"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_deeponet3d_r128_w16.npz",
+      "bytes": 225707,
+      "sha256": "c96decfda8bc3b6acbff58b6173499649b3904873d9f8d78a25f9f2fa43c63b3"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225662,
+      "sha256": "f1fe96c6e480928d9e1ab8b3f5ef88a329edec6d5d16efc008f8bda8d34c59c5"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_dst_exact.npz",
+      "bytes": 225565,
+      "sha256": "d64c77e9b54d39ee1820e5150d7aa6dac2bd02f8818c659d7b0551032dde0521"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_fno3d_w24_m8.npz",
+      "bytes": 225641,
+      "sha256": "d9e46d0d5d8b5bba3a6309234a33cb6adfd10b434ad621bebf4f3fcca04e6336"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_linear_bank_galerkin.npz",
+      "bytes": 225609,
+      "sha256": "2c422963b1e9db33ff6d27b06296109cb47c2a14743d850e9f2c1582e61902b6"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_linear_bank_weak_qR.npz",
+      "bytes": 225583,
+      "sha256": "f9198b6450350aea1f6168fd8dc3e73a1434957acd275e8feaeab72da2e495e4"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_nmrom_K16_q0_dense.npz",
+      "bytes": 227186,
+      "sha256": "384a6d204e73c11901676561ac6556d51b8b83ff962514219fe47edcdb5f4c99"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_nmrom_K16_q32_dense.npz",
+      "bytes": 227155,
+      "sha256": "49670e352f6d8cd3ba91fb4c48b514fa25ca11b00b16660868e73d8887e36825"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_nmrom_K16_q96_dense.npz",
+      "bytes": 227153,
+      "sha256": "5e581f883b322e8d267f63fdc41d4ff34c882e76b832fac7a34ee275b283669b"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_pod112_galerkin.npz",
+      "bytes": 225613,
+      "sha256": "d31a422ee0fcf13e5fa948b826f8eaa72fcf36a06b852ca39d1e06056677d552"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_pod128_galerkin.npz",
+      "bytes": 225584,
+      "sha256": "eb6a3110191f96fc8f3e4685daeaaad8601c1364b18f02291fc60047d5016b3d"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_pod16_galerkin.npz",
+      "bytes": 225554,
+      "sha256": "8bb0db10edde9ddd731f235ec35f5fe07e8c0e7629060fdb8c3d684b6ad891cf"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_pod48_galerkin.npz",
+      "bytes": 225595,
+      "sha256": "220d3555fed624ede237a1deaca2fd569331de1045cd1537adcb087fd22fdacf"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_reference.npz",
+      "bytes": 680156,
+      "sha256": "c2db5c2cd1370a83a19893e1f13f4f7daf3e07c0cc29c18396e860f2a93f4793"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_transolver3d_w48_s32.npz",
+      "bytes": 225623,
+      "sha256": "2b82221d4e97f432b55917409b1292b97cd739fabea717df2732ee06ef1efeee"
+    },
+    {
+      "path": "archive/out/fields/N32_case10_unet3d_w16.npz",
+      "bytes": 225581,
+      "sha256": "8fbe774bbaff58c35eb643351457f71069712d339f8919b72962a107474cbaac"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_deeponet3d_r128_w16.npz",
+      "bytes": 225576,
+      "sha256": "7619428085b56f66d42ffed506a1db61f5e131df127d5929583252dadaafbd42"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225519,
+      "sha256": "a53748fc8ba2a34553fb5ec39887598c37d437b31486a018bfdde635f8d608e4"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_dst_exact.npz",
+      "bytes": 225463,
+      "sha256": "9b462c9f8af4e788b567b70904bb08bd62e6b962efe55d345b07784129237daf"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_fno3d_w24_m8.npz",
+      "bytes": 225505,
+      "sha256": "7d4b0f9bd590c4b26816aa5ed9c52df406b777e7b481bc8c7393023ace4818c3"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_linear_bank_galerkin.npz",
+      "bytes": 225425,
+      "sha256": "a14660c9e533ceeb75c85e650280488576c6bbf26a1ffa04cc76aec6f6f69641"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_linear_bank_weak_qR.npz",
+      "bytes": 225459,
+      "sha256": "4b3a89959fef66c28b480ea57c8dbd86cd9461893d81261284ce70fc44206b08"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_nmrom_K16_q0_dense.npz",
+      "bytes": 227016,
+      "sha256": "a26e9c6e58b95a303a5e333c4d05e48c69f975dea514eda5fc33c94379e04cf8"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_nmrom_K16_q32_dense.npz",
+      "bytes": 227032,
+      "sha256": "7f5c188f73d3675c6f577e4cc951971541865d7d7d4bfe92e12429b9704609a3"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_nmrom_K16_q96_dense.npz",
+      "bytes": 227025,
+      "sha256": "720043be4564ed0d74bf8e7e2fcfd16c836e0494b87ef78312ea4ac15aa1c6fb"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_pod112_galerkin.npz",
+      "bytes": 225458,
+      "sha256": "4ce197b15cc353dcb30769596faef2209a14cbc28f8e08ed4ba02a940a419e85"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_pod128_galerkin.npz",
+      "bytes": 225470,
+      "sha256": "ed0c545543b686c0f5809dc1391074a47b790155f10c03fe884b8899ebc691d1"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_pod16_galerkin.npz",
+      "bytes": 225423,
+      "sha256": "21333c4ff854b943b2aa2d6daaa2677de60db9a399494720ce8213060600e65f"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_pod48_galerkin.npz",
+      "bytes": 225380,
+      "sha256": "78295d061135a08c01927a57ce4e61d0f8e466a5d33be399198ee91e7c279c28"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_reference.npz",
+      "bytes": 680188,
+      "sha256": "1e9b0fbb2b0de8dacfa0e8b9629a1dcf40ffa99a99c98ce52cd2b8e5395f8718"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_transolver3d_w48_s32.npz",
+      "bytes": 225410,
+      "sha256": "7ea4cbad4ce9136e95e730185ca20845e8297946f084c9f9eb0f284d6a5d2064"
+    },
+    {
+      "path": "archive/out/fields/N32_case11_unet3d_w16.npz",
+      "bytes": 225457,
+      "sha256": "c58ed875b864ce6ed58c968c0ec9a0d81eaecfe4015f6282d393c71ad15f7462"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_deeponet3d_r128_w16.npz",
+      "bytes": 225622,
+      "sha256": "dfb4f784eae91dc50e7db3241097ecccb0725e890470ee2329e64294efb4245d"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225514,
+      "sha256": "0c50d7f64f17f1ebe71b879f0f16d83c8b888c793b8b4867e055fe6e06b11e1e"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_dst_exact.npz",
+      "bytes": 225419,
+      "sha256": "fd68ced3e845cfdbd70491000efd7cd874e23622d1dd39a2a898f844398a2a4c"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_fno3d_w24_m8.npz",
+      "bytes": 225463,
+      "sha256": "23ecc900e5d11aa9af2c40ef17461243a9bc25c0116749b8d75d08c414a634f6"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_linear_bank_galerkin.npz",
+      "bytes": 225522,
+      "sha256": "c639a2e690563917f7e83b04bca3a2bfd9a476263a0d406ba548503c41ef0fd6"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_linear_bank_weak_qR.npz",
+      "bytes": 225463,
+      "sha256": "370afc6a34bde1902dc40d3631cee818c47d2d059ed2400a47d5a9df02572a8c"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_nmrom_K16_q0_dense.npz",
+      "bytes": 227035,
+      "sha256": "6b94c3f436dec13611c45d3c62be969f2cc8ca4f89972eb97be3e48f74d3b560"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_nmrom_K16_q32_dense.npz",
+      "bytes": 227034,
+      "sha256": "99bf6b2bf561b273edf1ae2408c5caceaeac96e1f072c117e8f813a0c8daac64"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_nmrom_K16_q96_dense.npz",
+      "bytes": 227026,
+      "sha256": "bd18e2dfed18c0c35c298928f80fe5a14e08b5ee8a3c8449743747c4070b24df"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_pod112_galerkin.npz",
+      "bytes": 225443,
+      "sha256": "0da302b49fd19390a79a3b3aae8e8ee8f169642d02dca5d9529e07455eaacfe2"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_pod128_galerkin.npz",
+      "bytes": 225431,
+      "sha256": "04e3f07632df3cc7f982fe1ffd72c281f55cb23e2df847b03566592d344031bf"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_pod16_galerkin.npz",
+      "bytes": 225412,
+      "sha256": "a8f86c73a25a79aa2d1a3cf6a76a377c878d8003c51c94cd99a20f420a39d2e4"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_pod48_galerkin.npz",
+      "bytes": 225402,
+      "sha256": "ab90ccbf6386926eb78e132b240f738f50c813b6e89ff398ae922651834a79c4"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_reference.npz",
+      "bytes": 679859,
+      "sha256": "59b1436ac82a8e069bcda28e7807de539a2d4e5efe2a674b08b70bafb091a14c"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_transolver3d_w48_s32.npz",
+      "bytes": 225488,
+      "sha256": "8b68700472486783bec7ac25f83d259356ce08dc463a0e864957b8ee81bc1ef0"
+    },
+    {
+      "path": "archive/out/fields/N32_case12_unet3d_w16.npz",
+      "bytes": 225519,
+      "sha256": "dd152c1a0e15e501c47ea827d62c747140dcd9dc03abd1122b7d073a14e7e78a"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_deeponet3d_r128_w16.npz",
+      "bytes": 225163,
+      "sha256": "b4f14efb94725a410e4ce536d2404bb2df458d7df92cb877955f8869afee6ee3"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225146,
+      "sha256": "9fd88f670b676d252c43a70d3a58a8775aed7df7549d9f559da99d77162d0183"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_dst_exact.npz",
+      "bytes": 225096,
+      "sha256": "6d605c681676ac281621dc6873898fae1b5e1b05ddd53d630620c72d9d9ce185"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_fno3d_w24_m8.npz",
+      "bytes": 225110,
+      "sha256": "38c79177f731f4b5cae28d0b74216f8d71bd71824ad9602c12936877ac42af11"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_linear_bank_galerkin.npz",
+      "bytes": 225090,
+      "sha256": "5938780f5a52d679a8f078d840eb6dee989c93503dbd2168f3bd9fa37ed814ae"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_linear_bank_weak_qR.npz",
+      "bytes": 225076,
+      "sha256": "c360e1e7c3ce54defc981b5d361ca4465a4a28442a5dc156e702f1bfa580265b"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_nmrom_K16_q0_dense.npz",
+      "bytes": 226687,
+      "sha256": "fc543985ae38bc829058d558d001f09ea508651872cab7c4482aaa79042d7b1d"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_nmrom_K16_q32_dense.npz",
+      "bytes": 226663,
+      "sha256": "40f3300258568751b429bbf28974a1b02c56a3c6987c56de442dd5701ee7f575"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_nmrom_K16_q96_dense.npz",
+      "bytes": 226715,
+      "sha256": "12aca57dc4c79ea242981129cb0586352dbbd52b54101bba00584c243a59e0a8"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_pod112_galerkin.npz",
+      "bytes": 225116,
+      "sha256": "76ef60ea242cec2ef4ca2e4de5fa70a5ae0441c6d8ac1f2cc2a421cc7f46d384"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_pod128_galerkin.npz",
+      "bytes": 225110,
+      "sha256": "ebf0a43d6235c2ee407c803cbda8ba438162b181e0da344c1e334240a2c9b769"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_pod16_galerkin.npz",
+      "bytes": 225090,
+      "sha256": "220c383961eeac6936c82c6c4d2121a2767ec43d58f2b73bcfd3b47386385909"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_pod48_galerkin.npz",
+      "bytes": 225082,
+      "sha256": "74de60ab0b6aea9079e80650f76697511114b44ea2c54206e78295fa4c127f30"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_reference.npz",
+      "bytes": 677866,
+      "sha256": "f96040f7a8566e557dd3f62cb6facec44d831aa487654b7bca4066e3ecca6923"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_transolver3d_w48_s32.npz",
+      "bytes": 225147,
+      "sha256": "67972538116ffebedb7c948f71b4bca6149a1080dc1fee1b949454214e359d24"
+    },
+    {
+      "path": "archive/out/fields/N32_case13_unet3d_w16.npz",
+      "bytes": 225125,
+      "sha256": "3e4839e7a8547ac6b3f68ac6cd2389c3bde129971b985986113b781066ba0823"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_deeponet3d_r128_w16.npz",
+      "bytes": 225546,
+      "sha256": "5e5823cf6427026118e93454d1099b3e1196c6409952a2ff714127eed504da62"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225368,
+      "sha256": "b11e6d2d30d6dbe4fd3f7e258b73e774f078f303b1fda388b8126295f99989f3"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_dst_exact.npz",
+      "bytes": 225280,
+      "sha256": "82b33555263f0f28fede7b8e8f91f06d71e790968a013bda6ce237318983730b"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_fno3d_w24_m8.npz",
+      "bytes": 225301,
+      "sha256": "e19f45148b8476372ca23dfc83fe82435057f21e48707d779720e22726a6bab7"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_linear_bank_galerkin.npz",
+      "bytes": 225248,
+      "sha256": "69e37217983e947a4cd320dc52115c8b4b66074a99f324ab85b84f796f93a5fc"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_linear_bank_weak_qR.npz",
+      "bytes": 225304,
+      "sha256": "a60940e0147f5b773dfc543eaa262768cd960febe06008f233fdf5fc495916b4"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_nmrom_K16_q0_dense.npz",
+      "bytes": 226830,
+      "sha256": "1b5782c03c438b84fd50cd934ad5f0346479d2e5e517757a65536b21040976e7"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_nmrom_K16_q32_dense.npz",
+      "bytes": 226882,
+      "sha256": "069620560dcce71ebb5824cf7399c6b15f0925fd68d4567a60c60f187450a78d"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_nmrom_K16_q96_dense.npz",
+      "bytes": 226884,
+      "sha256": "69f0f77d2c2d6d0fdc724b94cf6c0e97623515aa1b5d07704a6ad22eed0f71e9"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_pod112_galerkin.npz",
+      "bytes": 225306,
+      "sha256": "aea2b9bcd14170bb08fd4b51c22532119cce172a2d9c9314e7b7602f52c938f8"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_pod128_galerkin.npz",
+      "bytes": 225306,
+      "sha256": "d91fbd9a46047d0a221b627c903dff7ed0d65d834d44e59772b126552f6f7f36"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_pod16_galerkin.npz",
+      "bytes": 225283,
+      "sha256": "a665921f5ed2c902dcbd43bef12fc9a92a69cdb3568dfe7ce192e5f58ac2d11b"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_pod48_galerkin.npz",
+      "bytes": 225238,
+      "sha256": "afa98dd67b2b38c85bfaa33f6ae3f7f5e7ab39012b025e74564c89d788fbf97f"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_reference.npz",
+      "bytes": 678802,
+      "sha256": "3db8f0a839395013914815a06fd4e5b60722dfc052b230cca4e973e93e160cbf"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_transolver3d_w48_s32.npz",
+      "bytes": 225330,
+      "sha256": "4ded34ce58a819d2c06052696e3cf803930c13e2ef7acf7d57cf76263dc53347"
+    },
+    {
+      "path": "archive/out/fields/N32_case14_unet3d_w16.npz",
+      "bytes": 225285,
+      "sha256": "c36e54d11efa03e6945b67199544966e9d84391c51a66064e8abf2e6584b6f29"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_deeponet3d_r128_w16.npz",
+      "bytes": 225278,
+      "sha256": "e4f6c0c3fd99939c3f0686e36694cf3680f1333bfa750da388fc9e72d36f9ca5"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225245,
+      "sha256": "868c6d6d0fa0b6ba3d50f00f31cd27323203cf689908dad5aa5f5bc6c22063bf"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_dst_exact.npz",
+      "bytes": 225193,
+      "sha256": "a6f310601d5419402353b8bbc22c0959673b8d9a761d06fd32b9c1bc24b3cd7d"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_fno3d_w24_m8.npz",
+      "bytes": 225165,
+      "sha256": "1f92bff4409b90179e62c9b0cf4bfb301b36f8babe1d9d754e4c1cfe3d10c2ad"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_linear_bank_galerkin.npz",
+      "bytes": 225220,
+      "sha256": "b570e7442827bd4cb8e9302aed54a38ec51b0c8e9d5ff77a60d96733f192ed69"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_linear_bank_weak_qR.npz",
+      "bytes": 225167,
+      "sha256": "2dab99e17d930d5b3e5120f4d06b70abdd68238e34c268e95f8db4eabd72c1d3"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_nmrom_K16_q0_dense.npz",
+      "bytes": 226763,
+      "sha256": "85f44f5ff2664c13f50ed77e99eb0342b9a825bfe14143e4f95246c36565d542"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_nmrom_K16_q32_dense.npz",
+      "bytes": 226735,
+      "sha256": "6b0f561d98c230ed5b2fc1fb7e6f430e212d340f1d94772a912110a1ea7aeb31"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_nmrom_K16_q96_dense.npz",
+      "bytes": 226728,
+      "sha256": "df2207a49184405f172ad85ef6031e0e484957361820be6ecd3cc07f5d013aa0"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_pod112_galerkin.npz",
+      "bytes": 225249,
+      "sha256": "1acbfd1aecd3642439b35ad8f0973aac3e8db8c2837cf192aa4806c6a756856f"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_pod128_galerkin.npz",
+      "bytes": 225238,
+      "sha256": "709305c9dfbcec13e34a1bc0a58c79aecc18a988ece7b993766a2718af945036"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_pod16_galerkin.npz",
+      "bytes": 225176,
+      "sha256": "f383e99de23e56f3cdf2c8d68ba7cdfbd3533758ae5b35ac9679c09a84a215f5"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_pod48_galerkin.npz",
+      "bytes": 225222,
+      "sha256": "377e4c176dfeb4103da03fd2594f816dd77456b81227878c80ab3ce4ebfd7406"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_reference.npz",
+      "bytes": 678039,
+      "sha256": "336b2da26acc27b6eeeb95ad7081a3a1c8398893e14b5f2aed448c9f109c47fa"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_transolver3d_w48_s32.npz",
+      "bytes": 225228,
+      "sha256": "ce2b6947eec734e48a69d033fd0c92262b6b5181ac69a9eaaf6eee406a50b129"
+    },
+    {
+      "path": "archive/out/fields/N32_case15_unet3d_w16.npz",
+      "bytes": 225175,
+      "sha256": "708595410488f58bca13d6e364b3230d620212742eb2713ae9305c87efc7cc49"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_deeponet3d_r128_w16.npz",
+      "bytes": 225631,
+      "sha256": "3f037f7dda6d22fdc54162e7e356beccd5531eb188c02cab8e1a1b97887532d9"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225574,
+      "sha256": "39e454605e4496ae790489952f8b765c1b07b5515f0e1247cd035c1c2ecbfeee"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_dst_exact.npz",
+      "bytes": 225506,
+      "sha256": "82f3cb85ef0ba003933217987886e8aa8f5204851fb8520316d62a510cbb44c5"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_fno3d_w24_m8.npz",
+      "bytes": 225565,
+      "sha256": "d224fd4cb7138d952bfb575d8e4ef3d11f0a293d0b420980455eeb34bf3959bd"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_linear_bank_galerkin.npz",
+      "bytes": 225532,
+      "sha256": "fecd9f780222970f9ee6020e03a0d50976757370fb4519a2629150ce75b1b676"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_linear_bank_weak_qR.npz",
+      "bytes": 225538,
+      "sha256": "f4f405887e963b4b84e81ee8872e7289d8657b1d9b9d61a97d997a662d4562ff"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_nmrom_K16_q0_dense.npz",
+      "bytes": 227110,
+      "sha256": "9b4479768991fb7459d1eaca6441e6ed9830dd3f2a080d0aed4f5a2b651d4c98"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_nmrom_K16_q32_dense.npz",
+      "bytes": 227157,
+      "sha256": "7ff00be37d784ece7f5acf0491a5fbce9c27974ddb930e73b5e2f68c66e22856"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_nmrom_K16_q96_dense.npz",
+      "bytes": 227170,
+      "sha256": "8061a1ec5da1da16c1dbcfdaf566fefb922e3906d33fe5036cfb9036e1e5572d"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_pod112_galerkin.npz",
+      "bytes": 225556,
+      "sha256": "34f5888b874fa4fc2f0af72afc7160af016ea10d51da0f695a80af06d8d259bb"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_pod128_galerkin.npz",
+      "bytes": 225519,
+      "sha256": "ec09cefd765d6e6e607e8fdf72fca533696cd33adde9b6c3ac08aeb5e164308f"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_pod16_galerkin.npz",
+      "bytes": 225537,
+      "sha256": "7c0f370040b9214647a46b16851e9edf52e53f0cda2e531a13e2e74207d71490"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_pod48_galerkin.npz",
+      "bytes": 225533,
+      "sha256": "e89140ce7720282d3de72a64296d9c536fa322a736505c35cff4a40fefa1e0bd"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_reference.npz",
+      "bytes": 680151,
+      "sha256": "98836df5e92974c64c2cbc35b6438f6a61fd1cc0578ca0957da3e572f26b2bed"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_transolver3d_w48_s32.npz",
+      "bytes": 225575,
+      "sha256": "0fbeb1cc100ce374417d911aa5e93e8f49be479810d6f221d73ae148b752881d"
+    },
+    {
+      "path": "archive/out/fields/N32_case1_unet3d_w16.npz",
+      "bytes": 225578,
+      "sha256": "9a4816074cba35b216af118d7da97ae869c5c0603f9f4638ecb67e0edda7eb72"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_deeponet3d_r128_w16.npz",
+      "bytes": 225131,
+      "sha256": "1a18bd100d4803c4081affa8603975b2e9187a06f22c52e07eb69b2c32ed3281"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225082,
+      "sha256": "06384eb6e75ea2ae1b53b3d4c6f7fda42852cb574f3aa2ea4f9bca21ac815683"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_dst_exact.npz",
+      "bytes": 225014,
+      "sha256": "9370bd672996d0999a68e0164713908d74b06a6b033bd3031b0b114cac0f3405"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_fno3d_w24_m8.npz",
+      "bytes": 225051,
+      "sha256": "c284382f158df0cac772303568a78deabd37472338f879cbb2a7f2768af08f2d"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_linear_bank_galerkin.npz",
+      "bytes": 225021,
+      "sha256": "5e320a512cfdcb5c0c3cbfdaf2b5d4e28697f1f778a550ed1d12cb0b37882e71"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_linear_bank_weak_qR.npz",
+      "bytes": 225013,
+      "sha256": "a7f37d528f38a3de054d0c08ff150f0f60db9218176d77d3f02e046c680b8044"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_nmrom_K16_q0_dense.npz",
+      "bytes": 226614,
+      "sha256": "47a4ec828b2a7ca56717c655fbb42d6b895442a830c7e681ccd53519c21de3d8"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_nmrom_K16_q32_dense.npz",
+      "bytes": 226661,
+      "sha256": "d07dac5de7fa49256c7ec7fe8dac79d186d9c00faa8b6c9b6eb43dd57ae52dd9"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_nmrom_K16_q96_dense.npz",
+      "bytes": 226596,
+      "sha256": "ad470065487c38e596f273acc3880b7ac31a375ffc44f72b1501b2ced4e86389"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_pod112_galerkin.npz",
+      "bytes": 225045,
+      "sha256": "de45668ad439dd2524a2bf22c2c1469c24549cf6c851cace0f09d42dd37d092d"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_pod128_galerkin.npz",
+      "bytes": 224991,
+      "sha256": "b96214550b8ffeda12325e1d8562bdbe6f6c7c07af1e8790102c06a85ae676bd"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_pod16_galerkin.npz",
+      "bytes": 225077,
+      "sha256": "231d16325eeb7f329572db41b553fd77cd04554d9efe288ad53d72c2d2128ac8"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_pod48_galerkin.npz",
+      "bytes": 225027,
+      "sha256": "85a7f45aa3e62c492997e682e745089a2b6863d38cee093d26686fdbae08e5ba"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_reference.npz",
+      "bytes": 677572,
+      "sha256": "bcdfdcece06bc79af9244947b7d5ab8a36d24e53471edd4028645e817279ea5d"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_transolver3d_w48_s32.npz",
+      "bytes": 225011,
+      "sha256": "d1432bb5ff26ed94d1a3176226c9f323d35fc17e0bbf85f8d24463c1cfa9b4c2"
+    },
+    {
+      "path": "archive/out/fields/N32_case2_unet3d_w16.npz",
+      "bytes": 225056,
+      "sha256": "f9444cc3ff37e746f9286c4ca6660d6566d97f68cf4112e9a7f0019e7eba1934"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_deeponet3d_r128_w16.npz",
+      "bytes": 225628,
+      "sha256": "a1721d3b46e83ee96dc3813ce0387ff8bd51e177a2ad31c2d962ea3eb8b57af6"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225596,
+      "sha256": "2eb47085aecfef796f8c874727348ab3a029046e7f1f996f7dd82cd3b141c2aa"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_dst_exact.npz",
+      "bytes": 225536,
+      "sha256": "4abd4f533ff6ade252251cb0bc8d3d833cdf539a46d168a62fe97ccc15bafd07"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_fno3d_w24_m8.npz",
+      "bytes": 225553,
+      "sha256": "789571a549d783ca0e43aca2b109c86e3131e4e505763bac1fdbd345126a38c8"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_linear_bank_galerkin.npz",
+      "bytes": 225573,
+      "sha256": "ac00e794b8194cfca6e02b5bf9d3b09aea41dc4ceae204c6347d2d2f17b89ae7"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_linear_bank_weak_qR.npz",
+      "bytes": 225542,
+      "sha256": "0cee32c9e611df53df7038ee89952d1c9a48a6fb6ab8e25c643b758d1a455178"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_nmrom_K16_q0_dense.npz",
+      "bytes": 227070,
+      "sha256": "915197d52363d5909557bed3c5f7457d02d256fca5bc3b88011b1427b67cdc5e"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_nmrom_K16_q32_dense.npz",
+      "bytes": 227104,
+      "sha256": "3efe613968c5e103a42105f8c2500c22494608c0b28e6f47d5bce3bfa94df6c7"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_nmrom_K16_q96_dense.npz",
+      "bytes": 227149,
+      "sha256": "a08936dee5cb3f2ce215bdc5c0a4ac237d8d548e9fca63d0472f8af6116a322b"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_pod112_galerkin.npz",
+      "bytes": 225534,
+      "sha256": "8effbca5f08a4bb31dc9c394c5f14e3b318c7c69f2dc6f1366313e91ad514aa3"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_pod128_galerkin.npz",
+      "bytes": 225574,
+      "sha256": "9f03fa04f73c6da729f91fbe014c7789d63dc945229309b8f07669f42ce59919"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_pod16_galerkin.npz",
+      "bytes": 225547,
+      "sha256": "2c6215e27666042977a1c9dcf9a2e6c8cd48c25d56fccdd26a4e3268670b9069"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_pod48_galerkin.npz",
+      "bytes": 225525,
+      "sha256": "b5c0b1d3b43628b5d1e5da9beee1427984457f65a4f8137b50020a9dac24a1ce"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_reference.npz",
+      "bytes": 680139,
+      "sha256": "e3e65486d3a88d20de5d8833563aed696e656b7390bda3da3c116650f8ffe2dc"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_transolver3d_w48_s32.npz",
+      "bytes": 225535,
+      "sha256": "f544bfe39e1fe8557b2d1ce2f2a447d4bb89e99d9751eaefd2d34e27ccd3bc39"
+    },
+    {
+      "path": "archive/out/fields/N32_case3_unet3d_w16.npz",
+      "bytes": 225531,
+      "sha256": "618d7a7a3d5b36b3a6513b5568e8503a899efd0b133c7941dc6f569f18734e1f"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_deeponet3d_r128_w16.npz",
+      "bytes": 225413,
+      "sha256": "43fe4e9076e803297e9847ce32e6690a0f1f1d7c3bbaa432c971650790d70e70"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225373,
+      "sha256": "282ea032489886f05434a4d8cc9d4a5fcca4e8cf60bdf33365bc58b813ba69aa"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_dst_exact.npz",
+      "bytes": 225309,
+      "sha256": "109dc19696d56f2405b9317e62311d4c9bd04cfa00c10e8f86c9545bc13b121e"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_fno3d_w24_m8.npz",
+      "bytes": 225362,
+      "sha256": "5acd0ef1ccd043043518c8c3d5c230b7a814a1c2e705584e2535b7c10748d476"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_linear_bank_galerkin.npz",
+      "bytes": 225350,
+      "sha256": "454a18670ee20550e06ecc1db8c7cf13e82586c1654798b82817b42b901b4f33"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_linear_bank_weak_qR.npz",
+      "bytes": 225365,
+      "sha256": "dffe2bf52c82386759693ddd3596df899004f42269ba03edfd3dccbe027b22a3"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_nmrom_K16_q0_dense.npz",
+      "bytes": 226935,
+      "sha256": "d95d47bba30057943b078a98b92766d09c84ee5205944a751479514d087e7a5b"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_nmrom_K16_q32_dense.npz",
+      "bytes": 226889,
+      "sha256": "ea1eeb9b8c463cf5e63757b1aebdc5f37c4008338dda4fb0a130f172edc61687"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_nmrom_K16_q96_dense.npz",
+      "bytes": 226965,
+      "sha256": "688fea6150bb38ecce975cfbf9d0fb273b416f0fe7bc0a1ad360d6cae2ebb374"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_pod112_galerkin.npz",
+      "bytes": 225412,
+      "sha256": "5a91ac2474dd2269a0a67a5c3cc85a52ac0c5fae9d16065fa82e2c9285e1e091"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_pod128_galerkin.npz",
+      "bytes": 225370,
+      "sha256": "32327fc45addd4b424bbb3e936fd9fd9adf390f49072bffa0df17aa12ca8d2b8"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_pod16_galerkin.npz",
+      "bytes": 225337,
+      "sha256": "17d2b4701925d0eafbd17b8d16a3e4f49e61de1d1ca6dee9ed3ef0ab9546be2e"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_pod48_galerkin.npz",
+      "bytes": 225315,
+      "sha256": "77755cfda8052837022328f0ad4fb74a674bbe0b104de9a7751b5c2f037a09db"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_reference.npz",
+      "bytes": 679072,
+      "sha256": "b5a1a28d52c4f1bd2ae5e4d5641bcad5956229afd9c08d166febb3b5c6d79ffc"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_transolver3d_w48_s32.npz",
+      "bytes": 225376,
+      "sha256": "df6ff6b11f3d926c33de37fa2ea420ce9b88eea9e6458a5fceee3d0c419f19be"
+    },
+    {
+      "path": "archive/out/fields/N32_case4_unet3d_w16.npz",
+      "bytes": 225326,
+      "sha256": "5f6b0e41124cc95f2f83dc95950e2fe1331eb94aa250a8b5817b94242d62e4d0"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_deeponet3d_r128_w16.npz",
+      "bytes": 225327,
+      "sha256": "466fa27bd248c38e7ac20349b7391e57f83ba11def3ed622d7ebf1faca788bf4"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225277,
+      "sha256": "38883896e077858ab6a707c07b888ffcae57923e3978f3934a1a61cc24f02d84"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_dst_exact.npz",
+      "bytes": 225230,
+      "sha256": "17513cf2d7c8c520ddd2d7672482363915be0278c1cae3a4240e44fafaf4644a"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_fno3d_w24_m8.npz",
+      "bytes": 225233,
+      "sha256": "28b86638a09eb84c436f13a73d6df7cf3a63b97b5f27fc8c8fd5f8bec3aa3a50"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_linear_bank_galerkin.npz",
+      "bytes": 225271,
+      "sha256": "2c99e6307a83ec7347ab5b249878d7bc76b8075eacdf8ae68c860f3ee1f769e7"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_linear_bank_weak_qR.npz",
+      "bytes": 225272,
+      "sha256": "83661124d52f7e47a4f3a5f5684359bb9ca916865d5e1dd56c0420b5e3cce3f8"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_nmrom_K16_q0_dense.npz",
+      "bytes": 226793,
+      "sha256": "3630dfa78248b4f8e407865804eec17cf19c2affffd3315bcc5b8cf1945cbb0c"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_nmrom_K16_q32_dense.npz",
+      "bytes": 226834,
+      "sha256": "f75022441e9d85059cdb559f15c442d61263fcde741c169c80cb1054b71490fb"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_nmrom_K16_q96_dense.npz",
+      "bytes": 226785,
+      "sha256": "a3b4e2f00b8a615dd9f20f5d783e25230ec7553252bec1b2fa10814301d587e4"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_pod112_galerkin.npz",
+      "bytes": 225242,
+      "sha256": "22d9fbb7caba8c7e2f990c853d29a6579d1a1de22dfdd58d02cafcd471b3cda9"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_pod128_galerkin.npz",
+      "bytes": 225231,
+      "sha256": "e0dade142ad6273520d6c508f1e9068ff2c8a8f2e3a625432f7dc814ae670799"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_pod16_galerkin.npz",
+      "bytes": 225177,
+      "sha256": "977904500772692a1c45aadaf1962e985fb68f450a8b0896bc8bbf457d5d06b4"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_pod48_galerkin.npz",
+      "bytes": 225209,
+      "sha256": "6b8b707df0d9748f350ec902b0eacfec909e940f736ca860b1d0d1ea141e023f"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_reference.npz",
+      "bytes": 678292,
+      "sha256": "609c38b7549d62d6dac97356aafd90e42d8a3cd18a096aeb5e732e5ca6ae47f1"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_transolver3d_w48_s32.npz",
+      "bytes": 225196,
+      "sha256": "4ae20cf74f59d2c5e07d86f417fc1bb94034f82829ce95c5a1a1595fa20f557b"
+    },
+    {
+      "path": "archive/out/fields/N32_case5_unet3d_w16.npz",
+      "bytes": 225291,
+      "sha256": "653ecac51108b33f6d2a2623a1c167364a166c273d487f480c55422f103d1121"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_deeponet3d_r128_w16.npz",
+      "bytes": 225299,
+      "sha256": "bd7dfa3f16a3a26f1f43588796ca90840d1ce1c612e8c629233b48c5461fcdbd"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225224,
+      "sha256": "79a5e89cee14082f798f6896fd31a05a23df28d66564c754d684cc34f16a501b"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_dst_exact.npz",
+      "bytes": 225128,
+      "sha256": "d93d679aab77cbb06cdd682a73058577353a43a3f61e285d6f9c882017b28769"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_fno3d_w24_m8.npz",
+      "bytes": 225161,
+      "sha256": "2526e8486b97abf967158b78412735a46ce4978d8a1e35ce19733f0331332667"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_linear_bank_galerkin.npz",
+      "bytes": 225202,
+      "sha256": "a44f87d3176d67e0dc9b6c8f7f55fa1f5906a5f16039ac9d31afeafef81c4ec5"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_linear_bank_weak_qR.npz",
+      "bytes": 225102,
+      "sha256": "6faf86f1031535ff777d93de07c35d1d1eaf004961d6ed693187bcd12e2a5141"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_nmrom_K16_q0_dense.npz",
+      "bytes": 226703,
+      "sha256": "015d16d4e5586b1ca687d4091b70ab85b64bad55a2eb6fc56702a4f3e1cfb59a"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_nmrom_K16_q32_dense.npz",
+      "bytes": 226768,
+      "sha256": "0250ee04d7e4b175fe968bc7eff5026e31a172bcdd8ff471d5a11fc6d5ece971"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_nmrom_K16_q96_dense.npz",
+      "bytes": 226746,
+      "sha256": "fbacd653c75c6a96f2bd453d262aa0e26d31473e03365c7647e3b279c34fd792"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_pod112_galerkin.npz",
+      "bytes": 225157,
+      "sha256": "b877b2e9d0e8354ff182218fefd1ce2c571189f8c0c9912cb5fcd39fea363e2a"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_pod128_galerkin.npz",
+      "bytes": 225198,
+      "sha256": "c544945ce5acb08e7b472d523d1f8a4d01cc568dc63a5a2b3b7c872487285a99"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_pod16_galerkin.npz",
+      "bytes": 225190,
+      "sha256": "93432049f354a6bba5e4591376ed3b556bdf3715e601e7543ad14d4db7d32443"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_pod48_galerkin.npz",
+      "bytes": 225154,
+      "sha256": "d7f22e1c90f174ad8eff65076be23c199efe873c4409232c3e95baf262c7bb90"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_reference.npz",
+      "bytes": 677903,
+      "sha256": "21743d0de98c4b8acb54f7b5ba54a4afae8874b7dc2650e60ae0ce1a51d4a625"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_transolver3d_w48_s32.npz",
+      "bytes": 225211,
+      "sha256": "d244871d49a6f865edf5f9cbbf9213e0ea47462cfdc9d097e7b91bf851af6735"
+    },
+    {
+      "path": "archive/out/fields/N32_case6_unet3d_w16.npz",
+      "bytes": 225197,
+      "sha256": "674fc016500c737a73451163691a00ac9272219ba21bf95bb18bfb9541485f5c"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_deeponet3d_r128_w16.npz",
+      "bytes": 225406,
+      "sha256": "590f56aa80b57ddb2cabb0ee05e6616a08c9cfcb1c0d3e7dd0fe1d53b395d9d9"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225317,
+      "sha256": "f3d6e412428d847467b531b8b119dafa3dd8dd8b4d73797200ae30923feac200"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_dst_exact.npz",
+      "bytes": 225311,
+      "sha256": "6b0cc060ca16aab1bfa0a47269ac4dc8e56625462bd96498462f5b4df8a8e094"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_fno3d_w24_m8.npz",
+      "bytes": 225323,
+      "sha256": "06831d03ce4d7889f2b0bad7ccd4cbd8d1bb0973d438a2be726e2bb4366d96f0"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_linear_bank_galerkin.npz",
+      "bytes": 225321,
+      "sha256": "47e2e7561adbfeeebb00dccca9827c017874c39ad06dbb8715d9d2ebfff0a642"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_linear_bank_weak_qR.npz",
+      "bytes": 225270,
+      "sha256": "8e9b958ade8b88f79725074892a1d1ee208559b8ba13936ce962b7fd694bf958"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_nmrom_K16_q0_dense.npz",
+      "bytes": 226849,
+      "sha256": "674a7296981897d19d36410cb432f707840f0438b7c4a5af3ff64cce22dbacee"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_nmrom_K16_q32_dense.npz",
+      "bytes": 226895,
+      "sha256": "a144986e2b942149a7dc96e58a4c696bdb3187df2db0081288ffb835ab1ea352"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_nmrom_K16_q96_dense.npz",
+      "bytes": 226841,
+      "sha256": "7c82f89ce25bcfb2b4591ad0dff722edb1faa8dd5b45e2a9eed66b3fa99b0180"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_pod112_galerkin.npz",
+      "bytes": 225321,
+      "sha256": "352807851090c8bc3a0fa2cb09cf205aea9db2f8ca7afdc8199b79f87a6eba1d"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_pod128_galerkin.npz",
+      "bytes": 225275,
+      "sha256": "bf4514867d90398ec21df26d45631bd0aa6269553855a2f1e2f3097ace2a617f"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_pod16_galerkin.npz",
+      "bytes": 225273,
+      "sha256": "dee91c102075306c3131a8013a0a17c4090f6c023d6433db8be6b03cb705706b"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_pod48_galerkin.npz",
+      "bytes": 225285,
+      "sha256": "83e937f23505bcaf945b3dc2d04a2f677c0744d07077e54940394b85649dce7b"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_reference.npz",
+      "bytes": 679088,
+      "sha256": "85c3b1990858d143def25fa88f3667569786c2e27e9f0519c40e79a01aaaaaf1"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_transolver3d_w48_s32.npz",
+      "bytes": 225296,
+      "sha256": "31ba7616d06594496d12a6f21a9f07f8aad49aa1a2f39b262e361e19577fd7f3"
+    },
+    {
+      "path": "archive/out/fields/N32_case7_unet3d_w16.npz",
+      "bytes": 225273,
+      "sha256": "416627e617a2e21fddbc24d259d300e366dc68c60c6bc54861708f36f21d13de"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_deeponet3d_r128_w16.npz",
+      "bytes": 225601,
+      "sha256": "e9817896e8ed935f7e9bde387fd0270613b100d545182abc141eef971b506a51"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225451,
+      "sha256": "230670ccbad560925e8c4780ef8d6ad10860aa30378a1adfb45d88972d5d7c42"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_dst_exact.npz",
+      "bytes": 225426,
+      "sha256": "59d18e7787816b9d1685402c49f84c8bd8e223617daed735a0ed8709f0e6e46e"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_fno3d_w24_m8.npz",
+      "bytes": 225486,
+      "sha256": "1c886dd87caa0ce75cdb82ad3e5cfca7bf170c752120f4030726f4275edf6f9b"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_linear_bank_galerkin.npz",
+      "bytes": 225473,
+      "sha256": "3a3c0d3d248540c5ef189ec4db2a3f295114529aaad95500be23affbecfe7c23"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_linear_bank_weak_qR.npz",
+      "bytes": 225443,
+      "sha256": "cb2773caa004284e9c80204a16b1bb26c4b596f2d5808e6eff45d860a4325945"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_nmrom_K16_q0_dense.npz",
+      "bytes": 227005,
+      "sha256": "b872e79e8e548693dbe75a85ba3277fafc54cea43243909d187ce3562cb1897d"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_nmrom_K16_q32_dense.npz",
+      "bytes": 227036,
+      "sha256": "91dcebbbd9f4c78739b007d976c1d90a3e9249ec9ef603c08968383c8bd74b4d"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_nmrom_K16_q96_dense.npz",
+      "bytes": 227042,
+      "sha256": "1819eec75dd90929f2cc5f1055d5cf9e9bc11f8da9a191efb78e2c8c8e87c1d5"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_pod112_galerkin.npz",
+      "bytes": 225434,
+      "sha256": "dc8d9232ba4858080d1eb98e94609e003e4306713acc607d87e17f28a7a74d2a"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_pod128_galerkin.npz",
+      "bytes": 225484,
+      "sha256": "8976263f23fcc7c666967092cfdcf63a47cf3896e7390a4e35b8a6fda8df05f2"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_pod16_galerkin.npz",
+      "bytes": 225325,
+      "sha256": "8f61b23ab0d6e5e978036d6f384894d14921f7895fa806e2d8063de004bc7ccb"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_pod48_galerkin.npz",
+      "bytes": 225390,
+      "sha256": "68b76573ea306818a4337947e89160f43ea64a1859588e73ed062e15629512f0"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_reference.npz",
+      "bytes": 679527,
+      "sha256": "8fabf4519337471cdee38fd62faad9b902498ecb825cd717c1b6340efd4fbf56"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_transolver3d_w48_s32.npz",
+      "bytes": 225413,
+      "sha256": "3ba50d533a22628bb158c8af4f9ad90733cbcfc0ae7034ed3493d04bbb641016"
+    },
+    {
+      "path": "archive/out/fields/N32_case8_unet3d_w16.npz",
+      "bytes": 225503,
+      "sha256": "88fdf3edceb2a6d98d30edbeaeeaef80969fae6d2c26b3415b17d94a0308f8bc"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_deeponet3d_r128_w16.npz",
+      "bytes": 225219,
+      "sha256": "605e8d89392faf34c3f67c54331c8b2a74295ba9341ff9d6f251d2c4d1e82d3c"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 225205,
+      "sha256": "5814d5b6357e195fd1054d9a23aa731d98349c7ed7810efb06d4f8aa4c66e2e9"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_dst_exact.npz",
+      "bytes": 225187,
+      "sha256": "05527b96fa887533b2a0239209e55dea356f04abe58e3d582f837ba4b31a13ca"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_fno3d_w24_m8.npz",
+      "bytes": 225216,
+      "sha256": "2fc016f21fc48ae0ca272477f5ad87175151f7a7739f6643c01a86e77a0b3f55"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_linear_bank_galerkin.npz",
+      "bytes": 225158,
+      "sha256": "dd010a35c3574824787a552dcd99510af202bdb226c929408cfdcc2a45cf0e82"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_linear_bank_weak_qR.npz",
+      "bytes": 225153,
+      "sha256": "987ae2e350b925e922498737d1a8ceb44027025273c941ab9f486bda9c830bfe"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_nmrom_K16_q0_dense.npz",
+      "bytes": 226737,
+      "sha256": "b8aa4ad3ba48813d1969afa3dcfae7c5429a2fd71ec539bb7858c56007da4531"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_nmrom_K16_q32_dense.npz",
+      "bytes": 226750,
+      "sha256": "88a63f02bea81aaa77e4bc7e3a9da98494c1653379a9a803daf98f9ffa5aaa3f"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_nmrom_K16_q96_dense.npz",
+      "bytes": 226740,
+      "sha256": "57e3d684d14bb6bf66cd9ad96dbc4358c5b7c307c0ed86b0bf7e430e68a438b0"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_pod112_galerkin.npz",
+      "bytes": 225199,
+      "sha256": "43688e2924b0245de6fd6e73be874712899abd4a62c1d8a3d011dc4884919885"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_pod128_galerkin.npz",
+      "bytes": 225180,
+      "sha256": "c953d4659fc0d6954ccecc8f252d931103393d9bc59ede7d32a4cead0f60b9e2"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_pod16_galerkin.npz",
+      "bytes": 225162,
+      "sha256": "7e062081faec43719f65e7789d12b44dbd9eafd17992cdd2666e1c40231285d5"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_pod48_galerkin.npz",
+      "bytes": 225176,
+      "sha256": "e15e22bba5cc05e8c250c13f1191d786ccabffb6c8abb289efa6e1da4bb36b45"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_reference.npz",
+      "bytes": 678183,
+      "sha256": "f25dc00ee36e445cd13c8fae0610a372540791a207012cd9271304df0b8691aa"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_transolver3d_w48_s32.npz",
+      "bytes": 225146,
+      "sha256": "4d0fce7432db4feabcb075d8de6b5d38a170d91e2c0452486cd90669edf9040b"
+    },
+    {
+      "path": "archive/out/fields/N32_case9_unet3d_w16.npz",
+      "bytes": 225178,
+      "sha256": "23f52335595478d8fa841090afd046c52e02ca41cef0935034fdba6bdf6b60c0"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16.npz",
+      "bytes": 1892470,
+      "sha256": "69deb7349982b72474dea85e4f94dcfab0929ba52f0124e119544f9d6f354791"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1896071,
+      "sha256": "b2e831727d40a12458078d848b1226b3bbda16cf0401f07720483e1823555338"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1788760,
+      "sha256": "f74b9c34c99ccac9bfd8398694aecea9fec30410bd007f395c651716c9534a14"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1894734,
+      "sha256": "914a2dbaa156386dc31b9d4344d61154759a87f4f6cd984e96fc8bf5e3f955fa"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1894959,
+      "sha256": "654ea22a6ad837acaff6fbf99f6c6bce33dea1a5c90c5a3ef4fe15bd800070dc"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1787847,
+      "sha256": "2a3040eb128a79a1e60a539e7b5973c8c15c53ec7dff0fcbb940540ae42174aa"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_dst_exact.npz",
+      "bytes": 1894119,
+      "sha256": "86e83da377d6e9ec21acd0fa6bea146b58b291be133136c04c4d9f1ced1b8b63"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_fno3d_w24_m8.npz",
+      "bytes": 1888850,
+      "sha256": "8f71323f23c4bf02471a2cfdb3dca7fccdb10f05ed2eec642074e11f9e0d3d55"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1786225,
+      "sha256": "abf03d8de5465fd777b2e6ddf0364d2ba4cf74de69eb8247bf33ee9e46af3798"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1893373,
+      "sha256": "da2fb61446e30c4dc8b232809bf354308f80e89017bba3071cfed845273c8762"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_linear_bank_galerkin.npz",
+      "bytes": 1893746,
+      "sha256": "bae2bea81aced9ba99b6534699c52d0890507654b7e05af26b06f78c7badff00"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_linear_bank_weak_qR.npz",
+      "bytes": 1893631,
+      "sha256": "156be998f44531207414663d66a0e4c950b0fd092c635ab11c8a72e9bfc5e1cb"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_nmrom_K16_q0_dense.npz",
+      "bytes": 1895448,
+      "sha256": "0a9fa4a0d0aaefdf45f2e3337e7c12765ca85034295be84c501af214a5bc80c2"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_nmrom_K16_q32_dense.npz",
+      "bytes": 1895327,
+      "sha256": "37b8d4aaf207d6c66e811d04f93ad94e2df3be86b75378165917e0677de0b451"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_nmrom_K16_q96_dense.npz",
+      "bytes": 1895332,
+      "sha256": "0416b9feb09d76a597d10f6da5f6690f9052d0ad4f3c58c7c95c530c47f68dda"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_pod112_galerkin.npz",
+      "bytes": 1893428,
+      "sha256": "98215e2cdaf702ebab931adc4611c6034debeadae791b26e56f1d91e65fefa7d"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_pod128_galerkin.npz",
+      "bytes": 1893465,
+      "sha256": "0245ebec9fcdc494c4d9505ef8b6b2f9687d62797720f424bd3d340eb4ec27be"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_pod16_galerkin.npz",
+      "bytes": 1893098,
+      "sha256": "5dd6303121309ab34bc0fce35bdd2dc569fc0d501515268b3b0926fada9bba2b"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_pod48_galerkin.npz",
+      "bytes": 1893446,
+      "sha256": "c56bd2dcd6a12477eda6f82de9dd1475903ead551122ad12b7a37ef3f7f5950a"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_reference.npz",
+      "bytes": 5714279,
+      "sha256": "2dce397190d20e6468465257deb1f15515979eac32cab11940f6b5398ae5e893"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_transolver3d_w48_s32.npz",
+      "bytes": 1883517,
+      "sha256": "c780726e2a48cd863c107e4479f4e60fdbb42a967b463676361c4adbef37980c"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1786100,
+      "sha256": "7fa6040e525224cbaf110834f61669fc639548f194f477724cfff623c2f911cd"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_unet3d_w16.npz",
+      "bytes": 1924019,
+      "sha256": "73988c5f762a9ec8c94224d196654e8a513a158a48f364cf34be230acb5f2383"
+    },
+    {
+      "path": "archive/out/fields/N64_case0_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1786214,
+      "sha256": "2d1fb23eca353c96086d2476b3be3428873ca5b27dad13ccd031b6a4ec70a91b"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16.npz",
+      "bytes": 1892832,
+      "sha256": "e3177680e9727b8524e94ef8639f15c3f10bb85ea086125ec40c8d9a716deb51"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1894154,
+      "sha256": "952edf264eb4a8d66b90883a93fbcc523d27f4eb74c20d7836a1a678ec6fdaa4"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1787284,
+      "sha256": "80febde129577d4d2ff8d191116645b2b3c0d926569e9962c6792017ce739b2c"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1894972,
+      "sha256": "72fe5d15e57846d079ba57e845ba02f9aead8c482a4fe15d2453cddfd9ea53ff"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1893931,
+      "sha256": "6078229b482ad66ef04eafaee3a1c42b88a8fa95fb3ab8e783695a5476fb4817"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1786251,
+      "sha256": "4d6bed09d0ae22169e653586feba17e4d77ee2f3a35d1b91bda062d8a9c8c2db"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_dst_exact.npz",
+      "bytes": 1893269,
+      "sha256": "89e8784302bbbac9d7126abae0b0db316dfaaac292a2a29d82c449d98af25a32"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_fno3d_w24_m8.npz",
+      "bytes": 1889830,
+      "sha256": "1db1d1ce29cf439a138d4440a0e67716bb79413fd3a54f8fcde3571814b90799"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1785629,
+      "sha256": "6f434dfc6a6c911b2e840b5d5818ff5086e274a8612956b6d91a8d005bdd63fa"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1893088,
+      "sha256": "83a870d804b712d4ef0f564b75a367e091c62d07a42a4d00d16cbc73b3d87e03"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_linear_bank_galerkin.npz",
+      "bytes": 1893093,
+      "sha256": "7e5b32e1f4f29524dcd4b3ae1d3d28f2735d73346265d4ec8c11301f86d31db4"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_linear_bank_weak_qR.npz",
+      "bytes": 1892957,
+      "sha256": "4b054e007817cb13319117cf42911c52c5188adc4e36b5a440501f22a1475924"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_nmrom_K16_q0_dense.npz",
+      "bytes": 1894572,
+      "sha256": "b2748683f14f08e5e1d145da8f21999eede24d6a205a2d605027fff50ee72426"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_nmrom_K16_q32_dense.npz",
+      "bytes": 1894624,
+      "sha256": "78f4ddf6c19078195ecd5bb9115e9145e3cabb42abbf99603d17859cc53a95ac"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_nmrom_K16_q96_dense.npz",
+      "bytes": 1894552,
+      "sha256": "221cf3e97f243ea0d0d1c9927d977b5c9f36fb2d8241fc796a24252e780efcb1"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_pod112_galerkin.npz",
+      "bytes": 1892950,
+      "sha256": "1c4c4c3f6b98cd638fd349f117fdafa63dc8e59ab6e3c06e9481f55dacf5ca1b"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_pod128_galerkin.npz",
+      "bytes": 1893045,
+      "sha256": "dc8399f0a9fb7efdea054ff411f97db6e9da40f2fa51d6d3cd780e932ecbb544"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_pod16_galerkin.npz",
+      "bytes": 1892855,
+      "sha256": "06d14ea1ef71e5d757c8d17d3949e69c1c6daa5cca5c3cdad45417860ea29978"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_pod48_galerkin.npz",
+      "bytes": 1892897,
+      "sha256": "5312399a3b0cd9d277b168d52ee4dbf3fd7cec7ad83a4b2193281669ecbb9ec5"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_reference.npz",
+      "bytes": 5706937,
+      "sha256": "47eb21084f30ff3948a687e4201db9d2a7fc7572ee81bb776526bc4734883077"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_transolver3d_w48_s32.npz",
+      "bytes": 1885546,
+      "sha256": "0a652c05c87d050d271e2a6ac31360d4d52253c9c1e9d087ac0da9c07b78cf81"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1785773,
+      "sha256": "0e44d2adc583fae3aac2365ce99e78b0086e0f77402b8d4d52aecb4bb8f94ea4"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_unet3d_w16.npz",
+      "bytes": 1923073,
+      "sha256": "27c07068a53609c5c343685965947e8ed1ca941b27411126d9f1da76fa6a8ef0"
+    },
+    {
+      "path": "archive/out/fields/N64_case10_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1785703,
+      "sha256": "dbd65daa0117648137f443e3cc57f78a7d2fc71c223034f67a64b5742c9c05c0"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16.npz",
+      "bytes": 1891587,
+      "sha256": "ae43fb08d4b644f4c06c52f7dc74eef5f3645bca9662c566f6bda0e2df9d3dfe"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1892809,
+      "sha256": "f04014b74bcf465fbf320fe4d560705772d1b7146a41d7c6bb59e7bd76345a9e"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1785514,
+      "sha256": "b8e62c1223f33d03a2965abb70e4d58d9f39a1e5656dc1a0b90217d920d3c6bf"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1893767,
+      "sha256": "5f6702e1a51073b3f6af0793a8700487b35fc4cd5c690610b85f8eaf41e2a83e"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1892139,
+      "sha256": "8803d7ae38433fc4916300e1a27f8cdd68a3bd741219ca7a34bff50ecd3644b0"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1784584,
+      "sha256": "dfe35e7028253e29a75cc64409a1f039e7e97a0d7020b66482655f4f2e03edff"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_dst_exact.npz",
+      "bytes": 1892216,
+      "sha256": "d6cbda13447ae9d03f8db212138bcccd54a7e29a3689fd7403f416ce5a6784b3"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_fno3d_w24_m8.npz",
+      "bytes": 1888139,
+      "sha256": "c1bcabcf8b50a693ee61204d103d5828127881fc06c142197cf13e39b508e987"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1784491,
+      "sha256": "65744e950d009b7885143de421054f3c23fa91b4a6ac83706bb46bfa589e80b4"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1891584,
+      "sha256": "aa1fc10acf6d9a7847106c3eb30d5f1cd645c160198db331971647224c85073c"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_linear_bank_galerkin.npz",
+      "bytes": 1891725,
+      "sha256": "453ef50ba61fabed29921d1da7d3ce5fec0137a98e3df05a02b6d68e48fdb53e"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_linear_bank_weak_qR.npz",
+      "bytes": 1891929,
+      "sha256": "f34c10c3cf13ce8c1dda69d31c958b915fa579a6dc66b7ab68bdddbae2c34029"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_nmrom_K16_q0_dense.npz",
+      "bytes": 1893458,
+      "sha256": "cb3d02b42e26834aff99514e5890260adcd86af80e379d7af81e742916154906"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_nmrom_K16_q32_dense.npz",
+      "bytes": 1893449,
+      "sha256": "feaffc0e019dc2a60a24c91c9e3f7923222a4292bc94d5f9d301543e6f18d96e"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_nmrom_K16_q96_dense.npz",
+      "bytes": 1893388,
+      "sha256": "f925f90c3c5a4247c5cf17b5ae6f6ebfc15853e7d5f6e6e2b3df8bcacd766b31"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_pod112_galerkin.npz",
+      "bytes": 1892027,
+      "sha256": "cb165f4a6b5f3a20f0e5c61dcf3413163088c3ec8d81b3b96dbb6182407fa740"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_pod128_galerkin.npz",
+      "bytes": 1891879,
+      "sha256": "6231f6ede1aeedf0f8906bfc9271a41dd55a7f907a3af6db66b8d8d201d9d9dc"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_pod16_galerkin.npz",
+      "bytes": 1891878,
+      "sha256": "6c7772f161ab82eeb432c929c3de686e028f161a51b23623ae9d5a6e5f02f6ae"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_pod48_galerkin.npz",
+      "bytes": 1892077,
+      "sha256": "f6ec7d5589fb4432776d4737f04efe6eeb0b844f49f3d453e209561a4de39411"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_reference.npz",
+      "bytes": 5705654,
+      "sha256": "1a4a3dc92c3cdbfecd007197180b6e32e267e2b0882640b289c0498ff8ce2abe"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_transolver3d_w48_s32.npz",
+      "bytes": 1884615,
+      "sha256": "1717e252fbed4fb0747c86895120ef0d77d69eafe2a53de4c4ac22812272d746"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1784448,
+      "sha256": "f8ac0cbb269d0bda924dd1943fa9df68d24c0d07259302cc8b866b80b5267ad5"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_unet3d_w16.npz",
+      "bytes": 1922493,
+      "sha256": "252b2e27fd575d331a5e54d5cce8b4e6ed91a88147b48e5d6ce86eb4459626e1"
+    },
+    {
+      "path": "archive/out/fields/N64_case11_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1784440,
+      "sha256": "bf8970d315ecc659bfe61e834346b0e1a32bbf2344e924a022fc06d1cf3c547a"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16.npz",
+      "bytes": 1891234,
+      "sha256": "39173eaaf528d6c8b3e854f0aaa15ec969c390bc70f88bacf0eecaa2b87a4733"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1893034,
+      "sha256": "31edf7d53f8bb4d7dcbc4ec7ffaea971b07fd658790b95e8d3980a9fb4d18e22"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1785447,
+      "sha256": "370c0b305192cef50358a296a4b4b9309c58cbd0c72bc2727e5c41e59aaac5f7"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1892381,
+      "sha256": "f8f0108e5d7e7d92faefb600a76fc7838c2ffd98c3ba9b71d3c8a15e0e509a42"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1892128,
+      "sha256": "73101bfe42d8e9059bd9227bf289620f577362f895f889f32cbd69ef2cfbb7f6"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1785147,
+      "sha256": "71789da7f3701b39e1b9fa6bca3888f14a4be425f2d9b619524996696d96a70c"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_dst_exact.npz",
+      "bytes": 1891815,
+      "sha256": "6553f67d311535bb549d59c4622985585b430c02cb478a5c48b3dcee70409842"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_fno3d_w24_m8.npz",
+      "bytes": 1888527,
+      "sha256": "ed631f7140adeefad6a4df1e5273b147922035a408fff98ac7bc333e5042a20f"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1783563,
+      "sha256": "c91bdded5d06a338d4d1417f467d247d060560f696bb0505ccc89c9873de43ec"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1890928,
+      "sha256": "867baa2ee1410abfde23020cb7bd6c3c2896d83aa43fd7d8a7144a112e94ad88"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_linear_bank_galerkin.npz",
+      "bytes": 1891224,
+      "sha256": "1b54de54dc22b764db6326d224f9b77285e983615e3ad40f5ee184e80644af68"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_linear_bank_weak_qR.npz",
+      "bytes": 1891354,
+      "sha256": "773e62f2e717c7f0b6caecbc0e6ba2c953e471f0bfd7ccbb1d8003e6b1240269"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_nmrom_K16_q0_dense.npz",
+      "bytes": 1892912,
+      "sha256": "bf03beca236e419808993cee426d9492791a4f854e11020d9029c28d06604376"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_nmrom_K16_q32_dense.npz",
+      "bytes": 1892925,
+      "sha256": "5d226b09fd8e02a4ee14fc31d827c5b0bf41d71ecc3d8ee00776f6282e234f97"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_nmrom_K16_q96_dense.npz",
+      "bytes": 1892969,
+      "sha256": "d1f1e5a8f1e24e0123507a02b59b3372fad542b02f6082d4a7f07707961e505f"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_pod112_galerkin.npz",
+      "bytes": 1891410,
+      "sha256": "c4ba6075f796883980c39b9a7657fa7aee202fad7f112dbc75205353c5800f4f"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_pod128_galerkin.npz",
+      "bytes": 1891280,
+      "sha256": "11a540243d423c631b82b72ad3a82b5fc404a9f53475ba145486f63fe19ffd64"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_pod16_galerkin.npz",
+      "bytes": 1891339,
+      "sha256": "073fe495b781b5c380b2413f789095682c109c897927d053539f1e87ab767607"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_pod48_galerkin.npz",
+      "bytes": 1891372,
+      "sha256": "7526364e087491065f6c8af31dfb39dd28e343ce79d2895a69133c098d44f032"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_reference.npz",
+      "bytes": 5702436,
+      "sha256": "b7425fc02a5bf626328431ab78fcb094b8c0a8f80128fe3d464e03a13579bb09"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_transolver3d_w48_s32.npz",
+      "bytes": 1885958,
+      "sha256": "98746f16b74a1a1ac972782186940bae6f46cb56a83bf1bad14db7b0390e6879"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1784108,
+      "sha256": "ec8c4d3aa5e7fd022e90e9c736e4752eb53e6ccd0ca54808e063b4603c7dd909"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_unet3d_w16.npz",
+      "bytes": 1920789,
+      "sha256": "5c2d1bd4b87e9d11826ac1ef8b8b9d7a196ee22be8bbf3a52cd41a471ec0fa4d"
+    },
+    {
+      "path": "archive/out/fields/N64_case12_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1783614,
+      "sha256": "5d0d6da57a24d9631237be3c8d1a5923e98334b7b0118818f968f9e89f63b36e"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16.npz",
+      "bytes": 1888986,
+      "sha256": "3ffce7c108ca500efa189590dde905a48b4f82ba29fdedd76b8d83c98ae7d268"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1888926,
+      "sha256": "298e570a78adaecb2fc3f09bbd71cf4cbbea67114d5d7cf746e7e544c28c95cd"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1780574,
+      "sha256": "a2a4c22994ffac2807fae2f3c4a5a5830db1510f2032c333ecc2ec323866b841"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1889041,
+      "sha256": "c358b2ef4a52cc53a5171326e4606ae36f57040476b1d4ecf3e1df0300972c0c"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1888515,
+      "sha256": "748babc3b05f9b0148b7ea67f31306eebc4c329cad59c546e7ebc5dca59bca43"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1780526,
+      "sha256": "2660d3246b5c6712e0ff3340a83a29779b48b1618d0c47da17fc3b3d3986ae6f"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_dst_exact.npz",
+      "bytes": 1888667,
+      "sha256": "c8ac709e38cebea39bdc140a777414257d10d672be33098fd650e26cd40a836e"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_fno3d_w24_m8.npz",
+      "bytes": 1886122,
+      "sha256": "2ec4f9df18f539ff7661298ce43e29261dfdafcfe1d3e112641b6aa041055f51"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1780260,
+      "sha256": "e01b1efd53f07ec80ccc6b0f539ac8ea77332c042705dea61139f729b1b25e97"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1888034,
+      "sha256": "1bab3046ad40a75436ad6322cf04f3bcaee9c461c41c5af8470b459b743e2bd6"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_linear_bank_galerkin.npz",
+      "bytes": 1888265,
+      "sha256": "e948d2838601ddae7f4aaba08371e2debc78b8bbcbbd46a4e422a78a50f0514b"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_linear_bank_weak_qR.npz",
+      "bytes": 1888193,
+      "sha256": "5f5509b5f5f2bfab474790c483df0649a157c2a97efb5d368c29649c4aeeb1f0"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_nmrom_K16_q0_dense.npz",
+      "bytes": 1889946,
+      "sha256": "c1bf59d1421806382d3a44e5fd86539c1c4614347ffc28074ff73b17e17100a7"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_nmrom_K16_q32_dense.npz",
+      "bytes": 1889895,
+      "sha256": "db874280a994ac0ea896c22bfadddd552bb8b40b2a3da590300a40b6b13940e2"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_nmrom_K16_q96_dense.npz",
+      "bytes": 1889791,
+      "sha256": "ed9aed999ec162d70680341f58eda3ed9b28a3d2c1763cab644b6b437236c3e7"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_pod112_galerkin.npz",
+      "bytes": 1888453,
+      "sha256": "34d372f5903d4614fe115e1c06ccf7eb8197e3e2876faf8b88e5f1f4b8759a03"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_pod128_galerkin.npz",
+      "bytes": 1888457,
+      "sha256": "6b5298463f2bca9db966390715a4b9367a71a3f297d38f84259c12faa48e004c"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_pod16_galerkin.npz",
+      "bytes": 1888514,
+      "sha256": "bd625169d469c9b6293bb7741bd616c789dceb2b94eee55f986c5ddee3dd38d6"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_pod48_galerkin.npz",
+      "bytes": 1888450,
+      "sha256": "2141e7af22ee1603a3cbbf25b4eaf4d19af69d0ac62433b4d73f081957b8659d"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_reference.npz",
+      "bytes": 5686229,
+      "sha256": "af09a77190f49755e6bc927a7503b7c3d03c49ea3fa02ddb3ec6600118c955e1"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_transolver3d_w48_s32.npz",
+      "bytes": 1886666,
+      "sha256": "6a0ef718f2b572402512e652654da13fa6524c73befcbd2a851361abc25dd9f0"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1780181,
+      "sha256": "10d8dac61907c55723129fd9d869ac3911ea1344f694f082d51d623ab76d9a16"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_unet3d_w16.npz",
+      "bytes": 1915137,
+      "sha256": "c7f46f20da63519562024d9213e3904256015f64505b616ac985f43e0f0699cb"
+    },
+    {
+      "path": "archive/out/fields/N64_case13_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1780140,
+      "sha256": "22ec993b74aa51ae3e09112430adeb686a40bb185bcca2165be242af69387b9c"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16.npz",
+      "bytes": 1891711,
+      "sha256": "b6e24825064ebf07f54d26ded5b7e1cf4928129b8ebb2ca87e1dd8e292ae909b"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1892289,
+      "sha256": "5f3cc8e073de0702e392d34d7e193ec1963736e0d15867dd64e1f3c861cb13f6"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1783925,
+      "sha256": "169070db5c2a54c346c64ba07924d7214fae2a361867be53b427c7d902f97fb1"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1892117,
+      "sha256": "cd76e5ff278ab2f911456af4e12d307d1e3cd88138d3a08f1fdae23c243ad192"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1891119,
+      "sha256": "be3ecbbd6677b07ce66662fdea38d8c46c15abd21e7d60f015677057153c02ec"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1783313,
+      "sha256": "c248b4d3820e47b9ab25fc97efa9a2a7b68e73006541cdf719d0003e1c2a6d40"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_dst_exact.npz",
+      "bytes": 1890750,
+      "sha256": "7b85ae7f788a4571bd947cf6364afb4a7293c385d577660753cce78268e60489"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_fno3d_w24_m8.npz",
+      "bytes": 1888310,
+      "sha256": "d361d02f36e9b2f9a118d0c9692bb622b9982c6ee38c5a5212741304d210ac1e"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1782325,
+      "sha256": "3e45823146529b5d41596248a98d42da5bddbaa577b38a1957d6a8daa26e2390"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1890013,
+      "sha256": "cabd1af52a36ef0a81613459003ff7890df9984ce74832cb548b1b391f7193c7"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_linear_bank_galerkin.npz",
+      "bytes": 1890258,
+      "sha256": "fa6fdec8dc04588468ff924f3bf25d442da7f57569bbf081c1b208ed042b0c49"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_linear_bank_weak_qR.npz",
+      "bytes": 1890116,
+      "sha256": "cc2d04caca00aab7fae6917d9a2bfd1f82ba7d60692fdd9297e8426769c8f957"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_nmrom_K16_q0_dense.npz",
+      "bytes": 1891784,
+      "sha256": "bb0a374ff7a57470bd0ae3f92748a616603ec1299c583d60c069a5441fc5b052"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_nmrom_K16_q32_dense.npz",
+      "bytes": 1891702,
+      "sha256": "8816095f4d9e5ece4c2f1dd3e309e705a295a398ed759aec1fc8041cc5864956"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_nmrom_K16_q96_dense.npz",
+      "bytes": 1891736,
+      "sha256": "faa0d2c0835c5f831e651049caebb0bc3e41810c15cf25a19e6062a92a2fc977"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_pod112_galerkin.npz",
+      "bytes": 1890170,
+      "sha256": "735196d720e15bdbd3ffabdbf5372ab634d13ea377a3a1f12ecce69584bf5a68"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_pod128_galerkin.npz",
+      "bytes": 1890166,
+      "sha256": "8d9ce0ef1581e67509d325231317f92f60a2f201ae3d5668ba56ed5f3f0bd9af"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_pod16_galerkin.npz",
+      "bytes": 1890599,
+      "sha256": "0d8bcad0a9b93787e5aaf89e19b412c811a84ba7502272d4bc134e20fc2e47f5"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_pod48_galerkin.npz",
+      "bytes": 1890173,
+      "sha256": "661a16ee4553ae2e16b95523d3119850eee48521505794431a8b33c318c9cdac"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_reference.npz",
+      "bytes": 5694053,
+      "sha256": "82f0181132738731fe70ca01e73addea711890cd7a7f53b6da7d4c7232eb4bbf"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_transolver3d_w48_s32.npz",
+      "bytes": 1885457,
+      "sha256": "51d952fe02d5b1385d42f1f1e11944406041d3c0001062d2a1f8a80a1b0e4f67"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1782918,
+      "sha256": "1a4cf2e5e40e0fd7b9de3757e9e128d0bc3365477d6d56718e193a4d8930026f"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_unet3d_w16.npz",
+      "bytes": 1919307,
+      "sha256": "2739eb4f0aa723c9a44894a8526fce5bb40bd56ccd4cc549885969f288362937"
+    },
+    {
+      "path": "archive/out/fields/N64_case14_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1782398,
+      "sha256": "be63d54431bf58525241bc5dce5bfee4e938cc272603a98cae3386fc1cccbee9"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16.npz",
+      "bytes": 1889711,
+      "sha256": "e2436c2b33fc5a7fedef8f1b2bdb5b0e0b871f2a6916f6b5ebc574485dc5cad2"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1890235,
+      "sha256": "39dc4f29a54fadb748e356799a0fc42823370a37b81eb22597ad6d4f469f29a0"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1781694,
+      "sha256": "62a106f2c2e2c3e3eece3556fe70d258a06f125337ceee6f13acb72d3e7cfe97"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1890611,
+      "sha256": "332289d4295635cea60169605950c026c0575d4fc20c8ce4fc433abeb7c621b6"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1889716,
+      "sha256": "cd536a1a978e0769216b0820a8a6d76ab28a9f2dac594ffb7930ef5b1eb1133f"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1781215,
+      "sha256": "b299959a34a1df6e50b8767c7114991834991ba01dc89210466646703ae957fa"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_dst_exact.npz",
+      "bytes": 1889594,
+      "sha256": "d8a4104b9418666c64e913a3a987f9b44089a497d62ab1a47ee9587c88a41897"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_fno3d_w24_m8.npz",
+      "bytes": 1886284,
+      "sha256": "23f73cbdd7f8afeec6067a08f9a2e85bcf79259869248c480d8346e262db6dd1"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1780746,
+      "sha256": "b4206a8ee71c8d6f6899e15b61fee60a6f8936a658744ff400e8e98286a347bb"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1889231,
+      "sha256": "b4e0142c98d4768a42f6be557e1a370f51f528f5c860425f61cb1dd2342fe9ee"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_linear_bank_galerkin.npz",
+      "bytes": 1889231,
+      "sha256": "c2e0541775c3d1b4832f65ba7842fb2780f6ea82b1aaf50dee08562af27425a8"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_linear_bank_weak_qR.npz",
+      "bytes": 1889308,
+      "sha256": "5400fdbd2b4d7967f83e148388a2907d71c0e87f1d867fba6941094796885356"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_nmrom_K16_q0_dense.npz",
+      "bytes": 1890835,
+      "sha256": "8b1955149a794545c19b7a6ccd2ef6c8c4c322718c0ee139c2ddc7b35bb1b3a5"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_nmrom_K16_q32_dense.npz",
+      "bytes": 1890871,
+      "sha256": "11b2fede11b0277f8946b9f1de7f6d0d5fb3534d27b0b754b5bd26f30f99c0f0"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_nmrom_K16_q96_dense.npz",
+      "bytes": 1890842,
+      "sha256": "de07563959e3e352f5f68430661aae4f934512b89839aec9019f3efb5bb2faa1"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_pod112_galerkin.npz",
+      "bytes": 1889522,
+      "sha256": "4b38c93630bade95d912aef7846ae97cffd96859911475033558a8df948c60c7"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_pod128_galerkin.npz",
+      "bytes": 1889487,
+      "sha256": "c09e52a991d05f949479a16cddafb7320131bf36fb472abfdbc2a1d1ff86a5a5"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_pod16_galerkin.npz",
+      "bytes": 1889563,
+      "sha256": "d48605f70cc27c19131bd61167b5915c0b19fb3c4ae46a5a2940d188348bbb6d"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_pod48_galerkin.npz",
+      "bytes": 1889314,
+      "sha256": "18373b5c4283a6b70fa08dcb1b28ad45948b4d7a3ff839b23744214c50b4bfe0"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_reference.npz",
+      "bytes": 5688463,
+      "sha256": "4c265e7921874b4abdc009db0a54353e749bb1fdcd1d49c4e3beb1cfa354f5a1"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_transolver3d_w48_s32.npz",
+      "bytes": 1884858,
+      "sha256": "c3e3180878346bcdf3527efcff8e81771fe84b2fd20523005a59c7f7b8cd7165"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1781017,
+      "sha256": "dce012d9400cc4c7bed1f293f529859907fdcdb71112941cdcbda62ab7cfe88d"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_unet3d_w16.npz",
+      "bytes": 1916475,
+      "sha256": "35eddefa2b9bfea81e7e1d877b9fb182aa03ecb327322a81e14fa79ae0e3454b"
+    },
+    {
+      "path": "archive/out/fields/N64_case15_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1780959,
+      "sha256": "6e12fe04fe4f903361db981d686cc624dff00e5489800d5d4071b9d166f031b6"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16.npz",
+      "bytes": 1891772,
+      "sha256": "661863ac841d29169ccf902790d2a34571e1c330dbe2c04c0885a3d5f8d91c1d"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1893497,
+      "sha256": "97ebda11d5578aff76cadcd5f72338107a57a2d6cf7d2ab4253d31d3e682fb69"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1785397,
+      "sha256": "554c344eb143695c6df760c6431237a967bad0266c0a9a7714640b0f7d810b73"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1894580,
+      "sha256": "d42410878454f4ee54c1c8e7bd5291911032f9c7016d9183d200ef3b00e7ab97"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1893058,
+      "sha256": "f036750f73fd070536549c830fa932ec14b8ecb91dc4c5d0f792f18115675dc5"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1785313,
+      "sha256": "26b0e89fedd23ee83a1081e261d31939698900fbdaa3723568d7ddc1cee025ad"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_dst_exact.npz",
+      "bytes": 1892911,
+      "sha256": "16b83c3ca9d722a7bc7aea0ffaf6fa215ae8f28b9afc54915e4c15caa31dcbff"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_fno3d_w24_m8.npz",
+      "bytes": 1887187,
+      "sha256": "2a12d11c54ef89e09c75b615f206e944e2927d2c56c79483d6d386197e57c1b2"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1784921,
+      "sha256": "0e658ab19d6840535967bab9a1469601a5c10b414f3d3885d9f10d0729ea9ce3"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1892350,
+      "sha256": "4b6e8bc81d24aa263244082f20a6890d7076adfc6e192cc590d775b83bc86358"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_linear_bank_galerkin.npz",
+      "bytes": 1892664,
+      "sha256": "4417e68e2f3606bb1c195379a24eb4681e10b3cb30ed4f208780583d99bfe47c"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_linear_bank_weak_qR.npz",
+      "bytes": 1892749,
+      "sha256": "5d61d9bf51099693843c59b341ff2c8befe361edfeec20e26aed87b46640503f"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_nmrom_K16_q0_dense.npz",
+      "bytes": 1894403,
+      "sha256": "f73f8d3b489cad4ac598be3a83459f6829a7d2fef3a60fabc3288620ea23da23"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_nmrom_K16_q32_dense.npz",
+      "bytes": 1894313,
+      "sha256": "717c2c4b4c3135d91b1eefa853d8e54e929b0d84d2118e7e52ddd587623ad784"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_nmrom_K16_q96_dense.npz",
+      "bytes": 1894315,
+      "sha256": "3c04d3da4ff0431edbed2511cbf7d6cc013e0393b65a74397fe17bb15506ad6f"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_pod112_galerkin.npz",
+      "bytes": 1892657,
+      "sha256": "2a454331abe1d68f2b834d98874504f13841994846bd86a75929e3272b8bc494"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_pod128_galerkin.npz",
+      "bytes": 1892803,
+      "sha256": "b53cc744d38ac36f95f8d89e6545d1d4d0116053336fccc4fa8fa4504bb0a877"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_pod16_galerkin.npz",
+      "bytes": 1892643,
+      "sha256": "3c390b74eed8507d837d7f421394ac4e6621aee0485d67d55a43d743eeac75ae"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_pod48_galerkin.npz",
+      "bytes": 1892863,
+      "sha256": "e1ed3105069bb4f3caaf6c0485996aee93a89376c2af538d7f2b2ee80f7514d5"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_reference.npz",
+      "bytes": 5705911,
+      "sha256": "92c892a0ac4a261db9e5ca0106581005bd15ff00afed18b18fc2a085acd2f255"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_transolver3d_w48_s32.npz",
+      "bytes": 1884707,
+      "sha256": "ad9b7bede664d728c53a078981efe51af493e5239b7707c5e599cd338712d583"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1784922,
+      "sha256": "74665bb3ce4abdb2e1543bb8386f85b866f373cfa3b6bb47aed5b177154d4207"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_unet3d_w16.npz",
+      "bytes": 1923375,
+      "sha256": "12f6aaea94e392c246f55a704982eb6f997af7b572bf4a9571e5105d52cb4022"
+    },
+    {
+      "path": "archive/out/fields/N64_case1_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1784661,
+      "sha256": "642f47993d1e295541c5bf8b0729908ed488199988c2816da634ddb2afe3c7bb"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16.npz",
+      "bytes": 1888628,
+      "sha256": "c27f5e75c08f450e8ff5dd1c0d57a8da5e74d3483a80ce223c6328ff3ab27138"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1888457,
+      "sha256": "0a9a27f5dcc5eee9b1f21be9b7bd9aac6a1ef071ad075d909fbde4f31cdeaadf"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1779689,
+      "sha256": "d7ba2d7da2e6a330197b27d4be426c01f7c84fdaa9ac7f66ca0b6b95effcf08e"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1888659,
+      "sha256": "ae71ba59494f567fcb8bf725692ab47efc2092ea967fd39a2770a8fa9dbe0053"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1888305,
+      "sha256": "47d4aa25a2658fac6f7aaabb431ce23fc2560167612261d0513792402049d86a"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1779486,
+      "sha256": "290ff78933e0230a4cb157f0c2c7c5d4c68f43cb06c6ca012bb818ae99179466"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_dst_exact.npz",
+      "bytes": 1888149,
+      "sha256": "ebcf9bc392dd27f3f32da711922ddd06032b0093092342df6dbc2155965b7f3b"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_fno3d_w24_m8.npz",
+      "bytes": 1885185,
+      "sha256": "c0e496a0e7c0add5cc4005343a8670d570d9c0a2896c2b55d42fe62f8c677668"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1779452,
+      "sha256": "9780e3e9c1128575ee9d446462303e49c58f74828a90edb007d6b6bf70a8f895"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1887647,
+      "sha256": "1d3d504d7d0917162a2ffa6a3506e1f619d2f70e3d731be2821e14e13c6adc9f"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_linear_bank_galerkin.npz",
+      "bytes": 1887877,
+      "sha256": "487a324e15f76479c280ebbb91c2092049f88540da620e59b75f72a72217853f"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_linear_bank_weak_qR.npz",
+      "bytes": 1887917,
+      "sha256": "5d22fac8ea3e7eff6a72678925785967075047889d2a1a395988590ec2d90f31"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_nmrom_K16_q0_dense.npz",
+      "bytes": 1889455,
+      "sha256": "98fb04b475e5da7b7c687c1a9c9b2ec7fdd366e73e91317fda50e662bd4a3f41"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_nmrom_K16_q32_dense.npz",
+      "bytes": 1889567,
+      "sha256": "2ba3fc9192fe8c6cb5b029b367ec5417bf0c12b1c5286fa20ab9c8be20e0a257"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_nmrom_K16_q96_dense.npz",
+      "bytes": 1889650,
+      "sha256": "752e8b9a577c2ebca011fc18917297e7fd5705fea6499a6e958195904d48a14d"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_pod112_galerkin.npz",
+      "bytes": 1888303,
+      "sha256": "34b14187b4702d3188961b00f4a74b34b324209f1868259b632aea2fcd3333a6"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_pod128_galerkin.npz",
+      "bytes": 1888175,
+      "sha256": "a61aed1e38c8da39632e8e60758b2f1810fa14bbdb2ed7e7756407404020b01e"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_pod16_galerkin.npz",
+      "bytes": 1888190,
+      "sha256": "9fd5de9bb2fdf27492421dd0aee38d8432acb2df6df5b0b94da1d08fc3767f45"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_pod48_galerkin.npz",
+      "bytes": 1888252,
+      "sha256": "0bb190bf6bd4439462e0c7a72b2086965e10b7613cfbdbccaa714629b311c491"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_reference.npz",
+      "bytes": 5684561,
+      "sha256": "4f45fe38b55da9906625557b8d87ac41a14ee01ffa77e21e844a02e20691d39e"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_transolver3d_w48_s32.npz",
+      "bytes": 1883955,
+      "sha256": "42d74fdcc8f24f17230abd274aa9096676e3a5490781f9d10c9ca4c7f5eb1426"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1779346,
+      "sha256": "f74d970bbfcd26741f9732d8250d5692c3f640244483374ee1bbc070b223822a"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_unet3d_w16.npz",
+      "bytes": 1913773,
+      "sha256": "d90d8fdb275eac5d132e724f5f341a2bf7528d1bf7d9bee03045eca2d553ff83"
+    },
+    {
+      "path": "archive/out/fields/N64_case2_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1779642,
+      "sha256": "72f2e61f876ad2ec461a5e12033bd05a4698d7638c48e6ab5b0426d47bab8f94"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16.npz",
+      "bytes": 1892114,
+      "sha256": "8648a9f71d312ab4b37c9581730942bf74810b5c9700f285218896648c7aa1d7"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1893241,
+      "sha256": "4864ef424e987f496d5add61e5e00274d09904af87401322fa731b70be729ebc"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1785507,
+      "sha256": "58bbcfaa6b6b2e1d4b7dfcb55d50577f7817b996f8765e1425ffb3572af98a91"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1894475,
+      "sha256": "15973d2671732803a76eeb2b1e801e7176b95f652564d7bc06053bd656224f58"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1893012,
+      "sha256": "b1980b42bf6774d6a295bdb926be782daa63af66bbc6e925973628b1c4a731fa"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1784795,
+      "sha256": "f7015ba9acff1f9ef7037f2f6caed4f2d72156f4706480d125ad41f9eaf9174e"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_dst_exact.npz",
+      "bytes": 1892757,
+      "sha256": "2bfcb3fabf176c989ebae64930866bfa02633d5f0b036dc6088025470af982b3"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_fno3d_w24_m8.npz",
+      "bytes": 1889299,
+      "sha256": "30ccc94e5a6cb3d6f3c8de05f3d5388b627a76213a81cc82c10ab8cbb1bc2a67"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1784852,
+      "sha256": "895b6968eeab7d83a2f49a2d2cebbeeb5fe9d27229680dd5026c8fc88f0ef738"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1892439,
+      "sha256": "8fbfd717f2e7b78ada55760207223b40ea1d3a0f41f891b4dd60a063e373b445"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_linear_bank_galerkin.npz",
+      "bytes": 1892645,
+      "sha256": "68cbcb5878eda3e0517d92eaa38b8f1e38bcd16e5b6d45aa571826dfa040c744"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_linear_bank_weak_qR.npz",
+      "bytes": 1892450,
+      "sha256": "9807805597f66ec81b290ee64a4ebc6ed5a38e975d5116dbea86bc895c5aea1f"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_nmrom_K16_q0_dense.npz",
+      "bytes": 1894058,
+      "sha256": "cbe4760911153846fbaf31f7340f7d1c27a53f255fad053fb4f67b82d214491c"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_nmrom_K16_q32_dense.npz",
+      "bytes": 1894083,
+      "sha256": "a80b7702fdef6706c694b7d7cec980bfe81bf23655ce1a84ed10c3422361e89b"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_nmrom_K16_q96_dense.npz",
+      "bytes": 1894187,
+      "sha256": "6b779cf97cca4c590ffb49ba3163128b6d7e098c21f3c9a076af554a9a66dab1"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_pod112_galerkin.npz",
+      "bytes": 1892575,
+      "sha256": "af237c3a215caff312cc4ddcd02b969e0d47a06904c5ecb3802e67ac51a44bba"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_pod128_galerkin.npz",
+      "bytes": 1892461,
+      "sha256": "0b37000a9b3495b928872eaefcafd421bb322e5862c46b90fedacee1381ebea1"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_pod16_galerkin.npz",
+      "bytes": 1892403,
+      "sha256": "bc7c0523eb306d3d15c1b0b523f77079700f49f4171debbdcedfda16b288400e"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_pod48_galerkin.npz",
+      "bytes": 1892548,
+      "sha256": "0ccbb696f28a22ad6f58811c4d6ab773bf9e9e1f5eb3a9c6012611de2cfc381a"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_reference.npz",
+      "bytes": 5705199,
+      "sha256": "cc7f5e7e66dd9d0e60b732057bbf7c279e6d1db0bc09a132e6187b5ed64527b4"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_transolver3d_w48_s32.npz",
+      "bytes": 1885684,
+      "sha256": "52083166fd979d09b57ee182cf6be66c1626f8a7617dcf79f30c0487a811eef1"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1784865,
+      "sha256": "69148d23e5c4a763adf7a42c4fc330f735bab4789cc74683615fce205b45343a"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_unet3d_w16.npz",
+      "bytes": 1922365,
+      "sha256": "a8e7dd830eef32231620c1652e847ffd067b9f614fdd8083dd15980abcf4ae93"
+    },
+    {
+      "path": "archive/out/fields/N64_case3_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1784751,
+      "sha256": "39308ad24965f193fd7225d0716e45dd279482e6509d8ff8805565954eff6955"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16.npz",
+      "bytes": 1890362,
+      "sha256": "2884b219e80b1ddd40f21b6fc1f7f806456f285882dbe2f12e6b285c07ff5210"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1891172,
+      "sha256": "b615b0f80f88267d536db47890625b6f65a9c647598d116a08caef27b38ae12f"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1783711,
+      "sha256": "ae9b75d67138067602a8c53d6eb0e306593db2957ca4cc2ab4eb0569eb9398e5"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1891798,
+      "sha256": "ae162a9322e5d6890439e7d9103c2668896093b2661b60ef8888d67157140c36"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1891154,
+      "sha256": "4c705b6343b014a0559892be68ba9223045aff710fd3cd42996e5f7102c0cf63"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1783313,
+      "sha256": "e5b11e7da6556b1c623a792edfa9349372cb7860367f7107e395847f9785c3ab"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_dst_exact.npz",
+      "bytes": 1891139,
+      "sha256": "ab4ce888d7dcb10ba590597bbf534e5b959f55895103526376268b3cbbbc00ed"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_fno3d_w24_m8.npz",
+      "bytes": 1887867,
+      "sha256": "9d56f2cce1f3d01b2c4e465beb00e970c013f2dcb6189abd0bc1a194f76758cc"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1782764,
+      "sha256": "fc5bb2f54c949933ad5e76be6c1c7ce638a2176668fbc40f4d783304be6b9caa"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1890518,
+      "sha256": "cc5b991d1ee4ba912420e21eb475af4540d5b94a0e45af797f831bfa00273330"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_linear_bank_galerkin.npz",
+      "bytes": 1890644,
+      "sha256": "27d9f7f5eb9c37d1ceb1dd3367856de5a1d3c5dcf52572ab28895dde4b3832b5"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_linear_bank_weak_qR.npz",
+      "bytes": 1890785,
+      "sha256": "b759da62acc3429b18200b8ab3a4612067112260d7a3a1af6cd9608ca26bd303"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_nmrom_K16_q0_dense.npz",
+      "bytes": 1892255,
+      "sha256": "e28ac38b6510b34820d2d080c012391267015dfc982468443ad3f3991fb80a8f"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_nmrom_K16_q32_dense.npz",
+      "bytes": 1892131,
+      "sha256": "03f6ce356b16be64ab936d209a2734f053a2e80dd7fa0c449db89d61cb572cb9"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_nmrom_K16_q96_dense.npz",
+      "bytes": 1892132,
+      "sha256": "7f81b898f73d44f90f55540aadbeaaae152f0e5b2c317b570bba3e181e74fd58"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_pod112_galerkin.npz",
+      "bytes": 1890884,
+      "sha256": "0003e4c269af23ce23895a37fb4ef0231c007afb69bc2362b6ca29ba2a15a9a6"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_pod128_galerkin.npz",
+      "bytes": 1890776,
+      "sha256": "6380e3a81022580a4868b7e0e2b0f45e5090255076092571176b91ee9130f8e2"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_pod16_galerkin.npz",
+      "bytes": 1890825,
+      "sha256": "c93c2419c81feaccbae2db39e464a22631eaf2e8d1320f0a4a846952f456dce0"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_pod48_galerkin.npz",
+      "bytes": 1890878,
+      "sha256": "f2bdf9a0a3ae8f307afa98744cbfd2be29ee110b3444fdd2c3d20ee25daa94e7"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_reference.npz",
+      "bytes": 5696267,
+      "sha256": "904f3b5509bc1b4d8d6ac7e5cee6d49d1509e6b1ef20e5c5dbd5223028601335"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_transolver3d_w48_s32.npz",
+      "bytes": 1885178,
+      "sha256": "caf9bbf4047a6434d39103d83dc735459d496c2c200c6ac97975fb3c06bb20fb"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1782988,
+      "sha256": "b5e837514bf1a7ebf735ea5a632d07000d3519961d35891d8365ddc14c9dbba2"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_unet3d_w16.npz",
+      "bytes": 1919866,
+      "sha256": "80bcf4b40dffd4515bf7baff89033aa23625bc20e2e6de2d2138eb9678d480a0"
+    },
+    {
+      "path": "archive/out/fields/N64_case4_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1782781,
+      "sha256": "4817d4af0caae678a792c45f56e4315f20a5550bf59e4df3b876d1c4a94fe56b"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16.npz",
+      "bytes": 1891605,
+      "sha256": "fb55a6aa22726fd282248f7445bf415dde1568f5e98d8cf5dd51fbeec563780e"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1891140,
+      "sha256": "f3948f384ffff9c801e00ba988b62146172f7d362c2d68c2c376cb3d6d0e52a6"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1783138,
+      "sha256": "84d4fd8e515b5eef8accb4047de401dd7477987e7d85161682e10cecf0ec30c6"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1891411,
+      "sha256": "b5cdb61a3d55ec8f8911196b78c2032b1b6dad58344a914335839d4252aa4ff3"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1890197,
+      "sha256": "0734d974a60e9ff8bf988fd4291940f0840fe5753c1e4503dd926a8a0d89f4ac"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1782225,
+      "sha256": "c2ce66ed14f0f5dd254810f96c6e06c084a3c5b48316c915fd002b05105e25ce"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_dst_exact.npz",
+      "bytes": 1889898,
+      "sha256": "2f817bc0fafac559d68a6488ef1a310bc2a6ed1fa70af35c0b7a27cc64fdb428"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_fno3d_w24_m8.npz",
+      "bytes": 1886667,
+      "sha256": "4b6193d45ebf1fec964ff519d25621032f236b844d80ef1938e817724528d1ee"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1781922,
+      "sha256": "380d82ff3352fd85c26936cd101d5416899d6131cb65d44460239df6de8fecf2"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1889800,
+      "sha256": "d8cbbc0c00301128437b1ccd2d05a2c23ffc9316f73fcbd5dac8cc2fe04ccf35"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_linear_bank_galerkin.npz",
+      "bytes": 1889759,
+      "sha256": "fee7d7cbea66ae5a9a7fe264b1bb5176c6a2a6490d8ca1845be32f709e732b5a"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_linear_bank_weak_qR.npz",
+      "bytes": 1889641,
+      "sha256": "12c964579329f7a0b9eab5e3a3e7f9f2a688151980bcb27fd64a1f650c0a1218"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_nmrom_K16_q0_dense.npz",
+      "bytes": 1891218,
+      "sha256": "8054449b80240b9e6a7e4dc4b3f760cff5da40735d1a144f93752c82ca9fa54a"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_nmrom_K16_q32_dense.npz",
+      "bytes": 1891410,
+      "sha256": "f7c49af2c157ec92cc1d493e2c4204912e53ee76ae019151fc0c032be51d33de"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_nmrom_K16_q96_dense.npz",
+      "bytes": 1891196,
+      "sha256": "817bf0be8f71a7ba8d7325fa32875d6c66f4e92e8d433fb27bf2c6dc16cd94d5"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_pod112_galerkin.npz",
+      "bytes": 1889828,
+      "sha256": "780c65e3efaa264cd131b0fc88c21b7ab294834b42e1b0a9d1be95debfd5ef91"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_pod128_galerkin.npz",
+      "bytes": 1889771,
+      "sha256": "4c1ea3fd45a61f36e616d0b1da14d7b424b25ac1068255b3998717d0f36e4fe3"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_pod16_galerkin.npz",
+      "bytes": 1889952,
+      "sha256": "1f801924a0daaf6fc43beb8802be62bdf0ee4608ac4188a4f1e9d3cd255bd0a1"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_pod48_galerkin.npz",
+      "bytes": 1889839,
+      "sha256": "0d61dce7d51b05a9f90519c27745cb6da2770a6e859a427792c242603b860ea0"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_reference.npz",
+      "bytes": 5689734,
+      "sha256": "0e9f36f36498b97d29bbf196f0b12e301bf0abde1727b92c1141157b9f3313f3"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_transolver3d_w48_s32.npz",
+      "bytes": 1885355,
+      "sha256": "d2e8e79e5caf787cf62dfd8dbcd1ac9e9449a72c38a2e4ebdf0d0b360d648f37"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1781724,
+      "sha256": "e12fb20859e13b5345391438180769adf5fc80f2d842f88c2ac3e1785e032ff1"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_unet3d_w16.npz",
+      "bytes": 1917754,
+      "sha256": "994b06710be42fa9f4fd187aeec715759f612c941c3460d7d4db69365cae4e1b"
+    },
+    {
+      "path": "archive/out/fields/N64_case5_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1781997,
+      "sha256": "526cd2aac903347f1eca4f54698c8fd427cb45910a5387ec837cc7ef2376676f"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16.npz",
+      "bytes": 1889642,
+      "sha256": "dd3de8553743f9614e33917575859acb28c907ba286a1d3f88ceb7295eca3ece"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1890423,
+      "sha256": "b4fc319f67cf277e73502f016b538b4101b8f2a81961ca495cccca8b17ac20a6"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1782182,
+      "sha256": "ccf57f6d480097916634aec8b9ed4291967c9222d4474a284f800ee38aeae40b"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1889909,
+      "sha256": "94a9b58bd03053db1e324de518760bcd9f81562f184eb6fa584f573caff7e8f9"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1889116,
+      "sha256": "5742d5f3dfdb35d8799e1005bd0f2b911e22ac2e39828524230f27c7e68124f3"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1781179,
+      "sha256": "67558467f2c1e251949cd58538b57bfea9ec8351320d1ebc1006b8cfa57d26b4"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_dst_exact.npz",
+      "bytes": 1889432,
+      "sha256": "a16708cfc3cec8fbccdb673f6e4ecddef3e0c80bd00b0536e9f3768c5ff7c2ae"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_fno3d_w24_m8.npz",
+      "bytes": 1886364,
+      "sha256": "14ebd5fada6b26504c20c72ed3659a3802bbe2f95c2d138a859ab07490e5264d"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1780536,
+      "sha256": "2817b553713cc83e447e7c421711079844ddc66267db3a723990647b12a76213"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1889015,
+      "sha256": "65e230cd7825f3ef53332aaa38b195e3de6ae0fb9949079c4e213ee7d3c14f92"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_linear_bank_galerkin.npz",
+      "bytes": 1888920,
+      "sha256": "2f6784de070ae0c2c3b0d343478fa483587af2fde5cd2c227331a769ca1ba984"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_linear_bank_weak_qR.npz",
+      "bytes": 1888870,
+      "sha256": "eb2b24bb924f1f0ec3fd7378b418182d2a0c31686ba7fb26d12f557a0628682e"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_nmrom_K16_q0_dense.npz",
+      "bytes": 1890507,
+      "sha256": "fcdc86015d8cc2d6080657d08f67c2ff94b5c3105131d3d46cfc6f16f59fd8f4"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_nmrom_K16_q32_dense.npz",
+      "bytes": 1890623,
+      "sha256": "f98170fa2d7965787a17ba5a112326902e16f86570c62376991a9a85874af9eb"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_nmrom_K16_q96_dense.npz",
+      "bytes": 1890623,
+      "sha256": "c68f01b8bda734d5a81e9f0e52dbc39c3472ab55835a3adc910e36d72d8fbbfd"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_pod112_galerkin.npz",
+      "bytes": 1889040,
+      "sha256": "845cf4f4d5440189128a57084cb2fd83a23c08f2a6b1ab8159a26ef6875e1f41"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_pod128_galerkin.npz",
+      "bytes": 1888964,
+      "sha256": "10bbac8d8ba327f8e1fb8c9c4a66417f5dd1c25b44fc349e0fa312afc7c435d5"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_pod16_galerkin.npz",
+      "bytes": 1889153,
+      "sha256": "a8f28e753363a93f96cc6b03aaf3acc961a8c12f1b9ef4635f92ea2fd2d07ca7"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_pod48_galerkin.npz",
+      "bytes": 1888977,
+      "sha256": "4633f3767a2599f18a053eb3eb5bbd38858ac58c646ca9d8d0a5080a4161a7af"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_reference.npz",
+      "bytes": 5686048,
+      "sha256": "86b830492bd2836a8e650dc064d6518db160c604f52ef5419b004f839d15eeb0"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_transolver3d_w48_s32.npz",
+      "bytes": 1884989,
+      "sha256": "5063e2f4868420c9a05db6fdb783b9ed35db093153f0f3850639e06d932ce341"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1780770,
+      "sha256": "b53096ae8ea49e1574e506833055ebb738099c58252e275f5ebb935994dbe502"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_unet3d_w16.npz",
+      "bytes": 1914042,
+      "sha256": "18c85dc825f3a7b4c2c3e7de48f2ffe629d4478998b0e6873be91c7d87b0a72d"
+    },
+    {
+      "path": "archive/out/fields/N64_case6_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1780513,
+      "sha256": "94ee5d22ae6b7bd0580c12d902f61c046948651dd1e916be051310dd27dde163"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16.npz",
+      "bytes": 1889697,
+      "sha256": "3049003970df2b351b0e5d35139bf4841abf2964e63bcb52334920dc167a91c9"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1890809,
+      "sha256": "01cf7448ee363829804fbc3095c6b7449ecb2eff1b309d6363336736e426b159"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1782863,
+      "sha256": "73c3cf87294e2f55e1c6ffe1c26e2c533ef86676530c5fec8b4e9a376327b872"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1891296,
+      "sha256": "ca9cb66f4c52fab2433017e63b35a1de0eff3c1ffaf25d322477985c34d2e040"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1890783,
+      "sha256": "a1cfa2900703f59bb25109c1a268e39d371690164f15786054ca2cd3ce4bc16d"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1782241,
+      "sha256": "f90b1ca6c6e6bd3f92dd1b84244af525284fa9ede9ca13ee0a9139c0f144145d"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_dst_exact.npz",
+      "bytes": 1890713,
+      "sha256": "fdb642a71ca2f2579fa0b7424cd2947db90b75cf693f8cd864c0cc918d7519fa"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_fno3d_w24_m8.npz",
+      "bytes": 1886500,
+      "sha256": "8ce223c24c3ff72fe543bd090ef4c0a046f1ba3d58fbd5af4d2ee6c0c9b64150"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1781215,
+      "sha256": "39298bf6d1a4d84e0d75855fbc530fa3a8ec3a8642fa48ce971020bcfea86483"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1889820,
+      "sha256": "d611b502bf42252a2859165b155a07e9ab70c59a8441f45b01da6042af6deb40"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_linear_bank_galerkin.npz",
+      "bytes": 1890307,
+      "sha256": "4b29ee5b3cebdfb7b160b252ecc0984b56c937474895e95ae4b8df9d84b82c1e"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_linear_bank_weak_qR.npz",
+      "bytes": 1890386,
+      "sha256": "13942e9693d44ca6619bfada2d13ff111583e30a25c35489cced082f197790cf"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_nmrom_K16_q0_dense.npz",
+      "bytes": 1891932,
+      "sha256": "e746a7328443820d7d5331992c7e7ddef89611617be76e22c31186e68d4efd3a"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_nmrom_K16_q32_dense.npz",
+      "bytes": 1891914,
+      "sha256": "c7f6957c1223a9cb69d6d39514bd3830e14840287349b9c3b3c2a0dec74c30fd"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_nmrom_K16_q96_dense.npz",
+      "bytes": 1891896,
+      "sha256": "d72592abcef57c2301a6387f99305b07f15f7357195a7af140da87801be8b40c"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_pod112_galerkin.npz",
+      "bytes": 1890496,
+      "sha256": "1136152f57479e58a552113824838d95f6eafcb435e9cf61c1b5173bf0118862"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_pod128_galerkin.npz",
+      "bytes": 1890330,
+      "sha256": "a7576a4c52a1123133d116e3b2ff448efae6468923895d7c3076f87f06551664"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_pod16_galerkin.npz",
+      "bytes": 1890310,
+      "sha256": "e8a3d9adb3488ad39131ead39bb4180c4a0f2bc90215bdce02f9adf0bc4fd419"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_pod48_galerkin.npz",
+      "bytes": 1890490,
+      "sha256": "7475fa6d69a2798729ba8236c45f4aec36df70bdfe43b0cb27a1e8c3a6e552b2"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_reference.npz",
+      "bytes": 5696270,
+      "sha256": "afb0751210dc4b6f71e9734545a4e906928e88d6d40abf23c8290ce50fdb561f"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_transolver3d_w48_s32.npz",
+      "bytes": 1884156,
+      "sha256": "e455d913e1e2929f5b1514bdc9901ec5fa2e5b46d6a94aabe103552b35e67d4a"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1781739,
+      "sha256": "ac94a908212398214c1eea54116d685be63835f5ee7930d427bfc14b78bcb596"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_unet3d_w16.npz",
+      "bytes": 1920474,
+      "sha256": "222f60f8df66f243eb26ab702931236ab61fcc4e298b390803e2066c94d2b7c6"
+    },
+    {
+      "path": "archive/out/fields/N64_case7_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1781325,
+      "sha256": "faf8416dd60a56802f640a7e70a71a0b66013348015e84c82f9eb6335d7f3bfc"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16.npz",
+      "bytes": 1893040,
+      "sha256": "81d5d5b479461efc99d0ed0bcd45d66049accb3f7954892e85c1546ae7699b34"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1893249,
+      "sha256": "d8e5209ea1e6aaa0768d353497c2c518bac3b0c11644d2f780dc2edec2351013"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1785479,
+      "sha256": "e444b6a8a4d5b27b46ab49d1d147e888b04f1b0909280f04d65b9c9aaa00b267"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1893755,
+      "sha256": "3130d1f6661d2ee811a938a9dfea6d3363b6ea38d4b3809bfb37a7d53ec07ba6"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1891656,
+      "sha256": "a0c13470cb9ded320fb2f3474927dadcfe9bc8ef0ab76713a65bc24ddd9168fe"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1783995,
+      "sha256": "1af636241fb4c481612c8f4be6b38fad8bb4c36d5e2cbbf6224a951929630863"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_dst_exact.npz",
+      "bytes": 1891886,
+      "sha256": "f0e44c2330758543c7b9db2bd3ab123dd4ce7f26ee396b9db7285c61c200ded6"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_fno3d_w24_m8.npz",
+      "bytes": 1889639,
+      "sha256": "ed3c69dd532800663b144a3a9112dc339cc203ec55e7a9bbbb85cbaf8dec6a82"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1783890,
+      "sha256": "6b6c91a4f57f487c69052c7694976be73e6d845282955abf6bbbe1f5083917a8"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1891345,
+      "sha256": "a3685256352d1fc616bd626f0cd0752467a48aa10597bf16a5a51c6f0a91c4d7"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_linear_bank_galerkin.npz",
+      "bytes": 1891426,
+      "sha256": "89a8fd4401ee1698f932222f5cf8e144e3bdae74ccb8a8d71cd29e02ead85671"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_linear_bank_weak_qR.npz",
+      "bytes": 1891475,
+      "sha256": "41286508edba36e957a0743fc3295d856e8b627f662083d861f3f7ba11d51a2e"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_nmrom_K16_q0_dense.npz",
+      "bytes": 1893070,
+      "sha256": "84b5e757421fa4e8e2109c78990f3acb65c863d75b98f4a0d1abafbe2859f622"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_nmrom_K16_q32_dense.npz",
+      "bytes": 1892969,
+      "sha256": "395a7a74e5330900734fb4a7d9232c6509144649778fd13512b426d0bb2b86d7"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_nmrom_K16_q96_dense.npz",
+      "bytes": 1892888,
+      "sha256": "8678797a2ccaa97881b3d3d985ba1d7fd144c808508606a5b20d582b56688936"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_pod112_galerkin.npz",
+      "bytes": 1891546,
+      "sha256": "8422ea8e54474a80b95813e4a645ac48bf62c6e95121a97616a752966744b60d"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_pod128_galerkin.npz",
+      "bytes": 1891616,
+      "sha256": "b177f0be21aac15d3432b50911e0c0b18f82207331ad21b5f8a4f7b0132c781c"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_pod16_galerkin.npz",
+      "bytes": 1891509,
+      "sha256": "ea315bafc92f1406c5473d55cbd97f3f5cbd62b7f282999bc9bda4b0041a412d"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_pod48_galerkin.npz",
+      "bytes": 1891432,
+      "sha256": "4da25868165010ab528dc0b2bb71aec482e4c266cfbaaa5d7406cd04daa6ca0a"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_reference.npz",
+      "bytes": 5700221,
+      "sha256": "b2516bdd38fc4b6f85838a251b74a0a9f443015692a942cc2b8bc541c7e5bb73"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_transolver3d_w48_s32.npz",
+      "bytes": 1885728,
+      "sha256": "ea52ff4b2da0835339f642d5750013f21444c05d2caecd5845021e1a62700064"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1783954,
+      "sha256": "3d0b28de5114a80152697800fdf243340f2ae28d887eaf73e19d57e646aa6c8a"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_unet3d_w16.npz",
+      "bytes": 1922366,
+      "sha256": "af256e04894a54af0b6914a96b0afda54479f3f2789808b209674054bf77174c"
+    },
+    {
+      "path": "archive/out/fields/N64_case8_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1783862,
+      "sha256": "fbf5b8f11b520fb3feaf17ac0b1ef334141613af55a672c34bc730915e9da894"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16.npz",
+      "bytes": 1889672,
+      "sha256": "b88aad76e64625f88a34674ae40e21ac928d2daf2f05217e7c1ccfca369deabb"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16_native32_continuous_trunk.npz",
+      "bytes": 1889552,
+      "sha256": "429e203e6a0fbe3bd0bf5afb36b57f9150aca54e768784177aacc23c3fff98c8"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16_native32_interpolate.npz",
+      "bytes": 1781031,
+      "sha256": "dbbde7d8d001d3955016adb0eb07e06534b40696f1cc2cb349e5781a9b1c4a37"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16_podinit.npz",
+      "bytes": 1890085,
+      "sha256": "1ee876e4db7a276a5eefe0591127c855f0a569f2d839dd3436677eb827d0e667"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16_podinit_native32_continuous_trunk.npz",
+      "bytes": 1889818,
+      "sha256": "eefc61e92c2d592fe775c4b102bf38e9ad009ec2c2f4255b3e6f34020123f2c0"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_deeponet3d_r128_w16_podinit_native32_interpolate.npz",
+      "bytes": 1781029,
+      "sha256": "11d7e2224ae9ae9cbd9265d6de88515d688b876c923bf232f5de773d328835a4"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_dst_exact.npz",
+      "bytes": 1889417,
+      "sha256": "e6012fdcfcb290d40a9d49b286a9b91c4a8caacb7ed88b35a740107e18ce78d5"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_fno3d_w24_m8.npz",
+      "bytes": 1885615,
+      "sha256": "e8a1a78ddadd61301f64fff89bd0f20282837b044ffe73698eaecb0d438de6b9"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_fno3d_w24_m8_native32_interpolate.npz",
+      "bytes": 1780783,
+      "sha256": "985a7275fb981baef3e256c195fcea11aaa963a96db0ada44491d92747cdb03d"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_fno3d_w24_m8_physical_padding17.npz",
+      "bytes": 1889010,
+      "sha256": "99951fd09cf6b4127e109a2e858cc0002120e32d0d16ae519ae3339dff470c7d"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_linear_bank_galerkin.npz",
+      "bytes": 1889128,
+      "sha256": "337a103ec66749def7c5144ce40b4403a43a050be8090d92d8f18384f33472c7"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_linear_bank_weak_qR.npz",
+      "bytes": 1889145,
+      "sha256": "4384d0bceee89aa05724177eb18d23e2be6f1f8cdbc5967471a8c447b2f1ccd2"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_nmrom_K16_q0_dense.npz",
+      "bytes": 1890558,
+      "sha256": "aef280f0b4d62e306bac46f6d3737b8a602beeb6c78ca05d0a51c09ca4c3d004"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_nmrom_K16_q32_dense.npz",
+      "bytes": 1890657,
+      "sha256": "6064298732cec15b2a2d29837d7cb2f50cc959029592389b17f0d36ad9e47ebc"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_nmrom_K16_q96_dense.npz",
+      "bytes": 1890664,
+      "sha256": "100a5e6a7571a4619a7c2572bd0ec5c7246654abf3306467cab84cf7dd717401"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_pod112_galerkin.npz",
+      "bytes": 1889253,
+      "sha256": "561003ac017916e55503abbb8f741ab4617d3cd1f8933978ada89c50fead1806"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_pod128_galerkin.npz",
+      "bytes": 1889241,
+      "sha256": "624ad6dacd137598e322930901fac1bb988b77a33e071fcfec7175a8f57c2343"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_pod16_galerkin.npz",
+      "bytes": 1889403,
+      "sha256": "da2936ee595bdfffbc916b61614469000633e42500228e25a0ff5e94e76a2ce9"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_pod48_galerkin.npz",
+      "bytes": 1889242,
+      "sha256": "b17c3b362204370ff878c79a41d013ba336d726d7cf1098cc0595e96257cda8d"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_reference.npz",
+      "bytes": 5687895,
+      "sha256": "1e4c940e40f022b41aa419a32f024bc00eabc78a8730579b0fe89e0c48d4d308"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_transolver3d_w48_s32.npz",
+      "bytes": 1885072,
+      "sha256": "bd9c37f797393f637df5e76aa8d89a9fe485d27d1cc358420430d15df13b687b"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_transolver3d_w48_s32_native32_interpolate.npz",
+      "bytes": 1780627,
+      "sha256": "1b0edac12602f0cf2f2b735b6529bf687b9559abb3526e5a1debd5b4896d3ccb"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_unet3d_w16.npz",
+      "bytes": 1918343,
+      "sha256": "573a6ce6d02db3f92e14cc18156c19bd931af7013ea4986f91a761d24553a58b"
+    },
+    {
+      "path": "archive/out/fields/N64_case9_unet3d_w16_native32_interpolate.npz",
+      "bytes": 1780559,
+      "sha256": "da3f20368dc87282e10b9185918de2a9b549ede9c017e5cf852b796d65bc8d1d"
+    },
+    {
+      "path": "archive/out/head_K16.pkl",
+      "bytes": 1040980,
+      "sha256": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16/best.pkl",
+      "bytes": 6335344,
+      "sha256": "af6ce042b44d26b82e33e4ed1703cfe5bc17cd653ac2a720b0aaa22cebe9d02c"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16/curve.json",
+      "bytes": 411097,
+      "sha256": "4482a50a84ad4336aa053e55761c7cb1076fea8531b89d887e034a7a16421530"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16/latest.pkl",
+      "bytes": 19004551,
+      "sha256": "c7bcc34599df28e36e3b791ee2c2b23f4b9cede0ca23099630413382a2a032fb"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16/training.json",
+      "bytes": 800,
+      "sha256": "cf3f237a96d7895dcb650196c9d745f2abc05abfea74ffba10d8e6e486cd08f8"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/best.pkl",
+      "bytes": 6335340,
+      "sha256": "60852999115503cfed57e7020ef17775c7540861a1669177c5a091ad97eedaef"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/curve.json",
+      "bytes": 166070,
+      "sha256": "0b63a43f0bdd7d77f6ff918cc3a302d3379f924b39cc3acdbc0bdd88b592f454"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/latest.pkl",
+      "bytes": 19004547,
+      "sha256": "1e6c0fa4428d9a1d1c9ae378c1fff421a97e99d8c377c70553e9bd0e40289cb7"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/branch_curve.json",
+      "bytes": 995,
+      "sha256": "950a3398820ea292c487d8b5b18eec7dead3780c17b9e2dba652838fc2da1ddc"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/branch_latest.pkl",
+      "bytes": 18143191,
+      "sha256": "288dba5bc8bda58775874fc7b967773f3203c457a6751549fa7e80f1a901555c"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/branch_teacher.npz",
+      "bytes": 613408,
+      "sha256": "2d7929fe9068afa1876e5c11165a0e80a28276820c01ea45bfcb7c66a0132773"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/initialized.pkl",
+      "bytes": 6336661,
+      "sha256": "9f8597186da195431f018840a7b28396aaa2ced1109d81c335eb7b1d0a492ff6"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/pretraining.json",
+      "bytes": 4076,
+      "sha256": "31e34e08578b6f238302b0eab68eff0975577f8fb5f96e2e5f8381759579c541"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/random_initialization.pkl",
+      "bytes": 6334920,
+      "sha256": "0a9faef3e9787bd3610ebaf8d7a44e8478c977e8d1345752b5aa9f1064c6d563"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/training_teacher.npz",
+      "bytes": 29231330,
+      "sha256": "f9ee798e4929436f827282200f6b9370361d92237f9347290dcb84a88bf5005e"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/trunk_curve.json",
+      "bytes": 1852,
+      "sha256": "4ddbb66ea3e30593e63a84f06b7cf66381fcce7ed976e0ba95a9add11a455e3f"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/trunk_latest.pkl",
+      "bytes": 861355,
+      "sha256": "96f6e35b9610deb50aaf04d2dad2e6b8f0aa9ae800ad4e84c077f32d8d10d159"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/pretraining/trunk_selected.pkl",
+      "bytes": 6335556,
+      "sha256": "dcc99cb909ff2b8618860cc7fb65be6b72cec8e167cd235c52dd084145a56a39"
+    },
+    {
+      "path": "archive/out/operators/deeponet3d_r128_w16_podinit/training.json",
+      "bytes": 827,
+      "sha256": "7de9a9928e6f835ccff5c78cc97f58ca8da9407b96db546a4d6f23fb71cb316f"
+    },
+    {
+      "path": "archive/out/operators/fno3d_w24_m8/best.pkl",
+      "bytes": 75529079,
+      "sha256": "147024108ae3f26ef7cfd80be0d514ba01c9596916b8bd60297168342ad05c11"
+    },
+    {
+      "path": "archive/out/operators/fno3d_w24_m8/training.json",
+      "bytes": 1177,
+      "sha256": "0c624f9b0684efc7747ad26d4593e4d14d21988fb954ae6040b083418f721889"
+    },
+    {
+      "path": "archive/out/operators/transolver3d_w48_s32/best.pkl",
+      "bytes": 4494781,
+      "sha256": "27235f65b77e99d89617fdb082ec8115c235467fc594389820c6a1f6c43e8b46"
+    },
+    {
+      "path": "archive/out/operators/transolver3d_w48_s32/curve.json",
+      "bytes": 414167,
+      "sha256": "3ce67daf2a0c5c651db36dd6ea57645d24d36007ebcf7e14c32a8c1952cb3e50"
+    },
+    {
+      "path": "archive/out/operators/transolver3d_w48_s32/latest.pkl",
+      "bytes": 13482616,
+      "sha256": "5d544c94b56153d0c16bd37f88066e04cc7674bdd86e8d4158f52f7e235d5e50"
+    },
+    {
+      "path": "archive/out/operators/transolver3d_w48_s32/training.json",
+      "bytes": 892,
+      "sha256": "8ab8a71cf164fee6c6af039c74528d6ccf5759fc4093dca209dc9b88057dd004"
+    },
+    {
+      "path": "archive/out/operators/unet3d_w16/best.pkl",
+      "bytes": 2838268,
+      "sha256": "89eea3b0b7d975a2219419b5d1927a2dd35be46d50a842cf4c3a68c795eb332f"
+    },
+    {
+      "path": "archive/out/operators/unet3d_w16/training.json",
+      "bytes": 1132,
+      "sha256": "1c5e40db4b91f725a2953dcc26dda1c6054f902db732ef026820fe4e4af18182"
+    },
+    {
+      "path": "archive/out/result.json",
+      "bytes": 1045693,
+      "sha256": "2e2034b58fbb58c18058ef78eba279853816de54af1b0eb8500cad56d92197ad"
+    },
+    {
+      "path": "archive/out/summary.json",
+      "bytes": 74695,
+      "sha256": "2be87e5eaba56f65e12d6c3ec9dacc0c517693b0fc99fdd3798a67f5571190cb"
+    },
+    {
+      "path": "archive/out/weak_setup_N32.npz",
+      "bytes": 29722435,
+      "sha256": "79f15f80357743bdcb861a874fb1b3541bf432eab7524d96779cd26267c390c0"
+    },
+    {
+      "path": "archive/run.sbatch",
+      "bytes": 1458,
+      "sha256": "6588a6d7445237f42b818867aa90a1ac7d66179db93932bf20130c86f2fbc2c7"
+    }
+  ],
+  "scope": "Every non-cache archive file read from Git and compared by SHA256, or reconstructed from committed chunks and compared in a separate temporary directory."
+}

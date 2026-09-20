@@ -1,5 +1,15 @@
 # Poisson3D independent seeds, baseline repair and final preparation
 
+
+## Seed05 collected; selected-bundle independent confirmation prepared
+
+Seed05 completed successfully and is independently audited, retained in Git at `f47d97bcad52e59317c57573e2e0631c468bb653`, restoration-verified, and its exact remote directory deleted. See `runs/seed05/{COMPLETION,COLLECTED,audit-local,source-audit,retention-audit,diagnostics,selection}.json`. The selected states, fresh POD teacher and actual physical coefficient metric are independently audited. The new `select_development.py` generates the complete native-development candidate selection from audited result files; it selects accuracy only and does not combine timings across jobs.
+
+The next unique attempt is **seed06**, a real complete paired development panel. It preserves the stronger original K16 NM-ROM, U-Net and newly improved Transolver; it imports the independently trained FNO from seed04. It repeats the selected POD-initialized DeepONet recipe at the registered independent seed 920752. No other recipe changes are made. All CG tolerances, DST, frozen native/fine POD arrays and the separate native-trained prolonged-POD control are included. The current config is ready to stage with `cluster/stage.py seed06 --reuse-attempt seed05 --reuse-operator fno3d_w24_m8=seed04` after the source commit.
+
+After seed06 collection/audit/retention, compare both same-recipe DeepONet seeds. If the new seed is selected, its real complete selected-bundle panel is eligible for the final freeze. If the older seed remains selected, perform an additional fully reused real development replay with that exact DeepONet checkpoint and the remaining selected models before freezing. Preserve all candidate results and all training convergence qualifications. Final64 seed 920499 remains unopened.
+
+
 ## Iterative-CG baseline continuation — next development replay and final
 
 Production-mesh verification strengthened the initial CG audit. Native/transfer smokes exposed small differences between separately tolerance-stopped JAX and SciPy solutions that exceeded the initial fixed field-parity gate; see `runs/cg-replay-gate-diagnostic.json`. The new solver saves every iteration's step coefficients and dot products. NumPy independently reconstructs the exact saved recurrence and field, verifies every coefficient and stopping decision, and counts the recorded steps. A separate SciPy solve is checked against the mathematical SPD residual bound on the difference between its approximate field and the measured field; its iteration count is reported separately. This avoids mistaking different valid finite-precision trajectories for a solver failure. No production measurement had used the initial CG audit.

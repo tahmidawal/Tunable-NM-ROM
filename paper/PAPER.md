@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 09:44; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 09:45; this block is removed before submission).*
 *Populated tables (90): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -655,12 +655,10 @@ median GPU query times. All rows meet the stopping rule.
 
 <!-- section sources: none (prose only) -->
 
-Table 5 summarises the deployment-time controls of a
-frozen model. Correction rank is the accuracy control: with the test
-space fixed, the Burgers2D ladder lowers the error $2.44\times$
-for $5.16\times$ the runtime (with a smaller test space the
-same ranks give $1.22\times$, so test count is held
-fixed along the ladder). Empirical quadrature and the stopping tolerance
+Table 5 summarises the deployment-time controls.
+Correction rank is the accuracy control (with a smaller fixed test space
+the same ranks give only $1.22\times$, so test count is
+held fixed along the ladder). Empirical quadrature and the stopping tolerance
 are cost controls: they lower the runtime at little or no change in
 error (Appendix Table 11). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
@@ -717,7 +715,8 @@ Three-dimensional heat misses 1 % once $t=0$ is counted
 bank represents the initial field only to $\nHeatThreeInit %$.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
-rank study uses one checkpoint. FOM
+rank study uses one checkpoint; the multi-seed and sealed study sets
+$M=4(k+q)$, so it does not replicate that fixed-test-count study. FOM
 comparisons do not isolate the nonlinear head's contribution over the
 linear span of the same bank. Quadrature rules are validated on a finite
 set of reached states, not certified globally, and none is used in three

@@ -22,9 +22,11 @@ untracked on main) was re-run and snapshotted with its output in
 hashes); `gen_headline.py` verifies the hashes and writes one paragraph into Appendix C.2 (4608 trajectories,
 four cohorts, 0 shared vectors and 0 shared single values).
 
-**Page budget cost (please review):** to keep references on page 9 the Limitations dropped the clause "the
-multi-seed study changes the test count with the rank, so it does not replicate that intervention"; the
-Reproducibility statement, the Table 5 job note and two cross-references were shortened.
+**Page budget.** The Limitations clause on the multi-seed/sealed study ($M=4(k+q)$, so it does not
+replicate the fixed-test-count rank study) was briefly cut and is restored (binding reviewer caveat since
+2026-09-17). Room came from the "Which knob to turn" prose, which no longer repeats Table 5's
+2.44×/5.16× rank span; earlier trims (Reproducibility statement, Table 5 job note, two cross-references)
+stand. No other caveat was removed.
 
 ## 2026-09-21 (paper lane) — editorial review fixes
 

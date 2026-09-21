@@ -621,12 +621,10 @@ median GPU query times. All rows meet the stopping rule.}
 
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
-Table~\ref{tab:knobs-main} summarises the deployment-time controls of a
-frozen model. Correction rank is the accuracy control: with the test
-space fixed, the Burgers2D ladder lowers the error $\nQxmErrSpan\times$
-for $\nQxmCostSpan\times$ the runtime (with a smaller test space the
-same ranks give $\nQxmTwoFiftySixErrSpan\times$, so test count is held
-fixed along the ladder). Empirical quadrature and the stopping tolerance
+Table~\ref{tab:knobs-main} summarises the deployment-time controls.
+Correction rank is the accuracy control (with a smaller fixed test space
+the same ranks give only $\nQxmTwoFiftySixErrSpan\times$, so test count is
+held fixed along the ladder). Empirical quadrature and the stopping tolerance
 are cost controls: they lower the runtime at little or no change in
 error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
@@ -698,7 +696,8 @@ Three-dimensional heat misses 1\,\% once $t=0$ is counted
 bank represents the initial field only to $\nHeatThreeInit\,\%$.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
-rank study uses one checkpoint. FOM
+rank study uses one checkpoint; the multi-seed and sealed study sets
+$M=4(k+q)$, so it does not replicate that fixed-test-count study. FOM
 comparisons do not isolate the nonlinear head's contribution over the
 linear span of the same bank. Quadrature rules are validated on a finite
 set of reached states, not certified globally, and none is used in three

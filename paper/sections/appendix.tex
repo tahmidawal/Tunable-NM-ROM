@@ -62,7 +62,9 @@ double precision and the highest matrix-multiplication precision; all
 repetitions, including outliers, enter the median, and no time is
 borrowed from another allocation. Requested full fields and
 initialisation are charged; host transfer is included only where the
-table says complete query. The Poisson and three-dimensional heat CG comparators are
+table says complete query; for Burgers at $4096^2$, copying the six
+double-precision output fields to the host adds about
+$\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
 \texttt{expanded\_seed790715}; Table~\ref{tab:problems} separates that
 checkpoint's lineage from the job that produced the printed

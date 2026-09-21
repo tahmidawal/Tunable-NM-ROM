@@ -24,6 +24,10 @@ Heat (wide bank, batched fit) 2D & $4096^2$ & $q=32$ & $q=0$ & 11.03 & 11.33 & 1
 Burgers 2D & $256^2$ & $q=256$, EQ & $q=0$, EQ & 746.02 & 40.36 & 31.79 & GPU query & --- & \texttt{3789570} & development \\
 Burgers 2D & $512^2$ & $q=256$, EQ & $q=0$, EQ & 783.33 & 40.49 & 52.92 & GPU query & --- & \texttt{3805065} & development \\
 Burgers 2D & $1024^2$ & $q=256$, dense & $q=0$, EQ & 22053.85 & 40.27 & 81.31 & GPU query & --- & \texttt{3789572} & development \\
+Burgers 2D & $2048^2$ & $q=256$, EQ $M=544$ & $q=0$, EQ & 124.15 & 29.48 & 122.76 & GPU query & 0.99$\times$ / 2.01$\times$ (complete query); 6.07$\times$ / 25.5$\times$ (vs.\ tight Newton) & \texttt{4071616} & development \\
+Burgers 2D & $4096^2$ & $q=256$, EQ $M=1088$ & $q=0$, EQ & 107.51 & 40.73 & 523.85 & GPU query & 2.18$\times$ / 2.68$\times$ (complete query); 30.4$\times$ / 80.3$\times$ (vs.\ tight Newton) & \texttt{4079320} & development \\
+Burgers (held-out cases) 2D & $2048^2$ & $q=256$, EQ $M=1088$ & $q=0$, EQ & 114.91 & 29.19 & 164.43 & GPU query & 1.28$\times$ / 2.49$\times$ (complete query); 6.48$\times$ / 25.5$\times$ (vs.\ tight Newton) & \texttt{4077566} & held-out \\
+Burgers (held-out cases) 2D & $4096^2$ & $q=256$, EQ $M=1088$ & $q=0$, EQ & 99.96 & 40.60 & 537.39 & GPU query & 2.28$\times$ / 2.74$\times$ (complete query); 32.3$\times$ / 79.6$\times$ (vs.\ tight Newton) & \texttt{4079321} & held-out \\
 Burgers (earlier model) 2D & $1024^2$ & --- & single & --- & 41.68 & 68.04 & GPU query & --- & \texttt{3534502} & development \\
 Burgers (earlier model) 2D & $1024^2$ & --- & single & --- & 41.68 & 605.75 & GPU query & --- & \texttt{3534502} & development \\
 Poisson 3D & $32^3$ & $q=96$ & $q=0$ & 2.63 & 2.49 & 2.47 & GPU query & --- & \texttt{4028642} & accepted final \\

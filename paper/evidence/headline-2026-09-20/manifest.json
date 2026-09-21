@@ -135,5 +135,71 @@
     "read": "coordinator-supplied audited summary",
     "lane": "hires-heat",
     "role": "wide2d-training"
+  },
+  "intake_06_hires-burgers": {
+    "tree": "worktrees/2026-09-20-hires-burgers",
+    "path": "experiments/hires-burgers/reports/summary.json",
+    "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+    "status": "lane summary, final for the lane (8/8 jobs); dev6 development + hold64 held-out; hold64 timings one repetition",
+    "adapter": "hires-burgers-v1",
+    "sha256": "05a87dd121f54a52c80f6a16e9297078e587a3ff6d857c8773ca03d8b2b19afa",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-burgers",
+    "role": "summary"
+  },
+  "intake_07_hires-burgers": {
+    "tree": "worktrees/2026-09-20-hires-burgers",
+    "path": "experiments/hires-burgers/checks/hb2k02-summary.json",
+    "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+    "status": "NumPy audit of dev6 2048^2, job 4071616",
+    "adapter": "hires-burgers-v1",
+    "sha256": "62e285f523a40b03a5fb006db9e441b077f9b5b4fcc5218c563bf162564f5011",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-burgers",
+    "role": "hb2k02"
+  },
+  "intake_08_hires-burgers": {
+    "tree": "worktrees/2026-09-20-hires-burgers",
+    "path": "experiments/hires-burgers/checks/hb2kh64-summary.json",
+    "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+    "status": "NumPy audit of hold64 2048^2, job 4077566; one failed audit gate (restricted recomputation)",
+    "adapter": "hires-burgers-v1",
+    "sha256": "64bc7deed9015c9f4881d6c101f6c5fd79a6af2551121a24bf780c8523661620",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-burgers",
+    "role": "hb2kh64"
+  },
+  "intake_09_hires-burgers": {
+    "tree": "worktrees/2026-09-20-hires-burgers",
+    "path": "experiments/hires-burgers/checks/hb4k04-summary.json",
+    "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+    "status": "NumPy audit of dev6 4096^2, job 4079320",
+    "adapter": "hires-burgers-v1",
+    "sha256": "8212e2fbdd4ba981fb2140891ac7973a9cbb9852aae95e6fca4830f6fbf5aa1f",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-burgers",
+    "role": "hb4k04"
+  },
+  "intake_10_hires-burgers": {
+    "tree": "worktrees/2026-09-20-hires-burgers",
+    "path": "experiments/hires-burgers/checks/hb4kh64-summary.json",
+    "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+    "status": "NumPy audit of hold64 4096^2, job 4079321; one failed audit gate (restricted recomputation)",
+    "adapter": "hires-burgers-v1",
+    "sha256": "b3943b6b21f5d6e8537929f3535d788d771c94fac74e5b62618a71600d12fead",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-burgers",
+    "role": "hb4kh64"
+  },
+  "intake_11_bank-floor": {
+    "tree": "worktrees/2026-09-20-bank-floor",
+    "path": "experiments/bank-floor/reports/summary.json",
+    "commit": "c14192f2ec857778d7a84948ef31cc38dc868295",
+    "status": "bank-floor lane summary; used only for the incumbent Burgers bank solve on its confirmation cohort",
+    "adapter": "hires-burgers-v1",
+    "sha256": "ec33bd32380c9834cacd43560c93d84443a4eea5281eb49c37c1aca3b4dcf99c",
+    "read": "coordinator-supplied audited summary",
+    "lane": "bank-floor",
+    "role": "bank-floor-summary"
   }
 }

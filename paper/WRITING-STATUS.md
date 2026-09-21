@@ -1,6 +1,36 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — hires-heat intake — CURRENT HANDOFF (the 09-20 section below still holds otherwise)
+## 2026-09-21 (paper lane) — hires-burgers intake — CURRENT HANDOFF
+
+**State.** `main.pdf` 21 pages (appendix +1), references open page 9, 0 overfull, 0 undefined;
+`check_headline.py` PASS (now also asserts dev6 + held-out Burgers rows at 2048²/4096² and no pending
+slot), `check_rewrite.py` PASS. Only the nmrom-baselines Table 2 slot remains reserved.
+
+**What was read.** `exp/2026-09-20-hires-burgers` @ `0ab60014`, committed blobs: `reports/summary.json` and
+the per-job audits `checks/{hb2k02,hb2kh64,hb4k04,hb4kh64}-summary.json` (each asserted equal to the SHA256
+the summary records; hb2k01/hb4k03 are superseded dev6 attempts and not ingested). Bank floor:
+`exp/2026-09-20-bank-floor` @ `c14192f2` `reports/summary.json`, only `solve_burgers.inc512_full` (1.70 %
+worst evolved on the confirmation cohort). Adapter `hires-burgers-v1`. All gates asserted except the one
+failed `restricted_recomputation_tracks_full_grid` on the two hold64 jobs, whose counts (5/384, 18/1152),
+per-arm cohort-worst gap (1.2 %) and exact full-grid recheck are recomputed from the audit rows and printed
+in a footnote.
+
+**Rows.** Arms from the lane's pre-registered roles; every ratio recomputed from ms. Table 1 FOM = fastest
+same-grid converged Newton–BiCGStab with evolved error ≤ accurate (asserted equal to the lane's
+`fastest_at_least_as_accurate`). "Burgers" 2048²/4096² dev6 continue the existing series (and the figure);
+new series "Burgers (held-out cases)" ($^h$) 2048² (accurate = pre-declared q256/M1088 rung, because the
+chosen M544 arm was not run on hold64) and 4096² (chosen arm); not plotted, the figure caption says
+held-out errors are higher. Tight-Newton and complete-query ratios: Table C.3 only. Host copy ≈246 ms
+(median host−GPU over every arm of hb4k04) in Appendix C.1 text.
+
+**Prose.** Burgers paragraph + footnote; Limitations: coarse 1024² Newton faster at similar error at both
+meshes, bank-floor 1.70 %; implementation: one sentence on Cholesky/clipping/damping carry-over/quadratic
+predictor (runs above 1024²). **Claims changed because the new rows falsified them:** abstract "accurate
+Burgers setting is slower than the full-order solver" → "… up to $1024^2$"; conclusion "Accurate nonlinear
+solves remain slower than the FOM" → "… up to $1024^2$"; Burgers paragraph likewise. No new number in
+the abstract (1024² already appears there). The user should confirm those two wordings.
+
+## 2026-09-21 (paper lane) — hires-heat intake (the 09-20 section below still holds otherwise)
 
 **State.** `main.pdf` 20 pages, references open page 9, 0 overfull, 0 undefined; `check_headline.py`
 PASS (now also asserts the heat time conventions and the appendix heat table), `check_rewrite.py` PASS.

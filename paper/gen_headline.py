@@ -52,7 +52,7 @@ PENDING = [
     dict(problem='Heat', dim=3, meshes=[128], lane='hires-heat'),
     dict(problem='Burgers', dim=3, meshes=[128], lane='hires-burgers'),
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (earlier model)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers (earlier model)']
 
 
 def digest(b: bytes) -> str:
@@ -353,8 +353,97 @@ def hires_heat(parts):
     HH['h3d_init'] = [min(init), max(init)]
 
 
+HB = {}   # hires-burgers facts for captions / Limitations
+
+
+def hires_burgers(parts):
+    """Adapter for the hires-burgers lane (lane summary + per-job NumPy audit summaries; role -> (key, data)).
+
+    Arms come from the lane's pre-registered roles in ``summary['matrix']`` (chosen on dev6 / pre-declared accurate
+    rung / fast q=0); every number is then read from the per-job audit table and every ratio recomputed from ms.
+    Table 1 FOM = fastest same-grid Newton--BiCGStab arm that converged every step with worst evolved error <= the
+    accurate setting's (the lane's ``fastest_at_least_as_accurate`` for that arm, asserted).  Tight-Newton and
+    host-inclusive ratios go to the appendix only.
+    """
+    sm = parts['summary'][1]
+    src = {s['attempt']: s for s in sm['sources']}
+    T = {}
+    for role in ('hb2k02', 'hb2kh64', 'hb4k04', 'hb4kh64'):
+        key, d = parts[role]
+        assert MAN[key]['sha256'] == src[role]['sha256'] and d['job_id'] == src[role]['job_id'], role   # the audit the summary names
+        g = d['gates']
+        for name, v in g.items():
+            if name != 'restricted_recomputation_tracks_full_grid': assert v['passed'] in (True, None), (role, name)
+        assert g['log_says_backend_gpu']['passed'] and g['x64_and_highest']['passed'] and g['complete']['passed']
+        assert set(d['failed_gates']) <= {'restricted_recomputation_tracks_full_grid'}
+        T[role] = (key, d)
+    M = {(m['attempt'], m['role']): m for m in sm['matrix']}
+
+    def fom_label(a):
+        def t(x):
+            m, ex = f'{x:.0e}'.split('e'); ex = int(ex)
+            return f'10^{{{ex}}}' if m == '1' else f'{m}{{\\times}}10^{{{ex}}}'
+        s = t(a['ntol']) if a['ntol'] == a['ltol'] else t(a['ntol']) + '/' + t(a['ltol'])
+        return r'Newton--BiCGStab, tol $%s$' % s
+
+    def lab(a):
+        return f"$q={a['q']}$, EQ" + (f" $M={a['M']}$" if a['q'] else '')
+
+    plan = [  # attempt, mesh, accurate role, problem, cohort, status
+        ('hb2k02', 2048, 'chosen on dev6', 'Burgers', 'development', 'development; 6 cases, arm chosen here'),
+        ('hb4k04', 4096, 'chosen on dev6', 'Burgers', 'development', 'development; 6 cases, arm chosen here'),
+        ('hb2kh64', 2048, 'accurate rung q256/M1088', 'Burgers (held-out cases)', 'held-out', 'held-out; 64 cases, one timing repetition'),
+        ('hb4kh64', 4096, 'chosen on dev6', 'Burgers (held-out cases)', 'held-out', 'held-out; 64 cases, one timing repetition'),
+    ]
+    for att, n, arole, problem, coh, status in plan:
+        key, d = T[att]; t = d['table']; assert d['intervals'] == n
+        ma, mf = M[(att, arole)], M[(att, 'fast q=0')]
+        a, f = t[ma['arm']], t[mf['arm']]
+        assert ma['certified_primary'] and a['stalled_exits'] == f['stalled_exits'] == 0 and a['cases'] == f['cases'] == d['cohort_cases']
+        assert a['q'] == 256 and f['q'] == 0 and a['worst_evolved_percent'] <= f['worst_evolved_percent']
+        foms = {k: v for k, v in t.items() if v['family'] == 'fom' and v['mesh'] == n and v['nonlinear_converged'] and v['stalled_steps'] == 0}
+        ok = {k: v for k, v in foms.items() if v['worst_evolved_percent'] <= a['worst_evolved_percent']}
+        c = min(ok, key=lambda k: ok[k]['median_gpu_ms'])
+        assert c == ma['fastest_at_least_as_accurate'] and abs(ma['s_fastest_at_least_as_accurate_gpu'] - t[c]['median_gpu_ms'] / a['median_gpu_ms']) < 1e-9
+        tight = t[ma['tight']]
+        assert abs(ma['s_tight_gpu'] - tight['median_gpu_ms'] / a['median_gpu_ms']) < 1e-9 and abs(ma['s_tight_host'] - tight['median_host_ms'] / a['median_host_ms']) < 1e-9
+        assert abs(mf['s_tight_gpu'] - tight['median_gpu_ms'] / f['median_gpu_ms']) < 1e-9
+        fom = t[c]
+        alt = [dict(scope='complete query', accurate=fom['median_host_ms'] / a['median_host_ms'], fast=fom['median_host_ms'] / f['median_host_ms']),
+               dict(scope=r'vs.\ tight Newton', accurate=tight['median_gpu_ms'] / a['median_gpu_ms'], fast=tight['median_gpu_ms'] / f['median_gpu_ms'])]
+        row(problem, 2, n, setting(lab(f), f['worst_evolved_percent'], f['median_gpu_ms'], arm=f['name']),
+            setting(lab(a), a['worst_evolved_percent'], a['median_gpu_ms'], arm=a['name']),
+            dict(name=fom_label(fom), error_pct=fom['worst_evolved_percent'], ms=fom['median_gpu_ms'], arm=c), key, d['job_id'], coh, status,
+            'same-grid, evolved', 'GPU query', note=f"{d['cohort_cases']} cases, {a['reps']} repetitions; {d['gpu']}", alt=alt)
+        HB[(att, 'coarse')] = {k: v for k, v in t.items() if k.startswith('c') and v['family'] == 'fom' and v['mesh'] < n}
+        HB[(att, 'acc')] = a
+    # the dev6 arm chosen at 2048^2 (M=544) was not run on hold64; its 4096^2 hold64 twin is quoted so no arm is hidden
+    m544 = T['hb4kh64'][1]['table']['q256_M544_lat64_g0p001_fast_chol_clip_lamcarry_pred2']
+    assert ('hb2kh64', 'chosen on dev6') not in M and m544['cases'] == 64
+    HB['m544_hold_4096'] = m544['worst_evolved_percent']
+    # coarse-grid Newton (1024^2 interpolated) against the dev6 accurate setting at both meshes
+    for att in ('hb2k02', 'hb4k04'):
+        cc = HB[(att, 'coarse')]['c1024_nt1e-4_dt005']; acc = HB[(att, 'acc')]
+        assert cc['median_gpu_ms'] < acc['median_gpu_ms'] and cc['nonlinear_converged']
+        HB[att] = dict(coarse_err=cc['worst_evolved_percent'], coarse_ms=cc['median_gpu_ms'], acc_err=acc['worst_evolved_percent'], acc_ms=acc['median_gpu_ms'])
+    # host copy of six f64 fields at 4096^2: host minus GPU time, every arm of the dev6 job
+    t4 = T['hb4k04'][1]['table']; gaps = sorted(v['median_host_ms'] - v['median_gpu_ms'] for v in t4.values())
+    HB['host_gap_4096'] = gaps[len(gaps) // 2]; HB['host_gap_range'] = (gaps[0], gaps[-1])
+    # the failed restricted-recomputation gate: count rows and compare cohort-worst per arm
+    for att in ('hb2kh64', 'hb4kh64'):
+        rr = [x for x in T[att][1]['restricted_recheck'] if x['job_full_evolved'] > 1e-6]
+        bad = [x for x in rr if abs(x['restricted_evolved'] / x['job_full_evolved'] - 1) >= 0.05]
+        worst = defaultdict(lambda: [0., 0.])
+        for x in rr:
+            w = worst[x['name']]; w[0] = max(w[0], x['restricted_evolved']); w[1] = max(w[1], x['job_full_evolved'])
+        fg = T[att][1]['full_grid_recheck']; assert all(x['abs_diff'] < 1e-15 for x in fg)
+        HB[(att, 'gate')] = dict(bad=len(bad), rows=len(rr), worst_gap=max(abs(w[0] / w[1] - 1) for w in worst.values()))
+    bf = parts['bank-floor-summary'][1]['solve_burgers']['inc512_full']; assert bf['R'] == 512 and bf['kind'] == 'rom'
+    HB['bank_floor_confirm'] = 100 * bf['worst_evolved']['confirm']
+
+
 # ---- coordinator-supplied lane rows ----------------------------------------------------------------
-HEAT_PARTS = {}
+HEAT_PARTS = {}; BURG_PARTS = {}
 for k, v in MAN.items():
     if not k.startswith('intake_'): continue
     d = D[k]
@@ -362,12 +451,16 @@ for k, v in MAN.items():
         hires_poisson(k, d); continue
     if v.get('adapter') == 'hires-heat-v1':
         HEAT_PARTS[v['role']] = (k, d); continue
+    if v.get('adapter') == 'hires-burgers-v1':
+        BURG_PARTS[v['role']] = (k, d); continue
     assert d['schema'] == INTAKE_SCHEMA, k
     for r in d['headline_rows']:
         row(r['problem'], r['dim'], r['intervals'], r.get('fast'), r.get('accurate'), r['fom'], k, r['job_id'], r['cohort'],
             r['status'], r['error_convention'], r['timing_scope'], r.get('note', ''))
 if HEAT_PARTS:
     hires_heat(HEAT_PARTS)
+if BURG_PARTS:
+    hires_burgers(BURG_PARTS)
 
 ROWS.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], r['fom']['ms']))
 APPX.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
@@ -390,6 +483,7 @@ def marks(r):
     if 'evolved' in r['error_convention']: m += r'$^{e}$'          # evolved output times only (t = 0 excluded)
     if r['status'].startswith('provisional'): m += r'$^{p}$'
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
+    if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
     return m
 def cells(s): return [e(s['error_pct']), sp(s['speedup'])] if s else ['---', '---']
 
@@ -440,7 +534,7 @@ for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']),
     a, f = r['accurate'], r['fast']
     c = [f"{r['problem']} {r['dim']}D" + (r'$^{\ast}$' if r['appendix_only'] else ''), mesh(r), a['label'] if a else '---', f['label'] if f else '---', f"{a['ms']:.2f}" if a else '---',
          f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'],
-         (spn(r['alt']['accurate']) + r'$\times$ / ' + spn(r['alt']['fast']) + r'$\times$ (' + r['alt']['scope'] + ')') if r.get('alt') else '---',
+         '; '.join(spn(x['accurate']) + r'$\times$ / ' + spn(x['fast']) + r'$\times$ (' + x['scope'] + ')' for x in (r['alt'] if isinstance(r['alt'], list) else [r['alt']])) if r.get('alt') else '---',
          r'\texttt{' + r['job_id'] + '}', r['status'].split(';')[0]]
     tl.append(' & '.join(c) + r' \\'); tmd.append([md(re.sub(r'\\texttt\{(\w+)\}', r'\1', x)) for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
@@ -558,6 +652,21 @@ if HH:
     mac['nHeatLinErr'] = e(HH['lin_err']); mac['nHeatLinMs'] = f"{HH['lin_ms'][0]:.1f}\\mbox{{--}}{HH['lin_ms'][1]:.1f}"; mac['nHeatNmromMinMs'] = f"{HH['nmrom_min_ms']:.1f}"
     mac['nHeatThreeAllTimes'] = e(HH['h3d_all']); mac['nHeatThreeEvolvedCheck'] = e(HH['h3d_evolved'])
     mac['nHeatThreeInit'] = f"{HH['h3d_init'][0]:.1f}\\mbox{{--}}{HH['h3d_init'][1]:.1f}"
+if HB:
+    mac['nBurgHostGapMs'] = f"{HB['host_gap_4096']:.0f}"
+    mac['nBurgMFiveFourFourHold'] = e(HB['m544_hold_4096'])
+    for att, w in (('hb2k02', 'TwentyFortyEight'), ('hb4k04', 'FortyNinetySix')):
+        mac['nBurgCoarseErr' + w] = e(HB[att]['coarse_err']); mac['nBurgCoarseMs' + w] = f"{HB[att]['coarse_ms']:.0f}"
+        mac['nBurgAccMs' + w] = f"{HB[att]['acc_ms']:.0f}"
+    mac['nBurgBankFloorConfirm'] = e(HB['bank_floor_confirm'])
+    for att, w in (('hb2kh64', 'TwentyFortyEight'), ('hb4kh64', 'FortyNinetySix')):
+        g = HB[(att, 'gate')]; mac['nBurgGateBad' + w] = str(g['bad']); mac['nBurgGateRows' + w] = str(g['rows'])
+    mac['nBurgGateWorstPct'] = f"{100 * max(HB[(a, 'gate')]['worst_gap'] for a in ('hb2kh64', 'hb4kh64')):.1f}"
+    H = {(r['problem'], r['intervals']): r for r in ROWS if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
+    mac['nBurgHoldAccErrFortyNinetySix'] = e(H[('Burgers (held-out cases)', 4096)]['accurate']['error_pct'])
+    mac['nBurgDevAccErrFortyNinetySix'] = e(H[('Burgers', 4096)]['accurate']['error_pct'])
+    mac['nBurgDevAccSFortyNinetySix'] = spn(H[('Burgers', 4096)]['accurate']['speedup'])
+    mac['nBurgHoldAccSFortyNinetySix'] = spn(H[('Burgers (held-out cases)', 4096)]['accurate']['speedup'])
 mac['nHeadFasterRows'] = str(sum(1 for r in ROWS if any(r[s] and r[s]['speedup'] > 1 for s in ('fast', 'accurate'))))
 mac['nHeadRows'] = str(len(ROWS))
 mac['nHeadAccFasterSubOne'] = str(sum(1 for r in ROWS if r['accurate'] and r['accurate']['speedup'] > 1 and r['accurate']['error_pct'] < 1))
@@ -579,5 +688,5 @@ write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '
          'One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.',
     sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()},
-    heat_appendix_rows=HEAT_APPX, heat_facts=HH, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
+    heat_appendix_rows=HEAT_APPX, heat_facts=HH, burgers_facts={f'{k[0]}|{k[1]}' if isinstance(k, tuple) else k: v for k, v in HB.items() if not (isinstance(k, tuple) and k[1] in ('coarse', 'acc'))}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
 print(f'Headline: {len(ROWS)} rows, {mac["nHeadFasterRows"]} with a faster NM-ROM setting; {len(F)} failure rows; all snapshots hash-verified.')

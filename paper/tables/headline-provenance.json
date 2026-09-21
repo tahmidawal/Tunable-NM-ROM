@@ -137,6 +137,72 @@
       "read": "coordinator-supplied audited summary",
       "lane": "hires-heat",
       "role": "wide2d-training"
+    },
+    "intake_06_hires-burgers": {
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "path": "experiments/hires-burgers/reports/summary.json",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "status": "lane summary, final for the lane (8/8 jobs); dev6 development + hold64 held-out; hold64 timings one repetition",
+      "adapter": "hires-burgers-v1",
+      "sha256": "05a87dd121f54a52c80f6a16e9297078e587a3ff6d857c8773ca03d8b2b19afa",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-burgers",
+      "role": "summary"
+    },
+    "intake_07_hires-burgers": {
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "path": "experiments/hires-burgers/checks/hb2k02-summary.json",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "status": "NumPy audit of dev6 2048^2, job 4071616",
+      "adapter": "hires-burgers-v1",
+      "sha256": "62e285f523a40b03a5fb006db9e441b077f9b5b4fcc5218c563bf162564f5011",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-burgers",
+      "role": "hb2k02"
+    },
+    "intake_08_hires-burgers": {
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "path": "experiments/hires-burgers/checks/hb2kh64-summary.json",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "status": "NumPy audit of hold64 2048^2, job 4077566; one failed audit gate (restricted recomputation)",
+      "adapter": "hires-burgers-v1",
+      "sha256": "64bc7deed9015c9f4881d6c101f6c5fd79a6af2551121a24bf780c8523661620",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-burgers",
+      "role": "hb2kh64"
+    },
+    "intake_09_hires-burgers": {
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "path": "experiments/hires-burgers/checks/hb4k04-summary.json",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "status": "NumPy audit of dev6 4096^2, job 4079320",
+      "adapter": "hires-burgers-v1",
+      "sha256": "8212e2fbdd4ba981fb2140891ac7973a9cbb9852aae95e6fca4830f6fbf5aa1f",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-burgers",
+      "role": "hb4k04"
+    },
+    "intake_10_hires-burgers": {
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "path": "experiments/hires-burgers/checks/hb4kh64-summary.json",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "status": "NumPy audit of hold64 4096^2, job 4079321; one failed audit gate (restricted recomputation)",
+      "adapter": "hires-burgers-v1",
+      "sha256": "b3943b6b21f5d6e8537929f3535d788d771c94fac74e5b62618a71600d12fead",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-burgers",
+      "role": "hb4kh64"
+    },
+    "intake_11_bank-floor": {
+      "tree": "worktrees/2026-09-20-bank-floor",
+      "path": "experiments/bank-floor/reports/summary.json",
+      "commit": "c14192f2ec857778d7a84948ef31cc38dc868295",
+      "status": "bank-floor lane summary; used only for the incumbent Burgers bank solve on its confirmation cohort",
+      "adapter": "hires-burgers-v1",
+      "sha256": "ec33bd32380c9834cacd43560c93d84443a4eea5281eb49c37c1aca3b4dcf99c",
+      "read": "coordinator-supplied audited summary",
+      "lane": "bank-floor",
+      "role": "bank-floor-summary"
     }
   },
   "rows": [
@@ -790,6 +856,186 @@
       "timing_scope": "GPU query",
       "note": "",
       "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 2.37213269036348,
+        "ms": 29.481315985322,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
+        "speedup": 4.163933524353346
+      },
+      "accurate": {
+        "label": "$q=256$, EQ $M=544$",
+        "error_pct": 0.8652934857324558,
+        "ms": 124.15014486759901,
+        "arm": "q256_M544_lat64_g0p001_fast_chol_clip",
+        "speedup": 0.9887885358833294
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.04938130483311317,
+        "ms": 122.75823997333646,
+        "arm": "lean_nt3e-3_l3e-3_dt005"
+      },
+      "source": "intake_07_hires-burgers",
+      "job_id": "4071616",
+      "cohort": "development",
+      "status": "development; 6 cases, arm chosen here",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "6 cases, 5 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 0.988322267135517,
+          "fast": 2.0147612396515138
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 6.065323740589481,
+          "fast": 25.541967713991347
+        }
+      ],
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 2.414951606064111,
+        "ms": 40.726391365751624,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 12.862733728039396
+      },
+      "accurate": {
+        "label": "$q=256$, EQ $M=1088$",
+        "error_pct": 0.6042128376406513,
+        "ms": 107.51051316037774,
+        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+        "speedup": 4.872572108926071
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.04994838819809611,
+        "ms": 523.8527278415859,
+        "arm": "lean_nt3e-3_l3e-3_dt005"
+      },
+      "source": "intake_09_hires-burgers",
+      "job_id": "4079320",
+      "cohort": "development",
+      "status": "development; 6 cases, arm chosen here",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "6 cases, 5 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 2.1753884890638475,
+          "fast": 2.6778860801160063
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 30.404532502532767,
+          "fast": 80.26262043185947
+        }
+      ],
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers (held-out cases)",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 9.026025352815884,
+        "ms": 29.190955916419625,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
+        "speedup": 5.632838226422675
+      },
+      "accurate": {
+        "label": "$q=256$, EQ $M=1088$",
+        "error_pct": 1.3083877432126219,
+        "ms": 114.90617296658456,
+        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry",
+        "speedup": 1.4309756221682215
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $10^{-3}$",
+        "error_pct": 0.13033958081321567,
+        "ms": 164.42793235182762,
+        "arm": "lean_nt1e-3_l1e-3_dt005"
+      },
+      "source": "intake_08_hires-burgers",
+      "job_id": "4077566",
+      "cohort": "held-out",
+      "status": "held-out; 64 cases, one timing repetition",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "64 cases, 1 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 1.2777564150155838,
+          "fast": 2.4948376811270667
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 6.480426417053205,
+          "fast": 25.509305036368687
+        }
+      ],
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers (held-out cases)",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$, EQ",
+        "error_pct": 9.030161732936454,
+        "ms": 40.60274315997958,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 13.235258799064754
+      },
+      "accurate": {
+        "label": "$q=256$, EQ $M=1088$",
+        "error_pct": 1.3311527645946648,
+        "ms": 99.96451088227332,
+        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+        "speedup": 5.37578595574943
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.13766972263962474,
+        "ms": 537.387813674286,
+        "arm": "lean_nt3e-3_l3e-3_dt005"
+      },
+      "source": "intake_10_hires-burgers",
+      "job_id": "4079321",
+      "cohort": "held-out",
+      "status": "held-out; 64 cases, one timing repetition",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "64 cases, 1 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 2.2758457029052197,
+          "fast": 2.736178189146835
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 32.32618863315306,
+          "fast": 79.58752005175785
+        }
+      ],
       "appendix_only": null
     },
     {
@@ -1777,6 +2023,37 @@
       1.896485541942913
     ]
   },
+  "burgers_facts": {
+    "m544_hold_4096": 2.928377196657574,
+    "hb2k02": {
+      "coarse_err": 0.41731562261215943,
+      "coarse_ms": 78.40933348052204,
+      "acc_err": 0.8652934857324558,
+      "acc_ms": 124.15014486759901
+    },
+    "hb4k04": {
+      "coarse_err": 0.6268469189260948,
+      "coarse_ms": 79.75224405527115,
+      "acc_err": 0.6042128376406513,
+      "acc_ms": 107.51051316037774
+    },
+    "host_gap_4096": 245.63156813383102,
+    "host_gap_range": [
+      240.87036564014852,
+      249.39112388528883
+    ],
+    "hb2kh64|gate": {
+      "bad": 5,
+      "rows": 384,
+      "worst_gap": 0.011885438460271125
+    },
+    "hb4kh64|gate": {
+      "bad": 18,
+      "rows": 1152,
+      "worst_gap": 0.011907578914653105
+    },
+    "bank_floor_confirm": 1.703198201037747
+  },
   "failures": [
     {
       "problem": "Burgers 3D, $33^3$ (final)",
@@ -1955,9 +2232,27 @@
     "nHeatThreeAllTimes": "1.93",
     "nHeatThreeEvolvedCheck": "0.75",
     "nHeatThreeInit": "1.2\\mbox{--}1.9",
-    "nHeadFasterRows": "21",
-    "nHeadRows": "27",
-    "nHeadAccFasterSubOne": "12"
+    "nBurgHostGapMs": "246",
+    "nBurgMFiveFourFourHold": "2.93",
+    "nBurgCoarseErrTwentyFortyEight": "0.42",
+    "nBurgCoarseMsTwentyFortyEight": "78",
+    "nBurgAccMsTwentyFortyEight": "124",
+    "nBurgCoarseErrFortyNinetySix": "0.63",
+    "nBurgCoarseMsFortyNinetySix": "80",
+    "nBurgAccMsFortyNinetySix": "108",
+    "nBurgBankFloorConfirm": "1.70",
+    "nBurgGateBadTwentyFortyEight": "5",
+    "nBurgGateRowsTwentyFortyEight": "384",
+    "nBurgGateBadFortyNinetySix": "18",
+    "nBurgGateRowsFortyNinetySix": "1152",
+    "nBurgGateWorstPct": "1.2",
+    "nBurgHoldAccErrFortyNinetySix": "1.33",
+    "nBurgDevAccErrFortyNinetySix": "0.60",
+    "nBurgDevAccSFortyNinetySix": "4.87",
+    "nBurgHoldAccSFortyNinetySix": "5.38",
+    "nHeadFasterRows": "25",
+    "nHeadRows": "31",
+    "nHeadAccFasterSubOne": "13"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

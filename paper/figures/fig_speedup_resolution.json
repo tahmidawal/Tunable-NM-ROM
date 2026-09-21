@@ -1,6 +1,6 @@
 {
   "evidence": "headline-provenance.json",
-  "evidence_sha256": "02a78c4d86056977958a1ceb8b22cb4d71944ea88a984b10f705298b164eecb6",
+  "evidence_sha256": "ca99537f93a8de3af20f946b3cc46143bc70fe225fe09949ae13ac8d6a88a633",
   "series": {
     "2D|Burgers|accurate": [
       {
@@ -29,6 +29,24 @@
         "status": "development",
         "job_id": "3789572",
         "source": "burgers_panel"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 0.9887885358833294,
+        "error_pct": 0.8652934857324558,
+        "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "status": "development; 6 cases, arm chosen here",
+        "job_id": "4071616",
+        "source": "intake_07_hires-burgers"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 4.872572108926071,
+        "error_pct": 0.6042128376406513,
+        "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "status": "development; 6 cases, arm chosen here",
+        "job_id": "4079320",
+        "source": "intake_09_hires-burgers"
       }
     ],
     "2D|Burgers|fast": [
@@ -58,6 +76,24 @@
         "status": "development",
         "job_id": "3789572",
         "source": "burgers_panel"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 4.163933524353346,
+        "error_pct": 2.37213269036348,
+        "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "status": "development; 6 cases, arm chosen here",
+        "job_id": "4071616",
+        "source": "intake_07_hires-burgers"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 12.862733728039396,
+        "error_pct": 2.414951606064111,
+        "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "status": "development; 6 cases, arm chosen here",
+        "job_id": "4079320",
+        "source": "intake_09_hires-burgers"
       }
     ],
     "2D|Heat|fast": [

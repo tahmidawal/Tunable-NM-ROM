@@ -20,6 +20,10 @@
 | Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | — | 3789570 | development |
 | Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | — | 3805065 | development |
 | Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | — | 3789572 | development |
+| Burgers 2D | 2048^2 | q=256, EQ M=544 | q=0, EQ | 124.15 | 29.48 | 122.76 | GPU query | 0.99× / 2.01× (complete query); 6.07× / 25.5× (vs. tight Newton) | 4071616 | development |
+| Burgers 2D | 4096^2 | q=256, EQ M=1088 | q=0, EQ | 107.51 | 40.73 | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | 4079320 | development |
+| Burgers (held-out cases) 2D | 2048^2 | q=256, EQ M=1088 | q=0, EQ | 114.91 | 29.19 | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | 4077566 | held-out |
+| Burgers (held-out cases) 2D | 4096^2 | q=256, EQ M=1088 | q=0, EQ | 99.96 | 40.60 | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | 4079321 | held-out |
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | — | 3534502 | development |
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | — | 3534502 | development |
 | Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | — | 4028642 | accepted final |

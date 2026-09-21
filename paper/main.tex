@@ -63,7 +63,7 @@ reaches $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
 On Burgers the fast setting is $\nHeadBurgersFastS\times$ faster than
 Newton--BiCGStab at $1024^2$, and a correction ladder lowers same-grid
 error $\nQxmErrSpan\times$ for $\nQxmCostSpan\times$ the runtime; the
-accurate Burgers setting is slower than the full-order solver.
+accurate Burgers setting is slower than the full-order solver up to $1024^2$.
 Fast-setting speedup grows with resolution in every problem measured.
 The named solvers remain more accurate at their tolerances.
 Three-dimensional Burgers, Navier--Stokes and the full wave state miss
@@ -367,7 +367,9 @@ $B\,(\head(\latent)+\corr y)-b$ and $B\,[\dhead\;\;\corr]$, with $\dhead$
 from a forward-mode Jacobian-Vector Product \citep{Bradbury2018JAX}; the
 sampled Burgers advection uses the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
-projected operator.
+projected operator. The Burgers runs above $1024^2$ solve it by Cholesky
+factorisation, clip the step, carry the damping over between time
+steps and start each step from a quadratic predictor.
 
 \subsection{Training Protocol}
 
@@ -459,13 +461,19 @@ $\nHeatThreeAllTimes\,\%$ on its final cohort at $128^3$
 (Table~\ref{tab:heat-hires}). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances. Poisson (dev.\ sources) rows use development sources of a
+tolerances; the other Burgers rows use the fastest Newton setting at least
+as accurate (tight-Newton ratios for $2048^2$ and $4096^2$ are in
+Table~\ref{tab:headline-times}). $^{h}$\,64 held-out cases never used for
+selection (not the sealed final cohort). At $2048^2$ the arm chosen on
+development cases ($M=544$) was not run on held-out cases, so that
+held-out row shows the $M=1088$ rung; at $4096^2$ the $M=544$ arm reaches
+$\nBurgMFiveFourFourHold\,\%$ on them. Poisson (dev.\ sources) rows use development sources of a
 separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
 host transfer of the field dominates the NM-ROM query: the accurate
 setting's complete-query speedups are
 $\nHiresPoissonAccTotalSTwentyFortyEight\times$ and
 $\nHiresPoissonAccTotalSFortyNinetySix\times$. Dashes mark settings not
-measured and rows reserved for runs in progress. Times and settings: Table~\ref{tab:headline-times}.}
+measured. Times and settings: Table~\ref{tab:headline-times}.}
 \label{tab:headline}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline}}
 \end{table}
@@ -477,7 +485,9 @@ measured and rows reserved for runs in progress. Times and settings: Table~\ref{
 of Table~\ref{tab:headline}. The accurate Burgers setting at $1024^2$
 evaluates the residual densely because no quadrature rule is validated
 there at $q=256$; with the validated $q=128$ rule the error is
-$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$.}
+$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$. Burgers points at
+$2048^2$ and $4096^2$ are the six development cases; held-out errors are
+higher and are not plotted (Table~\ref{tab:headline}).}
 \label{fig:speedup}
 \end{figure}
 
@@ -504,8 +514,18 @@ The reduced solve costs the same at every mesh, so the fast setting
 passes Newton--BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
 faster at $1024^2$ with $\nHeadBurgersFastErr\,\%$ error. The accurate
 setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and is slower than the
-FOM at every mesh (\S\ref{sec:results:tunability} gives the cost of each
-rank).
+FOM up to $1024^2$ (\S\ref{sec:results:tunability} gives the cost of each
+rank). At $4096^2$ the accurate setting chosen on six development cases
+reaches $\nBurgDevAccErrFortyNinetySix\,\%$ and is
+$\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
+at least as accurate; on 64 held-out cases the same setting gives
+$\nBurgHoldAccErrFortyNinetySix\,\%$ at
+$\nBurgHoldAccSFortyNinetySix\times$.\footnote{A restricted-grid
+recomputation of the held-out errors disagreed with the full-grid value
+by more than 5\,\% on $\nBurgGateBadTwentyFortyEight/\nBurgGateRowsTwentyFortyEight$
+($2048^2$) and $\nBurgGateBadFortyNinetySix/\nBurgGateRowsFortyNinetySix$
+($4096^2$) rows; per-arm cohort worsts agree within
+$\nBurgGateWorstPct\,\%$ and the full-grid recomputation is exact.}
 
 \paragraph{Resolution.}
 Figure~\ref{fig:speedup} shows the pattern common to all problems: the
@@ -646,7 +666,14 @@ accurate Poisson errors are close to the frozen bank's projection floor
 ($\nHiresFloorSquare\,\%$ square, $\nHiresFloorCube\,\%$ cube), which no
 correction rank can pass; the
 L-shape accurate setting ($\nHiresLshapeAccErr\,\%$ against a floor of
-$\nHiresLshapeFloor\,\%$) is limited by the head.
+$\nHiresLshapeFloor\,\%$) is limited by the head. On Burgers a
+$1024^2$ Newton solve interpolated to the fine mesh is faster than the
+accurate setting at similar error ($\nBurgCoarseErrTwentyFortyEight\,\%$ in
+$\nBurgCoarseMsTwentyFortyEight$\,ms at $2048^2$,
+$\nBurgCoarseErrFortyNinetySix\,\%$ in $\nBurgCoarseMsFortyNinetySix$\,ms at
+$4096^2$), and the development accuracy does not carry to held-out cases:
+the free solve in the same 512-function bank reaches only
+$\nBurgBankFloorConfirm\,\%$ on a held-out cohort.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
 rank study uses one checkpoint; the multi-seed study changes the test
@@ -666,7 +693,8 @@ $\nHeadPoissonAccS\times$ faster than CG on Poisson at
 $\nHeadPoissonMesh$ with $\nHeadPoissonAccErr\,\%$ error, the fast Burgers
 setting is $\nHeadBurgersFastS\times$ faster than Newton--BiCGStab at
 $1024^2$, and fast-setting speedup grows with resolution in every
-problem measured. Accurate nonlinear solves remain slower than the FOM,
+problem measured. Accurate nonlinear solves remain slower than the FOM
+up to $1024^2$,
 and three problems miss their targets (Table~\ref{tab:failures}). Future
 work is a cheaper high-rank nonlinear solve, quadrature in three
 dimensions, reliable nonlinear initialization and unstructured meshes.

@@ -54,6 +54,60 @@
       "sha256": "075d0c5f861be98b05fa2765fc400edb789b01b7bc62dd18c73781402f9d613d",
       "adapter": "hires-heat-v1",
       "status": "training record of the wide 2D bank (job 4054869); hash listed in inputs/wide2d/SHA256SUMS"
+    },
+    {
+      "lane": "hires-burgers",
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "commit": "0ab60014",
+      "adapter": "hires-burgers-v1",
+      "role": "summary",
+      "blob_path": "experiments/hires-burgers/reports/summary.json",
+      "status": "lane summary, final for the lane (8/8 jobs); dev6 development + hold64 held-out; hold64 timings one repetition"
+    },
+    {
+      "lane": "hires-burgers",
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "commit": "0ab60014",
+      "adapter": "hires-burgers-v1",
+      "role": "hb2k02",
+      "blob_path": "experiments/hires-burgers/checks/hb2k02-summary.json",
+      "status": "NumPy audit of dev6 2048^2, job 4071616"
+    },
+    {
+      "lane": "hires-burgers",
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "commit": "0ab60014",
+      "adapter": "hires-burgers-v1",
+      "role": "hb2kh64",
+      "blob_path": "experiments/hires-burgers/checks/hb2kh64-summary.json",
+      "status": "NumPy audit of hold64 2048^2, job 4077566; one failed audit gate (restricted recomputation)"
+    },
+    {
+      "lane": "hires-burgers",
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "commit": "0ab60014",
+      "adapter": "hires-burgers-v1",
+      "role": "hb4k04",
+      "blob_path": "experiments/hires-burgers/checks/hb4k04-summary.json",
+      "status": "NumPy audit of dev6 4096^2, job 4079320"
+    },
+    {
+      "lane": "hires-burgers",
+      "tree": "worktrees/2026-09-20-hires-burgers",
+      "commit": "0ab60014",
+      "adapter": "hires-burgers-v1",
+      "role": "hb4kh64",
+      "blob_path": "experiments/hires-burgers/checks/hb4kh64-summary.json",
+      "status": "NumPy audit of hold64 4096^2, job 4079321; one failed audit gate (restricted recomputation)"
+    },
+    {
+      "lane": "bank-floor",
+      "role": "bank-floor-summary",
+      "tree": "worktrees/2026-09-20-bank-floor",
+      "commit": "c14192f2",
+      "blob_path": "experiments/bank-floor/reports/summary.json",
+      "adapter": "hires-burgers-v1",
+      "status": "bank-floor lane summary; used only for the incumbent Burgers bank solve on its confirmation cohort"
     }
   ]
 }

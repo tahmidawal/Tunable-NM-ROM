@@ -26,7 +26,7 @@ HERE = Path(__file__).resolve().parent
 STYLE = {'Poisson': ('#2a78d6', 'o'), 'Poisson (dev. sources)': ('#2a78d6', 'v'), 'Poisson, L-shape': ('#e87ba4', 'D'), 'Heat': ('#eb6834', 's'), 'Heat (wide bank)': ('#eb6834', 'P'), 'Heat (wide bank, batched fit)': ('#eb6834', 'X'), 'Burgers': ('#1baf7a', '^')}
 INK = '#2b2b2b'; MUTED = '#6b6b6b'
 LABEL = {'Heat (wide bank)': 'Heat, wide bank', 'Heat (wide bank, batched fit)': 'Heat, wide bank, batched fit'}
-NUDGE = {'Poisson': (6, 6), 'Heat (wide bank, batched fit)': (6, -1), 'Heat (wide bank)': (6, -7)}   # end labels that would otherwise touch at 4096^2
+NUDGE = {'Poisson': (6, 6), 'Burgers': (6, -8), 'Heat (wide bank, batched fit)': (6, -1), 'Heat (wide bank)': (6, -7)}   # end labels that would otherwise touch at 4096^2
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--evidence', default=str(HERE.parent / 'tables/headline-provenance.json'))

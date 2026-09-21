@@ -34,6 +34,10 @@ for (p, d, s), pts in series.items():
 for r in prov['rows']:
     if r['problem'].startswith('Heat (wide bank'): assert r['error_convention'] == 'same-grid, all times' and r['alt']['scope'].startswith('vs.')
     if r['problem'] == 'Heat' and r['dim'] == 3: assert 'evolved' in r['error_convention']
+# hires-burgers intake: held-out rows shown beside the development rows at both fine meshes; no lane slot left pending
+hb = {(r['problem'], r['intervals']) for r in prov['rows'] if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
+assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (2048, 4096)}, hb
+assert 'pending:' not in tex
 assert r'\input{tables/TH_heat_hires}' in (P / 'sections/appendix.tex').read_text()
 fails = prov['failures']; assert {f['source'] for f in fails} == {'burgers3d', 'ns3d', 'wave'}
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])

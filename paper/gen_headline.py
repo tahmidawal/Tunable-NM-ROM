@@ -105,6 +105,18 @@ ROWS = []  # headline rows
 APPX = []  # measured rows shown only in the appendix timing table (re-measures, duplicates of a final-cohort mesh)
 
 
+def rule_pick(cands, acc_err):
+    """User decision 2026-09-21 (one FOM rule for all rows): the fastest tested setting of the named solver, in the same
+    allocation, whose error is at most the accurate NM-ROM setting's.  cands: name -> dict(err, ms)."""
+    ok = {k: v for k, v in cands.items() if v['err'] <= acc_err + 1e-12}
+    return min(ok, key=lambda k: ok[k]['ms'])
+
+
+def tol_tex(x):
+    m_, ex = f'{float(x):.0e}'.split('e'); ex = int(ex)
+    return f'10^{{{ex}}}' if m_ == '1' else f'{m_}{{\\times}}10^{{{ex}}}'
+
+
 def setting(label, err, ms, **kw):
     return dict(label=label, error_pct=err, ms=ms, **kw)
 
@@ -126,12 +138,14 @@ for n in (256, 1024):
     g = cg[('Poisson2D', n)]; f, a = g['q0_m4@new_K32'], g['q256_m4@new_K32']
     assert f['cg'] == a['cg'] and f['cg_ms'] == a['cg_ms'] and f['job_id'] == a['job_id']
     row('Poisson', 2, n, setting('$q=0$', f['error_pct'], f['method_ms']), setting('$q=256$', a['error_pct'], a['method_ms']),
-        dict(name='CG, rtol $10^{-2}$', error_pct=a['cg_error_pct'], ms=a['cg_ms']), 'paired_cg', a['job_id'],
+        dict(name='CG, rtol $10^{-2}$', error_pct=a['cg_error_pct'], ms=a['cg_ms'], arm=a['cg'], candidates={a['cg']: dict(err=a['cg_error_pct'], ms=a['cg_ms'])},
+             selection='record: ' + D['paired_cg']['selection']), 'paired_cg', a['job_id'],
         'development', 'development', 'same-grid', 'GPU query')
 for n in (64, 256, 1024):
     h = cg[('Heat2D', n)]['nmrom_cholesky']
     row('Heat', 2, n, setting('single', h['error_pct'], h['method_ms']), None,
-        dict(name='CN--CG, rtol $10^{-2}$', error_pct=h['cg_error_pct'], ms=h['cg_ms']), 'paired_cg', h['job_id'],
+        dict(name='CN--CG, rtol $10^{-2}$', error_pct=h['cg_error_pct'], ms=h['cg_ms'], arm=h['cg'], candidates={h['cg']: dict(err=h['cg_error_pct'], ms=h['cg_ms'])},
+             selection='record: ' + D['paired_cg']['selection']), 'paired_cg', h['job_id'],
         'development', 'development; earlier checkpoint, one setting', 'refined reference', 'GPU query')
 
 # ---- L-shaped Poisson ------------------------------------------------------------------------
@@ -140,13 +154,12 @@ for r in D['lshape']:
     if r.get('test_modes') == 257 and r['metric'] in ('worst_same_grid', 'median_total_ms'):
         V[(r['mesh'], r['subject'])][r['metric']] = r['value']; ljob[r['mesh']] = r['job_id']
 for n in (256, 512):
-    cands = [s for (m, s) in V if m == n and s.startswith('fom_cg_gpu_r')]
-    ref = min(cands, key=lambda s: V[(n, s)]['median_total_ms']); c = V[(n, ref)]
     f, a = V[(n, 'neural_q0@head_sdf_R512_K16')], V[(n, 'neural_q64@head_sdf_R512_K16')]
-    tol = ref.split('_r')[1]; assert tol == '0.01'
+    cands = {s: dict(err=100 * V[(n, s)]['worst_same_grid'], ms=V[(n, s)]['median_total_ms']) for (m, s) in V if m == n and s.startswith('fom_cg_gpu_r')}
+    ref = rule_pick(cands, 100 * a['worst_same_grid']); c = V[(n, ref)]
     row('Poisson, L-shape', 2, n, setting('$q=0$', 100 * f['worst_same_grid'], f['median_total_ms']),
         setting('$q=64$', 100 * a['worst_same_grid'], a['median_total_ms']),
-        dict(name='CG, rtol $10^{-2}$', error_pct=100 * c['worst_same_grid'], ms=c['median_total_ms']), 'lshape', ljob[n],
+        dict(name='CG, rtol $' + tol_tex(ref.split('_r')[1]) + '$', error_pct=100 * c['worst_same_grid'], ms=c['median_total_ms'], arm=ref, candidates=cands), 'lshape', ljob[n],
         'development', 'development', 'same-grid', 'complete query')
 
 # ---- Burgers 2D: one frozen model, three meshes -------------------------------------------------
@@ -169,7 +182,8 @@ for n in (256, 512, 1024):
     row('Burgers', 2, n, setting(lab(fs), roms[fs]['worst_evolved_percent'], roms[fs]['median_gpu_ms'], arm=fs),
         setting(lab(as_), roms[as_]['worst_evolved_percent'], roms[as_]['median_gpu_ms'], arm=as_,
                 eq='dense' if 'dense' in as_ else {'certified in one draw': 'single-draw', 'confirmed (3/3)': 'confirmed'}[roms[as_]['rule_status']]),
-        dict(name='Newton--BiCGStab, tol $10^{-%s}$' % cs[5], error_pct=ok[cs]['worst_evolved_percent'], ms=ok[cs]['median_gpu_ms'], arm=cs),
+        dict(name='Newton--BiCGStab, tol $10^{-%s}$' % cs[5], error_pct=ok[cs]['worst_evolved_percent'], ms=ok[cs]['median_gpu_ms'], arm=cs,
+             candidates={k: dict(err=v['worst_evolved_percent'], ms=v['median_gpu_ms']) for k, v in foms.items()}),
         'burgers_panel', next(iter(pjob[(n, cs)])), 'development', 'development', 'same-grid, evolved', 'GPU query')
 
 # ---- Burgers 2D, earlier model, tight and relaxed Newton (one NM-ROM setting) ---------------------
@@ -178,20 +192,24 @@ b = D['burgers_iter']; S = {}
 for name in ('nmrom', 'fft_tight', 'fft_loose'):
     calls = [r for r in b['invocations'] if r['name'] == name]; assert len(calls) == 12
     S[name] = (100 * max(r['error']['fixed_initial_max'] for r in calls), 1000 * median(r['gpu_seconds'] for r in calls))
+_bc = {k: dict(err=S[k][0], ms=S[k][1]) for k in ('fft_loose', 'fft_tight')}
+_bpick = rule_pick(_bc, S['nmrom'][0])
 for name, title in (('fft_loose', 'Newton--BiCGStab, relaxed'), ('fft_tight', 'Newton--BiCGStab, tight')):
-    row('Burgers (earlier model)', 2, 1024, setting('single', *S['nmrom']), None, dict(name=title, error_pct=S[name][0], ms=S[name][1]),
-        'burgers_iter', b['job_id'], 'development', 'development; earlier model, stalled exits permitted', 'refined reference', 'GPU query')
+    row('Burgers (earlier model)', 2, 1024, setting('single', *S['nmrom']), None, dict(name=title, error_pct=S[name][0], ms=S[name][1], arm=name, candidates=_bc),
+        'burgers_iter', b['job_id'], 'development', 'development; earlier model, stalled exits permitted', 'refined reference', 'GPU query',
+        appendix_only=None if name == _bpick else 'not the rule\'s full-order setting (a faster setting of the same solver is at least as accurate)')
 
 # ---- Poisson 3D accepted final -------------------------------------------------------------------
 p3 = D['poisson3d']; assert p3['final_cohort_opened']
 pr = {(r['intervals'], r['method']): r for r in p3['rows']}; pc = {(r['intervals'], r['method']): r for r in p3['cg_controls']}
 for n in (32, 64):
     f, a = pr[(n, 'nmrom_K16_q0_dense')], pr[(n, 'nmrom_K16_q96_dense')]
-    c = pc[(n, a['matched_cg_method'])]; assert c['cg_failed_invocations'] == 0 and f['nonstationary_cases'] == a['nonstationary_cases'] == 0
-    assert c['method'] == 'cg_identity_plain_rtol1e-02'
+    cands = {k[1]: dict(err=100 * v['same_grid_error_worst'], ms=v['device_ms_median']) for k, v in pc.items() if k[0] == n and v['cg_failed_invocations'] == 0}
+    c = pc[(n, rule_pick(cands, 100 * a['same_grid_error_worst']))]; assert f['nonstationary_cases'] == a['nonstationary_cases'] == 0
+    assert c['method'] == a['matched_cg_method']
     row('Poisson', 3, n, setting('$q=0$', 100 * f['same_grid_error_worst'], f['device_ms_median']),
         setting('$q=96$', 100 * a['same_grid_error_worst'], a['device_ms_median']),
-        dict(name='CG, rtol $10^{-2}$', error_pct=100 * c['same_grid_error_worst'], ms=c['device_ms_median']), 'poisson3d', p3['job_id'],
+        dict(name='CG, rtol $' + tol_tex(c['method'].split('rtol')[1]) + '$', error_pct=100 * c['same_grid_error_worst'], ms=c['device_ms_median'], arm=c['method'], candidates=cands), 'poisson3d', p3['job_id'],
         'final', 'accepted final', 'same-grid', 'GPU query')
 
 # ---- Heat 3D accepted final ----------------------------------------------------------------------
@@ -233,18 +251,23 @@ def hires_poisson(key, d):
     ]
     for attempt, lm, problem, dim, n, scope, only in plan:
         assert attempt in audited, attempt
-        v = verdict[(attempt, lm)]; assert not v.get('withdrawn_as_bar_verdict') and v['comparator'] == 'cg_0.01'
+        v = verdict[(attempt, lm)]; assert not v.get('withdrawn_as_bar_verdict')
         acc = R_[(attempt, lm, v['arm'])]; q = acc['q']
-        fast = R_[(attempt, lm, v['arm'].replace(f'rom_q{q}_', 'rom_q0_'))]; fom = R_[(attempt, lm, 'cg_0.01')]
+        fast = R_[(attempt, lm, v['arm'].replace(f'rom_q{q}_', 'rom_q0_'))]
+        _use = 'median_device_ms' if scope == 'device' else 'median_total_ms'
+        cands = {k[2]: dict(err=100 * r_['worst_same_grid'], ms=r_[_use]) for k, r_ in R_.items()
+                 if k[0] == attempt and k[1] == lm and r_['family'] == 'cg' and r_['cases'] == acc['cases']}
+        fom = R_[(attempt, lm, rule_pick(cands, 100 * acc['worst_same_grid']))]
         assert fast['q'] == 0 and acc['family'] == fast['family'] == 'nm-rom' and fom['family'] == 'cg'
         assert q == max(r['q'] for (a, m, _), r in R_.items() if a == attempt and m == lm and r['family'] == 'nm-rom' and not _.count('m4') and not _.count('m8'))
         assert acc['cases'] == fast['cases'] == fom['cases'] and 'development' in acc['status']
         use, other = ('median_device_ms', 'median_total_ms') if scope == 'device' else ('median_total_ms', 'median_device_ms')
-        sd = acc['speedups']['named_cg_1e-2']; assert abs(sd[scope] - fom[use] / acc[use]) < 1e-9       # lane ratio reproduces
+        if fom['subject'] == 'cg_0.01':
+            sd = acc['speedups']['named_cg_1e-2']; assert abs(sd[scope] - fom[use] / acc[use]) < 1e-9       # lane ratio reproduces where the lane used the same setting
         alt = dict(scope='complete query' if scope == 'device' else 'GPU query', accurate=fom[other] / acc[other], fast=fom[other] / fast[other])
         row(problem, dim, n, setting(f'$q=0$', 100 * fast['worst_same_grid'], fast[use], arm=fast['subject']),
             setting(f'$q={q}$', 100 * acc['worst_same_grid'], acc[use], arm=acc['subject']),
-            dict(name='CG, rtol $10^{-2}$', error_pct=100 * fom['worst_same_grid'], ms=fom[use]), key, acc['job_id'], 'development',
+            dict(name='CG, rtol $' + tol_tex(fom['subject'].split('_')[1]) + '$', error_pct=100 * fom['worst_same_grid'], ms=fom[use], arm=fom['subject'], candidates=cands), key, acc['job_id'], 'development',
             'development', 'same-grid', 'GPU query' if scope == 'device' else 'complete query',
             note=f"{acc['cases']} development sources; {acc['gpu']}; attempt {attempt}", alt=alt, appendix_only=only)
         if not only:
@@ -309,7 +332,8 @@ def hires_heat(parts):
         st = lambda x, lab: setting(lab, 100 * x['error_all_times_worst'], x['device_ms_median'], arm=x['method'],
                                     evolved_pct=100 * x['error_evolved_worst'])
         return dict(R=R, fast=st(f, '$q=0$'), acc=st(a, f'$q={q}$'), cases=a['cases'], fom_arm=c,
-                    fom=dict(name=fom_label(c), error_pct=100 * fom['error_all_times_worst'], ms=fom['device_ms_median'], arm=c),
+                    fom=dict(name=fom_label(c), error_pct=100 * fom['error_all_times_worst'], ms=fom['device_ms_median'], arm=c,
+                             candidates={k: dict(err=100 * v['error_all_times_worst'], ms=v['device_ms_median']) for k, v in R.items() if k.startswith('fom_cncg_') and v['failures'] == 0}),
                     tight=dict(scope=r'vs.\ CN--CG rtol $10^{-6}$', accurate=a['speedup_vs_named_fom'], fast=f['speedup_vs_named_fom']))
 
     CN = ('nmrom_q0_cn', 'nmrom_q32_cn'); BF = ('nmrom_q0_field_direct_tol1e-4_chol', 'nmrom_q32_field_direct_tol1e-4_chol')
@@ -432,7 +456,8 @@ def hires_burgers(parts):
                dict(scope=r'vs.\ tight Newton', accurate=tight['median_gpu_ms'] / a['median_gpu_ms'], fast=tight['median_gpu_ms'] / f['median_gpu_ms'])]
         row(problem, 2, n, setting(lab(f), f['worst_evolved_percent'], f['median_gpu_ms'], arm=f['name']),
             setting(lab(a), a['worst_evolved_percent'], a['median_gpu_ms'], arm=a['name'], eq='lattice'),
-            dict(name=fom_label(fom), error_pct=fom['worst_evolved_percent'], ms=fom['median_gpu_ms'], arm=c), key, d['job_id'], coh, status,
+            dict(name=fom_label(fom), error_pct=fom['worst_evolved_percent'], ms=fom['median_gpu_ms'], arm=c,
+                 candidates={k: dict(err=v['worst_evolved_percent'], ms=v['median_gpu_ms']) for k, v in foms.items()}), key, d['job_id'], coh, status,
             'same-grid, evolved', 'GPU query', note=f"{d['cohort_cases']} cases, {a['reps']} repetitions; {d['gpu']}", alt=alt)
         HB[(att, 'coarse')] = {k: v for k, v in t.items() if k.startswith('c') and v['family'] == 'fom' and v['mesh'] < n}
         HB[(att, 'acc')] = a
@@ -554,18 +579,18 @@ lines += [r'\bottomrule', r'\end{tabular}']
 write('TH_headline', lines, ['Problem', 'Mesh', 'Accurate err. (%)', 'Accurate speedup', 'Fast err. (%)', 'Fast speedup', 'FOM err. (%)', 'FOM'], mdrows)
 
 # supporting times (appendix)
-tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrlll@{}}', r'\toprule',
-      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Status \\', r'\midrule']
+tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrllll@{}}', r'\toprule',
+      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM setting & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Status \\', r'\midrule']
 tmd = []
 for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], bool(r['appendix_only']), r['fom']['ms'])):
     a, f = r['accurate'], r['fast']
     c = [f"{r['problem']} {r['dim']}D" + (r'$^{\ast}$' if r['appendix_only'] else ''), mesh(r), a['label'] if a else '---', f['label'] if f else '---', f"{a['ms']:.2f}" if a else '---',
-         f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'],
+         f"{f['ms']:.2f}" if f else '---', r['fom']['name'], f"{r['fom']['ms']:.2f}", r['timing_scope'],
          '; '.join(spn(x['accurate']) + r'$\times$ / ' + spn(x['fast']) + r'$\times$ (' + x['scope'] + ')' for x in (r['alt'] if isinstance(r['alt'], list) else [r['alt']])) if r.get('alt') else '---',
          r['status'].split(';')[0]]
     tl.append(' & '.join(c) + r' \\'); tmd.append([md(re.sub(r'\\texttt\{(\w+)\}', r'\1', x)) for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
-write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope or FOM: acc. / fast', 'Status'], tmd)
+write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM setting', 'FOM ms', 'Timing', 'Other scope or FOM: acc. / fast', 'Status'], tmd)
 
 # appendix heat table (hires-heat lane): both error conventions, the batched variant, the tight named FOM, 3D speed rows
 if HEAT_APPX:

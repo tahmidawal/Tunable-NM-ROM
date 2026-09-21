@@ -1,6 +1,24 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — Figure 2 (tunability) and "results incoming" slots — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — one FOM-selection rule for every row (user decision, option A) — CURRENT HANDOFF
+
+Every Table 1 row (and so Figures 1–2 and Table C.3) now uses the fastest tested setting of the named solver,
+same allocation, with error ≤ the row's accurate setting (single setting where only one exists). Each row
+records its candidate settings in `headline-provenance.json`; `check_headline.py` re-derives the pick per
+row. Changed rows (accurate / fast speedup, old → new): Poisson 2D 4096² 146× / 148× → 116× / 117× (CG rtol
+1e-1); L-shape 1024² 9.76× / 10.0× → 8.38× / 8.59× and 2048² 19.3× / 19.4× → 17.0× / 17.1× (CG rtol 3e-2);
+earlier Burgers model: its tight-Newton row (14.5×) is no longer the rule's FOM and moves to Table C.3
+(the relaxed row, 1.63×, stays). Unchanged because the rule already held: Poisson 256²/1024² and old heat
+(the paired-CG record retains one setting per row, chosen by the same rule; p-linear tested CG 1e-2…1e-8
+only), L-shape 256²/512² and Poisson 3D (rtol 1e-2 is the loosest tested), 2048² Poisson and the dev-source
+cubes (no looser setting tested), Burgers and wide-bank heat (already the rule). Abstract now quotes 116× for
+Poisson at 4096². The resolution trend still holds in every series under the new denominators (fast
+speedups: Poisson 3.33/15.2/74.3/117; L-shape 4.04/6.18/8.59/17.1; Burgers 0.79/1.31/2.02/4.16/12.9; heat
+old 0.22/0.61/4.85; wide bank 1.57/9.59/35.4), checked by check_headline; the Resolution paragraph now says
+the setting can change with the mesh instead of claiming a fixed rtol 1e-2. Figure 2's "looser than Table 1"
+note removed. Table C.3 gains a "FOM setting" column.
+
+## 2026-09-21 (paper lane) — Figure 2 (tunability) and "results incoming" slots
 
 **Figure 2** (`figures/gen_fig_tunability_rank.py`, from `headline-provenance.json` → `tunability`; placed in §6.2):
 worst error vs speedup over ONE full-order setting per series at 4096², log–log, FOM-parity line. Series:

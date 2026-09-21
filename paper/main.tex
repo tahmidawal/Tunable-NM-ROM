@@ -473,15 +473,17 @@ quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{} that passed the
 held-out bar in its single draw and was not re-drawn (it is not the
 $q=256$ rule of Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
 $63{\times}63$ lattice rule passing the held-out bar in the same job;
-$^{d}$\,dense residual. The earlier Burgers model has one
-setting, may exit on a stall, and is shown against relaxed
-($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances (other rows' tight-Newton ratios:
-Table~\ref{tab:headline-times}). $^{h}$\,64 held-out cases never used for
+$^{d}$\,dense residual. The earlier Burgers model has one setting and
+may exit on a stall; its rule-selected FOM is the relaxed Newton setting
+($10^{-2}/0.5$), and its tight-setting ratio is in
+Table~\ref{tab:headline-times} with the other rows' tight ratios. The FOM
+setting can differ between meshes of a series (Table~\ref{tab:headline-times});
+rows from the paired-CG record list the one setting that record retains,
+itself chosen by the same rule. $^{h}$\,64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
 $M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev.\ sources) rows use development sources of a
-separate run and are not the held-out cohort. Complete-query speedups: Table~\ref{tab:headline-times}. Dashes mark settings not
-measured. Times and settings: Table~\ref{tab:headline-times}.}
+separate run and are not the held-out cohort. Dashes mark settings not
+measured. Times, settings and complete-query speedups: Table~\ref{tab:headline-times}.}
 \label{tab:headline}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline}}
 \end{table}
@@ -534,10 +536,8 @@ Figure~\ref{fig:speedup} shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM), fixed across meshes for the CG series and re-selected
-per mesh for Burgers and wide-bank heat, whose ratios against one fixed
-tight setting (Table~\ref{tab:headline-times}) also rise from $2048^2$ to
-$4096^2$.
+accurate NM-ROM; it may change with the mesh), and against one fixed
+tight setting where a series timed one (Table~\ref{tab:headline-times}).
 
 \begin{table}[t]
 \centering
@@ -634,7 +634,7 @@ is a safeguard, not a control; a truncated solve fails.
 $4096^2$; one frozen model and allocation per series, each divided by one
 full-order setting, the fastest at least as accurate as its best point
 (Newton--BiCGStab \nTuneBurgFomLabel; CN--CG \nTuneHeatFomLabel; CG
-\nTunePoissonFomLabel, looser than in Table~\ref{tab:headline}). On
+\nTunePoissonFomLabel). On
 Burgers $q$ and $M$ change together ($M\approx4(k+q)$, $M=544$ an
 alternative at $q=256$; fixed-$M$ ladder: Table~\ref{tab:ladder-main}).
 Star: looser stopping tolerance; grey: rule failed its held-out check.}

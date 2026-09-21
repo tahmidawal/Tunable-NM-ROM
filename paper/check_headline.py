@@ -58,6 +58,14 @@ import subprocess
 _pdf = subprocess.check_output(['pdftotext', str(P / 'main.pdf'), '-']).decode()
 _hits = re.findall(r'(?i)\bDST\b|sine[- ]?transform|SuperLU|sparse[- ]direct|coarse[- ]grid|Swarztrauber|FFT[- ]based|fast transform\b', _pdf)
 assert not _hits, _hits
+# 2026-09-21 user decision (one FOM rule): every Table 1 FOM is the fastest tested setting of the named solver with
+# error <= the row's accurate setting (the single setting where there is no accurate one), from the recorded candidates
+for r in prov['rows']:
+    ref = (r['accurate'] or r['fast'])['error_pct']; C = r['fom']['candidates']
+    ok = {k: v for k, v in C.items() if v['err'] <= ref + 1e-12}
+    assert r['fom']['arm'] == min(ok, key=lambda k: ok[k]['ms']), (r['problem'], r['intervals'], r['fom']['arm'])
+    assert abs(C[r['fom']['arm']]['ms'] - r['fom']['ms']) < 1e-9
+    if len(C) == 1: assert r['fom'].get('selection', '').startswith('record: Fastest'), (r['problem'], r['intervals'])
 fails = prov['failures']; assert {f['source'] for f in fails} - {'burgers3d', 'ns3d', 'wave', 'heat3d'} <= {k for k in man if 'hires-heat' in k}
 assert not any(r['problem'] == 'Heat' and r['dim'] == 3 for r in prov['rows'])      # 2026-09-21: Heat 3D reported with the failures
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])

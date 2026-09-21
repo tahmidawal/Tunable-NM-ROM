@@ -10,11 +10,11 @@ Problem & Mesh & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Solv
 Poisson & $256^2$ & 0.97 & \textbf{3.13$\times$} & 3.16 & \textbf{3.33$\times$} & 0.15 & CG, rtol $10^{-2}$ \\
  & $1024^2$ & 0.96 & \textbf{13.9$\times$} & 3.15 & \textbf{15.2$\times$} & 0.072 & CG, rtol $10^{-2}$ \\
  & $2048^2$ & 0.96 & \textbf{72.8$\times$} & 3.15 & \textbf{74.3$\times$} & 0.049 & CG, rtol $10^{-2}$ \\
- & $4096^2$ & 0.96 & \textbf{146$\times$} & 3.15 & \textbf{148$\times$} & 0.038 & CG, rtol $10^{-2}$ \\
+ & $4096^2$ & 0.96 & \textbf{116$\times$} & 3.15 & \textbf{117$\times$} & 0.45 & CG, rtol $10^{-1}$ \\
 Poisson, L-shape$^{c}$ & $256^2$ & 2.13 & \textbf{3.84$\times$} & 3.86 & \textbf{4.04$\times$} & 0.64 & CG, rtol $10^{-2}$ \\
  & $512^2$ & 2.12 & \textbf{6.07$\times$} & 3.85 & \textbf{6.18$\times$} & 0.38 & CG, rtol $10^{-2}$ \\
- & $1024^2$ & 2.20 & \textbf{9.76$\times$} & 3.85 & \textbf{10.0$\times$} & 0.31 & CG, rtol $10^{-2}$ \\
- & $2048^2$ & 2.20 & \textbf{19.3$\times$} & 3.85 & \textbf{19.4$\times$} & 0.24 & CG, rtol $10^{-2}$ \\
+ & $1024^2$ & 2.20 & \textbf{8.38$\times$} & 3.85 & \textbf{8.59$\times$} & 1.05 & CG, rtol $3{\times}10^{-2}$ \\
+ & $2048^2$ & 2.20 & \textbf{17.0$\times$} & 3.85 & \textbf{17.1$\times$} & 0.76 & CG, rtol $3{\times}10^{-2}$ \\
 Heat$^{r}$ & $64^2$ & --- & --- & 4.56 & 0.22$\times$ & 1.59 & CN--CG, rtol $10^{-2}$ \\
  & $256^2$ & --- & --- & 4.56 & 0.61$\times$ & 0.93 & CN--CG, rtol $10^{-2}$ \\
  & $1024^2$ & --- & --- & 4.56 & \textbf{4.85$\times$} & 0.77 & CN--CG, rtol $10^{-2}$ \\
@@ -32,7 +32,6 @@ Burgers$^{e}$ & $2048^2$ & 0.87$^{\ell}$ & 0.99$\times$ & 2.37 & \textbf{4.16$\t
 Burgers (held-out cases)$^{e}$$^{h}$ & $2048^2$ & 1.31$^{\ell}$ & \textbf{1.43$\times$} & 9.03 & \textbf{5.63$\times$} & 0.13 & Newton--BiCGStab, tol $10^{-3}$ \\
  & $4096^2$ & 1.33$^{\ell}$ & \textbf{5.38$\times$} & 9.03 & \textbf{13.2$\times$} & 0.14 & Newton--BiCGStab, tol $3{\times}10^{-3}$ \\
 Burgers (earlier model)$^{r}$ & $1024^2$ & --- & --- & 3.91 & \textbf{1.63$\times$} & 2.39 & Newton--BiCGStab, relaxed \\
- & $1024^2$ & --- & --- & 3.91 & \textbf{14.5$\times$} & 2.14 & Newton--BiCGStab, tight \\
 Burgers, certified quadrature rule & $256^2$, $512^2$, $1024^2$ & \multicolumn{6}{l}{\emph{results incoming}} \\
 Burgers (wider learned bank), held-out 64 & $2048^2$, $4096^2$ & \multicolumn{6}{l}{\emph{results incoming}} \\
 \midrule

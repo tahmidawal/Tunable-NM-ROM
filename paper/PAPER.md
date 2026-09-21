@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 11:07; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 11:11; this block is removed before submission).*
 *Populated tables (92): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -457,15 +457,17 @@ quadrature: $^{s}$ stored rule of job 3780164 that passed the
 held-out bar in its single draw and was not re-drawn (it is not the
 $q=256$ rule of Table 16); $^{\ell}$ deterministic
 $63{\times}63$ lattice rule passing the held-out bar in the same job;
-$^{d}$ dense residual. The earlier Burgers model has one
-setting, may exit on a stall, and is shown against relaxed
-($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances (other rows' tight-Newton ratios:
-Table 7). $^{h}$ 64 held-out cases never used for
+$^{d}$ dense residual. The earlier Burgers model has one setting and
+may exit on a stall; its rule-selected FOM is the relaxed Newton setting
+($10^{-2}/0.5$), and its tight-setting ratio is in
+Table 7 with the other rows' tight ratios. The FOM
+setting can differ between meshes of a series (Table 7);
+rows from the paired-CG record list the one setting that record retains,
+itself chosen by the same rule. $^{h}$ 64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
 $M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev. sources) rows use development sources of a
-separate run and are not the held-out cohort. Complete-query speedups: Table 7. Dashes mark settings not
-measured. Times and settings: Table 7.
+separate run and are not the held-out cohort. Dashes mark settings not
+measured. Times, settings and complete-query speedups: Table 7.
 
 <!-- table: TH_headline -->
 | Problem | Mesh | Accurate err. (%) | Accurate speedup | Fast err. (%) | Fast speedup | FOM err. (%) | FOM |
@@ -473,11 +475,11 @@ measured. Times and settings: Table 7.
 | Poisson 2D (development) | 256^2 | 0.97 | **3.13×** | 3.16 | **3.33×** | 0.15 | CG, rtol 10^{-2} |
 | Poisson 2D (development) | 1024^2 | 0.96 | **13.9×** | 3.15 | **15.2×** | 0.072 | CG, rtol 10^{-2} |
 | Poisson 2D (development) | 2048^2 | 0.96 | **72.8×** | 3.15 | **74.3×** | 0.049 | CG, rtol 10^{-2} |
-| Poisson 2D (development) | 4096^2 | 0.96 | **146×** | 3.15 | **148×** | 0.038 | CG, rtol 10^{-2} |
+| Poisson 2D (development) | 4096^2 | 0.96 | **116×** | 3.15 | **117×** | 0.45 | CG, rtol 10^{-1} |
 | Poisson, L-shape 2D (development) | 256^2 | 2.13 | **3.84×** | 3.86 | **4.04×** | 0.64 | CG, rtol 10^{-2} |
 | Poisson, L-shape 2D (development) | 512^2 | 2.12 | **6.07×** | 3.85 | **6.18×** | 0.38 | CG, rtol 10^{-2} |
-| Poisson, L-shape 2D (development) | 1024^2 | 2.20 | **9.76×** | 3.85 | **10.0×** | 0.31 | CG, rtol 10^{-2} |
-| Poisson, L-shape 2D (development) | 2048^2 | 2.20 | **19.3×** | 3.85 | **19.4×** | 0.24 | CG, rtol 10^{-2} |
+| Poisson, L-shape 2D (development) | 1024^2 | 2.20 | **8.38×** | 3.85 | **8.59×** | 1.05 | CG, rtol 3{\times}10^{-2} |
+| Poisson, L-shape 2D (development) | 2048^2 | 2.20 | **17.0×** | 3.85 | **17.1×** | 0.76 | CG, rtol 3{\times}10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 64^2 | — | — | 4.56 | 0.22× | 1.59 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 256^2 | — | — | 4.56 | 0.61× | 0.93 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 1024^2 | — | — | 4.56 | **4.85×** | 0.77 | CN–CG, rtol 10^{-2} |
@@ -495,7 +497,6 @@ measured. Times and settings: Table 7.
 | Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 2048^2 | 1.31^{\ell} | **1.43×** | 9.03 | **5.63×** | 0.13 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 4096^2 | 1.33^{\ell} | **5.38×** | 9.03 | **13.2×** | 0.14 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **1.63×** | 2.39 | Newton–BiCGStab, relaxed |
-| Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **14.5×** | 2.14 | Newton–BiCGStab, tight |
 | Burgers, certified quadrature rule 2D | 256^2, 512^2, 1024^2 | results incoming |  |  |  |  | lane burgers-eqcert |
 | Burgers (wider learned bank), held-out 64 2D | 2048^2, 4096^2 | results incoming |  |  |  |  | lane burgers-heldout |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
@@ -549,10 +550,8 @@ Figure 1 shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM), fixed across meshes for the CG series and re-selected
-per mesh for Burgers and wide-bank heat, whose ratios against one fixed
-tight setting (Table 7) also rise from $2048^2$ to
-$4096^2$.
+accurate NM-ROM; it may change with the mesh), and against one fixed
+tight setting where a series timed one (Table 7).
 
 **Table 2.** Other nonlinear-manifold ROMs on the shared Burgers 2D family at
 $256^2$ and $512^2$: worst and median evolved same-grid error over 32
@@ -670,7 +669,7 @@ is a safeguard, not a control; a truncated solve fails.
 $4096^2$; one frozen model and allocation per series, each divided by one
 full-order setting, the fastest at least as accurate as its best point
 (Newton–BiCGStab \nTuneBurgFomLabel; CN–CG \nTuneHeatFomLabel; CG
-\nTunePoissonFomLabel, looser than in Table 1). On
+\nTunePoissonFomLabel). On
 Burgers $q$ and $M$ change together ($M\approx4(k+q)$, $M=544$ an
 alternative at $q=256$; fixed-$M$ ladder: Table 11).
 Star: looser stopping tolerance; grey: rule failed its held-out check.
@@ -1170,7 +1169,7 @@ unpreconditioned; heat CG is warm-started from the previous time level. The Heat
 checkpoint's lineage from the job that produced the printed
 measurements.
 
-**Table 7.** Supporting data for Table 1: the two settings
+**Table 7.** Supporting data for Table 1, including the full-order setting the rule selected for each row: the two settings
 of each frozen model, median times (ms), timing scope and evidence status
 (allocations: Appendix C). “EQ” and “dense” name the Burgers residual
 evaluation; “single” marks models measured at one setting. Where a
@@ -1183,41 +1182,41 @@ above it, or a development-source run at a mesh whose held-out row is in
 Table 1.
 
 <!-- table: TH_headline_times -->
-| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Other scope or FOM: acc. / fast | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | — | development |
-| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | — | development |
-| Poisson 2D | 2048^2 | q=256 | q=0 | 5.47 | 5.35 | 397.80 | GPU query | 28.7× / 28.8× (complete query) | development |
-| Poisson 2D | 4096^2 | q=256 | q=0 | 16.92 | 16.74 | 2472.81 | GPU query | 41.1× / 41.7× (complete query) | development |
-| Poisson 2D^{\ast} | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | 2465.60 | GPU query | 37.6× / 37.9× (complete query) | development |
-| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | — | development |
-| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | — | development |
-| Poisson, L-shape 2D | 1024^2 | q=128 | q=0 | 5.81 | 5.67 | 56.72 | complete query | 16.0× / 16.5× (GPU query) | development |
-| Poisson, L-shape 2D | 2048^2 | q=128 | q=0 | 18.75 | 18.66 | 362.30 | complete query | 33.9× / 34.3× (GPU query) | development |
-| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | — | development |
-| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | — | development |
-| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | — | development |
-| Heat (wide bank) 2D | 1024^2 | q=32 | q=0 | 27.33 | 27.77 | 43.51 | GPU query | 4.70× / 4.62× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Heat (wide bank) 2D | 2048^2 | q=32 | q=0 | 27.97 | 28.42 | 272.55 | GPU query | 28.8× / 28.3× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Heat (wide bank) 2D | 4096^2 | q=32 | q=0 | 31.68 | 32.19 | 1139.83 | GPU query | 149× / 146× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Heat (wide bank, batched fit) 2D | 1024^2 | q=32 | q=0 | 3.13 | 3.36 | 43.51 | GPU query | 41.0× / 38.3× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Heat (wide bank, batched fit) 2D | 2048^2 | q=32 | q=0 | 4.54 | 4.78 | 272.55 | GPU query | 177× / 169× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Heat (wide bank, batched fit) 2D | 4096^2 | q=32 | q=0 | 11.03 | 11.33 | 1139.83 | GPU query | 428× / 416× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
-| Burgers 2D | 256^2 | q=256, M=1088, EQ m=2560 | q=0, M=64, EQ m=1024 | 746.02 | 40.36 | 31.79 | GPU query | — | development |
-| Burgers 2D | 512^2 | q=256, M=1088, EQ m=2438 | q=0, M=64, EQ m=922 | 783.33 | 40.49 | 52.92 | GPU query | — | development |
-| Burgers 2D | 1024^2 | q=256, M=1088, dense | q=0, M=64, EQ m=934 | 22053.85 | 40.27 | 81.31 | GPU query | — | development |
-| Burgers 2D | 2048^2 | q=256, M=544, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 124.15 | 29.48 | 122.76 | GPU query | 0.99× / 2.01× (complete query); 6.07× / 25.5× (vs. tight Newton) | development |
-| Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.73 | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
-| Burgers (held-out cases) 2D | 2048^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 114.91 | 29.19 | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | held-out |
-| Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 40.60 | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | — | development |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | — | development |
-| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | — | accepted final |
-| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | — | accepted final |
-| Poisson (dev. sources) 3D^{\ast} | 64^3 | q=96 | q=0 | 1.43 | 1.38 | 2.88 | GPU query | 1.57× / 1.56× (complete query) | development |
-| Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | 12.55 | GPU query | 2.70× / 2.66× (complete query) | development |
-| Poisson (dev. sources) 3D^{\ast} | 128^3 | q=96 | q=0 | 1.90 | 1.76 | 12.40 | GPU query | 2.65× / 2.70× (complete query) | development |
-| Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | 140.87 | GPU query | 4.18× / 4.21× (complete query) | development |
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM setting | FOM ms | Timing | Other scope or FOM: acc. / fast | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | CG, rtol 10^{-2} | 22.29 | GPU query | — | development |
+| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | CG, rtol 10^{-2} | 60.02 | GPU query | — | development |
+| Poisson 2D | 2048^2 | q=256 | q=0 | 5.47 | 5.35 | CG, rtol 10^{-2} | 397.80 | GPU query | 28.7× / 28.8× (complete query) | development |
+| Poisson 2D | 4096^2 | q=256 | q=0 | 16.92 | 16.74 | CG, rtol 10^{-1} | 1954.80 | GPU query | 32.7× / 33.2× (complete query) | development |
+| Poisson 2D^{\ast} | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | CG, rtol 2{\times}10^{-1} | 1779.89 | GPU query | 27.4× / 27.6× (complete query) | development |
+| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | CG, rtol 10^{-2} | 11.64 | complete query | — | development |
+| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | CG, rtol 10^{-2} | 29.13 | complete query | — | development |
+| Poisson, L-shape 2D | 1024^2 | q=128 | q=0 | 5.81 | 5.67 | CG, rtol 3{\times}10^{-2} | 48.70 | complete query | 13.7× / 14.1× (GPU query) | development |
+| Poisson, L-shape 2D | 2048^2 | q=128 | q=0 | 18.75 | 18.66 | CG, rtol 3{\times}10^{-2} | 318.22 | complete query | 29.8× / 30.2× (GPU query) | development |
+| Heat 2D | 64^2 | — | single | — | 11.23 | CN–CG, rtol 10^{-2} | 2.50 | GPU query | — | development |
+| Heat 2D | 256^2 | — | single | — | 11.34 | CN–CG, rtol 10^{-2} | 6.94 | GPU query | — | development |
+| Heat 2D | 1024^2 | — | single | — | 12.21 | CN–CG, rtol 10^{-2} | 59.18 | GPU query | — | development |
+| Heat (wide bank) 2D | 1024^2 | q=32 | q=0 | 27.33 | 27.77 | CN–CG, \Delta t=0.05, rtol 10^{-3} | 43.51 | GPU query | 4.70× / 4.62× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Heat (wide bank) 2D | 2048^2 | q=32 | q=0 | 27.97 | 28.42 | CN–CG, \Delta t=0.05, rtol 10^{-3} | 272.55 | GPU query | 28.8× / 28.3× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Heat (wide bank) 2D | 4096^2 | q=32 | q=0 | 31.68 | 32.19 | CN–CG, \Delta t=0.05, rtol 10^{-2} | 1139.83 | GPU query | 149× / 146× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Heat (wide bank, batched fit) 2D | 1024^2 | q=32 | q=0 | 3.13 | 3.36 | CN–CG, \Delta t=0.05, rtol 10^{-3} | 43.51 | GPU query | 41.0× / 38.3× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Heat (wide bank, batched fit) 2D | 2048^2 | q=32 | q=0 | 4.54 | 4.78 | CN–CG, \Delta t=0.05, rtol 10^{-3} | 272.55 | GPU query | 177× / 169× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Heat (wide bank, batched fit) 2D | 4096^2 | q=32 | q=0 | 11.03 | 11.33 | CN–CG, \Delta t=0.05, rtol 10^{-2} | 1139.83 | GPU query | 428× / 416× (vs. CN–CG rtol 10^{-6}) | sealed held-out |
+| Burgers 2D | 256^2 | q=256, M=1088, EQ m=2560 | q=0, M=64, EQ m=1024 | 746.02 | 40.36 | Newton–BiCGStab, tol 10^{-3} | 31.79 | GPU query | — | development |
+| Burgers 2D | 512^2 | q=256, M=1088, EQ m=2438 | q=0, M=64, EQ m=922 | 783.33 | 40.49 | Newton–BiCGStab, tol 10^{-3} | 52.92 | GPU query | — | development |
+| Burgers 2D | 1024^2 | q=256, M=1088, dense | q=0, M=64, EQ m=934 | 22053.85 | 40.27 | Newton–BiCGStab, tol 10^{-4} | 81.31 | GPU query | — | development |
+| Burgers 2D | 2048^2 | q=256, M=544, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 124.15 | 29.48 | Newton–BiCGStab, tol 3{\times}10^{-3} | 122.76 | GPU query | 0.99× / 2.01× (complete query); 6.07× / 25.5× (vs. tight Newton) | development |
+| Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.73 | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
+| Burgers (held-out cases) 2D | 2048^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 114.91 | 29.19 | Newton–BiCGStab, tol 10^{-3} | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | held-out |
+| Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 40.60 | Newton–BiCGStab, tol 3{\times}10^{-3} | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | Newton–BiCGStab, relaxed | 68.04 | GPU query | — | development |
+| Burgers (earlier model) 2D^{\ast} | 1024^2 | — | single | — | 41.68 | Newton–BiCGStab, tight | 605.75 | GPU query | — | development |
+| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | CG, rtol 10^{-2} | 2.47 | GPU query | — | accepted final |
+| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | CG, rtol 10^{-2} | 4.46 | GPU query | — | accepted final |
+| Poisson (dev. sources) 3D^{\ast} | 64^3 | q=96 | q=0 | 1.43 | 1.38 | CG, rtol 10^{-2} | 2.88 | GPU query | 1.57× / 1.56× (complete query) | development |
+| Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | CG, rtol 10^{-2} | 12.55 | GPU query | 2.70× / 2.66× (complete query) | development |
+| Poisson (dev. sources) 3D^{\ast} | 128^3 | q=96 | q=0 | 1.90 | 1.76 | CG, rtol 10^{-2} | 12.40 | GPU query | 2.65× / 2.70× (complete query) | development |
+| Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | CG, rtol 10^{-2} | 140.87 | GPU query | 4.18× / 4.21× (complete query) | development |
 
 **Table 8.** Heat at high resolution, accuracy: one frozen model per block;
 worst same-grid relative $L^2$ error over all output times and over

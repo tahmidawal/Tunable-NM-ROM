@@ -291,7 +291,15 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.15274307683271274,
-        "ms": 22.289779037237167
+        "ms": 22.289779037237167,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.15274307683271274,
+            "ms": 22.289779037237167
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
       },
       "source": "paired_cg",
       "job_id": "3780692",
@@ -322,7 +330,15 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.07220757966955461,
-        "ms": 60.017009382136166
+        "ms": 60.017009382136166,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.07220757966955461,
+            "ms": 60.017009382136166
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
       },
       "source": "paired_cg",
       "job_id": "3783813",
@@ -355,7 +371,26 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.049005297417446865,
-        "ms": 397.80197478830814
+        "ms": 397.80197478830814,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0002509335010835259,
+            "ms": 554.3579573277384
+          },
+          "cg_0.001": {
+            "err": 0.00544784519200537,
+            "ms": 488.1290914490819
+          },
+          "cg_0.01": {
+            "err": 0.049005297417446865,
+            "ms": 397.80197478830814
+          },
+          "cg_1e-06": {
+            "err": 2.2520594437806132e-06,
+            "ms": 671.2894008960575
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4049279",
@@ -380,19 +415,42 @@
         "error_pct": 3.149052648463983,
         "ms": 16.741542145609856,
         "arm": "rom_q0_lean64",
-        "speedup": 147.7049319223631
+        "speedup": 116.763196665527
       },
       "accurate": {
         "label": "$q=256$",
         "error_pct": 0.964537840152561,
         "ms": 16.921300441026688,
         "arm": "rom_q256_lean64",
-        "speedup": 146.13583344322683
+        "speedup": 115.52279831238826
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.037865510109647026,
-        "ms": 2472.8083428926766
+        "name": "CG, rtol $10^{-1}$",
+        "error_pct": 0.4505524242017507,
+        "ms": 1954.7959780320525,
+        "arm": "cg_0.1",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.00016721468602509662,
+            "ms": 3360.9984796494246
+          },
+          "cg_0.001": {
+            "err": 0.003990982558310612,
+            "ms": 3000.2080423291773
+          },
+          "cg_0.01": {
+            "err": 0.037865510109647026,
+            "ms": 2472.8083428926766
+          },
+          "cg_0.03": {
+            "err": 0.12280866110742777,
+            "ms": 2149.0802909247577
+          },
+          "cg_0.1": {
+            "err": 0.4505524242017507,
+            "ms": 1954.7959780320525
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4051236",
@@ -403,8 +461,8 @@
       "note": "12 development sources; NVIDIA H200; attempt hp4096",
       "alt": {
         "scope": "complete query",
-        "accurate": 41.08216703443935,
-        "fast": 41.72288790304294
+        "accurate": 32.6738932378126,
+        "fast": 33.183477974139734
       },
       "appendix_only": null
     },
@@ -427,7 +485,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.637361448170308,
-        "ms": 11.643623118288815
+        "ms": 11.643623118288815,
+        "arm": "fom_cg_gpu_r0.01",
+        "candidates": {
+          "fom_cg_gpu_r0.0001": {
+            "err": 0.0027313776258884974,
+            "ms": 16.970426309853792
+          },
+          "fom_cg_gpu_r0.01": {
+            "err": 0.637361448170308,
+            "ms": 11.643623118288815
+          },
+          "fom_cg_gpu_r1e-10": {
+            "err": 1.8375406701198053e-09,
+            "ms": 28.08455703780055
+          }
+        }
       },
       "source": "lshape",
       "job_id": "3784663",
@@ -458,7 +531,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.3845242627555538,
-        "ms": 29.12696509156376
+        "ms": 29.12696509156376,
+        "arm": "fom_cg_gpu_r0.01",
+        "candidates": {
+          "fom_cg_gpu_r0.0001": {
+            "err": 0.0019988543809274983,
+            "ms": 42.23289655055851
+          },
+          "fom_cg_gpu_r0.01": {
+            "err": 0.3845242627555538,
+            "ms": 29.12696509156376
+          },
+          "fom_cg_gpu_r1e-10": {
+            "err": 1.1312536560092557e-09,
+            "ms": 70.12349204160273
+          }
+        }
       },
       "source": "lshape",
       "job_id": "3789568",
@@ -479,19 +567,38 @@
         "error_pct": 3.849894344385892,
         "ms": 5.667413817718625,
         "arm": "rom_q0_lean@head_sdf_R512_K16",
-        "speedup": 10.008394971570402
+        "speedup": 8.593028359100932
       },
       "accurate": {
         "label": "$q=128$",
         "error_pct": 2.1956586483888754,
         "ms": 5.809025838971138,
         "arm": "rom_q128_lean@head_sdf_R512_K16",
-        "speedup": 9.764411026463936
+        "speedup": 8.383548121218572
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.3140645590650977,
-        "ms": 56.7217159550637
+        "name": "CG, rtol $3{\\times}10^{-2}$",
+        "error_pct": 1.0459156700411292,
+        "ms": 48.70024765841663,
+        "arm": "cg_0.03",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0014699598475045562,
+            "ms": 81.73914183862507
+          },
+          "cg_0.01": {
+            "err": 0.3140645590650977,
+            "ms": 56.7217159550637
+          },
+          "cg_0.03": {
+            "err": 1.0459156700411292,
+            "ms": 48.70024765841663
+          },
+          "cg_0.1": {
+            "err": 6.927740835800707,
+            "ms": 40.866264374926686
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4057694",
@@ -502,8 +609,8 @@
       "note": "32 development sources; NVIDIA H200; attempt hpl32",
       "alt": {
         "scope": "GPU query",
-        "accurate": 16.046441765776848,
-        "fast": 16.51236979766111
+        "accurate": 13.681210504711009,
+        "fast": 14.07846115861295
       },
       "appendix_only": null
     },
@@ -516,19 +623,38 @@
         "error_pct": 3.849360094871094,
         "ms": 18.65585893392563,
         "arm": "rom_q0_lean@head_sdf_R512_K16",
-        "speedup": 19.420073438055997
+        "speedup": 17.057630600308233
       },
       "accurate": {
         "label": "$q=128$",
         "error_pct": 2.1950989738306297,
         "ms": 18.754946999251842,
         "arm": "rom_q128_lean@head_sdf_R512_K16",
-        "speedup": 19.317471308306086
+        "speedup": 16.967509971585518
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.24144017718963606,
-        "ms": 362.2981505468488
+        "name": "CG, rtol $3{\\times}10^{-2}$",
+        "error_pct": 0.7607562840209043,
+        "ms": 318.22475022636354,
+        "arm": "cg_0.03",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0010675798577736795,
+            "ms": 525.2222148701549
+          },
+          "cg_0.01": {
+            "err": 0.24144017718963606,
+            "ms": 362.2981505468488
+          },
+          "cg_0.03": {
+            "err": 0.7607562840209043,
+            "ms": 318.22475022636354
+          },
+          "cg_0.1": {
+            "err": 3.139437220852073,
+            "ms": 268.98708543740213
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4057694",
@@ -539,8 +665,8 @@
       "note": "32 development sources; NVIDIA H200; attempt hpl32",
       "alt": {
         "scope": "GPU query",
-        "accurate": 33.8502130919887,
-        "fast": 34.26022008384185
+        "accurate": 29.80145786227147,
+        "fast": 30.162424750655408
       },
       "appendix_only": null
     },
@@ -558,7 +684,15 @@
       "fom": {
         "name": "CN--CG, rtol $10^{-2}$",
         "error_pct": 1.5860306094822634,
-        "ms": 2.503836411051452
+        "ms": 2.503836411051452,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 1.5860306094822634,
+            "ms": 2.503836411051452
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
       },
       "source": "paired_cg",
       "job_id": "3529772",
@@ -584,7 +718,15 @@
       "fom": {
         "name": "CN--CG, rtol $10^{-2}$",
         "error_pct": 0.9254642451452146,
-        "ms": 6.938944570720196
+        "ms": 6.938944570720196,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 0.9254642451452146,
+            "ms": 6.938944570720196
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
       },
       "source": "paired_cg",
       "job_id": "3529772",
@@ -610,7 +752,15 @@
       "fom": {
         "name": "CN--CG, rtol $10^{-2}$",
         "error_pct": 0.7706845902824921,
-        "ms": 59.1779820388183
+        "ms": 59.1779820388183,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 0.7706845902824921,
+            "ms": 59.1779820388183
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
       },
       "source": "paired_cg",
       "job_id": "3529772",
@@ -646,7 +796,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.1838961673460271,
         "ms": 43.51394739933312,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491604803146899,
+            "ms": 128.38601460680366
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8603507545984647,
+            "ms": 35.9827745705843
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.8460943596585323,
+            "ms": 29.365314869210124
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1838961673460271,
+            "ms": 43.51394739933312
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8297581106840624,
+            "ms": 27.560366550460458
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8251832560215558,
+            "ms": 42.88227087818086
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -686,7 +862,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.18381600015544516,
         "ms": 272.54559798166156,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.044918130258744124,
+            "ms": 805.538103217259
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8340810037615273,
+            "ms": 212.6287161372602
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6751364622268284,
+            "ms": 181.64515704847872
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.18381600015544516,
+            "ms": 272.54559798166156
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8265156717741442,
+            "ms": 173.09919046238065
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8252879916894246,
+            "ms": 275.28702188283205
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -726,7 +928,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
         "error_pct": 0.468383929956588,
         "ms": 1139.833604451269,
-        "arm": "fom_cncg_dt0.05_rtol1e-2"
+        "arm": "fom_cncg_dt0.05_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491875555185377,
+            "ms": 4713.3676435332745
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6306085670350259,
+            "ms": 1204.3734728358686
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.468383929956588,
+            "ms": 1139.833604451269
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1837618639251259,
+            "ms": 1619.40634297207
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8249527728953475,
+            "ms": 1013.6782706249505
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8253252913650924,
+            "ms": 1629.4863000512123
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -766,7 +994,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.1838961673460271,
         "ms": 43.51394739933312,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491604803146899,
+            "ms": 128.38601460680366
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8603507545984647,
+            "ms": 35.9827745705843
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.8460943596585323,
+            "ms": 29.365314869210124
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1838961673460271,
+            "ms": 43.51394739933312
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8297581106840624,
+            "ms": 27.560366550460458
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8251832560215558,
+            "ms": 42.88227087818086
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -806,7 +1060,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.18381600015544516,
         "ms": 272.54559798166156,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.044918130258744124,
+            "ms": 805.538103217259
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8340810037615273,
+            "ms": 212.6287161372602
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6751364622268284,
+            "ms": 181.64515704847872
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.18381600015544516,
+            "ms": 272.54559798166156
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8265156717741442,
+            "ms": 173.09919046238065
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8252879916894246,
+            "ms": 275.28702188283205
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -846,7 +1126,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
         "error_pct": 0.468383929956588,
         "ms": 1139.833604451269,
-        "arm": "fom_cncg_dt0.05_rtol1e-2"
+        "arm": "fom_cncg_dt0.05_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491875555185377,
+            "ms": 4713.3676435332745
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6306085670350259,
+            "ms": 1204.3734728358686
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.468383929956588,
+            "ms": 1139.833604451269
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1837618639251259,
+            "ms": 1619.40634297207
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8249527728953475,
+            "ms": 1013.6782706249505
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8253252913650924,
+            "ms": 1629.4863000512123
+          }
+        }
       },
       "source": "intake_01_hires-heat",
       "job_id": "4060928",
@@ -885,7 +1191,37 @@
         "name": "Newton--BiCGStab, tol $10^{-3}$",
         "error_pct": 0.04889766354765399,
         "ms": 31.787732965312898,
-        "arm": "nt1e-3_dt005"
+        "arm": "nt1e-3_dt005",
+        "candidates": {
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 90.40484204888344
+          },
+          "nt1e-2_dt005": {
+            "err": 3.7126546739634616,
+            "ms": 15.656420961022377
+          },
+          "nt1e-2_dt01": {
+            "err": 3.199937091473226,
+            "ms": 9.009246015921235
+          },
+          "nt1e-3_dt005": {
+            "err": 0.04889766354765399,
+            "ms": 31.787732965312898
+          },
+          "nt1e-3_dt01": {
+            "err": 1.5178517607598867,
+            "ms": 19.724276033230126
+          },
+          "nt1e-4_dt005": {
+            "err": 0.03384942323363766,
+            "ms": 36.99925902765244
+          },
+          "nt1e-4_dt01": {
+            "err": 1.5108805044811702,
+            "ms": 27.768754516728222
+          }
+        }
       },
       "source": "burgers_panel",
       "job_id": "3789570",
@@ -920,7 +1256,37 @@
         "name": "Newton--BiCGStab, tol $10^{-3}$",
         "error_pct": 0.051606745250106834,
         "ms": 52.91527253575623,
-        "arm": "nt1e-3_dt005"
+        "arm": "nt1e-3_dt005",
+        "candidates": {
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 157.68805099651217
+          },
+          "nt1e-2_dt005": {
+            "err": 4.06144653872326,
+            "ms": 24.370670085772872
+          },
+          "nt1e-2_dt01": {
+            "err": 3.3549853901440385,
+            "ms": 13.851479045115411
+          },
+          "nt1e-3_dt005": {
+            "err": 0.051606745250106834,
+            "ms": 52.91527253575623
+          },
+          "nt1e-3_dt01": {
+            "err": 1.5893416045412816,
+            "ms": 33.71582238469273
+          },
+          "nt1e-4_dt005": {
+            "err": 0.034092587591794114,
+            "ms": 61.19445699732751
+          },
+          "nt1e-4_dt01": {
+            "err": 1.5869339087343035,
+            "ms": 48.43214666470885
+          }
+        }
       },
       "source": "burgers_panel",
       "job_id": "3805065",
@@ -955,7 +1321,29 @@
         "name": "Newton--BiCGStab, tol $10^{-4}$",
         "error_pct": 0.03428094698588521,
         "ms": 81.31132053676993,
-        "arm": "nt1e-4_dt005"
+        "arm": "nt1e-4_dt005",
+        "candidates": {
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 210.89778339955956
+          },
+          "nt1e-2_dt005": {
+            "err": 4.262825883443124,
+            "ms": 31.116269528865814
+          },
+          "nt1e-2_dt01": {
+            "err": 3.4581810072340486,
+            "ms": 17.724266508594155
+          },
+          "nt1e-4_dt005": {
+            "err": 0.03428094698588521,
+            "ms": 81.31132053676993
+          },
+          "nt1e-4_dt01": {
+            "err": 1.6287209985383715,
+            "ms": 64.03521506581455
+          }
+        }
       },
       "source": "burgers_panel",
       "job_id": "3789572",
@@ -990,7 +1378,45 @@
         "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
         "error_pct": 0.04938130483311317,
         "ms": 122.75823997333646,
-        "arm": "lean_nt3e-3_l3e-3_dt005"
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.65011639066824,
+            "ms": 95.86505708284676
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1615468304860377,
+            "ms": 100.34879250451922
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 753.0108210630715
+          },
+          "nt1e-4_dt005": {
+            "err": 0.033368494812221795,
+            "ms": 285.35404009744525
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.04938130483311317,
+            "ms": 122.75823997333646
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.054316500348756076,
+            "ms": 163.44069899059832
+          },
+          "lean_nt1e-4_dt005": {
+            "err": 0.033368494812221795,
+            "ms": 280.36771388724446
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 758.9693325571716
+          },
+          "lean_nt1e-3_dt005": {
+            "err": 0.05399479207603797,
+            "ms": 238.79593145102262
+          }
+        }
       },
       "source": "intake_07_hires-burgers",
       "job_id": "4071616",
@@ -1036,7 +1462,45 @@
         "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
         "error_pct": 0.04994838819809611,
         "ms": 523.8527278415859,
-        "arm": "lean_nt3e-3_l3e-3_dt005"
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.6607352179764727,
+            "ms": 405.51948943175375
+          },
+          "nt1e-4_dt005": {
+            "err": 0.03177654480372312,
+            "ms": 1224.2244996596128
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.04994838819809611,
+            "ms": 523.8527278415859
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 3268.8068917486817
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1634663319958576,
+            "ms": 420.39928934536874
+          },
+          "lean_nt1e-4_dt005": {
+            "err": 0.03177654480372312,
+            "ms": 1207.9105235170573
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 3302.434889599681
+          },
+          "lean_nt1e-3_dt005": {
+            "err": 0.05443069205339697,
+            "ms": 1027.2024516016245
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.0550280868090141,
+            "ms": 707.4501581955701
+          }
+        }
       },
       "source": "intake_09_hires-burgers",
       "job_id": "4079320",
@@ -1082,7 +1546,21 @@
         "name": "Newton--BiCGStab, tol $10^{-3}$",
         "error_pct": 0.13033958081321567,
         "ms": 164.42793235182762,
-        "arm": "lean_nt1e-3_l1e-3_dt005"
+        "arm": "lean_nt1e-3_l1e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.13033958081321567,
+            "ms": 164.42793235182762
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 750.6873530801386
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 744.6409987751395
+          }
+        }
       },
       "source": "intake_08_hires-burgers",
       "job_id": "4077566",
@@ -1128,7 +1606,25 @@
         "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
         "error_pct": 0.13766972263962474,
         "ms": 537.387813674286,
-        "arm": "lean_nt3e-3_l3e-3_dt005"
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.13307165913208607,
+            "ms": 704.6601281035691
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.13766972263962474,
+            "ms": 537.387813674286
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 3231.471635401249
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 3250.7355173584074
+          }
+        }
       },
       "source": "intake_10_hires-burgers",
       "job_id": "4079321",
@@ -1165,33 +1661,18 @@
       "fom": {
         "name": "Newton--BiCGStab, relaxed",
         "error_pct": 2.3899365244885784,
-        "ms": 68.04365944117308
-      },
-      "source": "burgers_iter",
-      "job_id": "3534502",
-      "cohort": "development",
-      "status": "development; earlier model, stalled exits permitted",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Burgers (earlier model)",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "single",
-        "error_pct": 3.9076203252235464,
-        "ms": 41.676780325360596,
-        "speedup": 14.534399953617983
-      },
-      "accurate": null,
-      "fom": {
-        "name": "Newton--BiCGStab, tight",
-        "error_pct": 2.1416109568868054,
-        "ms": 605.7469940278679
+        "ms": 68.04365944117308,
+        "arm": "fft_loose",
+        "candidates": {
+          "fft_loose": {
+            "err": 2.3899365244885784,
+            "ms": 68.04365944117308
+          },
+          "fft_tight": {
+            "err": 2.1416109568868054,
+            "ms": 605.7469940278679
+          }
+        }
       },
       "source": "burgers_iter",
       "job_id": "3534502",
@@ -1222,7 +1703,34 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.15655376030406967,
-        "ms": 2.472918713465333
+        "ms": 2.472918713465333,
+        "arm": "cg_identity_plain_rtol1e-02",
+        "candidates": {
+          "cg_identity_plain_rtol1e-02": {
+            "err": 0.15655376030406967,
+            "ms": 2.472918713465333
+          },
+          "cg_identity_plain_rtol1e-04": {
+            "err": 0.0014548746983886038,
+            "ms": 3.3660533372312784
+          },
+          "cg_identity_plain_rtol1e-06": {
+            "err": 1.2825130716936707e-05,
+            "ms": 4.007487557828426
+          },
+          "cg_identity_rtol1e-02": {
+            "err": 0.15655376030406967,
+            "ms": 2.777723129838705
+          },
+          "cg_identity_rtol1e-04": {
+            "err": 0.0014548746983886038,
+            "ms": 3.841457422822714
+          },
+          "cg_identity_rtol1e-06": {
+            "err": 1.2825130716936707e-05,
+            "ms": 4.6394760720431805
+          }
+        }
       },
       "source": "poisson3d",
       "job_id": "4028642",
@@ -1253,7 +1761,34 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.1143233155290821,
-        "ms": 4.46332641877234
+        "ms": 4.46332641877234,
+        "arm": "cg_identity_plain_rtol1e-02",
+        "candidates": {
+          "cg_identity_plain_rtol1e-02": {
+            "err": 0.1143233155290821,
+            "ms": 4.46332641877234
+          },
+          "cg_identity_plain_rtol1e-04": {
+            "err": 0.001017594938693413,
+            "ms": 6.547121563926339
+          },
+          "cg_identity_plain_rtol1e-06": {
+            "err": 7.918620732823087e-06,
+            "ms": 8.115387056022882
+          },
+          "cg_identity_rtol1e-02": {
+            "err": 0.1143233155290821,
+            "ms": 4.5598275028169155
+          },
+          "cg_identity_rtol1e-04": {
+            "err": 0.001017594938693413,
+            "ms": 6.767568411305547
+          },
+          "cg_identity_rtol1e-06": {
+            "err": 7.918620732823087e-06,
+            "ms": 8.327592862769961
+          }
+        }
       },
       "source": "poisson3d",
       "job_id": "4028642",
@@ -1286,7 +1821,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.07475800752263316,
-        "ms": 12.551042484119534
+        "ms": 12.551042484119534,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0004434472942290071,
+            "ms": 20.08856600150466
+          },
+          "cg_0.01": {
+            "err": 0.07475800752263316,
+            "ms": 12.551042484119534
+          },
+          "cg_1e-06": {
+            "err": 5.376761439303584e-06,
+            "ms": 25.71474900469184
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4051032",
@@ -1323,7 +1873,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.048870968008946775,
-        "ms": 140.86809940636158
+        "ms": 140.86809940636158,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0002711851515791559,
+            "ms": 220.31176136806607
+          },
+          "cg_0.01": {
+            "err": 0.048870968008946775,
+            "ms": 140.86809940636158
+          },
+          "cg_1e-06": {
+            "err": 3.708472447676722e-06,
+            "ms": 282.18568838201463
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4056288",
@@ -1350,19 +1915,38 @@
         "error_pct": 3.149052648463983,
         "ms": 17.008751863613725,
         "arm": "rom_q0_lean64",
-        "speedup": 144.96088318308676
+        "speedup": 104.64554296524506
       },
       "accurate": {
         "label": "$q=256$",
         "error_pct": 0.9645378401524893,
         "ms": 17.165145371109247,
         "arm": "rom_q256_lean64",
-        "speedup": 143.64012880084837
+        "speedup": 103.69210603510093
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.037865510109647026,
-        "ms": 2465.6036919914186
+        "name": "CG, rtol $2{\\times}10^{-1}$",
+        "error_pct": 0.7720330047906748,
+        "ms": 1779.890073928982,
+        "arm": "cg_0.2",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.037865510109647026,
+            "ms": 2465.6036919914186
+          },
+          "cg_0.1": {
+            "err": 0.4505524242017507,
+            "ms": 1949.5734714437276
+          },
+          "cg_0.2": {
+            "err": 0.7720330047906748,
+            "ms": 1779.890073928982
+          },
+          "cg_0.3": {
+            "err": 1.2950519116023134,
+            "ms": 1697.5208318326622
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4071227",
@@ -1373,10 +1957,47 @@
       "note": "12 development sources; NVIDIA H200; attempt hp4096b",
       "alt": {
         "scope": "complete query",
-        "accurate": 37.5758506576484,
-        "fast": 37.947917921091836
+        "accurate": 27.375266061176745,
+        "fast": 27.646329527502953
       },
       "appendix_only": "re-measure of the row above"
+    },
+    {
+      "problem": "Burgers (earlier model)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 3.9076203252235464,
+        "ms": 41.676780325360596,
+        "speedup": 14.534399953617983
+      },
+      "accurate": null,
+      "fom": {
+        "name": "Newton--BiCGStab, tight",
+        "error_pct": 2.1416109568868054,
+        "ms": 605.7469940278679,
+        "arm": "fft_tight",
+        "candidates": {
+          "fft_loose": {
+            "err": 2.3899365244885784,
+            "ms": 68.04365944117308
+          },
+          "fft_tight": {
+            "err": 2.1416109568868054,
+            "ms": 605.7469940278679
+          }
+        }
+      },
+      "source": "burgers_iter",
+      "job_id": "3534502",
+      "cohort": "development",
+      "status": "development; earlier model, stalled exits permitted",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": "not the rule's full-order setting (a faster setting of the same solver is at least as accurate)"
     },
     {
       "problem": "Poisson (dev. sources)",
@@ -1399,7 +2020,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.11330595548692919,
-        "ms": 2.8789108619093895
+        "ms": 2.8789108619093895,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0006495161129507228,
+            "ms": 4.482330987229943
+          },
+          "cg_0.01": {
+            "err": 0.11330595548692919,
+            "ms": 2.8789108619093895
+          },
+          "cg_1e-06": {
+            "err": 7.400475724272115e-06,
+            "ms": 5.769781768321991
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4051032",
@@ -1436,7 +2072,22 @@
       "fom": {
         "name": "CG, rtol $10^{-2}$",
         "error_pct": 0.07475800749510775,
-        "ms": 12.404954293742776
+        "ms": 12.404954293742776,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.000443447294266253,
+            "ms": 19.82858288101852
+          },
+          "cg_0.01": {
+            "err": 0.07475800749510775,
+            "ms": 12.404954293742776
+          },
+          "cg_1e-06": {
+            "err": 5.376761441387243e-06,
+            "ms": 25.44995374046266
+          }
+        }
       },
       "source": "intake_00_hires-poisson",
       "job_id": "4056288",
@@ -1578,7 +2229,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.14342768427537603,
         "ms": 66.84290454722941,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.03515388894880518,
+            "ms": 197.47182296123356
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.7515790605819824,
+            "ms": 56.403980939649045
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.813219285202484,
+            "ms": 43.897437397390604
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.14342768427537603,
+            "ms": 66.84290454722941
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.635553530767416,
+            "ms": 42.44366206694394
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.6328317263931145,
+            "ms": 65.65514905378222
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1617,7 +2294,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.1838961673460271,
         "ms": 43.51394739933312,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491604803146899,
+            "ms": 128.38601460680366
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8603507545984647,
+            "ms": 35.9827745705843
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.8460943596585323,
+            "ms": 29.365314869210124
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1838961673460271,
+            "ms": 43.51394739933312
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8297581106840624,
+            "ms": 27.560366550460458
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8251832560215558,
+            "ms": 42.88227087818086
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1656,7 +2359,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.1838961673460271,
         "ms": 43.51394739933312,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491604803146899,
+            "ms": 128.38601460680366
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8603507545984647,
+            "ms": 35.9827745705843
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.8460943596585323,
+            "ms": 29.365314869210124
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1838961673460271,
+            "ms": 43.51394739933312
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8297581106840624,
+            "ms": 27.560366550460458
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8251832560215558,
+            "ms": 42.88227087818086
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1695,7 +2424,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.18381600015544516,
         "ms": 272.54559798166156,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.044918130258744124,
+            "ms": 805.538103217259
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8340810037615273,
+            "ms": 212.6287161372602
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6751364622268284,
+            "ms": 181.64515704847872
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.18381600015544516,
+            "ms": 272.54559798166156
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8265156717741442,
+            "ms": 173.09919046238065
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8252879916894246,
+            "ms": 275.28702188283205
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1734,7 +2489,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
         "error_pct": 0.18381600015544516,
         "ms": 272.54559798166156,
-        "arm": "fom_cncg_dt0.05_rtol1e-3"
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.044918130258744124,
+            "ms": 805.538103217259
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8340810037615273,
+            "ms": 212.6287161372602
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6751364622268284,
+            "ms": 181.64515704847872
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.18381600015544516,
+            "ms": 272.54559798166156
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8265156717741442,
+            "ms": 173.09919046238065
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8252879916894246,
+            "ms": 275.28702188283205
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1773,7 +2554,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
         "error_pct": 0.468383929956588,
         "ms": 1139.833604451269,
-        "arm": "fom_cncg_dt0.05_rtol1e-2"
+        "arm": "fom_cncg_dt0.05_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491875555185377,
+            "ms": 4713.3676435332745
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6306085670350259,
+            "ms": 1204.3734728358686
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.468383929956588,
+            "ms": 1139.833604451269
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1837618639251259,
+            "ms": 1619.40634297207
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8249527728953475,
+            "ms": 1013.6782706249505
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8253252913650924,
+            "ms": 1629.4863000512123
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1812,7 +2619,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
         "error_pct": 0.468383929956588,
         "ms": 1139.833604451269,
-        "arm": "fom_cncg_dt0.05_rtol1e-2"
+        "arm": "fom_cncg_dt0.05_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491875555185377,
+            "ms": 4713.3676435332745
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6306085670350259,
+            "ms": 1204.3734728358686
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.468383929956588,
+            "ms": 1139.833604451269
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1837618639251259,
+            "ms": 1619.40634297207
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8249527728953475,
+            "ms": 1013.6782706249505
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8253252913650924,
+            "ms": 1629.4863000512123
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1851,7 +2684,33 @@
         "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
         "error_pct": 0.634702304551246,
         "ms": 173.13579912297428,
-        "arm": "fom_cncg_dt0.1_rtol1e-2"
+        "arm": "fom_cncg_dt0.1_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.0351554895377306,
+            "ms": 813.606427051127
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.7248323242041286,
+            "ms": 213.43342843465507
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6942886661562329,
+            "ms": 182.53307789564133
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.14344194727700593,
+            "ms": 267.61947316117585
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.634702304551246,
+            "ms": 173.13579912297428
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.6329189037003752,
+            "ms": 268.6707153916359
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1890,7 +2749,33 @@
         "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
         "error_pct": 0.6329113578354391,
         "ms": 1014.6029226016253,
-        "arm": "fom_cncg_dt0.1_rtol1e-2"
+        "arm": "fom_cncg_dt0.1_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.03515597472216969,
+            "ms": 4789.842800237238
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6100154123897491,
+            "ms": 1211.9150983635336
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.4853829743033122,
+            "ms": 1112.0569193735719
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.14344364438061782,
+            "ms": 1603.0280727427453
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.6329113578354391,
+            "ms": 1014.6029226016253
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.6329643460978495,
+            "ms": 1586.6804588586092
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1929,7 +2814,33 @@
         "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
         "error_pct": 1.5820140852734415,
         "ms": 7.020727964118123,
-        "arm": "fom_cncg_dt0.1_rtol1e-2"
+        "arm": "fom_cncg_dt0.1_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.0829946215603692,
+            "ms": 29.29259045049548
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08294552283456497,
+            "ms": 17.43982150219381
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3406397425245502,
+            "ms": 16.117990482598543
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.8859721448772688,
+            "ms": 7.44861108250916
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5652684181871788,
+            "ms": 14.469165587797761
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.5820140852734415,
+            "ms": 7.020727964118123
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -1968,7 +2879,33 @@
         "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
         "error_pct": 1.5820140852734415,
         "ms": 7.020727964118123,
-        "arm": "fom_cncg_dt0.1_rtol1e-2"
+        "arm": "fom_cncg_dt0.1_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.0829946215603692,
+            "ms": 29.29259045049548
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08294552283456497,
+            "ms": 17.43982150219381
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3406397425245502,
+            "ms": 16.117990482598543
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.8859721448772688,
+            "ms": 7.44861108250916
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5652684181871788,
+            "ms": 14.469165587797761
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.5820140852734415,
+            "ms": 7.020727964118123
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -2007,7 +2944,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-4}$",
         "error_pct": 0.3414562886706821,
         "ms": 173.34341816604137,
-        "arm": "fom_cncg_dt0.05_rtol1e-4"
+        "arm": "fom_cncg_dt0.05_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08318906882198948,
+            "ms": 331.5195890609175
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08323193137766716,
+            "ms": 176.75654985941947
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3414562886706821,
+            "ms": 173.34341816604137
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.3714851156355674,
+            "ms": 75.2879474312067
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5698275498883016,
+            "ms": 159.47465505450964
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.581262691694478,
+            "ms": 70.91979449614882
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -2046,7 +3009,33 @@
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-4}$",
         "error_pct": 0.3414562886706821,
         "ms": 173.34341816604137,
-        "arm": "fom_cncg_dt0.05_rtol1e-4"
+        "arm": "fom_cncg_dt0.05_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08318906882198948,
+            "ms": 331.5195890609175
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08323193137766716,
+            "ms": 176.75654985941947
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3414562886706821,
+            "ms": 173.34341816604137
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.3714851156355674,
+            "ms": 75.2879474312067
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5698275498883016,
+            "ms": 159.47465505450964
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.581262691694478,
+            "ms": 70.91979449614882
+          }
+        }
       },
       "tight": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
@@ -2881,8 +3870,8 @@
     "nHiresFloorCube": "0.143",
     "nHiresPoissonAccSTwentyFortyEight": "72.8",
     "nHiresPoissonAccTotalSTwentyFortyEight": "28.7",
-    "nHiresPoissonAccSFortyNinetySix": "146",
-    "nHiresPoissonAccTotalSFortyNinetySix": "41.1",
+    "nHiresPoissonAccSFortyNinetySix": "116",
+    "nHiresPoissonAccTotalSFortyNinetySix": "32.7",
     "nHeatWideAccErr": "0.49",
     "nHeatWideAccEvolved": "0.22",
     "nHeatWideBatchedAccEvolved": "0.21",
@@ -2920,8 +3909,8 @@
     "nBurgDevAccErrFortyNinetySix": "0.60",
     "nBurgDevAccSFortyNinetySix": "4.87",
     "nBurgHoldAccSFortyNinetySix": "5.38",
-    "nHeadFasterRows": "26",
-    "nHeadRows": "30",
+    "nHeadFasterRows": "25",
+    "nHeadRows": "29",
     "nHeadAccFasterSubOne": "14",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",

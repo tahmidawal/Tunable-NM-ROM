@@ -45,3 +45,10 @@ User decisions (2026-09-21, finishing pass):
   preference above.
 - The abstract follows the older paper's four-move structure (gap; what we
   present and its controls; "the framework combines"; results + one limits clause).
+
+User decision (2026-09-21, "option A"): ONE full-order selection rule for every row
+of Table 1 and Figures 1-2 — the fastest tested setting of the named solver, in the
+same allocation, whose error is at most the row's accurate NM-ROM setting's (the
+single setting where there is only one). check_headline.py verifies it per row from
+the recorded candidate settings; rows whose record retains one setting cite the
+record's own identical selection rule.

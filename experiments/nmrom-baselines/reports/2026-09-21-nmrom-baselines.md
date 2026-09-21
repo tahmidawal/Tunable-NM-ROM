@@ -14,6 +14,48 @@ Pass rule (pre-registered): median of three seeds ≤ 1.5 % and a valid LS-LSPG 
 | 4072224 | 1 (weights reloaded) | swish / feature | 1.67 %, 1.45 %, 1.73 % | 1.67 % | 1.04 %, 0.85 %, 1.21 % | 31.60 % | 386.56 %, 13005.47 %, 18777.20 % (sns) | FAIL | FAIL |
 | 4077574 | 3 | sigmoid / feature | 1.45 %, 1.83 %, 1.44 % | 1.45 % | 1.58 %, 1.79 %, 1.49 % | 31.60 % | diverged, diverged, diverged (sns) | pass | FAIL |
 
+## 2. Headline: worst evolved same-grid error, query time and memory per method, mesh and latent dimension
+
+Validation cohort (32 held-out cases) for every row. Times: median GPU query, supplied initial field on GPU to six dense fields on GPU, all arms interleaved in one allocation per mesh. "× FOM" = named-FOM time / arm time (> 1 means faster than the full-order solve). Kim rows marked INADMISSIBLE used an activation that failed the reproduction gate.
+
+| mesh | method | solved unknowns | worst evolved | median evolved | query ms | × FOM | compiled-query MB | admissible |
+|---|---|---|---|---|---|---|---|---|
+| 128² | Kim NM-LSPG K=8 [swish] | 8 | 50.57 % | 21.53 % | 301.1 | 0.24 | 4252 | NO |
+| 128² | Kim NM-LSPG-HR K=8 (exploratory) [swish] | 8 | 54.16 % | 26.59 % | 79.9 | 0.91 | 4258 | NO |
+| 128² | POD-LSPG K=8 (better reference) | 8 | 54.95 % | 22.34 % | 56.2 | 1.29 | 4 | yes |
+| 128² | Kim NM-LSPG K=16 [swish] | 16 | 43.42 % | 19.49 % | 518.9 | 0.14 | 4275 | NO |
+| 128² | Kim NM-LSPG-HR K=16 (exploratory) [swish] | 16 | 44.75 % | 19.03 % | 132.5 | 0.55 | 4321 | NO |
+| 128² | POD-LSPG K=16 (better reference) | 16 | 40.85 % | 9.93 % | 93.6 | 0.78 | 8 | yes |
+| 128² | Kim NM-LSPG K=32 [swish] | 32 | 40.84 % | 14.99 % | 945.6 | 0.08 | 4322 | NO |
+| 128² | Kim NM-LSPG-HR K=32 (exploratory) [swish] | 32 | 58.15 % | 20.22 % | 166.5 | 0.44 | 4328 | NO |
+| 128² | POD-LSPG K=32 (better reference) | 32 | 23.35 % | 4.20 % | 176.3 | 0.41 | 14 | yes |
+| 128² | ours fast (q=0), K=16 | 16 | 3.41 % | 0.59 % | 109.2 | 0.67 | 190 | yes |
+| 128² | ours accurate (q=256), K=16 | 272 | 0.51 % | 0.08 % | 1353.7 | 0.05 | 504 | yes |
+| 128² | FOM loose (1e-4) | — | 0.05 % | 0.01 % | 32.2 | 2.26 | 4 | yes |
+| 128² | FOM named / reference | — | 0.00 % | 0.00 % | 72.8 | 1.00 | 4 | yes |
+
+## 3. Where each Kim configuration stops fitting or training
+
+| mesh | arm | outcome |
+|---|---|---|
+| 128² | `kim_K16_base` | trained 869 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 7.18e-06 |
+| 128² | `kim_K16_refzero` | trained 869 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 8.71e-06 |
+| 128² | `kim_K16_global` | trained 869 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 4.17e-06 |
+| 128² | `kim_K16_refzero_global` | trained 869 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 4.25e-06 |
+| 128² | `kim_K16_b50` | trained 1174 epochs in 1200 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 1.10e-05 |
+| 128² | `kim_K16_b200` | trained 895 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 6.88e-06 |
+| 128² | `kim_K16_M1_4096` | trained 2077 epochs in 1200 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 4.45e-06 |
+| 128² | `kim_K16_M1_1024` | trained 2480 epochs in 1190 s, stop = early_stop, M1 = 1024, 112 fit trajectories, best validation-snapshot MSE 4.64e-06 |
+| 128² | `kim_K16_pat50` | trained 334 epochs in 461 s, stop = early_stop, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 2.56e-05 |
+| 128² | `kim_K16_lr3e4_pat50` | trained 869 epochs in 1201 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 4.80e-06 |
+| 128² | `kim_K16_f64` | trained 454 epochs in 1200 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 9.83e-06 |
+| 128² | `kim_final_K8` | trained 870 epochs in 1200 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 8.20e-06 |
+| 128² | `kim_final_K32` | trained 864 epochs in 1200 s, stop = wall_budget, M1 = 32258, 112 fit trajectories, best validation-snapshot MSE 2.83e-06 |
+
+## 4. Tuning effort given to the Kim baseline
+
+- **128²** (job 4073272): 11 sweep candidates scored on the tuning subset, 13 autoencoders trained, 4.1 GPU-hours of training; selected `kim_K16_refzero_global`. Candidates (tune worst evolved): `kim_K16_base` 83.52 %, `kim_K16_refzero` 43.62 %, `kim_K16_global` 83.73 %, `kim_K16_refzero_global` 35.95 %, `kim_K16_b50` 84.56 %, `kim_K16_b200` 69.78 %, `kim_K16_M1_4096` 69.54 %, `kim_K16_M1_1024` 68.97 %, `kim_K16_pat50` 69.77 %, `kim_K16_lr3e4_pat50` 70.02 %, `kim_K16_f64` 84.39 %
+
 ## Shared Burgers family, 128² intervals (n = 16129), job 4073272, NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719
 
 Kim rows: **code matches a passed gate; a Kim row is admissible only if its activation is the gate activation (sigmoid)**. Other Kim hyper-parameters are tuned on the family (DESIGN s.3) and printed in the `act` column and variant. Cohort = 32 held-out validation cases unless the column says tune (16 training-side cases used for every choice). NumPy audit: all audited rows agree.
@@ -64,4 +106,10 @@ Selection rule: smallest worst evolved NM-LSPG error on the 16-case tuning subse
 - **tune**: 16 cases carved from the training split, used for every choice; **validation**: 32 held-out cases, never used to choose.
 - **GN cap hits**: time steps whose Gauss–Newton solve hit the 20-iteration cap. **compiled-query memory**: XLA memory analysis (arguments + outputs + temporaries) of the jitted query.
 - **POD-LSPG zero / ic**: linear basis with zero reference or with the initial field as reference. **ours_q0 / ours_q256**: frozen project checkpoint without / with 256 corrections.
-- **FOM**: full-order model on the same grid; `fom_fft_tight` is the reference itself (error 0 by construction).
+- **FOM**: full-order model on the same grid; `fom_fft_tight` is the reference itself (error 0 by construction) and is the named FOM for "× FOM"; `fom_nt1e4_dt005` is the same solver with loose tolerances.
+- **× FOM**: named-FOM median query time divided by the arm's median query time, same allocation; below 1 the reduced model is slower than solving the full problem.
+- **median evolved**: median over the 32 cases of each case's worst evolved-time error.
+- **data-matched**: the Kim autoencoder trained on 576 trajectories (the count the project bank was trained on) instead of 112.
+- **admissible**: a Kim row counts as the validated method only if it ran the code and activation that passed the reproduction gate.
+- **precheck**: before training, weights + gradient + two Adam moments of the dense encoder are compared with device memory; if larger, the arm is recorded as not fitting and not attempted.
+- **epochs / wall budget**: training passes over the fit snapshots; the wall budget is a per-arm time limit added by this lane (the paper allows up to 10 000 epochs).

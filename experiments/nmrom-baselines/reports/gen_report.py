@@ -46,6 +46,61 @@ for g in gates:
 out.append('')
 
 rows_json = []
+# ---------------------------------------------------------------- headline: one row per method x K x mesh
+HEAD = []
+for f in fams:
+    s = f['s']; L = s['intervals']; A = s['arms']
+    tf = A.get('fom_fft_tight', {}).get('timing', {}).get('gpu_ms_median')
+    def row(name, label):
+        a = A[name]; kim = a['family'].startswith('kim'); act = a.get('activation', 'swish') if kim else None
+        adm = (not kim) or (f['admissible'] and act in passed_acts)
+        t = a.get('timing', {}).get('gpu_ms_median'); mem = a.get('memory_analysis', {}).get('total')
+        HEAD.append(dict(mesh=L, method=label, arm=name, solved=a.get('solved_dimension'), cohort=a.get('cohort'), worst=a['worst_evolved'],
+                         median=a['median_evolved'], ms=t, vs_fom=(tf / t if (t and tf) else None), mem=mem, admissible=adm, act=act))
+    for K in (8, 16, 32):
+        nm = f'kim_final_K{K}'
+        if nm in A: row(nm, f'Kim NM-LSPG K={K}')
+        if nm + '_hr' in A: row(nm + '_hr', f'Kim NM-LSPG-HR K={K} (exploratory)')
+        nm = f'sig_K{K}_sel'
+        if nm in A: row(nm, f'Kim NM-LSPG K={K}')
+        if nm + '_hr' in A: row(nm + '_hr', f'Kim NM-LSPG-HR K={K} (exploratory)')
+        for dm in [k for k in A if k.startswith(f'kim_final_K{K}_fit') and not k.endswith('_hr')]:
+            row(dm, f"Kim NM-LSPG K={K}, data-matched ({A[dm]['variant']['fit_traj']} traj.)")
+        pods = [k for k in (f'pod_lspg_zero_K{K}', f'pod_lspg_ic_K{K}') if k in A]
+        if pods: row(min(pods, key=lambda k: A[k]['worst_evolved']), f'POD-LSPG K={K} (better reference)')
+    for nm, lab in (('ours_q0', 'ours fast (q=0), K=16'), ('ours_q256', 'ours accurate (q=256), K=16'),
+                    ('fom_nt1e4_dt005', 'FOM loose (1e-4)'), ('fom_fft_tight', 'FOM named / reference')):
+        if nm in A: row(nm, lab)
+if HEAD:
+    out += ['## 2. Headline: worst evolved same-grid error, query time and memory per method, mesh and latent dimension', '',
+            'Validation cohort (32 held-out cases) for every row. Times: median GPU query, supplied initial field on GPU to six dense fields on GPU, all arms '
+            'interleaved in one allocation per mesh. "× FOM" = named-FOM time / arm time (> 1 means faster than the full-order solve). '
+            'Kim rows marked INADMISSIBLE used an activation that failed the reproduction gate.', '',
+            '| mesh | method | solved unknowns | worst evolved | median evolved | query ms | × FOM | compiled-query MB | admissible |', '|---|---|---|---|---|---|---|---|---|']
+    for h in HEAD:
+        num = lambda x, fmt: '—' if x is None else format(x, fmt)
+        out.append(f"| {h['mesh']}² | {h['method']}{' [' + h['act'] + ']' if h['act'] else ''} | {h['solved'] or '—'} | {pc(h['worst'])} | {pc(h['median'])} | "
+                   f"{num(h['ms'], '.1f')} | {num(h['vs_fom'], '.2f')} | {num(None if h['mem'] is None else h['mem'] / 1e6, '.0f')} | {'yes' if h['admissible'] else 'NO'} |")
+    out.append('')
+    # ------------------------------------------------------------ fitting limits and tuning effort
+    out += ['## 3. Where each Kim configuration stops fitting or training', '',
+            '| mesh | arm | outcome |', '|---|---|---|']
+    for f in fams:
+        s = f['s']
+        for d in s['dropped']:
+            det = f"needs {d['need_gb']:.0f} GB for weights + gradient + Adam state > device {d['device_limit_gb']:.0f} GB (M1 = {d['M1']}); not attempted" if 'need_gb' in d else d['reason']
+            out.append(f"| {s['intervals']}² | `{d['name']}` | {d['reason']}: {det} |")
+        for nm, t in s['training'].items():
+            out.append(f"| {s['intervals']}² | `{nm}` | trained {t['epochs']} epochs in {t['seconds']:.0f} s, stop = {t['stop_reason']}, M1 = {t['M1']}, "
+                       f"{t.get('fit_trajectories', 112)} fit trajectories, best validation-snapshot MSE {t['best_val']:.2e} |")
+    out += ['', '## 4. Tuning effort given to the Kim baseline', '']
+    for f in fams:
+        s = f['s']; sel = s.get('selection', {})
+        tot = sum(t['seconds'] for t in s['training'].values())
+        out.append(f"- **{s['intervals']}²** (job {s['job_id']}): {len(sel.get('candidates', {}))} sweep candidates scored on the tuning subset, "
+                   f"{len(s['training'])} autoencoders trained, {tot / 3600:.1f} GPU-hours of training; selected `{sel.get('selected', '—')}`. "
+                   + 'Candidates (tune worst evolved): ' + ', '.join(f'`{k}` {pc(v)}' for k, v in sel.get('candidates', {}).items()))
+    out.append('')
 for f in fams:
     s = f['s']; L = s['intervals']
     out += [f"## Shared Burgers family, {L}² intervals (n = {s['n']}), job {s['job_id']}, {s['gpu_uuid']}", '',
@@ -83,8 +138,14 @@ out += ['## Glossary', '',
         '- **tune**: 16 cases carved from the training split, used for every choice; **validation**: 32 held-out cases, never used to choose.',
         '- **GN cap hits**: time steps whose Gauss–Newton solve hit the 20-iteration cap. **compiled-query memory**: XLA memory analysis (arguments + outputs + temporaries) of the jitted query.',
         '- **POD-LSPG zero / ic**: linear basis with zero reference or with the initial field as reference. **ours_q0 / ours_q256**: frozen project checkpoint without / with 256 corrections.',
-        '- **FOM**: full-order model on the same grid; `fom_fft_tight` is the reference itself (error 0 by construction).', '']
+        '- **FOM**: full-order model on the same grid; `fom_fft_tight` is the reference itself (error 0 by construction) and is the named FOM for "× FOM"; `fom_nt1e4_dt005` is the same solver with loose tolerances.',
+        '- **× FOM**: named-FOM median query time divided by the arm\'s median query time, same allocation; below 1 the reduced model is slower than solving the full problem.',
+        '- **median evolved**: median over the 32 cases of each case\'s worst evolved-time error.',
+        '- **data-matched**: the Kim autoencoder trained on 576 trajectories (the count the project bank was trained on) instead of 112.',
+        '- **admissible**: a Kim row counts as the validated method only if it ran the code and activation that passed the reproduction gate.',
+        '- **precheck**: before training, weights + gradient + two Adam moments of the dense encoder are compared with device memory; if larger, the arm is recorded as not fitting and not attempted.',
+        '- **epochs / wall budget**: training passes over the fit snapshots; the wall budget is a per-arm time limit added by this lane (the paper allows up to 10 000 epochs).', '']
 (LANE / 'reports/2026-09-21-nmrom-baselines.md').write_text('\n'.join(out))
 (LANE / 'summary.json').write_text(json.dumps(dict(gate_passed=bool(passed), gates=gates, family_runs=[dict(path=f['path'], sha256=f['sha256'], admissible=f['admissible']) for f in fams],
-                                                   rows=rows_json, generator_sha256=sha(__file__)), indent=1) + '\n')
+                                                   rows=rows_json, headline=HEAD, generator_sha256=sha(__file__)), indent=1) + '\n')
 print('gate_passed', bool(passed), 'gates', len(gates), 'family runs', len(fams))

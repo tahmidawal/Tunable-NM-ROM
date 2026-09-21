@@ -28,6 +28,7 @@
 \input{tables/numbers}
 \input{tables/campaign-numbers}
 \input{tables/headline-numbers}
+\input{tables/sealed-top}
 
 % short-hands used in prose
 \newcommand{\corr}{C_q}
@@ -50,15 +51,15 @@ model; moving it generally requires retraining. We present a
 nonlinear-manifold reduced-order model (NM-ROM) for Poisson, heat and
 viscous Burgers equations that exposes a deployment-time accuracy--speed
 tradeoff from a single trained decoder, controlled at inference time by
-the correction rank $q$, which sets accuracy, and by the solver
-tolerance, budget and empirical-quadrature rule, which set cost. The framework combines a frozen coordinate-network spatial
+the correction rank $q$ (accuracy) and the solver tolerance, budget and
+empirical-quadrature rule (cost). The framework combines a frozen coordinate-network spatial
 bank with a small nonlinear head and nested correction directions; exact
 Dirichlet enforcement by a vanishing factor in the bank; least-squares
 Petrov--Galerkin projection of the discrete residual onto fixed weak
 tests, with every linear operator preassembled; matrix-free JAX
 evaluation; and NNLS empirical quadrature for the Burgers advection,
-certified on held-out reached states. Across Poisson and heat in two and
-three dimensions and viscous Burgers in two, at meshes up to $4096^2$,
+validated on held-out reached states. Across Poisson in two and three
+dimensions, and heat and viscous Burgers in two, at meshes up to $4096^2$,
 the same frozen model keeps its accuracy as the two-dimensional mesh is
 refined, so its speedup over the named iterative solvers grows with
 resolution, reaching $\nHiresPoissonAccSFortyNinetySix\times$ at
@@ -70,8 +71,8 @@ $\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers against Newton--BiCGStab
 $\nBurgHoldAccErrFortyNinetySix\,\%$ on held-out cases); at matched latent
 dimension its fast setting is far more accurate than a reproduced
 shallow-masked-autoencoder NM-ROM and POD-LSPG. The named solvers remain
-more accurate at their tolerances, and three-dimensional Burgers,
-Navier--Stokes and full-state waves miss their targets.
+more accurate at their tolerances, and three-dimensional Burgers and
+heat, Navier--Stokes and full-state waves miss their targets.
 \end{abstract}
 
 % =====================================================================
@@ -271,10 +272,10 @@ $k$-dimensional at every $q$, and $q=R$ is a linear solve.
 The heat semi-discretisation $du/dt = -\kappa\, \Aop u$ is advanced with
 Crank--Nicolson; the reduced step substitutes the manifold into the fully
 discrete equation \emph{before} projecting and solves
-$\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$
+$\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$, with $D$ the diagonal Crank--Nicolson amplification of the tests (Appendix eq.~\eqref{eq:heat-step})
 (shown at $q=0$; with corrections see Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
 a linear system; at $q=R$ the step is the linear recurrence
-\eqref{eq:heat-endpoint}. Reflective waves use an explicit latent
+(Appendix eq.~\eqref{eq:heat-endpoint}). Reflective waves use an explicit latent
 integration instead (Appendix~\ref{app:method:wave}).
 
 \paragraph{Hyperbolic (Burgers).}
@@ -308,7 +309,7 @@ The non-linear manifold reduces the DOF count from $n$ to $k+q$, but a
 projected term such as $\tests N(\bank c)$ still costs $O(n)$. For a fixed linear operator
 the tested residual is exactly precomputable,
 $\tests(\Aop\,u-f)=B\,(\head(\latent)+\corr y)-b$ with
-$B=\rowscale\,\tests\bank$ assembled offline by the corresponding discrete transforms, so
+$B=\rowscale\,\tests\bank=\rowscale B_0$ (the $B_0$ of \S\ref{sec:method:weak} with its rows rescaled) assembled offline by the corresponding discrete transforms, so
 linear terms are never approximated; the Burgers advection
 $\tests N(\bank c)$ is the only term that resists preassembly, evaluated
 \emph{densely}, $O(nR)$ per residual, or on an \emph{empirical quadrature}
@@ -318,7 +319,7 @@ the projected advection term at $n_{\rm fit}$ stored codes with a hard cap
 of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$ re-solves the
 fit, rules are not nested, and deployment selects among stored rules. \emph{A rule is never accepted on its NNLS fit residual}; we score it by
 the held-out relative error $\rho$ of the projected advection term
-\eqref{eq:rho} over states the solver actually reaches on trajectories
+(Appendix eq.~\eqref{eq:rho}) over states the solver actually reaches on trajectories
 disjoint from the fit and evaluation cases, against a primary bar
 $\rho_{\max}\le\nEqtopBar$ fixed before any certification job ran and a
 tight bar $\nEqtopTightBar$, and then re-draw the construction: a rule is
@@ -336,7 +337,7 @@ then warm-started from step to step. No encoder is used.
 \paragraph{Head.} $\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, with
 $\varphi_\theta$ an MLP with two hidden SiLU layers; the skip keeps a
 latent-independent Jacobian component. Widths and $(k,R)$ are per family
-(Tables~\ref{tab:problems} and~\ref{tab:config3d}). The skip is a design
+(Table~\ref{tab:problems}; three-dimensional sizes in Table~\ref{tab:config3d}). The skip is a design
 choice, not ablated here.
 
 \paragraph{Bank.} Every Dirichlet bank is a coordinate network times a
@@ -353,8 +354,8 @@ training coefficient residuals, nested in $q$.
 
 \paragraph{What is fixed, what is chosen, and how error is reported.}
 \label{sec:method:tuning}
-Each row of Table~\ref{tab:headline} names one frozen model (two-dimensional
-heat and Poisson each have two). Chosen at run time are $q$, the number of
+Each row of Table~\ref{tab:headline} comes from one frozen model, named
+by its problem label. Chosen at run time are $q$, the number of
 tests $M$ (usually $M=4(k+q)$; fixed along the rank study of
 Table~\ref{tab:ladder-main} and on the L-shape), the quadrature, the
 tolerance and budget, and for heat the stepping mode (Crank--Nicolson or
@@ -378,7 +379,7 @@ sampled Burgers advection uses the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
 projected operator. The Burgers runs above $1024^2$ assemble the
 Jacobian analytically instead of by forward-mode products, clip the
-step, and (arm by arm, Table~\ref{tab:headline-times}) solve the normal
+step, and (in the settings listed in Table~\ref{tab:headline-times}) solve the normal
 system by Cholesky factorisation, carry the damping between time steps
 and start each step from a quadratic predictor.
 
@@ -467,8 +468,9 @@ error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
 batched). The batched fit solves each output time independently against
 exactly propagated test moments, exploiting the linear, autonomous
 structure of the heat equation (eigenfunction tests). Burgers accurate
-quadrature: $^{s}$\,rule passed the held-out bar in its single draw
-(construction marginal, Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
+quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{} that passed the
+held-out bar in its single draw and was not re-drawn (it is not the
+$q=256$ rule of Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
 $63{\times}63$ lattice rule passing the held-out bar in the same job;
 $^{d}$\,dense residual. The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
@@ -476,8 +478,7 @@ setting, may exit on a stall, and is shown against relaxed
 tolerances (other rows' tight-Newton ratios:
 Table~\ref{tab:headline-times}). $^{h}$\,64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
-$M=544$ arm was not run on them, so the $M=1088$ rung is shown (at
-$4096^2$, $M=544$ reaches $\nBurgMFiveFourFourHold\,\%$ there). Poisson (dev.\ sources) rows use development sources of a
+$M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev.\ sources) rows use development sources of a
 separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
 host transfer of the field dominates the NM-ROM query: the accurate
 setting's complete-query speedups are
@@ -497,7 +498,7 @@ evaluates the residual densely because no quadrature rule is validated
 there at $q=256$; with the validated $q=128$ rule the error is
 $\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$. Burgers points at
 $2048^2$ and $4096^2$ are development cases; the held-out rows of
-Table~\ref{tab:headline} are not plotted.}
+Table~\ref{tab:headline} are not plotted. The legend applies to both panels.}
 \label{fig:speedup}
 \end{figure}
 
@@ -544,8 +545,8 @@ $4096^2$.
 \centering
 \caption{Other nonlinear-manifold ROMs on the shared Burgers 2D family at
 $256^2$ and $512^2$: worst and median evolved same-grid error over 32
-held-out cases and
-compiled-query memory, one allocation. Latent dimension is matched for
+validation cases (never used for any choice) and compiled-query memory,
+one allocation. Latent dimension is matched for
 the baselines and our fast setting; our accurate setting solves
 $k+q=272$ unknowns. The shallow masked-autoencoder NM-LSPG of
 \citet{KimChoi2022NMROM} passed its reproduction gate, on their own 2D
@@ -567,7 +568,7 @@ No times: every row, ours included, uses a dense residual
 \resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines}}
 \end{table}
 
-On 32 held-out Burgers cases at $256^2$ and $512^2$
+On 32 validation Burgers cases at $256^2$ and $512^2$
 (Table~\ref{tab:nmrom-baselines}) our fast setting, at matched latent
 dimension, reaches worst errors of
 $\nBaseOursFastWorst\,\%$, against $\nBaseKimRange\,\%$ for the
@@ -577,7 +578,7 @@ $\nBaseOursAccWorst\,\%$.
 
 \paragraph{Where the method currently fails.}
 \label{sec:results:failures}
-Table~\ref{tab:failures} collects the three problems that miss their
+Table~\ref{tab:failures} collects the four problems that miss their
 targets; they are excluded from Table~\ref{tab:headline}. On
 three-dimensional Burgers the corrections cut the held-out worst error
 from $\nFailBurgersQzero\,\%$ to $\nFailBurgersAcc\,\%$, but the FOM is faster,
@@ -589,14 +590,19 @@ $\nFailNsQzero\,\%$ to $\nFailNsAcc\,\%$; \nFailNsFailing{} of
 CG but its energy-state error, which includes velocity, is
 $\nFailWaveQzero\,\%$; corrections bring it to $\nFailWaveAcc\,\%$, still
 above CG's, at a cost that removes the speedup. Three-dimensional heat
-reaches $\nFailHeatThreeEvolved\,\%$ over evolved times (the only
-convention its $32^3$/$64^3$ record holds) but $\nFailHeatThreeAll\,\%$
-once $t=0$ is counted at $128^3$, and is slower than CN--CG. The
+reaches $\nFailHeatThreeEvolved\,\%$ over evolved times ($32^3$/$64^3$
+records hold no other convention) but $\nFailHeatThreeAll\,\%$ with $t=0$
+at $128^3$; it is slower than CN--CG with Crank--Nicolson stepping up to
+$128^3$ and faster at $256^3$ (16 cases) and with the batched fit
+(Table~\ref{tab:heat-hires-times}), but misses the all-times target. The
 three-dimensional solves evaluate the residual densely.
 
 \begin{table}[t]
 \centering
-\caption{Problems on which the method misses its target. Error is the
+\caption{Problems on which the method misses its target: Navier--Stokes
+$\nFailNsTarget\,\%$ per held-out case; heat 1\,\% over all output times;
+wave, an energy-state error within that of CG; Burgers 3D, faster than the
+FOM at its accuracy (no numeric error target was recorded). Error is the
 worst same-grid relative $L^2$ error (\%) over evolved times, except the
 Heat 3D $128^3$ rows (all output times including $t=0$); the wave
 error is the energy-state error over displacement and velocity.
@@ -615,9 +621,8 @@ raises the cost.
 
 \begin{table}[t]
 \centering
-\caption{Burgers2D correction settings from one frozen model at $256^2$,
-test count fixed at $M=\nQxmFixedM$, dense residual, one allocation
-(job \provQxmWithinJob). Errors are worst
+\caption{Burgers 2D correction settings from one frozen model at $256^2$,
+test count fixed at $M=\nQxmFixedM$, dense residual, one allocation. Errors are worst
 evolved same-grid percentages on development cases; times are paired
 median GPU query times. All rows meet the stopping rule.}
 \label{tab:ladder-main}
@@ -628,8 +633,8 @@ median GPU query times. All rows meet the stopping rule.}
 
 Appendix Table~\ref{tab:knobs-main} summarises the deployment-time controls.
 Correction rank is the accuracy control (with a smaller fixed test space
-the same ranks give only $\nQxmTwoFiftySixErrSpan\times$, so test count is
-held fixed along the ladder). Empirical quadrature and the stopping tolerance
+the same ranks give a $\nQxmTwoFiftySixErrSpan\times$ error reduction from
+$q=0$ to $256$, so test count is held fixed along the ladder). Empirical quadrature and the stopping tolerance
 are cost controls: they lower the runtime at little or no change in
 error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
@@ -638,15 +643,15 @@ A separate ladder, in which the test count follows a fixed schedule
 $M=4(k+q)$, was evaluated once on a sealed held-out cohort after every
 choice was frozen. All \nSealedCheckpoints{} checkpoints (the original
 model and three retrained seeds) give monotone error reduction with
-top-rank errors of $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, and
+top-rank errors of $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$ (\nSealedTopPerCheckpoint), and
 \nSealedKnobBarCount{} of \nSealedCheckpoints{} meet the pre-registered
-secondary criterion, the \emph{knob bar}: converged settings spanning at
+secondary criterion: converged settings spanning at
 least $2\times$ in error and $2\times$ in cost. Two stricter
 pre-registered checks fail: the sealed-to-development error ratio at
 $q=0$ for the original model, whose uncorrected solve converges to a
 wrong branch on one sealed case ($\nSealedIncQzero\,\%$, kept in the
 reported maximum), and universal convergence, which fails on
-\nSealedUnconvergedCells{} (Table~\ref{tab:sealed}).
+\nSealedUnconvergedPlain{} (Table~\ref{tab:sealed}).
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}

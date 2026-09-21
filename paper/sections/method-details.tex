@@ -252,8 +252,8 @@ indices, weights, and the cached $m\times5\times R$ bank block.
 Damping starts at $\lambda_0=10^{-6}$ (Poisson, Burgers) or $10^{-4}$ (heat);
 $\lambda\leftarrow\max(\lambda/3,10^{-12})$ on acceptance and
 $\min(10\lambda,\lambda_{\max})$ on rejection; the trust radius is taken from the
-spread of the training codes. Exit codes differ per cell and are reported per
-cell. Burgers: 4 stationarity, 1 residual, 2 tiny step, 3 rejected at
+spread of the training codes. Exit codes differ per problem and are reported per
+problem. Burgers: 4 stationarity, 1 residual, 2 tiny step, 3 rejected at
 $\lambda\ge10^{14}$, 0 budget. Poisson: 6 stationarity, 2 relative residual, 1
 stall, 3 damping limit, 5 non-finite initial value, 0 budget. Heat: 1
 stationarity, 2 tiny step, 3 damping limit, 4 non-finite, 0 budget. The heat

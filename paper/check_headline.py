@@ -57,7 +57,7 @@ macros = set(re.findall(r'\\(n[A-Za-z]+)', abstract))
 defined = set(re.findall(r'\\newcommand\{\\(n\w+)\}', (P / 'tables/headline-numbers.tex').read_text() + (P / 'tables/numbers.tex').read_text()))
 assert macros and macros <= defined, macros - defined
 assert all(m.startswith(('nHead', 'nQxm', 'nHires', 'nHeat', 'nBurg', 'nBase')) for m in macros), macros   # only generated-table numbers
-assert 'full pre-registered criterion' not in main and 'knob bar' in main
+assert 'full pre-registered criterion' not in main and 'pre-registered\nsecondary criterion' in main   # 2026-09-21: 'knob bar' jargon replaced
 assert r'\label{tab:knobs-main}' in (P / 'sections/appendix.tex').read_text()   # 2026-09-21: knob table moved to the appendix for the page budget
 for label in ('tab:headline', 'fig:speedup', 'tab:failures', 'tab:nmrom-baselines'):
     assert r'\label{' + label + '}' in main.split(r'\bibliographystyle')[0], label

@@ -108,22 +108,29 @@ Table~\ref{tab:headline}.}
 
 \begin{table}[htbp]
 \centering
-\caption{Heat at high resolution, one frozen model per block (median
-times, ms). Errors are worst
-same-grid relative $L^2$ over all output times and over evolved times.
-Speedup uses the FOM rule of Table~\ref{tab:headline}; the last column
-uses CN--CG at $\Delta t=0.025$, rtol $10^{-6}$. CN: reduced
-Crank--Nicolson steps; batched fit: each output time fitted
-independently to exactly propagated test moments (linear autonomous
-problems with eigenfunction tests only). The sealed 2D cohort was opened
-once and gives every wide-bank row of Table~\ref{tab:headline}; the
-development row ran on another GPU (A100) and is shown for reference.
-Wide bank: $R=128$, $k=8$; earlier: the $R=32$ checkpoint of the
-Heat rows; 3D: the Heat 3D model of Table~\ref{tab:failures}. The 3D rows
-miss the 1\,\% all-times target; $256^3$ is the first 16 final cases,
-not a mesh trend.}
+\caption{Heat at high resolution, accuracy: one frozen model per block;
+worst same-grid relative $L^2$ error over all output times and over
+evolved times, accurate / fast setting. CN: reduced Crank--Nicolson
+steps; batched fit: each output time fitted independently to exactly
+propagated test moments (linear autonomous problems with eigenfunction
+tests only). The sealed 2D cohort was opened once and gives every
+wide-bank row of Table~\ref{tab:headline}; the development row ran on
+another GPU (A100) and is shown for reference. Wide bank: $R=128$, $k=8$;
+earlier: the $R=32$ checkpoint of the Heat rows; 3D: the Heat 3D model of
+Table~\ref{tab:failures}. The 3D rows miss the 1\,\% all-times target;
+$256^3$ is the first 16 final cases, not a mesh trend.}
 \label{tab:heat-hires}
 \resizebox{\linewidth}{!}{\input{tables/TH_heat_hires}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Heat at high resolution, timing for the rows of
+Table~\ref{tab:heat-hires}: median GPU query times (ms), the FOM chosen
+by the rule of Table~\ref{tab:headline} and its speedup, and the speedup
+against CN--CG at $\Delta t=0.025$, rtol $10^{-6}$.}
+\label{tab:heat-hires-times}
+\resizebox{\linewidth}{!}{\input{tables/TH_heat_hires_times}}
 \end{table}
 
 \begin{table}[htbp]
@@ -142,10 +149,10 @@ formed.}
 
 \begin{table}[htbp]
 \centering
-\caption{Which knob to turn, measured on Burgers2D from frozen models.
+\caption{Which knob to turn, measured on Burgers 2D from frozen models.
 Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
 dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
-and cap: 32 held-out validation cases (Table~\ref{tab:knobs}),
+and cap: 32 validation cases (Table~\ref{tab:knobs}),
 stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
 $^{\ast}$\,Jobs \provPanelJob{} and \provPanelTenTwentyFourJob{};
 Table~\ref{tab:figure1-table} is another allocation.}
@@ -166,11 +173,11 @@ Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
 \begin{table}[htbp]
 \centering
 \caption{Dense and empirical-quadrature (EQ) residual evaluation on
-Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
+Burgers 2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
 median GPU milliseconds from one allocation (job \provEqtopLadderJob, the
 EQ-ladder job of Table~\ref{tab:eqladder}; the $256^2$ row of
 Table~\ref{tab:headline} is job \provPanelJob{} and Table~\ref{tab:ladder-main}
-is job \provQxmWithinJob, each with its own measured error); the last column is dense
+is the fixed-$M$ ladder job, each with its own measured error); the last column is dense
 time over EQ time. Dashes: no paired dense measurement. Rules at
 $q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
 higher-rank rules pass some (Table~\ref{tab:eqladder}).}
@@ -236,7 +243,7 @@ development cohort, the pre-registered sealed-over-development ratio of seed mea
 original model's $q=0$ rung is a single sealed case converged to a wrong branch
 (gradient exit, zero budget exits); the pre-registered ratio criterion fails
 at $q=0$ for the original model alone (\nSealedCtwoIncQzeroRatio) and the
-convergence criterion fails on \nSealedUnconvergedCells.}
+convergence criterion fails on \nSealedUnconvergedPlain.}
 \label{tab:sealed}
 \resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
 \resizebox{\linewidth}{!}{\input{tables/T13b_sealed_verdicts}}
@@ -268,7 +275,7 @@ block-damped step is the one kept.}
 
 \begin{table}[htbp]
 \centering
-\caption{Solver-side controls on Burgers2D, 32 held-out validation cases,
+\caption{Solver-side controls on Burgers 2D, 32 validation cases,
 one allocation: stopping tolerance, EQ node count $m$ and iteration cap,
 with full-order settings for scale. Error: worst over
 cases and output times of the $L^2$ error against the refined reference,

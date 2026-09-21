@@ -1,6 +1,26 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — finishing pass (user decisions) — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — final review fixes — CURRENT HANDOFF
+
+Final read-only review applied (editorial only). Must-fix: abstract scope "Poisson in two and three
+dimensions, and heat and viscous Burgers in two"; 3D heat added to the abstract's failure list;
+"certified" → "validated on held-out reached states"; "four problems" in the failures paragraph; Table 3
+caption states each target (NS 5 % per held-out case from the macro; heat 1 % all-times; wave within CG's
+energy-state error; Burgers 3D faster than the FOM at its accuracy — no numeric error target is recorded);
+3D heat speed reworded to what Tables 3/C.6 show; the high-resolution heat table split into an accuracy
+table (C.5) and a timing table (C.6), both legible. Should-fix: marker s now names its source job and says
+it is not the Table D.2 rule; per-checkpoint top-rank errors printed beside the 0.59–0.68 % range (new
+generated `tables/sealed-top.tex`, kept out of the byte-preserved numbers.tex); §3.4 model-naming sentence
+simplified; "32 validation cases" wording in Table 2 and the knob/solver tables; width citation →
+Table C.1; jargon removed ("job G2", "arm by arm", "rung", "knob bar", "seed2", "per cell"; legacy table
+labels via editorial_subs.py); Burgers 3D written as $32^3$ intervals (derived in the generator from the
+record's 33/65/129 boundary-inclusive node counts); "Burgers 2D"; B = ΛB₀ relation in §3.3; D defined and
+appendix equations cited as such in §3.2; "a 1.22× error reduction from q=0 to 256"; marker h shortened;
+Figure 1 caption says the legend applies to both panels; Table C.10 gains the Heat 3D 128³ row and the
+allocation paragraph lists the Heat 3D jobs for Table 3. check_headline now expects "pre-registered
+secondary criterion" instead of "knob bar". Abstract 246 words.
+
+## 2026-09-21 (paper lane) — finishing pass (user decisions)
 
 **User decisions recorded (also in `paper/AGENTS.md`):** (1) Table 2 accuracy + memory only, no time
 column; (2) Table 1 not compacted; (3) APPLIED — wide-bank heat 1024² now the sealed-cohort row (plain and

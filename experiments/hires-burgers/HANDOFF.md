@@ -7,7 +7,7 @@
 
 ## State (update at every milestone)
 
-- Jobs used: **3 / 8** (hb2k01 done; hb4k01, hb4k02 failed before any ROM number). Running: none. Namespace empty.
+- Jobs used: **5 / 8** (hb2k01 done; hb4k01, hb4k02 failed before any ROM number). RUNNING: `hb2k02` = 4071616 (2048², speed loop) and `hb4k03` = 4071625 (4096²), both H200 pax008, source = HEAD at submission.
 - **hb2k01 (2048², job 4054951, H200) collected, NumPy-audited (no failed gate), remote dir deleted.**
   `checks/hb2k01-summary.json`, report `reports/2026-09-20-hires-burgers.md`, `reports/summary.json`.
   Accuracy SURVIVES transfer: q=256/M=1088 0.598 % worst evolved (dense truth 0.5985 %), q=128 1.075 %, q=0 2.37 %,
@@ -49,3 +49,5 @@ See the bottom of this file's job table.
 
 Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage `hb4k01` with `config-4096.json --mem 400G` once the early phases are seen to work and the account has < 6 running.
 | hb4k02 | 4059827 | 4096² | H200 (pax010) | **FAILED, no ROM number** (Triton gemm > 2^31 elements; `artifacts/hb4k02-failed/`), remote deleted | — |
+| hb2k02 | 4071616 | 2048² | H200 (pax008) | RUNNING (config-2048-speed.json) | — |
+| hb4k03 | 4071625 | 4096² | H200 (pax008) | RUNNING (config-4096-speed.json, blocked bank) | — |

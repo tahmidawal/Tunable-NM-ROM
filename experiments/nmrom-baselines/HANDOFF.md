@@ -1,6 +1,6 @@
 # HANDOFF — nmrom-baselines (kept current; read DESIGN.md first)
 
-**State 2026-09-21 ~00:40 EDT** (session 2, Opus agent, took over from the credit-limited session at 5da47517).
+**State 2026-09-21 ~03:10 EDT** (session 2, Opus agent, took over from the credit-limited session at 5da47517).
 Read DESIGN.md §6–§7 first (audit dispositions and post-gate03 amendments).
 
 | job | dir | id | status |
@@ -9,10 +9,11 @@ Read DESIGN.md §6–§7 first (audit dispositions and post-gate03 amendments).
 | gate02 | — | 4055132 | cancelled by me <1 min (submitted with 6 account jobs running). no output |
 | gate03 attempt 1 (swish / per-feature / f32) | removed | 4059370 | DONE, audited: **FAIL** 1.67/1.45/1.73 %, median 1.67 % > 1.5 %; LS-LSPG 31.6 %; HR fails. `runs/gate03/` |
 | gate04: HR-SNS on attempt-1 weights + attempt 2 (global scale) | removed | 4072224 | DONE, audited: attempt 2 **FAIL** 709/11.2/10.9 %; HR-SNS fails. `runs/gate04/` |
-| gate05: attempt 3 (sigmoid / per-feature / f32) — the LAST allowed attempt | `gate05` | 4077574 | RUNNING (started 23:46, ~2.7 h) |
-| fam128a: 128² sweep (11 variants) -> selection -> finals K=8/16/32 + ours q0/q256 + FOMs + timing, `--provisional` | `fam128a` | 4073272 | RUNNING (started 23:08, ~7 h) |
+| gate05: attempt 3 (sigmoid / per-feature / f32) — the LAST allowed attempt | removed | 4077574 | DONE, audited: **PASS** 1.45/1.83/1.44 %, median 1.45 %; LS 31.6 %; HR diverges (HR gate FAIL). `runs/gate05/` |
+| fam128a: 128² **swish** sweep (11 variants) -> selection -> finals K=8/16/32 + ours q0/q256 + FOMs + timing, `--provisional` | `fam128a` | 4073272 | RUNNING (started 23:08, ~7 h). Kim rows INADMISSIBLE (swish failed the gate); POD/ours/FOM rows valid |
+| fam256: sigmoid mini-sweep K16 -> select on tune -> finals K8/16/32 (+HR expl.) + data-matched K16 fit576 + published-M1 precheck + POD + ours + FOMs + timing, `--gate gate05` | `fam256` | 4095408 | RUNNING (submitted 03:05, est. 7–8 h) |
 
-Jobs used: 6 / 8. Two left: **fam256** (A100-80G) and **fam512** (H200, 240G). No job budget for Lee & Carlberg (B): cut, as DESIGN §5 foresaw.
+Jobs used: 7 / 8. One left: **fam512** (H200, 240G) — config from fam256's SELECTED line (`python configs/make_mesh_configs.py 512 <copy of live fam256 summary.json>`), submit when fam128a frees the lane slot. No job budget for Lee & Carlberg (B): cut, as DESIGN §5 foresaw.
 
 ## Session 2 changes (committed)
 
@@ -27,15 +28,11 @@ Jobs used: 6 / 8. Two left: **fam256** (A100-80G) and **fam512** (H200, 240G). N
 
 ## Next steps
 
-1. **gate05 done** -> collect (below), `audit_gate.py`, regenerate report (`python reports/gen_report.py`), commit.
-   If it fails: the Kim baseline is NOT validated (three attempts used). Family tables print as "unvalidated
-   implementation — not admissible". Nearest miss = attempt 1, 1.67 % vs 1.5 %. Do not move the bar.
-2. **fam128a done** -> collect, `audit_family.py runs/fam128a`, then `python configs/make_mesh_configs.py`,
-   check the printed walls, commit configs, stage + guarded-submit:
-   - `python cluster/stage.py fam256 --gpu a100-80G --hours 12 --mem 160G -- family.py --provisional --config experiments/nmrom-baselines/configs/fam256.json --out output` (drop `--provisional` and pass `--gate <passed gate summary>` if gate05 passes)
-   - `python cluster/stage.py fam512 --gpu h200 --hours <from walls> --mem 240G -- family.py ... fam512.json ...`
-   - `bash cluster/submit.sh fam256` (it waits for account < 6 and lane < 2), same for fam512.
-3. Report + lab log + final message.
+1. fam128a done -> collect, `audit_family.py runs/fam128a`, commit small files, delete remote dir.
+2. When fam256's log shows `SELECTED`: copy its live `output/summary.json` to the scratchpad, `python configs/make_mesh_configs.py 512 <copy>`,
+   commit fam512.json, `python cluster/stage.py --gpu h200 --hours 14 --mem 240G fam512 -- family.py --gate experiments/nmrom-baselines/runs/gate05/output/summary.json --config experiments/nmrom-baselines/configs/fam512.json --out output`
+   (OPTIONS BEFORE the attempt name — argparse REMAINDER swallows anything after it), then `bash cluster/submit.sh fam512`.
+3. fam256 / fam512 done -> collect + audit, `python reports/gen_report.py`, lab-log entry, final message.
 
 **Collect a job:** `rsync -a tufts-login:/cluster/tufts/paralab/tawal01/nmrombase_20260920/<attempt>/{output,logs,OUTPUTS.sha256,run.sbatch,COMMIT.txt} runs/<attempt>/`,
 `cd runs/<attempt> && sha256sum -c OUTPUTS.sha256`, run `audit_gate.py` / `audit_family.py`, then delete the remote attempt dir (that dir only).

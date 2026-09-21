@@ -1,0 +1,133 @@
+{
+  "result": "runs/bfsp01/result-solve.json",
+  "result_sha256": "4eb5908f88ea0f289d143c2887bf4071b0384792ff6fa3e342360239cc4bc64a",
+  "tolerance": 1e-10,
+  "worst_abs_difference": 1.120519486129717e-15,
+  "subjects": {
+    "dst_direct": {
+      "max_abs_error_difference": 1.120519486129717e-15,
+      "reported_worst": 0.0
+    },
+    "cg_0.01": {
+      "max_abs_error_difference": 6.965998958219366e-17,
+      "reported_worst": 0.001524020486815314
+    },
+    "cg_0.0001": {
+      "max_abs_error_difference": 2.2880901004180415e-17,
+      "reported_worst": 1.1905720849775648e-05
+    },
+    "cg_1e-06": {
+      "max_abs_error_difference": 1.4677161916895902e-17,
+      "reported_worst": 6.711287195203267e-08
+    },
+    "cg_1e-08": {
+      "max_abs_error_difference": 9.576368075826565e-18,
+      "reported_worst": 8.919501694372841e-10
+    },
+    "coarse_dst_85": {
+      "max_abs_error_difference": 3.325790164099285e-16,
+      "reported_worst": 0.0011461147875994962
+    },
+    "coarse_dst_51": {
+      "max_abs_error_difference": 3.9193908535350985e-16,
+      "reported_worst": 0.002926487612296525
+    },
+    "inc512_floor": {
+      "max_abs_error_difference": 5.204170427930421e-18,
+      "reported_worst": 0.0074589180259083555
+    },
+    "inc512_weak": {
+      "max_abs_error_difference": 5.312590645178972e-18,
+      "reported_worst": 0.007458958707358803
+    },
+    "inc512_galerkin": {
+      "max_abs_error_difference": 2.4774019641293776e-17,
+      "reported_worst": 0.007741092495084198
+    },
+    "ft512_floor": {
+      "max_abs_error_difference": 1.3877787807814457e-17,
+      "reported_worst": 0.0031744999864747507
+    },
+    "ft512_weak": {
+      "max_abs_error_difference": 1.2576745200831851e-17,
+      "reported_worst": 0.0031745014713803654
+    },
+    "ft512_galerkin": {
+      "max_abs_error_difference": 1.3010426069826053e-17,
+      "reported_worst": 0.0032101140587922914
+    },
+    "pod256_floor": {
+      "max_abs_error_difference": 1.0408340855860843e-17,
+      "reported_worst": 0.009406927296860428
+    },
+    "pod256_weak": {
+      "max_abs_error_difference": 1.214306433183765e-17,
+      "reported_worst": 0.009406927755923793
+    },
+    "pod256_galerkin": {
+      "max_abs_error_difference": 1.0408340855860843e-17,
+      "reported_worst": 0.009756492759841818
+    },
+    "pod512_floor": {
+      "max_abs_error_difference": 1.0842021724855044e-17,
+      "reported_worst": 0.0021969833254870882
+    },
+    "pod512_weak": {
+      "max_abs_error_difference": 1.0842021724855044e-17,
+      "reported_worst": 0.0021969833260070256
+    },
+    "pod512_galerkin": {
+      "max_abs_error_difference": 9.974659986866641e-18,
+      "reported_worst": 0.00228522802547198
+    },
+    "pod1024_floor": {
+      "max_abs_error_difference": 1.0576582775009228e-17,
+      "reported_worst": 0.00020738759107313167
+    },
+    "pod1024_weak": {
+      "max_abs_error_difference": 1.0576582775009228e-17,
+      "reported_worst": 0.0002073875912243451
+    },
+    "pod1024_galerkin": {
+      "max_abs_error_difference": 1.015433685080296e-17,
+      "reported_worst": 0.00021325135532220544
+    },
+    "pod2048_floor": {
+      "max_abs_error_difference": 6.077793923155851e-18,
+      "reported_worst": 3.016624991573072e-06
+    },
+    "pod2048_weak": {
+      "max_abs_error_difference": 6.0775908503154695e-18,
+      "reported_worst": 3.0166252291805023e-06
+    },
+    "pod2048_galerkin": {
+      "max_abs_error_difference": 6.044622739821556e-18,
+      "reported_worst": 3.079360086585803e-06
+    },
+    "cat1024_floor": {
+      "max_abs_error_difference": 5.664956351236761e-18,
+      "reported_worst": 0.0011235958590810743
+    },
+    "cat1024_weak": {
+      "max_abs_error_difference": 5.719166459861036e-18,
+      "reported_worst": 0.0011254093274844189
+    },
+    "cat1024_galerkin": {
+      "max_abs_error_difference": 6.911788849595091e-18,
+      "reported_worst": 0.0012393645375468347
+    },
+    "cat2048_floor": {
+      "max_abs_error_difference": 4.9873299934333204e-18,
+      "reported_worst": 0.0008556847239858431
+    },
+    "cat2048_weak": {
+      "max_abs_error_difference": 5.0550926292136644e-18,
+      "reported_worst": 0.0008598668418343578
+    },
+    "cat2048_galerkin": {
+      "max_abs_error_difference": 8.226383983733765e-18,
+      "reported_worst": 0.0010978182807672772
+    }
+  },
+  "passed": true
+}

@@ -4,6 +4,8 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | `inc512` | 512 | 512 | 2.59e+07 | 0.2922 | 0.7459 | 0.0580 | 0.9191 | 0.9594 | 1.00x | 0.0000 | 3.3e+07 | 1.11e+06 | 264 |
 | `ft512` | 512 | 512 | 9.57e+04 | 0.0837 | 0.3174 | 0.0112 | 0.3600 | 0.3138 | 2.35x | 0.3191 | 3.3e+07 | 1.11e+06 | 264 |
+| `cat1024` | 1024 | 1024 | 3.52e+06 | 0.0286 | 0.1124 | 0.0047 | 0.1283 | 0.1088 | 6.64x | 0.1084 | 6.61e+07 | 4.33e+06 | 529 |
+| `cat2048` | 2048 | 2048 | 8.79e+06 | 0.0244 | 0.0856 | 0.0041 | 0.0979 | 0.0884 | 8.72x | 0.0732 | 1.32e+08 | 1.7e+07 | 1057 |
 | `pod128` | 128 | 128 | orthonormal | 1.0746 | 2.5326 | 0.2327 | 2.9771 | 2.6683 | 0.29x | 2.7204 | 8.26e+06 | 8.19e+04 | 66 |
 | `pod256` | 256 | 256 | orthonormal | 0.2952 | 0.9407 | 0.0267 | 1.0035 | 0.8941 | 0.79x | 0.9779 | 1.65e+07 | 2.95e+05 | 132 |
 | `pod512` | 512 | 512 | orthonormal | 0.0450 | 0.2197 | 0.0042 | 0.2357 | 0.1896 | 3.40x | 0.6473 | 3.3e+07 | 1.11e+06 | 264 |
@@ -26,6 +28,72 @@
 | `podraw_sub2048` | 2048 | 2048 | orthonormal | 0.0006 | 0.0006 | 0.0000 | 0.0028 | 0.0019 | 1263.17x | 0.0175 | 1.32e+08 | 1.7e+07 | 1057 |
 | `random512` | 512 | 512 | 8.57e+01 | 26.2732 | 32.2364 | 20.5537 | 51.5182 | 55.4400 | 0.02x | 57.8167 | 3.3e+07 | 1.11e+06 | 264 |
 
+### Floors — Burgers 2D, 256 intervals (job 4056956, complete=True)
+
+| arm | R | rank | cond | train mean-sq floor (rms %) | dev6 worst % | dev6 median % | hold64 worst % | vs inc512 (dev6) | head-transplant defect worst % | decode FLOPs/field | full-bank operator entries | bank MB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `inc512` | 512 | 512 | 2.63e+04 | 0.1116 | 0.3918 | 0.0352 | 2.2351 | 1.00x | 0.0000 | 3.33e+07 | 1.08e+06 | 266 |
+| `ft512` | 512 | 512 | 1.05e+04 | 0.0432 | 0.2245 | 0.0211 | 0.7146 | 1.75x | 1.9100 | 3.33e+07 | 1.08e+06 | 266 |
+| `cat1024` | 1024 | 1024 | 7.33e+04 | 0.0269 | 0.1435 | 0.0141 | 0.3755 | 2.73x | 1.3090 | 6.66e+07 | 4.26e+06 | 533 |
+| `cat2048` | 2048 | 2048 | 1.64e+05 | 0.0242 | 0.1291 | 0.0129 | 0.3356 | 3.04x | 1.0388 | 1.33e+08 | 1.69e+07 | 1065 |
+| `pod128` | 128 | 128 | orthonormal | 0.8336 | 3.6325 | 0.3148 | 11.6010 | 0.11x | 21.5712 | 8.32e+06 | 7.37e+04 | 67 |
+| `pod256` | 256 | 256 | orthonormal | 0.1419 | 0.9278 | 0.0435 | 2.4407 | 0.42x | 6.8096 | 1.66e+07 | 2.79e+05 | 133 |
+| `pod512` | 512 | 512 | orthonormal | 0.0111 | 0.1609 | 0.0035 | 0.3762 | 2.43x | 2.5408 | 3.33e+07 | 1.08e+06 | 266 |
+| `pod1024` | 1024 | 1024 | orthonormal | 0.0003 | 0.0076 | 0.0001 | 0.0363 | 51.71x | 1.3221 | 6.66e+07 | 4.26e+06 | 533 |
+| `pod2048` | 2048 | 2048 | orthonormal | 0.0000 | 0.0001 | 0.0000 | 0.0021 | 6020.84x | 0.6131 | 1.33e+08 | 1.69e+07 | 1065 |
+| `podraw128` | 128 | 128 | orthonormal | 1.0001 | 4.8437 | 0.4996 | 14.3739 | 0.08x | 26.7545 | 8.32e+06 | 7.37e+04 | 67 |
+| `podraw256` | 256 | 256 | orthonormal | 0.1772 | 1.1373 | 0.0580 | 3.3255 | 0.34x | 8.7494 | 1.66e+07 | 2.79e+05 | 133 |
+| `podraw512` | 512 | 512 | orthonormal | 0.0146 | 0.1959 | 0.0043 | 0.5680 | 2.00x | 2.6485 | 3.33e+07 | 1.08e+06 | 266 |
+| `podraw1024` | 1024 | 1024 | orthonormal | 0.0004 | 0.0087 | 0.0001 | 0.0494 | 45.28x | 1.3380 | 6.66e+07 | 4.26e+06 | 533 |
+| `podraw2048` | 2048 | 2048 | orthonormal | 0.0000 | 0.0001 | 0.0000 | 0.0019 | 5218.80x | 0.6224 | 1.33e+08 | 1.69e+07 | 1065 |
+| `pod_sub128` | 128 | 128 | orthonormal | 0.9765 | 3.6863 | 0.3289 | 18.5274 | 0.11x | 28.9766 | 8.32e+06 | 7.37e+04 | 67 |
+| `pod_sub256` | 256 | 256 | orthonormal | 0.2192 | 0.9388 | 0.0476 | 6.0252 | 0.42x | 10.7702 | 1.66e+07 | 2.79e+05 | 133 |
+| `pod_sub512` | 512 | 512 | orthonormal | 0.0402 | 0.1744 | 0.0028 | 1.0115 | 2.25x | 2.9528 | 3.33e+07 | 1.08e+06 | 266 |
+| `pod_sub1024` | 1024 | 1024 | orthonormal | 0.0046 | 0.0101 | 0.0000 | 0.0946 | 38.66x | 1.3164 | 6.66e+07 | 4.26e+06 | 533 |
+| `pod_sub2048` | 2048 | 2048 | orthonormal | 0.0004 | 0.0001 | 0.0000 | 0.0011 | 5454.14x | 0.5879 | 1.33e+08 | 1.69e+07 | 1065 |
+| `podraw_sub128` | 128 | 128 | orthonormal | 1.1684 | 5.8263 | 0.4818 | 19.4435 | 0.07x | 28.7792 | 8.32e+06 | 7.37e+04 | 67 |
+| `podraw_sub256` | 256 | 256 | orthonormal | 0.2623 | 1.1696 | 0.0595 | 6.3548 | 0.34x | 12.9919 | 1.66e+07 | 2.79e+05 | 133 |
+| `podraw_sub512` | 512 | 512 | orthonormal | 0.0465 | 0.2070 | 0.0034 | 1.2949 | 1.89x | 3.2951 | 3.33e+07 | 1.08e+06 | 266 |
+| `podraw_sub1024` | 1024 | 1024 | orthonormal | 0.0053 | 0.0121 | 0.0001 | 0.1158 | 32.49x | 1.3610 | 6.66e+07 | 4.26e+06 | 533 |
+| `podraw_sub2048` | 2048 | 2048 | orthonormal | 0.0004 | 0.0001 | 0.0000 | 0.0012 | 4748.62x | 0.5993 | 1.33e+08 | 1.69e+07 | 1065 |
+| `random512` | 512 | 512 | 8.57e+01 | 35.8346 | 68.9306 | 31.6871 | 71.8086 | 0.01x | 79.5023 | 3.33e+07 | 1.08e+06 | 266 |
+
+### Solved error and paired cost — Poisson 2D (job 4059578, NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB)
+
+| subject | kind | R | M | dev12 worst % | confirm256 worst % | median total ms | median device ms |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `dst_direct` | fom_control  | - | - | 0.0000 | 0.0000 | 0.517 | 0.149 |
+| `cg_0.01` | fom_named  | - | - | 0.1524 | 0.2196 | 12.910 | 12.121 |
+| `cg_0.0001` | fom_named  | - | - | 0.0012 | 0.0020 | 18.536 | 17.612 |
+| `cg_1e-06` | fom_named  | - | - | 0.0000 | 0.0000 | 22.277 | 21.536 |
+| `cg_1e-08` | fom_named  | - | - | 0.0000 | 0.0000 | 26.186 | 25.272 |
+| `coarse_dst_85` | fom_coarse  | - | - | 0.1146 | 0.1598 | 0.631 | 0.242 |
+| `coarse_dst_51` | fom_coarse  | - | - | 0.2926 | 0.4061 | 0.632 | 0.248 |
+| `inc512_floor` | rom projection of the true solution (floor; not a solver) | 512 | 2048 | 0.7459 | 0.9775 | 0.854 | 0.460 |
+| `inc512_weak` | rom weak | 512 | 2048 | 0.7459 | 0.9776 | 0.728 | 0.340 |
+| `inc512_galerkin` | rom galerkin | 512 | 2048 | 0.7741 | 1.0309 | 0.906 | 0.506 |
+| `ft512_floor` | rom projection of the true solution (floor; not a solver) | 512 | 2048 | 0.3174 | 0.4723 | 0.851 | 0.461 |
+| `ft512_weak` | rom weak | 512 | 2048 | 0.3175 | 0.4723 | 0.745 | 0.343 |
+| `ft512_galerkin` | rom galerkin | 512 | 2048 | 0.3210 | 0.4816 | 0.902 | 0.503 |
+| `pod256_floor` | rom projection of the true solution (floor; not a solver) | 256 | 1024 | 0.9407 | 1.3528 | 0.706 | 0.315 |
+| `pod256_weak` | rom weak | 256 | 1024 | 0.9407 | 1.3528 | 0.639 | 0.246 |
+| `pod256_galerkin` | rom galerkin | 256 | 1024 | 0.9756 | 1.4212 | 0.707 | 0.312 |
+| `pod512_floor` | rom projection of the true solution (floor; not a solver) | 512 | 2048 | 0.2197 | 0.3457 | 0.846 | 0.459 |
+| `pod512_weak` | rom weak | 512 | 2048 | 0.2197 | 0.3457 | 0.729 | 0.341 |
+| `pod512_galerkin` | rom galerkin | 512 | 2048 | 0.2285 | 0.3685 | 0.896 | 0.505 |
+| `pod1024_floor` | rom projection of the true solution (floor; not a solver) | 1024 | 4096 | 0.0207 | 0.0427 | 1.157 | 0.756 |
+| `pod1024_weak` | rom weak | 1024 | 4096 | 0.0207 | 0.0427 | 0.942 | 0.553 |
+| `pod1024_galerkin` | rom galerkin | 1024 | 4096 | 0.0213 | 0.0453 | 1.312 | 0.904 |
+| `pod2048_floor` | rom projection of the true solution (floor; not a solver) | 2048 | 8192 | 0.0003 | 0.0006 | 1.726 | 1.332 |
+| `pod2048_weak` | rom weak | 2048 | 8192 | 0.0003 | 0.0006 | 1.406 | 1.002 |
+| `pod2048_galerkin` | rom galerkin | 2048 | 8192 | 0.0003 | 0.0007 | 2.090 | 1.687 |
+| `cat1024_floor` | rom projection of the true solution (floor; not a solver) | 1024 | 4096 | 0.1124 | 0.1670 | 1.171 | 0.758 |
+| `cat1024_weak` | rom weak | 1024 | 4096 | 0.1125 | 0.1673 | 0.951 | 0.551 |
+| `cat1024_galerkin` | rom galerkin | 1024 | 4096 | 0.1239 | 0.1917 | 1.300 | 0.899 |
+| `cat2048_floor` | rom projection of the true solution (floor; not a solver) | 2048 | 8192 | 0.0856 | 0.1222 | 1.737 | 1.336 |
+| `cat2048_weak` | rom weak | 2048 | 8192 | 0.0860 | 0.1229 | 1.398 | 1.002 |
+| `cat2048_galerkin` | rom galerkin | 2048 | 8192 | 0.1098 | 0.1614 | 2.094 | 1.698 |
+
 ### Checkpoints (git-ignored `ckpt/`, hashes from `CKPT-MANIFEST.json`)
 
 | file | MB | SHA256 |
@@ -34,4 +102,13 @@
 | `ckpt/bfp02/ckpt/poisson2d_ft512.pkl` | 4.7 | `93c9171ed6dda3bb2cf0484ef9ddbd3eb7cabc060fe9f1460123b4157f03504a` |
 | `ckpt/bfp02/ckpt/poisson2d_pod2048_modes.npy` | 1057.0 | `664effe97e5ff2c0cc4b65815ad83f0eaf20c4f0032cb854fed89c6cba95bb5c` |
 | `ckpt/bfp02/ckpt/poisson2d_podraw2048_modes.npy` | 1057.0 | `6baf7542f1e6a79c6a8d0f3080782cc0da94f8841f8db52eb038019b303e5bad` |
+| `ckpt/bfb03/ckpt/burgers2d_cat1024.pkl` | 29.4 | `a722b29eac393c929ed63c545c9e4da38d105a9ef5c95c9580e6df56580c53ab` |
+| `ckpt/bfb03/ckpt/burgers2d_cat2048.pkl` | 55.6 | `f6a0f4f63f8348a2bc57edeb330e390d5d234884c6a874b7a5acbf5c619c86b8` |
+| `ckpt/bfb03/ckpt/burgers2d_dev6_fields.npz` | 18.7 | `7fb31c0b4ec69c94c2e79ee3230e2746ab5b2872ac4e9f8ea9059c4a77966aa7` |
+| `ckpt/bfb03/ckpt/burgers2d_ft512.pkl` | 14.7 | `8eb5bb520ce05a0a873d809c007499e7b8e8091f35432f78a49960485a78f973` |
+| `ckpt/bfb03/ckpt/burgers2d_pod2048_modes.npy` | 1065.4 | `a7115cf2a614455612c6e9e65a83ed964fcb22e1acc909233d018789c49efbfe` |
+| `ckpt/bfb03/ckpt/burgers2d_podraw2048_modes.npy` | 1065.4 | `7a83c0c4981728f0b7cd1df56e2e553828196fa86d8b62d3ccdbd3bd163f1459` |
+| `ckpt/bfsp01/ckpt/poisson2d_cat1024.pkl` | 19.4 | `8df8e0b7d4fc68db99960543ee4fbaf628a95af1d6e83365fac562bb565f1bd4` |
+| `ckpt/bfsp01/ckpt/poisson2d_cat2048.pkl` | 45.7 | `7a45956db8b4b825c7e4253b145a8460cdfd6bb94fc0ddac6de8b3b314f69758` |
+| `ckpt/bfsp01/ckpt/poisson2d_dev12_fields.npz` | 6.2 | `0ecb8da4191e1a670d0da432d3b12d034e9d8667efc7aa923c4bed9c941f3662` |
 

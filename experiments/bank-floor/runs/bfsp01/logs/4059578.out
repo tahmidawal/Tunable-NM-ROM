@@ -1,0 +1,118 @@
+host=pax106 source_commit=f54f80ac1b63c4f71e25353e955235acb9db7592 job=4059578
+NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  425G  91% /cluster/tufts/paralab
+jax_backend=gpu
+ARM inc512 dev12 worst 7.458918e-03 (logged 7.459000e-03)
+ARM random512 dev12 worst 3.2236e-01
+ARM cat1024 warm start verified: init probe rms 1.9808e-03 (incumbent 2.8815e-03)
+   vp[cat1024]      1/10000 rms-floor 2.1016e-03 {'rank': 1024, 'cond': 560829338.1285197, 'train_probe_rms': 0.001980840015297178, 'dev12': 0.00505123223443499, 'common256': 0.006325836384615553, 'fresh256': 0.006575547559301731} [13s]
+   vp[cat1024]    250/10000 rms-floor 1.0770e-03  [46s]
+   vp[cat1024]    500/10000 rms-floor 7.7316e-04  [79s]
+   vp[cat1024]    750/10000 rms-floor 6.5391e-04  [113s]
+   vp[cat1024]   1000/10000 rms-floor 6.0905e-04  [146s]
+   vp[cat1024]   1250/10000 rms-floor 5.2090e-04  [180s]
+   vp[cat1024]   1500/10000 rms-floor 4.8437e-04  [214s]
+   vp[cat1024]   1750/10000 rms-floor 4.9283e-04  [247s]
+   vp[cat1024]   2000/10000 rms-floor 4.7165e-04  [281s]
+   vp[cat1024]   2250/10000 rms-floor 3.9847e-04  [315s]
+   vp[cat1024]   2500/10000 rms-floor 3.5358e-04 {'rank': 1024, 'cond': 3847001.591284057, 'train_probe_rms': 0.0003837327573717345, 'dev12': 0.0014361709817059855, 'common256': 0.001661968042836376, 'fresh256': 0.001397802025945488} [349s]
+   vp[cat1024]   2750/10000 rms-floor 4.1941e-04  [383s]
+   vp[cat1024]   3000/10000 rms-floor 3.6043e-04  [416s]
+   vp[cat1024]   3250/10000 rms-floor 3.9390e-04  [450s]
+   vp[cat1024]   3500/10000 rms-floor 3.2577e-04  [483s]
+   vp[cat1024]   3750/10000 rms-floor 3.3580e-04  [517s]
+   vp[cat1024]   4000/10000 rms-floor 3.5087e-04  [551s]
+   vp[cat1024]   4250/10000 rms-floor 3.3474e-04  [584s]
+   vp[cat1024]   4500/10000 rms-floor 3.2759e-04  [618s]
+   vp[cat1024]   4750/10000 rms-floor 3.2113e-04  [652s]
+   vp[cat1024]   5000/10000 rms-floor 2.8774e-04 {'rank': 1024, 'cond': 3588857.8473491673, 'train_probe_rms': 0.0003063849650904441, 'dev12': 0.0012067357536614581, 'common256': 0.0013879664733531503, 'fresh256': 0.0011608176946121328} [686s]
+   vp[cat1024]   5250/10000 rms-floor 2.8682e-04  [720s]
+   vp[cat1024]   5500/10000 rms-floor 2.7839e-04  [753s]
+   vp[cat1024]   5750/10000 rms-floor 3.1498e-04  [787s]
+   vp[cat1024]   6000/10000 rms-floor 2.9208e-04  [821s]
+   vp[cat1024]   6250/10000 rms-floor 3.0669e-04  [854s]
+   vp[cat1024]   6500/10000 rms-floor 3.1558e-04  [888s]
+   vp[cat1024]   6750/10000 rms-floor 3.0150e-04  [922s]
+   vp[cat1024]   7000/10000 rms-floor 3.0023e-04  [955s]
+   vp[cat1024]   7250/10000 rms-floor 2.9357e-04  [989s]
+   vp[cat1024]   7500/10000 rms-floor 2.7923e-04 {'rank': 1024, 'cond': 3543269.8304788736, 'train_probe_rms': 0.0002837874221968521, 'dev12': 0.0011343708678608392, 'common256': 0.0012986190133693189, 'fresh256': 0.001103395998440675} [1023s]
+   vp[cat1024]   7750/10000 rms-floor 2.9286e-04  [1057s]
+   vp[cat1024]   8000/10000 rms-floor 2.4533e-04  [1090s]
+   vp[cat1024]   8250/10000 rms-floor 2.8230e-04  [1124s]
+   vp[cat1024]   8500/10000 rms-floor 3.0819e-04  [1158s]
+   vp[cat1024]   8750/10000 rms-floor 3.0400e-04  [1191s]
+   vp[cat1024]   9000/10000 rms-floor 2.9664e-04  [1225s]
+   vp[cat1024]   9250/10000 rms-floor 2.7766e-04  [1259s]
+   vp[cat1024]   9500/10000 rms-floor 2.8861e-04  [1292s]
+   vp[cat1024]   9750/10000 rms-floor 2.6516e-04  [1326s]
+   vp[cat1024]  10000/10000 rms-floor 2.6460e-04 {'rank': 1024, 'cond': 3522090.8110957365, 'train_probe_rms': 0.0002801246776906695, 'dev12': 0.0011235958590810786, 'common256': 0.0012827018172944823, 'fresh256': 0.0010881936247860468} [1360s]
+ARM cat1024 [ok] rank 1024 cond 3.52e+06 probe rms 2.8012e-04 dev12 worst 1.1236e-03 common256 worst 1.2827e-03 fresh256 worst 1.0882e-03
+ARM cat2048 warm start verified: init probe rms 1.3309e-03 (incumbent 2.8815e-03)
+   vp[cat2048]      1/8000 rms-floor 1.3411e-03 {'rank': 2048, 'cond': 1389382742.0901608, 'train_probe_rms': 0.001330944085986784, 'dev12': 0.003159766806058178, 'common256': 0.004123231008244986, 'fresh256': 0.0045822478666009475} [15s]
+   vp[cat2048]    250/8000 rms-floor 8.1190e-04  [95s]
+   vp[cat2048]    500/8000 rms-floor 6.0755e-04  [176s]
+   vp[cat2048]    750/8000 rms-floor 4.4714e-04  [257s]
+   vp[cat2048]   1000/8000 rms-floor 4.7179e-04  [338s]
+   vp[cat2048]   1250/8000 rms-floor 4.2183e-04  [418s]
+   vp[cat2048]   1500/8000 rms-floor 3.8285e-04  [499s]
+   vp[cat2048]   1750/8000 rms-floor 3.7862e-04  [580s]
+   vp[cat2048]   2000/8000 rms-floor 3.3256e-04  [660s]
+   vp[cat2048]   2250/8000 rms-floor 3.1017e-04  [741s]
+   vp[cat2048]   2500/8000 rms-floor 3.3124e-04 {'rank': 2048, 'cond': 9243275.656851195, 'train_probe_rms': 0.0003021969410745704, 'dev12': 0.0010315636311010812, 'common256': 0.0012064088102166992, 'fresh256': 0.0011079309352861112} [823s]
+   vp[cat2048]   2750/8000 rms-floor 2.8604e-04  [904s]
+   vp[cat2048]   3000/8000 rms-floor 2.6065e-04  [984s]
+   vp[cat2048]   3250/8000 rms-floor 2.6167e-04  [1065s]
+   vp[cat2048]   3500/8000 rms-floor 2.6986e-04  [1146s]
+   vp[cat2048]   3750/8000 rms-floor 2.9555e-04  [1227s]
+   vp[cat2048]   4000/8000 rms-floor 2.8074e-04  [1307s]
+   vp[cat2048]   4250/8000 rms-floor 2.7647e-04  [1388s]
+   vp[cat2048]   4500/8000 rms-floor 2.6067e-04  [1469s]
+   vp[cat2048]   4750/8000 rms-floor 2.4869e-04  [1549s]
+   vp[cat2048]   5000/8000 rms-floor 2.4153e-04 {'rank': 2048, 'cond': 8843406.014091404, 'train_probe_rms': 0.00024906399077598523, 'dev12': 0.0008809127587408624, 'common256': 0.0010125182930867897, 'fresh256': 0.0009277325415104497} [1631s]
+   vp[cat2048]   5250/8000 rms-floor 2.5615e-04  [1712s]
+   vp[cat2048]   5500/8000 rms-floor 2.3603e-04  [1793s]
+   vp[cat2048]   5750/8000 rms-floor 2.8320e-04  [1873s]
+   vp[cat2048]   6000/8000 rms-floor 2.5594e-04  [1954s]
+   vp[cat2048]   6250/8000 rms-floor 2.4621e-04  [2035s]
+   vp[cat2048]   6500/8000 rms-floor 2.4559e-04  [2116s]
+   vp[cat2048]   6750/8000 rms-floor 2.2762e-04  [2196s]
+   vp[cat2048]   7000/8000 rms-floor 2.4885e-04  [2277s]
+   vp[cat2048]   7250/8000 rms-floor 2.2953e-04  [2358s]
+   vp[cat2048]   7500/8000 rms-floor 2.4700e-04 {'rank': 2048, 'cond': 8794654.20643902, 'train_probe_rms': 0.0002399148369286711, 'dev12': 0.0008562720840630501, 'common256': 0.0009795357135631336, 'fresh256': 0.000883951173577138} [2440s]
+   vp[cat2048]   7750/8000 rms-floor 2.4304e-04  [2520s]
+   vp[cat2048]   8000/8000 rms-floor 2.4842e-04  [2601s]
+ARM cat2048 [ok] rank 2048 cond 8.79e+06 probe rms 2.3975e-04 dev12 worst 8.5568e-04 common256 worst 9.7898e-04 fresh256 worst 8.8399e-04
+REP-DONE
+SUBJECT dst_direct: worst 0.0000e+00 median 0.0000e+00 total 0.517 ms device 0.149 ms
+SUBJECT cg_0.01: worst 1.5240e-03 median 5.5235e-04 total 12.910 ms device 12.121 ms
+SUBJECT cg_0.0001: worst 1.1906e-05 median 2.9714e-06 total 18.536 ms device 17.612 ms
+SUBJECT cg_1e-06: worst 6.7113e-08 median 3.3485e-08 total 22.277 ms device 21.536 ms
+SUBJECT cg_1e-08: worst 8.9195e-10 median 2.7212e-10 total 26.186 ms device 25.272 ms
+SUBJECT coarse_dst_85: worst 1.1461e-03 median 4.1783e-04 total 0.631 ms device 0.242 ms
+SUBJECT coarse_dst_51: worst 2.9265e-03 median 1.0532e-03 total 0.632 ms device 0.248 ms
+SUBJECT inc512_floor: worst 7.4589e-03 median 5.8037e-04 total 0.854 ms device 0.460 ms
+SUBJECT inc512_weak: worst 7.4590e-03 median 5.8038e-04 total 0.728 ms device 0.340 ms
+SUBJECT inc512_galerkin: worst 7.7411e-03 median 6.1015e-04 total 0.906 ms device 0.506 ms
+SUBJECT ft512_floor: worst 3.1745e-03 median 1.1187e-04 total 0.851 ms device 0.461 ms
+SUBJECT ft512_weak: worst 3.1745e-03 median 1.1188e-04 total 0.745 ms device 0.343 ms
+SUBJECT ft512_galerkin: worst 3.2101e-03 median 1.1403e-04 total 0.902 ms device 0.503 ms
+SUBJECT pod256_floor: worst 9.4069e-03 median 2.6698e-04 total 0.706 ms device 0.315 ms
+SUBJECT pod256_weak: worst 9.4069e-03 median 2.6698e-04 total 0.639 ms device 0.246 ms
+SUBJECT pod256_galerkin: worst 9.7565e-03 median 2.7889e-04 total 0.707 ms device 0.312 ms
+SUBJECT pod512_floor: worst 2.1970e-03 median 4.2196e-05 total 0.846 ms device 0.459 ms
+SUBJECT pod512_weak: worst 2.1970e-03 median 4.2196e-05 total 0.729 ms device 0.341 ms
+SUBJECT pod512_galerkin: worst 2.2852e-03 median 4.6528e-05 total 0.896 ms device 0.505 ms
+SUBJECT pod1024_floor: worst 2.0739e-04 median 1.9600e-06 total 1.157 ms device 0.756 ms
+SUBJECT pod1024_weak: worst 2.0739e-04 median 1.9600e-06 total 0.942 ms device 0.553 ms
+SUBJECT pod1024_galerkin: worst 2.1325e-04 median 2.0429e-06 total 1.312 ms device 0.904 ms
+SUBJECT pod2048_floor: worst 3.0166e-06 median 7.5647e-09 total 1.726 ms device 1.332 ms
+SUBJECT pod2048_weak: worst 3.0166e-06 median 7.5647e-09 total 1.406 ms device 1.002 ms
+SUBJECT pod2048_galerkin: worst 3.0794e-06 median 8.0960e-09 total 2.090 ms device 1.687 ms
+SUBJECT cat1024_floor: worst 1.1236e-03 median 4.6674e-05 total 1.171 ms device 0.758 ms
+SUBJECT cat1024_weak: worst 1.1254e-03 median 4.6741e-05 total 0.951 ms device 0.551 ms
+SUBJECT cat1024_galerkin: worst 1.2394e-03 median 5.1033e-05 total 1.300 ms device 0.899 ms
+SUBJECT cat2048_floor: worst 8.5568e-04 median 4.1288e-05 total 1.737 ms device 1.336 ms
+SUBJECT cat2048_weak: worst 8.5987e-04 median 4.1426e-05 total 1.398 ms device 1.002 ms
+SUBJECT cat2048_galerkin: worst 1.0978e-03 median 5.0691e-05 total 2.094 ms device 1.698 ms
+SOLVE-DONE
+ALL-DONE

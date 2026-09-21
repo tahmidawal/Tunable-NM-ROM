@@ -123,6 +123,14 @@ def main():
                     dict(kind='fom', label=f'Newton-BiCGStab(Helmholtz) ntol {fs["ntol"]:g} ltol {fs["ltol"]:g}',
                          **fs), cfg['fom_repetitions'])
 
+    for cs in cfg.get('coarse_fom', []):
+        # coarse-grid FOM control: solve on a coarser mesh, output prolonged to the L grid by the
+        # engine's own output_field; error is against the SAME fine-grid reference as every other row
+        cf, _ = e.make_fom(cs['intervals'], dt, L, .25, .05)
+        run_subject(cs['name'], lambda u, nu, cf=cf, cs=cs: cf(u, nu, cs['ntol'], cs['ltol']),
+                    dict(kind='fom_coarse', label=f'Newton FOM on {cs["intervals"]} intervals, prolonged', **cs),
+                    cfg['fom_repetitions'])
+
     xy = K.grid(L)
     for spec in cfg['banks']:
         tag = spec['tag']

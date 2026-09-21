@@ -114,7 +114,6 @@ def compress(a):
     d = np.load(a.npz)
     Gram = jnp.asarray(d['Gram'], F64)
     Rc = Gram.shape[0]
-    Lc = BB.chol_whitener(Gram)
     C = np.asarray(d['C_tr'])
     un2, fl2 = np.asarray(d['un2_tr']), np.asarray(d['fl2_tr'])
     traj, tt = np.asarray(d['traj_tr']), np.asarray(d['t_tr'])
@@ -139,6 +138,14 @@ def compress(a):
     rep['gates']['cat_gram_matches_extraction'] = dict(relative=gram_dev, passed=bool(gram_dev <= 1e-10))
     assert gram_dev <= 1e-10, gram_dev
     s_target = float(jnp.sqrt(jnp.trace(G_inc_fit.T @ G_inc_fit)))
+    # whitener from a thin QR of the bank on the fit grid (G = Q_g R_g, so ||G c|| = ||R_g c||): better
+    # conditioned than the Cholesky of Gram (cond(G)^2 ~ 5e9 here), and it makes G' = s Q_g W orthogonal to
+    # round-off. Lc = R_g^T plays the role of the Cholesky factor L (L L^T = Gram) everywhere below.
+    Rg = jnp.linalg.qr(G_cat_fit, mode='r')
+    Lc = Rg.T
+    wdev = float(jnp.linalg.norm(Lc @ Lc.T - Gram) / jnp.linalg.norm(Gram))
+    rep['gates']['qr_whitener_reproduces_gram'] = dict(relative=wdev, passed=bool(wdev <= 1e-10))
+    assert wdev <= 1e-10, wdev
     del G_inc_fit, G_cat_fit
     # floors are measured on the EVALUATION grid convention (engines: N intervals, (N-1)^2 interior)
     N = a.floor_mesh
@@ -216,6 +223,7 @@ def compress(a):
     Gm = sc.features(BB.to_device(merged), jnp.asarray(xe, F64))
     orth = float(jnp.max(jnp.abs(gm / s ** 2 - jnp.eye(512))))
     rep['gates']['compressed_bank_orthogonal_at_fit_mesh'] = dict(max_abs_dev=orth, passed=bool(orth <= 1e-8),
+                                                                  note='G\' = s Q_g W with Q_g from the thin QR at the fit grid',
                                                                   scale=s, trace_incumbent=s_target ** 2,
                                                                   trace_new=float(jnp.trace(gm)))
     assert orth <= 1e-8, orth

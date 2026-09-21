@@ -69,23 +69,29 @@ def ravel_nodes(ij, L):
 
 # ------------------------------------------------------------------- bank ----
 
-def build_bank(bank, L, rows=1 << 18, via_host=None):
-    """G on the L-grid. Above ~2^22 rows the device concatenate would hold two copies, so the
-    blocks are gathered on the host and uploaded once (`via_host`)."""
+def build_bank(bank, L, rows=1 << 20, inplace=None):
+    """G on the L-grid as ONE device array.
+
+    Above ~24 GB neither a device concatenate (two copies) nor a host upload of the whole
+    array works: hb4k01 (job 4055954, 4096^2, H200) died with RESOURCE_EXHAUSTED allocating
+    63.97 GiB in `jit_stage`, the staged host-to-device copy of a 64 GB NumPy array. So the
+    buffer is allocated once and filled block by block on the device through a DONATED
+    dynamic_update_slice: peak = G + one block. Values are `bank.at` on the same points; the
+    blocking differs from `bank.on_grid`'s, so agreement is to 1 ulp (4.4e-16 absolute at
+    L = 96, bitwise at L = 64; scratch test 2026-09-20), not bitwise."""
     n = (L - 1) ** 2
-    via_host = (n * bank.dim * 8 > 24e9) if via_host is None else via_host
-    if not via_host:
+    inplace = (n * bank.dim * 8 > 24e9) if inplace is None else inplace
+    if not inplace:
         return bank.on_grid(L)
-    out = np.empty((n, bank.dim), dtype=np.float64)
+    put = jax.jit(lambda g, blk, i0: jax.lax.dynamic_update_slice(g, blk, (i0, jnp.zeros((), i0.dtype))), donate_argnums=0)
+    G = jnp.zeros((n, bank.dim), dtype=jnp.float64)
     x = np.arange(1, L) / L
     per = max(1, rows // (L - 1))
     for i0 in range(0, L - 1, per):
         i1 = min(L - 1, i0 + per)
         xy = np.stack(np.meshgrid(x[i0:i1], x, indexing='ij'), -1).reshape(-1, 2)
-        out[i0 * (L - 1):i1 * (L - 1)] = np.asarray(bank.at(xy, chunk=8192))
-    G = jnp.asarray(out)
-    del out
-    return G
+        G = put(G, bank.at(xy, chunk=8192), jnp.asarray(i0 * (L - 1), dtype=jnp.int64))
+    return jax.block_until_ready(G)
 
 
 def project_bank(G, sx, sy, L, cols=32):

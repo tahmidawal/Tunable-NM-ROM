@@ -1,0 +1,17 @@
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k01/experiments/hires-burgers/hires.py", line 714, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k01/experiments/hires-burgers/hires.py", line 180, in main
+    jax.block_until_ready(G)
+    ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 63.97GiB. [executable_name='jit_stage'] [tf-allocator-allocation-error='']

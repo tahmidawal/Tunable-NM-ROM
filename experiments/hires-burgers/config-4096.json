@@ -1,5 +1,5 @@
 {
- "attempt": "hb4k01",
+ "attempt": "hb4k02",
  "intervals": 4096,
  "dt": 0.005,
  "eval_seed": 7090702,
@@ -369,12 +369,8 @@
  ],
  "audit_arms": [
   "fft_tight",
-  "nt1e-4_dt005",
-  "q0_M64_xfer_g0p001_fast",
-  "q256_M1088_xfer_g0p001_fast",
-  "q256_M544_xfer_g0p001_fast",
-  "q128_M576_xfer_g0p001_fast",
-  "q256_M1088_scaled_g0p001_fast",
+  "lean_nt1e-4_dt005",
+  "q0_M64_scaled_g0p001_fast",
   "q256_M1088_lat64_g0p001_fast"
  ],
  "reps": 5,
@@ -422,5 +418,6 @@
   "c2048",
   "c1024",
   "_g0p001_fast"
- ]
+ ],
+ "retry_note": "hb4k01 (job 4055954) died before any number: 64 GiB staged host-to-device copy of the bank; bank now filled in place on the device and built before the FOM truth phase"
 }

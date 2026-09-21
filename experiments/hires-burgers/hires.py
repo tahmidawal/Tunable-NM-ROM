@@ -131,6 +131,14 @@ def main():
     n0 = [float(np.linalg.norm(u)) for u in inputs_u]
     sub = max(1, L // cfg.get('restrict_to', 256))
 
+    # the bank first: the largest single allocation (64 GiB at 4096^2) goes into an unfragmented pool
+    bank = A.CoordBank(params, K, R)
+    t0 = time.perf_counter()
+    G = H.build_bank(bank, L, inplace=cfg.get('bank_inplace'))
+    jax.block_until_ready(G)
+    rep['phases']['bank'] = dict(shape=list(G.shape), seconds=time.perf_counter() - t0, bytes=int(G.nbytes))
+    print('BANK', G.shape, el(), flush=True)
+
     # ---------------------------------------------------- full-order solvers ----
     foms = {}
 
@@ -174,12 +182,6 @@ def main():
                     current_relative_evolved=float(max(cur[1:])))
 
     # -------------------------------------------------------- bank, directions --
-    bank = A.CoordBank(params, K, R)
-    t0 = time.perf_counter()
-    G = H.build_bank(bank, L)
-    jax.block_until_ready(G)
-    rep['phases']['bank'] = dict(shape=list(G.shape), seconds=time.perf_counter() - t0, bytes=int(G.nbytes))
-    print('BANK', G.shape, el(), flush=True)
     dfile = inputs / cfg['directions_file']
     Cnp = np.ascontiguousarray(np.load(dfile)['C'])
     rep['directions'] = dict(file=cfg['directions_file'], sha256=sha_file(dfile), expected=cfg.get('directions_sha256'))

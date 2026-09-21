@@ -1,0 +1,565 @@
+{
+  "config": {
+    "attempt": "hb4k01",
+    "intervals": 4096,
+    "dt": 0.005,
+    "eval_seed": 7090702,
+    "eval_cases": 4,
+    "eval_fresh_seed": 911702,
+    "eval_fresh_cases": 2,
+    "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+    "train_seed": 0,
+    "train_trajectories": 128,
+    "decoder_code_subsample": 8192,
+    "gauss_jordan_max": 64,
+    "cold_axis_points": 48,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 600,
+      "gtol": 1e-06
+    },
+    "ic_gtol": 1e-06,
+    "inner_damping": 1e-10,
+    "tau_y": 0.1,
+    "rho_bar": 0.116,
+    "rho_tight": 0.06,
+    "directions_file": "directions_qtd02.npz",
+    "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "population": {
+      "mesh": 512,
+      "fit_trajectories": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "cert_trajectories": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fit_states": 128,
+      "seed": 20260920
+    },
+    "target_chunk": 8,
+    "restrict_to": 256,
+    "fast_arm_q0": "C1",
+    "rungs": [
+      {
+        "q": 0,
+        "M": 64,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+                "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+                "mesh": 256,
+                "status": "confirmed (3/3) at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+                "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+                "mesh": 256,
+                "status": "confirmed (3/3) at 256^2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "q": 128,
+        "M": 576,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+                "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+                "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      },
+      {
+        "q": 256,
+        "M": 544,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": false,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      },
+      {
+        "q": 256,
+        "M": 1088,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "solvers": [
+          "lu",
+          "chol"
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          },
+          {
+            "name": "badfit",
+            "parts": [
+              {
+                "file": "rules/rule_q256_reachable_m2048.npz",
+                "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+                "mesh": 256,
+                "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+              }
+            ],
+            "refit": "state",
+            "control": false
+          },
+          {
+            "name": "bad0",
+            "parts": [
+              {
+                "file": "rules/rule_q256_reachable_m2048.npz",
+                "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+                "mesh": 256,
+                "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+              }
+            ],
+            "control": true
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      }
+    ],
+    "dense_tangent_group": 17,
+    "dense_deadline_seconds": 36000,
+    "fom_settings": [
+      {
+        "name": "fft_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08
+      },
+      {
+        "name": "nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      {
+        "name": "nt1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      {
+        "name": "nt1e-4_dt01",
+        "dt": 0.01,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "nt1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      {
+        "name": "nt1e-2_dt01",
+        "dt": 0.01,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      {
+        "name": "lean_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_l1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-2_l1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.01,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_l1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      }
+    ],
+    "coarse_fom": [
+      {
+        "name": "c2048_nt1e-4_dt005",
+        "mesh": 2048,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "c1024_nt1e-4_dt005",
+        "mesh": 1024,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      }
+    ],
+    "same_grid_reference": "fft_tight",
+    "audit_cases": [
+      0
+    ],
+    "audit_arms": [
+      "fft_tight",
+      "nt1e-4_dt005",
+      "q0_M64_xfer_g0p001_fast",
+      "q256_M1088_xfer_g0p001_fast",
+      "q256_M544_xfer_g0p001_fast",
+      "q128_M576_xfer_g0p001_fast",
+      "q256_M1088_scaled_g0p001_fast",
+      "q256_M1088_lat64_g0p001_fast"
+    ],
+    "reps": 5,
+    "order_seed": 20260920,
+    "burn_seconds": 0.25,
+    "profile_arms": [
+      "q256_M1088_xfer_g0p001_fast",
+      "q256_M1088_xfer_g1em06_fast",
+      "q256_M544_xfer_g0p001_fast",
+      "q128_M576_xfer_g0p001_fast",
+      "q256_M1088_lat64_g0p001_fast",
+      "q256_M1088_scaled_g0p001_fast"
+    ],
+    "reference": {
+      "mesh": 8192,
+      "dt": 0.0003125,
+      "ntol": 1e-11,
+      "ltol": 1e-09,
+      "accept_residual": 2e-11,
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "deadline_seconds": 54000,
+      "note": "the SAME refined object as the 2048^2 job (8192^2, dt/16): 2L here, 4L there"
+    },
+    "purpose": "DESIGN.md: 4096^2 panel, frozen-weight transfer, bank resident (68 GB) on an H200, Phi-free operators, rules re-certified at this mesh",
+    "rule_notes": {
+      "scaled": "b-eqtop nodes at the same physical points, weights multiplied by (L/256)^2, NO refit",
+      "xfer": "same support, NNLS weight refit on 128 fit states, per-state scaling",
+      "lat64": "uniform 63x63 interior sub-lattice, equal weights",
+      "bad0": "CONTROL: the historically regressing q-ridge rule with its ORIGINAL weights scaled by (L/256)^2; expected to fail the certificate and to regress",
+      "badfit": "the same support with weights refit; labelled separately, not a control"
+    },
+    "parity_bar": 1e-09,
+    "fom_notes": "audited = iterative_paths.make_fom (the named comparator of every earlier panel; it also records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic: the FOM at its best. Both are reported; speedups are quoted against the FASTER of the two at each tolerance.",
+    "keep_for_reference": [
+      "fft_tight",
+      "lean_",
+      "nt1e",
+      "c2048",
+      "c1024",
+      "_g0p001_fast"
+    ]
+  },
+  "commit": "c0c007de22d423addad48a79c792374a8662d3eb",
+  "job_id": "4055954",
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "nvidia_smi": [
+    "GPU 0: NVIDIA H200 (UUID: GPU-0a476d14-05f4-a288-5ed3-39f4f359c534)"
+  ],
+  "cuda_visible": "0",
+  "x64": true,
+  "matmul_precision": "highest",
+  "jax_version": "0.10.2",
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "K": 16,
+  "R": 512,
+  "intervals": 4096,
+  "dt": 0.005,
+  "weights_frozen": true,
+  "final_cohort_unopened": true,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "timing_contract": "gpu_seconds: supplied dense initial field resident on the GPU to six dense GPU output fields, block_until_ready on both sides; host_seconds: the same invocation plus the host upload of the input and the host copy of the six outputs; identical for every subject",
+  "populations": {},
+  "rules": [],
+  "quick": [],
+  "dense_truth": [],
+  "arm_setup": [],
+  "invocations": [],
+  "parity": [],
+  "profile": [],
+  "reference": [],
+  "physical": [],
+  "dropped": [],
+  "gates": {
+    "evaluation_cohort_matches_b_panel": {
+      "expected": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+      "got": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+      "passed": true
+    }
+  },
+  "phases": {
+    "truth": [
+      {
+        "case": 0,
+        "seconds": 6.269278681837022,
+        "max_relative_residual": 5.176708511928902e-07,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 1,
+        "seconds": 3.0605425043031573,
+        "max_relative_residual": 2.146826805693024e-08,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 2,
+        "seconds": 5.516567051876336,
+        "max_relative_residual": 5.881491203512787e-09,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 3,
+        "seconds": 4.774356019683182,
+        "max_relative_residual": 6.657671098110819e-08,
+        "converged": true,
+        "newton_total": 101
+      },
+      {
+        "case": 4,
+        "seconds": 3.5732707800343633,
+        "max_relative_residual": 6.807917250106698e-09,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 5,
+        "seconds": 2.934250484686345,
+        "max_relative_residual": 2.1042257948360117e-08,
+        "converged": true,
+        "newton_total": 100
+      }
+    ]
+  },
+  "complete": false,
+  "physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "physical_cases": [
+    [
+      0.28252396549391534,
+      0.6366084820193556,
+      0.1868965964536891,
+      1.0820386491896183,
+      0.03172924415397142
+    ],
+    [
+      0.6969516647251746,
+      0.3451044576480736,
+      0.10606757516929861,
+      1.883079655612731,
+      0.09507673822337352
+    ],
+    [
+      0.45131714866409367,
+      0.5960642645978614,
+      0.09280172370327633,
+      1.5231312745422343,
+      0.014089575881689515
+    ],
+    [
+      0.15227706255373677,
+      0.28851457124797375,
+      0.13591160848175055,
+      1.2767181974115185,
+      0.01762820727774322
+    ],
+    [
+      0.8130532184264921,
+      0.8113791413070836,
+      0.08364773158362382,
+      1.0772552621887435,
+      0.025703631918398633
+    ],
+    [
+      0.4606729763621312,
+      0.16598352069267147,
+      0.07016574189598321,
+      1.1994479966226255,
+      0.04655240960473743
+    ]
+  ]
+}

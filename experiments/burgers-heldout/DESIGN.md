@@ -217,3 +217,23 @@ q, so the binding term is now the weak-residual test space / quadrature and the 
 - **bh2c** (attribution control, `config-1024-bh2c.json`): the INCUMBENT model (inc512, its head, qtd02
   directions) on the same cohorts and rungs (lat64/lat128). Not a candidate; it answers whether the new bank
   changes the corrected error at all. 1 rep.
+
+## Amendment A3 (2026-09-21 ~21:00 EDT, after bh2b, before bh3/bh4 are submitted)
+
+**bh2b outcome (job 4144023, `checks/bh2b-summary.json`), dev6 ∪ sel32 at $1024^2$:** every `lat128` arm FAILS
+the ρ certificate (ρ_max 0.37–0.63, set by single outlier states; p95 ≤ 0.005, lower than lat64's), so the
+certified set is still {q0, q256/M1088 lat64} and the pre-registered rule again picks q256/M1088 lat64 (1.73 %).
+The uncertified arms are accurate — q384/M1600 0.91 %, q448/M1856 0.65 %, **q512/M2112 0.41 %** — but slow:
+302–635 ms at $1024^2$ against 109 ms for q256/lat64 and 70 ms for the relaxed FOM (lat128 has 16129 nodes).
+The dense exact-residual twin of q384/M1600 reproduces its EQ error on the hard cases (0.906/0.912 % vs
+0.914 %), so the quadrature is not what limits accuracy; the certificate failure is an outlier-state property
+of the ρ metric, reported, not waived.
+
+**Verdict under the pre-registered rules: the bar cannot be met** (the only certified candidate is 1.73 % on the
+selection cohorts; the stop rule forbids H200 jobs for it). **A3 (labelled exploratory, nothing selected on
+held-out data):** bh3 (dev6 + hold64) and bh4 (fresh64) at $4096^2$ measure, in one allocation each with the
+paired FOM grid and 5 reps: the pre-registered headline q256/M1088 lat64 (certified), the fast q0, and the
+uncertified accurate arms q448/M1856 and q512/M2112 lat128, **labelled uncertified**. The "exploratory accurate
+arm" is fixed now as q512/M2112 lat128 (most accurate on dev6 ∪ sel32 in bh2b), before any held-out number.
+Their purpose is to state, for the paper, what held-out accuracy costs at $4096^2$; no bar verdict is claimed
+from an uncertified arm.

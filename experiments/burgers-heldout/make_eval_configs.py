@@ -1,6 +1,6 @@
 """Write the frozen 4096^2 evaluation configs (bh3: dev6 + hold64; bh4: fresh64) from bh2's audited selection.
 
-    python make_eval_configs.py checks/bh2-summary.json
+    python make_eval_configs.py checks/bh2b-summary.json [selection-config]
 
 The headline arm is read from the audited bh2 summary (group 'dev6+sel32', key 'selection.chosen'); it is
 never chosen here. The arm set, FOM grid, repetitions and audit coverage are identical in both configs.
@@ -18,21 +18,15 @@ def main():
     sel = summ['groups']['dev6+sel32']['selection']
     head = sel['chosen']
     assert head, sel
-    m = re.match(r'q(\d+)_M(\d+)_(\w+?)_g(0p\d+)_fast', head)
-    q, M, rule = int(m.group(1)), int(m.group(2)), m.group(3)
-    base = json.loads((HERE / 'config-1024-select.json').read_text())
-    V = [{"solver": "chol", "clip": True, "lamcarry": True, "pred2": True}]
-    lat = lambda: [{"name": "lat64", "parts": [{"lattice": 64}]}]
-    ladder = {(0, 64), (128, 576), (256, 1088), (q, M)}
-    if q == 256 and M != 2176:
-        ladder.add((256, 2176))
+    base = json.loads((HERE / sys.argv[2]).read_text()) if len(sys.argv) > 2 else json.loads((HERE / 'config-1024-bh2b.json').read_text())
     rungs = []
-    for qq, MM in sorted(ladder):
-        r = {"q": qq, "M": MM, "gtols": [0.001, 0.01], "dense": False, "rules": lat(),
-             "variants": ([{"solver": "lu", "clip": True, "lamcarry": True, "pred2": True}] if qq == 0 else V)}
+    for r in base['rungs']:                       # the selection job's full ladder, minus its dense twins
+        r = dict(r, dense=False)
+        r.pop('dense_cases', None)
         rungs.append(r)
-    assert rule == 'lat64', rule
-    fast = 'q0_M64_lat64_g0p001_fast_clip_lamcarry_pred2'
+    names = [f"q{r['q']}_M{r['M']}_{r['rules'][0]['name']}" for r in rungs]
+    assert any(head.startswith(n + '_') for n in names), (head, names)
+    fast = 'q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2'
     common = dict(base)
     for k in ('selection', 'eval_draws', 'cohort_name', 'attempt', 'purpose'):
         common.pop(k, None)

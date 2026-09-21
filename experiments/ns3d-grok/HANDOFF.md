@@ -12,9 +12,9 @@ table is the parent of the sealed job.
 
 ## What is running
 
-Nothing until `ns3dgrok_diag05` is submitted. That job is the only reader of
-seed 202609203. Do not submit a second sealed job and do not change the rank
-or the time step after seeing its errors.
+Job **4142080** `ns3dgrok_diag05` is pending (Priority) in
+`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag05/`, commit `9c40c70c`.
+It is the only reader of seed 202609203. One job for this lane.
 
 ## Next step
 

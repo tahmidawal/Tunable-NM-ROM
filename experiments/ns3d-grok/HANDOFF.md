@@ -12,9 +12,12 @@ table is the parent of the sealed job.
 
 ## What is running
 
-Job **4142080** `ns3dgrok_diag05` is pending (Priority) in
+Job **4142139** `ns3dgrok_diag05` is pending (Priority) in
 `/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag05/`, commit `9c40c70c`.
-It is the only reader of seed 202609203. One job for this lane.
+Job 4142080 died at import before drawing a trajectory, because `diag04.py`
+imports `diag03.py` and that file was not staged. The seed was not read.
+4142139 is the same frozen script with that file present. It is the only
+reader of seed 202609203.
 
 ## Next step
 

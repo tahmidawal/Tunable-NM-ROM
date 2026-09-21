@@ -1,6 +1,32 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — editorial review fixes — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — Table 2 at 512², train/eval separation — CURRENT HANDOFF
+
+**State.** 20 pages, main text + references start within page 9, 0 overfull, 0 undefined;
+`check_headline.py` and `check_rewrite.py` PASS. The six [USER] options below are still unapplied.
+
+**512² rows.** `runs/fam512/output/summary.json` (job 4107272, H200) and `runs/fam512/audit.json`, committed
+blobs at `af6ca98d` (the 256² and gate files are byte-identical between be5bdbef and af6ca98d, so they stay
+pinned at be5bdbef). Same assertions as 256² (GPU/x64/highest, split gates, audit agreement within its
+5e-6 relative tolerance, gate binding, kimae/lspg hashes equal to the gate's, sigmoid activation); the
+per-mesh "ours beats every baseline" assert now runs at both meshes. Table 2 is now one row per method with
+256² and 512² column groups (no data-matched Kim run at 512²: dashes); Table C.5 gains a mesh column and the
+512² HR rows. Caption: 2183 GB for the published encoder at 512² vs a 135 GB device; the capped (width 4096)
+encoder trained 229–231 epochs in its 4800 s budget, so those errors partly reflect a training-time limit
+(all from JSON). Results sentence ranges over both meshes: ours 6.79–7.72 % fast / 0.88–1.05 % accurate vs
+Kim 120–252 % and POD-LSPG 25–56 %.
+
+**Train/eval separation.** The overlap check (`reports/checks/2026-09-21-burgers-train-eval-overlap.py`,
+untracked on main) was re-run and snapshotted with its output in
+`paper/evidence/burgers-train-eval-overlap-2026-09-21/` (`check.py`, `output.txt`, `result.json` with
+hashes); `gen_headline.py` verifies the hashes and writes one paragraph into Appendix C.2 (4608 trajectories,
+four cohorts, 0 shared vectors and 0 shared single values).
+
+**Page budget cost (please review):** to keep references on page 9 the Limitations dropped the clause "the
+multi-seed study changes the test count with the rank, so it does not replicate that intervention"; the
+Reproducibility statement, the Table 5 job note and two cross-references were shortened.
+
+## 2026-09-21 (paper lane) — editorial review fixes
 
 **State.** `main.pdf` 20 pages, main text + references start within page 9, 0 overfull, 0 undefined,
 abstract 244 words; `check_headline.py` PASS, `check_rewrite.py` PASS. (The historical exact-prose checks

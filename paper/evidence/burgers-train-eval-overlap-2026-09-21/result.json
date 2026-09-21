@@ -1,0 +1,39 @@
+{
+  "script": "check.py (copy of reports/checks/2026-09-21-burgers-train-eval-overlap.py on main)",
+  "script_sha256": "15778806c11b9ede0bd9ad97bb30b4982bb489c616c9ad86267ac2642792428b",
+  "output_sha256": "78ef4c2fcd9c250b792f739a2f5c2d123b0efacb5963ae70b90fe6ae0410b922",
+  "run": "/home/tahmid/Dev/.venv/bin/python check.py, CPU, 2026-09-21, reads the nmrom-baselines, hires-burgers and b-seeds worktrees",
+  "training_trajectories": 4608,
+  "unique_training_rows": 4608,
+  "cohorts": {
+    "val32": {
+      "n": 32,
+      "min_dist": 0.070176,
+      "exact": 0,
+      "allclose": 0,
+      "shared_scalars": 0
+    },
+    "hold64": {
+      "n": 64,
+      "min_dist": 0.075826,
+      "exact": 0,
+      "allclose": 0,
+      "shared_scalars": 0
+    },
+    "dev6": {
+      "n": 6,
+      "min_dist": 0.05264,
+      "exact": 0,
+      "allclose": 0,
+      "shared_scalars": 0
+    },
+    "sealed6": {
+      "n": 6,
+      "min_dist": 0.099195,
+      "exact": 0,
+      "allclose": 0,
+      "shared_scalars": 0
+    }
+  },
+  "verdict": "disjoint"
+}

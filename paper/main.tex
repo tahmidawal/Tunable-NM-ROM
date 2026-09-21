@@ -521,8 +521,7 @@ The reduced solve costs the same at every mesh, so the fast setting
 passes Newton--BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
 faster at $1024^2$ with $\nHeadBurgersFastErr\,\%$ error. The accurate
 setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$
-(\S\ref{sec:results:tunability} gives the cost of each rank). At $4096^2$ the accurate setting chosen on six development cases
+cases, is slower than the FOM through $2048^2$. At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix\,\%$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
@@ -535,15 +534,16 @@ Figure~\ref{fig:speedup} shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM). That setting is the same at every mesh for the CG
-series; for Burgers and wide-bank heat it is re-selected per mesh, and
-the ratios against one fixed tight setting in
-Table~\ref{tab:headline-times} rise from $2048^2$ to $4096^2$ as well.
+accurate NM-ROM), fixed across meshes for the CG series and re-selected
+per mesh for Burgers and wide-bank heat, whose ratios against one fixed
+tight setting (Table~\ref{tab:headline-times}) also rise from $2048^2$ to
+$4096^2$.
 
 \begin{table}[t]
 \centering
-\caption{Other nonlinear-manifold ROMs on the shared Burgers 2D family:
-worst and median evolved same-grid error over 32 held-out cases and
+\caption{Other nonlinear-manifold ROMs on the shared Burgers 2D family at
+$256^2$ and $512^2$: worst and median evolved same-grid error over 32
+held-out cases and
 compiled-query memory, one allocation. Latent dimension is matched for
 the baselines and our fast setting; our accurate setting solves
 $k+q=272$ unknowns. The shallow masked-autoencoder NM-LSPG of
@@ -553,18 +553,22 @@ attempts (\nBaseGateAct{} activation; median
 $\nBaseGateMedian\,\%$ against a $\nBaseGateBar\,\%$ bar; published
 ${<}\nBaseGatePublished\,\%$); its hyper-reduction was not reproduced,
 and its published encoder width ($2n$) needs $\nBaseEncoderNeedGB$\,GB
-to train at $256^2$, beyond the $\nBaseDeviceGB$\,GB device. Data-matched:
+to train at $256^2$ and $\nBaseEncoderNeedGBFiveTwelve$\,GB at $512^2$,
+beyond the $\nBaseDeviceGB$ and $\nBaseDeviceGBFiveTwelve$\,GB devices;
+at $512^2$ its encoder, capped at width $\nBaseKimWidth$, trained only
+$\nBaseKimEpochs$ epochs in its $\nBaseKimWall$\,s budget, so those errors
+partly reflect a training-time limit. Data-matched:
 trained on our bank's \nBaseDataMatched{} trajectories. The
 convolutional-autoencoder NM-ROM \citep{LeeCarlberg2020} was not run.
-No times: every row, including our unoptimised reference path, uses a
-dense residual; our optimised query is timed in other jobs
+No times: every row, ours included, uses a dense residual
 (Tables~\ref{tab:headline},~\ref{tab:nmrom-baselines-appx}).}
 \label{tab:nmrom-baselines}
-\input{tables/TH_nmrom_baselines}
+\resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines}}
 \end{table}
 
-On 32 held-out Burgers cases (Table~\ref{tab:nmrom-baselines}) our
-fast setting, at matched latent dimension, reaches a worst error of
+On 32 held-out Burgers cases at $256^2$ and $512^2$
+(Table~\ref{tab:nmrom-baselines}) our fast setting, at matched latent
+dimension, reaches worst errors of
 $\nBaseOursFastWorst\,\%$, against $\nBaseKimRange\,\%$ for the
 reproduced shallow masked-autoencoder NM-ROM and $\nBasePodRange\,\%$
 for POD-LSPG; the accurate setting, at 272 solved unknowns, reaches
@@ -634,10 +638,8 @@ Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
 dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
 and cap: 32 held-out validation cases (Table~\ref{tab:knobs}),
 stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
-$^{\ast}$\,Dense over EQ time at $q=0$ in the scheduled-ladder jobs
-\provPanelJob{} ($256^2$) and \provPanelTenTwentyFourJob{} ($1024^2$);
-Table~\ref{tab:figure1-table} is a different allocation and gives a
-different ratio.}
+$^{\ast}$\,Jobs \provPanelJob{} and \provPanelTenTwentyFourJob{};
+Table~\ref{tab:figure1-table} is another allocation.}
 \label{tab:knobs-main}
 \small
 \begin{tabular}{@{}llll@{}}
@@ -664,14 +666,12 @@ pre-registered checks fail: the sealed-to-development error ratio at
 $q=0$ for the original model, whose uncorrected solve converges to a
 wrong branch on one sealed case ($\nSealedIncQzero\,\%$, kept in the
 reported maximum), and universal convergence, which fails on
-\nSealedUnconvergedCells. Table~\ref{tab:sealed} retains every
-checkpoint and verdict.
+\nSealedUnconvergedCells{} (Table~\ref{tab:sealed}).
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
 Speedups are against the named iterative solvers, and the named FOM is
-more accurate than the NM-ROM in every row. Faster non-iterative
-solvers exist for several rows. On the square and cube a direct
+more accurate than the NM-ROM in every row. On the square and cube a direct
 sine-transform solve and a coarse-grid solve at the NM-ROM's own accuracy
 are each $\nHiresCtlTotalFaster\times$ faster than the accurate NM-ROM in
 complete-query time and $\nHiresCtlDeviceFaster\times$ faster in
@@ -698,8 +698,7 @@ Three-dimensional heat misses 1\,\% once $t=0$ is counted
 bank represents the initial field only to $\nHeatThreeInit\,\%$.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
-rank study uses one checkpoint; the multi-seed study changes the test
-count with the rank, so it does not replicate that intervention. FOM
+rank study uses one checkpoint. FOM
 comparisons do not isolate the nonlinear head's contribution over the
 linear span of the same bank. Quadrature rules are validated on a finite
 set of reached states, not certified globally, and none is used in three
@@ -722,11 +721,9 @@ work is a cheaper high-rank nonlinear solve, quadrature in three
 dimensions, reliable nonlinear initialization and unstructured meshes.
 
 \section*{Reproducibility statement}\label{sec:repro}
-Tables and numerical prose are generated from retained run records by
-the accompanying scripts. Source hashes, checkpoints, solver settings,
-cohorts, timing repetitions and audit results identify each comparison
-(Appendix~\ref{app:provenance}). The source archive retains failed settings; the paper distinguishes
-development selection from held-out evaluation.
+Every table and prose number is generated from hash-pinned run records
+that identify source, checkpoint, settings, cohort, allocation and audit
+(Appendix~\ref{app:provenance}); failed settings are retained.
 
 \section*{AI use statement}
 Language-model assistants supported method and experiment development,

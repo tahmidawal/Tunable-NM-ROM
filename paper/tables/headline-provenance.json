@@ -247,6 +247,28 @@
       "read": "coordinator-supplied audited summary",
       "lane": "nmrom-baselines",
       "role": "gate05-audit"
+    },
+    "intake_16_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/fam512/output/summary.json",
+      "commit": "af6ca98ddbca9b0e79912d86df00dc8e07d368b4",
+      "status": "shared Burgers family 512^2, job 4107272; 32 held-out validation cases",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "440dbb287accf292c6f6d50875ce5b59d14dcf9a99b7268be4e91d8cfe9f300e",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "fam512"
+    },
+    "intake_17_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/fam512/audit.json",
+      "commit": "af6ca98ddbca9b0e79912d86df00dc8e07d368b4",
+      "status": "NumPy audit of fam512",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "a3adaaf2528f647168f10f3d4e6e7c7c05b9dc9e6311f6bf441fae3a25a3dfbc",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "fam512-audit"
     }
   },
   "rows": [
@@ -2077,6 +2099,7 @@
   },
   "nmrom_baselines": [
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG",
       "arm": "kim_final_K8",
       "family": "kim_nm_lspg",
@@ -2088,6 +2111,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG",
       "arm": "kim_final_K16",
       "family": "kim_nm_lspg",
@@ -2099,6 +2123,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG",
       "arm": "kim_final_K32",
       "family": "kim_nm_lspg",
@@ -2110,6 +2135,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG, data-matched",
       "arm": "kim_final_K16_fit576",
       "family": "kim_nm_lspg",
@@ -2121,6 +2147,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "POD-LSPG",
       "arm": "pod_lspg_zero_K8",
       "family": "pod_lspg",
@@ -2132,6 +2159,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "POD-LSPG",
       "arm": "pod_lspg_zero_K16",
       "family": "pod_lspg",
@@ -2143,6 +2171,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "POD-LSPG",
       "arm": "pod_lspg_zero_K32",
       "family": "pod_lspg",
@@ -2154,6 +2183,7 @@
       "path": "dense"
     },
     {
+      "mesh": 256,
       "label": "This work, fast ($q=0$, $k=16$)",
       "arm": "ours_q0",
       "family": "ours",
@@ -2165,6 +2195,7 @@
       "path": "dense (reference path)"
     },
     {
+      "mesh": 256,
       "label": "This work, accurate ($q=256$, $k=16$)",
       "arm": "ours_q256",
       "family": "ours",
@@ -2176,6 +2207,7 @@
       "path": "dense (reference path)"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG-HR (exploratory)",
       "arm": "kim_final_K8_hr",
       "family": "kim_hr",
@@ -2187,6 +2219,7 @@
       "path": "hyper-reduced, not reproduced"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG-HR (exploratory)",
       "arm": "kim_final_K16_hr",
       "family": "kim_hr",
@@ -2198,6 +2231,7 @@
       "path": "hyper-reduced, not reproduced"
     },
     {
+      "mesh": 256,
       "label": "Kim et al. NM-LSPG-HR (exploratory)",
       "arm": "kim_final_K32_hr",
       "family": "kim_hr",
@@ -2206,6 +2240,138 @@
       "median": 41.98456057449186,
       "mb": 2794.388808,
       "ms": 474.9230279121548,
+      "path": "hyper-reduced, not reproduced"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG",
+      "arm": "sig_K8_sel",
+      "family": "kim_nm_lspg",
+      "k": 8,
+      "worst": 175.7098587181721,
+      "median": 55.479454082026706,
+      "mb": 9958.801304,
+      "ms": 746.1148279253393,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG",
+      "arm": "sig_K16_sel",
+      "family": "kim_nm_lspg",
+      "k": 16,
+      "worst": 174.99209555124983,
+      "median": 58.555930084894634,
+      "mb": 10510.559392,
+      "ms": 1496.5896885842085,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG",
+      "arm": "sig_K32_sel",
+      "family": "kim_nm_lspg",
+      "k": 32,
+      "worst": 252.3310472185688,
+      "median": 56.716273305428984,
+      "mb": 10878.760096,
+      "ms": 2059.330441756174,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K8",
+      "family": "pod_lspg",
+      "k": 8,
+      "worst": 55.818327936639115,
+      "median": 24.07565754714649,
+      "mb": 71.40648,
+      "ms": 313.5255326051265,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K16",
+      "family": "pod_lspg",
+      "k": 16,
+      "worst": 42.00900255566247,
+      "median": 13.829116054390633,
+      "mb": 121.54184,
+      "ms": 617.1954735182226,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K32",
+      "family": "pod_lspg",
+      "k": 32,
+      "worst": 25.625087468219164,
+      "median": 7.741677865541531,
+      "mb": 221.81256,
+      "ms": 383.38999217376113,
+      "path": "dense"
+    },
+    {
+      "mesh": 512,
+      "label": "This work, fast ($q=0$, $k=16$)",
+      "arm": "ours_q0",
+      "family": "ours",
+      "k": 16,
+      "worst": 7.721891437580587,
+      "median": 0.6856562360363847,
+      "mb": 2367.852424,
+      "ms": 404.1904644109309,
+      "path": "dense (reference path)"
+    },
+    {
+      "mesh": 512,
+      "label": "This work, accurate ($q=256$, $k=16$)",
+      "arm": "ours_q256",
+      "family": "ours",
+      "k": 272,
+      "worst": 1.0505661505527013,
+      "median": 0.08026457105179588,
+      "mb": 6891.33608,
+      "ms": 6268.50843988359,
+      "path": "dense (reference path)"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "sig_K8_sel_hr",
+      "family": "kim_hr",
+      "k": 8,
+      "worst": 273.271088066708,
+      "median": 53.084052771142765,
+      "mb": 9813.394616,
+      "ms": 29.60842102766037,
+      "path": "hyper-reduced, not reproduced"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "sig_K16_sel_hr",
+      "family": "kim_hr",
+      "k": 16,
+      "worst": 185.17209543085758,
+      "median": 58.518643669632176,
+      "mb": 10099.289192,
+      "ms": 61.728344298899174,
+      "path": "hyper-reduced, not reproduced"
+    },
+    {
+      "mesh": 512,
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "sig_K32_sel_hr",
+      "family": "kim_hr",
+      "k": 32,
+      "worst": 194.47364623767763,
+      "median": 56.00372043666278,
+      "mb": 10569.426536,
+      "ms": 138.45908897928894,
       "path": "hyper-reduced, not reproduced"
     }
   ],
@@ -2444,9 +2610,9 @@
     "nHeadFasterRows": "25",
     "nHeadRows": "31",
     "nHeadAccFasterSubOne": "13",
-    "nBaseOursFastWorst": "6.79",
-    "nBaseOursAccWorst": "0.88",
-    "nBaseKimRange": "120\\mbox{--}164",
+    "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
+    "nBaseOursAccWorst": "0.88\\mbox{--}1.05",
+    "nBaseKimRange": "120\\mbox{--}252",
     "nBasePodRange": "25\\mbox{--}56",
     "nBaseGateMedian": "1.45",
     "nBaseGateAttempt": "3",
@@ -2455,7 +2621,12 @@
     "nBaseEncoderNeedGB": "136",
     "nBaseDeviceGB": "77",
     "nBaseDataMatched": "576",
-    "nBaseGateAct": "sigmoid"
+    "nBaseGateAct": "sigmoid",
+    "nBaseEncoderNeedGBFiveTwelve": "2183",
+    "nBaseDeviceGBFiveTwelve": "135",
+    "nBaseKimEpochs": "229\\mbox{--}231",
+    "nBaseKimWall": "4800",
+    "nBaseKimWidth": "4096"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

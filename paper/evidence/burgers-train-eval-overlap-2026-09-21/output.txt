@@ -1,0 +1,14 @@
+train (4608, 5) unique rows 4608
+validation case seeds in {0,1000}? False min/max 59003622 4188872719
+val32   n= 32 min unit-cube dist to train 7.0176e-02 (median nn 1.353e-01) exact-row-matches 0 allclose(1e-8) 0 shared-scalars 0
+hold64  n= 64 min unit-cube dist to train 7.5826e-02 (median nn 1.286e-01) exact-row-matches 0 allclose(1e-8) 0 shared-scalars 0
+dev6    n=  6 min unit-cube dist to train 5.2640e-02 (median nn 1.042e-01) exact-row-matches 0 allclose(1e-8) 0 shared-scalars 0
+sealed6 n=  6 min unit-cube dist to train 9.9195e-02 (median nn 1.649e-01) exact-row-matches 0 allclose(1e-8) 0 shared-scalars 0
+sealed json matches regen True dev json matches True
+train self nn median 0.13097287853590875
+val32 hold64 min dist 0.08912223426433993
+val32 dev6 min dist 0.24794285856437298
+val32 sealed6 min dist 0.19098700673435864
+hold64 dev6 min dist 0.21247817841530958
+hold64 sealed6 min dist 0.23098598777895915
+dev6 sealed6 min dist 0.5016369374942209

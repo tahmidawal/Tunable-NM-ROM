@@ -245,5 +245,27 @@
     "read": "coordinator-supplied audited summary",
     "lane": "nmrom-baselines",
     "role": "gate05-audit"
+  },
+  "intake_16_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/fam512/output/summary.json",
+    "commit": "af6ca98ddbca9b0e79912d86df00dc8e07d368b4",
+    "status": "shared Burgers family 512^2, job 4107272; 32 held-out validation cases",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "440dbb287accf292c6f6d50875ce5b59d14dcf9a99b7268be4e91d8cfe9f300e",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "fam512"
+  },
+  "intake_17_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/fam512/audit.json",
+    "commit": "af6ca98ddbca9b0e79912d86df00dc8e07d368b4",
+    "status": "NumPy audit of fam512",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "a3adaaf2528f647168f10f3d4e6e7c7c05b9dc9e6311f6bf441fae3a25a3dfbc",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "fam512-audit"
   }
 }

@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 09:40; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 09:44; this block is removed before submission).*
 *Populated tables (90): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -536,8 +536,7 @@ The reduced solve costs the same at every mesh, so the fast setting
 passes Newton–BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
 faster at $1024^2$ with $\nHeadBurgersFastErr %$ error. The accurate
 setting reaches $\nHeadBurgersAccErr %$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$
-(§6.2 gives the cost of each rank). At $4096^2$ the accurate setting chosen on six development cases
+cases, is slower than the FOM through $2048^2$. At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix %$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
@@ -550,13 +549,14 @@ Figure 1 shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM). That setting is the same at every mesh for the CG
-series; for Burgers and wide-bank heat it is re-selected per mesh, and
-the ratios against one fixed tight setting in
-Table 8 rise from $2048^2$ to $4096^2$ as well.
+accurate NM-ROM), fixed across meshes for the CG series and re-selected
+per mesh for Burgers and wide-bank heat, whose ratios against one fixed
+tight setting (Table 8) also rise from $2048^2$ to
+$4096^2$.
 
-**Table 2.** Other nonlinear-manifold ROMs on the shared Burgers 2D family:
-worst and median evolved same-grid error over 32 held-out cases and
+**Table 2.** Other nonlinear-manifold ROMs on the shared Burgers 2D family at
+$256^2$ and $512^2$: worst and median evolved same-grid error over 32
+held-out cases and
 compiled-query memory, one allocation. Latent dimension is matched for
 the baselines and our fast setting; our accurate setting solves
 $k+q=272$ unknowns. The shallow masked-autoencoder NM-LSPG of
@@ -566,28 +566,32 @@ attempts (\nBaseGateAct activation; median
 $\nBaseGateMedian %$ against a $\nBaseGateBar %$ bar; published
 ${<}\nBaseGatePublished %$); its hyper-reduction was not reproduced,
 and its published encoder width ($2n$) needs $\nBaseEncoderNeedGB$ GB
-to train at $256^2$, beyond the $\nBaseDeviceGB$ GB device. Data-matched:
+to train at $256^2$ and $\nBaseEncoderNeedGBFiveTwelve$ GB at $512^2$,
+beyond the $\nBaseDeviceGB$ and $\nBaseDeviceGBFiveTwelve$ GB devices;
+at $512^2$ its encoder, capped at width $\nBaseKimWidth$, trained only
+$\nBaseKimEpochs$ epochs in its $\nBaseKimWall$ s budget, so those errors
+partly reflect a training-time limit. Data-matched:
 trained on our bank's \nBaseDataMatched trajectories. The
 convolutional-autoencoder NM-ROM (Lee & Carlberg, 2020) was not run.
-No times: every row, including our unoptimised reference path, uses a
-dense residual; our optimised query is timed in other jobs
+No times: every row, ours included, uses a dense residual
 (Table 1, Table 10).
 
 <!-- table: TH_nmrom_baselines -->
-| Method (256^2, 32 held-out cases) | Solved unknowns | Worst evolved (%) | Median evolved (%) | Query memory (MB) |
-| --- | --- | --- | --- | --- |
-| Kim et al. NM-LSPG | 8 | 163.93 | 43.34 | 2480 |
-| Kim et al. NM-LSPG | 16 | 145.40 | 43.87 | 2567 |
-| Kim et al. NM-LSPG | 32 | 127.51 | 43.61 | 2742 |
-| Kim et al. NM-LSPG, data-matched | 16 | 120.33 | 38.71 | 2567 |
-| POD-LSPG | 8 | 55.52 | 22.72 | 18 |
-| POD-LSPG | 16 | 41.53 | 10.45 | 30 |
-| POD-LSPG | 32 | 24.78 | 5.65 | 55 |
-| This work, fast (q=0, k=16) | 16 | 6.79 | 0.66 | 625 |
-| This work, accurate (q=256, k=16) | 272 | 0.88 | 0.089 | 1769 |
+| Method | Unknowns | 256^2 worst (%) | 256^2 median (%) | 256^2 MB | 512^2 worst (%) | 512^2 median (%) | 512^2 MB |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Kim et al. NM-LSPG | 8 | 163.93 | 43.34 | 2480 | 175.71 | 55.48 | 9959 |
+| Kim et al. NM-LSPG | 16 | 145.40 | 43.87 | 2567 | 174.99 | 58.56 | 10511 |
+| Kim et al. NM-LSPG | 32 | 127.51 | 43.61 | 2742 | 252.33 | 56.72 | 10879 |
+| Kim et al. NM-LSPG, data-matched | 16 | 120.33 | 38.71 | 2567 | — | — | — |
+| POD-LSPG | 8 | 55.52 | 22.72 | 18 | 55.82 | 24.08 | 71 |
+| POD-LSPG | 16 | 41.53 | 10.45 | 30 | 42.01 | 13.83 | 122 |
+| POD-LSPG | 32 | 24.78 | 5.65 | 55 | 25.63 | 7.74 | 222 |
+| This work, fast (q=0, k=16) | 16 | 6.79 | 0.66 | 625 | 7.72 | 0.69 | 2368 |
+| This work, accurate (q=256, k=16) | 272 | 0.88 | 0.089 | 1769 | 1.05 | 0.080 | 6891 |
 
-On 32 held-out Burgers cases (Table 2) our
-fast setting, at matched latent dimension, reaches a worst error of
+On 32 held-out Burgers cases at $256^2$ and $512^2$
+(Table 2) our fast setting, at matched latent
+dimension, reaches worst errors of
 $\nBaseOursFastWorst %$, against $\nBaseKimRange %$ for the
 reproduced shallow masked-autoencoder NM-ROM and $\nBasePodRange %$
 for POD-LSPG; the accurate setting, at 272 solved unknowns, reaches
@@ -666,10 +670,8 @@ Rank: fixed-$M$ ladder at $256^2$ (Table 4). EQ:
 dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
 and cap: 32 held-out validation cases (Table 16),
 stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
-$^{\ast}$ Dense over EQ time at $q=0$ in the scheduled-ladder jobs
-3789570 ($256^2$) and 3789572 ($1024^2$);
-Table 11 is a different allocation and gives a
-different ratio.
+$^{\ast}$ Jobs 3789570 and 3789572;
+Table 11 is another allocation.
 
 A separate ladder, in which the test count follows a fixed schedule
 $M=4(k+q)$, was evaluated once on a sealed held-out cohort after every
@@ -683,14 +685,12 @@ pre-registered checks fail: the sealed-to-development error ratio at
 $q=0$ for the original model, whose uncorrected solve converges to a
 wrong branch on one sealed case ($10.1120 %$, kept in the
 reported maximum), and universal convergence, which fails on
-`seed2` at $q=64$ (3 budget exits). Table 13 retains every
-checkpoint and verdict.
+`seed2` at $q=64$ (3 budget exits){} (Table 13).
 
 **Limitations.**
 
 Speedups are against the named iterative solvers, and the named FOM is
-more accurate than the NM-ROM in every row. Faster non-iterative
-solvers exist for several rows. On the square and cube a direct
+more accurate than the NM-ROM in every row. On the square and cube a direct
 sine-transform solve and a coarse-grid solve at the NM-ROM's own accuracy
 are each $\nHiresCtlTotalFaster\times$ faster than the accurate NM-ROM in
 complete-query time and $\nHiresCtlDeviceFaster\times$ faster in
@@ -717,8 +717,7 @@ Three-dimensional heat misses 1 % once $t=0$ is counted
 bank represents the initial field only to $\nHeatThreeInit %$.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
-rank study uses one checkpoint; the multi-seed study changes the test
-count with the rank, so it does not replicate that intervention. FOM
+rank study uses one checkpoint. FOM
 comparisons do not isolate the nonlinear head's contribution over the
 linear span of the same bank. Quadrature rules are validated on a finite
 set of reached states, not certified globally, and none is used in three
@@ -747,11 +746,9 @@ dimensions, reliable nonlinear initialization and unstructured meshes.
 
 <!-- section sources: none (prose only) -->
 
-Tables and numerical prose are generated from retained run records by
-the accompanying scripts. Source hashes, checkpoints, solver settings,
-cohorts, timing repetitions and audit results identify each comparison
-(Appendix C). The source archive retains failed settings; the paper distinguishes
-development selection from held-out evaluation.
+Every table and prose number is generated from hash-pinned run records
+that identify source, checkpoint, settings, cohort, allocation and audit
+(Appendix C); failed settings are retained.
 
 ## AI use statement
 
@@ -1246,20 +1243,31 @@ in Table 1, in other jobs, and no ratio across jobs is
 formed.
 
 <!-- table: TH_nmrom_baselines_appx -->
-| Method | Residual path | k | Worst (%) | Median (%) | GPU ms (this job) | MB |
-| --- | --- | --- | --- | --- | --- | --- |
-| Kim et al. NM-LSPG | dense | 8 | 163.93 | 43.34 | 1301 | 2480 |
-| Kim et al. NM-LSPG | dense | 16 | 145.40 | 43.87 | 2384 | 2567 |
-| Kim et al. NM-LSPG | dense | 32 | 127.51 | 43.61 | 3846 | 2742 |
-| Kim et al. NM-LSPG, data-matched | dense | 16 | 120.33 | 38.71 | 3886 | 2567 |
-| POD-LSPG | dense | 8 | 55.52 | 22.72 | 138 | 18 |
-| POD-LSPG | dense | 16 | 41.53 | 10.45 | 259 | 30 |
-| POD-LSPG | dense | 32 | 24.78 | 5.65 | 519 | 55 |
-| This work, fast (q=0, k=16) | dense (reference path) | 16 | 6.79 | 0.66 | 262 | 625 |
-| This work, accurate (q=256, k=16) | dense (reference path) | 272 | 0.88 | 0.089 | 3746 | 1769 |
-| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 8 | 115.60 | 51.78 | 65 | 2452 |
-| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 16 | 202.87 | 52.51 | 126 | 2506 |
-| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 32 | 122.68 | 41.98 | 475 | 2794 |
+| Mesh | Method | Residual path | k | Worst (%) | Median (%) | GPU ms (this job) | MB |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 256^2 | Kim et al. NM-LSPG | dense | 8 | 163.93 | 43.34 | 1301 | 2480 |
+| 256^2 | Kim et al. NM-LSPG | dense | 16 | 145.40 | 43.87 | 2384 | 2567 |
+| 256^2 | Kim et al. NM-LSPG | dense | 32 | 127.51 | 43.61 | 3846 | 2742 |
+| 256^2 | Kim et al. NM-LSPG, data-matched | dense | 16 | 120.33 | 38.71 | 3886 | 2567 |
+| 256^2 | POD-LSPG | dense | 8 | 55.52 | 22.72 | 138 | 18 |
+| 256^2 | POD-LSPG | dense | 16 | 41.53 | 10.45 | 259 | 30 |
+| 256^2 | POD-LSPG | dense | 32 | 24.78 | 5.65 | 519 | 55 |
+| 256^2 | This work, fast (q=0, k=16) | dense (reference path) | 16 | 6.79 | 0.66 | 262 | 625 |
+| 256^2 | This work, accurate (q=256, k=16) | dense (reference path) | 272 | 0.88 | 0.089 | 3746 | 1769 |
+| 256^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 8 | 115.60 | 51.78 | 65 | 2452 |
+| 256^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 16 | 202.87 | 52.51 | 126 | 2506 |
+| 256^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 32 | 122.68 | 41.98 | 475 | 2794 |
+| 512^2 | Kim et al. NM-LSPG | dense | 8 | 175.71 | 55.48 | 746 | 9959 |
+| 512^2 | Kim et al. NM-LSPG | dense | 16 | 174.99 | 58.56 | 1497 | 10511 |
+| 512^2 | Kim et al. NM-LSPG | dense | 32 | 252.33 | 56.72 | 2059 | 10879 |
+| 512^2 | POD-LSPG | dense | 8 | 55.82 | 24.08 | 314 | 71 |
+| 512^2 | POD-LSPG | dense | 16 | 42.01 | 13.83 | 617 | 122 |
+| 512^2 | POD-LSPG | dense | 32 | 25.63 | 7.74 | 383 | 222 |
+| 512^2 | This work, fast (q=0, k=16) | dense (reference path) | 16 | 7.72 | 0.69 | 404 | 2368 |
+| 512^2 | This work, accurate (q=256, k=16) | dense (reference path) | 272 | 1.05 | 0.080 | 6269 | 6891 |
+| 512^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 8 | 273.27 | 53.08 | 30 | 9813 |
+| 512^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 16 | 185.17 | 58.52 | 62 | 10099 |
+| 512^2 | Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 32 | 194.47 | 56.00 | 138 | 10569 |
 
 **Table 11.** Dense and empirical-quadrature (EQ) residual evaluation on
 Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (%); time is

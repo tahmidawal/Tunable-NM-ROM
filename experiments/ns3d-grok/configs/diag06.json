@@ -1,0 +1,22 @@
+{
+  "n": 32,
+  "dt_truth": 0.001,
+  "horizon": 0.2,
+  "dt": 0.01,
+  "train_seed": 202609201,
+  "train_cases": 512,
+  "dev_seed": 202609202,
+  "dev_cases": 16,
+  "final_seed_closed": 202609203,
+  "sealed_seed_reserved": 202609211,
+  "rank": 64,
+  "gram_block": 512,
+  "target_relative": 0.05,
+  "parity_relative": 1e-6,
+  "f32_parity_relative": 1e-5,
+  "f32_speed_factor": 0.8,
+  "truncation_tails": [1e-12, 1e-8, 1e-6, 1e-4, 1e-3],
+  "fourier_ranks": [64, 128, 256],
+  "timing_repetitions": 5,
+  "fom_dts": [0.004, 0.005, 0.01, 0.02]
+}

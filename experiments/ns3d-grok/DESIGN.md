@@ -128,3 +128,28 @@ result back. It also records the illegal per-time floor as a ceiling. Ranks
 seed only. A rank-64 per-time floor above 1% aborts the job, because diag01
 already measured that floor well below 1% and a larger value means the shift
 was not reproduced.
+
+## Amendment — coefficient shift, before diag06
+
+diag04 selected centered POD rank 64, a ROM-centroid shift after every startup
+step, and $\Delta t=0.01$. diag05 opened seed 202609203 once. That seed is
+closed again and is not read here. A later held-out draw, not used by diag06,
+is seed **202609211**, 32 cases. Its parameter rows were checked against
+training seed 202609201 (512), development seed 202609202 (16), and
+202609203 (32): zero rounded-row overlaps. diag06 does not generate it.
+
+diag06 stays on the development seed. It asks whether the diag04 tracker can
+be evaluated without a $32^3$ nonlinearity or a $32^3$ centroid. The startup
+step is unchanged, so this is not a switch to multistep CNAB2.
+
+Parity gate, pre-registered. A rewrite of the rank-64 tracker is kept only
+when every development trajectory matches the grid tracker to a relative
+$L^2$ of at most $10^{-6}$. Float32 is kept only when it also matches its
+float64 twin to $10^{-5}$ and its median is at most 0.8 times the float64
+median. A low-wavenumber Fourier basis is a different subspace. It is eligible
+only if its own tensor-and-phase implementation matches a grid implementation
+of that same basis to $10^{-6}$, and its evolved worst on development is at
+most 5% with no case over 5%. It is rolled out only when the smallest tested
+rank in $\{64,128,256\}$ whose centered-snapshot floor is at most 5% exists.
+Among eligible methods, the sealed setting is the one with the smallest
+development median. If none are eligible, the sealed seed stays unopened.

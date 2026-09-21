@@ -1,26 +1,22 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21 after the sealed evaluation. Nothing is running.
+Updated 2026-09-21 before the coefficient-space development job.
 
 ## State
 
-The sealed cohort (seed 202609203, 32 cases) was opened once by job **4142139**.
-The frozen setting was centered POD rank 64, ROM-centroid shift every startup
-step, $\Delta t=0.01$. Generated table: `results/diag05.md`. Local NumPy verify
-passed. Remote directory deleted. This is a classical centered POD plus an
-online shift, not the coordinate-network NM-ROM.
-
-Job 4142080 died at import before any trajectory, because `diag03.py` was not
-staged. It did not read the seed. 4142139 is the only opening.
+Seed 202609203 stays closed. Seed 202609211 is reserved for one later sealed
+draw and has not been generated. Its parameter rows do not overlap training,
+development, or 202609203. diag06 is development only: the diag04 tracker
+rewritten with a quadratic tensor, coefficient centroid, and Fourier
+shift-reproject. A local $N=8$ smoke matched the grid tracker to about
+$10^{-15}$.
 
 ## What is running
 
-Nothing. Do not submit another sealed job and do not change rank or dt from
-the sealed errors.
+Nothing yet. The next command submits `ns3dgrok_diag06`.
 
 ## Next step
 
-If work continues, the remaining block is cost: every startup step still
-evaluates the nonlinearity on the $32^3$ grid, so the tracker is slower than
-CNAB2. A shift that stays in coefficient space would be the next hypothesis.
-Do not retune on seed 202609203.
+Submit diag06. On exit, NumPy-verify, delete the remote directory, and seal
+only the method `summary.json` selects. If the selection is null, do not open
+202609211.

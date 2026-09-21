@@ -87,3 +87,22 @@ Held-out evolved worst is under 5% with 0/32 cases over the bar. The script
 picks CNAB2 at $\Delta t=0.01$ as the fastest eligible comparator. The paired
 speedup is below one: the tracker is slower. Kept as the accuracy result for
 this classical tracker. It is not a change to the coordinate-network NM-ROM.
+
+## 2026-09-21 — move the tracked step into coefficient space
+
+Hypothesis. The diag04 startup step is a quadratic map on the centered POD
+coefficients, plus a shift-and-reproject. Preassembling that quadratic map and
+the centroid's quadratic forms removes the $32^3$ nonlinearity and the grid
+centroid. The shift stays exact if every Fourier coefficient of the POD modes
+is kept, and a tail can be dropped only when the development fields still
+match the grid tracker. A low-wavenumber Fourier basis is a different
+subspace: a translation there is a $2\times 2$ phase, but it is kept only if
+its centered-snapshot floor and its solved error both clear 5%.
+
+Change. `coeff_shift.py` and `diag06.py`. Development seed only. Parity gate
+$10^{-6}$ against the grid tracker. Seed 202609211 is reserved and not
+generated. A local smoke at $N=8$ matched the grid tracker to $10^{-15}$.
+
+Measured effect. Pending `diag06`.
+
+Kept or reverted. Not applied.

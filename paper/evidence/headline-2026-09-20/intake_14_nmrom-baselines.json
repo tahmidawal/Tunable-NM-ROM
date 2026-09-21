@@ -1,0 +1,583 @@
+{
+  "config": {
+    "out": "output",
+    "nx": 60,
+    "nt": 1500,
+    "ns": 5,
+    "b": 100,
+    "db": 10,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "max_epochs": 10000,
+    "train_wall": 3000.0,
+    "act": "sigmoid",
+    "scale": "feature",
+    "train_dtype": "float32",
+    "attempt": 3,
+    "hr": [
+      55,
+      58,
+      51,
+      54,
+      44,
+      47,
+      40,
+      40,
+      60,
+      60
+    ],
+    "allow_cpu": false,
+    "hr_basis": "sns",
+    "load_ae": null
+  },
+  "n": 3364,
+  "M1": 6728,
+  "M2": 33730,
+  "fom_seconds_warm": 14.03323744982481,
+  "published": {
+    "nm_lspg": "<1 % (Fig. 14, n_s=5, n_train=4)",
+    "nm_lspg_hr_percent": [
+      0.93,
+      0.94,
+      0.95,
+      0.97,
+      0.97,
+      0.98
+    ],
+    "ls_lspg_hr_percent": [
+      34.38,
+      37.73,
+      37.84,
+      37.95,
+      37.96,
+      37.97
+    ]
+  },
+  "seeds": [
+    {
+      "seed": 0,
+      "train": {
+        "u": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 2.617904044655006e-07,
+          "final_lr": 1e-08,
+          "seconds": 1523.0852244198322
+        },
+        "v": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 1.8423753544993815e-07,
+          "final_lr": 1e-08,
+          "seconds": 1525.6124203568324
+        }
+      },
+      "nm_projection": {
+        "u": 0.01584539675843049,
+        "v": 0.010515770098243943,
+        "max": 0.01584539675843049
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.014524554733394245,
+          "v": 0.011801054576474658,
+          "max": 0.014524554733394245
+        },
+        "seconds_warm": 2.244722690898925,
+        "gn_iterations_mean": 3.994666576385498,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.2543486094150714e-06,
+        "finite": true,
+        "ic_error": 0.0010654250103166692
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 156,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6464724372181777,
+            0.052201002866208775
+          ],
+          "seconds_warm": 0.05873792199417949,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 145,
+          "active_hidden": [
+            5740,
+            5740
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6162815758066187,
+            0.052202385791289226
+          ],
+          "seconds_warm": 0.05870818393304944,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 9.564386572905972e-13,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5430,
+            5430
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.5858830459004006,
+            0.052880129422192154
+          ],
+          "seconds_warm": 0.05854342598468065,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4480,
+            4480
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.5483635409394009,
+            0.03973174847836289
+          ],
+          "seconds_warm": 0.05924848327413201,
+          "gn_iterations_mean": 0.003999999724328518
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 167,
+          "active_hidden": [
+            6510,
+            6510
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6651137666018355,
+            0.06398341859487254
+          ],
+          "seconds_warm": 0.05943249678239226,
+          "gn_iterations_mean": 0.005333333276212215
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "train": {
+        "u": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 2.9141605750737654e-07,
+          "final_lr": 1e-08,
+          "seconds": 1518.8961083372124
+        },
+        "v": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 2.4284275923491805e-07,
+          "final_lr": 1e-08,
+          "seconds": 1519.7880394230597
+        }
+      },
+      "nm_projection": {
+        "u": 0.017905220223777808,
+        "v": 0.010467927301728705,
+        "max": 0.017905220223777808
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.01834222433925664,
+          "v": 0.010618357159380731,
+          "max": 0.01834222433925664
+        },
+        "seconds_warm": 2.254768003243953,
+        "gn_iterations_mean": 4.007333278656006,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.4346663419749766e-06,
+        "finite": true,
+        "ic_error": 0.001241123253312738
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 156,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6464724372181777,
+            0.052201002866208775
+          ],
+          "seconds_warm": 0.05822982080280781,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 145,
+          "active_hidden": [
+            5740,
+            5740
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6162815758066187,
+            0.052202385791289226
+          ],
+          "seconds_warm": 0.05851944908499718,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 6.977253810284406e-13,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5430,
+            5430
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.5858830459004006,
+            0.052880129422192154
+          ],
+          "seconds_warm": 0.058351282961666584,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4480,
+            4480
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.5483635409394009,
+            0.03973174847836289
+          ],
+          "seconds_warm": 0.05847252020612359,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 167,
+          "active_hidden": [
+            6510,
+            6510
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6651137666018355,
+            0.06398341859487254
+          ],
+          "seconds_warm": 0.05859858077019453,
+          "gn_iterations_mean": 0.003999999724328518
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "train": {
+        "u": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 2.0562576708016422e-07,
+          "final_lr": 1e-08,
+          "seconds": 1520.0949860448018
+        },
+        "v": {
+          "stop_reason": "max_epochs",
+          "truncated": false,
+          "epochs": 10000,
+          "best_val": 2.2985763337146636e-07,
+          "final_lr": 1e-08,
+          "seconds": 1524.6008439389989
+        }
+      },
+      "nm_projection": {
+        "u": 0.014889742360712548,
+        "v": 0.01404969630758133,
+        "max": 0.014889742360712548
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.01437620290663365,
+          "v": 0.014167860664634884,
+          "max": 0.01437620290663365
+        },
+        "seconds_warm": 2.2625773451291025,
+        "gn_iterations_mean": 3.994666576385498,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.2771463052653282e-06,
+        "finite": true,
+        "ic_error": 0.0009971481479074768
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 156,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6464724372181777,
+            0.052201002866208775
+          ],
+          "seconds_warm": 0.0590220782905817,
+          "gn_iterations_mean": 0.0033333334140479565
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 145,
+          "active_hidden": [
+            5740,
+            5740
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6162815758066187,
+            0.052202385791289226
+          ],
+          "seconds_warm": 0.06000654213130474,
+          "gn_iterations_mean": 0.004666666500270367
+        },
+        {
+          "subnet_parity": 1.7148164144127456e-12,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5430,
+            5430
+          ],
+          "error": {
+            "u": 3.311554867870658,
+            "v": 1.5683206609639089,
+            "max": 3.311554867870658
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5858830459004006,
+            0.052880129422192154
+          ],
+          "seconds_warm": 0.058421434834599495,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4480,
+            4480
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.5483635409394009,
+            0.03973174847836289
+          ],
+          "seconds_warm": 0.05870264070108533,
+          "gn_iterations_mean": 0.0026666666381061077
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 167,
+          "active_hidden": [
+            6510,
+            6510
+          ],
+          "error": {
+            "u": Infinity,
+            "v": Infinity,
+            "max": Infinity
+          },
+          "finite": false,
+          "sampled_basis_singular_values": [
+            0.6651137666018355,
+            0.06398341859487254
+          ],
+          "seconds_warm": 0.05967010883614421,
+          "gn_iterations_mean": 0.0026666666381061077
+        }
+      ]
+    }
+  ],
+  "ls_lspg": {
+    "error": {
+      "u": 0.31595478053610554,
+      "v": 0.3159547805361059,
+      "max": 0.3159547805361059
+    },
+    "gn_iterations_max": 3,
+    "gn_cap_hits": 0,
+    "last_step_norm_max": 1.87927904291625e-07,
+    "finite": true
+  },
+  "ls_projection": {
+    "u": 0.1796143089785209,
+    "v": 0.1796143089785209,
+    "max": 0.1796143089785209
+  },
+  "gate": {
+    "rule": "median over exactly three distinct seeds of NM-LSPG max relative error <= 1.5 % (diverged seed = inf) AND a converged, finite LS-LSPG control >= 10 %; HR gate: median NM-LSPG-HR (55 basis / 58 samples) <= 2 %",
+    "note": "published 34-38 % is LS-LSPG-HR; this control is LS-LSPG without HR (their Fig. 13 shows LS-LSPG >> NM-LSPG at n_s=5)",
+    "attempt": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "nm_lspg_errors": [
+      0.014524554733394245,
+      0.01834222433925664,
+      0.01437620290663365
+    ],
+    "nm_lspg_median": 0.014524554733394245,
+    "ls_lspg": 0.3159547805361059,
+    "ls_valid": true,
+    "hr_errors": [
+      Infinity,
+      Infinity,
+      Infinity
+    ],
+    "hr_median": Infinity,
+    "passed": true,
+    "hr_passed": false,
+    "recipe": {
+      "act": "sigmoid",
+      "scale": "feature",
+      "train_dtype": "float32",
+      "b": 100,
+      "db": 10,
+      "ns": 5,
+      "nx": 60,
+      "nt": 1500,
+      "online_dtype": "float64"
+    }
+  },
+  "source_sha256": {
+    "gate_kim2d.py": "f3406224013c461f9e653cb1e3cc40381523b10d08ca0b416637e5080b2b182c",
+    "kimae.py": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+    "lspg.py": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298"
+  },
+  "provenance": {
+    "job_id": "4077574",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "commit": "ac769088d2639c4958fca3019cfc952627af8ed0",
+    "jax": "0.10.2",
+    "matmul": "highest"
+  }
+}

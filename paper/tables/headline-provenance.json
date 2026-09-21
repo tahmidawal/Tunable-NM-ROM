@@ -203,6 +203,50 @@
       "read": "coordinator-supplied audited summary",
       "lane": "bank-floor",
       "role": "bank-floor-summary"
+    },
+    "intake_12_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/fam256/output/summary.json",
+      "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+      "status": "shared Burgers family 256^2, job 4095408; 32 held-out validation cases",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "e520ed95c3d51b978f5d6e448ad3e70ca13e69c8b6180cd67e69d76c0978e179",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "fam256"
+    },
+    "intake_13_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/fam256/audit.json",
+      "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+      "status": "NumPy audit of fam256",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "368cde7b265faa65bb6e5a6332ea5020c20c26488ad2fad949037f1d1a7d2072",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "fam256-audit"
+    },
+    "intake_14_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/gate05/output/summary.json",
+      "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+      "status": "Kim et al. reproduction gate, attempt 3 (sigmoid), job 4077574",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "42989d848c68027a2244ba4b2688c69c431aee921484d8986282f5f50c099cbe",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "gate05"
+    },
+    "intake_15_nmrom-baselines": {
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "path": "experiments/nmrom-baselines/runs/gate05/audit.json",
+      "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+      "status": "NumPy audit of gate05",
+      "adapter": "nmrom-baselines-v1",
+      "sha256": "75f62734e49cf7adb45502b3b3637321aa90bc0bc9a1c2c839e610d895d22a39",
+      "read": "coordinator-supplied audited summary",
+      "lane": "nmrom-baselines",
+      "role": "gate05-audit"
     }
   },
   "rows": [
@@ -2023,6 +2067,140 @@
       1.896485541942913
     ]
   },
+  "nmrom_baselines": [
+    {
+      "label": "Kim et al. NM-LSPG",
+      "arm": "kim_final_K8",
+      "family": "kim_nm_lspg",
+      "k": 8,
+      "worst": 163.93112215254504,
+      "median": 43.341052978480754,
+      "mb": 2480.165528,
+      "ms": 1300.812846980989,
+      "path": "dense"
+    },
+    {
+      "label": "Kim et al. NM-LSPG",
+      "arm": "kim_final_K16",
+      "family": "kim_nm_lspg",
+      "k": 16,
+      "worst": 145.3979347313846,
+      "median": 43.87225593706398,
+      "mb": 2566.8566,
+      "ms": 2384.3658859841526,
+      "path": "dense"
+    },
+    {
+      "label": "Kim et al. NM-LSPG",
+      "arm": "kim_final_K32",
+      "family": "kim_nm_lspg",
+      "k": 32,
+      "worst": 127.50975510457066,
+      "median": 43.61190916493061,
+      "mb": 2742.191512,
+      "ms": 3845.6699869129807,
+      "path": "dense"
+    },
+    {
+      "label": "Kim et al. NM-LSPG, data-matched",
+      "arm": "kim_final_K16_fit576",
+      "family": "kim_nm_lspg",
+      "k": 16,
+      "worst": 120.3339482323158,
+      "median": 38.711484478223014,
+      "mb": 2566.8566,
+      "ms": 3885.8547396957874,
+      "path": "dense"
+    },
+    {
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K8",
+      "family": "pod_lspg",
+      "k": 8,
+      "worst": 55.515054958899924,
+      "median": 22.719058221708632,
+      "mb": 17.749648,
+      "ms": 137.95594591647387,
+      "path": "dense"
+    },
+    {
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K16",
+      "family": "pod_lspg",
+      "k": 16,
+      "worst": 41.53059573064152,
+      "median": 10.451140727880832,
+      "mb": 30.299856,
+      "ms": 258.755364920944,
+      "path": "dense"
+    },
+    {
+      "label": "POD-LSPG",
+      "arm": "pod_lspg_zero_K32",
+      "family": "pod_lspg",
+      "k": 32,
+      "worst": 24.779773709020073,
+      "median": 5.654193769183437,
+      "mb": 55.269712,
+      "ms": 518.7979028560221,
+      "path": "dense"
+    },
+    {
+      "label": "This work, fast ($q=0$, $k=16$)",
+      "arm": "ours_q0",
+      "family": "ours",
+      "k": 16,
+      "worst": 6.789713163471451,
+      "median": 0.6571010754562812,
+      "mb": 624.893832,
+      "ms": 262.16744794510305,
+      "path": "dense (reference path)"
+    },
+    {
+      "label": "This work, accurate ($q=256$, $k=16$)",
+      "arm": "ours_q256",
+      "family": "ours",
+      "k": 272,
+      "worst": 0.8755617681042219,
+      "median": 0.08868117929578549,
+      "mb": 1768.755088,
+      "ms": 3746.2962872814387,
+      "path": "dense (reference path)"
+    },
+    {
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "kim_final_K8_hr",
+      "family": "kim_hr",
+      "k": 8,
+      "worst": 115.59821175406395,
+      "median": 51.78377731901019,
+      "mb": 2451.68236,
+      "ms": 64.71933680586517,
+      "path": "hyper-reduced, not reproduced"
+    },
+    {
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "kim_final_K16_hr",
+      "family": "kim_hr",
+      "k": 16,
+      "worst": 202.86870997913806,
+      "median": 52.50758940111546,
+      "mb": 2505.860536,
+      "ms": 126.24029628932476,
+      "path": "hyper-reduced, not reproduced"
+    },
+    {
+      "label": "Kim et al. NM-LSPG-HR (exploratory)",
+      "arm": "kim_final_K32_hr",
+      "family": "kim_hr",
+      "k": 32,
+      "worst": 122.68150745189523,
+      "median": 41.98456057449186,
+      "mb": 2794.388808,
+      "ms": 474.9230279121548,
+      "path": "hyper-reduced, not reproduced"
+    }
+  ],
   "burgers_facts": {
     "m544_hold_4096": 2.928377196657574,
     "hb2k02": {
@@ -2252,7 +2430,19 @@
     "nBurgHoldAccSFortyNinetySix": "5.38",
     "nHeadFasterRows": "25",
     "nHeadRows": "31",
-    "nHeadAccFasterSubOne": "13"
+    "nHeadAccFasterSubOne": "13",
+    "nBaseOursFastWorst": "6.79",
+    "nBaseOursAccWorst": "0.88",
+    "nBaseKimRange": "120\\mbox{--}164",
+    "nBasePodRange": "25\\mbox{--}56",
+    "nBaseGateMedian": "1.45",
+    "nBaseGateAttempt": "3",
+    "nBaseGateBar": "1.5",
+    "nBaseGatePublished": "1",
+    "nBaseEncoderNeedGB": "136",
+    "nBaseDeviceGB": "77",
+    "nBaseDataMatched": "576",
+    "nBaseGateAct": "sigmoid"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

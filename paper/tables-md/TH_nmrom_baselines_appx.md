@@ -1,0 +1,14 @@
+| Method | Residual path | k | Worst (%) | Median (%) | GPU ms (this job) | MB |
+| --- | --- | --- | --- | --- | --- | --- |
+| Kim et al. NM-LSPG | dense | 8 | 163.93 | 43.34 | 1301 | 2480 |
+| Kim et al. NM-LSPG | dense | 16 | 145.40 | 43.87 | 2384 | 2567 |
+| Kim et al. NM-LSPG | dense | 32 | 127.51 | 43.61 | 3846 | 2742 |
+| Kim et al. NM-LSPG, data-matched | dense | 16 | 120.33 | 38.71 | 3886 | 2567 |
+| POD-LSPG | dense | 8 | 55.52 | 22.72 | 138 | 18 |
+| POD-LSPG | dense | 16 | 41.53 | 10.45 | 259 | 30 |
+| POD-LSPG | dense | 32 | 24.78 | 5.65 | 519 | 55 |
+| This work, fast (q=0, k=16) | dense (reference path) | 16 | 6.79 | 0.66 | 262 | 625 |
+| This work, accurate (q=256, k=16) | dense (reference path) | 272 | 0.88 | 0.089 | 3746 | 1769 |
+| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 8 | 115.60 | 51.78 | 65 | 2452 |
+| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 16 | 202.87 | 52.51 | 126 | 2506 |
+| Kim et al. NM-LSPG-HR (exploratory) | hyper-reduced, not reproduced | 32 | 122.68 | 41.98 | 475 | 2794 |

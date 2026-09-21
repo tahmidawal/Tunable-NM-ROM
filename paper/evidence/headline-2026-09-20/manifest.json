@@ -201,5 +201,49 @@
     "read": "coordinator-supplied audited summary",
     "lane": "bank-floor",
     "role": "bank-floor-summary"
+  },
+  "intake_12_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/fam256/output/summary.json",
+    "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+    "status": "shared Burgers family 256^2, job 4095408; 32 held-out validation cases",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "e520ed95c3d51b978f5d6e448ad3e70ca13e69c8b6180cd67e69d76c0978e179",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "fam256"
+  },
+  "intake_13_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/fam256/audit.json",
+    "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+    "status": "NumPy audit of fam256",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "368cde7b265faa65bb6e5a6332ea5020c20c26488ad2fad949037f1d1a7d2072",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "fam256-audit"
+  },
+  "intake_14_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/gate05/output/summary.json",
+    "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+    "status": "Kim et al. reproduction gate, attempt 3 (sigmoid), job 4077574",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "42989d848c68027a2244ba4b2688c69c431aee921484d8986282f5f50c099cbe",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "gate05"
+  },
+  "intake_15_nmrom-baselines": {
+    "tree": "worktrees/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/runs/gate05/audit.json",
+    "commit": "be5bdbef5104335584af3210b57f628294eda43a",
+    "status": "NumPy audit of gate05",
+    "adapter": "nmrom-baselines-v1",
+    "sha256": "75f62734e49cf7adb45502b3b3637321aa90bc0bc9a1c2c839e610d895d22a39",
+    "read": "coordinator-supplied audited summary",
+    "lane": "nmrom-baselines",
+    "role": "gate05-audit"
   }
 }

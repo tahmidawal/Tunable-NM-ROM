@@ -108,6 +108,42 @@
       "blob_path": "experiments/bank-floor/reports/summary.json",
       "adapter": "hires-burgers-v1",
       "status": "bank-floor lane summary; used only for the incumbent Burgers bank solve on its confirmation cohort"
+    },
+    {
+      "lane": "nmrom-baselines",
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "commit": "be5bdbef",
+      "adapter": "nmrom-baselines-v1",
+      "role": "fam256",
+      "blob_path": "experiments/nmrom-baselines/runs/fam256/output/summary.json",
+      "status": "shared Burgers family 256^2, job 4095408; 32 held-out validation cases"
+    },
+    {
+      "lane": "nmrom-baselines",
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "commit": "be5bdbef",
+      "adapter": "nmrom-baselines-v1",
+      "role": "fam256-audit",
+      "blob_path": "experiments/nmrom-baselines/runs/fam256/audit.json",
+      "status": "NumPy audit of fam256"
+    },
+    {
+      "lane": "nmrom-baselines",
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "commit": "be5bdbef",
+      "adapter": "nmrom-baselines-v1",
+      "role": "gate05",
+      "blob_path": "experiments/nmrom-baselines/runs/gate05/output/summary.json",
+      "status": "Kim et al. reproduction gate, attempt 3 (sigmoid), job 4077574"
+    },
+    {
+      "lane": "nmrom-baselines",
+      "tree": "worktrees/2026-09-20-nmrom-baselines",
+      "commit": "be5bdbef",
+      "adapter": "nmrom-baselines-v1",
+      "role": "gate05-audit",
+      "blob_path": "experiments/nmrom-baselines/runs/gate05/audit.json",
+      "status": "NumPy audit of gate05"
     }
   ]
 }

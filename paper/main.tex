@@ -61,7 +61,9 @@ faster; on an L-shaped domain the accurate setting is
 $\nHeadLshapeAccS\times$ faster; on held-out three-dimensional Poisson it
 reaches $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
 On Burgers the fast setting is $\nHeadBurgersFastS\times$ faster than
-Newton--BiCGStab at $1024^2$, and a correction ladder lowers same-grid
+Newton--BiCGStab at $1024^2$; at matched latent dimension it is more
+accurate on held-out Burgers cases than a reproduced shallow masked-autoencoder
+NM-ROM and than POD-LSPG; a correction ladder lowers same-grid
 error $\nQxmErrSpan\times$ for $\nQxmCostSpan\times$ the runtime; the
 accurate Burgers setting is slower than the full-order solver up to $1024^2$.
 Fast-setting speedup grows with resolution in every problem measured.
@@ -455,19 +457,16 @@ only). Heat (wide bank) is a separately trained frozen model with a
 error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
 batched). The batched fit solves each output time independently against
 exactly propagated test moments, exploiting the linear autonomous
-structure with eigenfunction tests that the sine-transform solve also
-uses. With $t=0$ the Heat 3D model's accurate error is
+structure the sine-transform solve also uses. With $t=0$ the Heat 3D model's accurate error is
 $\nHeatThreeAllTimes\,\%$ on its final cohort at $128^3$
 (Table~\ref{tab:heat-hires}). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances; the other Burgers rows use the fastest Newton setting at least
-as accurate (tight-Newton ratios for $2048^2$ and $4096^2$ are in
+tolerances (other rows' tight-Newton ratios:
 Table~\ref{tab:headline-times}). $^{h}$\,64 held-out cases never used for
-selection (not the sealed final cohort). At $2048^2$ the arm chosen on
-development cases ($M=544$) was not run on held-out cases, so that
-held-out row shows the $M=1088$ rung; at $4096^2$ the $M=544$ arm reaches
-$\nBurgMFiveFourFourHold\,\%$ on them. Poisson (dev.\ sources) rows use development sources of a
+selection (not the sealed final cohort); at $2048^2$ the development-chosen
+$M=544$ arm was not run on them, so the $M=1088$ rung is shown (at
+$4096^2$, $M=544$ reaches $\nBurgMFiveFourFourHold\,\%$ there). Poisson (dev.\ sources) rows use development sources of a
 separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
 host transfer of the field dominates the NM-ROM query: the accurate
 setting's complete-query speedups are
@@ -534,11 +533,30 @@ FOM's, so fast-setting speedup rises with resolution in every series.
 
 \begin{table}[t]
 \centering
-\caption{Comparison with other nonlinear-manifold ROMs on shared data
-(reserved; rows are filled from the audited comparison run).}
+\caption{Other nonlinear-manifold ROMs on the shared Burgers 2D family at
+matched latent dimension $k$: worst and median evolved same-grid error
+over 32 held-out cases and compiled-query memory, one allocation. The shallow masked-autoencoder NM-LSPG of \citet{KimChoi2022NMROM} passed
+its reproduction gate on the third of three pre-registered attempts (\nBaseGateAct{} activation; median
+$\nBaseGateMedian\,\%$ against a $\nBaseGateBar\,\%$ bar; published
+${<}\nBaseGatePublished\,\%$); its hyper-reduction was not reproduced,
+and its published encoder width ($2n$) needs $\nBaseEncoderNeedGB$\,GB
+to train at $256^2$, beyond the $\nBaseDeviceGB$\,GB device. Data-matched:
+trained on our bank's \nBaseDataMatched{} trajectories. The
+convolutional-autoencoder NM-ROM \citep{LeeCarlberg2020} was not run.
+No times: every row, including our unoptimised reference path, uses a
+dense residual; our optimised query is timed in other jobs
+(Tables~\ref{tab:headline},~\ref{tab:nmrom-baselines-appx}).}
 \label{tab:nmrom-baselines}
 \input{tables/TH_nmrom_baselines}
 \end{table}
+
+At matched latent dimension on 32 held-out Burgers cases
+(Table~\ref{tab:nmrom-baselines}), our worst error is
+$\nBaseOursFastWorst\,\%$ (fast) and $\nBaseOursAccWorst\,\%$
+(accurate), against $\nBaseKimRange\,\%$ for the reproduced shallow
+masked-autoencoder NM-ROM and $\nBasePodRange\,\%$ for POD-LSPG; ours
+are higher here than on the development cases of
+Table~\ref{tab:headline}, as for its held-out Burgers rows.
 
 \paragraph{Where the method currently fails.}
 \label{sec:results:failures}
@@ -568,12 +586,9 @@ Speedup is against the named FOM in the same allocation.}
 \input{tables/TH_failures}
 \end{table}
 
-\subsection{Best Configurations per Problem and Resolution}
-\label{sec:results:best}
-
-Table~\ref{tab:headline-times} lists, for every row of
-Table~\ref{tab:headline}, the correction rank and residual evaluation of
-both settings with their measured times. Moving between them changes
+\paragraph{Settings.}\label{sec:results:best}
+Table~\ref{tab:headline-times} lists both settings of every row of
+Table~\ref{tab:headline} with their times; moving between them changes
 only deployment arguments. Table~\ref{tab:ladder-main} shows the
 intermediate settings on Burgers with the residual test space held
 fixed: each added block of correction directions lowers the error and
@@ -598,7 +613,7 @@ for $\nQxmCostSpan\times$ the runtime (with a smaller test space the
 same ranks give $\nQxmTwoFiftySixErrSpan\times$, so test count is held
 fixed along the ladder). Empirical quadrature and the stopping tolerance
 are cost controls: they lower the runtime at little or no change in
-error (Table~\ref{tab:figure1-table}). The iteration cap
+error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
 
 \begin{table}[t]
@@ -620,18 +635,6 @@ Stopping tolerance & looser & $\nTuneTolErrConverged\to\nTuneTolErrLoose\,\%$ & 
 Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
 \bottomrule
 \end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\caption{Dense and empirical-quadrature (EQ) residual evaluation on
-Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
-median GPU milliseconds from one allocation; the last column is dense
-time over EQ time. Dashes: no paired dense measurement. Rules at
-$q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
-higher-rank rules pass some (Table~\ref{tab:eqladder}).}
-\label{tab:figure1-table}
-\input{tables/TR_figure1_table}
 \end{table}
 
 A separate ladder, in which the test count follows a fixed schedule

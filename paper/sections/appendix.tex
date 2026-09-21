@@ -108,6 +108,32 @@ not a mesh trend.}
 
 \begin{table}[htbp]
 \centering
+\caption{Supporting data for Table~\ref{tab:nmrom-baselines}: every row
+of that table with its residual path and median GPU query time from the
+same allocation, plus the exploratory hyper-reduced Kim et al.\ rows,
+whose hyper-reduction did not pass its reproduction gate. Our rows use
+the unoptimised dense reference path (no empirical quadrature, stopping
+tolerance $10^{-6}$, $M=4(k+q)$ tests); our optimised query is timed only
+in Table~\ref{tab:headline}, in other jobs, and no ratio across jobs is
+formed.}
+\label{tab:nmrom-baselines-appx}
+\resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines_appx}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Dense and empirical-quadrature (EQ) residual evaluation on
+Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
+median GPU milliseconds from one allocation; the last column is dense
+time over EQ time. Dashes: no paired dense measurement. Rules at
+$q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
+higher-rank rules pass some (Table~\ref{tab:eqladder}).}
+\label{tab:figure1-table}
+\input{tables/TR_figure1_table}
+\end{table}
+
+\begin{table}[htbp]
+\centering
 \caption{Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except
 Navier--Stokes, which is periodic. Burgers and Navier--Stokes appear in

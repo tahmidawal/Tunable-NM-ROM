@@ -1,6 +1,37 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — hires-burgers intake — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — Table 2 filled from nmrom-baselines — CURRENT HANDOFF
+
+**State.** `main.pdf` 22 pages; main text and references start within page 9 (`check_rewrite.py` PASS),
+`check_headline.py` PASS (now also: Table 2 has no time/ratio column, 512² slot reserved), 0 overfull,
+0 undefined, abstract 241 words.
+
+**What was read.** `exp/2026-09-20-nmrom-baselines` @ `be5bdbef`, committed blobs: `runs/fam256/output/summary.json`
+(job 4095408, A100, 256²), `runs/fam256/audit.json`, `runs/gate05/output/summary.json` (job 4077574, attempt 3,
+sigmoid), `runs/gate05/audit.json`. The generated report was read, not snapshotted (JSON-only evidence).
+Asserted: GPU/x64/highest, split gates, audit all-agree and per-row recomputed = reported for every Table 2
+arm, gate passed / HR gate failed, audit's recomputed gate median = reported, family job bound to that gate,
+kimae.py/lspg.py hashes equal to the gate's, every Kim row uses the gate activation (admissible).
+
+**Table 2 (`TH_nmrom_baselines`).** 256², 32 held-out validation cases: Kim NM-LSPG k=8/16/32, Kim k=16
+data-matched (576 trajectories), POD-LSPG (zero reference) k=8/16/32, ours q=0 and q=256 (k=16): worst and
+median evolved error and compiled-query memory. **No time column** (our rows are the unoptimised dense path).
+A reserved 512² row. Appendix Table C.5 (`TH_nmrom_baselines_appx`) adds the same-job GPU ms with the residual
+path labelled and the exploratory Kim HR rows; no cross-job ratio. The 128² job (swish Kim rows, inadmissible)
+was not ingested at all — 128² POD/ours could be added from `runs/fam128` if wanted.
+Caption facts from JSON: gate attempt 3 of 3 (asserted), median 1.45 % vs 1.5 % bar (parsed from the rule),
+published <1 %, HR not reproduced, published encoder (M1=2n, asserted) needs 136 GB vs 77 GB device,
+Lee–Carlberg not run. Results sentence (macros): ours 6.79 % / 0.88 % vs Kim 120–164 % and POD-LSPG 25–56 %.
+Abstract: one qualitative clause (no number, no speed); the generator asserts both our settings beat every
+Table 2 baseline on worst error, so the clause cannot silently become false.
+
+**Structural changes for the page budget / new table.** Dense-vs-EQ table (`TR_figure1_table`) moved from the
+main text to Appendix C; §6.2 "Best configurations" became a `\paragraph{Settings.}` (label kept);
+Table 1 caption trimmed. `check_rewrite.py`: the dense/EQ table may live in the appendix, and Table 2 may
+contain "POD" (coordinator instruction; note `paper/AGENTS.md` says POD comparison rows are no longer printed —
+**the user should confirm this exception**).
+
+## 2026-09-21 (paper lane) — hires-burgers intake
 
 **State.** `main.pdf` 21 pages (appendix +1), references open page 9, 0 overfull, 0 undefined;
 `check_headline.py` PASS (now also asserts dev6 + held-out Burgers rows at 2048²/4096² and no pending

@@ -38,6 +38,10 @@ for r in prov['rows']:
 hb = {(r['problem'], r['intervals']) for r in prov['rows'] if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
 assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (2048, 4096)}, hb
 assert 'pending:' not in tex
+# nmrom-baselines intake: Table 2 carries no speed or ratio column (our rows there are the unoptimised dense path); 512^2 slot reserved
+t2 = (P / 'tables/TH_nmrom_baselines.tex').read_text()
+assert r'\times' not in t2 and ' ms' not in t2 and '512^2' in t2 and 'reserved' in t2
+assert r'\input{tables/TH_nmrom_baselines_appx}' in (P / 'sections/appendix.tex').read_text()
 assert r'\input{tables/TH_heat_hires}' in (P / 'sections/appendix.tex').read_text()
 fails = prov['failures']; assert {f['source'] for f in fails} == {'burgers3d', 'ns3d', 'wave'}
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])

@@ -1,26 +1,26 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21. diag04 selected the setting. diag05 opens the sealed cohort once.
+Updated 2026-09-21 after the sealed evaluation. Nothing is running.
 
 ## State
 
-Development diagnosis is finished. Final seed 202609203 has not been read yet.
-The frozen setting, chosen as the fastest diag04 row with zero development
-cases over 5%, is centered POD rank 64, ROM-centroid re-centering every
-startup step, $\Delta t=0.01$. Table: `results/diag04.md`. Commit of that
-table is the parent of the sealed job.
+The sealed cohort (seed 202609203, 32 cases) was opened once by job **4142139**.
+The frozen setting was centered POD rank 64, ROM-centroid shift every startup
+step, $\Delta t=0.01$. Generated table: `results/diag05.md`. Local NumPy verify
+passed. Remote directory deleted. This is a classical centered POD plus an
+online shift, not the coordinate-network NM-ROM.
+
+Job 4142080 died at import before any trajectory, because `diag03.py` was not
+staged. It did not read the seed. 4142139 is the only opening.
 
 ## What is running
 
-Job **4142139** `ns3dgrok_diag05` is pending (Priority) in
-`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag05/`, commit `9c40c70c`.
-Job 4142080 died at import before drawing a trajectory, because `diag04.py`
-imports `diag03.py` and that file was not staged. The seed was not read.
-4142139 is the same frozen script with that file present. It is the only
-reader of seed 202609203.
+Nothing. Do not submit another sealed job and do not change rank or dt from
+the sealed errors.
 
 ## Next step
 
-Submit diag05. On exit: confirm `jax_backend=gpu`, NumPy-verify, checksum
-pull, delete the remote directory, then pick the FOM comparator from the saved
-FOM table by the pre-registered rule.
+If work continues, the remaining block is cost: every startup step still
+evaluates the nonlinearity on the $32^3$ grid, so the tracker is slower than
+CNAB2. A shift that stays in coefficient space would be the next hypothesis.
+Do not retune on seed 202609203.

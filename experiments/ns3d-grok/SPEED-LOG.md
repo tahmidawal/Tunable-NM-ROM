@@ -82,8 +82,8 @@ saved table, not before.
 
 Change. `diag05.py` with `--final`. Rank and dt are constants.
 
-Measured effect. Pending `diag05`.
-
-Kept or reverted. Not applied.
-
-Kept or reverted. Not applied.
+Measured effect. `results/diag05.md`, generated from the sealed summary.
+Held-out evolved worst is under 5% with 0/32 cases over the bar. The script
+picks CNAB2 at $\Delta t=0.01$ as the fastest eligible comparator. The paired
+speedup is below one: the tracker is slower. Kept as the accuracy result for
+this classical tracker. It is not a change to the coordinate-network NM-ROM.

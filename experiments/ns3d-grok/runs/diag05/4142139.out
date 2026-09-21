@@ -1,0 +1,41 @@
+host=pax052 source_commit=9c40c70c166fd29906164da86c9c0087eefa9319 job=4142139
+NVIDIA A100-PCIE-40GB, GPU-a4e1b967-2a4b-a258-1983-0d3c32a2f8cb, 40960 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.34:/projects/paralab  4.6T  4.2T  431G  91% /cluster/tufts/paralab
+jax_backend=gpu
+generating training POD data and evaluation truth
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=64 orth=6.353e-10 energy_tail=2.130e-08
+rom evolved worst 0.046060
+fom dt=0.004 worst=0.001179 median_ms=6.825
+fom dt=0.005 worst=0.001901 median_ms=5.653
+fom dt=0.01 worst=0.024709 median_ms=3.173
+fom dt=0.02 worst=2.715035 median_ms=1.945
+wrote output/summary.json final_opened=True
+{"passed": true, "failures": 0, "final": true}
+DIAG_EXIT=0

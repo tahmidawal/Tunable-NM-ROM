@@ -224,3 +224,13 @@ purpose. Its output is a status for the rule used in the paper's $2048^2$ rows (
 reported, not used to change any hires-burgers number.
 
 Jobs after these: 5 of 8.
+
+## Addendum A3 (2026-09-21 18:15 EDT, after bc2048 failed, before bc2048b is staged)
+
+`bc2048` (job 4143536, H200) died before any certificate or number: the Φ-free operator parity gate at the
+population mesh $2048^2$ transposes the dense $\Phi$ (34 GiB) and XLA ran out of memory during autotuning. Logs in
+`artifacts/bc2048-failed/`; remote dir deleted; it counts as job 6 of 8. Retry `bc2048b` (`config-2048b.json`) with one
+change: the **dense-query population** comes from the audited dense query at $L_p=512^2$ on the same trajectories,
+its coefficients decoded and scored at $2048^2$ — exactly hires-burgers' population convention (its DESIGN §4), which
+is what the paper's $2048^2$ certificate used. The **deployed population** (each arm's own states at $2048^2$) is
+unchanged, so an arm is still confirmed only if both populations pass on every draw. Nothing else changes. Jobs: 7 of 8.

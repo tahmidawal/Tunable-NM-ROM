@@ -1,0 +1,36 @@
+W0921 18:08:43.826946 2825702 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 33.98GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0921 18:08:43.827303 2825635 config_assigner.cc:383] Could not get config for HLO: %wrapped_transpose = f64[1088,4190209]{1,0} fusion(%args_0_.1), kind=kInput, calls=
+(param_0: f64[4190209,1088]) -> f64[1088,4190209] {
+  %param_0 = f64[4190209,1088]{1,0} parameter(0)
+  ROOT %transpose.1.1 = f64[1088,4190209]{1,0} transpose(%param_0), dimensions={1,0}, metadata={op_name="args[0]"}
+}, metadata={op_name="args[0]"}. Status: INTERNAL: Autotuning failed for HLO: %wrapped_transpose = f64[1088,4190209]{1,0} fusion(%args_0_.1), kind=kInput, calls=%wrapped_transpose_computation, metadata={op_name="args[0]"}. Failed to profile configs: Out of memory while trying to allocate 33.98GiB.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/bcert_20260921/bc2048/experiments/burgers-eqcert/eqcert.py", line 802, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/bcert_20260921/bc2048/experiments/burgers-eqcert/eqcert.py", line 251, in main
+    Aref = jnp.asarray(Phig).T @ Gp
+           ^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 500, in _transpose_property
+    return lax_numpy.transpose(self)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/lax_numpy.py", line 1164, in transpose
+    return lax.transpose(a, axes_)
+           ~~~~~~~~~~~~~^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/lax/lax.py", line 3165, in transpose
+    return transpose_p.bind(operand, permutation=permutation)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 705, in bind
+    return self.bind_with_trace(prev_trace, args, avals, params)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 713, in bind_with_trace
+    return trace.process_primitive(self, args, params)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py", line 1294, in process_primitive
+    return primitive.impl(*args, **params)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/dispatch.py", line 88, in apply_primitive
+    outs = fun(*args)
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %wrapped_transpose = f64[1088,4190209]{1,0} fusion(%args_0_.1), kind=kInput, calls=%wrapped_transpose_computation, metadata={op_name="args[0]"}. Failed to profile configs: Out of memory while trying to allocate 33.98GiB.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

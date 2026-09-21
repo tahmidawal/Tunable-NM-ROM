@@ -516,7 +516,7 @@ def main():
 
     # (c) held-out populations: the audited dense query at the target mesh on every trajectory of every draw,
     #     each per-step state tagged (draw, trajectory, k)
-    assert int(pc['mesh']) == L, 'this lane certifies at the target mesh'
+    assert int(pc['mesh']) == L or cfg.get('population_mesh_A3'), 'this lane certifies at the target mesh (A3 exception: bc2048 only)'
     steps_total = int(round(.25 / dt))
 
     def tagged(v, d, i):

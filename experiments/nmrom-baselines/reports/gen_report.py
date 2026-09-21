@@ -82,6 +82,25 @@ if HEAD:
         out.append(f"| {h['mesh']}² | {h['method']}{' [' + h['act'] + ']' if h['act'] else ''} | {h['solved'] or '—'} | {pc(h['worst'])} | {pc(h['median'])} | "
                    f"{num(h['ms'], '.1f')} | {num(h['vs_fom'], '.2f')} | {num(None if h['mem'] is None else h['mem'] / 1e6, '.0f')} | {'yes' if h['admissible'] else 'NO'} |")
     out.append('')
+    # ------------------------------------------------------------ where a baseline beats us (generated, not typed)
+    out += ['### Where a baseline beats the project NM-ROM', '',
+            'Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis:', '']
+    beats = []
+    for L in sorted({h['mesh'] for h in HEAD}):
+        ours = {h['arm']: h for h in HEAD if h['mesh'] == L and h['arm'] in ('ours_q0', 'ours_q256')}
+        for h in HEAD:
+            if h['mesh'] != L or h['arm'].startswith(('ours', 'fom')) or not h['admissible']:
+                continue
+            for o in ours.values():
+                if h['worst'] < o['worst']:
+                    beats.append(f"- {L}²: {h['method']} has lower worst evolved error ({pc(h['worst'])}) than `{o['arm']}` ({pc(o['worst'])}).")
+                if h['ms'] and o['ms'] and h['ms'] < o['ms']:
+                    beats.append(f"- {L}²: {h['method']} is faster ({h['ms']:.1f} ms vs {o['ms']:.1f} ms for `{o['arm']}`) at {pc(h['worst'])} vs {pc(o['worst'])} worst evolved error.")
+        fom = next((h for h in HEAD if h['mesh'] == L and h['arm'] == 'fom_fft_tight'), None)
+        for o in ours.values():
+            if fom and o['ms'] and fom['ms'] and fom['ms'] < o['ms']:
+                beats.append(f"- {L}²: the named FOM itself ({fom['ms']:.1f} ms) is faster than `{o['arm']}` ({o['ms']:.1f} ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.")
+    out += (beats or ['- none']) + ['']
     # ------------------------------------------------------------ fitting limits and tuning effort
     out += ['## 3. Where each Kim configuration stops fitting or training', '',
             '| mesh | arm | outcome |', '|---|---|---|']

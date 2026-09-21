@@ -48,6 +48,32 @@ Validation cohort (32 held-out cases) for every row. Times: median GPU query, su
 | 256² | FOM loose (1e-4) | — | 0.06 % | 0.01 % | 33.9 | 2.39 | 14 | yes |
 | 256² | FOM named / reference | — | 0.00 % | 0.00 % | 81.0 | 1.00 | 14 | yes |
 
+### Where a baseline beats the project NM-ROM
+
+Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis:
+
+- 128²: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 109.2 ms for `ours_q0`) at 54.95 % vs 3.41 % worst evolved error.
+- 128²: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 1353.7 ms for `ours_q256`) at 54.95 % vs 0.51 % worst evolved error.
+- 128²: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 109.2 ms for `ours_q0`) at 40.85 % vs 3.41 % worst evolved error.
+- 128²: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 1353.7 ms for `ours_q256`) at 40.85 % vs 0.51 % worst evolved error.
+- 128²: POD-LSPG K=32 (better reference) is faster (176.3 ms vs 1353.7 ms for `ours_q256`) at 23.35 % vs 0.51 % worst evolved error.
+- 128²: the named FOM itself (72.8 ms) is faster than `ours_q0` (109.2 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
+- 128²: the named FOM itself (72.8 ms) is faster than `ours_q256` (1353.7 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
+- 256²: Kim NM-LSPG K=8 is faster (1300.8 ms vs 3746.3 ms for `ours_q256`) at 163.93 % vs 0.88 % worst evolved error.
+- 256²: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 262.2 ms for `ours_q0`) at 115.60 % vs 6.79 % worst evolved error.
+- 256²: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 3746.3 ms for `ours_q256`) at 115.60 % vs 0.88 % worst evolved error.
+- 256²: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 262.2 ms for `ours_q0`) at 55.52 % vs 6.79 % worst evolved error.
+- 256²: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 3746.3 ms for `ours_q256`) at 55.52 % vs 0.88 % worst evolved error.
+- 256²: Kim NM-LSPG K=16 is faster (2384.4 ms vs 3746.3 ms for `ours_q256`) at 145.40 % vs 0.88 % worst evolved error.
+- 256²: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 262.2 ms for `ours_q0`) at 202.87 % vs 6.79 % worst evolved error.
+- 256²: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 3746.3 ms for `ours_q256`) at 202.87 % vs 0.88 % worst evolved error.
+- 256²: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 262.2 ms for `ours_q0`) at 41.53 % vs 6.79 % worst evolved error.
+- 256²: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 3746.3 ms for `ours_q256`) at 41.53 % vs 0.88 % worst evolved error.
+- 256²: Kim NM-LSPG-HR K=32 (exploratory) is faster (474.9 ms vs 3746.3 ms for `ours_q256`) at 122.68 % vs 0.88 % worst evolved error.
+- 256²: POD-LSPG K=32 (better reference) is faster (518.8 ms vs 3746.3 ms for `ours_q256`) at 24.78 % vs 0.88 % worst evolved error.
+- 256²: the named FOM itself (81.0 ms) is faster than `ours_q0` (262.2 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
+- 256²: the named FOM itself (81.0 ms) is faster than `ours_q256` (3746.3 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
+
 ## 3. Where each Kim configuration stops fitting or training
 
 | mesh | arm | outcome |

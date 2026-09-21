@@ -88,7 +88,7 @@ def write_report(S, tables):
         head.append(f"| {v['mesh']} | `{v['arm']}` | {pct(r['worst_same_grid'])} | {r['median_total_ms']:.2f} | "
                     f"{r['median_device_ms']:.2f} | {g('named_cg_1e-2')} | {g('named_cg_1e-2', 'device')} | "
                     f"{g('fastest_cg_matched')} | {g('fastest_coarse_matched')} | {g('dst_direct')} | "
-                    f"{'**met**' if v['bar_met'] else 'missed'} | `{v['attempt']}` / {src['job_id']} / "
+                    f"{'withdrawn: 12-source subset (A8)' if v.get('withdrawn_as_bar_verdict') else ('**met**' if v['bar_met'] else 'missed')} | `{v['attempt']}` / {src['job_id']} / "
                     f"{'audit passed' if src['audit_passed'] else 'AUDIT FAILED'} |")
     floors = '; '.join(f"{b['mesh']} {pct(b['worst'])} %" for b in S['bank_floor'])
     text = f"""# High-resolution Poisson: does the NM-ROM's speedup over CG keep growing at high accuracy?
@@ -237,6 +237,10 @@ def main():
                                        error_checks=a['error_checks'],
                                        peak_device_bytes=(a.get('device_memory') or {}).get('peak_bytes_in_use')))
         v = a['verdict']
+        # DESIGN A8: a verdict on fewer than the lshape lane's 32 development sources is a subset
+        # measurement, not the bar verdict
+        subset = a.get('cohort_sources', 12) < 32
+        v = dict(v, withdrawn_as_bar_verdict=subset)
         summary['verdicts'].append(dict(attempt=attempt, mesh=label, **v))
         floor = next(m['bank_floor']['worst'] for m in a['arm_setup'] if m['model'] == a['headline_model'])
         summary['bank_floor'].append(dict(attempt=attempt, mesh=label, worst=floor))
@@ -247,7 +251,7 @@ def main():
         md.append(f"Audit: **{'passed' if a['passed'] else 'FAILED'}** ({a['error_checks']} recomputed errors). "
                   f"Bank floor worst {pct(floor)} % (`{a['headline_model']}`). Bar (accurate arm `{v['arm']}` vs "
                   f"`cg_0.01`): worst same-grid {pct(v['worst_same_grid'])} %, speedup {v['speedup_total']:.2f}× → "
-                  f"**{'BAR MET' if v['bar_met'] else 'BAR MISSED'}**; fast arm `{v['fast_arm']['arm']}` "
+                  f"**{('12-SOURCE SUBSET — NOT A BAR VERDICT (DESIGN A8)' if subset else ('BAR MET' if v['bar_met'] else 'BAR MISSED'))}**; fast arm `{v['fast_arm']['arm']}` "
                   f"{pct(v['fast_arm']['worst_same_grid'])} % / {v['fast_arm']['speedup_total']:.2f}×. "
                   f"The `× vs DST` column is against the CPU sparse-direct solve on this domain.\n")
         md.append(table_md(rows, lambda r: r['family'] == 'nm-rom'))

@@ -23,5 +23,5 @@ for v in [v for v in S['verdicts'] if v['attempt'] == attempt]:
           f"{cg['median_total_ms']:.1f} ms, {cg['median_iterations']:g} iterations, {100 * cg['worst_physical']:.3f} % worst physical. "
           f"Speedups of the accurate arm: {f('named_cg_1e-2')}; fastest matched-accuracy CG: {f('fastest_cg_matched')}; "
           f"matched coarse grid: {f('fastest_coarse_matched')}; direct transform: {f('dst_direct')}. "
-          f"Bar: **{'MET' if v['bar_met'] else 'MISSED'}** (<=1 %: {v['accuracy_bar_1pct']}, >=5x: {v['speed_bar_5x']}, "
+          f"Bar: **{'WITHDRAWN (subset of the cohort, DESIGN A8); on the subset: ' if v.get('withdrawn_as_bar_verdict') else ''}{'MET' if v['bar_met'] else 'MISSED'}** (<=1 %: {v['accuracy_bar_1pct']}, >=5x: {v['speed_bar_5x']}, "
           f"0.5 % stretch: {v['stretch_bar_0p5pct']}).")

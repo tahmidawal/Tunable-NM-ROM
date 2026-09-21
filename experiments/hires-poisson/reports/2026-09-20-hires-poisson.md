@@ -40,8 +40,9 @@ repetitions, randomised order, burn-in, medians.
 | square 4096² | `rom_q256_lean64` | 0.965 | 61.35 | 16.92 | 41.08 | 146.14 | 32.67 | 0.74 | 0.80 | **met** | `hp4096` / 4051236 / audit passed |
 | cube 64³ | `rom_q96_leandst64` | 0.160 | 2.63 | 1.43 | 1.57 | 2.02 | 1.57 | — | 0.65 | missed | `hp3d128` / 4051032 / audit passed |
 | cube 128³ | `rom_q96_leandst64` | 0.160 | 6.33 | 1.86 | 2.70 | 6.75 | 2.70 | 0.83 | 0.81 | missed | `hp3d128` / 4051032 / audit passed |
+| L-shape 1024² (12 sources) | `rom_q128_lean@head_sdf_R512_K16` | 0.895 | 5.88 | 3.33 | 9.88 | 16.68 | 9.88 | 0.99 | 30.72 | withdrawn: 12-source subset (A8) | `hpl1024` / 4053801 / audit passed |
 
-Bank projection floors (the error no query on this checkpoint can beat): square 2048² 0.742 %; square 4096² 0.742 %; cube 64³ 0.143 %; cube 128³ 0.143 %.
+Bank projection floors (the error no query on this checkpoint can beat): square 2048² 0.742 %; square 4096² 0.742 %; cube 64³ 0.143 %; cube 128³ 0.143 %; L-shape 1024² (12 sources) 0.423 %.
 
 **Reading.** Against the named same-mesh CG the speedup grows with the mesh at unchanged error, because CG's iteration
 count grows with $n$ while the ROM's device time is one bank-times-coefficients product. **The ROM does not beat the
@@ -218,6 +219,53 @@ Comparators and controls in the same job:
 | `coarse64_cg_0.01` | 0.140 | 0.137 | 7.62 | 3.00 | 78.5 | — | — | — | — |
 | `coarse64_dst` | 0.081 | 0.076 | 5.28 | 0.63 |  | — | — | — | — |
 | `dst_direct` | 0.000 | 0.013 | 5.12 | 0.42 |  | — | — | — | — |
+
+## L-shape 1024² (12 sources) — `hpl1024`, job `4053801`, NVIDIA H200, source `849afb2d89ae`
+
+Audit: **passed** (4080 recomputed errors). Bank floor worst 0.423 % (`head_sdf_R512_K16`). Bar (accurate arm `rom_q128_lean@head_sdf_R512_K16` vs `cg_0.01`): worst same-grid 0.895 %, speedup 9.88× → **12-SOURCE SUBSET — NOT A BAR VERDICT (DESIGN A8)**; fast arm `rom_q0_lean@head_sdf_R512_K16` 1.331 % / 9.96×. The `× vs DST` column is against the CPU sparse-direct solve on this domain.
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `rom_q0_lean@head_sdf_R512_K16` | 1.331 | 1.331 | 5.84 | 3.28 | 4 | 9.96 / 16.9 | 8.81 (`cg_0.03`) | 1.00 (`coarse64_cg_0.0001`) | 30.95 |
+| `rom_q0_lean@head_sdf_R512_K32` | 1.016 | 1.016 | 5.96 | 3.40 | 5 | 9.76 / 16.3 | 9.76 (`cg_0.01`) | 0.97 (`coarse64_cg_0.0001`) | 30.33 |
+| `rom_q0_retained@head_sdf_R512_K16` | 1.331 | 1.331 | 5.94 | 3.34 | 4 | 9.79 / 16.6 | 8.66 (`cg_0.03`) | 0.98 (`coarse64_cg_0.0001`) | 30.43 |
+| `rom_q0_retained@head_sdf_R512_K32` | 1.016 | 1.016 | 6.04 | 3.45 | 5 | 9.63 / 16.1 | 9.63 (`cg_0.01`) | 0.96 (`coarse64_cg_0.0001`) | 29.94 |
+| `rom_q128_lean@head_sdf_R512_K16` | 0.895 | 0.895 | 5.88 | 3.33 | 4 | 9.88 / 16.7 | 9.88 (`cg_0.01`) | 0.99 (`coarse64_cg_0.0001`) | 30.72 |
+| `rom_q128_lean@head_sdf_R512_K32` | 1.043 | 1.043 | 5.96 | 3.44 | 5 | 9.75 / 16.2 | 9.75 (`cg_0.01`) | 0.97 (`coarse64_cg_0.0001`) | 30.32 |
+| `rom_q128_retained@head_sdf_R512_K16` | 0.895 | 0.895 | 6.00 | 3.41 | 4 | 9.70 / 16.3 | 9.70 (`cg_0.01`) | 0.97 (`coarse64_cg_0.0001`) | 30.14 |
+| `rom_q128_retained@head_sdf_R512_K32` | 1.043 | 1.043 | 6.10 | 3.53 | 5 | 9.53 / 15.7 | 9.53 (`cg_0.01`) | 0.95 (`coarse64_cg_0.0001`) | 29.61 |
+| `rom_q32_lean@head_sdf_R512_K16` | 1.092 | 1.092 | 5.91 | 3.33 | 4 | 9.85 / 16.7 | 8.71 (`cg_0.03`) | 0.98 (`coarse64_cg_0.0001`) | 30.60 |
+| `rom_q32_lean@head_sdf_R512_K32` | 0.969 | 0.969 | 6.06 | 3.49 | 5 | 9.60 / 15.9 | 9.60 (`cg_0.01`) | 0.96 (`coarse64_cg_0.0001`) | 29.84 |
+| `rom_q32_retained@head_sdf_R512_K16` | 1.092 | 1.092 | 5.94 | 3.37 | 4 | 9.79 / 16.5 | 8.65 (`cg_0.03`) | 0.98 (`coarse64_cg_0.0001`) | 30.42 |
+| `rom_q32_retained@head_sdf_R512_K32` | 0.969 | 0.969 | 6.02 | 3.49 | 5 | 9.66 / 15.9 | 9.66 (`cg_0.01`) | 0.96 (`coarse64_cg_0.0001`) | 30.01 |
+| `rom_q64_lean@head_sdf_R512_K16` | 1.021 | 1.021 | 5.89 | 3.29 | 4 | 9.87 / 16.9 | 9.87 (`cg_0.01`) | 0.99 (`coarse64_cg_0.0001`) | 30.67 |
+| `rom_q64_lean@head_sdf_R512_K32` | 0.997 | 0.997 | 5.96 | 3.44 | 5 | 9.76 / 16.1 | 9.76 (`cg_0.01`) | 0.98 (`coarse64_cg_0.0001`) | 30.34 |
+| `rom_q64_retained@head_sdf_R512_K16` | 1.021 | 1.021 | 5.92 | 3.40 | 4 | 9.82 / 16.3 | 9.82 (`cg_0.01`) | 0.98 (`coarse64_cg_0.0001`) | 30.51 |
+| `rom_q64_retained@head_sdf_R512_K32` | 0.997 | 0.997 | 6.08 | 3.54 | 5 | 9.57 / 15.7 | 9.57 (`cg_0.01`) | 0.96 (`coarse64_cg_0.0001`) | 29.74 |
+
+
+Comparators and controls in the same job:
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `cg_0.0001` | 0.001 | 0.009 | 82.92 | 80.12 | 2099 | — | — | — | — |
+| `cg_0.01` | 0.314 | 0.314 | 58.16 | 55.53 | 1443.5 | — | — | — | — |
+| `cg_0.03` | 1.046 | 1.047 | 51.43 | 48.49 | 1262.5 | — | — | — | — |
+| `cg_0.1` | 6.928 | 6.929 | 42.74 | 39.63 | 1027 | — | — | — | — |
+| `coarse128_cg_0.0001` | 0.249 | 0.258 | 8.43 | 5.82 | 245 | — | — | — | — |
+| `coarse128_cg_0.01` | 0.999 | 1.000 | 6.49 | 3.94 | 159.5 | — | — | — | — |
+| `coarse128_splu_cpu` | 0.249 | 0.258 | 12.35 | 11.84 |  | — | — | — | — |
+| `coarse256_cg_0.0001` | 0.086 | 0.095 | 14.04 | 11.44 | 501 | — | — | — | — |
+| `coarse256_cg_0.01` | 0.644 | 0.645 | 10.58 | 8.00 | 337 | — | — | — | — |
+| `coarse256_splu_cpu` | 0.086 | 0.095 | 20.66 | 20.00 |  | — | — | — | — |
+| `coarse512_cg_0.0001` | 0.024 | 0.033 | 33.26 | 30.63 | 1028 | — | — | — | — |
+| `coarse512_cg_0.01` | 0.386 | 0.386 | 23.84 | 21.11 | 699.5 | — | — | — | — |
+| `coarse512_splu_cpu` | 0.024 | 0.033 | 55.08 | 53.90 |  | — | — | — | — |
+| `coarse64_cg_0.0001` | 0.784 | 0.784 | 5.81 | 3.22 | 119.5 | — | — | — | — |
+| `coarse64_cg_0.01` | 1.581 | 1.582 | 4.88 | 2.27 | 73 | — | — | — | — |
+| `coarse64_splu_cpu` | 0.784 | 0.784 | 10.01 | 9.54 |  | — | — | — | — |
+| `fom_splu_cpu` | 0.000 | 0.009 | 180.75 | 176.42 |  | — | — | — | — |
+| `pcg_ic0_cpu_0.01` | 0.316 | 0.316 | 11846.18 | 11841.68 | 425.5 | — | — | — | — |
 
 
 ## Glossary

@@ -178,7 +178,7 @@ def make_dense_eval(params, C, K, q, L, dt, tangent_chunks):
 
 def make_query(params, C, K, q, L, dt, trust, quadrature, ic_budget=400, step_budget=600, gtol=1e-6,
                ic_gtol=1e-6, ridge=1e-10, solver='lu', tangent_chunks=1, decode='fused', parts=False,
-               clip=False, lam_carry=False):
+               clip=False, lam_carry=False, predictor='lin'):
     """Supplied dense field on GPU -> six dense GPU fields; `topfix.make_query`'s tuple layout,
     with slot 8/12/14 all carrying the LM's joint exit gradient and slot 15 the rejected-step
     count per time step (the damping retries)."""
@@ -219,17 +219,27 @@ def make_query(params, C, K, q, L, dt, trust, quadrature, ic_budget=400, step_bu
         return data['A'] @ hz(w[:K]) + tab['AC'] @ w[K:] if quadrature == 'eq' else data['A'] @ head(w, tab)
 
     def evolve(w0, nu, scale, data, tab):
-        def step(carry, _):
-            wv, wprev, lam0 = carry
+        def step(carry, k):
+            wv, wprev, wprev2, lam0 = carry
             p = ahead(wv, data, tab)
             we = wv + (wv - wprev)
-            r0 = jnp.linalg.norm(res(wv, p, nu, data, tab))
-            re = jnp.linalg.norm(res(we, p, nu, data, tab))
-            wi = jnp.where(jnp.isfinite(re) & (re < r0), we, wv)
+            if predictor == 'quad':
+                # `pred2` arm: the guard picks the smallest residual among the current state, the
+                # linear and (from the third step on) the quadratic extrapolation, evaluated as ONE
+                # batched residual call; the default arm evaluates two separate residuals.
+                wq = jnp.where(k >= 2, 3. * wv - 3. * wprev + wprev2, we)
+                cand = jnp.stack((wv, we, wq))
+                rs = jax.vmap(lambda ww: jnp.linalg.norm(res(ww, p, nu, data, tab)))(cand)
+                rs = jnp.where(jnp.isfinite(rs), rs, jnp.inf)
+                wi = cand[jnp.argmin(rs)]
+            else:
+                r0 = jnp.linalg.norm(res(wv, p, nu, data, tab))
+                re = jnp.linalg.norm(res(we, p, nu, data, tab))
+                wi = jnp.where(jnp.isfinite(re) & (re < r0), we, wv)
             w2, rn, it, reason, gn, rej, lam = lm(wi, (p, nu, data, tab), 1e-9 * scale, lam0)
             # `lam_carry` arm: the next step starts from this step's final damping, not from 1e-6
-            return (w2, wv, lam if lam_carry else lam0), (w2, rn, it, reason, gn, rej)
-        _, out = jax.lax.scan(step, (w0, w0, jnp.asarray(1e-6, dtype=jnp.float64)), None, length=steps)
+            return (w2, wv, wprev, lam if lam_carry else lam0), (w2, rn, it, reason, gn, rej)
+        _, out = jax.lax.scan(step, (w0, w0, w0, jnp.asarray(1e-6, dtype=jnp.float64)), jnp.arange(steps))
         return out
 
     def decode_fields(W, data, tab):

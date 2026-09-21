@@ -344,12 +344,16 @@ def main():
             tab = HF.build_tables(params, C, K, data, cold)
             for var in rung.get('variants', [dict(solver=s_) for s_ in rung.get('solvers', ['lu'])]):
                 solver = var.get('solver', 'lu')
-                sfx = ''.join(f'_{k_}' for k_ in ([solver] if solver != 'lu' else []) + [k_ for k_ in ('clip', 'lamcarry') if var.get(k_)])
+                sfx = ''.join(f'_{k_}' for k_ in ([solver] if solver != 'lu' else []) + [k_ for k_ in ('clip', 'lamcarry', 'pred2') if var.get(k_)])
+                if var.get('ic_gtol') is not None:
+                    sfx += f"_icg{gt(var['ic_gtol'])[1:]}"
                 fq, parts = HF.make_query(params, C, K, q, L, dt, trust, 'eq', ic_budget=st['ic_budget'],
-                                          step_budget=st['step_budget'], gtol=g, ic_gtol=cfg['ic_gtol'],
+                                          step_budget=st['step_budget'], gtol=g,
+                                          ic_gtol=var.get('ic_gtol', cfg['ic_gtol']),
                                           ridge=cfg['inner_damping'], solver=solver, parts=True,
-                                          clip=bool(var.get('clip')), lam_carry=bool(var.get('lamcarry')))
-                algorithmic = bool(var.get('clip') or var.get('lamcarry'))
+                                          clip=bool(var.get('clip')), lam_carry=bool(var.get('lamcarry')),
+                                          predictor='quad' if var.get('pred2') else 'lin')
+                algorithmic = bool(var.get('clip') or var.get('lamcarry') or var.get('pred2') or var.get('ic_gtol') is not None)
                 names.append(add(f'{tag}_{gt(g)}_fast{sfx}', family='rom', kind='rom',
                                  q=q, M=M, m=info['m'], rule=rs['name'], gtol=g,
                                  kernel='hfast' + (' (algorithmic variant: not a parity arm)' if algorithmic else ''),

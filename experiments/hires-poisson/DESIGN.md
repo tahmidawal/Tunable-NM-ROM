@@ -274,3 +274,10 @@ driver runs, two output directories, one allocation each mesh timed within itsel
 SuperLU to 12 at $2048^2$) and a restricted subject is never eligible as a matched comparator. The
 square and cube cohorts are unaffected: they already use every opened development source of their
 parent lanes (12 of 12; 12 of the 16 validation-seed draws in 3D — stated in A2).
+
+**A9 (2026-09-20, before `hp4096b`) — comparator tolerances for the re-measure job.** `hp4096`
+showed even CG $10^{-1}$ (0.451 % worst physical) is more accurate than the accurate ROM arm, so
+`hp4096b` tests CG at $3\times10^{-1}$, $2\times10^{-1}$, $10^{-1}$ and $10^{-2}$ (named) to bracket the
+true matched-accuracy CG for both the accurate and the fast arm; coarse grids
+$n_c\in\{64,128,256\}$; ladder `q0`, `q256`, plus `q256m8`, `q384m4`, the linear top rung, and the
+f32-I/O twins of A6. Everything else as `hp4096`.

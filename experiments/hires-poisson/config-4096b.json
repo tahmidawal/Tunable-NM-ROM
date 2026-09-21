@@ -29,18 +29,16 @@
   "keep_f32": true,
   "retained_baseline": false,
   "cg_tolerances": [
+    0.3,
+    0.2,
     0.1,
-    0.03,
-    0.01,
-    0.0001
+    0.01
   ],
   "cg_maxiter": 100000,
   "coarse_intervals": [
     64,
     128,
-    256,
-    512,
-    1024
+    256
   ],
   "coarse_cg_tolerances": [
     0.01,

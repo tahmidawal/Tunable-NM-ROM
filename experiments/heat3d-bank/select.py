@@ -7,7 +7,7 @@ import make_configs as MC
 GATE, BAR = 0.006, 0.008
 HERE = Path(__file__).resolve().parent
 cands, log = [], []
-for d in map(Path, sys.argv[1:]):
+for d in (Path(a).resolve() for a in sys.argv[1:]):
     s = json.loads((d / 'summary.json').read_text()); m = re.match(r'val_vp_R(\d+)_K(\d+)', d.name); R, K = int(m[1]), int(m[2])
     tr = json.loads(next(d.parent.glob(f'trained_vp_R{R}-training.json')).read_text())
     floor = {f['intervals']: f['worst'] for f in tr['bank']['validation_floor_other_grids']}

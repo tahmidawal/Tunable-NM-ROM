@@ -1,0 +1,87 @@
+host=pax051 source_commit=010cf0666aad50f8ddbcfb89b129d5c8ceff645a job=4139559
+NVIDIA A100-PCIE-40GB, GPU-a840f593-3e39-4ee0-681d-f3898b49b09b, 40960 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.30:/projects/paralab  4.6T  4.2T  435G  91% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=434.3 devices=[CudaDevice(id=0)]
+generating training and development trajectories
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+shift_self_check {'integer_shift_relative': 2.9849331349049453e-16, 'centroid_shift_absolute': 5.551115123125783e-17, 'centered_translate_relative': 4.976293810036587e-16, 'centered_residual': 1.1102230246251565e-16, 'passed': True}
+oracle-shift POD on centered training snapshots
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=237 orth=5.937e-05 energy_tail=1.016e-12
+oracle shift rank 64 evolved worst 0.001276
+oracle shift rank 128 evolved worst 0.000201
+oracle shift rank 237 evolved worst 0.000026
+plain POD on integer-translated training trajectories
+augmented 1/2048
+augmented 256/2048
+augmented 512/2048
+augmented 768/2048
+augmented 1024/2048
+augmented 1280/2048
+augmented 1536/2048
+augmented 1792/2048
+augmented 2048/2048
+gram rows 512/12288
+gram rows 1024/12288
+gram rows 1536/12288
+gram rows 2048/12288
+gram rows 2560/12288
+gram rows 3072/12288
+gram rows 3584/12288
+gram rows 4096/12288
+gram rows 4608/12288
+gram rows 5120/12288
+gram rows 5632/12288
+gram rows 6144/12288
+gram rows 6656/12288
+gram rows 7168/12288
+gram rows 7680/12288
+gram rows 8192/12288
+gram rows 8704/12288
+gram rows 9216/12288
+gram rows 9728/12288
+gram rows 10240/12288
+gram rows 10752/12288
+gram rows 11264/12288
+gram rows 11776/12288
+gram rows 12288/12288
+eigh dimension 12288
+pod rank=3072 orth=9.566e-12 energy_tail=1.719e-06
+rank 64 floor_evolved_worst=0.538600 galerkin_evolved_worst=0.544478 one_interval_worst=0.539578
+rank 128 floor_evolved_worst=0.368834 galerkin_evolved_worst=0.397152 one_interval_worst=0.370510
+rank 256 floor_evolved_worst=0.274330 galerkin_evolved_worst=0.296391 one_interval_worst=0.276712
+rank 512 floor_evolved_worst=0.178084 galerkin_evolved_worst=0.197923 one_interval_worst=0.180611
+rank 1024 floor_evolved_worst=0.102688 galerkin_evolved_worst=0.115548 one_interval_worst=0.104367
+rank 1536 floor_evolved_worst=0.074255 galerkin_evolved_worst=0.084984 one_interval_worst=0.075909
+rank 2048 floor_evolved_worst=0.055103 galerkin_evolved_worst=0.066428 one_interval_worst=0.057327
+rank 3072 floor_evolved_worst=0.038407 galerkin_evolved_worst=0.045968 one_interval_worst=0.040074
+timing FOM, Galerkin pieces, and one weak query
+wrote output/summary.json elapsed=643.2s
+{"passed": true, "failures": 0}
+DIAG_EXIT=0

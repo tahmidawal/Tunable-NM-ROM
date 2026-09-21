@@ -21,4 +21,20 @@ Measured effect. Pending `diag01`. A local smoke (four $N=8$ trajectories,
 5.6 s) only checked that the timer runs: one weak query was slower than one
 Galerkin rollout on that toy mesh. Those milliseconds are not a result.
 
+Kept or reverted. Not applied. The measurement is `results/diag01.md`.
+
+## 2026-09-21 — center the bank on the initial field
+
+Hypothesis. diag01 shows that a fixed linear subspace needs rank 3072 before
+CNAB2 stays under 5%, while a per-time oracle shift reaches that bar at rank
+64. The oracle center is not available online. The centroid of $u_0$ is
+known, and the true center moves only a few hundredths of the period, so
+freezing it may keep the rollout under 5% in a rank-64 centered POD.
+
+Change. `diag02.py`. No change to the production NM-ROM.
+
+Measured effect. Pending `diag02`.
+
+Kept or reverted. Not applied.
+
 Kept or reverted. Not applied.

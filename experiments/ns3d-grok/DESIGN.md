@@ -108,3 +108,23 @@ A later fix is justified only if this job shows a concrete gap:
   measure a representation floor.
 - **Development cohort:** the 16 trajectories from seed 202609202. The final
   cohort is a different seed and is not used here.
+
+## Amendment — diag02, after diag01
+
+diag01 (job 4139559) is recorded in `results/diag01.md`, generated from that
+job's `summary.json`. The plain POD reaches an evolved floor under 5% only at
+rank 3072, and CNAB2 in that subspace stays under 5% on every development
+case. The centered family, with each training snapshot shifted by its own
+energy centroid, has only 237 modes above the spectral cutoff, and the
+per-time oracle floor at rank 64 is far below 5%. That center uses the truth
+at the future time, so it is not a model.
+
+diag02 asks whether the centroid of the initial field alone is enough. The
+basis is still the centered training POD. The solved arm shifts $u_0$ by that
+centroid, integrates with the same CNAB2 Galerkin stepper, and shifts the
+result back. It also records the illegal per-time floor as a ceiling. Ranks
+32, 64, 128, clipped to the available spectrum. Time steps 0.001, 0.004 and
+0.01, timed in the same job as the errors, including the shifts. Development
+seed only. A rank-64 per-time floor above 1% aborts the job, because diag01
+already measured that floor well below 1% and a larger value means the shift
+was not reproduced.

@@ -36,6 +36,12 @@ SOURCES = {
     'burgers3d': ('.', 'paper/evidence/main-experiments-2026-09-20/burgers.json', None, 'accepted final'),
     'lshape': (WT + '2026-09-17-lshape', 'experiments/lshape/reports/summary.json', 'd80fed7a', 'development'),
     'burgers_panel': (WT + '2026-09-17-b-panel', 'experiments/b-panel/reports/summary.json', '25434a27', 'development'),
+    'eqcert_summary': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/reports/summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'eqcert_bc256': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc256-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'eqcert_bc256b': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc256b-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'eqcert_bc512': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc512-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'eqcert_bc1024': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc1024-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'eqcert_bc2048b': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc2048b-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
     'wave': (WT + '2026-09-17-w-ladder', 'experiments/w-ladder/reports/summary.json', '9b84d0556888ebc052b52bd165a61dcd56b2b53d', 'development'),
     'poisson3d': (WT + '2026-09-20-paper-p3d', 'experiments/paper-p3d/runs/final08/paper-comparisons.json', '26c73030b89adfa321ede751db2798abf9bcd1b2', 'accepted final'),
     'heat3d': (WT + '2026-09-20-paper-h3d', 'experiments/paper-h3d/runs/final08/paper-tables.json', 'f15c7232ab21df20cd0fa279134c06114b5ca721', 'accepted final'),
@@ -53,11 +59,11 @@ PENDING = [
     dict(problem='Burgers', dim=3, meshes=[128], lane='hires-burgers'),
 ]
 INCOMING = [  # slots for the paused lanes (branch in the lane dict); no value is printed until an audited summary.json is ingested
-    dict(problem='Burgers, certified quadrature rule', dim=2, meshes=[256, 512, 1024], lane='burgers-eqcert', branch='exp/2026-09-21-burgers-eqcert'),
+    # burgers-eqcert slot filled 2026-09-21 from the lane's audited summaries (rows 'Burgers, confirmed rule'; 256^2 has no certified rule)
     dict(problem='Burgers (wider learned bank), held-out 64', dim=2, meshes=[2048, 4096], lane='burgers-heldout', branch='exp/2026-09-21-burgers-heldout'),
     dict(problem='Heat 3D (wider bank)', dim=3, meshes=[64, 128], lane='heat3d-bank', branch='exp/2026-09-21-heat3d-bank'),
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers (earlier model)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, confirmed rule', 'Burgers (earlier model)']
 
 
 def digest(b: bytes) -> str:
@@ -185,6 +191,51 @@ for n in (256, 512, 1024):
         dict(name='Newton--BiCGStab, tol $10^{-%s}$' % cs[5], error_pct=ok[cs]['worst_evolved_percent'], ms=ok[cs]['median_gpu_ms'], arm=cs,
              candidates={k: dict(err=v['worst_evolved_percent'], ms=v['median_gpu_ms']) for k, v in foms.items()}),
         'burgers_panel', next(iter(pjob[(n, cs)])), 'development', 'development', 'same-grid, evolved', 'GPU query')
+
+# ---- Burgers 2D, burgers-eqcert lane (audited, closed 2026-09-21): quadrature rules re-drawn on independent held-out populations
+# Pre-registered selection per mesh (DESIGN 5 + A1.3): cheapest q=256 arm confirmed on draws 1-5 that also passes a sixth
+# (confirmation) draw.  512^2 and 1024^2 have such a rule; 256^2 does not (its pick failed confirmation).  Same model and dev6 cohort
+# as the b-panel rows; one FOM per row by the paper rule, from the same allocation.
+EQC = {}
+_eqs = D['eqcert_summary']
+for _k in ('bc256', 'bc256b', 'bc512', 'bc1024', 'bc2048b'):
+    assert _eqs['sources'][_k]['accepted'] and not _eqs['sources'][_k]['failed_gates'] and MAN['eqcert_' + _k]['sha256'] == _eqs['sources'][_k]['sha256'], _k
+    assert D['eqcert_' + _k]['failed_gates'] == [], _k
+_bars = {r_['rho_bar'] for _k in ('bc256', 'bc256b', 'bc512', 'bc1024', 'bc2048b') for r_ in D['eqcert_' + _k]['rules']}
+assert len(_bars) == 1; EQC['bar'] = _bars.pop()
+for n, k in ((512, 'eqcert_bc512'), (1024, 'eqcert_bc1024')):
+    d = D[k]; v = d['verdict']; assert d['intervals'] == n and v['certified_rule_exists'] and v['selected_passes_confirmation'] and v['accepted']
+    a_, f_ = d['table'][v['accurate']['arm']], d['table'][v['fast']['arm']]
+    assert a_['stalled_exits'] == f_['stalled_exits'] == 0 and a_['status'] == 'confirmed' and a_['confirmation_pass'] and a_['cases'] == f_['cases'] == d['cohort_cases']
+    cands = {nm: dict(err=t_['worst_evolved_percent'], ms=t_['median_gpu_ms']) for nm, t_ in d['table'].items()
+             if t_['family'] == 'fom' and t_['nonlinear_converged'] and t_['stalled_steps'] == 0 and t_['cases'] == d['cohort_cases']}
+    pick = rule_pick(cands, a_['worst_evolved_percent']); assert pick == v['accurate']['fom'] == a_['fom_by_paper_rule'], (n, pick)
+    assert abs(d['table'][pick]['median_gpu_ms'] / a_['median_gpu_ms'] - a_['speedup_gpu']) < 1e-12
+    nt, lt = pick.split('_nt')[1].split('_')[0], pick.split('_l')[2].split('_')[0] if pick.count('_l') > 1 else None
+    lab_ = lambda t_: f"$q={t_['q']}$, $M={t_['M']}$, EQ " + ('lattice ' if t_['rule'] == 'lat64' else '') + f"$m={t_['m']}$" + ({1: ', first step exact'}[t_['exact_steps']] if t_['exact_steps'] else '')
+    row('Burgers, confirmed rule', 2, n, setting(lab_(f_), f_['worst_evolved_percent'], f_['median_gpu_ms'], arm=f_['name']),
+        setting(lab_(a_), a_['worst_evolved_percent'], a_['median_gpu_ms'], arm=a_['name'], eq='confirmed', exact_steps=a_['exact_steps'],
+                confirmation_rho=a_['confirmation_rho_max'], heldout_rho=a_['heldout_rho_max']),
+        dict(name='Newton--BiCGStab, tol $' + tol_tex(nt) + '$', error_pct=cands[pick]['err'], ms=cands[pick]['ms'], arm=pick, candidates=cands),
+        k, d['job_id'], 'development', 'development; re-drawn quadrature rule', 'same-grid, evolved', 'GPU query')
+    EQC[n] = dict(arm=a_['name'], exact_steps=a_['exact_steps'], conf_rho=a_['confirmation_rho_max'])
+# the paper's 256^2 / 512^2 stored q=256 rule ('scaled' in the lane: b-eqtop's m=2560 rule) on independent re-draws
+_s256 = D['eqcert_bc256']['arm_status']['q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2']
+_s512 = D['eqcert_bc512']['arm_status']['q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2']
+assert D['eqcert_bc256']['verdict']['selected_on_certification_draws'] == 'q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2'
+assert not D['eqcert_bc256']['verdict']['certified_rule_exists'] and not _s256['confirmation_pass'] and not _s256['audited_confirmation_pass']
+assert not _s512['confirmation_pass'] and _s512['draws_passed'] < _s512['draws']
+EQC['s512'] = (_s512['draws_passed'], _s512['draws'])
+# 256^2 post-hoc follow-up (A2.1, exact first step): passes every draw (5 + confirmation) in both bc256 and bc256b
+_pk = _eqs['combined_256']['pick']; _st = [D[k]['arm_status'][_pk] for k in ('eqcert_bc256', 'eqcert_bc256b')]
+assert all(x['draws_passed'] == x['draws'] and x['confirmation_pass'] for x in _st)
+_row256 = D['eqcert_bc256b']['table'][_pk]; assert _row256['exact_steps'] == 1
+EQC['follow'] = dict(draws=sum(x['draws'] + 1 for x in _st), err=_row256['worst_evolved_percent'], sp=_row256['speedup_gpu'])
+# the 2048^2 certificate for the lattice rule with no exact step (the rule of the 2048^2/4096^2 rows)
+_c = D['eqcert_bc2048b']['table']['q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2']
+assert _c['confirmation_pass'] and _c['exact_steps'] == 0 and D['eqcert_bc2048b']['arm_status']['q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2']['audited_confirmation_pass']
+assert abs(_c['confirmation_rho_max'] - D['eqcert_bc2048b']['arm_status']['q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2']['confirmation_heldout_rho_max_k>=0']) < 1e-15 and _eqs['certificate_2048']['q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2']['status'] == 'confirmed'
+EQC['lat2048'] = _c['confirmation_rho_max']
 
 # ---- Burgers 2D, earlier model, tight and relaxed Newton (one NM-ROM setting) ---------------------
 from statistics import median
@@ -835,6 +886,13 @@ if HB:
     mac['nBurgDevAccErrFortyNinetySix'] = e(H[('Burgers', 4096)]['accurate']['error_pct'])
     mac['nBurgDevAccSFortyNinetySix'] = spn(H[('Burgers', 4096)]['accurate']['speedup'])
     mac['nBurgHoldAccSFortyNinetySix'] = spn(H[('Burgers (held-out cases)', 4096)]['accurate']['speedup'])
+def _sci1(x):
+    m_, ex = f'{x:.0e}'.split('e'); return f'{m_}{{\\times}}10^{{{int(ex)}}}'
+mac['nEqcBar'] = f"{EQC['bar']:g}"; mac['nEqcLatConfRho'] = f"{EQC['lat2048']:.4f}"; mac['nEqcLatMargin'] = _sci1(EQC['bar'] - EQC['lat2048'])
+assert f"{EQC['bar']:g}" == '0.116'                                                       # the same primary bar as \nEqtopBar
+mac['nEqcScaledPassFiveTwelve'] = str(EQC['s512'][0]); mac['nEqcScaledDrawsFiveTwelve'] = str(EQC['s512'][1])
+mac['nEqcConfRhoTenTwentyFour'] = f"{EQC[1024]['conf_rho']:.4f}"
+mac['nEqcFollowDraws'] = str(EQC['follow']['draws']); mac['nEqcFollowErr'] = f"{EQC['follow']['err']:.3f}"; mac['nEqcFollowS'] = f"{EQC['follow']['sp']:.3f}"
 mac['nHeadFasterRows'] = str(sum(1 for r in ROWS if any(r[s] and r[s]['speedup'] > 1 for s in ('fast', 'accurate'))))
 mac['nHeadRows'] = str(len(ROWS))
 mac['nHeadAccFasterSubOne'] = str(sum(1 for r in ROWS if r['accurate'] and r['accurate']['speedup'] > 1 and r['accurate']['error_pct'] < 1))

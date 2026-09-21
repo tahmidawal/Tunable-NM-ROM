@@ -39,8 +39,36 @@ assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (
 assert 'pending:' not in tex and 'reserved' not in tex
 # 2026-09-21 user decision: exactly three "results incoming" slots (paused lanes), no number in them
 _inc = [l for l in tex.splitlines() if 'results incoming' in l]
-assert len(_inc) == 3 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
-assert {i['lane'] for i in prov['incoming']} == {'burgers-eqcert', 'burgers-heldout', 'heat3d-bank'}
+assert len(_inc) == 2 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
+assert {i['lane'] for i in prov['incoming']} == {'burgers-heldout', 'heat3d-bank'}
+# 2026-09-21 burgers-eqcert intake (audited blobs @176b2a9a): re-derive the confirmed-rule rows, the FOM rule and every label number
+_eq = {k: json.loads((P / f'evidence/headline-2026-09-20/{k}.json').read_bytes()) for k in man if k.startswith('eqcert_')}
+assert set(_eq) == {'eqcert_summary', 'eqcert_bc256', 'eqcert_bc256b', 'eqcert_bc512', 'eqcert_bc1024', 'eqcert_bc2048b'}
+for k in _eq:
+    assert man[k]['commit'].startswith('176b2a9a') and man[k]['read'] == 'committed blob'
+    if k != 'eqcert_summary': assert _eq['eqcert_summary']['sources'][k[7:]]['sha256'] == man[k]['sha256'] and _eq['eqcert_summary']['sources'][k[7:]]['accepted']
+_cr = {r['intervals']: r for r in prov['rows'] if r['problem'] == 'Burgers, confirmed rule'}
+assert set(_cr) == {512, 1024}
+for n, r in _cr.items():
+    d = _eq[f'eqcert_bc{n}']; v = d['verdict']; a_, f_ = d['table'][v['accurate']['arm']], d['table'][v['fast']['arm']]
+    assert v['certified_rule_exists'] and a_['confirmation_pass'] and r['accurate']['arm'] == a_['name'] and r['fast']['arm'] == f_['name']
+    assert r['accurate']['error_pct'] == a_['worst_evolved_percent'] and r['accurate']['ms'] == a_['median_gpu_ms'] and r['fast']['ms'] == f_['median_gpu_ms']
+    fo = d['table'][r['fom']['arm']]; assert r['fom']['ms'] == fo['median_gpu_ms'] and r['fom']['arm'] == a_['fom_by_paper_rule']
+    assert abs(r['accurate']['speedup'] - a_['speedup_gpu']) < 1e-12 and r['accurate']['speedup'] < 1   # slower than Newton--BiCGStab (text: through 2048^2)
+    assert set(r['fom']['candidates']) == {k for k, t in d['table'].items() if t['family'] == 'fom'}
+_hn = (P / 'tables/headline-numbers.tex').read_text()
+def _m(name): return re.search(r'\\newcommand\{\\' + name + r'\}\{([^}]*(?:\{[^}]*\}[^}]*)*)\}', _hn).group(1)
+_s512 = _eq['eqcert_bc512']['arm_status']['q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2']
+assert (_m('nEqcScaledPassFiveTwelve'), _m('nEqcScaledDrawsFiveTwelve')) == (str(_s512['draws_passed']), str(_s512['draws'])) and not _s512['confirmation_pass']
+assert not _eq['eqcert_bc256']['arm_status']['q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2']['confirmation_pass']
+assert not _eq['eqcert_bc256']['verdict']['certified_rule_exists']
+_l = _eq['eqcert_bc2048b']['table']['q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2']
+assert _m('nEqcLatConfRho') == f"{_l['confirmation_rho_max']:.4f}" and _m('nEqcBar') == '0.116' and 0 < 0.116 - _l['confirmation_rho_max'] < 5e-4
+assert _m('nEqcConfRhoTenTwentyFour') == f"{_eq['eqcert_bc1024']['table'][_eq['eqcert_bc1024']['verdict']['accurate']['arm']]['confirmation_rho_max']:.4f}"
+_pk = _eq['eqcert_summary']['combined_256']['pick']; _t = _eq['eqcert_bc256b']['table'][_pk]
+assert (_m('nEqcFollowErr'), _m('nEqcFollowS')) == (f"{_t['worst_evolved_percent']:.3f}", f"{_t['speedup_gpu']:.3f}") and _m('nEqcFollowDraws') == '12'
+_mt = main.split(r'\bibliographystyle')[0] if 'main' in dir() else (P / 'main.tex').read_text()
+assert 'passed the\nheld-out bar in its single draw' not in (P / 'main.tex').read_text()   # stale 256^2/512^2 rule wording removed
 # Figure 2: every ratio reproduces from ms; uncertified rungs are marked in the figure record
 _tf = json.loads((P / 'figures/fig_tunability_rank.json').read_text())
 assert _tf['evidence_sha256'] == hashlib.sha256((P / 'tables/headline-provenance.json').read_bytes()).hexdigest()

@@ -269,6 +269,60 @@
       "read": "coordinator-supplied audited summary",
       "lane": "nmrom-baselines",
       "role": "fam512-audit"
+    },
+    "eqcert_summary": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/reports/summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "8b667c04b6b16faae46d1b182a9f194a201bccd34f392952ffd062606fe380f9",
+      "read": "committed blob",
+      "git_blob": "631e82218c31e3221a8f818cbf4ba1adf93eb094"
+    },
+    "eqcert_bc256": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/checks/bc256-summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "7d8f0119738aa57a60abc397d595e979c3f8b72e7ce83819803ccb586f191856",
+      "read": "committed blob",
+      "git_blob": "b31c9758f4902f6a9c015bac3662a133d1768d2e"
+    },
+    "eqcert_bc256b": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/checks/bc256b-summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "09bb1b7d5505052c0684475e9bc27e87540f89612bb08ca6d8683ca745fea1fd",
+      "read": "committed blob",
+      "git_blob": "c5d122dbf4a73f9130b79d59dce69969f65ea5bc"
+    },
+    "eqcert_bc512": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/checks/bc512-summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "914f52e3a1733dde9ae715fb86e467e62d3ca317c1672423200194ac9fdfd6ce",
+      "read": "committed blob",
+      "git_blob": "a5fd789b0a49df5fa19d9c6f94bce6a86f611d7c"
+    },
+    "eqcert_bc1024": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/checks/bc1024-summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "1cb66f17b4049586f802dffd865454df66c16082eb89a066dad8a88dd78bb0b5",
+      "read": "committed blob",
+      "git_blob": "29305893fe6ee67c153e68720b2126dfada7a58b"
+    },
+    "eqcert_bc2048b": {
+      "tree": "worktrees/2026-09-21-burgers-eqcert",
+      "path": "experiments/burgers-eqcert/checks/bc2048b-summary.json",
+      "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+      "status": "audited; burgers-eqcert lane (closed)",
+      "sha256": "3d3bbfb4c7a00353acb4b7ea3475f13760c220cbca23cd95e49eaaeb388b906e",
+      "read": "committed blob",
+      "git_blob": "db9b6e1b597e3635b1f3aa37b56ebdf226fe417d"
     }
   },
   "rows": [
@@ -1645,6 +1699,214 @@
           "fast": 79.58752005175785
         }
       ],
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers, confirmed rule",
+      "dim": 2,
+      "intervals": 512,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 2.137517893718323,
+        "ms": 23.617225931957364,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 0.7510534137686485
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$, first step exact",
+        "error_pct": 0.5623368901612699,
+        "ms": 194.97219868935645,
+        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+        "eq": "confirmed",
+        "exact_steps": 1,
+        "confirmation_rho": 0.05179222156338272,
+        "heldout_rho": 0.0416053384707513,
+        "speedup": 0.09097603801556935
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.04971054736629807,
+        "ms": 17.73779815994203,
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-4_dt005": {
+            "err": 0.03409258759178587,
+            "ms": 35.069214878603816
+          },
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.5900452635486995,
+            "ms": 13.411175459623337
+          },
+          "c256_nt1e-4_dt005": {
+            "err": 1.5127842197199872,
+            "ms": 22.749958094209433
+          },
+          "lean_nt1e-2_l1e-2_dt01": {
+            "err": 1.620002548896976,
+            "ms": 9.30900708772242
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.050815849002648246,
+            "ms": 22.326122503727674
+          },
+          "lean_nt3e-3_l3e-3_dt0125": {
+            "err": 2.3371739391645305,
+            "ms": 10.404392844066024
+          },
+          "nt1e-4_dt005": {
+            "err": 0.03409258759178587,
+            "ms": 35.324522061273456
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1507446794317855,
+            "ms": 15.466967364773154
+          },
+          "lean_nt3e-3_l3e-3_dt01": {
+            "err": 1.6043563284109923,
+            "ms": 11.73742744140327
+          },
+          "lean_nt1e-3_l1e-3_dt025": {
+            "err": 5.353081455758417,
+            "ms": 8.923281682655215
+          },
+          "nt1e-3_dt005": {
+            "err": 0.051606745250107645,
+            "ms": 31.15108609199524
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 88.91526749357581
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.04971054736629807,
+            "ms": 17.73779815994203
+          },
+          "c128_nt1e-4_dt005": {
+            "err": 4.220918320853728,
+            "ms": 22.262195125222206
+          },
+          "lean_nt1e-3_l1e-3_dt0125": {
+            "err": 2.2692867912555577,
+            "ms": 11.839353013783693
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 88.15239649266005
+          }
+        }
+      },
+      "source": "eqcert_bc512",
+      "job_id": "4140818",
+      "cohort": "development",
+      "status": "development; re-drawn quadrature rule",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Burgers, confirmed rule",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 2.2883561038158087,
+        "ms": 24.99580103904009,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 1.3878442387854677
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
+        "error_pct": 0.5856593373230501,
+        "ms": 108.58091607224196,
+        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+        "eq": "confirmed",
+        "exact_steps": 0,
+        "confirmation_rho": 0.11568388359449233,
+        "heldout_rho": 0.09579801801664642,
+        "speedup": 0.3194878043097294
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.0483020286721527,
+        "ms": 34.69027846585959,
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-4_dt005": {
+            "err": 0.034280946985885186,
+            "ms": 77.54571153782308
+          },
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.629403195288051,
+            "ms": 27.365293470211327
+          },
+          "c512_nt1e-4_dt005": {
+            "err": 0.8043058939317079,
+            "ms": 35.214396426454186
+          },
+          "lean_nt1e-2_l1e-2_dt01": {
+            "err": 1.6558277102038474,
+            "ms": 18.560041906312108
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.0529575134971242,
+            "ms": 46.107542933896184
+          },
+          "lean_nt3e-3_l3e-3_dt0125": {
+            "err": 2.3945140627265458,
+            "ms": 21.12493198364973
+          },
+          "nt1e-4_dt005": {
+            "err": 0.034280946985885186,
+            "ms": 79.76043305825442
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1577540475792563,
+            "ms": 29.26900959573686
+          },
+          "lean_nt3e-3_l3e-3_dt01": {
+            "err": 1.6444945727483469,
+            "ms": 24.635344510897994
+          },
+          "lean_nt1e-3_l1e-3_dt025": {
+            "err": 5.470388326113463,
+            "ms": 18.928091507405043
+          },
+          "nt1e-3_dt005": {
+            "err": 0.05316179751071317,
+            "ms": 68.51616594940424
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 204.7629951266572
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.0483020286721527,
+            "ms": 34.69027846585959
+          },
+          "c256_nt1e-4_dt005": {
+            "err": 2.3127452779200612,
+            "ms": 23.066987399943173
+          },
+          "lean_nt1e-3_l1e-3_dt0125": {
+            "err": 2.324449424654293,
+            "ms": 24.32576648425311
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 207.75559649337083
+          }
+        }
+      },
+      "source": "eqcert_bc1024",
+      "job_id": "4139290",
+      "cohort": "development",
+      "status": "development; re-drawn quadrature rule",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
       "appendix_only": null
     },
     {
@@ -3307,17 +3569,6 @@
   ],
   "incoming": [
     {
-      "problem": "Burgers, certified quadrature rule",
-      "dim": 2,
-      "meshes": [
-        256,
-        512,
-        1024
-      ],
-      "lane": "burgers-eqcert",
-      "branch": "exp/2026-09-21-burgers-eqcert"
-    },
-    {
       "problem": "Burgers (wider learned bank), held-out 64",
       "dim": 2,
       "meshes": [
@@ -3909,8 +4160,17 @@
     "nBurgDevAccErrFortyNinetySix": "0.60",
     "nBurgDevAccSFortyNinetySix": "4.87",
     "nBurgHoldAccSFortyNinetySix": "5.38",
-    "nHeadFasterRows": "25",
-    "nHeadRows": "29",
+    "nEqcBar": "0.116",
+    "nEqcLatConfRho": "0.1156",
+    "nEqcLatMargin": "4{\\times}10^{-4}",
+    "nEqcScaledPassFiveTwelve": "4",
+    "nEqcScaledDrawsFiveTwelve": "5",
+    "nEqcConfRhoTenTwentyFour": "0.1157",
+    "nEqcFollowDraws": "12",
+    "nEqcFollowErr": "0.520",
+    "nEqcFollowS": "0.085",
+    "nHeadFasterRows": "26",
+    "nHeadRows": "31",
     "nHeadAccFasterSubOne": "14",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",

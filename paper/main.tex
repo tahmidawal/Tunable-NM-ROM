@@ -477,20 +477,22 @@ with host transfers (all others GPU query; heat was measured in GPU query
 only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
-batched). The batched fit solves each output time independently against
-exactly propagated test moments, exploiting the linear, autonomous
-structure of the heat equation (eigenfunction tests). Burgers accurate
-quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{} that passed the
-held-out bar in its single draw and was not re-drawn (it is not the
-$q=256$ rule of Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
-$63{\times}63$ lattice rule passing the held-out bar in the same job;
-$^{d}$\,dense residual. The earlier Burgers model has one setting and
+batched; the batched fit: Table~\ref{tab:headline-times}). Burgers accurate
+quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}, not
+confirmed on independent re-draws (it fails the confirmation draw at
+$256^2$ and passes \nEqcScaledPassFiveTwelve{} of
+\nEqcScaledDrawsFiveTwelve{} draws at $512^2$; it is not the $q=256$
+rule of Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
+$63{\times}63$ lattice rule, marginal: it passes the re-draw check at
+$2048^2$ by only $\nEqcLatMargin$ (confirmation $\rho_{\max}=\nEqcLatConfRho$
+against the bar $\nEqcBar$); $^{v}$\,rule confirmed on independent
+re-draws by the pre-registered procedure ($1024^2$ with a thin margin,
+confirmation $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes it at
+$256^2$, Appendix~\ref{app:cg-current}); $^{d}$\,dense residual. The earlier Burgers model has one setting and
 may exit on a stall; its rule-selected FOM is the relaxed Newton setting
 ($10^{-2}/0.5$), and its tight-setting ratio is in
-Table~\ref{tab:headline-times} with the other rows' tight ratios. The FOM
-setting can differ between meshes of a series (Table~\ref{tab:headline-times});
-rows from the paired-CG record list the one setting that record retains,
-itself chosen by the same rule. $^{h}$\,64 held-out cases never used for
+Table~\ref{tab:headline-times} with the other rows' tight ratios; the
+FOM setting can differ between meshes of a series. $^{h}$\,64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
 $M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev.\ sources) rows use development sources of a
 separate run and are not the held-out cohort. Dashes mark settings not
@@ -517,20 +519,21 @@ $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
 
 \paragraph{Burgers.}
 The reduced solve costs the same at every mesh, so the fast setting
-passes Newton--BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
-faster at $1024^2$ with $\nHeadBurgersFastErr\,\%$ error. The accurate
+overtakes Newton--BiCGStab by $1024^2$ ($\nHeadBurgersFastS\times$
+faster at $\nHeadBurgersFastErr\,\%$ error). The accurate
 setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$; at $1024^2$ it uses a
-dense residual (no validated $q=256$ rule there; the validated $q=128$
-rule gives $\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$). At $4096^2$ the accurate setting chosen on six development cases
+cases, is slower than the FOM through $2048^2$, also with the rules
+confirmed on independent re-draws at $512^2$ and $1024^2$ (rows marked
+$^{v}$); the dense $1024^2$ panel row's stored $q=128$ rule gives
+$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$. At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix\,\%$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
 $\nBurgHoldAccErrFortyNinetySix\,\%$ at
 $\nBurgHoldAccSFortyNinetySix\times$ (audit note in
-Appendix~\ref{app:cg-current}). A certified quadrature rule at
-$256^2$--$1024^2$ and a wider, held-out-tested bank are in progress
-(results incoming).
+Appendix~\ref{app:cg-current}); a re-timing with a wider-margin
+quadrature rule (first step exact) and a wider, held-out-tested bank are in progress (results
+incoming).
 
 \paragraph{Resolution.}
 Table~\ref{tab:headline} shows that the NM-ROM query time grows more
@@ -623,7 +626,8 @@ development (6 cases) and held-out (64 cases, never used for selection)
 share settings; heat uses the sealed held-out cohort, Poisson
 development sources. On Burgers $q$ and $M$ change together
 ($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
-Table~\ref{tab:ladder-main}); heat and Poisson vary $q$ only.
+Table~\ref{tab:ladder-main}), $q>0$ with the lattice rule
+($^{\ell}$ in Table~\ref{tab:headline}); heat and Poisson vary $q$ only.
 $^{\star}$\,looser stopping tolerance; $^{\dagger}$\,quadrature rule
 failed its held-out check.}
 \label{tab:tunability}

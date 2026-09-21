@@ -1,6 +1,38 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — Figures 1–2 replaced by tables (user decision) — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — burgers-eqcert intake: Burgers quadrature labels — CURRENT HANDOFF
+
+Source: branch `exp/2026-09-21-burgers-eqcert` @ 176b2a9a (lane closed, all five jobs audited/accepted), read as
+committed blobs and pinned as `evidence/headline-2026-09-20/eqcert_{summary,bc256,bc256b,bc512,bc1024,bc2048b}.json`
+(manifest records commit, git blob id and SHA256; the check summaries' SHA256 equal those listed in the lane's
+summary.json). `gen_headline.py` SOURCES gained the six entries so a future `--refresh` reproduces them.
+- **Table 1, Burgers 256²/512² accurate rows (marker s):** "passed the held-out bar in its single draw" removed; now
+  "not confirmed on independent re-draws (fails the confirmation draw at 256² and passes 4 of 5 draws at 512²)".
+  Errors/speedups unchanged. (Paper arm at 512² is `eqtopxfer` m=2438; the lane's `scaled` rule is the same b-eqtop
+  m=2560 rule, which the lane's DESIGN names "the paper's current rule at 256²/512²".)
+- **Marker ℓ (2048²/4096² lattice rows, incl. the 4096² headline rows):** "marginal: it passes the re-draw check at
+  2048² by only 4×10⁻⁴ (confirmation ρmax 0.1156 against the bar 0.116)". Table 4 caption: Burgers q>0 settings use
+  that rule (ℓ). Burgers paragraph: one clause, a re-timing with a wider-margin rule (first step exact) is in progress
+  (results incoming). The unaudited 40-trajectory exploration numbers are not used.
+- **Results-incoming slot filled:** new rows "Burgers, confirmed rule" (marker v) at 512² (lat64, first step exact:
+  0.56 %, 0.091×; fast q=0 0.75×) and 1024² (lat64, j=0: 0.59 %, 0.32×; thin margin, confirmation ρ 0.1157; fast
+  1.39×), FOM Newton–BiCGStab lean_nt3e-3_l3e-3_dt005 re-picked by the paper rule from every FOM in the same job
+  (matches the lane's `fom_by_paper_rule`). 256²: no confirmed-rule row; Appendix C.1 states that no rule passed the
+  pre-registered procedure and gives the post-hoc exact-first-step follow-up (12/12 draws, 0.520 %, 0.085×). Two
+  "results incoming" slots remain (burgers-heldout, heat3d-bank).
+- Burgers paragraph: accurate setting slower than Newton–BiCGStab through 2048² "also with the rules confirmed on
+  independent re-draws at 512² and 1024²"; fast setting now "overtakes Newton–BiCGStab by 1024²" (the new rows'
+  leaner FOM makes q=0 0.75× at 512², so "passes at 512²" was no longer true of every row); the q=128 note no
+  longer says "validated" (the lane finds that family 4/5 at 1024²).
+- Abstract/intro/conclusion unchanged: they say "validated on held-out reached states", never "certified", for the
+  4096² rule.
+- Space: Table 1 caption sentences on the batched heat fit and on the paired-CG record's single retained setting
+  moved to the Table C.4 caption. Main text ends on page 9, References on page 9 (PDF now 22 pages).
+- check_headline: two incoming slots; re-derives the confirmed-rule rows (arm, error, ms, FOM arm, candidate set,
+  speedup < 1) and every new macro (4/5, 0.1156 vs 0.116 margin < 5e-4, 0.1157, 12 draws, 0.520 %, 0.085×) from the
+  pinned blobs; asserts the old single-draw wording is gone. check_headline and check_rewrite pass.
+
+## 2026-09-21 (paper lane) — Figures 1–2 replaced by tables (user decision)
 
 User: "Instead of those figs, I would like tables. The figs are kinda ugly."
 - **Figure 1 (speedup vs mesh) dropped, not tabulated**: every point was a Table 1 speedup, so a

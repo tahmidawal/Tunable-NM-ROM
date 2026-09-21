@@ -81,7 +81,12 @@ restricted-grid recomputation of the errors disagreed with the full-grid
 value by more than 5\,\% on $\nBurgGateBadTwentyFortyEight/\nBurgGateRowsTwentyFortyEight$
 ($2048^2$) and $\nBurgGateBadFortyNinetySix/\nBurgGateRowsFortyNinetySix$
 ($4096^2$) case--arm rows; per-arm cohort worsts agree within
-$\nBurgGateWorstPct\,\%$ and the full-grid recomputation is exact. For Burgers at $4096^2$, copying the six
+$\nBurgGateWorstPct\,\%$ and the full-grid recomputation is exact. For Burgers at $256^2$ no quadrature rule passed the pre-registered
+re-draw procedure (its pick failed the confirmation draw), so
+Table~\ref{tab:headline} has no confirmed-rule row there; a post-hoc
+follow-up rule with an exact first time step passes all
+\nEqcFollowDraws{} draws of two jobs and gives $\nEqcFollowErr\,\%$ at
+$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -98,7 +103,11 @@ evaluation; ``single'' marks models measured at one setting. Where a
 run recorded both timing scopes, the speedups in the scope not used by
 Table~\ref{tab:headline} are listed; a series never mixes scopes.
 For heat that column gives the speedups against the tighter
-CN--CG setting (rtol $10^{-6}$).
+CN--CG setting (rtol $10^{-6}$). The heat batched fit solves each output time independently against
+exactly propagated test moments, exploiting the linear, autonomous
+structure of the heat equation (eigenfunction tests). Rows from the
+paired-CG record list the one full-order setting that record retains,
+itself chosen by the same rule.
 $^{\ast}$\,not in Table~\ref{tab:headline}: a re-measurement of the row
 above it, or a development-source run at a mesh whose held-out row is in
 Table~\ref{tab:headline}.}

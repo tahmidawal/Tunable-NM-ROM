@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 14:53; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 18:59; this block is removed before submission).*
 *Populated tables (93): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -461,20 +461,22 @@ with host transfers (all others GPU query; heat was measured in GPU query
 only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
-batched). The batched fit solves each output time independently against
-exactly propagated test moments, exploiting the linear, autonomous
-structure of the heat equation (eigenfunction tests). Burgers accurate
-quadrature: $^{s}$ stored rule of job 3780164 that passed the
-held-out bar in its single draw and was not re-drawn (it is not the
-$q=256$ rule of Table 17); $^{\ell}$ deterministic
-$63{\times}63$ lattice rule passing the held-out bar in the same job;
-$^{d}$ dense residual. The earlier Burgers model has one setting and
+batched; the batched fit: Table 8). Burgers accurate
+quadrature: $^{s}$ stored rule of job 3780164, not
+confirmed on independent re-draws (it fails the confirmation draw at
+$256^2$ and passes \nEqcScaledPassFiveTwelve of
+\nEqcScaledDrawsFiveTwelve draws at $512^2$; it is not the $q=256$
+rule of Table 17); $^{\ell}$ deterministic
+$63{\times}63$ lattice rule, marginal: it passes the re-draw check at
+$2048^2$ by only $\nEqcLatMargin$ (confirmation $\rho_{\max}=\nEqcLatConfRho$
+against the bar $\nEqcBar$); $^{v}$ rule confirmed on independent
+re-draws by the pre-registered procedure ($1024^2$ with a thin margin,
+confirmation $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes it at
+$256^2$, Appendix C.1); $^{d}$ dense residual. The earlier Burgers model has one setting and
 may exit on a stall; its rule-selected FOM is the relaxed Newton setting
 ($10^{-2}/0.5$), and its tight-setting ratio is in
-Table 8 with the other rows' tight ratios. The FOM
-setting can differ between meshes of a series (Table 8);
-rows from the paired-CG record list the one setting that record retains,
-itself chosen by the same rule. $^{h}$ 64 held-out cases never used for
+Table 8 with the other rows' tight ratios; the
+FOM setting can differ between meshes of a series. $^{h}$ 64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
 $M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev. sources) rows use development sources of a
 separate run and are not the held-out cohort. Dashes mark settings not
@@ -507,8 +509,9 @@ measured. Times, settings and complete-query speedups: Table 8.
 | Burgers 2D (development; 6 cases, arm chosen here) | 4096^2 | 0.60^{\ell} | **4.87×** | 2.41 | **12.9×** | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 2048^2 | 1.31^{\ell} | **1.43×** | 9.03 | **5.63×** | 0.13 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 4096^2 | 1.33^{\ell} | **5.38×** | 9.03 | **13.2×** | 0.14 | Newton–BiCGStab, tol 3{\times}10^{-3} |
+| Burgers, confirmed rule 2D (development; re-drawn quadrature rule) | 512^2 | 0.56^{v} | 0.091× | 2.14 | 0.75× | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |
+| Burgers, confirmed rule 2D (development; re-drawn quadrature rule) | 1024^2 | 0.59^{v} | 0.32× | 2.29 | **1.39×** | 0.048 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **1.63×** | 2.39 | Newton–BiCGStab, relaxed |
-| Burgers, certified quadrature rule 2D | 256^2, 512^2, 1024^2 | results incoming |  |  |  |  | lane burgers-eqcert |
 | Burgers (wider learned bank), held-out 64 2D | 2048^2, 4096^2 | results incoming |  |  |  |  | lane burgers-heldout |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
@@ -534,20 +537,21 @@ $\nHeadPoissonThreeAccErr %$ at $\nHeadPoissonThreeAccS\times$.
 
 **Burgers.**
 The reduced solve costs the same at every mesh, so the fast setting
-passes Newton–BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
-faster at $1024^2$ with $\nHeadBurgersFastErr %$ error. The accurate
+overtakes Newton–BiCGStab by $1024^2$ ($\nHeadBurgersFastS\times$
+faster at $\nHeadBurgersFastErr %$ error). The accurate
 setting reaches $\nHeadBurgersAccErr %$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$; at $1024^2$ it uses a
-dense residual (no validated $q=256$ rule there; the validated $q=128$
-rule gives $\nHeadBurgersMidErr %$ at $\nHeadBurgersMidS\times$). At $4096^2$ the accurate setting chosen on six development cases
+cases, is slower than the FOM through $2048^2$, also with the rules
+confirmed on independent re-draws at $512^2$ and $1024^2$ (rows marked
+$^{v}$); the dense $1024^2$ panel row's stored $q=128$ rule gives
+$\nHeadBurgersMidErr %$ at $\nHeadBurgersMidS\times$. At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix %$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
 $\nBurgHoldAccErrFortyNinetySix %$ at
 $\nBurgHoldAccSFortyNinetySix\times$ (audit note in
-Appendix C.1). A certified quadrature rule at
-$256^2$–$1024^2$ and a wider, held-out-tested bank are in progress
-(results incoming).
+Appendix C.1); a re-timing with a wider-margin
+quadrature rule (first step exact) and a wider, held-out-tested bank are in progress (results
+incoming).
 
 **Resolution.**
 Table 1 shows that the NM-ROM query time grows more
@@ -657,7 +661,8 @@ development (6 cases) and held-out (64 cases, never used for selection)
 share settings; heat uses the sealed held-out cohort, Poisson
 development sources. On Burgers $q$ and $M$ change together
 ($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
-Table 12); heat and Poisson vary $q$ only.
+Table 12), $q>0$ with the lattice rule
+($^{\ell}$ in Table 1); heat and Poisson vary $q$ only.
 $^{\star}$ looser stopping tolerance; $^{\dagger}$ quadrature rule
 failed its held-out check.
 
@@ -1197,7 +1202,12 @@ restricted-grid recomputation of the errors disagreed with the full-grid
 value by more than 5 % on $\nBurgGateBadTwentyFortyEight/\nBurgGateRowsTwentyFortyEight$
 ($2048^2$) and $\nBurgGateBadFortyNinetySix/\nBurgGateRowsFortyNinetySix$
 ($4096^2$) case–arm rows; per-arm cohort worsts agree within
-$\nBurgGateWorstPct %$ and the full-grid recomputation is exact. For Burgers at $4096^2$, copying the six
+$\nBurgGateWorstPct %$ and the full-grid recomputation is exact. For Burgers at $256^2$ no quadrature rule passed the pre-registered
+re-draw procedure (its pick failed the confirmation draw), so
+Table 1 has no confirmed-rule row there; a post-hoc
+follow-up rule with an exact first time step passes all
+\nEqcFollowDraws draws of two jobs and gives $\nEqcFollowErr %$ at
+$\nEqcFollowS\times$ against the same Newton–BiCGStab rule. For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$ ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -1212,7 +1222,11 @@ evaluation; “single” marks models measured at one setting. Where a
 run recorded both timing scopes, the speedups in the scope not used by
 Table 1 are listed; a series never mixes scopes.
 For heat that column gives the speedups against the tighter
-CN–CG setting (rtol $10^{-6}$).
+CN–CG setting (rtol $10^{-6}$). The heat batched fit solves each output time independently against
+exactly propagated test moments, exploiting the linear, autonomous
+structure of the heat equation (eigenfunction tests). Rows from the
+paired-CG record list the one full-order setting that record retains,
+itself chosen by the same rule.
 $^{\ast}$ not in Table 1: a re-measurement of the row
 above it, or a development-source run at a mesh whose held-out row is in
 Table 1.
@@ -1245,6 +1259,8 @@ Table 1.
 | Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.73 | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
 | Burgers (held-out cases) 2D | 2048^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 114.91 | 29.19 | Newton–BiCGStab, tol 10^{-3} | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | held-out |
 | Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 40.60 | Newton–BiCGStab, tol 3{\times}10^{-3} | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
+| Burgers, confirmed rule 2D | 512^2 | q=256, M=1088, EQ lattice m=3969, first step exact | q=0, M=64, EQ m=1024 | 194.97 | 23.62 | Newton–BiCGStab, tol 3{\times}10^{-3} | 17.74 | GPU query | — | development |
+| Burgers, confirmed rule 2D | 1024^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 108.58 | 25.00 | Newton–BiCGStab, tol 3{\times}10^{-3} | 34.69 | GPU query | — | development |
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | Newton–BiCGStab, relaxed | 68.04 | GPU query | — | development |
 | Burgers (earlier model) 2D^{\ast} | 1024^2 | — | single | — | 41.68 | Newton–BiCGStab, tight | 605.75 | GPU query | — | development |
 | Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | CG, rtol 10^{-2} | 2.47 | GPU query | — | accepted final |

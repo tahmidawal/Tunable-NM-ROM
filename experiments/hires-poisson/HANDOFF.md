@@ -14,10 +14,10 @@ namespace `/cluster/tufts/paralab/tawal01/hires_p_20260920/`. Contract:
 | 2 | hp3d128 | cube 64³ + 128³ | 4051032 | H200 | DONE, audited, collected, remote deleted. 128³: 0.160 %, 2.70× vs CG 1e-2 → bar MISSED on speed (I/O-bound; 6.8× device) |
 | 3 | hp4096 | square 4096² | 4051236 | H200 | DONE, audited, collected, remote deleted. Bar MET (0.965 %, 41.1× total / 146× device) |
 | 4 | hpl1024 | L-shape 1024², 12 sources | 4053801 | H200 | DONE, audited, collected, remote deleted. 0.895 % / 9.88× — **bar verdict WITHDRAWN (A8): 12-source subset excludes the hard sources**; timings stand |
-| 5 | hp3d256 | cube 128³ + 256³ (DST-assembled operator, A7) | 4056288 | H200 | RUNNING |
-| 6 | hpl32 | L-shape 1024² AND 2048², all 32 development sources (two driver runs → output/, output2/) | 4057694 | H200 | RUNNING/PENDING; ~3–4 h (2n=4096 reference by tight GPU CG) |
-| 7 | hp4096b | square 4096² re-measure: f32-I/O twins, q256m8, q384m4, CG 0.3/0.2/0.1/0.01 (A6, A9) | — | H200 | STAGED at runs/hp4096b; a background chain submits it when the lane has < 2 jobs and the account < 6. If the session died: `cluster/submit.sh hp4096b` |
-| 8 | (spare) | — | — | — | one job left in the budget |
+| 5 | hp3d256 | cube 128³ + 256³ (DST-assembled operator, A7) | 4056288 | H200 | DONE, audited, collected, remote deleted. 256³: 0.160 %, 4.18× total / 23× device vs CG 1e-2 → bar MISSED on speed (36 of 42 ms is host copy) |
+| 6 | hpl32 | L-shape 1024² AND 2048², all 32 sources | 4057694 | H200 | job FAILED 1:0 in the 2048² AUDIT (A10). 1024²/32: audited PASSED, pulled to runs/hpl32/archive/output (hashes verified): 2.196 % / 9.76× → bar MISSED on accuracy. 2048²: driver complete, all driver gates passed; audit rejected the CG 2n reference (true residual 4.6e-9 > 6.4e-10). Remote dir KEPT (39 GB fields) for the repair |
+| 7 | hpl32fix | repair of the 2048² 2n reference in runs' remote dir hpl32, then the unchanged audit | 4071217 | H200 | RUNNING. When logs/4071217.repair.out says ALL-DONE: `cluster/collect.sh hpl32` needs ALL-DONE in logs/*.out — it greps `logs/*.out`, which matches `*.repair.out`; it pulls output/ + output2/, verifies, deletes remote |
+| 8 | hp4096b | square 4096² re-measure: f32-I/O twins, q256m8, q384m4, CG 0.3/0.2/0.1/0.01 (A6, A9) | 4071227 | H200 | PENDING/RUNNING. **Budget now fully spent (8/8).** |
 
 ## How to run
 

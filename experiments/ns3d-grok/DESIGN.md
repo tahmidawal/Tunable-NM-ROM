@@ -153,3 +153,12 @@ most 5% with no case over 5%. It is rolled out only when the smallest tested
 rank in $\{64,128,256\}$ whose centered-snapshot floor is at most 5% exists.
 Among eligible methods, the sealed setting is the one with the smallest
 development median. If none are eligible, the sealed seed stays unopened.
+
+## Amendment — frozen seal, after diag06
+
+diag06 selected the rank-64 startup tracker with the Fourier shift truncated
+at tail $10^{-6}$ (9222 frequencies, energy kept 0.9999990109711092). That is
+the only setting diag07 may run. Rank 64, $\Delta t=0.01$, and the startup
+step stay as in diag04. diag07 opens seed 202609211 once, 32 cases, and also
+records the grid tracker on that cohort as a parity check. It does not choose
+a different tail, rank, or time step. Seed 202609203 stays closed.

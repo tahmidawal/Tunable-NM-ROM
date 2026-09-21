@@ -52,6 +52,7 @@ TASK_ROOT=REMOTE
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest PYTHONUNBUFFERED=1
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
 export XDG_CACHE_HOME="$TASK_ROOT/cache" MPLCONFIGDIR="$TASK_ROOT/cache/matplotlib"
 export TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"

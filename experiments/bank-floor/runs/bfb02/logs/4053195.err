@@ -1,0 +1,24 @@
+W0920 19:37:44.410209 2522738 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 21.15GiB (rounded to 22710109952)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0920 19:37:44.410847 2522738 bfc_allocator.cc:525] *_******************_**************************************************************_________________
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfb02/experiments/bank-floor/bf_rep.py", line 330, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfb02/experiments/bank-floor/bf_rep.py", line 233, in main
+    Qall, info = K.pod_deflated(U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
+                 ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfb02/experiments/bank-floor/bf_core.py", line 216, in pod_deflated
+    w = np.asarray(w)[::-1]
+        ~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 414, in __array__
+    return np.asarray(self._value, dtype=dtype, **kwds)  # pyrefly: ignore[no-matching-overload]
+                      ^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 623, in _value
+    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Unable to allocate device workspace for syevBatched [executable_name='jit_eigh']

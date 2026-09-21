@@ -199,7 +199,8 @@ def pod_deflated(U, scale, maxrank, idx=None, ranks=(), stage_ratio=1e-5, block=
     from stage traces minus accepted eigenvalues (never from sums of tiny eigenvalues)."""
     idx = np.arange(U.shape[0]) if idx is None else np.asarray(idx)
     t0 = time.perf_counter()
-    Ur = U[jnp.asarray(idx)] * jnp.asarray(np.asarray(scale)[idx])[:, None]
+    # built on the HOST and uploaded once: only one S x n array is ever device-resident here
+    Ur = jnp.asarray(np.asarray(U)[idx] * np.asarray(scale)[idx][:, None])
     S, n = Ur.shape
     r_goal = int(min(maxrank, S))
     Q = jnp.zeros((n, 0), F64)

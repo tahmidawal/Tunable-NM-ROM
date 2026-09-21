@@ -144,7 +144,6 @@ def main():
     xy = K.grid(cfg['intervals'])
     assert len(xy) == n
     U = jnp.asarray(Utr_h)
-    del Utr_h
     held = {k: jnp.asarray(v) for k, v in held_h.items()}
     np.savez(out / 'ckpt' / f'{cfg["pde"]}_{primary}_fields.npz', U=held_h[primary])
     S = U.shape[0]
@@ -228,10 +227,23 @@ def main():
     # ---- POD controls -------------------------------------------------------------
     if 'pod' in arms:
         rmax = max(cfg['pod_ranks'])
-        for name, scale, idx in (('pod', 1. / un, None), ('podraw', np.ones(S), None),
-                                 ('pod_sub', 1. / un, sub), ('podraw_sub', np.ones(S), sub)):
-            Qall, info = K.pod_deflated(U, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
-            assert info['rank'] == min(rmax, len(np.arange(S) if idx is None else idx)), info
+        variants = (('pod', 1. / un, None), ('podraw', np.ones(S), None),
+                    ('pod_sub', 1. / un, sub), ('podraw_sub', np.ones(S), sub))
+        # The deflated POD holds a scaled working copy of its snapshots next to a 26k eigh
+        # workspace; with U resident too that exhausted an 80 GB A100 (job 4053195). So U leaves
+        # the device while the bases are computed (kept on the host) and returns for scoring.
+        del U
+        bases = {}
+        for name, scale, idx in variants:
+            rows = np.arange(S) if idx is None else np.asarray(idx)
+            Qall, info = K.pod_deflated(Utr_h, scale, rmax, idx=idx, ranks=cfg['pod_ranks'])
+            assert info['rank'] == min(rmax, len(rows)), info
+            bases[name] = (np.asarray(Qall), info)
+            del Qall
+        U = jnp.asarray(Utr_h)
+        for name, scale, idx in variants:
+            Qh, info = bases.pop(name)
+            Qall = jnp.asarray(Qh)
             for rk in cfg['pod_ranks']:
                 if rk > Qall.shape[1]:
                     continue
@@ -241,8 +253,8 @@ def main():
                                                  grid_bound=True)
                 f = R_['arms'][f'{name}{rk}']['floors']
                 if name in ('pod', 'pod_sub') and str(rk) in info['tail_mean_sq']:
-                    # known answer: mean squared relative floor on the POD's own snapshots equals
-                    # the discarded eigenvalue mass / snapshot count
+                    # known answer: the mean squared relative floor on the POD's own snapshots
+                    # equals the energy left after rk modes / snapshot count
                     own = f['train_full' if name == 'pod' else 'train_sub']['rms'] ** 2
                     tail = info['tail_mean_sq'][str(rk)]
                     chk = abs(own / max(tail['mean_sq'], 1e-300) - 1)
@@ -255,12 +267,13 @@ def main():
                       + ' '.join(f'{k} worst {f[k]["worst"]:.4e}' for k in held), flush=True)
             if name in ('pod', 'podraw'):
                 p = out / 'ckpt' / f'{cfg["pde"]}_{name}{rmax}_modes.npy'
-                np.save(p, np.asarray(Qall))
+                np.save(p, Qh)
                 R_['arms'][f'{name}{rmax}']['checkpoint'] = dict(
                     file=p.name, sha256=K.sha_file(p), bytes=p.stat().st_size,
                     note='columns are nested: the first r columns are the rank-r basis')
-            del Qall
+            del Qall, Qh
             save()
+    del Utr_h
 
     # ---- learned arms ---------------------------------------------------------------
     def probe_fn(blocks):

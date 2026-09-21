@@ -628,37 +628,37 @@
       "intervals": 1024,
       "fast": {
         "label": "$q=0$",
-        "error_pct": 0.5607283273904548,
-        "ms": 36.892072996124625,
+        "error_pct": 1.3615913158587163,
+        "ms": 27.77227619662881,
         "arm": "nmrom_q0_cn",
-        "evolved_pct": 0.4613555695266473,
-        "speedup": 1.811850056630079
+        "evolved_pct": 0.8404915833639982,
+        "speedup": 1.5668124244211263
       },
       "accurate": {
         "label": "$q=32$",
-        "error_pct": 0.23573417192589777,
-        "ms": 31.196273979730904,
+        "error_pct": 0.48761323417433267,
+        "ms": 27.33315690420568,
         "arm": "nmrom_q32_cn",
-        "evolved_pct": 0.16932588452149452,
-        "speedup": 2.14265667081457
+        "evolved_pct": 0.2172399112779702,
+        "speedup": 1.5919839611588278
       },
       "fom": {
         "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
-        "error_pct": 0.14342768427537603,
-        "ms": 66.84290454722941,
+        "error_pct": 0.1838961673460271,
+        "ms": 43.51394739933312,
         "arm": "fom_cncg_dt0.05_rtol1e-3"
       },
-      "source": "intake_02_hires-heat",
-      "job_id": "4054869",
-      "cohort": "development",
-      "status": "development; 128-function bank",
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
       "error_convention": "same-grid, all times",
       "timing_scope": "GPU query",
-      "note": "12 cases; NVIDIA A100 80GB PCIe; arms nmrom_q0_cn / nmrom_q32_cn",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
       "alt": {
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
-        "accurate": 6.329981044836846,
-        "fast": 5.352689803632808
+        "accurate": 4.697079633236556,
+        "fast": 4.6228121057786415
       },
       "appendix_only": null
     },
@@ -739,6 +739,46 @@
         "scope": "vs.\\ CN--CG rtol $10^{-6}$",
         "accurate": 148.75770326992182,
         "fast": 146.4178307657556
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank, batched fit)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951003422841,
+        "ms": 3.355792025104165,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388479503345592,
+        "speedup": 12.966818883235897
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997149815502,
+        "ms": 3.130949568003416,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063253580697757,
+        "speedup": 13.898003290765763
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.1838961673460271,
+        "ms": 43.51394739933312,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_field_direct_tol1e-4_chol / nmrom_q32_field_direct_tol1e-4_chol",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 41.00545595458904,
+        "fast": 38.258036745533566
       },
       "appendix_only": null
     },
@@ -1297,68 +1337,6 @@
         "accurate": 4.181976211016386,
         "fast": 4.207055069784597
       },
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat",
-      "dim": 3,
-      "intervals": 32,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 1.561584941191253,
-        "ms": 38.352411007508636,
-        "speedup": 0.13461852544831637
-      },
-      "accurate": {
-        "label": "$q=96$",
-        "error_pct": 0.7617815535839739,
-        "ms": 77.7792395092547,
-        "speedup": 0.06637947413466633
-      },
-      "fom": {
-        "name": "CN--CG, rtol $10^{-4}$",
-        "error_pct": 0.324568746473869,
-        "ms": 5.16294501721859
-      },
-      "source": "heat3d",
-      "job_id": "4033346",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat",
-      "dim": 3,
-      "intervals": 64,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 1.5471978124578238,
-        "ms": 40.37753585726023,
-        "speedup": 0.2685883598009542
-      },
-      "accurate": {
-        "label": "$q=96$",
-        "error_pct": 0.7542092089366933,
-        "ms": 85.4373979382217,
-        "speedup": 0.12693429798210296
-      },
-      "fom": {
-        "name": "CN--CG, rtol $10^{-4}$",
-        "error_pct": 0.3373665591596981,
-        "ms": 10.84493612870574
-      },
-      "source": "heat3d",
-      "job_id": "4033346",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
       "appendix_only": null
     }
   ],
@@ -2474,6 +2452,66 @@
       "metric": "energy-state (displacement and velocity)",
       "source": "wave",
       "displacement_pct": 2.8094300105452796
+    },
+    {
+      "problem": "Heat 3D, $32^3$ (final, evolved)",
+      "setting": "$q=0$",
+      "error_pct": 1.561584941191253,
+      "fom_error_pct": 0.324568746473869,
+      "speedup": 0.13461852544831637,
+      "fom": "CN--CG",
+      "metric": "same-grid, evolved times only (the record has no all-times value)",
+      "source": "heat3d"
+    },
+    {
+      "problem": "Heat 3D, $32^3$ (final, evolved)",
+      "setting": "$q=96$",
+      "error_pct": 0.7617815535839739,
+      "fom_error_pct": 0.324568746473869,
+      "speedup": 0.06637947413466633,
+      "fom": "CN--CG",
+      "metric": "same-grid, evolved times only (the record has no all-times value)",
+      "source": "heat3d"
+    },
+    {
+      "problem": "Heat 3D, $64^3$ (final, evolved)",
+      "setting": "$q=0$",
+      "error_pct": 1.5471978124578238,
+      "fom_error_pct": 0.3373665591596981,
+      "speedup": 0.2685883598009542,
+      "fom": "CN--CG",
+      "metric": "same-grid, evolved times only (the record has no all-times value)",
+      "source": "heat3d"
+    },
+    {
+      "problem": "Heat 3D, $64^3$ (final, evolved)",
+      "setting": "$q=96$",
+      "error_pct": 0.7542092089366933,
+      "fom_error_pct": 0.3373665591596981,
+      "speedup": 0.12693429798210296,
+      "fom": "CN--CG",
+      "metric": "same-grid, evolved times only (the record has no all-times value)",
+      "source": "heat3d"
+    },
+    {
+      "problem": "Heat 3D, $128^3$ (final, all times)",
+      "setting": "$q=0$",
+      "error_pct": 3.177643271559473,
+      "fom_error_pct": 1.5820140852734415,
+      "speedup": 0.4261412073068404,
+      "fom": "CN--CG",
+      "metric": "same-grid, all times including t=0",
+      "source": "intake_04_hires-heat"
+    },
+    {
+      "problem": "Heat 3D, $128^3$ (final, all times)",
+      "setting": "$q=96$",
+      "error_pct": 1.9321796613277418,
+      "fom_error_pct": 1.5820140852734415,
+      "speedup": 0.19993296624339812,
+      "fom": "CN--CG",
+      "metric": "same-grid, all times including t=0",
+      "source": "intake_04_hires-heat"
     }
   ],
   "pending": [
@@ -2546,7 +2584,8 @@
     "nHeadPoissonThreeAccErr": "0.26",
     "nHeadBurgersMidErr": "1.04",
     "nHeadBurgersMidS": "0.50",
-    "nHeadHeatThreeAccErr": "0.75",
+    "nFailHeatThreeEvolved": "0.75",
+    "nFailHeatThreeAll": "1.93",
     "nFailBurgersQzero": "16.26",
     "nFailBurgersAcc": "4.40",
     "nFailNsQzero": "20.34",
@@ -2607,9 +2646,9 @@
     "nBurgDevAccErrFortyNinetySix": "0.60",
     "nBurgDevAccSFortyNinetySix": "4.87",
     "nBurgHoldAccSFortyNinetySix": "5.38",
-    "nHeadFasterRows": "25",
-    "nHeadRows": "31",
-    "nHeadAccFasterSubOne": "13",
+    "nHeadFasterRows": "26",
+    "nHeadRows": "30",
+    "nHeadAccFasterSubOne": "14",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",
     "nBaseKimRange": "120\\mbox{--}252",

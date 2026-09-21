@@ -105,9 +105,10 @@ uses CN--CG at $\Delta t=0.025$, rtol $10^{-6}$. CN: reduced
 Crank--Nicolson steps; batched fit: each output time fitted
 independently to exactly propagated test moments (linear autonomous
 problems with eigenfunction tests only). The sealed 2D cohort was opened
-once; the Table~\ref{tab:headline} $1024^2$ row uses the development
-cases. Wide bank: $R=128$, $k=8$; earlier: the $R=32$ checkpoint of the
-Heat rows; 3D: the Heat 3D model of Table~\ref{tab:headline}. The 3D rows
+once and gives every wide-bank row of Table~\ref{tab:headline}; the
+development row ran on another GPU (A100) and is shown for reference.
+Wide bank: $R=128$, $k=8$; earlier: the $R=32$ checkpoint of the
+Heat rows; 3D: the Heat 3D model of Table~\ref{tab:failures}. The 3D rows
 miss the 1\,\% all-times target; $256^3$ is the first 16 final cases,
 not a mesh trend.}
 \label{tab:heat-hires}
@@ -126,6 +127,29 @@ in Table~\ref{tab:headline}, in other jobs, and no ratio across jobs is
 formed.}
 \label{tab:nmrom-baselines-appx}
 \resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines_appx}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Which knob to turn, measured on Burgers2D from frozen models.
+Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
+dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
+and cap: 32 held-out validation cases (Table~\ref{tab:knobs}),
+stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
+$^{\ast}$\,Jobs \provPanelJob{} and \provPanelTenTwentyFourJob{};
+Table~\ref{tab:figure1-table} is another allocation.}
+\label{tab:knobs-main}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Knob & Turn it to & Effect on error & Effect on cost \\
+\midrule
+Correction rank $q$ & $0\to256$ & $\nQxmErrSpan\times$ lower & $\nQxmCostSpan\times$ higher \\
+Empirical quadrature & dense $\to$ stored rule & Table~\ref{tab:figure1-table} & $\nPanelEqSpeedupZero\times$ lower at $256^2$, $\nPanelTenTwentyFourEqSpeedupZero\times$ at $1024^2$$^{\ast}$ \\
+Stopping tolerance & looser & $\nTuneTolErrConverged\to\nTuneTolErrLoose\,\%$ & $\nTuneTolSavingPct\,\%$ lower \\
+Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 \begin{table}[htbp]

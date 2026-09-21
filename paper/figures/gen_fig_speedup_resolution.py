@@ -43,7 +43,7 @@ for r in prov['rows']:
     for s in ('fast', 'accurate'):
         if r[s]:
             series.setdefault((r['dim'], r['problem'], s), []).append(
-                dict(intervals=r['intervals'], speedup=r[s]['speedup'], error_pct=r[s]['error_pct'], fom=r['fom']['name'],
+                dict(intervals=r['intervals'], speedup=r[s]['speedup'], error_pct=r[s]['error_pct'], fom=r['fom']['name'], eq=r[s].get('eq'),
                      status=r['status'], job_id=r['job_id'], source=r['source']))
 
 plt.rcParams.update({'font.size': 8, 'font.family': 'serif', 'axes.edgecolor': MUTED, 'axes.labelcolor': INK,
@@ -57,11 +57,19 @@ for ax, dim in zip(axes, (2, 3)):
         prov_flag = any(x['status'].startswith('provisional') for x in pts)
         ax.plot([x['intervals'] for x in pts], [x['speedup'] for x in pts], color=c, lw=1.6 if s == 'fast' else 1.2,
                 ls='-' if s == 'fast' else '--', marker=mk, ms=5.5, mfc=c if s == 'fast' else 'white', mec=c, mew=1.2, zorder=3)
+        for x in pts:          # a dense-residual accurate point: marked, so it is not read as the method's quadrature path
+            if x.get('eq') == 'dense':
+                ax.plot([x['intervals']], [x['speedup']], marker=mk, ms=5.5, mfc='white', mec=MUTED, mew=1.0, ls='none', zorder=4)
+                ax.annotate('dense residual', (x['intervals'], x['speedup']), xytext=(6, -3), textcoords='offset points', fontsize=6.5, color=MUTED)
         if s == 'fast':
-            first = p in ('Poisson, L-shape', 'Poisson (dev. sources)')          # its end point sits between two other labels
+            # labels whose end point is crowded are anchored at the first point instead: (offset, horizontal alignment)
+            AT_FIRST = {'Poisson, L-shape': ((-6, 9), 'right'), 'Heat': ((4, -13), 'left')}
+            AT_LAST = {'Poisson (dev. sources)': ((-8, 7), 'right')}
+            first = p in AT_FIRST
             x = pts[0] if first else pts[-1]
-            ax.annotate(LABEL.get(p, p) + (' (provisional)' if prov_flag else ''), (x['intervals'], x['speedup']), xytext=(-6, 5) if first else NUDGE.get(p, (6, 2)),
-                        ha='right' if first else 'left', textcoords='offset points', fontsize=7, color=INK)
+            off, ha = AT_FIRST[p] if first else AT_LAST.get(p, (NUDGE.get(p, (6, 2)), 'left'))
+            ax.annotate(LABEL.get(p, p) + (' (provisional)' if prov_flag else ''), (x['intervals'], x['speedup']), xytext=off,
+                        ha=ha, textcoords='offset points', fontsize=7, color=INK)
     ticks = sorted({x['intervals'] for (d, _, _), pts in series.items() if d == dim for x in pts})
     ax.set_xticks(ticks); ax.set_xticklabels([f'${t}^{dim}$' for t in ticks]); ax.minorticks_off()
     ax.set_xlim(ticks[0] / 1.35, ticks[-1] * (2.6 if dim == 2 else 2.2))

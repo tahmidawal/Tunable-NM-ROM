@@ -44,81 +44,74 @@
 
 % =====================================================================
 \begin{abstract}
-A reduced-order PDE solver should let a practitioner choose accuracy and
-cost after training. We present a nonlinear-manifold reduced-order model
-(NM-ROM) that provides this choice from one frozen decoder: nested
-correction directions enlarge the trial space without retraining, while
-solver tolerance and empirical quadrature set the cost of the reduced
-solve. The architecture combines a learned spatial bank with a small
-nonlinear coefficient map, exact boundary enforcement and matrix-free
-weak residual projection; linear operators are preassembled and
-validated quadrature reduces nonlinear residual evaluation. Each
-comparison times the model and a named full-order solver in one GPU
-allocation. On two-dimensional
-Poisson at $\nHeadPoissonMesh$ the accurate setting reaches
-$\nHeadPoissonAccErr\,\%$ error $\nHeadPoissonAccS\times$ faster than
-conjugate gradients, and the fast setting is $\nHeadPoissonFastS\times$
-faster; on an L-shaped domain the accurate setting is
-$\nHeadLshapeAccS\times$ faster; on held-out three-dimensional Poisson it
-reaches $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
-On Burgers the fast setting is $\nHeadBurgersFastS\times$ faster than
-Newton--BiCGStab at $1024^2$, and on held-out Burgers cases it is more
-accurate at matched latent dimension than a reproduced shallow
-masked-autoencoder NM-ROM and than POD-LSPG; a correction ladder lowers
-same-grid error $\nQxmErrSpan\times$ for $\nQxmCostSpan\times$ the
-runtime; on development cases the accurate Burgers setting is slower
-than the full-order solver through $2048^2$ and faster at $4096^2$.
-Against the selected full-order setting, fast-setting speedup grows
-with resolution in every series. The named solvers
-remain more accurate at their tolerances.
-Three-dimensional Burgers, Navier--Stokes and the full wave state miss
-their targets and are reported as the method's present limits.
+Learned PDE surrogates such as Fourier Neural Operators and DeepONets
+typically deliver one (accuracy, speed) operating point per trained
+model; moving it generally requires retraining. We present a
+nonlinear-manifold reduced-order model (NM-ROM) for Poisson, heat and
+viscous Burgers equations that exposes a deployment-time accuracy--speed
+tradeoff from a single trained decoder, controlled at inference time by
+the correction rank $q$, which sets accuracy, and by the solver
+tolerance, budget and empirical-quadrature rule, which set cost. The framework combines a frozen coordinate-network spatial
+bank with a small nonlinear head and nested correction directions; exact
+Dirichlet enforcement by a vanishing factor in the bank; least-squares
+Petrov--Galerkin projection of the discrete residual onto fixed weak
+tests, with every linear operator preassembled; matrix-free JAX
+evaluation; and NNLS empirical quadrature for the Burgers advection,
+certified on held-out reached states. Across Poisson and heat in two and
+three dimensions and viscous Burgers in two, at meshes up to $4096^2$,
+the same frozen model keeps its accuracy as the two-dimensional mesh is
+refined, so its speedup over the named iterative solvers grows with
+resolution, reaching $\nHiresPoissonAccSFortyNinetySix\times$ at
+$\nHeadPoissonAccErr\,\%$ error against conjugate gradients on Poisson,
+$\nHeatWideAccS\times$ at $\nHeatWideAccErr\,\%$ against Crank--Nicolson
+CG on a sealed held-out heat cohort, and $\nBurgDevAccSFortyNinetySix\times$ at
+$\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers against Newton--BiCGStab
+($\nBurgHoldAccSFortyNinetySix\times$ at
+$\nBurgHoldAccErrFortyNinetySix\,\%$ on held-out cases); at matched latent
+dimension its fast setting is far more accurate than a reproduced
+shallow-masked-autoencoder NM-ROM and POD-LSPG. The named solvers remain
+more accurate at their tolerances, and three-dimensional Burgers,
+Navier--Stokes and full-state waves miss their targets.
 \end{abstract}
 
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
 
-Neural operators for partial differential equations (PDEs)
-\citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,Li2024PINO,BoulleTownsend2024}
-provide fast amortised inference. At a fixed grid and inference
-procedure, a trained operator returns one accuracy and runtime point.
-A practitioner may instead need to spend more computation on a difficult
-query, or accept a less accurate solution when response time matters.
-Classical full-order methods (FOMs) expose numerical controls such as
-iteration tolerance, but their cost can grow substantially with mesh
-resolution. The question is whether a trained reduced model can provide
-a useful accuracy--cost tradeoff at deployment.
-
-Projection-based reduced-order models address this question by solving
-the governing equations in a smaller space
+Learned PDE surrogates such as neural operators
+\citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator} typically
+deliver one accuracy--speed operating point per trained model; moving it
+generally requires retraining. Projection-based reduced-order models
+(ROMs) solve the governing equations in a small trial space
 \citep{BennerGugercinWillcox2015,Sirovich1987POD}. A linear subspace is
 inexpensive to use, but can require many basis functions to represent
-moving fronts. Nonlinear-manifold ROMs learn a more compact
-representation \citep{LeeCarlberg2020,KimChoi2022NMROM}; their online
-nonlinear solve can, however, offset the benefit of fewer unknowns.
-Representation accuracy and computational advantage therefore need to
-be measured separately.
+moving fronts; nonlinear-manifold ROMs learn a more compact
+representation \citep{LeeCarlberg2020,KimChoi2022NMROM}, although their
+online nonlinear solve can offset the benefit of fewer unknowns. A
+deployed ROM usually offers one operating point, whereas a practitioner
+may want to spend more computation on a difficult query or accept a less
+accurate answer when response time matters, and the cost of a
+full-order solve grows with the mesh. We ask: \emph{can one trained
+NM-ROM give a deployment-time accuracy--cost choice, keep its accuracy
+as the mesh is refined, and be faster than named iterative full-order
+solvers while being more accurate than prior nonlinear-manifold ROMs?}
 
-We present an NM-ROM with a deployment-time accuracy--cost family from
-one trained decoder. The solution is represented by a learned spatial
-bank multiplied by a nonlinear map of latent variables. We augment this
-map with nested, precomputed correction directions. Activating more
-directions enlarges the trial space without changing the learned
-weights. The correction rank is the primary representation control;
-iteration limits and stopping tolerances govern the numerical solve,
-and empirical quadrature reduces residual-evaluation cost where its
-validation permits. All online coefficients are determined from the
-weak PDE residual, without access to the reference solution.
+Our model represents the solution by a learned spatial bank multiplied
+by a nonlinear map of latent variables, augmented with nested,
+precomputed correction directions: activating more directions enlarges
+the trial space without changing the learned weights. The correction
+rank is the representation control; stopping tolerances and empirical
+quadrature set the cost of the solve. All online coefficients come from
+the weak PDE residual, without access to the reference solution.
 
-Our experiments measure what this mechanism delivers against full-order
-solvers. Table~\ref{tab:headline} reports, for every problem and mesh,
-the error and the speedup of one frozen model, at an accurate and a fast
-setting where both were measured, against a named solver timed in the
-same allocation;
-Figure~\ref{fig:speedup} shows how the speedup changes with resolution,
-and Table~\ref{tab:failures} lists the problems on which the method
-misses its target.
+For two-dimensional Poisson, heat and viscous Burgers the answer is
+largely yes (Table~\ref{tab:headline}, Figure~\ref{fig:speedup}): the
+accurate error stays near its coarse-mesh level up to $4096^2$ while the
+speedup over the named solver grows, and on held-out Burgers cases the
+model is far more accurate than a reproduced NM-ROM and POD-LSPG
+(Table~\ref{tab:nmrom-baselines}). It is not yet so for
+three-dimensional Burgers and heat, Navier--Stokes or the full wave
+state (Table~\ref{tab:failures}).
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -132,11 +125,14 @@ A learned spatial bank, a nonlinear head with a linear skip, and nested
 corrections support compact latent solves, boundary enforcement and
 node-local evaluation. The nonlinear coordinates and linear corrections have distinct roles
 in the reduced representation.
-\item \textbf{A practical weak-form implementation and paired evaluation.}
-Precomputed linear operators, matrix-free differentiation and validated
-empirical quadrature make the online solve measurable against
-full-order solvers, and paired accuracy and runtime measurements show
-where the reduced solve is faster.
+\item \textbf{Resolution-robust speedups over named iterative solvers.}
+With precomputed linear operators, matrix-free differentiation and
+validated empirical quadrature, the accurate setting reaches
+$\nHeadPoissonAccErr\,\%$ on Poisson at
+$\nHiresPoissonAccSFortyNinetySix\times$ the speed of CG, and
+$\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers at
+$\nBurgDevAccSFortyNinetySix\times$ that of Newton--BiCGStab, at $4096^2$
+in the same allocation.
 \end{enumerate}
 
 \section{Related Work}\label{sec:related}
@@ -516,12 +512,10 @@ L-shaped domain the accurate setting is
 $\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. The earlier
 heat checkpoint crosses CG between $256^2$ and $1024^2$ ($\nHeadHeatFastS\times$
 at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
-cohort, reaches $\nHeatWideAccErr\,\%$ over all times and is
+cohort at every mesh, reaches $\nHeatWideAccErr\,\%$ over all times and is
 $\nHeatWideAccS\times$ faster than CN--CG at $4096^2$
 ($\nHeatWideBatchedAccS\times$ with the batched fit). In three dimensions the held-out Poisson cohort gives
-$\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$;
-three-dimensional heat reaches $\nHeadHeatThreeAccErr\,\%$ over evolved times and is slower
-than CG at both meshes.
+$\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
 
 \paragraph{Burgers.}
 The reduced solve costs the same at every mesh, so the fast setting
@@ -594,13 +588,17 @@ $\nFailNsQzero\,\%$ to $\nFailNsAcc\,\%$; \nFailNsFailing{} of
 \nFailNsCases{} held-out cases miss the $\nFailNsTarget\,\%$ target. On reflective waves the fast setting is faster than
 CG but its energy-state error, which includes velocity, is
 $\nFailWaveQzero\,\%$; corrections bring it to $\nFailWaveAcc\,\%$, still
-above CG's, at a cost that removes the speedup. The three-dimensional
-solves evaluate the residual densely.
+above CG's, at a cost that removes the speedup. Three-dimensional heat
+reaches $\nFailHeatThreeEvolved\,\%$ over evolved times (the only
+convention its $32^3$/$64^3$ record holds) but $\nFailHeatThreeAll\,\%$
+once $t=0$ is counted at $128^3$, and is slower than CN--CG. The
+three-dimensional solves evaluate the residual densely.
 
 \begin{table}[t]
 \centering
 \caption{Problems on which the method misses its target. Error is the
-worst same-grid relative $L^2$ error (\%) over evolved times; the wave
+worst same-grid relative $L^2$ error (\%) over evolved times, except the
+Heat 3D $128^3$ rows (all output times including $t=0$); the wave
 error is the energy-state error over displacement and velocity.
 Speedup is against the named FOM in the same allocation.}
 \label{tab:failures}
@@ -628,36 +626,13 @@ median GPU query times. All rows meet the stopping rule.}
 
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
-Table~\ref{tab:knobs-main} summarises the deployment-time controls.
+Appendix Table~\ref{tab:knobs-main} summarises the deployment-time controls.
 Correction rank is the accuracy control (with a smaller fixed test space
 the same ranks give only $\nQxmTwoFiftySixErrSpan\times$, so test count is
 held fixed along the ladder). Empirical quadrature and the stopping tolerance
 are cost controls: they lower the runtime at little or no change in
 error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
-
-\begin{table}[t]
-\centering
-\caption{Which knob to turn, measured on Burgers2D from frozen models.
-Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
-dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
-and cap: 32 held-out validation cases (Table~\ref{tab:knobs}),
-stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
-$^{\ast}$\,Jobs \provPanelJob{} and \provPanelTenTwentyFourJob{};
-Table~\ref{tab:figure1-table} is another allocation.}
-\label{tab:knobs-main}
-\small
-\begin{tabular}{@{}llll@{}}
-\toprule
-Knob & Turn it to & Effect on error & Effect on cost \\
-\midrule
-Correction rank $q$ & $0\to256$ & $\nQxmErrSpan\times$ lower & $\nQxmCostSpan\times$ higher \\
-Empirical quadrature & dense $\to$ stored rule & Table~\ref{tab:figure1-table} & $\nPanelEqSpeedupZero\times$ lower at $256^2$, $\nPanelTenTwentyFourEqSpeedupZero\times$ at $1024^2$$^{\ast}$ \\
-Stopping tolerance & looser & $\nTuneTolErrConverged\to\nTuneTolErrLoose\,\%$ & $\nTuneTolSavingPct\,\%$ lower \\
-Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 A separate ladder, in which the test count follows a fixed schedule
 $M=4(k+q)$, was evaluated once on a sealed held-out cohort after every
@@ -675,48 +650,50 @@ reported maximum), and universal convergence, which fails on
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-Speedups are measured against the named iterative full-order solvers at
-the stated tolerances; comparison with other full-order solver classes
-(direct and spectral solvers, coarser discretisations) is outside the
-scope of this study. The named FOM is more accurate than the NM-ROM in
-every row. On heat at $4096^2$ the linear solve in the learned bank, a
-baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is faster than every
-NM-ROM setting. The accurate
-Poisson errors are close to the frozen bank's projection floor
-($\nHiresFloorSquare\,\%$ square, $\nHiresFloorCube\,\%$ cube), which no
-correction rank can pass; the L-shape accurate setting
-($\nHiresLshapeAccErr\,\%$ against a floor of $\nHiresLshapeFloor\,\%$) is
-limited by the head. Burgers accuracy on development cases does not
-carry to held-out cases (Tables~\ref{tab:headline}
-and~\ref{tab:nmrom-baselines}): the free solve in the same 512-function
-bank reaches only $\nBurgBankFloorConfirm\,\%$ on a held-out cohort.
-Three-dimensional heat misses 1\,\% once $t=0$ is counted
-($\nHeatThreeAllTimes\,\%$ at $128^3$, Table~\ref{tab:heat-hires}): its
-bank represents the initial field only to $\nHeatThreeInit\,\%$.
-Except where marked final, cohorts are small development cohorts, and
-timings are medians without dispersion. The fixed-test-space
-rank study uses one checkpoint; the multi-seed and sealed study sets
-$M=4(k+q)$, so it does not replicate that fixed-test-count study. FOM
-comparisons do not isolate the nonlinear head's contribution over the
-linear span of the same bank. Quadrature rules are validated on a finite
-set of reached states, not certified globally, and none is used in three
-dimensions. The reduced nonlinear solve can converge to a wrong branch,
-and lower same-grid error does not remove discretisation error.
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=2pt,parsep=0pt]
+\item Speedups are measured against the named iterative full-order
+solvers at the stated tolerances; comparison with other full-order
+solver classes (direct and spectral solvers, coarser discretisations) is
+outside the scope of this study. The named FOM is more accurate than the
+NM-ROM in every row, and on heat at $4096^2$ the linear solve in the
+learned bank, a baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is
+faster than every NM-ROM setting.
+\item Accuracy is bounded by the frozen bank: Burgers development
+accuracy does not carry to held-out cases (the free solve in the same
+512-function bank reaches only $\nBurgBankFloorConfirm\,\%$ there); the
+Poisson errors sit near the bank floor ($\nHiresFloorSquare\,\%$ square,
+$\nHiresFloorCube\,\%$ cube); the L-shape ($\nHiresLshapeAccErr\,\%$ against
+a floor of $\nHiresLshapeFloor\,\%$) is limited by the head; the
+three-dimensional heat bank represents the initial field only to
+$\nHeatThreeInit\,\%$.
+\item The fixed-test-space rank study uses one checkpoint; the
+multi-seed and sealed study sets $M=4(k+q)$, so it does not replicate
+it. Comparisons with the FOM do not isolate the nonlinear head's
+contribution over the linear span of the same bank.
+\item Quadrature rules are validated on a finite set of reached states,
+not certified globally, and none is used in three dimensions; the
+reduced solve can converge to a wrong branch, and lower same-grid error
+does not remove discretisation error.
+\item Except where marked final or held-out, cohorts are small
+development cohorts, and timings are medians without dispersion.
+\end{itemize}
 
 \FloatBarrier
 \section{Conclusion and Future Work}\label{sec:conclusion}
 
-We presented an NM-ROM whose nested corrections change approximation
-capacity after training. From one frozen model, the accurate setting is
-$\nHeadPoissonAccS\times$ faster than CG on Poisson at
-$\nHeadPoissonMesh$ with $\nHeadPoissonAccErr\,\%$ error, the fast Burgers
-setting is $\nHeadBurgersFastS\times$ faster than Newton--BiCGStab at
-$1024^2$, and fast-setting speedup grows with resolution in every
-problem measured. On development cases accurate nonlinear solves remain
-slower than the FOM through $2048^2$,
-and three problems miss their targets (Table~\ref{tab:failures}). Future
-work is a cheaper high-rank nonlinear solve, quadrature in three
-dimensions, reliable nonlinear initialization and unstructured meshes.
+One frozen NM-ROM, with nested corrections that change its approximation
+capacity after training, keeps its accuracy under mesh refinement on
+two-dimensional Poisson, heat and Burgers, so its speedup over the named
+iterative solvers grows with resolution: at $4096^2$ its accurate setting
+reaches $\nHeadPoissonAccErr\,\%$ at $\nHiresPoissonAccSFortyNinetySix\times$
+on Poisson, $\nHeatWideAccErr\,\%$ at $\nHeatWideAccS\times$ on held-out
+heat and $\nBurgHoldAccErrFortyNinetySix\,\%$ at
+$\nBurgHoldAccSFortyNinetySix\times$ on held-out Burgers, far more
+accurate than a reproduced NM-ROM and POD-LSPG. The named solvers remain
+more accurate, and three-dimensional Burgers, heat and Navier--Stokes
+and the full wave state miss their targets (Table~\ref{tab:failures});
+future work is a better three-dimensional bank, a cheaper high-rank
+solve and quadrature in three dimensions.
 
 \section*{Reproducibility statement}\label{sec:repro}
 Every table and prose number is generated from hash-pinned run records

@@ -31,3 +31,17 @@ controls are not featured in the PDF; Limitations carries one neutral scoping
 sentence instead. Their evidence, macros and provenance stay in the repository;
 `check_headline.py` asserts none of them appears in the rendered text. The user
 may add them back later.
+
+User decisions (2026-09-21, finishing pass):
+- Table 2 reports accuracy and compiled-query memory only; no time column (checked).
+- Table 1 keeps its current layout (no one-row-per-problem compaction); GPU-query
+  time in Table 1, complete-query in captions/appendix.
+- Heat: the wide-bank series uses the sealed cohort at every mesh; plain
+  Crank–Nicolson row leads, batched fit labelled beneath it.
+- Heat 3D is reported in the failures table (all-times where a record holds it;
+  the accepted 32^3/64^3 records hold evolved times only and are labelled so),
+  not in Table 1 or Figure 1.
+- POD-LSPG rows stay in Table 2: an explicit exception to the "no POD rows"
+  preference above.
+- The abstract follows the older paper's four-move structure (gap; what we
+  present and its controls; "the framework combines"; results + one limits clause).

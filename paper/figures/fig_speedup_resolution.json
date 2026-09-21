@@ -1,6 +1,6 @@
 {
   "evidence": "headline-provenance.json",
-  "evidence_sha256": "4d92f60ce69017d491378dfb408a51f3f10ea70f650c77136447613ae47f71f9",
+  "evidence_sha256": "3c163ee38429d435c2a214dbbab20b8d9e83bb87be7b074e14662a8caf38066d",
   "series": {
     "2D|Burgers|accurate": [
       {
@@ -8,6 +8,7 @@
         "speedup": 0.042609757141137336,
         "error_pct": 0.5129194368597558,
         "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "eq": "single-draw",
         "status": "development",
         "job_id": "3789570",
         "source": "burgers_panel"
@@ -17,6 +18,7 @@
         "speedup": 0.06755189897313166,
         "error_pct": 0.5509721660506048,
         "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "eq": "single-draw",
         "status": "development",
         "job_id": "3805065",
         "source": "burgers_panel"
@@ -26,6 +28,7 @@
         "speedup": 0.0036869440868685472,
         "error_pct": 0.5860844308137502,
         "fom": "Newton--BiCGStab, tol $10^{-4}$",
+        "eq": "dense",
         "status": "development",
         "job_id": "3789572",
         "source": "burgers_panel"
@@ -35,6 +38,7 @@
         "speedup": 0.9887885358833294,
         "error_pct": 0.8652934857324558,
         "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "eq": "lattice",
         "status": "development; 6 cases, arm chosen here",
         "job_id": "4071616",
         "source": "intake_07_hires-burgers"
@@ -44,6 +48,7 @@
         "speedup": 4.872572108926071,
         "error_pct": 0.6042128376406513,
         "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "eq": "lattice",
         "status": "development; 6 cases, arm chosen here",
         "job_id": "4079320",
         "source": "intake_09_hires-burgers"
@@ -55,6 +60,7 @@
         "speedup": 0.7876313363478396,
         "error_pct": 1.8891456982792685,
         "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "eq": null,
         "status": "development",
         "job_id": "3789570",
         "source": "burgers_panel"
@@ -64,6 +70,7 @@
         "speedup": 1.30681761154721,
         "error_pct": 2.139992785875173,
         "fom": "Newton--BiCGStab, tol $10^{-3}$",
+        "eq": null,
         "status": "development",
         "job_id": "3805065",
         "source": "burgers_panel"
@@ -73,6 +80,7 @@
         "speedup": 2.0191597673133193,
         "error_pct": 2.2912840655657516,
         "fom": "Newton--BiCGStab, tol $10^{-4}$",
+        "eq": null,
         "status": "development",
         "job_id": "3789572",
         "source": "burgers_panel"
@@ -82,6 +90,7 @@
         "speedup": 4.163933524353346,
         "error_pct": 2.37213269036348,
         "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "eq": null,
         "status": "development; 6 cases, arm chosen here",
         "job_id": "4071616",
         "source": "intake_07_hires-burgers"
@@ -91,6 +100,7 @@
         "speedup": 12.862733728039396,
         "error_pct": 2.414951606064111,
         "fom": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "eq": null,
         "status": "development; 6 cases, arm chosen here",
         "job_id": "4079320",
         "source": "intake_09_hires-burgers"
@@ -102,6 +112,7 @@
         "speedup": 0.22302384595833427,
         "error_pct": 4.559260371319415,
         "fom": "CN--CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development; earlier checkpoint, one setting",
         "job_id": "3529772",
         "source": "paired_cg"
@@ -111,6 +122,7 @@
         "speedup": 0.6118243600736881,
         "error_pct": 4.555681208224373,
         "fom": "CN--CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development; earlier checkpoint, one setting",
         "job_id": "3529772",
         "source": "paired_cg"
@@ -120,6 +132,7 @@
         "speedup": 4.848179130967018,
         "error_pct": 4.555479479880739,
         "fom": "CN--CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development; earlier checkpoint, one setting",
         "job_id": "3529772",
         "source": "paired_cg"
@@ -128,18 +141,20 @@
     "2D|Heat (wide bank)|accurate": [
       {
         "intervals": 1024,
-        "speedup": 2.14265667081457,
-        "error_pct": 0.23573417192589777,
+        "speedup": 1.5919839611588278,
+        "error_pct": 0.48761323417433267,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
-        "status": "development; 128-function bank",
-        "job_id": "4054869",
-        "source": "intake_02_hires-heat"
+        "eq": null,
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
       },
       {
         "intervals": 2048,
         "speedup": 9.743661198324537,
         "error_pct": 0.4876132354521976,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -149,6 +164,7 @@
         "speedup": 35.97407245341486,
         "error_pct": 0.4876132355320749,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -157,18 +173,20 @@
     "2D|Heat (wide bank)|fast": [
       {
         "intervals": 1024,
-        "speedup": 1.811850056630079,
-        "error_pct": 0.5607283273904548,
+        "speedup": 1.5668124244211263,
+        "error_pct": 1.3615913158587163,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
-        "status": "development; 128-function bank",
-        "job_id": "4054869",
-        "source": "intake_02_hires-heat"
+        "eq": null,
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
       },
       {
         "intervals": 2048,
         "speedup": 9.588343422515257,
         "error_pct": 1.3615913163566813,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -178,6 +196,7 @@
         "speedup": 35.4082211317936,
         "error_pct": 1.361591316387811,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -185,10 +204,21 @@
     ],
     "2D|Heat (wide bank, batched fit)|accurate": [
       {
+        "intervals": 1024,
+        "speedup": 13.898003290765763,
+        "error_pct": 0.4875997149815502,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
         "intervals": 2048,
         "speedup": 60.01114685519034,
         "error_pct": 0.4875997162513447,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -198,6 +228,7 @@
         "speedup": 103.382655607953,
         "error_pct": 0.4875997163307145,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -205,10 +236,21 @@
     ],
     "2D|Heat (wide bank, batched fit)|fast": [
       {
+        "intervals": 1024,
+        "speedup": 12.966818883235897,
+        "error_pct": 1.3615951003422841,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
         "intervals": 2048,
         "speedup": 57.045331805333646,
         "error_pct": 1.3615951008399731,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -218,6 +260,7 @@
         "speedup": 100.64314054500332,
         "error_pct": 1.3615951008710845,
         "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "eq": null,
         "status": "sealed held-out; opened once",
         "job_id": "4060928",
         "source": "intake_01_hires-heat"
@@ -229,6 +272,7 @@
         "speedup": 3.1299969911002545,
         "error_pct": 0.968850419215881,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3780692",
         "source": "paired_cg"
@@ -238,6 +282,7 @@
         "speedup": 13.89680050665934,
         "error_pct": 0.9647906290076345,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3783813",
         "source": "paired_cg"
@@ -247,6 +292,7 @@
         "speedup": 72.76811016327979,
         "error_pct": 0.9645883880109439,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4049279",
         "source": "intake_00_hires-poisson"
@@ -256,6 +302,7 @@
         "speedup": 146.13583344322683,
         "error_pct": 0.964537840152561,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4051236",
         "source": "intake_00_hires-poisson"
@@ -267,6 +314,7 @@
         "speedup": 3.3253067456640246,
         "error_pct": 3.1567468474549267,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3780692",
         "source": "paired_cg"
@@ -276,6 +324,7 @@
         "speedup": 15.230242482252532,
         "error_pct": 3.1495039123511046,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3783813",
         "source": "paired_cg"
@@ -285,6 +334,7 @@
         "speedup": 74.34952018557414,
         "error_pct": 3.1491428879205863,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4049279",
         "source": "intake_00_hires-poisson"
@@ -294,6 +344,7 @@
         "speedup": 147.7049319223631,
         "error_pct": 3.149052648463983,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4051236",
         "source": "intake_00_hires-poisson"
@@ -305,6 +356,7 @@
         "speedup": 3.8449897420640498,
         "error_pct": 2.130548143759591,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3784663",
         "source": "lshape"
@@ -314,6 +366,7 @@
         "speedup": 6.0670471046288705,
         "error_pct": 2.1232983314622316,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3789568",
         "source": "lshape"
@@ -323,6 +376,7 @@
         "speedup": 9.764411026463936,
         "error_pct": 2.1956586483888754,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4057694",
         "source": "intake_00_hires-poisson"
@@ -332,6 +386,7 @@
         "speedup": 19.317471308306086,
         "error_pct": 2.1950989738306297,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4057694",
         "source": "intake_00_hires-poisson"
@@ -343,6 +398,7 @@
         "speedup": 4.044737152642725,
         "error_pct": 3.8608496739056593,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3784663",
         "source": "lshape"
@@ -352,6 +408,7 @@
         "speedup": 6.176130590034533,
         "error_pct": 3.8520647297506585,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "3789568",
         "source": "lshape"
@@ -361,6 +418,7 @@
         "speedup": 10.008394971570402,
         "error_pct": 3.849894344385892,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4057694",
         "source": "intake_00_hires-poisson"
@@ -370,49 +428,10 @@
         "speedup": 19.420073438055997,
         "error_pct": 3.849360094871094,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4057694",
         "source": "intake_00_hires-poisson"
-      }
-    ],
-    "3D|Heat|accurate": [
-      {
-        "intervals": 32,
-        "speedup": 0.06637947413466633,
-        "error_pct": 0.7617815535839739,
-        "fom": "CN--CG, rtol $10^{-4}$",
-        "status": "accepted final",
-        "job_id": "4033346",
-        "source": "heat3d"
-      },
-      {
-        "intervals": 64,
-        "speedup": 0.12693429798210296,
-        "error_pct": 0.7542092089366933,
-        "fom": "CN--CG, rtol $10^{-4}$",
-        "status": "accepted final",
-        "job_id": "4033346",
-        "source": "heat3d"
-      }
-    ],
-    "3D|Heat|fast": [
-      {
-        "intervals": 32,
-        "speedup": 0.13461852544831637,
-        "error_pct": 1.561584941191253,
-        "fom": "CN--CG, rtol $10^{-4}$",
-        "status": "accepted final",
-        "job_id": "4033346",
-        "source": "heat3d"
-      },
-      {
-        "intervals": 64,
-        "speedup": 0.2685883598009542,
-        "error_pct": 1.5471978124578238,
-        "fom": "CN--CG, rtol $10^{-4}$",
-        "status": "accepted final",
-        "job_id": "4033346",
-        "source": "heat3d"
       }
     ],
     "3D|Poisson|accurate": [
@@ -421,6 +440,7 @@
         "speedup": 0.9406602553139782,
         "error_pct": 0.2648324881147418,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "accepted final",
         "job_id": "4028642",
         "source": "poisson3d"
@@ -430,6 +450,7 @@
         "speedup": 1.330341162818037,
         "error_pct": 0.26278484925919676,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "accepted final",
         "job_id": "4028642",
         "source": "poisson3d"
@@ -441,6 +462,7 @@
         "speedup": 0.9912259498727033,
         "error_pct": 1.398706785845361,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "accepted final",
         "job_id": "4028642",
         "source": "poisson3d"
@@ -450,6 +472,7 @@
         "speedup": 1.3846112009113518,
         "error_pct": 1.3924048766358852,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "accepted final",
         "job_id": "4028642",
         "source": "poisson3d"
@@ -461,6 +484,7 @@
         "speedup": 6.753091557557722,
         "error_pct": 0.15965075226329933,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4051032",
         "source": "intake_00_hires-poisson"
@@ -470,6 +494,7 @@
         "speedup": 23.179541295366462,
         "error_pct": 0.15960551059368017,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4056288",
         "source": "intake_00_hires-poisson"
@@ -481,6 +506,7 @@
         "speedup": 6.975613060595963,
         "error_pct": 0.5454752416100778,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4051032",
         "source": "intake_00_hires-poisson"
@@ -490,6 +516,7 @@
         "speedup": 23.658185326920147,
         "error_pct": 0.5456130298462576,
         "fom": "CG, rtol $10^{-2}$",
+        "eq": null,
         "status": "development",
         "job_id": "4056288",
         "source": "intake_00_hires-poisson"

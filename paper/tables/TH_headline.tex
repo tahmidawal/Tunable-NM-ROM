@@ -18,10 +18,11 @@ Poisson, L-shape$^{c}$ & $256^2$ & 2.13 & \textbf{3.84$\times$} & 3.86 & \textbf
 Heat$^{r}$ & $64^2$ & --- & --- & 4.56 & 0.22$\times$ & 1.59 & CN--CG, rtol $10^{-2}$ \\
  & $256^2$ & --- & --- & 4.56 & 0.61$\times$ & 0.93 & CN--CG, rtol $10^{-2}$ \\
  & $1024^2$ & --- & --- & 4.56 & \textbf{4.85$\times$} & 0.77 & CN--CG, rtol $10^{-2}$ \\
-Heat (wide bank)$^{t}$ & $1024^2$ & 0.24 & \textbf{2.14$\times$} & 0.56 & \textbf{1.81$\times$} & 0.14 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
-Heat (wide bank)$^{t}$$^{f}$ & $2048^2$ & 0.49 & \textbf{9.74$\times$} & 1.36 & \textbf{9.59$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
+Heat (wide bank)$^{t}$$^{f}$ & $1024^2$ & 0.49 & \textbf{1.59$\times$} & 1.36 & \textbf{1.57$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
+ & $2048^2$ & 0.49 & \textbf{9.74$\times$} & 1.36 & \textbf{9.59$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
  & $4096^2$ & 0.49 & \textbf{36.0$\times$} & 1.36 & \textbf{35.4$\times$} & 0.47 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-2}$ \\
-Heat (wide bank, batched fit)$^{t}$$^{f}$ & $2048^2$ & 0.49 & \textbf{60.0$\times$} & 1.36 & \textbf{57.0$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
+Heat (wide bank, batched fit)$^{t}$$^{f}$ & $1024^2$ & 0.49 & \textbf{13.9$\times$} & 1.36 & \textbf{13.0$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
+ & $2048^2$ & 0.49 & \textbf{60.0$\times$} & 1.36 & \textbf{57.0$\times$} & 0.18 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-3}$ \\
  & $4096^2$ & 0.49 & \textbf{103$\times$} & 1.36 & \textbf{101$\times$} & 0.47 & CN--CG, $\Delta t{=}0.05$, rtol $10^{-2}$ \\
 Burgers$^{e}$ & $256^2$ & 0.51$^{s}$ & 0.043$\times$ & 1.89 & 0.79$\times$ & 0.049 & Newton--BiCGStab, tol $10^{-3}$ \\
  & $512^2$ & 0.55$^{s}$ & 0.068$\times$ & 2.14 & \textbf{1.31$\times$} & 0.052 & Newton--BiCGStab, tol $10^{-3}$ \\
@@ -38,7 +39,5 @@ Poisson$^{f}$ & $32^3$ & 0.26 & 0.94$\times$ & 1.40 & 0.99$\times$ & 0.16 & CG, 
  & $64^3$ & 0.26 & \textbf{1.33$\times$} & 1.39 & \textbf{1.38$\times$} & 0.11 & CG, rtol $10^{-2}$ \\
 Poisson (dev. sources) & $128^3$ & 0.16 & \textbf{6.75$\times$} & 0.55 & \textbf{6.98$\times$} & 0.075 & CG, rtol $10^{-2}$ \\
  & $256^3$ & 0.16 & \textbf{23.2$\times$} & 0.55 & \textbf{23.7$\times$} & 0.049 & CG, rtol $10^{-2}$ \\
-Heat$^{e}$$^{f}$ & $32^3$ & 0.76 & 0.066$\times$ & 1.56 & 0.13$\times$ & 0.32 & CN--CG, rtol $10^{-4}$ \\
- & $64^3$ & 0.75 & 0.13$\times$ & 1.55 & 0.27$\times$ & 0.34 & CN--CG, rtol $10^{-4}$ \\
 \bottomrule
 \end{tabular}

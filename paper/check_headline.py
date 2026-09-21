@@ -33,7 +33,6 @@ for (p, d, s), pts in series.items():
 # hires-heat intake: heat rows carry an explicit time convention; the tight named-FOM ratios stay out of Table 1
 for r in prov['rows']:
     if r['problem'].startswith('Heat (wide bank'): assert r['error_convention'] == 'same-grid, all times' and r['alt']['scope'].startswith('vs.')
-    if r['problem'] == 'Heat' and r['dim'] == 3: assert 'evolved' in r['error_convention']
 # hires-burgers intake: held-out rows shown beside the development rows at both fine meshes; no lane slot left pending
 hb = {(r['problem'], r['intervals']) for r in prov['rows'] if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
 assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (2048, 4096)}, hb
@@ -48,7 +47,8 @@ import subprocess
 _pdf = subprocess.check_output(['pdftotext', str(P / 'main.pdf'), '-']).decode()
 _hits = re.findall(r'(?i)\bDST\b|sine[- ]?transform|SuperLU|sparse[- ]direct|coarse[- ]grid|Swarztrauber|FFT[- ]based|fast transform\b', _pdf)
 assert not _hits, _hits
-fails = prov['failures']; assert {f['source'] for f in fails} == {'burgers3d', 'ns3d', 'wave'}
+fails = prov['failures']; assert {f['source'] for f in fails} - {'burgers3d', 'ns3d', 'wave', 'heat3d'} <= {k for k in man if 'hires-heat' in k}
+assert not any(r['problem'] == 'Heat' and r['dim'] == 3 for r in prov['rows'])      # 2026-09-21: Heat 3D reported with the failures
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])
 main = (P / 'main.tex').read_text()
 abstract = main.split(r'\begin{abstract}')[1].split(r'\end{abstract}')[0]
@@ -56,9 +56,10 @@ assert not re.search(r'\d+\.\d', abstract), 'abstract numbers must be generated 
 macros = set(re.findall(r'\\(n[A-Za-z]+)', abstract))
 defined = set(re.findall(r'\\newcommand\{\\(n\w+)\}', (P / 'tables/headline-numbers.tex').read_text() + (P / 'tables/numbers.tex').read_text()))
 assert macros and macros <= defined, macros - defined
-assert all(m.startswith(('nHead', 'nQxm')) for m in macros), macros            # only generated-table numbers
+assert all(m.startswith(('nHead', 'nQxm', 'nHires', 'nHeat', 'nBurg', 'nBase')) for m in macros), macros   # only generated-table numbers
 assert 'full pre-registered criterion' not in main and 'knob bar' in main
-for label in ('tab:headline', 'fig:speedup', 'tab:failures', 'tab:nmrom-baselines', 'tab:knobs-main'):
+assert r'\label{tab:knobs-main}' in (P / 'sections/appendix.tex').read_text()   # 2026-09-21: knob table moved to the appendix for the page budget
+for label in ('tab:headline', 'fig:speedup', 'tab:failures', 'tab:nmrom-baselines'):
     assert r'\label{' + label + '}' in main.split(r'\bibliographystyle')[0], label
 app = (P / 'sections/appendix.tex').read_text() + (P / 'sections/method-details.tex').read_text()
 for label in ('tab:headline-times', 'tab:config3d', 'eq:wave-accel', 'eq:heat-step-corrected', 'eq:heat-endpoint', 'eq:block-damped'):

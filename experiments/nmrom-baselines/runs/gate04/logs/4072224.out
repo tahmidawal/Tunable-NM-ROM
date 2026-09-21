@@ -1,0 +1,623 @@
+host=pax105 source_commit=334b73367bf93289516e281f39bd544e9f9db413
+NVIDIA A100 80GB PCIe, GPU-e1155fbe-2d60-1685-178c-9d7f9cbab295, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  386G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu
+FOM mu=0.9 16.8s newton_max=3 relres_max=9.92e-12
+FOM mu=0.95 14.0s newton_max=3 relres_max=9.98e-12
+FOM mu=1.05 14.3s newton_max=3 relres_max=9.93e-12
+FOM mu=1.1 14.4s newton_max=3 relres_max=9.94e-12
+FOM mu=1.0 14.2s newton_max=3 relres_max=9.95e-12
+n=3364 M1=6728 M2=33730 P=320 nnz=1063720 train=5404 val=600
+LS-LSPG {'error': {'u': 0.31595478053609205, 'v': 0.31595478053609066, 'max': 0.31595478053609205}, 'gn_iterations_max': 3, 'gn_cap_hits': 0, 'last_step_norm_max': 1.8792790435690274e-07, 'finite': True} LS projection {'u': 0.179614308978526, 'v': 0.179614308978526, 'max': 0.179614308978526}
+NM-LSPG seed=0 {'error': {'u': 0.016662899821837666, 'v': 0.014012854279688501, 'max': 0.016662899821837666}, 'seconds_warm': 2.115535763092339, 'gn_iterations_mean': 3.31333327293396, 'gn_iterations_max': 5, 'gn_cap_hits': 0, 'last_step_norm_max': 1.7900401679845128e-07, 'finite': True, 'ic_error': 0.003635561651759184} projection {'u': 0.010434172945878208, 'v': 0.010021710306535, 'max': 0.010434172945878208}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 0.5540465972754874, 'v': 3.865637331770994, 'max': 3.865637331770994}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 3.798608175944537, 'gn_iterations_mean': 16.544666290283203}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 41.6320630931373, 'v': 103.10280177437389, 'max': 103.10280177437389}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.366802545264363, 'gn_iterations_mean': 17.82200050354004}
+NM-LSPG-HR seed=0 {'subnet_parity': 9.711675860437857e-13, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 118.29213332992045, 'v': 103.95371844073046, 'max': 118.29213332992045}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.658594224136323, 'gn_iterations_mean': 19.05466651916504}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 0.8136483800170645, 'v': 5.378048107093988, 'max': 5.378048107093988}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.17175474204123, 'gn_iterations_mean': 17.980667114257812}
+NM-LSPG-HR seed=0 {'subnet_parity': 6.341560494777349e-13, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 0.288188523899348, 'v': 1.9126411185634453, 'max': 1.9126411185634453}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 3.8063585408963263, 'gn_iterations_mean': 16.58799934387207}
+NM-LSPG seed=1 {'error': {'u': 0.014460925369739544, 'v': 0.012120616703960762, 'max': 0.014460925369739544}, 'seconds_warm': 2.113642165903002, 'gn_iterations_mean': 3.328000068664551, 'gn_iterations_max': 5, 'gn_cap_hits': 0, 'last_step_norm_max': 1.6705565541398333e-07, 'finite': True, 'ic_error': 0.003147441749426542} projection {'u': 0.00846649756975803, 'v': 0.00774838406451745, 'max': 0.00846649756975803}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 21.36803006821925, 'v': 130.0547377188767, 'max': 130.0547377188767}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 4.557883007917553, 'gn_iterations_mean': 19.859333038330078}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 18.302396863917746, 'v': 133.1519395096981, 'max': 133.1519395096981}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.820147269871086, 'gn_iterations_mean': 19.67799949645996}
+NM-LSPG-HR seed=1 {'subnet_parity': 1.903234198763501e-13, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 3.134134441506746, 'v': 7.100564283722487, 'max': 7.100564283722487}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.600285688880831, 'gn_iterations_mean': 18.889333724975586}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 4.836527574660613, 'v': 4.934403021152631, 'max': 4.934403021152631}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.327888012863696, 'gn_iterations_mean': 18.6473331451416}
+NM-LSPG-HR seed=1 {'subnet_parity': 1.2732442841885232e-13, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 0.19041283050965085, 'v': 1.977508135425304, 'max': 1.977508135425304}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 3.8356464761309326, 'gn_iterations_mean': 16.709999084472656}
+NM-LSPG seed=2 {'error': {'u': 0.016785990636415872, 'v': 0.01731942442067609, 'max': 0.01731942442067609}, 'seconds_warm': 2.1650532130151987, 'gn_iterations_mean': 3.4093332290649414, 'gn_iterations_max': 5, 'gn_cap_hits': 0, 'last_step_norm_max': 1.6028737527344526e-07, 'finite': True, 'ic_error': 0.004025159063003381} projection {'u': 0.010390085739615265, 'v': 0.01207244957547464, 'max': 0.01207244957547464}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 39.645405703919465, 'v': 187.77202420356548, 'max': 187.77202420356548}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 4.074778058100492, 'gn_iterations_mean': 17.768667221069336}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 0.5083074036323704, 'v': 8.460028266317055, 'max': 8.460028266317055}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.377525305841118, 'gn_iterations_mean': 17.84600067138672}
+NM-LSPG-HR seed=2 {'subnet_parity': 2.0871696720430865e-13, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 1.4174065376415572, 'v': 28.223643630922368, 'max': 28.223643630922368}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.44550504302606, 'gn_iterations_mean': 18.163999557495117}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 1.2662735786859993, 'v': 2.365992857355197, 'max': 2.365992857355197}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.4836354879662395, 'gn_iterations_mean': 19.39266586303711}
+NM-LSPG-HR seed=2 {'subnet_parity': 3.3320487500941016e-13, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 0.12208989073872704, 'v': 1.5636435111520337, 'max': 1.5636435111520337}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 3.810407876037061, 'gn_iterations_mean': 16.92133331298828}
+GATE {'rule': 'median over exactly three distinct seeds of NM-LSPG max relative error <= 1.5 % (diverged seed = inf) AND a converged, finite LS-LSPG control >= 10 %; HR gate: median NM-LSPG-HR (55 basis / 58 samples) <= 2 %', 'note': 'published 34-38 % is LS-LSPG-HR; this control is LS-LSPG without HR (their Fig. 13 shows LS-LSPG >> NM-LSPG at n_s=5)', 'attempt': 1, 'seeds': [0, 1, 2], 'nm_lspg_errors': [0.016662899821837666, 0.014460925369739544, 0.01731942442067609], 'nm_lspg_median': 0.016662899821837666, 'ls_lspg': 0.31595478053609205, 'ls_valid': True, 'hr_errors': [3.865637331770994, 130.0547377188767, 187.77202420356548], 'hr_median': 130.0547377188767, 'passed': False, 'hr_passed': False, 'recipe': {'act': 'swish', 'scale': 'feature', 'train_dtype': 'float32', 'b': 100, 'db': 10, 'ns': 5, 'nx': 60, 'nt': 1500, 'online_dtype': 'float64'}}
+jax_backend=gpu
+FOM mu=0.9 15.5s newton_max=3 relres_max=9.92e-12
+FOM mu=0.95 14.0s newton_max=3 relres_max=9.98e-12
+FOM mu=1.05 14.2s newton_max=3 relres_max=9.93e-12
+FOM mu=1.1 14.3s newton_max=3 relres_max=9.94e-12
+FOM mu=1.0 14.1s newton_max=3 relres_max=9.95e-12
+n=3364 M1=6728 M2=33730 P=320 nnz=1063720 train=5404 val=600
+LS-LSPG {'error': {'u': 0.31595478053609205, 'v': 0.31595478053609066, 'max': 0.31595478053609205}, 'gn_iterations_max': 3, 'gn_cap_hits': 0, 'last_step_norm_max': 1.8792790435690274e-07, 'finite': True} LS projection {'u': 0.179614308978526, 'v': 0.179614308978526, 'max': 0.179614308978526}
+seed0-u ep=0 lr=1.0e-03 train=8.8806e-03 val=1.2846e-03 best=1.2846e-03 t=0s
+seed0-u ep=15 lr=1.0e-03 train=6.8009e-05 val=6.0101e-05 best=6.0101e-05 t=2s
+seed0-u ep=20 lr=1.0e-03 train=5.1077e-05 val=4.8190e-05 best=4.8190e-05 t=3s
+seed0-u ep=25 lr=1.0e-03 train=4.2185e-05 val=3.9426e-05 best=3.9426e-05 t=4s
+seed0-u ep=30 lr=1.0e-03 train=3.2714e-05 val=3.0174e-05 best=3.0174e-05 t=4s
+seed0-u ep=35 lr=1.0e-03 train=2.6393e-05 val=2.3787e-05 best=2.3787e-05 t=5s
+seed0-u ep=40 lr=1.0e-03 train=2.4590e-05 val=2.0843e-05 best=2.0843e-05 t=6s
+seed0-u ep=50 lr=1.0e-03 train=6.5390e-04 val=5.7757e-04 best=1.9462e-05 t=7s
+seed0-u ep=75 lr=1.0e-06 train=4.3708e-04 val=4.1976e-04 best=1.9462e-05 t=11s
+seed0-u ep=100 lr=1.0e-08 train=4.3653e-04 val=4.1930e-04 best=1.9462e-05 t=15s
+seed0-u ep=125 lr=1.0e-08 train=4.3652e-04 val=4.1929e-04 best=1.9462e-05 t=18s
+seed0-u ep=150 lr=1.0e-08 train=4.3650e-04 val=4.1928e-04 best=1.9462e-05 t=22s
+seed0-u ep=175 lr=1.0e-08 train=4.3648e-04 val=4.1926e-04 best=1.9462e-05 t=26s
+seed0-u ep=200 lr=1.0e-08 train=4.3645e-04 val=4.1924e-04 best=1.9462e-05 t=29s
+seed0-u ep=225 lr=1.0e-08 train=4.3641e-04 val=4.1920e-04 best=1.9462e-05 t=33s
+TRAINED seed=0 u {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 243, 'best_val': 1.946175325429067e-05, 'final_lr': 1e-08, 'seconds': 35.67297282489017}
+seed0-v ep=0 lr=1.0e-03 train=9.2422e-03 val=1.2053e-03 best=1.2053e-03 t=0s
+seed0-v ep=10 lr=1.0e-03 train=7.5132e-05 val=6.5310e-05 best=6.5310e-05 t=1s
+seed0-v ep=20 lr=1.0e-03 train=4.2390e-05 val=3.9310e-05 best=3.9310e-05 t=3s
+seed0-v ep=25 lr=1.0e-03 train=3.4200e-05 val=3.1676e-05 best=3.1676e-05 t=4s
+seed0-v ep=30 lr=1.0e-03 train=3.7343e-05 val=2.8398e-05 best=2.8398e-05 t=4s
+seed0-v ep=50 lr=1.0e-03 train=1.7989e-05 val=1.4258e-05 best=1.4258e-05 t=7s
+seed0-v ep=60 lr=1.0e-03 train=1.1008e-05 val=1.0162e-05 best=1.0162e-05 t=9s
+seed0-v ep=75 lr=1.0e-03 train=1.1837e-05 val=1.0383e-05 best=8.2096e-06 t=11s
+seed0-v ep=100 lr=1.0e-04 train=2.1709e-03 val=2.0291e-03 best=6.9662e-06 t=15s
+seed0-v ep=125 lr=1.0e-07 train=1.8938e-03 val=1.8134e-03 best=6.9662e-06 t=18s
+seed0-v ep=150 lr=1.0e-08 train=1.8926e-03 val=1.8122e-03 best=6.9662e-06 t=22s
+seed0-v ep=175 lr=1.0e-08 train=1.8922e-03 val=1.8119e-03 best=6.9662e-06 t=26s
+seed0-v ep=200 lr=1.0e-08 train=1.8918e-03 val=1.8115e-03 best=6.9662e-06 t=30s
+seed0-v ep=225 lr=1.0e-08 train=1.8912e-03 val=1.8109e-03 best=6.9662e-06 t=33s
+seed0-v ep=250 lr=1.0e-08 train=1.8905e-03 val=1.8101e-03 best=6.9662e-06 t=37s
+seed0-v ep=275 lr=1.0e-08 train=1.8895e-03 val=1.8092e-03 best=6.9662e-06 t=41s
+TRAINED seed=0 v {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 279, 'best_val': 6.966233740968164e-06, 'final_lr': 1e-08, 'seconds': 41.11501992633566}
+NM-LSPG seed=0 {'error': {'u': 7.093826505354988, 'v': 2.5821536898655912, 'max': 7.093826505354988}, 'seconds_warm': 2.9212482110597193, 'gn_iterations_mean': 4.613999843597412, 'gn_iterations_max': 9, 'gn_cap_hits': 0, 'last_step_norm_max': 3.158434098311748e-07, 'finite': True, 'ic_error': 0.035482805159401165} projection {'u': 0.05600733245946115, 'v': 0.03406655049633201, 'max': 0.05600733245946115}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 77.75095370753513, 'v': 90.06725887695768, 'max': 90.06725887695768}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 4.33330082334578, 'gn_iterations_mean': 18.916000366210938}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 111.70984611758026, 'v': 134.06593485996126, 'max': 134.06593485996126}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.616351936943829, 'gn_iterations_mean': 18.80466651916504}
+NM-LSPG-HR seed=0 {'subnet_parity': 2.5415882784040356e-15, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 50.11924673681898, 'v': 78.31954358381833, 'max': 78.31954358381833}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.7685966356657445, 'gn_iterations_mean': 19.504667282104492}
+NM-LSPG-HR seed=0 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 74.8948920691459, 'v': 150.13107889450592, 'max': 150.13107889450592}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.354339445009828, 'gn_iterations_mean': 18.770666122436523}
+NM-LSPG-HR seed=0 {'subnet_parity': 1.7809669688086674e-15, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 368.7542226328524, 'v': 415.4245171365846, 'max': 415.4245171365846}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 4.370846214238554, 'gn_iterations_mean': 19.601999282836914}
+seed1-u ep=0 lr=1.0e-03 train=8.3599e-03 val=1.4453e-03 best=1.4453e-03 t=0s
+seed1-u ep=5 lr=1.0e-03 train=2.0471e-04 val=1.9358e-04 best=1.9358e-04 t=1s
+seed1-u ep=15 lr=1.0e-03 train=6.0059e-05 val=5.4802e-05 best=5.4802e-05 t=2s
+seed1-u ep=25 lr=1.0e-03 train=4.5475e-05 val=4.2074e-05 best=3.9934e-05 t=4s
+seed1-u ep=30 lr=1.0e-03 train=2.9292e-05 val=2.5611e-05 best=2.5611e-05 t=4s
+seed1-u ep=40 lr=1.0e-03 train=1.8304e-05 val=1.7587e-05 best=1.7587e-05 t=6s
+seed1-u ep=50 lr=1.0e-03 train=2.5608e-05 val=1.9463e-05 best=1.4756e-05 t=7s
+seed1-u ep=60 lr=1.0e-03 train=1.2828e-05 val=1.1821e-05 best=1.1821e-05 t=9s
+seed1-u ep=75 lr=1.0e-04 train=1.2706e-05 val=8.8456e-06 best=8.8456e-06 t=11s
+seed1-u ep=80 lr=1.0e-04 train=7.9802e-06 val=7.6662e-06 best=7.6662e-06 t=12s
+seed1-u ep=85 lr=1.0e-04 train=7.7665e-06 val=7.4890e-06 best=7.4890e-06 t=13s
+seed1-u ep=100 lr=1.0e-04 train=7.3721e-06 val=7.1342e-06 best=7.1342e-06 t=15s
+seed1-u ep=105 lr=1.0e-04 train=7.2602e-06 val=7.0123e-06 best=7.0123e-06 t=16s
+seed1-u ep=120 lr=1.0e-04 train=6.8897e-06 val=6.6583e-06 best=6.6583e-06 t=18s
+seed1-u ep=125 lr=1.0e-04 train=6.7887e-06 val=6.5795e-06 best=6.5633e-06 t=18s
+seed1-u ep=140 lr=1.0e-04 train=6.3846e-06 val=6.1482e-06 best=6.1482e-06 t=21s
+seed1-u ep=145 lr=1.0e-04 train=6.2343e-06 val=6.0315e-06 best=6.0315e-06 t=21s
+seed1-u ep=150 lr=1.0e-04 train=6.0898e-06 val=5.8851e-06 best=5.8851e-06 t=22s
+seed1-u ep=155 lr=1.0e-04 train=5.9572e-06 val=5.7696e-06 best=5.7696e-06 t=23s
+seed1-u ep=170 lr=1.0e-04 train=5.5358e-06 val=5.3830e-06 best=5.3830e-06 t=25s
+seed1-u ep=175 lr=1.0e-04 train=5.3958e-06 val=5.1741e-06 best=5.1741e-06 t=26s
+seed1-u ep=185 lr=1.0e-04 train=5.0674e-06 val=4.9149e-06 best=4.9149e-06 t=27s
+seed1-u ep=195 lr=1.0e-04 train=4.7831e-06 val=4.6035e-06 best=4.6035e-06 t=29s
+seed1-u ep=200 lr=1.0e-04 train=4.6048e-06 val=4.4627e-06 best=4.4627e-06 t=30s
+seed1-u ep=205 lr=1.0e-04 train=4.5012e-06 val=4.3741e-06 best=4.3741e-06 t=30s
+seed1-u ep=210 lr=1.0e-04 train=4.3880e-06 val=4.2300e-06 best=4.2300e-06 t=31s
+seed1-u ep=215 lr=1.0e-04 train=4.2513e-06 val=4.1215e-06 best=4.1215e-06 t=32s
+seed1-u ep=220 lr=1.0e-04 train=4.1068e-06 val=3.9899e-06 best=3.9899e-06 t=33s
+seed1-u ep=225 lr=1.0e-04 train=3.9863e-06 val=3.8300e-06 best=3.8300e-06 t=33s
+seed1-u ep=230 lr=1.0e-04 train=3.8845e-06 val=3.7196e-06 best=3.7196e-06 t=34s
+seed1-u ep=245 lr=1.0e-04 train=3.5764e-06 val=3.4197e-06 best=3.4197e-06 t=36s
+seed1-u ep=250 lr=1.0e-04 train=3.5044e-06 val=3.3560e-06 best=3.3560e-06 t=37s
+seed1-u ep=255 lr=1.0e-04 train=3.4021e-06 val=3.2718e-06 best=3.2718e-06 t=38s
+seed1-u ep=260 lr=1.0e-04 train=3.3106e-06 val=3.2048e-06 best=3.2048e-06 t=38s
+seed1-u ep=265 lr=1.0e-04 train=3.3056e-06 val=3.1353e-06 best=3.1353e-06 t=39s
+seed1-u ep=275 lr=1.0e-04 train=3.1387e-06 val=3.1897e-06 best=3.0361e-06 t=41s
+seed1-u ep=300 lr=1.0e-04 train=2.8737e-06 val=2.6639e-06 best=2.6639e-06 t=44s
+seed1-u ep=310 lr=1.0e-04 train=2.6308e-06 val=2.5473e-06 best=2.5473e-06 t=46s
+seed1-u ep=325 lr=1.0e-04 train=2.4692e-06 val=2.4549e-06 best=2.4137e-06 t=48s
+seed1-u ep=345 lr=1.0e-04 train=2.2768e-06 val=2.2031e-06 best=2.2031e-06 t=51s
+seed1-u ep=350 lr=1.0e-04 train=2.3511e-06 val=2.3324e-06 best=2.2031e-06 t=52s
+seed1-u ep=360 lr=1.0e-04 train=2.1920e-06 val=2.0475e-06 best=2.0475e-06 t=53s
+seed1-u ep=375 lr=1.0e-05 train=1.8443e-06 val=1.7973e-06 best=1.7948e-06 t=56s
+seed1-u ep=380 lr=1.0e-05 train=1.8410e-06 val=1.7922e-06 best=1.7922e-06 t=56s
+seed1-u ep=385 lr=1.0e-05 train=1.8340e-06 val=1.7857e-06 best=1.7857e-06 t=57s
+seed1-u ep=400 lr=1.0e-05 train=1.8228e-06 val=1.7753e-06 best=1.7753e-06 t=59s
+seed1-u ep=410 lr=1.0e-05 train=1.8147e-06 val=1.7658e-06 best=1.7658e-06 t=61s
+seed1-u ep=415 lr=1.0e-05 train=1.8125e-06 val=1.7622e-06 best=1.7622e-06 t=61s
+seed1-u ep=425 lr=1.0e-05 train=1.8013e-06 val=1.7582e-06 best=1.7566e-06 t=63s
+seed1-u ep=450 lr=1.0e-05 train=1.7762e-06 val=1.7324e-06 best=1.7324e-06 t=67s
+seed1-u ep=475 lr=1.0e-05 train=1.7563e-06 val=1.7104e-06 best=1.7077e-06 t=70s
+seed1-u ep=480 lr=1.0e-05 train=1.7427e-06 val=1.6984e-06 best=1.6984e-06 t=71s
+seed1-u ep=500 lr=1.0e-05 train=1.7165e-06 val=1.6758e-06 best=1.6758e-06 t=74s
+seed1-u ep=525 lr=1.0e-05 train=1.6899e-06 val=1.6492e-06 best=1.6492e-06 t=78s
+seed1-u ep=535 lr=1.0e-05 train=1.6810e-06 val=1.6367e-06 best=1.6367e-06 t=79s
+seed1-u ep=540 lr=1.0e-05 train=1.6705e-06 val=1.6232e-06 best=1.6232e-06 t=80s
+seed1-u ep=550 lr=1.0e-05 train=1.6597e-06 val=1.6197e-06 best=1.6128e-06 t=82s
+seed1-u ep=575 lr=1.0e-05 train=1.6286e-06 val=1.5955e-06 best=1.5885e-06 t=85s
+seed1-u ep=585 lr=1.0e-05 train=1.6168e-06 val=1.5746e-06 best=1.5746e-06 t=87s
+seed1-u ep=600 lr=1.0e-05 train=1.5988e-06 val=1.5599e-06 best=1.5595e-06 t=89s
+seed1-u ep=605 lr=1.0e-05 train=1.5950e-06 val=1.5515e-06 best=1.5515e-06 t=90s
+seed1-u ep=615 lr=1.0e-05 train=1.5812e-06 val=1.5366e-06 best=1.5366e-06 t=91s
+seed1-u ep=625 lr=1.0e-05 train=1.5740e-06 val=1.5370e-06 best=1.5361e-06 t=93s
+seed1-u ep=630 lr=1.0e-05 train=1.5658e-06 val=1.5234e-06 best=1.5234e-06 t=93s
+seed1-u ep=640 lr=1.0e-05 train=1.5539e-06 val=1.5158e-06 best=1.5158e-06 t=95s
+seed1-u ep=650 lr=1.0e-05 train=1.5450e-06 val=1.5183e-06 best=1.5001e-06 t=96s
+seed1-u ep=675 lr=1.0e-05 train=1.5213e-06 val=1.4856e-06 best=1.4777e-06 t=100s
+seed1-u ep=685 lr=1.0e-05 train=1.5113e-06 val=1.4709e-06 best=1.4709e-06 t=102s
+seed1-u ep=695 lr=1.0e-05 train=1.4959e-06 val=1.4570e-06 best=1.4570e-06 t=103s
+seed1-u ep=700 lr=1.0e-05 train=1.4939e-06 val=1.4637e-06 best=1.4570e-06 t=104s
+seed1-u ep=705 lr=1.0e-05 train=1.4859e-06 val=1.4480e-06 best=1.4480e-06 t=105s
+seed1-u ep=725 lr=1.0e-05 train=1.4689e-06 val=1.4312e-06 best=1.4312e-06 t=108s
+seed1-u ep=735 lr=1.0e-05 train=1.4576e-06 val=1.4194e-06 best=1.4194e-06 t=109s
+seed1-u ep=750 lr=1.0e-05 train=1.4446e-06 val=1.4052e-06 best=1.4052e-06 t=111s
+seed1-u ep=755 lr=1.0e-05 train=1.4385e-06 val=1.3999e-06 best=1.3999e-06 t=112s
+seed1-u ep=765 lr=1.0e-05 train=1.4273e-06 val=1.3959e-06 best=1.3959e-06 t=114s
+seed1-u ep=775 lr=1.0e-05 train=1.4175e-06 val=1.3876e-06 best=1.3782e-06 t=115s
+seed1-u ep=790 lr=1.0e-05 train=1.4062e-06 val=1.3677e-06 best=1.3677e-06 t=117s
+seed1-u ep=795 lr=1.0e-05 train=1.4015e-06 val=1.3659e-06 best=1.3659e-06 t=118s
+seed1-u ep=800 lr=1.0e-05 train=1.4010e-06 val=1.3696e-06 best=1.3654e-06 t=119s
+seed1-u ep=805 lr=1.0e-05 train=1.3967e-06 val=1.3584e-06 best=1.3584e-06 t=119s
+seed1-u ep=815 lr=1.0e-05 train=1.3820e-06 val=1.3503e-06 best=1.3503e-06 t=121s
+seed1-u ep=825 lr=1.0e-05 train=1.3782e-06 val=1.3486e-06 best=1.3389e-06 t=122s
+seed1-u ep=835 lr=1.0e-05 train=1.3662e-06 val=1.3305e-06 best=1.3305e-06 t=124s
+seed1-u ep=850 lr=1.0e-05 train=1.3542e-06 val=1.3285e-06 best=1.3226e-06 t=126s
+seed1-u ep=855 lr=1.0e-05 train=1.3514e-06 val=1.3178e-06 best=1.3178e-06 t=127s
+seed1-u ep=860 lr=1.0e-05 train=1.3463e-06 val=1.3080e-06 best=1.3080e-06 t=128s
+seed1-u ep=865 lr=1.0e-05 train=1.3401e-06 val=1.3014e-06 best=1.3014e-06 t=128s
+seed1-u ep=870 lr=1.0e-05 train=1.3381e-06 val=1.3011e-06 best=1.3011e-06 t=129s
+seed1-u ep=875 lr=1.0e-05 train=1.3343e-06 val=1.3125e-06 best=1.3011e-06 t=130s
+seed1-u ep=885 lr=1.0e-05 train=1.3262e-06 val=1.2931e-06 best=1.2931e-06 t=131s
+seed1-u ep=890 lr=1.0e-05 train=1.3233e-06 val=1.2892e-06 best=1.2892e-06 t=132s
+seed1-u ep=895 lr=1.0e-05 train=1.3164e-06 val=1.2806e-06 best=1.2806e-06 t=133s
+seed1-u ep=900 lr=1.0e-05 train=1.3118e-06 val=1.2907e-06 best=1.2806e-06 t=134s
+seed1-u ep=925 lr=1.0e-05 train=1.2926e-06 val=1.2568e-06 best=1.2568e-06 t=137s
+seed1-u ep=950 lr=1.0e-05 train=1.2761e-06 val=1.2518e-06 best=1.2466e-06 t=141s
+seed1-u ep=965 lr=1.0e-05 train=1.2640e-06 val=1.2323e-06 best=1.2323e-06 t=143s
+seed1-u ep=975 lr=1.0e-05 train=1.2570e-06 val=1.2373e-06 best=1.2235e-06 t=145s
+seed1-u ep=980 lr=1.0e-05 train=1.2555e-06 val=1.2186e-06 best=1.2186e-06 t=146s
+seed1-u ep=1000 lr=1.0e-05 train=1.2365e-06 val=1.2071e-06 best=1.2056e-06 t=149s
+seed1-u ep=1025 lr=1.0e-05 train=1.2201e-06 val=1.1944e-06 best=1.1889e-06 t=152s
+seed1-u ep=1050 lr=1.0e-05 train=1.2016e-06 val=1.1787e-06 best=1.1769e-06 t=156s
+seed1-u ep=1075 lr=1.0e-05 train=1.1854e-06 val=1.1576e-06 best=1.1558e-06 t=160s
+seed1-u ep=1100 lr=1.0e-05 train=1.1695e-06 val=1.1383e-06 best=1.1383e-06 t=163s
+seed1-u ep=1115 lr=1.0e-05 train=1.1547e-06 val=1.1263e-06 best=1.1263e-06 t=166s
+seed1-u ep=1125 lr=1.0e-05 train=1.1490e-06 val=1.1230e-06 best=1.1217e-06 t=167s
+seed1-u ep=1135 lr=1.0e-05 train=1.1477e-06 val=1.1152e-06 best=1.1152e-06 t=169s
+seed1-u ep=1145 lr=1.0e-05 train=1.1376e-06 val=1.1057e-06 best=1.1057e-06 t=170s
+seed1-u ep=1150 lr=1.0e-05 train=1.1339e-06 val=1.1092e-06 best=1.1057e-06 t=171s
+seed1-u ep=1160 lr=1.0e-05 train=1.1280e-06 val=1.1021e-06 best=1.1021e-06 t=172s
+seed1-u ep=1175 lr=1.0e-05 train=1.1228e-06 val=1.1174e-06 best=1.0917e-06 t=175s
+seed1-u ep=1185 lr=1.0e-05 train=1.1127e-06 val=1.0850e-06 best=1.0850e-06 t=176s
+seed1-u ep=1190 lr=1.0e-05 train=1.1099e-06 val=1.0755e-06 best=1.0755e-06 t=177s
+seed1-u ep=1200 lr=1.0e-05 train=1.1046e-06 val=1.0799e-06 best=1.0755e-06 t=178s
+seed1-u ep=1225 lr=1.0e-05 train=1.0899e-06 val=1.0725e-06 best=1.0598e-06 t=182s
+seed1-u ep=1230 lr=1.0e-05 train=1.0860e-06 val=1.0584e-06 best=1.0584e-06 t=183s
+seed1-u ep=1235 lr=1.0e-05 train=1.0792e-06 val=1.0562e-06 best=1.0562e-06 t=183s
+seed1-u ep=1250 lr=1.0e-05 train=1.0766e-06 val=1.0670e-06 best=1.0445e-06 t=186s
+seed1-u ep=1265 lr=1.0e-05 train=1.0691e-06 val=1.0354e-06 best=1.0354e-06 t=188s
+seed1-u ep=1275 lr=1.0e-05 train=1.0631e-06 val=1.0456e-06 best=1.0350e-06 t=189s
+seed1-u ep=1300 lr=1.0e-05 train=1.0443e-06 val=1.0254e-06 best=1.0155e-06 t=193s
+seed1-u ep=1325 lr=1.0e-05 train=1.0287e-06 val=1.0110e-06 best=1.0035e-06 t=197s
+seed1-u ep=1350 lr=1.0e-05 train=1.0158e-06 val=9.9059e-07 best=9.8956e-07 t=201s
+seed1-u ep=1355 lr=1.0e-05 train=1.0116e-06 val=9.8578e-07 best=9.8578e-07 t=201s
+seed1-u ep=1375 lr=1.0e-05 train=1.0011e-06 val=9.7386e-07 best=9.7386e-07 t=204s
+seed1-u ep=1390 lr=1.0e-05 train=9.9680e-07 val=9.6754e-07 best=9.6754e-07 t=207s
+seed1-u ep=1400 lr=1.0e-05 train=9.8619e-07 val=9.7156e-07 best=9.6239e-07 t=208s
+seed1-u ep=1415 lr=1.0e-05 train=9.7803e-07 val=9.4952e-07 best=9.4952e-07 t=210s
+seed1-u ep=1425 lr=1.0e-05 train=9.7417e-07 val=9.6007e-07 best=9.4952e-07 t=212s
+seed1-u ep=1445 lr=1.0e-05 train=9.6174e-07 val=9.3960e-07 best=9.3960e-07 t=215s
+seed1-u ep=1450 lr=1.0e-05 train=9.6233e-07 val=9.4407e-07 best=9.3960e-07 t=215s
+seed1-u ep=1455 lr=1.0e-05 train=9.6227e-07 val=9.3511e-07 best=9.3511e-07 t=216s
+seed1-u ep=1475 lr=1.0e-05 train=9.4498e-07 val=9.2839e-07 best=9.2357e-07 t=219s
+seed1-u ep=1495 lr=1.0e-05 train=9.3619e-07 val=9.1610e-07 best=9.1610e-07 t=222s
+seed1-u ep=1500 lr=1.0e-05 train=9.3491e-07 val=9.1458e-07 best=9.1458e-07 t=223s
+seed1-u ep=1515 lr=1.0e-05 train=9.2692e-07 val=9.0671e-07 best=9.0671e-07 t=225s
+seed1-u ep=1520 lr=1.0e-05 train=9.2387e-07 val=9.0211e-07 best=9.0211e-07 t=226s
+seed1-u ep=1525 lr=1.0e-05 train=9.2086e-07 val=9.0995e-07 best=8.9768e-07 t=227s
+seed1-u ep=1530 lr=1.0e-05 train=9.2172e-07 val=8.9524e-07 best=8.9524e-07 t=227s
+seed1-u ep=1550 lr=1.0e-05 train=9.0992e-07 val=8.8878e-07 best=8.8550e-07 t=230s
+seed1-u ep=1575 lr=1.0e-05 train=8.9933e-07 val=8.8259e-07 best=8.7672e-07 t=234s
+seed1-u ep=1580 lr=1.0e-05 train=8.9873e-07 val=8.7462e-07 best=8.7462e-07 t=235s
+seed1-u ep=1585 lr=1.0e-05 train=8.9250e-07 val=8.6793e-07 best=8.6793e-07 t=236s
+seed1-u ep=1600 lr=1.0e-05 train=8.8358e-07 val=8.7056e-07 best=8.6392e-07 t=238s
+seed1-u ep=1615 lr=1.0e-05 train=8.7851e-07 val=8.5738e-07 best=8.5738e-07 t=240s
+seed1-u ep=1620 lr=1.0e-05 train=8.7409e-07 val=8.5657e-07 best=8.5657e-07 t=241s
+seed1-u ep=1625 lr=1.0e-05 train=8.7652e-07 val=8.5552e-07 best=8.5384e-07 t=241s
+seed1-u ep=1645 lr=1.0e-05 train=8.6120e-07 val=8.4273e-07 best=8.4273e-07 t=244s
+seed1-u ep=1650 lr=1.0e-05 train=8.6209e-07 val=8.4884e-07 best=8.4273e-07 t=245s
+seed1-u ep=1665 lr=1.0e-05 train=8.5588e-07 val=8.3676e-07 best=8.3676e-07 t=247s
+seed1-u ep=1670 lr=1.0e-05 train=8.5437e-07 val=8.3010e-07 best=8.3010e-07 t=248s
+seed1-u ep=1675 lr=1.0e-05 train=8.5195e-07 val=8.3606e-07 best=8.3010e-07 t=249s
+seed1-u ep=1685 lr=1.0e-05 train=8.4388e-07 val=8.2281e-07 best=8.2281e-07 t=250s
+seed1-u ep=1700 lr=1.0e-05 train=8.4004e-07 val=8.3561e-07 best=8.1944e-07 t=253s
+seed1-u ep=1725 lr=1.0e-05 train=8.3596e-07 val=8.1070e-07 best=8.0899e-07 t=256s
+seed1-u ep=1750 lr=1.0e-05 train=8.1702e-07 val=8.0089e-07 best=7.9817e-07 t=260s
+seed1-u ep=1760 lr=1.0e-05 train=8.1178e-07 val=7.9522e-07 best=7.9522e-07 t=262s
+seed1-u ep=1765 lr=1.0e-05 train=8.1029e-07 val=7.9212e-07 best=7.9212e-07 t=262s
+seed1-u ep=1775 lr=1.0e-05 train=8.0987e-07 val=7.9192e-07 best=7.9192e-07 t=264s
+seed1-u ep=1780 lr=1.0e-05 train=8.0310e-07 val=7.8860e-07 best=7.8860e-07 t=265s
+seed1-u ep=1800 lr=1.0e-05 train=7.9362e-07 val=7.7797e-07 best=7.7402e-07 t=268s
+seed1-u ep=1815 lr=1.0e-05 train=7.9185e-07 val=7.7192e-07 best=7.7192e-07 t=270s
+seed1-u ep=1825 lr=1.0e-05 train=7.8442e-07 val=7.7397e-07 best=7.7032e-07 t=271s
+seed1-u ep=1850 lr=1.0e-05 train=7.7573e-07 val=7.5533e-07 best=7.5533e-07 t=275s
+seed1-u ep=1875 lr=1.0e-05 train=7.6600e-07 val=7.5830e-07 best=7.4866e-07 t=279s
+seed1-u ep=1900 lr=1.0e-05 train=7.5574e-07 val=7.4217e-07 best=7.3948e-07 t=282s
+seed1-u ep=1905 lr=1.0e-05 train=7.5205e-07 val=7.3664e-07 best=7.3664e-07 t=283s
+seed1-u ep=1920 lr=1.0e-05 train=7.5034e-07 val=7.3065e-07 best=7.3065e-07 t=285s
+seed1-u ep=1925 lr=1.0e-05 train=7.4331e-07 val=7.3552e-07 best=7.3065e-07 t=286s
+seed1-u ep=1935 lr=1.0e-05 train=7.4393e-07 val=7.2689e-07 best=7.2689e-07 t=288s
+seed1-u ep=1950 lr=1.0e-05 train=7.3781e-07 val=7.2317e-07 best=7.2317e-07 t=290s
+seed1-u ep=1975 lr=1.0e-05 train=7.3004e-07 val=7.1360e-07 best=7.1257e-07 t=294s
+seed1-u ep=1990 lr=1.0e-05 train=7.2094e-07 val=7.0387e-07 best=7.0387e-07 t=296s
+seed1-u ep=2000 lr=1.0e-05 train=7.2691e-07 val=7.1077e-07 best=7.0387e-07 t=297s
+seed1-u ep=2025 lr=1.0e-05 train=7.0906e-07 val=6.9707e-07 best=6.9218e-07 t=301s
+seed1-u ep=2040 lr=1.0e-05 train=7.0189e-07 val=6.9029e-07 best=6.9029e-07 t=303s
+seed1-u ep=2050 lr=1.0e-05 train=6.9881e-07 val=6.9148e-07 best=6.8875e-07 t=305s
+seed1-u ep=2075 lr=1.0e-05 train=6.9281e-07 val=6.8405e-07 best=6.7973e-07 t=308s
+seed1-u ep=2100 lr=1.0e-05 train=6.8243e-07 val=6.7237e-07 best=6.6791e-07 t=312s
+seed1-u ep=2105 lr=1.0e-05 train=6.8214e-07 val=6.6763e-07 best=6.6763e-07 t=313s
+seed1-u ep=2115 lr=1.0e-05 train=6.7740e-07 val=6.6591e-07 best=6.6591e-07 t=314s
+seed1-u ep=2125 lr=1.0e-05 train=6.7269e-07 val=6.6168e-07 best=6.5933e-07 t=316s
+seed1-u ep=2135 lr=1.0e-05 train=6.7155e-07 val=6.5796e-07 best=6.5796e-07 t=317s
+seed1-u ep=2150 lr=1.0e-05 train=6.6289e-07 val=6.5205e-07 best=6.5205e-07 t=320s
+seed1-u ep=2155 lr=1.0e-05 train=6.6403e-07 val=6.5203e-07 best=6.5203e-07 t=320s
+seed1-u ep=2170 lr=1.0e-05 train=6.5817e-07 val=6.4933e-07 best=6.4933e-07 t=323s
+seed1-u ep=2175 lr=1.0e-05 train=6.5890e-07 val=6.5565e-07 best=6.4542e-07 t=323s
+seed1-u ep=2200 lr=1.0e-05 train=6.4792e-07 val=6.3544e-07 best=6.3544e-07 t=327s
+seed1-u ep=2215 lr=1.0e-05 train=6.4346e-07 val=6.3024e-07 best=6.3024e-07 t=329s
+seed1-u ep=2225 lr=1.0e-05 train=6.4178e-07 val=6.3335e-07 best=6.3024e-07 t=331s
+seed1-u ep=2250 lr=1.0e-05 train=6.3401e-07 val=6.2640e-07 best=6.2436e-07 t=335s
+seed1-u ep=2265 lr=1.0e-05 train=6.2884e-07 val=6.1799e-07 best=6.1799e-07 t=337s
+seed1-u ep=2275 lr=1.0e-05 train=6.2824e-07 val=6.1876e-07 best=6.1540e-07 t=338s
+seed1-u ep=2280 lr=1.0e-05 train=6.2813e-07 val=6.1466e-07 best=6.1466e-07 t=339s
+seed1-u ep=2295 lr=1.0e-05 train=6.2145e-07 val=6.0755e-07 best=6.0755e-07 t=341s
+seed1-u ep=2300 lr=1.0e-05 train=6.2217e-07 val=6.1677e-07 best=6.0755e-07 t=342s
+seed1-u ep=2320 lr=1.0e-05 train=6.0980e-07 val=6.0094e-07 best=6.0094e-07 t=345s
+seed1-u ep=2325 lr=1.0e-05 train=6.1135e-07 val=6.0583e-07 best=6.0094e-07 t=346s
+seed1-u ep=2350 lr=1.0e-05 train=6.0382e-07 val=5.9359e-07 best=5.9359e-07 t=349s
+seed1-u ep=2355 lr=1.0e-05 train=6.0252e-07 val=5.9079e-07 best=5.9079e-07 t=350s
+seed1-u ep=2375 lr=1.0e-05 train=5.9657e-07 val=5.9271e-07 best=5.9079e-07 t=353s
+seed1-u ep=2400 lr=1.0e-05 train=5.9236e-07 val=5.8445e-07 best=5.8445e-07 t=357s
+seed1-u ep=2410 lr=1.0e-05 train=5.8822e-07 val=5.7928e-07 best=5.7928e-07 t=358s
+seed1-u ep=2420 lr=1.0e-05 train=5.8436e-07 val=5.7471e-07 best=5.7471e-07 t=360s
+seed1-u ep=2425 lr=1.0e-05 train=5.8422e-07 val=5.7952e-07 best=5.7471e-07 t=361s
+seed1-u ep=2435 lr=1.0e-05 train=5.7833e-07 val=5.7164e-07 best=5.7164e-07 t=362s
+seed1-u ep=2450 lr=1.0e-05 train=5.7692e-07 val=5.7552e-07 best=5.6934e-07 t=364s
+seed1-u ep=2460 lr=1.0e-05 train=5.7323e-07 val=5.6552e-07 best=5.6552e-07 t=366s
+seed1-u ep=2465 lr=1.0e-05 train=5.6933e-07 val=5.6376e-07 best=5.6376e-07 t=366s
+seed1-u ep=2475 lr=1.0e-05 train=5.6877e-07 val=5.6465e-07 best=5.6107e-07 t=368s
+seed1-u ep=2480 lr=1.0e-06 train=5.5452e-07 val=5.5153e-07 best=5.5153e-07 t=369s
+seed1-u ep=2500 lr=1.0e-07 train=5.5390e-07 val=5.5105e-07 best=5.5020e-07 t=372s
+seed1-u ep=2505 lr=1.0e-07 train=5.5257e-07 val=5.5001e-07 best=5.5001e-07 t=372s
+seed1-u ep=2510 lr=1.0e-07 train=5.5258e-07 val=5.4986e-07 best=5.4986e-07 t=373s
+seed1-u ep=2525 lr=1.0e-08 train=5.5243e-07 val=5.4980e-07 best=5.4975e-07 t=375s
+seed1-u ep=2550 lr=1.0e-08 train=5.5242e-07 val=5.4983e-07 best=5.4975e-07 t=379s
+seed1-u ep=2575 lr=1.0e-08 train=5.5241e-07 val=5.4988e-07 best=5.4975e-07 t=383s
+seed1-u ep=2600 lr=1.0e-08 train=5.5241e-07 val=5.4986e-07 best=5.4975e-07 t=387s
+seed1-u ep=2625 lr=1.0e-08 train=5.5240e-07 val=5.4985e-07 best=5.4975e-07 t=390s
+seed1-u ep=2650 lr=1.0e-08 train=5.5239e-07 val=5.4985e-07 best=5.4975e-07 t=394s
+seed1-u ep=2675 lr=1.0e-08 train=5.5239e-07 val=5.4983e-07 best=5.4975e-07 t=398s
+seed1-u ep=2700 lr=1.0e-08 train=5.5238e-07 val=5.4981e-07 best=5.4975e-07 t=401s
+TRAINED seed=1 u {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 2715, 'best_val': 5.497464599102386e-07, 'final_lr': 1e-08, 'seconds': 403.51431473717093}
+seed1-v ep=0 lr=1.0e-03 train=8.5088e-03 val=1.4044e-03 best=1.4044e-03 t=0s
+seed1-v ep=10 lr=1.0e-03 train=8.6478e-05 val=7.2750e-05 best=7.2750e-05 t=1s
+seed1-v ep=15 lr=1.0e-03 train=4.9277e-05 val=4.4620e-05 best=4.4620e-05 t=2s
+seed1-v ep=25 lr=1.0e-03 train=5.8556e-05 val=4.6490e-05 best=2.8741e-05 t=4s
+seed1-v ep=30 lr=1.0e-03 train=2.8152e-05 val=2.5489e-05 best=2.5489e-05 t=4s
+seed1-v ep=40 lr=1.0e-03 train=2.6511e-05 val=2.2762e-05 best=2.2762e-05 t=6s
+seed1-v ep=45 lr=1.0e-03 train=2.5045e-05 val=1.8482e-05 best=1.8482e-05 t=7s
+seed1-v ep=50 lr=1.0e-03 train=2.7951e-05 val=1.8290e-05 best=1.7633e-05 t=7s
+seed1-v ep=60 lr=1.0e-03 train=1.1852e-05 val=1.1823e-05 best=1.1823e-05 t=9s
+seed1-v ep=75 lr=1.0e-03 train=3.2284e-02 val=4.6907e-03 best=8.5524e-06 t=11s
+seed1-v ep=100 lr=1.0e-05 train=7.2227e-04 val=6.9274e-04 best=8.5524e-06 t=15s
+seed1-v ep=125 lr=1.0e-07 train=7.1992e-04 val=6.9058e-04 best=8.5524e-06 t=19s
+seed1-v ep=150 lr=1.0e-08 train=7.1990e-04 val=6.9057e-04 best=8.5524e-06 t=22s
+seed1-v ep=175 lr=1.0e-08 train=7.1989e-04 val=6.9056e-04 best=8.5524e-06 t=26s
+seed1-v ep=200 lr=1.0e-08 train=7.1988e-04 val=6.9054e-04 best=8.5524e-06 t=30s
+seed1-v ep=225 lr=1.0e-08 train=7.1986e-04 val=6.9052e-04 best=8.5524e-06 t=33s
+seed1-v ep=250 lr=1.0e-08 train=7.1983e-04 val=6.9049e-04 best=8.5524e-06 t=37s
+TRAINED seed=1 v {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 270, 'best_val': 8.552355211577378e-06, 'final_lr': 1e-08, 'seconds': 39.95978701999411}
+NM-LSPG seed=1 {'error': {'u': 0.11215609651513338, 'v': 0.10914970235977609, 'max': 0.11215609651513338}, 'seconds_warm': 2.252251976169646, 'gn_iterations_mean': 3.5439999103546143, 'gn_iterations_max': 5, 'gn_cap_hits': 0, 'last_step_norm_max': 1.259741045858563e-07, 'finite': True, 'ic_error': 0.021944285987667626} projection {'u': 0.0161751313492231, 'v': 0.03810869537495937, 'max': 0.03810869537495937}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 44.57125767910122, 'v': 131.43743611732268, 'max': 131.43743611732268}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 4.528289333917201, 'gn_iterations_mean': 19.770000457763672}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 74.78570749079664, 'v': 80.76484499938624, 'max': 80.76484499938624}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.659924829844385, 'gn_iterations_mean': 18.997333526611328}
+NM-LSPG-HR seed=1 {'subnet_parity': 1.0304368224059617e-13, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 50.105833691212815, 'v': 431.61782973552897, 'max': 431.61782973552897}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.435788702219725, 'gn_iterations_mean': 18.068666458129883}
+NM-LSPG-HR seed=1 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 0.9616358236850193, 'v': 6.279119339530881, 'max': 6.279119339530881}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.00512182386592, 'gn_iterations_mean': 17.219999313354492}
+NM-LSPG-HR seed=1 {'subnet_parity': 1.0340702385639517e-13, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 0.322365241267127, 'v': 2.1706046778230834, 'max': 2.1706046778230834}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 3.558235866948962, 'gn_iterations_mean': 15.863999366760254}
+seed2-u ep=0 lr=1.0e-03 train=8.4001e-03 val=1.3063e-03 best=1.3063e-03 t=0s
+seed2-u ep=5 lr=1.0e-03 train=2.1784e-04 val=1.8382e-04 best=1.8382e-04 t=1s
+seed2-u ep=10 lr=1.0e-03 train=1.2022e-04 val=1.0772e-04 best=1.0772e-04 t=1s
+seed2-u ep=15 lr=1.0e-03 train=7.2958e-05 val=6.6645e-05 best=6.6645e-05 t=2s
+seed2-u ep=20 lr=1.0e-03 train=5.5613e-05 val=5.0364e-05 best=5.0364e-05 t=3s
+seed2-u ep=25 lr=1.0e-03 train=4.5315e-05 val=4.3785e-05 best=4.3785e-05 t=4s
+seed2-u ep=35 lr=1.0e-03 train=2.5750e-05 val=2.4698e-05 best=2.4698e-05 t=5s
+seed2-u ep=45 lr=1.0e-03 train=1.8475e-05 val=1.7259e-05 best=1.7259e-05 t=7s
+seed2-u ep=50 lr=1.0e-03 train=2.1814e-05 val=2.4120e-05 best=1.6088e-05 t=7s
+seed2-u ep=75 lr=1.0e-04 train=1.3627e-05 val=1.0713e-05 best=1.0499e-05 t=11s
+seed2-u ep=85 lr=1.0e-04 train=7.4591e-06 val=7.3176e-06 best=7.3176e-06 t=13s
+seed2-u ep=90 lr=1.0e-04 train=7.3355e-06 val=7.1744e-06 best=7.1744e-06 t=13s
+seed2-u ep=100 lr=1.0e-04 train=7.0915e-06 val=6.9252e-06 best=6.9252e-06 t=15s
+seed2-u ep=105 lr=1.0e-04 train=7.0049e-06 val=6.8484e-06 best=6.8484e-06 t=16s
+seed2-u ep=110 lr=1.0e-04 train=6.8816e-06 val=6.7100e-06 best=6.7100e-06 t=16s
+seed2-u ep=115 lr=1.0e-04 train=6.7741e-06 val=6.6436e-06 best=6.6436e-06 t=17s
+seed2-u ep=120 lr=1.0e-04 train=6.6325e-06 val=6.5123e-06 best=6.5123e-06 t=18s
+seed2-u ep=125 lr=1.0e-04 train=6.5345e-06 val=6.4039e-06 best=6.3969e-06 t=18s
+seed2-u ep=130 lr=1.0e-04 train=6.4113e-06 val=6.2737e-06 best=6.2737e-06 t=19s
+seed2-u ep=135 lr=1.0e-04 train=6.2603e-06 val=6.1328e-06 best=6.1328e-06 t=20s
+seed2-u ep=150 lr=1.0e-04 train=5.9694e-06 val=5.8705e-06 best=5.8183e-06 t=22s
+seed2-u ep=165 lr=1.0e-04 train=5.5686e-06 val=5.4485e-06 best=5.4485e-06 t=24s
+seed2-u ep=175 lr=1.0e-04 train=5.3613e-06 val=5.2063e-06 best=5.2063e-06 t=26s
+seed2-u ep=190 lr=1.0e-04 train=5.0196e-06 val=4.8914e-06 best=4.8914e-06 t=28s
+seed2-u ep=195 lr=1.0e-04 train=4.9090e-06 val=4.8188e-06 best=4.8188e-06 t=29s
+seed2-u ep=200 lr=1.0e-04 train=4.8292e-06 val=4.7309e-06 best=4.6959e-06 t=30s
+seed2-u ep=205 lr=1.0e-04 train=4.7401e-06 val=4.5815e-06 best=4.5815e-06 t=30s
+seed2-u ep=210 lr=1.0e-04 train=4.5947e-06 val=4.4498e-06 best=4.4498e-06 t=31s
+seed2-u ep=215 lr=1.0e-04 train=4.5224e-06 val=4.3651e-06 best=4.3651e-06 t=32s
+seed2-u ep=225 lr=1.0e-04 train=4.3010e-06 val=4.1405e-06 best=4.1405e-06 t=33s
+seed2-u ep=235 lr=1.0e-04 train=4.1166e-06 val=3.9976e-06 best=3.9976e-06 t=35s
+seed2-u ep=240 lr=1.0e-04 train=4.0680e-06 val=3.9511e-06 best=3.9511e-06 t=36s
+seed2-u ep=250 lr=1.0e-04 train=3.8686e-06 val=3.7855e-06 best=3.7855e-06 t=37s
+seed2-u ep=275 lr=1.0e-04 train=3.5658e-06 val=3.5090e-06 best=3.3988e-06 t=41s
+seed2-u ep=285 lr=1.0e-04 train=3.7556e-06 val=3.3122e-06 best=3.3122e-06 t=42s
+seed2-u ep=290 lr=1.0e-05 train=3.2330e-06 val=3.0095e-06 best=3.0095e-06 t=43s
+seed2-u ep=295 lr=1.0e-05 train=3.0703e-06 val=2.9860e-06 best=2.9860e-06 t=44s
+seed2-u ep=300 lr=1.0e-05 train=3.0623e-06 val=2.9852e-06 best=2.9852e-06 t=44s
+seed2-u ep=315 lr=1.0e-05 train=3.0362e-06 val=2.9573e-06 best=2.9573e-06 t=47s
+seed2-u ep=320 lr=1.0e-05 train=3.0284e-06 val=2.9455e-06 best=2.9455e-06 t=47s
+seed2-u ep=325 lr=1.0e-05 train=3.0217e-06 val=2.9460e-06 best=2.9455e-06 t=48s
+seed2-u ep=340 lr=1.0e-05 train=2.9965e-06 val=2.9120e-06 best=2.9120e-06 t=50s
+seed2-u ep=345 lr=1.0e-05 train=2.9869e-06 val=2.9037e-06 best=2.9037e-06 t=51s
+seed2-u ep=350 lr=1.0e-05 train=2.9782e-06 val=2.9102e-06 best=2.9037e-06 t=52s
+seed2-u ep=355 lr=1.0e-05 train=2.9706e-06 val=2.8906e-06 best=2.8906e-06 t=53s
+seed2-u ep=365 lr=1.0e-05 train=2.9487e-06 val=2.8645e-06 best=2.8645e-06 t=54s
+seed2-u ep=375 lr=1.0e-05 train=2.9327e-06 val=2.8671e-06 best=2.8527e-06 t=56s
+seed2-u ep=400 lr=1.0e-05 train=2.8833e-06 val=2.8066e-06 best=2.8015e-06 t=59s
+seed2-u ep=410 lr=1.0e-05 train=2.8636e-06 val=2.7864e-06 best=2.7864e-06 t=61s
+seed2-u ep=415 lr=1.0e-05 train=2.8399e-06 val=2.7648e-06 best=2.7648e-06 t=62s
+seed2-u ep=425 lr=1.0e-05 train=2.8171e-06 val=2.7482e-06 best=2.7473e-06 t=63s
+seed2-u ep=440 lr=1.0e-05 train=2.7817e-06 val=2.7149e-06 best=2.7149e-06 t=65s
+seed2-u ep=450 lr=1.0e-05 train=2.7668e-06 val=2.7112e-06 best=2.6888e-06 t=67s
+seed2-u ep=465 lr=1.0e-05 train=2.7280e-06 val=2.6447e-06 best=2.6447e-06 t=69s
+seed2-u ep=475 lr=1.0e-05 train=2.7028e-06 val=2.6258e-06 best=2.6258e-06 t=70s
+seed2-u ep=485 lr=1.0e-05 train=2.6855e-06 val=2.6083e-06 best=2.6083e-06 t=72s
+seed2-u ep=495 lr=1.0e-05 train=2.6694e-06 val=2.5863e-06 best=2.5863e-06 t=73s
+seed2-u ep=500 lr=1.0e-05 train=2.6521e-06 val=2.5832e-06 best=2.5799e-06 t=74s
+seed2-u ep=505 lr=1.0e-05 train=2.6408e-06 val=2.5619e-06 best=2.5619e-06 t=75s
+seed2-u ep=515 lr=1.0e-05 train=2.6163e-06 val=2.5430e-06 best=2.5430e-06 t=76s
+seed2-u ep=525 lr=1.0e-05 train=2.6039e-06 val=2.5253e-06 best=2.5253e-06 t=78s
+seed2-u ep=535 lr=1.0e-05 train=2.5711e-06 val=2.4986e-06 best=2.4986e-06 t=79s
+seed2-u ep=550 lr=1.0e-05 train=2.5413e-06 val=2.4714e-06 best=2.4657e-06 t=82s
+seed2-u ep=560 lr=1.0e-05 train=2.5209e-06 val=2.4401e-06 best=2.4401e-06 t=83s
+seed2-u ep=565 lr=1.0e-05 train=2.5099e-06 val=2.4367e-06 best=2.4367e-06 t=84s
+seed2-u ep=575 lr=1.0e-05 train=2.4912e-06 val=2.4352e-06 best=2.4192e-06 t=85s
+seed2-u ep=580 lr=1.0e-05 train=2.4813e-06 val=2.4089e-06 best=2.4089e-06 t=86s
+seed2-u ep=600 lr=1.0e-05 train=2.4461e-06 val=2.3718e-06 best=2.3664e-06 t=89s
+seed2-u ep=610 lr=1.0e-05 train=2.4199e-06 val=2.3451e-06 best=2.3451e-06 t=91s
+seed2-u ep=620 lr=1.0e-05 train=2.4046e-06 val=2.3225e-06 best=2.3225e-06 t=92s
+seed2-u ep=625 lr=1.0e-05 train=2.3951e-06 val=2.3358e-06 best=2.3206e-06 t=93s
+seed2-u ep=630 lr=1.0e-05 train=2.3825e-06 val=2.3147e-06 best=2.3147e-06 t=94s
+seed2-u ep=635 lr=1.0e-05 train=2.3746e-06 val=2.3078e-06 best=2.3078e-06 t=94s
+seed2-u ep=640 lr=1.0e-05 train=2.3661e-06 val=2.2889e-06 best=2.2889e-06 t=95s
+seed2-u ep=645 lr=1.0e-05 train=2.3587e-06 val=2.2842e-06 best=2.2842e-06 t=96s
+seed2-u ep=650 lr=1.0e-05 train=2.3460e-06 val=2.2821e-06 best=2.2775e-06 t=97s
+seed2-u ep=655 lr=1.0e-05 train=2.3351e-06 val=2.2611e-06 best=2.2611e-06 t=97s
+seed2-u ep=675 lr=1.0e-05 train=2.2985e-06 val=2.2466e-06 best=2.2401e-06 t=100s
+seed2-u ep=680 lr=1.0e-05 train=2.2881e-06 val=2.2226e-06 best=2.2226e-06 t=101s
+seed2-u ep=700 lr=1.0e-05 train=2.2562e-06 val=2.1900e-06 best=2.1887e-06 t=104s
+seed2-u ep=715 lr=1.0e-05 train=2.2331e-06 val=2.1662e-06 best=2.1662e-06 t=106s
+seed2-u ep=720 lr=1.0e-05 train=2.2269e-06 val=2.1539e-06 best=2.1539e-06 t=107s
+seed2-u ep=725 lr=1.0e-05 train=2.2151e-06 val=2.1441e-06 best=2.1441e-06 t=108s
+seed2-u ep=735 lr=1.0e-05 train=2.2001e-06 val=2.1322e-06 best=2.1322e-06 t=109s
+seed2-u ep=740 lr=1.0e-05 train=2.1920e-06 val=2.1317e-06 best=2.1317e-06 t=110s
+seed2-u ep=750 lr=1.0e-05 train=2.1785e-06 val=2.1093e-06 best=2.1018e-06 t=111s
+seed2-u ep=755 lr=1.0e-05 train=2.1682e-06 val=2.0997e-06 best=2.0997e-06 t=112s
+seed2-u ep=775 lr=1.0e-05 train=2.1488e-06 val=2.0795e-06 best=2.0740e-06 t=115s
+seed2-u ep=800 lr=1.0e-05 train=2.1063e-06 val=2.0623e-06 best=2.0365e-06 t=119s
+seed2-u ep=825 lr=1.0e-05 train=2.0660e-06 val=2.0082e-06 best=2.0028e-06 t=123s
+seed2-u ep=835 lr=1.0e-05 train=2.0500e-06 val=1.9855e-06 best=1.9855e-06 t=124s
+seed2-u ep=850 lr=1.0e-05 train=2.0332e-06 val=1.9750e-06 best=1.9674e-06 t=126s
+seed2-u ep=855 lr=1.0e-05 train=2.0188e-06 val=1.9565e-06 best=1.9565e-06 t=127s
+seed2-u ep=860 lr=1.0e-05 train=2.0149e-06 val=1.9465e-06 best=1.9465e-06 t=128s
+seed2-u ep=875 lr=1.0e-05 train=1.9946e-06 val=1.9505e-06 best=1.9396e-06 t=130s
+seed2-u ep=890 lr=1.0e-05 train=1.9807e-06 val=1.9132e-06 best=1.9132e-06 t=132s
+seed2-u ep=900 lr=1.0e-05 train=1.9586e-06 val=1.9051e-06 best=1.9051e-06 t=134s
+seed2-u ep=905 lr=1.0e-05 train=1.9557e-06 val=1.8985e-06 best=1.8985e-06 t=134s
+seed2-u ep=925 lr=1.0e-05 train=1.9372e-06 val=1.8760e-06 best=1.8707e-06 t=137s
+seed2-u ep=935 lr=1.0e-05 train=1.9250e-06 val=1.8592e-06 best=1.8592e-06 t=139s
+seed2-u ep=945 lr=1.0e-05 train=1.9080e-06 val=1.8499e-06 best=1.8499e-06 t=140s
+seed2-u ep=950 lr=1.0e-05 train=1.9029e-06 val=1.8393e-06 best=1.8393e-06 t=141s
+seed2-u ep=965 lr=1.0e-05 train=1.8813e-06 val=1.8256e-06 best=1.8256e-06 t=143s
+seed2-u ep=970 lr=1.0e-05 train=1.8840e-06 val=1.8239e-06 best=1.8239e-06 t=144s
+seed2-u ep=975 lr=1.0e-05 train=1.8702e-06 val=1.8122e-06 best=1.8122e-06 t=145s
+seed2-u ep=980 lr=1.0e-05 train=1.8627e-06 val=1.8067e-06 best=1.8067e-06 t=146s
+seed2-u ep=995 lr=1.0e-05 train=1.8480e-06 val=1.7962e-06 best=1.7962e-06 t=148s
+seed2-u ep=1000 lr=1.0e-05 train=1.8476e-06 val=1.7849e-06 best=1.7837e-06 t=149s
+seed2-u ep=1010 lr=1.0e-05 train=1.8334e-06 val=1.7718e-06 best=1.7718e-06 t=150s
+seed2-u ep=1020 lr=1.0e-05 train=1.8149e-06 val=1.7656e-06 best=1.7656e-06 t=152s
+seed2-u ep=1025 lr=1.0e-05 train=1.8153e-06 val=1.7757e-06 best=1.7636e-06 t=152s
+seed2-u ep=1030 lr=1.0e-05 train=1.8076e-06 val=1.7534e-06 best=1.7534e-06 t=153s
+seed2-u ep=1050 lr=1.0e-05 train=1.7875e-06 val=1.7357e-06 best=1.7357e-06 t=156s
+seed2-u ep=1060 lr=1.0e-05 train=1.7732e-06 val=1.7221e-06 best=1.7221e-06 t=158s
+seed2-u ep=1065 lr=1.0e-05 train=1.7663e-06 val=1.7170e-06 best=1.7170e-06 t=158s
+seed2-u ep=1075 lr=1.0e-05 train=1.7571e-06 val=1.7096e-06 best=1.7096e-06 t=160s
+seed2-u ep=1090 lr=1.0e-05 train=1.7382e-06 val=1.6883e-06 best=1.6883e-06 t=162s
+seed2-u ep=1100 lr=1.0e-05 train=1.7328e-06 val=1.6806e-06 best=1.6806e-06 t=164s
+seed2-u ep=1105 lr=1.0e-05 train=1.7271e-06 val=1.6784e-06 best=1.6784e-06 t=164s
+seed2-u ep=1115 lr=1.0e-05 train=1.7160e-06 val=1.6707e-06 best=1.6707e-06 t=166s
+seed2-u ep=1125 lr=1.0e-05 train=1.7074e-06 val=1.6527e-06 best=1.6527e-06 t=167s
+seed2-u ep=1150 lr=1.0e-05 train=1.6819e-06 val=1.6340e-06 best=1.6340e-06 t=171s
+seed2-u ep=1165 lr=1.0e-05 train=1.6671e-06 val=1.6167e-06 best=1.6167e-06 t=173s
+seed2-u ep=1175 lr=1.0e-05 train=1.6520e-06 val=1.6120e-06 best=1.6120e-06 t=175s
+seed2-u ep=1185 lr=1.0e-05 train=1.6490e-06 val=1.6021e-06 best=1.6021e-06 t=176s
+seed2-u ep=1195 lr=1.0e-05 train=1.6374e-06 val=1.5899e-06 best=1.5899e-06 t=178s
+seed2-u ep=1200 lr=1.0e-05 train=1.6343e-06 val=1.5851e-06 best=1.5851e-06 t=178s
+seed2-u ep=1205 lr=1.0e-05 train=1.6275e-06 val=1.5843e-06 best=1.5843e-06 t=179s
+seed2-u ep=1220 lr=1.0e-05 train=1.6142e-06 val=1.5682e-06 best=1.5682e-06 t=181s
+seed2-u ep=1225 lr=1.0e-05 train=1.6100e-06 val=1.5771e-06 best=1.5682e-06 t=182s
+seed2-u ep=1250 lr=1.0e-05 train=1.5805e-06 val=1.5505e-06 best=1.5434e-06 t=186s
+seed2-u ep=1275 lr=1.0e-05 train=1.5566e-06 val=1.5164e-06 best=1.5164e-06 t=190s
+seed2-u ep=1300 lr=1.0e-05 train=1.5380e-06 val=1.5005e-06 best=1.4991e-06 t=193s
+seed2-u ep=1310 lr=1.0e-05 train=1.5282e-06 val=1.4889e-06 best=1.4889e-06 t=195s
+seed2-u ep=1325 lr=1.0e-05 train=1.5130e-06 val=1.4743e-06 best=1.4743e-06 t=197s
+seed2-u ep=1335 lr=1.0e-05 train=1.5053e-06 val=1.4649e-06 best=1.4649e-06 t=199s
+seed2-u ep=1350 lr=1.0e-05 train=1.4897e-06 val=1.4579e-06 best=1.4539e-06 t=201s
+seed2-u ep=1355 lr=1.0e-05 train=1.4891e-06 val=1.4485e-06 best=1.4485e-06 t=202s
+seed2-u ep=1360 lr=1.0e-05 train=1.4809e-06 val=1.4409e-06 best=1.4409e-06 t=202s
+seed2-u ep=1375 lr=1.0e-05 train=1.4717e-06 val=1.4367e-06 best=1.4301e-06 t=205s
+seed2-u ep=1395 lr=1.0e-05 train=1.4508e-06 val=1.4147e-06 best=1.4147e-06 t=208s
+seed2-u ep=1400 lr=1.0e-05 train=1.4452e-06 val=1.4184e-06 best=1.4144e-06 t=208s
+seed2-u ep=1425 lr=1.0e-05 train=1.4244e-06 val=1.3891e-06 best=1.3884e-06 t=212s
+seed2-u ep=1430 lr=1.0e-05 train=1.4199e-06 val=1.3842e-06 best=1.3842e-06 t=213s
+seed2-u ep=1440 lr=1.0e-05 train=1.4161e-06 val=1.3733e-06 best=1.3733e-06 t=214s
+seed2-u ep=1450 lr=1.0e-05 train=1.4080e-06 val=1.3784e-06 best=1.3721e-06 t=216s
+seed2-u ep=1455 lr=1.0e-05 train=1.3980e-06 val=1.3672e-06 best=1.3672e-06 t=216s
+seed2-u ep=1460 lr=1.0e-05 train=1.3980e-06 val=1.3565e-06 best=1.3565e-06 t=217s
+seed2-u ep=1475 lr=1.0e-05 train=1.3845e-06 val=1.3539e-06 best=1.3505e-06 t=219s
+seed2-u ep=1490 lr=1.0e-05 train=1.3692e-06 val=1.3357e-06 best=1.3357e-06 t=222s
+seed2-u ep=1500 lr=1.0e-05 train=1.3662e-06 val=1.3356e-06 best=1.3331e-06 t=223s
+seed2-u ep=1520 lr=1.0e-05 train=1.3429e-06 val=1.3128e-06 best=1.3128e-06 t=226s
+seed2-u ep=1525 lr=1.0e-05 train=1.3408e-06 val=1.3172e-06 best=1.3098e-06 t=227s
+seed2-u ep=1530 lr=1.0e-05 train=1.3412e-06 val=1.3091e-06 best=1.3091e-06 t=228s
+seed2-u ep=1540 lr=1.0e-05 train=1.3269e-06 val=1.3007e-06 best=1.3007e-06 t=229s
+seed2-u ep=1550 lr=1.0e-05 train=1.3261e-06 val=1.2928e-06 best=1.2928e-06 t=231s
+seed2-u ep=1575 lr=1.0e-05 train=1.2989e-06 val=1.2695e-06 best=1.2695e-06 t=234s
+seed2-u ep=1600 lr=1.0e-05 train=1.2823e-06 val=1.2539e-06 best=1.2539e-06 t=238s
+seed2-u ep=1625 lr=1.0e-05 train=1.2615e-06 val=1.2373e-06 best=1.2295e-06 t=242s
+seed2-u ep=1640 lr=1.0e-05 train=1.2534e-06 val=1.2239e-06 best=1.2239e-06 t=244s
+seed2-u ep=1650 lr=1.0e-05 train=1.2429e-06 val=1.2140e-06 best=1.2132e-06 t=246s
+seed2-u ep=1655 lr=1.0e-05 train=1.2369e-06 val=1.2096e-06 best=1.2096e-06 t=246s
+seed2-u ep=1660 lr=1.0e-05 train=1.2371e-06 val=1.2070e-06 best=1.2070e-06 t=247s
+seed2-u ep=1665 lr=1.0e-05 train=1.2333e-06 val=1.2024e-06 best=1.2024e-06 t=248s
+seed2-u ep=1675 lr=1.0e-05 train=1.2254e-06 val=1.2004e-06 best=1.1971e-06 t=249s
+seed2-u ep=1685 lr=1.0e-05 train=1.2176e-06 val=1.1857e-06 best=1.1857e-06 t=251s
+seed2-u ep=1700 lr=1.0e-05 train=1.2055e-06 val=1.1803e-06 best=1.1790e-06 t=253s
+seed2-u ep=1710 lr=1.0e-05 train=1.1984e-06 val=1.1750e-06 best=1.1750e-06 t=254s
+seed2-u ep=1725 lr=1.0e-05 train=1.1921e-06 val=1.1694e-06 best=1.1591e-06 t=257s
+seed2-u ep=1730 lr=1.0e-05 train=1.1837e-06 val=1.1539e-06 best=1.1539e-06 t=257s
+seed2-u ep=1735 lr=1.0e-05 train=1.1786e-06 val=1.1506e-06 best=1.1506e-06 t=258s
+seed2-u ep=1745 lr=1.0e-05 train=1.1708e-06 val=1.1452e-06 best=1.1452e-06 t=260s
+seed2-u ep=1750 lr=1.0e-05 train=1.1699e-06 val=1.1475e-06 best=1.1452e-06 t=260s
+seed2-u ep=1755 lr=1.0e-05 train=1.1660e-06 val=1.1362e-06 best=1.1362e-06 t=261s
+seed2-u ep=1760 lr=1.0e-05 train=1.1634e-06 val=1.1328e-06 best=1.1328e-06 t=262s
+seed2-u ep=1770 lr=1.0e-05 train=1.1551e-06 val=1.1302e-06 best=1.1302e-06 t=263s
+seed2-u ep=1775 lr=1.0e-05 train=1.1502e-06 val=1.1245e-06 best=1.1214e-06 t=264s
+seed2-u ep=1780 lr=1.0e-05 train=1.1485e-06 val=1.1206e-06 best=1.1206e-06 t=265s
+seed2-u ep=1800 lr=1.0e-05 train=1.1333e-06 val=1.1077e-06 best=1.1077e-06 t=268s
+seed2-u ep=1825 lr=1.0e-05 train=1.1172e-06 val=1.0970e-06 best=1.0904e-06 t=272s
+seed2-u ep=1850 lr=1.0e-05 train=1.1052e-06 val=1.0762e-06 best=1.0733e-06 t=275s
+seed2-u ep=1855 lr=1.0e-05 train=1.0922e-06 val=1.0681e-06 best=1.0681e-06 t=276s
+seed2-u ep=1860 lr=1.0e-05 train=1.0874e-06 val=1.0650e-06 best=1.0650e-06 t=277s
+seed2-u ep=1875 lr=1.0e-05 train=1.0790e-06 val=1.0650e-06 best=1.0589e-06 t=279s
+seed2-u ep=1890 lr=1.0e-05 train=1.0703e-06 val=1.0475e-06 best=1.0475e-06 t=281s
+seed2-u ep=1900 lr=1.0e-05 train=1.0634e-06 val=1.0431e-06 best=1.0429e-06 t=283s
+seed2-u ep=1925 lr=1.0e-05 train=1.0453e-06 val=1.0373e-06 best=1.0282e-06 t=287s
+seed2-u ep=1945 lr=1.0e-05 train=1.0312e-06 val=1.0085e-06 best=1.0085e-06 t=290s
+seed2-u ep=1950 lr=1.0e-05 train=1.0287e-06 val=1.0133e-06 best=1.0085e-06 t=290s
+seed2-u ep=1955 lr=1.0e-05 train=1.0286e-06 val=1.0069e-06 best=1.0069e-06 t=291s
+seed2-u ep=1960 lr=1.0e-05 train=1.0255e-06 val=1.0032e-06 best=1.0032e-06 t=292s
+seed2-u ep=1965 lr=1.0e-05 train=1.0209e-06 val=1.0009e-06 best=1.0009e-06 t=293s
+seed2-u ep=1975 lr=1.0e-05 train=1.0134e-06 val=9.9702e-07 best=9.9670e-07 t=294s
+seed2-u ep=1980 lr=1.0e-05 train=1.0086e-06 val=9.8884e-07 best=9.8884e-07 t=295s
+seed2-u ep=2000 lr=1.0e-05 train=9.9769e-07 val=9.7946e-07 best=9.7574e-07 t=298s
+seed2-u ep=2010 lr=1.0e-05 train=9.9031e-07 val=9.7177e-07 best=9.7177e-07 t=299s
+seed2-u ep=2025 lr=1.0e-05 train=9.8228e-07 val=9.6490e-07 best=9.6490e-07 t=301s
+seed2-u ep=2030 lr=1.0e-05 train=9.8091e-07 val=9.6363e-07 best=9.6363e-07 t=302s
+seed2-u ep=2050 lr=1.0e-05 train=9.6667e-07 val=9.4817e-07 best=9.4696e-07 t=305s
+seed2-u ep=2065 lr=1.0e-05 train=9.5955e-07 val=9.4131e-07 best=9.4131e-07 t=307s
+seed2-u ep=2075 lr=1.0e-05 train=9.5248e-07 val=9.3537e-07 best=9.3537e-07 t=309s
+seed2-u ep=2100 lr=1.0e-05 train=9.4144e-07 val=9.2313e-07 best=9.2283e-07 t=313s
+seed2-u ep=2120 lr=1.0e-05 train=9.2535e-07 val=9.0747e-07 best=9.0747e-07 t=316s
+seed2-u ep=2125 lr=1.0e-05 train=9.1979e-07 val=9.0392e-07 best=9.0284e-07 t=316s
+seed2-u ep=2135 lr=1.0e-05 train=9.1507e-07 val=9.0116e-07 best=9.0116e-07 t=318s
+seed2-u ep=2145 lr=1.0e-05 train=9.0979e-07 val=8.9276e-07 best=8.9276e-07 t=319s
+seed2-u ep=2150 lr=1.0e-05 train=9.0878e-07 val=9.0346e-07 best=8.9276e-07 t=320s
+seed2-u ep=2160 lr=1.0e-05 train=9.0648e-07 val=8.8795e-07 best=8.8795e-07 t=322s
+seed2-u ep=2170 lr=1.0e-05 train=8.9975e-07 val=8.8430e-07 best=8.8430e-07 t=323s
+seed2-u ep=2175 lr=1.0e-05 train=8.9570e-07 val=8.8142e-07 best=8.8142e-07 t=324s
+seed2-u ep=2180 lr=1.0e-05 train=8.9125e-07 val=8.7569e-07 best=8.7569e-07 t=325s
+seed2-u ep=2200 lr=1.0e-05 train=8.8440e-07 val=8.7671e-07 best=8.6738e-07 t=328s
+seed2-u ep=2205 lr=1.0e-05 train=8.7779e-07 val=8.6256e-07 best=8.6256e-07 t=328s
+seed2-u ep=2225 lr=1.0e-05 train=8.7068e-07 val=8.5857e-07 best=8.5396e-07 t=331s
+seed2-u ep=2230 lr=1.0e-05 train=8.6294e-07 val=8.4958e-07 best=8.4958e-07 t=332s
+seed2-u ep=2250 lr=1.0e-05 train=8.5434e-07 val=8.4267e-07 best=8.4113e-07 t=335s
+seed2-u ep=2275 lr=1.0e-05 train=8.4334e-07 val=8.3866e-07 best=8.2898e-07 t=339s
+seed2-u ep=2300 lr=1.0e-05 train=8.2694e-07 val=8.2064e-07 best=8.1684e-07 t=342s
+seed2-u ep=2325 lr=1.0e-05 train=8.2008e-07 val=8.0717e-07 best=8.0717e-07 t=346s
+seed2-u ep=2340 lr=1.0e-05 train=8.0982e-07 val=7.9579e-07 best=7.9579e-07 t=348s
+seed2-u ep=2350 lr=1.0e-05 train=8.0848e-07 val=7.9918e-07 best=7.9579e-07 t=350s
+seed2-u ep=2355 lr=1.0e-05 train=8.0370e-07 val=7.9013e-07 best=7.9013e-07 t=351s
+seed2-u ep=2375 lr=1.0e-05 train=7.9202e-07 val=7.8228e-07 best=7.8228e-07 t=354s
+seed2-u ep=2380 lr=1.0e-05 train=7.8924e-07 val=7.7667e-07 best=7.7667e-07 t=354s
+seed2-u ep=2390 lr=1.0e-05 train=7.8518e-07 val=7.7307e-07 best=7.7307e-07 t=356s
+seed2-u ep=2400 lr=1.0e-05 train=7.8558e-07 val=7.7655e-07 best=7.7297e-07 t=357s
+seed2-u ep=2410 lr=1.0e-05 train=7.7874e-07 val=7.6855e-07 best=7.6855e-07 t=359s
+seed2-u ep=2415 lr=1.0e-05 train=7.7225e-07 val=7.6310e-07 best=7.6310e-07 t=360s
+seed2-u ep=2425 lr=1.0e-05 train=7.7040e-07 val=7.6207e-07 best=7.6100e-07 t=361s
+seed2-u ep=2430 lr=1.0e-05 train=7.6654e-07 val=7.5570e-07 best=7.5570e-07 t=362s
+seed2-u ep=2440 lr=1.0e-05 train=7.6512e-07 val=7.5400e-07 best=7.5400e-07 t=363s
+seed2-u ep=2450 lr=1.0e-05 train=7.5917e-07 val=7.4688e-07 best=7.4688e-07 t=365s
+seed2-u ep=2475 lr=1.0e-05 train=7.4771e-07 val=7.4332e-07 best=7.3530e-07 t=368s
+seed2-u ep=2490 lr=1.0e-05 train=7.4356e-07 val=7.3132e-07 best=7.3132e-07 t=371s
+seed2-u ep=2500 lr=1.0e-05 train=7.3865e-07 val=7.3073e-07 best=7.3073e-07 t=372s
+seed2-u ep=2505 lr=1.0e-05 train=7.4052e-07 val=7.2571e-07 best=7.2571e-07 t=373s
+seed2-u ep=2525 lr=1.0e-05 train=7.2684e-07 val=7.2003e-07 best=7.1914e-07 t=376s
+seed2-u ep=2530 lr=1.0e-05 train=7.2970e-07 val=7.1547e-07 best=7.1547e-07 t=377s
+seed2-u ep=2550 lr=1.0e-05 train=7.1873e-07 val=7.1197e-07 best=7.0943e-07 t=380s
+seed2-u ep=2575 lr=1.0e-05 train=7.0929e-07 val=7.0944e-07 best=7.0162e-07 t=383s
+seed2-u ep=2580 lr=1.0e-05 train=7.0638e-07 val=7.0017e-07 best=7.0017e-07 t=384s
+seed2-u ep=2585 lr=1.0e-05 train=7.0225e-07 val=6.9359e-07 best=6.9359e-07 t=385s
+seed2-u ep=2600 lr=1.0e-05 train=6.9869e-07 val=6.9680e-07 best=6.9332e-07 t=387s
+seed2-u ep=2620 lr=1.0e-05 train=6.9136e-07 val=6.8184e-07 best=6.8184e-07 t=390s
+seed2-u ep=2625 lr=1.0e-05 train=6.9307e-07 val=6.8385e-07 best=6.8184e-07 t=391s
+seed2-u ep=2650 lr=1.0e-05 train=6.8090e-07 val=6.7334e-07 best=6.7334e-07 t=394s
+seed2-u ep=2675 lr=1.0e-05 train=6.7393e-07 val=6.6423e-07 best=6.6423e-07 t=398s
+seed2-u ep=2680 lr=1.0e-05 train=6.7019e-07 val=6.6236e-07 best=6.6236e-07 t=399s
+seed2-u ep=2685 lr=1.0e-05 train=6.6754e-07 val=6.6088e-07 best=6.6088e-07 t=400s
+seed2-u ep=2700 lr=1.0e-05 train=6.6724e-07 val=6.5815e-07 best=6.5710e-07 t=402s
+seed2-u ep=2710 lr=1.0e-05 train=6.6116e-07 val=6.5507e-07 best=6.5507e-07 t=403s
+seed2-u ep=2725 lr=1.0e-05 train=6.5513e-07 val=6.5097e-07 best=6.4815e-07 t=406s
+seed2-u ep=2740 lr=1.0e-05 train=6.5132e-07 val=6.4509e-07 best=6.4509e-07 t=408s
+seed2-u ep=2750 lr=1.0e-05 train=6.5211e-07 val=6.4278e-07 best=6.4278e-07 t=409s
+seed2-u ep=2760 lr=1.0e-05 train=6.4627e-07 val=6.3994e-07 best=6.3994e-07 t=411s
+seed2-u ep=2765 lr=1.0e-05 train=6.4797e-07 val=6.3651e-07 best=6.3651e-07 t=412s
+seed2-u ep=2775 lr=1.0e-05 train=6.4484e-07 val=6.3369e-07 best=6.3369e-07 t=413s
+seed2-u ep=2800 lr=1.0e-05 train=6.3168e-07 val=6.3229e-07 best=6.2671e-07 t=417s
+seed2-u ep=2810 lr=1.0e-05 train=6.2856e-07 val=6.2153e-07 best=6.2153e-07 t=418s
+seed2-u ep=2825 lr=1.0e-05 train=6.2406e-07 val=6.2323e-07 best=6.1630e-07 t=420s
+seed2-u ep=2835 lr=1.0e-06 train=6.1204e-07 val=6.0557e-07 best=6.0557e-07 t=422s
+seed2-u ep=2850 lr=1.0e-06 train=6.0576e-07 val=6.0341e-07 best=6.0339e-07 t=424s
+seed2-u ep=2875 lr=1.0e-07 train=6.0399e-07 val=6.0230e-07 best=6.0212e-07 t=428s
+seed2-u ep=2900 lr=1.0e-08 train=6.0382e-07 val=6.0233e-07 best=6.0212e-07 t=432s
+seed2-u ep=2925 lr=1.0e-08 train=6.0382e-07 val=6.0235e-07 best=6.0212e-07 t=435s
+seed2-u ep=2950 lr=1.0e-08 train=6.0381e-07 val=6.0232e-07 best=6.0212e-07 t=439s
+seed2-u ep=2975 lr=1.0e-08 train=6.0381e-07 val=6.0233e-07 best=6.0212e-07 t=443s
+seed2-u ep=3000 lr=1.0e-08 train=6.0380e-07 val=6.0231e-07 best=6.0212e-07 t=447s
+seed2-u ep=3025 lr=1.0e-08 train=6.0378e-07 val=6.0233e-07 best=6.0212e-07 t=450s
+seed2-u ep=3050 lr=1.0e-08 train=6.0378e-07 val=6.0232e-07 best=6.0212e-07 t=454s
+TRAINED seed=2 u {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 3068, 'best_val': 6.021226113261946e-07, 'final_lr': 1e-08, 'seconds': 456.46294501097873}
+seed2-v ep=0 lr=1.0e-03 train=9.4349e-03 val=1.3895e-03 best=1.3895e-03 t=0s
+seed2-v ep=5 lr=1.0e-03 train=2.0706e-04 val=1.7303e-04 best=1.7303e-04 t=1s
+seed2-v ep=10 lr=1.0e-03 train=9.8294e-05 val=8.5380e-05 best=8.5380e-05 t=1s
+seed2-v ep=15 lr=1.0e-03 train=5.8474e-05 val=5.2487e-05 best=5.2487e-05 t=2s
+seed2-v ep=25 lr=1.0e-03 train=3.7230e-05 val=3.4982e-05 best=3.4982e-05 t=4s
+seed2-v ep=45 lr=1.0e-03 train=1.9053e-05 val=1.8395e-05 best=1.8395e-05 t=7s
+seed2-v ep=50 lr=1.0e-03 train=2.1920e-05 val=3.5344e-05 best=1.5972e-05 t=7s
+seed2-v ep=55 lr=1.0e-03 train=1.6485e-05 val=1.5866e-05 best=1.5866e-05 t=8s
+seed2-v ep=60 lr=1.0e-03 train=1.4592e-05 val=1.1885e-05 best=1.1885e-05 t=9s
+seed2-v ep=75 lr=1.0e-03 train=1.4380e-05 val=1.4619e-05 best=1.0055e-05 t=11s
+seed2-v ep=100 lr=1.0e-04 train=7.0451e-04 val=6.6910e-04 best=8.2465e-06 t=15s
+seed2-v ep=125 lr=1.0e-06 train=6.8663e-04 val=6.5333e-04 best=8.2465e-06 t=19s
+seed2-v ep=150 lr=1.0e-08 train=6.8650e-04 val=6.5322e-04 best=8.2465e-06 t=22s
+seed2-v ep=175 lr=1.0e-08 train=6.8650e-04 val=6.5322e-04 best=8.2465e-06 t=26s
+seed2-v ep=200 lr=1.0e-08 train=6.8649e-04 val=6.5322e-04 best=8.2465e-06 t=30s
+seed2-v ep=225 lr=1.0e-08 train=6.8648e-04 val=6.5321e-04 best=8.2465e-06 t=33s
+seed2-v ep=250 lr=1.0e-08 train=6.8647e-04 val=6.5320e-04 best=8.2465e-06 t=37s
+seed2-v ep=275 lr=1.0e-08 train=6.8645e-04 val=6.5318e-04 best=8.2465e-06 t=41s
+TRAINED seed=2 v {'stop_reason': 'early_stop', 'truncated': False, 'epochs': 284, 'best_val': 8.246524885180406e-06, 'final_lr': 1e-08, 'seconds': 42.01169562712312}
+NM-LSPG seed=2 {'error': {'u': 0.08719365801639477, 'v': 0.1088609266574579, 'max': 0.1088609266574579}, 'seconds_warm': 2.2338858931325376, 'gn_iterations_mean': 3.496000051498413, 'gn_iterations_max': 5, 'gn_cap_hits': 0, 'last_step_norm_max': 1.3491584466117598e-07, 'finite': True, 'ic_error': 0.015841138967642977} projection {'u': 0.018248713974677054, 'v': 0.038573474603195886, 'max': 0.038573474603195886}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 55, 'samples': 58, 'nodes_evaluated': 152, 'active_hidden': [5550, 5550], 'error': {'u': 18.22502523833018, 'v': 20.506689991634026, 'max': 20.506689991634026}, 'finite': True, 'sampled_basis_singular_values': [0.6464724372181596, 0.05220100286620226], 'seconds_warm': 4.34872934082523, 'gn_iterations_mean': 19.049333572387695}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 51, 'samples': 54, 'nodes_evaluated': 139, 'active_hidden': [5370, 5370], 'error': {'u': 64.71297701945922, 'v': 509.7182727595068, 'max': 509.7182727595068}, 'finite': True, 'sampled_basis_singular_values': [0.6162815758065759, 0.05220238579128215], 'seconds_warm': 4.497119619976729, 'gn_iterations_mean': 18.381999969482422}
+NM-LSPG-HR seed=2 {'subnet_parity': 1.6281185230136058e-13, 'residual_basis': 44, 'samples': 47, 'nodes_evaluated': 121, 'active_hidden': [5160, 5160], 'error': {'u': 2.189203942584786, 'v': 11.714718346238367, 'max': 11.714718346238367}, 'finite': True, 'sampled_basis_singular_values': [0.5858830459000606, 0.052880129422213554], 'seconds_warm': 4.4554743389599025, 'gn_iterations_mean': 18.249332427978516}
+NM-LSPG-HR seed=2 {'subnet_parity': 0.0, 'residual_basis': 40, 'samples': 40, 'nodes_evaluated': 102, 'active_hidden': [4390, 4390], 'error': {'u': 0.7770972433668529, 'v': 5.635606060638313, 'max': 5.635606060638313}, 'finite': True, 'sampled_basis_singular_values': [0.5483635409393051, 0.03973174847837538], 'seconds_warm': 4.150565782096237, 'gn_iterations_mean': 17.792667388916016}
+NM-LSPG-HR seed=2 {'subnet_parity': 1.2427203564079598e-13, 'residual_basis': 60, 'samples': 60, 'nodes_evaluated': 158, 'active_hidden': [5940, 5940], 'error': {'u': 0.9489934272221345, 'v': 2.2608530014775576, 'max': 2.2608530014775576}, 'finite': True, 'sampled_basis_singular_values': [0.6651137666016492, 0.06398341859469932], 'seconds_warm': 3.533716839272529, 'gn_iterations_mean': 15.442666053771973}
+GATE {'rule': 'median over exactly three distinct seeds of NM-LSPG max relative error <= 1.5 % (diverged seed = inf) AND a converged, finite LS-LSPG control >= 10 %; HR gate: median NM-LSPG-HR (55 basis / 58 samples) <= 2 %', 'note': 'published 34-38 % is LS-LSPG-HR; this control is LS-LSPG without HR (their Fig. 13 shows LS-LSPG >> NM-LSPG at n_s=5)', 'attempt': 2, 'seeds': [0, 1, 2], 'nm_lspg_errors': [7.093826505354988, 0.11215609651513338, 0.1088609266574579], 'nm_lspg_median': 0.11215609651513338, 'ls_lspg': 0.31595478053609205, 'ls_valid': True, 'hr_errors': [90.06725887695768, 131.43743611732268, 20.506689991634026], 'hr_median': 90.06725887695768, 'passed': False, 'hr_passed': False, 'recipe': {'act': 'swish', 'scale': 'global', 'train_dtype': 'float32', 'b': 100, 'db': 10, 'ns': 5, 'nx': 60, 'nt': 1500, 'online_dtype': 'float64'}}
+ALL-DONE

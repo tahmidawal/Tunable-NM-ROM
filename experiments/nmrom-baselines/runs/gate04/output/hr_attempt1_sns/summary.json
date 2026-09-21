@@ -1,0 +1,559 @@
+{
+  "config": {
+    "out": "output/hr_attempt1_sns",
+    "nx": 60,
+    "nt": 1500,
+    "ns": 5,
+    "b": 100,
+    "db": 10,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "max_epochs": 10000,
+    "train_wall": 3000.0,
+    "act": "swish",
+    "scale": "feature",
+    "train_dtype": "float32",
+    "attempt": 1,
+    "hr": [
+      55,
+      58,
+      51,
+      54,
+      44,
+      47,
+      40,
+      40,
+      60,
+      60
+    ],
+    "allow_cpu": false,
+    "hr_basis": "sns",
+    "load_ae": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output"
+  },
+  "n": 3364,
+  "M1": 6728,
+  "M2": 33730,
+  "fom_seconds_warm": 14.352864581625909,
+  "published": {
+    "nm_lspg": "<1 % (Fig. 14, n_s=5, n_train=4)",
+    "nm_lspg_hr_percent": [
+      0.93,
+      0.94,
+      0.95,
+      0.97,
+      0.97,
+      0.98
+    ],
+    "ls_lspg_hr_percent": [
+      34.38,
+      37.73,
+      37.84,
+      37.95,
+      37.96,
+      37.97
+    ]
+  },
+  "seeds": [
+    {
+      "seed": 0,
+      "train": {
+        "u": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed0_u.pkl",
+          "sha256": "c8b425a48d59dda1ce742052d8870847c1020c3938c82ed8a2169b5ca2747364"
+        },
+        "v": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed0_v.pkl",
+          "sha256": "582ada608e0c1f8efde48e67d21f9984c455d3d7991c4aa9a7e20a5264b210d2"
+        }
+      },
+      "nm_projection": {
+        "u": 0.010434172945878208,
+        "v": 0.010021710306535,
+        "max": 0.010434172945878208
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.016662899821837666,
+          "v": 0.014012854279688501,
+          "max": 0.016662899821837666
+        },
+        "seconds_warm": 2.115535763092339,
+        "gn_iterations_mean": 3.31333327293396,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.7900401679845128e-07,
+        "finite": true,
+        "ic_error": 0.003635561651759184
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 152,
+          "active_hidden": [
+            5550,
+            5550
+          ],
+          "error": {
+            "u": 0.5540465972754874,
+            "v": 3.865637331770994,
+            "max": 3.865637331770994
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6464724372181596,
+            0.05220100286620226
+          ],
+          "seconds_warm": 3.798608175944537,
+          "gn_iterations_mean": 16.544666290283203
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 139,
+          "active_hidden": [
+            5370,
+            5370
+          ],
+          "error": {
+            "u": 41.6320630931373,
+            "v": 103.10280177437389,
+            "max": 103.10280177437389
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6162815758065759,
+            0.05220238579128215
+          ],
+          "seconds_warm": 4.366802545264363,
+          "gn_iterations_mean": 17.82200050354004
+        },
+        {
+          "subnet_parity": 9.711675860437857e-13,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5160,
+            5160
+          ],
+          "error": {
+            "u": 118.29213332992045,
+            "v": 103.95371844073046,
+            "max": 118.29213332992045
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5858830459000606,
+            0.052880129422213554
+          ],
+          "seconds_warm": 4.658594224136323,
+          "gn_iterations_mean": 19.05466651916504
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4390,
+            4390
+          ],
+          "error": {
+            "u": 0.8136483800170645,
+            "v": 5.378048107093988,
+            "max": 5.378048107093988
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5483635409393051,
+            0.03973174847837538
+          ],
+          "seconds_warm": 4.17175474204123,
+          "gn_iterations_mean": 17.980667114257812
+        },
+        {
+          "subnet_parity": 6.341560494777349e-13,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 158,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": 0.288188523899348,
+            "v": 1.9126411185634453,
+            "max": 1.9126411185634453
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6651137666016492,
+            0.06398341859469932
+          ],
+          "seconds_warm": 3.8063585408963263,
+          "gn_iterations_mean": 16.58799934387207
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "train": {
+        "u": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed1_u.pkl",
+          "sha256": "fb543e86c49b6f24af24dade3f81679de23f0ef535699b37a8d9821af4d653fa"
+        },
+        "v": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed1_v.pkl",
+          "sha256": "679384d64db8825da8274bf83bfb006ef4e677873aea14706f99446a38887018"
+        }
+      },
+      "nm_projection": {
+        "u": 0.00846649756975803,
+        "v": 0.00774838406451745,
+        "max": 0.00846649756975803
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.014460925369739544,
+          "v": 0.012120616703960762,
+          "max": 0.014460925369739544
+        },
+        "seconds_warm": 2.113642165903002,
+        "gn_iterations_mean": 3.328000068664551,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.6705565541398333e-07,
+        "finite": true,
+        "ic_error": 0.003147441749426542
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 152,
+          "active_hidden": [
+            5550,
+            5550
+          ],
+          "error": {
+            "u": 21.36803006821925,
+            "v": 130.0547377188767,
+            "max": 130.0547377188767
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6464724372181596,
+            0.05220100286620226
+          ],
+          "seconds_warm": 4.557883007917553,
+          "gn_iterations_mean": 19.859333038330078
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 139,
+          "active_hidden": [
+            5370,
+            5370
+          ],
+          "error": {
+            "u": 18.302396863917746,
+            "v": 133.1519395096981,
+            "max": 133.1519395096981
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6162815758065759,
+            0.05220238579128215
+          ],
+          "seconds_warm": 4.820147269871086,
+          "gn_iterations_mean": 19.67799949645996
+        },
+        {
+          "subnet_parity": 1.903234198763501e-13,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5160,
+            5160
+          ],
+          "error": {
+            "u": 3.134134441506746,
+            "v": 7.100564283722487,
+            "max": 7.100564283722487
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5858830459000606,
+            0.052880129422213554
+          ],
+          "seconds_warm": 4.600285688880831,
+          "gn_iterations_mean": 18.889333724975586
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4390,
+            4390
+          ],
+          "error": {
+            "u": 4.836527574660613,
+            "v": 4.934403021152631,
+            "max": 4.934403021152631
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5483635409393051,
+            0.03973174847837538
+          ],
+          "seconds_warm": 4.327888012863696,
+          "gn_iterations_mean": 18.6473331451416
+        },
+        {
+          "subnet_parity": 1.2732442841885232e-13,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 158,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": 0.19041283050965085,
+            "v": 1.977508135425304,
+            "max": 1.977508135425304
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6651137666016492,
+            0.06398341859469932
+          ],
+          "seconds_warm": 3.8356464761309326,
+          "gn_iterations_mean": 16.709999084472656
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "train": {
+        "u": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed2_u.pkl",
+          "sha256": "cea1926f2341f0ffdc4ae524cf21e0d986689a26dc79f841f4e4d18fb2de081e"
+        },
+        "v": {
+          "loaded": "/cluster/tufts/paralab/tawal01/nmrombase_20260920/gate03/output/ae_seed2_v.pkl",
+          "sha256": "15b06f1b64713a65db8999275c1e5b4d8c3cb28d41a06bdfcb1bb14bf7134ab1"
+        }
+      },
+      "nm_projection": {
+        "u": 0.010390085739615265,
+        "v": 0.01207244957547464,
+        "max": 0.01207244957547464
+      },
+      "nm_lspg": {
+        "error": {
+          "u": 0.016785990636415872,
+          "v": 0.01731942442067609,
+          "max": 0.01731942442067609
+        },
+        "seconds_warm": 2.1650532130151987,
+        "gn_iterations_mean": 3.4093332290649414,
+        "gn_iterations_max": 5,
+        "gn_cap_hits": 0,
+        "last_step_norm_max": 1.6028737527344526e-07,
+        "finite": true,
+        "ic_error": 0.004025159063003381
+      },
+      "hr": [
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 55,
+          "samples": 58,
+          "nodes_evaluated": 152,
+          "active_hidden": [
+            5550,
+            5550
+          ],
+          "error": {
+            "u": 39.645405703919465,
+            "v": 187.77202420356548,
+            "max": 187.77202420356548
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6464724372181596,
+            0.05220100286620226
+          ],
+          "seconds_warm": 4.074778058100492,
+          "gn_iterations_mean": 17.768667221069336
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 51,
+          "samples": 54,
+          "nodes_evaluated": 139,
+          "active_hidden": [
+            5370,
+            5370
+          ],
+          "error": {
+            "u": 0.5083074036323704,
+            "v": 8.460028266317055,
+            "max": 8.460028266317055
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6162815758065759,
+            0.05220238579128215
+          ],
+          "seconds_warm": 4.377525305841118,
+          "gn_iterations_mean": 17.84600067138672
+        },
+        {
+          "subnet_parity": 2.0871696720430865e-13,
+          "residual_basis": 44,
+          "samples": 47,
+          "nodes_evaluated": 121,
+          "active_hidden": [
+            5160,
+            5160
+          ],
+          "error": {
+            "u": 1.4174065376415572,
+            "v": 28.223643630922368,
+            "max": 28.223643630922368
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5858830459000606,
+            0.052880129422213554
+          ],
+          "seconds_warm": 4.44550504302606,
+          "gn_iterations_mean": 18.163999557495117
+        },
+        {
+          "subnet_parity": 0.0,
+          "residual_basis": 40,
+          "samples": 40,
+          "nodes_evaluated": 102,
+          "active_hidden": [
+            4390,
+            4390
+          ],
+          "error": {
+            "u": 1.2662735786859993,
+            "v": 2.365992857355197,
+            "max": 2.365992857355197
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.5483635409393051,
+            0.03973174847837538
+          ],
+          "seconds_warm": 4.4836354879662395,
+          "gn_iterations_mean": 19.39266586303711
+        },
+        {
+          "subnet_parity": 3.3320487500941016e-13,
+          "residual_basis": 60,
+          "samples": 60,
+          "nodes_evaluated": 158,
+          "active_hidden": [
+            5940,
+            5940
+          ],
+          "error": {
+            "u": 0.12208989073872704,
+            "v": 1.5636435111520337,
+            "max": 1.5636435111520337
+          },
+          "finite": true,
+          "sampled_basis_singular_values": [
+            0.6651137666016492,
+            0.06398341859469932
+          ],
+          "seconds_warm": 3.810407876037061,
+          "gn_iterations_mean": 16.92133331298828
+        }
+      ]
+    }
+  ],
+  "ls_lspg": {
+    "error": {
+      "u": 0.31595478053609205,
+      "v": 0.31595478053609066,
+      "max": 0.31595478053609205
+    },
+    "gn_iterations_max": 3,
+    "gn_cap_hits": 0,
+    "last_step_norm_max": 1.8792790435690274e-07,
+    "finite": true
+  },
+  "ls_projection": {
+    "u": 0.179614308978526,
+    "v": 0.179614308978526,
+    "max": 0.179614308978526
+  },
+  "gate": {
+    "rule": "median over exactly three distinct seeds of NM-LSPG max relative error <= 1.5 % (diverged seed = inf) AND a converged, finite LS-LSPG control >= 10 %; HR gate: median NM-LSPG-HR (55 basis / 58 samples) <= 2 %",
+    "note": "published 34-38 % is LS-LSPG-HR; this control is LS-LSPG without HR (their Fig. 13 shows LS-LSPG >> NM-LSPG at n_s=5)",
+    "attempt": 1,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "nm_lspg_errors": [
+      0.016662899821837666,
+      0.014460925369739544,
+      0.01731942442067609
+    ],
+    "nm_lspg_median": 0.016662899821837666,
+    "ls_lspg": 0.31595478053609205,
+    "ls_valid": true,
+    "hr_errors": [
+      3.865637331770994,
+      130.0547377188767,
+      187.77202420356548
+    ],
+    "hr_median": 130.0547377188767,
+    "passed": false,
+    "hr_passed": false,
+    "recipe": {
+      "act": "swish",
+      "scale": "feature",
+      "train_dtype": "float32",
+      "b": 100,
+      "db": 10,
+      "ns": 5,
+      "nx": 60,
+      "nt": 1500,
+      "online_dtype": "float64"
+    }
+  },
+  "source_sha256": {
+    "gate_kim2d.py": "f3406224013c461f9e653cb1e3cc40381523b10d08ca0b416637e5080b2b182c",
+    "kimae.py": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+    "lspg.py": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298"
+  },
+  "provenance": {
+    "job_id": "4072224",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "commit": "334b73367bf93289516e281f39bd544e9f9db413",
+    "jax": "0.10.2",
+    "matmul": "highest"
+  }
+}

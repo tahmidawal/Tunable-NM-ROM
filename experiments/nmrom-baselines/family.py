@@ -106,9 +106,10 @@ def main():
         else:
             report['gates'][f'split_{s}_matches_cache'] = dict(passed=None, note='cache index not present; draws are from the protocol seeds only')
     save()
-    cohort_name = cfg['cohort']
-    assert cohort_name in ('tune', 'validation')
-    eval_phys = phys['train'][TUNE] if cohort_name == 'tune' else phys['validation']
+    # every arm is reported on the 32 validation cases; Kim arms are ALSO scored on the tuning subset, and only
+    # that score is ever used to choose anything (variant, HR size, the finals' hyper-parameters)
+    cohort_name = 'validation'
+    eval_phys = phys['validation']
     tune_phys = phys['train'][TUNE]
 
     # ------------------------------------------------------------------ snapshots (all 51 states) and references
@@ -134,7 +135,7 @@ def main():
             rows.append(f)
         return np.stack(rows)
     REF = reference(eval_phys)                                     # (cases, 6, L+1, L+1)
-    REF_tune = REF if cohort_name == 'tune' else reference(tune_phys)
+    REF_tune = reference(tune_phys)
     print(f'DATA {time.monotonic()-T0:.0f}s fit={U_fit.shape} ref={REF.shape}', flush=True)
     np.savez(out / 'reference.npz', reference=REF, physical=eval_phys)
 
@@ -260,7 +261,7 @@ def main():
             return pad(full), o[0].reshape(-1)
         return jax.jit(query), raw
 
-    for v in cfg['variants']:
+    def run_variant(v, register, reuse=None):
         name, K = v['name'], int(v['K'])
         t_arm = time.monotonic()
         try:
@@ -283,20 +284,25 @@ def main():
             micro = max(d for d in (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 30, 40, 48, 60, 80, 120, 240)
                         if d * idx.size * bytes_ <= float(cfg.get('micro_bytes', 5e9)) or d == 1)
             print(f'ARM {name}: n={n} K={K} M1={M1} M2={M2} nnz={int(valid.sum())} micro={micro} weights+adam~{need_gb:.1f}GB', flush=True)
-            p0 = kimae.init(jax.random.PRNGKey(int(v['seed'])), n, K, M1, M2, idx, valid, tdt)
-            Xn = (D / sc).astype(np.float32 if bytes_ == 4 else np.float64)
-            del D
-            p, info = kimae.train(p0, jnp.asarray(Xn[perm[nva:]]), jnp.asarray(Xn[perm[:nva]]), idx, valid, act, ny=m, b=v['b'], db=v['db'], batch=240, micro=micro,
-                                  max_epochs=int(v['max_epochs']), wall_seconds=float(v['wall']), seed=int(v['seed']),
-                                  lr0=float(v['lr']), lr_patience=int(v['patience']), tag=name)
-            del Xn, p0
-            hist = info.pop('history'); np.save(out / f'history_{name}.npy', hist)
-            info.update(params=kimae.n_params(p, valid), M1=M1, M2=M2, micro=micro, dtype=str(np.dtype(tdt)),
-                        seconds_per_epoch=float(info['seconds'] / max(info['epochs'], 1)))
-            report['training'][name] = info
-            print('TRAINED', name, {k: info[k] for k in ('stop_reason', 'epochs', 'best_val', 'seconds')}, flush=True); save()
-            with open(out / f'ae_{name}.pkl', 'wb') as fh:
-                pickle.dump(dict(params=host(p), scale=sc, variant=v), fh)
+            if reuse is None:
+                p0 = kimae.init(jax.random.PRNGKey(int(v['seed'])), n, K, M1, M2, idx, valid, tdt)
+                Xn = (D / sc).astype(np.float32 if bytes_ == 4 else np.float64)
+                del D
+                p, info = kimae.train(p0, jnp.asarray(Xn[perm[nva:]]), jnp.asarray(Xn[perm[:nva]]), idx, valid, act, ny=m, b=v['b'], db=v['db'], batch=240, micro=micro,
+                                      max_epochs=int(v['max_epochs']), wall_seconds=float(v['wall']), seed=int(v['seed']),
+                                      lr0=float(v['lr']), lr_patience=int(v['patience']), tag=name)
+                del Xn, p0
+                hist = info.pop('history'); np.save(out / f'history_{name}.npy', hist)
+                info.update(params=kimae.n_params(p, valid), M1=M1, M2=M2, micro=micro, dtype=str(np.dtype(tdt)),
+                            seconds_per_epoch=float(info['seconds'] / max(info['epochs'], 1)))
+                report['training'][name] = info
+                print('TRAINED', name, {k: info[k] for k in ('stop_reason', 'epochs', 'best_val', 'seconds')}, flush=True); save()
+                with open(out / f'ae_{name}.pkl', 'wb') as fh:
+                    pickle.dump(dict(params=host(p), scale=sc, variant=v), fh)
+            else:
+                ck = pickle.load(open(out / f'ae_{reuse}.pkl', 'rb'))
+                p, sc = jax.tree_util.tree_map(jnp.asarray, ck['params']), ck['scale']
+                del D
             A = dict(p=jax.tree_util.tree_map(lambda w_: jnp.asarray(w_, jnp.float64), p), scale=jnp.asarray(sc), idx=jnp.asarray(idx))
             jac_batch = None if n * idx.shape[1] * K * 8 < 6e9 else max(1, int(6e9 // (n * idx.shape[1] * 8)))
             nmq, nmres, nmproj = make_nm_query(K, v['ref'], jac_batch)
@@ -306,9 +312,12 @@ def main():
             arm = dict(family='kim_nm_lspg', K=K, cohort=cohort_name, variant=v, **errors(F, REF), gn_mean=float(its.mean()), gn_max=int(its.max()),
                        autoencode=errors(PF, REF), jac_batch=jac_batch, solved_dimension=K,
                        gn_cap_hits=int((its >= cfg.get('gn_cap', 20)).sum()), training_dtype=v.get('dtype', 'float32'), online_dtype='float64')
-            report['arms'][name] = arm; subjects[name] = (nmq, host(A))
+            Ft, _ = run_cases(nmq, A, tune_phys)
+            arm['tune'] = errors(Ft, REF_tune)
+            report['arms'][name] = arm
+            if register: subjects[name] = (nmq, host(A))
             if cohort_name == 'validation': np.savez(out / f'fields_{name}.npz', fields=F.astype(fdt))
-            print('NM-LSPG', name, 'worst_evolved', arm['worst_evolved'], 'autoencode', arm['autoencode']['worst_evolved'], flush=True); save()
+            print('NM-LSPG', name, 'worst_evolved', arm['worst_evolved'], 'autoencode', arm['autoencode']['worst_evolved'], 'tune', arm['tune']['worst_evolved'], flush=True); save()
 
             # ---------------- hyper-reduction (their online algorithm); grid chosen on the tuning subset only
             if v.get('hr') and hr_allowed:
@@ -345,7 +354,7 @@ def main():
                 if best is not None:
                     _, hname, H, nr, nz = best
                     report['arms'][name]['hr_selected'] = hname
-                    subjects[name + '_hr'] = (hrq, host(H))
+                    if register: subjects[name + '_hr'] = (hrq, host(H))
                     if cohort_name == 'validation':
                         Fh, ith = run_cases(hrq, H, eval_phys)
                         report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, cohort='validation', residual_basis=nr, samples=nz,
@@ -363,6 +372,25 @@ def main():
                 print('DROPPED (OOM)', name, flush=True); jax.clear_caches(); save()
             else:
                 raise
+
+    for v in cfg['variants']:
+        run_variant(v, register=bool(v.get('timed')))
+    fin = cfg.get('finals')
+    if fin:
+        cands = {k: a_['tune']['worst_evolved'] for k, a_ in report['arms'].items()
+                 if a_['family'] == 'kim_nm_lspg' and a_['tune']['finite'] and a_['finite']}
+        report['selection'] = dict(rule='smallest worst evolved NM-LSPG error on the 16-case tuning subset (train cases 112-127)', candidates=cands)
+        if cands:
+            best = min(cands, key=cands.get)
+            bv = report['arms'][best]['variant']
+            report['selection'].update(selected=best, selected_variant=bv)
+            print('SELECTED', best, cands[best], flush=True); save()
+            for k in cands:                       # the share is nearly full: keep only the selected sweep weights
+                if k != best: (out / f'ae_{k}.pkl').unlink(missing_ok=True)
+            for K in fin['Ks']:
+                fv = dict(bv, K=int(K), name=f'kim_final_K{K}', **fin.get('overrides', {}))
+                same = int(K) == int(bv['K']) and not fin.get('overrides')
+                run_variant(fv, register=True, reuse=best if same else None)
     del U_fit, Xfit
 
     # ------------------------------------------------------------------ the frozen project ROM (K=16, R=512)

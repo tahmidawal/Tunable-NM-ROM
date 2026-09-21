@@ -1,4 +1,77 @@
-{"intervals": 16, "cohort": "validation", "pod_ks": [8], "rom_qs": [0, 16], "gn_cap": 20, "hr_residual_cases": 8,
- "variants": [{"name": "kim_K8_smoke", "K": 8, "ref": "ic", "scale": "feature", "b": 10, "db": 2, "M1": "2n", "lr": 1e-3, "patience": 10,
-               "seed": 0, "max_epochs": 25, "wall": 60, "dtype": "float32", "hr": [[16, 24], [24, 40]]}],
- "timing": {"reps": 2, "cases": 2, "burn": 0.05}}
+{
+ "intervals": 16,
+ "pod_ks": [
+  8
+ ],
+ "rom_qs": [
+  0,
+  16
+ ],
+ "gn_cap": 20,
+ "hr_residual_cases": 8,
+ "variants": [
+  {
+   "name": "kim_K8_smoke",
+   "K": 8,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 10,
+   "db": 2,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 25,
+   "wall": 60,
+   "dtype": "float32",
+   "hr": [
+    [
+     16,
+     24
+    ],
+    [
+     24,
+     40
+    ]
+   ],
+   "timed": false
+  },
+  {
+   "name": "kim_K8_smoke_global",
+   "K": 8,
+   "ref": "ic",
+   "scale": "global",
+   "b": 10,
+   "db": 2,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 25,
+   "wall": 60,
+   "dtype": "float32",
+   "hr": [
+    [
+     16,
+     24
+    ],
+    [
+     24,
+     40
+    ]
+   ],
+   "timed": false
+  }
+ ],
+ "timing": {
+  "reps": 2,
+  "cases": 2,
+  "burn": 0.05
+ },
+ "finals": {
+  "Ks": [
+   4,
+   8
+  ]
+ }
+}

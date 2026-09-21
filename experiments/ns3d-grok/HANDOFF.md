@@ -19,10 +19,13 @@ move that number. Both remote job directories have been deleted.
 
 ## What is running
 
-Nothing until `ns3dgrok_diag03` is submitted.
+Nothing until the scheduler starts it. Job **4141126** `ns3dgrok_diag03` is
+pending (Priority). Directory
+`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag03/`. Source commit
+`70f1573a`. One job for this lane.
 
 ## Next step
 
-Submit diag03: every-step re-centering from the ROM centroid, with a
-true-centroid control and an output-time-only arm. Development only. Do not
-open the final cohort.
+When 4141126 exits 0, confirm `jax_backend=gpu`, pull and NumPy-verify, delete
+the remote directory, and compare the every-step ROM centroid with the
+true-centroid control. Do not open seed 202609203.

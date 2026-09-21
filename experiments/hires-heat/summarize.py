@@ -8,10 +8,13 @@ audit = json.loads((run / 'audit.json').read_text()) if (run / 'audit.json').exi
 summary = dict(schema='hires-heat-summary-v1', results_sha256=hashlib.sha256(raw).hexdigest(), source_commit=res['source_commit'], source_sha256=res['source_sha256'],
                model_sha256=res['model_sha256'], metadata=res['metadata'], audit_passed=None if audit is None else audit['passed'], meshes=[])
 lines = []
-for mesh in res['meshes']:
+names = res['config'].get('cohort_names') or [['all', 10**9]]; cohorts = []; lo = 0
+for cname, cnt in names:
+    cohorts.append((cname, lo, lo + cnt)); lo += cnt
+for mesh, (cname, lo, hi) in [(m, c) for m in res['meshes'] for c in cohorts]:
     rows = []
     for r in mesh['rows']:
-        same, phys = np.asarray(r['same']), np.asarray(r['physical']); ms = np.asarray(r['device_ms']).reshape(len(same), -1)
+        same, phys = np.asarray(r['same'])[lo:hi], np.asarray(r['physical'])[lo:hi]; ms = np.asarray(r['device_ms']).reshape(len(r['same']), -1)[lo:hi]; r = dict(r, stats=r['stats'][lo:hi])
         row = dict(method=r['method'], cases=len(same), repetitions=ms.shape[1], error_all_times_worst=float(same.max()), error_evolved_worst=float(same[:, 1:].max()),
                    error_all_times_median=float(np.median(same.max(1))), physical_all_times_worst=float(phys.max()), physical_evolved_worst=float(phys[:, 1:].max()),
                    device_ms_median=float(np.median(ms)), device_ms_median_of_case_medians=float(np.median(np.median(ms, axis=1))), failures=0)
@@ -34,9 +37,9 @@ for mesh in res['meshes']:
                     best = min(pool, key=lambda f: f['device_ms_median']); r[key] = dict(method=best['method'], device_ms=best['device_ms_median'], speedup=best['device_ms_median'] / r['device_ms_median'])
                 else: r[key] = None
             r['bar_error_le_1pct'] = r['error_all_times_worst'] <= .01; r['bar_speedup_ge_5'] = r['speedup_vs_named_fom'] >= 5
-    summary['meshes'].append(dict(intervals=mesh['intervals'], unknowns=mesh['unknowns'], bank_condition=mesh['bank_condition'], profile_ms=mesh['profile'], rows=rows,
+    summary['meshes'].append(dict(cohort=cname, intervals=mesh['intervals'], unknowns=mesh['unknowns'], bank_condition=mesh['bank_condition'], profile_ms=mesh['profile'], rows=rows,
                                   reference_refinement_max=max((c.get('reference_refinement', 0.) for c in mesh['cases']), default=None)))
-    lines += [f"\n### {mesh['intervals']} intervals per axis ({mesh['unknowns']} unknowns), {rows[0]['cases']} cases x {rows[0]['repetitions']} repetitions\n",
+    lines += [f"\n### [{cname}] {mesh['intervals']} intervals per axis ({mesh['unknowns']} unknowns), {rows[0]['cases']} cases x {rows[0]['repetitions']} repetitions\n",
               '| method | err all-times worst % | err evolved worst % | GPU ms | x vs named CN-CG | fastest CG with err<=ROM (all-times): x | coarse FOM matched: x | failures |', '|---|---:|---:|---:|---:|---|---|---:|']
     for r in rows:
         f = r.get('fastest_fom_error_le_rom_all_times'); c = r.get('fastest_coarse_fom_physical_evolved_le_rom')

@@ -1,26 +1,20 @@
 # bank-floor — HANDOFF (kept current)
 
-**State 2026-09-20 ~20:40.** 5/8 GPU jobs used. Phase 1 (representation) running:
+**State 2026-09-20 ~23:00 EDT.** 7/8 GPU jobs used. Phase 1 done for both PDEs; Phase 2 Poisson done; Phase 2 Burgers running.
 
 | attempt | job | outcome |
 |---|---|---|
-| bfp01 | 4052480 | FAILED at 3 min: single-Gram POD assert (sigma_2048/sigma_1 = 1.1e-8). Logs in `runs/bfp01/`. Remote dir deleted. |
-| bfb01 | 4052482 | FAILED at 3 min: same assert (8.0e-9). Logs in `runs/bfb01/`. Remote dir deleted. |
-| bfb02 | 4053195 | FAILED at 3 min: OOM in 26k eigh (two snapshot arrays resident). Remote dir deleted. |
-| bfp02 | 4053735 | RUNNING (A100 80GB pax050): Poisson all arms; POD + ft512 done, cat1024/cat2048 training |
-| bfb03 | 4056956 | RUNNING: Burgers all arms (deflated POD, one resident snapshot array) |
+| bfp01 / bfb01 | 4052480 / 4052482 | FAILED 3 min: single-Gram POD sigma-ratio assert. Logs kept. |
+| bfb02 | 4053195 | FAILED 3 min: eigh OOM. Logs kept. |
+| bfp02 | 4053735 | PARTIAL (POD + ft512 good; died scoring cat1024 on the 1023 mesh). Collected, NumPy audit PASS, remote removed. |
+| bfb03 | 4056956 | COMPLETED 1:36. Burgers Phase 1, all arms. Collected, audit PASS (`checks/bfb03-audit.json`), remote removed. |
+| bfsp01 | 4059578 | COMPLETED 1:51. Poisson cat1024/cat2048 + Phase-2 solve/timing. Collected, rep + solve audits PASS, remote removed. |
+| bfsb01 | 4071262 | SUBMITTED: Burgers Phase-2 (full-bank q=R dense solve for inc512/ft512/pod512/cat1024/pod1024/cat2048/pod2048 + FOM rows). Remote `.../bankfloor_20260920/bfsb01`. |
 
-Remote dirs: `/cluster/tufts/paralab/tawal01/bankfloor_20260920/{bfp02,bfb03}`. Log markers: `ARM <tag>`, `REP-DONE`, `ALL-DONE`.
+**When bfsb01 ends:** `python cluster/collect.py bfsb01` → write/ run a NumPy field audit (fields in `ckpt/bfsb01/fields`, truth = `fom_tight` fields) →
+`python reports/gen_report.py` → delete remote dir → final lab-log entry (flock) → commit. One job left in the budget.
 
-Interim Poisson (from the bfp02 log, NOT yet pulled/audited): held-out dev12 worst floor inc512 0.746 %; POD 512 / 1024 / 2048 =
-0.220 % / 0.0207 % / 0.0003 %; ft512 (6 min varpro fine-tune) 0.317 %.
-
-**Protocol deviation (recorded):** at the first submission the account had 5 jobs running and I submitted two (7 > 6).
-Since then every submit goes through a waiter that submits only when the account has < 6 jobs and refuses duplicates.
-
-**After completion:** checksum-verified pull (`OUTPUTS.sha256`) into `runs/<attempt>/output/` (git-ignored; copy `ckpt/*` to
-`experiments/bank-floor/ckpt/`), run `audit_rep_np.py`, commit `result.json` + audit + logs, delete the remote dir, apply gate
-P1, then Phase 2: `bf_solve_poisson.py` (CPU-smoked OK) and `bf_solve_burgers.py` (smoke in progress) — 3 jobs left.
+Generated tables: `reports/tables.generated.md`, `reports/summary.json`. Checkpoints: `ckpt/` (ignored) + `CKPT-MANIFEST.json`.
 
 **Landmines found so far**
 - `p-bank-head/checkpoints/head_K32_w0_s0.pkl` is on the WITHDRAWN `bank_R512_S192` bank (floor 0.8688 %). The right Poisson

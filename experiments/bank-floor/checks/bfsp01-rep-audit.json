@@ -1,0 +1,23 @@
+{
+  "result": "runs/bfsp01/result-rep.json",
+  "result_sha256": "4883de84036bca54a321c56ea3aae3fdbadb68fc7e8303f8fa7762d68a7f9e15",
+  "cohort": "dev12",
+  "tolerance": 1e-06,
+  "arms": {
+    "cat1024": {
+      "numpy_worst": 0.0011235958590811443,
+      "reported_worst": 0.0011235958590810786,
+      "relative_difference": 5.839773109528323e-14,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "cat2048": {
+      "numpy_worst": 0.0008556847239858307,
+      "reported_worst": 0.0008556847239858498,
+      "relative_difference": 2.2315482794965646e-14,
+      "file_hash_ok": true,
+      "passed": true
+    }
+  },
+  "passed": true
+}

@@ -68,7 +68,8 @@ for f in fams:
             row(dm, f"Kim NM-LSPG K={K}, data-matched ({A[dm]['variant']['fit_traj']} traj.)")
         pods = [k for k in (f'pod_lspg_zero_K{K}', f'pod_lspg_ic_K{K}') if k in A]
         if pods: row(min(pods, key=lambda k: A[k]['worst_evolved']), f'POD-LSPG K={K} (better reference)')
-    for nm, lab in (('ours_q0', 'ours fast (q=0), K=16'), ('ours_q256', 'ours accurate (q=256), K=16'),
+    for nm, lab in (('ours_q0', f"ours fast (q=0), K=16 — dense reference path, M={A.get('ours_q0', {}).get('M')}"),
+                    ('ours_q256', f"ours accurate (q=256), K=16 — dense reference path, M={A.get('ours_q256', {}).get('M')}"),
                     ('fom_nt1e4_dt005', 'FOM loose (1e-4)'), ('fom_fft_tight', 'FOM named / reference')):
         if nm in A: row(nm, lab)
 if HEAD:
@@ -76,6 +77,16 @@ if HEAD:
             'Validation cohort (32 held-out cases) for every row. Times: median GPU query, supplied initial field on GPU to six dense fields on GPU, all arms '
             'interleaved in one allocation per mesh. "× FOM" = named-FOM time / arm time (> 1 means faster than the full-order solve). '
             'Kim rows marked INADMISSIBLE used an activation that failed the reproduction gate.', '',
+            '**Cohort.** Every error in this table is on the shared split\'s 32 held-out *validation* cases (worst over cases and the five evolved times). '
+            'It is not the 6 development cases used by other lanes; the project ROM\'s q = 0 error is larger on this cohort than on those, consistent with the '
+            'bank-floor lane\'s held-out finding. Accuracy comparisons within this table are like-for-like.', '',
+            '**Which query path "ours" is.** The project-ROM rows run the unoptimised *dense-residual reference path*: vendored '
+            '`topfix.make_query(..., quadrature=\'dense\', arm=\'base\')` from `exp/2026-09-17-b-panel` @ 25434a27, M = 4(K+q) sine weak tests '
+            '(64 at q = 0, 1088 at q = 256), Gauss–Newton/LM stationarity tolerance 1e-6 for the steps and the initial fit, Gauss–Jordan linear solve at q = 0 '
+            'and LU at q = 256, no b-speed kernels; compilation excluded (every subject gets one warm call before timing). It is **not** the optimised query '
+            '(certified empirical quadrature, looser tolerance, fused/fast kernels) measured by the hires-burgers and b-panel lanes; no time from another job '
+            'is used here. The fair speed comparison in this table is therefore same-path: our dense path against Kim NM-LSPG without HR (also a dense '
+            'full-residual Gauss–Newton) and against dense POD-LSPG; Kim NM-LSPG-HR is the hyper-reduced analogue of the optimised query, which this job did not time.', '',
             '| mesh | method | solved unknowns | worst evolved | median evolved | query ms | × FOM | compiled-query MB | admissible |', '|---|---|---|---|---|---|---|---|---|']
     for h in HEAD:
         num = lambda x, fmt: '—' if x is None else format(x, fmt)
@@ -84,7 +95,10 @@ if HEAD:
     out.append('')
     # ------------------------------------------------------------ where a baseline beats us (generated, not typed)
     out += ['### Where a baseline beats the project NM-ROM', '',
-            'Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis:', '']
+            'Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis. '
+            '**Every speed line below compares against our dense reference path** (see above); lines marked [HR vs dense] compare a hyper-reduced '
+            'baseline with it and do not say how the baseline compares with our optimised (empirical-quadrature) query, which this job did not measure. '
+            'Accuracy lines are unaffected.', '']
     beats = []
     for L in sorted({h['mesh'] for h in HEAD}):
         ours = {h['arm']: h for h in HEAD if h['mesh'] == L and h['arm'] in ('ours_q0', 'ours_q256')}
@@ -95,11 +109,12 @@ if HEAD:
                 if h['worst'] < o['worst']:
                     beats.append(f"- {L}²: {h['method']} has lower worst evolved error ({pc(h['worst'])}) than `{o['arm']}` ({pc(o['worst'])}).")
                 if h['ms'] and o['ms'] and h['ms'] < o['ms']:
-                    beats.append(f"- {L}²: {h['method']} is faster ({h['ms']:.1f} ms vs {o['ms']:.1f} ms for `{o['arm']}`) at {pc(h['worst'])} vs {pc(o['worst'])} worst evolved error.")
+                    tag = ' [HR vs dense]' if 'HR' in h['method'] else ' [dense vs dense]'
+                    beats.append(f"- {L}²{tag}: {h['method']} is faster ({h['ms']:.1f} ms vs {o['ms']:.1f} ms for `{o['arm']}`, dense reference path) at {pc(h['worst'])} vs {pc(o['worst'])} worst evolved error.")
         fom = next((h for h in HEAD if h['mesh'] == L and h['arm'] == 'fom_fft_tight'), None)
         for o in ours.values():
             if fom and o['ms'] and fom['ms'] and fom['ms'] < o['ms']:
-                beats.append(f"- {L}²: the named FOM itself ({fom['ms']:.1f} ms) is faster than `{o['arm']}` ({o['ms']:.1f} ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.")
+                beats.append(f"- {L}²: the named FOM itself ({fom['ms']:.1f} ms) is faster than `{o['arm']}` ({o['ms']:.1f} ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).")
     out += (beats or ['- none']) + ['']
     # ------------------------------------------------------------ fitting limits and tuning effort
     out += ['## 3. Where each Kim configuration stops fitting or training', '',

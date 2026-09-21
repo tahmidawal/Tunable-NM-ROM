@@ -18,6 +18,10 @@ Pass rule (pre-registered): median of three seeds ≤ 1.5 % and a valid LS-LSPG 
 
 Validation cohort (32 held-out cases) for every row. Times: median GPU query, supplied initial field on GPU to six dense fields on GPU, all arms interleaved in one allocation per mesh. "× FOM" = named-FOM time / arm time (> 1 means faster than the full-order solve). Kim rows marked INADMISSIBLE used an activation that failed the reproduction gate.
 
+**Cohort.** Every error in this table is on the shared split's 32 held-out *validation* cases (worst over cases and the five evolved times). It is not the 6 development cases used by other lanes; the project ROM's q = 0 error is larger on this cohort than on those, consistent with the bank-floor lane's held-out finding. Accuracy comparisons within this table are like-for-like.
+
+**Which query path "ours" is.** The project-ROM rows run the unoptimised *dense-residual reference path*: vendored `topfix.make_query(..., quadrature='dense', arm='base')` from `exp/2026-09-17-b-panel` @ 25434a27, M = 4(K+q) sine weak tests (64 at q = 0, 1088 at q = 256), Gauss–Newton/LM stationarity tolerance 1e-6 for the steps and the initial fit, Gauss–Jordan linear solve at q = 0 and LU at q = 256, no b-speed kernels; compilation excluded (every subject gets one warm call before timing). It is **not** the optimised query (certified empirical quadrature, looser tolerance, fused/fast kernels) measured by the hires-burgers and b-panel lanes; no time from another job is used here. The fair speed comparison in this table is therefore same-path: our dense path against Kim NM-LSPG without HR (also a dense full-residual Gauss–Newton) and against dense POD-LSPG; Kim NM-LSPG-HR is the hyper-reduced analogue of the optimised query, which this job did not time.
+
 | mesh | method | solved unknowns | worst evolved | median evolved | query ms | × FOM | compiled-query MB | admissible |
 |---|---|---|---|---|---|---|---|---|
 | 128² | Kim NM-LSPG K=8 [swish] | 8 | 50.57 % | 21.53 % | 301.1 | 0.24 | 4252 | NO |
@@ -29,8 +33,8 @@ Validation cohort (32 held-out cases) for every row. Times: median GPU query, su
 | 128² | Kim NM-LSPG K=32 [swish] | 32 | 40.84 % | 14.99 % | 945.6 | 0.08 | 4322 | NO |
 | 128² | Kim NM-LSPG-HR K=32 (exploratory) [swish] | 32 | 58.15 % | 20.22 % | 166.5 | 0.44 | 4328 | NO |
 | 128² | POD-LSPG K=32 (better reference) | 32 | 23.35 % | 4.20 % | 176.3 | 0.41 | 14 | yes |
-| 128² | ours fast (q=0), K=16 | 16 | 3.41 % | 0.59 % | 109.2 | 0.67 | 190 | yes |
-| 128² | ours accurate (q=256), K=16 | 272 | 0.51 % | 0.08 % | 1353.7 | 0.05 | 504 | yes |
+| 128² | ours fast (q=0), K=16 — dense reference path, M=64 | 16 | 3.41 % | 0.59 % | 109.2 | 0.67 | 190 | yes |
+| 128² | ours accurate (q=256), K=16 — dense reference path, M=1088 | 272 | 0.51 % | 0.08 % | 1353.7 | 0.05 | 504 | yes |
 | 128² | FOM loose (1e-4) | — | 0.05 % | 0.01 % | 32.2 | 2.26 | 4 | yes |
 | 128² | FOM named / reference | — | 0.00 % | 0.00 % | 72.8 | 1.00 | 4 | yes |
 | 256² | Kim NM-LSPG K=8 [sigmoid] | 8 | 163.93 % | 43.34 % | 1300.8 | 0.06 | 2480 | yes |
@@ -43,36 +47,36 @@ Validation cohort (32 held-out cases) for every row. Times: median GPU query, su
 | 256² | Kim NM-LSPG K=32 [sigmoid] | 32 | 127.51 % | 43.61 % | 3845.7 | 0.02 | 2742 | yes |
 | 256² | Kim NM-LSPG-HR K=32 (exploratory) [sigmoid] | 32 | 122.68 % | 41.98 % | 474.9 | 0.17 | 2794 | yes |
 | 256² | POD-LSPG K=32 (better reference) | 32 | 24.78 % | 5.65 % | 518.8 | 0.16 | 55 | yes |
-| 256² | ours fast (q=0), K=16 | 16 | 6.79 % | 0.66 % | 262.2 | 0.31 | 625 | yes |
-| 256² | ours accurate (q=256), K=16 | 272 | 0.88 % | 0.09 % | 3746.3 | 0.02 | 1769 | yes |
+| 256² | ours fast (q=0), K=16 — dense reference path, M=64 | 16 | 6.79 % | 0.66 % | 262.2 | 0.31 | 625 | yes |
+| 256² | ours accurate (q=256), K=16 — dense reference path, M=1088 | 272 | 0.88 % | 0.09 % | 3746.3 | 0.02 | 1769 | yes |
 | 256² | FOM loose (1e-4) | — | 0.06 % | 0.01 % | 33.9 | 2.39 | 14 | yes |
 | 256² | FOM named / reference | — | 0.00 % | 0.00 % | 81.0 | 1.00 | 14 | yes |
 
 ### Where a baseline beats the project NM-ROM
 
-Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis:
+Every admissible reduced baseline row that is better than one of our two settings on the same mesh, on either axis. **Every speed line below compares against our dense reference path** (see above); lines marked [HR vs dense] compare a hyper-reduced baseline with it and do not say how the baseline compares with our optimised (empirical-quadrature) query, which this job did not measure. Accuracy lines are unaffected.
 
-- 128²: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 109.2 ms for `ours_q0`) at 54.95 % vs 3.41 % worst evolved error.
-- 128²: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 1353.7 ms for `ours_q256`) at 54.95 % vs 0.51 % worst evolved error.
-- 128²: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 109.2 ms for `ours_q0`) at 40.85 % vs 3.41 % worst evolved error.
-- 128²: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 1353.7 ms for `ours_q256`) at 40.85 % vs 0.51 % worst evolved error.
-- 128²: POD-LSPG K=32 (better reference) is faster (176.3 ms vs 1353.7 ms for `ours_q256`) at 23.35 % vs 0.51 % worst evolved error.
-- 128²: the named FOM itself (72.8 ms) is faster than `ours_q0` (109.2 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
-- 128²: the named FOM itself (72.8 ms) is faster than `ours_q256` (1353.7 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
-- 256²: Kim NM-LSPG K=8 is faster (1300.8 ms vs 3746.3 ms for `ours_q256`) at 163.93 % vs 0.88 % worst evolved error.
-- 256²: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 262.2 ms for `ours_q0`) at 115.60 % vs 6.79 % worst evolved error.
-- 256²: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 3746.3 ms for `ours_q256`) at 115.60 % vs 0.88 % worst evolved error.
-- 256²: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 262.2 ms for `ours_q0`) at 55.52 % vs 6.79 % worst evolved error.
-- 256²: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 3746.3 ms for `ours_q256`) at 55.52 % vs 0.88 % worst evolved error.
-- 256²: Kim NM-LSPG K=16 is faster (2384.4 ms vs 3746.3 ms for `ours_q256`) at 145.40 % vs 0.88 % worst evolved error.
-- 256²: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 262.2 ms for `ours_q0`) at 202.87 % vs 6.79 % worst evolved error.
-- 256²: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 3746.3 ms for `ours_q256`) at 202.87 % vs 0.88 % worst evolved error.
-- 256²: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 262.2 ms for `ours_q0`) at 41.53 % vs 6.79 % worst evolved error.
-- 256²: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 3746.3 ms for `ours_q256`) at 41.53 % vs 0.88 % worst evolved error.
-- 256²: Kim NM-LSPG-HR K=32 (exploratory) is faster (474.9 ms vs 3746.3 ms for `ours_q256`) at 122.68 % vs 0.88 % worst evolved error.
-- 256²: POD-LSPG K=32 (better reference) is faster (518.8 ms vs 3746.3 ms for `ours_q256`) at 24.78 % vs 0.88 % worst evolved error.
-- 256²: the named FOM itself (81.0 ms) is faster than `ours_q0` (262.2 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
-- 256²: the named FOM itself (81.0 ms) is faster than `ours_q256` (3746.3 ms), so that setting of our ROM is not a speed-up over the full-order solve on this family at this mesh.
+- 128² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 109.2 ms for `ours_q0`, dense reference path) at 54.95 % vs 3.41 % worst evolved error.
+- 128² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (56.2 ms vs 1353.7 ms for `ours_q256`, dense reference path) at 54.95 % vs 0.51 % worst evolved error.
+- 128² [dense vs dense]: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 109.2 ms for `ours_q0`, dense reference path) at 40.85 % vs 3.41 % worst evolved error.
+- 128² [dense vs dense]: POD-LSPG K=16 (better reference) is faster (93.6 ms vs 1353.7 ms for `ours_q256`, dense reference path) at 40.85 % vs 0.51 % worst evolved error.
+- 128² [dense vs dense]: POD-LSPG K=32 (better reference) is faster (176.3 ms vs 1353.7 ms for `ours_q256`, dense reference path) at 23.35 % vs 0.51 % worst evolved error.
+- 128²: the named FOM itself (72.8 ms) is faster than `ours_q0` (109.2 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
+- 128²: the named FOM itself (72.8 ms) is faster than `ours_q256` (1353.7 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
+- 256² [dense vs dense]: Kim NM-LSPG K=8 is faster (1300.8 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 163.93 % vs 0.88 % worst evolved error.
+- 256² [HR vs dense]: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 262.2 ms for `ours_q0`, dense reference path) at 115.60 % vs 6.79 % worst evolved error.
+- 256² [HR vs dense]: Kim NM-LSPG-HR K=8 (exploratory) is faster (64.7 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 115.60 % vs 0.88 % worst evolved error.
+- 256² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 262.2 ms for `ours_q0`, dense reference path) at 55.52 % vs 6.79 % worst evolved error.
+- 256² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (138.0 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 55.52 % vs 0.88 % worst evolved error.
+- 256² [dense vs dense]: Kim NM-LSPG K=16 is faster (2384.4 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 145.40 % vs 0.88 % worst evolved error.
+- 256² [HR vs dense]: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 262.2 ms for `ours_q0`, dense reference path) at 202.87 % vs 6.79 % worst evolved error.
+- 256² [HR vs dense]: Kim NM-LSPG-HR K=16 (exploratory) is faster (126.2 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 202.87 % vs 0.88 % worst evolved error.
+- 256² [dense vs dense]: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 262.2 ms for `ours_q0`, dense reference path) at 41.53 % vs 6.79 % worst evolved error.
+- 256² [dense vs dense]: POD-LSPG K=16 (better reference) is faster (258.8 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 41.53 % vs 0.88 % worst evolved error.
+- 256² [HR vs dense]: Kim NM-LSPG-HR K=32 (exploratory) is faster (474.9 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 122.68 % vs 0.88 % worst evolved error.
+- 256² [dense vs dense]: POD-LSPG K=32 (better reference) is faster (518.8 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 24.78 % vs 0.88 % worst evolved error.
+- 256²: the named FOM itself (81.0 ms) is faster than `ours_q0` (262.2 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
+- 256²: the named FOM itself (81.0 ms) is faster than `ours_q256` (3746.3 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
 
 ## 3. Where each Kim configuration stops fitting or training
 

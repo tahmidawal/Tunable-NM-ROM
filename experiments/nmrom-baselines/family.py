@@ -348,7 +348,7 @@ def main():
                     subjects[name + '_hr'] = (hrq, host(H))
                     if cohort_name == 'validation':
                         Fh, ith = run_cases(hrq, H, eval_phys)
-                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, cohort='validation', residual_basis=nr, samples=nz,
+                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, cohort='validation', residual_basis=nr, samples=nz,
                                                             selected_on='tune', **errors(Fh, REF), gn_mean=float(ith.mean()))
                         np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(fdt))
                         print('NM-LSPG-HR (validation)', name, report['arms'][name + '_hr']['worst_evolved'], flush=True)
@@ -399,6 +399,7 @@ def main():
         F, its = run_cases(fq, ref_pre, eval_phys)
         report['arms'][fname] = dict(family='fom', ntol=ntol, ltol=ltol, dt=DT, cohort=cohort_name, **errors(F, REF), newton_total_mean=float(its.sum(1).mean()))
         subjects[fname] = (fq, ref_pre)
+        if cohort_name == 'validation': np.savez(out / f'fields_{fname}.npz', fields=F.astype(fdt))
     save()
 
     # ------------------------------------------------------------------ timing, one allocation, interleaved

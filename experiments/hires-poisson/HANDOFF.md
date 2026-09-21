@@ -13,10 +13,11 @@ namespace `/cluster/tufts/paralab/tawal01/hires_p_20260920/`. Contract:
 | 1 | hp2048 | square 2048² | 4049279 | H200 | DONE, audited on cluster, collected, remote deleted. Bar MET (0.965 %, 28.7× vs CG 1e-2) |
 | 2 | hp3d128 | cube 64³ + 128³ | 4051032 | H200 | DONE, audited, collected, remote deleted. 128³: 0.160 %, 2.70× vs CG 1e-2 → bar MISSED on speed (I/O-bound; 6.8× device) |
 | 3 | hp4096 | square 4096² | 4051236 | H200 | DONE, audited, collected, remote deleted. Bar MET (0.965 %, 41.1× total / 146× device) |
-| 4 | hpl1024 | L-shape 1024² | 4053801 | H200 | RUNNING |
-| 5 | hp3d256 | cube 128³ + 256³ (DST-assembled operator, A7) | — | H200 | STAGED at runs/hp3d256, NOT submitted (account had 6 running). Submit: `cluster/submit.sh hp3d256` |
-| 6 | hpl2048 | L-shape 2048² (2n reference by tight GPU CG, A5) | — | H200 | not staged yet: `stage.py hpl2048 --config config-lshape-2048.json --set lshape --driver hpl_solve.py --audit hpl_audit_np.py --hours 8` |
-| 7 | hp4096b | square 4096² re-measure: f32-I/O twins + q256m8/q384m4 (A6) | — | H200 | not staged yet: `stage.py hp4096b --config config-4096b.json --memfrac 0.95 --hours 6` |
+| 4 | hpl1024 | L-shape 1024², 12 sources | 4053801 | H200 | DONE, audited, collected, remote deleted. 0.895 % / 9.88× — **bar verdict WITHDRAWN (A8): 12-source subset excludes the hard sources**; timings stand |
+| 5 | hp3d256 | cube 128³ + 256³ (DST-assembled operator, A7) | 4056288 | H200 | RUNNING |
+| 6 | hpl32 | L-shape 1024² AND 2048², all 32 development sources (two driver runs → output/, output2/) | 4057694 | H200 | RUNNING/PENDING; ~3–4 h (2n=4096 reference by tight GPU CG) |
+| 7 | hp4096b | square 4096² re-measure: f32-I/O twins, q256m8, q384m4, CG 0.3/0.2/0.1/0.01 (A6, A9) | — | H200 | STAGED at runs/hp4096b; a background chain submits it when the lane has < 2 jobs and the account < 6. If the session died: `cluster/submit.sh hp4096b` |
+| 8 | (spare) | — | — | — | one job left in the budget |
 
 ## How to run
 
@@ -33,9 +34,9 @@ gate passed. `runs/*/archive/output/sub/` is pulled but git-ignored.
 
 ## Next steps
 
-1. Collect `hp3d128` and `hp4096` when ALL-DONE; regenerate summary; lab-log append (flock).
-2. L-shaped 1024² / 2048²: port `worktrees/2026-09-17-lshape/experiments/lshape/lsh_solve.py`
-   (source commit d80fed7a) into the lane with coarse-grid arms, 5 reps, UUID guard, primary models
-   only, no POD at 2048²; M=257, q ∈ {0,32,64,128}; fine reference at 2n by SuperLU. Own amendment first.
-3. Speed loop re-measure ideas not yet run: pinned/f32 I/O for all subjects alike; larger M at q=256;
-   sine-mode enrichment of the bank as a labelled accuracy arm (floor 0.742 % is what binds).
+1. Collect each job when its log says ALL-DONE: `cluster/collect.sh <attempt>` (pulls output/ and output2/, verifies
+   checksums, deletes the remote dir), then `reports/generate_hires.py`, then a lab-log append under flock
+   (`reports/make_lab_entry.py <attempt>` prints the generated paragraph; hpl32 has two audits — output2 is 2048²).
+2. After all jobs: final lab-log entry + rewrite nothing on main except the append; commit; do not push.
+3. Ideas not run (spare job): sine-mode enrichment of the bank to break the 0.742 % floor (labelled accuracy arm);
+   a 1024² square anchor on the same H200 for a three-point same-GPU mesh series; pinned host buffers.

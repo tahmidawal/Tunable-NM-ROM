@@ -7,7 +7,8 @@
 
 ## State (update at every milestone)
 
-- Jobs used: **5 / 8** (hb2k01 done; hb4k01, hb4k02 failed before any ROM number). RUNNING: `hb2k02` = 4071616 (2048², speed loop) and `hb4k03` = 4071625 (4096²), both H200 pax008, source = HEAD at submission.
+- Jobs used: **6 / 8**. RUNNING: `hb4k03` = 4071625 (4096², H200 pax008) and `hb2kh64` = 4077566 (2048², hold64 cohort, accuracy of the chosen rungs on 64 held-out cases; config-2048-hold64.json).
+- **hb2k02 (4071616) collected, audited (no failed gate), remote deleted**: `checks/hb2k02-summary.json`. dev6, 2048²: accurate rung q256/M1088/lat64 chol+clip+lamcarry 0.598 % at 130.7 ms GPU (192 ms host-inclusive) = 5.76× vs lean_tight (4.24× host-inclusive), 0.94× vs relaxed passing lean_nt3e-3 (122.8 ms); cheapest certified ≤1 %: q256/M544 clip 0.865 %, 124 ms, 6.07× vs tight. M=2176 gives 0.454 % at 139 ms but its lattice rule FAILS the certificate (ρ 0.151 / 0.147; lat128 is worse, 0.62) → stretch bar not met. Coarse FOM c1024: 0.417 % same-grid, 78 ms, 2.21 % vs refined reference (ROM accurate rung 2.11 %, truth 1.99 %).
 - **hb2k01 (2048², job 4054951, H200) collected, NumPy-audited (no failed gate), remote dir deleted.**
   `checks/hb2k01-summary.json`, report `reports/2026-09-20-hires-burgers.md`, `reports/summary.json`.
   Accuracy SURVIVES transfer: q=256/M=1088 0.598 % worst evolved (dense truth 0.5985 %), q=128 1.075 %, q=0 2.37 %,
@@ -49,5 +50,6 @@ See the bottom of this file's job table.
 
 Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage `hb4k01` with `config-4096.json --mem 400G` once the early phases are seen to work and the account has < 6 running.
 | hb4k02 | 4059827 | 4096² | H200 (pax010) | **FAILED, no ROM number** (Triton gemm > 2^31 elements; `artifacts/hb4k02-failed/`), remote deleted | — |
-| hb2k02 | 4071616 | 2048² | H200 (pax008) | RUNNING (config-2048-speed.json) | — |
+| hb2k02 | 4071616 | 2048² | H200 (pax008) | DONE, audited, remote deleted | `checks/hb2k02-summary.json` |
 | hb4k03 | 4071625 | 4096² | H200 (pax008) | RUNNING (config-4096-speed.json, blocked bank) | — |
+| hb2kh64 | 4077566 | 2048², hold64 | H200 | RUNNING | — |

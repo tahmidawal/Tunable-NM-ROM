@@ -75,6 +75,26 @@ def train_bank(u, val, cfg, log):
     return params, np.linalg.solve(r, np.eye(len(r))), q, target, norm2, perp, info
 
 
+def make_validate(k, r, old=False):
+    """Best-found validation error of the head (4 nearest training codes as LM starts). heat3d-bank: the hires-heat form
+    (old=True) broadcasts |lib - t|^2 inside the vmap, a V x S x R tensor (1536 x 12288 x 256 at valR256) whose fusion stalled
+    ptxas for >17 min in job 4141159; the new form finds the same 4 nearest codes by one V x S matmul + top_k."""
+    solve = C.lm(C.mlp_head, 400, 1e-8); eye = jnp.eye(r)
+    @jax.jit
+    def validate(p, z, vt, vn, vp):
+        lib = C.mlp_head(p, z)
+        if old:
+            def one(t, nrm, pp):
+                zs, st = jax.vmap(lambda s: solve(p, eye, t, s))(z[jnp.argsort(jnp.sum((lib - t) ** 2, axis=1))[:4]])
+                return jnp.sqrt((jnp.min(st[:, 3]) ** 2 * jnp.sum(t * t) + pp) / nrm)
+            return jax.vmap(one)(vt, vn, vp)
+        d2 = jnp.sum(lib * lib, axis=1)[None, :] - 2 * vt @ lib.T   # + |t|^2, constant per row
+        idx = jax.lax.top_k(-d2, 4)[1]
+        _, st = jax.vmap(lambda t, s4: jax.vmap(lambda s: solve(p, eye, t, s))(s4))(vt, z[idx])
+        return jnp.sqrt((jnp.min(st[..., 3], axis=1) ** 2 * jnp.sum(vt * vt, axis=1) + vp) / vn)
+    return validate
+
+
 def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
     target, norm2, perp = map(jnp.asarray, (target, norm2, perp)); a, b = jax.random.split(jax.random.PRNGKey(cfg['model_seed'] + 100 + k))
     a0, a1 = jax.random.split(a)
@@ -89,14 +109,7 @@ def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
     def step(pz, state, key, target, norm2, perp):
         value, grad = jax.value_and_grad(objective)(pz, jax.random.randint(key, (batch,), 0, len(target)), target, norm2, perp)
         update, state = opt.update(grad, state, pz); return optax.apply_updates(pz, update), state, value
-    solve = C.lm(C.mlp_head, 400, 1e-8); eye = jnp.eye(target.shape[1]); vt, vn, vp = map(jnp.asarray, (vtarget, vnorm2, vperp))
-    @jax.jit
-    def validate(p, z, vt, vn, vp):
-        lib = C.mlp_head(p, z)
-        def one(t, nrm, pp):
-            zs, st = jax.vmap(lambda s: solve(p, eye, t, s))(z[jnp.argsort(jnp.sum((lib - t) ** 2, axis=1))[:4]])
-            return jnp.sqrt((jnp.min(st[:, 3]) ** 2 * jnp.sum(t * t) + pp) / nrm)
-        return jax.vmap(one)(vt, vn, vp)
+    vt, vn, vp = map(jnp.asarray, (vtarget, vnorm2, vperp)); validate = make_validate(k, target.shape[1], cfg.get('head_validate_old', False))
     key = jax.random.PRNGKey(cfg['model_seed'] + 200 + k); pz = (p, z); best = (np.inf, None, None); begin = time.perf_counter()
     for it in range(cfg['head_steps']):
         key, sub = jax.random.split(key); pz, state, value = step(pz, state, sub, target, norm2, perp)

@@ -463,6 +463,8 @@ def main():
                 build_rule(rung, rs)
                 run_quick(register(rung, rs))
     rep['phases']['early_answer_seconds'] = el()
+    # hb4k02 lost EVERY ROM arm to a mislabelled 'OOM' and carried on for ten minutes: never again
+    assert any(built[n]['kind'] == 'rom' for n in subjects), ('no ROM arm survived the early answer', rep['dropped'])
 
     # (c) reachable populations from the audited dense query at the population mesh
     assert not set(pc['fit_trajectories']) & set(pc['cert_trajectories'])

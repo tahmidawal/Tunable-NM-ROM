@@ -1,0 +1,12 @@
+{
+ "passed": true,
+ "checked_error_vectors": 4640,
+ "max_full_field_absolute_discrepancy": 0.0,
+ "max_subgrid_absolute_discrepancy": 6.82953495254756e-16,
+ "max_reduced_arm_full_vs_subgrid_relative_gap": 0.03012464516818894,
+ "max_reduced_arm_full_vs_random_sample_relative_gap": 0.013875696020805973,
+ "gap_tolerance": 0.05,
+ "failures": [],
+ "failure_count": 0,
+ "note": "Full-field audits recompute the reported full-grid error exactly. Sub-grid audits recompute exactly the in-job strided sub-grid error from the saved strided field and an independent SciPy reference; for reduced arms (smooth error) the full-grid and sub-grid error values must also agree within 5%. CG arms have rough error fields, so their full-grid error is audited exactly only where full fields are saved."
+}

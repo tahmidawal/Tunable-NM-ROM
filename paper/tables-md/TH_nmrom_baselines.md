@@ -9,4 +9,3 @@
 | POD-LSPG | 32 | 24.78 | 5.65 | 55 |
 | This work, fast (q=0, k=16) | 16 | 6.79 | 0.66 | 625 |
 | This work, accurate (q=256, k=16) | 272 | 0.88 | 0.089 | 1769 |
-| 512^2: all methods (reserved for the running 512^2 job) | — | — | — | — |

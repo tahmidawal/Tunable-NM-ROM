@@ -212,8 +212,11 @@ held-out relative error of the projected advection term,
   \rho_{\max}\le\nEqtopBar\ \text{(primary bar)},\quad \rho_{\max}\le\nEqtopTightBar\ \text{(tight)},
   \label{eq:rho}
 \end{equation}
-over the held-out reachable states described below; the primary bar is
-\nEqtopBarOrigin. A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
+over the held-out reachable states described below. The primary bar is
+the held-out $\rho$ of the original model's $q=0$ rule at the state that
+carries its largest first-interval error, measured in an earlier diagnostic
+study and fixed before any certification job ran; the tight bar was fixed
+before the EQ-ladder job of Table~\ref{tab:eqladder}. A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
 $n_{\text{fit}}$ stored codes $c^{(\ell)}$ we evaluate the decoded state, form
 the per-node contributions $N_i(\bank c^{(\ell)})$ and the exact full-grid
 target $\tests N(\bank c^{(\ell)})$, and solve
@@ -231,7 +234,7 @@ Lawson--Hanson criterion with an exact non-negative refit after each addition
 and a hard cap of $m$ nodes, padded to the requested count if the support
 saturates. Three counts are separated: the requested node count $m$, the
 achieved support, and the number of fit states $n_{\text{fit}}$. In the
-certification cell the fit states are reachable states (states of the dense
+certification study the fit states are reachable states (states of the dense
 solver's own converged per-step trajectory on fit trajectories), the held-out
 states are 512 reachable states per rung from certification trajectories
 disjoint from both the fit and the evaluation cases, and $\rho$ of
@@ -253,7 +256,7 @@ stall, 3 damping limit, 5 non-finite initial value, 0 budget. Heat: 1
 stationarity, 2 tiny step, 3 damping limit, 4 non-finite, 0 budget. The heat
 criterion divides by $\normF{\jac{}}$ only, applied to a residual already
 normalised by the target norm; Poisson and Burgers use \eqref{eq:stationarity}
-directly. The completion rule that accepts an attained initial fit
-(\S\ref{sec:method:weak}) was pre-registered in the panel cell's design before
-the job ran; complete exit flags remain in the source records.
+directly. An initial fit that meets its stopping rule is accepted as the
+starting state of the time loop; this acceptance rule was fixed before the
+evaluation jobs ran, and complete exit flags remain in the source records.
 

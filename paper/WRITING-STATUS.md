@@ -1,6 +1,64 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — Table 2 filled from nmrom-baselines — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — editorial review fixes — CURRENT HANDOFF
+
+**State.** `main.pdf` 20 pages, main text + references start within page 9, 0 overfull, 0 undefined,
+abstract 244 words; `check_headline.py` PASS, `check_rewrite.py` PASS. (The historical exact-prose checks
+`check_integrity_repair.py` / `check_campaign_integration.py` still fail by design; the former also names
+`sections/extended-results.tex`, now archived.)
+
+**Done.** A1 512² slot removed. A2/A8 Limitations rewritten: every control ratio stated as "X is Y× faster
+than the NM-ROM" (new reciprocal macros, asserted < 1 before inverting); each recurring caveat (FOM more
+accurate; faster direct/coarse solvers; held-out Burgers; Heat 3D with t=0) stated once there, repeats
+removed from the caption, figure caption, failures paragraph and Table 2 sentence; the restricted-grid audit
+footnote moved to Appendix C.1. A3 A.6 "completion rule / panel cell" rewritten self-contained. A4 lab names
+replaced (incumbent → original model, b-seeds/b-eqtop/q-diag/q-ridge/lane/summary.json/"EQ panels"); the
+primary-bar origin is now prose, not the `\nEqtopBarOrigin` macro. A5 k for latent dimension (legacy tables
+via `editorial_subs.py`), κ for heat diffusivity, Burgers 3D written "$33^3$ nodes" in both tables. A6
+Appendix B starts on a fresh page with its figure ([H], `float` package). A7 bibliography 78 → 31 cited
+entries, sorted; Swarztrauber cited at the Baselines paragraph; the near-blank reference page is gone. A9
+nine orphan section files → `archive-unused/sections/` (commit eb8b5556).
+B1 caption "selected accurate rank (Table C.3)". B2 abstract/intro reworded (settings "where both were
+measured"). B3 abstract/conclusion/Burgers paragraph: slower through 2048² on development cases, faster at
+4096². B4 Table 5 EQ ratios footnoted with their jobs; C.6 is a different allocation. B5 C.6 caption names
+its job and those of Table 1's 256² row and Table 4; Table 4 caption names its job. B6 Table 2 caption names
+Kim et al.'s own 2D Burgers benchmark as the gate problem. B7 Resolution paragraph states the FOM-selection
+rule, which series use a fixed FOM setting, and cites the fixed tight-setting ratios in C.3 (2048²→4096²);
+abstract softened to "against the selected full-order setting". B8 matched-dimension claim restricted to the
+fast setting; accurate setting described "at 272 solved unknowns" (caption, sentence, abstract). B9 every
+accurate Burgers cell in Table 1 carries a rule-status mark (s single-draw, marginal construction; ℓ 63×63
+lattice rule passing the held-out ρ bar in the same job, asserted from the audit JSON for M=544 and M=1088;
+d dense); §3.3 now points to Table D.2.
+C: Table C.1 meshes/cohorts updated (Poisson to 4096², L-shape to 2048², Burgers to 4096² + 64 held-out,
+new wide-bank heat row) via exact substitutions that `check_rewrite.py` re-derives from the BASE tables; C.3
+settings now carry M, m and rule; generated wide-bank training hyperparameters (`TH_training.tex`); Table D.4
+error convention stated; job IDs removed from Tables C.3 and C.7 and gathered in one generated "Allocations"
+paragraph (Appendix C.2).
+
+**Not done (no evidence in the paper snapshots, or out of scope):** training hyperparameters for the
+Burgers/Poisson/L-shape/3D checkpoints (only the wide heat bank's record is snapshotted); Newton–BiCGStab
+line-search settings (the FFT Helmholtz preconditioner is already stated in A.3); L-shape boundary factor
+and test-space construction; job IDs and file paths inside the legacy tables C.1/C.2 and the D-table
+captions (C.1's heat job is required by `check_headline.py`; C.2's source column is a transcription table).
+
+**[USER] options — prepared, not applied.**
+(i) *Complete-query in Table 1:* switch the scope in `gen_headline.py` so rows with an `alt` complete-query
+ratio use it (Poisson 2048²/4096² 72.8×/146× → 28.7×/41.1×; Burgers 2048²/4096² dev 0.99×/4.87× →
+0.99×/2.18×, held-out 1.43×/5.38× → 1.28×/2.28×; dev-source cube 6.75×/23.2× → 2.70×/4.18×); heat, the paired-CG
+rows and Poisson/Heat 3D have no complete-query time and would need a mark or removal.
+(ii) *Heat lead row:* delete the two batched-fit `plan` entries in `hires_heat()` (Table C.4 keeps them), or
+drop the plain-CN entries instead; the Linear-problems sentence and the figure follow automatically.
+(iii) *POD rows in Table 2:* remove the three `pod_lspg_zero_*` plan entries, the POD clause in the results
+sentence and the abstract, and the check_rewrite POD exemption.
+(iv) *Dense-path time column in Table 2:* add `ms` from `appx_nb` (same job 4095408) with a caption sentence;
+relax the `' ms' not in t2` assertion in `check_headline.py`.
+(v) *Heat 1024² sealed / Heat 3D placement:* change the wide02b plan entry to final04 `sealed_opened_once`
+1024² (row becomes 0.49 % / 1.59× / fast 1.57×, all sealed); moving Heat 3D to Table 3 means adding it to
+`F` and dropping its two Table 1 rows (check_headline's failure-source set must include it).
+(vi) *One row per problem:* keep the largest mesh per series in Table 1, send the rest to C.3 as
+appendix-only rows; the figure must then read C.3 rows, and the monotonicity check must run on ROWS+APPX.
+
+## 2026-09-21 (paper lane) — Table 2 filled from nmrom-baselines
 
 **State.** `main.pdf` 22 pages; main text and references start within page 9 (`check_rewrite.py` PASS),
 `check_headline.py` PASS (now also: Table 2 has no time/ratio column, 512² slot reserved), 0 overfull,

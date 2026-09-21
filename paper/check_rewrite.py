@@ -6,17 +6,20 @@ BASE='53d26f481dcd3e59f2d2dc15126392dc2b458460'
 def old(path): return subprocess.check_output(['git','show',f'{BASE}:{path}'],cwd=R)
 files=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'paper/tables','paper/tables-md'],cwd=R).decode().splitlines()
 preserved=[p for p in files if Path(p).name.startswith(('T','numbers'))]
-changed=[p for p in preserved if (R/p).read_bytes()!=old(p)]
+# 2026-09-21 editorial review: legacy tables may differ from BASE only by the exact substitutions in editorial_subs.py
+import sys; sys.path.insert(0,str(P)); import editorial_subs as ES
+def expected(path): return ES.apply(Path(path).stem, old(path).decode())
+changed=[p for p in preserved if (R/p).read_text()!=expected(p)]
 reference_only={'paper/tables/T00_glance.tex','paper/tables-md/T00_glance.md'}
 # 2026-09-20 review fix: Heat2D setup rows now separate checkpoint lineage from the measured job (one row each).
 heat_provenance={'paper/tables/T01_problems.tex','paper/tables-md/T01_problems.md','paper/tables/T01b_spec.tex','paper/tables-md/T01b_spec.md'}
 assert not set(changed)-reference_only-heat_provenance,changed
 for path in set(changed)&heat_provenance:
-    a=old(path).decode().splitlines();b=(R/path).read_text().splitlines()
+    a=expected(path).splitlines();b=(R/path).read_text().splitlines()
     diff=[i for i,(x,y) in enumerate(zip(a,b)) if x!=y]
     assert len(a)==len(b) and len(diff)==1 and 'Heat 2D' in a[diff[0]] and '3529772' in b[diff[0]],path
 for path in set(changed)&reference_only:
-    before=old(path).decode()
+    before=expected(path)
     cleaned=re.sub(r'; Fig\.[~ ]\\ref\{fig:family\}[ABC]', '', before)
     assert (R/path).read_text()==cleaned,path
 log=(P/'main.log').read_text()

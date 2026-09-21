@@ -157,11 +157,13 @@ for n in (256, 512, 1024):
     cs = min(ok, key=lambda s: ok[s]['median_gpu_ms'])
     assert pjob[(n, fs)] == pjob[(n, as_)] == pjob[(n, cs)] and len(pjob[(n, cs)]) == 1
     def lab(s):
-        q = s.split('_')[0][1:]; kind = 'dense' if 'dense' in s else 'EQ'
-        return f'$q={q}$, {kind}'
+        q = s.split('_')[0][1:]; M = s.split('_')[1][1:]
+        if 'dense' in s: return f'$q={q}$, $M={M}$, dense'
+        return f"$q={q}$, $M={M}$, EQ $m={P[(n, s)]['rule_m']}$"
     assert cs.startswith('nt1e-') and cs.endswith('_dt005')
     row('Burgers', 2, n, setting(lab(fs), roms[fs]['worst_evolved_percent'], roms[fs]['median_gpu_ms'], arm=fs),
-        setting(lab(as_), roms[as_]['worst_evolved_percent'], roms[as_]['median_gpu_ms'], arm=as_),
+        setting(lab(as_), roms[as_]['worst_evolved_percent'], roms[as_]['median_gpu_ms'], arm=as_,
+                eq='dense' if 'dense' in as_ else {'certified in one draw': 'single-draw', 'confirmed (3/3)': 'confirmed'}[roms[as_]['rule_status']]),
         dict(name='Newton--BiCGStab, tol $10^{-%s}$' % cs[5], error_pct=ok[cs]['worst_evolved_percent'], ms=ok[cs]['median_gpu_ms'], arm=cs),
         'burgers_panel', next(iter(pjob[(n, cs)])), 'development', 'development', 'same-grid, evolved', 'GPU query')
 
@@ -271,6 +273,14 @@ def hires_heat(parts):
     assert S['h2d-final04']['model']['bank'] == '93b0ec7ad22526f003b1f2d81dfecab2f6bc883ea73ad715f85f7437ede73233'   # inputs/wide2d/SHA256SUMS
     assert S['h2d-final04']['model']['head'] == '49c2ae73b0fde3c5126604af770af14ddcb5bef254f71fc93cf4f53eccbce498'   # head_K8.pkl
     HH['wide_floor'] = 100 * tr['bank']['validation_projection_worst']
+    c_ = tr['config']
+    HH['training_sentence'] = (
+        r'The wide heat bank of Table~\ref{tab:headline} is a random-Fourier-feature coordinate network '
+        f"({c_['fourier_features']} features, scale {c_['fourier_scale']:g}, width {c_['bank_width']}, $R={c_['bank_rank']}$) trained for "
+        f"{c_['bank_steps']} steps (learning rate {c_['bank_learning_rate']:g}, {c_['bank_batch_states']} states $\\times$ {c_['bank_batch_points']} points per batch, "
+        f"gradient clip {c_['bank_gradient_clip']:g}, exact coefficient refit every {c_['refit_every']} steps), then a head of width {c_['head_width']} with $k=8$ for "
+        f"{c_['head_steps']} steps (learning rate {c_['head_learning_rate']:g}, {c_['head_batch_states']} states per batch), on {c_['train_count']} training draws "
+        f"at ${c_['train_intervals']}^2$ with {c_['validation_count']} validation draws; its validation projection floor is {100 * tr['bank']['validation_projection_worst']:.2f}\\,\\%.")
 
     def fom_for(R, err):
         c = {k: v for k, v in R.items() if k.startswith('fom_cncg_') and v['failures'] == 0 and v['error_all_times_worst'] <= err}
@@ -387,7 +397,7 @@ def hires_burgers(parts):
         return r'Newton--BiCGStab, tol $%s$' % s
 
     def lab(a):
-        return f"$q={a['q']}$, EQ" + (f" $M={a['M']}$" if a['q'] else '')
+        return f"$q={a['q']}$, $M={a['M']}$, EQ " + (f"lattice $m={a['m']}$" if a['rule'] == 'lat64' else f"$m={a['m']}$")
 
     plan = [  # attempt, mesh, accurate role, problem, cohort, status
         ('hb2k02', 2048, 'chosen on dev6', 'Burgers', 'development', 'development; 6 cases, arm chosen here'),
@@ -405,6 +415,8 @@ def hires_burgers(parts):
         ok = {k: v for k, v in foms.items() if v['worst_evolved_percent'] <= a['worst_evolved_percent']}
         c = min(ok, key=lambda k: ok[k]['median_gpu_ms'])
         assert c == ma['fastest_at_least_as_accurate'] and abs(ma['s_fastest_at_least_as_accurate_gpu'] - t[c]['median_gpu_ms'] / a['median_gpu_ms']) < 1e-9
+        rl = [r_ for r_ in d['rules'] if a['name'] in r_['deployed']]
+        assert len(rl) == 1 and rl[0]['deployed'][a['name']]['certified_primary'] and rl[0]['source'][0]['kind'] == 'lattice' and rl[0]['m'] == 63 * 63
         tight = t[ma['tight']]
         assert abs(ma['s_tight_gpu'] - tight['median_gpu_ms'] / a['median_gpu_ms']) < 1e-9 and abs(ma['s_tight_host'] - tight['median_host_ms'] / a['median_host_ms']) < 1e-9
         assert abs(mf['s_tight_gpu'] - tight['median_gpu_ms'] / f['median_gpu_ms']) < 1e-9
@@ -412,7 +424,7 @@ def hires_burgers(parts):
         alt = [dict(scope='complete query', accurate=fom['median_host_ms'] / a['median_host_ms'], fast=fom['median_host_ms'] / f['median_host_ms']),
                dict(scope=r'vs.\ tight Newton', accurate=tight['median_gpu_ms'] / a['median_gpu_ms'], fast=tight['median_gpu_ms'] / f['median_gpu_ms'])]
         row(problem, 2, n, setting(lab(f), f['worst_evolved_percent'], f['median_gpu_ms'], arm=f['name']),
-            setting(lab(a), a['worst_evolved_percent'], a['median_gpu_ms'], arm=a['name']),
+            setting(lab(a), a['worst_evolved_percent'], a['median_gpu_ms'], arm=a['name'], eq='lattice'),
             dict(name=fom_label(fom), error_pct=fom['worst_evolved_percent'], ms=fom['median_gpu_ms'], arm=c), key, d['job_id'], coh, status,
             'same-grid, evolved', 'GPU query', note=f"{d['cohort_cases']} cases, {a['reps']} repetitions; {d['gpu']}", alt=alt)
         HB[(att, 'coarse')] = {k: v for k, v in t.items() if k.startswith('c') and v['family'] == 'fom' and v['mesh'] < n}
@@ -487,7 +499,8 @@ def marks(r):
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
     if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
     return m
-def cells(s): return [e(s['error_pct']), sp(s['speedup'])] if s else ['---', '---']
+EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$'}
+def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), sp(s['speedup'])] if s else ['---', '---']
 
 
 INGESTED = {v.get('lane') for v in MAN.values() if v.get('lane')}
@@ -529,18 +542,18 @@ lines += [r'\bottomrule', r'\end{tabular}']
 write('TH_headline', lines, ['Problem', 'Mesh', 'Accurate err. (%)', 'Accurate speedup', 'Fast err. (%)', 'Fast speedup', 'FOM err. (%)', 'FOM'], mdrows)
 
 # supporting times (appendix)
-tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrllll@{}}', r'\toprule',
-      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Job & Status \\', r'\midrule']
+tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrlll@{}}', r'\toprule',
+      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Status \\', r'\midrule']
 tmd = []
 for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], bool(r['appendix_only']), r['fom']['ms'])):
     a, f = r['accurate'], r['fast']
     c = [f"{r['problem']} {r['dim']}D" + (r'$^{\ast}$' if r['appendix_only'] else ''), mesh(r), a['label'] if a else '---', f['label'] if f else '---', f"{a['ms']:.2f}" if a else '---',
          f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'],
          '; '.join(spn(x['accurate']) + r'$\times$ / ' + spn(x['fast']) + r'$\times$ (' + x['scope'] + ')' for x in (r['alt'] if isinstance(r['alt'], list) else [r['alt']])) if r.get('alt') else '---',
-         r'\texttt{' + r['job_id'] + '}', r['status'].split(';')[0]]
+         r['status'].split(';')[0]]
     tl.append(' & '.join(c) + r' \\'); tmd.append([md(re.sub(r'\\texttt\{(\w+)\}', r'\1', x)) for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
-write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope or FOM: acc. / fast', 'Job', 'Status'], tmd)
+write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope or FOM: acc. / fast', 'Status'], tmd)
 
 # appendix heat table (hires-heat lane): both error conventions, the batched variant, the tight named FOM, 3D speed rows
 if HEAT_APPX:
@@ -604,8 +617,6 @@ if NBP:
         lab = r['label']
         bl.append(f"{lab} & {r['k']} & {e(r['worst'])} & {e(r['median'])} & {r['mb']:.0f} \\\\")
         bmd.append([md(lab), str(r['k']), e(r['worst']), e(r['median']), f"{r['mb']:.0f}"])
-    bl += [r'\midrule', r'$512^2$, all methods & \multicolumn{4}{l}{\emph{reserved: that job is still running}} \\']
-    bmd.append(['512^2: all methods (reserved for the running 512^2 job)', '—', '—', '—', '—'])
     # appendix: same job, labelled query paths, exploratory hyper-reduced Kim rows; no ratio to any FOM
     for r in T2: appx_nb.append(dict(r, path='dense (reference path)' if r['family'] == 'ours' else 'dense'))
     for K in (8, 16, 32):
@@ -643,7 +654,7 @@ B = {r['method']: r for r in D['burgers3d']['rows']}
 assert D['burgers3d']['final_evaluation']['complete']['complete']
 bf = B['fom_n33_dt0.01_nt1e-02_lt5e-01']
 for m, lab_ in (('rom_q0', '$q=0$'), ('rom_q192', '$q=192$')):
-    F.append(dict(problem='Burgers 3D, $33^3$ (final)', setting=lab_, error_pct=100 * B[m]['worst_evolved'], fom_error_pct=100 * bf['worst_evolved'],
+    F.append(dict(problem='Burgers 3D, $33^3$ nodes (final)', setting=lab_, error_pct=100 * B[m]['worst_evolved'], fom_error_pct=100 * bf['worst_evolved'],
                   speedup=bf['median_ms'] / B[m]['median_ms'], fom='Newton--BiCGStab', metric='same-grid, evolved', source='burgers3d'))
 N = {r['method']: r for r in D['ns3d']['rows']}; nf = N['fom_dt0.01']; assert D['ns3d']['evaluation_cohort'] == 'final'
 for m, lab_ in (('nmrom_pca64_free_q0', '$q=0$'), ('nmrom_pca64_free_q256', '$q=256$')):
@@ -700,6 +711,12 @@ if HP:
     mac['nHiresCtlDevice'] = rng([c['device'] for v in sq.values() for c in v['controls'].values()])
     ls = {k: v for k, v in HP.items() if k[0] == 'Poisson, L-shape'}
     mac['nHiresLshapeCoarse'] = rng([v['controls']['fastest_coarse_matched']['total'] for v in ls.values()])
+    # the same controls as "control is X times faster than the NM-ROM" (reciprocals; every value must be < 1 for that wording)
+    ctl_t = [c['total'] for v in sq.values() for c in v['controls'].values()]; ctl_d = [c['device'] for v in sq.values() for c in v['controls'].values()]
+    ctl_l = [v['controls']['fastest_coarse_matched']['total'] for v in ls.values()]
+    assert max(ctl_t + ctl_d + ctl_l) < 1
+    mac['nHiresCtlTotalFaster'] = rng([1 / x for x in ctl_t]); mac['nHiresCtlDeviceFaster'] = rng([1 / x for x in ctl_d])
+    mac['nHiresLshapeCoarseFaster'] = rng([1 / x for x in ctl_l])
     mac['nHiresLshapeAccErr'] = e(max(v['acc_err'] for v in ls.values())); mac['nHiresLshapeFloor'] = e(max(v['floor_pct'] for v in ls.values()))
     mac['nHiresFloorSquare'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] == 'Poisson'):.3f}"
     mac['nHiresFloorCube'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] != 'Poisson'):.3f}"
@@ -718,6 +735,8 @@ if HH:
     mac['nHeatCoarseErr'] = e(HH['coarse_err']); mac['nHeatCoarseMs'] = f"{HH['coarse_ms']:.1f}"; mac['nHeatDstMs'] = f"{HH['dst_ms']:.1f}"
     mac['nHeatLinErr'] = e(HH['lin_err']); mac['nHeatLinMs'] = f"{HH['lin_ms'][0]:.1f}\\mbox{{--}}{HH['lin_ms'][1]:.1f}"; mac['nHeatNmromMinMs'] = f"{HH['nmrom_min_ms']:.1f}"
     mac['nHeatThreeAllTimes'] = e(HH['h3d_all']); mac['nHeatThreeEvolvedCheck'] = e(HH['h3d_evolved'])
+    hc = [HH['coarse_ms'], HH['dst_ms']] + list(HH['lin_ms'])
+    mac['nHeatCtlFaster'] = f"{HH['nmrom_min_ms'] / max(hc):.1f}\\mbox{{--}}{HH['nmrom_min_ms'] / min(hc):.1f}"
     mac['nHeatThreeInit'] = f"{HH['h3d_init'][0]:.1f}\\mbox{{--}}{HH['h3d_init'][1]:.1f}"
 if HB:
     mac['nBurgHostGapMs'] = f"{HB['host_gap_4096']:.0f}"
@@ -726,6 +745,8 @@ if HB:
         mac['nBurgCoarseErr' + w] = e(HB[att]['coarse_err']); mac['nBurgCoarseMs' + w] = f"{HB[att]['coarse_ms']:.0f}"
         mac['nBurgAccMs' + w] = f"{HB[att]['acc_ms']:.0f}"
     mac['nBurgBankFloorConfirm'] = e(HB['bank_floor_confirm'])
+    bf_ = [HB[a]['acc_ms'] / HB[a]['coarse_ms'] for a in ('hb2k02', 'hb4k04')]
+    mac['nBurgCoarseFaster'] = f"{min(bf_):.1f}\\mbox{{--}}{max(bf_):.1f}"
     for att, w in (('hb2kh64', 'TwentyFortyEight'), ('hb4kh64', 'FortyNinetySix')):
         g = HB[(att, 'gate')]; mac['nBurgGateBad' + w] = str(g['bad']); mac['nBurgGateRows' + w] = str(g['rows'])
     mac['nBurgGateWorstPct'] = f"{100 * max(HB[(a, 'gate')]['worst_gap'] for a in ('hb2kh64', 'hb4kh64')):.1f}"
@@ -743,14 +764,31 @@ mac.update(NB)
 # ---- compact 3D configuration table (values read from the run records) ---------------------------------------
 cfg = []
 b3 = D['burgers3d']
-cfg.append(['Burgers 3D', '$33^3$ nodes', str(B['rom_q192']['cases']) + ' final', '0, 192', 'Newton--BiCGStab, $\\Delta t=0.01$', 'dense', 'job \\texttt{%s}' % b3['job_id']])
-cfg.append(['Poisson 3D', '$32^3$, $64^3$', str(pr[(64, 'nmrom_K16_q96_dense')]['cases']) + ' final', '0, 32, 96 ($k=16$)', 'CG, rtol $10^{-2}$, no preconditioner', 'dense', 'job \\texttt{%s}' % p3['job_id']])
-cfg.append(['Heat 3D', '$32^3$, $64^3$', str(hr[(64, 'nmrom_K32_q96_dense')]['cases']) + ' final', '0, 32, 64, 96 ($k=32$)', 'CN--CG, $\\Delta t=0.05$, rtol $10^{-4}$, warm start', 'dense', 'job \\texttt{%s}' % h3['source']['primary']['job_id']])
+cfg.append(['Burgers 3D', '$33^3$ nodes', str(B['rom_q192']['cases']) + ' final', '0, 192', 'Newton--BiCGStab, $\\Delta t=0.01$', 'dense'])
+cfg.append(['Poisson 3D', '$32^3$, $64^3$', str(pr[(64, 'nmrom_K16_q96_dense')]['cases']) + ' final', '0, 32, 96 ($k=16$)', 'CG, rtol $10^{-2}$, no preconditioner', 'dense'])
+cfg.append(['Heat 3D', '$32^3$, $64^3$', str(hr[(64, 'nmrom_K32_q96_dense')]['cases']) + ' final', '0, 32, 64, 96 ($k=32$)', 'CN--CG, $\\Delta t=0.05$, rtol $10^{-4}$, warm start', 'dense'])
 ns = D['ns3d']
-cfg.append(['Navier--Stokes 3D', f"${ns['n']}^3$ periodic", f"{ns['cohort_count']} final", ', '.join(str(q) for q in ns['q_values']) + f" ($k={ns['k']}$, $R={ns['r']}$, $M={ns['test_modes']}$)", 'CNAB2, $\\Delta t=0.01$', 'dense', 'job \\texttt{%s}' % ns['job_id']])
-cl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}lllp{3.3cm}p{3.6cm}ll@{}}', r'\toprule',
-      r'Problem & Mesh & Cases & Correction ranks & Named FOM & Residual & Allocation \\', r'\midrule'] + [' & '.join(c) + r' \\' for c in cfg] + [r'\bottomrule', r'\end{tabular}']
-write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named FOM', 'Residual', 'Allocation'], [[md(x) for x in c] for c in cfg])
+cfg.append(['Navier--Stokes 3D', f"${ns['n']}^3$ periodic", f"{ns['cohort_count']} final", ', '.join(str(q) for q in ns['q_values']) + f" ($k={ns['k']}$, $R={ns['r']}$, $M={ns['test_modes']}$)", 'CNAB2, $\\Delta t=0.01$', 'dense'])
+cl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}lllp{3.3cm}p{3.6cm}l@{}}', r'\toprule',
+      r'Problem & Mesh & Cases & Correction ranks & Named FOM & Residual \\', r'\midrule'] + [' & '.join(c) + r' \\' for c in cfg] + [r'\bottomrule', r'\end{tabular}']
+write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named FOM', 'Residual'], [[md(x) for x in c] for c in cfg])
+
+# allocations, moved out of the tables into one reproducibility paragraph
+def _jobs(rows):
+    out = defaultdict(list)
+    for r in rows:
+        k = f"{r['problem']} {r['dim']}D"
+        if r['job_id'] not in out[k]: out[k].append(r['job_id'])
+    return '; '.join(f"{k} {', '.join(v)}" for k, v in out.items())
+_srt = sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
+jp = [r'% GENERATED by paper/gen_headline.py -- do not edit.',
+      r'\paragraph{Allocations.} Every ratio pairs times from one Slurm allocation. Tables~\ref{tab:headline} and~\ref{tab:headline-times}: ' + _jobs(_srt) + '. '
+      + r'Table~\ref{tab:failures}: Burgers 3D ' + str(D['burgers3d']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '; Wave 2D ' + str(next(iter({r['job_id'] for r in D['wave'] if r.get('mesh') == 1024}))) + '. '
+      + r'Table~\ref{tab:config3d}: Burgers 3D ' + str(b3['job_id']) + '; Poisson 3D ' + str(p3['job_id']) + '; Heat 3D ' + str(h3['source']['primary']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '. '
+      + (r'Table~\ref{tab:heat-hires}: ' + ', '.join(sorted({r['job'] for r in HEAT_APPX})) + '. ' if HEAT_APPX else '')
+      + (r'Tables~\ref{tab:nmrom-baselines} and~\ref{tab:nmrom-baselines-appx}: ' + str(NBP['fam256']['job_id']) + r' (reproduction gate: ' + str(NBP['gate05']['provenance']['job_id']) + ').' if NBP else '')]
+(HERE / 'tables/TH_jobs.tex').write_text('\n'.join(jp) + '\n')
+(HERE / 'tables/TH_training.tex').write_text('% GENERATED by paper/gen_headline.py from the wide bank training record -- do not edit.\n' + HH.get('training_sentence', '') + '\n')
 
 (HERE / 'tables/headline-provenance.json').write_text(json.dumps(dict(
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '

@@ -1,11 +1,13 @@
 % Compact supplement: details needed to interpret the main FOM comparisons.
 \input{sections/method-details}
 
+\clearpage
 \section{Architecture and online data flow}
 \label{app:arch}
+Figure~\ref{fig:arch} shows the offline preparation and the online solve
+of every NM-ROM query in the paper.
 
-
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{\input{figures/architecture}}
 \caption{NM-ROM from training to prediction. Blue components are prepared
@@ -15,8 +17,8 @@ weak PDE residual before reconstructing the requested fields. Initialization
 and the reduced solver are PDE-specific; linear-PDE corrections can be
 eliminated analytically. Time-dependent problems repeat the reduced step,
 with reconstruction at requested output times. Empirical quadrature (EQ)
-is an optional residual evaluation, used in the Burgers2D EQ panels;
-the current 3D and wave panels do not use it. Correction rank changes the
+is an optional residual evaluation, used for two-dimensional Burgers;
+the three-dimensional and wave solves do not use it. Correction rank changes the
 representation, whereas EQ changes residual evaluation. Baselines are evaluated
 independently and are not stages of this pipeline.}
 \label{fig:arch}
@@ -32,6 +34,7 @@ directions remain frozen. Deployment changes reduced coordinates, not
 network weights. Recorded training configurations and available offline
 costs are retained with the source evidence; unrecorded training costs
 are not inferred.
+\input{tables/TH_training}
 
 
 \begin{table}[htbp]
@@ -62,7 +65,12 @@ double precision and the highest matrix-multiplication precision; all
 repetitions, including outliers, enter the median, and no time is
 borrowed from another allocation. Requested full fields and
 initialisation are charged; host transfer is included only where the
-table says complete query; for Burgers at $4096^2$, copying the six
+table says complete query. For the held-out Burgers rows, an independent
+restricted-grid recomputation of the errors disagreed with the full-grid
+value by more than 5\,\% on $\nBurgGateBadTwentyFortyEight/\nBurgGateRowsTwentyFortyEight$
+($2048^2$) and $\nBurgGateBadFortyNinetySix/\nBurgGateRowsFortyNinetySix$
+($4096^2$) case--arm rows; per-arm cohort worsts agree within
+$\nBurgGateWorstPct\,\%$ and the full-grid recomputation is exact. For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -73,12 +81,12 @@ measurements.
 \begin{table}[htbp]
 \centering
 \caption{Supporting data for Table~\ref{tab:headline}: the two settings
-of each frozen model, median times (ms), timing scope, allocation and
-evidence status. ``EQ'' and ``dense'' name the Burgers residual
+of each frozen model, median times (ms), timing scope and evidence status
+(allocations: Appendix~\ref{app:provenance}). ``EQ'' and ``dense'' name the Burgers residual
 evaluation; ``single'' marks models measured at one setting. Where a
 run recorded both timing scopes, the speedups in the scope not used by
 Table~\ref{tab:headline} are listed; a series never mixes scopes.
-For heat that column gives the speedups against the lane's tighter
+For heat that column gives the speedups against the tighter
 CN--CG setting (rtol $10^{-6}$).
 $^{\ast}$\,not in Table~\ref{tab:headline}: a re-measurement of the row
 above it, or a development-source run at a mesh whose held-out row is in
@@ -124,7 +132,10 @@ formed.}
 \centering
 \caption{Dense and empirical-quadrature (EQ) residual evaluation on
 Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
-median GPU milliseconds from one allocation; the last column is dense
+median GPU milliseconds from one allocation (job \provEqtopLadderJob, the
+EQ-ladder job of Table~\ref{tab:eqladder}; the $256^2$ row of
+Table~\ref{tab:headline} is job \provPanelJob{} and Table~\ref{tab:ladder-main}
+is job \provQxmWithinJob, each with its own measured error); the last column is dense
 time over EQ time. Dashes: no paired dense measurement. Rules at
 $q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
 higher-rank rules pass some (Table~\ref{tab:eqladder}).}
@@ -143,7 +154,7 @@ Table~\ref{tab:failures}.}
 \end{table}
 
 Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
-($u_t=\nu\Delta u$, Gaussian initial fields) and scalar Burgers
+($u_t=\kappa\Delta u$, Gaussian initial fields) and scalar Burgers
 ($u_t+u(u_x+u_y+u_z)=\nu\Delta u$, backward Euler, sign-upwind) are posed
 on the unit cube with zero Dirichlet walls and extend the operators of
 Appendix~\ref{app:method} across three axes. Navier--Stokes uses
@@ -173,21 +184,23 @@ solver configuration, checkpoint identity and allocation metadata. Development
 selection and final evaluation are distinct. Solver exit flags document
 numerical stopping, not a proof of global optimality.
 
+\input{tables/TH_jobs}
+
 \section{Validation of the correction and quadrature studies}
 
 
 \begin{table}[htbp]
 \centering
-\caption{The sealed cohort (lane b-seeds, job \nSealedJob, \provSealedGpu),
+\caption{The sealed cohort (job \nSealedJob, \provSealedGpu),
 opened once after every choice was frozen. Top: per rung of the dense
-$M=4(K+q)$ ladder, the incumbent's sealed worst evolved error and device
+$M=4(k+q)$ ladder, the original model's sealed worst evolved error and device
 time, the seed mean $\pm$ sample standard deviation on the sealed and the
-development cohort, the lane's sealed-over-development ratio of seed means
+development cohort, the pre-registered sealed-over-development ratio of seed means
 (raw and difficulty-normalised) and the converged count over the
 \nSealedCheckpoints{} checkpoints. Bottom: per-checkpoint verdicts. The
-incumbent's $q=0$ rung is a single sealed case converged to a wrong branch
+original model's $q=0$ rung is a single sealed case converged to a wrong branch
 (gradient exit, zero budget exits); the pre-registered ratio criterion fails
-at $q=0$ for the incumbent alone (\nSealedCtwoIncQzeroRatio) and the
+at $q=0$ for the original model alone (\nSealedCtwoIncQzeroRatio) and the
 convergence criterion fails on \nSealedUnconvergedCells.}
 \label{tab:sealed}
 \resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
@@ -202,7 +215,7 @@ with its same-job dense twins, and the construction status from the four-draw
 replication (job \provEqtopRepJob): confirmed = every re-draw passes, marginal
 = only the listed fraction does. Errors are as measured with these rules
 (SHA256-identified); they are not properties of the construction above
-$q=32$. Ladder rows read from the \provEqtopLadderSource.}
+$q=32$. Ladder rows are read from the study's final summary record.}
 \label{tab:eqladder}
 \resizebox{\linewidth}{!}{\input{tables/T09_eq_ladder}}
 \end{table}
@@ -222,7 +235,10 @@ block-damped step is the one kept.}
 \centering
 \caption{Solver-side controls on Burgers2D, 32 held-out validation cases,
 one allocation: stopping tolerance, EQ node count $m$ and iteration cap,
-with full-order settings for scale.}
+with full-order settings for scale. Error: worst over
+cases and output times of the $L^2$ error against the refined reference,
+relative to the initial-field norm, so the full-order rows show their
+discretisation error.}
 \label{tab:knobs}
 \input{tables/T08_solver_knobs}
 \end{table}

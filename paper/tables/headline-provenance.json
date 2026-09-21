@@ -805,17 +805,18 @@
       "dim": 2,
       "intervals": 256,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 1.8891456982792685,
         "ms": 40.35864432808012,
         "arm": "q0_M64_eqcert_g1em06_fastL4",
         "speedup": 0.7876313363478396
       },
       "accurate": {
-        "label": "$q=256$, EQ",
+        "label": "$q=256$, $M=1088$, EQ $m=2560$",
         "error_pct": 0.5129194368597558,
         "ms": 746.0200455971062,
         "arm": "q256_M1088_eqtop_g1em06",
+        "eq": "single-draw",
         "speedup": 0.042609757141137336
       },
       "fom": {
@@ -839,17 +840,18 @@
       "dim": 2,
       "intervals": 512,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=922$",
         "error_pct": 2.139992785875173,
         "ms": 40.491704479791224,
         "arm": "q0_M64_eqxfer_g1em06_fastL4",
         "speedup": 1.30681761154721
       },
       "accurate": {
-        "label": "$q=256$, EQ",
+        "label": "$q=256$, $M=1088$, EQ $m=2438$",
         "error_pct": 0.5509721660506048,
         "ms": 783.3276834571734,
         "arm": "q256_M1088_eqtopxfer_g1em06",
+        "eq": "single-draw",
         "speedup": 0.06755189897313166
       },
       "fom": {
@@ -873,17 +875,18 @@
       "dim": 2,
       "intervals": 1024,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=934$",
         "error_pct": 2.2912840655657516,
         "ms": 40.26987950783223,
         "arm": "q0_M64_eqxfer_g1em06",
         "speedup": 2.0191597673133193
       },
       "accurate": {
-        "label": "$q=256$, dense",
+        "label": "$q=256$, $M=1088$, dense",
         "error_pct": 0.5860844308137502,
         "ms": 22053.852356038988,
         "arm": "q256_M1088_dense_g1em06",
+        "eq": "dense",
         "speedup": 0.0036869440868685472
       },
       "fom": {
@@ -907,17 +910,18 @@
       "dim": 2,
       "intervals": 2048,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 2.37213269036348,
         "ms": 29.481315985322,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
         "speedup": 4.163933524353346
       },
       "accurate": {
-        "label": "$q=256$, EQ $M=544$",
+        "label": "$q=256$, $M=544$, EQ lattice $m=3969$",
         "error_pct": 0.8652934857324558,
         "ms": 124.15014486759901,
         "arm": "q256_M544_lat64_g0p001_fast_chol_clip",
+        "eq": "lattice",
         "speedup": 0.9887885358833294
       },
       "fom": {
@@ -952,17 +956,18 @@
       "dim": 2,
       "intervals": 4096,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 2.414951606064111,
         "ms": 40.726391365751624,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
         "speedup": 12.862733728039396
       },
       "accurate": {
-        "label": "$q=256$, EQ $M=1088$",
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
         "error_pct": 0.6042128376406513,
         "ms": 107.51051316037774,
         "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+        "eq": "lattice",
         "speedup": 4.872572108926071
       },
       "fom": {
@@ -997,17 +1002,18 @@
       "dim": 2,
       "intervals": 2048,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 9.026025352815884,
         "ms": 29.190955916419625,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
         "speedup": 5.632838226422675
       },
       "accurate": {
-        "label": "$q=256$, EQ $M=1088$",
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
         "error_pct": 1.3083877432126219,
         "ms": 114.90617296658456,
         "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry",
+        "eq": "lattice",
         "speedup": 1.4309756221682215
       },
       "fom": {
@@ -1042,17 +1048,18 @@
       "dim": 2,
       "intervals": 4096,
       "fast": {
-        "label": "$q=0$, EQ",
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 9.030161732936454,
         "ms": 40.60274315997958,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
         "speedup": 13.235258799064754
       },
       "accurate": {
-        "label": "$q=256$, EQ $M=1088$",
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
         "error_pct": 1.3311527645946648,
         "ms": 99.96451088227332,
         "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+        "eq": "lattice",
         "speedup": 5.37578595574943
       },
       "fom": {
@@ -2050,6 +2057,7 @@
   ],
   "heat_facts": {
     "wide_floor": 0.1145065503412607,
+    "training_sentence": "The wide heat bank of Table~\\ref{tab:headline} is a random-Fourier-feature coordinate network (32 features, scale 1.5, width 256, $R=128$) trained for 80000 steps (learning rate 0.001, 64 states $\\times$ 2048 points per batch, gradient clip 1, exact coefficient refit every 10000 steps), then a head of width 256 with $k=8$ for 80000 steps (learning rate 0.0005, 128 states per batch), on 512 training draws at $64^2$ with 16 validation draws; its validation projection floor is 0.11\\,\\%.",
     "coarse_arm": "coarse64_fom_cncg_dt0.05_rtol1e-3",
     "coarse_err": 0.28695275848636814,
     "coarse_ms": 2.7763196267187595,
@@ -2234,7 +2242,7 @@
   },
   "failures": [
     {
-      "problem": "Burgers 3D, $33^3$ (final)",
+      "problem": "Burgers 3D, $33^3$ nodes (final)",
       "setting": "$q=0$",
       "error_pct": 16.2625104019396,
       "fom_error_pct": 2.311813545648998,
@@ -2244,7 +2252,7 @@
       "source": "burgers3d"
     },
     {
-      "problem": "Burgers 3D, $33^3$ (final)",
+      "problem": "Burgers 3D, $33^3$ nodes (final)",
       "setting": "$q=192$",
       "error_pct": 4.398729638956904,
       "fom_error_pct": 2.311813545648998,
@@ -2385,6 +2393,9 @@
     "nHiresCtlTotal": "0.67\\mbox{--}0.92",
     "nHiresCtlDevice": "0.039\\mbox{--}0.38",
     "nHiresLshapeCoarse": "0.57\\mbox{--}0.81",
+    "nHiresCtlTotalFaster": "1.09\\mbox{--}1.49",
+    "nHiresCtlDeviceFaster": "2.66\\mbox{--}25.6",
+    "nHiresLshapeCoarseFaster": "1.23\\mbox{--}1.75",
     "nHiresLshapeAccErr": "2.20",
     "nHiresLshapeFloor": "0.77",
     "nHiresFloorSquare": "0.742",
@@ -2409,6 +2420,7 @@
     "nHeatNmromMinMs": "11.0",
     "nHeatThreeAllTimes": "1.93",
     "nHeatThreeEvolvedCheck": "0.75",
+    "nHeatCtlFaster": "1.4\\mbox{--}4.0",
     "nHeatThreeInit": "1.2\\mbox{--}1.9",
     "nBurgHostGapMs": "246",
     "nBurgMFiveFourFourHold": "2.93",
@@ -2419,6 +2431,7 @@
     "nBurgCoarseMsFortyNinetySix": "80",
     "nBurgAccMsFortyNinetySix": "108",
     "nBurgBankFloorConfirm": "1.70",
+    "nBurgCoarseFaster": "1.3\\mbox{--}1.6",
     "nBurgGateBadTwentyFortyEight": "5",
     "nBurgGateRowsTwentyFortyEight": "384",
     "nBurgGateBadFortyNinetySix": "18",

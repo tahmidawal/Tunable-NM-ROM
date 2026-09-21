@@ -7,6 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 PY=/home/tahmid/Dev/.venv/bin/python
 "$PY" gen_tables.py
+"$PY" editorial_subs.py
 "$PY" gen_campaign_supplement.py
 "$PY" gen_rewrite_tables.py
 "$PY" gen_main_experiments.py

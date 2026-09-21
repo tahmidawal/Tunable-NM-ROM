@@ -75,7 +75,7 @@ cd "$TASK_ROOT/code"
 __SECOND__
 cd "$TASK_ROOT"
 rm -rf cache tmp
-find output output2 -type f -print0 2>/dev/null | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+find output $(test -d output2 && echo output2) -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
 

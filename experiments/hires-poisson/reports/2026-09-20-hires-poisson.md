@@ -38,6 +38,7 @@ repetitions, randomised order, burn-in, medians.
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
 | square 2048² | `rom_q256_lean64` | 0.965 | 14.17 | 5.47 | 28.73 | 72.77 | 28.73 | 0.67 | 0.68 | **met** | `hp2048` / 4049279 / audit passed |
 | square 4096² | `rom_q256_lean64` | 0.965 | 61.35 | 16.92 | 41.08 | 146.14 | 32.67 | 0.74 | 0.80 | **met** | `hp4096` / 4051236 / audit passed |
+| square 4096² | `rom_q256_lean64` | 0.965 | 66.88 | 17.17 | 37.58 | 143.64 | 27.38 | 0.75 | 0.77 | **met** | `hp4096b` / 4071227 / audit passed |
 | cube 64³ | `rom_q96_leandst64` | 0.160 | 2.63 | 1.43 | 1.57 | 2.02 | 1.57 | — | 0.65 | missed | `hp3d128` / 4051032 / audit passed |
 | cube 128³ | `rom_q96_leandst64` | 0.160 | 6.33 | 1.86 | 2.70 | 6.75 | 2.70 | 0.83 | 0.81 | missed | `hp3d128` / 4051032 / audit passed |
 | cube 128³ | `rom_q96_leandst64` | 0.160 | 6.38 | 1.90 | 2.65 | 6.52 | 2.65 | 0.80 | 0.80 | missed | `hp3d256` / 4056288 / audit passed |
@@ -46,7 +47,7 @@ repetitions, randomised order, burn-in, medians.
 | L-shape 1024² (32 sources) | `rom_q128_lean@head_sdf_R512_K16` | 2.196 | 5.81 | 3.38 | 9.76 | 16.05 | 8.38 | 0.81 | 30.91 | missed | `hpl32` / 4057694 / audit passed |
 | L-shape 2048² (32 sources) | `rom_q128_lean@head_sdf_R512_K16` | 2.195 | 18.75 | 10.41 | 19.32 | 33.85 | 16.97 | 0.57 | — | missed | `hpl32` / 4057694 / audit passed |
 
-Bank projection floors (the error no query on this checkpoint can beat): square 2048² 0.742 %; square 4096² 0.742 %; cube 64³ 0.143 %; cube 128³ 0.143 %; cube 128³ 0.143 %; cube 256³ 0.143 %; L-shape 1024² (12 sources) 0.423 %; L-shape 1024² (32 sources) 0.768 %; L-shape 2048² (32 sources) 0.768 %.
+Bank projection floors (the error no query on this checkpoint can beat): square 2048² 0.742 %; square 4096² 0.742 %; square 4096² 0.742 %; cube 64³ 0.143 %; cube 128³ 0.143 %; cube 128³ 0.143 %; cube 256³ 0.143 %; L-shape 1024² (12 sources) 0.423 %; L-shape 1024² (32 sources) 0.768 %; L-shape 2048² (32 sources) 0.768 %.
 
 **Reading.** Against the named same-mesh CG the speedup grows with the mesh at unchanged error, because CG's iteration
 count grows with $n$ while the ROM's device time is one bank-times-coefficients product. **The ROM does not beat the
@@ -142,6 +143,53 @@ Comparators and controls in the same job:
 | `coarse64_cg_0.01` | 0.304 | 0.304 | 46.35 | 2.56 | 85.5 | — | — | — | — |
 | `coarse64_dst` | 0.167 | 0.167 | 45.38 | 0.66 |  | — | — | — | — |
 | `dst_direct` | 0.000 | 0.000 | 49.03 | 2.21 |  | — | — | — | — |
+
+## square 4096² — `hp4096b`, job `4071227`, NVIDIA H200, source `2135ba0e6379`
+
+Audit: **passed** (4080 recomputed errors, worst difference 0.0e+00). Bank projection floor: worst 0.742 %. Bar (accurate arm `rom_q256_lean64` vs `cg_0.01`): worst same-grid 0.965 % (≤ 1 %, stretch 0.5 % missed), speedup 37.58× (≥ 5) → **BAR MET**.
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `rom_q0_lean32` | 3.149 | 3.149 | 59.15 | 9.79 | 5 | 42.49 / 251.7 | 29.53 (`cg_0.3`) | 0.84 (`coarse256_dst`) | 0.87 |
+| `rom_q0_lean64` | 3.149 | 3.149 | 66.23 | 17.01 | 5 | 37.95 / 145.0 | 26.37 (`cg_0.3`) | 0.75 (`coarse256_dst`) | 0.78 |
+| `rom_q256_lean32` | 0.965 | 0.965 | 58.73 | 9.49 | 5 | 42.79 / 259.9 | 31.17 (`cg_0.2`) | 0.85 (`coarse256_dst`) | 0.88 |
+| `rom_q256_lean64` | 0.965 | 0.965 | 66.88 | 17.17 | 5 | 37.58 / 143.6 | 27.38 (`cg_0.2`) | 0.75 (`coarse256_dst`) | 0.77 |
+| `rom_q256m8_lean32` | 0.965 | 0.965 | 58.25 | 9.65 | 5 | 43.14 / 255.6 | 31.43 (`cg_0.2`) | 0.86 (`coarse256_dst`) | 0.88 |
+| `rom_q256m8_lean64` | 0.965 | 0.964 | 67.02 | 17.34 | 5 | 37.50 / 142.2 | 27.32 (`cg_0.2`) | 0.74 (`coarse256_dst`) | 0.77 |
+| `rom_q384m4_lean32` | 0.760 | 0.760 | 58.47 | 9.61 | 5 | 42.98 / 256.6 | 34.20 (`cg_0.1`) | 0.85 (`coarse256_dst`) | 0.88 |
+| `rom_q384m4_lean64` | 0.760 | 0.760 | 67.20 | 17.32 | 5 | 37.40 / 142.4 | 29.76 (`cg_0.1`) | 0.74 (`coarse256_dst`) | 0.76 |
+| `rom_q512_linear_lean32` | 0.742 | 0.742 | 58.20 | 8.42 | 0 | 43.18 / 292.8 | 34.36 (`cg_0.1`) | 0.86 (`coarse256_dst`) | 0.88 |
+| `rom_q512_linear_lean64` | 0.742 | 0.742 | 65.85 | 16.15 | 0 | 38.17 / 152.7 | 30.37 (`cg_0.1`) | 0.76 (`coarse256_dst`) | 0.78 |
+
+
+Comparators and controls in the same job:
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `cg_0.01` | 0.038 | 0.038 | 2513.11 | 2465.60 | 6690 | — | — | — | — |
+| `cg_0.01_io32` | 0.038 | 0.038 | 2556.10 | 2529.67 | 6864.5 | — | — | — | — |
+| `cg_0.1` | 0.451 | 0.451 | 1999.73 | 1949.57 | 5289 | — | — | — | — |
+| `cg_0.1_io32` | 0.500 | 0.500 | 2009.22 | 1983.77 | 5382 | — | — | — | — |
+| `cg_0.2` | 0.772 | 0.772 | 1830.88 | 1779.89 | 4829.5 | — | — | — | — |
+| `cg_0.3` | 1.295 | 1.295 | 1746.43 | 1697.52 | 4606 | — | — | — | — |
+| `coarse128_cg_0.0001` | 0.041 | 0.041 | 55.97 | 6.26 | 262.5 | — | — | — | — |
+| `coarse128_cg_0.01` | 0.201 | 0.201 | 54.01 | 4.46 | 176 | — | — | — | — |
+| `coarse128_dst` | 0.041 | 0.041 | 49.87 | 0.65 |  | — | — | — | — |
+| `coarse128_dst_io32` | 0.041 | 0.041 | 25.45 | 0.84 |  | — | — | — | — |
+| `coarse256_cg_0.0001` | 0.010 | 0.010 | 60.59 | 12.05 | 536 | — | — | — | — |
+| `coarse256_cg_0.01` | 0.153 | 0.153 | 57.66 | 8.51 | 364.5 | — | — | — | — |
+| `coarse256_dst` | 0.010 | 0.010 | 49.83 | 0.77 |  | — | — | — | — |
+| `coarse64_cg_0.0001` | 0.168 | 0.167 | 52.59 | 3.47 | 129.5 | — | — | — | — |
+| `coarse64_cg_0.01` | 0.304 | 0.304 | 51.94 | 2.56 | 85.5 | — | — | — | — |
+| `coarse64_dst` | 0.167 | 0.167 | 50.06 | 0.66 |  | — | — | — | — |
+| `coarse64_dst_io32` | 0.167 | 0.167 | 25.65 | 0.82 |  | — | — | — | — |
+| `dst_direct` | 0.000 | 0.000 | 51.41 | 2.19 |  | — | — | — | — |
+| `dst_direct_io32` | 0.000 | 0.000 | 26.93 | 2.34 |  | — | — | — | — |
+| `rom_q0_lean64_io32` | 3.149 | 3.149 | 41.79 | 17.15 | 5 | 61.17 / 147.5 | 48.08 (`cg_0.1_io32`) | 0.61 (`coarse128_dst_io32`) | 0.64 |
+| `rom_q256_lean32_io32` | 0.965 | 0.965 | 34.59 | 9.58 | 5 | 73.90 / 264.1 | 58.09 (`cg_0.1_io32`) | 0.74 (`coarse128_dst_io32`) | 0.78 |
+| `rom_q256_lean64_io32` | 0.965 | 0.965 | 42.39 | 17.35 | 5 | 60.30 / 145.8 | 47.40 (`cg_0.1_io32`) | 0.60 (`coarse128_dst_io32`) | 0.64 |
+| `rom_q512_linear_lean32_io32` | 0.742 | 0.742 | 33.39 | 8.58 | 0 | 76.55 / 295.0 | 60.17 (`cg_0.1_io32`) | 0.76 (`coarse128_dst_io32`) | 0.81 |
+| `rom_q512_linear_lean64_io32` | 0.742 | 0.742 | 41.10 | 16.36 | 0 | 62.19 / 154.6 | 48.89 (`cg_0.1_io32`) | 0.62 (`coarse128_dst_io32`) | 0.66 |
 
 ## cube 64³ — `hp3d128`, job `4051032`, NVIDIA H200, source `c6d5eb6c367d`
 
@@ -441,6 +489,17 @@ Comparators and controls in the same job:
 | `fom_splu_cpu` | 0.000 | 0.004 | 814.08 | 795.74 |  | — | — | — | — |
 | `pcg_ic0_cpu_0.01` | 0.030 | 0.030 | 119447.38 | 119431.13 | 858 | — | — | — | — |
 
+
+## What was wrong in this lane and how it was handled
+
+Details and dates are in `DESIGN.md` (amendments) and the lab log; no measurement is restated here.
+
+- **L-shape cohort (A8, retraction).** The first L-shape job used the first 12 of that lane's 32 development sources; the hard sources are outside those 12, so its "bar met" line is withdrawn as a bar verdict (its row above is marked). The 32-source rows decide the L-shape bar. A statement made from the 12-source job — that the ROM ties the matched coarse-grid control on the L-shape — is also withdrawn: on 32 sources the coarse solve wins.
+- **2n reference by CG (A10).** The $4096^2$ L-shape reference was accepted by the driver on CG's recursive residual, a check that cannot fail. The independent audit measured the true stencil residual, rejected it and failed the job. It was repaired by true-residual restarts and the unchanged audit then passed; the repair turned out to change nothing at the printed precision, and superseded values are kept.
+- **Gates that were wrong on first contact with real data (A1, A6).** An f32 parity limit tighter than the local smoke had already measured; a bitwise bank-equality gate; a blanket field limit on f32-I/O twins of loosely converged CG; diagnosing an f32-I/O subject against the unrounded source. All were found on the local smoke and fixed before the GPU job that used them.
+- **Wrapper bug (A11).** The re-measure job is FAILED in Slurm because the batch script's checksum step tripped `pipefail` after the audit had passed; it was collected by hand with explicit substitutes for the completion marker.
+- **Comparator honesty (A4, A9).** The named CG $10^{-2}$ is 20–25× more accurate than the ROM's accurate arm, so looser CG tolerances were added until the fastest CG with error ≤ the ROM's was bracketed; that column, not the named one, is the matched-accuracy iterative comparison.
+- **Omissions.** No POD-LSPG arm at these meshes; no $q=R$ rung on the L-shape; CPU sparse-direct and IC(0)-PCG timed on fewer sources at $2048^2$ (never eligible as matched comparators); all sources are opened development sources.
 
 ## Glossary
 

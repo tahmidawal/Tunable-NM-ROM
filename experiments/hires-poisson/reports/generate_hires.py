@@ -141,6 +141,17 @@ by the identical f64 host↔device copies; device-only ratios are shown beside t
 
 {tables}
 
+## What was wrong in this lane and how it was handled
+
+Details and dates are in `DESIGN.md` (amendments) and the lab log; no measurement is restated here.
+
+- **L-shape cohort (A8, retraction).** The first L-shape job used the first 12 of that lane's 32 development sources; the hard sources are outside those 12, so its "bar met" line is withdrawn as a bar verdict (its row above is marked). The 32-source rows decide the L-shape bar. A statement made from the 12-source job — that the ROM ties the matched coarse-grid control on the L-shape — is also withdrawn: on 32 sources the coarse solve wins.
+- **2n reference by CG (A10).** The $4096^2$ L-shape reference was accepted by the driver on CG's recursive residual, a check that cannot fail. The independent audit measured the true stencil residual, rejected it and failed the job. It was repaired by true-residual restarts and the unchanged audit then passed; the repair turned out to change nothing at the printed precision, and superseded values are kept.
+- **Gates that were wrong on first contact with real data (A1, A6).** An f32 parity limit tighter than the local smoke had already measured; a bitwise bank-equality gate; a blanket field limit on f32-I/O twins of loosely converged CG; diagnosing an f32-I/O subject against the unrounded source. All were found on the local smoke and fixed before the GPU job that used them.
+- **Wrapper bug (A11).** The re-measure job is FAILED in Slurm because the batch script's checksum step tripped `pipefail` after the audit had passed; it was collected by hand with explicit substitutes for the completion marker.
+- **Comparator honesty (A4, A9).** The named CG $10^{{-2}}$ is 20–25× more accurate than the ROM's accurate arm, so looser CG tolerances were added until the fastest CG with error ≤ the ROM's was bracketed; that column, not the named one, is the matched-accuracy iterative comparison.
+- **Omissions.** No POD-LSPG arm at these meshes; no $q=R$ rung on the L-shape; CPU sparse-direct and IC(0)-PCG timed on fewer sources at $2048^2$ (never eligible as matched comparators); all sources are opened development sources.
+
 ## Glossary
 
 - **NM-ROM** — nonlinear-manifold reduced-order model: the solution is sought on a low-dimensional learned manifold instead of on the mesh.

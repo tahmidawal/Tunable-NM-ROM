@@ -1,0 +1,34 @@
+host=pax008 source_commit=2135ba0e6379d41fab91df44977a48eb0413ce25
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  385G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCES 35.0
+DIRECTIONS 7b556726166e 44.4
+ASSEMBLY GATE {'intervals': 64, 'operator_relative': 5.29592801955116e-16, 'bank_relative': 1.2755244291668785e-15, 'floor_chunked': [0.001192458230096526, 0.0003989940821911449, 0.0005392060843289148], 'floor_direct_lstsq': [0.0011924582507275498, 0.00039899408116375536, 0.0005392060568941743], 'floor_max_abs_difference': 2.7434740460310914e-11, 'trust_matches': True, 'passed': True}
+BANK 10.614923720248044 floor worst 0.007418947498645068
+WARMUP 34 40.4
+TIMED 0 505.7
+TIMED 1 826.2
+TIMED 2 1145.5
+TIMED 3 1465.6
+TIMED 4 1785.8
+PARITY {'candidate': 'rom_q0_lean32', 'baseline': 'rom_q0_lean64', 'worst_field_relative': 1.1620902057885787e-07, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean32', 'baseline': 'rom_q256_lean64', 'worst_field_relative': 3.764018796340249e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256m8_lean32', 'baseline': 'rom_q256m8_lean64', 'worst_field_relative': 3.7675380454228506e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q384m4_lean32', 'baseline': 'rom_q384m4_lean64', 'worst_field_relative': 2.465123835976392e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q512_linear_lean32', 'baseline': 'rom_q512_linear_lean64', 'worst_field_relative': 2.9305042338727076e-05, 'integers_identical': True, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q0_lean64_io32', 'baseline': 'rom_q0_lean64', 'worst_field_relative': 2.6080015150599716e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean64_io32', 'baseline': 'rom_q256_lean64', 'worst_field_relative': 2.6086727408135685e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q256_lean32_io32', 'baseline': 'rom_q256_lean32', 'worst_field_relative': 6.650212930563256e-06, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q512_linear_lean64_io32', 'baseline': 'rom_q512_linear_lean64', 'worst_field_relative': 2.6078818867991838e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'rom_q512_linear_lean32_io32', 'baseline': 'rom_q512_linear_lean32', 'worst_field_relative': 8.503978259152171e-06, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'dst_direct_io32', 'baseline': 'dst_direct', 'worst_field_relative': 2.6080347393667804e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'cg_0.1_io32', 'baseline': 'cg_0.1', 'worst_field_relative': 0.0006428399412555544, 'integers_identical': None, 'limit': None, 'passed': None}
+PARITY {'candidate': 'cg_0.01_io32', 'baseline': 'cg_0.01', 'worst_field_relative': 1.8684075381853526e-05, 'integers_identical': None, 'limit': None, 'passed': None}
+PARITY {'candidate': 'coarse64_dst_io32', 'baseline': 'coarse64_dst', 'worst_field_relative': 2.6432433442436364e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+PARITY {'candidate': 'coarse128_dst_io32', 'baseline': 'coarse128_dst', 'worst_field_relative': 2.607933882801804e-08, 'integers_identical': None, 'limit': 0.0001, 'passed': True}
+GATES {'assembly': True, 'parity_coverage': True, 'parity': True, 'diagnostics_coverage': True, 'solver_validity': True, 'deterministic': True}
+HIRES SOLVE COMPLETE
+AUDIT PASSED {'driver_gates': True, 'final_uuid_matches': True, 'deterministic': True, 'coverage': True, 'parity_present_and_passed': True, 'diagnostics_present_and_valid': True, 'verdict_computable': True} 4080 checks; worst difference 0.0
+VERDICT {'arm': 'rom_q256_lean64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.009645378401524893, 'speedup_total': 37.5758506576484, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': False, 'speed_bar_5x': True, 'bar_met': True}

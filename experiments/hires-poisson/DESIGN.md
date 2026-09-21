@@ -298,3 +298,25 @@ true residual until it reaches the evaluation floor, rewrites the reference, rec
 `physical_error` from the saved fields keeping the superseded value beside it, and then the
 unchanged audit runs. If the audit fails again the $2048^2$ L-shape result is reported as
 "same-grid only, physical column unverified".
+
+**A11 (2026-09-21, after `hp4096b`) — Slurm state FAILED 1:0 on `hp4096b` is a wrapper bug after
+every scientific step had finished.** Job 4071227: driver complete with all driver gates passing,
+independent audit PASSED (4080 recomputed errors), `OUTPUTS.sha256` written (435 files). The batch
+script then exited 1 before `echo ALL-DONE`: the A8 edit of `cluster/stage.py` made the checksum
+step `find output output2 … 2>/dev/null`, and under `set -o pipefail` `find` returns 1 when
+`output2` does not exist (only `hpl32` has one). The log is complete and the error stream is
+empty, so this is not the disk-full/truncated-log failure mode. `collect.sh` correctly refused
+(no ALL-DONE). The marker was NOT faked: the attempt was pulled by hand with the same steps and
+three explicit substitutes for the marker — `output/COMPLETE` present, remote `audit.json`
+`passed == true` with the right job id, and `sha256sum -c OUTPUTS.sha256` passing on the cluster
+AND on the pulled copy — and only then was the remote directory deleted. `stage.py` is fixed
+(`find output $(test -d output2 && echo output2)`). Every other job of the lane printed ALL-DONE,
+except `hpl32`'s first batch script (audit failure, A10), whose repair script did.
+
+## Closing state (2026-09-21)
+
+Eight of eight GPU jobs used: `hp2048` 4049279, `hp3d128` 4051032, `hp4096` 4051236, `hpl1024`
+4053801, `hp3d256` 4056288, `hpl32` 4057694, `hpl32fix` 4071217, `hp4096b` 4071227. All collected
+with verified checksums; the namespace `/cluster/tufts/paralab/tawal01/hires_p_20260920/` is empty.
+Stop rule reached (budget). Verdicts, tables and the glossary: `reports/2026-09-20-hires-poisson.md`
+(generated); speed loop: `SPEED-LOG.md` (generated).

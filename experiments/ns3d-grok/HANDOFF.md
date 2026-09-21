@@ -12,5 +12,6 @@ seed 202609203 is closed.
 
 ## What is running
 
-Nothing until `ns3dgrok_diag04` is submitted. That job fuses the tracker and
-times it against CNAB2 in one allocation. Do not open the final cohort in it.
+Job **4141875** `ns3dgrok_diag04` is pending (Priority) in
+`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag04/`, commit `9b8adc74`.
+One job for this lane.

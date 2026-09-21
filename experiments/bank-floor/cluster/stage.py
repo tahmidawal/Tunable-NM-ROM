@@ -31,6 +31,18 @@ KINDS = {
                         f'{X}/bank-floor/config-rep-poisson.json', POISSON_CKPT],
         cmd=f'"$PY" {X}/bank-floor/bf_rep.py --config {X}/bank-floor/config-rep-poisson.json '
             f'--incumbent {POISSON_CKPT} --out output'),
+    'solve-poisson': dict(
+        files=COMMON + [f'{X}/bank-floor/bf_solve_poisson.py', f'{X}/bank-floor/pbh_core.py',
+                        f'{X}/multiresolution-poisson/core.py', f'{X}/multiresolution-poisson/iterative_core.py',
+                        f'{X}/cost-to-tolerance/ctol_tol.py',
+                        f'{X}/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py',
+                        f'{X}/bank-floor/config-solve-poisson.json', POISSON_CKPT],
+        cmd=f'"$PY" {X}/bank-floor/bf_solve_poisson.py --config {X}/bank-floor/config-solve-poisson.json --out output'),
+    'solve-burgers': dict(
+        files=COMMON + [f'{X}/bank-floor/bf_solve_burgers.py', f'{X}/b-head-train/common.py',
+                        f'{X}/separable-decoder/sep_hfit.py',
+                        f'{X}/bank-floor/config-solve-burgers.json', BURGERS_CKPT],
+        cmd=f'"$PY" {X}/bank-floor/bf_solve_burgers.py --config {X}/bank-floor/config-solve-burgers.json --out output'),
 }
 PYPATH = ':'.join(f'$TASK_ROOT/{X}/{d}' for d in (
     'bank-floor', 'mr-burgers2d', 'head-ablation', 'separable-decoder', 'b-head-train',

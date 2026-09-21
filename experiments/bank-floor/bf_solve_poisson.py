@@ -36,6 +36,7 @@ F64 = jnp.float64
 
 def load_basis(spec, here, xy):
     path = here / spec['file']
+    assert 'sha256' not in spec or K.sha_file(path) == spec['sha256'], f'bank hash mismatch: {path}'
     if path.suffix == '.npy':
         Q = jnp.asarray(np.load(path)[:, :spec['R']])
         dev = float(jnp.max(jnp.abs(Q.T @ Q - jnp.eye(Q.shape[1], dtype=F64))))

@@ -128,6 +128,7 @@ def main():
         tag = spec['tag']
         t0 = time.perf_counter()
         path = here / spec['file']
+        assert 'sha256' not in spec or K.sha_file(path) == spec['sha256'], f'bank hash mismatch: {path}'
         if path.suffix == '.npy':
             Q = jnp.asarray(np.load(path)[:, :spec['R']])
             binfo = dict(columns=int(Q.shape[1]), rank=int(Q.shape[1]), rank_valid=True)

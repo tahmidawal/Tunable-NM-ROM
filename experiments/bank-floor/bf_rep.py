@@ -24,6 +24,10 @@ import bf_core as K
 F64 = jnp.float64
 
 
+def G_cols(blocks):
+    return sum(int(b['g'][-1][0].shape[1]) for b in blocks)
+
+
 def host(tree):
     return jax.tree_util.tree_map(np.asarray, tree)
 
@@ -182,7 +186,11 @@ def main():
         Q, info = K.orth_basis(G)
         o = dict(basis=info, floors=score(Q), cost=K.cost_model(n, G.shape[1], Kdim))
         del G, Q
-        if fine and tag:
+        if fine and tag and 8 * G_cols(blocks) * (fine['intervals'] - 1) ** 2 > cfg.get('fine_mesh_byte_cap', 5e9):
+            # job 4053735 died here: the 1023-interval orthonormalisation of a 1024-column bank
+            # did not fit beside the resident training snapshots. Recorded, not silently dropped.
+            o['fine_mesh'] = dict(intervals=fine['intervals'], skipped='bank too large beside resident snapshots')
+        elif fine and tag:
             Gf = K.bank_of(blocks, K.grid(fine['intervals']))
             Qf, inff = K.orth_basis(Gf)
             o['fine_mesh'] = dict(intervals=fine['intervals'], basis=inff,
@@ -319,13 +327,14 @@ def main():
         blocks, tinfo = K.train_varpro(blocks, lrs, xy, U, spec['steps'], spec['batch'],
                                        cfg['seed'] + 7 * spec['R'], ridge=cfg['ridge'],
                                        log_every=cfg['log_every'], tag=tag, probe=probe_fn)
+        ck = keep(blocks, tag)            # before scoring: job 4053735 lost a trained bank to a scoring crash
         r = score_bank(blocks, tag)
         r['warm_start'] = warm
         r['training'] = tinfo
         took = r['floors']['train_probe']['rms'] < init_scores['train_probe']['rms']
         r['training_took'] = bool(took)
         r['label'] = 'ok' if took else 'training_did_not_take'
-        r['checkpoint'] = keep(blocks, tag)
+        r['checkpoint'] = ck
         r['seconds'] = time.perf_counter() - t0
         R_['arms'][tag] = r
         save()

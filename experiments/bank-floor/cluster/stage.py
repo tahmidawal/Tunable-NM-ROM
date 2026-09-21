@@ -38,6 +38,16 @@ KINDS = {
                         f'{X}/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py',
                         f'{X}/bank-floor/config-solve-poisson.json', POISSON_CKPT],
         cmd=f'"$PY" {X}/bank-floor/bf_solve_poisson.py --config {X}/bank-floor/config-solve-poisson.json --out output'),
+    'repsolve-poisson': dict(
+        files=COMMON + [f'{X}/bank-floor/bf_solve_poisson.py', f'{X}/bank-floor/pbh_core.py',
+                        f'{X}/multiresolution-poisson/core.py', f'{X}/multiresolution-poisson/iterative_core.py',
+                        f'{X}/cost-to-tolerance/ctol_tol.py',
+                        f'{X}/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py',
+                        f'{X}/bank-floor/config-solve-poisson.json', f'{X}/bank-floor/config-rep-poisson-cat.json',
+                        POISSON_CKPT],
+        cmd=f'"$PY" {X}/bank-floor/bf_rep.py --config {X}/bank-floor/config-rep-poisson-cat.json '
+            f'--incumbent {POISSON_CKPT} --out output/rep || echo REP-FAILED\n'
+            f'"$PY" {X}/bank-floor/bf_solve_poisson.py --config {X}/bank-floor/config-solve-poisson.json --out output/solve'),
     'solve-burgers': dict(
         files=COMMON + [f'{X}/bank-floor/bf_solve_burgers.py', f'{X}/b-head-train/common.py',
                         f'{X}/separable-decoder/sep_hfit.py',

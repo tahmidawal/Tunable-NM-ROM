@@ -23,6 +23,9 @@ def sha(p):
 
 def main():
     att = sys.argv[1]
+    partial = '--partial' in sys.argv
+    if partial:    # a failed job never wrote OUTPUTS.sha256: hash remotely first, then verify the transfer
+        subprocess.check_call(['ssh', 'tufts-login', f'cd {NS}/{att} && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256'])
     run = LANE / 'runs' / att
     for sub in ('output/', 'logs/', 'OUTPUTS.sha256'):
         subprocess.check_call(['rsync', '-a', f'tufts-login:{NS}/{att}/{sub}', str(run / sub)])
@@ -34,7 +37,7 @@ def main():
             bad.append(name)
     assert not bad and lines, f'checksum mismatch: {bad}'
     log = ''.join(p.read_text() for p in (run / 'logs').glob('*.out'))
-    assert 'jax_backend=gpu' in log and 'ALL-DONE' in log, 'log markers missing'
+    assert 'jax_backend=gpu' in log and (partial or 'ALL-DONE' in log), 'log markers missing'
     shutil.copy(run / 'output/result.json', run / 'result.json')
     ck = LANE / 'ckpt'
     ck.mkdir(exist_ok=True)

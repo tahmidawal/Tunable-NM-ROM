@@ -1,0 +1,30 @@
+W0920 20:12:38.999197 2523735 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.97GiB (rounded to 8556412928)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0920 20:12:38.999920 2523735 bfc_allocator.cc:525] ******_______****************____*******************************************************____________
+W0920 20:12:42.541843 2523735 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.98GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0920 20:12:42.542085 2523686 config_assigner.cc:383] Could not get config for HLO: %gemm_fusion_dot = f64[2,1024,1024]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=
+(parameter_0: f64[1024,2,522242], parameter_1: f64[2,522242,1024]) -> f64[2,1024,1024] {
+  %parameter_0 = f64[1024,2,522242]{2,1,0} parameter(0)
+  %parameter_1 = f64[2,522242,1024]{2,1,0} parameter(1)
+  ROOT %dot.1 = f64[2,1024,1024]{2,1,0} dot(%parameter_0, %parameter_1), lhs_batch_dims={1}, lhs_contracting_dims={2}, rhs_batch_dims={0}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=4}
+}, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=4}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot = f64[2,1024,1024]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=%gemm_fusion_dot_computation, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=4}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 7.98GiB.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp02/experiments/bank-floor/bf_rep.py", line 330, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp02/experiments/bank-floor/bf_rep.py", line 309, in main
+    r = score_bank(blocks, tag)
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp02/experiments/bank-floor/bf_rep.py", line 188, in score_bank
+    Qf, inff = K.orth_basis(Gf)
+               ~~~~~~~~~~~~^^^^
+  File "/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp02/experiments/bank-floor/bf_core.py", line 146, in orth_basis
+    dev = float(jnp.max(jnp.abs(Q.T @ Q - jnp.eye(rank, dtype=F64))))
+                                ~~~~^~~
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 880, in _operator_matmul
+    return tensor_contractions.matmul(self, cast(ArrayLike, other))
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot = f64[2,1024,1024]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=%gemm_fusion_dot_computation, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=4}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 7.98GiB.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

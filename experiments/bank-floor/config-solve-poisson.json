@@ -1,0 +1,82 @@
+{
+ "attempt": "bfsp01",
+ "intervals": 255,
+ "cohorts": {
+  "dev12": [
+   [
+    7090703,
+    6
+   ],
+   [
+    7090732,
+    6
+   ]
+  ],
+  "confirm256": [
+   [
+    20260922,
+    256
+   ]
+  ]
+ },
+ "save_fields_cohort": "dev12",
+ "burn_seconds": 0.05,
+ "repetitions": 7,
+ "cg_maxiter": 20000,
+ "cg_tolerances": [
+  0.01,
+  0.0001,
+  1e-06,
+  1e-08
+ ],
+ "coarse_intervals": [
+  85,
+  51
+ ],
+ "test_multiplier": 4,
+ "banks": [
+  {
+   "tag": "inc512",
+   "file": "incumbents/poisson_primary_K32.pkl"
+  },
+  {
+   "tag": "ft512",
+   "file": "bank/poisson2d_ft512.pkl",
+   "sha256": "93c9171ed6dda3bb2cf0484ef9ddbd3eb7cabc060fe9f1460123b4157f03504a"
+  },
+  {
+   "tag": "pod256",
+   "file": "bank/poisson2d_pod2048_modes.npy",
+   "R": 256,
+   "sha256": "664effe97e5ff2c0cc4b65815ad83f0eaf20c4f0032cb854fed89c6cba95bb5c"
+  },
+  {
+   "tag": "pod512",
+   "file": "bank/poisson2d_pod2048_modes.npy",
+   "R": 512,
+   "sha256": "664effe97e5ff2c0cc4b65815ad83f0eaf20c4f0032cb854fed89c6cba95bb5c"
+  },
+  {
+   "tag": "pod1024",
+   "file": "bank/poisson2d_pod2048_modes.npy",
+   "R": 1024,
+   "sha256": "664effe97e5ff2c0cc4b65815ad83f0eaf20c4f0032cb854fed89c6cba95bb5c"
+  },
+  {
+   "tag": "pod2048",
+   "file": "bank/poisson2d_pod2048_modes.npy",
+   "R": 2048,
+   "sha256": "664effe97e5ff2c0cc4b65815ad83f0eaf20c4f0032cb854fed89c6cba95bb5c"
+  },
+  {
+   "tag": "cat1024",
+   "file": "../../output/rep/ckpt/poisson2d_cat1024.pkl",
+   "optional": true
+  },
+  {
+   "tag": "cat2048",
+   "file": "../../output/rep/ckpt/poisson2d_cat2048.pkl",
+   "optional": true
+  }
+ ]
+}

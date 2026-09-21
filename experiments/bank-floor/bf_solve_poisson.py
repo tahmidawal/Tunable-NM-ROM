@@ -174,6 +174,10 @@ def main():
 
     for spec in cfg['banks']:
         tag = spec['tag']
+        if spec.get('optional') and not (here / spec['file']).exists():
+            R_['subjects'][f'{tag}_SKIPPED'] = dict(kind='skipped', reason=f'missing {spec["file"]}', results={})
+            print(f'SKIP {tag}: {spec["file"]} missing', flush=True)
+            continue
         t0 = time.perf_counter()
         Q, binfo = load_basis(spec, here, xy)
         Rk = int(Q.shape[1])

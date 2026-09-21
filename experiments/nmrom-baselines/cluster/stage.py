@@ -22,6 +22,8 @@ FILES = ['experiments/nmrom-baselines/kimae.py', 'experiments/nmrom-baselines/ls
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
 
+FILES += sorted(str(p.relative_to(WT)) for p in list((LANE / 'configs').glob('*.json')) + list((LANE / 'runs').glob('gate*/output/summary.json')))
+
 SCRIPT = r'''#!/bin/bash
 #SBATCH --job-name=nmb_@NAME@
 #SBATCH --partition=gpu

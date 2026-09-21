@@ -9,7 +9,7 @@ while true; do
   TOTAL=$(printf '%s\n' "$Q" | grep -c . || true); MINE=$(printf '%s\n' "$Q" | grep -c nmrombase_20260920 || true)
   if printf '%s\n' "$Q" | grep -q "$NS/$A\$"; then echo "already queued for $A"; exit 1; fi
   if [ "$TOTAL" -lt 6 ] && [ "$MINE" -lt 2 ]; then break; fi
-  echo "waiting: account=$TOTAL lane=$MINE $(date +%H:%M)"; sleep 120
+  echo "waiting: account=$TOTAL lane=$MINE $(date +%H:%M)"; sleep 30
 done
 ssh tufts-login "test ! -e $NS/$A"
 rsync -a "$HERE/stage/$A/" "tufts-login:$NS/$A/"

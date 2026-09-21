@@ -111,3 +111,19 @@ is the truncation named in that table.
 
 Kept or reverted. The exact tensor, coefficient centroid, and parity-passing
 truncation are kept. Float32 and the Fourier basis are reverted.
+
+## 2026-09-21 — seal the parity-passing truncation
+
+Hypothesis. The development selection, Fourier tail $10^{-6}$, stays within
+5% on a new cohort and its paired time is the number to set beside CNAB2.
+
+Change. `diag07.py` with `--final`. Rank, dt, tail, and the truncation
+fingerprint are constants. Seed 202609211, opened once.
+
+Measured effect. `results/diag07.md`. The sealed worst stays within 5%, with
+no case over the bar, and the field gap versus the grid tracker stays within
+the parity gate. The paired speedup against the eligible CNAB2 step is below
+one.
+
+Kept or reverted. Kept as the faster form of the tracker. It does not beat
+CNAB2.

@@ -1,24 +1,24 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21. The sealed truncation job is in the queue.
+Updated 2026-09-21 after the sealed truncation. Nothing is running.
 
 ## State
 
-diag06 (job 4147975, commit `b447d836`) selected truncation tail `1e-6`,
-9222 frequencies, on development. Local NumPy verify passed. The Slurm exit
-was 1 because `verify_diag.py` was not staged; the computation had already
-written `summary.json`. Remote directory deleted. Table:
-`results/diag06.md`.
+Seed 202609211 was opened once by job **4148215**. The frozen setting is
+centered POD rank 64, startup step, dt=0.01, Fourier tail 1e-6. Generated
+table: `results/diag07.md`. Local NumPy verify passed. Remote directory
+deleted. The coefficient form matches the grid tracker and is slower than
+CNAB2. It is not the coordinate-network NM-ROM.
+
+Seed 202609203 stays closed. Do not open 202609211 again.
 
 ## What is running
 
-Job **4148215** `ns3dgrok_diag07` is pending (Priority) in
-`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag07/`, commit
-`f12b8fc2`. It is the only reader of seed 202609211. The setting is frozen:
-rank 64, dt=0.01, tail 1e-6. Seed 202609203 stays closed.
+Nothing.
 
 ## Next step
 
-On exit: confirm `jax_backend=gpu` and `DIAG_EXIT=0`, checksum pull,
-NumPy-verify, delete the remote directory. Do not change the tail if the
-sealed error exceeds 5%.
+The remaining time is the shift-reproject over the retained Fourier
+coefficients of the POD modes. A parity-passing truncation did not make that
+cheaper than CNAB2. A shift that is cheap in a vortex-adapted basis would be
+the next hypothesis.

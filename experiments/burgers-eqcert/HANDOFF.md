@@ -2,50 +2,42 @@
 
 **Lane:** `experiments/burgers-eqcert/` in `worktrees/2026-09-21-burgers-eqcert`
 (`exp/2026-09-21-burgers-eqcert`, fork `exp/2026-09-20-hires-burgers` @ `0ab60014`). Cluster namespace
-`/cluster/tufts/paralab/tawal01/bcert_20260921/` (NOT created yet). Contract:
-`reports/2026-09-20-speed-accuracy-campaign-protocol.md` (on main). Budget: ≤ 4 GPU jobs total, ≤ 2 running,
-account-wide ≤ 6 running.
+`/cluster/tufts/paralab/tawal01/bcert_20260921/`. Contract: `reports/2026-09-20-speed-accuracy-campaign-protocol.md`
+(on main). Budget: ≤ 2 running (lane), ≤ 8 total, account-wide wait if ≥ 6 running. Hard stop 2026-09-24 12:00 EDT.
+Design: `DESIGN.md` (+ Addendum A1, Codex dispositions; audit record `reports/codex-design-audit-2026-09-21.md`).
 
-## State (2026-09-21 11:05 EDT)
+## State (2026-09-21, resumed after the pause)
 
-- **PAUSED by user instruction (via coordinator) before any work product.** No GPU job submitted, no
-  cluster directory created, nothing running, lab log untouched. Jobs used: **0 / 4**.
-- Done so far: read the protocol, CLAUDE.md, hires-burgers HANDOFF/DESIGN (incl. A1)/SPEED-LOG, `hires.py`,
-  `hops.py`, `audit_hires.py`, `cluster/{stage,collect}.py`, and the paper's Table 1 / Table D.2 sources
-  (`paper/main.tex`, `paper/tables/TH_headline.tex`, `paper/tables/T09_eq_ladder.tex`, `paper/gen_headline.py`).
-- DESIGN.md NOT written yet; no Codex audit yet.
+- Resumed at user request. DESIGN.md written, Codex audit done (12 findings, dispositions A1), code + configs ready,
+  local 64² smoke passes every path; audit script tested on the smoke (NumPy ρ recomputation agrees to 5e-12).
+- **Exploration (local, not results; `explore/`)**: on initial-fit states $w_0$ of `params_draw(0,128)` trajectories
+  8–47, lat64 ρ_max = 0.52 / 0.30 / 0.22 / 0.18 at 256² / 512² / 1024² / 2048² (bar 0.116); worst trajectories
+  18, 22 (hires-burgers sampled only 8–15). So **hires-burgers' lat64 "certified" at 2048²/4096² is a single-draw
+  result** — flagged in the lab log; not re-certified by this lane unless spare budget (DESIGN §6). Evolved states
+  at 256²: worst is k=1 (lat64 0.139, every-2nd-node 0.078), k≥2 ≤ 0.033 → the exact-first-step arms (`xfast.py`).
+- Jobs used: see table. Nothing else running for this lane.
 
-## Goal (from the brief)
+## Files
 
-Accurate q=256 Burgers 2D rung with a CERTIFIED rule (primary bar ρ_max ≤ 0.116 on held-out reached states,
-never NNLS fit residual) at 256², 512², 1024², timed in the same job as Newton–BiCGStab, FOM chosen by the
-paper rule (fastest tested FOM, converged every step, worst evolved error ≤ the accurate setting's); with
-chol/clip/lamcarry/pred2, q=0 fast and q=128 alongside; dev6 and (if budget) hold64; `bad0` control kept.
+- `eqcert.py` driver (from hires.py @ 0ab60014), `xfast.py` (exact-first-steps), `audit_eqcert.py` (NumPy audit),
+  `config-{256,512,1024}.json`, `config-smoke64.json`, `cluster/{stage.py,collect.py,submit.sh}`.
 
-## Findings from reading (no new numbers)
+## How to run a job
 
-- Paper Table 1 today: 256² 0.51 % at 0.043×, 512² 0.55 % at 0.068× (both the b-eqtop stored rule, marginal
-  1/5 re-draws, Table D.2), 1024² 0.59 % dense at 0.0037× (b-panel job, A100).
-- In hires-burgers the lattice rule `lat64` (63×63, m=3969) at q=256/M=1088 had held-out ρ_max 0.1000
-  (2048²) and 0.0908 (4096²), always attained at held-out state index 357 = 7×51 = the **initial-fit state
-  w0 of trajectory 15**. ρ rises as the mesh coarsens, and the local 256² exploration in
-  `experiments/hires-burgers/DESIGN.md` §4 saw ρ_max 0.126 on w0 → **lat64 may FAIL the bar at 256²**; that
-  would be reported as a failure, not softened.
-- `lat128` failed badly at 2048²/4096² (ρ_max ≈ 0.62, same w0 state): likely aliasing of the bank's
-  training-mesh (256²) content near sine index 2s = 256. Not a promising fallback without checking.
+```bash
+cd worktrees/2026-09-21-burgers-eqcert          # commit first: stage.py refuses uncommitted files
+PY=/home/tahmid/Dev/.venv/bin/python
+$PY experiments/burgers-eqcert/cluster/stage.py <attempt> config-<L>.json --gpu a100-80G|h200 --mem 240G
+experiments/burgers-eqcert/cluster/submit.sh <attempt>      # waits for slots; squeue before/after
+# when done:
+$PY experiments/burgers-eqcert/cluster/collect.py <attempt>
+$PY experiments/burgers-eqcert/audit_eqcert.py experiments/burgers-eqcert/runs/<attempt>/archive \
+    --checkpoint experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl \
+    --out experiments/burgers-eqcert/checks/<attempt>-summary.json
+ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcert_20260921/<attempt>'   # only that attempt dir
+```
 
-## Planned next steps when resumed (not yet started)
+## Jobs
 
-1. Write `experiments/burgers-eqcert/DESIGN.md`: reuse `hires.py`/`hops.py`/`hfast.py`/`audit_hires.py`
-   (copy with recorded source commit 0ab60014) with configs at L = 256, 512, 1024; population mesh = target
-   mesh (dense query affordable ≤ 1024²); candidate rules at q=256/M=1088 pre-declared: `lat64`
-   (deterministic, certify per mesh), `lat128`, lattice-support NNLS refit with 5 fit-state draws (random
-   construction → confirmed only if 5/5 pass), b-eqtop `scaled` rule for reference, `bad0` control; optional
-   second disjoint held-out population (trajectories 16–23) as a replication of the certificate. FOM grid =
-   hires-burgers grid incl. `lean_nt3e-3_l3e-3`, coarse FOM at L/2, L/4, refined reference 4L (deadline-guarded).
-   Selection: cheapest certified non-control arm ≤ 1 % on dev6; hold64 reported, never used to choose.
-2. Cheap local check (GB10, sub-minute): ρ of lat32/64/128 on the w0 states of trajectories 8–15 at
-   L = 256/512/1024, to know before submission whether lat64 fails at 256² (exploration, not a result).
-3. Codex read-only audit of DESIGN.md; record it.
-4. Jobs (≤ 4): one per mesh (dev6 timed 5 reps, then hold64 1 rep in the same allocation), 1 spare.
-   Cluster stage/collect scripts need NAMESPACE → `bcert_20260921` and LANE → `experiments/burgers-eqcert`.
+| attempt | job id | mesh | GPU | state | summary |
+|---|---|---|---|---|---|

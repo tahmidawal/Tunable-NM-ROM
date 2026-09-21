@@ -1,0 +1,501 @@
+{
+ "attempt": "bc256",
+ "intervals": 256,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "population": {
+  "mesh": 256,
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+   ],
+   [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+   ]
+  ],
+  "confirm_draw": [
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55
+  ]
+ },
+ "k_thresholds": [
+  0,
+  1,
+  2
+ ],
+ "target_chunk": 8,
+ "restrict_to": 256,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+       "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+       "mesh": 256,
+       "status": "confirmed (3/3) at 256^2"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 128,
+   "M": 576,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+       "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2"
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.001
+   ],
+   "dense": true,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "certified in one draw at 256^2; marginal 1/5 construction draws (b-eqtop A4)"
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1,
+       "gtols": [
+        0.001,
+        0.01
+       ]
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 2
+      }
+     ]
+    },
+    {
+     "name": "lathalf",
+     "parts": [
+      {
+       "lattice": "half"
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1,
+       "gtols": [
+        0.001,
+        0.01
+       ]
+      }
+     ]
+    },
+    {
+     "name": "exact",
+     "exact": true,
+     "parts": [],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "gtols": [
+        0.001,
+        0.01
+       ]
+      }
+     ]
+    },
+    {
+     "name": "bad0",
+     "control": true,
+     "parts": [
+      {
+       "file": "rules/rule_q256_reachable_m2048.npz",
+       "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+       "mesh": 256,
+       "status": "q-ridge rule; regressed at 1024^2 in b-panel (control: must fail)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 40000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt0125",
+   "dt": 0.0125,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt0125",
+   "dt": 0.0125,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt025",
+   "dt": 0.025,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c128_nt1e-4_dt005",
+   "mesh": 128,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "c64_nt1e-4_dt005",
+   "mesh": 64,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "nt1e-4_dt005",
+  "nt1e-3_dt005",
+  "lean_tight",
+  "lean_nt1e-4_dt005",
+  "lean_nt1e-3_l1e-3_dt005",
+  "lean_nt3e-3_l3e-3_dt005",
+  "lean_nt1e-2_l1e-2_dt005",
+  "lean_nt1e-3_l1e-3_dt01",
+  "lean_nt3e-3_l3e-3_dt01",
+  "lean_nt1e-2_l1e-2_dt01",
+  "lean_nt1e-3_l1e-3_dt0125",
+  "lean_nt3e-3_l3e-3_dt0125",
+  "lean_nt1e-3_l1e-3_dt025",
+  "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+  "q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x2",
+  "q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_lathalf_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_exact_g0p01_fast_chol_clip_lamcarry_pred2"
+ ],
+ "reps": 5,
+ "required_reps": 5,
+ "order_seed": 20260921,
+ "burn_seconds": 0.25,
+ "profile_arms": [
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2"
+ ],
+ "reference": {
+  "mesh": 1024,
+  "dt": 0.0003125,
+  "ntol": 1e-11,
+  "ltol": 1e-09,
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "deadline_seconds": 60000,
+  "accept_residual": 2e-11
+ },
+ "parity_bar": 1e-09,
+ "keep_for_reference": null,
+ "purpose": "DESIGN.md: certification of q=256 rules at 256^2 on five held-out draws of params_draw(20260921,40), then the same-allocation ROM/FOM panel on dev6",
+ "rule_notes": {
+  "scaled": "b-eqtop rule at the same physical points, weights x (L/256)^2, no refit",
+  "lat64": "uniform 63x63 interior sub-lattice, equal weights (L/64)^2",
+  "lathalf": "every second interior node, equal weights 4",
+  "exact": "no rule: all-node advection through the separable projection",
+  "bad0": "CONTROL: q-ridge q=256 m=2048 rule, original weights x (L/256)^2; must fail",
+  "_xj": "first j backward-Euler steps solved with the exact residual, the rule afterwards"
+ }
+}

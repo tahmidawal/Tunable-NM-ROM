@@ -1,0 +1,214 @@
+{
+ "attempt": "smoke64",
+ "allow_cpu_smoke": false,
+ "intervals": 64,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "local_smoke_waives_cohort_hash": true,
+ "case_subset": [
+  0
+ ],
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "population": {
+  "mesh": 64,
+  "source_draw": [
+   20260921,
+   20
+  ],
+  "cert_draws": [
+   [
+    0
+   ],
+   [
+    8
+   ]
+  ],
+  "confirm_draw": [
+   16
+  ]
+ },
+ "k_thresholds": [
+  0,
+  1,
+  2
+ ],
+ "target_chunk": 8,
+ "restrict_to": 64,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat16",
+     "parts": [
+      {
+       "lattice": 16
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.001
+   ],
+   "dense": true,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat16",
+     "parts": [
+      {
+       "lattice": 16
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 2
+      }
+     ]
+    },
+    {
+     "name": "lathalf",
+     "parts": [
+      {
+       "lattice": "half"
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1
+      }
+     ],
+     "gtols": [
+      0.001,
+      0.01
+     ]
+    },
+    {
+     "name": "exact",
+     "exact": true,
+     "parts": []
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt0125",
+   "dt": 0.0125,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c32_nt1e-4_dt005",
+   "mesh": 32,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q256_M1088_lat16_g0p001_fast_chol_clip_lamcarry_pred2_x1"
+ ],
+ "reps": 1,
+ "required_reps": 1,
+ "order_seed": 20260921,
+ "burn_seconds": 0.0,
+ "profile_arms": [
+  "q256_M1088_lat16_g0p001_fast_chol_clip_lamcarry_pred2_x1"
+ ],
+ "reference": {
+  "mesh": 128,
+  "dt": 0.00125,
+  "ntol": 1e-11,
+  "ltol": 1e-09,
+  "cases": [
+   0
+  ],
+  "deadline_seconds": 3000,
+  "accept_residual": 2e-11
+ },
+ "parity_bar": 1e-09,
+ "keep_for_reference": null,
+ "purpose": "local 64^2 smoke of every code path (not a result)"
+}

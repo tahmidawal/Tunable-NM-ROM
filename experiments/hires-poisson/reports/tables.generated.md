@@ -168,6 +168,82 @@ Comparators and controls in the same job:
 | `coarse64_dst` | 0.081 | 0.076 | 5.28 | 0.63 |  | — | — | — | — |
 | `dst_direct` | 0.000 | 0.013 | 5.12 | 0.42 |  | — | — | — | — |
 
+## cube 128³ — `hp3d256`, job `4056288`, NVIDIA H200, source `b8bd7059c6a1`
+
+Audit: **passed**. Bank floor worst 0.143 %. Bar (accurate arm `rom_q96_leandst64` vs `cg_0.01`): worst same-grid 0.160 %, speedup 2.65× → **BAR MISSED**; fast arm `rom_q0_leandst64` 0.545 % / 2.70×.
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `rom_q0_lean64` | 0.545 | 0.546 | 7.88 | 3.43 | 4 | 2.15 / 3.6 | 2.15 (`cg_0.01`) | 0.64 (`coarse32_dst`) | 0.64 |
+| `rom_q0_leandst32` | 0.545 | 0.546 | 6.09 | 1.54 | 4 | 2.78 / 8.0 | 2.78 (`cg_0.01`) | 0.83 (`coarse32_dst`) | 0.83 |
+| `rom_q0_leandst64` | 0.545 | 0.546 | 6.27 | 1.76 | 4 | 2.70 / 7.0 | 2.70 (`cg_0.01`) | 0.81 (`coarse32_dst`) | 0.81 |
+| `rom_q0_onestart64` | 0.545 | 0.546 | 6.26 | 1.81 | 3 | 2.70 / 6.8 | 2.70 (`cg_0.01`) | 0.81 (`coarse32_dst`) | 0.81 |
+| `rom_q0_retained` | 0.545 | 0.546 | 7.88 | 3.48 | 4 | 2.15 / 3.6 | 2.15 (`cg_0.01`) | 0.64 (`coarse32_dst`) | 0.64 |
+| `rom_q128_linear` | 0.144 | 0.145 | 7.06 | 2.45 |  | 2.40 / 5.1 | 2.40 (`cg_0.01`) | 0.72 (`coarse64_dst`) | 0.72 |
+| `rom_q128_lineardst` | 0.144 | 0.145 | 5.37 | 0.85 |  | 3.15 / 14.6 | 3.15 (`cg_0.01`) | 0.95 (`coarse64_dst`) | 0.95 |
+| `rom_q32_lean64` | 0.287 | 0.288 | 7.92 | 3.45 | 4 | 2.14 / 3.6 | 2.14 (`cg_0.01`) | 0.64 (`coarse64_dst`) | 0.64 |
+| `rom_q32_leandst32` | 0.287 | 0.288 | 6.03 | 1.55 | 4 | 2.80 / 8.0 | 2.80 (`cg_0.01`) | 0.84 (`coarse64_dst`) | 0.84 |
+| `rom_q32_leandst64` | 0.287 | 0.288 | 6.21 | 1.75 | 4 | 2.73 / 7.1 | 2.73 (`cg_0.01`) | 0.82 (`coarse64_dst`) | 0.82 |
+| `rom_q32_onestart64` | 0.287 | 0.288 | 6.24 | 1.86 | 4 | 2.71 / 6.7 | 2.71 (`cg_0.01`) | 0.82 (`coarse64_dst`) | 0.81 |
+| `rom_q32_retained` | 0.287 | 0.288 | 7.95 | 3.56 | 4 | 2.13 / 3.5 | 2.13 (`cg_0.01`) | 0.64 (`coarse64_dst`) | 0.64 |
+| `rom_q96_lean64` | 0.160 | 0.160 | 7.94 | 3.53 | 4 | 2.13 / 3.5 | 2.13 (`cg_0.01`) | 0.64 (`coarse64_dst`) | 0.64 |
+| `rom_q96_leandst32` | 0.160 | 0.160 | 6.07 | 1.59 | 4 | 2.79 / 7.8 | 2.79 (`cg_0.01`) | 0.84 (`coarse64_dst`) | 0.84 |
+| `rom_q96_leandst64` | 0.160 | 0.160 | 6.38 | 1.90 | 4 | 2.65 / 6.5 | 2.65 (`cg_0.01`) | 0.80 (`coarse64_dst`) | 0.80 |
+| `rom_q96_onestart64` | 0.160 | 0.160 | 6.28 | 1.89 | 4 | 2.70 / 6.6 | 2.70 (`cg_0.01`) | 0.81 (`coarse64_dst`) | 0.81 |
+| `rom_q96_retained` | 0.160 | 0.160 | 8.06 | 3.60 | 4 | 2.10 / 3.4 | 2.10 (`cg_0.01`) | 0.63 (`coarse64_dst`) | 0.63 |
+
+
+Comparators and controls in the same job:
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `cg_0.0001` | 0.000 | 0.013 | 24.18 | 19.83 | 280 | — | — | — | — |
+| `cg_0.01` | 0.075 | 0.076 | 16.92 | 12.40 | 173.5 | — | — | — | — |
+| `cg_1e-06` | 0.000 | 0.013 | 30.01 | 25.45 | 360.5 | — | — | — | — |
+| `coarse32_cg_0.0001` | 0.301 | 0.293 | 6.77 | 2.31 | 62.5 | — | — | — | — |
+| `coarse32_cg_0.01` | 0.333 | 0.326 | 6.07 | 1.52 | 34 | — | — | — | — |
+| `coarse32_dst` | 0.301 | 0.293 | 5.08 | 0.65 |  | — | — | — | — |
+| `coarse64_cg_0.0001` | 0.081 | 0.076 | 8.98 | 4.56 | 134 | — | — | — | — |
+| `coarse64_cg_0.01` | 0.140 | 0.137 | 7.40 | 2.94 | 78.5 | — | — | — | — |
+| `coarse64_dst` | 0.081 | 0.076 | 5.10 | 0.69 |  | — | — | — | — |
+| `dst_direct` | 0.000 | 0.013 | 5.08 | 0.41 |  | — | — | — | — |
+
+## cube 256³ — `hp3d256`, job `4056288`, NVIDIA H200, source `b8bd7059c6a1`
+
+Audit: **passed**. Bank floor worst 0.143 %. Bar (accurate arm `rom_q96_leandst64` vs `cg_0.01`): worst same-grid 0.160 %, speedup 4.18× → **BAR MISSED**; fast arm `rom_q0_leandst64` 0.546 % / 4.21×.
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `rom_q0_leandst32` | 0.546 | 0.546 | 40.51 | 4.15 | 4 | 4.39 / 34.0 | 4.39 (`cg_0.01`) | 0.91 (`coarse32_dst`) | 0.96 |
+| `rom_q0_leandst64` | 0.546 | 0.546 | 42.27 | 5.95 | 4 | 4.21 / 23.7 | 4.21 (`cg_0.01`) | 0.87 (`coarse32_dst`) | 0.92 |
+| `rom_q0_onestart64` | 0.546 | 0.546 | 42.30 | 5.97 | 3 | 4.20 / 23.6 | 4.20 (`cg_0.01`) | 0.87 (`coarse32_dst`) | 0.92 |
+| `rom_q128_lineardst` | 0.144 | 0.144 | 41.11 | 4.95 |  | 4.33 / 28.4 | 4.33 (`cg_0.01`) | 0.91 (`coarse128_dst`) | 0.95 |
+| `rom_q32_leandst32` | 0.287 | 0.287 | 40.49 | 4.09 | 4 | 4.39 / 34.5 | 4.39 (`cg_0.01`) | 0.92 (`coarse128_dst`) | 0.96 |
+| `rom_q32_leandst64` | 0.287 | 0.287 | 42.41 | 5.97 | 4 | 4.19 / 23.6 | 4.19 (`cg_0.01`) | 0.88 (`coarse128_dst`) | 0.92 |
+| `rom_q32_onestart64` | 0.287 | 0.287 | 42.20 | 6.01 | 4 | 4.21 / 23.5 | 4.21 (`cg_0.01`) | 0.88 (`coarse128_dst`) | 0.92 |
+| `rom_q96_leandst32` | 0.160 | 0.160 | 40.60 | 4.29 | 4 | 4.38 / 32.8 | 4.38 (`cg_0.01`) | 0.92 (`coarse128_dst`) | 0.96 |
+| `rom_q96_leandst64` | 0.160 | 0.160 | 42.52 | 6.08 | 4 | 4.18 / 23.2 | 4.18 (`cg_0.01`) | 0.88 (`coarse128_dst`) | 0.92 |
+| `rom_q96_onestart64` | 0.160 | 0.160 | 42.33 | 6.05 | 4 | 4.20 / 23.3 | 4.20 (`cg_0.01`) | 0.88 (`coarse128_dst`) | 0.92 |
+
+
+Comparators and controls in the same job:
+
+| subject | worst same-grid % | worst physical % | median total ms | median device ms | iterations | × vs CG 1e-2 (total / device) | × vs fastest matched CG | × vs matched coarse grid | × vs DST |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `cg_0.0001` | 0.000 | 0.003 | 257.09 | 220.31 | 576 | — | — | — | — |
+| `cg_0.01` | 0.049 | 0.049 | 177.82 | 140.87 | 368.5 | — | — | — | — |
+| `cg_1e-06` | 0.000 | 0.003 | 320.63 | 282.19 | 740.5 | — | — | — | — |
+| `coarse128_cg_0.0001` | 0.020 | 0.019 | 56.42 | 20.17 | 280 | — | — | — | — |
+| `coarse128_cg_0.01` | 0.078 | 0.078 | 49.06 | 12.83 | 173.5 | — | — | — | — |
+| `coarse128_dst` | 0.020 | 0.019 | 37.21 | 1.01 |  | — | — | — | — |
+| `coarse32_cg_0.0001` | 0.291 | 0.289 | 38.83 | 2.39 | 62.5 | — | — | — | — |
+| `coarse32_cg_0.01` | 0.324 | 0.322 | 37.73 | 1.55 | 34 | — | — | — | — |
+| `coarse32_dst` | 0.291 | 0.289 | 36.83 | 0.72 |  | — | — | — | — |
+| `coarse64_cg_0.0001` | 0.075 | 0.073 | 41.10 | 4.62 | 134 | — | — | — | — |
+| `coarse64_cg_0.01` | 0.137 | 0.136 | 39.31 | 2.97 | 78.5 | — | — | — | — |
+| `coarse64_dst` | 0.075 | 0.073 | 37.31 | 0.72 |  | — | — | — | — |
+| `dst_direct` | 0.000 | 0.003 | 38.99 | 2.29 |  | — | — | — | — |
+
 ## L-shape 1024² (12 sources) — `hpl1024`, job `4053801`, NVIDIA H200, source `849afb2d89ae`
 
 Audit: **passed** (4080 recomputed errors). Bank floor worst 0.423 % (`head_sdf_R512_K16`). Bar (accurate arm `rom_q128_lean@head_sdf_R512_K16` vs `cg_0.01`): worst same-grid 0.895 %, speedup 9.88× → **12-SOURCE SUBSET — NOT A BAR VERDICT (DESIGN A8)**; fast arm `rom_q0_lean@head_sdf_R512_K16` 1.331 % / 9.96×. The `× vs DST` column is against the CPU sparse-direct solve on this domain.

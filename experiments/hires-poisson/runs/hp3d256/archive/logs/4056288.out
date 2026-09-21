@@ -1,0 +1,37 @@
+host=pax010 source_commit=b8bd7059c6a1855313d7a66765abc2f3a9758978
+NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  433G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+MESH 128 floor worst 0.0014297659594201882 34.2
+WARMUP 128 27 22.5
+TIMED 128 0 165.1
+TIMED 128 1 254.0
+TIMED 128 2 343.3
+TIMED 128 3 432.4
+TIMED 128 4 521.6
+PARITY {'intervals': 128, 'candidate': 'rom_q0_lean64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_leandst64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 7.254798554339019e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_leandst32', 'baseline': 'rom_q0_retained', 'worst_field_relative': 8.940690667915113e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q0_onestart64', 'baseline': 'rom_q0_retained', 'worst_field_relative': 5.928005396876566e-05, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_lean64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_leandst64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 7.355181207729273e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_leandst32', 'baseline': 'rom_q32_retained', 'worst_field_relative': 8.87277529011764e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q32_onestart64', 'baseline': 'rom_q32_retained', 'worst_field_relative': 0.0010793042257639003, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_lean64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 0.0, 'integers_identical': True, 'limit': 1e-12, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_leandst64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 6.52021566352213e-16, 'integers_identical': True, 'limit': 1e-10, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_leandst32', 'baseline': 'rom_q96_retained', 'worst_field_relative': 8.553438481682547e-08, 'integers_identical': True, 'limit': 0.0001, 'same_solver': True, 'passed': True}
+PARITY {'intervals': 128, 'candidate': 'rom_q96_onestart64', 'baseline': 'rom_q96_retained', 'worst_field_relative': 4.7810752995791886e-06, 'integers_identical': False, 'limit': None, 'same_solver': False, 'passed': None}
+MESH 256 floor worst 0.001429182712019683 698.9
+WARMUP 256 23 16.2
+TIMED 256 0 905.5
+TIMED 256 1 1050.9
+TIMED 256 2 1196.9
+TIMED 256 3 1343.7
+TIMED 256 4 1489.0
+GATES {'parity': True, 'solver_validity': True, 'deterministic': True}
+HIRES 3D COMPLETE
+VERDICT 128 {'arm': 'rom_q96_leandst64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.0015965075226330092, 'speedup_total': 2.652097034756379, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': True, 'speed_bar_5x': False, 'bar_met': False, 'fast_arm': {'arm': 'rom_q0_leandst64', 'worst_same_grid': 0.005454752416100738, 'speedup_total': 2.7000723499889387}}
+VERDICT 256 {'arm': 'rom_q96_leandst64', 'comparator': 'cg_0.01', 'worst_same_grid': 0.0015960551059368017, 'speedup_total': 4.181976211016386, 'accuracy_bar_1pct': True, 'stretch_bar_0p5pct': True, 'speed_bar_5x': False, 'bar_met': False, 'fast_arm': {'arm': 'rom_q0_leandst64', 'worst_same_grid': 0.005456130298462576, 'speedup_total': 4.207055069784597}}
+AUDIT PASSED {'driver_gates': True, 'final_uuid_matches': True, 'deterministic': True, 'coverage': True, 'parity_recomputed': True} 6000 1.0321226795495604e-16
+ALL-DONE

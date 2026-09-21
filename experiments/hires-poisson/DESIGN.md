@@ -281,3 +281,20 @@ showed even CG $10^{-1}$ (0.451 % worst physical) is more accurate than the accu
 true matched-accuracy CG for both the accurate and the fast arm; coarse grids
 $n_c\in\{64,128,256\}$; ladder `q0`, `q256`, plus `q256m8`, `q384m4`, the linear top rung, and the
 f32-I/O twins of A6. Everything else as `hp4096`.
+
+**A10 (2026-09-20/21, after `hpl32`) — the 2n reference of the $2048^2$ L-shape run was rejected
+by the independent audit; repaired in place, not re-gated.** `hpl32` (job 4057694): the $1024^2$
+32-source run completed and its audit passed. The $2048^2$ driver run completed with every driver
+gate passing, then `hpl_audit_np.py` FAILED on source 0: true stencil residual of the $4096^2$
+reference $4.6\times10^{-9}$ against the limit $\max(10^{-11}, 2\times\text{floor}) = 6.4\times10^{-10}$. Cause: A5's
+CG reference was accepted on CG's *recursive* residual ($\le10^{-11}$) — the quantity the loop exits
+on, i.e. a driver-side check that cannot fail — and the recursive residual drifts from the true
+one at 12.6 M unknowns. The audit gate is NOT loosened. Same-grid errors (the bar metric; SuperLU
+reference, residual $1.4\times10^{-11}$, accepted) and all timings are unaffected; only `physical_error`
+and the matched-coarse-grid selection depend on the rejected reference. Because a failed audit
+keeps the fields, `hpl_repair_fine.py` (job 8 of 8, run inside the same attempt directory after
+the first job ended; `squeue` checked — never two jobs at once in one directory) restarts CG on the
+true residual until it reaches the evaluation floor, rewrites the reference, recomputes every
+`physical_error` from the saved fields keeping the superseded value beside it, and then the
+unchanged audit runs. If the audit fails again the $2048^2$ L-shape result is reported as
+"same-grid only, physical column unverified".

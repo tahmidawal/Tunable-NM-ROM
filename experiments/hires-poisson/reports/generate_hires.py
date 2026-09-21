@@ -12,7 +12,7 @@ from pathlib import Path
 LANE = Path(__file__).resolve().parents[1]
 OUT = LANE / 'reports'
 ATTEMPTS_2D = ['hp2048', 'hp4096', 'hp4096b', 'hp2048b']
-ATTEMPTS_3D = ['hp3d128']
+ATTEMPTS_3D = ['hp3d128', 'hp3d256']
 ATTEMPTS_L = [('hpl1024', 'output'), ('hpl32', 'output'), ('hpl32', 'output2')]
 
 

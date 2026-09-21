@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hires_p_20260920/hpl32/code/hpl_audit_np.py", line 172, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hires_p_20260920/hpl32/code/hpl_audit_np.py", line 81, in main
+    assert r['fine_residual'] <= max(1e-11, 2 * r['fine_floor']), r
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'case': 0, 'same_residual': 1.4084978999114852e-11, 'fine_residual': 4.604371287733022e-09, 'same_floor': 7.993106620702693e-11, 'fine_floor': 3.197272459331867e-10}

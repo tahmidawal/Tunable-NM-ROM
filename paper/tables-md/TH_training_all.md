@@ -1,0 +1,10 @@
+| Model | Stage | Network | Optimiser, learning rate | Steps | Batch | Training data |
+| --- | --- | --- | --- | --- | --- | --- |
+| Burgers 2D (k=16, R=512) | bank | 128 Fourier features (scale 4), width 1024, 2 layers | AdamW, wd 10^{-5}, warm-up + cosine 10^{-3}\to10^{-5} | 300000 | all states \times 4096 points | 16384 states of 576 trajectories |
+|  | head | width 512, 2 layers | Adam, warm-up + cosine 10^{-3}\to10^{-5} | 200000 | 4096 states | 131072 states of 4608 trajectories |
+| Poisson 2D (k=32, R=512) | bank | 64 Fourier features (scale 4), width R, 2 layers | Adam, four phases at 10^{-3}, 3{\times}10^{-4}, 3{\times}10^{-4}, 10^{-4} | 100000, 40000, 30000, 30000 | 64 sources \times 4096 points | 2611 fit / 461 validation sources |
+|  | head | width 128, 2 layers | Adam, 10^{-3} | 150000 (full batch) | all | as bank |
+| Poisson 2D (k=16, R=128) | bank + head | 64 Fourier features, g and h width 128, 2 layers | Adam; staged from an R=64 model (bank, head, joint at 3{\times}10^{-4}, 3{\times}10^{-4}, 10^{-4}) | 40000, 30000, 20000 after widening | 64 sources \times 4096 points | 512 training sources |
+| L-shape (k=16, R=512) | bank / head | 64 Fourier features (scale 4), 2 layers; head width 128, 2 layers | as Poisson k=32 | 100000, 40000, 30000, 30000; head 150000 | 64 sources \times 4096 points | 2611 fit / 461 validation sources |
+| Poisson 3D (k=16, R=128) | bank / head | 64 Fourier features (scale 1.5), widths 256; head width 256 + skip | Adam, cosine (floor 0.03); 10^{-3} bank, 5{\times}10^{-4} head | 150000 / 100000 | 64 states \times 2048 points / 128 states | 512 training / 16 validation fields |
+| Heat 3D (k=32, R=128) | bank / head | 32 Fourier features (scale 1.5); head width 256 + skip | Adam, cosine (floor 0.03); 10^{-3} bank, 5{\times}10^{-4} head; clip 1, refit every 10000 | 150000 / 150000 | 64 states \times 2048 points / 128 states | 512 training / 16 validation trajectories |

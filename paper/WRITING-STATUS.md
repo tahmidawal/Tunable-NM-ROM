@@ -1,6 +1,37 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — §3.4 architecture brought up to date — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — finishing pass (user decisions) — CURRENT HANDOFF
+
+**User decisions recorded (also in `paper/AGENTS.md`):** (1) Table 2 accuracy + memory only, no time
+column; (2) Table 1 not compacted; (3) APPLIED — wide-bank heat 1024² now the sealed-cohort row (plain and
+batched; same H200 job 4060928 as 2048²/4096²), Heat 3D moved from Table 1 and Figure 1 to Table 3
+(32³/64³ from the accepted final08 record, which holds evolved-time errors only and is labelled so; 128³
+all-times rows from h3d-final08 on the same final cohort, 1.93 % accurate); (4) GPU-query in Table 1;
+(5) plain CN heat row leads, batched beneath; (6) POD-LSPG stays in Table 2 (AGENTS.md exception);
+(7) worktrees stay separate.
+
+**Finishing pass (commit 705d6641):** abstract rewritten in the older paper's four moves (gap phrased as
+"typically one operating point … generally requires retraining", not "no way"), 249 words, generated
+numbers only (check_headline's abstract-macro prefixes widened to nHires/nHeat/nBurg/nBase); introduction
+opens on the one-operating-point problem, then ROMs, poses the question, answers it before the
+contributions; contribution 3 is a result; Limitations are five bullets (scoping first; no caveat dropped;
+the heat linear-bank baseline sentence folded into the first bullet); conclusion ends on the result, limits
+in one sentence. Figure 1: no 3D heat series, the dense-residual accurate Burgers 1024² point drawn grey
+with a "dense residual" note, labels de-overlapped. The knob table moved to the appendix (still referenced
+from §6.2) for the page budget; bibliography 30 → 28 cited entries.
+
+**Appendix completeness (item e).** A read-only audit of the lane worktrees recovered, from committed blobs
+only, the training configurations of the Burgers 2D, Poisson 2D (k=32 and the staged k=16 "original"),
+L-shape, Poisson 3D and Heat 3D checkpoints, the Newton–BiCGStab settings, the L-shape vanishing factor and
+Lanczos test space, and the exact pred2 predictor. They are transcribed in
+`evidence/training-configs-2026-09-21/transcription.json` with the worktree, commit, path and SHA256 of every
+blob read (key lines spot-checked against the blobs: run_r3a.sbatch, lsh_core.py:385-391, hfast.py:225-234,
+engines.py, paper-h3d coverage05 config); `gen_training_appendix.py` renders a new appendix table and one
+"Full-order and solver details" paragraph. Transcribed code constants, not run outputs, as for Table C.2.
+Nothing was reported not found. Caveat: the Poisson k=16 checkpoint was built in stages from an R=64 model,
+so its row describes the chain, not one recipe.
+
+## 2026-09-21 (paper lane) — §3.4 architecture brought up to date
 
 Applied from a read-only code audit (checkpoints loaded; evidence: cold start — multiresolution-poisson
 correction_core.py:45, hires-poisson hp_core.py:167-172, lsh_solve.py:45, paper-p3d poisson.py:58-59,

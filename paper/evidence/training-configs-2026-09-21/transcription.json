@@ -1,0 +1,188 @@
+{
+  "note": "Transcribed on 2026-09-21 from committed configuration/code blobs (read-only audit of the lane worktrees); each row lists the blobs it reads, with SHA256.",
+  "sources": {
+    "burgers_bank": {
+      "worktree": "2026-09-16-b-speed",
+      "commit": "47c178d26f6e4785f8f8f38146849604fc7ac017",
+      "path": "experiments/separable-decoder/cluster/run_r3a.sbatch",
+      "sha256": "95190a341636f20d3489d80aadc86a6e3f707582d5f7f5cf5707ee720f47e4df"
+    },
+    "burgers_head": {
+      "worktree": "2026-09-16-b-speed",
+      "commit": "47c178d26f6e4785f8f8f38146849604fc7ac017",
+      "path": "experiments/separable-decoder/cluster/run_dn256b.sbatch",
+      "sha256": "cc5349789dc57ea4efe4ae5d43bc1cfa32529307de04c13641b6e450dc9eecaa"
+    },
+    "burgers_head_code": {
+      "worktree": "2026-09-16-b-speed",
+      "commit": "47c178d26f6e4785f8f8f38146849604fc7ac017",
+      "path": "experiments/separable-decoder/sep_hfit.py",
+      "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8"
+    },
+    "poisson_k32": {
+      "worktree": "2026-09-17-p-linear",
+      "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+      "path": "experiments/p-bank-head/config-train.json",
+      "sha256": "07027a70131f565ad407853e8912fb933a4d12770c00aa1f182d740788a9e1b0"
+    },
+    "poisson_k16": {
+      "worktree": "2026-09-17-p-linear",
+      "commit": "aa9b55ee7e17f6fa734511f9e4c2481d1715fcdf",
+      "path": "experiments/multiresolution-poisson/config-capacity-accuracy.json",
+      "sha256": "ceb9b249bdb4bff4105c38d4ae1b1ab88d4d7ec93c44d22a7a0b8cb37510d319"
+    },
+    "lshape_train": {
+      "worktree": "2026-09-17-lshape",
+      "commit": "d80fed7a85a44064890085e381296ecfd902fa9c",
+      "path": "experiments/lshape/config-train.json",
+      "sha256": "87af404dbabb9107c0ef7564e3dc08eae9717c8291a21e3b251920258fab191d"
+    },
+    "lshape_core": {
+      "worktree": "2026-09-17-lshape",
+      "commit": "d80fed7a85a44064890085e381296ecfd902fa9c",
+      "path": "experiments/lshape/lsh_core.py",
+      "sha256": "836600923c4bac3c04459352356c710d316f6c4b6f075aef65598f8f41574dcc"
+    },
+    "lshape_solve": {
+      "worktree": "2026-09-17-lshape",
+      "commit": "d80fed7a85a44064890085e381296ecfd902fa9c",
+      "path": "experiments/lshape/config-solve.json",
+      "sha256": "1466991f75e94ca8b3d662f53bc1525135f6c54a806adb1b073790af5cf4ef61"
+    },
+    "poisson3d": {
+      "worktree": "2026-09-20-paper-p3d",
+      "commit": "9b7c638b8247365e36a66425bfaf976bf822ab18",
+      "path": "experiments/paper-p3d/final-freeze.json",
+      "sha256": "825c5a3365b8e26da5607fc9b54e431b8d5ccddc981af8b13fbf11ef5b0b1609"
+    },
+    "heat3d": {
+      "worktree": "2026-09-20-paper-h3d",
+      "commit": "f15c7232ab21df20cd0fa279134c06114b5ca721",
+      "path": "experiments/paper-h3d/runs/coverage05/code/config.json",
+      "sha256": "4917ef8a40c824b7a10b1c40b1ce89c5d2bf4b5efae06d5233091f60cc636fd5"
+    },
+    "heat3d_train": {
+      "worktree": "2026-09-20-paper-h3d",
+      "commit": "f15c7232ab21df20cd0fa279134c06114b5ca721",
+      "path": "experiments/paper-h3d/runs/coverage05/code/train.py",
+      "sha256": "839360bc0d90955a8cf6930b2d50fc41bdd251a457f933a5fe248b093ce8b7ce"
+    },
+    "newton_fom": {
+      "worktree": "2026-09-20-hires-burgers",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "path": "experiments/mr-burgers2d/engines.py",
+      "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4"
+    },
+    "pred2": {
+      "worktree": "2026-09-20-hires-burgers",
+      "commit": "0ab600146ec692e30fba48dcdfc591801ab2e914",
+      "path": "experiments/hires-burgers/hfast.py",
+      "sha256": "693b947c92ea4d65708eea4d1f6a17214901ce4712bc5e3dd8c4a91f3d339286"
+    }
+  },
+  "rows": [
+    {
+      "model": "Burgers 2D ($k=16$, $R=512$)",
+      "stage": "bank",
+      "net": "128 Fourier features (scale 4), width 1024, 2 layers",
+      "opt": "AdamW, wd $10^{-5}$, warm-up + cosine $10^{-3}\\to10^{-5}$",
+      "steps": "300000",
+      "batch": "all states $\\times$ 4096 points",
+      "data": "16384 states of 576 trajectories",
+      "src": [
+        "burgers_bank"
+      ]
+    },
+    {
+      "model": "",
+      "stage": "head",
+      "net": "width 512, 2 layers",
+      "opt": "Adam, warm-up + cosine $10^{-3}\\to10^{-5}$",
+      "steps": "200000",
+      "batch": "4096 states",
+      "data": "131072 states of 4608 trajectories",
+      "src": [
+        "burgers_head",
+        "burgers_head_code"
+      ]
+    },
+    {
+      "model": "Poisson 2D ($k=32$, $R=512$)",
+      "stage": "bank",
+      "net": "64 Fourier features (scale 4), width $R$, 2 layers",
+      "opt": "Adam, four phases at $10^{-3}$, $3{\\times}10^{-4}$, $3{\\times}10^{-4}$, $10^{-4}$",
+      "steps": "100000, 40000, 30000, 30000",
+      "batch": "64 sources $\\times$ 4096 points",
+      "data": "2611 fit / 461 validation sources",
+      "src": [
+        "poisson_k32"
+      ]
+    },
+    {
+      "model": "",
+      "stage": "head",
+      "net": "width 128, 2 layers",
+      "opt": "Adam, $10^{-3}$",
+      "steps": "150000 (full batch)",
+      "batch": "all",
+      "data": "as bank",
+      "src": [
+        "poisson_k32"
+      ]
+    },
+    {
+      "model": "Poisson 2D ($k=16$, $R=128$)",
+      "stage": "bank + head",
+      "net": "64 Fourier features, $g$ and $h$ width 128, 2 layers",
+      "opt": "Adam; staged from an $R=64$ model (bank, head, joint at $3{\\times}10^{-4}$, $3{\\times}10^{-4}$, $10^{-4}$)",
+      "steps": "40000, 30000, 20000 after widening",
+      "batch": "64 sources $\\times$ 4096 points",
+      "data": "512 training sources",
+      "src": [
+        "poisson_k16"
+      ]
+    },
+    {
+      "model": "L-shape ($k=16$, $R=512$)",
+      "stage": "bank / head",
+      "net": "64 Fourier features (scale 4), 2 layers; head width 128, 2 layers",
+      "opt": "as Poisson $k=32$",
+      "steps": "100000, 40000, 30000, 30000; head 150000",
+      "batch": "64 sources $\\times$ 4096 points",
+      "data": "2611 fit / 461 validation sources",
+      "src": [
+        "lshape_train"
+      ]
+    },
+    {
+      "model": "Poisson 3D ($k=16$, $R=128$)",
+      "stage": "bank / head",
+      "net": "64 Fourier features (scale 1.5), widths 256; head width 256 + skip",
+      "opt": "Adam, cosine (floor 0.03); $10^{-3}$ bank, $5{\\times}10^{-4}$ head",
+      "steps": "150000 / 100000",
+      "batch": "64 states $\\times$ 2048 points / 128 states",
+      "data": "512 training / 16 validation fields",
+      "src": [
+        "poisson3d"
+      ]
+    },
+    {
+      "model": "Heat 3D ($k=32$, $R=128$)",
+      "stage": "bank / head",
+      "net": "32 Fourier features (scale 1.5); head width 256 + skip",
+      "opt": "Adam, cosine (floor 0.03); $10^{-3}$ bank, $5{\\times}10^{-4}$ head; clip 1, refit every 10000",
+      "steps": "150000 / 150000",
+      "batch": "64 states $\\times$ 2048 points / 128 states",
+      "data": "512 training / 16 validation trajectories",
+      "src": [
+        "heat3d",
+        "heat3d_train"
+      ]
+    }
+  ],
+  "text": {
+    "newton": "The Burgers FOM is Newton's method with BiCGStab inner solves (at most 200 iterations, Jacobian--vector products by forward-mode differentiation) preconditioned by the exact inverse of the implicit Helmholtz operator $(I+\\Delta t\\,\\nu\\,\\lambda)^{-1}$ (advection dropped); Newton stops when the residual norm falls below the nonlinear tolerance times the previous state's norm, or after 20 iterations, and always takes the full step (no line search or damping). Each named setting fixes $\\Delta t$, the nonlinear and the linear tolerance.",
+    "lshape": "On the L-shape the vanishing factor is $4\\min(x,\\,y,\\,d_{\\mathrm{right}},\\,d_{\\mathrm{top}},\\,d_{\\mathrm{corner}})$ with the distances to the outer right and top edges and to the re-entrant corner, and the test space is the $M$ lowest eigenvectors of the five-point operator on the masked grid, computed by shift-invert Lanczos and scaled as $\\tests=\\rowscale^{-1}\\Phi\\T$ ($M=257$; $M=1024$ for the $q=R$ solve).",
+    "pred2": "The quadratic predictor of the $4096^2$ Burgers rows forms the linear extrapolation $2w_n-w_{n-1}$ and, from the third step on, the quadratic one $3w_n-3w_{n-1}+w_{n-2}$, evaluates the residual norm of the current code and both candidates in one batched call and starts the solve from the smallest."
+  }
+}

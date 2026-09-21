@@ -1,0 +1,128 @@
+{
+ "gate_passed": false,
+ "gates": [
+  {
+   "path": "runs/gate03/output/summary.json",
+   "sha256": "f9377217789a3e6ed3fe20591006ef5e9bf9a705ddee9515edddbdfff0e6f57f",
+   "job": "4059370",
+   "attempt": 1,
+   "recipe": {
+    "act": "swish",
+    "scale": "feature",
+    "train_dtype": "float32",
+    "b": 100,
+    "db": 10,
+    "ns": 5,
+    "nx": 60,
+    "nt": 1500,
+    "online_dtype": "float64"
+   },
+   "trained": true,
+   "errors": [
+    0.016662899821837662,
+    0.014460925369739542,
+    0.01731942442067609
+   ],
+   "median": 0.016662899821837662,
+   "ls": 0.31595478053611603,
+   "hr": [
+    1.316887747295924,
+    3.1889146515507574,
+    1.5402703935531683
+   ],
+   "hr_basis": "residual",
+   "passed": false,
+   "hr_passed": false,
+   "kimae": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+   "lspg": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298",
+   "autoencode": [
+    0.010434172945878202,
+    0.008466497569758074,
+    0.01207244957547464
+   ]
+  },
+  {
+   "path": "runs/gate04/output/attempt2/summary.json",
+   "sha256": "b7d047cf1d4149947cbc6b3940b160e77b27e86fef3f9334b7a38e092f3395ee",
+   "job": "4072224",
+   "attempt": 2,
+   "recipe": {
+    "act": "swish",
+    "scale": "global",
+    "train_dtype": "float32",
+    "b": 100,
+    "db": 10,
+    "ns": 5,
+    "nx": 60,
+    "nt": 1500,
+    "online_dtype": "float64"
+   },
+   "trained": true,
+   "errors": [
+    7.093826505354988,
+    0.11215609651513338,
+    0.1088609266574579
+   ],
+   "median": 0.11215609651513338,
+   "ls": 0.31595478053609205,
+   "hr": [
+    90.06725887695768,
+    131.43743611732268,
+    20.506689991634026
+   ],
+   "hr_basis": "sns",
+   "passed": false,
+   "hr_passed": false,
+   "kimae": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+   "lspg": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298",
+   "autoencode": [
+    0.05600733245946115,
+    0.03810869537495937,
+    0.038573474603195886
+   ]
+  },
+  {
+   "path": "runs/gate04/output/hr_attempt1_sns/summary.json",
+   "sha256": "bd7baba73e635ff87490e8b05388af4c62f20844306364194bfe49424d68bda0",
+   "job": "4072224",
+   "attempt": 1,
+   "recipe": {
+    "act": "swish",
+    "scale": "feature",
+    "train_dtype": "float32",
+    "b": 100,
+    "db": 10,
+    "ns": 5,
+    "nx": 60,
+    "nt": 1500,
+    "online_dtype": "float64"
+   },
+   "trained": false,
+   "errors": [
+    0.016662899821837666,
+    0.014460925369739544,
+    0.01731942442067609
+   ],
+   "median": 0.016662899821837666,
+   "ls": 0.31595478053609205,
+   "hr": [
+    3.865637331770994,
+    130.0547377188767,
+    187.77202420356548
+   ],
+   "hr_basis": "sns",
+   "passed": false,
+   "hr_passed": false,
+   "kimae": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+   "lspg": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298",
+   "autoencode": [
+    0.010434172945878208,
+    0.00846649756975803,
+    0.01207244957547464
+   ]
+  }
+ ],
+ "family_runs": [],
+ "rows": [],
+ "generator_sha256": "28cadc03add6958a70a716e26ef2236c159ab852a834d27987b64acbd5ad7a80"
+}

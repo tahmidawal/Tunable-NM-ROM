@@ -17,8 +17,8 @@ Design + pre-registered selection rule: `DESIGN.md`. Codex audit: `CODEX-DESIGN-
 |---|---|---|---|
 | valR256 | 4141159 | CANCELLED (head-validate compile stall, see runs/valR256-cancelled/CANCELLED.md). Bank had reached 0.122 % at 64^3/128^3 | train R=256 K16/K32 + validation panels |
 | valR320 | 4142297 | CANCELLED while pending (same fix) |
-| valR256b | 4143174 | RUNNING (H200) |
-| valR320b | 4143180 | submitted (H200) | train R=320 K16/K32 + validation panels |
+| valR256b | 4143174 | DONE, collected, remote removed; R256 floor 0.120 % |
+| valR320b | 4143180 | DONE, collected, remote removed; R320 floor 0.060 % | train R=320 K16/K32 + validation panels |
 | final01 | - | not submitted | frozen selection, cohorts 920399 + 921099, 32^3/64^3/128^3 |
 
 ## Next step
@@ -28,3 +28,7 @@ copy `runs/<job>/pull/out/trained_vp_R*` to `inputs/vp_R*` and commit -> `select
 ## Earlier local findings (pre-GPU, orientation only; see diagnostics/podfloor*.py)
 POD floor (training-only POD, worst relative L2, t=0 worst): 2048 training draws, R=256 -> 0.14 % (920399) / 0.15 % (921777 val256);
 R=320 -> 0.08 % / 0.07 %. R=128 cannot reach 1 % (1.71 %). Disclosure in DESIGN.md: 920399 was touched by this POD diagnostic only.
+
+## 2026-09-21 ~20:30 — validation done, pre-registered selection applied (R320/K32/q288 via rule 5), addendum 1 speed jobs next
+Next: submit speedR256 + speedR320 (configs speed_*.json, no training: inputs/vp_R* committed), then `select_speed.py`, then final01
+(two panels: A = configs/final01.json, B = addendum). Jobs used: 4 of 8.

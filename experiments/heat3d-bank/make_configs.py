@@ -41,6 +41,7 @@ def panel(name, k, ladder, extra, cohorts, meshes, cases, timed, save, audit_int
 
 LADDER = {256: dict(ladder=[0, 32, 64, 96, 128, 160, 192, 224], extra=[128, 192]),
           320: dict(ladder=[0, 32, 64, 96, 128, 192, 256, 288], extra=[128, 192])}
+SPEED_Q = {256: [0, 128, 160, 192, 224], 320: [0, 128, 192, 256, 288]}
 if __name__ == '__main__':
     for r in (256, 320):
         name = f'vp_R{r}'
@@ -49,4 +50,16 @@ if __name__ == '__main__':
             cfg = panel(name, k, LADDER[r]['ladder'], LADDER[r]['extra'], [('validation', 921777, 256)], [64, 128], 256, 8, 32, 16)
             cfg['save_selection_arms'] = '_field_cn'   # every validation case keeps the selection-driving arms for the NumPy audit
             (HERE / f'val_{name}_K{k}.json').write_text(json.dumps(cfg, indent=1) + '\n')
+    # ADDENDUM 1 (speed loop, validation only; see DESIGN.md addendum 1): CN stepping at LM stationarity tolerance 1e-4 with
+    # Cholesky normal equations (hires-heat's accepted speed variant), same field init; direct arms repeated in the same allocation.
+    for r in (256, 320):
+        name = f'vp_R{r}'
+        for k in (16, 32):
+            qs = [q for q in SPEED_Q[r] if q + k <= r]
+            cfg = panel(name, k, [], [], [('validation', 921777, 256)], [64, 128], 256, 16, 32, 32)
+            cfg['save_selection_arms'] = '_field_cn'
+            cfg['rom_arms'] = [a for q in qs for a in (
+                dict(name=f'nmrom_q{q}_field_cn_tol1e-4_chol', q=q, opt=dict(init='field', tolerance=1e-4, cholesky=True)),
+                dict(name=f'nmrom_q{q}_field_direct_tol1e-4_chol', q=q, opt=dict(init='field', stepping='exact_direct', tolerance=1e-4, cholesky=True)))]
+            (HERE / f'speed_{name}_K{k}.json').write_text(json.dumps(cfg, indent=1) + '\n')
     print('written')

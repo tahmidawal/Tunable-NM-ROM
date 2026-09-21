@@ -86,3 +86,24 @@ auto-decoder training floor 17–24 % after 3000 steps vs variable-projection **
 
 ## Audit
 Codex design audit and dispositions: `CODEX-DESIGN-AUDIT.txt`, `CODEX-DESIGN-AUDIT-DISPOSITION.md` (all blockers/majors fixed or accepted before job 1).
+
+## Addendum 1 (2026-09-21 ~20:30 EDT, after validation jobs valR256b/valR320b, before any sealed cohort is opened)
+
+**What validation showed** (`runs/valR*b/val_vp_*/summary.json`, 256 validation draws): bank floors 0.120 % (R=256) and 0.060 % (R=320)
+at $64^3$/$128^3$; the correction ladder is monotone and reaches 0.093 % (R320 K32 q288). Every `field_cn` arm (LM stationarity
+tolerance $10^{-6}$) has some non-stationary LM exits over 256 × 20 solves, so the pre-registered zero-failure rule admits no $q$ and
+rule 5 selected R320/K32/q288 (`selection.json`; primary final arms unchanged: `configs/final01.json`).
+
+**Speed loop (protocol mandate), validation only.** Stage profile at $128^3$: CN evolve ≈ 12 ms of 15–20 ms (20 sequential LM solves),
+encode+decode ≈ 2.3 ms (bank read, memory bound), direct init/evolve ≈ 1.4 ms each. Hypothesis (hires-heat SPEED-LOG, accepted there):
+LM stationarity tolerance $10^{-4}$ + Cholesky cuts CN iterations and the budget-exhaustion exits at negligible error cost.
+Jobs `speedR256`, `speedR320` (configs `speed_vp_R*_K*.json`): arms `field_cn_tol1e-4_chol` and `field_direct_tol1e-4_chol` for
+$q\in$ {0,128,160,192,224} (R256) / {0,128,192,256,288} (R320), both heads, validation cohort 921777 (256 draws, 16 timed), $64^3$/$128^3$.
+
+**Addendum selection rule (mechanical, validation only):** rules 1–3 of the main rule with `field_cn` replaced by
+`field_cn_tol1e-4_chol` (gate ≤ 0.6 %; smallest $q$ with worst all-times ≤ 0.8 % at both meshes and zero failed solves; fastest median
+at $128^3$; ties within 5 % → smaller R, then K). If nothing qualifies, no addendum arms are added.
+
+**Final job:** panel A = pre-registered selection (`final01.json`); panel B = addendum selection (fast $q=0$, accurate $q$, with
+`cn_tol1e-4_chol` and `direct` stepping), same cohorts/meshes/FOM ladder, same allocation. Both are reported; A is labelled
+pre-registered, B "selected on validation after addendum 1". Sealed verdict cohort 921099 opened once, in that job.

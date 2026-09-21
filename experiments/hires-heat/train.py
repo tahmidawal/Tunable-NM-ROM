@@ -55,7 +55,11 @@ def train_bank(u, val, cfg, log):
     for it in range(cfg['bank_steps']):
         key, sub = jax.random.split(key); pz, state, loss = step(pz, state, sub, data, x, norms)
         if (it + 1) % cfg['refit_every'] == 0:   # exact training-only free coefficients remove auto-decoder code lag
-            qf, rf = np.linalg.qr(raw(pz[0]), mode='reduced'); fitted = np.linalg.solve(rf, (u @ qf).T).T; assert np.isfinite(fitted).all()
+            # Truncated-SVD refit: an ill-conditioned bank (R=256 in 3D, job 4071535) gave huge exact coefficients and the
+            # next Adam steps diverged. Directions below refit_rcond * s_max keep zero coefficient.
+            uu, ss, vv = np.linalg.svd(raw(pz[0]), full_matrices=False); keep = ss > cfg.get('refit_rcond', 1e-4) * ss[0]
+            fitted = ((u @ uu[:, keep]) / ss[keep]) @ vv[keep]; assert np.isfinite(fitted).all()
+            print('REFIT', it + 1, 'kept', int(keep.sum()), 'cond', float(ss[0] / ss[-1]), 'max|coef|', float(np.abs(fitted).max()), flush=True)
             pz = (pz[0], jnp.asarray(fitted)); adam = state[0]
             state = (adam._replace(mu=(adam.mu[0], jnp.zeros_like(pz[1])), nu=(adam.nu[0], jnp.zeros_like(pz[1]))), *state[1:])
         if (it + 1) % cfg['checkpoint_every'] == 0 or it + 1 == cfg['bank_steps']:

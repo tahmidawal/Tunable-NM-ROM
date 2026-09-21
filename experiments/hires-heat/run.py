@@ -37,6 +37,12 @@ def main():
                                  'blocked. Offline bank/operator assembly and compilation excluded and recorded. Host transfers excluded for every method.')
     if model['directions'] is None:
         model['directions'], result['directions'] = C.sep2d_directions(model, cfg['sep2d_training'])
+    if 'sealed_gate' in cfg:   # pre-registered: the sealed cohort is opened only if the trained bank's VALIDATION floor passes
+        floor = json.loads((here / 'inputs' / Path(cfg['model']['bank']).parent / 'training.json').read_text())['bank']['validation_projection_worst']
+        result['sealed_gate'] = dict(threshold=cfg['sealed_gate'], validation_projection_worst=floor, sealed_opened=floor <= cfg['sealed_gate'])
+        if floor > cfg['sealed_gate']:
+            cfg['cohorts'] = cfg['cohorts'][:1]; cfg['cohort_names'] = cfg['cohort_names'][:1]
+            cfg['cases_by_mesh'] = {k: min(v, cfg['cohorts'][0][1]) for k, v in cfg['cases_by_mesh'].items()}; result['config'] = cfg
     draws = np.concatenate([C.family(model['family'], s, c) for s, c in cfg['cohorts']])
     if 'sep2d_training' in cfg:
         train = np.concatenate([C.family('mr2d', s, c) for s, c in cfg['sep2d_training']['train_draws']])

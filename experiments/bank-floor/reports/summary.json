@@ -29,6 +29,14 @@
       "commit": "f54f80ac1b63c4f71e25353e955235acb9db7592",
       "gpu": "NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB",
       "complete": true
+    },
+    "solve_burgers": {
+      "attempt": "bfsb01",
+      "result_sha256": "f10d417694e4a1644729d3dc7a9496e2f5df1e3018676312057eb8dbc32001d3",
+      "job": "4071262",
+      "commit": "43cfde1a7c40784025207830688e5a22c953d4f2",
+      "gpu": "NVIDIA A100 80GB PCIe, GPU-1ae08085-d922-d6fc-f768-bc37bc584a4c, 81920 MiB",
+      "complete": true
     }
   },
   "rep_poisson": {
@@ -951,6 +959,151 @@
         "confirm256": 0.0016136157893473278
       },
       "median_total_ms": 2.0938424859195948
+    }
+  },
+  "solve_burgers": {
+    "fom_tight": {
+      "kind": "fom",
+      "R": null,
+      "worst_all": {
+        "dev6": 0.0,
+        "confirm": 0.0
+      },
+      "worst_evolved": {
+        "dev6": 0.0,
+        "confirm": 0.0
+      },
+      "median_total_ms": 89.89189099520445
+    },
+    "fom_nt1e-4": {
+      "kind": "fom",
+      "R": null,
+      "worst_all": {
+        "dev6": 0.0005673300739169449,
+        "confirm": 0.0005212296875435878
+      },
+      "worst_evolved": {
+        "dev6": 0.0005673300739169449,
+        "confirm": 0.0005212296875435878
+      },
+      "median_total_ms": 23.433475056663156
+    },
+    "fom_nt1e-2": {
+      "kind": "fom",
+      "R": null,
+      "worst_all": {
+        "dev6": 0.04432770312564372,
+        "confirm": 0.0489681837185925
+      },
+      "worst_evolved": {
+        "dev6": 0.04432770312564372,
+        "confirm": 0.0489681837185925
+      },
+      "median_total_ms": 17.06341654062271
+    },
+    "fom_coarse128_nt1e-4": {
+      "kind": "fom_coarse",
+      "R": null,
+      "worst_all": {
+        "dev6": 0.039422761031228076,
+        "confirm": 0.05582857417354566
+      },
+      "worst_evolved": {
+        "dev6": 0.039422761031228076,
+        "confirm": 0.05582857417354566
+      },
+      "median_total_ms": 23.268942488357425
+    },
+    "inc512_full": {
+      "kind": "rom",
+      "R": 512,
+      "worst_all": {
+        "dev6": 0.003957936147546811,
+        "confirm": 0.01703198201037747
+      },
+      "worst_evolved": {
+        "dev6": 0.00293354090773299,
+        "confirm": 0.01703198201037747
+      },
+      "median_total_ms": 2763.188620097935
+    },
+    "ft512_full": {
+      "kind": "rom",
+      "R": 512,
+      "worst_all": {
+        "dev6": 0.0022626627047950664,
+        "confirm": 0.016321640939265813
+      },
+      "worst_evolved": {
+        "dev6": 0.0011797614744092147,
+        "confirm": 0.016321640939265813
+      },
+      "median_total_ms": 2787.794678006321
+    },
+    "pod512_full": {
+      "kind": "rom",
+      "R": 512,
+      "worst_all": {
+        "dev6": 0.001610676192737402,
+        "confirm": 0.0038280261548444693
+      },
+      "worst_evolved": {
+        "dev6": 0.00022055646181642303,
+        "confirm": 0.0038280261548444693
+      },
+      "median_total_ms": 2775.65234224312
+    },
+    "cat1024_full": {
+      "kind": "rom",
+      "R": 1024,
+      "worst_all": {
+        "dev6": 0.0015915998201796744,
+        "confirm": 0.006550484086308643
+      },
+      "worst_evolved": {
+        "dev6": 0.0006765503930112064,
+        "confirm": 0.006550484086308643
+      },
+      "median_total_ms": 8100.608832668513
+    },
+    "pod1024_full": {
+      "kind": "rom",
+      "R": 1024,
+      "worst_all": {
+        "dev6": 7.734054323691791e-05,
+        "confirm": 0.0004193448690418382
+      },
+      "worst_evolved": {
+        "dev6": 1.4453735217320007e-05,
+        "confirm": 0.0004193448690418382
+      },
+      "median_total_ms": 8230.874242493883
+    },
+    "cat2048_full": {
+      "kind": "rom",
+      "R": 2048,
+      "worst_all": {
+        "dev6": 0.0014934420354526527,
+        "confirm": 0.0028080587785222783
+      },
+      "worst_evolved": {
+        "dev6": 0.0004046839926378858,
+        "confirm": 0.0028080587785222783
+      },
+      "median_total_ms": 29752.272460609674
+    },
+    "pod2048_full": {
+      "kind": "rom",
+      "R": 2048,
+      "worst_all": {
+        "dev6": 6.599844999094046e-07,
+        "confirm": 3.0459043024950143e-05
+      },
+      "worst_evolved": {
+        "dev6": 3.5538517087643797e-07,
+        "confirm": 3.0459043024950143e-05
+      },
+      "median_total_ms": 31899.38382874243
     }
   }
 }

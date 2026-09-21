@@ -94,6 +94,22 @@
 | `cat2048_weak` | rom weak | 2048 | 8192 | 0.0860 | 0.1229 | 1.398 | 1.002 |
 | `cat2048_galerkin` | rom galerkin | 2048 | 8192 | 0.1098 | 0.1614 | 2.094 | 1.698 |
 
+### Solved error and paired cost — Burgers 2D (job 4071262, NVIDIA A100 80GB PCIe, GPU-1ae08085-d922-d6fc-f768-bc37bc584a4c, 81920 MiB)
+
+| subject | kind | R | M | dev6 worst all-times % | dev6 worst evolved % | confirm worst all-times % | confirm worst evolved % | floor on dev6 % | budget exits (dev6) | median total ms (dev6) | reps |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `fom_tight` | fom | - | - | 0.0000 | 0.0000 | 0.0000 | 0.0000 | - | - | 89.9 | 5 |
+| `fom_nt1e-4` | fom | - | - | 0.0567 | 0.0567 | 0.0521 | 0.0521 | - | - | 23.4 | 5 |
+| `fom_nt1e-2` | fom | - | - | 4.4328 | 4.4328 | 4.8968 | 4.8968 | - | - | 17.1 | 5 |
+| `fom_coarse128_nt1e-4` | fom_coarse | - | - | 3.9423 | 3.9423 | 5.5829 | 5.5829 | - | - | 23.3 | 5 |
+| `inc512_full` | rom | 512 | 2048 | 0.3958 | 0.2934 | 1.7032 | 1.7032 | 0.3918 | 0 | 2763.2 | 5 |
+| `ft512_full` | rom | 512 | 2048 | 0.2263 | 0.1180 | 1.6322 | 1.6322 | 0.2245 | 0 | 2787.8 | 5 |
+| `pod512_full` | rom | 512 | 2048 | 0.1611 | 0.0221 | 0.3828 | 0.3828 | 0.1609 | 0 | 2775.7 | 5 |
+| `cat1024_full` | rom | 1024 | 4096 | 0.1592 | 0.0677 | 0.6550 | 0.6550 | 0.1435 | 0 | 8100.6 | 5 |
+| `pod1024_full` | rom | 1024 | 4096 | 0.0077 | 0.0014 | 0.0419 | 0.0419 | 0.0076 | 0 | 8230.9 | 5 |
+| `cat2048_full` | rom | 2048 | 8192 | 0.1493 | 0.0405 | 0.2808 | 0.2808 | 0.1291 | 0 | 29752.3 | 5 |
+| `pod2048_full` | rom | 2048 | 8192 | 0.0001 | 0.0000 | 0.0030 | 0.0030 | 0.0001 | 0 | 31899.4 | 5 |
+
 ### Checkpoints (git-ignored `ckpt/`, hashes from `CKPT-MANIFEST.json`)
 
 | file | MB | SHA256 |

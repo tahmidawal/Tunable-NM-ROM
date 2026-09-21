@@ -1,0 +1,17 @@
+host=pax106 source_commit=43cfde1a7c40784025207830688e5a22c953d4f2 job=4071262
+NVIDIA A100 80GB PCIe, GPU-1ae08085-d922-d6fc-f768-bc37bc584a4c, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  385G  92% /cluster/tufts/paralab
+jax_backend=gpu
+SUBJECT fom_tight: all 0.0000e+00 evolved 0.0000e+00 t0 0.0000e+00 total 89.9 ms budget_exits -
+SUBJECT fom_nt1e-4: all 5.6733e-04 evolved 5.6733e-04 t0 0.0000e+00 total 23.4 ms budget_exits -
+SUBJECT fom_nt1e-2: all 4.4328e-02 evolved 4.4328e-02 t0 0.0000e+00 total 17.1 ms budget_exits -
+SUBJECT fom_coarse128_nt1e-4: all 3.9423e-02 evolved 3.9423e-02 t0 3.5668e-02 total 23.3 ms budget_exits -
+SUBJECT inc512_full: all 3.9579e-03 evolved 2.9335e-03 t0 3.9579e-03 total 2763.2 ms budget_exits 0
+SUBJECT ft512_full: all 2.2627e-03 evolved 1.1798e-03 t0 2.2627e-03 total 2787.8 ms budget_exits 0
+SUBJECT pod512_full: all 1.6107e-03 evolved 2.2056e-04 t0 1.6107e-03 total 2775.7 ms budget_exits 0
+SUBJECT cat1024_full: all 1.5916e-03 evolved 6.7655e-04 t0 1.5916e-03 total 8100.6 ms budget_exits 0
+SUBJECT pod1024_full: all 7.7341e-05 evolved 1.4454e-05 t0 7.7341e-05 total 8230.9 ms budget_exits 0
+SUBJECT cat2048_full: all 1.4934e-03 evolved 4.0468e-04 t0 1.4934e-03 total 29752.3 ms budget_exits 0
+SUBJECT pod2048_full: all 6.5998e-07 evolved 3.5539e-07 t0 6.5998e-07 total 31899.4 ms budget_exits 0
+SOLVE-DONE
+ALL-DONE

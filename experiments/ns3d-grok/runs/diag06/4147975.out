@@ -1,0 +1,57 @@
+host=pax049 source_commit=b447d836137a39de55a746c4e547ed79035e7894 job=4147975
+NVIDIA A100 80GB PCIe, GPU-f940153e-e912-2568-93ab-0a6a7eb4287a, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.29:/projects/paralab  4.6T  4.2T  428G  91% /cluster/tufts/paralab
+jax_backend=gpu
+generating centered-POD training data and development truth
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=64 orth=6.353e-10 energy_tail=2.130e-08
+assembling the advection tensor and centroid forms
+operator gaps tensor=2.684e-15 centroid=1.622e-16 shift=3.871e-15
+phase rotation gap 3.700e-15
+tracker worst=0.045635 median_ms=15.238
+coeff_full parity=5.824e-15 median_ms=10.923
+trunc tail 1e-12 freq=9260 parity=5.996e-15 median_ms=6.838
+trunc tail 1e-08 freq=9259 parity=9.242e-09 median_ms=6.615
+trunc tail 1e-06 freq=9222 parity=6.919e-07 median_ms=6.584
+trunc tail 0.0001 freq=8942 parity=4.077e-05 median_ms=6.495
+trunc tail 0.001 freq=8354 parity=2.866e-04 median_ms=6.577
+f32 parity_vs_f64=2.549e-06 median_ms=9.210
+profile grid_advection_twice_per_step median_ms=8.262
+profile grid_centroid_shift_reproject median_ms=3.349
+profile coeff_advection_twice_per_step median_ms=0.579
+profile coeff_shift_reproject median_ms=6.032
+profile six_output_shifts median_ms=0.622
+fourier floor rank 64 worst=0.698807
+fourier floor rank 128 worst=0.504414
+fourier floor rank 256 worst=0.303861
+fom dt=0.004 worst=0.000943 median_ms=6.766
+fom dt=0.005 worst=0.001516 median_ms=5.507
+fom dt=0.01 worst=0.007882 median_ms=3.079
+fom dt=0.02 worst=0.766936 median_ms=1.856
+wrote output/summary.json selection={'name': 'trunc_1em06', 'median_ms': 6.583815440535545, 'evolved_worst': 0.04563465922073874}

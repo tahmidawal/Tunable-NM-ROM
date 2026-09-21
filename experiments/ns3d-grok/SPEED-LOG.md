@@ -103,6 +103,11 @@ Change. `coeff_shift.py` and `diag06.py`. Development seed only. Parity gate
 $10^{-6}$ against the grid tracker. Seed 202609211 is reserved and not
 generated. A local smoke at $N=8$ matched the grid tracker to $10^{-15}$.
 
-Measured effect. Pending `diag06`.
+Measured effect. `results/diag06.md`, generated from the development summary.
+The exact coefficient form matches the grid tracker. The kept truncation is
+faster than that tracker and still slower than CNAB2 on this development job.
+Float32 and the low-wavenumber Fourier basis are not kept. The sealed setting
+is the truncation named in that table.
 
-Kept or reverted. Not applied.
+Kept or reverted. The exact tensor, coefficient centroid, and parity-passing
+truncation are kept. Float32 and the Fourier basis are reverted.

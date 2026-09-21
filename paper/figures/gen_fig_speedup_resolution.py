@@ -23,8 +23,10 @@ from matplotlib.lines import Line2D
 HERE = Path(__file__).resolve().parent
 # dataviz validator: passes light mode; aqua/magenta sit in the 6-8 CVD band, so every
 # series also carries its own marker shape and a direct label (secondary encoding).
-STYLE = {'Poisson': ('#2a78d6', 'o'), 'Poisson (dev. sources)': ('#2a78d6', 'v'), 'Poisson, L-shape': ('#e87ba4', 'D'), 'Heat': ('#eb6834', 's'), 'Burgers': ('#1baf7a', '^')}
+STYLE = {'Poisson': ('#2a78d6', 'o'), 'Poisson (dev. sources)': ('#2a78d6', 'v'), 'Poisson, L-shape': ('#e87ba4', 'D'), 'Heat': ('#eb6834', 's'), 'Heat (wide bank)': ('#eb6834', 'P'), 'Heat (wide bank, batched fit)': ('#eb6834', 'X'), 'Burgers': ('#1baf7a', '^')}
 INK = '#2b2b2b'; MUTED = '#6b6b6b'
+LABEL = {'Heat (wide bank)': 'Heat, wide bank', 'Heat (wide bank, batched fit)': 'Heat, wide bank, batched fit'}
+NUDGE = {'Poisson': (6, 6), 'Heat (wide bank, batched fit)': (6, -1), 'Heat (wide bank)': (6, -7)}   # end labels that would otherwise touch at 4096^2
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--evidence', default=str(HERE.parent / 'tables/headline-provenance.json'))
@@ -58,7 +60,7 @@ for ax, dim in zip(axes, (2, 3)):
         if s == 'fast':
             first = p in ('Poisson, L-shape', 'Poisson (dev. sources)')          # its end point sits between two other labels
             x = pts[0] if first else pts[-1]
-            ax.annotate(p + (' (provisional)' if prov_flag else ''), (x['intervals'], x['speedup']), xytext=(-6, 5) if first else (6, 2),
+            ax.annotate(LABEL.get(p, p) + (' (provisional)' if prov_flag else ''), (x['intervals'], x['speedup']), xytext=(-6, 5) if first else NUDGE.get(p, (6, 2)),
                         ha='right' if first else 'left', textcoords='offset points', fontsize=7, color=INK)
     ticks = sorted({x['intervals'] for (d, _, _), pts in series.items() if d == dim for x in pts})
     ax.set_xticks(ticks); ax.set_xticklabels([f'${t}^{dim}$' for t in ticks]); ax.minorticks_off()

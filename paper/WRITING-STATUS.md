@@ -1,6 +1,53 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-20 (paper lane) — headline table, resolution figure, failure table — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — hires-heat intake — CURRENT HANDOFF (the 09-20 section below still holds otherwise)
+
+**State.** `main.pdf` 20 pages, references open page 9, 0 overfull, 0 undefined; `check_headline.py`
+PASS (now also asserts the heat time conventions and the appendix heat table), `check_rewrite.py` PASS.
+
+**What was read.** Branch `exp/2026-09-20-hires-heat` @ `4fb12a6d`, committed blobs only (intake entries
+01–05, adapter `hires-heat-v1`, `role` kept in the manifest): `h2d-final04` (job 4060928, H200, sealed
+cohort opened once + development), `h2d-wide02b` (job 4054869, A100, development), `h2d-ladder01`
+(job 4051290, earlier R=32 checkpoint), `h3d-final08` (job 4072943, H200), and the wide bank's
+`training.json` (SHA256 = the lane's `SHA256SUMS`). Every summary asserts `audit_passed`, `backend=gpu`,
+`precision=highest`, x64, not a local smoke; final04 and wide02b assert the same bank/head hashes
+(= `inputs/wide2d/SHA256SUMS`, head K=8). `h3d-profile03` and `REPORT.md` were read, not ingested
+(nothing cited comes from them only).
+
+**Rule used (re-derived from milliseconds).** FOM of a heat row = fastest same-grid CN–CG with 0 failed
+solves and all-times worst error ≤ the accurate setting's; the generator asserts that this is the lane's
+own `fastest_fom_error_le_rom_all_times` pick and that its ratio and every named-FOM (rtol 1e-6) ratio
+reproduce from the ms fields to 1e-9. Fast = q=0, accurate = q=32 (declared in the lane's addendum 1),
+same stepping arm, same job.
+
+**Table 1.** New series "Heat (wide bank)" (plain CN): 1024² development (wide02b, as instructed),
+2048²/4096² sealed (^f). Labelled second series "Heat (wide bank, batched fit)" (exact-propagator
+`field_direct_tol1e-4_chol`) at 2048²/4096² sealed; caption sentence says it exploits linear autonomous
+structure with eigenfunction tests, as the sine-transform control does. **The user decides which leads;**
+to drop it from Table 1, remove its two `plan` entries in `hires_heat()` (the appendix table keeps it).
+New marks: ^t all output times incl. t=0 (heat wide rows), ^e evolved only (Heat 3D **and Burgers 2D**,
+whose error was already evolved-only). Heat 2D/3D pending slots are gone (closed lanes leave no slot).
+Tight rtol 1e-6 ratios appear only in Table C.3's alternative-ratio column and Table C.4.
+
+**Appendix Table C.4 (`TH_heat_hires`).** Wide bank 1024² dev + sealed 1024²/2048²/4096² (CN and
+batched), earlier R=32 checkpoint 2048²/4096², Heat 3D model 128³ (final, 64) and 256³ (first 16 final)
+with both error conventions, Table-1-rule speedups and rtol 1e-6 speedups.
+
+**Prose.** Linear paragraph: one sentence on the wide bank (macros), "over evolved times" on Heat 3D.
+Failures paragraph: Heat 3D misses 1 % with t=0 (bank initial-field limit 1.2–1.9 %, from the linear
+solve in the bank, whose all-times maximum is asserted to be the t=0 value). Limitations: heat controls
+at 4096² (coarse-grid CN–CG, DST, linear-bank baseline) all faster than every NM-ROM setting (asserted).
+Abstract and conclusion unchanged. Range macros now use `\mbox{--}` (the hires-poisson ranges printed
+"0.67 − −0.92" in math mode before; fixed for all).
+
+**Could not be supported / choices to confirm.** (1) Heat 3D Table 1 rows (32³/64³) stay evolved-times:
+`paper-tables.json` (f15c7232) has no all-times field; the all-times 1.93 % quoted is from h3d-final08 at
+128³ on the same final cohort, not at 32³/64³. (2) final04 also has a sealed 1024² cohort (0.49 %,
+1.59× plain / 13.9× batched vs the Table-1 FOM); per instruction Table 1 uses wide02b development
+1024² (A100, other GPU than 2048²/4096²); the sealed 1024² is in Table C.4. (3) Complete-query heat
+time was never measured. (4) PAPER.md leaves `\nHeat*`/`\nHires*` macros unexpanded (pre-existing).
+
+## 2026-09-20 (paper lane) — headline table, resolution figure, failure table
 
 **State.** `main.pdf`: 20 pages, references start on page 9 (main text within nine), 0 overfull
 boxes, 0 undefined references. Previous PDF kept as `main.before-2026-09-20-headline.pdf`.

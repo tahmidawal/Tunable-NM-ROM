@@ -445,8 +445,18 @@ FOM is the named iterative solver at its fastest tested setting that is at
 least as accurate as the accurate setting. $^{f}$\,held-out final cohort
 (all others development);
 $^{r}$\,error against a refined reference, which includes discretisation
-error (all others same-grid); $^{c}$\,complete-query time with host
-transfers (all others GPU query). The earlier Burgers model has one
+error (all others same-grid); $^{t}$\,all output times including
+$t=0$; $^{e}$\,evolved output times only; $^{c}$\,complete-query time
+with host transfers (all others GPU query; heat was measured in GPU query
+only). Heat (wide bank) is a separately trained frozen model with a
+128-function bank ($q=32$ accurate); over evolved times its accurate
+error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
+batched). The batched fit solves each output time independently against
+exactly propagated test moments, exploiting the linear autonomous
+structure with eigenfunction tests that the sine-transform solve also
+uses. With $t=0$ the Heat 3D model's accurate error is
+$\nHeatThreeAllTimes\,\%$ on its final cohort at $128^3$
+(Table~\ref{tab:heat-hires}). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
 tolerances. Poisson (dev.\ sources) rows use development sources of a
@@ -479,11 +489,14 @@ corrections cost little speed because they are eliminated analytically
 to $4096^2$ while the GPU-query speedup rises to
 $\nHiresPoissonAccSFortyNinetySix\times$. On the
 L-shaped domain, where no fast transform applies, the accurate setting is
-$\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. Heat crosses
-CG between $256^2$ and $1024^2$ and is $\nHeadHeatFastS\times$ faster at
-the finest mesh. In three dimensions the held-out Poisson cohort gives
+$\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. The earlier
+heat checkpoint crosses CG between $256^2$ and $1024^2$ ($\nHeadHeatFastS\times$
+at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
+cohort, reaches $\nHeatWideAccErr\,\%$ over all times and is
+$\nHeatWideAccS\times$ faster than CN--CG at $4096^2$
+($\nHeatWideBatchedAccS\times$ with the batched fit). In three dimensions the held-out Poisson cohort gives
 $\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$;
-three-dimensional heat reaches $\nHeadHeatThreeAccErr\,\%$ and is slower
+three-dimensional heat reaches $\nHeadHeatThreeAccErr\,\%$ over evolved times and is slower
 than CG at both meshes.
 
 \paragraph{Burgers.}
@@ -520,7 +533,9 @@ $\nFailNsQzero\,\%$ to $\nFailNsAcc\,\%$; \nFailNsFailing{} of
 \nFailNsCases{} held-out cases miss the $\nFailNsTarget\,\%$ target. On reflective waves the fast setting is faster than
 CG but its energy-state error, which includes velocity, is
 $\nFailWaveQzero\,\%$; corrections bring it to $\nFailWaveAcc\,\%$, still
-above CG's, at a cost that removes the speedup. The three-dimensional
+above CG's, at a cost that removes the speedup. Three-dimensional heat
+misses 1\,\% once $t=0$ is counted: its bank represents the initial
+field only to $\nHeatThreeInit\,\%$ at $128^3$--$256^3$. The three-dimensional
 solves evaluate the residual densely.
 
 \begin{table}[t]
@@ -621,7 +636,12 @@ more accurate than the NM-ROM in every row. On the square and cube a
 direct sine-transform solve and a coarse-grid solve at the NM-ROM's own
 accuracy are both faster than the NM-ROM ($\nHiresCtlTotal\times$ in
 complete-query time, $\nHiresCtlDevice\times$ in GPU-query time), and on
-the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). The
+the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). On
+heat at $4096^2$, coarse-grid CN--CG interpolated to the fine mesh
+($\nHeatCoarseErr\,\%$ in $\nHeatCoarseMs$\,ms), the exact sine-transform
+solve ($\nHeatDstMs$\,ms) and the linear solve in the learned bank, a
+baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), are all faster than
+every NM-ROM setting. The
 accurate Poisson errors are close to the frozen bank's projection floor
 ($\nHiresFloorSquare\,\%$ square, $\nHiresFloorCube\,\%$ cube), which no
 correction rank can pass; the

@@ -1,6 +1,6 @@
 {
   "evidence": "headline-provenance.json",
-  "evidence_sha256": "c42dc5319a25f7712f916d3c6d65cabd3e172c039d4a34e186177fa880843b2a",
+  "evidence_sha256": "02a78c4d86056977958a1ceb8b22cb4d71944ea88a984b10f705298b164eecb6",
   "series": {
     "2D|Burgers|accurate": [
       {
@@ -87,6 +87,104 @@
         "status": "development; earlier checkpoint, one setting",
         "job_id": "3529772",
         "source": "paired_cg"
+      }
+    ],
+    "2D|Heat (wide bank)|accurate": [
+      {
+        "intervals": 1024,
+        "speedup": 2.14265667081457,
+        "error_pct": 0.23573417192589777,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "development; 128-function bank",
+        "job_id": "4054869",
+        "source": "intake_02_hires-heat"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 9.743661198324537,
+        "error_pct": 0.4876132354521976,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 35.97407245341486,
+        "error_pct": 0.4876132355320749,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      }
+    ],
+    "2D|Heat (wide bank)|fast": [
+      {
+        "intervals": 1024,
+        "speedup": 1.811850056630079,
+        "error_pct": 0.5607283273904548,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "development; 128-function bank",
+        "job_id": "4054869",
+        "source": "intake_02_hires-heat"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 9.588343422515257,
+        "error_pct": 1.3615913163566813,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 35.4082211317936,
+        "error_pct": 1.361591316387811,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      }
+    ],
+    "2D|Heat (wide bank, batched fit)|accurate": [
+      {
+        "intervals": 2048,
+        "speedup": 60.01114685519034,
+        "error_pct": 0.4875997162513447,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 103.382655607953,
+        "error_pct": 0.4875997163307145,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      }
+    ],
+    "2D|Heat (wide bank, batched fit)|fast": [
+      {
+        "intervals": 2048,
+        "speedup": 57.045331805333646,
+        "error_pct": 1.3615951008399731,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 100.64314054500332,
+        "error_pct": 1.3615951008710845,
+        "fom": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "status": "sealed held-out; opened once",
+        "job_id": "4060928",
+        "source": "intake_01_hires-heat"
       }
     ],
     "2D|Poisson|accurate": [

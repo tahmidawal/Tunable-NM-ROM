@@ -2,8 +2,8 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 23:15; this block is removed before submission).*
-*Populated tables (88): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
+*Status for the reader (generated 2026-09-21 00:07; this block is removed before submission).*
+*Populated tables (89): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
 *Open decisions for the user: (1) the headline Burgers metric, worst over evolved times or worst over all times, both printed everywhere, and now decisive for §5.1 at 1024², where reduced rungs are non-dominated on the evolved metric only because the t=0 compression bounds all-times; (2) sign-off on the abstract's new opening two sentences (resolution-knob framing), which are provisionally accepted and unchanged in this pass.*
@@ -262,7 +262,7 @@ in the coefficients, so $y$ is not eliminated in closed form; we damp the
 $(z,y)$ blocks separately inside one Levenberg–Marquardt step
 (*block-damped* variable projection), which, in the recorded solver comparison, removes the joint LM
 configuration's $6$ budget exits
-(Table 13).
+(Table 14).
 
 **Solver and exits.**
 Each attempt solves the damped normal system
@@ -375,7 +375,7 @@ L-shaped domain, heat, viscous Burgers and reflective waves; the
 three-dimensional problems are Poisson, heat, Burgers and incompressible
 Navier–Stokes. Table 7 gives the two-dimensional meshes
 and cohorts, Table 8 the sampled families and
-Table 10 the three-dimensional configurations. Burgers
+Table 11 the three-dimensional configurations. Burgers
 provides the correction-rank study.
 
 **Accuracy.**
@@ -432,8 +432,18 @@ FOM is the named iterative solver at its fastest tested setting that is at
 least as accurate as the accurate setting. $^{f}$ held-out final cohort
 (all others development);
 $^{r}$ error against a refined reference, which includes discretisation
-error (all others same-grid); $^{c}$ complete-query time with host
-transfers (all others GPU query). The earlier Burgers model has one
+error (all others same-grid); $^{t}$ all output times including
+$t=0$; $^{e}$ evolved output times only; $^{c}$ complete-query time
+with host transfers (all others GPU query; heat was measured in GPU query
+only). Heat (wide bank) is a separately trained frozen model with a
+128-function bank ($q=32$ accurate); over evolved times its accurate
+error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
+batched). The batched fit solves each output time independently against
+exactly propagated test moments, exploiting the linear autonomous
+structure with eigenfunction tests that the sine-transform solve also
+uses. With $t=0$ the Heat 3D model's accurate error is
+$\nHeatThreeAllTimes %$ on its final cohort at $128^3$
+(Table 10). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
 tolerances. Poisson (dev. sources) rows use development sources of a
@@ -458,12 +468,16 @@ measured and rows reserved for runs in progress. Times and settings: Table 9.
 | Heat 2D (development; earlier checkpoint, one setting) | 64^2 | — | — | 4.56 | 0.22× | 1.59 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 256^2 | — | — | 4.56 | 0.61× | 0.93 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 1024^2 | — | — | 4.56 | **4.85×** | 0.77 | CN–CG, rtol 10^{-2} |
+| Heat (wide bank) 2D (development; 128-function bank) | 1024^2 | 0.24 | **2.14×** | 0.56 | **1.81×** | 0.14 | CN–CG, \Delta t=0.05, rtol 10^{-3} |
+| Heat (wide bank) 2D (sealed held-out; opened once) | 2048^2 | 0.49 | **9.74×** | 1.36 | **9.59×** | 0.18 | CN–CG, \Delta t=0.05, rtol 10^{-3} |
+| Heat (wide bank) 2D (sealed held-out; opened once) | 4096^2 | 0.49 | **36.0×** | 1.36 | **35.4×** | 0.47 | CN–CG, \Delta t=0.05, rtol 10^{-2} |
+| Heat (wide bank, batched fit) 2D (sealed held-out; opened once) | 2048^2 | 0.49 | **60.0×** | 1.36 | **57.0×** | 0.18 | CN–CG, \Delta t=0.05, rtol 10^{-3} |
+| Heat (wide bank, batched fit) 2D (sealed held-out; opened once) | 4096^2 | 0.49 | **103×** | 1.36 | **101×** | 0.47 | CN–CG, \Delta t=0.05, rtol 10^{-2} |
 | Burgers 2D (development) | 256^2 | 0.51 | 0.043× | 1.89 | 0.79× | 0.049 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers 2D (development) | 512^2 | 0.55 | 0.068× | 2.14 | **1.31×** | 0.052 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers 2D (development) | 1024^2 | 0.59 | 0.0037× | 2.29 | **2.02×** | 0.034 | Newton–BiCGStab, tol 10^{-4} |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **1.63×** | 2.39 | Newton–BiCGStab, relaxed |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **14.5×** | 2.14 | Newton–BiCGStab, tight |
-| Heat 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-burgers lane |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
@@ -471,7 +485,6 @@ measured and rows reserved for runs in progress. Times and settings: Table 9.
 | Poisson (dev. sources) 3D (development) | 256^3 | 0.16 | **23.2×** | 0.55 | **23.7×** | 0.049 | CG, rtol 10^{-2} |
 | Heat 3D (accepted final) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
 | Heat 3D (accepted final) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
-| Heat 3D | 128^3 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 3D | 128^3 | — | — | — | — | — | pending: hires-burgers lane |
 
 ![Figure 1](figures/fig_speedup_resolution.png)
@@ -490,11 +503,14 @@ corrections cost little speed because they are eliminated analytically
 to $4096^2$ while the GPU-query speedup rises to
 $\nHiresPoissonAccSFortyNinetySix\times$. On the
 L-shaped domain, where no fast transform applies, the accurate setting is
-$\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr %$. Heat crosses
-CG between $256^2$ and $1024^2$ and is $\nHeadHeatFastS\times$ faster at
-the finest mesh. In three dimensions the held-out Poisson cohort gives
+$\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr %$. The earlier
+heat checkpoint crosses CG between $256^2$ and $1024^2$ ($\nHeadHeatFastS\times$
+at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
+cohort, reaches $\nHeatWideAccErr %$ over all times and is
+$\nHeatWideAccS\times$ faster than CN–CG at $4096^2$
+($\nHeatWideBatchedAccS\times$ with the batched fit). In three dimensions the held-out Poisson cohort gives
 $\nHeadPoissonThreeAccErr %$ at $\nHeadPoissonThreeAccS\times$;
-three-dimensional heat reaches $\nHeadHeatThreeAccErr %$ and is slower
+three-dimensional heat reaches $\nHeadHeatThreeAccErr %$ over evolved times and is slower
 than CG at both meshes.
 
 **Burgers.**
@@ -531,7 +547,9 @@ $\nFailNsQzero %$ to $\nFailNsAcc %$; \nFailNsFailing of
 \nFailNsCases held-out cases miss the $\nFailNsTarget %$ target. On reflective waves the fast setting is faster than
 CG but its energy-state error, which includes velocity, is
 $\nFailWaveQzero %$; corrections bring it to $\nFailWaveAcc %$, still
-above CG's, at a cost that removes the speedup. The three-dimensional
+above CG's, at a cost that removes the speedup. Three-dimensional heat
+misses 1 % once $t=0$ is counted: its bank represents the initial
+field only to $\nHeatThreeInit %$ at $128^3$–$256^3$. The three-dimensional
 solves evaluate the residual densely.
 
 **Table 3.** Problems on which the method misses its target. Error is the
@@ -591,7 +609,7 @@ is a safeguard, not a control; a truncated solve fails.
 **Table 5.** Which knob to turn, measured on Burgers2D from frozen models.
 Rank: fixed-$M$ ladder at $256^2$ (Table 4). EQ:
 dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
-and cap: 32 held-out validation cases (Table 14),
+and cap: 32 held-out validation cases (Table 15),
 stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
 
 **Table 6.** Dense and empirical-quadrature (EQ) residual evaluation on
@@ -599,7 +617,7 @@ Burgers2D at $256^2$. Error is worst evolved relative $L^2$ (%); time is
 median GPU milliseconds from one allocation; the last column is dense
 time over EQ time. Dashes: no paired dense measurement. Rules at
 $q=0, 16, 32$ pass every independent reconstruction;
-higher-rank rules pass some (Table 12).
+higher-rank rules pass some (Table 13).
 
 <!-- table: TR_figure1_table -->
 | Correction rank $q$ | Dense error (%) | Dense ms | EQ error (%) | EQ ms | Dense / EQ |
@@ -623,7 +641,7 @@ pre-registered checks fail: the sealed-to-development error ratio at
 $q=0$ for the original model, whose uncorrected solve converges to a
 wrong branch on one sealed case ($10.1120 %$, kept in the
 reported maximum), and universal convergence, which fails on
-`seed2` at $q=64$ (3 budget exits). Table 11 retains every
+`seed2` at $q=64$ (3 budget exits). Table 12 retains every
 checkpoint and verdict.
 
 **Limitations.**
@@ -633,7 +651,12 @@ more accurate than the NM-ROM in every row. On the square and cube a
 direct sine-transform solve and a coarse-grid solve at the NM-ROM's own
 accuracy are both faster than the NM-ROM ($\nHiresCtlTotal\times$ in
 complete-query time, $\nHiresCtlDevice\times$ in GPU-query time), and on
-the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). The
+the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). On
+heat at $4096^2$, coarse-grid CN–CG interpolated to the fine mesh
+($\nHeatCoarseErr %$ in $\nHeatCoarseMs$ ms), the exact sine-transform
+solve ($\nHeatDstMs$ ms) and the linear solve in the learned bank, a
+baseline ($\nHeatLinErr %$ in $\nHeatLinMs$ ms), are all faster than
+every NM-ROM setting. The
 accurate Poisson errors are close to the frozen bank's projection floor
 ($\nHiresFloorSquare %$ square, $\nHiresFloorCube %$ cube), which no
 correction rank can pass; the
@@ -893,7 +916,7 @@ the $q=0$ trust radius. The correction step is therefore an undamped
 Gauss–Newton step on the current linearisation, not throttled by a radius
 calibrated for the latent code. The step is accepted only if the residual
 decreases; otherwise $\lambda$ grows as in §A.6.
-Table 13 compares it with joint damping and with
+Table 14 compares it with joint damping and with
 variable projection.
 
 ### A.4 Second-order instance: reflective waves
@@ -1014,7 +1037,7 @@ independently and are not stages of this pipeline.
 <!-- section sources: none (prose only) -->
 
 Table 7 and Table 8 identify the two-dimensional
-studies and Table 10 the three-dimensional ones. Within each study,
+studies and Table 11 the three-dimensional ones. Within each study,
 training precedes evaluation and the selected bank, head and correction
 directions remain frozen. Deployment changes reduced coordinates, not
 network weights. Recorded training configurations and available offline
@@ -1023,7 +1046,7 @@ are not inferred.
 
 **Table 7.** Problem specification. Cohort and reduced sizes are read from the run
 configurations where recorded. The Burgers sealed cohort has been opened
-and is reported in Table 11; other rows describe their
+and is reported in Table 12; other rows describe their
 recorded development and validation cohorts.
 
 <!-- table: T01_problems -->
@@ -1070,18 +1093,20 @@ evidence status. “EQ” and “dense” name the Burgers residual
 evaluation; “single” marks models measured at one setting. Where a
 run recorded both timing scopes, the speedups in the scope not used by
 Table 1 are listed; a series never mixes scopes.
+For heat that column gives the speedups against the lane's tighter
+CN–CG setting (rtol $10^{-6}$).
 $^{\ast}$ not in Table 1: a re-measurement of the row
 above it, or a development-source run at a mesh whose held-out row is in
 Table 1.
 
 <!-- table: TH_headline_times -->
-| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Other scope: acc. / fast | Job | Status |
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Other scope or FOM: acc. / fast | Job | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | — | 3780692 | development |
 | Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | — | 3783813 | development |
 | Poisson 2D | 2048^2 | q=256 | q=0 | 5.47 | 5.35 | 397.80 | GPU query | 28.7× / 28.8× (complete query) | 4049279 | development |
 | Poisson 2D | 4096^2 | q=256 | q=0 | 16.92 | 16.74 | 2472.81 | GPU query | 41.1× / 41.7× (complete query) | 4051236 | development |
-| Poisson 2D^{\ast | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | 2465.60 | GPU query | 37.6× / 37.9× (complete query) | 4071227 | development |
+| Poisson 2D^{\ast} | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | 2465.60 | GPU query | 37.6× / 37.9× (complete query) | 4071227 | development |
 | Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | — | 3784663 | development |
 | Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | — | 3789568 | development |
 | Poisson, L-shape 2D | 1024^2 | q=128 | q=0 | 5.81 | 5.67 | 56.72 | complete query | 16.0× / 16.5× (GPU query) | 4057694 | development |
@@ -1089,6 +1114,11 @@ Table 1.
 | Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | — | 3529772 | development |
 | Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | — | 3529772 | development |
 | Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | — | 3529772 | development |
+| Heat (wide bank) 2D | 1024^2 | q=32 | q=0 | 31.20 | 36.89 | 66.84 | GPU query | 6.33× / 5.35× (vs. CN–CG rtol 10^{-6}) | 4054869 | development |
+| Heat (wide bank) 2D | 2048^2 | q=32 | q=0 | 27.97 | 28.42 | 272.55 | GPU query | 28.8× / 28.3× (vs. CN–CG rtol 10^{-6}) | 4060928 | sealed held-out |
+| Heat (wide bank) 2D | 4096^2 | q=32 | q=0 | 31.68 | 32.19 | 1139.83 | GPU query | 149× / 146× (vs. CN–CG rtol 10^{-6}) | 4060928 | sealed held-out |
+| Heat (wide bank, batched fit) 2D | 2048^2 | q=32 | q=0 | 4.54 | 4.78 | 272.55 | GPU query | 177× / 169× (vs. CN–CG rtol 10^{-6}) | 4060928 | sealed held-out |
+| Heat (wide bank, batched fit) 2D | 4096^2 | q=32 | q=0 | 11.03 | 11.33 | 1139.83 | GPU query | 428× / 416× (vs. CN–CG rtol 10^{-6}) | 4060928 | sealed held-out |
 | Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | — | 3789570 | development |
 | Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | — | 3805065 | development |
 | Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | — | 3789572 | development |
@@ -1096,14 +1126,45 @@ Table 1.
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | — | 3534502 | development |
 | Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | — | 4028642 | accepted final |
 | Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | — | 4028642 | accepted final |
-| Poisson (dev. sources) 3D^{\ast | 64^3 | q=96 | q=0 | 1.43 | 1.38 | 2.88 | GPU query | 1.57× / 1.56× (complete query) | 4051032 | development |
+| Poisson (dev. sources) 3D^{\ast} | 64^3 | q=96 | q=0 | 1.43 | 1.38 | 2.88 | GPU query | 1.57× / 1.56× (complete query) | 4051032 | development |
 | Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | 12.55 | GPU query | 2.70× / 2.66× (complete query) | 4051032 | development |
-| Poisson (dev. sources) 3D^{\ast | 128^3 | q=96 | q=0 | 1.90 | 1.76 | 12.40 | GPU query | 2.65× / 2.70× (complete query) | 4056288 | development |
+| Poisson (dev. sources) 3D^{\ast} | 128^3 | q=96 | q=0 | 1.90 | 1.76 | 12.40 | GPU query | 2.65× / 2.70× (complete query) | 4056288 | development |
 | Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | 140.87 | GPU query | 4.18× / 4.21× (complete query) | 4056288 | development |
 | Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | — | 4033346 | accepted final |
 | Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | — | 4033346 | accepted final |
 
-**Table 10.** Three-dimensional configurations, read from the run records.
+**Table 10.** Heat at high resolution, one frozen model per block (median
+times, ms). Errors are worst
+same-grid relative $L^2$ over all output times and over evolved times.
+Speedup uses the FOM rule of Table 1; the last column
+uses CN–CG at $\Delta t=0.025$, rtol $10^{-6}$. CN: reduced
+Crank–Nicolson steps; batched fit: each output time fitted
+independently to exactly propagated test moments (linear autonomous
+problems with eigenfunction tests only). The sealed 2D cohort was opened
+once; the Table 1 $1024^2$ row uses the development
+cases. Wide bank: $R=128$, $k=8$; earlier: the $R=32$ checkpoint of the
+Heat rows; 3D: the Heat 3D model of Table 1. The 3D rows
+miss the 1 % all-times target; $256^3$ is the first 16 final cases,
+not a mesh trend.
+
+<!-- table: TH_heat_hires -->
+| Model | Mesh | Cohort (cases) | Stepping | Acc. / fast | Err. all times (%) | Err. evolved (%) | ms | FOM ms | FOM (Table 1 rule) | Speedup | vs CN–CG 1e-6 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Wide bank | 1024^2 | development (12) | CN | 32 / 0 | 0.24 / 0.56 | 0.17 / 0.46 | 31.2 / 36.9 | 66.8 | \Delta t=0.05, rtol 10^{-3} | 2.14 / 1.81× | 6.33 / 5.35× |
+| Wide bank | 1024^2 | sealed (16) | CN | 32 / 0 | 0.49 / 1.36 | 0.22 / 0.84 | 27.3 / 27.8 | 43.5 | \Delta t=0.05, rtol 10^{-3} | 1.59 / 1.57× | 4.70 / 4.62× |
+| Wide bank | 1024^2 | sealed (16) | batched fit | 32 / 0 | 0.49 / 1.36 | 0.21 / 0.84 | 3.1 / 3.4 | 43.5 | \Delta t=0.05, rtol 10^{-3} | 13.9 / 13.0× | 41.0 / 38.3× |
+| Wide bank | 2048^2 | sealed (16) | CN | 32 / 0 | 0.49 / 1.36 | 0.22 / 0.84 | 28.0 / 28.4 | 272.5 | \Delta t=0.05, rtol 10^{-3} | 9.74 / 9.59× | 28.8 / 28.3× |
+| Wide bank | 2048^2 | sealed (16) | batched fit | 32 / 0 | 0.49 / 1.36 | 0.21 / 0.84 | 4.5 / 4.8 | 272.5 | \Delta t=0.05, rtol 10^{-3} | 60.0 / 57.0× | 177 / 169× |
+| Wide bank | 4096^2 | sealed (16) | CN | 32 / 0 | 0.49 / 1.36 | 0.22 / 0.84 | 31.7 / 32.2 | 1139.8 | \Delta t=0.05, rtol 10^{-2} | 36.0 / 35.4× | 149 / 146× |
+| Wide bank | 4096^2 | sealed (16) | batched fit | 32 / 0 | 0.49 / 1.36 | 0.21 / 0.84 | 11.0 / 11.3 | 1139.8 | \Delta t=0.05, rtol 10^{-2} | 103 / 101× | 428 / 416× |
+| Earlier (R=32) | 2048^2 | development (12) | CN | 24 / 0 | 1.68 / 4.56 | 1.11 / 4.56 | 15.9 / 8.9 | 173.1 | \Delta t=0.1, rtol 10^{-2} | 10.9 / 19.5× | 51.1 / 91.4× |
+| Earlier (R=32) | 4096^2 | development (12) | CN | 24 / 0 | 1.68 / 4.56 | 1.11 / 4.56 | 18.0 / 10.8 | 1014.6 | \Delta t=0.1, rtol 10^{-2} | 56.5 / 93.7× | 267 / 442× |
+| 3D model | 128^3 | final (64) | CN | 96 / 0 | 1.93 / 3.18 | 0.75 / 1.54 | 35.1 / 16.5 | 7.0 | \Delta t=0.1, rtol 10^{-2} | 0.20 / 0.43× | 0.83 / 1.78× |
+| 3D model | 128^3 | final (64) | batched fit | 96 / 0 | 1.93 / 3.18 | 0.72 / 1.36 | 5.2 / 4.0 | 7.0 | \Delta t=0.1, rtol 10^{-2} | 1.36 / 1.77× | 5.67 / 7.40× |
+| 3D model | 256^3 | final, 1st 16 (16) | CN | 96 / 0 | 1.27 / 2.02 | 0.55 / 0.91 | 37.0 / 21.0 | 173.3 | \Delta t=0.05, rtol 10^{-4} | 4.69 / 8.27× | 8.96 / 15.8× |
+| 3D model | 256^3 | final, 1st 16 (16) | batched fit | 96 / 0 | 1.27 / 2.02 | 0.50 / 0.86 | 9.6 / 8.4 | 173.3 | \Delta t=0.05, rtol 10^{-4} | 18.1 / 20.5× | 34.7 / 39.3× |
+
+**Table 11.** Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except
 Navier–Stokes, which is periodic. Burgers and Navier–Stokes appear in
 Table 3.
@@ -1139,7 +1200,7 @@ the displayed values through these machine-readable manifests:
 fine-grid Burgers tight and relaxed controls.
 - `tables/headline-provenance.json`: every row of
 Table 1, Table 9, Table 3 and
-Table 10 and every point of Figure 1, with the
+Table 11 and every point of Figure 1, with the
 commit and SHA256 of each source record.
 
 Each manifest records source hashes; its corresponding evidence retains
@@ -1149,7 +1210,7 @@ numerical stopping, not a proof of global optimality.
 
 \section{Validation of the correction and quadrature studies}
 
-**Table 11.** The sealed cohort (lane b-seeds, job 3804465, NVIDIA A100-PCIE-40GB),
+**Table 12.** The sealed cohort (lane b-seeds, job 3804465, NVIDIA A100-PCIE-40GB),
 opened once after every choice was frozen. Top: per rung of the dense
 $M=4(K+q)$ ladder, the incumbent's sealed worst evolved error and device
 time, the seed mean $\pm$ sample standard deviation on the sealed and the
@@ -1179,7 +1240,7 @@ convergence criterion fails on `seed2` at $q=64$ (3 budget exits).
 | `seed2` | `3804465` | yes | yes | no | 4.81$\times$ | 13.17$\times$ | no |
 | `seed3` | `3804465` | yes | yes | yes | 5.22$\times$ | 14.62$\times$ | yes |
 
-**Table 12.** The EQ ladder with the cheapest rule passing the primary bar in its
+**Table 13.** The EQ ladder with the cheapest rule passing the primary bar in its
 draw per rung, timed in one allocation (job 3780164, A100 80 GB),
 with its same-job dense twins, and the construction status from the four-draw
 replication (job 3783811): confirmed = every re-draw passes, marginal
@@ -1197,7 +1258,7 @@ $q=32$. Ladder rows read from the lane summary.json (final).
 | 128 | 2048 | 64 | 0.0669 | marginal (4 of 5 draws pass) | 0.8936 | 1.8116 | 246.9 | 0.8930 | 1190.5 | 0.207 |
 | 256 | 2048 | 64 | 0.1074 | marginal (1 of 5 draws pass) | 0.5389 | 0.9053 | 722.2 | 0.5194 | 3915.1 | 0.184 |
 
-**Table 13.** How the corrections are solved on Burgers, one job (job
+**Table 14.** How the corrections are solved on Burgers, one job (job
 3734098, NVIDIA A100 80GB PCIe): joint LM on $(z,y)$, block-damped, and plain
 variable projection at $q=64$ and $128$. Same error where all converge; the
 block-damped step is the one kept.
@@ -1211,7 +1272,7 @@ block-damped step is the one kept.
 | $q{=}128$, plain variable projection | 256 | 1.8116 | 297 | no | 47566.9 |
 | $q{=}128$, block-damped | 256 | 1.8116 | 0 | yes | 825.5 |
 
-**Table 14.** Solver-side controls on Burgers2D, 32 held-out validation cases,
+**Table 15.** Solver-side controls on Burgers2D, 32 held-out validation cases,
 one allocation: stopping tolerance, EQ node count $m$ and iteration cap,
 with full-order settings for scale.
 

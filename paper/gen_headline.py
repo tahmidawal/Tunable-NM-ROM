@@ -20,7 +20,7 @@ New rows from the running lanes enter through ``headline-intake.json``
 (see INTAKE_SCHEMA below); until a path is listed there the slot prints dashes.
 """
 from __future__ import annotations
-import hashlib, json, subprocess, sys
+import hashlib, json, re, subprocess, sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -52,7 +52,7 @@ PENDING = [
     dict(problem='Heat', dim=3, meshes=[128], lane='hires-heat'),
     dict(problem='Burgers', dim=3, meshes=[128], lane='hires-burgers'),
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Burgers', 'Burgers (earlier model)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (earlier model)']
 
 
 def digest(b: bytes) -> str:
@@ -83,6 +83,7 @@ def refresh():
             (E / f'{key}.json').write_bytes(raw)
             manifest[key] = dict(tree=item.get('tree'), path=path, commit=full, status=item['status'], adapter=item.get('adapter'),
                                  sha256=digest(raw), read='coordinator-supplied audited summary', lane=item['lane'])
+            if item.get('role'): manifest[key]['role'] = item['role']
     (E / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 
@@ -243,16 +244,130 @@ def hires_poisson(key, d):
             HP[(problem, n)] = dict(controls=ctl, floor_pct=100 * floors[(attempt, lm)], acc_err=100 * acc['worst_same_grid'])
 
 
+HH = {}         # hires-heat facts for captions / Limitations / failures prose
+HEAT_APPX = []  # rows of the appendix heat table (tight-tolerance ratios, evolved errors, batched variant, 3D speed rows)
+HEAT_NAMED = 'fom_cncg_dt0.025_rtol1e-6_NAMED'
+
+
+def hires_heat(parts):
+    """Adapter for the hires-heat lane (schema hires-heat-summary-v1, one summary per job; role -> (key, data)).
+
+    Table 1 convention, re-derived here from milliseconds: the FOM of a row is the fastest same-grid CN--CG setting
+    with no failed solve whose worst all-times error does not exceed the accurate setting's; both settings of the row
+    divide that one FOM time.  The lane's named CN--CG (rtol 1e-6) ratios go to the appendix only.  Fast = q=0 and
+    accurate = the declared accurate rank of the same frozen model, both with the same stepping arm.
+    """
+    S = {}
+    for role in ('h2d-final04', 'h2d-wide02b', 'h2d-ladder01', 'h3d-final08'):
+        key, d = parts[role]
+        md_ = d['metadata']
+        assert d['schema'] == 'hires-heat-summary-v1' and d['audit_passed'] is True, role
+        assert md_['backend'] == 'gpu' and md_['precision'] == 'highest' and md_['x64'] and not md_['local_smoke'], role
+        S[role] = dict(key=key, job=md_['job_id'], gpu=md_['gpu'].split(',')[0], model=d['model_sha256'],
+                       R={(m['cohort'], m['intervals']): {r['method']: r for r in m['rows']} for m in d['meshes']})
+    tr = parts['wide2d-training'][1]
+    # the 128-function bank of the wide rows is the bank recorded in the training file; final04 and wide02b share it and the K=8 head
+    assert tr['config']['bank_rank'] == 128 and S['h2d-final04']['model'] == S['h2d-wide02b']['model']
+    assert S['h2d-final04']['model']['bank'] == '93b0ec7ad22526f003b1f2d81dfecab2f6bc883ea73ad715f85f7437ede73233'   # inputs/wide2d/SHA256SUMS
+    assert S['h2d-final04']['model']['head'] == '49c2ae73b0fde3c5126604af770af14ddcb5bef254f71fc93cf4f53eccbce498'   # head_K8.pkl
+    HH['wide_floor'] = 100 * tr['bank']['validation_projection_worst']
+
+    def fom_for(R, err):
+        c = {k: v for k, v in R.items() if k.startswith('fom_cncg_') and v['failures'] == 0 and v['error_all_times_worst'] <= err}
+        return min(c, key=lambda k: c[k]['device_ms_median'])
+
+    def fom_label(k):
+        dt, tol = k.split('_dt')[1].split('_rtol'); tol = tol.split('_')[0]
+        return r'CN--CG, $\Delta t{=}%s$, rtol $10^{%s}$' % (dt, tol.split('e')[1])
+
+    def pair(role, cohort, n, fast_arm, acc_arm):
+        R = S[role]['R'][(cohort, n)]; f, a = R[fast_arm], R[acc_arm]
+        assert f['failures'] == a['failures'] == 0 and f['cases'] == a['cases'] == R[HEAT_NAMED]['cases']
+        assert a['error_all_times_worst'] <= f['error_all_times_worst']
+        c = fom_for(R, a['error_all_times_worst']); fom = R[c]
+        lane = a['fastest_fom_error_le_rom_all_times']                       # the lane's own pick must be ours, and its ratio must reproduce
+        assert lane['method'] == c and abs(lane['speedup'] - fom['device_ms_median'] / a['device_ms_median']) < 1e-9, (role, n, lane, c)
+        for x in (f, a):
+            assert abs(x['speedup_vs_named_fom'] - R[HEAT_NAMED]['device_ms_median'] / x['device_ms_median']) < 1e-9
+        q = int(acc_arm.split('_q')[1].split('_')[0])
+        st = lambda x, lab: setting(lab, 100 * x['error_all_times_worst'], x['device_ms_median'], arm=x['method'],
+                                    evolved_pct=100 * x['error_evolved_worst'])
+        return dict(R=R, fast=st(f, '$q=0$'), acc=st(a, f'$q={q}$'), cases=a['cases'], fom_arm=c,
+                    fom=dict(name=fom_label(c), error_pct=100 * fom['error_all_times_worst'], ms=fom['device_ms_median'], arm=c),
+                    tight=dict(scope=r'vs.\ CN--CG rtol $10^{-6}$', accurate=a['speedup_vs_named_fom'], fast=f['speedup_vs_named_fom']))
+
+    CN = ('nmrom_q0_cn', 'nmrom_q32_cn'); BF = ('nmrom_q0_field_direct_tol1e-4_chol', 'nmrom_q32_field_direct_tol1e-4_chol')
+    plan = [  # role, cohort, mesh, problem, arms, Table-1 cohort, status
+        ('h2d-wide02b', 'all', 1024, 'Heat (wide bank)', CN, 'development', 'development; 128-function bank'),
+        ('h2d-final04', 'sealed_opened_once', 2048, 'Heat (wide bank)', CN, 'final', 'sealed held-out; opened once'),
+        ('h2d-final04', 'sealed_opened_once', 4096, 'Heat (wide bank)', CN, 'final', 'sealed held-out; opened once'),
+        ('h2d-final04', 'sealed_opened_once', 2048, 'Heat (wide bank, batched fit)', BF, 'final', 'sealed held-out; opened once'),
+        ('h2d-final04', 'sealed_opened_once', 4096, 'Heat (wide bank, batched fit)', BF, 'final', 'sealed held-out; opened once'),
+    ]
+    for role, cohort, n, problem, arms, coh, status in plan:
+        p = pair(role, cohort, n, *arms)
+        row(problem, 2, n, p['fast'], p['acc'], p['fom'], S[role]['key'], S[role]['job'], coh, status, 'same-grid, all times', 'GPU query',
+            note=f"{p['cases']} cases; {S[role]['gpu']}; arms {arms[0]} / {arms[1]}", alt=p['tight'])
+    # appendix heat table: every NM-ROM pair of the lane that the paper cites, same convention, plus the tight-tolerance ratios
+    appx = [  # model label, role, cohort, cohort label, dim, mesh, stepping label, arms
+        ('Wide bank', 'h2d-wide02b', 'all', 'development', 2, 1024, 'CN', CN),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 1024, 'CN', CN),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 1024, 'batched fit', BF),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 2048, 'CN', CN),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 2048, 'batched fit', BF),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 4096, 'CN', CN),
+        ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 4096, 'batched fit', BF),
+        ('Earlier ($R{=}32$)', 'h2d-ladder01', 'all', 'development', 2, 2048, 'CN', ('nmrom_q0_cn', 'nmrom_q24_cn')),
+        ('Earlier ($R{=}32$)', 'h2d-ladder01', 'all', 'development', 2, 4096, 'CN', ('nmrom_q0_cn', 'nmrom_q24_cn')),
+        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
+        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
+        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
+        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
+    ]
+    for model, role, cohort, clab, dim, n, step, arms in appx:
+        p = pair(role, cohort, n, *arms)
+        for s in ('fast', 'acc'): p[s]['speedup'] = p['fom']['ms'] / p[s]['ms']
+        HEAT_APPX.append(dict(model=model, role=role, source=S[role]['key'], job=S[role]['job'], gpu=S[role]['gpu'], cohort=clab, cases=p['cases'],
+                              dim=dim, intervals=n, stepping=step, fast=p['fast'], accurate=p['acc'], fom=p['fom'], tight=p['tight']))
+    # Limitations: controls at 4096^2 on the sealed cohort, all faster than every NM-ROM arm measured there
+    R = S['h2d-final04']['R'][('sealed_opened_once', 4096)]
+    acc_err = R[CN[1]]['error_all_times_worst']
+    nm_min = min(v['device_ms_median'] for k, v in R.items() if k.startswith('nmrom_'))
+    coarse = {k: v for k, v in R.items() if k.startswith('coarse') and v['failures'] == 0 and v['physical_all_times_worst'] <= acc_err}
+    ck = min(coarse, key=lambda k: coarse[k]['device_ms_median'])
+    lin = [R[k] for k in ('linear_bank_field_BASELINE', 'linear_bank_moments_BASELINE')]
+    ctl = [coarse[ck]['device_ms_median'], R['dst_exact_CONTROL']['device_ms_median']] + [x['device_ms_median'] for x in lin]
+    assert max(ctl) < nm_min, (ctl, nm_min)
+    HH.update(coarse_arm=ck, coarse_err=100 * coarse[ck]['physical_all_times_worst'], coarse_ms=coarse[ck]['device_ms_median'],
+              dst_ms=R['dst_exact_CONTROL']['device_ms_median'], lin_err=100 * max(x['error_all_times_worst'] for x in lin),
+              lin_ms=[min(x['device_ms_median'] for x in lin), max(x['device_ms_median'] for x in lin)], nmrom_min_ms=nm_min)
+    # Heat 3D all-times convention (same frozen model, same final cohort, 128^3) and the bank's initial-field limit
+    R3 = S['h3d-final08']['R']
+    HH['h3d_all'] = 100 * R3[('paper_h3d_final_cohort', 128)]['nmrom_q96_cn']['error_all_times_worst']
+    HH['h3d_evolved'] = 100 * R3[('paper_h3d_final_cohort', 128)]['nmrom_q96_cn']['error_evolved_worst']
+    init = []
+    for n in (128, 256):
+        lb = [R3[('paper_h3d_final_cohort', n)][k] for k in ('linear_bank_field_BASELINE', 'linear_bank_moments_BASELINE')]
+        for x in lb: assert x['error_all_times_worst'] > x['error_evolved_worst']        # the all-times maximum is attained at t = 0
+        init.append(100 * min(x['error_all_times_worst'] for x in lb))
+    HH['h3d_init'] = [min(init), max(init)]
+
+
 # ---- coordinator-supplied lane rows ----------------------------------------------------------------
+HEAT_PARTS = {}
 for k, v in MAN.items():
     if not k.startswith('intake_'): continue
     d = D[k]
     if v.get('adapter') == 'hires-poisson-v1':
         hires_poisson(k, d); continue
+    if v.get('adapter') == 'hires-heat-v1':
+        HEAT_PARTS[v['role']] = (k, d); continue
     assert d['schema'] == INTAKE_SCHEMA, k
     for r in d['headline_rows']:
         row(r['problem'], r['dim'], r['intervals'], r.get('fast'), r.get('accurate'), r['fom'], k, r['job_id'], r['cohort'],
             r['status'], r['error_convention'], r['timing_scope'], r.get('note', ''))
+if HEAT_PARTS:
+    hires_heat(HEAT_PARTS)
 
 ROWS.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], r['fom']['ms']))
 APPX.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
@@ -271,10 +386,15 @@ def mesh(r): return f"${r['intervals']}^{r['dim']}$"
 MARK = {'refined reference': r'$^{r}$', 'complete query': r'$^{c}$'}
 def marks(r):
     m = MARK.get(r['error_convention'], '') + MARK.get(r['timing_scope'], '')
+    if 'all times' in r['error_convention']: m += r'$^{t}$'        # every output time including t = 0
+    if 'evolved' in r['error_convention']: m += r'$^{e}$'          # evolved output times only (t = 0 excluded)
     if r['status'].startswith('provisional'): m += r'$^{p}$'
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
     return m
 def cells(s): return [e(s['error_pct']), sp(s['speedup'])] if s else ['---', '---']
+
+
+INGESTED = {v.get('lane') for v in MAN.values() if v.get('lane')}
 
 
 def covered(p, n):
@@ -286,7 +406,7 @@ def write(name, lines, mdhead, mdrows):
     (HERE / 'tables-md' / f'{name}.md').write_text('| ' + ' | '.join(mdhead) + ' |\n| ' + ' | '.join(['---'] * len(mdhead)) + ' |\n' + ''.join('| ' + ' | '.join(x) + ' |\n' for x in mdrows))
 
 
-def md(x): return x.replace('---', '—').replace(r'$\times$', '×').replace(r'\textbf{', '**').replace('}', '**' if 'textbf' in x else '}').replace('$', '').replace('--', '–')
+def md(x): return x.replace('{=}', '=').replace(r'.\ ', '. ').replace('---', '—').replace(r'$\times$', '×').replace(r'\textbf{', '**').replace('}', '**' if 'textbf' in x else '}').replace('$', '').replace('--', '–')
 
 lines = [r'% GENERATED by paper/gen_headline.py from hash-pinned snapshots -- do not edit.', r'\small\setlength{\tabcolsep}{4pt}',
          r'\begin{tabular}{@{}llrrrrrl@{}}', r'\toprule',
@@ -303,6 +423,7 @@ for dim in (2, 3):
         seen = (r['problem'], r['status']); lines.append(' & '.join(c) + r' \\')
         mdrows.append([f"{r['problem']} {dim}D ({r['status']})", f"{r['intervals']}^{dim}"] + [md(x) for x in c[2:]])
     for p in [x for x in PENDING if x['dim'] == dim]:
+        if p['lane'] in INGESTED: continue       # a closed, ingested lane leaves no reserved slot; its unfilled meshes are reported in the appendix
         todo = [n for n in p['meshes'] if not covered(p, n)]
         if not todo: continue
         m = ', '.join(f'${n}^{dim}$' for n in todo)
@@ -313,7 +434,7 @@ write('TH_headline', lines, ['Problem', 'Mesh', 'Accurate err. (%)', 'Accurate s
 
 # supporting times (appendix)
 tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrllll@{}}', r'\toprule',
-      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope: acc.\ / fast & Job & Status \\', r'\midrule']
+      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Job & Status \\', r'\midrule']
 tmd = []
 for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], bool(r['appendix_only']), r['fom']['ms'])):
     a, f = r['accurate'], r['fast']
@@ -321,9 +442,27 @@ for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']),
          f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'],
          (spn(r['alt']['accurate']) + r'$\times$ / ' + spn(r['alt']['fast']) + r'$\times$ (' + r['alt']['scope'] + ')') if r.get('alt') else '---',
          r'\texttt{' + r['job_id'] + '}', r['status'].split(';')[0]]
-    tl.append(' & '.join(c) + r' \\'); tmd.append([md(x).replace('\\texttt{', '').replace('}', '') for x in c])
+    tl.append(' & '.join(c) + r' \\'); tmd.append([md(re.sub(r'\\texttt\{(\w+)\}', r'\1', x)) for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
-write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope: acc. / fast', 'Job', 'Status'], tmd)
+write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope or FOM: acc. / fast', 'Job', 'Status'], tmd)
+
+# appendix heat table (hires-heat lane): both error conventions, the batched variant, the tight named FOM, 3D speed rows
+if HEAT_APPX:
+    hl = [r'% GENERATED by paper/gen_headline.py from the hires-heat lane summaries -- do not edit.', r'\scriptsize',
+          r'\setlength{\tabcolsep}{3pt}', r'\begin{tabular}{@{}lllllrrrrlrr@{}}', r'\toprule',
+          r'Model & Mesh & Cohort & Stepping & $q$ acc./fast & Err.\ all (\%) & Err.\ evol.\ (\%) & ms & FOM ms & CN--CG FOM & Speedup & vs.\ $10^{-6}$ \\',
+          r'\midrule']
+    hmd = []; seen = None
+    for r in HEAT_APPX:
+        a, f = r['accurate'], r['fast']
+        c = [r['model'] if r['model'] != seen else '', mesh(r), f"{r['cohort']} ({r['cases']})", r['stepping'], f"{a['label'][3:-1]} / {f['label'][3:-1]}",
+             f"{e(a['error_pct'])} / {e(f['error_pct'])}", f"{e(a['evolved_pct'])} / {e(f['evolved_pct'])}", f"{a['ms']:.1f} / {f['ms']:.1f}",
+             f"{r['fom']['ms']:.1f}", r['fom']['name'].replace('CN--CG, ', ''), spn(a['speedup']) + ' / ' + spn(f['speedup']) + r'$\times$',
+             spn(r['tight']['accurate']) + ' / ' + spn(r['tight']['fast']) + r'$\times$']
+        seen = r['model']; hl.append(' & '.join(c) + r' \\'); hmd.append([md(x) for x in [r['model']] + c[1:]])
+    hl += [r'\bottomrule', r'\end{tabular}']
+    write('TH_heat_hires', hl, ['Model', 'Mesh', 'Cohort (cases)', 'Stepping', 'Acc. / fast', 'Err. all times (%)', 'Err. evolved (%)', 'ms', 'FOM ms',
+                                'FOM (Table 1 rule)', 'Speedup', 'vs CN–CG 1e-6'], hmd)
 
 # second small table slot: other nonlinear-manifold ROMs (nmrom-baselines lane)
 bl = [r'% GENERATED by paper/gen_headline.py -- slot for the nmrom-baselines lane; no value is read until an audited summary is supplied.',
@@ -394,7 +533,7 @@ mac['nFailNsQzero'] = e(FB[('ns3d', '$q=0$')]['error_pct']); mac['nFailNsAcc'] =
 mac['nFailNsTarget'] = f"{D['ns3d']['target_percent']:g}"; mac['nFailNsFailing'] = str(FB[('ns3d', '$q=256$')]['failing']); mac['nFailNsCases'] = str(FB[('ns3d', '$q=256$')]['cases'])
 mac['nFailWaveQzero'] = e(FB[('wave', '$q=0$')]['error_pct']); mac['nFailWaveAcc'] = e(FB[('wave', '$q=32$')]['error_pct'])
 if HP:
-    def rng(vals): return spn(min(vals)) + '--' + spn(max(vals))
+    def rng(vals): return spn(min(vals)) + r'\mbox{--}' + spn(max(vals))       # en dash that survives math mode
     sq = {k: v for k, v in HP.items() if k[0].startswith('Poisson') and ',' not in k[0]}          # square and cube
     mac['nHiresCtlTotal'] = rng([c['total'] for v in sq.values() for c in v['controls'].values()])
     mac['nHiresCtlDevice'] = rng([c['device'] for v in sq.values() for c in v['controls'].values()])
@@ -407,6 +546,18 @@ if HP:
         if r['source'].startswith('intake_') and r['problem'] == 'Poisson':
             w = {2048: 'TwentyFortyEight', 4096: 'FortyNinetySix'}[r['intervals']]
             mac['nHiresPoissonAccS' + w] = spn(r['accurate']['speedup']); mac['nHiresPoissonAccTotalS' + w] = spn(r['alt']['accurate'])
+if HH:
+    W = {(r['problem'], r['intervals']): r for r in ROWS if r['problem'].startswith('Heat (wide bank')}
+    cn4, bf4 = W[('Heat (wide bank)', 4096)], W[('Heat (wide bank, batched fit)', 4096)]
+    assert cn4['accurate']['error_pct'] == max(W[k]['accurate']['error_pct'] for k in W if k[1] > 1024)   # one sealed value at both meshes
+    mac['nHeatWideAccErr'] = e(cn4['accurate']['error_pct']); mac['nHeatWideAccEvolved'] = e(cn4['accurate']['evolved_pct'])
+    mac['nHeatWideBatchedAccEvolved'] = e(bf4['accurate']['evolved_pct']); mac['nHeatWideAccS'] = spn(cn4['accurate']['speedup'])
+    mac['nHeatWideBatchedAccS'] = spn(bf4['accurate']['speedup']); mac['nHeatWideFloor'] = e(HH['wide_floor'])
+    mac['nHeatWideTightS'] = spn(cn4['alt']['accurate']); mac['nHeatWideBatchedTightS'] = spn(bf4['alt']['accurate'])
+    mac['nHeatCoarseErr'] = e(HH['coarse_err']); mac['nHeatCoarseMs'] = f"{HH['coarse_ms']:.1f}"; mac['nHeatDstMs'] = f"{HH['dst_ms']:.1f}"
+    mac['nHeatLinErr'] = e(HH['lin_err']); mac['nHeatLinMs'] = f"{HH['lin_ms'][0]:.1f}\\mbox{{--}}{HH['lin_ms'][1]:.1f}"; mac['nHeatNmromMinMs'] = f"{HH['nmrom_min_ms']:.1f}"
+    mac['nHeatThreeAllTimes'] = e(HH['h3d_all']); mac['nHeatThreeEvolvedCheck'] = e(HH['h3d_evolved'])
+    mac['nHeatThreeInit'] = f"{HH['h3d_init'][0]:.1f}\\mbox{{--}}{HH['h3d_init'][1]:.1f}"
 mac['nHeadFasterRows'] = str(sum(1 for r in ROWS if any(r[s] and r[s]['speedup'] > 1 for s in ('fast', 'accurate'))))
 mac['nHeadRows'] = str(len(ROWS))
 mac['nHeadAccFasterSubOne'] = str(sum(1 for r in ROWS if r['accurate'] and r['accurate']['speedup'] > 1 and r['accurate']['error_pct'] < 1))
@@ -427,5 +578,6 @@ write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named
 (HERE / 'tables/headline-provenance.json').write_text(json.dumps(dict(
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '
          'One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.',
-    sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
+    sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()},
+    heat_appendix_rows=HEAT_APPX, heat_facts=HH, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
 print(f'Headline: {len(ROWS)} rows, {mac["nHeadFasterRows"]} with a faster NM-ROM setting; {len(F)} failure rows; all snapshots hash-verified.')

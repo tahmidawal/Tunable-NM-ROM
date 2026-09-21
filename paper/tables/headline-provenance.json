@@ -82,6 +82,61 @@
       "sha256": "a6f553046633b9b8776399be013ded076228be4e6d9db4d0f4ed6b0a318445e6",
       "read": "coordinator-supplied audited summary",
       "lane": "hires-poisson"
+    },
+    "intake_01_hires-heat": {
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "path": "experiments/hires-heat/runs/h2d-final04/summary.json",
+      "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+      "status": "sealed 2D cohort opened once (job 4060928) plus development cases; NumPy audit passed",
+      "adapter": "hires-heat-v1",
+      "sha256": "0dabd585796a9d389a45ac41064a24ee1b43b6d6e74277f7c8ad8c9ae394c29d",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-heat",
+      "role": "h2d-final04"
+    },
+    "intake_02_hires-heat": {
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "path": "experiments/hires-heat/runs/h2d-wide02b/summary.json",
+      "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+      "status": "development (job 4054869, trains the wide bank); NumPy audit passed",
+      "adapter": "hires-heat-v1",
+      "sha256": "ffff597a0346d5fc5bb02862421d159aabf22a4fe08e9bfd2b7cd1899dd6b562",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-heat",
+      "role": "h2d-wide02b"
+    },
+    "intake_03_hires-heat": {
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "path": "experiments/hires-heat/runs/h2d-ladder01/summary.json",
+      "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+      "status": "development; earlier R=32 checkpoint (job 4051290); NumPy audit passed",
+      "adapter": "hires-heat-v1",
+      "sha256": "b13537841a51693de135d48dee44909af92abd55f6fbb8f93a3512719c3bf471",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-heat",
+      "role": "h2d-ladder01"
+    },
+    "intake_04_hires-heat": {
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "path": "experiments/hires-heat/runs/h3d-final08/summary.json",
+      "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+      "status": "paper-h3d final cohort (64 at 128^3, first 16 at 256^3; job 4072943); NumPy audit passed",
+      "adapter": "hires-heat-v1",
+      "sha256": "57400f4625cf2ccc4d0e4eb702f626b662d8a7fd96fab3dfd593f8b8bad773e8",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-heat",
+      "role": "h3d-final08"
+    },
+    "intake_05_hires-heat": {
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "path": "experiments/hires-heat/inputs/wide2d/training.json",
+      "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+      "status": "training record of the wide 2D bank (job 4054869); hash listed in inputs/wide2d/SHA256SUMS",
+      "adapter": "hires-heat-v1",
+      "sha256": "075d0c5f861be98b05fa2765fc400edb789b01b7bc62dd18c73781402f9d613d",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-heat",
+      "role": "wide2d-training"
     }
   },
   "rows": [
@@ -433,6 +488,206 @@
       "timing_scope": "GPU query",
       "note": "",
       "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.5607283273904548,
+        "ms": 36.892072996124625,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.4613555695266473,
+        "speedup": 1.811850056630079
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.23573417192589777,
+        "ms": 31.196273979730904,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.16932588452149452,
+        "speedup": 2.14265667081457
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.14342768427537603,
+        "ms": 66.84290454722941,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "source": "intake_02_hires-heat",
+      "job_id": "4054869",
+      "cohort": "development",
+      "status": "development; 128-function bank",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "12 cases; NVIDIA A100 80GB PCIe; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 6.329981044836846,
+        "fast": 5.352689803632808
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615913163566813,
+        "ms": 28.424680465832353,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404719172065523,
+        "speedup": 9.588343422515257
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132354521976,
+        "ms": 27.971579926088452,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724476505929355,
+        "speedup": 9.743661198324537
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.18381600015544516,
+        "ms": 272.54559798166156,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 28.79844847326454,
+        "fast": 28.339389925088142
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.361591316387811,
+        "ms": 32.19121345318854,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404670019337802,
+        "speedup": 35.4082211317936
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132355320749,
+        "ms": 31.684864312410355,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724597924783795,
+        "speedup": 35.97407245341486
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "error_pct": 0.468383929956588,
+        "ms": 1139.833604451269,
+        "arm": "fom_cncg_dt0.05_rtol1e-2"
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 148.75770326992182,
+        "fast": 146.4178307657556
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank, batched fit)",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951008399731,
+        "ms": 4.777702037245035,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388296833262997,
+        "speedup": 57.045331805333646
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997162513447,
+        "ms": 4.541582893580198,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063323936629868,
+        "speedup": 60.01114685519034
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.18381600015544516,
+        "ms": 272.54559798166156,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_field_direct_tol1e-4_chol / nmrom_q32_field_direct_tol1e-4_chol",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 177.36945952388888,
+        "fast": 168.60367116609814
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (wide bank, batched fit)",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951008710845,
+        "ms": 11.325497180223465,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388251179695527,
+        "speedup": 100.64314054500332
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997163307145,
+        "ms": 11.025385232642293,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063341532502505,
+        "speedup": 103.382655607953
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "error_pct": 0.468383929956588,
+        "ms": 1139.833604451269,
+        "arm": "fom_cncg_dt0.05_rtol1e-2"
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_field_direct_tol1e-4_chol / nmrom_q32_field_direct_tol1e-4_chol",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 427.5014019082661,
+        "fast": 416.1731329343967
+      },
       "appendix_only": null
     },
     {
@@ -994,6 +1249,534 @@
       "acc_err": 2.1950989738306297
     }
   },
+  "heat_appendix_rows": [
+    {
+      "model": "Wide bank",
+      "role": "h2d-wide02b",
+      "source": "intake_02_hires-heat",
+      "job": "4054869",
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "cohort": "development",
+      "cases": 12,
+      "dim": 2,
+      "intervals": 1024,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.5607283273904548,
+        "ms": 36.892072996124625,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.4613555695266473,
+        "speedup": 1.811850056630079
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.23573417192589777,
+        "ms": 31.196273979730904,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.16932588452149452,
+        "speedup": 2.14265667081457
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.14342768427537603,
+        "ms": 66.84290454722941,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 6.329981044836846,
+        "fast": 5.352689803632808
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 1024,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615913158587163,
+        "ms": 27.77227619662881,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404915833639982,
+        "speedup": 1.5668124244211263
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.48761323417433267,
+        "ms": 27.33315690420568,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.2172399112779702,
+        "speedup": 1.5919839611588278
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.1838961673460271,
+        "ms": 43.51394739933312,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 4.697079633236556,
+        "fast": 4.6228121057786415
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 1024,
+      "stepping": "batched fit",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951003422841,
+        "ms": 3.355792025104165,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388479503345592,
+        "speedup": 12.966818883235897
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997149815502,
+        "ms": 3.130949568003416,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063253580697757,
+        "speedup": 13.898003290765763
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.1838961673460271,
+        "ms": 43.51394739933312,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 41.00545595458904,
+        "fast": 38.258036745533566
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 2048,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615913163566813,
+        "ms": 28.424680465832353,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404719172065523,
+        "speedup": 9.588343422515257
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132354521976,
+        "ms": 27.971579926088452,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724476505929355,
+        "speedup": 9.743661198324537
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.18381600015544516,
+        "ms": 272.54559798166156,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 28.79844847326454,
+        "fast": 28.339389925088142
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 2048,
+      "stepping": "batched fit",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951008399731,
+        "ms": 4.777702037245035,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388296833262997,
+        "speedup": 57.045331805333646
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997162513447,
+        "ms": 4.541582893580198,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063323936629868,
+        "speedup": 60.01114685519034
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.18381600015544516,
+        "ms": 272.54559798166156,
+        "arm": "fom_cncg_dt0.05_rtol1e-3"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 177.36945952388888,
+        "fast": 168.60367116609814
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 4096,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.361591316387811,
+        "ms": 32.19121345318854,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404670019337802,
+        "speedup": 35.4082211317936
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132355320749,
+        "ms": 31.684864312410355,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724597924783795,
+        "speedup": 35.97407245341486
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "error_pct": 0.468383929956588,
+        "ms": 1139.833604451269,
+        "arm": "fom_cncg_dt0.05_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 148.75770326992182,
+        "fast": 146.4178307657556
+      }
+    },
+    {
+      "model": "Wide bank",
+      "role": "h2d-final04",
+      "source": "intake_01_hires-heat",
+      "job": "4060928",
+      "gpu": "NVIDIA H200",
+      "cohort": "sealed",
+      "cases": 16,
+      "dim": 2,
+      "intervals": 4096,
+      "stepping": "batched fit",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615951008710845,
+        "ms": 11.325497180223465,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.8388251179695527,
+        "speedup": 100.64314054500332
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4875997163307145,
+        "ms": 11.025385232642293,
+        "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.2063341532502505,
+        "speedup": 103.382655607953
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "error_pct": 0.468383929956588,
+        "ms": 1139.833604451269,
+        "arm": "fom_cncg_dt0.05_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 427.5014019082661,
+        "fast": 416.1731329343967
+      }
+    },
+    {
+      "model": "Earlier ($R{=}32$)",
+      "role": "h2d-ladder01",
+      "source": "intake_03_hires-heat",
+      "job": "4051290",
+      "gpu": "NVIDIA H200",
+      "cohort": "development",
+      "cases": 12,
+      "dim": 2,
+      "intervals": 2048,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 4.555464936862458,
+        "ms": 8.901520166546106,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 4.555464936862458,
+        "speedup": 19.45013839025576
+      },
+      "accurate": {
+        "label": "$q=24$",
+        "error_pct": 1.6765200538684557,
+        "ms": 15.916900476440787,
+        "arm": "nmrom_q24_cn",
+        "evolved_pct": 1.1096639546392888,
+        "speedup": 10.877482043645319
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
+        "error_pct": 0.634702304551246,
+        "ms": 173.13579912297428,
+        "arm": "fom_cncg_dt0.1_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 51.11588328741371,
+        "fast": 91.40084073603978
+      }
+    },
+    {
+      "model": "Earlier ($R{=}32$)",
+      "role": "h2d-ladder01",
+      "source": "intake_03_hires-heat",
+      "job": "4051290",
+      "gpu": "NVIDIA H200",
+      "cohort": "development",
+      "cases": 12,
+      "dim": 2,
+      "intervals": 4096,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 4.555465826763242,
+        "ms": 10.830170474946499,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 4.555465826763242,
+        "speedup": 93.68300572449091
+      },
+      "accurate": {
+        "label": "$q=24$",
+        "error_pct": 1.6765200539405822,
+        "ms": 17.9684495087713,
+        "arm": "nmrom_q24_cn",
+        "evolved_pct": 1.1096663182825677,
+        "speedup": 56.46580257836642
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
+        "error_pct": 0.6329113578354391,
+        "ms": 1014.6029226016253,
+        "arm": "fom_cncg_dt0.1_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 266.569622376103,
+        "fast": 442.2684584067824
+      }
+    },
+    {
+      "model": "3D model",
+      "role": "h3d-final08",
+      "source": "intake_04_hires-heat",
+      "job": "4072943",
+      "gpu": "NVIDIA H200",
+      "cohort": "final",
+      "cases": 64,
+      "dim": 3,
+      "intervals": 128,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.177643271559473,
+        "ms": 16.475121024996042,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 1.5447030384633682,
+        "speedup": 0.4261412073068404
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 1.9321796613277418,
+        "ms": 35.11540940962732,
+        "arm": "nmrom_q96_cn",
+        "evolved_pct": 0.7526806147559879,
+        "speedup": 0.19993296624339812
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
+        "error_pct": 1.5820140852734415,
+        "ms": 7.020727964118123,
+        "arm": "fom_cncg_dt0.1_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 0.8341805191217437,
+        "fast": 1.777989394193389
+      }
+    },
+    {
+      "model": "3D model",
+      "role": "h3d-final08",
+      "source": "intake_04_hires-heat",
+      "job": "4072943",
+      "gpu": "NVIDIA H200",
+      "cohort": "final",
+      "cases": 64,
+      "dim": 3,
+      "intervals": 128,
+      "stepping": "batched fit",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.177761920544368,
+        "ms": 3.9570678491145372,
+        "arm": "nmrom_q0_direct_tol1e-4_chol",
+        "evolved_pct": 1.3640141443983314,
+        "speedup": 1.7742248128722717
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 1.9323263774580153,
+        "ms": 5.166946677491069,
+        "arm": "nmrom_q96_direct_tol1e-4_chol",
+        "evolved_pct": 0.7241447134480463,
+        "speedup": 1.358776933910067
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.1$, rtol $10^{-2}$",
+        "error_pct": 1.5820140852734415,
+        "ms": 7.020727964118123,
+        "arm": "fom_cncg_dt0.1_rtol1e-2"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 5.669226388207896,
+        "fast": 7.402599997634665
+      }
+    },
+    {
+      "model": "3D model",
+      "role": "h3d-final08",
+      "source": "intake_04_hires-heat",
+      "job": "4072943",
+      "gpu": "NVIDIA H200",
+      "cohort": "final, 1st 16",
+      "cases": 16,
+      "dim": 3,
+      "intervals": 256,
+      "stepping": "CN",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0199040444473115,
+        "ms": 20.953207043930888,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.9072065459272481,
+        "speedup": 8.272882418553221
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 1.273734319726359,
+        "ms": 36.99471824802458,
+        "arm": "nmrom_q96_cn",
+        "evolved_pct": 0.5494685855965505,
+        "speedup": 4.6856261211098005
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-4}$",
+        "error_pct": 0.3414562886706821,
+        "ms": 173.34341816604137,
+        "arm": "fom_cncg_dt0.05_rtol1e-4"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 8.961268115040172,
+        "fast": 15.821902029882455
+      }
+    },
+    {
+      "model": "3D model",
+      "role": "h3d-final08",
+      "source": "intake_04_hires-heat",
+      "job": "4072943",
+      "gpu": "NVIDIA H200",
+      "cohort": "final, 1st 16",
+      "cases": 16,
+      "dim": 3,
+      "intervals": 256,
+      "stepping": "batched fit",
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0201601341249553,
+        "ms": 8.437641197815537,
+        "arm": "nmrom_q0_direct_tol1e-4_chol",
+        "evolved_pct": 0.8597182983011193,
+        "speedup": 20.544061320232377
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 1.2738730926871527,
+        "ms": 9.559631580486894,
+        "arm": "nmrom_q96_direct_tol1e-4_chol",
+        "evolved_pct": 0.5016808379291438,
+        "speedup": 18.132855508769786
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-4}$",
+        "error_pct": 0.3414562886706821,
+        "ms": 173.34341816604137,
+        "arm": "fom_cncg_dt0.05_rtol1e-4"
+      },
+      "tight": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 34.67911773269744,
+        "fast": 39.29055304541111
+      }
+    }
+  ],
+  "heat_facts": {
+    "wide_floor": 0.1145065503412607,
+    "coarse_arm": "coarse64_fom_cncg_dt0.05_rtol1e-3",
+    "coarse_err": 0.28695275848636814,
+    "coarse_ms": 2.7763196267187595,
+    "dst_ms": 7.812432013452053,
+    "lin_err": 0.1331866449643706,
+    "lin_ms": [
+      5.0661449786275625,
+      7.971384795382619
+    ],
+    "nmrom_min_ms": 11.025385232642293,
+    "h3d_all": 1.9321796613277418,
+    "h3d_evolved": 0.7526806147559879,
+    "h3d_init": [
+      1.2048231681126045,
+      1.896485541942913
+    ]
+  },
   "failures": [
     {
       "problem": "Burgers 3D, $33^3$ (final)",
@@ -1144,9 +1927,9 @@
     "nFailNsCases": "32",
     "nFailWaveQzero": "11.34",
     "nFailWaveAcc": "5.12",
-    "nHiresCtlTotal": "0.67--0.92",
-    "nHiresCtlDevice": "0.039--0.38",
-    "nHiresLshapeCoarse": "0.57--0.81",
+    "nHiresCtlTotal": "0.67\\mbox{--}0.92",
+    "nHiresCtlDevice": "0.039\\mbox{--}0.38",
+    "nHiresLshapeCoarse": "0.57\\mbox{--}0.81",
     "nHiresLshapeAccErr": "2.20",
     "nHiresLshapeFloor": "0.77",
     "nHiresFloorSquare": "0.742",
@@ -1155,9 +1938,26 @@
     "nHiresPoissonAccTotalSTwentyFortyEight": "28.7",
     "nHiresPoissonAccSFortyNinetySix": "146",
     "nHiresPoissonAccTotalSFortyNinetySix": "41.1",
-    "nHeadFasterRows": "16",
-    "nHeadRows": "22",
-    "nHeadAccFasterSubOne": "7"
+    "nHeatWideAccErr": "0.49",
+    "nHeatWideAccEvolved": "0.22",
+    "nHeatWideBatchedAccEvolved": "0.21",
+    "nHeatWideAccS": "36.0",
+    "nHeatWideBatchedAccS": "103",
+    "nHeatWideFloor": "0.11",
+    "nHeatWideTightS": "149",
+    "nHeatWideBatchedTightS": "428",
+    "nHeatCoarseErr": "0.29",
+    "nHeatCoarseMs": "2.8",
+    "nHeatDstMs": "7.8",
+    "nHeatLinErr": "0.13",
+    "nHeatLinMs": "5.1\\mbox{--}8.0",
+    "nHeatNmromMinMs": "11.0",
+    "nHeatThreeAllTimes": "1.93",
+    "nHeatThreeEvolvedCheck": "0.75",
+    "nHeatThreeInit": "1.2\\mbox{--}1.9",
+    "nHeadFasterRows": "21",
+    "nHeadRows": "27",
+    "nHeadAccFasterSubOne": "12"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

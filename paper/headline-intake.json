@@ -8,6 +8,52 @@
       "blob_path": "experiments/hires-poisson/reports/summary.json",
       "adapter": "hires-poisson-v1",
       "status": "development; lane closed, per-job independent audits passed"
+    },
+    {
+      "lane": "hires-heat",
+      "role": "h2d-final04",
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "commit": "4fb12a6d",
+      "blob_path": "experiments/hires-heat/runs/h2d-final04/summary.json",
+      "adapter": "hires-heat-v1",
+      "status": "sealed 2D cohort opened once (job 4060928) plus development cases; NumPy audit passed"
+    },
+    {
+      "lane": "hires-heat",
+      "role": "h2d-wide02b",
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "commit": "4fb12a6d",
+      "blob_path": "experiments/hires-heat/runs/h2d-wide02b/summary.json",
+      "adapter": "hires-heat-v1",
+      "status": "development (job 4054869, trains the wide bank); NumPy audit passed"
+    },
+    {
+      "lane": "hires-heat",
+      "role": "h2d-ladder01",
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "commit": "4fb12a6d",
+      "blob_path": "experiments/hires-heat/runs/h2d-ladder01/summary.json",
+      "adapter": "hires-heat-v1",
+      "status": "development; earlier R=32 checkpoint (job 4051290); NumPy audit passed"
+    },
+    {
+      "lane": "hires-heat",
+      "role": "h3d-final08",
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "commit": "4fb12a6d",
+      "blob_path": "experiments/hires-heat/runs/h3d-final08/summary.json",
+      "adapter": "hires-heat-v1",
+      "status": "paper-h3d final cohort (64 at 128^3, first 16 at 256^3; job 4072943); NumPy audit passed"
+    },
+    {
+      "lane": "hires-heat",
+      "role": "wide2d-training",
+      "tree": "worktrees/2026-09-20-hires-heat",
+      "commit": "4fb12a6d",
+      "blob_path": "experiments/hires-heat/inputs/wide2d/training.json",
+      "sha256": "075d0c5f861be98b05fa2765fc400edb789b01b7bc62dd18c73781402f9d613d",
+      "adapter": "hires-heat-v1",
+      "status": "training record of the wide 2D bank (job 4054869); hash listed in inputs/wide2d/SHA256SUMS"
     }
   ]
 }

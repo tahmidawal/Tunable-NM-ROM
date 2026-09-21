@@ -30,6 +30,11 @@ for lane in ('hires-poisson', 'hires-heat', 'hires-burgers'):
 for (p, d, s), pts in series.items():
     if s == 'fast' and not p.startswith('Burgers (earlier'):
         v = [y for _, y in sorted(pts)]; assert all(b > a for a, b in zip(v, v[1:])), (p, d, v)
+# hires-heat intake: heat rows carry an explicit time convention; the tight named-FOM ratios stay out of Table 1
+for r in prov['rows']:
+    if r['problem'].startswith('Heat (wide bank'): assert r['error_convention'] == 'same-grid, all times' and r['alt']['scope'].startswith('vs.')
+    if r['problem'] == 'Heat' and r['dim'] == 3: assert 'evolved' in r['error_convention']
+assert r'\input{tables/TH_heat_hires}' in (P / 'sections/appendix.tex').read_text()
 fails = prov['failures']; assert {f['source'] for f in fails} == {'burgers3d', 'ns3d', 'wave'}
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])
 main = (P / 'main.tex').read_text()

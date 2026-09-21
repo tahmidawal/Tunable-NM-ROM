@@ -80,5 +80,60 @@
     "sha256": "a6f553046633b9b8776399be013ded076228be4e6d9db4d0f4ed6b0a318445e6",
     "read": "coordinator-supplied audited summary",
     "lane": "hires-poisson"
+  },
+  "intake_01_hires-heat": {
+    "tree": "worktrees/2026-09-20-hires-heat",
+    "path": "experiments/hires-heat/runs/h2d-final04/summary.json",
+    "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+    "status": "sealed 2D cohort opened once (job 4060928) plus development cases; NumPy audit passed",
+    "adapter": "hires-heat-v1",
+    "sha256": "0dabd585796a9d389a45ac41064a24ee1b43b6d6e74277f7c8ad8c9ae394c29d",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-heat",
+    "role": "h2d-final04"
+  },
+  "intake_02_hires-heat": {
+    "tree": "worktrees/2026-09-20-hires-heat",
+    "path": "experiments/hires-heat/runs/h2d-wide02b/summary.json",
+    "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+    "status": "development (job 4054869, trains the wide bank); NumPy audit passed",
+    "adapter": "hires-heat-v1",
+    "sha256": "ffff597a0346d5fc5bb02862421d159aabf22a4fe08e9bfd2b7cd1899dd6b562",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-heat",
+    "role": "h2d-wide02b"
+  },
+  "intake_03_hires-heat": {
+    "tree": "worktrees/2026-09-20-hires-heat",
+    "path": "experiments/hires-heat/runs/h2d-ladder01/summary.json",
+    "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+    "status": "development; earlier R=32 checkpoint (job 4051290); NumPy audit passed",
+    "adapter": "hires-heat-v1",
+    "sha256": "b13537841a51693de135d48dee44909af92abd55f6fbb8f93a3512719c3bf471",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-heat",
+    "role": "h2d-ladder01"
+  },
+  "intake_04_hires-heat": {
+    "tree": "worktrees/2026-09-20-hires-heat",
+    "path": "experiments/hires-heat/runs/h3d-final08/summary.json",
+    "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+    "status": "paper-h3d final cohort (64 at 128^3, first 16 at 256^3; job 4072943); NumPy audit passed",
+    "adapter": "hires-heat-v1",
+    "sha256": "57400f4625cf2ccc4d0e4eb702f626b662d8a7fd96fab3dfd593f8b8bad773e8",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-heat",
+    "role": "h3d-final08"
+  },
+  "intake_05_hires-heat": {
+    "tree": "worktrees/2026-09-20-hires-heat",
+    "path": "experiments/hires-heat/inputs/wide2d/training.json",
+    "commit": "4fb12a6d887c47721e46647577a65890c8c8b8a2",
+    "status": "training record of the wide 2D bank (job 4054869); hash listed in inputs/wide2d/SHA256SUMS",
+    "adapter": "hires-heat-v1",
+    "sha256": "075d0c5f861be98b05fa2765fc400edb789b01b7bc62dd18c73781402f9d613d",
+    "read": "coordinator-supplied audited summary",
+    "lane": "hires-heat",
+    "role": "wide2d-training"
   }
 }

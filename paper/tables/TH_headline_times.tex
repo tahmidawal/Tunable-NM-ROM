@@ -2,7 +2,7 @@
 \scriptsize
 \begin{tabular}{@{}llllrrrllll@{}}
 \toprule
-Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope: acc.\ / fast & Job & Status \\
+Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope or FOM: acc.\ / fast & Job & Status \\
 \midrule
 Poisson 2D & $256^2$ & $q=256$ & $q=0$ & 7.12 & 6.70 & 22.29 & GPU query & --- & \texttt{3780692} & development \\
 Poisson 2D & $1024^2$ & $q=256$ & $q=0$ & 4.32 & 3.94 & 60.02 & GPU query & --- & \texttt{3783813} & development \\
@@ -16,6 +16,11 @@ Poisson, L-shape 2D & $2048^2$ & $q=128$ & $q=0$ & 18.75 & 18.66 & 362.30 & comp
 Heat 2D & $64^2$ & --- & single & --- & 11.23 & 2.50 & GPU query & --- & \texttt{3529772} & development \\
 Heat 2D & $256^2$ & --- & single & --- & 11.34 & 6.94 & GPU query & --- & \texttt{3529772} & development \\
 Heat 2D & $1024^2$ & --- & single & --- & 12.21 & 59.18 & GPU query & --- & \texttt{3529772} & development \\
+Heat (wide bank) 2D & $1024^2$ & $q=32$ & $q=0$ & 31.20 & 36.89 & 66.84 & GPU query & 6.33$\times$ / 5.35$\times$ (vs.\ CN--CG rtol $10^{-6}$) & \texttt{4054869} & development \\
+Heat (wide bank) 2D & $2048^2$ & $q=32$ & $q=0$ & 27.97 & 28.42 & 272.55 & GPU query & 28.8$\times$ / 28.3$\times$ (vs.\ CN--CG rtol $10^{-6}$) & \texttt{4060928} & sealed held-out \\
+Heat (wide bank) 2D & $4096^2$ & $q=32$ & $q=0$ & 31.68 & 32.19 & 1139.83 & GPU query & 149$\times$ / 146$\times$ (vs.\ CN--CG rtol $10^{-6}$) & \texttt{4060928} & sealed held-out \\
+Heat (wide bank, batched fit) 2D & $2048^2$ & $q=32$ & $q=0$ & 4.54 & 4.78 & 272.55 & GPU query & 177$\times$ / 169$\times$ (vs.\ CN--CG rtol $10^{-6}$) & \texttt{4060928} & sealed held-out \\
+Heat (wide bank, batched fit) 2D & $4096^2$ & $q=32$ & $q=0$ & 11.03 & 11.33 & 1139.83 & GPU query & 428$\times$ / 416$\times$ (vs.\ CN--CG rtol $10^{-6}$) & \texttt{4060928} & sealed held-out \\
 Burgers 2D & $256^2$ & $q=256$, EQ & $q=0$, EQ & 746.02 & 40.36 & 31.79 & GPU query & --- & \texttt{3789570} & development \\
 Burgers 2D & $512^2$ & $q=256$, EQ & $q=0$, EQ & 783.33 & 40.49 & 52.92 & GPU query & --- & \texttt{3805065} & development \\
 Burgers 2D & $1024^2$ & $q=256$, dense & $q=0$, EQ & 22053.85 & 40.27 & 81.31 & GPU query & --- & \texttt{3789572} & development \\

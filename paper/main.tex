@@ -202,11 +202,12 @@ $g_\phi$ \citep{Tancik2020FourierFeatures},
   \bcmask(x) = 16\,x_1(1-x_1)\,x_2(1-x_2).
   \label{eq:bank}
 \end{equation}
-To strictly enforce the homogeneous Dirichlet condition on the boundary
-$\Gamma$, we utilize the smooth vanishing factor $\bcmask$, zero on
-$\Gamma$, folded into every column of the bank, so that
-$\partial u/\partial z = 0$ on $\Gamma$ at every resolution (homogeneous
-data only).
+On the two-dimensional square the smooth vanishing factor $\bcmask$ of
+\eqref{eq:bank}, zero on the boundary $\Gamma$, is folded into every
+column of the bank, so $\partial u/\partial z = 0$ on $\Gamma$ at every
+resolution (homogeneous data only); the L-shape uses a distance-based
+factor, the cube a scaled product factor, and periodic Navier--Stokes none
+(\S\ref{sec:decoder}).
 
 \paragraph{Nested correction directions.}
 \label{sec:method:ladder}
@@ -242,7 +243,8 @@ should vanish at the true solution. We substitute the trial manifold
 $u(\latent,y)$ into $\rfull$ and project onto a fixed, latent-independent
 test space. On the Dirichlet square, $\tests\in\Real^{M\times n}$
 collects low-frequency tensor-product sine vectors, eigenvectors of the five-point
-operator, $\tests\Aop=\rowscale\tests$. The reduced problem solved online
+operator, $\tests\Aop=\rowscale\tests$; the L-shape uses Lanczos
+eigenvectors of its own operator. The reduced problem solved online
 is
 \begin{equation}
   (\latent^{\star},y^{\star})
@@ -274,7 +276,7 @@ The heat semi-discretisation $du/dt = -\kappa\, \Aop u$ is advanced with
 Crank--Nicolson; the reduced step substitutes the manifold into the fully
 discrete equation \emph{before} projecting and solves
 $\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$
-(Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
+(shown at $q=0$; with corrections see Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
 a linear system; at $q=R$ the step is the linear recurrence
 \eqref{eq:heat-endpoint}. Reflective waves use an explicit latent
 integration instead (Appendix~\ref{app:method:wave}).
@@ -299,9 +301,9 @@ $\station{\latent}{y}=\norm{\jac{}\T\rweak}_2/(\normF{\jac{}}\norm{\rweak}_2)\le
 \refstepcounter{equation}\label{eq:stationarity}(\theequation), a
 residual threshold, and the stalls, reported as early-stopped, never as
 converged. No query uses the solution it predicts: the elliptic solve starts from
-the cached training code nearest the projected source, the Burgers query
-fits $(\latent,y)$ to the supplied initial field
-(Appendix~\ref{app:method:codes}).
+the cached training code nearest the projected source; the heat and
+Burgers queries start from nearest codes and fit $(\latent,y)$ to the
+supplied initial field (Appendix~\ref{app:method:codes}).
 
 \subsection{Hyper-reduction}
 \label{sec:method:precomp}
@@ -330,32 +332,37 @@ tight bar $\nEqtopTightBar$, and then re-draw the construction: a rule is
 \subsection{Model Architecture}
 \label{sec:decoder}
 
-Three properties of the problem motivate our architecture: the latent
-iteration is initialised cold, so the decoder Jacobian must retain a
-well-conditioned linear component, which motivates a \emph{linear skip}
-in the head; hyper-reduction retains a sparse subset of mesh nodes, so
-the decoder must evaluate at any node in mesh-independent time, which
-motivates a \emph{per-node bank}; and the family must reach from the
-head's image to the bank's whole span without retraining, which
-motivates the nested \emph{correction directions}.
+Every query starts from stored training codes, never cold: the elliptic
+solve from the code nearest the projected source, the time-dependent
+solves from nearest codes refined by a fit to the supplied initial field,
+then warm-started from step to step. No encoder is used.
 
-\paragraph{Linear skip, for cold-start convergence.}
-The head is a two-layer SiLU MLP plus a linear skip,
-$\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, so its Jacobian
-retains a latent-independent component along which the cold solve can
-descend; the elliptic solver checks the numerical rank of the projected
-Jacobian at every query. The skip is a design choice, not ablated here.
+\paragraph{Head.} $\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, with
+$\varphi_\theta$ an MLP with two hidden SiLU layers; the skip keeps a
+latent-independent Jacobian component. Widths and $(k,R)$ are per family
+(Tables~\ref{tab:problems} and~\ref{tab:config3d}). The skip is a design
+choice, not ablated here.
 
-\paragraph{No encoder; per-node bank.} No encoder is needed: the query
-fits $(\latent,y)$ against the supplied input. The decoder restricted to
-a rule's support is a cached block times the coefficients, and the
-network's parameters do not depend on the mesh.
+\paragraph{Bank.} Every Dirichlet bank is a coordinate network times a
+vanishing factor: $\bcmask$ of \eqref{eq:bank} on the square, its product
+form in 3D, a distance-based factor on the L-shape; some banks are
+right-multiplied by a fixed orthonormalising matrix. The network's
+parameters do not depend on the mesh, so a quadrature rule's support is
+a cached block, and decoding in row blocks at large $n$ changes memory,
+not the model. The periodic Navier--Stokes bank has no factor and a
+global solenoidal projection.
+
+\paragraph{Corrections.} $\corr$ holds leading singular directions of
+training coefficient residuals, nested in $q$.
 
 \paragraph{What is fixed, what is chosen, and how error is reported.}
 \label{sec:method:tuning}
-Every operating point uses one frozen artefact per PDE; selected at run
-time are the rank $q$, the quadrature (dense or a stored rule) and the
-stopping tolerance and budget; $M$ is held fixed along the headline ladder.
+Each row of Table~\ref{tab:headline} names one frozen model (two-dimensional
+heat and Poisson each have two). Chosen at run time are $q$, the number of
+tests $M$ (usually $M=4(k+q)$; fixed along the rank study of
+Table~\ref{tab:ladder-main} and on the L-shape), the quadrature, the
+tolerance and budget, and for heat the stepping mode (Crank--Nicolson or
+the batched exact-propagator fit).
 \label{sec:method:layers}
 The representation ablations distinguish three quantities: the \emph{bank floor} (projection
 error onto $\operatorname{range}\bank$), the \emph{best-found} error (the
@@ -373,9 +380,11 @@ $B\,(\head(\latent)+\corr y)-b$ and $B\,[\dhead\;\;\corr]$, with $\dhead$
 from a forward-mode Jacobian-Vector Product \citep{Bradbury2018JAX}; the
 sampled Burgers advection uses the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
-projected operator. The Burgers runs above $1024^2$ solve it by Cholesky
-factorisation, clip the step, carry the damping over between time
-steps and start each step from a quadratic predictor.
+projected operator. The Burgers runs above $1024^2$ assemble the
+Jacobian analytically instead of by forward-mode products, clip the
+step, and (arm by arm, Table~\ref{tab:headline-times}) solve the normal
+system by Cholesky factorisation, carry the damping between time steps
+and start each step from a quadratic predictor.
 
 \subsection{Training Protocol}
 

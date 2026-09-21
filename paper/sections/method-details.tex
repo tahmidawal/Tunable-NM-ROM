@@ -150,7 +150,10 @@ an algebraic route we verified in-job (residual and Jacobian parity below
 $10^{-11}$ relative on sign-satisfying states) and do not time in this paper.
 Time stepping uses a fixed substep count per output interval; each step is
 warm-started at the previous code, and the linear extrapolation is used instead
-when, and only when, its residual norm is smaller.
+when, and only when, its residual norm is smaller; the $4096^2$ rows also try a
+quadratic predictor under the same rule. In every Burgers arm above $1024^2$
+except the $2048^2$ development accurate arm, the damping $\lambda$ is carried
+from one step to the next rather than reset to $\lambda_0$.
 
 \paragraph{Block-damped step.}
 With $\jac{}=[\jac{\latent}\;\;\jac{y}]$ the Jacobian of

@@ -1,6 +1,27 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — named iterative FOMs only (user decision) — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — §3.4 architecture brought up to date — CURRENT HANDOFF
+
+Applied from a read-only code audit (checkpoints loaded; evidence: cold start — multiresolution-poisson
+correction_core.py:45, hires-poisson hp_core.py:167-172, lsh_solve.py:45, paper-p3d poisson.py:58-59,
+topfix.py:176-188, hfast.py:200-234, cp_algebra_paths.py:81-86, hires-heat core.py:283-308; bank factors —
+lsh_core.py:385-392, 3D common.py:43-44, ns3d_model.py:29-55; orthonormalising rotation — hires-heat
+train.py:71-75, paper-p3d train.py:61-63; C_q — lsh_core.py:578-590, head-ablation ladder.py:82-140,
+hires-heat train.py:107-111; M — panel.py:5,127, hp_solve.py:189, hires-burgers config-2048.json; analytic
+Jacobian — hires-burgers hfast.py:13-18). §3.4 rewritten (warm start from stored codes, never cold; head;
+bank factors per domain incl. NS; corrections; what is chosen at run time incl. M and heat stepping mode);
+the claim that the elliptic solver checks the Jacobian rank at every query is dropped. §3.1 eq. (1) marked
+as the 2D-square case with pointers for L-shape/cube/NS; §3.2 names the L-shape's Lanczos test vectors,
+marks the heat step formula as q=0, and says heat also starts from nearest codes + initial fit; §4.1 says
+the runs above 1024² assemble the Jacobian analytically and that Cholesky/damping carry-over/quadratic
+predictor are arm-specific; Appendix A.3 adds the quadratic predictor (4096² rows) and damping carried
+between steps (every arm above 1024² except the 2048² development accurate arm, read from the arm names).
+My own deviations from the proposed text: "usually $M=4(k+q)$" rather than "Burgers and square Poisson use
+$M=4(k+q)$", because the 2048² development Burgers arm uses $M=544=2(k+q)$ and the Table 4 ladder fixes M.
+`paper/methods.tex` (not input anywhere) moved to `archive-unused/`. L-shape accurate ranks in Table C.3
+already read q=64 (256², 512²) and q=128 (1024², 2048²).
+
+## 2026-09-21 (paper lane) — named iterative FOMs only (user decision)
 
 **User decision (2026-09-21, reversible; also recorded in `paper/AGENTS.md`).** No direct/spectral,
 sparse-direct or coarse-grid solver is featured. Removed from the PDF: the Baselines clause on the

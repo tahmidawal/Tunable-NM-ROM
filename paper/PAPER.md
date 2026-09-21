@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 09:51; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 10:03; this block is removed before submission).*
 *Populated tables (90): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -176,11 +176,12 @@ $$
 
 <!-- equation (1) -->
 
-To strictly enforce the homogeneous Dirichlet condition on the boundary
-$\Gamma$, we utilize the smooth vanishing factor $\mu$, zero on
-$\Gamma$, folded into every column of the bank, so that
-$\partial u/\partial z = 0$ on $\Gamma$ at every resolution (homogeneous
-data only).
+On the two-dimensional square the smooth vanishing factor $\mu$ of
+(1), zero on the boundary $\Gamma$, is folded into every
+column of the bank, so $\partial u/\partial z = 0$ on $\Gamma$ at every
+resolution (homogeneous data only); the L-shape uses a distance-based
+factor, the cube a scaled product factor, and periodic Navier–Stokes none
+(§3.4).
 
 **Nested correction directions.**
 
@@ -220,7 +221,8 @@ should vanish at the true solution. We substitute the trial manifold
 $u(z,y)$ into $r$ and project onto a fixed, latent-independent
 test space. On the Dirichlet square, $P\in\mathbb{R}^{M\times n}$
 collects low-frequency tensor-product sine vectors, eigenvectors of the five-point
-operator, $PA=\LambdaP$. The reduced problem solved online
+operator, $PA=\LambdaP$; the L-shape uses Lanczos
+eigenvectors of its own operator. The reduced problem solved online
 is
 
 $$
@@ -255,7 +257,7 @@ The heat semi-discretisation $du/dt = -\kappa A u$ is advanced with
 Crank–Nicolson; the reduced step substitutes the manifold into the fully
 discrete equation *before* projecting and solves
 $z_{n+1}=\operatorname*{arg min}_{z}\lVert B_0h_\theta(z)-D B_0h_\theta(z_n) \rVert_2$
-(Appendix A.2), a nonlinear least-squares problem, not
+(shown at $q=0$; with corrections see Appendix A.2), a nonlinear least-squares problem, not
 a linear system; at $q=R$ the step is the linear recurrence
 (8). Reflective waves use an explicit latent
 integration instead (Appendix A.4).
@@ -282,9 +284,9 @@ $\eta(z,y)=\lVert J_{}^{\top}r_{w} \rVert_2/(\lVert J_{} \rVert_{F}\lVert r_{w} 
 (\theequation), a
 residual threshold, and the stalls, reported as early-stopped, never as
 converged. No query uses the solution it predicts: the elliptic solve starts from
-the cached training code nearest the projected source, the Burgers query
-fits $(z,y)$ to the supplied initial field
-(Appendix A.6).
+the cached training code nearest the projected source; the heat and
+Burgers queries start from nearest codes and fit $(z,y)$ to the
+supplied initial field (Appendix A.6).
 
 ### 3.3 Hyper-reduction
 
@@ -315,32 +317,37 @@ tight bar $0.06$, and then re-draw the construction: a rule is
 
 <!-- section sources: none (prose only) -->
 
-Three properties of the problem motivate our architecture: the latent
-iteration is initialised cold, so the decoder Jacobian must retain a
-well-conditioned linear component, which motivates a *linear skip*
-in the head; hyper-reduction retains a sparse subset of mesh nodes, so
-the decoder must evaluate at any node in mesh-independent time, which
-motivates a *per-node bank*; and the family must reach from the
-head's image to the bank's whole span without retraining, which
-motivates the nested *correction directions*.
+Every query starts from stored training codes, never cold: the elliptic
+solve from the code nearest the projected source, the time-dependent
+solves from nearest codes refined by a fit to the supplied initial field,
+then warm-started from step to step. No encoder is used.
 
-**Linear skip, for cold-start convergence.**
-The head is a two-layer SiLU MLP plus a linear skip,
-$h_\theta(z)=\varphi_\theta(z)+W^{\top}z$, so its Jacobian
-retains a latent-independent component along which the cold solve can
-descend; the elliptic solver checks the numerical rank of the projected
-Jacobian at every query. The skip is a design choice, not ablated here.
+**Head.** $h_\theta(z)=\varphi_\theta(z)+W^{\top}z$, with
+$\varphi_\theta$ an MLP with two hidden SiLU layers; the skip keeps a
+latent-independent Jacobian component. Widths and $(k,R)$ are per family
+(Table 6 and Table 12). The skip is a design
+choice, not ablated here.
 
-**No encoder; per-node bank.** No encoder is needed: the query
-fits $(z,y)$ against the supplied input. The decoder restricted to
-a rule's support is a cached block times the coefficients, and the
-network's parameters do not depend on the mesh.
+**Bank.** Every Dirichlet bank is a coordinate network times a
+vanishing factor: $\mu$ of (1) on the square, its product
+form in 3D, a distance-based factor on the L-shape; some banks are
+right-multiplied by a fixed orthonormalising matrix. The network's
+parameters do not depend on the mesh, so a quadrature rule's support is
+a cached block, and decoding in row blocks at large $n$ changes memory,
+not the model. The periodic Navier–Stokes bank has no factor and a
+global solenoidal projection.
+
+**Corrections.** $C_q$ holds leading singular directions of
+training coefficient residuals, nested in $q$.
 
 **What is fixed, what is chosen, and how error is reported.**
 
-Every operating point uses one frozen artefact per PDE; selected at run
-time are the rank $q$, the quadrature (dense or a stored rule) and the
-stopping tolerance and budget; $M$ is held fixed along the headline ladder.
+Each row of Table 1 names one frozen model (two-dimensional
+heat and Poisson each have two). Chosen at run time are $q$, the number of
+tests $M$ (usually $M=4(k+q)$; fixed along the rank study of
+Table 4 and on the L-shape), the quadrature, the
+tolerance and budget, and for heat the stepping mode (Crank–Nicolson or
+the batched exact-propagator fit).
 
 The representation ablations distinguish three quantities: the *bank floor* (projection
 error onto $\operatorname{range}G$), the *best-found* error (the
@@ -358,9 +365,11 @@ $B (h_\theta(z)+C_q y)-b$ and $B [Dh_\theta C_q]$, with $Dh_\theta$
 from a forward-mode Jacobian-Vector Product (Bradbury et al., 2018); the
 sampled Burgers advection uses the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
-projected operator. The Burgers runs above $1024^2$ solve it by Cholesky
-factorisation, clip the step, carry the damping over between time
-steps and start each step from a quadratic predictor.
+projected operator. The Burgers runs above $1024^2$ assemble the
+Jacobian analytically instead of by forward-mode products, clip the
+step, and (arm by arm, Table 8) solve the normal
+system by Cholesky factorisation, carry the damping between time steps
+and start each step from a quadratic predictor.
 
 \subsection{Training Protocol}
 
@@ -934,7 +943,10 @@ an algebraic route we verified in-job (residual and Jacobian parity below
 $10^{-11}$ relative on sign-satisfying states) and do not time in this paper.
 Time stepping uses a fixed substep count per output interval; each step is
 warm-started at the previous code, and the linear extrapolation is used instead
-when, and only when, its residual norm is smaller.
+when, and only when, its residual norm is smaller; the $4096^2$ rows also try a
+quadratic predictor under the same rule. In every Burgers arm above $1024^2$
+except the $2048^2$ development accurate arm, the damping $\lambda$ is carried
+from one step to the next rather than reset to $\lambda_0$.
 
 **Block-damped step.**
 With $J_{}=[J_{z} J_{y}]$ the Jacobian of

@@ -102,7 +102,7 @@ $O(\Delta t^2)$ wrong; `pred2` (quadratic extrapolation, one batched residual gu
 **Not pursued (local evidence only, no job spent):** XLA command buffers for `while` loops — GB10
 micro-benchmark 0.146 vs 0.146 ms per iteration; initial-fit tolerance 1e-4 — 81 → 78 iterations.
 
-**H11 outcome (hb4k04, 4096², dev6, same job).** `pred2` removes 19–32 % of LM iterations at
+**H11 outcome (hb4k04, 4096², dev6, same job).** `pred2` removes 19–26 % of the median LM iterations per query at
 unchanged error at every rung, but the time gain is smaller than the iteration gain (1.15× at the
 accurate rung) because the steady steps were already cheap and the first steps, the initial fit
 (18.4 ms) and the decode (16.7 ms) are untouched. Profile, case 0: 164.2 → 147.6 ms whole query,

@@ -1,0 +1,58 @@
+{
+  "attempt": "hpl32",
+  "intervals": 1024,
+  "requested_modes": 257,
+  "mode_seed": 0,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "correction_ladder": [
+    0,
+    32,
+    64,
+    128
+  ],
+  "cohorts": {
+    "development": {
+      "seed": 20260917,
+      "draw": 64,
+      "count": 32
+    },
+    "training": {
+      "seed": 0,
+      "draw": 4608,
+      "count": 3072
+    }
+  },
+  "case_count": 32,
+  "cg_gpu_rtols": [
+    0.1,
+    0.03,
+    0.01,
+    0.0001
+  ],
+  "pcg_ic0_rtols": [
+    0.01
+  ],
+  "coarse_intervals": [
+    64,
+    128,
+    256,
+    512
+  ],
+  "coarse_cg_rtols": [
+    0.01,
+    0.0001
+  ],
+  "cg_maxiter": 200000,
+  "tight_cg_rtol": 1e-10,
+  "solver_agreement_limit": 1e-08,
+  "reference_residual_limit": 1e-12,
+  "repetitions": 5,
+  "order_seed": 921034,
+  "burn_seconds": 0.1,
+  "fine_reference": "splu",
+  "slow_subject_cases": {
+    "pcg_ic0_cpu_0.01": 2
+  }
+}

@@ -336,6 +336,8 @@ def main():
         for case in range(len(dev)):
             for i in order.permutation(len(subjects)):
                 sub = subjects[int(i)]
+                if case >= cfg.get('slow_subject_cases', {}).get(sub['name'], len(dev)):
+                    continue
                 K_.burn(cfg['burn_seconds'])
                 assert gpu_uuid() == uuid0
                 field, row = invoke(sub, sources[case])

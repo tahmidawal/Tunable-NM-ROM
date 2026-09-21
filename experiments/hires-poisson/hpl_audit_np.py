@@ -114,8 +114,13 @@ def main():
             median_iterations=(float(np.median([x['iterations'] for x in rows])) if 'iterations' in rows[0] and rows[0]['family'] != 'nm-rom' else None),
             median_lm_attempts=(float(np.median([x['iterations'] for x in rows])) if rows[0]['family'] == 'nm-rom' else None),
             valid=all(x.get('stationary', True) and x.get('converged', True) for x in rows))
-    want = {(c, r) for c in range(len(dev)) for r in range(cfg['repetitions'])}
-    coverage = all({(x['case'], x['rep']) for x in inv if x['name'] == name} == want for name in R['declared_subjects'])
+    limit = cfg.get('slow_subject_cases', {})
+    coverage = all({(x['case'], x['rep']) for x in inv if x['name'] == name}
+                   == {(c, r) for c in range(min(limit.get(name, len(dev)), len(dev))) for r in range(cfg['repetitions'])}
+                   for name in R['declared_subjects'])
+    # a subject restricted to fewer sources is never eligible as a matched comparator
+    for name in table:
+        table[name]['valid'] = bool(table[name]['valid'] and table[name]['cases'] == len(dev))
 
     def pick(fams, bound):
         ok = [k for k, v in table.items() if v['family'] in fams and v['valid'] and v['worst_physical'] <= bound]
@@ -129,7 +134,7 @@ def main():
         for label, k in (('named_cg_1e-2', 'cg_0.01'), ('fastest_cg_matched', pick(('cg',), r['worst_physical'])),
                          ('fastest_coarse_matched', pick(('coarse-direct', 'coarse-cg'), r['worst_physical'])),
                          ('dst_direct', 'fom_splu_cpu')):
-            row[label] = None if k is None else dict(
+            row[label] = None if k is None or not table[k]['valid'] else dict(
                 comparator=k, worst_physical=table[k]['worst_physical'], median_total_ms=table[k]['median_total_ms'],
                 speedup_total=table[k]['median_total_ms'] / r['median_total_ms'],
                 speedup_device=table[k]['median_device_ms'] / r['median_device_ms'])
@@ -152,7 +157,7 @@ def main():
                  gpu=R['gpu'], gpu_uuid=R['gpu_uuid'], error_checks=checks, worst_error_difference=worst_diff,
                  reference_checks=refs, parity=R['parity'], arm_setup=R['arm_setup'], fom=R['fom'],
                  fine_reference=R['fine_reference'], device_memory=R.get('device_memory'),
-                 headline_model=HEAD_MODEL, verdict=verdict, selections=selections, table=table,
+                 headline_model=HEAD_MODEL, cohort_sources=int(len(dev)), verdict=verdict, selections=selections, table=table,
                  result_sha256=hashlib.sha256((out / 'result.json').read_bytes()).hexdigest())
     (out / 'audit.json').write_text(json.dumps(audit, indent=2) + '\n')
     if a.delete_fields and audit['passed']:

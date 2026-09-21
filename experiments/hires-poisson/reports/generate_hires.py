@@ -13,7 +13,7 @@ LANE = Path(__file__).resolve().parents[1]
 OUT = LANE / 'reports'
 ATTEMPTS_2D = ['hp2048', 'hp4096', 'hp4096b', 'hp2048b']
 ATTEMPTS_3D = ['hp3d128']
-ATTEMPTS_L = ['hpl1024', 'hpl2048']
+ATTEMPTS_L = [('hpl1024', 'output'), ('hpl32', 'output'), ('hpl32', 'output2')]
 
 
 def sha(path):
@@ -223,13 +223,13 @@ def main():
             md.append(table_md(rows, lambda r: r['family'] in ('nm-rom', 'linear-rom')))
             md.append('\nComparators and controls in the same job:\n')
             md.append(table_md(rows, lambda r: r['family'] not in ('nm-rom', 'linear-rom')))
-    for attempt in ATTEMPTS_L:
-        p = LANE / 'runs' / attempt / 'archive' / 'output' / 'audit.json'
+    for attempt, sub in ATTEMPTS_L:
+        p = LANE / 'runs' / attempt / 'archive' / sub / 'audit.json'
         if not p.exists():
             continue
         a = json.loads(p.read_text())
         n = a['intervals']
-        label = f'L-shape {n}²'
+        label = f"L-shape {n}² ({a.get('cohort_sources', 12)} sources)"
         status = 'audited (development sources)' if a['passed'] else 'AUDIT GATES FAILED'
         summary['sources'].append(dict(attempt=attempt, path=str(p.relative_to(LANE)), sha256=sha(p),
                                        job_id=a['job_id'], commit=a['commit'], gpu=a['gpu'],

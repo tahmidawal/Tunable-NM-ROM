@@ -259,3 +259,18 @@ mesh **of the same job**, where the DST-assembled operator is also gated against
 `poisson.assemble` ($\le 10^{-11}$; smoke $1\times10^{-15}$) and `lineardst` against the parent linear
 rung ($\le10^{-10}$). Bank floor from the $R$ factor of a host QR. Meshes $128^3$ and $256^3$ in one
 job, H200, 240 G host. Same cohort, arms, bar and audit as A2/A3.
+
+**A8 (2026-09-20, after `hpl1024`) — RETRACTION of the L-shape cohort choice; the 12-source
+L-shape verdict is not the bar verdict.** A5 fixed "the first 12 sources of the lshape lane's
+development cohort" and in the same paragraph expected a ~2.1 % miss — but that orientation number
+is the worst over the lane's **32** development sources, and its hard sources are outside the first
+12 (at $512^2$ in `lsh07`: worst 2.198 % at source 28; worst over the first 12 only 0.896 %).
+`hpl1024` (job 4053801) therefore measured 0.895 % / 9.88× and its audit printed "bar met" on a
+subset that excludes the hard sources. That verdict is withdrawn as a bar verdict; the job's
+timings, per-source errors and speed ratios stand and are reported as "12-source subset". The
+L-shape bar is decided on the full 32-source cohort: job `hpl32` runs $1024^2$ and $2048^2$ (two
+driver runs, two output directories, one allocation each mesh timed within itself) with
+`case_count = 32`; the CPU controls are restricted (`slow_subject_cases`: IC(0)-PCG to 1–2 sources,
+SuperLU to 12 at $2048^2$) and a restricted subject is never eligible as a matched comparator. The
+square and cube cohorts are unaffected: they already use every opened development source of their
+parent lanes (12 of 12; 12 of the 16 validation-seed draws in 3D — stated in A2).

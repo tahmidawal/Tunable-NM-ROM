@@ -1,0 +1,53 @@
+{
+ "training": {
+  "local_smoke": true,
+  "d": 3,
+  "family": "h3d",
+  "train_intervals": 12,
+  "times": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5
+  ],
+  "diffusivity": 0.02,
+  "train_seed": 921000,
+  "train_count": 48,
+  "validation_seed": 921777,
+  "validation_count": 16,
+  "model_seed": 921002,
+  "fourier_features": 16,
+  "fourier_scale": 1.5,
+  "bank_width": 64,
+  "bank_depth": 3,
+  "bank_rank": 48,
+  "modes": 200,
+  "pod_reference_ranks": [
+   48
+  ],
+  "bank_steps": 1000,
+  "bank_batch_states": 32,
+  "bank_learning_rate": 0.001,
+  "bank_gradient_clip": 1.0,
+  "warmup": 100,
+  "tail_power": 4,
+  "tail_weight": 0.5,
+  "white_weight": 0.001,
+  "checkpoint_every": 500,
+  "floor_grids": [
+   16,
+   24
+  ],
+  "head_width": 64,
+  "latent_dimensions": [
+   4,
+   8
+  ],
+  "head_steps": 1000,
+  "head_batch_states": 64,
+  "head_learning_rate": 0.0005,
+  "head_checkpoint_every": 500
+ }
+}

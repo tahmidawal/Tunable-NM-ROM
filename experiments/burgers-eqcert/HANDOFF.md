@@ -44,8 +44,8 @@ ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcert_20260921/<attempt>'
 | bc256 | 4139288 | 256², dev6 | A100-80G (pax106) | DONE, audited (no failed gate, accepted), remote deleted | `checks/bc256-summary.json` |
 | bc1024 | 4139290 | 1024², dev6 | H200, 240G | submitted 16:12 EDT 09-21 (staged at f80f0a88) | — |
 
-| bc512 | 4140818 | 512², dev6 | H200, 240G | submitted 16:43 EDT (staged at 7fa79b8a) | — |
+| bc512 | 4140818 | 512², dev6 | H200, 240G | DONE, audited (accepted), remote deleted | `checks/bc512-summary.json` |
 
-Jobs used: 3 / 8. **bc256 verdict (pre-registered rule): NO certified rule** — selected `scaled` (5/5, ρ 0.0994) FAILED the
+Jobs used: 3 / 8. **bc512: CERTIFIED** lat64_x1 g1e-2 (0.562 %, 0.091× vs lean_nt3e-3). bc1024 still running. **bc256 verdict (pre-registered rule): NO certified rule** — selected `scaled` (5/5, ρ 0.0994) FAILED the
 confirmation draw (0.165, w0 of traj 43); `lat64_x1` passed all 6 draws (0.063) but is not promoted. Exact arm
 1500 ms vs FOM lean_nt3e-3 17.6 ms (0.012×).

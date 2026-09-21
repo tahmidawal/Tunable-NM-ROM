@@ -1,0 +1,39 @@
+host=pax106 source_commit=e7b9dba53b69cc10d2b82a72056efe69c8220842 job=4140791
+NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.32:/projects/paralab  4.6T  4.2T  433G  91% /cluster/tufts/paralab
+jax_backend=gpu
+generating training and development trajectories
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=128 orth=5.274e-07 energy_tail=1.844e-10
+rank 32 oracle_worst=0.007366 frozen_worst=0.283006 gal_0.001=0.306162 gal_0.004=0.306099 gal_0.01=0.305760
+rank 64 oracle_worst=0.001276 frozen_worst=0.232740 gal_0.001=0.261553 gal_0.004=0.261477 gal_0.01=0.261066
+rank 128 oracle_worst=0.000201 frozen_worst=0.171966 gal_0.001=0.195983 gal_0.004=0.195951 gal_0.01=0.195827
+wrote output/summary.json elapsed=86.1s
+{"passed": true, "failures": 0}
+DIAG_EXIT=0

@@ -35,6 +35,24 @@ Change. `diag02.py`. No change to the production NM-ROM.
 
 Measured effect. Pending `diag02`.
 
+Kept or reverted. Not applied. The measurement is `results/diag02.md`.
+Freezing the centroid of $u_0$ is already past 5% at the first saved time, so
+it is not kept.
+
+## 2026-09-21 — re-center from the ROM field every step
+
+Hypothesis. A shift of a few hundredths of the period takes the field out of
+the centered subspace, but one time step moves the center by much less. Taking
+the energy centroid of the decoded field after every startup step, and
+re-projecting in that frame, should stay near the per-time oracle floor. The
+same loop driven by the true centroid is the control. Re-centering only at the
+saved output times should still miss, because diag02 already does at that lag.
+
+Change. `diag03.py`. The substep is the startup step of the production
+Galerkin runner, not multistep CNAB2.
+
+Measured effect. Pending `diag03`.
+
 Kept or reverted. Not applied.
 
 Kept or reverted. Not applied.

@@ -237,3 +237,29 @@ uncertified accurate arms q448/M1856 and q512/M2112 lat128, **labelled uncertifi
 arm" is fixed now as q512/M2112 lat128 (most accurate on dev6 ∪ sel32 in bh2b), before any held-out number.
 Their purpose is to state, for the paper, what held-out accuracy costs at $4096^2$; no bar verdict is claimed
 from an uncertified arm.
+
+## Amendment A4 (2026-09-21 ~22:00 EDT; coordinator request, user-approved; written before bh5 is staged)
+
+**Question (not this lane's model).** The burgers-eqcert lane (exp/2026-09-21-burgers-eqcert @ 176b2a9a) found the
+rule behind the paper's 4096² Burgers headline — hires-burgers' `lat64`, j=0 — only marginally certified at 2048²
+(confirmation ρ 0.1156 vs bar 0.116; bh2c here also finds the incumbent's lat64 at 1024² uncertified, ρ 0.119),
+while `lat64` with j=1 (first backward-Euler step on the exact residual, the rule afterwards) has a wide margin.
+**bh5 re-times the INCUMBENT model's paper settings at 4096² with lat64 j=1 in place of j=0.**
+
+- Driver: `eqcert/eqcert.py` = burgers-eqcert's `eqcert.py` @ 176b2a9a, byte-identical except a per-case cohort
+  label; `eqcert/xfast.py`, `eqcert/audit_eqcert.py` copied unchanged. Model: the incumbent checkpoint and
+  qtd02 directions (committed files).
+- Cohorts: dev6 + hold64 (70 cases, one allocation). Arms: q256/M1088 lat64 **j=0 and j=1**, gtol 1e-3 and 1e-2
+  (the paper's accurate setting and its looser-tolerance variant, as in hb4k04/hb4kh64), chol+clip+lamcarry+pred2;
+  q0/M64 `scaled` (the paper's fast setting); control `bad0` (must fail). FOM grid: `fft_tight` (untimed
+  reference), `lean_tight`, `lean_nt1e-3_l1e-3_dt005`, `lean_nt3e-3_l3e-3_dt005`, `lean_nt1e-3_l1e-3_dt01`,
+  `lean_nt1e-2_l1e-2_dt005`; 5 timed repetitions, H200.
+- Certificate: eqcert's procedure at 4096²: population = `params_draw(20260921,56)` (disjoint from dev6/hold64:
+  min scaled distance 0.17/0.15, no shared value) from the audited dense query at 512², five 8-trajectory draws +
+  a 16-trajectory confirmation draw, ρ over k ≥ j, bar 0.116; status confirmed / marginal / fails.
+- Reported per cohort (dev6, hold64): error, GPU ms, the paper's FOM rule (fastest tested setting with worst
+  evolved error ≤ the row's), FOM ms and error, speedup, certificate status. Nothing is selected on hold64: the
+  accurate row is the paper's setting with j=1 at the same gtol as the paper row (1e-2 on dev6 per hb4k04's rule),
+  and both gtols are shown.
+- Budget: bh5 is the lane's 8th and last job (bh1, bh2, bh2b, bh2c, bh3, bh4 before it); it could not be folded
+  into bh3 (different checkpoint).

@@ -66,7 +66,7 @@ EXP = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterativ
        'experiments/hires-burgers/hops.py', 'experiments/hires-burgers/hfast.py',
        f'{LANE}/bh_bank.py', f'{LANE}/bh_compress.py', f'{LANE}/bh_dirs.py', f'{LANE}/cluster/stage.py']
 PYPATH = ['experiments/mr-burgers2d', SD, 'experiments/head-ablation', 'experiments/cheap-corrections',
-          'experiments/b-ladder-top', 'experiments/b-panel/speed', 'experiments/hires-burgers', LANE]
+          'experiments/b-ladder-top', 'experiments/b-panel/speed', 'experiments/hires-burgers', LANE, f'{LANE}/eqcert']
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 
@@ -134,6 +134,13 @@ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
 
+EQCERT = '''
+PYTHONPATH="$EXPPATH" "$PY" exp/{lane}/eqcert/eqcert.py --config exp/{lane}/{config} --checkpoint in/{model} \\
+  --inputs exp/experiments/b-panel/inputs --out output
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+echo ALL-DONE
+'''
+
 
 def sha(b):
     return hashlib.sha256(b).hexdigest()
@@ -142,7 +149,7 @@ def sha(b):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
-    p.add_argument('kind', choices=['build', 'hires'])
+    p.add_argument('kind', choices=['build', 'hires', 'eqcert'])
     p.add_argument('config', nargs='?')
     p.add_argument('--gpu', default='a100', choices=sorted(GRES))
     p.add_argument('--mem', default='128G')
@@ -183,7 +190,8 @@ def main():
         put('in/sep_hfit_dense_mid_N256_dense.pkl', INCUMBENT)
         body = BUILD
     else:
-        assert a.config, 'hires needs a config'
+        assert a.kind in ('hires', 'eqcert')
+        assert a.config, 'hires/eqcert need a config'
         cfg = json.loads((ROOT / LANE / a.config).read_text())
         exp += [f'{LANE}/bh_hires.py', f'{LANE}/{a.config}']
         man = json.loads((ROOT / LANE / 'CKPT-MANIFEST.json').read_text())
@@ -192,6 +200,12 @@ def main():
             m = man[key]
             put(f"in/{Path(m['staged_as']).name}", m['local_path'], (ROOT / m['local_path']).read_bytes(), m['sha256'])
         body = HIRES
+        if a.kind == 'eqcert':                  # DESIGN A4: eqcert.py (copied from burgers-eqcert @ 176b2a9a)
+            exp += [f'{LANE}/eqcert/eqcert.py', f'{LANE}/eqcert/xfast.py', 'experiments/b-panel/inputs/directions_qtd02.npz']
+            for rung in cfg['rungs']:
+                for rs in rung['rules']:
+                    exp += [f"experiments/b-panel/inputs/{part['file']}" for part in rs['parts'] if 'file' in part]
+            body = EQCERT
     for f in exp:
         put(f'exp/{f}', f)
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
@@ -201,7 +215,7 @@ def main():
     script = HEAD.format(attempt=a.attempt, gres=gres, constraint=('#SBATCH ' + constraint) if constraint else '',
                          mem=a.mem, hours=a.hours, remote=remote, memfrac=a.mem_fraction,
                          exppath=':'.join('$TASK_ROOT/exp/' + x for x in PYPATH))
-    model = Path(man[cfg['model_key']]['staged_as']).name if a.kind == 'hires' else None
+    model = Path(man[cfg['model_key']]['staged_as']).name if a.kind != 'build' else None
     script += body.format(lane=LANE, config=a.config, model=model)
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{sha(p_.read_bytes())}  {p_.relative_to(out)}' for p_ in sorted(out.rglob('*')) if p_.is_file()]

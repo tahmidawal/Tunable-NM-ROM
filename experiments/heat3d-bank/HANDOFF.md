@@ -30,5 +30,5 @@ POD floor (training-only POD, worst relative L2, t=0 worst): 2048 training draws
 R=320 -> 0.08 % / 0.07 %. R=128 cannot reach 1 % (1.71 %). Disclosure in DESIGN.md: 920399 was touched by this POD diagnostic only.
 
 ## 2026-09-21 ~20:30 — validation done, pre-registered selection applied (R320/K32/q288 via rule 5), addendum 1 speed jobs next
-Next: submit speedR256 + speedR320 (configs speed_*.json, no training: inputs/vp_R* committed), then `select_speed.py`, then final01
+Next: submit speedR256 (4146429) + speedR320 (4146432) RUNNING (configs speed_*.json, no training: inputs/vp_R* committed), then `select_speed.py`, then final01
 (two panels: A = configs/final01.json, B = addendum). Jobs used: 4 of 8.

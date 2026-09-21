@@ -212,7 +212,7 @@ def main():
         ])
     table('TC_development_nmrom', ['PDE', 'Part', 'MLP widths', 'Parameters',
           'Budget', 'Done', 'Selected', 'Base seed'], nmrom_rows, 'lllrrrrr')
-    (HERE / 'sections/campaign-panels-generated.tex').write_text('\n'.join(sections) + '\n')
+    (HERE / 'archive-unused/sections/campaign-panels-generated.tex').write_text('\n'.join(sections) + '\n')
     check = dict(passed=True, oracle_rows=len(oracle_rows), oracle_fits=int(macros['nOracleConfirmationFits']),
                  independent_oracle_checks=len(audit['checks']), development_rows=selected_count,
                  development_panels=len(selection['panels']), operator_training_records=len(train_rows),

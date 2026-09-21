@@ -1,18 +1,27 @@
-| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Job | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | 3780692 | development |
-| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | 3783813 | development |
-| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | 3784663 | development |
-| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | 3789568 | development |
-| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | 3529772 | development |
-| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | 3529772 | development |
-| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | 3529772 | development |
-| Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | 3789570 | development |
-| Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | 3805065 | development |
-| Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | 3789572 | development |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | 3534502 | development |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | 3534502 | development |
-| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | 4028642 | accepted final |
-| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | 4028642 | accepted final |
-| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | 4033346 | accepted final |
-| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | 4033346 | accepted final |
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Other scope: acc. / fast | Job | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | — | 3780692 | development |
+| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | — | 3783813 | development |
+| Poisson 2D | 2048^2 | q=256 | q=0 | 5.47 | 5.35 | 397.80 | GPU query | 28.7× / 28.8× (complete query) | 4049279 | development |
+| Poisson 2D | 4096^2 | q=256 | q=0 | 16.92 | 16.74 | 2472.81 | GPU query | 41.1× / 41.7× (complete query) | 4051236 | development |
+| Poisson 2D^{\ast | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | 2465.60 | GPU query | 37.6× / 37.9× (complete query) | 4071227 | development |
+| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | — | 3784663 | development |
+| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | — | 3789568 | development |
+| Poisson, L-shape 2D | 1024^2 | q=128 | q=0 | 5.81 | 5.67 | 56.72 | complete query | 16.0× / 16.5× (GPU query) | 4057694 | development |
+| Poisson, L-shape 2D | 2048^2 | q=128 | q=0 | 18.75 | 18.66 | 362.30 | complete query | 33.9× / 34.3× (GPU query) | 4057694 | development |
+| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | — | 3529772 | development |
+| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | — | 3529772 | development |
+| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | — | 3529772 | development |
+| Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | — | 3789570 | development |
+| Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | — | 3805065 | development |
+| Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | — | 3789572 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | — | 3534502 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | — | 3534502 | development |
+| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | — | 4028642 | accepted final |
+| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | — | 4028642 | accepted final |
+| Poisson (dev. sources) 3D^{\ast | 64^3 | q=96 | q=0 | 1.43 | 1.38 | 2.88 | GPU query | 1.57× / 1.56× (complete query) | 4051032 | development |
+| Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | 12.55 | GPU query | 2.70× / 2.66× (complete query) | 4051032 | development |
+| Poisson (dev. sources) 3D^{\ast | 128^3 | q=96 | q=0 | 1.90 | 1.76 | 12.40 | GPU query | 2.65× / 2.70× (complete query) | 4056288 | development |
+| Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | 140.87 | GPU query | 4.18× / 4.21× (complete query) | 4056288 | development |
+| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | — | 4033346 | accepted final |
+| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | — | 4033346 | accepted final |

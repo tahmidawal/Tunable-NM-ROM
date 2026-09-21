@@ -44,7 +44,20 @@ for a mesh disappears automatically once a row covers it; the figure picks the p
 The generator asserts the named FOM is at least as accurate as both NM-ROM settings and that both
 come from one job; a lane row violating that must be fixed at the lane, not here.
 
-**Open slots.** hires-poisson (2048^2, 4096^2, 128^3), hires-heat (same), hires-burgers (same),
+**hires-poisson intake (done).** `headline-intake.json` reads the lane's `reports/summary.json` as the
+committed blob at `9f795088` through the `hires-poisson-v1` adapter in `gen_headline.py` (intake entries may
+now give `tree` + `commit` + `blob_path` + `adapter`). Table 1 gained Poisson 2D 2048²/4096² (row = `hp4096`),
+L-shape 1024²/2048² on the 32-source `hpl32` run (the withdrawn 12-source `hpl1024` verdict is refused by an
+assert), and a separate development series "Poisson (dev. sources)" 128³/256³. Appendix-only (marked * in
+Table C.3): `hp4096b`, the lane's cube 64³ (final08 keeps the 64³ row in Table 1) and the second 128³ measure.
+**Scope rule:** square/cube rows use GPU-query time like the existing series, the L-shape uses complete-query
+time like its series; the other scope is printed in Table C.3 and, for 2048²/4096², in the Table 1 caption
+(28.7× / 41.1× complete-query against 72.8× / 146× GPU-query). Limitations carries, once, the faster
+DST/coarse-grid controls in both scopes, the bank floors and the head-limited L-shape error. The abstract,
+results headline sentence and conclusion macros are pinned to non-lane rows (`best()` skips `intake_*`) until
+the coordinator releases them.
+
+**Open slots.** hires-heat (2048^2, 4096^2, 128^3), hires-burgers (same),
 nmrom-baselines (Table 2). Nothing was read from those lanes.
 `reports/2026-09-20-paper-ideation-handoff.md` still lists Heat3D as provisional: its generator hard-codes
 the pending file name, the status string and a retention-blocker section, so it needs more than a path

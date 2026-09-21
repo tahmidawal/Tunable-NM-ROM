@@ -449,8 +449,13 @@ error (all others same-grid); $^{c}$\,complete-query time with host
 transfers (all others GPU query). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances. Dashes mark settings not measured and rows reserved for runs
-in progress. Times and settings: Table~\ref{tab:headline-times}.}
+tolerances. Poisson (dev.\ sources) rows use development sources of a
+separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
+host transfer of the field dominates the NM-ROM query: the accurate
+setting's complete-query speedups are
+$\nHiresPoissonAccTotalSTwentyFortyEight\times$ and
+$\nHiresPoissonAccTotalSFortyNinetySix\times$. Dashes mark settings not
+measured and rows reserved for runs in progress. Times and settings: Table~\ref{tab:headline-times}.}
 \label{tab:headline}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline}}
 \end{table}
@@ -470,7 +475,9 @@ $\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$.}
 On Poisson the accurate setting reaches $\nHeadPoissonAccErr\,\%$ error and
 is $\nHeadPoissonAccS\times$ faster than CG at $\nHeadPoissonMesh$; the
 corrections cost little speed because they are eliminated analytically
-(\S\ref{sec:method:weak}). On the
+(\S\ref{sec:method:weak}). The error stays at $\nHeadPoissonAccErr\,\%$ up
+to $4096^2$ while the GPU-query speedup rises to
+$\nHiresPoissonAccSFortyNinetySix\times$. On the
 L-shaped domain, where no fast transform applies, the accurate setting is
 $\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. Heat crosses
 CG between $256^2$ and $1024^2$ and is $\nHeadHeatFastS\times$ faster at
@@ -609,9 +616,17 @@ checkpoint and verdict.
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-Speedups are against the named iterative solvers; on the square, direct
-sine-transform solvers are faster than CG and are not the comparator,
-and the named FOM is more accurate than the NM-ROM in every row.
+Speedups are against the named iterative solvers, and the named FOM is
+more accurate than the NM-ROM in every row. On the square and cube a
+direct sine-transform solve and a coarse-grid solve at the NM-ROM's own
+accuracy are both faster than the NM-ROM ($\nHiresCtlTotal\times$ in
+complete-query time, $\nHiresCtlDevice\times$ in GPU-query time), and on
+the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). The
+accurate Poisson errors are close to the frozen bank's projection floor
+($\nHiresFloorSquare\,\%$ square, $\nHiresFloorCube\,\%$ cube), which no
+correction rank can pass; the
+L-shape accurate setting ($\nHiresLshapeAccErr\,\%$ against a floor of
+$\nHiresLshapeFloor\,\%$) is limited by the head.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
 rank study uses one checkpoint; the multi-seed study changes the test

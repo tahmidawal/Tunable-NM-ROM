@@ -9,8 +9,12 @@ Problem & Mesh & Err.\ (\%) & Speedup & Err.\ (\%) & Speedup & Err.\ (\%) & Solv
 \multicolumn{8}{@{}l}{\emph{Two-dimensional}} \\
 Poisson & $256^2$ & 0.97 & \textbf{3.13$\times$} & 3.16 & \textbf{3.33$\times$} & 0.15 & CG, rtol $10^{-2}$ \\
  & $1024^2$ & 0.96 & \textbf{13.9$\times$} & 3.15 & \textbf{15.2$\times$} & 0.072 & CG, rtol $10^{-2}$ \\
+ & $2048^2$ & 0.96 & \textbf{72.8$\times$} & 3.15 & \textbf{74.3$\times$} & 0.049 & CG, rtol $10^{-2}$ \\
+ & $4096^2$ & 0.96 & \textbf{146$\times$} & 3.15 & \textbf{148$\times$} & 0.038 & CG, rtol $10^{-2}$ \\
 Poisson, L-shape$^{c}$ & $256^2$ & 2.13 & \textbf{3.84$\times$} & 3.86 & \textbf{4.04$\times$} & 0.64 & CG, rtol $10^{-2}$ \\
  & $512^2$ & 2.12 & \textbf{6.07$\times$} & 3.85 & \textbf{6.18$\times$} & 0.38 & CG, rtol $10^{-2}$ \\
+ & $1024^2$ & 2.20 & \textbf{9.76$\times$} & 3.85 & \textbf{10.0$\times$} & 0.31 & CG, rtol $10^{-2}$ \\
+ & $2048^2$ & 2.20 & \textbf{19.3$\times$} & 3.85 & \textbf{19.4$\times$} & 0.24 & CG, rtol $10^{-2}$ \\
 Heat$^{r}$ & $64^2$ & --- & --- & 4.56 & 0.22$\times$ & 1.59 & CN--CG, rtol $10^{-2}$ \\
  & $256^2$ & --- & --- & 4.56 & 0.61$\times$ & 0.93 & CN--CG, rtol $10^{-2}$ \\
  & $1024^2$ & --- & --- & 4.56 & \textbf{4.85$\times$} & 0.77 & CN--CG, rtol $10^{-2}$ \\
@@ -19,16 +23,16 @@ Burgers & $256^2$ & 0.51 & 0.043$\times$ & 1.89 & 0.79$\times$ & 0.049 & Newton-
  & $1024^2$ & 0.59 & 0.0037$\times$ & 2.29 & \textbf{2.02$\times$} & 0.034 & Newton--BiCGStab, tol $10^{-4}$ \\
 Burgers (earlier model)$^{r}$ & $1024^2$ & --- & --- & 3.91 & \textbf{1.63$\times$} & 2.39 & Newton--BiCGStab, relaxed \\
  & $1024^2$ & --- & --- & 3.91 & \textbf{14.5$\times$} & 2.14 & Newton--BiCGStab, tight \\
-Poisson & $2048^2$, $4096^2$ & --- & --- & --- & --- & --- & \emph{pending: hires-poisson} \\
 Heat & $2048^2$, $4096^2$ & --- & --- & --- & --- & --- & \emph{pending: hires-heat} \\
 Burgers & $2048^2$, $4096^2$ & --- & --- & --- & --- & --- & \emph{pending: hires-burgers} \\
 \midrule
 \multicolumn{8}{@{}l}{\emph{Three-dimensional}} \\
 Poisson$^{f}$ & $32^3$ & 0.26 & 0.94$\times$ & 1.40 & 0.99$\times$ & 0.16 & CG, rtol $10^{-2}$ \\
  & $64^3$ & 0.26 & \textbf{1.33$\times$} & 1.39 & \textbf{1.38$\times$} & 0.11 & CG, rtol $10^{-2}$ \\
+Poisson (dev. sources) & $128^3$ & 0.16 & \textbf{6.75$\times$} & 0.55 & \textbf{6.98$\times$} & 0.075 & CG, rtol $10^{-2}$ \\
+ & $256^3$ & 0.16 & \textbf{23.2$\times$} & 0.55 & \textbf{23.7$\times$} & 0.049 & CG, rtol $10^{-2}$ \\
 Heat$^{f}$ & $32^3$ & 0.76 & 0.066$\times$ & 1.56 & 0.13$\times$ & 0.32 & CN--CG, rtol $10^{-4}$ \\
  & $64^3$ & 0.75 & 0.13$\times$ & 1.55 & 0.27$\times$ & 0.34 & CN--CG, rtol $10^{-4}$ \\
-Poisson & $128^3$ & --- & --- & --- & --- & --- & \emph{pending: hires-poisson} \\
 Heat & $128^3$ & --- & --- & --- & --- & --- & \emph{pending: hires-heat} \\
 Burgers & $128^3$ & --- & --- & --- & --- & --- & \emph{pending: hires-burgers} \\
 \bottomrule

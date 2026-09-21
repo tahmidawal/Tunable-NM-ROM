@@ -1,0 +1,13 @@
+{
+  "_comment": "Audited lane summaries handed over by the coordinator. Each is read as a COMMITTED blob (tree + commit + blob_path) and snapshotted by gen_headline.py --refresh.",
+  "sources": [
+    {
+      "lane": "hires-poisson",
+      "tree": "worktrees/2026-09-20-hires-poisson",
+      "commit": "9f795088",
+      "blob_path": "experiments/hires-poisson/reports/summary.json",
+      "adapter": "hires-poisson-v1",
+      "status": "development; lane closed, per-job independent audits passed"
+    }
+  ]
+}

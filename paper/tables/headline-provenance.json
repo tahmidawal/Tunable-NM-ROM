@@ -72,6 +72,16 @@
       "status": "accepted final",
       "sha256": "5c01c13c9e326a63821dec434fdc651c540ac3a19424bdd604744df88b408e7e",
       "read": "committed blob"
+    },
+    "intake_00_hires-poisson": {
+      "tree": "worktrees/2026-09-20-hires-poisson",
+      "path": "experiments/hires-poisson/reports/summary.json",
+      "commit": "9f7950884860e163a2a0ab922723f6d9af5aa258",
+      "status": "development; lane closed, per-job independent audits passed",
+      "adapter": "hires-poisson-v1",
+      "sha256": "a6f553046633b9b8776399be013ded076228be4e6d9db4d0f4ed6b0a318445e6",
+      "read": "coordinator-supplied audited summary",
+      "lane": "hires-poisson"
     }
   },
   "rows": [
@@ -102,7 +112,9 @@
       "status": "development",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Poisson",
@@ -131,7 +143,83 @@
       "status": "development",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1491428879205863,
+        "ms": 5.350430961698294,
+        "arm": "rom_q0_lean64",
+        "speedup": 74.34952018557414
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9645883880109439,
+        "ms": 5.466707516461611,
+        "arm": "rom_q256_lean64",
+        "speedup": 72.76811016327979
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.049005297417446865,
+        "ms": 397.80197478830814
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4049279",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp2048",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 28.72577516314283,
+        "fast": 28.7885735409717
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.149052648463983,
+        "ms": 16.741542145609856,
+        "arm": "rom_q0_lean64",
+        "speedup": 147.7049319223631
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.964537840152561,
+        "ms": 16.921300441026688,
+        "arm": "rom_q256_lean64",
+        "speedup": 146.13583344322683
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.037865510109647026,
+        "ms": 2472.8083428926766
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4051236",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp4096",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 41.08216703443935,
+        "fast": 41.72288790304294
+      },
+      "appendix_only": null
     },
     {
       "problem": "Poisson, L-shape",
@@ -160,7 +248,9 @@
       "status": "development",
       "error_convention": "same-grid",
       "timing_scope": "complete query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Poisson, L-shape",
@@ -189,7 +279,83 @@
       "status": "development",
       "error_convention": "same-grid",
       "timing_scope": "complete query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson, L-shape",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.849894344385892,
+        "ms": 5.667413817718625,
+        "arm": "rom_q0_lean@head_sdf_R512_K16",
+        "speedup": 10.008394971570402
+      },
+      "accurate": {
+        "label": "$q=128$",
+        "error_pct": 2.1956586483888754,
+        "ms": 5.809025838971138,
+        "arm": "rom_q128_lean@head_sdf_R512_K16",
+        "speedup": 9.764411026463936
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.3140645590650977,
+        "ms": 56.7217159550637
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4057694",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "complete query",
+      "note": "32 development sources; NVIDIA H200; attempt hpl32",
+      "alt": {
+        "scope": "GPU query",
+        "accurate": 16.046441765776848,
+        "fast": 16.51236979766111
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson, L-shape",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.849360094871094,
+        "ms": 18.65585893392563,
+        "arm": "rom_q0_lean@head_sdf_R512_K16",
+        "speedup": 19.420073438055997
+      },
+      "accurate": {
+        "label": "$q=128$",
+        "error_pct": 2.1950989738306297,
+        "ms": 18.754946999251842,
+        "arm": "rom_q128_lean@head_sdf_R512_K16",
+        "speedup": 19.317471308306086
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.24144017718963606,
+        "ms": 362.2981505468488
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4057694",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "complete query",
+      "note": "32 development sources; NVIDIA H200; attempt hpl32",
+      "alt": {
+        "scope": "GPU query",
+        "accurate": 33.8502130919887,
+        "fast": 34.26022008384185
+      },
+      "appendix_only": null
     },
     {
       "problem": "Heat",
@@ -213,7 +379,9 @@
       "status": "development; earlier checkpoint, one setting",
       "error_convention": "refined reference",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Heat",
@@ -237,7 +405,9 @@
       "status": "development; earlier checkpoint, one setting",
       "error_convention": "refined reference",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Heat",
@@ -261,7 +431,9 @@
       "status": "development; earlier checkpoint, one setting",
       "error_convention": "refined reference",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Burgers",
@@ -293,7 +465,9 @@
       "status": "development",
       "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Burgers",
@@ -325,7 +499,9 @@
       "status": "development",
       "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Burgers",
@@ -357,7 +533,9 @@
       "status": "development",
       "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Burgers (earlier model)",
@@ -381,7 +559,9 @@
       "status": "development; earlier model, stalled exits permitted",
       "error_convention": "refined reference",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Burgers (earlier model)",
@@ -405,7 +585,9 @@
       "status": "development; earlier model, stalled exits permitted",
       "error_convention": "refined reference",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Poisson",
@@ -434,7 +616,9 @@
       "status": "accepted final",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Poisson",
@@ -463,7 +647,83 @@
       "status": "accepted final",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson (dev. sources)",
+      "dim": 3,
+      "intervals": 128,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.5454752416100778,
+        "ms": 1.799274468794465,
+        "arm": "rom_q0_leandst64",
+        "speedup": 6.975613060595963
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.15965075226329933,
+        "ms": 1.8585624638944864,
+        "arm": "rom_q96_leandst64",
+        "speedup": 6.753091557557722
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.07475800752263316,
+        "ms": 12.551042484119534
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4051032",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp3d128",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 2.6999841733535046,
+        "fast": 2.6594490597149356
+      },
+      "appendix_only": null
+    },
+    {
+      "problem": "Poisson (dev. sources)",
+      "dim": 3,
+      "intervals": 256,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.5456130298462576,
+        "ms": 5.954307038336992,
+        "arm": "rom_q0_leandst64",
+        "speedup": 23.658185326920147
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.15960551059368017,
+        "ms": 6.077260011807084,
+        "arm": "rom_q96_leandst64",
+        "speedup": 23.179541295366462
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.048870968008946775,
+        "ms": 140.86809940636158
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4056288",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp3d256",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 4.181976211016386,
+        "fast": 4.207055069784597
+      },
+      "appendix_only": null
     },
     {
       "problem": "Heat",
@@ -492,7 +752,9 @@
       "status": "accepted final",
       "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     },
     {
       "problem": "Heat",
@@ -521,9 +783,217 @@
       "status": "accepted final",
       "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": ""
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     }
   ],
+  "appendix_only_rows": [
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.149052648463983,
+        "ms": 17.008751863613725,
+        "arm": "rom_q0_lean64",
+        "speedup": 144.96088318308676
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9645378401524893,
+        "ms": 17.165145371109247,
+        "arm": "rom_q256_lean64",
+        "speedup": 143.64012880084837
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.037865510109647026,
+        "ms": 2465.6036919914186
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4071227",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp4096b",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 37.5758506576484,
+        "fast": 37.947917921091836
+      },
+      "appendix_only": "re-measure of the row above"
+    },
+    {
+      "problem": "Poisson (dev. sources)",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.545084033036452,
+        "ms": 1.3827905058860779,
+        "arm": "rom_q0_leandst64",
+        "speedup": 2.0819573533769766
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.1598005692364618,
+        "ms": 1.4267107471823692,
+        "arm": "rom_q96_leandst64",
+        "speedup": 2.0178658271096577
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.11330595548692919,
+        "ms": 2.8789108619093895
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4051032",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp3d128",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 1.567272327817224,
+        "fast": 1.558575469636139
+      },
+      "appendix_only": "development sources; the held-out final row is in Table 1"
+    },
+    {
+      "problem": "Poisson (dev. sources)",
+      "dim": 3,
+      "intervals": 128,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 0.5454752416100739,
+        "ms": 1.7614078242331743,
+        "arm": "rom_q0_leandst64",
+        "speedup": 7.042636079548045
+      },
+      "accurate": {
+        "label": "$q=96$",
+        "error_pct": 0.15965075226330092,
+        "ms": 1.9038375467061996,
+        "arm": "rom_q96_leandst64",
+        "speedup": 6.515763025686933
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.07475800749510775,
+        "ms": 12.404954293742776
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4056288",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp3d256",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 2.652097034756379,
+        "fast": 2.7000723499889387
+      },
+      "appendix_only": "re-measure of the row above"
+    }
+  ],
+  "lane_controls": {
+    "Poisson|2048": {
+      "controls": {
+        "dst_direct": {
+          "comparator": "dst_direct",
+          "total": 0.6766663115351926,
+          "device": 0.10288317426434229
+        },
+        "fastest_coarse_matched": {
+          "comparator": "coarse64_dst",
+          "total": 0.6692647441405852,
+          "device": 0.13822707036359214
+        }
+      },
+      "floor_pct": 0.7419412501196744,
+      "acc_err": 0.9645883880109439
+    },
+    "Poisson|4096": {
+      "controls": {
+        "dst_direct": {
+          "comparator": "dst_direct",
+          "total": 0.7991149281550126,
+          "device": 0.13067314586935144
+        },
+        "fastest_coarse_matched": {
+          "comparator": "coarse64_dst",
+          "total": 0.7396333714761618,
+          "device": 0.03912731984421029
+        }
+      },
+      "floor_pct": 0.7418947498652936,
+      "acc_err": 0.964537840152561
+    },
+    "Poisson (dev. sources)|128": {
+      "controls": {
+        "dst_direct": {
+          "comparator": "dst_direct",
+          "total": 0.8095799478522667,
+          "device": 0.22567440007566586
+        },
+        "fastest_coarse_matched": {
+          "comparator": "coarse64_dst",
+          "total": 0.8349841435543793,
+          "device": 0.33826869269079163
+        }
+      },
+      "floor_pct": 0.14297659454250067,
+      "acc_err": 0.15965075226329933
+    },
+    "Poisson (dev. sources)|256": {
+      "controls": {
+        "dst_direct": {
+          "comparator": "dst_direct",
+          "total": 0.9170853388902196,
+          "device": 0.37602394455549965
+        },
+        "fastest_coarse_matched": {
+          "comparator": "coarse128_dst",
+          "total": 0.8751885655421325,
+          "device": 0.16539049491654412
+        }
+      },
+      "floor_pct": 0.1429182712019683,
+      "acc_err": 0.15960551059368017
+    },
+    "Poisson, L-shape|1024": {
+      "controls": {
+        "dst_direct": {
+          "comparator": "fom_splu_cpu",
+          "total": 30.90652574616899,
+          "device": 51.93485192458532
+        },
+        "fastest_coarse_matched": {
+          "comparator": "coarse64_cg_0.01",
+          "total": 0.8149705630268025,
+          "device": 0.6731836331164514
+        }
+      },
+      "floor_pct": 0.768030967779516,
+      "acc_err": 2.1956586483888754
+    },
+    "Poisson, L-shape|2048": {
+      "controls": {
+        "fastest_coarse_matched": {
+          "comparator": "coarse64_cg_0.01",
+          "total": 0.5721668533537961,
+          "device": 0.2310919451501011
+        }
+      },
+      "floor_pct": 0.7675986796940607,
+      "acc_err": 2.1950989738306297
+    }
+  },
   "failures": [
     {
       "problem": "Burgers 3D, $33^3$ (final)",
@@ -674,9 +1144,20 @@
     "nFailNsCases": "32",
     "nFailWaveQzero": "11.34",
     "nFailWaveAcc": "5.12",
-    "nHeadFasterRows": "10",
-    "nHeadRows": "16",
-    "nHeadAccFasterSubOne": "3"
+    "nHiresCtlTotal": "0.67--0.92",
+    "nHiresCtlDevice": "0.039--0.38",
+    "nHiresLshapeCoarse": "0.57--0.81",
+    "nHiresLshapeAccErr": "2.20",
+    "nHiresLshapeFloor": "0.77",
+    "nHiresFloorSquare": "0.742",
+    "nHiresFloorCube": "0.143",
+    "nHiresPoissonAccSTwentyFortyEight": "72.8",
+    "nHiresPoissonAccTotalSTwentyFortyEight": "28.7",
+    "nHiresPoissonAccSFortyNinetySix": "146",
+    "nHiresPoissonAccTotalSFortyNinetySix": "41.1",
+    "nHeadFasterRows": "16",
+    "nHeadRows": "22",
+    "nHeadAccFasterSubOne": "7"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

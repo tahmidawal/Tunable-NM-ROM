@@ -52,7 +52,7 @@ PENDING = [
     dict(problem='Heat', dim=3, meshes=[128], lane='hires-heat'),
     dict(problem='Burgers', dim=3, meshes=[128], lane='hires-burgers'),
 ]
-ORDER = ['Poisson', 'Poisson, L-shape', 'Heat', 'Burgers', 'Burgers (earlier model)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Burgers', 'Burgers (earlier model)']
 
 
 def digest(b: bytes) -> str:
@@ -73,11 +73,15 @@ def refresh():
                              read='committed blob' if commit else 'existing hash-pinned paper snapshot')
     if INTAKE.exists():
         for i, item in enumerate(json.loads(INTAKE.read_text())['sources']):
-            raw = Path(item['path']).read_bytes()
-            if item.get('sha256'): assert digest(raw) == item['sha256'], item['path']
+            if item.get('blob_path'):       # preferred: the lane's committed blob, never its working tree
+                full = subprocess.check_output(['git', '-C', str(REPO / item['tree']), 'rev-parse', item['commit']]).decode().strip()
+                raw = subprocess.check_output(['git', '-C', str(REPO / item['tree']), 'show', f"{full}:{item['blob_path']}"]); path = item['blob_path']
+            else:
+                raw = Path(item['path']).read_bytes(); full = item.get('commit'); path = item['path']
+            if item.get('sha256'): assert digest(raw) == item['sha256'], path
             key = f"intake_{i:02d}_{item['lane']}"
             (E / f'{key}.json').write_bytes(raw)
-            manifest[key] = dict(tree=None, path=item['path'], commit=item.get('commit'), status=item['status'],
+            manifest[key] = dict(tree=item.get('tree'), path=path, commit=full, status=item['status'], adapter=item.get('adapter'),
                                  sha256=digest(raw), read='coordinator-supplied audited summary', lane=item['lane'])
     (E / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
@@ -92,17 +96,19 @@ for k, v in MAN.items():
     D[k] = json.loads(b)
 
 ROWS = []  # headline rows
+APPX = []  # measured rows shown only in the appendix timing table (re-measures, duplicates of a final-cohort mesh)
 
 
 def setting(label, err, ms, **kw):
     return dict(label=label, error_pct=err, ms=ms, **kw)
 
 
-def row(problem, dim, n, fast, acc, fom, source, job, cohort, status, error, timing, note=''):
+def row(problem, dim, n, fast, acc, fom, source, job, cohort, status, error, timing, note='', alt=None, appendix_only=None):
     for s in (fast, acc):
         if s: assert fom['error_pct'] <= s['error_pct'] + 1e-12, (problem, n)
-    ROWS.append(dict(problem=problem, dim=dim, intervals=n, fast=fast, accurate=acc, fom=fom, source=source,
-                     job_id=str(job), cohort=cohort, status=status, error_convention=error, timing_scope=timing, note=note))
+    (APPX if appendix_only else ROWS).append(dict(problem=problem, dim=dim, intervals=n, fast=fast, accurate=acc, fom=fom, source=source,
+                     job_id=str(job), cohort=cohort, status=status, error_convention=error, timing_scope=timing, note=note,
+                     alt=alt, appendix_only=appendix_only))
 
 
 # ---- Poisson 2D and Heat 2D: paired CG snapshot -------------------------------------------
@@ -190,16 +196,67 @@ for n in (32, 64):
         dict(name='CN--CG, rtol $10^{-4}$', error_pct=100 * c['worst_rel_l2'], ms=c['device_ms']), 'heat3d', a['job_id'],
         'final', 'accepted final', 'same-grid, evolved', 'GPU query')
 
+HP = {}   # controls of the hires-poisson lane, for the Limitations sentence
+
+
+def hires_poisson(key, d):
+    """Adapter for the hires-poisson lane summary (its own schema).
+
+    Scope rule: never mix timing scopes inside one series.  The existing square/cube Poisson series are GPU-query
+    times, so those rows use median_device_ms; the existing L-shape series is complete-query, so it uses
+    median_total_ms.  The other scope is carried in ``alt`` and printed in the appendix timing table only.
+    Arms are the lane's own verdict arms (accurate) and their q = 0 twins (fast); no variant is picked here.
+    """
+    audited = {(s['attempt']) for s in d['sources'] if s['audit_passed'] and all(s['gates'].values())}
+    R_ = {(r['attempt'], r['mesh'], r['subject']): r for r in d['rows']}
+    verdict = {(v['attempt'], v['mesh']): v for v in d['verdicts']}
+    floors = {(b['attempt'], b['mesh']): b['worst'] for b in d['bank_floor']}
+    plan = [  # attempt, lane mesh label, problem, dim, intervals, scope key, appendix-only reason
+        ('hp2048', 'square 2048²', 'Poisson', 2, 2048, 'device', None),
+        ('hp4096', 'square 4096²', 'Poisson', 2, 4096, 'device', None),
+        ('hp4096b', 'square 4096²', 'Poisson', 2, 4096, 'device', 're-measure of the row above'),
+        ('hp3d128', 'cube 64³', 'Poisson (dev. sources)', 3, 64, 'device', 'development sources; the held-out final row is in Table 1'),
+        ('hp3d128', 'cube 128³', 'Poisson (dev. sources)', 3, 128, 'device', None),
+        ('hp3d256', 'cube 128³', 'Poisson (dev. sources)', 3, 128, 'device', 're-measure of the row above'),
+        ('hp3d256', 'cube 256³', 'Poisson (dev. sources)', 3, 256, 'device', None),
+        ('hpl32', 'L-shape 1024² (32 sources)', 'Poisson, L-shape', 2, 1024, 'total', None),
+        ('hpl32', 'L-shape 2048² (32 sources)', 'Poisson, L-shape', 2, 2048, 'total', None),
+    ]
+    for attempt, lm, problem, dim, n, scope, only in plan:
+        assert attempt in audited, attempt
+        v = verdict[(attempt, lm)]; assert not v.get('withdrawn_as_bar_verdict') and v['comparator'] == 'cg_0.01'
+        acc = R_[(attempt, lm, v['arm'])]; q = acc['q']
+        fast = R_[(attempt, lm, v['arm'].replace(f'rom_q{q}_', 'rom_q0_'))]; fom = R_[(attempt, lm, 'cg_0.01')]
+        assert fast['q'] == 0 and acc['family'] == fast['family'] == 'nm-rom' and fom['family'] == 'cg'
+        assert q == max(r['q'] for (a, m, _), r in R_.items() if a == attempt and m == lm and r['family'] == 'nm-rom' and not _.count('m4') and not _.count('m8'))
+        assert acc['cases'] == fast['cases'] == fom['cases'] and 'development' in acc['status']
+        use, other = ('median_device_ms', 'median_total_ms') if scope == 'device' else ('median_total_ms', 'median_device_ms')
+        sd = acc['speedups']['named_cg_1e-2']; assert abs(sd[scope] - fom[use] / acc[use]) < 1e-9       # lane ratio reproduces
+        alt = dict(scope='complete query' if scope == 'device' else 'GPU query', accurate=fom[other] / acc[other], fast=fom[other] / fast[other])
+        row(problem, dim, n, setting(f'$q=0$', 100 * fast['worst_same_grid'], fast[use], arm=fast['subject']),
+            setting(f'$q={q}$', 100 * acc['worst_same_grid'], acc[use], arm=acc['subject']),
+            dict(name='CG, rtol $10^{-2}$', error_pct=100 * fom['worst_same_grid'], ms=fom[use]), key, acc['job_id'], 'development',
+            'development', 'same-grid', 'GPU query' if scope == 'device' else 'complete query',
+            note=f"{acc['cases']} development sources; {acc['gpu']}; attempt {attempt}", alt=alt, appendix_only=only)
+        if not only:
+            ctl = {c: acc['speedups'][c] for c in ('dst_direct', 'fastest_coarse_matched') if acc['speedups'].get(c)}
+            HP[(problem, n)] = dict(controls=ctl, floor_pct=100 * floors[(attempt, lm)], acc_err=100 * acc['worst_same_grid'])
+
+
 # ---- coordinator-supplied lane rows ----------------------------------------------------------------
 for k, v in MAN.items():
     if not k.startswith('intake_'): continue
-    d = D[k]; assert d['schema'] == INTAKE_SCHEMA, k
+    d = D[k]
+    if v.get('adapter') == 'hires-poisson-v1':
+        hires_poisson(k, d); continue
+    assert d['schema'] == INTAKE_SCHEMA, k
     for r in d['headline_rows']:
         row(r['problem'], r['dim'], r['intervals'], r.get('fast'), r.get('accurate'), r['fom'], k, r['job_id'], r['cohort'],
             r['status'], r['error_convention'], r['timing_scope'], r.get('note', ''))
 
 ROWS.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], r['fom']['ms']))
-for r in ROWS:
+APPX.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
+for r in ROWS + APPX:
     for s in ('fast', 'accurate'):
         if r[s]: r[s]['speedup'] = r['fom']['ms'] / r[s]['ms']
 
@@ -221,7 +278,7 @@ def cells(s): return [e(s['error_pct']), sp(s['speedup'])] if s else ['---', '--
 
 
 def covered(p, n):
-    return any(r['problem'] == p['problem'] and r['dim'] == p['dim'] and r['intervals'] == n for r in ROWS)
+    return any(r['problem'].startswith(p['problem']) and ',' not in r['problem'] and r['dim'] == p['dim'] and r['intervals'] == n for r in ROWS)
 
 
 def write(name, lines, mdhead, mdrows):
@@ -255,16 +312,18 @@ lines += [r'\bottomrule', r'\end{tabular}']
 write('TH_headline', lines, ['Problem', 'Mesh', 'Accurate err. (%)', 'Accurate speedup', 'Fast err. (%)', 'Fast speedup', 'FOM err. (%)', 'FOM'], mdrows)
 
 # supporting times (appendix)
-tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrlll@{}}', r'\toprule',
-      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Job & Status \\', r'\midrule']
+tl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}llllrrrllll@{}}', r'\toprule',
+      r'Problem & Mesh & Accurate & Fast & Accurate ms & Fast ms & FOM ms & Timing & Other scope: acc.\ / fast & Job & Status \\', r'\midrule']
 tmd = []
-for r in ROWS:
+for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], bool(r['appendix_only']), r['fom']['ms'])):
     a, f = r['accurate'], r['fast']
-    c = [f"{r['problem']} {r['dim']}D", mesh(r), a['label'] if a else '---', f['label'] if f else '---', f"{a['ms']:.2f}" if a else '---',
-         f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'], r'\texttt{' + r['job_id'] + '}', r['status'].split(';')[0]]
+    c = [f"{r['problem']} {r['dim']}D" + (r'$^{\ast}$' if r['appendix_only'] else ''), mesh(r), a['label'] if a else '---', f['label'] if f else '---', f"{a['ms']:.2f}" if a else '---',
+         f"{f['ms']:.2f}" if f else '---', f"{r['fom']['ms']:.2f}", r['timing_scope'],
+         (spn(r['alt']['accurate']) + r'$\times$ / ' + spn(r['alt']['fast']) + r'$\times$ (' + r['alt']['scope'] + ')') if r.get('alt') else '---',
+         r'\texttt{' + r['job_id'] + '}', r['status'].split(';')[0]]
     tl.append(' & '.join(c) + r' \\'); tmd.append([md(x).replace('\\texttt{', '').replace('}', '') for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
-write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Job', 'Status'], tmd)
+write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM ms', 'Timing', 'Other scope: acc. / fast', 'Job', 'Status'], tmd)
 
 # second small table slot: other nonlinear-manifold ROMs (nmrom-baselines lane)
 bl = [r'% GENERATED by paper/gen_headline.py -- slot for the nmrom-baselines lane; no value is read until an audited summary is supplied.',
@@ -313,7 +372,7 @@ write('TH_failures', fl, ['Problem', 'Setting', 'NM-ROM err. (%)', 'FOM err. (%)
 
 # prose macros used by abstract / results: only values present in the generated headline table
 def best(pred, key):
-    c = [r for r in ROWS if pred(r) and r[key]]
+    c = [r for r in ROWS if pred(r) and r[key] and not r['source'].startswith('intake_')]   # lane rows stay out of abstract/conclusion macros
     return max(c, key=lambda r: r[key]['speedup'])
 mac = {}
 pa = best(lambda r: r['problem'] == 'Poisson' and r['dim'] == 2, 'accurate')
@@ -322,7 +381,7 @@ mac['nHeadPoissonFastS'] = spn(pa['fast']['speedup']); mac['nHeadPoissonMesh'] =
 la = best(lambda r: r['problem'] == 'Poisson, L-shape', 'accurate'); mac['nHeadLshapeAccS'] = spn(la['accurate']['speedup']); mac['nHeadLshapeAccErr'] = e(la['accurate']['error_pct'])
 ha = best(lambda r: r['problem'] == 'Heat' and r['dim'] == 2, 'fast'); mac['nHeadHeatFastS'] = spn(ha['fast']['speedup']); mac['nHeadHeatFastErr'] = e(ha['fast']['error_pct'])
 bb = [r for r in ROWS if r['problem'] == 'Burgers']
-b1024 = [r for r in bb if r['intervals'] == 1024][0]; b256 = [r for r in bb if r['intervals'] == 256][0]
+b1024 = [r for r in bb if r['intervals'] == 1024 and not r['source'].startswith('intake_')][0]; b256 = [r for r in bb if r['intervals'] == 256][0]
 mac['nHeadBurgersFastS'] = spn(b1024['fast']['speedup']); mac['nHeadBurgersFastErr'] = e(b1024['fast']['error_pct'])
 mac['nHeadBurgersAccErr'] = e(b256['accurate']['error_pct']); mac['nHeadBurgersAccS'] = spn(b256['accurate']['speedup'])
 p3a = best(lambda r: r['problem'] == 'Poisson' and r['dim'] == 3, 'accurate'); mac['nHeadPoissonThreeAccS'] = spn(p3a['accurate']['speedup']); mac['nHeadPoissonThreeAccErr'] = e(p3a['accurate']['error_pct'])
@@ -334,6 +393,20 @@ mac['nFailBurgersQzero'] = e(FB[('burgers3d', '$q=0$')]['error_pct']); mac['nFai
 mac['nFailNsQzero'] = e(FB[('ns3d', '$q=0$')]['error_pct']); mac['nFailNsAcc'] = e(FB[('ns3d', '$q=256$')]['error_pct'])
 mac['nFailNsTarget'] = f"{D['ns3d']['target_percent']:g}"; mac['nFailNsFailing'] = str(FB[('ns3d', '$q=256$')]['failing']); mac['nFailNsCases'] = str(FB[('ns3d', '$q=256$')]['cases'])
 mac['nFailWaveQzero'] = e(FB[('wave', '$q=0$')]['error_pct']); mac['nFailWaveAcc'] = e(FB[('wave', '$q=32$')]['error_pct'])
+if HP:
+    def rng(vals): return spn(min(vals)) + '--' + spn(max(vals))
+    sq = {k: v for k, v in HP.items() if k[0].startswith('Poisson') and ',' not in k[0]}          # square and cube
+    mac['nHiresCtlTotal'] = rng([c['total'] for v in sq.values() for c in v['controls'].values()])
+    mac['nHiresCtlDevice'] = rng([c['device'] for v in sq.values() for c in v['controls'].values()])
+    ls = {k: v for k, v in HP.items() if k[0] == 'Poisson, L-shape'}
+    mac['nHiresLshapeCoarse'] = rng([v['controls']['fastest_coarse_matched']['total'] for v in ls.values()])
+    mac['nHiresLshapeAccErr'] = e(max(v['acc_err'] for v in ls.values())); mac['nHiresLshapeFloor'] = e(max(v['floor_pct'] for v in ls.values()))
+    mac['nHiresFloorSquare'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] == 'Poisson'):.3f}"
+    mac['nHiresFloorCube'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] != 'Poisson'):.3f}"
+    for r in ROWS:
+        if r['source'].startswith('intake_') and r['problem'] == 'Poisson':
+            w = {2048: 'TwentyFortyEight', 4096: 'FortyNinetySix'}[r['intervals']]
+            mac['nHiresPoissonAccS' + w] = spn(r['accurate']['speedup']); mac['nHiresPoissonAccTotalS' + w] = spn(r['alt']['accurate'])
 mac['nHeadFasterRows'] = str(sum(1 for r in ROWS if any(r[s] and r[s]['speedup'] > 1 for s in ('fast', 'accurate'))))
 mac['nHeadRows'] = str(len(ROWS))
 mac['nHeadAccFasterSubOne'] = str(sum(1 for r in ROWS if r['accurate'] and r['accurate']['speedup'] > 1 and r['accurate']['error_pct'] < 1))
@@ -354,5 +427,5 @@ write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named
 (HERE / 'tables/headline-provenance.json').write_text(json.dumps(dict(
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '
          'One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.',
-    sources=MAN, rows=ROWS, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
+    sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
 print(f'Headline: {len(ROWS)} rows, {mac["nHeadFasterRows"]} with a faster NM-ROM setting; {len(F)} failure rows; all snapshots hash-verified.')

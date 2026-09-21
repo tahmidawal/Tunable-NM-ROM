@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-20 18:58; this block is removed before submission).*
+*Status for the reader (generated 2026-09-20 23:15; this block is removed before submission).*
 *Populated tables (88): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -436,16 +436,25 @@ error (all others same-grid); $^{c}$ complete-query time with host
 transfers (all others GPU query). The earlier Burgers model has one
 setting, may exit on a stall, and is shown against relaxed
 ($10^{-2}/0.5$) and tight ($10^{-6}/10^{-8}$) nonlinear/linear Newton
-tolerances. Dashes mark settings not measured and rows reserved for runs
-in progress. Times and settings: Table 9.
+tolerances. Poisson (dev. sources) rows use development sources of a
+separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
+host transfer of the field dominates the NM-ROM query: the accurate
+setting's complete-query speedups are
+$\nHiresPoissonAccTotalSTwentyFortyEight\times$ and
+$\nHiresPoissonAccTotalSFortyNinetySix\times$. Dashes mark settings not
+measured and rows reserved for runs in progress. Times and settings: Table 9.
 
 <!-- table: TH_headline -->
 | Problem | Mesh | Accurate err. (%) | Accurate speedup | Fast err. (%) | Fast speedup | FOM err. (%) | FOM |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Poisson 2D (development) | 256^2 | 0.97 | **3.13×** | 3.16 | **3.33×** | 0.15 | CG, rtol 10^{-2} |
 | Poisson 2D (development) | 1024^2 | 0.96 | **13.9×** | 3.15 | **15.2×** | 0.072 | CG, rtol 10^{-2} |
+| Poisson 2D (development) | 2048^2 | 0.96 | **72.8×** | 3.15 | **74.3×** | 0.049 | CG, rtol 10^{-2} |
+| Poisson 2D (development) | 4096^2 | 0.96 | **146×** | 3.15 | **148×** | 0.038 | CG, rtol 10^{-2} |
 | Poisson, L-shape 2D (development) | 256^2 | 2.13 | **3.84×** | 3.86 | **4.04×** | 0.64 | CG, rtol 10^{-2} |
 | Poisson, L-shape 2D (development) | 512^2 | 2.12 | **6.07×** | 3.85 | **6.18×** | 0.38 | CG, rtol 10^{-2} |
+| Poisson, L-shape 2D (development) | 1024^2 | 2.20 | **9.76×** | 3.85 | **10.0×** | 0.31 | CG, rtol 10^{-2} |
+| Poisson, L-shape 2D (development) | 2048^2 | 2.20 | **19.3×** | 3.85 | **19.4×** | 0.24 | CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 64^2 | — | — | 4.56 | 0.22× | 1.59 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 256^2 | — | — | 4.56 | 0.61× | 0.93 | CN–CG, rtol 10^{-2} |
 | Heat 2D (development; earlier checkpoint, one setting) | 1024^2 | — | — | 4.56 | **4.85×** | 0.77 | CN–CG, rtol 10^{-2} |
@@ -454,14 +463,14 @@ in progress. Times and settings: Table 9.
 | Burgers 2D (development) | 1024^2 | 0.59 | 0.0037× | 2.29 | **2.02×** | 0.034 | Newton–BiCGStab, tol 10^{-4} |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **1.63×** | 2.39 | Newton–BiCGStab, relaxed |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **14.5×** | 2.14 | Newton–BiCGStab, tight |
-| Poisson 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-poisson lane |
 | Heat 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 2D | 2048^2, 4096^2 | — | — | — | — | — | pending: hires-burgers lane |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
+| Poisson (dev. sources) 3D (development) | 128^3 | 0.16 | **6.75×** | 0.55 | **6.98×** | 0.075 | CG, rtol 10^{-2} |
+| Poisson (dev. sources) 3D (development) | 256^3 | 0.16 | **23.2×** | 0.55 | **23.7×** | 0.049 | CG, rtol 10^{-2} |
 | Heat 3D (accepted final) | 32^3 | 0.76 | 0.066× | 1.56 | 0.13× | 0.32 | CN–CG, rtol 10^{-4} |
 | Heat 3D (accepted final) | 64^3 | 0.75 | 0.13× | 1.55 | 0.27× | 0.34 | CN–CG, rtol 10^{-4} |
-| Poisson 3D | 128^3 | — | — | — | — | — | pending: hires-poisson lane |
 | Heat 3D | 128^3 | — | — | — | — | — | pending: hires-heat lane |
 | Burgers 3D | 128^3 | — | — | — | — | — | pending: hires-burgers lane |
 
@@ -477,7 +486,9 @@ $\nHeadBurgersMidErr %$ at $\nHeadBurgersMidS\times$.
 On Poisson the accurate setting reaches $\nHeadPoissonAccErr %$ error and
 is $\nHeadPoissonAccS\times$ faster than CG at $\nHeadPoissonMesh$; the
 corrections cost little speed because they are eliminated analytically
-(§3.2). On the
+(§3.2). The error stays at $\nHeadPoissonAccErr %$ up
+to $4096^2$ while the GPU-query speedup rises to
+$\nHiresPoissonAccSFortyNinetySix\times$. On the
 L-shaped domain, where no fast transform applies, the accurate setting is
 $\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr %$. Heat crosses
 CG between $256^2$ and $1024^2$ and is $\nHeadHeatFastS\times$ faster at
@@ -617,9 +628,17 @@ checkpoint and verdict.
 
 **Limitations.**
 
-Speedups are against the named iterative solvers; on the square, direct
-sine-transform solvers are faster than CG and are not the comparator,
-and the named FOM is more accurate than the NM-ROM in every row.
+Speedups are against the named iterative solvers, and the named FOM is
+more accurate than the NM-ROM in every row. On the square and cube a
+direct sine-transform solve and a coarse-grid solve at the NM-ROM's own
+accuracy are both faster than the NM-ROM ($\nHiresCtlTotal\times$ in
+complete-query time, $\nHiresCtlDevice\times$ in GPU-query time), and on
+the L-shape the coarse-grid solve is ($\nHiresLshapeCoarse\times$). The
+accurate Poisson errors are close to the frozen bank's projection floor
+($\nHiresFloorSquare %$ square, $\nHiresFloorCube %$ cube), which no
+correction rank can pass; the
+L-shape accurate setting ($\nHiresLshapeAccErr %$ against a floor of
+$\nHiresLshapeFloor %$) is limited by the head.
 Except where marked final, cohorts are small development cohorts, and
 timings are medians without dispersion. The fixed-test-space
 rank study uses one checkpoint; the multi-seed study changes the test
@@ -1048,27 +1067,41 @@ measurements.
 **Table 9.** Supporting data for Table 1: the two settings
 of each frozen model, median times (ms), timing scope, allocation and
 evidence status. “EQ” and “dense” name the Burgers residual
-evaluation; “single” marks models measured at one setting.
+evaluation; “single” marks models measured at one setting. Where a
+run recorded both timing scopes, the speedups in the scope not used by
+Table 1 are listed; a series never mixes scopes.
+$^{\ast}$ not in Table 1: a re-measurement of the row
+above it, or a development-source run at a mesh whose held-out row is in
+Table 1.
 
 <!-- table: TH_headline_times -->
-| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Job | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | 3780692 | development |
-| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | 3783813 | development |
-| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | 3784663 | development |
-| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | 3789568 | development |
-| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | 3529772 | development |
-| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | 3529772 | development |
-| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | 3529772 | development |
-| Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | 3789570 | development |
-| Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | 3805065 | development |
-| Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | 3789572 | development |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | 3534502 | development |
-| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | 3534502 | development |
-| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | 4028642 | accepted final |
-| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | 4028642 | accepted final |
-| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | 4033346 | accepted final |
-| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | 4033346 | accepted final |
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM ms | Timing | Other scope: acc. / fast | Job | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | 22.29 | GPU query | — | 3780692 | development |
+| Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | 60.02 | GPU query | — | 3783813 | development |
+| Poisson 2D | 2048^2 | q=256 | q=0 | 5.47 | 5.35 | 397.80 | GPU query | 28.7× / 28.8× (complete query) | 4049279 | development |
+| Poisson 2D | 4096^2 | q=256 | q=0 | 16.92 | 16.74 | 2472.81 | GPU query | 41.1× / 41.7× (complete query) | 4051236 | development |
+| Poisson 2D^{\ast | 4096^2 | q=256 | q=0 | 17.17 | 17.01 | 2465.60 | GPU query | 37.6× / 37.9× (complete query) | 4071227 | development |
+| Poisson, L-shape 2D | 256^2 | q=64 | q=0 | 3.03 | 2.88 | 11.64 | complete query | — | 3784663 | development |
+| Poisson, L-shape 2D | 512^2 | q=64 | q=0 | 4.80 | 4.72 | 29.13 | complete query | — | 3789568 | development |
+| Poisson, L-shape 2D | 1024^2 | q=128 | q=0 | 5.81 | 5.67 | 56.72 | complete query | 16.0× / 16.5× (GPU query) | 4057694 | development |
+| Poisson, L-shape 2D | 2048^2 | q=128 | q=0 | 18.75 | 18.66 | 362.30 | complete query | 33.9× / 34.3× (GPU query) | 4057694 | development |
+| Heat 2D | 64^2 | — | single | — | 11.23 | 2.50 | GPU query | — | 3529772 | development |
+| Heat 2D | 256^2 | — | single | — | 11.34 | 6.94 | GPU query | — | 3529772 | development |
+| Heat 2D | 1024^2 | — | single | — | 12.21 | 59.18 | GPU query | — | 3529772 | development |
+| Burgers 2D | 256^2 | q=256, EQ | q=0, EQ | 746.02 | 40.36 | 31.79 | GPU query | — | 3789570 | development |
+| Burgers 2D | 512^2 | q=256, EQ | q=0, EQ | 783.33 | 40.49 | 52.92 | GPU query | — | 3805065 | development |
+| Burgers 2D | 1024^2 | q=256, dense | q=0, EQ | 22053.85 | 40.27 | 81.31 | GPU query | — | 3789572 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 68.04 | GPU query | — | 3534502 | development |
+| Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | 605.75 | GPU query | — | 3534502 | development |
+| Poisson 3D | 32^3 | q=96 | q=0 | 2.63 | 2.49 | 2.47 | GPU query | — | 4028642 | accepted final |
+| Poisson 3D | 64^3 | q=96 | q=0 | 3.36 | 3.22 | 4.46 | GPU query | — | 4028642 | accepted final |
+| Poisson (dev. sources) 3D^{\ast | 64^3 | q=96 | q=0 | 1.43 | 1.38 | 2.88 | GPU query | 1.57× / 1.56× (complete query) | 4051032 | development |
+| Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | 12.55 | GPU query | 2.70× / 2.66× (complete query) | 4051032 | development |
+| Poisson (dev. sources) 3D^{\ast | 128^3 | q=96 | q=0 | 1.90 | 1.76 | 12.40 | GPU query | 2.65× / 2.70× (complete query) | 4056288 | development |
+| Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | 140.87 | GPU query | 4.18× / 4.21× (complete query) | 4056288 | development |
+| Heat 3D | 32^3 | q=96 | q=0 | 77.78 | 38.35 | 5.16 | GPU query | — | 4033346 | accepted final |
+| Heat 3D | 64^3 | q=96 | q=0 | 85.44 | 40.38 | 10.84 | GPU query | — | 4033346 | accepted final |
 
 **Table 10.** Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except

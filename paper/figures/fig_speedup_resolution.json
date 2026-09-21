@@ -1,6 +1,6 @@
 {
   "evidence": "headline-provenance.json",
-  "evidence_sha256": "6fc479841c0e6a74a05c638751ae6ab5c3832b14e1750ac33e2b840ff2230f8b",
+  "evidence_sha256": "c42dc5319a25f7712f916d3c6d65cabd3e172c039d4a34e186177fa880843b2a",
   "series": {
     "2D|Burgers|accurate": [
       {
@@ -107,6 +107,24 @@
         "status": "development",
         "job_id": "3783813",
         "source": "paired_cg"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 72.76811016327979,
+        "error_pct": 0.9645883880109439,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4049279",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 146.13583344322683,
+        "error_pct": 0.964537840152561,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4051236",
+        "source": "intake_00_hires-poisson"
       }
     ],
     "2D|Poisson|fast": [
@@ -127,6 +145,24 @@
         "status": "development",
         "job_id": "3783813",
         "source": "paired_cg"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 74.34952018557414,
+        "error_pct": 3.1491428879205863,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4049279",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 4096,
+        "speedup": 147.7049319223631,
+        "error_pct": 3.149052648463983,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4051236",
+        "source": "intake_00_hires-poisson"
       }
     ],
     "2D|Poisson, L-shape|accurate": [
@@ -147,6 +183,24 @@
         "status": "development",
         "job_id": "3789568",
         "source": "lshape"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 9.764411026463936,
+        "error_pct": 2.1956586483888754,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4057694",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 19.317471308306086,
+        "error_pct": 2.1950989738306297,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4057694",
+        "source": "intake_00_hires-poisson"
       }
     ],
     "2D|Poisson, L-shape|fast": [
@@ -167,6 +221,24 @@
         "status": "development",
         "job_id": "3789568",
         "source": "lshape"
+      },
+      {
+        "intervals": 1024,
+        "speedup": 10.008394971570402,
+        "error_pct": 3.849894344385892,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4057694",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 2048,
+        "speedup": 19.420073438055997,
+        "error_pct": 3.849360094871094,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4057694",
+        "source": "intake_00_hires-poisson"
       }
     ],
     "3D|Heat|accurate": [
@@ -247,6 +319,46 @@
         "status": "accepted final",
         "job_id": "4028642",
         "source": "poisson3d"
+      }
+    ],
+    "3D|Poisson (dev. sources)|accurate": [
+      {
+        "intervals": 128,
+        "speedup": 6.753091557557722,
+        "error_pct": 0.15965075226329933,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4051032",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 256,
+        "speedup": 23.179541295366462,
+        "error_pct": 0.15960551059368017,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4056288",
+        "source": "intake_00_hires-poisson"
+      }
+    ],
+    "3D|Poisson (dev. sources)|fast": [
+      {
+        "intervals": 128,
+        "speedup": 6.975613060595963,
+        "error_pct": 0.5454752416100778,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4051032",
+        "source": "intake_00_hires-poisson"
+      },
+      {
+        "intervals": 256,
+        "speedup": 23.658185326920147,
+        "error_pct": 0.5456130298462576,
+        "fom": "CG, rtol $10^{-2}$",
+        "status": "development",
+        "job_id": "4056288",
+        "source": "intake_00_hires-poisson"
       }
     ]
   },

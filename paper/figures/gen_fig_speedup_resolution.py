@@ -23,7 +23,7 @@ from matplotlib.lines import Line2D
 HERE = Path(__file__).resolve().parent
 # dataviz validator: passes light mode; aqua/magenta sit in the 6-8 CVD band, so every
 # series also carries its own marker shape and a direct label (secondary encoding).
-STYLE = {'Poisson': ('#2a78d6', 'o'), 'Poisson, L-shape': ('#e87ba4', 'D'), 'Heat': ('#eb6834', 's'), 'Burgers': ('#1baf7a', '^')}
+STYLE = {'Poisson': ('#2a78d6', 'o'), 'Poisson (dev. sources)': ('#2a78d6', 'v'), 'Poisson, L-shape': ('#e87ba4', 'D'), 'Heat': ('#eb6834', 's'), 'Burgers': ('#1baf7a', '^')}
 INK = '#2b2b2b'; MUTED = '#6b6b6b'
 
 ap = argparse.ArgumentParser()
@@ -56,7 +56,7 @@ for ax, dim in zip(axes, (2, 3)):
         ax.plot([x['intervals'] for x in pts], [x['speedup'] for x in pts], color=c, lw=1.6 if s == 'fast' else 1.2,
                 ls='-' if s == 'fast' else '--', marker=mk, ms=5.5, mfc=c if s == 'fast' else 'white', mec=c, mew=1.2, zorder=3)
         if s == 'fast':
-            first = p == 'Poisson, L-shape'          # its end point sits between two other labels
+            first = p in ('Poisson, L-shape', 'Poisson (dev. sources)')          # its end point sits between two other labels
             x = pts[0] if first else pts[-1]
             ax.annotate(p + (' (provisional)' if prov_flag else ''), (x['intervals'], x['speedup']), xytext=(-6, 5) if first else (6, 2),
                         ha='right' if first else 'left', textcoords='offset points', fontsize=7, color=INK)

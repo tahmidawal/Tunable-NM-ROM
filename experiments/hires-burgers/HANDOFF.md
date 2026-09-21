@@ -7,8 +7,10 @@
 
 ## State (update at every milestone)
 
-- Jobs used: **8 / 8 (budget spent)**. RUNNING/QUEUED: `hb4k04` = 4079320 (4096², dev6, `config-4096-pred.json`:
-  pred2 predictor + tolerance arms, 5 reps) and `hb4kh64` = 4079321 (4096², hold64, `config-4096-hold64.json`,
+- **hb4k04 (4079320, 4096², dev6) collected, audited (no failed gate), remote deleted**: `checks/hb4k04-summary.json`.
+  pred2 1.15× at the accurate rung at unchanged error (145.7 → 127.2 ms); chosen dev6 arm (pre-registered rule) =
+  q256/M1088/lat64 g1e-2 chol+clip+lamcarry+pred2, 0.604 % at 107.5 ms = 30.4× tight, **4.87× relaxed passing (not 5)**.
+- Jobs used: **8 / 8 (budget spent)**. RUNNING: `hb4kh64` = 4079321 (4096², hold64, `config-4096-hold64.json`,
   1 rep). Both staged at af5e61e9, H200, `--mem 320G`. When done: collect.py → audit_hires.py → delete ONLY that
   remote dir → regenerate report + `reports/summary.json` → SPEED-LOG rows (pred2 vs chol_clip_lamcarry, same job) →
   lab-log entry → final bar verdict. DESIGN addendum A1 fixes the selection rule (choose on dev6, report hold64).
@@ -57,5 +59,5 @@ Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage 
 | hb2k02 | 4071616 | 2048² | H200 (pax008) | DONE, audited, remote deleted | `checks/hb2k02-summary.json` |
 | hb4k03 | 4071625 | 4096² | H200 (pax008) | DONE, audited (no failed gate), remote deleted | `checks/hb4k03-summary.json` |
 | hb2kh64 | 4077566 | 2048², hold64 | H200 (pax008) | DONE, audited (1 failed gate: restricted proxy, see State), remote deleted | `checks/hb2kh64-summary.json` |
-| hb4k04 | 4079320 | 4096², dev6, pred2 | H200 | SUBMITTED | — |
+| hb4k04 | 4079320 | 4096², dev6, pred2 | H200 (pax008) | DONE, audited (no failed gate), remote deleted | `checks/hb4k04-summary.json` |
 | hb4kh64 | 4079321 | 4096², hold64 | H200 | SUBMITTED | — |

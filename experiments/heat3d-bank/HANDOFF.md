@@ -18,7 +18,7 @@ Design + pre-registered selection rule: `DESIGN.md`. Codex audit: `CODEX-DESIGN-
 | valR256 | 4141159 | CANCELLED (head-validate compile stall, see runs/valR256-cancelled/CANCELLED.md). Bank had reached 0.122 % at 64^3/128^3 | train R=256 K16/K32 + validation panels |
 | valR320 | 4142297 | CANCELLED while pending (same fix) |
 | valR256b | 4143174 | RUNNING (H200) |
-| valR320b | - | resubmit with fixed head validate | train R=320 K16/K32 + validation panels |
+| valR320b | 4143180 | submitted (H200) | train R=320 K16/K32 + validation panels |
 | final01 | - | not submitted | frozen selection, cohorts 920399 + 921099, 32^3/64^3/128^3 |
 
 ## Next step

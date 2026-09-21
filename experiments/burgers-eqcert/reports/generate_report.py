@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 LANE = Path(__file__).resolve().parents[1]
-ATTEMPTS = ['bc256', 'bc256b', 'bc512', 'bc1024', 'bc2048']
+ATTEMPTS = ['bc256', 'bc256b', 'bc512', 'bc1024', 'bc2048b']
 MAIN = ['bc256', 'bc256b', 'bc512', 'bc1024']
 
 
@@ -60,7 +60,7 @@ def main():
                              fom_gpu_ms=fo['median_gpu_ms'], fom_worst_evolved_percent=fo['worst_evolved_percent'],
                              speedup_gpu=t['speedup_gpu'], speedup_host=t['speedup_host']))
     for a, s in S.items():
-        if a == 'bc2048':
+        if a == 'bc2048b':
             continue
         v = s['verdict']
         L = s['intervals']
@@ -97,8 +97,8 @@ def main():
                certificate_2048=({n: dict(status=st['audited_status'], confirmation=st.get('audited_confirmation_pass'),
                                           heldout_rho_max=st.get('heldout_rho_max'), deployed_rho_max=st.get('deployed_rho_max'),
                                           heldout_rho_max_all_k=st.get('heldout_rho_max_k>=0'),
-                                          worst_evolved_percent=S['bc2048']['table'][n]['worst_evolved_percent'])
-                                  for n, st in S['bc2048']['arm_status'].items()} if 'bc2048' in S else None),
+                                          worst_evolved_percent=S['bc2048b']['table'][n]['worst_evolved_percent'])
+                                  for n, st in S['bc2048b']['arm_status'].items()} if 'bc2048b' in S else None),
                rows=rows)
     (LANE / 'reports' / 'summary.json').write_text(json.dumps(out, indent=1) + '\n')
 
@@ -120,7 +120,7 @@ def main():
     if combined256:
         md += ['', f"**$256^2$, combined rule (A2.1):** eligible {combined256['eligible']}; pick `{combined256['pick']}`."]
     if out['certificate_2048']:
-        md += ['', '**$2048^2$ certificate only (A2.2, bc2048):**', '', '| arm | status | confirmation | $\\rho_{\\max}$ held-out | all $k$ | worst evolved % |', '|---|---|---|---|---|---|']
+        md += ['', '**$2048^2$ certificate only (A2.2 + A3, bc2048b):**', '', '| arm | status | confirmation | $\\rho_{\\max}$ held-out | all $k$ | worst evolved % |', '|---|---|---|---|---|---|']
         for n, c in out['certificate_2048'].items():
             md.append(f"| `{n}` | {c['status']} | {c['confirmation']} | {f(c['heldout_rho_max'])} | {f(c['heldout_rho_max_all_k'])} | {f(c['worst_evolved_percent'], 3)} |")
     md += ['', '## Rows', '',
@@ -151,6 +151,37 @@ def main():
                 md.append(f"| `{n}` | {t['dt']} | {t['ntol']} | {t['ltol']} | {f(t['worst_evolved_percent'], 4)} | "
                           f"{f(t['median_gpu_ms'], 1)} | {t['nonlinear_converged']} |")
         md.append('')
+    # exploration cross-check (local GB10, NOT audited, NOT a certificate): other held-out trajectories
+    ex = {}
+    for fn in ('w0_lattice_rho_256_512_1024.json', 'w0_lattice_rho_2048.json'):
+        q_ = LANE / 'explore' / fn
+        if q_.exists():
+            ex.update(json.loads(q_.read_text()))
+    ev = {}
+    for L_ in (256, 512, 1024):
+        q_ = LANE / 'explore' / f'evolved_lattice_rho_L{L_}.json'
+        if q_.exists():
+            ev[L_] = json.loads(q_.read_text())
+    out['exploration_crosscheck'] = dict(
+        note='local GB10, unaudited; trajectories params_draw(0,128) 8-47 (w0) and the hardest few (k>=1); never used by any certificate',
+        lat64_w0_rho_max={L_: ex[str(L_)]['rules']['lat64']['rho_max'] for L_ in (256, 512, 1024, 2048) if str(L_) in ex},
+        lat64_k1_rho_max={L_: max(r['lat64']['k1'] for r in ev[L_]['per_traj'].values()) for L_ in ev},
+        lat64_k2_rho_max={L_: max(r['lat64']['k2'] for r in ev[L_]['per_traj'].values()) for L_ in ev},
+        trajectories_k=({L_: ev[L_]['trajectories'] for L_ in ev}))
+    (LANE / 'reports' / 'summary.json').write_text(json.dumps(out, indent=1) + '\n')
+    xc = out['exploration_crosscheck']
+    md += ['## Cross-check against the exploration trajectories (unaudited, local)', '',
+           'Before any job, `explore/` measured `lat64` on 40 *other* held-out trajectories (`params_draw(0,128)` 8–47, '
+           'never used by any certificate or selection). Those numbers are local and unaudited, but they are evidence about '
+           'the same fixed rule:', '',
+           '| mesh | $\\rho_{\\max}$ at $k=0$ (40 traj.) | $\\rho_{\\max}$ at $k=1$ (hardest traj.) | $\\rho_{\\max}$ at $k=2$ |', '|---|---|---|---|']
+    for L_ in (256, 512, 1024, 2048):
+        md.append(f"| ${L_}^2$ | {f(xc['lat64_w0_rho_max'].get(L_))} | {f(xc['lat64_k1_rho_max'].get(L_))} | {f(xc['lat64_k2_rho_max'].get(L_))} |")
+    md += ['', 'Reading, against the bar 0.116: `lat64` with $j=0$ (selected at $1024^2$; the paper\'s $2048^2$/$4096^2$ rule) fails '
+           'on initial-fit states of these trajectories although it passes the lane\'s 56 by a margin of only $3$–$4\\times10^{-4}$ in $\\rho$; '
+           'with $j=1$ it is contradicted at $256^2$ (one $k=1$ state) but not at $512^2$/$1024^2$; with $j=2$ nothing '
+           'measured fails. **The certificates are population-dependent near the bar**; the robust choices on all evidence are '
+           '$j=2$ at $256^2$ and $j=1$ at $512^2$ and above.', '']
     md += ['## Speed verdict', '',
            'The protocol bar (error ≤ 1 % **and** speedup ≥ 5× against the named FOM, same allocation) is **missed at every '
            'mesh**: every accurate row is slower than the fastest Newton–BiCGStab setting at least as accurate (speedups in the '

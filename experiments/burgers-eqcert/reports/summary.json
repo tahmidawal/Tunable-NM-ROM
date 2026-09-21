@@ -1,10 +1,11 @@
 {
- "status": "partial",
+ "status": "final",
  "attempts": [
   "bc256",
   "bc256b",
   "bc512",
-  "bc1024"
+  "bc1024",
+  "bc2048b"
  ],
  "combined_256": {
   "rule": "DESIGN A2.1: confirmed 5/5 + confirmation in BOTH bc256 and bc256b; cheapest by bc256b time",
@@ -51,6 +52,15 @@
    "job_id": "4139290",
    "job_commit": "f80f0a884fba522a7de76c184fa531ddd9bda455",
    "result_json_sha256": "49871a6149c6e9d78d025da69902439bfeda062a7762dda4bb168b5a113abeef",
+   "accepted": true,
+   "failed_gates": []
+  },
+  "bc2048b": {
+   "summary": "checks/bc2048b-summary.json",
+   "sha256": "3d3bbfb4c7a00353acb4b7ea3475f13760c220cbca23cd95e49eaaeb388b906e",
+   "job_id": "4144580",
+   "job_commit": "71dc5c91c4280d4cf52c408fac1f23be75820ba3",
+   "result_json_sha256": "cad0b3a90688813a5e9d1a32fc4b792b6ca1d73f375b7bffe2e8906b9d71a94c",
    "accepted": true,
    "failed_gates": []
   }
@@ -117,7 +127,32 @@
    "accepted": true
   }
  },
- "certificate_2048": null,
+ "certificate_2048": {
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2": {
+   "status": "confirmed",
+   "confirmation": true,
+   "heldout_rho_max": 0.07939875689099664,
+   "deployed_rho_max": 0.11057589067705434,
+   "heldout_rho_max_all_k": 0.07939875689099664,
+   "worst_evolved_percent": 0.5979296452075404
+  },
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1": {
+   "status": "confirmed",
+   "confirmation": true,
+   "heldout_rho_max": 0.03762682848004319,
+   "deployed_rho_max": 0.03165058905396676,
+   "heldout_rho_max_all_k": 0.07939875689099664,
+   "worst_evolved_percent": 0.5979297833248844
+  },
+  "q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2": {
+   "status": "fails",
+   "confirmation": false,
+   "heldout_rho_max": 0.49686674870770026,
+   "deployed_rho_max": 0.5426134878138197,
+   "heldout_rho_max_all_k": 0.49686674870770026,
+   "worst_evolved_percent": 1.047814615395931
+  }
+ },
  "rows": [
   {
    "mesh": 256,
@@ -890,5 +925,42 @@
    "worst_current_relative_evolved_percent": 0.6898295412852098,
    "stalled_exits": 0
   }
- ]
+ ],
+ "exploration_crosscheck": {
+  "note": "local GB10, unaudited; trajectories params_draw(0,128) 8-47 (w0) and the hardest few (k>=1); never used by any certificate",
+  "lat64_w0_rho_max": {
+   "256": 0.5164487691914643,
+   "512": 0.2951763512558574,
+   "1024": 0.2222318496621229,
+   "2048": 0.18271640513227574
+  },
+  "lat64_k1_rho_max": {
+   "256": 0.13899853740851217,
+   "512": 0.08516754078394899,
+   "1024": 0.06736861097358694
+  },
+  "lat64_k2_rho_max": {
+   "256": 0.03283491996019955,
+   "512": 0.028785679468248466,
+   "1024": 0.025950036685443333
+  },
+  "trajectories_k": {
+   "256": [
+    22,
+    18,
+    15,
+    9
+   ],
+   "512": [
+    22,
+    18,
+    20
+   ],
+   "1024": [
+    22,
+    18,
+    20
+   ]
+  }
+ }
 }

@@ -16,8 +16,10 @@ Design: `DESIGN.md` (+ Addendum A1, Codex dispositions; audit record `reports/co
   - 512²: certified `lat64` j=1 g1e-2, 0.562 %, 195.0 ms, 0.091×.
   - 1024²: certified `lat64` j=0, 0.586 %, 108.6 ms, 0.32× — confirmation ρ 0.1157 vs bar 0.116 (thin); j=1 0.069×.
   - Speed bar missed everywhere. `scaled` (paper's current 256²/512² rule) not certified at any mesh.
-- **Running:** `bc2048` 4143536 (certificate only, pending H200). When done: collect → audit → delete remote →
-  `reports/generate_report.py` (status becomes final) → lab-log closing entry. Jobs used 5 / 8.
+- bc2048 4143536 FAILED before any number (Φ parity OOM at 2048², `artifacts/bc2048-failed/`); A3 retry bc2048b 4144580
+  (population at 512², hires convention) audited, accepted, remote deleted: lat64 j=0 confirmed, confirmation 0.1156
+  (thin); j=1 0.051. Nothing running; namespace empty. **Jobs used 7 / 8.** Report status: final.
+- Exploration cross-check (unaudited) contradicts lat64 j=0 at 1024²/2048² (w0 0.22/0.18) and j=1 at 256² (k=1 0.139).
 - Exploration (`explore/`): lat64 on w0 of params_draw(0,128) 8–47 fails at 256–2048² (0.52/0.30/0.22/0.18).
 
 ## Files
@@ -53,7 +55,8 @@ Jobs used: 3 / 8. **bc512: CERTIFIED** lat64_x1 g1e-2 (0.562 %, 0.091× vs lean_
 **bc1024: CERTIFIED** lat64 j=0 (0.586 %, 108.6 ms, 0.32× vs lean_nt3e-3 34.7 ms).
 
 | bc256b | 4143154 | 256², dev6, fresh pop (A2.1) | A100-80G (pax105) | DONE, audited (accepted), remote deleted | `checks/bc256b-summary.json` |
-| bc2048 | 4143536 | 2048², certificate only (A2.2) | H200 | pending (Resources) | — |
+| bc2048 | 4143536 | 2048², certificate only (A2.2) | H200 | FAILED (Φ parity OOM), remote deleted | `artifacts/bc2048-failed/` |
+| bc2048b | 4144580 | 2048², certificate only (A3) | H200 (pax009) | DONE, audited (accepted), remote deleted | `checks/bc2048b-summary.json` |
 
 **256² CERTIFIED under A2.1**: lat64_x1 g1e-2 (0.520 %, 214.2 ms, 0.085× vs lean_nt3e-3 18.1 ms), ρ_max 0.073 over 112 trajectories.
 Jobs used: 5 / 8. Only bc2048 left (pending H200). Next: collect/audit bc256b → apply the A2.1 combined 12-draw rule by hand-free script

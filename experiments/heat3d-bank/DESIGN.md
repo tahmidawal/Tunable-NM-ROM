@@ -10,7 +10,7 @@ over **all** output times including $t=0$, on the sealed cohort at $128^3$ (also
 Crank–Nicolson CG FOM in the same allocation? Current state: $1.93\%$ all-times at $128^3$ (hires-heat `h3d-final08`, paper failures table),
 because the frozen $R=128$ bank represents the initial field only to $\approx 1.5$–$1.9\%$.
 
-## Root cause of the previous training failures (hires-heat jobs 4071535, 4072491)
+## Root cause of the previous training failures (hires-heat jobs 4071535, 4072491) — supported mechanism
 
 `train.py` (auto-decoder) learned codes $\eta$ with Adam and replaced them every 10k/20k steps by exact least-squares coefficients.
 At each refit it zeroed the code Adam moments but kept the **shared step count**, so bias correction was $\approx 1$ and a re-sampled
@@ -21,7 +21,7 @@ refit **0.0448 → 0.1357 (×3.0)** with the original reset; **0.0531** with the
 (truncated refit kept 112 of 256 directions): 4071535 diverged (loss $4\times10^9$), 4072491 degraded the validation floor $2.3\to 6\%$.
 
 **Fix:** remove the codes entirely. `train_vp.py` eliminates the optimal coefficients exactly for the current bank $G$ (variable
-projection), so the loss is the true projection error onto $\mathrm{span}(G)$; nothing can lag or be kicked. Same toy config:
+projection, thin-QR projector), so the loss is the true projection error onto $\mathrm{span}(G)$; nothing can lag or be kicked. Same toy config:
 auto-decoder training floor 17–24 % after 3000 steps vs variable-projection **validation** floor 14.8 % (POD reference with the same
 48 training draws: 12.4 %).
 
@@ -40,17 +40,17 @@ auto-decoder training floor 17–24 % after 3000 steps vs variable-projection **
 ## Cohorts and disclosure
 
 - **Validation 921777** (256 draws): every choice (bank rank, head, $q$, stepping variants).
-- **Sealed: paper-h3d final cohort 920399** (64 draws) — the cohort of the paper's $1.93\%$ failure row, so the verdict is comparable.
-  *Disclosure:* this lane's pre-GPU diagnostic (`diagnostics/podfloor2.py`) computed training-data POD projection floors on 920399
-  (no model, nothing trained or selected); every choice here is made on 921777 only.
-- **Confirmation cohort 921099** (64 draws, first 16 were hires-heat's sealed seed, never opened by anyone): evaluated in the same final job.
+- **Sealed verdict cohort 921099** (64 draws; its first 16 were reserved as hires-heat's sealed seed but never evaluated by anyone).
+- **Repeated paper benchmark 920399** (64 draws) — the cohort of the paper's $1.93\%$ failure row, reported for comparability, NOT as
+  a fresh sealed test (Codex finding 9): it was evaluated by paper-h3d/hires-heat, and this lane's pre-GPU diagnostic
+  (`diagnostics/podfloor2.py`) computed training-data POD floors on it (no model, nothing selected). Every choice is made on 921777 only.
 - Both sealed cohorts are opened exactly once, in the final job, after this file's selection has been applied and committed.
 
 ## Jobs (budget: ≤ 8 total, ≤ 1–2 running)
 
 1. `valR256`, `valR320` (parallel, H200, 240G): train bank + heads K16/K32, then the validation panel (`val_vp_R*_K*.json`) at $64^3$ and
-   $128^3$: all 256 validation draws for errors, first 8 timed (5 repetitions), fields saved for the first 32 (NumPy audit).
-2. `final01` (H200): frozen selected model, cohorts 920399 + 921099, meshes $32^3, 64^3, 128^3$, all cases timed.
+   $128^3$: all 256 validation draws for errors, first 8 timed (5 repetitions); every case saves the selection-driving `_field_cn` arms, all arms saved for the first 32 (NumPy audit).
+2. `final01` (H200): frozen selected model, cohorts 921099 + 920399, meshes $32^3, 64^3, 128^3$, all cases timed.
 
 ## Pre-registered selection rule (applied mechanically by `select.py` on validation summaries)
 
@@ -60,7 +60,7 @@ auto-decoder training floor 17–24 % after 3000 steps vs variable-projection **
 3. Among candidates with such a $q$: smallest validation median GPU time of that arm at $128^3$; ties within 5 % go to smaller $R$, then smaller $K$.
 4. Final arms for the chosen model: $q=0$ (fast), accurate $q$ with `cn` and `direct` stepping, top ladder $q$ (both steppings), and the
    `cn_dt0.05` / `cn_dt0.1` variants of the accurate $q$ if they exist and pass the same 0.8 % validation test.
-5. If no candidate reaches 0.8 %: take the lowest validation worst all-times error at $128^3$ (`field_cn`), run the final anyway, report a miss.
+5. If no gated candidate reaches 0.8 %: take the gated candidate/q with the lowest validation worst all-times error at $128^3$ (`field_cn`), run the final anyway, report a miss. If no bank passes the gate, `select.py` writes STOP and no final config.
 
 ## Pass bar and reporting
 
@@ -83,3 +83,6 @@ auto-decoder training floor 17–24 % after 3000 steps vs variable-projection **
 - If both banks miss the gate (floor > 0.6 % at $128^3$), do not open the sealed cohorts; diagnose on validation (one further training
   job allowed, e.g. more steps / POD-teacher start), then stop.
 - Hard stop 2026-09-24 12:00 EDT; 8 jobs total.
+
+## Audit
+Codex design audit and dispositions: `CODEX-DESIGN-AUDIT.txt`, `CODEX-DESIGN-AUDIT-DISPOSITION.md` (all blockers/majors fixed or accepted before job 1).

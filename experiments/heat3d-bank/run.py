@@ -100,7 +100,11 @@ def main():
             full = (n - 1) ** d <= 300000 and ci < cfg.get('full_audit_cases', 2)
             if full:
                 for m in names: saved['FULL_' + m] = np.asarray(methods[m](u0)[0])
-            case['fields_saved'] = ci < cfg.get('save_fields_cases', count)   # heat3d-bank: large validation cohorts save an audited prefix
+            # heat3d-bank: every arm saved for a prefix of cases; beyond it only the selection-driving arms (Codex finding 5)
+            if ci < cfg.get('save_fields_cases', count): case['fields_saved'] = 'all'
+            elif cfg.get('save_selection_arms'):
+                case['fields_saved'] = 'selection'; saved = {k: v for k, v in saved.items() if cfg['save_selection_arms'] in k}
+            else: case['fields_saved'] = False
             if case['fields_saved']: np.savez_compressed(out / f'fields_n{n}_case{ci}.npz', draw=draw, stride=stride, **saved)
             case['timed'] = ci < timed_count; mesh['cases'].append(case)
             print('case', n, ci, 'timed' if case['timed'] else 'errors-only', {m: (round(float(np.median(rows[m]['device_ms'][-reps:])), 3) if case['timed'] else None, round(100 * max(rows[m]['same'][-1]), 4)) for m in names}, flush=True)

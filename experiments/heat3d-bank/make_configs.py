@@ -47,5 +47,6 @@ if __name__ == '__main__':
         (HERE / f'train_{name}.json').write_text(json.dumps(dict(training=training(r)), indent=1) + '\n')
         for k in (16, 32):
             cfg = panel(name, k, LADDER[r]['ladder'], LADDER[r]['extra'], [('validation', 921777, 256)], [64, 128], 256, 8, 32, 16)
+            cfg['save_selection_arms'] = '_field_cn'   # every validation case keeps the selection-driving arms for the NumPy audit
             (HERE / f'val_{name}_K{k}.json').write_text(json.dumps(cfg, indent=1) + '\n')
     print('written')

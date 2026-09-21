@@ -2,10 +2,10 @@
 
 Branch `exp/2026-09-21-heat3d-bank` (fork of hires-heat `4fb12a6d`). Lane dir `experiments/heat3d-bank/`.
 Cluster namespace `/cluster/tufts/paralab/tawal01/h3dbank_20260921/`. Budget: ≤ 8 jobs total, ≤ 1 running (≤ 2 if account < 5 running).
-Design + pre-registered selection rule: `DESIGN.md`. Codex audit: `CODEX-DESIGN-AUDIT.txt` (+ disposition below once read).
+Design + pre-registered selection rule: `DESIGN.md`. Codex audit: `CODEX-DESIGN-AUDIT.txt`, disposition `CODEX-DESIGN-AUDIT-DISPOSITION.md`.
 
 ## State
-- Divergence root cause verified locally (`diagnostics/refit_smoke.py`, JSONs beside it): Adam moments zeroed at refit with the shared
+- Divergence mechanism supported locally (Codex: "supported", not "verified") (`diagnostics/refit_smoke.py`, JSONs beside it): Adam moments zeroed at refit with the shared
   step count kept -> ×3 full-batch loss spike 50 steps after refit (0.0448 -> 0.1357) vs 0.0531 with count reset / 0.0412 keeping moments.
 - Fix = code-free variable-projection trainer `train_vp.py` (local smokes pass; `configs/smoke_vp.json`, `configs/smoke_panel.json`).
 - Pipeline copied from hires-heat @4fb12a6d: `core.py`, `train.py` (head only), `run.py` (+ errors-only/timed-prefix, saved-field prefix),

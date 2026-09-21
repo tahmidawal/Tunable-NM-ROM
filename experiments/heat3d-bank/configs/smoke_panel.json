@@ -19,7 +19,11 @@
  "cohorts": [
   [
    921777,
-   4
+   2
+  ],
+  [
+   921099,
+   2
   ]
  ],
  "meshes": [
@@ -28,7 +32,7 @@
  ],
  "cases_by_mesh": {
   "12": 4,
-  "24": 3
+  "24": 4
  },
  "repetitions": 1,
  "burn_seconds": 0.01,
@@ -106,8 +110,12 @@
  "coarse_cg": "fom_cncg_dt0.05_rtol1e-4",
  "cohort_names": [
   [
-   "validation",
-   4
+   "a",
+   2
+  ],
+  [
+   "b",
+   2
   ]
  ],
  "timed_cases_by_mesh": {
@@ -115,5 +123,6 @@
   "24": 1
  },
  "local_smoke": true,
- "save_fields_cases": 2
+ "save_fields_cases": 2,
+ "save_selection_arms": "_field_cn"
 }

@@ -5,12 +5,14 @@
 # Each panel writes out/<panel stem>/. Must be run from a CLEAN committed tree (the commit is the recorded source).
 set -euo pipefail
 JOB=$1; GPU=$2; WALL=$3; MEM=$4; TCFG=$5; TNAME=$6; shift 6; PANELS=("$@")
+[[ "$JOB" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{1,40}$ ]] || { echo "bad job name"; exit 1; }
 LANE=$(cd "$(dirname "$0")/.." && pwd); NS=/cluster/tufts/paralab/tawal01/h3dbank_20260921; REMOTE=$NS/$JOB
 RUN=$LANE/runs/$JOB; [ -e "$RUN" ] && { echo "run dir exists: $RUN"; exit 1; }
 git -C "$LANE" diff --quiet HEAD -- . || { echo "uncommitted lane changes"; exit 1; }
 [ -z "$(git -C "$LANE" status --porcelain -- .)" ] || { echo "untracked/uncommitted lane files"; exit 1; }
 mkdir -p "$RUN/stage/code/heat3d-bank/configs"
-cp "$LANE"/{core.py,run.py,train.py,train_vp.py} "$RUN/stage/code/heat3d-bank/"
+cp "$LANE"/{core.py,run.py,train.py,train_vp.py,audit.py,summarize.py} "$RUN/stage/code/heat3d-bank/"   # reporting scripts staged + checksummed too
+printf "%s\n" "${PANELS[@]}" > "$RUN/stage/EXPECTED_PANELS.txt"
 for c in "${PANELS[@]}"; do cp "$LANE/configs/$c" "$RUN/stage/code/heat3d-bank/configs/"; done
 [ "$TCFG" != "-" ] && cp "$LANE/configs/$TCFG" "$RUN/stage/code/heat3d-bank/configs/"
 cp -r "$LANE/inputs" "$RUN/stage/code/heat3d-bank/inputs"
@@ -49,14 +51,15 @@ $PANELCMD
 fi
 set -e
 cd "\$ROOT"; [ "$TNAME" != "-" ] && [ -d code/heat3d-bank/inputs/$TNAME ] && cp -r code/heat3d-bank/inputs/$TNAME out/trained_$TNAME
+echo "run_exit=\$STATUS" > out/EXIT_STATUS.txt; cp job.out out/job.out.copy 2>/dev/null || true
 find out -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo "run_exit=\$STATUS"; exit \$STATUS
 EOF
-(cd "$RUN/stage" && find code COMMIT.txt run.sbatch -type f -print0 | sort -z | xargs -0 sha256sum > SOURCE.sha256)
+(cd "$RUN/stage" && find code COMMIT.txt run.sbatch EXPECTED_PANELS.txt -type f -print0 | sort -z | xargs -0 sha256sum > SOURCE.sha256)
 ssh tufts-login "squeue -u \$USER -o '%i %j %T %M %R'" | tee "$RUN/QUEUE-BEFORE.log"
 if grep -q " h3db_$JOB " "$RUN/QUEUE-BEFORE.log"; then echo "duplicate job name queued"; exit 1; fi
 [ "$(grep -c RUNNING "$RUN/QUEUE-BEFORE.log" || true)" -ge 6 ] && { echo "account already has 6 running"; exit 1; }
-ssh tufts-login "test ! -e $REMOTE && mkdir -p $NS"
+ssh tufts-login "mkdir -p '$NS' && mkdir '$REMOTE'" || { echo "remote dir exists or mkdir failed (atomic)"; exit 1; }
 rsync -a "$RUN/stage/" "tufts-login:$REMOTE/"
 ssh tufts-login "cd $REMOTE && sha256sum -c SOURCE.sha256 > /dev/null && sbatch run.sbatch" | tee "$RUN/SUBMIT.log"
 sleep 3; ssh tufts-login "squeue -u \$USER -o '%i %j %T %M %R'" | tee "$RUN/QUEUE-AFTER.log"

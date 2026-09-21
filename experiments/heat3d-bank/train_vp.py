@@ -9,7 +9,7 @@ the floor (4072491). Here there are no codes at all: for the current bank G the 
 (Golub-Pereyra variable projection), so the loss is the true projection error of every snapshot onto span(G).
 
 Loss (f64, full training grid, explicit jit arguments only):
-  e_j = ||(I - P_G) y_j||^2 for unit-norm targets y_j, P_G via Cholesky of G^T G (+ tiny trace-relative ridge)
+  e_j = ||(I - P_G) y_j||^2 for unit-norm targets y_j, P_G = Q Q^T from a thin QR of G (exact, differentiable)
   mean term  = sum_k w_k e(v_k) over the top-K POD modes v_k of the normalised training snapshots, w_k = lambda_k / S
                (exactly the mean training error restricted to those modes; the dropped tail is recorded)
   tail term  = (mean_b e_b^p)^(1/p) over a random minibatch of training snapshots (worst-case pressure)
@@ -32,11 +32,11 @@ def build(cfg):
     return dict(freq=jax.random.normal(k0, (d, F), dtype=jnp.float64) * cfg['fourier_scale'], net=T.mlp_init(k1, sizes))
 
 
-def projection_errors(g, y, ridge):
-    """Squared projection residual of each column of y onto span(g) (both f64 device arrays)."""
-    a = g.T @ g; a = a + ridge * jnp.trace(a) / a.shape[0] * jnp.eye(a.shape[0])
-    c = jax.scipy.linalg.cho_solve((jnp.linalg.cholesky(a), True), g.T @ y); r = y - g @ c
-    return jnp.sum(r * r, axis=0), a
+def projection_errors(g, y, ridge=None):
+    """Squared residual of each column of y after the EXACT orthogonal projection onto span(g), via thin Householder QR
+    (no normal equations; Codex audit finding 3). Also returns g^T g (whitening term only). `ridge` is unused (kept for call sites)."""
+    q, _ = jnp.linalg.qr(g, mode='reduced'); r = y - q @ (q.T @ y)
+    return jnp.sum(r * r, axis=0), g.T @ g
 
 
 def train_bank_vp(u, v, cfg, log):
@@ -84,7 +84,7 @@ def train_bank_vp(u, v, cfg, log):
             log.append(rec); print('BANK', rec, flush=True); assert np.isfinite(float(val)) and np.isfinite(worst)
             if worst < best[0]: best = (worst, jax.tree_util.tree_map(lambda t: t, net), it + 1)
     params = dict(p, net=best[1]); g = np.asarray(jax.jit(C.mlp_features)(params, x)); q, r = np.linalg.qr(g, mode='reduced')
-    sv = np.linalg.svd(r, compute_uv=False); assert sv[-1] > sv[0] * 1e-12
+    sv = np.linalg.svd(r, compute_uv=False); assert sv[-1] > sv[0] * 1e-8, ('bank condition', sv[0] / sv[-1])
     target = u @ q; norm2 = np.sum(u * u, axis=1); perp = np.maximum(norm2 - np.sum(target ** 2, axis=1), 0.)
     info = dict(selected_step=best[2], validation_projection_worst=best[0], condition=float(sv[0] / sv[-1]),
                 training_projection_worst=float(np.max(np.sqrt(perp / norm2))), pod_validation_floor_worst=pod, pod_modes=K,

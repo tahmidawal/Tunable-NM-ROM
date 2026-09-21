@@ -6,7 +6,7 @@ import numpy as np
 run = Path(sys.argv[1]); out = Path(sys.argv[2]) if len(sys.argv) > 2 else run / 'pull' / 'out'; raw = (out / 'results.json').read_bytes(); res = json.loads(raw)
 audit = json.loads((run / 'audit.json').read_text()) if (run / 'audit.json').exists() else None
 summary = dict(schema='heat3d-bank-summary-v1', results_sha256=hashlib.sha256(raw).hexdigest(), source_commit=res['source_commit'], source_sha256=res['source_sha256'],
-               model_sha256=res['model_sha256'], metadata=res['metadata'], audit_passed=None if audit is None else audit['passed'], meshes=[])
+               model_sha256=res['model_sha256'], reporting_sha256={f: hashlib.sha256((Path(__file__).resolve().parent / f).read_bytes()).hexdigest() for f in ('audit.py', 'summarize.py')}, metadata=res['metadata'], audit_passed=None if audit is None else audit['passed'], meshes=[])
 lines = []
 names = res['config'].get('cohort_names') or [['all', 10**9]]; cohorts = []; lo = 0
 for cname, cnt in names:
@@ -14,10 +14,11 @@ for cname, cnt in names:
 for mesh, (cname, lo, hi) in [(m, c) for m in res['meshes'] for c in cohorts]:
     rows = []
     for r in mesh['rows']:
-        same, phys = np.asarray(r['same'])[lo:hi], np.asarray(r['physical'])[lo:hi]; ms = np.asarray(r['device_ms']).reshape(-1, res['config']['repetitions'])[lo:hi]   # timed cases are a prefix (heat3d-bank); r = dict(r, stats=r['stats'][lo:hi])
+        same, phys = np.asarray(r['same'])[lo:hi], np.asarray(r['physical'])[lo:hi]; ms = np.asarray(r['device_ms']).reshape(-1, res['config']['repetitions'])[lo:hi]; r = dict(r, stats=r['stats'][lo:hi])   # timed cases are a prefix (heat3d-bank; stats slice restored per Codex finding 4)
         row = dict(method=r['method'], cases=len(same), timed_cases=len(ms), repetitions=ms.shape[1], error_all_times_worst=float(same.max()), error_evolved_worst=float(same[:, 1:].max()),
                    error_all_times_median=float(np.median(same.max(1))), physical_all_times_worst=float(phys.max()), physical_evolved_worst=float(phys[:, 1:].max()),
-                   device_ms_median=float(np.median(ms)) if ms.size else float('nan'), device_ms_median_of_case_medians=float(np.median(np.median(ms, axis=1))) if ms.size else float('nan'), failures=0)
+                   device_ms_median=float(np.median(ms)) if ms.size else float('nan'), device_ms_median_of_case_medians=float(np.median(np.median(ms, axis=1))) if ms.size else float('nan'),
+                   device_ms_p10_p90=[float(np.percentile(ms, 10)), float(np.percentile(ms, 90))] if ms.size else None, failures=0)
         if r['method'].startswith('nmrom'):
             i = np.stack([np.asarray(x[0]).reshape(-1, 5)[-1] for x in r['stats']]); st = np.concatenate([np.asarray(x[1]).reshape(-1, 5) for x in r['stats']])
             row.update(init_attempts_max=float(i[:, 0].max()), init_attempts_mean=float(i[:, 0].mean()), step_attempts_mean=float(st[:, 0].mean()), step_attempts_max=float(st[:, 0].max()),
@@ -38,7 +39,7 @@ for mesh, (cname, lo, hi) in [(m, c) for m in res['meshes'] for c in cohorts]:
                 else: r[key] = None
             r['bar_error_le_1pct'] = r['error_all_times_worst'] <= .01; r['bar_speedup_ge_5'] = r['speedup_vs_named_fom'] >= 5
     summary['meshes'].append(dict(cohort=cname, intervals=mesh['intervals'], unknowns=mesh['unknowns'], bank_condition=mesh['bank_condition'], profile_ms=mesh['profile'], rows=rows,
-                                  reference_refinement_max=max((c.get('reference_refinement', 0.) for c in mesh['cases']), default=None)))
+                                  reference_refinement_max=max((c.get('reference_refinement', 0.) for c in mesh['cases'][lo:hi]), default=None)))
     lines += [f"\n### [{cname}] {mesh['intervals']} intervals per axis ({mesh['unknowns']} unknowns), {rows[0]['cases']} cases ({rows[0]['timed_cases']} timed x {rows[0]['repetitions']} repetitions)\n",
               '| method | err all-times worst % | err evolved worst % | GPU ms | x vs named CN-CG | fastest CG with err<=ROM (all-times): x | coarse FOM matched: x | failures |', '|---|---:|---:|---:|---:|---|---|---:|']
     for r in rows:

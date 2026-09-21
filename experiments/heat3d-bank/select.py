@@ -28,11 +28,15 @@ if passing:
     best = min(c['ms_128'] for c in passing)
     tied = [c for c in passing if c['ms_128'] <= 1.05 * best]; chosen = min(tied, key=lambda c: (c['R'], c['K'])); rule = 'rule 1-3 (gate + <=0.8% + fastest)'
 else:
-    chosen = min(cands, key=lambda c: min(c['errors_128_cn'].values())); chosen['accurate_q'] = min(chosen['errors_128_cn'], key=chosen['errors_128_cn'].get)
-    rule = 'rule 5 (no candidate reached 0.8%: lowest validation error)'
+    gated = [c for c in cands if c['gate']]
+    if not gated:   # stop rule: no bank passes the 0.6 % floor gate -> the sealed cohorts stay closed (Codex finding 1)
+        (HERE / 'selection.json').write_text(json.dumps(dict(rule='STOP: no bank passed the floor gate; no final config written', candidates=log), indent=1) + '\n')
+        sys.exit('STOP: no bank passed the 0.6 % floor gate; sealed cohorts stay closed')
+    chosen = min(gated, key=lambda c: min(c['errors_128_cn'].values())); chosen['accurate_q'] = min(chosen['errors_128_cn'], key=chosen['errors_128_cn'].get)
+    rule = 'rule 5 (no gated candidate reached 0.8%: lowest validation error among gated banks)'
 R, K, qa, qt = chosen['R'], chosen['K'], chosen['accurate_q'], chosen['top_q']
 arms = [a for a in MC.rom_arms(sorted({0, qa, qt}), [qa]) if (a['q'] in (0, qa, qt) and ('_dt' not in a['name'] or any(a['name'].endswith(v) for v in chosen['ok_variants'])))]
-cfg = MC.panel(f'vp_R{R}', K, [], [], [('paper_h3d_final_920399', 920399, 64), ('confirmation_921099', 921099, 64)], [32, 64, 128], 128, 128, 128, 16)
+cfg = MC.panel(f'vp_R{R}', K, [], [], [('sealed_921099_never_opened', 921099, 64), ('paper_benchmark_920399_repeated', 920399, 64)], [32, 64, 128], 128, 128, 128, 16)
 cfg['rom_arms'] = arms
 (HERE / 'configs' / 'final01.json').write_text(json.dumps(cfg, indent=1) + '\n')
 (HERE / 'selection.json').write_text(json.dumps(dict(rule=rule, chosen=dict(R=R, K=K, accurate_q=qa, top_q=qt, fast_q=0), candidates=log, final_arms=[a['name'] for a in arms]), indent=1) + '\n')

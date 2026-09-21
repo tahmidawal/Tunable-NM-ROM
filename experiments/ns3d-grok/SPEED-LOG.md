@@ -51,7 +51,21 @@ saved output times should still miss, because diag02 already does at that lag.
 Change. `diag03.py`. The substep is the startup step of the production
 Galerkin runner, not multistep CNAB2.
 
-Measured effect. Pending `diag03`.
+Measured effect. Pending `diag03`. The measurement is `results/diag03.md`.
+Every-step ROM-centroid tracking at ranks 64 and 128, and at both
+$\Delta t=0.004$ and $0.01$, has 0/16 development cases over 5%. Re-centering
+only at the saved times stays over 5%. Kept as the mechanism. The Python-loop
+times in that job are not a query cost.
+
+## 2026-09-21 — fuse the tracker and time it against CNAB2
+
+Hypothesis. The same startup-step-plus-recenter scan, compiled as one
+trajectory, matches the Python tracker and is the query whose median belongs
+next to CNAB2 from the same allocation.
+
+Change. `diag04.py`. Smoke agrees with the Python tracker to $10^{-15}$.
+
+Measured effect. Pending `diag04`.
 
 Kept or reverted. Not applied.
 

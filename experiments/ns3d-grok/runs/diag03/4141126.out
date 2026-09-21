@@ -1,0 +1,49 @@
+host=pax051 source_commit=70f1573ac86a327204fdbd47a960040cdc0b9d3a job=4141126
+NVIDIA A100-PCIE-40GB, GPU-a840f593-3e39-4ee0-681d-f3898b49b09b, 40960 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.26:/projects/paralab  4.6T  4.2T  432G  91% /cluster/tufts/paralab
+jax_backend=gpu
+generating centered-POD training trajectories and full development trajectories
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+full trajectory 1/16
+full trajectory 8/16
+full trajectory 16/16
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=128 orth=5.274e-07 energy_tail=1.844e-10
+rank 64 rom dt=0.004 worst=0.019752
+rank 64 rom dt=0.01 worst=0.045635
+rank 64 truth dt=0.004 worst=0.008877
+rank 64 truth dt=0.01 worst=0.022432
+rank 64 interval dt=0.004 worst=0.116260
+rank 64 interval dt=0.01 worst=0.116081
+rank 128 rom dt=0.004 worst=0.008091
+rank 128 rom dt=0.01 worst=0.020402
+rank 128 truth dt=0.004 worst=0.006342
+rank 128 truth dt=0.01 worst=0.016105
+rank 128 interval dt=0.004 worst=0.068976
+rank 128 interval dt=0.01 worst=0.068934
+wrote output/summary.json elapsed=126.9s
+{"passed": true, "failures": 0}
+DIAG_EXIT=0

@@ -15,7 +15,7 @@ Design + pre-registered selection rule: `DESIGN.md`. Codex audit: `CODEX-DESIGN-
 ## Jobs
 | job | id | status | what |
 |---|---|---|---|
-| valR256 | 4141159 | submitted 2026-09-21 (H200, 240G, 10h) | train R=256 K16/K32 + validation panels |
+| valR256 | 4141159 | RUNNING (H200). Bank done: worst validation floor 0.1256 % (32^3), 0.1222 % at 64^3 and 128^3 (gate 0.6 % PASS; POD-R256 ref 0.1425 %); heads + panels running | train R=256 K16/K32 + validation panels |
 | valR320 | - | waiting: account had 4 running (lane limit 1 while account >= 5) | train R=320 K16/K32 + validation panels |
 | final01 | - | not submitted | frozen selection, cohorts 920399 + 921099, 32^3/64^3/128^3 |
 

@@ -1,6 +1,6 @@
 # hires-burgers — frozen Burgers NM-ROM against Newton–BiCGStab above $1024^2$
 
-Same-allocation accuracy and cost of the frozen 2D Burgers NM-ROM (one checkpoint, $K=16$, $R=512$, trained at $256^2$) transferred without retraining to the meshes below. **Status: provisional: 2048² only (hb2k01); development cases; one checkpoint.** Development cases only (six; the sealed cohort is unopened); one checkpoint, one seed. Every number is generated from the audit JSONs listed at the end.
+Same-allocation accuracy and cost of the frozen 2D Burgers NM-ROM (one checkpoint, $K=16$, $R=512$, trained at $256^2$) transferred without retraining to the meshes below. **Status: provisional: hb4k04/hb4kh64 running.** Development cases only Two cohorts: dev6 (the six opened development cases every arm was chosen on) and, where run, hold64 (64 held-out cases, `params_draw(20260916, 64)`, never used to choose anything); the sealed final cohort is unopened. One checkpoint, one seed. Every number is generated from the audit JSONs listed at the end.
 
 ```mermaid
 flowchart LR
@@ -18,7 +18,25 @@ flowchart LR
 
 Error: $\epsilon_k = \lVert u_k - u^{\mathrm{tight}}_k \rVert_2 / \lVert u_0 \rVert_2$ on the full grid; *evolved* $=\max_{k\ge 1}\epsilon_k$, *all-times* $=\max_{k\ge 0}\epsilon_k$; worst over the six cases. Speedup $S = T_{\mathrm{FOM}} / T_{\mathrm{ROM}}$ from median GPU times of the same job.
 
+## Bar verdict per mesh and cohort
+
+Bar: worst evolved error $\le 1\,\%$ **and** $S \ge 5$. The accurate arm is chosen on dev6 by the pre-registered rule and then looked up unchanged on hold64; the pre-declared accurate rung ($q=256$, $M=1088$) and the fast setting are shown beside it. $S$ is given for the GPU query (dense GPU input to six dense GPU fields) and the complete query (host-inclusive, including the transfer of the six output fields); both come from the same job. "relaxed passing" is the cheapest FOM of that job that converges every step within 0.1 % of `fft_tight` on that cohort (the tight FOM when none does). "coarse" is the fastest coarse-grid FOM whose same-grid error is at most the ROM's (— if none). hold64 jobs time one repetition only. Only the latest dev6 audit of each mesh enters this table; earlier ones keep their own sections below.
+
+| mesh | cohort | job | role | arm | worst evolved % | stalled exits | GPU ms | host ms | $S$ tight GPU / host | $S$ relaxed passing GPU / host | $S$ fastest same-grid FOM at least as accurate, GPU | $S$ coarse GPU / host | bar vs tight | bar vs relaxed passing |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2048² | dev6 | `hb2k02` | chosen on dev6 | `q256_M544_lat64_g0p001_fast_chol_clip` | 0.865 | 0 / 300 | 124.2 | 187.2 | 6.07 / 4.36 (`lean_tight`) | 0.99 / 0.99 (`lean_nt3e-3_l3e-3_dt005`) | 0.99 (`lean_nt3e-3_l3e-3_dt005`) | 0.63 / 0.75 (`c1024_nt1e-4_dt005`) | MET | not met |
+| 2048² | dev6 | `hb2k02` | accurate rung q256/M1088 | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | 0.598 | 0 / 300 | 130.7 | 192.4 | 5.76 / 4.24 (`lean_tight`) | 0.94 / 0.96 (`lean_nt3e-3_l3e-3_dt005`) | 0.94 (`lean_nt3e-3_l3e-3_dt005`) | 0.60 / 0.73 (`c1024_nt1e-4_dt005`) | MET | not met |
+| 2048² | dev6 | `hb2k02` | fast q=0 | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 2.372 | 0 / 300 | 29.5 | 91.8 | 25.54 / 8.88 (`lean_tight`) | 4.16 / 2.01 (`lean_nt3e-3_l3e-3_dt005`) | 3.25 (`lean_nt1e-3_l1e-3_dt01`) | 1.21 / 1.07 (`c512_nt1e-4_dt005`) | not met | not met |
+| 2048² | hold64 | `hb2kh64` | chosen on dev6 | `q256_M544_lat64_g0p001_fast_chol_clip` | not run on this cohort at this mesh | — | — | — | — | — | — | — | — | — |
+| 2048² | hold64 | `hb2kh64` | accurate rung q256/M1088 | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | 1.308 | 0 / 3200 | 114.9 | 177.5 | 6.48 / 4.53 (`lean_tight`) | 6.48 / 4.53 (`lean_tight`) | 1.43 (`lean_nt1e-3_l1e-3_dt005`) | 0.71 / 0.80 (`c1024_nt1e-4_dt005`) | not met | not met |
+| 2048² | hold64 | `hb2kh64` | fast q=0 | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 9.026 | 0 / 3200 | 29.2 | 90.9 | 25.51 / 8.85 (`lean_tight`) | 25.51 / 8.85 (`lean_tight`) | 5.63 (`lean_nt1e-3_l1e-3_dt005`) | 2.79 / 1.56 (`c1024_nt1e-4_dt005`) | not met | not met |
+| 4096² | dev6 | `hb4k03` | chosen on dev6 | `q256_M544_lat64_g0p001_fast_chol_clip` | 0.875 | 0 / 300 | 137.8 | 381.0 | 23.64 / 9.18 (`lean_tight`) | 3.79 / 1.99 (`lean_nt3e-3_l3e-3_dt005`) | 3.79 (`lean_nt3e-3_l3e-3_dt005`) | 0.58 / 0.85 (`c1024_nt1e-4_dt005`) | MET | not met |
+| 4096² | dev6 | `hb4k03` | accurate rung q256/M1088 | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | 0.604 | 0 / 300 | 144.7 | 385.0 | 22.52 / 9.09 (`lean_tight`) | 3.61 / 1.97 (`lean_nt3e-3_l3e-3_dt005`) | 3.61 (`lean_nt3e-3_l3e-3_dt005`) | 1.94 / 1.36 (`c2048_nt1e-4_dt005`) | MET | not met |
+| 4096² | dev6 | `hb4k03` | fast q=0 | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 2.416 | 0 / 300 | 43.0 | 285.2 | 75.69 / 12.27 (`lean_tight`) | 12.13 / 2.66 (`lean_nt3e-3_l3e-3_dt005`) | 9.39 (`lean_nt1e-3_l1e-3_dt01`) | 1.85 / 1.13 (`c1024_nt1e-4_dt005`) | not met | not met |
+
 ## $2048^2$ — attempt `hb2k01`, job `4054951`, GPU 0: NVIDIA H200 (UUID: GPU-50404ee7-1d50-1d0c-6780-806cf66543b8)
+
+**Cohort: dev6 (six opened development cases) — 6 cases.** Every number in this section is on this cohort only.
 
 Source commit `b66a59bda43a70cc46aef12902e2b6910c5a29f9`; elapsed 5654 s; failed audit gates: none; dropped: none.
 
@@ -33,7 +51,7 @@ Source commit `b66a59bda43a70cc46aef12902e2b6910c5a29f9`; elapsed 5654 s; failed
 ### Every arm
 
 | arm | family | q | M | m | rule | tol | worst evolved % | worst all-times % | GPU ms | host ms | it/step | stalled | retries | ρ_max held-out | ρ_max deployed | certified | vs refined ref % |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `c512_nt1e-4_dt005` | fom audited mesh 512 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 1.2170 | 2.3569 | 35.82 | 98.65 | — | 0 / 300 | — | — | — | — | 2.788 |
 | `nt1e-2_dt01` | fom audited mesh 2048 | — | — | — | ntol 0.01, ltol 0.5, dt 0.01 | — | 3.5129 | 3.5129 | 56.74 | 121.35 | — | 0 / 150 | — | — | — | — | 2.788 |
 | `c1024_nt1e-4_dt005` | fom audited mesh 1024 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.4173 | 1.2598 | 78.38 | 141.03 | — | 0 / 300 | — | — | — | — | 2.208 |
@@ -195,6 +213,307 @@ Same-grid truth (`fft_tight`) against the refined reference, worst evolved: 1.99
 | `q256_M1088_lat64_g0p001_fast` | 506.04 | 18.43 | 479.92 | 4.27 | 494 | 114 | 0.972 | 0.761 | 0.348 | 0.158 | 0.780 |
 | `q256_M1088_scaled_g0p001_fast` | 444.86 | 18.44 | 421.43 | 4.27 | 511 | 130 | 0.825 | 0.584 | 0.341 | 0.166 | 0.779 |
 
+## $2048^2$ — attempt `hb2k02`, job `4071616`, GPU 0: NVIDIA H200 (UUID: GPU-0603978b-01ce-16f6-4753-599dad36006b)
+
+**Cohort: dev6 (six opened development cases) — 6 cases.** Every number in this section is on this cohort only.
+
+Source commit `ae700dfde8c2d4834e082e539a6c730c47d8d2f3`; elapsed 2647 s; failed audit gates: none; dropped: none.
+
+### Bar verdict
+
+| setting | arm | worst evolved % | worst all-times % | GPU ms | stalled exits / steps | $S$ vs tight | $S$ vs relaxed passing | $S$ vs fastest tested FOM at least as accurate | bar ($\le$ limit and $S\ge5$) |
+|---|---|---|---|---|---|---|---|---|---|
+| accurate_1_percent | `q256_M544_lat64_g0p001_fast_chol_clip` | 0.8653 | 3.2190 | 124.15 | 0 / 300 | 6.07 (`lean_tight`) | 0.99 (`lean_nt3e-3_l3e-3_dt005`) | 0.99 (`lean_nt3e-3_l3e-3_dt005`) | tight: MET; relaxed: not met; matched: not met |
+| stretch_half_percent | — | — | — | — | — | — | — | — | **not met**: no certified ROM arm at or below the error limit |
+| fast ($q=0$) | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 2.3721 | — | 29.48 | — | 25.54 | 4.16 | 3.25 | reported beside the accurate rung |
+
+### Every arm
+
+| arm | family | q | M | m | rule | tol | worst evolved % | worst all-times % | GPU ms | host ms | it/step | stalled | retries | ρ_max held-out | ρ_max deployed | certified | vs refined ref % |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `c512_nt1e-4_dt005` | fom audited mesh 512 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 1.2170 | 2.3569 | 35.62 | 98.63 | — | 0 / 300 | — | — | — | — | 2.788 |
+| `c1024_nt1e-4_dt005` | fom audited mesh 1024 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.4173 | 1.2598 | 78.41 | 141.18 | — | 0 / 300 | — | — | — | — | 2.208 |
+| `lean_nt1e-3_l1e-3_dt01` | fom lean mesh 2048 | — | — | — | ntol 0.001, ltol 0.001, dt 0.01 | — | 1.6501 | 1.6501 | 95.87 | 158.71 | — | 0 / 150 | — | — | — | — | 3.627 |
+| `lean_nt1e-2_l1e-2_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.01, ltol 0.01, dt 0.005 | — | 2.1615 | 2.1615 | 100.35 | 163.35 | — | 0 / 300 | — | — | — | — | 2.479 |
+| `lean_nt3e-3_l3e-3_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.003, ltol 0.003, dt 0.005 | — | 0.0494 | 0.0494 | 122.76 | 185.03 | — | 0 / 300 | — | — | — | — | 1.996 |
+| `lean_nt1e-3_l1e-3_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.001, ltol 0.001, dt 0.005 | — | 0.0543 | 0.0543 | 163.44 | 225.38 | — | 0 / 300 | — | — | — | — | 1.992 |
+| `lean_nt1e-3_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.001, ltol 1e-05, dt 0.005 | — | 0.0540 | 0.0540 | 238.80 | 299.89 | — | 0 / 300 | — | — | — | — | 1.993 |
+| `lean_nt1e-4_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.0334 | 0.0334 | 280.37 | 342.97 | — | 0 / 300 | — | — | — | — | 1.981 |
+| `nt1e-4_dt005` | fom audited mesh 2048 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.0334 | 0.0334 | 285.35 | 346.67 | — | 0 / 300 | — | — | — | — | — |
+| `lean_tight` | fom lean mesh 2048 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 753.01 | 815.66 | — | 0 / 300 | — | — | — | — | 1.995 |
+| `fft_tight` | fom audited mesh 2048 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 758.97 | 822.43 | — | 0 / 300 | — | — | — | — | 1.995 |
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | rom | 0 | 64 | 1024 | scaled | 0.001 | 2.3721 | 4.1823 | 29.48 | 91.84 | 2.0 | 0 / 300 | 0 | 0.0404 | 0.0424 | True | 3.394 |
+| `q0_M64_scaled_g0p001_fast` | rom | 0 | 64 | 1024 | scaled | 0.001 | 2.3721 | 4.1823 | 33.19 | 95.66 | 2.0 | 0 / 300 | 77 | 0.0404 | 0.0424 | True | — |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0748 | 3.6604 | 74.35 | 134.04 | 2.0 | 0 / 300 | 0 | 0.0698 | 0.0719 | True | 2.345 |
+| `q128_M576_lat64_g0p001_fast_chol_clip` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0748 | 3.6604 | 74.35 | 135.22 | 2.0 | 0 / 300 | 0 | 0.0698 | 0.0719 | True | — |
+| `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0478 | 3.2190 | 93.74 | 156.52 | 2.5 | 0 / 300 | 0 | 0.4840 | 0.4841 | False | 2.105 |
+| `q128_M576_lat64_g0p001_fast_chol_lamcarry` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0748 | 3.6604 | 97.62 | 160.18 | 2.0 | 0 / 300 | 158 | 0.0698 | 0.0719 | True | — |
+| `q256_M1088_bad0_g0p001_fast_chol_clip` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0478 | 3.2190 | 98.25 | 160.12 | 3.0 | 0 / 300 | 0 | 0.4840 | 0.4841 | False | — |
+| `q128_M576_lat64_g0p001_fast_chol` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0748 | 3.6604 | 102.73 | 166.38 | 2.0 | 0 / 300 | 164 | 0.0698 | 0.0719 | True | — |
+| `q256_M544_lat64_g0p001_fast_chol_clip` | rom | 256 | 544 | 3969 | lat64 | 0.001 | 0.8653 | 3.2190 | 124.15 | 187.22 | 3.0 | 0 / 300 | 0 | 0.0634 | 0.0624 | True | — |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.5980 | 3.2190 | 130.69 | 192.36 | 3.0 | 0 / 300 | 0 | 0.1000 | 0.0980 | True | 2.112 |
+| `q128_M576_lat64_g0p001_fast` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0748 | 3.6604 | 131.97 | 195.26 | 2.0 | 0 / 300 | 164 | 0.0698 | 0.0719 | True | — |
+| `q256_M1088_bad0_g0p001_fast_chol` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0359 | 3.2190 | 137.10 | 198.39 | 3.0 | 0 / 300 | 349 | 0.4840 | 0.4841 | False | — |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.5980 | 3.2190 | 137.27 | 199.43 | 3.0 | 0 / 300 | 0 | 0.1000 | 0.0980 | True | — |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4538 | 3.2190 | 138.80 | 200.42 | 2.5 | 0 / 300 | 10 | 0.1515 | 0.1468 | False | 2.078 |
+| `q256_M2176_lat64_g0p001_fast_chol_clip` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4538 | 3.2190 | 147.23 | 207.45 | 2.5 | 0 / 300 | 10 | 0.1515 | 0.1468 | False | — |
+| `q256_M1088_bad0_g0p001_fast_chol_lamcarry` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0358 | 3.2190 | 158.54 | 219.92 | 3.0 | 0 / 300 | 502 | 0.4840 | 0.4841 | False | — |
+| `q256_M2176_lat64_g0p001_fast_chol_lamcarry` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4538 | 3.2190 | 180.82 | 242.68 | 2.5 | 0 / 300 | 452 | 0.1515 | 0.1468 | False | — |
+| `q256_M2176_lat64_g0p001_fast_chol` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4538 | 3.2190 | 183.57 | 245.71 | 2.5 | 0 / 300 | 343 | 0.1515 | 0.1468 | False | — |
+| `q256_M1088_lat64_g0p001_fast_chol` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.5980 | 3.2190 | 193.79 | 254.62 | 3.0 | 0 / 300 | 378 | 0.1000 | 0.0980 | True | — |
+| `q256_M544_lat64_g0p001_fast_chol` | rom | 256 | 544 | 3969 | lat64 | 0.001 | 0.8896 | 3.2190 | 200.23 | 263.13 | 3.0 | 0 / 300 | 468 | 0.0634 | 0.0624 | True | — |
+| `q256_M1088_lat64_g0p001_fast_chol_lamcarry` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.5980 | 3.2190 | 222.11 | 284.11 | 3.0 | 0 / 300 | 565 | 0.1000 | 0.0980 | True | — |
+| `q256_M1088_bad0_g0p001_fast` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0359 | 3.2190 | 244.13 | 306.31 | 3.0 | 0 / 300 | 349 | 0.4840 | 0.4841 | False | — |
+| `q256_M2176_lat64_g0p001_fast` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4538 | 3.2190 | 271.01 | 333.29 | 2.5 | 0 / 300 | 343 | 0.1515 | 0.1468 | False | — |
+| `q256_M1088_lat64_g0p001_fast` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.5980 | 3.2190 | 302.74 | 365.71 | 3.0 | 0 / 300 | 378 | 0.1000 | 0.0980 | True | — |
+| `q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4539 | 3.2190 | 317.78 | 378.43 | 2.5 | 0 / 300 | 9 | 0.6233 | 0.6856 | False | 2.078 |
+| `q256_M2176_lat128_g0p001_fast_chol_clip` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4539 | 3.2190 | 335.05 | 398.00 | 2.5 | 0 / 300 | 9 | 0.6233 | 0.6856 | False | — |
+| `q256_M2176_lat128_g0p001_fast_chol_lamcarry` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4539 | 3.2190 | 420.45 | 483.15 | 2.5 | 0 / 300 | 456 | 0.6233 | 0.6856 | False | — |
+| `q256_M2176_lat128_g0p001_fast_chol` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4539 | 3.2190 | 420.83 | 483.05 | 2.5 | 0 / 300 | 347 | 0.6233 | 0.6856 | False | — |
+| `q256_M2176_lat128_g0p001_fast` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4539 | 3.2190 | 508.89 | 571.31 | 2.5 | 0 / 300 | 347 | 0.6233 | 0.6856 | False | — |
+
+Same-grid truth (`fft_tight`) against the refined reference, worst evolved: 1.995 % (the discretisation error of this mesh; no reduced arm can be more physical than this).
+
+### Dense truth (exact advection, same solver, tolerance 1e-6) and the deployed arms against it
+
+| rung | case | worst evolved % | iterations | seconds | deployed arm − dense (relative, per arm) |
+|---|---|---|---|---|---|
+
+### Quadrature rules (certified only by held-out ρ; the NNLS fit residual is never a certificate)
+
+| q | M | rule | m | NNLS fit (not a certificate) | ρ_max fit states | ρ_max held-out | ρ_95 held-out | argmax state | primary (≤ bar) | control |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 64 | scaled | 1024 | — | 0.0042 | 0.0404 | 0.0239 | 145 | True | False |
+| 128 | 576 | lat64 | 3969 | — | 0.0725 | 0.0698 | 0.0050 | 357 | True | False |
+| 256 | 544 | lat64 | 3969 | — | 0.0048 | 0.0634 | 0.0035 | 357 | True | False |
+| 256 | 1088 | lat64 | 3969 | — | 0.0085 | 0.1000 | 0.0065 | 357 | True | False |
+| 256 | 1088 | bad0 | 2048 | — | 0.3263 | 0.4840 | 0.2599 | 255 | False | True |
+| 256 | 2176 | lat64 | 3969 | — | 0.0169 | 0.1515 | 0.0155 | 357 | False | False |
+| 256 | 2176 | lat128 | 16129 | — | 0.0307 | 0.6233 | 0.0052 | 357 | False | False |
+
+### Parity of the optimised kernel against the audited path (same rule, same tolerance)
+
+| fast arm | audited twin | worst relative field difference | integers identical | passed (≤ 1e-9 and integers) |
+|---|---|---|---|---|
+| `q0_M64_scaled_g0p001_fast` | none in this job | — | — | not covered |
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M544_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M544_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+
+### Profile of the accurate rung (case 0, medians of 7; micro-kernels medians of 30)
+
+| arm | whole query ms | initial fit ms | evolve ms | decode ms | LM iterations | retries | ms per iteration | (r, J) ms | residual ms | Gram ms | Gram + solve ms |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q256_M1088_lat64_g0p001_fast_chol` | 315.13 | 17.94 | 288.05 | 4.26 | 494 | 114 | 0.583 | 0.668 | 0.436 | 0.160 | 0.781 |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | 171.34 | 18.17 | 146.94 | 4.26 | 229 | 0 | 0.642 | 0.722 | 0.337 | 0.153 | 0.784 |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | 146.77 | 16.59 | 125.51 | 4.26 | 191 | 0 | 0.657 | 0.719 | 0.366 | 0.155 | 0.784 |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | 178.45 | 18.31 | 156.15 | 4.26 | 210 | 10 | 0.744 | 0.625 | 0.496 | 0.160 | 0.784 |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | 86.49 | 11.03 | 71.11 | 4.27 | 134 | 0 | 0.531 | 0.499 | 0.472 | 0.125 | 0.456 |
+
+## $2048^2$ — attempt `hb2kh64`, job `4077566`, GPU 0: NVIDIA H200 (UUID: GPU-82ad2379-97ca-7878-e8f3-7e960c158cff)
+
+**Cohort: hold64: params_draw(20260916, 64), the bank-floor lane's held-out cohort; never used to fit the bank, the head, the directions or any rule in this lane — 64 cases.** Every number in this section is on this cohort only.
+
+Source commit `7627da25f2ab7bbd4c72c3a86b17712ef9c84c75`; elapsed 1210 s; failed audit gates: restricted_recomputation_tracks_full_grid; dropped: none.
+
+### Bar verdict
+
+| setting | arm | worst evolved % | worst all-times % | GPU ms | stalled exits / steps | $S$ vs tight | $S$ vs relaxed passing | $S$ vs fastest tested FOM at least as accurate | bar ($\le$ limit and $S\ge5$) |
+|---|---|---|---|---|---|---|---|---|---|
+| accurate_1_percent | — | — | — | — | — | — | — | — | **not met**: no certified ROM arm at or below the error limit |
+| stretch_half_percent | — | — | — | — | — | — | — | — | **not met**: no certified ROM arm at or below the error limit |
+| fast ($q=0$) | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 9.0260 | — | 29.19 | — | 25.51 | 25.51 | 5.63 | reported beside the accurate rung |
+
+### Every arm
+
+| arm | family | q | M | m | rule | tol | worst evolved % | worst all-times % | GPU ms | host ms | it/step | stalled | retries | ρ_max held-out | ρ_max deployed | certified | vs refined ref % |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `c1024_nt1e-4_dt005` | fom audited mesh 1024 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.5088 | 1.6197 | 81.44 | 141.89 | — | 0 / 3200 | — | — | — | — | — |
+| `lean_nt1e-3_l1e-3_dt005` | fom lean mesh 2048 | — | — | — | ntol 0.001, ltol 0.001, dt 0.005 | — | 0.1303 | 0.1303 | 164.43 | 226.84 | — | 0 / 3200 | — | — | — | — | — |
+| `lean_tight` | fom lean mesh 2048 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 744.64 | 804.58 | — | 0 / 3200 | — | — | — | — | — |
+| `fft_tight` | fom audited mesh 2048 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 750.69 | 811.56 | — | 0 / 3200 | — | — | — | — | — |
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | rom | 0 | 64 | 1024 | scaled | 0.001 | 9.0260 | 9.0260 | 29.19 | 90.92 | 2.0 | 0 / 3200 | 21 | 0.0404 | 0.0424 | True | — |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 2.3878 | 5.7471 | 71.18 | 133.54 | 2.0 | 0 / 3200 | 0 | 0.0698 | 0.0719 | True | — |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 1.3084 | 3.8144 | 114.91 | 177.53 | 2.0 | 0 / 3200 | 38 | 0.1000 | 0.0980 | True | — |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 1.1088 | 3.8144 | 129.34 | 189.74 | 2.0 | 0 / 3200 | 221 | 0.1515 | 0.1468 | False | — |
+
+Same-grid truth (`fft_tight`) against the refined reference, worst evolved: — % (the discretisation error of this mesh; no reduced arm can be more physical than this).
+
+### Dense truth (exact advection, same solver, tolerance 1e-6) and the deployed arms against it
+
+| rung | case | worst evolved % | iterations | seconds | deployed arm − dense (relative, per arm) |
+|---|---|---|---|---|---|
+
+### Quadrature rules (certified only by held-out ρ; the NNLS fit residual is never a certificate)
+
+| q | M | rule | m | NNLS fit (not a certificate) | ρ_max fit states | ρ_max held-out | ρ_95 held-out | argmax state | primary (≤ bar) | control |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 64 | scaled | 1024 | — | 0.0042 | 0.0404 | 0.0239 | 145 | True | False |
+| 128 | 576 | lat64 | 3969 | — | 0.0725 | 0.0698 | 0.0050 | 357 | True | False |
+| 256 | 1088 | lat64 | 3969 | — | 0.0085 | 0.1000 | 0.0065 | 357 | True | False |
+| 256 | 2176 | lat64 | 3969 | — | 0.0169 | 0.1515 | 0.0155 | 357 | False | False |
+
+### Parity of the optimised kernel against the audited path (same rule, same tolerance)
+
+| fast arm | audited twin | worst relative field difference | integers identical | passed (≤ 1e-9 and integers) |
+|---|---|---|---|---|
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+
+### Profile of the accurate rung (case 0, medians of 7; micro-kernels medians of 30)
+
+| arm | whole query ms | initial fit ms | evolve ms | decode ms | LM iterations | retries | ms per iteration | (r, J) ms | residual ms | Gram ms | Gram + solve ms |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+
+## $4096^2$ — attempt `hb4k03`, job `4071625`, GPU 0: NVIDIA H200 (UUID: GPU-3011fd20-5985-c4ea-f6bf-649a67b8d28b)
+
+**Cohort: dev6 (six opened development cases) — 6 cases.** Every number in this section is on this cohort only.
+
+Source commit `ae700dfde8c2d4834e082e539a6c730c47d8d2f3`; elapsed 4697 s; failed audit gates: none; dropped: none.
+
+### Bar verdict
+
+| setting | arm | worst evolved % | worst all-times % | GPU ms | stalled exits / steps | $S$ vs tight | $S$ vs relaxed passing | $S$ vs fastest tested FOM at least as accurate | bar ($\le$ limit and $S\ge5$) |
+|---|---|---|---|---|---|---|---|---|---|
+| accurate_1_percent | `q256_M544_lat64_g0p001_fast_chol_clip` | 0.8755 | 3.4303 | 137.83 | 0 / 300 | 23.64 (`lean_tight`) | 3.79 (`lean_nt3e-3_l3e-3_dt005`) | 3.79 (`lean_nt3e-3_l3e-3_dt005`) | tight: MET; relaxed: not met; matched: not met |
+| stretch_half_percent | — | — | — | — | — | — | — | — | **not met**: no certified ROM arm at or below the error limit |
+| fast ($q=0$) | `q0_M64_scaled_g0p001_fast_clip_lamcarry` | 2.4158 | — | 43.04 | — | 75.69 | 12.13 | 9.39 | reported beside the accurate rung |
+
+### Every arm
+
+| arm | family | q | M | m | rule | tol | worst evolved % | worst all-times % | GPU ms | host ms | it/step | stalled | retries | ρ_max held-out | ρ_max deployed | certified | vs refined ref % |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `c1024_nt1e-4_dt005` | fom audited mesh 1024 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.6268 | 1.6664 | 79.68 | 323.32 | — | 0 / 300 | — | — | — | — | 2.208 |
+| `c2048_nt1e-4_dt005` | fom audited mesh 2048 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.2146 | 0.8908 | 281.30 | 524.95 | — | 0 / 300 | — | — | — | — | 1.981 |
+| `lean_nt1e-3_l1e-3_dt01` | fom lean mesh 4096 | — | — | — | ntol 0.001, ltol 0.001, dt 0.01 | — | 1.6607 | 1.6607 | 403.96 | 642.23 | — | 0 / 150 | — | — | — | — | 3.540 |
+| `lean_nt1e-2_l1e-2_dt005` | fom lean mesh 4096 | — | — | — | ntol 0.01, ltol 0.01, dt 0.005 | — | 2.1635 | 2.1635 | 419.30 | 662.46 | — | 0 / 300 | — | — | — | — | 2.489 |
+| `lean_nt3e-3_l3e-3_dt005` | fom lean mesh 4096 | — | — | — | ntol 0.003, ltol 0.003, dt 0.005 | — | 0.0499 | 0.0499 | 522.28 | 758.58 | — | 0 / 300 | — | — | — | — | 1.896 |
+| `lean_nt1e-3_l1e-3_dt005` | fom lean mesh 4096 | — | — | — | ntol 0.001, ltol 0.001, dt 0.005 | — | 0.0550 | 0.0550 | 704.85 | 947.42 | — | 0 / 300 | — | — | — | — | 1.892 |
+| `lean_nt1e-3_dt005` | fom lean mesh 4096 | — | — | — | ntol 0.001, ltol 1e-05, dt 0.005 | — | 0.0544 | 0.0544 | 1022.96 | 1265.05 | — | 0 / 300 | — | — | — | — | 1.893 |
+| `lean_nt1e-4_dt005` | fom lean mesh 4096 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.0318 | 0.0318 | 1202.39 | 1440.43 | — | 0 / 300 | — | — | — | — | 1.881 |
+| `nt1e-4_dt005` | fom audited mesh 4096 | — | — | — | ntol 0.0001, ltol 1e-06, dt 0.005 | — | 0.0318 | 0.0318 | 1219.37 | 1461.82 | — | 0 / 300 | — | — | — | — | — |
+| `lean_tight` | fom lean mesh 4096 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 3257.79 | 3498.10 | — | 0 / 300 | — | — | — | — | 1.895 |
+| `fft_tight` | fom audited mesh 4096 | — | — | — | ntol 1e-06, ltol 1e-08, dt 0.005 | — | 0.0000 | 0.0000 | 3283.07 | 3527.01 | — | 0 / 300 | — | — | — | — | 1.895 |
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | rom | 0 | 64 | 1024 | scaled | 0.001 | 2.4158 | 4.3503 | 43.04 | 285.17 | 2.0 | 0 / 300 | 0 | 0.0403 | 0.0431 | True | — |
+| `q0_M64_scaled_g0p001_fast` | rom | 0 | 64 | 1024 | scaled | 0.001 | 2.4157 | 4.3503 | 46.49 | 288.47 | 2.0 | 0 / 300 | 77 | 0.0403 | 0.0431 | True | — |
+| `q128_M576_lat64_g0p001_fast_chol_clip` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0907 | 3.8503 | 87.78 | 330.51 | 2.0 | 0 / 300 | 0 | 0.0644 | 0.0662 | True | — |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0907 | 3.8503 | 88.02 | 331.73 | 2.0 | 0 / 300 | 0 | 0.0644 | 0.0662 | True | 2.265 |
+| `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0475 | 3.4303 | 107.77 | 347.22 | 2.5 | 0 / 300 | 0 | 0.4838 | 0.4839 | False | 2.013 |
+| `q128_M576_lat64_g0p001_fast_chol_lamcarry` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0907 | 3.8503 | 111.95 | 355.59 | 2.0 | 0 / 300 | 158 | 0.0644 | 0.0662 | True | — |
+| `q256_M1088_bad0_g0p001_fast_chol_clip` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0475 | 3.4303 | 112.49 | 355.53 | 3.0 | 0 / 300 | 0 | 0.4838 | 0.4839 | False | — |
+| `q128_M576_lat64_g0p001_fast_chol` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0907 | 3.8503 | 116.70 | 354.51 | 2.0 | 0 / 300 | 164 | 0.0644 | 0.0662 | True | — |
+| `q256_M544_lat64_g0p001_fast_chol_clip` | rom | 256 | 544 | 3969 | lat64 | 0.001 | 0.8755 | 3.4303 | 137.83 | 380.98 | 3.0 | 0 / 300 | 0 | 0.0577 | 0.0561 | True | — |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.6043 | 3.4303 | 144.66 | 385.01 | 3.0 | 0 / 300 | 0 | 0.0908 | 0.0877 | True | 2.020 |
+| `q128_M576_lat64_g0p001_fast` | rom | 128 | 576 | 3969 | lat64 | 0.001 | 1.0907 | 3.8503 | 146.38 | 387.46 | 2.0 | 0 / 300 | 164 | 0.0644 | 0.0662 | True | — |
+| `q256_M1088_bad0_g0p001_fast_chol` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0365 | 3.4303 | 150.89 | 392.39 | 3.0 | 0 / 300 | 349 | 0.4838 | 0.4839 | False | — |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.6043 | 3.4303 | 151.08 | 393.28 | 3.0 | 0 / 300 | 0 | 0.0908 | 0.0877 | True | — |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4608 | 3.4303 | 152.73 | 394.96 | 2.5 | 0 / 300 | 10 | 0.1368 | 0.1304 | False | 1.984 |
+| `q256_M2176_lat64_g0p001_fast_chol_clip` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4609 | 3.4303 | 160.16 | 403.57 | 2.5 | 0 / 300 | 10 | 0.1368 | 0.1304 | False | — |
+| `q256_M1088_bad0_g0p001_fast_chol_lamcarry` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0363 | 3.4303 | 174.25 | 417.62 | 3.0 | 0 / 300 | 501 | 0.4838 | 0.4839 | False | — |
+| `q256_M2176_lat64_g0p001_fast_chol` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4609 | 3.4303 | 197.04 | 434.52 | 2.5 | 0 / 300 | 355 | 0.1368 | 0.1304 | False | — |
+| `q256_M1088_lat64_g0p001_fast_chol` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.6043 | 3.4303 | 207.01 | 450.14 | 3.0 | 0 / 300 | 378 | 0.0908 | 0.0877 | True | — |
+| `q256_M544_lat64_g0p001_fast_chol` | rom | 256 | 544 | 3969 | lat64 | 0.001 | 0.9048 | 3.4303 | 212.75 | 452.62 | 3.0 | 0 / 300 | 477 | 0.0577 | 0.0561 | True | — |
+| `q256_M1088_lat64_g0p001_fast_chol_lamcarry` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.6043 | 3.4303 | 236.95 | 477.96 | 3.0 | 0 / 300 | 582 | 0.0908 | 0.0877 | True | — |
+| `q256_M2176_lat64_g0p001_fast_chol_lamcarry` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4608 | 3.4303 | 244.27 | 482.27 | 2.5 | 0 / 300 | 547 | 0.1368 | 0.1304 | False | — |
+| `q256_M1088_bad0_g0p001_fast` | rom | 256 | 1088 | 2048 | bad0 (control) | 0.001 | 1.0365 | 3.4303 | 258.22 | 499.42 | 3.0 | 0 / 300 | 349 | 0.4838 | 0.4839 | False | — |
+| `q256_M2176_lat64_g0p001_fast` | rom | 256 | 2176 | 3969 | lat64 | 0.001 | 0.4609 | 3.4303 | 284.30 | 527.72 | 2.5 | 0 / 300 | 355 | 0.1368 | 0.1304 | False | — |
+| `q256_M1088_lat64_g0p001_fast` | rom | 256 | 1088 | 3969 | lat64 | 0.001 | 0.6043 | 3.4303 | 315.78 | 559.39 | 3.0 | 0 / 300 | 378 | 0.0908 | 0.0877 | True | — |
+| `q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4609 | 3.4303 | 331.95 | 572.31 | 2.5 | 0 / 300 | 9 | 0.6191 | 0.6810 | False | 1.984 |
+| `q256_M2176_lat128_g0p001_fast_chol_clip` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4610 | 3.4303 | 350.13 | 592.70 | 2.5 | 0 / 300 | 9 | 0.6191 | 0.6810 | False | — |
+| `q256_M2176_lat128_g0p001_fast_chol` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4610 | 3.4303 | 436.51 | 697.85 | 2.5 | 0 / 300 | 347 | 0.6191 | 0.6810 | False | — |
+| `q256_M2176_lat128_g0p001_fast` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4610 | 3.4303 | 523.58 | 759.82 | 2.5 | 0 / 300 | 347 | 0.6191 | 0.6810 | False | — |
+| `q256_M2176_lat128_g0p001_fast_chol_lamcarry` | rom | 256 | 2176 | 16129 | lat128 | 0.001 | 0.4609 | 3.4303 | 548.54 | 786.04 | 2.5 | 0 / 300 | 553 | 0.6191 | 0.6810 | False | — |
+
+Same-grid truth (`fft_tight`) against the refined reference, worst evolved: 1.895 % (the discretisation error of this mesh; no reduced arm can be more physical than this).
+
+### Dense truth (exact advection, same solver, tolerance 1e-6) and the deployed arms against it
+
+| rung | case | worst evolved % | iterations | seconds | deployed arm − dense (relative, per arm) |
+|---|---|---|---|---|---|
+
+### Quadrature rules (certified only by held-out ρ; the NNLS fit residual is never a certificate)
+
+| q | M | rule | m | NNLS fit (not a certificate) | ρ_max fit states | ρ_max held-out | ρ_95 held-out | argmax state | primary (≤ bar) | control |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 64 | scaled | 1024 | — | 0.0041 | 0.0403 | 0.0235 | 145 | True | False |
+| 128 | 576 | lat64 | 3969 | — | 0.0654 | 0.0644 | 0.0050 | 357 | True | False |
+| 256 | 544 | lat64 | 3969 | — | 0.0049 | 0.0577 | 0.0035 | 357 | True | False |
+| 256 | 1088 | lat64 | 3969 | — | 0.0086 | 0.0908 | 0.0064 | 357 | True | False |
+| 256 | 1088 | bad0 | 2048 | — | 0.3257 | 0.4838 | 0.2597 | 255 | False | True |
+| 256 | 2176 | lat64 | 3969 | — | 0.0171 | 0.1368 | 0.0152 | 357 | False | False |
+| 256 | 2176 | lat128 | 16129 | — | 0.0299 | 0.6191 | 0.0056 | 357 | False | False |
+
+### Parity of the optimised kernel against the audited path (same rule, same tolerance)
+
+| fast arm | audited twin | worst relative field difference | integers identical | passed (≤ 1e-9 and integers) |
+|---|---|---|---|---|
+| `q0_M64_scaled_g0p001_fast` | none in this job | — | — | not covered |
+| `q0_M64_scaled_g0p001_fast_clip_lamcarry` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M544_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M544_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_clip` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_lamcarry` | none in this job | — | — | not covered |
+| `q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry` | none in this job | — | — | not covered |
+
+### Profile of the accurate rung (case 0, medians of 7; micro-kernels medians of 30)
+
+| arm | whole query ms | initial fit ms | evolve ms | decode ms | LM iterations | retries | ms per iteration | (r, J) ms | residual ms | Gram ms | Gram + solve ms |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `q256_M1088_lat64_g0p001_fast_chol` | 329.94 | 18.15 | 289.48 | 16.68 | 495 | 114 | 0.585 | 0.628 | 0.496 | 0.159 | 0.775 |
+| `q256_M1088_lat64_g0p001_fast_chol_clip` | 185.36 | 18.24 | 148.24 | 16.68 | 230 | 0 | 0.645 | 0.584 | 0.484 | 0.155 | 0.768 |
+| `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | 163.71 | 18.29 | 127.17 | 16.67 | 191 | 0 | 0.666 | 0.682 | 0.469 | 0.163 | 0.773 |
+| `q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry` | 190.75 | 18.31 | 155.46 | 16.68 | 209 | 10 | 0.744 | 0.770 | 0.459 | 0.159 | 0.776 |
+| `q128_M576_lat64_g0p001_fast_chol_clip_lamcarry` | 98.76 | 10.95 | 71.12 | 16.68 | 134 | 0 | 0.531 | 0.645 | 0.322 | 0.136 | 0.446 |
+
 ## Glossary
 
 - **FOM** — full-order model: backward-Euler upwind finite differences on the full grid, Newton iterations with FFT-preconditioned BiCGStab. `fft_tight` is its converged setting and the truth every same-grid error is measured against.
@@ -209,8 +528,16 @@ Same-grid truth (`fft_tight`) against the refined reference, worst evolved: 1.99
 - **retries** — rejected LM trial steps (damping increases).
 - **evolved / all-times** — worst error over output times after t = 0 / including t = 0, where the ROM returns its own compression of the supplied field.
 - **vs refined ref** — error against an 8192² solve at Δt/16 restricted to this grid: the physical error.
+- **dev6 / hold64** — the two evaluation cohorts: six opened development cases (all choices are made on these) and 64 held-out cases drawn with a different seed, never used to choose anything.
+- **GPU / host (complete) query** — GPU: dense input on the device to six dense output fields on the device. Host: the same plus copying the six fields to host memory; at 4096² that copy is about 240 ms for every arm, ROM and FOM alike.
+- **coarse FOM** — the same full-order solver on a 2× or 4× coarser grid, its output interpolated to this grid, scored against the same same-grid truth.
+- **pred2** — algorithmic ROM arm: each time step starts from the smallest-residual of {current state, linear extrapolation, quadratic extrapolation}, evaluated as one batched residual.
+- **clip / lamcarry / chol** — ROM solver variants: shorten an over-long step onto the trust radius instead of rejecting it; carry the damping between time steps; Cholesky instead of LU for the normal equations.
 - **parity** — agreement of the optimised kernel with the audited one on output fields and on the integer iteration and exit vectors.
 
 ## Sources
 
 - `checks/hb2k01-summary.json` SHA256 `125beef32d43b048db70d0223145e056ad13795c2a4fd0649460f4761d50ccc2` (attempt `hb2k01`, job `4054951`, commit `b66a59bda43a70cc46aef12902e2b6910c5a29f9`, result.json `36804abd3cd456abb5f3f2a68c85bc815eaee3eb4aab66a30465c89f5baa6796`)
+- `checks/hb2k02-summary.json` SHA256 `62e285f523a40b03a5fb006db9e441b077f9b5b4fcc5218c563bf162564f5011` (attempt `hb2k02`, job `4071616`, commit `ae700dfde8c2d4834e082e539a6c730c47d8d2f3`, result.json `657ff6496e5580e5add9a04b2e0ace6ac24cc28e8e60bea8f1c2f1cc1c180479`)
+- `checks/hb2kh64-summary.json` SHA256 `64bc7deed9015c9f4881d6c101f6c5fd79a6af2551121a24bf780c8523661620` (attempt `hb2kh64`, job `4077566`, commit `7627da25f2ab7bbd4c72c3a86b17712ef9c84c75`, result.json `0ea4527462677f5fc5416538b240b3075d9271afc805f8265ec02df6be2a02d5`)
+- `checks/hb4k03-summary.json` SHA256 `c785be00d9182de60b6a63b14c74093c15652205e76d93e78dcc2083aee38d5e` (attempt `hb4k03`, job `4071625`, commit `ae700dfde8c2d4834e082e539a6c730c47d8d2f3`, result.json `5af5bee5017ccde297b271641ec089278a69db073ddf9481122963465b450745`)

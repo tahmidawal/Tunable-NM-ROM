@@ -134,10 +134,10 @@ def main():
     # the bank first: the largest single allocation (64 GiB at 4096^2) goes into an unfragmented pool
     bank = A.CoordBank(params, K, R)
     t0 = time.perf_counter()
-    G = H.build_bank(bank, L, inplace=cfg.get('bank_inplace'))
-    jax.block_until_ready(G)
-    rep['phases']['bank'] = dict(shape=list(G.shape), seconds=time.perf_counter() - t0, bytes=int(G.nbytes))
-    print('BANK', G.shape, el(), flush=True)
+    G = H.build_bank(bank, L, nblocks=cfg.get('bank_blocks'))
+    single = len(G) == 1
+    rep['phases']['bank'] = dict(shape=[H.bank_rows(G), R], blocks=len(G), seconds=time.perf_counter() - t0, bytes=int(sum(g.nbytes for g in G)))
+    print('BANK', H.bank_rows(G), 'rows in', len(G), 'blocks', el(), flush=True)
 
     # ---------------------------------------------------- full-order solvers ----
     foms = {}
@@ -204,7 +204,7 @@ def main():
     # ------------------------------------- operators without Phi, parity-gated ----
     pc = cfg['population']
     Lp = int(pc['mesh'])
-    Gp = bank.on_grid(Lp) if Lp != L else G
+    Gp = bank.on_grid(Lp) if Lp != L else jnp.concatenate(G, 0)
     ops_M = {}
 
     def operators(M):
@@ -221,7 +221,7 @@ def main():
         Phig, lamg, _ = e.modes(Lp, Mg)
         kxg, kyg, lamg2 = H.modes_lean(Lp, Mg)
         sxg, syg = H.sine_tables(Lp, kxg, kyg)
-        Ag = H.project_bank(Gp, jnp.asarray(sxg), jnp.asarray(syg), Lp)
+        Ag = H.project_bank((Gp,), jnp.asarray(sxg), jnp.asarray(syg), Lp)
         Aref = jnp.asarray(Phig).T @ Gp
         pick = np.arange(0, (Lp - 1) ** 2, 97)
         g0 = dict(mesh=Lp, M=Mg, lam_identical=bool(np.array_equal(lamg, lamg2)),
@@ -300,7 +300,7 @@ def main():
     def add(name, **kw):
         built[name] = dict(name=name, **kw)
         rep['arm_setup'].append({k: v for k, v in kw.items() if k in (
-            'family', 'q', 'M', 'm', 'rule', 'gtol', 'kernel', 'solver', 'setting', 'quadrature', 'parity_twin')} | dict(arm=name))
+            'family', 'q', 'M', 'm', 'rule', 'gtol', 'kernel', 'solver', 'setting', 'quadrature', 'parity_twin', 'variant')} | dict(arm=name))
         return name
 
     def register(rung, rs):
@@ -314,33 +314,43 @@ def main():
         names = []
         for g in rung['gtols']:
             twin = None
-            if rs.get('base'):
+            if rs.get('base') and not single:
+                rep['dropped'].append(dict(name=f'{tag}_{gt(g)}_base', phase='register',
+                                           reason='audited path needs the bank as ONE array; blocked bank at this mesh'))
+            if rs.get('base') and single:
                 qf = TF.make_query(params, C, K, q, L, dt, trust, 'eq', 'base', ic_budget=st['ic_budget'],
                                    step_budget=st['step_budget'], gtol=g, ic_gtol=cfg['ic_gtol'], linear=lin(K + q),
                                    inner_damping=cfg['inner_damping'], tau_y=cfg['tau_y'])
                 twin = add(f'{tag}_{gt(g)}_base', family='rom', kind='rom', q=q, M=M, m=info['m'], rule=rs['name'], gtol=g,
-                           kernel='audited topfix base', quadrature='eq', data=data, cold=cold,
+                           kernel='audited topfix base', quadrature='eq', data=dict(data, G=G[0]), cold=cold,
                            query=(lambda u, nu, d, c, _q=qf: _q(u, nu, d, c)))
                 names.append(twin)
-            if q == 0:
+            if q == 0 and single and not cfg.get('q0_through_hfast'):
                 oo = FL.ARMS[cfg['fast_arm_q0']]
-                tabq = F.build_tables(params, data, cold, oo)
+                d1 = dict(data, G=G[0])
+                tabq = F.build_tables(params, d1, cold, oo)
                 fq = F.make_query(params, K, L, dt, int(data['G5'].shape[0]), trust, oo, ic_budget=st['ic_budget'],
                                   step_budget=st['step_budget'], gtol=g)
                 names.append(add(f'{tag}_{gt(g)}_fast', family='rom', kind='rom', q=q, M=M, m=info['m'], rule=rs['name'],
-                                 gtol=g, kernel=f"b-speed {cfg['fast_arm_q0']}", quadrature='eq', data=data, cold=cold,
+                                 gtol=g, kernel=f"b-speed {cfg['fast_arm_q0']}", quadrature='eq', data=d1, cold=cold,
                                  fastarm=True, parity_twin=twin,
                                  query=(lambda u, nu, d, c, _t=tabq, _f=fq: _f(u, nu, d, c, _t))))
                 continue
             tab = HF.build_tables(params, C, K, data, cold)
-            for solver in rung.get('solvers', ['lu']):
+            for var in rung.get('variants', [dict(solver=s_) for s_ in rung.get('solvers', ['lu'])]):
+                solver = var.get('solver', 'lu')
+                sfx = ''.join(f'_{k_}' for k_ in ([solver] if solver != 'lu' else []) + [k_ for k_ in ('clip', 'lamcarry') if var.get(k_)])
                 fq, parts = HF.make_query(params, C, K, q, L, dt, trust, 'eq', ic_budget=st['ic_budget'],
                                           step_budget=st['step_budget'], gtol=g, ic_gtol=cfg['ic_gtol'],
-                                          ridge=cfg['inner_damping'], solver=solver, parts=True)
-                names.append(add(f'{tag}_{gt(g)}_fast' + ('' if solver == 'lu' else f'_{solver}'), family='rom', kind='rom',
-                                 q=q, M=M, m=info['m'], rule=rs['name'], gtol=g, kernel='hfast', solver=solver,
-                                 quadrature='eq', data=data, cold=cold, tab=tab, parts=parts, fastarm=True, hfast=True,
-                                 parity_twin=twin, query=(lambda u, nu, d, c, _t=tab, _f=fq: _f(u, nu, d, c, _t))))
+                                          ridge=cfg['inner_damping'], solver=solver, parts=True,
+                                          clip=bool(var.get('clip')), lam_carry=bool(var.get('lamcarry')))
+                algorithmic = bool(var.get('clip') or var.get('lamcarry'))
+                names.append(add(f'{tag}_{gt(g)}_fast{sfx}', family='rom', kind='rom',
+                                 q=q, M=M, m=info['m'], rule=rs['name'], gtol=g,
+                                 kernel='hfast' + (' (algorithmic variant: not a parity arm)' if algorithmic else ''),
+                                 solver=solver, quadrature='eq', data=data, cold=cold, tab=tab, parts=parts, fastarm=True,
+                                 hfast=True, parity_twin=(None if algorithmic else twin), variant=var,
+                                 query=(lambda u, nu, d, c, _t=tab, _f=fq: _f(u, nu, d, c, _t))))
         return names
 
     def invoke(b, u, c):

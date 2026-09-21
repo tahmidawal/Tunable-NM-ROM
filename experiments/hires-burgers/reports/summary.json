@@ -1,0 +1,93 @@
+{
+ "status": "provisional: 2048\u00b2 only (hb2k01); development cases; one checkpoint",
+ "sources": [
+  {
+   "file": "checks/hb2k01-summary.json",
+   "sha256": "125beef32d43b048db70d0223145e056ad13795c2a4fd0649460f4761d50ccc2",
+   "attempt": "hb2k01",
+   "job_id": "4054951",
+   "commit": "b66a59bda43a70cc46aef12902e2b6910c5a29f9",
+   "gpu": [
+    "GPU 0: NVIDIA H200 (UUID: GPU-50404ee7-1d50-1d0c-6780-806cf66543b8)"
+   ],
+   "result_sha256": "36804abd3cd456abb5f3f2a68c85bc815eaee3eb4aab66a30465c89f5baa6796",
+   "failed_gates": []
+  }
+ ],
+ "verdicts": {
+  "2048": {
+   "accurate_1_percent": {
+    "arm": "q256_M1088_lat64_g0p001_fast_chol",
+    "worst_evolved_percent": 0.5979510749034243,
+    "worst_all_times_percent": 3.2189825885357433,
+    "median_gpu_ms": 195.1791311148554,
+    "stalled_exits": 0,
+    "steps": 300,
+    "tight_comparator": "lean_tight",
+    "relaxed_passing_comparator": "lean_nt1e-3_l1e-3_dt005",
+    "fastest_tested_fom_at_least_as_accurate": "lean_nt1e-3_l1e-3_dt005",
+    "speedups": {
+     "vs_tight": 3.846796234351373,
+     "vs_relaxed_passing": 0.8382887331971005,
+     "vs_fastest_tested_fom_at_least_as_accurate": 0.8382887331971005
+    },
+    "met_vs_tight": false,
+    "met_vs_relaxed_passing": false,
+    "met_vs_fastest_tested_at_least_as_accurate": false,
+    "limit_percent": 1.0,
+    "selection": "cheapest certified non-control ROM arm with worst evolved error <= limit (development cases)"
+   },
+   "stretch_half_percent": {
+    "met": false,
+    "reason": "no certified ROM arm at or below the error limit",
+    "limit_percent": 0.5
+   },
+   "fast_setting": {
+    "arm": "q0_M64_xfer_g0p001_fast",
+    "worst_evolved_percent": 2.3821864512329296,
+    "median_gpu_ms": 25.09825536981225,
+    "vs_tight": 29.915001482519983,
+    "vs_relaxed_passing": 6.519037445350803,
+    "vs_fastest_tested_fom_at_least_as_accurate": 3.8154905035322866,
+    "certified_primary": true
+   }
+  }
+ },
+ "headline": [
+  {
+   "mesh": 2048,
+   "setting": "accurate_1_percent",
+   "arm": "q256_M1088_lat64_g0p001_fast_chol",
+   "worst_evolved_percent": 0.5979510749034243,
+   "worst_all_times_percent": 3.2189825885357433,
+   "median_gpu_ms": 195.1791311148554,
+   "stalled_exits": 0,
+   "steps": 300,
+   "tight_comparator": "lean_tight",
+   "relaxed_passing_comparator": "lean_nt1e-3_l1e-3_dt005",
+   "fastest_tested_fom_at_least_as_accurate": "lean_nt1e-3_l1e-3_dt005",
+   "speedups": {
+    "vs_tight": 3.846796234351373,
+    "vs_relaxed_passing": 0.8382887331971005,
+    "vs_fastest_tested_fom_at_least_as_accurate": 0.8382887331971005
+   },
+   "met_vs_tight": false,
+   "met_vs_relaxed_passing": false,
+   "met_vs_fastest_tested_at_least_as_accurate": false,
+   "limit_percent": 1.0,
+   "selection": "cheapest certified non-control ROM arm with worst evolved error <= limit (development cases)"
+  },
+  {
+   "mesh": 2048,
+   "setting": "fast_setting",
+   "arm": "q0_M64_xfer_g0p001_fast",
+   "worst_evolved_percent": 2.3821864512329296,
+   "median_gpu_ms": 25.09825536981225,
+   "vs_tight": 29.915001482519983,
+   "vs_relaxed_passing": 6.519037445350803,
+   "vs_fastest_tested_fom_at_least_as_accurate": 3.8154905035322866,
+   "certified_primary": true
+  }
+ ],
+ "report_sha256": "f1118393502f4290c9be19e1dcf28ea8d2b9eb49ee3bf5b8b4308020de8298cb"
+}

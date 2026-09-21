@@ -1,0 +1,176 @@
+host=pax008 source_commit=b66a59bda43a70cc46aef12902e2b6910c5a29f9
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  389G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+TRUTH 0 4.0
+TRUTH 1 4.8
+TRUTH 2 6.0
+TRUTH 3 7.1
+TRUTH 4 7.9
+TRUTH 5 8.6
+BANK (4190209, 512) 15.9
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 8.1 55.8
+QUICK nt1e-4_dt005 evolved% 0.0334 all% 0.0334 stalled 0 5.3 61.2
+QUICK nt1e-3_dt005 evolved% 0.054 all% 0.054 stalled 0 4.6 65.7
+QUICK nt1e-2_dt005 evolved% 4.3716 all% 4.3716 stalled 0 3.6 69.3
+QUICK nt1e-4_dt01 evolved% 1.6507 all% 1.6507 stalled 0 6.1 75.4
+QUICK nt1e-3_dt01 evolved% 1.6493 all% 1.6493 stalled 0 4.1 79.5
+QUICK nt1e-2_dt01 evolved% 3.5129 all% 3.5129 stalled 0 3.4 82.9
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 8.5 91.3
+QUICK lean_nt1e-4_dt005 evolved% 0.0334 all% 0.0334 stalled 0 4.7 96.1
+QUICK lean_nt1e-3_dt005 evolved% 0.054 all% 0.054 stalled 0 4.3 100.4
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0543 all% 0.0543 stalled 0 3.7 104.1
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1615 all% 2.1615 stalled 0 3.4 107.5
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6501 all% 1.6501 stalled 0 4.3 111.8
+QUICK c1024_nt1e-4_dt005 evolved% 0.4173 all% 1.2598 stalled 0 4.4 116.3
+QUICK c512_nt1e-4_dt005 evolved% 1.217 all% 2.3569 stalled 0 4.3 120.6
+QUICK q0_M64_scaled_g0p001_fast evolved% 2.3728 all% 4.1823 stalled 0 9.9 140.8
+QUICK q0_M64_scaled_g1em06_fast evolved% 2.3714 all% 4.1823 stalled 0 5.6 146.4
+QUICK q128_M576_scaled_g0p001_fast evolved% 1.075 all% 3.6604 stalled 0 9.0 163.6
+QUICK q128_M576_scaled_g1em06_fast evolved% 1.075 all% 3.6604 stalled 0 5.9 169.5
+QUICK q128_M576_lat64_g0p001_fast evolved% 1.0748 all% 3.6604 stalled 0 7.0 180.6
+QUICK q128_M576_lat64_g1em06_fast evolved% 1.0748 all% 3.6604 stalled 0 6.1 186.7
+QUICK q256_M544_scaled_g0p001_fast evolved% 0.8819 all% 3.219 stalled 0 9.7 203.7
+QUICK q256_M544_scaled_g1em06_fast evolved% 0.8639 all% 3.219 stalled 0 8.7 212.3
+QUICK q256_M544_lat64_g0p001_fast evolved% 0.8896 all% 3.219 stalled 0 8.1 221.3
+QUICK q256_M544_lat64_g1em06_fast evolved% 0.8653 all% 3.219 stalled 0 9.1 230.5
+QUICK q256_M1088_scaled_g0p001_fast evolved% 0.5915 all% 3.219 stalled 0 8.6 241.4
+QUICK q256_M1088_scaled_g0p001_fast_chol evolved% 0.5915 all% 3.219 stalled 0 6.2 247.7
+QUICK q256_M1088_scaled_g1em06_fast evolved% 0.5915 all% 3.219 stalled 0 8.5 256.2
+QUICK q256_M1088_scaled_g1em06_fast_chol evolved% 0.5915 all% 3.219 stalled 0 6.8 263.0
+QUICK q256_M1088_lat64_g0p001_fast evolved% 0.598 all% 3.219 stalled 0 8.4 271.6
+QUICK q256_M1088_lat64_g0p001_fast_chol evolved% 0.598 all% 3.219 stalled 0 6.2 277.8
+QUICK q256_M1088_lat64_g1em06_fast evolved% 0.5979 all% 3.219 stalled 0 8.9 286.8
+QUICK q256_M1088_lat64_g1em06_fast_chol evolved% 0.5979 all% 3.219 stalled 0 7.5 294.3
+QUICK q256_M1088_bad0_g0p001_fast evolved% 1.0359 all% 3.219 stalled 0 7.8 305.6
+QUICK q256_M1088_bad0_g0p001_fast_chol evolved% 1.0359 all% 3.219 stalled 0 6.0 311.7
+QUICK q256_M1088_bad0_g1em06_fast evolved% 1.0476 all% 3.219 stalled 0 7.9 319.6
+QUICK q256_M1088_bad0_g1em06_fast_chol evolved% 1.0476 all% 3.219 stalled 0 6.6 326.2
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 338.9
+POPULATION q 128 stalled {'fit': 0, 'cert': 0} 384.4
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 528.7
+RULE 0 64 scaled m 1024 rho_max 0.0404 p95 0.0239 median 3.14e-04 fit-states rho_max 0.0042 532.5
+RULE 128 576 scaled m 2319 rho_max 0.0988 p95 0.0030 median 6.69e-04 fit-states rho_max 0.1356 536.1
+RULE 128 576 lat64 m 3969 rho_max 0.0698 p95 0.0050 median 2.94e-04 fit-states rho_max 0.0725 537.8
+RULE 256 544 scaled m 2560 rho_max 0.1470 p95 0.0071 median 4.70e-04 fit-states rho_max 0.0103 541.0
+RULE 256 544 lat64 m 3969 rho_max 0.0634 p95 0.0035 median 2.86e-04 fit-states rho_max 0.0048 541.4
+RULE 256 1088 scaled m 2560 rho_max 0.2549 p95 0.0169 median 1.05e-03 fit-states rho_max 0.0245 543.7
+RULE 256 1088 lat64 m 3969 rho_max 0.1000 p95 0.0065 median 4.31e-04 fit-states rho_max 0.0085 544.1
+RULE 256 1088 bad0 m 2048 rho_max 0.4840 p95 0.2599 median 1.55e-02 fit-states rho_max 0.3263 545.9
+RULE 0 64 xfer m 933 rho_max 0.0328 p95 0.0192 median 1.11e-03 fit-states rho_max 0.0001 552.0
+QUICK q0_M64_xfer_g0p001_base evolved% 2.3822 all% 4.1823 stalled 0 6.4 559.4
+QUICK q0_M64_xfer_g0p001_fast evolved% 2.3822 all% 4.1823 stalled 0 7.9 567.3
+QUICK q0_M64_xfer_g1em06_base evolved% 2.3809 all% 4.1823 stalled 0 5.2 572.6
+QUICK q0_M64_xfer_g1em06_fast evolved% 2.3809 all% 4.1823 stalled 0 5.6 578.2
+PARITY q0_M64_xfer_g0p001_fast 7.657e-13 integers True
+PARITY q0_M64_xfer_g1em06_fast 7.857e-13 integers True
+RULE 128 576 xfer m 2151 rho_max 0.1315 p95 0.0284 median 3.22e-03 fit-states rho_max 0.0063 591.1
+QUICK q128_M576_xfer_g0p001_base evolved% 1.075 all% 3.6604 stalled 0 7.8 599.7
+QUICK q128_M576_xfer_g0p001_fast evolved% 1.075 all% 3.6604 stalled 0 7.3 607.0
+QUICK q128_M576_xfer_g1em06_base evolved% 1.075 all% 3.6604 stalled 0 6.8 613.9
+QUICK q128_M576_xfer_g1em06_fast evolved% 1.075 all% 3.6604 stalled 0 6.1 620.0
+PARITY q128_M576_xfer_g0p001_fast 5.378e-14 integers True
+PARITY q128_M576_xfer_g1em06_fast 5.353e-14 integers True
+RULE 256 544 xfer m 2395 rho_max 0.0749 p95 0.0063 median 1.03e-03 fit-states rho_max 0.0005 638.1
+QUICK q256_M544_xfer_g0p001_base evolved% 0.8637 all% 3.219 stalled 0 10.5 649.3
+QUICK q256_M544_xfer_g0p001_fast evolved% 0.8637 all% 3.219 stalled 0 8.1 657.4
+QUICK q256_M544_xfer_g1em06_base evolved% 0.8608 all% 3.219 stalled 0 9.9 667.4
+QUICK q256_M544_xfer_g1em06_fast evolved% 0.8608 all% 3.219 stalled 0 8.9 676.3
+PARITY q256_M544_xfer_g0p001_fast 6.177e-14 integers True
+PARITY q256_M544_xfer_g1em06_fast 9.597e-14 integers True
+RULE 256 1088 xfer m 2470 rho_max 0.2052 p95 0.0170 median 1.75e-03 fit-states rho_max 0.0018 697.8
+QUICK q256_M1088_xfer_g0p001_base evolved% 0.5886 all% 3.219 stalled 0 9.0 707.5
+QUICK q256_M1088_xfer_g0p001_fast evolved% 0.5886 all% 3.219 stalled 0 8.1 715.6
+QUICK q256_M1088_xfer_g0p001_fast_chol evolved% 0.5886 all% 3.219 stalled 0 6.1 721.7
+QUICK q256_M1088_xfer_g1em06_base evolved% 0.5886 all% 3.219 stalled 0 9.6 731.3
+QUICK q256_M1088_xfer_g1em06_fast evolved% 0.5886 all% 3.219 stalled 0 10.3 741.6
+QUICK q256_M1088_xfer_g1em06_fast_chol evolved% 0.5886 all% 3.219 stalled 0 10.1 751.8
+PARITY q256_M1088_xfer_g0p001_fast 6.177e-14 integers True
+PARITY q256_M1088_xfer_g0p001_fast_chol 8.356e-14 integers True
+PARITY q256_M1088_xfer_g1em06_fast 7.232e-14 integers True
+PARITY q256_M1088_xfer_g1em06_fast_chol 7.295e-14 integers True
+RULE 256 1088 badfit m 1678 rho_max 4.2252 p95 0.2730 median 4.57e-02 fit-states rho_max 0.3001 776.8
+QUICK q256_M1088_badfit_g0p001_fast evolved% 0.977 all% 3.219 stalled 0 7.8 785.3
+QUICK q256_M1088_badfit_g0p001_fast_chol evolved% 0.977 all% 3.219 stalled 0 5.8 791.1
+QUICK q256_M1088_badfit_g1em06_fast evolved% 0.9796 all% 3.219 stalled 0 8.7 799.9
+QUICK q256_M1088_badfit_g1em06_fast_chol evolved% 0.9796 all% 3.219 stalled 0 7.1 807.0
+DEPLOYED-RHO q0_M64_scaled_g0p001_fast 0.0424 certified(both) True 808.7
+DEPLOYED-RHO q0_M64_scaled_g1em06_fast 0.0424 certified(both) True 810.3
+DEPLOYED-RHO q128_M576_scaled_g0p001_fast 0.1065 certified(both) True 813.0
+DEPLOYED-RHO q128_M576_scaled_g1em06_fast 0.1065 certified(both) True 815.7
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast 0.0719 certified(both) True 819.4
+DEPLOYED-RHO q128_M576_lat64_g1em06_fast 0.0719 certified(both) True 825.1
+DEPLOYED-RHO q256_M544_scaled_g0p001_fast 0.1668 certified(both) False 830.0
+DEPLOYED-RHO q256_M544_scaled_g1em06_fast 0.1668 certified(both) False 836.6
+DEPLOYED-RHO q256_M544_lat64_g0p001_fast 0.0624 certified(both) True 842.2
+DEPLOYED-RHO q256_M544_lat64_g1em06_fast 0.0624 certified(both) True 850.2
+DEPLOYED-RHO q256_M1088_scaled_g0p001_fast 0.2927 certified(both) False 853.8
+DEPLOYED-RHO q256_M1088_scaled_g0p001_fast_chol 0.2927 certified(both) False 856.5
+DEPLOYED-RHO q256_M1088_scaled_g1em06_fast 0.2927 certified(both) False 861.8
+DEPLOYED-RHO q256_M1088_scaled_g1em06_fast_chol 0.2927 certified(both) False 865.6
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast 0.0980 certified(both) True 869.6
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol 0.0980 certified(both) True 872.7
+DEPLOYED-RHO q256_M1088_lat64_g1em06_fast 0.0980 certified(both) True 878.7
+DEPLOYED-RHO q256_M1088_lat64_g1em06_fast_chol 0.0980 certified(both) True 883.0
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast 0.4841 certified(both) False 886.3
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast_chol 0.4841 certified(both) False 888.9
+DEPLOYED-RHO q256_M1088_bad0_g1em06_fast 0.4841 certified(both) False 893.8
+DEPLOYED-RHO q256_M1088_bad0_g1em06_fast_chol 0.4841 certified(both) False 897.1
+DEPLOYED-RHO q0_M64_xfer_g0p001_fast 0.0337 certified(both) True 898.6
+DEPLOYED-RHO q0_M64_xfer_g1em06_fast 0.0337 certified(both) True 900.2
+DEPLOYED-RHO q128_M576_xfer_g0p001_fast 0.1393 certified(both) False 902.5
+DEPLOYED-RHO q128_M576_xfer_g1em06_fast 0.1393 certified(both) False 905.0
+DEPLOYED-RHO q256_M544_xfer_g0p001_fast 0.0808 certified(both) True 908.8
+DEPLOYED-RHO q256_M544_xfer_g1em06_fast 0.0808 certified(both) True 915.0
+DEPLOYED-RHO q256_M1088_xfer_g0p001_fast 0.2192 certified(both) False 918.7
+DEPLOYED-RHO q256_M1088_xfer_g0p001_fast_chol 0.2192 certified(both) False 921.4
+DEPLOYED-RHO q256_M1088_xfer_g1em06_fast 0.2192 certified(both) False 927.0
+DEPLOYED-RHO q256_M1088_xfer_g1em06_fast_chol 0.2192 certified(both) False 930.9
+DEPLOYED-RHO q256_M1088_badfit_g0p001_fast 4.3293 certified(both) False 934.3
+DEPLOYED-RHO q256_M1088_badfit_g0p001_fast_chol 4.3293 certified(both) False 937.0
+DEPLOYED-RHO q256_M1088_badfit_g1em06_fast 4.3293 certified(both) False 942.1
+DEPLOYED-RHO q256_M1088_badfit_g1em06_fast_chol 4.3293 certified(both) False 945.8
+DENSE 0 64 case 0 evolved% 0.801 iters 191 9.1 955.7
+DENSE 0 64 case 1 evolved% 0.4362 iters 236 5.8 962.0
+DENSE 0 64 case 2 evolved% 2.3717 iters 197 5.0 967.7
+DENSE 0 64 case 3 evolved% 1.6334 iters 228 5.7 973.9
+DENSE 0 64 case 4 evolved% 1.2818 iters 148 4.1 978.6
+DENSE 0 64 case 5 evolved% 0.8107 iters 186 4.8 984.0
+DENSE 128 576 case 0 evolved% 0.2533 iters 364 55.8 1040.5
+DENSE 128 576 case 1 evolved% 0.2212 iters 295 42.0 1083.2
+DENSE 128 576 case 2 evolved% 1.0747 iters 201 30.7 1114.6
+DENSE 128 576 case 3 evolved% 0.8227 iters 303 43.0 1158.2
+DENSE 128 576 case 4 evolved% 0.3675 iters 137 22.9 1181.8
+DENSE 128 576 case 5 evolved% 0.4765 iters 224 33.4 1215.9
+DENSE 256 544 case 0 evolved% 0.1204 iters 1684 318.0 1534.7
+DENSE 256 544 case 1 evolved% 0.1368 iters 494 98.0 1633.3
+DENSE 256 544 case 2 evolved% 0.8655 iters 843 160.8 1794.9
+DENSE 256 544 case 3 evolved% 0.4621 iters 775 148.6 1944.2
+DENSE 256 544 case 4 evolved% 0.2401 iters 207 46.3 1991.2
+DENSE 256 544 case 5 evolved% 0.2805 iters 284 60.2 2052.1
+DENSE 256 1088 case 0 evolved% 0.0747 iters 1588 347.3 2400.8
+DENSE 256 1088 case 1 evolved% 0.0704 iters 498 114.9 2517.1
+DENSE 256 1088 case 2 evolved% 0.5985 iters 450 104.8 2623.3
+DENSE 256 1088 case 3 evolved% 0.336 iters 908 200.6 2825.4
+DENSE 256 1088 case 4 evolved% 0.1653 iters 239 60.8 2887.5
+DENSE 256 1088 case 5 evolved% 0.2061 iters 271 67.5 2956.3
+TIMED rep 0 3296.5
+TIMED rep 1 3610.5
+TIMED rep 2 3926.8
+TIMED rep 3 4243.3
+TIMED rep 4 4561.4
+PROFILE {"arm": "q256_M1088_xfer_g0p001_fast", "case": 0, "iterations": 491, "steps": 50, "retries": 113, "J_shape": [1088, 272], "m": 2470, "whole_query_ms": 450.4094230942428, "initialize_ms": 18.464941065758467, "evolve_ms": 427.99355927854776, "decode_ms": 4.290441982448101, "evalJ_ms": 0.5016373470425606, "residual_ms": 0.4949416033923626, "gram_ms": 0.16079889610409737, "gram_plus_solve_ms": 0.7923953235149384, "evolve_ms_per_iteration": 0.8716773101396085}
+PROFILE {"arm": "q256_M1088_xfer_g1em06_fast", "case": 0, "iterations": 1561, "steps": 50, "retries": 407, "J_shape": [1088, 272], "m": 2470, "whole_query_ms": 1340.6387669965625, "initialize_ms": 18.438654020428658, "evolve_ms": 1315.3886878862977, "decode_ms": 4.261667374521494, "evalJ_ms": 0.6413389928638935, "residual_ms": 0.3839079290628433, "gram_ms": 0.16529811546206474, "gram_plus_solve_ms": 0.782194547355175, "evolve_ms_per_iteration": 0.8426577116504149}
+PROFILE {"arm": "q256_M544_xfer_g0p001_fast", "case": 0, "iterations": 556, "steps": 50, "retries": 143, "J_shape": [544, 272], "m": 2395, "whole_query_ms": 485.9093218110502, "initialize_ms": 18.4326209127903, "evolve_ms": 461.0535688698292, "decode_ms": 4.265638068318367, "evalJ_ms": 0.46219187788665295, "residual_ms": 0.31603663228452206, "gram_ms": 0.1616370864212513, "gram_plus_solve_ms": 0.7800539024174213, "evolve_ms_per_iteration": 0.829233037535664}
+PROFILE {"arm": "q128_M576_xfer_g0p001_fast", "case": 0, "iterations": 277, "steps": 50, "retries": 59, "J_shape": [576, 144], "m": 2151, "whole_query_ms": 161.1563372425735, "initialize_ms": 10.943079367280006, "evolve_ms": 144.64286109432578, "decode_ms": 4.268669057637453, "evalJ_ms": 0.42668147943913937, "residual_ms": 0.3196410834789276, "gram_ms": 0.1352450344711542, "gram_plus_solve_ms": 0.4533305764198303, "evolve_ms_per_iteration": 0.5221763938423314}
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast", "case": 0, "iterations": 494, "steps": 50, "retries": 114, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 506.0436869971454, "initialize_ms": 18.432889599353075, "evolve_ms": 479.9245111644268, "decode_ms": 4.2680297046899796, "evalJ_ms": 0.7609741296619177, "residual_ms": 0.34754001535475254, "gram_ms": 0.1581630203872919, "gram_plus_solve_ms": 0.7804825436323881, "evolve_ms_per_iteration": 0.9715071076202971}
+PROFILE {"arm": "q256_M1088_scaled_g0p001_fast", "case": 0, "iterations": 511, "steps": 50, "retries": 130, "J_shape": [1088, 272], "m": 2560, "whole_query_ms": 444.85932728275657, "initialize_ms": 18.435237929224968, "evolve_ms": 421.43129417672753, "decode_ms": 4.27247304469347, "evalJ_ms": 0.5838898941874504, "residual_ms": 0.34059956669807434, "gram_ms": 0.16612792387604713, "gram_plus_solve_ms": 0.7785926572978497, "evolve_ms_per_iteration": 0.8247187752969227}
+REFERENCE 0 accepted True 154.8 4854.3
+REFERENCE 1 accepted True 162.4 5016.9
+REFERENCE 2 accepted True 187.0 5204.1
+REFERENCE 3 accepted True 170.5 5374.9
+REFERENCE 4 accepted True 146.1 5521.4
+REFERENCE 5 accepted True 131.7 5653.3
+HIRES COMPLETE
+ALL-DONE

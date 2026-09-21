@@ -1,0 +1,25 @@
+(parameter_0: f64[8,512], parameter_1: f64[16769025,512]) -> f64[8,16769025] {
+  %parameter_1 = f64[16769025,512]{1,0} parameter(1)
+  %parameter_0 = f64[8,512]{1,0} parameter(0)
+  %dot.4 = f64[16769025,8]{0,1} dot(%parameter_1, %parameter_0), lhs_contracting_dims={1}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(one)/vmap()/transpose" stack_frame_id=11}
+  ROOT %bitcast.15 = f64[8,16769025]{1,0} bitcast(%dot.4), metadata={op_name="jit(one)/vmap()/transpose" stack_frame_id=11}
+}, metadata={op_name="jit(one)/vmap()/transpose" stack_frame_id=11}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.1 = f64[8,16769025]{1,0} fusion(%c.1, %g.1), kind=kCustom, calls=%gemm_fusion_dot.1_computation, metadata={op_name="jit(one)/vmap()/transpose" stack_frame_id=11}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"r
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k02/experiments/hires-burgers/hires.py", line 716, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k02/experiments/hires-burgers/hires.py", line 497, in main
+    certify_heldout(rung['q'], rung['M'], rs['name'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k02/experiments/hires-burgers/hires.py", line 291, in certify_heldout
+    targets_for(q, M, 'cert')), bar, tight_bar)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k02/experiments/hires-burgers/hires.py", line 245, in targets_for
+    targets[(q, M, tag)] = H.dense_targets(G, pops[q][tag], o['sx'], o['sy'], L, chunk=cfg['target_chunk'])
+                           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hires_b_20260920/hb4k02/experiments/hires-burgers/hops.py", line 146, in dense_targets
+    return np.concatenate([np.asarray(f(Cs[s:s + chunk], G, sx, sy)) for s in range(0, len(Cs), chunk)])
+                                      ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.1 = f64[8,16769025]{1,0} fusion(%c.1, %g.1), kind=kCustom, calls=%gemm_fusion_dot.1_computation, metadata={op_name="jit(one)/vmap()/transpose" stack_frame_id=11}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 63.98GiB.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

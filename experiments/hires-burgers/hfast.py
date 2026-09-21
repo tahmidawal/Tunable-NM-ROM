@@ -48,7 +48,7 @@ import sep_common as sc
 import hops as H
 
 
-def make_fused_lm(evalJ, K, q, budget, trust, gtol, ridge, solver='lu'):
+def make_fused_lm(evalJ, K, q, budget, trust, gtol, ridge, solver='lu', clip=False):
     """`varpro.make_block_lm` with one (r, J) evaluation per iteration."""
     mask_z = jnp.concatenate((jnp.ones(K), jnp.zeros(q)))
     mask_y = 1. - mask_z
@@ -62,7 +62,7 @@ def make_fused_lm(evalJ, K, q, budget, trust, gtol, ridge, solver='lu'):
     def ratio(g, J, rn):
         return jnp.linalg.norm(g) / (jnp.linalg.norm(J) * rn + 1e-300)
 
-    def lm(w0, args, tol):
+    def lm(w0, args, tol, lam0=1e-6):
         r, J = evalJ(w0, args)
         rn = jnp.linalg.norm(r)
         g = J.T @ r
@@ -74,7 +74,14 @@ def make_fused_lm(evalJ, K, q, budget, trust, gtol, ridge, solver='lu'):
             Hm = J.T @ J
             d = jnp.diag(Hm) + 1e-30
             step = solve(Hm + jnp.diag(lam * d * mask_z + ridge * d * mask_y), g)
-            ok = jnp.all(jnp.isfinite(step)) & (jnp.linalg.norm(step[:K]) <= trust)
+            if clip:
+                # `clip` arm: a z-step longer than the trust radius is SHORTENED onto it instead of
+                # being rejected (a rejection still costs a full (r, J) evaluation and a solve).
+                nz = jnp.linalg.norm(step[:K])
+                step = step * jnp.where(nz > trust, trust / (nz + 1e-300), 1.)
+                ok = jnp.all(jnp.isfinite(step))
+            else:
+                ok = jnp.all(jnp.isfinite(step)) & (jnp.linalg.norm(step[:K]) <= trust)
             wn = w + jnp.where(ok, step, 0.)
             r2, J2 = evalJ(wn, args)
             rn2 = jnp.linalg.norm(r2)
@@ -94,8 +101,8 @@ def make_fused_lm(evalJ, K, q, budget, trust, gtol, ridge, solver='lu'):
 
         w, r, J, g, rn, lam, it, reason, rej = jax.lax.while_loop(
             lambda s: (s[6] < budget) & (s[7] == 0), body,
-            (w0, r, J, g, rn, jnp.asarray(1e-6), jnp.int32(0), reason, jnp.int32(0)))
-        return w, rn, it, reason, ratio(g, J, rn), rej
+            (w0, r, J, g, rn, jnp.asarray(lam0, dtype=jnp.float64), jnp.int32(0), reason, jnp.int32(0)))
+        return w, rn, it, reason, ratio(g, J, rn), rej, lam
     return lm
 
 
@@ -155,7 +162,7 @@ def make_dense_eval(params, C, K, q, L, dt, tangent_chunks):
 
     def res(w, prev, nu, data, tab):
         h = hz(w[:K]) + tab['C'] @ w[K:]
-        adv = e.spatial(data['G'] @ h, L)[0].reshape(L - 1, L - 1)
+        adv = e.spatial(H.bank_apply(data['G'], h), L)[0].reshape(L - 1, L - 1)
         ah = data['A'] @ h
         lam = data['lam']
         return (ah - prev + dt * (H.sep_project(adv, data['sx'], data['sy'], L) + nu * lam * ah)) / (1 + dt * nu * lam)
@@ -170,7 +177,8 @@ def make_dense_eval(params, C, K, q, L, dt, tangent_chunks):
 
 
 def make_query(params, C, K, q, L, dt, trust, quadrature, ic_budget=400, step_budget=600, gtol=1e-6,
-               ic_gtol=1e-6, ridge=1e-10, solver='lu', tangent_chunks=1, decode='fused', parts=False):
+               ic_gtol=1e-6, ridge=1e-10, solver='lu', tangent_chunks=1, decode='fused', parts=False,
+               clip=False, lam_carry=False):
     """Supplied dense field on GPU -> six dense GPU fields; `topfix.make_query`'s tuple layout,
     with slot 8/12/14 all carrying the LM's joint exit gradient and slot 15 the rejected-step
     count per time step (the damping retries)."""
@@ -178,7 +186,7 @@ def make_query(params, C, K, q, L, dt, trust, quadrature, ic_budget=400, step_bu
         res, evalJ, hz = make_eq_eval(params, K, q, L, dt)
     else:
         res, evalJ, hz = make_dense_eval(params, C, K, q, L, dt, tangent_chunks)
-    lm = make_fused_lm(evalJ, K, q, step_budget, trust, gtol, ridge, solver)
+    lm = make_fused_lm(evalJ, K, q, step_budget, trust, gtol, ridge, solver, clip)
     if q:
         ic_lm = A.make_stationary_lm(lambda z, tgt, Rm, Qr: (lambda v: v - Qr @ (Qr.T @ v))(Rm @ hz(z) - tgt),
                                      ic_budget, gtol=ic_gtol, linear='gj')
@@ -212,23 +220,24 @@ def make_query(params, C, K, q, L, dt, trust, quadrature, ic_budget=400, step_bu
 
     def evolve(w0, nu, scale, data, tab):
         def step(carry, _):
-            wv, wprev = carry
+            wv, wprev, lam0 = carry
             p = ahead(wv, data, tab)
             we = wv + (wv - wprev)
             r0 = jnp.linalg.norm(res(wv, p, nu, data, tab))
             re = jnp.linalg.norm(res(we, p, nu, data, tab))
             wi = jnp.where(jnp.isfinite(re) & (re < r0), we, wv)
-            w2, rn, it, reason, gn, rej = lm(wi, (p, nu, data, tab), 1e-9 * scale)
-            return (w2, wv), (w2, rn, it, reason, gn, rej)
-        _, out = jax.lax.scan(step, (w0, w0), None, length=steps)
+            w2, rn, it, reason, gn, rej, lam = lm(wi, (p, nu, data, tab), 1e-9 * scale, lam0)
+            # `lam_carry` arm: the next step starts from this step's final damping, not from 1e-6
+            return (w2, wv, lam if lam_carry else lam0), (w2, rn, it, reason, gn, rej)
+        _, out = jax.lax.scan(step, (w0, w0, jnp.asarray(1e-6, dtype=jnp.float64)), None, length=steps)
         return out
 
     def decode_fields(W, data, tab):
         if decode == 'fused':
             Hm = jax.vmap(lambda v: head(v, tab))(W)                 # (6, R)
-            U = (data['G'] @ Hm.T).T.reshape(len(W), L - 1, L - 1)
+            U = H.bank_apply(data['G'], Hm.T).T.reshape(len(W), L - 1, L - 1)
             return jnp.pad(U, ((0, 0), (1, 1), (1, 1)))
-        return jax.vmap(lambda v: e.output_field(data['G'] @ head(v, tab), L, L))(W)
+        return jax.vmap(lambda v: e.output_field(H.bank_apply(data['G'], head(v, tab)), L, L))(W)
 
     def query(u0, nu, data, cold, tab):
         w0, scale, icit, icreason, icgn, icrn, uin, icgj = initialize(u0, data, cold, tab)

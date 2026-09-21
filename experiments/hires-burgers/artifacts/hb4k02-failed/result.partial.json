@@ -1,0 +1,4620 @@
+{
+  "config": {
+    "attempt": "hb4k02",
+    "intervals": 4096,
+    "dt": 0.005,
+    "eval_seed": 7090702,
+    "eval_cases": 4,
+    "eval_fresh_seed": 911702,
+    "eval_fresh_cases": 2,
+    "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+    "train_seed": 0,
+    "train_trajectories": 128,
+    "decoder_code_subsample": 8192,
+    "gauss_jordan_max": 64,
+    "cold_axis_points": 48,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 600,
+      "gtol": 1e-06
+    },
+    "ic_gtol": 1e-06,
+    "inner_damping": 1e-10,
+    "tau_y": 0.1,
+    "rho_bar": 0.116,
+    "rho_tight": 0.06,
+    "directions_file": "directions_qtd02.npz",
+    "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "population": {
+      "mesh": 512,
+      "fit_trajectories": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "cert_trajectories": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fit_states": 128,
+      "seed": 20260920
+    },
+    "target_chunk": 8,
+    "restrict_to": 256,
+    "fast_arm_q0": "C1",
+    "rungs": [
+      {
+        "q": 0,
+        "M": 64,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+                "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+                "mesh": 256,
+                "status": "confirmed (3/3) at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+                "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+                "mesh": 256,
+                "status": "confirmed (3/3) at 256^2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "q": 128,
+        "M": 576,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+                "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+                "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      },
+      {
+        "q": 256,
+        "M": 544,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "dense": false,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      },
+      {
+        "q": 256,
+        "M": 1088,
+        "gtols": [
+          0.001,
+          1e-06
+        ],
+        "solvers": [
+          "lu",
+          "chol"
+        ],
+        "dense": true,
+        "rules": [
+          {
+            "name": "xfer",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ],
+            "refit": "state",
+            "base": true
+          },
+          {
+            "name": "scaled",
+            "parts": [
+              {
+                "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+                "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+                "mesh": 256,
+                "status": "certified in one draw at 256^2"
+              }
+            ]
+          },
+          {
+            "name": "lat64",
+            "parts": [
+              {
+                "lattice": 64
+              }
+            ]
+          },
+          {
+            "name": "badfit",
+            "parts": [
+              {
+                "file": "rules/rule_q256_reachable_m2048.npz",
+                "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+                "mesh": 256,
+                "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+              }
+            ],
+            "refit": "state",
+            "control": false
+          },
+          {
+            "name": "bad0",
+            "parts": [
+              {
+                "file": "rules/rule_q256_reachable_m2048.npz",
+                "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+                "mesh": 256,
+                "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+              }
+            ],
+            "control": true
+          }
+        ],
+        "dense_cases": [
+          0,
+          4
+        ]
+      }
+    ],
+    "dense_tangent_group": 17,
+    "dense_deadline_seconds": 36000,
+    "fom_settings": [
+      {
+        "name": "fft_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08
+      },
+      {
+        "name": "nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      {
+        "name": "nt1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      {
+        "name": "nt1e-4_dt01",
+        "dt": 0.01,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "nt1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      {
+        "name": "nt1e-2_dt01",
+        "dt": 0.01,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      {
+        "name": "lean_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_l1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-2_l1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.01,
+        "impl": "lean"
+      },
+      {
+        "name": "lean_nt1e-3_l1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      }
+    ],
+    "coarse_fom": [
+      {
+        "name": "c2048_nt1e-4_dt005",
+        "mesh": 2048,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      {
+        "name": "c1024_nt1e-4_dt005",
+        "mesh": 1024,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      }
+    ],
+    "same_grid_reference": "fft_tight",
+    "audit_cases": [
+      0
+    ],
+    "audit_arms": [
+      "fft_tight",
+      "lean_nt1e-4_dt005",
+      "q0_M64_scaled_g0p001_fast",
+      "q256_M1088_lat64_g0p001_fast"
+    ],
+    "reps": 5,
+    "order_seed": 20260920,
+    "burn_seconds": 0.25,
+    "profile_arms": [
+      "q256_M1088_xfer_g0p001_fast",
+      "q256_M1088_xfer_g1em06_fast",
+      "q256_M544_xfer_g0p001_fast",
+      "q128_M576_xfer_g0p001_fast",
+      "q256_M1088_lat64_g0p001_fast",
+      "q256_M1088_scaled_g0p001_fast"
+    ],
+    "reference": {
+      "mesh": 8192,
+      "dt": 0.0003125,
+      "ntol": 1e-11,
+      "ltol": 1e-09,
+      "accept_residual": 2e-11,
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "deadline_seconds": 54000,
+      "note": "the SAME refined object as the 2048^2 job (8192^2, dt/16): 2L here, 4L there"
+    },
+    "purpose": "DESIGN.md: 4096^2 panel, frozen-weight transfer, bank resident (68 GB) on an H200, Phi-free operators, rules re-certified at this mesh",
+    "rule_notes": {
+      "scaled": "b-eqtop nodes at the same physical points, weights multiplied by (L/256)^2, NO refit",
+      "xfer": "same support, NNLS weight refit on 128 fit states, per-state scaling",
+      "lat64": "uniform 63x63 interior sub-lattice, equal weights",
+      "bad0": "CONTROL: the historically regressing q-ridge rule with its ORIGINAL weights scaled by (L/256)^2; expected to fail the certificate and to regress",
+      "badfit": "the same support with weights refit; labelled separately, not a control"
+    },
+    "parity_bar": 1e-09,
+    "fom_notes": "audited = iterative_paths.make_fom (the named comparator of every earlier panel; it also records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic: the FOM at its best. Both are reported; speedups are quoted against the FASTER of the two at each tolerance.",
+    "keep_for_reference": [
+      "fft_tight",
+      "lean_",
+      "nt1e",
+      "c2048",
+      "c1024",
+      "_g0p001_fast"
+    ],
+    "retry_note": "hb4k01 (job 4055954) died before any number: 64 GiB staged host-to-device copy of the bank; bank now filled in place on the device and built before the FOM truth phase"
+  },
+  "commit": "77db1832666a93d0717a894180fe55e0fee4dec6",
+  "job_id": "4059827",
+  "backend": "gpu",
+  "gpu": "NVIDIA H200",
+  "nvidia_smi": [
+    "GPU 0: NVIDIA H200 (UUID: GPU-0a476d14-05f4-a288-5ed3-39f4f359c534)"
+  ],
+  "cuda_visible": "0",
+  "x64": true,
+  "matmul_precision": "highest",
+  "jax_version": "0.10.2",
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "K": 16,
+  "R": 512,
+  "intervals": 4096,
+  "dt": 0.005,
+  "weights_frozen": true,
+  "final_cohort_unopened": true,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "timing_contract": "gpu_seconds: supplied dense initial field resident on the GPU to six dense GPU output fields, block_until_ready on both sides; host_seconds: the same invocation plus the host upload of the input and the host copy of the six outputs; identical for every subject",
+  "populations": {
+    "0": {
+      "mesh": 512,
+      "M": 64,
+      "fit_states": 128,
+      "cert_states": 408,
+      "fit_sha256": "3daca994f18812d872999037973d297e9d6fa5e30c8b725ca7a6e00fdc5ac3e2",
+      "cert_sha256": "ddb641a8c89c86d615954c436a649b71c735788891d0526fcf47531cac2d4e38",
+      "stalled_steps": {
+        "fit": 0,
+        "cert": 0
+      },
+      "seconds": 12.84292370500043,
+      "source": "audited dense query (topfix base) at the population mesh, every per-step state including the initial fit; stalled steps counted, not removed"
+    },
+    "128": {
+      "mesh": 512,
+      "M": 576,
+      "fit_states": 128,
+      "cert_states": 408,
+      "fit_sha256": "34f99f728cc8f4003be127d9a6e289115bc204f48ffba6325fc6f024eff1959c",
+      "cert_sha256": "cf0767c84bf8bd4cc191c4776977b542115b78e5be5c5e666dd4f0398b9f3b15",
+      "stalled_steps": {
+        "fit": 0,
+        "cert": 0
+      },
+      "seconds": 44.64325813297182,
+      "source": "audited dense query (topfix base) at the population mesh, every per-step state including the initial fit; stalled steps counted, not removed"
+    },
+    "256": {
+      "mesh": 512,
+      "M": 1088,
+      "fit_states": 128,
+      "cert_states": 408,
+      "fit_sha256": "0f65f36f2c70fc1d0590cb6eb303401bb60b99b6927d14eba3d410879011e311",
+      "cert_sha256": "05c3299c5ac239c085efab2b29ccbb243d19179cd87eab488c0529ce190bda2c",
+      "stalled_steps": {
+        "fit": 0,
+        "cert": 0
+      },
+      "seconds": 138.6040550111793,
+      "source": "audited dense query (topfix base) at the population mesh, every per-step state including the initial fit; stalled steps counted, not removed"
+    }
+  },
+  "rules": [
+    {
+      "q": 0,
+      "M": 64,
+      "rule": "scaled",
+      "m": 1024,
+      "source": [
+        {
+          "kind": "transfer",
+          "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+          "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+          "source_mesh": 256,
+          "source_m": 1024,
+          "source_status": "confirmed (3/3) at 256^2"
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 2.8237203657627106,
+      "deployed": {}
+    },
+    {
+      "q": 128,
+      "M": 576,
+      "rule": "scaled",
+      "m": 2319,
+      "source": [
+        {
+          "kind": "transfer",
+          "file": "rules-eqtop/rule_q128_m2319_bet101_rhow64.npz",
+          "sha256": "27ae705a6c9e5a2227bfdccb95b59992e67188b0f3e2ca05db5b5f2dc5798b48",
+          "source_mesh": 256,
+          "source_m": 2319,
+          "source_status": "certified in one draw at 256^2"
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 4.260386400390416,
+      "deployed": {}
+    },
+    {
+      "q": 128,
+      "M": 576,
+      "rule": "lat64",
+      "m": 3969,
+      "source": [
+        {
+          "kind": "lattice",
+          "s": 64,
+          "m": 3969
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 4.340216431766748,
+      "deployed": {}
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "rule": "scaled",
+      "m": 2560,
+      "source": [
+        {
+          "kind": "transfer",
+          "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+          "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+          "source_mesh": 256,
+          "source_m": 2560,
+          "source_status": "certified in one draw at 256^2"
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 3.7425347631797194,
+      "deployed": {}
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "rule": "lat64",
+      "m": 3969,
+      "source": [
+        {
+          "kind": "lattice",
+          "s": 64,
+          "m": 3969
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 2.037961043883115,
+      "deployed": {}
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "rule": "scaled",
+      "m": 2560,
+      "source": [
+        {
+          "kind": "transfer",
+          "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+          "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+          "source_mesh": 256,
+          "source_m": 2560,
+          "source_status": "certified in one draw at 256^2"
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 2.0852943044155836,
+      "deployed": {}
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "rule": "lat64",
+      "m": 3969,
+      "source": [
+        {
+          "kind": "lattice",
+          "s": 64,
+          "m": 3969
+        }
+      ],
+      "refit": null,
+      "control": false,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 2.1133127799257636,
+      "deployed": {}
+    },
+    {
+      "q": 256,
+      "M": 1088,
+      "rule": "bad0",
+      "m": 2048,
+      "source": [
+        {
+          "kind": "transfer",
+          "file": "rules/rule_q256_reachable_m2048.npz",
+          "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+          "source_mesh": 256,
+          "source_m": 2048,
+          "source_status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+        }
+      ],
+      "refit": null,
+      "control": true,
+      "rho_bar": 0.116,
+      "rho_tight": 0.06,
+      "build_seconds": 3.7122692740522325,
+      "deployed": {}
+    }
+  ],
+  "quick": [
+    {
+      "name": "fft_tight",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "4c9cd8c470e6e39d4647c3af780a32222dc5fa55095d7a9477901f11dce91a98",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.176708511928902e-07
+    },
+    {
+      "name": "fft_tight",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "dff89f9e6325215124bf8102a7341585e44fe8a8ffb38528fda85e9b495a9cc2",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 2.146826805693024e-08
+    },
+    {
+      "name": "fft_tight",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "c12374a9a6b172e4dc9ea50bb5664770e281e7b014dc0497c08ec0e56185ce9b",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.881491203512787e-09
+    },
+    {
+      "name": "fft_tight",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "af2978856db93c53560e80c46b7332cb87f930c15e5108dda7e3f040f23e9470",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 101,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 6.657671098110819e-08
+    },
+    {
+      "name": "fft_tight",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "6cd5c6b389658305ab8ea76bf33996abfb355914fb4c2637d8fab3233e5654d3",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 6.807917250106698e-09
+    },
+    {
+      "name": "fft_tight",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "5e79810cd65c43b5f83b90491e4fde8167b85d56dc019c044d489146fb466dc4",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 2.1042257948360117e-08
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "e23f529983bdcfc63d8f8d0d862077b07c40a0e840b96c33a2ca5414caa35c83",
+      "same_grid_per_time": [
+        0.0,
+        4.204456321938754e-05,
+        5.382220104003093e-05,
+        5.4500863503870705e-05,
+        5.164378603080274e-05,
+        4.818633133471042e-05
+      ],
+      "same_grid_all": 5.4500863503870705e-05,
+      "same_grid_evolved": 5.4500863503870705e-05,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        4.492099769710707e-05,
+        6.0981148692336565e-05,
+        6.543991557044404e-05,
+        6.574458157991696e-05,
+        6.508664046855538e-05
+      ],
+      "current_relative_evolved": 6.574458157991696e-05,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 52,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.06303980829639e-05
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "a9577c18e3871d5de639e211ac10b85371bacb3b7bd3ab1c338d5ea1d5dd3c69",
+      "same_grid_per_time": [
+        0.0,
+        0.00012804706641156397,
+        0.00012627244122073798,
+        9.27941160521811e-05,
+        6.740063078576775e-05,
+        5.024913681161323e-05
+      ],
+      "same_grid_all": 0.00012804706641156397,
+      "same_grid_evolved": 0.00012804706641156397,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00017524113554990355,
+        0.0002162477249851595,
+        0.00019247800149557392,
+        0.00016586609616078295,
+        0.00014435275100605136
+      ],
+      "current_relative_evolved": 0.0002162477249851595,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.667522977049829e-05
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "699853507e4611a29e1a4c8bf8461a585dbb9ac464e60e6ef25db1ff0a1fbf61",
+      "same_grid_per_time": [
+        0.0,
+        2.1941731553974386e-11,
+        0.0003177654480372312,
+        0.0003131053444310512,
+        0.0002604335527397349,
+        0.00021818349120277612
+      ],
+      "same_grid_all": 0.0003177654480372312,
+      "same_grid_evolved": 0.0003177654480372312,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        2.385066157332606e-11,
+        0.00037267478780965316,
+        0.0003935791275470981,
+        0.00034845398643331647,
+        0.0003087334218568364
+      ],
+      "current_relative_evolved": 0.0003935791275470981,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 61,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.842531807038124e-05
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "114c77397ccf7d8d8947053b7ecb37685c829d3eedbbf9003d09122b4fbb9b5a",
+      "same_grid_per_time": [
+        0.0,
+        0.00015415282142350285,
+        0.000206472461297411,
+        0.00020255740073084485,
+        0.00018484062453107684,
+        0.0001690718091995679
+      ],
+      "same_grid_all": 0.000206472461297411,
+      "same_grid_evolved": 0.000206472461297411,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00016845739604256257,
+        0.00024109310315428134,
+        0.0002513907514634825,
+        0.00024290863520961252,
+        0.00023445022122215513
+      ],
+      "current_relative_evolved": 0.0002513907514634825,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 54,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.468445489032553e-05
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "04b5f03940c8fcdee7cb6f6140794fc0b0636b42c08e915020f665f686d60782",
+      "same_grid_per_time": [
+        0.0,
+        0.0002152309855252499,
+        0.00018893490700836837,
+        0.00014894546310861587,
+        0.0001123968395695709,
+        8.821826295552673e-05
+      ],
+      "same_grid_all": 0.0002152309855252499,
+      "same_grid_evolved": 0.0002152309855252499,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0002580654677212224,
+        0.0002696120423053669,
+        0.00025316994120242885,
+        0.00022653052010156583,
+        0.00020879360815180754
+      ],
+      "current_relative_evolved": 0.0002696120423053669,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.863360323432927e-05
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "499472c8789bd7f83bb4a13157e12f5737d75df15c7677f0de2543e5f3be38f3",
+      "same_grid_per_time": [
+        0.0,
+        0.0001236032722286607,
+        0.00011786660325394005,
+        8.632975659161064e-05,
+        6.491264721302618e-05,
+        5.098566437724381e-05
+      ],
+      "same_grid_all": 0.0001236032722286607,
+      "same_grid_evolved": 0.0001236032722286607,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0001757335593310413,
+        0.00021193762510703947,
+        0.00018610940439520987,
+        0.00016252483359797162,
+        0.00014511134334988966
+      ],
+      "current_relative_evolved": 0.00021193762510703947,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.718801051470924e-05
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "dfb22c9092ded5f9079bb6bcf89d462698b6c7e7c3f79407643258aaa6388968",
+      "same_grid_per_time": [
+        0.0,
+        5.077841810692223e-05,
+        5.765110782707819e-05,
+        5.705105391465732e-05,
+        5.3708314621952814e-05,
+        4.999369141654678e-05
+      ],
+      "same_grid_all": 5.765110782707819e-05,
+      "same_grid_evolved": 5.765110782707819e-05,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        5.425237006129661e-05,
+        6.531934240419097e-05,
+        6.850196329668932e-05,
+        6.837280810660847e-05,
+        6.752789284418427e-05
+      ],
+      "current_relative_evolved": 6.850196329668932e-05,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0001773751891535573
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "1ca49483e4b07ebf90234fc5b65f78c38a25683061555ed2f82006f34964f51a",
+      "same_grid_per_time": [
+        0.0,
+        0.00044804488059719947,
+        0.00029158831605813356,
+        0.00019628823351596628,
+        0.00013808045164872507,
+        0.0001019128684013952
+      ],
+      "same_grid_all": 0.00044804488059719947,
+      "same_grid_evolved": 0.00044804488059719947,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0006131799490104007,
+        0.0004993592376154151,
+        0.0004071504585808454,
+        0.0003398019455320576,
+        0.00029276926630228373
+      ],
+      "current_relative_evolved": 0.0006131799490104007,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0004238483259199616
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "bea1c01163213ffc9068551d18c58a5056b98389fdf03b911ecc917b5a1078d8",
+      "same_grid_per_time": [
+        0.0,
+        0.0005442566187845083,
+        0.0005443069205339697,
+        0.00048250977979632983,
+        0.0004283032148095697,
+        0.00038439532969664823
+      ],
+      "same_grid_all": 0.0005443069205339697,
+      "same_grid_evolved": 0.0005443069205339697,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005916069290949268,
+        0.000638362249156667,
+        0.000606523591956767,
+        0.0005730596577613295,
+        0.0005439260542986628
+      ],
+      "current_relative_evolved": 0.000638362249156667,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00017083335692892105
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "a54fc9ecc30d4e21cda0bc6867716c75b75d456a46e96aa4b2028af8d8abb15f",
+      "same_grid_per_time": [
+        0.0,
+        0.00026362551886340696,
+        0.00026512676723099284,
+        0.0002442182214272324,
+        0.0002221700533755141,
+        0.0002073391165852409
+      ],
+      "same_grid_all": 0.00026512676723099284,
+      "same_grid_evolved": 0.00026512676723099284,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00028808858655977925,
+        0.00030958237548643207,
+        0.00030309532993685466,
+        0.00029196517046402613,
+        0.00028751512142415867
+      ],
+      "current_relative_evolved": 0.00030958237548643207,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0008588251447978915
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "99852bb055e765e31a12478f4a418b7b88281e437f56302290dba399f1f1c03a",
+      "same_grid_per_time": [
+        0.0,
+        0.00024878033556484597,
+        0.00020794141570013657,
+        0.00016170274381408485,
+        0.0001219173162853847,
+        9.630295708493076e-05
+      ],
+      "same_grid_all": 0.00024878033556484597,
+      "same_grid_evolved": 0.00024878033556484597,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00029829168649071124,
+        0.000296734524363462,
+        0.0002748541196842616,
+        0.0002457185911390367,
+        0.00022792833605880553
+      ],
+      "current_relative_evolved": 0.00029829168649071124,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005388762323060263
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "41b0811b34ea95769a5416dc6cc0621ad9b6fc38190bb1a3d590659f913b7b12",
+      "same_grid_per_time": [
+        0.0,
+        0.0003566244200293994,
+        0.00023262917911272813,
+        0.00016159161975819032,
+        0.00012067207537507639,
+        9.532991032601275e-05
+      ],
+      "same_grid_all": 0.0003566244200293994,
+      "same_grid_evolved": 0.0003566244200293994,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005070325206293587,
+        0.0004182938541592664,
+        0.0003483586806658103,
+        0.00030213232416626126,
+        0.00027132040972298175
+      ],
+      "current_relative_evolved": 0.0005070325206293587,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00031423003100142417
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "54ca758dfd3e8d9f4bfe04b12178afbae5efeb22c0ebd1b561bd67e4155b6d7a",
+      "same_grid_per_time": [
+        0.0,
+        0.005416533120047838,
+        0.008406535130881434,
+        0.009618158026593649,
+        0.009878339047127465,
+        0.00964815362650369
+      ],
+      "same_grid_all": 0.009878339047127465,
+      "same_grid_evolved": 0.009878339047127465,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.005787099524434481,
+        0.009524697223406922,
+        0.011548650952269328,
+        0.012575516190284545,
+        0.013032033958171187
+      ],
+      "current_relative_evolved": 0.013032033958171187,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0012156088210696274
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "f14857cd5d55571f0c108ebea34b6617b0865dcaa38fb5c126f302c60ee10d1b",
+      "same_grid_per_time": [
+        0.0,
+        0.016045141393958632,
+        0.011946811153103077,
+        0.008563296001401096,
+        0.00620900268857868,
+        0.004640328984480154
+      ],
+      "same_grid_all": 0.016045141393958632,
+      "same_grid_evolved": 0.016045141393958632,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.021958869318400416,
+        0.020459497794690466,
+        0.017762398853369766,
+        0.015279724017417003,
+        0.013330462909126374
+      ],
+      "current_relative_evolved": 0.021958869318400416,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.008892706326485733
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "fa2da5fbba1cb89c9aad5c6c3bd4b091e2d532a32bb22040457b9063be7f663c",
+      "same_grid_per_time": [
+        0.0,
+        0.03637083145659522,
+        0.04428277968312873,
+        0.04229366634733673,
+        0.03889430039526071,
+        0.03546715907319331
+      ],
+      "same_grid_all": 0.04428277968312873,
+      "same_grid_evolved": 0.04428277968312873,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.039535092755913624,
+        0.05193477020225945,
+        0.05316390983999457,
+        0.05203966186264648,
+        0.05018664484578744
+      ],
+      "current_relative_evolved": 0.05316390983999457,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.006410696500261257
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "62a6aa6b693cbde5bab2a9a4c272a691dcc0b9dc7d02f2c1b6842d5e21a9ce43",
+      "same_grid_per_time": [
+        0.0,
+        0.015259901762326795,
+        0.02290522397162173,
+        0.02518039310647733,
+        0.02472354338044618,
+        0.023376421291517523
+      ],
+      "same_grid_all": 0.02518039310647733,
+      "same_grid_evolved": 0.02518039310647733,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.01667594073860364,
+        0.026745898659132034,
+        0.03125098328840916,
+        0.03249048846986626,
+        0.03241585435872054
+      ],
+      "current_relative_evolved": 0.03249048846986626,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00406217788393732
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "58a29edc90f49025a12f97402d9650b5f6f775549cc088d47053028a4ecd1948",
+      "same_grid_per_time": [
+        0.0,
+        0.01452715711046026,
+        0.013900933381132519,
+        0.01138400414667423,
+        0.008558205735954949,
+        0.006587198501660254
+      ],
+      "same_grid_all": 0.01452715711046026,
+      "same_grid_evolved": 0.01452715711046026,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.01741829869533724,
+        0.019836773935437913,
+        0.019349952662606505,
+        0.01724865933887824,
+        0.015590478623084932
+      ],
+      "current_relative_evolved": 0.019836773935437913,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.004322460144318918
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "fc98a777a16000e7eade9f7710499ca754c95ec7274485f1c764c1ae1856ad54",
+      "same_grid_per_time": [
+        0.0,
+        0.014530373739938283,
+        0.010453063626118857,
+        0.0076417889144652475,
+        0.005878069873349642,
+        0.00472757816579867
+      ],
+      "same_grid_all": 0.014530373739938283,
+      "same_grid_evolved": 0.014530373739938283,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.020658630226276144,
+        0.018795803211868266,
+        0.016474143325955492,
+        0.014717198713345524,
+        0.013455257018026476
+      ],
+      "current_relative_evolved": 0.020658630226276144,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.009393200568945811
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "14dc1ced997a3705f4044da162d92cc6089d3ce48b24a60b1ef643972101d754",
+      "same_grid_per_time": [
+        0.0,
+        0.0037870660455045974,
+        0.004870273016330365,
+        0.005468489695483049,
+        0.005702043780704115,
+        0.005656421965892723
+      ],
+      "same_grid_all": 0.005702043780704115,
+      "same_grid_evolved": 0.005702043780704115,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.004046154177443314,
+        0.0055180731601857545,
+        0.006566088699582504,
+        0.007258927188048624,
+        0.007640289115915767
+      ],
+      "current_relative_evolved": 0.007640289115915767,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 28,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 6.81660670668413e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "4ae033c4830c13f72b25ca3b9df9af623509587173e83dbbc918b0899d209333",
+      "same_grid_per_time": [
+        0.0,
+        0.0120869067172574,
+        0.00899605309512627,
+        0.0065295754033416285,
+        0.00518214657159056,
+        0.0043722370466870485
+      ],
+      "same_grid_all": 0.0120869067172574,
+      "same_grid_evolved": 0.0120869067172574,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.016541755448031534,
+        0.015406180452835544,
+        0.013543958148629963,
+        0.012752735568525447,
+        0.012560304231812858
+      ],
+      "current_relative_evolved": 0.016541755448031534,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 35,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.04266046585284e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "b04ea03241a8f47fda2240822dd4eb2756def3704cf2539dfe214ad8fc5e2094",
+      "same_grid_per_time": [
+        0.0,
+        0.014158979936024793,
+        0.016619005308341622,
+        0.01611991122350511,
+        0.014886970366418272,
+        0.013545392916651713
+      ],
+      "same_grid_all": 0.016619005308341622,
+      "same_grid_evolved": 0.016619005308341622,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.015390810786602307,
+        0.019490741725223852,
+        0.02026302236077266,
+        0.019918417252776818,
+        0.019166965761248333
+      ],
+      "current_relative_evolved": 0.02026302236077266,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 50,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 3.3982521597849124e-07
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "3190a7d53a804ea7873a1bc4c17e02242f46f8ee4c69b1f7e3554d61b7bd6f22",
+      "same_grid_per_time": [
+        0.0,
+        0.0090221461981878,
+        0.011291291834375914,
+        0.012039328026268706,
+        0.011951131581768458,
+        0.011435162095595858
+      ],
+      "same_grid_all": 0.012039328026268706,
+      "same_grid_evolved": 0.012039328026268706,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.009859354121625565,
+        0.01318457953116105,
+        0.014941817522928834,
+        0.01570560080665489,
+        0.015857027234262917
+      ],
+      "current_relative_evolved": 0.015857027234262917,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 45,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.908447139556545e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "646ead688556647fce667876b93b17a126703c4806ffd0cda962cb13c2c26944",
+      "same_grid_per_time": [
+        0.0,
+        0.008520139097535611,
+        0.00827773096689789,
+        0.0063966530105595,
+        0.005089940874534838,
+        0.004626084108943521
+      ],
+      "same_grid_all": 0.008520139097535611,
+      "same_grid_evolved": 0.008520139097535611,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.010215785965434116,
+        0.011812406648290086,
+        0.010872706242785921,
+        0.01025853536460783,
+        0.01094894368082256
+      ],
+      "current_relative_evolved": 0.011812406648290086,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 34,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.51023446765826e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "278e0bb58f080492b04483c36bdd25a9938fc4c154d8204ccd82afdf78672ae7",
+      "same_grid_per_time": [
+        0.0,
+        0.011997911575208112,
+        0.00939140717149708,
+        0.00719173903530133,
+        0.005622001081752673,
+        0.004501579935904092
+      ],
+      "same_grid_all": 0.011997911575208112,
+      "same_grid_evolved": 0.011997911575208112,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.01705808970615201,
+        0.01688682355639001,
+        0.01550392728149751,
+        0.014076067292416821,
+        0.012812038828457557
+      ],
+      "current_relative_evolved": 0.01705808970615201,
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 35,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.090005192434473e-05
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "00461bceab4e68a34deee6e26f2f69f3b6e423db757dfc0ad77e3e749ede5e8b",
+      "same_grid_per_time": [
+        0.0,
+        0.003792585710975531,
+        0.00488290963074825,
+        0.005484077210140101,
+        0.005718502179236322,
+        0.005672278563472898
+      ],
+      "same_grid_all": 0.005718502179236322,
+      "same_grid_evolved": 0.005718502179236322,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.004052051465009718,
+        0.0055323905839977545,
+        0.006584804836860552,
+        0.007279879380134815,
+        0.0076617070707002185
+      ],
+      "current_relative_evolved": 0.0076617070707002185,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.000316576076798706
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "596411d595659c2d400719ddc3400865f936ee81df5d6214b47cdf916031aea5",
+      "same_grid_per_time": [
+        0.0,
+        0.012495419123358059,
+        0.00938343431812399,
+        0.006756882925339421,
+        0.005328551244682002,
+        0.00447731113889492
+      ],
+      "same_grid_all": 0.012495419123358059,
+      "same_grid_evolved": 0.012495419123358059,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.017100832511938696,
+        0.016069589723816426,
+        0.014015450301585474,
+        0.013113022576262187,
+        0.012862154875069367
+      ],
+      "current_relative_evolved": 0.017100832511938696,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0009050395560020764
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "306f3544402a0c5bbd18175bbb5d9e02ca13076c694fc5941310e0e20a995972",
+      "same_grid_per_time": [
+        0.0,
+        0.014102999581404482,
+        0.016598372239995808,
+        0.016391368592362544,
+        0.015412154221231121,
+        0.014215792758774635
+      ],
+      "same_grid_all": 0.016598372239995808,
+      "same_grid_evolved": 0.016598372239995808,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.015329960142726756,
+        0.019466543297058884,
+        0.02060424922355675,
+        0.02062110093502431,
+        0.02011559315798631
+      ],
+      "current_relative_evolved": 0.02062110093502431,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.000921505489624255
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "04d9931ef0ac34c2bb0caee4df11f98a19f5199b26f2eda75bdf747093087f84",
+      "same_grid_per_time": [
+        0.0,
+        0.009160780481739132,
+        0.011375288920573308,
+        0.012127748479719792,
+        0.012102162487015818,
+        0.01172201997493637
+      ],
+      "same_grid_all": 0.012127748479719792,
+      "same_grid_evolved": 0.012127748479719792,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.010010852940743014,
+        0.013282660980086465,
+        0.015051554733998931,
+        0.015904078339184217,
+        0.016254810244861195
+      ],
+      "current_relative_evolved": 0.016254810244861195,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005556706989288968
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "a7adbe0e99470e4fb30ff78e16bed293608b836645ccff7531e94b8226362bd6",
+      "same_grid_per_time": [
+        0.0,
+        0.00896939031473422,
+        0.008739433596057262,
+        0.0066933312552060606,
+        0.005276041700162724,
+        0.0047620145646476335
+      ],
+      "same_grid_all": 0.00896939031473422,
+      "same_grid_evolved": 0.00896939031473422,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.010754445513954776,
+        0.012471261016476809,
+        0.011376984870584318,
+        0.010633612786555459,
+        0.011270661762241698
+      ],
+      "current_relative_evolved": 0.012471261016476809,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005381200967793346
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "edffebfd17edc97201b0c6a72ead5938c1ccc0fee229113f3051b4eba111c06c",
+      "same_grid_per_time": [
+        0.0,
+        0.01236420925011235,
+        0.009733500958529746,
+        0.007407317692702666,
+        0.005766764429576373,
+        0.004603962177187449
+      ],
+      "same_grid_all": 0.01236420925011235,
+      "same_grid_evolved": 0.01236420925011235,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.017578875224406928,
+        0.017501947287676067,
+        0.015968671039771704,
+        0.014438518063202992,
+        0.013103431021719462
+      ],
+      "current_relative_evolved": 0.017578875224406928,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0009219269472752478
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "d4b002240de38fd16772bb65fe29341a682b33dc12ef2720055e321287005445",
+      "same_grid_per_time": [
+        0.0,
+        0.007106693381971358,
+        0.011997422881173558,
+        0.014176664664334567,
+        0.014678413556832092,
+        0.01432170548942529
+      ],
+      "same_grid_all": 0.014678413556832092,
+      "same_grid_evolved": 0.014678413556832092,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0075928903192499795,
+        0.013593212735717307,
+        0.017022110826531472,
+        0.018686200833055118,
+        0.019344732629921053
+      ],
+      "current_relative_evolved": 0.019344732629921053,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.003408329431952166
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "5e88e6cd494232208ae4519119f01feb232fa5c37b4e052d30427bed9e2b74db",
+      "same_grid_per_time": [
+        0.0,
+        0.008296646562533887,
+        0.009412110716842155,
+        0.008254273084063034,
+        0.006754736073180499,
+        0.005381649810947377
+      ],
+      "same_grid_all": 0.009412110716842155,
+      "same_grid_evolved": 0.009412110716842155,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.011354526156823683,
+        0.016118699457687253,
+        0.017121408712226394,
+        0.016622718363215154,
+        0.015460085574682121
+      ],
+      "current_relative_evolved": 0.017121408712226394,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 29,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.008292525971015603
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "163e7ce5a9639e832de963675b7a8f7f8ff6f0c48165a7e95c1d75bf95d38373",
+      "same_grid_per_time": [
+        0.0,
+        0.014414836447599671,
+        0.011453477315009716,
+        0.009880269771841836,
+        0.017938657556396335,
+        0.02055942955026517
+      ],
+      "same_grid_all": 0.02055942955026517,
+      "same_grid_evolved": 0.02055942955026517,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0156689268073864,
+        0.01343261910449688,
+        0.012419679273752536,
+        0.024001503151305517,
+        0.029091949173087404
+      ],
+      "current_relative_evolved": 0.029091949173087404,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 36,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.009765734087119404
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "e47c658dbaaeaf966337140b9bbd66267011db0f5ebd9e7684f1176203771858",
+      "same_grid_per_time": [
+        0.0,
+        0.01290649876683247,
+        0.028050889375730487,
+        0.03450405739390457,
+        0.03541109521548573,
+        0.03400012824234429
+      ],
+      "same_grid_all": 0.03541109521548573,
+      "same_grid_evolved": 0.03541109521548573,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.014104154268535852,
+        0.03275437277851217,
+        0.042822433964378716,
+        0.046535553706837325,
+        0.04714764469451029
+      ],
+      "current_relative_evolved": 0.04714764469451029,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.008661719181764001
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "15c63c95b8c4f537e9b456dfcd1c5968df4de24fbe4e3615c63f0fc688f3fd3b",
+      "same_grid_per_time": [
+        0.0,
+        0.01103665252837579,
+        0.014962312567168642,
+        0.014160469647878662,
+        0.01188973825788395,
+        0.009393303250577299
+      ],
+      "same_grid_all": 0.014962312567168642,
+      "same_grid_evolved": 0.014962312567168642,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0132331266795123,
+        0.021351372876092817,
+        0.02406924785307436,
+        0.023963205742656087,
+        0.022231923554659687
+      ],
+      "current_relative_evolved": 0.02406924785307436,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.009466820022210108
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "e8dd78663575de64e280d83bfa836412dd4d08acf21c233e1c142ad2e6a12495",
+      "same_grid_per_time": [
+        0.0,
+        0.008878983390813359,
+        0.009379353136163122,
+        0.007859413940257388,
+        0.006472389495666385,
+        0.005440066394745631
+      ],
+      "same_grid_all": 0.009379353136163122,
+      "same_grid_evolved": 0.009379353136163122,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.012623738242319967,
+        0.016865149023052257,
+        0.01694329863845412,
+        0.01620522457376144,
+        0.015483084355108758
+      ],
+      "current_relative_evolved": 0.01694329863845412,
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "mesh": 4096,
+      "impl": "audited",
+      "newton_iterations_total": 29,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.007956968374583283
+    },
+    {
+      "name": "lean_tight",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "4c9cd8c470e6e39d4647c3af780a32222dc5fa55095d7a9477901f11dce91a98",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.176708511928902e-07
+    },
+    {
+      "name": "lean_tight",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "dff89f9e6325215124bf8102a7341585e44fe8a8ffb38528fda85e9b495a9cc2",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 2.146826805693024e-08
+    },
+    {
+      "name": "lean_tight",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "c12374a9a6b172e4dc9ea50bb5664770e281e7b014dc0497c08ec0e56185ce9b",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.881491203512787e-09
+    },
+    {
+      "name": "lean_tight",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "af2978856db93c53560e80c46b7332cb87f930c15e5108dda7e3f040f23e9470",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 101,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 6.657671098110819e-08
+    },
+    {
+      "name": "lean_tight",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "6cd5c6b389658305ab8ea76bf33996abfb355914fb4c2637d8fab3233e5654d3",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 6.807917250106698e-09
+    },
+    {
+      "name": "lean_tight",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "5e79810cd65c43b5f83b90491e4fde8167b85d56dc019c044d489146fb466dc4",
+      "same_grid_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "same_grid_all": 0.0,
+      "same_grid_evolved": 0.0,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "current_relative_evolved": 0.0,
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 100,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 2.1042257948360117e-08
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "e23f529983bdcfc63d8f8d0d862077b07c40a0e840b96c33a2ca5414caa35c83",
+      "same_grid_per_time": [
+        0.0,
+        4.204456321938754e-05,
+        5.382220104003093e-05,
+        5.4500863503870705e-05,
+        5.164378603080274e-05,
+        4.818633133471042e-05
+      ],
+      "same_grid_all": 5.4500863503870705e-05,
+      "same_grid_evolved": 5.4500863503870705e-05,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        4.492099769710707e-05,
+        6.0981148692336565e-05,
+        6.543991557044404e-05,
+        6.574458157991696e-05,
+        6.508664046855538e-05
+      ],
+      "current_relative_evolved": 6.574458157991696e-05,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 52,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.06303980829639e-05
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "a9577c18e3871d5de639e211ac10b85371bacb3b7bd3ab1c338d5ea1d5dd3c69",
+      "same_grid_per_time": [
+        0.0,
+        0.00012804706641156397,
+        0.00012627244122073798,
+        9.27941160521811e-05,
+        6.740063078576775e-05,
+        5.024913681161323e-05
+      ],
+      "same_grid_all": 0.00012804706641156397,
+      "same_grid_evolved": 0.00012804706641156397,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00017524113554990355,
+        0.0002162477249851595,
+        0.00019247800149557392,
+        0.00016586609616078295,
+        0.00014435275100605136
+      ],
+      "current_relative_evolved": 0.0002162477249851595,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.667522977049829e-05
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "699853507e4611a29e1a4c8bf8461a585dbb9ac464e60e6ef25db1ff0a1fbf61",
+      "same_grid_per_time": [
+        0.0,
+        2.1941731553974386e-11,
+        0.0003177654480372312,
+        0.0003131053444310512,
+        0.0002604335527397349,
+        0.00021818349120277612
+      ],
+      "same_grid_all": 0.0003177654480372312,
+      "same_grid_evolved": 0.0003177654480372312,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        2.385066157332606e-11,
+        0.00037267478780965316,
+        0.0003935791275470981,
+        0.00034845398643331647,
+        0.0003087334218568364
+      ],
+      "current_relative_evolved": 0.0003935791275470981,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 61,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.842531807038124e-05
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "114c77397ccf7d8d8947053b7ecb37685c829d3eedbbf9003d09122b4fbb9b5a",
+      "same_grid_per_time": [
+        0.0,
+        0.00015415282142350285,
+        0.000206472461297411,
+        0.00020255740073084485,
+        0.00018484062453107684,
+        0.0001690718091995679
+      ],
+      "same_grid_all": 0.000206472461297411,
+      "same_grid_evolved": 0.000206472461297411,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00016845739604256257,
+        0.00024109310315428134,
+        0.0002513907514634825,
+        0.00024290863520961252,
+        0.00023445022122215513
+      ],
+      "current_relative_evolved": 0.0002513907514634825,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 54,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.468445489032553e-05
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "04b5f03940c8fcdee7cb6f6140794fc0b0636b42c08e915020f665f686d60782",
+      "same_grid_per_time": [
+        0.0,
+        0.0002152309855252499,
+        0.00018893490700836837,
+        0.00014894546310861587,
+        0.0001123968395695709,
+        8.821826295552673e-05
+      ],
+      "same_grid_all": 0.0002152309855252499,
+      "same_grid_evolved": 0.0002152309855252499,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0002580654677212224,
+        0.0002696120423053669,
+        0.00025316994120242885,
+        0.00022653052010156583,
+        0.00020879360815180754
+      ],
+      "current_relative_evolved": 0.0002696120423053669,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.863360323432927e-05
+    },
+    {
+      "name": "lean_nt1e-4_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "499472c8789bd7f83bb4a13157e12f5737d75df15c7677f0de2543e5f3be38f3",
+      "same_grid_per_time": [
+        0.0,
+        0.0001236032722286607,
+        0.00011786660325394005,
+        8.632975659161064e-05,
+        6.491264721302618e-05,
+        5.098566437724381e-05
+      ],
+      "same_grid_all": 0.0001236032722286607,
+      "same_grid_evolved": 0.0001236032722286607,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0001757335593310413,
+        0.00021193762510703947,
+        0.00018610940439520987,
+        0.00016252483359797162,
+        0.00014511134334988966
+      ],
+      "current_relative_evolved": 0.00021193762510703947,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.718801051470924e-05
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "dfb22c9092ded5f9079bb6bcf89d462698b6c7e7c3f79407643258aaa6388968",
+      "same_grid_per_time": [
+        0.0,
+        5.077841810692223e-05,
+        5.765110782707819e-05,
+        5.705105391465732e-05,
+        5.3708314621952814e-05,
+        4.999369141654678e-05
+      ],
+      "same_grid_all": 5.765110782707819e-05,
+      "same_grid_evolved": 5.765110782707819e-05,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        5.425237006129661e-05,
+        6.531934240419097e-05,
+        6.850196329668932e-05,
+        6.837280810660847e-05,
+        6.752789284418427e-05
+      ],
+      "current_relative_evolved": 6.850196329668932e-05,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0001773751891535573
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "1ca49483e4b07ebf90234fc5b65f78c38a25683061555ed2f82006f34964f51a",
+      "same_grid_per_time": [
+        0.0,
+        0.00044804488059719947,
+        0.00029158831605813356,
+        0.00019628823351596628,
+        0.00013808045164872507,
+        0.0001019128684013952
+      ],
+      "same_grid_all": 0.00044804488059719947,
+      "same_grid_evolved": 0.00044804488059719947,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0006131799490104007,
+        0.0004993592376154151,
+        0.0004071504585808454,
+        0.0003398019455320576,
+        0.00029276926630228373
+      ],
+      "current_relative_evolved": 0.0006131799490104007,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0004238483259199616
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "bea1c01163213ffc9068551d18c58a5056b98389fdf03b911ecc917b5a1078d8",
+      "same_grid_per_time": [
+        0.0,
+        0.0005442566187845083,
+        0.0005443069205339697,
+        0.00048250977979632983,
+        0.0004283032148095697,
+        0.00038439532969664823
+      ],
+      "same_grid_all": 0.0005443069205339697,
+      "same_grid_evolved": 0.0005443069205339697,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005916069290949268,
+        0.000638362249156667,
+        0.000606523591956767,
+        0.0005730596577613295,
+        0.0005439260542986628
+      ],
+      "current_relative_evolved": 0.000638362249156667,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00017083335692892105
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "a54fc9ecc30d4e21cda0bc6867716c75b75d456a46e96aa4b2028af8d8abb15f",
+      "same_grid_per_time": [
+        0.0,
+        0.00026362551886340696,
+        0.00026512676723099284,
+        0.0002442182214272324,
+        0.0002221700533755141,
+        0.0002073391165852409
+      ],
+      "same_grid_all": 0.00026512676723099284,
+      "same_grid_evolved": 0.00026512676723099284,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00028808858655977925,
+        0.00030958237548643207,
+        0.00030309532993685466,
+        0.00029196517046402613,
+        0.00028751512142415867
+      ],
+      "current_relative_evolved": 0.00030958237548643207,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0008588251447978915
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "99852bb055e765e31a12478f4a418b7b88281e437f56302290dba399f1f1c03a",
+      "same_grid_per_time": [
+        0.0,
+        0.00024878033556484597,
+        0.00020794141570013657,
+        0.00016170274381408485,
+        0.0001219173162853847,
+        9.630295708493076e-05
+      ],
+      "same_grid_all": 0.00024878033556484597,
+      "same_grid_evolved": 0.00024878033556484597,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00029829168649071124,
+        0.000296734524363462,
+        0.0002748541196842616,
+        0.0002457185911390367,
+        0.00022792833605880553
+      ],
+      "current_relative_evolved": 0.00029829168649071124,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005388762323060263
+    },
+    {
+      "name": "lean_nt1e-3_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "41b0811b34ea95769a5416dc6cc0621ad9b6fc38190bb1a3d590659f913b7b12",
+      "same_grid_per_time": [
+        0.0,
+        0.0003566244200293994,
+        0.00023262917911272813,
+        0.00016159161975819032,
+        0.00012067207537507639,
+        9.532991032601275e-05
+      ],
+      "same_grid_all": 0.0003566244200293994,
+      "same_grid_evolved": 0.0003566244200293994,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005070325206293587,
+        0.0004182938541592664,
+        0.0003483586806658103,
+        0.00030213232416626126,
+        0.00027132040972298175
+      ],
+      "current_relative_evolved": 0.0005070325206293587,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00031423003100142417
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "cd9cc344d1fd25ade3d7763e13116eff58a9e0e4a8da5974b0b889539968bf5d",
+      "same_grid_per_time": [
+        0.0,
+        6.749588971783449e-05,
+        7.219618016686238e-05,
+        6.685284331962156e-05,
+        6.067467290291765e-05,
+        5.5637291689248286e-05
+      ],
+      "same_grid_all": 7.219618016686238e-05,
+      "same_grid_evolved": 7.219618016686238e-05,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        7.211354987226817e-05,
+        8.179907013649743e-05,
+        8.027110290040549e-05,
+        7.724125764368638e-05,
+        7.515086333650242e-05
+      ],
+      "current_relative_evolved": 8.179907013649743e-05,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00017870158466426253
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "b62d8d22e741358096adbf2c318c049c0e36331e087ffa8619914aa1eef21269",
+      "same_grid_per_time": [
+        0.0,
+        0.00039052187825268657,
+        0.00025348414868159444,
+        0.0001708432379014805,
+        0.00012360945976981394,
+        9.195127115321424e-05
+      ],
+      "same_grid_all": 0.00039052187825268657,
+      "same_grid_evolved": 0.00039052187825268657,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005344558006672267,
+        0.0004341039892970112,
+        0.00035437122954884746,
+        0.0003041903065526162,
+        0.0002641521783594537
+      ],
+      "current_relative_evolved": 0.0005344558006672267,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00030767100336856837
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "ed15b90ff75e9e05a5ed78f09671598f6d18ab47ba72b6952fc38830eac9f0cf",
+      "same_grid_per_time": [
+        0.0,
+        0.0005381139224743187,
+        0.000550280868090141,
+        0.0004741396294867012,
+        0.0004261285393086093,
+        0.0003839720292940715
+      ],
+      "same_grid_all": 0.000550280868090141,
+      "same_grid_evolved": 0.000550280868090141,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005849298183809588,
+        0.000645368484893226,
+        0.00059600216038463,
+        0.000570149992936898,
+        0.0005433270768918917
+      ],
+      "current_relative_evolved": 0.000645368484893226,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00016947947273483256
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "c43bb86c448e943df24e13883aea9e013d1e19a85cec845f3e5d40d5463f5f3f",
+      "same_grid_per_time": [
+        0.0,
+        0.0002640776366500337,
+        0.000251736073912426,
+        0.0002317452118543587,
+        0.0002102946628356562,
+        0.00019894065906875854
+      ],
+      "same_grid_all": 0.0002640776366500337,
+      "same_grid_evolved": 0.0002640776366500337,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00028858265850952594,
+        0.0002939463735456683,
+        0.0002876152771803402,
+        0.00027635910488219814,
+        0.0002758690626755947
+      ],
+      "current_relative_evolved": 0.0002939463735456683,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0008953419573376265
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "4bdff361a04f3e499caede8580bd2bde8e7e74a16e1b4b13e4339eaa206a66ac",
+      "same_grid_per_time": [
+        0.0,
+        0.00022816297111928797,
+        0.0002040705244874284,
+        0.00015693613512330945,
+        0.00011856852374735803,
+        0.00010245535461720987
+      ],
+      "same_grid_all": 0.00022816297111928797,
+      "same_grid_evolved": 0.00022816297111928797,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00027357112970918015,
+        0.0002912107230610699,
+        0.00026675208007330284,
+        0.00023896925798824235,
+        0.0002424897345324575
+      ],
+      "current_relative_evolved": 0.0002912107230610699,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.792156031569288e-05
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "fcd0899dca94367a5a7048ac6d238b01a18f299db6943d6a225f99c0ce37b4df",
+      "same_grid_per_time": [
+        0.0,
+        0.0003758068624461536,
+        0.00023747370377722056,
+        0.00016071705269598213,
+        0.00011801778243620713,
+        9.233227774865377e-05
+      ],
+      "same_grid_all": 0.0003758068624461536,
+      "same_grid_evolved": 0.0003758068624461536,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0005343052523441208,
+        0.00042700486324767574,
+        0.00034647329187893804,
+        0.00029548664667918706,
+        0.0002627887862660145
+      ],
+      "current_relative_evolved": 0.0005343052523441208,
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00031727796549515716
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "1474e5cd1aa98286c09dedfbd95f432c3fe0f0d222053f47539e8b5e868800c4",
+      "same_grid_per_time": [
+        0.0,
+        0.00044488837803849265,
+        0.0005590442575738624,
+        0.0005536047138143251,
+        0.0005017042399355237,
+        0.021634663319958575
+      ],
+      "same_grid_all": 0.021634663319958575,
+      "same_grid_evolved": 0.021634663319958575,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00047532494751001354,
+        0.000633403323125951,
+        0.0006647205824332734,
+        0.0006386893345069216,
+        0.029222551585911243
+      ],
+      "current_relative_evolved": 0.029222551585911243,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 48,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.00998062435448282
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "4a76112e9c91e4d916777c50c01e5b169ce738765b15e7a1d7ebde3bf49d6b9f",
+      "same_grid_per_time": [
+        0.0,
+        0.0019213731026367946,
+        0.0009592594854835422,
+        0.0005476921547044128,
+        0.000351576151090204,
+        0.000248042911215142
+      ],
+      "same_grid_all": 0.0019213731026367946,
+      "same_grid_evolved": 0.0019213731026367946,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0026295300139004625,
+        0.0016427787362060023,
+        0.001136049308482337,
+        0.0008651931444071795,
+        0.0007125630184592612
+      ],
+      "current_relative_evolved": 0.0026295300139004625,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.008892706326485733
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "dc1b33fbb97bf6a19f3445f3d9eed120ad9ae738ffc402abaea573fd6ad8458d",
+      "same_grid_per_time": [
+        0.0,
+        0.0010489253233078987,
+        0.0008079211441571934,
+        0.0007143648168964093,
+        0.0006498413292245198,
+        0.0005352241451354003
+      ],
+      "same_grid_all": 0.0010489253233078987,
+      "same_grid_evolved": 0.0010489253233078987,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0011401817965171843,
+        0.0009475285712323155,
+        0.0008979696015579996,
+        0.0008694724598089805,
+        0.0007573514424814084
+      ],
+      "current_relative_evolved": 0.0011401817965171843,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005130202144025707
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "ac15392a7176173a19959b9f72c4a84dc1c76a8e4358ba5e49222514330ca369",
+      "same_grid_per_time": [
+        0.0,
+        0.0018121706923849268,
+        0.0022067193799700634,
+        0.002107681569228516,
+        0.001844808684025087,
+        0.0015532423554231063
+      ],
+      "same_grid_all": 0.0022067193799700634,
+      "same_grid_evolved": 0.0022067193799700634,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0019803306433499313,
+        0.002576735026863098,
+        0.002615809896959269,
+        0.0024243586105392855,
+        0.0021538659553274556
+      ],
+      "current_relative_evolved": 0.002615809896959269,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0010789742981493562
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "1599b5a4b05839b311a83189647cb219f05913b900ab305515dfa1dcec9b727d",
+      "same_grid_per_time": [
+        0.0,
+        0.0015324260483258693,
+        0.0009847057428948637,
+        0.0005545348062996212,
+        0.0003228357695418122,
+        0.0002448552371911691
+      ],
+      "same_grid_all": 0.0015324260483258693,
+      "same_grid_evolved": 0.0015324260483258693,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0018374038661036834,
+        0.0014051851540591632,
+        0.000942570128525481,
+        0.0006506602415313372,
+        0.0005795195545142846
+      ],
+      "current_relative_evolved": 0.0018374038661036834,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.004322460144318918
+    },
+    {
+      "name": "lean_nt1e-2_l1e-2_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "d8ef8d5746a604427dc0481e38eea7e77f6943fe220ee51a6abbedeee5f00510",
+      "same_grid_per_time": [
+        0.0,
+        0.0017662589334356187,
+        0.0008675321471216782,
+        0.0005421325075874635,
+        0.00038788320365761876,
+        0.0004963840656140225
+      ],
+      "same_grid_all": 0.0017662589334356187,
+      "same_grid_evolved": 0.0017662589334356187,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0025111873130565683,
+        0.0015599219616845375,
+        0.0011687274709655474,
+        0.0009711613350634099,
+        0.0014127688529421184
+      ],
+      "current_relative_evolved": 0.0025111873130565683,
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.01,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 50,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.009393200568945811
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "f00502068dd07db893fcecfa48eb73972fecc21d213d6652762e7c5c72368666",
+      "same_grid_per_time": [
+        0.0,
+        0.0038081845150250977,
+        0.004897525439376761,
+        0.005494512747357508,
+        0.0057326834983850335,
+        0.005693186440635935
+      ],
+      "same_grid_all": 0.0057326834983850335,
+      "same_grid_evolved": 0.0057326834983850335,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.00406871744479721,
+        0.00554895045672706,
+        0.006597334925936863,
+        0.007297932760131532,
+        0.007689947931670082
+      ],
+      "current_relative_evolved": 0.007689947931670082,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0003154500826693905
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "3e36d8c9fce107a0b2200520469748ef8a3551e6a5300df13b3b06e766155b62",
+      "same_grid_per_time": [
+        0.0,
+        0.01250730376865714,
+        0.009395127245908816,
+        0.006764983425982905,
+        0.005333450390412951,
+        0.0044670197160639755
+      ],
+      "same_grid_all": 0.01250730376865714,
+      "same_grid_evolved": 0.01250730376865714,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.0171170974588538,
+        0.016089614433938755,
+        0.014032252748133859,
+        0.013125078875549626,
+        0.012832590283681798
+      ],
+      "current_relative_evolved": 0.0171170974588538,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0008937167104067643
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "63603c493770384a368f4d589829e3c31192542e15409580119229b23447d0de",
+      "same_grid_per_time": [
+        0.0,
+        0.014109210290531147,
+        0.016607352179764726,
+        0.016391273486074474,
+        0.015409758500939185,
+        0.014210427795920475
+      ],
+      "same_grid_all": 0.016607352179764726,
+      "same_grid_evolved": 0.016607352179764726,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.015336711183370292,
+        0.01947707495545219,
+        0.020604129673218344,
+        0.020617895517453022,
+        0.020108001642556023
+      ],
+      "current_relative_evolved": 0.020617895517453022,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0009219850535403955
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "5dc2a1d81708582ff8b64f05a539edac61d8bb3cbd84de93567c1896dee33278",
+      "same_grid_per_time": [
+        0.0,
+        0.009190443334381168,
+        0.011379875771477012,
+        0.01212390839941359,
+        0.012097734325656312,
+        0.011719587612217402
+      ],
+      "same_grid_all": 0.01212390839941359,
+      "same_grid_evolved": 0.01212390839941359,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.010043268350783051,
+        0.013288016939477522,
+        0.015046788871727923,
+        0.015898259063064295,
+        0.016251437311311512
+      ],
+      "current_relative_evolved": 0.016251437311311512,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005496256594965593
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "0ff2c52905210d86cb4584c92af7684ae02e9c55f2bca68c3c99d46047053ac3",
+      "same_grid_per_time": [
+        0.0,
+        0.008969097356398866,
+        0.008749916649566992,
+        0.0067051403559058,
+        0.005288721912646602,
+        0.004770376458363055
+      ],
+      "same_grid_all": 0.008969097356398866,
+      "same_grid_evolved": 0.008969097356398866,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.010754094252124832,
+        0.012486220440921491,
+        0.01139705738079986,
+        0.010659169155755618,
+        0.011290452561803293
+      ],
+      "current_relative_evolved": 0.012486220440921491,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 26,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0005101823899524565
+    },
+    {
+      "name": "lean_nt1e-3_l1e-3_dt01",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "6df0fb9e13e46410bfd11b31d1c1fa274677d3a491ce9ed7509ff8476feb2242",
+      "same_grid_per_time": [
+        0.0,
+        0.0123774861763245,
+        0.00974377779702533,
+        0.007413372414359701,
+        0.005763786979805834,
+        0.004587172643036216
+      ],
+      "same_grid_all": 0.0123774861763245,
+      "same_grid_evolved": 0.0123774861763245,
+      "t0_compression": 0.0,
+      "current_relative_per_time": [
+        0.0,
+        0.017597751759454643,
+        0.017520426217960246,
+        0.015981723788740985,
+        0.014431063282828449,
+        0.013055645984794619
+      ],
+      "current_relative_evolved": 0.017597751759454643,
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 0.001,
+      "mesh": 4096,
+      "impl": "lean",
+      "newton_iterations_total": 27,
+      "steps": 25,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 0.0009431768547818771
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "0aa996a038ad30cb9b13c2755076e16fe631d36aff78c92d48f8f77901d3f4a4",
+      "same_grid_per_time": [
+        0.004824697729096877,
+        0.00020276199937291548,
+        0.0003445529639172571,
+        0.00045744513716486314,
+        0.0005470201656082647,
+        0.0006113421532011566
+      ],
+      "same_grid_all": 0.004824697729096877,
+      "same_grid_evolved": 0.0006113421532011566,
+      "t0_compression": 0.004824697729096877,
+      "current_relative_per_time": [
+        0.004824697729096877,
+        0.0002166337478490338,
+        0.00039038231657222936,
+        0.0005492604929471037,
+        0.0006963782996514213,
+        0.0008257571354060276
+      ],
+      "current_relative_evolved": 0.0008257571354060276,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 52,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.10391473071411e-05
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "32ee2f9da3b13e76389562118621fee5ecc6f9338957956ee740992caee44bd2",
+      "same_grid_per_time": [
+        0.0003173591019910185,
+        0.0003883889998653682,
+        0.0003941838516778971,
+        0.0003398658655877079,
+        0.000284313262381922,
+        0.00023821439418265998
+      ],
+      "same_grid_all": 0.0003941838516778971,
+      "same_grid_evolved": 0.0003941838516778971,
+      "t0_compression": 0.0003173591019910185,
+      "current_relative_per_time": [
+        0.0003173591019910185,
+        0.0005315368112592057,
+        0.0006750591049572061,
+        0.0007049660621595821,
+        0.0006996660174875338,
+        0.0006843282354963683
+      ],
+      "current_relative_evolved": 0.0007049660621595821,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.663806784301631e-05
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "3c692a38375fedca29232c09f9b33b0de09b061fb2a6b0997bbbc35c3fabe9f6",
+      "same_grid_per_time": [
+        3.5626157558230594e-06,
+        0.0008641582328755092,
+        0.0013574837542528239,
+        0.0017358639658365416,
+        0.001991880954671629,
+        0.002146297421281575
+      ],
+      "same_grid_all": 0.002146297421281575,
+      "same_grid_evolved": 0.002146297421281575,
+      "t0_compression": 3.5626157558230594e-06,
+      "current_relative_per_time": [
+        3.5626157558230594e-06,
+        0.0009393399744872897,
+        0.001592054684346765,
+        0.0021820126592085013,
+        0.0026650900080050716,
+        0.003037048053186223
+      ],
+      "current_relative_evolved": 0.003037048053186223,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 60,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.918802222840296e-05
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "41fc000ae0724a24ec92971ea0eba913ea8f2063063b720c27391f3fff97254a",
+      "same_grid_per_time": [
+        0.0089075678493325,
+        0.0005115909248816322,
+        0.0008164383428686004,
+        0.0010456587853924651,
+        0.001228207997740609,
+        0.001369070783467256
+      ],
+      "same_grid_all": 0.0089075678493325,
+      "same_grid_evolved": 0.001369070783467256,
+      "t0_compression": 0.0089075678493325,
+      "current_relative_per_time": [
+        0.0089075678493325,
+        0.0005590638838052847,
+        0.0009533361126198683,
+        0.0012977504000631424,
+        0.0016140517228913742,
+        0.0018984770410412554
+      ],
+      "current_relative_evolved": 0.0018984770410412554,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 54,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.503677270118517e-05
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "ad8ff563afbc07601cc23bf580dc4173d384769ab75481e745ef371d0168a323",
+      "same_grid_per_time": [
+        0.0023108591735873925,
+        0.0006749603305793595,
+        0.0008470134361686239,
+        0.0008334516319181311,
+        0.0007205202088780092,
+        0.0005888625486545501
+      ],
+      "same_grid_all": 0.0023108591735873925,
+      "same_grid_evolved": 0.0008470134361686239,
+      "t0_compression": 0.0023108591735873925,
+      "current_relative_per_time": [
+        0.0023108591735873925,
+        0.0008092884627143933,
+        0.0012086968258088718,
+        0.001416658797414393,
+        0.0014521744408996053,
+        0.001393710691186877
+      ],
+      "current_relative_evolved": 0.0014521744408996053,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.87210265844356e-05
+    },
+    {
+      "name": "c2048_nt1e-4_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "b9cf2a5188acee452ad04e754b574f8d634e7da6e3ee9e58a6bad005d2c21bd1",
+      "same_grid_per_time": [
+        0.001350046245914417,
+        0.00048258821556251553,
+        0.00047949011291341224,
+        0.00043150641373811783,
+        0.0003880478246215497,
+        0.0003514276494478916
+      ],
+      "same_grid_all": 0.001350046245914417,
+      "same_grid_evolved": 0.00048258821556251553,
+      "t0_compression": 0.001350046245914417,
+      "current_relative_per_time": [
+        0.001350046245914417,
+        0.000686122165561503,
+        0.0008621780299737091,
+        0.0009302401028814928,
+        0.0009715735042772427,
+        0.001000205428811447
+      ],
+      "current_relative_evolved": 0.001000205428811447,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 2048,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.713654008454222e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 0,
+      "family": "fom",
+      "field_sha256": "4cfbbf49483d0749460167e033c566643895722bfb4f9605960d28aa31d8077c",
+      "same_grid_per_time": [
+        0.009026130418427583,
+        0.0005700795913316229,
+        0.00098555619698727,
+        0.001318920598498103,
+        0.0015829587387050836,
+        0.0017728971416562161
+      ],
+      "same_grid_all": 0.009026130418427583,
+      "same_grid_evolved": 0.0017728971416562161,
+      "t0_compression": 0.009026130418427583,
+      "current_relative_per_time": [
+        0.009026130418427583,
+        0.000609080985709158,
+        0.001116646064854057,
+        0.0015836455986372685,
+        0.0020151690635610273,
+        0.0023947023076975054
+      ],
+      "current_relative_evolved": 0.0023947023076975054,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 52,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 5.185978873589528e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 1,
+      "family": "fom",
+      "field_sha256": "0d8ef17c3b8072aad94eaa00cbecb1a58a01f11d9437be03c2e148e426aaabd4",
+      "same_grid_per_time": [
+        0.0005937576985742877,
+        0.0010201083188837478,
+        0.0010514640863059383,
+        0.0009450418420036695,
+        0.0008190219533499003,
+        0.0007051264540547748
+      ],
+      "same_grid_all": 0.0010514640863059383,
+      "same_grid_evolved": 0.0010514640863059383,
+      "t0_compression": 0.0005937576985742877,
+      "current_relative_per_time": [
+        0.0005937576985742877,
+        0.0013960877448805555,
+        0.0018006836200290077,
+        0.001960251067818505,
+        0.0020155297137191244,
+        0.002025645611218232
+      ],
+      "current_relative_evolved": 0.002025645611218232,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.656539564800443e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 2,
+      "family": "fom",
+      "field_sha256": "fc80cb0f30293edeca8038988376883c1e47ce458365078937dc8f082b2adf92",
+      "same_grid_per_time": [
+        1.4065761735597462e-05,
+        0.0025687111724181466,
+        0.0041107447021457985,
+        0.005177079861332562,
+        0.00586231538560669,
+        0.00626846918926197
+      ],
+      "same_grid_all": 0.00626846918926197,
+      "same_grid_evolved": 0.00626846918926197,
+      "t0_compression": 1.4065761735597462e-05,
+      "current_relative_per_time": [
+        1.4065761735597462e-05,
+        0.0027921889711511657,
+        0.004821074534926613,
+        0.0065076837917521346,
+        0.007843640515419461,
+        0.00886999255505713
+      ],
+      "current_relative_evolved": 0.00886999255505713,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 59,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.911682442257517e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 3,
+      "family": "fom",
+      "field_sha256": "086f188e1f9b5694f73bbb9a31ef5d5b4356827984cb242188c1e5d1e467f64a",
+      "same_grid_per_time": [
+        0.016664496582762568,
+        0.0014281528268619823,
+        0.002331827078503833,
+        0.0030183392732496157,
+        0.0035443363393115853,
+        0.003937907026198087
+      ],
+      "same_grid_all": 0.016664496582762568,
+      "same_grid_evolved": 0.003937907026198087,
+      "t0_compression": 0.016664496582762568,
+      "current_relative_per_time": [
+        0.016664496582762568,
+        0.001560677930785598,
+        0.002722820384098945,
+        0.003746012613393579,
+        0.004657795898981404,
+        0.005460657088933429
+      ],
+      "current_relative_evolved": 0.005460657088933429,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 54,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.57337495239793e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 4,
+      "family": "fom",
+      "field_sha256": "6ad7b70284139a3b5663cf58067d98f850aea7b5956f63bceb4d7a84cbea3d02",
+      "same_grid_per_time": [
+        0.0043229797765784546,
+        0.0017484188026784,
+        0.002307688345653871,
+        0.002347512977867507,
+        0.002096858070477579,
+        0.001768392259402681
+      ],
+      "same_grid_all": 0.0043229797765784546,
+      "same_grid_evolved": 0.002347512977867507,
+      "t0_compression": 0.0043229797765784546,
+      "current_relative_per_time": [
+        0.0043229797765784546,
+        0.002096382707093294,
+        0.0032930948427040843,
+        0.003990183454901597,
+        0.004226118377558445,
+        0.004185403204487846
+      ],
+      "current_relative_evolved": 0.004226118377558445,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 51,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 9.890640157746395e-05
+    },
+    {
+      "name": "c1024_nt1e-4_dt005",
+      "case": 5,
+      "family": "fom",
+      "field_sha256": "35de06a4244f81243242f046aea39983647190152df169b309c4fc0d6f3d1af2",
+      "same_grid_per_time": [
+        0.002525543972821509,
+        0.0013260204474663455,
+        0.0013287732768189117,
+        0.0012153104308328029,
+        0.0011010501811320906,
+        0.0010002407667301886
+      ],
+      "same_grid_all": 0.002525543972821509,
+      "same_grid_evolved": 0.0013287732768189117,
+      "t0_compression": 0.002525543972821509,
+      "current_relative_per_time": [
+        0.002525543972821509,
+        0.0018852760835320964,
+        0.002389286233929754,
+        0.002619962216591708,
+        0.0027567508822163643,
+        0.0028468057267941327
+      ],
+      "current_relative_evolved": 0.0028468057267941327,
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06,
+      "mesh": 1024,
+      "impl": "audited",
+      "newton_iterations_total": 56,
+      "steps": 50,
+      "stalled_steps": 0,
+      "nonlinear_converged": true,
+      "max_relative_residual": 8.703703036479504e-05
+    }
+  ],
+  "dense_truth": [],
+  "arm_setup": [
+    {
+      "family": "fom",
+      "setting": {
+        "name": "fft_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08
+      },
+      "arm": "fft_tight"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      "arm": "nt1e-4_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      "arm": "nt1e-3_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      "arm": "nt1e-2_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-4_dt01",
+        "dt": 0.01,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      "arm": "nt1e-4_dt01"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 1e-05
+      },
+      "arm": "nt1e-3_dt01"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "nt1e-2_dt01",
+        "dt": 0.01,
+        "ntol": 0.01,
+        "ltol": 0.5
+      },
+      "arm": "nt1e-2_dt01"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_tight",
+        "dt": 0.005,
+        "ntol": 1e-06,
+        "ltol": 1e-08,
+        "impl": "lean"
+      },
+      "arm": "lean_tight"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_nt1e-4_dt005",
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06,
+        "impl": "lean"
+      },
+      "arm": "lean_nt1e-4_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_nt1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 1e-05,
+        "impl": "lean"
+      },
+      "arm": "lean_nt1e-3_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_nt1e-3_l1e-3_dt005",
+        "dt": 0.005,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      },
+      "arm": "lean_nt1e-3_l1e-3_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_nt1e-2_l1e-2_dt005",
+        "dt": 0.005,
+        "ntol": 0.01,
+        "ltol": 0.01,
+        "impl": "lean"
+      },
+      "arm": "lean_nt1e-2_l1e-2_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "lean_nt1e-3_l1e-3_dt01",
+        "dt": 0.01,
+        "ntol": 0.001,
+        "ltol": 0.001,
+        "impl": "lean"
+      },
+      "arm": "lean_nt1e-3_l1e-3_dt01"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "c2048_nt1e-4_dt005",
+        "mesh": 2048,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      "arm": "c2048_nt1e-4_dt005"
+    },
+    {
+      "family": "fom",
+      "setting": {
+        "name": "c1024_nt1e-4_dt005",
+        "mesh": 1024,
+        "dt": 0.005,
+        "ntol": 0.0001,
+        "ltol": 1e-06
+      },
+      "arm": "c1024_nt1e-4_dt005"
+    },
+    {
+      "family": "rom",
+      "q": 0,
+      "M": 64,
+      "m": 1024,
+      "rule": "scaled",
+      "gtol": 0.001,
+      "kernel": "b-speed C1",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q0_M64_scaled_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 0,
+      "M": 64,
+      "m": 1024,
+      "rule": "scaled",
+      "gtol": 1e-06,
+      "kernel": "b-speed C1",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q0_M64_scaled_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 128,
+      "M": 576,
+      "m": 2319,
+      "rule": "scaled",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q128_M576_scaled_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 128,
+      "M": 576,
+      "m": 2319,
+      "rule": "scaled",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q128_M576_scaled_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 128,
+      "M": 576,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q128_M576_lat64_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 128,
+      "M": 576,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q128_M576_lat64_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 544,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M544_scaled_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 544,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M544_scaled_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 544,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M544_lat64_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 544,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M544_lat64_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_scaled_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_scaled_g0p001_fast_chol"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_scaled_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2560,
+      "rule": "scaled",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_scaled_g1em06_fast_chol"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_lat64_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_lat64_g0p001_fast_chol"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_lat64_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 3969,
+      "rule": "lat64",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_lat64_g1em06_fast_chol"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2048,
+      "rule": "bad0",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_bad0_g0p001_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2048,
+      "rule": "bad0",
+      "gtol": 0.001,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_bad0_g0p001_fast_chol"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2048,
+      "rule": "bad0",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "lu",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_bad0_g1em06_fast"
+    },
+    {
+      "family": "rom",
+      "q": 256,
+      "M": 1088,
+      "m": 2048,
+      "rule": "bad0",
+      "gtol": 1e-06,
+      "kernel": "hfast",
+      "solver": "chol",
+      "quadrature": "eq",
+      "parity_twin": null,
+      "arm": "q256_M1088_bad0_g1em06_fast_chol"
+    }
+  ],
+  "invocations": [],
+  "parity": [],
+  "profile": [],
+  "reference": [],
+  "physical": [],
+  "dropped": [
+    {
+      "name": "q0_M64_scaled_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.10 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.40, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.10_computation, metadata={op_name=\"jit(query)/vmap()/transpose\" stack_frame_id=346}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backen"
+    },
+    {
+      "name": "q0_M64_scaled_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.10 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.40, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.10_computation, metadata={op_name=\"jit(query)/vmap()/transpose\" stack_frame_id=346}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backen"
+    },
+    {
+      "name": "q128_M576_scaled_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q128_M576_scaled_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q128_M576_lat64_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q128_M576_lat64_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M544_scaled_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M544_scaled_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M544_lat64_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M544_lat64_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_scaled_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_scaled_g0p001_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_scaled_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_scaled_g1em06_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_lat64_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_lat64_g0p001_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_lat64_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_lat64_g1em06_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_bad0_g0p001_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_bad0_g0p001_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_bad0_g1em06_fast",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.25, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=503}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    },
+    {
+      "name": "q256_M1088_bad0_g1em06_fast_chol",
+      "phase": "quick",
+      "reason": "INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.11 = f64[6,16769025]{1,0} fusion(%loop_add_fusion.24, %data__G__.1), kind=kCustom, calls=%gemm_fusion_dot.11_computation, metadata={op_name=\"jit(query)/transpose\" stack_frame_id=504}, backend_config={\"operation_queue_id\":\"0\",\"fusion_backend_confi"
+    }
+  ],
+  "gates": {
+    "evaluation_cohort_matches_b_panel": {
+      "expected": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+      "got": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+      "passed": true
+    },
+    "phi_free_operator_parity": {
+      "passed": true,
+      "per_M": [
+        {
+          "mesh": 512,
+          "M": 64,
+          "lam_identical": true,
+          "A_relative": 6.876865387419801e-16,
+          "rows_max_abs": 0.0,
+          "passed": true
+        },
+        {
+          "mesh": 512,
+          "M": 544,
+          "lam_identical": true,
+          "A_relative": 5.6243873460994034e-15,
+          "rows_max_abs": 0.0,
+          "passed": true
+        },
+        {
+          "mesh": 512,
+          "M": 576,
+          "lam_identical": true,
+          "A_relative": 5.637056696166597e-15,
+          "rows_max_abs": 0.0,
+          "passed": true
+        },
+        {
+          "mesh": 512,
+          "M": 1088,
+          "lam_identical": true,
+          "A_relative": 8.3450821606778e-15,
+          "rows_max_abs": 0.0,
+          "passed": true
+        }
+      ],
+      "note": "algebraically equal, different summation order; toleranced"
+    }
+  },
+  "phases": {
+    "bank": {
+      "shape": [
+        16769025,
+        512
+      ],
+      "seconds": 11.805449051316828,
+      "bytes": 68685926400
+    },
+    "truth": [
+      {
+        "case": 0,
+        "seconds": 5.53736653085798,
+        "max_relative_residual": 5.176708511928902e-07,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 1,
+        "seconds": 3.069571082945913,
+        "max_relative_residual": 2.146826805693024e-08,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 2,
+        "seconds": 5.52814974822104,
+        "max_relative_residual": 5.881491203512787e-09,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 3,
+        "seconds": 4.775422071106732,
+        "max_relative_residual": 6.657671098110819e-08,
+        "converged": true,
+        "newton_total": 101
+      },
+      {
+        "case": 4,
+        "seconds": 3.5657135411165655,
+        "max_relative_residual": 6.807917250106698e-09,
+        "converged": true,
+        "newton_total": 100
+      },
+      {
+        "case": 5,
+        "seconds": 2.9346778369508684,
+        "max_relative_residual": 2.1042257948360117e-08,
+        "converged": true,
+        "newton_total": 100
+      }
+    ],
+    "early_answer_seconds": 426.2
+  },
+  "complete": false,
+  "physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "physical_cases": [
+    [
+      0.28252396549391534,
+      0.6366084820193556,
+      0.1868965964536891,
+      1.0820386491896183,
+      0.03172924415397142
+    ],
+    [
+      0.6969516647251746,
+      0.3451044576480736,
+      0.10606757516929861,
+      1.883079655612731,
+      0.09507673822337352
+    ],
+    [
+      0.45131714866409367,
+      0.5960642645978614,
+      0.09280172370327633,
+      1.5231312745422343,
+      0.014089575881689515
+    ],
+    [
+      0.15227706255373677,
+      0.28851457124797375,
+      0.13591160848175055,
+      1.2767181974115185,
+      0.01762820727774322
+    ],
+    [
+      0.8130532184264921,
+      0.8113791413070836,
+      0.08364773158362382,
+      1.0772552621887435,
+      0.025703631918398633
+    ],
+    [
+      0.4606729763621312,
+      0.16598352069267147,
+      0.07016574189598321,
+      1.1994479966226255,
+      0.04655240960473743
+    ]
+  ],
+  "directions": {
+    "file": "directions_qtd02.npz",
+    "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "expected": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535"
+  }
+}

@@ -68,12 +68,7 @@
    "q": 4,
    "M": 80,
    "gtols": [
-    1e-06,
     0.001
-   ],
-   "solvers": [
-    "lu",
-    "chol"
    ],
    "dense": true,
    "rules": [
@@ -85,20 +80,27 @@
       }
      ],
      "base": true
+    }
+   ],
+   "variants": [
+    {
+     "solver": "lu"
     },
     {
-     "name": "mix",
-     "parts": [
-      {
-       "lattice": 16
-      },
-      {
-       "random": 400,
-       "seed": 3
-      }
-     ],
-     "refit": "state",
-     "control": true
+     "solver": "chol"
+    },
+    {
+     "solver": "chol",
+     "clip": true
+    },
+    {
+     "solver": "chol",
+     "lamcarry": true
+    },
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true
     }
    ]
   }
@@ -141,13 +143,13 @@
  ],
  "audit_arms": [
   "fft_tight",
-  "q4_M80_lat32_g0p001_fast"
+  "q4_M80_lat32_g0p001_fast_chol_clip"
  ],
  "reps": 2,
  "order_seed": 1,
  "burn_seconds": 0.02,
  "profile_arms": [
-  "q4_M80_lat32_g0p001_fast"
+  "q4_M80_lat32_g0p001_fast_chol_clip"
  ],
  "reference": {
   "mesh": 128,
@@ -167,7 +169,7 @@
   "fft_tight",
   "nt1e",
   "c32",
-  "lat32_g0p001_fast"
+  "chol_clip"
  ],
- "bank_inplace": true
+ "bank_blocks": 2
 }

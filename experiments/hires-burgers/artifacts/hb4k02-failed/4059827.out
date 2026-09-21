@@ -1,0 +1,30 @@
+host=pax010 source_commit=77db1832666a93d0717a894180fe55e0fee4dec6
+NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  425G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK (16769025, 512) 14.6
+TRUTH 0 20.2
+TRUTH 1 23.2
+TRUTH 2 28.8
+TRUTH 3 33.5
+TRUTH 4 37.1
+TRUTH 5 40.0
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 32.5 103.6
+QUICK nt1e-4_dt005 evolved% 0.0318 all% 0.0318 stalled 0 19.0 122.6
+QUICK nt1e-3_dt005 evolved% 0.0544 all% 0.0544 stalled 0 17.0 139.6
+QUICK nt1e-2_dt005 evolved% 4.4283 all% 4.4283 stalled 0 12.7 152.3
+QUICK nt1e-4_dt01 evolved% 1.6619 all% 1.6619 stalled 0 19.2 171.5
+QUICK nt1e-3_dt01 evolved% 1.6598 all% 1.6598 stalled 0 14.6 186.2
+QUICK nt1e-2_dt01 evolved% 3.5411 all% 3.5411 stalled 0 11.6 197.8
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 31.4 229.3
+QUICK lean_nt1e-4_dt005 evolved% 0.0318 all% 0.0318 stalled 0 18.5 247.7
+QUICK lean_nt1e-3_dt005 evolved% 0.0544 all% 0.0544 stalled 0 15.8 263.6
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.055 all% 0.055 stalled 0 13.3 276.8
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1635 all% 2.1635 stalled 0 12.0 288.8
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6607 all% 1.6607 stalled 0 12.7 301.5
+QUICK c2048_nt1e-4_dt005 evolved% 0.2146 all% 0.8908 stalled 0 12.2 313.8
+QUICK c1024_nt1e-4_dt005 evolved% 0.6268 all% 1.6664 stalled 0 10.7 324.5
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 439.1
+POPULATION q 128 stalled {'fit': 0, 'cert': 0} 483.8
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 622.4

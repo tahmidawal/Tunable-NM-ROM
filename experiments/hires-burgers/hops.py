@@ -69,35 +69,43 @@ def ravel_nodes(ij, L):
 
 # ------------------------------------------------------------------- bank ----
 
-def build_bank(bank, L, rows=1 << 20, inplace=None):
-    """G on the L-grid as ONE device array.
+MAX_GEMM_ELEMENTS = 2.146e9     # XLA's Triton gemm indexes with int32: hb4k02 (job 4059827) failed
+                               # autotuning on f64[6, 16769025] x [512] = 8.6e9 elements
 
-    Above ~24 GB neither a device concatenate (two copies) nor a host upload of the whole
-    array works: hb4k01 (job 4055954, 4096^2, H200) died with RESOURCE_EXHAUSTED allocating
-    63.97 GiB in `jit_stage`, the staged host-to-device copy of a 64 GB NumPy array. So the
-    buffer is allocated once and filled block by block on the device through a DONATED
-    dynamic_update_slice: peak = G + one block. Values are `bank.at` on the same points; the
-    blocking differs from `bank.on_grid`'s, so agreement is to 1 ulp (4.4e-16 absolute at
-    L = 96, bitwise at L = 64; scratch test 2026-09-20), not bitwise."""
+
+def build_bank(bank, L, nblocks=None):
+    """G on the L-grid as a TUPLE of row blocks, each below the int32 gemm limit.
+
+    hb4k01 died uploading one 64 GiB host array; hb4k02 built one 64 GiB device array and then
+    every product with it failed Triton-gemm autotuning (more than 2^31 elements). Blocks are
+    evaluated on the device by `bank.at` on the same points as `bank.on_grid`, never
+    concatenated, never copied. `bank_apply` is the only way the driver multiplies by G."""
     n = (L - 1) ** 2
-    inplace = (n * bank.dim * 8 > 24e9) if inplace is None else inplace
-    if not inplace:
-        return bank.on_grid(L)
-    put = jax.jit(lambda g, blk, i0: jax.lax.dynamic_update_slice(g, blk, (i0, jnp.zeros((), i0.dtype))), donate_argnums=0)
-    G = jnp.zeros((n, bank.dim), dtype=jnp.float64)
+    nblocks = int(np.ceil(n * bank.dim / MAX_GEMM_ELEMENTS)) if nblocks is None else int(nblocks)
+    if nblocks == 1:
+        return (bank.on_grid(L),)
     x = np.arange(1, L) / L
-    per = max(1, rows // (L - 1))
-    for i0 in range(0, L - 1, per):
-        i1 = min(L - 1, i0 + per)
+    edges = np.linspace(0, L - 1, nblocks + 1).astype(int)
+    out = []
+    for i0, i1 in zip(edges[:-1], edges[1:]):
         xy = np.stack(np.meshgrid(x[i0:i1], x, indexing='ij'), -1).reshape(-1, 2)
-        G = put(G, bank.at(xy, chunk=8192), jnp.asarray(i0 * (L - 1), dtype=jnp.int64))
-    return jax.block_until_ready(G)
+        out.append(jax.block_until_ready(bank.at(xy, chunk=8192)))
+    return tuple(out)
+
+
+def bank_apply(Gb, X):
+    """G @ X for X of shape (R,) or (R, k), G a tuple of row blocks."""
+    return jnp.concatenate([g @ X for g in Gb], axis=0)
+
+
+def bank_rows(Gb):
+    return int(sum(g.shape[0] for g in Gb))
 
 
 def project_bank(G, sx, sy, L, cols=32):
     """A = Phi^T G by the separable projection, `cols` bank columns at a time."""
-    f = jax.jit(lambda g, a, b: sep_project(jnp.moveaxis(g.reshape(L - 1, L - 1, -1), -1, 0), a, b, L))
-    out = [f(G[:, s:s + cols], sx, sy) for s in range(0, G.shape[1], cols)]
+    f = jax.jit(lambda gs, a, b: sep_project(jnp.moveaxis(jnp.concatenate(gs, 0).reshape(L - 1, L - 1, -1), -1, 0), a, b, L))
+    out = [f(tuple(g[:, s:s + cols] for g in G), sx, sy) for s in range(0, G[0].shape[1], cols)]
     return jnp.concatenate(out, axis=0).T                         # (M, R)
 
 
@@ -140,7 +148,7 @@ def rule_ops(bank, L, kx, ky, ij, w):
 def dense_targets(G, coefficients, sx, sy, L, chunk=8):
     """Phi^T a(G c) for every coefficient row: the exact side of rho, (S, M)."""
     def one(c, g, a, b):
-        return sep_project(e.spatial(g @ c, L)[0].reshape(L - 1, L - 1), a, b, L)
+        return sep_project(e.spatial(bank_apply(g, c), L)[0].reshape(L - 1, L - 1), a, b, L)
     f = jax.jit(jax.vmap(one, in_axes=(0, None, None, None)))
     Cs = jnp.asarray(np.asarray(coefficients))
     return np.concatenate([np.asarray(f(Cs[s:s + chunk], G, sx, sy)) for s in range(0, len(Cs), chunk)])

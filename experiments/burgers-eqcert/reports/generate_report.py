@@ -8,7 +8,8 @@ import json
 from pathlib import Path
 
 LANE = Path(__file__).resolve().parents[1]
-ATTEMPTS = ['bc256', 'bc512', 'bc1024']
+ATTEMPTS = ['bc256', 'bc256b', 'bc512', 'bc1024', 'bc2048']
+MAIN = ['bc256', 'bc256b', 'bc512', 'bc1024']
 
 
 def sha(p):
@@ -26,7 +27,39 @@ def main():
         if p.exists():
             S[a] = json.loads(p.read_text())
     rows, lines = [], []
+    # DESIGN A2.1: combined 12-draw rule at 256^2 (bc256 AND bc256b)
+    combined256 = None
+    if 'bc256' in S and 'bc256b' in S:
+        A_, B_ = S['bc256'], S['bc256b']
+        ok = []
+        for n, st in B_['arm_status'].items():
+            sa = A_['arm_status'].get(n)
+            if not sa or st.get('q') != 256 or st.get('control') or st.get('audited_status') == 'exact residual':
+                continue
+            both = all(x.get('audited_status') == 'confirmed' and x.get('audited_confirmation_pass') for x in (st, sa))
+            acc = all(Z['table'][n]['worst_evolved_percent'] <= 1 and Z['table'][n]['stalled_exits'] == 0 for Z in (A_, B_))
+            if both and acc:
+                ok.append(n)
+        pick = min(ok, key=lambda n: B_['table'][n]['median_gpu_ms']) if ok else None
+        combined256 = dict(rule='DESIGN A2.1: confirmed 5/5 + confirmation in BOTH bc256 and bc256b; cheapest by bc256b time',
+                           eligible=ok, pick=pick)
+        if pick:
+            t = B_['table'][pick]
+            fo = B_['table'][t['fom_by_paper_rule']]
+            st = B_['arm_status'][pick]
+            rows.append(dict(mesh=256, attempt='bc256+bc256b', job_id=f"{A_['job_id']}+{B_['job_id']}", gpu=B_['gpu'],
+                             role='CERTIFIED (A2.1 combined, row from bc256b)', arm=pick, status='confirmed in both',
+                             exact_steps=st.get('exact_steps'), m=t['m'],
+                             heldout_rho_max=max(st['heldout_rho_max'], A_['arm_status'][pick]['heldout_rho_max']),
+                             deployed_rho_max=max(st['deployed_rho_max'], A_['arm_status'][pick]['deployed_rho_max']),
+                             confirmation_pass=True, worst_evolved_percent=t['worst_evolved_percent'],
+                             worst_all_times_percent=t['worst_all_times_percent'], rom_gpu_ms=t['median_gpu_ms'],
+                             rom_host_ms=t['median_host_ms'], stalled_exits=t['stalled_exits'], fom=t['fom_by_paper_rule'],
+                             fom_gpu_ms=fo['median_gpu_ms'], fom_worst_evolved_percent=fo['worst_evolved_percent'],
+                             speedup_gpu=t['speedup_gpu'], speedup_host=t['speedup_host']))
     for a, s in S.items():
+        if a == 'bc2048':
+            continue
         v = s['verdict']
         L = s['intervals']
         for key, role in (('accurate', 'accurate row'), ('selected_failed_confirmation', 'selected, failed confirmation'),
@@ -47,15 +80,20 @@ def main():
                                  fom=t['fom_by_paper_rule'], fom_gpu_ms=S[a]['table'][t['fom_by_paper_rule']]['median_gpu_ms'],
                                  fom_worst_evolved_percent=S[a]['table'][t['fom_by_paper_rule']]['worst_evolved_percent'],
                                  speedup_gpu=t['speedup_gpu'], confirmation_pass=True, stalled_exits=t['stalled_exits']))
-    out = dict(status='final' if len(S) == len(ATTEMPTS) else 'partial', attempts=list(S),
+    out = dict(status='final' if len(S) == len(ATTEMPTS) else 'partial', attempts=list(S), combined_256=combined256,
                sources={a: dict(summary=f'checks/{a}-summary.json', sha256=sha(LANE / 'checks' / f'{a}-summary.json'),
                                 job_id=s['job_id'], job_commit=s['commit'], result_json_sha256=s['sources']['result_json_sha256'],
                                 accepted=s['verdict']['accepted'], failed_gates=s['failed_gates']) for a, s in S.items()},
-               verdict_per_mesh={s['intervals']: dict(certified_rule_exists=s['verdict']['certified_rule_exists'],
+               verdict_per_mesh={a_: dict(mesh=s['intervals'], certified_rule_exists=s['verdict']['certified_rule_exists'],
                                                       selected_on_certification_draws=s['verdict']['selected_on_certification_draws'],
                                                       selected_passes_confirmation=s['verdict']['selected_passes_confirmation'],
                                                       control=s['verdict'].get('control'), accepted=s['verdict']['accepted'])
-                                 for s in S.values()},
+                                 for a_, s in S.items() if a_ in MAIN},
+               certificate_2048=({n: dict(status=st['audited_status'], confirmation=st.get('audited_confirmation_pass'),
+                                          heldout_rho_max=st.get('heldout_rho_max'), deployed_rho_max=st.get('deployed_rho_max'),
+                                          heldout_rho_max_all_k=st.get('heldout_rho_max_k>=0'),
+                                          worst_evolved_percent=S['bc2048']['table'][n]['worst_evolved_percent'])
+                                  for n, st in S['bc2048']['arm_status'].items()} if 'bc2048' in S else None),
                rows=rows)
     (LANE / 'reports' / 'summary.json').write_text(json.dumps(out, indent=1) + '\n')
 
@@ -68,11 +106,18 @@ def main():
           '## Verdict per mesh (pre-registered selection, DESIGN §5 + A1.3)', '',
           '| mesh | certified rule | selected on draws 1–5 | selected passes confirmation | control `bad0` | audit accepted |',
           '|---|---|---|---|---|---|']
-    for L, v in out['verdict_per_mesh'].items():
+    for a_, v in out['verdict_per_mesh'].items():
+        L = f"{S[a_]['intervals']}^2$ ({a_})"
         c = v['control'][0] if v['control'] else {}
-        md.append(f"| ${L}^2$ | {'yes' if v['certified_rule_exists'] else '**no**'} | `{v['selected_on_certification_draws']}` | "
+        md.append(f"| ${L} | {'yes' if v['certified_rule_exists'] else '**no**'} | `{v['selected_on_certification_draws']}` | "
                   f"{v['selected_passes_confirmation']} | {c.get('status')}, {f(c.get('worst_evolved_percent'), 3)} % "
                   f"(exact {f(c.get('exact_worst_evolved_percent'), 3)} %) | {v['accepted']} |")
+    if combined256:
+        md += ['', f"**$256^2$, combined rule (A2.1):** eligible {combined256['eligible']}; pick `{combined256['pick']}`."]
+    if out['certificate_2048']:
+        md += ['', '**$2048^2$ certificate only (A2.2, bc2048):**', '', '| arm | status | confirmation | $\\rho_{\\max}$ held-out | all $k$ | worst evolved % |', '|---|---|---|---|---|---|']
+        for n, c in out['certificate_2048'].items():
+            md.append(f"| `{n}` | {c['status']} | {c['confirmation']} | {f(c['heldout_rho_max'])} | {f(c['heldout_rho_max_all_k'])} | {f(c['worst_evolved_percent'], 3)} |")
     md += ['', '## Rows', '',
            '| mesh | role | arm | exact steps | $m$ | $\\rho_{\\max}$ held-out / deployed (draws 1–5) | confirmation | '
            'worst evolved % | ROM ms | FOM (paper rule) | FOM ms | FOM % | speedup |',

@@ -1,10 +1,11 @@
 {
- "status": "final",
+ "status": "partial",
  "attempts": [
   "bc256",
   "bc512",
   "bc1024"
  ],
+ "combined_256": null,
  "sources": {
   "bc256": {
    "summary": "checks/bc256-summary.json",
@@ -35,7 +36,8 @@
   }
  },
  "verdict_per_mesh": {
-  "256": {
+  "bc256": {
+   "mesh": 256,
    "certified_rule_exists": false,
    "selected_on_certification_draws": "q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2",
    "selected_passes_confirmation": false,
@@ -49,7 +51,8 @@
    ],
    "accepted": true
   },
-  "512": {
+  "bc512": {
+   "mesh": 512,
    "certified_rule_exists": true,
    "selected_on_certification_draws": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
    "selected_passes_confirmation": true,
@@ -63,7 +66,8 @@
    ],
    "accepted": true
   },
-  "1024": {
+  "bc1024": {
+   "mesh": 1024,
    "certified_rule_exists": true,
    "selected_on_certification_draws": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
    "selected_passes_confirmation": true,
@@ -78,6 +82,7 @@
    "accepted": true
   }
  },
+ "certificate_2048": null,
  "rows": [
   {
    "mesh": 256,

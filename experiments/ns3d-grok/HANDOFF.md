@@ -1,22 +1,24 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21. diag06 is the development coefficient-space test.
+Updated 2026-09-21. The sealed truncation job is in the queue.
 
 ## State
 
-Seed 202609203 stays closed. Seed 202609211 is reserved and has not been
-generated. diag06 compares the grid center tracker with its coefficient-space
-form on development seed 202609202. The sealed draw happens only if that job's
-`summary.json` selects a method.
+diag06 (job 4147975, commit `b447d836`) selected truncation tail `1e-6`,
+9222 frequencies, on development. Local NumPy verify passed. The Slurm exit
+was 1 because `verify_diag.py` was not staged; the computation had already
+written `summary.json`. Remote directory deleted. Table:
+`results/diag06.md`.
 
 ## What is running
 
-Job **4147975** `ns3dgrok_diag06` is pending (Priority) in
-`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag06/`, commit
-`b447d836`. One job for this lane.
+Job **4148215** `ns3dgrok_diag07` is pending (Priority) in
+`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag07/`, commit
+`f12b8fc2`. It is the only reader of seed 202609211. The setting is frozen:
+rank 64, dt=0.01, tail 1e-6. Seed 202609203 stays closed.
 
 ## Next step
 
-On exit: confirm `jax_backend=gpu`, NumPy-verify, checksum pull, delete the
-remote directory. Seal 202609211 only for the selected method. If the
-selection is null, do not open that seed.
+On exit: confirm `jax_backend=gpu` and `DIAG_EXIT=0`, checksum pull,
+NumPy-verify, delete the remote directory. Do not change the tail if the
+sealed error exceeds 5%.

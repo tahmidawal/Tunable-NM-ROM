@@ -134,6 +134,29 @@ inlined into the prompt instead (`checks/codex-design-audit-02.txt`, 22 findings
 | 21 | memory contamination | **fixed/limited**: every subject is an outer-jitted query so XLA memory analysis exists for all; inactive subjects live on the host during training; process peak is labelled whole-process |
 | 22 | f32 saved fields | **fixed** for $L\le256$ (f64); 512² saves f32 with a stated audit tolerance |
 
+## 7. Amendments after gate03 (2026-09-20 late; written before any family job ran)
+
+1. **Retraction of a design statement.** §2 said the paper does not state the residual-snapshot source. It does: §4.1 uses
+   GNAT-SNS, $\Phi_r$ = SVD of the FOM *solution* snapshots. gate03 used NM-LSPG residual snapshots (my misreading).
+   `gate_kim2d.py --hr-basis sns` is now the default and the HR gate is defined with it.
+2. **gate03 (job 4059370), attempt 1: FAIL.** NM-LSPG 1.67 / 1.45 / 1.73 % (median 1.67 % > 1.5 %); LS-LSPG control 31.6 %;
+   HR (residual-snapshot basis) 130–320 % at 55/58. Per the fixed sequence, attempt 2 (global scaling) runs as gate04.
+3. **HR is unstable in this implementation with either basis** (gate04 part 1, SNS basis on the attempt-1 weights: 190–13000 %,
+   GN hitting its cap). A sub-minute local diagnostic on the saved attempt-1 weights shows the full residual and the
+   sub-network agree (parity 1e-13) and that unweighted collocation on 300 random *active* rows tracks NM-LSPG (1.9 % over
+   the full horizon) while 58 rows — greedy or random, gappy or collocation — do not. The published 55/58 configuration is
+   **not reproduced**; the HR gate is failed. HR arms on the shared family are therefore **exploratory only**
+   (`exploratory_hr_gate_failed=true`), with both the published gappy form and the collocation adaptation, sizes chosen on the
+   tuning subset; they never enter a headline accuracy row. Their query time is still printed because it bounds what the
+   published online algorithm could cost on this hardware.
+4. **Job economy (8-job cap, 4 used by gate01–gate04).** The 128² sweep, the automated selection (smallest tuning-subset
+   worst evolved error) and the K = 8/16/32 finals run in one job; every Kim arm is scored on both cohorts but only the
+   tuning score selects. 256² and 512² reuse the 128²-selected hyper-parameters with the encoder capped.
+5. **Provisional family runs.** To use the second job slot while gate attempts run, `family.py --provisional` may run before
+   a gate has passed. Nothing from it is admissible until `reports/gen_report.py` finds a passed gate whose
+   `kimae.py`/`lspg.py` hashes equal the family run's. If no attempt passes, the family tables are printed under the
+   heading *unvalidated implementation — not admissible* and the final message says so.
+
 ## Glossary
 
 - **NM-ROM** nonlinear-manifold reduced-order model: the state is a decoder output $x_{ref}+g(\hat x)$.

@@ -45,6 +45,7 @@ def main():
     ap.add_argument('--allow-cpu', action='store_true')
     ap.add_argument('--gate', help='summary.json of the accepted Kim reproduction gate; required unless --smoke')
     ap.add_argument('--smoke', action='store_true')
+    ap.add_argument('--provisional', action='store_true', help='run before a gate has passed; every Kim number is inadmissible until the report generator finds a passed gate with identical kimae.py/lspg.py hashes')
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     import jax
@@ -75,10 +76,16 @@ def main():
     if a.smoke:
         report['gate_binding'] = dict(smoke=True, note='no result of a smoke run may be reported')
         hr_allowed = True
+    elif a.provisional:
+        report['gate_binding'] = dict(provisional=True, note='no reproduction gate had passed when this ran; Kim arms are inadmissible until one passes for these exact kimae.py/lspg.py hashes',
+                                      kimae_sha256=sha_file(HERE / 'kimae.py'), lspg_sha256=sha_file(HERE / 'lspg.py'))
+        hr_allowed = True        # HR arms are exploratory regardless (HR gate failed in gate03/gate04): labelled per arm
+        tc = cfg.get('timing')
+        assert tc is None or (tc['reps'] >= 5 and tc['cases'] >= 4 and tc['burn'] >= .25)
     else:
         g = json.loads(Path(a.gate).read_text())
         assert g['gate']['passed'], 'Kim reproduction gate has not passed: no Kim arm may be run for the comparison'
-        hr_allowed = bool(g['gate']['hr_passed'])
+        hr_allowed = True        # exploratory unless g['gate']['hr_passed']; labelled per arm
         report['gate_binding'] = dict(gate_sha256=sha_file(a.gate), gate=g['gate'], gate_job=g['provenance']['job_id'],
                                       kimae_matches_gate=bool(g['source_sha256']['kimae.py'] == sha_file(HERE / 'kimae.py')),
                                       lspg_matches_gate=bool(g['source_sha256']['lspg.py'] == sha_file(HERE / 'lspg.py')))
@@ -325,15 +332,21 @@ def main():
                 Rs = (U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)).reshape(-1, n)[::int(cfg.get('hr_snapshot_stride', 2))].T
                 hrq, hraw = make_hr_query(K, v['ref'])
                 best = None
-                for nr, nz in v['hr']:
-                    Phir = kimae.pod_basis(Rs, nr)
-                    rows = kimae.greedy_samples(Phir, nz)
+                active = np.where(np.abs(Rs).max(1) > 1e-3 * np.abs(Rs).max())[0]
+                for nr, nz, mode in v['hr']:
+                    if mode == 'gappy':          # published: gappy POD on the SNS basis, greedy oversampled rows
+                        Phir = kimae.pod_basis(Rs, nr)
+                        rows = kimae.greedy_samples(Phir, nz)
+                        Wm = np.linalg.pinv(Phir[rows])
+                    else:                        # adaptation: unweighted collocation on random rows where the training data is active
+                        rows = np.sort(np.random.default_rng(20260920).choice(active, min(nz, active.size), replace=False))
+                        Wm = np.eye(rows.size)
                     need = np.unique(np.concatenate((rows, nbr[rows][nbr[rows] >= 0].ravel())))
                     pos = np.full(n + 1, need.size, np.int64); pos[need] = np.arange(need.size)
                     loc = np.stack([pos[rows]] + [pos[np.where(nbr[rows, j] >= 0, nbr[rows, j], n)] for j in range(4)], 1)
                     sub, remap, nact = kimae.subnet(A['p'], idx, valid, need)
                     H = dict(p=A['p'], scale=A['scale'], idx=A['idx'], sub=sub, remap=remap, scalen=A['scale'][need], need=jnp.asarray(need),
-                             loc=jnp.asarray(loc), pinv=jnp.asarray(np.linalg.pinv(Phir[rows])))
+                             loc=jnp.asarray(loc), pinv=jnp.asarray(Wm))
                     # control: sub-network rows reproduce the full residual rows
                     p_ = tune_phys[0]; ui = jnp.asarray(e.initial(L, p_))[1:-1, 1:-1].reshape(-1)
                     refv = ui if v['ref'] == 'ic' else jnp.zeros_like(ui)
@@ -345,19 +358,19 @@ def main():
                     assert parity < 1e-9, parity
                     Ft, itst = run_cases(hrq, H, tune_phys)
                     et = errors(Ft, REF_tune)
-                    hname = f'{name}_hr{nr}x{nz}'
-                    report['arms'][hname] = dict(family='kim_nm_lspg_hr', K=K, cohort='tune', residual_basis=nr, samples=nz,
+                    hname = f'{name}_hr_{mode}{nr}x{nz}'
+                    report['arms'][hname] = dict(family='kim_nm_lspg_hr', K=K, cohort='tune', residual_basis=nr, samples=int(rows.size), mode=mode, exploratory_hr_gate_failed=True,
                                                  nodes_evaluated=int(need.size), active_hidden=nact, subnet_parity=parity, **et, gn_mean=float(itst.mean()))
                     print('NM-LSPG-HR (tune)', hname, et['worst_evolved'], flush=True); save()
                     if et['finite'] and (best is None or et['worst_evolved'] < best[0]):
-                        best = (et['worst_evolved'], hname, H, nr, nz)
+                        best = (et['worst_evolved'], hname, H, nr, int(rows.size), mode)
                 if best is not None:
-                    _, hname, H, nr, nz = best
+                    _, hname, H, nr, nz, mode = best
                     report['arms'][name]['hr_selected'] = hname
                     if register: subjects[name + '_hr'] = (hrq, host(H))
                     if cohort_name == 'validation':
                         Fh, ith = run_cases(hrq, H, eval_phys)
-                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, cohort='validation', residual_basis=nr, samples=nz,
+                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, cohort='validation', residual_basis=nr, samples=nz, mode=mode, exploratory_hr_gate_failed=True,
                                                             selected_on='tune', **errors(Fh, REF), gn_mean=float(ith.mean()))
                         np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(fdt))
                         print('NM-LSPG-HR (validation)', name, report['arms'][name + '_hr']['worst_evolved'], flush=True)
@@ -389,7 +402,7 @@ def main():
                 if k != best: (out / f'ae_{k}.pkl').unlink(missing_ok=True)
             for K in fin['Ks']:
                 fv = dict(bv, K=int(K), name=f'kim_final_K{K}', **fin.get('overrides', {}))
-                same = int(K) == int(bv['K']) and not fin.get('overrides')
+                same = int(K) == int(bv['K']) and set(fin.get('overrides', {})) <= {'hr'}     # HR needs no retraining
                 run_variant(fv, register=True, reuse=best if same else None)
     del U_fit, Xfit
 

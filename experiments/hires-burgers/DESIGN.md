@@ -140,3 +140,29 @@ BiCGStab. **q** number of linear correction directions added to the neural head'
 the ROM query actually visits. **Evolved error** worst error over output times after $t=0$.
 **Stalled exit** an LM step that ended on budget, tiny step or rejection rather than on the
 stationarity or residual test; for the FOM, a time step whose Newton residual missed its tolerance.
+
+## Addendum A1 (2026-09-21, before jobs 7 and 8; written before either was submitted)
+
+Budget at this point: 6 of 8 jobs used. The last two are spent as follows, and nothing else:
+
+- **hb4k04** (`config-4096-pred.json`, 4096², dev6, 5 repetitions, same FOM arms as hb4k03, no refined
+  reference because hb4k03 already has it). It tests hypothesis **H11**: the steady time steps take 2–3 LM
+  iterations because the linear predictor is O(Δt²) wrong. Arm `pred2` evaluates one batched residual
+  over {current state, linear extrapolation, quadratic extrapolation from the third step on} and starts
+  the LM from the smallest. It is an algorithmic arm, so its error is measured directly; it is not a
+  parity arm. Tolerance arms $g=3\cdot10^{-3}$ and $10^{-2}$ at q=256/M=1088 are labelled; their exit
+  stationarity is reported next to their error.
+- **hb4kh64** (`config-4096-hold64.json`, 4096², the 64-case held-out cohort `hold64`, 1 repetition):
+  the same ROM arms, the tight and relaxed-passing FOMs, and the coarse FOMs. Timing is not its purpose.
+
+**Selection rule (unchanged, restated so it cannot move):** the headline accurate arm is the cheapest
+certified non-control ROM arm with worst evolved error ≤ 1 % on **dev6** (hb4k04). Its hold64 error is
+then *reported*, never used to choose. A dev6 pass with a hold64 fail is reported as a fail on unseen
+cases. The bar is scored against the tight FOM, the relaxed passing FOM (`lean_nt3e-3_l3e-3_dt005`),
+the fastest tested FOM at least as accurate, and the coarse-grid FOM, on both the GPU-query and the
+complete-query (host-inclusive) scope.
+
+**Not tested, recorded:** XLA command buffers for `while` loops (local micro-benchmark on the GB10: no
+gain, 0.146 vs 0.146 ms per iteration, so no job is spent on it); per-variant `ic_gtol` $10^{-4}$
+(local smoke: 81 → 78 initial-fit iterations, no time change); f32 decode (the 64 GiB bank read is
+16.7 ms of 164 ms at 4096², not worth a precision arm).

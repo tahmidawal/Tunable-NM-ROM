@@ -1,12 +1,12 @@
 {
- "attempt": "hb4kh64",
+ "attempt": "hb4k04",
  "intervals": 4096,
  "dt": 0.005,
  "eval_seed": 7090702,
  "eval_cases": 4,
  "eval_fresh_seed": 911702,
  "eval_fresh_cases": 2,
- "expected_physical_sha256": null,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
  "train_seed": 0,
  "train_trajectories": 128,
  "decoder_code_subsample": 8192,
@@ -179,6 +179,18 @@
        "lattice": 64
       }
      ]
+    },
+    {
+     "name": "bad0",
+     "parts": [
+      {
+       "file": "rules/rule_q256_reachable_m2048.npz",
+       "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+       "mesh": 256,
+       "status": "q-ridge rule; secondary only at 256^2; regressed at 1024^2 in b-panel (control: must fail)"
+      }
+     ],
+     "control": true
     }
    ]
   },
@@ -224,6 +236,12 @@
    "ltol": 1e-08
   },
   {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
    "name": "lean_tight",
    "dt": 0.005,
    "ntol": 1e-06,
@@ -231,8 +249,36 @@
    "impl": "lean"
   },
   {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05,
+   "impl": "lean"
+  },
+  {
    "name": "lean_nt1e-3_l1e-3_dt005",
    "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
    "ntol": 0.001,
    "ltol": 0.001,
    "impl": "lean"
@@ -269,12 +315,17 @@
   "fft_tight",
   "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2"
  ],
- "reps": 1,
+ "reps": 5,
  "order_seed": 20260920,
  "burn_seconds": 0.25,
- "profile_arms": [],
+ "profile_arms": [
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p003_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2"
+ ],
  "reference": null,
- "purpose": "accuracy of the rungs, including the pred2 and tolerance arms, on the 64-case held-out cohort at 4096^2; selection is made on dev6 (hb4k04) only; one timed repetition, timing is not the purpose",
+ "purpose": "4096^2 dev6 speed job: pred2 (quadratic-extrapolation guard) vs the kept chol+clip+lamcarry arm, same allocation, 5 reps; gtol 3e-3 / 1e-2 with pred2 as labelled tolerance arms; no refined reference (hb4k03 has it)",
  "rule_notes": {
   "scaled": "b-eqtop nodes at the same physical points, weights multiplied by (L/256)^2, NO refit",
   "xfer": "same support, NNLS weight refit on 128 fit states, per-state scaling",
@@ -285,14 +336,5 @@
  "parity_bar": 1e-09,
  "fom_notes": "audited = iterative_paths.make_fom (the named comparator of every earlier panel; it also records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic: the FOM at its best. Both are reported; speedups are quoted against the FASTER of the two at each tolerance.",
  "q0_through_hfast": true,
- "keep_for_reference": [],
- "eval_draws": [
-  [
-   20260916,
-   64
-  ]
- ],
- "cohort_name": "hold64: params_draw(20260916, 64), the bank-floor lane's held-out cohort; never used to fit the bank, the head, the directions or any rule in this lane",
- "required_reps": 1,
- "prune_each_arm": true
+ "keep_for_reference": []
 }

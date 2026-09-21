@@ -78,7 +78,7 @@ assert macros and macros <= defined, macros - defined
 assert all(m.startswith(('nHead', 'nQxm', 'nHires', 'nHeat', 'nBurg', 'nBase')) for m in macros), macros   # only generated-table numbers
 assert 'full pre-registered criterion' not in main and re.search(r'pre-registered\s+secondary criterion', main) and 'knob bar' not in main   # 2026-09-21: 'knob bar' jargon replaced
 assert r'\label{tab:knobs-main}' in (P / 'sections/appendix.tex').read_text()   # 2026-09-21: knob table moved to the appendix for the page budget
-for label in ('tab:headline', 'fig:speedup', 'tab:failures', 'tab:nmrom-baselines'):
+for label in ('tab:headline', 'tab:tunability', 'tab:failures', 'tab:nmrom-baselines'):
     assert r'\label{' + label + '}' in main.split(r'\bibliographystyle')[0], label
 app = (P / 'sections/appendix.tex').read_text() + (P / 'sections/method-details.tex').read_text()
 for label in ('tab:headline-times', 'tab:config3d', 'eq:wave-accel', 'eq:heat-step-corrected', 'eq:heat-endpoint', 'eq:block-damped'):
@@ -89,5 +89,22 @@ assert len(heat_job) == 1 and t01.count(heat_job.pop()) == 2                    
 assert 'INPUT -->|' in (P / 'figures/architecture.mmd').read_text() and '(in.south)' in (P / 'figures/architecture.tex').read_text()
 fig = json.loads((P / 'figures/fig_speedup_resolution.json').read_text())
 assert fig['evidence_sha256'] == hashlib.sha256((P / 'tables/headline-provenance.json').read_bytes()).hexdigest()
+# 2026-09-21 user decision: the two figures are replaced by tables; the tunability table is re-derived here
+assert 'fig_speedup_resolution' not in main and 'fig_tunability_rank' not in main and 'fig:speedup' not in main and 'fig:tunability' not in main
+assert r'\input{tables/TH_tunability}' in main.split(r'\bibliographystyle')[0]
+import importlib.util as _iu
+_sp = _iu.spec_from_file_location('gtt', P / 'gen_tunability_table.py'); _g = _iu.module_from_spec(_sp); _sp.loader.exec_module(_g)
+_tt = (P / 'tables/TH_tunability.tex').read_text()
+assert _g.render()[0] == _tt, 'TH_tunability.tex is stale or hand-edited'
+_rows = [l for l in _tt.splitlines() if l.endswith(r'\\') and ('$q=' in l or 'FOM:' in l)]
+_n = 0
+for s_ in prov['tunability']:
+    fm = s_['fom']
+    for r_ in s_['rungs']:
+        exp = [_g.e(r_['err']), _g.ms(r_['ms']), _g.sp(fm['ms'] / r_['ms'])]
+        hits = [l for l in _rows if l.split(' & ')[0] == _g.setting(r_, s_['series'].split()[0]) and ' & '.join(exp) in l]
+        assert hits, (s_['series'], r_['arm']); _n += 1
+    assert any('FOM:' in l and ' & '.join([_g.e(fm['err']), _g.ms(fm['ms'])]) in l for l in _rows), s_['series']
+assert _n == sum(len(s_['rungs']) for s_ in prov['tunability'])
 print(json.dumps(dict(passed=True, rows=len(prov['rows']), bold_speedups=bold, failure_rows=len(fails), figure_points=sum(len(v) for v in fig['series'].values()),
                       pending_lane_slots=tex.count('pending:'), abstract_macros=sorted(macros)), indent=2))

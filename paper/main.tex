@@ -110,7 +110,7 @@ weights. The correction rank is the accuracy control; stopping
 tolerances and empirical quadrature set the cost of the solve. All
 online coefficients come from the weak PDE residual, without access to
 the reference solution. The accurate error
-(Table~\ref{tab:headline}, Figure~\ref{fig:speedup})
+(Table~\ref{tab:headline})
 stays near its coarse-mesh level up to $4096^2$ while the speedup over
 the named solver grows, and on held-out Burgers cases the model is far
 more accurate than a reproduced NM-ROM and POD-LSPG
@@ -499,18 +499,6 @@ measured. Times, settings and complete-query speedups: Table~\ref{tab:headline-t
 \resizebox{\linewidth}{!}{\input{tables/TH_headline}}
 \end{table}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{fig_speedup_resolution}
-\caption{Speedup over the named FOM against mesh, plotted from the rows
-of Table~\ref{tab:headline}. The grey accurate Burgers point at $1024^2$ is dense (no validated
-$q=256$ rule there; the validated $q=128$ rule gives
-$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$). Burgers points at
-$2048^2$ and $4096^2$ are development cases; the held-out rows of
-Table~\ref{tab:headline} are not plotted. The legend applies to both panels.}
-\label{fig:speedup}
-\end{figure}
-
 \paragraph{Linear problems.}
 On Poisson the accurate setting reaches $\nHeadPoissonAccErr\,\%$ error and
 is $\nHeadPoissonAccS\times$ faster than CG at $\nHeadPoissonMesh$; the
@@ -532,7 +520,9 @@ The reduced solve costs the same at every mesh, so the fast setting
 passes Newton--BiCGStab at $512^2$ and is $\nHeadBurgersFastS\times$
 faster at $1024^2$ with $\nHeadBurgersFastErr\,\%$ error. The accurate
 setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$. At $4096^2$ the accurate setting chosen on six development cases
+cases, is slower than the FOM through $2048^2$; at $1024^2$ it uses a
+dense residual (no validated $q=256$ rule there; the validated $q=128$
+rule gives $\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$). At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix\,\%$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
@@ -543,7 +533,7 @@ $256^2$--$1024^2$ and a wider, held-out-tested bank are in progress
 (results incoming).
 
 \paragraph{Resolution.}
-Figure~\ref{fig:speedup} shows that the NM-ROM query time grows more
+Table~\ref{tab:headline} shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
@@ -621,19 +611,24 @@ Speedup is against the named FOM in the same allocation.}
 \input{tables/TH_failures}
 \end{table}
 
-\begin{figure}[t]
+\begin{table}[t]
 \centering
-\includegraphics[width=\linewidth]{fig_tunability_rank}
-\caption{Worst error (evolved times for Burgers and heat) against speed at
-$4096^2$; one frozen model and allocation per series, each divided by one
-full-order setting, the fastest at least as accurate as its best point
-(Newton--BiCGStab \nTuneBurgFomLabel; CN--CG \nTuneHeatFomLabel; CG
-\nTunePoissonFomLabel). On
-Burgers $q$ and $M$ change together ($M\approx4(k+q)$, $M=544$ an
-alternative at $q=256$; fixed-$M$ ladder: Table~\ref{tab:ladder-main}).
-Star: looser stopping tolerance; grey: rule failed its held-out check.}
-\label{fig:tunability}
-\end{figure}
+\caption{Correction-rank tunability at $4096^2$. Each problem block is one
+frozen model; every speedup is the median GPU query time of \emph{one}
+named full-order setting (the \emph{FOM} row, the fastest at least as
+accurate as the block's most accurate setting, in the same allocation)
+divided by the setting's (ms). Error is the worst same-grid relative
+$L^2$ error (\%), over evolved times for Burgers and heat. Burgers
+development (6 cases) and held-out (64 cases, never used for selection)
+share settings; heat uses the sealed held-out cohort, Poisson
+development sources. On Burgers $q$ and $M$ change together
+($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
+Table~\ref{tab:ladder-main}); heat and Poisson vary $q$ only.
+$^{\star}$\,looser stopping tolerance; $^{\dagger}$\,quadrature rule
+failed its held-out check.}
+\label{tab:tunability}
+\input{tables/TH_tunability}
+\end{table}
 
 \paragraph{Settings.}\label{sec:results:best}
 Table~\ref{tab:headline-times} lists both settings of every row of
@@ -657,7 +652,7 @@ is a safeguard, not a control; a truncated solve fails.
 On Burgers at $4096^2$ the correction rank is a genuine accuracy--cost
 tradeoff, and every tested setting is faster than the named solver
 ($\nTuneBurgDevSpeedMin$--$\nTuneBurgDevSpeedMax\times$ on development
-cases, Figure~\ref{fig:tunability}); on the linear problems the
+cases, Table~\ref{tab:tunability}); on the linear problems the
 corrections are eliminated analytically, so accuracy improves at nearly
 constant cost.
 

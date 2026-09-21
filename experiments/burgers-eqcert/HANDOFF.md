@@ -41,3 +41,8 @@ ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcert_20260921/<attempt>'
 
 | attempt | job id | mesh | GPU | state | summary |
 |---|---|---|---|---|---|
+| bc256 | 4139288 | 256², dev6 | A100-80G | submitted 16:11 EDT 09-21 (staged at f80f0a88) | — |
+| bc1024 | 4139290 | 1024², dev6 | H200, 240G | submitted 16:12 EDT 09-21 (staged at f80f0a88) | — |
+
+Next: when one finishes → collect, audit, delete remote dir, commit summary; then stage/submit `bc512`
+(`config-512.json --gpu h200 --mem 240G`). Jobs used: 2 / 8.

@@ -151,7 +151,10 @@ $10^{-11}$ relative on sign-satisfying states) and do not time in this paper.
 Time stepping uses a fixed substep count per output interval; each step is
 warm-started at the previous code, and the linear extrapolation is used instead
 when, and only when, its residual norm is smaller; the $4096^2$ rows also try a
-quadratic predictor under the same rule. In every Burgers arm above $1024^2$
+quadratic predictor under the same rule. The runs above $1024^2$ assemble
+the Jacobian analytically instead of by forward-mode products and clip the
+step; in the settings listed in Table~\ref{tab:headline-times} they solve the
+normal system by Cholesky factorisation. In every Burgers arm above $1024^2$
 except the $2048^2$ development accurate arm, the damping $\lambda$ is carried
 from one step to the next rather than reset to $\lambda_0$.
 

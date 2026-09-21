@@ -1,6 +1,44 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — one FOM-selection rule for every row (user decision, option A) — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — older paper's language, light touch — CURRENT HANDOFF
+
+User request: "Look into the older paper. I wanna keep the same language and methodology wherever
+applicable. Except the updates." then "But don't overdo it. Do it where necessary." Old source:
+`worktrees/2026-09-16-paper-refresh/private/old-submission/main.tex`. Previous PDF kept as
+`main.before-2026-09-21-old-language.pdf`. Targeted sentence edits only; no table data, numbers, caveats
+or user decisions changed; main text still ends on page 9 with References on page 9.
+
+Edits (old-paper move → where): intro opens on the old gap framing (one (accuracy, wall-clock) point per
+trained model, no deployment-time knob; FOMs expose it through tolerance but cost grows with the mesh; ROMs
+"from the opposite direction"; "The key open question is thus: …?"; "This paper answers that question
+largely affirmatively for two-dimensional Poisson, heat and viscous Burgers. We present an NM-ROM whose
+distinguishing property is …"); the three old contribution headings (contribution 3's resolution result
+folded under the "matrix-free JAX implementation" heading; the vague sentence "nonlinear coordinates and
+linear corrections have distinct roles" dropped); related-work first heading "Linear and non-linear
+manifold ROMs." and an old-style "We differ from these by …" sentence with the runtime-tunable-network
+analogy (Yu et al. 2019, Cai et al. 2020 — bibitems copied verbatim from the old source into
+`bib-inline.tex`); methodology opening "To answer this question … three components. First … Second …
+Third …"; §3.4 now opens "Three properties of the problem motivate our architecture. First … this
+motivates a linear skip. Second … coordinate-network bank. Third … nested corrections", with paragraphs
+"Linear skip, for the latent solve." / "Coordinate-network bank, for node-local evaluation." / "Nested
+corrections, for accuracy." (warm start from stored codes, no encoder, skip-not-ablated caveat kept; the
+duplicated warm-start sentence now lives only in "Solver and exits"); results intro in the old voice;
+Settings paragraph gains "moving between them never requires retraining … This is what we mean by
+deployment-time tunability."; Limitations as the old run-in (i)–(v) paragraph (same five items, same
+text); conclusion opens "We built an NM-ROM whose distinguishing property is …".
+Space moves: the Burgers >1024² solver refinements sentence (analytic Jacobian kept in §4.1; clipping,
+Cholesky in the listed settings) moved to Appendix A.3, which already held the damping carry-over and
+predictor; Figure 2's source moved before the Settings paragraph so it stays on page 8.
+Deliberately NOT carried over (no longer true): "Pareto dominance"/"continuous Pareto frontier" (the q
+ladder is discrete settings; §6.2 heading stays "Which Knob to Turn"); "strictly faster"/"beats neural
+operators"; "affirmatively for 2D and 3D" (3D Poisson held-out 32³ is slower than CG; 3D heat/Burgers/NS
+fail); cold-start GN, ViT encoder, CP head, binary mask, backward-Euler heat, tangent Galerkin; the old
+per-problem Setup paragraphs and knob tables (current Setup/appendix already carry them; page budget).
+Checks: check_headline and check_rewrite pass; 0 undefined references, 0 overfull boxes;
+check_integrity_repair / check_campaign_integration fail by design exactly as on HEAD (verified on a clean
+HEAD worktree).
+
+## 2026-09-21 (paper lane) — one FOM-selection rule for every row (user decision, option A)
 
 Every Table 1 row (and so Figures 1–2 and Table C.3) now uses the fastest tested setting of the named solver,
 same allocation, with error ≤ the row's accurate setting (single setting where only one exists). Each row

@@ -80,56 +80,60 @@ heat, Navier--Stokes and full-state waves miss their targets.
 \section{Introduction}
 \label{sec:intro}
 
-Learned PDE surrogates such as neural operators
+Neural operators for partial differential equations (PDEs)
 \citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator} typically
-deliver one accuracy--speed operating point per trained model; moving it
-generally requires retraining. Projection-based reduced-order models
-(ROMs) solve the governing equations in a small trial space
-\citep{BennerGugercinWillcox2015,Sirovich1987POD}. A linear subspace is
-inexpensive to use, but can require many basis functions to represent
-moving fronts; nonlinear-manifold ROMs learn a more compact
-representation \citep{LeeCarlberg2020,KimChoi2022NMROM}, although their
-online nonlinear solve can offset the benefit of fewer unknowns. A
-deployed ROM usually offers one operating point, whereas a practitioner
-may want to spend more computation on a difficult query or accept a less
-accurate answer when response time matters, and the cost of a
-full-order solve grows with the mesh. We ask: \emph{can one trained
-NM-ROM give a deployment-time accuracy--cost choice, keep its accuracy
-as the mesh is refined, and be faster than named iterative full-order
-solvers while being more accurate than prior nonlinear-manifold ROMs?}
+deliver one (accuracy, wall-clock) operating point per trained model,
+with no deployment-time knob to trade compute for accuracy; moving the
+point generally requires retraining. Full-order methods (FOMs) solved
+with iterative solvers such as conjugate gradients
+\citep{HestenesStiefel1952CG} expose this knob through their tolerance,
+but their cost grows with the mesh. Reduced-order models (ROMs) approach
+the problem from the opposite direction: linear projection-based ROMs
+\citep{BennerGugercinWillcox2015,Sirovich1987POD} can require many basis
+functions for moving fronts \citep{CohenDeVore2015}, and
+nonlinear-manifold ROMs (NM-ROMs) learn a more compact representation
+\citep{LeeCarlberg2020,KimChoi2022NMROM}, but their online nonlinear
+solve can offset the benefit of fewer unknowns. The key open question is thus:
+\emph{can one trained NM-ROM give a deployment-time accuracy--cost
+choice, keep its accuracy as the mesh is refined, and be faster than
+named iterative full-order solvers while being more accurate than prior
+nonlinear-manifold ROMs?}
 
-Our model represents the solution by a learned spatial bank multiplied
-by a nonlinear map of latent variables, augmented with nested,
-precomputed correction directions: activating more directions enlarges
-the trial space without changing the learned weights. The correction
-rank is the representation control; stopping tolerances and empirical
-quadrature set the cost of the solve. All online coefficients come from
-the weak PDE residual, without access to the reference solution.
-
-For two-dimensional Poisson, heat and viscous Burgers the answer is
-largely yes (Table~\ref{tab:headline}, Figure~\ref{fig:speedup}): the
-accurate error stays near its coarse-mesh level up to $4096^2$ while the
-speedup over the named solver grows, and on held-out Burgers cases the
-model is far more accurate than a reproduced NM-ROM and POD-LSPG
+This paper answers that question largely affirmatively for
+two-dimensional Poisson, heat and viscous Burgers. We present an NM-ROM
+whose distinguishing property is a deployment-time accuracy--cost choice
+from a single trained model. It represents the solution by a learned
+spatial bank multiplied by a nonlinear map of latent variables,
+augmented with nested, precomputed correction directions: activating
+more directions enlarges the trial space without changing the learned
+weights. The correction rank is the accuracy control; stopping
+tolerances and empirical quadrature set the cost of the solve. All
+online coefficients come from the weak PDE residual, without access to
+the reference solution. The accurate error
+(Table~\ref{tab:headline}, Figure~\ref{fig:speedup})
+stays near its coarse-mesh level up to $4096^2$ while the speedup over
+the named solver grows, and on held-out Burgers cases the model is far
+more accurate than a reproduced NM-ROM and POD-LSPG
 (Table~\ref{tab:nmrom-baselines}). It is not yet so for
 three-dimensional Burgers and heat, Navier--Stokes or the full wave
 state (Table~\ref{tab:failures}).
 
 \paragraph{Contributions.}
 \begin{enumerate}
-\item \textbf{A tunable NM-ROM from one trained model.}
+\item \textbf{A tunable NM-ROM with a deployment-time accuracy/speed
+tradeoff from a single trained model.}
 Nested correction directions provide discrete deployment settings that
 change approximation capacity without retraining. We isolate correction
 rank at fixed residual test count and separately evaluate a prescribed
 test-count schedule across seeds and held-out cases.
-\item \textbf{An architecture supporting the accuracy--cost tradeoff.}
+\item \textbf{Architectural choices that make this tradeoff achievable.}
 A learned spatial bank, a nonlinear head with a linear skip, and nested
 corrections support compact latent solves, boundary enforcement and
-node-local evaluation. The nonlinear coordinates and linear corrections have distinct roles
-in the reduced representation.
-\item \textbf{Resolution-robust speedups over named iterative solvers.}
-With precomputed linear operators, matrix-free differentiation and
-validated empirical quadrature, the accurate setting reaches
+node-local evaluation.
+\item \textbf{A matrix-free JAX implementation that makes the framework
+practical.} With precomputed linear operators, matrix-free
+differentiation and validated empirical quadrature, query time grows
+more slowly with the mesh than the named solvers': the accurate setting reaches
 $\nHeadPoissonAccErr\,\%$ on Poisson at
 $\nHiresPoissonAccSFortyNinetySix\times$ the speed of CG, and
 $\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers at
@@ -139,7 +143,7 @@ in the same allocation.
 
 \section{Related Work}\label{sec:related}
 
-\paragraph{Projection-based and nonlinear-manifold ROMs.}
+\paragraph{Linear and non-linear manifold ROMs.}
 Linear ROMs approximate solutions in a fixed subspace
 \citep{BennerGugercinWillcox2015,Sirovich1987POD}; moving fronts can
 require a large basis \citep{CohenDeVore2015,GreifUrban2019}.
@@ -148,11 +152,14 @@ projection \citep{LeeCarlberg2020,KimChoi2022NMROM}, including quadratic
 manifolds \citep{GeelenWrightWillcox2022,BarnettFarhat2022}, neural-field
 representations \citep{KimWenLeeChoiCNFROM2024} and adaptive bases
 \citep{PeherstorferWillcox2015Adaptive,Carlberg2015hRefinement}.
-Our focus is a nested set of correction directions within one learned
-bank, selected after training. Least-squares Petrov--Galerkin projection
+Least-squares Petrov--Galerkin projection
 \citep{Carlberg2011LSPG} and preassembly of reduced operators
 \citep{StefanescuSandu2014,WederSchwerdtnerPeherstorfer2024} are established
-components; the experiment isolates the effect of correction rank.
+components. We differ from these by a coordinate-network bank with an
+exact boundary factor, a head with a linear skip, and nested corrections
+selected after training that give deployment-time settings from one
+trained model, as runtime-tunable networks do
+\citep{YuSlimmable2019,Cai2020OnceForAll}.
 
 \paragraph{Neural operators and hyper-reduction.}
 FNO \citep{Li2020FNO}, DeepONet \citep{Lu2021DeepONet}, U-Net
@@ -168,22 +175,22 @@ comparator is conjugate gradient \citep{HestenesStiefel1952CG}.
 
 \section{Methodology}\label{sec:method}
 
-We turn a learned manifold into a practical PDE solver through three
-components: a trial manifold whose decoder enforces Dirichlet conditions
-exactly and carries nested linear correction directions
-(\S\ref{sec:method:manifold}); a least-squares Petrov--Galerkin
-projection of the discrete residual onto fixed weak tests
-(\S\ref{sec:method:weak}); and exact preassembly of every linear term
-with Empirical Quadrature for Burgers advection where validated
-(\S\ref{sec:method:precomp}); \S\ref{sec:decoder} gives the architecture.
+To answer this question, we turn a learned manifold into a practical
+PDE solver through three components. First, a trial manifold whose
+decoder enforces Dirichlet conditions exactly and carries nested linear
+correction directions (\S\ref{sec:method:manifold}). Second, a
+least-squares Petrov--Galerkin projection of the discrete residual onto
+fixed weak tests (\S\ref{sec:method:weak}). Third, exact preassembly of
+every linear term, with Empirical Quadrature for the Burgers advection
+where validated (\S\ref{sec:method:precomp}); \S\ref{sec:decoder} gives
+the architecture.
 Throughout, $u \in \Real^{n}$ is the
 full-order state on a uniform grid of $N$ intervals per axis,
 $\Aop \in \Real^{n \times n}$ the discrete negative Laplacian; $R$ is the bank width, $k$ the latent dimension, $M$ the number
 of weak tests and $m$ the number of quadrature nodes.
-The formulas below illustrate scalar Dirichlet problems; periodic vector
-fields and time-integrator details are specified per PDE in the appendix.
-Figure~\ref{fig:arch} (Appendix~\ref{app:arch}) shows the data flow;
-Appendix~\ref{app:method} gives the per-PDE derivations and exit codes.
+The formulas illustrate scalar Dirichlet problems;
+Appendix~\ref{app:method} gives the per-PDE derivations (periodic vector
+fields, time integrators) and exit codes, Figure~\ref{fig:arch} the data flow.
 
 \subsection{Trial Manifold with Exact Dirichlet Enforcement}
 \label{sec:method:manifold}
@@ -330,18 +337,24 @@ tight bar $\nEqtopTightBar$, and then re-draw the construction: a rule is
 \subsection{Model Architecture}
 \label{sec:decoder}
 
-Every query starts from stored training codes, never cold: the elliptic
-solve from the code nearest the projected source, the time-dependent
-solves from nearest codes refined by a fit to the supplied initial field,
-then warm-started from step to step. No encoder is used.
+Three properties of the problem motivate our architecture. First, every
+query starts from stored training codes, never cold and without an
+encoder (\S\ref{sec:method:weak}), and its iteration descends along the
+head's Jacobian; this motivates a \emph{linear skip}. Second, quadrature
+evaluates the decoder only near sparse nodes, and one model serves every
+mesh; this motivates a \emph{coordinate-network bank}. Third, one model
+must offer several accuracy--cost settings; this motivates
+\emph{nested corrections}.
 
-\paragraph{Head.} $\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, with
+\paragraph{Linear skip, for the latent solve.}
+$\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, with
 $\varphi_\theta$ an MLP with two hidden SiLU layers; the skip keeps a
 latent-independent Jacobian component. Widths and $(k,R)$ are per family
 (Table~\ref{tab:problems}; three-dimensional sizes in Table~\ref{tab:config3d}). The skip is a design
 choice, not ablated here.
 
-\paragraph{Bank.} Every Dirichlet bank is a coordinate network times a
+\paragraph{Coordinate-network bank, for node-local evaluation.} Every
+Dirichlet bank is a coordinate network times a
 vanishing factor: $\bcmask$ of \eqref{eq:bank} on the square, its product
 form in 3D, a distance-based factor on the L-shape; some banks are
 right-multiplied by a fixed orthonormalising matrix. The network's
@@ -350,8 +363,8 @@ a cached block, and decoding in row blocks at large $n$ changes memory,
 not the model. The periodic Navier--Stokes bank has no factor and a
 global solenoidal projection.
 
-\paragraph{Corrections.} $\corr$ holds leading singular directions of
-training coefficient residuals, nested in $q$.
+\paragraph{Nested corrections, for accuracy.} $\corr$ holds leading
+singular directions of training coefficient residuals, nested in $q$.
 
 \paragraph{What is fixed, what is chosen, and how error is reported.}
 \label{sec:method:tuning}
@@ -379,10 +392,8 @@ from a forward-mode Jacobian-Vector Product \citep{Bradbury2018JAX}; the
 sampled Burgers advection uses the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
 projected operator. The Burgers runs above $1024^2$ assemble the
-Jacobian analytically instead of by forward-mode products, clip the
-step, and (in the settings listed in Table~\ref{tab:headline-times}) solve the normal
-system by Cholesky factorisation, carry the damping between time steps
-and start each step from a quadratic predictor.
+Jacobian analytically, with the solver refinements of
+Appendix~\ref{app:method:burgers}.
 
 \subsection{Training Protocol}
 
@@ -440,9 +451,9 @@ NM-ROM setting.
 
 \section{Numerical Experiments and Results}\label{sec:results}
 
-Table~\ref{tab:headline} is the headline comparison; the subsections
-that follow give the settings behind it and the controls that move a
-frozen model between them.
+Table~\ref{tab:headline} reports the headline comparison against the
+named iterative solvers; the subsections that follow analyse the settings
+behind it and which knob to turn.
 
 \subsection{Accuracy and Speed against Full-Order Solvers}
 \label{sec:results:operators}\label{sec:exp:panel}
@@ -610,23 +621,6 @@ Speedup is against the named FOM in the same allocation.}
 \input{tables/TH_failures}
 \end{table}
 
-\paragraph{Settings.}\label{sec:results:best}
-Table~\ref{tab:headline-times} lists both settings of every row of
-Table~\ref{tab:headline} with their times; moving between them changes
-only deployment arguments. Appendix Table~\ref{tab:ladder-main} is the
-fixed-test-count evidence at $256^2$: with $M$ held fixed, each added
-block of correction directions lowers the error and raises the cost.
-
-\subsection{Which Knob to Turn}\label{sec:results:tunability}
-
-Appendix Table~\ref{tab:knobs-main} summarises the deployment-time controls.
-Correction rank is the accuracy control (with a smaller fixed test space
-the same ranks give a $\nQxmTwoFiftySixErrSpan\times$ error reduction from
-$q=0$ to $256$, so test count is held fixed along the ladder). Empirical quadrature and the stopping tolerance
-are cost controls: they lower the runtime at little or no change in
-error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
-is a safeguard, not a control; a truncated solve fails.
-
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig_tunability_rank}
@@ -640,6 +634,25 @@ alternative at $q=256$; fixed-$M$ ladder: Table~\ref{tab:ladder-main}).
 Star: looser stopping tolerance; grey: rule failed its held-out check.}
 \label{fig:tunability}
 \end{figure}
+
+\paragraph{Settings.}\label{sec:results:best}
+Table~\ref{tab:headline-times} lists both settings of every row of
+Table~\ref{tab:headline} with their times; moving between them never
+requires retraining, only new deployment arguments. This is what we mean by
+deployment-time tunability. Appendix Table~\ref{tab:ladder-main} is the
+fixed-test-count evidence at $256^2$: with $M$ held fixed, each added
+block of correction directions lowers the error and raises the cost.
+
+\subsection{Which Knob to Turn}\label{sec:results:tunability}
+
+Appendix Table~\ref{tab:knobs-main} summarises the deployment-time controls.
+Correction rank is the accuracy control (with a smaller fixed test space
+the same ranks give a $\nQxmTwoFiftySixErrSpan\times$ error reduction from
+$q=0$ to $256$, so test count is held fixed along the ladder). Empirical quadrature and the stopping tolerance
+are cost controls: they lower the runtime at little or no change in
+error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
+is a safeguard, not a control; a truncated solve fails.
+
 
 On Burgers at $4096^2$ the correction rank is a genuine accuracy--cost
 tradeoff, and every tested setting is faster than the named solver
@@ -659,15 +672,14 @@ convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=2pt,parsep=0pt]
-\item Speedups are measured against the named iterative full-order
+(i) Speedups are measured against the named iterative full-order
 solvers at the stated tolerances; comparison with other full-order
 solver classes (direct and spectral solvers, coarser discretisations) is
 outside the scope of this study. The named FOM is more accurate than the
 NM-ROM in every row, and on heat at $4096^2$ the linear solve in the
 learned bank, a baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is
 faster than every NM-ROM setting.
-\item Accuracy is bounded by the frozen bank: Burgers development
+(ii) Accuracy is bounded by the frozen bank: Burgers development
 accuracy does not carry to held-out cases (the free solve in the same
 512-function bank reaches only $\nBurgBankFloorConfirm\,\%$ there); the
 Poisson errors sit near the bank floor ($\nHiresFloorSquare\,\%$ square,
@@ -675,23 +687,24 @@ $\nHiresFloorCube\,\%$ cube); the L-shape ($\nHiresLshapeAccErr\,\%$ against
 a floor of $\nHiresLshapeFloor\,\%$) is limited by the head; the
 three-dimensional heat bank represents the initial field only to
 $\nHeatThreeInit\,\%$.
-\item The fixed-test-space rank study uses one checkpoint; the
+(iii) The fixed-test-space rank study uses one checkpoint; the
 multi-seed and sealed study sets $M=4(k+q)$, so it does not replicate
 it. Comparisons with the FOM do not isolate the nonlinear head's
 contribution over the linear span of the same bank.
-\item Quadrature rules are validated on a finite set of reached states,
+(iv) Quadrature rules are validated on a finite set of reached states,
 not certified globally, and none is used in three dimensions; the
 reduced solve can converge to a wrong branch, and lower same-grid error
 does not remove discretisation error.
-\item Except where marked final or held-out, cohorts are small
+(v) Except where marked final or held-out, cohorts are small
 development cohorts, and timings are medians without dispersion.
-\end{itemize}
 
 \FloatBarrier
 \section{Conclusion and Future Work}\label{sec:conclusion}
 
-One frozen NM-ROM, with nested corrections that change its approximation
-capacity after training, keeps its accuracy under mesh refinement on
+We built an NM-ROM whose distinguishing property is a deployment-time
+accuracy--cost choice from one trained model, through nested corrections
+that change its capacity after training; it keeps its accuracy under
+mesh refinement on
 two-dimensional Poisson, heat and Burgers, so its speedup over the named
 iterative solvers grows with resolution: at $4096^2$ its accurate setting
 reaches $\nHeadPoissonAccErr\,\%$ at $\nHiresPoissonAccSFortyNinetySix\times$

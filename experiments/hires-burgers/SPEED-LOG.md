@@ -63,6 +63,12 @@ any measurement — this is the hypothesis list the first job tests:
 | 2026-09-20 | hb2k02 (4071616, H200, 2048², dev6) | H9+H10 | q=0 through hfast with clip+lamcarry: `q0_M64_scaled_g0p001_fast` → `q0_M64_scaled_g0p001_fast_clip_lamcarry` | algorithmic arm: error 2.3721 → 2.3721 %, stalled 0 → 0, rejected trial steps 77 → 0, median LM iterations 133 → 114 | 33.19 → 29.48 ms (1.13×) | **kept** |
 | 2026-09-20 | hb2k02 (4071616, H200, 2048², dev6) | H7b | M=544 with clip vs M=1088 with clip (q=256): `q256_M1088_lat64_g0p001_fast_chol_clip` → `q256_M544_lat64_g0p001_fast_chol_clip` | accuracy measured: error 0.5980 → 0.8653 %, stalled 0 → 0, rejected trial steps 0 → 0, median LM iterations 181 → 188 | 137.27 → 124.15 ms (1.11×) | **kept as the cheaper ≤1 % rung only; M=1088 stays the accurate rung** |
 
+| 2026-09-21 | hb4k03 (4071625, H200, 4096², dev6) | H5 | Cholesky: `q256_M1088_lat64_g0p001_fast` → `q256_M1088_lat64_g0p001_fast_chol` | algorithmic arm, error measured directly: error 0.6043 → 0.6043 %, stalled 0 → 0, rejected trial steps 378 → 378, median LM iterations per query 284 → 284, worst exit stationarity 9.93e-04 → 9.93e-04, certified True → True | 315.78 → 207.01 ms (1.53×); host-inclusive 559.4 → 450.1 ms | **kept** (replicates hb2k02 at 4096²) |
+| 2026-09-21 | hb4k03 (4071625, H200, 4096², dev6) | H9 | `clip` (shorten an over-long z-step onto the trust radius): `q256_M1088_lat64_g0p001_fast_chol` → `q256_M1088_lat64_g0p001_fast_chol_clip` | algorithmic arm, error measured directly: error 0.6043 → 0.6043 %, stalled 0 → 0, rejected trial steps 378 → 0, median LM iterations per query 284 → 181, worst exit stationarity 9.93e-04 → 9.94e-04, certified True → True | 207.01 → 151.08 ms (1.37×); host-inclusive 450.1 → 393.3 ms | **kept** (replicates hb2k02 at 4096²) |
+| 2026-09-21 | hb4k03 (4071625, H200, 4096², dev6) | H10 | `lamcarry` (carry the damping between steps): `q256_M1088_lat64_g0p001_fast_chol_clip` → `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | algorithmic arm, error measured directly: error 0.6043 → 0.6043 %, stalled 0 → 0, rejected trial steps 0 → 0, median LM iterations per query 181 → 168.5, worst exit stationarity 9.94e-04 → 1.00e-03, certified True → True | 151.08 → 144.66 ms (1.04×); host-inclusive 393.3 → 385.0 ms | **kept** (replicates hb2k02 at 4096²) |
+| 2026-09-21 | hb4k03 (4071625, H200, 4096², dev6) | H5+H9+H10 | chol+clip+lamcarry cumulative: `q256_M1088_lat64_g0p001_fast` → `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` | algorithmic arm, error measured directly: error 0.6043 → 0.6043 %, stalled 0 → 0, rejected trial steps 378 → 0, median LM iterations per query 284 → 168.5, worst exit stationarity 9.93e-04 → 1.00e-03, certified True → True | 315.78 → 144.66 ms (2.18×); host-inclusive 559.4 → 385.0 ms | **kept** (replicates hb2k02 at 4096²) |
+| 2026-09-21 | hb4k03 (4071625, H200, 4096², dev6) | H9+H10 | clip+lamcarry: `q0_M64_scaled_g0p001_fast` → `q0_M64_scaled_g0p001_fast_clip_lamcarry` | algorithmic arm, error measured directly: error 2.4157 → 2.4158 %, stalled 0 → 0, rejected trial steps 77 → 0, median LM iterations per query 133 → 113.5, worst exit stationarity 9.84e-04 → 9.80e-04, certified True → True | 46.49 → 43.04 ms (1.08×); host-inclusive 288.5 → 285.2 ms | **kept** (replicates hb2k02 at 4096²) |
+
 ### Profile, hb2k01, `q256_M1088_lat64_g0p001_fast`, case 0 (the slowest case; LU)
 
 whole query 506.0 ms = initial fit 18.4 + evolve 479.9 + decode 4.3. Evolve: 494 LM iterations over 50 steps, 114 rejected trial steps, 0.972 ms per iteration; isolated kernels: $(r,J)$ 0.761 ms, residual 0.348 ms, Gram 0.158 ms, Gram + LU solve 0.780 ms. **The LU solve of the 272×272 system (≈0.6 ms) is the largest single item per iteration, larger than the whole residual-and-Jacobian evaluation** — hence H5. From `result.json` (quick rows): the FIRST time step takes 41–88 of the 170–494 LM iterations of a query at tol 1e-3 (37–315 at 1e-6), most of the rejected trial steps are there, and steady state is 2–3 iterations per step. The start of step 1 is the initial-fit state and the $z$-step is capped at 1 % of the code radius, so the solver creeps and every over-long step is rejected at the price of a full $(r,J)$ evaluation and a solve. → H9, H10.
@@ -72,3 +78,19 @@ All numbers above are generated from `checks/hb2k01-summary.json` by the snippet
 ### Cumulative, accurate rung $q=256$, $M=1088$, lattice rule, tol 1e-3, 2048², dev6 (hb2k02)
 
 `q256_M1088_lat64_g0p001_fast` 302.74 ms → `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry` 130.69 ms: **2.32×** at unchanged error (0.5980 → 0.5980 %), zero stalled exits, on top of hfast's 1.15× over the audited path (hb2k01). Profile of the final arm, case 0: whole query 146.8 ms = initial fit 16.6 + evolve 125.5 + decode 4.3; 191 LM iterations, 0 rejected, 0.657 ms per iteration, of which $(r,J)$ 0.719 ms and Gram + Cholesky-free LU probe 0.784 ms (the probe times the LU solve; the arm runs Cholesky). What is left is ≈3.8 LM iterations per time step at ≈0.65 ms; the remaining ideas are a second-order predictor and a looser first-step policy (H8), not yet measured.
+
+### Replication at 4096² (hb4k03) and what is left
+
+The hb2k02 changes replicate at 4096² at unchanged error (rows above, generated by
+`checks/speedlog_rows.py` from `checks/hb4k03-summary.json`). Profile of the kept arm at 4096², case 0:
+whole query 163.7 ms = initial fit 18.3 + evolve 127.2 + decode 16.7; 191 LM iterations, 0 rejected,
+0.666 ms per iteration; per-step iterations 20, 8, 8, 6, 6, 10, 10, 6, 5, 4, then 2–4. Decode is the
+read of the 64 GiB f64 bank (≈13 ms at H200 bandwidth), so it cannot shrink without a precision arm.
+Complete-query (host-inclusive) time adds ≈240 ms to every arm at 4096² (six f64 fields, 806 MB) and
+dominates any GPU-side gain in that scope.
+
+**H11 (pending, hb4k04):** the steady steps take 2–3 iterations because the linear predictor is
+$O(\Delta t^2)$ wrong; `pred2` (quadratic extrapolation, one batched residual guard). Local 64² smoke
+(GB10, not a result): 105 → 72 and 102 → 59 LM iterations per query at unchanged error.
+**Not pursued (local evidence only, no job spent):** XLA command buffers for `while` loops — GB10
+micro-benchmark 0.146 vs 0.146 ms per iteration; initial-fit tolerance 1e-4 — 81 → 78 iterations.

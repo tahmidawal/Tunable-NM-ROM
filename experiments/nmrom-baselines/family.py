@@ -132,6 +132,21 @@ def main():
     U_fit = trajectories(phys['train'][FIT])                       # (112, 51, n)
     report['snapshots'] = dict(fit=list(U_fit.shape), seconds=time.perf_counter() - t0,
                                sha256=hashlib.sha256(np.ascontiguousarray(U_fit[:, ::10]).tobytes()).hexdigest())
+    # data-matched arms (variant key fit_traj > 112): extra fit trajectories are further TRAIN-split draws, indices
+    # 128.. (the shared protocol's "future_train_prefixes"); the tuning subset 112-127 and validation stay out
+    want = [int(v.get('fit_traj', len(FIT))) for v in cfg['variants']]
+    want += [int(cfg.get('finals', {}).get('overrides', {}).get('fit_traj', len(FIT)))]
+    nextra = max(want) - len(FIT)
+    U_extra = None
+    if nextra > 0:
+        t0 = time.perf_counter()
+        extra_idx = np.arange(PROTO['counts']['train'], PROTO['counts']['train'] + nextra)
+        P_extra = np.stack([e.params_draw(case_seed('train', int(i)), 1)[0] for i in extra_idx])
+        U_extra = trajectories(P_extra)
+        report['snapshots']['extra_fit'] = dict(split='train', indices=[int(extra_idx[0]), int(extra_idx[-1])], shape=list(U_extra.shape),
+                                                seconds=time.perf_counter() - t0,
+                                                sha256=hashlib.sha256(np.ascontiguousarray(U_extra[:, ::10]).tobytes()).hexdigest())
+        print(f'EXTRA-FIT {U_extra.shape} {time.perf_counter()-t0:.0f}s', flush=True)
     del fomq; jax.clear_caches()
     ref_q, ref_pre = ip.make_fom(L, DT, 'fft')
     def reference(P):
@@ -278,7 +293,21 @@ def main():
             tdt = jnp.float32 if v.get('dtype', 'float32') == 'float32' else jnp.float64
             bytes_ = 4 if tdt == jnp.float32 else 8
             need_gb = (M1 * n * bytes_ * 4 + idx.size * bytes_ * 4) / 1e9
-            D = U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)
+            try:
+                dev_limit = int(jax.devices()[0].memory_stats()['bytes_limit'])
+            except Exception:   # noqa: BLE001
+                dev_limit = None
+            if reuse is None and dev_limit and need_gb * 1e9 > dev_limit:
+                # weights + gradient + two Adam moments alone exceed the device: record, do not attempt
+                report['dropped'].append(dict(name=name, reason='exceeds_device_memory_precheck', need_gb=need_gb, device_limit_gb=dev_limit / 1e9,
+                                              M1=M1, n=n, note='weights+grad+Adam state of the dense encoder; training not attempted'))
+                print(f'DROPPED (precheck) {name}: needs {need_gb:.0f} GB > device {dev_limit/1e9:.0f} GB', flush=True); save()
+                return
+            nfit = int(v.get('fit_traj', len(FIT))); assert nfit >= len(FIT)
+            Usrc = U_fit if nfit == len(FIT) else np.concatenate((U_fit, U_extra[:nfit - len(FIT)]))
+            assert Usrc.shape[0] == nfit
+            D = Usrc - (Usrc[:, :1] if v['ref'] == 'ic' else 0.)
+            del Usrc
             D = D.reshape(-1, n)
             rng = np.random.default_rng(20260920 + int(v['seed']))
             perm = rng.permutation(D.shape[0]); nva = D.shape[0] // 10
@@ -300,7 +329,7 @@ def main():
                                       lr0=float(v['lr']), lr_patience=int(v['patience']), tag=name)
                 del Xn, p0
                 hist = info.pop('history'); np.save(out / f'history_{name}.npy', hist)
-                info.update(params=kimae.n_params(p, valid), M1=M1, M2=M2, micro=micro, dtype=str(np.dtype(tdt)),
+                info.update(params=kimae.n_params(p, valid), M1=M1, M2=M2, micro=micro, fit_trajectories=nfit, fit_snapshots=nfit * (STEPS + 1), dtype=str(np.dtype(tdt)),
                             seconds_per_epoch=float(info['seconds'] / max(info['epochs'], 1)))
                 report['training'][name] = info
                 print('TRAINED', name, {k: info[k] for k in ('stop_reason', 'epochs', 'best_val', 'seconds')}, flush=True); save()
@@ -404,7 +433,7 @@ def main():
                 fv = dict(bv, K=int(K), name=f'kim_final_K{K}', **fin.get('overrides', {}))
                 same = int(K) == int(bv['K']) and set(fin.get('overrides', {})) <= {'hr'}     # HR needs no retraining
                 run_variant(fv, register=True, reuse=best if same else None)
-    del U_fit, Xfit
+    del U_fit, Xfit, U_extra
 
     # ------------------------------------------------------------------ the frozen project ROM (K=16, R=512)
     if cfg.get('rom_qs') is not None and len(cfg['rom_qs']):

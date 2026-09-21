@@ -478,17 +478,18 @@ only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
 batched; the batched fit: Table~\ref{tab:headline-times}). Burgers accurate
-quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}, not
-confirmed on independent re-draws (it fails the confirmation draw at
-$256^2$ and passes \nEqcScaledPassFiveTwelve{} of
-\nEqcScaledDrawsFiveTwelve{} draws at $512^2$; it is not the $q=256$
-rule of Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
-$63{\times}63$ lattice rule, marginal: it passes the re-draw check at
-$2048^2$ by only $\nEqcLatMargin$ (confirmation $\rho_{\max}=\nEqcLatConfRho$
-against the bar $\nEqcBar$); $^{v}$\,rule confirmed on independent
-re-draws by the pre-registered procedure ($1024^2$ with a thin margin,
-confirmation $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes it at
-$256^2$, Appendix~\ref{app:cg-current}); $^{d}$\,dense residual. The earlier Burgers model has one setting and
+quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}
+($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table~\ref{tab:eqladder}),
+not confirmed on re-draws: it fails the confirmation draw at $256^2$;
+$^{x}$\,its nodes with weights refit at $512^2$
+($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
+unrefit weights they pass \nEqcScaledPassFiveTwelve{} of
+\nEqcScaledDrawsFiveTwelve{} re-draws); $^{\ell}$\,$63{\times}63$
+lattice rule, thin margin: it clears the re-draw bar at $2048^2$ by only
+$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs.\ $\nEqcBar$);
+$^{v}$\,confirmed by the pre-registered re-draw procedure ($1024^2$: thin
+margin, $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$,
+Appendix~\ref{app:cg-current}); $^{d}$\,dense residual. The earlier Burgers model has one setting and
 may exit on a stall; its rule-selected FOM is the relaxed Newton setting
 ($10^{-2}/0.5$), and its tight-setting ratio is in
 Table~\ref{tab:headline-times} with the other rows' tight ratios; the

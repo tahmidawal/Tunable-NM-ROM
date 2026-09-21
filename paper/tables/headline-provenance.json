@@ -1238,7 +1238,22 @@
         "error_pct": 0.5129194368597558,
         "ms": 746.0200455971062,
         "arm": "q256_M1088_eqtop_g1em06",
-        "eq": "single-draw",
+        "eq": "not-confirmed",
+        "rule": {
+          "set": "eqtop",
+          "m": 2560,
+          "file_sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+          "source_job": "3780164",
+          "status": "certified in one draw",
+          "redraw": {
+            "same_rule_as_lane_scaled": true,
+            "lane_scaled": {
+              "m": 2560,
+              "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+              "refit": null
+            }
+          }
+        },
         "speedup": 0.042609757141137336
       },
       "fom": {
@@ -1303,7 +1318,22 @@
         "error_pct": 0.5509721660506048,
         "ms": 783.3276834571734,
         "arm": "q256_M1088_eqtopxfer_g1em06",
-        "eq": "single-draw",
+        "eq": "single-draw-refit",
+        "rule": {
+          "set": "eqtopxfer",
+          "m": 2438,
+          "file_sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+          "source_job": "3780164",
+          "status": "certified in one draw",
+          "redraw": {
+            "same_rule_as_lane_scaled": false,
+            "lane_scaled": {
+              "m": 2560,
+              "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+              "refit": null
+            }
+          }
+        },
         "speedup": 0.06755189897313166
       },
       "fom": {
@@ -1369,6 +1399,7 @@
         "ms": 22053.852356038988,
         "arm": "q256_M1088_dense_g1em06",
         "eq": "dense",
+        "rule": null,
         "speedup": 0.0036869440868685472
       },
       "fom": {
@@ -4163,6 +4194,8 @@
     "nEqcBar": "0.116",
     "nEqcLatConfRho": "0.1156",
     "nEqcLatMargin": "4{\\times}10^{-4}",
+    "nEqcRowRuleMFiveTwelve": "2438",
+    "nEqcLaneRuleM": "2560",
     "nEqcScaledPassFiveTwelve": "4",
     "nEqcScaledDrawsFiveTwelve": "5",
     "nEqcConfRhoTenTwentyFour": "0.1157",

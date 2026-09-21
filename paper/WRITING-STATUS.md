@@ -1,6 +1,26 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — burgers-eqcert intake: Burgers quadrature labels — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — Burgers rule identity per row; "thin margin" — CURRENT HANDOFF
+
+Coordinator follow-up on e0241c2f. Rule identity verified from the pinned evidence (b-panel summary rows
+`rule_set`/`rule_m`/`rule_file_sha256`/`rule_source_job`; eqcert `rules[]` source file, SHA256, `refit`, m; b-panel
+DESIGN §3.2/§A3 and eqcert.py: the lane's `scaled` = original weights × (L/256)², no refit):
+- **256² accurate row** (arm `q256_M1088_eqtop_g1em06`): b-eqtop's stored rule, job 3780164, file SHA256 3603d6e1…,
+  m=2560, native mesh. The lane's `scaled` rule at 256² is the same file with weights ×1 and no refit → **the same
+  rule**; marker s keeps "not confirmed on re-draws: it fails the confirmation draw at 256²".
+- **512² accurate row** (arm `q256_M1088_eqtopxfer_g1em06`): the same source file's nodes mapped to 512² with weights
+  **refit by NNLS at 512²** (support 2438), single held-out draw at 512² in b-panel job 3805065. The lane's `scaled`
+  rule at 512² is the unrefit transfer (all 2560 nodes, weights ×4) → **a different rule**. New marker x: "its nodes
+  with weights refit at 512² (m=2438), one held-out draw, not re-drawn (with unrefit weights they pass 4 of 5
+  re-draws)". The e0241c2f label that attached the 4/5 result to this row was wrong and is retracted.
+- ℓ label: "marginal" → "thin margin" (the rule passes all five draws and confirmation at 2048²; it clears the bar
+  by 4×10⁻⁴). Table 1 caption quadrature notes shortened to hold page 9.
+- `gen_headline.py` stores each panel row's rule identity in provenance and asserts the same/different verdict;
+  `check_headline.py` re-reads the panel blob and the lane blobs and asserts per row: set, m and file hash; same
+  source file; identical rule only at 256²; marker s at 256² and x at 512²; no "marginal" in the main text.
+  check_headline and check_rewrite pass; main text ends on page 9, References on page 9.
+
+## 2026-09-21 (paper lane) — burgers-eqcert intake: Burgers quadrature labels
 
 Source: branch `exp/2026-09-21-burgers-eqcert` @ 176b2a9a (lane closed, all five jobs audited/accepted), read as
 committed blobs and pinned as `evidence/headline-2026-09-20/eqcert_{summary,bc256,bc256b,bc512,bc1024,bc2048b}.json`

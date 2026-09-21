@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 18:59; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 19:01; this block is removed before submission).*
 *Populated tables (93): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -462,17 +462,18 @@ only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
 batched; the batched fit: Table 8). Burgers accurate
-quadrature: $^{s}$ stored rule of job 3780164, not
-confirmed on independent re-draws (it fails the confirmation draw at
-$256^2$ and passes \nEqcScaledPassFiveTwelve of
-\nEqcScaledDrawsFiveTwelve draws at $512^2$; it is not the $q=256$
-rule of Table 17); $^{\ell}$ deterministic
-$63{\times}63$ lattice rule, marginal: it passes the re-draw check at
-$2048^2$ by only $\nEqcLatMargin$ (confirmation $\rho_{\max}=\nEqcLatConfRho$
-against the bar $\nEqcBar$); $^{v}$ rule confirmed on independent
-re-draws by the pre-registered procedure ($1024^2$ with a thin margin,
-confirmation $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes it at
-$256^2$, Appendix C.1); $^{d}$ dense residual. The earlier Burgers model has one setting and
+quadrature: $^{s}$ stored rule of job 3780164
+($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table 17),
+not confirmed on re-draws: it fails the confirmation draw at $256^2$;
+$^{x}$ its nodes with weights refit at $512^2$
+($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
+unrefit weights they pass \nEqcScaledPassFiveTwelve of
+\nEqcScaledDrawsFiveTwelve re-draws); $^{\ell}$ $63{\times}63$
+lattice rule, thin margin: it clears the re-draw bar at $2048^2$ by only
+$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs. $\nEqcBar$);
+$^{v}$ confirmed by the pre-registered re-draw procedure ($1024^2$: thin
+margin, $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$,
+Appendix C.1); $^{d}$ dense residual. The earlier Burgers model has one setting and
 may exit on a stall; its rule-selected FOM is the relaxed Newton setting
 ($10^{-2}/0.5$), and its tight-setting ratio is in
 Table 8 with the other rows' tight ratios; the
@@ -503,7 +504,7 @@ measured. Times, settings and complete-query speedups: Table 8.
 | Heat (wide bank, batched fit) 2D (sealed held-out; opened once) | 2048^2 | 0.49 | **60.0×** | 1.36 | **57.0×** | 0.18 | CN–CG, \Delta t=0.05, rtol 10^{-3} |
 | Heat (wide bank, batched fit) 2D (sealed held-out; opened once) | 4096^2 | 0.49 | **103×** | 1.36 | **101×** | 0.47 | CN–CG, \Delta t=0.05, rtol 10^{-2} |
 | Burgers 2D (development) | 256^2 | 0.51^{s} | 0.043× | 1.89 | 0.79× | 0.049 | Newton–BiCGStab, tol 10^{-3} |
-| Burgers 2D (development) | 512^2 | 0.55^{s} | 0.068× | 2.14 | **1.31×** | 0.052 | Newton–BiCGStab, tol 10^{-3} |
+| Burgers 2D (development) | 512^2 | 0.55^{x} | 0.068× | 2.14 | **1.31×** | 0.052 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers 2D (development) | 1024^2 | 0.59^{d} | 0.0037× | 2.29 | **2.02×** | 0.034 | Newton–BiCGStab, tol 10^{-4} |
 | Burgers 2D (development; 6 cases, arm chosen here) | 2048^2 | 0.87^{\ell} | 0.99× | 2.37 | **4.16×** | 0.049 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers 2D (development; 6 cases, arm chosen here) | 4096^2 | 0.60^{\ell} | **4.87×** | 2.41 | **12.9×** | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |

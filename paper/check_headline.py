@@ -69,6 +69,20 @@ _pk = _eq['eqcert_summary']['combined_256']['pick']; _t = _eq['eqcert_bc256b']['
 assert (_m('nEqcFollowErr'), _m('nEqcFollowS')) == (f"{_t['worst_evolved_percent']:.3f}", f"{_t['speedup_gpu']:.3f}") and _m('nEqcFollowDraws') == '12'
 _mt = main.split(r'\bibliographystyle')[0] if 'main' in dir() else (P / 'main.tex').read_text()
 assert 'passed the\nheld-out bar in its single draw' not in (P / 'main.tex').read_text()   # stale 256^2/512^2 rule wording removed
+# rule identity per Burgers panel row (coordinator follow-up): the lane's re-draw result is attached only to the rule it tested
+_bp = json.loads((P / 'evidence/headline-2026-09-20/burgers_panel.json').read_bytes())
+_pm = {(r['mesh'], r['subject'], r['metric']): r['value'] for r in _bp['rows']}
+_bt = (P / 'tables/TH_headline.tex').read_text()
+for n, same, mark in ((256, True, '$^{s}$'), (512, False, '$^{x}$')):
+    r = [x for x in prov['rows'] if x['problem'] == 'Burgers' and x['intervals'] == n][0]; a_ = r['accurate']; arm = a_['arm']
+    assert (a_['rule']['set'], a_['rule']['m'], a_['rule']['file_sha256']) == (_pm[(n, arm, 'rule_set')], _pm[(n, arm, 'rule_m')], _pm[(n, arm, 'rule_file_sha256')])
+    lane = [x for x in _eq[f'eqcert_bc{n}']['rules'] if x['q'] == 256 and x['M'] == 1088 and x['rule'] == 'scaled'][0]
+    assert lane['refit'] is None and lane['source'][0]['sha256'] == a_['rule']['file_sha256']        # same source file
+    assert (lane['m'] == a_['rule']['m'] and a_['rule']['set'] == 'eqtop' and lane['source'][0]['source_mesh'] == n) == same   # identical rule only at 256^2
+    assert a_['rule']['redraw']['same_rule_as_lane_scaled'] == same and a_['eq'] == ('not-confirmed' if same else 'single-draw-refit')
+    assert f"{e_(a_['error_pct'])}{mark}" in _bt if (e_ := (lambda x: f'{x:.2f}' if x >= 0.1 else f'{x:.3f}')) else False
+assert _m('nEqcRowRuleMFiveTwelve') == '2438' and _m('nEqcLaneRuleM') == '2560'
+assert 'marginal' not in (P / 'main.tex').read_text().split(r'\bibliographystyle')[0]
 # Figure 2: every ratio reproduces from ms; uncertified rungs are marked in the figure record
 _tf = json.loads((P / 'figures/fig_tunability_rank.json').read_text())
 assert _tf['evidence_sha256'] == hashlib.sha256((P / 'tables/headline-provenance.json').read_bytes()).hexdigest()

@@ -187,7 +187,9 @@ for n in (256, 512, 1024):
     assert cs.startswith('nt1e-') and cs.endswith('_dt005')
     row('Burgers', 2, n, setting(lab(fs), roms[fs]['worst_evolved_percent'], roms[fs]['median_gpu_ms'], arm=fs),
         setting(lab(as_), roms[as_]['worst_evolved_percent'], roms[as_]['median_gpu_ms'], arm=as_,
-                eq='dense' if 'dense' in as_ else {'certified in one draw': 'single-draw', 'confirmed (3/3)': 'confirmed'}[roms[as_]['rule_status']]),
+                eq='dense' if 'dense' in as_ else {'certified in one draw': 'single-draw', 'confirmed (3/3)': 'confirmed'}[roms[as_]['rule_status']],
+                rule=None if 'dense' in as_ else dict(set=roms[as_]['rule_set'], m=roms[as_]['rule_m'], file_sha256=roms[as_]['rule_file_sha256'],
+                                                      source_job=roms[as_]['rule_source_job'], status=roms[as_]['rule_status'])),
         dict(name='Newton--BiCGStab, tol $10^{-%s}$' % cs[5], error_pct=ok[cs]['worst_evolved_percent'], ms=ok[cs]['median_gpu_ms'], arm=cs,
              candidates={k: dict(err=v['worst_evolved_percent'], ms=v['median_gpu_ms']) for k, v in foms.items()}),
         'burgers_panel', next(iter(pjob[(n, cs)])), 'development', 'development', 'same-grid, evolved', 'GPU query')
@@ -226,6 +228,27 @@ assert D['eqcert_bc256']['verdict']['selected_on_certification_draws'] == 'q256_
 assert not D['eqcert_bc256']['verdict']['certified_rule_exists'] and not _s256['confirmation_pass'] and not _s256['audited_confirmation_pass']
 assert not _s512['confirmation_pass'] and _s512['draws_passed'] < _s512['draws']
 EQC['s512'] = (_s512['draws_passed'], _s512['draws'])
+# Rule identity (2026-09-21 coordinator follow-up): which re-draw result belongs to which Table 1 row.
+#  256^2 panel arm `eqtop`: b-eqtop's stored m=2560 file at its native mesh.  The lane's `scaled` rule at 256^2 is that file
+#    with weights x (256/256)^2 and no refit -> the SAME rule, so its failed re-draw applies to the row (marker s).
+#  512^2 panel arm `eqtopxfer`: the same node set mapped to 512^2 with weights REFIT by NNLS at 512^2 (b-panel DESIGN 3.2/A3;
+#    support 2438 after the refit).  The lane's `scaled` rule at 512^2 keeps the original weights x 4 on all 2560 nodes -> a
+#    DIFFERENT rule; the row keeps its own single-draw status (marker x) and the related result is stated as such.
+def _lane_rule(k):
+    r_ = [x for x in D[k]['rules'] if x['q'] == 256 and x['M'] == 1088 and x['rule'] == 'scaled']; assert len(r_) == 1; return r_[0]
+_b256 = [r_ for r_ in ROWS if r_['problem'] == 'Burgers' and r_['intervals'] == 256][0]['accurate']['rule']
+_b512 = [r_ for r_ in ROWS if r_['problem'] == 'Burgers' and r_['intervals'] == 512][0]['accurate']['rule']
+_l256, _l512 = _lane_rule('eqcert_bc256'), _lane_rule('eqcert_bc512')
+assert _b256['set'] == 'eqtop' and _l256['refit'] is None and _l256['source'][0]['source_mesh'] == 256
+assert _l256['source'][0]['sha256'] == _b256['file_sha256'] and _l256['m'] == _b256['m']        # same file, same nodes, same weights
+assert _b512['set'] == 'eqtopxfer' and _l512['refit'] is None and _l512['source'][0]['sha256'] == _b512['file_sha256']
+assert _l512['m'] != _b512['m']                                                                   # refit support differs: not the same rule
+EQC['identity'] = {256: dict(row=dict(_b256), lane=dict(m=_l256['m'], sha256=_l256['source'][0]['sha256'], refit=_l256['refit']), same=True),
+                   512: dict(row=dict(_b512), lane=dict(m=_l512['m'], sha256=_l512['source'][0]['sha256'], refit=_l512['refit']), same=False)}
+for r_ in ROWS:
+    if r_['problem'] == 'Burgers' and r_['intervals'] in (256, 512):
+        r_['accurate']['eq'] = 'not-confirmed' if EQC['identity'][r_['intervals']]['same'] else 'single-draw-refit'
+        _id = EQC['identity'][r_['intervals']]; r_['accurate']['rule']['redraw'] = dict(same_rule_as_lane_scaled=_id['same'], lane_scaled=_id['lane'])
 # 256^2 post-hoc follow-up (A2.1, exact first step): passes every draw (5 + confirmation) in both bc256 and bc256b
 _pk = _eqs['combined_256']['pick']; _st = [D[k]['arm_status'][_pk] for k in ('eqcert_bc256', 'eqcert_bc256b')]
 assert all(x['draws_passed'] == x['draws'] and x['confirmation_pass'] for x in _st)
@@ -582,7 +605,7 @@ def marks(r):
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
     if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
     return m
-EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$'}
+EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'not-confirmed': r'$^{s}$', 'single-draw-refit': r'$^{x}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$'}
 def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), sp(s['speedup'])] if s else ['---', '---']
 
 
@@ -890,6 +913,7 @@ def _sci1(x):
     m_, ex = f'{x:.0e}'.split('e'); return f'{m_}{{\\times}}10^{{{int(ex)}}}'
 mac['nEqcBar'] = f"{EQC['bar']:g}"; mac['nEqcLatConfRho'] = f"{EQC['lat2048']:.4f}"; mac['nEqcLatMargin'] = _sci1(EQC['bar'] - EQC['lat2048'])
 assert f"{EQC['bar']:g}" == '0.116'                                                       # the same primary bar as \nEqtopBar
+mac['nEqcRowRuleMFiveTwelve'] = str(EQC['identity'][512]['row']['m']); mac['nEqcLaneRuleM'] = str(EQC['identity'][512]['lane']['m'])
 mac['nEqcScaledPassFiveTwelve'] = str(EQC['s512'][0]); mac['nEqcScaledDrawsFiveTwelve'] = str(EQC['s512'][1])
 mac['nEqcConfRhoTenTwentyFour'] = f"{EQC[1024]['conf_rho']:.4f}"
 mac['nEqcFollowDraws'] = str(EQC['follow']['draws']); mac['nEqcFollowErr'] = f"{EQC['follow']['err']:.3f}"; mac['nEqcFollowS'] = f"{EQC['follow']['sp']:.3f}"

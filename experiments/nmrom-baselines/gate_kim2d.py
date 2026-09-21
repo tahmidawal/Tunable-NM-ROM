@@ -32,6 +32,9 @@ def main():
     ap.add_argument('--hr', type=int, nargs='*', default=[55, 58, 51, 54, 44, 47, 40, 40, 60, 60],
                     help='pairs: residual basis, samples')
     ap.add_argument('--allow-cpu', action='store_true')
+    ap.add_argument('--hr-basis', default='sns', choices=['sns', 'residual'],
+                    help='sns = SVD of the FOM solution snapshots (their Section 4.1, GNAT-SNS); residual = NM-LSPG residual snapshots (gate03, a misreading)')
+    ap.add_argument('--load-ae', help='directory with ae_seed{s}_{u,v}.pkl from an earlier gate job; skips training')
     a = ap.parse_args()
 
     import jax
@@ -145,17 +148,25 @@ def main():
             else:
                 sc = np.full(n, np.abs(Dc[tr]).max())
             Xn = Dc / sc
-            p0 = kimae.init(jax.random.PRNGKey(1000 * seed + c), n, a.ns, M1, M2, idx, valid, tdt)
-            p, info = kimae.train(p0, jnp.asarray(Xn[tr], tdt), jnp.asarray(Xn[va], tdt), idx, valid, act,
-                                  ny=m, b=a.b, db=a.db, batch=240, micro=240, max_epochs=a.max_epochs, wall_seconds=a.train_wall,
-                                  seed=seed, tag=f'seed{seed}-{name}')
-            np.save(out / f'history_seed{seed}_{name}.npy', info.pop('history'))
-            rec['train'][name] = info
-            print(f'TRAINED seed={seed} {name}', info, flush=True)
-            P.append(jax.tree_util.tree_map(lambda w: jnp.asarray(w, jnp.float64), p)); SC.append(jnp.asarray(sc))
             import pickle
-            with open(out / f'ae_seed{seed}_{name}.pkl', 'wb') as fh:
-                pickle.dump(dict(params=jax.tree_util.tree_map(np.asarray, p), scale=sc), fh)
+            if a.load_ae:
+                src = Path(a.load_ae) / f'ae_seed{seed}_{name}.pkl'
+                ck = pickle.load(open(src, 'rb'))
+                assert np.allclose(ck['scale'], sc, rtol=1e-9, atol=0), 'loaded autoencoder was normalised differently'
+                sc = ck['scale']
+                p = jax.tree_util.tree_map(jnp.asarray, ck['params'])
+                rec['train'][name] = dict(loaded=str(src), sha256=hashlib.sha256(src.read_bytes()).hexdigest())
+            else:
+                p0 = kimae.init(jax.random.PRNGKey(1000 * seed + c), n, a.ns, M1, M2, idx, valid, tdt)
+                p, info = kimae.train(p0, jnp.asarray(Xn[tr], tdt), jnp.asarray(Xn[va], tdt), idx, valid, act,
+                                      ny=m, b=a.b, db=a.db, batch=240, micro=240, max_epochs=a.max_epochs, wall_seconds=a.train_wall,
+                                      seed=seed, tag=f'seed{seed}-{name}')
+                np.save(out / f'history_seed{seed}_{name}.npy', info.pop('history'))
+                rec['train'][name] = info
+                print(f'TRAINED seed={seed} {name}', info, flush=True)
+                with open(out / f'ae_seed{seed}_{name}.pkl', 'wb') as fh:
+                    pickle.dump(dict(params=jax.tree_util.tree_map(np.asarray, p), scale=sc), fh)
+            P.append(jax.tree_util.tree_map(lambda w: jnp.asarray(w, jnp.float64), p)); SC.append(jnp.asarray(sc))
 
         def dec_full(z, args):
             refj, pu, pv, su, sv, ix = args
@@ -182,13 +193,16 @@ def main():
 
         # ---------------- hyper-reduction: residual snapshots from NM-LSPG on the training parameters
         if a.hr:
-            rollr = jax.jit(lspg.make_rollout(nm_res, a.nt, keep_residuals=True))
-            Rs = []
-            for mu in mus_train:
-                am = (jnp.asarray(snaps[mu][0]),) + args[1:]
-                _, o = rollr(z0, am)
-                Rs.append(np.asarray(o[3]).reshape(-1, 2 * n))
-            Rs = np.concatenate(Rs).T
+            if a.hr_basis == 'sns':
+                Rs = D.T                                   # FOM solution snapshots (reference-subtracted), joint (u,v) state
+            else:
+                rollr = jax.jit(lspg.make_rollout(nm_res, a.nt, keep_residuals=True))
+                Rs = []
+                for mu in mus_train:
+                    am = (jnp.asarray(snaps[mu][0]),) + args[1:]
+                    _, o = rollr(z0, am)
+                    Rs.append(np.asarray(o[3]).reshape(-1, 2 * n))
+                Rs = np.concatenate(Rs).T
             rec['hr'] = []
             nbr = neighbour_table(m)
             for nr, nz in zip(a.hr[::2], a.hr[1::2]):

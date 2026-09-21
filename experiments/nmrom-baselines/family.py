@@ -312,8 +312,8 @@ def main():
 
             # ---------------- hyper-reduction (their online algorithm); grid chosen on the tuning subset only
             if v.get('hr') and hr_allowed:
-                rcases = phys['train'][FIT][::max(1, len(FIT) // int(cfg.get('hr_residual_cases', 16)))]
-                Rs = np.concatenate([np.asarray(nmres(jnp.asarray(e.initial(L, p_)), float(p_[4]), A)[0]) for p_ in rcases]).T
+                # residual basis = SVD of the FOM solution snapshots (their Section 4.1, GNAT-SNS), reference-subtracted
+                Rs = (U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)).reshape(-1, n)[::int(cfg.get('hr_snapshot_stride', 2))].T
                 hrq, hraw = make_hr_query(K, v['ref'])
                 best = None
                 for nr, nz in v['hr']:

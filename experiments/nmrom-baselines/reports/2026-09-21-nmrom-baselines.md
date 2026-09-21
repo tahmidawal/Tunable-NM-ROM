@@ -51,6 +51,19 @@ Validation cohort (32 held-out cases) for every row. Times: median GPU query, su
 | 256² | ours accurate (q=256), K=16 — dense reference path, M=1088 | 272 | 0.88 % | 0.09 % | 3746.3 | 0.02 | 1769 | yes |
 | 256² | FOM loose (1e-4) | — | 0.06 % | 0.01 % | 33.9 | 2.39 | 14 | yes |
 | 256² | FOM named / reference | — | 0.00 % | 0.00 % | 81.0 | 1.00 | 14 | yes |
+| 512² | Kim NM-LSPG K=8 [sigmoid] | 8 | 175.71 % | 55.48 % | 746.1 | 0.11 | 9959 | yes |
+| 512² | Kim NM-LSPG-HR K=8 (exploratory) [sigmoid] | 8 | 273.27 % | 53.08 % | 29.6 | 2.67 | 9813 | yes |
+| 512² | POD-LSPG K=8 (better reference) | 8 | 55.82 % | 24.08 % | 313.5 | 0.25 | 71 | yes |
+| 512² | Kim NM-LSPG K=16 [sigmoid] | 16 | 174.99 % | 58.56 % | 1496.6 | 0.05 | 10511 | yes |
+| 512² | Kim NM-LSPG-HR K=16 (exploratory) [sigmoid] | 16 | 185.17 % | 58.52 % | 61.7 | 1.28 | 10099 | yes |
+| 512² | POD-LSPG K=16 (better reference) | 16 | 42.01 % | 13.83 % | 617.2 | 0.13 | 122 | yes |
+| 512² | Kim NM-LSPG K=32 [sigmoid] | 32 | 252.33 % | 56.72 % | 2059.3 | 0.04 | 10879 | yes |
+| 512² | Kim NM-LSPG-HR K=32 (exploratory) [sigmoid] | 32 | 194.47 % | 56.00 % | 138.5 | 0.57 | 10569 | yes |
+| 512² | POD-LSPG K=32 (better reference) | 32 | 25.63 % | 7.74 % | 383.4 | 0.21 | 222 | yes |
+| 512² | ours fast (q=0), K=16 — dense reference path, M=64 | 16 | 7.72 % | 0.69 % | 404.2 | 0.20 | 2368 | yes |
+| 512² | ours accurate (q=256), K=16 — dense reference path, M=1088 | 272 | 1.05 % | 0.08 % | 6268.5 | 0.01 | 6891 | yes |
+| 512² | FOM loose (1e-4) | — | 0.05 % | 0.01 % | 33.2 | 2.38 | 55 | yes |
+| 512² | FOM named / reference | — | 0.00 % | 0.00 % | 79.0 | 1.00 | 55 | yes |
 
 ### Where a baseline beats the project NM-ROM
 
@@ -77,6 +90,22 @@ Every admissible reduced baseline row that is better than one of our two setting
 - 256² [dense vs dense]: POD-LSPG K=32 (better reference) is faster (518.8 ms vs 3746.3 ms for `ours_q256`, dense reference path) at 24.78 % vs 0.88 % worst evolved error.
 - 256²: the named FOM itself (81.0 ms) is faster than `ours_q0` (262.2 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
 - 256²: the named FOM itself (81.0 ms) is faster than `ours_q256` (3746.3 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
+- 512² [dense vs dense]: Kim NM-LSPG K=8 is faster (746.1 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 175.71 % vs 1.05 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=8 (exploratory) is faster (29.6 ms vs 404.2 ms for `ours_q0`, dense reference path) at 273.27 % vs 7.72 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=8 (exploratory) is faster (29.6 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 273.27 % vs 1.05 % worst evolved error.
+- 512² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (313.5 ms vs 404.2 ms for `ours_q0`, dense reference path) at 55.82 % vs 7.72 % worst evolved error.
+- 512² [dense vs dense]: POD-LSPG K=8 (better reference) is faster (313.5 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 55.82 % vs 1.05 % worst evolved error.
+- 512² [dense vs dense]: Kim NM-LSPG K=16 is faster (1496.6 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 174.99 % vs 1.05 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=16 (exploratory) is faster (61.7 ms vs 404.2 ms for `ours_q0`, dense reference path) at 185.17 % vs 7.72 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=16 (exploratory) is faster (61.7 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 185.17 % vs 1.05 % worst evolved error.
+- 512² [dense vs dense]: POD-LSPG K=16 (better reference) is faster (617.2 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 42.01 % vs 1.05 % worst evolved error.
+- 512² [dense vs dense]: Kim NM-LSPG K=32 is faster (2059.3 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 252.33 % vs 1.05 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=32 (exploratory) is faster (138.5 ms vs 404.2 ms for `ours_q0`, dense reference path) at 194.47 % vs 7.72 % worst evolved error.
+- 512² [HR vs dense]: Kim NM-LSPG-HR K=32 (exploratory) is faster (138.5 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 194.47 % vs 1.05 % worst evolved error.
+- 512² [dense vs dense]: POD-LSPG K=32 (better reference) is faster (383.4 ms vs 404.2 ms for `ours_q0`, dense reference path) at 25.63 % vs 7.72 % worst evolved error.
+- 512² [dense vs dense]: POD-LSPG K=32 (better reference) is faster (383.4 ms vs 6268.5 ms for `ours_q256`, dense reference path) at 25.63 % vs 1.05 % worst evolved error.
+- 512²: the named FOM itself (79.0 ms) is faster than `ours_q0` (404.2 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
+- 512²: the named FOM itself (79.0 ms) is faster than `ours_q256` (6268.5 ms), so our dense reference path at that setting is not a speed-up over the full-order solve here (says nothing about the optimised query, not timed in this job).
 
 ## 3. Where each Kim configuration stops fitting or training
 
@@ -102,11 +131,16 @@ Every admissible reduced baseline row that is better than one of our two setting
 | 256² | `kim_final_K8` | trained 852 epochs in 2401 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 3.96e-05 |
 | 256² | `kim_final_K32` | trained 837 epochs in 2402 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 2.89e-05 |
 | 256² | `kim_final_K16_fit576` | trained 540 epochs in 7205 s, stop = wall_budget, M1 = 4096, 576 fit trajectories, best validation-snapshot MSE 1.93e-05 |
+| 512² | `sig_K16_published_M1` | exceeds_device_memory_precheck: needs 2183 GB for weights + gradient + Adam state > device 135 GB (M1 = 522242); not attempted |
+| 512² | `sig_K8_sel` | trained 231 epochs in 4810 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 2.97e-04 |
+| 512² | `sig_K16_sel` | trained 230 epochs in 4814 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 2.48e-04 |
+| 512² | `sig_K32_sel` | trained 229 epochs in 4814 s, stop = wall_budget, M1 = 4096, 112 fit trajectories, best validation-snapshot MSE 3.09e-04 |
 
 ## 4. Tuning effort given to the Kim baseline
 
 - **128²** (job 4073272): 11 sweep candidates scored on the tuning subset, 13 autoencoders trained, 4.1 GPU-hours of training; selected `kim_K16_refzero_global`. Candidates (tune worst evolved): `kim_K16_base` 83.52 %, `kim_K16_refzero` 43.62 %, `kim_K16_global` 83.73 %, `kim_K16_refzero_global` 35.95 %, `kim_K16_b50` 84.56 %, `kim_K16_b200` 69.78 %, `kim_K16_M1_4096` 69.54 %, `kim_K16_M1_1024` 68.97 %, `kim_K16_pat50` 69.77 %, `kim_K16_lr3e4_pat50` 70.02 %, `kim_K16_f64` 84.39 %
 - **256²** (job 4095408): 3 sweep candidates scored on the tuning subset, 6 autoencoders trained, 5.3 GPU-hours of training; selected `sig_K16_zero_feature`. Candidates (tune worst evolved): `sig_K16_ic_feature` 84.93 %, `sig_K16_zero_feature` 70.59 %, `sig_K16_zero_global` 76.47 %
+- **512²** (job 4107272): 0 sweep candidates scored on the tuning subset, 3 autoencoders trained, 4.0 GPU-hours of training; selected `—`. Candidates (tune worst evolved): 
 
 ## Shared Burgers family, 128² intervals (n = 16129), job 4073272, NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719
 
@@ -182,6 +216,36 @@ Kim rows: **code matches a passed gate; a Kim row is admissible only if its acti
 
 Selection rule: smallest worst evolved NM-LSPG error on the 16-case tuning subset (train cases 112-127). Selected: `sig_K16_zero_feature`.
 
+
+Dropped arms: `sig_K16_published_M1` (exceeds_device_memory_precheck)
+
+
+## Shared Burgers family, 512² intervals (n = 261121), job 4107272, NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8
+
+Kim rows: **code matches a passed gate; a Kim row is admissible only if its activation is the gate activation (sigmoid)**. Other Kim hyper-parameters are tuned on the family (DESIGN s.3) and printed in the `act` column and variant. Cohort = 32 held-out validation cases unless the column says tune (16 training-side cases used for every choice). NumPy audit: all audited rows agree.
+
+| arm | family | solved unknowns | worst evolved (validation) | median evolved | worst evolved (tune) | autoencode-only worst | GN cap hits | query GPU ms (median) | compiled-query memory MB | training s (epochs, stop) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `pod_lspg_zero_K8` | pod_lspg | 8 | 55.82 % | 24.08 % | — | — | 0 | 313.5 | 71 | 0 (—, —) |
+| `pod_lspg_zero_K16` | pod_lspg | 16 | 42.01 % | 13.83 % | — | — | 0 | 617.2 | 122 | 0 (—, —) |
+| `pod_lspg_zero_K32` | pod_lspg | 32 | 25.63 % | 7.74 % | — | — | 0 | 383.4 | 222 | 0 (—, —) |
+| `pod_lspg_zero_K64` | pod_lspg | 64 | 13.52 % | 2.22 % | — | — | 0 | 1023.4 | 422 | 0 (—, —) |
+| `pod_lspg_zero_K128` | pod_lspg | 128 | 5.41 % | 0.56 % | — | — | 0 | 1458.0 | 823 | 0 (—, —) |
+| `pod_lspg_ic_K8` | pod_lspg | 8 | 149.51 % | 69.16 % | — | — | 1 | 322.1 | 71 | 0 (—, —) |
+| `pod_lspg_ic_K16` | pod_lspg | 16 | 167.60 % | 57.08 % | — | — | 0 | 778.0 | 122 | 0 (—, —) |
+| `pod_lspg_ic_K32` | pod_lspg | 32 | 177.37 % | 38.24 % | — | — | 0 | 441.7 | 222 | 0 (—, —) |
+| `pod_lspg_ic_K64` | pod_lspg | 64 | 35.76 % | 12.18 % | — | — | 0 | 1207.4 | 422 | 0 (—, —) |
+| `pod_lspg_ic_K128` | pod_lspg | 128 | 11.98 % | 3.09 % | — | — | 0 | 1563.3 | 823 | 0 (—, —) |
+| `sig_K8_sel` [sigmoid] | kim_nm_lspg | 8 | 175.71 % | 55.48 % | 74.64 % | 275.23 % | 387 | 746.1 | 9959 | 4810 (231, wall_budget) |
+| `sig_K8_sel_hr` [sigmoid] | kim_nm_lspg_hr (exploratory HR) | 8 | 273.27 % | 53.08 % | — | — | — | 29.6 | 9813 | 0 (—, —) |
+| `sig_K16_sel` [sigmoid] | kim_nm_lspg | 16 | 174.99 % | 58.56 % | 76.77 % | 248.02 % | 244 | 1496.6 | 10511 | 4814 (230, wall_budget) |
+| `sig_K16_sel_hr` [sigmoid] | kim_nm_lspg_hr (exploratory HR) | 16 | 185.17 % | 58.52 % | — | — | — | 61.7 | 10099 | 0 (—, —) |
+| `sig_K32_sel` [sigmoid] | kim_nm_lspg | 32 | 252.33 % | 56.72 % | 67.49 % | 227.92 % | 227 | 2059.3 | 10879 | 4814 (229, wall_budget) |
+| `sig_K32_sel_hr` [sigmoid] | kim_nm_lspg_hr (exploratory HR) | 32 | 194.47 % | 56.00 % | — | — | — | 138.5 | 10569 | 0 (—, —) |
+| `ours_q0` | ours | 16 | 7.72 % | 0.69 % | — | — | — | 404.2 | 2368 | 0 (—, —) |
+| `ours_q256` | ours | 272 | 1.05 % | 0.08 % | — | — | — | 6268.5 | 6891 | 0 (—, —) |
+| `fom_fft_tight` | fom | — | 0.00 % | 0.00 % | — | — | — | 79.0 | 55 | 0 (—, —) |
+| `fom_nt1e4_dt005` | fom | — | 0.05 % | 0.01 % | — | — | — | 33.2 | 55 | 0 (—, —) |
 
 Dropped arms: `sig_K16_published_M1` (exceeds_device_memory_precheck)
 

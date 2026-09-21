@@ -1,0 +1,131 @@
+host=pax008 source_commit=de929efb8860fa2e8cb2f4500ccd2da1bb104610
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.29:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu
+DATA 29s fit=(112, 51, 261121) ref=(32, 6, 513, 513)
+POD-LSPG zero 8 0.5581832793663911
+POD-LSPG zero 16 0.42009002555662467
+POD-LSPG zero 32 0.25625087468219165
+POD-LSPG zero 64 0.13521700620527227
+POD-LSPG zero 128 0.054130401441775944
+POD-LSPG ic 8 1.4950668710514068
+POD-LSPG ic 16 1.675999253007455
+POD-LSPG ic 32 1.7737184686450909
+POD-LSPG ic 64 0.3576097574808202
+POD-LSPG ic 128 0.11981101362638129
+ARM sig_K8_sel: n=261121 K=8 M1=4096 M2=2611300 nnz=83446300 micro=12 weights+adam~18.4GB
+sig_K8_sel ep=0 lr=1.0e-03 train=1.6301e-02 val=1.0609e-02 best=1.0609e-02 t=0s
+sig_K8_sel ep=10 lr=1.0e-03 train=2.9636e-03 val=2.9225e-03 best=2.9225e-03 t=209s
+sig_K8_sel ep=15 lr=1.0e-03 train=2.8658e-03 val=2.5998e-03 best=2.5998e-03 t=314s
+sig_K8_sel ep=25 lr=1.0e-03 train=2.1803e-03 val=2.7156e-03 best=2.1520e-03 t=523s
+sig_K8_sel ep=50 lr=1.0e-03 train=1.6598e-03 val=2.0466e-03 best=1.7622e-03 t=1046s
+sig_K8_sel ep=60 lr=1.0e-04 train=9.2600e-04 val=1.1177e-03 best=1.1177e-03 t=1255s
+sig_K8_sel ep=65 lr=1.0e-04 train=7.9702e-04 val=9.8517e-04 best=9.8517e-04 t=1359s
+sig_K8_sel ep=70 lr=1.0e-04 train=7.1969e-04 val=9.2148e-04 best=9.2148e-04 t=1464s
+sig_K8_sel ep=75 lr=1.0e-04 train=6.7157e-04 val=8.7048e-04 best=8.7048e-04 t=1568s
+sig_K8_sel ep=85 lr=1.0e-04 train=5.8413e-04 val=7.9262e-04 best=7.9262e-04 t=1778s
+sig_K8_sel ep=100 lr=1.0e-04 train=5.0245e-04 val=7.1583e-04 best=7.1431e-04 t=2091s
+sig_K8_sel ep=115 lr=1.0e-04 train=4.3394e-04 val=6.2303e-04 best=6.2303e-04 t=2405s
+sig_K8_sel ep=120 lr=1.0e-04 train=4.1927e-04 val=6.0346e-04 best=6.0346e-04 t=2509s
+sig_K8_sel ep=125 lr=1.0e-04 train=3.9309e-04 val=5.6814e-04 best=5.6814e-04 t=2614s
+sig_K8_sel ep=130 lr=1.0e-04 train=3.8591e-04 val=5.5305e-04 best=5.5305e-04 t=2719s
+sig_K8_sel ep=135 lr=1.0e-04 train=3.5853e-04 val=5.2043e-04 best=5.2043e-04 t=2823s
+sig_K8_sel ep=140 lr=1.0e-04 train=3.4273e-04 val=5.0997e-04 best=5.0997e-04 t=2928s
+sig_K8_sel ep=145 lr=1.0e-04 train=3.2797e-04 val=4.9148e-04 best=4.9148e-04 t=3032s
+sig_K8_sel ep=150 lr=1.0e-04 train=3.1619e-04 val=4.8893e-04 best=4.8641e-04 t=3137s
+sig_K8_sel ep=155 lr=1.0e-04 train=3.0565e-04 val=4.5616e-04 best=4.5616e-04 t=3241s
+sig_K8_sel ep=170 lr=1.0e-04 train=2.7049e-04 val=4.0974e-04 best=4.0974e-04 t=3555s
+sig_K8_sel ep=175 lr=1.0e-04 train=2.6359e-04 val=4.0327e-04 best=4.0188e-04 t=3660s
+sig_K8_sel ep=185 lr=1.0e-04 train=2.4276e-04 val=3.7476e-04 best=3.7476e-04 t=3869s
+sig_K8_sel ep=190 lr=1.0e-04 train=2.3690e-04 val=3.6514e-04 best=3.6514e-04 t=3973s
+sig_K8_sel ep=195 lr=1.0e-04 train=2.2975e-04 val=3.5923e-04 best=3.5923e-04 t=4078s
+sig_K8_sel ep=200 lr=1.0e-04 train=2.2446e-04 val=3.5046e-04 best=3.4688e-04 t=4182s
+sig_K8_sel ep=210 lr=1.0e-04 train=2.1259e-04 val=3.2526e-04 best=3.2526e-04 t=4392s
+sig_K8_sel ep=220 lr=1.0e-04 train=2.0290e-04 val=3.1426e-04 best=3.1426e-04 t=4601s
+sig_K8_sel ep=225 lr=1.0e-04 train=1.9686e-04 val=3.0750e-04 best=3.0524e-04 t=4705s
+sig_K8_sel ep=230 lr=1.0e-04 train=1.9179e-04 val=2.9671e-04 best=2.9671e-04 t=4810s
+TRAINED sig_K8_sel {'stop_reason': 'wall_budget', 'epochs': 231, 'best_val': 0.00029671151423826814, 'seconds': 4809.706083063036}
+NM-LSPG sig_K8_sel worst_evolved 1.7570985871817209 autoencode 2.752322926132651 tune 0.746403627513487
+NM-LSPG-HR (tune) sig_K8_sel_hr_gappy32x48 1.0068036848549664
+NM-LSPG-HR (tune) sig_K8_sel_hr_gappy64x96 0.9042196525779784
+NM-LSPG-HR (tune) sig_K8_sel_hr_gappy128x192 0.6892107067518765
+NM-LSPG-HR (tune) sig_K8_sel_hr_colloc0x64 0.6604360680176861
+NM-LSPG-HR (tune) sig_K8_sel_hr_colloc0x256 0.650687239355265
+NM-LSPG-HR (tune) sig_K8_sel_hr_colloc0x1024 0.8698433843158979
+NM-LSPG-HR (validation) sig_K8_sel 2.73271088066708
+ARM sig_K16_sel: n=261121 K=16 M1=4096 M2=2611300 nnz=83446300 micro=12 weights+adam~18.4GB
+sig_K16_sel ep=0 lr=1.0e-03 train=1.5887e-02 val=1.0378e-02 best=1.0378e-02 t=0s
+sig_K16_sel ep=10 lr=1.0e-03 train=2.7153e-03 val=2.7916e-03 best=2.7916e-03 t=210s
+sig_K16_sel ep=15 lr=1.0e-03 train=2.4869e-03 val=2.3658e-03 best=2.3658e-03 t=315s
+sig_K16_sel ep=25 lr=1.0e-03 train=2.2905e-03 val=3.7935e-03 best=2.1659e-03 t=526s
+sig_K16_sel ep=35 lr=1.0e-03 train=1.7227e-03 val=1.8191e-03 best=1.8191e-03 t=736s
+sig_K16_sel ep=40 lr=1.0e-03 train=1.7562e-03 val=1.7826e-03 best=1.7826e-03 t=841s
+sig_K16_sel ep=50 lr=1.0e-04 train=1.0360e-03 val=1.2269e-03 best=1.2269e-03 t=1051s
+sig_K16_sel ep=55 lr=1.0e-04 train=8.5554e-04 val=1.0823e-03 best=1.0823e-03 t=1156s
+sig_K16_sel ep=60 lr=1.0e-04 train=7.5207e-04 val=9.5178e-04 best=9.5178e-04 t=1261s
+sig_K16_sel ep=65 lr=1.0e-04 train=6.7169e-04 val=8.8016e-04 best=8.8016e-04 t=1366s
+sig_K16_sel ep=70 lr=1.0e-04 train=6.1292e-04 val=7.7333e-04 best=7.7333e-04 t=1471s
+sig_K16_sel ep=75 lr=1.0e-04 train=5.6174e-04 val=7.4456e-04 best=7.4456e-04 t=1576s
+sig_K16_sel ep=80 lr=1.0e-04 train=5.1397e-04 val=7.0599e-04 best=7.0599e-04 t=1682s
+sig_K16_sel ep=85 lr=1.0e-04 train=4.8556e-04 val=6.7239e-04 best=6.7239e-04 t=1787s
+sig_K16_sel ep=95 lr=1.0e-04 train=4.2121e-04 val=6.1692e-04 best=6.1692e-04 t=1997s
+sig_K16_sel ep=100 lr=1.0e-04 train=3.9130e-04 val=5.9446e-04 best=5.7605e-04 t=2102s
+sig_K16_sel ep=120 lr=1.0e-04 train=3.1769e-04 val=4.8564e-04 best=4.8564e-04 t=2522s
+sig_K16_sel ep=125 lr=1.0e-04 train=3.0424e-04 val=4.5056e-04 best=4.5056e-04 t=2627s
+sig_K16_sel ep=135 lr=1.0e-04 train=2.8033e-04 val=4.1439e-04 best=4.1439e-04 t=2837s
+sig_K16_sel ep=145 lr=1.0e-04 train=2.5677e-04 val=3.8554e-04 best=3.8554e-04 t=3048s
+sig_K16_sel ep=150 lr=1.0e-04 train=2.4384e-04 val=3.7725e-04 best=3.7725e-04 t=3153s
+sig_K16_sel ep=165 lr=1.0e-04 train=2.2348e-04 val=3.4377e-04 best=3.4377e-04 t=3468s
+sig_K16_sel ep=175 lr=1.0e-04 train=2.0838e-04 val=3.3303e-04 best=3.2316e-04 t=3678s
+sig_K16_sel ep=180 lr=1.0e-04 train=2.0349e-04 val=3.1437e-04 best=3.1437e-04 t=3784s
+sig_K16_sel ep=200 lr=1.0e-04 train=1.8127e-04 val=2.8125e-04 best=2.8125e-04 t=4204s
+sig_K16_sel ep=210 lr=1.0e-04 train=1.7711e-04 val=2.6748e-04 best=2.6748e-04 t=4414s
+sig_K16_sel ep=220 lr=1.0e-04 train=1.6728e-04 val=2.5604e-04 best=2.5604e-04 t=4625s
+sig_K16_sel ep=225 lr=1.0e-04 train=1.6725e-04 val=2.5149e-04 best=2.5003e-04 t=4730s
+TRAINED sig_K16_sel {'stop_reason': 'wall_budget', 'epochs': 230, 'best_val': 0.00024839554680511355, 'seconds': 4813.850856658071}
+NM-LSPG sig_K16_sel worst_evolved 1.7499209555124984 autoencode 2.4801508811978845 tune 0.7677343237815625
+NM-LSPG-HR (tune) sig_K16_sel_hr_gappy32x48 0.809554434687177
+NM-LSPG-HR (tune) sig_K16_sel_hr_gappy64x96 1.4964911752062624
+NM-LSPG-HR (tune) sig_K16_sel_hr_gappy128x192 0.9660874556945185
+NM-LSPG-HR (tune) sig_K16_sel_hr_colloc0x64 1.0024355081538576
+NM-LSPG-HR (tune) sig_K16_sel_hr_colloc0x256 0.9358487125352252
+NM-LSPG-HR (tune) sig_K16_sel_hr_colloc0x1024 0.7761051066571669
+NM-LSPG-HR (validation) sig_K16_sel 1.8517209543085758
+ARM sig_K32_sel: n=261121 K=32 M1=4096 M2=2611300 nnz=83446300 micro=12 weights+adam~18.4GB
+sig_K32_sel ep=0 lr=1.0e-03 train=1.6483e-02 val=1.0831e-02 best=1.0831e-02 t=0s
+sig_K32_sel ep=10 lr=1.0e-03 train=2.6752e-03 val=2.5380e-03 best=2.5380e-03 t=211s
+sig_K32_sel ep=25 lr=1.0e-03 train=2.0167e-03 val=1.9455e-03 best=1.9455e-03 t=528s
+sig_K32_sel ep=35 lr=1.0e-03 train=1.8234e-03 val=1.8878e-03 best=1.8878e-03 t=739s
+sig_K32_sel ep=50 lr=1.0e-03 train=1.6898e-03 val=1.9010e-03 best=1.5217e-03 t=1056s
+sig_K32_sel ep=75 lr=1.0e-03 train=1.4802e-03 val=1.7723e-03 best=1.3387e-03 t=1583s
+sig_K32_sel ep=85 lr=1.0e-04 train=1.0050e-03 val=1.0495e-03 best=1.0495e-03 t=1794s
+sig_K32_sel ep=90 lr=1.0e-04 train=7.1887e-04 val=9.1032e-04 best=9.1032e-04 t=1900s
+sig_K32_sel ep=95 lr=1.0e-04 train=6.3530e-04 val=8.5459e-04 best=8.5459e-04 t=2005s
+sig_K32_sel ep=100 lr=1.0e-04 train=5.7297e-04 val=8.2225e-04 best=8.1089e-04 t=2111s
+sig_K32_sel ep=105 lr=1.0e-04 train=5.3871e-04 val=7.5950e-04 best=7.5950e-04 t=2216s
+sig_K32_sel ep=125 lr=1.0e-04 train=4.1821e-04 val=6.3447e-04 best=6.3447e-04 t=2639s
+sig_K32_sel ep=130 lr=1.0e-04 train=4.0034e-04 val=6.0814e-04 best=6.0814e-04 t=2744s
+sig_K32_sel ep=135 lr=1.0e-04 train=3.8016e-04 val=5.8867e-04 best=5.8867e-04 t=2850s
+sig_K32_sel ep=140 lr=1.0e-04 train=3.6216e-04 val=5.6395e-04 best=5.6395e-04 t=2956s
+sig_K32_sel ep=145 lr=1.0e-04 train=3.4033e-04 val=5.4172e-04 best=5.4172e-04 t=3061s
+sig_K32_sel ep=150 lr=1.0e-04 train=3.1728e-04 val=5.3308e-04 best=5.3308e-04 t=3167s
+sig_K32_sel ep=155 lr=1.0e-04 train=3.0763e-04 val=5.1274e-04 best=5.1274e-04 t=3272s
+sig_K32_sel ep=175 lr=1.0e-04 train=2.5356e-04 val=4.3175e-04 best=4.3175e-04 t=3695s
+sig_K32_sel ep=200 lr=1.0e-04 train=2.1670e-04 val=3.6832e-04 best=3.6597e-04 t=4223s
+sig_K32_sel ep=220 lr=1.0e-04 train=1.8622e-04 val=3.2972e-04 best=3.2972e-04 t=4645s
+sig_K32_sel ep=225 lr=1.0e-04 train=1.8388e-04 val=3.3528e-04 best=3.2972e-04 t=4750s
+TRAINED sig_K32_sel {'stop_reason': 'wall_budget', 'epochs': 229, 'best_val': 0.00030869554029777646, 'seconds': 4813.735673020128}
+NM-LSPG sig_K32_sel worst_evolved 2.5233104721856883 autoencode 2.2792078418056474 tune 0.6749066690571147
+NM-LSPG-HR (tune) sig_K32_sel_hr_gappy32x48 nan
+NM-LSPG-HR (tune) sig_K32_sel_hr_gappy64x96 0.8035894119497384
+NM-LSPG-HR (tune) sig_K32_sel_hr_gappy128x192 0.7132128852072493
+NM-LSPG-HR (tune) sig_K32_sel_hr_colloc0x64 0.9085396414603785
+NM-LSPG-HR (tune) sig_K32_sel_hr_colloc0x256 0.6933291773344626
+NM-LSPG-HR (tune) sig_K32_sel_hr_colloc0x1024 0.6786791024642141
+NM-LSPG-HR (validation) sig_K32_sel 1.9447364623767762
+DROPPED (precheck) sig_K16_published_M1: needs 2183 GB > device 135 GB
+OURS ours_q0 0.07721891437580587
+OURS ours_q256 0.010505661505527014
+DONE
+ALL-DONE

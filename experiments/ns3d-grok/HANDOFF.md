@@ -26,16 +26,19 @@ still drifts from 2% to 10%. Capacity05 POD-3072 development snapshot floor was
 
 ## What is running
 
-Nothing on the cluster yet. Local smoke `experiments/ns3d-grok/runs/smoke01`
-finished in 5.6 s on the GB10 (`jax` GPU, float64). `verify_diag.py` passed
-with zero failures, including the saved oracle-shift and affine-PCA fields.
-The smoke cohort is four trajectories at $N=8$ and is not a result.
+Job **4139559** `ns3dgrok_diag01`, partition `gpu`, pending (Priority) at
+submit. Directory `/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag01/`.
+Source commit `010cf066`. One job for this lane. Do not submit another until
+this one finishes and its remote directory is deleted.
+
+Local smoke `experiments/ns3d-grok/runs/smoke01` finished in 5.6 s on the GB10.
+`verify_diag.py` passed. That smoke is four trajectories at $N=8$ and is not
+a result.
 
 ## Next step
 
-Commit, then submit one GPU job `ns3dgrok_diag01` into
-`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag01/`. Development POD
-floor, Galerkin rollout, one-interval error, affine-$K$ proxy, oracle-shift
-floor, and same-job timings. Do not open the final cohort. After the job:
-NumPy recompute, checksum pull, delete the remote directory, then choose a
-fix from the measured gap.
+When 4139559 exits 0, confirm `jax_backend=gpu` in the log, pull
+`summary.json`, `verify.json`, and `OUTPUTS.sha256` with checksums, recompute
+is already inside the job, delete the remote directory, then read the
+development floor against the Galerkin rollout before choosing a fix. Do not
+open seed 202609203.

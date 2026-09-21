@@ -1,0 +1,320 @@
+{
+ "attempt": "bh2",
+ "intervals": 1024,
+ "dt": 0.005,
+ "eval_draws": [
+  [
+   7090702,
+   4,
+   "dev6"
+  ],
+  [
+   911702,
+   2,
+   "dev6"
+  ],
+  [
+   20260927,
+   32,
+   "sel32"
+  ]
+ ],
+ "cohort_name": "dev6 (opened development) + sel32 = params_draw(20260927,32) (this lane's selection cohort); hold64 not opened",
+ "expected_physical_sha256": null,
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "model_key": "bh_model",
+ "directions_key": "directions_bh",
+ "directions_file": "directions_bh.npz",
+ "directions_sha256": "FILL",
+ "population": {
+  "mesh": 512,
+  "fit_trajectories": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "cert_trajectories": [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "fit_states": 128,
+  "seed": 20260920
+ },
+ "target_chunk": 8,
+ "restrict_to": 256,
+ "fast_arm_q0": "C1",
+ "q0_through_hfast": true,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 128,
+   "M": 576,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 544,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    },
+    {
+     "name": "lat16",
+     "parts": [
+      {
+       "lattice": 16
+      }
+     ],
+     "control": true
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 384,
+   "M": 1600,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 2176,
+   "gtols": [
+    0.001,
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [],
+ "same_grid_reference": "fft_tight",
+ "untimed": [
+  "fft_tight"
+ ],
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2"
+ ],
+ "reps": 3,
+ "required_reps": 3,
+ "order_seed": 20260921,
+ "burn_seconds": 0.1,
+ "profile_arms": [],
+ "reference": null,
+ "parity_bar": 1e-09,
+ "keep_for_reference": [],
+ "prune_each_arm": true,
+ "selection": {
+  "cohorts": [
+   "dev6",
+   "sel32"
+  ],
+  "limit_percent": 0.8
+ },
+ "purpose": "bh2 (DESIGN section 5): select the accurate setting of the new frozen model on dev6+sel32 at 1024^2 by the pre-registered rule; certificates at this mesh; bank floor at this mesh. hold64 and fresh64 are not opened."
+}

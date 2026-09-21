@@ -1,0 +1,29 @@
+{
+ "attempt": "smoke64",
+ "intervals": 64, "dt": 0.005,
+ "eval_draws": [[7090702, 1, "dev6"], [20260927, 2, "sel32"]],
+ "expected_physical_sha256": null, "local_smoke_waives_cohort_hash": true,
+ "train_seed": 0, "train_trajectories": 128, "decoder_code_subsample": 8192, "gauss_jordan_max": 64,
+ "cold_axis_points": 48, "strict": {"ic_budget": 400, "step_budget": 600, "gtol": 1e-06},
+ "ic_gtol": 1e-06, "inner_damping": 1e-10, "tau_y": 0.1, "rho_bar": 0.116, "rho_tight": 0.06,
+ "directions_file": "directions_bh.npz", "directions_sha256": null,
+ "population": {"mesh": 64, "fit_trajectories": [0, 1], "cert_trajectories": [8], "fit_states": 24, "seed": 20260920},
+ "target_chunk": 8, "restrict_to": 64, "fast_arm_q0": "C1", "q0_through_hfast": true,
+ "rungs": [
+  {"q": 0, "M": 64, "gtols": [0.001], "dense": false, "rules": [{"name": "lat32", "parts": [{"lattice": 32}]}],
+   "variants": [{"solver": "lu", "clip": true, "lamcarry": true, "pred2": true}]},
+  {"q": 16, "M": 128, "gtols": [0.001, 0.01], "dense": false,
+   "rules": [{"name": "lat32", "parts": [{"lattice": 32}]}, {"name": "lat8", "parts": [{"lattice": 8}], "control": true}],
+   "variants": [{"solver": "chol", "clip": true, "lamcarry": true, "pred2": true}]}
+ ],
+ "dense_tangent_group": 34, "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {"name": "fft_tight", "dt": 0.005, "ntol": 1e-06, "ltol": 1e-08},
+  {"name": "lean_tight", "dt": 0.005, "ntol": 1e-06, "ltol": 1e-08, "impl": "lean"},
+  {"name": "lean_nt3e-3_l3e-3_dt005", "dt": 0.005, "ntol": 0.003, "ltol": 0.003, "impl": "lean"}],
+ "coarse_fom": [],
+ "same_grid_reference": "fft_tight", "untimed": ["fft_tight"],
+ "audit_cases": [0], "audit_arms": ["fft_tight", "q16_M128_lat32_g0p001_fast_chol_clip_lamcarry_pred2"],
+ "reps": 2, "required_reps": 2, "order_seed": 1, "burn_seconds": 0.02, "profile_arms": [],
+ "reference": null, "parity_bar": 1e-09, "keep_for_reference": [], "prune_each_arm": true
+}

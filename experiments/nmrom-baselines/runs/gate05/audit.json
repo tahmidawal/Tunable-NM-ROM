@@ -1,0 +1,59 @@
+{
+ "run": "runs/gate05",
+ "rows": [
+  {
+   "arm": "ls_lspg",
+   "reported": 0.3159547805361059,
+   "recomputed": 0.3159547805361059,
+   "diverged_both": false,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_seed0",
+   "reported": 0.014524554733394245,
+   "recomputed": 0.014524554733394245,
+   "diverged_both": false,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_hr_seed0_55x58",
+   "reported": Infinity,
+   "recomputed": NaN,
+   "diverged_both": true,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_seed1",
+   "reported": 0.01834222433925664,
+   "recomputed": 0.01834222433925664,
+   "diverged_both": false,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_hr_seed1_55x58",
+   "reported": Infinity,
+   "recomputed": NaN,
+   "diverged_both": true,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_seed2",
+   "reported": 0.01437620290663365,
+   "recomputed": 0.01437620290663365,
+   "diverged_both": false,
+   "agree": true
+  },
+  {
+   "arm": "nm_lspg_hr_seed2_55x58",
+   "reported": Infinity,
+   "recomputed": NaN,
+   "diverged_both": true,
+   "agree": true
+  }
+ ],
+ "all_agree": true,
+ "recomputed_nm_median": 0.014524554733394245,
+ "gate_passed_reported": true,
+ "hr_passed_reported": false,
+ "log_has_gpu": true
+}

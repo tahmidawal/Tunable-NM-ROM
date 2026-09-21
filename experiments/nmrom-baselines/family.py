@@ -62,7 +62,7 @@ def main():
     import engines as e, iterative_paths as ip, kimae, lspg
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     L = int(cfg['intervals']); m = L - 1; n = m * m
-    act = kimae.ACT['swish']
+    ACT_DEFAULT = 'swish'   # fam128a (job 4073272) ran swish throughout; the passed gate (gate05) is sigmoid: set per variant
     host = lambda t: jax.tree_util.tree_map(np.asarray, t)
     gpu_uuid = os.popen('nvidia-smi --query-gpu=name,uuid --format=csv,noheader').read().strip()
     report = dict(config=cfg, intervals=L, n=n, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
@@ -236,7 +236,7 @@ def main():
     nbr = np.stack((np.where(np.arange(n) // m > 0, np.arange(n) - m, -1), np.where(np.arange(n) // m < m - 1, np.arange(n) + m, -1),
                     np.where(np.arange(n) % m > 0, np.arange(n) - 1, -1), np.where(np.arange(n) % m < m - 1, np.arange(n) + 1, -1)), 1)
 
-    def make_nm_query(K, ref_mode, jac_batch):
+    def make_nm_query(K, ref_mode, jac_batch, act):
         def dec(z, A):   # interior state
             return A['ref'] + kimae.decode(A['p'], z, A['idx'], act) * A['scale']
         res = lambda z, zp, A: fom_res(dec(z, A), dec(zp, A), A['nu'])
@@ -263,7 +263,7 @@ def main():
             return pad(jax.lax.map(lambda x: dec(kimae.encode(A['p'], (x - ref) / A['scale'], act), B), U))
         return jax.jit(query), jax.jit(rollout_residuals), jax.jit(project)
 
-    def make_hr_query(K, ref_mode):
+    def make_hr_query(K, ref_mode, act):
         def nodes(z, H):
             return jnp.concatenate((H['refn'] + kimae.decode(H['sub'], z, H['remap'], act) * H['scalen'], jnp.zeros(1)))
         def raw(z, zp, H):
@@ -285,6 +285,7 @@ def main():
 
     def run_variant(v, register, reuse=None):
         name, K = v['name'], int(v['K'])
+        act_name = v.get('act', ACT_DEFAULT); act = kimae.ACT[act_name]
         t_arm = time.monotonic()
         try:
             idx, valid, M2 = kimae.mask_tables(m, m, v['b'], v['db'])
@@ -341,11 +342,11 @@ def main():
                 del D
             A = dict(p=jax.tree_util.tree_map(lambda w_: jnp.asarray(w_, jnp.float64), p), scale=jnp.asarray(sc), idx=jnp.asarray(idx))
             jac_batch = None if n * idx.shape[1] * K * 8 < 6e9 else max(1, int(6e9 // (n * idx.shape[1] * 8)))
-            nmq, nmres, nmproj = make_nm_query(K, v['ref'], jac_batch)
+            nmq, nmres, nmproj = make_nm_query(K, v['ref'], jac_batch, act)
             # manifold floor (autoencode the truth) on the evaluation cohort
             PF = np.stack([np.asarray(nmproj(jnp.asarray(REF[c][:, 1:-1, 1:-1].reshape(6, n)), jnp.asarray(REF[c][0]), A)) for c in range(len(REF))])
             F, its = run_cases(nmq, A, eval_phys)
-            arm = dict(family='kim_nm_lspg', K=K, cohort=cohort_name, variant=v, **errors(F, REF), gn_mean=float(its.mean()), gn_max=int(its.max()),
+            arm = dict(family='kim_nm_lspg', K=K, cohort=cohort_name, variant=v, activation=act_name, **errors(F, REF), gn_mean=float(its.mean()), gn_max=int(its.max()),
                        autoencode=errors(PF, REF), jac_batch=jac_batch, solved_dimension=K,
                        gn_cap_hits=int((its >= cfg.get('gn_cap', 20)).sum()), training_dtype=v.get('dtype', 'float32'), online_dtype='float64')
             Ft, _ = run_cases(nmq, A, tune_phys)
@@ -359,7 +360,7 @@ def main():
             if v.get('hr') and hr_allowed:
                 # residual basis = SVD of the FOM solution snapshots (their Section 4.1, GNAT-SNS), reference-subtracted
                 Rs = (U_fit - (U_fit[:, :1] if v['ref'] == 'ic' else 0.)).reshape(-1, n)[::int(cfg.get('hr_snapshot_stride', 2))].T
-                hrq, hraw = make_hr_query(K, v['ref'])
+                hrq, hraw = make_hr_query(K, v['ref'], act)
                 best = None
                 active = np.where(np.abs(Rs).max(1) > 1e-3 * np.abs(Rs).max())[0]
                 for nr, nz, mode in v['hr']:
@@ -388,7 +389,7 @@ def main():
                     Ft, itst = run_cases(hrq, H, tune_phys)
                     et = errors(Ft, REF_tune)
                     hname = f'{name}_hr_{mode}{nr}x{nz}'
-                    report['arms'][hname] = dict(family='kim_nm_lspg_hr', K=K, cohort='tune', residual_basis=nr, samples=int(rows.size), mode=mode, exploratory_hr_gate_failed=True,
+                    report['arms'][hname] = dict(family='kim_nm_lspg_hr', K=K, cohort='tune', activation=act_name, residual_basis=nr, samples=int(rows.size), mode=mode, exploratory_hr_gate_failed=True,
                                                  nodes_evaluated=int(need.size), active_hidden=nact, subnet_parity=parity, **et, gn_mean=float(itst.mean()))
                     print('NM-LSPG-HR (tune)', hname, et['worst_evolved'], flush=True); save()
                     if et['finite'] and (best is None or et['worst_evolved'] < best[0]):
@@ -399,7 +400,7 @@ def main():
                     if register: subjects[name + '_hr'] = (hrq, host(H))
                     if cohort_name == 'validation':
                         Fh, ith = run_cases(hrq, H, eval_phys)
-                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, cohort='validation', residual_basis=nr, samples=nz, mode=mode, exploratory_hr_gate_failed=True,
+                        report['arms'][name + '_hr'] = dict(family='kim_nm_lspg_hr', K=K, solved_dimension=K, activation=act_name, cohort='validation', residual_basis=nr, samples=nz, mode=mode, exploratory_hr_gate_failed=True,
                                                             selected_on='tune', **errors(Fh, REF), gn_mean=float(ith.mean()))
                         np.savez(out / f'fields_{name}_hr.npz', fields=Fh.astype(fdt))
                         print('NM-LSPG-HR (validation)', name, report['arms'][name + '_hr']['worst_evolved'], flush=True)
@@ -420,7 +421,7 @@ def main():
     fin = cfg.get('finals')
     if fin:
         cands = {k: a_['tune']['worst_evolved'] for k, a_ in report['arms'].items()
-                 if a_['family'] == 'kim_nm_lspg' and a_['tune']['finite'] and a_['finite']}
+                 if a_['family'] == 'kim_nm_lspg' and a_['tune']['finite'] and a_['finite'] and a_['variant'].get('select', True)}
         report['selection'] = dict(rule='smallest worst evolved NM-LSPG error on the 16-case tuning subset (train cases 112-127)', candidates=cands)
         if cands:
             best = min(cands, key=cands.get)

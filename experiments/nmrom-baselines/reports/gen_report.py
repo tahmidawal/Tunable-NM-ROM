@@ -15,6 +15,7 @@ for p in sorted(LANE.glob('runs/gate*/output/**/summary.json')):
                       kimae=s['source_sha256']['kimae.py'], lspg=s['source_sha256']['lspg.py'],
                       autoencode=[r['nm_projection']['max'] for r in s['seeds']]))
 passed = [g for g in gates if g['passed'] and g['trained']]
+passed_acts = {g['recipe']['act'] for g in passed}
 
 fams = []
 for p in sorted(LANE.glob('runs/fam*/output/summary.json')):
@@ -22,12 +23,15 @@ for p in sorted(LANE.glob('runs/fam*/output/summary.json')):
     a = json.loads((p.parents[1] / 'audit.json').read_text()) if (p.parents[1] / 'audit.json').exists() else None
     gb = s['gate_binding']
     ksha = gb.get('kimae_sha256') or next((g['kimae'] for g in gates), None)
-    admissible = any(g['kimae'] == ksha and g['lspg'] == (gb.get('lspg_sha256') or g['lspg']) for g in passed)
+    admissible = any(g['kimae'] == ksha and g['lspg'] == (gb.get('lspg_sha256') or g['lspg']) for g in passed)   # code identity only; the activation is bound per arm below
     fams.append(dict(path=str(p.relative_to(LANE)), sha256=sha(p), s=s, audit=a, admissible=admissible))
 
 out = ['# Kim et al. masked-autoencoder NM-LSPG versus the project NM-ROM on the shared Burgers 2D family', '']
 verdict = 'PASSED' if passed else 'FAILED'
-out += [f'Reproduction gate: **{verdict}**. ' + ('Kim-baseline rows below are admissible where marked.' if passed else
+out += [f'Reproduction gate: **{verdict}**. ' + (('**Adapted** reproduction: passed on attempt ' + ', '.join(str(g['attempt']) for g in passed) + ' of the pre-registered three (activation ' + ', '.join(sorted(passed_acts))
+         + '), not on the paper-default attempt 1; median ' + ', '.join(pc(g['median']) for g in passed) + ' against the 1.5 % bar (published < 1 %), i.e. above the published figure. '
+         'Hyper-reduction was NOT reproduced (HR gate failed on every attempt), so every HR arm is exploratory. '
+         'Kim-baseline rows are admissible only where marked (same code hashes and the gate activation).') if passed else
         'No attempt reproduced the published number within the pre-registered tolerance, so **every Kim-baseline number in this report is from an '
         'unvalidated implementation and is not admissible as a statement about the published method**; it is printed so the work is not lost. '
         'POD-LSPG, project-ROM and FOM rows do not depend on the gate.'),
@@ -45,19 +49,25 @@ rows_json = []
 for f in fams:
     s = f['s']; L = s['intervals']
     out += [f"## Shared Burgers family, {L}² intervals (n = {s['n']}), job {s['job_id']}, {s['gpu_uuid']}", '',
-            f"Kim rows: **{'admissible' if f['admissible'] else 'NOT admissible (no passed gate for this code)'}**. Cohort = 32 held-out validation cases unless the column says tune "
+            f"Kim rows: **{'code matches a passed gate; a Kim row is admissible only if its activation is the gate activation (' + ', '.join(sorted(passed_acts)) + ')' if f['admissible'] else 'NOT admissible (no passed gate for this code)'}**. "
+            "Other Kim hyper-parameters are tuned on the family (DESIGN s.3) and printed in the `act` column and variant. "
+            f"Cohort = 32 held-out validation cases unless the column says tune "
             f"(16 training-side cases used for every choice). NumPy audit: {'all audited rows agree' if f['audit'] and f['audit']['all_agree'] else 'MISSING or disagreeing'}.", '',
             '| arm | family | solved unknowns | worst evolved (validation) | median evolved | worst evolved (tune) | autoencode-only worst | GN cap hits | query GPU ms (median) | compiled-query memory MB | training s (epochs, stop) |', '|---|---|---|---|---|---|---|---|---|---|---|']
     for name, a in s['arms'].items():
         if a.get('cohort') == 'tune' and a['family'] == 'kim_nm_lspg_hr':
             continue
+        kim = a['family'].startswith('kim')
+        act = a.get('activation', 'swish') if kim else None
+        adm = (not kim) or (f['admissible'] and act in passed_acts)
+        tag = '' if not kim else (f' [{act}]' + ('' if adm else ' INADMISSIBLE'))
         t = a.get('timing', {}); m = a.get('memory_analysis', {}); tr = s['training'].get(name, {})
-        out.append(f"| `{name}` | {a['family']}{' (exploratory HR)' if a.get('exploratory_hr_gate_failed') else ''} | {a.get('solved_dimension', '—')} | {pc(a['worst_evolved'])} | {pc(a['median_evolved'])} | "
+        out.append(f"| `{name}`{tag} | {a['family']}{' (exploratory HR)' if a.get('exploratory_hr_gate_failed') else ''} | {a.get('solved_dimension', '—')} | {pc(a['worst_evolved'])} | {pc(a['median_evolved'])} | "
                    f"{pc(a['tune']['worst_evolved']) if 'tune' in a else '—'} | {pc(a['autoencode']['worst_evolved']) if 'autoencode' in a else '—'} | {a.get('gn_cap_hits', '—')} | "
                    f"{t.get('gpu_ms_median', float('nan')):.1f} | {m.get('total', 0) / 1e6:.0f} | {tr.get('seconds', 0):.0f} ({tr.get('epochs', '—')}, {tr.get('stop_reason', '—')}) |" if t else
-                   f"| `{name}` | {a['family']} | {a.get('solved_dimension', '—')} | {pc(a['worst_evolved'])} | {pc(a['median_evolved'])} | {pc(a['tune']['worst_evolved']) if 'tune' in a else '—'} | "
+                   f"| `{name}`{tag} | {a['family']} | {a.get('solved_dimension', '—')} | {pc(a['worst_evolved'])} | {pc(a['median_evolved'])} | {pc(a['tune']['worst_evolved']) if 'tune' in a else '—'} | "
                    f"{pc(a['autoencode']['worst_evolved']) if 'autoencode' in a else '—'} | {a.get('gn_cap_hits', '—')} | not timed | — | {tr.get('seconds', 0):.0f} ({tr.get('epochs', '—')}, {tr.get('stop_reason', '—')}) |")
-        rows_json.append(dict(mesh=L, arm=name, family=a['family'], admissible=(f['admissible'] or not a['family'].startswith('kim')), worst_evolved=a['worst_evolved'],
+        rows_json.append(dict(mesh=L, arm=name, family=a['family'], activation=act, admissible=adm, cohort=a.get('cohort'), K=a.get('K'), worst_evolved=a['worst_evolved'], median_evolved=a['median_evolved'],
                               gpu_ms=t.get('gpu_ms_median'), memory_bytes=m.get('total')))
     if s.get('selection'):
         out += ['', f"Selection rule: {s['selection']['rule']}. Selected: `{s['selection'].get('selected')}`.", '']

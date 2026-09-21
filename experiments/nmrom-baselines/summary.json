@@ -1,5 +1,5 @@
 {
- "gate_passed": false,
+ "gate_passed": true,
  "gates": [
   {
    "path": "runs/gate03/output/summary.json",
@@ -120,9 +120,49 @@
     0.00846649756975803,
     0.01207244957547464
    ]
+  },
+  {
+   "path": "runs/gate05/output/summary.json",
+   "sha256": "42989d848c68027a2244ba4b2688c69c431aee921484d8986282f5f50c099cbe",
+   "job": "4077574",
+   "attempt": 3,
+   "recipe": {
+    "act": "sigmoid",
+    "scale": "feature",
+    "train_dtype": "float32",
+    "b": 100,
+    "db": 10,
+    "ns": 5,
+    "nx": 60,
+    "nt": 1500,
+    "online_dtype": "float64"
+   },
+   "trained": true,
+   "errors": [
+    0.014524554733394245,
+    0.01834222433925664,
+    0.01437620290663365
+   ],
+   "median": 0.014524554733394245,
+   "ls": 0.3159547805361059,
+   "hr": [
+    Infinity,
+    Infinity,
+    Infinity
+   ],
+   "hr_basis": "sns",
+   "passed": true,
+   "hr_passed": false,
+   "kimae": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f",
+   "lspg": "cb771512f73d5349f3c56228b0eccbe22547f6d087da62ef77337de7e6758298",
+   "autoencode": [
+    0.01584539675843049,
+    0.017905220223777808,
+    0.014889742360712548
+   ]
   }
  ],
  "family_runs": [],
  "rows": [],
- "generator_sha256": "28cadc03add6958a70a716e26ef2236c159ab852a834d27987b64acbd5ad7a80"
+ "generator_sha256": "dc0999d6b95c000bf8f3617790a3b3a9f13a282a32b5abf59049c5abb48a9557"
 }

@@ -26,7 +26,9 @@ for r in S['seeds']:
         rows.append(dict(arm=f"nm_lspg_hr_seed{r['seed']}_{r['hr'][0]['residual_basis']}x{r['hr'][0]['samples']}",
                          reported=r['hr'][0]['error']['max'], recomputed=maxrel(np.load(hp)['nm_lspg_hr'])))
 for w in rows:
-    w['agree'] = bool(abs(w['reported'] - w['recomputed']) <= 1e-10 * max(1., abs(w['reported'])))
+    both_nonfinite = not np.isfinite(w['reported']) and not np.isfinite(w['recomputed'])   # diverged run: reported inf, fields NaN/inf
+    w['diverged_both'] = bool(both_nonfinite)
+    w['agree'] = bool(both_nonfinite or abs(w['reported'] - w['recomputed']) <= 1e-10 * max(1., abs(w['reported'])))
     ok &= w['agree']
 nm = [w['recomputed'] for w in rows if w['arm'].startswith('nm_lspg_seed')]
 res = dict(run=str(run), rows=rows, all_agree=ok, recomputed_nm_median=float(np.median(nm)) if len(nm) == 3 else None,

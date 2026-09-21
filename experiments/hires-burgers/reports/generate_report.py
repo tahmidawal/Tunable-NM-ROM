@@ -57,6 +57,8 @@ def main():
         w('')
         w(f"## ${Lm}^2$ — attempt `{s['attempt']}`, job `{s['job_id']}`, {', '.join(s['nvidia_smi']) or s['gpu']}")
         w('')
+        w(f"**Cohort: {s.get('cohort') or 'dev6 (six opened development cases)'} — {s.get('cohort_cases', 6)} cases.** Every number in this section is on this cohort only.")
+        w('')
         w(f"Source commit `{s['commit']}`; elapsed {f(s.get('elapsed_seconds'), 0)} s; failed audit gates: "
           f"{', '.join(s['failed_gates']) or 'none'}; dropped: {', '.join(d['name'] for d in s['dropped']) or 'none'}.")
         w('')

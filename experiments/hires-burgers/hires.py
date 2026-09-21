@@ -113,8 +113,13 @@ def main():
     save()
 
     # ------------------------------------------------------------------ cohort --
-    physical = np.concatenate((e.params_draw(cfg['eval_seed'], cfg['eval_cases']),
-                               e.params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
+    if cfg.get('eval_draws'):
+        # another cohort, e.g. bank-floor's hold64 = params_draw(20260916, 64); named in the config and the report
+        physical = np.concatenate([e.params_draw(int(sd), int(n_)) for sd, n_ in cfg['eval_draws']])
+    else:
+        physical = np.concatenate((e.params_draw(cfg['eval_seed'], cfg['eval_cases']),
+                                   e.params_draw(cfg['eval_fresh_seed'], cfg['eval_fresh_cases'])))
+    rep['cohort_name'] = cfg.get('cohort_name', 'dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases')
     rep['physical_sha256'] = sha_array(physical)
     want = cfg.get('expected_physical_sha256')
     rep['gates']['evaluation_cohort_matches_b_panel'] = dict(expected=want, got=rep['physical_sha256'],
@@ -399,6 +404,8 @@ def main():
                 rep['parity'].append(dict(fast=name, base=None, covered=False, passed=None,
                                           note='no audited twin in this job; the arm stands on its directly measured error'))
                 continue
+            if kept[(name, 0)][0] is None or kept[(twin, 0)][0] is None:
+                continue
             per = []
             for c in range(ncase):
                 (fa, ia), (fb, ib) = kept[(name, c)], kept[(twin, c)]
@@ -447,6 +454,9 @@ def main():
                 jax.clear_caches()
                 continue
             subjects.append(name)
+            if cfg.get('prune_each_arm') and keep_pat is not None and not any(s_ in name for s_ in keep_pat):
+                for c in range(ncase):                   # large cohorts: never hold more than one arm's fields
+                    kept[(name, c)] = (None, kept[(name, c)][1])
             rows = [x for x in rep['quick'] if x['name'] == name]
             print('QUICK', name, 'evolved%', round(100 * max(x['same_grid_evolved'] for x in rows), 4),
                   'all%', round(100 * max(x['same_grid_all'] for x in rows), 4),

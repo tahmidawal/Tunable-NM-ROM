@@ -191,7 +191,7 @@ def main():
                                        vs_fastest_tested_fom_at_least_as_accurate=t['speedup_vs_fastest_fom_at_least_as_accurate'],
                                        certified_primary=t.get('certified_primary'))
 
-    summary = dict(verdict=verdict, attempt=cfg['attempt'], job_id=r['job_id'], commit=r['commit'], gpu=r['gpu'], nvidia_smi=r['nvidia_smi'],
+    summary = dict(cohort=r.get('cohort_name'), cohort_cases=len(r['physical_cases']), verdict=verdict, attempt=cfg['attempt'], job_id=r['job_id'], commit=r['commit'], gpu=r['gpu'], nvidia_smi=r['nvidia_smi'],
                    intervals=L, elapsed_seconds=r.get('elapsed_seconds'), gates=gates, table=table,
                    truth_vs_refined_reference_evolved_percent=truth_phys, rules=r['rules'], parity=r['parity'],
                    profile=r['profile'], dense_truth=r['dense_truth'], dropped=r['dropped'],

@@ -14,6 +14,7 @@ PY=/home/tahmid/Dev/.venv/bin/python
 "$PY" gen_headline.py
 "$PY" gen_training_appendix.py
 "$PY" figures/gen_fig_speedup_resolution.py
+"$PY" figures/gen_fig_tunability_rank.py
 if [[ "${1:-}" == "--figures" ]]; then
   "$PY" figures/gen_fig_tunability_family.py
 fi

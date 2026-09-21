@@ -1,6 +1,36 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — final review fixes — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — Figure 2 (tunability) and "results incoming" slots — CURRENT HANDOFF
+
+**Figure 2** (`figures/gen_fig_tunability_rank.py`, from `headline-provenance.json` → `tunability`; placed in §6.2):
+worst error vs speedup over ONE full-order setting per series at 4096², log–log, FOM-parity line. Series:
+Burgers development (hb4k04) and held-out 64 (hb4kh64, hollow) — q0/M64, q128/M576, q256/M544, q256/M1088,
+q256/M1088 at looser tolerance (star), q256/M2176 grey ("rule not certified": its lattice rule's
+`certified_primary` is false in both jobs; all other rungs true); heat wide bank sealed (q=0/32/96, CN);
+Poisson hp4096 (q=0/64/128/256, lean64). Denominator = the paper's rule applied to each series' most accurate
+rung: Burgers lean_nt3e-3_l3e-3_dt005 (as the coordinator said), heat the named CN-CG rtol 1e-6, Poisson
+**cg rtol 1e-1**. Every ratio reproduces from ms (asserted in the generator and in check_headline); every
+rung is faster than its FOM setting. **Flag for the user:** the rule picks CG rtol 1e-1 for Poisson (116×
+at q=256), while Table 1's Poisson rows use rtol 1e-2 (146×) — Table 1's Poisson/L-shape rows use the lanes'
+named comparator, not the stated "fastest at least as accurate" rule. The figure caption says so; Table 1 is
+unchanged (user decision: Table 1 stays as is). Table 4 (fixed-M ladder, 256²) moved to the appendix, with
+the pointer kept in the Settings paragraph and the Figure 2 caption.
+
+**Results-incoming slots (paused lanes; fill ONLY from an audited summary.json read as a committed blob):**
+| slot in Table 1 | lane | branch |
+|---|---|---|
+| Burgers, certified quadrature rule — 256², 512², 1024² | burgers-eqcert | exp/2026-09-21-burgers-eqcert |
+| Burgers (wider learned bank), held-out 64 — 2048², 4096² | burgers-heldout | exp/2026-09-21-burgers-heldout |
+| Heat 3D (wider bank) — 64³, 128³ (3D block) | heat3d-bank | exp/2026-09-21-heat3d-bank |
+Defined in `INCOMING` in `gen_headline.py`; check_headline requires exactly these three literal "results
+incoming" rows and still rejects "pending"/"reserved". One sentence each in the Burgers and failures
+paragraphs; abstract unchanged; Heat 3D stays in Table 3.
+
+**Page budget for this step:** the complete-query sentence left the Table 1 caption (numbers remain in
+Table C.3), the Figure 1 caption and the sealed-ladder paragraph were tightened (per-checkpoint values moved
+to the D.1 caption), and both figures were made slightly shorter. No caveat was removed.
+
+## 2026-09-21 (paper lane) — final review fixes
 
 Final read-only review applied (editorial only). Must-fix: abstract scope "Poisson in two and three
 dimensions, and heat and viscous Burgers in two"; 3D heat added to the abstract's failure list;

@@ -29,6 +29,7 @@
 \input{tables/campaign-numbers}
 \input{tables/headline-numbers}
 \input{tables/sealed-top}
+\input{tables/tunability-numbers}
 
 % short-hands used in prose
 \newcommand{\corr}{C_q}
@@ -479,11 +480,7 @@ tolerances (other rows' tight-Newton ratios:
 Table~\ref{tab:headline-times}). $^{h}$\,64 held-out cases never used for
 selection (not the sealed final cohort); at $2048^2$ the development-chosen
 $M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev.\ sources) rows use development sources of a
-separate run and are not the held-out cohort. At $2048^2$ and $4096^2$
-host transfer of the field dominates the NM-ROM query: the accurate
-setting's complete-query speedups are
-$\nHiresPoissonAccTotalSTwentyFortyEight\times$ and
-$\nHiresPoissonAccTotalSFortyNinetySix\times$. Dashes mark settings not
+separate run and are not the held-out cohort. Complete-query speedups: Table~\ref{tab:headline-times}. Dashes mark settings not
 measured. Times and settings: Table~\ref{tab:headline-times}.}
 \label{tab:headline}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline}}
@@ -493,10 +490,9 @@ measured. Times and settings: Table~\ref{tab:headline-times}.}
 \centering
 \includegraphics[width=\linewidth]{fig_speedup_resolution}
 \caption{Speedup over the named FOM against mesh, plotted from the rows
-of Table~\ref{tab:headline}. The accurate Burgers setting at $1024^2$
-evaluates the residual densely because no quadrature rule is validated
-there at $q=256$; with the validated $q=128$ rule the error is
-$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$. Burgers points at
+of Table~\ref{tab:headline}. The grey accurate Burgers point at $1024^2$ is dense (no validated
+$q=256$ rule there; the validated $q=128$ rule gives
+$\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$). Burgers points at
 $2048^2$ and $4096^2$ are development cases; the held-out rows of
 Table~\ref{tab:headline} are not plotted. The legend applies to both panels.}
 \label{fig:speedup}
@@ -529,7 +525,9 @@ $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
 $\nBurgHoldAccErrFortyNinetySix\,\%$ at
 $\nBurgHoldAccSFortyNinetySix\times$ (audit note in
-Appendix~\ref{app:cg-current}).
+Appendix~\ref{app:cg-current}). A certified quadrature rule at
+$256^2$--$1024^2$ and a wider, held-out-tested bank are in progress
+(results incoming).
 
 \paragraph{Resolution.}
 Figure~\ref{fig:speedup} shows that the NM-ROM query time grows more
@@ -595,7 +593,8 @@ records hold no other convention) but $\nFailHeatThreeAll\,\%$ with $t=0$
 at $128^3$; it is slower than CN--CG with Crank--Nicolson stepping up to
 $128^3$ and faster at $256^3$ (16 cases) and with the batched fit
 (Table~\ref{tab:heat-hires-times}), but misses the all-times target. The
-three-dimensional solves evaluate the residual densely.
+three-dimensional solves evaluate the residual densely. A wider
+three-dimensional heat bank is in progress (results incoming).
 
 \begin{table}[t]
 \centering
@@ -614,20 +613,9 @@ Speedup is against the named FOM in the same allocation.}
 \paragraph{Settings.}\label{sec:results:best}
 Table~\ref{tab:headline-times} lists both settings of every row of
 Table~\ref{tab:headline} with their times; moving between them changes
-only deployment arguments. Table~\ref{tab:ladder-main} shows the
-intermediate settings on Burgers with the residual test space held
-fixed: each added block of correction directions lowers the error and
-raises the cost.
-
-\begin{table}[t]
-\centering
-\caption{Burgers 2D correction settings from one frozen model at $256^2$,
-test count fixed at $M=\nQxmFixedM$, dense residual, one allocation. Errors are worst
-evolved same-grid percentages on development cases; times are paired
-median GPU query times. All rows meet the stopping rule.}
-\label{tab:ladder-main}
-\input{tables/TR_correction_main}
-\end{table}
+only deployment arguments. Appendix Table~\ref{tab:ladder-main} is the
+fixed-test-count evidence at $256^2$: with $M$ held fixed, each added
+block of correction directions lowers the error and raises the cost.
 
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
@@ -639,19 +627,35 @@ are cost controls: they lower the runtime at little or no change in
 error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
 
-A separate ladder, in which the test count follows a fixed schedule
-$M=4(k+q)$, was evaluated once on a sealed held-out cohort after every
-choice was frozen. All \nSealedCheckpoints{} checkpoints (the original
-model and three retrained seeds) give monotone error reduction with
-top-rank errors of $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$ (\nSealedTopPerCheckpoint), and
-\nSealedKnobBarCount{} of \nSealedCheckpoints{} meet the pre-registered
-secondary criterion: converged settings spanning at
-least $2\times$ in error and $2\times$ in cost. Two stricter
-pre-registered checks fail: the sealed-to-development error ratio at
-$q=0$ for the original model, whose uncorrected solve converges to a
-wrong branch on one sealed case ($\nSealedIncQzero\,\%$, kept in the
-reported maximum), and universal convergence, which fails on
-\nSealedUnconvergedPlain{} (Table~\ref{tab:sealed}).
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_tunability_rank}
+\caption{Worst error (evolved times for Burgers and heat) against speed at
+$4096^2$; one frozen model and allocation per series, each divided by one
+full-order setting, the fastest at least as accurate as its best point
+(Newton--BiCGStab \nTuneBurgFomLabel; CN--CG \nTuneHeatFomLabel; CG
+\nTunePoissonFomLabel, looser than in Table~\ref{tab:headline}). On
+Burgers $q$ and $M$ change together ($M\approx4(k+q)$, $M=544$ an
+alternative at $q=256$; fixed-$M$ ladder: Table~\ref{tab:ladder-main}).
+Star: looser stopping tolerance; grey: rule failed its held-out check.}
+\label{fig:tunability}
+\end{figure}
+
+On Burgers at $4096^2$ the correction rank is a genuine accuracy--cost
+tradeoff, and every tested setting is faster than the named solver
+($\nTuneBurgDevSpeedMin$--$\nTuneBurgDevSpeedMax\times$ on development
+cases, Figure~\ref{fig:tunability}); on the linear problems the
+corrections are eliminated analytically, so accuracy improves at nearly
+constant cost.
+
+A separate ladder with $M=4(k+q)$, evaluated once on a sealed cohort,
+gives monotone error reduction for all \nSealedCheckpoints{} checkpoints
+(top-rank errors $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, Table~\ref{tab:sealed}); \nSealedKnobBarCount{} of \nSealedCheckpoints{}
+meet the pre-registered secondary criterion (settings spanning at least
+$2\times$ in error and in cost). Two stricter pre-registered checks fail:
+the original model's sealed-to-development ratio at $q=0$ (one sealed case
+converges to a wrong branch, $\nSealedIncQzero\,\%$) and universal
+convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}

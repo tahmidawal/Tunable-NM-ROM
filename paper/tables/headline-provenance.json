@@ -2075,6 +2075,280 @@
       1.896485541942913
     ]
   },
+  "tunability": [
+    {
+      "series": "Burgers 2D, development (6)",
+      "source": "intake_09_hires-burgers",
+      "cohort": "development (6)",
+      "fom": {
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "err": 0.04994838819809611,
+        "ms": 523.8527278415859,
+        "name": "Newton--BiCGStab"
+      },
+      "rungs": [
+        {
+          "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+          "q": 0,
+          "M": 64,
+          "kind": "rank",
+          "err": 2.414951606064111,
+          "ms": 40.726391365751624,
+          "certified": true,
+          "speedup": 12.862733728039396
+        },
+        {
+          "arm": "q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 128,
+          "M": 576,
+          "kind": "rank",
+          "err": 1.090646452758366,
+          "ms": 77.35267514362931,
+          "certified": true,
+          "speedup": 6.772263879289117
+        },
+        {
+          "arm": "q256_M544_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 544,
+          "kind": "rank",
+          "err": 0.8754360335359037,
+          "ms": 112.11490980349481,
+          "certified": true,
+          "speedup": 4.672462643548026
+        },
+        {
+          "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 1088,
+          "kind": "rank",
+          "err": 0.6042855951639985,
+          "ms": 127.18093348667026,
+          "certified": true,
+          "speedup": 4.118956462105937
+        },
+        {
+          "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 1088,
+          "kind": "tolerance",
+          "err": 0.6042128376406513,
+          "ms": 107.51051316037774,
+          "certified": true,
+          "speedup": 4.872572108926071
+        },
+        {
+          "arm": "q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 2176,
+          "kind": "rank",
+          "err": 0.46084885485562094,
+          "ms": 132.1857264265418,
+          "certified": false,
+          "speedup": 3.9630052502885103
+        }
+      ],
+      "style": "filled"
+    },
+    {
+      "series": "Burgers 2D, held-out (64)",
+      "source": "intake_10_hires-burgers",
+      "cohort": "held-out (64)",
+      "fom": {
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "err": 0.13766972263962474,
+        "ms": 537.387813674286,
+        "name": "Newton--BiCGStab"
+      },
+      "rungs": [
+        {
+          "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+          "q": 0,
+          "M": 64,
+          "kind": "rank",
+          "err": 9.030161732936454,
+          "ms": 40.60274315997958,
+          "certified": true,
+          "speedup": 13.235258799064754
+        },
+        {
+          "arm": "q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 128,
+          "M": 576,
+          "kind": "rank",
+          "err": 2.4313959758308274,
+          "ms": 74.57621837966144,
+          "certified": true,
+          "speedup": 7.205887149419249
+        },
+        {
+          "arm": "q256_M544_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 544,
+          "kind": "rank",
+          "err": 2.928377196657574,
+          "ms": 105.23145855404437,
+          "certified": true,
+          "speedup": 5.106722087276748
+        },
+        {
+          "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 1088,
+          "kind": "rank",
+          "err": 1.3297208599317352,
+          "ms": 112.63684695586562,
+          "certified": true,
+          "speedup": 4.77097706654422
+        },
+        {
+          "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 1088,
+          "kind": "tolerance",
+          "err": 1.3311527645946648,
+          "ms": 99.96451088227332,
+          "certified": true,
+          "speedup": 5.37578595574943
+        },
+        {
+          "arm": "q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+          "q": 256,
+          "M": 2176,
+          "kind": "rank",
+          "err": 1.1283810333290185,
+          "ms": 126.37441232800484,
+          "certified": false,
+          "speedup": 4.252346687709975
+        }
+      ],
+      "style": "hollow"
+    },
+    {
+      "series": "Heat 2D (wide bank), sealed (16)",
+      "source": "intake_01_hires-heat",
+      "cohort": "sealed (16)",
+      "fom": {
+        "arm": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+        "err": 0.04491875555185377,
+        "ms": 4713.3676435332745,
+        "name": "CN--CG"
+      },
+      "rungs": [
+        {
+          "arm": "nmrom_q0_cn",
+          "q": 0,
+          "kind": "rank",
+          "err": 0.8404670019337802,
+          "ms": 32.19121345318854,
+          "certified": true,
+          "speedup": 146.4178307657556
+        },
+        {
+          "arm": "nmrom_q32_cn",
+          "q": 32,
+          "kind": "rank",
+          "err": 0.21724597924783795,
+          "ms": 31.684864312410355,
+          "certified": true,
+          "speedup": 148.75770326992182
+        },
+        {
+          "arm": "nmrom_q96_cn",
+          "q": 96,
+          "kind": "rank",
+          "err": 0.08156041563492662,
+          "ms": 24.36684095300734,
+          "certified": true,
+          "speedup": 193.43367704591816
+        }
+      ],
+      "style": "filled"
+    },
+    {
+      "series": "Poisson 2D, development (12)",
+      "source": "intake_00_hires-poisson",
+      "cohort": "development (12)",
+      "fom": {
+        "arm": "cg_0.1",
+        "err": 0.4505524242017507,
+        "ms": 1954.7959780320525,
+        "name": "CG"
+      },
+      "rungs": [
+        {
+          "arm": "rom_q0_lean64",
+          "q": 0,
+          "kind": "rank",
+          "err": 3.149052648463983,
+          "ms": 16.741542145609856,
+          "certified": true,
+          "speedup": 116.763196665527
+        },
+        {
+          "arm": "rom_q64_lean64",
+          "q": 64,
+          "kind": "rank",
+          "err": 2.0756529668495234,
+          "ms": 16.913400264456868,
+          "certified": true,
+          "speedup": 115.57675851496357
+        },
+        {
+          "arm": "rom_q128_lean64",
+          "q": 128,
+          "kind": "rank",
+          "err": 1.5456560864269675,
+          "ms": 16.866295132786036,
+          "certified": true,
+          "speedup": 115.89954774550137
+        },
+        {
+          "arm": "rom_q256_lean64",
+          "q": 256,
+          "kind": "rank",
+          "err": 0.964537840152561,
+          "ms": 16.921300441026688,
+          "certified": true,
+          "speedup": 115.52279831238826
+        }
+      ],
+      "style": "filled"
+    }
+  ],
+  "incoming": [
+    {
+      "problem": "Burgers, certified quadrature rule",
+      "dim": 2,
+      "meshes": [
+        256,
+        512,
+        1024
+      ],
+      "lane": "burgers-eqcert",
+      "branch": "exp/2026-09-21-burgers-eqcert"
+    },
+    {
+      "problem": "Burgers (wider learned bank), held-out 64",
+      "dim": 2,
+      "meshes": [
+        2048,
+        4096
+      ],
+      "lane": "burgers-heldout",
+      "branch": "exp/2026-09-21-burgers-heldout"
+    },
+    {
+      "problem": "Heat 3D (wider bank)",
+      "dim": 3,
+      "meshes": [
+        64,
+        128
+      ],
+      "lane": "heat3d-bank",
+      "branch": "exp/2026-09-21-heat3d-bank"
+    }
+  ],
   "nmrom_baselines": [
     {
       "mesh": 256,
@@ -2665,7 +2939,22 @@
     "nBaseDeviceGBFiveTwelve": "135",
     "nBaseKimEpochs": "229\\mbox{--}231",
     "nBaseKimWall": "4800",
-    "nBaseKimWidth": "4096"
+    "nBaseKimWidth": "4096",
+    "nTuneBurgDevSpeedMin": "4.12",
+    "nTuneBurgDevSpeedMax": "12.9",
+    "nTuneBurgDevFomTol": "lean_nt3e-3_l3e-3_dt005",
+    "nTuneBurgHoldSpeedMin": "4.77",
+    "nTuneBurgHoldSpeedMax": "13.2",
+    "nTuneBurgHoldFomTol": "lean_nt3e-3_l3e-3_dt005",
+    "nTuneHeatSpeedMin": "146",
+    "nTuneHeatSpeedMax": "193",
+    "nTuneHeatFomTol": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+    "nTunePoissonSpeedMin": "116",
+    "nTunePoissonSpeedMax": "117",
+    "nTunePoissonFomTol": "cg_0.1",
+    "nTuneBurgFomLabel": "tolerance $3{\\times}10^{-3}$",
+    "nTuneHeatFomLabel": "$\\Delta t=0.025$, rtol $10^{-6}$",
+    "nTunePoissonFomLabel": "rtol $10^{-1}$"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

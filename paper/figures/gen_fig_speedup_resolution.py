@@ -48,7 +48,7 @@ for r in prov['rows']:
 
 plt.rcParams.update({'font.size': 8, 'font.family': 'serif', 'axes.edgecolor': MUTED, 'axes.labelcolor': INK,
                      'xtick.color': MUTED, 'ytick.color': MUTED, 'axes.linewidth': 0.6})
-fig, axes = plt.subplots(1, 2, figsize=(6.6, 2.55), sharey=True, gridspec_kw={'width_ratios': [1.55, 1]})
+fig, axes = plt.subplots(1, 2, figsize=(6.6, 2.1), sharey=True, gridspec_kw={'width_ratios': [1.55, 1]})
 for ax, dim in zip(axes, (2, 3)):
     ax.axhline(1, color=MUTED, lw=0.8, ls=':'); ax.set_xscale('log', base=2); ax.set_yscale('log')
     for (d, p, s), pts in sorted(series.items()):

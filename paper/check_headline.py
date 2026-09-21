@@ -36,7 +36,18 @@ for r in prov['rows']:
 # hires-burgers intake: held-out rows shown beside the development rows at both fine meshes; no lane slot left pending
 hb = {(r['problem'], r['intervals']) for r in prov['rows'] if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
 assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (2048, 4096)}, hb
-assert 'pending:' not in tex
+assert 'pending:' not in tex and 'reserved' not in tex
+# 2026-09-21 user decision: exactly three "results incoming" slots (paused lanes), no number in them
+_inc = [l for l in tex.splitlines() if 'results incoming' in l]
+assert len(_inc) == 3 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
+assert {i['lane'] for i in prov['incoming']} == {'burgers-eqcert', 'burgers-heldout', 'heat3d-bank'}
+# Figure 2: every ratio reproduces from ms; uncertified rungs are marked in the figure record
+_tf = json.loads((P / 'figures/fig_tunability_rank.json').read_text())
+assert _tf['evidence_sha256'] == hashlib.sha256((P / 'tables/headline-provenance.json').read_bytes()).hexdigest()
+for s_ in prov['tunability']:
+    for r_ in s_['rungs']:
+        assert abs(s_['fom']['ms'] / r_['ms'] - r_['speedup']) < 1e-9 and s_['fom']['err'] <= min(x['err'] for x in s_['rungs'])
+    assert any(not r_['certified'] for r_ in s_['rungs']) == s_['series'].startswith('Burgers')
 # nmrom-baselines intake: Table 2 carries no speed or ratio column (our rows there are the unoptimised dense path); no reserved slot
 t2 = (P / 'tables/TH_nmrom_baselines.tex').read_text()
 assert r'\times' not in t2 and ' ms' not in t2 and 'reserved' not in t2
@@ -57,7 +68,7 @@ macros = set(re.findall(r'\\(n[A-Za-z]+)', abstract))
 defined = set(re.findall(r'\\newcommand\{\\(n\w+)\}', (P / 'tables/headline-numbers.tex').read_text() + (P / 'tables/numbers.tex').read_text()))
 assert macros and macros <= defined, macros - defined
 assert all(m.startswith(('nHead', 'nQxm', 'nHires', 'nHeat', 'nBurg', 'nBase')) for m in macros), macros   # only generated-table numbers
-assert 'full pre-registered criterion' not in main and 'pre-registered\nsecondary criterion' in main   # 2026-09-21: 'knob bar' jargon replaced
+assert 'full pre-registered criterion' not in main and re.search(r'pre-registered\s+secondary criterion', main) and 'knob bar' not in main   # 2026-09-21: 'knob bar' jargon replaced
 assert r'\label{tab:knobs-main}' in (P / 'sections/appendix.tex').read_text()   # 2026-09-21: knob table moved to the appendix for the page budget
 for label in ('tab:headline', 'fig:speedup', 'tab:failures', 'tab:nmrom-baselines'):
     assert r'\label{' + label + '}' in main.split(r'\bibliographystyle')[0], label

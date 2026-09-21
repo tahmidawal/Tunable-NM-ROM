@@ -149,6 +149,16 @@ formed.}
 
 \begin{table}[htbp]
 \centering
+\caption{Burgers 2D correction settings from one frozen model at $256^2$,
+test count fixed at $M=\nQxmFixedM$, dense residual, one allocation. Errors are worst
+evolved same-grid percentages on development cases; times are paired
+median GPU query times. All rows meet the stopping rule.}
+\label{tab:ladder-main}
+\input{tables/TR_correction_main}
+\end{table}
+
+\begin{table}[htbp]
+\centering
 \caption{Which knob to turn, measured on Burgers 2D from frozen models.
 Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
 dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
@@ -243,7 +253,7 @@ development cohort, the pre-registered sealed-over-development ratio of seed mea
 original model's $q=0$ rung is a single sealed case converged to a wrong branch
 (gradient exit, zero budget exits); the pre-registered ratio criterion fails
 at $q=0$ for the original model alone (\nSealedCtwoIncQzeroRatio) and the
-convergence criterion fails on \nSealedUnconvergedPlain.}
+convergence criterion fails on \nSealedUnconvergedPlain. Top-rank sealed errors per checkpoint: \nSealedTopPerCheckpoint.}
 \label{tab:sealed}
 \resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
 \resizebox{\linewidth}{!}{\input{tables/T13b_sealed_verdicts}}

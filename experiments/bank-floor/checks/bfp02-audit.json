@@ -1,0 +1,86 @@
+{
+  "result": "runs/bfp02/result.json",
+  "result_sha256": "db3f4dc5ada3fae419701c5ee9e59fcf609e6b3aaab4417315a4a25be26711fd",
+  "cohort": "dev12",
+  "tolerance": 1e-06,
+  "arms": {
+    "pod128": {
+      "numpy_worst": 0.02532602064552415,
+      "reported_worst": 0.02532602064552415,
+      "relative_difference": 0.0,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "pod256": {
+      "numpy_worst": 0.009406927296860431,
+      "reported_worst": 0.009406927296860441,
+      "relative_difference": 1.1102230246251565e-15,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "pod512": {
+      "numpy_worst": 0.0021969833254870835,
+      "reported_worst": 0.002196983325487094,
+      "relative_difference": 4.773959005888173e-15,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "pod1024": {
+      "numpy_worst": 0.00020738759107312945,
+      "reported_worst": 0.000207387591073144,
+      "relative_difference": 7.016609515630989e-14,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "pod2048": {
+      "numpy_worst": 3.0166249915767475e-06,
+      "reported_worst": 3.0166249915511594e-06,
+      "relative_difference": 8.482325952741121e-12,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "podraw128": {
+      "numpy_worst": 0.02620777319785285,
+      "reported_worst": 0.026207773197852852,
+      "relative_difference": 1.1102230246251565e-16,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "podraw256": {
+      "numpy_worst": 0.009870031647641513,
+      "reported_worst": 0.00987003164764153,
+      "relative_difference": 1.7763568394002505e-15,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "podraw512": {
+      "numpy_worst": 0.002240056845193115,
+      "reported_worst": 0.0022400568451931046,
+      "relative_difference": 4.6629367034256575e-15,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "podraw1024": {
+      "numpy_worst": 0.00022923123094452852,
+      "reported_worst": 0.00022923123094455253,
+      "relative_difference": 1.0480505352461478e-13,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "podraw2048": {
+      "numpy_worst": 3.1771866751503516e-06,
+      "reported_worst": 3.1771866751470605e-06,
+      "relative_difference": 1.035838081975271e-12,
+      "file_hash_ok": true,
+      "passed": true
+    },
+    "ft512": {
+      "numpy_worst": 0.003174499986474773,
+      "reported_worst": 0.00317449998647475,
+      "relative_difference": 7.327471962526033e-15,
+      "file_hash_ok": true,
+      "passed": true
+    }
+  },
+  "passed": true
+}

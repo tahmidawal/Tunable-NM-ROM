@@ -13,11 +13,13 @@ dispositions §9). Budget ≤ 2 running / ≤ 8 total GPU jobs; only scancel own
 - **bh1 = job 4139115 DONE**, collected (checksums), remote deleted. cpod512 selected (state-weighted POD); sel32 floor
   0.183 % vs incumbent 0.513 % (256²). Head oracle 4.34e-3 (incumbent 5.20e-3). Directions rank 512.
   Records `checks/bh1/`; model+directions in git-ignored `ckpt/bh1/`, hashes in `CKPT-MANIFEST.json`. Lab-log milestone 1 appended.
-- **bh2 = job 4142941** (A100-80G, staged at 925a59a4, `config-1024-select.json`): 1024², dev6+sel32, selection.
-  When done: `cluster/collect.py bh2` → `audit_bh.py runs/bh2/archive --out checks/bh2-summary.json` → delete remote →
-  `make_eval_configs.py checks/bh2-summary.json` → DESIGN amendment naming the headline arm → commit → stage bh3/bh4
-  (`--gpu h200 --mem 320G --hours 20`), submit both (≤2 running).
-- Jobs used: 2 / 8.
+- **bh2 = job 4142941 DONE** (collected, audited `checks/bh2-summary.json`, remote deleted): no certified arm ≤ 1 % on
+  dev6+sel32 (q256/M1088 1.73 %, q384/M1600 0.93 % uncertified ρ 0.128); stop rule → no H200 yet. DESIGN A2.
+- **bh2b = 4144023** (new model, lat128 ladder q256…q512, dense q384 twin) and **bh2c = 4144025** (incumbent model,
+  attribution control), both A100-80G, 1024², staged at 917349ca. When done: collect → audit → delete remote →
+  if bh2b's selected arm ≤ 1 %: make_eval_configs.py (reads group dev6+sel32) → amendment A3 naming headline → bh3/bh4.
+  Else: final report, stop.
+- Jobs used: 4 / 8.
 
 ## How to run / collect
 

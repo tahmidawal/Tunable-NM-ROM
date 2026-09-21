@@ -25,3 +25,6 @@ experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
 # byte-identical to experiments/ns2d/configs/dev8_eval_ref.npz (MANIFEST-verified in-job).
 experiments/ns2d/runs/*/archive/collection.tar.gz
 experiments/ns2d/runs/*/archive/experiments/ns2d/configs/dev8_eval_ref.npz
+
+# ns3d-grok diagnostic fields stay on disk; only summary.json is committed.
+experiments/ns3d-grok/runs/**/*.npy

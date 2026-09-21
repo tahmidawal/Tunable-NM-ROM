@@ -65,7 +65,24 @@ next to CNAB2 from the same allocation.
 
 Change. `diag04.py`. Smoke agrees with the Python tracker to $10^{-15}$.
 
-Measured effect. Pending `diag04`.
+Measured effect. `results/diag04.md`. The fused scan reproduces the diag03
+ROM errors. On this development job the fastest setting with zero cases over
+5% is rank 64 at $\Delta t=0.01$. Its median is 14.853 ms; CNAB2 at
+$\Delta t=0.01$ on the same job is 2.845 ms. Those times are separate calls
+from the accuracy loop, so the sealed job repeats accuracy and time from the
+same calls. Kept.
+
+## 2026-09-21 — one sealed evaluation of that frozen setting
+
+Hypothesis. Rank 64 and $\Delta t=0.01$ is the fastest development setting
+with no case over 5%. The sealed cohort either stays under 5% or shows the
+held-out miss. The FOM comparator is the fastest tested CNAB2 step whose
+sealed error is no worse than this tracker, chosen after the run from the
+saved table, not before.
+
+Change. `diag05.py` with `--final`. Rank and dt are constants.
+
+Measured effect. Pending `diag05`.
 
 Kept or reverted. Not applied.
 

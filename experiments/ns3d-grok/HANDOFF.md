@@ -1,17 +1,23 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21 after diag03 passed on development. diag04 is the fused timing.
+Updated 2026-09-21. diag04 selected the setting. diag05 opens the sealed cohort once.
 
 ## State
 
-diag03 (job 4141126, commit `70f1573a`, A100-40GB, `jax_backend=gpu`) is
-pulled, NumPy-verified, and deleted. Table: `results/diag03.md`. Every-step
-ROM-centroid tracking is under 5% on all 16 development cases at ranks 64 and
-128, for $\Delta t=0.004$ and $0.01$. Output-time re-centering is not. Final
-seed 202609203 is closed.
+Development diagnosis is finished. Final seed 202609203 has not been read yet.
+The frozen setting, chosen as the fastest diag04 row with zero development
+cases over 5%, is centered POD rank 64, ROM-centroid re-centering every
+startup step, $\Delta t=0.01$. Table: `results/diag04.md`. Commit of that
+table is the parent of the sealed job.
 
 ## What is running
 
-Job **4141875** `ns3dgrok_diag04` is pending (Priority) in
-`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag04/`, commit `9b8adc74`.
-One job for this lane.
+Nothing until `ns3dgrok_diag05` is submitted. That job is the only reader of
+seed 202609203. Do not submit a second sealed job and do not change the rank
+or the time step after seeing its errors.
+
+## Next step
+
+Submit diag05. On exit: confirm `jax_backend=gpu`, NumPy-verify, checksum
+pull, delete the remote directory, then pick the FOM comparator from the saved
+FOM table by the pre-registered rule.

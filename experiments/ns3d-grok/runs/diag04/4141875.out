@@ -1,0 +1,40 @@
+host=pax105 source_commit=9b8adc7464027de71f93094d9510b4af269bd6a7 job=4141875
+NVIDIA A100 80GB PCIe, GPU-a9dcc2dc-2ba8-5c5c-ed4c-ff7b876e8fee, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.20:/projects/paralab  4.6T  4.2T  431G  91% /cluster/tufts/paralab
+jax_backend=gpu
+generating trajectories
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=128 orth=5.274e-07 energy_tail=1.844e-10
+rank 64 dt=0.004 worst=0.019752
+rank 64 dt=0.01 worst=0.045635
+rank 128 dt=0.004 worst=0.008091
+rank 128 dt=0.01 worst=0.020402
+wrote output/summary.json elapsed=61.1s
+{"passed": true, "failures": 0}
+DIAG_EXIT=0

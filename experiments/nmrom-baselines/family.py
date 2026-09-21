@@ -136,6 +136,7 @@ def main():
     # 128.. (the shared protocol's "future_train_prefixes"); the tuning subset 112-127 and validation stay out
     want = [int(v.get('fit_traj', len(FIT))) for v in cfg['variants']]
     want += [int(cfg.get('finals', {}).get('overrides', {}).get('fit_traj', len(FIT)))]
+    want += [int((cfg.get('finals') or {}).get('data_matched', {}).get('fit_traj', len(FIT)))]
     nextra = max(want) - len(FIT)
     U_extra = None
     if nextra > 0:
@@ -434,6 +435,9 @@ def main():
                 fv = dict(bv, K=int(K), name=f'kim_final_K{K}', **fin.get('overrides', {}))
                 same = int(K) == int(bv['K']) and set(fin.get('overrides', {})) <= {'hr'}     # HR needs no retraining
                 run_variant(fv, register=True, reuse=best if same else None)
+            dm = fin.get('data_matched')
+            if dm:   # the selected hyper-parameters with more fit trajectories (fit_traj), trained from scratch
+                run_variant(dict(bv, **dm, hr=[], name=f"kim_final_K{dm['K']}_fit{dm['fit_traj']}"), register=True)
     del U_fit, Xfit, U_extra
 
     # ------------------------------------------------------------------ the frozen project ROM (K=16, R=512)

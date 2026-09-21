@@ -1,56 +1,49 @@
-"""Write configs/fam256.json and configs/fam512.json from the 128^2 selection (runs/fam128a/output/summary.json).
+"""Write the 256^2 and 512^2 family configs (DESIGN s.8). Rules fixed before any 256^2 number exists.
 
-Rules fixed before the 128^2 result was read (HANDOFF / DESIGN s.7 item 4):
-- every Kim hyper-parameter = the variant selected on the 128^2 tuning subset; only K changes (8/16/32);
-- encoder width capped at M1 <= 4096 above 128^2 (the published M1 = 2n does not fit; that arm is kept in the
-  config and is recorded by family.py's device-memory precheck, never attempted);
-- wall budgets are scaled so every arm gets at least the epoch count the selected 128^2 arm got
-  (epoch cost measured at 128^2 for M1 = 4096 and the selected width, scaled by n and data size);
-- 256^2 only: one data-matched arm, K = 16, 576 fit trajectories (= the frozen bank's 576 training trajectories),
-  from the protocol's future train prefixes (train indices 128..591);
-- HR (exploratory; HR gate failed) grid = the 128^2 finals' grid, selected per mesh on the tuning subset;
-- no finals block: each variant is registered for timing directly.
+fam256 (`python make_mesh_configs.py 256`):
+- the passed gate is attempt 3 (sigmoid), but the 128^2 sweep (fam128a) ran swish, so the 256^2 job runs its own
+  sigmoid mini-sweep at K = 16 on the tuning subset. Candidates = the gate recipe (ic / per-feature) and the two
+  swish-sweep variants with the best 128^2 TUNING score (zero reference with per-feature or global scaling);
+- encoder width capped at M1 = 4096 (published M1 = 2n needs 135 GB of weights+grad+Adam at 256^2: kept as an
+  arm so the precheck records it, never attempted, excluded from selection);
+- wall 2400 s per arm (~1000 epochs at the measured 128^2 M1=4096 epoch cost x4), max_epochs 10000 as in the gate;
+- finals K = 8/16/32 of the selected variant with the 128^2 HR grid (exploratory; HR gate failed), and one
+  data-matched arm: K = 16, 576 fit trajectories (= the frozen bank's training count), wall 7200 s.
+fam512 (`python make_mesh_configs.py 512`, after fam256's SELECTED line exists): the fam256-selected variant at
+  K = 8/16/32, no sweep, same HR grid, published-M1 precheck arm; wall 4800 s per arm.
 """
-import json, sys
+import json, re, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 LANE = HERE.parent
-S = json.loads((LANE / 'runs/fam128a/output/summary.json').read_text())
-sel = S['selection']['selected']
-bv = dict(S['selection']['selected_variant'])
-hr = S['config']['finals']['overrides']['hr']
-tr = S['training']
-n128 = S['n']
-ep_sel = tr[sel]['epochs']
+HR = [[32, 48, 'gappy'], [64, 96, 'gappy'], [128, 192, 'gappy'], [0, 64, 'colloc'], [0, 256, 'colloc'], [0, 1024, 'colloc']]
+BASE = dict(K=16, ref='ic', scale='feature', b=100, db=10, M1=4096, lr=0.001, patience=10, seed=0, max_epochs=10000,
+            wall=2400, dtype='float32', act='sigmoid', hr=[])
+COMMON = dict(pod_ks=[8, 16, 32, 64, 128], rom_qs=[0, 256], gn_cap=20, hr_residual_cases=16, timing=dict(reps=5, cases=6, burn=.25))
 
 
-def sec_per_epoch_at(n, M1, fit_traj=112):
-    """Scale the measured 128^2 epoch cost of the M1=4096 sweep arm (encoder-dominated) by n and data size."""
-    ref = tr.get('kim_K16_M1_4096') or tr[sel]
-    return ref['seconds_per_epoch'] * (n * M1) / (n128 * ref['M1']) * fit_traj / 112
+def fam256():
+    sweep = [dict(BASE, name='sig_K16_ic_feature'),
+             dict(BASE, ref='zero', name='sig_K16_zero_feature'),
+             dict(BASE, ref='zero', scale='global', name='sig_K16_zero_global'),
+             dict(BASE, M1='2n', select=False, name='sig_K16_published_M1')]
+    cfg = dict(intervals=256, variants=sweep, finals=dict(Ks=[8, 16, 32], overrides=dict(hr=HR),
+                                                          data_matched=dict(K=16, fit_traj=576, wall=7200)), **COMMON)
+    return cfg
 
 
-def mesh(L, gpu_note, data_matched):
-    n = (L - 1) ** 2
-    M1 = 4096 if bv['M1'] == '2n' else min(int(bv['M1']), 4096)
-    variants = []
-    for K in (8, 16, 32):
-        wall = max(1200, int(1.2 * ep_sel * sec_per_epoch_at(n, M1)))
-        variants.append(dict(bv, K=K, M1=M1, wall=wall, hr=hr, timed=True, name=f'kim_K{K}_sel'))
-    if data_matched:
-        wall = max(1200, int(1.2 * ep_sel * sec_per_epoch_at(n, M1, 576)))
-        variants.append(dict(bv, K=16, M1=M1, wall=wall, hr=[], timed=True, fit_traj=576, name='kim_K16_sel_fit576'))
-    variants.append(dict(bv, K=16, M1='2n', wall=1200, hr=[], timed=False, name='kim_K16_published_M1'))
-    for v in variants:
-        v['max_epochs'] = max(int(v['max_epochs']), 3000)
-    cfg = dict(intervals=L, pod_ks=[8, 16, 32, 64, 128], rom_qs=[0, 256], gn_cap=20, hr_residual_cases=16, variants=variants,
-               timing=dict(reps=5, cases=6, burn=.25),
-               provenance=dict(selected_at_128=sel, source=str((LANE / 'runs/fam128a/output/summary.json').relative_to(LANE)),
-                               source_job=S['job_id'], selected_epochs_128=ep_sel, gpu=gpu_note))
-    (HERE / f'fam{L}.json').write_text(json.dumps(cfg, indent=1) + '\n')
-    print(L, [(v['name'], v['M1'], v['wall']) for v in variants])
+def fam512():
+    s = json.loads((LANE / 'runs/fam256/output/summary.json').read_text()) if (LANE / 'runs/fam256/output/summary.json').exists() else None
+    if s is None:   # job still running: read the SELECTED variant from the live summary copied by the caller
+        s = json.loads(Path(sys.argv[2]).read_text())
+    bv = dict(s['selection']['selected_variant'])
+    vs = [dict(bv, K=K, wall=4800, hr=HR, timed=True, name=f'sig_K{K}_sel') for K in (8, 16, 32)]
+    vs.append(dict(bv, K=16, M1='2n', hr=[], select=False, name='sig_K16_published_M1'))
+    return dict(intervals=512, variants=vs, provenance=dict(selected_at_256=s['selection']['selected'], source_job=s['job_id']), **COMMON)
 
 
-mesh(256, 'a100-80G', True)
-mesh(512, 'h200 --mem 240G', False)
+L = int(sys.argv[1])
+cfg = fam256() if L == 256 else fam512()
+(HERE / f'fam{L}.json').write_text(json.dumps(cfg, indent=1) + '\n')
+print(L, [(v['name'], v['M1'], v['wall']) for v in cfg['variants']])

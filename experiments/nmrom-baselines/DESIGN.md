@@ -157,6 +157,27 @@ inlined into the prompt instead (`checks/codex-design-audit-02.txt`, 22 findings
    `kimae.py`/`lspg.py` hashes equal the family run's. If no attempt passes, the family tables are printed under the
    heading *unvalidated implementation — not admissible* and the final message says so.
 
+## 8. Amendments after gate05 (2026-09-21 ~03:00 EDT, session 2; written before any 256² number exists)
+
+1. **Gate verdict.** gate05 (job 4077574), attempt 3 of 3 (sigmoid / per-feature / f32): NM-LSPG 1.45 / 1.83 / 1.44 %, median
+   **1.45 % ≤ 1.5 % — PASS**, LS-LSPG control 31.6 %. It is an *adapted* reproduction (the paper-default attempt 1 failed at
+   1.67 %) and the median is above the published "< 1 %". HR at 55/58 diverges on all seeds: **HR gate FAIL** on every attempt.
+2. **Activation binding.** `family.py` hard-coded swish, so fam128a (job 4073272) trains the recipe that *failed* the gate.
+   Its Kim rows are **not admissible** as the validated method; they are kept as a swish sensitivity study. The activation is now
+   a per-variant key; `gen_report.py` admits a Kim row only if its code hashes equal a passed gate's **and** its activation is
+   the gate's activation. Other hyper-parameters (reference, scaling, mask, width, lr) remain family-tuned as in §3.
+3. **256² runs its own sigmoid mini-sweep** (the 128² selection was made on swish): K = 16 candidates = gate recipe
+   (ic / per-feature) and the two variants with the best 128² *tuning* score (zero reference, per-feature and global);
+   M1 = 4096; wall 2400 s each; selection by worst evolved error on the tuning subset; finals K = 8/16/32 with the 128² HR grid.
+   512² reuses the 256²-selected variant (no sweep), wall 4800 s per arm, H200.
+4. **Data-matched arm (256² only).** The frozen project checkpoint's bank was trained on 576 trajectories (head on 4608); the
+   Kim AE on 112. One arm trains the selected variant at K = 16 on 576 fit trajectories — train indices 0–111 plus 128–591 (the
+   shared protocol's `future_train_prefixes`; tuning cases 112–127 and validation untouched; the final cohort has no split code),
+   wall 7200 s. It never enters selection. The head's 4608-trajectory data remain unmatched: stated as a limitation.
+5. **Published encoder width.** The published M1 = 2n arm is kept in each mesh config; a device-memory precheck records it as
+   `exceeds_device_memory_precheck` (weights + gradient + two Adam moments > device) without attempting it.
+6. **Budget.** gate05 closes the gate; remaining jobs = fam256 (A100-80G) and fam512 (H200). Lee & Carlberg (B): cut.
+
 ## Glossary
 
 - **NM-ROM** nonlinear-manifold reduced-order model: the state is a decoder output $x_{ref}+g(\hat x)$.

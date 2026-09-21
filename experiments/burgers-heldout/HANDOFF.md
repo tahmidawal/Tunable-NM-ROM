@@ -18,11 +18,13 @@ dispositions §9). Budget ≤ 2 running / ≤ 8 total GPU jobs; only scancel own
 - **bh2b = 4144023 DONE** (collected, audited `checks/bh2b-summary.json`, remote deleted): lat128 arms uncertified
   (ρ outliers) but accurate (q512/M2112 0.41 %, q448 0.65 %) and slow (300–635 ms at 1024²). Pre-registered pick
   still q256/M1088 lat64 1.73 % → bar not met under the rules. DESIGN A3: labelled exploratory 4096² jobs.
-- **bh2c = 4144025** (incumbent attribution control, 1024²) RUNNING. Quick results already seen: incumbent q256/M1088
-  1.49 %, q384 1.04 %, q512 1.35 % (new model: 1.73 / 0.91 / 0.41 %).
-- **bh3 = 4146491** (H200, 4096², dev6+hold64, staged 749043d1) submitted. **bh4 (fresh64) STAGED in runs/bh4, NOT
-  submitted** — submit when bh2c finishes (≤2 running): rsync runs/bh4 → sbatch.
-- Jobs used: 6 / 8 (7 once bh4 is submitted).
+- **bh2c = 4144025 DONE** (incumbent attribution, `checks/bh2c-summary.json`): incumbent sel32 q256/M1088 1.49 %,
+  q512 1.35 %, floor 0.594 % (new: 1.73 / 0.41 / 0.259 %). Incumbent lat64 q256 uncertified at 1024² (ρ 0.119).
+- **bh3 = 4146491** (H200, dev6+hold64, new model, exploratory per A3) RUNNING; **bh4 = 4147539** (fresh64) RUNNING.
+- **bh5 STAGED (runs/bh5, commit 7912b033), NOT submitted**: coordinator task A4 (incumbent re-timed with lat64
+  j=1 at 4096², dev6+hold64, eqcert certificate). Submit as soon as bh3 or bh4 leaves the queue (≤2 running):
+  rsync runs/bh5 → sbatch. Collect with cluster/collect.py bh5; audit with eqcert/audit_eqcert.py AND audit_bh.py.
+- Jobs used: 6 submitted / 8 (bh5 = 8th). No budget left for retries after bh5.
 
 ## How to run / collect
 

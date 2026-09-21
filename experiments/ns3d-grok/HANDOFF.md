@@ -1,7 +1,6 @@
 # Handoff — ns3d-grok
 
-Updated 2026-09-21 after diag01 (job 4139559) was pulled, verified, and deleted
-from the cluster. About to submit diag02.
+Updated 2026-09-21 after diag01 was pulled and diag02 was submitted as job 4140791.
 
 ## State
 
@@ -23,11 +22,14 @@ $\Delta t=0.01$ passes at 2.47%.
 
 ## What is running
 
-Nothing yet. Next submit is one job, `ns3dgrok_diag02`.
+Nothing until the scheduler starts it. Job **4140791** `ns3dgrok_diag02` is pending
+(Priority). Directory
+`/cluster/tufts/paralab/tawal01/ns3d_grok_20260921/diag02/`. Source commit
+`e7b9dba5`. One job for this lane.
 
 ## Next step
 
-Submit diag02: centered POD, frozen centroid of $u_0$, CNAB2 Galerkin at
-$\Delta t\in\{0.001,0.004,0.01\}$, development only. Do not open the final
-cohort. After it exits: NumPy verify, checksum pull, delete the remote
-directory.
+When 4140791 exits 0, confirm `jax_backend=gpu`, pull `summary.json`,
+`verify.json`, and `OUTPUTS.sha256`, rerun `verify_diag02.py` locally, delete
+the remote directory, and compare the frozen-center rollout with the 5% bar.
+Do not open seed 202609203.

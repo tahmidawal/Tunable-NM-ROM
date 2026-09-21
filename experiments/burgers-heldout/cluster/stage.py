@@ -128,7 +128,7 @@ echo ALL-DONE
 '''
 
 HIRES = '''
-PYTHONPATH="$EXPPATH" "$PY" exp/{lane}/bh_hires.py --config exp/{lane}/{config} --checkpoint in/bh_model.pkl \\
+PYTHONPATH="$EXPPATH" "$PY" exp/{lane}/bh_hires.py --config exp/{lane}/{config} --checkpoint in/{model} \\
   --inputs in --out output
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
@@ -169,6 +169,7 @@ def main():
         proof.append(dict(dest=dest, source=str(src), bytes=len(content), sha256=sha(content), commit=commit))
 
     exp = list(EXP)
+    man = {}
     if a.kind == 'build':
         for dest, src in CODE.items():
             put(dest, src)
@@ -200,7 +201,8 @@ def main():
     script = HEAD.format(attempt=a.attempt, gres=gres, constraint=('#SBATCH ' + constraint) if constraint else '',
                          mem=a.mem, hours=a.hours, remote=remote, memfrac=a.mem_fraction,
                          exppath=':'.join('$TASK_ROOT/exp/' + x for x in PYPATH))
-    script += body.format(lane=LANE, config=a.config)
+    model = Path(man[cfg['model_key']]['staged_as']).name if a.kind == 'hires' else None
+    script += body.format(lane=LANE, config=a.config, model=model)
     (out / 'run.sbatch').write_text(script)
     manifest = [f'{sha(p_.read_bytes())}  {p_.relative_to(out)}' for p_ in sorted(out.rglob('*')) if p_.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

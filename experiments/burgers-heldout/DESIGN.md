@@ -196,3 +196,24 @@ Record: `audits/codex-design-audit-2026-09-21.md` (files inlined; Codex cannot r
   budget/margin stop, not an impossibility result.
 - **A-15 host memory.** 70 cases × six 4097² f64 fields of truth ≈ 56 GB; `prune_each_arm` keeps one
   arm's fields at a time; `--mem 320G`.
+
+## Amendment A2 (2026-09-21 ~19:10 EDT, after bh2, before bh2b/bh2c are submitted)
+
+**bh2 outcome (job 4142941, audited `checks/bh2-summary.json`).** New model at $1024^2$, worst evolved over
+dev6 ∪ sel32 (floor 0.259 %): q256/M1088 1.73 % (dev6 0.80 %), q256/M2176 1.32 % (uncertified, ρ 0.166),
+q384/M1600 0.93 % (uncertified, ρ 0.128), q128 2.26 %, q0 4.62 %. The lat16 control fails the certificate
+(ρ 1.99) and regresses (20.4 %) as required. **Pre-registered result: no certified arm ≤ 0.8 %; the rule picks
+q256/M1088 g1e-2 (1.73 %), and the §8 stop rule (no certified rung ≤ 1 %) forbids spending H200 jobs on it.**
+Error is 3–7× the bank floor and falls with the test count M (1.73 → 1.32 % from M=1088 to 2176) and with
+q, so the binding term is now the weak-residual test space / quadrature and the correction rank, not the bank.
+
+**A2 (new arms, same cohorts, same selection rule, same stop rule):**
+- **bh2b** (new model, `config-1024-bh2b.json`): lattice `lat128` (127² nodes, no fit) so larger M and q can
+  certify: q256/M1088, q256/M2176, q384/M1600, q448/M1856, q512/M2112 (q = R: every bank direction), plus
+  q256/M1088 lat64 (continuity) and q0; gtol $10^{-2}$ only (bh2: within 0.3 % relative of $10^{-3}$ on every
+  rung); a dense exact-residual twin of q384/M1600 on dev6 case 0 and the three hardest sel32 cases
+  (global indices 11, 25, 32) to separate quadrature from subspace error. 3 reps. Selection by the §5 rule on
+  bh2b's arms; bh3/bh4 are submitted only if the selected arm is ≤ 1 % on dev6 ∪ sel32 (stop rule unchanged).
+- **bh2c** (attribution control, `config-1024-bh2c.json`): the INCUMBENT model (inc512, its head, qtd02
+  directions) on the same cohorts and rungs (lat64/lat128). Not a candidate; it answers whether the new bank
+  changes the corrected error at all. 1 rep.

@@ -9,11 +9,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RUNS = HERE.parent / 'runs'
-SOURCES = dict(rep_poisson='bfp02', rep_burgers='bfb03', solve_poisson='bfsp01', solve_burgers='bfsb01')
+SOURCES = dict(rep_poisson='bfp02', rep_burgers='bfb03', solve_poisson='bfsp01:result-solve.json',
+               solve_burgers='bfsb01', rep_poisson_extra='bfsp01:result-rep.json')
 
 
 def load(att):
-    p = RUNS / att / 'result.json'
+    att, _, name = att.partition(':')
+    p = RUNS / att / (name or 'result.json')
     if not p.exists():
         return None, None
     return json.loads(p.read_text()), hashlib.sha256(p.read_bytes()).hexdigest()
@@ -67,6 +69,14 @@ def main():
             continue
         summary['sources'][key] = dict(attempt=SOURCES[key], result_sha256=h, job=res['slurm_job'],
                                        commit=res['source_commit'], gpu=res['gpu'], complete=res['complete'])
+        if key == 'rep_poisson':
+            extra, h2 = load(SOURCES['rep_poisson_extra'])
+            if extra is not None:
+                summary['sources']['rep_poisson_extra'] = dict(attempt=SOURCES['rep_poisson_extra'], result_sha256=h2,
+                                                               job=extra['slurm_job'], commit=extra['source_commit'])
+                for tg, arm in extra['arms'].items():
+                    if tg not in res['arms']:
+                        res['arms'][tg] = arm
         table, out = rep_table(res, primary, large)
         summary[key] = out
         md += [f'### Floors — {title} (job {res["slurm_job"]}, complete={res["complete"]})', '', table, '']
@@ -77,12 +87,14 @@ def main():
         summary['sources'][key] = dict(attempt=SOURCES[key], result_sha256=h, job=res['slurm_job'],
                                        commit=res['source_commit'], gpu=res['gpu'], complete=res['complete'])
         rows, out = [], {}
-        cohorts = list(next(iter(res['subjects'].values()))['results'])
+        cohorts = list(next(s for s in res['subjects'].values() if s['results'])['results'])
         if key == 'solve_poisson':
             rows = ['| subject | kind | R | M | ' + ' | '.join(f'{c} worst %' for c in cohorts)
                     + ' | median total ms | median device ms |', '|---|---|---:|---:|' + '---:|' * len(cohorts) + '---:|---:|']
             for name, s in res['subjects'].items():
                 r = s['results']
+                if not r:
+                    continue
                 rows.append(f"| `{name}` | {s['kind']} {s.get('form', '')} | {s.get('R', '-')} | {s.get('M', '-')} | "
                             + ' | '.join(pct(r[c]['worst']) for c in cohorts)
                             + f" | {r[cohorts[0]]['median_total_ms']:.3f} | {r[cohorts[0]]['median_device_ms']:.3f} |")

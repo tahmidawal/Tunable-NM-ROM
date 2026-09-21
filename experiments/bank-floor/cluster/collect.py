@@ -38,13 +38,16 @@ def main():
     assert not bad and lines, f'checksum mismatch: {bad}'
     log = ''.join(p.read_text() for p in (run / 'logs').glob('*.out'))
     assert 'jax_backend=gpu' in log and (partial or 'ALL-DONE' in log), 'log markers missing'
-    shutil.copy(run / 'output/result.json', run / 'result.json')
+    for rj in sorted((run / 'output').rglob('result.json')):
+        rel = rj.parent.relative_to(run / 'output')
+        name = 'result.json' if str(rel) == '.' else f'result-{str(rel).replace("/", "-")}.json'
+        shutil.copy(rj, run / name)
     ck = LANE / 'ckpt'
     ck.mkdir(exist_ok=True)
     man_path = LANE / 'CKPT-MANIFEST.json'
     man = json.loads(man_path.read_text()) if man_path.exists() else {}
     for p in sorted((run / 'output').rglob('*')):
-        if p.is_file() and p.parent.name in ('ckpt', 'fields'):
+        if p.is_file() and p.parent.name in ('ckpt', 'fields') and p.name != 'result.json':
             dest = ck / att / p.parent.name / p.name
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(p, dest)

@@ -36,7 +36,7 @@ else:
     rule = 'rule 5 (no gated candidate reached 0.8%: lowest validation error among gated banks)'
 R, K, qa, qt = chosen['R'], chosen['K'], chosen['accurate_q'], chosen['top_q']
 arms = [a for a in MC.rom_arms(sorted({0, qa, qt}), [qa]) if (a['q'] in (0, qa, qt) and ('_dt' not in a['name'] or any(a['name'].endswith(v) for v in chosen['ok_variants'])))]
-cfg = MC.panel(f'vp_R{R}', K, [], [], [('sealed_921099_never_opened', 921099, 64), ('paper_benchmark_920399_repeated', 920399, 64)], [32, 64, 128], 128, 128, 128, 16)
+cfg = MC.panel(f'vp_R{R}', K, [], [], [('sealed_921099_never_opened', 921099, 64), ('paper_benchmark_920399_repeated', 920399, 64)], [32, 64, 128], 128, 128, 128, 32)   # 31^3 audit sub-grid (addendum 1)
 cfg['rom_arms'] = arms
 (HERE / 'configs' / 'final01.json').write_text(json.dumps(cfg, indent=1) + '\n')
 (HERE / 'selection.json').write_text(json.dumps(dict(rule=rule, chosen=dict(R=R, K=K, accurate_q=qa, top_q=qt, fast_q=0), candidates=log, final_arms=[a['name'] for a in arms]), indent=1) + '\n')

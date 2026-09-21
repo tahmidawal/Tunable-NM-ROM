@@ -7,21 +7,25 @@
 
 ## State (update at every milestone)
 
-- Jobs used: **6 / 8**. RUNNING: `hb4k03` = 4071625 (4096², H200 pax008) and `hb2kh64` = 4077566 (2048², hold64 cohort, accuracy of the chosen rungs on 64 held-out cases; config-2048-hold64.json).
-- **hb2k02 (4071616) collected, audited (no failed gate), remote deleted**: `checks/hb2k02-summary.json`. dev6, 2048²: accurate rung q256/M1088/lat64 chol+clip+lamcarry 0.598 % at 130.7 ms GPU (192 ms host-inclusive) = 5.76× vs lean_tight (4.24× host-inclusive), 0.94× vs relaxed passing lean_nt3e-3 (122.8 ms); cheapest certified ≤1 %: q256/M544 clip 0.865 %, 124 ms, 6.07× vs tight. M=2176 gives 0.454 % at 139 ms but its lattice rule FAILS the certificate (ρ 0.151 / 0.147; lat128 is worse, 0.62) → stretch bar not met. Coarse FOM c1024: 0.417 % same-grid, 78 ms, 2.21 % vs refined reference (ROM accurate rung 2.11 %, truth 1.99 %).
-- **hb2k01 (2048², job 4054951, H200) collected, NumPy-audited (no failed gate), remote dir deleted.**
-  `checks/hb2k01-summary.json`, report `reports/2026-09-20-hires-burgers.md`, `reports/summary.json`.
-  Accuracy SURVIVES transfer: q=256/M=1088 0.598 % worst evolved (dense truth 0.5985 %), q=128 1.075 %, q=0 2.37 %,
-  zero stalled exits. Bar at 2048²: NOT met — cheapest certified ≤1 % arm `q256_M1088_lat64_g0p001_fast_chol`
-  195 ms vs lean_tight 751 ms = 3.85×; vs relaxed passing FOM (164 ms) 0.84×. Only the 63×63 lattice rule certifies
-  at q=256/M=1088 (ρ_max 0.100 / 0.098); scaled and refit b-eqtop rules FAIL the certificate (0.25–0.29, 0.21–0.22)
-  although their error is the same; control bad0 fails as required (0.484, error 1.04 %).
-- Speed loop so far (SPEED-LOG.md): hfast 1.11–1.16× at parity; Cholesky 1.56–1.80× at parity; M=544 reverted;
-  first time step costs 41–88 of 170–494 LM iterations → `clip` and `lamcarry` arms written, pending measurement.
-- hb4k01: 64 GiB staged upload OOM. hb4k02: Triton gemm cannot autotune > 2^31 elements → bank is now a tuple of
-  row blocks (`hops.build_bank/bank_apply`). Records in `artifacts/hb4k0{1,2}-failed/`.
-- Next: smoke (blocked bank + variants) → commit → submit `hb2k02` (`config-2048-speed.json`) and `hb4k03`
-  (`config-4096-speed.json`, `--mem 320G`), both H200.
+- Jobs used: **8 / 8 (budget spent)**. RUNNING/QUEUED: `hb4k04` = 4079320 (4096², dev6, `config-4096-pred.json`:
+  pred2 predictor + tolerance arms, 5 reps) and `hb4kh64` = 4079321 (4096², hold64, `config-4096-hold64.json`,
+  1 rep). Both staged at af5e61e9, H200, `--mem 320G`. When done: collect.py → audit_hires.py → delete ONLY that
+  remote dir → regenerate report + `reports/summary.json` → SPEED-LOG rows (pred2 vs chol_clip_lamcarry, same job) →
+  lab-log entry → final bar verdict. DESIGN addendum A1 fixes the selection rule (choose on dev6, report hold64).
+- **hb4k03 (4071625, 4096², dev6) collected, audited, no failed gate, remote deleted**: `checks/hb4k03-summary.json`.
+  q256/M1088/lat64 chol+clip+lamcarry 0.604 % at 144.7 ms GPU / 385 ms host-inclusive; tight FOM 3258 ms (22.5×),
+  relaxed passing lean_nt3e-3 522 ms (3.61×; host-inclusive 758.6/385 = 1.97×); cheapest certified ≤1 % is
+  q256/M544 clip 0.875 % at 137.8 ms (3.79× vs relaxed). Coarse c1024 79.7 ms at 0.627 % same-grid (beats the ROM
+  on both axes); c2048 281 ms 0.215 %. Host-inclusive adds ≈240 ms to EVERY arm at 4096² (six f64 fields, 806 MB).
+- **hb2kh64 (4077566, 2048², hold64) collected, audited, remote deleted**: `checks/hb2kh64-summary.json`. ONE FAILED
+  GATE `restricted_recomputation_tracks_full_grid` (5/384 rows, low-error q256 cases, 256² restricted sample reads
+  5–7 % low; cohort-worst per arm agrees within 1.2 %; full-grid recompute on case 0 exact). hold64 worst evolved:
+  q256/M1088 1.308 %, q256/M2176 1.109 % (uncertified), q128 2.39 %, q0 9.03 %, c1024 0.509 %, lean_nt1e-3 0.130 %.
+  → **no certified ROM arm ≤ 1 % on held-out cases at 2048²**; the dev6 0.598 % does not generalise (bank floor,
+  bank-floor lane).
+- Earlier: hb2k01/hb2k02 (2048², dev6) audited; hb4k01/hb4k02 failed before any number (records in artifacts/).
+- Next step after these two jobs: a head refit + EQ recertification on the bank-floor lane's better banks
+  (`worktrees/2026-09-20-bank-floor/experiments/bank-floor/CKPT-MANIFEST.json`) — out of this lane's budget.
 
 ## How to run a job
 
@@ -51,5 +55,7 @@ See the bottom of this file's job table.
 Next: watch `logs/4054951.out` for the `QUICK` lines (early answer), then stage `hb4k01` with `config-4096.json --mem 400G` once the early phases are seen to work and the account has < 6 running.
 | hb4k02 | 4059827 | 4096² | H200 (pax010) | **FAILED, no ROM number** (Triton gemm > 2^31 elements; `artifacts/hb4k02-failed/`), remote deleted | — |
 | hb2k02 | 4071616 | 2048² | H200 (pax008) | DONE, audited, remote deleted | `checks/hb2k02-summary.json` |
-| hb4k03 | 4071625 | 4096² | H200 (pax008) | RUNNING (config-4096-speed.json, blocked bank) | — |
-| hb2kh64 | 4077566 | 2048², hold64 | H200 | RUNNING | — |
+| hb4k03 | 4071625 | 4096² | H200 (pax008) | DONE, audited (no failed gate), remote deleted | `checks/hb4k03-summary.json` |
+| hb2kh64 | 4077566 | 2048², hold64 | H200 (pax008) | DONE, audited (1 failed gate: restricted proxy, see State), remote deleted | `checks/hb2kh64-summary.json` |
+| hb4k04 | 4079320 | 4096², dev6, pred2 | H200 | SUBMITTED | — |
+| hb4kh64 | 4079321 | 4096², hold64 | H200 | SUBMITTED | — |

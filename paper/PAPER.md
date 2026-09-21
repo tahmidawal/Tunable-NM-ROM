@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-21 09:45; this block is removed before submission).*
+*Status for the reader (generated 2026-09-21 09:51; this block is removed before submission).*
 *Populated tables (90): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -411,9 +411,7 @@ enter a speedup.
 **Baselines.**
 Linear problems are compared with conjugate gradients (CG), including the
 L-shaped domain and the CG solve inside each Crank–Nicolson (CN) heat
-step; on the square and cube a direct sine-transform solve
-(Swarztrauber, 1977) is faster still and is reported as a control
-in the Limitations, not as the comparator. Burgers is compared with Newton–BiCGStab and Navier–Stokes with
+step. Burgers is compared with Newton–BiCGStab and Navier–Stokes with
 its CNAB2 time integrator. The named FOM of a row is that solver at its
 fastest tested setting that is at least as accurate as the accurate
 NM-ROM setting.
@@ -448,8 +446,8 @@ only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
 batched). The batched fit solves each output time independently against
-exactly propagated test moments, exploiting the linear autonomous
-structure the sine-transform solve also uses. Burgers accurate
+exactly propagated test moments, exploiting the linear, autonomous
+structure of the heat equation (eigenfunction tests). Burgers accurate
 quadrature: $^{s}$ rule passed the held-out bar in its single draw
 (construction marginal, Table 14); $^{\ell}$ deterministic
 $63{\times}63$ lattice rule passing the held-out bar in the same job;
@@ -520,7 +518,7 @@ corrections cost little speed because they are eliminated analytically
 (§3.2). The error stays at $\nHeadPoissonAccErr %$ up
 to $4096^2$ while the GPU-query speedup rises to
 $\nHiresPoissonAccSFortyNinetySix\times$. On the
-L-shaped domain, where no fast transform applies, the accurate setting is
+L-shaped domain the accurate setting is
 $\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr %$. The earlier
 heat checkpoint crosses CG between $256^2$ and $1024^2$ ($\nHeadHeatFastS\times$
 at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
@@ -687,21 +685,13 @@ reported maximum), and universal convergence, which fails on
 
 **Limitations.**
 
-Speedups are against the named iterative solvers, and the named FOM is
-more accurate than the NM-ROM in every row. On the square and cube a direct
-sine-transform solve and a coarse-grid solve at the NM-ROM's own accuracy
-are each $\nHiresCtlTotalFaster\times$ faster than the accurate NM-ROM in
-complete-query time and $\nHiresCtlDeviceFaster\times$ faster in
-GPU-query time; on the L-shape the coarse-grid solve is
-$\nHiresLshapeCoarseFaster\times$ faster. On heat at $4096^2$, coarse-grid
-CN–CG interpolated to the fine mesh ($\nHeatCoarseErr %$ in
-$\nHeatCoarseMs$ ms), the exact sine-transform solve ($\nHeatDstMs$ ms)
-and the linear solve in the learned bank, a baseline ($\nHeatLinErr %$
-in $\nHeatLinMs$ ms), are $\nHeatCtlFaster\times$ faster than the
-fastest NM-ROM setting. On Burgers a $1024^2$ Newton solve interpolated
-to the fine mesh is $\nBurgCoarseFaster\times$ faster than the accurate
-setting at similar error ($\nBurgCoarseErrTwentyFortyEight %$ at
-$2048^2$, $\nBurgCoarseErrFortyNinetySix %$ at $4096^2$). The accurate
+Speedups are measured against the named iterative full-order solvers at
+the stated tolerances; comparison with other full-order solver classes
+(direct and spectral solvers, coarser discretisations) is outside the
+scope of this study. The named FOM is more accurate than the NM-ROM in
+every row. On heat at $4096^2$ the linear solve in the learned bank, a
+baseline ($\nHeatLinErr %$ in $\nHeatLinMs$ ms), is faster than every
+NM-ROM setting. The accurate
 Poisson errors are close to the frozen bank's projection floor
 ($\nHiresFloorSquare %$ square, $\nHiresFloorCube %$ cube), which no
 correction rank can pass; the L-shape accurate setting
@@ -1110,10 +1100,10 @@ recorded development and validation cohorts.
 | PDE | equation, domain, boundary | meshes | time stepping | reduced sizes | reference | cohorts |
 |---|---|---|---|---|---|---|
 | Burgers 2D | $u_t+u(u_x+u_y)=\nu\Delta u$, $(0,1)^2$, $u\|_{\partial\Omega}=0$ | $256^2$ (ladder 64–1024) | $\Delta t=0.005$, backward Euler, sign-upwind | $k=16$, $R=512$ | refined $ 4096^2$, $\Delta t=0.00015625$ | 6 development cases; 32 held-out (tuning); 64 held-out at $2048^2$, $4096^2$; sealed cohort opened once |
-| Poisson 2D | $-\Delta u=f$, $(0,1)^2$, $u\|_{\partial\Omega}=0$ | $256^2$, $1024^2$ | none (elliptic) | $K=16$, $R=128$ (incumbent); $K=32$, $R=512$ | exact discrete (DST); 2048$^2$ refinement | 12 development sources |
+| Poisson 2D | $-\Delta u=f$, $(0,1)^2$, $u\|_{\partial\Omega}=0$ | $256^2$, $1024^2$ | none (elliptic) | $K=16$, $R=128$ (incumbent); $K=32$, $R=512$ | exact discrete solution; 2048$^2$ refinement | 12 development sources |
 | Heat 2D | $u_t=\kappa\Delta u$, $(0,1)^2$ | $64^2$–$1024^2$ | Crank–Nicolson | $k=8$, $R=32$ | refined-grid reference ($1024^2$/$2048^2$ pair); error includes discretisation | 12 development cases, 3 repetitions; measured in job 3529772; checkpoint lineage: earlier cell, job 3511417 |
 | Wave 2D (reflective) | $u_{tt}=c^2\Delta u$, $(0,1)^2$, $u\|_{\partial\Omega}=0$ | $64^2$, $256^2$, $1024^2$ | RK4 on the manifold; exact modal propagation for the bank | $k=32$, $R=64$ | direct DST | 8 development cases |
-| Poisson, L-shape | $-\Delta u=f$, $(0,1)^2\setminus[\tfrac12,1)^2$ | $256^2$, $512^2$ | none | $K\in\{16,32\}$, $R\in\{256,512,514\}$ | sparse direct (SuperLU) | 3072 / 256 / 32 sources (train / selection / development) |
+| Poisson, L-shape | $-\Delta u=f$, $(0,1)^2\setminus[\tfrac12,1)^2$ | $256^2$, $512^2$ | none | $K\in\{16,32\}$, $R\in\{256,512,514\}$ | converged discrete solution | 3072 / 256 / 32 sources (train / selection / development) |
 
 **Table 7.** Sampled problem families, transcribed from the generator sources named
 in the last column (code constants, not run outputs).
@@ -1416,8 +1406,6 @@ discretisation error.
 | FOM Newton $10^{-2}$, $\Delta t{=}0.005$ | 35.357 | 17.4 | 0/96 |
 | FOM Newton $10^{-4}$, $\Delta t{=}0.005$ | 6.171 | 22.4 | 0/96 |
 | FOM Newton $10^{-6}$, $\Delta t{=}0.005$ | 6.172 | 88.3 | 0/96 |
-| FOM $128^2$, $\Delta t{=}0.005$ | 9.849 | 21.2 | 0/96 |
-| FOM $64^2$, $\Delta t{=}0.01$ | 16.095 | 14.0 | 0/96 |
 
 **Reading the validation tables.**
 Correction rank $q$ is the number of added coefficient directions;

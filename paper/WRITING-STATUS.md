@@ -1,6 +1,24 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — Table 2 at 512², train/eval separation — CURRENT HANDOFF
+## 2026-09-21 (paper lane) — named iterative FOMs only (user decision) — CURRENT HANDOFF
+
+**User decision (2026-09-21, reversible; also recorded in `paper/AGENTS.md`).** No direct/spectral,
+sparse-direct or coarse-grid solver is featured. Removed from the PDF: the Baselines clause on the
+sine-transform solve and its Swarztrauber citation (bib entry dropped, 30 entries left); the "no fast
+transform" framing of the L-shape; the Limitations ratios for DST/coarse-grid solves on square, cube and
+L-shape, the heat coarse-grid CN–CG and exact sine-transform times, and the Burgers 1024² coarse Newton
+comparison; the two coarse-grid FOM rows (128², 64²) of Table D.4; "DST"/"SuperLU" in Table C.1's reference
+column (now "exact discrete solution", "exact modal solution", "converged discrete solution"). The heat
+batched-fit caption now says it exploits the linear, autonomous structure of the heat equation
+(eigenfunction tests). Limitations now opens: "Speedups are measured against the named iterative
+full-order solvers at the stated tolerances; comparison with other full-order solver classes (direct and
+spectral solvers, coarser discretisations) is outside the scope of this study." The linear-bank baseline
+sentence for heat (not one of the excluded classes) stays. Evidence, macros (`nHiresCtl*`, `nHeatCoarse*`,
+`nBurgCoarse*`) and provenance are untouched; `check_headline.py` scans the rendered PDF for
+DST/sine-transform/SuperLU/sparse-direct/coarse-grid/Swarztrauber/FFT-based/fast transform. The six
+[USER] options below remain unapplied.
+
+## 2026-09-21 (paper lane) — Table 2 at 512², train/eval separation
 
 **State.** 20 pages, main text + references start within page 9, 0 overfull, 0 undefined;
 `check_headline.py` and `check_rewrite.py` PASS. The six [USER] options below are still unapplied.

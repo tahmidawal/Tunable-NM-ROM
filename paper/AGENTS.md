@@ -22,3 +22,12 @@ Latest presentation preference (2026-09-20): comparison tables in the PDF
 contain NM-ROM and named FOMs only. Keep the appendix compact: method,
 configuration and validation needed for main claims. Full historical and
 operator/POD comparison records remain in the repository, not as PDF dumps.
+
+User decision (2026-09-21, reversible): the paper compares against the NAMED
+iterative full-order solvers only (CG for Poisson/heat/L-shape, Newton–BiCGStab
+for Burgers, CNAB2 for Navier–Stokes). Direct/spectral transforms (DST, sine
+transform, FFT-based direct), sparse-direct (SuperLU) and coarse-grid FOM
+controls are not featured in the PDF; Limitations carries one neutral scoping
+sentence instead. Their evidence, macros and provenance stay in the repository;
+`check_headline.py` asserts none of them appears in the rendered text. The user
+may add them back later.

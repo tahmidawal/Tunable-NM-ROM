@@ -7,7 +7,7 @@ is an exact string replacement; check_rewrite.py verifies current == apply(BASE)
 from pathlib import Path
 
 WIDE = (r'Heat 2D, wide bank & $u_t=\kappa\Delta u$, $(0,1)^2$ & $1024^2$--$4096^2$ & Crank--Nicolson; '
-        r'batched exact-propagator fit & $k=8$, $R=128$ & exact same-grid propagation (DST) & 12 development cases; '
+        r'batched exact-propagator fit & $k=8$, $R=128$ & exact same-grid propagation & 12 development cases; '
         r'16 sealed held-out cases, opened once \\' + '\n')
 SUBS = {
     'T01_problems': [
@@ -20,7 +20,15 @@ SUBS = {
         ('Wave 2D (reflective) & ', WIDE + 'Wave 2D (reflective) & '),
         ('$K=32$, $R=64$', '$k=32$, $R=64$'),
         (r'$256^2$, $512^2$ & none & $K\in\{16,32\}$', r'$256^2$--$2048^2$ & none & $k\in\{16,32\}$'),
+        # 2026-09-21 user decision: direct/spectral/sparse-direct solvers are not featured; references described neutrally
+        ('exact discrete (DST); 2048$^2$ refinement', 'exact discrete solution; 2048$^2$ refinement'),
+        ('& direct DST &', '& exact modal solution &'),
+        ('sparse direct (SuperLU)', 'converged discrete solution'),
     ],
+    'T08_solver_knobs': [(r'FOM $128^2$, $\Delta t{=}0.005$ & 9.849 & 21.2 & 0/96 \\' + '\n', ''),
+                         (r'FOM $64^2$, $\Delta t{=}0.01$ & 16.095 & 14.0 & 0/96 \\' + '\n', ''),
+                         ('| FOM $128^2$, $\\Delta t{=}0.005$ | 9.849 | 21.2 | 0/96 |\n', ''),
+                         ('| FOM $64^2$, $\\Delta t{=}0.01$ | 16.095 | 14.0 | 0/96 |\n', '')],
     'T13_sealed': [('incumbent sealed', 'original model sealed'), ('for the incumbent', 'for the original model'),
                    ('b-seeds sealed cohort', 'sealed cohort'), ('4(K+q)', '4(k+q)')],
     'T13b_sealed_verdicts': [('incumbent', 'original'), ('b-seeds sealed cohort', 'sealed cohort')],

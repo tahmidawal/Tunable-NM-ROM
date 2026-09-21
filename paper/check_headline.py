@@ -43,6 +43,11 @@ t2 = (P / 'tables/TH_nmrom_baselines.tex').read_text()
 assert r'\times' not in t2 and ' ms' not in t2 and 'reserved' not in t2
 assert r'\input{tables/TH_nmrom_baselines_appx}' in (P / 'sections/appendix.tex').read_text()
 assert r'\input{tables/TH_heat_hires}' in (P / 'sections/appendix.tex').read_text()
+# 2026-09-21 user decision: no direct/spectral/sparse-direct/coarse-grid solver is featured in the rendered paper
+import subprocess
+_pdf = subprocess.check_output(['pdftotext', str(P / 'main.pdf'), '-']).decode()
+_hits = re.findall(r'(?i)\bDST\b|sine[- ]?transform|SuperLU|sparse[- ]direct|coarse[- ]grid|Swarztrauber|FFT[- ]based|fast transform\b', _pdf)
+assert not _hits, _hits
 fails = prov['failures']; assert {f['source'] for f in fails} == {'burgers3d', 'ns3d', 'wave'}
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])
 main = (P / 'main.tex').read_text()

@@ -426,9 +426,7 @@ enter a speedup.
 \paragraph{Baselines.}
 Linear problems are compared with conjugate gradients (CG), including the
 L-shaped domain and the CG solve inside each Crank--Nicolson (CN) heat
-step; on the square and cube a direct sine-transform solve
-\citep{Swarztrauber1977} is faster still and is reported as a control
-in the Limitations, not as the comparator. Burgers is compared with Newton--BiCGStab and Navier--Stokes with
+step. Burgers is compared with Newton--BiCGStab and Navier--Stokes with
 its CNAB2 time integrator. The named FOM of a row is that solver at its
 fastest tested setting that is at least as accurate as the accurate
 NM-ROM setting.
@@ -462,8 +460,8 @@ only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
 batched). The batched fit solves each output time independently against
-exactly propagated test moments, exploiting the linear autonomous
-structure the sine-transform solve also uses. Burgers accurate
+exactly propagated test moments, exploiting the linear, autonomous
+structure of the heat equation (eigenfunction tests). Burgers accurate
 quadrature: $^{s}$\,rule passed the held-out bar in its single draw
 (construction marginal, Table~\ref{tab:eqladder}); $^{\ell}$\,deterministic
 $63{\times}63$ lattice rule passing the held-out bar in the same job;
@@ -505,7 +503,7 @@ corrections cost little speed because they are eliminated analytically
 (\S\ref{sec:method:weak}). The error stays at $\nHeadPoissonAccErr\,\%$ up
 to $4096^2$ while the GPU-query speedup rises to
 $\nHiresPoissonAccSFortyNinetySix\times$. On the
-L-shaped domain, where no fast transform applies, the accurate setting is
+L-shaped domain the accurate setting is
 $\nHeadLshapeAccS\times$ faster at $\nHeadLshapeAccErr\,\%$. The earlier
 heat checkpoint crosses CG between $256^2$ and $1024^2$ ($\nHeadHeatFastS\times$
 at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
@@ -668,21 +666,13 @@ reported maximum), and universal convergence, which fails on
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-Speedups are against the named iterative solvers, and the named FOM is
-more accurate than the NM-ROM in every row. On the square and cube a direct
-sine-transform solve and a coarse-grid solve at the NM-ROM's own accuracy
-are each $\nHiresCtlTotalFaster\times$ faster than the accurate NM-ROM in
-complete-query time and $\nHiresCtlDeviceFaster\times$ faster in
-GPU-query time; on the L-shape the coarse-grid solve is
-$\nHiresLshapeCoarseFaster\times$ faster. On heat at $4096^2$, coarse-grid
-CN--CG interpolated to the fine mesh ($\nHeatCoarseErr\,\%$ in
-$\nHeatCoarseMs$\,ms), the exact sine-transform solve ($\nHeatDstMs$\,ms)
-and the linear solve in the learned bank, a baseline ($\nHeatLinErr\,\%$
-in $\nHeatLinMs$\,ms), are $\nHeatCtlFaster\times$ faster than the
-fastest NM-ROM setting. On Burgers a $1024^2$ Newton solve interpolated
-to the fine mesh is $\nBurgCoarseFaster\times$ faster than the accurate
-setting at similar error ($\nBurgCoarseErrTwentyFortyEight\,\%$ at
-$2048^2$, $\nBurgCoarseErrFortyNinetySix\,\%$ at $4096^2$). The accurate
+Speedups are measured against the named iterative full-order solvers at
+the stated tolerances; comparison with other full-order solver classes
+(direct and spectral solvers, coarser discretisations) is outside the
+scope of this study. The named FOM is more accurate than the NM-ROM in
+every row. On heat at $4096^2$ the linear solve in the learned bank, a
+baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is faster than every
+NM-ROM setting. The accurate
 Poisson errors are close to the frozen bank's projection floor
 ($\nHiresFloorSquare\,\%$ square, $\nHiresFloorCube\,\%$ cube), which no
 correction rank can pass; the L-shape accurate setting

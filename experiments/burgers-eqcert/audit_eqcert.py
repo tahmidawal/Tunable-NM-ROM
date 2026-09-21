@@ -204,7 +204,9 @@ def main():
             wa = np.load(o / f'restricted_{name}_case{c}.npz')['internal_latents'][:j + 1]
             wb = np.load(o / f'restricted_{twin}_case{c}.npz')['internal_latents'][:j + 1]
             sw.append(dict(arm=name, twin=twin, case=c, rel=float(np.linalg.norm(wa - wb) / np.linalg.norm(wb))))
-    gate('exact_phase_matches_exact_arm', bool(sw) and max(x_['rel'] for x_ in sw) <= 1e-10,
+    has_twin = any(s_.get('status') == 'exact residual' for s_ in status.values())
+    gate('exact_phase_matches_exact_arm', (not has_twin) or (bool(sw) and max(x_['rel'] for x_ in sw) <= 1e-10),
+         applicable=has_twin,
          worst=max([x_['rel'] for x_ in sw] or [None]), pairs=len(sw),
          note='internal latents w_0..w_j of every x_j arm vs the exact-residual arm at the same tolerance')
 

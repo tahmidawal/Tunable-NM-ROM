@@ -200,3 +200,27 @@ Audit: `reports/codex-design-audit-2026-09-21.md` (gpt-6-astra, read-only, files
     path is gated by item 2.
 12. **Scope.** Accepted: certification, development accuracy and speed are separate verdicts; the exact-residual
     fallback is never called a certified rule; dev6 results are development evidence.
+
+## Addendum A2 (2026-09-21 ~17:30 EDT, after bc256 and bc512 were audited, before bc256b / bc2048 were staged)
+
+**Facts that prompt it.** bc256: the pre-registered pick (`scaled`, 5/5) failed the confirmation draw → $256^2$ has
+**no certified rule**, and that verdict stands. `lat64` $j=1$ passed all six draws there but was not the pick.
+bc512: `lat64` $j=1$ ($g=10^{-2}$) certified. Exploration (§2) says the paper's $2048^2$/$4096^2$ lattice certificate is a
+single draw.
+
+**A2.1 `bc256b` — replication at $256^2$ on a fresh population.** `config-256.json` unchanged except the population
+seed: `params_draw(20260922, 56)` (never generated before, asserted disjoint from dev6, hold64 and train_physical;
+also disjoint from the bc256 population by seed). Same arms, same per-job rule. **Combined rule for the $256^2$
+row:** a rule arm is *certified at $256^2$* only if it is confirmed (5/5) **and** passes the confirmation draw in
+**both** bc256 and bc256b (12 draws, 112 trajectories). Among arms meeting that, with error ≤ 1 % and 0 stalls in
+both jobs, the pick is the cheapest by bc256b's median GPU time; its row (error, times, FOM) is bc256b's. `scaled`
+already failed in bc256 and so cannot be certified at $256^2$ whatever bc256b shows. bc256 remains reported as the
+first attempt, with its failure.
+
+**A2.2 `bc2048` — certificate only, $2048^2$.** $q=256$, $M=1088$, `lat64` $j\in\{0,1\}$ ($g=10^{-3}$), the
+`bad0` control, on the same five draws + confirmation draw as bc256/512/1024 (`params_draw(20260921,56)`). FOMs:
+`fft_tight` and `lean_nt3e-3_l3e-3_dt005` only, 1 repetition, no reference, no dense truth: timing is not its
+purpose. Its output is a status for the rule used in the paper's $2048^2$ rows (hires-burgers `lat64`, $j=0$) —
+reported, not used to change any hires-burgers number.
+
+Jobs after these: 5 of 8.

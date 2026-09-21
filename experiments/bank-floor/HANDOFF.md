@@ -1,21 +1,26 @@
 # bank-floor — HANDOFF (kept current)
 
-**State 2026-09-20 19:40.** Phase 1 (representation) running, 2/8 jobs used:
+**State 2026-09-20 ~20:40.** 5/8 GPU jobs used. Phase 1 (representation) running:
 
-| attempt | job | node | what | remote dir |
-|---|---|---|---|---|
-| bfp01 | 4052480 | pax106 | Poisson: inc512, random, POD{128..2048}(+raw,+sub), ft512, cat1024, cat2048 | `/cluster/tufts/paralab/tawal01/bankfloor_20260920/bfp01` |
-| bfb01 | 4052482 | pax106 (a100-80G) | Burgers: same arms | `.../bfb01` |
+| attempt | job | outcome |
+|---|---|---|
+| bfp01 | 4052480 | FAILED at 3 min: single-Gram POD assert (sigma_2048/sigma_1 = 1.1e-8). Logs in `runs/bfp01/`. Remote dir deleted. |
+| bfb01 | 4052482 | FAILED at 3 min: same assert (8.0e-9). Logs in `runs/bfb01/`. Remote dir deleted. |
+| bfb02 | 4053195 | FAILED at 3 min: OOM in 26k eigh (two snapshot arrays resident). Remote dir deleted. |
+| bfp02 | 4053735 | RUNNING (A100 80GB pax050): Poisson all arms; POD + ft512 done, cat1024/cat2048 training |
+| bfb03 | 4056956 | RUNNING: Burgers all arms (deflated POD, one resident snapshot array) |
 
-Source commit staged: see `runs/<attempt>/COMMIT.txt`. `result.json` is rewritten after every arm; checkpoints land in
-`output/ckpt/`. Log markers: `jax_backend=gpu`, `ARM <tag> ...`, `REP-DONE`, `ALL-DONE`.
+Remote dirs: `/cluster/tufts/paralab/tawal01/bankfloor_20260920/{bfp02,bfb03}`. Log markers: `ARM <tag>`, `REP-DONE`, `ALL-DONE`.
 
-**Protocol deviation (recorded):** the account had 5 jobs running when I submitted; the second submit made it 7 (> 6).
-Both started at once on idle GPUs, so nothing was queued behind them; later submissions wait until < 6.
+Interim Poisson (from the bfp02 log, NOT yet pulled/audited): held-out dev12 worst floor inc512 0.746 %; POD 512 / 1024 / 2048 =
+0.220 % / 0.0207 % / 0.0003 %; ft512 (6 min varpro fine-tune) 0.317 %.
 
-**After completion:** checksum-verified pull (`OUTPUTS.sha256`) into `runs/<attempt>/output/` (git-ignored; move `ckpt/*` to
-`experiments/bank-floor/ckpt/`), run `audit_rep_np.py`, commit `result.json` + audit + logs, delete the remote dir,
-apply gate P1 (DESIGN), then Phase 2 for promoted banks.
+**Protocol deviation (recorded):** at the first submission the account had 5 jobs running and I submitted two (7 > 6).
+Since then every submit goes through a waiter that submits only when the account has < 6 jobs and refuses duplicates.
+
+**After completion:** checksum-verified pull (`OUTPUTS.sha256`) into `runs/<attempt>/output/` (git-ignored; copy `ckpt/*` to
+`experiments/bank-floor/ckpt/`), run `audit_rep_np.py`, commit `result.json` + audit + logs, delete the remote dir, apply gate
+P1, then Phase 2: `bf_solve_poisson.py` (CPU-smoked OK) and `bf_solve_burgers.py` (smoke in progress) — 3 jobs left.
 
 **Landmines found so far**
 - `p-bank-head/checkpoints/head_K32_w0_s0.pkl` is on the WITHDRAWN `bank_R512_S192` bank (floor 0.8688 %). The right Poisson

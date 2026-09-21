@@ -1,0 +1,8 @@
+{"smoke": true, "intervals": 64, "dt": 0.005, "candidate_trajectories": 4,
+ "eval_seed": 7090702, "eval_cases": 1, "eval_fresh_seed": 911702, "eval_fresh_cases": 1,
+ "confirm_seed": 20260922, "confirm_draw": 32, "confirm_count": 1,
+ "reference_tolerances": [1e-6, 1e-8], "burn_seconds": 0.0,
+ "fom_settings": [{"name": "fom_nt1e-2", "ntol": 0.01, "ltol": 0.5}], "fom_repetitions": 2, "rom_repetitions": 1,
+ "test_multiplier": 4, "cold_axis_points": 48, "cold_oversample": 4,
+ "strict": {"ic_budget": 400, "step_budget": 180, "gtol": 1e-06},
+ "banks": [{"tag": "inc512", "file": "../../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl"}]}

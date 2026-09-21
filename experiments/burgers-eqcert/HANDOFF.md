@@ -49,10 +49,11 @@ ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcert_20260921/<attempt>'
 Jobs used: 3 / 8. **bc512: CERTIFIED** lat64_x1 g1e-2 (0.562 %, 0.091× vs lean_nt3e-3). 
 **bc1024: CERTIFIED** lat64 j=0 (0.586 %, 108.6 ms, 0.32× vs lean_nt3e-3 34.7 ms).
 
-| bc256b | 4143154 | 256², dev6, fresh pop (A2.1) | A100-80G (pax105) | running | — |
+| bc256b | 4143154 | 256², dev6, fresh pop (A2.1) | A100-80G (pax105) | DONE, audited (accepted), remote deleted | `checks/bc256b-summary.json` |
 | bc2048 | 4143536 | 2048², certificate only (A2.2) | H200 | pending (Resources) | — |
 
-Jobs used: 5 / 8. Next: collect/audit bc256b → apply the A2.1 combined 12-draw rule by hand-free script
+**256² CERTIFIED under A2.1**: lat64_x1 g1e-2 (0.520 %, 214.2 ms, 0.085× vs lean_nt3e-3 18.1 ms), ρ_max 0.073 over 112 trajectories.
+Jobs used: 5 / 8. Only bc2048 left (pending H200). Next: collect/audit bc256b → apply the A2.1 combined 12-draw rule by hand-free script
 (`reports/generate_report.py` must implement it) → bc2048 status → final report + lab log. **bc256 verdict (pre-registered rule): NO certified rule** — selected `scaled` (5/5, ρ 0.0994) FAILED the
 confirmation draw (0.165, w0 of traj 43); `lat64_x1` passed all 6 draws (0.063) but is not promoted. Exact arm
 1500 ms vs FOM lean_nt3e-3 17.6 ms (0.012×).

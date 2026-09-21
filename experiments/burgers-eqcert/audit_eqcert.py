@@ -178,9 +178,13 @@ def main():
                 mism.append(name + ' (confirmation)')
         # diagnostics beside the status (never change it)
         diag = {}
+        cm, cd = mh[:, 0] < nd, dz['meta'][:, 0] < nd                   # certification draws only
         for j in (0, 1, 2):
-            diag[f'heldout_rho_max_k>={j}'] = float(rh[mh[:, 2] >= j].max())
-            diag[f'deployed_rho_max_k>={j}'] = float(dz['rho'][dz['meta'][:, 2] >= j].max())
+            diag[f'heldout_rho_max_k>={j}'] = float(rh[cm & (mh[:, 2] >= j)].max())
+            diag[f'deployed_rho_max_k>={j}'] = float(dz['rho'][cd & (dz['meta'][:, 2] >= j)].max())
+            if ci is not None:
+                diag[f'confirmation_heldout_rho_max_k>={j}'] = float(rh[(mh[:, 0] == ci) & (mh[:, 2] >= j)].max())
+                diag[f'confirmation_deployed_rho_max_k>={j}'] = float(dz['rho'][(dz['meta'][:, 0] == ci) & (dz['meta'][:, 2] >= j)].max())
             diag[f'draws_passed_if_k>={j}'] = int(sum(status_from(rh, mh, dz['rho'], dz['meta'], j, nd)[1]))
         status[name] = dict(st, audited_status=s_, audited_per_draw=per, audited_confirmation_pass=conf_pass, **diag)
         if s_ != st['status']:
@@ -268,7 +272,10 @@ def main():
             s_ = status.get(n, {})
             t.update(status=s_.get('audited_status'), exact_steps=s_.get('exact_steps'), control=bool(s_.get('control')),
                      heldout_rho_max=s_.get('heldout_rho_max'), deployed_rho_max=s_.get('deployed_rho_max'),
-                     confirmation_pass=s_.get('audited_confirmation_pass'))
+                     confirmation_pass=s_.get('audited_confirmation_pass'),
+                     confirmation_rho_max=(max(s_[f"confirmation_heldout_rho_max_k>={s_['exact_steps']}"],
+                                               s_[f"confirmation_deployed_rho_max_k>={s_['exact_steps']}"])
+                                           if s_.get('exact_steps') is not None and f"confirmation_heldout_rho_max_k>={s_['exact_steps']}" in s_ else None))
         else:
             t.update(mesh=xs[0]['mesh'], dt=xs[0]['dt'], ntol=xs[0]['ntol'], ltol=xs[0]['ltol'], impl=xs[0].get('impl'),
                      stalled_steps=int(sum(x_['stalled_steps'] for x_ in pc.values())),
@@ -298,7 +305,7 @@ def main():
                     heldout_rho_max=t.get('heldout_rho_max'), deployed_rho_max=t.get('deployed_rho_max'),
                     worst_evolved_percent=t['worst_evolved_percent'], worst_all_times_percent=t['worst_all_times_percent'],
                     worst_current_relative_evolved_percent=t['worst_current_relative_evolved_percent'],
-                    confirmation_pass=t.get('confirmation_pass'),
+                    confirmation_pass=t.get('confirmation_pass'), confirmation_rho_max=t.get('confirmation_rho_max'),
                     rom_gpu_ms=t['median_gpu_ms'], rom_host_ms=t['median_host_ms'], stalled_exits=t['stalled_exits'],
                     steps=t['steps'], fom=f, fom_gpu_ms=foms[f]['median_gpu_ms'] if f else None,
                     fom_host_ms=foms[f]['median_host_ms'] if f else None,

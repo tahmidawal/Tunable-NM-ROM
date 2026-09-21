@@ -48,11 +48,13 @@ def main():
             fo = B_['table'][t['fom_by_paper_rule']]
             st = B_['arm_status'][pick]
             rows.append(dict(mesh=256, attempt='bc256+bc256b', job_id=f"{A_['job_id']}+{B_['job_id']}", gpu=B_['gpu'],
-                             role='CERTIFIED (A2.1 combined, row from bc256b)', arm=pick, status='confirmed in both',
+                             role='A2 follow-up: passes 12/12 draws in bc256+bc256b (primary 256^2 verdict remains: no certified rule); row from bc256b', arm=pick, status='confirmed in both',
                              exact_steps=st.get('exact_steps'), m=t['m'],
                              heldout_rho_max=max(st['heldout_rho_max'], A_['arm_status'][pick]['heldout_rho_max']),
                              deployed_rho_max=max(st['deployed_rho_max'], A_['arm_status'][pick]['deployed_rho_max']),
-                             confirmation_pass=True, worst_evolved_percent=t['worst_evolved_percent'],
+                             confirmation_pass=True, confirmation_rho_max=max(t['confirmation_rho_max'], A_['table'][pick]['confirmation_rho_max']),
+                             worst_current_relative_evolved_percent=t['worst_current_relative_evolved_percent'],
+                             worst_evolved_percent=t['worst_evolved_percent'],
                              worst_all_times_percent=t['worst_all_times_percent'], rom_gpu_ms=t['median_gpu_ms'],
                              rom_host_ms=t['median_host_ms'], stalled_exits=t['stalled_exits'], fom=t['fom_by_paper_rule'],
                              fom_gpu_ms=fo['median_gpu_ms'], fom_worst_evolved_percent=fo['worst_evolved_percent'],
@@ -79,7 +81,10 @@ def main():
                                  worst_evolved_percent=t['worst_evolved_percent'], rom_gpu_ms=t['median_gpu_ms'],
                                  fom=t['fom_by_paper_rule'], fom_gpu_ms=S[a]['table'][t['fom_by_paper_rule']]['median_gpu_ms'],
                                  fom_worst_evolved_percent=S[a]['table'][t['fom_by_paper_rule']]['worst_evolved_percent'],
-                                 speedup_gpu=t['speedup_gpu'], confirmation_pass=True, stalled_exits=t['stalled_exits']))
+                                 speedup_gpu=t['speedup_gpu'], speedup_host=t['speedup_host'], confirmation_pass=True,
+                                 confirmation_rho_max=t.get('confirmation_rho_max'), rom_host_ms=t['median_host_ms'],
+                                 worst_current_relative_evolved_percent=t['worst_current_relative_evolved_percent'],
+                                 stalled_exits=t['stalled_exits']))
     out = dict(status='final' if len(S) == len(ATTEMPTS) else 'partial', attempts=list(S), combined_256=combined256,
                sources={a: dict(summary=f'checks/{a}-summary.json', sha256=sha(LANE / 'checks' / f'{a}-summary.json'),
                                 job_id=s['job_id'], job_commit=s['commit'], result_json_sha256=s['sources']['result_json_sha256'],
@@ -119,38 +124,54 @@ def main():
         for n, c in out['certificate_2048'].items():
             md.append(f"| `{n}` | {c['status']} | {c['confirmation']} | {f(c['heldout_rho_max'])} | {f(c['heldout_rho_max_all_k'])} | {f(c['worst_evolved_percent'], 3)} |")
     md += ['', '## Rows', '',
-           '| mesh | role | arm | exact steps | $m$ | $\\rho_{\\max}$ held-out / deployed (draws 1–5) | confirmation | '
-           'worst evolved % | ROM ms | FOM (paper rule) | FOM ms | FOM % | speedup |',
+           '| mesh | role | arm | exact steps | $m$ | $\\rho_{\\max}$ held-out / deployed (draws 1–5, $k\\ge j$) | '
+           '$\\rho_{\\max}$ confirmation draw | worst evolved % (current-rel. %) | ROM GPU ms | FOM (paper rule) | FOM GPU ms | FOM % | '
+           'speedup GPU / host-incl. |',
            '|---|---|---|---|---|---|---|---|---|---|---|---|---|']
     for r in rows:
-        md.append(f"| ${r['mesh']}^2$ | {r['role']} | `{r['arm']}` | {r.get('exact_steps')} | {r.get('m')} | "
-                  f"{f(r.get('heldout_rho_max'))} / {f(r.get('deployed_rho_max'))} | {r.get('confirmation_pass')} | "
-                  f"{f(r['worst_evolved_percent'], 3)} | {f(r['rom_gpu_ms'], 1)} | `{r['fom']}` | {f(r['fom_gpu_ms'], 1)} | "
-                  f"{f(r['fom_worst_evolved_percent'], 3)} | {f(r['speedup_gpu'], 3)}× |")
+        md.append(f"| ${r['mesh']}^2$ ({r['attempt']}) | {r['role']} | `{r['arm']}` | {r.get('exact_steps')} | {r.get('m')} | "
+                  f"{f(r.get('heldout_rho_max'))} / {f(r.get('deployed_rho_max'))} | {f(r.get('confirmation_rho_max'))} "
+                  f"({'pass' if r.get('confirmation_pass') else 'n/a' if r.get('confirmation_pass') is None else 'FAIL'}) | "
+                  f"{f(r['worst_evolved_percent'], 3)} ({f(r.get('worst_current_relative_evolved_percent'), 3)}) | "
+                  f"{f(r['rom_gpu_ms'], 1)} | `{r['fom']}` | {f(r['fom_gpu_ms'], 1)} | "
+                  f"{f(r['fom_worst_evolved_percent'], 3)} | {f(r['speedup_gpu'], 3)}× / {f(r.get('speedup_host'), 3)}× |")
     md += ['', '## Every arm', '']
     for a, s in S.items():
         md += [f"### ${s['intervals']}^2$ — `{a}`, job {s['job_id']}, {s['gpu']}, commit `{s['commit'][:8]}`", '',
-               '| arm | status | $\\rho_{\\max}$ held-out ($k\\ge j$) | $\\rho_{\\max}$ all $k$ | confirmation | worst evolved % | GPU ms | speedup |',
+               '| arm | status (draws 1–5) | $\\rho_{\\max}$ held-out, draws 1–5, $k\\ge j$ | same, all $k$ | same, $k\\ge1$ | confirmation draw $\\rho_{\\max}$ ($k\\ge j$) | worst evolved % | GPU ms | speedup |',
                '|---|---|---|---|---|---|---|---|']
         for n, st in s['arm_status'].items():
             t = s['table'][n]
             md.append(f"| `{n}` | {st['audited_status']} | {f(st.get('heldout_rho_max'))} | {f(st.get('heldout_rho_max_k>=0'))} | "
-                      f"{st.get('audited_confirmation_pass')} | {f(t['worst_evolved_percent'], 3)} | {f(t['median_gpu_ms'], 1)} | "
-                      f"{f(t['speedup_gpu'], 3)}× |")
+                      f"{f(st.get('heldout_rho_max_k>=1'))} | {f(t.get('confirmation_rho_max'))} ({st.get('audited_confirmation_pass')}) | "
+                      f"{f(t['worst_evolved_percent'], 3)} | {f(t['median_gpu_ms'], 1)} | {f(t['speedup_gpu'], 3)}× |")
         md += ['', '| FOM | dt | Newton tol | lin. tol | worst evolved % | GPU ms | converged |', '|---|---|---|---|---|---|---|']
         for n, t in s['table'].items():
             if t['family'] == 'fom':
                 md.append(f"| `{n}` | {t['dt']} | {t['ntol']} | {t['ltol']} | {f(t['worst_evolved_percent'], 4)} | "
                           f"{f(t['median_gpu_ms'], 1)} | {t['nonlinear_converged']} |")
         md.append('')
-    md += ['## What this does and does not show', '',
+    md += ['## Speed verdict', '',
+           'The protocol bar (error ≤ 1 % **and** speedup ≥ 5× against the named FOM, same allocation) is **missed at every '
+           'mesh**: every accurate row is slower than the fastest Newton–BiCGStab setting at least as accurate (speedups in the '
+           'Rows table, all < 1).', '',
+           '## What this does and does not show', '',
+           '- **$256^2$:** the pre-registered verdict (bc256, §5 + A1.3) is **no certified rule**: the pick failed its confirmation '
+           'draw. The A2 follow-up (written after bc256 was seen, before bc256b existed) required a rule to pass all six draws in '
+           'both bc256 and bc256b; it is an amended procedure with fresh replication, not the original pre-registered success, '
+           'and its confirmation draws took part in its selection.',
+           '- **$1024^2$:** the selected `lat64` ($j=0$) passes the confirmation draw at $\\rho_{\\max}$ just below the 0.116 bar '
+           '(see the Rows table); the $j=1$ variant has a wide margin at about five times the cost.',
+           '- Coverage is reported as counts: 40 certification + 16 confirmation trajectories per job; selection among several '
+           'passing arms means no per-trajectory failure bound is claimed for the winner. The same population is reused across '
+           'meshes, and the two query populations share trajectories.',
            '- Certification is empirical coverage on $40$ (+16 confirmation) held-out trajectories of a fresh seed; zero '
            'failures in $n$ trajectories bounds the per-trajectory failure probability by about $3/n$ at 95 %.',
            '- Certificates sample the per-step states $w_k$ only (for an arm with $j$ exact steps, $k\\ge j$), never LM '
            'iterates or predictor candidates.',
            '- Arms with $j\\ge1$ are a different online method (the first $j$ steps use the exact residual); their time '
            'includes those steps.',
-           '- Errors are on six opened development cases (dev6); they are development evidence, not held-out accuracy.',
+           '- Errors are on six opened development cases (dev6), at the five output times $t=0.05,\\dots,0.25$; development evidence, not held-out accuracy.',
            '- Speedup = median GPU time of the FOM chosen by the paper rule (fastest converged Newton–BiCGStab setting '
            'with worst error ≤ the ROM\'s) over the ROM\'s, same allocation, 5 repetitions × 6 cases.',
            '', '## Glossary', '',
@@ -158,7 +179,7 @@ def main():
            '- **ρ_max held-out / deployed** — worst ρ over the five certification draws, on states of the audited dense '
            'query / on states visited by that arm itself.',
            '- **confirmed** — ρ_max ≤ 0.116 on all five draws in both populations; **marginal (n/5)** — some draws pass.',
-           '- **confirmation** — a sixth draw of 16 trajectories, used only after the selection.',
+           '- **confirmation** — a sixth draw of 16 trajectories, used after the per-job selection (in the A2 follow-up it is also a filter).',
            '- **exact steps j** — number of initial time steps solved with the exact (all-node) residual.',
            '- **scaled** — b-eqtop\'s stored rule at the same physical nodes; **lat64** — 63×63 equal-weight lattice; '
            '**lathalf** — every second node; **exact** — no quadrature; **bad0** — control rule that must fail.',

@@ -185,10 +185,11 @@ fixed weak tests (\S\ref{sec:method:weak}). Third, exact preassembly of
 every linear term, with Empirical Quadrature for the Burgers advection
 where validated (\S\ref{sec:method:precomp}); \S\ref{sec:decoder} gives
 the architecture.
-Throughout, $u \in \Real^{n}$ is the
-full-order state on a uniform grid of $N$ intervals per axis,
-$\Aop \in \Real^{n \times n}$ the discrete negative Laplacian; $R$ is the bank width, $k$ the latent dimension, $M$ the number
-of weak tests and $m$ the number of quadrature nodes.
+Throughout, $u \in \Real^{n}$ is the full-order state on a uniform grid
+of $N$ intervals per axis and $\Aop \in \Real^{n \times n}$ the discrete
+negative Laplacian. Four sizes recur: $R$ spatial basis functions in the
+bank, $k$ nonlinear latent coordinates, $M$ weak tests (the rows of the
+projected residual) and $m$ quadrature nodes, with $k+q\ll M\ll n$.
 The formulas illustrate scalar Dirichlet problems;
 Appendix~\ref{app:method} gives the per-PDE derivations (periodic vector
 fields, time integrators) and exit codes, Figure~\ref{fig:arch} the data flow.
@@ -196,62 +197,71 @@ fields, time integrators) and exit codes, Figure~\ref{fig:arch} the data flow.
 \subsection{Trial Manifold with Exact Dirichlet Enforcement}
 \label{sec:method:manifold}
 
-We train a decoder $\mathcal{D} : \Real^k \to \Real^n$, $k \ll n$, with
-latent state $z$ and no encoder in the deployed path, separable into a
-frozen spatial \emph{bank} $\bank\in\Real^{n\times R}$ times a small
-neural \emph{head} $\head:\Real^{k}\to\Real^{R}$, $k\le R\ll n$, the bank
-built once per mesh from a random-Fourier-feature coordinate network
-$g_\phi$ \citep{Tancik2020FourierFeatures},
+A solution is a fixed set of spatial functions with coefficients that a
+small network produces. The \emph{bank}
+$\bank\in\Real^{n\times R}$ holds those $R$ functions, one per column,
+sampled at the mesh nodes; it is built once per mesh, then frozen.
+The \emph{head} $\head:\Real^{k}\to\Real^{R}$ is a small network that
+turns $k$ latent coordinates $\latent$ into the $R$ coefficients. The
+decoder is their product, $\mathcal{D}(\latent)=\bank\head(\latent)$,
+$k\le R\ll n$, and there is no encoder. Each bank column is a random-Fourier-feature coordinate network $g_\phi$
+\citep{Tancik2020FourierFeatures} read at the node coordinates and
+multiplied by a factor that vanishes on the boundary, here for the
+two-dimensional square,
 \begin{equation}
   \bank_{x,:} = \bcmask(x)\,g_\phi(x)\T,
   \qquad
   \bcmask(x) = 16\,x_1(1-x_1)\,x_2(1-x_2).
   \label{eq:bank}
 \end{equation}
-On the two-dimensional square the smooth vanishing factor $\bcmask$ of
-\eqref{eq:bank}, zero on the boundary $\Gamma$, is folded into every
-column of the bank, so $\partial u/\partial z = 0$ on $\Gamma$ at every
-resolution (homogeneous data only); the L-shape uses a distance-based
-factor, the cube a scaled product factor, and periodic Navier--Stokes none
-(\S\ref{sec:decoder}).
+Because $\bcmask$ is zero
+on the boundary $\Gamma$, every column of the bank is zero there, so
+every trial state and every derivative $\partial u/\partial z$ vanishes
+on $\Gamma$ at any resolution (homogeneous data only); no penalty term
+is needed. The L-shape uses a distance-based
+factor, the cube a scaled product factor, and periodic Navier--Stokes
+none (\S\ref{sec:decoder}).
 
 \paragraph{Nested correction directions.}
 \label{sec:method:ladder}
-The deployed model augments the head's output with $q$ fixed directions
-$\corr\in\Real^{R\times q}$ and solves for the latent code and the
-correction coefficients together,
+The head reaches only the states its $k$ coordinates produce. To widen
+that set after training we add $q$ fixed directions in coefficient
+space, the columns of $\corr\in\Real^{R\times q}$, whose coefficients
+$y$ the solver chooses alongside the latent code,
 \begin{equation}
   u(\latent,y) \;=\; \bank\big(\head(\latent) + \corr\,y\big),
   \qquad \latent\in\Real^{k},\; y\in\Real^{q},\; 0\le q\le R .
   \label{eq:ladder}
 \end{equation}
-The columns of $\corr$ are chosen offline from training data; the
-Burgers construction uses principal components of the head's coefficient
-errors. Per-PDE constructions are stated in Appendix~\ref{app:method}.
-The directions are ordered so that $C_{q}$ is a prefix of $C_{q'}$ for $q<q'$; the
-ladder is nested and no rung needs retraining. At $q=0$ the model is the
-frozen head; at $q=R$ the head is irrelevant and the representation is the full
-linear span of the bank. For linear PDEs its coefficients can be found
-by a reduced linear solve; for nonlinear PDEs the equations can remain
-nonlinear even in this full-bank representation;
-in between, $q$ moves the reachable set from the head's image towards
-the bank's span, and the solved dimension from $k$ to $k+q$. Two consequences follow: the bank's projection error is a floor on the
-achievable error whatever the head or the solver does, so nonlinearity
-in $\head$ buys a smaller \emph{solved} dimension, not an escape from the
-span; and all $x$-dependence factors through $\bank$, which makes node
-sampling and exact preassembly available from one decoder.
+The columns of $\corr$ are computed offline from training data alone;
+for Burgers they are the principal components of the coefficient errors
+the head leaves behind. Per-PDE constructions are in
+Appendix~\ref{app:method}. They are ordered once, so $C_{q}$ is the first $q$ columns of $C_{q'}$:
+raising $q$ adds directions without disturbing those in use, and no
+setting needs retraining.
+At $q=0$ the model is the frozen head, solved in $k$ unknowns; at $q=R$
+the head no longer matters and the trial states fill the span of the
+bank. In between, $q$ buys reach: representable states grow from the
+head's image towards that span, and the solve from $k$ to $k+q$
+unknowns. Two consequences matter later. The bank's projection error is a floor
+that no head and no solver can beat, so nonlinearity in $\head$ buys a
+smaller \emph{solved} dimension, not an escape from the span. And all
+dependence on the spatial coordinate sits in $\bank$, which is what lets
+us sample nodes and preassemble operators from one decoder.
 
 \subsection{Projecting the PDE onto the Manifold}
 \label{sec:method:weak}
 
-Each PDE we consider gives a discretised residual $\rfull(u)$ that
-should vanish at the true solution. We substitute the trial manifold
-$u(\latent,y)$ into $\rfull$ and project onto a fixed, latent-independent
-test space. On the Dirichlet square, $\tests\in\Real^{M\times n}$
-collects low-frequency tensor-product sine vectors, eigenvectors of the five-point
-operator, $\tests\Aop=\rowscale\tests$; the L-shape uses Lanczos
-eigenvectors of its own operator. The reduced problem solved online
-is
+Each PDE gives a discrete residual $\rfull(u)\in\Real^{n}$: the amount
+by which a candidate state fails the discrete equations, zero at the
+discrete solution. A trial state has only $k+q$ free numbers, so
+$\rfull$ cannot be driven to zero; we ask instead that it be small
+against $M$ fixed directions. The rows of $\tests\in\Real^{M\times n}$
+are those \emph{weak tests}: on the Dirichlet square they are the
+low-frequency tensor-product sine vectors, which are eigenvectors of the
+five-point operator, $\tests\Aop=\rowscale\tests$; the L-shape uses
+Lanczos eigenvectors of its own operator. Substituting the trial state into
+$\rfull$ and testing it gives the problem solved at every query,
 \begin{equation}
   (\latent^{\star},y^{\star})
   =
@@ -263,134 +273,135 @@ is
   \qquad M>k+q ,
   \label{eq:objective}
 \end{equation}
-with a diagonal row scaling $\rowscale_\star$ stated per PDE in
-Appendix~\ref{app:method}: a least-squares Petrov--Galerkin condition
-with an explicit test space \citep{Carlberg2011LSPG,LeeCarlberg2020}, not
-tangent Galerkin, overdetermined rather than square, solved by a method
-appropriate to each PDE's structure.
+The diagonal row scaling $\rowscale_\star$ (per PDE,
+Appendix~\ref{app:method}) puts the rows on a common footing. This is
+least-squares Petrov--Galerkin projection
+\citep{Carlberg2011LSPG,LeeCarlberg2020}: the test space is fixed, not
+the moving tangent space of Galerkin projection, and $M>k+q$ makes the
+system overdetermined, not square.
 
 \paragraph{Elliptic (Poisson).}
-The Poisson residual is $\rfull(u) = \Aop u - f$, and projection gives
-$\rweak(\latent,y)=B_0(\head(\latent)+\corr y)-b_0$, $B_0=\tests\bank$
-(Appendix~\ref{app:method:poisson}); the projector onto
+The residual is $\rfull(u) = \Aop u - f$, so testing it leaves
+$\rweak(\latent,y)=B_0(\head(\latent)+\corr y)-b_0$, where
+$B_0=\tests\bank$ holds the tested bank functions and $b_0$ the tested
+source (Appendix~\ref{app:method:poisson}). Because that residual is
+linear in the coefficients, the corrections cost no extra iterations:
+the projector onto
 $\operatorname{range}(B_0\corr)$ does not depend on $\latent$, so $y$ is
 eliminated exactly \citep{GolubPereyra1973}, the iteration stays
 $k$-dimensional at every $q$, and $q=R$ is a linear solve.
 
 \paragraph{Parabolic (heat).}
-The heat semi-discretisation $du/dt = -\kappa\, \Aop u$ is advanced with
-Crank--Nicolson; the reduced step substitutes the manifold into the fully
-discrete equation \emph{before} projecting and solves
-$\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$, with $D$ the diagonal Crank--Nicolson amplification of the tests (Appendix eq.~\eqref{eq:heat-step})
-(shown at $q=0$; with corrections see Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
-a linear system; at $q=R$ the step is the linear recurrence
-(Appendix eq.~\eqref{eq:heat-endpoint}). Reflective waves use an explicit latent
+The semi-discretisation $du/dt = -\kappa\, \Aop u$ is advanced with
+Crank--Nicolson. The manifold enters the fully discrete step
+\emph{before} projection, and each step solves
+$\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$,
+where $D$ scales each test by its Crank--Nicolson amplification factor
+(Appendix eq.~\eqref{eq:heat-step}, shown at $q=0$; with corrections,
+Appendix~\ref{app:method:heat}). The step is a nonlinear least-squares
+problem, not a linear solve; at $q=R$ it becomes the linear recurrence
+of Appendix eq.~\eqref{eq:heat-endpoint}. Reflective waves use an explicit latent
 integration instead (Appendix~\ref{app:method:wave}).
 
 \paragraph{Hyperbolic (Burgers).}
 For $u_t+u(u_x+u_y)=\nu\Delta u$ with a sign-upwind stencil and backward
-Euler (Appendix~\ref{app:method:burgers}) the weak residual is nonlinear
-in the coefficients, so $y$ is not eliminated in closed form; we damp the
-$(\latent,y)$ blocks separately inside one Levenberg--Marquardt step
-(\emph{block-damped} variable projection), which, in the recorded solver comparison, removes the joint LM
+Euler (Appendix~\ref{app:method:burgers}) the tested residual is
+nonlinear in the coefficients, so $y$ cannot be eliminated in closed
+form. We damp the $\latent$ and $y$ blocks separately inside one
+Levenberg--Marquardt step, leaving the linear block undamped
+(\emph{block-damped} variable projection). In the recorded solver comparison this removes the joint
 configuration's $\nBlockJointBudgetExits$ budget exits
 (Table~\ref{tab:solver-variants}).
 
 \paragraph{Solver and exits.}
-Each attempt solves the damped normal system
-$(H+\lambda\,\diag(\diag H))\,\delta=-g$, $H=\jac{}\T\jac{}$,
-$g=\jac{}\T\rweak$, accepting the step only if it strictly decreases the
-residual: damped Levenberg--Marquardt with a monotone test
-\citep{Marquardt1963}. Three exit families are recorded and never conflated: the scale-free
-stationarity measure
-$\station{\latent}{y}=\norm{\jac{}\T\rweak}_2/(\normF{\jac{}}\norm{\rweak}_2)\le\eta_{\mathrm{tol}}$
-\refstepcounter{equation}\label{eq:stationarity}(\theequation), a
-residual threshold, and the stalls, reported as early-stopped, never as
-converged. No query uses the solution it predicts: the elliptic solve starts from
-the cached training code nearest the projected source; the heat and
-Burgers queries start from nearest codes and fit $(\latent,y)$ to the
-supplied initial field (Appendix~\ref{app:method:codes}).
+The nonlinear problems are solved by damped Levenberg--Marquardt with a
+monotone test \citep{Marquardt1963}: each attempt solves a damped normal
+system for a step in the $k+q$ unknowns and keeps it only if the
+residual strictly decreases. Three exit families are recorded and never
+conflated: a scale-free stationarity measure, a residual threshold, and
+the stalls, reported as early-stopped and never as converged. No query
+uses the solution it predicts; every solve starts from stored training
+codes (Appendix~\ref{app:method:codes}).
 
 \subsection{Hyper-reduction}
 \label{sec:method:precomp}
 
-The non-linear manifold reduces the DOF count from $n$ to $k+q$, but a
-projected term such as $\tests N(\bank c)$ still costs $O(n)$. For a fixed linear operator
-the tested residual is exactly precomputable,
-$\tests(\Aop\,u-f)=B\,(\head(\latent)+\corr y)-b$ with
-$B=\rowscale\,\tests\bank=\rowscale B_0$ (the $B_0$ of \S\ref{sec:method:weak} with its rows rescaled) assembled offline by the corresponding discrete transforms, so
-linear terms are never approximated; the Burgers advection
-$\tests N(\bank c)$ is the only term that resists preassembly, evaluated
-\emph{densely}, $O(nR)$ per residual, or on an \emph{empirical quadrature}
-rule of $m$ nodes \citep{Hernandez2017EQ,YanoPatera2019LPEQ}, $O(mR)$. The rule is a non-negative \emph{per-node} weight vector, \emph{independent
-of the snapshot}, fitted by NNLS \citep{LawsonHanson1974NNLS} to reproduce
-the projected advection term at $n_{\rm fit}$ stored codes with a hard cap
-of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$ re-solves the
-fit, rules are not nested, and deployment selects among stored rules. \emph{A rule is never accepted on its NNLS fit residual}; we score it by
-the held-out relative error $\rho$ of the projected advection term
-(Appendix eq.~\eqref{eq:rho}) over states the solver actually reaches on trajectories
-disjoint from the fit and evaluation cases, against a primary bar
-$\rho_{\max}\le\nEqtopBar$ fixed before any certification job ran and a
-tight bar $\nEqtopTightBar$. We repeat the check with independent trajectory
-samples (re-draws): a rule is \emph{confirmed} only if every re-draw passes
-(Table~\ref{tab:eqladder}).
+The manifold cuts the unknowns from $n$ to $k+q$, but a tested term such
+as $\tests N(\bank c)$ still touches every node, so one residual still
+costs $O(n)$. Linear terms escape this: they can be tested once,
+offline,
+$\tests(\Aop\,u-f)=B\,(\head(\latent)+\corr y)-b$, where the $M\times R$
+matrix $B=\rowscale\,\tests\bank=\rowscale B_0$ is the $B_0$ of
+\S\ref{sec:method:weak} with its rows rescaled, assembled offline by the
+discrete transform of each problem. Linear terms are therefore exact and
+cost nothing per node online. The Burgers advection is the one term that
+resists this. It is evaluated \emph{densely}, at every node, at $O(nR)$
+per residual, or on an \emph{empirical quadrature} rule
+\citep{Hernandez2017EQ,YanoPatera2019LPEQ} that replaces the sum over
+all nodes by a weighted sum over $m$ of them, at $O(mR)$. The rule is one
+non-negative weight per node, the same for every state, fitted by NNLS
+\citep{LawsonHanson1974NNLS} to reproduce the tested advection term at
+$n_{\rm fit}$ stored codes under a cap of $m$ nodes
+(Appendix~\ref{app:method:eq}). Changing $m$ re-solves the fit, so rules
+are not nested; deployment picks among stored rules. \emph{A rule is never accepted on its NNLS fit residual.}
+We score it on states the solver actually reaches, on trajectories
+disjoint from the fit and the evaluation cases, against a bar fixed
+before any certification job ran, and call it \emph{confirmed} only if
+independent re-draws of those trajectories also pass
+(Appendix~\ref{app:method:eq}, Table~\ref{tab:eqladder}).
 
 \subsection{Model Architecture}
 \label{sec:decoder}
 
 Three properties of the problem motivate our architecture. First, every
-query starts from stored training codes, never cold and without an
-encoder (\S\ref{sec:method:weak}), and its iteration descends along the
-head's Jacobian; this motivates a \emph{linear skip}. Second, quadrature
+query starts from stored training codes and descends along the head's
+Jacobian; this motivates a \emph{linear skip}. Second, quadrature
 evaluates the decoder only near sparse nodes, and one model serves every
 mesh; this motivates a \emph{coordinate-network bank}. Third, one model
-must offer several accuracy--cost settings; this motivates
-\emph{nested corrections}.
+must offer several accuracy--cost settings; this motivates \emph{nested
+corrections}.
 
 \paragraph{Linear skip, for the latent solve.}
 $\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, with
 $\varphi_\theta$ an MLP with two hidden SiLU layers; the skip keeps a
 latent-independent Jacobian component. Widths and $(k,R)$ are per family
-(Table~\ref{tab:problems}; three-dimensional sizes in Table~\ref{tab:config3d}). The skip is a design
+(Tables~\ref{tab:problems} and~\ref{tab:config3d}); the skip is a design
 choice, not ablated here.
 
-\paragraph{Coordinate-network bank, for node-local evaluation.} Every
-Dirichlet bank is a coordinate network times a
-vanishing factor: $\bcmask$ of \eqref{eq:bank} on the square, its product
-form in 3D, a distance-based factor on the L-shape; some banks are
-right-multiplied by a fixed orthonormalising matrix. The network's
-parameters do not depend on the mesh, so a quadrature rule's support is
-a cached block, and decoding in row blocks at large $n$ changes memory,
-not the model. The periodic Navier--Stokes bank has no factor and a
-global solenoidal projection.
+\paragraph{Coordinate-network bank, for node-local evaluation.} The
+vanishing factor of \eqref{eq:bank} becomes a product form in 3D and a
+distance-based factor on the L-shape; some banks are right-multiplied by
+a fixed orthonormalising matrix, and the periodic Navier--Stokes bank
+has no factor but a global solenoidal projection. Because $g_\phi$ takes
+coordinates, not a grid, one node can be decoded without the others: a
+quadrature rule's support is a cached block, and decoding in row blocks
+at large $n$ changes memory, not the model.
 
 \paragraph{Nested corrections, for accuracy.} $\corr$ holds leading
 singular directions of training coefficient residuals, nested in $q$.
 
-\paragraph{What is fixed, what is chosen, and how error is reported.}
-\label{sec:method:tuning}
-Each row of Table~\ref{tab:headline} comes from one frozen model, named
-by its problem label. Chosen at run time are $q$, the number of
-tests $M$ (usually $M=4(k+q)$; fixed along the rank study of
-Table~\ref{tab:ladder-main} and on the L-shape), the quadrature, the
-tolerance and budget, and for heat the stepping mode (Crank--Nicolson or
-the batched exact-propagator fit).
-\label{sec:method:layers}
-The representation ablations distinguish three quantities: the \emph{bank floor} (projection
-error onto $\operatorname{range}\bank$), the \emph{best-found} error (the
-smallest any point of the augmented manifold attains, from a multistart
-oracle) and the \emph{solved} error the iteration returns.
+\paragraph{What is fixed and what is solved.}
+\label{sec:method:tuning}\label{sec:method:layers}
+Fixed by training, and shared by every row of
+Table~\ref{tab:headline}: the bank $\bank$, the head weights, the
+directions $\corr$ and the tests $\tests$. Solved at every query: the
+code $\latent$ and the coefficients $y$, once per time step when time
+enters. Chosen at run time: $q$, the test count $M$ (usually $M=4(k+q)$;
+fixed along the rank study of Table~\ref{tab:ladder-main} and on the
+L-shape), the quadrature, the tolerance and budget, and for heat the
+stepping mode. Three error quantities separate the parts
+(Appendix~\ref{app:method:codes}).
 
 % =====================================================================
 \section{Implementation}
 \label{sec:impl}
 
 \subsection{Matrix-free Projected Operators via JAX}
-Every linear term is preassembled once per mesh as the $M\times R$
-matrix $B$, so the online residual and Jacobian of a linear PDE are
-$B\,(\head(\latent)+\corr y)-b$ and $B\,[\dhead\;\;\corr]$, with $\dhead$
-from a forward-mode Jacobian-Vector Product \citep{Bradbury2018JAX}; the
-sampled Burgers advection uses the cached stencil block. The damped
+The $M\times R$ matrix $B$ of \S\ref{sec:method:precomp} is built once
+per mesh, so a linear PDE never touches the grid online: its residual is
+$B\,(\head(\latent)+\corr y)-b$ and its Jacobian
+$B\,[\dhead\;\;\corr]$, where $\dhead$ is the head's Jacobian, obtained
+by forward-mode Jacobian-vector products \citep{Bradbury2018JAX}. The sampled Burgers advection reads only the cached stencil block. The damped
 normal system is solved directly; no Krylov solve is applied to the
 projected operator. The Burgers runs above $1024^2$ assemble the
 Jacobian analytically, with the solver refinements of
@@ -398,26 +409,25 @@ Appendix~\ref{app:method:burgers}.
 
 \subsection{Training Protocol}
 
-The bank and the head are trained in two stages, both as auto-decoders:
-the coordinate network $g_\phi$ is fitted to the training states through
-\eqref{eq:bank}, then frozen, and the head is fitted with a code library
-$Z$ on the bank-projected states; $\corr$ is then constructed from training-only coefficient directions
-as specified for each PDE. Sizes and cohorts
-are in Appendix~\ref{app:training-schedule}; checkpoint hashes and
-recorded offline costs are retained with the source evidence described there.
+Training runs in two stages, both as auto-decoders and both on training
+data only. First the coordinate network $g_\phi$ is fitted to the
+training states through \eqref{eq:bank} and frozen, which fixes the
+bank. Then the head is fitted on the bank-projected states, with one
+stored code per training state. The correction directions $\corr$ follow,
+as specified for each PDE. Sizes, cohorts, checkpoint hashes and
+recorded offline costs are in Appendix~\ref{app:training-schedule}.
 
 % =====================================================================
 \section{Experimental Setup and Benchmark Problems}
 \label{sec:setup}
 
 \paragraph{Problems and references.}
-The two-dimensional problems are Poisson on the square and on an
-L-shaped domain, heat, viscous Burgers and reflective waves; the
-three-dimensional problems are Poisson, heat, Burgers and incompressible
-Navier--Stokes. Table~\ref{tab:problems} gives the two-dimensional meshes
-and cohorts, Table~\ref{tab:spec} the sampled families and
-Table~\ref{tab:config3d} the three-dimensional configurations. Burgers
-provides the correction-rank study.
+In two dimensions: Poisson on the square and on an L-shaped domain,
+heat, viscous Burgers and reflective waves; in three: Poisson, heat,
+Burgers and incompressible Navier--Stokes. Meshes and cohorts are in
+Table~\ref{tab:problems}, the sampled families in Table~\ref{tab:spec}
+and the three-dimensional configurations in Table~\ref{tab:config3d}.
+Burgers provides the correction-rank study.
 
 \paragraph{Accuracy.}
 We report worst relative $L^2$ error over the stated cases and requested
@@ -431,12 +441,12 @@ interchanged. Settings for a held-out (final) cohort are fixed before its
 cases are accessed; all other cohorts are development cohorts.
 
 \paragraph{Timing and speedup.}
-Every accuracy--runtime pair comes from the same solver invocation.
-We use double precision, GPU burn-in, synchronised timing and medians
-of retained repetitions. GPU query time includes initialization, the
-solve or rollout, and requested device outputs. Complete-query time
-additionally includes host transfers and is labelled separately.
-Training and compilation are offline costs. Speedup is
+Every accuracy--runtime pair comes from the same solver invocation, in
+double precision, with GPU burn-in, synchronised timing and medians of
+retained repetitions (protocol: Appendix~\ref{app:cg-current}). GPU
+query time covers initialisation, the solve or rollout and the requested
+device outputs; complete-query time adds host transfers and is labelled
+separately. Training and compilation are offline costs. Speedup is
 $S=T_{\mathrm{FOM}}/T_{\mathrm{method}}$ with both times from the same
 allocation; each table names the FOM algorithm and shows its error.
 Solves that miss their stopping rule are reported as such and do not
@@ -619,22 +629,22 @@ failed its held-out check.}
 \end{table}
 
 \paragraph{Settings.}\label{sec:results:best}
-Table~\ref{tab:headline-times} lists both settings of every row of
-Table~\ref{tab:headline} with their times; moving between them never
-requires retraining, only new deployment arguments. This is what we mean by
-deployment-time tunability. Appendix Table~\ref{tab:ladder-main} is the
-fixed-test-count evidence at $256^2$: with $M$ held fixed, each added
-block of correction directions lowers the error and raises the cost.
+Table~\ref{tab:headline-times} lists both settings of every row with
+their times; moving between them never requires retraining, only new
+deployment arguments. This is what we mean by deployment-time
+tunability. With $M$ held fixed, each added block of
+correction directions lowers the error and raises the cost
+(Appendix Table~\ref{tab:ladder-main}).
 
 \subsection{Which Knob to Turn}\label{sec:results:tunability}
 
-Appendix Table~\ref{tab:knobs-main} summarises the deployment-time controls.
 Correction rank is the accuracy control (with a smaller fixed test space
-the same ranks give a $\nQxmTwoFiftySixErrSpan\times$ error reduction from
-$q=0$ to $256$, so test count is held fixed along the ladder). Empirical quadrature and the stopping tolerance
-are cost controls: they lower the runtime at little or no change in
-error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
-is a safeguard, not a control; a truncated solve fails.
+the same ranks give a $\nQxmTwoFiftySixErrSpan\times$ error reduction
+from $q=0$ to $256$, so the test count is held fixed along the ladder).
+Empirical quadrature and the stopping tolerance are cost controls: they
+lower the runtime at little or no change in error. The iteration cap is
+a safeguard, not a control; a truncated solve fails (Appendix
+Tables~\ref{tab:knobs-main} and~\ref{tab:figure1-table}).
 
 
 On Burgers at $4096^2$, changing the correction rank trades accuracy for cost. Table~\ref{tab:tunability} compares every setting with one
@@ -645,14 +655,7 @@ $\nBhFastS\times$ on both cohorts against the Newton--BiCGStab comparator select
 corrections are eliminated analytically, so accuracy improves at nearly
 constant cost.
 
-A separate ladder with $M=4(k+q)$, evaluated once on a sealed cohort,
-gives monotone error reduction for all \nSealedCheckpoints{} checkpoints
-(top-rank errors $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, Table~\ref{tab:sealed}); \nSealedKnobBarCount{} of \nSealedCheckpoints{}
-meet the pre-registered secondary criterion (settings spanning at least
-$2\times$ in error and in cost). Two stricter pre-registered checks fail:
-the original model's sealed-to-development ratio at $q=0$ (one sealed case
-converges to a wrong branch, $\nSealedIncQzero\,\%$) and universal
-convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
+The multi-seed sealed ladder is in Appendix~\ref{app:sealed-ladder}.
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
@@ -700,8 +703,8 @@ on Poisson, $\nHeatWideAccErr\,\%$ at $\nHeatWideAccS\times$ on held-out
 heat and $\nBurgHoldAccErrFortyNinetySix\,\%$ at
 $\nBurgHoldAccSFortyNinetySix\times$ on held-out Burgers, far more
 accurate than a reproduced NM-ROM and POD-LSPG; its $4096^2$ quadrature
-rule is not confirmed on independent re-draws, and the confirmed variant
-is slower than the FOM. The named solvers remain
+rule is not confirmed on re-draws, and the confirmed variant is slower
+than the FOM. The named solvers remain
 more accurate; three-dimensional heat meets its accuracy target but is
 faster than CN--CG only with a batched fit at $128^3$; and
 three-dimensional Burgers, Navier--Stokes and the full wave state miss
@@ -711,14 +714,14 @@ solve and quadrature in three dimensions.
 
 \section*{Reproducibility statement}\label{sec:repro}
 Every table and prose number is generated from hash-pinned run records
-that identify source, checkpoint, settings, cohort, allocation and audit
+identifying source, checkpoint, settings, cohort, allocation and audit
 (Appendix~\ref{app:provenance}); failed settings are retained.
 
 \section*{AI use statement}
 Language-model assistants supported method and experiment development,
-implementation, analysis, auditing, and manuscript drafting and editing.
-Recorded solver runs produced the numerical results; table generators
-reproduce them. The authors are responsible for verifying methods, results and text.
+implementation, analysis, auditing and manuscript drafting. Recorded
+solver runs produced the numerical results; table generators reproduce
+them. The authors are responsible for the methods, results and text.
 
 \bibliographystyle{plainnat}
 \input{bib-inline}

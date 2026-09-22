@@ -6,8 +6,9 @@
 
 \section{Method details}
 \label{app:method}
-The generic overdetermined problem \eqref{eq:objective} is instantiated
-differently per PDE. Poisson, heat and Burgers below are fully discrete
+This appendix writes the reduced problem \eqref{eq:objective} out for
+each PDE: what the residual is, how the time step enters, and what is
+solved at each query. Poisson, heat and Burgers below are fully discrete
 weak least-squares problems; the wave arm (\S\ref{app:method:wave}) is an
 explicit second-order latent integration and is not an instance of
 \eqref{eq:objective}. Formulas are for the scalar two-dimensional
@@ -17,7 +18,9 @@ Appendix~\ref{app:main-experiment-details}.
 \subsection{Elliptic instance: Poisson}
 \label{app:method:poisson}
 
-For $\Aop u=f$ we take $\rowscale_\star=\rowscale$, so the weak residual is
+For $\Aop u=f$ we take $\rowscale_\star=\rowscale$. Testing the residual
+and rescaling the rows leaves a small linear expression in the
+coefficients,
 \begin{equation}
   \rweak(\latent,y)
   \;=\;\rowscale^{-1}\tests(\Aop\umanifold-f)
@@ -31,8 +34,10 @@ is exactly the tested error $\tests(\umanifold-u^{\star})$, so the minimised
 objective is the squared discrete $L^2$ error of the reduced state in the
 retained modes; this holds only for the modes $\tests$ retains.
 
-\paragraph{Analytically eliminated corrections.} Let $B_0\corr=Q\mathcal{R}$ be
-a thin QR factorisation. $Q$ does not depend on $\latent$, so the inner
+\paragraph{Analytically eliminated corrections.} Because the residual is
+linear in $y$, the best $y$ for a given $\latent$ can be written down
+instead of iterated for. Let $B_0\corr=Q\mathcal{R}$ be a thin QR
+factorisation. $Q$ does not depend on $\latent$, so the inner
 minimisation over $y$ has the closed form
 $\mathcal{R}y=Q\T(b_0-B_0\head(\latent))$ and the minimised value is
 \begin{equation}
@@ -60,7 +65,8 @@ of $B_0\corr$.
 \subsection{Parabolic instance: heat}
 \label{app:method:heat}
 
-The semi-discrete heat equation $\dot u=-\kappa\Aop u$ is advanced with
+The reduced heat step is one nonlinear least-squares problem per time
+step. The semi-discrete equation $\dot u=-\kappa\Aop u$ is advanced with
 Crank--Nicolson,
 $(I+\tfrac{\Delta t\kappa}{2}\Aop)u^{n+1}=(I-\tfrac{\Delta t\kappa}{2}\Aop)u^{n}$,
 % Implemented: Crank-Nicolson (heat_core.cn_factor).
@@ -109,7 +115,9 @@ exact and is reported as an algebraic ablation of the same step.
 \subsection{Nonlinear advection: Burgers}
 \label{app:method:burgers}
 
-The full-order problem is $u_t+u(u_x+u_y)=\nu\Delta u$ with the non-conservative
+Burgers is the only problem whose tested residual stays nonlinear in the
+coefficients, so nothing is eliminated in closed form. The full-order
+problem is $u_t+u(u_x+u_y)=\nu\Delta u$ with the non-conservative
 sign-upwind stencil
 \begin{equation}
   N(u)_{ij} \;=\; u_{ij}\,\big(\delta_x u + \delta_y u\big)_{ij},
@@ -210,8 +218,9 @@ energy-state error over displacement and velocity.
 \subsection{Empirical quadrature: the fit and the counts}
 \label{app:method:eq}
 
-A fitted rule with support $\mathcal S$ and weights $w$ is scored by the
-held-out relative error of the projected advection term,
+A rule is judged by how well its weighted sum over $m$ nodes reproduces
+the tested advection term of the full grid. That relative error, on one
+state, is
 \begin{equation}
   \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
   \quad
@@ -251,6 +260,29 @@ indices, weights, and the cached $m\times5\times R$ bank block.
 
 \subsection{Solver constants and exit codes}
 \label{app:method:codes}
+The representation ablations separate three error quantities: the
+\emph{bank floor}, the projection error onto $\operatorname{range}\bank$,
+which no head or solver can beat; the \emph{best-found} error, the
+smallest any point of the augmented manifold attains, located by a
+multistart oracle; and the \emph{solved} error, what the deployed
+iteration actually returns.
+
+
+Write $\jac{}$ for the Jacobian of $\rweak$ in $(\latent,y)$. Each
+Levenberg--Marquardt attempt solves
+$(H+\lambda\,\diag(\diag H))\,\delta=-g$ with $H=\jac{}\T\jac{}$ and
+$g=\jac{}\T\rweak$, and accepts $\delta$ only if the residual strictly
+decreases. The stationarity measure of \S\ref{sec:method:weak} is scale free: it
+divides the gradient norm by the sizes of the Jacobian and the residual,
+\begin{equation}
+  \station{\latent}{y}=\frac{\norm{\jac{}\T\rweak}_2}{\normF{\jac{}}\,\norm{\rweak}_2}
+  \;\le\;\eta_{\mathrm{tol}} ,
+  \label{eq:stationarity}
+\end{equation}
+so one tolerance $\eta_{\mathrm{tol}}$ serves every mesh and every rank.
+The elliptic solve starts from the cached training code nearest the
+projected source; the heat and Burgers queries start from the nearest
+codes and fit $(\latent,y)$ to the supplied initial field.
 
 Damping starts at $\lambda_0=10^{-6}$ (Poisson, Burgers) or $10^{-4}$ (heat);
 $\lambda\leftarrow\max(\lambda/3,10^{-12})$ on acceptance and

@@ -1,5 +1,56 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — clarity pass on the maths and the architecture — CURRENT HANDOFF
+
+User: "Make the math and architecture very easy to follow and understand", keeping the content, the structure and
+the claims. Prose only: no number, macro, table datum, citation or label changed (`eq:stationarity` moved from
+§3.2 to Appendix A.6 with its display; the sealed-ladder and EQ-bar macros moved with the text that carries them,
+and every one of those numbers still renders in the PDF). Abstract and introduction untouched.
+
+- **§3 opening.** The four recurring sizes are now named in words with their roles: $R$ bank functions, $k$ latent
+  coordinates, $M$ weak tests (the rows of the projected residual), $m$ quadrature nodes, with $k+q\ll M\ll n$.
+- **§3.1 trial manifold.** Says what the objects are before using them: a solution is a fixed set of spatial
+  functions with coefficients a small network produces; the bank $\bank\in\Real^{n\times R}$ holds those functions
+  one per column and is frozen; the head $\head:\Real^k\to\Real^R$ turns $k$ coordinates into $R$ coefficients;
+  the decoder is their product and there is no encoder. Eq. (1) now has a lead-in ("multiplied by a factor that
+  vanishes on the boundary") and a consequence ("every column is zero there, so every trial state and every
+  $\partial u/\partial z$ vanishes on $\Gamma$ at any resolution; no penalty term is needed").
+- **§3.1 nested corrections.** Motivation before the formula ("the head reaches only the states its $k$ coordinates
+  produce"), then what eq. (2) buys: prefix ordering, $q=0$ and $q=R$ endpoints, reach growing from the head's
+  image to the bank's span and the solve from $k$ to $k+q$ unknowns.
+- **§3.2 projection.** Defines the residual in words ("how far a candidate state is from satisfying the discrete
+  equations, zero at the discrete solution"), explains why it cannot vanish ($k+q$ free numbers), introduces the
+  weak tests as the rows of $\tests$, then gives eq. (3) and reads it back: row scaling, fixed test space versus
+  the moving tangent space of Galerkin, $M>k+q$ making the system overdetermined. Per-PDE paragraphs say what is
+  solved: Poisson linear in the coefficients so $y$ is eliminated; heat one nonlinear least-squares problem per
+  step with $D$ the Crank--Nicolson amplification of each test; Burgers nonlinear so the blocks are damped
+  separately, with "block-damped variable projection" glossed as leaving the linear block undamped.
+- **§3.2 solver.** Names $\jac{}$, says the step is over the $k+q$ unknowns and is kept only if the residual
+  strictly decreases, and lists the three exit families. The damped normal system and the stationarity display
+  moved to Appendix A.6, where they sit with the solver constants.
+- **§3.3 hyper-reduction.** Says what the cost problem is (a tested term still touches every node, $O(n)$), what
+  preassembly buys ($B$ is $M\times R$, built offline, linear terms exact and free of the grid online), and what
+  the quadrature rule replaces (the sum over all nodes by a weighted sum over $m$ of them, $O(nR)\to O(mR)$),
+  with the two acceptance caveats kept (never accepted on the NNLS fit residual; confirmed only if independent
+  re-draws pass) and the mechanics pointed at Appendix A.5.
+- **§3.4 architecture.** Kept the three-properties opening; the bank paragraph now explains why a coordinate
+  network gives node-local decoding. The old "what is fixed, what is chosen" paragraph is now **"What is fixed and
+  what is solved"**: fixed by training ($\bank$, head weights, $\corr$, $\tests$), solved per query ($\latent$,
+  $y$, once per time step), chosen at run time ($q$, $M$, quadrature, tolerance, budget, heat stepping mode).
+- **§4 implementation.** States that a linear PDE never touches the grid online and what $\dhead$ is; the training
+  protocol now reads as two stages in order, with sizes and hashes left to the appendix.
+- **Appendix A.** Lead-ins added before the Poisson residual, the variable-projection QR, the heat step, the
+  Burgers instance and the EQ score; A.6 gains the Levenberg--Marquardt step and the stationarity display.
+- **Figure B.1 caption** is now a guided read (offline fixes $\bank$, $\head$, $\corr$ and the tests; inputs set
+  $(z_0,y_0)$ and enter the residual; the solve adjusts $k+q$ unknowns; reconstruction returns
+  $u=\bank[\head(z)+\corr y]$), the legend marks frozen versus solved with sizes, and the solve box says
+  "over $z$ and $y$ ($k+q$ unknowns)".
+- **Page budget** (the pass is +33 words net on the main text): the multi-seed sealed-ladder paragraph moved to
+  Appendix D with a one-line pointer (check_headline's "pre-registered secondary criterion" assertion now scans
+  main text plus appendix); the timing-protocol sentences that Appendix C.1 already carries were compressed to a
+  pointer; the three error-quantity definitions moved to Appendix A.6. No caveat was dropped.
+- Both checks pass; 0 overfull boxes; main text ends on page 9, References start on page 9; PDF 22 pages.
+
 ## 2026-09-22 (paper lane) — writing pass: abstract/intro restored to a8c9883d; 256³ intake withdrawn — CURRENT HANDOFF
 
 User: "Finish the writing first. We will update the numbers later." The Heat 3D 256³ intake I had committed as

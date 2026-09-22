@@ -25,7 +25,7 @@
 \node[online,text width=2.7cm] (init) at (5,0)
  {\textbf{Initialize}\\Initial reduced\\coordinates $(z_0,y_0)$};
 \node[online,text width=3.3cm] (solve) at (9,0)
- {\textbf{Reduced solve}\\Weak residual minimization\\Adjust $z$ and $y$};
+ {\textbf{Reduced solve}\\Minimise the weak residual\\over $z$ and $y$ ($k+q$ unknowns)};
 \node[online,text width=3.0cm] (out) at (13,0)
  {\textbf{Reconstruct}\\$u=\bank[\head(z)+\corr y]$\\Requested\\solution fields};
 \draw[arr] (in) -- (init);
@@ -39,8 +39,10 @@
 \node[align=left,text width=8.2cm,anchor=north west,font=\footnotesize] at (0,-2.05)
  {Source $f$, PDE parameters and boundary data define the residual.\\$q$: number of correction directions. Tolerance and iteration cap control the solve.};
 \node[align=left,text width=14.4cm,anchor=north west,font=\footnotesize] at (0,-3.7)
- {$\bank$: frozen spatial bank; $\head$: frozen neural head;
- $\corr$: fixed correction directions; $z$: nonlinear coordinates;
- $y$: correction coefficients. Solid arrows show online flow, the direct input dependency of the residual, or an evaluation choice;
+ {Frozen at deployment: $\bank$, the $n\times R$ spatial bank; $\head$,
+ the head that maps $k$ latent coordinates to $R$ coefficients; $\corr$,
+ the $R\times q$ correction directions; and the weak tests.
+ Solved at each query: the latent code $z\in\Real^{k}$ and the correction
+ coefficients $y\in\Real^{q}$. Solid arrows show online flow, the direct input dependency of the residual, or an evaluation choice;
  dashed arrows show reuse of prepared components.};
 \end{tikzpicture}

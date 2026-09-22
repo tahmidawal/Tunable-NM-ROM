@@ -10,17 +10,22 @@ of every NM-ROM query in the paper.
 \begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{\input{figures/architecture}}
-\caption{NM-ROM from training to prediction. Blue components are prepared
-before the query and remain frozen; orange boxes compute the online solution.
-The inputs initialize reduced coordinates, which are adjusted to minimize the
-weak PDE residual before reconstructing the requested fields. Initialization
-and the reduced solver are PDE-specific; linear-PDE corrections can be
-eliminated analytically. Time-dependent problems repeat the reduced step,
-with reconstruction at requested output times. Empirical quadrature (EQ)
-is an optional residual evaluation, used for two-dimensional Burgers;
-the three-dimensional and wave solves do not use it. Correction rank changes the
-representation, whereas EQ changes residual evaluation. Baselines are evaluated
-independently and are not stages of this pipeline.}
+\caption{NM-ROM from training to prediction, read left to right. Offline
+(blue), training fixes the spatial bank $\bank$, the head $\head$, the
+correction directions $\corr$ and the weak tests; these never change
+again. Online (orange), the PDE inputs do two things: they set the
+starting reduced coordinates $(z_0,y_0)$, taken from stored training
+codes, and they enter the weak residual directly. The reduced solve then
+adjusts the $k+q$ unknowns $(z,y)$ until that residual is small, and the
+reconstruction returns $u=\bank[\head(z)+\corr y]$ at the requested
+times. Time-dependent problems repeat the solve once per step.
+Initialisation and the reduced solver are PDE-specific, and for linear
+PDEs the correction coefficients are eliminated analytically rather than
+iterated. Empirical quadrature (EQ) is an optional way to evaluate the
+residual, used for two-dimensional Burgers; the three-dimensional and
+wave solves evaluate it densely. Correction rank changes what the model
+can represent; EQ changes only how the residual is evaluated. Baselines
+are separate methods, not stages of this pipeline.}
 \label{fig:arch}
 \end{figure}
 
@@ -334,6 +339,17 @@ numerical stopping, not a proof of global optimality.
 \input{tables/TH_jobs}
 
 \section{Validation of the correction and quadrature studies}
+\label{app:sealed-ladder}
+
+A separate ladder with $M=4(k+q)$, evaluated once on a sealed cohort,
+gives monotone error reduction for all \nSealedCheckpoints{} checkpoints
+(top-rank errors $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, Table~\ref{tab:sealed}); \nSealedKnobBarCount{} of \nSealedCheckpoints{}
+meet the pre-registered secondary criterion (settings spanning at least
+$2\times$ in error and in cost). Two stricter pre-registered checks fail:
+the original model's sealed-to-development ratio at $q=0$ (one sealed case
+converges to a wrong branch, $\nSealedIncQzero\,\%$) and universal
+convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
+
 
 
 \begin{table}[htbp]

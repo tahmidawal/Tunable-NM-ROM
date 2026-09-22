@@ -318,3 +318,91 @@ cases (the centered family is low rank; 1536 centered snapshots is ample),
 development seed 202609202 with 16 cases, truth CNAB2 at $\Delta t=0.001$. Every
 check, control and integrity rule above applies unchanged. Budget after this job:
 3 of 6.
+
+## Amendment — resolution ladder (`fast04`, `ladder64/96/128`, `sealed09`)
+
+Written before any of these jobs was staged. The user authorises up to 6 further
+GPU jobs (9 total for the cell), still at most one running.
+
+### Two bars, both binding
+
+At each mesh, on held-out cases: **worst evolved relative $L^2 \le 5\,\%$ per case**
+(stretch: $\le 1\,\%$) **and paired speedup $\ge 5\times$**. Neither may be bought
+with the other. Specifically:
+
+- The accurate setting's error is held at or below the $32^3$ level (0.449 %) as far
+  as the mesh allows; the rank-64 oracle floor was 0.128 %, so there is headroom.
+- Time is not spent where it does not lower error: the frontier is reported over
+  rank, step and iteration count, not as a single point.
+- If both bars cannot be met at a mesh, the report says **which one binds and why**
+  -- representation (the floor is already above the bar), time-step stability, or
+  residual solver overhead. A miss is a result; the comparator is not softened.
+
+### Comparator rule, with stability made explicit
+
+The comparator is the fastest tested **stable** CNAB2 setting whose evolved worst is
+no larger than the ROM's. A CNAB2 setting is **unstable** when any field is
+non-finite or its evolved worst exceeds 100 %; unstable settings are never
+comparators. Where an unstable setting is cheaper than the comparator, that is
+recorded next to the row rather than used, so "faster at matched accuracy" stays
+separable from "takes a step the FOM cannot". Both are reported:
+
+- **matched-accuracy comparator** -- the paper's rule above;
+- **stability-limited comparator** -- the fastest stable CNAB2 that itself meets the
+  5 % target, i.e. the cheapest the FOM can honestly be run at that mesh.
+
+### The driver fix, and its gate
+
+`ns2d_rom.make_lm` is generic: `jacfwd`, a data-dependent `while_loop`, and an
+accept/reject trial that re-evaluates residual *and* Jacobian. `cost02` measured
+that as roughly nine tenths of the query while the arithmetic is two orders of
+magnitude cheaper. It is replaced, for this residual only, by `make_frozen_run`: a
+fixed number of damped Gauss-Newton sweeps with an **analytic** Jacobian in a
+statically unrolled scan, warm-started by extrapolating the previous step's
+increment, with the constant parts of the Jacobian and the Crank-Nicolson
+preconditioner hoisted out of the sweep.
+
+**Gate, pre-registered.** The fast solver is used only where it reproduces the
+reference LM arm to a relative field agreement of $10^{-8}$ over the whole
+trajectory, and the reference LM arm is re-run **in the same job** so the
+before/after timing is paired. `test_fast_solver.py` additionally requires: the
+$\Phi$-free operator build to match the dense build to $10^{-12}$; the cheap test
+enumeration to equal `ns3d_rom.test_modes` exactly; `diagnose=False` (the timed
+variant) to produce bit-identical fields; and the query to stay translation
+equivariant to $10^{-12}$.
+
+`build_operators_fast` also removes the dense test matrix $\Phi$, which is 1.8 GB at
+$N=64$ and 14.7 GB at $N=128$ and whose einsums dominated the build. The tests are
+Fourier modes, so $\langle\phi_m,f\rangle$ is one coefficient of $\hat f$ and
+$\langle\phi_m,\partial_d f\rangle$ is the same coefficient times $2\pi i k_d$; both
+come from a single FFT of the bank. Validation at every mesh uses a random subset of
+densely built tests, a real check at a fraction of the memory.
+
+### Ladder
+
+Meshes $N \in \{64, 96, 128\}$, one job each, one directory each. Frozen across the
+ladder: training seed 202609201 with **128 cases** (uniform, so the bank quality is
+comparable between meshes), development seed 202609202 with 16 cases, truth CNAB2 at
+$\Delta t=0.001$, $T=0.2$, six output times, $M=292$ complete cos/sin pairs, damping
+$10^{-6}$, extrapolated warm start.
+
+Frontier per mesh: rank $\in \{64,128\}$ $\times$ $\Delta t \in \{0.04,0.02,0.01\}$
+$\times$ Gauss-Newton sweeps $\in \{2,3\}$. Also per mesh: the centered-POD
+oracle-shift **floor** at each rank (so a miss can be attributed), the reference LM
+arm at rank 64 / $\Delta t=0.01$, the centroid tracker, CNAB2 at
+$\Delta t \in \{0.004,0.005,0.01,0.02\}$ with stability flags, the isolated
+grid-sized pieces, and one interleaved timing block over every arm.
+
+$128^3$ runs on an **H200** with `--mem 240G`: the rank-128 bank alone is 6.4 GB on
+device and `build_tensor` peaks near 32 GB. Field `.npy` files are written for the
+in-job independent NumPy re-verification, checksummed into the manifest, and then
+deleted before the pull, because at $128^3$ they are several GB each.
+
+### Sealed draw (`sealed09`), conditional
+
+Run **only if** both bars are met at at least one mesh. One draw, one job, at the
+mesh with the largest joint margin, with rank, $\Delta t$, sweeps, $M$ and damping
+frozen from the ladder and recorded here as a further amendment before the job.
+Cohort: seed **202609221**, 32 cases, checked disjoint by rounded parameter row from
+training 202609201, development 202609202 and the closed 202609203 / 202609211.
+Opened once. If neither bar is met, the seed stays unopened and that is the result.

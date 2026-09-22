@@ -406,3 +406,33 @@ frozen from the ladder and recorded here as a further amendment before the job.
 Cohort: seed **202609221**, 32 cases, checked disjoint by rounded parameter row from
 training 202609201, development 202609202 and the closed 202609203 / 202609211.
 Opened once. If neither bar is met, the seed stays unopened and that is the result.
+
+## Amendment — ladder settings fixed on development, after `fast04` and `ladder64`
+
+Three changes, each made on development evidence and recorded before the
+remaining jobs were staged.
+
+1. **Rank 128 is dropped at $96^3$ and $128^3$.** It was carried at $32^3$ and
+   $64^3$ and lost on both axes at every step size: at $64^3$, 4.033 % against
+   1.990 % at $\Delta t=0.04$ and 1.356 % against 0.617 % at $\Delta t=0.02$, while
+   costing 7.273 ms against 4.748 ms. Its representation floor is six times lower
+   (0.020 % against 0.129 %), so **representation is not what binds**; the extra
+   modes add poorly-resolved reduced dynamics and a bank twice the size. Carrying
+   it at $128^3$ would also double a 3.2 GB device-resident bank for a setting
+   already known to lose.
+2. **The sweep ladder becomes $\{2,3,4\}$.** At $64^3$ no tested setting met the
+   pre-registered $10^{-8}$ parity gate: 3 sweeps gives $1.43\times10^{-8}$, a
+   factor of 1.4 over. That is **reported as a miss**, not absorbed by widening the
+   bound. Four sweeps met the gate at $32^3$ ($7.87\times10^{-9}$), so it is added
+   at the remaining meshes to give a strictly gate-passing row.
+3. **The parity gate is a reporting criterion, not a verifier assertion.**
+   `verify_ladder.py` made the $10^{-8}$ gate fatal, which aborted `ladder64`'s tail
+   after the science had completed and left the job with no checksum manifest (it
+   was recovered by re-running the verifier on the job directory, not by re-running
+   the job). The verifier now records the parity and fails only if the fast solver
+   does not reproduce the reference at all ($10^{-6}$); whether the $10^{-8}$ gate
+   is met is stated per mesh in the report.
+
+The FOM ladder is extended to $\Delta t \in \{0.001,0.002,0.004,0.005,0.01,0.02\}$
+so the comparator search reaches below the explicit stability limit at the finer
+meshes. $\Delta t = 0.001$ is the reference itself and is labelled as such.

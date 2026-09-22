@@ -118,6 +118,24 @@ def main():
                 f"CNAB2 dt={dname}" if dname else "none stable is as accurate",
                 ms(cms) if dname else "-", f"{ratio:.3f}x" if dname else "-"))
         W("")
+        finite = [float(d) for d, v in s["cnab2"].items() if not v["unstable"]]
+        blew = [float(d) for d, v in s["cnab2"].items() if v["unstable"]]
+        usable = [float(d) for d, v in s["cnab2"].items()
+                  if not v["unstable"] and v["stats"]
+                  and v["stats"]["evolved_worst"] <= float(s["config"]["target_relative"])]
+        if finite:
+            rom_dts = [v["dt"] for v in s["frontier"].values()]
+            rom_steps = min(v["steps"] for v in s["frontier"].values())
+            blew_text = (f"steps at or above {min(blew)} blew up (evolved worst over 100 %)"
+                         if blew else "no tested step blew up")
+            W(f"**Stability and step size.** For CNAB2 at this mesh, {blew_text}; the coarsest "
+              f"step that both stays finite and meets the 5 % target is {max(usable)} "
+              f"({s['cnab2'][repr(max(usable))]['steps']} steps) -- that is the "
+              "stability-limited comparator. The reduced model runs at "
+              f"{max(rom_dts)} ({rom_steps} steps), because its step is solved implicitly at "
+              "the midpoint instead of advanced explicitly. Where the two comparator columns "
+              "differ, the gap between them is the part of the margin that comes from a step "
+              "the FOM cannot take rather than from throughput.\n")
         W("### Baselines and the FOM ladder\n")
         W("| arm | evolved worst | over 5 % | median ms | note |")
         W("|---|---:|---:|---:|---|")

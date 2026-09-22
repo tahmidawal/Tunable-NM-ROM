@@ -1,0 +1,31 @@
+{
+  "family": "deeponet",
+  "prefix": "don",
+  "pde": "burgers",
+  "job_name": "ctol_don_don01",
+  "time": "04:40:00",
+  "arms": [
+    {
+      "name": "small",
+      "config": "code/configs/deeponet/small.json"
+    },
+    {
+      "name": "medium",
+      "config": "code/configs/deeponet/medium.json"
+    },
+    {
+      "name": "large",
+      "config": "code/configs/deeponet/large.json"
+    }
+  ],
+  "refine_learning_rate": 0.0003,
+  "per_arm_seconds": 3000.0,
+  "global_seconds": 15600.0,
+  "reserve_seconds": 900.0,
+  "design": "DeepONet capacity screen on the U-Net/Transolver protocol byte-for-byte: equal 3000-second wall budget per capacity with early stopping, then a learning-rate refinement of the validation-selected capacity; the same Burgers data, split, metric, optimiser, scheduler, patience, selection rule and seed as jobs 3780138 (unet01) and 3780139 (tsol01); matched eight-case cohort scoring and same-job timing",
+  "matched_arms": {
+    "unet01": "3780138",
+    "tsol01": "3780139",
+    "note": "the budget this lane matches; no timing is compared across those jobs"
+  }
+}

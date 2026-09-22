@@ -2,7 +2,7 @@
 #SBATCH --job-name=ns3dshift_ladder96
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
-#SBATCH --gres=gpu:h200:1
+#SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=240G
 #SBATCH --time=06:00:00

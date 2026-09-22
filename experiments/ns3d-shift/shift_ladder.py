@@ -75,6 +75,17 @@ def run_cases(call, dev, viscosities, keep=False):
     return errors, fields
 
 
+def disjointness(seed, count, others):
+    """Rounded-row overlap of a cohort against every other cohort. Must be zero."""
+    rows = np.round(F.parameters(int(seed), int(count)), 9)
+    out = {}
+    for other_seed, other_count in others:
+        other = np.round(F.parameters(int(other_seed), int(other_count)), 9)
+        keys = {tuple(x) for x in other}
+        out[str(other_seed)] = int(sum(1 for row in rows if tuple(row) in keys))
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=Path, required=True)
@@ -90,6 +101,7 @@ def main():
     for closed in cfg["closed_seeds"]:
         if int(closed) in (int(cfg["train_seed"]), int(cfg["dev_seed"])):
             raise RuntimeError("refusing to read a closed seed")
+    sealed = bool(cfg.get("sealed_cohort", False))
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
     free_gb = shutil.disk_usage(out).free / 2**30
@@ -104,7 +116,7 @@ def main():
     ranks = [int(x) for x in cfg["ranks"]]
     target = float(cfg["target_relative"])
     report = dict(schema="ns3d-shift-ladder-v1", config=cfg, smoke=bool(args.smoke),
-                  final_cohort_opened=False, device=str(jax.devices()),
+                  final_cohort_opened=sealed, device=str(jax.devices()),
                   source_commit=os.environ.get("SOURCE_COMMIT"),
                   job_id=os.environ.get("SLURM_JOB_ID"),
                   files={name: sha256_file(ROOT / name) for name in (
@@ -120,6 +132,17 @@ def main():
     train_par = F.parameters(int(cfg["train_seed"]), int(cfg["train_cases"]))
     dev_par = F.parameters(int(cfg["dev_seed"]), int(cfg["dev_cases"]))
     report["dev_parameter_sha256"] = D.sha256_array(dev_par)
+    if sealed:
+        others = [(cfg["train_seed"], cfg["train_cases"])] + \
+            [(s, c) for s, c in cfg["disjoint_against"]]
+        overlap = disjointness(cfg["dev_seed"], cfg["dev_cases"], others)
+        report["sealed_disjointness"] = overlap
+        log(f"sealed cohort disjointness (rounded-row overlaps): {overlap}")
+        if any(v for v in overlap.values()):
+            raise RuntimeError(f"sealed cohort overlaps another cohort: {overlap}")
+        if len(cfg["ranks"]) != 1 or len(cfg["rom_dt_ladder"]) != 1 \
+                or len(cfg["iters_ladder"]) != 1:
+            raise RuntimeError("a sealed draw runs exactly one frozen setting")
     log("generating trajectories")
     train, _, _ = D.generate(train_par, n, float(cfg["dt_truth"]), horizon)
     dev, _, _ = D.generate(dev_par, n, float(cfg["dt_truth"]), horizon)

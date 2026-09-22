@@ -20,15 +20,15 @@
   colorlinks=true,
   linkcolor=navy,
   urlcolor=blue,
-  pdftitle={Poisson ROM: From Training to Residual to Prediction},
+  pdftitle={Nonlinear-Manifold ROM: Poisson and Burgers from Training to Prediction},
   pdfauthor={Tunable NM-ROM project}
 }
 
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{Poisson ROM worked example}
-\rhead{Training $\rightarrow$ residual $\rightarrow$ prediction}
-\lfoot{\scriptsize $P$: interior grid values \quad $K$: latent variables \quad $R$: learned spatial patterns}
+\lhead{NM-ROM: Poisson and Burgers}
+\rhead{Training $\rightarrow$ precompute $\rightarrow$ solve}
+\lfoot{\scriptsize $P$: grid values \quad $K$: latent variables \quad $R$: learned patterns \quad $M$: test equations}
 \rfoot{\thepage}
 \setlength{\headheight}{14pt}
 
@@ -50,19 +50,20 @@
 \begin{document}
 
 \begin{center}
-  {\LARGE\bfseries\color{navy} Poisson ROM}\\[0.35em]
-  {\Large From Training to Residual to Final Prediction}\\[0.8em]
-  {\color{gray} A complete numerical walkthrough of the separable-decoder architecture}
+  {\LARGE\bfseries\color{navy} Nonlinear-Manifold ROM (NM-ROM)}\\[0.35em]
+  {\Large From Training to Poisson and Burgers Prediction}\\[0.8em]
+  {\color{gray} A numerical walkthrough of the separable-decoder architecture}
 \end{center}
 
 \vspace{0.5em}
 
 \keyidea{\textbf{Purpose of this document.}
-The project dimensions in Section~\ref{sec:real-sizes} are taken from the
-$N=256$ Poisson quadrature-free configuration.  The small matrices later in
-the document are deliberately constructed teaching numbers, not experimental
-measurements.  They use the same algebra as the production implementation and
-are consistent with a real four-point discrete Poisson problem.}
+Part I follows Poisson from training to a final prediction with small numbers.
+Part II explains the same architecture as a general nonlinear-manifold ROM.
+Part III shows exactly what changes for time-dependent Burgers.  The Poisson
+project dimensions in Section~\ref{sec:real-sizes} and the Burgers dimensions
+in Section~\ref{sec:burgers-sizes} come from the implemented configurations.
+The small arithmetic examples are teaching numbers, not measured results.}
 
 \setcounter{tocdepth}{1}
 \tableofcontents
@@ -683,7 +684,7 @@ $\mat{A}$, and stores the forcing after inverse-eigenvalue scaling.  The
 apparent disappearance of $\mat{W}$ and $\mat{\Lambda}$ is only an algebraic
 fold; it does not change the residual.
 
-\section{The entire method in twelve lines}
+\section{The Poisson method in twelve lines}
 
 \begin{enumerate}
   \item Generate full-order Poisson training solutions.
@@ -706,6 +707,501 @@ the full grid is used to build the spatial bank, to project a new source, and
 to return the final field.  It is not revisited during every latent-solver
 iteration.  Each iteration uses only the small latent MLP and precomputed
 dense matrices.}
+
+\clearpage
+\section{How this becomes a general NM-ROM}
+\label{sec:general-nmrom}
+
+The decoder used above is not only a Poisson decoder.  Its general form is
+still
+\begin{equation}
+  \underbrace{\vect{z}}_{K\text{ latent variables}}
+  \longrightarrow
+  \underbrace{\vect{h}(\vect{z})}_{R\text{ coefficients}}
+  \longrightarrow
+  \underbrace{\mat{G}\vect{h}(\vect{z})}_{P\text{ physical-grid values}}.
+\end{equation}
+Here $P$ counts physical-grid values, $K$ counts the latent variables changed
+by the online solver, and $R$ counts the frozen learned spatial patterns in
+$\mat{G}$ and their matching coefficients in $\vect{h}(\vect{z})$.
+
+Although $\mat{G}$ is fixed, the predicted solution is not fixed.  The
+coefficient vector $\vect{h}(\vect{z})$ changes when $\vect{z}$ changes, so the
+same columns of $\mat{G}$ can make many different fields.  A simple analogy is
+a fixed palette of $R$ paint colors: keeping the palette fixed does not keep
+the painting fixed, because the mixture changes.
+
+There are two nested geometric objects:
+\begin{itemize}
+  \item All combinations $\mat{G}\vect{c}$, with any $R$-entry coefficient
+        vector $\vect{c}$, form a linear space of dimension at most $R$.
+  \item The neural head permits only coefficients of the form
+        $\vect{c}=\vect{h}(\vect{z})$, where $\vect{z}$ has only $K$ entries.
+        This usually traces a curved, $K$-dimensional surface inside the
+        larger $R$-dimensional coefficient space.
+\end{itemize}
+That curved surface is the learned \emph{nonlinear manifold}.  The spatial
+bank $\mat{G}$ can therefore be fixed while the allowed solutions depend
+nonlinearly on the $K$ latent variables.
+
+\keyidea{\textbf{What ``generalizes'' means here.}
+The trained model can solve new parameter values, source fields, initial
+conditions, or time states from the same problem family by finding a new
+latent vector.  It does not automatically generalize to an unrelated PDE,
+boundary condition, or operator.  A changed mesh requires the continuous
+spatial network to be reevaluated and all projected objects to be rebuilt;
+accuracy on that mesh must also be checked.}
+
+There is an important conditional statement for linear Poisson.  If a forcing
+has a finite affine expansion
+\begin{equation}
+  \vect{f}(\mu)=\sum_{a=1}^{A}\theta_a(\mu)\vect{f}_a,
+\end{equation}
+then, for a fixed invertible Poisson matrix $\mat{L}$,
+\begin{equation}
+  \vect{u}(\mu)
+  =\sum_{a=1}^{A}\theta_a(\mu)\mat{L}^{-1}\vect{f}_a.
+\end{equation}
+Those exact solutions lie in the linear span of the $A$ fixed fields
+$\mat{L}^{-1}\vect{f}_a$, so a nonlinear head cannot improve representation
+accuracy; its possible value is reducing online cost.  The implemented
+Poisson data use Gaussian sources, which are not affine in their center and
+width parameters.  Therefore that theorem does not, by itself, prove that the
+implemented Gaussian solution family is a low-dimensional linear subspace.
+The Poisson residual precomputation remains exact because the operator is fixed
+and each new source enters only through its projected right-hand side.
+
+\section{The general offline and online recipe}
+
+Suppose a discretized PDE is written as
+\begin{equation}
+  \vect{F}(\vect{u};\vect{d})=\vect{0}.
+\end{equation}
+The vector $\vect{u}$ has $P$ physical-grid values.  The symbol $\vect{d}$
+collects the data that define the particular problem, such as a forcing,
+viscosity, previous time state, or boundary data.
+
+After auto-decoder training, freeze $\mat{G}$ and the head
+$\vect{h}$.  Choose $M$ smooth test functions and store them as columns of
+$\mat{\Phi}\in\mathbb{R}^{P\times M}$.  Here $M$ is the number of weak test
+equations, whereas $P$ is the number of physical-grid values.  The online
+solver minimizes the weighted weak residual
+\begin{equation}
+  \vect{r}(\vect{z};\vect{d})
+  =\mat{W}\mat{\Phi}^{\mathsf T}
+    \vect{F}\!\left(\mat{G}\vect{h}(\vect{z});\vect{d}\right).
+\end{equation}
+This says: decode a candidate field, apply the discrete PDE, project the
+mismatch onto $M$ smooth test functions, and adjust the $K$ latent variables
+until that projected mismatch is small.
+
+The amount that can be precomputed is determined by the algebraic degree of
+the PDE residual as a function of the state $\vect{u}$:
+
+\begin{center}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth}
+                    >{\raggedright\arraybackslash}p{0.33\textwidth}
+                    >{\raggedright\arraybackslash}p{0.37\textwidth}@{}}
+\toprule
+State dependence & Typical term & What is stored before the online solve \\
+\midrule
+Degree 1: linear & diffusion, Poisson, Stokes & an $M\times R$ projected matrix \\
+Degree 2: quadratic & Burgers advection, fluid convection & an $M\times R\times R$ tensor \\
+Non-polynomial & $|u|$, $1/\rho$, limiters & exact polynomial pieces, plus samples or another approximation for the rest \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For example, a fixed linear term $\mat{L}\vect{u}$ becomes
+\begin{equation}
+  \mat{\Phi}^{\mathsf T}\mat{L}\mat{G}\vect{h}(\vect{z}).
+\end{equation}
+Everything before $\vect{h}(\vect{z})$ is one precomputed $M\times R$
+matrix.  A quadratic term contains products of two entries of
+$\vect{h}(\vect{z})$, so its coefficients form a three-index tensor: one
+index for the $M$ test equations and two indices for pairs of the $R$ learned
+patterns.
+
+\section{Burgers: what changes from Poisson}
+
+The implemented one-dimensional model is viscous Burgers on the interval
+$[0,1]$ with zero values at both walls.  In continuous notation,
+\begin{equation}
+  u_t+u\,u_x=\nu u_{xx}.
+\end{equation}
+The viscosity $\nu$ controls diffusion.  Small $\nu$ permits a sharper moving
+front; larger $\nu$ smooths it more strongly.
+
+Backward Euler turns one time step into the nonlinear equation
+\begin{equation}
+  \underbrace{\vect{u}^{\,n+1}-\vect{u}^{\,n}}_{\text{change over one step}}
+  +\Delta t\left[
+    \underbrace{\vect{N}(\vect{u}^{\,n+1})}_{\text{advection}}
+    -\underbrace{\nu\mat{\Delta}_h\vect{u}^{\,n+1}}_{\text{diffusion}}
+  \right]
+  =\vect{0}.
+  \label{eq:burgers-step}
+\end{equation}
+Here $n$ labels the known old time, $n+1$ labels the unknown new time,
+$\Delta t=0.005$ is the time-step size, $\nu$ is the viscosity, and
+$\mat{\Delta}_h$ is the discrete second derivative.  The implementation takes
+50 steps.  Therefore one initial field produces 51 saved states: the initial
+state plus 50 new states.
+
+Poisson has one solve for one source.  Burgers instead has a chain of solves.
+At every time step, the previous decoded state is known and the next $K$-entry
+latent vector must be found.
+
+\subsection{The real Burgers sizes}
+\label{sec:burgers-sizes}
+
+For a concrete $N=256$ Burgers grid, two points are boundary points and
+\begin{equation}
+  P=256-2=254
+\end{equation}
+physical interior-grid values remain.  The implemented model sizes are
+\begin{equation}
+  K=8,\qquad R=32,\qquad M=32.
+\end{equation}
+Thus the online solver adjusts $K=8$ latent variables; the frozen spatial bank
+contains $R=32$ learned patterns and the head returns 32 matching
+coefficients; and the weak residual has $M=32$ test equations.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Object & Shape at $N=256$ & Plain meaning \\
+\midrule
+$\vect{z}$ & $8=K$ & latent unknowns in one time-step solve \\
+$\vect{h}(\vect{z})$ & $32=R$ & coefficients of the learned patterns \\
+$\mat{G}$ & $254\times32=P\times R$ & learned patterns on the interior grid \\
+$\mat{\Phi}$ & $254\times32=P\times M$ & 32 sine test functions on that grid \\
+$\mat{B}=\mat{\Phi}^{\mathsf T}\mat{G}$ & $32\times32=M\times R$ & projected spatial bank \\
+$\mat{Q}$ & $32\times32\times32=M\times R\times R$ & projected pairwise advection interactions \\
+$\vect{r}$ & $32=M$ & weak residual for one candidate state \\
+$\mat{J}_r$ & $32\times8=M\times K$ & residual sensitivity to the latent variables \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The training generator produces 512 trajectories.  Each has 51 states, so
+26,112 states are available; the configuration selects at most 8,192 of them
+for auto-decoder training.  Every selected state receives its own $K=8$ entry
+training code.  The networks learn one $P$-by-$R$ spatial bank and a nonlinear
+map from those eight latent variables to $R=32$ coefficients, exactly as in
+the Poisson training description.
+
+The Burgers spatial network starts from one coordinate $x$.  Sixty-four
+learned frequencies produce 64 sine and 64 cosine values, giving 128 Fourier
+features.  The path is
+\begin{equation}
+  \mathbb{R}^{1}
+  \longrightarrow128\text{ Fourier features}
+  \longrightarrow128
+  \longrightarrow128
+  \longrightarrow\mathbb{R}^{32}.
+\end{equation}
+Its 32 outputs are the $R=32$ raw learned-pattern values at $x$.  The stored
+bank row is actually
+\begin{equation}
+  G(x,:)=s\,4x(1-x)\,\widetilde{\vect{g}}(x)^{\mathsf T},
+\end{equation}
+where $s$ is the fixed root-mean-square amplitude of the training data.
+The factor $4x(1-x)$ makes every pattern zero at both walls.  The Burgers
+latent head is
+\begin{equation}
+  \mathbb{R}^{8}\longrightarrow128\longrightarrow128
+  \longrightarrow\mathbb{R}^{32},
+\end{equation}
+plus a separate linear skip from its $K=8$ latent inputs to its $R=32$
+coefficient outputs.  Both hidden layers use the SiLU activation.
+
+\section{Burgers one-time precomputation}
+
+The $M=32$ lowest discrete sine modes are used as test functions.  They are
+eigenvectors of the negative discrete Laplacian, so
+\begin{equation}
+  -\mat{\Delta}_h\mat{\Phi}=\mat{\Phi}\mat{\Lambda},
+\end{equation}
+where $\mat{\Lambda}$ contains $M$ positive eigenvalues.  First precompute
+\begin{equation}
+  \mat{B}=\mat{\Phi}^{\mathsf T}\mat{G}
+  \in\mathbb{R}^{M\times R}.
+\end{equation}
+Here $M$ counts test equations and $R$ counts learned patterns.  This single
+matrix handles both the state-change term and, with the eigenvalues, the
+linear diffusion term in Equation~\eqref{eq:burgers-step}.
+
+The advection term is quadratic.  At interior grid node $i$, a decoded field
+value is
+\begin{equation}
+  u_i=\sum_{k=1}^{R}G_{ik}h_k,
+\end{equation}
+a backward difference gives
+\begin{equation}
+  (D^-u)_i=\sum_{k=1}^{R}(D^-G)_{ik}h_k.
+\end{equation}
+Multiplying the two expressions produces every pair of coefficients
+$h_jh_k$.  Projecting that product onto test function $m$ gives
+\begin{equation}
+  T_{mjk}
+  =\sum_{i=1}^{P}\Phi_{im}\,G_{ij}\,(D^-G)_{ik}.
+  \label{eq:T-burgers}
+\end{equation}
+The index $m$ selects one of the $M$ test equations.  The indices $j$ and $k$
+select an ordered pair of the $R$ learned spatial patterns.  Consequently
+$\mat{T}$ has shape $M\times R\times R$.
+
+The raw tensor is not symmetric because one bank factor is differenced and
+the other is not.  Store the symmetrized tensor
+\begin{equation}
+  Q_{mjk}=T_{mjk}+T_{mkj}.
+\end{equation}
+For one $R$-entry coefficient vector $\vect{h}$, the complete projected
+advection vector is then
+\begin{equation}
+  q_m(\vect{h})
+  =\frac{1}{2}\vect{h}^{\mathsf T}\mat{Q}_m\vect{h},
+  \qquad m=1,\ldots,M.
+  \label{eq:q-burgers}
+\end{equation}
+There is one $R\times R$ matrix slice $\mat{Q}_m$ for each test equation.
+With $M=R=32$, the production tensor contains $32^3=32{,}768$ numbers, which
+occupy 256 KiB in 64-bit floating point.
+
+\subsection{A two-coefficient tensor calculation}
+
+This tiny arithmetic example explains the contraction in
+Equation~\eqref{eq:q-burgers}.  Suppose one test equation has
+\begin{equation}
+  \mat{Q}_1=\begin{bmatrix}2&1\\1&4\end{bmatrix},
+  \qquad
+  \vect{h}=\begin{bmatrix}1\\2\end{bmatrix}.
+\end{equation}
+Here the teaching example has $R=2$ learned-pattern coefficients.  First,
+\begin{equation}
+  \mat{Q}_1\vect{h}
+  =\begin{bmatrix}2&1\\1&4\end{bmatrix}
+   \begin{bmatrix}1\\2\end{bmatrix}
+  =\begin{bmatrix}4\\9\end{bmatrix}.
+\end{equation}
+Then
+\begin{equation}
+  q_1(\vect{h})
+  =\frac12\begin{bmatrix}1&2\end{bmatrix}
+    \begin{bmatrix}4\\9\end{bmatrix}
+  =\frac12(22)=11.
+\end{equation}
+That one number is the advection contribution to one test equation.  The real
+model performs the same operation for all $M=32$ test equations and all
+$R=32$ coefficients at once.
+
+\section{The Burgers residual, term by term}
+
+Assume the old latent state $\vect{z}^{\,n}$ is known.  Its projected physical
+state is computed once as
+\begin{equation}
+  \vect{p}^{\,n}
+  =\mat{B}\vect{h}(\vect{z}^{\,n})
+  =\mat{\Phi}^{\mathsf T}\vect{u}^{\,n}.
+\end{equation}
+The vector $\vect{p}^{\,n}$ has $M$ entries, one per test equation.  It does
+not have $P$ entries because the known field has already been projected.
+
+For a candidate new latent state $\vect{z}$, write
+\begin{equation}
+  \vect{c}=\vect{h}(\vect{z}).
+\end{equation}
+The vector $\vect{z}$ has $K=8$ latent variables and the vector $\vect{c}$ has
+$R=32$ learned-pattern coefficients.  The exact small residual used by the
+tensor arm is
+\begin{equation}
+\boxed{
+  \vect{r}(\vect{z})
+  =\mat{W}_{\nu}\left[
+      \underbrace{\mat{B}\vect{c}-\vect{p}^{\,n}}_{\text{change from the old state}}
+      +\underbrace{\Delta t\,\nu\mat{\Lambda}\mat{B}\vect{c}}_{\text{diffusion}}
+      +\underbrace{\Delta t\,\vect{q}(\vect{c})}_{\text{advection}}
+    \right].
+}
+\label{eq:burgers-small-residual}
+\end{equation}
+Every quantity inside the brackets has $M=32$ entries.  Reading from left to
+right:
+\begin{itemize}
+  \item $\mat{B}\vect{c}$ is the candidate new field projected onto the test
+        functions.
+  \item $\vect{p}^{\,n}$ is the already projected old field.
+  \item $\Delta t$ is the time-step size, here 0.005.
+  \item $\nu$ is the viscosity for this trajectory.
+  \item $\mat{\Lambda}\mat{B}\vect{c}$ is the projected negative-Laplacian
+        contribution.
+  \item $\vect{q}(\vect{c})$ is the quadratic tensor contraction from
+        Equation~\eqref{eq:q-burgers}.
+\end{itemize}
+
+The fixed diagonal weighting is
+\begin{equation}
+  \mat{W}_{\nu}
+  =\operatorname{diag}\!\left(
+      \frac{1}{1+\Delta t\,\nu\lambda_1},\ldots,
+      \frac{1}{1+\Delta t\,\nu\lambda_M}
+    \right).
+\end{equation}
+It rescales high-frequency test equations, whose Laplacian eigenvalues are
+larger.  It changes cheaply when the viscosity $\nu$ changes; the spatial bank
+$\mat{G}$, projected bank $\mat{B}$, eigenvalues, and tensor $\mat{Q}$ remain
+fixed.
+
+For the Jacobian, the derivative of one quadratic entry is especially simple:
+\begin{equation}
+  \frac{\partial q_m}{\partial\vect{c}}
+  =(\mat{Q}_m\vect{c})^{\mathsf T}.
+\end{equation}
+Stacking those rows into $\mat{D}_q(\vect{c})\in\mathbb{R}^{M\times R}$ gives
+\begin{equation}
+  \mat{J}_r
+  =\mat{W}_{\nu}
+   \left[
+     \mat{B}+\Delta t\,\nu\mat{\Lambda}\mat{B}
+     +\Delta t\,\mat{D}_q(\vect{c})
+   \right]
+   \underbrace{\frac{\partial\vect{h}}{\partial\vect{z}}}_{R\times K}.
+\end{equation}
+The final Jacobian has shape $M\times K$: one row per test equation and one
+column per latent variable.  In the code, automatic differentiation passes
+through the complete small reduced residual---the latent head plus its cached
+matrix and tensor contractions.  It does not pass through a $P$-point
+advection stencil.
+
+\section{One complete Burgers rollout}
+
+For a new initial condition and viscosity, the online calculation is:
+\begin{enumerate}
+  \item Receive the initial field $\vect{u}^{\,0}$ with $P$ interior values.
+  \item Find an initial $K$-entry latent vector $\vect{z}^{\,0}$ whose decoded
+        field $\mat{G}\vect{h}(\vect{z}^{\,0})$ fits that initial field.
+  \item Compute its $M$-entry projection
+        $\vect{p}^{\,0}=\mat{B}\vect{h}(\vect{z}^{\,0})$.
+  \item Extrapolate the last two latent states to obtain an initial guess for
+        the next state.  At the first step they are identical, so the initial
+        code itself is used.
+  \item Repeatedly evaluate the head, the fixed matrix products, the quadratic
+        tensor contraction, and Equation~\eqref{eq:burgers-small-residual}.
+        Levenberg--Marquardt adjusts only the $K=8$ latent variables.
+  \item Stop when the residual is sufficiently small, progress stalls, the
+        proposed step is tiny, the damping reaches its maximum after rejected
+        steps, the iteration budget is exhausted, or the initial residual is
+        nonfinite.  Carry the current latent state forward and record which
+        stop condition occurred.
+  \item Set
+        $\vect{p}^{\,n+1}=\mat{B}\vect{h}(\vect{z}^{\,n+1})$ and repeat until
+        all 50 steps are complete.
+  \item Decode the saved latent states when the physical fields are needed.
+\end{enumerate}
+
+The inner time-step solve uses the $K$-entry latent vector, the $R$-entry head
+output, the $M$-entry residual, one $M\times R$ matrix, and one
+$M\times R\times R$ tensor.  It does not traverse the $P$ physical-grid values.
+Fitting the initial condition and returning physical fields still touch the
+grid, so the claim of grid-independent cost applies to the cached latent
+solve, not to every part of the end-to-end workflow.
+
+\section{The important upwind sign caveat}
+
+The implemented full-order model uses sign-dependent upwinding:
+\begin{equation}
+  (D^{\mathrm{up}}u)_i=
+  \begin{cases}
+    (u_i-u_{i-1})/\Delta x, & u_i>0,\\
+    (u_{i+1}-u_i)/\Delta x, & u_i\le 0.
+  \end{cases}
+\end{equation}
+The advection at node $i$ is $u_i(D^{\mathrm{up}}u)_i$.  A fixed
+backward-difference tensor is guaranteed to represent this expression exactly
+for a nonnegative decoded field.  At $u_i=0$, the forward/backward choice is
+irrelevant because the product is zero.  Once negative values occur, the
+stencil changes and the tensor generally differs from the full sign-upwind
+operator, although special cancellations can still occur.
+
+The same operator can be written as
+\begin{equation}
+  \vect{N}_{\mathrm{upwind}}(\vect{u})
+  =\vect{u}\odot D^c\vect{u}
+   -\frac{\Delta x}{2}|\vect{u}|\odot\mat{\Delta}_h\vect{u}.
+\end{equation}
+The first term is quadratic and can be stored in a tensor.  The second contains
+$|\vect{u}|$, which is not a polynomial in the state, so it still needs
+sampling or another approximation for genuinely sign-changing fields.
+
+This distinction leads to three logically different Burgers models:
+\begin{itemize}
+  \item \textbf{Sign-upwind plus a plain backward tensor:} guaranteed exact on
+        the nonnegative part of state space; its general mismatch on
+        sign-changing states must be measured, not hidden.
+  \item \textbf{Sign-upwind in split form:} precompute the quadratic central
+        term and sample only the $|u|$ stabilizer.
+  \item \textbf{A skew-symmetric or centered quadratic discretization:}
+        representable exactly by a tensor for either sign, but it is a
+        different full-order discretization and must be judged against its own
+        full-order solution.
+\end{itemize}
+
+For the current positive-blob family, the full-order fields are intended to
+remain nonnegative, while decoded candidates can undershoot slightly below
+zero.  Therefore the plain tensor is algebraically exact on nonnegative
+decoded fields and only near the full sign-upwind oracle when those
+undershoots occur.  It should not be described as universally exact for
+upwind Burgers.
+
+\section{Poisson and Burgers side by side}
+
+\begin{center}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth}
+                    >{\raggedright\arraybackslash}p{0.34\textwidth}
+                    >{\raggedright\arraybackslash}p{0.34\textwidth}@{}}
+\toprule
+Question & Poisson & Burgers \\
+\midrule
+Unknown online & one $K$-entry latent vector for a new source & one $K$-entry latent vector at each time step \\
+Known problem data & projected source & viscosity and projected previous state \\
+State degree & linear, degree 1 & linear diffusion plus quadratic advection \\
+Main cached object & $M\times R$ matrix & $M\times R$ matrix and $M\times R\times R$ tensor \\
+Full grid in the inner solve? & no & no for the tensor arm \\
+Main limitation & new operator or boundary data require rebuilding & non-polynomial sign-upwind part is not one global tensor \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\keyidea{\textbf{Answer to ``Is a fixed matrix generalizable?''}
+Yes, within the problem family for which it was built.  The fixed matrix is
+not a stored answer; it is a compact representation of how the fixed PDE
+operator acts on the learned spatial patterns.  New data change the latent
+coefficients and therefore change the solution.  If the operator has affine
+parameter dependence, one matrix can be stored for each fixed component and
+combined online.  A new PDE, boundary condition, non-affine operator, or
+unvalidated state family requires new projected objects and possibly new
+training.}
+
+\section{The full NM-ROM pipeline in fifteen lines}
+
+\begin{enumerate}
+  \item Generate full-order solution snapshots from the intended PDE family.
+  \item Give each selected snapshot a trainable $K$-entry latent code.
+  \item Train the spatial network, latent head, and codes to reconstruct the snapshots.
+  \item Freeze both networks.
+  \item Evaluate the spatial network to build the $P\times R$ bank $\mat{G}$.
+  \item Choose $M$ smooth test functions and build $\mat{\Phi}$.
+  \item Precompute an $M\times R$ matrix for every linear state term.
+  \item Precompute an $M\times R\times R$ tensor for every quadratic state term.
+  \item Identify every non-polynomial term that still requires sampling.
+  \item Receive new problem data: a source for Poisson, or an initial condition and viscosity for Burgers.
+  \item Obtain an initial $K$-entry latent guess.
+  \item Evaluate only the small head and cached reduced operators inside the latent solve.
+  \item Use the $M\times K$ residual Jacobian to update the latent vector.
+  \item For an unsteady PDE, carry the accepted latent state into the next time step.
+  \item Decode $\mat{G}\vect{h}(\vect{z})$ when the $P$-value physical field is needed.
+\end{enumerate}
 
 \clearpage
 \section*{Plain-language glossary}
@@ -757,7 +1253,48 @@ The new forcing projected onto the retained test functions.
 
 \textbf{$\vect{r}(\vect{z})$ --- residual.}
 The weighted mismatch between the decoded field's projected Poisson response
-and the projected forcing.
+and the projected forcing, or between two consecutive states and the projected
+time-dependent PDE terms for Burgers.
+
+\textbf{$\mat{T}$ --- raw Burgers interaction tensor.}
+Stores the projection of every ordered pair consisting of one learned pattern
+and one backward-differenced learned pattern.
+
+\textbf{$\mat{Q}$ --- symmetric Burgers interaction tensor.}
+The raw tensor plus its transpose in the two learned-pattern indices.  It is
+used in the quadratic contraction and its derivative.
+
+\textbf{$\vect{q}(\vect{h})$ --- projected advection.}
+The $M$-entry vector produced by contracting the Burgers tensor with the
+$R$-entry coefficient vector twice.
+
+\textbf{$\Delta t$ --- time-step size.}
+The amount of simulated time advanced by one backward-Euler solve.
+
+\textbf{$\nu$ --- viscosity.}
+The Burgers parameter controlling the strength of diffusion.
+
+\textbf{FOM --- full-order model.}
+The reference discretized PDE solver that evolves all physical-grid values.
+
+\textbf{LM --- Levenberg--Marquardt.}
+The damped nonlinear least-squares method used to adjust the latent variables.
+
+\textbf{NM-ROM --- nonlinear-manifold reduced-order model.}
+A reduced solver whose admissible states are selected by a nonlinear map from
+the latent vector, here $\vect{u}=\mat{G}\vect{h}(\vect{z})$.
+
+\textbf{Polynomial degree in the state.}
+The highest number of state factors multiplied together in a residual term:
+one for a linear term, two for a quadratic term.
+
+\textbf{Sign-upwind.}
+An advection difference that switches between a backward and forward stencil
+according to the sign of the local velocity.
+
+\textbf{Tensor contraction.}
+Summing the stored pairwise interaction coefficients against every product
+$h_jh_k$ to produce the projected quadratic term.
 
 \textbf{Auto-decoder.}
 A decoder trained with one free latent code per training snapshot, without a

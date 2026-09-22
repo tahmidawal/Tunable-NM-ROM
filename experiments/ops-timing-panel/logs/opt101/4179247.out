@@ -1,0 +1,105 @@
+host=pax049 source_commit=e664fe450c6d743a8d3beeddf6e1d1000fda96ab
+NVIDIA A100 80GB PCIe, 81920 MiB, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc
+10.235.106.20:/projects/paralab  4.6T  4.2T  439G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+DECLARED 21 subjects: fft_tight dense_tight nt1e-2_dt01 nt1e-2_dt005 nt1e-3_dt01 nt1e-3_dt005 nt1e-4_dt01 nt1e-4_dt005 q0_M64_dense_g1em06 q256_M1088_dense_g1em06 q0_M64_eqcert_g1em06 q256_M1088_eqcert_g1em06 q0_M64_eqtop_g1em06 q256_M1088_eqtop_g1em06 pod256_M1024_dense pod512_M2048_dense q0_M64_eqcert_g1em06_fastL4 q0_M64_eqcert_g0p001 q256_M1088_eqcert_g0p001 q0_M64_eqtop_g0p001 q256_M1088_eqtop_g0p001
+REFERENCE 0 79.5
+REFERENCE 1 145.4
+REFERENCE 2 236.5
+REFERENCE 3 320.4
+REFERENCE 4 392.2
+REFERENCE 5 456.7
+SNAPSHOTS 14.8
+RULE eqcert q 0 m 1024 primary
+RULE eqcert q 256 m 2048 secondary
+RULE eqtop q 0 m 1024 primary
+RULE eqtop q 256 m 2560 primary
+RECON q 0 2.54466 51.5
+RECON q 256 0.90164 211.1
+ARM fft_tight 0.4
+ARM dense_tight 0.3
+ARM nt1e-2_dt01 0.0
+ARM nt1e-2_dt005 0.0
+ARM nt1e-3_dt01 0.0
+ARM nt1e-3_dt005 0.0
+ARM nt1e-4_dt01 0.0
+ARM nt1e-4_dt005 0.0
+ARM q0_M64_dense_g1em06 1.0
+ARM q256_M1088_dense_g1em06 1.1
+ARM q0_M64_eqcert_g1em06 0.0
+ARM q256_M1088_eqcert_g1em06 0.0
+ARM q0_M64_eqtop_g1em06 0.0
+ARM q256_M1088_eqtop_g1em06 0.0
+ARM pod256_M1024_dense 5.3
+ARM pod512_M2048_dense 7.2
+ARM q0_M64_eqcert_g1em06_fastL4 2.5
+ARM q0_M64_eqcert_g0p001 0.0
+ARM q256_M1088_eqcert_g0p001 0.0
+ARM q0_M64_eqtop_g0p001 0.0
+ARM q256_M1088_eqtop_g0p001 0.0
+WARM fft_tight 1.2
+WARM dense_tight 2.7
+WARM nt1e-2_dt01 1.0
+WARM nt1e-2_dt005 0.0
+WARM nt1e-3_dt01 0.0
+WARM nt1e-3_dt005 0.0
+WARM nt1e-4_dt01 0.0
+WARM nt1e-4_dt005 0.0
+WARM q0_M64_dense_g1em06 5.8
+WARM q256_M1088_dense_g1em06 20.8
+WARM q0_M64_eqcert_g1em06 3.4
+WARM q256_M1088_eqcert_g1em06 6.9
+WARM q0_M64_eqtop_g1em06 2.2
+WARM q256_M1088_eqtop_g1em06 7.3
+WARM pod256_M1024_dense 4.9
+WARM pod512_M2048_dense 6.8
+WARM q0_M64_eqcert_g1em06_fastL4 4.6
+WARM q0_M64_eqcert_g0p001 2.2
+WARM q256_M1088_eqcert_g0p001 3.8
+WARM q0_M64_eqtop_g0p001 2.9
+WARM q256_M1088_eqtop_g0p001 3.9
+TIMED 0 994.3
+TIMED 1 1099.4
+TIMED 2 1204.6
+TIMED 3 1309.9
+TIMED 4 1415.1
+PANEL COMPLETE
+OPERATOR PHASE
+op_exit fno-large=0
+FNO burgers-dev-00004 device_ms 7.322
+FNO burgers-dev-00005 device_ms 7.332
+FNO PANEL COMPLETE
+op_exit unet-small=0
+FNO burgers-dev-00004 device_ms 9.443
+FNO burgers-dev-00005 device_ms 9.436
+FNO PANEL COMPLETE
+op_exit unet-medium=0
+FNO burgers-dev-00004 device_ms 5.847
+FNO burgers-dev-00005 device_ms 5.842
+FNO PANEL COMPLETE
+op_exit unet-large=0
+FNO burgers-dev-00004 device_ms 10.068
+FNO burgers-dev-00005 device_ms 10.041
+FNO PANEL COMPLETE
+op_exit unet-refine=0
+FNO burgers-dev-00004 device_ms 5.858
+FNO burgers-dev-00005 device_ms 5.85
+FNO PANEL COMPLETE
+op_exit tsol-small=0
+FNO burgers-dev-00004 device_ms 11.037
+FNO burgers-dev-00005 device_ms 11.025
+FNO PANEL COMPLETE
+op_exit tsol-medium=0
+FNO burgers-dev-00004 device_ms 12.834
+FNO burgers-dev-00005 device_ms 12.818
+FNO PANEL COMPLETE
+op_exit tsol-large=0
+FNO burgers-dev-00004 device_ms 15.275
+FNO burgers-dev-00005 device_ms 15.274
+FNO PANEL COMPLETE
+op_exit tsol-refine=0
+FNO burgers-dev-00004 device_ms 11.061
+FNO burgers-dev-00005 device_ms 11.039
+FNO PANEL COMPLETE
+ALL-DONE

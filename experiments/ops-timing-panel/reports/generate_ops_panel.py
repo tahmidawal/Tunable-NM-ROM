@@ -21,8 +21,14 @@ from pathlib import Path
 FAMILY_LABEL = {'rom': 'NM-ROM', 'fast': 'NM-ROM (fast kernel)', 'pod': 'POD-LSPG', 'free': 'free bank',
                 'fno': 'FNO', 'unet': 'U-Net', 'transolver': 'Transolver', 'fom': 'FOM'}
 ROLE = {'unet-refine': 'validation-selected', 'tsol-refine': 'validation-selected',
-        'fno-large': 'validation-selected', 'unet-medium': 'best worst-case (not selected)',
-        'tsol-large': 'best worst-case (not selected)'}
+        'fno-large': 'validation-selected',
+        'unet-medium': 'best worst case on no-second\'s validation set; not selected',
+        'tsol-large': 'best worst case on no-second\'s validation set; not selected'}
+# no-second's 32-case VALIDATION worst percentages, for the ordering observation only. Those
+# cases are a different split from this panel's cohort, so the percentages are never compared;
+# only whether the two arms rank the same way is.
+NOSECOND_VALIDATION_WORST = {'unet-refine': 7.5176, 'unet-medium': 3.9622,
+                             'tsol-refine': 9.3183, 'tsol-large': 6.3953}
 
 
 def sha(path):
@@ -136,9 +142,55 @@ def main():
     acc = by.get('q256_M1088_eqtop_g0p001')
     fast = by.get('q0_M64_eqcert_g1em06_fastL4')
     cheapest_fom = min(foms, key=lambda r: r['median_gpu_ms']) if foms else None
+    cheapest_all = min(printed, key=lambda r: r['median_gpu_ms'])
+    cheapest_red = min(roms + pods, key=lambda r: r['median_gpu_ms']) if (roms or pods) else None
+    cheapest_prose = (
+        (f"It is the cheapest arm in the whole panel: cheaper than the cheapest full-order setting "
+         f"(`{cheapest_fom['arm']}`, {cheapest_fom['median_gpu_ms']:.3f} ms) and than the cheapest "
+         f"NM-ROM or POD arm (`{cheapest_red['arm']}`, {cheapest_red['median_gpu_ms']:.3f} ms).")
+        if cheapest_op and cheapest_all['arm'] == cheapest_op['arm'] else
+        (f"The cheapest arm in the panel is `{cheapest_all['arm']}` at {cheapest_all['median_gpu_ms']:.3f} ms."))
 
     def f(v, n=4):
         return '—' if v is None else f'{v:.{n}f}'
+
+    pairs, reproduced = [], []
+    for fam, sel, oth in (('U-Net', 'unet-refine', 'unet-medium'),
+                          ('Transolver', 'tsol-refine', 'tsol-large')):
+        if sel not in by or oth not in by:
+            continue
+        hs, ho = by[sel]['worst_evolved_percent'], by[oth]['worst_evolved_percent']
+        vs, vo = NOSECOND_VALIDATION_WORST[sel], NOSECOND_VALIDATION_WORST[oth]
+        same = (hs > ho) == (vs > vo)
+        reproduced.append(same)
+        pairs.append(f'| {fam} | `{sel}` | {f(hs)} | {vs:.4f} | `{oth}` | {f(ho)} | {vo:.4f} | '
+                      f"{'yes' if same else '**no**'} |")
+    pairs_table = chr(10).join(pairs)
+    if pairs and not any(reproduced):
+        pairs_verdict = ('On **neither** family does the ordering reproduce on this cohort: here the '
+                         'validation-selected arm has the *lower* worst case in both families, the '
+                         'opposite of the ranking on `no-second`\'s 32 validation cases. The two '
+                         'cohorts are different splits, so this neither confirms nor refutes the '
+                         'selection-rule finding — it says the finding does not transfer to these six '
+                         'cases, and that six cases is a thin basis for a tail statement either way.')
+    elif pairs and all(reproduced):
+        pairs_verdict = ('The ordering reproduces on both families, on a cohort the selection never saw.')
+    else:
+        pairs_verdict = ('The ordering reproduces on one family and not the other; see the last column.')
+
+    if cross:
+        c0 = cross[0]
+        exact = c0['per_case_max_difference'] == 0.0
+        cross_prose = (
+            f"`{c0['arm']}` was scored here (job `{c0['job']}`) and in b-panel `bpn301` (job "
+            f"`{c0['bpn301_job']}`) on the same six cases, with the same metric and the same audit "
+            f"code. Worst evolved error: **{c0['worst_evolved_percent']:.4f} %** here, "
+            f"**{c0['bpn301_worst_evolved_percent']:.4f} %** there; the largest per-case difference is "
+            f"**{c0['per_case_max_difference']:.3e} %**"
+            + (', i.e. the two jobs agree bit for bit and the operator path is deterministic across '
+               'allocations on this GPU model.' if exact else '.'))
+    else:
+        cross_prose = 'No `bpn301` audit was supplied, so the FNO error cross-check was not run.'
 
     md = f"""# The operator arms, timed: a same-allocation {d['intervals']}² Burgers panel for U-Net, Transolver, FNO, the NM-ROM, POD and the full-order solver
 
@@ -168,9 +220,8 @@ same-job converged `fft_tight` solve, as every other row.
 
 ## What the table says
 
-* **Cheapest arm overall:** `{cheapest_op['arm'] if cheapest_op else '—'}` at {f(cheapest_op['median_gpu_ms'], 3) if cheapest_op else '—'} ms GPU-query, with
-  {f(cheapest_op['worst_evolved_percent']) if cheapest_op else '—'} % worst evolved error — cheaper than the cheapest full-order setting
-  (`{cheapest_fom['arm'] if cheapest_fom else '—'}`, {f(cheapest_fom['median_gpu_ms'], 3) if cheapest_fom else '—'} ms) and cheaper than every NM-ROM and POD arm here.
+* **Cheapest operator arm:** `{cheapest_op['arm'] if cheapest_op else '—'}` at {f(cheapest_op['median_gpu_ms'], 3) if cheapest_op else '—'} ms GPU-query, with
+  {f(cheapest_op['worst_evolved_percent']) if cheapest_op else '—'} % worst evolved error. {cheapest_prose}
 * **Most accurate operator arm:** `{best_op['arm'] if best_op else '—'}` at {f(best_op['worst_evolved_percent']) if best_op else '—'} % worst evolved,
   {f(best_op['median_gpu_ms'], 3) if best_op else '—'} ms.
 * **NM-ROM accurate arm** (`q256_M1088_eqtop_g0p001`, the arm §7 of the design named in advance):
@@ -189,14 +240,15 @@ same-job converged `fft_tight` solve, as every other row.
 `no-second` selected on the **mean** validation error, and that rule twice picked the arm with
 the worse tail. Both are in the table; here they are side by side on **this** cohort:
 
-| family | validation-selected | worst evolved % here | best-worst-case arm (not selected) | worst evolved % here |
-|---|---|---|---|---|
-| U-Net | `unet-refine` | {f(by['unet-refine']['worst_evolved_percent']) if 'unet-refine' in by else '—'} | `unet-medium` | {f(by['unet-medium']['worst_evolved_percent']) if 'unet-medium' in by else '—'} |
-| Transolver | `tsol-refine` | {f(by['tsol-refine']['worst_evolved_percent']) if 'tsol-refine' in by else '—'} | `tsol-large` | {f(by['tsol-large']['worst_evolved_percent']) if 'tsol-large' in by else '—'} |
+| family | validation-selected | worst here % | worst on no-second's validation % | the other arm | worst here % | worst on no-second's validation % | does the ordering reproduce? |
+|---|---|---|---|---|---|---|---|
+{pairs_table}
+
+{pairs_verdict}
 
 ## Cross-check, and what is *not* a cross-check
 
-{json.dumps(cross, indent=1) if cross else 'No bpn301 audit was supplied.'}
+{cross_prose}
 
 `fno-large` ran here on the same six cases, with the same metric and the same audit code, as in
 b-panel `bpn301`. The **errors** are compared above. The **timings are not**: `bpn301` is a

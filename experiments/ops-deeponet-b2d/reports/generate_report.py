@@ -299,7 +299,11 @@ worst column is one case. Hyperparameters were inherited from the FNO lane and n
 per family; `refine` is the only family-level tuning. The float32 network gets more epochs
 per second than the float64 FNO did — favourable to this lane, and the epoch counts are in
 the table. The trunk is a coordinate MLP with sinusoidal features, the form this project's
-3D lanes use; a different trunk is the first thing a reviewer would vary.
+3D lanes use; a different trunk is the first thing a reviewer would vary. And a DeepONet
+compresses the whole 257² field through a small global bottleneck before its trunk, while the
+FNO, U-Net and Transolver beside it are full-resolution field-to-field maps — that is what the
+architecture is, not a defect of this implementation, and a gap in either direction should be
+read as a property of the family.
 
 ## 7. Sources
 

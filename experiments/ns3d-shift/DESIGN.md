@@ -475,3 +475,28 @@ assumed away. The FOM ladder at $128^3$ additionally carries $\Delta t = 0.0025$
 because the explicit stability limit halves from $64^3$ (stable at 0.005, unstable
 at 0.01) and the coarsest stable step at $128^3$ should sit near there; the ladder
 brackets it from both sides.
+
+## Amendment — how the sealed setting is chosen, written before the sealed job
+
+The frozen setting is **read from the development ladder by a script**
+(`make_sealed_config.py`), not typed, and the rule is fixed here before the draw:
+
+among frontier settings whose sweep count met the $10^{-8}$ parity gate **at that
+mesh**, and which are under the target on every development case,
+
+1. prefer those meeting the **stretch** accuracy target (evolved worst $\le 1\,\%$);
+   fall back to the 5 % target only if no gate-passing setting reaches the stretch;
+2. among those, take the largest paired speedup against the **stability-limited**
+   comparator -- the cheapest stable CNAB2 that itself meets the 5 % target, which
+   is the conservative of the two comparators.
+
+So accuracy is never traded for speed: the ladder is searched for a setting meeting
+**both** bars, and speed only breaks ties inside that set. The mesh for the draw is
+the one whose chosen setting has the largest margin on the conservative comparator.
+The selection, the job it came from, its development error, its parity and its
+development speedup are written into the sealed config and travel with it.
+
+The sealed cohort is seed 202609221, 32 cases, verified disjoint by rounded
+parameter row from training 202609201, development 202609202 and the closed
+202609203 / 202609211 (checked: zero overlaps). The job refuses to start unless
+exactly one rank, one step and one sweep count are frozen.

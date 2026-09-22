@@ -1,5 +1,21 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 — Writing pass on a8c9883d — CURRENT HANDOFF
+
+Prose only in `main.tex` and `sections/appendix.tex`: clarified the Burgers held-out checks versus
+independent confirmation, the exact-first-step variant's cost, and the distinct speedup comparators.
+Expanded NNLS and explained re-draws; simplified the wider-bank limitations, abstract and conclusion.
+Tightened nearby resolution, limitation and AI-use sentences to preserve pagination. All caveats remain;
+no material moved between main text and appendix. Numerical tokens, macros, labels, references and
+citation keys match the prior sources. Tables, generators, evidence and other protected files are unchanged.
+
+Rebuilt `main.pdf` with the LaTeX step of `build.sh` only (no regeneration). Main text ends on page 9;
+References start on page 9; PDF has 22 pages; abstract has 250 source words. Zero overfull boxes or
+undefined references. `check_headline.py`: exit 0. `check_rewrite.py`: exit 0, executed via `runpy`
+with only its `rewrite-verification.json` write suppressed to respect the prohibition on JSON edits.
+This status entry and the rebuilt PDF are the explicitly requested exceptions to the source-only scope.
+No experiments, installs, push or merge. Root lab log left untouched under the outside-paper prohibition.
+
 ## 2026-09-22 (paper lane) — Burgers 4096² quadrature re-test; fast-column denominator; wider bank — CURRENT HANDOFF
 
 Source: branch `exp/2026-09-21-burgers-heldout` @ 3771cacf, read as committed blobs and pinned in

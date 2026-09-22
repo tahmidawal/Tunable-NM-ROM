@@ -46,20 +46,20 @@
 
 % =====================================================================
 \begin{abstract}
-Neural operators such as Fourier Neural Operators and DeepONets
-deliver one (accuracy, speed) operating point per trained
-model; moving it requires retraining. We present a
+Neural operators, including Fourier Neural Operators and DeepONets,
+offer one accuracy--speed setting per trained
+model; changing it requires retraining. We present a
 nonlinear-manifold reduced-order model (NM-ROM) for Poisson, heat and
-viscous Burgers equations that exposes a deployment-time accuracy--speed
-tradeoff from one trained decoder, set by
+viscous Burgers equations with an accuracy--speed
+tradeoff from one decoder, set after training by
 the correction rank $q$ (accuracy) and the solver tolerance, budget and
 empirical-quadrature rule (cost). The framework combines a frozen coordinate-network spatial
 bank with a nonlinear head and nested correction directions; exact
 Dirichlet enforcement in the bank; least-squares
 Petrov--Galerkin projection of the discrete residual onto fixed weak
 tests, with every linear operator preassembled; matrix-free JAX
-evaluation; and NNLS empirical quadrature for Burgers advection.
-The $4096^2$ quadrature rule is validated on held-out reached states but not confirmed on independent re-draws. Across Poisson and heat in two and
+evaluation; and non-negative least-squares (NNLS) empirical quadrature for Burgers advection.
+The $4096^2$ rule passes checks on states reached in held-out trajectories but is not confirmed on independent re-draws. Across Poisson and heat in two and
 three dimensions, and viscous Burgers in two, at meshes up to $4096^2$,
 the frozen model keeps its accuracy as the two-dimensional mesh is
 refined, so its speedup over the named iterative solvers reaches $\nHiresPoissonAccSFortyNinetySix\times$ at
@@ -68,7 +68,7 @@ $\nHeatWideAccS\times$ at $\nHeatWideAccErr\,\%$ against Crank--Nicolson
 CG on a sealed held-out heat cohort, and $\nBurgDevAccSFortyNinetySix\times$ at
 $\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers against Newton--BiCGStab
 ($\nBurgHoldAccSFortyNinetySix\times$ at
-$\nBurgHoldAccErrFortyNinetySix\,\%$ on held-out cases); at matched latent
+$\nBurgHoldAccErrFortyNinetySix\,\%$ on held-out cases). At matched latent
 dimension its fast setting is more accurate than a reproduced
 shallow-masked-autoencoder NM-ROM and POD-LSPG. The named solvers remain
 more accurate; three-dimensional heat meets its accuracy target but
@@ -331,8 +331,8 @@ the held-out relative error $\rho$ of the projected advection term
 (Appendix eq.~\eqref{eq:rho}) over states the solver actually reaches on trajectories
 disjoint from the fit and evaluation cases, against a primary bar
 $\rho_{\max}\le\nEqtopBar$ fixed before any certification job ran and a
-tight bar $\nEqtopTightBar$, and then re-draw the construction: a rule is
-\emph{confirmed} only if every re-draw passes
+tight bar $\nEqtopTightBar$. We repeat the check with independent trajectory
+samples (re-draws): a rule is \emph{confirmed} only if every re-draw passes
 (Table~\ref{tab:eqladder}).
 
 \subsection{Model Architecture}
@@ -469,10 +469,10 @@ retrained between them. Error is the worst relative $L^2$ error over the
 cohort (\%). Speedup is the FOM's median time divided by the NM-ROM's in
 the same GPU allocation, \textbf{bold} where the NM-ROM is faster. The
 FOM is the named iterative solver at its fastest tested setting that is at
-least as accurate as the accurate setting. At $4096^2$ the Burgers fast
-column instead divides \nBhFastFom{}, the fastest tested setting at least
-as accurate as that fast setting; the FOM column stays the accurate
-comparator. Marker definitions, the heat evolved-time errors and the
+least as accurate as the accurate setting. For the $4096^2$ Burgers fast
+column, the numerator is instead the time for \nBhFastFom{}, the fastest tested setting at least
+as accurate as the fast setting. The FOM column reports the accurate
+setting's comparator. Marker definitions, the heat evolved-time errors and the
 quadrature labels are in Appendix~\ref{app:cg-current}. Dashes mark
 settings not measured. Times, settings and complete-query speedups:
 Table~\ref{tab:headline-times}.}
@@ -507,30 +507,29 @@ The reduced solve costs the same at every mesh, so the fast setting
 overtakes Newton--BiCGStab by $1024^2$ ($\nHeadBurgersFastS\times$
 faster at $\nHeadBurgersFastErr\,\%$ error). The accurate
 setting reaches $\nHeadBurgersAccErr\,\%$ at $256^2$ and, on development
-cases, is slower than the FOM through $2048^2$, also with the rules
+cases, is slower than the FOM through $2048^2$. This includes the rules
 confirmed on independent re-draws at $512^2$ and $1024^2$ (rows marked
-$^{v}$); the dense $1024^2$ panel row's stored $q=128$ rule gives
+$^{v}$). The dense $1024^2$ panel row's stored $q=128$ rule gives
 $\nHeadBurgersMidErr\,\%$ at $\nHeadBurgersMidS\times$. At $4096^2$ the accurate setting chosen on six development cases
 reaches $\nBurgDevAccErrFortyNinetySix\,\%$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
-at least as accurate; on 64 held-out cases the same setting gives
+at least as accurate. On 64 held-out cases the same setting gives
 $\nBurgHoldAccErrFortyNinetySix\,\%$ at
 $\nBurgHoldAccSFortyNinetySix\times$.
-The lattice rule of those rows passes five held-out draws and fails the
-confirmation draw, so it is validated on held-out reached states and not
+The lattice quadrature rule used in these rows passes checks on five
+held-out trajectory samples but fails on the independent confirmation
+sample. It is therefore validated on held-out states but not
 confirmed on independent re-draws (Appendix~\ref{app:cg-current}).
-The fast setting is $\nBhFastS\times$ on both cohorts against the Newton
-setting matched to its own error.
+The fast setting gives $\nBhFastS\times$ on both cohorts against the fastest
+tested Newton--BiCGStab setting at least as accurate as itself.
 
 \paragraph{Resolution.}
-Table~\ref{tab:headline} shows that the NM-ROM query time grows more
-slowly with the mesh than the iterative FOM's: in every series the
-fast-setting speedup rises with resolution against the FOM setting
-selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM, except the $4096^2$ Burgers fast column, which divides
-the setting matched to the fast error; the comparator may change with
-the mesh), and against one fixed
-tight setting where a series timed one (Table~\ref{tab:headline-times}).
+Table~\ref{tab:headline} shows slower query-time growth with mesh size
+for the NM-ROM than for the iterative FOM. In every series, fast-setting speedup rises under the row-specific
+selection rule (fastest tested FOM at least as accurate as the accurate
+NM-ROM, or the fast NM-ROM for the $4096^2$ Burgers fast column).
+The selected FOM may change with mesh size. Speedup also rises against a
+fixed tight setting wherever one was timed (Table~\ref{tab:headline-times}).
 
 \begin{table}[t]
 \centering
@@ -608,8 +607,8 @@ share settings; heat uses the sealed held-out cohort, Poisson
 development sources. On Burgers $q$ and $M$ change together
 ($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
 Table~\ref{tab:ladder-main}), $q>0$ with the lattice rule marked
-$^{w}$ in Table~\ref{tab:headline}. Speedups in a block share the FOM
-row, so the $q=0$ ratio is not Table~\ref{tab:headline}'s fast column.
+$^{w}$ in Table~\ref{tab:headline}. Each block uses one FOM time for all
+speedups, so its $q=0$ ratio differs from Table~\ref{tab:headline}'s fast column.
 Heat and Poisson vary $q$ only.
 $^{\star}$\,looser stopping tolerance; $^{\dagger}$\,quadrature rule
 failed its held-out check.}
@@ -636,13 +635,11 @@ error (Appendix Table~\ref{tab:figure1-table}). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
 
 
-On Burgers at $4096^2$ the correction rank is a genuine accuracy--cost
-tradeoff. Table~\ref{tab:tunability} compares every setting with one
-shared Newton setting
+On Burgers at $4096^2$, changing the correction rank trades accuracy for cost. Table~\ref{tab:tunability} compares every setting with one
+shared Newton--BiCGStab setting
 ($\nTuneBurgDevSpeedMin$--$\nTuneBurgDevSpeedMax\times$ on development
 cases). Table~\ref{tab:headline}'s fast column is a different comparison:
-$\nBhFastS\times$ on both cohorts against the Newton setting matched to
-the fast error. On the linear problems the
+$\nBhFastS\times$ on both cohorts against the Newton--BiCGStab comparator selected for the fast setting. On linear problems the
 corrections are eliminated analytically, so accuracy improves at nearly
 constant cost.
 
@@ -657,58 +654,55 @@ convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
 
 \paragraph{Limitations.}\label{sec:limitations}
 \label{sec:results:head}\label{sec:results:collapse}\label{sec:exp:eq}
-(i) Speedups are measured against the named iterative full-order
-solvers at the stated tolerances; comparison with other full-order
-solver classes (direct and spectral solvers, coarser discretisations) is
-outside the scope of this study. The named FOM is more accurate than the
-NM-ROM in every row, and on heat at $4096^2$ the linear solve in the
-learned bank, a baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is
-faster than every NM-ROM setting, as it is in three dimensions
+(i) Speedups use the named iterative full-order solvers at the stated
+tolerances; direct and spectral solvers and coarser discretisations are
+outside this study's scope. The named FOM is more accurate in every row.
+For heat at $4096^2$, the linear-bank baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms) is
+faster than every NM-ROM setting, also in three dimensions
 ($\nHeatNewLinErr\,\%$ in $\nHeatNewLinMs$\,ms at $128^3$).
 (ii) A wider Burgers bank cuts the $256^2$ projection floor from
-$\nBhFloorOld\,\%$ to $\nBhFloorNew\,\%$ on its selection cohort, but its
-confirmed rung is less accurate on 64 held-out cases
-($\nBhBankErr\,\%$ at $\nBhBankS\times$) than the bank in
-Table~\ref{tab:headline}, and the unconfirmed arms at
-$\nBhSubErrLo$--$\nBhSubErrHi\,\%$ run at
-$\nBhSubSLo$--$\nBhSubSHi\times$ Newton--BiCGStab.
-The binding limit is the correction subspace and the weak test space,
-not the bank. Held-out accuracy still does not carry over from
-development cases (the free solve in the 512-function bank reaches only
-$\nBurgBankFloorConfirm\,\%$); the
-Poisson errors sit near the bank floor ($\nHiresFloorSquare\,\%$ square,
+$\nBhFloorOld\,\%$ to $\nBhFloorNew\,\%$ on its selection cases. With confirmed quadrature, it is less accurate on 64 held-out cases
+($\nBhBankErr\,\%$ at $\nBhBankS\times$) than the model in
+Table~\ref{tab:headline}. Settings with unconfirmed quadrature reach
+$\nBhSubErrLo$--$\nBhSubErrHi\,\%$ error at
+$\nBhSubSLo$--$\nBhSubSHi\times$ the speed of Newton--BiCGStab.
+The correction subspace and weak test space, rather than the bank, limit accuracy here.
+Development accuracy does not transfer to held-out cases
+(the unrestricted solve in the 512-function bank reaches only
+$\nBurgBankFloorConfirm\,\%$).
+Poisson errors lie near the bank floor ($\nHiresFloorSquare\,\%$ square,
 $\nHiresFloorCube\,\%$ cube); the L-shape ($\nHiresLshapeAccErr\,\%$ against
 a floor of $\nHiresLshapeFloor\,\%$) is limited by the head.
-(iii) The fixed-test-space rank study uses one checkpoint; the
-multi-seed and sealed study sets $M=4(k+q)$, so it does not replicate
-it. Comparisons with the FOM do not isolate the nonlinear head's
-contribution over the linear span of the same bank.
-(iv) Quadrature rules are validated on a finite set of reached states,
-not certified globally, and none is used in three dimensions; the
-reduced solve can converge to a wrong branch, and lower same-grid error
+(iii) The fixed-test-space rank study uses one checkpoint. The
+multi-seed and sealed study varies $M=4(k+q)$, so it is not a replication.
+FOM comparisons do not isolate the nonlinear head's contribution
+over the bank's linear span.
+(iv) Quadrature validation covers finitely many reached states,
+not a global certificate; no rule is used in three dimensions.
+Reduced solves can converge to a wrong branch. Lower same-grid error
 does not remove discretisation error.
-(v) Except where marked final or held-out, cohorts are small
-development cohorts, and timings are medians without dispersion.
+(v) Unmarked cohorts are small development cohorts; exceptions are marked
+final or held-out. Timings report medians without dispersion.
 
 \FloatBarrier
 \section{Conclusion and Future Work}\label{sec:conclusion}
 
-We built an NM-ROM whose distinguishing property is a deployment-time
-accuracy--cost choice from one trained model, through nested corrections
-that change its capacity after training; it keeps its accuracy under
-mesh refinement on
-two-dimensional Poisson, heat and Burgers, so its speedup over the named
-iterative solvers grows with resolution: at $4096^2$ its accurate setting
+Nested corrections give one trained NM-ROM an accuracy--cost tradeoff
+after training. Accuracy persists under mesh refinement on
+two-dimensional Poisson, heat and Burgers, while speedup over the named
+iterative solvers grows. At $4096^2$ the accurate setting
 reaches $\nHeadPoissonAccErr\,\%$ at $\nHiresPoissonAccSFortyNinetySix\times$
 on Poisson, $\nHeatWideAccErr\,\%$ at $\nHeatWideAccS\times$ on held-out
 heat and $\nBurgHoldAccErrFortyNinetySix\,\%$ at
-$\nBurgHoldAccSFortyNinetySix\times$ on held-out Burgers, far more
-accurate than a reproduced NM-ROM and POD-LSPG. The named solvers remain
+$\nBurgHoldAccSFortyNinetySix\times$ on held-out Burgers. It is more
+accurate than a reproduced NM-ROM and POD-LSPG. The Burgers rule passes held-out checks but fails independent
+confirmation. The confirmed variant uses the exact first-step residual
+and is slower than the FOM. The named solvers remain
 more accurate; three-dimensional heat meets its accuracy target but is
 faster than CN--CG only with a batched fit at $128^3$; and
 three-dimensional Burgers, Navier--Stokes and the full wave state miss
-their targets (Table~\ref{tab:failures});
-future work is a better three-dimensional bank, a cheaper high-rank
+their targets (Table~\ref{tab:failures}).
+Future work includes a better three-dimensional bank, a cheaper high-rank
 solve and quadrature in three dimensions.
 
 \section*{Reproducibility statement}\label{sec:repro}
@@ -718,10 +712,9 @@ that identify source, checkpoint, settings, cohort, allocation and audit
 
 \section*{AI use statement}
 Language-model assistants supported method and experiment development,
-implementation, result analysis, auditing, and manuscript drafting and
-editing. Numerical results were computed by the recorded solver runs;
-table generators reproduce the reported values from those records.
-The authors are responsible for verifying the methods, results and text.
+implementation, analysis, auditing, and manuscript drafting and editing.
+Recorded solver runs produced the numerical results; table generators
+reproduce them. The authors are responsible for verifying methods, results and text.
 
 \bibliographystyle{plainnat}
 \input{bib-inline}

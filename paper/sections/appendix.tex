@@ -134,7 +134,30 @@ re-draw procedure (its pick failed the confirmation draw), so
 Table~\ref{tab:headline} has no confirmed-rule row there; a post-hoc
 follow-up rule with an exact first time step passes all
 \nEqcFollowDraws{} draws of two jobs and gives $\nEqcFollowErr\,\%$ at
-$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, the lattice rule of the accurate rows passes five held-out draws and fails the confirmation draw ($\rho_{\max}=\nBhJzeroRho$ against the bar $\nEqcBar$). From time step 2 the same draw is $\rho_{\max}=\nBhJzeroRhoKtwo$, so the miss is in the first steps: the rule is validated on held-out reached states and not confirmed on re-draws. The same rule with the first time step on the exact residual passes all five draws and the confirmation draw ($\rho_{\max}=\nBhJoneRho$) at the same printed error, in $\nBhJoneMsDev$\,ms on the six development cases and $\nBhJoneMsHold$\,ms on the 64 held-out cases ($\nBhJoneSDev\times$ and $\nBhJoneSHold\times$ against Newton--BiCGStab; $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$ the quadrature-step cost in the same job; Table~\ref{tab:headline-times}). That form is slower than the full-order solver on both cohorts. No confirmed form of this accurate lattice rule is also faster. The fast setting's smaller rule passes the confirmation draw and is faster, at higher error. For Burgers at $4096^2$, copying the six
+$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, the lattice quadrature rule used in the accurate
+rows passes checks on five held-out trajectory samples but fails on the
+independent confirmation sample ($\rho_{\max}=\nBhJzeroRho$ against the
+threshold $\nEqcBar$). Restricting the same sample to time step 2 onward
+gives $\rho_{\max}=\nBhJzeroRhoKtwo$, locating the failure in the first
+steps. The rule is validated on held-out states but not confirmed on
+independent re-draws.
+
+Using the exact residual at the first time step and the same quadrature
+rule thereafter passes all five checks and the confirmation check
+($\rho_{\max}=\nBhJoneRho$). The error is unchanged at the reported
+precision. Median query times are $\nBhJoneMsDev$\,ms on the six
+development cases and $\nBhJoneMsHold$\,ms on the 64 held-out cases.
+The corresponding speedups against Newton--BiCGStab are
+$\nBhJoneSDev\times$ and $\nBhJoneSHold\times$.
+These queries cost $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$
+as much as queries using quadrature at every step in the same job
+(Table~\ref{tab:headline-times}). This variant is slower than the
+full-order solver on both cohorts.
+No confirmed form of this accurate lattice rule is also faster.
+The fast setting's smaller rule passes the confirmation check and is
+faster than the full-order solver, at higher error.
+
+For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -158,10 +181,11 @@ paired-CG record list the one full-order setting that record retains,
 itself chosen by the same rule.
 $^{\ast}$\,not in Table~\ref{tab:headline}: a re-measurement of the row
 above it, a development-source run at a mesh whose held-out row is in
-Table~\ref{tab:headline}, or the confirmed first-step form of the
-$4096^2$ Burgers lattice rule. The $4096^2$ Burgers fast speedup in
-Table~\ref{tab:headline} does not divide the Newton time printed here;
-it divides \nBhFastFom.}
+Table~\ref{tab:headline}, or the confirmed variant of the
+$4096^2$ Burgers lattice rule with an exact residual at the first step.
+For the $4096^2$ Burgers fast speedup in Table~\ref{tab:headline}, the
+numerator is the time for \nBhFastFom{}, rather than the Newton time
+printed here.}
 \label{tab:headline-times}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline_times}}
 \end{table}

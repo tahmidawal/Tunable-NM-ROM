@@ -22,12 +22,16 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--pilot", type=Path, required=True)
     p.add_argument("--cost", type=Path, required=True)
+    p.add_argument("--mesh", type=Path, default=None)
     p.add_argument("--out", type=Path, required=True)
     a = p.parse_args()
     P = json.loads((a.pilot / "summary.json").read_text())
     C = json.loads((a.cost / "summary.json").read_text())
     PV = json.loads((a.pilot / "verify.json").read_text())
     CV = json.loads((a.cost / "verify.json").read_text())
+    M = json.loads((a.mesh / "summary.json").read_text()) if a.mesh else None
+    MV = json.loads((a.mesh / "verify.json").read_text()) \
+        if a.mesh and (a.mesh / "verify.json").exists() else None
     pc, cc = P["config"], C["config"]
     br = str(pc["base_rank"])
     A0, A1 = P["A0_fixed_bank_floor"], P["A1_centered_oracle_floor"]["ranks"]
@@ -73,17 +77,30 @@ def main():
       f"cohort in the same job, and **{pct(B0['stats']['evolved_worst'])}** for the same model "
       "with the frame frozen. It is also more accurate than the FOM at the same step: CNAB2 at "
       f"$\\Delta t=0.01$ gives {pct(P['E_cnab2']['0.01']['evolved_worst'])}.\n")
-    W("**Speed: no, and the reason is not the solver.** The complete query costs "
-      f"**{ms(PT['B1']['median_ms'])} ms** against a **{ms(PT['CNAB2_dt0.005']['median_ms'])} ms** "
-      f"comparator, a paired speedup of "
-      f"**{PT['CNAB2_dt0.005']['median_ms'] / PT['B1']['median_ms']:.3f}x**. The cost sweep shows "
-      f"that the grid-sized work the ROM cannot avoid -- one initial centering and projection at "
-      f"{ms(init_ms)} ms plus {P['truth']['frames'] - 1} laboratory-frame output reconstructions at "
-      f"{ms(out_ms)} ms each, "
-      f"{ms(init_ms + (P['truth']['frames'] - 1) * out_ms)} ms in total -- is by itself "
-      f"{'more' if init_ms + (P['truth']['frames'] - 1) * out_ms > PT['CNAB2_dt0.005']['median_ms'] else 'a large fraction of'} "
-      "than the whole FOM trajectory. At this mesh the output contract, not the reduced "
-      "dynamics, is what loses the race.\n")
+    best_row = min(settings, key=lambda k: settings[k]["timing"][f"query_{k}"]["median_ms"]
+                   if settings[k]["stats"]["cases_evolved_over_target"] == 0 else 1e9)
+    bq = settings[best_row]["timing"][f"query_{best_row}"]["median_ms"]
+    bone = settings[best_row]["timing"][f"query_one_output_{best_row}"]["median_ms"]
+    grid_total = init_ms + (P["truth"]["frames"] - 1) * out_ms
+    W("**Speed: no, and the cost sweep says why.** The pilot's complete query costs "
+      f"**{ms(PT['B1']['median_ms'])} ms** against a "
+      f"**{ms(PT['CNAB2_dt0.005']['median_ms'])} ms** comparator, a paired speedup of "
+      f"**{PT['CNAB2_dt0.005']['median_ms'] / PT['B1']['median_ms']:.3f}x**; the best setting "
+      f"found anywhere in the sweep is {best_row.replace('_', ', ')} at "
+      f"{ms(bq)} ms. The interesting part is the split. The grid-sized work the ROM "
+      f"cannot avoid -- one initial centering and projection at {ms(init_ms)} ms plus "
+      f"{P['truth']['frames'] - 1} laboratory-frame output reconstructions at {ms(out_ms)} ms "
+      f"each -- is only {ms(grid_total)} ms in total, about "
+      f"{100 * grid_total / bq:.0f} % of that best query. **Roughly nine tenths of the cost is "
+      "the reduced rollout itself**, and its arithmetic -- an $M\\times r\\times r$ contraction "
+      "and a 67-unknown least squares, a few times per step -- is two orders of magnitude below "
+      "what it is being charged. The reduced model is not paying for physics; it is paying for a "
+      "generic damped Levenberg-Marquardt driver dispatched as hundreds of tiny sequential GPU "
+      "kernels per trajectory, against a FOM whose whole step is three large FFTs.\n")
+    W("That matters because the rollout's cost contains no $N$: $A$, $\\mathsf T$ and $D_d$ are "
+      "sized by the rank and the test count, not by the mesh. The FOM's cost does contain $N$. "
+      "So the losing margin at $N=32$ is a statement about this mesh and this solver, not about "
+      "the idea.\n")
 
     W("## The mechanism\n")
     W("Write $u(x,t) = v(x - c(t), t)$. Because the nonlinearity, the Laplacian and the Leray "
@@ -276,6 +293,59 @@ flowchart LR
           f"evolved worst at {ms(q)} ms, comparator CNAB2 dt={dname} at {ms(cms)} ms, "
           f"**{cms / q:.3f}x**.\n")
 
+    if M:
+        ms_set = {k: v for k, v in M["settings"].items() if "failed" not in v}
+        mc = M["config"]
+        W(f"## Does it cross at a larger mesh? ($N={mc['n']}$, exploratory)\n")
+        W("The cost sweep above says the reduced rollout carries no $N$ in its shapes while the "
+          "FOM's cost does, so the losing margin should shrink with the mesh. This was written "
+          "into `DESIGN.md` as an explicitly exploratory amendment **before** the job, with a "
+          "stated crossover bar and no licence to draw a sealed cohort whatever it showed. "
+          f"Rank {mc['rank']}, gauge {mc['gauge']}, $M={mc['modes_ladder'][0]}$, same "
+          "development seed, same checks.\n")
+        W("| dt | steps | evolved worst | over 5 % | query ms | comparator | comparator ms "
+          "| paired speedup |")
+        W("|---:|---:|---:|---:|---:|---|---:|---:|")
+        crossed = []
+        for key in sorted(ms_set, key=lambda k: -ms_set[k]["dt"]):
+            v = ms_set[key]
+            tm = v["timing"]
+            q = tm[f"query_{key}"]["median_ms"]
+            cms, dname = comparator(v["stats"]["evolved_worst"], M["cnab2"], tm)
+            ratio = cms / q if dname else None
+            if ratio and ratio > 1 and v["stats"]["cases_evolved_over_target"] == 0:
+                crossed.append((ratio, v))
+            W("| {} | {} | {} | {}/{} | {} | {} | {} | {} |".format(
+                v["dt"], v["steps"], pct(v["stats"]["evolved_worst"]),
+                v["stats"]["cases_evolved_over_target"], v["stats"]["cases"], ms(q),
+                f"CNAB2 dt={dname}" if dname else "none tested is as accurate",
+                ms(cms) if dname else "-", f"{ratio:.3f}x" if ratio else "-"))
+        W("")
+        W("| CNAB2 dt | evolved worst | over 5 % | median ms |")
+        W("|---:|---:|---:|---:|")
+        any_m = ms_set[next(iter(ms_set))]["timing"]
+        for dtv, st in M["cnab2"].items():
+            W("| {} | {} | {}/{} | {} |".format(
+                dtv, pct(st["evolved_worst"]), st["cases_evolved_over_target"],
+                st["cases"], ms(any_m[f"CNAB2_dt{dtv}"]["median_ms"])))
+        W("")
+        mi = any_m["piece_initial_centering_projection"]["median_ms"]
+        mo = any_m["piece_one_output_reconstruction"]["median_ms"]
+        W(f"Grid-sized pieces at this mesh: initial centering and projection {ms(mi)} ms, one "
+          f"output reconstruction {ms(mo)} ms (against {ms(init_ms)} ms and {ms(out_ms)} ms at "
+          f"$N={pc['n']}$).\n")
+        if crossed:
+            best_ratio, bv = max(crossed)
+            W(f"**It crosses.** The best row is $\\Delta t={bv['dt']}$ at "
+              f"{pct(bv['stats']['evolved_worst'])} evolved worst, "
+              f"{bv['stats']['cases_evolved_over_target']}/{bv['stats']['cases']} over 5 %, "
+              f"**{best_ratio:.3f}x** its comparator. This is a development measurement on an "
+              "exploratory amendment: it is a reason to design the experiment properly, not a "
+              "result to quote.\n")
+        else:
+            W("**It does not cross at this mesh** under the comparator rule. The margin and its "
+              "direction are in the table; whether it crosses further out is not answered here.\n")
+
     W("## What failed, and what was retracted\n")
     W("- **The framing the cell was opened with.** A coordinate network is not what makes the "
       "shift free. Any fixed bank gets free shifts in the co-moving form, so the architecture "
@@ -299,16 +369,56 @@ flowchart LR
       f"independently in NumPy from the saved fields (worst disagreement {PV['worst_gap']:.3e} "
       f"and {CV['worst_gap']:.3e}).\n")
 
+    W("## Judgement, and the experiment I would run next\n")
+    W("**A shift-aware decoder is the right direction, but not for the reason the cell was "
+      "opened.** What earns its keep is the *co-moving formulation*: once the frame is an "
+      "unknown of the same least-squares problem, a rank-64 linear bank represents and "
+      "integrates a family whose fixed-span floor is two orders of magnitude worse, the frame "
+      "is recovered from the residual with no oracle and no gauge, and the whole thing stays "
+      "exactly translation-equivariant. That is a real mechanism and it generalises to any "
+      "PDE whose family is an orbit of a continuous symmetry -- translation here, but rotation "
+      "and dilation enter the residual the same way, as extra columns.\n")
+    W("What does **not** survive is the architectural claim. A coordinate network was supposed "
+      "to be what makes `g(x - c)` cheap. It is not: the freezing form never evaluates the bank "
+      "at shifted coordinates at all, so a stored POD basis is equally free. Anyone writing "
+      "this up should lead with the symmetry, not the decoder.\n")
+    W("The honest status of speed is that it is **unresolved, and was measured against the "
+      "wrong bottleneck**. Nine tenths of the query is a generic damped Levenberg-Marquardt "
+      "driver whose arithmetic is two orders of magnitude cheaper than its wall time -- "
+      "hundreds of tiny sequential GPU kernels per trajectory. Nothing about the method "
+      "requires that solver.\n")
+    W("The next experiment, in order:\n")
+    W("1. **Make the reduced solve cost what its arithmetic costs.** Analytic Jacobian (it is "
+      "one contraction; the analytic $J_\\delta$ column already matches AD to $10^{-17}$), a "
+      "fixed small iteration count instead of a data-dependent `while_loop`, and the whole "
+      "step fused. If a 67-unknown least squares still costs 1.5 ms after that, the conclusion "
+      "changes; until then the speed number is a statement about `make_lm`, not about the "
+      "method. This is the cheapest and highest-leverage thing left.\n")
+    W("2. **Settle the mesh scaling properly**, with a pre-registered ladder over $N$ and its "
+      "own sealed cohort. The rollout's shapes contain no $N$; the FOM's cost does. That is the "
+      "whole speed argument and it deserves a designed experiment rather than the one "
+      "exploratory probe run here.\n")
+    W("3. **Then, and only then, the sealed draw.** Seed 202609221 is named and unopened.\n")
+    W("Two things I would *not* do next. A multi-structure version "
+      "($u=\\sum_j g(x-c_j)a_j$) is not indicated: the single-shift representation floor is "
+      "already far below the bar, so a shortfall in the solved trajectory points at the "
+      "dynamics or the solver, not at needing several frames -- and several frames bring back "
+      "relative-shift-dependent interaction terms that destroy the one thing that makes this "
+      "cheap, a constant stored tensor. And I would not retrain a coordinate bank to chase a "
+      "free shift it does not provide.\n")
+
     W("## Integrity record\n")
-    W("| item | pilot01 | cost02 |")
-    W("|---|---|---|")
-    W(f"| job | {P['job_id']} | {C['job_id']} |")
-    W(f"| commit | `{P['source_commit']}` | `{C['source_commit']}` |")
-    W(f"| GPU | {P['gpu']} | {C['gpu']} |")
-    W(f"| backend | {P['device']} | {C['device']} |")
-    W("| `summary.json` | `experiments/ns3d-shift/runs/pilot01/summary.json` "
-      "| `experiments/ns3d-shift/runs/cost02/summary.json` |")
-    W("| independent recomputation | `runs/pilot01/verify.json` | `runs/cost02/verify.json` |")
+    runs = [("pilot01", P, PV), ("cost02", C, CV)] + ([("mesh03", M, MV)] if M else [])
+    W("| item | " + " | ".join(n for n, _, _ in runs) + " |")
+    W("|---|" + "---|" * len(runs))
+    W("| job | " + " | ".join(str(r["job_id"]) for _, r, _ in runs) + " |")
+    W("| commit | " + " | ".join(f"`{r['source_commit']}`" for _, r, _ in runs) + " |")
+    W("| GPU | " + " | ".join(r["gpu"] for _, r, _ in runs) + " |")
+    W("| backend | " + " | ".join(r["device"] for _, r, _ in runs) + " |")
+    W("| `summary.json` | " + " | ".join(
+        f"`experiments/ns3d-shift/runs/{n}/summary.json`" for n, _, _ in runs) + " |")
+    W("| independent recomputation | " + " | ".join(
+        f"{v['worst_gap']:.1e}" if v else "-" for _, _, v in runs) + " |")
     W("")
     W("Harness checks, all from `pilot01`: the co-moving residual with $\\delta\\equiv0$ "
       f"reproduces `ns3d_rom.make_run` to {P['zero_delta_parity_vs_ns3d_rom']:.3e}; a complete "

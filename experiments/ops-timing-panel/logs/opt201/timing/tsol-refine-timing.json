@@ -1,0 +1,191 @@
+{
+  "model": "tsol-refine",
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "7f5a96d7077a59e247712d27440918580f48c00d426439616d00df4858e9c01e",
+  "config": {
+    "family": "transolver",
+    "dim": 128,
+    "layers": 8,
+    "heads": 8,
+    "slices": 64,
+    "mlp_ratio": 2,
+    "patch": 4,
+    "ref": 8,
+    "dtype": "float32",
+    "warmup_epochs": 10,
+    "epochs": 4000,
+    "patience": 250,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "seed": 20260914,
+    "refines_capacity": "small",
+    "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "best_epoch": 1542,
+  "parameter_tensor_elements": 3108240,
+  "real_parameter_count": 3108240,
+  "repetitions_per_case": 5,
+  "burn_in_per_block": 20,
+  "device_query_pooled": {
+    "count": 30,
+    "mean_ms": 11.084723612293601,
+    "median_ms": 11.071354616433382,
+    "p05_ms": 11.04479634668678,
+    "p95_ms": 11.143604340031743,
+    "minimum_ms": 11.043544858694077,
+    "maximum_ms": 11.291168164461851,
+    "upper_tukey_outliers": 2
+  },
+  "host_transfer_pooled": {
+    "count": 30,
+    "mean_ms": 0.25371313095092773,
+    "median_ms": 0.25286106392741203,
+    "p05_ms": 0.2499330323189497,
+    "p95_ms": 0.25950674898922443,
+    "minimum_ms": 0.24963496252894402,
+    "maximum_ms": 0.25992607697844505,
+    "upper_tukey_outliers": 0
+  },
+  "device_query_median_of_case_medians_ms": 11.07415952719748,
+  "cases": [
+    {
+      "case_id": "burgers-dev-00000",
+      "case_index": 0,
+      "artifact": "L256_tsol-refine_case0.npz",
+      "field_sha256": "f40b59d2b4f73cb5a26ce6b2ae6fa2e01ebfedc7793a9977baaa969bfa59853c",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011072522960603237,
+        0.011047004722058773,
+        0.011097247712314129,
+        0.01105424016714096,
+        0.011113711167126894
+      ],
+      "host_seconds": [
+        0.00025788089260458946,
+        0.0002596513368189335,
+        0.00025313906371593475,
+        0.0002516251988708973,
+        0.0002517150714993477
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00001",
+      "case_index": 1,
+      "artifact": "L256_tsol-refine_case1.npz",
+      "field_sha256": "6d8ccdd04a53fb322789d4eceeeb7823683ff210d64cb9b04c16a63ab143727b",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011088928207755089,
+        0.011045339051634073,
+        0.011044352315366268,
+        0.01105525717139244,
+        0.01105817686766386
+      ],
+      "host_seconds": [
+        0.00025437306612730026,
+        0.00025933003053069115,
+        0.00025120005011558533,
+        0.000249665230512619,
+        0.0002504810690879822
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00002",
+      "case_index": 2,
+      "artifact": "L256_tsol-refine_case2.npz",
+      "field_sha256": "32bcda382121faa7b7b28707a407969cd1fb106f5bafc3dc1872132b38099e36",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011291168164461851,
+        0.011109275277704,
+        0.011075796093791723,
+        0.011053415946662426,
+        0.011043544858694077
+      ],
+      "host_seconds": [
+        0.00025992607697844505,
+        0.0002526133321225643,
+        0.00025033438578248024,
+        0.00025310879573225975,
+        0.00025592604652047157
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00003",
+      "case_index": 3,
+      "artifact": "L256_tsol-refine_case3.npz",
+      "field_sha256": "58feca45cd28740be69c5a46a72fc4b151f5eb1713519dcd9163d56f393c0039",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011146157048642635,
+        0.011081352829933167,
+        0.011093932669609785,
+        0.011069239117205143,
+        0.011083449702709913
+      ],
+      "host_seconds": [
+        0.0002555372193455696,
+        0.00025171320885419846,
+        0.0002592192031443119,
+        0.0002518361434340477,
+        0.00025071389973163605
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00004",
+      "case_index": 4,
+      "artifact": "L256_tsol-refine_case4.npz",
+      "field_sha256": "7d22b68c48edd0dd02f18e9001e2f1cb0e071fd0d107097b43ad984a5e7a8623",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011058819014579058,
+        0.011063956655561924,
+        0.011076353024691343,
+        0.011128176935017109,
+        0.011140484362840652
+      ],
+      "host_seconds": [
+        0.00025357073172926903,
+        0.000249634962528944,
+        0.0002506398595869541,
+        0.0002562040463089943,
+        0.0002502603456377983
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00005",
+      "case_index": 5,
+      "artifact": "L256_tsol-refine_case5.npz",
+      "field_sha256": "09aa0ddffec39cdd0d52fbc51618f318862ede5556cc5c74f209d22f488bad88",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.011082353070378304,
+        0.011057665105909109,
+        0.011070137843489647,
+        0.011069464031606913,
+        0.011070186272263527
+      ],
+      "host_seconds": [
+        0.0002566012553870678,
+        0.00025211600586771965,
+        0.0002578962594270706,
+        0.000253377016633749,
+        0.00025110412389039993
+      ]
+    }
+  ],
+  "timed_region": "supplied on-device initial field and viscosity to on-device complete trajectory",
+  "host_transfer": "separately timed device-to-host copy of the finished trajectory",
+  "retained": "every individual repetition is stored in the npz beside this file",
+  "deviation": "second process in the same Slurm allocation on the same GPU, after the JAX phase exited; the source protocol times all models in one process",
+  "scientific_status": "same-allocation, same-GPU timing against the JAX subjects of this job; no ratio is taken against any other job"
+}

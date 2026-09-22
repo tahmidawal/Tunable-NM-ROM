@@ -26,6 +26,12 @@ IC_RESIDUAL_FLOOR = 1e-10
 # converged at 1e-3; the Codex report audit caught it. `converged_design5` is now the primary
 # flag and defines `admissible`; the as-implemented flag is kept as `converged_own_gtol`.
 DESIGN5_GTOL = 1e-6
+# name -> family, read from the lane's own checkpoint manifest.
+try:
+    OPERATOR_FAMILY = {c['name']: c['family']
+                       for c in json.loads((HERE / 'operators.json').read_text())['checkpoints']}
+except (OSError, KeyError, ValueError):       # an audit run outside the lane directory
+    OPERATOR_FAMILY = {}
 ADMISSIBILITY_RULE = dict(
     primary='converged_design5: DESIGN.md §5 as written — every time step g <= 1e-6 or residual-rule exit, '
             'initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity',
@@ -183,8 +189,9 @@ def main():
             continue
         meta = json.loads(tj.read_text())
         assert meta['model'] == name, (meta['model'], name)
-        fam = ('unet' if name.startswith('unet') else
-               'transolver' if name.startswith('tsol') else 'fno')
+        # The family is declared data, not a guess from the arm name: `don-*` fell through a
+        # prefix rule to 'fno' and mislabelled every DeepONet row in the first opt201 report.
+        fam = OPERATOR_FAMILY.get(name, 'fno')
         for c in meta['cases']:
             idx = int(c['case_index'])
             f = F(c['artifact'])

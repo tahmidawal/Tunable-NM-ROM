@@ -121,3 +121,13 @@ below for q ∈ {0, 160}, reference arms included for a same-allocation before/a
 worst all-times error is ≤ min(0.8 %, 1.05 × the family reference arm's) at both 64³ and 128³ and it has zero failed solves at both;
 choose the fastest 128³ median among eligible variants (the reference is always eligible if it has zero failures). The fast setting
 q=0 uses the same variant. Panel B of the final = these arms (replacing addendum-1's arms if a variant wins). Panel A unchanged.
+
+## Addendum 3 (2026-09-22, user request via coordinator, before staging): frozen panel A at 256³
+
+Same frozen evaluation as `final01` panel A at a new mesh — no selection, no setting change: model `vp_R320/{bank,head_K32}.pkl`,
+arms `nmrom_q0/q288_field_cn` and `..._field_direct_tol1e-4_chol`, linear-bank baselines, DST, coarse CN-CG, and the full CN-CG ladder
+(named + dt {0.025,0.05,0.1} × rtol {1e-4,1e-3,1e-2}) so the paper FOM rule can be re-derived. Sealed cohort 921099, **all 64 cases**
+(estimated ≈35 s/case → ≈40 min), 5 retained repetitions each, one H200 (`--mem 240G`). Config `configs/final256.json` is `final01.json`
+with only cohorts/meshes/case counts changed (panel A only; 920399 not repeated). Memory: bank 16.6 M × 320 f64 = 42 GB, peak ≈85 GB
+during chunked assembly; no chunking change needed. The 256³ sealed cohort was already opened at 32³–128³ in `final01`; this is not a
+new selection. Extra budget authorised by the user: ≤ 2 jobs beyond 8 (this is job 9).

@@ -1,0 +1,142 @@
+{
+ "model": {
+  "kind": "mlp",
+  "bank": "vp_R320/bank.pkl",
+  "head": "vp_R320/head_K32.pkl"
+ },
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 1024
+ },
+ "cohorts": [
+  [
+   921099,
+   64
+  ]
+ ],
+ "cohort_names": [
+  [
+   "sealed_921099_never_opened",
+   64
+  ]
+ ],
+ "meshes": [
+  256
+ ],
+ "cases_by_mesh": {
+  "256": 64
+ },
+ "timed_cases_by_mesh": {
+  "256": 64
+ },
+ "save_fields_cases": 64,
+ "repetitions": 5,
+ "burn_seconds": 0.15,
+ "audit_intervals": 32,
+ "full_audit_cases": 0,
+ "reference_budget": 0.0001,
+ "rom_defaults": {
+  "init": "field",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "rom_arms": [
+  {
+   "name": "nmrom_q0_field_cn",
+   "q": 0,
+   "opt": {
+    "init": "field"
+   }
+  },
+  {
+   "name": "nmrom_q0_field_direct_tol1e-4_chol",
+   "q": 0,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q288_field_cn",
+   "q": 288,
+   "opt": {
+    "init": "field"
+   }
+  },
+  {
+   "name": "nmrom_q288_field_direct_tol1e-4_chol",
+   "q": 288,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  }
+ ],
+ "linear_bank_inits": [
+  "moments",
+  "field"
+ ],
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-4": {
+   "dt": 0.025,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.025_rtol1e-3": {
+   "dt": 0.025,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-4": {
+   "dt": 0.05,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-4": {
+   "dt": 0.1,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  }
+ },
+ "coarse_intervals": [
+  32,
+  64
+ ],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-4"
+}

@@ -1,0 +1,67 @@
+ADVERSARIAL AUDIT of a pre-registration, BEFORE any GPU job runs. Read-only: change no file.
+
+Target: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-tune-deeponet/experiments/ops-tune-deeponet/DESIGN.md
+
+Context you must read to judge it:
+  - the same worktree's experiments/ops-deeponet-b2d/{DESIGN.md,HANDOFF.md,reports/2026-09-22-ops-deeponet-b2d.md}
+    (the lane this one forks; its result is what this lane is trying to improve on)
+  - experiments/ops-deeponet-b2d/{train.py,model.py,families.py,dataset.py,worker_second.py,cluster/stage.py,audit.py,prepare_diagnosis_cohort.py}
+    (the harness this lane inherits and will modify; no modified code exists yet - you are auditing the PLAN)
+  - experiments/mr-burgers2d/engines.py and experiments/separable-decoder/sep_common.py (the Burgers FOM)
+  - the repository CLAUDE.md and AGENTS.md
+  - the data generator as committed: `git show 5169c095:experiments/neural-operator-burgers/data.py`
+    and `git show 5169c095:experiments/neural-operator-burgers/protocol.json`
+
+The lane's job, verbatim from its brief: make the DeepONet baseline on 2D viscous Burgers at
+256^2 as strong as it can HONESTLY be made in the time available, so the paper's operator
+comparison survives review. Two suspects, in priority order: (1) DATA PARITY - the operators
+trained on 128 cases while our NM-ROM's head trained on 4608 trajectories; (2) TUNING.
+Budget: <= 1 running GPU job, <= 6 total. Deadline 2026-09-25.
+
+Find everything WRONG with the plan. In particular:
+
+1. Is the data-parity accounting in section 2 correct and complete? Check every number against
+   the artefacts it cites (the cluster index metadata is quoted in the design; the local
+   citations - reports/2026-09-10-historical-poisson-and-burgers-cost-audit.json and the
+   LAB-LOG entries - you can read). Is the "205x supervised states" comparison fair, or is it
+   comparing objects that cannot be compared? Is anything hand-typed that should be derived?
+
+2. Section 2.3 changes the reference solver protocol for the NEW training data (a cheaper
+   mesh/timestep than the pinned 4096 anchor) because parity at the pinned protocol costs ~146
+   GPU-hours. Is the justification sound? Are the three safeguards (nested prefix, measured
+   per-case target difference on cases 0-127, the trained c-pinned128/c-new128 control)
+   sufficient? What could this still hide? Is the pre-registered rule for CHOOSING the setting
+   inside the job a legitimate pre-registration or a disguised post-hoc choice?
+
+3. Section 4.1 replaces epoch-based patience with step-based patience. Does that break the
+   like-for-like claim against the U-Net / Transolver / FNO arms anywhere the design does not
+   already admit? Is the claim that "c-pinned128 is not bitwise don-small" handled honestly?
+   Are the constants (500 steps, 40 evaluations, 8 evaluations) internally consistent with the
+   arithmetic quoted beside them?
+
+4. Section 5: is the selection metric, the selection surface and the composition rule 5.3
+   genuinely pre-registered, or does any of it leave room to choose after seeing numbers?
+   Is the claim that selection noise biases "in the baseline's favour, the conservative
+   direction" actually true for THIS paper? Are the thresholds in T0-T2 (10%, 0.7x, 10%, 2%)
+   arbitrary in a way that will be challenged, and is any of them unreachable or vacuous by
+   construction (the parent lane shipped a vacuous "still improving" column - do not let that
+   recur)?
+
+5. Section 6: does the job budget arithmetic work? 13 arms in tun01 at the stated budgets in
+   <= 10 hours, with data loading, smokes and the cohort build? Is any arm's cost
+   underestimated? Does the ordering lose the most important result if the job is truncated?
+   Is the "decide plateau-vs-cosine inside the job" rule in section 6 consistent with
+   section 5's pre-registration discipline?
+
+6. Gates in section 8 and the harness they rely on: will any of them fail for a reason
+   unrelated to the science (the parent lane's audit found audit.py would have CRASHED on the
+   first DeepONet arm because of a family whitelist)? Walk the inherited code and name every
+   place a plan change in section 3 will break an existing assertion, path assumption, index
+   check or shape check. Be concrete: file, line, what breaks.
+
+7. Anything the design claims that a hostile reviewer of the PAPER would not accept, and
+   anything the design should measure but does not.
+
+Output: a markdown report. Number every finding BLOCKER / MAJOR / MINOR, say exactly what is
+wrong, where, and what the fix is. Do not soften. If a section is sound, say so in one line and
+move on - spend the words on the defects. State explicitly if you could not read a file.

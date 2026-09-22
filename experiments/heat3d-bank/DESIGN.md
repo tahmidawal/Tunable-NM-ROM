@@ -107,3 +107,17 @@ at $128^3$; ties within 5 % → smaller R, then K). If nothing qualifies, no add
 **Final job:** panel A = pre-registered selection (`final01.json`); panel B = addendum selection (fast $q=0$, accurate $q$, with
 `cn_tol1e-4_chol` and `direct` stepping), same cohorts/meshes/FOM ladder, same allocation. Both are reported; A is labelled
 pre-registered, B "selected on validation after addendum 1". Sealed verdict cohort 921099 opened once, in that job.
+
+## Addendum 2 (2026-09-21 ~22:50 EDT, after speedR256/speedR320, before any sealed cohort is opened)
+
+Addendum-1 selection (`selection_addendum1.json`): **R256/K16, accurate q=160** (validation 128³: 0.543 %, CN tol1e-4 13.1 ms, direct
+6.9 ms; named 29.4 ms). Stage profile (q160, 128³): CN = encode 1.2 + init 1.3 + evolve 7.8 + decode 1.1 ms; direct = 1.2 + 1.4 + 1.5 + 1.1 ms.
+Hypotheses (existing code paths only): (i) CN dt 0.05 halves the sequential solves (validation at q128/q192, tol 1e-6, showed
+unchanged all-times error); (ii) one initial-fit start instead of 4; (iii) `moments` initial fit (M=1024 sine moments by DST) removes the
+O(NR) encode read. Job `speed2` (config `speed2_vp_R256_K16.json`, validation 921777, 256 draws, 16 timed, 64³/128³): the 9 variants
+below for q ∈ {0, 160}, reference arms included for a same-allocation before/after.
+
+**Rule (mechanical, `select_speed2.py`, validation only), per stepping family (cn, direct), at q=160:** a variant is eligible if its
+worst all-times error is ≤ min(0.8 %, 1.05 × the family reference arm's) at both 64³ and 128³ and it has zero failed solves at both;
+choose the fastest 128³ median among eligible variants (the reference is always eligible if it has zero failures). The fast setting
+q=0 uses the same variant. Panel B of the final = these arms (replacing addendum-1's arms if a variant wins). Panel A unchanged.

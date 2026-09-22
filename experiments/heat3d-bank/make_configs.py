@@ -62,4 +62,15 @@ if __name__ == '__main__':
                 dict(name=f'nmrom_q{q}_field_cn_tol1e-4_chol', q=q, opt=dict(init='field', tolerance=1e-4, cholesky=True)),
                 dict(name=f'nmrom_q{q}_field_direct_tol1e-4_chol', q=q, opt=dict(init='field', stepping='exact_direct', tolerance=1e-4, cholesky=True)))]
             (HERE / f'speed_{name}_K{k}.json').write_text(json.dumps(cfg, indent=1) + '\n')
+    # ADDENDUM 2 (speed loop, validation only; DESIGN.md addendum 2): variants of the addendum-1 selection R256/K16, q in {0, 160}.
+    V2 = {'cn_tol1e-4_chol': dict(), 'cn_tol1e-4_chol_dt0.05': dict(dt=0.05), 'cn_tol1e-4_chol_s1': dict(starts=1),
+          'cn_tol1e-4_chol_dt0.05_s1': dict(dt=0.05, starts=1), 'cn_tol1e-4_chol_mom_dt0.05_s1': dict(init='moments', dt=0.05, starts=1),
+          'direct_tol1e-4_chol': dict(stepping='exact_direct'), 'direct_tol1e-4_chol_s1': dict(stepping='exact_direct', starts=1),
+          'direct_tol1e-4_chol_mom': dict(stepping='exact_direct', init='moments'),
+          'direct_tol1e-4_chol_mom_s1': dict(stepping='exact_direct', init='moments', starts=1)}
+    cfg = panel('vp_R256', 16, [], [], [('validation', 921777, 256)], [64, 128], 256, 16, 32, 32)
+    cfg['save_selection_arms'] = 'nmrom_'
+    cfg['rom_arms'] = [dict(name=f'nmrom_q{q}_field_{v}' if '_mom' not in v else f'nmrom_q{q}_{v}', q=q,
+                            opt=dict(dict(init='field', tolerance=1e-4, cholesky=True), **o)) for q in (0, 160) for v, o in V2.items()]
+    (HERE / 'speed2_vp_R256_K16.json').write_text(json.dumps(cfg, indent=1) + '\n')
     print('written')

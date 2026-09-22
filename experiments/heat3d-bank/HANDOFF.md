@@ -32,3 +32,8 @@ R=320 -> 0.08 % / 0.07 %. R=128 cannot reach 1 % (1.71 %). Disclosure in DESIGN.
 ## 2026-09-21 ~20:30 — validation done, pre-registered selection applied (R320/K32/q288 via rule 5), addendum 1 speed jobs next
 Next: submit speedR256 (4146429) + speedR320 (4146432) RUNNING (configs speed_*.json, no training: inputs/vp_R* committed), then `select_speed.py`, then final01
 (two panels: A = configs/final01.json, B = addendum). Jobs used: 4 of 8.
+
+## 2026-09-21 ~23:00 — addendum 1 done (R256/K16/q160 panel B), addendum 2 speed2 job 4149861 RUNNING (job 7 of 8)
+speedR256 4146429 / speedR320 4146432: collected, all checks passed, remotes removed. After speed2: collect, `select_speed2.py
+runs/speed2/speed2_vp_R256_K16`, commit, then submit final01 (LAST job, 8 of 8):
+`cluster/submit.sh final01 h200 14:00:00 240G - - final01.json final01b.json`. Nothing else may be submitted.

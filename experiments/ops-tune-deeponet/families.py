@@ -236,9 +236,10 @@ class DeepONet2d(nn.Module):
     """Branch/trunk DeepONet; the 2D analogue of this project's `deeponet3d`."""
 
     def __init__(self, cin, cout, width, rank, trunk_width, levels=3, pool_bins=4,
-                 frequencies=(1., 2., 4.)):
+                 frequencies=(1., 2., 4.), trunk_layers=3):
         super().__init__()
         assert trunk_width >= rank, 'a declared rank needs trunk_width >= rank'
+        assert trunk_layers >= 2, 'the trunk needs an input layer and a read-out'
         self.cout, self.rank, self.pool_bins = cout, rank, pool_bins
         self.frequencies = tuple(float(f) for f in frequencies)
         blocks, ci = [], cin - 2  # the last two channels are the x, y coordinates
@@ -251,8 +252,11 @@ class DeepONet2d(nn.Module):
         self.branch_hidden = nn.Linear(ci * pool_bins * pool_bins, trunk_width)
         self.branch_read = nn.Linear(trunk_width, rank * cout)
         features = 2 * (1 + 2 * len(self.frequencies))
-        self.trunk = nn.ModuleList([nn.Linear(features, trunk_width), nn.Linear(trunk_width, trunk_width),
-                                    nn.Linear(trunk_width, rank)])
+        # `trunk_layers` counts every linear map: input, hidden..., read-out. 3 is the
+        # inherited depth and the 3D lane's, so the default changes nothing.
+        self.trunk = nn.ModuleList([nn.Linear(features, trunk_width)]
+                                   + [nn.Linear(trunk_width, trunk_width) for _ in range(trunk_layers - 2)]
+                                   + [nn.Linear(trunk_width, rank)])
         self.bias = nn.Parameter(torch.zeros(cout))
         # The 3D lane scales the read-out down at initialisation; keep that.
         with torch.no_grad():
@@ -293,7 +297,8 @@ def make(family, cin, cout, config):
         network = DeepONet2d(cin, cout, width=config['width'], rank=config['rank'],
                              trunk_width=config['trunk_width'], levels=config.get('levels', 3),
                              pool_bins=config.get('pool_bins', 4),
-                             frequencies=config.get('trunk_frequencies', (1., 2., 4.)))
+                             frequencies=config.get('trunk_frequencies', (1., 2., 4.)),
+                             trunk_layers=config.get('trunk_layers', 3))
     elif family == 'transolver':
         network = Transolver2d(cin, cout, dim=config['dim'], layers=config['layers'], heads=config['heads'],
                                slices=config['slices'], mlp_ratio=config.get('mlp_ratio', 2),

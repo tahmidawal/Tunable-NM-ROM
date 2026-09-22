@@ -67,7 +67,9 @@ def main():
                 suppressed.append(dict(arm=r['arm'], gates=r['gates']))
                 continue
         for scope in ('gpu', 'host'):
-            comp, ratio = fom_rule(rows, r, scope)
+            # A full-order row is not compared with itself: the rule exists to give a reduced or
+            # operator arm its comparator, and applying it to a FOM row just returns that row.
+            comp, ratio = (None, None) if r['family'] == 'fom' else fom_rule(rows, r, scope)
             r[f'fom_{scope}'] = comp
             r[f'speedup_{scope}'] = ratio
         printed.append(r)
@@ -83,7 +85,8 @@ def main():
             arm=r['arm'], fam=FAMILY_LABEL.get(r['family'], r['family']), role=ROLE.get(r['arm'], '—'),
             we=cell(r['worst_evolved_percent'], 4), me=cell(r['median_evolved_percent'], 4),
             wa=cell(r['worst_all_times_percent'], 4), g=cell(r['median_gpu_ms']), h=cell(r['median_host_ms']),
-            c=f"`{r['fom_gpu']}`" if r['fom_gpu'] else 'none at least as accurate',
+            c=(f"`{r['fom_gpu']}`" if r['fom_gpu'] else
+               ('— (is a FOM)' if r['family'] == 'fom' else 'none at least as accurate')),
             sg=cell(r['speedup_gpu'], 3) + ('×' if r['speedup_gpu'] is not None else ''),
             sh=cell(r['speedup_host'], 3) + ('×' if r['speedup_host'] is not None else '')))
     table = '\n'.join(lines)

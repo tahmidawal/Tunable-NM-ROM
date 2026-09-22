@@ -1,7 +1,9 @@
 """Checksum-collect one exact completed attempt; remote cleanup stays an explicit separate step.
 
-`fnockpt/best.pt` (429 MB) is NOT collected: it is an out-of-band input whose SHA256 is in
-PROVENANCE.json and whose source copy is retained in the lane it came from (b-ladder-top's rule).
+The nine `opsckpt/*.pt` files (1.2 GB) are NOT collected: they are out-of-band INPUTS whose
+SHA256 is in PROVENANCE.json and whose source copies are retained in the lanes they came from
+(b-ladder-top's rule). The remote MANIFEST is verified in full before the archive is made, so
+they are checked; they are simply not copied back.
 """
 import argparse
 from pathlib import Path
@@ -9,8 +11,9 @@ import shlex
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
-NAMESPACE = '/cluster/tufts/paralab/tawal01/b_panel_20260917'
-EXCLUDED = ['fnockpt/best.pt']
+NAMESPACE = '/cluster/tufts/paralab/tawal01/opstime_20260922'
+LANE = 'experiments/ops-timing-panel'
+EXCLUDED = None   # filled from operators.json
 
 
 def main():
@@ -19,10 +22,14 @@ def main():
     a = p.parse_args()
     assert a.attempt.isalnum()
     remote = f'{NAMESPACE}/{a.attempt}'
-    out = ROOT / 'experiments/b-panel/runs' / a.attempt / 'archive'
+    global EXCLUDED
+    import json
+    EXCLUDED = [f"opsckpt/{c['name']}.pt"
+                for c in json.loads((ROOT / LANE / 'operators.json').read_text())['checkpoints']]
+    out = ROOT / LANE / 'runs' / a.attempt / 'archive'
     out.mkdir(parents=True, exist_ok=False)
     members = ['COMMIT.txt', 'PROVENANCE.json', 'MANIFEST.sha256', 'run.sbatch', 'logs', 'OUTPUTS.sha256', 'output']
-    for extra in ('experiments', 'fnocode'):
+    for extra in ('experiments',):
         if subprocess.run(['ssh', 'tufts-login', f'test -e {shlex.quote(remote + "/" + extra)}']).returncode == 0:
             members.append(extra)
     cmd = (f'cd {shlex.quote(remote)} && sha256sum -c OUTPUTS.sha256 --quiet && '

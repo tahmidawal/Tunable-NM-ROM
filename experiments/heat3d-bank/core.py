@@ -214,6 +214,23 @@ def sep2d_directions(model, cfg_train):
 
 
 # ---------------------------------------------------------------- reduced solver
+def row_blocks(rows, target=1 << 21):
+    """Row slices of the bank for blocked encode/decode. One block below the target (identical to the old single GEMM);
+    at 256^3 the single f64 [6, 16.6M] decode GEMM failed XLA autotuning (job 4171513), so it is split. Memory/kernels only."""
+    k = max(1, -(-rows // target)); step = -(-rows // k)
+    return [(s, min(s + step, rows)) for s in range(0, rows, step)]
+
+
+def bank_project(bank, vec, blk):
+    """bank^T vec, summed over row blocks (exact same value up to summation order)."""
+    return sum(bank[s:e].T @ vec[s:e] for s, e in blk)
+
+
+def bank_expand(coefs, bank, blk):
+    """coefs @ bank^T, concatenated over row blocks."""
+    return coefs @ bank.T if len(blk) == 1 else jnp.concatenate([coefs @ bank[s:e].T for s, e in blk], axis=1)
+
+
 def lm(head_fn, budget, tol, cholesky=False):
     """Damped monotone LM on ||matrix h(z) - target||/||target||. reasons: 0 budget 1 stationary 2 tiny 3 damping."""
     def solve(params, matrix, target, z0, scale=None):
@@ -266,6 +283,7 @@ def make_stages(model, setup, q, opt):
          fit_budget, step_budget, tolerance, compress, direct_starts.
     """
     d, n, modes = model['d'], setup['n'], setup['modes']; head_fn = model['head_fn']; hp = model['head_params']
+    blk = row_blocks((n - 1) ** d)
     codes = model['codes']; times = np.asarray(setup['times']); nu = setup['nu']; lam = jnp.asarray(setup['mode_lam'])
     assert 0 <= q <= np.asarray(setup['directions']).shape[1] and q + codes.shape[1] <= setup['a'].shape[0], ('invalid q', q)
     D = np.asarray(setup['directions'])[:, :q]; Dj = jnp.asarray(D)
@@ -289,7 +307,7 @@ def make_stages(model, setup, q, opt):
 
     def encode(u0, bank):
         m0 = moments(u0, modes, n, d)
-        t0 = jsl.solve_triangular(rtri_t, bank.T @ u0.reshape(-1), lower=True) if opt['init'] == 'field' else m0
+        t0 = jsl.solve_triangular(rtri_t, bank_project(bank, u0.reshape(-1), blk), lower=True) if opt['init'] == 'field' else m0
         return t0, m0
     def init(t0):
         z, c0, stats, chosen = best_fit(fit0, E0, lib0, t0, opt['starts'], opt.get('mean_start', False))
@@ -318,7 +336,7 @@ def make_stages(model, setup, q, opt):
         _, (coefs, infos) = jax.lax.scan(step, (z, coef), None, length=nsteps)
         return coefs[stride - 1::stride], infos
     def decode(coefs, bank):
-        return (coefs @ bank.T).reshape((len(times),) + (n - 1,) * d)
+        return bank_expand(coefs, bank, blk).reshape((len(times),) + (n - 1,) * d)
     def query(u0, bank):
         t0, m0 = encode(u0, bank); z, c0, s0 = init(t0); coefs, s1 = evolve(z, c0, m0)
         return decode(jnp.concatenate((c0[None], coefs)), bank), s0, s1
@@ -331,17 +349,18 @@ def linear_bank(setup, init, direct=False):
     assert np.max(np.linalg.eigvals(gen).real) < 1e-8
     maps = jnp.asarray(np.stack([scipy.linalg.expm(t * gen) for t in setup['times']]))
     n, d, modes = setup['n'], setup['d'], setup['modes']; rt = jnp.asarray(setup['rtri']); leftj = jnp.asarray(left)
+    blk = row_blocks((n - 1) ** d)
     @jax.jit
     def query(u0, bank):
         if init == 'field':
-            c = jsl.solve_triangular(rt, jsl.solve_triangular(rt.T, bank.T @ u0.reshape(-1), lower=True), lower=False)
+            c = jsl.solve_triangular(rt, jsl.solve_triangular(rt.T, bank_project(bank, u0.reshape(-1), blk), lower=True), lower=False)
         else:
             c = leftj @ moments(u0, modes, n, d)
         if direct:   # free coefficients fitted to the SAME exact propagated supplied-field moments as the ROM 'direct' arm
             m0 = moments(u0, modes, n, d); lam = jnp.asarray(setup['mode_lam']); ts = jnp.asarray(setup['times'][1:])
             later = (jnp.exp(-setup['nu'] * lam[None] * ts[:, None]) * m0[None]) @ leftj.T
-            return (jnp.concatenate((c[None], later)) @ bank.T).reshape((len(setup['times']),) + (n - 1,) * d)
-        return ((maps @ c) @ bank.T).reshape((len(setup['times']),) + (n - 1,) * d)
+            return bank_expand(jnp.concatenate((c[None], later)), bank, blk).reshape((len(setup['times']),) + (n - 1,) * d)
+        return bank_expand(maps @ c, bank, blk).reshape((len(setup['times']),) + (n - 1,) * d)
     return query
 
 

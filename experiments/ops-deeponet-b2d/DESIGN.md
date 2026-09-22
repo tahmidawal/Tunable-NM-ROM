@@ -235,6 +235,20 @@ is a time from `don01` divided by a time from any other job.
 - **A1 (2026-09-22, before `don01`).** Independent audit of this design and of the
   `families.py` diff; disposition recorded in §A2 below before submission.
 
+- **A4 (2026-09-22, after `don01`) — the §5 timing decision, taken the way §5 pre-registered.**
+  No same-allocation panel was run in this lane, so **this lane reports accuracy only and makes
+  no speed claim of any kind.** The reason is not that the route is unavailable: the sibling
+  `ops-timing-panel` lane completed exactly such a panel the same day (job 4179247, 24:58,
+  audited) timing the FNO, U-Net and Transolver checkpoints beside the NM-ROM, POD and the
+  named Newton–BiCGStab full-order settings in one allocation, and its `operators.json` extends
+  by adding rows. Copying that 46-file harness into this lane to add one family would duplicate
+  a lane that has two unused jobs and owns the gates, comparators and audit for it. Instead
+  `reports/timing-handoff.json` records every DeepONet checkpoint's path and SHA256 —
+  **re-verified against the hash `train.py` recorded, all four match** — the `families.py` and
+  `model.py` that harness needs, and how to rebuild the checkpoints from the archive parts if
+  the extracted tree is gone. The in-job `timing.py` block is reported as same-job only, and
+  nothing from `don01` is divided by anything from another job.
+
 - **A3 (2026-09-22, during `don01`, before any result was read as a verdict).** The first arm,
   `don-small`, ended by **early stopping** at 561 s of its 3000 s budget (best epoch 288 of
   539) — the first Burgers arm in this comparison not to end on its wall budget. §3 and the

@@ -339,8 +339,16 @@ FNO job's. Accuracy is comparable across these jobs; **timing is not, and none i
 These are device-resident query times measured inside job `{mine['job_id']}` on its own GPU,
 retained per repetition. **They are not a speed claim.** A speed number is admissible only
 from a same-allocation panel in which the ROM, the operator and the FOM are timed in one job
-on one GPU; no such panel has been run for this checkpoint. No time here is divided by a time
-from any other job.
+on one GPU; no such panel has been run for these checkpoints, so **no speed statement about this
+DeepONet is admissible from this lane**. No time here is divided by a time from any other job.
+
+The admissible route exists and is prepared rather than run here: the `ops-timing-panel` lane
+(job 4179247) already times the FNO, U-Net and Transolver checkpoints beside the NM-ROM, POD
+and the named full-order solver in one allocation, and its `operators.json` extends by adding
+rows. `reports/timing-handoff.json` in this lane carries exactly those rows — every DeepONet
+checkpoint's path and SHA256, re-verified against the hash the training job recorded, plus the
+`families.py` that harness needs to build the family. Running it there rather than copying the
+harness here avoids a second copy of a 46-file harness for one extra family.
 
 ## 6. Caveats that must travel with these numbers
 

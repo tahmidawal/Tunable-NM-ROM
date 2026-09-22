@@ -9,14 +9,23 @@ merged. Pre-registration: `DESIGN.md`. Read that before touching anything here.
 
 *(kept current; newest first)*
 
-- **2026-09-22** — lane created; DeepONet family written, smoked locally, pre-registered,
-  independently audited. Job `don01` staged/submitted. See §Jobs.
+- **2026-09-22 — lane complete on its own question; 1 of 4 jobs used, nothing running.**
+  `don01` (job 4179556) COMPLETED, collected, audited, reported, remote deleted, namespace
+  empty. **DeepONet is the weakest of the four operator families on 2D Burgers at 256² by a
+  wide margin** — selected arm `don-small`, validation-32 mean 14.7877 %, median 11.7522 %,
+  worst 54.7444 %, against `fno-large`'s 2.2811 / 1.8054 / 6.3825 and `unet-medium`'s
+  1.4341 / 1.3169 / 3.9622. Pre-registered D1 and D2 both **fail**; D3 (the honest negative)
+  is the outcome. All four arms **early-stopped** at 543–898 s of a 3000 s budget and accuracy
+  got monotonically worse with capacity, so neither "too small" nor "too little time" explains
+  it. Report `reports/2026-09-22-ops-deeponet-b2d.md`, rows `reports/summary.json`.
+  **No speed claim is made** (DESIGN §A4); the handoff for the admissible route is
+  `reports/timing-handoff.json`.
 
 ## Jobs
 
 | attempt | spec | job id | GPU | state | what it is |
 |---|---|---|---|---|---|
-| `don01` | `specs/don01.json` | *(see below)* | A100-80G | *(see below)* | DeepONet capacity screen: `small`/`medium`/`large` at 3000 s each + `refine` |
+| `don01` | `specs/don01.json` | 4179556 | A100-80G pax050 | COMPLETED 00:45:45, collected, audited, remote deleted | DeepONet capacity screen: `small`/`medium`/`large` at 3000 s each + `refine` |
 
 Job budget for this lane: **4 total, 1 running at a time.** Preamble deaths with zero
 training GPU time do not count (the `no-second` rule), but they must be recorded with their
@@ -33,10 +42,17 @@ logs in `runs/<attempt>/`.
 - `reports/codex-design-audit.md` — Codex could not run (sandbox failure); the independent
   audit is `reports/design-audit-2026-09-22.md`, disposition in `DESIGN.md` §A2.
 
-## Next, in order
+## Next, whoever picks this up
 
-1. Collect `don01`, run `audit.py don01`, regenerate the report, commit.
-2. Decide on timing: a same-allocation panel (`b-panel` harness) or an explicit statement that
-   no speed claim is admissible. **Do not divide a time from `don01` by a time from any other
-   job** — DESIGN §5.
-3. Append the lab-log entry under `flock`.
+1. **The one thing outstanding: a same-allocation timing row.** Hand
+   `reports/timing-handoff.json` to the `ops-timing-panel` lane (it has 2 unused jobs, the
+   gates, the comparators and the audit already built) rather than copying its 46-file harness
+   here. That file has each checkpoint's path and SHA256, re-verified against the hash
+   `train.py` recorded, and the `families.py`/`model.py` that harness needs for the family.
+   **Never divide a time from `don01` by a time from another job** — DESIGN §5/§A4.
+2. If anyone wants to argue the DeepONet deserves better: the fair experiment is a
+   *family-tuned schedule*, not a longer budget — every arm early-stopped. Give it its own
+   worktree and its own pre-registration; do not amend this one after the fact.
+3. `runs/don01/archive/don01/` is `.gitignore`d. It rebuilds from
+   `runs/don01/archive-parts/part-*` (`manifest.json` has each part's SHA256): concatenate,
+   `tar -xzf`, then re-verify against `MANIFEST.sha256` / `OUTPUTS.sha256`.

@@ -1,0 +1,57 @@
+{
+  "purpose": "Everything the ops-timing-panel harness needs to time this lane\"s DeepONet arms in ONE allocation beside the NM-ROM, POD and the full-order solver \u2014 the only construction from which a speed number for these checkpoints is admissible. This lane makes no speed claim.",
+  "add_to": "experiments/ops-timing-panel/operators.json -> checkpoints",
+  "requires": {
+    "families_py": {
+      "path": "worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/families.py",
+      "sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+      "why": "the panel\"s lib/families.py is no-second\"s and has no `deeponet` entry; this file is that file plus DeepONet2d, and the U-Net and Transolver classes are untouched",
+      "check": "python check_inherited.py in this lane lists exactly which files differ from no-second"
+    },
+    "model_py": {
+      "path": "worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/model.py",
+      "sha256": "70a14f70429134f58e6d81a8fbd94992b4f1969fdd7648cb0cd8386248917f3e",
+      "why": "one smoke_bounded branch; make_model dispatch is unchanged"
+    },
+    "unpack": "the checkpoint paths below live in a .gitignored extracted tree; if it is gone, rebuild it by concatenating runs/don01/archive-parts/part-* (manifest.json has each part\"s SHA256) and untarring, then re-verify every best.pt against the sha256 recorded here"
+  },
+  "caveat": "These arms are 6-9x less accurate than the FNO/U-Net/Transolver arms on the same data and all four early-stopped; a speed row for them should carry that error beside it, and the panel\"s own note that every operator arm is already above the 256^2 discretisation error applies a fortiori.",
+  "checkpoints": [
+    {
+      "name": "don-large",
+      "family": "deeponet",
+      "sha256": "af5a47ddb0bc7aa2ea8fca7a8df324e296c8f3fe16517c97cd13caee16c9b6e2",
+      "path": "2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/runs/don01/archive/don01/out/don-large/best.pt",
+      "recorded_in": "don01/OUTPUTS.sha256",
+      "role": "capacity",
+      "source_job": "4179556"
+    },
+    {
+      "name": "don-medium",
+      "family": "deeponet",
+      "sha256": "014df949b789b07bfee19288bfd7fa8072cec51d14200bd88d1e0625bba0fb4b",
+      "path": "2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/runs/don01/archive/don01/out/don-medium/best.pt",
+      "recorded_in": "don01/OUTPUTS.sha256",
+      "role": "best_validation_worst",
+      "source_job": "4179556"
+    },
+    {
+      "name": "don-refine",
+      "family": "deeponet",
+      "sha256": "fa006e41ede5ea6ffcf33e6d380174dbbc73df2fb72857c7d05a24432b472a38",
+      "path": "2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/runs/don01/archive/don01/out/don-refine/best.pt",
+      "recorded_in": "don01/OUTPUTS.sha256",
+      "role": "capacity",
+      "source_job": "4179556"
+    },
+    {
+      "name": "don-small",
+      "family": "deeponet",
+      "sha256": "64d13193f9531f0f9ad92a70ad254ee481484fe879a6088698ade95af33398b7",
+      "path": "2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/runs/don01/archive/don01/out/don-small/best.pt",
+      "recorded_in": "don01/OUTPUTS.sha256",
+      "role": "selected",
+      "source_job": "4179556"
+    }
+  ]
+}

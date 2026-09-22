@@ -144,8 +144,16 @@ FNO job's. Accuracy is comparable across these jobs; **timing is not, and none i
 These are device-resident query times measured inside job `4179556` on its own GPU,
 retained per repetition. **They are not a speed claim.** A speed number is admissible only
 from a same-allocation panel in which the ROM, the operator and the FOM are timed in one job
-on one GPU; no such panel has been run for this checkpoint. No time here is divided by a time
-from any other job.
+on one GPU; no such panel has been run for these checkpoints, so **no speed statement about this
+DeepONet is admissible from this lane**. No time here is divided by a time from any other job.
+
+The admissible route exists and is prepared rather than run here: the `ops-timing-panel` lane
+(job 4179247) already times the FNO, U-Net and Transolver checkpoints beside the NM-ROM, POD
+and the named full-order solver in one allocation, and its `operators.json` extends by adding
+rows. `reports/timing-handoff.json` in this lane carries exactly those rows — every DeepONet
+checkpoint's path and SHA256, re-verified against the hash the training job recorded, plus the
+`families.py` that harness needs to build the family. Running it there rather than copying the
+harness here avoids a second copy of a 46-file harness for one extra family.
 
 ## 6. Caveats that must travel with these numbers
 
@@ -171,7 +179,7 @@ read as a property of the family.
 | `experiments/no-second/runs/unet01/audit.json` | `d4096ba15209d03c8415b97016b92615d1f736987abb0e4232544b51fc122c47` |
 | `experiments/ops-deeponet-b2d/runs/don01/audit.json` | `e3e747dc82eaded743439451e2c4ea5e621f16bd73d9313c842dc004aa0a21c5` |
 
-Generator SHA256 `5c4e20c9260a6b734fe26b193dbafbd61ab40808d91a83dd0d08e2f1e730b2c5`.
+Generator SHA256 `60c48bf9ed471f440a78c79163a81c746fea1e1c0a0c12c29c40ca31acf3ad59`.
 
 ## 8. Glossary
 

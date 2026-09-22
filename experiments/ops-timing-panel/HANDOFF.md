@@ -1,11 +1,12 @@
 # ops-timing-panel — HANDOFF
 
-**State (2026-09-22):** design written, harness copied and smoked, nothing submitted yet.
+**State (2026-09-22):** `opt101` = job **4179247** RUNNING on pax049 (a100-80G, 6 h wall).
+Staged from source commit `e664fe45`. Expected ~45 min.
 
 - Worktree `worktrees/2026-09-22-ops-timing-panel`, branch `exp/2026-09-22-ops-timing-panel`,
   forked from `exp/2026-09-17-no-second` @ `ea812685`.
 - Namespace `/cluster/tufts/paralab/tawal01/opstime_20260922/`, one directory per job.
-- Jobs used: 0 of 3. Running: 0 of 1.
+- Jobs used: 1 of 3. Running: 1 of 1. squeue checked before (empty) and after (exactly one).
 
 ## What exists
 
@@ -23,8 +24,14 @@
   (6, 257, 257), $t_0$ bitwise, boundary masked, f64.
 - `declare_subjects` on the trimmed config: 21 subjects, exactly the intended set.
 
+- Codex design audit (`checks/codex-design-audit.md`): six findings, all accepted, disposition
+  table in `DESIGN.md` §11.
+
 ## Next
 
-1. Commit, stage `opt101`, `squeue` before/after, submit to a100-80G.
-2. On completion: collect with checksums, run `audit_panel.py` over all 9 operator names,
-   delete the remote directory, generate the report, append the lab log.
+1. Watch 4179247. Preflight must print `jax_backend=gpu`; the training-index assert exits 43.
+2. On completion: collect with checksums; run
+   `audit_panel.py output/result.json --fields output --out checks/opt101-audit.json
+   --fno-name fno-large unet-small unet-medium unet-large unet-refine tsol-small tsol-medium
+   tsol-large tsol-refine`; **refuse the job if the audit's `failed` list is non-empty**;
+   delete the remote directory; generate the report; append the lab log.

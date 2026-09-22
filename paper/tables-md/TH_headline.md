@@ -34,8 +34,6 @@
 | Heat (new bank) 3D (accepted final) | 32^3 | 0.11 | 0.057× | 2.00 | 0.13× | 0.078 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
 | Heat (new bank) 3D (accepted final) | 64^3 | 0.11 | —^{n} | 2.00 | 0.21× | 0.081 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
 | Heat (new bank) 3D (accepted final) | 128^3 | 0.11 | 0.28× | 2.00 | 0.62× | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
-| Heat (new bank) 3D (accepted final) | 256^3 | 0.11 | —^{n} | 2.00 | **3.85×** | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
 | Heat (new bank, batched fit) 3D (accepted final) | 32^3 | 0.11 | 0.62× | 2.00 | 0.57× | 0.078 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
 | Heat (new bank, batched fit) 3D (accepted final) | 64^3 | 0.11 | 0.94× | 2.00 | 0.85× | 0.081 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
 | Heat (new bank, batched fit) 3D (accepted final) | 128^3 | 0.11 | **2.22×** | 2.00 | **2.10×** | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
-| Heat (new bank, batched fit) 3D (accepted final) | 256^3 | 0.11 | **6.74×** | 2.00 | **6.60×** | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |

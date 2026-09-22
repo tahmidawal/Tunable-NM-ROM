@@ -441,22 +441,6 @@
       "read": "coordinator-supplied audited summary",
       "lane": "nmrom-baselines",
       "role": "fam512-audit"
-    },
-    "heat3db_panel_a256": {
-      "tree": "worktrees/2026-09-21-heat3d-bank",
-      "path": "experiments/heat3d-bank/runs/final256c/final256/summary.json",
-      "commit": "5f1b048dcac33e078848d755ab1d963902192ae1",
-      "status": "audited final; heat3d-bank lane, 256^3 addendum 3",
-      "sha256": "1794c9bcb675a07c8fa82fcb3c8c2cacc09a9a95c44c3de5108f1ad8f26d3369",
-      "read": "committed blob",
-      "git_blob": "9768f463d7dbf445aa38e01959a3fe8f5f2585e4",
-      "companion_blobs": {
-        "runs/final256c/FINAL-TABLE.md": "ac5c3df539ca53edc653ef58aa0c06ac3af480d1",
-        "runs/final256c/final_table.json": "f7573f79a9c50bb299a6635d46ab750433692752",
-        "runs/final256c/final256/audit.json": "d84433e201a19bf03222e1998fe5cf650085f68a",
-        "DESIGN.md": "5d1440d435e19dcddd3401dd778e465eaedc8357",
-        "HANDOFF.md": "2c21edb85b8b86859bf1a3a0b67f546761111d4d"
-      }
     }
   },
   "rows": [
@@ -2590,86 +2574,6 @@
       "appendix_only": null
     },
     {
-      "problem": "Heat (new bank)",
-      "dim": 3,
-      "intervals": 256,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 2.004190154127506,
-        "ms": 46.21625319123268,
-        "arm": "nmrom_q0_field_cn",
-        "evolved_pct": 0.9529565157048022,
-        "nonstationary": 0,
-        "speedup": 3.8530403003575424
-      },
-      "accurate": {
-        "label": "$q=288$",
-        "error_pct": 0.11367606709227203,
-        "ms": 77.70556607283652,
-        "arm": "nmrom_q288_field_cn",
-        "evolved_pct": 0.08593666896107019,
-        "nonstationary": 2,
-        "speedup": 2.2916387470935144
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
-        "error_pct": 0.08228551541225271,
-        "ms": 178.0730860773474,
-        "arm": "fom_cncg_dt0.025_rtol1e-4",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.0822319802397718,
-            "ms": 330.01667517237365
-          },
-          "fom_cncg_dt0.025_rtol1e-4": {
-            "err": 0.08228551541225271,
-            "ms": 178.0730860773474
-          },
-          "fom_cncg_dt0.025_rtol1e-3": {
-            "err": 0.35957283027813475,
-            "ms": 140.32932766713202
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 1.4130736982160854,
-            "ms": 100.64302547834814
-          },
-          "fom_cncg_dt0.05_rtol1e-4": {
-            "err": 0.33747075338934995,
-            "ms": 173.51146531291306
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.338569032501547,
-            "ms": 115.49786641262472
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 1.4824055615904637,
-            "ms": 73.53087747469544
-          },
-          "fom_cncg_dt0.1_rtol1e-4": {
-            "err": 1.5495798478732261,
-            "ms": 159.56786973401904
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 1.5494732442037265,
-            "ms": 110.57768715545535
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 1.5594722129651961,
-            "ms": 71.34319050237536
-          }
-        }
-      },
-      "source": "heat3db_panel_a256",
-      "job_id": "4175680",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
       "problem": "Heat (new bank, batched fit)",
       "dim": 3,
       "intervals": 32,
@@ -2901,86 +2805,6 @@
       },
       "source": "heat3db_panel_a",
       "job_id": "4153878",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (new bank, batched fit)",
-      "dim": 3,
-      "intervals": 256,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 2.0042213479590014,
-        "ms": 26.990438578650355,
-        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
-        "evolved_pct": 0.7031357850386314,
-        "nonstationary": 0,
-        "speedup": 6.597635883479292
-      },
-      "accurate": {
-        "label": "$q=288$",
-        "error_pct": 0.11383486978565195,
-        "ms": 26.419530622661114,
-        "arm": "nmrom_q288_field_direct_tol1e-4_chol",
-        "evolved_pct": 0.02583352241815507,
-        "nonstationary": 0,
-        "speedup": 6.740206274694631
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
-        "error_pct": 0.08228551541225271,
-        "ms": 178.0730860773474,
-        "arm": "fom_cncg_dt0.025_rtol1e-4",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.0822319802397718,
-            "ms": 330.01667517237365
-          },
-          "fom_cncg_dt0.025_rtol1e-4": {
-            "err": 0.08228551541225271,
-            "ms": 178.0730860773474
-          },
-          "fom_cncg_dt0.025_rtol1e-3": {
-            "err": 0.35957283027813475,
-            "ms": 140.32932766713202
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 1.4130736982160854,
-            "ms": 100.64302547834814
-          },
-          "fom_cncg_dt0.05_rtol1e-4": {
-            "err": 0.33747075338934995,
-            "ms": 173.51146531291306
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.338569032501547,
-            "ms": 115.49786641262472
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 1.4824055615904637,
-            "ms": 73.53087747469544
-          },
-          "fom_cncg_dt0.1_rtol1e-4": {
-            "err": 1.5495798478732261,
-            "ms": 159.56786973401904
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 1.5494732442037265,
-            "ms": 110.57768715545535
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 1.5594722129651961,
-            "ms": 71.34319050237536
-          }
-        }
-      },
-      "source": "heat3db_panel_a256",
-      "job_id": "4175680",
       "cohort": "final",
       "status": "accepted final",
       "error_convention": "same-grid, all times",
@@ -4947,17 +4771,7 @@
     "nHeatNewBatchedAccEvolved": "0.030",
     "nHeatNewCnAccS": "0.28",
     "nHeatNewBfAccS": "2.22",
-    "nHeatNewBfAccSTwoFiftySix": "6.74",
-    "nHeatNewCnFastSTwoFiftySix": "3.85",
-    "nHeatNewBfFastSTwoFiftySix": "6.60",
-    "nHeatNewAccErrSpan": "0.1136\\mbox{--}0.1138",
-    "nHeatNewLinErrTwoFiftySix": "0.070",
-    "nHeatNewLinMsTwoFiftySix": "11.6\\mbox{--}21.7",
-    "nHeatNewProfile": "11.0 + 1.9 + 2.6 + 10.7",
-    "nHeatNewProfileQuery": "25.5",
-    "nHeatNewNonstat": "3",
-    "nHeatNewNonstatSixtyFour": "1",
-    "nHeatNewNonstatTwoFiftySix": "2",
+    "nHeatNewNonstat": "1",
     "nHeatNewCases": "64",
     "nHeatNewK": "32",
     "nHeatNewQ": "288",
@@ -5065,9 +4879,9 @@
     "nEqcFollowDraws": "12",
     "nEqcFollowErr": "0.520",
     "nEqcFollowS": "0.085",
-    "nHeadFasterRows": "29",
-    "nHeadRows": "39",
-    "nHeadAccFasterSubOne": "17",
+    "nHeadFasterRows": "27",
+    "nHeadRows": "37",
+    "nHeadAccFasterSubOne": "15",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",
     "nBaseKimRange": "120\\mbox{--}252",

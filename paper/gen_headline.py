@@ -50,7 +50,6 @@ SOURCES = {
     'heat3db_selection': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
     'heat3db_selection_add1': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum1.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
     'heat3db_selection_add2': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum2.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
-    'heat3db_panel_a256': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/runs/final256c/final256/summary.json', '5f1b048dcac33e078848d755ab1d963902192ae1', 'audited final; heat3d-bank lane, 256^3 addendum 3'),
     'ns3d_grok_diag07': (WT + '2026-09-21-ns3d-grok', 'experiments/ns3d-grok/runs/diag07/output/summary.json', '8852b7cd6365de7a8fdfd747bedee587f1cf9f29', 'audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)'),
     'bh5_summary': (WT + '2026-09-21-burgers-heldout', 'experiments/burgers-heldout/checks/bh5-summary.json', '3771cacfe84730eda2466f02b19f8c2290649b26', 'audited; burgers-heldout lane (closed); incumbent 4096^2 re-timing'),
     'bh5_eqcert': (WT + '2026-09-21-burgers-heldout', 'experiments/burgers-heldout/checks/bh5-eqcert-summary.json', '3771cacfe84730eda2466f02b19f8c2290649b26', 'audited; burgers-heldout lane (closed); quadrature re-draws at 4096^2'),
@@ -344,12 +343,9 @@ _ha = D['heat3db_panel_a']; _hm = _ha['metadata']
 assert _ha['audit_passed'] and _hm['backend'] == 'gpu' and _hm['x64'] and _hm['precision'] == 'highest' and not _hm['local_smoke']
 assert MAN['heat3db_panel_a']['sha256'] == {r_['summary_sha256'] for r_ in D['heat3db_final_table'] if r_['panel'] == 'final01'}.pop()
 _sel = D['heat3db_selection']['chosen']; assert (_sel['R'], _sel['K'], _sel['accurate_q'], _sel['fast_q']) == (320, 32, 288, 0)
-_ha256 = D['heat3db_panel_a256']; _hm256 = _ha256['metadata']       # 256^3, addendum 3 of the same lane and the same frozen model
-assert _ha256['audit_passed'] and _hm256['backend'] == 'gpu' and _hm256['x64'] and _hm256['precision'] == 'highest' and not _hm256['local_smoke']
-_HN = {m['intervals']: {r_['method']: r_ for r_ in m['rows']} for _d in (_ha, _ha256) for m in _d['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
-_HJ = {n: _hm['job_id'] for n in (32, 64, 128)} | {256: _hm256['job_id']}
-assert set(_HN) == {32, 64, 128, 256}
-for n in (32, 64, 128, 256):
+_HN = {m['intervals']: {r_['method']: r_ for r_ in m['rows']} for m in _ha['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
+assert set(_HN) == {32, 64, 128}
+for n in (32, 64, 128):
     R_ = _HN[n]; assert all(r_['cases'] == r_['timed_cases'] == 64 for r_ in R_.values())
     cands = {k: dict(err=100 * v['error_all_times_worst'], ms=v['device_ms_median']) for k, v in R_.items() if k.startswith('fom_cncg_') and v['failures'] == 0}
     for prob, arms in (('Heat (new bank)', ('nmrom_q0_field_cn', 'nmrom_q288_field_cn')),
@@ -362,15 +358,12 @@ for n in (32, 64, 128, 256):
         dt_, rt_ = pick.split('_dt')[1].split('_')[0], pick.split('rtol')[1]
         row(prob, 3, n, st_(f_, '$q=0$'), st_(a_, '$q=288$'),
             dict(name='CN--CG, $\\Delta t{=}' + dt_ + '$, rtol $' + tol_tex(rt_) + '$', error_pct=cands[pick]['err'], ms=cands[pick]['ms'], arm=pick, candidates=cands),
-            'heat3db_panel_a' if n < 256 else 'heat3db_panel_a256', _HJ[n], 'final', 'accepted final', 'same-grid, all times', 'GPU query')
+            'heat3db_panel_a', _hm['job_id'], 'final', 'accepted final', 'same-grid, all times', 'GPU query')
     lb = [R_[k] for k in R_ if k.startswith('linear_bank_')]; nm = [R_[k] for k in R_ if k.startswith('nmrom_')]
-    if n == 256:   # the 256^3 query is memory bound: the profile of the accurate batched arm (appendix sentence)
-        H3N['profile'] = {k: v for k, v in [m for m in _ha256['meshes']][0]['profile_ms']['nmrom_q288_field_direct_tol1e-4_chol'].items()}
     H3N[n] = dict(lin_err=[100 * min(x['error_all_times_worst'] for x in lb), 100 * max(x['error_all_times_worst'] for x in lb)],
                   lin_ms=[min(x['device_ms_median'] for x in lb), max(x['device_ms_median'] for x in lb)],
                   nm_min_ms=min(x['device_ms_median'] for x in nm), nm_min_err=100 * min(x['error_all_times_worst'] for x in nm))
-for n_ in (128, 256):
-    assert H3N[n_]['lin_ms'][1] < H3N[n_]['nm_min_ms'] and H3N[n_]['lin_err'][1] < H3N[n_]['nm_min_err']   # the bank baseline beats every NM-ROM arm
+assert H3N[128]['lin_ms'][1] < H3N[128]['nm_min_ms'] and H3N[128]['lin_err'][1] < H3N[128]['nm_min_err']   # the bank baseline beats every NM-ROM arm
 H3N['floor'] = 100 * [c_ for c_ in D['heat3db_selection']['candidates'] if (c_['R'], c_['K']) == (320, 32)][0]['bank_floor']['128']
 # panel B (chosen after the speed addenda): one appendix line only
 _hb = {m['intervals']: {r_['method']: r_ for r_ in m['rows']} for m in D['heat3db_panel_b']['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}[128]
@@ -1046,16 +1039,7 @@ mac['nHeatNewAccErr'] = e(max(r['accurate']['error_pct'] for r in _h3r.values())
 mac['nHeatNewAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ == 'Heat (new bank)'))
 mac['nHeatNewBatchedAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ != 'Heat (new bank)'))
 mac['nHeatNewCnAccS'] = spn(_h3r[('Heat (new bank)', 128)]['accurate']['speedup']); mac['nHeatNewBfAccS'] = spn(_h3r[('Heat (new bank, batched fit)', 128)]['accurate']['speedup'])
-mac['nHeatNewBfAccSTwoFiftySix'] = spn(_h3r[('Heat (new bank, batched fit)', 256)]['accurate']['speedup'])
-mac['nHeatNewCnFastSTwoFiftySix'] = spn(_h3r[('Heat (new bank)', 256)]['fast']['speedup'])
-mac['nHeatNewBfFastSTwoFiftySix'] = spn(_h3r[('Heat (new bank, batched fit)', 256)]['fast']['speedup'])
-mac['nHeatNewAccErrSpan'] = f"{min(r['accurate']['error_pct'] for r in _h3r.values()):.4f}\\mbox{{--}}{max(r['accurate']['error_pct'] for r in _h3r.values()):.4f}"
-mac['nHeatNewLinErrTwoFiftySix'] = e(H3N[256]['lin_err'][1]); mac['nHeatNewLinMsTwoFiftySix'] = f"{H3N[256]['lin_ms'][0]:.1f}\\mbox{{--}}{H3N[256]['lin_ms'][1]:.1f}"
-mac['nHeatNewProfile'] = ' + '.join(f"{H3N['profile'][k_]:.1f}" for k_ in ('encode', 'init', 'evolve', 'decode'))
-mac['nHeatNewProfileQuery'] = f"{H3N['profile']['query']:.1f}"
 mac['nHeatNewNonstat'] = str(sum(r['accurate']['nonstationary'] for r in _h3r.values()))
-for n_, w_ in ((64, 'SixtyFour'), (256, 'TwoFiftySix')):
-    mac['nHeatNewNonstat' + w_] = str(_h3r[('Heat (new bank)', n_)]['accurate']['nonstationary'])
 _hc = {r_['cases'] for m in D['heat3db_panel_a']['meshes'] if m['cohort'].startswith('sealed') for r_ in m['rows']}; assert len(_hc) == 1; mac['nHeatNewCases'] = str(_hc.pop()); mac['nHeatNewK'] = str(_sel['K']); mac['nHeatNewQ'] = str(_sel['accurate_q']); mac['nHeatNewR'] = str(_sel['R']); mac['nHeatNewFloor'] = f"{H3N['floor']:.2f}"
 mac['nHeatNewLinErr'] = e(H3N[128]['lin_err'][1]); mac['nHeatNewLinMs'] = f"{H3N[128]['lin_ms'][0]:.1f}\\mbox{{--}}{H3N[128]['lin_ms'][1]:.1f}"
 mac['nHeatNewBR'], mac['nHeatNewBK'], mac['nHeatNewBQ'] = (str(_c2[k_]) for k_ in ('R', 'K', 'accurate_q')); mac['nHeatNewBErr'] = e(H3N['b']['err']); mac['nHeatNewBCnS'] = spn(H3N['b']['cn']); mac['nHeatNewBBfS'] = spn(H3N['b']['bf'])

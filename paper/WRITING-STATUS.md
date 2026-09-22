@@ -1,42 +1,37 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-22 (paper lane) — Heat 3D 256³ rows; abstract/intro restored to a8c9883d — CURRENT HANDOFF
+## 2026-09-22 (paper lane) — writing pass: abstract/intro restored to a8c9883d; 256³ intake withdrawn — CURRENT HANDOFF
 
-Source: heat3d-bank @5f1b048d (addendum 3), `runs/final256c/final256/summary.json` pinned as
-`evidence/headline-2026-09-20/heat3db_panel_a256.json` (commit, git blob 9768f463, sha256 1794c9bc…; FINAL-TABLE.md,
-final_table.json, audit.json, DESIGN.md, HANDOFF.md as `companion_blobs`). Same frozen panel-A model (R=320, K=32),
-sealed cohort 921099, job 4175680.
-- **Table 1, four new rows** in the existing Heat (new bank) block: CN at 256³ — accurate 0.11 % (0.1138), speedup
-  **dashed (ⁿ)** because 2 of 64 cases exited non-stationary (the lane reports 2.29×), fast 2.00 % at 3.85×; batched
-  fit at 256³ — accurate 0.11 % at **6.74×**, fast 2.00 % at 6.60×. FOM re-derived by the rule: CN--CG Δt 0.025,
-  rtol 1e-4 (178.07 ms), matching the lane's pick. Fast-column ratios divide the accurate row's FOM (the paper's
-  convention), so they differ from the lane's per-setting 1.54× / 2.64×.
-- **Results (Linear problems):** rewritten sentence — the bank meets 1 % all-times at every mesh, its accurate error
-  hardly moves (0.1136–0.1138 % from 32³ to 256³) and the full-order solve gets dearer instead; the batched fit (exact
-  propagator, linear autonomous problem only) passes CN--CG at 128³ (2.22×) and reaches 6.74× at 256³, where the fast
-  setting is also faster with CN steps (3.85×); with CN steps the accurate setting is slower up to 128³.
-- **Limitations (i):** the linear-bank baseline also beats every NM-ROM arm at 256³ (0.070 % in 11.6–21.7 ms).
-- **Appendix:** the marker ⁿ note now reads "1 of 64 cases at 64³, 2 at 256³"; one sentence says the 256³ query is
-  memory bound (11.0 + 1.9 + 2.6 + 10.7 ms encode / init / solve / decode).
-- **Abstract and introduction restored to a8c9883d** (user: do not rewrite them). The introduction needed no restore —
-  9021c992 left it untouched apart from my 3D-heat sentence. The abstract is a8c9883d's text with **one** factual edit:
-  "meets its accuracy target but beats CN--CG only with a batched fit at $128^3$" → "meets its accuracy target and
-  beats CN--CG with a batched fit from $128^3$". Everything 9021c992 had changed in the abstract (NNLS expansion,
-  "offer one accuracy--speed setting", "passes checks on states reached in held-out trajectories", the
-  semicolon→period before "At matched latent dimension") is reverted. 249 source words.
-- **Conclusion** likewise restored to a8c9883d and adjusted, not rewritten: the 3D-heat clause now says "meets its
-  accuracy target and, with a batched fit, is faster than CN--CG at $128^3$ and $256^3$", and 9021c992's two new
-  Burgers sentences are kept as one clause ("its $4096^2$ quadrature rule is not confirmed on independent re-draws,
-  and the confirmed variant is slower than the FOM").
-- **Page budget:** the multi-seed sealed-ladder paragraph moved to Appendix D (before Table D.1) with a one-line
-  pointer in §6.2; no caveat dropped. check_headline's "pre-registered secondary criterion" assertion now scans main
-  text plus appendix.
-- check_headline re-derives the 256³ rows (arm, error, ms, failures, FOM pick and candidates), the dash convention,
-  the mesh-independence span macro, the per-mesh non-stationary counts, the 256³ linear-bank error and the memory
-  profile; the bold count now ignores dashed rows. Both checks pass, 0 overfull, main text ends on page 9,
-  References on page 9, PDF 22 pages.
+User: "Finish the writing first. We will update the numbers later." The Heat 3D 256³ intake I had committed as
+89086cb1 is **withdrawn**: `paper/` is restored to its 9021c992 content (evidence blob `heat3db_panel_a256.json`
+removed, generator/check/table/macro changes reverted), so the paper contains no 256³ heat number. That intake will
+come back as a separate task.
 
-## 2026-09-22 — Writing pass on a8c9883d
+Writing pass on top of 9021c992:
+- **Abstract and introduction restored byte-for-byte to a8c9883d** (`git diff a8c9883d -- paper/main.tex` shows no
+  hunk in either). No factual edit was needed: a8c9883d's abstract already says the $4096^2$ rule is "validated on
+  held-out reached states but not confirmed on independent re-draws", and its 3D-heat clause ("beats CN--CG only
+  with a batched fit at $128^3$") is still what the current numbers say. Reverted from 9021c992: "Neural operators,
+  including …, offer one accuracy--speed setting"; "with an accuracy--speed tradeoff from one decoder, set after
+  training"; "non-negative least-squares (NNLS)"; "passes checks on states reached in held-out trajectories"; and
+  the semicolon → period before "At matched latent dimension".
+- **Conclusion restored to a8c9883d and adjusted, not rewritten**: one clause added so the caveat 9021c992
+  introduced is kept — "; its $4096^2$ quadrature rule is not confirmed on independent re-draws, and the confirmed
+  variant is slower than the FOM". 9021c992's replacement opening ("Nested corrections give one trained NM-ROM …")
+  and its three short sentences are gone.
+- **Consistency fixes in the prose 9021c992 rewrote** (only where it clashed with the restored voice):
+  the Burgers results paragraph now reads "passes five held-out draws and fails the confirmation draw, so it is
+  validated on held-out reached states but not confirmed on independent re-draws" (was "passes checks on five
+  held-out trajectory samples … validated on held-out states"), and its last sentence ends "at least as accurate as
+  the fast setting" (was "as itself"); the Resolution paragraph is a full sentence again ("Table 1 shows that the
+  NM-ROM query time grows more slowly with the mesh than the iterative FOM's: …") instead of the nominal
+  "shows slower query-time growth with mesh size", keeping 9021c992's clearer split of the selection rule.
+- **Left alone** (9021c992 wording that reads consistently): §3.3 re-draw sentence, Table 1 and Table 4 captions,
+  the tunability paragraph, Limitations (i)–(v), the AI-use statement. Every caveat is still present.
+- No number, macro, label, reference or table datum changed. Abstract 250 source words. Both check scripts pass;
+  0 overfull boxes; main text ends on page 9 and References start on page 9; PDF 22 pages.
+
+## 2026-09-22 — Writing pass on a8c9883d — CURRENT HANDOFF
 
 Prose only in `main.tex` and `sections/appendix.tex`: clarified the Burgers held-out checks versus
 independent confirmation, the exact-first-step variant's cost, and the distinct speedup comparators.

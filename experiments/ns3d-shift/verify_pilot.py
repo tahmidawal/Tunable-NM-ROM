@@ -17,10 +17,10 @@ def relative(pred, truth):
     """(cases, times): sqrt of summed squares, normalized by the initial field."""
     out = np.empty(truth.shape[:2], dtype=np.float64)
     for case in range(truth.shape[0]):
-        den = np.sqrt(np.einsum("...,...->", truth[case, 0], truth[case, 0]))
+        den = np.sqrt(np.einsum("cxyz,cxyz->", truth[case, 0], truth[case, 0]))
         for instant in range(truth.shape[1]):
             diff = pred[case, instant] - truth[case, instant]
-            out[case, instant] = np.sqrt(np.einsum("...,...->", diff, diff)) / max(den, 1e-300)
+            out[case, instant] = np.sqrt(np.einsum("cxyz,cxyz->", diff, diff)) / max(den, 1e-300)
     return out
 
 

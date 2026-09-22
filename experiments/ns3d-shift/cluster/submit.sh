@@ -7,7 +7,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 NS=/cluster/tufts/paralab/tawal01/ns3dshift_20260922
 DEST="$NS/$JOB"
 
-ssh tufts-login "mkdir -p $DEST/logs $DEST/output"
+ssh tufts-login "mkdir -p $DEST/logs $DEST/output $DEST/experiments"
 for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift; do
   rsync -az --delete \
     --include='*/' --include='*.py' --include='*.json' --include='*.sbatch' \

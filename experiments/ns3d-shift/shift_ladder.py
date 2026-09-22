@@ -131,10 +131,22 @@ def main():
     if not report["shift_self_check"]["passed"]:
         raise RuntimeError("Fourier shift / centroid identity check failed")
 
-    log("centering the training snapshots in place")
+    log("centering the training snapshots in place (GPU), cross-checked against numpy")
+    centre_jit = jax.jit(lambda f: SR.shift_field(f, -SR.grid_centroid(f) * n))
+    cross = 0.0
     for case in range(len(train)):
         for instant in range(train.shape[1]):
-            train[case, instant], _ = D.center_field(train[case, instant])
+            field = train[case, instant]
+            if case < 2 and instant < 2:
+                want, _ = D.center_field(field)
+                got = np.asarray(centre_jit(jnp.asarray(field)))
+                cross = max(cross, float(np.linalg.norm(got - want)
+                                         / max(np.linalg.norm(want), 1e-300)))
+            train[case, instant] = np.asarray(centre_jit(jnp.asarray(field)))
+    report["gpu_centering_vs_numpy"] = cross
+    log(f"gpu centering vs numpy: {cross:.3e}")
+    if cross > 1e-10:
+        raise RuntimeError(f"GPU centering disagrees with the numpy path: {cross}")
     basis_all, energy, _ = D.pod_basis(
         train.reshape(len(train) * train.shape[1], -1), max(ranks), int(cfg["gram_block"]))
     del train
@@ -160,10 +172,27 @@ def main():
     report["floors"] = dict(available_rank=available, ranks=floors,
                             spectrum_head=[float(x) for x in energy[:8]])
 
+    arg_cache, runner_cache = {}, {}
+
     def frozen_args(rank):
-        o = ops[rank]
-        return (jnp.asarray(banks[rank]), jnp.asarray(o["A"]), jnp.asarray(o["T"]),
-                jnp.asarray(o["lam"]), jnp.asarray(o["Dd"]))
+        if rank not in arg_cache:
+            o = ops[rank]
+            arg_cache[rank] = (jnp.asarray(banks[rank]), jnp.asarray(o["A"]),
+                               jnp.asarray(o["T"]), jnp.asarray(o["lam"]),
+                               jnp.asarray(o["Dd"]))
+        return arg_cache[rank]
+
+    def frozen_runner(rank, dtv, iters, outputs=5):
+        """One compile per distinct configuration, shared by accuracy and timing."""
+        key = (rank, float(dtv), int(iters), int(outputs))
+        if key not in runner_cache:
+            steps = D.nsteps_for(float(dtv), horizon)
+            every = steps // outputs
+            runner_cache[key] = SR.make_frozen_run(
+                float(dtv), steps, every, n, rank, iters=int(iters),
+                damping=float(cfg["damping"]), extrapolate=bool(cfg["extrapolate"]),
+                diagnose=False)
+        return runner_cache[key]
 
     # ---- reference LM arm, for the same-job before/after of the driver fix -----
     ref_rank, ref_dt = int(cfg["reference_rank"]), float(cfg["reference_dt"])
@@ -193,10 +222,7 @@ def main():
                 continue
             for iters in cfg["iters_ladder"]:
                 key = f"r{rank}_dt{dtv}_it{iters}"
-                runner = SR.make_frozen_run(float(dtv), steps, steps // 5, n, rank,
-                                            iters=int(iters), damping=float(cfg["damping"]),
-                                            extrapolate=bool(cfg["extrapolate"]),
-                                            diagnose=False)
+                runner = frozen_runner(rank, dtv, iters)
                 keep = True
                 errors, fields = run_cases(lambda u, nu: runner(u, nu, *argv),
                                            dev, viscosities, keep=keep)
@@ -275,17 +301,12 @@ def main():
         timed[f"piece_output_r{rank}"] = (
             lambda fn=output_piece, aa=a0, cc=c0, b=bank_j: fn(aa, cc, b))
     for key, entry in frontier.items():
-        steps = entry["steps"]
-        runner = SR.make_frozen_run(entry["dt"], steps, steps // 5, n, entry["rank"],
-                                    iters=entry["iters"], damping=float(cfg["damping"]),
-                                    extrapolate=bool(cfg["extrapolate"]), diagnose=False)
+        runner = frozen_runner(entry["rank"], entry["dt"], entry["iters"])
         argv = frozen_args(entry["rank"])
         timed[f"query_{key}"] = (lambda rn=runner, aa=argv: rn(u0, nu, *aa))
-        if entry["rank"] == ref_rank and entry["dt"] == ref_dt \
-                and entry["iters"] == min(cfg["iters_ladder"]):
-            single = SR.make_frozen_run(entry["dt"], steps, steps, n, entry["rank"],
-                                        iters=entry["iters"], damping=float(cfg["damping"]),
-                                        extrapolate=bool(cfg["extrapolate"]), diagnose=False)
+        if entry["iters"] == min(cfg["iters_ladder"]):
+            # one output instead of five isolates the reconstruction cost
+            single = frozen_runner(entry["rank"], entry["dt"], entry["iters"], outputs=1)
             timed[f"one_output_{key}"] = (lambda rn=single, aa=argv: rn(u0, nu, *aa))
     timed["reference_lm"] = lambda: reference(u0, nu, *ref_args)
     if tracker is not None:

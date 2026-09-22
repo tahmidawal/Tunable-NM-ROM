@@ -57,3 +57,10 @@ Nothing running. Worktree not merged (ask the user).
 ## 2026-09-22 — REOPENED for 256³ (user-authorised, ≤2 extra jobs): final256 = job 4171513 (H200, 6 h), job 9
 Frozen panel A, sealed 921099 (64 cases), config `configs/final256.json`, DESIGN addendum 3. On completion:
 `cluster/collect.sh final256`, check COLLECT-STATUS, remove remote, extend `make_final_table.py` output for the 256³ rows.
+
+## 2026-09-22 — 256³ NOT obtained: both authorised extra jobs failed on memory/kernel issues (no numbers, nothing retracted from final01)
+- 4171513: 256³ decode as one f64 [6,16.6M] GEMM -> XLA autotuning failure. Fixed by blocked decode.
+- 4175066: blocked decode sliced the 42 GB device bank -> slice copies duplicated it -> OOM 39.62 GiB in jit_query.
+  Fixed by STORING the bank as row blocks (no slicing). Parity vs committed 64³ numbers 7.5e-15 (1 block and 7 forced blocks).
+- Ready to run: `cluster/submit.sh final256c h200 06:00:00 240G - - final256.json` (frozen panel A, sealed 921099, 64 cases).
+  Needs a new job authorisation (the 2 extra jobs are spent). Memory after the fix at 256³: 8 blocks x 5.3 GB = 42 GB, no duplicate.

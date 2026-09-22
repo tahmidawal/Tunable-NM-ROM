@@ -170,7 +170,7 @@ def load_model(spec, root):
 
 
 def bank_at(model, n, chunk=1 << 18):
-    """[N,R] device array, evaluated in coordinate chunks (never a full activation tensor)."""
+    """List of [rows,R] device blocks (row_blocks), evaluated in coordinate chunks (never a full activation tensor)."""
     d = model['d']; a = axis_nodes(n); N = (n - 1) ** d
     rot = None if model['rotation'] is None else jnp.asarray(model['rotation'])
     @jax.jit
@@ -178,13 +178,17 @@ def bank_at(model, n, chunk=1 << 18):
         sub = jnp.stack(jnp.unravel_index(idx, (n - 1,) * d), -1)
         g = model['feature_fn'](p, jnp.asarray(a)[sub])
         return g if rot is None else g @ rot
-    parts = [piece(model['bank_params'], jnp.arange(s, min(s + chunk, N))) for s in range(0, N, chunk)]
-    return block(jnp.concatenate(parts)) if len(parts) > 1 else block(parts[0])
+    rows = row_blocks(N)   # bank is STORED as row blocks: slicing a 42 GB device array at 256^3 duplicated it (OOM, job 4175066)
+    out = []
+    for lo, hi in rows:
+        parts = [piece(model['bank_params'], jnp.arange(s, min(s + chunk, hi))) for s in range(lo, hi, chunk)]
+        out.append(block(jnp.concatenate(parts) if len(parts) > 1 else parts[0]))
+    return out
 
 
 def tsqr_r(bank, chunk=1 << 20):
     """Triangular factor of the bank by chunked QR (exact; avoids an N x R Q)."""
-    rs = [np.linalg.qr(np.asarray(bank[s:s + chunk]), mode='r') for s in range(0, bank.shape[0], chunk)]
+    rs = [np.linalg.qr(np.asarray(b[s:s + chunk]), mode='r') for b in bank for s in range(0, b.shape[0], chunk)]
     r = np.linalg.qr(np.concatenate(rs), mode='r') if len(rs) > 1 else rs[0]
     return r * np.where(np.diag(r) < 0, -1., 1.)[:, None]
 
@@ -192,7 +196,7 @@ def tsqr_r(bank, chunk=1 << 20):
 def weak_matrix(bank, modes, n, d, cols=16):
     """a = tests^T bank via DST of bank columns (no N x M test matrix)."""
     f = jax.jit(lambda b: moments(jnp.moveaxis(b.reshape((n - 1,) * d + (b.shape[1],)), -1, 0), modes, n, d))
-    return np.concatenate([np.asarray(f(bank[:, s:s + cols])) for s in range(0, bank.shape[1], cols)]).T
+    return np.concatenate([np.asarray(f(jnp.concatenate([b[:, s:s + cols] for b in bank]))) for s in range(0, bank[0].shape[1], cols)]).T
 
 
 def sep2d_directions(model, cfg_train):
@@ -204,7 +208,7 @@ def sep2d_directions(model, cfg_train):
     u = np.concatenate([np.asarray(prop(initial_grid(n, d, p), lam, times, cfg_train['diffusivity'])).reshape(len(times), -1)
                         for p in draws])
     assert len(u) == len(model['codes']), (len(u), len(model['codes']))
-    g = np.asarray(bank_at(model, n)); q, r = np.linalg.qr(g, mode='reduced')
+    g = np.concatenate([np.asarray(b) for b in bank_at(model, n)]); q, r = np.linalg.qr(g, mode='reduced')
     resid = u @ q - np.asarray(model['head_fn'](model['head_params'], model['codes'])) @ r.T
     _, sv, vt = np.linalg.svd(resid, full_matrices=False)
     directions = np.linalg.solve(r, vt.T)
@@ -221,14 +225,17 @@ def row_blocks(rows, target=1 << 21):
     return [(s, min(s + step, rows)) for s in range(0, rows, step)]
 
 
-def bank_project(bank, vec, blk):
-    """bank^T vec, summed over row blocks (exact same value up to summation order)."""
-    return sum(bank[s:e].T @ vec[s:e] for s, e in blk)
+def bank_project(bank, vec):
+    """bank^T vec over the stored row blocks (same value up to summation order)."""
+    out = 0; lo = 0
+    for b in bank:
+        out = out + b.T @ vec[lo:lo + b.shape[0]]; lo += b.shape[0]
+    return out
 
 
-def bank_expand(coefs, bank, blk):
-    """coefs @ bank^T, concatenated over row blocks."""
-    return coefs @ bank.T if len(blk) == 1 else jnp.concatenate([coefs @ bank[s:e].T for s, e in blk], axis=1)
+def bank_expand(coefs, bank):
+    """coefs @ bank^T over the stored row blocks."""
+    return coefs @ bank[0].T if len(bank) == 1 else jnp.concatenate([coefs @ b.T for b in bank], axis=1)
 
 
 def lm(head_fn, budget, tol, cholesky=False):
@@ -283,7 +290,6 @@ def make_stages(model, setup, q, opt):
          fit_budget, step_budget, tolerance, compress, direct_starts.
     """
     d, n, modes = model['d'], setup['n'], setup['modes']; head_fn = model['head_fn']; hp = model['head_params']
-    blk = row_blocks((n - 1) ** d)
     codes = model['codes']; times = np.asarray(setup['times']); nu = setup['nu']; lam = jnp.asarray(setup['mode_lam'])
     assert 0 <= q <= np.asarray(setup['directions']).shape[1] and q + codes.shape[1] <= setup['a'].shape[0], ('invalid q', q)
     D = np.asarray(setup['directions'])[:, :q]; Dj = jnp.asarray(D)
@@ -307,7 +313,7 @@ def make_stages(model, setup, q, opt):
 
     def encode(u0, bank):
         m0 = moments(u0, modes, n, d)
-        t0 = jsl.solve_triangular(rtri_t, bank_project(bank, u0.reshape(-1), blk), lower=True) if opt['init'] == 'field' else m0
+        t0 = jsl.solve_triangular(rtri_t, bank_project(bank, u0.reshape(-1)), lower=True) if opt['init'] == 'field' else m0
         return t0, m0
     def init(t0):
         z, c0, stats, chosen = best_fit(fit0, E0, lib0, t0, opt['starts'], opt.get('mean_start', False))
@@ -336,7 +342,7 @@ def make_stages(model, setup, q, opt):
         _, (coefs, infos) = jax.lax.scan(step, (z, coef), None, length=nsteps)
         return coefs[stride - 1::stride], infos
     def decode(coefs, bank):
-        return bank_expand(coefs, bank, blk).reshape((len(times),) + (n - 1,) * d)
+        return bank_expand(coefs, bank).reshape((len(times),) + (n - 1,) * d)
     def query(u0, bank):
         t0, m0 = encode(u0, bank); z, c0, s0 = init(t0); coefs, s1 = evolve(z, c0, m0)
         return decode(jnp.concatenate((c0[None], coefs)), bank), s0, s1
@@ -349,18 +355,17 @@ def linear_bank(setup, init, direct=False):
     assert np.max(np.linalg.eigvals(gen).real) < 1e-8
     maps = jnp.asarray(np.stack([scipy.linalg.expm(t * gen) for t in setup['times']]))
     n, d, modes = setup['n'], setup['d'], setup['modes']; rt = jnp.asarray(setup['rtri']); leftj = jnp.asarray(left)
-    blk = row_blocks((n - 1) ** d)
     @jax.jit
     def query(u0, bank):
         if init == 'field':
-            c = jsl.solve_triangular(rt, jsl.solve_triangular(rt.T, bank_project(bank, u0.reshape(-1), blk), lower=True), lower=False)
+            c = jsl.solve_triangular(rt, jsl.solve_triangular(rt.T, bank_project(bank, u0.reshape(-1)), lower=True), lower=False)
         else:
             c = leftj @ moments(u0, modes, n, d)
         if direct:   # free coefficients fitted to the SAME exact propagated supplied-field moments as the ROM 'direct' arm
             m0 = moments(u0, modes, n, d); lam = jnp.asarray(setup['mode_lam']); ts = jnp.asarray(setup['times'][1:])
             later = (jnp.exp(-setup['nu'] * lam[None] * ts[:, None]) * m0[None]) @ leftj.T
-            return bank_expand(jnp.concatenate((c[None], later)), bank, blk).reshape((len(setup['times']),) + (n - 1,) * d)
-        return bank_expand(maps @ c, bank, blk).reshape((len(setup['times']),) + (n - 1,) * d)
+            return bank_expand(jnp.concatenate((c[None], later)), bank).reshape((len(setup['times']),) + (n - 1,) * d)
+        return bank_expand(maps @ c, bank).reshape((len(setup['times']),) + (n - 1,) * d)
     return query
 
 

@@ -52,7 +52,7 @@ def main():
         begin = time.perf_counter(); bank = C.bank_at(model, n); rtri = C.tsqr_r(bank); modes = C.mode_list(cfg['tests'], n, d)
         a = C.weak_matrix(bank, modes, n, d); sv = np.linalg.svd(rtri, compute_uv=False)
         setup = dict(n=n, d=d, times=times, nu=nu, modes=modes, a=a, rtri=rtri, mode_lam=C.mode_eigs(n, modes), directions=model['directions'])
-        mesh = dict(intervals=n, unknowns=(n - 1) ** d, setup_seconds=time.perf_counter() - begin, bank_bytes=int(bank.size * 8),
+        mesh = dict(intervals=n, unknowns=(n - 1) ** d, setup_seconds=time.perf_counter() - begin, bank_bytes=int(sum(b.size for b in bank) * 8),
                     bank_condition=float(sv[0] / sv[-1]), cases=[], warmup_seconds={}, profile={})
         if (n - 1) ** d <= 70000:   # gate the DST weak matrix against explicit tests where that is affordable
             explicit = C.explicit_tests(n, d, modes).T @ np.asarray(bank)

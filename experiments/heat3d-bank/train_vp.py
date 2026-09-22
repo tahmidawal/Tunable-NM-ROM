@@ -95,7 +95,7 @@ def train_bank_vp(u, v, cfg, log):
 def floor_at(params, rotation, cfg, seed, count, n):
     """Worst/rms projection error of a cohort onto the bank evaluated at another grid (no fitting, f64, GPU)."""
     model = dict(d=cfg['d'], feature_fn=C.mlp_features, bank_params=jax.tree_util.tree_map(jnp.asarray, params), rotation=rotation)
-    g = C.bank_at(model, n); lam = C.eig_grid(n, cfg['d']); prop = C.make_propagate(cfg['d']); t = jnp.asarray(cfg['times'])
+    g = jnp.concatenate(C.bank_at(model, n)); lam = C.eig_grid(n, cfg['d']); prop = C.make_propagate(cfg['d']); t = jnp.asarray(cfg['times'])
     draws = C.family(cfg['family'], seed, count); errs = []; chunk = max(4, min(64, int(3e8 // (len(cfg['times']) * g.shape[0]))))
     f = jax.jit(lambda g, y: projection_errors(g, y, 1e-15)[0])
     for s in range(0, count, chunk):

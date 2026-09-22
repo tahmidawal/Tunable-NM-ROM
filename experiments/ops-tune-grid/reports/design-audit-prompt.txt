@@ -1,0 +1,74 @@
+You are an adversarial, independent auditor. You are NOT the author. Your job is to find what
+is WRONG with a pre-registration before any GPU job runs, not to praise it. Be concrete and
+rank findings BLOCKER / MAJOR / MINOR. Do not edit any file; report findings as text.
+
+TARGET (read it first, in full):
+  experiments/ops-tune-grid/DESIGN.md
+in the worktree /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-tune-grid
+
+CONTEXT you must read to judge it (all absolute paths, all read-only):
+  worktrees/2026-09-17-no-second/experiments/no-second/DESIGN.md
+  worktrees/2026-09-17-no-second/experiments/no-second/reports/2026-09-17-no-second.md
+  worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/DESIGN.md
+  worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/data.py
+  worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/protocol-refined.json
+  worktrees/2026-09-14-no-burgers/experiments/neural-operator-burgers/artifacts/calibration01/calibration-index.json
+  worktrees/2026-09-22-ops-tune-grid/experiments/ops-tune-grid/{dataset.py,train.py,model.py,families.py,worker_second.py,audit.py,cluster/stage.py}
+  worktrees/2026-09-22-ops-timing-panel/experiments/ops-timing-panel/reports/2026-09-22-ops-timing-panel.md
+
+QUESTIONS YOU MUST ANSWER, each explicitly:
+
+1. DATA PARITY ACCOUNTING (DESIGN section 3). Is the table right? Check every number against
+   the sources. In particular: is it true that the NM-ROM head trained on 4608 trajectories at
+   256 intervals / dt=0.005 while the operators trained on 128 cases restricted from a
+   4096-interval / dt=1.5625e-4 anchor? Is the "0.19 s vs 135 s per trajectory" claim
+   supported? Is the states-per-side accounting (131072 fitted states vs 640 supervised
+   evolved states) correct and correctly caveated?
+
+2. THE CHEAP-FIDELITY DECISION (section 3.2). The lane proposes generating the NEW training
+   data at 1024 intervals / dt=3.125e-4 instead of the pinned 4096 / 1.5625e-4 reference,
+   because the latter costs 173 A100-hours. Is that defensible? Are the calibration numbers
+   quoted correctly from calibration-index.json? Is the bound "worst 3.06e-3 from the pinned
+   reference" derived correctly (it adds the anchor's own refinement margin 1.386e-3 to the
+   1024 setting's 1.87e-3 deviation from the anchor)? Are controls G1 and G2 sufficient to
+   separate target-fidelity from data-size? What is the strongest objection a reviewer could
+   make to this, and does the design already answer it?
+
+3. THE GENERATION PLAN (section 5.1). data.py's `allowed_count` caps train at 128 and
+   `read_calibration` requires the calibration JSON's recorded source hashes to equal the
+   current ones. The lane intends to bypass `allowed_count`/`read_calibration` by calling
+   data.py's own functions (case_seed / case_record / make_solver / solve / save_case)
+   directly from a new script, keeping data.py BYTE-IDENTICAL, and substituting a stronger
+   gate: regenerate case burgers-train-00000 at the pinned setting and assert bit-identity
+   with the cached file. Is that sound? What could it miss? Does any numerical path differ
+   between calling data.generate() and calling those functions directly? Read data.py closely.
+
+4. DISJOINTNESS. Enlarging the training set from 128 to 4608 cases: can any new training case
+   collide with validation-32, with the matched diagnosis-8 cohort, or with the 6 development
+   cases the ops-timing-panel lane used? Trace case_seed and the split codes. Are the existing
+   automatic checks (dataset.load_pair, prepare_diagnosis_cohort.py) sufficient, or is a new
+   check needed?
+
+5. THE BUDGET RULE (section 6) and the grid (section 5.4). Is holding the 3000 s screen budget
+   while adding one `fno-epochmatch` arm the right call, or is it a dodge? Is 8700 s actually
+   the right wall to reach ~1960 FNO epochs (fno-large ran 692 epochs in 3003 s)? Are the
+   proposed hyperparameter changes the ones that matter for each family, or are obvious
+   high-value knobs missing? Will any proposed arm fail, OOM, or not be constructible by the
+   code as written? Check `tsol-patch2` (patch 4 -> 2 on a 257^2 grid) and `fno-modes48`
+   and `fno-norm` against families.py / model.py / the installed neuralop API especially.
+
+6. SELECTION AND HONESTY (sections 4.2, 4.3, 7). Is the selection metric pre-registered
+   tightly enough? Is there any route by which a final or held-out cohort gets touched? Is
+   the claim structure honest about validation-32 being the tuning cohort? Are criteria
+   T1-T5 falsifiable as written, or are any of them unfalsifiable?
+
+7. ARITHMETIC AND FEASIBILITY. Check every wall-clock and cost estimate in the document
+   (generation 4608 x 4.8 s; grid01 16 arms; ladder01 18 h; the 173 A100-hour figure; the
+   equal-wall-is-equal-steps claim in 5.3). Does the 6-job / 1-running-job budget actually
+   fit? What is the single most likely way this lane runs out of time, and does the design
+   have a stop rule for it?
+
+8. ANYTHING THE DESIGN CLAIMS THAT IT CANNOT DELIVER, and anything load-bearing it omits.
+
+Report as a ranked list. For each finding: severity, what is wrong, why it matters, and the
+smallest fix. End with the single change that would most improve the lane.

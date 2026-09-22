@@ -1,0 +1,24 @@
+{
+  "job_name": "opstune_gen01",
+  "time": "10:00:00",
+  "pde": "burgers",
+  "worker": "worker_gen.py",
+  "prefix": "gen",
+  "family": "none",
+  "arms": [],
+  "count": 4608,
+  "prefixes": [
+    128,
+    512,
+    2048,
+    4608
+  ],
+  "generation_seconds": 27000.0,
+  "data_dirs": [
+    "train",
+    "validation",
+    "refinement"
+  ],
+  "data_origin": "the pinned Burgers cache /cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01, copied in the sbatch preamble and re-verified against its own DATA.sha256; the cache itself is never modified. This job READS it for the reproduction gate and the fidelity measurement, and writes a new extended training bank beside it in this lane namespace.",
+  "design": "Generate Burgers training case indices 0..4607 from the frozen protocol seed sequence at the calibration-measured 1024-interval / dt=3.125e-4 setting (DESIGN 3.2). Gate: regenerate burgers-train-00000 at the pinned 4096 / dt=1.5625e-4 reference and require the arrays to be identical to the published case. Measure: re-solve every published training case at the cheap setting and record its fixed-initial error against that case own pinned target, which is control G1. No training, no timing, no accuracy claim."
+}

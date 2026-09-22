@@ -1,0 +1,97 @@
+{
+  "job_name": "opstune_ladder01",
+  "time": "20:00:00",
+  "pde": "burgers",
+  "prefix": "lad",
+  "family": "unet",
+  "smoke_families": [
+    "unet",
+    "transolver"
+  ],
+  "arms": [
+    {
+      "name": "fno-n0128",
+      "config": "code/configs/fno/large.json",
+      "train_index": "data/trainbig/index-00128.json"
+    },
+    {
+      "name": "fno-n0512",
+      "config": "code/configs/fno/large.json",
+      "train_index": "data/trainbig/index-00512.json"
+    },
+    {
+      "name": "fno-n2048",
+      "config": "code/configs/fno/large.json",
+      "train_index": "data/trainbig/index-02048.json"
+    },
+    {
+      "name": "fno-n4608",
+      "config": "code/configs/fno/large.json",
+      "train_index": "data/trainbig/index-04608.json"
+    },
+    {
+      "name": "unet-n0128",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/trainbig/index-00128.json"
+    },
+    {
+      "name": "unet-n0512",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/trainbig/index-00512.json"
+    },
+    {
+      "name": "unet-n2048",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/trainbig/index-02048.json"
+    },
+    {
+      "name": "unet-n4608",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/trainbig/index-04608.json"
+    },
+    {
+      "name": "tsol-n0128",
+      "config": "code/configs/transolver/small.json",
+      "train_index": "data/trainbig/index-00128.json"
+    },
+    {
+      "name": "tsol-n0512",
+      "config": "code/configs/transolver/small.json",
+      "train_index": "data/trainbig/index-00512.json"
+    },
+    {
+      "name": "tsol-n2048",
+      "config": "code/configs/transolver/small.json",
+      "train_index": "data/trainbig/index-02048.json"
+    },
+    {
+      "name": "tsol-n4608",
+      "config": "code/configs/transolver/small.json",
+      "train_index": "data/trainbig/index-04608.json"
+    },
+    {
+      "name": "unet-pinned128",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/train/index.json"
+    },
+    {
+      "name": "unet-n4608-long",
+      "config": "code/configs/unet/medium.json",
+      "train_index": "data/trainbig/index-04608.json",
+      "seconds": 8000.0
+    }
+  ],
+  "refine_learning_rate": null,
+  "per_arm_seconds": 4000.0,
+  "global_seconds": 66000.0,
+  "reserve_seconds": 2500.0,
+  "data_source": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/cache",
+  "data_dirs": [
+    "train",
+    "validation",
+    "refinement",
+    "trainbig"
+  ],
+  "train_index": "data/train/index.json",
+  "design": "Error versus training-set size at 128 / 512 / 2048 / 4608 cases for all three families, using each family PUBLISHED reference configuration unchanged so that the ONLY thing varying across a ladder is the number of training cases (DESIGN 5.3). Every rung draws from the same cheap-fidelity bank, so fidelity is constant along a ladder. unet-pinned128 is control G2: the same configuration, the same budget and the same 128 physical cases at the PINNED 4096 reference fidelity, which measures the target-fidelity effect at fixed data size. unet-n4608-long doubles the wall at the top rung to test whether the budget binds there. Equal 4000 s wall per rung; at fixed batch size that is very nearly equal optimisation steps, so a rung differs from its neighbours in the data the same number of gradient steps is drawn from."
+}

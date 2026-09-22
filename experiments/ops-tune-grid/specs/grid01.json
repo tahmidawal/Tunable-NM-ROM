@@ -1,0 +1,96 @@
+{
+  "job_name": "opstune_grid01",
+  "time": "18:30:00",
+  "pde": "burgers",
+  "prefix": "tune",
+  "family": "unet",
+  "smoke_families": [
+    "unet",
+    "transolver"
+  ],
+  "arms": [
+    {
+      "name": "fno-modes48",
+      "config": "code/configs/fno/modes48.json"
+    },
+    {
+      "name": "fno-width96",
+      "config": "code/configs/fno/width96.json"
+    },
+    {
+      "name": "fno-layers6",
+      "config": "code/configs/fno/layers6.json"
+    },
+    {
+      "name": "fno-norm",
+      "config": "code/configs/fno/norm.json"
+    },
+    {
+      "name": "fno-cosine",
+      "config": "code/configs/fno/cosine.json"
+    },
+    {
+      "name": "fno-epochmatch",
+      "config": "code/configs/fno/epochmatch.json",
+      "seconds": 8700.0
+    },
+    {
+      "name": "unet-base64",
+      "config": "code/configs/unet/base64.json"
+    },
+    {
+      "name": "unet-groups16",
+      "config": "code/configs/unet/groups16.json"
+    },
+    {
+      "name": "unet-lr3e-3",
+      "config": "code/configs/unet/lr3e-3.json"
+    },
+    {
+      "name": "unet-cosine",
+      "config": "code/configs/unet/cosine.json"
+    },
+    {
+      "name": "unet-base48-cosine",
+      "config": "code/configs/unet/base48-cosine.json"
+    },
+    {
+      "name": "tsol-slices32",
+      "config": "code/configs/transolver/slices32.json"
+    },
+    {
+      "name": "tsol-slices128",
+      "config": "code/configs/transolver/slices128.json"
+    },
+    {
+      "name": "tsol-layers6-d192",
+      "config": "code/configs/transolver/layers6-d192.json"
+    },
+    {
+      "name": "tsol-patch2",
+      "config": "code/configs/transolver/patch2.json"
+    },
+    {
+      "name": "tsol-cosine",
+      "config": "code/configs/transolver/cosine.json"
+    }
+  ],
+  "refine_learning_rate": null,
+  "per_arm_seconds": 3000.0,
+  "global_seconds": 62000.0,
+  "reserve_seconds": 2000.0,
+  "data_source": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/cache",
+  "data_dirs": [
+    "train",
+    "validation",
+    "refinement"
+  ],
+  "train_index": "data/train/index.json",
+  "design": "Per-family hyperparameter grid at the PUBLISHED 128-case training set and the PUBLISHED 3000 s per-arm wall budget, so the tuning effect is measured with data and budget both held at the value the published arms used (DESIGN 5.2, 5.4). One exception, declared: fno-epochmatch gets 8700 s and an 1963-epoch cap, to reach the epoch count unet-medium reached in its 3000 s (DESIGN 6). No refinement arm: the published *-refine arms already exist and are carried over rather than re-run.",
+  "matched_arms": {
+    "unet01": "3780138",
+    "tsol01": "3780139",
+    "fno_burgers02": "3710846",
+    "note": "the budget and data this grid holds fixed; no timing is compared across jobs"
+  }
+}

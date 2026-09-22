@@ -24,3 +24,8 @@ experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
 # archive parts beside it (runs/*/archive-parts/), which are tracked; the extracted
 # copy is not, because individual checkpoints exceed this lane's 50 MB per-file cap.
 experiments/ops-deeponet-b2d/runs/*/archive/*/
+
+# ops-tune-grid: same rule as ops-deeponet-b2d -- the collected job tree is extracted from
+# the checksum-verified archive parts beside it, which are tracked; the extracted copy is
+# not, because individual checkpoints exceed this lane's 50 MB per-file cap.
+experiments/ops-tune-grid/runs/*/archive/*/

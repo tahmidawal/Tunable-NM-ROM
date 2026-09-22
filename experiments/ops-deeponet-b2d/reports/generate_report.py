@@ -158,6 +158,24 @@ def timing_table(records, attempt):
     return '\n'.join(lines)
 
 
+def capacity_observation(mine_records):
+    """Does more capacity buy accuracy here? Generated, because the answer decides whether an
+    under-capacity reading is available."""
+    caps = sorted((r for r in mine_records if r['arm'] != 'refine' and not r['arm'].endswith('-refine')),
+                  key=lambda r: r['params'])
+    if len(caps) < 2:
+        return ''
+    best, worst = min(caps, key=lambda r: r['validation']['mean']), max(caps, key=lambda r: r['validation']['mean'])
+    monotone = all(caps[i]['validation']['mean'] <= caps[i + 1]['validation']['mean'] for i in range(len(caps) - 1))
+    trend = ('accuracy gets **worse** monotonically as capacity grows' if monotone else
+             f"the largest capacity is not the most accurate: `{best['arm']}` ({best['params']} parameters) "
+             f"beats `{worst['arm']}` ({worst['params']})")
+    return (f"Over the {len(caps)} capacities, {trend} "
+            f"({' → '.join(f'{pct(r["validation"]["mean"])} %' for r in caps)} mean, smallest to largest). "
+            f"Together with every arm early-stopping, that removes the two easy readings — too small, "
+            f"too little time — and points at the architecture or the inherited schedule instead.")
+
+
 def budget_paragraph(mine_records, records):
     """DESIGN 3: say what actually ended each arm, generated. `no-second` reported every Burgers
     arm ending on its wall budget; that must not be asserted here, it must be derived."""
@@ -172,17 +190,19 @@ def budget_paragraph(mine_records, records):
         parts.append(
             f"**{len(early)} of {len(mine_records)} arms here ended by early stopping, not on the wall budget** "
             f"({', '.join('`%s`' % a for a in early)}): the patience rule fired, so training had stopped "
-            f"improving for 250 consecutive epochs while budget remained. This is the first Burgers arm in "
-            f"this comparison to do so — {sib_wall} of {len(siblings)} arms in the FNO, U-Net and Transolver "
-            f"jobs ended on their budget. For these arms the number is **not** a lower bound imposed by the "
-            f"budget; more of the same budget was available and the optimiser was not using it.")
+            f"improving for 250 consecutive epochs while budget remained. **These are the first Burgers arms "
+            f"in this comparison to end that way** — {sib_wall} of {len(siblings)} arms in the FNO, U-Net and "
+            f"Transolver jobs ended on their budget. For an early-stopped arm the error is **not** a lower "
+            f"bound imposed by the budget: more of the same budget was there and the optimiser was not using "
+            f"it, so \"it needed longer\" is not available as an explanation for these rows.")
     if wall:
         parts.append(f"{len(wall)} arm(s) ended on the wall budget ({', '.join('`%s`' % a for a in wall)}); "
                      f"for those the budget binds and the error is a lower bound on that configuration.")
     if other:
         parts.append(f"{len(other)} arm(s) ended another way ({', '.join('`%s`' % a for a in other)}).")
-    parts.append(f"The \"Still improving?\" column marks the {len(improving)} arm(s) whose best checkpoint fell "
-                 f"in the last 5 % of the epochs they ran.")
+    parts.append("No arm here was still improving when it stopped." if not improving else
+                 f"Still improving when it stopped: {', '.join('`%s`' % a for a in improving)} — those errors "
+                 f"are lower bounds.")
     return ' '.join(parts)
 
 
@@ -290,6 +310,8 @@ may simply need a different one.
 
 {accuracy_table(records, 'validation', 'Fixed-initial relative error, 32 held-out validation cases, '
                 'recomputed from the saved prediction fields by an audit that imports neither torch nor jax')}
+
+{capacity_observation(mine_records)}
 
 Selected DeepONet arm, by the pre-registered rule (argmin validation mean case-maximum over
 all arms including `refine`): **`{don['arm']}`**, {don['params']} real parameters,

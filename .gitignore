@@ -19,3 +19,8 @@ experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/fields/*.npz
 
 # Heat accuracy fields are preserved exactly in checksum-verified archive parts.
 experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
+
+# ops-deeponet-b2d: the collected job tree is extracted from the checksum-verified
+# archive parts beside it (runs/*/archive-parts/), which are tracked; the extracted
+# copy is not, because individual checkpoints exceed this lane's 50 MB per-file cap.
+experiments/ops-deeponet-b2d/runs/*/archive/*/

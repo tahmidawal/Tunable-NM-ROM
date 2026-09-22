@@ -1,0 +1,14 @@
+### burgers-heldout — milestone 2: bh2/bh2b/bh2c (1024² selection + attribution) and bh3/bh4 (4096²) audited; bar NOT met on held-out cases
+
+Branch `exp/2026-09-21-burgers-heldout`, namespace `bheld_20260921`. All jobs `jax_backend=gpu`, f64, highest, checksum-collected, NumPy-audited (`audit_bh.py`), remote dirs deleted. Summaries `experiments/burgers-heldout/checks/{bh2,bh2b,bh2c,bh3,bh4}-summary.json`; generated tables `reports/tables.generated.md`, lane `reports/summary.json`.
+
+- bh2 4142941 (A100, 1024², dev6+sel32): new model q256/M1088 lat64 1.73 % worst evolved (dev6 0.80 %), floor 0.259 %; q384/M1600 0.93 % but uncertified (ρ 0.128); lat16 control fails (ρ 1.99, 20.4 %) as required. Pre-registered rule: no certified arm ≤ 0.8 % → stop rule (no H200 for it). DESIGN A2.
+- bh2b 4144023 (A100, 1024²): every lat128 arm fails ρ (0.37–0.63, single outlier states; p95 ≤ 0.005); accurate but slow: q512/M2112 0.41 %, q448 0.65 % at 300–635 ms (FOM lean_nt3e-3 70 ms). Dense twin of q384 on the hard cases = its EQ error (0.906/0.912 vs 0.914 %): quadrature is not the limiter.
+- bh2c 4144025 (A100, 1024², INCUMBENT attribution control): incumbent sel32 q256/M1088 1.49 % (floor 0.594 %), q512 1.35 %; incumbent lat64 q256 is uncertified at 1024² (ρ 0.119).
+- bh3 4146491 (H200, 4096², dev6+hold64, 5 reps; exploratory per DESIGN A3) and bh4 4147539 (H200, fresh64 = params_draw(20260929,64), untouched): headline q256/M1088 lat64 g1e-2 (certified) dev6 0.854 % @ 80.0 ms = 6.54× lean_nt3e-3 (523.7 ms, 0.050 %); **hold64 1.601 %** @ 79.9 ms = 6.70× (535.7 ms, 0.138 %); **fresh64 2.407 %** @ 77.3 ms = 5.48× lean_nt1e-3_dt01 (423.6 ms, 2.394 %). Bank floor at 4096²: dev6 0.053 %, hold64 0.295 %, fresh64 0.368 %. Uncertified q512/M2112 lat128: hold64 0.393 % / fresh64 0.458 % at 259–260 ms = 2.07× / 2.21×. q0: hold64 7.61 %, fresh64 8.00 %.
+
+**Reading.** The better bank halves the floor but the certified corrected rung gets WORSE on held-out cases than the incumbent (hold64 1.60 vs 1.33 %): its error is 3–8× the floor, set by the correction subspace/test space, not by the bank. Held-out ≤ 1 % is reached only by q=R=512 with lat128, uncertified and ~2× the FOM. The lane bar (≤1 % held-out AND ≥5×) is not met.
+
+**Wrong / retracted.** (1) The lane premise "the bank floor is the binding term for the corrected ROM" is wrong for the certified q=256 rung (bh2c/bh3). (2) Restricted-proxy audit gate fails on bh2–bh4 (worst gap 0.36 at 4096²; threshold 5 % tuned on the incumbent's dev6); every headline worst case is recomputed exactly from full fields (gate passes), so headline numbers stand. (3) DESIGN §4 said hold64 is "evaluated once, never opened": it was opened by earlier lanes (Codex A-1); fresh64 added as the untouched cohort.
+
+**Open.** bh5 (4153483, coordinator task A4: incumbent re-timed with lat64 j=1 at 4096², dev6+hold64) running; 8/8 jobs used.

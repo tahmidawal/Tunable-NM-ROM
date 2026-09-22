@@ -30,6 +30,82 @@ are separate methods, not stages of this pipeline.}
 \end{figure}
 
 
+\section{Neural operators in three dimensions}
+\label{app:operators}
+Four neural operators were trained on the same data, split and wall budget
+as the three-dimensional models of this paper and evaluated in the same
+allocation: an FNO \citep{Li2020FNO}, a U-Net \citep{Ronneberger2015UNet},
+a DeepONet \citep{Lu2021DeepONet} and a Transolver \citep{WuTransolver2024}.
+Tables~\ref{tab:op-linear} and~\ref{tab:op-nonlinear} report worst
+same-grid error, median GPU query time and the speedup over the same
+full-order control used elsewhere in the row's problem. They win where
+our three-dimensional models fail: on Burgers 3D the best of them,
+\nOpBurgBestName, reaches $\nOpBurgBestErr\,\%$ at $\nOpBurgBestS\times$
+Newton--BiCGStab against $\nFailBurgersAcc\,\%$ for the NM-ROM, and the
+fastest is $\nOpBurgFastS\times$; on Navier--Stokes \nOpNsBestName{}
+reaches $\nOpNsBestErr\,\%$ against $\nFailNsAcc\,\%$. On Poisson 3D the
+corrected NM-ROM is the more accurate, and no operator is faster than CG
+(at most $\nOpPoissonFastS\times$); on heat the best operator error is
+$\nOpHeatBestErr\,\%$, with no CG measurement in that record and so no
+speedup. Five facts frame these numbers.
+
+First, every operator here is trained and evaluated at $32^3$. The same
+trained operators transfer badly to $64^3$: worst errors of
+$\nOpTransferLo$--$\nOpTransferHi\,\%$ across the four families,
+recovered to $\nOpNativeLo$--$\nOpNativeHi\,\%$ only by training on the
+native grid and interpolating (for the FNO, also by physical padding).
+The top of that recovered range is again DeepONet. The fine-mesh rows of Table~\ref{tab:headline} are
+therefore NM-ROM against the named solvers alone; no operator was trained
+at those meshes.
+
+Second, DeepONet is limited by the budget, not by its architecture: at
+these budgets it is the weakest arm everywhere (worst
+$\nOpDeepWorst\,\%$), and its recorded step budget and exit reason are in
+Table~\ref{tab:development-training}.
+
+Third, the operators produce the requested output times directly, in one
+pass. They are not autoregressive rollouts, so the set of output times is
+fixed when they are trained.
+
+Fourth, every arm stopped on its wall budget rather than by early
+stopping (Table~\ref{tab:development-training}). At equal wall time the
+float32 U-Net and Transolver completed more epochs than the float64 FNO,
+which favours them.
+
+Fifth, an operator's own evaluation resolution can trade accuracy for
+cost, as \S\ref{sec:related} says; the comparison here fixes one
+evaluation setting per trained operator.
+
+\begin{table}[htbp]
+\centering
+\caption{Three-dimensional linear problems at $32^3$, $\nOpCasesDev$
+development cases: worst same-grid relative $L^2$ error, median GPU query
+time and speedup over the problem's full-order control. Poisson uses the
+steady error and CG at rtol $10^{-2}$ as the control; the heat record has
+no CG measurement, so no heat speedup is inferred.}
+\label{tab:op-linear}
+\resizebox{\linewidth}{!}{\input{tables/TR_3d_linear}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Three-dimensional nonlinear problems at $32^3$: Burgers on its
+accepted final cohort ($\nOpCasesFinal$ cases, worst evolved error) and
+Navier--Stokes on a development cohort. Speedups divide the named
+full-order solver of the same problem in the same allocation.}
+\label{tab:op-nonlinear}
+\resizebox{\linewidth}{!}{\input{tables/TR_3d_nonlinear}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Recorded training budgets of the neural operators: parameters,
+step budget, steps completed, the step selected by validation, batch,
+learning rate, seed and exit reason. Every arm exits on its step budget.}
+\label{tab:development-training}
+\resizebox{\linewidth}{!}{\input{tables/TC_development_training}}
+\end{table}
+
 \section{Experimental configuration and reproducibility}
 \label{app:training-schedule}\label{app:provenance}
 Tables~\ref{tab:problems} and \ref{tab:spec} identify the two-dimensional
@@ -158,7 +234,10 @@ These queries cost $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$
 as much as queries using quadrature at every step in the same job
 (Table~\ref{tab:headline-times}). This variant is slower than the
 full-order solver on both cohorts.
-No confirmed form of this accurate lattice rule is also faster.
+No confirmed form of this accurate lattice rule is also faster. In the
+wider bank, the settings whose quadrature is not confirmed reach
+$\nBhSubErrLo$--$\nBhSubErrHi\,\%$ error at
+$\nBhSubSLo$--$\nBhSubSHi\times$ the speed of Newton--BiCGStab.
 The fast setting's smaller rule passes the confirmation check and is
 faster than the full-order solver, at higher error.
 
@@ -242,7 +321,8 @@ $256^2$ and $\nBaseEncoderNeedGBFiveTwelve$\,GB at $512^2$, beyond the
 $\nBaseDeviceGB$ and $\nBaseDeviceGBFiveTwelve$\,GB devices; at $512^2$
 its encoder, capped at width $\nBaseKimWidth$, trained only
 $\nBaseKimEpochs$ epochs in its $\nBaseKimWall$\,s budget, so those errors
-partly reflect a training-time limit.}
+partly reflect a training-time limit. The data-matched row is trained on our
+bank's \nBaseDataMatched{} trajectories.}
 \label{tab:nmrom-baselines-appx}
 \resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines_appx}}
 \end{table}

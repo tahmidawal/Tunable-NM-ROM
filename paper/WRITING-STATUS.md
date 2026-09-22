@@ -1,5 +1,47 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — neural-operator numbers wired in (Appendix C) — CURRENT HANDOFF
+
+The paper reported no neural-operator numbers although the abstract and introduction frame it against them. The
+two already-generated tables are now in the paper. No new experiments; `gen_main_experiments.py` still reads the
+four hash-pinned snapshots in `evidence/main-experiments-2026-09-20/` (burgers b3d007, poisson replay07, heat
+extra03, ns confirmation06b), verified by sha256 on every build, and the regenerated tables are byte-identical to
+the committed ones.
+- **Appendix C, "Neural operators in three dimensions"** (`app:operators`): Table C.1 = `TR_3d_linear`
+  (Poisson 3D, Heat 3D at 32³), Table C.2 = `TR_3d_nonlinear` (Burgers 3D final, NS 3D development), Table C.3 =
+  `TC_development_training` (parameters, step budget, steps done, selected step, batch, lr, seed, exit). All four
+  operators, same-allocation error, GPU ms and speedup over the same full-order control as elsewhere.
+- **What it shows** (appendix prose, all macros from `tables/operator-numbers.tex`, new): they win where our 3D
+  models fail — Burgers 3D best 2.02 % at 2.39× Newton–BiCGStab against 4.40 % for the NM-ROM, fastest 3.94×;
+  NS 0.47 % against 18.92 %. On Poisson 3D the corrected NM-ROM is more accurate and no operator beats CG
+  (≤0.998×); heat best 0.32 %, with no CG measurement in that record, so no heat speedup is inferred.
+- **Caveats, stated plainly in the appendix:** (1) everything is trained and evaluated at 32³; the same trained
+  operators transfer badly to 64³ (17–220 % worst error), recovering to 0.37–21.8 % only with native-grid training
+  plus interpolation (or FNO physical padding), the top of that range again DeepONet — so the fine-mesh rows of
+  Table 1 are NM-ROM against the named solvers alone, with no operator trained at those meshes; (2) DeepONet is
+  budget-limited, not architecture-limited, with its recorded budget and exit in Table C.3; (3) the operators emit
+  the requested output times directly in one pass, not autoregressively, so their output times are fixed at
+  training; (4) every arm stopped on its wall budget, and at equal wall time the float32 U-Net and Transolver got
+  more epochs than the float64 FNO, which favours them; (5) an operator's own evaluation resolution can trade
+  accuracy for cost, as §2 says — this comparison fixes one evaluation setting per operator.
+- **Main text:** one sentence in the failures paragraph (four operators trained at 32³ beat the NM-ROM on
+  Burgers 3D and Navier–Stokes, are behind it on Poisson 3D, and none transfers to 64³ → Appendix C). A longer
+  main-text paragraph was drafted and dropped: page 9 could not take it, so the numbers live in the appendix.
+- **Abstract**, factual adjustment only: "deliver one (accuracy, speed) operating point … moving it requires
+  retraining" → "typically deliver … moving it generally requires retraining", so it no longer implies an operator
+  has exactly one accuracy–cost point (a coarser FNO evaluation rung was 2.12× faster at 1.14× its own error).
+  Related work already said evaluation resolution can trade accuracy for cost. 249 source words.
+- **Dangling reference:** `related-work.tex:58` now cites `app:operators` instead of the undefined
+  `sec:exp:operators`. That file is still not `\input` by `main.tex`. `archive-unused/sections/{results,intro}.tex`
+  keep the old `sec:exp:operators` label and reference, but nothing compiles them; left as is.
+- **Page budget** (the appendix section is free, the main sentence is not): the sealed-ladder paragraph stays in
+  Appendix D, the wider-bank unconfirmed-quadrature numbers moved to Appendix C.1, and two Table 2 caption
+  sentences moved to the Table C.7 caption. No caveat was dropped.
+- `check_headline.py` now re-derives, from the pinned snapshots: every operator row of both tables (worst error,
+  median GPU ms, and the speedup against the recorded control), the best-operator macros per problem, and the
+  64³ transfer ranges; it also asserts the appendix labels, the three `\input`s and the main-text pointer.
+  Both checks pass; 0 overfull boxes; main text ends on page 9, References start on page 9; PDF 24 pages.
+
 ## 2026-09-22 (paper lane) — clarity pass on the maths and the architecture — CURRENT HANDOFF
 
 User: "Make the math and architecture very easy to follow and understand", keeping the content, the structure and

@@ -250,5 +250,61 @@ _body = (P / 'main.tex').read_text() + (P / 'sections/appendix.tex').read_text()
 for name in ('nBhFastS', 'nBhJzeroRho', 'nBhJoneRho', 'nBhJoneMsDev', 'nBhJoneSDev', 'nBhBankErr', 'nBhFloorNew', 'nBhSubSLo'):
     assert '\\' + name in _body, name
 assert 'No confirmed form of this accurate lattice rule is also faster.' in (P / 'sections/appendix.tex').read_text()
+# 2026-09-22 neural-operator intake: the appendix tables and their prose numbers re-derived from the pinned records
+import statistics
+_me = json.loads((P / 'evidence/main-experiments-2026-09-20/manifest.json').read_text())
+_md = {}
+for _k, _v in _me.items():
+    _raw = (P / f'evidence/main-experiments-2026-09-20/{_k}.json').read_bytes()
+    assert hashlib.sha256(_raw).hexdigest() == _v['sha256'], _k
+    _md[_k] = json.loads(_raw)
+_OPS = {'fno': 'FNO', 'unet': 'U-Net', 'deeponet': 'DeepONet', 'transolver': 'Transolver'}
+def _opname(m):
+    return next(v for k, v in _OPS.items() if m.startswith(k))
+def _grid(kind, n):                      # worst error (%) and median GPU ms per method at mesh n
+    out = {}
+    if kind in ('poisson', 'heat'):
+        for r in _md[kind]['invocations']:
+            if r['intervals'] != n: continue
+            v = r['same_grid_error'] if kind == 'poisson' else r['same_grid']['current_evolved']
+            out.setdefault(r['method'], []).append((100 * v, r['device_ms']))
+        return {m: (max(x for x, _ in vs), statistics.median(t for _, t in vs)) for m, vs in out.items()}
+    if kind == 'burgers':
+        return {r['method']: (100 * r['worst_evolved'], r['median_ms']) for r in _md[kind]['rows']}
+    return {r['method']: (r['same_grid_evolved_worst_percent'], r['gpu_ms']) for r in _md[kind]['rows']}
+_prov3d = json.loads((P / 'tables/main-experiments-provenance.json').read_text())
+_ctl = _prov3d['controls']; _sel3d = _prov3d['selected']
+_tex = {n: (P / f'tables/TR_3d_{n}.tex').read_text() for n in ('linear', 'nonlinear')}
+_best = {}
+for _kind, _which in (('poisson', 'linear'), ('heat', 'linear'), ('burgers', 'nonlinear'), ('ns', 'nonlinear')):
+    _g = _grid(_kind, 32); _c = _ctl[_kind]
+    _pick = [r['method'] for r in _sel3d[_kind] if any(r['method'].startswith(k) for k in _OPS)]
+    _ops = {m: _g[m] for m in _pick}
+    assert len({_opname(m) for m in _ops}) == 4, (_kind, sorted(_ops))
+    for _m, (_e, _t) in _ops.items():
+        assert f"{_e:.3f}" in _tex[_which] and f"{_t:.3f}" in _tex[_which], (_kind, _m)   # error and time printed as recorded
+        if _c: assert f"{_g[_c][1] / _t:.3g}" + r'$\times$' in _tex[_which], (_kind, _m)  # speedup divides the recorded control
+    _b = min(_ops.items(), key=lambda kv: kv[1][0]); _best[_kind] = (_opname(_b[0]), _b[1], _c and _g[_c][1] / _b[1][1])
+_on = (P / 'tables/operator-numbers.tex').read_text()
+def _mo(name): return re.search(r'\\newcommand\{\\' + name + r'\}\{([^}]*)\}', _on).group(1)
+for _kind, _pre in (('poisson', 'nOpPoissonBest'), ('heat', 'nOpHeatBest'), ('burgers', 'nOpBurgBest'), ('ns', 'nOpNsBest')):
+    _n, (_e, _t), _s = _best[_kind]
+    assert _mo(_pre + 'Name') == _n and _mo(_pre + 'Err') == (f'{_e:.2f}' if _e >= 0.1 else f'{_e:.3f}'), _kind
+    if _s: assert _mo(_pre + 'S') == f'{_s:.3g}', _kind
+# the 64^3 caveat: the same trained operators transfer badly; native-grid training plus interpolation recovers
+_direct, _native = [], []
+for _kind in ('poisson', 'heat'):
+    _same = {r['method'] for r in _sel3d[_kind]}          # the very arms of the 32^3 tables
+    for _m, (_e, _t) in _grid(_kind, 64).items():
+        if any(_m.startswith(k) for k in _OPS): (_direct if _m in _same else _native).append(_e)
+assert _mo('nOpTransferLo') == f'{min(_direct):.0f}' and _mo('nOpTransferHi') == f'{max(_direct):.0f}'
+assert _mo('nOpNativeLo') == f'{min(_native):.2f}' and _mo('nOpNativeHi') == f'{max(_native):.1f}'
+assert min(_direct) > 10 > min(_native)
+_app = (P / 'sections/appendix.tex').read_text()
+for _lbl in ('app:operators', 'tab:op-linear', 'tab:op-nonlinear', 'tab:development-training'):
+    assert r'\label{' + _lbl + '}' in _app, _lbl
+for _t in ('TR_3d_linear', 'TR_3d_nonlinear', 'TC_development_training'):
+    assert r'\input{tables/' + _t + '}' in _app, _t
+assert r'\ref{app:operators}' in main.split(r'\bibliographystyle')[0]      # the main text points at the comparison
 print(json.dumps(dict(passed=True, rows=len(prov['rows']), bold_speedups=bold, failure_rows=len(fails), figure_points=sum(len(v) for v in fig['series'].values()),
                       pending_lane_slots=tex.count('pending:'), abstract_macros=sorted(macros)), indent=2))

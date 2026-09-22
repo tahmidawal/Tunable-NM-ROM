@@ -29,7 +29,8 @@
     "commit": "d80fed7a85a44064890085e381296ecfd902fa9c",
     "status": "development",
     "sha256": "aae5229584d4c88566df5101867752e4a8dada201255c42ceb60045835371623",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "faefcfa14679af04f6d31387c8a662a7e188f46e"
   },
   "burgers_panel": {
     "tree": "worktrees/2026-09-17-b-panel",
@@ -37,7 +38,174 @@
     "commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
     "status": "development",
     "sha256": "faad5b6265ebd306559855679cbdb5a07c1b45e93c3c2ad419ceaa92ce4b5abf",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "6de488169921b6e32755201829965035396bf455"
+  },
+  "eqcert_summary": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/reports/summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "8b667c04b6b16faae46d1b182a9f194a201bccd34f392952ffd062606fe380f9",
+    "read": "committed blob",
+    "git_blob": "631e82218c31e3221a8f818cbf4ba1adf93eb094"
+  },
+  "eqcert_bc256": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/checks/bc256-summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "7d8f0119738aa57a60abc397d595e979c3f8b72e7ce83819803ccb586f191856",
+    "read": "committed blob",
+    "git_blob": "b31c9758f4902f6a9c015bac3662a133d1768d2e"
+  },
+  "eqcert_bc256b": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/checks/bc256b-summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "09bb1b7d5505052c0684475e9bc27e87540f89612bb08ca6d8683ca745fea1fd",
+    "read": "committed blob",
+    "git_blob": "c5d122dbf4a73f9130b79d59dce69969f65ea5bc"
+  },
+  "eqcert_bc512": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/checks/bc512-summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "914f52e3a1733dde9ae715fb86e467e62d3ca317c1672423200194ac9fdfd6ce",
+    "read": "committed blob",
+    "git_blob": "a5fd789b0a49df5fa19d9c6f94bce6a86f611d7c"
+  },
+  "eqcert_bc1024": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/checks/bc1024-summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "1cb66f17b4049586f802dffd865454df66c16082eb89a066dad8a88dd78bb0b5",
+    "read": "committed blob",
+    "git_blob": "29305893fe6ee67c153e68720b2126dfada7a58b"
+  },
+  "eqcert_bc2048b": {
+    "tree": "worktrees/2026-09-21-burgers-eqcert",
+    "path": "experiments/burgers-eqcert/checks/bc2048b-summary.json",
+    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
+    "status": "audited; burgers-eqcert lane (closed)",
+    "sha256": "3d3bbfb4c7a00353acb4b7ea3475f13760c220cbca23cd95e49eaaeb388b906e",
+    "read": "committed blob",
+    "git_blob": "db9b6e1b597e3635b1f3aa37b56ebdf226fe417d"
+  },
+  "heat3db_panel_a": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/runs/final01/final01/summary.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "50149d6d55713d5c3ca909241c77f87f0ea860e0be3989744fe1f55e63ce36df",
+    "read": "committed blob",
+    "git_blob": "7e2aa123bf2b37f42bd1f8808d846e048c1e24ef",
+    "companion_blobs": {
+      "DESIGN.md": "0399be78ee18875010edc57adb8aa3d4501e12f8",
+      "HANDOFF.md": "74993fc116fdaff7e97a82a27d99700f781d17a8",
+      "runs/final01/FINAL-TABLE.md": "3afff59e4d424e0aecf5ccf74a7ae12233c4dcd9"
+    },
+    "companion_sha256": {
+      "DESIGN.md": "760320bf321fd1256131842735899bf69a862226c2931213526146c4aa549344",
+      "HANDOFF.md": "b6bd09d8d56f996ceda68465635759d62ef3aa31e4183b5d9778a69b75b6a1a6",
+      "runs/final01/FINAL-TABLE.md": "25b1496a3c9f4a2fc2e52aad2878b4278a34f37ae3918e5bcf75bb2c6eaa0b11"
+    }
+  },
+  "heat3db_panel_b": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/runs/final01/final01b/summary.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "5edf382537d39bdbdfdb98f2fab5fedb154a3fbe63edd2839bbbc44713ff405e",
+    "read": "committed blob",
+    "git_blob": "0920bbbe6f27ac836b34dcb3a04c565c23624a67"
+  },
+  "heat3db_final_table": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/runs/final01/final_table.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "a2fe20874156da9c6998c37b187b26983487f7e2022b3c252f54dbfdee72f967",
+    "read": "committed blob",
+    "git_blob": "82a5c1e544bbfafa750b6e6fa84697404e20d9cf"
+  },
+  "heat3db_selection": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/selection.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "e980531a872beee32faba11c8f1758da823ce57f2a97c3822806343e5e532b1a",
+    "read": "committed blob",
+    "git_blob": "573245b2bdc0f07d461d319c1d987392970884c7"
+  },
+  "heat3db_selection_add1": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/selection_addendum1.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "2e42e79dd8797981a4590c946e3cc30ae9cd8d7c728bb719e1dc3090347f07ee",
+    "read": "committed blob",
+    "git_blob": "997cb9438e1c24341714ed14703a1d411f12f9a5"
+  },
+  "heat3db_selection_add2": {
+    "tree": "worktrees/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/selection_addendum2.json",
+    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+    "status": "audited final; heat3d-bank lane (closed)",
+    "sha256": "7bc09667416a35ac2cea2ab1b25dcdc0988a8efdc14b4549ee27cb635f4fe315",
+    "read": "committed blob",
+    "git_blob": "0642d2b1964887b3166b6037852852a102fefc3e"
+  },
+  "ns3d_grok_diag07": {
+    "tree": "worktrees/2026-09-21-ns3d-grok",
+    "path": "experiments/ns3d-grok/runs/diag07/output/summary.json",
+    "commit": "8852b7cd6365de7a8fdfd747bedee587f1cf9f29",
+    "status": "audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)",
+    "sha256": "97ad1b9ee19ddb08e9d660c1bb60e033d887504b639218bdcf715715cde6f9d4",
+    "read": "committed blob",
+    "git_blob": "ed345d4de6e44e17ab30cefe9a365dc724af0662"
+  },
+  "bh5_summary": {
+    "tree": "worktrees/2026-09-21-burgers-heldout",
+    "path": "experiments/burgers-heldout/checks/bh5-summary.json",
+    "commit": "3771cacfe84730eda2466f02b19f8c2290649b26",
+    "status": "audited; burgers-heldout lane (closed); incumbent 4096^2 re-timing",
+    "sha256": "dd8199b873423f35b406002d3a9f185293966823c48f8c7ef9f43f8eddaa8ddd",
+    "read": "committed blob",
+    "git_blob": "25d8e6003da646de983a89f859c4c0c4ff4e2157"
+  },
+  "bh5_eqcert": {
+    "tree": "worktrees/2026-09-21-burgers-heldout",
+    "path": "experiments/burgers-heldout/checks/bh5-eqcert-summary.json",
+    "commit": "3771cacfe84730eda2466f02b19f8c2290649b26",
+    "status": "audited; burgers-heldout lane (closed); quadrature re-draws at 4096^2",
+    "sha256": "14b6996ac89dcbcbae49f5b4f7343ad1d83f5208ba0da708b83454a1fc00f263",
+    "read": "committed blob",
+    "git_blob": "d21c1fc1ffd08ddc577bfd6e26be7df33e29d224"
+  },
+  "bh_summary": {
+    "tree": "worktrees/2026-09-21-burgers-heldout",
+    "path": "experiments/burgers-heldout/reports/summary.json",
+    "commit": "3771cacfe84730eda2466f02b19f8c2290649b26",
+    "status": "audited; burgers-heldout lane (closed); wider-bank result",
+    "sha256": "1559b8493b007d47084c9baf20191df3c70429f36fae92fe2278e1d570dc8c81",
+    "read": "committed blob",
+    "git_blob": "e37b42c50ac619d0b5762921a24c799a19fdc413",
+    "companion_blobs": {
+      "DESIGN.md": "72a077a8e0d476b00740436fa059ab9b3288a188",
+      "HANDOFF.md": "451377482ca8d70ffb425f26645e35aec13b2dae",
+      "reports/2026-09-21-burgers-heldout.md": "acc3e81e097ba3cbd58dafd80402c3e163b03ff4",
+      "reports/tables.generated.md": "a28bf3b91048a4c99675dc3e940ad594d67d1227"
+    },
+    "companion_sha256": {
+      "DESIGN.md": "fe646f94ac35df0ab010a70bfe7e940b3ba749191489049a02bc7ef4807169a0",
+      "HANDOFF.md": "3afae5216a892c6b0a198262a1260376e8d731158641fe57334b957e2c6f92e9",
+      "reports/2026-09-21-burgers-heldout.md": "fa27fe6ae8ae97e5943d772b209fe096c1a01c94ce0d22518681d878ddeeeeaa",
+      "reports/tables.generated.md": "f5691acf0f5eb19caf13cc8e1f3ad5789c3dc5a830c9ebd8ba5a61d411381870"
+    }
   },
   "wave": {
     "tree": "worktrees/2026-09-17-w-ladder",
@@ -45,7 +213,8 @@
     "commit": "9b84d0556888ebc052b52bd165a61dcd56b2b53d",
     "status": "development",
     "sha256": "5cbae5c721b4a7d180feaf9a8fef15d8a5d2840077f51b5deb91375d9ba61250",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "48d5f6719e33040fd24a2a91ec2ef5dc6576ee64"
   },
   "poisson3d": {
     "tree": "worktrees/2026-09-20-paper-p3d",
@@ -53,7 +222,8 @@
     "commit": "26c73030b89adfa321ede751db2798abf9bcd1b2",
     "status": "accepted final",
     "sha256": "48fad9067babede53918a07ca1168ad9dfbcf44196de41e0c332062a16479a97",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "6a23a9f14169f4231880dd6c86a5ac065c33a303"
   },
   "heat3d": {
     "tree": "worktrees/2026-09-20-paper-h3d",
@@ -61,7 +231,8 @@
     "commit": "f15c7232ab21df20cd0fa279134c06114b5ca721",
     "status": "accepted final",
     "sha256": "e0319cbc711f5098218ffc324f1b6d3abeb06570db48f68d5dfba2d269230041",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "9bb63fde8c47e267ad2d98e0d90d2821b4909672"
   },
   "ns3d": {
     "tree": "worktrees/2026-09-20-paper-ns3d",
@@ -69,7 +240,8 @@
     "commit": "3f4e12d6134da21cf82e5259c2990c8ab625b4c6",
     "status": "accepted final",
     "sha256": "5c01c13c9e326a63821dec434fdc651c540ac3a19424bdd604744df88b408e7e",
-    "read": "committed blob"
+    "read": "committed blob",
+    "git_blob": "ae197b125ce10f8db7e7b89bc9c6539b6027434d"
   },
   "intake_00_hires-poisson": {
     "tree": "worktrees/2026-09-20-hires-poisson",
@@ -267,127 +439,5 @@
     "read": "coordinator-supplied audited summary",
     "lane": "nmrom-baselines",
     "role": "fam512-audit"
-  },
-  "eqcert_summary": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/reports/summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "8b667c04b6b16faae46d1b182a9f194a201bccd34f392952ffd062606fe380f9",
-    "read": "committed blob",
-    "git_blob": "631e82218c31e3221a8f818cbf4ba1adf93eb094"
-  },
-  "eqcert_bc256": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/checks/bc256-summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "7d8f0119738aa57a60abc397d595e979c3f8b72e7ce83819803ccb586f191856",
-    "read": "committed blob",
-    "git_blob": "b31c9758f4902f6a9c015bac3662a133d1768d2e"
-  },
-  "eqcert_bc256b": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/checks/bc256b-summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "09bb1b7d5505052c0684475e9bc27e87540f89612bb08ca6d8683ca745fea1fd",
-    "read": "committed blob",
-    "git_blob": "c5d122dbf4a73f9130b79d59dce69969f65ea5bc"
-  },
-  "eqcert_bc512": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/checks/bc512-summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "914f52e3a1733dde9ae715fb86e467e62d3ca317c1672423200194ac9fdfd6ce",
-    "read": "committed blob",
-    "git_blob": "a5fd789b0a49df5fa19d9c6f94bce6a86f611d7c"
-  },
-  "eqcert_bc1024": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/checks/bc1024-summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "1cb66f17b4049586f802dffd865454df66c16082eb89a066dad8a88dd78bb0b5",
-    "read": "committed blob",
-    "git_blob": "29305893fe6ee67c153e68720b2126dfada7a58b"
-  },
-  "eqcert_bc2048b": {
-    "tree": "worktrees/2026-09-21-burgers-eqcert",
-    "path": "experiments/burgers-eqcert/checks/bc2048b-summary.json",
-    "commit": "176b2a9a5e4642a0a1338d824e7e3ab94e298ca8",
-    "status": "audited; burgers-eqcert lane (closed)",
-    "sha256": "3d3bbfb4c7a00353acb4b7ea3475f13760c220cbca23cd95e49eaaeb388b906e",
-    "read": "committed blob",
-    "git_blob": "db9b6e1b597e3635b1f3aa37b56ebdf226fe417d"
-  },
-  "heat3db_panel_a": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/runs/final01/final01/summary.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "50149d6d55713d5c3ca909241c77f87f0ea860e0be3989744fe1f55e63ce36df",
-    "read": "committed blob",
-    "git_blob": "7e2aa123bf2b37f42bd1f8808d846e048c1e24ef",
-    "companion_blobs": {
-      "DESIGN.md": "0399be78ee18875010edc57adb8aa3d4501e12f8",
-      "HANDOFF.md": "74993fc116fdaff7e97a82a27d99700f781d17a8",
-      "runs/final01/FINAL-TABLE.md": "3afff59e4d424e0aecf5ccf74a7ae12233c4dcd9"
-    }
-  },
-  "heat3db_panel_b": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/runs/final01/final01b/summary.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "5edf382537d39bdbdfdb98f2fab5fedb154a3fbe63edd2839bbbc44713ff405e",
-    "read": "committed blob",
-    "git_blob": "0920bbbe6f27ac836b34dcb3a04c565c23624a67"
-  },
-  "heat3db_final_table": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/runs/final01/final_table.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "a2fe20874156da9c6998c37b187b26983487f7e2022b3c252f54dbfdee72f967",
-    "read": "committed blob",
-    "git_blob": "82a5c1e544bbfafa750b6e6fa84697404e20d9cf"
-  },
-  "heat3db_selection": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/selection.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "e980531a872beee32faba11c8f1758da823ce57f2a97c3822806343e5e532b1a",
-    "read": "committed blob",
-    "git_blob": "573245b2bdc0f07d461d319c1d987392970884c7"
-  },
-  "heat3db_selection_add1": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/selection_addendum1.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "2e42e79dd8797981a4590c946e3cc30ae9cd8d7c728bb719e1dc3090347f07ee",
-    "read": "committed blob",
-    "git_blob": "997cb9438e1c24341714ed14703a1d411f12f9a5"
-  },
-  "heat3db_selection_add2": {
-    "tree": "worktrees/2026-09-21-heat3d-bank",
-    "path": "experiments/heat3d-bank/selection_addendum2.json",
-    "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
-    "status": "audited final; heat3d-bank lane (closed)",
-    "sha256": "7bc09667416a35ac2cea2ab1b25dcdc0988a8efdc14b4549ee27cb635f4fe315",
-    "read": "committed blob",
-    "git_blob": "0642d2b1964887b3166b6037852852a102fefc3e"
-  },
-  "ns3d_grok_diag07": {
-    "tree": "worktrees/2026-09-21-ns3d-grok",
-    "path": "experiments/ns3d-grok/runs/diag07/output/summary.json",
-    "commit": "8852b7cd6365de7a8fdfd747bedee587f1cf9f29",
-    "status": "audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)",
-    "sha256": "97ad1b9ee19ddb08e9d660c1bb60e033d887504b639218bdcf715715cde6f9d4",
-    "read": "committed blob",
-    "git_blob": "ed345d4de6e44e17ab30cefe9a365dc724af0662"
   }
 }

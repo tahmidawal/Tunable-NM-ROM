@@ -80,6 +80,43 @@ in the last column (code constants, not run outputs).}
 
 \subsection{Headline settings, times and timing protocol}
 \label{app:cg-current}\label{app:main-experiment-details}
+Table~\ref{tab:headline} markers.
+$^{f}$\,held-out final cohort (all others development);
+$^{r}$\,error against a refined reference, which includes discretisation
+error (all others same-grid); $^{t}$\,all output times including
+$t=0$; $^{e}$\,evolved output times only; $^{c}$\,complete-query time
+with host transfers (all others GPU query; heat was measured in GPU query
+only). Heat (wide bank) is a separately trained frozen model with a
+128-function bank ($q=32$ accurate); over evolved times its accurate
+error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
+batched; the batched fit: Table~\ref{tab:headline-times}); Heat (new
+bank) ($q=\nHeatNewQ$ accurate; Table~\ref{tab:config3d}): at most $\nHeatNewAccEvolved\,\%$
+($\nHeatNewBatchedAccEvolved\,\%$ batched) over evolved times;
+$^{n}$\,\nHeatNewNonstat{} solve (one step of one case) missed its
+stationarity rule, so no speedup is given. Burgers accurate
+quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}
+($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table~\ref{tab:eqladder}),
+not confirmed on re-draws: it fails the confirmation draw at $256^2$;
+$^{x}$\,its nodes with weights refit at $512^2$
+($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
+unrefit weights they pass \nEqcScaledPassFiveTwelve{} of
+\nEqcScaledDrawsFiveTwelve{} re-draws); $^{\ell}$\,$63{\times}63$
+lattice rule at $2048^2$, thin margin: it clears the re-draw bar by only
+$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs.\ $\nEqcBar$);
+$^{w}$\,the same rule at $4096^2$: five held-out draws pass and the
+confirmation draw does not; $^{v}$\,confirmed by the pre-registered
+re-draw procedure ($1024^2$: thin margin,
+$\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$);
+$^{d}$\,dense residual. The earlier Burgers model has one setting and
+may exit on a stall; its rule-selected FOM is the relaxed Newton setting
+($10^{-2}/0.5$), and its tight-setting ratio is in
+Table~\ref{tab:headline-times} with the other rows' tight ratios; the
+FOM setting can differ between meshes of a series. $^{h}$\,64 held-out
+cases never used for selection (not the sealed final cohort); at $2048^2$
+the development-chosen $M=544$ setting was not run on them, so the
+$M=1088$ setting is shown. Poisson (dev.\ sources) rows use development
+sources of a separate run and are not the held-out cohort.
+
 Table~\ref{tab:headline-times} gives the settings and measured times
 behind every row of Table~\ref{tab:headline}. Every cost and error come
 from the same invocation. Timings use GPU warm-up and synchronisation,
@@ -97,7 +134,7 @@ re-draw procedure (its pick failed the confirmation draw), so
 Table~\ref{tab:headline} has no confirmed-rule row there; a post-hoc
 follow-up rule with an exact first time step passes all
 \nEqcFollowDraws{} draws of two jobs and gives $\nEqcFollowErr\,\%$ at
-$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, copying the six
+$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, the lattice rule of the accurate rows passes five held-out draws and fails the confirmation draw ($\rho_{\max}=\nBhJzeroRho$ against the bar $\nEqcBar$). From time step 2 the same draw is $\rho_{\max}=\nBhJzeroRhoKtwo$, so the miss is in the first steps: the rule is validated on held-out reached states and not confirmed on re-draws. The same rule with the first time step on the exact residual passes all five draws and the confirmation draw ($\rho_{\max}=\nBhJoneRho$) at the same printed error, in $\nBhJoneMsDev$\,ms on the six development cases and $\nBhJoneMsHold$\,ms on the 64 held-out cases ($\nBhJoneSDev\times$ and $\nBhJoneSHold\times$ against Newton--BiCGStab; $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$ the quadrature-step cost in the same job; Table~\ref{tab:headline-times}). That form is slower than the full-order solver on both cohorts. No confirmed form of this accurate lattice rule is also faster. The fast setting's smaller rule passes the confirmation draw and is faster, at higher error. For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -120,8 +157,11 @@ structure of the heat equation (eigenfunction tests). Rows from the
 paired-CG record list the one full-order setting that record retains,
 itself chosen by the same rule.
 $^{\ast}$\,not in Table~\ref{tab:headline}: a re-measurement of the row
-above it, or a development-source run at a mesh whose held-out row is in
-Table~\ref{tab:headline}.}
+above it, a development-source run at a mesh whose held-out row is in
+Table~\ref{tab:headline}, or the confirmed first-step form of the
+$4096^2$ Burgers lattice rule. The $4096^2$ Burgers fast speedup in
+Table~\ref{tab:headline} does not divide the Newton time printed here;
+it divides \nBhFastFom.}
 \label{tab:headline-times}
 \resizebox{\linewidth}{!}{\input{tables/TH_headline_times}}
 \end{table}

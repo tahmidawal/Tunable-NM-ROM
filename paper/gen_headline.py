@@ -14,7 +14,9 @@ One row = one frozen model evaluated at two deployment settings:
   accurate  the largest stored correction rank at the model's standard time step
             (for Burgers: its lowest-error residual evaluation that meets the rule)
 and ONE named full-order solver (FOM) from the same allocation, at least as
-accurate as both settings.  Both speedups divide that one FOM time.
+accurate as the accurate setting.  Both speedups divide that one FOM time,
+except the 4096^2 Burgers fast column, whose denominator is the fastest
+tested setting at least as accurate as the fast setting (bh5 grid).
 
 New rows from the running lanes enter through ``headline-intake.json``
 (see INTAKE_SCHEMA below); until a path is listed there the slot prints dashes.
@@ -49,10 +51,27 @@ SOURCES = {
     'heat3db_selection_add1': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum1.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
     'heat3db_selection_add2': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum2.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
     'ns3d_grok_diag07': (WT + '2026-09-21-ns3d-grok', 'experiments/ns3d-grok/runs/diag07/output/summary.json', '8852b7cd6365de7a8fdfd747bedee587f1cf9f29', 'audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)'),
+    'bh5_summary': (WT + '2026-09-21-burgers-heldout', 'experiments/burgers-heldout/checks/bh5-summary.json', '3771cacfe84730eda2466f02b19f8c2290649b26', 'audited; burgers-heldout lane (closed); incumbent 4096^2 re-timing'),
+    'bh5_eqcert': (WT + '2026-09-21-burgers-heldout', 'experiments/burgers-heldout/checks/bh5-eqcert-summary.json', '3771cacfe84730eda2466f02b19f8c2290649b26', 'audited; burgers-heldout lane (closed); quadrature re-draws at 4096^2'),
+    'bh_summary': (WT + '2026-09-21-burgers-heldout', 'experiments/burgers-heldout/reports/summary.json', '3771cacfe84730eda2466f02b19f8c2290649b26', 'audited; burgers-heldout lane (closed); wider-bank result'),
     'wave': (WT + '2026-09-17-w-ladder', 'experiments/w-ladder/reports/summary.json', '9b84d0556888ebc052b52bd165a61dcd56b2b53d', 'development'),
     'poisson3d': (WT + '2026-09-20-paper-p3d', 'experiments/paper-p3d/runs/final08/paper-comparisons.json', '26c73030b89adfa321ede751db2798abf9bcd1b2', 'accepted final'),
     'heat3d': (WT + '2026-09-20-paper-h3d', 'experiments/paper-h3d/runs/final08/paper-tables.json', 'f15c7232ab21df20cd0fa279134c06114b5ca721', 'accepted final'),
     'ns3d': (WT + '2026-09-20-paper-ns3d', 'experiments/ns3d/runs/final07/paper_summary.json', '3f4e12d6134da21cf82e5259c2990c8ab625b4c6', 'accepted final'),
+}
+# companion markdown, pinned by git blob and sha256, not loaded as JSON
+COMPANIONS = {
+    'heat3db_panel_a': [
+        ('experiments/heat3d-bank/DESIGN.md', 'DESIGN.md'),
+        ('experiments/heat3d-bank/HANDOFF.md', 'HANDOFF.md'),
+        ('experiments/heat3d-bank/runs/final01/FINAL-TABLE.md', 'runs/final01/FINAL-TABLE.md'),
+    ],
+    'bh_summary': [
+        ('experiments/burgers-heldout/DESIGN.md', 'DESIGN.md'),
+        ('experiments/burgers-heldout/HANDOFF.md', 'HANDOFF.md'),
+        ('experiments/burgers-heldout/reports/2026-09-21-burgers-heldout.md', 'reports/2026-09-21-burgers-heldout.md'),
+        ('experiments/burgers-heldout/reports/tables.generated.md', 'reports/tables.generated.md'),
+    ],
 }
 INTAKE = HERE / 'headline-intake.json'
 INTAKE_SCHEMA = 'nmrom-headline-rows-v1'
@@ -65,12 +84,13 @@ PENDING = [
     dict(problem='Heat', dim=3, meshes=[128], lane='hires-heat'),
     dict(problem='Burgers', dim=3, meshes=[128], lane='hires-burgers'),
 ]
-INCOMING = [  # slots for the paused lanes (branch in the lane dict); no value is printed until an audited summary.json is ingested
-    # burgers-eqcert slot filled 2026-09-21 from the lane's audited summaries (rows 'Burgers, confirmed rule'; 256^2 has no certified rule)
-    dict(problem='Burgers (wider learned bank), held-out 64', dim=2, meshes=[2048, 4096], lane='burgers-heldout', branch='exp/2026-09-21-burgers-heldout'),
-    # heat3d-bank slot filled 2026-09-22 (Table 1 rows 'Heat (new bank)', panel A)
+INCOMING = [  # paused-lane slots; empty once every listed lane has been ingested
+    # burgers-eqcert filled 2026-09-21 (rows 'Burgers, confirmed rule')
+    # heat3d-bank filled 2026-09-22 (rows 'Heat (new bank)')
+    # burgers-heldout filled 2026-09-22: the wider bank did not improve held-out accuracy, so it is a
+    # limitations sentence, not a Table 1 row.  The 4096^2 quadrature re-timing is a relabel plus appendix rows.
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, confirmed rule', 'Burgers (earlier model)', 'Heat (new bank)', 'Heat (new bank, batched fit)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, exact first step', 'Burgers, confirmed rule', 'Burgers (earlier model)', 'Heat (new bank)', 'Heat (new bank, batched fit)']
 
 
 def digest(b: bytes) -> str:
@@ -89,6 +109,16 @@ def refresh():
         (E / f'{key}.json').write_bytes(raw)
         manifest[key] = dict(tree=tree, path=path, commit=full, status=status, sha256=digest(raw),
                              read='committed blob' if commit else 'existing hash-pinned paper snapshot')
+        if full:
+            manifest[key]['git_blob'] = subprocess.check_output(['git', '-C', str(REPO / tree), 'rev-parse', f'{full}:{path}']).decode().strip()
+        if key in COMPANIONS:
+            blobs, shas = {}, {}
+            for rel, label in COMPANIONS[key]:
+                raw_c = subprocess.check_output(['git', '-C', str(REPO / tree), 'show', f'{full}:{rel}'])
+                blobs[label] = subprocess.check_output(['git', '-C', str(REPO / tree), 'rev-parse', f'{full}:{rel}']).decode().strip()
+                shas[label] = digest(raw_c)
+            manifest[key]['companion_blobs'] = blobs
+            manifest[key]['companion_sha256'] = shas
     if INTAKE.exists():
         for i, item in enumerate(json.loads(INTAKE.read_text())['sources']):
             if item.get('blob_path'):       # preferred: the lane's committed blob, never its working tree
@@ -616,6 +646,99 @@ def hires_burgers(parts):
     HB['bank_floor_confirm'] = 100 * bf['worst_evolved']['confirm']
 
 
+BH5 = {}
+
+
+def burgers_heldout():
+    """4096^2 quadrature re-test and the wider-bank result, from the pinned burgers-heldout blobs.
+
+    Table 1 keeps the hires-burgers accurate rows.  Their lattice rule is relabelled from the re-draws.
+    The fast-column speedup is re-derived on bh5's wider Newton grid: fastest converged same-mesh setting
+    whose error is at most the fast setting's, same job as that fast setting.  The confirmed form (first
+    time step on the exact residual) is an appendix row.  The wider bank did not improve held-out accuracy,
+    so it is prose, not a table row.
+    """
+    sm, bh, eq = D['bh_summary'], D['bh5_summary'], D['bh5_eqcert']
+    assert MAN['bh5_summary']['sha256'] == sm['sources_sha256']['bh5-summary.json']
+    assert MAN['bh5_eqcert']['sha256'] == sm['sources_sha256']['bh5-eqcert-summary.json']
+    assert bh['job_id'] == eq['job_id'] == sm['jobs']['bh5']['job_id'] and bh['intervals'] == eq['intervals'] == 4096
+    for d_ in (bh, eq):
+        assert set(d_['failed_gates']) <= {'restricted_recomputation_tracks_full_grid'}
+        g_ = d_['gates']
+        assert g_['log_says_backend_gpu']['passed'] and g_['x64_and_highest']['passed'] and g_['full_grid_errors_recomputed']['passed']
+    assert eq['gates']['arm_status_recomputed_matches_job']['passed'] and eq['gates']['rho_recomputed_in_numpy']['passed']
+    assert eq['verdict']['certified_rule_exists'] is False and {r_['rho_bar'] for r_ in eq['rules']} == {EQC['bar']}
+    paper, exact = 'q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2', 'q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1'
+    fast_arm = 'q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2'
+    st0, st1, stq = eq['arm_status'][paper], eq['arm_status'][exact], eq['arm_status'][fast_arm]
+    assert st0['draws_passed'] == st0['draws'] == 5 and st0['exact_steps'] == 0 and not st0['confirmation_pass'] and not st0['audited_confirmation_pass']
+    assert st1['draws_passed'] == st1['draws'] == 5 and st1['exact_steps'] == 1 and st1['confirmation_pass'] and st1['audited_confirmation_pass']
+    assert stq['confirmation_pass'] and stq['draws_passed'] == stq['draws'] == 5 and stq['status'] == 'confirmed'   # the fast setting's smaller rule does pass
+    assert eq['table'][exact]['fom_by_paper_rule'] == 'lean_nt3e-3_l3e-3_dt005'
+    BH5['j0_rho'] = st0['confirmation_heldout_rho_max_k>=0']
+    BH5['j0_rho_k2'] = st0['confirmation_heldout_rho_max_k>=2']
+    BH5['j1_rho'] = st1['confirmation_heldout_rho_max_k>=1']
+    assert abs(BH5['j1_rho'] - eq['table'][exact]['confirmation_rho_max']) < 1e-15
+    assert BH5['j0_rho'] > EQC['bar'] > BH5['j0_rho_k2'] and BH5['j1_rho'] < EQC['bar']
+
+    def foms_of(table):
+        return {k: v for k, v in table.items() if v['family'] == 'fom' and v['mesh'] == 4096 and v['nonlinear_converged'] and v['stalled_steps'] == 0}
+
+    def newton_name(v, with_dt=False):
+        s = tol_tex(v['ntol']) if v['ntol'] == v['ltol'] else tol_tex(v['ntol']) + '/' + tol_tex(v['ltol'])
+        lab = r'Newton--BiCGStab, tol $%s$' % s
+        return lab + (r', $\Delta t{=}%s$' % f"{v['dt']:g}" if with_dt else '')
+
+    fast_sps = []
+    for cohort, problem, coh in (('dev6', 'Burgers', 'development'), ('hold64', 'Burgers (held-out cases)', 'held-out')):
+        table = bh['groups'][cohort]['table']
+        r = [x for x in ROWS if x['problem'] == problem and x['intervals'] == 4096][0]
+        assert r['accurate']['arm'] == paper and r['fast']['arm'] == fast_arm and r['accurate']['eq'] == 'lattice'
+        j0, j1, fq = table[paper], table[exact], table[fast_arm]
+        assert abs(j1['worst_evolved_percent'] - r['accurate']['error_pct']) < 1e-4
+        assert abs(fq['worst_evolved_percent'] - r['fast']['error_pct']) < 1e-6
+        assert j1['stalled_exits'] == fq['stalled_exits'] == 0
+        foms = foms_of(table)
+        cands = {k: dict(err=v['worst_evolved_percent'], ms=v['median_gpu_ms']) for k, v in foms.items()}
+        fpick = rule_pick(cands, fq['worst_evolved_percent']); assert fpick == 'lean_nt1e-3_l1e-3_dt01'
+        fo = foms[fpick]
+        r['fast']['own_fom'] = dict(arm=fpick, ms=fo['median_gpu_ms'], err=fo['worst_evolved_percent'], rom_ms=fq['median_gpu_ms'],
+                                    rom_err=fq['worst_evolved_percent'], job=bh['job_id'])
+        r['fast']['speed_digits'] = 2
+        r['accurate']['eq'] = 'lattice-unconfirmed'
+        fast_sps.append(fo['median_gpu_ms'] / fq['median_gpu_ms'])
+        apick = rule_pick(cands, j1['worst_evolved_percent']); assert apick == 'lean_nt3e-3_l3e-3_dt005'
+        af = foms[apick]
+        lab = f"$q={j1['q']}$, $M={j1['M']}$, EQ lattice $m={j1['m']}$, first step exact"
+        row('Burgers, exact first step', 2, 4096, None,
+            setting(lab, j1['worst_evolved_percent'], j1['median_gpu_ms'], arm=exact, eq='confirmed'),
+            dict(name=newton_name(af), error_pct=af['worst_evolved_percent'], ms=af['median_gpu_ms'], arm=apick, candidates=cands),
+            'bh5_summary', bh['job_id'], coh, 'confirmed rule; first step on the exact residual', 'same-grid, evolved', 'GPU query',
+            appendix_only='confirmed form of the 4096^2 lattice rule; slower than Newton--BiCGStab')
+        BH5[cohort] = dict(j1_ms=j1['median_gpu_ms'], j0_ms=j0['median_gpu_ms'], sp=af['median_gpu_ms'] / j1['median_gpu_ms'],
+                           cost=j1['median_gpu_ms'] / j0['median_gpu_ms'])
+    assert f'{fast_sps[0]:.2f}' == f'{fast_sps[1]:.2f}' == '10.10'
+    assert f"{BH5['dev6']['sp']:.2f}" == '0.10' and f"{BH5['hold64']['sp']:.2f}" == '0.08'
+    BH5['fast_s'] = '10.10'
+    BH5['fast_fom'] = newton_name(bh['groups']['dev6']['table']['lean_nt1e-3_l1e-3_dt01'], with_dt=True)
+    assert BH5['fast_fom'] == newton_name(bh['groups']['hold64']['table']['lean_nt1e-3_l1e-3_dt01'], with_dt=True)
+    sel, floors = sm['bank_selection'], sm['bank_floors_256_sel32']
+    assert sel['chosen'] == 'state' and floors['pod_state_R512'] == sel['chosen_floor'] == floors['pod_state_R512']
+    assert floors['incumbent_inc512'] == sel['incumbent_floor'] and sel['chosen_floor'] < 0.5 * sel['incumbent_floor']
+    hold = [r_ for r_ in sm['rows'] if r_['job'] == 'bh3' and r_['cohort'] == 'hold64' and str(r_['role']).startswith('headline')]
+    assert len(hold) == 1 and hold[0]['certified'] and hold[0]['arm'] == paper
+    assert abs(hold[0]['fom_ms'] / hold[0]['rom_ms'] - hold[0]['speedup']) < 1e-12
+    paper_hold = [x for x in ROWS if x['problem'] == 'Burgers (held-out cases)' and x['intervals'] == 4096][0]
+    assert hold[0]['worst_evolved_percent'] > paper_hold['accurate']['error_pct']
+    subs = [r_ for r_ in sm['rows'] if r_['mesh'] == 4096 and r_['cohort'] in ('hold64', 'fresh64') and r_['q'] > 0
+            and not r_['certified'] and r_['worst_evolved_percent'] < 0.5]
+    assert len(subs) >= 2 and all(abs(r_['fom_ms'] / r_['rom_ms'] - r_['speedup']) < 1e-12 and r_['speedup'] > 1 for r_ in subs)
+    BH5.update(floor_old=100 * sel['incumbent_floor'], floor_new=100 * sel['chosen_floor'], bank_err=hold[0]['worst_evolved_percent'],
+               bank_s=hold[0]['speedup'], sub_err=(min(r_['worst_evolved_percent'] for r_ in subs), max(r_['worst_evolved_percent'] for r_ in subs)),
+               sub_s=(min(r_['speedup'] for r_ in subs), max(r_['speedup'] for r_ in subs)))
+    assert f"{BH5['floor_old']:.3f}" == '0.513' and f"{BH5['floor_new']:.3f}" == '0.183' and f"{BH5['bank_err']:.3f}" == '1.601'
+
+
 # ---- coordinator-supplied lane rows ----------------------------------------------------------------
 HEAT_PARTS = {}; BURG_PARTS = {}
 for k, v in MAN.items():
@@ -637,19 +760,27 @@ if HEAT_PARTS:
     hires_heat(HEAT_PARTS)
 if BURG_PARTS:
     hires_burgers(BURG_PARTS)
+if 'bh5_summary' in D:
+    burgers_heldout()
 
 ROWS.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], r['fom']['ms']))
 APPX.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
 for r in ROWS + APPX:
     for s in ('fast', 'accurate'):
-        if r[s]: r[s]['speedup'] = r['fom']['ms'] / r[s]['ms']
+        if not r[s]: continue
+        fo = r[s].get('own_fom')
+        if fo:
+            assert fo['err'] <= r[s]['error_pct'] + 1e-9
+            r[s]['speedup'] = fo['ms'] / fo['rom_ms']
+        else:
+            r[s]['speedup'] = r['fom']['ms'] / r[s]['ms']
 
 
 # ---- rendering -----------------------------------------------------------------------------------------
 def e(x): return f'{x:.2f}' if x >= 0.1 else f'{x:.3f}'
 def spn(x): return (f'{x:.0f}' if x >= 100 else f'{x:.1f}' if x >= 10 else f'{x:.2f}' if x >= 0.1 else f'{x:.3f}' if x >= 0.01 else f'{x:.4f}')
-def sp(x):
-    t = (f'{x:.0f}' if x >= 100 else f'{x:.1f}' if x >= 10 else f'{x:.2f}' if x >= 0.1 else f'{x:.3f}' if x >= 0.01 else f'{x:.4f}') + r'$\times$'
+def sp(x, nd=None):
+    t = (f'{x:.{nd}f}' if nd else (f'{x:.0f}' if x >= 100 else f'{x:.1f}' if x >= 10 else f'{x:.2f}' if x >= 0.1 else f'{x:.3f}' if x >= 0.01 else f'{x:.4f}')) + r'$\times$'
     return r'\textbf{' + t + '}' if x > 1 else t
 def mesh(r): return f"${r['intervals']}^{r['dim']}$"
 MARK = {'refined reference': r'$^{r}$', 'complete query': r'$^{c}$'}
@@ -661,8 +792,8 @@ def marks(r):
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
     if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
     return m
-EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'not-confirmed': r'$^{s}$', 'single-draw-refit': r'$^{x}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$'}
-def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), r'---$^{n}$' if s.get('nonstationary') else sp(s['speedup'])] if s else ['---', '---']   # a solve that missed its stopping rule does not enter a speedup
+EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'not-confirmed': r'$^{s}$', 'single-draw-refit': r'$^{x}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$', 'lattice-unconfirmed': r'$^{w}$'}
+def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), r'---$^{n}$' if s.get('nonstationary') else sp(s['speedup'], s.get('speed_digits'))] if s else ['---', '---']   # a solve that missed its stopping rule does not enter a speedup
 
 
 INGESTED = {v.get('lane') for v in MAN.values() if v.get('lane')}
@@ -970,6 +1101,19 @@ if HB:
     mac['nBurgDevAccErrFortyNinetySix'] = e(H[('Burgers', 4096)]['accurate']['error_pct'])
     mac['nBurgDevAccSFortyNinetySix'] = spn(H[('Burgers', 4096)]['accurate']['speedup'])
     mac['nBurgHoldAccSFortyNinetySix'] = spn(H[('Burgers (held-out cases)', 4096)]['accurate']['speedup'])
+if BH5:
+    mac['nBhJzeroRho'] = f"{BH5['j0_rho']:.4f}"; mac['nBhJzeroRhoKtwo'] = f"{BH5['j0_rho_k2']:.4f}"; mac['nBhJoneRho'] = f"{BH5['j1_rho']:.4f}"
+    mac['nBhFastS'] = BH5['fast_s']; mac['nBhFastFom'] = BH5['fast_fom']
+    mac['nBhJoneMsDev'] = f"{BH5['dev6']['j1_ms']:.0f}"; mac['nBhJoneMsHold'] = f"{BH5['hold64']['j1_ms']:.0f}"
+    mac['nBhJoneSDev'] = f"{BH5['dev6']['sp']:.2f}"; mac['nBhJoneSHold'] = f"{BH5['hold64']['sp']:.2f}"
+    mac['nBhJoneCostDev'] = spn(BH5['dev6']['cost']); mac['nBhJoneCostHold'] = spn(BH5['hold64']['cost'])
+    mac['nBhFloorOld'] = f"{BH5['floor_old']:.3f}"; mac['nBhFloorNew'] = f"{BH5['floor_new']:.3f}"
+    mac['nBhBankErr'] = f"{BH5['bank_err']:.3f}"; mac['nBhBankS'] = spn(BH5['bank_s'])
+    mac['nBhSubErrLo'] = f"{BH5['sub_err'][0]:.3f}"; mac['nBhSubErrHi'] = f"{BH5['sub_err'][1]:.3f}"
+    mac['nBhSubSLo'] = spn(BH5['sub_s'][0]); mac['nBhSubSHi'] = spn(BH5['sub_s'][1])
+    for cohort, coh in (('dev6', 'development'), ('hold64', 'held-out')):
+        rr = [r for r in APPX if r['problem'] == 'Burgers, exact first step' and r['cohort'] == coh][0]
+        assert abs(rr['accurate']['speedup'] - BH5[cohort]['sp']) < 1e-12 and rr['accurate']['speedup'] < 1
 def _sci1(x):
     m_, ex = f'{x:.0e}'.split('e'); return f'{m_}{{\\times}}10^{{{int(ex)}}}'
 mac['nEqcBar'] = f"{EQC['bar']:g}"; mac['nEqcLatConfRho'] = f"{EQC['lat2048']:.4f}"; mac['nEqcLatMargin'] = _sci1(EQC['bar'] - EQC['lat2048'])
@@ -1088,7 +1232,8 @@ assert all(r['speedup'] > 1 for t_ in TUNE for r in t_['rungs'])      # every ru
 
 (HERE / 'tables/headline-provenance.json').write_text(json.dumps(dict(
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '
-         'One named FOM per row from the same allocation, at least as accurate as both settings; speedup = FOM ms / NM-ROM ms. Bold = speedup > 1.',
+         'One named FOM per row from the same allocation, at least as accurate as the accurate setting; speedup = FOM ms / NM-ROM ms. '
+         'Exception: the 4096^2 Burgers fast column divides the fastest tested same-allocation setting at least as accurate as that fast setting (bh5 grid, same job). Bold = speedup > 1.',
     sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()},
     heat_appendix_rows=HEAT_APPX, heat_facts=HH, tunability=TUNE, incoming=INCOMING, nmrom_baselines=appx_nb, burgers_facts={f'{k[0]}|{k[1]}' if isinstance(k, tuple) else k: v for k, v in HB.items() if not (isinstance(k, tuple) and k[1] in ('coarse', 'acc'))}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
 print(f'Headline: {len(ROWS)} rows, {mac["nHeadFasterRows"]} with a faster NM-ROM setting; {len(F)} failure rows; all snapshots hash-verified.')

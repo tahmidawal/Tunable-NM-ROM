@@ -1,6 +1,38 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-22 (paper lane) — Heat 3D new bank into Table 1; NS follow-up sentence — CURRENT HANDOFF
+## 2026-09-22 (paper lane) — Burgers 4096² quadrature re-test; fast-column denominator; wider bank — CURRENT HANDOFF
+
+Source: branch `exp/2026-09-21-burgers-heldout` @ 3771cacf, read as committed blobs and pinned in
+`evidence/headline-2026-09-20/` (`bh5_summary`, `bh5_eqcert`, `bh_summary`; DESIGN.md, HANDOFF.md and the two
+reports as `companion_blobs` of `bh_summary`, with sha256). `gen_headline.py --refresh` now records `git_blob`
+and companion hashes. The wider-bank lane did not improve held-out accuracy, so the last "results incoming"
+slot is gone (asserted empty).
+- **Table 1, 4096² Burgers accurate rows kept** (dev6 0.60 % at 4.87×; hold64 1.33 % at 5.38×, from the
+  hires-burgers jobs). Marker ℓ stays on the 2048² rows. New marker w: the 63×63 lattice rule passes five
+  held-out draws and fails the confirmation draw (ρmax 0.1173 against the bar 0.116). From time step 2 the
+  same draw is 0.0147. Validated on held-out reached states, not confirmed on re-draws.
+- **Fast column:** 12.9× / 13.2× divided the accurate row's Newton setting. Under the per-setting rule on
+  bh5's wider grid, same job, both cohorts are 10.10× against Newton–BiCGStab, tol 10^{-3}, Δt=0.01
+  (`lean_nt1e-3_l1e-3_dt01`). The printed FOM column is still the accurate comparator. Table 4 keeps
+  12.9× / 13.2× because every rung in a block divides one shared FOM; its caption says that q=0 ratio is
+  not Table 1's fast column, and the tunability paragraph no longer quotes it as the fast-row speedup.
+- **Appendix:** the same lattice rule with the first step on the exact residual passes five draws and the
+  confirmation draw (ρmax 0.0513) at the same printed error, in 5308 ms / 6558 ms (0.10× / 0.08× against
+  Newton–BiCGStab at tol 3×10^{-3}; 49.6× / 65.9× the quadrature step in the same job). No confirmed form
+  of this accurate rule is faster. The fast setting's smaller rule does pass and is faster, at higher error.
+  Two appendix timing rows.
+- **Limitations (ii):** the wider bank cuts the 256² selection-cohort projection floor from 0.513 % to
+  0.183 %. Its confirmed 4096² rung is 1.601 % at 6.70× on 64 held-out cases, worse than Table 1. The
+  unconfirmed arms at 0.393–0.458 % run at 1.98–2.21× Newton–BiCGStab (faster, not slower). The binding
+  limit is the correction subspace and the weak test space.
+- **Abstract** (250 words): the 4096² quadrature sentence says validated on held-out reached states but not
+  confirmed on independent re-draws. The accurate speedup claim is unchanged. Intro and conclusion did not
+  claim the 4096² rule was confirmed.
+- Marker definitions moved from the Table 1 caption to Appendix C.1 so the float still fits; nothing removed.
+  check_headline re-derives the fast denominator, the w label, the appendix rows, the ρ and bank macros from
+  the pinned blobs. Both checks pass; main text ends on page 9, References on page 9. PDF 23 pages.
+
+## 2026-09-22 (paper lane) — Heat 3D new bank into Table 1; NS follow-up sentence
 
 Sources (committed blobs, pinned in `evidence/headline-2026-09-20/` with commit, git blob id and SHA256 in the manifest):
 heat3d-bank @55165375 — `heat3db_panel_a` (runs/final01/final01/summary.json, job 4153878), `heat3db_panel_b`

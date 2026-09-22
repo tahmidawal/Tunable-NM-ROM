@@ -2,7 +2,7 @@
 
 *Anonymous submission to ICLR 2027. Every number below is generated from run records by `gen_tables.py`; tables are inlined from `tables-md/` behind an HTML comment naming their id; **[PENDING: …]** marks a lane that has not landed.*
 
-*Status for the reader (generated 2026-09-22 11:30; this block is removed before submission).*
+*Status for the reader (generated 2026-09-22 14:21; this block is removed before submission).*
 *Populated tables (93): T00, T01, T01b, T02, T02b, T02c, T03, T03b, T03c, T03m, T03mb, T03mc, T04, T04b, T04m, T05, T05b, T05c, T05m, T06a, T06b, T07, T08, T08b, T09, T09b, T09c, T09c, T09d, T10, T11a, T11b, T11c, T11d, T11e, T11f, T11g, T11h, T11i, T12, T12b, T13, T13b, T14, T14b, T14c, T14d, T15, T16, T17, T18a, T18b, T18c, T18d, T18m, T19, T20, T20b, T21, TC, TC, TC, TC, TC, TC, TC, TC, TC, TH, TH, TH, TH, TH, TH, TH, TH, TH, TH, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR, TR. Populated does not mean final: the three-dimensional appendix is provisional development evidence.*
 *Pending cells: none. Active experiment status is recorded in the canonical LAB-LOG.md; this manuscript uses a frozen evidence snapshot.*
 *The sealed cohort (T13, b-seeds job 3804465) is the headline for the scheduled ladder; T12 is the development-cohort seed table; the two top EQ rungs are single-draw rules, never certified.*
@@ -13,29 +13,29 @@
 ## Abstract
 
 Neural operators such as Fourier Neural Operators and DeepONets
-typically deliver one (accuracy, speed) operating point per trained
-model; moving it generally requires retraining. We present a
+deliver one (accuracy, speed) operating point per trained
+model; moving it requires retraining. We present a
 nonlinear-manifold reduced-order model (NM-ROM) for Poisson, heat and
 viscous Burgers equations that exposes a deployment-time accuracy–speed
-tradeoff from a single trained decoder, controlled at inference time by
+tradeoff from one trained decoder, set by
 the correction rank $q$ (accuracy) and the solver tolerance, budget and
 empirical-quadrature rule (cost). The framework combines a frozen coordinate-network spatial
-bank with a small nonlinear head and nested correction directions; exact
+bank with a nonlinear head and nested correction directions; exact
 Dirichlet enforcement in the bank; least-squares
 Petrov–Galerkin projection of the discrete residual onto fixed weak
 tests, with every linear operator preassembled; matrix-free JAX
-evaluation; and NNLS empirical quadrature for the Burgers advection,
-validated on held-out reached states. Across Poisson and heat in two and
+evaluation; and NNLS empirical quadrature for Burgers advection.
+The $4096^2$ quadrature rule is validated on held-out reached states but not confirmed on independent re-draws. Across Poisson and heat in two and
 three dimensions, and viscous Burgers in two, at meshes up to $4096^2$,
 the frozen model keeps its accuracy as the two-dimensional mesh is
-refined, so its speedup over the named iterative solvers grows, reaching $\nHiresPoissonAccSFortyNinetySix\times$ at
+refined, so its speedup over the named iterative solvers reaches $\nHiresPoissonAccSFortyNinetySix\times$ at
 $\nHeadPoissonAccErr %$ error against conjugate gradients on Poisson,
 $\nHeatWideAccS\times$ at $\nHeatWideAccErr %$ against Crank–Nicolson
 CG on a sealed held-out heat cohort, and $\nBurgDevAccSFortyNinetySix\times$ at
 $\nBurgDevAccErrFortyNinetySix %$ on Burgers against Newton–BiCGStab
 ($\nBurgHoldAccSFortyNinetySix\times$ at
 $\nBurgHoldAccErrFortyNinetySix %$ on held-out cases); at matched latent
-dimension its fast setting is far more accurate than a reproduced
+dimension its fast setting is more accurate than a reproduced
 shallow-masked-autoencoder NM-ROM and POD-LSPG. The named solvers remain
 more accurate; three-dimensional heat meets its accuracy target but
 beats CN–CG only with a batched fit at $128^3$, and three-dimensional Burgers, Navier–Stokes and full-state waves miss
@@ -453,40 +453,13 @@ retrained between them. Error is the worst relative $L^2$ error over the
 cohort (%). Speedup is the FOM's median time divided by the NM-ROM's in
 the same GPU allocation, **bold** where the NM-ROM is faster. The
 FOM is the named iterative solver at its fastest tested setting that is at
-least as accurate as the accurate setting. $^{f}$ held-out final cohort
-(all others development);
-$^{r}$ error against a refined reference, which includes discretisation
-error (all others same-grid); $^{t}$ all output times including
-$t=0$; $^{e}$ evolved output times only; $^{c}$ complete-query time
-with host transfers (all others GPU query; heat was measured in GPU query
-only). Heat (wide bank) is a separately trained frozen model with a
-128-function bank ($q=32$ accurate); over evolved times its accurate
-error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
-batched; the batched fit: Table 8); Heat (new
-bank) ($q=\nHeatNewQ$ accurate; Table 15): at most $\nHeatNewAccEvolved %$
-($\nHeatNewBatchedAccEvolved %$ batched) over evolved times;
-$^{n}$ \nHeatNewNonstat solve (one step of one case) missed its
-stationarity rule, so no speedup is given. Burgers accurate
-quadrature: $^{s}$ stored rule of job 3780164
-($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table 17),
-not confirmed on re-draws: it fails the confirmation draw at $256^2$;
-$^{x}$ its nodes with weights refit at $512^2$
-($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
-unrefit weights they pass \nEqcScaledPassFiveTwelve of
-\nEqcScaledDrawsFiveTwelve re-draws); $^{\ell}$ $63{\times}63$
-lattice rule, thin margin: it clears the re-draw bar at $2048^2$ by only
-$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs. $\nEqcBar$);
-$^{v}$ confirmed by the pre-registered re-draw procedure ($1024^2$: thin
-margin, $\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$,
-Appendix C.1); $^{d}$ dense residual. The earlier Burgers model has one setting and
-may exit on a stall; its rule-selected FOM is the relaxed Newton setting
-($10^{-2}/0.5$), and its tight-setting ratio is in
-Table 8 with the other rows' tight ratios; the
-FOM setting can differ between meshes of a series. $^{h}$ 64 held-out cases never used for
-selection (not the sealed final cohort); at $2048^2$ the development-chosen
-$M=544$ setting was not run on them, so the $M=1088$ setting is shown. Poisson (dev. sources) rows use development sources of a
-separate run and are not the held-out cohort. Dashes mark settings not
-measured. Times, settings and complete-query speedups: Table 8.
+least as accurate as the accurate setting. At $4096^2$ the Burgers fast
+column instead divides \nBhFastFom, the fastest tested setting at least
+as accurate as that fast setting; the FOM column stays the accurate
+comparator. Marker definitions, the heat evolved-time errors and the
+quadrature labels are in Appendix C.1. Dashes mark
+settings not measured. Times, settings and complete-query speedups:
+Table 8.
 
 <!-- table: TH_headline -->
 | Problem | Mesh | Accurate err. (%) | Accurate speedup | Fast err. (%) | Fast speedup | FOM err. (%) | FOM |
@@ -512,13 +485,12 @@ measured. Times, settings and complete-query speedups: Table 8.
 | Burgers 2D (development) | 512^2 | 0.55^{x} | 0.068× | 2.14 | **1.31×** | 0.052 | Newton–BiCGStab, tol 10^{-3} |
 | Burgers 2D (development) | 1024^2 | 0.59^{d} | 0.0037× | 2.29 | **2.02×** | 0.034 | Newton–BiCGStab, tol 10^{-4} |
 | Burgers 2D (development; 6 cases, arm chosen here) | 2048^2 | 0.87^{\ell} | 0.99× | 2.37 | **4.16×** | 0.049 | Newton–BiCGStab, tol 3{\times}10^{-3} |
-| Burgers 2D (development; 6 cases, arm chosen here) | 4096^2 | 0.60^{\ell} | **4.87×** | 2.41 | **12.9×** | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |
+| Burgers 2D (development; 6 cases, arm chosen here) | 4096^2 | 0.60^{w} | **4.87×** | 2.41 | **10.10×** | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 2048^2 | 1.31^{\ell} | **1.43×** | 9.03 | **5.63×** | 0.13 | Newton–BiCGStab, tol 10^{-3} |
-| Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 4096^2 | 1.33^{\ell} | **5.38×** | 9.03 | **13.2×** | 0.14 | Newton–BiCGStab, tol 3{\times}10^{-3} |
+| Burgers (held-out cases) 2D (held-out; 64 cases, one timing repetition) | 4096^2 | 1.33^{w} | **5.38×** | 9.03 | **10.10×** | 0.14 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers, confirmed rule 2D (development; re-drawn quadrature rule) | 512^2 | 0.56^{v} | 0.091× | 2.14 | 0.75× | 0.050 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers, confirmed rule 2D (development; re-drawn quadrature rule) | 1024^2 | 0.59^{v} | 0.32× | 2.29 | **1.39×** | 0.048 | Newton–BiCGStab, tol 3{\times}10^{-3} |
 | Burgers (earlier model) 2D (development; earlier model, stalled exits permitted) | 1024^2 | — | — | 3.91 | **1.63×** | 2.39 | Newton–BiCGStab, relaxed |
-| Burgers (wider learned bank), held-out 64 2D | 2048^2, 4096^2 | results incoming |  |  |  |  | lane burgers-heldout |
 | Poisson 3D (accepted final) | 32^3 | 0.26 | 0.94× | 1.40 | 0.99× | 0.16 | CG, rtol 10^{-2} |
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
 | Poisson (dev. sources) 3D (development) | 128^3 | 0.16 | **6.75×** | 0.55 | **6.98×** | 0.075 | CG, rtol 10^{-2} |
@@ -565,17 +537,21 @@ reaches $\nBurgDevAccErrFortyNinetySix %$ and is
 $\nBurgDevAccSFortyNinetySix\times$ faster than the fastest Newton setting
 at least as accurate; on 64 held-out cases the same setting gives
 $\nBurgHoldAccErrFortyNinetySix %$ at
-$\nBurgHoldAccSFortyNinetySix\times$ (audit note in
-Appendix C.1); a re-timing with a wider-margin
-quadrature rule (first step exact) and a wider, held-out-tested bank are in progress (results
-incoming).
+$\nBurgHoldAccSFortyNinetySix\times$.
+The lattice rule of those rows passes five held-out draws and fails the
+confirmation draw, so it is validated on held-out reached states and not
+confirmed on independent re-draws (Appendix C.1).
+The fast setting is $\nBhFastS\times$ on both cohorts against the Newton
+setting matched to its own error.
 
 **Resolution.**
 Table 1 shows that the NM-ROM query time grows more
 slowly with the mesh than the iterative FOM's: in every series the
 fast-setting speedup rises with resolution against the FOM setting
 selected per row (fastest tested setting at least as accurate as the
-accurate NM-ROM; it may change with the mesh), and against one fixed
+accurate NM-ROM, except the $4096^2$ Burgers fast column, which divides
+the setting matched to the fast error; the comparator may change with
+the mesh), and against one fixed
 tight setting where a series timed one (Table 8).
 
 **Table 2.** Other nonlinear-manifold ROMs on the shared Burgers 2D family at
@@ -664,8 +640,10 @@ development (6 cases) and held-out (64 cases, never used for selection)
 share settings; heat uses the sealed held-out cohort, Poisson
 development sources. On Burgers $q$ and $M$ change together
 ($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
-Table 12), $q>0$ with the lattice rule
-($^{\ell}$ in Table 1); heat and Poisson vary $q$ only.
+Table 12), $q>0$ with the lattice rule marked
+$^{w}$ in Table 1. Speedups in a block share the FOM
+row, so the $q=0$ ratio is not Table 1's fast column.
+Heat and Poisson vary $q$ only.
 $^{\star}$ looser stopping tolerance; $^{\dagger}$ quadrature rule
 failed its held-out check.
 
@@ -714,9 +692,12 @@ error (Appendix Table 14). The iteration cap
 is a safeguard, not a control; a truncated solve fails.
 
 On Burgers at $4096^2$ the correction rank is a genuine accuracy–cost
-tradeoff, and every tested setting is faster than the named solver
+tradeoff. Table 4 compares every setting with one
+shared Newton setting
 ($\nTuneBurgDevSpeedMin$–$\nTuneBurgDevSpeedMax\times$ on development
-cases, Table 4); on the linear problems the
+cases). Table 1's fast column is a different comparison:
+$\nBhFastS\times$ on both cohorts against the Newton setting matched to
+the fast error. On the linear problems the
 corrections are eliminated analytically, so accuracy improves at nearly
 constant cost.
 
@@ -739,9 +720,17 @@ NM-ROM in every row, and on heat at $4096^2$ the linear solve in the
 learned bank, a baseline ($\nHeatLinErr %$ in $\nHeatLinMs$ ms), is
 faster than every NM-ROM setting, as it is in three dimensions
 ($\nHeatNewLinErr %$ in $\nHeatNewLinMs$ ms at $128^3$).
-(ii) Accuracy is bounded by the frozen bank: Burgers development
-accuracy does not carry to held-out cases (the free solve in the same
-512-function bank reaches only $\nBurgBankFloorConfirm %$ there); the
+(ii) A wider Burgers bank cuts the $256^2$ projection floor from
+$\nBhFloorOld %$ to $\nBhFloorNew %$ on its selection cohort, but its
+confirmed rung is less accurate on 64 held-out cases
+($\nBhBankErr %$ at $\nBhBankS\times$) than the bank in
+Table 1, and the unconfirmed arms at
+$\nBhSubErrLo$–$\nBhSubErrHi %$ run at
+$\nBhSubSLo$–$\nBhSubSHi\times$ Newton–BiCGStab.
+The binding limit is the correction subspace and the weak test space,
+not the bank. Held-out accuracy still does not carry over from
+development cases (the free solve in the 512-function bank reaches only
+$\nBurgBankFloorConfirm %$); the
 Poisson errors sit near the bank floor ($\nHiresFloorSquare %$ square,
 $\nHiresFloorCube %$ cube); the L-shape ($\nHiresLshapeAccErr %$ against
 a floor of $\nHiresLshapeFloor %$) is limited by the head.
@@ -1205,6 +1194,43 @@ in the last column (code constants, not run outputs).
 
 <!-- section sources: none (prose only) -->
 
+Table 1 markers.
+$^{f}$ held-out final cohort (all others development);
+$^{r}$ error against a refined reference, which includes discretisation
+error (all others same-grid); $^{t}$ all output times including
+$t=0$; $^{e}$ evolved output times only; $^{c}$ complete-query time
+with host transfers (all others GPU query; heat was measured in GPU query
+only). Heat (wide bank) is a separately trained frozen model with a
+128-function bank ($q=32$ accurate); over evolved times its accurate
+error is $\nHeatWideAccEvolved %$ ($\nHeatWideBatchedAccEvolved %$
+batched; the batched fit: Table 8); Heat (new
+bank) ($q=\nHeatNewQ$ accurate; Table 15): at most $\nHeatNewAccEvolved %$
+($\nHeatNewBatchedAccEvolved %$ batched) over evolved times;
+$^{n}$ \nHeatNewNonstat solve (one step of one case) missed its
+stationarity rule, so no speedup is given. Burgers accurate
+quadrature: $^{s}$ stored rule of job 3780164
+($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table 17),
+not confirmed on re-draws: it fails the confirmation draw at $256^2$;
+$^{x}$ its nodes with weights refit at $512^2$
+($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
+unrefit weights they pass \nEqcScaledPassFiveTwelve of
+\nEqcScaledDrawsFiveTwelve re-draws); $^{\ell}$ $63{\times}63$
+lattice rule at $2048^2$, thin margin: it clears the re-draw bar by only
+$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs. $\nEqcBar$);
+$^{w}$ the same rule at $4096^2$: five held-out draws pass and the
+confirmation draw does not; $^{v}$ confirmed by the pre-registered
+re-draw procedure ($1024^2$: thin margin,
+$\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$);
+$^{d}$ dense residual. The earlier Burgers model has one setting and
+may exit on a stall; its rule-selected FOM is the relaxed Newton setting
+($10^{-2}/0.5$), and its tight-setting ratio is in
+Table 8 with the other rows' tight ratios; the
+FOM setting can differ between meshes of a series. $^{h}$ 64 held-out
+cases never used for selection (not the sealed final cohort); at $2048^2$
+the development-chosen $M=544$ setting was not run on them, so the
+$M=1088$ setting is shown. Poisson (dev. sources) rows use development
+sources of a separate run and are not the held-out cohort.
+
 Table 8 gives the settings and measured times
 behind every row of Table 1. Every cost and error come
 from the same invocation. Timings use GPU warm-up and synchronisation,
@@ -1222,7 +1248,7 @@ re-draw procedure (its pick failed the confirmation draw), so
 Table 1 has no confirmed-rule row there; a post-hoc
 follow-up rule with an exact first time step passes all
 \nEqcFollowDraws draws of two jobs and gives $\nEqcFollowErr %$ at
-$\nEqcFollowS\times$ against the same Newton–BiCGStab rule. For Burgers at $4096^2$, copying the six
+$\nEqcFollowS\times$ against the same Newton–BiCGStab rule. For Burgers at $4096^2$, the lattice rule of the accurate rows passes five held-out draws and fails the confirmation draw ($\rho_{\max}=\nBhJzeroRho$ against the bar $\nEqcBar$). From time step 2 the same draw is $\rho_{\max}=\nBhJzeroRhoKtwo$, so the miss is in the first steps: the rule is validated on held-out reached states and not confirmed on re-draws. The same rule with the first time step on the exact residual passes all five draws and the confirmation draw ($\rho_{\max}=\nBhJoneRho$) at the same printed error, in $\nBhJoneMsDev$ ms on the six development cases and $\nBhJoneMsHold$ ms on the 64 held-out cases ($\nBhJoneSDev\times$ and $\nBhJoneSHold\times$ against Newton–BiCGStab; $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$ the quadrature-step cost in the same job; Table 8). That form is slower than the full-order solver on both cohorts. No confirmed form of this accurate lattice rule is also faster. The fast setting's smaller rule passes the confirmation draw and is faster, at higher error. For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$ ms to every arm. The Poisson and three-dimensional heat CG comparators are
 unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
@@ -1243,8 +1269,11 @@ structure of the heat equation (eigenfunction tests). Rows from the
 paired-CG record list the one full-order setting that record retains,
 itself chosen by the same rule.
 $^{\ast}$ not in Table 1: a re-measurement of the row
-above it, or a development-source run at a mesh whose held-out row is in
-Table 1.
+above it, a development-source run at a mesh whose held-out row is in
+Table 1, or the confirmed first-step form of the
+$4096^2$ Burgers lattice rule. The $4096^2$ Burgers fast speedup in
+Table 1 does not divide the Newton time printed here;
+it divides \nBhFastFom.
 
 <!-- table: TH_headline_times -->
 | Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM setting | FOM ms | Timing | Other scope or FOM: acc. / fast | Status |
@@ -1274,6 +1303,8 @@ Table 1.
 | Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.73 | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
 | Burgers (held-out cases) 2D | 2048^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 114.91 | 29.19 | Newton–BiCGStab, tol 10^{-3} | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | held-out |
 | Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 40.60 | Newton–BiCGStab, tol 3{\times}10^{-3} | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
+| Burgers, exact first step 2D^{\ast} | 4096^2 | q=256, M=1088, EQ lattice m=3969, first step exact | — | 5308.00 | — | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.76 | GPU query | — | confirmed rule |
+| Burgers, exact first step 2D^{\ast} | 4096^2 | q=256, M=1088, EQ lattice m=3969, first step exact | — | 6557.77 | — | Newton–BiCGStab, tol 3{\times}10^{-3} | 536.84 | GPU query | — | confirmed rule |
 | Burgers, confirmed rule 2D | 512^2 | q=256, M=1088, EQ lattice m=3969, first step exact | q=0, M=64, EQ m=1024 | 194.97 | 23.62 | Newton–BiCGStab, tol 3{\times}10^{-3} | 17.74 | GPU query | — | development |
 | Burgers, confirmed rule 2D | 1024^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 108.58 | 25.00 | Newton–BiCGStab, tol 3{\times}10^{-3} | 34.69 | GPU query | — | development |
 | Burgers (earlier model) 2D | 1024^2 | — | single | — | 41.68 | Newton–BiCGStab, relaxed | 68.04 | GPU query | — | development |

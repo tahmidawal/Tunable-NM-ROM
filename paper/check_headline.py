@@ -14,7 +14,12 @@ for r in prov['rows']:
     for s in ('fast', 'accurate'):
         x = r[s]
         if not x: continue
-        assert abs(r['fom']['ms'] / x['ms'] - x['speedup']) < 1e-12          # same-row ratio only
+        fo = x.get('own_fom')
+        if fo:                                                                  # 4096^2 Burgers fast column: its own denominator
+            assert abs(fo['ms'] / fo['rom_ms'] - x['speedup']) < 1e-12
+            assert abs(fo['rom_err'] - x['error_pct']) < 1e-6          # same fast setting; its time is this job's, not the row's
+        else:
+            assert abs(r['fom']['ms'] / x['ms'] - x['speedup']) < 1e-12        # same-row ratio only
         assert r['fom']['error_pct'] <= x['error_pct']                        # named FOM at least as accurate
         bold += x['speedup'] > 1
         series[(r['problem'], r['dim'], s)].append((r['intervals'], x['speedup']))
@@ -37,10 +42,9 @@ for r in prov['rows']:
 hb = {(r['problem'], r['intervals']) for r in prov['rows'] if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
 assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (2048, 4096)}, hb
 assert 'pending:' not in tex and 'reserved' not in tex
-# 2026-09-21 user decision: exactly three "results incoming" slots (paused lanes), no number in them
-_inc = [l for l in tex.splitlines() if 'results incoming' in l]
-assert len(_inc) == 1 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
-assert {i['lane'] for i in prov['incoming']} == {'burgers-heldout'}
+# 2026-09-22: the last incoming slot (burgers-heldout) is closed; the wider bank is a limitations sentence
+assert prov['incoming'] == []
+assert 'results incoming' not in tex and 'results incoming' not in (P / 'main.tex').read_text()
 # 2026-09-21 burgers-eqcert intake (audited blobs @176b2a9a): re-derive the confirmed-rule rows, the FOM rule and every label number
 _eq = {k: json.loads((P / f'evidence/headline-2026-09-20/{k}.json').read_bytes()) for k in man if k.startswith('eqcert_')}
 assert set(_eq) == {'eqcert_summary', 'eqcert_bc256', 'eqcert_bc256b', 'eqcert_bc512', 'eqcert_bc1024', 'eqcert_bc2048b'}
@@ -179,5 +183,72 @@ for s_ in prov['tunability']:
         assert hits, (s_['series'], r_['arm']); _n += 1
     assert any('FOM:' in l and ' & '.join([_g.e(fm['err']), _g.ms(fm['ms'])]) in l for l in _rows), s_['series']
 assert _n == sum(len(s_['rungs']) for s_ in prov['tunability'])
+# 2026-09-22 burgers-heldout intake (audited blobs @3771cacf): 4096^2 quadrature label, fast-column denominator, confirmed variant, wider bank
+import subprocess as _sp
+def _blob(v, rel=None):
+    spec = f"{v['commit']}:{rel or v['path']}"
+    raw = _sp.check_output(['git', '-C', str(P.parent / v['tree']), 'show', spec])
+    bid = _sp.check_output(['git', '-C', str(P.parent / v['tree']), 'rev-parse', spec]).decode().strip()
+    return raw, bid
+_bh = {}
+for k in ('bh5_summary', 'bh5_eqcert', 'bh_summary'):
+    v = man[k]; raw, bid = _blob(v)
+    assert v['commit'].startswith('3771cacf') and v['read'] == 'committed blob' and bid == v['git_blob']
+    assert hashlib.sha256(raw).hexdigest() == v['sha256']
+    _bh[k] = json.loads(raw)
+assert _bh['bh_summary']['sources_sha256']['bh5-summary.json'] == man['bh5_summary']['sha256']
+assert _bh['bh_summary']['sources_sha256']['bh5-eqcert-summary.json'] == man['bh5_eqcert']['sha256']
+for label, rel in (('DESIGN.md', 'experiments/burgers-heldout/DESIGN.md'), ('HANDOFF.md', 'experiments/burgers-heldout/HANDOFF.md'),
+                   ('reports/2026-09-21-burgers-heldout.md', 'experiments/burgers-heldout/reports/2026-09-21-burgers-heldout.md'),
+                   ('reports/tables.generated.md', 'experiments/burgers-heldout/reports/tables.generated.md')):
+    raw, bid = _blob(man['bh_summary'], rel)
+    assert bid == man['bh_summary']['companion_blobs'][label] and hashlib.sha256(raw).hexdigest() == man['bh_summary']['companion_sha256'][label]
+_paper = 'q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2'
+_exact, _fast = _paper + '_x1', 'q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2'
+_st = _bh['bh5_eqcert']['arm_status']
+assert _st[_paper]['draws_passed'] == 5 and not _st[_paper]['confirmation_pass'] and _st[_exact]['confirmation_pass'] and _st[_exact]['exact_steps'] == 1
+assert _st[_fast]['confirmation_pass'] and _st[_fast]['status'] == 'confirmed'
+assert _m('nBhJzeroRho') == f"{_st[_paper]['confirmation_heldout_rho_max_k>=0']:.4f}"
+assert _m('nBhJzeroRhoKtwo') == f"{_st[_paper]['confirmation_heldout_rho_max_k>=2']:.4f}"
+assert _m('nBhJoneRho') == f"{_st[_exact]['confirmation_heldout_rho_max_k>=1']:.4f}"
+def _pick(table, err):
+    ok = {k: v for k, v in table.items() if v['family'] == 'fom' and v['mesh'] == 4096 and v['nonlinear_converged'] and v['stalled_steps'] == 0 and v['worst_evolved_percent'] <= err + 1e-12}
+    return min(ok, key=lambda k: ok[k]['median_gpu_ms'])
+_own = []
+for cohort, problem in (('dev6', 'Burgers'), ('hold64', 'Burgers (held-out cases)')):
+    table = _bh['bh5_summary']['groups'][cohort]['table']
+    r = [x for x in prov['rows'] if x['problem'] == problem and x['intervals'] == 4096][0]
+    assert r['accurate']['eq'] == 'lattice-unconfirmed' and r['accurate']['arm'] == _paper and r['fast']['arm'] == _fast
+    fq = table[_fast]; fp = _pick(table, fq['worst_evolved_percent']); fo = table[fp]
+    assert fp == 'lean_nt1e-3_l1e-3_dt01' and r['fast']['own_fom']['arm'] == fp
+    assert abs(fo['median_gpu_ms'] / fq['median_gpu_ms'] - r['fast']['speedup']) < 1e-12
+    assert f"{r['fast']['speedup']:.2f}" == '10.10' and abs(r['accurate']['speedup'] - r['fom']['ms'] / r['accurate']['ms']) < 1e-12
+    _own.append(r['fast']['speedup'])
+    j1 = table[_exact]; ap = _pick(table, j1['worst_evolved_percent']); af = table[ap]
+    rr = [x for x in prov['appendix_only_rows'] if x['problem'] == 'Burgers, exact first step' and x['cohort'] == ('development' if cohort == 'dev6' else 'held-out')][0]
+    assert rr['accurate']['arm'] == _exact and rr['fom']['arm'] == ap == 'lean_nt3e-3_l3e-3_dt005'
+    assert rr['accurate']['ms'] == j1['median_gpu_ms'] and rr['fom']['ms'] == af['median_gpu_ms'] and rr['accurate']['speedup'] < 1
+    assert abs(rr['accurate']['speedup'] - af['median_gpu_ms'] / j1['median_gpu_ms']) < 1e-12
+assert _m('nBhFastS') == '10.10' and tex.count(r'\textbf{10.10$\times$}') == 2 and tex.count(r'$^{w}$') == 2
+assert '12.9' not in tex and '13.2' not in tex
+for cohort, ms_name, s_name in (('dev6', 'nBhJoneMsDev', 'nBhJoneSDev'), ('hold64', 'nBhJoneMsHold', 'nBhJoneSHold')):
+    rr = [x for x in prov['appendix_only_rows'] if x['problem'] == 'Burgers, exact first step' and x['cohort'] == ('development' if cohort == 'dev6' else 'held-out')][0]
+    assert _m(ms_name) == f"{rr['accurate']['ms']:.0f}" and _m(s_name) == f"{rr['accurate']['speedup']:.2f}"
+    j0 = _bh['bh5_summary']['groups'][cohort]['table'][_paper]['median_gpu_ms']
+    assert _m('nBhJoneCost' + ('Dev' if cohort == 'dev6' else 'Hold')) == (f"{rr['accurate']['ms'] / j0:.1f}" if rr['accurate']['ms'] / j0 >= 10 else f"{rr['accurate']['ms'] / j0:.2f}")
+_sel = _bh['bh_summary']['bank_selection']
+assert _m('nBhFloorOld') == f"{100 * _sel['incumbent_floor']:.3f}" and _m('nBhFloorNew') == f"{100 * _sel['chosen_floor']:.3f}" and _sel['chosen_floor'] < 0.5 * _sel['incumbent_floor']
+_hold = [r_ for r_ in _bh['bh_summary']['rows'] if r_['job'] == 'bh3' and r_['cohort'] == 'hold64' and str(r_['role']).startswith('headline')][0]
+assert _m('nBhBankErr') == f"{_hold['worst_evolved_percent']:.3f}" and _m('nBhBankS') == (f"{_hold['speedup']:.2f}" if _hold['speedup'] < 10 else f"{_hold['speedup']:.1f}")
+_subs = [r_ for r_ in _bh['bh_summary']['rows'] if r_['mesh'] == 4096 and r_['cohort'] in ('hold64', 'fresh64') and r_['q'] > 0 and not r_['certified'] and r_['worst_evolved_percent'] < 0.5]
+assert _subs and all(r_['speedup'] > 1 for r_ in _subs)
+assert _m('nBhSubErrLo') == f"{min(r_['worst_evolved_percent'] for r_ in _subs):.3f}" and _m('nBhSubErrHi') == f"{max(r_['worst_evolved_percent'] for r_ in _subs):.3f}"
+assert _m('nBhSubSLo') == f"{min(r_['speedup'] for r_ in _subs):.2f}" and _m('nBhSubSHi') == f"{max(r_['speedup'] for r_ in _subs):.2f}"
+_abs = (P / 'main.tex').read_text().split(r'\begin{abstract}')[1].split(r'\end{abstract}')[0]
+assert 'not confirmed on independent re-draws' in _abs and r'\nBurgDevAccSFortyNinetySix' in _abs and r'\nBurgHoldAccSFortyNinetySix' in _abs
+_body = (P / 'main.tex').read_text() + (P / 'sections/appendix.tex').read_text()
+for name in ('nBhFastS', 'nBhJzeroRho', 'nBhJoneRho', 'nBhJoneMsDev', 'nBhJoneSDev', 'nBhBankErr', 'nBhFloorNew', 'nBhSubSLo'):
+    assert '\\' + name in _body, name
+assert 'No confirmed form of this accurate lattice rule is also faster.' in (P / 'sections/appendix.tex').read_text()
 print(json.dumps(dict(passed=True, rows=len(prov['rows']), bold_speedups=bold, failure_rows=len(fails), figure_points=sum(len(v) for v in fig['series'].values()),
                       pending_lane_slots=tex.count('pending:'), abstract_macros=sorted(macros)), indent=2))

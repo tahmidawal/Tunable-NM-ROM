@@ -1,0 +1,14 @@
+{
+  "attempt": "don01",
+  "job_id": "4179556",
+  "job_name": "ctol_don_don01",
+  "source_commit": "eabafdff1cad26622c71bce81f298eca1a7aedd1",
+  "remote": "/cluster/tufts/paralab/tawal01/opsdon_20260922/don01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 04:40:00",
+  "submitted_utc": "2026-09-22T21:36:30.872434+00:00",
+  "queue_before": "one owned job, another lane's (4179247 opt_opt101); none of this lane's",
+  "queue_after": "exactly one job in this lane's namespace (4179556 don01) and one directory for it",
+  "manifest_verified_remotely": "29 files, sha256sum -c passed before submission",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged",
+  "design": "DESIGN.md \u00a73 and specs/don01.json; audit disposition \u00a7A2"
+}

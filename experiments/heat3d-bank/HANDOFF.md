@@ -64,3 +64,10 @@ Frozen panel A, sealed 921099 (64 cases), config `configs/final256.json`, DESIGN
   Fixed by STORING the bank as row blocks (no slicing). Parity vs committed 64³ numbers 7.5e-15 (1 block and 7 forced blocks).
 - Ready to run: `cluster/submit.sh final256c h200 06:00:00 240G - - final256.json` (frozen panel A, sealed 921099, 64 cases).
   Needs a new job authorisation (the 2 extra jobs are spent). Memory after the fix at 256³: 8 blocks x 5.3 GB = 42 GB, no duplicate.
+
+## 2026-09-22 — 256³ DONE: final256c (job 4175680) collected, all checks passed, remote removed, namespace empty, nothing running
+Frozen panel A at 256³, sealed 921099, 64 cases x 5 reps, one H200. `runs/final256c/final256/summary.json`, table `runs/final256c/FINAL-TABLE.md`.
+Accurate q288: direct 0.1138 % all-times / 0.0258 % evolved in 26.42 ms = 12.49x named CN-CG (330.02 ms) and 6.74x the paper-rule FOM
+(dt 0.025 rtol 1e-4, 0.0823 %, 178.07 ms) -> BOTH bars met at 256³; CN 0.1137 % in 77.71 ms = 4.25x named, 2.29x rule (2 non-stationary exits).
+Fast q0: 2.0042 %, direct 26.99 ms (12.23x named). Linear-bank control 0.0696-0.0698 % in 11.6-21.7 ms (baseline, not the NM-ROM).
+Query profile (q288 direct): encode 11.0 + init 1.9 + evolve 2.6 + decode 10.7 ms -> now bank-read (memory) bound, not solver bound.

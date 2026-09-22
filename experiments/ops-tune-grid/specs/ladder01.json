@@ -1,6 +1,6 @@
 {
   "job_name": "opstune_ladder01",
-  "time": "20:00:00",
+  "time": "16:00:00",
   "pde": "burgers",
   "prefix": "lad",
   "family": "unet",
@@ -78,12 +78,12 @@
       "name": "unet-n4608-long",
       "config": "code/configs/unet/medium.json",
       "train_index": "data/trainbig/index-04608.json",
-      "seconds": 8000.0
+      "seconds": 9000.0
     }
   ],
   "refine_learning_rate": null,
-  "per_arm_seconds": 4000.0,
-  "global_seconds": 66000.0,
+  "per_arm_seconds": 3000.0,
+  "global_seconds": 54000.0,
   "reserve_seconds": 2500.0,
   "data_source": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/cache",
   "data_dirs": [
@@ -93,7 +93,7 @@
     "trainbig"
   ],
   "train_index": "data/train/index.json",
-  "design": "Error versus training-set size at 128 / 512 / 2048 / 4608 cases for all three families, using each family PUBLISHED reference configuration unchanged so that the ONLY thing varying across a ladder is the number of training cases (DESIGN 5.3). Every rung draws from the same cheap-fidelity bank, so fidelity is constant along a ladder. unet-pinned128 is control G2: the same configuration, the same budget and the same 128 physical cases at the PINNED 4096 reference fidelity, which measures the target-fidelity effect at fixed data size. unet-n4608-long doubles the wall at the top rung to test whether the budget binds there. Equal 4000 s wall per rung; at fixed batch size that is very nearly equal optimisation steps, so a rung differs from its neighbours in the data the same number of gradient steps is drawn from.",
+  "design": "Error versus training-set size at 128 / 512 / 2048 / 4608 cases for all three families, using each family PUBLISHED reference configuration unchanged so that the ONLY thing varying across a ladder is the number of training cases (DESIGN 5.3). Every rung draws from the same cheap-fidelity bank, so fidelity is constant along a ladder. unet-pinned128 is control G2: the same configuration, the same budget and the same 128 physical cases at the PINNED 4096 reference fidelity, which measures the target-fidelity effect at fixed data size. unet-n4608-long triples the wall at the top rung to test whether the budget binds there. Equal 3000 s wall per rung -- the PUBLISHED per-arm budget, so the n=128 rung is directly comparable to the published arms as well as to its own ladder; at fixed batch size that is very nearly equal optimisation steps, so a rung differs from its neighbours in the data the same number of gradient steps is drawn from.",
   "disjointness_indices": [
     "data/trainbig/index-04608.json"
   ]

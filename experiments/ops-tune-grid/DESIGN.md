@@ -212,17 +212,29 @@ one a reviewer should weight.
 **Budget: ≤ 1 running GPU job, ≤ 6 total**, `squeue -u tawal01` before and after every submit,
 one directory per job, `gpu` partition only, output under paralab only.
 
-### 5.1 `gen01` — data (≈ 7 h, A100)
+### 5.1 `gen01` — data (≈ 9 h wall, 13 h limit, A100)
 
-In order, writing its index incrementally so a truncated run is still usable:
+In order, writing its report incrementally so a truncated run is still usable:
 
 1. **Reproduction gate** — regenerate `burgers-train-00000` at the pinned 4096 /
-   $1.5625\times10^{-4}$ setting; assert bit-identical to the cached npz. (~135 s)
-2. **G1** — re-solve training indices `0..127` at 1024 / $3.125\times10^{-4}$; record the
-   per-case fixed-initial error against the pinned target. These 128 cases double as the
-   cheap-fidelity 128-case training set used by control G2. (~10 min)
-3. **Bulk** — solve training indices `128..4607` at 1024 / $3.125\times10^{-4}$. (~6.0 h)
+   $1.5625\times10^{-4}$ setting; assert its arrays are identical to the cached case. (~137 s)
+2. **Bulk, indices `0..4607`** at 1024 / $3.125\times10^{-4}$. Indices `0..127` are the same
+   physical cases the published bank holds, so each one also yields **control G1**: its
+   fixed-initial error against its own pinned target. Those 128 cases are then the
+   cheap-fidelity 128-case training set control G2 uses. (~8.7 h)
+3. **The discretisation bar on this lane's own cohort** — solve each of the 32 validation
+   cases *on the 256 grid*, at the anchor's time step and at the panel's, and score by the
+   identical metric against the same pinned reference. This is the 4.03 % qualification of §2
+   measured on validation-32 instead of on the panel's six development cases. (~4 min)
 4. Write prefix indices `index-00128/00512/02048/04608.json` over whatever completed.
+
+**The budget arithmetic, because it is not the obvious one.** The frozen `data.solve` runs a
+**2 s GPU warm-up before every solve**, and the calibration's 4.80 s per case excludes it
+(that timer starts after the warm-up). The real cost is therefore ~6.8 s per case and 4608
+cases need ~8.7 h, not the ~6.1 h a naive 4608 × 4.8 s gives. The warm-up is inside the
+generator this lane reuses byte-identically, so those 2.6 h are a price paid for
+reproducibility, not an inefficiency to remove — removing it would mean forking the frozen
+numerical path, which is the one thing §3.2's gate rests on not doing.
 
 ### 5.2 `grid01` — the tuning grid at the published 128 cases (≈ 16 h, A100)
 
@@ -231,15 +243,26 @@ at exactly the published value. Screen budget **3000 s per arm — the published
 unchanged** — so every arm in this grid is directly comparable to the published arms. §6
 handles the budget question separately rather than by moving this bar.
 
-### 5.3 `ladder01` — error versus training-set size (≈ 18 h, A100)
+### 5.3 `ladder01` — error versus training-set size (≈ 15 h, 16 h limit, A100)
 
-Each family's **`grid01`-selected** configuration, trained at 128 / 512 / 2048 / 4608 cases,
-**4000 s of wall each**. At fixed batch size, equal wall is very nearly equal optimisation
-steps, so a ladder rung differs from its neighbours in the data the same number of gradient
-steps is drawn from — which is the question. Plus control **G2** (§3.2) and one 3× long run
-at the top rung to test whether the budget binds there.
+Each family's **published** configuration — `fno-large`, `unet-medium`, `tsol-small` —
+unchanged, trained at 128 / 512 / 2048 / 4608 cases at the **published 3000 s** per arm.
 
-Jobs 4–6 are held in reserve for failures and for anything §7 says must be re-run.
+**This job runs before `grid01`, and deliberately does not use tuned configurations.** A
+ladder must vary one thing. Putting `grid01`'s winners here would confound tuning with data
+and would also make the data result, which is the reviewer-facing one, wait on the grid.
+Holding the published per-arm budget additionally makes the $n=128$ rung comparable to the
+published arms, not only to its own ladder.
+
+At fixed batch size, equal wall is very nearly equal optimisation steps, so a rung differs
+from its neighbours in **the data the same number of gradient steps is drawn from** — which
+is the question. Every rung draws from the same cheap-fidelity bank, so fidelity is constant
+along a ladder; **control G2** (§3.2) is the same configuration and budget on the same 128
+physical cases at the pinned fidelity, and `unet-n4608-long` triples the wall at the top rung
+to test whether the budget binds there.
+
+Jobs 4–6 are held in reserve for failures and for anything §7 says must be re-run. If the
+budget runs short, `grid01` is the job that gets cut, not `ladder01`.
 
 ### 5.4 The grid, fixed before any job
 

@@ -23,17 +23,28 @@ makes the translation cheap; the co-moving formulation is. The learned-bank arm
 |---|---|---|
 | 4176514 `pilot01` | `configs/pilot01.json` | floors, harness checks, identifiability, arms B0/B1/B2 + ladder, tracker, CNAB2. `results/pilot01.md` |
 | 4176596 `cost02` | `configs/cost02.json` | M and dt sweep at gauge 0 with the per-piece cost split. `results/cost02.md` |
+| 4176669 `mesh03` | `configs/mesh03.json` | exploratory N=64 probe (DESIGN amendment). `results/mesh03.md` |
 
-Both A100, `jax_backend=gpu`, f64, matmul precision highest, one job directory
-each, remote directories deleted after a checksum-verified pull. Budget used: 2
+All A100 (`mesh03` on an 80GB card, the others on 40GB), `jax_backend=gpu`, f64, matmul precision highest, one job directory
+each, remote directories deleted after a checksum-verified pull. Budget used: 3
 of 6. Field `.npy` files are not committed (75 MB each); they live in the session
 scratch and are regenerable from the recorded seeds.
 
 ## Headline
 
-Accuracy **passes** and speed **fails**, so stop rule 3 applies: no sealed draw.
-The sealed seed named in `DESIGN.md` (202609221) has **not** been drawn. Seeds
-202609203 and 202609211 remain closed.
+Accuracy passes comfortably: **0.449 %** evolved worst, 0/16 over the 5 % target,
+against 2.538 % for the centroid tracker on the same cohort and a 0.128 % oracle
+floor. The frame is recovered with **no oracle and no gauge**; the gauge was
+tried at three weights and hurt at all of them.
+
+Speed loses at $N=32$ (**0.232x**, best setting 0.422x) and **crosses at $N=64$**
+(**1.789x** at 2.073 % evolved worst, 0/16 over target). The $N=32$ cost is ~90 %
+generic damped-LM driver overhead, not physics, and that overhead carries no $N$.
+
+Stop rule 3 applied after `pilot01`: **no sealed draw**. `mesh03` was an
+explicitly exploratory DESIGN amendment and carries no licence to open one
+either. Seed **202609221 has not been drawn**; 202609203 and 202609211 remain
+closed.
 
 ## Next
 

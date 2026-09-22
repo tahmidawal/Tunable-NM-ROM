@@ -183,6 +183,10 @@ def audit_arm(folder, rows, data_root):
                 stop_reason=stop_reason(result), wall_budget_seconds=result['wall_budget_seconds'],
                 training_seconds=result['training_seconds'], warmup_epochs=result.get('warmup_epochs', 0),
                 final_learning_rate=history[-1]['learning_rate'],
+                train_loss_at_best=history[result['best_epoch']]['train_mean_squared_relative_error'],
+                train_loss_final=history[-1]['train_mean_squared_relative_error'],
+                epochs_at_minimum_learning_rate=sum(1 for h in history if h['learning_rate'] <= 1.0000001e-5),
+                training_cases=len(json.loads((folder / 'provenance.json').read_text())['train_case_ids']),
                 batched_selection_score=result['validation']['batched_selection_score'],
                 batch1_vs_batch8_selection_gap=selection_gap,
                 best_checkpoint_sha256=result['best_checkpoint_sha256'],
@@ -192,6 +196,20 @@ def audit_arm(folder, rows, data_root):
                 declared_errors=declared, validation_case_ids=[r['case_id'] for r in rows],
                 train_index_sha256=provenance['train_index_sha256'],
                 validation_index_sha256=provenance['validation_index_sha256'])
+
+
+def persistence_baseline(rows, data_root):
+    """The trivial floor a reader needs to size any operator error: predict u(t) = u(0) at every
+    requested output time, scored by the same metric on the same cases. Nothing is trained; this
+    is arithmetic on the archived cases."""
+    per_case = []
+    for row in rows:
+        with np.load(data_root / row['path']) as case:
+            target, supplied = case['target'].copy(), case['input'].copy()
+        prediction = np.repeat(supplied[None], target.shape[0], axis=0)
+        per_case.append(float(fixed_initial_errors(prediction, target).max()))
+    return dict(cases=len(rows), fixed_initial=statistics(per_case), case_maximum_errors=per_case,
+                definition='hold the supplied initial state at every output time; no training, no parameters')
 
 
 def audit_cohort(root, prefix):
@@ -301,6 +319,13 @@ def main(attempt):
     assert set(arms) == expected_arms, (set(arms), expected_arms)
     assert not selection['stopped_by_signal']
     cohort = audit_cohort(root, prefix) if pde == 'burgers' else dict(present=False, note='no matched cohort for Poisson')
+    baseline = {}
+    if pde == 'burgers':
+        baseline['validation-32'] = persistence_baseline(rows, root / 'data/validation')
+        cohort_index = root / 'data/diagnosis-cohort/index.json'
+        if cohort_index.exists():
+            baseline['diagnosis-8'] = persistence_baseline(
+                json.loads(cohort_index.read_text())['records'], cohort_index.parent)
     assert pde == 'poisson' or (cohort['present'] and set(cohort['models']) == expected_arms), 'cohort must be scored for every arm'
     timing = audit_timing(root)
     assert timing['present'] and set(timing['models']) == expected_arms
@@ -310,7 +335,7 @@ def main(attempt):
                   split_hashes_cross_checked_against_archived_manifest=True,
                   identical_split_to_fno_job=True, validation_cases=len(rows),
                   arms=arms, capacity_selection=selection, worker_tasks=worker,
-                  cohort=cohort, timing=timing,
+                  cohort=cohort, timing=timing, persistence_baseline=baseline,
                   metric='maximum over the six requested output times of the interior l2 discrepancy divided by '
                          'the interior l2 norm of the supplied initial field (Burgers lane metric)',
                   passed=bool(arms) and all(a.get('complete') for a in arms.values()),

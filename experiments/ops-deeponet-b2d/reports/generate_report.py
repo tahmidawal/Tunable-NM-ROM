@@ -21,6 +21,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import numpy as np
+
 HERE = Path(__file__).resolve().parent
 LANE = HERE.parent
 WT = LANE.parents[1]
@@ -77,6 +79,11 @@ def arm_records(audit, source, source_sha, cross_job, job_id=None, gpu=None, att
             epochs=r['epochs_completed'], best_epoch=r['best_epoch'], stop_reason=stop,
             budget_s=r.get('wall_budget_seconds', 3000.0), training_s=r.get('training_seconds'),
             validation=r['fixed_initial'], cohort=(cohort.get(arm) or {}).get('fixed_initial'),
+            train_loss_at_best=r.get('train_loss_at_best'), train_loss_final=r.get('train_loss_final'),
+            epochs_at_min_lr=r.get('epochs_at_minimum_learning_rate'), training_cases=r.get('training_cases'),
+            final_learning_rate=r.get('final_learning_rate'),
+            worst_per_time=r.get('worst_per_time'),
+            mean_per_time=(np.asarray(r['per_time_errors']).mean(axis=0).tolist() if r.get('per_time_errors') else None),
             timing=timing.get(arm), job_id=job_id or audit.get('job_id'),
             gpu=gpu or audit.get('gpu', 'NVIDIA A100 80GB PCIe'), attempt=attempt or audit.get('attempt'),
             source=source, source_sha256=source_sha, cross_job=cross_job,
@@ -115,7 +122,7 @@ def capacity_table(records):
     lines = ['| Run | Operator | Capacity | dtype | Real parameters | Epochs | Best epoch | Still improving? | '
              'Training s | Budget s | Ended by | Job |',
              '| --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | --- | --- |']
-    for r in records:
+    for r in sorted(records, key=lambda r: (r['cross_job'], LABEL[r['family']], r['params'])):
         t = '—' if r['training_s'] is None else f"{r['training_s']:.0f}"
         lines.append(f"| `{r['arm']}` | {LABEL[r['family']]} | {capacity_of(r['config'])} | "
                      f"{r['dtype'].replace('torch.', '')} | {r['params']} | {r['epochs']} | {r['best_epoch']} | "
@@ -124,7 +131,7 @@ def capacity_table(records):
     return '\n'.join(lines)
 
 
-def accuracy_table(records, key, title):
+def accuracy_table(records, key, title, baseline=None, job=None):
     lines = [f'**{title}**', '',
              '| Run | Operator | mean (%) | median (%) | worst (%) | cases > 5 % | Job |',
              '| --- | --- | ---: | ---: | ---: | ---: | --- |']
@@ -132,13 +139,19 @@ def accuracy_table(records, key, title):
         s = r[key]
         lines.append(f"| `{r['arm']}` | {LABEL[r['family']]} | {pct(s['mean'])} | {pct(s['median'])} | "
                      f"{pct(s['maximum'])} | {s['above_threshold_counts']['0.05']} | {r['job_id']} |")
+    if baseline:
+        s = baseline['fixed_initial']
+        lines.append(f"| `persistence` | trivial control | {pct(s['mean'])} | {pct(s['median'])} | "
+                     f"{pct(s['maximum'])} | {s['above_threshold_counts']['0.05']} | {job} |")
     return '\n'.join(lines)
 
 
-def cohort_table(records, diagnosis):
+def cohort_table(records, diagnosis, baseline=None, job=None):
     rows = [(r['arm'], LABEL[r['family']], r['cohort']['maximum'], r['job_id']) for r in records if r['cohort']]
     rows += [(name, 'ROM' if name == 'rom' else 'FOM', s['worst_fixed_initial_error'], DIAGNOSIS_JOB)
              for name, s in diagnosis['summary'].items()]
+    if baseline:
+        rows.append(('persistence', 'trivial control', baseline['fixed_initial']['maximum'], job))
     lines = ['| Subject | Kind | worst fixed-initial error (%) | Job |', '| --- | --- | ---: | --- |']
     for arm, kind, value, job in sorted(rows, key=lambda t: t[2]):
         lines.append(f"| `{arm}` | {kind} | {pct(value)} | {job} |")
@@ -179,6 +192,63 @@ def capacity_observation(mine_records):
             f"under-capacity — it says that making *these* knobs bigger, under this schedule, did not help.")
 
 
+def per_time_sentence(mine_records):
+    """A diagnostic the audit already holds: where in time the error sits. Derived, not asserted."""
+    rows = [r for r in mine_records if r.get('worst_per_time')]
+    if not rows:
+        return ''
+    best = min(rows, key=lambda r: r['validation']['mean'])
+    per_time = best['mean_per_time']
+    evolved = per_time[1:]
+    shape = ('largest at the FIRST evolved time and falls thereafter' if evolved[0] == max(evolved) else
+             'largest at the LAST evolved time' if evolved[-1] == max(evolved) else 'largest in the interior')
+    return (f"**Where the error sits in time** (`{best['arm']}`, mean over the 32 cases at each output time): "
+            + ', '.join(f'{pct(v)} %' for v in per_time)
+            + f". It is {shape} — the opposite of the accumulating profile a rollout would give, which is "
+              f"expected for a direct multi-time output and points at the representation of the early, "
+              f"sharpest field rather than at error growth over time.")
+
+
+def generalisation_reading(mine_records, baseline):
+    """§2: the reading the first two paragraphs do not name. All of it is derived."""
+    cases = {r['training_cases'] for r in mine_records if r['training_cases']}
+    if not cases:
+        return ''
+    n = cases.pop()
+    train_rms = [100 * r['train_loss_at_best'] ** .5 for r in mine_records if r['train_loss_at_best']]
+    val = [100 * r['validation']['mean'] for r in mine_records]
+    floor = baseline.get('validation-32')
+    floor_text = ('' if not floor else
+                  f" For scale at the other end, the trivial control — hold the supplied field at every output "
+                  f"time, no training and no parameters — scores {pct(floor['fixed_initial']['mean'])} % mean and "
+                  f"{pct(floor['fixed_initial']['maximum'])} % worst on these same cases, so these arms are "
+                  f"{floor['fixed_initial']['mean'] / min(r['validation']['mean'] for r in mine_records):.1f}× "
+                  f"better than persistence while being several times worse than the other three families.")
+    return (f"**A third reading the first two do not cover: there are only {n} training cases.** These arms reach "
+            f"{min(train_rms):.2f}–{max(train_rms):.2f} % RMS relative error on the training set against "
+            f"{min(val):.2f}–{max(val):.2f} % on validation. A branch/trunk operator that pushes a 257² field "
+            f"through a small global code is more exposed to a {n}-case training set than the convolutional "
+            f"field-to-field baselines beside it, so data-limited generalisation is a live explanation here and "
+            f"this lane does not separate it from architecture or schedule.{floor_text}")
+
+
+def compute_sentence(mine_records, records):
+    """§6: what compute each family actually consumed. Equal *budget* was held; realised training
+    time was not equal, and the direction matters for how the gap is read."""
+    sib = [r for r in records if r['cross_job'] and r['training_s']]
+    mine = [r for r in mine_records if r['training_s']]
+    if not sib or not mine:
+        return ''
+    lo, hi = min(r['training_s'] for r in sib), max(r['training_s'] for r in sib)
+    mlo, mhi = min(r['training_s'] for r in mine), max(r['training_s'] for r in mine)
+    return (f"**Equal budget was held; realised compute was not.** The comparison arms trained for "
+            f"{lo:.0f}–{hi:.0f} s and these for {mlo:.0f}–{mhi:.0f} s, because these stopped early — a "
+            f"{lo / mhi:.1f}–{hi / mlo:.1f}× difference in training time actually spent, in the comparison "
+            f"arms' favour. Their epoch counts are in the §1 table beside these. A float32 network also gets "
+            f"more epochs per second than the float64 FNO, which pulls the other way; neither effect is "
+            f"corrected for, and both are visible in the table.")
+
+
 def budget_caveat(mine_records):
     stops = {r['stop_reason'] for r in mine_records}
     if stops == {'early_stopping'}:
@@ -204,6 +274,15 @@ def budget_paragraph(mine_records, records):
     improving = [r['arm'] for r in mine_records if r['still_improving']]
     siblings = [r for r in records if r['cross_job']]
     sib_wall = sum(1 for r in siblings if r['stop_reason'] == 'wall_budget')
+    falling = sum(1 for r in mine_records
+                  if r['train_loss_final'] is not None and r['train_loss_final'] < r['train_loss_at_best'])
+    floored = [r for r in mine_records if r['epochs_at_min_lr']]
+    lr_floor = ('' if not floored else
+                f"Against that, every one of these arms had already been sitting at the scheduler's "
+                f"minimum learning rate (1e-5) for "
+                f"{min(r['epochs_at_min_lr'] for r in floored)}–{max(r['epochs_at_min_lr'] for r in floored)} "
+                f"epochs when it stopped, which is the strongest evidence available here that *this* schedule "
+                f"was genuinely spent.")
     parts = []
     if early:
         parts.append(
@@ -215,17 +294,26 @@ def budget_paragraph(mine_records, records):
             f"bound imposed by the budget: the budget was there and the schedule stopped anyway. What that "
             f"establishes is narrow and worth stating exactly — 250 consecutive epochs produced no new best "
             f"**validation selection score** under *this* schedule. It does not establish that no further "
-            f"training could help; the training loss was still falling in all four histories, and a different "
-            f"patience, learning-rate schedule or stopping rule is untested here.")
+            f"training could help: {falling} of {len(mine_records)} arms had a *lower training loss at the "
+            f"last epoch than at the selected one*, so optimisation was still working while validation "
+            f"selection was not, and a different patience, schedule or stopping rule is untested here. "
+            f"{lr_floor}")
     if wall:
         parts.append(f"{len(wall)} arm(s) ended on the wall budget ({', '.join('`%s`' % a for a in wall)}); "
                      f"for those the budget binds and the error is a lower bound on that configuration.")
     if other:
         parts.append(f"{len(other)} arm(s) ended another way ({', '.join('`%s`' % a for a in other)}).")
-    parts.append("No arm here was still improving when it stopped." if not improving else
+    patience = {r['config'].get('patience') for r in mine_records}
+    if early and len(patience) == 1:
+        need = int((patience.pop() + 1) / 0.05) + 1
+        parts.append(f"The \"Still improving?\" column is **vacuous for an early-stopped arm** and is kept only "
+                     f"so the table matches the sibling jobs': the flag needs the best epoch in the last 5 % of "
+                     f"the run, which under this patience cannot happen below ~{need} epochs, far above the "
+                     f"4000-epoch cap. It is not a second, independent fact about these arms.")
+    parts.append("" if early else "No arm here was still improving when it stopped." if not improving else
                  f"Still improving when it stopped: {', '.join('`%s`' % a for a in improving)} — those errors "
                  f"are lower bounds.")
-    return ' '.join(parts)
+    return ' '.join(x for x in parts if x)
 
 
 def criteria(records, don, fno_large):
@@ -293,6 +381,7 @@ DIAG = None
 def main():
     global DIAG
     mine, fno, DIAG, records, sources = load_all()
+    baseline = mine.get('persistence_baseline', {})
     don = selected(records, 'deeponet')
     fno_large = next(r for r in records if r['arm'] == 'fno-large')
     criteria_rows = criteria(records, don, fno_large)
@@ -306,8 +395,13 @@ Generated by `reports/generate_report.py` on {generated} from audited records on
 **measured** number in this file — every error, every count, every time — is read from one of
 the hash-pinned sources listed at the end and is never typed. Protocol constants and identifiers
 that are not measurements (the 1.5× D1 bar, the patience, the ROM/FOM and sibling job ids, the
-`ops-timing-panel` reference in §5) are literals in the generator, pinned by `DESIGN.md` and by
-that lane's own record rather than by these five audits. Status: **final for the accuracy panel of job `{mine['job_id']}`**. The
+`ops-timing-panel` reference in §5, and the two FNO split hashes `audit.py` asserts against) are
+literals in the generator or the audit, pinned by `DESIGN.md` and by the producing lane's own
+record rather than by these five audits. On the split hashes specifically: what is verified here
+is that this job's train and validation indices match `don01`'s own archived `DATA.sha256`
+manifest **and** the literals `audit.py` carries, and that the `unet01`/`tsol01` audits — which
+are pinned sources — assert the same two literals. The FNO job's own `provenance.json` is not in
+this repository, so the FNO leg of "identical split" rests on those literals, not on a file. Status: **final for the accuracy panel of job `{mine['job_id']}`**. The
 timing column is same-job only and is not a speed claim — see §5.
 
 DeepONet was the one operator named in the paper's abstract that had never been trained in
@@ -323,7 +417,7 @@ Job `{mine['job_id']}` on {mine['gpu']}, source commit `{mine['source_commit'][:
 preamble, train/validation index hashes asserted equal to the FNO job's
 (`{mine['train_index_sha256'][:8]}…` / `{mine['validation_index_sha256'][:8]}…`).
 
-{capacity_table(mine_records)}
+{capacity_table(records)}
 
 {budget_paragraph(mine_records, records)}
 
@@ -334,9 +428,12 @@ may simply need a different one.
 ## 2. Validation-32 accuracy, all four families
 
 {accuracy_table(records, 'validation', 'Fixed-initial relative error, 32 held-out validation cases, '
-                'recomputed from the saved prediction fields by an audit that imports neither torch nor jax')}
+                'recomputed from the saved prediction fields by an audit that imports neither torch nor jax',
+                baseline.get('validation-32'), mine['job_id'])}
 
 {capacity_observation(mine_records)}
+
+{generalisation_reading(mine_records, baseline)}
 
 Selected DeepONet arm, by the pre-registered rule (argmin validation mean case-maximum over
 all arms including `refine`): **`{don['arm']}`**, {don['params']} real parameters,
@@ -344,12 +441,14 @@ all arms including `refine`): **`{don['arm']}`**, {don['params']} real parameter
 
 {warning or 'The selected arm also has the best worst case among its own family.'}
 
+{per_time_sentence(mine_records)}
+
 ## 3. The matched eight-case ROM / FOM cohort
 
 Rebuilt in-job from the same 4096-interval anchors, cohort index hash asserted equal to the
 FNO job's. Accuracy is comparable across these jobs; **timing is not, and none is taken.**
 
-{cohort_table(records, DIAG)}
+{cohort_table(records, DIAG, baseline.get('diagnosis-8'), mine['job_id'])}
 
 ## 4. Pre-registered criteria (DESIGN §4)
 
@@ -380,9 +479,7 @@ harness here avoids a second copy of a 46-file harness for one extra family.
 Single seed. One mesh (256 intervals). One Gaussian continuum family. {budget_caveat(mine_records)}
 The eight-case cohort's
 worst column is one case. Hyperparameters were inherited from the FNO lane and not re-tuned
-per family; `refine` is the only family-level tuning. The float32 network gets more epochs
-per second than the float64 FNO did — favourable to this lane, and the epoch counts are in
-the table. The trunk is a coordinate MLP with sinusoidal features, the form this project's
+per family; `refine` is the only family-level tuning. {compute_sentence(mine_records, records)} The trunk is a coordinate MLP with sinusoidal features, the form this project's
 3D lanes use; a different trunk is the first thing a reviewer would vary. And a DeepONet
 compresses the whole 257² field through a small global bottleneck before its trunk, while the
 FNO, U-Net and Transolver beside it are full-resolution field-to-field maps — that is what the
@@ -431,6 +528,12 @@ Generator SHA256 `{sha(__file__)}`.
   solver on one GPU. The only construction from which a speed ratio may be quoted.
 - **device query / host transfer** — the time to produce the complete trajectory in GPU
   memory, and separately the time to copy it back to the host.
+- **persistence (trivial control)** — not a model: predict that the field never changes, i.e.
+  hold the supplied initial state at every output time. It costs nothing and learns nothing, and
+  it is the floor any operator must beat by a wide margin to be doing anything at all.
+- **D3 "ranking"** — the four families ordered by their *selected* arm's validation worst case.
+  Only the last place is load-bearing (and DeepONet is last on every metric); the order among
+  the other three depends on which metric is used, and by mean or median the U-Net leads.
 - **fixed contract** — every family consumes the same feature tensor and emits the same five
   evolved fields, which are then masked to the zero boundary with the supplied initial state
   prepended; nothing between families differs except the network.

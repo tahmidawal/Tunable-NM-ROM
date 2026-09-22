@@ -235,6 +235,52 @@ is a time from `don01` divided by a time from any other job.
 - **A1 (2026-09-22, before `don01`).** Independent audit of this design and of the
   `families.py` diff; disposition recorded in §A2 below before submission.
 
+- **A6 (2026-09-22, after the report) — second independent report audit, ten findings, all
+  accepted.** Commissioned in parallel with §A5 and reported after it, so it audited the
+  already-corrected state and had independently found six of A5's eight issues.
+  `reports/report-audit-2026-09-22.md`. It re-derived **all 99 rendered cells** from the pinned
+  sources, recomputed all four arms on both cohorts from the saved fields, and re-hashed every
+  source, checkpoint and the generator: **no number in the report was wrong.** What it added:
+  - **Realised compute was invisible while §6 called it "favourable to this lane" (MAJOR).** The
+    §1 table showed only this lane's four arms. Equal *budget* was held as pre-registered, but
+    realised training time ran 543–898 s here against 3001–3006 s for the comparison arms — a
+    3.3–5.5× difference in the *other* direction. §1 now tabulates all sixteen arms and §6 states
+    the ratio, generated, alongside the float32/float64 epoch-rate effect that pulls the other way.
+  - **The most likely explanation was never named (MAJOR).** There are only **128 training
+    cases**, and these arms reach 4.28–8.59 % RMS on training against 14.79–18.22 % on
+    validation. §2 now names data-limited generalisation as a third reading and says this lane
+    does not separate it from architecture or schedule.
+  - **No trivial floor (raised as the chief reviewer gap).** The report gave the reader nothing
+    to size the errors against. `audit.py` now computes a **persistence control** — hold the
+    supplied field at every output time, no training, no parameters — on both cohorts, and it is
+    a row in both tables: 64.6850 % mean / 90.6492 % worst on validation-32. These arms are
+    ~4.4× better than persistence and ~7–11× worse than the other families. Both are now visible.
+  - **"Still improving?" is unreachable for an early-stopped arm (MAJOR).** At patience 250 the
+    flag needs the best epoch in the last 5 % of the run, i.e. ≳5021 epochs against a 4000-epoch
+    cap. §1 had presented it as a second independent fact; it now says the column is vacuous here
+    and is kept only to match the sibling tables.
+  - **A load-bearing empirical claim was a literal (MAJOR).** "the training loss was still
+    falling in all four histories" — true, the auditor checked it — was an f-string constant, the
+    exact `no-second` failure recurring. `audit.py` now records `train_loss_at_best`,
+    `train_loss_final` and `epochs_at_minimum_learning_rate` per arm and the sentence is derived,
+    which also surfaced the counterweight: every arm had sat at the 1e-5 learning-rate floor for
+    146–209 epochs before stopping.
+  - **`HANDOFF.md` still carried the claim §A5 had just retracted (MAJOR)** — the one document
+    that tells the next session to read it first. Rewritten.
+  - **Minors, all fixed:** the four checkpoint paths in `timing-handoff.json` lacked the
+    `worktrees/` prefix its other entries carry; §A3 above said 561 s where the audited value is
+    552 s (the only hand-typed measurement in this pre-registration); D3's bare ranking array now
+    has a glossary entry saying only last place is load-bearing; and the FNO split-hash literals
+    are now disclosed as literals, with what *is* verified about them stated exactly.
+  - **Process finding, recorded rather than fixed:** the report and generator changed *during*
+    this audit (the §A5 pass), so an audit whose target moved cannot certify what a reader saw.
+    The right order is to commit and quote the report's SHA256 before commissioning an audit. The
+    §A5 and §A6 passes were commissioned together for speed against the 09-25 deadline; that was
+    a deliberate trade and it cost this certainty.
+  - The auditor also supplied the **per-output-time profile**, which the audit already held and
+    the report did not show: mean error 0, 14.43, 10.71, 9.49, 9.17, 9.12 % — largest at the
+    *first* evolved time and falling. That is now generated into §2.
+
 - **A5 (2026-09-22, after the report) — Codex report audit, eight findings, all accepted.**
   `reports/codex-report-audit-2026-09-22.md` (`gpt-6-astra`, headless; its read-only sandbox
   could not start, so it ran with sandboxing bypassed under a read-only instruction and
@@ -291,7 +337,7 @@ is a time from `don01` divided by a time from any other job.
   nothing from `don01` is divided by anything from another job.
 
 - **A3 (2026-09-22, during `don01`, before any result was read as a verdict).** The first arm,
-  `don-small`, ended by **early stopping** at 561 s of its 3000 s budget (best epoch 288 of
+  `don-small`, ended by **early stopping** at 552 s of its 3000 s budget (best epoch 288 of
   539) — the first Burgers arm in this comparison not to end on its wall budget. §3 and the
   report generator both *asserted* "every arm ended on its wall budget", inherited from
   `no-second` where it was true. That sentence is now **generated** from the recorded

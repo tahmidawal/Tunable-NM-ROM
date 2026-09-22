@@ -1,0 +1,100 @@
+host=pax051 source_commit=76ecd68722b007065a192a05b87d51d9c73224f1 job=4176514
+NVIDIA A100-PCIE-40GB, GPU-a840f593-3e39-4ee0-681d-f3898b49b09b, 40960 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=440.3 devices=[CudaDevice(id=0)]
+generating trajectories
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+A0: fixed uncentred POD (must-fail control)
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=128 orth=8.580e-15 energy_tail=2.666e-02
+A0 rank 32 evolved worst 0.854129
+A0 rank 64 evolved worst 0.700266
+A0 rank 128 evolved worst 0.471195
+A1: centered POD with an oracle per-time shift
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=128 orth=5.274e-07 energy_tail=1.844e-10
+centered POD available rank 128
+A1 rank 32 evolved worst 0.007366
+A1 rank 64 evolved worst 0.001276
+A1 rank 128 evolved worst 0.000201
+building operators rank=64 modes=292
+operator checks {'modes': 292, 'rank': 64, 'bank_orthonormality': 1.3322676295501878e-15, 'test_orthogonality': 1.7190315808874456e-15, 'A_condition': 101.43758062359703, 'A_smallest_singular': 0.009853958570392252, 'tensor_relative': 1.4519125446100858e-14, 'derivative_relative': 9.486992981107448e-15, 'diffusion_relative': 4.5864276589406256e-15, 'S_skew': 1.5681843204764384e-14, 'shift_sign_relative': 3.7090838014436645e-11}
+delta==0 parity vs ns3d_rom.make_run: 5.669e-15
+complete-query equivariance: 1.120e-15
+conditioning {"singular_values": [282.83551062181044, 265.3437188847506, 253.77432213516647, 1.0009005722450202, 0.9850291540424563, 0.9740546126974259, 0.9725857460052453, 0.9644575421313935, 0.94912885718842, 0.9411965711446335, 0.9399947587027996, 0.9149062798443022, 0.8953218583909262, 0.8543696932092111, 0.8257796524677631, 0.7970507053020786, 0.7362183836117461, 0.7260066669710249, 0.719924584063169, 0.6
+tangents {'captured_fraction': [0.8176781903410142, 0.8446742114100309, 0.8888752971555103], 'tangent_norms': [302.25670120238607, 312.04283464962094, 304.6895163357806], 'tangent_rank_in_span': 3}
+arm B0: {'id': 'B0', 'mode': 'zero', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 0.0, 'budget': 60}
+arm B0 evolved worst 2.348551 over target 16/16 median iters 10.0
+arm B1: {'id': 'B1', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 0.0, 'budget': 60}
+arm B1 evolved worst 0.004491 over target 0/16 median iters 3.0
+arm B2: {'id': 'B2', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 1.0, 'budget': 60}
+arm B2 evolved worst 0.204998 over target 16/16 median iters 3.0
+arm B2_r32: {'id': 'B2_r32', 'mode': 'free', 'rank': 32, 'modes': 292, 'dt': 0.01, 'gauge': 1.0, 'budget': 60}
+building operators rank=32 modes=292
+arm B2_r32 evolved worst 0.224109 over target 16/16 median iters 3.0
+arm B2_r128: {'id': 'B2_r128', 'mode': 'free', 'rank': 128, 'modes': 292, 'dt': 0.01, 'gauge': 1.0, 'budget': 60}
+building operators rank=128 modes=292
+arm B2_r128 evolved worst 0.247637 over target 16/16 median iters 3.0
+arm B2_M96: {'id': 'B2_M96', 'mode': 'free', 'rank': 64, 'modes': 96, 'dt': 0.01, 'gauge': 1.0, 'budget': 60}
+building operators rank=64 modes=96
+arm B2_M96 evolved worst 0.739960 over target 16/16 median iters 3.0
+arm B2_M1024: {'id': 'B2_M1024', 'mode': 'free', 'rank': 64, 'modes': 1024, 'dt': 0.01, 'gauge': 1.0, 'budget': 60}
+building operators rank=64 modes=1024
+arm B2_M1024 evolved worst 0.107829 over target 16/16 median iters 3.0
+arm B2_dt0.005: {'id': 'B2_dt0.005', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.005, 'gauge': 1.0, 'budget': 60}
+arm B2_dt0.005 evolved worst 0.253411 over target 16/16 median iters 3.0
+arm B2_w0.1: {'id': 'B2_w0.1', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 0.1, 'budget': 60}
+arm B2_w0.1 evolved worst 0.103199 over target 15/16 median iters 3.0
+arm B2_w10.0: {'id': 'B2_w10.0', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 10.0, 'budget': 60}
+arm B2_w10.0 evolved worst 0.208023 over target 16/16 median iters 3.0
+arm B2_b20: {'id': 'B2_b20', 'mode': 'free', 'rank': 64, 'modes': 292, 'dt': 0.01, 'gauge': 1.0, 'budget': 20}
+arm B2_b20 evolved worst 0.204998 over target 16/16 median iters 3.0
+arm C: centroid tracker
+tracker evolved worst 0.025384
+arm E: CNAB2 comparators
+CNAB2 dt=0.002 evolved worst 0.000188
+CNAB2 dt=0.004 evolved worst 0.000943
+CNAB2 dt=0.005 evolved worst 0.001516
+CNAB2 dt=0.01 evolved worst 0.007882
+CNAB2 dt=0.02 evolved worst 0.766936
+timing complete queries
+{"B0": {"median_ms": 93.34613429382443, "min_ms": 93.24752306565642, "max_ms": 163.80098881199956, "repetitions": [163.80098881199956, 93.34613429382443, 93.33539428189397, 93.3119673281908, 93.41635694727302, 93.24752306565642, 93.57104217633605]}, "B1": {"median_ms": 23.87455105781555, "min_ms": 23.831093683838844, "max_ms": 39.85505364835262, "repetitions": [39.85505364835262, 23.922888096421957, 23.85157300159335, 23.831093683838844, 23.87455105781555, 23.84069189429283, 23.908252827823162]}, "B2": {"median_ms": 24.699759669601917, "min_ms": 24.616780690848827, "max_ms": 41.60441504791379, "repetitions": [41.60441504791379, 24.703651200979948, 24.65596701949835, 24.63162411004305, 24.616780690848827, 24.699759669601917, 24.709000252187252]}, "C_tracker": {"median_ms": 14.864645432680845, "min_ms": 14.833624009042978, "max_ms": 21.638893987983465, "repetitions": [21.638893987983465, 1
+done
+B0 {"recomputed": {"evolved_worst": 2.3485509854738043, "evolved_median": 1.9228367461386335, "cases_over_target": 16}, "reported": {"evolved_worst": 2.3485509854738034, "evolved_median": 1.9228367461386338, "cases_over_target": 16}, "gap": 8.881784197001252e-16}
+B1 {"recomputed": {"evolved_worst": 0.004490837460242411, "evolved_median": 0.0028638202514950552, "cases_over_target": 0}, "reported": {"evolved_worst": 0.00449083746024241, "evolved_median": 0.0028638202514950552, "cases_over_target": 0}, "gap": 8.673617379884035e-19}
+B2 {"recomputed": {"evolved_worst": 0.2049981727467545, "evolved_median": 0.162220363618942, "cases_over_target": 16}, "reported": {"evolved_worst": 0.2049981727467544, "evolved_median": 0.16222036361894196, "cases_over_target": 16}, "gap": 1.1102230246251565e-16}
+C_tracker {"recomputed": {"evolved_worst": 0.025383940343429504, "evolved_median": 0.016610954675452032, "cases_over_target": 0}, "reported": {"evolved_worst": 0.025383940343429515, "evolved_median": 0.016610954675452032, "cases_over_target": 0}, "gap": 1.0408340855860843e-17}
+verify ok 8.881784197001252e-16
+SHIFT_EXIT=0

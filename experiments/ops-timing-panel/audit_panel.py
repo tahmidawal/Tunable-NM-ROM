@@ -72,6 +72,8 @@ def main():
     # against the same same-job `fft_tight` solve. `fno_meta` keeps the first arm present so
     # the existing single-model summary block is unchanged; `operators` carries them all.
     p.add_argument('--fno-name', nargs='+', default=['fno-large'])
+    p.add_argument('--operator-reps', type=int, default=5,
+                   help='repetitions each operator arm must have retained per case')
     a = p.parse_args()
     r = json.loads(Path(a.result).read_text())
     cfg = r['config']
@@ -172,6 +174,7 @@ def main():
 
     # ------------------------------------------------ the FNO, same code ------
     fno_rows, fno_meta, operator_meta = [], None, {}
+    reps_ops = a.operator_reps
     for name in a.fno_name:
         tj = fields_dir / f'{name}-timing.json'
         if not tj.exists():
@@ -180,19 +183,45 @@ def main():
             continue
         meta = json.loads(tj.read_text())
         assert meta['model'] == name, (meta['model'], name)
+        fam = ('unet' if name.startswith('unet') else
+               'transolver' if name.startswith('tsol') else 'fno')
         for c in meta['cases']:
             idx = int(c['case_index'])
             f = F(c['artifact'])
+            # `kind` stays 'fno' -- it is this file's label for a direct multi-time operator
+            # query, and the admissibility and scoring branches key on it. `family` carries the
+            # actual architecture so the table does not call a U-Net an FNO (Codex audit #2c).
             for k, (dsec, hsec) in enumerate(zip(c['device_seconds'], c['host_seconds'])):
-                x = dict(kind='fno', family='fno', name=name, case=idx, rep=k, gpu_seconds=float(dsec),
+                x = dict(kind='fno', family=fam, name=name, case=idx, rep=k, gpu_seconds=float(dsec),
                          host_seconds=float(dsec + hsec), artifact=c['artifact'], iterations=[])
                 score(x, f)
                 fno_rows.append(x)
+        # --- the operator-arm integrity gates (Codex design audit, findings 2a/2b/5a) --------
+        # The `every_subject_case_has_all_reps` gate above covers the JAX subjects only, and
+        # `zip` would silently truncate unequal device/host arrays, so the shape of every
+        # operator arm is asserted here instead of assumed.
+        gate(f'operator_cohort_and_reps_{name}',
+             ({int(c['case_index']) for c in meta['cases']} == set(refs)) and
+             all(len(c['device_seconds']) == len(c['host_seconds']) == reps_ops
+                 for c in meta['cases']),
+             dict(cases=sorted(int(c['case_index']) for c in meta['cases']), expected=sorted(refs),
+                  reps=sorted({len(c['device_seconds']) for c in meta['cases']} |
+                              {len(c['host_seconds']) for c in meta['cases']}), expected_reps=reps_ops),
+             'every panel case present, device and host arrays the same length, and that length '
+             'is the declared repetition count')
+        # Not the recorded boolean: the operator's own saved t0 is compared, bitwise, with the
+        # initial state of THIS panel's converged fft_tight solve. A stale field file, or a file
+        # from a different cohort, fails here.
         gate(f'operator_returns_supplied_field_at_t0_{name}',
-             all(c['t0_returned_exactly'] for c in meta['cases']))
+             all(np.array_equal(F(c['artifact'])[0], F(base[int(c['case_index'])])[0])
+                 for c in meta['cases']) and all(c['t0_returned_exactly'] for c in meta['cases']))
         gate(f'operator_saved_fields_match_recorded_hash_{name}',
              all(hashlib.sha256(np.ascontiguousarray(F(c['artifact'])).tobytes()).hexdigest()
                  == c['field_sha256'] for c in meta['cases']))
+        # The timing is admissible only if it happened on the GPU the JAX phase ran on.
+        gate(f'operator_gpu_matches_panel_{name}',
+             meta['environment'].get('gpu') == r.get('gpu'),
+             dict(operator=meta['environment'].get('gpu'), panel=r.get('gpu')))
         info(f'operator_timed_in_same_allocation_{name}', True,
              dict(deviation=meta.get('deviation'), status=meta.get('scientific_status')))
         operator_meta[name] = dict(model=meta['model'], checkpoint_sha256=meta['checkpoint_sha256'],
@@ -351,7 +380,8 @@ def main():
         x['bank_projection_percent'] = fl.get('bank_projection_percent')
         x['solved_over_best_found'] = (x['worst_all_times_percent'] / best if best else None)
     by = {x['arm']: x for x in rows}
-    rows.sort(key=lambda x: ({'rom': 0, 'fast': 1, 'pod': 2, 'free': 3, 'fno': 4, 'fom': 5}.get(x['family'], 9),
+    rows.sort(key=lambda x: ({'rom': 0, 'fast': 1, 'pod': 2, 'free': 3, 'fno': 4, 'unet': 4.3,
+                              'transolver': 4.6, 'fom': 5}.get(x['family'], 9),
                              x['q'] if x['q'] is not None else (x['k'] or -1), x['arm']))
 
     # ------------------------------------------------ fidelity gates ----------

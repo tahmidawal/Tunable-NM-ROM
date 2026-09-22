@@ -58,7 +58,7 @@ def main():
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--mem-fraction', default='0.90')
     p.add_argument('--reps', type=int, default=5)
-    p.add_argument('--burn-in', type=int, default=5)
+    p.add_argument('--burn-in', type=int, default=20)
     a = p.parse_args()
     attempt, config = a.attempt, a.config
     assert attempt.isalnum(), attempt
@@ -148,6 +148,10 @@ export SOURCE_COMMIT=$(cat COMMIT.txt)
 echo "host=$(hostname) source_commit=$SOURCE_COMMIT"
 nvidia-smi --query-gpu=name,memory.total,uuid --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
+# Codex design audit #3: the training index is an external absolute path. panel.py adds the
+# cohort/training disjointness gate only `if ... exists()`, so a missing file would make the
+# gate silently vanish instead of failing. Assert it here.
+test -s "__TRAININDEX__" || { echo "MISSING TRAINING INDEX __TRAININDEX__"; exit 43; }
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export PYTHONPATH="__PYPATH__"
 "$PY" __LANE__/panel.py \\

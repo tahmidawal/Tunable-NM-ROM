@@ -1,0 +1,37 @@
+Adversarial pre-registration audit. Read-only. Do NOT edit any file.
+
+Working directory: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d
+
+Context. This lane adds a DeepONet arm to an existing, already-published neural-operator
+comparison on 2D viscous Burgers at 256x256. It is a copy of ../no-second (commit ea812685 of
+this repository) with a DeepONet family added; ../no-second/DESIGN.md and
+../no-second/reports/2026-09-17-no-second.md describe the protocol and the numbers the new arm
+must be comparable with. A cluster GPU job is about to be submitted and CANNOT be cheaply redone.
+
+Audit these, in this order:
+
+1. families.py `DeepONet2d` and its registration in `make`. Is it a faithful DeepONet
+   (Lu et al. 2021)? Compare against this project's own 3D version at
+   ../../../2026-09-20-paper-b3d/experiments/paper-b3d/operators/extra_models3d.py
+   (functions deeponet_coefficients / deeponet_trunk / apply_extra, kind 'deeponet3d') and say
+   where the 2D port deviates. Check shapes, the channel split (the last two feature channels
+   are x,y coordinates), the 1/sqrt(rank) scaling, the bias, the initialisation scale, and
+   especially the trunk being evaluated only on batch element 0.
+2. Any way the new arm gets an unfair advantage or disadvantage over the U-Net/Transolver/FNO
+   arms it will be tabulated beside: contract, normalisation, loss, metric, budget, precision,
+   optimiser, data, split, selection rule.
+3. DESIGN.md: is anything pre-registered that the code cannot actually deliver, or any gate
+   that will fail for a reason unrelated to the science (../no-second hit exactly this: a 1e-11
+   batch-invariance gate no float32 arm could meet)? Are the criteria falsifiable and stated
+   before the data?
+4. The job will run `cluster/stage.py don01 don01.json` then sbatch the generated run.sbatch,
+   which runs worker_second.py with specs/don01.json. Trace that path for anything that will
+   die in the preamble or mid-job: missing staged files, wrong paths, wrong cluster namespace,
+   arm names, budget arithmetic (per_arm_seconds / global_seconds / reserve_seconds / sbatch
+   --time), memory, or audit.py assertions that cannot be satisfied by what the job produces.
+5. Numerical/performance risk: parameter counts, the cost of the branch and trunk at a
+   257x257 grid with batch 8, and whether any arm is likely to OOM or to be so slow that
+   3000 s yields a useless number.
+
+Output: findings ranked BLOCKER / MAJOR / MINOR, each with file:line, why it is wrong, and the
+smallest correct fix. If something is fine, say so briefly. Be specific; do not restate the design.

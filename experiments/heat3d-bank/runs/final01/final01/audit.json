@@ -1,0 +1,89 @@
+{
+ "passed": true,
+ "subgrid_representativeness_passed": false,
+ "subgrid_representativeness_failures": 1192,
+ "subgrid_representativeness_examples": [
+  {
+   "n": 128,
+   "case": 0,
+   "method": "nmrom_q288_field_direct_tol1e-4_chol",
+   "reference": "same",
+   "subgrid_gap": 0.1934677875221054
+  },
+  {
+   "n": 128,
+   "case": 0,
+   "method": "linear_bank_moments_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.21392610399711787
+  },
+  {
+   "n": 128,
+   "case": 0,
+   "method": "linear_bank_moments_direct_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.2201240447060155
+  },
+  {
+   "n": 128,
+   "case": 0,
+   "method": "linear_bank_field_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.21393005245873542
+  },
+  {
+   "n": 128,
+   "case": 0,
+   "method": "linear_bank_field_direct_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.22012404470596875
+  },
+  {
+   "n": 128,
+   "case": 1,
+   "method": "nmrom_q288_field_direct_tol1e-4_chol",
+   "reference": "same",
+   "subgrid_gap": 0.10224730261391791
+  },
+  {
+   "n": 128,
+   "case": 1,
+   "method": "linear_bank_moments_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.10219130426821076
+  },
+  {
+   "n": 128,
+   "case": 1,
+   "method": "linear_bank_moments_direct_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.10667680200686575
+  },
+  {
+   "n": 128,
+   "case": 1,
+   "method": "linear_bank_field_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.1022094447675388
+  },
+  {
+   "n": 128,
+   "case": 1,
+   "method": "linear_bank_field_direct_BASELINE",
+   "reference": "same",
+   "subgrid_gap": 0.1066768020068665
+  }
+ ],
+ "passed_definition": "heat3d-bank (changed 2026-09-21 after valR256b, disclosed): exact recomputation (<=1e-10) of every saved error + random-node full-grid estimate within 5% for reduced arms; the strided sub-grid representativeness (5%) is reported separately because it fails for sub-0.5% error fields at 15^3 sub-grids",
+ "checked_error_vectors": 15678,
+ "cases_without_saved_fields": 0,
+ "cases_with_selection_arms_only": 0,
+ "max_full_field_absolute_discrepancy": 5.560356497233446e-16,
+ "max_subgrid_absolute_discrepancy": 9.15210849282102e-16,
+ "max_reduced_arm_full_vs_subgrid_relative_gap": 0.2201240447060155,
+ "max_reduced_arm_full_vs_random_sample_relative_gap": 0.01786776452217826,
+ "gap_tolerance": 0.05,
+ "failures": [],
+ "failure_count": 0,
+ "note": "Full-field audits recompute the reported full-grid error exactly. Sub-grid audits recompute exactly the in-job strided sub-grid error from the saved strided field and an independent SciPy reference; for reduced arms (smooth error) the full-grid and sub-grid error values must also agree within 5%. CG arms have rough error fields, so their full-grid error is audited exactly only where full fields are saved."
+}

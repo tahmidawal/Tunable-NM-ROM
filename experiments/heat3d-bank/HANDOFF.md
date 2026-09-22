@@ -45,3 +45,11 @@ Next: final01 = LAST job (8 of 8), panels A (final01.json) + B (final01b.json).
 
 ## final01 = job 4153878 RUNNING (H200 pax009, 16 h wall) — LAST job, 8 of 8. Sealed 921099 + repeated benchmark 920399 opened here.
 On completion: `cluster/collect.sh final01` (then `--remove` if all checks pass), `make_report.py`-style generated table, lab log.
+
+## 2026-09-22 ~04:00 — LANE CLOSED: final01 (4153878) collected, all checks passed, remote removed; namespace empty; 8 of 8 jobs used
+Generated table: `runs/final01/FINAL-TABLE.md` / `final_table.json` (from `runs/final01/{final01,final01b}/summary.json`).
+Sealed 921099 (64 draws), worst all-times same-grid error: panel A (pre-registered, R320/K32/q288) 0.1137 % at 32^3/64^3/128^3;
+panel B (addendum, R256/K16/q160) 0.4733 %. Accuracy bar (<=1 %) PASS at every mesh. Speed bar (>=5x named CN-CG) NOT met:
+best 4.86x (panel B direct, 128^3); vs the paper FOM rule 1.92x (B direct) / 0.94x (B cn) / 2.22x (A direct) / 0.28x (A cn) at 128^3.
+Labelled controls beat every ROM arm: linear solve in the learned bank 0.150 % in 1.3-2.2 ms; DST 2.1 ms; coarse 64^3 CN-CG 0.46 % 4.9 ms.
+Nothing running. Worktree not merged (ask the user).

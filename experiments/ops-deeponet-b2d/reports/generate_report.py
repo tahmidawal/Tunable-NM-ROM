@@ -149,12 +149,13 @@ def timing_table(records, attempt):
     rows = [r for r in records if r['attempt'] == attempt and r['timing']]
     if not rows:
         return '_No same-job timing block for this attempt._'
-    lines = [f'| Arm | device query median (ms) | host transfer median (ms) | repetitions |',
-             '| --- | ---: | ---: | ---: |']
+    lines = [f'| Arm | device query median (ms) | host transfer median (ms) | measurements |',
+             '| --- | ---: | ---: | --- |']
     for r in sorted(rows, key=lambda r: r['timing']['device_pooled_median_ms']):
         t = r['timing']
+        cases, reps = t['repetitions']  # the retained array's shape, not a count
         lines.append(f"| `{r['arm']}` | {t['device_pooled_median_ms']:.3f} | {t['host_pooled_median_ms']:.3f} | "
-                     f"{sum(t['repetitions'])} |")
+                     f"{reps} per case × {cases} cases = {reps * cases} |")
     return '\n'.join(lines)
 
 
@@ -170,10 +171,28 @@ def capacity_observation(mine_records):
     trend = ('accuracy gets **worse** monotonically as capacity grows' if monotone else
              f"the largest capacity is not the most accurate: `{best['arm']}` ({best['params']} parameters) "
              f"beats `{worst['arm']}` ({worst['params']})")
+    tail = ('worst-case error does not follow that ordering' if not monotone_worst(caps) else
+            'worst-case error follows the same ordering')
     return (f"Over the {len(caps)} capacities, {trend} "
-            f"({' → '.join(f'{pct(r["validation"]["mean"])} %' for r in caps)} mean, smallest to largest). "
-            f"Together with every arm early-stopping, that removes the two easy readings — too small, "
-            f"too little time — and points at the architecture or the inherited schedule instead.")
+            f"({' → '.join(f'{pct(r["validation"]["mean"])} %' for r in caps)} mean, smallest to largest); "
+            f"{tail}. Three coupled configurations are not a capacity sweep, so this does not rule out "
+            f"under-capacity — it says that making *these* knobs bigger, under this schedule, did not help.")
+
+
+def budget_caveat(mine_records):
+    stops = {r['stop_reason'] for r in mine_records}
+    if stops == {'early_stopping'}:
+        return ("One 3000 s budget per capacity, none of which was exhausted: every arm ran out of validation "
+                "patience first, so what is untested here is a different stopping rule or schedule, not a "
+                "longer run of this one.")
+    if stops == {'wall_budget'}:
+        return "One 3000 s budget per capacity, which every arm exhausted, so every error here is a lower bound."
+    return ("One 3000 s budget per capacity; arms ended in more than one way (" +
+            ', '.join(sorted(s.replace('_', ' ') for s in stops)) + "), see §1.")
+
+
+def monotone_worst(caps):
+    return all(caps[i]['validation']['maximum'] <= caps[i + 1]['validation']['maximum'] for i in range(len(caps) - 1))
 
 
 def budget_paragraph(mine_records, records):
@@ -193,8 +212,11 @@ def budget_paragraph(mine_records, records):
             f"improving for 250 consecutive epochs while budget remained. **These are the first Burgers arms "
             f"in this comparison to end that way** — {sib_wall} of {len(siblings)} arms in the FNO, U-Net and "
             f"Transolver jobs ended on their budget. For an early-stopped arm the error is **not** a lower "
-            f"bound imposed by the budget: more of the same budget was there and the optimiser was not using "
-            f"it, so \"it needed longer\" is not available as an explanation for these rows.")
+            f"bound imposed by the budget: the budget was there and the schedule stopped anyway. What that "
+            f"establishes is narrow and worth stating exactly — 250 consecutive epochs produced no new best "
+            f"**validation selection score** under *this* schedule. It does not establish that no further "
+            f"training could help; the training loss was still falling in all four histories, and a different "
+            f"patience, learning-rate schedule or stopping rule is untested here.")
     if wall:
         parts.append(f"{len(wall)} arm(s) ended on the wall budget ({', '.join('`%s`' % a for a in wall)}); "
                      f"for those the budget binds and the error is a lower bound on that configuration.")
@@ -255,7 +277,7 @@ def rows_for_summary(records, criteria_rows):
                 if value is not None:
                     rows.append(dict(base, cohort=cohort, metric=f'{metric}_fixed_initial_error', value=value,
                                      key=f"{r['arm']}|{r['job_id']}"))
-        if r['timing']:
+        if r['timing'] and not r['cross_job']:  # DESIGN A4: this lane exports no other job's times
             for metric in ('device_pooled_median_ms', 'host_pooled_median_ms'):
                 rows.append(dict(base, cohort='same-job timing', metric=metric, value=r['timing'][metric],
                                  key=f"{r['arm']}|{r['job_id']}",
@@ -281,8 +303,11 @@ def main():
     text = f"""# A DeepONet on 2D viscous Burgers at 256², beside the FNO, U-Net and Transolver
 
 Generated by `reports/generate_report.py` on {generated} from audited records only; every
-number in this file is read from one of the hash-pinned sources listed at the end, and no
-number is typed. Status: **final for the accuracy panel of job `{mine['job_id']}`**. The
+**measured** number in this file — every error, every count, every time — is read from one of
+the hash-pinned sources listed at the end and is never typed. Protocol constants and identifiers
+that are not measurements (the 1.5× D1 bar, the patience, the ROM/FOM and sibling job ids, the
+`ops-timing-panel` reference in §5) are literals in the generator, pinned by `DESIGN.md` and by
+that lane's own record rather than by these five audits. Status: **final for the accuracy panel of job `{mine['job_id']}`**. The
 timing column is same-job only and is not a speed claim — see §5.
 
 DeepONet was the one operator named in the paper's abstract that had never been trained in
@@ -352,8 +377,8 @@ harness here avoids a second copy of a 46-file harness for one extra family.
 
 ## 6. Caveats that must travel with these numbers
 
-Single seed. One mesh (256 intervals). One Gaussian continuum family. One 3000 s budget per
-capacity, on which every arm was still training when it stopped. The eight-case cohort's
+Single seed. One mesh (256 intervals). One Gaussian continuum family. {budget_caveat(mine_records)}
+The eight-case cohort's
 worst column is one case. Hyperparameters were inherited from the FNO lane and not re-tuned
 per family; `refine` is the only family-level tuning. The float32 network gets more epochs
 per second than the float64 FNO did — favourable to this lane, and the epoch counts are in
@@ -361,8 +386,8 @@ the table. The trunk is a coordinate MLP with sinusoidal features, the form this
 3D lanes use; a different trunk is the first thing a reviewer would vary. And a DeepONet
 compresses the whole 257² field through a small global bottleneck before its trunk, while the
 FNO, U-Net and Transolver beside it are full-resolution field-to-field maps — that is what the
-architecture is, not a defect of this implementation, and a gap in either direction should be
-read as a property of the family.
+architecture is, not a defect of this implementation — but one implementation of one family,
+on one schedule it did not choose, is evidence about this recipe and not a verdict on DeepONets.
 
 ## 7. Sources
 
@@ -395,8 +420,9 @@ Generator SHA256 `{sha(__file__)}`.
   siblings are that solver run at looser tolerances, i.e. cheaper and less accurate settings.
 - **worst / median / mean** — over the cases of a cohort, of the per-case maximum-over-time
   error. "cases > 5 %" counts how many cases exceed five percent.
-- **still improving** — the best checkpoint fell in the last 5 % of the epochs the arm ran, so
-  the arm had not converged when its budget ended; its error is a lower bound.
+- **still improving** — a heuristic flag: the best checkpoint fell in the last 5 % of the epochs
+  the arm ran, i.e. validation was improving recently when the run ended. It is a hint that the
+  run stopped mid-progress, not a proof that more training would have helped.
 - **wall budget** — the fixed number of seconds each capacity is allowed to train. Equal
   budget, not equal epochs, is what is held constant across families.
 - **cross-job** — a row measured in a different Slurm allocation. Accuracy may be read across

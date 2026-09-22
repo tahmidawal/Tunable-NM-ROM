@@ -235,7 +235,48 @@ is a time from `don01` divided by a time from any other job.
 - **A1 (2026-09-22, before `don01`).** Independent audit of this design and of the
   `families.py` diff; disposition recorded in §A2 below before submission.
 
-- **A4 (2026-09-22, after `don01`) — the §5 timing decision, taken the way §5 pre-registered.**
+- **A5 (2026-09-22, after the report) — Codex report audit, eight findings, all accepted.**
+  `reports/codex-report-audit-2026-09-22.md` (`gpt-6-astra`, headless; its read-only sandbox
+  could not start, so it ran with sandboxing bypassed under a read-only instruction and
+  `git status` was clean before and after). It independently recomputed all four arms on both
+  cohorts from the saved fields, re-hashed every source, checkpoint and the generator, and
+  regenerated the report in memory. **No accuracy number and no D1/D2 ratio was wrong.** What it
+  did find:
+  - **One wrong rendered number (MINOR).** The timing table printed `sum(shape) = 62` as
+    "repetitions"; the arrays are 30 repetitions on each of 32 cases. Now printed as
+    `30 per case × 32 cases = 960`.
+  - **Two overreaches in the interpretation (MAJOR).** Early stopping establishes only that 250
+    consecutive epochs produced no new best *validation selection score* under *this* schedule —
+    the training loss was still falling in all four histories — and three coupled capacity
+    configurations are not a capacity sweep, so under-capacity is not ruled out. Both claims are
+    now stated at that strength, and "read as a property of the family" is gone.
+  - **A cross-job timing surface in `summary.json` (MAJOR).** It exported timing rows for all
+    sixteen arms across four jobs under one `same-job timing` label. Flags marked them, but the
+    rows still invited the comparison §A4 forbids. This lane's summary now carries **only** its
+    own job's timing rows (8 rows, one `job_id`).
+  - **A stale caveat (MAJOR)** that still said every arm was "still training when it stopped",
+    contradicting the early-stopping table. The §6 budget sentence is now generated from the
+    recorded stop reasons.
+  - **The provenance guarantee was too broad (MINOR):** protocol constants and job identifiers
+    are literals in the generator, not derived from the five audits. The guarantee is now scoped
+    to measured numbers and says where the rest is pinned.
+  - **The glossary reversed a bound (MINOR):** "still improving" implied the error was a lower
+    bound. It is a heuristic flag, and now says so.
+  - **§A4's own wording (MINOR):** it claimed the timing decision was "taken the way §5
+    pre-registered" when both of §5's conditions for running a panel actually held. Relabelled a
+    post-result change of plan.
+  - **The handoff's "6-9× less accurate" (MINOR)** named no metric. Replaced by generated
+    selected-arm-vs-selected-arm ratios (5.88–10.94× depending on family and metric).
+
+  The auditor's own summary of what a hostile reviewer would still ask for — independent seeds,
+  training-vs-validation curves, a schedule/patience ablation, a trunk/branch representation
+  diagnostic, and a sealed cohort after any tuning — is recorded in the report's §6 and in
+  `HANDOFF.md` as the shape of any follow-up, not as something this lane claims to have done.
+
+- **A4 (2026-09-22, after `don01`) — a post-result change to the §5 timing plan, not merely its
+  fallback.** §5 said to submit a reduced same-allocation panel *iff* a usable checkpoint returned
+  and the job budget allowed. **Both conditions held** — the checkpoints are usable and 3 of 4 jobs
+  were unused — so this is a change of plan made after seeing the result, and is labelled as one.
   No same-allocation panel was run in this lane, so **this lane reports accuracy only and makes
   no speed claim of any kind.** The reason is not that the route is unavailable: the sibling
   `ops-timing-panel` lane completed exactly such a panel the same day (job 4179247, 24:58,

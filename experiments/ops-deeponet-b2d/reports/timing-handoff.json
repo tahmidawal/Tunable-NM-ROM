@@ -15,7 +15,7 @@
     },
     "unpack": "the checkpoint paths below live in a .gitignored extracted tree; if it is gone, rebuild it by concatenating runs/don01/archive-parts/part-* (manifest.json has each part\"s SHA256) and untarring, then re-verify every best.pt against the sha256 recorded here"
   },
-  "caveat": "These arms are 6-9x less accurate than the FNO/U-Net/Transolver arms on the same data and all four early-stopped; a speed row for them should carry that error beside it, and the panel\"s own note that every operator arm is already above the 256^2 discretisation error applies a fortiori.",
+  "caveat": "These arms are far less accurate than the FNO/U-Net/Transolver arms measured on the same data, split and metric, and all four early-stopped; a speed row for them must carry that error beside it, and the panel's own note that every operator arm already sits above the 256^2 discretisation error applies a fortiori.",
   "checkpoints": [
     {
       "name": "don-large",
@@ -53,5 +53,23 @@
       "role": "selected",
       "source_job": "4179556"
     }
-  ]
+  ],
+  "accuracy_ratios_selected_arm_vs_selected_arm": {
+    "definition": "this lane's validation-selected arm divided by each other family's validation-selected arm, on the 32 validation cases, fixed-initial relative error; generated, not typed",
+    "unet": {
+      "mean": 10.935,
+      "median": 10.876,
+      "maximum": 7.282
+    },
+    "transolver": {
+      "mean": 7.586,
+      "median": 8.647,
+      "maximum": 5.875
+    },
+    "fno": {
+      "mean": 6.483,
+      "median": 6.509,
+      "maximum": 8.577
+    }
+  }
 }

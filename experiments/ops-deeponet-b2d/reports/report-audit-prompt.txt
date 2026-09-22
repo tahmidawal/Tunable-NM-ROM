@@ -1,0 +1,42 @@
+READ-ONLY AUDIT. You must NOT create, edit, move or delete ANY file except the single output
+file passed to you with -o. Do not run git commands that change state. Do not run cluster jobs.
+Your sandbox has been bypassed only because it fails to start in this environment; treat that
+as trust, not licence.
+
+Lane: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d
+Use /home/tahmid/Dev/.venv/bin/python when you need numpy.
+
+Audit the finished report `reports/2026-09-22-ops-deeponet-b2d.md` against its pre-registration
+`DESIGN.md` (including amendments A1-A4), its generator `reports/generate_report.py`, its rows
+`reports/summary.json`, and the independent NumPy audit `runs/don01/audit.json`. The collected
+job tree is `runs/don01/archive/don01/` (logs, out/<arm>/{result.json,history.json,
+*.prediction.npz}, data/validation/, data/diagnosis-cohort/).
+
+The result under audit is a strong NEGATIVE: a DeepONet trained on 2D viscous Burgers at 256^2
+under the same protocol as the FNO, U-Net and Transolver arms lands 6-9x worse than all of
+them, and all four of its arms ended by early stopping well inside their 3000 s budget.
+
+Do these, in order:
+
+1. RECOMPUTE, independently, from the saved prediction .npz fields and the archived validation
+   cases, the mean/median/worst/">5%" columns for at least two DeepONet arms, and one arm on
+   the matched eight-case cohort. The metric is defined in `audit.py:fixed_initial_errors`;
+   read it, do not assume it. Compare against audit.json AND the rendered table.
+2. Verify every rendered number traces to one of the five hash-pinned sources, and re-hash
+   those files against the report's source table. Flag anything typed rather than generated.
+3. Attack the CLAIMS, not just the arithmetic: "all four arms early-stopped", "accuracy gets
+   monotonically worse as capacity grows", "12 of 12 sibling arms ended on their budget", the
+   D1/D2/D3 verdicts and ratios, the selection tail-warning, and the claim that the train and
+   validation split hashes equal the FNO job's.
+4. PRE-REGISTRATION COMPLIANCE. Was every DESIGN section 4 criterion evaluated and reported,
+   including unfavourable ones? Was the section 3.1 selection rule applied unchanged? Amendment
+   A3 was written DURING the job - verify it only turned a hard-coded claim into a derived one
+   and moved no goalpost. A4 records not running a timing panel - check nothing in the report
+   or summary.json nevertheless lets a reader form a cross-job speed comparison, and re-hash
+   the checkpoints listed in reports/timing-handoff.json.
+5. What would a hostile ICLR reviewer ask for that is missing? Is the negative stated in a way
+   that could mislead in EITHER direction - overstating the DeepONet's weakness, or excusing it?
+
+Output: findings ranked BLOCKER / MAJOR / MINOR, each with file:line, what is wrong, and the
+smallest correct fix. State plainly whether any number in the report is wrong. Briefly list
+what you verified as correct.

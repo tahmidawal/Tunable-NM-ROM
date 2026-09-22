@@ -1,10 +1,10 @@
 {
   "name": "ladder128",
-  "question": "accuracy-cost frontier at N=128 with rank 64, paired against a stable CNAB2 comparator",
+  "question": "accuracy-cost frontier at N=128, where the explicit FOM's stable step is smallest",
   "n": 128,
   "dt_truth": 0.001,
   "horizon": 0.2,
-  "train_cases": 128,
+  "train_cases": 48,
   "dev_cases": 16,
   "train_seed": 202609201,
   "dev_seed": 202609202,
@@ -34,12 +34,11 @@
   "lm_budget": 60,
   "lm_gtol": 1e-07,
   "fom_dt_ladder": [
-    0.001,
     0.002,
+    0.0025,
     0.004,
     0.005,
-    0.01,
-    0.02
+    0.01
   ],
   "include_tracker": true,
   "timing_case": 0,

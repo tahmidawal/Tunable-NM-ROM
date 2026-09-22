@@ -436,3 +436,29 @@ remaining jobs were staged.
 The FOM ladder is extended to $\Delta t \in \{0.001,0.002,0.004,0.005,0.01,0.02\}$
 so the comparator search reaches below the explicit stability limit at the finer
 meshes. $\Delta t = 0.001$ is the reference itself and is labelled as such.
+
+## Amendment — `ladder128` budget, written before staging
+
+Two reductions at $128^3$ only, both forced by wall time and both recorded before
+the job was staged.
+
+1. **Training cases 128 -> 48.** Trajectory generation, not the reduced model,
+   dominates these jobs: at $96^3$ it ran at roughly 50 s per trajectory, about
+   two orders of magnitude above what the timed CNAB2 step cost predicts, so
+   $128^3$ would spend most of an eight-hour allocation generating data. The bank
+   can afford it: the rank-64 oracle-shift floor is 0.128 % with 512 training cases
+   ($32^3$, `pilot01`), 0.125 % with 128 ($32^3$, `fast04`) and 0.129 % with 128
+   ($64^3$, `ladder64`), so the floor is insensitive to the count over a 4x range.
+   48 cases still give 288 centered snapshots for a rank-64 basis, and **the floor
+   is measured in the job**, so if this reduction does hurt the bank it will show
+   up there rather than being assumed away.
+2. **FOM ladder $\{0.002, 0.0025, 0.004, 0.005, 0.01\}$**, dropping
+   $\Delta t = 0.001$. The explicit stability limit halves from $64^3$ to $128^3$
+   (stable at 0.005, unstable at 0.01 at $64^3$), so the coarsest stable step
+   should be near 0.0025 and the ladder brackets it from both sides. Re-running the
+   200-step $\Delta t = 0.001$ reference on 16 cases at $128^3$ would cost about
+   half an hour for a row whose error is zero by construction.
+
+If the $128^3$ floor comes out materially worse than 0.13 %, the accuracy result at
+that mesh is attributed to the reduced training set and reported as such rather
+than as a property of the method.

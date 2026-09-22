@@ -68,41 +68,45 @@
  },
  "rom_arms": [
   {
-   "name": "nmrom_q0_field_cn_tol1e-4_chol",
-   "q": 0,
-   "opt": {
-    "init": "field",
-    "tolerance": 0.0001,
-    "cholesky": true
-   }
-  },
-  {
-   "name": "nmrom_q0_field_direct_tol1e-4_chol",
+   "name": "nmrom_q0_field_cn_tol1e-4_chol_s1",
    "q": 0,
    "opt": {
     "init": "field",
     "tolerance": 0.0001,
     "cholesky": true,
-    "stepping": "exact_direct"
+    "starts": 1
    }
   },
   {
-   "name": "nmrom_q160_field_cn_tol1e-4_chol",
-   "q": 160,
+   "name": "nmrom_q0_direct_tol1e-4_chol_mom_s1",
+   "q": 0,
    "opt": {
-    "init": "field",
+    "init": "moments",
     "tolerance": 0.0001,
-    "cholesky": true
+    "cholesky": true,
+    "stepping": "exact_direct",
+    "starts": 1
    }
   },
   {
-   "name": "nmrom_q160_field_direct_tol1e-4_chol",
+   "name": "nmrom_q160_field_cn_tol1e-4_chol_s1",
    "q": 160,
    "opt": {
     "init": "field",
     "tolerance": 0.0001,
     "cholesky": true,
-    "stepping": "exact_direct"
+    "starts": 1
+   }
+  },
+  {
+   "name": "nmrom_q160_direct_tol1e-4_chol_mom_s1",
+   "q": 160,
+   "opt": {
+    "init": "moments",
+    "tolerance": 0.0001,
+    "cholesky": true,
+    "stepping": "exact_direct",
+    "starts": 1
    }
   }
  ],

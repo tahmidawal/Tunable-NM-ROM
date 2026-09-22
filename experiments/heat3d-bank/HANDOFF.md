@@ -37,3 +37,8 @@ Next: submit speedR256 (4146429) + speedR320 (4146432) RUNNING (configs speed_*.
 speedR256 4146429 / speedR320 4146432: collected, all checks passed, remotes removed. After speed2: collect, `select_speed2.py
 runs/speed2/speed2_vp_R256_K16`, commit, then submit final01 (LAST job, 8 of 8):
 `cluster/submit.sh final01 h200 14:00:00 240G - - final01.json final01b.json`. Nothing else may be submitted.
+
+## 2026-09-22 — speed2 (4149861) collected, all checks passed, remote removed; addendum-2 selection applied
+Panel B arms (`configs/final01b.json`, `selection_addendum2.json`): R256/K16, q in {0,160}: `field_cn_tol1e-4_chol_s1` (13.2 ms val) and
+`direct_tol1e-4_chol_mom_s1` (6.3 ms val); all variants 0.543 % at q160; CN dt0.05 variants had non-stationary exits -> ineligible.
+Next: final01 = LAST job (8 of 8), panels A (final01.json) + B (final01b.json).

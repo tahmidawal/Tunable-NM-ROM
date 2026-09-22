@@ -1,8 +1,9 @@
 {
- "note": "Every file copied into this lane, with the worktree and commit it came from. The b-panel harness (panel.py, audit_panel.py, cluster/, inputs/) and its JAX-side modules come from exp/2026-09-17-b-panel; the torch-side operator adapter comes from exp/2026-09-17-no-second.",
+ "note": "Every file copied into this lane, with the worktree and commit it came from. The b-panel harness (panel.py, audit_panel.py, cluster/, inputs/) and its JAX-side modules come from exp/2026-09-17-b-panel; the torch-side operator adapter comes from exp/2026-09-17-no-second. For opt201 (DESIGN A1) lib/families.py and lib/model.py are replaced by the ops-deeponet-b2d lane's versions, which add a DeepONet branch; checks/parity_families.py proved the swap leaves all nine opt101 arms bitwise identical.",
  "source_commits": {
   "exp/2026-09-17-b-panel": "25434a27bfc8857d81859784250b0bfd9a78adfd",
-  "exp/2026-09-17-no-second": "ea812685e7386e6af631a646e996c5428794f560"
+  "exp/2026-09-17-no-second": "ea812685e7386e6af631a646e996c5428794f560",
+  "exp/2026-09-22-ops-deeponet-b2d": "306c939d956b0425ada2569a8fc6d2bab1f06ea9"
  },
  "files": [
   {
@@ -263,11 +264,13 @@
   },
   {
    "lane_path": "lib/families.py",
-   "source_worktree": "2026-09-17-no-second",
-   "source_path": "experiments/no-second/families.py",
-   "source_commit": "ea812685e7386e6af631a646e996c5428794f560",
-   "sha256": "11efca39993f7e34421d873a8f3f69a911f5348fe0973b74745e8b0d553b88df",
-   "bytes": 12230
+   "source_worktree": "2026-09-22-ops-deeponet-b2d",
+   "source_path": "experiments/ops-deeponet-b2d/families.py",
+   "source_commit": "306c939d956b0425ada2569a8fc6d2bab1f06ea9",
+   "sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+   "bytes": 16699,
+   "replaced_for": "opt201",
+   "superseded_source": "2026-09-17-no-second"
   },
   {
    "lane_path": "lib/fast.py",
@@ -311,11 +314,13 @@
   },
   {
    "lane_path": "lib/model.py",
-   "source_worktree": "2026-09-17-no-second",
-   "source_path": "experiments/no-second/model.py",
-   "source_commit": "ea812685e7386e6af631a646e996c5428794f560",
-   "sha256": "08a5b5ed65ce4ca5e6db8a15d26cfecb803f2470742baa9416f3d73dee25c397",
-   "bytes": 5280
+   "source_worktree": "2026-09-22-ops-deeponet-b2d",
+   "source_path": "experiments/ops-deeponet-b2d/model.py",
+   "source_commit": "306c939d956b0425ada2569a8fc6d2bab1f06ea9",
+   "sha256": "70a14f70429134f58e6d81a8fbd94992b4f1969fdd7648cb0cd8386248917f3e",
+   "bytes": 5370,
+   "replaced_for": "opt201",
+   "superseded_source": "2026-09-17-no-second"
   },
   {
    "lane_path": "lib/sep_common.py",

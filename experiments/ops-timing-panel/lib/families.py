@@ -21,6 +21,20 @@ the value 0 rather than the normalised boundary value; it is cropped away at the
 and the mask restores the exact boundary, so it is a fixed ring the networks learn
 around, not a correctness issue.
 
+DeepONet. The branch/trunk operator of Lu et al. (Nat. Mach. Intell. 2021), in the
+2D analogue of the form this project's 3D lanes already use (`deeponet3d` in
+`paper-b3d/operators/extra_models3d.py`): a convolutional branch over the supplied
+field and parameter channels -- `levels` levels of two 3x3 convolutions with GELU
+followed by 2x2 average pooling, then an exact adaptive average pool to
+`pool_bins` x `pool_bins`, a GELU hidden layer and a linear read to
+`cout * rank` coefficients -- and an MLP trunk over the coordinate channels with
+sinusoidal features at `trunk_frequencies`, `tanh` activations and a linear read to
+`rank` basis functions. The output is the rank-`rank` contraction
+`u_c(y) = sum_k B_{ck} T_k(y) / sqrt(rank) + bias_c`, exactly as in 3D. The trunk is
+evaluated once per forward on the coordinate channels of the first batch element:
+`model.features` builds those channels from the field shape alone, so they are
+bitwise identical across a batch (asserted in `smoke_second.py`).
+
 U-Net. The PDEBench 2D baseline topology (GroupNorm and GELU in place of PDEBench's
 BatchNorm and tanh): a four-level encoder–decoder with two 3×3
 convolutions per level, channel doubling per level from `base` to `16*base` at the
@@ -50,7 +64,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-FAMILIES = ('unet', 'transolver')
+FAMILIES = ('unet', 'transolver', 'deeponet')
 DTYPES = {'float32': torch.float32, 'float64': torch.float64}
 
 
@@ -215,6 +229,59 @@ class Transolver2d(nn.Module):
         return crop(out, box)
 
 
+# -------------------------------------------------------------------------- DeepONet
+
+
+class DeepONet2d(nn.Module):
+    """Branch/trunk DeepONet; the 2D analogue of this project's `deeponet3d`."""
+
+    def __init__(self, cin, cout, width, rank, trunk_width, levels=3, pool_bins=4,
+                 frequencies=(1., 2., 4.)):
+        super().__init__()
+        assert trunk_width >= rank, 'a declared rank needs trunk_width >= rank'
+        self.cout, self.rank, self.pool_bins = cout, rank, pool_bins
+        self.frequencies = tuple(float(f) for f in frequencies)
+        blocks, ci = [], cin - 2  # the last two channels are the x, y coordinates
+        for level in range(levels):
+            co = width * 2 ** level
+            blocks.append(nn.Sequential(nn.Conv2d(ci, co, 3, padding=1), nn.GELU(),
+                                        nn.Conv2d(co, co, 3, padding=1), nn.GELU()))
+            ci = co
+        self.branch = nn.ModuleList(blocks)
+        self.branch_hidden = nn.Linear(ci * pool_bins * pool_bins, trunk_width)
+        self.branch_read = nn.Linear(trunk_width, rank * cout)
+        features = 2 * (1 + 2 * len(self.frequencies))
+        self.trunk = nn.ModuleList([nn.Linear(features, trunk_width), nn.Linear(trunk_width, trunk_width),
+                                    nn.Linear(trunk_width, rank)])
+        self.bias = nn.Parameter(torch.zeros(cout))
+        # The 3D lane scales the read-out down at initialisation; keep that.
+        with torch.no_grad():
+            self.branch_read.weight.mul_(0.1)
+            self.branch_read.bias.zero_()  # 3D `_dense(scale=.1)` has a zero bias
+
+    def forward(self, x):  # B C H W
+        b, _, h, w = x.shape
+        z = x[:, :-2]
+        for block in self.branch:
+            z = F.avg_pool2d(block(z), 2, ceil_mode=True)
+        z = F.adaptive_avg_pool2d(z, self.pool_bins).reshape(b, -1)
+        coefficients = self.branch_read(F.gelu(self.branch_hidden(z))).reshape(b, self.cout, self.rank)
+        # Coordinate channels are batch-invariant by construction in `model.features`.
+        # `model.features` builds the coordinate channels on [0, 1]; the 3D lane's trunk
+        # consumes coordinates on [-1, 1], so map them before the sinusoidal features or
+        # every declared frequency would cover half its period (audit finding M1).
+        coords = x[0, -2:].permute(1, 2, 0).reshape(-1, 2) * 2 - 1
+        trunk = [coords]
+        for frequency in self.frequencies:
+            trunk += [torch.sin(math.pi * frequency * coords), torch.cos(math.pi * frequency * coords)]
+        trunk = torch.cat(trunk, dim=-1)
+        for layer in self.trunk[:-1]:
+            trunk = torch.tanh(layer(trunk))
+        trunk = self.trunk[-1](trunk)  # N rank
+        out = coefficients @ trunk.transpose(0, 1) / math.sqrt(self.rank)  # B cout N
+        return out.reshape(b, self.cout, h, w) + self.bias[None, :, None, None]
+
+
 # -------------------------------------------------------------------------- factory
 
 
@@ -222,6 +289,11 @@ def make(family, cin, cout, config):
     dtype = DTYPES[config.get('dtype', 'float32')]
     if family == 'unet':
         network = UNet2d(cin, cout, base=config['base'], groups=config.get('groups', 8))
+    elif family == 'deeponet':
+        network = DeepONet2d(cin, cout, width=config['width'], rank=config['rank'],
+                             trunk_width=config['trunk_width'], levels=config.get('levels', 3),
+                             pool_bins=config.get('pool_bins', 4),
+                             frequencies=config.get('trunk_frequencies', (1., 2., 4.)))
     elif family == 'transolver':
         network = Transolver2d(cin, cout, dim=config['dim'], layers=config['layers'], heads=config['heads'],
                                slices=config['slices'], mlp_ratio=config.get('mlp_ratio', 2),
@@ -239,7 +311,9 @@ if __name__ == '__main__':
     import json
     import sys
     for family, grid in (('unet', [dict(base=b) for b in (24, 32, 48)]),
-                         ('transolver', [dict(dim=d, layers=8, heads=8, slices=64, patch=4) for d in (128, 192, 256)])):
+                         ('transolver', [dict(dim=d, layers=8, heads=8, slices=64, patch=4) for d in (128, 192, 256)]),
+                         ('deeponet', [dict(width=wd, rank=rk, trunk_width=tw)
+                                       for wd, rk, tw in ((48, 256, 384), (64, 384, 512), (96, 512, 768))])):
         for config in grid:
             net = make(family, 4, 5, config)
             print(json.dumps(dict(family=family, config=config, real_parameters=parameter_count(net))))

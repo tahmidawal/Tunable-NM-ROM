@@ -59,6 +59,8 @@ def smoke_bounded(config):
         return config["width"] <= 8 and config["layers"] <= 2
     if family == "unet":
         return config["base"] <= 8
+    if family == "deeponet":
+        return config["width"] <= 8 and config["rank"] <= 16
     if family == "transolver":
         return config["dim"] <= 32 and config["layers"] <= 2
     raise ValueError(family)

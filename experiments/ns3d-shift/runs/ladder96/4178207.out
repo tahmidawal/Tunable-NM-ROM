@@ -1,0 +1,58 @@
+host=pax049 source_commit=d28918619fc2a6d37bda45fc0167b5b77f1b48bb job=4178207
+NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.20:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=440.3 devices=[CudaDevice(id=0)]
+generating trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+centering the training snapshots in place (GPU), cross-checked against numpy
+gpu centering vs numpy: 1.630e-15
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.339e-09 energy_tail=1.413e-08
+centered POD available rank 64
+floor rank 64 evolved worst 0.001289
+operators rank 64: {'modes': 292, 'rank': 64, 'bank_orthonormality': 6.328271240363392e-15, 'check_modes': 8, 'A_condition': 104.90921873572103, 'A_smallest_singular': 0.009527737661942948, 'subset_test_orthogonality': 1.047407416643613e-13, 'A_relative': 9.595073457138593e-15, 'derivative_relative': 3.4469464661749432e-15, 'diffusion_relative': 1.0803792437703931e-14, 'tensor_relative': 4.6223912387147984e-15, 'shift_sign_relative': 2.3629450095078252e-11}
+reference LM rank 64 dt 0.01 evolved worst 0.005262
+r64_dt0.04_it2: evolved worst 0.019902 (0/16 over target)
+r64_dt0.04_it3: evolved worst 0.019463 (0/16 over target)
+r64_dt0.04_it4: evolved worst 0.019456 (0/16 over target)
+r64_dt0.02_it2: evolved worst 0.006166 (0/16 over target)
+r64_dt0.02_it3: evolved worst 0.006159 (0/16 over target)
+r64_dt0.02_it4: evolved worst 0.006159 (0/16 over target)
+r64_dt0.01_it2: parity vs LM 5.371e-06
+r64_dt0.01_it2: evolved worst 0.005262 (0/16 over target)
+r64_dt0.01_it3: parity vs LM 1.429e-08
+r64_dt0.01_it3: evolved worst 0.005262 (0/16 over target)
+r64_dt0.01_it4: parity vs LM 6.997e-09
+r64_dt0.01_it4: evolved worst 0.005262 (0/16 over target)
+tracker evolved worst 0.025288
+CNAB2 dt=0.001 evolved worst 0.000000 unstable=False
+CNAB2 dt=0.002 evolved worst 0.000186 unstable=False
+CNAB2 dt=0.004 evolved worst 0.010479 unstable=False
+CNAB2 dt=0.005 evolved worst 0.211063 unstable=False
+CNAB2 dt=0.01 evolved worst 17.079417 unstable=True
+CNAB2 dt=0.02 evolved worst 2.747268 unstable=True
+timing 22 arms, 7 interleaved repetitions
+done
+r64_dt0.01_it2 {"evolved_worst": 0.005262170966118741, "evolved_median": 0.0032547202127833717, "gap": 1.734723475976807e-18}
+verify ok 1.734723475976807e-18 parity 6.996985444276716e-09
+SHIFT_EXIT=0

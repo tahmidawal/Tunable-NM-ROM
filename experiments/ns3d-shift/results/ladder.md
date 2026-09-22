@@ -6,8 +6,11 @@ Generated from each job's `summary.json` by `write_ladder_table.py`. Accuracy is
 
 | mesh | best setting meeting 5 % | evolved worst | over 5 % | ROM ms | comparator | stable? | comparator error | comparator ms | paired speedup | stability-limited FOM | that speedup |
 |---:|---|---:|---:|---:|---|---|---:|---:|---:|---|---:|
-| 32^3 | r64 dt0.02 it3 | 0.602% | 0/16 | 5.302 | CNAB2 dt=0.005 | stable | 0.152% | 5.342 | **1.01x** | CNAB2 dt=0.01 | 0.59x |
-| 64^3 | r64 dt0.04 it3 | 1.946% | 0/16 | 5.370 | CNAB2 dt=0.005 | stable | 0.382% | 19.086 | **3.55x** | CNAB2 dt=0.005 | 3.55x |
+| 32^3 | r64 dt0.04 it4 | 1.912% | 0/16 | 3.893 | CNAB2 dt=0.01 | stable | 0.788% | 3.114 | **0.80x** | CNAB2 dt=0.01 | 0.80x |
+| | *parity at 32^3: 2 sweeps 5.03e-06, 3 sweeps 1.46e-08, 4 sweeps 7.87e-09* | | | | | | | | | | |
+| 64^3 | *no sweep count met the 1e-8 parity gate at this mesh (best 1.43e-08)* | | | | | | | | | | |
+| 96^3 | r64 dt0.02 it4 | 0.616% | 0/16 | 16.990 | CNAB2 dt=0.002 | stable | 0.019% | 179.122 | **10.54x** | CNAB2 dt=0.004 | 5.42x |
+| | *parity at 96^3: 2 sweeps 5.37e-06, 3 sweeps 1.43e-08, 4 sweeps 7.00e-09* | | | | | | | | | | |
 
 The **stability-limited FOM** is the cheapest stable CNAB2 that itself meets the 5 % target, i.e. the cheapest the FOM can honestly be run at that mesh. Where it equals the matched-accuracy comparator, the speedup is pure throughput; where it is coarser, the extra margin comes from the reduced model being more accurate than the FOM at that step, not from taking a step the FOM cannot.
 
@@ -133,4 +136,57 @@ The six-output contract plus the initial projection is 2.972 ms at rank 64. A so
 Independent NumPy recomputation: worst disagreement 0.000e+00; driver-fix parity against the LM arm 1.429e-08.
 
 GPU: NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB. Job 4178149, commit `eceb1b779d92897cc7b9f6da7abdf60c8ef1757e`. Operator checks and the GPU-centering cross-check are in the summary.
+
+## 96^3
+
+### Representation floor (is accuracy limited by the bank?)
+
+| rank | oracle-shift floor, evolved worst | over 5 % |
+|---:|---:|---:|
+| 64 | 0.129% | 0/16 |
+
+### Accuracy-cost frontier
+
+| rank | dt | steps | sweeps | evolved worst | over 5 % | query ms | comparator | comparator ms | paired speedup |
+|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| 64 | 0.02 | 10 | 2 | 0.617% | 0/16 | 14.202 | CNAB2 dt=0.002 | 179.122 | 12.612x |
+| 64 | 0.02 | 10 | 3 | 0.616% | 0/16 | 15.510 | CNAB2 dt=0.002 | 179.122 | 11.549x |
+| 64 | 0.02 | 10 | 4 | 0.616% | 0/16 | 16.990 | CNAB2 dt=0.002 | 179.122 | 10.543x |
+| 64 | 0.01 | 20 | 2 | 0.526% | 0/16 | 17.034 | CNAB2 dt=0.002 | 179.122 | 10.516x |
+| 64 | 0.01 | 20 | 3 | 0.526% | 0/16 | 19.622 | CNAB2 dt=0.002 | 179.122 | 9.129x |
+| 64 | 0.01 | 20 | 4 | 0.526% | 0/16 | 22.612 | CNAB2 dt=0.002 | 179.122 | 7.922x |
+| 64 | 0.04 | 5 | 2 | 1.990% | 0/16 | 12.713 | CNAB2 dt=0.004 | 92.069 | 7.242x |
+| 64 | 0.04 | 5 | 3 | 1.946% | 0/16 | 13.341 | CNAB2 dt=0.004 | 92.069 | 6.901x |
+| 64 | 0.04 | 5 | 4 | 1.946% | 0/16 | 14.170 | CNAB2 dt=0.004 | 92.069 | 6.497x |
+
+**Stability and step size.** For CNAB2 at this mesh, steps at or above 0.01 blew up (evolved worst over 100 %); the coarsest step that both stays finite and meets the 5 % target is 0.004 (50 steps) -- that is the stability-limited comparator. The reduced model runs at 0.04 (5 steps), because its step is solved implicitly at the midpoint instead of advanced explicitly. Where the two comparator columns differ, the gap between them is the part of the margin that comes from a step the FOM cannot take rather than from throughput.
+
+### Baselines and the FOM ladder
+
+| arm | evolved worst | over 5 % | median ms | note |
+|---|---:|---:|---:|---|
+| reference LM arm (rank 64, dt 0.01) | 0.526% | 0/16 | 33.908 | the pre-fix solver, same job |
+| centroid tracker (rank 64, dt 0.01) | 2.529% | 0/16 | 202.848 | the arm to beat |
+| CNAB2 dt=0.001 (200 steps) | 0.000% | 0/16 | 353.557 | this is the reference itself |
+| CNAB2 dt=0.002 (100 steps) | 0.019% | 0/16 | 179.122 |  |
+| CNAB2 dt=0.004 (50 steps) | 1.048% | 0/16 | 92.069 |  |
+| CNAB2 dt=0.005 (40 steps) | 21.106% | 1/16 | 74.571 |  |
+| CNAB2 dt=0.01 (20 steps) | 1707.942% | 6/16 | 39.586 | **unstable** |
+| CNAB2 dt=0.02 (10 steps) | 274.727% | 12/16 | 22.223 | **unstable** |
+
+### Cost breakdown
+
+| piece | median ms |
+|---|---:|
+| initial r64 | 1.652 |
+| output r64 | 1.520 |
+| four extra output reconstructions (r64_dt0.01_it2) | 7.396 |
+| four extra output reconstructions (r64_dt0.02_it2) | 7.432 |
+| four extra output reconstructions (r64_dt0.04_it2) | 7.367 |
+
+The six-output contract plus the initial projection is 9.253 ms at rank 64. A solve of zero cost would therefore cap the speedup at **9.95x** against the stability-limited FOM (CNAB2 dt=0.004, 92.069 ms) at this mesh.
+
+Independent NumPy recomputation: worst disagreement 1.735e-18; driver-fix parity against the LM arm 6.997e-09.
+
+GPU: NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB. Job 4178207, commit `d28918619fc2a6d37bda45fc0167b5b77f1b48bb`. Operator checks and the GPU-centering cross-check are in the summary.
 

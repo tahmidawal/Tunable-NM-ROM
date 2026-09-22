@@ -65,11 +65,18 @@ def main():
         n = s["config"]["n"]
         t = s["timing"]["arms"]
         matched, (slim_ms, slim_dt) = comparators(s, t)
+        # gate membership comes from the MEASURED parity at this mesh, not a fixed
+        # sweep count: 3 sweeps met 1e-8 at 32^3 and missed it at 64^3 and 96^3.
+        parity_by_sweep = {v["iters"]: v["parity_vs_reference_lm"]
+                           for v in s["frontier"].values()
+                           if "parity_vs_reference_lm" in v}
+        ok_sweeps = {i for i, pv in parity_by_sweep.items() if pv <= 1e-8}
         gated = {k: v for k, v in s["frontier"].items()
                  if v["stats"]["cases_evolved_over_target"] == 0
-                 and v["iters"] >= s["config"].get("parity_gated_iters", 3)}
+                 and v["iters"] in ok_sweeps}
         if not gated:
-            W(f"| {n}^3 | none meets the target | | | | | | | | | | |")
+            W(f"| {n}^3 | *no sweep count met the 1e-8 parity gate at this mesh "
+              f"(best {min(parity_by_sweep.values()):.2e})* | | | | | | | | | | |")
             continue
         best = max(gated, key=lambda k: (matched(gated[k]["stats"]["evolved_worst"])[0] or 0)
                    / t[f"query_{k}"]["median_ms"])
@@ -82,6 +89,9 @@ def main():
             dname, pct(s["cnab2"][dname]["stats"]["evolved_worst"]), ms(cms), cms / q,
             f"CNAB2 dt={slim_dt}" if slim_dt else "none",
             f"{slim_ms / q:.2f}x" if slim_dt else "-"))
+        W(f"| | *parity at {n}^3: "
+          + ", ".join(f"{i} sweeps {pv:.2e}" for i, pv in sorted(parity_by_sweep.items()))
+          + "* | | | | | | | | | | |")
     W("")
     W("The **stability-limited FOM** is the cheapest stable CNAB2 that itself meets the 5 % "
       "target, i.e. the cheapest the FOM can honestly be run at that mesh. Where it equals the "

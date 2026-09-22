@@ -1,4 +1,7 @@
-"""Independent NumPy audit of one collected attempt. Imports neither torch nor jax
+"""Independent NumPy audit of one collected attempt.
+
+Inherited from `experiments/no-second/audit.py`; the only change is that the family
+whitelist admits `deeponet` (audit finding B1, DESIGN A2). Imports neither torch nor jax
 nor any driver file.
 
     python audit.py <attempt>
@@ -91,7 +94,7 @@ def audit_arm_poisson(folder, rows, data_root):
     config = provenance['config']
     for key, value in dict(epochs=500, patience=80, batch_size=8, weight_decay=0.0001).items():
         assert config[key] == value, (folder, key, config[key])
-    assert config['learning_rate'] in LEARNING_RATES and config['seed'] == 20260914 and config['family'] in ('unet', 'transolver')
+    assert config['learning_rate'] in LEARNING_RATES and config['seed'] == 20260914 and config['family'] in ('unet', 'transolver', 'deeponet')
     discrete, physical, declared = [], [], []
     for index, row in enumerate(rows):
         with np.load(data_root / row['path']) as case:
@@ -146,7 +149,7 @@ def audit_arm(folder, rows, data_root):
     for key, value in PROTOCOL.items():
         assert config[key] == value, (folder, key, config[key])
     assert config['learning_rate'] in LEARNING_RATES and config['seed'] in (20260914, 20260915), folder
-    assert config['family'] in ('unet', 'transolver')
+    assert config['family'] in ('unet', 'transolver', 'deeponet')
     per_case, per_time, declared = [], [], []
     for index, row in enumerate(rows):
         with np.load(data_root / row['path']) as case:

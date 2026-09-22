@@ -257,6 +257,7 @@ class DeepONet2d(nn.Module):
         # The 3D lane scales the read-out down at initialisation; keep that.
         with torch.no_grad():
             self.branch_read.weight.mul_(0.1)
+            self.branch_read.bias.zero_()  # 3D `_dense(scale=.1)` has a zero bias
 
     def forward(self, x):  # B C H W
         b, _, h, w = x.shape
@@ -266,7 +267,10 @@ class DeepONet2d(nn.Module):
         z = F.adaptive_avg_pool2d(z, self.pool_bins).reshape(b, -1)
         coefficients = self.branch_read(F.gelu(self.branch_hidden(z))).reshape(b, self.cout, self.rank)
         # Coordinate channels are batch-invariant by construction in `model.features`.
-        coords = x[0, -2:].permute(1, 2, 0).reshape(-1, 2)
+        # `model.features` builds the coordinate channels on [0, 1]; the 3D lane's trunk
+        # consumes coordinates on [-1, 1], so map them before the sinusoidal features or
+        # every declared frequency would cover half its period (audit finding M1).
+        coords = x[0, -2:].permute(1, 2, 0).reshape(-1, 2) * 2 - 1
         trunk = [coords]
         for frequency in self.frequencies:
             trunk += [torch.sin(math.pi * frequency * coords), torch.cos(math.pi * frequency * coords)]

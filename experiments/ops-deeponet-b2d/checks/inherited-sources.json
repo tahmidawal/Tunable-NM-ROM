@@ -3,10 +3,8 @@
   "source": "experiments/no-second",
   "identical": {
     "NEURALOPERATOR-LICENSE": "5f335b0603acfb1d180bf3117492e2076562075cc9b6353a3b94d5d5bc03ef33",
-    "audit.py": "62868221a5bc290d70a86bc038671f014a899ddb9b518d0b3f6e0b263d025e6b",
     "check_burgers_error_definition.py": "0c92e60b92785945d64631f8a9247ee80ba599f9e35c604ea697415dc17289c5",
     "check_fno_parity.py": "0d6d8b70f64eddf1c2910de9fffd3ae2fe45c9d799a0e11507af5e2d2427dcd6",
-    "cluster/collect.py": "0d9bcd2efd5f89f3aec7ec05fd55f97df4c1fad3aefa22fcd44c16d4e71cf8f6",
     "configs/transolver/large.json": "bb8aa1f0e740e767f2d2acc6f1ba90c7ef0a8b78e1adc4f5307743b23ad4aed6",
     "configs/transolver/medium.json": "235b64e13647d7edb9b4c1270106c3677454efc7f8fcd13e4541b3176bffaba0",
     "configs/transolver/small.json": "093149b71c513c2f42a1da202efb8d7cd11be4014c7e0b1a0a6833b856366e8b",
@@ -25,15 +23,23 @@
   },
   "changed": {
     "DESIGN.md": {
-      "sha256": "826b5635e0194c737477a867fc3e80699b597e920dee4484d8bb2bf70b304453",
+      "sha256": "4c77d6027605c509f0e1d23ddd475568c3ff70c945b63a9ddddb2e3fe454a9cf",
       "fork_sha256": "3d97bbf8f533ca904e0060e43bb086743a4dd53f4887ad28afa7153d3af9ac3d"
+    },
+    "audit.py": {
+      "sha256": "b14306e14eeaf9beef238b369dec04f5deea88ef294df82e6d158305b879ba34",
+      "fork_sha256": "62868221a5bc290d70a86bc038671f014a899ddb9b518d0b3f6e0b263d025e6b"
+    },
+    "cluster/collect.py": {
+      "sha256": "2190b6a9ba96942c1276edeea5c80f370a51335ebc14ffed338c00a649cf5157",
+      "fork_sha256": "0d9bcd2efd5f89f3aec7ec05fd55f97df4c1fad3aefa22fcd44c16d4e71cf8f6"
     },
     "cluster/stage.py": {
       "sha256": "a860e321a9f9c263bcbb2a54e097ac7fbec050d6a3532556bfad487f8a797497",
       "fork_sha256": "db54e59add82412650785c9c27a482a6fc24bd117a953df851364eb053a056e6"
     },
     "families.py": {
-      "sha256": "6bcc69f2cc22cf4ed0f7c7aed851969278a2947aebf946fa4ba8b3c450832230",
+      "sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
       "fork_sha256": "11efca39993f7e34421d873a8f3f69a911f5348fe0973b74745e8b0d553b88df"
     },
     "model.py": {
@@ -54,7 +60,8 @@
     }
   },
   "new": {
-    "check_inherited.py": "6cba237f099924e2136ca20a422a5e498d45e14f2762e9658d59dc9bf35ce4d5",
+    "HANDOFF.md": "34e6a72301b099c26ad2e26fe08dd051f6cab48e66c9aa5122f2366c94e90899",
+    "check_inherited.py": "aab17a881e33a17752d6a5add272769dcd5ea351a130e28d42cd1dd92c3ca741",
     "configs/deeponet/large.json": "82d3ec3791483d3845ff63b2741c1c846881b2368d368550c6a43504ecf1e934",
     "configs/deeponet/medium.json": "669f9f8d3cf3ed599042fc4149b0a160fdd97de4b1b8e0d8ff624ea7555f957d",
     "configs/deeponet/small.json": "852c79f553e3f51fc30de8afa63804fe2aa0dbcc20742a130e87a425b43e216e",

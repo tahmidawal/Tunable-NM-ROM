@@ -1,4 +1,7 @@
-"""Checksum-collect one exact completed no-second attempt; remote cleanup stays explicit.
+"""Checksum-collect one exact completed ops-deeponet-b2d attempt; remote cleanup stays explicit.
+
+Inherited from `experiments/no-second/cluster/collect.py`; the only changes are the lane
+path and the cluster namespace (audit finding B2, DESIGN A2).
 
     python cluster/collect.py <attempt>            # verify remotely, tar, scp, verify, extract
     python cluster/collect.py <attempt> --cleanup  # ONLY after audit.py passed: rm the remote dir
@@ -20,8 +23,8 @@ import shlex
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
-LANE = ROOT / 'experiments/no-second'
-NAMESPACE = '/cluster/tufts/paralab/tawal01/no_second_20260917'
+LANE = ROOT / 'experiments/ops-deeponet-b2d'
+NAMESPACE = '/cluster/tufts/paralab/tawal01/opsdon_20260922'
 EXCLUDES = ['--exclude=*/last.pt', '--exclude=*.solver.npz', '--exclude=cache', '--exclude=tmp',
             '--exclude=data/train', '--exclude=data/refinement', '--exclude=code/__pycache__']
 

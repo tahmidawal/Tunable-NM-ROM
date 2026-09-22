@@ -19,8 +19,8 @@ LANE = Path(__file__).resolve().parent
 ROOT = LANE.parents[1]
 SOURCE = 'experiments/no-second'
 EXPECTED_CHANGED = {'DESIGN.md', 'families.py', 'model.py', 'smoke_second.py', 'training_smoke_second.py',
-                    'worker_second.py', 'cluster/stage.py'}
-EXPECTED_NEW = {'DESIGN.md', 'check_inherited.py', 'specs/don01.json',
+                    'worker_second.py', 'audit.py', 'cluster/stage.py', 'cluster/collect.py'}
+EXPECTED_NEW = {'HANDOFF.md', 'check_inherited.py', 'specs/don01.json',
                 'configs/deeponet/small.json', 'configs/deeponet/medium.json', 'configs/deeponet/large.json'}
 
 

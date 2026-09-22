@@ -4,7 +4,7 @@
   "n": 128,
   "dt_truth": 0.001,
   "horizon": 0.2,
-  "train_cases": 48,
+  "train_cases": 128,
   "dev_cases": 16,
   "train_seed": 202609201,
   "dev_seed": 202609202,
@@ -34,6 +34,7 @@
   "lm_budget": 60,
   "lm_gtol": 1e-07,
   "fom_dt_ladder": [
+    0.001,
     0.002,
     0.0025,
     0.004,

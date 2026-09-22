@@ -437,10 +437,20 @@ The FOM ladder is extended to $\Delta t \in \{0.001,0.002,0.004,0.005,0.01,0.02\
 so the comparator search reaches below the explicit stability limit at the finer
 meshes. $\Delta t = 0.001$ is the reference itself and is labelled as such.
 
-## Amendment — `ladder128` budget, written before staging
+## Amendment — `ladder128` budget: a cut made, then WITHDRAWN
 
-Two reductions at $128^3$ only, both forced by wall time and both recorded before
-the job was staged.
+**Withdrawn before the job was staged. Recorded because the reasoning was wrong and
+the mistake is instructive.** Two reductions were written down here on the belief
+that trajectory generation was taking about 50 s per case at $96^3$ and would
+consume most of a $128^3$ allocation. That belief came from misreading `squeue`'s
+elapsed-time field: `2:13` is two minutes and thirteen seconds, not two hours. The
+job's own clock settles it -- `ladder64` reports `elapsed_seconds` of **152** for
+the entire run, and its timed CNAB2 at $\Delta t=0.001$ is 89.2 ms per trajectory,
+so generating 144 trajectories costs well under a minute. Nothing needed cutting.
+
+`ladder128` therefore runs with the **same 128 training cases as the rest of the
+ladder** and the **full FOM ladder including $\Delta t = 0.001$**, so the meshes
+stay directly comparable. The two paragraphs below are the withdrawn text.
 
 1. **Training cases 128 -> 48.** Trajectory generation, not the reduced model,
    dominates these jobs: at $96^3$ it ran at roughly 50 s per trajectory, about
@@ -459,6 +469,9 @@ the job was staged.
    200-step $\Delta t = 0.001$ reference on 16 cases at $128^3$ would cost about
    half an hour for a row whose error is zero by construction.
 
-If the $128^3$ floor comes out materially worse than 0.13 %, the accuracy result at
-that mesh is attributed to the reduced training set and reported as such rather
-than as a property of the method.
+(End of withdrawn text.) The floor is still measured in the job at every mesh, so
+if the bank were ever the limiting factor it would show up there rather than being
+assumed away. The FOM ladder at $128^3$ additionally carries $\Delta t = 0.0025$,
+because the explicit stability limit halves from $64^3$ (stable at 0.005, unstable
+at 0.01) and the coarsest stable step at $128^3$ should sit near there; the ladder
+brackets it from both sides.

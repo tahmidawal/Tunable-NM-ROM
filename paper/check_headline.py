@@ -341,5 +341,40 @@ _app2 = (P / 'sections/appendix.tex').read_text()
 assert r'\label{tab:ops256}' in _app2 and r'\input{tables/TR_ops256}' in _app2
 assert 'cohort-specific' in _app2 and 'discretisation error' in _app2            # the two qualifications stay
 assert 'every arm stopped on its wall budget' not in _app2                       # made conditional on the recorded stop reason
+# 2026-09-22 ops-deeponet-b2d intake: the 2D DeepONet rows re-derived from its pinned blobs
+_dm = json.loads((P / 'evidence/ops-deeponet-b2d-2026-09-22/manifest.json').read_text())
+for _k, _v in _dm.items():
+    assert hashlib.sha256((P / f'evidence/ops-deeponet-b2d-2026-09-22/{_k}.json').read_bytes()).hexdigest() == _v['sha256'], _k
+    assert _v['commit'].startswith('306c939d')
+_ds = json.loads((P / 'evidence/ops-deeponet-b2d-2026-09-22/summary.json').read_text())
+_da = json.loads((P / 'evidence/ops-deeponet-b2d-2026-09-22/audit.json').read_text())
+assert _da['identical_split_to_fno_job'] and _da['split_hashes_cross_checked_against_archived_manifest']
+_dv = {(r['arm'], r['metric']): 100 * r['value'] for r in _ds['rows'] if 'arm' in r and r['cohort'] == 'validation-32'}
+_dmatch = {r['arm']: 100 * r['value'] for r in _ds['rows']
+           if 'arm' in r and r['cohort'] == 'diagnosis-8' and r['metric'] == 'worst_fixed_initial_error'}
+_darms = sorted({a for a, _ in _dv if a.startswith('don-')})
+assert len(_darms) == 4
+_dt = (P / 'tables/TR_deeponet2d.tex').read_text()
+for _a in _darms + ['unet-refine', 'tsol-refine', 'fno-large']:
+    for _k in ('mean_fixed_initial_error', 'median_fixed_initial_error', 'worst_fixed_initial_error'):
+        assert _e2(_dv[(_a, _k)]) in _dt, (_a, _k)
+    assert _e2(_dmatch[_a]) in _dt, _a
+    if _a.startswith('don-'):
+        _arm = _da['arms'][_a]
+        assert _arm['stop_reason'] == 'early_stopping'                      # none of the 2D DeepONet arms hit the wall budget
+        assert _arm['train_loss_final'] < _arm['train_loss_at_best']        # training loss still falling at the last epoch
+assert _mp('nDonMeanLo') == _e2(min(_dv[(a, 'mean_fixed_initial_error')] for a in _darms))
+assert _mp('nDonMeanHi') == _e2(max(_dv[(a, 'mean_fixed_initial_error')] for a in _darms))
+assert _mp('nDonMatchLo') == _e2(min(_dmatch[a] for a in _darms)) and _mp('nDonMatchHi') == _e2(max(_dmatch[a] for a in _darms))
+assert _mp('nDonTrainCases') == str({_da['arms'][a]['training_cases'] for a in _darms}.pop())
+_tr = [100 * _da['arms'][a]['train_loss_at_best'] ** 0.5 for a in _darms]
+assert (_mp('nDonTrainRmsLo'), _mp('nDonTrainRmsHi')) == (_e2(min(_tr)), _e2(max(_tr)))
+_pers = _da['persistence_baseline']['validation-32']['fixed_initial']['mean'] * 100
+assert _mp('nDonPersistMean') == _e2(_pers) and _mp('nDonVsPersist') == f"{_pers / min(_dv[(a, 'mean_fixed_initial_error')] for a in _darms):.1f}"
+_appd = (P / 'sections/appendix.tex').read_text()
+assert r'\label{tab:deeponet2d}' in _appd and r'\input{tables/TR_deeponet2d}' in _appd
+for _phrase in ('not an architecture ceiling', 'not on the wall budget', 'vacuous at this patience',
+                'data-limited reading is live', 'no speed number from', 'weak evidence'):
+    assert _phrase in _appd, _phrase                                        # the four qualifications stay in the text
 print(json.dumps(dict(passed=True, rows=len(prov['rows']), bold_speedups=bold, failure_rows=len(fails), figure_points=sum(len(v) for v in fig['series'].values()),
                       pending_lane_slots=tex.count('pending:'), abstract_macros=sorted(macros)), indent=2))

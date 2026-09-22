@@ -1,5 +1,44 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — DeepONet on 2D Burgers (Appendix C) — CURRENT HANDOFF
+
+DeepONet, the one operator named in the abstract that had never been trained on the 2D family, is now in the
+paper as a negative result written with its qualifications. Source: `exp/2026-09-22-ops-deeponet-b2d` @306c939d,
+pinned in `evidence/ops-deeponet-b2d-2026-09-22/`: `summary` (blob 437c6189, sha256 0255abc0…) and `audit`
+(blob fc70ca9f, sha256 12a52746…); the lane report, DESIGN.md and the four audit reports as companion blobs.
+Job 4179556, A100-80G; the audit's `identical_split_to_fno_job` and archived-manifest split check are asserted in
+both the generator and check_headline.
+- **Table C.3 (`tab:deeponet2d`, `gen_ops_panel.py`)**: the four DeepONet arms with their recorded stop reason,
+  validation mean/median/worst over 32 cases and worst over the matched 8, beside the selected U-Net, Transolver
+  and FNO arms, the NM-ROM on the matched cohort and a persistence control. **No timing column**: this lane takes
+  no admissible timing and none is claimed.
+- **Paragraph "DeepONet in two dimensions"**, the result in one sentence (14.79–18.22 % mean against 1.35–2.28 %
+  for the other families' selected arms; 16.02–26.63 % matched-8 worst against 1.87 % for the NM-ROM; about 4.4×
+  better than a persistence control at 64.68 %), then, verbatim, the qualifications:
+  - "Four qualifications make this weak evidence about DeepONet, and we state them rather than drop the row; the
+    paper's claim is about tunability, not about beating a baseline."
+  - "All 4 arms ended by early stopping, not on the wall budget, so the budget did not bind and their errors are
+    not a budget-imposed floor."
+  - "The lane's ``still improving'' flag is vacuous at this patience: with patience 250 it could only be set above
+    about 5000 epochs, against a cap of 4000, and the training loss was still falling in all four histories, so
+    this is not early stopping at convergence."
+  - "Training used 128 cases, at 4.28–8.59 % training error against the validation errors above, so a data-limited
+    reading is live and this lane does not separate it from a capacity reading; three coupled capacities are not a
+    capacity sweep."
+  - "And no speed number from this lane is admissible, so none is claimed. As in three dimensions, this is not an
+    architecture ceiling: no DeepONet-specific schedule or hyperparameter search was run."
+- **The 3D DeepONet sentence is re-scoped** so the two dimensions cannot be conflated: "DeepONet is the weakest arm
+  everywhere here …, and in three dimensions it is limited by the budget: every arm stopped on its step budget …
+  We do not read it as an architecture ceiling in either dimension."
+- The conditional stop-reason caveat from the previous intake now reads correctly with these arms present: the 3D
+  arms stopped on their step budget, the 2D arms train with an early-stopping patience, and Table C.3 prints each
+  arm's recorded stop reason.
+- check_headline re-derives every printed DeepONet value (validation mean/median/worst, matched-8 worst) and every
+  macro (means, matched range, training cases, training RMS from `train_loss_at_best`, the persistence ratio), and
+  asserts per arm that the stop reason is `early_stopping` and that the final training loss is below the loss at
+  the selected epoch. It also asserts the six qualification phrases stay in the text. Both checks pass; 0 overfull
+  boxes; main text ends on page 9, References on page 9; PDF 25 pages. Main text unchanged by this intake.
+
 ## 2026-09-22 (paper lane) — 2D operator panel at 256² (Appendix C) — CURRENT HANDOFF
 
 The 2D operator hole ("trained but untimed") is filled. Source: `exp/2026-09-22-ops-timing-panel` @ea38c19a,

@@ -1,0 +1,11 @@
+| Arm | Ended by | Val. mean (%) | Val. median (%) | Val. worst (%) | Matched-8 worst (%) |
+| --- | --- | --- | --- | --- | --- |
+| DeepONet, small (selected) | early stopping | 14.79 | 11.75 | 54.74 | 16.02 |
+| DeepONet, medium | early stopping | 14.90 | 12.73 | 51.79 | 18.98 |
+| DeepONet, refined | early stopping | 15.76 | 12.46 | 58.98 | 21.37 |
+| DeepONet, large | early stopping | 18.22 | 14.80 | 60.35 | 26.63 |
+| U-Net, refined | wall budget | 1.35 | 1.08 | 7.52 | 1.71 |
+| Transolver, refined | wall budget | 1.95 | 1.36 | 9.32 | 1.52 |
+| FNO, large | wall budget | 2.28 | 1.81 | 6.38 | 2.48 |
+| NM-ROM (same cohort) | --- | --- | --- | --- | 1.87 |
+| Persistence control | --- | 64.68 | 65.52 | 90.65 | 75.00 |

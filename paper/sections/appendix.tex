@@ -58,10 +58,11 @@ The top of that recovered range is again DeepONet. The fine-mesh rows of Table~\
 therefore NM-ROM against the named solvers alone; no operator was trained
 at those meshes.
 
-Second, DeepONet is limited by the budget, not by its architecture: at
-these budgets it is the weakest arm everywhere (worst
-$\nOpDeepWorst\,\%$), and its recorded step budget and exit reason are in
-Table~\ref{tab:development-training}.
+Second, DeepONet is the weakest arm everywhere here (worst
+$\nOpDeepWorst\,\%$), and in three dimensions it is limited by the
+budget: every arm stopped on its step budget, recorded with its exit
+reason in Table~\ref{tab:development-training}. We do not read it as an
+architecture ceiling in either dimension.
 
 Third, the operators produce the requested output times directly, in one
 pass. They are not autoregressive rollouts, so the set of output times is
@@ -127,6 +128,49 @@ across jobs. This lane also could not reproduce an earlier
 validation-selection pathology: here the selected arms are the better
 ones. The two cohorts are different splits with no case in common, so
 that is cohort-specific and refutes nothing.
+
+\paragraph{DeepONet in two dimensions.}
+DeepONet was the one operator named in our abstract that had never been
+trained on this 2D family. It now has been, on the same data, split,
+metric, optimiser, seed and wall budget as the U-Net, Transolver and FNO
+arms (job \nDonJob; Table~\ref{tab:deeponet2d}). Its \nDonArms{} arms
+reach $\nDonMeanLo$--$\nDonMeanHi\,\%$ mean validation error, against
+$\nDonOtherMeanLo$--$\nDonOtherMeanHi\,\%$ for the selected arms of the
+other three families, and $\nDonMatchLo$--$\nDonMatchHi\,\%$ worst error
+on the matched eight-case cohort where the NM-ROM reaches
+$\nDonRomMatch\,\%$. A persistence control, which returns the supplied
+field at every output time, scores $\nDonPersistMean\,\%$, so these arms
+are about $\nDonVsPersist\times$ better than doing nothing.
+
+Four qualifications make this weak evidence about DeepONet, and we state
+them rather than drop the row; the paper's claim is about tunability,
+not about beating a baseline. All \nDonArms{} arms ended by early
+stopping, not on the wall budget, so the budget did not bind and their
+errors are not a budget-imposed floor. The lane's ``still improving''
+flag is vacuous at this patience: with patience \nDonPatience{} it could
+only be set above about 5000 epochs, against a cap of \nDonEpochCap{},
+and the training loss was still falling in all four histories, so this
+is not early stopping at convergence. Training used \nDonTrainCases{}
+cases, at $\nDonTrainRmsLo$--$\nDonTrainRmsHi\,\%$ training error
+against the validation errors above, so a data-limited reading is live
+and this lane does not separate it from a capacity reading; three
+coupled capacities are not a capacity sweep. And no speed number from
+this lane is admissible, so none is claimed. As in three dimensions,
+this is not an architecture ceiling: no DeepONet-specific schedule or
+hyperparameter search was run.
+
+\begin{table}[htbp]
+\centering
+\caption{DeepONet on Burgers 2D at $256^2$ (job \nDonJob), beside the
+selected arm of each other family, the NM-ROM on the matched cohort and
+a persistence control. Fixed-initial relative error over the six
+requested output times, on the 32 validation cases and on the eight
+matched cases. Accuracy only: this lane takes no timing, and accuracy is
+comparable across these jobs while timing is not. ``Ended by'' is the
+recorded stop reason of each arm.}
+\label{tab:deeponet2d}
+\resizebox{\linewidth}{!}{\input{tables/TR_deeponet2d}}
+\end{table}
 
 \begin{table}[htbp]
 \centering

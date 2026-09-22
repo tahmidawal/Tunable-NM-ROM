@@ -21,7 +21,7 @@ for r in prov['rows']:
         else:
             assert abs(r['fom']['ms'] / x['ms'] - x['speedup']) < 1e-12        # same-row ratio only
         assert r['fom']['error_pct'] <= x['error_pct']                        # named FOM at least as accurate
-        bold += x['speedup'] > 1
+        bold += x['speedup'] > 1 and not x.get('nonstationary')   # a row whose solve missed its stopping rule prints a dash, not a ratio
         series[(r['problem'], r['dim'], s)].append((r['intervals'], x['speedup']))
     if r['fast'] and r['accurate']:
         assert r['accurate']['error_pct'] <= r['fast']['error_pct']
@@ -118,9 +118,11 @@ assert not any(r['problem'] == 'Heat' and r['dim'] == 3 for r in prov['rows'])  
 assert not any('heat' in f['source'].lower() or f['problem'].startswith('Heat') for f in fails)   # Heat 3D left the failures table
 _ha = json.loads((P / 'evidence/headline-2026-09-20/heat3db_panel_a.json').read_bytes())
 assert man['heat3db_panel_a']['commit'].startswith('55165375') and _ha['audit_passed'] and _ha['metadata']['backend'] == 'gpu'
-_HN = {m['intervals']: {x['method']: x for x in m['rows']} for m in _ha['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
+_ha256 = json.loads((P / 'evidence/headline-2026-09-20/heat3db_panel_a256.json').read_bytes())
+assert man['heat3db_panel_a256']['commit'].startswith('5f1b048d') and _ha256['audit_passed'] and _ha256['metadata']['backend'] == 'gpu'
+_HN = {m['intervals']: {x['method']: x for x in m['rows']} for d_ in (_ha, _ha256) for m in d_['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
 _h3 = {(r['problem'], r['intervals']): r for r in prov['rows'] if r['dim'] == 3 and r['problem'].startswith('Heat (new bank')}
-assert set(_h3) == {(p_, n) for p_ in ('Heat (new bank)', 'Heat (new bank, batched fit)') for n in (32, 64, 128)}
+assert set(_h3) == {(p_, n) for p_ in ('Heat (new bank)', 'Heat (new bank, batched fit)') for n in (32, 64, 128, 256)}
 _hl = (P / 'tables/TH_headline.tex').read_text()
 for (p_, n), r in _h3.items():
     arms = ('nmrom_q0_field_cn', 'nmrom_q288_field_cn') if p_ == 'Heat (new bank)' else ('nmrom_q0_field_direct_tol1e-4_chol', 'nmrom_q288_field_direct_tol1e-4_chol')
@@ -133,8 +135,18 @@ for (p_, n), r in _h3.items():
     assert r['fom']['ms'] == cand[r['fom']['arm']]['device_ms_median']
     if r['accurate']['nonstationary']: assert r'---$^{n}$' in _hl                    # a solve that missed its rule does not enter a speedup
 # the text's speed claims: slower than CN--CG with CN stepping at every mesh, faster only with the batched fit at 128^3
-assert all(r['accurate']['speedup'] < 1 for (p_, n), r in _h3.items() if p_ == 'Heat (new bank)')
-assert [n for (p_, n), r in _h3.items() if p_ != 'Heat (new bank)' and r['accurate']['speedup'] > 1] == [128]
+assert all(r['accurate']['speedup'] < 1 for (p_, n), r in _h3.items() if p_ == 'Heat (new bank)' and n <= 128)
+assert sorted(n for (p_, n), r in _h3.items() if p_ != 'Heat (new bank)' and r['accurate']['speedup'] > 1) == [128, 256]
+assert all(r['fast']['speedup'] > 1 for (p_, n), r in _h3.items() if n == 256)                      # at 256^3 the fast setting is faster either way
+_sp = {(p_, n): r['accurate']['error_pct'] for (p_, n), r in _h3.items()}
+assert ('\\newcommand{\\nHeatNewAccErrSpan}{%.4f\\mbox{--}%.4f}' % (min(_sp.values()), max(_sp.values()))) in _hn   # accuracy is mesh-independent
+assert _m('nHeatNewBfAccSTwoFiftySix') == f"{_h3[('Heat (new bank, batched fit)', 256)]['accurate']['speedup']:.2f}"
+for n_, w_ in ((64, 'SixtyFour'), (256, 'TwoFiftySix')):
+    assert _m('nHeatNewNonstat' + w_) == str(_h3[('Heat (new bank)', n_)]['accurate']['nonstationary'])
+_pf = [m for m in _ha256['meshes']][0]['profile_ms']['nmrom_q288_field_direct_tol1e-4_chol']
+assert _m('nHeatNewProfile') == ' + '.join(f"{_pf[k_]:.1f}" for k_ in ('encode', 'init', 'evolve', 'decode'))
+_lb = [x for k, x in _HN[256].items() if k.startswith('linear_bank_')]
+assert _m('nHeatNewLinErrTwoFiftySix') == '%.3f' % (100 * max(x['error_all_times_worst'] for x in _lb))
 # Navier--Stokes follow-up sentence (ns3d-grok diag07, a different model): macros re-derived from the pinned blob
 _ng = json.loads((P / 'evidence/headline-2026-09-20/ns3d_grok_diag07.json').read_bytes()); _cs = _ng['coeff']['stats']
 assert man['ns3d_grok_diag07']['commit'].startswith('8852b7cd') and _ng['final_cohort_opened'] and not _ng['smoke']
@@ -153,7 +165,7 @@ macros = set(re.findall(r'\\(n[A-Za-z]+)', abstract))
 defined = set(re.findall(r'\\newcommand\{\\(n\w+)\}', (P / 'tables/headline-numbers.tex').read_text() + (P / 'tables/numbers.tex').read_text()))
 assert macros and macros <= defined, macros - defined
 assert all(m.startswith(('nHead', 'nQxm', 'nHires', 'nHeat', 'nBurg', 'nBase')) for m in macros), macros   # only generated-table numbers
-assert 'full pre-registered criterion' not in main and re.search(r'pre-registered\s+secondary criterion', main) and 'knob bar' not in main   # 2026-09-21: 'knob bar' jargon replaced
+assert 'full pre-registered criterion' not in main and re.search(r'pre-registered\s+secondary criterion', main + (P / 'sections/appendix.tex').read_text()) and 'knob bar' not in main   # 2026-09-21: 'knob bar' jargon replaced
 assert r'\label{tab:knobs-main}' in (P / 'sections/appendix.tex').read_text()   # 2026-09-21: knob table moved to the appendix for the page budget
 for label in ('tab:headline', 'tab:tunability', 'tab:failures', 'tab:nmrom-baselines'):
     assert r'\label{' + label + '}' in main.split(r'\bibliographystyle')[0], label

@@ -56,7 +56,9 @@ rule registered before the sealed cohort was opened. A second model
 reaches $\nHeatNewBErr\,\%$ on the same sealed cohort at $128^3$,
 $\nHeatNewBCnS\times$ (Crank--Nicolson) and $\nHeatNewBBfS\times$ (batched
 fit) against the rule's CN--CG setting; it is not used in
-Table~\ref{tab:headline}.
+Table~\ref{tab:headline}. At $256^3$ the query is memory bound: the
+accurate batched arm spends $\nHeatNewProfile$\,ms on encoding, the
+initial fit, the solve and decoding.
 
 
 \begin{table}[htbp]
@@ -92,8 +94,9 @@ error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
 batched; the batched fit: Table~\ref{tab:headline-times}); Heat (new
 bank) ($q=\nHeatNewQ$ accurate; Table~\ref{tab:config3d}): at most $\nHeatNewAccEvolved\,\%$
 ($\nHeatNewBatchedAccEvolved\,\%$ batched) over evolved times;
-$^{n}$\,\nHeatNewNonstat{} solve (one step of one case) missed its
-stationarity rule, so no speedup is given. Burgers accurate
+$^{n}$\,some solves missed the stationarity rule
+(\nHeatNewNonstatSixtyFour{} of \nHeatNewCases{} cases at $64^3$,
+\nHeatNewNonstatTwoFiftySix{} at $256^3$), so those rows get no speedup. Burgers accurate
 quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}
 ($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table~\ref{tab:eqladder}),
 not confirmed on re-draws: it fails the confirmation draw at $256^2$;
@@ -334,6 +337,17 @@ numerical stopping, not a proof of global optimality.
 \input{tables/TH_jobs}
 
 \section{Validation of the correction and quadrature studies}
+\label{app:sealed-ladder}
+
+A separate ladder with $M=4(k+q)$, evaluated once on a sealed cohort,
+gives monotone error reduction for all \nSealedCheckpoints{} checkpoints
+(top-rank errors $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, Table~\ref{tab:sealed}); \nSealedKnobBarCount{} of \nSealedCheckpoints{}
+meet the pre-registered secondary criterion (settings spanning at least
+$2\times$ in error and in cost). Two stricter pre-registered checks fail:
+the original model's sealed-to-development ratio at $q=0$ (one sealed case
+converges to a wrong branch, $\nSealedIncQzero\,\%$) and universal
+convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
+
 
 
 \begin{table}[htbp]

@@ -116,11 +116,13 @@ being held equal. `don01` gives **3000 s per capacity** and the same 3e-4 refine
 validation-selected capacity, in one allocation with a 15600 s global budget and a 900 s
 reserve, exactly as `unet01` and `tsol01` did.
 
-Every arm's `result.json` records `stop_reason` and the epoch curve, and the report carries a
+Every arm's `result.json` records `stop_reason` and the epoch curve. **What ended each arm is
+generated from those records, never asserted** (§A3). The report carries a
 generated **`still_improving`** column (best epoch within the last 5 % of completed epochs —
 `no-second`'s own definition, reused unchanged so the four families are graded identically).
-**The budget binds. No number in this lane is an architecture ceiling**, and the report says
-so beside the table rather than in a preamble.
+**No number in this lane is an architecture ceiling**, and the report says so beside the table
+rather than in a preamble. Where the budget binds, the report says the number is a lower bound;
+where an arm early-stopped, it says that instead.
 
 Float32 networks get more epochs per second than the float64 FNO. That is favourable to this
 lane and to `no-second`, and the epoch counts are reported for every arm so the reader can see it.
@@ -232,6 +234,18 @@ is a time from `don01` divided by a time from any other job.
 
 - **A1 (2026-09-22, before `don01`).** Independent audit of this design and of the
   `families.py` diff; disposition recorded in §A2 below before submission.
+
+- **A3 (2026-09-22, during `don01`, before any result was read as a verdict).** The first arm,
+  `don-small`, ended by **early stopping** at 561 s of its 3000 s budget (best epoch 288 of
+  539) — the first Burgers arm in this comparison not to end on its wall budget. §3 and the
+  report generator both *asserted* "every arm ended on its wall budget", inherited from
+  `no-second` where it was true. That sentence is now **generated** from the recorded
+  `stop_reason` of each arm rather than written, so the report says what actually ended each
+  arm. Nothing about the protocol, the budget, the selection rule or the criteria changed; only
+  a hard-coded claim became a derived one. Consequence for the reading, stated in advance of the
+  numbers: for an early-stopped arm the error is **not** a lower bound imposed by the budget,
+  and D3's "needed longer" alternative does not apply to it — but "needed a different schedule"
+  still does, since the schedule is the U-Net's and was not tuned for this family.
 
 - **A2 (2026-09-22, before `don01`) — independent design audit, every finding accepted.**
   Codex could not run: its bubblewrap sandbox failed on every file read

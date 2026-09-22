@@ -158,6 +158,34 @@ def timing_table(records, attempt):
     return '\n'.join(lines)
 
 
+def budget_paragraph(mine_records, records):
+    """DESIGN 3: say what actually ended each arm, generated. `no-second` reported every Burgers
+    arm ending on its wall budget; that must not be asserted here, it must be derived."""
+    wall = [r['arm'] for r in mine_records if r['stop_reason'] == 'wall_budget']
+    early = [r['arm'] for r in mine_records if r['stop_reason'] == 'early_stopping']
+    other = [r['arm'] for r in mine_records if r['stop_reason'] not in ('wall_budget', 'early_stopping')]
+    improving = [r['arm'] for r in mine_records if r['still_improving']]
+    siblings = [r for r in records if r['cross_job']]
+    sib_wall = sum(1 for r in siblings if r['stop_reason'] == 'wall_budget')
+    parts = []
+    if early:
+        parts.append(
+            f"**{len(early)} of {len(mine_records)} arms here ended by early stopping, not on the wall budget** "
+            f"({', '.join('`%s`' % a for a in early)}): the patience rule fired, so training had stopped "
+            f"improving for 250 consecutive epochs while budget remained. This is the first Burgers arm in "
+            f"this comparison to do so — {sib_wall} of {len(siblings)} arms in the FNO, U-Net and Transolver "
+            f"jobs ended on their budget. For these arms the number is **not** a lower bound imposed by the "
+            f"budget; more of the same budget was available and the optimiser was not using it.")
+    if wall:
+        parts.append(f"{len(wall)} arm(s) ended on the wall budget ({', '.join('`%s`' % a for a in wall)}); "
+                     f"for those the budget binds and the error is a lower bound on that configuration.")
+    if other:
+        parts.append(f"{len(other)} arm(s) ended another way ({', '.join('`%s`' % a for a in other)}).")
+    parts.append(f"The \"Still improving?\" column marks the {len(improving)} arm(s) whose best checkpoint fell "
+                 f"in the last 5 % of the epochs they ran.")
+    return ' '.join(parts)
+
+
 def criteria(records, don, fno_large):
     """DESIGN 4, evaluated in code. Every ratio is accuracy, never time."""
     out = []
@@ -252,10 +280,11 @@ preamble, train/validation index hashes asserted equal to the FNO job's
 
 {capacity_table(mine_records)}
 
-**Every arm ended on its wall budget, not by early stopping, and the "Still improving?"
-column says whether validation was still improving when the budget cut it off.** Where it
-says yes, that arm's error is a lower bound on its configuration, not a converged value.
-The budget binds; none of these numbers is an architecture ceiling.
+{budget_paragraph(mine_records, records)}
+
+Nothing here is an architecture ceiling either way: no DeepONet-specific hyperparameter search
+was run, the schedule is the U-Net's, and a family that early-stops under an inherited schedule
+may simply need a different one.
 
 ## 2. Validation-32 accuracy, all four families
 

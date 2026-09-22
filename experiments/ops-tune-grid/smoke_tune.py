@@ -57,11 +57,11 @@ def probe(path, batch, mesh, steps):
     torch.cuda.synchronize()
     seconds = (time.perf_counter() - started) / max(steps - 1, 1)
     peak = torch.cuda.max_memory_allocated()
+    parameters_real = sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())
     del net, optimizer, field, target, prediction, loss
     torch.cuda.empty_cache()
     return dict(config=str(path), family=adapter.family_of(config),
-                real_parameters=sum(p.numel() * (2 if p.is_complex() else 1)
-                                    for p in adapter.make_model('burgers', config).parameters()),
+                real_parameters=parameters_real,
                 batch=batch, peak_allocated_bytes=int(peak), seconds_per_step=seconds,
                 projected_peak_bytes_at_batch_8=int(peak * 8 / batch))
 

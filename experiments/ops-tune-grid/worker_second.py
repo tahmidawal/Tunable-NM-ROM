@@ -97,9 +97,14 @@ for _family in SPEC.get('smoke_families', [SPEC['family']]):
 run('config-smoke', [PY, 'code/smoke_tune.py', '--output', 'out/config-smoke.json', '--configs']
     + sorted({a['config'] for a in SPEC['arms']}))
 if PDE == 'burgers':
+    # The cohort index is built from the PINNED training index so its SHA256 stays equal to
+    # the FNO job's, which the audit asserts; any further training index this job trains on
+    # (ops-tune-grid's extended bank) is checked for the same seed and input-field
+    # disjointness through --also-disjoint-from, which does not enter the written index.
     run('cohort', [PY, 'code/prepare_diagnosis_cohort.py',
                    '--reference-index', 'data/refinement/index.json',
-                   '--train-index', TRAIN, '--out', 'data/diagnosis-cohort'])
+                   '--train-index', 'data/train/index.json', '--out', 'data/diagnosis-cohort']
+        + (['--also-disjoint-from'] + SPEC['disjointness_indices'] if SPEC.get('disjointness_indices') else []))
 
 trained = []
 for arm in SPEC['arms']:

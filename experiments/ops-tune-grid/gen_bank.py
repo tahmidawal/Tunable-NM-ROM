@@ -174,6 +174,42 @@ def main():
             print(f"GENERATED {record['case_id']} n={len(records)} "
                   f"elapsed={time.monotonic()-started:.0f}s", flush=True)
 
+    # ------------------------------------------------------------------- DISCRETISATION bar
+    # The paper's key qualification is that every operator error exceeds the 256-grid's own
+    # discretisation error, quoted as 4.03 %. That figure was measured on the timing panel's
+    # six development cases. The comparison this lane makes is on validation-32, so the bar
+    # is measured HERE, on those same 32 cases, against the same pinned reference the
+    # operators are scored against: solve each validation case ON the 256 grid and score it
+    # by the identical fixed-initial metric. `dt_converged` isolates the spatial error (the
+    # anchor's own time step on the coarse grid); `dt_panel` is the panel's own coarse-grid
+    # setting, for continuity with the published figure.
+    del query
+    jax.clear_caches()
+    validation = args.pinned_cache.parent / 'validation'
+    report['discretisation'] = {}
+    for label, dt in (('dt_converged', PINNED[1]), ('dt_panel', 0.00125)):
+        rows = json.loads((validation / 'index.json').read_text())['records']
+        query, dense = data.make_solver(engines, 256, dt, 256)
+        errors = []
+        for row in rows:
+            physical = engines.params_draw(row['seed'], 1)[0]
+            fields, _, residuals, _ = data.solve(jax, engines, query, dense, 256, physical)
+            errors.append(dict(case_id=row['case_id'],
+                               **data.fixed_initial_errors(fields, squeeze_target(validation / row['path']))))
+        worst = [e['maximum'] for e in errors]
+        report['discretisation'][label] = dict(
+            intervals=256, dt=dt, cases=len(errors),
+            worst=max(worst), median=float(np.median(worst)), mean=float(np.mean(worst)),
+            per_case=errors,
+            definition='the 256-interval grid solved on its own mesh at this time step, scored '
+                       'by the same fixed-initial metric against the same pinned 4096 / '
+                       '1.5625e-4 reference the operators are scored against; a perfect '
+                       'operator on this mesh could not do better')
+        print(f"DISCRETISATION {label} worst={max(worst):.6g} median={np.median(worst):.6g}", flush=True)
+        save_report()
+        del query
+        jax.clear_caches()
+
     # --------------------------------------------------------------------- prefix indices
     fidelity = [row['maximum'] for row in report['fidelity']]
     summary = dict(count=len(fidelity),

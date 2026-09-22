@@ -383,3 +383,32 @@ must travel with the timing row). The handoff is written; this lane makes no spe
 
 - **A1 (2026-09-22, before `gen01`).** Independent audit of this design commissioned before
   the first GPU job; disposition recorded here before submission.
+
+- **A2 (2026-09-22, before `gen01`) — Codex design audit, two findings, both accepted.**
+  `reports/codex-design-audit-2026-09-22.md` (`gpt-6-astra`, headless, `-s read-only`).
+  **Its sandbox could not read a single file** — every read failed with
+  `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`, the same failure
+  `no-second` recorded on 2026-09-17 and `ops-deeponet-b2d` on 2026-09-22 — so it audited
+  only the numbers quoted in the prompt and said so rather than inventing file findings.
+  That limits it to two findings, and both are real:
+
+  - **MAJOR — the §3.2 fidelity arithmetic was wrong as written.** The text read as though
+    3.06e-3 were 1.87e-3 + 1.386e-3; that sum is 3.26e-3. 3.056e-3 is the calibration gate's
+    own per-case maximum of (deviation + that case's anchor margin), which is smaller because
+    the two column maxima fall on different cases. §3.2 now states which quantity is which,
+    and — the auditor's substantive point, accepted — that **both are observed maxima over
+    eight development cases, not a bound over 4608**, and that neither is a certified error.
+    The acceptance test is now stated explicitly to be control **G1**, measured on the real
+    training cases, with its pre-registered 1.0 % failure threshold, not the calibration
+    figure.
+  - **MINOR — the epoch-match arm needed an epoch target, not just a wall.** 8700 s at
+    `fno-large`'s published throughput implies ≈2005 epochs, and wall time does not guarantee
+    an epoch count on a different node. §5.4 and §6 now pre-register an explicit **1963-epoch
+    target under an 8700 s cap**, whichever binds first, and require the report to state the
+    epochs actually achieved and which bound stopped the arm.
+
+  Everything else in the auditor's reply is an explicit *unresolved* — data-parity
+  accounting, generation-path equivalence, disjointness, selection and honesty, feasibility,
+  omissions — because it could not read the files. **This audit therefore does not discharge
+  §A1**, and the independent subagent audit commissioned in parallel with the same brief is
+  what covers those questions; its disposition is §A3.

@@ -14,6 +14,11 @@ here.
 The cohort is held out from FNO training by construction: calibration, train and
 validation use different split codes and therefore different generation seeds.
 This script re-checks that against the training index rather than assuming it.
+
+`--also-disjoint-from` takes further training indices -- ops-tune-grid's extended bank
+(DESIGN 3.1) -- and applies the same seed and input-field checks to them. Those indices are
+deliberately NOT recorded in the written index, so the cohort file and its SHA256 stay
+byte-identical to the FNO job's, which `audit.py` asserts.
 """
 from __future__ import annotations
 
@@ -46,12 +51,14 @@ def restrict(field, intervals):
 def main(args):
     reference = json.loads((args.reference_index).read_text())
     assert reference['pde'] == 'burgers' and reference['complete'] is True
-    training = json.loads(args.train_index.read_text())
-    training_seeds = {row['seed'] for row in training['records']}
-    training_inputs = set()
-    for row in training['records']:
-        with np.load(args.train_index.parent / row['path']) as case:
-            training_inputs.add(hashlib.sha256(case['input'].tobytes()).hexdigest())
+    training_seeds, training_inputs, checked = set(), set(), []
+    for index_path in [args.train_index] + list(args.also_disjoint_from):
+        training = json.loads(index_path.read_text())
+        training_seeds |= {row['seed'] for row in training['records']}
+        for row in training['records']:
+            with np.load(index_path.parent / row['path']) as case:
+                training_inputs.add(hashlib.sha256(case['input'].tobytes()).hexdigest())
+        checked.append(dict(index=str(index_path), cases=len(training['records'])))
     args.out.mkdir(parents=True, exist_ok=False)
     records, report = [], []
     for record in reference['records']:
@@ -101,7 +108,10 @@ def main(args):
     (args.out / 'index.json').write_text(json.dumps(index, indent=2) + '\n')
     (args.out / 'cohort-provenance.json').write_text(json.dumps(dict(
         cases=report, index_sha256=sha(args.out / 'index.json'),
-        disjoint_from_training_by_seed=True, disjoint_from_training_by_input_field=True), indent=2) + '\n')
+        disjoint_from_training_by_seed=True, disjoint_from_training_by_input_field=True,
+        training_indices_checked=checked,
+        training_seeds_checked=len(training_seeds),
+        training_input_fields_checked=len(training_inputs)), indent=2) + '\n')
     print(json.dumps(dict(cases=len(records), index=str(args.out / 'index.json')), indent=2), flush=True)
 
 
@@ -110,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--reference-index', required=True, type=Path)
     parser.add_argument('--train-index', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
+    parser.add_argument('--also-disjoint-from', nargs='*', default=[], type=Path)
     parser.add_argument('--intervals', type=int, default=256)
     parser.add_argument('--reference-intervals', type=int, default=4096)
     parser.add_argument('--reference-dt', type=float, default=0.00015625)

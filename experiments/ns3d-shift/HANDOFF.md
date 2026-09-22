@@ -24,11 +24,23 @@ makes the translation cheap; the co-moving formulation is. The learned-bank arm
 | 4176514 `pilot01` | `configs/pilot01.json` | floors, harness checks, identifiability, arms B0/B1/B2 + ladder, tracker, CNAB2. `results/pilot01.md` |
 | 4176596 `cost02` | `configs/cost02.json` | M and dt sweep at gauge 0 with the per-piece cost split. `results/cost02.md` |
 | 4176669 `mesh03` | `configs/mesh03.json` | exploratory N=64 probe (DESIGN amendment). `results/mesh03.md` |
+| 4178112 `fast04` | `configs/fast04.json` | the driver fix measured before/after in one job, plus the 32^3 frontier |
+| 4178149 `ladder64` | `configs/ladder64.json` | 64^3 frontier, floors, tracker, CNAB2 stability |
+| 4178207 `ladder96` | `configs/ladder96.json` | 96^3 frontier |
 
 All A100 (`mesh03` on an 80GB card, the others on 40GB), `jax_backend=gpu`, f64, matmul precision highest, one job directory
 each, remote directories deleted after a checksum-verified pull. Budget used: 3
 of 6. Field `.npy` files are not committed (75 MB each); they live in the session
 scratch and are regenerable from the recorded seeds.
+
+## The driver fix
+
+`ns2d_rom.make_lm` -> `shift_rom.make_frozen_run`: fixed damped Gauss-Newton
+sweeps, analytic Jacobian, statically unrolled scan, extrapolated warm start,
+constants hoisted, Cholesky instead of LU, one contraction against `T + T^T`
+instead of two. Measured 2.52x at matched rank/step with field parity 1.46e-08.
+`build_operators_fast` also removes the dense test matrix (14.7 GB at 128^3).
+`test_fast_solver.py` is the local gate; run it before touching either.
 
 ## Headline
 

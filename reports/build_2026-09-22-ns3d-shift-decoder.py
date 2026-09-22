@@ -58,11 +58,14 @@ def main():
     W = L.append
     W("# Solving the translation online for 3D Navier-Stokes\n")
     W("A shift-aware reduced model for the NS3D translation orbit, where the frame is an "
-      "unknown of the reduced least-squares problem rather than a tracked quantity. "
-      "**These numbers are final for the development cohort and provisional for nothing "
-      "else: the sealed cohort was never drawn**, because the speed bar failed and the "
-      "design's stop rule 3 forbids opening it. Generated from the run JSONs by "
-      "`reports/build_2026-09-22-ns3d-shift-decoder.py`; no number here is hand-typed.\n")
+      "unknown of the reduced least-squares problem rather than a tracked quantity. It meets "
+      "the accuracy target comfortably at both meshes tried, loses on speed at $N=32$ and wins "
+      "on speed at $N=64$. **Every number here is a development measurement and none of it has "
+      "been through a sealed cohort**: the pre-registered speed bar failed at the design mesh, "
+      "stop rule 3 forbade the sealed draw, and the larger-mesh result comes from an explicitly "
+      "exploratory amendment that carries no licence to open one either. Generated from the run "
+      "JSONs by `reports/build_2026-09-22-ns3d-shift-decoder.py`; no number here is "
+      "hand-typed.\n")
 
     W("## What was asked and what came back\n")
     W("`ns3d-grok` had established that NS3D at $N=32$ in this project fails on "
@@ -101,6 +104,27 @@ def main():
       "sized by the rank and the test count, not by the mesh. The FOM's cost does contain $N$. "
       "So the losing margin at $N=32$ is a statement about this mesh and this solver, not about "
       "the idea.\n")
+    if M:
+        ms_set0 = {k: v for k, v in M["settings"].items() if "failed" not in v}
+        cross = []
+        for k, v in ms_set0.items():
+            tm = v["timing"]
+            q = tm[f"query_{k}"]["median_ms"]
+            cms_, dn_ = comparator(v["stats"]["evolved_worst"], M["cnab2"], tm)
+            if dn_ and v["stats"]["cases_evolved_over_target"] == 0:
+                cross.append((cms_ / q, v, dn_, q, cms_))
+        top = max(cross) if cross else None
+        if top and top[0] > 1:
+            W(f"**And at $N={M['config']['n']}$ it crosses.** Same reduced model, same stored "
+              f"operators, same checks: {pct(top[1]['stats']['evolved_worst'])} evolved worst, "
+              f"{top[1]['stats']['cases_evolved_over_target']}/{top[1]['stats']['cases']} over "
+              f"5 %, {ms(top[3])} ms against a {ms(top[4])} ms comparator -- "
+              f"**{top[0]:.3f}x**, at $\\Delta t={top[1]['dt']}$. That is the first reduced "
+              "model in this NS3D line that is both inside the accuracy target and faster than "
+              "the FOM it is measured against. It is a **development measurement on an "
+              "explicitly exploratory amendment**, written before the job and carrying no "
+              "licence to open a sealed cohort, and it should be treated as a reason to design "
+              "that experiment rather than as a result to quote.\n")
 
     W("## The mechanism\n")
     W("Write $u(x,t) = v(x - c(t), t)$. Because the nonlinearity, the Laplacian and the Leray "
@@ -334,6 +358,11 @@ flowchart LR
         W(f"Grid-sized pieces at this mesh: initial centering and projection {ms(mi)} ms, one "
           f"output reconstruction {ms(mo)} ms (against {ms(init_ms)} ms and {ms(out_ms)} ms at "
           f"$N={pc['n']}$).\n")
+        if M["gpu"] != C["gpu"]:
+            W(f"This job landed on a different card from the other two (`{M['gpu']}` against "
+              f"`{C['gpu']}`). Every ratio in this section is paired **within** this job's own "
+              "interleaved timing blocks, so the comparison is unaffected; but no millisecond "
+              "here should be put beside a millisecond from the $N=32$ tables.\n")
         if crossed:
             best_ratio, bv = max(crossed)
             W(f"**It crosses.** The best row is $\\Delta t={bv['dt']}$ at "
@@ -382,11 +411,15 @@ flowchart LR
       "to be what makes `g(x - c)` cheap. It is not: the freezing form never evaluates the bank "
       "at shifted coordinates at all, so a stored POD basis is equally free. Anyone writing "
       "this up should lead with the symmetry, not the decoder.\n")
-    W("The honest status of speed is that it is **unresolved, and was measured against the "
-      "wrong bottleneck**. Nine tenths of the query is a generic damped Levenberg-Marquardt "
-      "driver whose arithmetic is two orders of magnitude cheaper than its wall time -- "
-      "hundreds of tiny sequential GPU kernels per trajectory. Nothing about the method "
-      "requires that solver.\n")
+    W("On speed the picture changed twice. At $N=32$ the method loses by about a factor of "
+      "two and a half, and the cost sweep showed why: nine tenths of the query is a generic "
+      "damped Levenberg-Marquardt driver whose arithmetic is two orders of magnitude cheaper "
+      "than its wall time -- hundreds of tiny sequential GPU kernels per trajectory -- against "
+      "a FOM whose whole step is three large FFTs. Because that overhead is mesh-independent "
+      "and the FOM's cost is not, the exploratory $N=64$ probe crosses. So the right statement "
+      "is not \"the shift ROM is slow\"; it is **\"at $N=32$ this FOM is too cheap for any "
+      "reduced model carrying a generic nonlinear solver, and the crossover is already at "
+      "$N=64$\"**. Neither half of that has been through a sealed cohort.\n")
     W("The next experiment, in order:\n")
     W("1. **Make the reduced solve cost what its arithmetic costs.** Analytic Jacobian (it is "
       "one contraction; the analytic $J_\\delta$ column already matches AD to $10^{-17}$), a "
@@ -394,10 +427,13 @@ flowchart LR
       "step fused. If a 67-unknown least squares still costs 1.5 ms after that, the conclusion "
       "changes; until then the speed number is a statement about `make_lm`, not about the "
       "method. This is the cheapest and highest-leverage thing left.\n")
-    W("2. **Settle the mesh scaling properly**, with a pre-registered ladder over $N$ and its "
-      "own sealed cohort. The rollout's shapes contain no $N$; the FOM's cost does. That is the "
-      "whole speed argument and it deserves a designed experiment rather than the one "
-      "exploratory probe run here.\n")
+    W("2. **Settle the mesh scaling properly**, with a pre-registered ladder over $N$ "
+      "(64, 96, 128), its own sealed cohort, and timing on more than one case. The one probe "
+      "run here says the crossover is real at $N=64$; it does not say where the curve goes, and "
+      "an exploratory amendment is not the evidence a claim should rest on. Note also that the "
+      "FOM at $N=64$ is unstable at $\\Delta t \\ge 0.01$ while the reduced implicit-midpoint "
+      "solve is not, so part of the margin comes from the ROM taking steps the FOM cannot -- "
+      "that deserves to be stated separately rather than folded into a speedup number.\n")
     W("3. **Then, and only then, the sealed draw.** Seed 202609221 is named and unopened.\n")
     W("Two things I would *not* do next. A multi-structure version "
       "($u=\\sum_j g(x-c_j)a_j$) is not indicated: the single-shift representation floor is "

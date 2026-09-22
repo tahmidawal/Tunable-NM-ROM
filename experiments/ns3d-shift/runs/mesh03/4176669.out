@@ -1,0 +1,39 @@
+host=pax049 source_commit=cd44b0e0e2d1e5a45fa471939b6fc285af001f51 job=4176669
+NVIDIA A100 80GB PCIe, GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.26:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=440.3 devices=[CudaDevice(id=0)]
+generated 1/256 dt=0.001
+generated 32/256 dt=0.001
+generated 64/256 dt=0.001
+generated 96/256 dt=0.001
+generated 128/256 dt=0.001
+generated 160/256 dt=0.001
+generated 192/256 dt=0.001
+generated 224/256 dt=0.001
+generated 256/256 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+gram rows 256/1536
+gram rows 512/1536
+gram rows 768/1536
+gram rows 1024/1536
+gram rows 1280/1536
+gram rows 1536/1536
+eigh dimension 1536
+pod rank=64 orth=2.664e-09 energy_tail=1.822e-08
+CNAB2 comparator accuracy on the full development cohort
+CNAB2 dt=0.004 evolved worst 0.000933
+CNAB2 dt=0.005 evolved worst 0.003823
+CNAB2 dt=0.01 evolved worst 6.861432
+CNAB2 dt=0.02 evolved worst 2.720382
+M292_dt0.04: evolved worst 0.020725 (0/16 over target), query 10.831 ms, one-output 8.561 ms, median iters 4.0
+M292_dt0.02: evolved worst 0.006443 (0/16 over target), query 15.116 ms, one-output 13.101 ms, median iters 3.0
+M292_dt0.01: evolved worst 0.004936 (0/16 over target), query 25.910 ms, one-output 23.845 ms, median iters 3.0
+done
+M292_dt0.01 {"evolved_worst": 0.004935907878375127, "evolved_median": 0.0029072995519345986, "gap": 1.3010426069826053e-18}
+M292_dt0.02 {"evolved_worst": 0.006443313171119922, "evolved_median": 0.005041945234146923, "gap": 8.673617379884035e-19}
+M292_dt0.04 {"evolved_worst": 0.02072536572188815, "evolved_median": 0.014159263975659413, "gap": 3.469446951953614e-18}
+verify ok 3.469446951953614e-18
+SHIFT_EXIT=0

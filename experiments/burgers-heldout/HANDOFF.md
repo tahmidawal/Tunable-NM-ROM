@@ -24,9 +24,9 @@ dispositions §9). Budget ≤ 2 running / ≤ 8 total GPU jobs; only scancel own
   remote deleted). Headline q256/M1088 lat64 g1e-2 (certified): dev6 0.854 % @80.0 ms (6.54x), hold64 1.601 % (6.70x vs
   lean_nt3e-3), fresh64 2.407 % (5.48x vs lean_nt1e-3_dt01). Uncertified q512/M2112 lat128: hold64 0.393 % / fresh64 0.458 %
   at ~260 ms (2.07x / 2.21x). Bar NOT met. Restricted-proxy gate fails (gap 0.36); full-grid worst-case recompute passes.
-- **bh5 = 4153483** (H200, A4 coordinator task, incumbent lat64 j=1, dev6+hold64) RUNNING (submitted by the auto-submitter
-  when bh4 finished). When done: collect.py bh5 → eqcert/audit_eqcert.py AND audit_bh.py → delete remote.
-- Jobs used: 8 / 8. No retries possible.
+- **bh5 = 4153483 DONE** (collected, audited `checks/bh5-summary.json` + `checks/bh5-eqcert-summary.json`, remote
+  deleted): incumbent j=0 fails the 4096² confirmation draw (ρ 0.1173); j=1 certifies but costs 5.3–6.6 s/query.
+- **LANE CLOSED: 8/8 jobs, namespace empty.** Report `reports/2026-09-21-burgers-heldout.md`, `reports/summary.json`.
 
 ## How to run / collect
 

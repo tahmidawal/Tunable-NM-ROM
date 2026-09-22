@@ -85,3 +85,15 @@
 | bh4 | 4096² | fresh64 | headline (pre-registered) | `q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | lat64 | True | 2.407 | 0.368 | 77.3 | `lean_nt1e-3_l1e-3_dt01` | 423.6 | 2.394 | 5.48× |
 | bh4 | 4096² | fresh64 | ladder | `q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2` | 448 | 1856 | lat128 | False | 0.673 | 0.368 | 283.7 | `lean_nt3e-3_l3e-3_dt005` | 576.1 | 0.149 | 2.03× |
 | bh4 | 4096² | fresh64 | ladder | `q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2` | 512 | 2112 | lat128 | False | 0.458 | 0.368 | 260.1 | `lean_nt3e-3_l3e-3_dt005` | 576.1 | 0.149 | 2.21× |
+| bh5 | 4096² | dev6 | ladder | `q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2` | 0 | 64 | scaled | True | 2.415 | — | 40.2 | `lean_nt1e-3_l1e-3_dt01` | 406.0 | 1.661 | 10.10× |
+| bh5 | 4096² | dev6 | ladder | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | lat64 | True | 0.604 | — | 125.9 | `lean_nt3e-3_l3e-3_dt005` | 523.8 | 0.050 | 4.16× |
+| bh5 | 4096² | dev6 | ladder | `q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | lat64 | True | 0.604 | — | 107.0 | `lean_nt3e-3_l3e-3_dt005` | 523.8 | 0.050 | 4.90× |
+| bh5 | 4096² | dev6 | ladder | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1088 | lat64 | True | 0.604 | — | 5619.8 | `lean_nt3e-3_l3e-3_dt005` | 523.8 | 0.050 | 0.09× |
+| bh5 | 4096² | dev6 | ladder | `q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1088 | lat64 | True | 0.604 | — | 5308.0 | `lean_nt3e-3_l3e-3_dt005` | 523.8 | 0.050 | 0.10× |
+| bh5 | 4096² | dev6 | ladder | `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | bad0 | False | 1.047 | — | 90.9 | `lean_nt3e-3_l3e-3_dt005` | 523.8 | 0.050 | 5.76× |
+| bh5 | 4096² | hold64 | ladder | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | lat64 | True | 1.330 | — | 111.3 | `lean_nt3e-3_l3e-3_dt005` | 536.8 | 0.138 | 4.82× |
+| bh5 | 4096² | hold64 | ladder | `q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2` | 0 | 64 | scaled | True | 9.030 | — | 39.7 | `lean_nt1e-3_l1e-3_dt01` | 401.2 | 2.006 | 10.10× |
+| bh5 | 4096² | hold64 | ladder | `q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1088 | lat64 | True | 1.330 | — | 6885.3 | `lean_nt3e-3_l3e-3_dt005` | 536.8 | 0.138 | 0.08× |
+| bh5 | 4096² | hold64 | ladder | `q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | bad0 | False | 7.066 | — | 81.2 | `lean_nt1e-3_l1e-3_dt01` | 401.2 | 2.006 | 4.94× |
+| bh5 | 4096² | hold64 | ladder | `q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1088 | lat64 | True | 1.331 | — | 6557.8 | `lean_nt3e-3_l3e-3_dt005` | 536.8 | 0.138 | 0.08× |
+| bh5 | 4096² | hold64 | ladder | `q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2` | 256 | 1088 | lat64 | True | 1.331 | — | 99.6 | `lean_nt3e-3_l3e-3_dt005` | 536.8 | 0.138 | 5.39× |

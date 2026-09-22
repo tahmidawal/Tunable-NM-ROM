@@ -187,7 +187,13 @@ def one_group(r, cfg, L, tight, cases, gate):
                      worst_joint_stationarity=max([x['worst_joint_stationarity'] for x in per_case.values()
                                                    if x['worst_joint_stationarity'] is not None], default=None))
             ru = next((y for y in r['rules'] if y['q'] == t['q'] and y['M'] == t['M'] and y['rule'] == t['rule']), None)
-            if ru:
+            ast = (r.get('arm_status') or {}).get(n)
+            if ast:                                   # eqcert job (bh5): the job's 5-draw + confirmation status
+                t.update(rho_max_heldout=ast.get('heldout_rho_max'), rho_max_deployed=ast.get('deployed_rho_max'),
+                         control=ast.get('control', False), certificate_status=ast.get('status'),
+                         certified_primary=ast.get('status') == 'confirmed',
+                         certificate_basis='eqcert: 5 held-out draws + confirmation draw, k >= j')
+            elif ru:
                 dep = (ru.get('deployed') or {}).get(n)
                 t.update(rho_max_heldout=ru['heldout_population']['rho_max'],
                          rho_max_deployed=(dep or {}).get('rho_max'), control=ru.get('control', False),

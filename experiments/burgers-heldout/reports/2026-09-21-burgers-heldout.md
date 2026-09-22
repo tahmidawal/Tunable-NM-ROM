@@ -49,3 +49,18 @@ See `tables.generated.md` (all arms, all jobs). Headline rows are in the final l
 - **FOM (paper rule)**: fastest tested Newton–BiCGStab setting in the same allocation whose worst evolved error is ≤ the
   ROM row's. **speedup**: its median GPU ms / the ROM's median GPU ms.
 - **j**: number of initial time steps solved with the exact residual before the rule takes over (bh5).
+
+## bh5 — incumbent model at $4096^2$ with `lat64` j=1 vs the paper's j=0 (coordinator task, DESIGN A4)
+
+Job 4153483 (H200, source 7912b033), dev6 + hold64, 5 reps, audited by `audit_bh.py` (`checks/bh5-summary.json`) and
+`eqcert/audit_eqcert.py` (`checks/bh5-eqcert-summary.json`). Certificate population `params_draw(20260921,56)`, five
+8-trajectory draws + a 16-trajectory confirmation draw, bar 0.116.
+
+- **j=0 (the paper's rule):** passes 5/5 draws (held-out ρ_max 0.0717, deployed 0.1072) but **fails the confirmation
+  draw at $4096^2$** (held-out ρ 0.1173 > 0.116; deployed 0.1084). Error and speed reproduce hb4k04/hb4kh64: g1e-2
+  dev6 0.604 % @ 107.0 ms (4.90× `lean_nt3e-3`), hold64 1.331 % @ 99.6 ms (5.39×).
+- **j=1:** certifies with margin everywhere (draws ≤ 0.037, confirmation 0.051 held-out / 0.048 deployed), identical error
+  (0.604 / 1.331 %), but the exact first step at $4096^2$ costs ~5–7 s per query: 5308 ms dev6 / 6558 ms hold64
+  (0.10× / 0.08×). **j=1 is not a usable replacement for the 4096² speed row.**
+- Control `bad0` fails (ρ 0.53) as required. The restricted-proxy gate fails as in every 4096² job; full-grid
+  worst-case recomputation passes.

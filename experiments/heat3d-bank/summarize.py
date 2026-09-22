@@ -39,7 +39,7 @@ for mesh, (cname, lo, hi) in [(m, c) for m in res['meshes'] for c in cohorts]:
                 else: r[key] = None
             r['bar_error_le_1pct'] = r['error_all_times_worst'] <= .01; r['bar_speedup_ge_5'] = r['speedup_vs_named_fom'] >= 5
     summary['meshes'].append(dict(cohort=cname, intervals=mesh['intervals'], unknowns=mesh['unknowns'], bank_condition=mesh['bank_condition'], profile_ms=mesh['profile'], rows=rows,
-                                  reference_refinement_max=max((c.get('reference_refinement', 0.) for c in mesh['cases'][lo:hi]), default=None)))
+                                  reference_refinement_over_budget=sum(not c.get('reference_refinement_ok', True) for c in mesh['cases'][lo:hi]), reference_refinement_max=max((c.get('reference_refinement', 0.) for c in mesh['cases'][lo:hi]), default=None)))
     lines += [f"\n### [{cname}] {mesh['intervals']} intervals per axis ({mesh['unknowns']} unknowns), {rows[0]['cases']} cases ({rows[0]['timed_cases']} timed x {rows[0]['repetitions']} repetitions)\n",
               '| method | err all-times worst % | err evolved worst % | GPU ms | x vs named CN-CG | fastest CG with err<=ROM (all-times): x | coarse FOM matched: x | failures |', '|---|---:|---:|---:|---:|---|---|---:|']
     for r in rows:

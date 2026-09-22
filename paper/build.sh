@@ -13,6 +13,7 @@ PY=/home/tahmid/Dev/.venv/bin/python
 "$PY" gen_main_experiments.py
 "$PY" gen_headline.py
 "$PY" gen_tunability_table.py
+"$PY" gen_ops_panel.py
 "$PY" gen_training_appendix.py
 "$PY" figures/gen_fig_speedup_resolution.py
 "$PY" figures/gen_fig_tunability_rank.py

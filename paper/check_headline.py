@@ -306,5 +306,40 @@ for _lbl in ('app:operators', 'tab:op-linear', 'tab:op-nonlinear', 'tab:developm
 for _t in ('TR_3d_linear', 'TR_3d_nonlinear', 'TC_development_training'):
     assert r'\input{tables/' + _t + '}' in _app, _t
 assert r'\ref{app:operators}' in main.split(r'\bibliographystyle')[0]      # the main text points at the comparison
+# 2026-09-22 ops-timing-panel intake: the 256^2 panel re-derived from its pinned blobs
+_om = json.loads((P / 'evidence/ops-timing-panel-2026-09-22/manifest.json').read_text())
+for _k, _v in _om.items():
+    assert hashlib.sha256((P / f'evidence/ops-timing-panel-2026-09-22/{_k}.json').read_bytes()).hexdigest() == _v['sha256'], _k
+    assert _v['commit'].startswith('ea38c19a') and _v['read'] == 'committed blob'
+_os = json.loads((P / 'evidence/ops-timing-panel-2026-09-22/summary.json').read_text())
+assert _os['failed_gates'] == [] and _os['intervals'] == 256 and not _os['suppressed_rows']
+assert hashlib.sha256((P / 'evidence/ops-timing-panel-2026-09-22/audit.json').read_bytes()).hexdigest() == _os['audit_sha256']
+_or = {r['arm']: r for r in _os['rows']}
+_ofom = {a: r for a, r in _or.items() if r['family'] == 'fom'}
+_ops2 = [a for a, r in _or.items() if r['family'] in ('fno', 'unet', 'transolver')]
+_ot = (P / 'tables/TR_ops256.tex').read_text()
+_e2 = lambda x: f'{x:.2f}' if x >= 0.1 else f'{x:.3f}'
+_ms2 = lambda x: f'{x:.0f}' if x >= 100 else f'{x:.1f}'
+for _a in _ops2 + ['q0_M64_eqcert_g1em06_fastL4', 'q256_M1088_eqtop_g0p001', 'pod256_M1024_dense', 'pod512_M2048_dense']:
+    _r = _or[_a]; _f = _ofom[_r['fom_gpu']]
+    assert abs(_f['median_gpu_ms'] / _r['median_gpu_ms'] - _r['speedup_gpu']) < 1e-9, _a       # one job, one ratio
+    assert _f['worst_evolved_percent'] <= _r['worst_evolved_percent'] + 1e-12, _a              # the paper's FOM rule
+    assert _e2(_r['worst_evolved_percent']) in _ot and _ms2(_r['median_gpu_ms']) in _ot, _a
+_o2 = (P / 'tables/ops-numbers.tex').read_text()
+def _mp(n): return re.search(r'\\newcommand\{\\' + n + r'\}\{([^}]*)\}', _o2).group(1)
+_oe = [_or[a]['worst_evolved_percent'] for a in _ops2]
+assert (_mp('nOpsTwoDOpErrLo'), _mp('nOpsTwoDOpErrHi')) == (_e2(min(_oe)), _e2(max(_oe)))
+assert _mp('nOpsTwoDOpFaster') == str(sum(_or[a]['speedup_gpu'] > 1 for a in _ops2)) and _mp('nOpsTwoDOpArms') == str(len(_ops2))
+assert _mp('nOpsTwoDAccErr') == _e2(_or['q256_M1088_eqtop_g0p001']['worst_evolved_percent'])
+assert _mp('nOpsTwoDFastErr') == _e2(_or['q0_M64_eqcert_g1em06_fastL4']['worst_evolved_percent'])
+_disc = _os['fom_discretisation_error_percent']['dense_tight']
+assert _mp('nOpsTwoDDisc') == f'{_disc:.3f}' and min(_oe) > _disc                 # every operator error exceeds the discretisation error
+assert float(_mp('nOpsTwoDAccS')) < 1 and all(_or[a]['speedup_gpu'] < 1 for a in _or if _or[a]['family'] in ('rom', 'fast', 'pod'))
+_cc = _os['fno_error_cross_check'][0]
+assert _cc['absolute_difference'] == 0.0 and _mp('nOpsTwoDFnoGap') == f"{_cc['absolute_difference']:.3e}"
+_app2 = (P / 'sections/appendix.tex').read_text()
+assert r'\label{tab:ops256}' in _app2 and r'\input{tables/TR_ops256}' in _app2
+assert 'cohort-specific' in _app2 and 'discretisation error' in _app2            # the two qualifications stay
+assert 'every arm stopped on its wall budget' not in _app2                       # made conditional on the recorded stop reason
 print(json.dumps(dict(passed=True, rows=len(prov['rows']), bold_speedups=bold, failure_rows=len(fails), figure_points=sum(len(v) for v in fig['series'].values()),
                       pending_lane_slots=tex.count('pending:'), abstract_macros=sorted(macros)), indent=2))

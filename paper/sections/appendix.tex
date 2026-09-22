@@ -67,10 +67,12 @@ Third, the operators produce the requested output times directly, in one
 pass. They are not autoregressive rollouts, so the set of output times is
 fixed when they are trained.
 
-Fourth, every arm stopped on its wall budget rather than by early
-stopping (Table~\ref{tab:development-training}). At equal wall time the
-float32 U-Net and Transolver completed more epochs than the float64 FNO,
-which favours them.
+Fourth, each arm's stop reason is recorded with its budget
+(Table~\ref{tab:development-training}): every three-dimensional arm there
+stopped on its step budget rather than by early stopping, while the
+two-dimensional arms above train with an early-stopping patience. At
+equal wall time the float32 U-Net and Transolver completed more epochs
+than the float64 FNO, which favours them.
 
 Fifth, an operator's own evaluation resolution can trade accuracy for
 cost, as \S\ref{sec:related} says; the comparison here fixes one
@@ -95,6 +97,47 @@ Navier--Stokes on a development cohort. Speedups divide the named
 full-order solver of the same problem in the same allocation.}
 \label{tab:op-nonlinear}
 \resizebox{\linewidth}{!}{\input{tables/TR_3d_nonlinear}}
+\end{table}
+
+\paragraph{Two dimensions at $256^2$.}
+The Burgers operators were also timed against the NM-ROM, POD and the
+full-order solver in one allocation (job \nOpsTwoDJob{},
+\nOpsTwoDCases{} development cases, \nOpsTwoDReps{} retained repetitions
+each; Table~\ref{tab:ops256}). The fast operators are quicker than the
+NM-ROM and than the full-order setting the rule matches to them
+(\nOpsTwoDOpFaster{} of \nOpsTwoDOpArms{} operator arms beat it, up to
+$\nOpsTwoDOpFastS\times$), and an order of magnitude less accurate:
+$\nOpsTwoDOpErrLo$--$\nOpsTwoDOpErrHi\,\%$ worst evolved error, against
+$\nOpsTwoDAccErr\,\%$ for the accurate NM-ROM setting and
+$\nOpsTwoDFastErr\,\%$ for the fast one. Every operator error exceeds the
+mesh's own discretisation error, $\nOpsTwoDDisc\,\%$: at this resolution
+they do not resolve the discrete solution they were trained on. No
+NM-ROM or POD arm here is faster than its comparator either; the
+accurate setting meets the campaign's $\le 1\,\%$ accuracy bar and misses
+its $\ge 5\times$ speed bar ($\nOpsTwoDAccS\times$), which is what
+Table~\ref{tab:headline} already shows for accurate Burgers below
+$4096^2$.
+
+Two asymmetries are declared and left in place, both favouring the
+operators: their complete-query scope is not charged the upload of the
+input field, and the fields their errors are scored on come from an
+extra, untimed query. The FNO error reproduces the earlier panel case by
+case (difference $\nOpsTwoDFnoGap$), and no timing was ever divided
+across jobs. This lane also could not reproduce an earlier
+validation-selection pathology: here the selected arms are the better
+ones. The two cohorts are different splits with no case in common, so
+that is cohort-specific and refutes nothing.
+
+\begin{table}[htbp]
+\centering
+\caption{Burgers 2D at $256^2$ in one allocation (job \nOpsTwoDJob):
+worst evolved and all-times same-grid error, median GPU query time, the
+full-order setting the rule matches to each row, and the speedup over
+it. Operator arms are the trained sizes of each family; the last three
+rows are the full-order settings the rule selects. Complete-query times
+add host transfer and are in the lane record.}
+\label{tab:ops256}
+\resizebox{\linewidth}{!}{\input{tables/TR_ops256}}
 \end{table}
 
 \begin{table}[htbp]

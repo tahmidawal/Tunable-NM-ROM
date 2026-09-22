@@ -1,5 +1,40 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — 2D operator panel at 256² (Appendix C) — CURRENT HANDOFF
+
+The 2D operator hole ("trained but untimed") is filled. Source: `exp/2026-09-22-ops-timing-panel` @ea38c19a,
+pinned as committed blobs in `evidence/ops-timing-panel-2026-09-22/`: `summary` (blob e25eaec4, sha256
+04525529…) and `audit` (blob b377c38a, sha256 fcbae91b…, which equals the summary's own `audit_sha256`);
+`reports/table-256.md`, `DESIGN.md` and `checks/codex-design-audit.md` recorded as companion blobs. Job 4179247,
+A100-80G, 6 development cases, 5 retained repetitions, 20 burn-in, 0 failed gates, no suppressed rows.
+- **Table C.3 (`tab:ops256`, new `gen_ops_panel.py`, run from `build.sh`)**: Burgers 2D at 256² in one
+  allocation — NM-ROM fast and accurate, both POD-LSPG ranks, all nine operator arms, and the three full-order
+  settings the rule selects. Columns: worst evolved %, worst all-times %, median GPU ms, the rule's FOM, speedup.
+  Every printed speedup is re-derived in the generator as that FOM's time over the row's own time in the same job.
+- **Appendix C paragraph, "Two dimensions at 256²"**, with these caveats:
+  - the fast operators beat the NM-ROM and the rule-matched full-order setting (3 of 9 arms, up to 1.48×) and are
+    an order of magnitude less accurate: 4.46–7.42 % against 0.51 % (accurate NM-ROM) and 1.89 % (fast);
+  - **every operator error exceeds the mesh's own discretisation error, 4.027 %** — at this resolution they do not
+    resolve the discrete solution they were trained on (asserted in the generator and in check_headline);
+  - no NM-ROM or POD arm here is faster than its comparator; the accurate setting meets the ≤1 % bar and misses
+    the ≥5× bar (0.0659×), which is what Table 1 already shows for accurate Burgers below 4096² — stated that way
+    so it cannot read as a contradiction;
+  - two declared asymmetries, both favouring the operators: their complete-query scope is not charged the input
+    upload, and their scored fields come from an extra untimed query;
+  - the FNO error reproduces the earlier panel case by case (difference 0.000e+00) and no timing was divided
+    across jobs;
+  - the lane could not reproduce the earlier validation-selection pathology (here the selected arms are the better
+    ones), and since the cohorts are different splits with no shared case, that is cohort-specific and refutes
+    nothing. The paper asserts no general selection pathology anywhere, so nothing else needed qualifying.
+- **Wall-budget caveat made conditional** (DeepONet 2D is still training and its smallest arm early-stopped):
+  the 3D caveat now reads "each arm's stop reason is recorded with its budget: every three-dimensional arm there
+  stopped on its step budget rather than by early stopping, while the two-dimensional arms above train with an
+  early-stopping patience." check_headline asserts the old absolute sentence is gone.
+- check_headline re-derives, from the pinned blobs: each printed row's error and time, each speedup as one job's
+  ratio, the FOM rule per row, the macro ranges, the discretisation-error inequality, the FNO cross-check and the
+  labels/inputs. Both checks pass; 0 overfull boxes; main text ends on page 9, References on page 9; PDF 24 pages.
+  Main text unchanged by this intake.
+
 ## 2026-09-22 (paper lane) — neural-operator numbers wired in (Appendix C) — CURRENT HANDOFF
 
 The paper reported no neural-operator numbers although the abstract and introduction frame it against them. The

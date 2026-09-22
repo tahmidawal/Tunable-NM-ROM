@@ -1,0 +1,23 @@
+{
+  "name": "mesh03",
+  "question": "does the paired speedup cross 1 at N=64, where the FOM cost scales and the reduced rollout does not",
+  "n": 64,
+  "dt_truth": 0.001,
+  "horizon": 0.2,
+  "train_cases": 256,
+  "dev_cases": 16,
+  "train_seed": 202609201,
+  "dev_seed": 202609202,
+  "closed_seeds": [202609203, 202609211],
+  "rank": 64,
+  "gauge": 0.0,
+  "budget": 60,
+  "gtol": 1e-7,
+  "modes_ladder": [292],
+  "rom_dt_ladder": [0.04, 0.02, 0.01],
+  "fom_dt_ladder": [0.004, 0.005, 0.01, 0.02],
+  "timing_case": 0,
+  "timing_repetitions": 7,
+  "gram_block": 256,
+  "target_relative": 0.05
+}

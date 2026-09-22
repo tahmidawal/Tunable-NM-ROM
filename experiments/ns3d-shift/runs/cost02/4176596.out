@@ -1,0 +1,59 @@
+host=pax051 source_commit=dc8eb9f7b274736f0134742345ae32243fe44051 job=4176596
+NVIDIA A100-PCIE-40GB, GPU-a840f593-3e39-4ee0-681d-f3898b49b09b, 40960 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=440.3 devices=[CudaDevice(id=0)]
+generated 1/512 dt=0.001
+generated 32/512 dt=0.001
+generated 64/512 dt=0.001
+generated 96/512 dt=0.001
+generated 128/512 dt=0.001
+generated 160/512 dt=0.001
+generated 192/512 dt=0.001
+generated 224/512 dt=0.001
+generated 256/512 dt=0.001
+generated 288/512 dt=0.001
+generated 320/512 dt=0.001
+generated 352/512 dt=0.001
+generated 384/512 dt=0.001
+generated 416/512 dt=0.001
+generated 448/512 dt=0.001
+generated 480/512 dt=0.001
+generated 512/512 dt=0.001
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+gram rows 512/3072
+gram rows 1024/3072
+gram rows 1536/3072
+gram rows 2048/3072
+gram rows 2560/3072
+gram rows 3072/3072
+eigh dimension 3072
+pod rank=64 orth=6.353e-10 energy_tail=2.130e-08
+CNAB2 comparator accuracy on the full development cohort
+CNAB2 dt=0.004 evolved worst 0.000943
+CNAB2 dt=0.005 evolved worst 0.001516
+CNAB2 dt=0.01 evolved worst 0.007882
+CNAB2 dt=0.02 evolved worst 0.766936
+M96_dt0.04: evolved worst 0.047509 (0/16 over target), query 13.446 ms, one-output 12.644 ms, median iters 4.0
+M96_dt0.02: evolved worst 0.034274 (0/16 over target), query 14.267 ms, one-output 13.613 ms, median iters 4.0
+M96_dt0.01: evolved worst 0.038914 (0/16 over target), query 21.566 ms, one-output 20.856 ms, median iters 3.0
+M292_dt0.04: evolved worst 0.021642 (0/16 over target), query 8.282 ms, one-output 7.694 ms, median iters 4.0
+M292_dt0.02: evolved worst 0.006393 (0/16 over target), query 13.073 ms, one-output 12.414 ms, median iters 3.0
+M292_dt0.01: evolved worst 0.004491 (0/16 over target), query 23.918 ms, one-output 23.103 ms, median iters 3.0
+M1024_dt0.04: evolved worst 0.011812 (0/16 over target), query 9.736 ms, one-output 9.283 ms, median iters 4.0
+M1024_dt0.02: evolved worst 0.003375 (0/16 over target), query 16.241 ms, one-output 15.621 ms, median iters 3.0
+M1024_dt0.01: evolved worst 0.002171 (0/16 over target), query 30.256 ms, one-output 29.542 ms, median iters 3.0
+done
+M1024_dt0.01 {"evolved_worst": 0.002170904366075092, "evolved_median": 0.001264950443095432, "gap": 4.336808689942018e-19}
+M1024_dt0.02 {"evolved_worst": 0.003374617404871136, "evolved_median": 0.0022449390901542183, "gap": 1.3010426069826053e-18}
+M1024_dt0.04 {"evolved_worst": 0.01181233119499976, "evolved_median": 0.007163694068081476, "gap": 3.469446951953614e-18}
+M292_dt0.01 {"evolved_worst": 0.004490837460242411, "evolved_median": 0.0028638202514950552, "gap": 8.673617379884035e-19}
+M292_dt0.02 {"evolved_worst": 0.006392938168789754, "evolved_median": 0.004630315671206218, "gap": 5.204170427930421e-18}
+M292_dt0.04 {"evolved_worst": 0.02164205577508361, "evolved_median": 0.013493442565783362, "gap": 1.3877787807814457e-17}
+M96_dt0.01 {"evolved_worst": 0.03891431928647795, "evolved_median": 0.007855635931453931, "gap": 6.938893903907228e-18}
+M96_dt0.02 {"evolved_worst": 0.034274435134286005, "evolved_median": 0.011883490291638996, "gap": 5.204170427930421e-18}
+M96_dt0.04 {"evolved_worst": 0.04750851507539124, "evolved_median": 0.03465461194255192, "gap": 0.0}
+verify ok 1.3877787807814457e-17
+SHIFT_EXIT=0

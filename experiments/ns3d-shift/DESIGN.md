@@ -282,3 +282,39 @@ the development stage and recorded in this file as an amendment before submit.
   smooth solenoidal Fourier functions and solved in least squares.
 - **Evolved worst:** for each case take the worst error over the output times
   after $t=0$; then take the worst over cases.
+
+## Amendment — mesh scaling probe (`mesh03`), written before the job
+
+`pilot01` (job 4176514) met the accuracy bar and missed the speed bar, so stop
+rule 3 applies and **the sealed cohort is not drawn**. `cost02` (job 4176596)
+then split the cost and found something the stop rule did not anticipate: the
+grid-sized work is **not** what loses the race. At $N=32$, $M=292$,
+$\Delta t=0.04$ the complete query is 8.282 ms, of which the initial centering
+and projection is 0.264 ms and the five output reconstructions are about 0.59 ms
+in total. Roughly 90 % of the query is the reduced rollout, whose arithmetic
+(an $M\times r\times r$ contraction and a $67$-unknown least squares, a few times
+per step) is some two orders of magnitude below what it costs, and which is
+**independent of the mesh** because $A$, $\mathsf T$ and $D_d$ have no $N$ in
+their shapes.
+
+The FOM's cost is not mesh independent. That makes one further development
+measurement decisive for the question the cell was opened to answer:
+
+> At $N=64$, with the same reduced model and the same stored operators, does the
+> paired speedup cross 1?
+
+This is a **new, exploratory question**, not a re-roll of the one stop rule 3
+closed. It is labelled as such, it uses the development seed only, and it cannot
+license a sealed draw: any crossover found here would need its own design, its
+own pre-registered ladder and its own sealed cohort. The bar is stated only so
+the outcome is not read after the fact: a crossover means paired speedup $> 1$
+with evolved worst $\le 5\,\%$ and 0 development cases over 5 %, under the same
+comparator rule.
+
+Settings frozen now: $N=64$, rank 64, gauge 0 (the pilot showed every nonzero
+weight hurts), $M=292$, $\Delta t \in \{0.04, 0.02, 0.01\}$, CNAB2 comparators at
+$\Delta t \in \{0.004, 0.005, 0.01, 0.02\}$, training seed 202609201 with 256
+cases (the centered family is low rank; 1536 centered snapshots is ample),
+development seed 202609202 with 16 cases, truth CNAB2 at $\Delta t=0.001$. Every
+check, control and integrity rule above applies unchanged. Budget after this job:
+3 of 6.

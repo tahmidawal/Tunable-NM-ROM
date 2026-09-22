@@ -47,6 +47,17 @@ SHA256 in \texttt{evidence/training-configs-2026-09-21}).}
 
 \input{tables/TH_solver_details}
 
+\paragraph{Three-dimensional heat, new bank.} The bank of the Heat (new
+bank) rows ($R=\nHeatNewR$) was trained with a code-free
+variable-projection trainer that eliminates the coefficients exactly;
+its projection floor is $\nHeatNewFloor\,\%$. Its arms were fixed by a
+rule registered before the sealed cohort was opened. A second model
+($R=\nHeatNewBR$, $k=\nHeatNewBK$, $q=\nHeatNewBQ$), chosen after speed results had been seen,
+reaches $\nHeatNewBErr\,\%$ on the same sealed cohort at $128^3$,
+$\nHeatNewBCnS\times$ (Crank--Nicolson) and $\nHeatNewBBfS\times$ (batched
+fit) against the rule's CN--CG setting; it is not used in
+Table~\ref{tab:headline}.
+
 
 \begin{table}[htbp]
 \centering
@@ -125,9 +136,10 @@ propagated test moments (linear autonomous problems with eigenfunction
 tests only). The sealed 2D cohort was opened once and gives every
 wide-bank row of Table~\ref{tab:headline}; the development row ran on
 another GPU (A100) and is shown for reference. Wide bank: $R=128$, $k=8$;
-earlier: the $R=32$ checkpoint of the Heat rows; 3D: the Heat 3D model of
-Table~\ref{tab:failures}. The 3D rows miss the 1\,\% all-times target;
-$256^3$ is the first 16 final cases, not a mesh trend.}
+earlier: the $R=32$ checkpoint of the Heat rows; 3D, earlier bank: the
+three-dimensional model that preceded the new bank of
+Table~\ref{tab:headline} (it misses the 1\,\% all-times target;
+$256^3$ is the first 16 final cases, not a mesh trend).}
 \label{tab:heat-hires}
 \resizebox{\linewidth}{!}{\input{tables/TH_heat_hires}}
 \end{table}
@@ -151,7 +163,17 @@ whose hyper-reduction did not pass its reproduction gate. Our rows use
 the unoptimised dense reference path (no empirical quadrature, stopping
 tolerance $10^{-6}$, $M=4(k+q)$ tests); our optimised query is timed only
 in Table~\ref{tab:headline}, in other jobs, and no ratio across jobs is
-formed.}
+formed. The shallow masked-autoencoder NM-LSPG of \citet{KimChoi2022NMROM}
+passed its reproduction gate, on their own 2D Burgers benchmark (their
+Sec.~6.2), on the third of three pre-registered attempts
+(\nBaseGateAct{} activation; median $\nBaseGateMedian\,\%$ against a
+$\nBaseGateBar\,\%$ bar; published ${<}\nBaseGatePublished\,\%$). Its
+published encoder width ($2n$) needs $\nBaseEncoderNeedGB$\,GB to train at
+$256^2$ and $\nBaseEncoderNeedGBFiveTwelve$\,GB at $512^2$, beyond the
+$\nBaseDeviceGB$ and $\nBaseDeviceGBFiveTwelve$\,GB devices; at $512^2$
+its encoder, capped at width $\nBaseKimWidth$, trained only
+$\nBaseKimEpochs$ epochs in its $\nBaseKimWall$\,s budget, so those errors
+partly reflect a training-time limit.}
 \label{tab:nmrom-baselines-appx}
 \resizebox{\linewidth}{!}{\input{tables/TH_nmrom_baselines_appx}}
 \end{table}

@@ -39,8 +39,8 @@ assert hb == {(p, n) for p in ('Burgers', 'Burgers (held-out cases)') for n in (
 assert 'pending:' not in tex and 'reserved' not in tex
 # 2026-09-21 user decision: exactly three "results incoming" slots (paused lanes), no number in them
 _inc = [l for l in tex.splitlines() if 'results incoming' in l]
-assert len(_inc) == 2 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
-assert {i['lane'] for i in prov['incoming']} == {'burgers-heldout', 'heat3d-bank'}
+assert len(_inc) == 1 and all(l.count('&') == 2 and r'\multicolumn{6}{l}{\emph{results incoming}}' in l for l in _inc), _inc
+assert {i['lane'] for i in prov['incoming']} == {'burgers-heldout'}
 # 2026-09-21 burgers-eqcert intake (audited blobs @176b2a9a): re-derive the confirmed-rule rows, the FOM rule and every label number
 _eq = {k: json.loads((P / f'evidence/headline-2026-09-20/{k}.json').read_bytes()) for k in man if k.startswith('eqcert_')}
 assert set(_eq) == {'eqcert_summary', 'eqcert_bc256', 'eqcert_bc256b', 'eqcert_bc512', 'eqcert_bc1024', 'eqcert_bc2048b'}
@@ -109,7 +109,38 @@ for r in prov['rows']:
     assert abs(C[r['fom']['arm']]['ms'] - r['fom']['ms']) < 1e-9
     if len(C) == 1: assert r['fom'].get('selection', '').startswith('record: Fastest'), (r['problem'], r['intervals'])
 fails = prov['failures']; assert {f['source'] for f in fails} - {'burgers3d', 'ns3d', 'wave', 'heat3d'} <= {k for k in man if 'hires-heat' in k}
-assert not any(r['problem'] == 'Heat' and r['dim'] == 3 for r in prov['rows'])      # 2026-09-21: Heat 3D reported with the failures
+assert not any(r['problem'] == 'Heat' and r['dim'] == 3 for r in prov['rows'])      # the earlier Heat 3D model is in neither table now
+# 2026-09-22 heat3d-bank intake: Table 1 'Heat (new bank)' rows re-derived from the pinned panel-A blob (sealed cohort 921099)
+assert not any('heat' in f['source'].lower() or f['problem'].startswith('Heat') for f in fails)   # Heat 3D left the failures table
+_ha = json.loads((P / 'evidence/headline-2026-09-20/heat3db_panel_a.json').read_bytes())
+assert man['heat3db_panel_a']['commit'].startswith('55165375') and _ha['audit_passed'] and _ha['metadata']['backend'] == 'gpu'
+_HN = {m['intervals']: {x['method']: x for x in m['rows']} for m in _ha['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
+_h3 = {(r['problem'], r['intervals']): r for r in prov['rows'] if r['dim'] == 3 and r['problem'].startswith('Heat (new bank')}
+assert set(_h3) == {(p_, n) for p_ in ('Heat (new bank)', 'Heat (new bank, batched fit)') for n in (32, 64, 128)}
+_hl = (P / 'tables/TH_headline.tex').read_text()
+for (p_, n), r in _h3.items():
+    arms = ('nmrom_q0_field_cn', 'nmrom_q288_field_cn') if p_ == 'Heat (new bank)' else ('nmrom_q0_field_direct_tol1e-4_chol', 'nmrom_q288_field_direct_tol1e-4_chol')
+    for s_, a_ in zip(('fast', 'accurate'), arms):
+        x = _HN[n][a_]; assert r[s_]['arm'] == a_ and r[s_]['error_pct'] == 100 * x['error_all_times_worst'] and r[s_]['ms'] == x['device_ms_median']
+        assert r[s_]['nonstationary'] == x['failures'] and x['cases'] == 64
+    assert r['accurate']['error_pct'] <= 1 and r['error_convention'] == 'same-grid, all times' and r['cohort'] == 'final'   # meets the 1 % all-times target
+    cand = {k: v for k, v in _HN[n].items() if k.startswith('fom_cncg_') and v['failures'] == 0}
+    assert set(r['fom']['candidates']) == set(cand) and r['fom']['arm'] == _HN[n][arms[1]]['fastest_fom_error_le_rom_all_times']['method']
+    assert r['fom']['ms'] == cand[r['fom']['arm']]['device_ms_median']
+    if r['accurate']['nonstationary']: assert r'---$^{n}$' in _hl                    # a solve that missed its rule does not enter a speedup
+# the text's speed claims: slower than CN--CG with CN stepping at every mesh, faster only with the batched fit at 128^3
+assert all(r['accurate']['speedup'] < 1 for (p_, n), r in _h3.items() if p_ == 'Heat (new bank)')
+assert [n for (p_, n), r in _h3.items() if p_ != 'Heat (new bank)' and r['accurate']['speedup'] > 1] == [128]
+# Navier--Stokes follow-up sentence (ns3d-grok diag07, a different model): macros re-derived from the pinned blob
+_ng = json.loads((P / 'evidence/headline-2026-09-20/ns3d_grok_diag07.json').read_bytes()); _cs = _ng['coeff']['stats']
+assert man['ns3d_grok_diag07']['commit'].startswith('8852b7cd') and _ng['final_cohort_opened'] and not _ng['smoke']
+_hn2 = (P / 'tables/headline-numbers.tex').read_text()
+def _m2(name): return re.search(r'\\newcommand\{\\' + name + r'\}\{([^}]*)\}', _hn2).group(1)
+_ff = min((v for v in _ng['fom'].values() if v['stats']['evolved_worst'] <= _cs['evolved_worst']), key=lambda v: v['median_ms'])
+assert _m2('nNsGrokWorst') == f"{100 * _cs['evolved_worst']:.2f}" and _m2('nNsGrokOver') == str(_cs['cases_evolved_over_target']) == '0'
+assert _m2('nNsGrokCases') == str(_cs['cases']) and abs(float(_m2('nNsGrokS')) - _ff['median_ms'] / _ng['coeff']['median_ms']) < 0.005 and _ff['dt'] == 0.01
+_mt = (P / 'main.tex').read_text().split(r'\bibliographystyle')[0]
+assert 'four problems' not in _mt and 'nFailHeatThree' not in _mt and 'nHeatThreeInit' not in _mt
 assert not any(r['source'] in ('burgers3d', 'ns3d', 'wave') for r in prov['rows'])
 main = (P / 'main.tex').read_text()
 abstract = main.split(r'\begin{abstract}')[1].split(r'\end{abstract}')[0]

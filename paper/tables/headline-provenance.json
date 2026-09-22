@@ -323,6 +323,74 @@
       "sha256": "3d3bbfb4c7a00353acb4b7ea3475f13760c220cbca23cd95e49eaaeb388b906e",
       "read": "committed blob",
       "git_blob": "db9b6e1b597e3635b1f3aa37b56ebdf226fe417d"
+    },
+    "heat3db_panel_a": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/runs/final01/final01/summary.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "50149d6d55713d5c3ca909241c77f87f0ea860e0be3989744fe1f55e63ce36df",
+      "read": "committed blob",
+      "git_blob": "7e2aa123bf2b37f42bd1f8808d846e048c1e24ef",
+      "companion_blobs": {
+        "DESIGN.md": "0399be78ee18875010edc57adb8aa3d4501e12f8",
+        "HANDOFF.md": "74993fc116fdaff7e97a82a27d99700f781d17a8",
+        "runs/final01/FINAL-TABLE.md": "3afff59e4d424e0aecf5ccf74a7ae12233c4dcd9"
+      }
+    },
+    "heat3db_panel_b": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/runs/final01/final01b/summary.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "5edf382537d39bdbdfdb98f2fab5fedb154a3fbe63edd2839bbbc44713ff405e",
+      "read": "committed blob",
+      "git_blob": "0920bbbe6f27ac836b34dcb3a04c565c23624a67"
+    },
+    "heat3db_final_table": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/runs/final01/final_table.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "a2fe20874156da9c6998c37b187b26983487f7e2022b3c252f54dbfdee72f967",
+      "read": "committed blob",
+      "git_blob": "82a5c1e544bbfafa750b6e6fa84697404e20d9cf"
+    },
+    "heat3db_selection": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/selection.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "e980531a872beee32faba11c8f1758da823ce57f2a97c3822806343e5e532b1a",
+      "read": "committed blob",
+      "git_blob": "573245b2bdc0f07d461d319c1d987392970884c7"
+    },
+    "heat3db_selection_add1": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/selection_addendum1.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "2e42e79dd8797981a4590c946e3cc30ae9cd8d7c728bb719e1dc3090347f07ee",
+      "read": "committed blob",
+      "git_blob": "997cb9438e1c24341714ed14703a1d411f12f9a5"
+    },
+    "heat3db_selection_add2": {
+      "tree": "worktrees/2026-09-21-heat3d-bank",
+      "path": "experiments/heat3d-bank/selection_addendum2.json",
+      "commit": "55165375fc9e1193aed1ff2a729439a893e80396",
+      "status": "audited final; heat3d-bank lane (closed)",
+      "sha256": "7bc09667416a35ac2cea2ab1b25dcdc0988a8efdc14b4549ee27cb635f4fe315",
+      "read": "committed blob",
+      "git_blob": "0642d2b1964887b3166b6037852852a102fefc3e"
+    },
+    "ns3d_grok_diag07": {
+      "tree": "worktrees/2026-09-21-ns3d-grok",
+      "path": "experiments/ns3d-grok/runs/diag07/output/summary.json",
+      "commit": "8852b7cd6365de7a8fdfd747bedee587f1cf9f29",
+      "status": "audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)",
+      "sha256": "97ad1b9ee19ddb08e9d660c1bb60e033d887504b639218bdcf715715cde6f9d4",
+      "read": "committed blob",
+      "git_blob": "ed345d4de6e44e17ab30cefe9a365dc724af0662"
     }
   },
   "rows": [
@@ -2196,6 +2264,486 @@
         "fast": 4.207055069784597
       },
       "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 32,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0041641834304134,
+        "ms": 25.414715986698866,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 1.0037384637131952,
+        "nonstationary": 0,
+        "speedup": 0.13101240439156023
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11358234526322153,
+        "ms": 58.15785040613264,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08396876425598045,
+        "nonstationary": 0,
+        "speedup": 0.05725182456184691
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.07837328908127797,
+        "ms": 3.3296430483460426,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.07826828732697816,
+            "ms": 4.132918547838926
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.07837328908127797,
+            "ms": 3.3296430483460426
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6490788124213854,
+            "ms": 2.941813552752137
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.6956205137348266,
+            "ms": 2.7315850602462888
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3208021541513088,
+            "ms": 2.7037019608542323
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.32228333462298625,
+            "ms": 2.45037698186934
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 2.381768572565625,
+            "ms": 2.114749513566494
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.4581232445140533,
+            "ms": 2.3071288596838713
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.4580990000350114,
+            "ms": 2.0208325004205108
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 2.1281271159545123,
+            "ms": 1.775157987140119
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.004188571279985,
+        "ms": 25.44845500960946,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 0.9634206328800607,
+        "nonstationary": 0,
+        "speedup": 0.20538158355346237
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11367043718775029,
+        "ms": 58.69116052053869,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08539337748575793,
+        "nonstationary": 1,
+        "speedup": 0.08905334197700171
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.08127465468538603,
+        "ms": 5.226643988862634,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08127651364566611,
+            "ms": 7.299848017282784
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08127465468538603,
+            "ms": 5.226643988862634
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6224545608136295,
+            "ms": 4.176954971626401
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.802078298617795,
+            "ms": 3.767221118323505
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.33345608501298957,
+            "ms": 4.436726565472782
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.334727175885224,
+            "ms": 3.58152505941689
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.9846742112079752,
+            "ms": 2.724988036789
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5272915066045494,
+            "ms": 3.857177449390292
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.52705941096364,
+            "ms": 3.0397175578400493
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.6391844318855857,
+            "ms": 2.35329894348979
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 128,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.004190061504043,
+        "ms": 28.24710833374411,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 0.9549596522309409,
+        "nonstationary": 0,
+        "speedup": 0.6172579466258218
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11367573793847349,
+        "ms": 62.02554446645081,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08582484080217943,
+        "nonstationary": 0,
+        "speedup": 0.28110599009146797
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.0820933177187895,
+        "ms": 17.435752088204026,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08204000965799457,
+            "ms": 29.15126457810402
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.0820933177187895,
+            "ms": 17.435752088204026
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.4831598687764751,
+            "ms": 13.498243875801563
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.514418105827291,
+            "ms": 10.847708559595048
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3366649417149719,
+            "ms": 16.0940270870924
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.33770474234495057,
+            "ms": 11.460236506536603
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.7900839947588665,
+            "ms": 7.461020490154624
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.545095463677621,
+            "ms": 14.418795937672257
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.5448409526565838,
+            "ms": 10.290460544638336
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.5575497707809325,
+            "ms": 7.043040473945439
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank, batched fit)",
+      "dim": 3,
+      "intervals": 32,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0041953809406277,
+        "ms": 5.879755015484989,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.7557798163327992,
+        "nonstationary": 0,
+        "speedup": 0.5662894184497581
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11374111242875551,
+        "ms": 5.355478846468031,
+        "arm": "nmrom_q288_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.0298688716357283,
+        "nonstationary": 0,
+        "speedup": 0.6217264867999546
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.07837328908127797,
+        "ms": 3.3296430483460426,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.07826828732697816,
+            "ms": 4.132918547838926
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.07837328908127797,
+            "ms": 3.3296430483460426
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6490788124213854,
+            "ms": 2.941813552752137
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.6956205137348266,
+            "ms": 2.7315850602462888
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3208021541513088,
+            "ms": 2.7037019608542323
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.32228333462298625,
+            "ms": 2.45037698186934
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 2.381768572565625,
+            "ms": 2.114749513566494
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.4581232445140533,
+            "ms": 2.3071288596838713
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.4580990000350114,
+            "ms": 2.0208325004205108
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 2.1281271159545123,
+            "ms": 1.775157987140119
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank, batched fit)",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.004219765325165,
+        "ms": 6.136377924121916,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.7130836441434399,
+        "nonstationary": 0,
+        "speedup": 0.8517474075898837
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11382924235236544,
+        "ms": 5.540255340747535,
+        "arm": "nmrom_q288_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.026617707005408085,
+        "nonstationary": 0,
+        "speedup": 0.9433940617179953
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.08127465468538603,
+        "ms": 5.226643988862634,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08127651364566611,
+            "ms": 7.299848017282784
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08127465468538603,
+            "ms": 5.226643988862634
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6224545608136295,
+            "ms": 4.176954971626401
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.802078298617795,
+            "ms": 3.767221118323505
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.33345608501298957,
+            "ms": 4.436726565472782
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.334727175885224,
+            "ms": 3.58152505941689
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.9846742112079752,
+            "ms": 2.724988036789
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5272915066045494,
+            "ms": 3.857177449390292
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.52705941096364,
+            "ms": 3.0397175578400493
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.6391844318855857,
+            "ms": 2.35329894348979
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
+    },
+    {
+      "problem": "Heat (new bank, batched fit)",
+      "dim": 3,
+      "intervals": 128,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0042212553479133,
+        "ms": 8.300997549667954,
+        "arm": "nmrom_q0_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.7050031343399579,
+        "nonstationary": 0,
+        "speedup": 2.100440577638945
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11383454083767461,
+        "ms": 7.839759928174317,
+        "arm": "nmrom_q288_field_direct_tol1e-4_chol",
+        "evolved_pct": 0.02598001276236768,
+        "nonstationary": 0,
+        "speedup": 2.224016072934057
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.0820933177187895,
+        "ms": 17.435752088204026,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08204000965799457,
+            "ms": 29.15126457810402
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.0820933177187895,
+            "ms": 17.435752088204026
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.4831598687764751,
+            "ms": 13.498243875801563
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.514418105827291,
+            "ms": 10.847708559595048
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3366649417149719,
+            "ms": 16.0940270870924
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.33770474234495057,
+            "ms": 11.460236506536603
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.7900839947588665,
+            "ms": 7.461020490154624
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.545095463677621,
+            "ms": 14.418795937672257
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.5448409526565838,
+            "ms": 10.290460544638336
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.5575497707809325,
+            "ms": 7.043040473945439
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null
     }
   ],
   "appendix_only_rows": [
@@ -3077,7 +3625,7 @@
       }
     },
     {
-      "model": "3D model",
+      "model": "3D, earlier bank",
       "role": "h3d-final08",
       "source": "intake_04_hires-heat",
       "job": "4072943",
@@ -3142,7 +3690,7 @@
       }
     },
     {
-      "model": "3D model",
+      "model": "3D, earlier bank",
       "role": "h3d-final08",
       "source": "intake_04_hires-heat",
       "job": "4072943",
@@ -3207,7 +3755,7 @@
       }
     },
     {
-      "model": "3D model",
+      "model": "3D, earlier bank",
       "role": "h3d-final08",
       "source": "intake_04_hires-heat",
       "job": "4072943",
@@ -3272,7 +3820,7 @@
       }
     },
     {
-      "model": "3D model",
+      "model": "3D, earlier bank",
       "role": "h3d-final08",
       "source": "intake_04_hires-heat",
       "job": "4072943",
@@ -3608,16 +4156,6 @@
       ],
       "lane": "burgers-heldout",
       "branch": "exp/2026-09-21-burgers-heldout"
-    },
-    {
-      "problem": "Heat 3D (wider bank)",
-      "dim": 3,
-      "meshes": [
-        64,
-        128
-      ],
-      "lane": "heat3d-bank",
-      "branch": "exp/2026-09-21-heat3d-bank"
     }
   ],
   "nmrom_baselines": [
@@ -3997,66 +4535,6 @@
       "metric": "energy-state (displacement and velocity)",
       "source": "wave",
       "displacement_pct": 2.8094300105452796
-    },
-    {
-      "problem": "Heat 3D, $32^3$ (final, evolved)",
-      "setting": "$q=0$",
-      "error_pct": 1.561584941191253,
-      "fom_error_pct": 0.324568746473869,
-      "speedup": 0.13461852544831637,
-      "fom": "CN--CG",
-      "metric": "same-grid, evolved times only (the record has no all-times value)",
-      "source": "heat3d"
-    },
-    {
-      "problem": "Heat 3D, $32^3$ (final, evolved)",
-      "setting": "$q=96$",
-      "error_pct": 0.7617815535839739,
-      "fom_error_pct": 0.324568746473869,
-      "speedup": 0.06637947413466633,
-      "fom": "CN--CG",
-      "metric": "same-grid, evolved times only (the record has no all-times value)",
-      "source": "heat3d"
-    },
-    {
-      "problem": "Heat 3D, $64^3$ (final, evolved)",
-      "setting": "$q=0$",
-      "error_pct": 1.5471978124578238,
-      "fom_error_pct": 0.3373665591596981,
-      "speedup": 0.2685883598009542,
-      "fom": "CN--CG",
-      "metric": "same-grid, evolved times only (the record has no all-times value)",
-      "source": "heat3d"
-    },
-    {
-      "problem": "Heat 3D, $64^3$ (final, evolved)",
-      "setting": "$q=96$",
-      "error_pct": 0.7542092089366933,
-      "fom_error_pct": 0.3373665591596981,
-      "speedup": 0.12693429798210296,
-      "fom": "CN--CG",
-      "metric": "same-grid, evolved times only (the record has no all-times value)",
-      "source": "heat3d"
-    },
-    {
-      "problem": "Heat 3D, $128^3$ (final, all times)",
-      "setting": "$q=0$",
-      "error_pct": 3.177643271559473,
-      "fom_error_pct": 1.5820140852734415,
-      "speedup": 0.4261412073068404,
-      "fom": "CN--CG",
-      "metric": "same-grid, all times including t=0",
-      "source": "intake_04_hires-heat"
-    },
-    {
-      "problem": "Heat 3D, $128^3$ (final, all times)",
-      "setting": "$q=96$",
-      "error_pct": 1.9321796613277418,
-      "fom_error_pct": 1.5820140852734415,
-      "speedup": 0.19993296624339812,
-      "fom": "CN--CG",
-      "metric": "same-grid, all times including t=0",
-      "source": "intake_04_hires-heat"
     }
   ],
   "pending": [
@@ -4129,8 +4607,29 @@
     "nHeadPoissonThreeAccErr": "0.26",
     "nHeadBurgersMidErr": "1.04",
     "nHeadBurgersMidS": "0.50",
-    "nFailHeatThreeEvolved": "0.75",
-    "nFailHeatThreeAll": "1.93",
+    "nHeatNewAccErr": "0.11",
+    "nHeatNewAccEvolved": "0.086",
+    "nHeatNewBatchedAccEvolved": "0.030",
+    "nHeatNewCnAccS": "0.28",
+    "nHeatNewBfAccS": "2.22",
+    "nHeatNewNonstat": "1",
+    "nHeatNewCases": "64",
+    "nHeatNewK": "32",
+    "nHeatNewQ": "288",
+    "nHeatNewR": "320",
+    "nHeatNewFloor": "0.06",
+    "nHeatNewLinErr": "0.070",
+    "nHeatNewLinMs": "1.5\\mbox{--}2.8",
+    "nHeatNewBR": "256",
+    "nHeatNewBK": "16",
+    "nHeatNewBQ": "160",
+    "nHeatNewBErr": "0.47",
+    "nHeatNewBCnS": "0.94",
+    "nHeatNewBBfS": "1.92",
+    "nNsGrokWorst": "4.80",
+    "nNsGrokOver": "0",
+    "nNsGrokCases": "32",
+    "nNsGrokS": "0.47",
     "nFailBurgersQzero": "16.26",
     "nFailBurgersAcc": "4.40",
     "nFailNsQzero": "20.34",
@@ -4202,9 +4701,9 @@
     "nEqcFollowDraws": "12",
     "nEqcFollowErr": "0.520",
     "nEqcFollowS": "0.085",
-    "nHeadFasterRows": "26",
-    "nHeadRows": "31",
-    "nHeadAccFasterSubOne": "14",
+    "nHeadFasterRows": "27",
+    "nHeadRows": "37",
+    "nHeadAccFasterSubOne": "15",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",
     "nBaseKimRange": "120\\mbox{--}252",

@@ -35,3 +35,9 @@
 | Poisson (dev. sources) 3D | 128^3 | q=96 | q=0 | 1.86 | 1.80 | CG, rtol 10^{-2} | 12.55 | GPU query | 2.70× / 2.66× (complete query) | development |
 | Poisson (dev. sources) 3D^{\ast} | 128^3 | q=96 | q=0 | 1.90 | 1.76 | CG, rtol 10^{-2} | 12.40 | GPU query | 2.65× / 2.70× (complete query) | development |
 | Poisson (dev. sources) 3D | 256^3 | q=96 | q=0 | 6.08 | 5.95 | CG, rtol 10^{-2} | 140.87 | GPU query | 4.18× / 4.21× (complete query) | development |
+| Heat (new bank) 3D | 32^3 | q=288 | q=0 | 58.16 | 25.41 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 3.33 | GPU query | — | accepted final |
+| Heat (new bank) 3D | 64^3 | q=288 | q=0 | 58.69 | 25.45 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 5.23 | GPU query | — | accepted final |
+| Heat (new bank) 3D | 128^3 | q=288 | q=0 | 62.03 | 28.25 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 17.44 | GPU query | — | accepted final |
+| Heat (new bank, batched fit) 3D | 32^3 | q=288 | q=0 | 5.36 | 5.88 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 3.33 | GPU query | — | accepted final |
+| Heat (new bank, batched fit) 3D | 64^3 | q=288 | q=0 | 5.54 | 6.14 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 5.23 | GPU query | — | accepted final |
+| Heat (new bank, batched fit) 3D | 128^3 | q=288 | q=0 | 7.84 | 8.30 | CN–CG, \Delta t=0.025, rtol 10^{-4} | 17.44 | GPU query | — | accepted final |

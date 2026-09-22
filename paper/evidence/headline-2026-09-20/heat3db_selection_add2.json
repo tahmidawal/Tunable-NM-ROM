@@ -1,0 +1,113 @@
+{
+ "rule": "addendum 2",
+ "families": {
+  "cn": {
+   "winner": "nmrom_q160_field_cn_tol1e-4_chol_s1",
+   "reference": "nmrom_q160_field_cn_tol1e-4_chol",
+   "table": {
+    "nmrom_q160_field_cn_tol1e-4_chol": {
+     "err64": 0.005428316306992373,
+     "err128": 0.00542833346357314,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 13.33420048467815,
+     "eligible": true
+    },
+    "nmrom_q160_field_cn_tol1e-4_chol_dt0.05": {
+     "err64": 0.005428316306992373,
+     "err128": 0.00542833346357314,
+     "fail": [
+      1,
+      2
+     ],
+     "ms128": 11.22928992845118,
+     "eligible": false
+    },
+    "nmrom_q160_field_cn_tol1e-4_chol_s1": {
+     "err64": 0.005428367858675576,
+     "err128": 0.005428385078905913,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 13.174326391890645,
+     "eligible": true
+    },
+    "nmrom_q160_field_cn_tol1e-4_chol_dt0.05_s1": {
+     "err64": 0.005428367858675576,
+     "err128": 0.005428385078905913,
+     "fail": [
+      1,
+      2
+     ],
+     "ms128": 10.663187131285667,
+     "eligible": false
+    },
+    "nmrom_q160_cn_tol1e-4_chol_mom_dt0.05_s1": {
+     "err64": 0.005428420670021586,
+     "err128": 0.0054284381384716255,
+     "fail": [
+      1,
+      1
+     ],
+     "ms128": 10.121286381036043,
+     "eligible": false
+    }
+   }
+  },
+  "direct": {
+   "winner": "nmrom_q160_direct_tol1e-4_chol_mom_s1",
+   "reference": "nmrom_q160_field_direct_tol1e-4_chol",
+   "table": {
+    "nmrom_q160_field_direct_tol1e-4_chol": {
+     "err64": 0.005428316306992373,
+     "err128": 0.00542833346357314,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 7.216636789962649,
+     "eligible": true
+    },
+    "nmrom_q160_field_direct_tol1e-4_chol_s1": {
+     "err64": 0.005428367858675567,
+     "err128": 0.005428385078905939,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 7.009210297837853,
+     "eligible": true
+    },
+    "nmrom_q160_direct_tol1e-4_chol_mom": {
+     "err64": 0.005428362572070202,
+     "err128": 0.005428380027072669,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 6.569977849721909,
+     "eligible": true
+    },
+    "nmrom_q160_direct_tol1e-4_chol_mom_s1": {
+     "err64": 0.005428420670021593,
+     "err128": 0.005428438138471632,
+     "fail": [
+      0,
+      0
+     ],
+     "ms128": 6.292565492913127,
+     "eligible": true
+    }
+   }
+  }
+ },
+ "final_b_arms": [
+  "nmrom_q0_field_cn_tol1e-4_chol_s1",
+  "nmrom_q0_direct_tol1e-4_chol_mom_s1",
+  "nmrom_q160_field_cn_tol1e-4_chol_s1",
+  "nmrom_q160_direct_tol1e-4_chol_mom_s1"
+ ]
+}

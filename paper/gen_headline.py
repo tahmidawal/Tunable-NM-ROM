@@ -42,6 +42,13 @@ SOURCES = {
     'eqcert_bc512': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc512-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
     'eqcert_bc1024': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc1024-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
     'eqcert_bc2048b': (WT + '2026-09-21-burgers-eqcert', 'experiments/burgers-eqcert/checks/bc2048b-summary.json', '176b2a9a5e4642a0a1338d824e7e3ab94e298ca8', 'audited; burgers-eqcert lane (closed)'),
+    'heat3db_panel_a': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/runs/final01/final01/summary.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'heat3db_panel_b': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/runs/final01/final01b/summary.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'heat3db_final_table': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/runs/final01/final_table.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'heat3db_selection': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'heat3db_selection_add1': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum1.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'heat3db_selection_add2': (WT + '2026-09-21-heat3d-bank', 'experiments/heat3d-bank/selection_addendum2.json', '55165375fc9e1193aed1ff2a729439a893e80396', 'audited final; heat3d-bank lane (closed)'),
+    'ns3d_grok_diag07': (WT + '2026-09-21-ns3d-grok', 'experiments/ns3d-grok/runs/diag07/output/summary.json', '8852b7cd6365de7a8fdfd747bedee587f1cf9f29', 'audited diagnostic; ns3d-grok lane (a different model: shift-tracking linear POD ROM)'),
     'wave': (WT + '2026-09-17-w-ladder', 'experiments/w-ladder/reports/summary.json', '9b84d0556888ebc052b52bd165a61dcd56b2b53d', 'development'),
     'poisson3d': (WT + '2026-09-20-paper-p3d', 'experiments/paper-p3d/runs/final08/paper-comparisons.json', '26c73030b89adfa321ede751db2798abf9bcd1b2', 'accepted final'),
     'heat3d': (WT + '2026-09-20-paper-h3d', 'experiments/paper-h3d/runs/final08/paper-tables.json', 'f15c7232ab21df20cd0fa279134c06114b5ca721', 'accepted final'),
@@ -61,9 +68,9 @@ PENDING = [
 INCOMING = [  # slots for the paused lanes (branch in the lane dict); no value is printed until an audited summary.json is ingested
     # burgers-eqcert slot filled 2026-09-21 from the lane's audited summaries (rows 'Burgers, confirmed rule'; 256^2 has no certified rule)
     dict(problem='Burgers (wider learned bank), held-out 64', dim=2, meshes=[2048, 4096], lane='burgers-heldout', branch='exp/2026-09-21-burgers-heldout'),
-    dict(problem='Heat 3D (wider bank)', dim=3, meshes=[64, 128], lane='heat3d-bank', branch='exp/2026-09-21-heat3d-bank'),
+    # heat3d-bank slot filled 2026-09-22 (Table 1 rows 'Heat (new bank)', panel A)
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, confirmed rule', 'Burgers (earlier model)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, confirmed rule', 'Burgers (earlier model)', 'Heat (new bank)', 'Heat (new bank, batched fit)']
 
 
 def digest(b: bytes) -> str:
@@ -297,6 +304,55 @@ for n in (32, 64):
     # paper-tables.json records evolved-time errors only (worst_rel_l2 = maximum over evolved times), so these rows say so.
     H3F.append(dict(n=n, fast=f, acc=a, fom=c))
 
+# ---- Heat 3D, new bank (heat3d-bank lane, closed 2026-09-22; user decision 2026-09-22: Table 1 from PANEL A) -------------------
+# Panel A = the arms chosen by the rule pre-registered in the lane's DESIGN.md (R=320, K=32, q in {0, 288}); sealed cohort
+# 921099 (64 draws) opened once in job 4153878.  Plain Crank--Nicolson row first, the batched exact-propagator fit beneath
+# (linear autonomous heat only), both from the same frozen model.  One FOM per row by the paper rule on all-times error.
+H3N = {}
+_ha = D['heat3db_panel_a']; _hm = _ha['metadata']
+assert _ha['audit_passed'] and _hm['backend'] == 'gpu' and _hm['x64'] and _hm['precision'] == 'highest' and not _hm['local_smoke']
+assert MAN['heat3db_panel_a']['sha256'] == {r_['summary_sha256'] for r_ in D['heat3db_final_table'] if r_['panel'] == 'final01'}.pop()
+_sel = D['heat3db_selection']['chosen']; assert (_sel['R'], _sel['K'], _sel['accurate_q'], _sel['fast_q']) == (320, 32, 288, 0)
+_HN = {m['intervals']: {r_['method']: r_ for r_ in m['rows']} for m in _ha['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}
+assert set(_HN) == {32, 64, 128}
+for n in (32, 64, 128):
+    R_ = _HN[n]; assert all(r_['cases'] == r_['timed_cases'] == 64 for r_ in R_.values())
+    cands = {k: dict(err=100 * v['error_all_times_worst'], ms=v['device_ms_median']) for k, v in R_.items() if k.startswith('fom_cncg_') and v['failures'] == 0}
+    for prob, arms in (('Heat (new bank)', ('nmrom_q0_field_cn', 'nmrom_q288_field_cn')),
+                       ('Heat (new bank, batched fit)', ('nmrom_q0_field_direct_tol1e-4_chol', 'nmrom_q288_field_direct_tol1e-4_chol'))):
+        f_, a_ = R_[arms[0]], R_[arms[1]]
+        pick = rule_pick(cands, 100 * a_['error_all_times_worst']); assert pick == a_['fastest_fom_error_le_rom_all_times']['method'], (n, prob, pick)
+        def st_(x, lab):
+            return setting(lab, 100 * x['error_all_times_worst'], x['device_ms_median'], arm=x['method'], evolved_pct=100 * x['error_evolved_worst'],
+                           nonstationary=x['failures'])
+        dt_, rt_ = pick.split('_dt')[1].split('_')[0], pick.split('rtol')[1]
+        row(prob, 3, n, st_(f_, '$q=0$'), st_(a_, '$q=288$'),
+            dict(name='CN--CG, $\\Delta t{=}' + dt_ + '$, rtol $' + tol_tex(rt_) + '$', error_pct=cands[pick]['err'], ms=cands[pick]['ms'], arm=pick, candidates=cands),
+            'heat3db_panel_a', _hm['job_id'], 'final', 'accepted final', 'same-grid, all times', 'GPU query')
+    lb = [R_[k] for k in R_ if k.startswith('linear_bank_')]; nm = [R_[k] for k in R_ if k.startswith('nmrom_')]
+    H3N[n] = dict(lin_err=[100 * min(x['error_all_times_worst'] for x in lb), 100 * max(x['error_all_times_worst'] for x in lb)],
+                  lin_ms=[min(x['device_ms_median'] for x in lb), max(x['device_ms_median'] for x in lb)],
+                  nm_min_ms=min(x['device_ms_median'] for x in nm), nm_min_err=100 * min(x['error_all_times_worst'] for x in nm))
+assert H3N[128]['lin_ms'][1] < H3N[128]['nm_min_ms'] and H3N[128]['lin_err'][1] < H3N[128]['nm_min_err']   # the bank baseline beats every NM-ROM arm
+H3N['floor'] = 100 * [c_ for c_ in D['heat3db_selection']['candidates'] if (c_['R'], c_['K']) == (320, 32)][0]['bank_floor']['128']
+# panel B (chosen after the speed addenda): one appendix line only
+_hb = {m['intervals']: {r_['method']: r_ for r_ in m['rows']} for m in D['heat3db_panel_b']['meshes'] if m['cohort'] == 'sealed_921099_never_opened'}[128]
+_c2 = D['heat3db_selection_add1']['chosen']; assert (_c2['R'], _c2['K'], _c2['accurate_q']) == (256, 16, 160)
+H3N['b'] = dict(err=100 * _hb['nmrom_q160_field_cn_tol1e-4_chol_s1']['error_all_times_worst'],
+                cn=_hb['nmrom_q160_field_cn_tol1e-4_chol_s1']['fastest_fom_error_le_rom_all_times']['speedup'],
+                bf=_hb['nmrom_q160_direct_tol1e-4_chol_mom_s1']['fastest_fom_error_le_rom_all_times']['speedup'])
+for k_ in ('nmrom_q160_field_cn_tol1e-4_chol_s1', 'nmrom_q160_direct_tol1e-4_chol_mom_s1'):
+    x_ = _hb[k_]['fastest_fom_error_le_rom_all_times']; assert abs(_hb[x_['method']]['device_ms_median'] / _hb[k_]['device_ms_median'] - x_['speedup']) < 1e-12
+    assert _hb[k_]['failures'] == 0
+
+# ---- Navier--Stokes follow-up diagnosis (ns3d-grok diag07; a DIFFERENT model, not the NM-ROM): one sentence in the failures paragraph
+_ng = D['ns3d_grok_diag07']; assert _ng['final_cohort_opened'] and _ng['sealed_seed_opened'] and not _ng['smoke']
+_co = _ng['coeff']; _cs = _co['stats']; assert _cs['cases'] == _ng['config']['eval_cases'] and _co['under_target']
+_nf = {k: v for k, v in _ng['fom'].items() if v['stats']['evolved_worst'] <= _cs['evolved_worst']}
+_nfk = min(_nf, key=lambda k: _nf[k]['median_ms']); assert _ng['fom'][_nfk]['dt'] == _ng['config']['dt']   # the rule's CNAB2 step is the paper's dt
+NSG = dict(worst=100 * _cs['evolved_worst'], over=_cs['cases_evolved_over_target'], cases=_cs['cases'], target=100 * _ng['config']['target_relative'],
+           speedup=_ng['fom'][_nfk]['median_ms'] / _co['median_ms'])
+
 HP = {}   # controls of the hires-poisson lane, for the Limitations sentence
 
 
@@ -434,10 +490,10 @@ def hires_heat(parts):
         ('Wide bank', 'h2d-final04', 'sealed_opened_once', 'sealed', 2, 4096, 'batched fit', BF),
         ('Earlier ($R{=}32$)', 'h2d-ladder01', 'all', 'development', 2, 2048, 'CN', ('nmrom_q0_cn', 'nmrom_q24_cn')),
         ('Earlier ($R{=}32$)', 'h2d-ladder01', 'all', 'development', 2, 4096, 'CN', ('nmrom_q0_cn', 'nmrom_q24_cn')),
-        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
-        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
-        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
-        ('3D model', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
+        ('3D, earlier bank', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
+        ('3D, earlier bank', 'h3d-final08', 'paper_h3d_final_cohort', 'final', 3, 128, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
+        ('3D, earlier bank', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'CN', ('nmrom_q0_cn', 'nmrom_q96_cn')),
+        ('3D, earlier bank', 'h3d-final08', 'paper_h3d_final_cohort', 'final, 1st 16', 3, 256, 'batched fit', ('nmrom_q0_direct_tol1e-4_chol', 'nmrom_q96_direct_tol1e-4_chol')),
     ]
     for model, role, cohort, clab, dim, n, step, arms in appx:
         p = pair(role, cohort, n, *arms)
@@ -606,7 +662,7 @@ def marks(r):
     if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
     return m
 EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'not-confirmed': r'$^{s}$', 'single-draw-refit': r'$^{x}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$'}
-def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), sp(s['speedup'])] if s else ['---', '---']
+def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), r'---$^{n}$' if s.get('nonstationary') else sp(s['speedup'])] if s else ['---', '---']   # a solve that missed its stopping rule does not enter a speedup
 
 
 INGESTED = {v.get('lane') for v in MAN.values() if v.get('lane')}
@@ -816,15 +872,9 @@ for m, lab_ in (('head_q0', '$q=0$'), ('nested_q32', '$q=32$')):
     F.append(dict(problem='Wave 2D, $1024^2$ (dev.)', setting=lab_, error_pct=100 * W[m]['worst_energy_state'], fom_error_pct=100 * W[wf]['worst_energy_state'],
                   speedup=W[wf]['median_gpu_ms'] / W[m]['median_gpu_ms'], fom='midpoint--CG', fom_arm=wf, metric='energy-state (displacement and velocity)', source='wave',
                   displacement_pct=100 * W[m]['worst_current_displacement']))
-for x in H3F:
-    for s_, lab_ in ((x['fast'], '$q=0$'), (x['acc'], '$q=96$')):
-        F.append(dict(problem=f"Heat 3D, ${x['n']}^3$ (final, evolved)", setting=lab_, error_pct=100 * s_['worst_rel_l2'], fom_error_pct=100 * x['fom']['worst_rel_l2'],
-                      speedup=x['fom']['device_ms'] / s_['device_ms'], fom='CN--CG', metric='same-grid, evolved times only (the record has no all-times value)', source='heat3d'))
+# 2026-09-22 user decision: Heat 3D (new bank) meets its target and is in Table 1; the earlier Heat 3D model leaves the failures table.
 h128 = [r for r in HEAT_APPX if r['dim'] == 3 and r['intervals'] == 128 and r['stepping'] == 'CN']
 assert len(h128) == 1; h128 = h128[0]
-for s_, lab_ in ((h128['fast'], '$q=0$'), (h128['accurate'], '$q=96$')):
-    F.append(dict(problem='Heat 3D, $128^3$ (final, all times)', setting=lab_, error_pct=s_['error_pct'], fom_error_pct=h128['fom']['error_pct'],
-                  speedup=h128['fom']['ms'] / s_['ms'], fom='CN--CG', metric='same-grid, all times including t=0', source=h128['source']))
 fl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\small', r'\begin{tabular}{@{}llrrrl@{}}', r'\toprule',
       r'Problem & Setting & Err.\ (\%) & FOM err.\ (\%) & Speedup & FOM \\', r'\midrule']
 fmd = []; seen = None
@@ -852,7 +902,18 @@ mac['nHeadBurgersAccErr'] = e(b256['accurate']['error_pct']); mac['nHeadBurgersA
 p3a = best(lambda r: r['problem'] == 'Poisson' and r['dim'] == 3, 'accurate'); mac['nHeadPoissonThreeAccS'] = spn(p3a['accurate']['speedup']); mac['nHeadPoissonThreeAccErr'] = e(p3a['accurate']['error_pct'])
 bq = P[(1024, 'q128_M576_eqxfer_g1em06')]; assert bq['admissible'] and bq['converged_design5']
 mac['nHeadBurgersMidErr'] = e(bq['worst_evolved_percent']); mac['nHeadBurgersMidS'] = spn(b1024['fom']['ms'] / bq['median_gpu_ms'])
-mac['nFailHeatThreeEvolved'] = e(100 * H3F[-1]['acc']['worst_rel_l2']); mac['nFailHeatThreeAll'] = e(h128['accurate']['error_pct'])
+# Heat 3D new bank (Table 1 rows 'Heat (new bank)', panel A) and the NS follow-up diagnosis
+_h3r = {(r['problem'], r['intervals']): r for r in ROWS if r['dim'] == 3 and r['problem'].startswith('Heat (new bank')}
+mac['nHeatNewAccErr'] = e(max(r['accurate']['error_pct'] for r in _h3r.values()))
+mac['nHeatNewAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ == 'Heat (new bank)'))
+mac['nHeatNewBatchedAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ != 'Heat (new bank)'))
+mac['nHeatNewCnAccS'] = spn(_h3r[('Heat (new bank)', 128)]['accurate']['speedup']); mac['nHeatNewBfAccS'] = spn(_h3r[('Heat (new bank, batched fit)', 128)]['accurate']['speedup'])
+mac['nHeatNewNonstat'] = str(sum(r['accurate']['nonstationary'] for r in _h3r.values()))
+_hc = {r_['cases'] for m in D['heat3db_panel_a']['meshes'] if m['cohort'].startswith('sealed') for r_ in m['rows']}; assert len(_hc) == 1; mac['nHeatNewCases'] = str(_hc.pop()); mac['nHeatNewK'] = str(_sel['K']); mac['nHeatNewQ'] = str(_sel['accurate_q']); mac['nHeatNewR'] = str(_sel['R']); mac['nHeatNewFloor'] = f"{H3N['floor']:.2f}"
+mac['nHeatNewLinErr'] = e(H3N[128]['lin_err'][1]); mac['nHeatNewLinMs'] = f"{H3N[128]['lin_ms'][0]:.1f}\\mbox{{--}}{H3N[128]['lin_ms'][1]:.1f}"
+mac['nHeatNewBR'], mac['nHeatNewBK'], mac['nHeatNewBQ'] = (str(_c2[k_]) for k_ in ('R', 'K', 'accurate_q')); mac['nHeatNewBErr'] = e(H3N['b']['err']); mac['nHeatNewBCnS'] = spn(H3N['b']['cn']); mac['nHeatNewBBfS'] = spn(H3N['b']['bf'])
+mac['nNsGrokWorst'] = e(NSG['worst']); mac['nNsGrokOver'] = str(NSG['over']); mac['nNsGrokCases'] = str(NSG['cases']); mac['nNsGrokS'] = spn(NSG['speedup'])
+assert f"{NSG['target']:g}" == mac.get('nFailNsTarget', f"{NSG['target']:g}")
 FB = {(r['source'], r['setting']): r for r in F}
 mac['nFailBurgersQzero'] = e(FB[('burgers3d', '$q=0$')]['error_pct']); mac['nFailBurgersAcc'] = e(FB[('burgers3d', '$q=192$')]['error_pct'])
 mac['nFailNsQzero'] = e(FB[('ns3d', '$q=0$')]['error_pct']); mac['nFailNsAcc'] = e(FB[('ns3d', '$q=256$')]['error_pct'])
@@ -928,8 +989,7 @@ cfg = []
 b3 = D['burgers3d']
 cfg.append(['Burgers 3D', f'${B3N}^3$', str(B['rom_q192']['cases']) + ' final', '0, 192', 'Newton--BiCGStab, $\\Delta t=0.01$', 'dense'])
 cfg.append(['Poisson 3D', '$32^3$, $64^3$', str(pr[(64, 'nmrom_K16_q96_dense')]['cases']) + ' final', '0, 32, 96 ($k=16$)', 'CG, rtol $10^{-2}$, no preconditioner', 'dense'])
-cfg.append(['Heat 3D', '$32^3$, $64^3$', str(hr[(64, 'nmrom_K32_q96_dense')]['cases']) + ' final', '0, 32, 64, 96 ($k=32$)', 'CN--CG, $\\Delta t=0.05$, rtol $10^{-4}$, warm start', 'dense'])
-cfg.append(['Heat 3D', '$128^3$', str(h128['cases']) + ' final (all times)', '0, 96 ($k=32$)', h128['fom']['name'], 'dense'])
+cfg.append(['Heat 3D (new bank)', '$32^3$, $64^3$, $128^3$', '64 sealed final (all times)', '0, 288 ($k=32$, $R=320$)', 'CN--CG, setting per row by the rule; named $\\Delta t=0.025$, rtol $10^{-6}$', 'exact (linear)'])
 ns = D['ns3d']
 cfg.append(['Navier--Stokes 3D', f"${ns['n']}^3$ periodic", f"{ns['cohort_count']} final", ', '.join(str(q) for q in ns['q_values']) + f" ($k={ns['k']}$, $R={ns['r']}$, $M={ns['test_modes']}$)", 'CNAB2, $\\Delta t=0.01$', 'dense'])
 cl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}lllp{3.3cm}p{3.6cm}l@{}}', r'\toprule',
@@ -946,8 +1006,8 @@ def _jobs(rows):
 _srt = sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
 jp = [r'% GENERATED by paper/gen_headline.py -- do not edit.',
       r'\paragraph{Allocations.} Every ratio pairs times from one Slurm allocation. Tables~\ref{tab:headline} and~\ref{tab:headline-times}: ' + _jobs(_srt) + '. '
-      + r'Table~\ref{tab:failures}: Burgers 3D ' + str(D['burgers3d']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '; Heat 3D ' + str(h3['source']['primary']['job_id']) + ', ' + str(h128['job']) + '; Wave 2D ' + str(next(iter({r['job_id'] for r in D['wave'] if r.get('mesh') == 1024}))) + '. '
-      + r'Table~\ref{tab:config3d}: Burgers 3D ' + str(b3['job_id']) + '; Poisson 3D ' + str(p3['job_id']) + '; Heat 3D ' + str(h3['source']['primary']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '. '
+      + r'Table~\ref{tab:failures}: Burgers 3D ' + str(D['burgers3d']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '; Wave 2D ' + str(next(iter({r['job_id'] for r in D['wave'] if r.get('mesh') == 1024}))) + '. '
+      + r'Table~\ref{tab:config3d}: Burgers 3D ' + str(b3['job_id']) + '; Poisson 3D ' + str(p3['job_id']) + '; Heat 3D ' + str(D['heat3db_panel_a']['metadata']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '. '
       + (r'Table~\ref{tab:heat-hires}: ' + ', '.join(sorted({r['job'] for r in HEAT_APPX})) + '. ' if HEAT_APPX else '')
       + (r'Tables~\ref{tab:nmrom-baselines} and~\ref{tab:nmrom-baselines-appx}: ' + ', '.join(f"${n}^2$ {j}" for n, j in NBJ.items()) + r' (reproduction gate: ' + str(NBP['gate05']['provenance']['job_id']) + ').' if NBP else '')]
 # train/evaluation disjointness of the Burgers checkpoint (read-only regeneration check, output snapshotted in evidence/)

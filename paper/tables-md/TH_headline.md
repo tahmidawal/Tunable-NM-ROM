@@ -32,4 +32,9 @@
 | Poisson 3D (accepted final) | 64^3 | 0.26 | **1.33×** | 1.39 | **1.38×** | 0.11 | CG, rtol 10^{-2} |
 | Poisson (dev. sources) 3D (development) | 128^3 | 0.16 | **6.75×** | 0.55 | **6.98×** | 0.075 | CG, rtol 10^{-2} |
 | Poisson (dev. sources) 3D (development) | 256^3 | 0.16 | **23.2×** | 0.55 | **23.7×** | 0.049 | CG, rtol 10^{-2} |
-| Heat 3D (wider bank) 3D | 64^3, 128^3 | results incoming |  |  |  |  | lane heat3d-bank |
+| Heat (new bank) 3D (accepted final) | 32^3 | 0.11 | 0.057× | 2.00 | 0.13× | 0.078 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
+| Heat (new bank) 3D (accepted final) | 64^3 | 0.11 | —^{n} | 2.00 | 0.21× | 0.081 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
+| Heat (new bank) 3D (accepted final) | 128^3 | 0.11 | 0.28× | 2.00 | 0.62× | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
+| Heat (new bank, batched fit) 3D (accepted final) | 32^3 | 0.11 | 0.62× | 2.00 | 0.57× | 0.078 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
+| Heat (new bank, batched fit) 3D (accepted final) | 64^3 | 0.11 | 0.94× | 2.00 | 0.85× | 0.081 | CN–CG, \Delta t=0.025, rtol 10^{-4} |
+| Heat (new bank, batched fit) 3D (accepted final) | 128^3 | 0.11 | **2.22×** | 2.00 | **2.10×** | 0.082 | CN–CG, \Delta t=0.025, rtol 10^{-4} |

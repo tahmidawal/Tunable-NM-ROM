@@ -46,7 +46,7 @@
 
 % =====================================================================
 \begin{abstract}
-Learned PDE surrogates such as Fourier Neural Operators and DeepONets
+Neural operators such as Fourier Neural Operators and DeepONets
 typically deliver one (accuracy, speed) operating point per trained
 model; moving it generally requires retraining. We present a
 nonlinear-manifold reduced-order model (NM-ROM) for Poisson, heat and
@@ -55,15 +55,14 @@ tradeoff from a single trained decoder, controlled at inference time by
 the correction rank $q$ (accuracy) and the solver tolerance, budget and
 empirical-quadrature rule (cost). The framework combines a frozen coordinate-network spatial
 bank with a small nonlinear head and nested correction directions; exact
-Dirichlet enforcement by a vanishing factor in the bank; least-squares
+Dirichlet enforcement in the bank; least-squares
 Petrov--Galerkin projection of the discrete residual onto fixed weak
 tests, with every linear operator preassembled; matrix-free JAX
 evaluation; and NNLS empirical quadrature for the Burgers advection,
-validated on held-out reached states. Across Poisson in two and three
-dimensions, and heat and viscous Burgers in two, at meshes up to $4096^2$,
-the same frozen model keeps its accuracy as the two-dimensional mesh is
-refined, so its speedup over the named iterative solvers grows with
-resolution, reaching $\nHiresPoissonAccSFortyNinetySix\times$ at
+validated on held-out reached states. Across Poisson and heat in two and
+three dimensions, and viscous Burgers in two, at meshes up to $4096^2$,
+the frozen model keeps its accuracy as the two-dimensional mesh is
+refined, so its speedup over the named iterative solvers grows, reaching $\nHiresPoissonAccSFortyNinetySix\times$ at
 $\nHeadPoissonAccErr\,\%$ error against conjugate gradients on Poisson,
 $\nHeatWideAccS\times$ at $\nHeatWideAccErr\,\%$ against Crank--Nicolson
 CG on a sealed held-out heat cohort, and $\nBurgDevAccSFortyNinetySix\times$ at
@@ -72,8 +71,9 @@ $\nBurgDevAccErrFortyNinetySix\,\%$ on Burgers against Newton--BiCGStab
 $\nBurgHoldAccErrFortyNinetySix\,\%$ on held-out cases); at matched latent
 dimension its fast setting is far more accurate than a reproduced
 shallow-masked-autoencoder NM-ROM and POD-LSPG. The named solvers remain
-more accurate at their tolerances, and three-dimensional Burgers and
-heat, Navier--Stokes and full-state waves miss their targets.
+more accurate; three-dimensional heat meets its accuracy target but
+beats CN--CG only with a batched fit at $128^3$, and three-dimensional Burgers, Navier--Stokes and full-state waves miss
+their targets.
 \end{abstract}
 
 % =====================================================================
@@ -114,9 +114,10 @@ the reference solution. The accurate error
 stays near its coarse-mesh level up to $4096^2$ while the speedup over
 the named solver grows, and on held-out Burgers cases the model is far
 more accurate than a reproduced NM-ROM and POD-LSPG
-(Table~\ref{tab:nmrom-baselines}). It is not yet so for
-three-dimensional Burgers and heat, Navier--Stokes or the full wave
-state (Table~\ref{tab:failures}).
+(Table~\ref{tab:nmrom-baselines}). Three-dimensional heat meets its
+accuracy target but is faster than CN--CG only with a batched fit at
+$128^3$; it is not yet so for three-dimensional Burgers, Navier--Stokes
+or the full wave state (Table~\ref{tab:failures}).
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -477,7 +478,11 @@ with host transfers (all others GPU query; heat was measured in GPU query
 only). Heat (wide bank) is a separately trained frozen model with a
 128-function bank ($q=32$ accurate); over evolved times its accurate
 error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
-batched; the batched fit: Table~\ref{tab:headline-times}). Burgers accurate
+batched; the batched fit: Table~\ref{tab:headline-times}); Heat (new
+bank) ($q=\nHeatNewQ$ accurate; Table~\ref{tab:config3d}): at most $\nHeatNewAccEvolved\,\%$
+($\nHeatNewBatchedAccEvolved\,\%$ batched) over evolved times;
+$^{n}$\,\nHeatNewNonstat{} solve (one step of one case) missed its
+stationarity rule, so no speedup is given. Burgers accurate
 quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}
 ($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table~\ref{tab:eqladder}),
 not confirmed on re-draws: it fails the confirmation draw at $256^2$;
@@ -516,7 +521,13 @@ at $1024^2$). A wider heat bank, evaluated once on a sealed held-out
 cohort at every mesh, reaches $\nHeatWideAccErr\,\%$ over all times and is
 $\nHeatWideAccS\times$ faster than CN--CG at $4096^2$
 ($\nHeatWideBatchedAccS\times$ with the batched fit). In three dimensions the held-out Poisson cohort gives
-$\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$.
+$\nHeadPoissonThreeAccErr\,\%$ at $\nHeadPoissonThreeAccS\times$. A new
+three-dimensional heat bank, evaluated once on a sealed cohort of
+\nHeatNewCases{} cases, meets the 1\,\% all-times target at every mesh
+(accurate $\nHeatNewAccErr\,\%$) but is slower than CN--CG with
+Crank--Nicolson stepping at every mesh ($\nHeatNewCnAccS\times$ at
+$128^3$) and faster only with the batched fit at $128^3$
+($\nHeatNewBfAccS\times$; slower at $32^3$ and $64^3$).
 
 \paragraph{Burgers.}
 The reduced solve costs the same at every mesh, so the fast setting
@@ -552,17 +563,11 @@ validation cases (never used for any choice) and compiled-query memory,
 one allocation. Latent dimension is matched for
 the baselines and our fast setting; our accurate setting solves
 $k+q=272$ unknowns. The shallow masked-autoencoder NM-LSPG of
-\citet{KimChoi2022NMROM} passed its reproduction gate, on their own 2D
-Burgers benchmark (their Sec.~6.2), on the third of three pre-registered
-attempts (\nBaseGateAct{} activation; median
-$\nBaseGateMedian\,\%$ against a $\nBaseGateBar\,\%$ bar; published
-${<}\nBaseGatePublished\,\%$); its hyper-reduction was not reproduced,
-and its published encoder width ($2n$) needs $\nBaseEncoderNeedGB$\,GB
-to train at $256^2$ and $\nBaseEncoderNeedGBFiveTwelve$\,GB at $512^2$,
-beyond the $\nBaseDeviceGB$ and $\nBaseDeviceGBFiveTwelve$\,GB devices;
-at $512^2$ its encoder, capped at width $\nBaseKimWidth$, trained only
-$\nBaseKimEpochs$ epochs in its $\nBaseKimWall$\,s budget, so those errors
-partly reflect a training-time limit. Data-matched:
+\citet{KimChoi2022NMROM} passed its reproduction gate on the third of
+three pre-registered attempts; its hyper-reduction was not reproduced,
+and its published encoder width does not fit our devices, so at $512^2$
+its width-capped encoder is training-time limited
+(Table~\ref{tab:nmrom-baselines-appx}). Data-matched:
 trained on our bank's \nBaseDataMatched{} trajectories. The
 convolutional-autoencoder NM-ROM \citep{LeeCarlberg2020} was not run.
 No times: every row, ours included, uses a dense residual
@@ -581,7 +586,7 @@ $\nBaseOursAccWorst\,\%$.
 
 \paragraph{Where the method currently fails.}
 \label{sec:results:failures}
-Table~\ref{tab:failures} collects the four problems that miss their
+Table~\ref{tab:failures} collects the three problems that miss their
 targets; they are excluded from Table~\ref{tab:headline}. On
 three-dimensional Burgers the corrections cut the held-out worst error
 from $\nFailBurgersQzero\,\%$ to $\nFailBurgersAcc\,\%$, but the FOM is faster,
@@ -589,26 +594,24 @@ and the refined-reference check fails, so only
 same-grid reduction error is established. On three-dimensional
 Navier--Stokes the corrections lower the worst error only from
 $\nFailNsQzero\,\%$ to $\nFailNsAcc\,\%$; \nFailNsFailing{} of
-\nFailNsCases{} held-out cases miss the $\nFailNsTarget\,\%$ target. On reflective waves the fast setting is faster than
+\nFailNsCases{} held-out cases miss the $\nFailNsTarget\,\%$ target. A
+follow-up diagnosis attributes this to representation (the family is a
+translating vortex orbit that a fixed bank must rebuild): a
+shift-tracking linear POD ROM, a different model and not the NM-ROM,
+meets the target on a fresh held-out cohort ($\nNsGrokWorst\,\%$ worst,
+\nNsGrokOver{} of \nNsGrokCases{} cases over) but runs at
+$\nNsGrokS\times$ CNAB2. On reflective waves the fast setting is faster than
 CG but its energy-state error, which includes velocity, is
 $\nFailWaveQzero\,\%$; corrections bring it to $\nFailWaveAcc\,\%$, still
-above CG's, at a cost that removes the speedup. Three-dimensional heat
-reaches $\nFailHeatThreeEvolved\,\%$ over evolved times ($32^3$/$64^3$
-records hold no other convention) but $\nFailHeatThreeAll\,\%$ with $t=0$
-at $128^3$; it is slower than CN--CG with Crank--Nicolson stepping up to
-$128^3$ and faster at $256^3$ (16 cases) and with the batched fit
-(Table~\ref{tab:heat-hires-times}), but misses the all-times target. The
-three-dimensional solves evaluate the residual densely. A wider
-three-dimensional heat bank is in progress (results incoming).
+above CG's, at a cost that removes the speedup. The
+three-dimensional solves evaluate the residual densely.
 
 \begin{table}[t]
 \centering
 \caption{Problems on which the method misses its target: Navier--Stokes
-$\nFailNsTarget\,\%$ per held-out case; heat 1\,\% over all output times;
-wave, an energy-state error within that of CG; Burgers 3D, faster than the
+$\nFailNsTarget\,\%$ per held-out case; wave, an energy-state error within that of CG; Burgers 3D, faster than the
 FOM at its accuracy (no numeric error target was recorded). Error is the
-worst same-grid relative $L^2$ error (\%) over evolved times, except the
-Heat 3D $128^3$ rows (all output times including $t=0$); the wave
+worst same-grid relative $L^2$ error (\%) over evolved times; the wave
 error is the energy-state error over displacement and velocity.
 Speedup is against the named FOM in the same allocation.}
 \label{tab:failures}
@@ -678,15 +681,14 @@ solver classes (direct and spectral solvers, coarser discretisations) is
 outside the scope of this study. The named FOM is more accurate than the
 NM-ROM in every row, and on heat at $4096^2$ the linear solve in the
 learned bank, a baseline ($\nHeatLinErr\,\%$ in $\nHeatLinMs$\,ms), is
-faster than every NM-ROM setting.
+faster than every NM-ROM setting, as it is in three dimensions
+($\nHeatNewLinErr\,\%$ in $\nHeatNewLinMs$\,ms at $128^3$).
 (ii) Accuracy is bounded by the frozen bank: Burgers development
 accuracy does not carry to held-out cases (the free solve in the same
 512-function bank reaches only $\nBurgBankFloorConfirm\,\%$ there); the
 Poisson errors sit near the bank floor ($\nHiresFloorSquare\,\%$ square,
 $\nHiresFloorCube\,\%$ cube); the L-shape ($\nHiresLshapeAccErr\,\%$ against
-a floor of $\nHiresLshapeFloor\,\%$) is limited by the head; the
-three-dimensional heat bank represents the initial field only to
-$\nHeatThreeInit\,\%$.
+a floor of $\nHiresLshapeFloor\,\%$) is limited by the head.
 (iii) The fixed-test-space rank study uses one checkpoint; the
 multi-seed and sealed study sets $M=4(k+q)$, so it does not replicate
 it. Comparisons with the FOM do not isolate the nonlinear head's
@@ -712,8 +714,10 @@ on Poisson, $\nHeatWideAccErr\,\%$ at $\nHeatWideAccS\times$ on held-out
 heat and $\nBurgHoldAccErrFortyNinetySix\,\%$ at
 $\nBurgHoldAccSFortyNinetySix\times$ on held-out Burgers, far more
 accurate than a reproduced NM-ROM and POD-LSPG. The named solvers remain
-more accurate, and three-dimensional Burgers, heat and Navier--Stokes
-and the full wave state miss their targets (Table~\ref{tab:failures});
+more accurate; three-dimensional heat meets its accuracy target but is
+faster than CN--CG only with a batched fit at $128^3$; and
+three-dimensional Burgers, Navier--Stokes and the full wave state miss
+their targets (Table~\ref{tab:failures});
 future work is a better three-dimensional bank, a cheaper high-rank
 solve and quadrature in three dimensions.
 

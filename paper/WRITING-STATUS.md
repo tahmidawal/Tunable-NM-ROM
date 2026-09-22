@@ -1,6 +1,43 @@
 # Writing status — ICLR 2027 draft
 
-## 2026-09-21 (paper lane) — Burgers rule identity per row; "thin margin" — CURRENT HANDOFF
+## 2026-09-22 (paper lane) — Heat 3D new bank into Table 1; NS follow-up sentence — CURRENT HANDOFF
+
+Sources (committed blobs, pinned in `evidence/headline-2026-09-20/` with commit, git blob id and SHA256 in the manifest):
+heat3d-bank @55165375 — `heat3db_panel_a` (runs/final01/final01/summary.json, job 4153878), `heat3db_panel_b`
+(final01b), `heat3db_final_table`, `heat3db_selection{,_add1,_add2}`; DESIGN.md, HANDOFF.md, FINAL-TABLE.md blob ids
+recorded as `companion_blobs` of the panel-A entry (not JSON, not loaded). ns3d-grok @8852b7cd — `ns3d_grok_diag07`.
+- **Table 1, new 3D block from panel A (pre-registered R=320, k=32, q∈{0,288}; sealed cohort 921099, 64 cases):**
+  "Heat (new bank)" (plain CN) and "Heat (new bank, batched fit)" beneath, 32³/64³/128³, all-times error (^t, ^f).
+  Accurate 0.11 % (0.1137) at every mesh. FOM re-derived by the rule from every CN--CG setting (CN--CG Δt 0.025, rtol
+  1e-4 at every mesh; matches the lane's own pick). Accurate speedups: CN 0.057×/—ⁿ/0.28×; batched 0.62×/0.94×/2.22×.
+  **64³ CN accurate: one solve (one step of one case) missed the stationarity rule → speedup printed as —ⁿ**, per the
+  Setup rule that such solves do not enter a speedup (the lane's own table shows 0.09×). Caption: evolved-time
+  errors (≤0.086 %, 0.030 % batched) and the ⁿ marker; model sizes in Table C.11.
+- **Failures table:** Heat 3D rows removed (earlier model); "four problems" → "three problems"; heat target removed
+  from the caption. Abstract, intro, results and conclusion now say 3D heat meets its accuracy target but is faster
+  than CN--CG only with the batched fit at 128³ (slower at 32³/64³ and with CN stepping). Abstract scope: "Poisson
+  and heat in two and three dimensions, and viscous Burgers in two" (abstract trimmed to 249 words; "by a vanishing
+  factor", "with resolution", "at their tolerances" cut).
+- **NS:** one sentence in the failures paragraph: diagnosis = representation (translating vortex orbit a fixed bank
+  must rebuild); a shift-tracking linear POD ROM (different model) meets 5 % on a fresh held-out cohort (4.80 % worst,
+  0/32) at 0.47× CNAB2 (CNAB2 Δt 0.01 = the rule's pick, re-derived).
+- **Limitations (i):** the linear solve in the same learned bank also beats every NM-ROM arm in 3D — **I used panel A's
+  own bank (0.070 % in 1.5–2.8 ms at 128³)**, since Table 1 reports panel A; the coordinator's 0.150 % / ~2 ms is panel
+  B's R=256 bank. (ii): the "3D heat bank represents the initial field only to …" clause removed.
+- **Appendix:** paragraph "Three-dimensional heat, new bank" (code-free variable-projection trainer with exact
+  coefficient elimination, R=320, floor 0.06 % from selection.json; arms fixed by the pre-registered rule; panel B
+  one line: R=256, k=16, q=160, chosen after speed results, 0.47 %, 0.94× CN / 1.92× batched at 128³, not in Table 1).
+  Heat-hires tables' 3D rows relabelled "3D, earlier bank"; training table row "Heat 3D, earlier bank"; config
+  table's Heat 3D row now the new bank; allocation paragraph points Table C.11 to job 4153878. Repeated cohort 920399
+  not used.
+- **Space:** Table 2 caption's Kim et al. reproduction details (gate numbers, encoder memory, epochs) moved to the
+  Table C.7 caption; the Table 2 caption keeps the gate pass, the unreproduced hyper-reduction and the training-time
+  limit at 512².
+- One "results incoming" slot left (burgers-heldout). check_headline re-derives the 18 heat settings (arm, error,
+  ms, failures), the FOM pick and candidate set, the ⁿ dash, the speed claims (CN < 1 everywhere; batched > 1 only at
+  128³) and the NS macros from the pinned blobs. Both checks pass; main text ends on page 9, References on page 9.
+
+## 2026-09-21 (paper lane) — Burgers rule identity per row; "thin margin"
 
 Coordinator follow-up on e0241c2f. Rule identity verified from the pinned evidence (b-panel summary rows
 `rule_set`/`rule_m`/`rule_file_sha256`/`rule_source_job`; eqcert `rules[]` source file, SHA256, `refit`, m; b-panel

@@ -41,6 +41,11 @@ Poisson$^{f}$ & $32^3$ & 0.26 & 0.94$\times$ & 1.40 & 0.99$\times$ & 0.16 & CG, 
  & $64^3$ & 0.26 & \textbf{1.33$\times$} & 1.39 & \textbf{1.38$\times$} & 0.11 & CG, rtol $10^{-2}$ \\
 Poisson (dev. sources) & $128^3$ & 0.16 & \textbf{6.75$\times$} & 0.55 & \textbf{6.98$\times$} & 0.075 & CG, rtol $10^{-2}$ \\
  & $256^3$ & 0.16 & \textbf{23.2$\times$} & 0.55 & \textbf{23.7$\times$} & 0.049 & CG, rtol $10^{-2}$ \\
-Heat 3D (wider bank) & $64^3$, $128^3$ & \multicolumn{6}{l}{\emph{results incoming}} \\
+Heat (new bank)$^{t}$$^{f}$ & $32^3$ & 0.11 & 0.057$\times$ & 2.00 & 0.13$\times$ & 0.078 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
+ & $64^3$ & 0.11 & ---$^{n}$ & 2.00 & 0.21$\times$ & 0.081 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
+ & $128^3$ & 0.11 & 0.28$\times$ & 2.00 & 0.62$\times$ & 0.082 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
+Heat (new bank, batched fit)$^{t}$$^{f}$ & $32^3$ & 0.11 & 0.62$\times$ & 2.00 & 0.57$\times$ & 0.078 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
+ & $64^3$ & 0.11 & 0.94$\times$ & 2.00 & 0.85$\times$ & 0.081 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
+ & $128^3$ & 0.11 & \textbf{2.22$\times$} & 2.00 & \textbf{2.10$\times$} & 0.082 & CN--CG, $\Delta t{=}0.025$, rtol $10^{-4}$ \\
 \bottomrule
 \end{tabular}

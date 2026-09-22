@@ -426,7 +426,7 @@ flowchart LR
           "parity gate, and the best setting overall. Where they differ, the second is faster "
           "but its solve sits outside the gate, and it is never used for a headline claim.\n")
         W("| mesh | gate | setting | evolved worst | over 5 % | ROM ms "
-          "| coarsest stable FOM step | comparator | comparator ms | **paired speedup** "
+          "| coarsest usable FOM step | comparator | comparator ms | **paired speedup** "
           "| free-solve ceiling |")
         W("|---:|---|---|---:|---:|---:|---:|---|---:|---:|---:|")
         for s, _ in LAD:
@@ -468,7 +468,7 @@ flowchart LR
                   "| {:.1f}x |".format(
                       nn, label, key.replace("_", " "), pct(vv["stats"]["evolved_worst"]),
                       vv["stats"]["cases_evolved_over_target"], vv["stats"]["cases"], ms(qq),
-                      max(uu), dn_, ms(cms_), cms_ / qq, (sl[0] or 0) / ct))
+                      max(uu), dn_, ms(cms_), cms_ / qq, cms_ / ct))
                 return key
 
             emit({k: v for k, v in passing.items() if v["iters"] in gated_sweeps},
@@ -477,8 +477,8 @@ flowchart LR
             note = ", ".join(f"{i} sweeps {pv:.2e}" for i, pv in sorted(parity_by_sweep.items()))
             W(f"| | *parity at {n}^3: {note}* | | | | | | | | | |")
         W("")
-        W("The **free-solve ceiling** is the comparator divided by the grid-sized work the "
-          "reduced model cannot avoid -- one initial centering and projection plus the six "
+        W("The **free-solve ceiling** is that row's own comparator divided by the grid-sized "
+          "work the reduced model cannot avoid -- one initial centering and projection plus the six "
           "output fields it must produce to be compared with the FOM at all. It is what the "
           "speedup would be if the reduced solve were instantaneous, and it is the honest upper "
           "bound on this method at each mesh. The full frontier over rank, step and sweep "
@@ -514,44 +514,59 @@ flowchart LR
       "unknown of the same least-squares problem, a rank-64 linear bank represents and "
       "integrates a family whose fixed-span floor is two orders of magnitude worse, the frame "
       "is recovered from the residual with no oracle and no gauge, and the whole thing stays "
-      "exactly translation-equivariant. That is a real mechanism and it generalises to any "
-      "PDE whose family is an orbit of a continuous symmetry -- translation here, but rotation "
-      "and dilation enter the residual the same way, as extra columns.\n")
+      "exactly translation-equivariant. That generalises to any PDE whose family is an orbit "
+      "of a continuous symmetry -- translation here, but rotation and dilation enter the "
+      "residual the same way, as extra columns.\n")
     W("What does **not** survive is the architectural claim. A coordinate network was supposed "
       "to be what makes `g(x - c)` cheap. It is not: the freezing form never evaluates the bank "
       "at shifted coordinates at all, so a stored POD basis is equally free. Anyone writing "
       "this up should lead with the symmetry, not the decoder.\n")
-    W("On speed the picture changed twice. At $N=32$ the method loses by about a factor of "
-      "two and a half, and the cost sweep showed why: nine tenths of the query is a generic "
-      "damped Levenberg-Marquardt driver whose arithmetic is two orders of magnitude cheaper "
-      "than its wall time -- hundreds of tiny sequential GPU kernels per trajectory -- against "
-      "a FOM whose whole step is three large FFTs. Because that overhead is mesh-independent "
-      "and the FOM's cost is not, the exploratory $N=64$ probe crosses. So the right statement "
-      "is not \"the shift ROM is slow\"; it is **\"at $N=32$ this FOM is too cheap for any "
-      "reduced model carrying a generic nonlinear solver, and the crossover is already at "
-      "$N=64$\"**. Neither half of that has been through a sealed cohort.\n")
+    if LAD:
+        W("**On speed, the answer turned on two things, and neither was the reduced model.** "
+          "The first was the solver driver: a generic damped Levenberg-Marquardt loop was "
+          "costing about nine tenths of the query while its arithmetic is two orders of "
+          "magnitude cheaper, and replacing it with a fixed number of analytic-Jacobian "
+          "Gauss-Newton sweeps returned a factor of 2.5 at matched output. The second is "
+          "resolution. The reduced model's error is set by the rank-64 truncation and is "
+          "**essentially mesh-independent**, while the explicit FOM's usable step shrinks as "
+          "the mesh refines. So the margin grows with resolution on its own:\n")
+        line = []
+        for s, _ in LAD:
+            t_ = s["timing"]["arms"]
+            fomtab = {d: v for d, v in s["cnab2"].items() if not v["unstable"] and v["stats"]}
+            tgt = float(s["config"]["target_relative"])
+            usable = [float(d) for d, v in fomtab.items()
+                      if v["stats"]["evolved_worst"] <= tgt]
+            line.append(f"{s['config']['n']}^3 {max(usable)}")
+        W("the coarsest CNAB2 step that stays finite and meets 5 % goes "
+          + ", ".join(line) + ", while the reduced model runs at 0.04 throughout.\n")
+    W("The bars the coordinator set were: worst evolved error $\\le 5\\,\\%$ per case "
+      "(stretch $\\le 1\\,\\%$) **and** paired speedup $\\ge 5\\times$, neither traded for "
+      "the other. Where that lands is in the ladder table above, mesh by mesh, with the "
+      "stability-limited comparator alongside the matched-accuracy one so a margin that comes "
+      "from a step the FOM cannot take is never presented as throughput.\n")
     W("The next experiment, in order:\n")
-    W("1. **Make the reduced solve cost what its arithmetic costs.** Analytic Jacobian (it is "
-      "one contraction; the analytic $J_\\delta$ column already matches AD to $10^{-17}$), a "
-      "fixed small iteration count instead of a data-dependent `while_loop`, and the whole "
-      "step fused. If a 67-unknown least squares still costs 1.5 ms after that, the conclusion "
-      "changes; until then the speed number is a statement about `make_lm`, not about the "
-      "method. This is the cheapest and highest-leverage thing left.\n")
-    W("2. **Settle the mesh scaling properly**, with a pre-registered ladder over $N$ "
-      "(64, 96, 128), its own sealed cohort, and timing on more than one case. The one probe "
-      "run here says the crossover is real at $N=64$; it does not say where the curve goes, and "
-      "an exploratory amendment is not the evidence a claim should rest on. Note also that the "
-      "FOM at $N=64$ is unstable at $\\Delta t \\ge 0.01$ while the reduced implicit-midpoint "
-      "solve is not, so part of the margin comes from the ROM taking steps the FOM cannot -- "
-      "that deserves to be stated separately rather than folded into a speedup number.\n")
-    W("3. **Then, and only then, the sealed draw.** Seed 202609221 is named and unopened.\n")
+    W("1. **Close the remaining solver gap.** At the finer meshes the reduced solve and the "
+      "irreducible grid work now cost about the same, so the free-solve ceiling is roughly "
+      "twice the achieved speedup. The sweeps are already analytic and unrolled; what is left "
+      "is the per-sweep normal-equation solve and the fact that the 6-output contract forces at "
+      "least five reduced steps. Both are addressable, and together they are the difference "
+      "between the achieved figure and the ceiling.\n")
+    W("2. **Extend the ladder and vary the family, not just the mesh.** Everything here is one "
+      "vortex family whose centered snapshots are a 237-mode set; the rank-64 error is flat in "
+      "the mesh precisely because the family is. The claim that needs testing next is whether "
+      "the same frontier survives a family with more internal structure, where the reduced "
+      "error is not already at its floor.\n")
+    W("3. **A sealed draw at the mesh with the largest joint margin**, with every setting "
+      "frozen. Seed 202609221 is named in `DESIGN.md`, checked disjoint from every other "
+      "cohort by rounded parameter row, and is opened at most once.\n")
     W("Two things I would *not* do next. A multi-structure version "
       "($u=\\sum_j g(x-c_j)a_j$) is not indicated: the single-shift representation floor is "
-      "already far below the bar, so a shortfall in the solved trajectory points at the "
-      "dynamics or the solver, not at needing several frames -- and several frames bring back "
+      "0.13 % at every mesh tested, so a shortfall points at the reduced dynamics or the "
+      "solver, not at needing several frames -- and several frames reintroduce "
       "relative-shift-dependent interaction terms that destroy the one thing that makes this "
-      "cheap, a constant stored tensor. And I would not retrain a coordinate bank to chase a "
-      "free shift it does not provide.\n")
+      "cheap, a constant stored tensor. And I would not raise the rank: rank 128 lost on "
+      "**both** axes at every step size tested, despite a six times lower floor.\n")
 
     W("## Integrity record\n")
     runs = [("pilot01", P, PV), ("cost02", C, CV)] + ([("mesh03", M, MV)] if M else [])

@@ -44,6 +44,41 @@ def fmt(x, d=3):
     return '—' if x is None else (f'{x:.{d}f}' if isinstance(x, float) else str(x))
 
 
+PAPER_ARM = 'q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2'
+
+
+def bh5_comparison(sources):
+    """bh5 (DESIGN A4): the paper's j=0 rows (hires-burgers hb4k04 / hb4kh64) beside bh5's j=0 re-time and j=1 rows."""
+    s, _ = load('bh5')
+    if s is None:
+        return []
+    ec = CH / 'bh5-eqcert-summary.json'
+    if ec.exists():
+        sources[ec.name] = sha(ec)
+    out = ['', '### bh5: paper rule lat64 j=0 vs j=1 at 4096² (paper FOM rule = fastest tested setting with error ≤ the row\'s)', '',
+           '| cohort | source | arm | q | M | rule | j | gtol | cert. (5 draws + confirmation) | worst evolved % | ROM ms | FOM | FOM ms | FOM % | speedup |',
+           '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|']
+    for cohort, hb in (('dev6', 'hb4k04'), ('hold64', 'hb4kh64')):
+        hp = LANE.parent / 'hires-burgers/checks' / f'{hb}-summary.json'
+        sources[f'hires-burgers/{hp.name}'] = sha(hp)
+        h = json.loads(hp.read_text())
+        cands = [(f'{hb} (paper, job {h["job_id"]})', h['table'], PAPER_ARM, 0, 'hires-burgers rule (population + own states)')]
+        g = s['groups'][cohort]['table']
+        for arm in (PAPER_ARM, PAPER_ARM.replace('g0p01', 'g0p001'), PAPER_ARM + '_x1', PAPER_ARM.replace('g0p01', 'g0p001') + '_x1'):
+            if arm in g:
+                cands.append((f'bh5 (job {s["job_id"]})', g, arm, 1 if arm.endswith('_x1') else 0, None))
+        for src, tab, arm, j, cert in cands:
+            t = tab[arm]
+            f = t['fastest_fom_at_least_as_accurate']
+            fo = tab[f]
+            cs = cert or f"{t.get('certificate_status')}, confirmation {'pass' if t.get('confirmation_pass') else 'FAIL'}"
+            out.append(f"| {cohort} | {src} | `{arm}` | {t['q']} | {t['M']} | {t['rule']} | {j} | {t['gtol']:g} | "
+                       f"{cs} → {t['certified_primary']} | {fmt(t['worst_evolved_percent'])} | {fmt(t['median_gpu_ms'], 1)} | "
+                       f"`{f}` | {fmt(fo['median_gpu_ms'], 1)} | {fmt(fo['worst_evolved_percent'])} | "
+                       f"{fmt(t['speedup_vs_fastest_fom_at_least_as_accurate'], 2)}× |")
+    return out
+
+
 def main():
     out, sources, rows = {}, {}, []
     for name in ('bh2', 'bh2b', 'bh2c', 'bh3', 'bh4', 'bh5'):
@@ -71,6 +106,7 @@ def main():
         lines.append(f"| {r['job']} | {r['mesh']}² | {r['cohort']} | {r['role']} | `{r['arm']}` | {r['q']} | {r['M']} | {r['rule']} | "
                      f"{fmt(r['certified'])} | {fmt(r['worst_evolved_percent'])} | {fmt(r['floor_percent'])} | {fmt(r['rom_ms'], 1)} | "
                      f"`{r['fom_setting']}` | {fmt(r['fom_ms'], 1)} | {fmt(r['fom_error_percent'])} | {fmt(r['speedup'], 2)}× |")
+    lines += bh5_comparison(sources)
     (LANE / 'reports/tables.generated.md').write_text('\n'.join(lines) + '\n')
     for name in ('compress.json', 'hfit_bh.json', 'directions.json'):
         p = CH / 'bh1' / name

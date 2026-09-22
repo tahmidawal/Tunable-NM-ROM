@@ -41,6 +41,7 @@
      "rho_max_deployed": 0.0269133676465109,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -128,7 +129,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 5.619224404314849,
@@ -215,7 +217,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 6.616232060120461,
@@ -273,6 +276,7 @@
      "rho_max_deployed": 0.031323413376507146,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -331,6 +335,7 @@
      "rho_max_deployed": 0.031278584410018406,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -418,6 +423,7 @@
      "rho_max_deployed": 0.5791310577597754,
      "control": true,
      "certificate_status": "fails",
+     "confirmation_pass": false,
      "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -500,21 +506,21 @@
    },
    "verdict": {
     "accurate_1_percent": {
-     "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
-     "worst_evolved_percent": 0.6042128376407683,
+     "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+     "worst_evolved_percent": 0.6042129809181105,
      "worst_all_times_percent": 3.430339181466524,
-     "median_gpu_ms": 106.96672066114843,
+     "median_gpu_ms": 5308.004256803542,
      "stalled_exits": 0,
      "steps": 300,
      "tight_comparator": "lean_tight",
      "relaxed_passing_comparator": "lean_nt3e-3_l3e-3_dt005",
      "fastest_tested_fom_at_least_as_accurate": "lean_nt3e-3_l3e-3_dt005",
      "speedups": {
-      "vs_tight": 30.571563826239526,
-      "vs_relaxed_passing": 4.8964528179375915,
-      "vs_fastest_tested_fom_at_least_as_accurate": 4.8964528179375915
+      "vs_tight": 0.6160771110506037,
+      "vs_relaxed_passing": 0.09867315010825328,
+      "vs_fastest_tested_fom_at_least_as_accurate": 0.09867315010825328
      },
-     "met_vs_tight": true,
+     "met_vs_tight": false,
      "met_vs_relaxed_passing": false,
      "met_vs_fastest_tested_at_least_as_accurate": false,
      "limit_percent": 1.0,
@@ -721,7 +727,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 6.331813901038601,
@@ -1011,6 +1018,7 @@
      "rho_max_deployed": 0.0269133676465109,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -1127,6 +1135,7 @@
      "rho_max_deployed": 0.031323413376507146,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -1243,6 +1252,7 @@
      "rho_max_deployed": 0.5791310577597754,
      "control": true,
      "certificate_status": "fails",
+     "confirmation_pass": false,
      "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -1359,6 +1369,7 @@
      "rho_max_deployed": 0.031278584410018406,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -1649,7 +1660,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 7.076967830483444,
@@ -1797,6 +1809,7 @@
      "rho_max_deployed": 0.0269133676465109,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -2012,7 +2025,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 6.313167655126326,
@@ -2227,7 +2241,8 @@
      "rho_max_deployed": 0.10717237660611255,
      "control": false,
      "certificate_status": "confirmed",
-     "certified_primary": true,
+     "confirmation_pass": false,
+     "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
       "lean_nt1e-3_l1e-3_dt005": 7.076967830483444,
@@ -2349,6 +2364,7 @@
      "rho_max_deployed": 0.031323413376507146,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -2471,6 +2487,7 @@
      "rho_max_deployed": 0.031278584410018406,
      "control": false,
      "certificate_status": "confirmed",
+     "confirmation_pass": true,
      "certified_primary": true,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {
@@ -2686,6 +2703,7 @@
      "rho_max_deployed": 0.5791310577597754,
      "control": true,
      "certificate_status": "fails",
+     "confirmation_pass": false,
      "certified_primary": false,
      "certificate_basis": "eqcert: 5 held-out draws + confirmation draw, k >= j",
      "speedup_gpu": {

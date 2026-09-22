@@ -191,7 +191,9 @@ def one_group(r, cfg, L, tight, cases, gate):
             if ast:                                   # eqcert job (bh5): the job's 5-draw + confirmation status
                 t.update(rho_max_heldout=ast.get('heldout_rho_max'), rho_max_deployed=ast.get('deployed_rho_max'),
                          control=ast.get('control', False), certificate_status=ast.get('status'),
-                         certified_primary=ast.get('status') == 'confirmed',
+                         confirmation_pass=ast.get('confirmation_pass'),
+                         # eqcert DESIGN sec. 9.3: certified = 5/5 draws AND the confirmation draw
+                         certified_primary=ast.get('status') == 'confirmed' and ast.get('confirmation_pass') is not False,
                          certificate_basis='eqcert: 5 held-out draws + confirmation draw, k >= j')
             elif ru:
                 dep = (ru.get('deployed') or {}).get(n)

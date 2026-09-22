@@ -26,6 +26,11 @@ dispositions §9). Budget ≤ 2 running / ≤ 8 total GPU jobs; only scancel own
   at ~260 ms (2.07x / 2.21x). Bar NOT met. Restricted-proxy gate fails (gap 0.36); full-grid worst-case recompute passes.
 - **bh5 = 4153483 DONE** (collected, audited `checks/bh5-summary.json` + `checks/bh5-eqcert-summary.json`, remote
   deleted): incumbent j=0 fails the 4096² confirmation draw (ρ 0.1173); j=1 certifies but costs 5.3–6.6 s/query.
+- 2026-09-22 closing pass: `audit_bh.py` now requires the confirmation draw for bh5 certification (the first bh5 commit
+  0e20e20c showed `cert True` for the j=0 rows; retracted). `checks/bh5-eqcert-summary.json` actually produced this pass
+  (the earlier eqcert audit run had been OOM-killed; rerun under `JAXRUN_MAX=48G jaxrun`, ~24 GB RSS):
+  `$PY eqcert/audit_eqcert.py runs/bh5/archive --checkpoint runs/bh5/staged/in/sep_hfit_dense_mid_N256_dense.pkl --out checks/bh5-eqcert-summary.json`.
+  Paired paper-vs-j=1 table: last block of `reports/tables.generated.md`.
 - **LANE CLOSED: 8/8 jobs, namespace empty.** Report `reports/2026-09-21-burgers-heldout.md`, `reports/summary.json`.
 
 ## How to run / collect

@@ -1,0 +1,48 @@
+failed gates: ['restricted_recomputation_tracks_full_grid']
+q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2              ev   9.0302%  gpu     39.71 ms  confirmed  FOM lean_nt1e-3_l1e-3_dt01  S 10.121297176899404
+lean_nt1e-3_l1e-3_dt005                                    ev   0.1331%  gpu    704.54 ms  conv True
+q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2      ev   1.3297%  gpu    111.60 ms  confirmed  FOM lean_nt3e-3_l3e-3_dt005  S 4.810464216221886
+lean_nt1e-2_l1e-2_dt005                                    ev  31.1802%  gpu    417.60 ms  conv True
+q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2       ev   1.3312%  gpu     99.55 ms  confirmed  FOM lean_nt3e-3_l3e-3_dt005  S 5.392459438369348
+q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1   ev   1.3297%  gpu   6856.34 ms  confirmed  FOM lean_nt3e-3_l3e-3_dt005  S 0.07829840211555054
+q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1    ev   1.3311%  gpu   6266.84 ms  confirmed  FOM lean_nt3e-3_l3e-3_dt005  S 0.08566370790840097
+lean_nt1e-3_l1e-3_dt01                                     ev   2.0062%  gpu    401.95 ms  conv True
+q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2       ev   7.0664%  gpu     82.80 ms  fails  FOM lean_nt1e-3_l1e-3_dt01  S 4.854327294102242
+lean_nt3e-3_l3e-3_dt005                                    ev   0.1377%  gpu    536.84 ms  conv True
+lean_tight                                                 ev   0.0000%  gpu   3226.61 ms  conv True
+{
+ "mesh": 4096,
+ "selected_on_certification_draws": null,
+ "selected_passes_confirmation": null,
+ "certified_rule_exists": false,
+ "accurate": null,
+ "cheapest_marginal_q256": null,
+ "fast": {
+  "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+  "basis": "q=0",
+  "status": "confirmed",
+  "exact_steps": 0,
+  "m": 1024,
+  "heldout_rho_max": 0.027999020930761304,
+  "deployed_rho_max": 0.0269133676465109,
+  "worst_evolved_percent": 9.030161732932955,
+  "worst_all_times_percent": 9.030161732932955,
+  "worst_current_relative_evolved_percent": 11.686923283582034,
+  "confirmation_pass": true,
+  "confirmation_rho_max": 0.026549346488932528,
+  "rom_gpu_ms": 39.71298527903855,
+  "rom_host_ms": 285.9349043574184,
+  "stalled_exits": 0,
+  "steps": 3500,
+  "fom": "lean_nt1e-3_l1e-3_dt01",
+  "fom_gpu_ms": 401.94692579098046,
+  "fom_host_ms": 648.1400213669986,
+  "fom_worst_evolved_percent": 2.0062467820726275,
+  "speedup_gpu": 10.121297176899404,
+  "speedup_host": 2.266739777095643,
+  "lane_bar_met": false
+ },
+ "accepted": false,
+ "acceptance_rule": "every audit gate passed (else the verdict is reported but not accepted)"
+}
+EXIT 0

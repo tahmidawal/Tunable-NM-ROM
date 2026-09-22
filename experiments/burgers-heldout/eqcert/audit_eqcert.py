@@ -40,7 +40,9 @@ def silu(x):
 
 def bank_np(params, xy, chunk=65536):
     """sep_common.features in NumPy: out_scale * bc(x) * g_mlp([sin, cos](2 pi x B))."""
-    out = []
+    # local change vs burgers-eqcert's copy (memory only, same values): write into one preallocated
+    # array instead of concatenating a list of chunks, which doubled peak RSS (~137 GB at 4096^2).
+    out = None
     for s in range(0, len(xy), chunk):
         p = xy[s:s + chunk]
         ang = 2. * np.pi * (p @ params['B'])
@@ -50,8 +52,10 @@ def bank_np(params, xy, chunk=65536):
         w, b = params['g'][-1]
         x = x @ np.asarray(w) + np.asarray(b)
         bc = 16. * p[:, 0] * (1 - p[:, 0]) * p[:, 1] * (1 - p[:, 1])
-        out.append(float(np.asarray(params['out_scale'])) * bc[:, None] * x)
-    return np.concatenate(out)
+        if out is None:
+            out = np.empty((len(xy), x.shape[1]), x.dtype)
+        out[s:s + chunk] = float(np.asarray(params['out_scale'])) * bc[:, None] * x
+    return out
 
 
 def modes_np(L, M):

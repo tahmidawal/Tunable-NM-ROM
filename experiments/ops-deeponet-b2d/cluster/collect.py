@@ -13,7 +13,8 @@ cases and refinement anchors (already archived and hash-linked by the Burgers la
 and the solver-audit sidecars. Everything else — every `best.pt`, every saved
 validation and cohort prediction, every history, the timing repetition arrays, the
 model-facing validation cases and the rebuilt cohort — is archived byte for byte
-and then chunked into 64 MiB Git-tracked parts by `preserve` below.
+and then chunked into 45 MiB Git-tracked parts by `preserve` below (no-second used 64 MiB;
+this lane is capped at 50 MB per committed file).
 """
 import argparse
 import hashlib
@@ -85,7 +86,7 @@ def preserve(attempt):
     manifest = dict(archive_sha256=expected, exclusions=EXCLUDES, parts=[])
     with archive.open('rb') as stream:
         index = 0
-        while data := stream.read(64 * 1024 * 1024):
+        while data := stream.read(45 * 1024 * 1024):
             path = chunks / f'part-{index:04d}'
             path.write_bytes(data)
             manifest['parts'].append(dict(path=path.name, sha256=sha(path), bytes=len(data)))

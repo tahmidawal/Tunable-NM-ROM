@@ -130,5 +130,7 @@ GPU: NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB.
 
 The six-output contract plus the initial projection is 2.972 ms at rank 64. A solve of zero cost would therefore cap the speedup at **6.42x** against the stability-limited FOM (CNAB2 dt=0.005, 19.086 ms) at this mesh.
 
+Independent NumPy recomputation: worst disagreement 0.000e+00; driver-fix parity against the LM arm 1.429e-08.
+
 GPU: NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB. Job 4178149, commit `eceb1b779d92897cc7b9f6da7abdf60c8ef1757e`. Operator checks and the GPU-centering cross-check are in the summary.
 

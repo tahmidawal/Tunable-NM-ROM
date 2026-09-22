@@ -23,12 +23,21 @@ def main():
     p.add_argument("--pilot", type=Path, required=True)
     p.add_argument("--cost", type=Path, required=True)
     p.add_argument("--mesh", type=Path, default=None)
+    p.add_argument("--ladder", type=Path, action="append", default=None,
+                   help="ladder job output dirs (fast04 / ladder64 / 96 / 128)")
     p.add_argument("--out", type=Path, required=True)
     a = p.parse_args()
     P = json.loads((a.pilot / "summary.json").read_text())
     C = json.loads((a.cost / "summary.json").read_text())
     PV = json.loads((a.pilot / "verify.json").read_text())
     CV = json.loads((a.cost / "verify.json").read_text())
+    LAD = []
+    for run in (a.ladder or []):
+        s = json.loads((run / "summary.json").read_text())
+        v = json.loads((run / "verify.json").read_text()) \
+            if (run / "verify.json").exists() else None
+        LAD.append((s, v))
+    LAD.sort(key=lambda sv: sv[0]["config"]["n"])
     M = json.loads((a.mesh / "summary.json").read_text()) if a.mesh else None
     MV = json.loads((a.mesh / "verify.json").read_text()) \
         if a.mesh and (a.mesh / "verify.json").exists() else None
@@ -374,6 +383,107 @@ flowchart LR
         else:
             W("**It does not cross at this mesh** under the comparator rule. The margin and its "
               "direction are in the table; whether it crosses further out is not answered here.\n")
+
+    if LAD:
+        W("## Pushing to higher resolution\n")
+        W("Two changes were made after the sections above, in this order. First the "
+          "**solver driver** was replaced, because until it was, every timing at every mesh "
+          "measured `ns2d_rom.make_lm` rather than the method. Then the mesh was raised.\n")
+        W("### The driver fix\n")
+        f0 = LAD[0][0]
+        ft = f0["timing"]["arms"]
+        W("`make_lm` (generic: `jacfwd`, a data-dependent `while_loop`, an accept/reject trial "
+          "that re-evaluates residual *and* Jacobian) is replaced for this residual by a fixed "
+          "number of damped Gauss-Newton sweeps with an **analytic** Jacobian in a statically "
+          "unrolled scan, warm-started by extrapolating the previous step's increment, with the "
+          "constant Jacobian terms and the Crank-Nicolson preconditioner hoisted out of the "
+          "sweep, one contraction against $\\mathsf T + \\mathsf T^{\\top}$ in place of two, "
+          "and a Cholesky factor/solve in place of a general LU.\n")
+        W(f"Measured in one job at $N={f0['config']['n']}$, same allocation, interleaved, at "
+          "the same rank and step:\n")
+        W("| solver | median ms | saving | field parity vs the LM arm |")
+        W("|---|---:|---:|---:|")
+        W(f"| reference LM | {ms(ft['reference_lm']['median_ms'])} | 1.00x | — |")
+        ref_rank, ref_dt = f0["config"]["reference_rank"], f0["config"]["reference_dt"]
+        for it in sorted(f0["config"]["iters_ladder"], reverse=True):
+            key = f"r{ref_rank}_dt{ref_dt}_it{it}"
+            if f"query_{key}" not in ft:
+                continue
+            q = ft[f"query_{key}"]["median_ms"]
+            par = f0["frontier"][key].get("parity_vs_reference_lm")
+            W("| frozen Gauss-Newton, {} sweeps | {} | {:.2f}x | {} |".format(
+                it, ms(q), ft["reference_lm"]["median_ms"] / q,
+                f"{par:.2e}" if par is not None else "—"))
+        W("")
+        W("The pre-registered parity gate is $10^{-8}$. It also caught two bugs before any GPU "
+          "time, both of which looked plausible at $2\\times10^{-5}$ instead of "
+          "$7\\times10^{-10}$: a scalar Levenberg damping over-damped the coefficient "
+          "directions, because the three shift columns are more than ten times their norm; and "
+          "the $\\mathsf T + \\mathsf T^{\\top}$ rewrite of the Jacobian's advection term was "
+          "off by a factor of two.\n")
+        W("### The ladder\n")
+        W("Two rows per mesh: the best setting whose sweep count **meets** the $10^{-8}$ "
+          "parity gate, and the best setting overall. Where they differ, the second is faster "
+          "but its solve sits outside the gate, and it is never used for a headline claim.\n")
+        W("| mesh | gate | setting | evolved worst | over 5 % | ROM ms "
+          "| coarsest stable FOM step | comparator | comparator ms | **paired speedup** "
+          "| free-solve ceiling |")
+        W("|---:|---|---|---:|---:|---:|---:|---|---:|---:|---:|")
+        for s, _ in LAD:
+            n = s["config"]["n"]
+            t_ = s["timing"]["arms"]
+            fomtab = {d: v for d, v in s["cnab2"].items() if not v["unstable"] and v["stats"]}
+
+            def comp(worst, tt=t_, ff=fomtab):
+                ok = [(tt[f"CNAB2_dt{d}"]["median_ms"], d) for d, v in ff.items()
+                      if v["stats"]["evolved_worst"] <= worst]
+                return min(ok) if ok else (None, None)
+            tgt = float(s["config"]["target_relative"])
+            usable = [float(d) for d, v in fomtab.items()
+                      if v["stats"]["evolved_worst"] <= tgt]
+            slim = comp(tgt)
+            passing = {k: v for k, v in s["frontier"].items()
+                       if v["stats"]["cases_evolved_over_target"] == 0}
+            if not passing:
+                continue
+            parity_by_sweep = {v["iters"]: v["parity_vs_reference_lm"]
+                               for v in s["frontier"].values()
+                               if "parity_vs_reference_lm" in v}
+            gated_sweeps = {i for i, pv in parity_by_sweep.items() if pv <= 1e-8}
+            r0 = sorted(s["floors"]["ranks"], key=int)[0]
+            contract = (t_[f"piece_initial_r{r0}"]["median_ms"]
+                        + 5 * t_[f"piece_output_r{r0}"]["median_ms"])
+
+            def emit(pool, label, nn=n, tt=t_, cc=comp, uu=usable, sl=slim, ct=contract):
+                if not pool:
+                    W(f"| {nn}^3 | {label} | *no sweep count tested at this mesh met the "
+                      "1e-8 gate* | | | | | | | | |")
+                    return None
+                key = max(pool, key=lambda k: (cc(pool[k]["stats"]["evolved_worst"])[0] or 0)
+                          / tt[f"query_{k}"]["median_ms"])
+                vv = pool[key]
+                qq = tt[f"query_{key}"]["median_ms"]
+                cms_, dn_ = cc(vv["stats"]["evolved_worst"])
+                W("| {}^3 | {} | {} | {} | {}/{} | {} | {} | CNAB2 dt={} | {} | **{:.2f}x** "
+                  "| {:.1f}x |".format(
+                      nn, label, key.replace("_", " "), pct(vv["stats"]["evolved_worst"]),
+                      vv["stats"]["cases_evolved_over_target"], vv["stats"]["cases"], ms(qq),
+                      max(uu), dn_, ms(cms_), cms_ / qq, (sl[0] or 0) / ct))
+                return key
+
+            emit({k: v for k, v in passing.items() if v["iters"] in gated_sweeps},
+                 "**met**" if gated_sweeps else "none met")
+            emit(passing, "best overall")
+            note = ", ".join(f"{i} sweeps {pv:.2e}" for i, pv in sorted(parity_by_sweep.items()))
+            W(f"| | *parity at {n}^3: {note}* | | | | | | | | | |")
+        W("")
+        W("The **free-solve ceiling** is the comparator divided by the grid-sized work the "
+          "reduced model cannot avoid -- one initial centering and projection plus the six "
+          "output fields it must produce to be compared with the FOM at all. It is what the "
+          "speedup would be if the reduced solve were instantaneous, and it is the honest upper "
+          "bound on this method at each mesh. The full frontier over rank, step and sweep "
+          "count, the baselines and the per-mesh cost breakdown are in "
+          "`experiments/ns3d-shift/results/ladder.md`.\n")
 
     W("## What failed, and what was retracted\n")
     W("- **The framing the cell was opened with.** A coordinate network is not what makes the "

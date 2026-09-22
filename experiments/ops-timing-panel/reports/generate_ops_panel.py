@@ -19,11 +19,14 @@ import json
 from pathlib import Path
 
 FAMILY_LABEL = {'rom': 'NM-ROM', 'fast': 'NM-ROM (fast kernel)', 'pod': 'POD-LSPG', 'free': 'free bank',
-                'fno': 'FNO', 'unet': 'U-Net', 'transolver': 'Transolver', 'fom': 'FOM'}
+                'fno': 'FNO', 'unet': 'U-Net', 'transolver': 'Transolver', 'deeponet': 'DeepONet',
+                'fom': 'FOM'}
 ROLE = {'unet-refine': 'validation-selected', 'tsol-refine': 'validation-selected',
         'fno-large': 'validation-selected',
         'unet-medium': 'best worst case on no-second\'s validation set; not selected',
-        'tsol-large': 'best worst case on no-second\'s validation set; not selected'}
+        'tsol-large': 'best worst case on no-second\'s validation set; not selected',
+        'don-small': 'validation-selected',
+        'don-medium': 'best worst case on the DeepONet lane\'s validation set; not selected'}
 # no-second's 32-case VALIDATION worst percentages, for the ordering observation only. Those
 # cases are a different split from this panel's cohort, so the percentages are never compared;
 # only whether the two arms rank the same way is.
@@ -57,12 +60,21 @@ def main():
     p.add_argument('audit')
     p.add_argument('--out', required=True)
     p.add_argument('--bpn301', default=None, help="b-panel bpn301 audit.json, for the FNO error cross-check")
+    p.add_argument('--previous', default=None,
+                   help='an earlier audit.json of this lane; arms absent from it are marked new in this job')
+    p.add_argument('--deeponet', default=None,
+                   help="the ops-deeponet-b2d lane's reports/summary.json, for the DeepONet section")
     a = p.parse_args()
     d = json.loads(Path(a.audit).read_text())
     if d['failed']:
         raise SystemExit(f"audit has failed gates, the job is not accepted: {d['failed']}")
     rows = d['arms']
     by = {r['arm']: r for r in rows}
+    previous = set()
+    if a.previous:
+        previous = {r['arm'] for r in json.loads(Path(a.previous).read_text())['arms']}
+    for r in rows:
+        r['new_in_this_job'] = bool(previous) and r['arm'] not in previous
 
     printed, suppressed = [], []
     for r in rows:
@@ -88,7 +100,8 @@ def main():
              '|---|---|---|---|---|---|---|---|---|---|---|']
     for r in printed:
         lines.append('| `{arm}` | {fam} | {role} | {we} | {me} | {wa} | {g} | {h} | {c} | {sg} | {sh} |'.format(
-            arm=r['arm'], fam=FAMILY_LABEL.get(r['family'], r['family']), role=ROLE.get(r['arm'], '—'),
+            arm=r['arm'], fam=FAMILY_LABEL.get(r['family'], r['family']),
+            role=(('**newly timed** — ' if r['new_in_this_job'] else '') + ROLE.get(r['arm'], '')) or '—',
             we=cell(r['worst_evolved_percent'], 4), me=cell(r['median_evolved_percent'], 4),
             wa=cell(r['worst_all_times_percent'], 4), g=cell(r['median_gpu_ms']), h=cell(r['median_host_ms']),
             c=(f"`{r['fom_gpu']}`" if r['fom_gpu'] else
@@ -178,6 +191,82 @@ def main():
     else:
         pairs_verdict = ('The ordering reproduces on one family and not the other; see the last column.')
 
+    # ---- the DeepONet block, built from the sibling lane's own generated summary -----------
+    don_block = ''
+    don_rows = [r for r in printed if r['family'] == 'deeponet']
+    if don_rows and a.deeponet:
+        ds = json.loads(Path(a.deeponet).read_text())
+        want = {(x['arm'], x['cohort'], x['metric']): x for x in ds['rows']}
+        meta = {}
+        for x in ds['rows']:
+            meta.setdefault(x['arm'], x)
+        lines = ['| arm | capacity | real params | epochs run | best epoch | stop reason | '
+                 'their validation-32 worst % | their diagnosis-8 worst % | worst evolved % HERE |',
+                 '|---|---|---|---|---|---|---|---|---|']
+        for r in sorted(don_rows, key=lambda r: r['arm']):
+            m = meta[r['arm']]
+            v = want.get((r['arm'], 'validation-32', 'worst_fixed_initial_error'))
+            g8 = want.get((r['arm'], 'diagnosis-8', 'worst_fixed_initial_error'))
+            lines.append(f"| `{r['arm']}` | {m['capacity']} | {m['params']:,} | {m['epochs']} | "
+                         f"{m['best_epoch']} | **{m['stop_reason']}** | "
+                         f"{100 * v['value']:.4f} | {100 * g8['value']:.4f} | "
+                         f"{r['worst_evolved_percent']:.4f} |")
+        stops = sorted({meta[r['arm']]['stop_reason'] for r in don_rows})
+        early = stops == ['early_stopping']
+        ratios = None
+        hand = Path(a.deeponet).with_name('timing-handoff.json')
+        if hand.exists():
+            ratios = json.loads(hand.read_text()).get('accuracy_ratios_selected_arm_vs_selected_arm')
+        rtext = ''
+        if ratios:
+            rtext = ('\n\nThe sibling lane\'s generated selected-arm-vs-selected-arm ratios on its 32 '
+                     'validation cases (its number, not recomputed here): DeepONet\'s error divided by '
+                     + ', '.join(f"**{k}**\u2019s is {v['mean']:.3f}× on the mean, {v['median']:.3f}× on the "
+                                 f"median and {v['maximum']:.3f}× on the maximum"
+                                 for k, v in ratios.items()) + '. These must travel with every DeepONet '
+                     'speed row; a cost without them is not a result.')
+        # the ordering check against the sibling lane, on rank only
+        pairs_d = []
+        for arm in sorted(don_rows, key=lambda r: r['worst_evolved_percent']):
+            pairs_d.append(arm['arm'])
+        theirs = sorted((r['arm'] for r in don_rows),
+                        key=lambda n: want[(n, 'diagnosis-8', 'worst_fixed_initial_error')]['value'])
+        same_rank = pairs_d == theirs
+        don_block = f"""## The DeepONet arms
+
+**Newly timed in this job.** The `ops-deeponet-b2d` lane trained these four on the same data,
+split, reference, metric, budget and selection rule, and made no speed claim, for the same
+reason `no-second` made none. Their costs above are the first admissible ones.
+
+{chr(10).join(lines)}
+
+**Read every DeepONet row with all four of these.** They are the sibling lane's own record and
+they change what the numbers mean:
+
+1. **All four arms ended by {'early stopping, not on the wall budget' if early else '/'.join(stops)}.** The per-capacity wall budget did
+   **not** bind — the opposite of the U-Net, Transolver and FNO arms, every one of which ended
+   on its budget. Comparing "equal wall" across the families therefore does not mean the same
+   thing for DeepONet as it does for the others.
+2. **`still_improving = no` is vacuous for these arms.** It is defined against the patience
+   window, and an arm that early-stopped satisfies it by construction; it says nothing about
+   whether the configuration had converged.
+3. **Training loss was still falling in all four histories** when early stopping fired on the
+   validation criterion.
+4. **128 training cases.** A **data-limited** reading of this result is live, and the sibling
+   lane did not separate it from a capacity reading. **Nothing here is evidence of an
+   architecture ceiling for DeepONet**, and no sentence in this report should be read that way.
+   What is established is that *these four checkpoints, trained this way, on this much data*
+   are far less accurate than the other operators on the same cohort while costing a comparable
+   amount.{rtext}
+
+**Rank ordering.** By worst error the four arms rank {' < '.join(f'`{x}`' for x in pairs_d)} here and
+{' < '.join(f'`{x}`' for x in theirs)} on the sibling lane's diagnosis-8 cohort — the ordering
+{'reproduces' if same_rank else '**does not reproduce**'}. Only the ordering is compared: that cohort is the *calibration*
+split and this panel's is the *development* split, they share no case, and the absolute
+percentages are therefore not comparable in either direction.
+
+"""
+
     if cross:
         c0 = cross[0]
         exact = c0['per_case_max_difference'] == 0.0
@@ -246,7 +335,7 @@ the worse tail. Both are in the table; here they are side by side on **this** co
 
 {pairs_verdict}
 
-## Cross-check, and what is *not* a cross-check
+{don_block}## Cross-check, and what is *not* a cross-check
 
 {cross_prose}
 
@@ -299,8 +388,18 @@ Written for a reader who has none of this project's vocabulary.
 * **FOM** — full-order model, the real solver on the full grid. Here: backward-Euler Newton
   iterations with a BiCGStab linear solve and an FFT Helmholtz preconditioner. `fft_tight` is
   the converged one; `nt1e-2_dt01` and the rest are deliberately looser, cheaper settings.
-* **U-Net / Transolver / FNO** — three trained neural operators. Each takes the initial field
-  and the viscosity and returns all five later times in one forward pass.
+* **U-Net / Transolver / FNO / DeepONet** — four trained neural operators. Each takes the
+  initial field and the viscosity and returns all five later times in one forward pass. A
+  **DeepONet** does it by combining a *branch* network that reads the input field into
+  coefficients with a *trunk* network that turns coordinates into basis functions.
+* **early stopping vs wall budget** — two different reasons training can end. "Wall budget"
+  means the clock ran out while the model was still improving, so the number is a lower bound
+  on that configuration. "Early stopping" means validation error stopped improving for a set
+  number of epochs; it does not by itself mean the model had converged, especially when the
+  training loss was still falling.
+* **data-limited vs capacity-limited** — whether a model is held back by having too few
+  training examples or by being too small/wrong in shape. With 128 training cases the two are
+  not separated here, so a weak result is not evidence about the architecture.
 * **`-small` / `-medium` / `-large` / `-refine`** — the four capacities each operator family was
   trained at; `-refine` is a lower-learning-rate retrain of the capacity validation picked.
 * **worst / median evolved %** — the error metric, $\\max_k \\lVert \\hat u(t_k) - u^\\star(t_k)\\rVert_2 /

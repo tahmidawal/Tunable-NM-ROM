@@ -20,11 +20,13 @@ dispositions §9). Budget ≤ 2 running / ≤ 8 total GPU jobs; only scancel own
   still q256/M1088 lat64 1.73 % → bar not met under the rules. DESIGN A3: labelled exploratory 4096² jobs.
 - **bh2c = 4144025 DONE** (incumbent attribution, `checks/bh2c-summary.json`): incumbent sel32 q256/M1088 1.49 %,
   q512 1.35 %, floor 0.594 % (new: 1.73 / 0.41 / 0.259 %). Incumbent lat64 q256 uncertified at 1024² (ρ 0.119).
-- **bh3 = 4146491** (H200, dev6+hold64, new model, exploratory per A3) RUNNING; **bh4 = 4147539** (fresh64) RUNNING.
-- **bh5 STAGED (runs/bh5, commit 7912b033), NOT submitted**: coordinator task A4 (incumbent re-timed with lat64
-  j=1 at 4096², dev6+hold64, eqcert certificate). Submit as soon as bh3 or bh4 leaves the queue (≤2 running):
-  rsync runs/bh5 → sbatch. Collect with cluster/collect.py bh5; audit with eqcert/audit_eqcert.py AND audit_bh.py.
-- Jobs used: 6 submitted / 8 (bh5 = 8th). No budget left for retries after bh5.
+- **bh3 = 4146491 DONE, bh4 = 4147539 DONE** (H200, collected, audited `checks/bh3-summary.json`, `checks/bh4-summary.json`,
+  remote deleted). Headline q256/M1088 lat64 g1e-2 (certified): dev6 0.854 % @80.0 ms (6.54x), hold64 1.601 % (6.70x vs
+  lean_nt3e-3), fresh64 2.407 % (5.48x vs lean_nt1e-3_dt01). Uncertified q512/M2112 lat128: hold64 0.393 % / fresh64 0.458 %
+  at ~260 ms (2.07x / 2.21x). Bar NOT met. Restricted-proxy gate fails (gap 0.36); full-grid worst-case recompute passes.
+- **bh5 = 4153483** (H200, A4 coordinator task, incumbent lat64 j=1, dev6+hold64) RUNNING (submitted by the auto-submitter
+  when bh4 finished). When done: collect.py bh5 → eqcert/audit_eqcert.py AND audit_bh.py → delete remote.
+- Jobs used: 8 / 8. No retries possible.
 
 ## How to run / collect
 

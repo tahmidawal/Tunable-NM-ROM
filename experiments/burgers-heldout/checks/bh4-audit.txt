@@ -1,0 +1,13 @@
+failed gates: ['restricted_recomputation_tracks_full_grid']
+== fresh64 64 cases {"arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2", "worst_evolved_percent": 2.406896613458944, "worst_all_times_percent": 4.3785625342623185, "median_evolved_percent": 0.1140450737200781, "median_gpu_ms": 77.27575395256281, "median_host_ms": 327.5752083864063, "certified_primary": true, "stalled_exits": 0, "fastest_fom_at_least_as_accurate": "lean_nt1e-3_l1e-3_dt01", "fom_ms": 423.5535515472293, "fom_error_percent": 2.3938922179933675, "speedup": 5.481066568528541, "speedup_host": 2.0576725625963035, "speedup_vs_tight": 44.86705218244382, "bar_met": false, "stretch_met": false}
+   c2048_nt1e-4_dt005                                   ev   0.3642%  floor  0.3680%  gpu    294.74 ms  stalled_steps 0
+   lean_nt1e-3_l1e-3_dt005                              ev   0.1423%  floor  0.3680%  gpu    738.51 ms  stalled_steps 0
+   c1024_nt1e-4_dt005                                   ev   1.0746%  floor  0.3680%  gpu     83.09 ms  stalled_steps 0
+   lean_nt1e-2_l1e-2_dt005                              ev  10.4914%  floor  0.3680%  gpu    421.79 ms  stalled_steps 0
+   q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2          ev   7.9974%  floor  0.3680%  gpu     47.57 ms  S*   8.90 (lean_nt1e-3_l1e-3_dt01)  cert True  stalled 0
+   q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 ev   2.4069%  floor  0.3680%  gpu     77.28 ms  S*   5.48 (lean_nt1e-3_l1e-3_dt01)  cert True  stalled 0
+   q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 ev   0.6734%  floor  0.3680%  gpu    283.70 ms  S*   2.03 (lean_nt3e-3_l3e-3_dt005)  cert False  stalled 0
+   lean_nt1e-3_l1e-3_dt01                               ev   2.3939%  floor  0.3680%  gpu    423.55 ms  stalled_steps 0
+   q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 ev   0.4575%  floor  0.3680%  gpu    260.13 ms  S*   2.21 (lean_nt3e-3_l3e-3_dt005)  cert False  stalled 0
+   lean_nt3e-3_l3e-3_dt005                              ev   0.1494%  floor  0.3680%  gpu    576.08 ms  stalled_steps 0
+   lean_tight                                           ev   0.0000%  floor  0.3680%  gpu   3467.14 ms  stalled_steps 0

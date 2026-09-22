@@ -42,3 +42,6 @@ runs/speed2/speed2_vp_R256_K16`, commit, then submit final01 (LAST job, 8 of 8):
 Panel B arms (`configs/final01b.json`, `selection_addendum2.json`): R256/K16, q in {0,160}: `field_cn_tol1e-4_chol_s1` (13.2 ms val) and
 `direct_tol1e-4_chol_mom_s1` (6.3 ms val); all variants 0.543 % at q160; CN dt0.05 variants had non-stationary exits -> ineligible.
 Next: final01 = LAST job (8 of 8), panels A (final01.json) + B (final01b.json).
+
+## final01 = job 4153878 RUNNING (H200 pax009, 16 h wall) — LAST job, 8 of 8. Sealed 921099 + repeated benchmark 920399 opened here.
+On completion: `cluster/collect.sh final01` (then `--remove` if all checks pass), `make_report.py`-style generated table, lab log.

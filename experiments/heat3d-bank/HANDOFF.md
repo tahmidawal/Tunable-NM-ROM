@@ -53,3 +53,7 @@ panel B (addendum, R256/K16/q160) 0.4733 %. Accuracy bar (<=1 %) PASS at every m
 best 4.86x (panel B direct, 128^3); vs the paper FOM rule 1.92x (B direct) / 0.94x (B cn) / 2.22x (A direct) / 0.28x (A cn) at 128^3.
 Labelled controls beat every ROM arm: linear solve in the learned bank 0.150 % in 1.3-2.2 ms; DST 2.1 ms; coarse 64^3 CN-CG 0.46 % 4.9 ms.
 Nothing running. Worktree not merged (ask the user).
+
+## 2026-09-22 — REOPENED for 256³ (user-authorised, ≤2 extra jobs): final256 = job 4171513 (H200, 6 h), job 9
+Frozen panel A, sealed 921099 (64 cases), config `configs/final256.json`, DESIGN addendum 3. On completion:
+`cluster/collect.sh final256`, check COLLECT-STATUS, remove remote, extend `make_final_table.py` output for the 256³ rows.

@@ -1,0 +1,50 @@
+{
+  "name": "ladder64",
+  "question": "accuracy-cost frontier at N=64, paired against a stable CNAB2 comparator",
+  "n": 64,
+  "dt_truth": 0.001,
+  "horizon": 0.2,
+  "train_cases": 128,
+  "dev_cases": 16,
+  "train_seed": 202609201,
+  "dev_seed": 202609202,
+  "closed_seeds": [
+    202609203,
+    202609211
+  ],
+  "modes": 292,
+  "check_modes": 12,
+  "ranks": [
+    64,
+    128
+  ],
+  "rom_dt_ladder": [
+    0.04,
+    0.02,
+    0.01
+  ],
+  "iters_ladder": [
+    2,
+    3
+  ],
+  "damping": 1e-06,
+  "extrapolate": true,
+  "reference_rank": 64,
+  "reference_dt": 0.01,
+  "lm_budget": 60,
+  "lm_gtol": 1e-07,
+  "fom_dt_ladder": [
+    0.001,
+    0.002,
+    0.004,
+    0.005,
+    0.01,
+    0.02
+  ],
+  "include_tracker": true,
+  "timing_case": 0,
+  "timing_repetitions": 7,
+  "gram_block": 128,
+  "save_fields": true,
+  "target_relative": 0.05
+}

@@ -31,7 +31,7 @@ for job, n in PANELS:
         continue
     s = json.loads(p.read_text()); g = s['gates']
     ok = g['all_passed']
-    status = 'final (every gate passed)' if ok else 'PROVISIONAL — a gate failed, see Gates'
+    status = 'final (every registered gate passed; restricted audit, see Gates)' if ok else 'PROVISIONAL — a gate failed, see Gates'
     combined['meshes'].append(dict(mesh=n, job=job, summary_json=str(p.relative_to(LANE)), summary_sha256=sha(p), status=status,
                                    rows=[{k: x.get(k) for k in ('method', 'family', 'unknowns', 'worst_all_times', 'median_case_max', 'device_ms_median',
                                                                 'fom_chosen', 'speedup', 'no_fom_as_accurate', 'speedup_vs_named', 'failures')} for x in s['rows']]))
@@ -62,8 +62,16 @@ for job, n in PANELS:
             f"{100*oe['positive_control_min_relative_deviation']:.0f} %, fails as required: {oe['positive_control_fails_as_required']}); "
             f"NM-ROM reproduces hires-heat h2d-final04: **{g.get('nmrom_reproduces_h2d_final04', {}).get('passed')}** "
             f"(max relative difference {g.get('nmrom_reproduces_h2d_final04', {}).get('max_relative', float('nan')):.2e}); "
-            f"summary vs independent recompute: max relative difference {g['summary_vs_audit_recompute_max_relative']:.1e}.", '']
+            f"table statistics re-derived by the audit from the stored per-case error vectors: max relative difference {g['summary_vs_audit_recompute_max_relative']:.1e}. "
+            "**Restricted audit:** full fields are not saved (0.8 GB per arm-case at 4096²); the audit recomputes every strided sub-grid error exactly from saved fields "
+            "and cross-checks every per-case full-grid error with an independent 50 000-node random sample (≤5 % reduced arms, ≤10 % others); "
+            "the full-grid errors themselves are not recomputed from full fields.", '']
+    dstc = next((x for x in rows if x['method'] == 'dst_exact_CONTROL'), None)
     ref = next((x for x in rows if x['method'] == 'nmrom_q32_field_direct_tol1e-4_chol'), None)
+    if dstc and ref:
+        out += [f"Control, not a FOM candidate: the exact DST propagator (`dst_exact_CONTROL`) takes {dstc['device_ms_median']:.3f} ms at 0 % error, "
+                f"{'faster' if dstc['device_ms_median'] < ref['device_ms_median'] else 'slower'} than the accurate NM-ROM setting ({ref['device_ms_median']:.3f} ms); "
+                "every speedup in this table is over the tested CN–CG settings only.", '']
     if ref:
         better = sorted([x for x in rows if x['family'] not in ('fom', 'control', 'nmrom') and x['worst_all_times'] <= ref['worst_all_times']
                          and x['device_ms_median'] <= ref['device_ms_median']], key=lambda x: x['device_ms_median'])
@@ -76,7 +84,7 @@ for job, n in PANELS:
         out += ['Autotuning calibration (DESIGN A6): ' + '; '.join(
             f"`{a}` {next(x for x in rows if x['method'] == a)['device_ms_median']:.3f} ms with GEMM autotuning vs {b['device_ms_median']:.3f} ms without "
             f"(ratio {b['device_ms_median'] / next(x for x in rows if x['method'] == a)['device_ms_median']:.3f})" for a, b in cal)
-            + '. The r = 32 quadratic manifold at this mesh could only be compiled without autotuning (70 GiB bank).', '']
+            + '. The r = 32 quadratic manifold at this mesh could only be compiled without autotuning (70 GiB bank); the calibration is at r = 16 and does not bound the r = 32 effect.', '']
     if s.get('qm'):
         out += ['Quadratic manifold ridge weight chosen on the trajectory-split holdout: ' +
                 ', '.join(f"r={r}: γ={v['gamma']:g} ({v['columns']} columns)" for r, v in s['qm'].items()) + '.', '']
@@ -121,8 +129,8 @@ out += ['', '## Glossary', '',
         'block; the median over all sentinel repetitions after full-order blocks divided by the median after all other blocks must lie within ±10 %; (b) re-time — three '
         'real arms are rebuilt and timed again on all 16 cases after the full-order phase and must match their own block medians within ±10 %; (c) positive control — '
         'the sentinel timed behind deliberately queued GPU work must fail the ±10 % test. The v1 per-block sentinel test is reported but is noise-dominated (A2).',
-        '- **FNO / U-Net / Transolver / DeepONet epochs**: every operator stopped on its 3000 s wall budget with its best validation checkpoint at or near the last epoch, '
-        'i.e. still improving; see the training table.',
+        '- **operator training budget**: every operator stopped on its 3000 s wall budget (the Burgers panel protocol); `epochs` counts the partial last epoch. '
+        'Convergence is not established, so the operator rows are a budget-limited comparison, not a statement about what these architectures can reach.',
         '- **GPU**: 1024² ran on an A100 80GB (no H200 was free; DESIGN A2), 2048² and 4096² on an H200. Every ratio is inside one job.']
 (LANE / 'reports' / '2026-09-23-heat-compare-hires-1024-2048-4096.md').write_text('\n'.join(out) + '\n')
 (LANE / 'reports' / 'summary.json').write_text(json.dumps(combined, indent=1) + '\n')

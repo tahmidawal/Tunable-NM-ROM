@@ -60,6 +60,8 @@ for ci in range(ncases):
             if ci < cfg['random_audit_cases'] and 'rand' not in z.files:
                 failures.append(dict(arm=name, case=ci, check='random_sample_missing', value=None))
             if 'rand' in z.files:
+                if len(np.unique(z['rand_idx'])) != min(cfg['random_audit_nodes'], (n - 1) ** 2) or not np.isfinite(z['rand']).all():
+                    failures.append(dict(arm=name, case=ci, check='random_sample_size_or_finite', value=int(len(np.unique(z['rand_idx'])))))
                 rand_est.setdefault(name, {}).setdefault(key, {})[ci] = None
                 idx = z['rand_idx']; refr = refs[key].reshape(len(times), -1)[:, idx]
                 er = np.sqrt(np.sum((z['rand'] - refr) ** 2, 1) / np.sum(refr ** 2, 1))
@@ -74,7 +76,10 @@ for name, row in arms.items():
     same = np.asarray(row['same']); ms = np.asarray(row['device_ms'])
     if same.shape != (expected_cases, len(times)) or ms.shape != (expected_cases, cfg['repetitions']) or not np.isfinite(same).all():
         failures.append(dict(arm=name, check='coverage_or_finite', value=[list(same.shape), list(ms.shape)]))
-    par = max(row.get('timed_vs_warm_max_relative', [np.inf]))
+    if not (np.isfinite(ms).all() and (ms > 0).all()):
+        failures.append(dict(arm=name, check='timings_nonfinite_or_nonpositive', value=None))
+    pv = np.asarray(row.get('timed_vs_warm_max_relative', [np.inf]), dtype=float)
+    par = float(np.max(pv)) if np.isfinite(pv).all() else float('inf')
     ptol = 1e-4 if row['family'] == 'operator' else 1e-9   # f32 cuDNN kernels need not be bitwise deterministic
     if not par <= ptol:
         failures.append(dict(arm=name, check='timed_output_differs_from_audited_output', value=par))
@@ -85,8 +90,13 @@ for name, row in arms.items():
                             physical_worst=float(np.max(row['physical'])), random_node_estimate_worst=float(np.max(est)),
                             random_node_estimate_median=float(np.median(est)), random_node_cases=int(len(re_)), timed_vs_warm_max_relative=par)
 sent = np.array([float(np.median(s['ms'])) for s in res['sentinels']]); ref = float(np.median(sent))
-if len(sent) < len(arms):
-    failures.append(dict(check='sentinel_coverage', value=[len(sent), len(arms)]))
+after = [s_['after'] for s_ in res['sentinels']]
+# panel.py labels the coarse-grid control's sentinel 'coarse<nc>' instead of the full block name
+label = {b: (b.split('_')[0] if b.startswith('coarse') and b.endswith('_CONTROL') else b) for b in res['blocks']}
+missing_sent = sorted(b for b in res['blocks'] if label[b] not in set(after))
+short = [s_['after'] for s_ in res['sentinels'] if len(s_['ms']) != cfg['sentinel_reps'] or not np.isfinite(s_['ms']).all()]
+if 'start' not in after or missing_sent or short:
+    failures.append(dict(check='sentinel_coverage', value=dict(missing_blocks=missing_sent, wrong_rep_count=short)))
 cont = np.array([c['ms'] for c in res['contaminated']])
 order = dict(max_relative_deviation=float(np.max(np.abs(sent / ref - 1))), tolerance=cfg['order_tolerance'],
              positive_control_min_relative_deviation=float(np.min(cont / ref - 1)) if cont.size else None)
@@ -102,7 +112,14 @@ retime = {k: dict(of=v['retime_of'], ratio=float(np.median(v['device_ms']) / np.
           for k, v in arms.items() if v.get('retime_of')}
 order['retime'] = retime; order['retime_tolerance'] = cfg.get('retime_tolerance')
 if 'retime' in cfg:
-    order['passed'] = bool(post.size and abs(order['carryover_ratio'] - 1) <= cfg['carryover_tolerance'] and retime
+    rt = cfg['retime']
+    want = [rt['nmrom'] + '__RETIME'] if rt.get('nmrom') else []
+    want += [f"pod{rt['pod']}_galerkin_cn__RETIME"] if rt.get('pod') else []
+    want += [rt['operator'] + '__RETIME'] if rt.get('operator') and rt['operator'] in cfg.get('operators', {}) else []
+    order['retime_missing'] = [w for w in want if w not in retime]
+    if order['retime_missing']:
+        failures.append(dict(check='retime_coverage', value=order['retime_missing']))
+    order['passed'] = bool(post.size and abs(order['carryover_ratio'] - 1) <= cfg['carryover_tolerance'] and retime and not order['retime_missing']
                            and all(abs(v['ratio'] - 1) <= cfg['retime_tolerance'] for v in retime.values()))
 else:
     order['passed'] = order['passed_v1_per_block']

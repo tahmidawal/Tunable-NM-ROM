@@ -246,3 +246,20 @@ Fix, 4096² only: the r = 32 query is compiled from the **same** function with
 `compiler_options={'xla_gpu_autotune_level': 0}` and labelled `…_noautotune`; everything else is
 compiled as before. To measure what disabling autotuning costs, the r = 16 quadratic manifold
 is timed **both** ways in the same job (`qm16_*` and `qm16_*_noautotune`); the report prints both.
+
+## A7 (2026-09-23 ~11:10 EDT, after all panels): independent results audit and audit tightening
+
+Codex (read-only) recomputed all 132 raw arms of pn1024b / pn2048d / pn4096d from `results.json`
+and found **no mismatch** in any printed number, FOM choice or speedup, and confirmed the A2 gate
+statistics and the operator-training table (`checks/codex-results-audit-2026-09-23.md`).
+Accepted from it, without any new job: the report now states that the audit is *restricted*
+(full-grid errors are cross-checked by per-case random samples and exactly recomputed only on the
+strided sub-grid), no longer says the operators were "still improving" (the 1024² Transolver's
+best epoch is 198 of 227), prints the exact-DST control beside the NM-ROM at every mesh (it is
+faster and exact, so every speedup is over CN–CG only), and notes that the r = 16 autotuning
+calibration does not bound the r = 32 effect. The audit now also requires every configured
+re-time arm, a sentinel after every block with the configured repetition count, the full
+unique random-sample size, and finite positive timings; re-run on the saved data of all three
+panels: passed, 0 failures (the corrupted-field negative control still fails). Not fixable after
+the fact and recorded: `panel.py` accumulated the timed-vs-warm parity with Python `max`, which
+would have hidden a NaN; all stored parities are finite and 0.

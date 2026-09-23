@@ -32,7 +32,7 @@
  "sentinel_reps": 7,
  "order_tolerance": 0.1,
  "audit_intervals": 128,
- "random_audit_cases": 2,
+ "random_audit_cases": 16,
  "random_audit_nodes": 50000,
  "audit_sample_seed": 20260923,
  "factor_gate_draws": [
@@ -195,16 +195,20 @@
  "mesh": 1024,
  "operators": {
   "op_fno": {
-   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024/out/fno/best.pt"
+   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024a/out/fno/best.pt",
+   "family": "fno"
   },
   "op_unet": {
-   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024/out/unet/best.pt"
+   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024a/out/unet/best.pt",
+   "family": "unet"
   },
   "op_transolver": {
-   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024/out/transolver/best.pt"
+   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024a/out/transolver/best.pt",
+   "family": "transolver"
   },
   "op_deeponet": {
-   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024/out/deeponet/best.pt"
+   "checkpoint": "/cluster/tufts/paralab/tawal01/hcmp_20260923/tr1024a/out/deeponet/best.pt",
+   "family": "deeponet"
   }
  }
 }

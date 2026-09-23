@@ -20,7 +20,7 @@
  "cohort_name": "sealed (hires-heat h2d-final04, seed 791099, 16 draws; second opening, no choice made on it)",
  "train": [
   791000,
-  64
+  32
  ],
  "validation": [
   791001,
@@ -32,12 +32,12 @@
  "sentinel_reps": 3,
  "order_tolerance": 0.1,
  "audit_intervals": 32,
- "random_audit_cases": 2,
+ "random_audit_cases": 16,
  "random_audit_nodes": 500,
  "audit_sample_seed": 20260923,
  "factor_gate_draws": [
   0,
-  63
+  31
  ],
  "control_matmul_size": 1024,
  "nmrom": {
@@ -191,16 +191,20 @@
  "local_smoke": true,
  "operators": {
   "op_fno": {
-   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/fno/best.pt"
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/fno/best.pt",
+   "family": "fno"
   },
   "op_unet": {
-   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/unet/best.pt"
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/unet/best.pt",
+   "family": "unet"
   },
   "op_transolver": {
-   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/transolver/best.pt"
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/transolver/best.pt",
+   "family": "transolver"
   },
   "op_deeponet": {
-   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/deeponet/best.pt"
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/deeponet/best.pt",
+   "family": "deeponet"
   }
  }
 }

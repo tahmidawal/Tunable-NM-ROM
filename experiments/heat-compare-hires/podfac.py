@@ -83,9 +83,13 @@ def qm_fit(C, r, gamma):
     u, s, _ = np.linalg.svd(Cc, full_matrices=False); V = u[:, :r]
     A = V.T @ Cc; E = Cc - V @ A; Pi = vech(A.T).T                 # P x Ns
     G = Pi @ Pi.T; P = G.shape[0]; scale = np.trace(G) / P
-    W = np.linalg.solve(G + gamma * scale * np.eye(P), Pi @ E.T).T    # (rho^2 x P); symmetric system
+    # ridge as an augmented least-squares problem (no normal equations; rank-safe at gamma = 0)
+    lhs = np.vstack((Pi.T, np.sqrt(gamma * scale) * np.eye(P))) if gamma > 0 else Pi.T
+    rhs = np.vstack((E.T, np.zeros((P, E.shape[0])))) if gamma > 0 else E.T
+    sol, _, rank, _ = np.linalg.lstsq(lhs, rhs, rcond=None); W = sol.T
+    assert np.isfinite(W).all(), ('nonfinite W', r, gamma)
     stats = dict(gram_condition=float(np.linalg.cond(G)), in_sample_relative=float(np.linalg.norm(E - W @ Pi) / np.linalg.norm(Cc)),
-                 linear_in_sample_relative=float(np.linalg.norm(E) / np.linalg.norm(Cc)), columns=1 + r + P)
+                 linear_in_sample_relative=float(np.linalg.norm(E) / np.linalg.norm(Cc)), columns=1 + r + P, lstsq_rank=int(rank))
     return uref[:, 0], V, W, A, stats
 
 

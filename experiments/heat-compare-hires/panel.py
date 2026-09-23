@@ -183,11 +183,14 @@ def main():
                 idx = np.sort(np.random.default_rng(rng_seed + ci).choice(N, min(cfg['random_audit_nodes'], N), replace=False))
                 saved['rand'] = np.asarray(f.reshape(len(times), -1)[:, jnp.asarray(idx)]); saved['rand_idx'] = idx
             np.savez(fields_dir / f'{name}__case{ci}.npz', **saved)
-            del o, f
-            ms = []
+            del o
+            ms, parity = [], 0.0
             for _ in range(reps):
-                C.burn(burn); t = time.perf_counter(); o = method.run(x); ms.append(1e3 * (time.perf_counter() - t)); del o
-            row['device_ms'].append(ms)
+                C.burn(burn); t = time.perf_counter(); o = method.run(x); ms.append(1e3 * (time.perf_counter() - t))
+                parity = max(parity, float(jnp.max(jnp.abs(method.fields(o) - f)) / jnp.max(jnp.abs(f))))   # outside the timed region
+                del o
+            row['device_ms'].append(ms); row.setdefault('timed_vs_warm_max_relative', []).append(parity)
+            del f
             del u0, same, phys, x
         row['block_seconds'] = time.perf_counter() - begin
         row['device_ms_median'] = float(np.median(row['device_ms']))
@@ -310,12 +313,18 @@ def main():
             if not path.exists():
                 result.setdefault('operators_missing', []).append(dict(name=name, checkpoint=str(path))); continue
             net, norm, ck = H.load(path)
+            prov = json.loads((path.parent.parent / 'provenance.json').read_text())
+            assert ck['mesh'] == n and prov['mesh'] == n, ('operator trained at another mesh', ck['mesh'], n)
+            assert list(prov['train']) == list(cfg['train']) and list(prov['validation']) == list(cfg['validation']), prov
+            assert ck['family'] == spec['family'], (ck['family'], spec['family'])
             sync = lambda o: torch.cuda.synchronize()
             def run(x, net=net, norm=norm):
                 with torch.no_grad():
                     return H.query_interior(net, x, *norm)
             m = Method(run, prep=lambda u: torch.from_dlpack(u), fields=lambda o: jnp.from_dlpack(o), stats=lambda o: [], sync=sync)
             run_block(name, m, dict(family='operator', unknowns=None, checkpoint=str(path), checkpoint_sha256=sha_file(path),
+                                    training_provenance=dict(job_id=prov.get('job_id'), train=prov['train'], validation=prov['validation'],
+                                                             wall_seconds=prov['wall_seconds']),
                                     operator_family=ck['family'], best_epoch=int(ck['epoch']), best_step=int(ck['step']),
                                     parameters=int(sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())),
                                     parameter_dtype=str(getattr(net, 'parameter_dtype', torch.float64))))

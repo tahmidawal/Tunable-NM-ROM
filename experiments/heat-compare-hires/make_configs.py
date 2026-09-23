@@ -13,7 +13,7 @@ base = dict(
     times=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5], diffusivity=0.02, tests=dict(count=256),
     cohorts=[[791099, 16]], cohort_name='sealed (hires-heat h2d-final04, seed 791099, 16 draws; second opening, no choice made on it)',
     train=[791000, 512], validation=[791001, 16], repetitions=5, burn_seconds=0.15, idle_seconds=1.0, sentinel_reps=7,
-    order_tolerance=0.10, audit_intervals=128, random_audit_cases=2, random_audit_nodes=50000, audit_sample_seed=20260923,
+    order_tolerance=0.10, audit_intervals=128, random_audit_cases=16, random_audit_nodes=50000, audit_sample_seed=20260923,
     factor_gate_draws=[0, 257, 511], control_matmul_size=8192,
     nmrom=dict(model=dict(kind='mlp', bank='wide2d/bank.pkl', head='wide2d/head_K8.pkl'),
                defaults=dict(init='moments', stepping='cn', dt=0.025, starts=4, fit_budget=600, step_budget=120, tolerance=1e-6),
@@ -27,12 +27,13 @@ base = dict(
     cg_arms={k: dict(dt=v[0], tolerance=v[1]) for k, v in fom.items()}, fom_order=list(fom),
     coarse_intervals=[64], coarse_cg='fom_cncg_dt0.05_rtol1e-3')
 ops = ['fno', 'unet', 'transolver', 'deeponet']
+TRAIN = {1024: 'tr1024a', 2048: 'tr2048'}
 for n in (1024, 2048, 4096):
     c = dict(base, mesh=n)
-    c['operators'] = {} if n == 4096 else {f'op_{o}': dict(checkpoint=f'{NS}/tr{n}/out/{o}/best.pt') for o in ops}
+    c['operators'] = {} if n == 4096 else {f'op_{o}': dict(checkpoint=f'{NS}/{TRAIN[n]}/out/{o}/best.pt', family=o) for o in ops}
     (HERE / 'configs' / f'pn{n}.json').write_text(json.dumps(c, indent=1) + '\n')
-smoke = dict(base, mesh=64, cohorts=[[791099, 2]], train=[791000, 64], repetitions=2, sentinel_reps=3, idle_seconds=0.1, local_smoke=True,
-             factor_gate_draws=[0, 63], pod=dict(base['pod'], ranks=[8, 32]), qm=dict(base['qm'], ranks=[8]),
+smoke = dict(base, mesh=64, cohorts=[[791099, 2]], train=[791000, 32], repetitions=2, sentinel_reps=3, idle_seconds=0.1, local_smoke=True,
+             factor_gate_draws=[0, 31], pod=dict(base['pod'], ranks=[8, 32]), qm=dict(base['qm'], ranks=[8]),
              audit_intervals=32, random_audit_nodes=500, control_matmul_size=1024,
-             operators={f'op_{o}': dict(checkpoint=f'/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/{o}/best.pt') for o in ops})
+             operators={f'op_{o}': dict(checkpoint=f'/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/{o}/best.pt', family=o) for o in ops})
 (HERE / 'configs' / 'smoke64.json').write_text(json.dumps(smoke, indent=1) + '\n')

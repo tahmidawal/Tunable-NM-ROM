@@ -144,3 +144,40 @@ and the audit JSON; the G-order gate and its positive control.
 
 `tr1024`, `tr2048` (operator training, H200), then `pn1024`, `pn2048`, `pn4096` (panels,
 H200, 240 G). At most 2 of this lane's jobs at once.
+
+## A1 (2026-09-23, before any panel job; after the Codex code review `checks/codex-code-review-2026-09-23.md`)
+
+Codex (read-only, unsandboxed because the sandbox cannot start here) confirmed the POD factor
+construction, both POD CN step matrices, the quadratic-manifold fit and its use of the solver,
+the JAX/PyTorch synchronisation and the operator training hygiene. Dispositions of its findings:
+
+1. *Gates not enforced in reporting* — accepted. `summarize.py` now checks the complete expected
+   arm set, the h2d-final04 reproduction, the audit and the recompute agreement, and stamps
+   `status: final` only if all pass; otherwise `PROVISIONAL (diagnostic only)`, carried into the report.
+2. *Full-grid errors not recomputed exactly* — partly accepted. Full fields cannot be kept
+   (0.8 GB per arm-case at 4096²). The random-node sample (50 000 nodes) is now saved for
+   **every** case of every arm (was: 2 cases; §5 said 100 000 nodes and full fields at 1024² —
+   superseded), so every per-case full-grid error is cross-checked by an independent estimate
+   and the table statistics are re-derived from it; sub-grid errors are recomputed exactly; the
+   audit is NaN-safe and checks coverage (cases, repetitions, samples, sentinels). The report
+   calls this a restricted audit.
+3. *Positive control does not use the FOM* — not accepted as stated: a JAX while-loop FOM call
+   blocks at dispatch (measured locally: the "FOM-contaminated" sentinel was not contaminated),
+   so the control uses queued dense matmuls to prove the sentinel detects lingering GPU work; the
+   actual slow-arm carry-over is measured directly by the sentinel after every FOM block (that
+   is the gate). Sentinel medians are now recomputed from the raw repetitions in the audit.
+4. *Checkpoint provenance* — accepted: the panel asserts checkpoint mesh = panel mesh, family,
+   and training/validation seeds from the training job's `provenance.json` (verified to refuse
+   a 64-trained checkpoint at 256 and a checkpoint trained on a different training set).
+5. *"Lower bound" wording* — accepted: unmatched-accuracy ratios are labelled as such, not as
+   bounds; controls get no "FOM chosen"; the named FOM must have no failed solves.
+6. *FNO precision* — clarification: as in the Burgers panel, the FNO is float64/complex128 and
+   U-Net / Transolver / DeepONet are float32 (§5's "f32 operator networks" meant those three).
+7. *Timed outputs not checked* — accepted: every timed repetition's output is compared with the
+   audited warm output outside the timed region (≤1e-9 relative for JAX arms, ≤1e-4 for the
+   operators' float32 kernels); stored per case.
+8. *Ridge normal equations* — accepted: the ridge is solved as an augmented least-squares problem.
+
+Operational: `tr1024` (4196056) was cancelled by me while PENDING (no H200 free) and resubmitted
+unchanged as `tr1024a` (4196355), which landed on an A100-PCIE-40GB; FNO epochs there take ~470 s,
+so operators get few epochs within the 3000 s budget at both meshes (reported per arm).

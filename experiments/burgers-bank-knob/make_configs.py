@@ -140,7 +140,8 @@ def hold64():
     sel = json.loads((HERE / 'selection-4096.json').read_text())
     c = base(4096, 'bkh64')
     allarms = {arm_name(a): a for a in arms_for(4096, False)}
-    want = [sel['accurate'], sel['fast'], sel['current_accurate'], sel['current_fast']]
+    want = [sel['accurate'], sel['fast'], sel['current_accurate'], sel['current_fast']] + \
+        [x for x in (sel.get('sensitivity_accurate'), sel.get('sensitivity_fast')) if x]
     c['arms'] = [dict(allarms[n], certify=False) for n in dict.fromkeys(want)]
     c.update(eval_draws=[[20260916, 64]], expected_physical_sha256=None, skip_certificates=True,
              cohort_name='hold64: params_draw(20260916, 64), held-out; never used to fit the bank, head, directions, '

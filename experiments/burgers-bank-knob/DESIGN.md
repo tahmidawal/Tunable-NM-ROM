@@ -127,3 +127,20 @@ two remedies on the linear rung at $R'\in\{512,384,256\}$: (i) $M=2R'$ tests ins
 first step (`x1`) at $M=4R'$ for $R'\in\{384,256\}$, with the rule's $2048^2$ picks and the `bad0` control
 beside them, same certificate and timing protocol. Its arms are reported separately and never enter the §6
 selection or the hold64 job.
+
+**A3 (2026-09-23, after an independent read-only subagent review of the lane code; findings in PROGRESS.md).**
+Audit-only changes; no job input, error, time or certificate changes:
+(i) the NumPy ρ spot-check now covers EVERY certified arm (argmax over the certification draws, argmax over the
+confirmation draw, 2 random states; previously R'∈{512,64,32} only, draws 0–1); (ii) a new gate recomputes the
+coefficient map of every ROM arm in NumPy (saved internal latents of case 0 → $L_{[:R']}(h(z)+Cy)$ or the identity
+→ checkpoint features × $T_{[:,:R']}$ on the restricted grid) against the saved field; (iii) the order-effect
+statistics use MEANS of the normalised times (medians of 5-rep-normalised times are degenerate: exactly 1);
+(iv) a clearly labelled SENSITIVITY, not the pre-registered rule: backward Euler evaluates the EQ advection only at
+the new state, so an `x_j` arm's quadrature touches states $k\ge j+1$, never $k=j$. The pre-registered certificate
+(inherited from burgers-eqcert) includes $k=j$. The audit re-thresholds at $k\ge j+1$ and re-runs the §6 selection
+on it; both are reported, the pre-registered one is primary. (v) near-ties of the fast pick (within 0.1 % of the
+reference error) are listed.
+
+**A4 (same time, before the $4096^2$ dev job has started).** The hold64 job evaluates the §6 picks AND, as a
+labelled sensitivity arm, the accurate pick under the $k\ge j+1$ certificate if it differs, beside the paper's
+current settings.

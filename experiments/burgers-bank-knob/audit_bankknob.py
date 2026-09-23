@@ -58,6 +58,19 @@ def fields_np(params, Tp, coefs, L, chunk=65536):
     return out.T.reshape(-1, L - 1, L - 1)
 
 
+def fields_multi(params, groups, L, chunk=65536):
+    """One pass over the interior grid for several (T_p, coefs) groups: [(S_g, L-1, L-1)]."""
+    x = np.arange(1, L) / L
+    xy = np.stack(np.meshgrid(x, x, indexing='ij'), -1).reshape(-1, 2)
+    Ws = [Tp @ c.T for Tp, c in groups]
+    outs = [np.empty((len(xy), c.shape[0])) for _, c in groups]
+    for s in range(0, len(xy), chunk):
+        F = features_np(params, xy[s:s + chunk])
+        for W, o in zip(Ws, outs):
+            o[s:s + chunk] = F @ W
+    return [o.T.reshape(-1, L - 1, L - 1) for o in outs]
+
+
 def modes_np(L, M):
     k = np.arange(1, L)
     kx, ky = np.meshgrid(k, k, indexing='ij')
@@ -233,34 +246,71 @@ def main():
         T, Lr = rot['T'], rot['L']
         rng = np.random.default_rng(20260923)
         want = [n for n in cert if setup[n]['model'] in ('trunc', 'lin', 'parent')]
-        # every per-draw argmax of a spread of arms, plus random states; bounded so the grid pass stays cheap
-        pick_arms = [n for n in want if setup[n]['R_prime'] in (512, 64, 32) or setup[n].get('control')][:8]
+        # A3 (reviewer M2): EVERY certified arm, controls and parents included; per arm the argmax state over the
+        # certification draws, the argmax over the confirmation draw, and `spot_random` random states
         todo = []
-        for n in pick_arms:
+        for n in want:
             z = np.load(o / f'deployed_{n}.npz')
-            idx = {int(np.argmax(np.where(z['meta'][:, 0] == d, z['rho'], -1))) for d in range(min(nd, 2))}
+            m_ = z['meta']
+            idx = {int(np.argmax(np.where(m_[:, 0] < nd, z['rho'], -1)))}
+            if ci is not None:
+                idx.add(int(np.argmax(np.where(m_[:, 0] == ci, z['rho'], -1))))
             idx |= set(rng.choice(len(z['rho']), a.spot_random, replace=False).tolist())
             for i in sorted(idx):
-                todo.append((n, i, z['coefficients'][i], float(z['rho'][i]), z['meta'][i].tolist()))
+                todo.append((n, i, z['coefficients'][i], float(z['rho'][i]), m_[i].tolist()))
         by_T = {}
         for n, i, c_, rj, meta in todo:
             st = setup[n]
-            Rp = st['R_prime'] if st['model'] != 'parent' else R
-            key = 'I' if st['model'] == 'parent' else Rp
+            key = 'I' if st['model'] == 'parent' else st['R_prime']
             by_T.setdefault(key, []).append((n, i, c_, rj, meta))
-        for key, items in by_T.items():
-            Tp = np.eye(R) if key == 'I' else T[:, :key]
-            U = fields_np(params, Tp, np.stack([x[2] for x in items]), L)
-            for (n, i, c_, rj, meta), Ui in zip(items, U):
+        keys = list(by_T)
+        Us = fields_multi(params, [(np.eye(R) if k == 'I' else T[:, :k], np.stack([x[2] for x in by_T[k]])) for k in keys], L)
+        for key, U in zip(keys, Us):
+            for (n, i, c_, rj, meta), Ui in zip(by_T[key], U):
                 st = setup[n]
                 rz = np.load(o / f"rule_L{L}_{st['rule']}.npz")
                 kx, ky = modes_np(L, st['M'])
                 got = rho_np(Ui, L, kx, ky, rz['ij'], rz['weights'])
                 spot.append(dict(arm=n, state=i, meta=meta, job=rj, numpy=got, rel_diff=abs(got - rj) / max(rj, 1e-300)))
-            del U
+        del Us
     wr = max([x['rel_diff'] for x in spot] or [None]) if spot else None
     gate('rho_recomputed_in_numpy', a.no_rho_spot or (bool(spot) and wr <= 1e-7), worst_relative_diff=wr,
          states=len(spot), skipped=a.no_rho_spot)
+
+    # ---- A3 (reviewer M2): the coefficient map of every ROM arm, recomputed in NumPy from the saved internal
+    #      latents of dev case 0 and the checkpoint, decoded on the restricted grid, against the saved field ------
+    ck = pickle.load(open(a.checkpoint, 'rb'))
+    params = ck['params']
+    rot = np.load(a.rotation)
+    T, Lr = rot['T'], rot['L']
+    Cq = np.asarray(np.load(a.directions)['C'])
+    sub = max(1, L // cfg.get('restrict_to', 256))
+    xr = np.arange(sub, L, sub) / L
+    xyr = np.stack(np.meshgrid(xr, xr, indexing='ij'), -1).reshape(-1, 2)
+    Fr = features_np(params, xyr)
+    cmap = []
+    for x in r['quick']:
+        if x['family'] != 'rom' or x['case'] != 0:
+            continue
+        st = setup[x['name']]
+        z = np.load(o / f"restricted_{x['name']}_case0.npz")
+        W = z['internal_latents'][::int(round(.05 / r['dt']))]
+        if st['model'] == 'lin':
+            coef, Tp = W, T[:, :st['R_prime']]
+        else:
+            c512 = np.stack([head_np(params, w[:K]) + Cq[:, :st['q']] @ w[K:] for w in W])
+            if st['model'] == 'parent':
+                coef, Tp = c512, np.eye(R)
+            else:
+                coef, Tp = c512 @ Lr[:st['R_prime']].T, T[:, :st['R_prime']]
+        U = (Fr @ (Tp @ coef.T)).T.reshape(len(W), len(xr), len(xr))
+        saved = z['fields'][:, 1:-1, 1:-1]
+        rel = float(np.linalg.norm(U - saved) / np.linalg.norm(saved))
+        cmap.append(dict(arm=x['name'], relative=rel))
+    wc = max([c_['relative'] for c_ in cmap] or [None]) if cmap else None
+    gate('coefficient_map_recomputed_in_numpy', bool(cmap) and wc <= 1e-9, worst_relative=wc, arms=len(cmap),
+         note='every ROM arm: internal latents (case 0) -> L[:R\'](h(z) + C y) (or the identity for the linear rung) '
+              '-> checkpoint features x T[:, :R\'] on the restricted grid, against the job\'s saved field')
 
     # ---- order effect (pre-registered, DESIGN section 5) -----------------------------------------------
     inv = r['invocations']
@@ -285,9 +335,11 @@ def main():
             d['long' if longn else 'short'].append(ratio)
             lg = legacy.setdefault(x['name'], dict(long=[], short=[]))
             lg['long' if pv['gpu_seconds'] >= 1. else 'short'].append(x['gpu_seconds'])
-    pooled = (med(oe_long) / med(oe_short) - 1) if oe_long and oe_short else None
+    # A3 (reviewer minor 3): with 5 reps, ~20 % of normalised times are exactly 1, so MEDIANS of them are
+    # degenerate (always 1); the pooled and per-arm statistics are means of the normalised times
+    pooled = (float(np.mean(oe_long)) / float(np.mean(oe_short)) - 1) if oe_long and oe_short else None
     arms_oe = {n: dict(n_long=len(d['long']), n_short=len(d['short']),
-                       gap=(med(d['long']) / med(d['short']) - 1) if d['long'] and d['short'] else None)
+                       gap=(float(np.mean(d['long'])) / float(np.mean(d['short'])) - 1) if d['long'] and d['short'] else None)
                for n, d in per_arm.items()}
     evaluable = {n: v for n, v in arms_oe.items() if v['n_long'] >= 6 and v['n_short'] >= 6}
     worst_arm = max([v['gap'] for v in evaluable.values()] or [0.])
@@ -398,6 +450,34 @@ def main():
         sel['q_droppable'] = dict(target_arm=ref_acc, target_percent=target, best_without_q=row(best),
                                   best_without_q_ignoring_certificates=row(best_any),
                                   verdict=bool(best and table[best]['worst_evolved_percent'] <= target))
+    # ---- SENSITIVITY (reviewer M1; NOT the pre-registered rule): backward Euler evaluates the quadrature
+    #      advection only at the NEW state, so an x_j arm's EQ residual touches states k >= j+1, never k = j.
+    #      Certificate re-thresholded at k >= j+1 and the same selection re-run on it.
+    sens = {}
+    for n in cert:
+        z = np.load(o / f'deployed_{n}.npz')
+        j1 = setup[n]['exact_steps'] + 1
+        per = [float(z['rho'][(z['meta'][:, 0] == d) & (z['meta'][:, 2] >= j1)].max()) for d in range(len(ps['draws']))]
+        ok = all(v <= BAR for v in per[:nd]) and (ci is None or per[ci] <= BAR)
+        sens[n] = dict(confirmed=bool(ok), rho_max_cert=max(per[:nd]), rho_max_confirmation=per[ci] if ci is not None else None)
+    conf2 = {n: t for n, t in cand.items() if sens.get(n, {}).get('confirmed')}
+    acc2 = min(conf2, key=lambda n: t_err(table[n])) if conf2 else None
+    fast2_ok = {n: t for n, t in conf2.items() if ferr is not None and t['worst_evolved_percent'] <= ferr}
+    fast2 = min(fast2_ok, key=lambda n: table[n]['median_gpu_ms']) if fast2_ok else None
+    s2 = dict(definition='certificate on states k >= exact_steps + 1 (the states the EQ residual is evaluated at)',
+              per_arm=sens, accurate=row(acc2), fast=row(fast2))
+    if acc2:
+        f = fom_for(table[acc2]['worst_evolved_percent'])
+        s2['table1'] = dict(fom=f, fom_gpu_ms=foms[f]['median_gpu_ms'] if f else None, rom_gpu_ms=table[acc2]['median_gpu_ms'],
+                            speedup_gpu=(foms[f]['median_gpu_ms'] / table[acc2]['median_gpu_ms']) if f else None)
+    if ref_acc:
+        noq2 = {n: t for n, t in conf2.items() if t['model'] == 'lin' or t['q'] == 0}
+        b2 = min(noq2, key=lambda n: t_err(table[n])) if noq2 else None
+        s2['q_droppable'] = dict(best_without_q=row(b2), verdict=bool(b2 and table[b2]['worst_evolved_percent'] <= target))
+    sel['sensitivity_k_ge_j_plus_1'] = s2
+    # tie robustness of the fast pick (reviewer minor 1): arms within 0.1 % relative of the reference error
+    sel['fast_near_ties'] = {n: dict(worst_evolved_percent=t['worst_evolved_percent'], median_gpu_ms=t['median_gpu_ms'])
+                             for n, t in conf.items() if ferr is not None and ferr < t['worst_evolved_percent'] <= ferr * 1.001}
     failed = [k for k, v in gates.items() if not v['passed']]
     summary = dict(attempt=cfg['attempt'], job_id=r['job_id'], commit=r['commit'], gpu=r['gpu'], intervals=L,
                    cohort=r['cohort_name'], cohort_cases=len(cases), elapsed_seconds=r.get('elapsed_seconds'),

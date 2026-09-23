@@ -217,7 +217,7 @@ def main(run, delete=False):
     rung = None
     lim = {'lshape': 512, 'cube': 64}[problem]
     lin = sorted([a['Rp'] for a in R['arms'] if a['kind'] == 'linear'])
-    if n <= lim and lin and not R.get('smoke'):
+    if n <= lim and len(lin) >= 2:
         Rp = lin[len(lin) // 2]
         case = 0
         if problem == 'lshape':

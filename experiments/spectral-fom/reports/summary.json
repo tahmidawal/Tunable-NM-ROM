@@ -1238,7 +1238,270 @@
    "neighbour_worst": 1.0955649347658318
   }
  ],
- "heat2d": [],
+ "heat2d": [
+  {
+   "problem": "heat2d",
+   "mesh": 1024,
+   "gpu": "NVIDIA A100-PCIE-40GB",
+   "job": "4207215",
+   "attempt": "spD",
+   "output": "output0",
+   "result": "runs/spD/archive/output0/result.json",
+   "result_sha256": "c74396dbbccd7a379e536df98bee57aab302e6c88a8fa66306b2a81f70cb30c7",
+   "commit": "bab9a53fd4663a237523b770c4927191994598b4",
+   "cohort": "heldout_sealed_791099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R128_bf",
+     "worst": 0.0013271577367187958,
+     "ms": 2.922201529145241,
+     "a1": 2.9235021211206913,
+     "a2": 2.920049475505948,
+     "matched": "modal_exp_fft",
+     "matched_worst": 2.5995422118381156e-16,
+     "matched_ms": 1.2361069675534964,
+     "ratio_matched": 0.4230053797538954,
+     "exact": "modal_exp_fft",
+     "exact_ms": 1.2361069675534964,
+     "ratio_exact": 0.4230053797538954
+    },
+    "rom_fast": {
+     "arm": "lin_R48_cn",
+     "worst": 0.002762336642262201,
+     "ms": 0.8875036146491766,
+     "a1": 0.8872738108038902,
+     "a2": 0.8875394705682993,
+     "matched": "modal_exp_fft",
+     "matched_worst": 2.5995422118381156e-16,
+     "matched_ms": 1.2361069675534964,
+     "ratio_matched": 1.3927909105385672,
+     "exact": "modal_exp_fft",
+     "exact_ms": 1.2361069675534964,
+     "ratio_exact": 1.3927909105385672
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R128_cn",
+     "worst": 0.001331866413253713,
+     "ms": 1.9022361375391483,
+     "a1": 1.9042531494051218,
+     "a2": 1.9006391521543264,
+     "matched": "modal_exp_fft",
+     "matched_worst": 2.5995422118381156e-16,
+     "matched_ms": 1.2361069675534964,
+     "ratio_matched": 0.6498178344738007,
+     "exact": "modal_exp_fft",
+     "exact_ms": 1.2361069675534964,
+     "ratio_exact": 0.6498178344738007
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R48_bf",
+     "worst": 0.002762327637392815,
+     "ms": 1.5029460191726685,
+     "a1": 1.5034691896289587,
+     "a2": 1.5026037581264973,
+     "matched": "modal_exp_fft",
+     "matched_worst": 2.5995422118381156e-16,
+     "matched_ms": 1.2361069675534964,
+     "ratio_matched": 0.822455997610573,
+     "exact": "modal_exp_fft",
+     "exact_ms": 1.2361069675534964,
+     "ratio_exact": 0.822455997610573
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 2.5995422118381156e-16,
+     "ms": 1.2361069675534964
+    },
+    "modal_cn_fft": {
+     "worst": 0.0004491669898896038,
+     "ms": 1.2436176184564829
+    },
+    "modal_exp_mm": {
+     "worst": 1.6183437070226215e-15,
+     "ms": 3.3671350684016943
+    },
+    "modal_cn_mm": {
+     "worst": 0.0004491669898895123,
+     "ms": 3.3622493501752615
+    }
+   },
+   "validation": {
+    "exp_worst": 1.6183437070226215e-15,
+    "cn_vs_cncg": 9.673315723870019e-12,
+    "control": 3.1597666300913657e-06
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": null,
+   "drift": [
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.0029235021211206913,
+     "romA2_median": 0.002920049475505948,
+     "ratio": 0.9988190035540594
+    },
+    {
+     "name": "lin_R48_cn",
+     "romA1_median": 0.0008872738108038902,
+     "romA2_median": 0.0008875394705682993,
+     "ratio": 1.0002994112540844
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.0019042531494051218,
+     "romA2_median": 0.0019006391521543264,
+     "ratio": 0.9981021445326613
+    },
+    {
+     "name": "lin_R48_bf",
+     "romA1_median": 0.0015034691896289587,
+     "romA2_median": 0.0015026037581264973,
+     "ratio": 0.9994243769620081
+    }
+   ],
+   "neighbour_worst": 1.0035432169566578
+  },
+  {
+   "problem": "heat2d",
+   "mesh": 2048,
+   "gpu": "NVIDIA A100-PCIE-40GB",
+   "job": "4207215",
+   "attempt": "spD",
+   "output": "output1",
+   "result": "runs/spD/archive/output1/result.json",
+   "result_sha256": "bc40b7795384af12761699435e07099a47ae3265da34d01806f7faae91eff803",
+   "commit": "bab9a53fd4663a237523b770c4927191994598b4",
+   "cohort": "heldout_sealed_791099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R128_bf",
+     "worst": 0.001327157768770637,
+     "ms": 9.876830270513892,
+     "a1": 9.877464035525918,
+     "a2": 9.876256342977285,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.00044918639976630883,
+     "matched_ms": 4.3536454904824495,
+     "ratio_matched": 0.4407937942884108,
+     "exact": "modal_exp_fft",
+     "exact_ms": 4.357555415481329,
+     "ratio_exact": 0.44118966268867604
+    },
+    "rom_fast": {
+     "arm": "lin_R48_cn",
+     "worst": 0.0027623366599798813,
+     "ms": 3.242332022637129,
+     "a1": 3.2427452970296144,
+     "a2": 3.2409995328634977,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.00044918639976630883,
+     "matched_ms": 4.3536454904824495,
+     "ratio_matched": 1.3427512852127468,
+     "exact": "modal_exp_fft",
+     "exact_ms": 4.357555415481329,
+     "ratio_exact": 1.3439571842297449
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R128_cn",
+     "worst": 0.0013318664475028014,
+     "ms": 6.218601483851671,
+     "a1": 6.217817543074489,
+     "a2": 6.221077870577574,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.00044918639976630883,
+     "matched_ms": 4.3536454904824495,
+     "ratio_matched": 0.7001004167557451,
+     "exact": "modal_exp_fft",
+     "exact_ms": 4.357555415481329,
+     "ratio_exact": 0.7007291634295804
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R48_bf",
+     "worst": 0.0027623276551064866,
+     "ms": 4.6575479209423065,
+     "a1": 4.655241966247559,
+     "a2": 4.659619182348251,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.00044918639976630883,
+     "matched_ms": 4.3536454904824495,
+     "ratio_matched": 0.9347505520891405,
+     "exact": "modal_exp_fft",
+     "exact_ms": 4.357555415481329,
+     "ratio_exact": 0.9355900335212689
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 2.5444024606077214e-16,
+     "ms": 4.357555415481329
+    },
+    "modal_cn_fft": {
+     "worst": 0.00044918639976630883,
+     "ms": 4.3536454904824495
+    },
+    "modal_exp_mm": {
+     "worst": 2.699556703897952e-15,
+     "ms": 22.608621045947075
+    },
+    "modal_cn_mm": {
+     "worst": 0.00044918639976639085,
+     "ms": 22.60211412794888
+    }
+   },
+   "validation": {
+    "exp_worst": 2.699556703897952e-15,
+    "cn_vs_cncg": 6.607916816504347e-12,
+    "control": 7.89939822910741e-07
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": null,
+   "drift": [
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.009877464035525918,
+     "romA2_median": 0.009876256342977285,
+     "ratio": 0.9998777325288871
+    },
+    {
+     "name": "lin_R48_cn",
+     "romA1_median": 0.0032427452970296144,
+     "romA2_median": 0.0032409995328634977,
+     "ratio": 0.9994616400592067
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.006217817543074489,
+     "romA2_median": 0.006221077870577574,
+     "ratio": 1.0005243523922178
+    },
+    {
+     "name": "lin_R48_bf",
+     "romA1_median": 0.004655241966247559,
+     "romA2_median": 0.004659619182348251,
+     "ratio": 1.000940276817495
+    }
+   ],
+   "neighbour_worst": 1.0016759584751764
+  }
+ ],
  "heat3d": [],
  "ns3d": {
   "source_lane": "exp/2026-09-23-ns3d-shift-head",

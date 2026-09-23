@@ -6,6 +6,7 @@ This report measures the strongest fast-transform full-order solver for each pro
 
 - **Poisson 2D square** (256, 1024, 2048, 4096): spectral/ours is 0.099–0.352 against the accurate setting and 0.332–0.569 against the fast setting. The DST solve is exact, with worst error ≤ 1.4e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
 - **Poisson 3D cube** (32, 64): spectral/ours is 0.396–0.514 against the accurate setting and 0.519–0.586 against the fast setting. The DST solve is exact, with worst error ≤ 1.9e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
+- **Heat 2D** (1024, 2048): matched spectral/ours is 0.423–0.441 (accurate `lin_R128_bf`); 1.343–1.393 (fast `lin_R48_cn`); 0.650–0.700 (accurate_cn `lin_R128_cn`); 0.822–0.935 (fast_bf `lin_R48_bf`). The exact modal propagation is also the lane's truth.
 - **NS 3D** (recorded): CNAB2/ours is 1.091–7.790 for the accurate setting and 0.952–13.142 for the fast one. The ROM is faster than its matched CNAB2 setting in 7 of 8 rows. It is not faster at: 32³ fast (0.952).
 - **L-shape**: there is no spectral arm (see below).
 
@@ -54,6 +55,19 @@ Original pre-registered 11-setting ladder (spC/spE; superseded by the L1 ladder 
 | 2048² | 4207481 | accurate | 0.534% | 174.959 | pic_dt005_nt1e-4 | 0.051% | 151.446 | 0.866 | all pass |
 | 2048² | 4207481 | fast | 1.872% | 33.914 | pic_dt01_nt1e-3 | 1.676% | 71.801 | 2.117 | all pass |
 
+## Heat 2D (Dirichlet, modal CN at the paper Δt and exact modal propagation)
+
+| mesh | GPU | job | cohort | role | arm | err | ms | matched spectral | its err | its ms | ratio (matched) | ratio (exact) | timing gates | audit |
+|---:|---|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---|---|
+| 1024² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | accurate | `lin_R128_bf` | 0.1327% | 2.922 | `modal_exp_fft` | 0.0000% | 1.236 | **0.423** | 0.423 | all pass | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | fast | `lin_R48_cn` | 0.2762% | 0.888 | `modal_exp_fft` | 0.0000% | 1.236 | **1.393** | 1.393 | all pass | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | accurate_cn | `lin_R128_cn` | 0.1332% | 1.902 | `modal_exp_fft` | 0.0000% | 1.236 | **0.650** | 0.650 | all pass | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | fast_bf | `lin_R48_bf` | 0.2762% | 1.503 | `modal_exp_fft` | 0.0000% | 1.236 | **0.822** | 0.822 | all pass | PASS |
+| 2048² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | accurate | `lin_R128_bf` | 0.1327% | 9.877 | `modal_cn_fft` | 0.0449% | 4.354 | **0.441** | 0.441 | all pass | PASS |
+| 2048² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | fast | `lin_R48_cn` | 0.2762% | 3.242 | `modal_cn_fft` | 0.0449% | 4.354 | **1.343** | 1.344 | all pass | PASS |
+| 2048² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | accurate_cn | `lin_R128_cn` | 0.1332% | 6.219 | `modal_cn_fft` | 0.0449% | 4.354 | **0.700** | 0.701 | all pass | PASS |
+| 2048² | NVIDIA A100-PCIE-40GB | 4207215 | heldout_sealed_791099 | fast_bf | `lin_R48_bf` | 0.2762% | 4.658 | `modal_cn_fft` | 0.0449% | 4.354 | **0.935** | 0.936 | all pass | PASS |
+
 ## Navier–Stokes 3D (recorded from `ns3d-shift-head`, not rerun)
 
 CNAB2 is the lane FOM and is Fourier pseudo-spectral; the lane itself labels it not rule-compliant as an iterative FOM. Not rerun here. The ratio is CNAB2 ms / ROM ms, from the lane's own timing block and comparator rule. That lane used its protocol v2 (a fast block plus after-heavy gates), not this lane's A–B–A.
@@ -87,6 +101,8 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 | burgers2d_original_ladder | 512 | spC/output1 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `a73ae4889fc4cd15a22ad02689a7af1df66226a4f78003a7aeac31658e3a20c1` |
 | burgers2d_original_ladder | 1024 | spC/output2 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `036902853bb7b77aeb7747c6ecd969edcfedf9680f8d6846d3cafbc83bd356ba` |
 | burgers2d_original_ladder | 2048 | spE/output0 | 4207481 | NVIDIA A100 80GB PCIe | 97f88d5ec9 | `97ee42c23a1d07072667b901bb57e4830edb63f6d5619940b41c918d561f2e84` |
+| heat2d | 1024 | spD/output0 | 4207215 | NVIDIA A100-PCIE-40GB | bab9a53fd4 | `c74396dbbccd7a379e536df98bee57aab302e6c88a8fa66306b2a81f70cb30c7` |
+| heat2d | 2048 | spD/output1 | 4207215 | NVIDIA A100-PCIE-40GB | bab9a53fd4 | `bc40b7795384af12761699435e07099a47ae3265da34d01806f7faae91eff803` |
 | ns3d (lane) | 32 | a2_h32 | 4198840 | NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB | e94d398e2f | `301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c` |
 | ns3d (lane) | 64 | a2_h64 | 4198090 | NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB | 229cbc5ff5 | `05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f` |
 | ns3d (lane) | 96 | a3_h96 | 4198101 | NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB | 229cbc5ff5 | `4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af` |

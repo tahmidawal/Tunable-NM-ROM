@@ -1,0 +1,26 @@
+W0923 07:39:30.493361 4152123 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 4.00GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0923 07:39:30.493706 4152123 cuda_fft.cc:273] Failed to allocate work area.
+F0923 07:39:30.493714 4152123 cuda_fft.cc:347] Failed to update custom allocator for cufft plan: Out of memory while trying to allocate 4.00GiB.
+*** Check failure stack trace: ***
+    @     0x14dee0940f34  absl::lts_20260107::log_internal::LogMessage::SendToLog()
+    @     0x14dee0940eb6  absl::lts_20260107::log_internal::LogMessage::Flush()
+    @     0x14dee05ff350  stream_executor::gpu::CUDAFft::UpdatePlanWithScratchAllocator()
+    @     0x14ded6dcafc5  xla::gpu::RunFft()
+    @     0x14ded6dcae7d  xla::gpu::FftThunk::ExecuteOnStream()
+    @     0x14ded6eb2981  xla::gpu::ThunkExecutor::ExecuteOnStream()
+    @     0x14ded6cfc457  xla::gpu::GpuExecutable::ExecuteThunksImpl()
+    @     0x14ded6d03ddc  xla::gpu::GpuExecutable::ExecuteThunks()
+    @     0x14ded5775377  xla::StreamExecutorGpuClient::RunAsync()
+    @     0x14ded57a40d1  xla::PjRtStreamExecutorRawLoadedExecutable::Execute()::$_3::operator()()
+    @     0x14ded57a2a45  xla::PjRtStreamExecutorRawLoadedExecutable::Execute()
+    @     0x14ded57dbe51  xla::CommonPjRtLoadedExecutable::ExecuteLaunch()
+    @     0x14ded57dc8ed  xla::CommonPjRtLoadedExecutable::ExecuteHelperOnSingleDevice()
+    @     0x14ded57ddb35  xla::CommonPjRtLoadedExecutable::Execute()
+    @     0x14ded57a675f  xla::PjRtStreamExecutorLoadedExecutable::Execute()
+    @     0x14ded57416ba  pjrt::PJRT_LoadedExecutable_Execute()
+    @     0x14dfbd179c1a  xla::PjRtCApiLoadedExecutable::Execute()
+    @     0x14dfbd31242b  xla::ifrt::PjRtLoadedExecutable::Execute()
+    @     0x14dfc1478b7e  jax::(anonymous namespace)::PjitFunction::Call()
+    @     0x14dfc147543f  PjitFunction_tp_vectorcall
+    @     0x14dfdcdec4af  PyObject_Vectorcall
+/var/spool/slurm/job4207215/slurm_script: line 35: 4152123 Aborted                 (core dumped) "$PY" sp_heat.py --config config-h2d-4096.json --out ../output2

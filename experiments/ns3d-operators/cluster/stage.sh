@@ -4,7 +4,7 @@
 set -euo pipefail
 DEST="$1"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-if [[ -n "$(git -C "$HERE" status --porcelain -- experiments/ns3d-operators)" ]]; then
+if [[ -n "$(git -C "$HERE" status --porcelain -- experiments/ns3d-operators ':!experiments/ns3d-operators/runs')" ]]; then
   echo "refusing: uncommitted changes in experiments/ns3d-operators"; exit 1
 fi
 # atomic claim: plain mkdir fails if the directory already exists (dirs are never reused)

@@ -341,6 +341,32 @@ def main():
         result['contaminated'].append(dict(after=name, ms=tc))
         idle(); sentinel(name)
 
+    # ---------------- A2: re-time real arms AFTER the slow full-order phase (direct carry-over test)
+    rt = cfg.get('retime', {})
+    if rt.get('nmrom'):
+        model = C.load_model(cfg['nmrom']['model'], HERE.parent / 'hires-heat' / 'inputs')
+        bank = C.bank_at(model, n); rtri = C.tsqr_r(bank); a = C.weak_matrix(bank, tests, n, d)
+        setup = dict(n=n, d=d, times=times, nu=nu, modes=tests, a=a, rtri=rtri, mode_lam=C.mode_eigs(n, tests), directions=model['directions'])
+        arm = next(x for x in cfg['nmrom']['arms'] if x['name'] == rt['nmrom'])
+        st = C.make_stages(model, setup, arm['q'], {**cfg['nmrom']['defaults'], **arm.get('opt', {})})
+        run_block(rt['nmrom'] + '__RETIME', Method(lambda u: st['query'](u, bank)), dict(family='nmrom', retime_of=rt['nmrom'], unknowns=None))
+        idle(); sentinel(rt['nmrom'] + '__RETIME')
+        del bank, model, setup, st; jax.clear_caches()
+    if rt.get('pod'):
+        r = rt['pod']; V = build_fields(fm['Ux'], fm['Uy'], Ufull[:, :r], n)
+        K, G2, _ = pod_operators(V, n, nu, cfg['pod']['dt']); c = cfg['pod']['dt'] * nu / 2; I = np.eye(r)
+        q = make_pod_query(n, times, S=np.linalg.solve(I + c * K, I - c * K))
+        run_block(f'pod{r}_galerkin_cn__RETIME', Method(lambda u: q(u, V)), dict(family='pod', retime_of=f'pod{r}_galerkin_cn', unknowns=None))
+        idle(); sentinel(f'pod{r}_galerkin_cn__RETIME'); del V; jax.clear_caches()
+    if rt.get('operator') and rt['operator'] in cfg.get('operators', {}) and Path(cfg['operators'][rt['operator']]['checkpoint']).exists():
+        net, norm, ck = H.load(Path(cfg['operators'][rt['operator']]['checkpoint']))
+        def run(x):
+            with torch.no_grad():
+                return H.query_interior(net, x, *norm)
+        run_block(rt['operator'] + '__RETIME', Method(run, prep=lambda u: torch.from_dlpack(u), fields=lambda o: jnp.from_dlpack(o), stats=lambda o: [],
+                                                      sync=lambda o: torch.cuda.synchronize()), dict(family='operator', retime_of=rt['operator'], unknowns=None))
+        del net; torch.cuda.empty_cache(); idle(); sentinel(rt['operator'] + '__RETIME')
+
     # ---------------- order-effect gate
     med = np.array([s['median_ms'] for s in result['sentinels']]); ref = float(np.median(med))
     dev = np.abs(med / ref - 1)

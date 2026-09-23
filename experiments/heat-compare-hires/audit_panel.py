@@ -26,7 +26,7 @@ k = np.arange(1, n); a = np.arange(1, n) / n
 lam = {'same': 4.0 * n * n * np.sin(np.pi * k / (2 * n)) ** 2, 'physical': (np.pi * k) ** 2}
 arms = res['arms']; ncases = len(next(iter(arms.values()))['same'])
 recomputed = {}; rand_est = {}
-expected_cases = len(cfg['cohorts']) and sum(c for _, c in cfg['cohorts'])
+expected_cases = sum(c for _, c in cfg['cohorts'])
 for ci in range(ncases):
     draw = None; refs = None
     for name, row in arms.items():
@@ -90,7 +90,22 @@ if len(sent) < len(arms):
 cont = np.array([c['ms'] for c in res['contaminated']])
 order = dict(max_relative_deviation=float(np.max(np.abs(sent / ref - 1))), tolerance=cfg['order_tolerance'],
              positive_control_min_relative_deviation=float(np.min(cont / ref - 1)) if cont.size else None)
-order['passed'] = bool(order['max_relative_deviation'] <= cfg['order_tolerance'])
+order['passed_v1_per_block'] = bool(order['max_relative_deviation'] <= cfg['order_tolerance'])   # pre-registered v1 test (A2: noise-dominated)
+# A2 gate: (a) carry-over — pooled sentinel reps after full-order blocks vs after every other block;
+#          (b) re-timed real arms after the full-order phase vs their own block medians.
+fom_names = set(cfg['fom_order'])
+post = np.concatenate([s['ms'] for s in res['sentinels'] if s['after'] in fom_names]) if fom_names else np.array([])
+rest = np.concatenate([s['ms'] for s in res['sentinels'] if s['after'] not in fom_names])
+order['carryover_ratio'] = float(np.median(post) / np.median(rest)) if post.size else None
+order['carryover_tolerance'] = cfg.get('carryover_tolerance')
+retime = {k: dict(of=v['retime_of'], ratio=float(np.median(v['device_ms']) / np.median(arms[v['retime_of']]['device_ms'])))
+          for k, v in arms.items() if v.get('retime_of')}
+order['retime'] = retime; order['retime_tolerance'] = cfg.get('retime_tolerance')
+if 'retime' in cfg:
+    order['passed'] = bool(post.size and abs(order['carryover_ratio'] - 1) <= cfg['carryover_tolerance'] and retime
+                           and all(abs(v['ratio'] - 1) <= cfg['retime_tolerance'] for v in retime.values()))
+else:
+    order['passed'] = order['passed_v1_per_block']
 order['positive_control_fails_as_required'] = bool(cont.size) and order['positive_control_min_relative_deviation'] > cfg['order_tolerance']
 if not order['passed']:
     failures.append(dict(check='order_effect_gate', value=order['max_relative_deviation']))

@@ -187,6 +187,13 @@
   64
  ],
  "coarse_cg": "fom_cncg_dt0.05_rtol1e-3",
+ "retime": {
+  "nmrom": "nmrom_q32_field_direct_tol1e-4_chol",
+  "pod": 32,
+  "operator": "op_unet"
+ },
+ "carryover_tolerance": 0.1,
+ "retime_tolerance": 0.1,
  "mesh": 64,
  "local_smoke": true,
  "operators": {

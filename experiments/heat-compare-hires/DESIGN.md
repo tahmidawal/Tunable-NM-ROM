@@ -181,3 +181,25 @@ the JAX/PyTorch synchronisation and the operator training hygiene. Dispositions 
 Operational: `tr1024` (4196056) was cancelled by me while PENDING (no H200 free) and resubmitted
 unchanged as `tr1024a` (4196355), which landed on an A100-PCIE-40GB; FNO epochs there take ~470 s,
 so operators get few epochs within the 3000 s budget at both meshes (reported per arm).
+
+## A2 (2026-09-23 ~07:00 EDT, after pn1024a, before pn1024b / pn2048b / pn4096)
+
+`pn1024a` (job 4205399, A100-80G, complete, all arms) FAILED the pre-registered v1 order gate:
+max per-block sentinel deviation 36.8 % > 10 %. Diagnosis from its raw data (not a threshold
+change after the fact): the sentinel is a ~1.5 ms kernel whose own repetitions scatter
+1.0–3.1 ms *within* single blocks, so the per-block median of 7 reps cannot resolve ±10 %; the
+sentinels after the 11 full-order blocks are not slower (pooled median ratio post-FOM / rest
+= 0.94). The v1 test measures sentinel noise, not carry-over. `pn1024a` therefore stays a
+**provisional, diagnostic** run and is not the 1024² table.
+
+Amended gate for every later panel (the v1 statistic is still computed and reported):
+(a) **carry-over**: pooled sentinel repetitions (15 per block) after full-order blocks vs after
+all other blocks, median ratio within ±10 %; (b) **re-time**: three real arms
+(`nmrom_q32_field_direct_tol1e-4_chol`, `pod128_galerkin_cn`, `op_unet` where operators exist)
+are rebuilt and timed again on all 16 cases **after** the full-order phase; each re-timed
+median must be within ±10 % of its own block median; (c) the positive control must still fail.
+The 1024² panel is re-run unchanged otherwise as `pn1024b`. `pn2048` (4203979) was cancelled while
+PENDING (it had staged the v1 code) and resubmitted as `pn2048b`. `pn1024` (4203972) had been
+cancelled while PENDING because no H200 was free; 1024² runs on an A100-80G (the lane rule
+requires H200 only at ≥2048²); every ratio is within one job, but absolute times at 1024² are
+A100 times, not the H200 times of the paper's Table 1 row.

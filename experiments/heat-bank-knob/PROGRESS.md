@@ -12,3 +12,8 @@ Submit: `cluster/submit.sh <job> h200 <HH:MM:SS> 240G <config>` (clean committed
 ## Jobs
 | job | slurm id | config | state |
 |---|---|---|---|
+| h2d | 4197350 | configs/h2d.json (2D 1024²/2048²/4096², val 791001 ×16 + sealed 791099 ×16) | submitted 2026-09-23 ~03:25 EDT, source 962ced91, H200 |
+| h3d | 4197416 | configs/h3d.json (3D 32³/64³/128³, val 921777 ×16 + sealed 921099 ×64) | submitted ~03:50 EDT, source bae9e1e6, H200 |
+| h3d256 | - | configs/h3d256.json (3D 256³) | to submit when one of the above finishes (≤ 2 jobs) |
+
+- Local 3D smoke (16³, dev cohort): parity ≤ 7.5e-14 on all 12 paired arms; audit passed, both controls detected.

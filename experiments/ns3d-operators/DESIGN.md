@@ -260,3 +260,15 @@ Table 2 as qualified development comparisons. Dispositions:
    steps and the 0-based best epoch.
 6. *Data parity* — accepted: the report now says that the bank includes 16 trajectories of the
    operators' validation split.
+
+## A4 (2026-09-23 ~16:25 EDT) — 96³ training split across H200 and A100-80G (coordinator direction)
+
+H200s were saturated cluster-wide. On the coordinator's instruction, the three 96³ arms still pending on
+H200 (don-l 4232984, don-s 4232979, tsol-l 4232975; never started, directories empty) were cancelled and
+resubmitted unchanged on A100-80G in the same, still-unused job directories (don-l 4239995,
+don-s 4239998, tsol-l 4240001; staged source 814c58b6, `train_op.py` identical to the pre-registered
+one). fno-s, fno-l, unet-s, unet-l and tsol-s run or ran on H200. **Deviation from §4/§7** ("all arms of
+a mesh on the same GPU type"): at 96³ the 3000 s budget buys less work for the A100 arms (and their
+32.6 GB training set exceeds 35 % of an 80 GB card, so it is held in pinned host memory, per A1.7). The
+report prints each arm's GPU and epochs, and the 96³ cell is labelled with this deviation. No selection
+has been made at 96³.

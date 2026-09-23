@@ -140,10 +140,20 @@ if SPEC.get('compose') and not stopping:
     path = ROOT / 'out/composition.json'
     if path.exists():
         composed = json.loads(path.read_text())
-        arm = dict(SPEC['compose']['arm'])
-        arm['override'] = dict(decision, **composed['override'])
-        if train(arm):
-            trained.append(arm['name'])
+        # DESIGN 5.3: with no winning knob the composed configuration IS the reference's, so it
+        # is not re-run -- a second run of the same recipe would be a new measurement, not a
+        # composition, and the report would have two numbers for one configuration.
+        if composed['override']:
+            arm = dict(SPEC['compose']['arm'])
+            arm['override'] = dict(decision, **composed['override'])
+            if train(arm):
+                trained.append(arm['name'])
+        else:
+            records.append(dict(task=SPEC['compose']['arm']['name'],
+                                skipped='no knob cleared the composition threshold; the composed '
+                                        'configuration is the reference arm and is not re-run '
+                                        '(DESIGN 5.3)'))
+            save()
 
 (ROOT / 'out/selection.json').write_text(json.dumps(dict(
     spec=SPEC, scores={name: score(name) for name in trained}, trained=trained,

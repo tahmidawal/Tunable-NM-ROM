@@ -360,10 +360,19 @@ def main(attempt):
     cohort = audit_cohort(root, prefix)
     decisions = recompute_decisions(spec, arms, worker_decision, composition)
 
-    # T0's ratio: the label perturbation against each arm's own error (DESIGN 5.2).
-    label = extended.get('label_discrepancy', {}).get('maximum')
-    ratios = {name: label / a['fixed_initial']['mean'] for name, a in arms.items()
-              if a.get('complete') and label and a['mount'] != 'pinned'}
+    # T0's ratios: the measured label perturbation against each arm's own error (DESIGN 5.2).
+    # Three, because one number would hide which statistic is being compared with which:
+    # mean-to-mean is the like-for-like reading, worst-to-worst the tail reading, and
+    # worst-to-mean the deliberately conservative one.
+    label = extended.get('label_discrepancy') or {}
+    ratios = {}
+    for name, a in arms.items():
+        if not a.get('complete') or not label or a['mount'] == 'pinned':
+            continue
+        f = a['fixed_initial']
+        ratios[name] = dict(mean_over_mean=label['mean'] / f['mean'],
+                            worst_over_worst=label['maximum'] / f['maximum'],
+                            worst_over_mean=label['maximum'] / f['mean'])
     complete = [a for a in arms.values() if a.get('complete')]
     result = dict(attempt=attempt, job_id=job_id, gpu=gpu, source_commit=provenance['source_commit'],
                   pde='burgers', spec=spec, data_verified=verified, jax_backend='gpu',
@@ -372,7 +381,13 @@ def main(attempt):
                   arms=arms, skipped_arms=skipped, selection_record=selection, worker_tasks=worker,
                   decisions=decisions, cohort=cohort, persistence_baseline=baseline,
                   label_discrepancy_ratio=ratios,
-                  label_protocol_negligible={k: bool(v <= 0.2) for k, v in ratios.items()},
+                  label_protocol_negligible={k: bool(v['mean_over_mean'] <= 0.2 and v['worst_over_worst'] <= 0.2)
+                                             for k, v in ratios.items()},
+                  label_ratio_definition='rho = measured training-label discrepancy / arm validation error, '
+                                         'in three pairings; negligible requires mean-over-mean AND '
+                                         'worst-over-worst at or below 0.2 (DESIGN 5.2 T0). The '
+                                         'perturbation is on TRAINING labels only; every evaluation '
+                                         'cohort is pinned refined-anchor data.',
                   timing=dict(present=False, reason='no timing block runs in this lane; no speed '
                                                     'statement from it is admissible (DESIGN 7)'),
                   metric='maximum over the six requested output times of the interior l2 discrepancy divided by '
@@ -388,7 +403,8 @@ def main(attempt):
                                     v['training_cases'], v['stop_reason'])
                                 for k, v in arms.items() if v.get('complete')},
                           decisions=decisions.get('selection'),
-                          label_ratio={k: round(v, 4) for k, v in ratios.items()}), indent=2))
+                          label_ratio={k: {n: round(x, 4) for n, x in v.items()}
+                                       for k, v in ratios.items()}), indent=2))
 
 
 if __name__ == '__main__':

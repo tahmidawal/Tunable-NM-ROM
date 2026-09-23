@@ -21,7 +21,7 @@ ACCEPTED = {
     'burgers2d_L1_2048_without_half_dst': [('spG', 'output0')],
     'heat2d': [('spI', 'output0'), ('spI', 'output1'), ('spI', 'output2')],
     'heat2d_two_variant_record': [('spD', 'output0'), ('spD', 'output1')],
-    'heat3d': [('spN', 'output0'), ('spN', 'output1'), ('spN', 'output2')],
+    'heat3d': [('spN', 'output0'), ('spN', 'output1'), ('spN', 'output2'), ('spO', 'output0')],
 }
 
 

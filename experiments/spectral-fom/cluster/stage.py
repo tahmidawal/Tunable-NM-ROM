@@ -64,7 +64,7 @@ HEAT = [(f, HBK_COMMIT) for f in (
 TREE_SETS = {'heat': [HBK], 'burgers': ['experiments/mr-burgers2d', 'experiments/separable-decoder', 'experiments/head-ablation',
                          'experiments/cheap-corrections', 'experiments/b-ladder-top', 'experiments/b-panel/speed',
                          'experiments/hires-burgers', 'experiments/burgers-repanel', BKN]}
-FILESETS = {'heat': HEAT + [(f'{LANE}/sp_heat.py', 'HEAD')],
+FILESETS = {'heat': HEAT + [(f'{HBK}/configs/h3d256.json', 'cc92aca8'), (f'{LANE}/sp_heat.py', 'HEAD')],
             'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
             'burgers': BURG + [(f'{LANE}/sp_burgers.py', 'HEAD')] + [(f'{LANE}/lane-ref/burgers-{L}-{k}.json', 'HEAD')
                                                                    for L in (256, 512, 1024, 2048, 4096) for k in ('errors', 'selection')],

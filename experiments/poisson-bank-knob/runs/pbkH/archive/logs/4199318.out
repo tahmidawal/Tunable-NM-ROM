@@ -1,0 +1,68 @@
+host=pax049 source_commit=50f2df489a465100dd5a5dd7e947c7758e109acf
+NVIDIA A100 80GB PCIe, GPU-15e19d78-1dff-7ce0-3e6d-2ffe9e4ba214, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.3T  264G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 6.8 {'32': 9.176, '64': 5.345, '128': 2.314, '256': 0.945, '384': 0.773, '512': 0.746}
+WARMUP 41.1
+PHASE romA1 0 127.6
+PHASE romA1 1 163.6
+PHASE romA1 2 199.2
+PHASE romA1 3 235.0
+PHASE romA1 4 271.6
+PHASE cg 0 300.1
+PHASE cg 1 319.7
+PHASE cg 2 339.3
+PHASE romA2 0 382.2
+PHASE romA2 1 417.9
+PHASE romA2 2 453.5
+PHASE romA2 3 488.8
+PHASE romA2 4 524.5
+DRIFT False 0.8790108441188983 1.0440105141054055
+NEIGHBOUR False 1.4578680862113738
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': False, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 348 errors recomputed, worst relative deviation 2.6e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+jax_backend=gpu x64=True precision=highest
+BANK 11.2 {'32': 9.166, '64': 5.336, '128': 2.306, '256': 0.941, '384': 0.769, '512': 0.742}
+WARMUP 40.7
+PHASE romA1 0 134.9
+PHASE romA1 1 174.1
+PHASE romA1 2 213.5
+PHASE romA1 3 252.8
+PHASE romA1 4 292.3
+PHASE cg 0 333.2
+PHASE cg 1 364.7
+PHASE cg 2 396.0
+PHASE romA2 0 442.1
+PHASE romA2 1 481.2
+PHASE romA2 2 520.5
+PHASE romA2 3 559.6
+PHASE romA2 4 598.9
+DRIFT False 0.8982997332518332 1.013158340242861
+NEIGHBOUR False 1.6631986370105154
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': False, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 348 errors recomputed, worst relative deviation 6.3e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+jax_backend=gpu x64=True precision=highest
+BANK 16.9 {'32': 9.165, '64': 5.335, '128': 2.306, '256': 0.94, '384': 0.768, '512': 0.742}
+WARMUP 49.7
+PHASE romA1 0 171.7
+PHASE romA1 1 223.0
+PHASE romA1 2 274.1
+PHASE romA1 3 325.0
+PHASE romA1 4 375.5
+PHASE cg 0 500.4
+PHASE cg 1 611.3
+PHASE cg 2 722.5
+PHASE romA2 0 780.5
+PHASE romA2 1 831.3
+PHASE romA2 2 882.1
+PHASE romA2 3 932.9
+PHASE romA2 4 984.2
+DRIFT True 0.9476180792535633 1.0292253267612834
+NEIGHBOUR False 1.2039575875366333
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 348 errors recomputed, worst relative deviation 3.7e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE

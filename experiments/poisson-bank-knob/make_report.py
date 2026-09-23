@@ -155,8 +155,8 @@ def main():
               f"{m['table1']['accurate_speedup']:.1f}× vs `{m['table1']['fom']}` ({m['table1']['fom_gpu_ms']:.1f} ms, "
               f"{m['table1']['fom_worst_error']*100:.3f} %); fast `{m['table1']['fast']}` {m['table1']['fast_worst_error']*100:.3f} % "
               f"at {m['table1']['fast_gpu_ms']:.2f} ms = {m['table1']['fast_speedup']:.1f}× (fast bar: `R512_q0` "
-              f"{m['table1']['paper_fast_reference_worst_error']*100:.3f} %). Conservative (arm timed right after a long CG "
-              f"neighbour): accurate {m['table1']['accurate_gpu_ms_after_long']:.2f} ms = {m['table1']['accurate_speedup_after_long']:.1f}×, "
+              f"{m['table1']['paper_fast_reference_worst_error']*100:.3f} %). Conservative (arm median after a long predecessor; legacy design: right after a long CG, A-B-A: within-phase "
+              f"): accurate {m['table1']['accurate_gpu_ms_after_long']:.2f} ms = {m['table1']['accurate_speedup_after_long']:.1f}×, "
               f"fast {m['table1']['fast_gpu_ms_after_long']:.2f} ms = {m['table1']['fast_speedup_after_long']:.1f}×.", '',
               "| R' | q | arm | worst err % | median err % | floor % | GPU ms | GPU ms A1 / A2 | total ms | × vs matched CG (GPU) | × vs cg_0.01 (GPU) | own matched CG | × vs own matched CG | LM attempts |",
               '|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|']

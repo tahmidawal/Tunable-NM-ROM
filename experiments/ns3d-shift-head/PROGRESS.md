@@ -34,3 +34,10 @@ Cluster namespace `/cluster/tufts/paralab/tawal01/nshead_20260923/`.
   Rerunning all meshes under v2: a2_h64 (4198090), a3_h96 (4198101), then a2_h32.
 - FD-CG FOM is ~75x slower than CNAB2 at 64^3 at comparable accuracy (1.5 s at 128^3
   for 0.29 %); reported as the rule-compliant comparator, with that caveat stated.
+
+## 2026-09-23 ~05:20 EDT — 64^3 v2 landed (job 4198090), `results/a2_h64.md` — supersedes a1_h64 timing
+- All gates pass (fast block, after-heavy+cool-down; after-heavy ratios 1.02-1.06).
+- Parent reproduction: bank floor identical, parent linear arm within 1.2e-12 on 6 settings.
+- Ladder (dt 0.02, 3 sweeps): R'=64/48/32/16/8 = 0.616/1.005/1.262/2.959/5.549 % at
+  7.84/5.80/5.46/4.64/4.18 ms -> 2.46x..4.61x vs CNAB2; head k=8 0.152 % at 8.19 ms, 2.89x vs CNAB2.
+- FD-CG never as accurate as the head at 64^3 (best 0.26 % at 128^3, 1.6 s).

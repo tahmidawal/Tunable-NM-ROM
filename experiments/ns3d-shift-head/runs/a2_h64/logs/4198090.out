@@ -1,0 +1,255 @@
+host=pax050 source_commit=229cbc5ff53666896aa4c968181efabb1f5bcbe9 job=4198090 name=a2_h64
+NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  4.3T  323G  94% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=322.3 devices=[CudaDevice(id=0)]
+generating bank training trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.339e-09 energy_tail=1.413e-08
+generating development trajectories
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+bank floor r64: evolved worst 0.001289
+generating 512 head-training trajectories, 21 frames each
+  head data 64/512
+  head data 128/512
+  head data 192/512
+  head data 256/512
+  head data 320/512
+  head data 384/512
+  head data 448/512
+  head data 512/512
+head data: {'cases': 512, 'frames_per_case': 21, 'states_train': 9408, 'states_val': 1344, 'bank_outside_relative_worst': 0.003098077472809466, 'coefficient_sha256': 'a5dca98546827a31496728a9c3903ac0c482f37cc17478427bd4009110e43bcd'}
+  head step 5000/100000 weighted fit 8.8438e-04 (7s)
+  head step 10000/100000 weighted fit 4.0063e-04 (11s)
+  head step 15000/100000 weighted fit 7.9979e-04 (15s)
+  head step 20000/100000 weighted fit 2.9316e-04 (18s)
+  head step 25000/100000 weighted fit 5.2986e-04 (22s)
+  head step 30000/100000 weighted fit 4.6078e-04 (25s)
+  head step 35000/100000 weighted fit 3.4099e-04 (29s)
+  head step 40000/100000 weighted fit 2.1372e-04 (32s)
+  head step 45000/100000 weighted fit 1.4322e-04 (36s)
+  head step 50000/100000 weighted fit 1.1649e-04 (39s)
+  head step 55000/100000 weighted fit 8.8316e-05 (43s)
+  head step 60000/100000 weighted fit 1.1798e-04 (47s)
+  head step 65000/100000 weighted fit 5.6900e-05 (50s)
+  head step 70000/100000 weighted fit 4.8734e-05 (54s)
+  head step 75000/100000 weighted fit 3.6699e-05 (57s)
+  head step 80000/100000 weighted fit 3.5610e-05 (61s)
+  head step 85000/100000 weighted fit 2.8837e-05 (64s)
+  head step 90000/100000 weighted fit 2.5537e-05 (68s)
+  head step 95000/100000 weighted fit 2.3915e-05 (72s)
+  head step 100000/100000 weighted fit 2.2748e-05 (75s)
+head k=8: 90s fit {'train_q0': {'median': 0.00039733311816877645, 'worst': 0.0031012326306837385}, 'val_q0': {'median': 0.00041009066525057446, 'worst': 0.0017492128664033592}}
+  head step 5000/100000 weighted fit 4.1590e-04 (6s)
+  head step 10000/100000 weighted fit 2.2228e-04 (10s)
+  head step 15000/100000 weighted fit 2.1311e-04 (13s)
+  head step 20000/100000 weighted fit 1.1369e-04 (17s)
+  head step 25000/100000 weighted fit 1.1297e-04 (21s)
+  head step 30000/100000 weighted fit 8.2575e-05 (24s)
+  head step 35000/100000 weighted fit 9.9000e-05 (28s)
+  head step 40000/100000 weighted fit 7.4376e-05 (31s)
+  head step 45000/100000 weighted fit 4.8731e-05 (35s)
+  head step 50000/100000 weighted fit 5.6940e-05 (39s)
+  head step 55000/100000 weighted fit 2.6050e-05 (42s)
+  head step 60000/100000 weighted fit 2.2283e-05 (46s)
+  head step 65000/100000 weighted fit 1.3440e-05 (50s)
+  head step 70000/100000 weighted fit 1.1819e-05 (53s)
+  head step 75000/100000 weighted fit 8.9619e-06 (57s)
+  head step 80000/100000 weighted fit 6.6521e-06 (60s)
+  head step 85000/100000 weighted fit 6.6119e-06 (64s)
+  head step 90000/100000 weighted fit 5.7887e-06 (68s)
+  head step 95000/100000 weighted fit 5.3281e-06 (71s)
+  head step 100000/100000 weighted fit 5.0204e-06 (75s)
+head k=16: 82s fit {'train_q0': {'median': 0.0003962181366788231, 'worst': 0.0030990443730709613}, 'val_q0': {'median': 0.0004088126654490646, 'worst': 0.0017464088200401806}}
+  head step 5000/100000 weighted fit 1.0123e-04 (7s)
+  head step 10000/100000 weighted fit 8.9599e-05 (11s)
+  head step 15000/100000 weighted fit 6.5774e-05 (14s)
+  head step 20000/100000 weighted fit 6.5278e-05 (18s)
+  head step 25000/100000 weighted fit 2.9375e-05 (22s)
+  head step 30000/100000 weighted fit 2.5062e-05 (26s)
+  head step 35000/100000 weighted fit 2.9450e-05 (29s)
+  head step 40000/100000 weighted fit 1.7468e-05 (33s)
+  head step 45000/100000 weighted fit 1.8426e-05 (37s)
+  head step 50000/100000 weighted fit 1.1510e-05 (41s)
+  head step 55000/100000 weighted fit 9.2554e-06 (44s)
+  head step 60000/100000 weighted fit 5.0497e-06 (48s)
+  head step 65000/100000 weighted fit 3.7612e-06 (52s)
+  head step 70000/100000 weighted fit 2.7089e-06 (56s)
+  head step 75000/100000 weighted fit 1.4989e-06 (59s)
+  head step 80000/100000 weighted fit 1.1544e-06 (63s)
+  head step 85000/100000 weighted fit 7.3629e-07 (67s)
+  head step 90000/100000 weighted fit 6.5939e-07 (71s)
+  head step 95000/100000 weighted fit 5.9322e-07 (74s)
+  head step 100000/100000 weighted fit 5.5168e-07 (78s)
+head k=32: 86s fit {'train_q0': {'median': 0.00039593360684711006, 'worst': 0.003098181308971895}, 'val_q0': {'median': 0.0004084553508865431, 'worst': 0.001745607313284247}}
+floors k=8: q0=0.00130
+floors k=16: q0=0.00129
+floors k=32: q0=0.00129
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+rotation: rotated vs rebuilt operators 7.756e-16
+span floors: R'64=0.00129, R'48=0.00346, R'32=0.00748, R'16=0.02286, R'8=0.05765
+lin_dt0.04_it2: evolved worst 0.019902
+lin_dt0.04_it3: evolved worst 0.019463
+lin_dt0.04_it4: evolved worst 0.019456
+lin_dt0.02_it2: evolved worst 0.006166
+lin_dt0.02_it3: evolved worst 0.006159
+lin_dt0.02_it4: evolved worst 0.006159
+lin_dt0.01_it2: evolved worst 0.005262
+lin_dt0.01_it3: evolved worst 0.005262
+lin_dt0.01_it4: evolved worst 0.005262
+span64_dt0.04_it2: evolved worst 0.019902
+span64_dt0.04_it3: evolved worst 0.019463
+span64_dt0.04_it4: evolved worst 0.019456
+span64_dt0.02_it2: evolved worst 0.006166
+span64_dt0.02_it3: evolved worst 0.006159
+span64_dt0.02_it4: evolved worst 0.006159
+span64_dt0.01_it2: evolved worst 0.005262
+span64_dt0.01_it3: evolved worst 0.005262
+span64_dt0.01_it4: evolved worst 0.005262
+span48_dt0.04_it2: evolved worst 0.020093
+span48_dt0.04_it3: evolved worst 0.020341
+span48_dt0.04_it4: evolved worst 0.020341
+span48_dt0.02_it2: evolved worst 0.010034
+span48_dt0.02_it3: evolved worst 0.010045
+span48_dt0.02_it4: evolved worst 0.010045
+span48_dt0.01_it2: evolved worst 0.009541
+span48_dt0.01_it3: evolved worst 0.009543
+span48_dt0.01_it4: evolved worst 0.009543
+span32_dt0.04_it2: evolved worst 0.011418
+span32_dt0.04_it3: evolved worst 0.011415
+span32_dt0.04_it4: evolved worst 0.011415
+span32_dt0.02_it2: evolved worst 0.012622
+span32_dt0.02_it3: evolved worst 0.012622
+span32_dt0.02_it4: evolved worst 0.012622
+span32_dt0.01_it2: evolved worst 0.013310
+span32_dt0.01_it3: evolved worst 0.013310
+span32_dt0.01_it4: evolved worst 0.013310
+span16_dt0.04_it2: evolved worst 0.028175
+span16_dt0.04_it3: evolved worst 0.028170
+span16_dt0.04_it4: evolved worst 0.028170
+span16_dt0.02_it2: evolved worst 0.029593
+span16_dt0.02_it3: evolved worst 0.029593
+span16_dt0.02_it4: evolved worst 0.029593
+span16_dt0.01_it2: evolved worst 0.029945
+span16_dt0.01_it3: evolved worst 0.029945
+span16_dt0.01_it4: evolved worst 0.029945
+span8_dt0.04_it2: evolved worst 0.054945
+span8_dt0.04_it3: evolved worst 0.054931
+span8_dt0.04_it4: evolved worst 0.054931
+span8_dt0.02_it2: evolved worst 0.055487
+span8_dt0.02_it3: evolved worst 0.055485
+span8_dt0.02_it4: evolved worst 0.055485
+span8_dt0.01_it2: evolved worst 0.055782
+span8_dt0.01_it3: evolved worst 0.055782
+span8_dt0.01_it4: evolved worst 0.055782
+k8_q0_dt0.04_it2: evolved worst 0.004073
+k8_q0_dt0.04_it3: evolved worst 0.004070
+k8_q0_dt0.04_it4: evolved worst 0.004070
+k8_q0_dt0.02_it2: evolved worst 0.001519
+k8_q0_dt0.02_it3: evolved worst 0.001520
+k8_q0_dt0.02_it4: evolved worst 0.001520
+k8_q0_dt0.01_it2: evolved worst 0.001357
+k8_q0_dt0.01_it3: evolved worst 0.001357
+k8_q0_dt0.01_it4: evolved worst 0.001357
+k16_q0_dt0.04_it2: evolved worst 0.004795
+k16_q0_dt0.04_it3: evolved worst 0.004823
+k16_q0_dt0.04_it4: evolved worst 0.004823
+k16_q0_dt0.02_it2: evolved worst 0.001765
+k16_q0_dt0.02_it3: evolved worst 0.001767
+k16_q0_dt0.02_it4: evolved worst 0.001767
+k16_q0_dt0.01_it2: evolved worst 0.001405
+k16_q0_dt0.01_it3: evolved worst 0.001405
+k16_q0_dt0.01_it4: evolved worst 0.001405
+k32_q0_dt0.04_it2: evolved worst 0.008785
+k32_q0_dt0.04_it3: evolved worst 0.008759
+k32_q0_dt0.04_it4: evolved worst 0.008758
+k32_q0_dt0.02_it2: evolved worst 0.003369
+k32_q0_dt0.02_it3: evolved worst 0.003389
+k32_q0_dt0.02_it4: evolved worst 0.003389
+k32_q0_dt0.01_it2: evolved worst 0.002682
+k32_q0_dt0.01_it3: evolved worst 0.002684
+k32_q0_dt0.01_it4: evolved worst 0.002684
+selected k = 8
+control frame-zero: evolved worst 0.3981
+head driver parity vs LM: {'2': 7.97706950495102e-06, '3': 6.291030721481017e-10, '4': 8.592826109443923e-11}
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000186
+CNAB2 steps=80: 0.000325
+CNAB2 steps=70: 0.000444
+CNAB2 steps=60: 0.000628
+CNAB2 steps=50: 0.000933
+CNAB2 steps=40: 0.003823
+CNAB2 steps=20: 6.861432
+CNAB2 steps=10: 2.720382
+fd_n64_s20_tol0.0001: 0.048889 cg_p_mean=49.57812571525574
+fd_n64_s20_tol1e-06: 0.051824 cg_p_mean=74.69375085830688
+fd_n64_s20_tol1e-08: 0.051761 cg_p_mean=89.47500085830688
+fd_n64_s40_tol0.0001: 0.011517 cg_p_mean=42.95000123977661
+fd_n64_s40_tol1e-06: 0.011518 cg_p_mean=70.63281393051147
+fd_n64_s40_tol1e-08: 0.011518 cg_p_mean=87.20937728881836
+fd_n64_s50_tol0.0001: 0.011908 cg_p_mean=40.59249925613403
+fd_n64_s50_tol1e-06: 0.011770 cg_p_mean=69.3349986076355
+fd_n64_s50_tol1e-08: 0.011770 cg_p_mean=86.60499811172485
+fd_n64_s100_tol0.0001: 0.012138 cg_p_mean=32.914374232292175
+fd_n64_s100_tol1e-06: 0.012130 cg_p_mean=65.53562307357788
+fd_n64_s100_tol1e-08: 0.012130 cg_p_mean=84.4706220626831
+fd_n128_s40_tol1e-06: 0.002917 cg_p_mean=143.7281255722046
+fd_n128_s50_tol1e-06: 0.002600 cg_p_mean=140.91124629974365
+timing v2: 92 fast arms, 14 slow arms, 7 reps, cooldown 1.0s, 8 ladder arms
+neighbour gate: block True cooldown True; after-heavy ratios {'span64_dt0.02_it3': 1.018, 'span48_dt0.02_it3': 1.017, 'span32_dt0.02_it3': 1.022, 'span16_dt0.02_it3': 1.032, 'span8_dt0.02_it3': 1.029, 'k8_q0_dt0.02_it3': 1.056, 'k16_q0_dt0.02_it3': 1.023, 'k32_q0_dt0.02_it3': 1.023}
+timed outputs vs accuracy pass: 0.000e+00
+done
+control: perturbed copy of cnab2_s10 gap 5.541e-05 rejected=True
+cnab2_s10 {"dtype": "float32", "evolved_worst": 2.720382001712394, "evolved_median": 0.19068344362995265, "gap": 2.5719683439232217e-08}
+cnab2_s100 {"dtype": "float32", "evolved_worst": 0.00018582406556699686, "evolved_median": 0.0001098783752448349, "gap": 2.5719683439232217e-08}
+cnab2_s20 {"dtype": "float32", "evolved_worst": 6.861432319646873, "evolved_median": 0.02746039938803127, "gap": 2.5719683439232217e-08}
+cnab2_s200 {"dtype": "float32", "evolved_worst": 2.526783164412152e-08, "evolved_median": 2.463325079931362e-08, "gap": 2.5719683439232217e-08}
+cnab2_s40 {"dtype": "float32", "evolved_worst": 0.0038234672417105557, "evolved_median": 0.0008827869057853929, "gap": 2.5719683439232217e-08}
+cnab2_s50 {"dtype": "float32", "evolved_worst": 0.0009325763920293404, "evolved_median": 0.0005505744852035812, "gap": 2.5719683439232217e-08}
+cnab2_s60 {"dtype": "float32", "evolved_worst": 0.0006276117358123349, "evolved_median": 0.0003707590334210242, "gap": 2.5719683439232217e-08}
+cnab2_s70 {"dtype": "float32", "evolved_worst": 0.00044423188750054827, "evolved_median": 0.0002625267840215945, "gap": 2.5719683439232217e-08}
+cnab2_s80 {"dtype": "float32", "evolved_worst": 0.00032539763256050604, "evolved_median": 0.0001923478717107529, "gap": 2.5719683439232217e-08}
+fd_n128_s40_tol1e-06 {"dtype": "float32", "evolved_worst": 0.0029169170224900144, "evolved_median": 0.0016475167403043921, "gap": 2.2151247633037108e-10}
+fd_n128_s50_tol1e-06 {"dtype": "float32", "evolved_worst": 0.002600260121253865, "evolved_median": 0.0017357707156360378, "gap": 2.5264240872957533e-10}
+fd_n64_s100_tol0.0001 {"dtype": "float32", "evolved_worst": 0.012138400491872873, "evolved_median": 0.008004781947950334, "gap": 2.027050315794865e-10}
+fd_n64_s100_tol1e-06 {"dtype": "float32", "evolved_worst": 0.012129596400069841, "evolved_median": 0.007839985432865727, "gap": 2.623775285579e-10}
+fd_n64_s100_tol1e-08 {"dtype": "float32", "evolved_worst": 0.012129819532239341, "evolved_median": 0.007839783875381692, "gap": 2.414576039111438e-10}
+fd_n64_s20_tol0.0001 {"dtype": "float32", "evolved_worst": 0.048888534204850786, "evolved_median": 0.006730385856759035, "gap": 2.563384960026227e-10}
+fd_n64_s20_tol1e-06 {"dtype": "float32", "evolved_worst": 0.05182413711190754, "evolved_median": 0.006780251310154429, "gap": 2.3193513862956872e-10}
+fd_n64_s20_tol1e-08 {"dtype": "float32", "evolved_worst": 0.051760940740913024, "evolved_median": 0.006779787639142368, "gap": 2.588413528653577e-10}
+fd_n64_s40_tol0.0001 {"dtype": "float32", "evolved_worst": 0.011516558569969193, "evolved_median": 0.007515876894648549, "gap": 1.8935699709621279e-10}
+fd_n64_s40_tol1e-06 {"dtype": "float32", "evolved_worst": 0.011518440313899078, "evolved_median": 0.007514446033894976, "gap": 1.9462667241731957e-10}
+fd_n64_s40_tol1e-08 {"dtype": "float32", "evolved_worst": 0.011518167494136524, "evolved_median": 0.007514407111258459, "gap": 2.5048667740695807e-10}
+fd_n64_s50_tol0.0001 {"dtype": "float32", "evolved_worst": 0.011907910715830545, "evolved_median": 0.007651068202500331, "gap": 2.7021174534014314e-10}
+fd_n64_s50_tol1e-06 {"dtype": "float32", "evolved_worst": 0.011770179656397846, "evolved_median": 0.007650466034936857, "gap": 2.0788414479416817e-10}
+fd_n64_s50_tol1e-08 {"dtype": "float32", "evolved_worst": 0.01176989337878793, "evolved_median": 0.007650296359751053, "gap": 2.999786413195038e-10}
+k16_q0_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.0017665747963010983, "evolved_median": 0.0011081851633461342, "gap": 3.7730235602495554e-17}
+k32_q0_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.0033894050225495363, "evolved_median": 0.0020496442490114007, "gap": 6.852157730108388e-17}
+k8_q0_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.001520090442617584, "evolved_median": 0.000919322480586549, "gap": 2.47198095326695e-17}
+lin_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.006159103917496692, "evolved_median": 0.004894801289548742, "gap": 1.2750217548429532e-16}
+span16_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.029593130452851994, "evolved_median": 0.020157062619744325, "gap": 6.591949208711867e-16}
+span32_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.012622074551059247, "evolved_median": 0.007120048087260553, "gap": 1.734723475976807e-16}
+span48_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.01004537424849722, "evolved_median": 0.006349859972876536, "gap": 2.1684043449710089e-16}
+span64_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.006159104241134625, "evolved_median": 0.004894802056304048, "gap": 9.627715291671279e-17}
+span8_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.05548504347568136, "evolved_median": 0.035919880042437485, "gap": 1.0547118733938987e-15}
+verify ok 1.0547118733938987e-15 2.5719683439232217e-08
+RUN_EXIT=0 VERIFY_EXIT=0

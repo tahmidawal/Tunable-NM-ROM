@@ -1,0 +1,193 @@
+{
+  "model": "tsol-refine",
+  "role": "the 256^2 panel's validation-selected transolver configuration, retrained at 1024^2",
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "9e99c41c9a517f931e631e35b98717c2c204e7e4df13354424bf281e1515e137",
+  "config": {
+    "family": "transolver",
+    "dim": 128,
+    "layers": 8,
+    "heads": 8,
+    "slices": 64,
+    "mlp_ratio": 2,
+    "patch": 4,
+    "ref": 8,
+    "dtype": "float32",
+    "warmup_epochs": 10,
+    "epochs": 4000,
+    "patience": 250,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "seed": 20260914,
+    "refines_capacity": "small",
+    "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "best_epoch": 112,
+  "parameter_tensor_elements": 3108240,
+  "real_parameter_count": 3108240,
+  "repetitions_per_case": 5,
+  "burn_in_per_block": 20,
+  "device_query_pooled": {
+    "count": 30,
+    "mean_ms": 135.70853717004258,
+    "median_ms": 135.70673298090696,
+    "p05_ms": 135.56735878810287,
+    "p95_ms": 135.8352696057409,
+    "minimum_ms": 135.56394912302494,
+    "maximum_ms": 136.21294498443604,
+    "upper_tukey_outliers": 1
+  },
+  "host_transfer_pooled": {
+    "count": 30,
+    "mean_ms": 11.76418539447089,
+    "median_ms": 11.725739343091846,
+    "p05_ms": 11.619669408537447,
+    "p95_ms": 12.082335143350065,
+    "minimum_ms": 11.585069820284843,
+    "maximum_ms": 12.10712268948555,
+    "upper_tukey_outliers": 0
+  },
+  "device_query_median_of_case_medians_ms": 135.703053092584,
+  "cases": [
+    {
+      "case_id": "burgers-dev-00000",
+      "case_index": 0,
+      "artifact": "full_tsol-refine_case0.npy",
+      "field_sha256": "89303df8e92d02dff9976e38a0ddbdb47486e92f1dd33c64698a4ea6f7b5d6f4",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13621294498443604,
+        0.1355702211149037,
+        0.13557185465469956,
+        0.13558378582820296,
+        0.13570128427818418
+      ],
+      "host_seconds": [
+        0.011803917121142149,
+        0.011844260152429342,
+        0.011628034058958292,
+        0.011656934395432472,
+        0.011653758119791746
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00001",
+      "case_index": 1,
+      "artifact": "full_tsol-refine_case1.npy",
+      "field_sha256": "01e767b706e06f2824c5239482aaf12852b507aabd85b0eaad3b24c4052ebdfd",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13569502159953117,
+        0.1357090719975531,
+        0.1357305166311562,
+        0.13556394912302494,
+        0.13572215707972646
+      ],
+      "host_seconds": [
+        0.011804728303104639,
+        0.011881244834512472,
+        0.012062662281095982,
+        0.01210712268948555,
+        0.01190306805074215
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00002",
+      "case_index": 2,
+      "artifact": "full_tsol-refine_case2.npy",
+      "field_sha256": "9ef8230bca74f1ea5dcc0059b09fd4b84117900dc5c92b0f9111b59fbddb1792",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13579209195449948,
+        0.13568217400461435,
+        0.1355964713729918,
+        0.13557645585387945,
+        0.1357068382203579
+      ],
+      "host_seconds": [
+        0.01169700175523758,
+        0.011665571946650743,
+        0.011643031146377325,
+        0.0116457249969244,
+        0.011585069820284843
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00003",
+      "case_index": 3,
+      "artifact": "full_tsol-refine_case3.npy",
+      "field_sha256": "756891af75873dfda09a9c831bc88786dab4252da22fe9ad58d8468a3f1eb6c9",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13564501982182264,
+        0.13577791908755898,
+        0.13572600670158863,
+        0.1356928893364966,
+        0.13572405697777867
+      ],
+      "host_seconds": [
+        0.011615267023444176,
+        0.012098431121557951,
+        0.011868376284837723,
+        0.011752760037779808,
+        0.01173726562410593
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00004",
+      "case_index": 4,
+      "artifact": "full_tsol-refine_case4.npy",
+      "field_sha256": "116429fcc5fe20dbea2913ddc5fbe83fe83318dca886c3d5adcae6013e3897a3",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13578513078391552,
+        0.13570662774145603,
+        0.1358496081084013,
+        0.13581774476915598,
+        0.13570710411295295
+      ],
+      "host_seconds": [
+        0.011637621093541384,
+        0.011652838438749313,
+        0.011625050101429224,
+        0.011650832835584879,
+        0.01167991291731596
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00005",
+      "case_index": 5,
+      "artifact": "full_tsol-refine_case5.npy",
+      "field_sha256": "046bc1a5087c8b243aac29f23d300bbd82d7851923580ca4303c7feb32abd04a",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.13563364325091243,
+        0.13573503866791725,
+        0.13569703418761492,
+        0.13556501688435674,
+        0.1357784359715879
+      ],
+      "host_seconds": [
+        0.01171421306207776,
+        0.011787749826908112,
+        0.011756998021155596,
+        0.011867404915392399,
+        0.01189871085807681
+      ]
+    }
+  ],
+  "timed_region": "supplied on-device initial field and viscosity to on-device complete trajectory",
+  "host_transfer": "separately timed device-to-host copy of the finished trajectory",
+  "retained": "every individual repetition is stored in the npz beside this file",
+  "deviation": "second process in the same Slurm allocation on the same GPU, after the JAX phase exited; the source protocol times all models in one process",
+  "scientific_status": "same-allocation, same-GPU timing against the JAX subjects of this job; no ratio is taken against any other job"
+}

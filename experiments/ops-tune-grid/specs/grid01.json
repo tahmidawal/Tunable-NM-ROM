@@ -81,7 +81,7 @@
   "per_arm_seconds": 3000.0,
   "global_seconds": 62000.0,
   "reserve_seconds": 2000.0,
-  "data_source": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/cache",
+  "data_source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
   "data_dirs": [
     "train",
     "validation",
@@ -97,5 +97,6 @@
     "tsol01": "3780139",
     "fno_burgers02": "3710846",
     "note": "the budget and data this grid holds fixed; no timing is compared across jobs"
-  }
+  },
+  "data_origin": "the PINNED Burgers cache, directly. grid01 trains only on the published 128-case set, so it needs nothing this lane generated and has NO dependency on gen01: if generation fails, the tuning result still stands."
 }

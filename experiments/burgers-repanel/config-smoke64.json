@@ -68,6 +68,9 @@
      "base": [
       1e-06
      ],
+     "l4": [
+      1e-06
+     ],
      "variants": [
       {
        "solver": "lu",
@@ -206,47 +209,21 @@
  "parity_bar": 1e-09,
  "roles": {
   "optimised_accurate": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
-  "optimised_fast": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+  "optimised_fast": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
   "preoptimisation_accurate": "q256_M1088_exact_g1em06_base",
-  "preoptimisation_fast": "q0_M64_scaled_g1em06_base",
-  "optimised_on_the_papers_own_rule": "q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2"
+  "preoptimisation_fast": "q0_M64_lat16_g1em06_base",
+  "optimised_on_the_papers_own_rule": "q256_M1088_lat16_g1em06_fast_chol_clip_lamcarry_pred2"
  },
  "fom_subsets": {
   "b_panel": [
-   "fft_tight",
-   "nt1e-4_dt005",
-   "nt1e-3_dt005",
-   "nt1e-2_dt005",
-   "nt1e-4_dt01",
-   "nt1e-3_dt01",
-   "nt1e-2_dt01"
+   "fft_tight"
   ],
   "lean": [
-   "lean_tight",
-   "lean_nt1e-4_dt005",
-   "lean_nt1e-3_l1e-3_dt005",
-   "lean_nt3e-3_l3e-3_dt005",
-   "lean_nt1e-2_l1e-2_dt005",
-   "lean_nt1e-3_l1e-3_dt01",
-   "lean_nt3e-3_l3e-3_dt01",
-   "lean_nt1e-2_l1e-2_dt01"
+   "lean_nt3e-3_l3e-3_dt005"
   ],
   "full": [
    "fft_tight",
-   "nt1e-4_dt005",
-   "nt1e-3_dt005",
-   "nt1e-2_dt005",
-   "nt1e-4_dt01",
-   "nt1e-3_dt01",
-   "nt1e-2_dt01",
-   "lean_tight",
-   "lean_nt1e-4_dt005",
-   "lean_nt1e-3_l1e-3_dt005",
-   "lean_nt3e-3_l3e-3_dt005",
-   "lean_nt1e-2_l1e-2_dt005",
-   "lean_nt1e-3_l1e-3_dt01",
-   "lean_nt3e-3_l3e-3_dt01",
-   "lean_nt1e-2_l1e-2_dt01"
+   "lean_nt3e-3_l3e-3_dt005"
   ]
  },
  "profile_arms": [
@@ -271,5 +248,6 @@
   0
  ],
  "local_smoke_waives_cohort_hash": true,
- "allow_cpu_smoke": false
+ "allow_cpu_smoke": false,
+ "expected_from_the_paper": {}
 }

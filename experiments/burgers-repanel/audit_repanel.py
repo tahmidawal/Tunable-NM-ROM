@@ -26,6 +26,20 @@ import numpy as np
 
 BAR = 0.116
 
+# The paper's printed Burgers rows (paper/tables/headline-provenance.json rows 17-19), for the arms this lane
+# reproduces EXACTLY -- same mesh, same cohort, same quadrature rule, same tolerance, same kernel. If one of
+# these comes back at a different error, the lane's premise (that it is re-timing the same setting) is wrong.
+# Rows whose rule the lane deliberately does not rebuild (the NNLS-refit `eqtopxfer` / `eqxfer` rules at 512^2,
+# and the q=0 rule at 512^2 and 1024^2) are absent on purpose: they are not the same rule.
+PAPER = {
+    256: {'q256_M1088_scaled_g1em06_base': (0.5129194368597558, 'q256_M1088_eqtop_g1em06', 17),
+          'q0_M64_scaled_g1em06_fastL4': (1.8891456982792685, 'q0_M64_eqcert_g1em06_fastL4', 17)},
+    512: {},
+    1024: {'q256_M1088_exact_g1em06_base': (0.5860844308137502, 'q256_M1088_dense_g1em06', 19)},
+}
+PAPER_TOL = .02          # relative; deterministic arithmetic, so this is loose by design
+ALGO_TOL = .01           # an algorithmic arm may not move the worst evolved error by more than this, relative
+
 
 def med(x):
     return float(np.median(np.asarray(x, float)))
@@ -383,6 +397,85 @@ def main():
     verdict['rule_status'] = cfg.get('rule_status')
     verdict['certificates_run_in_this_job'] = CERTIFIED_HERE
     verdict['parity'] = gates['parity_against_preoptimisation_arm']
+    # ---- F14: does the pre-optimisation arm reproduce the number the paper prints? ----------------
+    tw = []
+    for name, (want, paper_arm, r_) in PAPER.get(L, {}).items():
+        t = table.get(name)
+        if t is None:
+            tw.append(dict(arm=name, paper_arm=paper_arm, row=r_, expected=want, got=None, ok=False,
+                           note='arm not timed in this job'))
+            continue
+        got = t['worst_evolved_percent']
+        tw.append(dict(arm=name, paper_arm=paper_arm, row=r_, expected=want, got=got,
+                       relative_difference=abs(got / want - 1), ok=bool(abs(got / want - 1) <= PAPER_TOL)))
+    gate('reproduces_the_printed_error_of_the_paper_row', all(x['ok'] for x in tw), applicable=bool(tw),
+         tolerance=PAPER_TOL, arms=tw,
+         note='only arms this job reproduces exactly (same rule, tolerance and kernel) are listed; rows whose '
+              'quadrature rule this lane does not rebuild are deliberately not checked here')
+
+    # ---- F13: the algorithmic arms must not move the error, and no role arm may stall -------------
+    algo = []
+    for n, t in table.items():
+        if t['family'] != 'rom':
+            continue
+        st = setup.get(n, {})
+        v_ = st.get('variant') or {}
+        if not (v_.get('clip') or v_.get('lamcarry') or v_.get('pred2') or st.get('exact_steps')):
+            continue
+        # the non-algorithmic arm of the SAME rule at the SAME tolerance. A different tolerance is a
+        # different setting -- comparing across one would test the tolerance, not the optimisation.
+        sib = [m for m, u in table.items() if u['family'] == 'rom' and u['rule'] == t['rule'] and m != n
+               and u['gtol'] == t['gtol']
+               and not ((setup.get(m, {}).get('variant') or {}).get('clip')
+                        or (setup.get(m, {}).get('variant') or {}).get('lamcarry')
+                        or (setup.get(m, {}).get('variant') or {}).get('pred2')
+                        or setup.get(m, {}).get('exact_steps'))]
+        if not sib:
+            algo.append(dict(arm=n, twin=None, comparable=False, ok=True,
+                             arm_percent=t['worst_evolved_percent'],
+                             note='no non-algorithmic arm of this rule AT THIS TOLERANCE in this job; the arm '
+                                  'stands on its directly measured error, reported beside it'))
+            continue
+        m_ = min(sib, key=lambda m: abs(table[m]['worst_evolved_percent'] - t['worst_evolved_percent']))
+        d_ = abs(t['worst_evolved_percent'] / table[m_]['worst_evolved_percent'] - 1)
+        algo.append(dict(arm=n, twin=m_, comparable=True, arm_percent=t['worst_evolved_percent'],
+                         twin_percent=table[m_]['worst_evolved_percent'], relative_difference=d_,
+                         ok=bool(d_ <= ALGO_TOL)))
+    gate('algorithmic_arms_do_not_move_the_error', all(x['ok'] for x in algo), tolerance=ALGO_TOL, arms=algo,
+         compared=sum(1 for x in algo if x.get('comparable')), total=len(algo),
+         note='clip / damping carry-over / quadratic predictor / exact-first-step change the iterates by design, '
+              'so they are not parity arms; this is the bar they are held to instead. Only arms with a '
+              'non-algorithmic twin of the same rule AT THE SAME TOLERANCE are compared -- across tolerances '
+              'the comparison would measure the tolerance, not the optimisation')
+    roles = cfg.get('roles', {})
+    stall = {n: table[n]['stalled_exits'] for n in roles.values() if n in table and table[n]['family'] == 'rom'}
+    gate('no_role_arm_stalls', all(v == 0 for v in stall.values()), per_arm=stall,
+         note='a stalled exit is a step that ran out of budget, took a vanishing step, or had its trial step '
+              'rejected, instead of meeting the convergence test')
+
+    # ---- F8: did a neighbouring arm's duration bias a timing? (the 22 s dense arm sits in this panel) ----
+    seq, order_eff = inv, []
+    for n in dict.fromkeys(x['name'] for x in inv):
+        after_long, after_short = [], []
+        for k, x in enumerate(seq):
+            if x['name'] != n:
+                continue
+            prev = seq[k - 1] if k else None
+            (after_long if prev and prev['gpu_seconds'] >= 1. else after_short).append(x['gpu_seconds'])
+        if after_long and after_short:
+            a_, b_ = med(after_long), med(after_short)
+            order_eff.append(dict(arm=n, median_after_a_long_arm_ms=1e3 * a_, median_after_a_short_arm_ms=1e3 * b_,
+                                  relative_difference=abs(a_ / b_ - 1), n_after_long=len(after_long),
+                                  n_after_short=len(after_short)))
+    worst_oe = max([x['relative_difference'] for x in order_eff] or [0.])
+    gate('no_order_effect_between_arms', worst_oe <= .05, worst_relative_difference=worst_oe, per_arm=order_eff,
+         note='every timed arm, split by whether the invocation immediately before it took more or less than 1 s '
+              'of GPU time; a systematic gap would mean the long pre-optimisation arm biases its neighbours '
+              'despite the burn-in, and the panel would not be internally comparable')
+
+    gate('all_roles_present', not verdict['missing_roles'], missing=verdict['missing_roles'],
+         note='a role arm that never reached the timed panel (typo, or dropped on OOM in the quick phase) would '
+              'otherwise leave an empty row and an accepted verdict')
     failed = [k for k, v in gates.items() if not v['passed']]
     verdict['accepted'] = not failed
     verdict['acceptance_rule'] = 'every audit gate passed (else the verdict is reported but not accepted)'

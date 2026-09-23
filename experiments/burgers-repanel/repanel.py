@@ -377,14 +377,16 @@ def main():
         names = []
         # ---- the audited pre-optimisation arm (the paper's printed setting), one per requested tolerance
         twins = {}
-        for g in rs.get('base', []):
+        bdata = None
+        if rs.get('base') or rs.get('l4'):
             assert single, 'the audited path needs the bank as ONE array'
             if exact:                                   # dense residual: the audited path needs Phi explicitly
-                Phi_, lam_, _ = e.modes(L, M)
+                Phi_, _, _ = e.modes(L, M)              # built ONCE, whatever the tolerance list (host memory)
                 bdata = dict(A=o['A'], lam=o['lam'], G=G[0], Phi=jnp.asarray(Phi_))
                 del Phi_
-            else:
-                bdata = dict(data, G=G[0])
+            else:                                       # exactly the keys arms.weak_eq reads, as b-panel passed them
+                bdata = dict(A=o['A'], lam=o['lam'], G=G[0], G5=ops['G5'], Pq=ops['Pq'])
+        for g in rs.get('base', []):
             qf = TF.make_query(params, C, K, q, L, dt, trust, 'dense' if exact else 'eq', 'base',
                                ic_budget=st['ic_budget'], step_budget=st['step_budget'], gtol=g,
                                ic_gtol=cfg['ic_gtol'], linear=lin(K + q), inner_damping=cfg['inner_damping'],
@@ -395,6 +397,20 @@ def main():
                            control=bool(rs.get('control')), preopt=True, variant=dict(solver='lu'),
                            query=(lambda u, nu, d_, c, _q=qf: _q(u, nu, d_, c)))
             names.append(twins[g])
+        for g in rs.get('l4', []):
+            # b-panel's `fast_arm` path (panel.py:628-633): the b-speed L4 kernel on the audited arm's
+            # settings. The paper's 256^2 and 512^2 FAST rows are this arm, not the audited `base` one.
+            assert q == 0 and not exact, 'the L4 kernel is the q=0 fast arm'
+            oo = FL.ARMS['L4']
+            tabq = F.build_tables(params, bdata, cold, oo)
+            fq = F.make_query(params, K, L, dt, int(bdata['G5'].shape[0]), trust, oo,
+                              ic_budget=st['ic_budget'], step_budget=st['step_budget'], gtol=g)
+            names.append(add(f'{tag}_{gt(g)}_fastL4', family='rom', kind='rom', q=q, M=M, m=m_, rule=rs['name'],
+                             gtol=g, kernel='b-speed L4 (the kernel the paper\'s fast rows print)', solver='gj',
+                             quadrature='eq', data=bdata, cold=cold, exact_steps=0, exact=False,
+                             control=bool(rs.get('control')), preopt=True, variant=dict(kernel='L4'),
+                             fastarm=True, parity_twin=twins.get(g),
+                             query=(lambda u, nu, d_, c, _t=tabq, _f=fq: _f(u, nu, d_, c, _t))))
         for var in rs.get('variants', rung['variants']):
             for g in var.get('gtols', rs.get('gtols', rung['gtols'])):
                 solver = var.get('solver', 'lu')
@@ -471,6 +487,8 @@ def main():
                                           note='no audited twin in this job; the arm stands on its directly measured error'))
                 continue
             if kept[(name, 0)][0] is None or kept[(twin, 0)][0] is None:
+                rep['parity'].append(dict(fast=name, base=twin, covered=False, passed=None,
+                                          note='fields were released before the gate could run (keep_for_reference)'))
                 continue
             per = []
             for c in range(ncase):
@@ -643,7 +661,9 @@ def main():
                                            status='exact residual', control=False)
     save()
     ctrl = [v_ for v_ in rep['arm_status'].values() if v_.get('control')]
-    rep['gates']['control_rule_fails_certificate'] = dict(
+    if SKIPC:
+        ctrl = None                                   # no certificate ran: emitting the gate would misread
+    rep['gates']['control_rule_fails_certificate'] = None if SKIPC else dict(
         passed=(all(v_['status'] != 'confirmed' for v_ in ctrl) if ctrl else None),
         controls=[dict(q=v_['q'], M=v_['M'], rule=v_['rule'], status=v_['status'], heldout_rho_max=v_['heldout_rho_max'])
                   for v_ in ctrl],

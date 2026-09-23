@@ -81,6 +81,9 @@
      "base": [
       1e-06
      ],
+     "l4": [
+      1e-06
+     ],
      "variants": [
       {
        "solver": "lu",
@@ -310,7 +313,7 @@
   "optimised_accurate": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
   "optimised_fast": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
   "preoptimisation_accurate": "q256_M1088_scaled_g1em06_base",
-  "preoptimisation_fast": "q0_M64_scaled_g1em06_base",
+  "preoptimisation_fast": "q0_M64_scaled_g1em06_fastL4",
   "optimised_on_the_papers_own_rule": "q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2"
  },
  "fom_subsets": {

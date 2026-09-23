@@ -84,7 +84,10 @@ def rungs(L):
         dict(name='exact', exact=True, parts=[], base=([1e-6] if L == 1024 else []),
              variants=[dict(OPT, gtols=[1e-2 if x1 else 1e-3])])])
     r0 = dict(q=0, M=64, gtols=[1e-6], variants=[dict(solver='lu')], rules=[
-        dict(name='scaled', parts=[Q0], base=[1e-6],
+        # `l4` = b-panel's fast_arm kernel. The paper's FAST rows print the L4 arm at 256^2 and 512^2
+        # (`q0_M64_eqcert_g1em06_fastL4`, `q0_M64_eqxfer_g1em06_fastL4`) and the audited `base` arm at
+        # 1024^2 (`q0_M64_eqxfer_g1em06`), so both are timed here and the role points at the right one.
+        dict(name='scaled', parts=[Q0], base=[1e-6], l4=[1e-6],
              variants=[dict(solver='lu', gtols=[1e-6]),                             # parity vs base
                        dict(solver='lu', clip=True, lamcarry=True, pred2=True, gtols=[1e-3])])])
     return [r0, r256]
@@ -116,7 +119,8 @@ def config(L):
         roles=dict(optimised_accurate=acc, optimised_fast='q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2',
                    preoptimisation_accurate=('q256_M1088_exact_g1em06_base' if L == 1024 else
                                              'q256_M1088_scaled_g1em06_base'),
-                   preoptimisation_fast='q0_M64_scaled_g1em06_base',
+                   preoptimisation_fast=('q0_M64_scaled_g1em06_base' if L == 1024 else
+                                         'q0_M64_scaled_g1em06_fastL4'),
                    optimised_on_the_papers_own_rule='q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2'),
         # which FOM names belong to which candidate grid, so the paper rule can be applied on either
         fom_subsets=dict(b_panel=[f['name'] for f in FOM if not f['name'].startswith('lean_')],
@@ -155,6 +159,12 @@ def smoke():
         for rs in rg['rules']:
             if rs['name'] == 'scaled':
                 rs['name'], rs['parts'] = 'lat16', [dict(lattice=16)]
+    # roles and FOM subsets must follow the rename and the reduced grid, or the smoke silently exercises
+    # neither the role lookup nor the by-grid selection -- the two things it exists to check
+    c['roles'] = {k: v.replace('_scaled_', '_lat16_') for k, v in c['roles'].items()}
+    kept = {f['name'] for f in c['fom_settings']}
+    c['fom_subsets'] = {k: [n for n in v if n in kept] for k, v in c['fom_subsets'].items()}
+    c['expected_from_the_paper'] = {}                # a 64^2 smoke has no paper row to reproduce
     c['rule_status'] = {'smoke': 'local smoke: no certificate, no result'}
     return c
 

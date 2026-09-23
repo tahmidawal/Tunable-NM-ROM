@@ -59,6 +59,11 @@ timed panel, ≥ 5 retained repetitions × 6 development cases, medians reported
 | optimisation on the paper's own rule | `…scaled_g1em06_fast_chol_clip_lamcarry_pred2`, `…scaled_g0p001_…` | isolates the solver-path gain from the rule change |
 | dense on the optimised path | `q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2` | separates "dense → quadrature" from "old solver → new solver" |
 
+**Parity covers the chain, not the headline rule.** The `lat64` rule that carries the corrected accurate row
+has no audited twin (b-panel never ran it), so the fold and Cholesky parity is established on the `scaled`
+rule and carried across. `SPEED-LOG.md` did the same at $2048^2$ ("no audited twin for this rule"); the
+report states it rather than letting the gate be read as covering the headline arm.
+
 **Known deviation, stated up front:** at $512^2$ the paper's printed arm uses `eqtopxfer` — the same
 support with NNLS-refit weights. Reproducing that refit needs the fit population from b-panel's own
 population spec, which this lane deliberately does not rebuild (it would be a *new* rule, not the
@@ -70,8 +75,18 @@ the printed arm directly; $1024^2$ reproduces it directly (dense has no rule).
 ### 3.2 NM-ROM, fast
 
 - **optimised fast**: `q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2`.
-- **pre-optimisation control**: `q0_M64_scaled_g1em06_base` (audited path, LU, gtol $10^{-6}$).
-- parity chain: `q0_M64_scaled_g1em06_fast`.
+- **pre-optimisation control**: whichever arm the paper actually prints at that mesh —
+  `q0_M64_scaled_g1em06_fastL4` (the b-speed `L4` kernel) at $256^2$ and $512^2$, because rows 17 and 18
+  print `…_fastL4` arms, which are *already* a fused kernel and not the audited path;
+  `q0_M64_scaled_g1em06_base` (audited, LU) at $1024^2$, because row 19 prints the audited arm.
+  Both are timed at every mesh, so the ladder audited → L4 → optimised is visible throughout.
+- parity chain: `q0_M64_scaled_g1em06_fast` and the `L4` arm, both against `…_base`.
+
+**Second known deviation, stated up front:** the paper's fast rows at $512^2$ and $1024^2$ use `eqxfer` —
+the $q{=}0$ support *refit* at that mesh ($m{=}922$ and $m{=}934$) — while this lane times the no-refit
+transfer (`scaled`, $m{=}1024$), for the same reason as §3.1: rebuilding the refit would produce a new rule,
+not the printed one. At $256^2$ there is no deviation (`eqcert` is that file with unit weights). Where the
+rule differs, the report says so beside the number and the tripwire in §5 does not fire.
 
 ### 3.3 Newton–BiCGStab candidate grid
 
@@ -122,6 +137,11 @@ reported as skipped** — the brief admits it only "if the harness carries it ch
 | **parity** | `…_fast` and `…_fast_chol` reproduce `…_base`'s field to $\le 10^{-9}$ relative on every case, with **identical** per-step iteration counts and stop reasons | **a finding, reported as such** — not worked around, not hidden. A parity failure invalidates the claim that the optimisation is error-free and the mesh's row falls back to the audited "confirmed rule" row |
 | algorithmic arms | clip / lamcarry / pred2 / exact-first-step change the iterates, so they are *not* parity arms. Bar: worst evolved error within 1 % *relative* of the non-algorithmic twin's, and zero stalled exits (budget, tiny-step or rejected) | reported; the arm is labelled as failing if it moves the error |
 | repetitions | ≥ 5 retained repetitions for every (arm, case); every timed repetition's full-field SHA256 identical to the untimed quick run of the same arm and case | gate recorded false; row not reported |
+| **reproduces the printed row** | where this job rebuilds the paper's arm exactly (same rule, tolerance, kernel, cohort, mesh), its worst evolved error must return the published value to 2 % relative: $256^2$ accurate 0.5129 %, $256^2$ fast 1.8891 %, $1024^2$ accurate 0.5861 % | **a finding**: the lane is then not re-timing the setting it claims to |
+| algorithmic arms, measured | every clip / carry-over / predictor / exact-step arm within 1 % *relative* of the non-algorithmic arm of the same rule | reported as failing |
+| no role arm stalls | zero budget, tiny-step or rejected-trial exits on every reported arm | reported as failing |
+| no order effect | each arm's median GPU time after a $\ge 1$ s neighbour within 5 % of its median after a short one — the $1024^2$ dense control runs ~22 s inside a panel of 25 ms arms | **a finding**: the panel is then not internally comparable |
+| all roles present | every named role arm reached the timed panel | audit not accepted |
 | independent audit | `audit_repanel.py` (NumPy only, no JAX) recomputes every error from the saved fields and reproduces the job's numbers | mismatch = finding |
 
 **Success for a mesh** = a single-job table giving, for optimised accurate / optimised fast /
@@ -176,3 +196,29 @@ certified arm at that mesh, and whether the dense control is timed.
   the "same setting, faster path" framing is wrong; report the error difference beside the times.
 - Cannot finish a mesh before 2026-09-24 → say which mesh, early, and leave the paper on its
   existing audited rows.
+
+## 9. Independent audit of this design, and its disposition
+
+`codex exec -m gpt-6-astra -s read-only` could not run: its bubblewrap sandbox fails on this box
+(`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`) before reading any file — a recorded
+landmine. An independent subagent audited instead, with the same brief; the full text is in
+`reports/design-audit-2026-09-22.md`. Twenty-three findings; disposition:
+
+| finding | severity | disposition |
+|---|---|---|
+| F1 the fast row's pre-optimisation arm is the `L4` kernel, not the audited path, at $256^2$/$512^2$ | major | **fixed**: the `L4` arm is built and timed, and `roles.preoptimisation_fast` points at the arm the paper prints per mesh. Does not affect $1024^2$ (row 19 prints the audited arm), so job `br1024`, already submitted, stands |
+| F2 the $q{=}0$ rule is `eqxfer` (refit) at $512^2$/$1024^2$, not `scaled` | major | **fixed by disclosure**: §3.2 above, and beside the number in the report |
+| F3 the accurate row's base arm is right | fine | — |
+| F4 parity chain sound; F11 timing hygiene sound; F20 skip-certificate short-circuits clean; F21 no dangling arm names | fine | — |
+| F5 parity does not cover the `lat64` headline rule | minor | **fixed by disclosure**: §3.1 above |
+| F6 a released field silently drops a parity pair | minor | **fixed**: the pair is now recorded as `covered=False` with a reason |
+| F8 the 22 s dense control sits in a panel of 25 ms arms; a 0.25 s burn may not isolate it | major | **fixed in the audit**, no job change: the invocation list is in execution order, so the audit splits every arm by whether its predecessor took $\ge 1$ s and gates the gap at 5 % |
+| F9 second bank copy; F10 `Phi` rebuilt per tolerance | minor | F10 **fixed** (hoisted, built once); F9 left — 4.3 GB on a 141 GB H200 with phase 8 off |
+| F12 unused `sx`/`sy` in the audited arm's data | minor | **fixed**: the audited arm now gets exactly the keys `arms.weak_eq` reads |
+| F13 the "algorithmic arms do not move the error" gate did not exist | major | **fixed**: `algorithmic_arms_do_not_move_the_error` (1 % relative) and `no_role_arm_stalls` |
+| F14 no tripwire that the base arm reproduces the paper's printed error | major | **fixed**: `reproduces_the_printed_error_of_the_paper_row`, 2 % relative, on the three arms this lane rebuilds exactly |
+| F15 vacuous certificate-control gate | minor | **fixed**: not emitted under `skip_certificates` |
+| F18 dead locals | nit | **fixed** |
+| F19 inert config fields | nit | **left**: inherited from the parent harness, marked here rather than pruned mid-flight |
+| F22 the smoke config's roles and FOM subsets did not follow the rule rename | major | **fixed**: both rebuilt inside `smoke()`, and the smoke re-run |
+| F23 `missing_roles` computed but never gated | major | **fixed**: `all_roles_present` |

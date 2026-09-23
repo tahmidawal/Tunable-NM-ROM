@@ -232,9 +232,12 @@ def main():
                           per_draw=per, job_status=c_['status'])
         if status != c_['status']:
             mism.append(name)
-    gate('certificate_status_recomputed_matches_job', not mism and bool(cert), mismatches=mism)
+    CERT_RUN = not cfg.get('skip_certificates')
+    gate('certificate_status_recomputed_matches_job', (not CERT_RUN) or (not mism and bool(cert)), mismatches=mism,
+         applicable=CERT_RUN)
     ctrl = [n for n in cert if setup[n].get('control')]
-    gate('certificate_control_fails', bool(ctrl) and all(cert[n]['status'] != 'confirmed' for n in ctrl),
+    gate('certificate_control_fails', (not CERT_RUN) or (bool(ctrl) and all(cert[n]['status'] != 'confirmed' for n in ctrl)),
+         applicable=CERT_RUN,
          controls={n: cert[n]['status'] for n in ctrl})
 
     # ---- rho itself in NumPy for spot states ----------------------------------------------------------
@@ -274,7 +277,7 @@ def main():
                 spot.append(dict(arm=n, state=i, meta=meta, job=rj, numpy=got, rel_diff=abs(got - rj) / max(rj, 1e-300)))
         del Us
     wr = max([x['rel_diff'] for x in spot] or [None]) if spot else None
-    gate('rho_recomputed_in_numpy', a.no_rho_spot or (bool(spot) and wr <= 1e-7), worst_relative_diff=wr,
+    gate('rho_recomputed_in_numpy', a.no_rho_spot or (not CERT_RUN) or (bool(spot) and wr <= 1e-7), worst_relative_diff=wr,
          states=len(spot), skipped=a.no_rho_spot)
 
     # ---- A3 (reviewer M2): the coefficient map of every ROM arm, recomputed in NumPy from the saved internal

@@ -50,7 +50,18 @@ from ablation import radius
 import sfit
 import gridarm
 
-sha_array, sha_file, host, dump = LD.sha_array, LD.sha_file, LD.host, LD.dump
+sha_file, host, dump = LD.sha_file, LD.host, LD.dump
+
+
+def sha_array(x, chunk=1 << 28):
+    """== ladder.sha_array (SHA256 of the C-contiguous bytes) without `.tobytes()`: p2048b (4207177) was killed at the
+    host-memory limit hashing a 72 GB quadratic-manifold bank, because tobytes() copies it. Hashes a byte view in chunks."""
+    a = np.ascontiguousarray(np.asarray(x))
+    v = memoryview(a).cast('B')
+    h = hashlib.sha256()
+    for s0 in range(0, len(v), chunk):
+        h.update(v[s0:s0 + chunk])
+    return h.hexdigest()
 TIMES = np.array([0., .05, .1, .15, .2, .25])
 
 

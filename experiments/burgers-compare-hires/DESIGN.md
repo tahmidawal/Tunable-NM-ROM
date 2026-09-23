@@ -188,3 +188,14 @@ time gets no row and is reported as not run.
 a third training job, `p2048` (an H200 job) trains `fno-large` itself after its JAX phases (same data generator,
 config, 3000 s budget; nothing is timed while it trains), then times it in Phase O. DeepONet still comes from
 `t2048s` via A3. The first `p2048` submission (4206695) was cancelled while PENDING, before it ran.
+
+## A5 (2026-09-23 ~10:25 EDT) — p2048b's JAX process killed at the host-memory limit; clean rerun p2048c
+
+`p2048b` (4207177) ran Phases F and S through the quadratic manifold at $r=32$, then its `cmp.py` process was
+killed by the 240 GB cgroup during the $r=64$ fit. Cause: `ladder.sha_array` hashes via `.tobytes()`, which copied the
+72 GB bank on top of the 111 GB snapshot matrix and the bank itself. So `p2048b` has no $r=64$ arm, no Phase B bracket,
+no completion flag, and cannot be the accepted $2048^2$ panel; it is kept as a record, and its in-job FNO training
+(A4) and operator phase still ran. Fix: `cmp.sha_array` hashes a byte view in 256 MB chunks (identical digest, checked).
+`p2048c` reruns the whole $2048^2$ panel in one H200 allocation, unchanged otherwise; the FNO it times is
+`p2048b`'s in-job checkpoint, picked up through the A3 path (re-hashed against the SHA256 its training recorded).
+No number from `p2048b` is quoted as a result.

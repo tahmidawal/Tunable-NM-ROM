@@ -1,0 +1,34 @@
+W0923 03:13:50.986307  186335 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.99GiB (rounded to 2138050560)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0923 03:13:50.987386  186335 bfc_allocator.cc:525] **************************************************************************************____******___*
+W0923 03:14:00.987618  186335 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.99GiB (rounded to 2138050560)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0923 03:14:00.987996  186335 bfc_allocator.cc:525] **************************************************************************************____******___*
+E0923 03:14:01.012906  186278 config_assigner.cc:383] Could not get config for HLO: %loop_transpose_fusion.1 = f64[2047,255,512]{2,1,0} fusion(%G.1), kind=kLoop, calls=
+(param_0.3: f64[521985,512]) -> f64[2047,255,512] {
+  %param_0.3 = f64[521985,512]{1,0} parameter(0)
+  %bitcast.20 = f64[255,2047,512]{2,1,0} bitcast(%param_0.3), metadata={op_name="G"}
+  ROOT %transpose.5.1 = f64[2047,255,512]{2,1,0} transpose(%bitcast.20), dimensions={1,0,2}, metadata={op_name="jit(contract)/reshape" stack_frame_id=4}
+}, metadata={op_name="jit(contract)/reshape" stack_frame_id=4}. Status: INTERNAL: Autotuning failed for HLO: %loop_transpose_fusion.1 = f64[2047,255,512]{2,1,0} fusion(%G.1), kind=kLoop, calls=%fused_transpose.1, metadata={op_name="jit(contract)/reshape" stack_frame_id=4}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.99GiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.99GiB. [tf-allocator-allocation-error='']
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/pbank_20260923/pbkE/code/pbk_solve.py", line 362, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/pbank_20260923/pbkE/code/pbk_solve.py", line 196, in main
+    bank = P.build_banks(params, n, cfg['rows_per_chunk'], cfg['eval_rows'], maxmode, Tm, edges, truth,
+                         keep_orig=cfg['keep_orig'])
+  File "/cluster/tufts/paralab/tawal01/pbank_20260923/pbkE/code/pbk_core.py", line 125, in build_banks
+    c = contract(G, S[s:e], S)
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %loop_transpose_fusion.1 = f64[2047,255,512]{2,1,0} fusion(%G.1), kind=kLoop, calls=%fused_transpose.1, metadata={op_name="jit(contract)/reshape" stack_frame_id=4}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.99GiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.99GiB. [tf-allocator-allocation-error='']
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

@@ -231,3 +231,9 @@ after 11:19, so none of their outputs was written in the window. The only artefa
 the salvaged `fno-large` 2048^2 checkpoint (`best.pt`, 11:02): every zip member passes its CRC, all 40 state tensors are
 finite, keys and shapes equal the 256^2 `fno-large`, its embedded epoch equals the history's best, and it re-hashes
 identically on the cluster and locally. It is used, with this note.
+
+## A9 (2026-09-23 15:30 EDT) — A7 applied
+
+`p2048e` (4218390, H200) COMPLETED at 15:06 EDT with 0 failed gates (remote and local audits agree to 5.9e-15), before
+the A7 deadline, so it is the accepted $2048^2$ panel; `p2048f` is run-and-not-used. In `p2048e` the quadratic manifold
+$r=64$ was dropped by the OOM policy (XLA "failed to get configs" autotuning on the 72 GB bank); POD-512 ran.

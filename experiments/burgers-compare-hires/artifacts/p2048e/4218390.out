@@ -1,0 +1,127 @@
+host=pax008 source_commit=f57b2effcee99b66d5c7a6e5211508cc7f4d0d89
+NVIDIA H200, GPU-d115e0d0-3aa6-50ba-f7e0-cd2c2b54a5ae, 143771 MiB
+10.235.106.22:/projects/paralab  4.6T  4.3T  350G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 4190209 rows in 1 blocks 9.9
+TRUTH 0 12.8
+TRUTH 1 13.7
+TRUTH 2 15.1
+TRUTH 3 16.3
+TRUTH 4 17.3
+TRUTH 5 18.1
+QUICK fft_tight evolved% 0.0 stalled 0 8.0 48.7
+QUICK nt1e-4_dt005 evolved% 0.0334 stalled 0 5.1 53.9
+QUICK nt1e-3_dt005 evolved% 0.054 stalled 0 4.6 58.5
+QUICK nt1e-2_dt005 evolved% 4.3716 stalled 0 3.6 62.1
+QUICK nt1e-4_dt01 evolved% 1.6507 stalled 0 6.0 68.2
+QUICK nt1e-3_dt01 evolved% 1.6493 stalled 0 4.1 72.2
+QUICK nt1e-2_dt01 evolved% 3.5129 stalled 0 3.4 75.6
+QUICK lean_tight evolved% 0.0 stalled 0 8.5 84.1
+QUICK lean_nt1e-4_dt005 evolved% 0.0334 stalled 0 4.7 88.9
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0543 stalled 0 3.7 92.6
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0494 stalled 0 3.6 96.2
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1615 stalled 0 3.5 99.7
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6501 stalled 0 4.3 104.0
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6651 stalled 0 3.3 107.3
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6773 stalled 0 3.2 110.4
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.3714 stalled 0 9.2 128.4
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5979 stalled 0 11.4 147.4
+TIMED F rep 0 228.3
+TIMED F rep 1 305.3
+TIMED F rep 2 382.5
+TIMED F rep 3 459.9
+TIMED F rep 4 537.1
+QUICK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5979 stalled 0 26.2 563.5
+BLOCK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 650.1
+QUICK bank512_M2048_lat64_g1em06 evolved% 0.2907 stalled 0 9.1 666.3
+BANKSPAN RHO bank512_M2048_lat64_g1em06 0.0573 ok 672.7
+BLOCK bank512_M2048_lat64_g1em06 695.2
+QUICK bank512_M2048_lat128_g1em06 evolved% 0.2909 stalled 0 8.2 710.2
+BANKSPAN RHO bank512_M2048_lat128_g1em06 0.5058 exceeds 716.3
+BLOCK bank512_M2048_lat128_g1em06 745.5
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.2195 stalled 0 8.5 760.2
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.0777 ok 764.7
+BLOCK bank384_M1536_lat64_g1em06 785.5
+QUICK bank384_M1536_lat128_g1em06 evolved% 0.2194 stalled 0 7.3 797.3
+BANKSPAN RHO bank384_M1536_lat128_g1em06 0.4145 exceeds 801.8
+BLOCK bank384_M1536_lat128_g1em06 826.9
+QUICK bank256_M1024_lat64_g1em06 evolved% 0.7293 stalled 0 7.4 840.1
+BANKSPAN RHO bank256_M1024_lat64_g1em06 0.078 ok 843.9
+BLOCK bank256_M1024_lat64_g1em06 862.9
+QUICK bank256_M1024_lat128_g1em06 evolved% 0.7282 stalled 0 6.8 874.0
+BANKSPAN RHO bank256_M1024_lat128_g1em06 0.3521 exceeds 877.3
+BLOCK bank256_M1024_lat128_g1em06 899.3
+QUICK bank128_M512_lat64_g1em06 evolved% 1.8716 stalled 0 7.4 912.4
+BANKSPAN RHO bank128_M512_lat64_g1em06 0.0479 ok 915.9
+BLOCK bank128_M512_lat64_g1em06 933.2
+QUICK bank128_M512_lat128_g1em06 evolved% 1.8719 stalled 0 6.1 943.3
+BANKSPAN RHO bank128_M512_lat128_g1em06 0.1624 exceeds 945.9
+BLOCK bank128_M512_lat128_g1em06 964.8
+SNAPSHOTS (4190209, 3328) 1365.8 2330.7
+POD 512 586.6 2917.3
+QUICK pod16_M64_dense_armsTwin evolved% 29.3744 stalled 0 13.2 3028.8
+QUICK pod16_M64_dense evolved% 29.3744 stalled 0 10.5 3042.9
+GRID PARITY pod16_M64_dense 9.225e-16 integers True
+BLOCK pod16_M64_dense 3089.4
+QUICK pod64_M256_dense evolved% 7.4711 stalled 0 20.6 3118.8
+BLOCK pod64_M256_dense 3193.2
+QUICK pod256_M1024_dense evolved% 1.1681 stalled 0 124.4 3382.1
+BLOCK pod256_M1024_dense 3979.2
+QUICK pod512_M2048_dense evolved% 0.4876 stalled 0 430.8 4416.6
+BLOCK pod512_M2048_dense 6554.4
+QMAN r 16 ridge 0.01 |W| 0.009323 heldout 0.123232 lin/quad 0.140193 0.077261 82.0 6658.2
+QUICK qman16_quad_M64_armsTwin evolved% 22.6973 stalled 0 17.8 6693.0
+QUICK qman16_quad_M64 evolved% 22.6973 stalled 0 12.6 6711.6
+GRID PARITY qman16_quad_M64 2.352e-15 integers True
+BLOCK qman16_quad_M64 6769.6
+QMAN r 32 ridge 0.01 |W| 0.009629 heldout 0.060962 lin/quad 0.06322 0.030868 135.7 6917.9
+QUICK qman32_quad_M128 evolved% 13.06 stalled 0 37.7 6965.6
+BLOCK qman32_quad_M128 7111.3
+QMAN r 64 ridge 1.0 |W| 0.0005371 heldout 0.026351 lin/quad 0.022706 0.02068 4873.1 12033.5
+DROPPED (OOM) qman64_quad_M256 INTERNAL: Failed to get configs for: 2 out of 126 instructions. See logs for all failures. Example failure: 
+Autotuning failed for HLO: %gemm_fusion_dot.14 = f64[6,839270]{1,0} fusion(%bitcast.801.0, 
+CMP COMPLETE
+torch_cuda True NVIDIA H200
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 458.811
+FNO burgers-dev-00001 device_ms 458.191
+FNO burgers-dev-00002 device_ms 458.536
+FNO burgers-dev-00003 device_ms 458.856
+FNO burgers-dev-00004 device_ms 459.321
+FNO burgers-dev-00005 device_ms 458.781
+OPERATOR TIMING COMPLETE fno-large
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 151.384
+FNO burgers-dev-00001 device_ms 151.341
+FNO burgers-dev-00002 device_ms 151.359
+FNO burgers-dev-00003 device_ms 151.35
+FNO burgers-dev-00004 device_ms 151.363
+FNO burgers-dev-00005 device_ms 151.415
+OPERATOR TIMING COMPLETE unet-refine
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 143.034
+FNO burgers-dev-00001 device_ms 142.979
+FNO burgers-dev-00002 device_ms 143.331
+FNO burgers-dev-00003 device_ms 142.936
+FNO burgers-dev-00004 device_ms 143.276
+FNO burgers-dev-00005 device_ms 142.901
+OPERATOR TIMING COMPLETE tsol-refine
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 83.931
+FNO burgers-dev-00001 device_ms 83.913
+FNO burgers-dev-00002 device_ms 83.46
+FNO burgers-dev-00003 device_ms 83.943
+FNO burgers-dev-00004 device_ms 83.515
+FNO burgers-dev-00005 device_ms 83.493
+OPERATOR TIMING COMPLETE don-small
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 459.391
+FNO burgers-dev-00001 device_ms 458.947
+FNO burgers-dev-00002 device_ms 459.541
+FNO burgers-dev-00003 device_ms 459.237
+FNO burgers-dev-00004 device_ms 459.071
+FNO burgers-dev-00005 device_ms 459.885
+OPERATOR TIMING COMPLETE fno-large-256
+AUDIT p2048 arms 39 failed gates: []
+ALL-DONE

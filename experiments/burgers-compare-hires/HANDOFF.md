@@ -16,7 +16,7 @@ archive history). Namespace `/cluster/tufts/paralab/tawal01/bcmp_20260923/`. Lan
 | p2048b | 4207177 | 2048^2 panel + in-job FNO training | JAX process killed (hash copy of 72 GB bank, A5); job OOM in FNO training; FNO checkpoint salvaged (A6); no numbers used |
 | p2048c | 4215837 | 2048^2 panel rerun | died silently in POD-512 quick run (A6); no numbers used |
 | p2048d | 4218300 | 2048^2 with late FNO pickup | cancelled while PENDING |
-| **p2048e** | **4218390** | **2048^2 panel, H200, --mem 400G — PRIMARY by A7** | running since ~11:35; slowed by a memory-starved node (pax008 ~15 GB free) in the r=64 fit |
+| **p2048e** | **4218390** | **2048^2 panel, H200 — ACCEPTED (A7/A9)** | **done, 0 failed gates, collected, remote deleted** → `checks/p2048e-summary.json`; qman r=64 dropped |
 | **p2048f** | **4219197** | **2048^2 panel, A100 fallback (A7)** | **done, 0 failed gates, collected, remote deleted** → `checks/p2048f-summary.json`; POD-512 and qman r=64 dropped (A100) |
 
 ## Commands

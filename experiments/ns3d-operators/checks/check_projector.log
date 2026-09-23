@@ -1,0 +1,2 @@
+  keep = P(torch.as_tensor(truth[None], device='cuda')).cpu().numpy()[0]
+{"16": {"vs_ns3d_fom": 4.464604866962057e-16, "idempotent": 4.762245191426194e-16, "truth_invariant": 2.366579235826789e-16}, "32": {"vs_ns3d_fom": 4.655785238229348e-16, "idempotent": 4.655785238229349e-16, "truth_invariant": 3.1669473952802916e-16}}

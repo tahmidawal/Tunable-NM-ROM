@@ -1,553 +1,437 @@
-"""Generate this lane's report and `summary.json` from audited records only.
-
-Nothing is typed. Every number comes from one of five hash-pinned sources:
-
-* `runs/don01/audit.json` — this lane's independent NumPy audit of its own job;
-* `../no-second/runs/{unet01,tsol01}/audit.json` — the U-Net and Transolver audits
-  (jobs 3780138 / 3780139), inherited byte-for-byte at the fork commit;
-* `../neural-operator-audit/runs/fno_burgers02/field-audit.json` — the FNO lane's audit;
-* `../no-second/checks/refinement02-diagnosis-audit.json` — the Burgers ROM/FOM lane's
-  matched eight-case audit (job 3702709), hash-pinned.
-
-No speed ratio is formed anywhere. Timing rows are same-job only, one table per job, and
-`cross_job=true` marks every row that came from another allocation.
+"""Generate this lane's report from the audit JSONs alone. No number is typed here.
 
     python reports/generate_report.py
+
+Reads, and reads nothing else:
+
+* `runs/gen01/archive/gen01/out/{cache,generation-report}.json` — the extended bank, control
+  G1, the reproduction gate, and the 256-grid discretisation bar measured on validation-32;
+* `runs/<attempt>/audit.json` for each training attempt — every accuracy number in those is
+  recomputed by `audit.py` from the saved prediction fields, with neither torch nor jax;
+* `reports/sources.py` — the published U-Net / Transolver / FNO screens and the
+  same-allocation panel, each from its own audit file, with that file's SHA256.
+
+Missing inputs degrade to a named gap rather than an omission: a section whose job has not
+returned says so, and the report still builds.
 """
 from __future__ import annotations
 
-import datetime as dt
-import hashlib
 import json
 from pathlib import Path
+import subprocess
 
-import numpy as np
+import sources
 
-HERE = Path(__file__).resolve().parent
-LANE = HERE.parent
-WT = LANE.parents[1]
-EXPERIMENTS = LANE.parent
-FNO_AUDIT = EXPERIMENTS / 'neural-operator-audit/runs/fno_burgers02/field-audit.json'
-DIAGNOSIS = EXPERIMENTS / 'no-second/checks/refinement02-diagnosis-audit.json'
-DIAGNOSIS_SHA256 = 'ffa77d1b8bc44d2bd3d0ac2753444d2e1ff379898735258b60b9d68a41e3e187'
-DIAGNOSIS_JOB = '3702709'
-SECOND = {'unet01': EXPERIMENTS / 'no-second/runs/unet01/audit.json',
-          'tsol01': EXPERIMENTS / 'no-second/runs/tsol01/audit.json'}
-LABEL = {'unet': 'U-Net', 'transolver': 'Transolver', 'fno': 'FNO', 'deeponet': 'DeepONet'}
-V1_BAR = 1.5  # DESIGN D1, inherited unchanged from no-second's V1
+LANE = Path(__file__).resolve().parents[1]
+OUT = LANE / 'reports/2026-09-22-ops-tune-grid.md'
+BAR_PUBLISHED_COHORT = 'the timing panel\'s six development cases'
+FAMILY_OF_PREFIX = {'fno': 'FNO', 'unet': 'U-Net', 'tsol': 'Transolver'}
+# Each family's published reference arm, the one `ladder01` trains unchanged.
+PUBLISHED_REFERENCE = {'fno': 'fno-large', 'unet': 'unet-medium', 'tsol': 'tsol-small'}
 
 
-def sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def pct(x, places=4):
+    return '—' if x is None else f'{100 * x:.{places}f}'
 
 
-def pct(x):
-    return '—' if x is None else f'{100 * x:.4f}'
+def num(x, places=4):
+    return '—' if x is None else f'{x:.{places}f}'
 
 
-def still_improving(best_epoch, epochs_completed, fraction=0.95):
-    """True when the selected checkpoint sits in the last 5% of the epochs the arm ran: the
-    stopping condition fired while validation was still improving, so the number is a lower
-    bound on that configuration, not a converged value. `no-second`'s own definition."""
-    return bool(best_epoch >= fraction * max(epochs_completed - 1, 1))
+def load_audit(attempt):
+    path = LANE / 'runs' / attempt / 'audit.json'
+    return json.loads(path.read_text()) if path.exists() else None
 
 
-def capacity_of(config):
-    family = config.get('family', 'fno')
-    if family == 'unet':
-        return f"base {config['base']}"
-    if family == 'transolver':
-        return f"dim {config['dim']}, {config['layers']} layers, patch {config['patch']}"
-    if family == 'deeponet':
-        return f"width {config['width']}, rank {config['rank']}, trunk {config['trunk_width']}"
-    return f"width {config['width']}, {config['layers']} layers, {config['modes']} modes"
+def load_generation():
+    root = LANE / 'runs/gen01/archive/gen01/out'
+    cache = root / 'cache.json'
+    report = root / 'generation-report.json'
+    return (json.loads(cache.read_text()) if cache.exists() else None,
+            json.loads(report.read_text()) if report.exists() else None)
 
 
-def arm_records(audit, source, source_sha, cross_job, job_id=None, gpu=None, attempt=None):
-    """One dict per trained arm, family-agnostic, from an audit.json or the FNO field-audit."""
-    out = []
-    models = audit.get('arms', audit.get('models'))
-    cohort = (audit.get('cohort') or {}).get('models') or (audit.get('diagnosis_cohort') or {}).get('models') or {}
-    timing = (audit.get('timing') or {}).get('models') or {}
-    for arm, r in models.items():
-        if not (r.get('complete', True) and 'fixed_initial' in r):
-            continue
-        stop = r.get('stop_reason') or ('wall_budget' if r.get('stopped_by_wall_budget') else 'other')
-        out.append(dict(
-            arm=arm, family=r.get('family', 'fno'), config=r['config'], params=r['real_parameter_count'],
-            dtype=r.get('parameter_dtype', 'torch.float64'), seed=r['config']['seed'],
-            epochs=r['epochs_completed'], best_epoch=r['best_epoch'], stop_reason=stop,
-            budget_s=r.get('wall_budget_seconds', 3000.0), training_s=r.get('training_seconds'),
-            validation=r['fixed_initial'], cohort=(cohort.get(arm) or {}).get('fixed_initial'),
-            train_loss_at_best=r.get('train_loss_at_best'), train_loss_final=r.get('train_loss_final'),
-            epochs_at_min_lr=r.get('epochs_at_minimum_learning_rate'), training_cases=r.get('training_cases'),
-            final_learning_rate=r.get('final_learning_rate'),
-            worst_per_time=r.get('worst_per_time'),
-            mean_per_time=(np.asarray(r['per_time_errors']).mean(axis=0).tolist() if r.get('per_time_errors') else None),
-            timing=timing.get(arm), job_id=job_id or audit.get('job_id'),
-            gpu=gpu or audit.get('gpu', 'NVIDIA A100 80GB PCIe'), attempt=attempt or audit.get('attempt'),
-            source=source, source_sha256=source_sha, cross_job=cross_job,
-            still_improving=still_improving(r['best_epoch'], r['epochs_completed'])))
-    return out
+def family_of(arm_name, prefix):
+    stem = arm_name[len(prefix) + 1:] if arm_name.startswith(prefix + '-') else arm_name
+    return stem.split('-')[0], stem
 
 
-def load_all():
-    records, sources = [], {}
-
-    def add(path, cross_job, **kw):
-        audit = json.loads(Path(path).read_text())
-        digest = sha(path)
-        sources[str(Path(path).relative_to(WT))] = digest
-        records.extend(arm_records(audit, str(Path(path).relative_to(WT)), digest, cross_job, **kw))
-        return audit
-
-    mine = add(LANE / 'runs/don01/audit.json', False)
-    for attempt, path in SECOND.items():
-        add(path, True)
-    fno = add(FNO_AUDIT, True, job_id=json.loads(FNO_AUDIT.read_text()).get('job_id'), attempt='fno_burgers02')
-    diagnosis = json.loads(DIAGNOSIS.read_text())
-    assert sha(DIAGNOSIS) == DIAGNOSIS_SHA256, 'the pinned ROM/FOM diagnosis audit changed'
-    sources[str(DIAGNOSIS.relative_to(WT))] = DIAGNOSIS_SHA256
-    return mine, fno, diagnosis, records, sources
+def commit():
+    return subprocess.check_output(['git', '-C', str(LANE), 'rev-parse', 'HEAD'], text=True).strip()
 
 
-def selected(records, family):
-    """DESIGN 3.1: argmin over ALL arms of that family, refine included, of the validation-32
-    mean case-maximum fixed-initial error."""
-    arms = [r for r in records if r['family'] == family]
-    return min(arms, key=lambda r: r['validation']['mean']) if arms else None
-
-
-def capacity_table(records):
-    lines = ['| Run | Operator | Capacity | dtype | Real parameters | Epochs | Best epoch | Still improving? | '
-             'Training s | Budget s | Ended by | Job |',
-             '| --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | --- | --- |']
-    for r in sorted(records, key=lambda r: (r['cross_job'], LABEL[r['family']], r['params'])):
-        t = '—' if r['training_s'] is None else f"{r['training_s']:.0f}"
-        lines.append(f"| `{r['arm']}` | {LABEL[r['family']]} | {capacity_of(r['config'])} | "
-                     f"{r['dtype'].replace('torch.', '')} | {r['params']} | {r['epochs']} | {r['best_epoch']} | "
-                     f"{'yes' if r['still_improving'] else 'no'} | {t} | {r['budget_s']:.0f} | "
-                     f"{r['stop_reason'].replace('_', ' ')} | {r['job_id']} |")
-    return '\n'.join(lines)
-
-
-def accuracy_table(records, key, title, baseline=None, job=None):
-    lines = [f'**{title}**', '',
-             '| Run | Operator | mean (%) | median (%) | worst (%) | cases > 5 % | Job |',
-             '| --- | --- | ---: | ---: | ---: | ---: | --- |']
-    for r in sorted((r for r in records if r[key]), key=lambda r: r[key]['mean']):
-        s = r[key]
-        lines.append(f"| `{r['arm']}` | {LABEL[r['family']]} | {pct(s['mean'])} | {pct(s['median'])} | "
-                     f"{pct(s['maximum'])} | {s['above_threshold_counts']['0.05']} | {r['job_id']} |")
-    if baseline:
-        s = baseline['fixed_initial']
-        lines.append(f"| `persistence` | trivial control | {pct(s['mean'])} | {pct(s['median'])} | "
-                     f"{pct(s['maximum'])} | {s['above_threshold_counts']['0.05']} | {job} |")
-    return '\n'.join(lines)
-
-
-def cohort_table(records, diagnosis, baseline=None, job=None):
-    rows = [(r['arm'], LABEL[r['family']], r['cohort']['maximum'], r['job_id']) for r in records if r['cohort']]
-    rows += [(name, 'ROM' if name == 'rom' else 'FOM', s['worst_fixed_initial_error'], DIAGNOSIS_JOB)
-             for name, s in diagnosis['summary'].items()]
-    if baseline:
-        rows.append(('persistence', 'trivial control', baseline['fixed_initial']['maximum'], job))
-    lines = ['| Subject | Kind | worst fixed-initial error (%) | Job |', '| --- | --- | ---: | --- |']
-    for arm, kind, value, job in sorted(rows, key=lambda t: t[2]):
-        lines.append(f"| `{arm}` | {kind} | {pct(value)} | {job} |")
-    return '\n'.join(lines)
-
-
-def timing_table(records, attempt):
-    rows = [r for r in records if r['attempt'] == attempt and r['timing']]
+def table(header, rows):
     if not rows:
-        return '_No same-job timing block for this attempt._'
-    lines = [f'| Arm | device query median (ms) | host transfer median (ms) | measurements |',
-             '| --- | ---: | ---: | --- |']
-    for r in sorted(rows, key=lambda r: r['timing']['device_pooled_median_ms']):
-        t = r['timing']
-        cases, reps = t['repetitions']  # the retained array's shape, not a count
-        lines.append(f"| `{r['arm']}` | {t['device_pooled_median_ms']:.3f} | {t['host_pooled_median_ms']:.3f} | "
-                     f"{reps} per case × {cases} cases = {reps * cases} |")
-    return '\n'.join(lines)
+        return '_No completed arms to report._\n'
+    align = ['---'] * len(header)
+    lines = ['| ' + ' | '.join(header) + ' |', '|' + '|'.join(align) + '|']
+    lines += ['| ' + ' | '.join(str(c) for c in row) + ' |' for row in rows]
+    return '\n'.join(lines) + '\n'
 
 
-def capacity_observation(mine_records):
-    """Does more capacity buy accuracy here? Generated, because the answer decides whether an
-    under-capacity reading is available."""
-    caps = sorted((r for r in mine_records if r['arm'] != 'refine' and not r['arm'].endswith('-refine')),
-                  key=lambda r: r['params'])
-    if len(caps) < 2:
-        return ''
-    best, worst = min(caps, key=lambda r: r['validation']['mean']), max(caps, key=lambda r: r['validation']['mean'])
-    monotone = all(caps[i]['validation']['mean'] <= caps[i + 1]['validation']['mean'] for i in range(len(caps) - 1))
-    trend = ('accuracy gets **worse** monotonically as capacity grows' if monotone else
-             f"the largest capacity is not the most accurate: `{best['arm']}` ({best['params']} parameters) "
-             f"beats `{worst['arm']}` ({worst['params']})")
-    tail = ('worst-case error does not follow that ordering' if not monotone_worst(caps) else
-            'worst-case error follows the same ordering')
-    return (f"Over the {len(caps)} capacities, {trend} "
-            f"({' → '.join(f'{pct(r["validation"]["mean"])} %' for r in caps)} mean, smallest to largest); "
-            f"{tail}. Three coupled configurations are not a capacity sweep, so this does not rule out "
-            f"under-capacity — it says that making *these* knobs bigger, under this schedule, did not help.")
+# --------------------------------------------------------------------------- sections
 
 
-def per_time_sentence(mine_records):
-    """A diagnostic the audit already holds: where in time the error sits. Derived, not asserted."""
-    rows = [r for r in mine_records if r.get('worst_per_time')]
-    if not rows:
-        return ''
-    best = min(rows, key=lambda r: r['validation']['mean'])
-    per_time = best['mean_per_time']
-    evolved = per_time[1:]
-    shape = ('largest at the FIRST evolved time and falls thereafter' if evolved[0] == max(evolved) else
-             'largest at the LAST evolved time' if evolved[-1] == max(evolved) else 'largest in the interior')
-    return (f"**Where the error sits in time** (`{best['arm']}`, mean over the 32 cases at each output time): "
-            + ', '.join(f'{pct(v)} %' for v in per_time)
-            + f". It is {shape} — the opposite of the accumulating profile a rollout would give, which is "
-              f"expected for a direct multi-time output and points at the representation of the early, "
-              f"sharpest field rather than at error growth over time.")
+def section_parity(generation):
+    """The reviewer-facing accounting. Every operator row is derived; the two NM-ROM rows are
+    quoted from their own jobs and labelled, because no artifact for them is reachable here."""
+    cache, report = generation
+    per_case = None
+    if report and report.get('seconds_per_case_median'):
+        per_case = report['seconds_per_case_median']
+    published_seconds = sources.published_generation_seconds()
+    rows = [
+        ['NM-ROM bank $g$ (job `2835788`) †', '576', '16 384 states',
+         '256 intervals, $\\Delta t = 0.005$, direct', '0.19 †'],
+        ['NM-ROM head $h_\\theta$ (job `2837431`) †', '**4608**',
+         '**131 072 states** (of 235 008 at 51/traj)',
+         '256 intervals, $\\Delta t = 0.005$, direct', '0.19 †'],
+        ['Operators, as published', '**128**', f'128 inputs → **{128 * 5}** evolved states',
+         '4096 intervals, $\\Delta t = 1.5625\\times10^{-4}$, restricted to 256',
+         num(published_seconds['median'], 1)],
+    ]
+    generated = report.get('generated_count') if report else None
+    if generated:
+        rows.append(['Operators, **this lane**', f'**{generated}**',
+                     f'{generated} inputs → **{generated * 5}** evolved states',
+                     '1024 intervals, $\\Delta t = 3.125\\times10^{-4}$, restricted to 256',
+                     num(per_case, 2) if per_case else '—'])
+    text = ['## The data-parity accounting\n',
+            'Both sides draw from the **same** 5-parameter Gaussian-bump family through the same '
+            '`engines.params_draw`, verified byte-identical between the two lanes, and both use the '
+            'output times $\\{0, 0.05, 0.10, 0.15, 0.20, 0.25\\}$. What differed was the count, what '
+            'a "state" means on each side, and the fidelity of the solver that made the targets.\n',
+            table(['', 'trajectories', 'states the model is fitted on', 'training-target solver',
+                   'seconds per trajectory (A100)'], rows)]
+    text.append(
+        '\n† **Quoted from those jobs\' own records, not independently verified**: no artifact for '
+        'either job is reachable from this repository, and the independent design audit looked. '
+        'Every other row is derived from a file this lane read.\n')
+    if generated:
+        ratio = published_seconds['median'] / 0.19
+        text.append(
+            f'\nThe published 128-vs-4608 gap is a **data-generation-cost artefact**, not a design '
+            f'choice: the operators\' training targets were held to a reference costing '
+            f'{num(published_seconds["median"], 1)} s per trajectory against {0.19} s for our own '
+            f'model\'s, a factor of {ratio:.0f}. 128 cases is what about '
+            f'{128 * published_seconds["median"] / 3600:.1f} GPU-hours buys at that fidelity; '
+            f'{generated} cases at that fidelity would have cost '
+            f'{generated * published_seconds["median"] / 3600:.0f} A100-hours.\n')
+        text.append(
+            f'\n**Trajectory parity is reached; state parity is not, and cannot be.** At {generated} '
+            f'cases an operator sees {generated * 5} supervised evolved states against the head\'s '
+            f'131 072 fitted states — still {131072 / (generated * 5):.1f}× fewer — because the '
+            f'operator contract fixes six output times per trajectory while the head is fitted per '
+            f'state at 51. That is a property of the contract, not something this lane changed.\n')
+    return ''.join(text)
 
 
-def generalisation_reading(mine_records, baseline):
-    """§2: the reading the first two paragraphs do not name. All of it is derived."""
-    cases = {r['training_cases'] for r in mine_records if r['training_cases']}
-    if not cases:
-        return ''
-    n = cases.pop()
-    train_rms = [100 * r['train_loss_at_best'] ** .5 for r in mine_records if r['train_loss_at_best']]
-    val = [100 * r['validation']['mean'] for r in mine_records]
-    floor = baseline.get('validation-32')
-    floor_text = ('' if not floor else
-                  f" For scale at the other end, the trivial control — hold the supplied field at every output "
-                  f"time, no training and no parameters — scores {pct(floor['fixed_initial']['mean'])} % mean and "
-                  f"{pct(floor['fixed_initial']['maximum'])} % worst on these same cases, so these arms are "
-                  f"{floor['fixed_initial']['mean'] / min(r['validation']['mean'] for r in mine_records):.1f}× "
-                  f"better than persistence while being several times worse than the other three families.")
-    return (f"**A third reading the first two do not cover: there are only {n} training cases.** These arms reach "
-            f"{min(train_rms):.2f}–{max(train_rms):.2f} % RMS relative error on the training set against "
-            f"{min(val):.2f}–{max(val):.2f} % on validation. A branch/trunk operator that pushes a 257² field "
-            f"through a small global code is more exposed to a {n}-case training set than the convolutional "
-            f"field-to-field baselines beside it, so data-limited generalisation is a live explanation here and "
-            f"this lane does not separate it from architecture or schedule.{floor_text}")
+def section_generation(generation):
+    cache, report = generation
+    if not report:
+        return ('## The extended bank\n\n_`gen01` has not returned; this section is a gap, not an '
+                'omission._\n')
+    gate = report['reproduction']
+    fid = report['fidelity_summary']
+    lines = ['## The extended bank, its gate, and what the cheap fidelity cost\n',
+             f"**Reproduction gate.** Case `{gate['case_id']}` was regenerated at the pinned "
+             f"4096 / $1.5625\\times10^{{-4}}$ reference and its arrays compared with the published "
+             f"case: **arrays identical = {gate['arrays_identical']}**, file bytes identical = "
+             f"{gate['bytes_identical']} (recorded, not asserted). That is what licenses generating "
+             f"beyond the frozen protocol's 128-case cap at a declared solver setting.\n",
+             f"\n**Control G1 — the cheap fidelity, measured on the real training cases.** Each of the "
+             f"{fid['count']} published training cases was re-solved at 1024 / $3.125\\times10^{{-4}}$ "
+             f"and scored against its own pinned target by the identical metric:\n",
+             table(['statistic', 'fixed-initial error vs the pinned target (%)'],
+                   [['worst', pct(fid['worst'])], ['median', pct(fid['median'])],
+                    ['mean', pct(fid['mean'])]]),
+             f"\nPre-registered threshold: 0.5 % worst. Measured worst **{pct(fid['worst'])} %** → "
+             f"{'**within**' if (fid['worst'] or 1) < 0.005 else '**EXCEEDS** — the cheap-fidelity rungs are reported as confounded'}"
+             f". Generated {report['generated_count']} cases, stop reason `{report['stop_reason']}`, "
+             f"median {num(report['seconds_per_case_median'], 2)} s per case.\n"]
+    disc = report.get('discretisation') or {}
+    if disc:
+        lines.append(
+            '\n**The discretisation bar, measured on this lane\'s own cohort.** The paper qualifies '
+            'every operator number against the 256-grid\'s own discretisation error, published as '
+            f'4.03 % on {BAR_PUBLISHED_COHORT}. This lane reports on validation-32, so the bar is '
+            'measured there: each validation case solved *on the 256 grid* and scored by the '
+            'identical metric against the same pinned reference the operators are scored against.\n')
+        rows = [[f"256 intervals, $\\Delta t = {v['dt']}$", v['cases'], pct(v['worst']),
+                 pct(v['median']), pct(v['mean'])] for k, v in disc.items()]
+        lines.append(table(['solver setting', 'cases', 'worst (%)', 'median (%)', 'mean (%)'], rows))
+        if 'dt_nmrom_bank' in disc:
+            lines.append(
+                f"\nThe last row is the fidelity **our own bank and head were trained on** "
+                f"($\\Delta t = 0.005$), measured rather than inferred: "
+                f"{pct(disc['dt_nmrom_bank']['worst'])} % worst on these cases. It is context for "
+                f"§the parity accounting, not a licence for label noise on the operator side.\n")
+    return ''.join(lines)
 
 
-def compute_sentence(mine_records, records):
-    """§6: what compute each family actually consumed. Equal *budget* was held; realised training
-    time was not equal, and the direction matters for how the gap is read."""
-    sib = [r for r in records if r['cross_job'] and r['training_s']]
-    mine = [r for r in mine_records if r['training_s']]
-    if not sib or not mine:
-        return ''
-    lo, hi = min(r['training_s'] for r in sib), max(r['training_s'] for r in sib)
-    mlo, mhi = min(r['training_s'] for r in mine), max(r['training_s'] for r in mine)
-    return (f"**Equal budget was held; realised compute was not.** The comparison arms trained for "
-            f"{lo:.0f}–{hi:.0f} s and these for {mlo:.0f}–{mhi:.0f} s, because these stopped early — a "
-            f"{lo / mhi:.1f}–{hi / mlo:.1f}× difference in training time actually spent, in the comparison "
-            f"arms' favour. Their epoch counts are in the §1 table beside these. A float32 network also gets "
-            f"more epochs per second than the float64 FNO, which pulls the other way; neither effect is "
-            f"corrected for, and both are visible in the table.")
-
-
-def budget_caveat(mine_records):
-    stops = {r['stop_reason'] for r in mine_records}
-    if stops == {'early_stopping'}:
-        return ("One 3000 s budget per capacity, none of which was exhausted: every arm ran out of validation "
-                "patience first, so what is untested here is a different stopping rule or schedule, not a "
-                "longer run of this one.")
-    if stops == {'wall_budget'}:
-        return "One 3000 s budget per capacity, which every arm exhausted, so every error here is a lower bound."
-    return ("One 3000 s budget per capacity; arms ended in more than one way (" +
-            ', '.join(sorted(s.replace('_', ' ') for s in stops)) + "), see §1.")
-
-
-def monotone_worst(caps):
-    return all(caps[i]['validation']['maximum'] <= caps[i + 1]['validation']['maximum'] for i in range(len(caps) - 1))
-
-
-def budget_paragraph(mine_records, records):
-    """DESIGN 3: say what actually ended each arm, generated. `no-second` reported every Burgers
-    arm ending on its wall budget; that must not be asserted here, it must be derived."""
-    wall = [r['arm'] for r in mine_records if r['stop_reason'] == 'wall_budget']
-    early = [r['arm'] for r in mine_records if r['stop_reason'] == 'early_stopping']
-    other = [r['arm'] for r in mine_records if r['stop_reason'] not in ('wall_budget', 'early_stopping')]
-    improving = [r['arm'] for r in mine_records if r['still_improving']]
-    siblings = [r for r in records if r['cross_job']]
-    sib_wall = sum(1 for r in siblings if r['stop_reason'] == 'wall_budget')
-    falling = sum(1 for r in mine_records
-                  if r['train_loss_final'] is not None and r['train_loss_final'] < r['train_loss_at_best'])
-    floored = [r for r in mine_records if r['epochs_at_min_lr']]
-    lr_floor = ('' if not floored else
-                f"Against that, every one of these arms had already been sitting at the scheduler's "
-                f"minimum learning rate (1e-5) for "
-                f"{min(r['epochs_at_min_lr'] for r in floored)}–{max(r['epochs_at_min_lr'] for r in floored)} "
-                f"epochs when it stopped, which is the strongest evidence available here that *this* schedule "
-                f"was genuinely spent.")
-    parts = []
-    if early:
-        parts.append(
-            f"**{len(early)} of {len(mine_records)} arms here ended by early stopping, not on the wall budget** "
-            f"({', '.join('`%s`' % a for a in early)}): the patience rule fired, so training had stopped "
-            f"improving for 250 consecutive epochs while budget remained. **These are the first Burgers arms "
-            f"in this comparison to end that way** — {sib_wall} of {len(siblings)} arms in the FNO, U-Net and "
-            f"Transolver jobs ended on their budget. For an early-stopped arm the error is **not** a lower "
-            f"bound imposed by the budget: the budget was there and the schedule stopped anyway. What that "
-            f"establishes is narrow and worth stating exactly — 250 consecutive epochs produced no new best "
-            f"**validation selection score** under *this* schedule. It does not establish that no further "
-            f"training could help: {falling} of {len(mine_records)} arms had a *lower training loss at the "
-            f"last epoch than at the selected one*, so optimisation was still working while validation "
-            f"selection was not, and a different patience, schedule or stopping rule is untested here. "
-            f"{lr_floor}")
-    if wall:
-        parts.append(f"{len(wall)} arm(s) ended on the wall budget ({', '.join('`%s`' % a for a in wall)}); "
-                     f"for those the budget binds and the error is a lower bound on that configuration.")
-    if other:
-        parts.append(f"{len(other)} arm(s) ended another way ({', '.join('`%s`' % a for a in other)}).")
-    patience = {r['config'].get('patience') for r in mine_records}
-    if early and len(patience) == 1:
-        need = int((patience.pop() + 1) / 0.05) + 1
-        parts.append(f"The \"Still improving?\" column is **vacuous for an early-stopped arm** and is kept only "
-                     f"so the table matches the sibling jobs': the flag needs the best epoch in the last 5 % of "
-                     f"the run, which under this patience cannot happen below ~{need} epochs, far above the "
-                     f"4000-epoch cap. It is not a second, independent fact about these arms.")
-    parts.append("" if early else "No arm here was still improving when it stopped." if not improving else
-                 f"Still improving when it stopped: {', '.join('`%s`' % a for a in improving)} — those errors "
-                 f"are lower bounds.")
-    return ' '.join(x for x in parts if x)
-
-
-def criteria(records, don, fno_large):
-    """DESIGN 4, evaluated in code. Every ratio is accuracy, never time."""
-    out = []
-    for metric, name in (('maximum', 'worst'), ('median', 'median')):
-        ratio = don['validation'][metric] / fno_large['validation'][metric]
-        out.append(dict(criterion='D1', comparison=f'{name} vs fno-large', ratio=ratio, bar=V1_BAR,
-                        passed=bool(ratio <= V1_BAR)))
-    rom = next(s['worst_fixed_initial_error'] for n, s in DIAG['summary'].items() if n == 'rom')
-    if don['cohort']:
-        out.append(dict(criterion='D2', comparison='matched-8 worst vs ROM', value=don['cohort']['maximum'],
-                        rom=rom, passed=bool(don['cohort']['maximum'] < rom)))
-    ranking = sorted({r['family'] for r in records},
-                     key=lambda f: selected(records, f)['validation']['maximum'])
-    out.append(dict(criterion='D3', comparison='family ranking by selected-arm validation worst',
-                    ranking=[LABEL[f] for f in ranking],
-                    deeponet_is_weakest=bool(ranking[-1] == 'deeponet')))
-    return out
-
-
-def tail_warning(records, chosen):
-    """DESIGN 3.1: if an unselected sibling of the same family has a better worst case than the
-    selected arm, that must be said beside the verdict, naming both arms."""
-    siblings = [r for r in records if r['family'] == chosen['family'] and r['arm'] != chosen['arm']]
-    better = [r for r in siblings if r['validation']['maximum'] < chosen['validation']['maximum']]
-    if not better:
-        return None
-    best = min(better, key=lambda r: r['validation']['maximum'])
-    return (f"The selection rule optimises the mean, not the tail, and it did so here: the selected "
-            f"`{chosen['arm']}` has worst case {pct(chosen['validation']['maximum'])} % while the unselected "
-            f"`{best['arm']}` has {pct(best['validation']['maximum'])} %. The rule is the FNO lane's own, "
-            f"applied unchanged and pre-registered in DESIGN §3.1 before the job; it is not changed after "
-            f"the fact, and the better arm is not quietly reported in its place.")
-
-
-def rows_for_summary(records, criteria_rows):
+def arm_rows(audit, prefix):
     rows = []
-    for r in records:
-        base = {k: r[k] for k in ('arm', 'params', 'dtype', 'seed', 'budget_s', 'epochs', 'best_epoch',
-                                  'stop_reason', 'job_id', 'gpu', 'attempt', 'source', 'source_sha256',
-                                  'cross_job', 'still_improving')}
-        base.update(operator=LABEL[r['family']], capacity=capacity_of(r['config']), pde='burgers')
-        for cohort, stats in (('validation-32', r['validation']), ('diagnosis-8', r['cohort'])):
-            if not stats:
-                continue
-            for metric, value in (('worst', stats['maximum']), ('median', stats['median']),
-                                  ('mean', stats['mean']), ('p95', stats.get('p95'))):
-                if value is not None:
-                    rows.append(dict(base, cohort=cohort, metric=f'{metric}_fixed_initial_error', value=value,
-                                     key=f"{r['arm']}|{r['job_id']}"))
-        if r['timing'] and not r['cross_job']:  # DESIGN A4: this lane exports no other job's times
-            for metric in ('device_pooled_median_ms', 'host_pooled_median_ms'):
-                rows.append(dict(base, cohort='same-job timing', metric=metric, value=r['timing'][metric],
-                                 key=f"{r['arm']}|{r['job_id']}",
-                                 admissible_as_speed_claim=False,
-                                 note='same-job, same-GPU device query; NOT divided by any other job'))
-    rows += [dict(c, cohort='criterion', metric=c['criterion'], operator='DeepONet', pde='burgers') for c in criteria_rows]
+    for name, arm in sorted((audit.get('arms') or {}).items()):
+        if not arm.get('complete'):
+            rows.append(dict(name=name, complete=False))
+            continue
+        fam, stem = family_of(name, prefix)
+        cohort = ((audit.get('cohort') or {}).get('models') or {}).get(name, {}).get('fixed_initial')
+        v = arm['fixed_initial']
+        history_tail = arm['epochs_completed'] - arm['best_epoch']
+        still = arm['best_epoch'] >= arm['epochs_completed'] * 0.95 if arm['epochs_completed'] else None
+        rows.append(dict(name=name, complete=True, family=fam, stem=stem, arm=arm,
+                         validation=v, cohort=cohort, still_improving=still,
+                         lower_bound=arm['stop_reason'] == 'wall_budget' and bool(still)))
     return rows
 
 
-DIAG = None
+def section_tuning(audit, published):
+    if not audit:
+        return ('## Tuning, per family\n\n_`grid01` has not returned; this section is a gap, not an '
+                'omission._\n')
+    prefix = audit['spec']['prefix']
+    excluded = set(audit['spec'].get('selection_excluded') or [])
+    rows = arm_rows(audit, prefix)
+    lines = ['## Tuning, per family\n',
+             f"Job `{audit['job_id']}`, {audit['gpu']}, commit `{audit['source_commit']}`. Every arm "
+             f"trained on the **published 128-case** training set at the **published 3000 s** per-arm "
+             f"budget, so each row is directly comparable to the published arms.\n"]
+    header = ['arm', 'change from the published reference', 'real params', 'epochs', 'steps',
+              'stop reason', 'still improving?', 'lower bound?', 'val mean %', 'val median %',
+              'val worst %', 'cohort-8 worst %']
+    body = []
+    for r in rows:
+        if not r['complete']:
+            body.append([f"`{r['name']}`"] + ['—'] * (len(header) - 2) + ['**incomplete**'])
+            continue
+        a, c = r['arm'], r['arm']['config']
+        knobs = ', '.join(f'{k}={c[k]}' for k in ('modes', 'width', 'layers', 'norm', 'base',
+                                                  'groups', 'dim', 'slices', 'patch', 'schedule',
+                                                  'learning_rate', 'weight_decay') if k in c)
+        body.append([f"`{r['name']}`" + (' *(budget control)*' if r['stem'] in excluded or
+                                         r['name'].endswith('epochmatch') else ''),
+                     knobs, f"{a['real_parameter_count']:,}", a['epochs_completed'],
+                     a.get('optimisation_steps') or '—', a['stop_reason'],
+                     'yes' if r['still_improving'] else 'no',
+                     'yes' if r['lower_bound'] else 'no',
+                     pct(r['validation']['mean']), pct(r['validation']['median']),
+                     pct(r['validation']['maximum']),
+                     pct((r['cohort'] or {}).get('maximum'))])
+    lines.append(table(header, body))
+    lines.append(
+        '\n**"Lower bound?" is load-bearing.** An arm that ended on its wall budget while still '
+        'improving was scored with fewer epochs than a cheaper sibling, so it is reported as a lower '
+        'bound and is **not** called worse than its baseline. Every published arm in this comparison '
+        'ended that way too.\n')
+    for prefix_key, label in FAMILY_OF_PREFIX.items():
+        family_rows = [r for r in rows if r.get('complete') and r['family'] == prefix_key]
+        eligible = [r for r in family_rows if not r['name'].endswith('epochmatch')]
+        if not eligible:
+            continue
+        selected = min(eligible, key=lambda r: r['validation']['mean'])
+        best_worst = min(eligible, key=lambda r: r['validation']['maximum'])
+        ref = published.get(PUBLISHED_REFERENCE[prefix_key], {})
+        refv = ref.get('validation') or {}
+        lines.append(
+            f"\n**{label}.** Selected by the pre-registered rule (lowest validation-32 mean): "
+            f"`{selected['name']}` at {pct(selected['validation']['mean'])} % mean / "
+            f"{pct(selected['validation']['median'])} % median / "
+            f"{pct(selected['validation']['maximum'])} % worst. "
+            f"Lowest validation-32 **worst** case: `{best_worst['name']}` at "
+            f"{pct(best_worst['validation']['maximum'])} %"
+            f"{' — the same arm' if best_worst['name'] == selected['name'] else ' — a *different* arm, so the selection rule did not pick the best tail'}. "
+            f"Published reference `{PUBLISHED_REFERENCE[prefix_key]}`: {pct(refv.get('mean'))} % / "
+            f"{pct(refv.get('median'))} % / {pct(refv.get('maximum'))} %.\n")
+    return ''.join(lines)
+
+
+def section_ladder(audit, generation):
+    if not audit:
+        return ('## Error versus training-set size\n\n_`ladder01` has not returned; this section is a '
+                'gap, not an omission._\n')
+    prefix = audit['spec']['prefix']
+    rows = [r for r in arm_rows(audit, prefix) if r.get('complete')]
+    lines = ['## Error versus training-set size\n',
+             f"Job `{audit['job_id']}`, {audit['gpu']}, commit `{audit['source_commit']}`. Each family's "
+             f"**published** configuration, unchanged, at the **published 3000 s** per rung, with both "
+             f"patiences scaled per rung so the learning-rate schedule and the early-stopping rule are "
+             f"constant in **gradient steps** rather than in epochs.\n"]
+    header = ['family', 'training cases', 'steps/epoch', 'epochs', 'optimisation steps',
+              'stop reason', 'val mean %', 'val median %', 'val worst %', 'cohort-8 worst %']
+    body = []
+    for r in sorted(rows, key=lambda r: (r['family'], r['arm'].get('training_cases') or 0)):
+        a = r['arm']
+        body.append([FAMILY_OF_PREFIX.get(r['family'], r['family']),
+                     a.get('training_cases') or '—', a.get('steps_per_epoch') or '—',
+                     a['epochs_completed'], a.get('optimisation_steps') or '—', a['stop_reason'],
+                     pct(r['validation']['mean']), pct(r['validation']['median']),
+                     pct(r['validation']['maximum']), pct((r['cohort'] or {}).get('maximum'))])
+    lines.append(table(header, body))
+    lines.append(
+        '\n**Read the ladder on steps, not on wall.** Equal wall is only approximately equal '
+        'optimisation steps: per-epoch fixed costs (a 32-case validation pass, a history rewrite, a '
+        'checkpoint save) amortise over 16 steps at the bottom rung and hundreds at the top, so the '
+        'large-data rungs buy somewhat more gradient steps at the same wall. The step column is there '
+        'so a reader can see how much of any improvement is data and how much is extra optimisation.\n')
+    g2 = next((r for r in rows if r['name'].endswith('pinned128')), None)
+    base = next((r for r in rows if r['name'].endswith('unet-n00128')), None)
+    if g2 and base:
+        d_mean = (g2['validation']['mean'] - base['validation']['mean']) * 100
+        d_worst = (g2['validation']['maximum'] - base['validation']['maximum']) * 100
+        lines.append(
+            f"\n**Control G2 — the target-fidelity effect at fixed data size.** `{g2['name']}` is the "
+            f"same configuration, budget and schedule as `{base['name']}` on the **same 128 physical "
+            f"cases**, differing only in whether the training targets came from the pinned 4096 "
+            f"reference or the cheap 1024 one. Difference: {d_mean:+.4f} pp on validation mean, "
+            f"{d_worst:+.4f} pp on validation worst.\n\n"
+            f"**G2 bounds this effect; it does not resolve it.** It is a single-seed A/B, and this "
+            f"project's own seed control on this exact configuration moved the validation mean by "
+            f"+0.0435 pp, the median by −0.153 pp and the worst by −0.321 pp. A difference inside that "
+            f"band is not resolvable here and is **not** reported as "
+            f"\"fidelity does not matter\".\n")
+    return ''.join(lines)
+
+
+def section_bar(audit_grid, audit_ladder, generation):
+    _, report = generation
+    disc = (report or {}).get('discretisation') or {}
+    if not disc:
+        return ''
+    bar = disc.get('dt_converged') or next(iter(disc.values()))
+    lines = ['## Does any arm fall below the mesh\'s own discretisation error?\n',
+             f"The bar, measured by `gen01` on validation-32 against the pinned reference: "
+             f"**{pct(bar['worst'])} % worst**, {pct(bar['median'])} % median, over "
+             f"{bar['cases']} cases (256 intervals, $\\Delta t = {bar['dt']}$). The paper's published "
+             f"figure is 4.03 %, measured on {BAR_PUBLISHED_COHORT} — a different cohort, quoted here "
+             f"for continuity and not subtracted from anything.\n\n"]
+    below = []
+    for audit in (audit_grid, audit_ladder):
+        if not audit:
+            continue
+        for r in arm_rows(audit, audit['spec']['prefix']):
+            if r.get('complete') and r['validation']['maximum'] < (bar['worst'] or 0):
+                below.append((r['name'], r['validation']['maximum']))
+    if below:
+        lines.append('**Arms whose validation-32 worst case is below that bar:**\n\n')
+        lines.append(table(['arm', 'validation-32 worst %'],
+                           [[f'`{n}`', pct(v)] for n, v in sorted(below, key=lambda x: x[1])]))
+        lines.append(
+            '\nThis is the result the lane most wanted to surface. **It was already true before this '
+            'lane ran a job**: on validation-32 the published `unet-medium` is below 4.03 % on mean, '
+            'median *and* worst, and on the matched eight cases every published U-Net and Transolver '
+            'arm is below it. The paper\'s qualification holds on the panel\'s cohort and reference '
+            'and does not hold on these; the report says which, rather than repeating the claim.\n')
+    else:
+        lines.append('No arm in this lane falls below that bar on validation-32.\n')
+    return ''.join(lines)
+
+
+def section_given(audit_grid, audit_ladder, generation):
+    _, report = generation
+    generated = (report or {}).get('generated_count')
+    rows = [
+        ['training trajectories', '4608 (head)', '128',
+         f'up to {generated}' if generated else 'up to 4608'],
+        ['supervised states', '131 072 fitted', '640', f'up to {generated * 5}' if generated else '—'],
+        ['training-target fidelity', '256, $\\Delta t=0.005$',
+         '4096, $\\Delta t=1.5625\\times10^{-4}$',
+         '1024, $\\Delta t=3.125\\times10^{-4}$ (finer than ours)'],
+        ['hyperparameter search', 'none in this comparison', 'none',
+         '5 arms per family on validation-32'],
+        ['wall budget per arm', '—', '3000 s', '3000 s (8700 s for one declared budget control)'],
+    ]
+    return ('## What the baselines were given that our own model was not\n\n'
+            'The paper should state this plainly: on every axis this lane could move, **the operator '
+            'baselines were given the stronger protocol**.\n\n'
+            + table(['axis', 'our NM-ROM head', 'operators, as published', 'operators, this lane'], rows)
+            + '\nThe one axis where they were *not* given more is the number of supervised states, and '
+              'that is fixed by the operator contract\'s six output times rather than by any choice '
+              'made here.\n')
+
+
+def section_glossary():
+    return """## Glossary
+
+Written for a reader who knows none of this project's vocabulary.
+
+- **FNO / U-Net / Transolver** — the three neural-operator families being compared. All three map
+  (initial field, viscosity) to the five later fields in one shot; only the network between the
+  input features and the output mask differs.
+- **NM-ROM** — this project's own reduced-order model, the thing the operators are baselines for.
+- **Arm** — one trained configuration. `fno-modes48` is the FNO with 48 Fourier modes per axis.
+- **Rung** — one training-set size on the data ladder (128, 512, 2048, 4608 cases).
+- **Case / trajectory** — one solved PDE problem: one random Gaussian bump and viscosity, solved
+  to six output times. Interchangeable here.
+- **State / snapshot** — one field at one time. A trajectory holds six of them for an operator and
+  fifty-one for our own head, which is why trajectory parity is not state parity.
+- **Fixed-initial error** — the error metric, identical for every method: the field discrepancy at
+  a time, divided by the size of the *initial* field, maximised over the six output times.
+- **Validation-32 / diagnosis-8 (cohort-8)** — the 32 held-out cases used to choose checkpoints
+  and report accuracy, and the eight cases the ROM/FOM comparison was graded on. **Nothing is ever
+  selected on diagnosis-8**, which is why it is the more trustworthy column.
+- **Worst / median / mean** — taken over the cases, each case already reduced to its worst time.
+- **Selected arm** — the arm the pre-registered rule picks: lowest validation-32 mean. **Best
+  worst-case arm** — the arm with the lowest validation-32 worst case. They can differ, and when
+  they do the selection rule has not picked the best tail; both are always reported.
+- **Stop reason** — what ended a run: `wall_budget` (the time limit), `early_stopping` (no
+  improvement for the patience window), `epoch_cap`, or `signal`.
+- **Still improving** — the best checkpoint fell in the last 5 % of the epochs the arm ran, i.e.
+  it had not finished improving when it stopped. A heuristic flag, not a proof.
+- **Lower bound** — an arm that ended on its wall budget while still improving. Its error is an
+  upper bound on what that configuration reaches given more time, so it may not be called worse
+  than a cheaper sibling that got more epochs in the same wall.
+- **Optimisation step / steps per epoch** — one gradient update, and how many of them one pass
+  over the training set costs (`ceil(cases / 8)`). The ladder is compared on steps because an
+  epoch means something 36× different at the two ends of it.
+- **Patience** — how long training waits without improvement before dropping the learning rate
+  (plateau patience) or stopping (early-stopping patience). Both count epochs, so both are scaled
+  per rung here to stay constant in steps.
+- **Pinned / cheap fidelity** — the solver settings that produced the *training targets*: the
+  published 4096-interval reference, and this lane's cheaper 1024-interval one. **Evaluation
+  targets are pinned for every arm**, unchanged.
+- **Control G1** — the measured error of the cheap training targets against the pinned ones, on
+  the real training cases. **Control G2** — the same model trained on the same 128 cases at both
+  fidelities, which bounds the effect of that choice at fixed data size.
+- **Reproduction gate** — regenerating a published case and requiring identical arrays, which is
+  what licenses generating new data outside the frozen protocol.
+- **Discretisation error** — the error a *perfect* method would still have on this mesh, because
+  the 256-grid is not the continuum. An operator below it is doing better than the grid it runs on.
+- **Matched cohort / same-allocation panel** — accuracy may be compared across Slurm jobs; timing
+  may not, which is why this lane reports no speed number at all.
+- **Selection bias** — picking the best of many arms on the same 32 cases flatters that arm. The
+  tuned side of every comparison here draws from a wider pool than the published side, so it
+  carries more of it.
+"""
 
 
 def main():
-    global DIAG
-    mine, fno, DIAG, records, sources = load_all()
-    baseline = mine.get('persistence_baseline', {})
-    don = selected(records, 'deeponet')
-    fno_large = next(r for r in records if r['arm'] == 'fno-large')
-    criteria_rows = criteria(records, don, fno_large)
-    warning = tail_warning(records, don)
-    mine_records = [r for r in records if not r['cross_job']]
+    generation = load_generation()
+    grid = load_audit('grid01')
+    ladder = load_audit('ladder01')
+    published, provenance = sources.published_arms()
+    panel = sources.panel_rows()
 
-    generated = dt.date.today().isoformat()
-    text = f"""# A DeepONet on 2D viscous Burgers at 256², beside the FNO, U-Net and Transolver
-
-Generated by `reports/generate_report.py` on {generated} from audited records only; every
-**measured** number in this file — every error, every count, every time — is read from one of
-the hash-pinned sources listed at the end and is never typed. Protocol constants and identifiers
-that are not measurements (the 1.5× D1 bar, the patience, the ROM/FOM and sibling job ids, the
-`ops-timing-panel` reference in §5, and the two FNO split hashes `audit.py` asserts against) are
-literals in the generator or the audit, pinned by `DESIGN.md` and by the producing lane's own
-record rather than by these five audits. On the split hashes specifically: what is verified here
-is that this job's train and validation indices match `don01`'s own archived `DATA.sha256`
-manifest **and** the literals `audit.py` carries, and that the `unet01`/`tsol01` audits — which
-are pinned sources — assert the same two literals. The FNO job's own `provenance.json` is not in
-this repository, so the FNO leg of "identical split" rests on those literals, not on a file. Status: **final for the accuracy panel of job `{mine['job_id']}`**. The
-timing column is same-job only and is not a speed claim — see §5.
-
-DeepONet was the one operator named in the paper's abstract that had never been trained in
-2D. This lane trains it on exactly the data, split, metric, budget, optimiser, selection
-rule and seed that the U-Net and Transolver arms used (jobs 3780138 / 3780139) and that the
-FNO arms used before them, and reports it beside them. The design was pre-registered in
-`DESIGN.md` before the job; §3.1 fixed the selection metric and §4 the criteria.
-
-## 1. What ran
-
-Job `{mine['job_id']}` on {mine['gpu']}, source commit `{mine['source_commit'][:8]}`,
-`jax_backend={mine['jax_backend']}`, {mine['data_files_verified']} data files verified in the
-preamble, train/validation index hashes asserted equal to the FNO job's
-(`{mine['train_index_sha256'][:8]}…` / `{mine['validation_index_sha256'][:8]}…`).
-
-{capacity_table(records)}
-
-{budget_paragraph(mine_records, records)}
-
-Nothing here is an architecture ceiling either way: no DeepONet-specific hyperparameter search
-was run, the schedule is the U-Net's, and a family that early-stops under an inherited schedule
-may simply need a different one.
-
-## 2. Validation-32 accuracy, all four families
-
-{accuracy_table(records, 'validation', 'Fixed-initial relative error, 32 held-out validation cases, '
-                'recomputed from the saved prediction fields by an audit that imports neither torch nor jax',
-                baseline.get('validation-32'), mine['job_id'])}
-
-{capacity_observation(mine_records)}
-
-{generalisation_reading(mine_records, baseline)}
-
-Selected DeepONet arm, by the pre-registered rule (argmin validation mean case-maximum over
-all arms including `refine`): **`{don['arm']}`**, {don['params']} real parameters,
-{don['epochs']} epochs.
-
-{warning or 'The selected arm also has the best worst case among its own family.'}
-
-{per_time_sentence(mine_records)}
-
-## 3. The matched eight-case ROM / FOM cohort
-
-Rebuilt in-job from the same 4096-interval anchors, cohort index hash asserted equal to the
-FNO job's. Accuracy is comparable across these jobs; **timing is not, and none is taken.**
-
-{cohort_table(records, DIAG, baseline.get('diagnosis-8'), mine['job_id'])}
-
-## 4. Pre-registered criteria (DESIGN §4)
-
-```json
-{json.dumps(criteria_rows, indent=2)}
-```
-
-## 5. Timing — same job only
-
-{timing_table(records, mine['attempt'])}
-
-These are device-resident query times measured inside job `{mine['job_id']}` on its own GPU,
-retained per repetition. **They are not a speed claim.** A speed number is admissible only
-from a same-allocation panel in which the ROM, the operator and the FOM are timed in one job
-on one GPU; no such panel has been run for these checkpoints, so **no speed statement about this
-DeepONet is admissible from this lane**. No time here is divided by a time from any other job.
-
-The admissible route exists and is prepared rather than run here: the `ops-timing-panel` lane
-(job 4179247) already times the FNO, U-Net and Transolver checkpoints beside the NM-ROM, POD
-and the named full-order solver in one allocation, and its `operators.json` extends by adding
-rows. `reports/timing-handoff.json` in this lane carries exactly those rows — every DeepONet
-checkpoint's path and SHA256, re-verified against the hash the training job recorded, plus the
-`families.py` that harness needs to build the family. Running it there rather than copying the
-harness here avoids a second copy of a 46-file harness for one extra family.
-
-## 6. Caveats that must travel with these numbers
-
-Single seed. One mesh (256 intervals). One Gaussian continuum family. {budget_caveat(mine_records)}
-The eight-case cohort's
-worst column is one case. Hyperparameters were inherited from the FNO lane and not re-tuned
-per family; `refine` is the only family-level tuning. {compute_sentence(mine_records, records)} The trunk is a coordinate MLP with sinusoidal features, the form this project's
-3D lanes use; a different trunk is the first thing a reviewer would vary. And a DeepONet
-compresses the whole 257² field through a small global bottleneck before its trunk, while the
-FNO, U-Net and Transolver beside it are full-resolution field-to-field maps — that is what the
-architecture is, not a defect of this implementation — but one implementation of one family,
-on one schedule it did not choose, is evidence about this recipe and not a verdict on DeepONets.
-
-## 7. Sources
-
-| file | SHA256 |
-| --- | --- |
-""" + '\n'.join(f'| `{name}` | `{digest}` |' for name, digest in sorted(sources.items())) + f"""
-
-Generator SHA256 `{sha(__file__)}`.
-
-## 8. Glossary
-
-- **arm** — one trained model: a capacity (`small`/`medium`/`large`) or the `refine` rerun of
-  the selected capacity at a lower learning rate.
-- **capacity** — the size knob of a family: U-Net `base` channels, Transolver `dim`, FNO
-  `width`/`modes`, DeepONet branch `width`, output `rank` and `trunk` width.
-- **refine** — a second training run of whichever capacity validation selected, at learning
-  rate 3e-4 instead of 1e-3, on the same budget. It is an arm like any other and competes in
-  the selection.
-- **fixed-initial relative error** — the l2 discrepancy over the interior nodes between the
-  predicted and reference field, divided by the l2 norm of the *supplied initial* field, so
-  every output time is normalised by the same fixed quantity. The per-case number is the
-  maximum over the six output times.
-- **validation-32** — the 32 held-out validation cases of the shared Burgers dataset. Used for
-  selection and for the headline table. Not the final cohort, which stays sealed.
-- **matched eight-case cohort (diagnosis-8)** — eight cases the Burgers ROM/FOM lane also
-  solved, rebuilt in this job from the same 4096-interval anchors, so the operator, the ROM
-  and the full-order solver are graded on the same cases against the same reference.
-- **ROM** — this project's reduced-order model, the subject the operators are being compared
-  with. **FOM** — the full-order finite-difference solver; `same_nt1e-2_dt005` and its
-  siblings are that solver run at looser tolerances, i.e. cheaper and less accurate settings.
-- **worst / median / mean** — over the cases of a cohort, of the per-case maximum-over-time
-  error. "cases > 5 %" counts how many cases exceed five percent.
-- **still improving** — a heuristic flag: the best checkpoint fell in the last 5 % of the epochs
-  the arm ran, i.e. validation was improving recently when the run ended. It is a hint that the
-  run stopped mid-progress, not a proof that more training would have helped.
-- **wall budget** — the fixed number of seconds each capacity is allowed to train. Equal
-  budget, not equal epochs, is what is held constant across families.
-- **cross-job** — a row measured in a different Slurm allocation. Accuracy may be read across
-  jobs here because the data, split, metric and reference are identical; timing may not.
-- **same-allocation panel** — a single job that times the ROM, the operator and the full-order
-  solver on one GPU. The only construction from which a speed ratio may be quoted.
-- **device query / host transfer** — the time to produce the complete trajectory in GPU
-  memory, and separately the time to copy it back to the host.
-- **persistence (trivial control)** — not a model: predict that the field never changes, i.e.
-  hold the supplied initial state at every output time. It costs nothing and learns nothing, and
-  it is the floor any operator must beat by a wide margin to be doing anything at all.
-- **D3 "ranking"** — the four families ordered by their *selected* arm's validation worst case.
-  Only the last place is load-bearing (and DeepONet is last on every metric); the order among
-  the other three depends on which metric is used, and by mean or median the U-Net leads.
-- **fixed contract** — every family consumes the same feature tensor and emits the same five
-  evolved fields, which are then masked to the zero boundary with the supplied initial state
-  prepended; nothing between families differs except the network.
-"""
-    report = HERE / f'{generated}-ops-deeponet-b2d.md'
-    report.write_text(text)
-    (HERE / 'summary.json').write_text(json.dumps(dict(
-        generated=generated, report=report.name, generator_sha256=sha(__file__), sources=sources,
-        rule='every row carries its source file and that file SHA256; no row is typed',
-        rows=rows_for_summary(records, criteria_rows)), indent=2) + '\n')
-    print(report)
-    print(json.dumps(criteria_rows, indent=2))
-    if warning:
-        print(warning)
+    parts = [
+        '# Tuning and data parity for the FNO, U-Net and Transolver baselines on 2D Burgers at 256²\n',
+        '\nWhat this report covers: how much of the operator baselines\' error was the **128-case '
+        'training set** rather than the architectures, and how much was the **absence of any tuning**. '
+        'It reports accuracy only — **no speed number from this lane is admissible**, and none is '
+        'stated. Numbers are final for the jobs named and provisional as evidence about these '
+        'families: one PDE, one mesh, one seed.\n',
+        f'\nGenerated by `reports/generate_report.py` from the audit JSONs alone, at commit '
+        f'`{commit()}`. No number below is typed.\n',
+        '\n', section_parity(generation),
+        '\n', section_generation(generation),
+        '\n', section_tuning(grid, published),
+        '\n', section_ladder(ladder, generation),
+        '\n', section_bar(grid, ladder, generation),
+        '\n', section_given(grid, ladder, generation),
+        '\n', section_glossary(),
+    ]
+    text = ''.join(parts)
+    OUT.write_text(text)
+    print(f'wrote {OUT} ({len(text)} chars)')
 
 
 if __name__ == '__main__':

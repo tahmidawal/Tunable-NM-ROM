@@ -69,6 +69,20 @@ def published_arms():
     return arms, provenance
 
 
+def published_generation_seconds():
+    """What one published training case cost to generate, from the archived index that recorded
+    it. The design first quoted 135 s; the records give a median of 127.2 s, and the audit was
+    right that the typed figure was not reproducible from any source."""
+    path = (WORKTREES / '2026-09-14-no-burgers/experiments/neural-operator-burgers'
+            / 'checks/live-train-index.json')
+    records = json.loads(path.read_text())['records']
+    values = sorted(r['reference']['wall_seconds_including_first_compile'] for r in records)
+    mid = len(values) // 2
+    median = values[mid] if len(values) % 2 else (values[mid - 1] + values[mid]) / 2
+    return dict(source=str(path), sha256=sha256(path), count=len(values), median=median,
+                mean=sum(values) / len(values), minimum=values[0], maximum=values[-1])
+
+
 def panel_rows():
     """The same-allocation panel's own rows, on its own 6 development cases. The operator
     percentages there are against a same-job converged 256-grid solve, NOT against the fine

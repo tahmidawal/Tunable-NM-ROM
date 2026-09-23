@@ -36,39 +36,47 @@ def reduced(m):
     return m.startswith(('nmrom', 'lin_', 'parent'))
 
 
-worst = dict(sub=0., full=0., rand=0.); checked = 0; failures = []; ctl = dict(swapped_case_detected=None, perturbed_error_detected=None)
+worst = dict(sub=0., full=0., rand=0., sub_gap=0.); checked = 0; failures = []; controls = {}; coverage_missing = []
 for mesh in res['meshes']:
     n = mesh['intervals']; rows = {r['method']: r for r in mesh['rows']}; prev = None
+    ctl = controls.setdefault(str(n), dict(swapped_case_detected=None, perturbed_error_detected=None))
     for case in mesh['cases']:
         ci = case['case']; z = np.load(out / f'fields_n{n}_case{ci}.npz'); draw = z['draw']; s = int(z['stride'])
         assert np.array_equal(draw, np.asarray(case['draw']))
+        missing = [m for m in rows if m not in z.files]
+        if missing: coverage_missing.append(dict(n=n, case=ci, missing=missing))
         d, refs = references(n, draw); sub = (slice(None),) + (slice(s - 1, None, s),) * d; axes = tuple(range(1, d + 1))
         for name in z.files:
             if name in ('draw', 'stride', 'sample_indices'): continue
             kind = 'full' if name.startswith('FULL_') else 'rand' if name.startswith('RAND_') else 'sub'
             m = name[5:] if kind != 'sub' else name; pred = z[name]
+            if not np.isfinite(pred).all(): failures.append(dict(n=n, case=ci, method=m, nonfinite_field=True)); continue
             for key in ('same', 'physical'):
                 if kind == 'rand':
                     ref = refs[key].reshape(len(times), -1)[:, z['sample_indices']]; err = rel(pred, ref, 1)
                     gap = float(np.max(np.abs(err - np.asarray(rows[m][key][ci])) / np.maximum(np.asarray(rows[m][key][ci]), 1e-9)))
                     if reduced(m):
                         worst['rand'] = max(worst['rand'], gap)
-                        if gap > .05: failures.append(dict(n=n, case=ci, method=m, ref=key, random_sample_gap=gap))
+                        if not np.isfinite(gap) or gap > .05: failures.append(dict(n=n, case=ci, method=m, ref=key, random_sample_gap=gap))
                     checked += 1; continue
                 ref = refs[key] if kind == 'full' else refs[key][sub]
                 err = rel(pred, ref, axes); recorded = np.asarray(rows[m][key if kind == 'full' else key + '_sub'][ci])
                 dev = float(np.max(np.abs(err - recorded))); worst[kind] = max(worst[kind], dev); checked += 1
-                if dev > 1e-10: failures.append(dict(n=n, case=ci, method=m, ref=key, kind=kind, discrepancy=dev))
+                if kind == 'sub' and key == 'same' and reduced(m):   # diagnostic only: sub-grid vs recorded full-grid error
+                    full_rec = np.asarray(rows[m]['same'][ci]); worst['sub_gap'] = max(worst['sub_gap'], float(np.max(np.abs(err - full_rec) / np.maximum(full_rec, 1e-9))))
+                if not np.isfinite(dev) or dev > 1e-10: failures.append(dict(n=n, case=ci, method=m, ref=key, kind=kind, discrepancy=dev))
         # controls, once per mesh, on the first saved reduced arm: they must be detected
-        if prev is not None and ctl['swapped_case_detected'] is not True:
+        if prev is not None and ctl['swapped_case_detected'] is not True:   # per mesh
             m = next(k for k in z.files if reduced(k)); _, rp = references(n, prev)
             err = rel(z[m], rp['same'][sub], axes); ctl['swapped_case_detected'] = bool(np.max(np.abs(err - np.asarray(rows[m]['same_sub'][ci]))) > 1e-10)
         if ctl['perturbed_error_detected'] is not True:
             m = next(k for k in z.files if reduced(k)); err = rel(z[m], refs['same'][sub], axes)
             ctl['perturbed_error_detected'] = bool(np.max(np.abs(err - np.asarray(rows[m]['same_sub'][ci]) * (1 + 1e-3))) > 1e-10)
         prev = draw
-passed = bool(not failures and checked > 0 and res['complete'] and ctl['swapped_case_detected'] and ctl['perturbed_error_detected'])
-print(json.dumps(dict(passed=passed, checked_error_vectors=checked, max_subgrid_abs_discrepancy=worst['sub'], max_full_abs_discrepancy=worst['full'],
-                      max_reduced_random_sample_relative_gap=worst['rand'], controls=ctl, failure_count=len(failures), failures=failures[:50],
+ctl_ok = all(c['swapped_case_detected'] and c['perturbed_error_detected'] for c in controls.values()) and len(controls) == len(res['meshes'])
+passed = bool(not failures and not coverage_missing and checked > 0 and res['complete'] and ctl_ok)
+print(json.dumps(dict(passed=passed, version=2, checked_error_vectors=checked, max_subgrid_abs_discrepancy=worst['sub'], max_full_abs_discrepancy=worst['full'],
+                      max_reduced_random_sample_relative_gap=worst['rand'], diagnostic_max_reduced_subgrid_vs_fullgrid_relative_gap=worst['sub_gap'],
+                      coverage_missing=coverage_missing[:20], controls=controls, failure_count=len(failures), failures=failures[:50],
                       definition='exact recomputation (<=1e-10) of every saved sub-grid and full-grid error with an independent SciPy DST reference; '
                                  'random-node full-grid estimate within 5% for reduced arms; swapped-case and perturbed-error controls must be detected'), indent=1))

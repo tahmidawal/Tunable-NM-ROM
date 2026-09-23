@@ -56,14 +56,16 @@ for mesh in res['meshes']:
     nbr = {}
     for m, recs in mesh['neighbour'].items():
         cs = sorted({x['case'] for x in recs}); main = np.median(np.asarray(byname[m]['device_ms']).reshape(-1, reps)[cs]); nb = np.median([x['ms'] for x in recs])
-        ok = (nb <= 1.10 * main) if main >= 1.0 else (nb - main <= 0.1)
+        ok = (nb <= 1.10 * main) if main >= 1.0 else (abs(nb - main) <= 0.1)
         nbr[m] = dict(main_ms=float(main), neighbour_ms=float(nb), ratio=float(nb / main), passed=bool(ok))
     gates = dict(parity_max_relative_difference=parity, parity_passed=None if parity is None else parity <= 1e-10,
                  fingerprint_mismatches=fp, determinism_passed=fp == 0,
-                 neighbour_passed=all(v['passed'] for v in nbr.values()), neighbour_failures={m: v for m, v in nbr.items() if not v['passed']},
+                 neighbour_passed=bool(nbr) and set(nbr) == {m for m, r in byname.items() if parse(m)['group'] in ('nmrom', 'lin', 'parent')} and all(v['passed'] for v in nbr.values()), neighbour_failures={m: v for m, v in nbr.items() if not v['passed']},
                  neighbour_max_ratio=max(v['ratio'] for v in nbr.values()) if nbr else None,
                  audit_passed=None if audit is None else audit['passed'],
                  weak_matrix_rotation_identity=mesh.get('weak_matrix_rotation_identity'), weak_matrix_relative_error=mesh.get('weak_matrix_relative_error'))
+    gates['results_complete'] = bool(res['complete'])
+    gates['usable'] = bool(res['complete'] and gates['determinism_passed'] and gates['neighbour_passed'] and gates['audit_passed'] and gates['parity_passed'] is not False)
     # selection on validation, frozen, read on held-out
     sel = {}
     for fam in fams + ['pooled']:
@@ -95,7 +97,14 @@ for mesh in res['meshes']:
             ser = sorted([r for r in R[held].values() if r['fam'] == fam and pick(r)], key=lambda r: -r['R'])
             errs = [r['err_worst'] for r in ser]
             mono[f'{fam}_{lab}'] = dict(R=[r['R'] for r in ser], err_worst=errs, ms=[r['ms_median'] for r in ser],
+                                        failures=[r['failures'] for r in ser], complete=[r['R'] for r in ser] == list(cfg['ladder']),
                                         monotone=bool(all(b >= a * (1 - 1e-9) for a, b in zip(errs, errs[1:]))))
+    for fam in fams:   # registered timing condition: linear rung R'=R vs the cheapest R' meeting the fast rule (held-out), >= 2x
+        lin = {r['R']: r for r in R[held].values() if r['group'] == 'lin' and r['fam'] == fam}; ref = min(R[held][cfg['paper_fast'][fam]]['err_worst'], 1e9)
+        ok = [r for r in lin.values() if r['err_worst'] <= ref and r['failures'] == 0]
+        cheap = min(ok, key=lambda r: r['ms_median']) if ok else None
+        mono[f'{fam}_linear_time_drop'] = dict(full_ms=lin[Rfull]['ms_median'], cheapest_R=cheap and cheap['R'], cheapest_ms=cheap and cheap['ms_median'],
+                                               ratio=cheap and lin[Rfull]['ms_median'] / cheap['ms_median'], passed=bool(cheap and lin[Rfull]['ms_median'] / cheap['ms_median'] >= 2))
     summary['meshes'].append(dict(intervals=n, unknowns=mesh['unknowns'], cohorts=cohorts, cases={c: sum(cc['cohort'] == c for cc in cases) for c in cohorts},
                                   bank_bytes=mesh['bank_bytes'], truncated_bank_condition=mesh['truncated_bank_condition'], setup_seconds=mesh['setup_seconds'],
                                   gates=gates, neighbour=nbr, selection=sel, monotonicity=mono, profile_ms=mesh['profile'], rows=R))

@@ -19,7 +19,7 @@ for job, label in JOBS:
         n = m['intervals']; g = m['gates']; held = m['cohorts'][-1]; val = m['cohorts'][0]; R = m['rows'][held]
         out.append(f"\n## {n}^{2 if job == 'h2d' else 3} — held-out `{held}` ({m['cases'][held]} cases), selection on `{val}` ({m['cases'][val]} cases)\n")
         out.append(f"Gates: parity max rel. diff {g['parity_max_relative_difference']} (pass {g['parity_passed']}); determinism {g['determinism_passed']}; "
-                   f"order-effect (neighbour) {g['neighbour_passed']} (max ratio {g['neighbour_max_ratio']:.3f}); NumPy audit {g['audit_passed']}.\n")
+                   f"order-effect (neighbour) {g['neighbour_passed']} (max ratio {g['neighbour_max_ratio']:.3f}); NumPy audit {g['audit_passed']}. **Usable: {g['usable']}**.\n")
         out += ['| family | role | arm | R\' | q | val worst % | held-out worst % | held-out median % | GPU ms | Table-1 FOM | FOM worst % | FOM ms | speedup | fast rule met on held-out |',
                 '|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---|']
         for fam, s in m['selection'].items():
@@ -32,7 +32,7 @@ for job, label in JOBS:
                                           heldout_err_median_pct=100 * a['err_median'], heldout_err_evolved_worst_pct=100 * a['err_evolved_worst'], gpu_ms=a['ms_median'],
                                           fom=fom.get('method'), fom_err_pct=100 * fom['err_worst'] if fom else None, fom_ms=fom.get('ms'), speedup=h['speedup_' + role],
                                           validation_err_worst_pct=100 * s['validation'][role]['err_worst'], paper_fast_heldout_err_pct=100 * h['paper_fast_err'],
-                                          fast_rule_met_heldout=h['fast_meets_rule_on_heldout'], failures=a['failures']))
+                                          fast_rule_met_heldout=h['fast_meets_rule_on_heldout'], failures=a['failures'], usable=g['usable'] and a['failures'] == 0))
         out += ['', f"Full held-out table ({held}): every (R', q, stepping) arm. `x T1` = the family's Table-1 FOM time / arm time; `x own` = fastest FOM at least as accurate as the arm; `x named` = CN-CG dt 0.025 rtol 1e-6.", '',
                 "| arm | R' | q | stepping | worst % | median % | GPU ms (p10-p90) | fails | x T1 | own FOM | x own | x named |", '|---|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|']
         t1 = {fam: (s['heldout']['fom'] or {}).get('ms') for fam, s in m['selection'].items()}
@@ -47,7 +47,9 @@ for job, label in JOBS:
             out.append(f"| `{r['method']}` | {pct(r['err_worst'])} | {pct(r['err_median'])} | {r['ms_median']:.3f} | {r['failures']} |")
         out += ['', 'Knob monotonicity (held-out worst error as R\' falls):', '']
         for k, v in m['monotonicity'].items():
-            out.append(f"- {k}: R' {v['R']} -> worst % {[round(100 * e, 3) for e in v['err_worst']]}, ms {[round(x, 2) for x in v['ms']]}; monotone {v['monotone']}")
+            if k.endswith('_time_drop'):
+                out.append(f"- {k}: linear rung at R'=R {v['full_ms']:.3f} ms vs cheapest R' meeting the fast rule (R'={v['cheapest_R']}, {v['cheapest_ms']} ms): ratio {v['ratio']}; >= 2x: {v['passed']}"); continue
+            out.append(f"- {k}: R' {v['R']} -> worst % {[round(100 * e, 3) for e in v['err_worst']]}, ms {[round(x, 2) for x in v['ms']]}; monotone {v['monotone']} (complete ladder {v['complete']}, failures {v['failures']})")
         if m['profile_ms']:
             out += ['', f"Cost profile at {n} (held-out case 0, median ms of 5; stages timed separately, so they need not sum to the fused query):", '',
                     "| arm | encode (G'^T u / moments) | init fit | evolve | decode (G'c) | fused query |", '|---|---:|---:|---:|---:|---:|']

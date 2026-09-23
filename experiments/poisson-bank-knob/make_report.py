@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-RUNS = [('pbkC', 'output'), ('pbkC', 'output2'), ('pbkC', 'output3'), ('pbkD', 'output')]
+RUNS = [('pbkE', 'output'), ('pbkE', 'output2'), ('pbkE', 'output3'), ('pbkD', 'output')]
 STAGES = ('project_and_start', 'lm_solve', 'y_elimination_and_map', 'reconstruction')
 
 

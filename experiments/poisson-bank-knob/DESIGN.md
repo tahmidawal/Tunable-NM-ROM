@@ -82,3 +82,11 @@ Table 1 rows are regenerated from the frozen models. Changes, all made before an
 
   Every arm is also compared with the fastest CG at least as accurate as itself. Parent (unrotated) arms are parity
   baselines and are excluded from the selection, because they duplicate `R512_*`.
+
+## Amendment A2 (2026-09-23, before any result) — pbkC moved to A100
+
+`pbkC` (job 4197114) was cancelled by me while PENDING (Slurm start estimate 08:04, waiting for an H200). Its remote
+directory was deleted and the name retired. The same three meshes run as `pbkE` on an **A100**: the 2048² original
+plus rotated banks are about 34 GB. 4096² (`pbkD`, job 4197115) stays on an H200, because its 69 GB rotated bank does
+not fit an 80 GB card. All speedups are within-job ratios, so the GPU-type difference between the 4096² row and the
+other rows affects only absolute milliseconds, which are labelled with their GPU.

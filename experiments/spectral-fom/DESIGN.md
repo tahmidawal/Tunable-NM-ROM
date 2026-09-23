@@ -218,3 +218,17 @@ Everything else is unchanged: ROM arms, reference, gates, audit, and the T1 repo
 **Which runs are reported.**
 - The L1 runs (spF: 256²/512²/1024², any A100; spG: 2048², 80 GB) are the Burgers result.
 - spC and spE stay in the report as the original-ladder record.
+
+## Amendment L2 (2026-09-23; written before any L2 job) — a half-length DST-I
+
+**The variant.** `dst_half` computes the DST-I from a real FFT of length $N = n$ instead of $2n$, using the
+classical pre-twiddle and running-sum post-step (Numerical Recipes `sinft`). It agrees with SciPy to about
+$10^{-14}$ in 2D and 3D. On the local GB10 it was 10–20 % faster than `dst_fft` for the batched heat transform at
+1024² and 2048².
+
+**Where it is used.**
+- Heat: it is added as a third variant, and heat 2D is re-timed at all three meshes in one job (spI, 80 GB).
+- Burgers: it joins the per-mesh micro-benchmark candidates (`dst_candidates`) for later jobs.
+
+**What happens to earlier runs.** The pending heat 4096² job spH (4209368) was cancelled by me before it started,
+and its directory was removed. spD (1024²/2048², two variants) is kept as a record.

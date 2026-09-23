@@ -32,6 +32,35 @@ def dst1_fft(x, axis):
     return jnp.moveaxis(y, -1, axis)
 
 
+def dst1_half(x, axis):
+    """Orthonormal DST-I along `axis` from a real FFT of HALF the odd-extension length (N = M+1 instead of
+    2(M+1)): the classical pre-twiddle y_j = sin(pi j/N)(f_j + f_{N-j}) + (f_j - f_{N-j})/2, one rfft, then
+    F_{2k} = Im-part, F_{2k+1} = running sum of the Re-part (Numerical Recipes `sinft`).  N must be even.
+    Verified against scipy.fft.dst(type=1, norm='ortho') in tests (round-off agreement)."""
+    x = jnp.moveaxis(x, axis, -1)
+    M = x.shape[-1]
+    N = M + 1
+    assert N % 2 == 0, N
+    zero = jnp.zeros(x.shape[:-1] + (1,), x.dtype)
+    f = jnp.concatenate((zero, x), axis=-1)
+    fr = jnp.concatenate((zero, x[..., ::-1]), axis=-1)
+    j = jnp.arange(N, dtype=x.dtype)
+    y = jnp.sin(jnp.pi * j / N) * (f + fr) + 0.5 * (f - fr)
+    y = y.at[..., 0].set(0.0)
+    Y = jnp.fft.rfft(y, axis=-1)
+    K = N // 2
+    R, I = Y.real[..., :K], -Y.imag[..., :K]
+    odd = jnp.cumsum(R, axis=-1) - 0.5 * R[..., :1]
+    F = jnp.stack((I, odd), axis=-1).reshape(x.shape[:-1] + (N,))
+    return jnp.moveaxis(F[..., 1:] * jnp.sqrt(2.0 / N), -1, axis)
+
+
+def dstn_half(x):
+    for ax in range(x.ndim):
+        x = dst1_half(x, ax)
+    return x
+
+
 def dstn_fft(x):
     for ax in range(x.ndim):
         x = dst1_fft(x, ax)
@@ -80,10 +109,12 @@ def make_poisson(n, d, variant):
     """Exact solve of  n^2 * (2d u - sum neighbours) = f  on the interior, zero Dirichlet.
     Returns fn(host-shaped full nodal source on device) -> full nodal field, plus its jit args."""
     lam = jnp.asarray(eig_grid(n, d))
-    if variant == 'fft':
+    if variant in ('fft', 'half'):
+        tr = dstn_fft if variant == 'fft' else dstn_half
+
         @jax.jit
         def solve(source, lam):
-            return pad1(dstn_fft(dstn_fft(interior(source)) / lam))
+            return pad1(tr(tr(interior(source)) / lam))
         return lambda s: solve(s, lam)
     S = jnp.asarray(sine_matrix(n - 1))
 
@@ -99,6 +130,12 @@ def _dst_batched_fft(x, d):
     """Orthonormal DST-I over the last d axes of a batched array."""
     for ax in range(1, d + 1):
         x = dst1_fft(x, x.ndim - ax)
+    return x
+
+
+def _dst_batched_half(x, d):
+    for ax in range(1, d + 1):
+        x = dst1_half(x, x.ndim - ax)
     return x
 
 
@@ -128,11 +165,13 @@ def make_heat(n, d, nu, times, variant, scheme, dt=None):
         assert all(abs(s_ * dt - t) < 1e-12 for s_, t in zip(steps, later)), (times, dt)
         fac = np.stack([g ** s_ for s_ in steps])
     fac = jnp.asarray(fac)
-    if variant == 'fft':
+    if variant in ('fft', 'half'):
+        tr = _dst_batched_fft if variant == 'fft' else _dst_batched_half
+
         @jax.jit
         def run(u0, fac):
-            c = _dst_batched_fft(u0[None], d)
-            return jnp.concatenate((u0[None], _dst_batched_fft(c * fac, d)))
+            c = tr(u0[None], d)
+            return jnp.concatenate((u0[None], tr(c * fac, d)))
         return lambda u: run(u, fac)
     S = jnp.asarray(sine_matrix(n - 1))
 
@@ -146,10 +185,12 @@ def make_heat(n, d, nu, times, variant, scheme, dt=None):
 def make_poisson_interior(n, d, variant):
     """Interior (n-1)^d forcing in -> interior field out (the cube lane's query scope)."""
     lam = jnp.asarray(eig_grid(n, d))
-    if variant == 'fft':
+    if variant in ('fft', 'half'):
+        tr = dstn_fft if variant == 'fft' else dstn_half
+
         @jax.jit
         def solve(f, lam):
-            return dstn_fft(dstn_fft(f) / lam)
+            return tr(tr(f) / lam)
         return lambda f: solve(f, lam)
     S = jnp.asarray(sine_matrix(n - 1))
 
@@ -186,7 +227,8 @@ def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, r
     def hinv(v, nu, lam, S):
         if dst == 'mm':
             return dstn_mm(dstn_mm(v.reshape(L - 1, L - 1), S) / (1.0 + dt * nu * lam), S).reshape(-1)
-        return dstn_fft(dstn_fft(v.reshape(L - 1, L - 1)) / (1.0 + dt * nu * lam)).reshape(-1)
+        tr = dstn_fft if dst == 'fft' else dstn_half
+        return tr(tr(v.reshape(L - 1, L - 1)) / (1.0 + dt * nu * lam)).reshape(-1)
 
     def step(prev, nu, ntol, lam, S, guess=None):
         thr = ntol * jnp.maximum(jnp.linalg.norm(prev), 1e-300)

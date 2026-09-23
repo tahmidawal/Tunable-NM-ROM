@@ -272,7 +272,7 @@ def main():
 
     # ---- spectral subjects: DST variant chosen by an untimed micro-benchmark
     bench = {}
-    for variant in ('fft', 'mm'):
+    for variant in cfg.get('dst_candidates', ['fft', 'mm']):
         fn = SC.make_burgers(L, dt, e.residual, max_iter=1, dst=variant)
         u0j = jnp.asarray(inputs_u[0])
         jax.block_until_ready(fn(u0j, float(physical[0, 4]), 0.0))

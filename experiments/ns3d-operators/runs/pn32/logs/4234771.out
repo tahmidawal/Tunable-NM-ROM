@@ -1,0 +1,62 @@
+host=pax106 source_commit=716a12cffa7d4af77481d7778de1d1341e43089d job=4234771 config=configs/panel32.json
+NVIDIA A100 80GB PCIe, GPU-61e51c62-3b2d-491a-b5a7-38377f765df9, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.3T  321G  94% /cluster/tufts/paralab
+jax_backend=gpu
+torch_backend=cuda NVIDIA A100 80GB PCIe
+[15:06:07] generating evaluation truth
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+[15:06:09] generating bank training trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.493e-10 energy_tail=1.408e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+[15:06:22] bank rebuild gap 3.093e-13
+[15:06:34] nmrom_accurate_head_k8: evolved worst 0.001510 (3.5s)
+[15:06:36] nmrom_fast_span16: evolved worst 0.029564 (2.0s)
+[15:06:37] cnab2_s200: evolved worst 0.000000 (1.2s)
+[15:06:38] cnab2_s100: evolved worst 0.000188 (1.0s)
+[15:06:39] cnab2_s80: evolved worst 0.000329 (1.0s)
+[15:06:40] cnab2_s70: evolved worst 0.000449 (0.9s)
+[15:06:41] cnab2_s60: evolved worst 0.000634 (0.8s)
+[15:06:42] cnab2_s50: evolved worst 0.000943 (0.8s)
+[15:06:43] cnab2_s40: evolved worst 0.001516 (0.8s)
+[15:06:43] cnab2_s20: evolved worst 0.007882 (0.8s)
+[15:06:44] cnab2_s10: evolved worst 0.766936 (0.8s)
+[15:06:45] op_don-l: evolved worst 0.984225 (0.5s)
+[15:06:45] op_don-s: evolved worst 0.525760 (0.2s)
+[15:06:45] op_fno-l: evolved worst 0.003956 (0.3s)
+[15:06:45] op_fno-s: evolved worst 0.004708 (0.2s)
+[15:06:46] op_tsol-l: evolved worst 0.008212 (0.7s)
+[15:06:46] op_tsol-s: evolved worst 0.005382 (0.4s)
+[15:06:47] op_unet-l: evolved worst 0.004792 (0.4s)
+[15:06:47] op_unet-s: evolved worst 0.006698 (0.3s)
+[15:06:47] reproduction gate: True {'nmrom_accurate_head_k8': 2.98e-10, 'nmrom_fast_span16': 1.1e-11, 'cnab2_s200': 0.0, 'cnab2_s100': 0.0, 'cnab2_s80': 0.0, 'cnab2_s70': 0.0, 'cnab2_s60': 0.0, 'cnab2_s50': 0.0, 'cnab2_s40': 0.0, 'cnab2_s20': 0.0, 'cnab2_s10': 0.0}
+[15:06:47] warm-up: 19 arms
+[15:07:27] FOM cnab2_s50; gates {'reproduction': True, 'drift': True, 'order': True, 'positive_control_failed_as_required': True, 'timed_outputs_match': True, 'gated_arms': ['nmrom_accurate_head_k8', 'nmrom_fast_span16', 'cnab2_s50', 'op_don-s', 'op_fno-l', 'op_tsol-s', 'op_unet-l'], 'bank_rebuild': True, 'coverage': True, 'finite_reported_arms': True, 'fom_found': True, 'all_passed': True}
+[15:07:27]   nmrom_accurate_head_k8: 0.00151 5.788 ms x1.169
+[15:07:27]   nmrom_fast_span16: 0.02956 3.216 ms x2.103
+[15:07:27]   cnab2_s50: 0.00094 6.764 ms x1.000
+[15:07:27]   op_don-s: 0.52576 3.677 ms x1.839
+[15:07:27]   op_fno-l: 0.00396 3.127 ms x2.163
+[15:07:27]   op_tsol-s: 0.00538 16.275 ms x0.416
+[15:07:27]   op_unet-l: 0.00479 15.040 ms x0.450
+{"passed": true, "control_rejected": true, "failures": [], "fom": "cnab2_s50", "sampled_max": 0.2166313275324787}
+RUN_EXIT=0 AUDIT_EXIT=0

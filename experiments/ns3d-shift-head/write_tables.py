@@ -175,10 +175,10 @@ def mesh_section(job):
     bf = s["bank_floor"]["stats"]
     L.append(f"| full bank R={cfg['rank']} (POD order) | {pct(bf['evolved_worst'])} | "
              f"{pct(bf['evolved_median'])} |")
-    for key, st in s["span_floors"].items():
+    for key, st in sorted(s["span_floors"].items(), key=lambda kv: -int(kv[0])):
         L.append(f"| span R'={key} (importance order) | {pct(st['evolved_worst'])} | "
                  f"{pct(st['evolved_median'])} |")
-    for k, fl in s["head_floors"].items():
+    for k, fl in sorted(s["head_floors"].items(), key=lambda kv: int(kv[0])):
         st = fl["0"]
         L.append(f"| head k={k} (query encoder) | {pct(st['evolved_worst'])} | "
                  f"{pct(st['evolved_median'])} |")
@@ -191,7 +191,7 @@ def mesh_section(job):
         L.append("| k | seconds | final weighted fit | train median | train worst | "
                  "val median | val worst |")
         L.append("|---:|---:|---:|---:|---:|---:|---:|")
-        for k, h in s["heads"].items():
+        for k, h in sorted(s["heads"].items(), key=lambda kv: int(kv[0])):
             f = h["fit"]
             L.append(f"| {k} | {h['train_seconds']:.0f} | {h['curve'][-1][1]:.3e} | "
                      f"{pct(f['train_q0']['median'])} | {pct(f['train_q0']['worst'])} | "

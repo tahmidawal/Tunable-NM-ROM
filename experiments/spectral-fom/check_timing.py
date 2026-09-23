@@ -90,7 +90,7 @@ for prob, runs in ACCEPTED.items():
         v2 = [t * 1.5 if i >= len(v) // 2 - 1 else t for i, t in enumerate(v)]
         ctrl_median = abs(1e3 * float(np.median(v2)) - R['timings'][nm0]['median_ms']) > 1e-9
         seq = [x for x in inv if x['phase'] == ph0]
-        ctrl_prev = any(x['previous'] != p_ for x, p_ in zip(seq, [seq[1]['name']] + [x['name'] for x in seq[:-1]]))
+        ctrl_prev = any(x['previous'] != p_ for x, p_ in list(zip(seq, [None, None] + [x['name'] for x in seq[:-2]]))[2:])   # off-by-one alignment
         if not (ctrl_median and ctrl_prev):
             bad += 1; print('CONTROL NOT DETECTED', att, od)
         print(f'{prob:10s} {att}/{od} n={R["intervals"]}: drift {dr_ok} neighbour {nb_ok} (worst {worst:.3f}) agrees_with_recorded={agree} controls_detected={ctrl_median and ctrl_prev}')

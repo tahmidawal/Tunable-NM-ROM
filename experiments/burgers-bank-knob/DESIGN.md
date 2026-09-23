@@ -108,3 +108,13 @@ Per mesh, over the (a)/(b)/(c) arms (parents and controls excluded; the rotated 
 | `bk2048` | $2048^2$ | H200 (or A100-80G) | parent kept (2 × 16 GiB) |
 | `bk4096` | $4096^2$ | H200, 240G | rotated bank only (64 GiB) |
 | `bkh64` | $4096^2$ hold64 | H200, 240G | chosen settings only, after the dev6 selection is committed |
+
+## Amendments
+
+**A1 (2026-09-23, after bk1024b's audit; the amendment touches no input of the setting rule — errors, times, certificates are unchanged).** The restricted-grid error comparator
+inherited from burgers-repanel (every arm, every case, recomputed on the $256^2$ subsample, two-sided 5 % bar)
+fails at $1024^2$ by −13.7 % — always an UNDER-count, concentrated in the most accurate arms (linear rung
+$R'=384/512$), whose error sits on shock fronts that every-4th-node subsampling misses. It is a property of the
+restriction, not of the job: the exact full-grid recomputation of the audit case agrees to $10^{-18}$ for those
+same arms. The gate is now one-sided in spirit: restricted/full ratio in $[0.5, 1.05]$ for every (arm, case) (a
+swapped case gives ratios ~$10^2$ and is still detected); the legacy two-sided result is reported beside it.

@@ -1,7 +1,8 @@
 #!/bin/bash
 # burgers-repanel: submit ONE staged attempt with the protocol's guards.
 #   cluster/submit.sh <attempt>
-# Waits until the account has < 6 running jobs and this lane (brep_*) < 2 running; refuses if a job named
+# Waits until the account has < 6 running jobs and this lane (brep_*) has NONE running or pending (lane
+# budget: <= 1 running job); refuses if a job named
 # brep_<attempt> is already queued; rsyncs runs/<attempt>/ to its own namespace dir; squeue before and after.
 set -euo pipefail
 A="$1"; [[ "$A" =~ ^[a-zA-Z0-9]+$ ]]
@@ -15,7 +16,7 @@ while true; do
   NLANE=$(echo "$Q" | awk '$2 ~ /^brep_/ && ($3=="RUNNING" || $3=="PENDING")' | grep -c . || true)
   echo "$(date +%T) account running=$NRUN lane running+pending=$NLANE"
   if echo "$Q" | awk '{print $2}' | grep -qx "brep_$A"; then echo "brep_$A already queued: refusing"; exit 3; fi
-  if [ "$NRUN" -lt 6 ] && [ "$NLANE" -lt 2 ]; then break; fi
+  if [ "$NRUN" -lt 6 ] && [ "$NLANE" -lt 1 ]; then break; fi
   sleep 120
 done
 echo "--- squeue before"; echo "$Q"

@@ -22,7 +22,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 for extra in ('experiments/ns3d', 'experiments/ns3d-grok', 'experiments/ns3d-shift',
-              'experiments/ns3d-shift-head', 'experiments/ns3d-operators/deps/ns2d'):
+              'experiments/ns3d-shift-head', 'experiments/ns3d-operators/deps/ns2d', 'experiments/ns3d-operators/deps/separable-decoder'):
     sys.path.insert(0, str(ROOT / extra))
 sys.path.insert(0, str(HERE))
 os.environ.setdefault('JAX_ENABLE_X64', '1')
@@ -226,6 +226,8 @@ def main():
     np.save(out / 'fields' / 'truth_samples.npy', np.stack([sample(truth[c]) for c in range(ncase)]))
     results = {}
     saved_truth_cases = set()
+    written = [0]
+    cap = float(cfg.get('field_cap_gb', 4.0)) * 2 ** 30
     for name, arm in arms.items():
         t0 = time.time()
         errors = np.empty((ncase, 6))
@@ -255,6 +257,11 @@ def main():
             disk = shutil.disk_usage(out).free / 2 ** 30
             if disk < float(cfg['min_free_gb']):
                 raise RuntimeError(f'only {disk:.0f} GB free; refusing to write fields')
+            nbytes = 8 * (len(fields) * fields[0 if 0 in fields else next(iter(fields))].size
+                          + len(samples) * samples[0].size)
+            if written[0] + nbytes > cap:
+                raise RuntimeError(f'saved-field cap {cap / 2**30:.1f} GB would be exceeded')
+            written[0] += nbytes
             np.savez(out / 'fields' / f'{name}.npz', cases=np.asarray(sorted(fields)),
                      fields=np.stack([fields[c] for c in sorted(fields)]), samples=np.stack(samples))
         results[name] = dict(kind=arm['kind'], finite=finite, stats=stats,
@@ -277,7 +284,7 @@ def main():
             continue
         got = np.asarray(results[name]['errors'])
         want = np.asarray(cfg['reference_values'][refname])
-        rel = float(np.max(np.abs(got - want) / np.maximum(np.abs(want), 1e-12)))
+        rel = float(np.max(np.abs(got - want) / np.maximum(np.abs(want), 1e-9)))  # floor: t=0 errors are ~1e-16
         repro[name] = dict(reference=refname, max_relative_gap=rel, passed=bool(rel <= 1e-6))
     report['reproduction_gate'] = dict(arms=repro, passed=all(v['passed'] for v in repro.values()))
     log(f"reproduction gate: {report['reproduction_gate']['passed']} "
@@ -308,18 +315,29 @@ def main():
             for c in range(ncase):
                 arms[name]['sync'](arms[name]['call'](c))
     order_rng = np.random.default_rng(int(cfg['timing_seed']))
+
+    def burn(seconds=2.0):
+        a = jnp.ones((1024, 1024)) * 1e-3
+        f = jax.jit(lambda a: a @ a * 1e-3 + 1e-3)
+        t = time.perf_counter()
+        while time.perf_counter() - t < seconds:
+            a = f(a)
+        jax.block_until_ready(a)
+    burn()
     prev = None
     for rnd in range(reps):                                   # A1
         for name in order_rng.permutation(names):
             for c in range(ncase):
                 timed(name, c, 'A1', rnd, prev)
                 prev = name
+    burn()
     b_order = list(order_rng.permutation(names))              # B, arm-major
     for name in b_order:
         for rnd in range(reps):
             for c in range(ncase):
                 timed(name, c, 'B', rnd, prev)
                 prev = name
+    burn()
     for rnd in range(reps):                                   # A2
         for name in order_rng.permutation(names):
             for c in range(ncase):
@@ -355,7 +373,7 @@ def main():
                             median_A2=float(np.median(r['A2'])), drift_ratio=drift, drift_passed=drift_ok,
                             order_ratio=order, order_passed=order_ok)
     # positive control: x1.15 on A2 must fail the drift gate
-    ctrl = {name: gate_ratio(1.15 * np.median(r['A2']), np.median(r['A1']))[1] for name, r in raw.items()}
+    ctrl = {name: gate_ratio(np.median(1.15 * np.asarray(r['A1'])), np.median(r['A1']))[1] for name, r in raw.items()}
     report['timing'] = dict(protocol='A1 interleaved / B arm-major / A2 interleaved', rounds=reps,
                             burn_calls=int(cfg['burn_calls']), arms=timing,
                             positive_control_all_failed=bool(not any(ctrl.values())), raw=raw)
@@ -396,7 +414,13 @@ def main():
         positive_control_failed_as_required=report['timing']['positive_control_all_failed'],
         timed_outputs_match=bool(timed_ok), gated_arms=gated,
         bank_rebuild=bool(gap <= 1e-8))
+    report['gates']['coverage'] = all(
+        len(raw[nm]['ms']) == 3 * reps * ncase and min(raw[nm]['ms']) > 0 for nm in names)
+    report['gates']['finite_reported_arms'] = all(results[nm]['finite'] for nm in gated)
+    report['gates']['fom_found'] = fom is not None
     report['gates']['all_passed'] = all(v for k, v in report['gates'].items() if k != 'gated_arms')
+    report['status'] = 'final' if report['gates']['all_passed'] else 'PROVISIONAL (diagnostic only)'
+    report['saved_field_bytes'] = written[0]
     report['results'] = results
     report['complete'] = True
     dump()

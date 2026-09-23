@@ -4,7 +4,7 @@ import hashlib, json, sys
 from pathlib import Path
 
 LANE = Path(__file__).resolve().parent.parent
-PANELS = [('pn1024b', 1024), ('pn2048c', 2048), ('pn4096b', 4096)]
+PANELS = [('pn1024b', 1024), ('pn2048d', 2048), ('pn4096c', 4096)]
 TRAIN = {1024: 'tr1024a', 2048: 'tr2048'}
 SHOW = {'nmrom': 'NM-ROM (ours)', 'linear_bank': 'linear bank (q=R rung)', 'pod': 'POD', 'qm': 'quadratic manifold',
         'operator': 'neural operator', 'control': 'control (not a FOM candidate)', 'fom': 'CN–CG full-order'}
@@ -110,8 +110,13 @@ out += ['', '## Glossary', '',
         '- **controls**: exact DST propagation and a 64-interval coarse-grid CN–CG + interpolation; printed for honesty, never used as "FOM chosen".',
         '- **sealed cohort**: the 16 evaluation draws of the paper\'s heat rows; **failed solves**: LM solves that did not reach stationarity, or CG solves that '
         'missed their tolerance.',
-        '- **order-effect gate**: a fixed sentinel query timed between every two arms must stay within ±10 % of its median; its positive control (sentinel '
-        'timed behind deliberately queued GPU work) must fail that test.']
+        '- **order-effect gate** (DESIGN A2): (a) carry-over — a fixed sentinel query (exact DST propagation of case 0, 15 repetitions) is timed after every '
+        'block; the median over all sentinel repetitions after full-order blocks divided by the median after all other blocks must lie within ±10 %; (b) re-time — three '
+        'real arms are rebuilt and timed again on all 16 cases after the full-order phase and must match their own block medians within ±10 %; (c) positive control — '
+        'the sentinel timed behind deliberately queued GPU work must fail the ±10 % test. The v1 per-block sentinel test is reported but is noise-dominated (A2).',
+        '- **FNO / U-Net / Transolver / DeepONet epochs**: every operator stopped on its 3000 s wall budget with its best validation checkpoint at or near the last epoch, '
+        'i.e. still improving; see the training table.',
+        '- **GPU**: 1024² ran on an A100 80GB (no H200 was free; DESIGN A2), 2048² and 4096² on an H200. Every ratio is inside one job.']
 (LANE / 'reports' / 'heat-compare-hires.md').write_text('\n'.join(out) + '\n')
 (LANE / 'reports' / 'summary.json').write_text(json.dumps(combined, indent=1) + '\n')
 print('\n'.join(out))

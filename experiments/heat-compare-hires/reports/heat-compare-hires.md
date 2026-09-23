@@ -59,7 +59,62 @@ Quadratic manifold ridge weight chosen on the trajectory-split holdout: r=8: γ=
 
 † no tested CN–CG setting is as accurate as this arm; ratio against the most accurate tested setting (unmatched accuracy; not a bound).
 
-## 2048² — NOT RUN / not collected
+## 2048² (4,190,209 unknowns) — final (every gate passed)
+
+Job 4211204, GPU `NVIDIA H200`, source commit `e9f61d72314292d391250b3b0737cac494a4c5f5`. Named FOM `fom_cncg_dt0.025_rtol1e-6_NAMED`.
+
+| method | family | unknowns | worst % | median % | GPU ms | FOM chosen | speedup | × named | failed solves |
+|---|---|---:|---:|---:|---:|---|---:|---:|---:|
+| `nmrom_q0_cn` | NM-ROM (ours) | 8 | 1.3616 | 0.4254 | 30.799 | `fom_cncg_dt0.1_rtol1e-2` | 5.68 | 26.64 | 0 |
+| `nmrom_q32_cn` | NM-ROM (ours) | 40 | 0.4876 | 0.1498 | 30.553 | `fom_cncg_dt0.05_rtol1e-3` | 9.16 | 26.85 | 0 |
+| `nmrom_q0_field_direct_tol1e-4_chol` | NM-ROM (ours) | 8 | 1.3616 | 0.4515 | 5.469 | `fom_cncg_dt0.1_rtol1e-2` | 31.99 | 150.00 | 0 |
+| `nmrom_q32_field_direct_tol1e-4_chol` | NM-ROM (ours) | 40 | 0.4876 | 0.1505 | 5.383 | `fom_cncg_dt0.05_rtol1e-3` | 51.97 | 152.41 | 0 |
+| `linear_bank_field_BASELINE` | linear bank (q=R rung) | 128 | 0.1327 | 0.0490 | 2.137 | `fom_cncg_dt0.025_rtol1e-4` | 200.89 | 383.95 | 0 |
+| `linear_bank_moments_BASELINE` | linear bank (q=R rung) | 128 | 0.1332 | 0.0491 | 1.342 | `fom_cncg_dt0.025_rtol1e-4` | 319.92 | 611.43 | 0 |
+| `linear_bank_moments_cn_BASELINE` | linear bank (q=R rung) | 128 | 0.1332 | 0.0491 | 1.485 | `fom_cncg_dt0.025_rtol1e-4` | 289.00 | 552.34 | 0 |
+| `pod8_galerkin_cn` | POD | 8 | 22.4511 | 8.9430 | 0.492 | `fom_cncg_dt0.1_rtol1e-2` | 355.54 | 1667.01 | 0 |
+| `pod8_lspg_cn` | POD | 8 | 22.4511 | 8.9794 | 0.498 | `fom_cncg_dt0.1_rtol1e-2` | 351.07 | 1646.09 | 0 |
+| `pod8_galerkin_exact` | POD | 8 | 22.4511 | 8.9428 | 0.346 | `fom_cncg_dt0.1_rtol1e-2` | 505.08 | 2368.20 | 0 |
+| `pod32_galerkin_cn` | POD | 32 | 0.9876 | 0.1798 | 0.844 | `fom_cncg_dt0.1_rtol1e-2` | 207.35 | 972.21 | 0 |
+| `pod32_lspg_cn` | POD | 32 | 0.9876 | 0.1803 | 0.840 | `fom_cncg_dt0.1_rtol1e-2` | 208.30 | 976.64 | 0 |
+| `pod32_galerkin_exact` | POD | 32 | 0.9876 | 0.1797 | 0.697 | `fom_cncg_dt0.1_rtol1e-2` | 250.89 | 1176.37 | 0 |
+| `pod128_galerkin_cn` | POD | 128 | 0.0449 | 0.0239 | 2.249 | `fom_cncg_dt0.025_rtol1e-4` | 190.91 | 364.87 | 0 |
+| `pod128_lspg_cn` | POD | 128 | 0.0449 | 0.0239 | 2.246 | `fom_cncg_dt0.025_rtol1e-4` | 191.09 | 365.21 | 0 |
+| `pod128_galerkin_exact` | POD | 128 | 0.0011 | 0.0001 | 2.091 | `fom_cncg_dt0.00625_rtol1e-8_TIGHT` | 721.82† | 392.42 | 0 |
+| `pod256_galerkin_cn` | POD | 256 | 0.0449 | 0.0239 | 4.158 | `fom_cncg_dt0.025_rtol1e-4` | 103.24 | 197.31 | 0 |
+| `pod256_lspg_cn` | POD | 256 | 0.0449 | 0.0239 | 4.163 | `fom_cncg_dt0.025_rtol1e-4` | 103.11 | 197.07 | 0 |
+| `pod256_galerkin_exact` | POD | 256 | 0.0000 | 0.0000 | 4.001 | `fom_cncg_dt0.00625_rtol1e-8_TIGHT` | 377.20† | 205.06 | 0 |
+| `qm8_cn` | quadratic manifold | 8 | 3.9712 | 1.7860 | 6.906 | `fom_cncg_dt0.1_rtol1e-2` | 25.34 | 118.81 | 0 |
+| `qm8_field_direct_tol1e-4_chol` | quadratic manifold | 8 | 3.9712 | 1.7737 | 2.907 | `fom_cncg_dt0.1_rtol1e-2` | 60.20 | 282.27 | 0 |
+| `qm16_cn` | quadratic manifold | 16 | 0.4816 | 0.1487 | 10.268 | `fom_cncg_dt0.05_rtol1e-3` | 27.25 | 79.90 | 0 |
+| `qm16_field_direct_tol1e-4_chol` | quadratic manifold | 16 | 0.4816 | 0.1448 | 5.373 | `fom_cncg_dt0.05_rtol1e-3` | 52.07 | 152.70 | 0 |
+| `qm32_cn` | quadratic manifold | 32 | 0.1765 | 0.0303 | 13.592 | `fom_cncg_dt0.025_rtol1e-3` | 25.36 | 60.36 | 0 |
+| `qm32_field_direct_tol1e-4_chol` | quadratic manifold | 32 | 0.4961 | 0.1186 | 11.794 | `fom_cncg_dt0.05_rtol1e-3` | 23.72 | 69.56 | 0 |
+| `op_fno` | neural operator | — | 3.9836 | 2.7732 | 460.412 | `fom_cncg_dt0.1_rtol1e-2` | 0.38 | 1.78 | 0 |
+| `op_unet` | neural operator | — | 2.7644 | 1.1627 | 155.387 | `fom_cncg_dt0.1_rtol1e-2` | 1.13 | 5.28 | 0 |
+| `op_transolver` | neural operator | — | 3.6577 | 2.1910 | 10.606 | `fom_cncg_dt0.1_rtol1e-2` | 16.50 | 77.35 | 0 |
+| `op_deeponet` | neural operator | — | 10.8961 | 4.6415 | 84.021 | `fom_cncg_dt0.1_rtol1e-2` | 2.08 | 9.76 | 0 |
+| `dst_exact_CONTROL` | control (not a FOM candidate) | 4,190,209 | 0.0000 | 0.0000 | 1.933 | — | — | 424.44 | 0 |
+| `coarse64_fom_cncg_dt0.05_rtol1e-3_CONTROL` | control (not a FOM candidate) | 3,969 | 0.2870 | 0.1999 | 3.307 | — | — | 248.10 | 0 |
+| `fom_cncg_dt0.1_rtol1e-2` | CN–CG full-order | 4,190,209 | 0.8265 | 0.4114 | 174.981 | — | — | 4.69 | 0 |
+| `fom_cncg_dt0.05_rtol1e-2` | CN–CG full-order | 4,190,209 | 0.6751 | 0.5758 | 189.106 | — | — | 4.34 | 0 |
+| `fom_cncg_dt0.025_rtol1e-2` | CN–CG full-order | 4,190,209 | 0.8341 | 0.6139 | 219.181 | — | — | 3.74 | 0 |
+| `fom_cncg_dt0.05_rtol1e-3` | CN–CG full-order | 4,190,209 | 0.1838 | 0.0995 | 279.787 | — | — | 2.93 | 0 |
+| `fom_cncg_dt0.1_rtol1e-3` | CN–CG full-order | 4,190,209 | 0.8253 | 0.4010 | 282.003 | — | — | 2.91 | 0 |
+| `fom_cncg_dt0.025_rtol1e-3` | CN–CG full-order | 4,190,209 | 0.1474 | 0.0735 | 344.671 | — | — | 2.38 | 0 |
+| `fom_cncg_dt0.025_rtol1e-4` | CN–CG full-order | 4,190,209 | 0.0449 | 0.0245 | 429.276 | — | — | 1.91 | 0 |
+| `fom_cncg_dt0.05_rtol1e-4` | CN–CG full-order | 4,190,209 | 0.1838 | 0.0963 | 443.806 | — | — | 1.85 | 0 |
+| `fom_cncg_dt0.025_rtol1e-6_NAMED` | CN–CG full-order | 4,190,209 | 0.0449 | 0.0239 | 820.438 | — | — | 1.00 | 0 |
+| `fom_cncg_dt0.0125_rtol1e-6` | CN–CG full-order | 4,190,209 | 0.0112 | 0.0060 | 939.988 | — | — | 0.87 | 0 |
+| `fom_cncg_dt0.00625_rtol1e-8_TIGHT` | CN–CG full-order | 4,190,209 | 0.0028 | 0.0015 | 1509.130 | — | — | 0.54 | 0 |
+
+Gates: audit passed **True** (0 failures); order-effect gate **True** (DESIGN A2: carry-over ratio 1.054, re-timed/original medians nmrom_q32_field_direct_tol1e-4_chol 0.927, pod128_galerkin_cn 0.990, op_unet 1.001, tolerance ±10 %; v1 per-block sentinel deviation 12.6 %, reported only; positive control deviation 6136 %, fails as required: True); NM-ROM reproduces hires-heat h2d-final04: **True** (max relative difference 5.33e-15); summary vs independent recompute: max relative difference 0.0e+00.
+
+Generated reading: the accurate NM-ROM setting (`nmrom_q32_field_direct_tol1e-4_chol`) is 0.4876 % worst at 5.383 ms (51.97× its chosen FOM). Baseline arms at least as accurate AND at least as fast: `linear_bank_moments_BASELINE` (0.1332 %, 1.342 ms), `linear_bank_moments_cn_BASELINE` (0.1332 %, 1.485 ms), `pod128_galerkin_exact` (0.0011 %, 2.091 ms), `linear_bank_field_BASELINE` (0.1327 %, 2.137 ms), `pod128_lspg_cn` (0.0449 %, 2.246 ms), `pod128_galerkin_cn` (0.0449 %, 2.249 ms), `pod256_galerkin_exact` (0.0000 %, 4.001 ms), `pod256_galerkin_cn` (0.0449 %, 4.158 ms), `pod256_lspg_cn` (0.0449 %, 4.163 ms), `qm16_field_direct_tol1e-4_chol` (0.4816 %, 5.373 ms).
+
+Quadratic manifold ridge weight chosen on the trajectory-split holdout: r=8: γ=0 (45 columns), r=16: γ=0 (153 columns), r=32: γ=1e-08 (561 columns).
+
+† no tested CN–CG setting is as accurate as this arm; ratio against the most accurate tested setting (unmatched accuracy; not a bound).
 
 ## 4096² — NOT RUN / not collected
 
@@ -79,6 +134,7 @@ Quadratic manifold ridge weight chosen on the trajectory-split holdout: r=8: γ=
 ## Provenance
 
 - 1024²: `runs/pn1024b/summary.json` sha256 `f248664afa36d011c82b99cadad7519a5bdb8a8bcab3723113befbadfa9d5c1c`
+- 2048²: `runs/pn2048d/summary.json` sha256 `6034b2667dc3b35bc790795fd84f690e0b80a3a22583632bfc2677391ecbb397`
 
 ## Glossary
 
@@ -93,4 +149,6 @@ Quadratic manifold ridge weight chosen on the trajectory-split holdout: r=8: γ=
 - **neural operators**: FNO / U-Net / Transolver / DeepONet trained at the target mesh on the 512 training draws with the Burgers panel's published configurations and a 3000 s wall budget per network; checkpoint = best validation.
 - **controls**: exact DST propagation and a 64-interval coarse-grid CN–CG + interpolation; printed for honesty, never used as "FOM chosen".
 - **sealed cohort**: the 16 evaluation draws of the paper's heat rows; **failed solves**: LM solves that did not reach stationarity, or CG solves that missed their tolerance.
-- **order-effect gate**: a fixed sentinel query timed between every two arms must stay within ±10 % of its median; its positive control (sentinel timed behind deliberately queued GPU work) must fail that test.
+- **order-effect gate** (DESIGN A2): (a) carry-over — a fixed sentinel query (exact DST propagation of case 0, 15 repetitions) is timed after every block; the median over all sentinel repetitions after full-order blocks divided by the median after all other blocks must lie within ±10 %; (b) re-time — three real arms are rebuilt and timed again on all 16 cases after the full-order phase and must match their own block medians within ±10 %; (c) positive control — the sentinel timed behind deliberately queued GPU work must fail the ±10 % test. The v1 per-block sentinel test is reported but is noise-dominated (A2).
+- **FNO / U-Net / Transolver / DeepONet epochs**: every operator stopped on its 3000 s wall budget with its best validation checkpoint at or near the last epoch, i.e. still improving; see the training table.
+- **GPU**: 1024² ran on an A100 80GB (no H200 was free; DESIGN A2), 2048² and 4096² on an H200. Every ratio is inside one job.

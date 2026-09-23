@@ -43,6 +43,14 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   At 4096² the paper's accurate rule (lat64, R'=512 q=256) is CONFIRMED on deployed states (ρ 0.107/0.108).
 - Selection frozen: selection-4096.json (from checks/bk4096-summary.json sha256 3fd1537e…); hold64 config generated.
 
+- bkh64 (4096² hold64, job 4210077, H200 pax011): FAILED at 2 h 20 min, after main-phase rep 4 of 5, when the paralab group
+  share hit 100 % (0 bytes free; not this lane's data — the lane held 4.9 GB). result.json intact (2816 invocations = 64 cases
+  × 11 arms × 4 reps; slow phase lean_tight / lean_nt1e-4 never timed). Pulled directly with remote sha256 of every file
+  (verified), remote deleted. Audit: every gate passes except complete and retained_repetitions (4 < 5). Numbers (4 reps):
+  chosen accurate R'=384 q=256 1.409 % / 106.6 ms / 5.05×; current R'=512 q=256 1.330 % / 113.5 ms / 4.74×; chosen fast R'=128
+  linear 3.111 % / 24.3 ms / 11.20×; current q=0 9.030 % / 41.0 ms / 6.65×; sensitivity R'=384 linear 1.350 % / 60.1 ms / 8.95×.
+  Current-arm errors reproduce hb4kh64 (1.3297 %, 9.0302 %). Rerun as bkh64b (same committed config) once disk freed (280 GB).
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -54,4 +62,5 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
 | bk512b | 4200506 | 512² | A100 | COMPLETED 19.8 min; collected, audited (all gates pass), remote deleted |
 | bk256b | 4202294 | 256² | A100 | COMPLETED 15.2 min; collected, audited (all gates pass), remote deleted |
+| bkh64 | 4210077 | 4096² hold64 | H200 | FAILED (group disk full) after 4/5 main reps; partial pulled + audited; remote deleted |
 | bx2048 | 4202862 | 2048² | A100-80G | exploratory (A2) COMPLETED 31.5 min; audited (all gates pass), remote deleted |

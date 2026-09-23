@@ -138,6 +138,15 @@ def main():
         if k in r['gates']:
             gate(k, r['gates'][k]['passed'], job=r['gates'][k])
 
+    # retained repetitions, recomputed from the invocations (a job cut short never writes its own gate)
+    cnt = {}
+    for x in r['invocations']:
+        cnt[(x['name'], x['case'])] = cnt.get((x['name'], x['case']), 0) + 1
+    timed_arms = sorted({x['name'] for x in r['invocations']})
+    gate('retained_repetitions_recomputed', bool(cnt) and min(cnt.values()) >= cfg['required_reps'],
+         minimum=min(cnt.values()) if cnt else 0, required=cfg['required_reps'], timed_arms=timed_arms,
+         phases_present=sorted({x['phase'] for x in r['invocations']}))
+
     # ---- errors: restricted grid, every (arm, case); full grid for the audit case --------------------------
     cases = sorted({x['case'] for x in r['quick']})
     truth_r = {c: np.load(o / f'restricted_{tight}_case{c}.npz')['fields'] for c in cases}

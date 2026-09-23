@@ -1,0 +1,96 @@
+{
+ "mesh": 2048,
+ "train_attempts": [
+  "t2048"
+ ],
+ "data": {
+  "mesh": 2048,
+  "dt": 0.005,
+  "ntol": 1e-06,
+  "ltol": 1e-08,
+  "solver": "iterative_paths.make_fom(L, dt, \"fft\") = fft_tight",
+  "dev6_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "splits": {
+   "train": {
+    "cases": 128,
+    "source_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+    "index_sha256": "fdf108338ddb39d4220d37a22c7a924bff7d193b38cb180054703242d9440f2a",
+    "median_seconds": 1.930728682084009,
+    "max_seconds": 4.10078331688419,
+    "worst_relative_residual": 9.99203622613072e-07
+   },
+   "validation": {
+    "cases": 32,
+    "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+    "index_sha256": "0a54c5db1a529fa2a70f543403fe1c1aad446bff99ebdde10d512be3b0a15496",
+    "median_seconds": 1.7356693400070071,
+    "max_seconds": 3.7481974312104285,
+    "worst_relative_residual": 9.990318413300446e-07
+   }
+  }
+ },
+ "operators": [
+  {
+   "name": "unet-refine",
+   "family": "unet",
+   "role": "the 256^2 panel's validation-selected unet configuration, retrained at 2048^2",
+   "local_path": "experiments/burgers-compare-hires/runs/t2048/archive/out/unet-refine/best.pt",
+   "sha256": "dc6fded56c90ffd5c310b46837a257f38db89223988ea9d3fe5459615c92f84f",
+   "source_job": "4196041",
+   "trained_at": "2048^2",
+   "epochs": 62,
+   "best_epoch": 49,
+   "stop_reason": "wall_budget",
+   "wall_budget_seconds": 3000.0,
+   "training_seconds": 3047.4908305369318,
+   "micro_batch_final": 4,
+   "validation_mean_case_max": 0.0738576320723885,
+   "validation_worst_case_max": 0.13204530419291768,
+   "real_parameter_count": 7763461
+  },
+  {
+   "name": "tsol-refine",
+   "family": "transolver",
+   "role": "the 256^2 panel's validation-selected transolver configuration, retrained at 2048^2",
+   "local_path": "experiments/burgers-compare-hires/runs/t2048/archive/out/tsol-refine/best.pt",
+   "sha256": "9922dbb6293a4f22dfed0770343c2822e7d437565a87e46696dd5f789249c1ad",
+   "source_job": "4196041",
+   "trained_at": "2048^2",
+   "epochs": 24,
+   "best_epoch": 22,
+   "stop_reason": "wall_budget",
+   "wall_budget_seconds": 3000.0,
+   "training_seconds": 3046.873752103653,
+   "micro_batch_final": 2,
+   "validation_mean_case_max": 0.16197004220038302,
+   "validation_worst_case_max": 0.3158199117091942,
+   "real_parameter_count": 3108240
+  },
+  {
+   "name": "fno-large-256",
+   "family": "fno",
+   "role": "the published 256^2-trained fno-large checkpoint, evaluated zero-shot at this mesh (FNO is discretisation-agnostic); NOT trained at this mesh",
+   "local_path": "../2026-09-17-b-panel/experiments/b-panel/runs/bpn301/fnockpt/best.pt",
+   "sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+   "source_job": "3710846 (no-audit), staged in b-panel bpn301",
+   "trained_at": "256^2",
+   "epochs": null,
+   "stop_reason": null
+  }
+ ],
+ "failed": [
+  {
+   "name": "fno-large",
+   "family": "fno",
+   "failed": true,
+   "exit_code": 1
+  },
+  {
+   "name": "don-small",
+   "family": "deeponet",
+   "failed": true,
+   "exit_code": 1
+  }
+ ],
+ "note": "local_path is relative to the repository root of this worktree (checkpoints are git-ignored)"
+}

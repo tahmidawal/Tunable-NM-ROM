@@ -230,5 +230,6 @@ $10^{-14}$ in 2D and 3D. On the local GB10 it was 10–20 % faster than `dst_fft
 - Heat: it is added as a third variant, and heat 2D is re-timed at all three meshes in one job (spI, 80 GB).
 - Burgers: it joins the per-mesh micro-benchmark candidates (`dst_candidates`) for later jobs.
 
-**What happens to earlier runs.** The pending heat 4096² job spH (4209368) was cancelled by me before it started,
-and its directory was removed. spD (1024²/2048², two variants) is kept as a record.
+**What happens to earlier runs.** The heat 4096² job spH (4209368) was cancelled by me. The squeue check showed it had just started running
+(correction: an earlier draft of this line said "before it started"). None of its output was pulled or used, and
+its directory was removed. spD (1024²/2048², two variants) is kept as a record.

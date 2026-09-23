@@ -71,6 +71,11 @@ def main():
     acc = min(elig, key=lambda k: elig[k]['worst_evolved']) if elig else None
     fastc = {k: v for k, v in elig.items() if v['worst_evolved'] <= FAST_BAR}
     fast = min(fastc, key=lambda k: fastc[k]['median_ms']) if fastc else None
+    reselected = dict(accurate=acc, fast=fast)
+    if a.frozen:     # held-out: the rows ARE the frozen validation arms; re-selection is informational only
+        fr0 = json.loads(Path(a.frozen).read_text())
+        fr0 = fr0['meshes'][str(P['mesh'])] if 'meshes' in fr0 else fr0
+        acc, fast = fr0['accurate'], fr0['fast']
     fom = fastest_fom(foms, rows[acc]['worst_evolved']) if acc else None
     fom_note = None
     if acc and fom is None:
@@ -88,6 +93,8 @@ def main():
     out = dict(mesh=P['mesh'], cohort=P['cohort'], job_id=P['job_id'], cert_job_id=Ce['job_id'], gpu=P['gpu'],
                commit=P['commit'], accurate=acc, fast=fast, fom=fom, fom_note=fom_note, fast_bar=FAST_BAR,
                accurate_row=rows.get(acc), fast_row=rows.get(fast), fom_row=foms.get(fom), arms=rows, foms=foms,
+               reselected_on_this_cohort=reselected,
+               fast_within_bar=None if fast is None else bool(rows[fast]['worst_evolved'] <= FAST_BAR),
                timing_gates=dict(drift=gates.get('timing_drift_worst'), neighbour=gates.get('timing_neighbour_ratio'),
                                  neighbour_fom=gates.get('timing_neighbour_ratio_fom'), passed=timing_ok),
                other_gates={k: v for k, v in gates.items() if not k.startswith('timing')},

@@ -99,7 +99,7 @@ def rel(a, b):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--panel', required=True, help='collected output dir of the panel job')
-    ap.add_argument('--cert', help='collected output dir of the certification job')
+    ap.add_argument('--cert', nargs='*', default=[], help='collected output dirs of the certification jobs (merged by arm)')
     ap.add_argument('--model', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--rho-states', type=int, default=0, help='0 = all arms/draws; else at most this many states')
@@ -159,8 +159,13 @@ def main():
         rep['checks']['reference_be_residual_step10'] = dict(value=v, passed=v <= 1e-9)
     # 4. rho
     if a.cert:
-        C_ = json.loads((Path(a.cert) / 'result.json').read_text())
-        CF = Path(a.cert) / 'fields'
+        Cs_ = [json.loads((Path(c) / 'result.json').read_text()) for c in a.cert]
+        C_ = dict(arms={}, certificates={})
+        for c in Cs_:
+            for k, v in c['arms'].items():
+                C_['arms'].setdefault(k, v)
+            for k, v in c['certificates'].items():
+                C_['certificates'].setdefault(k, v)
         b = pickle.loads((Path(a.model) / 'bank.pkl').read_bytes())
         p = {k: (np.asarray(v) if k != 'net' else [(np.asarray(w), np.asarray(bb)) for w, bb in v])
              for k, v in b['params'].items()}
@@ -171,7 +176,7 @@ def main():
         I, J, K = np.meshgrid(k, k, k, indexing='ij')
         lat = np.stack([I.ravel(), J.ravel(), K.ravel()], 1)
         rows, mut = [], []
-        files = sorted(CF.glob('cert_*_d*.npz'))
+        files = sorted(f for c in a.cert for f in (Path(c) / 'fields').glob('cert_*_d*.npz'))
         if a.rho_states:
             files = files[:a.rho_states]
         for f_ in files:

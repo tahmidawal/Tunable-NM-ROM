@@ -1,0 +1,75 @@
+host=pax049 source_commit=7e39d5a6c27fd1d9e853cf985f9e693870bbc3ed
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[3.8s] [mesh 129] bank evaluated (2048383, 512) 3.1s
+[9.7s] [mesh 129] A (2049, 512) 9.0s
+[88.9s] [mesh 129] tensor (2049, 512, 512) 88.3s
+[94.3s] table gates {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16}
+[155.4s] references done, worst residual 9.76e-11
+[176.6s] ARM span_R512_tensor_fs1_dt0.005: worst evolved 3.4821% its/query 54 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[184.4s] ARM span_R192_tensor_fsa_dt0.01: worst evolved 7.8865% its/query 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[200.9s] ARM span_R512_tensor_fsa_dt0.005: worst evolved 3.4821% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[208.6s] parity {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16, 'reference_residual': 9.760013508970467e-11, 'parity_trial_space': 1.902151981871205e-14}
+[211.1s] FOM fom_dt0.005_nt0.1_lt0.5: worst evolved 81.9114%
+[213.6s] FOM fom_dt0.005_nt0.1_lt0.1: worst evolved 81.9114%
+[216.9s] FOM fom_dt0.005_nt0.03_lt0.5: worst evolved 59.3501%
+[220.0s] FOM fom_dt0.005_nt0.03_lt0.1: worst evolved 64.9213%
+[226.0s] FOM fom_dt0.005_nt0.01_lt0.5: worst evolved 27.4191%
+[232.0s] FOM fom_dt0.005_nt0.01_lt0.1: worst evolved 27.4191%
+[238.6s] FOM fom_dt0.005_nt0.003_lt0.5: worst evolved 1.9728%
+[245.1s] FOM fom_dt0.005_nt0.003_lt0.1: worst evolved 1.8562%
+[252.8s] FOM fom_dt0.005_nt0.001_lt0.5: worst evolved 1.1276%
+[260.1s] FOM fom_dt0.005_nt0.001_lt0.1: worst evolved 1.1270%
+[271.6s] FOM fom_dt0.005_nt0.0001_lt0.5: worst evolved 0.0665%
+[281.8s] FOM fom_dt0.005_nt0.0001_lt0.1: worst evolved 0.0667%
+[284.6s] FOM fom_dt0.01_nt0.1_lt0.5: worst evolved 72.9623%
+[287.2s] FOM fom_dt0.01_nt0.1_lt0.1: worst evolved 72.0717%
+[291.1s] FOM fom_dt0.01_nt0.03_lt0.5: worst evolved 42.2472%
+[294.9s] FOM fom_dt0.01_nt0.03_lt0.1: worst evolved 42.2472%
+[299.5s] FOM fom_dt0.01_nt0.01_lt0.5: worst evolved 2.8944%
+[303.9s] FOM fom_dt0.01_nt0.01_lt0.1: worst evolved 1.3966%
+[309.1s] FOM fom_dt0.01_nt0.003_lt0.5: worst evolved 2.0200%
+[314.1s] FOM fom_dt0.01_nt0.003_lt0.1: worst evolved 1.7853%
+[320.6s] FOM fom_dt0.01_nt0.001_lt0.5: worst evolved 1.7981%
+[326.6s] FOM fom_dt0.01_nt0.001_lt0.1: worst evolved 1.7853%
+[335.4s] FOM fom_dt0.01_nt0.0001_lt0.5: worst evolved 1.8136%
+[342.7s] FOM fom_dt0.01_nt0.0001_lt0.1: worst evolved 1.8123%
+[346.8s] FOM fom_dt0.025_nt0.01_lt0.5: worst evolved 5.8891%
+[351.9s] FOM fom_dt0.025_nt0.001_lt0.5: worst evolved 5.9921%
+[413.3s] timing phase A1 done (288 invocations)
+[658.1s] timing phase B done (2496 invocations)
+[717.2s] timing phase A2 done (288 invocations)
+[717.3s] timing gates drift 1.009 neighbour 1.015 determinism 0.00e+00
+[717.3s] TIME span_R512_tensor_fs1_dt0.005: 295.50 ms
+[717.3s] TIME span_R192_tensor_fsa_dt0.01: 20.31 ms
+[717.3s] TIME span_R512_tensor_fsa_dt0.005: 294.24 ms
+[717.3s] TIME fom_dt0.005_nt0.1_lt0.5: 7.14 ms
+[717.3s] TIME fom_dt0.005_nt0.1_lt0.1: 7.12 ms
+[717.3s] TIME fom_dt0.005_nt0.03_lt0.5: 17.59 ms
+[717.3s] TIME fom_dt0.005_nt0.03_lt0.1: 15.40 ms
+[717.3s] TIME fom_dt0.005_nt0.01_lt0.5: 121.90 ms
+[717.3s] TIME fom_dt0.005_nt0.01_lt0.1: 121.89 ms
+[717.3s] TIME fom_dt0.005_nt0.003_lt0.5: 122.26 ms
+[717.3s] TIME fom_dt0.005_nt0.003_lt0.1: 122.08 ms
+[717.3s] TIME fom_dt0.005_nt0.001_lt0.5: 151.05 ms
+[717.3s] TIME fom_dt0.005_nt0.001_lt0.1: 149.25 ms
+[717.3s] TIME fom_dt0.005_nt0.0001_lt0.5: 262.44 ms
+[717.3s] TIME fom_dt0.005_nt0.0001_lt0.1: 237.24 ms
+[717.3s] TIME fom_dt0.01_nt0.1_lt0.5: 3.72 ms
+[717.3s] TIME fom_dt0.01_nt0.1_lt0.1: 3.70 ms
+[717.3s] TIME fom_dt0.01_nt0.03_lt0.5: 52.00 ms
+[717.3s] TIME fom_dt0.01_nt0.03_lt0.1: 47.44 ms
+[717.3s] TIME fom_dt0.01_nt0.01_lt0.5: 62.25 ms
+[717.3s] TIME fom_dt0.01_nt0.01_lt0.1: 61.19 ms
+[717.3s] TIME fom_dt0.01_nt0.003_lt0.5: 80.73 ms
+[717.3s] TIME fom_dt0.01_nt0.003_lt0.1: 71.32 ms
+[717.3s] TIME fom_dt0.01_nt0.001_lt0.5: 118.36 ms
+[717.3s] TIME fom_dt0.01_nt0.001_lt0.1: 106.87 ms
+[717.3s] TIME fom_dt0.01_nt0.0001_lt0.5: 180.60 ms
+[717.3s] TIME fom_dt0.01_nt0.0001_lt0.1: 138.27 ms
+[717.3s] TIME fom_dt0.025_nt0.01_lt0.5: 40.76 ms
+[717.3s] TIME fom_dt0.025_nt0.001_lt0.5: 81.89 ms
+PANEL COMPLETE
+ALL-DONE

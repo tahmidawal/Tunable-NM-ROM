@@ -1,0 +1,36 @@
+{
+ "mesh": 129,
+ "job": "4246338",
+ "checks": {
+  "restricted_errors": {
+   "n": 928,
+   "worst_rel": 1.0109763640030999e-15,
+   "passed": true
+  },
+  "control_swapped_case_detected": true,
+  "control_perturbed_error_detected": true,
+  "full_errors_case0": {
+   "arms": [
+    [
+     "fom_dt0.005_nt0.001_lt0.5",
+     3.578883190896978e-15
+    ],
+    [
+     "span_R192_tensor_fsa_dt0.01",
+     3.55296061584348e-15
+    ],
+    [
+     "span_R512_tensor_fs1_dt0.005",
+     3.516001609466996e-15
+    ]
+   ],
+   "passed": true
+  }
+ },
+ "failures": [],
+ "recomputed_selection": {
+  "accurate": null,
+  "fast": null
+ },
+ "passed": true
+}

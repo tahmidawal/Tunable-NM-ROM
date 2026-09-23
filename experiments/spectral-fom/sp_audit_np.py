@@ -133,7 +133,7 @@ def audit_heat(run, R, delete):
     for x in inv:
         first.setdefault((x['name'], x['case']), x)
     truths = {}
-    for c in (0, 1):
+    for c in (0, 1):      # case 1 is needed for the swapped-truth control
         u0 = np.asarray(C.initial_grid(n, d, draws[c]))
         cc = apply(S, u0)
         truths[c] = np.stack([u0] + [apply(S, cc * np.exp(-nu * t * lam)) for t in times[1:]])
@@ -146,8 +146,9 @@ def audit_heat(run, R, delete):
         dsub = max(abs(a - b) / (1e-8 * b + 1e-13) for a, b in zip(es, x['sub_errors']))
         ok = dsub <= 1.0
         row = dict(name=name, case=case, sub_deviation_over_tolerance=dsub)
-        if case in truths:
-            f = np.load(run / 'fields' / f'{name}_case{case}.npy')
+        fp = run / 'fields' / f'{name}_case{case}.npy'
+        if case in truths and fp.exists():       # full fields: case 0 (accurate ROM + one spectral) from amendment D on
+            f = np.load(fp)
             hash_ok &= hashlib.sha256(np.ascontiguousarray(f).tobytes()).hexdigest() == x['field_sha256']
             ef = relt(f, truths[case])
             dfull = max(abs(a - b) / (1e-8 * b + 1e-12) for a, b in zip(ef, x['same_grid_per_time']))

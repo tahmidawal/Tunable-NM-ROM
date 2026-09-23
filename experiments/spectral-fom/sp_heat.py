@@ -153,8 +153,17 @@ def main():
 
     # ---- T: A-B-A timing
     saved = {}
-    stride = max(1, n // 256)
+    # disk budget (amendment D, after the spN/spO disk-full incident): subsampled fields <= 256 (2D) / 32 (3D)
+    # points per axis; full fields only for case 0 and only for the accurate ROM arm + one spectral subject
+    stride = max(1, n // (256 if d == 2 else 32))
     subsl = (slice(None),) + (slice(stride - 1, None, stride),) * d
+    full_keep = {cfg['rom_arms']['rom_accurate'], spec[0]['name']}
+    sub_pts = len(range(stride - 1, n - 1, stride)) ** d
+    est = 8 * len(times) * (len(draws) * (len(rom) + len(spec) + 1) * sub_pts + (len(full_keep) + 1) * (n - 1) ** d)
+    R_['field_bytes_estimate'] = est
+    assert est <= cfg.get('field_bytes_limit', 12e9), ('field budget', est)
+    import shutil as _sh
+    assert _sh.disk_usage(out).free >= est + 100e9, ('cluster share too full to write fields safely', _sh.disk_usage(out).free)
 
     def record(sub_, c, rep_, phase, field, row, raw):
         assert np.isfinite(field).all(), sub_['name']
@@ -162,7 +171,7 @@ def main():
         key = (sub_['name'], c)
         if key not in saved:
             np.save(out / 'fields' / f"{sub_['name']}_sub_case{c}.npy", field[subsl])
-            if c < 2:
+            if c == 0 and sub_['name'] in full_keep:
                 np.save(out / 'fields' / f"{sub_['name']}_case{c}.npy", field)
             saved[key] = h
         e_ = errs(field, c)
@@ -170,7 +179,7 @@ def main():
                     same_grid_worst=float(max(e_)), sub_errors=np.asarray(C.rel_errors(jnp.asarray(field[subsl]), jnp.asarray(truth[c][subsl]))).tolist())
     for c in range(len(draws)):
         np.save(out / 'fields' / f'truth_sub_case{c}.npy', truth[c][subsl])
-        if c < 2:
+        if c == 0:
             np.save(out / 'fields' / f'truth_case{c}.npy', truth[c])
     for s_ in rom + spec:
         for _ in range(2):

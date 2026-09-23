@@ -257,3 +257,29 @@ touches the order-gate code only.
 
 The cohort is held-out sealed 921099 (64 cases). Because the cohort has 64 cases, the job uses 5 retained
 repetitions, which meets the brief's ≥5. 256³ follows once the lane's h3d256b selection lands.
+
+## Incident and amendment D (2026-09-23 ~11:00 EDT) — this lane filled the shared cluster disk
+
+**What happened.** The heat 3D driver saved "subsampled" fields with stride `n // 256`. In 3D that is stride 1,
+so every field of every subject and case was written in full. On top of that it saved full fields for cases 0
+and 1. spN (heat 3D at 128³) and spO (heat 3D at 256³) wrote 76 GB and 169 GB. Together with other lanes this
+took `/cluster/tufts/paralab` to **100 %, with 0 bytes free**.
+
+**Damage to this lane.** spN died silently in its 128³ pass (exit 1, empty stderr). Its 32³ and 64³ passes had
+completed with audits PASS and are kept. spO was cancelled by me while it was running, and its directory was
+removed.
+
+**Damage to other lanes.** Other lanes' jobs running at that time may have hit disk-full errors. They include
+bcmp_p2048b, bbk_bkh64, bcmp_p2048c and hcmp_pn4096d; I did not check them, because they belong to other lanes.
+Their owners should treat any empty-log or failed write between about 10:30 and 11:10 EDT as possibly caused by
+this.
+
+**Recovery.** The fields were deleted immediately and the share went back to 235 GB free.
+
+**Amendment D (fix).**
+- Subsampled fields are saved at no more than 256 (2D) or 32 (3D) points per axis.
+- Full fields are saved only for case 0, and only for the accurate ROM arm and one spectral subject.
+- The driver estimates the field bytes and refuses to run above 12 GB.
+- The driver also refuses to run unless the share has the estimate plus 100 GB free.
+
+Heat 3D at 128³ and 256³ are rerun as spP.

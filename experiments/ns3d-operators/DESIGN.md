@@ -234,3 +234,29 @@ arms would exceed the 4 GB cap of A1 and abort the job. At $96^3$ only each arm'
 saved in full (plus its truth); samples are kept for every case as before. $32^3$ (done) and $64^3$
 keep {0, 1, worst}. Nothing else changes. `pn32` (job 4234771) passed every gate; no setting or
 selection was revisited after seeing it.
+
+## A3 (2026-09-23 ~16:05 EDT, after pn32/pn64) — Codex results audit, dispositions
+
+`checks/codex-results-audit-32-64.md` (read-only; recomputed all 38 arms' medians, errors, FOM
+choices and speedups, all 114 saved full-field sets to 4.1e-16, the checkpoint sha256 chain and the
+selection; no corrupted number, no selection leak, no cross-job ratio). Verdict: the rows may enter
+Table 2 as qualified development comparisons. Dispositions:
+
+1. *Timed-output parity was error-metric parity* — accepted. pn32/pn64 compared each timed output's
+   error vector with the accuracy pass (gap 0 for every arm), not the fields. Their status stays as
+   written by the job, but the report states that this gate was error-metric parity. From the next
+   panel on, the timed field is also compared with the accuracy pass on the 8192 sample points.
+2. *Saved-field coverage deviated from §5.8* — accepted as a disclosed deviation. The code committed
+   before pn32 (`make_panel_config.py`, `panel.py`) saves {0, 1, worst} per arm and 8192 sample points
+   at every mesh, not all cases at 32³ and 32768 points as §5.8 said; the text was not updated. A2
+   described this coverage without flagging it. The report says "restricted audit" with the actual
+   coverage.
+3. *The 20 % sampled bound was not enforced* — accepted. The sampled estimates are diagnostic only
+   (Codex: 500 resamples of a saved 64³ error field give a 95 % ratio range 0.48–1.58, so the observed
+   0.22/0.42 gaps are sampling scatter of localised errors). This relabelling is retrospective.
+4. *Positive control* — accepted: it now multiplies the actual A2 samples by 1.15 (Codex applied that
+   to pn32/pn64 and every arm still rejects).
+5. *Epoch labels* — accepted: the report prints epochs evaluated (last may be partial), optimisation
+   steps and the 0-based best epoch.
+6. *Data parity* — accepted: the report now says that the bank includes 16 trajectories of the
+   operators' validation split.

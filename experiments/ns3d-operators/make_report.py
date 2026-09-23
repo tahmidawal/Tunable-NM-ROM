@@ -82,7 +82,7 @@ def main():
             nm = sel[0]
             m, tr = ops[nm], ops[nm]['training']
             row(nm, FAMILY[fam], m['arm'], f"{m['real_parameter_count']:,}",
-                f"{tr['epochs_completed']} ep, best {tr['best_epoch']}, {tr['stop_reason']}")
+                f"{tr['epochs_completed']} ep ({tr['optimisation_steps']} steps), best ep {tr['best_epoch']}, {tr['stop_reason']}")
         row(fom, 'FOM (CNAB2)', f"{res[fom]['steps']} steps")
         faster = [nm for nm, r in res.items() if r['kind'] == 'cnab2' and nm in tim
                   and tim[nm]['median_ms'] < tim[fom]['median_ms'] and not r['unstable']]
@@ -120,7 +120,20 @@ def main():
               'the 448 whose index is not 7 mod 8 and choose checkpoint and size on the other 64. The head was '
               'fitted on the states (21 frames) of the same 448 and held out the same 64; the bank is the POD '
               'of the first 128 of the 512 (six frames each). An operator sees one input/output pair per '
-              'trajectory (initial field and viscosity to five evolved fields).', '',
+              'trajectory (initial field and viscosity to five evolved fields). The bank\'s 128 trajectories include '
+              '16 that lie in the operators\' validation split, so the trajectories are the same but the exposure '
+              'is not identical, and the NM-ROM has no split that is held out from all of its components.', '',
+              '## Caveats that travel with these rows', '',
+              '- Development comparisons at 32³/64³: the NM-ROM setting was chosen on the evaluation cases.',
+              '- At 32³ the next faster CNAB2 setting misses the rule by 0.4 % of the NM-ROM error (see the '
+              'mesh section); against it the accurate setting would be slower than the full-order solver.',
+              '- Timed-output parity in pn32/pn64 compares the error of each timed output with the accuracy '
+              'pass (error-metric parity), not the fields themselves (DESIGN A3).',
+              '- The audit is restricted: exact recomputation on cases {0, 1, worst} per arm, and 8192-point '
+              'sampled estimates elsewhere, which are diagnostic only (they scatter by tens of percent for '
+              'localised errors); the truth solver is not re-solved.',
+              '- Operators are budget-limited, not converged: 3000 s bought 80 to 760 epochs depending on '
+              'family and mesh (Training column).', '',
               '## Glossary', '',
               '- **NM-ROM accurate / fast**: the paper\'s two settings of one frozen model — the $k=8$ head '
               '(accurate) and the span of the first 16 importance-ordered bank functions (fast), both solved in '
@@ -138,8 +151,9 @@ def main():
               'that row (context only).',
               '- **CNAB2**: the pseudo-spectral full-order solver (Crank–Nicolson viscous, Adams–Bashforth 2 '
               'advection, 2/3 dealiasing) that also produced the truth at $\\Delta t=0.001$.',
-              '- **Training**: epochs completed, epoch of the kept checkpoint, and why training stopped '
-              '(wall_budget = the 3000 s budget ran out).',
+              '- **Training**: epochs evaluated (the last one may be partial) with optimisation steps, the '
+              '0-based epoch of the kept checkpoint, and why training stopped (wall_budget = the 3000 s budget ran '
+              'out; patience = 250 epochs without a validation improvement).',
               '- **drift / order**: timing gates — median of the last interleaved block over the first, and of '
               'the arm-major block over the interleaved ones; each must be within 1/1.10–1.10.',
               '- **Development comparison**: evaluated on the cases the NM-ROM setting was chosen on.',

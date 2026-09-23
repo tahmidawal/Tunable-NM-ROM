@@ -10,10 +10,10 @@ Cohort: seed 202609202, 16 cases. Comparator (the Table-2 rule): CNAB2 with 50 s
 |---|---|---:|---:|---:|---:|---:|---|
 | NM-ROM accurate | head k=8 | — | 0.151 | 0.09 | 5.788 | 1.17× | — |
 | NM-ROM fast | span R'=16 | — | 2.96 | 2.02 | 3.216 | 2.1× | — |
-| FNO | fno-l | 18,888,495 | 0.396 | 0.231 | 3.127 | 2.16× | 624 ep, best 617, wall_budget |
-| U-Net | unet-l | 22,581,327 | 0.479 | 0.31 | 15.040 | *0.45×* | 458 ep, best 455, wall_budget |
-| Transolver | tsol-s | 6,003,816 | 0.538 | 0.348 | 16.275 | *0.416×* | 269 ep, best 267, wall_budget |
-| DeepONet | don-s | 5,741,519 | 52.6 | 41.1 | 3.677 | 1.84× | 298 ep, best 47, patience |
+| FNO | fno-l | 18,888,495 | 0.396 | 0.231 | 3.127 | 2.16× | 624 ep (34905 steps), best ep 617, wall_budget |
+| U-Net | unet-l | 22,581,327 | 0.479 | 0.31 | 15.040 | *0.45×* | 458 ep (25641 steps), best ep 455, wall_budget |
+| Transolver | tsol-s | 6,003,816 | 0.538 | 0.348 | 16.275 | *0.416×* | 269 ep (15014 steps), best ep 267, wall_budget |
+| DeepONet | don-s | 5,741,519 | 52.6 | 41.1 | 3.677 | 1.84× | 298 ep (16688 steps), best ep 47, patience |
 | FOM (CNAB2) | 50 steps | — | 0.094 | 0.055 | 6.764 | 1× | — |
 
 Next faster stable CNAB2 setting (not eligible under the rule): 40 steps, 0.152 % (1.004× the NM-ROM accurate error), 5.522 ms; against it the NM-ROM accurate setting would be 0.954×.
@@ -54,10 +54,10 @@ Cohort: seed 202609202, 16 cases. Comparator (the Table-2 rule): CNAB2 with 50 s
 |---|---|---:|---:|---:|---:|---:|---|
 | NM-ROM accurate | head k=8 | — | 0.152 | 0.092 | 7.759 | 3.05× | — |
 | NM-ROM fast | span R'=16 | — | 2.96 | 2.02 | 4.379 | 5.4× | — |
-| FNO | fno-l | 18,888,495 | 1.34 | 0.93 | 11.528 | 2.05× | 88 ep, best 86, wall_budget |
-| U-Net | unet-l | 22,581,327 | 1.11 | 0.864 | 32.077 | *0.737×* | 80 ep, best 79, wall_budget |
-| Transolver | tsol-l | 17,996,928 | 1.22 | 0.94 | 33.792 | *0.699×* | 110 ep, best 109, wall_budget |
-| DeepONet | don-s | 5,741,519 | 51.7 | 36.1 | 17.345 | 1.36× | 232 ep, best 209, wall_budget |
+| FNO | fno-l | 18,888,495 | 1.34 | 0.93 | 11.528 | 2.05× | 88 ep (4928 steps), best ep 86, wall_budget |
+| U-Net | unet-l | 22,581,327 | 1.11 | 0.864 | 32.077 | *0.737×* | 80 ep (4471 steps), best ep 79, wall_budget |
+| Transolver | tsol-l | 17,996,928 | 1.22 | 0.94 | 33.792 | *0.699×* | 110 ep (6107 steps), best ep 109, wall_budget |
+| DeepONet | don-s | 5,741,519 | 51.7 | 36.1 | 17.345 | 1.36× | 232 ep (12977 steps), best ep 209, wall_budget |
 | FOM (CNAB2) | 50 steps | — | 0.093 | 0.055 | 23.638 | 1× | — |
 
 Next faster stable CNAB2 setting (not eligible under the rule): 40 steps, 0.382 % (2.515× the NM-ROM accurate error), 19.187 ms; against it the NM-ROM accurate setting would be 2.47×.
@@ -92,7 +92,15 @@ Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_rep
 
 ## Data parity
 
-Both sides draw from training seed 202609201, the same 512 trajectories. The operators train on the 448 whose index is not 7 mod 8 and choose checkpoint and size on the other 64. The head was fitted on the states (21 frames) of the same 448 and held out the same 64; the bank is the POD of the first 128 of the 512 (six frames each). An operator sees one input/output pair per trajectory (initial field and viscosity to five evolved fields).
+Both sides draw from training seed 202609201, the same 512 trajectories. The operators train on the 448 whose index is not 7 mod 8 and choose checkpoint and size on the other 64. The head was fitted on the states (21 frames) of the same 448 and held out the same 64; the bank is the POD of the first 128 of the 512 (six frames each). An operator sees one input/output pair per trajectory (initial field and viscosity to five evolved fields). The bank's 128 trajectories include 16 that lie in the operators' validation split, so the trajectories are the same but the exposure is not identical, and the NM-ROM has no split that is held out from all of its components.
+
+## Caveats that travel with these rows
+
+- Development comparisons at 32³/64³: the NM-ROM setting was chosen on the evaluation cases.
+- At 32³ the next faster CNAB2 setting misses the rule by 0.4 % of the NM-ROM error (see the mesh section); against it the accurate setting would be slower than the full-order solver.
+- Timed-output parity in pn32/pn64 compares the error of each timed output with the accuracy pass (error-metric parity), not the fields themselves (DESIGN A3).
+- The audit is restricted: exact recomputation on cases {0, 1, worst} per arm, and 8192-point sampled estimates elsewhere, which are diagnostic only (they scatter by tens of percent for localised errors); the truth solver is not re-solved.
+- Operators are budget-limited, not converged: 3000 s bought 80 to 760 epochs depending on family and mesh (Training column).
 
 ## Glossary
 
@@ -103,7 +111,7 @@ Both sides draw from training seed 202609201, the same 512 trajectories. The ope
 - **Speedup**: the comparator CNAB2 time divided by the row's time in the same job; *italic* means slower than the comparator.
 - **Comparator / rule FOM**: the fastest tested CNAB2 step count whose worst error is no larger than the NM-ROM accurate setting's. **Matched CNAB2**: the fastest one at least as accurate as that row (context only).
 - **CNAB2**: the pseudo-spectral full-order solver (Crank–Nicolson viscous, Adams–Bashforth 2 advection, 2/3 dealiasing) that also produced the truth at $\Delta t=0.001$.
-- **Training**: epochs completed, epoch of the kept checkpoint, and why training stopped (wall_budget = the 3000 s budget ran out).
+- **Training**: epochs evaluated (the last one may be partial) with optimisation steps, the 0-based epoch of the kept checkpoint, and why training stopped (wall_budget = the 3000 s budget ran out; patience = 250 epochs without a validation improvement).
 - **drift / order**: timing gates — median of the last interleaved block over the first, and of the arm-major block over the interleaved ones; each must be within 1/1.10–1.10.
 - **Development comparison**: evaluated on the cases the NM-ROM setting was chosen on.
 - **Restricted audit**: an independent NumPy recomputation exact on the saved cases and sampled elsewhere; the truth solver itself is not re-solved.

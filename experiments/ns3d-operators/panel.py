@@ -225,6 +225,7 @@ def main():
 
     np.save(out / 'fields' / 'truth_samples.npy', np.stack([sample(truth[c]) for c in range(ncase)]))
     results = {}
+    acc_samples = {}
     saved_truth_cases = set()
     written = [0]
     cap = float(cfg.get('field_cap_gb', 4.0)) * 2 ** 30
@@ -264,6 +265,7 @@ def main():
             written[0] += nbytes
             np.savez(out / 'fields' / f'{name}.npz', cases=np.asarray(sorted(fields)),
                      fields=np.stack([fields[c] for c in sorted(fields)]), samples=np.stack(samples))
+        acc_samples[name] = np.stack(samples)
         results[name] = dict(kind=arm['kind'], finite=finite, stats=stats,
                              errors=errors.tolist(), seconds=time.time() - t0,
                              unstable=bool((not finite) or stats['evolved_worst'] > UNSTABLE))
@@ -350,6 +352,12 @@ def main():
                     tol = 1e-4 if (arms[name]['kind'] == 'operator' and 'float32' in
                                    op_meta.get(name, {}).get('parameter_dtype', '')) else 1e-9
                     gapv = float(np.max(np.abs(e - ref_e) / np.maximum(np.abs(ref_e), 1e-12)))
+                    # direct field parity on the fixed sample points (A3)
+                    ts = sample(to_np(o))
+                    ref_s = acc_samples[name][c]
+                    fgap = float(np.max(np.abs(ts - ref_s)) / max(float(np.max(np.abs(ref_s))), 1e-300))
+                    results[name]['timed_field_gap'] = max(results[name].get('timed_field_gap', 0.0), fgap)
+                    gapv = max(gapv, fgap)
                     results[name].setdefault('timed_output_gap', 0.0)
                     results[name]['timed_output_gap'] = max(results[name]['timed_output_gap'], gapv)
                     results[name]['timed_output_tolerance'] = tol
@@ -373,7 +381,7 @@ def main():
                             median_A2=float(np.median(r['A2'])), drift_ratio=drift, drift_passed=drift_ok,
                             order_ratio=order, order_passed=order_ok)
     # positive control: x1.15 on A2 must fail the drift gate
-    ctrl = {name: gate_ratio(np.median(1.15 * np.asarray(r['A1'])), np.median(r['A1']))[1] for name, r in raw.items()}
+    ctrl = {name: gate_ratio(np.median(1.15 * np.asarray(r['A2'])), np.median(r['A1']))[1] for name, r in raw.items()}
     report['timing'] = dict(protocol='A1 interleaved / B arm-major / A2 interleaved', rounds=reps,
                             burn_calls=int(cfg['burn_calls']), arms=timing,
                             positive_control_all_failed=bool(not any(ctrl.values())), raw=raw)

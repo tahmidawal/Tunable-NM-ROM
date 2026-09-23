@@ -14,6 +14,11 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   (uncertified linear R'=384 would be 0.21 % at 83 ms).
   Audit amendment A1 (restricted-grid comparator undercounts shock-front errors by ≤14 %; now one-sided ratio gate).
 
+- bk2048b (2048², A100-80G): parity 5.3e-14/7.8e-14 identical iterations; order effect pooled 0.0 %, worst arm 0.3 %.
+  Rule: accurate = R'=384 q=256 (0.534 %, 178 ms, 1.67× vs lean_nt3e-3_l3e-3_dt005 297 ms; current R'=512 q=256 0.598 %, 1.46×);
+  fast = R'=128 linear (1.87 %, 35 ms, 4.40×; current q=0 2.37 %, 47 ms, 3.31×). q not droppable (linear R'≥256 fails lat64
+  certificate: ρ 0.206/0.161 cert, R'=256 0.078 cert but 0.119 confirmation). ρ failures sit at the initial state k=0.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -22,4 +27,5 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bk1024 | 4197443 | 1024² | A100-80G | FAILED in 2 s: SyntaxError (repeated keyword `family`, introduced after smoke1); fixed f4c950a0; remote removed |
 | bk4096b | 4197473 | 4096² | H200 240G | submitted 02:45 EDT |
 | bk1024b | 4197475 | 1024² | A100-80G | COMPLETED 17.6 min; collected, audited (all gates pass after amendment A1), remote deleted |
-| bk2048b | 4198172 | 2048² | A100-80G | submitted |
+| bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
+| bk512b | 4200506 | 512² | A100 | submitted |

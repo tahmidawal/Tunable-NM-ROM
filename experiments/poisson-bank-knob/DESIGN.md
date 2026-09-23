@@ -116,3 +116,30 @@ timed right after a CG $10^{-3}$ solve is slower by a roughly constant +0.5–0.
 separates "right after a long CG" from "after the slow phase, later in the job", so the cause is not identified. Both
 the main-phase and the conservative (after-long-neighbour) Table-1 times are reported. By the pre-registered rule, the
 256²/1024² timings are **not gate-clean**.
+
+## Amendment A5 (2026-09-23, after the pbkE neighbour-gate failure, before any A–B–A result) — A–B–A timing design; $C_q$ out of the paper
+
+Requested by the coordinator, so that the neighbour effect can be separated from drift. The config sets
+`design: "ABA"`.
+
+- **Phases.** ROM phase A1 (every ROM arm; 5 reps × 12 sources, randomised within each source), then the CG phase B
+  (every CG rtol, loose and tight together; 3 reps × 12, randomised), then ROM phase A2 (identical to A1).
+- **Between phases:** a device sync, a 5 s cooldown and a fixed 2 s dummy matmul kernel. There is 0.1 s of burn-in
+  before every invocation, as before.
+- **Timings.** Table-1 time of an arm = its median over A1 ∪ A2, reported alongside the A1 and A2 medians separately.
+  FOM time = its CG-phase median.
+- **Gates**, all per subject, limit 1.10:
+  - **drift:** A2 median / A1 median must lie in $[1/1.10,\ 1.10]$;
+  - **within-phase neighbour:** median after a long predecessor / median after a short one $\le 1.10$. "Long" means
+    the predecessor's phase median is in the top third of that phase's subject medians; "short", the bottom third.
+    Applied in A1, A2 and B.
+- **Profile, parity and audit:** unchanged.
+- **Paper scope (user decision):** the correction directions $C_q$ are removed from the paper. The $q>0$ arms remain in
+  the job as family `correction-reference` and are excluded from the Table-1 selection. The primary arms are the
+  bank-span linear rung ($q=R'$) and head-only ($q=0$). The Table-1 rule of A1 is otherwise unchanged. The fast bar is
+  still the `R512_q0` error.
+- **Jobs.** `pbkF` (4096², old design, job 4198077, running about 40 min in its main phase) is cancelled by me. Under
+  the old design its timings would need an A–B–A rerun anyway. `pbkG` (job 4198779) was cancelled while PENDING. New:
+  `pbkH` = A–B–A 256², 1024² and 2048² in one allocation; `pbkI` = A–B–A 4096². Both use
+  `--constraint="a100-80G|h100-80G|h200-141G"`. The `pbkE` numbers (256², 1024², legacy design) are kept as the
+  record of the failed gate; they are superseded for timing but their errors stand.

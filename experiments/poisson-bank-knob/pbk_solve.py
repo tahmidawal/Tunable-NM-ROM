@@ -126,7 +126,8 @@ def main():
     here = Path(a.config).resolve().parent
     if a.smoke:
         cfg.update(intervals=128, repetitions=1, burn_seconds=0.001, rows_per_chunk=32, eval_rows=16,
-                   cg_fast=[0.1, 0.01], cg_slow=[1e-4], neighbour_tolerance=1e-4, neighbour_cases=1,
+                   cg_fast=[0.1, 0.01], cg_slow=[1e-4], neighbour_tolerance=1e-4, neighbour_cases=1, cg_repetitions=1,
+                   cooldown_seconds=0.1, phase_dummy_seconds=0.1,
                    profile_reps=1)
     n = int(cfg['intervals'])
     assert jax.default_backend() == 'gpu', jax.default_backend()
@@ -232,6 +233,8 @@ def main():
             call = lambda s, ops=ops, kern=kern, Qt=Qt, Rr=Rr: P.trunc_linear_query(s, ops, kern, Qt, Rr, bank['rot'])
             prof = make_linear_stages(ops, Qt, Rr, lambda a_, dec=dec_rot: dec(a_, bank['rot']))
         arm['family'] = {'trunc': 'nm-rom', 'orig': 'nm-rom-parent', 'linear': 'linear-rung'}[arm['kind']]
+        if arm['kind'] == 'trunc' and arm['q'] > 0:
+            arm['family'] = 'correction-reference'     # C_q removed from the paper (A5): reference only
         subjects.append(dict(name=arm['name'], family=arm['family'], arm=arm, call=call, prof=prof))
         R_['arms'].append(arm)
     cg = IC.make_cg(n, int(cfg['cg_maxiter']))
@@ -272,52 +275,109 @@ def main():
     R_['compile_warmup_seconds'] = time.perf_counter() - t
     print('WARMUP', round(R_['compile_warmup_seconds'], 1), flush=True)
 
-    # ---- phase 1: main
     order = np.random.default_rng(cfg['order_seed'])
-    main_set = subjects + fast
-    prev = None
-    for rep in range(cfg['repetitions']):
-        for case in range(len(dev)):
-            for i in order.permutation(len(main_set)):
-                sub = main_set[int(i)]
-                C.burn(cfg['burn_seconds'])
-                assert gpu_uuid() == uuid0
-                field, row = sub['call'](sources[case])
-                R_['invocations'].append(record(sub, case, rep, 'main', field, row, prev))
-                prev = sub['name']
-        print('MAIN', rep, round(time.perf_counter() - begin, 1), flush=True)
+    if cfg.get('design') == 'ABA':
+        # A-B-A (DESIGN A5): ROM arms, then every CG setting, then the ROM arms again. Each phase is
+        # randomised within a case and preceded by a sync + cooldown + a fixed dummy kernel.
+        def phase_break(label):
+            jax.block_until_ready(jnp.zeros(()))
+            time.sleep(cfg['cooldown_seconds'])
+            C.burn(cfg['phase_dummy_seconds'])
+            R_.setdefault('phase_breaks', []).append(dict(before=label, at_seconds=time.perf_counter() - begin))
+
+        def run_phase(label, subs, reps):
+            prev = None
+            for rep in range(reps):
+                for case in range(len(dev)):
+                    for i in order.permutation(len(subs)):
+                        sub = subs[int(i)]
+                        C.burn(cfg['burn_seconds'])
+                        assert gpu_uuid() == uuid0
+                        field, row = sub['call'](sources[case])
+                        R_['invocations'].append(record(sub, case, rep, label, field, row, prev))
+                        prev = sub['name']
+                print('PHASE', label, rep, round(time.perf_counter() - begin, 1), flush=True)
+                save()
+        phase_break('romA1')
+        run_phase('romA1', subjects, cfg['repetitions'])
+        phase_break('cg')
+        run_phase('cg', fast + slow, cfg['cg_repetitions'])
+        phase_break('romA2')
+        run_phase('romA2', subjects, cfg['repetitions'])
+        lim = cfg['neighbour_limit']
+        drift = []
+        for sub in subjects:
+            a1 = np.median([x['fused_device_seconds'] for x in R_['invocations'] if x['name'] == sub['name'] and x['phase'] == 'romA1'])
+            a2 = np.median([x['fused_device_seconds'] for x in R_['invocations'] if x['name'] == sub['name'] and x['phase'] == 'romA2'])
+            drift.append(dict(name=sub['name'], romA1_median=float(a1), romA2_median=float(a2), ratio=float(a2 / a1)))
+        R_['drift_gate'] = dict(rows=drift, limit=lim,
+                                passed=bool(all(1 / lim <= r['ratio'] <= lim for r in drift)))
+        # within-phase neighbour effect: predecessor "long" = its own phase median in the top third of the
+        # phase's subject medians, "short" = bottom third
+        rows = []
+        for label, subs in (('romA1', subjects), ('romA2', subjects), ('cg', fast + slow)):
+            inv = [x for x in R_['invocations'] if x['phase'] == label]
+            medians = {sb['name']: float(np.median([x['fused_device_seconds'] for x in inv if x['name'] == sb['name']])) for sb in subs}
+            cut = np.quantile(list(medians.values()), [1 / 3, 2 / 3])
+            for sb in subs:
+                mine = [x for x in inv if x['name'] == sb['name'] and x['previous'] is not None]
+                lo = [x['fused_device_seconds'] for x in mine if medians[x['previous']] <= cut[0]]
+                hi = [x['fused_device_seconds'] for x in mine if medians[x['previous']] >= cut[1]]
+                if len(lo) >= 3 and len(hi) >= 3:
+                    rows.append(dict(name=sb['name'], phase=label, after_short_median=float(np.median(lo)),
+                                     after_long_median=float(np.median(hi)), main_median=medians[sb['name']],
+                                     n_short=len(lo), n_long=len(hi), ratio=float(np.median(hi) / np.median(lo))))
+        R_['neighbour_gate'] = dict(rows=rows, limit=lim, passed=bool(all(r['ratio'] <= lim for r in rows)),
+                                    rule='per subject and phase: median after a long predecessor / median after a short one')
+        print('DRIFT', R_['drift_gate']['passed'], min(r['ratio'] for r in drift), max(r['ratio'] for r in drift), flush=True)
+        print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in rows), flush=True)
         save()
-    # ---- phase 2: slow CG
-    for rep in range(cfg['slow_repetitions']):
-        for case in range(len(dev)):
-            for i in order.permutation(len(slow)):
-                sub = slow[int(i)]
+    else:
+        # ---- phase 1: main
+        main_set = subjects + fast
+        prev = None
+        for rep in range(cfg['repetitions']):
+            for case in range(len(dev)):
+                for i in order.permutation(len(main_set)):
+                    sub = main_set[int(i)]
+                    C.burn(cfg['burn_seconds'])
+                    assert gpu_uuid() == uuid0
+                    field, row = sub['call'](sources[case])
+                    R_['invocations'].append(record(sub, case, rep, 'main', field, row, prev))
+                    prev = sub['name']
+            print('MAIN', rep, round(time.perf_counter() - begin, 1), flush=True)
+            save()
+        # ---- phase 2: slow CG
+        for rep in range(cfg['slow_repetitions']):
+            for case in range(len(dev)):
+                for i in order.permutation(len(slow)):
+                    sub = slow[int(i)]
+                    C.burn(cfg['burn_seconds'])
+                    field, row = sub['call'](sources[case])
+                    R_['slow_invocations'].append(record(sub, case, rep, 'slow', field, row, None))
+            print('SLOW', rep, round(time.perf_counter() - begin, 1), flush=True)
+            save()
+        # ---- phase 3: neighbour gate
+        long_sub = [s for s in slow if s['tolerance'] == cfg['neighbour_tolerance']][0]
+        for case in range(cfg['neighbour_cases']):
+            for i in order.permutation(len(subjects)):
+                sub = subjects[int(i)]
+                long_sub['call'](sources[case])
                 C.burn(cfg['burn_seconds'])
                 field, row = sub['call'](sources[case])
-                R_['slow_invocations'].append(record(sub, case, rep, 'slow', field, row, None))
-        print('SLOW', rep, round(time.perf_counter() - begin, 1), flush=True)
+                R_['neighbour'].append(record(sub, case, 0, 'neighbour', field, row, long_sub['name']))
+        gate_rows = []
+        for sub in subjects:
+            cases = range(cfg['neighbour_cases'])
+            base = np.median([x['fused_device_seconds'] for x in R_['invocations']
+                              if x['name'] == sub['name'] and x['case'] in cases])
+            after = np.median([x['fused_device_seconds'] for x in R_['neighbour'] if x['name'] == sub['name']])
+            gate_rows.append(dict(name=sub['name'], main_median=float(base), after_long_median=float(after),
+                                  ratio=float(after / base)))
+        R_['neighbour_gate'] = dict(rows=gate_rows, limit=cfg['neighbour_limit'],
+                                    passed=bool(all(r['ratio'] <= cfg['neighbour_limit'] for r in gate_rows)))
+        print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in gate_rows), flush=True)
         save()
-    # ---- phase 3: neighbour gate
-    long_sub = [s for s in slow if s['tolerance'] == cfg['neighbour_tolerance']][0]
-    for case in range(cfg['neighbour_cases']):
-        for i in order.permutation(len(subjects)):
-            sub = subjects[int(i)]
-            long_sub['call'](sources[case])
-            C.burn(cfg['burn_seconds'])
-            field, row = sub['call'](sources[case])
-            R_['neighbour'].append(record(sub, case, 0, 'neighbour', field, row, long_sub['name']))
-    gate_rows = []
-    for sub in subjects:
-        cases = range(cfg['neighbour_cases'])
-        base = np.median([x['fused_device_seconds'] for x in R_['invocations']
-                          if x['name'] == sub['name'] and x['case'] in cases])
-        after = np.median([x['fused_device_seconds'] for x in R_['neighbour'] if x['name'] == sub['name']])
-        gate_rows.append(dict(name=sub['name'], main_median=float(base), after_long_median=float(after),
-                              ratio=float(after / base)))
-    R_['neighbour_gate'] = dict(rows=gate_rows, limit=cfg['neighbour_limit'],
-                                passed=bool(all(r['ratio'] <= cfg['neighbour_limit'] for r in gate_rows)))
-    print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in gate_rows), flush=True)
-    save()
     # ---- phase 4: stage profile
     for rep in range(cfg['profile_reps']):
         for case in range(len(dev)):
@@ -347,6 +407,7 @@ def main():
         deterministic=all(x['matches_saved_field'] for x in allinv),
         cg_converged=all(x.get('cg_converged', True) for x in allinv),
         neighbour=R_['neighbour_gate']['passed'],
+        **({'drift': R_['drift_gate']['passed']} if 'drift_gate' in R_ else {}),
         profile_matches_fused=all(x['field_relative_to_fused'] <= 1e-10 for x in R_['profile']),
         device_guard=gpu_uuid() == uuid0)
     print('GATES', R_['gates'], flush=True)

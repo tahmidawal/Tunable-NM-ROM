@@ -50,6 +50,9 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   chosen accurate R'=384 q=256 1.409 % / 106.6 ms / 5.05×; current R'=512 q=256 1.330 % / 113.5 ms / 4.74×; chosen fast R'=128
   linear 3.111 % / 24.3 ms / 11.20×; current q=0 9.030 % / 41.0 ms / 6.65×; sensitivity R'=384 linear 1.350 % / 60.1 ms / 8.95×.
   Current-arm errors reproduce hb4kh64 (1.3297 %, 9.0302 %). Rerun as bkh64b (same committed config) once disk freed (280 GB).
+  COORDINATOR: the group disk was 100 % full ~10:30–11:10 EDT (another lane's dump); bkh64's last result.json write (11:01)
+  falls in that window. The partial is SUPERSEDED and not reported as a result; only bkh64b (clean rerun) is. No dev-panel
+  job overlapped the window (bk4096b ended ~08:05, bx2048 ~05:25, the rest earlier).
 
 ## Jobs
 | attempt | job | mesh | GPU | state |

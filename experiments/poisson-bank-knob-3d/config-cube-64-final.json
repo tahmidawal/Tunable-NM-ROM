@@ -1,0 +1,61 @@
+{
+ "attempt": "c64final",
+ "intervals": 64,
+ "order_seed": 923964,
+ "cohort": "final",
+ "case_count": 64,
+ "problem": "cube",
+ "prep": "prep_cube.npz",
+ "weak_tests": 512,
+ "lm_budget": 160,
+ "lm_tolerance": 1e-06,
+ "initial_starts": 3,
+ "field_chunk": 8192,
+ "R_ladder": [
+  16,
+  32,
+  48,
+  64,
+  96,
+  128
+ ],
+ "q_ladder": [
+  0,
+  32,
+  96
+ ],
+ "parity_q": [
+  0,
+  96
+ ],
+ "parity_limit": 1e-10,
+ "engine_parity_limit": 1e-10,
+ "dense_engine_max": 64,
+ "cg_iterations_per_interval": 40,
+ "cg_fast": [
+  0.3,
+  0.1,
+  0.03,
+  0.01,
+  0.003
+ ],
+ "cg_slow": [
+  0.001,
+  0.0001
+ ],
+ "repetitions": 5,
+ "slow_repetitions": 3,
+ "burn_seconds": 0.1,
+ "neighbour_tolerance": 0.001,
+ "neighbour_cases": 6,
+ "neighbour_limit": 1.1,
+ "gate_scope": "fused_device_seconds",
+ "profile_reps": 3,
+ "accepted_checkpoint_sha256": {
+  "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+  "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+ },
+ "final_count": 64,
+ "frozen_settings": "frozen-N64.json",
+ "final_parameters_sha256": "27ec2cf52d2eb0ad84d6b3e83c46f504a67c0dd56a7a1f968263d3179430be60"
+}

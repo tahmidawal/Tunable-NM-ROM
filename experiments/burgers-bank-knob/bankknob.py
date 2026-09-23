@@ -433,7 +433,8 @@ def main():
                 f = np.asarray(v[0])
                 assert np.isfinite(f).all(), name
                 vh = (None,) + tuple(host(v[1:]))
-                row = dict(name=name, case=c, family=b['family'], field_sha256=sha_array(f), seconds=secs[-1], **score(f, c))
+                row = dict(name=name, case=c, family=b['family'], field_sha256=sha_array(f),
+                           field_sha256_sub=sha_array(f[:, ::16, ::16]), seconds=secs[-1], **score(f, c))
                 row.update(rom_row(vh) if b['kind'] == 'rom' else fom_row(b, vh))
                 rep['quick'].append(row)
                 if name in keep_fields:
@@ -528,6 +529,8 @@ def main():
     rep['phases']['timed_phases'] = {k: v for k, v in phases}
     order_rng = np.random.default_rng(cfg['order_seed'])
     quick_sha = {(x_['name'], x_['case']): x_['field_sha256'] for x_ in rep['quick']}
+    quick_sub = {(x_['name'], x_['case']): x_['field_sha256_sub'] for x_ in rep['quick']}
+    sha_every = int(cfg.get('timed_full_sha_every', 1))    # held-out job: full-field SHA on every k-th invocation
     for ph_name, arms_ in phases:
         prev = 0.
         seq = 0
@@ -549,9 +552,11 @@ def main():
                     f = np.asarray(v[0])
                     hs = time.perf_counter() - ht
                     prev = gs
-                    same = sha_array(f) == quick_sha[(name, c)]
+                    same_sub = sha_array(f[:, ::16, ::16]) == quick_sub[(name, c)]
+                    full = (seq % sha_every == 0)
+                    same = (sha_array(f) == quick_sha[(name, c)]) if full else same_sub
                     row = dict(name=name, case=c, rep=r_, phase=ph_name, seq=seq, family=b['family'], gpu_seconds=gs,
-                               host_seconds=hs, identical_to_quick=same,
+                               host_seconds=hs, identical_to_quick=bool(same and same_sub), full_sha_checked=full,
                                same_grid_evolved=(None if cfg.get('timed_skip_score') else score(f, c)['same_grid_evolved']))
                     vh = (None,) + tuple(host(v[1:]))
                     if b['kind'] == 'rom':

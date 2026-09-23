@@ -154,7 +154,10 @@ def hold64():
              audit_arms=['fft_tight'] + list(dict.fromkeys(want))[:2],
              # host-side per-invocation re-scoring is redundant (every timed field is SHA-identical to the scored quick
              # run) and costs ~3 s per 4096^2 invocation on a contended node (bkh64b); off for the held-out job only
-             timed_skip_score=True, selection_source_summary_sha256=sel['source_summary_sha256'],
+             timed_skip_score=True,
+             # and the full-field SHA (800 MB on the host) on every 8th invocation; every invocation still checks the
+             # SHA of a 1/256 strided subsample against the quick run (bkh64b: ~9 s host time per invocation on pax008)
+             timed_full_sha_every=8, selection_source_summary_sha256=sel['source_summary_sha256'],
              fom_subsets=dict(lean=[f['name'] for f in FOM if f.get('impl') == 'lean']))
     return c
 

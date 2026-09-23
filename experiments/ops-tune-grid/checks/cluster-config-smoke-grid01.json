@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "mesh": 256,
+  "rows": [
+    {
+      "config": "code/configs/fno/cosine.json",
+      "family": "fno",
+      "real_parameters": 17877317,
+      "batch": 2,
+      "peak_allocated_bytes": 2452303872,
+      "seconds_per_step": 0.12053753295913339,
+      "projected_peak_bytes_at_batch_8": 9809215488
+    },
+    {
+      "config": "code/configs/fno/epochmatch.json",
+      "family": "fno",
+      "real_parameters": 17877317,
+      "batch": 2,
+      "peak_allocated_bytes": 2447055360,
+      "seconds_per_step": 0.1205738727003336,
+      "projected_peak_bytes_at_batch_8": 9788221440
+    },
+    {
+      "config": "code/configs/fno/lr3e-3.json",
+      "family": "fno",
+      "real_parameters": 17877317,
+      "batch": 2,
+      "peak_allocated_bytes": 2447055360,
+      "seconds_per_step": 0.12052576360292733,
+      "projected_peak_bytes_at_batch_8": 9788221440
+    },
+    {
+      "config": "code/configs/fno/modes48.json",
+      "family": "fno",
+      "real_parameters": 39373125,
+      "batch": 2,
+      "peak_allocated_bytes": 2971338752,
+      "seconds_per_step": 0.12434512400068343,
+      "projected_peak_bytes_at_batch_8": 11885355008
+    },
+    {
+      "config": "code/configs/fno/norm.json",
+      "family": "fno",
+      "real_parameters": 17878341,
+      "batch": 2,
+      "peak_allocated_bytes": 2993062400,
+      "seconds_per_step": 0.16062903450801969,
+      "projected_peak_bytes_at_batch_8": 11972249600
+    },
+    {
+      "config": "code/configs/fno/width96.json",
+      "family": "fno",
+      "real_parameters": 40222181,
+      "batch": 2,
+      "peak_allocated_bytes": 3961884160,
+      "seconds_per_step": 0.11188377742655575,
+      "projected_peak_bytes_at_batch_8": 15847536640
+    },
+    {
+      "config": "code/configs/transolver/cosine.json",
+      "family": "transolver",
+      "real_parameters": 3108240,
+      "batch": 2,
+      "peak_allocated_bytes": 804097536,
+      "seconds_per_step": 0.04076281771995127,
+      "projected_peak_bytes_at_batch_8": 3216390144
+    },
+    {
+      "config": "code/configs/transolver/layers6-d192.json",
+      "family": "transolver",
+      "real_parameters": 5245952,
+      "batch": 2,
+      "peak_allocated_bytes": 5641666048,
+      "seconds_per_step": 0.1485084630548954,
+      "projected_peak_bytes_at_batch_8": 22566664192
+    },
+    {
+      "config": "code/configs/transolver/lr3e-3.json",
+      "family": "transolver",
+      "real_parameters": 3108240,
+      "batch": 2,
+      "peak_allocated_bytes": 804097536,
+      "seconds_per_step": 0.040665304055437446,
+      "projected_peak_bytes_at_batch_8": 3216390144
+    },
+    {
+      "config": "code/configs/transolver/slices128.json",
+      "family": "transolver",
+      "real_parameters": 3116944,
+      "batch": 2,
+      "peak_allocated_bytes": 1170179072,
+      "seconds_per_step": 0.047986850840970874,
+      "projected_peak_bytes_at_batch_8": 4680716288
+    },
+    {
+      "config": "code/configs/transolver/slices32.json",
+      "family": "transolver",
+      "real_parameters": 3103888,
+      "batch": 2,
+      "peak_allocated_bytes": 650816512,
+      "seconds_per_step": 0.03703175182454288,
+      "projected_peak_bytes_at_batch_8": 2603266048
+    },
+    {
+      "config": "code/configs/unet/base64.json",
+      "family": "unet",
+      "real_parameters": 31038469,
+      "batch": 2,
+      "peak_allocated_bytes": 1517773824,
+      "seconds_per_step": 0.0581244605127722,
+      "projected_peak_bytes_at_batch_8": 6071095296
+    },
+    {
+      "config": "code/configs/unet/cosine.json",
+      "family": "unet",
+      "real_parameters": 7763461,
+      "batch": 2,
+      "peak_allocated_bytes": 4868457984,
+      "seconds_per_step": 0.03358328249305487,
+      "projected_peak_bytes_at_batch_8": 19473831936
+    },
+    {
+      "config": "code/configs/unet/groups16.json",
+      "family": "unet",
+      "real_parameters": 7763461,
+      "batch": 2,
+      "peak_allocated_bytes": 4868457984,
+      "seconds_per_step": 0.032958328956738114,
+      "projected_peak_bytes_at_batch_8": 19473831936
+    },
+    {
+      "config": "code/configs/unet/lr3e-3.json",
+      "family": "unet",
+      "real_parameters": 7763461,
+      "batch": 2,
+      "peak_allocated_bytes": 4868457984,
+      "seconds_per_step": 0.03376200166530907,
+      "projected_peak_bytes_at_batch_8": 19473831936
+    },
+    {
+      "config": "code/configs/unet/wd1e-3.json",
+      "family": "unet",
+      "real_parameters": 7763461,
+      "batch": 2,
+      "peak_allocated_bytes": 4868457984,
+      "seconds_per_step": 0.034376302966848016,
+      "projected_peak_bytes_at_batch_8": 19473831936
+    }
+  ]
+}

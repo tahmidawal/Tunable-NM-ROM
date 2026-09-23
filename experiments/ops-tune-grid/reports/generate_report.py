@@ -186,6 +186,50 @@ def arm_rows(audit, prefix):
     return rows
 
 
+def step_costs():
+    """Per-step cost of every grid config, measured ON THE A100 by the job's own pre-flight.
+    The design's first estimates were GB10 measurements scaled by published epoch counts; the
+    audit recorded that as an unverified gap, and this closes it with the real device."""
+    path = LANE / 'checks/cluster-config-smoke-grid01.json'
+    if not path.exists():
+        return None
+    rows = {r['config'].split('/')[-1].removesuffix('.json') + '@' + r['config'].split('/')[-2]: r
+            for r in json.loads(path.read_text())['rows']}
+    # Each family's published reference architecture, identified by a config that shares it.
+    baseline = {'fno': 'epochmatch@fno', 'unet': 'cosine@unet', 'transolver': 'cosine@transolver'}
+    out = {}
+    for key, r in rows.items():
+        family = key.split('@')[1]
+        base = rows.get(baseline[family])
+        out[key] = dict(r, ratio=r['seconds_per_step'] / base['seconds_per_step'] if base else None,
+                        family=family)
+    return out
+
+
+def section_step_costs():
+    costs = step_costs()
+    if not costs:
+        return ''
+    rows = []
+    for key, r in sorted(costs.items(), key=lambda kv: (kv[1]['family'], -(kv[1]['ratio'] or 0))):
+        rows.append([f"`{r['config'].split('/')[-2]}/{r['config'].split('/')[-1]}`",
+                     f"{r['real_parameters']:,}", num(r['seconds_per_step'], 4),
+                     f"{r['ratio']:.2f}×" if r['ratio'] else '—',
+                     num(r['projected_peak_bytes_at_batch_8'] / 2 ** 30, 2)])
+    worst = max((r for r in costs.values() if r['ratio']), key=lambda r: r['ratio'])
+    return ("\n### What each arm cost per optimisation step, measured on the A100\n\n"
+            "Measured by `grid01`'s own pre-flight (`smoke_tune.py`) at the real 257 squared contract "
+            "before any of the wall budget was spent, so these are device numbers rather than "
+            "projections. **They decide which arms may be called worse than their baseline**: at a "
+            "fixed 3000 s a more expensive arm buys proportionally fewer epochs, and every "
+            "published arm in this comparison ended on its wall still improving.\n\n"
+            + table(['config', 'real params', 's/step', 'vs its family baseline', 'peak GiB @ batch 8'], rows)
+            + f"\nThe most budget-confounded arm is "
+              f"`{worst['config'].split('/')[-2]}/{worst['config'].split('/')[-1]}` at "
+              f"{worst['ratio']:.2f}× its family's baseline cost per step; its result is a lower "
+              f"bound and is reported as one.\n")
+
+
 def section_tuning(audit, published):
     if not audit:
         return ('## Tuning, per family\n\n_`grid01` has not returned; this section is a gap, not an '
@@ -424,6 +468,7 @@ def main():
         '\n', section_parity(generation),
         '\n', section_generation(generation),
         '\n', section_tuning(grid, published),
+        section_step_costs(),
         '\n', section_ladder(ladder, generation),
         '\n', section_bar(grid, ladder, generation),
         '\n', section_given(grid, ladder, generation),

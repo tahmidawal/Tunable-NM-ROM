@@ -169,3 +169,14 @@ No blocker. Accepted and fixed before any panel job:
    rsync (no second remote copy of tens of GB).
 Not changed: complete-ms for operators excludes an upload (inherited; favours the operators; GPU-ms is the
 headline column).
+
+## A3 (2026-09-23 ~06:55 EDT) — 2048^2 operator retry runs concurrently with the panel job
+
+`t2048` (4196041) trained U-Net (62 epochs) and Transolver (24 epochs) at $2048^2$; FNO and DeepONet ran out of CUDA
+memory on its A100-80G at micro-batch 1 (≥ 8 GiB reserved-but-unallocated: fragmentation). Retry `t2048s` (FNO +
+DeepONet only, same configs and 3000 s budgets, `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`; an H200 retry
+`t2048r` sat unscheduled because every H200 was allocated and was cancelled before it ran). To save ~2 h, `p2048` is
+submitted concurrently: after its JAX phases it waits (bounded) for `t2048s`, re-hashes each checkpoint against the
+SHA256 the training job itself recorded, and times it in Phase O like every other operator
+(`cluster/late_ops.py`); the audit checks the timed checkpoint against that record. An arm that does not arrive in
+time gets no row and is reported as not run.

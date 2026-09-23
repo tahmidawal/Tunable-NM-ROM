@@ -40,11 +40,23 @@ def files_and_body(ROOT, LANE, LIBS, OPS, CHECKPOINT, cfg, a):
 "$PY" -c "import torch,sys; ok=torch.cuda.is_available(); print('torch_cuda', ok, torch.cuda.get_device_name() if ok else None, flush=True); sys.exit(0 if ok else 42)"
 mkdir -p output/optiming
 '''
+    late = getattr(a, 'late', None)
+    if late:                                      # DESIGN A3: arms from a concurrently running training job
+        tjob, arms_, wait = late.split(':')
+        files.append(f'{LANE}/cluster/late_ops.py')
+        body += (f'"$PY" cluster/late_ops.py operators-{L}.json /cluster/tufts/paralab/tawal01/bcmp_20260923/{tjob}/{LANE} '
+                 f'{arms_} {wait} output/operators-runtime.json || cp operators-{L}.json output/operators-runtime.json\n')
+        for arm in arms_.split(','):
+            body += (f'[ -f opckpt/{arm}.pt ] && "$PY" ops/optime.py --checkpoint opckpt/{arm}.pt --index output/opcohort/index.json '
+                     f'--out output/optiming --fields output/fields --name {arm} --role "retrained at {L}^2 (late, {tjob})" '
+                     f'--repetitions 5 --burn-in 20 || echo "LATE OPERATOR MISSING OR FAILED {arm}"\n')
+    else:
+        body += f'cp operators-{L}.json output/operators-runtime.json\n'
     for op in ops['operators']:
         body += (f'"$PY" ops/optime.py --checkpoint opckpt/{op["name"]}.pt --index output/opcohort/index.json '
                  f'--out output/optiming --fields output/fields --name {op["name"]} --role "{op["role"]}" '
                  f'--repetitions 5 --burn-in 20 || echo "OPERATOR FAILED {op["name"]}"\n')
-    body += '''"$PY" audit_cmp.py output --operators operators-''' + str(L) + '''.json --out output/audit-remote.json || echo "REMOTE AUDIT FAILED"
+    body += '''"$PY" audit_cmp.py output --operators output/operators-runtime.json --out output/audit-remote.json || echo "REMOTE AUDIT FAILED"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''

@@ -300,9 +300,9 @@ Summary `checks/bx2048-summary.json` sha256 `d1155302d7376111c585708f86617bae0d0
 | `R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1024 | True | 0.729 | 1,181.3 | 0.0336 / 0.0541 | confirmed | 0.25× |
 | `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 128 | 512 | False | 1.872 | 34.6 | 0.0479 / 0.0846 | confirmed | 4.45× |
 
-## $4096^2$ held-out (hold64) — job 4210077, NVIDIA H200
+## $4096^2$ held-out (hold64) — job 4210077, NVIDIA H200 — PARTIAL (job died on a full group disk after 4 of 5 timed repetitions)
 
-Summary sha256 `7e7535405ff9c71d129b958ca00063bed41318e498744856714cfa0ef6eec93c`.
+Summary `checks/bkh64-partial-summary.json` sha256 `7e7535405ff9c71d129b958ca00063bed41318e498744856714cfa0ef6eec93c`. FOM grid: the lean settings (fft_tight = untimed reference).
 
 | arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |
 |---|---|---|---|---|---|---|---|

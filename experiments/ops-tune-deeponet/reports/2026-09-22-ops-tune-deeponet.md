@@ -125,13 +125,13 @@ with no access to them.
 | --- | --- |
 | `experiments/no-second/checks/refinement02-diagnosis-audit.json` | `ffa77d1b8bc44d2b…` |
 | `experiments/ops-deeponet-b2d/reports/summary.json` | `0255abc0f16b88b7…` |
-| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `2bd2f1dafc870ec5…` |
+| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `16e0f2c151ea3643…` |
 | `experiments/ops-tune-deeponet/reports/accounting.json` | `674fe5cc950feb38…` |
 
 Inherited-source check: **passed** —
 10 files byte-identical to the forked lane, 6
 byte-identical to the pinned generator, 6 declared changed,
-5 new.
+6 new.
 
 **No speed number appears in this report and none is admissible from this lane.** No timing block
 was run; `timing.py` is not staged. Nothing here is divided by a time from any other job.

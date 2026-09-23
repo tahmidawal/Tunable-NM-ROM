@@ -168,10 +168,11 @@ def section_ladder(audits, accounting):
     if 'c-new128' in arms and 'base-top' in arms:
         small, top = arms['c-new128']['fixed_initial']['mean'], arms['base-top']['fixed_initial']['mean']
         verdict['T1'] = dict(ratio=top / small, large_effect=bool(top / small <= BARS['T1_large']),
-                             rungs=[arms[n]['training_cases'] for n in order if n in arms])
+                             rungs=sorted({arms[n]['training_cases'] for n in order
+                                           if n in arms and n != 'c-pinned128'}))
         if 'base-2048' in arms:
             last = arms['base-2048']['fixed_initial']['mean']
-            verdict['T1']['final_step_relative'] = (last - top) / last
+            verdict['T1']['final_step_improvement'] = (last - top) / last
             verdict['T1']['no_further_gain'] = bool((last - top) / last < BARS['T1_no_gain'])
     return text, verdict
 
@@ -260,10 +261,11 @@ def section_verdicts(audits, ladder_verdict, decisions, reference):
                      f"128-case rung's at the same wall budget, over rungs {t1['rungs']}. The "
                      f"pre-chosen large-effect bar is {BARS['T1_large']}×, so this is "
                      f"**{'a large data effect' if t1['large_effect'] else 'not a large data effect'}**. "
-                     + (f"The last rung-to-rung step changes the mean by "
-                        f"{100 * t1['final_step_relative']:+.1f} %, so at this compute there is "
+                     + (f"The last rung-to-rung step improves the mean by "
+                        f"{100 * t1['final_step_improvement']:.1f} % (the bar is "
+                        f"{100 * BARS['T1_no_gain']:.0f} %), so at this compute there is "
                         f"{'no further measurable gain' if t1.get('no_further_gain') else 'still measurable gain'}. "
-                        if 'final_step_relative' in t1 else '')
+                        if 'final_step_improvement' in t1 else '')
                      + "More data at a fixed budget also means fewer passes per example, so this is "
                        "the observed gain under the allotted compute, not a statement about data "
                        "saturation.")

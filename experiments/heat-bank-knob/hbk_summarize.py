@@ -8,7 +8,8 @@ import numpy as np
 
 run = Path(sys.argv[1]); pdir = Path(sys.argv[2]) if len(sys.argv) > 2 else run / 'pull' / 'out'
 raw = (pdir / 'panel' / 'results.json').read_bytes(); res = json.loads(raw); cfg = res['config']
-audit = json.loads((pdir / 'audit_np.json').read_text()) if (pdir / 'audit_np.json').exists() else None
+apath = run / 'audit_np_v2.json' if (run / 'audit_np_v2.json').exists() else pdir / 'audit_np.json'   # local re-run of audit v2 counts when present
+audit = json.loads(apath.read_text()) if apath.exists() else None
 reps = cfg['repetitions']; fams = list(cfg['families']); K = {2: 8, 3: 32}[cfg['dim']]
 Rfull = cfg['edges'][-1]
 
@@ -41,7 +42,7 @@ def fastest_fom(rows, err):
 summary = dict(schema='heat-bank-knob-summary-v1', results_sha256=hashlib.sha256(raw).hexdigest(), source_commit=res['source_commit'],
                source_sha256=res['source_sha256'], model_sha256=res['model_sha256'], prep_sha256=res['prep_sha256'],
                reporting_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), metadata=res['metadata'],
-               audit_passed=None if audit is None else audit['passed'], audit=None if audit is None else {k: v for k, v in audit.items() if k != 'failures'},
+               audit_passed=None if audit is None else audit['passed'], audit=None if audit is None else {k: v for k, v in audit.items() if k != 'failures'}, audit_file=str(apath.name),
                rotation={k: res['rotation'][k] for k in ('cumulative_energy', 'training_projection_floor_worst', 'L_times_T_identity_deviation', 'T_sha256')},
                meshes=[])
 md = []

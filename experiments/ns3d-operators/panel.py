@@ -308,8 +308,6 @@ def main():
         arm['sync'](o)
         ms = (time.perf_counter() - start) * 1e3
         samples_log.append((phase, rnd, name, c, prev, ms))
-        if phase == 'A2' and rnd == reps - 1:
-            last_out[(name, c)] = o
         return o
 
     log(f'warm-up: {len(names)} arms')

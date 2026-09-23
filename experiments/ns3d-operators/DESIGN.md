@@ -290,3 +290,12 @@ remote directory is deleted. Fix (memory only, no change to any setting, model o
 fraction 0.55, `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`, and `torch.cuda.empty_cache()`
 after each arm's accuracy pass and warm-up. The rerun `pn96b` evaluates the identical config
 (`configs/panel96.json`) on the same held-out cohort (its third opening overall; no choice is made on it).
+
+## A7 (2026-09-23 ~18:00 EDT) — pn96b (job 4244288) ran out of JAX memory in timing phase A2; rerun pn96c
+
+Cause: a leftover in `panel.py`'s `timed()` kept every arm's timed output of the last A2 round alive
+on the device (`last_out`, never read after the field-parity change of A3): 19 arms × 32 cases ×
+127 MB at 96³. At 32³/64³ it fitted (≤ 11 GB) and changed nothing measured. The dict is removed;
+no setting, model, selection or gate changes. pn96b reproduced pn96's accuracy pass exactly (gap 0 on
+every arm); its logs and partial summary are kept at `runs/pn96b_crashed/`, remote deleted. Rerun
+`pn96c`, same config, same cohort, A100-80G, JAX fraction 0.55.

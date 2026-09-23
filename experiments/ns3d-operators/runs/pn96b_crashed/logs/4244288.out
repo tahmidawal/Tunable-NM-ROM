@@ -1,0 +1,53 @@
+host=pax105 source_commit=fe0c8551b102d1d437ad636aefebbfe86112b9d3 job=4244288 config=configs/panel96.json
+NVIDIA A100 80GB PCIe, GPU-a9dcc2dc-2ba8-5c5c-ed4c-ff7b876e8fee, 81920 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_backend=cuda NVIDIA A100 80GB PCIe
+[17:39:10] generating evaluation truth
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+[17:39:32] generating bank training trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.338e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+[17:42:31] bank rebuild gap 2.346e-13
+[17:42:56] nmrom_accurate_head_k8: evolved worst 0.002068 (10.4s)
+[17:43:05] nmrom_fast_span16: evolved worst 0.032425 (9.0s)
+[17:43:24] cnab2_s200: evolved worst 0.000000 (19.4s)
+[17:43:38] cnab2_s100: evolved worst 0.000225 (13.5s)
+[17:43:50] cnab2_s80: evolved worst 0.000394 (12.6s)
+[17:44:02] cnab2_s70: evolved worst 0.000561 (12.0s)
+[17:44:14] cnab2_s60: evolved worst 0.047382 (11.4s)
+[17:44:24] cnab2_s50: evolved worst 26941.749234 (10.8s)
+[17:44:35] cnab2_s40: evolved worst 3981387513732642853053511053082624.000000 (10.1s)
+[17:44:44] cnab2_s20: evolved worst 933040489.727997 (9.1s)
+[17:44:52] cnab2_s10: evolved worst 25.829890 (8.5s)
+[17:45:06] op_don-l: evolved worst 0.614169 (13.3s)
+[17:45:15] op_don-s: evolved worst 0.514169 (9.1s)
+[17:45:23] op_fno-l: evolved worst 0.015052 (8.8s)
+[17:45:32] op_fno-s: evolved worst 0.016856 (8.3s)
+[17:45:40] op_tsol-l: evolved worst 0.023885 (8.5s)
+[17:45:48] op_tsol-s: evolved worst 0.011648 (7.8s)
+[17:45:58] op_unet-l: evolved worst 0.022926 (10.2s)
+[17:46:07] op_unet-s: evolved worst 0.045340 (8.7s)
+[17:46:08] reproduction gate: True {'nmrom_accurate_head_k8': 0.0, 'nmrom_fast_span16': 0.0, 'cnab2_s200': 0.0, 'cnab2_s100': 0.0, 'cnab2_s80': 0.0, 'cnab2_s70': 0.0, 'cnab2_s60': 0.0, 'cnab2_s50': 0.0, 'cnab2_s40': 0.0, 'cnab2_s20': 0.0, 'cnab2_s10': 0.0}
+[17:46:08] warm-up: 19 arms
+RUN_EXIT=1 AUDIT_EXIT=-1

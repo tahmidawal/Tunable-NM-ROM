@@ -1,0 +1,17 @@
+{
+  "attempt": "gen01",
+  "job_id": "4183681",
+  "job_name": "opstune_gen01",
+  "source_commit": "0e52b9869d45e0069b04fd4cdafa403901fad0ec",
+  "remote": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/gen01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 13:00:00",
+  "submitted_utc": "2026-09-23T00:05:00.125525+00:00",
+  "queue_before": "none of this lane's; one other lane's (4183561 opstune_don_gen02)",
+  "queue_after": "exactly one job in this lane's namespace (4183681 gen01) and one directory for it",
+  "manifest_verified_remotely": "56 files, sha256sum -c passed before submission",
+  "generation_budget_seconds": 36000.0,
+  "requested_cases": 4608,
+  "what_it_does": "reproduction gate at the pinned 4096/1.5625e-4 reference; bulk generation of train indices 0..4607 at 1024/3.125e-4 with control G1 measured on the 128 published cases; the 256-grid discretisation bar measured on validation-32 at three time steps including the NM-ROM bank fidelity; prefix indices written as each is reached; then the verified cache moved to <namespace>/cache",
+  "pending_rule": "if still PENDING after 3 h: scancel and resubmit as h100, then h200, then l40s; science unchanged",
+  "design": "DESIGN.md sections 3.2 and 5.1; audit disposition sections A2 and A3"
+}

@@ -1,0 +1,56 @@
+{
+ "intervals": 2048,
+ "training_intervals": 255,
+ "eval_seed": 7090703,
+ "eval_count": 6,
+ "fresh_seed": 7090732,
+ "fresh_count": 6,
+ "model": {
+  "id": "new_K32",
+  "checkpoint_path": "../p-linear/checkpoints/primary_K32.pkl",
+  "basis_path": "../p-linear/checkpoints/primary_K32-basis.npz",
+  "training": {
+   "seed": 0,
+   "draw_count": 3072,
+   "fit_split": {
+    "split_seed": 20260916,
+    "validation_fraction": 0.15
+   }
+  }
+ },
+ "R_ladder": [
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "rows_per_chunk": 256,
+ "eval_rows": 64,
+ "order_seed": 925048,
+ "prep_path": "runs/prep.npz",
+ "repetitions": 10,
+ "burn_seconds": 0.1,
+ "cg_maxiter": 200000,
+ "neighbour_limit": 1.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "problem": "poisson2d",
+ "source_lane": "exp/2026-09-23-poisson-bank-knob",
+ "source_lane_commit": "06546331",
+ "table1_settings_source": "worktrees/2026-09-23-poisson-bank-knob/experiments/poisson-bank-knob/reports/lab-entry.generated.md",
+ "accurate_Rp": 512,
+ "fast_Rp": 128,
+ "spectral_variants": [
+  "fft",
+  "mm"
+ ],
+ "spectral_limit": 1e-10,
+ "cg_validation": [
+  1e-06,
+  1e-08,
+  1e-10
+ ],
+ "cg_agreement_limit": 1e-08
+}

@@ -1,0 +1,22 @@
+{
+ "per_arm_seconds": 20,
+ "arms": [
+  {
+   "name": "unet",
+   "config": "inputs/opconfigs/smoke-unet.json"
+  },
+  {
+   "name": "fno",
+   "config": "inputs/opconfigs/smoke-fno.json"
+  },
+  {
+   "name": "tsol",
+   "config": "inputs/opconfigs/smoke-tsol.json"
+  },
+  {
+   "name": "don",
+   "config": "inputs/opconfigs/smoke-don.json"
+  }
+ ],
+ "smoke": true
+}

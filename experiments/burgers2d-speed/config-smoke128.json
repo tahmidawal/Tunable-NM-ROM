@@ -1,0 +1,313 @@
+{
+ "attempt": "smoke128",
+ "intervals": 128,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 1,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 1,
+ "expected_physical_sha256": null,
+ "cohort_name": "dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "rho_bar": 0.116,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "population": {
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0
+   ],
+   [
+    1
+   ]
+  ],
+  "confirm_draw": [
+   2
+  ],
+  "note": "burgers-eqcert populations (as the parent lane): 256^2 params_draw(20260922,56), else params_draw(20260921,56); 5 certification draws x 8 + 1 confirmation draw x 16"
+ },
+ "rules": {
+  "q0scaled": {
+   "lattice": 32,
+   "note": "SMOKE ONLY: stands in for the q0 file rule (L % 256)"
+  },
+  "lat64": {
+   "lattice": 64,
+   "note": "uniform 63x63 interior sub-lattice, equal weights; the paper accurate rule (burgers-eqcert: certified at 256^2 (bc256b, x1), 512^2 (x1), 1024^2; 2048^2 certificate-only; 4096^2 NOT confirmed)"
+  },
+  "bad0": {
+   "file": "rules/rule_q256_reachable_m2048.npz",
+   "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+   "mesh": 256,
+   "control": true,
+   "note": "q-ridge rule that regressed at 1024^2 in b-panel: certificate CONTROL, must fail"
+  }
+ },
+ "arms": [
+  {
+   "model": "lin",
+   "Rp": 128,
+   "M": 512,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "certify": false
+  },
+  {
+   "model": "lin",
+   "Rp": 128,
+   "M": 512,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin"
+  },
+  {
+   "model": "lin",
+   "Rp": 128,
+   "M": 512,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "certify": false
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin"
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": 1,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin"
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "q0",
+   "certify": false
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "q0"
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": 1,
+   "impl": "eng",
+   "graphs": true,
+   "family": "q0"
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "lu"
+   },
+   "impl": "general",
+   "graphs": false,
+   "family": "lin",
+   "candidate": false,
+   "certify": false,
+   "role": "general_path_section_6_3"
+  }
+ ],
+ "parity_pairs": [
+  [
+   "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1__eng_graphs",
+   "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1__parent"
+  ],
+  [
+   "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1__eng",
+   "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1__parent"
+  ],
+  [
+   "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent"
+  ],
+  [
+   "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2__eng_graphs",
+   "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2__parent"
+  ]
+ ],
+ "parity_bar": 1e-10,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  }
+ ],
+ "fom_both_modes": true,
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1__eng_graphs"
+ ],
+ "restrict_to": 256,
+ "target_chunk": 4,
+ "dense_tangent_group": 34,
+ "phi_gate_max_mesh": 128,
+ "rom_reps": 1,
+ "fom_reps": 1,
+ "order_seed": 20260924,
+ "burn_seconds": 0.01,
+ "phase_cooldown_seconds": 0.1,
+ "phase_dummy_seconds": 0.1,
+ "gate_limit": 1.1,
+ "parent_fast_bar": {
+  "percent": null,
+  "arm": "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2",
+  "source": "burgers-bank-knob checks/bk128-summary.json selection.fast_reference_error_percent"
+ },
+ "purpose": "DESIGN.md: deployment knobs + iterate-preserving engineering at this mesh, dev6 selection panel",
+ "local_smoke_waives_cohort_hash": true,
+ "required_reps": 2
+}

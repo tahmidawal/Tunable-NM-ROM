@@ -3706,7 +3706,286 @@
    "neighbour_worst": 1.0022030576695362
   }
  ],
- "heat3d": [],
+ "heat3d": [
+  {
+   "problem": "heat3d",
+   "mesh": 32,
+   "gpu": "NVIDIA A100-PCIE-40GB",
+   "job": "4215062",
+   "attempt": "spN",
+   "output": "output0",
+   "result": "runs/spN/archive/output0/result.json",
+   "result_sha256": "54661b49051e2583198ccd04edf1860a6c4a86e2c0b0bf981c742493c82cc192",
+   "commit": "de1ffd17b168767c13f276aeadb963b785462b4f",
+   "cohort": "heldout_sealed_921099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R320_bf",
+     "worst": 0.0006952217309834066,
+     "ms": 0.5831380840390921,
+     "a1": 0.5869953893125057,
+     "a2": 0.5801329389214516,
+     "matched": "modal_exp_mm",
+     "matched_worst": 9.243469039183799e-16,
+     "matched_ms": 0.17956155352294445,
+     "ratio_matched": 0.30792287185089273,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.17956155352294445,
+     "ratio_exact": 0.30792287185089273
+    },
+    "rom_fast": {
+     "arm": "lin_R128_cn",
+     "worst": 0.011109907639354343,
+     "ms": 0.31936238519847393,
+     "a1": 0.32165669836103916,
+     "a2": 0.3173940349370241,
+     "matched": "modal_exp_mm",
+     "matched_worst": 9.243469039183799e-16,
+     "matched_ms": 0.17956155352294445,
+     "ratio_matched": 0.5622501642181575,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.17956155352294445,
+     "ratio_exact": 0.5622501642181575
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R320_cn",
+     "worst": 0.0008022903004490516,
+     "ms": 0.520447501912713,
+     "a1": 0.5220470484346151,
+     "a2": 0.518580200150609,
+     "matched": "modal_exp_mm",
+     "matched_worst": 9.243469039183799e-16,
+     "matched_ms": 0.17956155352294445,
+     "ratio_matched": 0.34501376769613096,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.17956155352294445,
+     "ratio_exact": 0.34501376769613096
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R128_bf",
+     "worst": 0.011109907639354343,
+     "ms": 0.38374331779778004,
+     "a1": 0.3861985169351101,
+     "a2": 0.38152094930410385,
+     "matched": "modal_exp_mm",
+     "matched_worst": 9.243469039183799e-16,
+     "matched_ms": 0.17956155352294445,
+     "ratio_matched": 0.46792099092020517,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.17956155352294445,
+     "ratio_exact": 0.46792099092020517
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 1.8185078347640134e-16,
+     "ms": 0.250848475843668
+    },
+    "modal_cn_fft": {
+     "worst": 0.0007826918936381359,
+     "ms": 0.2504445146769285
+    },
+    "modal_exp_half": {
+     "worst": 1.789522426206785e-15,
+     "ms": 0.40346430614590645
+    },
+    "modal_cn_half": {
+     "worst": 0.0007826918936380203,
+     "ms": 0.4021769855171442
+    },
+    "modal_exp_mm": {
+     "worst": 9.243469039183799e-16,
+     "ms": 0.17956155352294445
+    },
+    "modal_cn_mm": {
+     "worst": 0.0007826918936382618,
+     "ms": 0.18182187341153622
+    }
+   },
+   "validation": {
+    "exp_worst": 1.789522426206785e-15,
+    "cn_vs_cncg": 2.7978992704558327e-11,
+    "control": 0.0031867459547426777
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "lin_R320_bf",
+     "romA1_median": 0.0005869953893125057,
+     "romA2_median": 0.0005801329389214516,
+     "ratio": 0.9883091920038903
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.00032165669836103916,
+     "romA2_median": 0.0003173940349370241,
+     "ratio": 0.9867477859291135
+    },
+    {
+     "name": "lin_R320_cn",
+     "romA1_median": 0.0005220470484346151,
+     "romA2_median": 0.000518580200150609,
+     "ratio": 0.9933591267407763
+    },
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.0003861985169351101,
+     "romA2_median": 0.00038152094930410385,
+     "ratio": 0.987888178162548
+    }
+   ],
+   "neighbour_worst": 1.014962880676276
+  },
+  {
+   "problem": "heat3d",
+   "mesh": 64,
+   "gpu": "NVIDIA A100-PCIE-40GB",
+   "job": "4215062",
+   "attempt": "spN",
+   "output": "output1",
+   "result": "runs/spN/archive/output1/result.json",
+   "result_sha256": "c4aa806c1a686c821c3cac37054abd1bf1787ce083b1ad06a970d336682e9fff",
+   "commit": "de1ffd17b168767c13f276aeadb963b785462b4f",
+   "cohort": "heldout_sealed_921099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R320_bf",
+     "worst": 0.000695662162980857,
+     "ms": 1.7304972279816866,
+     "a1": 1.7330576665699482,
+     "a2": 1.7283631023019552,
+     "matched": "modal_exp_mm",
+     "matched_worst": 1.5205384173162764e-15,
+     "matched_ms": 0.37998147308826447,
+     "ratio_matched": 0.21957935958755878,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.37998147308826447,
+     "ratio_exact": 0.21957935958755878
+    },
+    "rom_fast": {
+     "arm": "lin_R128_cn",
+     "worst": 0.011110265905281927,
+     "ms": 0.7507398258894682,
+     "a1": 0.7519479840993881,
+     "a2": 0.7497372571378946,
+     "matched": "modal_exp_mm",
+     "matched_worst": 1.5205384173162764e-15,
+     "matched_ms": 0.37998147308826447,
+     "ratio_matched": 0.5061426874990502,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.37998147308826447,
+     "ratio_exact": 0.5061426874990502
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R320_cn",
+     "worst": 0.0008238952676867531,
+     "ms": 1.6242589335888624,
+     "a1": 1.625698758289218,
+     "a2": 1.6222132835537195,
+     "matched": "modal_exp_mm",
+     "matched_worst": 1.5205384173162764e-15,
+     "matched_ms": 0.37998147308826447,
+     "ratio_matched": 0.23394143952693602,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.37998147308826447,
+     "ratio_exact": 0.23394143952693602
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R128_bf",
+     "worst": 0.011110265905281927,
+     "ms": 0.8496078662574291,
+     "a1": 0.8499205578118563,
+     "a2": 0.8492348715662956,
+     "matched": "modal_exp_mm",
+     "matched_worst": 1.5205384173162764e-15,
+     "matched_ms": 0.37998147308826447,
+     "ratio_matched": 0.44724335564606343,
+     "exact": "modal_exp_mm",
+     "exact_ms": 0.37998147308826447,
+     "ratio_exact": 0.44724335564606343
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 2.893501026548516e-16,
+     "ms": 0.5002757534384727
+    },
+    "modal_cn_fft": {
+     "worst": 0.0008127819877866065,
+     "ms": 0.4985129926353693
+    },
+    "modal_exp_half": {
+     "worst": 2.214172652209529e-15,
+     "ms": 1.3351773377507925
+    },
+    "modal_cn_half": {
+     "worst": 0.0008127819877862581,
+     "ms": 1.3343009632080793
+    },
+    "modal_exp_mm": {
+     "worst": 1.5205384173162764e-15,
+     "ms": 0.37998147308826447
+    },
+    "modal_cn_mm": {
+     "worst": 0.0008127819877864636,
+     "ms": 0.38775173015892506
+    }
+   },
+   "validation": {
+    "exp_worst": 2.214172652209529e-15,
+    "cn_vs_cncg": 2.1581141503325384e-11,
+    "control": 0.0007953493056807662
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "lin_R320_bf",
+     "romA1_median": 0.0017330576665699482,
+     "romA2_median": 0.0017283631023019552,
+     "ratio": 0.9972911667288692
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.0007519479840993881,
+     "romA2_median": 0.0007497372571378946,
+     "ratio": 0.9970600001486256
+    },
+    {
+     "name": "lin_R320_cn",
+     "romA1_median": 0.001625698758289218,
+     "romA2_median": 0.0016222132835537195,
+     "ratio": 0.9978560143952092
+    },
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.0008499205578118563,
+     "romA2_median": 0.0008492348715662956,
+     "ratio": 0.9991932348979463
+    }
+   ],
+   "neighbour_worst": 1.0028980130663532
+  }
+ ],
  "ns3d": {
   "source_lane": "exp/2026-09-23-ns3d-shift-head",
   "source_commit": "708c70fe",

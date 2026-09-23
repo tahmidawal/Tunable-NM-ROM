@@ -1,0 +1,19 @@
+Generated from `experiments/spectral-fom/reports/summary.json` (sha256 `df3401cdf0f22be8…`). Ratio = spectral FOM GPU ms / NM-ROM GPU ms (<1: spectral faster), same allocation, A–B–A.
+- Poisson 2D (DST-I, exact) 256²: accurate `R512_linear` 0.746% 0.403 ms, fast `R128_linear` 2.314% 0.250 ms; DST 0.142 ms (`dst_mm`, err 1.4e-15) -> ratio 0.352 / 0.569; job 4206052, NVIDIA A100 80GB PCIe.
+- Poisson 2D (DST-I, exact) 1024²: accurate `R512_linear` 0.742% 3.051 ms, fast `R128_linear` 2.306% 0.985 ms; DST 0.327 ms (`dst_fft`, err 5.1e-16) -> ratio 0.107 / 0.332; job 4206052, NVIDIA A100 80GB PCIe.
+- Poisson 2D (DST-I, exact) 2048²: accurate `R512_linear` 0.742% 11.414 ms, fast `R128_linear` 2.306% 3.102 ms; DST 1.131 ms (`dst_fft`, err 9.6e-16) -> ratio 0.099 / 0.364; job 4206052, NVIDIA A100 80GB PCIe.
+- Poisson 2D (DST-I, exact) 4096²: accurate `R512_linear` 0.742% 41.305 ms, fast `R128_linear` 2.306% 11.520 ms; DST 5.047 ms (`dst_fft`, err 9.4e-16) -> ratio 0.122 / 0.438; job 4206053, NVIDIA A100 80GB PCIe.
+- Poisson cube (3D DST-I, exact) 32³: accurate `R128_linear` 0.231% 0.239 ms, fast `R64_linear` 0.475% 0.210 ms; DST 0.123 ms (`dst_mm`, err 8.6e-16) -> ratio 0.514 / 0.586; job 4206052, NVIDIA A100 80GB PCIe.
+- Poisson cube (3D DST-I, exact) 64³: accurate `R128_linear` 0.231% 0.391 ms, fast `R64_linear` 0.469% 0.298 ms; DST 0.155 ms (`dst_mm`, err 1.9e-15) -> ratio 0.396 / 0.519; job 4206052, NVIDIA A100 80GB PCIe.
+- Burgers 2D 256²: accurate 0.166% 132.9 ms vs `ppic_dt005_nt2e-4` 0.112% 10.3 ms -> 0.078; fast 1.597% 32.8 ms vs `pic_dt01_nt5e-3` 1.455% 5.4 ms -> 0.166; job 4208042, NVIDIA A100-PCIE-40GB.
+- Burgers 2D 512²: accurate 0.195% 250.9 ms vs `ppic_dt005_nt2e-4` 0.115% 18.2 ms -> 0.072; fast 2.138% 33.9 ms vs `ppic_dt01_nt1e-2` 1.954% 6.2 ms -> 0.182; job 4208042, NVIDIA A100-PCIE-40GB.
+- Burgers 2D 1024²: accurate 0.522% 176.4 ms vs `ppic_dt005_nt5e-4` 0.291% 29.4 ms -> 0.166; fast 1.828% 32.7 ms vs `ppic_dt01_nt3e-3` 1.782% 14.5 ms -> 0.444; job 4208042, NVIDIA A100-PCIE-40GB.
+- Burgers 2D 2048²: accurate 0.534% 173.9 ms vs `ppic_dt005_nt5e-4` 0.292% 82.5 ms -> 0.474; fast 1.872% 34.1 ms vs `ppic_dt01_nt3e-3` 1.807% 40.1 ms -> 1.176; job 4209845, NVIDIA A100 80GB PCIe.
+- NS 3D 32³ (development, recorded from the lane): accurate head k=8 0.151% 6.264 ms vs CNAB2 50 steps (dt=0.004) 6.837 ms -> 1.091.
+- NS 3D 32³ (development, recorded from the lane): fast bank span R'=8 5.549% 3.395 ms vs CNAB2 20 steps (dt=0.01) 3.230 ms -> 0.952.
+- NS 3D 64³ (development, recorded from the lane): accurate head k=8 0.152% 8.194 ms vs CNAB2 50 steps (dt=0.004) 23.646 ms -> 2.886.
+- NS 3D 64³ (development, recorded from the lane): fast bank span R'=8 5.549% 4.179 ms vs CNAB2 40 steps (dt=0.005) 19.271 ms -> 4.611.
+- NS 3D 96³ (development, recorded from the lane): accurate head k=8 0.153% 15.956 ms vs CNAB2 60 steps (dt=0.0033333) 106.431 ms -> 6.670.
+- NS 3D 96³ (development, recorded from the lane): fast bank span R'=8 5.549% 8.160 ms vs CNAB2 50 steps (dt=0.004) 89.528 ms -> 10.971.
+- NS 3D 96³ (held-out, recorded from the lane): accurate head k=8 0.207% 15.792 ms vs CNAB2 70 steps (dt=0.0028571) 123.028 ms -> 7.790.
+- NS 3D 96³ (held-out, recorded from the lane): fast bank span R'=8 6.911% 8.110 ms vs CNAB2 60 steps (dt=0.0033333) 106.582 ms -> 13.142.

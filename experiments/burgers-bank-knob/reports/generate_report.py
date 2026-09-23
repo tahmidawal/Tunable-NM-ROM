@@ -74,6 +74,18 @@ def main():
                        f"{f(b and b['worst_evolved_percent'])} % against the current accurate {f(qd['target_percent'])} %"
                        + (f"; ignoring certificates `{bi['name']}` {f(bi['worst_evolved_percent'])} % ({bi['certificate']})"
                           if bi and (not b or bi['name'] != b['name']) else '') + '.')
+    out += ['', '### Sensitivity (NOT the pre-registered rule): certificate on the states the quadrature is actually evaluated at',
+            '', 'Backward Euler evaluates the empirical-quadrature advection only at the new state, so an arm whose first $j$ steps '
+            'are exact uses the rule on states $k \\ge j+1$; the pre-registered certificate (inherited from burgers-eqcert) '
+            'also includes $k=j$, the initial fitted state for $j=0$, where every linear-rung failure sits (DESIGN A3).', '',
+            '| mesh | accurate arm | worst % | GPU ms | Table-1 FOM | speedup | fast arm | worst % | GPU ms | speedup | q droppable? |',
+            '|---|---|---|---|---|---|---|---|---|---|---|']
+    for L, (s, _) in sums.items():
+        s2 = s['selection'].get('sensitivity_k_ge_j_plus_1') or {}
+        a, fa, t1 = s2.get('accurate'), s2.get('fast'), s2.get('table1') or {}
+        out.append(f"| ${L}^2$ | `{a and a['name']}` | {f(a and a['worst_evolved_percent'])} | {f(a and a['median_gpu_ms'], 1)} | "
+                   f"`{t1.get('fom')}` | {sp(t1.get('speedup_gpu'))} | `{fa and fa['name']}` | {f(fa and fa['worst_evolved_percent'])} | "
+                   f"{f(fa and fa['median_gpu_ms'], 1)} | {sp(fa and fa['speedup_gpu'])} | {(s2.get('q_droppable') or {}).get('verdict')} |")
     out.append('')
     # full tables
     for L, (s, h) in sums.items():

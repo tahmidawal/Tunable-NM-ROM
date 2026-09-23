@@ -75,6 +75,7 @@ def comparator(foms, family, worst):
 
 def rom_rows(s):
     t = s["timing"]["fast"]
+    gate = s["timing"].get("neighbour_gate", {})
     rows = []
     for key, e in s.get("span", {}).items():
         if not e["finite"]:
@@ -98,10 +99,18 @@ def rom_rows(s):
                          worst=e["stats"]["evolved_worst"], median=e["stats"]["evolved_median"],
                          over=e["stats"]["cases_evolved_over_target"], cases=e["stats"]["cases"],
                          ms=t[f"query_{key}"]["median_ms"]))
+    for r in rows:
+        g = gate.get(f"query_{r['key']}", {})
+        r["ms_heavy"] = g.get("after_heavy_ms")
     return rows
 
 
 def speed_cells(row, foms, best_worst):
+    def ratio(c, fam):
+        text = f"{c['ms'] / row['ms']:.2f}x"
+        if fam == "FD-CG" and row.get("ms_heavy"):
+            text += f" / {c['ms'] / row['ms_heavy']:.2f}x"
+        return text
     cells = []
     for fam in ("CNAB2", "FD-CG"):
         c = comparator(foms, fam, row["worst"])
@@ -109,10 +118,10 @@ def speed_cells(row, foms, best_worst):
             cells += ["none as accurate", "—"]
         else:
             cells += [f"{c['label']} ({pct(c['worst'])}, {ms(c['ms'])} ms)",
-                      f"**{c['ms'] / row['ms']:.2f}x**"]
+                      f"**{ratio(c, fam)}**"]
     for fam in ("CNAB2", "FD-CG"):
         c = comparator(foms, fam, best_worst)
-        cells.append("—" if c is None else f"{c['ms'] / row['ms']:.2f}x")
+        cells.append("—" if c is None else ratio(c, fam))
     return cells
 
 
@@ -141,7 +150,9 @@ def mesh_section(job):
              "Comparator = fastest tested stable setting of that FOM family whose development "
              "evolved worst is no larger than the arm's. The last two columns divide by the "
              f"fastest setting at least as accurate as the most accurate ladder arm "
-             f"({best_label}, {pct(best_worst)}).\n")
+             f"({best_label}, {pct(best_worst)}). FD-CG cells give two ratios: against the "
+             "arm's fast-block median / against its median measured immediately after the "
+             "heaviest FD-CG arm (conservative; timing protocol v2).\n")
     L.append("| arm | unknowns | evolved worst | evolved median | over 5 % | GPU ms | "
              "CNAB2 comparator | vs CNAB2 | FD-CG comparator | vs FD-CG | "
              "vs CNAB2 @ best arm | vs FD-CG @ best arm |")
@@ -236,12 +247,30 @@ def mesh_section(job):
     oc = s["operator_checks"]
     L.append(f"- Operator checks (subset of dense tests): A {oc['A_relative']:.1e}, D {oc['derivative_relative']:.1e}, "
              f"T {oc['tensor_relative']:.1e}, diffusion {oc['diffusion_relative']:.1e}, shift sign {oc['shift_sign_relative']:.1e}.")
-    L.append(f"- Timing neighbour gate (sentinel median after the job's longest arm, "
-             f"`{t['long_neighbour']}`, and inside the big block, each ≤ "
-             f"{cfg['neighbour_gate_ratio']}× its solo median): **{t['neighbour_gate_passed']}** — "
-             + "; ".join(f"{k.replace('query_', '')}: after-long {g['after_long_ratio']:.3f}, "
-                         f"in-block {g['fast_block_ratio']:.3f}"
-                         for k, g in t["neighbour_gate"].items()) + ".")
+    if t.get("protocol") == "v2":
+        L.append(f"- Timing neighbour gate (v2; heavy neighbour `{t['heavy_neighbour']}`, "
+                 f"cool-down {t['cooldown_seconds']} s, bound {cfg['neighbour_gate_ratio']}×): "
+                 f"fast block vs solo **{t['neighbour_gate_fast_block_passed']}**, after "
+                 f"neighbour + cool-down vs fast block **{t['neighbour_gate_after_cooldown_passed']}**.")
+        L.append("")
+        L.append("| ladder arm | fast-block ms | after heavy (no cool-down) | ratio | "
+                 "after heavy + cool-down | ratio |")
+        L.append("|---|---:|---:|---:|---:|---:|")
+        for k, g in t["neighbour_gate"].items():
+            if "after_heavy_ms" in g:
+                L.append(f"| {k.replace('query_', '')} | {ms(g['fast_block_ms'])} | "
+                         f"{ms(g['after_heavy_ms'])} | {g['after_heavy_ratio']:.3f} | "
+                         f"{ms(g['after_heavy_cooldown_ms'])} | {g['after_cooldown_ratio']:.3f} |")
+        L.append("")
+        L.append("GPU state at phase boundaries: " + "; ".join(
+            f"{x['label']}: {x['smi']}" for x in t.get("gpu_states", [])) + "\n")
+    else:
+        L.append(f"- Timing neighbour gate (v1; sentinel median after the job's longest arm, "
+                 f"`{t['long_neighbour']}`, and inside the big block, each ≤ "
+                 f"{cfg['neighbour_gate_ratio']}× its solo median): **{t['neighbour_gate_passed']}** — "
+                 + "; ".join(f"{k.replace('query_', '')}: after-long {g['after_long_ratio']:.3f}, "
+                             f"in-block {g['fast_block_ratio']:.3f}"
+                             for k, g in t["neighbour_gate"].items()) + ".")
     L.append(f"- Errors of the timed outputs vs the accuracy pass: {t['timed_output_error_agreement']:.1e}.")
     if v:
         L.append(f"- Independent NumPy audit (separate process, saved fields): worst gap float64 "

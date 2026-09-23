@@ -24,3 +24,13 @@ Cluster namespace `/cluster/tufts/paralab/tawal01/nshead_20260923/`.
   (1.09x). No FD-CG setting (32^3/64^3 FD) is as accurate as the accurate arms.
 - Submitted 64^3 (4197294) and 96^3 (4197368, attempt a2 — a1_h96 dir was created by a
   failed sbatch gres request and deleted unused).
+
+## 2026-09-23 ~04:30 EDT — 64^3 v1 (job 4197294): accuracy in, timing gate FAILED
+- Accuracy mirrors 32^3: head k=8 0.152 % (dt 0.02), span R'=64 0.616 %, R'=8 5.55 %;
+  R' ladder monotone in error and cost; vs CNAB2 2.5-4.5x (spans), 2.87x (head).
+- Neighbour gate failed: ladder arms 17-23 % slower right after the 128^3 FD-CG arm
+  (fine inside the randomised fast block). FD-CG speedups from v1 are not usable.
+- Timing protocol v2 (DESIGN amendment 2); 96^3 v1 (4197368) cancelled before timing.
+  Rerunning all meshes under v2: a2_h64 (4198090), a3_h96 (4198101), then a2_h32.
+- FD-CG FOM is ~75x slower than CNAB2 at 64^3 at comparable accuracy (1.5 s at 128^3
+  for 0.29 %); reported as the rule-compliant comparator, with that caveat stated.

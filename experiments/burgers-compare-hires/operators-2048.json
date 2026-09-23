@@ -1,7 +1,8 @@
 {
  "mesh": 2048,
  "train_attempts": [
-  "t2048"
+  "t2048",
+  "t2048s"
  ],
  "data": {
   "mesh": 2048,
@@ -26,6 +27,32 @@
     "median_seconds": 1.7356693400070071,
     "max_seconds": 3.7481974312104285,
     "worst_relative_residual": 9.990318413300446e-07
+   }
+  },
+  "retry_data": {
+   "mesh": 2048,
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "solver": "iterative_paths.make_fom(L, dt, \"fft\") = fft_tight",
+   "dev6_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+   "splits": {
+    "train": {
+     "cases": 128,
+     "source_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+     "index_sha256": "714a431064eb0e749542f4b93a5c55e3b0a0d7b69ab87cd720808a6ae8fe5722",
+     "median_seconds": 1.8744920529425144,
+     "max_seconds": 3.9813194652087986,
+     "worst_relative_residual": 9.99203622613072e-07
+    },
+    "validation": {
+     "cases": 32,
+     "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+     "index_sha256": "1084fc85f9a833d50fb401dc79b757511bb661f1850efa0ca9119f0c856ffaca",
+     "median_seconds": 1.684937563026324,
+     "max_seconds": 3.6388404220342636,
+     "worst_relative_residual": 9.990318413300446e-07
+    }
    }
   }
  },
@@ -67,6 +94,24 @@
    "real_parameter_count": 3108240
   },
   {
+   "name": "don-small",
+   "family": "deeponet",
+   "role": "the 256^2 panel's validation-selected deeponet configuration, retrained at 2048^2",
+   "local_path": "experiments/burgers-compare-hires/runs/t2048s/archive/out/don-small/best.pt",
+   "sha256": "7e287588af9a9ccbab63eaa2679d1017c2fcde9d051ce150820db1d615169820",
+   "source_job": "4206643",
+   "trained_at": "2048^2",
+   "epochs": 69,
+   "best_epoch": 67,
+   "stop_reason": "wall_budget",
+   "wall_budget_seconds": 3000.0,
+   "training_seconds": 3044.3265129090287,
+   "micro_batch_final": 8,
+   "validation_mean_case_max": 0.20202600924143743,
+   "validation_worst_case_max": 0.6414301178456053,
+   "real_parameter_count": 2569349
+  },
+  {
    "name": "fno-large-256",
    "family": "fno",
    "role": "the published 256^2-trained fno-large checkpoint, evaluated zero-shot at this mesh (FNO is discretisation-agnostic); NOT trained at this mesh",
@@ -86,8 +131,8 @@
    "exit_code": 1
   },
   {
-   "name": "don-small",
-   "family": "deeponet",
+   "name": "fno-large",
+   "family": "fno",
    "failed": true,
    "exit_code": 1
   }

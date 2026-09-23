@@ -16,7 +16,7 @@ REPORT = HERE / 'reports' / '2026-09-24-spectral-fom-vs-nmrom.md'
 ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
     'poisson3d': [('spA', 'output3'), ('spA', 'output4'), ('spM', 'output0'), ('spM', 'output1')],
-    'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spJ', 'output0')],
+    'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spJ', 'output0'), ('spL', 'output0')],
     'burgers2d_original_ladder': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
     'burgers2d_L1_2048_without_half_dst': [('spG', 'output0')],
     'heat2d': [('spI', 'output0'), ('spI', 'output1'), ('spI', 'output2')],

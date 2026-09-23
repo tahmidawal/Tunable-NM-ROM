@@ -84,7 +84,29 @@ def main():
     table = '\n'.join(lines)
 
     # ------------------------------------------------ the three questions ----
-    qm = {(r['k'], r['variant']): r for r in rows if r['family'] == 'qman'}
+    # The LADDER is the canonical arm at each rank: M = 4r and the ridge chosen by the declared
+    # rule. The sensitivity arms share (rank, variant) with it -- a different M, or a fixed gamma --
+    # so keying the ladder on (rank, variant) alone silently let one of them overwrite the rung.
+    def canonical(r):
+        return r['family'] == 'qman' and r['M'] == 4 * r['k'] and r.get('qman_forced_gamma') is None
+    qm = {(r['k'], r['variant']): r for r in rows if canonical(r)}
+    sensitivity = [dict(arm=r['arm'], rank=r['k'], variant=r['variant'], M=r['M'],
+                        forced_gamma=r.get('qman_forced_gamma'), selected_ridge=r.get('qman_ridge'),
+                        weight_frobenius_norm=r.get('qman_weight_frobenius_norm'),
+                        kind=('fixed ridge' if r.get('qman_forced_gamma') is not None else 'test-space M'),
+                        against=f"qman{r['k']}_{r['variant']}_M{4 * r['k']}",
+                        worst_evolved_percent=r['worst_evolved_percent'],
+                        median_evolved_percent=r['median_evolved_percent'],
+                        worst_all_times_percent=r['worst_all_times_percent'],
+                        median_gpu_ms=r['median_gpu_ms'], converged=r['converged_design5'])
+                   for r in rows if r['family'] == 'qman' and not canonical(r)]
+    for e in sensitivity:
+        base = next((r for r in rows if r['arm'] == e['against']), None)
+        e['baseline_worst_evolved_percent'] = base and base['worst_evolved_percent']
+        e['baseline_median_gpu_ms'] = base and base['median_gpu_ms']
+        e['error_ratio_vs_baseline'] = (base['worst_evolved_percent'] / e['worst_evolved_percent']
+                                        if base and e['worst_evolved_percent'] else None)
+        e['cost_ratio_vs_baseline'] = (e['median_gpu_ms'] / base['median_gpu_ms']) if base else None
     pod = {r['k']: r for r in rows if r['family'] == 'pod'}
     ranks = sorted({k for k, _ in qm})
     ladder = []
@@ -113,9 +135,13 @@ def main():
 
     adm = [r for r in rows if r['family'] != 'fom' and r['admissible']]
     # "the quadratic manifold" is the `quad` variant; the `lin` control is reported beside it, never as it
-    best_qman = min((r for r in adm if r['family'] == 'qman' and r['variant'] == 'quad'),
+    best_qman = min((r for r in adm if canonical(r) and r['variant'] == 'quad'),
                     key=lambda r: r['worst_evolved_percent'], default=None)
-    best_qman_lin = min((r for r in adm if r['family'] == 'qman' and r['variant'] == 'lin'),
+    # the most accurate quadratic arm of ANY kind, sensitivity arms included: the fairest single
+    # number for the baseline, since the sensitivity values were declared before the job
+    best_qman_any = min((r for r in adm if r['family'] == 'qman' and r['variant'] == 'quad'),
+                        key=lambda r: r['worst_evolved_percent'], default=None)
+    best_qman_lin = min((r for r in adm if canonical(r) and r['variant'] == 'lin'),
                         key=lambda r: r['worst_evolved_percent'], default=None)
     nm = [r for r in adm if r['family'] in ('rom', 'fast')]
     best_nm = min(nm, key=lambda r: r['worst_evolved_percent'], default=None)
@@ -133,6 +159,11 @@ def main():
             best_qman=best_qman and dict(arm=best_qman['arm'], solved_dimension=best_qman['solved_dimension'],
                                          worst_evolved_percent=best_qman['worst_evolved_percent'],
                                          median_gpu_ms=best_qman['median_gpu_ms']),
+            best_qman_any_including_sensitivity=best_qman_any and dict(
+                arm=best_qman_any['arm'], solved_dimension=best_qman_any['solved_dimension'],
+                worst_evolved_percent=best_qman_any['worst_evolved_percent'],
+                median_gpu_ms=best_qman_any['median_gpu_ms'],
+                note='the most accurate quadratic arm of any kind; sensitivity values were declared before the job'),
             best_qman_linear_control=best_qman_lin and dict(
                 arm=best_qman_lin['arm'], solved_dimension=best_qman_lin['solved_dimension'],
                 worst_evolved_percent=best_qman_lin['worst_evolved_percent'],
@@ -192,7 +223,7 @@ def main():
         failed_gates=d['failed'],
         fom_rule='fastest tested FOM setting whose worst evolved same-grid error <= the row, per timing scope',
         quadratic_manifold_fits=d.get('quadratic_manifold'),
-        ladder=ladder, answers=answers,
+        ladder=ladder, sensitivity_arms=sensitivity, answers=answers,
         fom_discretisation_error_percent=d.get('fom_discretisation_error_percent'),
         rows=[{k: r[k] for k in (
             'arm', 'kind', 'family', 'variant', 'q', 'k', 'M', 'solved_dimension', 'bank_columns',
@@ -201,7 +232,8 @@ def main():
             'qman_snapshot_relative_with_quadratic', 'worst_evolved_percent', 'median_evolved_percent',
             'worst_all_times_percent', 'median_all_times_percent', 'worst_reference_percent',
             'worst_t0_compression_percent', 'median_gpu_ms', 'median_host_ms', 'per_case_evolved_percent',
-            'median_iterations', 'max_iterations', 'total_budget_exits', 'converged_design5', 'admissible',
+            'best_found_percent', 'best_found_kind', 'median_iterations', 'max_iterations',
+            'total_budget_exits', 'converged_design5', 'admissible',
             'fom_gpu', 'speedup_gpu', 'fom_host', 'speedup_host') if k in r} for r in rows])
 
     od = Path(a.out_dir)

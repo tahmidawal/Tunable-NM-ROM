@@ -10,17 +10,29 @@ is edited.
 
 | | |
 |---|---|
-| status | `qmn101` **submitted**: job **4185793**, A100-80G, 180G, 12 h, `qman_20260922/qmn101` |
-| jobs used | 1 of 4 |
-| running | 1 (the cap for this lane) |
-| audit | done before the submit — `checks/design-audit.md`, dispositions in `DESIGN.md` §A1; one BLOCKING finding fixed |
-| smoke | green after every amendment: 14 subjects, no drops, no failed gate, baseline case to 1.6e-14 |
+| status | **DONE.** `qmn102` (job 4186220) landed clean, audited, reported, pulled, remote deleted |
+| jobs used | 2 of 4 (`qmn101` died with no numbers — DESIGN §A2; `qmn102` is the result) |
+| running | none; namespace `qman_20260922/` empty |
+| report | `reports/2026-09-22-quadratic-manifold.md`, generated from `reports/summary.json` |
+| numbers | `reports/summary.json`, `checks/qmn102-audit.json`, `artifacts/qmn102/result.json.gz` |
 
-**The blocking finding, for whoever picks this up.** The ridge holdout used to split snapshot
-*columns*; the snapshot matrix concatenates trajectories at 26 states each, so it was holding out
-near-duplicates and could not see overfitting — it handed the *baseline* its weakest $W$. Measured,
-not argued: `checks/probe64.json`. It now splits by trajectory. If a future lane reuses
-`qman.fit`, keep that.
+**The result.** The quadratic manifold beats POD-LSPG at matched solved dimension at every rung it
+is fitted at (1.29× / 1.28× / 1.48× lower worst evolved error at $r=8,16,32$), and stops paying at
+$r=64$ where the ridge pins at the grid top. It does **not** reach the nonlinear head: 22.21 %
+against 1.89 % at 16 solved unknowns, a factor of 11.8. The head needs 4× fewer unknowns than the
+best quadratic arm, is 17.6× cheaper and 3.7× more accurate. The binding constraint is
+representational — every arm's error equals its own representation floor — not the solve.
+
+**Two things a reader must not miss.** (1) The ridge rule leaves accuracy on the table: the
+pre-declared fixed $\gamma=10^{-4}$ beats the rule-selected one by 1.42× at $r=32$, so the ladder
+is a **lower bound** on a tuned quadratic manifold. (2) This lane gives the baseline no
+hyper-reduction, which GWW and BF both supply; the dense-against-dense comparison is in the report's
+§5 and the head still wins it 2.44× on cost and 3.7× on error.
+
+**The blocking finding, for whoever reuses `qman.fit`.** The ridge holdout used to split snapshot
+*columns*; the snapshot matrix concatenates trajectories at 26 states each, so it held out
+near-duplicates, could not see overfitting, and handed the *baseline* its weakest $W$. Measured, not
+argued: `checks/probe64.json`. It now splits by trajectory. Keep that.
 
 ## The lane in one paragraph
 
@@ -79,11 +91,10 @@ $PY quadratic-manifold/cluster/collect.py qmn101
 
 ## Next
 
-1. Watch 4185793; on completion run the audit, `reports/make_table.py`, the checksum-verified pull
-   (`cluster/collect.py qmn101`), then delete the remote job dir.
-2. Write `reports/2026-09-22-quadratic-manifold.md` from `reports/summary.json` — no hand-typed
-   numbers — answering DESIGN §1's three questions, and append the lab-log entry.
-3. Read the ladder with `DESIGN.md` §A1.1 in hand: check `ridge_at_grid_endpoint` and
-   $\lVert W\rVert_F$ per rung, and compare `qman32_quad_M128` with its two pre-declared
-   sensitivity arms (`qman32_quad_M512`, `qman32_quadg0p0001_M128`) before reading any rung as a
-   property of the method rather than of the selection rule or the test space.
+Nothing is required. 2 of 4 jobs remain unspent and the lane's question is answered. If it is
+reopened, the two open threads are named in the report's §5: a ridge chosen better than the
+held-out-snapshot rule (§2 shows it is worth ~1.4× at $r=32$), and hyper-reduction for the
+baseline (an EQ rule for the quadratic manifold, which is a lane's worth of work and would have to
+buy more than an order of magnitude to change the verdict).
+
+**Do not merge or push without asking.** The branch is the archive.

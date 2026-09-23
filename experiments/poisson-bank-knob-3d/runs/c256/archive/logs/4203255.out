@@ -1,0 +1,25 @@
+host=pax011 source_commit=1c19cc094b284c82772f3f9fb557dc732eaecaa1
+NVIDIA H200, GPU-93cde72e-530a-28e4-b459-8d7c676b7427, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.3T  339G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+MESH 256 {'16': 4.4968, '32': 1.3418, '48': 0.5836, '64': 0.2411, '96': 0.1608, '128': 0.1429} 48.2
+WARMUP 19 20.7
+MAIN 0 271.6
+MAIN 1 404.4
+MAIN 2 537.8
+MAIN 3 672.9
+MAIN 4 806.8
+SLOW 0 829.5
+SLOW 1 847.5
+SLOW 2 864.7
+NEIGHBOUR True 0.9971600760865789 0.9661917554256114 1.0757994258101347
+PROFILE 0 1524.5
+PROFILE 1 1597.1
+PROFILE 2 1669.2
+PARITY {'candidate': 'R128_q0', 'baseline': 'orig_q0', 'worst_field_relative': 1.4871076112047258e-15, 'limit': 1e-10, 'passed': True}
+PARITY {'candidate': 'R128_q96', 'baseline': 'orig_q96', 'worst_field_relative': 1.4878773437503993e-15, 'limit': 1e-10, 'passed': True}
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'rom_stationary_parent_and_full_R': True, 'neighbour': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK3 CUBE COMPLETE
+PASS 416 errors recomputed, worst relative deviation 2.9e-11, reference vs audit truth 1.9e-15, hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE

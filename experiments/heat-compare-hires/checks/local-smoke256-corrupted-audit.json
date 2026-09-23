@@ -1,0 +1,183 @@
+{
+ "passed": false,
+ "complete": true,
+ "checked_error_vectors": 128,
+ "worst": {
+  "sub_abs": 0.00029793130305870376,
+  "reduced_full_vs_sub": 0.19957215247770793,
+  "reduced_rand": 0.16593840384169492,
+  "other_rand": 0.01632163614080302
+ },
+ "order_effect": {
+  "max_relative_deviation": 1.7007321568373754,
+  "tolerance": 0.1,
+  "positive_control_min_relative_deviation": 28.193353410114266,
+  "passed": false,
+  "positive_control_fails_as_required": true
+ },
+ "recomputed": {
+  "nmrom_q0_field_direct_tol1e-4_chol": {
+   "worst_all_times": 0.007500079880901302,
+   "median_case_max": 0.00702648132442018,
+   "worst_evolved": 0.004143637595084823,
+   "device_ms_median": 6.657000500126742,
+   "physical_worst": 0.007500079880901302
+  },
+  "nmrom_q32_field_direct_tol1e-4_chol": {
+   "worst_all_times": 0.0025787287243571213,
+   "median_case_max": 0.0023887150552485198,
+   "worst_evolved": 0.0013811131711495698,
+   "device_ms_median": 5.156551498657791,
+   "physical_worst": 0.0025787287243571213
+  },
+  "linear_bank_moments_BASELINE": {
+   "worst_all_times": 0.0010809520321326694,
+   "median_case_max": 0.0009700720356977874,
+   "worst_evolved": 0.00039068438433486523,
+   "device_ms_median": 1.137606999691343,
+   "physical_worst": 0.0010809520321326694
+  },
+  "pod8_lspg_cn": {
+   "worst_all_times": 0.15928645423599624,
+   "median_case_max": 0.15316358555765094,
+   "worst_evolved": 0.09421916962399952,
+   "device_ms_median": 0.5994915009068791,
+   "physical_worst": 0.15928645423599624
+  },
+  "pod8_galerkin_exact": {
+   "worst_all_times": 0.15928645423599624,
+   "median_case_max": 0.15316358555765094,
+   "worst_evolved": 0.09428390791238099,
+   "device_ms_median": 1.4464009982475545,
+   "physical_worst": 0.15928645423599624
+  },
+  "pod32_lspg_cn": {
+   "worst_all_times": 0.009068077193373427,
+   "median_case_max": 0.008074116032501619,
+   "worst_evolved": 0.003166840201974195,
+   "device_ms_median": 0.6557154993060976,
+   "physical_worst": 0.009068077193373427
+  },
+  "pod32_galerkin_exact": {
+   "worst_all_times": 0.009068077193373427,
+   "median_case_max": 0.008074116032501619,
+   "worst_evolved": 0.0031335804990271355,
+   "device_ms_median": 1.5695854999648873,
+   "physical_worst": 0.009068077193373427
+  },
+  "qm8_field_direct_tol1e-4_chol": {
+   "worst_all_times": 0.06719040502206686,
+   "median_case_max": 0.048003829211990104,
+   "worst_evolved": 0.03985960757628498,
+   "device_ms_median": 3.6618939993786626,
+   "physical_worst": 0.06719040502206686
+  },
+  "dst_exact_CONTROL": {
+   "worst_all_times": 0.0,
+   "median_case_max": 0.0,
+   "worst_evolved": 0.0,
+   "device_ms_median": 1.8446670001139864,
+   "physical_worst": 6.35282397627629e-05
+  },
+  "coarse64_fom_cncg_dt0.05_rtol1e-3_CONTROL": {
+   "worst_all_times": 0.0029586741250602986,
+   "median_case_max": 0.0027905374665859123,
+   "worst_evolved": 0.0029586741250602986,
+   "device_ms_median": 55.13423700540443,
+   "physical_worst": 0.002911126539531568
+  },
+  "op_fno": {
+   "worst_all_times": 0.9983763687226225,
+   "median_case_max": 0.9967252662849154,
+   "worst_evolved": 0.9983763687226225,
+   "device_ms_median": 6.585287996131228,
+   "physical_worst": 0.9983769845172065
+  },
+  "op_unet": {
+   "worst_all_times": 1.1083141251356807,
+   "median_case_max": 1.1011628742366004,
+   "worst_evolved": 1.1083141251356807,
+   "device_ms_median": 3.965943498769775,
+   "physical_worst": 1.1083207283824563
+  },
+  "op_transolver": {
+   "worst_all_times": 1.0587376181919685,
+   "median_case_max": 1.0565988388254541,
+   "worst_evolved": 1.0587376181919685,
+   "device_ms_median": 13.845483499608235,
+   "physical_worst": 1.0587377309965418
+  },
+  "op_deeponet": {
+   "worst_all_times": 0.9925391280940968,
+   "median_case_max": 0.9917790936309928,
+   "worst_evolved": 0.9925391280940968,
+   "device_ms_median": 1.8478269994375296,
+   "physical_worst": 0.9925388026787496
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "worst_all_times": 0.008712540996458892,
+   "median_case_max": 0.007852602638865797,
+   "worst_evolved": 0.008712540996458892,
+   "device_ms_median": 57.147177001752425,
+   "physical_worst": 0.008666605160914545
+  },
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "worst_all_times": 0.0004685631542228878,
+   "median_case_max": 0.0004251480251488744,
+   "worst_evolved": 0.0004685631542228878,
+   "device_ms_median": 47.1070605017303,
+   "physical_worst": 0.0004217033910225473
+  }
+ },
+ "failure_count": 7,
+ "failures": [
+  {
+   "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+   "case": 0,
+   "ref": "same",
+   "check": "reduced_full_vs_subgrid",
+   "value": 0.16668889004430226
+  },
+  {
+   "arm": "nmrom_q32_field_direct_tol1e-4_chol",
+   "case": 0,
+   "ref": "same",
+   "check": "random_nodes_vs_full",
+   "value": 0.16593840384169492,
+   "tolerance": 0.05
+  },
+  {
+   "arm": "pod32_lspg_cn",
+   "case": 1,
+   "ref": "same",
+   "check": "subgrid_recompute",
+   "value": 0.00028567409729585635
+  },
+  {
+   "arm": "pod32_lspg_cn",
+   "case": 1,
+   "ref": "same",
+   "check": "reduced_full_vs_subgrid",
+   "value": 0.1903286516860074
+  },
+  {
+   "arm": "pod32_lspg_cn",
+   "case": 1,
+   "ref": "physical",
+   "check": "subgrid_recompute",
+   "value": 0.00029793130305870376
+  },
+  {
+   "arm": "pod32_lspg_cn",
+   "case": 1,
+   "ref": "physical",
+   "check": "reduced_full_vs_subgrid",
+   "value": 0.19957215247770793
+  },
+  {
+   "check": "order_effect_gate",
+   "value": 1.7007321568373754
+  }
+ ],
+ "note": "Sub-grid errors are recomputed exactly; full-grid errors are cross-checked by a random-node estimate (2 cases per arm) and, for smooth reduced arms, by the sub-grid value. Full fields are not saved (0.8 GB per arm-case at 4096^2)."
+}

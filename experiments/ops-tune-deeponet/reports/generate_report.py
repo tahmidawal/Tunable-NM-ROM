@@ -176,6 +176,45 @@ def section_ladder(audits, accounting):
     return text, verdict
 
 
+def section_pod(audits):
+    """POD-DeepONet beside the learned-trunk variant at the rungs both were run at."""
+    rows, diagnostics = [], []
+    arms = {}
+    for audit in audits.values():
+        arms.update(arms_of(audit))
+    pairs = [('c-new128', 'pod-128', 128), ('base-top', 'pod-top', None)]
+    for vanilla, pod, _ in pairs:
+        if vanilla not in arms or pod not in arms:
+            continue
+        v, q = arms[vanilla]['fixed_initial'], arms[pod]['fixed_initial']
+        rows.append([arms[pod]['training_cases'], pct(v['mean']), pct(q['mean']),
+                     f"{q['mean'] / v['mean']:.2f}×", pct(v['maximum']), pct(q['maximum']),
+                     f"{q['maximum'] / v['maximum']:.2f}×",
+                     f"{arms[vanilla]['real_parameter_count']:,}",
+                     f"{arms[pod]['real_parameter_count']:,}"])
+    for name, arm in sorted(arms.items()):
+        if arm.get('pod'):
+            d = arm['pod']
+            diagnostics.append([f'`{name}`', arm['training_cases'], d['rank'],
+                                ', '.join(f"{100 * e:.2f}" for e in d['captured_energy_per_time']),
+                                f"{d['top_orthonormality_deviation']:.1e}",
+                                f"{min(d['smallest_over_largest_eigenvalue']):.1e}",
+                                'yes' if d['well_conditioned'] else 'NO'])
+    if not rows and not diagnostics:
+        return '*(no POD-DeepONet arm has been collected yet)*'
+    text = ''
+    if rows:
+        text += table(['Training cases', 'learned trunk mean (%)', 'POD trunk mean (%)', 'ratio',
+                       'learned worst (%)', 'POD worst (%)', 'ratio', 'learned params', 'POD params'],
+                      rows, ['---:'] * 9) + '\n\n'
+    if diagnostics:
+        text += ('**The basis itself**, built from each arm\'s own training prefix in float64:\n\n'
+                 + table(['Arm', 'Cases', 'Rank', 'captured energy per output time (%)',
+                          'orthonormality deviation', 'spectrum ratio', 'well conditioned?'],
+                         diagnostics, ['---', '---:', '---:', '---', '---:', '---:', '---']))
+    return text
+
+
 def section_sweep(audits):
     audit = audits.get('tun01')
     if not audit:
@@ -263,6 +302,7 @@ def main():
     sweep, decisions = section_sweep(audits)
     accuracy = section_accuracy(audits, parent)
     verdicts = section_verdicts(audits, ladder_verdict, decisions, reference)
+    pod = section_pod(audits)
     operator, nmrom, parity = accounting['operator'], accounting['nmrom'], accounting['parity']
     extended = next((a['extended_training_data'] for a in audits.values()
                      if a.get('extended_training_data', {}).get('present')), {})
@@ -335,19 +375,28 @@ model error and **not** small against a 2 % one. §3's T0 row gives the ratio pe
 
 {ladder}
 
-## 4. The sweep
+## 4. POD-DeepONet beside the learned-trunk variant
+
+The modern variant (Lu et al., CMAME 2022) replaces the learned coordinate-MLP trunk with the
+POD basis of its **own training** output fields — extra structure, not extra data, and no
+validation or cohort field enters it. Rank 64 at every rung, because mean subtraction leaves a
+128-case rung at most 127 modes. Pre-registered in `DESIGN.md` §A4 before it ran.
+
+{pod}
+
+## 5. The sweep
 
 {sweep}
 
-## 5. Accuracy beside the other families
+## 6. Accuracy beside the other families
 
 {accuracy}
 
-## 6. The pre-registered verdicts
+## 7. The pre-registered verdicts
 
 {verdicts}
 
-## 7. What DeepONet was given that the other three families were not
+## 8. What DeepONet was given that the other three families were not
 
 The U-Net, Transolver and FNO rows above are the published ones: 128 training cases, an
 inherited schedule, a 3000 s per-arm wall budget, one seed, one learning-rate refinement. This
@@ -356,7 +405,11 @@ lane gave DeepONet, and only DeepONet:
 1. up to {extended.get('cases', 'n/a')} training cases instead of 128;
 2. a sweep over eleven one-factor arms plus a composed arm;
 3. a stopping rule and schedule chosen for it rather than inherited from the U-Net;
-4. a 3× longer final wall budget for the selected arm.
+4. a 3× longer final wall budget for the selected arm;
+5. a **POD trunk** for the arms in §4 — the POD basis of its own training outputs in place of a
+   learned coordinate MLP. That is extra structure rather than extra data, and no validation or
+   cohort field enters it, but it is information about the solution manifold the other three
+   families were not handed.
 
 **The paper must say so.** The like-for-like row against the published families is
 `ops-deeponet-b2d`'s `don-small` — 128 cases, inherited schedule, 3000 s — which stays in the
@@ -369,7 +422,7 @@ against 50-step 256² solves for our own model's snapshots, and at query time th
 handed the governing equations and solves a residual while an operator is a feed-forward map
 with no access to them.
 
-## 8. Provenance
+## 9. Provenance
 
 {table(['source', 'sha256'], [[f'`{name}`', f'`{digest[:16]}…`'] for name, digest in sorted(sources.items())])}
 
@@ -381,7 +434,7 @@ byte-identical to the pinned generator, {len(inherited['changed'])} declared cha
 **No speed number appears in this report and none is admissible from this lane.** No timing block
 was run; `timing.py` is not staged. Nothing here is divided by a time from any other job.
 
-## 9. Glossary
+## 10. Glossary
 
 Every column and term above, for a reader opening this cold.
 
@@ -426,6 +479,10 @@ Every column and term above, for a reader opening this cold.
   by at least 5 %.
 - **Persistence** — the trivial control: predict $u(t) = u(0)$ at every output time. No
   training, no parameters. It sizes everything else.
+- **POD trunk / POD-DeepONet** — the 2022 variant: the trunk is the fixed POD basis of the
+  training output fields and only the branch is learned. **Captured energy** is how much of the
+  training fields' variance those modes account for; **orthonormality deviation** and **spectrum
+  ratio** say whether the basis is numerically sound and whether its rank outran the data.
 - **T0–T6** — the pass/fail criteria written down in `DESIGN.md` before any job ran.
 """
     (HERE / '2026-09-22-ops-tune-deeponet.md').write_text(body)

@@ -55,11 +55,20 @@ to extrapolate roughly twice as far in parameter space as one given the bottom r
 
 *(the ladder job has not been collected yet)*
 
-## 4. The sweep
+## 4. POD-DeepONet beside the learned-trunk variant
+
+The modern variant (Lu et al., CMAME 2022) replaces the learned coordinate-MLP trunk with the
+POD basis of its **own training** output fields — extra structure, not extra data, and no
+validation or cohort field enters it. Rank 64 at every rung, because mean subtraction leaves a
+128-case rung at most 127 modes. Pre-registered in `DESIGN.md` §A4 before it ran.
+
+*(no POD-DeepONet arm has been collected yet)*
+
+## 5. The sweep
 
 *(the sweep job has not been collected yet)*
 
-## 5. Accuracy beside the other families
+## 6. Accuracy beside the other families
 
 | Arm | Family | Training cases | mean (%) | median (%) | worst (%) | > 5 % | train-128 mean (%) | val / train | Job |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
@@ -80,11 +89,11 @@ to extrapolate roughly twice as far in parameter space as one given the bottom r
 | `don-refine` | DeepONet (published) | 128 | 15.7642 | 12.4612 | 58.9848 | — | — | — | 4179556 |
 | `don-large` | DeepONet (published) | 128 | 18.2211 | 14.8022 | 60.3540 | — | — | — | 4179556 |
 
-## 6. The pre-registered verdicts
+## 7. The pre-registered verdicts
 
 *(no verdict is available until the jobs are collected)*
 
-## 7. What DeepONet was given that the other three families were not
+## 8. What DeepONet was given that the other three families were not
 
 The U-Net, Transolver and FNO rows above are the published ones: 128 training cases, an
 inherited schedule, a 3000 s per-arm wall budget, one seed, one learning-rate refinement. This
@@ -93,7 +102,11 @@ lane gave DeepONet, and only DeepONet:
 1. up to n/a training cases instead of 128;
 2. a sweep over eleven one-factor arms plus a composed arm;
 3. a stopping rule and schedule chosen for it rather than inherited from the U-Net;
-4. a 3× longer final wall budget for the selected arm.
+4. a 3× longer final wall budget for the selected arm;
+5. a **POD trunk** for the arms in §4 — the POD basis of its own training outputs in place of a
+   learned coordinate MLP. That is extra structure rather than extra data, and no validation or
+   cohort field enters it, but it is information about the solution manifold the other three
+   families were not handed.
 
 **The paper must say so.** The like-for-like row against the published families is
 `ops-deeponet-b2d`'s `don-small` — 128 cases, inherited schedule, 3000 s — which stays in the
@@ -106,13 +119,13 @@ against 50-step 256² solves for our own model's snapshots, and at query time th
 handed the governing equations and solves a residual while an operator is a feed-forward map
 with no access to them.
 
-## 8. Provenance
+## 9. Provenance
 
 | source | sha256 |
 | --- | --- |
 | `experiments/no-second/checks/refinement02-diagnosis-audit.json` | `ffa77d1b8bc44d2b…` |
 | `experiments/ops-deeponet-b2d/reports/summary.json` | `0255abc0f16b88b7…` |
-| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `8b390352004947ef…` |
+| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `2bd2f1dafc870ec5…` |
 | `experiments/ops-tune-deeponet/reports/accounting.json` | `674fe5cc950feb38…` |
 
 Inherited-source check: **passed** —
@@ -123,7 +136,7 @@ byte-identical to the pinned generator, 6 declared changed,
 **No speed number appears in this report and none is admissible from this lane.** No timing block
 was run; `timing.py` is not staged. Nothing here is divided by a time from any other job.
 
-## 9. Glossary
+## 10. Glossary
 
 Every column and term above, for a reader opening this cold.
 
@@ -168,4 +181,8 @@ Every column and term above, for a reader opening this cold.
   by at least 5 %.
 - **Persistence** — the trivial control: predict $u(t) = u(0)$ at every output time. No
   training, no parameters. It sizes everything else.
+- **POD trunk / POD-DeepONet** — the 2022 variant: the trunk is the fixed POD basis of the
+  training output fields and only the branch is learned. **Captured energy** is how much of the
+  training fields' variance those modes account for; **orthonormality deviation** and **spectrum
+  ratio** say whether the basis is numerically sound and whether its rank outran the data.
 - **T0–T6** — the pass/fail criteria written down in `DESIGN.md` before any job ran.

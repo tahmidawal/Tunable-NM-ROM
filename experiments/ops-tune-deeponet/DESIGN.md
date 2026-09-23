@@ -209,7 +209,12 @@ DeepONet:
 1. up to **4608** training cases instead of 128;
 2. a **hyperparameter sweep** over eleven one-factor arms plus a composed arm;
 3. a **tuned schedule** and a stopping rule expressed in steps;
-4. a **3× longer** final wall budget (9000 s) for the selected arm.
+4. a **3× longer** final wall budget (9000 s) for the selected arm;
+5. a **POD trunk** (§A4): the POD basis of its own training output fields, in place of a learned
+   coordinate MLP. That is extra *structure* rather than extra data — the modes come from the
+   same training targets and no validation or cohort field ever enters them — but it is
+   information about the solution manifold that the U-Net, Transolver and FNO arms were not
+   handed, and the report says so beside every POD row.
 
 This is a deliberate asymmetry in the baseline's favour, relative to the historical rows the
 paper tabulates. (The sibling lane `ops-tune-grid` is doing the same for the FNO, U-Net and
@@ -322,7 +327,12 @@ a *recipe* (configuration + data prefix + budget), scored by the recipe's own ru
 | **S1 — schedule** | `s-cos` vs `s-base`, both at the sweep budget and the top rung | inside `tun01`, from `result.json` |
 | **S2 — composed knobs** | every sweep arm vs `s-base`, §5.3's rule | `compose.py`, inside `tun01` |
 | **S3 — the tuned recipe** | `tuned` and every sweep arm, all at the sweep budget and the top rung | after `tun01` |
-| **S4 — the reported best DeepONet** | S3's winner and, if different, the **best-worst-case** arm of S3, each retrained at 9000 s at the top rung in `fin01`; the reported checkpoint is the retrained one | after `fin01` |
+| **S3b — the best POD recipe** | `pod-top` and the tuned POD arm, at the top rung | after `tun01` |
+| **S4 — the reported best DeepONet** | S3's winner and S3b's winner, each retrained at 9000 s at the top rung in `fin01`, plus the **best-worst-case** arm of S3 if the budget allows; the reported checkpoint is the retrained one | after `fin01` |
+
+The learned-trunk and POD-trunk variants are **reported side by side, never merged**: "the best
+DeepONet this lane could build" names the better of the two under §5.1's metric and gives the
+other beside it with its own numbers.
 
 Ties go to the arm with the smaller worst case; if still tied, to the earlier arm in the spec.
 A missing arm (skipped for budget, or failed) is not a candidate and is listed as such. Ladder
@@ -754,3 +764,52 @@ job of this lane divided by a time from any other job.**
   which is why `reports/accounting.py` uses a tolerance and records that 123 of 128 are bitwise
   identical with a maximum relative deviation of 7e-18. If the cluster environment is ever
   updated, gate 4 will abort the generation job — correctly, and that is the intended behaviour.
+
+- **A4 (2026-09-22, before `lad01` and before any training job) — a POD-DeepONet arm, added on
+  the coordinator's instruction with the user's approval, and pre-registered here before it
+  runs.**
+
+  **Why.** A reviewer will ask why the paper compares against the 2021 branch/trunk DeepONet
+  rather than the standard modern variant, and this project's own 3D lane already found that
+  DeepONet needed a POD-initialised trunk to be competitive there. Comparing against the weaker
+  variant alone is exactly the criticism this lane exists to forestall.
+
+  **What it is.** POD-DeepONet (Lu et al., *CMAME* 2022): the trunk is **not learned**. It is the
+  POD basis of the **training** output fields, held fixed, and the branch learns the
+  coefficients:
+  $$u_c(y) \;=\; \sum_{k=1}^{R} B_{ck}(u_0)\, \varphi_{ck}(y) \;+\; \mu_c(y) \;+\; \beta_c$$
+  with $\varphi_{ck}$ the $k$-th POD mode of evolved output time $c$ and $\mu_c$ that time's
+  training mean field. One basis per evolved output time, because the five times have different
+  structure. Everything else is the vanilla arm's: the same convolutional branch, the same
+  contract, the same boundary mask, loss, metric, data, split, cohorts and selection rule.
+
+  **Construction, and the three things that keep it honest.**
+  - The basis is built from the **training prefix only**, on the normalised targets, inside
+    `train.py`; no validation or cohort field ever enters it. At each ladder rung it is rebuilt
+    from that rung's own cases, so a POD arm at 128 cases has a 128-case basis.
+  - The Gram matrix and the eigendecomposition are **float64 on the GPU** — this repository's
+    `GRAM64` lesson, where an f32 Gram once floored POD near 2e-4 and faked an encoder wall. The
+    smoke reports a top-mode orthonormality deviation of 1.8e-15.
+  - **Rank 64, constant across every rung.** Mean subtraction costs one degree of freedom, so a
+    128-case rung admits at most 127 modes and a rank near that limit would divide by numerically
+    zero eigenvalues; 64 is comfortably inside it at every rung, and `train.py` refuses a rank
+    above `cases - 1` rather than returning noise. The captured energy per output time and the
+    retained spectrum ratio are recorded per arm, so a rank that outran the data is visible.
+
+  **Arms and budget.** `pod-128` and `pod-top` join `lad01` at 3000 s each — the bottom and top of
+  the ladder, which is what answers "what does the modern variant buy, and does it buy more or
+  less when fed?" — and `fin01` runs the tuned POD recipe at 9000 s beside the tuned vanilla one.
+  **This costs no extra job**: `lad01` goes from 5 arms to 7 (21000 s of training in a 25200 s
+  budget, 8.5 h limit) and `fin01`'s second arm becomes the POD one. The lane's submissions
+  remain `gen01` (failed), `gen02`, `lad01`, `tun01`, `fin01` — five of six, one spare. **Nothing
+  is cut.** What is *not* done, and is declared rather than discovered: the POD variant gets two
+  ladder rungs rather than four, and it is not swept — the eleven one-factor arms tune the
+  learned-trunk variant, and `fin01`'s POD arm inherits whichever of those knobs apply to it
+  (schedule, learning rate, branch bottleneck, batch size, weight decay; not the trunk knobs).
+
+  **A coupled change, declared.** A POD arm differs from `base` in two config entries, not one:
+  the trunk **and** the rank (64 against 256), because the rank of a POD-DeepONet *is* its number
+  of modes. The sweep's `s-rank` arm (512 against 256) is what this lane has to say about the
+  learned-trunk family's sensitivity to that knob; it does not isolate the effect at 64.
+
+  **What it is given that the other three families were not** is now item 5 of §3.1.

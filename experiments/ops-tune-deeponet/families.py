@@ -236,11 +236,11 @@ class DeepONet2d(nn.Module):
     """Branch/trunk DeepONet; the 2D analogue of this project's `deeponet3d`."""
 
     def __init__(self, cin, cout, width, rank, trunk_width, levels=3, pool_bins=4,
-                 frequencies=(1., 2., 4.), trunk_layers=3):
+                 frequencies=(1., 2., 4.), trunk_layers=3, trunk='mlp', nodes=None):
         super().__init__()
-        assert trunk_width >= rank, 'a declared rank needs trunk_width >= rank'
+        assert trunk_width >= rank or trunk == 'pod', 'a declared rank needs trunk_width >= rank'
         assert trunk_layers >= 2, 'the trunk needs an input layer and a read-out'
-        self.cout, self.rank, self.pool_bins = cout, rank, pool_bins
+        self.cout, self.rank, self.pool_bins, self.trunk_kind = cout, rank, pool_bins, trunk
         self.frequencies = tuple(float(f) for f in frequencies)
         blocks, ci = [], cin - 2  # the last two channels are the x, y coordinates
         for level in range(levels):
@@ -252,11 +252,21 @@ class DeepONet2d(nn.Module):
         self.branch_hidden = nn.Linear(ci * pool_bins * pool_bins, trunk_width)
         self.branch_read = nn.Linear(trunk_width, rank * cout)
         features = 2 * (1 + 2 * len(self.frequencies))
-        # `trunk_layers` counts every linear map: input, hidden..., read-out. 3 is the
-        # inherited depth and the 3D lane's, so the default changes nothing.
-        self.trunk = nn.ModuleList([nn.Linear(features, trunk_width)]
-                                   + [nn.Linear(trunk_width, trunk_width) for _ in range(trunk_layers - 2)]
-                                   + [nn.Linear(trunk_width, rank)])
+        if trunk == 'pod':
+            # POD-DeepONet (Lu et al., CMAME 2022): the trunk is NOT learned. It is the POD
+            # basis of the TRAINING output fields, held fixed, and the branch learns the
+            # coefficients. `train.py` fills these buffers from the training prefix only; they
+            # are part of the state dict, so a checkpoint rebuilds without the training data.
+            assert nodes, 'a POD trunk needs the node count of the output field'
+            self.trunk = nn.ModuleList()
+            self.register_buffer('modes', torch.zeros(cout, rank, nodes))
+            self.register_buffer('mean_field', torch.zeros(cout, nodes))
+        else:
+            # `trunk_layers` counts every linear map: input, hidden..., read-out. 3 is the
+            # inherited depth and the 3D lane's, so the default changes nothing.
+            self.trunk = nn.ModuleList([nn.Linear(features, trunk_width)]
+                                       + [nn.Linear(trunk_width, trunk_width) for _ in range(trunk_layers - 2)]
+                                       + [nn.Linear(trunk_width, rank)])
         self.bias = nn.Parameter(torch.zeros(cout))
         # The 3D lane scales the read-out down at initialisation; keep that.
         with torch.no_grad():
@@ -270,6 +280,11 @@ class DeepONet2d(nn.Module):
             z = F.avg_pool2d(block(z), 2, ceil_mode=True)
         z = F.adaptive_avg_pool2d(z, self.pool_bins).reshape(b, -1)
         coefficients = self.branch_read(F.gelu(self.branch_hidden(z))).reshape(b, self.cout, self.rank)
+        if self.trunk_kind == 'pod':
+            # u_c(y) = sum_k B_ck phi_ck(y) + mu_c(y): orthonormal modes, so no 1/sqrt(rank)
+            # rescaling, and the zero-initialised read-out starts the model at the training mean.
+            out = torch.einsum('bck,ckn->bcn', coefficients, self.modes) + self.mean_field[None]
+            return out.reshape(b, self.cout, h, w) + self.bias[None, :, None, None]
         # Coordinate channels are batch-invariant by construction in `model.features`.
         # `model.features` builds the coordinate channels on [0, 1]; the 3D lane's trunk
         # consumes coordinates on [-1, 1], so map them before the sinusoidal features or
@@ -294,11 +309,14 @@ def make(family, cin, cout, config):
     if family == 'unet':
         network = UNet2d(cin, cout, base=config['base'], groups=config.get('groups', 8))
     elif family == 'deeponet':
+        intervals = config.get('mesh_intervals')
         network = DeepONet2d(cin, cout, width=config['width'], rank=config['rank'],
                              trunk_width=config['trunk_width'], levels=config.get('levels', 3),
                              pool_bins=config.get('pool_bins', 4),
                              frequencies=config.get('trunk_frequencies', (1., 2., 4.)),
-                             trunk_layers=config.get('trunk_layers', 3))
+                             trunk_layers=config.get('trunk_layers', 3),
+                             trunk=config.get('trunk', 'mlp'),
+                             nodes=(intervals + 1) ** 2 if intervals else None)
     elif family == 'transolver':
         network = Transolver2d(cin, cout, dim=config['dim'], layers=config['layers'], heads=config['heads'],
                                slices=config['slices'], mlp_ratio=config.get('mlp_ratio', 2),

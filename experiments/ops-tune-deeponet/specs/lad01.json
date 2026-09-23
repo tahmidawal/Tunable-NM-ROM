@@ -29,8 +29,8 @@
   "worker": "worker_tune.py",
   "mem": "180G",
   "job_name": "opstune_don_lad01",
-  "time": "07:00:00",
-  "global_seconds": 19800,
+  "time": "08:30:00",
+  "global_seconds": 25200,
   "reserve_seconds": 900,
   "arms": [
     {
@@ -60,7 +60,30 @@
       "name": "base-top",
       "mount": "ext",
       "seconds": 3000
+    },
+    {
+      "name": "pod-128",
+      "mount": "ext",
+      "pool_limit": 128,
+      "seconds": 3000,
+      "knob": "trunk",
+      "override": {
+        "trunk": "pod",
+        "rank": 64,
+        "mesh_intervals": 256
+      }
+    },
+    {
+      "name": "pod-top",
+      "mount": "ext",
+      "seconds": 3000,
+      "knob": "trunk",
+      "override": {
+        "trunk": "pod",
+        "rank": 64,
+        "mesh_intervals": 256
+      }
     }
   ],
-  "design": "DESIGN 2.3 / 5.2 T0-T1: the data ladder at fixed wall budget. c-pinned128 and c-new128 are the same 128 physical draws under the two target protocols; base-512 / base-2048 / base-top are nested prefixes of the same draw. Every arm is configs/deeponet/base.json unchanged, so training-set size is the only variable across the last three. No arm here is a selection candidate."
+  "design": "DESIGN 2.3 / 5.2 T0-T1: the data ladder at fixed wall budget. c-pinned128 and c-new128 are the same 128 physical draws under the two target protocols; base-512 / base-2048 / base-top are nested prefixes of the same draw. Every arm is configs/deeponet/base.json unchanged, so training-set size is the only variable across the last three. No arm here is a selection candidate. Amendment A4 adds POD-DeepONet (Lu et al. 2022) at the bottom and top rungs: the same branch with the learned trunk replaced by the POD basis of the training outputs, rank 64 so the basis is well conditioned at the 128-case rung."
 }

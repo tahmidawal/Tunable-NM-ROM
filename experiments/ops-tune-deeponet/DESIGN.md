@@ -90,6 +90,14 @@ object as 640 supervised output fields for an initial-condition-to-future-fields
 dividing them would assert an information equivalence this lane cannot support. At full
 trajectory parity (4608 operator cases) the operator still sees 23040 supervised output fields.
 
+**The asymmetry the trajectory count hides.** Trajectory parity does not make the two sides
+equally cheap or equally informed. Each operator training case cost ≈ 130 GPU-seconds to
+produce at the pinned anchor, where the ROM's snapshots come from 50-step 256² solves; and at
+query time the ROM is handed the governing equations and solves a residual, while the operator
+is a feed-forward map with no access to them. The report states both beside the counts, because
+a reviewer weighing "36× less data" should also see what the 36× costs and what the other side
+gets instead.
+
 **What is and is not shared.** `engines.params_draw` and `burgers2d_film.sample_params` are the
 same sequential draw over the same ranges (LAB-LOG 2026-09-21), so both sides draw from **the
 same parameter family**. That is the extent of the equivalence: the two sides differ in
@@ -102,8 +110,9 @@ access to the PDE residual at query time. The report tabulates all of those besi
 
 The pinned 128 cases were solved at the 4096-interval, $\Delta t = 1.5625\times10^{-4}$ anchor
 and restricted to 256. The generating job's own recorded
-`wall_seconds_including_first_compile` is ≈ **114 s per case**, so 4608 cases at that setting
-extrapolates to ≈ 146 GPU-hours — more than this lane's entire budget. That is a historical
+`wall_seconds_including_first_compile` averages **130.33 s per case** over the 128 records
+(median 122.06, max 179.51; `reports/accounting.py` derives all four), so 4608 cases at that
+setting extrapolates to ≈ **167 GPU-hours** — more than this lane's entire budget. That is a historical
 extrapolation from one job's recorded times, not a proof about every possible generation
 strategy; it is the number this lane acts on.
 
@@ -221,24 +230,34 @@ rule holds outside the network but not inside it), and the arms are **single-see
 
 At 128 cases an epoch is 16 optimisation steps; at 4608 it is 576. The inherited rule (validate
 once per epoch, stop after 250 epochs without a new best) is therefore not one rule but four
-different rules across the ladder. This lane validates every `validate_every_steps` = 500
-optimisation steps and stops after `patience_evaluations` = 40 consecutive evaluations without a
-new best selection score — 20000 steps of no improvement, **the same rule at every rung**. The
-`ReduceLROnPlateau` scheduler, when used, steps on the same cadence with
-`plateau_patience_evaluations` = 8; PyTorch reduces when bad evaluations *exceed* patience, so
-that fires on the ninth consecutive bad evaluation, i.e. after 4500 steps. Those two constants
-are declared and held fixed across every rung and arm; **no equivalence to the inherited
+different rules across the ladder, and a fixed *step* cadence is not one rule either: it would
+give the small rung 36× more epochs between evaluations and — because the inherited driver
+writes a 62 MB checkpoint at every evaluation — it would also spend a different share of an
+equal wall budget on I/O at each rung, which biases the ladder in the direction the ladder is
+measuring.
+
+This lane therefore validates on a **fixed fraction of each arm's wall budget**:
+`validations_per_budget` = 200 evaluations, so every arm at every rung gets 200
+checkpoint-selection opportunities and 200 evaluations' worth of I/O inside its own budget. An
+arm stops after `patience_evaluations` = 50 consecutive evaluations without a new best selection
+score — a quarter of its budget with no improvement. The `ReduceLROnPlateau` scheduler, when
+used, steps on the same cadence with `plateau_patience_evaluations` = 16; PyTorch reduces when
+bad evaluations *exceed* patience, so that fires on the seventeenth consecutive bad evaluation,
+i.e. after 8.5 % of the budget. `last.pt` is written once, at the end. These constants are
+declared and held fixed across every rung and arm; **no equivalence to the inherited
 epoch-based constants is asserted**, because none is defined.
 
 Consequences, declared in advance:
 
-- `c-pinned128` is **not** `don-small` re-run. It is the base configuration and the pinned data
-  under this lane's validation cadence, checkpoint-selection opportunities, scheduler cadence
-  and stopping rule — a **new-schedule control**, on different hardware, and the report labels it
-  that way. `don-small` remains the historical row.
-- An arm whose budget ends before 40 non-improving evaluations could occur is reported as
-  **patience inactive under this budget**, which is a statement about the budget and never
-  evidence that the arm was still improving. `result.json` records realised steps, evaluations,
+- `c-pinned128` is **not** `don-small` re-run. It changes three things at once — validation
+  cadence, stopping patience and scheduler patience — and runs on different hardware. It is a
+  **new-schedule control**, the report labels it that way, and it is not offered as the
+  measurement of any single one of those changes. `don-small` remains the historical
+  recipe-matched row. Note the likely direction: 200 evaluations over 3000 s is *fewer*
+  checkpoint-selection opportunities than `don-small`'s 539 over 552 s, so this control is if
+  anything handicapped against the historical row, not flattered by it.
+- An arm that never accumulates 50 non-improving evaluations is reported as **patience
+  inactive**, which is a statement about the run and never evidence that it was still improving. `result.json` records realised steps, evaluations,
   epochs, examples seen, the stop reason and the evaluations spent at the learning-rate floor,
   so which of these applies is generated, never asserted.
 - The epoch cap is set high (`epochs` = 100000) so that the wall budget and the patience rule
@@ -327,11 +346,21 @@ missing piece.
 
 ### 5.2 Criteria
 
-- **T0 (target-protocol control).** `c-new128` and `c-pinned128` are reported with their signed
-  relative difference $(\text{new} - \text{pinned}) / \text{pinned}$ of the validation mean,
-  their paired per-case differences, and the measured per-time label discrepancy from §2.3. A
-  difference under **10 %** is a **pre-chosen practical tolerance**, not a measured noise band
-  and not an equivalence test; above it, every ladder rung carries the discrepancy beside it.
+- **T0 (target-protocol control), and what it can and cannot decide.** `c-new128` and
+  `c-pinned128` are reported with the signed relative difference
+  $(\text{new} - \text{pinned})/\text{pinned}$ of their validation means, their paired per-case
+  differences, and the measured per-time label discrepancy from §2.3. **This test cannot fail at
+  the errors this lane currently sees, and that is stated rather than discovered**: the label
+  perturbation an admissible setting introduces is at most 4.34e-3 (512) or 1.87e-3 (1024) in
+  this lane's own metric, while a 10 % relative band around a 15 % error is 1.5e-2 — an order of
+  magnitude larger. What T0 actually reports is therefore two things:
+  (i) the **ratio** $\rho = \text{worst label discrepancy} / \text{arm validation error}$, and
+  (ii) the trained pair, as a check that nothing unexpected happened. The label protocol is
+  called **negligible for an arm** iff $\rho \le 0.2$ for that arm, and **material** otherwise.
+  The corollary is the reviewer-facing one and is stated in the report beside the ladder: **the
+  cheaper targets stop being negligible exactly where T3 would start to pass.** If any DeepONet
+  arm reaches ~2 % validation error, its top-rung number must be re-derived on pinned-protocol
+  data before it is quoted, and this lane will say so rather than quote it.
 - **T1 (the data answer).** Reported as the **observed change in validation mean per rung at
   fixed wall budget**, with the caveat that more data at a fixed budget also means fewer passes
   per example. Two pre-chosen effect-size bars: a top-rung mean at or below **0.7×** the 128
@@ -362,16 +391,18 @@ missing piece.
 ### 5.3 The composition rule, fixed before the sweep
 
 `tuned` takes **every knob whose one-factor sweep arm improved the selection metric by at least
-2 % relative to `s-base`**, each at the value that arm used; where two arms vary the same knob,
-only the better one is taken. The schedule is not one of those knobs: it is carried by S1 and
+5 % relative to `s-base`**, each at the value that arm used; where two arms vary the same knob,
+only the better one is taken. 5 % is chosen because the paired standard error between two arms
+on these 32 cases, recomputed from the parent lane's own saved fields, is **2.0–3.8 % relative**:
+a 2 % trigger would compose roughly a quarter of purely null knobs by chance. The schedule is not one of those knobs: it is carried by S1 and
 applied to `tuned` whichever way S1 went. If no arm clears 2 %, `tuned` is `s-base`'s
 configuration and is **not re-run**; the composition is then reported as "no knob cleared the
 bar", not as a new measurement. If `tuned` is worse than the best single-knob arm, S3 selects
 that single-knob arm and the composition is reported as a **failed combination**.
 
-2 % is a pre-chosen practical trigger, not a noise estimate. The report gives every arm's
-continuous effect size rather than only its side of the line, and states that arms within a few
-per cent of each other are not distinguished by 32 cases.
+5 % is a pre-chosen practical trigger sized against that standard error, not a significance
+test. The report gives every arm's continuous effect size rather than only its side of the line,
+and states that arms within a few per cent of each other are not distinguished by 32 cases.
 
 ## 6. The jobs
 
@@ -438,9 +469,16 @@ job of this lane divided by a time from any other job.**
    the train index hash equals `5333584b…`; for extended-data arms it equals the hash `gen01`
    recorded, and the audit checks **each arm against its own declared source and prefix** rather
    than one global literal.
-4. `gen01`'s cases 0–127 reproduce the pinned cases' generation descriptors and input fields
-   **bitwise**; only the evolved targets may differ, and their difference is measured. A mismatch
-   voids the job. Every accepted case passes `data.py`'s residual, Newton-cap, boundary and
+4. The generation job's cases 0–127 reproduce the pinned cases' generation descriptors and input
+   fields **bitwise**; only the evolved targets may differ, and their difference is measured. A
+   mismatch voids the job. (Bitwise is reachable only because the cluster environment still
+   matches the one that produced the pinned cache — numpy 2.5.0, scipy 1.18.0, python 3.13.2,
+   checked in the job; the local box's numpy 2.4.4 already differs by 1 ULP in `exp`, which is
+   why this gate is a cluster gate.) Because descriptors and input fields are **protocol
+   independent**, that gate alone cannot detect a wrong reference setting, so the job separately
+   records the protocol hash actually in use, asserts the anchor `refine.configure()` produced,
+   records the chosen setting with both profiles, and reports the measured target discrepancy
+   beside the calibration's own prediction for that setting. Every accepted case passes `data.py`'s residual, Newton-cap, boundary and
    dtype assertions and keeps its solver sidecar; a failing case **aborts generation** rather
    than being skipped, so an accepted prefix is contiguous and unbiased.
 5. Every arm in the spec is present and complete, or explicitly recorded as skipped with its
@@ -628,3 +666,91 @@ job of this lane divided by a time from any other job.**
   the per-time and train-versus-validation split; independent seeds; and a fresh confirmation
   cohort (26, 27). These are recorded in `HANDOFF.md` as the shape of any follow-up, not as
   something this lane claims.
+
+- **A3 (2026-09-22, before `gen02`) — second independent design audit (Claude subagent, same
+  adversarial brief), 7 blockers, 15 major, 13 minor; every one accepted.**
+  `reports/design-audit-2026-09-22.md`. Commissioned in parallel with §A2 and reported after it,
+  against the same committed text (`10d93675`). It read the cluster indices directly and checked
+  the accounting against them, which §A2 could not.
+
+  **Independently found the same two blockers as §A2** — the `refine.py` / `protocol-refined.json`
+  provenance (its B6) and `s-rank`'s `trunk_width >= rank` construction failure (its B5) — and
+  reached them from different evidence, which is the strongest signal either audit gave.
+
+  **Its blockers about the inherited `audit.py`** (B1–B4, B7) are why that file is **rewritten
+  here rather than patched**: it asserts the FNO train-index hash for every arm, a frozen
+  `batch_size` / `patience` / `learning_rate` whitelist, one history entry per epoch, a
+  `capacity-selection.json` this lane does not write, `timing['present']` (which this lane
+  deliberately never produces, so **every job would have failed its own audit after spending its
+  GPU time**), and cohort scoring for every arm. The new `audit.py` keeps every kind of check —
+  independent recomputation of each error from the saved fields, checkpoint hashes, the boundary
+  and returned-initial-state gates, the batch-1/batch-8 tolerance — and replaces every literal
+  with a per-arm check against that arm's own declared source, prefix and override. B7 (the
+  cohort index carries the train-index hash) is handled by building the cohort against the
+  **pinned** 128-case index in every job, so its hash still equals the FNO job's, and checking
+  disjointness from the extended cases separately.
+
+  **Major findings, all accepted:**
+
+  - **M1 — the 114 s per case was record 0, not the mean.** `reports/accounting.py` now derives
+    it: mean **130.33 s**, median 122.06, max 179.51, so parity at the pinned anchor is
+    **166.8 GPU-hours**, not 146. §2.3 carries the derived numbers.
+  - **M2 — T0 could not fail, and that is now said out loud.** The label perturbation an
+    admissible setting introduces is at most 1.87e-3 (1024, the setting `gen02` chose) or
+    4.34e-3 (512) in this lane's own metric, while 10 % of a 15 % error is 1.5e-2. T0 is
+    restated as a **ratio** $\rho$ of label discrepancy to arm error, negligible at
+    $\rho \le 0.2$, with the corollary stated beside the ladder: **the cheap targets stop being
+    negligible exactly where T3 would start to pass**, and any arm that reaches ~2 % must have
+    its top-rung number re-derived on pinned-protocol data before it is quoted.
+  - **M3 — the 2 % composition trigger was below one paired standard error** (2.0–3.8 %
+    relative, recomputed from the parent lane's saved fields), so ~2.5 of 10 null knobs would
+    compose by chance. Raised to **5 %**, with the standard error stated beside it.
+  - **M4/M5 — the sweep was not one-factor.** Fixed before the job: the sweep has its own
+    reference arm `s-base` at the sweep budget, the §6 table no longer hard-codes a schedule for
+    the learning-rate arms, and §5.3 excludes the schedule from the composed knobs because S1
+    already carries it.
+  - **M6/M7 — the cadence itself biased the ladder.** A fixed *step* cadence gives the 128 rung
+    36× more epochs between evaluations, and the inherited driver's 62 MB per-evaluation
+    checkpoint write costs the small rung 36× more of an equal wall budget in I/O — both
+    pushing the small rung to look worse, which is the direction T1 measures. §4.1 now validates
+    on a **fixed fraction of each arm's wall budget** (200 evaluations, patience 50), and
+    `last.pt` is written once at the end.
+  - **M8 — history is indexed by step**, in the trainer and in the new audit.
+  - **M9 — the train-versus-validation gap** is recorded per arm at the selected checkpoint (the
+    first 128 training cases, same metric), because that gap is the parent lane's actual evidence
+    of data limitation.
+  - **M10 — nothing measured what more data buys on a five-parameter family.**
+    `reports/accounting.py` now computes the normalised nearest-training-neighbour distance of
+    every validation case per rung: mean 0.266 at 128 cases falling to 0.129 at 4608. That is
+    reported beside the ladder, and it is the same advantage our own head had at 4608.
+  - **M11 — the pooled path must not weaken verification.** `build_pool.py` runs the full
+    `dataset.load_pair` once per cache and its array hashes join the cache manifest, so every
+    job's preamble verifies the arrays and `train.py` asserts both index hashes.
+  - **M12 — the asymmetry trajectory parity hides** is now stated in §2.2: each operator case
+    cost ≈ 130 GPU-seconds to produce, and the ROM is handed the governing equations at query
+    time while the operator is not.
+  - **M13 — gate 4 was protocol-blind.** Descriptors and input fields are protocol independent,
+    so the job additionally records the protocol hash in use, asserts the anchor
+    `refine.configure()` produced, and records the chosen setting with both profiles.
+  - **M14 — "the declared `future_train_prefixes` extended" was false** (they are 512 and 1024).
+    §2.3 now says `gen_more.py` supersedes that list, and names what else it supersedes.
+  - **M15 — the collector would have tarred the 17 GB pool.** `cluster/collect.py` now has an
+    explicit inventory, dereferences the symlinked mounts (`-h`) and excludes the extended
+    cache's fields and pool.
+
+  **Minors, all fixed:** the margin column's derivation is declared and
+  `worst_difference_from_anchor` is derived beside it (1.874e-3 / 4.344e-3 / 9.149e-3); the
+  "4000 steps is the closest equivalent" sentence is gone; `s-pool16` is labelled as the
+  largest network in the whole comparison (20.26 M parameters against `fno-large`'s 17.88 M);
+  131072 is labelled prose-only and not regenerable; "the three learning rates" is now two;
+  `s-trunk` and `s-rank` are labelled coupled; gate 6's tolerance is stated as **relative**;
+  `check_inherited.py` exists and passes; T5's already-false premise is stated; and the
+  `--mem=180G` requirement is recorded rather than trimmed.
+
+  **A new landmine this audit's cluster work exposed**, recorded because it will bite again:
+  `engines.params_draw`'s `nu` is `np.exp(...)`, and **numpy builds differ by 1 ULP there**. On
+  the cluster (numpy 2.5.0, the build that produced the pinned cache) the regenerated cases 0–127
+  match bitwise and gate 4 holds; on this box (2.4.4) five of 128 differ in the last bit of `nu`,
+  which is why `reports/accounting.py` uses a tolerance and records that 123 of 128 are bitwise
+  identical with a maximum relative deviation of 7e-18. If the cluster environment is ever
+  updated, gate 4 will abort the generation job — correctly, and that is the intended behaviour.

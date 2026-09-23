@@ -1,0 +1,22 @@
+{
+  "job_name": "opstune_don_gen02",
+  "worker": "worker_gen.py",
+  "time": "08:30:00",
+  "mem": "120G",
+  "output_cache": "/cluster/tufts/paralab/tawal01/opstune_don_20260922/pool02",
+  "pinned_train_index": "data/pinned/train/index.json",
+  "pinned_validation_index": "data/pinned/validation/index.json",
+  "count": 4608,
+  "candidates": ["1024:0.0003125", "512:0.000625"],
+  "milestones": [128, 512, 1024, 2048, 3072, 4608],
+  "generation_seconds": 25200,
+  "generation_reserve_seconds": 1500,
+  "mounts": {
+    "pinned": {
+      "source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
+      "dirs": ["train", "validation", "refinement"]
+    }
+  },
+  "design": "DESIGN 2.3: extend the Burgers train split to 4608 cases -- parity with the 4608 trajectories our NM-ROM head was trained on -- as a nested prefix of the SAME case_seed('train', i) draw, at the finest profiled reference setting that fits the generation budget. Cases 0-127 are the pinned cache's own draws, so the target-protocol difference is measured per case against the pinned 4096-anchor targets rather than assumed. No training runs in this job.",
+  "data_origin": "pinned cache /cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01 is mounted read-only for the case-0-127 comparison and for the validation index; the generated cache is written to output_cache in the lane namespace and made read-only when complete"
+}

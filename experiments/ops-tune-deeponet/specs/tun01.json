@@ -1,0 +1,172 @@
+{
+  "family": "deeponet",
+  "prefix": "don",
+  "pde": "burgers",
+  "base_config": "code/configs/deeponet/base.json",
+  "validation_index": "data/pinned/validation/index.json",
+  "reference_index": "data/pinned/refinement/index.json",
+  "cohort_train_mount": "pinned",
+  "mounts": {
+    "pinned": {
+      "source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
+      "dirs": [
+        "train",
+        "validation",
+        "refinement"
+      ],
+      "train_index": "data/pinned/train/index.json"
+    },
+    "ext": {
+      "source": "/cluster/tufts/paralab/tawal01/opstune_don_20260922/pool02",
+      "dirs": [
+        "train",
+        "pool"
+      ],
+      "train_index": "data/ext/train/index.json",
+      "pool": "data/ext/pool"
+    }
+  },
+  "worker": "worker_tune.py",
+  "mem": "180G",
+  "job_name": "opstune_don_tun01",
+  "time": "08:30:00",
+  "global_seconds": 27000,
+  "reserve_seconds": 900,
+  "arms": [
+    {
+      "name": "s-base",
+      "mount": "ext",
+      "seconds": 1500
+    },
+    {
+      "name": "s-cos",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "schedule",
+      "override": {
+        "schedule": "cosine",
+        "min_learning_rate": 1e-06,
+        "warmup_steps": 2000
+      }
+    },
+    {
+      "name": "s-lr3e-3",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "learning_rate",
+      "override": {
+        "learning_rate": 0.003
+      }
+    },
+    {
+      "name": "s-lr3e-4",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "learning_rate",
+      "override": {
+        "learning_rate": 0.0003
+      }
+    },
+    {
+      "name": "s-pool8",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "pool_bins",
+      "override": {
+        "pool_bins": 8
+      }
+    },
+    {
+      "name": "s-pool16",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "pool_bins",
+      "override": {
+        "pool_bins": 16
+      }
+    },
+    {
+      "name": "s-freq",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "trunk_frequencies",
+      "override": {
+        "trunk_frequencies": [
+          1.0,
+          2.0,
+          4.0,
+          8.0,
+          16.0
+        ]
+      }
+    },
+    {
+      "name": "s-trunk",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "trunk_capacity",
+      "override": {
+        "trunk_width": 768,
+        "trunk_layers": 4
+      }
+    },
+    {
+      "name": "s-rank",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "rank",
+      "override": {
+        "rank": 512,
+        "trunk_width": 512
+      }
+    },
+    {
+      "name": "s-pertime",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "output_scale_mode",
+      "override": {
+        "output_scale_mode": "per_time"
+      }
+    },
+    {
+      "name": "s-batch32",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "batch_size",
+      "override": {
+        "batch_size": 32
+      }
+    },
+    {
+      "name": "s-wd0",
+      "mount": "ext",
+      "seconds": 1500,
+      "knob": "weight_decay",
+      "override": {
+        "weight_decay": 0.0
+      }
+    }
+  ],
+  "schedule_decision": {
+    "arm": "s-cos",
+    "reference": "s-base",
+    "override": {
+      "schedule": "cosine",
+      "min_learning_rate": 1e-06,
+      "warmup_steps": 2000
+    },
+    "note": "DESIGN 6 / S1: if the cosine arm beats the same-budget reference, every arm after it runs with the cosine schedule so the capacity and learning-rate knobs are not tested against a schedule already known to be worse. Recorded in out/schedule-decision.json."
+  },
+  "compose": {
+    "reference": "s-base",
+    "threshold": 0.05,
+    "arm": {
+      "name": "tuned",
+      "mount": "ext",
+      "seconds": 1500
+    },
+    "note": "DESIGN 5.3; the schedule is carried by S1, not by this threshold"
+  },
+  "design": "DESIGN 5.3 / 6: eleven one-factor arms plus their own same-budget reference s-base, all at the top rung, then the composed arm. Selection is validation-32 mean case-maximum only (DESIGN 5.1)."
+}

@@ -1,0 +1,134 @@
+{
+  "generated_by": "reports/accounting.py",
+  "rungs": [
+    128,
+    512,
+    2048,
+    4608
+  ],
+  "operator": {
+    "training_trajectories": 128,
+    "validation_trajectories": 32,
+    "supervised_output_fields": 640,
+    "distinct_solution_states": 768,
+    "train_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+    "validation_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+    "protocol_sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+    "protocol_in_use_sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+    "reference_setting": {
+      "intervals": 4096,
+      "dt": 0.00015625,
+      "passing": true,
+      "worst_empirical_margin": 0.0009588159542496009,
+      "work_proxy": 26843545600
+    },
+    "generator_sources": {
+      "experiments/neural-operator-burgers/data.py": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "experiments/neural-operator-burgers/protocol.json": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "experiments/neural-operator-burgers/protocol-refined.json": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+      "experiments/neural-operator-burgers/refine.py": "6f2e1a244812a0105e0e5f58236668a52725921d1bd9cee152aafe9260b9a81c"
+    },
+    "generating_job": "3702709",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "per_case_seconds": {
+      "mean": 130.33137549822095,
+      "median": 122.05931179854088,
+      "minimum": 104.07725458894856,
+      "maximum": 179.50686023698654,
+      "total_hours": 4.634004462158967
+    }
+  },
+  "nmrom": {
+    "bank_trajectories": 576,
+    "head_trajectories": 4608,
+    "head_extra_trajectories": 4032,
+    "steps_per_trajectory": 50,
+    "states_per_trajectory": 51,
+    "available_head_states": 235008,
+    "bank_snapshot_cap": 16384,
+    "retained_head_codes": 131072,
+    "retained_head_codes_source": "LAB-LOG 2026-09-16 prose; the only record in this repository, and not regenerable from the cited JSON",
+    "source": "reports/2026-09-10-historical-poisson-and-burgers-cost-audit.json",
+    "source_sha256": "3a6c0a731d3c5b9ad2c006f5e031d2cf58ea8108f048ff6c9e4dbc516704eb3b",
+    "extract_sha256": "3d7d61748392fe011e2575035fa3a48d096fd6aca3cdff703ac51b9aaaa9bd30",
+    "caution": "these state counts are fitted latent codes for a reconstruction objective. They are NOT comparable with an operator's supervised output fields and no ratio between the two is reported."
+  },
+  "parity": {
+    "target_trajectories": 4608,
+    "trajectory_ratio": 36.0,
+    "supervised_output_fields_at_parity": 23040,
+    "pinned_protocol_gpu_hours_at_parity": 166.82416063772283,
+    "note": "an extrapolation from this job's own recorded per-case wall time on one GPU type, not a proof about every possible generation strategy"
+  },
+  "reference_candidates": {
+    "256": {
+      "worst_empirical_margin": 0.010056232223642684,
+      "worst_difference_from_anchor": 0.009149048735337494,
+      "work_proxy": 13107200,
+      "passing": false,
+      "dt": 0.00125
+    },
+    "512": {
+      "worst_empirical_margin": 0.005250956531443278,
+      "worst_difference_from_anchor": 0.004343773043138087,
+      "work_proxy": 104857600,
+      "passing": false,
+      "dt": 0.000625
+    },
+    "1024": {
+      "worst_empirical_margin": 0.0027813460028035773,
+      "worst_difference_from_anchor": 0.001874162514498387,
+      "work_proxy": 838860800,
+      "passing": false,
+      "dt": 0.0003125
+    },
+    "4096": {
+      "worst_empirical_margin": 0.0009588159542496009,
+      "worst_difference_from_anchor": 0.0,
+      "work_proxy": 26843545600,
+      "passing": true,
+      "dt": 0.00015625
+    }
+  },
+  "reference_candidate_note": "\"margin\" is the candidate's difference from the anchor PLUS the anchor's own space and time refinement differences (data.py evaluate_gate); \"difference_from_anchor\" is the direct discrepancy, worst over the 8 calibration cases, in the same fixed-initial metric the models are graded in",
+  "regenerated_descriptors": {
+    "cases": 128,
+    "bitwise_identical_cases": 123,
+    "maximum_relative_deviation": 6.959090765433271e-18,
+    "numpy": "2.4.4",
+    "note": "the extended draws are the same case_seed/params_draw sequence as the pinned cache; any deviation here is the local numpy build, not the protocol"
+  },
+  "coverage": [
+    {
+      "cases": 128,
+      "nearest_mean": 0.2664574794064737,
+      "nearest_median": 0.2513329826037831,
+      "nearest_max": 0.4262763983878948,
+      "train_nearest_neighbour_median": 0.3005793090442708
+    },
+    {
+      "cases": 512,
+      "nearest_mean": 0.21335971371632714,
+      "nearest_median": 0.21579509413279216,
+      "nearest_max": 0.3285804528752496,
+      "train_nearest_neighbour_median": 0.2059549663026412
+    },
+    {
+      "cases": 2048,
+      "nearest_mean": 0.14951755936643615,
+      "nearest_median": 0.13952003032882082,
+      "nearest_max": 0.27110229283236614,
+      "train_nearest_neighbour_median": 0.15249288994700666
+    },
+    {
+      "cases": 4608,
+      "nearest_mean": 0.12879207259787373,
+      "nearest_median": 0.13104188965202496,
+      "nearest_max": 0.17625598456405348,
+      "train_nearest_neighbour_median": 0.12827996846067136
+    }
+  ],
+  "coverage_note": "normalised distance: each descriptor scaled to [0, 1] over its declared params_draw range, nu in log space. Reported so the report can say what more data buys on a five-parameter family; our own head was trained at 4608."
+}

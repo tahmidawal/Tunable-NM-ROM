@@ -85,8 +85,15 @@ def main():
     # The extended training draws are reproducible without solving anything: the same case seeds
     # and the same params_draw the generator uses.
     extended = np.array([engines.params_draw(data.case_seed('train', i), 1)[0] for i in range(max(RUNGS))])
-    if not np.allclose(extended[:len(train_descriptors)], np.array(train_descriptors), rtol=0, atol=0):
-        raise RuntimeError('regenerated descriptors differ from the pinned index')
+    pinned = np.array(train_descriptors)
+    # Exact on the cluster, where numpy is still the 2.5.0 that produced the cache; this box's
+    # 2.4.4 differs by 1 ULP in `exp`, i.e. in nu alone, which is why this is a tolerance here
+    # and a bitwise gate in the job (DESIGN section 8 gate 4).
+    deviation = float(np.abs(extended[:len(pinned)] - pinned).max()
+                      / np.abs(pinned).max())
+    if deviation > 1e-15:
+        raise RuntimeError(f'regenerated descriptors differ from the pinned index by {deviation}')
+    exact = int((extended[:len(pinned)] == pinned).all(axis=1).sum())
 
     candidates = {str(c['intervals']): c for c in gate['by_output_256']['candidates']}
     per_case = {str(c['intervals']): max(row['candidates'][i]['difference_from_anchor']
@@ -139,6 +146,11 @@ def main():
                                  'evaluate_gate); "difference_from_anchor" is the direct discrepancy, '
                                  'worst over the 8 calibration cases, in the same fixed-initial metric '
                                  'the models are graded in',
+        regenerated_descriptors=dict(cases=len(pinned), bitwise_identical_cases=exact,
+                                     maximum_relative_deviation=deviation, numpy=np.__version__,
+                                     note='the extended draws are the same case_seed/params_draw '
+                                          'sequence as the pinned cache; any deviation here is the '
+                                          'local numpy build, not the protocol'),
         coverage=coverage(normalised(extended), normalised(validation_descriptors), RUNGS),
         coverage_note='normalised distance: each descriptor scaled to [0, 1] over its declared '
                       'params_draw range, nu in log space. Reported so the report can say what more '

@@ -1,0 +1,157 @@
+{
+  "lane": "experiments/ops-tune-deeponet",
+  "fork": "306c939d",
+  "fork_lane": "experiments/ops-deeponet-b2d",
+  "generator_commit": "5169c095",
+  "inherited": {
+    "dataset.py": {
+      "sha256": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+      "fork_sha256": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+      "identical": true
+    },
+    "model.py": {
+      "sha256": "70a14f70429134f58e6d81a8fbd94992b4f1969fdd7648cb0cd8386248917f3e",
+      "fork_sha256": "70a14f70429134f58e6d81a8fbd94992b4f1969fdd7648cb0cd8386248917f3e",
+      "identical": true
+    },
+    "evaluate_cohort.py": {
+      "sha256": "a088ba646caee32a45cd5df49b1f421ee47f5bf222a8a01be2837612803b38a9",
+      "fork_sha256": "a088ba646caee32a45cd5df49b1f421ee47f5bf222a8a01be2837612803b38a9",
+      "identical": true
+    },
+    "prepare_diagnosis_cohort.py": {
+      "sha256": "3c6529e355c27ebcd8c8c5affc339c8286b0393703e0d75fc01f6df4c60f0504",
+      "fork_sha256": "3c6529e355c27ebcd8c8c5affc339c8286b0393703e0d75fc01f6df4c60f0504",
+      "identical": true
+    },
+    "spectral_conv_f64.py": {
+      "sha256": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+      "fork_sha256": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+      "identical": true
+    },
+    "NEURALOPERATOR-LICENSE": {
+      "sha256": "5f335b0603acfb1d180bf3117492e2076562075cc9b6353a3b94d5d5bc03ef33",
+      "fork_sha256": "5f335b0603acfb1d180bf3117492e2076562075cc9b6353a3b94d5d5bc03ef33",
+      "identical": true
+    },
+    "check_fno_parity.py": {
+      "sha256": "0d6d8b70f64eddf1c2910de9fffd3ae2fe45c9d799a0e11507af5e2d2427dcd6",
+      "fork_sha256": "0d6d8b70f64eddf1c2910de9fffd3ae2fe45c9d799a0e11507af5e2d2427dcd6",
+      "identical": true
+    },
+    "check_burgers_error_definition.py": {
+      "sha256": "0c92e60b92785945d64631f8a9247ee80ba599f9e35c604ea697415dc17289c5",
+      "fork_sha256": "0c92e60b92785945d64631f8a9247ee80ba599f9e35c604ea697415dc17289c5",
+      "identical": true
+    },
+    "smoke_second.py": {
+      "sha256": "3391670ad1ddf4497b16e6986ec0a94beb0c52366a420598451d0c017979b07a",
+      "fork_sha256": "3391670ad1ddf4497b16e6986ec0a94beb0c52366a420598451d0c017979b07a",
+      "identical": true
+    },
+    "training_smoke_second.py": {
+      "sha256": "fa48e6fb890091cd56ba49bd167e15a9419ab7811f678dc53a267c1a4288d8b2",
+      "fork_sha256": "fa48e6fb890091cd56ba49bd167e15a9419ab7811f678dc53a267c1a4288d8b2",
+      "identical": true
+    }
+  },
+  "changed": {
+    "families.py": {
+      "sha256": "4dd719fcb178a223acbcc3cf4b23ea8335401b3a4c08867701f9cb8211cbda8e",
+      "fork_sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+      "identical": false
+    },
+    "train.py": {
+      "sha256": "bceeda14622d86bc3480be03702fb16f8eae2020acdc734d36c7407824404b71",
+      "fork_sha256": "5abc9bd77275c40587c3b2fa9f81c17349a925d86bd3f847f86c42875e9578c1",
+      "identical": false
+    },
+    "audit.py": {
+      "sha256": "62bd642a53ebff7bc4e4a9a6b223e0d22e773501a4081822b8d6b5670d2f5b82",
+      "fork_sha256": "01cdbf6bb8c4f61a42c6808710ca1581c80b38c8fa91e277943985d2af6abb13",
+      "identical": false
+    },
+    "check_inherited.py": {
+      "sha256": "7652f428b3c528b1a6e854700f8712940a8ee8d451af8da54c8a7fc69ef1eceb",
+      "fork_sha256": "aab17a881e33a17752d6a5add272769dcd5ea351a130e28d42cd1dd92c3ca741",
+      "identical": false
+    },
+    "cluster/stage.py": {
+      "sha256": "4a23924cff73eb47340561491560fb0f6464d5eaf57a4c8090cc10da40cb197c",
+      "fork_sha256": "a860e321a9f9c263bcbb2a54e097ac7fbec050d6a3532556bfad487f8a797497",
+      "identical": false
+    },
+    "cluster/collect.py": {
+      "sha256": "a59e7eb859e759fab2612c9d66a24668e4db7177b36897da9599a453c56900db",
+      "fork_sha256": "468f5e9dad80edc1343b7fa890f29276efa8dc3eef0f210873d4ebf2bff97d8e",
+      "identical": false
+    }
+  },
+  "new": {
+    "gen_more.py": {
+      "sha256": "4c3734f9d92034806f46809dfce597cc43551d4e738f90bb7688393ec1bb585f",
+      "exists_in_fork": false
+    },
+    "build_pool.py": {
+      "sha256": "4223a4bae1b4450faf218d0ecf4f0496992aacb7f2eeb1d071cf4441d468b750",
+      "exists_in_fork": false
+    },
+    "worker_gen.py": {
+      "sha256": "ee14c37312961de93b363a8b17b74d419542b28276cea8aabad6c511a97e445e",
+      "exists_in_fork": false
+    },
+    "worker_tune.py": {
+      "sha256": "73b5e2d8f2a0e062ca44aa9870789dc26cafe6e9bd30b0c84b63c5a00ed10fa6",
+      "exists_in_fork": false
+    },
+    "compose.py": {
+      "sha256": "fc9c6d95b8ae65560ef0a8d188f7700280f8232ee58bac86b08d0c42064525a6",
+      "exists_in_fork": false
+    }
+  },
+  "vendored": {
+    "data.py": {
+      "sha256": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "source": "experiments/neural-operator-burgers/data.py",
+      "generator_sha256": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "identical": true
+    },
+    "refine.py": {
+      "sha256": "6f2e1a244812a0105e0e5f58236668a52725921d1bd9cee152aafe9260b9a81c",
+      "source": "experiments/neural-operator-burgers/refine.py",
+      "generator_sha256": "6f2e1a244812a0105e0e5f58236668a52725921d1bd9cee152aafe9260b9a81c",
+      "identical": true
+    },
+    "protocol.json": {
+      "sha256": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "source": "experiments/neural-operator-burgers/protocol.json",
+      "generator_sha256": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "identical": true
+    },
+    "protocol-refined.json": {
+      "sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+      "source": "experiments/neural-operator-burgers/protocol-refined.json",
+      "generator_sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+      "identical": true
+    },
+    "engines.py": {
+      "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "source": "experiments/mr-burgers2d/engines.py",
+      "generator_sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "identical": true
+    },
+    "sep_common.py": {
+      "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "source": "experiments/separable-decoder/sep_common.py",
+      "generator_sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "identical": true
+    }
+  },
+  "dropped": {
+    "timing.py": "no speed number is admissible from this lane (DESIGN section 7)",
+    "worker_second.py": "replaced by worker_tune.py (DESIGN section 3)"
+  },
+  "failures": [],
+  "undeclared_python_files": [],
+  "passed": true
+}

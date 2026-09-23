@@ -303,3 +303,18 @@ The A3 panels contain every v1 and A2 arm again, timed in one allocation per mes
 unchanged) is applied to the A3 panels. The A2 rerun at 129 (`val129y`) is cancelled as superseded. No rule, bar,
 cohort, FOM setting or gate changes. This is the last amendment before the stopping-rule date; whatever the A3
 panels show is applied as is.
+
+## A4 — correction of the selection's certificate inputs (2026-09-23 ~19:30 EDT; held-out not seen)
+
+The first frozen selection (`checks/selection-superseded-fsa-only-certs.json`) read certificates only from the A3
+certification jobs, which certified the new `fsa` arms only; every other arm was therefore marked ineligible for
+"no certificate", although its certificate exists (v1 jobs 4244521/4244525/4244529 for the LM/lat16/head arms, A2
+jobs for the `fs1` arms). `select.py` now merges the certificates of all certification jobs of a mesh by arm name.
+Re-applying the unchanged rule: the fast arms and the FOM are unchanged at every mesh; the accurate arm becomes the
+LM arm at η = 1e-6 (33, 65 nodes) and the `fs1` Δt = 0.005 arm (129 nodes), whose errors equal the previous `fsa`
+accurate arms' to 7 digits (e.g. 0.9852577 % vs 0.9852582 % at 65) — solver-tolerance noise — but which are slower
+at 33/65. The rule is applied literally (no tie-break was pre-registered). The first held-out attempt
+(jobs 4246320/4246321/4246323) had already started with the superseded selection; it was cancelled ~45 s after
+start, before any result was read (one quick-run line had been logged at 33 nodes; its logs are archived unread in
+`runs/failed/`). The held-out jobs are resubmitted with the corrected selection and, as a labelled extra arm, the
+superseded accurate arm (so both choices are reported on the sealed cohort).

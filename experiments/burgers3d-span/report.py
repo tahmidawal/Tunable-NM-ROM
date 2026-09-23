@@ -41,14 +41,16 @@ def main():
     a = ap.parse_args()
     src = {}
     tr = load(f'checks/training-{a.model}.json')
-    val = {n: load(f'checks/select-val-n{n}.json') for n in MESHES}
+    val = {n: load(f'checks/select-A3-n{n}.json') for n in MESHES}
+    hist = {t: {n: load(f'checks/select-{t}-n{n}.json') for n in MESHES} for t in ('v1', 'A2', 'A3')}
     ho = {n: load(f'checks/select-heldout-n{n}.json') for n in MESHES}
-    aud = {n: load(f'checks/audit-val-n{n}.json') for n in MESHES}
+    aud = {n: load(f'checks/audit-A3-n{n}.json') for n in MESHES}
     auh = {n: load(f'checks/audit-heldout-n{n}.json') for n in MESHES}
     for k, v in [('training', f'checks/training-{a.model}.json')] + \
-            [(f'select-val-n{n}', f'checks/select-val-n{n}.json') for n in MESHES] + \
+            [(f'select-{t}-n{n}', f'checks/select-{t}-n{n}.json') for t in ('v1', 'A2', 'A3') for n in MESHES] + \
+            [(f'audit-{t}-n{n}', f'checks/audit-{t}-n{n}.json') for t in ('v1',) for n in MESHES] + \
             [(f'select-heldout-n{n}', f'checks/select-heldout-n{n}.json') for n in MESHES] + \
-            [(f'audit-val-n{n}', f'checks/audit-val-n{n}.json') for n in MESHES] + \
+            [(f'audit-A3-n{n}', f'checks/audit-A3-n{n}.json') for n in MESHES] + \
             [(f'audit-heldout-n{n}', f'checks/audit-heldout-n{n}.json') for n in MESHES]:
         if (HERE / v).exists():
             src[k] = dict(path=f'experiments/burgers3d-span/{v}', sha256=sha(HERE / v))
@@ -90,6 +92,22 @@ def main():
             fr = s.get('frozen_fom_row') or {}
             L.append(f"- {n - 1}³ held-out, FOM frozen on validation `{s['frozen_validation_fom']}`: "
                      f"{pct(fr.get('worst_evolved'), 3)} % at {ms(fr.get('median_ms'))} ms.")
+    L.append('')
+    # selection history
+    L.append('## Selection history on the validation cohort (every panel kept; amendments A2/A3 were written after seeing the earlier panels)')
+    L.append('')
+    L.append('| panel | mesh | accurate | err % | ms | fast | err % | ms | fast speedup own | stopping rule at 64³ |')
+    L.append('|---|---|---|---:|---:|---|---:|---:|---:|---|')
+    for t in ('v1', 'A2', 'A3'):
+        for n in MESHES:
+            s = hist[t].get(n)
+            if not s:
+                L.append(f'| {t} | {n - 1}³ | not completed | | | | | | | |')
+                continue
+            ar, fr = s.get('accurate_row') or {}, s.get('fast_row') or {}
+            L.append(f"| {t} | {n - 1}³ | `{s['accurate']}` | {pct(ar.get('worst_evolved'))} | {ms(ar.get('median_ms'))} | "
+                     f"`{s['fast']}` | {pct(fr.get('worst_evolved'))} | {ms(fr.get('median_ms'))} | {sx(fr.get('speedup_own'))} | "
+                     f"{('pass' if s['stopping_rule_pass'] else 'fail') if n == 65 else ''} |")
     L.append('')
     # stopping rule
     L.append('## Stopping rule (DESIGN §10 with R1: own-matched FOM, 64³, validation)')

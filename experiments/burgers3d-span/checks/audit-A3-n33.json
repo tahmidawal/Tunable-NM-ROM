@@ -1,0 +1,682 @@
+{
+ "mesh": 33,
+ "job": "4246165",
+ "checks": {
+  "restricted_errors": {
+   "n": 1168,
+   "worst_rel": 1.0777351559273945e-15,
+   "passed": true
+  },
+  "control_swapped_case_detected": true,
+  "control_perturbed_error_detected": true,
+  "full_errors_case0": {
+   "arms": [
+    [
+     "fom_dt0.005_nt0.001_lt0.5",
+     1.6800181983443457e-16
+    ],
+    [
+     "head32_R512_tensor",
+     1.6254054712759972e-16
+    ],
+    [
+     "span_R128_tensor",
+     2.0830893888106657e-16
+    ],
+    [
+     "span_R512_tensor",
+     0.0
+    ]
+   ],
+   "passed": true
+  },
+  "reference_be_residual_step10": {
+   "value": 9.840739135653906e-17,
+   "passed": true
+  },
+  "rho_numpy": {
+   "states": 90,
+   "worst_diff": 8.881784197001252e-16,
+   "rows": [
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d0.npz",
+     "rho_numpy": 0.5000213283020701,
+     "rho_recorded": 0.5000213283020707,
+     "diff": 5.551115123125783e-16
+    },
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d1.npz",
+     "rho_numpy": 0.5000135772544759,
+     "rho_recorded": 0.5000135772544763,
+     "diff": 3.3306690738754696e-16
+    },
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d2.npz",
+     "rho_numpy": 0.5000253322875505,
+     "rho_recorded": 0.5000253322875504,
+     "diff": 1.1102230246251565e-16
+    },
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d3.npz",
+     "rho_numpy": 0.5000368415047517,
+     "rho_recorded": 0.5000368415047518,
+     "diff": 1.1102230246251565e-16
+    },
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d4.npz",
+     "rho_numpy": 0.5000071915930994,
+     "rho_recorded": 0.5000071915930985,
+     "diff": 8.881784197001252e-16
+    },
+    {
+     "arm": "span_R128_lat16_BADx05",
+     "file": "cert_span_R128_lat16_BADx05_d5.npz",
+     "rho_numpy": 0.5000855309113968,
+     "rho_recorded": 0.500085530911397,
+     "diff": 1.1102230246251565e-16
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.0006252686680200313,
+     "rho_recorded": 0.0006252686680200121,
+     "diff": 1.919037845299343e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 0.0009703160570477922,
+     "rho_recorded": 0.0009703160570477887,
+     "diff": 3.469446951953614e-18
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 0.00034657267690300144,
+     "rho_recorded": 0.0003465726769030156,
+     "diff": 1.4148838350935833e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 0.0002143524396786807,
+     "rho_recorded": 0.00021435243967867399,
+     "diff": 6.7220534694101275e-18
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0011210464145168337,
+     "rho_recorded": 0.0011210464145168437,
+     "diff": 9.974659986866641e-18
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.005",
+     "file": "cert_span_R128_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.004828448155653845,
+     "rho_recorded": 0.004828448155653819,
+     "diff": 2.6020852139652106e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.00048589292837831615,
+     "rho_recorded": 0.0004858929283783173,
+     "diff": 1.1384122811097797e-18
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 0.000724351535079713,
+     "rho_recorded": 0.0007243515350797309,
+     "diff": 1.7889335846010823e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 0.00026063371743538277,
+     "rho_recorded": 0.0002606337174353993,
+     "diff": 1.6534083130403943e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 0.00017855508129790732,
+     "rho_recorded": 0.0001785550812978874,
+     "diff": 1.9922214919421144e-17
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.0009003467684287434,
+     "rho_recorded": 0.000900346768428752,
+     "diff": 8.565197162635485e-18
+    },
+    {
+     "arm": "span_R128_tensor_fsa_dt0.01",
+     "file": "cert_span_R128_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.004063788083605791,
+     "rho_recorded": 0.0040637880836058024,
+     "diff": 1.1275702593849246e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.00034297724706113837,
+     "rho_recorded": 0.00034297724706114054,
+     "diff": 2.168404344971009e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 0.00023985789563817902,
+     "rho_recorded": 0.0002398578956381878,
+     "diff": 8.782037597132586e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 0.00013770238498698065,
+     "rho_recorded": 0.00013770238498698185,
+     "diff": 1.1926223897340549e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 5.869091871370042e-05,
+     "rho_recorded": 5.869091871372023e-05,
+     "diff": 1.980701843859456e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0005415886110607943,
+     "rho_recorded": 0.0005415886110607874,
+     "diff": 6.830473686658678e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.005",
+     "file": "cert_span_R192_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.0021835133711115406,
+     "rho_recorded": 0.0021835133711115375,
+     "diff": 3.0357660829594124e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.0002972438206025665,
+     "rho_recorded": 0.00029724382060259725,
+     "diff": 3.073713158996405e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 0.00018987475561615122,
+     "rho_recorded": 0.0001898747556161334,
+     "diff": 1.7835125737386548e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 9.90221538940501e-05,
+     "rho_recorded": 9.90221538940573e-05,
+     "diff": 7.196391919872536e-18
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 5.472206232722175e-05,
+     "rho_recorded": 5.4722062327207044e-05,
+     "diff": 1.4704491964334654e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.0004483803171532213,
+     "rho_recorded": 0.00044838031715319895,
+     "diff": 2.233456475320139e-17
+    },
+    {
+     "arm": "span_R192_tensor_fsa_dt0.01",
+     "file": "cert_span_R192_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.001662280343240285,
+     "rho_recorded": 0.0016622803432402744,
+     "diff": 1.0625181290357943e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.0003869748258609283,
+     "rho_recorded": 0.0003869748258609407,
+     "diff": 1.2414114874959026e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 0.00010595644720295173,
+     "rho_recorded": 0.00010595644720295562,
+     "diff": 3.889575293791747e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 5.04939007402032e-05,
+     "rho_recorded": 5.04939007401837e-05,
+     "diff": 1.950208657758301e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 7.703668520237296e-05,
+     "rho_recorded": 7.703668520238863e-05,
+     "diff": 1.566672139241554e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.00043593251427158684,
+     "rho_recorded": 0.0004359325142715823,
+     "diff": 4.553649124439119e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.005",
+     "file": "cert_span_R256_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.00151709369100547,
+     "rho_recorded": 0.0015170936910054724,
+     "diff": 2.3852447794681098e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.00032041460956196415,
+     "rho_recorded": 0.00032041460956195634,
+     "diff": 7.806255641895632e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 7.416706041452162e-05,
+     "rho_recorded": 7.416706041450854e-05,
+     "diff": 1.3078188705606397e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 3.7007422033898314e-05,
+     "rho_recorded": 3.700742203390989e-05,
+     "diff": 1.157385819128276e-17
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 6.805574113832691e-05,
+     "rho_recorded": 6.805574113833366e-05,
+     "diff": 6.749158523722265e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.0003589123239526122,
+     "rho_recorded": 0.00035891232395261356,
+     "diff": 1.3552527156068805e-18
+    },
+    {
+     "arm": "span_R256_tensor_fsa_dt0.01",
+     "file": "cert_span_R256_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.001213590651650485,
+     "rho_recorded": 0.0012135906516504617,
+     "diff": 2.3201926491189795e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.00015096786733322142,
+     "rho_recorded": 0.00015096786733319304,
+     "diff": 2.837899186480808e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 3.657413189118353e-05,
+     "rho_recorded": 3.657413189118182e-05,
+     "diff": 1.7076184216646695e-18
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 1.606486618210676e-05,
+     "rho_recorded": 1.6064866182113628e-05,
+     "diff": 6.867743136337867e-18
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 2.4285372857894044e-05,
+     "rho_recorded": 2.4285372857913143e-05,
+     "diff": 1.9098898894689964e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0005455928315875002,
+     "rho_recorded": 0.0005455928315875279,
+     "diff": 2.7755575615628914e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.005",
+     "file": "cert_span_R384_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.001024268006495378,
+     "rho_recorded": 0.0010242680064953685,
+     "diff": 9.540979117872439e-18
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.00011804908460802372,
+     "rho_recorded": 0.00011804908460802364,
+     "diff": 8.131516293641283e-20
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 3.099799470051143e-05,
+     "rho_recorded": 3.099799470051231e-05,
+     "diff": 8.809142651444724e-19
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 1.1947622584730815e-05,
+     "rho_recorded": 1.1947622584729665e-05,
+     "diff": 1.1502707423713399e-18
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 2.377399922941246e-05,
+     "rho_recorded": 2.3773999229389262e-05,
+     "diff": 2.3198538359400778e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.00041285726178206416,
+     "rho_recorded": 0.0004128572617821063,
+     "diff": 4.212125440106185e-17
+    },
+    {
+     "arm": "span_R384_tensor_fsa_dt0.01",
+     "file": "cert_span_R384_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.0007202899786633562,
+     "rho_recorded": 0.0007202899786633534,
+     "diff": 2.8189256484623115e-18
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 5.620975673505079e-05,
+     "rho_recorded": 5.620975673507159e-05,
+     "diff": 2.0796352920987582e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 1.5390247519132408e-05,
+     "rho_recorded": 1.5390247519155888e-05,
+     "diff": 2.3479753297889205e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 1.3807285241297123e-05,
+     "rho_recorded": 1.3807285241300662e-05,
+     "diff": 3.538903653628467e-18
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 7.759449995328448e-06,
+     "rho_recorded": 7.75944999533259e-06,
+     "diff": 4.141991112073529e-18
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0001642003418409289,
+     "rho_recorded": 0.0001642003418409432,
+     "diff": 1.431146867680866e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.005",
+     "file": "cert_span_R512_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.0004008227893789993,
+     "rho_recorded": 0.0004008227893790206,
+     "diff": 2.1304572689340162e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 4.349330886864194e-05,
+     "rho_recorded": 4.3493308868663303e-05,
+     "diff": 2.1365559061542472e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 1.4184167809483904e-05,
+     "rho_recorded": 1.4184167809494827e-05,
+     "diff": 1.0923336887791457e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 8.003473482479535e-06,
+     "rho_recorded": 8.003473482481339e-06,
+     "diff": 1.8041801776516597e-18
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 7.693117180299571e-06,
+     "rho_recorded": 7.693117180257011e-06,
+     "diff": 4.2560017467739575e-17
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.00012056209495900849,
+     "rho_recorded": 0.00012056209495901441,
+     "diff": 5.922454367202068e-18
+    },
+    {
+     "arm": "span_R512_tensor_fsa_dt0.01",
+     "file": "cert_span_R512_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.0002780477424414192,
+     "rho_recorded": 0.000278047742441397,
+     "diff": 2.2171934427328566e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.0026131745561558564,
+     "rho_recorded": 0.002613174556155846,
+     "diff": 1.0408340855860843e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 0.002611779419016994,
+     "rho_recorded": 0.0026117794190169707,
+     "diff": 2.3418766925686896e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 0.0011256759970927057,
+     "rho_recorded": 0.0011256759970927049,
+     "diff": 8.673617379884035e-19
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 0.0009754279616613777,
+     "rho_recorded": 0.000975427961661367,
+     "diff": 1.0625181290357943e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0025371024508764077,
+     "rho_recorded": 0.002537102450876348,
+     "diff": 5.984795992119984e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.005",
+     "file": "cert_span_R64_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.009118134374356181,
+     "rho_recorded": 0.009118134374356178,
+     "diff": 3.469446951953614e-18
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.002293796082806517,
+     "rho_recorded": 0.002293796082806532,
+     "diff": 1.474514954580286e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 0.002026656039889465,
+     "rho_recorded": 0.0020266560398894446,
+     "diff": 2.0383000842727483e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 0.0009351325364581164,
+     "rho_recorded": 0.0009351325364580903,
+     "diff": 2.6129272356900657e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 0.0008004152571804845,
+     "rho_recorded": 0.0008004152571804631,
+     "diff": 2.1467203015212988e-17
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.0022896743893410197,
+     "rho_recorded": 0.0022896743893410115,
+     "diff": 8.239936510889834e-18
+    },
+    {
+     "arm": "span_R64_tensor_fsa_dt0.01",
+     "file": "cert_span_R64_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.008241943814951363,
+     "rho_recorded": 0.008241943814951356,
+     "diff": 6.938893903907228e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d0.npz",
+     "rho_numpy": 0.0012236771273647369,
+     "rho_recorded": 0.0012236771273647416,
+     "diff": 4.7704895589362195e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d1.npz",
+     "rho_numpy": 0.0016303489896330166,
+     "rho_recorded": 0.001630348989632989,
+     "diff": 2.7538735181131813e-17
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d2.npz",
+     "rho_numpy": 0.0004544749770700919,
+     "rho_recorded": 0.00045447497707009694,
+     "diff": 5.041540102057596e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d3.npz",
+     "rho_numpy": 0.00037657715855479555,
+     "rho_recorded": 0.00037657715855478455,
+     "diff": 1.100465205072787e-17
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d4.npz",
+     "rho_numpy": 0.0015599991639076239,
+     "rho_recorded": 0.0015599991639076057,
+     "diff": 1.8214596497756474e-17
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.005",
+     "file": "cert_span_R96_tensor_fsa_dt0.005_d5.npz",
+     "rho_numpy": 0.005564027560406751,
+     "rho_recorded": 0.005564027560406753,
+     "diff": 1.734723475976807e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d0.npz",
+     "rho_numpy": 0.0010030663190183909,
+     "rho_recorded": 0.0010030663190183874,
+     "diff": 3.469446951953614e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d1.npz",
+     "rho_numpy": 0.0012497111332923725,
+     "rho_recorded": 0.0012497111332923675,
+     "diff": 4.9873299934333204e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d2.npz",
+     "rho_numpy": 0.00036472250946397307,
+     "rho_recorded": 0.00036472250946398147,
+     "diff": 8.40256683676266e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d3.npz",
+     "rho_numpy": 0.0003249238532249003,
+     "rho_recorded": 0.0003249238532248976,
+     "diff": 2.710505431213761e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d4.npz",
+     "rho_numpy": 0.001361039025634753,
+     "rho_recorded": 0.0013610390256347455,
+     "diff": 7.589415207398531e-18
+    },
+    {
+     "arm": "span_R96_tensor_fsa_dt0.01",
+     "file": "cert_span_R96_tensor_fsa_dt0.01_d5.npz",
+     "rho_numpy": 0.004798920979370704,
+     "rho_recorded": 0.004798920979370709,
+     "diff": 4.336808689942018e-18
+    }
+   ],
+   "passed": true
+  },
+  "control_downwind_mutation_detected": true
+ },
+ "failures": [],
+ "recomputed_selection": {
+  "accurate": "span_R512_tensor_fsa_dt0.005",
+  "fast": "span_R96_tensor_fsa_dt0.01"
+ },
+ "passed": true
+}

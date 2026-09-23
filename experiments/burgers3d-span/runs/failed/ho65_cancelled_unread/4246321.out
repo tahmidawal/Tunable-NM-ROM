@@ -1,0 +1,10 @@
+host=pax049 source_commit=f329c7e4362aaed054568f89100ec602d7f7351e
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[3.4s] [mesh 65] bank evaluated (250047, 512) 2.8s
+[5.9s] [mesh 65] A (2052, 512) 5.4s
+[16.7s] [mesh 65] tensor (2052, 512, 512) 16.2s
+[21.2s] table gates {'A_dst_vs_explicit': 1.0922997737105012e-15, 'qr_reconstruction': 1.6584037126248499e-15, 'tensor_vs_direct': 2.596707090328751e-16}
+[35.2s] references done, worst residual 1.00e-10

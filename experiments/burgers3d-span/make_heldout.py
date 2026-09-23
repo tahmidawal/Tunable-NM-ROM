@@ -19,6 +19,9 @@ def main(R):
     for n, s in sel['meshes'].items():
         val = json.loads((HERE / 'configs' / f'val_R{R}A3_n{n}.json').read_text())
         arms = [s['accurate_spec']] + ([s['fast_spec']] if s['fast_spec'] and s['fast'] != s['accurate'] else [])
+        sup = json.loads((HERE / 'checks' / 'selection-superseded-fsa-only-certs.json').read_text())['meshes'][n]
+        if sup['accurate'] not in (s['accurate'], s['fast']):
+            arms.append(sup['accurate_spec'])       # amendment A4: the superseded accurate arm, labelled extra
         c = {k: v for k, v in val.items() if k not in ('arms', 'parity', 'audit_arms', 'cohort_seed', 'cohort_count')}
         c.update(arms=[{k: v for k, v in a.items() if k in ('kind', 'rule', 'Rp', 'K', 'gtol', 'solver', 'dt')} for a in arms],
                  cohort_seed=923401, cohort_count=32, parity=dict(arm=None),

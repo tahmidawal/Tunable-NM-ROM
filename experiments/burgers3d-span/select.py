@@ -38,13 +38,19 @@ def fastest_fom(foms, bar):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--panel', required=True)
-    ap.add_argument('--cert', required=True)
+    ap.add_argument('--cert', required=True, nargs='+', help='certification results; certificates are merged by arm name')
     ap.add_argument('--out', required=True)
     ap.add_argument('--frozen', help='validation selection JSON (held-out use: report its FOM beside)')
     a = ap.parse_args()
     P = json.loads(Path(a.panel).read_text())
-    Ce = json.loads(Path(a.cert).read_text())
-    assert P['complete'] and Ce['complete'] and P['mesh'] == Ce['mesh']
+    Ces = [json.loads(Path(c).read_text()) for c in a.cert]
+    assert P['complete'] and all(c['complete'] and c['mesh'] == P['mesh'] for c in Ces)
+    Ce = dict(certificates={}, job_id='+'.join(str(c['job_id']) for c in Ces),
+              gates=dict(bad_control_not_confirmed=all(c['gates'].get('bad_control_not_confirmed', True) for c in Ces)))
+    for c in Ces:
+        for k, v in c['certificates'].items():
+            assert k not in Ce['certificates'] or Ce['certificates'][k]['confirmed'] == v['confirmed'], k
+            Ce['certificates'].setdefault(k, v)
     tim = P['timing']['summary']
     foms = {k: dict(worst_evolved=v['worst_evolved'], all_finite=v['all_finite'], median_ms=tim[k]['median_ms'],
                     capped=any(r['hit_newton_cap'] for r in v['quick']))
@@ -89,6 +95,8 @@ def main():
                stopping_rule_candidates=stop_pass, stopping_rule_pass=bool(stop_pass) and timing_ok)
     if a.frozen:
         fr = json.loads(Path(a.frozen).read_text())
+        if 'meshes' in fr:
+            fr = fr['meshes'][str(P['mesh'])]
         out['frozen_validation_fom'] = fr['fom']
         out['frozen_fom_row'] = foms.get(fr['fom'])
         for role in ('accurate', 'fast'):

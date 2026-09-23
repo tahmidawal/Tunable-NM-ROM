@@ -1,0 +1,37 @@
+{
+ "restricted_errors": {
+  "n": 1152,
+  "worst_rel": 1.0438090536712964e-15,
+  "passed": true
+ },
+ "control_swapped_case_detected": true,
+ "control_perturbed_error_detected": true,
+ "full_errors_case0": {
+  "arms": [
+   [
+    "fom_dt0.005_nt0.001_lt0.5",
+    3.4130207964354853e-15
+   ],
+   [
+    "head32_R512_tensor",
+    3.107180922860649e-15
+   ],
+   [
+    "span_R128_tensor",
+    3.191231811264302e-15
+   ],
+   [
+    "span_R512_tensor",
+    3.1485563536159513e-15
+   ]
+  ],
+  "passed": true
+ },
+ "rho_numpy": {
+  "states": 90,
+  "worst_diff": 1.4432899320127035e-15,
+  "passed": true
+ },
+ "control_downwind_mutation_detected": true
+}
+AUDIT PASS []

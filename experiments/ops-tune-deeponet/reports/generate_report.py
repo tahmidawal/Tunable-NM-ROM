@@ -26,9 +26,11 @@ LANE = HERE.parent
 PARENT_SUMMARY = LANE.parent / 'ops-deeponet-b2d/reports/summary.json'
 ATTEMPTS = ('lad01', 'tun01', 'fin01')
 # Criterion bars: DESIGN section 5.2. Literals, and declared as such.
+# Bars that ARE protocol constants: DESIGN section 5.2. Declared as literals.
 BARS = dict(T0_rho=0.2, T1_large=0.7, T1_no_gain=0.10, T2=0.10, T3_factor=1.5,
-            T4_rom_worst=0.018671, T5_discretisation=0.040265)
-FNO_LARGE = dict(mean=0.022811, median=0.018054, worst=0.063825)
+            T5_discretisation=0.040265)
+# The T3 reference and the T4 ROM bar are MEASUREMENTS and are derived, not typed.
+ROM_AUDIT = LANE.parent / 'no-second/checks/refinement02-diagnosis-audit.json'
 
 
 def sha(path):
@@ -52,7 +54,14 @@ def load():
     sources[str(PARENT_SUMMARY.relative_to(LANE.parents[1]))] = sha(PARENT_SUMMARY)
     inherited = json.loads((LANE / 'checks/inherited-sources.json').read_text())
     sources['experiments/ops-tune-deeponet/checks/inherited-sources.json'] = sha(LANE / 'checks/inherited-sources.json')
-    return audits, accounting, parent, inherited, sources
+    rom = json.loads(ROM_AUDIT.read_text())['summary']['rom']
+    sources[str(ROM_AUDIT.relative_to(LANE.parents[1]))] = sha(ROM_AUDIT)
+    reference = {row['metric'].replace('_fixed_initial_error', ''): row['value']
+                 for row in parent['rows']
+                 if row.get('arm') == 'fno-large' and row.get('cohort') == 'validation-32'}
+    reference = dict(mean=reference['mean'], median=reference['median'], worst=reference['worst'],
+                     rom_diagnosis8_worst=rom['worst_fixed_initial_error'])
+    return audits, accounting, parent, inherited, sources, reference
 
 
 def parent_rows(parent, cohort, metric):
@@ -113,14 +122,12 @@ def section_accuracy(audits, parent):
     published = parent_rows(parent, 'validation-32', 'mean_fixed_initial_error')
     worst = parent_rows(parent, 'validation-32', 'worst_fixed_initial_error')
     median = parent_rows(parent, 'validation-32', 'median_fixed_initial_error')
-    above = parent_rows(parent, 'validation-32', 'cases_above_5pct')
     for arm, row in sorted(published.items(), key=lambda kv: kv[1]['mean_fixed_initial_error']):
         rows.append([f'`{arm}`', (row.get('operator') or '') + ' (published)', 128,
                      pct(row['mean_fixed_initial_error']),
                      pct(median.get(arm, {}).get('median_fixed_initial_error')),
                      pct(worst.get(arm, {}).get('worst_fixed_initial_error')),
-                     int(above.get(arm, {}).get('cases_above_5pct', -1)),
-                     '—', '—', row.get('job_id')])
+                     '—', '—', '—', row.get('job_id')])
     rows.sort(key=lambda r: float(r[3]) if r[3] != 'n/a' else 1e9)
     return table(['Arm', 'Family', 'Training cases', 'mean (%)', 'median (%)', 'worst (%)',
                   '> 5 %', 'train-128 mean (%)', 'val / train', 'Job'],
@@ -190,7 +197,7 @@ def section_sweep(audits):
     return text, audit['decisions']
 
 
-def section_verdicts(audits, ladder_verdict, decisions, parent):
+def section_verdicts(audits, ladder_verdict, decisions, reference):
     """T0-T6 of DESIGN 5.2, each stated with the number that decides it."""
     lines = []
     if 'T0' in ladder_verdict:
@@ -228,12 +235,11 @@ def section_verdicts(audits, ladder_verdict, decisions, parent):
             arms.update(arms_of(audit))
         chosen = arms[selection['selected']]
         f = chosen['fixed_initial']
-        within = {k: f[k] / FNO_LARGE[k] for k in ('median', 'maximum') if k in f}
         lines.append(f"- **T3 (competitive with the FNO).** The selected arm "
-                     f"`{selection['selected']}` is {f['median'] / FNO_LARGE['median']:.2f}× "
-                     f"`fno-large`'s median and {f['maximum'] / FNO_LARGE['worst']:.2f}× its worst; "
+                     f"`{selection['selected']}` is {f['median'] / reference['median']:.2f}× "
+                     f"`fno-large`'s median and {f['maximum'] / reference['worst']:.2f}× its worst; "
                      f"the bar is {BARS['T3_factor']}× on both, so T3 "
-                     f"**{'PASSES' if max(f['median'] / FNO_LARGE['median'], f['maximum'] / FNO_LARGE['worst']) <= BARS['T3_factor'] else 'FAILS'}**.")
+                     f"**{'PASSES' if max(f['median'] / reference['median'], f['maximum'] / reference['worst']) <= BARS['T3_factor'] else 'FAILS'}**.")
         if selection['selected'] != selection['best_worst_case_arm']:
             lines.append(f"- **The selection rule optimises the mean, not the tail, and it did so "
                          f"here:** `{selection['selected']}` has worst case "
@@ -251,12 +257,12 @@ def section_verdicts(audits, ladder_verdict, decisions, parent):
 
 
 def main():
-    audits, accounting, parent, inherited, sources = load()
+    audits, accounting, parent, inherited, sources, reference = load()
     what_ran, arm_summary = section_what_ran(audits)
     ladder, ladder_verdict = section_ladder(audits, accounting)
     sweep, decisions = section_sweep(audits)
     accuracy = section_accuracy(audits, parent)
-    verdicts = section_verdicts(audits, ladder_verdict, decisions, parent)
+    verdicts = section_verdicts(audits, ladder_verdict, decisions, reference)
     operator, nmrom, parity = accounting['operator'], accounting['nmrom'], accounting['parity']
     extended = next((a['extended_training_data'] for a in audits.values()
                      if a.get('extended_training_data', {}).get('present')), {})
@@ -425,7 +431,7 @@ Every column and term above, for a reader opening this cold.
     (HERE / '2026-09-22-ops-tune-deeponet.md').write_text(body)
     summary = dict(generated='2026-09-22', report='2026-09-22-ops-tune-deeponet.md',
                    generator_sha256=sha(Path(__file__)), sources=sources, bars=BARS,
-                   fno_large_reference=FNO_LARGE, arms=arm_summary,
+                   derived_references=reference, arms=arm_summary,
                    ladder_verdict=ladder_verdict, decisions=decisions,
                    rule='every row carries its source file and that file SHA256; no row is typed')
     (HERE / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')

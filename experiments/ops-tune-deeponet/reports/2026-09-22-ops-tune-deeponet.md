@@ -63,22 +63,22 @@ to extrapolate roughly twice as far in parameter space as one given the bottom r
 
 | Arm | Family | Training cases | mean (%) | median (%) | worst (%) | > 5 % | train-128 mean (%) | val / train | Job |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `unet-refine` | U-Net (published) | 128 | 1.3523 | 1.0806 | 7.5176 | -1 | — | — | 3780138 |
-| `unet-medium` | U-Net (published) | 128 | 1.4341 | 1.3169 | 3.9622 | -1 | — | — | 3780138 |
-| `unet-small` | U-Net (published) | 128 | 1.6047 | 1.3963 | 5.5937 | -1 | — | — | 3780138 |
-| `unet-large` | U-Net (published) | 128 | 1.7029 | 1.3642 | 4.2340 | -1 | — | — | 3780138 |
-| `tsol-refine` | Transolver (published) | 128 | 1.9493 | 1.3591 | 9.3183 | -1 | — | — | 3780139 |
-| `tsol-small` | Transolver (published) | 128 | 2.0064 | 1.4522 | 6.8213 | -1 | — | — | 3780139 |
-| `fno-large` | FNO (published) | 128 | 2.2811 | 1.8054 | 6.3825 | -1 | — | — | 3710846 |
-| `fno-medium` | FNO (published) | 128 | 2.3122 | 1.7638 | 6.0423 | -1 | — | — | 3710846 |
-| `fno-refine` | FNO (published) | 128 | 2.3501 | 1.8810 | 7.1747 | -1 | — | — | 3710846 |
-| `fno-small` | FNO (published) | 128 | 2.5968 | 1.9552 | 7.4812 | -1 | — | — | 3710846 |
-| `tsol-medium` | Transolver (published) | 128 | 3.2950 | 2.3846 | 9.5338 | -1 | — | — | 3780139 |
-| `tsol-large` | Transolver (published) | 128 | 3.3412 | 3.0690 | 6.3953 | -1 | — | — | 3780139 |
-| `don-small` | DeepONet (published) | 128 | 14.7877 | 11.7522 | 54.7444 | -1 | — | — | 4179556 |
-| `don-medium` | DeepONet (published) | 128 | 14.8999 | 12.7297 | 51.7875 | -1 | — | — | 4179556 |
-| `don-refine` | DeepONet (published) | 128 | 15.7642 | 12.4612 | 58.9848 | -1 | — | — | 4179556 |
-| `don-large` | DeepONet (published) | 128 | 18.2211 | 14.8022 | 60.3540 | -1 | — | — | 4179556 |
+| `unet-refine` | U-Net (published) | 128 | 1.3523 | 1.0806 | 7.5176 | — | — | — | 3780138 |
+| `unet-medium` | U-Net (published) | 128 | 1.4341 | 1.3169 | 3.9622 | — | — | — | 3780138 |
+| `unet-small` | U-Net (published) | 128 | 1.6047 | 1.3963 | 5.5937 | — | — | — | 3780138 |
+| `unet-large` | U-Net (published) | 128 | 1.7029 | 1.3642 | 4.2340 | — | — | — | 3780138 |
+| `tsol-refine` | Transolver (published) | 128 | 1.9493 | 1.3591 | 9.3183 | — | — | — | 3780139 |
+| `tsol-small` | Transolver (published) | 128 | 2.0064 | 1.4522 | 6.8213 | — | — | — | 3780139 |
+| `fno-large` | FNO (published) | 128 | 2.2811 | 1.8054 | 6.3825 | — | — | — | 3710846 |
+| `fno-medium` | FNO (published) | 128 | 2.3122 | 1.7638 | 6.0423 | — | — | — | 3710846 |
+| `fno-refine` | FNO (published) | 128 | 2.3501 | 1.8810 | 7.1747 | — | — | — | 3710846 |
+| `fno-small` | FNO (published) | 128 | 2.5968 | 1.9552 | 7.4812 | — | — | — | 3710846 |
+| `tsol-medium` | Transolver (published) | 128 | 3.2950 | 2.3846 | 9.5338 | — | — | — | 3780139 |
+| `tsol-large` | Transolver (published) | 128 | 3.3412 | 3.0690 | 6.3953 | — | — | — | 3780139 |
+| `don-small` | DeepONet (published) | 128 | 14.7877 | 11.7522 | 54.7444 | — | — | — | 4179556 |
+| `don-medium` | DeepONet (published) | 128 | 14.8999 | 12.7297 | 51.7875 | — | — | — | 4179556 |
+| `don-refine` | DeepONet (published) | 128 | 15.7642 | 12.4612 | 58.9848 | — | — | — | 4179556 |
+| `don-large` | DeepONet (published) | 128 | 18.2211 | 14.8022 | 60.3540 | — | — | — | 4179556 |
 
 ## 6. The pre-registered verdicts
 
@@ -110,6 +110,7 @@ with no access to them.
 
 | source | sha256 |
 | --- | --- |
+| `experiments/no-second/checks/refinement02-diagnosis-audit.json` | `ffa77d1b8bc44d2b…` |
 | `experiments/ops-deeponet-b2d/reports/summary.json` | `0255abc0f16b88b7…` |
 | `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `8b390352004947ef…` |
 | `experiments/ops-tune-deeponet/reports/accounting.json` | `674fe5cc950feb38…` |

@@ -62,7 +62,42 @@ def main():
              'Protocol: `experiments/burgers3d-span/DESIGN.md` (pre-registered, revision R1 before any job, amendments '
              'dated there).')
     L.append('')
+    # verdict (numbers from the held-out selection files)
+    L.append('## Verdict')
+    L.append('')
+    for n in MESHES:
+        h = ho.get(n)
+        if not h:
+            continue
+        ar, fr, fo = h['accurate_row'], h['fast_row'], h['fom_row']
+        L.append(f"- **{n - 1}³, sealed held-out:** accurate `{h['accurate']}` {pct(ar['worst_evolved'])} % at "
+                 f"{sx(ar['speedup_rule'])} the FOM; fast `{h['fast']}` {pct(fr['worst_evolved'])} % "
+                 f"({'within' if h['fast_within_bar'] else 'OUTSIDE'} the pre-registered 5 % bar) at {sx(fr['speedup_rule'])} "
+                 f"the paper-rule FOM `{h['fom']}` ({pct(fo['worst_evolved'])} %, {ms(fo['median_ms'])} ms) and "
+                 f"{sx(fr['speedup_own'])} its own matched FOM.")
+    L.append('')
+    rat = [ho[n]['arms'][k]['worst_evolved'] / val[n]['arms'][k]['worst_evolved'] for n in MESHES if ho.get(n) and val.get(n)
+           for k in (ho[n]['accurate'], ho[n]['fast']) if k in val[n]['arms']]
+    L.append(f'The validation cohort (16 cases) under-estimated the worst-case error of the sealed cohort (32 cases): '
+             f'held-out / validation worst error of the frozen arms = {min(rat):.2f}–{max(rat):.2f}, so the fast settings chosen on '
+             'validation miss the bar on held-out; no setting is both within the bar and faster than Newton–BiCGStab on '
+             'the sealed cohort, and every accurate setting is slower than Newton–BiCGStab. This is a negative result for '
+             'Table 1.')
+    L.append('')
+    L.append('Process events (details and dates in DESIGN.md R1, A1–A4 and the lab log): the first six training '
+             'submissions failed or were cancelled (two device out-of-memory failures, one full-point recipe too slow, '
+             'duplicates cancelled); amendments A2/A3 (fixed-sweep solver path, a Δt = 0.01 reduced step, adaptive first '
+             'steps) were written after seeing validation panels; A4 corrected a selection bug (certificates of earlier '
+             'certification jobs had not been merged), after which a first held-out attempt that had started with the '
+             'superseded selection was cancelled within a minute and its logs were archived unread.')
+    L.append('')
     # headline
+    cc = load('checks/heldout-cohort-crossmesh.json')
+    if cc:
+        L.append(f"Held-out cohort identity across meshes: the recorded table hash of the 128³ job differs from the 32³/64³ jobs "
+                 f"(GPU roundoff in the peak normalisation); the initial fields agree to {cc['max_relative_difference']:.1e} "
+                 f"relative on the common audit lattice (`checks/heldout-cohort-crossmesh.json`).")
+        L.append('')
     L.append('## Headline rows (one frozen model per mesh series; Table-1 format)')
     L.append('')
     L.append('Error = worst over cases of the largest relative $L^2$ error at the five evolved output times, normalised '
@@ -196,7 +231,7 @@ def main():
         ('speedup rule / own', 'FOM ms / setting ms against the fastest FOM at least as accurate as the accurate setting / as the setting itself.'),
         ('timing gates', 'drift (median of the second ROM phase over the first within 1.10) and neighbour (invocations following a much longer one no more than 10 % slower), for ROM and FOM invocations; a failing mesh is labelled provisional.'),
         ('eligible', 'certified rule, finite outputs, no failed LM exits, non-stationary exits on at most 1 % of steps.'),
-        ('validation / held-out', 'the 16 cases used to choose settings / the 32 sealed cases opened once with the frozen settings.'),
+        ('validation / held-out', 'the 16 cases used to choose settings / the 32 sealed cases evaluated with the frozen settings (one completed evaluation; an earlier attempt with the superseded selection was aborted within a minute and its logs were archived unread — the lane owner\'s attestation).'),
         ('bank floor', 'the projection error onto the span of the bank functions, a lower bound for any span solve.'),
     ]:
         L.append(f'- **{t}**: {d}')

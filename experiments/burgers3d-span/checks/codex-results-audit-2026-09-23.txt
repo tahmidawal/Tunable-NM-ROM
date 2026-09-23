@@ -1,0 +1,84 @@
+The corrected selections and reported arithmetic check out. **The held-out result is negative under the 5% fast-bar criterion.** I found no demonstrated numerical blocker, but two major process/provenance qualifications and several audit limitations.
+
+I used read-only file inspection and `jq`; no files were changed and no Python, JAX, GPU, or cluster work ran.
+
+1. **Settings, eligibility, FOM choice and speedups: PASS after A4.**
+
+   I recomputed `max over cases of max(err[1:])` and compared `timing.summary.median_ms` with every available v1/A2/A3/held-out selection. There were **zero mismatches**. Independent reconstruction of validation eligibility and selection reproduced all accurate/fast picks; the FOM choices and shared-FOM speedup divisions also matched.
+
+   Examples from the raw records:
+
+   | Panel / arm | Recomputed error | Median ms |
+   |---|---:|---:|
+   | v1, 65 nodes, fast R128 | 4.151979% | 21.688871 |
+   | A2, 65 nodes, `fs1` R128, Δt=.01 | 3.936816% | 9.370487 |
+   | A3, 65 nodes, frozen fast | 3.936825% | 9.469630 |
+   | Held-out, 129 nodes, frozen accurate | 3.482103% | 295.496855 |
+   | Held-out, 129 nodes, frozen fast | 7.886453% | 20.305853 |
+
+   The attractive A2 arm was correctly rejected: **6/400 nonstationary steps = 1.5%**, exceeding R1’s 1% limit. A3 passes the stopping rule at 65 nodes: its eligible fast arm takes 9.469630 ms versus approximately 11.469 ms for its own matched FOM, **1.2111×**, with error below 5% and timing gates passing. The larger **2.8877×** shared-FOM ratio was correctly *not* used to establish that pass.
+
+   R512 model selection also agrees with the recorded condition and bank-validation floors. The missing A2 selection at 129 nodes is disclosed as an unfinished/superseded panel, not a missing successful result.
+
+   References: [selection implementation](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/select.py:12), [A3 raw 65-node panel](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/runs/val65z/archive/code/output/result.json), [model choice](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/checks/model-choice.json).
+
+2. **MAJOR — “sealed held-out opened once” overstates the process.**
+
+   A2/A3 honestly disclose that they followed validation results. Their candidate additions are validation-driven development, not an entirely prospectively fixed experiment. They retain the accuracy bar, eligibility threshold and comparator rule.
+
+   A4 is a justified correction: merging the earlier certificates restores genuinely eligible competitors, preserves fast picks/FOMs, and changes accurate picks according to the literal minimum-error rule. However, the corrected selection was frozen **after a first held-out attempt had already started and produced one quick-run line**. The report’s opening “opened once” and glossary’s “frozen before … opened” are therefore literally inaccurate, despite the later disclosure.
+
+   I found **no evidence that held-out outcomes drove a ROM choice**. The claim that the aborted logs were unread remains the lane owner’s attestation, not something these files independently prove. Appropriate wording is: “one completed held-out evaluation following an aborted attempt with the superseded selection; preliminary results reportedly unread.”
+
+   References: [DESIGN A2–A4](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/DESIGN.md:274), [unread-attempt record](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/runs/failed/HELDOUT-ATTEMPT1-UNREAD.txt), [report opening](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/reports/2026-09-23-burgers3d-span-accuracy-speed.md:3).
+
+3. **Held-out headline arms: PASS; fast-bar success: FAIL at every mesh.**
+
+   The headline arms exactly match corrected `selection.json`. Informational held-out reselection does not replace them; the superseded accurate arm remains supplementary. Mechanically choosing the held-out FOM is expressly authorized by §7/R1.
+
+   | Nodes/axis | Accurate error / ms | Fast error / ms | FOM error / ms | Accurate speedup | Fast shared / own speedup |
+   |---|---:|---:|---:|---:|---:|
+   | 33 | 1.3205% / 420.771 | **8.2900%** / 7.262 | 1.3074% / 7.659 | 0.0182× | 1.0547× / **0.6435×** |
+   | 65 | 2.3863% / 421.171 | **8.3066%** / 9.734 | 1.2403% / 11.579 | 0.0275× | 1.1895× / **0.7563×** |
+   | 129 | 3.4821% / 295.497 | **7.8865%** / 20.306 | 1.3966% / 61.186 | 0.2071× | 3.0132× / **2.0072×** |
+
+   All frozen arms remain solver/certificate-eligible; exceeding the fast error bar is a separate failure. The accurate arms are slower and less accurate than their selected FOMs. At 33/65 nodes, a faster, more accurate FOM also beats the fast arm. At 129 nodes, a qualified speed advantage survives against its own matched FOM, but the ROM misses 5% and remains less accurate.
+
+   Sources: held-out selection files for [33](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/checks/select-heldout-n33.json), [65](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/checks/select-heldout-n65.json), [129](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/checks/select-heldout-n129.json).
+
+4. **MAJOR — unresolved cross-mesh held-out cohort fingerprint mismatch.**
+
+   `hob33` and `hob65` record parameter-table SHA256 `83000af1…`; `hob129` records `da4ebf4f…`, despite identical seed 923401 and count 32. All lack an expected cohort hash, so the optional equality check is inactive.
+
+   The hash includes GPU-computed peak normalization, so roundoff is a plausible explanation; the available JSON does not establish that explanation or bound the difference. This prevents asserting byte-identical cross-mesh cohorts. It does **not** establish invalid within-job ROM/FOM comparisons, which share their job’s generated cohort.
+
+   References: [129-node raw record](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/runs/hob129/archive/code/output/result.json), [parameter-table hashing](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/paper-b3d/vendor/b3d_common.py:150), [optional cohort gate](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/panel.py:223).
+
+5. **Certificate/timing evidence is supportive, with bounded coverage.**
+
+   The tensor is correctly implemented as backward-advection, **not exact sign-upwind on negative decoded states**. R1 explicitly acknowledges this. Frozen-arm certificate maxima are approximately 0.00040–0.00480, comfortably below 0.116; the half-weight control fails. A3 NumPy audits cover 294 saved certificate states per mesh, with worst discrepancies below \(2.2\times10^{-14}\).
+
+   These are empirical certificates on accepted evolution endpoints. They do not certify trial states, Jacobians, held-out trajectories or solution-error bounds. The transferred threshold cannot establish accuracy equivalence.
+
+   **MINOR — audit PASS is narrower than a complete independent audit.** Held-out audit JSONs have null recomputed selections and no rho audit. `audit.py` does not make agreement with an external selection a passing condition. Saved full-grid checks cover case 0; timed-output parity checks only the restricted lattice. My JSON-level reconstruction verifies selection/arithmetic, not unsaved full fields.
+
+   **MINOR — burn-in occurs once before A–B–A**, rather than before every timed block as the repository rule requests. Nevertheless, repetitions are retained, all recorded drift/neighbour gates pass, and sampled timed-output differences are zero. I found no demonstrated timing failure.
+
+   References: [query implementations](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/common.py:462), [audit acceptance logic](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/audit.py:212), [timing implementation](/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-burgers3d-span/experiments/burgers3d-span/panel.py:351).
+
+For a paper Table 1 row, **CAN claim**:
+
+- Frozen, validation-selected **learned-bank span** results, with the held-out errors and explicitly defined same-job speedups above.
+- Validation passed the stopping rule after disclosed A2/A3 development.
+- A 129-node speed/accuracy tradeoff: 2.01× against its own matched tested FOM, at 7.89% error.
+- None of the evaluated held-out arms achieved both ≤5% error and an own-matched speedup.
+
+**CANNOT claim**:
+
+- Successful held-out ≤5% fast settings, an accuracy win, or simultaneous speed-and-accuracy dominance.
+- Shared-FOM ratios as accuracy-matched fast-arm gains.
+- A nonlinear-head advantage: every headline arm solves in a linear bank span.
+- An untouched, literally once-opened held-out process, fully prospective candidate selection, or verified identical cross-mesh cohorts.
+- Exact sign-upwind equivalence or an error guarantee from rho.
+
+**Verdict:** The corrected numerical selections are reproducible and the stopping rule was applied correctly; the substantive conclusion is a negative held-out result under the registered target. The report largely acknowledges that outcome honestly. Publication should correct the once-opened wording, qualify the unresolved cohort fingerprint mismatch, and retain the distinction between shared-FOM and own-matched speedups. The 129-node fast result supports a qualified speed/accuracy tradeoff, not a successful Table 1 accuracy-and-speed win.

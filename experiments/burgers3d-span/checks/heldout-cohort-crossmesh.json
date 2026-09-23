@@ -1,0 +1,6 @@
+{
+ "finding": "codex results audit #4: held-out table hash differs between hob33/hob65 (83000af1...) and hob129 (da4ebf4f...), same seed 923401 x 32",
+ "cause": "the hash includes s_star, the peak normalisation computed on the GPU over a 257^3 grid; last-bit roundoff",
+ "check": "initial fields on the common offset audit lattice x=(2k+1)/32, hob65 vs hob129, all 32 cases",
+ "max_relative_difference": 3.645959204493594e-16
+}

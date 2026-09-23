@@ -571,6 +571,87 @@ def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jn
     return jax.jit(query), jax.jit(coef)
 
 
+def make_query_fs(n, Rp, M, dt=DT, gtol=1e-3, trust=jnp.inf, unroll=True, first_sweeps=3):
+    """Amendment A2 fast path: span + tensor rule, the same scaled LSPG residual and the same LM step
+    (Cholesky of J^T J + lam diag(J^T J), clipped, damping carried, accept only if the residual decreases), but a
+    FIXED number of sweeps per time step after the predictor (3 on the first two steps, which have no
+    extrapolation history, then 1) instead of a while loop, and the time loop unrolled, so the
+    query is one straight-line program with no host round trips. The tensor is read twice per step: once for the
+    three predictor candidates (their residuals AND the chosen candidate's Jacobian), once at the swept state.
+    Stationarity is measured after the sweep and reported (reason 4 if ||J^T r|| <= gtol ||J||_F ||r||, else 0);
+    it is not enforced. dt in {0.005, 0.01}: backward Euler of the FOM at that step (the FOM grid has the same knob).
+    Output tuple identical to make_query."""
+    steps = int(round(0.25 / dt))
+    keep = int(round(0.05 / dt))
+    assert abs(steps * dt - 0.25) < 1e-12 and abs(keep * dt - 0.05) < 1e-12
+
+    def query(u0, nu, data, hp):
+        A, Ts, lam_ = data['A'], data['Ts'], data['lam']
+        S = 1.0 / (1.0 + dt * nu * lam_)
+        t = jnp.concatenate([b.T @ u0 for b in data['Qb']])
+        w0 = jax.scipy.linalg.solve_triangular(data['Rq'], t, lower=False)
+        ic = jnp.stack([0., 4., 0., jnp.linalg.norm(u0) ** 2 - jnp.linalg.norm(t) ** 2])
+
+        def rj(Ju, c, p):
+            Ac = A @ c
+            r = (Ac - p + dt * (0.5 * Ju @ c + nu * lam_ * Ac)) * S
+            return r, A + (dt * S)[:, None] * Ju
+
+        def sweep(w, r, J, rn, lam, p):
+            Hm = J.T @ J
+            g = J.T @ r
+            d = jnp.diag(Hm) + 1e-30
+            cf = jax.scipy.linalg.cho_factor(Hm + jnp.diag(lam * d), lower=True)
+            dw = jax.scipy.linalg.cho_solve(cf, -g)
+            nz = jnp.linalg.norm(dw)
+            dw = dw * jnp.where(nz > trust, trust / (nz + 1e-300), 1.)
+            ok = jnp.all(jnp.isfinite(dw))
+            wn = w + jnp.where(ok, dw, 0.)
+            r2, J2 = rj(jnp.einsum('mij,j->mi', Ts, wn), wn, p)
+            rn2 = jnp.linalg.norm(r2)
+            acc = ok & jnp.isfinite(rn2) & (rn2 < rn)
+            lam2 = jnp.where(acc, jnp.maximum(lam / 3, 1e-12), jnp.minimum(lam * 10, 1e14))
+            return (jnp.where(acc, wn, w), jnp.where(acc, r2, r), jnp.where(acc, J2, J), jnp.where(acc, rn2, rn),
+                    lam2, (~acc).astype(jnp.int32))
+
+        def make_step(nsweep):
+            def step(carry, k):
+                wv, wp, wp2, lam = carry
+                p = A @ wv
+                we = 2. * wv - wp
+                wq = jnp.where(k >= 2, 3. * wv - 3. * wp + wp2, we)
+                cand = jnp.stack((wv, we, wq))
+                Ju3 = jnp.einsum('mij,kj->kmi', Ts, cand)
+                r3 = jax.vmap(lambda Ju, c: rj(Ju, c, p)[0])(Ju3, cand)
+                rs = jnp.linalg.norm(r3, axis=1)
+                rs = jnp.where(jnp.isfinite(rs), rs, jnp.inf)
+                i = jnp.argmin(rs)
+                w = cand[i]
+                r, J = rj(Ju3[i], w, p)
+                rn = jnp.linalg.norm(r)
+                rej = jnp.int32(0)
+                for _ in range(nsweep):
+                    w, r, J, rn, lam, rj_ = sweep(w, r, J, rn, lam, p)
+                    rej = rej + rj_
+                gn = jnp.linalg.norm(J.T @ r) / (jnp.linalg.norm(J) * rn + 1e-300)
+                reason = jnp.where(jnp.isfinite(rn), jnp.where(gn <= gtol, 4, 0), 3).astype(jnp.int32)
+                return (w, wv, wp, lam), (w, rn, jnp.int32(nsweep), reason, gn, rej)
+            return step
+        carry = (w0, w0, w0, jnp.asarray(1e-6, dtype=jnp.float64))
+        carry, o1 = jax.lax.scan(make_step(first_sweeps), carry, jnp.arange(2), unroll=True)
+        _, o2 = jax.lax.scan(make_step(1), carry, jnp.arange(2, steps), unroll=unroll)
+        ws, rn, it, reason, gn, rej = (jnp.concatenate((x, y)) for x, y in zip(o1, o2))
+        internal = jnp.concatenate((w0[None], ws))
+        X = data['Rq'] @ internal[::keep].T
+        out, off = 0., 0
+        for b in data['Qb']:
+            wdt = b.shape[1]
+            out = out + b @ X[off:off + wdt]
+            off += wdt
+        return out.T, internal, it, reason, gn, rn, rej, ic
+    return jax.jit(query), jax.jit(lambda w, hp: w)
+
+
 def arm_data(mesh, kind, rule, Rp, M, lib=None):
     """Slice the mesh tables to one arm (prefix R', M). Copies are made once, offline."""
     edges = mesh['edges']

@@ -270,3 +270,22 @@ group (the 33-node group keeps all 29 791), for the POD-mode mean term and the m
 stochastic estimate of the same loss; checkpoint selection still evaluates the full point sets. 8 000 bank steps
 (was 12 000), 40 000 head steps (was 60 000). Everything else in §3 and R1 is unchanged. The failed attempts' logs
 are kept in `runs/failed/`.
+
+## A2 — fixed-sweep fast path and a two-step-size span (2026-09-23 ~18:45 EDT; AFTER the first validation panels)
+
+This amendment is written after seeing the first validation panels (`val33v1`/`val65v1`/`val129v1`, jobs
+4244520/4244524/4244527, and their certificates) and is labelled as such. What they showed: the tensor rule is
+certified everywhere (ρ ≤ 1e-2), the span ladder is monotone, but at 64³ no eligible arm within 5 % is faster than
+its own matched FOM (span R'=128 4.15 % at 21.7 ms vs `fom_dt0.01_nt0.01_lt0.1` 1.18 % at 11.6 ms): the per-step cost
+is (i) the LM while loop's host round trips and kernel launches (≈0.18 ms/step even at R'=32) and (ii) three to four
+full reads of the tensor per step. The held-out cohort is untouched.
+
+Added arms (validation panels re-run in full, new job directories `*A2`, every v1 arm re-timed in the same
+allocation; certificates run for the new arms): span, tensor rule, **fixed sweeps** — the same scaled residual, LM
+step (Cholesky, damping, clip, accept-if-decrease) and predictor, but exactly 3 sweeps on the first two steps (no
+extrapolation history) and 1 sweep afterwards, the time loop unrolled (no while loop), the tensor read once for all
+three predictor candidates and once after the sweep. Stationarity is measured after the last sweep and reported; the
+§6/R1 eligibility (non-stationary exits ≤ 1 % of steps) applies unchanged. For R' ∈ {512, 384, 256, 192, 128, 96, 64}
+and backward-Euler steps Δt ∈ {0.005, 0.01} (the FOM grid has the same Δt knob; the reference stays Δt = 0.005).
+Selection (§6 with R1) is applied to the A2 panels, which contain every v1 arm; the v1 panels are reported as the
+first validation panels. Nothing else changes (bar, rules, FOM grid, cohorts, gates, stopping rule).

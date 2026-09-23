@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+FS = False
 
 
 def arms(R, exact):
@@ -17,6 +18,9 @@ def arms(R, exact):
     a.append(dict(kind='head', rule='lat16', Rp=top, K=32))
     if exact:
         a.append(dict(kind='span', rule='exact', Rp=top))
+    if FS:   # amendment A2: fixed-sweep fast path, two backward-Euler steps
+        a += [dict(kind='span', rule='tensor', Rp=r, solver='fs1', dt=dt) for dt in (0.005, 0.01)
+              for r in span_ladder if r >= 64]
     return a
 
 
@@ -30,7 +34,7 @@ def base(R, n):
                 gtol=1e-3, step_budget=50, trust_fraction=0.05, rho_bar=0.116)
 
 
-def main(R):
+def main(R, tag=''):
     out = HERE / 'configs'
     for n in (33, 65, 129):
         c = base(R, n)
@@ -38,12 +42,16 @@ def main(R):
                  ref_ntol=1e-10, ref_ltol=1e-11, save_reference_steps=n in (33, 65), fom_grid=fom_grid(), reps=3,
                  audit_arms=[f'span_R{R}_tensor', 'span_R128_tensor', f'head32_R{R}_tensor', 'fom_dt0.005_nt0.001_lt0.5'],
                  parity=dict(arm=f'head32_R{R}_lat16', cases=4) if n in (33, 65) else dict(arm=None))
-        (out / f'val_R{R}_n{n}.json').write_text(json.dumps(c, indent=1) + '\n')
+        (out / f'val_R{R}{tag}_n{n}.json').write_text(json.dumps(c, indent=1) + '\n')
         c = base(R, n)
         c.update(mode='certify', arms=arms(R, exact=False) + [dict(kind='span', rule='lat16', Rp=128, bad=True)],
                  cert_draws=[[923201, 8], [923202, 8], [923203, 8], [923204, 8], [923205, 8], [923206, 16]])
-        (out / f'cert_R{R}_n{n}.json').write_text(json.dumps(c, indent=1) + '\n')
+        (out / f'cert_R{R}{tag}_n{n}.json').write_text(json.dumps(c, indent=1) + '\n')
 
 
 if __name__ == '__main__':
-    main(int(sys.argv[1]))
+    if len(sys.argv) > 2 and sys.argv[2] == 'A2':
+        FS = True
+        main(int(sys.argv[1]), tag='A2')
+    else:
+        main(int(sys.argv[1]))

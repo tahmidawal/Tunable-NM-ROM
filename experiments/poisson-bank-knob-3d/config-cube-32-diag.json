@@ -1,7 +1,7 @@
 {
- "attempt": "c32",
+ "attempt": "c32diag",
  "intervals": 32,
- "order_seed": 923032,
+ "order_seed": 923132,
  "cohort": "development",
  "case_count": 16,
  "problem": "cube",
@@ -43,7 +43,7 @@
   0.001,
   0.0001
  ],
- "repetitions": 5,
+ "repetitions": 2,
  "slow_repetitions": 3,
  "burn_seconds": 0.1,
  "neighbour_tolerance": 0.001,
@@ -65,6 +65,16 @@
    "name": "control_no_cg",
    "cg": false,
    "guard": true
+  },
+  {
+   "name": "after_cg_noguard",
+   "cg": true,
+   "guard": false
+  },
+  {
+   "name": "no_cg_noguard",
+   "cg": false,
+   "guard": false
   }
  ],
  "neighbour_gate_variant": "after_cg"

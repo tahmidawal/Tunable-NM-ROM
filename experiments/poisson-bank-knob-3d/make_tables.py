@@ -164,7 +164,8 @@ def main():
                      result_sha256=sha_file(base / 'result.json'), audit_sha256=sha_file(base / 'audit.json'),
                      audit=A['verdict'], audit_summary=A['summary'], gates=R['gates'],
                      neighbour_max_ratio=max(r['ratio'] for r in R['neighbour_gate']['rows']
-                                             if r['scope'] == R['neighbour_gate']['gate_scope']),
+                                             if r['scope'] == R['neighbour_gate']['gate_scope']
+                                             and r.get('variant', 'after_cg') == R['neighbour_gate'].get('gate_variant', 'after_cg')),
                      parity=R['parity'], floors={k: 100 * v['worst'] for k, v in R['floors'].items()},
                      not_constructible=R.get('not_constructible', []))
         usable = A['verdict'] == 'PASS' and all(R['gates'].values())

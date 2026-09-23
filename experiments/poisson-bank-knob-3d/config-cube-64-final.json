@@ -57,5 +57,18 @@
  },
  "final_count": 64,
  "frozen_settings": "frozen-N64.json",
- "final_parameters_sha256": "27ec2cf52d2eb0ad84d6b3e83c46f504a67c0dd56a7a1f968263d3179430be60"
+ "final_parameters_sha256": "27ec2cf52d2eb0ad84d6b3e83c46f504a67c0dd56a7a1f968263d3179430be60",
+ "neighbour_variants": [
+  {
+   "name": "after_cg",
+   "cg": true,
+   "guard": true
+  },
+  {
+   "name": "control_no_cg",
+   "cg": false,
+   "guard": true
+  }
+ ],
+ "neighbour_gate_variant": "after_cg"
 }

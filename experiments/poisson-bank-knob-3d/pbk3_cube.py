@@ -365,25 +365,9 @@ def main():
         print('SLOW', rep, round(time.perf_counter() - begin, 1), flush=True)
         save()
     long_sub = [s for s in slow if s['tolerance'] == cfg['neighbour_tolerance']][0]
-    ncase = range(cfg['neighbour_cases'])
-    for case in ncase:
-        for i in order.permutation(len(subjects)):
-            sub = subjects[int(i)]
-            invoke(long_sub, case)
-            P3.burn(cfg['burn_seconds'])
-            field, row = invoke(sub, case)
-            R_['neighbour'].append(record(sub, case, 0, 'neighbour', field, row, long_sub['name']))
-    gate_rows = []
-    for sub in subjects:
-        for scope in ('total_seconds', 'fused_device_seconds'):
-            base = np.median([x[scope] for x in R_['invocations'] if x['name'] == sub['name'] and x['case'] in ncase])
-            after = np.median([x[scope] for x in R_['neighbour'] if x['name'] == sub['name']])
-            gate_rows.append(dict(name=sub['name'], scope=scope, main_median=float(base),
-                                  after_long_median=float(after), ratio=float(after / base)))
-    R_['neighbour_gate'] = dict(rows=gate_rows, limit=cfg['neighbour_limit'], neighbour=long_sub['name'],
-                                cases=len(ncase), gate_scope=cfg['gate_scope'],
-                                passed=bool(all(r['ratio'] <= cfg['neighbour_limit'] for r in gate_rows
-                                                if r['scope'] == cfg['gate_scope'])))
+    R_['neighbour'], R_['neighbour_gate'] = P3.neighbour_phase(subjects, long_sub, invoke, record,
+                                                             R_['invocations'], cfg, uuid0, order)
+    gate_rows = [r for r in R_['neighbour_gate']['rows'] if r['variant'] == R_['neighbour_gate']['gate_variant']]
     print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in gate_rows), flush=True)
     save()
     for rep in range(cfg['profile_reps']):

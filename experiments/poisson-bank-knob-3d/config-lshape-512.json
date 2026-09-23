@@ -65,5 +65,18 @@
  "neighbour_cases": 6,
  "neighbour_limit": 1.1,
  "gate_scope": "total_seconds",
- "profile_reps": 3
+ "profile_reps": 3,
+ "neighbour_variants": [
+  {
+   "name": "after_cg",
+   "cg": true,
+   "guard": true
+  },
+  {
+   "name": "control_no_cg",
+   "cg": false,
+   "guard": true
+  }
+ ],
+ "neighbour_gate_variant": "after_cg"
 }

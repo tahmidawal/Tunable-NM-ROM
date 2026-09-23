@@ -54,5 +54,18 @@
  "accepted_checkpoint_sha256": {
   "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
   "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
- }
+ },
+ "neighbour_variants": [
+  {
+   "name": "after_cg",
+   "cg": true,
+   "guard": true
+  },
+  {
+   "name": "control_no_cg",
+   "cg": false,
+   "guard": true
+  }
+ ],
+ "neighbour_gate_variant": "after_cg"
 }

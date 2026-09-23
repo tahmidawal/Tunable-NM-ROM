@@ -191,3 +191,41 @@ def summarise(v):
 def q_set(ladder, Rp, K):
     """Correction ranks tested at truncation R': the parent's ladder values with q <= R' - K."""
     return sorted({q for q in ladder if q <= Rp - K})
+
+
+def neighbour_phase(subjects, long_sub, invoke, record, main_rows, cfg, uuid0, order):
+    """Order-effect gate. Each variant re-times every ROM arm on cases 0..neighbour_cases-1:
+    [long CG solve if v['cg']] -> burn-in -> [device-guard call if v['guard']] -> the arm.
+    The main phase runs burn-in -> device-guard call -> subject, so the variant with cg=True, guard=True
+    differs from it ONLY by the long predecessor. Ratio = variant median / main-phase median on the
+    same cases; the gate is the configured variant in the configured (Table-1) scope."""
+    ncase = range(cfg['neighbour_cases'])
+    variants = cfg.get('neighbour_variants', [dict(name='after_cg', cg=True, guard=True)])
+    rows = []
+    for v in variants:
+        for case in ncase:
+            for i in order.permutation(len(subjects)):
+                sub = subjects[int(i)]
+                if v['cg']:
+                    invoke(long_sub, case)
+                burn(cfg['burn_seconds'])
+                if v['guard']:
+                    assert gpu_uuid() == uuid0
+                field, row = invoke(sub, case)
+                rec = record(sub, case, 0, 'neighbour', field, row, long_sub['name'] if v['cg'] else None)
+                rec['variant'] = v['name']
+                rows.append(rec)
+    gate_rows = []
+    for v in variants:
+        for sub in subjects:
+            for scope in ('total_seconds', 'fused_device_seconds'):
+                base = np.median([x[scope] for x in main_rows if x['name'] == sub['name'] and x['case'] in ncase])
+                after = np.median([x[scope] for x in rows if x['name'] == sub['name'] and x['variant'] == v['name']])
+                gate_rows.append(dict(variant=v['name'], name=sub['name'], scope=scope, main_median=float(base),
+                                      after_long_median=float(after), ratio=float(after / base)))
+    gv, gs = cfg.get('neighbour_gate_variant', 'after_cg'), cfg['gate_scope']
+    gate = dict(rows=gate_rows, limit=cfg['neighbour_limit'], neighbour=long_sub['name'], cases=len(ncase),
+                gate_scope=gs, gate_variant=gv, variants=variants,
+                passed=bool(all(r['ratio'] <= cfg['neighbour_limit'] for r in gate_rows
+                                if r['scope'] == gs and r['variant'] == gv)))
+    return rows, gate

@@ -15,13 +15,13 @@ REPORT = HERE / 'reports' / '2026-09-24-spectral-fom-vs-nmrom.md'
 # accepted runs: (attempt, output dir) per problem/mesh; anything not listed is not reported
 ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
-    'poisson3d': [('spA', 'output3'), ('spA', 'output4')],
+    'poisson3d': [('spA', 'output3'), ('spA', 'output4'), ('spM', 'output0'), ('spM', 'output1')],
     'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spJ', 'output0')],
     'burgers2d_original_ladder': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
     'burgers2d_L1_2048_without_half_dst': [('spG', 'output0')],
     'heat2d': [('spI', 'output0'), ('spI', 'output1'), ('spI', 'output2')],
     'heat2d_two_variant_record': [('spD', 'output0'), ('spD', 'output1')],
-    'heat3d': [],
+    'heat3d': [('spN', 'output0'), ('spN', 'output1'), ('spN', 'output2')],
 }
 
 
@@ -228,7 +228,7 @@ def main():
       + (', '.join(f"{r['mesh']}³ {r['role'][4:]} ({r['ratio_matched']:.3f})" for r in nsr if r['ratio_matched'] <= 1) or 'none') + '.')
     w('- **L-shape**: there is no spectral arm (see below).\n')
     for prob, title, unit in (('poisson2d', 'Poisson 2D square (Dirichlet, 5-point)', '²'),
-                              ('poisson3d', 'Poisson 3D cube (Dirichlet, 7-point), final cohort', '³')):
+                              ('poisson3d', 'Poisson 3D cube (Dirichlet, 7-point); 32³/64³ final cohort, 128³/256³ development cohort (as the lane)', '³')):
         rows = S[prob]
         if not rows:
             continue

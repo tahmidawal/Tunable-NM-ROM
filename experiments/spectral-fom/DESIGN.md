@@ -241,3 +241,19 @@ and the rotated copy was transient alongside the 51.5 GB kept prefix. It is reru
 which affects memory only. Rows are partitioned more finely, and every arm's arithmetic is otherwise unchanged. Any
 round-off difference this introduces is covered by the lane-error parity gate, which requires agreement to 1e-8
 relative. No output of spK was used, and its directory was removed.
+
+## Note M/N (2026-09-23) — cube 128³/256³ and heat 3D
+
+**Cube 128³ and 256³ (spM).** The lane ran these meshes on its development cohort (seed 920411, 16 cases). Its
+summary row (`lane-ref/cube-selection.json`) selects accurate `R128_linear` and fast `R64_linear`. They are re-timed
+here on the same cohort, with the ROM code pinned at d2c775a9. The only later lane change is to `pbk3_core`, and it
+touches the order-gate code only.
+
+**Heat 3D (spN).** Meshes 32³, 64³ and 128³, from the h3d summary at 134f30a2
+(`lane-ref/heat3d-selection.json`):
+- pooled accurate is `lin_R320_bf`;
+- pooled fast is `lin_R128_cn`;
+- `lin_R320_cn` and `lin_R128_bf` are timed as well.
+
+The cohort is held-out sealed 921099 (64 cases). Because the cohort has 64 cases, the job uses 5 retained
+repetitions, which meets the brief's ≥5. 256³ follows once the lane's h3d256b selection lands.

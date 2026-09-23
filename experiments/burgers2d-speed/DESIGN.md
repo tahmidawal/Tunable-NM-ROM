@@ -1,6 +1,6 @@
 # DESIGN — burgers2d-speed: a faster 2D Burgers NM-ROM at $256^2$, $512^2$, $1024^2$ without retraining
 
-Written before the first cluster job (2026-09-23, ~17:30 EDT). Lane `exp/2026-09-23-burgers2d-speed`, forked from
+Written before the first cluster job (2026-09-23, ~16:30 EDT). Lane `exp/2026-09-23-burgers2d-speed`, forked from
 `exp/2026-09-23-burgers-bank-knob` @ `b5c843ab` (the lane that produced Table 1's Burgers rows). Cluster namespace
 `/cluster/tufts/paralab/tawal01/b2speed_20260923/`, one sub-directory per job, never reused. Local commits only;
 **never pushed**.

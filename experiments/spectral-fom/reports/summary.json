@@ -2028,9 +2028,274 @@
    "neighbour_worst": 1.0955649347658318
   }
  ],
- "heat2d": [
+ "burgers2d_L1_2048_without_half_dst": [
   {
-   "problem": "heat2d",
+   "problem": "burgers2d",
+   "mesh": 2048,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4208943",
+   "attempt": "spG",
+   "output": "output0",
+   "result": "runs/spG/archive/output0/result.json",
+   "result_sha256": "d9c177351b98194e6ec2d3a0868a313deedcdd9bcb8a30d9df69881910a4f4e0",
+   "commit": "bf979ae6b1608d8b877bc92f2adfb39b7e4a866c",
+   "arms": {
+    "rom_accurate": {
+     "arm": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst": 0.00534404554831695,
+     "median": 0.0016866534069385993,
+     "ms": 173.52877440862358,
+     "a1": 173.5669185873121,
+     "a2": 173.50354930385947,
+     "matched": "ppic_dt005_nt5e-4",
+     "matched_worst": 0.002923472438944071,
+     "matched_ms": 81.84031839482486,
+     "ratio_matched": 0.4716239060278742,
+     "ratio_tight": 1.4888278640705057
+    },
+    "rom_fast": {
+     "arm": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst": 0.01871638970921548,
+     "median": 0.006286233397273204,
+     "ms": 34.23427254892886,
+     "a1": 34.214452374726534,
+     "a2": 34.250695491209626,
+     "matched": "ppic_dt01_nt3e-3",
+     "matched_worst": 0.018065001271258534,
+     "matched_ms": 40.06610461510718,
+     "ratio_matched": 1.1703506933831662,
+     "ratio_tight": 7.5466617316992535
+    }
+   },
+   "spectral": {
+    "pic_dt005_nt1e-6": {
+     "worst": 3.7006358904549123e-06,
+     "median": 1.1555244628935505e-06,
+     "ms": 258.35447455756366,
+     "converged": true
+    },
+    "pic_dt005_nt1e-4": {
+     "worst": 0.0005101445593677322,
+     "median": 0.00020155664285841183,
+     "ms": 148.97424657829106,
+     "converged": true
+    },
+    "pic_dt005_nt2e-4": {
+     "worst": 0.0012047932037394103,
+     "median": 0.00046336668963974385,
+     "ms": 137.52855244092643,
+     "converged": true
+    },
+    "pic_dt005_nt5e-4": {
+     "worst": 0.00540772635729284,
+     "median": 0.0016394815239764464,
+     "ms": 107.48821892775595,
+     "converged": true
+    },
+    "pic_dt005_nt1e-3": {
+     "worst": 0.009352570580247375,
+     "median": 0.0038035028092892756,
+     "ms": 91.15140442736447,
+     "converged": true
+    },
+    "pic_dt005_nt3e-3": {
+     "worst": 0.023212286190829726,
+     "median": 0.010506579780000016,
+     "ms": 76.02654676884413,
+     "converged": true
+    },
+    "pic_dt005_nt1e-2": {
+     "worst": 0.042527592473389185,
+     "median": 0.015393366830287598,
+     "ms": 70.74822881259024,
+     "converged": true
+    },
+    "pic_dt01_nt1e-4": {
+     "worst": 0.016516969444618407,
+     "median": 0.012001116834646195,
+     "ms": 99.99341447837651,
+     "converged": true
+    },
+    "pic_dt01_nt1e-3": {
+     "worst": 0.01675644208487253,
+     "median": 0.012207663462036538,
+     "ms": 70.05070010200143,
+     "converged": true
+    },
+    "pic_dt01_nt2e-3": {
+     "worst": 0.018022637877717396,
+     "median": 0.01126651267207604,
+     "ms": 56.03021150454879,
+     "converged": true
+    },
+    "pic_dt01_nt3e-3": {
+     "worst": 0.016502094224328613,
+     "median": 0.011039016104044147,
+     "ms": 49.625703832134604,
+     "converged": true
+    },
+    "pic_dt01_nt5e-3": {
+     "worst": 0.015574799927822852,
+     "median": 0.012009707823119317,
+     "ms": 44.98917772434652,
+     "converged": true
+    },
+    "pic_dt01_nt1e-2": {
+     "worst": 0.03460351175846657,
+     "median": 0.014459827049153218,
+     "ms": 39.44651084020734,
+     "converged": true
+    },
+    "ppic_dt005_nt1e-6": {
+     "worst": 3.1294187469968367e-06,
+     "median": 1.172434016957947e-06,
+     "ms": 203.0655548442155,
+     "converged": true
+    },
+    "ppic_dt005_nt1e-4": {
+     "worst": 0.0004480509821392996,
+     "median": 0.00021591063607982118,
+     "ms": 100.01747449859977,
+     "converged": true
+    },
+    "ppic_dt005_nt2e-4": {
+     "worst": 0.0012119505581833772,
+     "median": 0.0004833941704608705,
+     "ms": 92.45229768566787,
+     "converged": true
+    },
+    "ppic_dt005_nt5e-4": {
+     "worst": 0.002923472438944071,
+     "median": 0.0015139254967527931,
+     "ms": 81.84031839482486,
+     "converged": true
+    },
+    "ppic_dt005_nt1e-3": {
+     "worst": 0.007641201568002121,
+     "median": 0.003483217583650787,
+     "ms": 67.39176553674042,
+     "converged": true
+    },
+    "ppic_dt005_nt3e-3": {
+     "worst": 0.01621167702050886,
+     "median": 0.010383743072053848,
+     "ms": 46.03058495558798,
+     "converged": true
+    },
+    "ppic_dt005_nt1e-2": {
+     "worst": 0.022504703449224724,
+     "median": 0.017919458910806842,
+     "ms": 46.637175837531686,
+     "converged": true
+    },
+    "ppic_dt01_nt1e-4": {
+     "worst": 0.016520724461437288,
+     "median": 0.011984262664460829,
+     "ms": 77.6460284832865,
+     "converged": true
+    },
+    "ppic_dt01_nt1e-3": {
+     "worst": 0.0166779492583307,
+     "median": 0.012391536474813166,
+     "ms": 50.39321235381067,
+     "converged": true
+    },
+    "ppic_dt01_nt2e-3": {
+     "worst": 0.018317500310690585,
+     "median": 0.012598629075075335,
+     "ms": 44.55742449499667,
+     "converged": true
+    },
+    "ppic_dt01_nt3e-3": {
+     "worst": 0.018065001271258534,
+     "median": 0.012694054941334972,
+     "ms": 40.06610461510718,
+     "converged": true
+    },
+    "ppic_dt01_nt5e-3": {
+     "worst": 0.019990640606321212,
+     "median": 0.012862010577511736,
+     "ms": 34.21293245628476,
+     "converged": true
+    },
+    "ppic_dt01_nt1e-2": {
+     "worst": 0.019372855474685067,
+     "median": 0.012591143232112863,
+     "ms": 27.46830298565328,
+     "converged": true
+    },
+    "imex_dt0025": {
+     "worst": 0.029755741435019443,
+     "median": 0.012746638184897664,
+     "ms": 140.97066083922982,
+     "converged": true
+    },
+    "imex_dt005": {
+     "worst": 0.042527592473389185,
+     "median": 0.015393366830287598,
+     "ms": 70.55042404681444,
+     "converged": true
+    },
+    "imex_dt01": {
+     "worst": 0.07753558148494677,
+     "median": 0.025645231451009755,
+     "ms": 35.78084544278681,
+     "converged": true
+    }
+   },
+   "dst_variant": "fft",
+   "validation": {
+    "agreement": 1.7163749425246126e-10,
+    "control": 0.0022879304259658152,
+    "fom_newton": 103,
+    "picard_sweeps": 446
+   },
+   "lane_parity": [
+    {
+     "name": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst_relative_deviation": 3.14934259479199e-13,
+     "passed": true
+    },
+    {
+     "name": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst_relative_deviation": 7.616609851988392e-14,
+     "passed": true
+    }
+   ],
+   "gates": {
+    "paper_fom_tight_converged": true,
+    "spectral_tight_converged": true,
+    "same_discrete_solution": true,
+    "control_failed": true,
+    "deterministic": true,
+    "spectral_converged": true,
+    "lane_error_parity": true,
+    "drift": true,
+    "neighbour": false,
+    "device_guard": true
+   },
+   "neighbour_T1": true,
+   "audit": "PASS",
+   "drift": [
+    {
+     "name": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "romA1_median": 0.1735669185873121,
+     "romA2_median": 0.17350354930385947,
+     "ratio": 0.9996348999914938
+    },
+    {
+     "name": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "romA1_median": 0.034214452374726534,
+     "romA2_median": 0.034250695491209626,
+     "ratio": 1.0010592926078765
+    }
+   ],
+   "neighbour_worst": 1.442368359135403
+  }
+ ],
+ "heat2d_two_variant_record": [
+  {
+   "problem": "heat2d_two_variant_record",
    "mesh": 1024,
    "gpu": "NVIDIA A100-PCIE-40GB",
    "job": "4207215",
@@ -2161,7 +2426,7 @@
    "neighbour_worst": 1.0035432169566578
   },
   {
-   "problem": "heat2d",
+   "problem": "heat2d_two_variant_record",
    "mesh": 2048,
    "gpu": "NVIDIA A100-PCIE-40GB",
    "job": "4207215",
@@ -2292,6 +2557,7 @@
    "neighbour_worst": 1.0016759584751764
   }
  ],
+ "heat2d": [],
  "heat3d": [],
  "ns3d": {
   "source_lane": "exp/2026-09-23-ns3d-shift-head",

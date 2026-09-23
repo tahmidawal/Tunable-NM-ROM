@@ -16,9 +16,11 @@ REPORT = HERE / 'reports' / '2026-09-24-spectral-fom-vs-nmrom.md'
 ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
     'poisson3d': [('spA', 'output3'), ('spA', 'output4')],
-    'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spG', 'output0')],
+    'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spJ', 'output0')],
     'burgers2d_original_ladder': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
-    'heat2d': [('spD', 'output0'), ('spD', 'output1'), ('spH', 'output0')],
+    'burgers2d_L1_2048_without_half_dst': [('spG', 'output0')],
+    'heat2d': [('spI', 'output0'), ('spI', 'output1'), ('spI', 'output2')],
+    'heat2d_two_variant_record': [('spD', 'output0'), ('spD', 'output1')],
     'heat3d': [],
 }
 
@@ -168,6 +170,8 @@ def rows_heat(problem):
 def main():
     S = dict(poisson2d=rows_poisson('poisson2d'), poisson3d=rows_poisson('poisson3d'), burgers2d=rows_burgers(),
              burgers2d_original_ladder=rows_burgers('burgers2d_original_ladder'),
+             burgers2d_L1_2048_without_half_dst=rows_burgers('burgers2d_L1_2048_without_half_dst'),
+             heat2d_two_variant_record=rows_heat('heat2d_two_variant_record'),
              heat2d=rows_heat('heat2d'), heat3d=rows_heat('heat3d'))
     ns = json.loads((HERE / 'lane-ref' / 'ns3d.json').read_text())
     S['ns3d'] = ns
@@ -277,11 +281,14 @@ def main():
             w(f'| `{nm}` | ' + ' | '.join(f"{pct(r['spectral'][nm]['worst'])} / {pct(r['spectral'][nm]['median'])} / {f2(r['spectral'][nm]['ms'])}"
                                         for r in S['burgers2d']) + ' |')
         w('')
-    if S['burgers2d_original_ladder']:
-        w('Original pre-registered 11-setting ladder (spC/spE; superseded by the L1 ladder above, which contains it):\n')
+    for key, text in (('burgers2d_original_ladder', 'Original pre-registered 11-setting ladder (spC/spE). It is superseded by the L1 ladder above, which contains it:'),
+                      ('burgers2d_L1_2048_without_half_dst', 'L1 ladder at 2048² without the half-length DST candidate (spG). It is superseded by spJ, which adds that candidate (amendment L2):')):
+        if not S[key]:
+            continue
+        w(text + '\n')
         w('| mesh | job | role | err | ms | matched spectral | its err | its ms | ratio (matched) | timing gates |')
         w('|---:|---|---|---:|---:|---|---:|---:|---:|---|')
-        for r in S['burgers2d_original_ladder']:
+        for r in S[key]:
             g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
             for role in ('rom_accurate', 'rom_fast'):
                 a = r['arms'][role]
@@ -308,6 +315,15 @@ def main():
                 w(f"| {r['mesh']}{unit} | {r['gpu']} | {r['job']} | {r['cohort']} | {role[4:]} | `{a['arm']}` | {pct(a['worst'], 4)} | {f2(a['ms'])} | "
                   f"`{a['matched']}` | {pct(a['matched_worst'], 4)} | {f2(a['matched_ms'])} | **{a['ratio_matched']:.3f}** | {a['ratio_exact']:.3f} | {gate_str(g)} | {r['audit']} |")
         w('')
+    if S['heat2d_two_variant_record']:
+        w('Heat 2D record without the half-length DST variant (spD, `fft`/`mm` only). It is superseded by the rows above (amendment L2):\n')
+        w('| mesh | job | role | arm | err | ms | matched spectral | its ms | ratio (matched) | timing gates |')
+        w('|---:|---|---|---|---:|---:|---|---:|---:|---|')
+        for r in S['heat2d_two_variant_record']:
+            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
+            for role, a in r['arms'].items():
+                w(f"| {r['mesh']}² | {r['job']} | {role[4:]} | `{a['arm']}` | {pct(a['worst'], 4)} | {f2(a['ms'])} | `{a['matched']}` | {f2(a['matched_ms'])} | {a['ratio_matched']:.3f} | {gate_str(g)} |")
+        w('')
     w('## Navier–Stokes 3D (recorded from `ns3d-shift-head`, not rerun)\n')
     w(ns['note'] + ' The ratio is CNAB2 ms / ROM ms, from the lane\'s own timing block and comparator rule. That '
       'lane used its protocol v2 (a fast block plus after-heavy gates), not this lane\'s A–B–A.\n')
@@ -328,7 +344,8 @@ def main():
     w('## Provenance\n')
     w('| problem | mesh | attempt/output | job | GPU | commit | result.json sha256 |')
     w('|---|---:|---|---|---|---|---|')
-    for prob in ('poisson2d', 'poisson3d', 'burgers2d', 'burgers2d_original_ladder', 'heat2d', 'heat3d'):
+    for prob in ('poisson2d', 'poisson3d', 'burgers2d', 'burgers2d_original_ladder', 'burgers2d_L1_2048_without_half_dst',
+                 'heat2d', 'heat2d_two_variant_record', 'heat3d'):
         for r in S[prob]:
             w(f"| {prob} | {r['mesh']} | {r['attempt']}/{r['output']} | {r['job']} | {r['gpu']} | {str(r['commit'])[:10]} | `{r['result_sha256']}` |")
     for r in ns['rows']:

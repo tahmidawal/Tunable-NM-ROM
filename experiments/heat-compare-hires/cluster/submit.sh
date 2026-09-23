@@ -15,7 +15,7 @@ HH=$LANE/../hires-heat
 cp "$HH"/{core.py,run.py,audit.py} "$RUN/stage/code/hires-heat/"
 mkdir -p "$RUN/stage/code/hires-heat/inputs/wide2d"
 cp "$HH"/inputs/wide2d/{bank.pkl,head_K8.pkl,training.json,SHA256SUMS} "$RUN/stage/code/hires-heat/inputs/wide2d/"
-(cd "$RUN/stage/code/hires-heat/inputs/wide2d" && sha256sum -c --ignore-missing SHA256SUMS)
+(cd "$RUN/stage/code/hires-heat" && sha256sum -c --ignore-missing inputs/wide2d/SHA256SUMS)
 git -C "$LANE" rev-parse HEAD > "$RUN/stage/COMMIT.txt"
 cat > "$RUN/stage/run.sbatch" <<EOF
 #!/bin/bash

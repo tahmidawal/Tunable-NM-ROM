@@ -126,7 +126,8 @@ def main():
     here = Path(a.config).resolve().parent
     if a.smoke:
         cfg.update(intervals=128, repetitions=1, burn_seconds=0.001, rows_per_chunk=32, eval_rows=16,
-                   cg_fast=[0.1, 0.01], cg_slow=[1e-4], neighbour_cases=1, profile_reps=1)
+                   cg_fast=[0.1, 0.01], cg_slow=[1e-4], neighbour_tolerance=1e-4, neighbour_cases=1,
+                   profile_reps=1)
     n = int(cfg['intervals'])
     assert jax.default_backend() == 'gpu', jax.default_backend()
     assert jax.config.jax_enable_x64 and os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'

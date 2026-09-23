@@ -15,7 +15,7 @@ Submit: `cluster/submit.sh <job> h200 <HH:MM:SS> 240G <config>` (clean committed
 | h2d | 4197350 | configs/h2d.json (2D 1024²/2048²/4096², val 791001 ×16 + sealed 791099 ×16) | COMPLETED 06:44 EDT (H200 pax010, 3.6 h); collected, checksums ok, audit v1+v2 passed, remote removed |
 | h3d | 4197416 | configs/h3d.json (3D 32³/64³/128³, val 921777 ×16 + sealed 921099 ×64) | COMPLETED 09:40 EDT (H200 pax008); collected, checksums ok, audit v1+v2 passed, remote removed |
 | h3d256 | 4206722 | configs/h3d256.json (3D 256³) | CANCELLED by owner ~1 min after start (no data) to add dt 0.0125 FOM (DESIGN addendum 1) |
-| h3d256b | 4207497 | configs/h3d256.json (3D 256³, grid + dt 0.0125) | running (H200 pax010), source ae2734f2 |
+| h3d256b | 4207497 | configs/h3d256.json (3D 256³, grid + dt 0.0125) | COMPLETED 10:21 EDT (H200 pax010); collected, checksums ok, audit v2 passed, neighbour gate passed (1.003), remote removed |
 
 - Local 3D smoke (16³, dev cohort): parity ≤ 7.5e-14 on all 12 paired arms; audit passed, both controls detected.
 
@@ -31,3 +31,10 @@ Submit: `cluster/submit.sh <job> h200 <HH:MM:SS> 240G <config>` (clean committed
 - Neighbour gate FAILS at all three meshes, only on the tiny `lin_R32_bf` arm (and `parent_lin_bf` at 32³): phase-1 median ~0.95 ms vs ~0.2–0.6 ms after a CG solve (arm slower in the main phase — conservative for the ROM; not a selected arm).
 - Linear rung R'=320 is the most accurate arm (bf 0.070 %, cn 0.083 %) — more accurate than every tested CN–CG at bf (no comparator; addendum 1).
 - Fast = lin_R128 (1.111 %).
+
+## STATE (2026-09-23 ~10:40 EDT): all 3 jobs done, namespace empty, nothing running. Generated: REPORT.md, report.json.
+- 256³: accurate lin_R320 (cn 0.083 % in 23.6 ms, 7.6x CN-CG dt0.025 rtol1e-4; bf 0.070 % in 24.5 ms, 9.9x CN-CG dt0.0125 rtol1e-4);
+  fast lin_R128 (1.111 %, cn 10.7 ms 16.8x / bf 11.6 ms 20.8x). Cost is bank-read bound: encode 11.9 + decode 12.3 ms at R'=320,
+  5.8 + 5.4 ms at R'=128; NM-ROM LM solve adds 5 ms (bf) to 30-50 ms (cn).
+- Nested column-block storage is slower than the unrotated bank at R'=R (2D 4096² lin cn 8.42 vs 5.66 ms; 3D 128³ 2.99 vs 2.62 ms).
+Open: neighbour-gate failures (4096²; 32³-128³ lin_R32_bf) are recorded, not rerun. Paper edits are for the paper owner.

@@ -3,7 +3,7 @@ import hashlib, json
 from pathlib import Path
 
 here = Path(__file__).resolve().parent
-JOBS = [('h2d', '2D wide bank (R=128, K=8)'), ('h3d', '3D new bank (R=320, K=32)'), ('h3d256', '3D new bank (R=320, K=32), 256^3')]
+JOBS = [('h2d', '2D wide bank (R=128, K=8)'), ('h3d', '3D new bank (R=320, K=32)'), ('h3d256b', '3D new bank (R=320, K=32), 256^3')]
 FAMS = {'cn': 'CN stepping', 'bf': 'batched fit', 'pooled': 'both families pooled'}
 out, rep = [], dict(schema='heat-bank-knob-report-v1', jobs={}, table1=[])
 pct = lambda x: f'{100 * x:.3f}'

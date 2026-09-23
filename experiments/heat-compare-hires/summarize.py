@@ -71,7 +71,9 @@ if ref04 is not None:
 cfg = res['config']
 expected = [a['name'] for a in cfg['nmrom']['arms']] + [f'linear_bank_{i}_BASELINE' for i in cfg['nmrom']['linear_bank_inits']] \
     + (['linear_bank_moments_cn_BASELINE'] if cfg['nmrom'].get('linear_bank_cn') else []) \
-    + [f'pod{r}_{m}' for r in cfg['pod']['ranks'] for m in cfg['pod']['methods']] + [f'qm{r}_{a["name"]}' for r in cfg['qm']['ranks'] for a in cfg['qm']['arms']] \
+    + [f'pod{r}_{m}' for r in cfg['pod']['ranks'] for m in cfg['pod']['methods']] + [f'qm{r}_{a["name"]}{sfx}' for r in cfg['qm']['ranks'] for a in cfg['qm']['arms']
+       for sfx in (([] if r in cfg['qm'].get('no_autotune_ranks', []) else [''])
+                   + (['_noautotune'] if r in cfg['qm'].get('no_autotune_ranks', []) or r == cfg['qm'].get('autotune_calibration_rank') else []))] \
     + ['dst_exact_CONTROL'] + [f'coarse{c}_{cfg["coarse_cg"]}_CONTROL' for c in cfg['coarse_intervals']] + list(cfg['operators']) + list(cfg['fom_order'])
 missing = [a for a in expected if a not in res['arms']]
 gates['expected_arms_missing'] = missing

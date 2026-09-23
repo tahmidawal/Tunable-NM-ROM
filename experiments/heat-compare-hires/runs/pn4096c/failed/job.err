@@ -1,0 +1,31 @@
+W0923 09:03:08.634201 1796030 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 70.11GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0923 09:03:08.635177 1795971 config_assigner.cc:383] Could not get config for HLO: %gemm_fusion_dot_general.51 = f64[6,16769025]{1,0} fusion(%input_concatenate_fusion.2, %bank.1), kind=kCustom, calls=
+(parameter_0.12: f64[6,561], parameter_1.12: f64[16769025,561]) -> f64[6,16769025] {
+  %parameter_1.12 = f64[16769025,561]{1,0} parameter(1)
+  %parameter_0.12 = f64[6,561]{1,0} parameter(0)
+  %dot.37 = f64[16769025,6]{0,1} dot(%parameter_1.12, %parameter_0.12), lhs_contracting_dims={1}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(query)/dot_general" stack_frame_id=217}
+  ROOT %bitcast.249 = f64[6,16769025]{1,0} bitcast(%dot.37), metadata={op_name="jit(query)/dot_general" stack_frame_id=217}
+}, metadata={op_name="jit(query)/dot_general" stack_frame_id=217}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot_general.51 = f64[6,16769025]{1,0} fusion(%input_concatenate_fusion.2, %bank.1), kind=kCustom, calls=%gemm_fusion_dot_general.51_computation, metadata={op_name="jit(query)/dot_general" stack_frame_id=217}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 70.11GiB.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 426, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 310, in main
+    run_qm()
+    ~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 303, in run_qm
+    run_block(f'qm{r}_{arm["name"]}', Method(lambda u, stq=stq: stq['query'](u, B)),
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              dict(family='qm', unknowns=r, opt=opt, gamma=gamma, setup_seconds=setup_s))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 192, in run_block
+    t = time.perf_counter(); o = method.run(x); row['warm_seconds'].append(time.perf_counter() - t)
+                                 ~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 45, in run
+    out = self.run_raw(x); self.sync(out); return out
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096c/code/heat-compare-hires/panel.py", line 303, in <lambda>
+    run_block(f'qm{r}_{arm["name"]}', Method(lambda u, stq=stq: stq['query'](u, B)),
+                                                                ~~~~~~~~~~~~^^^^^^
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot_general.51 = f64[6,16769025]{1,0} fusion(%input_concatenate_fusion.2, %bank.1), kind=kCustom, calls=%gemm_fusion_dot_general.51_computation, metadata={op_name="jit(query)/dot_general" stack_frame_id=217}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 70.11GiB.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

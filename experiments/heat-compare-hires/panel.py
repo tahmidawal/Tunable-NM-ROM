@@ -300,9 +300,15 @@ def main():
             for arm in cfg['qm']['arms']:
                 opt = {**cfg['nmrom']['defaults'], **arm.get('opt', {})}
                 stq = C.make_stages(model, setup, 0, opt)
-                run_block(f'qm{r}_{arm["name"]}', Method(lambda u, stq=stq: stq['query'](u, B)),
-                          dict(family='qm', unknowns=r, opt=opt, gamma=gamma, setup_seconds=setup_s))
-                idle(); sentinel(f'qm{r}_{arm["name"]}')
+                # A6: variants = default compile, and/or the SAME query compiled without GEMM autotuning (the autotuner needs an
+                # operand-sized scratch copy that does not fit next to a 70 GB bank); both at the calibration rank.
+                variants = [('', stq['query'])] if r not in cfg['qm'].get('no_autotune_ranks', []) else []
+                if r in cfg['qm'].get('no_autotune_ranks', []) or r == cfg['qm'].get('autotune_calibration_rank'):
+                    variants.append(('_noautotune', jax.jit(stq['query'].__wrapped__, compiler_options={'xla_gpu_autotune_level': 0})))
+                for suffix, qf in variants:
+                    run_block(f'qm{r}_{arm["name"]}{suffix}', Method(lambda u, qf=qf: qf(u, B)),
+                              dict(family='qm', unknowns=r, opt=opt, gamma=gamma, setup_seconds=setup_s, gemm_autotuning=not suffix))
+                    idle(); sentinel(f'qm{r}_{arm["name"]}{suffix}')
             del B, model, setup; jax.clear_caches()
 
 

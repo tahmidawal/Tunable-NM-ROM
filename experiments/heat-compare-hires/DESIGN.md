@@ -235,3 +235,14 @@ results kept in `runs/pn4096b/failed/` (diagnostic, not used). Fix: at 4096² th
 quadratic-manifold section runs **first**, largest rank first (r = 32, 16, 8), on a clean pool
 (`qm_first`); the factor model is now always built before the NM-ROM section (host-side,
 untimed). No timed code path changes; the A2 order gate covers the reordering.
+
+## A6 (2026-09-23 ~09:25 EDT): 4096² quadratic manifold r = 32, after pn4096c, before pn4096d
+
+`pn4096c` (job 4211639, H200) failed 50 s in, compiling the first timed query of the r = 32
+quadratic manifold: XLA's GEMM autotuner needs an operand-sized scratch copy of the 70 GiB
+(16.8 M × 561, f64) bank for the decode, which cannot fit beside the bank itself. (Not the 2³¹-
+element Triton limit: the 34 GB POD-256 basis compiled and ran in pn4096b.) No number produced.
+Fix, 4096² only: the r = 32 query is compiled from the **same** function with
+`compiler_options={'xla_gpu_autotune_level': 0}` and labelled `…_noautotune`; everything else is
+compiled as before. To measure what disabling autotuning costs, the r = 16 quadratic manifold
+is timed **both** ways in the same job (`qm16_*` and `qm16_*_noautotune`); the report prints both.

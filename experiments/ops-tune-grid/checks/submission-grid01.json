@@ -1,0 +1,17 @@
+{
+  "attempt": "grid01",
+  "job_id": "4183958",
+  "job_name": "opstune_grid01",
+  "source_commit": "2dd1cfdc761b349d4a0566959f6c3364e7ffbba3",
+  "remote": "/cluster/tufts/paralab/tawal01/opstune_grid_20260922/grid01",
+  "gpu_request": "a100 (constraint a100-80G), 180G, 18:30:00",
+  "submitted_utc": "2026-09-23T00:12:48.621048+00:00",
+  "queue_before": "one of this lane's (4183681 gen01, RUNNING) and one other lane's (4183561)",
+  "queue_after": "exactly one job per directory in this lane's namespace: gen01 and grid01, one each",
+  "concurrency": "2 concurrent GPU jobs, the coordinator-relaxed cap for this lane; 3 running on the account against a cap of 6",
+  "manifest_verified_remotely": "56 files, sha256sum -c passed before submission",
+  "independent_of": "gen01 entirely: grid01 stages the PINNED cache directly and trains only on the published 128-case set, so a generation failure cannot take the tuning result with it",
+  "arms": 16,
+  "training_seconds": 53700.0,
+  "design": "DESIGN.md sections 5.2 and 5.4; fno-epochmatch is a budget control excluded from the section 4.2 selection"
+}

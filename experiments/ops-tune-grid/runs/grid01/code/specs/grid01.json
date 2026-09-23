@@ -1,0 +1,102 @@
+{
+  "job_name": "opstune_grid01",
+  "time": "18:30:00",
+  "pde": "burgers",
+  "prefix": "tune",
+  "family": "unet",
+  "smoke_families": [
+    "fno",
+    "unet",
+    "transolver"
+  ],
+  "arms": [
+    {
+      "name": "fno-modes48",
+      "config": "code/configs/fno/modes48.json"
+    },
+    {
+      "name": "fno-width96",
+      "config": "code/configs/fno/width96.json"
+    },
+    {
+      "name": "fno-norm",
+      "config": "code/configs/fno/norm.json"
+    },
+    {
+      "name": "fno-cosine",
+      "config": "code/configs/fno/cosine.json"
+    },
+    {
+      "name": "fno-lr3e-3",
+      "config": "code/configs/fno/lr3e-3.json"
+    },
+    {
+      "name": "unet-base64",
+      "config": "code/configs/unet/base64.json"
+    },
+    {
+      "name": "unet-groups16",
+      "config": "code/configs/unet/groups16.json"
+    },
+    {
+      "name": "unet-lr3e-3",
+      "config": "code/configs/unet/lr3e-3.json"
+    },
+    {
+      "name": "unet-cosine",
+      "config": "code/configs/unet/cosine.json"
+    },
+    {
+      "name": "unet-wd1e-3",
+      "config": "code/configs/unet/wd1e-3.json"
+    },
+    {
+      "name": "tsol-slices32",
+      "config": "code/configs/transolver/slices32.json"
+    },
+    {
+      "name": "tsol-slices128",
+      "config": "code/configs/transolver/slices128.json"
+    },
+    {
+      "name": "tsol-layers6-d192",
+      "config": "code/configs/transolver/layers6-d192.json"
+    },
+    {
+      "name": "tsol-cosine",
+      "config": "code/configs/transolver/cosine.json"
+    },
+    {
+      "name": "tsol-lr3e-3",
+      "config": "code/configs/transolver/lr3e-3.json"
+    },
+    {
+      "name": "fno-epochmatch",
+      "config": "code/configs/fno/epochmatch.json",
+      "seconds": 8700.0,
+      "role": "budget control, NOT a tuning arm; excluded from the DESIGN 4.2 selection"
+    }
+  ],
+  "refine_learning_rate": null,
+  "per_arm_seconds": 3000.0,
+  "global_seconds": 62000.0,
+  "reserve_seconds": 2000.0,
+  "data_source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
+  "data_dirs": [
+    "train",
+    "validation",
+    "refinement"
+  ],
+  "train_index": "data/train/index.json",
+  "selection_excluded": [
+    "fno-epochmatch"
+  ],
+  "design": "Per-family hyperparameter grid at the PUBLISHED 128-case training set and the PUBLISHED 3000 s per-arm wall budget, so the tuning effect is measured with data and budget both held at the value the published arms used. Each family gets the same four knob classes: capacity, normalisation, learning-rate schedule and learning rate. fno-epochmatch is a BUDGET CONTROL at 8700 s with a 1963-epoch cap -- the count unet-medium reached in its published 3000 s -- and is excluded from the selection argmin so that a budget effect cannot be reported as a tuning effect. No refinement arm: the published *-refine arms are lower-learning-rate retrains and are carried over rather than re-run.",
+  "matched_arms": {
+    "unet01": "3780138",
+    "tsol01": "3780139",
+    "fno_burgers02": "3710846",
+    "note": "the budget and data this grid holds fixed; no timing is compared across jobs"
+  },
+  "data_origin": "the PINNED Burgers cache, directly. grid01 trains only on the published 128-case set, so it needs nothing this lane generated and has NO dependency on gen01: if generation fails, the tuning result still stands."
+}

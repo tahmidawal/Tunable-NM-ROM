@@ -1,0 +1,26 @@
+host=pax050 source_commit=50f2df489a465100dd5a5dd7e947c7758e109acf
+NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  4.3T  263G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 33.6 {'32': 9.165, '64': 5.335, '128': 2.306, '256': 0.94, '384': 0.768, '512': 0.742}
+WARMUP 94.4
+PHASE romA1 0 307.7
+PHASE romA1 1 397.4
+PHASE romA1 2 487.4
+PHASE romA1 3 577.3
+PHASE romA1 4 667.4
+PHASE cg 0 1327.8
+PHASE cg 1 1962.7
+PHASE cg 2 2597.8
+PHASE romA2 0 2695.6
+PHASE romA2 1 2786.1
+PHASE romA2 2 2876.0
+PHASE romA2 3 2966.5
+PHASE romA2 4 3056.1
+DRIFT True 0.9882305228663053 1.004888613010031
+NEIGHBOUR False 1.184936449742703
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 324 errors recomputed, worst relative deviation 5.7e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE

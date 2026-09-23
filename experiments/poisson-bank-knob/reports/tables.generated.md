@@ -227,3 +227,74 @@ Most accurate ROM arm: `R512_linear`; matched CG (fastest with worst error ≤ i
 - nm-rom q=0: error monotone as R' falls: False; GPU cost monotone: False; cost range (most/least expensive end of the family): 2.08×
 - linear rung q=R': error monotone as R' falls: True; GPU cost monotone: True; cost range (most/least expensive end of the family): 7.47×
 
+## 4096² — job 4199321, NVIDIA A100 80GB PCIe, commit `50f2df48`
+
+Gates: {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}. Audit: PASS (324 errors recomputed, worst relative deviation 5.7e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True).
+Parity: not run at this mesh (original bank not kept). Neighbour gate: FAIL, worst ratio 1.185 (limit 1.1).
+Design ABA. Drift gate (romA2/romA1 per arm): PASS, range 0.988–1.005.
+Gate breakdown: neighbour worst over primary arms 1.165; failing primary: R32_q0@romA1 1.165; failing other: R64_q32@romA2 1.185; drift failing: none; drift range over primary arms 0.989–1.005.
+Most accurate ROM arm: `R512_linear`; matched CG (fastest with worst error ≤ it): `cg_0.1`.
+
+**Table-1 settings (pre-registered rule):** accurate `R512_linear` 0.742 % at 42.39 ms = 105.9× vs `cg_0.1` (4490.0 ms, 0.451 %); fast `R128_linear` 2.306 % at 12.54 ms = 358.0× (fast bar: `R512_q0` 3.149 %). Conservative (arm median after a long predecessor; legacy design: right after a long CG, A-B-A: within-phase ): accurate 42.48 ms = 105.7×, fast 12.61 ms = 356.2×.
+
+| R' | q | arm | worst err % | median err % | floor % | GPU ms | GPU ms A1 / A2 | total ms | × vs matched CG (GPU) | × vs cg_0.01 (GPU) | own matched CG | × vs own matched CG | LM attempts |
+|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| 512 | 512 | linear-rung | 0.742 | 0.058 | 0.742 | 42.39 | 42.41 / 42.37 | 98.20 | 105.9 | 134.0 | cg_0.1 | 105.9 |  |
+| 384 | 384 | linear-rung | 0.768 | 0.062 | 0.768 | 32.48 | 32.49 / 32.48 | 88.73 | 138.2 | 174.8 | cg_0.1 | 138.2 |  |
+| 256 | 256 | linear-rung | 0.940 | 0.082 | 0.940 | 22.56 | 22.56 / 22.56 | 78.43 | 199.0 | 251.7 | cg_0.2 | 181.7 |  |
+| 128 | 128 | linear-rung | 2.306 | 0.218 | 2.306 | 12.54 | 12.57 / 12.52 | 68.66 | 358.0 | 452.7 | cg_0.4 | 298.6 |  |
+| 64 | 64 | linear-rung | 5.335 | 0.811 | 5.335 | 7.12 | 7.16 / 7.08 | 62.93 | 630.6 | 797.5 | cg_0.5 | 508.0 |  |
+| 32 | 32 | linear-rung | 9.165 | 3.127 | 9.165 | 4.39 | 4.41 / 4.38 | 60.30 | 1022.4 | 1292.9 | cg_0.7 | 769.4 |  |
+| 512 | 0 | nm-rom | 3.149 | 0.508 | 0.742 | 43.42 | 43.45 / 43.41 | 99.75 | 103.4 | 130.8 | cg_0.4 | 86.3 | 5 |
+| 384 | 0 | nm-rom | 3.148 | 0.507 | 0.768 | 33.66 | 33.67 / 33.62 | 89.87 | 133.4 | 168.7 | cg_0.4 | 111.3 | 5 |
+| 256 | 0 | nm-rom | 3.135 | 0.500 | 0.940 | 23.79 | 23.80 / 23.73 | 80.02 | 188.7 | 238.7 | cg_0.4 | 157.4 | 5 |
+| 128 | 0 | nm-rom | 3.036 | 0.493 | 2.306 | 13.90 | 13.92 / 13.85 | 70.18 | 322.9 | 408.4 | cg_0.4 | 269.3 | 5 |
+| 64 | 0 | nm-rom | 5.420 | 0.847 | 5.335 | 8.35 | 8.33 / 8.37 | 64.59 | 537.5 | 679.8 | cg_0.5 | 433.0 | 4 |
+| 32 | 0 | nm-rom | 9.165 | 3.127 | 9.165 | 9.17 | 9.24 / 9.17 | 65.39 | 489.6 | 619.1 | cg_0.7 | 368.4 | 24 |
+| 512 | 256 | correction-reference | 0.965 | 0.131 | 0.742 | 43.73 | 43.69 / 43.76 | 99.99 | 102.7 | 129.8 | cg_0.2 | 93.7 | 5 |
+| 384 | 256 | correction-reference | 0.953 | 0.125 | 0.768 | 33.92 | 33.87 / 33.99 | 90.26 | 132.4 | 167.4 | cg_0.2 | 120.9 | 5 |
+| 256 | 224 | correction-reference | 0.940 | 0.085 | 0.940 | 25.84 | 25.87 / 25.75 | 82.41 | 173.8 | 219.8 | cg_0.2 | 158.7 | 12 |
+| 128 | 96 | correction-reference | 2.306 | 0.218 | 2.306 | 15.17 | 15.21 / 15.03 | 71.86 | 295.9 | 374.2 | cg_0.4 | 246.8 | 10 |
+| 64 | 32 | correction-reference | 5.335 | 0.812 | 5.335 | 9.87 | 9.92 / 9.84 | 66.40 | 454.7 | 575.1 | cg_0.5 | 366.3 | 12 |
+
+| CG rtol | worst err % | GPU ms | total ms | iterations |
+|---:|---:|---:|---:|---:|
+| 0.7 | 6.708 | 3378.9 | 3435.5 | 3980 |
+| 0.5 | 3.724 | 3617.0 | 3674.8 | 4260 |
+| 0.4 | 2.205 | 3745.0 | 3800.2 | 4410 |
+| 0.3 | 1.295 | 3910.7 | 3966.6 | 4606 |
+| 0.2 | 0.772 | 4099.8 | 4156.3 | 4830 |
+| 0.1 | 0.451 | 4490.0 | 4546.0 | 5289 |
+| 0.03 | 0.123 | 4942.2 | 4999.3 | 5824 |
+| 0.01 | 0.038 | 5678.2 | 5734.3 | 6690 |
+| 0.001 | 0.004 | 6886.4 | 6943.4 | 8113 |
+| 0.0001 | 0.000 | 7731.4 | 7788.4 | 9110 |
+
+**Stage profile (median ms, each stage its own synchronised jit):**
+
+| arm | project + start | LM solve | y elim + map | reconstruction u=Gc | stage sum | fused GPU | host copies | dominant |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| R32_q0 | 0.82 | 6.02 | 0.21 | 2.99 | 10.05 | 9.17 | 56.22 | lm_solve |
+| R64_q32 | 1.77 | 2.86 | 0.22 | 5.69 | 10.53 | 9.87 | 56.52 | reconstruction |
+| R64_linear | 0.73 | 0.00 | 0.00 | 6.31 | 7.04 | 7.12 | 55.81 | reconstruction |
+| R64_q0 | 0.94 | 2.09 | 0.16 | 5.67 | 8.86 | 8.35 | 56.23 | reconstruction |
+| R256_q224 | 1.89 | 3.58 | 0.27 | 21.19 | 26.93 | 25.84 | 56.57 | reconstruction |
+| R256_linear | 0.69 | 0.00 | 0.00 | 22.23 | 22.92 | 22.56 | 55.87 | reconstruction |
+| R384_q256 | 1.92 | 1.89 | 0.25 | 31.13 | 35.20 | 33.92 | 56.34 | reconstruction |
+| R128_q0 | 0.69 | 2.14 | 0.15 | 11.17 | 14.15 | 13.90 | 56.28 | reconstruction |
+| R32_linear | 0.63 | 0.00 | 0.00 | 4.01 | 4.64 | 4.39 | 55.91 | reconstruction |
+| R128_linear | 0.74 | 0.00 | 0.00 | 12.52 | 13.26 | 12.54 | 56.11 | reconstruction |
+| R256_q0 | 0.75 | 2.38 | 0.17 | 21.16 | 24.46 | 23.79 | 56.23 | reconstruction |
+| R128_q96 | 1.74 | 2.60 | 0.21 | 11.23 | 15.79 | 15.17 | 56.68 | reconstruction |
+| R512_q0 | 0.75 | 2.33 | 0.16 | 40.93 | 44.17 | 43.42 | 56.34 | reconstruction |
+| R384_linear | 0.86 | 0.00 | 0.00 | 31.88 | 32.74 | 32.48 | 56.25 | reconstruction |
+| R512_q256 | 1.97 | 1.66 | 0.26 | 40.96 | 44.86 | 43.73 | 56.26 | reconstruction |
+| R512_linear | 0.99 | 0.00 | 0.00 | 41.79 | 42.79 | 42.39 | 55.82 | reconstruction |
+| R384_q0 | 0.95 | 2.01 | 0.18 | 31.09 | 34.23 | 33.66 | 56.21 | reconstruction |
+
+**Knob verdict inputs:**
+
+- C_q reference q=max: error monotone as R' falls: False; GPU cost monotone: True; cost range (most/least expensive end of the family): 4.77×
+- nm-rom q=0: error monotone as R' falls: False; GPU cost monotone: False; cost range (most/least expensive end of the family): 4.73×
+- linear rung q=R': error monotone as R' falls: True; GPU cost monotone: True; cost range (most/least expensive end of the family): 9.65×
+

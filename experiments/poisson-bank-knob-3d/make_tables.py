@@ -45,9 +45,10 @@ def load(attempt):
     return R, A, base
 
 
-def subjects(R):
-    """name -> summary over cases (main phase for ROM + fast CG, slow phase for slow CG)."""
-    scope = SCOPE[R['problem']]
+def subjects(R, scope=None):
+    """name -> summary over cases (main phase for ROM + fast CG, slow phase for slow CG). `ms` is in `scope`
+    (default: the series' Table-1 scope), `ms_other` in the other scope."""
+    scope = scope or SCOPE[R['problem']]
     arms = {a['name']: a for a in R['arms']}
     by = {}
     for x in R['invocations'] + R['slow_invocations']:
@@ -131,12 +132,14 @@ def profile(R):
     return out
 
 
-def order_gate_of(R):
-    """The amended (A1) paired order-effect gate; recomputed from the raw rows for runs made before A1."""
+def order_gate_of(R, scope=None):
+    """The amended (A1) paired order-effect gate, always recomputed from the raw rows (in `scope`, default the
+    series' Table-1 scope); where the driver stored its own evaluation in that scope, the two must agree."""
     g = R['neighbour_gate']
+    scope = scope or g['gate_scope']
     names = [a['name'] for a in R['arms']]
-    out = dict(P3.order_gate(R['neighbour'], R['invocations'], names, g['gate_scope']), recomputed_offline=True)
-    if 'order_gate' in g:      # the driver's own evaluation must agree on the statistic
+    out = dict(P3.order_gate(R['neighbour'], R['invocations'], names, scope), recomputed_offline=True)
+    if 'order_gate' in g and scope == g['gate_scope']:      # the driver's own evaluation must agree
         for k in ('pooled_paired_ratio', 'median_after_over_main', 'max_arm_paired_ratio'):
             assert abs(out[k] - g['order_gate'][k]) <= 1e-12 * abs(out[k]), (k, out[k], g['order_gate'][k])
     return out
@@ -197,6 +200,23 @@ def main():
             entry['selection'] = 'rule on this cohort'
         entry['paper_fast_bar_pct'] = bar
         entry['row'] = row_for(S, acc, fast)
+        # the same rule re-applied entirely in the other time scope (selection, FOM and speedups), with its own gate
+        alt = OTHER[SCOPE[prob]]
+        S2 = subjects(R, alt)
+        og2 = order_gate_of(R, alt)
+        if R['cohort'].get('role') == 'final':
+            a2, f2 = S2[fz['accurate']], S2[fz['fast']]
+        else:
+            a2, f2, _ = select(S2, R)
+        aft, ctl = {}, {}
+        for x in R['neighbour']:
+            if x.get('variant') in ('after_cg', 'control_no_cg'):
+                (aft if x['variant'] == 'after_cg' else ctl)[(x['name'], x['case'], x.get('round', 0))] = x
+        keys = [k for k in aft if k in ctl]
+        entry['order_effect_components_ms'] = {c: 1000 * float(np.median([aft[k][c] - ctl[k][c] for k in keys])) if keys else None
+                                               for c in ('input_seconds', 'fused_device_seconds', 'output_seconds', 'total_seconds')}
+        entry['alt'] = dict(scope=alt, order_gate=og2, row=row_for(S2, a2, f2), arms=per_arm(S2),
+                            usable=bool(A['verdict'] == 'PASS' and all(dict(R['gates'], neighbour=og2['passed']).values())))
         entry['arms'] = per_arm(S)
         entry['cg'] = sorted((s for s in S.values() if s['family'] == 'cg'), key=lambda s: -s['tolerance'])
         entry['profile'] = profile(R)

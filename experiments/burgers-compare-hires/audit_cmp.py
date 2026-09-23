@@ -23,11 +23,17 @@ def sha(x):
     return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
 
 
-def order_effect(rows, bar=.05, slow_seconds=1., factor=3., min_n=5):
-    """rows: timed invocations of ONE randomised panel in execution order, each with name, case, gpu_seconds.
-    Every sample is normalised by its arm's per-case median; per arm, the median normalised time after a slow
-    predecessor is compared with that after a fast one. Split (a): predecessor >= `slow_seconds` (repanel's
-    definition); split (b): predecessor >= `factor` x this arm's own per-case median."""
+def order_effect(rows, bar=.05, slow_seconds=1., factor=3., min_n=5, min_cases=3):
+    """rows: timed invocations of ONE randomised panel in execution order (name, case, gpu_seconds).
+
+    Per arm and split, the effect is estimated WITHIN each case: diff_c = median(log t | slow predecessor) -
+    median(log t | fast predecessor) over that case's samples, and the arm's gap is exp(median_c diff_c) - 1 over
+    the cases that have both kinds of predecessor. Comparing within a case removes the case mix (per-case timings
+    differ by up to 2x), and -- unlike normalising by a per-case median that includes the slowed samples (the first
+    version, which an independent audit showed cancels an injected slowdown on arms whose samples mostly follow slow
+    arms) -- the reference is the after-FAST samples only. Split (a): predecessor >= `slow_seconds`; split (b):
+    predecessor >= `factor` x this arm's own per-case median. An arm is judged in a split when >= `min_cases` cases
+    have both groups and each group has >= `min_n` samples in total."""
     med = {}
     for r in rows:
         med.setdefault((r['name'], r['case']), []).append(r['gpu_seconds'])
@@ -38,20 +44,40 @@ def order_effect(rows, bar=.05, slow_seconds=1., factor=3., min_n=5):
         for prev, r in zip(rows[:-1], rows[1:]):
             m = med[(r['name'], r['case'])]
             slow = prev['gpu_seconds'] >= (slow_seconds if split == 'a' else factor * m)
-            groups.setdefault(r['name'], ([], []))[0 if slow else 1].append(r['gpu_seconds'] / m)
+            g = groups.setdefault(r['name'], {}).setdefault(r['case'], ([], []))
+            g[0 if slow else 1].append(np.log(r['gpu_seconds']))
         per = []
-        for name, (s, f) in sorted(groups.items()):
-            judged = len(s) >= min_n and len(f) >= min_n
-            gap = float(np.median(s) / np.median(f) - 1) if (s and f) else None
-            per.append(dict(arm=name, n_after_slow=len(s), n_after_fast=len(f), gap=gap, judged=judged,
-                            passed=(abs(gap) <= bar) if judged else None))
+        for name, bycase in sorted(groups.items()):
+            diffs = [float(np.median(s) - np.median(f)) for s, f in bycase.values() if s and f]
+            ns = sum(len(s) for s, _ in bycase.values())
+            nf = sum(len(f) for _, f in bycase.values())
+            judged = len(diffs) >= min_cases and ns >= min_n and nf >= min_n
+            gap = float(np.exp(np.median(diffs)) - 1) if diffs else None
+            per.append(dict(arm=name, n_after_slow=ns, n_after_fast=nf, cases_with_both=len(diffs), gap=gap,
+                            judged=judged, passed=(abs(gap) <= bar) if judged else None))
         judged = [x for x in per if x['judged']]
         out[split] = dict(definition=('predecessor >= %g s' % slow_seconds) if split == 'a' else
                           ('predecessor >= %g x the arm\'s own per-case median' % factor),
                           judged_arms=len(judged), worst_gap=(max(abs(x['gap']) for x in judged) if judged else None),
                           passed=(all(x['passed'] for x in judged) if judged else None), per_arm=per)
     verdicts = [out[s]['passed'] for s in ('a', 'b') if out[s]['passed'] is not None]
-    return dict(bar=bar, min_samples=min_n, passed=(all(verdicts) if verdicts else None), splits=out)
+    return dict(bar=bar, min_samples=min_n, min_cases=min_cases, passed=(all(verdicts) if verdicts else None),
+                splits=out)
+
+
+def inject(rows, factor, split, slow_seconds=1., k=3.):
+    """The control: the same rows with every sample after a slow predecessor slowed by `factor`."""
+    med = {}
+    for r in rows:
+        med.setdefault((r['name'], r['case']), []).append(r['gpu_seconds'])
+    med = {kk: float(np.median(v)) for kk, v in med.items()}
+    out = [dict(rows[0])]
+    for prev, r in zip(rows[:-1], rows[1:]):
+        x = dict(r)
+        if prev['gpu_seconds'] >= (slow_seconds if split == 'a' else k * med[(r['name'], r['case'])]):
+            x['gpu_seconds'] = r['gpu_seconds'] * factor
+        out.append(x)
+    return out
 
 
 def errors(f, truth):
@@ -131,9 +157,18 @@ def main():
             if abs(r['same_grid_evolved'] - a_['evolved'][r['case']]) > 1e-13 + REL_TOL * a_['evolved'][r['case']]:
                 mism.append(dict(arm=name, case=r['case'], what='timed-row error'))
     setup = {s['arm']: s for s in rep['arm_setup']}
+    dropped = {d['name'] for d in rep['dropped']}
+    for name, a_ in arms.items():                     # audit F5: a partially timed or dropped arm has no timing row
+        if a_['phase'] in ('F', 'S') and (a_['reps_per_case'] < cfg['required_reps'] or name in dropped):
+            a_['timing_withheld'] = ('dropped: ' + '; '.join(d['reason'][:80] for d in rep['dropped'] if d['name'] == name)
+                                     if name in dropped else f"only {a_['reps_per_case']} repetitions per case")
+            a_['gpu_ms'] = a_['complete_ms'] = None
 
     # ------------------------------------------------------------ operators --
-    ops_meta = json.loads(Path(a.operators).read_text())['operators'] if a.operators else []
+    opsrec = json.loads(Path(a.operators).read_text()) if a.operators else {}
+    ops_meta = opsrec.get('operators', [])
+    for fo in opsrec.get('failed', []):
+        notes.append(f"operator {fo['name']}: training FAILED (exit {fo.get('exit_code')}) -- no row")
     op_gate = []
     for op in ops_meta:
         tj = root / 'optiming' / f"{op['name']}-timing.json"
@@ -205,6 +240,21 @@ def main():
     # ------------------------------------------------------------------ gates --
     Frows = [r for r in inv if r['phase'] == 'F']
     gates['no_order_effect_between_arms'] = order_effect(Frows)
+    must = sorted({v for v in cfg['roles'].values() if v in arms and arms[v]['phase'] == 'F'} |
+                  ({a_.get('fom_gpu_full') for a_ in arms.values() if a_['family'] != 'fom'} - {None}))
+    ctl = {}
+    for split in ('a', 'b'):
+        res = order_effect(inject(Frows, 1.06, split), bar=.05)['splits'][split]['per_arm']
+        per = {x['arm']: x for x in res}
+        ctl[split] = [dict(arm=m_, judged=per[m_]['judged'], caught=per[m_]['passed'] is False, gap=per[m_]['gap'])
+                      for m_ in must if m_ in per]
+    judged_any = [x for sp in ctl.values() for x in sp if x['judged']]
+    gates['control_order_gate_catches_injected_6pct'] = dict(
+        passed=bool(judged_any) and all(x['caught'] for x in judged_any),
+        note='+6% injected after slow predecessors in THIS job\'s Phase F rows; every judged role arm and rule-chosen '
+             'FOM must be caught individually. Arms never judged in a split are listed, not counted.',
+        per_split=ctl,
+        never_judged=sorted(m_ for m_ in must if not any(x['arm'] == m_ and x['judged'] for sp in ctl.values() for x in sp)))
     drift = []
     comps = {a_.get('fom_gpu_full') for a_ in arms.values() if a_['family'] != 'fom'} - {None}
     for name in sorted(comps | {v for v in cfg['roles'].values() if v in arms and arms[v]['phase'] == 'F'}):
@@ -213,6 +263,9 @@ def main():
             d = a_['bracket_gpu_ms'] / a_['gpu_ms'] - 1
             drift.append(dict(arm=name, phase_F_ms=a_['gpu_ms'], phase_B_ms=a_['bracket_gpu_ms'], drift=d,
                               passed=abs(d) <= .10))
+        else:
+            drift.append(dict(arm=name, phase_F_ms=a_.get('gpu_ms'), phase_B_ms=a_.get('bracket_gpu_ms'), drift=None,
+                              passed=False, note='missing Phase F or Phase B timing'))
     gates['bracket_drift'] = dict(bar=.10, passed=all(x['passed'] for x in drift) if drift else None, per_arm=drift)
     gates['five_retained_repetitions_everywhere'] = dict(
         passed=all(a_['reps_per_case'] >= cfg['required_reps'] for a_ in arms.values() if a_['phase'] in ('F', 'S', 'O')),
@@ -233,7 +286,11 @@ def main():
                           np.linalg.norm(np.load(fd / f"full_{pr['twin']}_case{c}.npy"))) for c in range(ncase))
             rec.append(dict(arm=pr['arm'], twin=pr['twin'], worst_relative=w, integers_identical=pr['integers_identical'],
                             passed=bool(w <= 1e-9 and pr['integers_identical'])))
-        gates['grid_arm_parity'] = dict(passed=all(x['passed'] for x in rec), pairs=rec, bar=1e-9)
+        want = len(cfg.get('grid_parity_ranks', [])) * (int(bool(cfg.get('pod_ranks'))) + int(bool(cfg.get('qman_ranks'))))
+        gates['grid_arm_parity'] = dict(passed=all(x['passed'] for x in rec) and len(rec) >= min(want, 1), pairs=rec,
+                                        bar=1e-9, pairs_expected_at_most=want)
+    elif cfg.get('grid_parity_ranks'):
+        gates['grid_arm_parity'] = dict(passed=False, note='no parity pair was produced (twin or arm dropped)')
     qm = rep.get('quadratic_manifold', [])
     gates['quadratic_manifold_trajectory_split'] = dict(
         passed=all(x['split'].startswith('by trajectory') and x['ridge'] in x['ridge_grid'] for x in qm) if qm else None,
@@ -254,7 +311,8 @@ def main():
                    phases={k: v for k, v in rep['phases'].items() if k.endswith('seconds')},
                    dropped=rep['dropped'], rule_status=[dict(arm=n, status=arms[n].get('rule_status'))
                                                          for n in arms if arms[n].get('rule_status')],
-                   snapshots=rep.get('snapshots'), quadratic_manifold_fits=gates['quadratic_manifold_trajectory_split']['fits'],
+                   snapshots=rep.get('snapshots'), bank_span=rep.get('bank_span'),
+                   reference_roles=cfg.get('reference_roles', []), quadratic_manifold_fits=gates['quadratic_manifold_trajectory_split']['fits'],
                    error_convention=('same-grid evolved: max over t in {0.05..0.25} of ||u - u_fft_tight|| / ||u_0||, '
                                      'reference solved in this job at this mesh'),
                    fom_rule='fastest tested FOM setting (Phase F timing, same job) whose worst evolved error <= the arm\'s',

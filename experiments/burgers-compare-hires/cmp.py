@@ -187,6 +187,23 @@ def main():
         print('TRUTH', c, el(), flush=True)
     save()
 
+    # ===== operator cohort (Phase O input), written at once: it depends only on the truth solve (audit F3)
+    cohort = out / 'opcohort'
+    cohort.mkdir(exist_ok=True)
+    records = []
+    for c in range(ncase):
+        target = truth[c][:, None].astype(np.float64)
+        path = cohort / f'burgers-dev-{c:05d}.npz'
+        np.savez(path, input=np.ascontiguousarray(target[0]), target=target,
+                 parameters=np.array([float(physical[c, 4])]), times=TIMES)
+        records.append(dict(case_id=f'burgers-dev-{c:05d}', split='development', case_index=c,
+                            seed=int(cfg['eval_seed'] if c < cfg['eval_cases'] else cfg['eval_fresh_seed']) * 100 + c,
+                            path=path.name, mesh=L, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                            generation_descriptors=dict(zip(('cx', 'cy', 'width', 'amplitude', 'nu'), map(float, physical[c])))))
+    (cohort / 'index.json').write_text(json.dumps(dict(
+        schema_version=1, pde='burgers', split='development', count=len(records), mesh=L, complete=True,
+        derivation=f'dev6 with this job\'s own same-grid fft_tight solve at {L} intervals, in the operator contract',
+        records=records), indent=1) + '\n')
     def score(f, c):
         sg = rel_per_time(f, truth[c], n0[c])
         return dict(same_grid_per_time=sg, same_grid_all=float(max(sg)), same_grid_evolved=float(max(sg[1:])),
@@ -345,14 +362,16 @@ def main():
                     max_relative_residual=float(np.nanmax(rn)))
 
     quick_sha = {}
+    quick_seconds = {}
 
     def run_quick(name):
         """One untimed query per case; the saved full fields are what the audit scores. False on OOM (dropped)."""
         b = built[name]
         t0 = time.perf_counter()
-        rows = []
+        rows, ct = [], []
         try:
             for c in range(ncase):
+                tc = time.perf_counter()
                 v = invoke(b, jnp.asarray(inputs_u[c]), c)
                 jax.block_until_ready(v)
                 f = np.asarray(v[0])
@@ -364,6 +383,7 @@ def main():
                 rows.append(row)
                 quick_sha[(name, c)] = row['field_sha256']
                 np.save(fields_dir / f'full_{name}_case{c}.npy', f)
+                ct.append(time.perf_counter() - tc)
                 del v, f, vh
         except Exception as exc:                     # noqa: BLE001
             if not is_oom(exc):
@@ -376,6 +396,7 @@ def main():
             save()
             return False
         rep['quick'].extend(rows)
+        quick_seconds[name] = float(np.median(ct[1:] if len(ct) > 1 else ct)) * ncase   # compile excluded
         subjects.append(name)
         print('QUICK', name, 'evolved%', round(100 * max(x['same_grid_evolved'] for x in rows), 4),
               'stalled', sum(x.get('stalled_exits', x.get('stalled_steps', 0)) for x in rows),
@@ -447,6 +468,22 @@ def main():
                 timed_call(name, c, r_, 'S')
         save()
 
+    def affordable(name):
+        """A slow arm is timed only if its 5 x 6 block fits before `phase_s_deadline_seconds` of job time (audit F4);
+        otherwise it is dropped with the projected cost recorded -- never silently shortened."""
+        dl = cfg.get('phase_s_deadline_seconds')
+        per = quick_seconds.get(name)
+        if dl is None or per is None:
+            return True
+        proj = per * cfg['reps'] * 1.2 + cfg['reps'] * ncase * cfg['burn_seconds']
+        if time.perf_counter() - begin + proj > dl:
+            rep['dropped'].append(dict(name=name, phase='timed', reason='deadline: projected block %.0f s would pass '
+                                       'phase_s_deadline_seconds=%s' % (proj, dl)))
+            print('DROPPED (deadline)', name, round(proj), flush=True)
+            save()
+            return False
+        return True
+
     def release(name):
         b = built.get(name)
         if b is not None:
@@ -462,9 +499,78 @@ def main():
                 continue
             build_rule(rung, rs)
             for n_ in register(rung, rs, 'S'):
-                if run_quick(n_):
+                if run_quick(n_) and affordable(n_):
                     time_block(n_)
                     print('BLOCK', n_, el(), flush=True)
+                release(n_)
+
+    # (a2) the bank-span model (coordinator 2026-09-23, DESIGN A1): u = G T[:, :R'] a, LM on the R' unknowns a, the
+    # advection through an EQ rule. Implemented as the ORIGINAL bank G with the linear head h(a) = T[:, :R'] a, so
+    # the rule's stencils, the test projection and arms' LM/initializer are unchanged. Every arm's rule is
+    # re-certified on held-out states under the truncation (rho on the states its own query visits on a
+    # population disjoint from dev6 and from training), and marked when rho_max exceeds the 0.116 bar.
+    bs = cfg.get('bank_span')
+    if bs:
+        rz = np.load(inputs.parent.parent / bs['rotation_file']) if not Path(bs['rotation_file']).is_absolute() else np.load(bs['rotation_file'])
+        rot_sha = sha_file(inputs.parent.parent / bs['rotation_file'])
+        assert rot_sha == bs['rotation_sha256'], rot_sha
+        Tn, Ln = np.asarray(rz['T']), np.asarray(rz['L'])
+        assert Tn.shape == (R, R) and float(np.linalg.norm(Ln @ Tn - np.eye(R))) < 1e-8
+        rep['bank_span'] = dict(rotation_file=bs['rotation_file'], rotation_sha256=rot_sha, arms=[])
+        hz = np.asarray(jax.jit(jax.vmap(lambda z: A.sc.head(params, z)))(jnp.asarray(Zsub)))
+        popc = e.params_draw(*bs['population_draw'])[bs['population_rows'][0]:bs['population_rows'][1]]
+        for other, nm in ((physical, 'dev6'), (train_physical, 'train')):
+            assert not any(np.any(np.all(np.isclose(o, popc), axis=1)) for o in other), f'population/{nm} overlap'
+        for Rp in bs['ranks']:
+            Tr = jnp.asarray(Tn[:, :Rp])
+            head = (lambda a_, _T=Tr: _T @ a_)
+            cand = hz @ Ln[:Rp].T                              # training codes' coefficients, rotated and truncated
+            M = int(bs['tests_per_unknown'] * Rp)
+            for rname in bs['rules']:
+                rung = dict(q=f'bs{Rp}', M=M)
+                rs = dict(name=rname, parts=[dict(lattice=int(rname.replace('lat', '')))])
+                build_rule(rung, rs)
+                ops, info = rules[(rung['q'], M, rname)]
+                o = operators(M)
+                cold = A.build_cold(bank, head, cand, cfg['cold_axis_points'])[0]
+                tr = radius(cand)
+                data = dict(A=o['A'], lam=o['lam'], G5=ops['G5'], Pq=ops['Pq'], Gb=G)
+                query = gridarm.make_query_eq(head, Rp, L, dt, tr, ic_budget=st['ic_budget'],
+                                              step_budget=st['step_budget'], gtol=bs['gtol'], linear=lin(Rp))
+                name = f"bank{Rp}_M{M}_{rname}_{gt(bs['gtol'])}"
+                add(name, family='bankspan', kind='rom', phase='S', k=Rp, M=M, m=info['m'], rule=rname,
+                    gtol=bs['gtol'], unknowns=Rp, trust_radius=tr, quadrature='eq', data=data, cold=cold,
+                    query=query, kernel='arms EQ LM (jacfwd), linear head T[:, :R\']; output via row-blocked bank',
+                    rule_status='re-certified in this job on held-out states (see bank_span)')
+                if run_quick(name) and affordable(name):
+                    # held-out rho under the truncation, on the states this arm's own query visits
+                    t0 = time.perf_counter()
+                    co = []
+                    for ph in popc:
+                        v = query(jnp.asarray(e.initial(L, ph)), float(ph[4]), data, cold)
+                        co.append(np.asarray(jax.vmap(head)(v[7])))
+                        del v
+                    co = np.concatenate(co)
+                    tg = H.dense_targets(G, co, o['sx'], o['sy'], L, chunk=cfg['target_chunk'])
+                    r = H.rho(ops['Pq'], H.sampled_advection(ops['G5'], co, L), tg)
+                    per = int(round(.25 / dt)) + 1
+                    kidx = np.tile(np.arange(per), len(popc))
+                    ent = dict(arm=name, R_prime=Rp, M=M, rule=rname, m=info['m'], states=int(len(r)),
+                               population=dict(draw=bs['population_draw'], rows=bs['population_rows']),
+                               rho_max=float(r.max()), rho_max_k_ge_1=float(r[kidx >= 1].max()),
+                               rho_p99=float(np.quantile(r, .99)), rho_median=float(np.median(r)),
+                               bar=cfg['rho_bar'], exceeds_bar=bool(r.max() > cfg['rho_bar']),
+                               seconds=time.perf_counter() - t0)
+                    rep['bank_span']['arms'].append(ent)
+                    np.save(fields_dir / f'rho_{name}.npy', r)
+                    built[name]['rule_status'] = ('rho_max %.4f on %d held-out states: %s the %.3f bar' % (
+                        ent['rho_max'], ent['states'], 'EXCEEDS' if ent['exceeds_bar'] else 'within', cfg['rho_bar']))
+                    rep['arm_setup'][-1]['rule_status'] = built[name]['rule_status']
+                    print('BANKSPAN RHO', name, round(ent['rho_max'], 4), 'exceeds' if ent['exceeds_bar'] else 'ok', el(), flush=True)
+                    save()
+                    time_block(name)
+                    print('BLOCK', name, el(), flush=True)
+                release(name)
 
     # (b) snapshots at this mesh, then the POD and quadratic-manifold fits (streamed; trajectory-split ridge)
     pod_ranks = sorted(set(cfg.get('pod_ranks', [])))
@@ -654,23 +760,6 @@ def main():
     rep['gates']['fft_tight_converged_everywhere'] = dict(
         passed=all(x['nonlinear_converged'] for x in inv if x['name'] == tight['name']))
 
-    # ============================================= operator cohort (Phase O input)
-    cohort = out / 'opcohort'
-    cohort.mkdir(exist_ok=True)
-    records = []
-    for c in range(ncase):
-        target = truth[c][:, None].astype(np.float64)
-        path = cohort / f'burgers-dev-{c:05d}.npz'
-        np.savez(path, input=np.ascontiguousarray(target[0]), target=target,
-                 parameters=np.array([float(physical[c, 4])]), times=TIMES)
-        records.append(dict(case_id=f'burgers-dev-{c:05d}', split='development', case_index=c,
-                            seed=int(cfg['eval_seed'] if c < cfg['eval_cases'] else cfg['eval_fresh_seed']) * 100 + c,
-                            path=path.name, mesh=L, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                            generation_descriptors=dict(zip(('cx', 'cy', 'width', 'amplitude', 'nu'), map(float, physical[c])))))
-    (cohort / 'index.json').write_text(json.dumps(dict(
-        schema_version=1, pde='burgers', split='development', count=len(records), mesh=L, complete=True,
-        derivation=f'dev6 with this job\'s own same-grid fft_tight solve at {L} intervals, in the operator contract',
-        records=records), indent=1) + '\n')
     np.save(fields_dir / 'truth_sha256.npy', np.array([rep['phases']['truth'][c]['field_sha256'] for c in range(ncase)]))
 
     rep['checkpoint_sha256_after'] = sha_file(a.checkpoint)

@@ -21,7 +21,8 @@ def files_and_body(ROOT, LANE, LIBS, OPS, CHECKPOINT, cfg, a):
     L = int(cfg['intervals'])
     files = LIBS + OPS + [f'{LANE}/cmp.py', f'{LANE}/sfit.py', f'{LANE}/gridarm.py', f'{LANE}/audit_cmp.py',
                           f'{LANE}/lib/hops.py', f'{LANE}/lib/hfast.py', f'{LANE}/lib/xfast.py', f'{LANE}/{a.config}',
-                          'experiments/b-panel/inputs/directions_qtd02.npz', CHECKPOINT]
+                          'experiments/b-panel/inputs/directions_qtd02.npz', CHECKPOINT,
+                          f'{LANE}/inputs/rotation_R512.npz', f'{LANE}/inputs/rotation_R512.json']
     for rung in cfg['rungs']:
         for rs in rung['rules']:
             files += [f"experiments/b-panel/inputs/{part['file']}" for part in rs['parts'] if 'file' in part]
@@ -35,7 +36,7 @@ def files_and_body(ROOT, LANE, LIBS, OPS, CHECKPOINT, cfg, a):
         assert got == op['sha256'], (op['name'], got, op['sha256'])
         extra.append((src, f"{LANE}/opckpt/{op['name']}.pt"))
     body = f'''cd {LANE}
-"$PY" cmp.py --config {a.config} --checkpoint "$TASK_ROOT/{CHECKPOINT}" --inputs "$TASK_ROOT/experiments/b-panel/inputs" --out output
+"$PY" cmp.py --config {a.config} --checkpoint "$TASK_ROOT/{CHECKPOINT}" --inputs "$TASK_ROOT/experiments/b-panel/inputs" --out output || echo "CMP FAILED (operators and audit still run)"
 "$PY" -c "import torch,sys; ok=torch.cuda.is_available(); print('torch_cuda', ok, torch.cuda.get_device_name() if ok else None, flush=True); sys.exit(0 if ok else 42)"
 mkdir -p output/optiming
 '''

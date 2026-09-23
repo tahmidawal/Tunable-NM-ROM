@@ -53,11 +53,18 @@ def main():
                "data/validation/index.json -C ../.. logs run.sbatch COMMIT.txt PROVENANCE.json MANIFEST.sha256 && "
                'cd ../.. && sha256sum collection.tar > collection.tar.sha256')
     else:
-        pre = (f'cd {shlex.quote(lane_r)} && ' +
-               ('find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 && ' if a.partial else '') +
-               'sha256sum -c OUTPUTS.sha256 --quiet && '
-               'tar -cf ../../collection.tar OUTPUTS.sha256 output -C ../.. logs run.sbatch COMMIT.txt PROVENANCE.json '
-               'MANIFEST.sha256 && cd ../.. && sha256sum collection.tar > collection.tar.sha256')
+        # panel: tens of GB of full fields -- verify remotely, then rsync the tree (no second remote copy: audit F12)
+        if a.partial:
+            subprocess.run(['ssh', 'tufts-login', f'cd {shlex.quote(lane_r)} && find output -type f -print0 | sort -z | '
+                            'xargs -0 sha256sum > OUTPUTS.sha256'], check=True)
+        subprocess.run(['ssh', 'tufts-login', f'cd {shlex.quote(lane_r)} && sha256sum -c OUTPUTS.sha256 --quiet'], check=True)
+        for src in (f'{lane_r}/OUTPUTS.sha256', f'{lane_r}/output', f'{remote}/logs', f'{remote}/run.sbatch',
+                    f'{remote}/COMMIT.txt', f'{remote}/PROVENANCE.json', f'{remote}/MANIFEST.sha256'):
+            subprocess.run(['rsync', '-a', f'tufts-login:{src}', str(local) + '/'], check=True)
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=local, check=True)
+        print(local)
+        print('Checksums verified; remote cleanup remains an explicit separate step.')
+        return
     subprocess.run(['ssh', 'tufts-login', pre], check=True)
     for name in ['collection.tar', 'collection.tar.sha256']:
         subprocess.run(['rsync', '-a', f'tufts-login:{remote}/{name}', str(local / name)], check=True)

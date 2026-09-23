@@ -10,9 +10,9 @@ import hashlib
 import json
 from pathlib import Path
 
-FAMILY = dict(nmrom='NM-ROM (ours)', pod='POD-LSPG', qman='quadratic manifold', fno='FNO', unet='U-Net',
+FAMILY = dict(nmrom='NM-ROM (ours)', bankspan='NM-ROM bank-span (ours)', pod='POD-LSPG', qman='quadratic manifold', fno='FNO', unet='U-Net',
               transolver='Transolver', deeponet='DeepONet', fom='FOM (Newton–BiCGStab)')
-ORDER = ['nmrom', 'pod', 'qman', 'fno', 'unet', 'transolver', 'deeponet']
+ORDER = ['nmrom', 'bankspan', 'pod', 'qman', 'fno', 'unet', 'transolver', 'deeponet']
 
 
 def f4(x):
@@ -33,9 +33,11 @@ def label(a, roles):
     if r == 'nmrom_fast':
         return 'NM-ROM fast (q=0, M=64)'
     if r == 'nmrom_accurate':
-        return 'NM-ROM accurate (q=256, M=1088)'
+        return 'reference only: NM-ROM with corrections (q=256, M=1088)'
     if r == 'nmrom_accurate_robust':
-        return 'NM-ROM accurate, robust rule (1 exact step)'
+        return 'reference only: NM-ROM with corrections (q=256), robust rule (1 exact step)'
+    if a['family'] == 'bankspan':
+        return f"NM-ROM bank-span R'={a['k']} (M={a['M']}, `{a['rule']}` m={a['m']})"
     if a['family'] == 'pod':
         return f"POD-LSPG k={a['k']} (M={a['M']})"
     if a['family'] == 'qman':
@@ -67,7 +69,8 @@ def main():
                                  speedup_complete=x.get('speedup_complete_full'), fom_complete=x.get('fom_complete_full'),
                                  epochs=x.get('epochs'), stop_reason=x.get('stop_reason'), trained_at=x.get('trained_at'),
                                  parameters=x.get('parameters'), rule_status=x.get('rule_status'),
-                                 stalled_exits=x.get('stalled', 0) + x.get('timed_stalled', 0)))
+                                 stalled_exits=x.get('stalled', 0) + x.get('timed_stalled', 0),
+                                 timing_withheld=x.get('timing_withheld')))
         foms = sorted((x for x in s['arms'] if x['family'] == 'fom'), key=lambda x: x['gpu_ms'])
         meshes.append(dict(intervals=s['intervals'], attempt=s['attempt'], job_id=s['job_id'], commit=s['commit'],
                            gpu=s['gpu'], summary_file=path, summary_sha256=hashlib.sha256(raw).hexdigest(),
@@ -102,14 +105,28 @@ def main():
         L(f"Summary `{m['summary_file']}` (SHA256 `{m['summary_sha256']}`). Failed gates: "
           f"{', '.join('`' + g + '`' for g in m['failed_gates']) if m['failed_gates'] else 'none'}.")
         L('')
-        L('| method | unknowns | worst % | median % | GPU ms | FOM chosen (its GPU ms, worst %) | speedup |')
-        L('|---|---|---|---|---|---|---|')
+        if m['failed_gates']:
+            L(f"> **This mesh FAILED gates {', '.join(m['failed_gates'])}; its rows are reported as measured but the "
+              "mesh is not accepted until each failure is dispositioned below.**")
+            L('')
+        L('| method | unknowns | worst % | median % | GPU ms | FOM chosen (its GPU ms, worst %) | speedup | status / notes |')
+        L('|---|---|---|---|---|---|---|---|')
         for r in m['rows']:
             fom = (f"`{r['fom']}` ({ms(r['fom_ms'])}, {f4(r['fom_worst_evolved_percent'])})" if r['fom'] else
                    'none at least as accurate')
             unk = f"{r['unknowns']:,}" if isinstance(r['unknowns'], int) else '— (no online solve)'
+            note = []
+            if r['rule_status']:
+                note.append(r['rule_status'])
+            if r['trained_at']:
+                note.append(f"trained at {r['trained_at']}" + (f", {r['epochs']} epochs ({r['stop_reason']})" if r['epochs'] else ''))
+            if r['timing_withheld']:
+                note.append('timing withheld: ' + r['timing_withheld'])
+                fom, r['speedup'] = '—', None
+            if r['stalled_exits']:
+                note.append(f"{r['stalled_exits']} stalled exits")
             L(f"| {r['method']} | {unk} | {f4(r['worst_evolved_percent'])} | {f4(r['median_evolved_percent'])} | "
-              f"{ms(r['gpu_ms'])} | {fom} | {sp(r['speedup'])} |")
+              f"{ms(r['gpu_ms'])} | {fom} | {sp(r['speedup'])} | {'; '.join(note) if note else ''} |")
         L('')
         L(f"FOM candidate grid (the rule chooses among all of these; ${n-1}^2$ = {(n-1)**2:,} unknowns):")
         L('')
@@ -128,6 +145,9 @@ def main():
             for r in ops:
                 L(f"| `{r['arm']}` | {r['trained_at'] or '—'} | {r['epochs'] if r['epochs'] is not None else '—'} | "
                   f"{r['stop_reason'] or '—'} | {r['parameters'] if r['parameters'] else '—'} |")
+        if m['notes']:
+            L('')
+            L('Notes: ' + '; '.join(m['notes']))
         if m['dropped']:
             L('')
             L('Dropped (not reported as rows): ' + '; '.join(f"`{d['name']}` ({d['phase']}: {d['reason'][:120]})"

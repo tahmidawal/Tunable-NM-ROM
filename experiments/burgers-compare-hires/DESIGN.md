@@ -125,3 +125,47 @@ its gates is reported as failed, with the reason, not replaced by numbers from a
 | `p2048` | panel at $2048^2$ | H200 | after `t2048` |
 
 Retries get a new attempt name and directory.
+
+## A1 (2026-09-23 ~02:40 EDT, before any panel job) — bank-span arms, by coordinator direction
+
+The paper drops the correction directions $C_q$. Our model's settings become (a) the head only ($q=0$, the
+"fast" arm already here) and (b) a **bank-span solve**: $u = G\,T_{:,:R'}\,a$ with $a\in\mathbb R^{R'}$ the LM
+unknowns, $T$ the importance rotation of the frozen bank (SVD of $G\Sigma^{1/2}$, $\Sigma$ the second moment of the
+training head coefficients — training codes only), taken verbatim from the sibling lane
+`worktrees/2026-09-23-burgers-bank-knob/experiments/burgers-bank-knob/inputs/rotation_R512.npz`
+(SHA256 `51149166…`, produced by its `make_rotation.py`; copied to `inputs/`, hash-checked in-job). Added to Phase S
+of every mesh:
+
+- $R'\in\{512,384,256,128\}$, $M=4R'$ weak tests, advection through the uniform lattice rules `lat64` and `lat128`,
+  gtol $10^{-6}$; implemented as the ORIGINAL bank with the linear head $h(a)=T_{:,:R'}a$, so the rule stencils,
+  test projection and `arms`' LM/initializer are unchanged (output decoded through the row-blocked bank).
+- **Held-out ρ under truncation, re-measured in-job for every bank-span arm**: on the states its own query visits for
+  8 held-out trajectories (`params_draw(20260921,56)` rows 0–7, burgers-eqcert's population source, asserted
+  disjoint from dev6 and training), $\rho=\lVert P_q^\top a(\text{nodes})-\Phi^\top a\rVert/\lVert\Phi^\top a\rVert$ per
+  state; any arm with $\rho_{\max}>0.116$ is **marked** in its row. ρ is never certified by an NNLS fit residual
+  (there is no fit: lattice rules).
+- The $q=256$ arms stay, labelled "reference only".
+
+## A2 — independent pre-job audit (subagent; Codex cannot run on this box), dispositions
+
+No blocker. Accepted and fixed before any panel job:
+1. **Order gate** normalised by a per-case median that contained the slowed samples, so it could not see a slowdown on
+   arms whose samples mostly follow slow arms (the NM-ROM fast arm, the fast FOM comparators). Replaced by a
+   within-case paired estimator (median over cases of median log-time after slow minus after fast). **Control
+   changed (deviation from §6, recorded here):** the pre-registered control "must fail on br1024" is withdrawn —
+   br1024's recorded failure is a case-mix artefact (all after-slow samples sit inside their own case's timing range;
+   paired gap on br1024 ≤ 1.2 %), so that dataset has no effect to detect. The control is now an injected +6 %
+   slowdown on real rows (br1024, and this job's own Phase F rows in `audit_cmp.py`), which every judged role arm and
+   rule-chosen FOM must individually fail (`checks/order-gate-control.json`: recovered gaps 5.8–6.6 %).
+2. The operator cohort is written right after the truth solve and `cmp.py` failure no longer aborts the operator phase
+   and the audit.
+3. A per-arm deadline (`phase_s_deadline_seconds`): a slow arm whose projected 5×6 block would overrun is dropped
+   and reported, never shortened.
+4. A partially timed or dropped arm prints no GPU ms and no speedup.
+5. Report prints rule status, operator training record (mesh, epochs, stop reason) and the zero-shot marker in a
+   notes column; a mesh with failed gates carries a banner.
+6. Minor: failed operator trainings become notes; grid-parity gate fails if no pair was produced; missing bracket
+   timing fails the drift gate; the robust-rule arm is released after its block; panel collection streams with
+   rsync (no second remote copy of tens of GB).
+Not changed: complete-ms for operators excludes an upload (inherited; favours the operators; GPU-ms is the
+headline column).

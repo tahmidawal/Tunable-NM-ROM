@@ -172,3 +172,40 @@ def make_query(head, K, L, dt, trust, ic_budget=400, step_budget=180, gtol=1e-6,
         return (fields, it, rn, reason, Z, icit, icreason, internal, gn, icgn,
                 icrn, jnp.linalg.norm(ui))
     return jax.jit(query)
+
+
+def make_query_eq(head, K, L, dt, trust, ic_budget=400, step_budget=180, gtol=1e-6, linear='gj'):
+    """arms.make_query(..., 'eq') -- the EQ-rule weak residual, arms' own LM (jacfwd) and initializer -- with the
+    output fields decoded through the row-blocked bank (`data['Gb']`) instead of one `data['G']` array, which at
+    2048^2 would exceed the int32 gemm limit. Used by the bank-span arms (head h(a) = T[:, :R'] a)."""
+    import arms as A
+    wk = A.weak_eq
+    ic = A.make_stationary_lm(lambda z, y, R: R @ head(z) - y, ic_budget, gtol=gtol, linear=linear)
+    lm = A.make_stationary_lm(lambda z, p, nu, data: wk(z, p, nu, data, head, L, dt),
+                              step_budget, trust, gtol, linear)
+
+    def query(u0, nu, data, cold):
+        xy, w, Q, R, Hrot, Hnorm, Zcand = cold
+        ui = e.sample_field(u0, xy, L) * w
+        y = Q.T @ ui
+        idx = jnp.argmin(Hnorm - 2 * Hrot @ y)
+        z, icrn, icit, icreason, icgn = ic(Zcand[idx], (y, R), 0.)
+        scale = jnp.linalg.norm(ui) * jnp.sqrt(len(w))
+
+        def step(carry, _):
+            z, zprev = carry
+            p = data['A'] @ head(z)
+            ze = z + (z - zprev)
+            r0 = jnp.linalg.norm(wk(z, p, nu, data, head, L, dt))
+            re = jnp.linalg.norm(wk(ze, p, nu, data, head, L, dt))
+            zi = jnp.where(jnp.isfinite(re) & (re < r0), ze, z)
+            z2, rn, it, reason, gn = lm(zi, (p, nu, data), 1e-9 * scale)
+            return (z2, z), (z2, rn, it, reason, gn)
+
+        _, (zs, rn, it, reason, gn) = jax.lax.scan(step, (z, z), None, length=int(round(.25 / dt)))
+        internal = jnp.concatenate((z[None], zs))
+        Z = internal[::int(round(.05 / dt))]
+        fields = jax.vmap(lambda z: e.output_field(H.bank_apply(data['Gb'], head(z)), L, L))(Z)
+        return (fields, it, rn, reason, Z, icit, icreason, internal, gn, icgn,
+                icrn, jnp.linalg.norm(ui))
+    return jax.jit(query)

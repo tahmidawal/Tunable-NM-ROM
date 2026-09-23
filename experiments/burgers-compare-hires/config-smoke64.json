@@ -158,11 +158,42 @@
   4,
   8
  ],
+ "rho_bar": 0.116,
+ "target_chunk": 4,
+ "phase_s_deadline_seconds": 3600,
+ "bank_span": {
+  "ranks": [
+   512,
+   32
+  ],
+  "rules": [
+   "lat16",
+   "lat32"
+  ],
+  "tests_per_unknown": 4,
+  "gtol": 1e-06,
+  "rotation_file": "burgers-compare-hires/inputs/rotation_R512.npz",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "rotation_source": "worktrees/2026-09-23-burgers-bank-knob/experiments/burgers-bank-knob/inputs/rotation_R512.npz (sibling lane, make_rotation.py; training codes only)",
+  "population_draw": [
+   20260921,
+   56
+  ],
+  "population_rows": [
+   0,
+   2
+  ],
+  "note": "held-out rho population = burgers-eqcert source draw rows 0-7, disjoint from dev6/train"
+ },
  "roles": {
   "nmrom_fast": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
   "nmrom_accurate": "q256_M1088_lat16_g0p001_fast_chol_clip_lamcarry_pred2",
   "nmrom_accurate_robust": "q256_M1088_lat16x_g0p01_fast_chol_clip_lamcarry_pred2_x1"
  },
+ "reference_roles": [
+  "nmrom_accurate",
+  "nmrom_accurate_robust"
+ ],
  "fom_subsets": {
   "b_panel": [
    "fft_tight",

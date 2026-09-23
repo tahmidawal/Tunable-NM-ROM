@@ -72,9 +72,18 @@ def config(L):
         pod_ranks=[16, 64, 256, 512], qman_ranks=[16, 32, 64],
         qman_gammas=[0., 1e-10, 1e-8, 1e-6, 1e-4, 1e-2, 1.], qman_seed=20260922, qman_holdout=.2,
         qman_cold_axis_points=96, fit_block_bytes=2e9, grid_tangent_chunk=64, grid_parity_ranks=[16],
+        rho_bar=.116, target_chunk=4, phase_s_deadline_seconds=(15 if L >= 2048 else 7) * 3600,
+        bank_span=dict(ranks=[512, 384, 256, 128], rules=['lat64', 'lat128'], tests_per_unknown=4, gtol=1e-6,
+                       rotation_file='burgers-compare-hires/inputs/rotation_R512.npz',
+                       rotation_sha256='51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772',
+                       rotation_source=('worktrees/2026-09-23-burgers-bank-knob/experiments/burgers-bank-knob/inputs/'
+                                        'rotation_R512.npz (sibling lane, make_rotation.py; training codes only)'),
+                       population_draw=[20260921, 56], population_rows=[0, 8],
+                       note='held-out rho population = burgers-eqcert source draw rows 0-7, disjoint from dev6/train'),
         roles=dict(nmrom_fast='q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2',
                    nmrom_accurate='q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2',
                    nmrom_accurate_robust='q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1'),
+        reference_roles=['nmrom_accurate', 'nmrom_accurate_robust'],
         fom_subsets=dict(b_panel=[f['name'] for f in FOM if not f['name'].startswith('lean_')],
                          lean=[f['name'] for f in FOM if f['name'].startswith('lean_')],
                          full=[f['name'] for f in FOM]),
@@ -89,7 +98,8 @@ def smoke():
              local_smoke_waives_cohort_hash=True, rungs=rungs(64, smoke=True), train_trajectories=10,
              fom_settings=[f for f in FOM if f['name'] in ('fft_tight', 'nt1e-2_dt01', 'lean_nt3e-3_l3e-3_dt005')],
              pod_ranks=[4, 16], qman_ranks=[4, 8], grid_parity_ranks=[4, 8], grid_tangent_chunk=4,
-             fit_block_bytes=8 * 260 * 97, qman_holdout=.3)
+             fit_block_bytes=8 * 260 * 97, qman_holdout=.3, phase_s_deadline_seconds=3600)
+    c['bank_span'] = dict(c['bank_span'], ranks=[512, 32], rules=['lat16', 'lat32'], population_rows=[0, 2])
     c['roles'] = {k: v.replace('_scaled_', '_lat16_').replace('lat64', 'lat16') for k, v in c['roles'].items()}
     kept = {f['name'] for f in c['fom_settings']}
     c['fom_subsets'] = {k: [n for n in v if n in kept] for k, v in c['fom_subsets'].items()}

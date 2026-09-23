@@ -1,0 +1,261 @@
+{
+ "attempt": "smoke128",
+ "intervals": 128,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 1,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 1,
+ "expected_physical_sha256": null,
+ "cohort_name": "dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "rho_bar": 0.116,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "ladder": [
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "keep_parent": true,
+ "population": {
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0
+   ],
+   [
+    1
+   ]
+  ],
+  "confirm_draw": [
+   2
+  ],
+  "note": "burgers-eqcert populations: 256^2 used params_draw(20260922,56) (bc256b), every other mesh params_draw(20260921,56); 5 certification draws of 8 trajectories + 1 confirmation draw of 16; rho on the states each arm itself reaches, at THIS mesh"
+ },
+ "rules": {
+  "q0scaled": {
+   "lattice": 32,
+   "note": "SMOKE ONLY: stands in for the q0 file rule, which needs L % 256 == 0"
+  },
+  "lat64": {
+   "lattice": 64,
+   "note": "uniform 63x63 interior sub-lattice, equal weights; the paper accurate rule (burgers-eqcert: certified at 256^2 (bc256b, x1), 512^2 (x1), 1024^2; 2048^2 certificate-only; 4096^2 NOT confirmed)"
+  },
+  "bad0": {
+   "lattice": 16,
+   "control": true,
+   "note": "SMOKE ONLY"
+  }
+ },
+ "arms": [
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "family": "a"
+  },
+  {
+   "model": "lin",
+   "Rp": 512,
+   "M": 2048,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "b"
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 256,
+   "M": 1088,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "c"
+  },
+  {
+   "model": "trunc",
+   "Rp": 64,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "family": "a"
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "b"
+  },
+  {
+   "model": "trunc",
+   "Rp": 64,
+   "q": 48,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "c"
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 256,
+   "M": 1088,
+   "rule": "bad0",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "control",
+   "untimed": true
+  },
+  {
+   "model": "parent",
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "family": "parent",
+   "role": "paper_fast_unrotated"
+  },
+  {
+   "model": "parent",
+   "q": 256,
+   "M": 1088,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 1
+   },
+   "family": "parent",
+   "role": "paper_accurate_unrotated"
+  }
+ ],
+ "parity_pairs": [
+  [
+   "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2",
+   "P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2"
+  ],
+  [
+   "R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+   "P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1"
+  ]
+ ],
+ "parity_bar": 1e-10,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2"
+ ],
+ "restrict_to": 256,
+ "target_chunk": 4,
+ "dense_tangent_group": 34,
+ "phi_gate_max_mesh": 128,
+ "reps": 1,
+ "required_reps": 1,
+ "order_seed": 20260923,
+ "burn_seconds": 0.02,
+ "slow_threshold_seconds": 1.0,
+ "cooldown_after_seconds": 0.5,
+ "cooldown_max_seconds": 2.0,
+ "fom_subsets": {
+  "lean": [
+   "lean_nt3e-3_l3e-3_dt005"
+  ]
+ },
+ "purpose": "DESIGN.md: nested bank truncation R' of the frozen R=512 Burgers model at this mesh, one allocation; dev6 selection panel; per-arm deployed-state rho re-measured at this mesh",
+ "local_smoke_waives_cohort_hash": true
+}

@@ -76,7 +76,7 @@ cd "$TASK_ROOT/code"
 __SECOND__
 cd "$TASK_ROOT"
 rm -rf cache tmp
-find output $(test -d output2 && echo output2) -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+find output $(ls -d output2 output3 2>/dev/null || true) -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
 
@@ -91,6 +91,7 @@ def main():
     p.add_argument('--set', default='2d', choices=['2d', '3d', 'lshape'], help='which parent file set to stage')
     p.add_argument('--subsample', type=int, default=16)
     p.add_argument('--config2', default=None, help='optional second driver run in the same job (-> ../output2)')
+    p.add_argument('--config3', default=None, help='optional third driver run in the same job (-> ../output3)')
     p.add_argument('--memfrac', default='0.75', help='XLA client memory fraction (0.95 for the 4096^2 bank)')
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--gpu', default='h200', choices=['a100', 'h100', 'h200', 'l40s'])
@@ -104,7 +105,7 @@ def main():
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     files = list(dict.fromkeys({'2d': COMMON, '3d': SET3D, 'lshape': SETL}[a.set] + [f'{LANE}/{a.driver}', f'{LANE}/{a.audit}',
-                                         f'{LANE}/{a.config}'] + ([f'{LANE}/{a.config2}'] if a.config2 else []) + a.extra))
+                                         f'{LANE}/{a.config}'] + ([f'{LANE}/{a.config2}'] if a.config2 else []) + ([f'{LANE}/{a.config3}'] if a.config3 else []) + a.extra))
     proof = []
     for name in files:
         content = (ROOT / name).read_bytes()
@@ -120,6 +121,9 @@ def main():
     script = SCRIPT
     second = ('"$PY" __DRIVER__ --config %s --out ../output2\n"$PY" __AUDIT__ ../output2 --subsample __SUB__ --delete-fields'
               % a.config2) if a.config2 else ''
+    if a.config3:
+        second += ('\n"$PY" __DRIVER__ --config %s --out ../output3\n"$PY" __AUDIT__ ../output3 --subsample __SUB__ --delete-fields'
+                   % a.config3)
     script = script.replace('__SECOND__', second)
     for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', a.gpu),
                          ('__HOURS__', f'{a.hours:02d}'), ('__MEM__', a.mem),

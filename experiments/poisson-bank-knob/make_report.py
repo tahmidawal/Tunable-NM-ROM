@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-RUNS = [('pbkA', 'output'), ('pbkA', 'output2'), ('pbkB', 'output')]
+RUNS = [('pbkC', 'output'), ('pbkC', 'output2'), ('pbkC', 'output3'), ('pbkD', 'output')]
 STAGES = ('project_and_start', 'lm_solve', 'y_elimination_and_map', 'reconstruction')
 
 
@@ -50,6 +50,27 @@ def one(attempt, sub):
         s['speedup_vs_matched_cg'] = ref['gpu_ms'] / s['gpu_ms'] if ref else None
         s['speedup_vs_cg_0.01'] = named['gpu_ms'] / s['gpu_ms'] if named else None
         s['speedup_vs_matched_cg_total'] = ref['total_ms'] / s['total_ms'] if ref else None
+        own = next((c for c in cgs if c['worst_error'] <= s['worst_error']), None)
+        s['own_matched_cg'] = own['name'] if own else None
+        s['speedup_vs_own_matched_cg'] = own['gpu_ms'] / s['gpu_ms'] if own else None
+    # PRE-REGISTERED Table-1 setting rule (coordinator, 2026-09-23, fixed before any cluster result):
+    # accurate = most accurate arm; fast = cheapest arm with worst error <= the paper's fast setting
+    # (q=0, R=512) at this mesh; FOM = fastest tested CG at least as accurate as the accurate arm.
+    cand = [s for s in rom if s['family'] != 'nm-rom-parent']
+    acc = min(cand, key=lambda s: (s['worst_error'], s['gpu_ms']))
+    paper_fast = subj[f'R512_q0']
+    fastarm = min([s for s in cand if s['worst_error'] <= paper_fast['worst_error']], key=lambda s: s['gpu_ms'])
+    table1 = dict(rule='accurate = most accurate arm; fast = cheapest arm with worst error <= (q=0, R=512) worst error; '
+                       'FOM = fastest tested CG with worst error <= accurate arm worst error; same job',
+                  accurate=acc['name'], fast=fastarm['name'], paper_fast_reference='R512_q0',
+                  paper_fast_reference_worst_error=paper_fast['worst_error'], fom=(ref['name'] if ref else None),
+                  fom_gpu_ms=(ref['gpu_ms'] if ref else None), fom_worst_error=(ref['worst_error'] if ref else None),
+                  accurate_worst_error=acc['worst_error'], accurate_gpu_ms=acc['gpu_ms'],
+                  accurate_speedup=(ref['gpu_ms'] / acc['gpu_ms'] if ref else None),
+                  fast_worst_error=fastarm['worst_error'], fast_gpu_ms=fastarm['gpu_ms'],
+                  fast_speedup=(ref['gpu_ms'] / fastarm['gpu_ms'] if ref else None),
+                  accurate_total_ms=acc['total_ms'], fast_total_ms=fastarm['total_ms'],
+                  fom_total_ms=(ref['total_ms'] if ref else None))
     prof = {}
     for nm in [s['name'] for s in rom]:
         rows = [x for x in R['profile'] if x['name'] == nm]
@@ -63,7 +84,7 @@ def one(attempt, sub):
                 audit=dict(verdict=A['verdict'], summary=A['summary']),
                 floors={k: v['worst'] for k, v in R['floors'].items()},
                 result_sha256=hashlib.sha256((d / 'result.json').read_bytes()).hexdigest(),
-                most_accurate_arm=best['name'], matched_cg=(ref['name'] if ref else None),
+                most_accurate_arm=best['name'], matched_cg=(ref['name'] if ref else None), table1=table1,
                 subjects=subj, profile=prof, device_memory=R.get('device_memory'))
 
 
@@ -97,19 +118,26 @@ def main():
         n = m['intervals']
         L += [f"## {n}² — job {m['job_id']}, {m['gpu']}, commit `{(m['commit'] or '')[:8]}`", '',
               f"Gates: {m['gates']}. Audit: {m['audit']['verdict']} ({m['audit']['summary']}).",
-              f"Parity: {'; '.join(f\"{p['candidate']} {p['worst_field_relative']:.1e}\" for p in m['parity']) or 'not run at this mesh (original bank not kept)'}. "
+              f"Parity: {'; '.join(f"{p['candidate']} {p['worst_field_relative']:.1e}" for p in m['parity']) or 'not run at this mesh (original bank not kept)'}. "
               f"Neighbour gate: {'PASS' if m['neighbour_gate']['passed'] else 'FAIL'}, worst ratio "
               f"{max(r['ratio'] for r in m['neighbour_gate']['rows']):.3f} (limit {m['neighbour_gate']['limit']}).",
               f"Most accurate ROM arm: `{m['most_accurate_arm']}`; matched CG (fastest with worst error ≤ it): `{m['matched_cg']}`.", '',
-              "| R' | q | arm | worst err % | median err % | floor % | GPU ms | total ms | × vs matched CG (GPU) | × vs cg_0.01 (GPU) | LM attempts |",
-              '|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|']
+              f"**Table-1 settings (pre-registered rule):** accurate `{m['table1']['accurate']}` "
+              f"{m['table1']['accurate_worst_error']*100:.3f} % at {m['table1']['accurate_gpu_ms']:.2f} ms = "
+              f"{m['table1']['accurate_speedup']:.1f}× vs `{m['table1']['fom']}` ({m['table1']['fom_gpu_ms']:.1f} ms, "
+              f"{m['table1']['fom_worst_error']*100:.3f} %); fast `{m['table1']['fast']}` {m['table1']['fast_worst_error']*100:.3f} % "
+              f"at {m['table1']['fast_gpu_ms']:.2f} ms = {m['table1']['fast_speedup']:.1f}× (fast bar: `R512_q0` "
+              f"{m['table1']['paper_fast_reference_worst_error']*100:.3f} %).", '',
+              "| R' | q | arm | worst err % | median err % | floor % | GPU ms | total ms | × vs matched CG (GPU) | × vs cg_0.01 (GPU) | own matched CG | × vs own matched CG | LM attempts |",
+              '|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|']
         rom = sorted([s for s in m['subjects'].values() if s['family'] != 'cg'],
                      key=lambda s: ({'nm-rom': 0, 'linear-rung': 1, 'nm-rom-parent': 2}[s['family']], -s['Rp'], s['q']))
         for s in rom:
             L.append(f"| {s['Rp']} | {s['q']} | {s['family']} | {s['worst_error']*100:.3f} | {s['median_error']*100:.3f} | "
                      f"{s['floor']*100:.3f} | {s['gpu_ms']:.2f} | {s['total_ms']:.2f} | "
                      f"{s['speedup_vs_matched_cg']:.1f} | {s['speedup_vs_cg_0.01']:.1f} | "
-                     f"{'' if s['lm_attempts'] is None else f\"{s['lm_attempts']:.0f}\"} |")
+                     f"{s['own_matched_cg']} | {'' if s['speedup_vs_own_matched_cg'] is None else f"{s['speedup_vs_own_matched_cg']:.1f}"} | "
+                     f"{'' if s['lm_attempts'] is None else f"{s['lm_attempts']:.0f}"} |")
         L += ['', '| CG rtol | worst err % | GPU ms | total ms | iterations |', '|---:|---:|---:|---:|---:|']
         for s in sorted([s for s in m['subjects'].values() if s['family'] == 'cg'], key=lambda s: -s['tolerance']):
             L.append(f"| {s['tolerance']:g} | {s['worst_error']*100:.3f} | {s['gpu_ms']:.1f} | {s['total_ms']:.1f} | {s['cg_iterations']:.0f} |")

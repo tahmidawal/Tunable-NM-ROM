@@ -61,3 +61,24 @@ H200 per job, UUID-guarded. 1024² and 2048² run sequentially in one allocation
 
   Speedups use the fastest tested CG whose worst same-grid error is $\le$ the worst error of the model's most accurate
   arm, from the same job. They are also given against the paper's named `cg_0.01`.
+
+## Amendment A1 (2026-09-23, before any cluster result) — Table-1 scope and settings rule
+
+The coordinator relayed a scope change from the user: $R'$ replaces $q$ as the paper's tunability knob, and the
+Table 1 rows are regenerated from the frozen models. Changes, all made before any job ran:
+
+- The first submissions, 4196680 (`pbkA`) and 4196682 (`pbkB`), were cancelled by me while still PENDING and never
+  started. Their remote directories were deleted and the attempt names are retired.
+- Meshes are now **256², 1024², 2048², 4096²**. Job `pbkC` runs 256², 1024² and 2048², each as its own driver run with
+  its own full arm and CG set, in one allocation. Job `pbkD` runs 4096².
+- The CG loose grid is widened to rtol $\{0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.03, 0.01\}$, so that a CG setting can
+  match the cheaper, less accurate arms. The tight phase is $\{10^{-3}, 10^{-4}\}$.
+- **Pre-registered Table-1 setting rule** (fixed by the coordinator before results):
+  - **accurate** = the most accurate arm at that mesh;
+  - **fast** = the cheapest arm whose worst error $\le$ that of the current paper fast setting ($q=0$, $R=512$,
+    arm `R512_q0`) at that mesh;
+  - **Table-1 speedup** = (the fastest tested CG with worst error $\le$ the accurate arm's) / (arm GPU-query time),
+    from the same job; one FOM per row.
+
+  Every arm is also compared with the fastest CG at least as accurate as itself. Parent (unrotated) arms are parity
+  baselines and are excluded from the selection, because they duplicate `R512_*`.

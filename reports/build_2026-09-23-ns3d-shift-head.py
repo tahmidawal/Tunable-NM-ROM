@@ -123,6 +123,29 @@ flowchart LR
 **What the head costs.** It is the most expensive reduced arm per query: its unknown count is small, but each sweep evaluates the network and its Jacobian and chains it through the $M\times R$ coefficient Jacobian, and the query is launch-bound, so fewer unknowns do not buy time. The span ladder is the cost knob; the head is the accuracy end.
 """)
 
+    # success criteria, generated
+    L.append("## Against the lane's success criteria\n")
+    L.append("| cohort | mesh | ladder monotone in error | in cost | accurate end (worst) | "
+             "≲1 %? | fast end (worst, vs CNAB2) | faster than CNAB2? | faster than FD-CG? |")
+    L.append("|---|---:|---|---|---|---|---|---|---|")
+    cohorts = [(j, S[j], "development") for j in have]
+    if held.exists():
+        cohorts.append((HELDOUT_JOB, W.load(HELDOUT_JOB)[0], "held-out"))
+    for j, s, label in cohorts:
+        span, head = ladder_rows(s)
+        em = all(a["worst"] <= b["worst"] for a, b in zip(span, span[1:]))
+        cm = all(a["ms"] >= b["ms"] for a, b in zip(span, span[1:]))
+        acc = min([head] + span, key=lambda r: r["worst"])
+        fast = min(span, key=lambda r: r["ms"])
+        _, xc = speed(s, fast, "CNAB2")
+        cf, xf = speed(s, fast, "FD-CG", heavy=True)
+        L.append(f"| {label} | {s['config']['n']}^3 | {em} | {cm} | {acc['label']} "
+                 f"{pct(acc['worst'])} | {acc['worst'] <= 0.01} | {fast['label']} "
+                 f"{pct(fast['worst'])}, {'—' if xc is None else f'{xc:.2f}x'} | "
+                 f"{xc is not None and xc > 1} | "
+                 f"{'no comparator' if xf is None else f'{xf > 1} ({xf:.2f}x conservative)'} |")
+    L.append("")
+
     # FOM finding
     L.append("## The FOM solvers\n")
     L.append(r"""**CNAB2 is spectral and performs no linear solve.** `experiments/ns3d/ns3d_fom.py:make_solver` is a Fourier pseudo-spectral Galerkin method with 2/3 dealiasing: the Crank–Nicolson viscous step is a pointwise division by $1+\tfrac12\Delta t\,\nu|k|^2$ in Fourier space, and the pressure is removed by the Leray projector $\hat u-k(k\cdot\hat u)/|k|^2$, also pointwise. Every "solve" is an FFT pair. Under the project's rule against featuring spectral/direct solvers as the comparator, it is not a rule-compliant FOM.

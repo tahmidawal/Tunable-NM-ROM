@@ -71,7 +71,7 @@ def run_cases(call, dev, viscosities, keep=False, inputs=None, restrict=None):
             raise RuntimeError(f"nonfinite field on case {case}")
         errors[case] = rel_case(out, dev, case)
         check = D.sumsq_rows(out, dev[case], dev[case, 0])
-        if float(np.max(np.abs(errors[case] - check))) > 1e-12:
+        if float(np.max(np.abs(errors[case] - check))) > 1e-12 * max(1.0, float(np.max(np.abs(check)))):
             raise RuntimeError("error reductions disagree")
         if keep:
             fields[case] = out

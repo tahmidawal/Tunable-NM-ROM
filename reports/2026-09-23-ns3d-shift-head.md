@@ -64,6 +64,14 @@ Ladder setting (dt and sweeps fixed in DESIGN.md). Worst/median = development ev
 
 **What the head costs.** It is the most expensive reduced arm per query: its unknown count is small, but each sweep evaluates the network and its Jacobian and chains it through the $M\times R$ coefficient Jacobian, and the query is launch-bound, so fewer unknowns do not buy time. The span ladder is the cost knob; the head is the accuracy end.
 
+## Against the lane's success criteria
+
+| cohort | mesh | ladder monotone in error | in cost | accurate end (worst) | ≲1 %? | fast end (worst, vs CNAB2) | faster than CNAB2? | faster than FD-CG? |
+|---|---:|---|---|---|---|---|---|---|
+| development | 32^3 | True | True | head k=8 0.151% | True | bank span R'=8 5.549%, 0.95x | False | True (8.00x conservative) |
+| development | 64^3 | True | True | head k=8 0.152% | True | bank span R'=8 5.549%, 4.61x | True | True (13.30x conservative) |
+| development | 96^3 | True | True | head k=8 0.153% | True | bank span R'=8 5.549%, 10.97x | True | True (41.76x conservative) |
+
 ## The FOM solvers
 
 **CNAB2 is spectral and performs no linear solve.** `experiments/ns3d/ns3d_fom.py:make_solver` is a Fourier pseudo-spectral Galerkin method with 2/3 dealiasing: the Crank–Nicolson viscous step is a pointwise division by $1+\tfrac12\Delta t\,\nu|k|^2$ in Fourier space, and the pressure is removed by the Leray projector $\hat u-k(k\cdot\hat u)/|k|^2$, also pointwise. Every "solve" is an FFT pair. Under the project's rule against featuring spectral/direct solvers as the comparator, it is not a rule-compliant FOM.

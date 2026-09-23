@@ -40,9 +40,11 @@ def claimed(report, key):
 def compare(errors, entry, target=0.05):
     evolved = errors[:, 1:].max(axis=1)
     stats = entry["stats"]
+    # relative to the size of the errors themselves (a blown-up FOM row can be O(100))
+    scale = max(1.0, float(np.max(np.abs(np.asarray(entry["errors"])))))
     gap = max(abs(float(evolved.max()) - stats["evolved_worst"]),
               abs(float(np.median(evolved)) - stats["evolved_median"]),
-              float(np.max(np.abs(errors - np.asarray(entry["errors"])))))
+              float(np.max(np.abs(errors - np.asarray(entry["errors"]))))) / scale
     count_ok = int(np.sum(evolved > target)) == stats["cases_evolved_over_target"]
     return gap, count_ok, evolved
 

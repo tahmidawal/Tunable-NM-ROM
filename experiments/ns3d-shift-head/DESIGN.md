@@ -204,3 +204,19 @@ because a 32-case cohort at 96^3 would otherwise put ~75 GB on a share that is 9
 (ii) nothing else. Known weakness carried into the held-out grid unchanged: the FD-CG
 3n=288^3 setting uses 40 steps, which is past its explicit stability margin (43 %
 development error); it is never a comparator and is kept only because the grid is frozen.
+
+## Amendment 4 (2026-09-23) — the held-out job crashed in its audit; rerun with identical frozen settings
+
+The held-out seed was opened once, by job 4201281 (`b1_heldout96`). That job computed and
+recorded every reduced-model row, every CNAB2 row and the FD-CG rows at 96^3, then
+stopped in the streamed audit of the FD-CG 192^3 / 40-step row: that setting blew up
+(evolved worst ≈ 645 relative to ‖u0‖), and the float32 audit bound was an **absolute**
+2e-6, which a 4.6e-6 gap on an error of that size (≈ 7e-9 relative) exceeds. No timing
+phase ran. Its summary, logs and manifest are kept at `runs/b1_heldout96_crashed/`.
+
+Fix (audit and error-reduction tolerances only, no change to the model, solver, settings
+or error formula): both the in-job reduction check and `verify_head.py` now compare
+relative to max(1, |error|). The frozen settings file is unchanged (sha256
+4e3686b8…ce9). The rerun (`b2_heldout96`) evaluates the same frozen settings on the same
+seed; nothing was chosen between the two runs, and the reduced-model accuracies of the
+rerun are checked against the crashed attempt's as a reproducibility gate.

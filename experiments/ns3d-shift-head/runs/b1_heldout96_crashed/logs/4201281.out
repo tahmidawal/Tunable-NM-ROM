@@ -1,0 +1,124 @@
+host=pax050 source_commit=350c13b7a2735509735605eb259d5fe9d17be373 job=4201281 name=b1_heldout96
+NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  4.4T  241G  95% /cluster/tufts/paralab
+jax_backend=gpu
+disk_free_gb=240.9 devices=[CudaDevice(id=0)]
+held-out disjointness (rounded-row overlaps): {'202609201': 0, '202609202': 0, '202609203': 0, '202609211': 0}
+generating bank training trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.339e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+bank rebuild vs frozen reference coefficients: 1.887e-13
+generating development trajectories
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+bank floor r64: evolved worst 0.001907
+floors k=8: q0=0.00191
+rotation: rotated vs rebuilt operators 8.200e-16
+span floors: R'64=0.00191, R'48=0.00291, R'32=0.00671, R'16=0.02358, R'8=0.06979
+lin_dt0.02_it3: evolved worst 0.011232
+control: perturbed copy of lin_dt0.02_it3 gap 3.065e-04 rejected=True
+lin_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.011231645757281212, "evolved_median": 0.004773954812068809, "gap": 5.707240235963695e-16}
+streamed verify ok lin_dt0.02_it3
+span64_dt0.02_it3: evolved worst 0.011232
+span64_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.011231648948151879, "evolved_median": 0.004773948914935036, "gap": 4.527628272299467e-16}
+streamed verify ok span64_dt0.02_it3
+span48_dt0.02_it3: evolved worst 0.012642
+span48_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.0126419343403158, "evolved_median": 0.006929080066117036, "gap": 6.800116025829084e-16}
+streamed verify ok span48_dt0.02_it3
+span32_dt0.02_it3: evolved worst 0.014591
+span32_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.014590911092359818, "evolved_median": 0.007845546907628004, "gap": 4.432218481120742e-16}
+streamed verify ok span32_dt0.02_it3
+span16_dt0.02_it3: evolved worst 0.032425
+span16_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.03242509154929979, "evolved_median": 0.02004352701729937, "gap": 1.2385925618474403e-15}
+streamed verify ok span16_dt0.02_it3
+span8_dt0.02_it3: evolved worst 0.069108
+span8_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.06910846568641442, "evolved_median": 0.037299586302487794, "gap": 2.8380076066980564e-15}
+streamed verify ok span8_dt0.02_it3
+k8_q0_dt0.02_it3: evolved worst 0.002068
+k8_q0_dt0.02_it3 {"dtype": "float64", "evolved_worst": 0.0020680567000797762, "evolved_median": 0.0009144456004612175, "gap": 8.760353553682876e-17}
+streamed verify ok k8_q0_dt0.02_it3
+selected k = 8
+control frame-zero: evolved worst 0.4239
+head driver parity vs LM: {'2': 6.650400878608735e-06, '3': 4.280006232836215e-10, '4': 5.290857555724035e-11}
+CNAB2 steps=200: 0.000000
+cnab2_s200 {"dtype": "float32", "evolved_worst": 2.515934379664938e-08, "evolved_median": 2.452302621013574e-08, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s200
+CNAB2 steps=100: 0.000225
+cnab2_s100 {"dtype": "float32", "evolved_worst": 0.00022491313480453888, "evolved_median": 0.00010096792780697544, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s100
+CNAB2 steps=80: 0.000394
+cnab2_s80 {"dtype": "float32", "evolved_worst": 0.00039390814722642273, "evolved_median": 0.00017670143358763411, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s80
+CNAB2 steps=70: 0.000561
+cnab2_s70 {"dtype": "float32", "evolved_worst": 0.0005611016847873081, "evolved_median": 0.00024112274138722134, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s70
+CNAB2 steps=60: 0.047382
+cnab2_s60 {"dtype": "float32", "evolved_worst": 0.04738243826843859, "evolved_median": 0.000340437357524042, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s60
+CNAB2 steps=50: error reductions disagree
+CNAB2 steps=50: nan
+CNAB2 steps=40: error reductions disagree
+CNAB2 steps=40: nan
+CNAB2 steps=20: error reductions disagree
+CNAB2 steps=20: nan
+CNAB2 steps=10: 25.829890
+cnab2_s10 {"dtype": "float32", "evolved_worst": 25.829889977841308, "evolved_median": 0.14875327083986906, "gap": 2.5595773709215522e-08}
+streamed verify ok cnab2_s10
+fd_n96_s20_tol0.0001: 16.104558 cg_p_mean=76.06718897819519
+fd_n96_s20_tol0.0001 {"dtype": "float32", "evolved_worst": 16.104558424707037, "evolved_median": 0.004573798853732887, "gap": 1.181057029953081e-09}
+streamed verify ok fd_n96_s20_tol0.0001
+fd_n96_s20_tol1e-06: 20.037510 cg_p_mean=112.52968835830688
+fd_n96_s20_tol1e-06 {"dtype": "float32", "evolved_worst": 20.037509661332365, "evolved_median": 0.004578693520271312, "gap": 2.7031070715111127e-08}
+streamed verify ok fd_n96_s20_tol1e-06
+fd_n96_s20_tol1e-08: 19.904633 cg_p_mean=134.0640664100647
+fd_n96_s20_tol1e-08 {"dtype": "float32", "evolved_worst": 19.904633022541297, "evolved_median": 0.00457869287005911, "gap": 1.9422191854800985e-08}
+streamed verify ok fd_n96_s20_tol1e-08
+fd_n96_s40_tol0.0001: 0.005106 cg_p_mean=67.38515734672546
+fd_n96_s40_tol0.0001 {"dtype": "float32", "evolved_worst": 0.005106129741990988, "evolved_median": 0.002727020579237194, "gap": 1.4992279249656515e-10}
+streamed verify ok fd_n96_s40_tol0.0001
+fd_n96_s40_tol1e-06: 0.005271 cg_p_mean=106.91172051429749
+fd_n96_s40_tol1e-06 {"dtype": "float32", "evolved_worst": 0.00527057778719267, "evolved_median": 0.0027142299186557655, "gap": 1.6522620207778949e-10}
+streamed verify ok fd_n96_s40_tol1e-06
+fd_n96_s40_tol1e-08: 0.005273 cg_p_mean=130.1257848739624
+fd_n96_s40_tol1e-08 {"dtype": "float32", "evolved_worst": 0.0052730342968122, "evolved_median": 0.0027140870538002316, "gap": 1.0791776630311722e-10}
+streamed verify ok fd_n96_s40_tol1e-08
+fd_n96_s50_tol0.0001: 0.005266 cg_p_mean=64.07874846458435
+fd_n96_s50_tol0.0001 {"dtype": "float32", "evolved_worst": 0.00526613867188462, "evolved_median": 0.002868094148651101, "gap": 1.592497284215455e-10}
+streamed verify ok fd_n96_s50_tol0.0001
+fd_n96_s50_tol1e-06: 0.005139 cg_p_mean=104.94374799728394
+fd_n96_s50_tol1e-06 {"dtype": "float32", "evolved_worst": 0.005138738641234031, "evolved_median": 0.0028176220323413432, "gap": 1.6504576655015923e-10}
+streamed verify ok fd_n96_s50_tol1e-06
+fd_n96_s50_tol1e-08: 0.005139 cg_p_mean=129.11687326431274
+fd_n96_s50_tol1e-08 {"dtype": "float32", "evolved_worst": 0.005138548499844937, "evolved_median": 0.002817519147124078, "gap": 1.716427254234293e-10}
+streamed verify ok fd_n96_s50_tol1e-08
+fd_n96_s100_tol0.0001: 0.005567 cg_p_mean=52.87718641757965
+fd_n96_s100_tol0.0001 {"dtype": "float32", "evolved_worst": 0.005566526681767772, "evolved_median": 0.0032858412178921733, "gap": 1.3269976740712397e-10}
+streamed verify ok fd_n96_s100_tol0.0001
+fd_n96_s100_tol1e-06: 0.005565 cg_p_mean=99.03499794006348
+fd_n96_s100_tol1e-06 {"dtype": "float32", "evolved_worst": 0.005565354495001641, "evolved_median": 0.00297684874051602, "gap": 1.2532163870017377e-10}
+streamed verify ok fd_n96_s100_tol1e-06
+fd_n96_s100_tol1e-08: 0.005566 cg_p_mean=126.23624777793884
+fd_n96_s100_tol1e-08 {"dtype": "float32", "evolved_worst": 0.005565665475384732, "evolved_median": 0.002975948852383049, "gap": 1.5303355566272103e-10}
+streamed verify ok fd_n96_s100_tol1e-08
+fd_n192_s40_tol1e-06: 645.467385 cg_p_mean=218.78594064712524
+fd_n192_s40_tol1e-06 {"dtype": "float32", "evolved_worst": 645.4673899875423, "evolved_median": 0.0008845102549569785, "gap": 4.57257976904657e-06}
+RUN_EXIT=1 VERIFY_EXIT=-1

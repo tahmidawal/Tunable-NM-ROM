@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/nshead_20260923/b1_heldout96/experiments/ns3d-shift-head/verify_head.py", line 134, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/nshead_20260923/b1_heldout96/experiments/ns3d-shift-head/verify_head.py", line 118, in main
+    raise RuntimeError(f"independent recomputation disagrees: f64 {worst64} f32 {worst32}")
+RuntimeError: independent recomputation disagrees: f64 0.0 f32 4.57257976904657e-06
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/nshead_20260923/b1_heldout96/experiments/ns3d-shift-head/head_ladder.py", line 852, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/nshead_20260923/b1_heldout96/experiments/ns3d-shift-head/head_ladder.py", line 689, in main
+    stream_audit("fd_cg", fd)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nshead_20260923/b1_heldout96/experiments/ns3d-shift-head/head_ladder.py", line 485, in stream_audit
+    raise RuntimeError(f"streamed audit failed for {key}")
+RuntimeError: streamed audit failed for fd_n192_s40_tol1e-06

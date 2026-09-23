@@ -280,3 +280,13 @@ The 96³ size selection was written by `make_panel_config.py 96` from the valida
 of the shift-head held-out job it reproduces) instead of the H200 named in §7, with JAX's memory
 fraction raised to 0.7 (the rank-64 bank build at 96³ needs it; the operators need < 5 GB at batch 1).
 Everything else as pre-registered; cohort = the 32 held-out cases (seed 202609221), second opening.
+
+## A6 (2026-09-23 ~17:45 EDT) — pn96 (job 4243807) ran out of GPU memory in warm-up; rerun pn96b
+
+pn96 completed the truth, bank rebuild, reproduction gate (all arms pass, max 2.9e-10) and the accuracy
+pass, then hit a PyTorch CUDA OOM during warm-up (DeepONet-l's 96³ trunk evaluation) because JAX held
+70 % of the card. No timing ran; its logs and partial summary are kept at `runs/pn96_crashed/` and its
+remote directory is deleted. Fix (memory only, no change to any setting, model or selection): JAX
+fraction 0.55, `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`, and `torch.cuda.empty_cache()`
+after each arm's accuracy pass and warm-up. The rerun `pn96b` evaluates the identical config
+(`configs/panel96.json`) on the same held-out cohort (its third opening overall; no choice is made on it).

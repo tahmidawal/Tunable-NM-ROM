@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/panel.py", line 442, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/panel.py", line 346, in main
+    o = timed(name, c, 'A2', rnd, prev)
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/panel.py", line 306, in timed
+    o = arm['call'](c)
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/panel.py", line 209, in op_call
+    return O.predict(m_, u0_t[c], nu_t[c], nm_, projector)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/ops3d.py", line 340, in predict
+    out = model(features(u0, nu, norm)) * norm[3]
+          ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/ops3d.py", line 70, in forward
+    return self.network(x.to(self.parameter_dtype)).to(torch.float64)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/nsops_20260923/pn96/experiments/ns3d-operators/ops3d.py", line 257, in forward
+    trunk = torch.tanh(layer(trunk))
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.53 GiB. GPU 0 has a total capacity of 79.25 GiB of which 269.88 MiB is free. Including non-PyTorch memory, this process has 78.98 GiB memory in use. Of the allocated memory 18.69 GiB is allocated by PyTorch, and 4.25 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

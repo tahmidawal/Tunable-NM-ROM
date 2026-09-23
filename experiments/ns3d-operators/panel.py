@@ -266,6 +266,7 @@ def main():
             np.savez(out / 'fields' / f'{name}.npz', cases=np.asarray(sorted(fields)),
                      fields=np.stack([fields[c] for c in sorted(fields)]), samples=np.stack(samples))
         acc_samples[name] = np.stack(samples)
+        torch.cuda.empty_cache()
         results[name] = dict(kind=arm['kind'], finite=finite, stats=stats,
                              errors=errors.tolist(), seconds=time.time() - t0,
                              unstable=bool((not finite) or stats['evolved_worst'] > UNSTABLE))
@@ -316,6 +317,7 @@ def main():
         for _ in range(int(cfg['burn_calls'])):
             for c in range(ncase):
                 arms[name]['sync'](arms[name]['call'](c))
+        torch.cuda.empty_cache()
     order_rng = np.random.default_rng(int(cfg['timing_seed']))
 
     def burn(seconds=2.0):

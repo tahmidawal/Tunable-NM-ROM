@@ -1,0 +1,41 @@
+You are an independent pre-job auditor for a scientific GPU experiment. Read, do not write.
+
+Lane root: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-quadratic-manifold/experiments/quadratic-manifold
+Read in this order: DESIGN.md, qman.py, the `qman` additions in panel.py (search "qman"), config-256-qman.json, COPIED-FROM.json.
+Parent harness for context (read-only): ../b-panel/DESIGN.md, ../head-ablation/arms.py, ../head-ablation/ablation.py.
+
+Goal of the lane: add a quadratic-manifold ROM baseline (Geelen-Wright-Willcox 2022;
+Barnett-Farhat 2022), u = u_ref + V_r a + W vech(a (x) a), to an existing same-allocation
+256^2 2D viscous Burgers cost/accuracy panel, so a reviewer's "why not something simpler than a
+neural head?" is answered with a measured row rather than an argument.
+
+Answer these eight questions, each with a concrete file/line citation and a severity
+(blocking / should-fix / note):
+
+1. Is the implemented trial map actually the method those two papers describe? Name any
+   deviation (the shift, centred vs uncentred POD, vech vs full Kronecker, the ridge target,
+   fitting against the POD complement) and say whether it weakens or strengthens the baseline
+   relative to the papers. A baseline that is accidentally handicapped is the worst outcome here.
+2. Is the comparison fair to the quadratic manifold? Does anything in the shared contract
+   (M = 4r test modes, the fixed-Gauss initializer, the trust radius, the LM budget, the
+   Gauss-Jordan vs LU switch at 64 unknowns) penalise it relative to POD-LSPG or to the neural
+   head at the same solved dimension?
+3. Is there any selection on evaluation data? The ridge gamma is chosen on a held-out split of
+   TRAINING snapshots. Check that nothing else (rank choice, M, tolerance, arm inclusion) is
+   selected after seeing evaluation-cohort error, in the design or the code.
+4. Can the timing comparison be trusted? Everything is timed in one allocation on one GPU; check
+   for anything that would make the qman arms' GPU/complete-query times not comparable with the
+   POD, NM-ROM and full-order rows of the same job.
+5. Correctness of qman.fit: the normal equations, the scaling of the ridge, the held-out split,
+   the refit on all snapshots, the numerical conditioning at r = 64 where P = 2080 against
+   N_s = 3328 snapshots. Any bug that would silently produce a weak W?
+6. Correctness of the wiring: does B @ head(a) equal the stated trial map, is the Jacobian the
+   analytic one, is the initial-fit path sound for a nonlinear-in-a head, and does anything about
+   the GridBank (bilinear interpolation of W columns, the padded copy) break an assumption?
+7. Memory and OOM: 19 compiled reduced queries on an 80 GB A100, with the r=64 quad bank at
+   1 + 64 + 2080 = 2145 columns of n = 65025 (plus the GridBank's padded duplicate). Will it fit,
+   and is the priority order right if it does not?
+8. Does DESIGN.md pre-register enough that the result cannot be rationalised afterwards, and is
+   the pass/fail section honest about the outcome where the quadratic manifold wins?
+
+Be adversarial and specific. If you find nothing blocking, say so plainly.

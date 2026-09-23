@@ -50,6 +50,7 @@ PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION={mem_fraction}
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"
 cd "$TASK_ROOT"
@@ -65,7 +66,7 @@ export PYTHONPATH="{pypath}"
 TRAIN = '''cd {lane}
 "$PY" opdata.py --mesh {mesh} --out data
 "$PY" -c "import torch,sys; ok=torch.cuda.is_available(); print('torch_cuda', ok, torch.cuda.get_device_name() if ok else None, flush=True); sys.exit(0 if ok else 42)"
-"$PY" ops/worker.py specs/train.json
+"$PY" ops/worker.py {spec}
 find out data -name '*.json' -o -name 'best.pt' | sort | xargs sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
@@ -78,6 +79,7 @@ def main():
     p.add_argument('--mesh', type=int)
     p.add_argument('--config')
     p.add_argument('--train-from')
+    p.add_argument('--spec', default='specs/train.json')
     p.add_argument('--gpu', default='a100-80G', choices=sorted(GRES))
     p.add_argument('--mem', default='240G')
     p.add_argument('--hours', type=int, default=8)
@@ -87,11 +89,11 @@ def main():
     lane = ROOT / LANE
     if a.kind == 'train':
         assert a.mesh
-        files = LIBS[:4] + OPS + [f'{LANE}/opdata.py', f'{LANE}/specs/train.json'] + \
+        files = LIBS[:4] + OPS + [f'{LANE}/opdata.py', f'{LANE}/{a.spec}'] + \
             [f'{LANE}/inputs/pinned/{n}-index.json' for n in ('train', 'validation')] + \
             [str(x.relative_to(ROOT)) for x in sorted((lane / 'inputs/opconfigs').glob('*.json'))
              if not x.name.startswith('smoke')]
-        body = TRAIN.format(lane=LANE, mesh=a.mesh)
+        body = TRAIN.format(lane=LANE, mesh=a.mesh, spec=a.spec)
         extra = []
     else:
         import panel_body                          # the panel job's body lives beside this script

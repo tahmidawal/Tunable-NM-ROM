@@ -1,0 +1,5 @@
+{
+ "note": "Retry of the fno-large arm alone at 2048^2 (t2048's FNO ran out of memory on an A100-80G at micro-batch 1, fragmentation). Same config, same 3000 s budget, H200 + expandable_segments.",
+ "per_arm_seconds": 3000,
+ "arms": [{"name": "fno-large", "config": "inputs/opconfigs/fno-large.json"}]
+}

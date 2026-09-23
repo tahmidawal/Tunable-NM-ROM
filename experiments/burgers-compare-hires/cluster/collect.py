@@ -95,8 +95,20 @@ def main():
                             validation_worst_case_max=r['validation']['worst_case_max'],
                             real_parameter_count=r['real_parameter_count']))
         good = [o for o in ops if not o.get('failed')]
-        rec = dict(mesh=L, train_attempt=a.attempt, data=od, operators=good + [FNO256],
-                   failed=[o for o in ops if o.get('failed')],
+        path = ROOT / LANE / f'operators-{L}.json'
+        if path.exists():                      # a retry job: merge, a new success replaces an earlier failure
+            old = json.loads(path.read_text())
+            names = {o['name'] for o in good}
+            good = [o for o in old['operators'] if o['name'] not in names and o['name'] != 'fno-large-256'] + good
+            failed = [o for o in old['failed'] if o['name'] not in names] + [o for o in ops if o.get('failed')]
+            attempts = old.get('train_attempts', [old.get('train_attempt')]) + [a.attempt]
+            data = dict(old['data'], retry_data=od)
+            for sp_ in ('train', 'validation'):      # same pinned cases; the regenerated fields may differ in the
+                assert data['splits'][sp_]['source_index_sha256'] == od['splits'][sp_]['source_index_sha256']
+                assert data['splits'][sp_]['cases'] == od['splits'][sp_]['cases']   # last bits on another GPU model
+        else:
+            failed, attempts, data = [o for o in ops if o.get('failed')], [a.attempt], od
+        rec = dict(mesh=L, train_attempts=attempts, data=data, operators=good + [FNO256], failed=failed,
                    note='local_path is relative to the repository root of this worktree (checkpoints are git-ignored)')
         (ROOT / LANE / f'operators-{L}.json').write_text(json.dumps(rec, indent=1) + '\n')
         print('operators record', f'operators-{L}.json', [(o['name'], o.get('epochs'), o.get('stop_reason')) for o in ops])

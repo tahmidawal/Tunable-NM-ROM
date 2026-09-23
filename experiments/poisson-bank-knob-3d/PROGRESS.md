@@ -18,7 +18,13 @@ Branch `exp/2026-09-23-poisson-bank-knob-3d` (local commits only, never pushed).
   c64b 4198674, l512 4199770, c32final 4200246, c64final 4202245, l1024 4201792.
 - 32^3/64^3 settings FROZEN on development (commits f6c10ffe, d2c775a9) before the final jobs were staged:
   accurate R128_linear, fast R64_linear at both meshes.
-- Pending (H200): c256 4203255, l2048 4203305. Next: c128 (H200).
+- Codex review 1 (checks/codex-review1.md): no algebraic or arithmetic defect; fixed: order gate now requires 32
+  pairs/arm (l256 4197817 had 6 -> excluded, rerun l256b 4204384 PASS), report shows usable rows only, states coverage,
+  and separates truncation gain from linear-rung / query-route gain.
+- H200 queue: all 32 H200 booked for 1-2 days by other users; l2048 4203305 cancelled while pending to free the slot for
+  l256b; resubmitted as l2048b 4205072. c256 4203255 pending. c128 next.
+- Fallback rule (fixed now): if no H200 job of this lane has started by 2026-09-23 20:00 EDT, the remaining >=2048^2 /
+  >=128^3 jobs go to A100-80GB/H100 (memory fits: c256 bank 2x17 GB, l2048 2x12.9 GB + 6.4 GB tests), labelled as such.
 
 ## Queue plan (max 2 of this lane at once)
 

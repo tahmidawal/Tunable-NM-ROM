@@ -36,13 +36,20 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   exact first step (x1) certifies (ρ 0.049) but costs 2.46 s (R'=384) / 1.18 s (R'=256) -> unusable. Cross-job repeat
   of R'=384 linear / R'=384 q=256 / R'=128 linear: 89.4/176.3/34.6 ms vs 90.1/177.7/35.2 ms in bk2048b; errors identical.
 
+- bk4096b (4096², H200): rule: accurate = R'=384 q=256 (0.545 %, 110.0 ms, 4.76× vs lean_nt3e-3_l3e-3_dt005 523 ms;
+  current R'=512 q=256 0.604 %, 127.5 ms, 4.10×); fast = R'=128 linear (1.894 %, 24.1 ms, 11.15× vs lean_nt1e-2_l1e-2_dt01
+  268 ms; current q=0 2.415 %, 41.5 ms, 6.47× vs the same comparator). q not droppable (pre-registered certificate);
+  sensitivity k>=j+1: R'=384 linear 0.224 %, 59.6 ms, 8.78×. Current q=0/q=256 errors reproduce hb4k04 (2.4150/0.6043).
+  At 4096² the paper's accurate rule (lat64, R'=512 q=256) is CONFIRMED on deployed states (ρ 0.107/0.108).
+- Selection frozen: selection-4096.json (from checks/bk4096-summary.json sha256 3fd1537e…); hold64 config generated.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
 | smoke1 | 4197296 | 128² | A100 | done, smoke only, remote deleted |
 | bk4096 | 4197441 | 4096² | H200 240G | cancelled while pending (same bug), never ran; remote removed |
 | bk1024 | 4197443 | 1024² | A100-80G | FAILED in 2 s: SyntaxError (repeated keyword `family`, introduced after smoke1); fixed f4c950a0; remote removed |
-| bk4096b | 4197473 | 4096² | H200 240G | submitted 02:45 EDT |
+| bk4096b | 4197473 | 4096² | H200 240G | COMPLETED 80.5 min (pax009); collected, audited (all gates pass), remote deleted |
 | bk1024b | 4197475 | 1024² | A100-80G | COMPLETED 17.6 min; collected, audited (all gates pass after amendment A1), remote deleted |
 | bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
 | bk512b | 4200506 | 512² | A100 | COMPLETED 19.8 min; collected, audited (all gates pass), remote deleted |

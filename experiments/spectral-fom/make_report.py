@@ -16,7 +16,8 @@ REPORT = HERE / 'reports' / '2026-09-24-spectral-fom-vs-nmrom.md'
 ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
     'poisson3d': [('spA', 'output3'), ('spA', 'output4')],
-    'burgers2d': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
+    'burgers2d': [('spF', 'output0'), ('spF', 'output1'), ('spF', 'output2'), ('spG', 'output0')],
+    'burgers2d_original_ladder': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
     'heat2d': [('spD', 'output0'), ('spD', 'output1'), ('spD', 'output2')],
     'heat3d': [],
 }
@@ -96,9 +97,9 @@ def rows_poisson(problem):
     return out
 
 
-def rows_burgers():
+def rows_burgers(key='burgers2d'):
     out = []
-    for att, od in ACCEPTED['burgers2d']:
+    for att, od in ACCEPTED[key]:
         x = load(att, od)
         if x is None:
             continue
@@ -166,6 +167,7 @@ def rows_heat(problem):
 
 def main():
     S = dict(poisson2d=rows_poisson('poisson2d'), poisson3d=rows_poisson('poisson3d'), burgers2d=rows_burgers(),
+             burgers2d_original_ladder=rows_burgers('burgers2d_original_ladder'),
              heat2d=rows_heat('heat2d'), heat3d=rows_heat('heat3d'))
     ns = json.loads((HERE / 'lane-ref' / 'ns3d.json').read_text())
     S['ns3d'] = ns
@@ -275,6 +277,18 @@ def main():
             w(f'| `{nm}` | ' + ' | '.join(f"{pct(r['spectral'][nm]['worst'])} / {pct(r['spectral'][nm]['median'])} / {f2(r['spectral'][nm]['ms'])}"
                                         for r in S['burgers2d']) + ' |')
         w('')
+    if S['burgers2d_original_ladder']:
+        w('Original pre-registered 11-setting ladder (spC/spE; superseded by the L1 ladder above, which contains it):\n')
+        w('| mesh | job | role | err | ms | matched spectral | its err | its ms | ratio (matched) | timing gates |')
+        w('|---:|---|---|---:|---:|---|---:|---:|---:|---|')
+        for r in S['burgers2d_original_ladder']:
+            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
+            for role in ('rom_accurate', 'rom_fast'):
+                a = r['arms'][role]
+                w(f"| {r['mesh']}² | {r['job']} | {role[4:]} | {pct(a['worst'])} | {f2(a['ms'])} | {a['matched']} | {pct(a['matched_worst'])} | "
+                  f"{f2(a['matched_ms'])} | {'—' if a['ratio_matched'] is None else f'{a['ratio_matched']:.3f}'} | {gate_str(g)} |")
+        w('')
+    if S['burgers2d']:
         w('| mesh | DST in $H^{-1}$ | paper FOM (1e-10) vs Picard (1e-10), max over t of diff/‖u0‖ | control (1.01ν) | ROM re-run vs lane errors (worst rel. dev.) |')
         w('|---:|---|---:|---:|---|')
         for r in S['burgers2d']:
@@ -314,7 +328,7 @@ def main():
     w('## Provenance\n')
     w('| problem | mesh | attempt/output | job | GPU | commit | result.json sha256 |')
     w('|---|---:|---|---|---|---|---|')
-    for prob in ('poisson2d', 'poisson3d', 'burgers2d', 'heat2d', 'heat3d'):
+    for prob in ('poisson2d', 'poisson3d', 'burgers2d', 'burgers2d_original_ladder', 'heat2d', 'heat3d'):
         for r in S[prob]:
             w(f"| {prob} | {r['mesh']} | {r['attempt']}/{r['output']} | {r['job']} | {r['gpu']} | {str(r['commit'])[:10]} | `{r['result_sha256']}` |")
     for r in ns['rows']:

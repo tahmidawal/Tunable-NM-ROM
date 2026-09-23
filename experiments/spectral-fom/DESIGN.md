@@ -191,3 +191,30 @@ the recorded one.
 
 **Burgers 2048² rerun.** spC's 2048² pass ran out of memory on an A100-PCIE-40GB while building the bank. It is
 rerun unchanged as spE on an 80 GB card.
+
+## Amendment L1 (2026-09-23, after spC/spE; written before any L1 job) — a stronger Burgers spectral ladder
+
+**What prompted it.** The original ladder has a gap in error between ntol $10^{-4}$ (about 0.05 %) and
+$10^{-3}$ (about 0.9 %) at $\Delta t = 0.005$. Every accurate arm, at 0.17–0.53 %, was therefore matched to a
+spectral setting about ten times more accurate than needed. At 2048² (spE) the fast arm, at 1.87 %, came out
+faster than its matched spectral setting (ratio 2.12). The accurate arm's ratio was 0.87.
+
+**What changes.** The brief asks for the strongest reasonable spectral solver, so the spectral side gets:
+- a denser ntol ladder:
+  - $\Delta t = 0.005$: $\{10^{-6}, 10^{-4}, 2\cdot10^{-4}, 5\cdot10^{-4}, 10^{-3}, 3\cdot10^{-3}, 10^{-2}\}$;
+  - $\Delta t = 0.01$: $\{10^{-4}, 10^{-3}, 2\cdot10^{-3}, 3\cdot10^{-3}, 5\cdot10^{-3}, 10^{-2}\}$;
+- a predictor variant of each (`ppic_*`), whose first iterate per step is $2u_n - u_{n-1}$. The ROM arms use a
+  quadratic predictor. The stopping rule is unchanged, so every step still satisfies
+  $\lVert r\rVert \le \text{ntol}\,\lVert u_n\rVert$.
+
+**Prototype evidence.** At 256² on the local GB10, dev6, the predictor cut the total sweeps by about 40 % at
+equal ntol. Examples of worst error:
+- $\Delta t = 0.005$, ntol $5\cdot10^{-4}$: 0.28 % with the predictor, 0.54 % without;
+- $\Delta t = 0.01$, ntol $5\cdot10^{-3}$: 1.82 % with the predictor.
+
+**What stays the same.** The 29-subject ladder contains the original 11 settings under the same names.
+Everything else is unchanged: ROM arms, reference, gates, audit, and the T1 reporting.
+
+**Which runs are reported.**
+- The L1 runs (spF: 256²/512²/1024², any A100; spG: 2048², 80 GB) are the Burgers result.
+- spC and spE stay in the report as the original-ladder record.

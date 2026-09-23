@@ -161,7 +161,7 @@ def make_poisson_interior(n, d, variant):
 
 # --------------------------------------------------------------- Burgers ------
 
-def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, reg=1e-12, dst='fft'):
+def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, reg=1e-12, dst='fft', predictor=False):
     """Backward-Euler 2D Burgers on the paper's stencil (the `residual` passed in is the paper's own
     `mr-burgers2d/engines.residual`, imported unchanged), each step solved to ||r|| <= ntol ||prev|| (the
     paper's Newton stopping rule) by the fixed-point iteration  u <- u - H^{-1} r(u),  H = I + dt nu A
@@ -169,7 +169,10 @@ def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, r
     solution.  m = 0: plain (Picard / chord) iteration; m > 0: Anderson acceleration with memory m.
     max_iter = 1 with ntol = 0 is the one-sweep IMEX scheme (explicit upwind advection, implicit diffusion).
     dst = 'fft' | 'mm' selects the DST-I implementation inside H^{-1} (same operator, round-off apart).
+    predictor=True (Picard only): the first iterate of each step is the linear extrapolation 2 u_n - u_{n-1}
+    (u_0 on the first step) instead of u_n; the stopping rule is unchanged, so the solution quality is too.
     query(full (L+1)^2 initial field, nu, ntol) -> (6 output fields, iterations per step, final rel. res.)"""
+    assert not (predictor and m)
     k = np.arange(1, L)
     l1 = 4.0 * L ** 2 * np.sin(np.pi * k / (2 * L)) ** 2
     lam = jnp.asarray(l1[:, None] + l1[None, :])
@@ -185,9 +188,10 @@ def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, r
             return dstn_mm(dstn_mm(v.reshape(L - 1, L - 1), S) / (1.0 + dt * nu * lam), S).reshape(-1)
         return dstn_fft(dstn_fft(v.reshape(L - 1, L - 1)) / (1.0 + dt * nu * lam)).reshape(-1)
 
-    def step(prev, nu, ntol, lam, S):
+    def step(prev, nu, ntol, lam, S, guess=None):
         thr = ntol * jnp.maximum(jnp.linalg.norm(prev), 1e-300)
-        r0 = residual(prev, prev, nu, dt, L)
+        start = prev if guess is None else guess
+        r0 = residual(start, prev, nu, dt, L)
         if m == 0:
             def body(s):
                 u, r, it = s
@@ -195,7 +199,7 @@ def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, r
                 return u, residual(u, prev, nu, dt, L), it + 1
             u, r, it = jax.lax.while_loop(
                 lambda s: (jnp.linalg.norm(s[1]) > thr) & (s[2] < max_iter) & jnp.all(jnp.isfinite(s[1][:1])),
-                body, (prev, r0, jnp.int32(0)))
+                body, (start, r0, jnp.int32(0)))
             return u, (it, jnp.linalg.norm(r) / jnp.maximum(jnp.linalg.norm(prev), 1e-300))
         # Anderson (type II): x_{k+1} = g_k - dG^T gamma, gamma = argmin || f_k - dF^T gamma ||
         def body(s):
@@ -222,9 +226,21 @@ def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, r
 
     @jax.jit
     def query(u0, nu, ntol, lam, S):
-        def block(u, _):
-            u, (it, rr) = jax.lax.scan(lambda u, _: step(u, nu, ntol, lam, S), u, None, length=nsub)
-            return u, (jnp.pad(u.reshape(L - 1, L - 1), 1), it, rr)
-        _, (fields, it, rr) = jax.lax.scan(block, u0[1:-1, 1:-1].reshape(-1), None, length=nout)
+        if predictor:
+            def pstep(c, _):
+                u, up = c
+                un, info = step(u, nu, ntol, lam, S, guess=2.0 * u - up)
+                return (un, u), info
+
+            def block(c, _):
+                c, (it, rr) = jax.lax.scan(pstep, c, None, length=nsub)
+                return c, (jnp.pad(c[0].reshape(L - 1, L - 1), 1), it, rr)
+            x0 = u0[1:-1, 1:-1].reshape(-1)
+            _, (fields, it, rr) = jax.lax.scan(block, (x0, x0), None, length=nout)
+        else:
+            def block(u, _):
+                u, (it, rr) = jax.lax.scan(lambda u, _: step(u, nu, ntol, lam, S), u, None, length=nsub)
+                return u, (jnp.pad(u.reshape(L - 1, L - 1), 1), it, rr)
+            _, (fields, it, rr) = jax.lax.scan(block, u0[1:-1, 1:-1].reshape(-1), None, length=nout)
         return jnp.concatenate((jnp.pad(u0[1:-1, 1:-1], 1)[None], fields)), it.reshape(-1), rr.reshape(-1)
     return lambda u0, nu, ntol: query(u0, nu, ntol, lam, S)

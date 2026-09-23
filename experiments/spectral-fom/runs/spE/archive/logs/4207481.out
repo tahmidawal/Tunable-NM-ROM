@@ -1,0 +1,44 @@
+host=pax049 source_commit=97f88d5ec92e1d99864b40f13e4c0001371e7be1
+NVIDIA A100 80GB PCIe, GPU-15e19d78-1dff-7ce0-3e6d-2ffe9e4ba214, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.3T  259G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK {'rows': 4190209, 'row_blocks': 1, 'column_edges': [0, 32, 64, 128, 256, 384, 512], 'kept_blocks': 5, 'seconds': 79.04404786322266, 'rotated_bytes': 12872322048} 79.7
+TRUTH 94.4
+ARMS built 115.7
+VALIDATION {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True} 1.7163749425246126e-10 0.0022879304259658152 124.3
+PHASE romA1 rep 0 t=15.5s 163.6
+PHASE romA1 rep 1 t=22.7s 170.8
+PHASE romA1 rep 2 t=29.8s 177.9
+PHASE romA1 rep 3 t=37.0s 185.1
+PHASE romA1 rep 4 t=44.1s 192.2
+PHASE romA1 rep 5 t=51.3s 199.4
+PHASE romA1 rep 6 t=58.4s 206.5
+PHASE romA1 rep 7 t=65.6s 213.7
+PHASE romA1 rep 8 t=72.8s 220.9
+PHASE romA1 rep 9 t=79.9s 228.0
+PHASE spec rep 0 t=128.7s 276.9
+PHASE spec rep 1 t=168.7s 316.8
+PHASE spec rep 2 t=208.5s 356.7
+PHASE spec rep 3 t=248.5s 396.7
+PHASE spec rep 4 t=288.5s 436.6
+PHASE spec rep 5 t=328.4s 476.6
+PHASE spec rep 6 t=368.3s 516.4
+PHASE spec rep 7 t=408.3s 556.4
+PHASE spec rep 8 t=448.3s 596.4
+PHASE spec rep 9 t=488.3s 636.4
+PHASE romA2 rep 0 t=502.5s 650.6
+PHASE romA2 rep 1 t=509.7s 657.8
+PHASE romA2 rep 2 t=516.8s 664.9
+PHASE romA2 rep 3 t=523.9s 672.1
+PHASE romA2 rep 4 t=531.1s 679.3
+PHASE romA2 rep 5 t=538.4s 686.5
+PHASE romA2 rep 6 t=545.5s 693.6
+PHASE romA2 rep 7 t=552.7s 700.9
+PHASE romA2 rep 8 t=559.9s 708.1
+PHASE romA2 rep 9 t=567.1s 715.2
+GATES {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True, 'deterministic': True, 'spectral_converged': True, 'lane_error_parity': True, 'drift': True, 'neighbour': True, 'device_guard': True}
+TIMINGS {'R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 174.96, 'R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 33.91, 'pic_dt005_nt1e-6': 262.33, 'pic_dt005_nt1e-4': 151.45, 'pic_dt005_nt1e-3': 93.11, 'pic_dt005_nt3e-3': 77.71, 'pic_dt005_nt1e-2': 72.42, 'pic_dt01_nt1e-4': 102.17, 'pic_dt01_nt1e-3': 71.8, 'pic_dt01_nt1e-2': 40.44, 'imex_dt0025': 143.58, 'imex_dt005': 72.23, 'imex_dt01': 36.84}
+ERRORS% {'R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 0.5344, 'R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 1.8716, 'pic_dt005_nt1e-6': 0.0004, 'pic_dt005_nt1e-4': 0.051, 'pic_dt005_nt1e-3': 0.9353, 'pic_dt005_nt3e-3': 2.3212, 'pic_dt005_nt1e-2': 4.2528, 'pic_dt01_nt1e-4': 1.6517, 'pic_dt01_nt1e-3': 1.6756, 'pic_dt01_nt1e-2': 3.4604, 'imex_dt0025': 2.9756, 'imex_dt005': 4.2528, 'imex_dt01': 7.7536}
+AUDIT PASS 78
+ALL-DONE

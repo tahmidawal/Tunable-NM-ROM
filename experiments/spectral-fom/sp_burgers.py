@@ -286,7 +286,8 @@ def main():
     rep['dst_variant_benchmark'] = dict(seconds_one_sweep_trajectory=bench, chosen=dst_variant)
     spec = []
     for sp in cfg['spectral_settings']:
-        fn = SC.make_burgers(L, sp['dt'], e.residual, max_iter=sp.get('max_iter', 400), dst=dst_variant)
+        fn = SC.make_burgers(L, sp['dt'], e.residual, max_iter=sp.get('max_iter', 400), dst=dst_variant,
+                             predictor=bool(sp.get('predictor', False)))
         nm = sp['name']
 
         def call(c, fn=fn, ntol=sp['ntol']):

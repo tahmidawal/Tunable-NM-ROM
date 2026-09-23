@@ -615,7 +615,8 @@
    "neighbour_worst": 1.013272952507029
   }
  ],
- "burgers2d": [
+ "burgers2d": [],
+ "burgers2d_original_ladder": [
   {
    "problem": "burgers2d",
    "mesh": 256,
@@ -1080,6 +1081,161 @@
     }
    ],
    "neighbour_worst": 1.1922917767410235
+  },
+  {
+   "problem": "burgers2d",
+   "mesh": 2048,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4207481",
+   "attempt": "spE",
+   "output": "output0",
+   "result": "runs/spE/archive/output0/result.json",
+   "result_sha256": "97ee42c23a1d07072667b901bb57e4830edb63f6d5619940b41c918d561f2e84",
+   "commit": "97f88d5ec92e1d99864b40f13e4c0001371e7be1",
+   "arms": {
+    "rom_accurate": {
+     "arm": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst": 0.005344045548317232,
+     "median": 0.0016866534069384944,
+     "ms": 174.95890869759023,
+     "a1": 174.74075872451067,
+     "a2": 175.00612908042967,
+     "matched": "pic_dt005_nt1e-4",
+     "matched_worst": 0.0005101445593677322,
+     "matched_ms": 151.4455173164606,
+     "ratio_matched": 0.8656062068735716,
+     "ratio_tight": 1.4993738239216137
+    },
+    "rom_fast": {
+     "arm": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst": 0.018716389709215474,
+     "median": 0.006286233397273259,
+     "ms": 33.91396743245423,
+     "a1": 33.92568998970091,
+     "a2": 33.90949941240251,
+     "matched": "pic_dt01_nt1e-3",
+     "matched_worst": 0.01675644208487253,
+     "matched_ms": 71.80099398829043,
+     "ratio_matched": 2.117151115725255,
+     "ratio_tight": 7.735125903082068
+    }
+   },
+   "spectral": {
+    "pic_dt005_nt1e-6": {
+     "worst": 3.7006358904549123e-06,
+     "median": 1.1555244628935505e-06,
+     "ms": 262.32880796305835,
+     "converged": true
+    },
+    "pic_dt005_nt1e-4": {
+     "worst": 0.0005101445593677322,
+     "median": 0.00020155664285841183,
+     "ms": 151.4455173164606,
+     "converged": true
+    },
+    "pic_dt005_nt1e-3": {
+     "worst": 0.009352570580247375,
+     "median": 0.0038035028092892756,
+     "ms": 93.11385545879602,
+     "converged": true
+    },
+    "pic_dt005_nt3e-3": {
+     "worst": 0.023212286190829726,
+     "median": 0.010506579780000016,
+     "ms": 77.70825596526265,
+     "converged": true
+    },
+    "pic_dt005_nt1e-2": {
+     "worst": 0.042527592473389185,
+     "median": 0.015393366830287598,
+     "ms": 72.41942128166556,
+     "converged": true
+    },
+    "pic_dt01_nt1e-4": {
+     "worst": 0.016516969444618407,
+     "median": 0.012001116834646195,
+     "ms": 102.17050416395068,
+     "converged": true
+    },
+    "pic_dt01_nt1e-3": {
+     "worst": 0.01675644208487253,
+     "median": 0.012207663462036538,
+     "ms": 71.80099398829043,
+     "converged": true
+    },
+    "pic_dt01_nt1e-2": {
+     "worst": 0.03460351175846657,
+     "median": 0.014459827049153218,
+     "ms": 40.444377809762955,
+     "converged": true
+    },
+    "imex_dt0025": {
+     "worst": 0.029755741435019443,
+     "median": 0.012746638184897664,
+     "ms": 143.58469238504767,
+     "converged": true
+    },
+    "imex_dt005": {
+     "worst": 0.042527592473389185,
+     "median": 0.015393366830287598,
+     "ms": 72.23396026529372,
+     "converged": true
+    },
+    "imex_dt01": {
+     "worst": 0.07753558148494677,
+     "median": 0.025645231451009755,
+     "ms": 36.83598036877811,
+     "converged": true
+    }
+   },
+   "dst_variant": "fft",
+   "validation": {
+    "agreement": 1.7163749425246126e-10,
+    "control": 0.0022879304259658152,
+    "fom_newton": 103,
+    "picard_sweeps": 446
+   },
+   "lane_parity": [
+    {
+     "name": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst_relative_deviation": 5.793277589764741e-13,
+     "passed": true
+    },
+    {
+     "name": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "worst_relative_deviation": 1.2159636660089506e-13,
+     "passed": true
+    }
+   ],
+   "gates": {
+    "paper_fom_tight_converged": true,
+    "spectral_tight_converged": true,
+    "same_discrete_solution": true,
+    "control_failed": true,
+    "deterministic": true,
+    "spectral_converged": true,
+    "lane_error_parity": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "neighbour_T1": true,
+   "audit": "PASS",
+   "drift": [
+    {
+     "name": "R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "romA1_median": 0.17474075872451067,
+     "romA2_median": 0.17500612908042967,
+     "ratio": 1.0015186517321777
+    },
+    {
+     "name": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+     "romA1_median": 0.03392568998970091,
+     "romA2_median": 0.03390949941240251,
+     "ratio": 0.9995227635074388
+    }
+   ],
+   "neighbour_worst": 1.0955649347658318
   }
  ],
  "heat2d": [],

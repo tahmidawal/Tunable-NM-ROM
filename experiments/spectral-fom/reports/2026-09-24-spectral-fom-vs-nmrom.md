@@ -6,13 +6,33 @@ This report measures the strongest fast-transform full-order solver for each pro
 
 | mesh | GPU | job | accurate arm | err | ms | fast arm | err | ms | `dst_fft` ms | `dst_mm` ms | spectral err | ratio vs accurate | ratio vs fast | timing gates | audit |
 |---:|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| 256² | NVIDIA A100 80GB PCIe | 4206052 | `R512_linear` | 0.746% | 0.403 | `R128_linear` | 2.314% | 0.250 | 0.152 | 0.142 | 1.4e-15 | **0.352** | **0.569** | all pass | PASS |
+| 1024² | NVIDIA A100 80GB PCIe | 4206052 | `R512_linear` | 0.742% | 3.051 | `R128_linear` | 2.306% | 0.985 | 0.327 | 0.698 | 5.1e-16 | **0.107** | **0.332** | all pass | PASS |
+| 2048² | NVIDIA A100 80GB PCIe | 4206052 | `R512_linear` | 0.742% | 11.414 | `R128_linear` | 2.306% | 3.102 | 1.131 | 4.090 | 9.6e-16 | **0.099** | **0.364** | all pass | PASS |
 | 4096² | NVIDIA A100 80GB PCIe | 4206053 | `R512_linear` | 0.742% | 41.305 | `R128_linear` | 2.306% | 11.520 | 5.047 | 29.900 | 9.4e-16 | **0.122** | **0.438** | all pass | PASS |
 
 Validation. The spectral solve was compared with the SciPy DST truth on every case. The paper's CG was run at rtol $10^{-6}$, $10^{-8}$ and $10^{-10}$ on case 0, and its distance to the spectral field is given. The control (continuum eigenvalues) must exceed $10^{-10}$. "CG certified" gives the paper CG's own true-residual convergence flag at each rtol.
 
 | mesh | spectral vs SciPy (worst) | CG→spectral distance at rtol 1e-6 / 1e-8 / 1e-10 | CG certified | CG true rel. residual at 1e-10 | control |
 |---:|---:|---|---|---:|---:|
+| 256² | 1.4e-15 | 4.0e-08 / 5.3e-10 / 3.1e-12 | yes / yes / yes | 9.6e-11 | 8.5e-05 |
+| 1024² | 2.5e-15 | 2.1e-08 / 2.1e-10 / 1.8e-12 | yes / yes / no | 1.7e-10 | 5.3e-06 |
+| 2048² | 3.7e-15 | 1.6e-08 / 1.4e-10 / 1.3e-12 | yes / yes / no | 8.0e-10 | 1.3e-06 |
 | 4096² | 6.4e-15 | 1.2e-08 / 9.6e-11 / 8.2e-13 | yes / no / no | 4.5e-09 | 3.3e-07 |
+
+## Poisson 3D cube (Dirichlet, 7-point), final cohort
+
+| mesh | GPU | job | accurate arm | err | ms | fast arm | err | ms | `dst_fft` ms | `dst_mm` ms | spectral err | ratio vs accurate | ratio vs fast | timing gates | audit |
+|---:|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| 32³ | NVIDIA A100 80GB PCIe | 4206052 | `R128_linear` | 0.231% | 0.239 | `R64_linear` | 0.475% | 0.210 | 0.164 | 0.123 | 8.6e-16 | **0.514** | **0.586** | all pass | PASS |
+| 64³ | NVIDIA A100 80GB PCIe | 4206052 | `R128_linear` | 0.231% | 0.391 | `R64_linear` | 0.469% | 0.298 | 0.203 | 0.155 | 1.9e-15 | **0.396** | **0.519** | all pass | PASS |
+
+Validation. The spectral solve was compared with the SciPy DST truth on every case. The paper's CG was run at rtol $10^{-6}$, $10^{-8}$ and $10^{-10}$ on case 0, and its distance to the spectral field is given. The control (continuum eigenvalues) must exceed $10^{-10}$. "CG certified" gives the paper CG's own true-residual convergence flag at each rtol.
+
+| mesh | spectral vs SciPy (worst) | CG→spectral distance at rtol 1e-6 / 1e-8 / 1e-10 | CG certified | CG true rel. residual at 1e-10 | control |
+|---:|---:|---|---|---:|---:|
+| 32³ | 8.6e-16 | 6.3e-08 / 6.7e-10 / 5.8e-12 | yes / yes / yes | 9.5e-11 | 2.0e-03 |
+| 64³ | 1.9e-15 | 4.7e-08 / 5.2e-10 / 4.1e-12 | yes / yes / yes | 9.8e-11 | 5.0e-04 |
 
 ## Navier–Stokes 3D (recorded from `ns3d-shift-head`, not rerun)
 
@@ -37,7 +57,12 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 
 | problem | mesh | attempt/output | job | GPU | commit | result.json sha256 |
 |---|---:|---|---|---|---|---|
+| poisson2d | 256 | spA/output0 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `827c48c6510de7f76e30611b30ae6beef0e133c67e49569d95bfd5c7f8839d98` |
+| poisson2d | 1024 | spA/output1 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `573f1c0549028d3c89033f90b15fe0e82bbe91fdad823d1d741fc3a785c9deac` |
+| poisson2d | 2048 | spA/output2 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `19d1b359b92c45c1f16768096f5c7bfe1411961281b417b0a5ea1c5a6b021c3b` |
 | poisson2d | 4096 | spB/output0 | 4206053 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925` |
+| poisson3d | 32 | spA/output3 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `aaca3a08cfb01f4b0463b898d04fd5be05d10ff9fc4c908c954e5ee707e92062` |
+| poisson3d | 64 | spA/output4 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `b694fc923deaaa930ddfb84508bc79f7610abf18f3ec8d08a558829ddc492663` |
 | ns3d (lane) | 32 | a2_h32 | 4198840 | NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB | e94d398e2f | `301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c` |
 | ns3d (lane) | 64 | a2_h64 | 4198090 | NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB | 229cbc5ff5 | `05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f` |
 | ns3d (lane) | 96 | a3_h96 | 4198101 | NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB | 229cbc5ff5 | `4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af` |

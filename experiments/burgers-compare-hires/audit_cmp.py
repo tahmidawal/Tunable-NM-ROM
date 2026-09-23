@@ -248,7 +248,7 @@ def main():
     gates['errors_recomputed_from_full_fields']['mismatches'] = mism[:20]
     failed = sorted(k for k, v in gates.items() if v.get('passed') is False)
 
-    summary = dict(attempt=cfg['attempt'], job_id=rep['job_id'], commit=rep['commit'], gpu=rep['gpu'],
+    summary = dict(attempt=cfg['attempt'], job_id=rep['job_id'], commit=rep['commit'], gpu=rep['gpu'], roles=cfg['roles'],
                    nvidia_smi=rep.get('nvidia_smi'), intervals=L, cohort=rep.get('cohort_name'),
                    cohort_sha256=rep['physical_sha256'], elapsed_seconds=rep.get('elapsed_seconds'),
                    phases={k: v for k, v in rep['phases'].items() if k.endswith('seconds')},

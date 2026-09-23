@@ -77,7 +77,7 @@ for prob, runs in ACCEPTED.items():
         if not agree:
             bad += 1
         # errors
-        key = 'same_grid_error' if prob.startswith('poisson') else ('same_grid_evolved' if prob == 'burgers2d' else 'same_grid_worst')
+        key = 'same_grid_error' if prob.startswith('poisson') else ('same_grid_evolved' if prob.startswith('burgers') else 'same_grid_worst')
         for nm in names:
             e = max(x[key] for x in inv if x['name'] == nm)
             e0 = R['errors'][nm]['worst']

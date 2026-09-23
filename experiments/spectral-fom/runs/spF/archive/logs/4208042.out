@@ -1,0 +1,122 @@
+host=pax143 source_commit=bf979ae6b1608d8b877bc92f2adfb39b7e4a866c
+NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB
+10.235.106.35:/projects/paralab  4.6T  4.3T  289G  94% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK {'rows': 65025, 'row_blocks': 1, 'column_edges': [0, 32, 64, 128, 256, 384, 512], 'kept_blocks': 5, 'seconds': 8.591571501921862, 'rotated_bytes': 199756800} 9.4
+TRUTH 12.0
+ARMS built 30.7
+VALIDATION {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True} 1.4773061111203672e-10 0.0022354360745760753 33.4
+PHASE romA1 rep 0 t=11.4s 77.1
+PHASE romA1 rep 1 t=14.9s 80.6
+PHASE romA1 rep 2 t=18.4s 84.1
+PHASE romA1 rep 3 t=21.9s 87.5
+PHASE romA1 rep 4 t=25.3s 91.0
+PHASE romA1 rep 5 t=28.8s 94.5
+PHASE romA1 rep 6 t=32.2s 97.9
+PHASE romA1 rep 7 t=35.7s 101.4
+PHASE romA1 rep 8 t=39.2s 104.9
+PHASE romA1 rep 9 t=42.7s 108.4
+PHASE spec rep 0 t=89.4s 155.1
+PHASE spec rep 1 t=126.9s 192.6
+PHASE spec rep 2 t=164.5s 230.2
+PHASE spec rep 3 t=202.2s 267.9
+PHASE spec rep 4 t=239.7s 305.4
+PHASE spec rep 5 t=277.3s 343.0
+PHASE spec rep 6 t=314.9s 380.6
+PHASE spec rep 7 t=352.5s 418.2
+PHASE spec rep 8 t=390.0s 455.7
+PHASE spec rep 9 t=427.5s 493.2
+PHASE romA2 rep 0 t=438.2s 503.9
+PHASE romA2 rep 1 t=441.7s 507.4
+PHASE romA2 rep 2 t=445.3s 511.0
+PHASE romA2 rep 3 t=448.8s 514.5
+PHASE romA2 rep 4 t=452.4s 518.1
+PHASE romA2 rep 5 t=456.0s 521.7
+PHASE romA2 rep 6 t=459.6s 525.3
+PHASE romA2 rep 7 t=463.2s 528.9
+PHASE romA2 rep 8 t=466.7s 532.4
+PHASE romA2 rep 9 t=470.3s 536.0
+GATES {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True, 'deterministic': True, 'spectral_converged': True, 'lane_error_parity': True, 'drift': True, 'neighbour': False, 'device_guard': True}
+TIMINGS {'R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 132.85, 'R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 32.8, 'pic_dt005_nt1e-6': 23.17, 'pic_dt005_nt1e-4': 14.83, 'pic_dt005_nt2e-4': 14.05, 'pic_dt005_nt5e-4': 11.68, 'pic_dt005_nt1e-3': 10.5, 'pic_dt005_nt3e-3': 9.25, 'pic_dt005_nt1e-2': 8.79, 'pic_dt01_nt1e-4': 9.66, 'pic_dt01_nt1e-3': 7.44, 'pic_dt01_nt2e-3': 6.29, 'pic_dt01_nt3e-3': 5.78, 'pic_dt01_nt5e-3': 5.43, 'pic_dt01_nt1e-2': 5.0, 'ppic_dt005_nt1e-6': 18.62, 'ppic_dt005_nt1e-4': 10.92, 'ppic_dt005_nt2e-4': 10.31, 'ppic_dt005_nt5e-4': 9.59, 'ppic_dt005_nt1e-3': 8.42, 'ppic_dt005_nt3e-3': 6.69, 'ppic_dt005_nt1e-2': 6.67, 'ppic_dt01_nt1e-4': 7.91, 'ppic_dt01_nt1e-3': 5.74, 'ppic_dt01_nt2e-3': 5.31, 'ppic_dt01_nt3e-3': 4.94, 'ppic_dt01_nt5e-3': 4.49, 'ppic_dt01_nt1e-2': 3.98, 'imex_dt0025': 16.99, 'imex_dt005': 8.79, 'imex_dt01': 4.7}
+ERRORS% {'R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 0.1656, 'R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 1.5968, 'pic_dt005_nt1e-6': 0.0003, 'pic_dt005_nt1e-4': 0.0482, 'pic_dt005_nt2e-4': 0.1142, 'pic_dt005_nt5e-4': 0.5356, 'pic_dt005_nt1e-3': 0.899, 'pic_dt005_nt3e-3': 2.1359, 'pic_dt005_nt1e-2': 3.6829, 'pic_dt01_nt1e-4': 1.5113, 'pic_dt01_nt1e-3': 1.5469, 'pic_dt01_nt2e-3': 1.6726, 'pic_dt01_nt3e-3': 1.4922, 'pic_dt01_nt5e-3': 1.4551, 'pic_dt01_nt1e-2': 3.0836, 'ppic_dt005_nt1e-6': 0.0003, 'ppic_dt005_nt1e-4': 0.0466, 'ppic_dt005_nt2e-4': 0.1117, 'ppic_dt005_nt5e-4': 0.2821, 'ppic_dt005_nt1e-3': 0.7836, 'ppic_dt005_nt3e-3': 1.6709, 'ppic_dt005_nt1e-2': 2.2916, 'ppic_dt01_nt1e-4': 1.5118, 'ppic_dt01_nt1e-3': 1.5621, 'ppic_dt01_nt2e-3': 1.6693, 'ppic_dt01_nt3e-3': 1.6513, 'ppic_dt01_nt5e-3': 1.8217, 'ppic_dt01_nt1e-2': 1.8589, 'imex_dt0025': 2.6239, 'imex_dt005': 3.6829, 'imex_dt01': 6.4981}
+AUDIT PASS 186
+jax_backend=gpu x64=True precision=highest
+BANK {'rows': 261121, 'row_blocks': 1, 'column_edges': [0, 32, 64, 128, 256, 384, 512], 'kept_blocks': 6, 'seconds': 8.341070998925716, 'rotated_bytes': 1069551616} 8.6
+TRUTH 11.7
+ARMS built 33.7
+VALIDATION {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True} 1.615256191903111e-10 0.002264972490424547 36.7
+PHASE romA1 rep 0 t=12.7s 81.8
+PHASE romA1 rep 1 t=17.3s 86.4
+PHASE romA1 rep 2 t=21.9s 91.0
+PHASE romA1 rep 3 t=26.5s 95.6
+PHASE romA1 rep 4 t=31.1s 100.2
+PHASE romA1 rep 5 t=35.7s 104.8
+PHASE romA1 rep 6 t=40.3s 109.4
+PHASE romA1 rep 7 t=44.9s 114.0
+PHASE romA1 rep 8 t=49.5s 118.6
+PHASE romA1 rep 9 t=54.2s 123.3
+PHASE spec rep 0 t=109.7s 178.8
+PHASE spec rep 1 t=154.5s 223.6
+PHASE spec rep 2 t=199.1s 268.2
+PHASE spec rep 3 t=243.9s 313.0
+PHASE spec rep 4 t=288.7s 357.8
+PHASE spec rep 5 t=333.4s 402.5
+PHASE spec rep 6 t=378.2s 447.3
+PHASE spec rep 7 t=423.0s 492.1
+PHASE spec rep 8 t=467.9s 537.0
+PHASE spec rep 9 t=512.8s 581.9
+PHASE romA2 rep 0 t=524.5s 593.6
+PHASE romA2 rep 1 t=529.2s 598.3
+PHASE romA2 rep 2 t=533.9s 603.0
+PHASE romA2 rep 3 t=538.6s 607.7
+PHASE romA2 rep 4 t=543.3s 612.4
+PHASE romA2 rep 5 t=547.9s 617.0
+PHASE romA2 rep 6 t=552.6s 621.7
+PHASE romA2 rep 7 t=557.3s 626.4
+PHASE romA2 rep 8 t=562.0s 631.1
+PHASE romA2 rep 9 t=566.7s 635.8
+GATES {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True, 'deterministic': True, 'spectral_converged': True, 'lane_error_parity': True, 'drift': True, 'neighbour': False, 'device_guard': True}
+TIMINGS {'R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 250.87, 'R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2': 33.86, 'pic_dt005_nt1e-6': 45.21, 'pic_dt005_nt1e-4': 27.33, 'pic_dt005_nt2e-4': 25.13, 'pic_dt005_nt5e-4': 20.52, 'pic_dt005_nt1e-3': 17.99, 'pic_dt005_nt3e-3': 15.25, 'pic_dt005_nt1e-2': 14.64, 'pic_dt01_nt1e-4': 17.87, 'pic_dt01_nt1e-3': 12.97, 'pic_dt01_nt2e-3': 10.97, 'pic_dt01_nt3e-3': 9.95, 'pic_dt01_nt5e-3': 9.18, 'pic_dt01_nt1e-2': 8.2, 'ppic_dt005_nt1e-6': 35.35, 'ppic_dt005_nt1e-4': 19.5, 'ppic_dt005_nt2e-4': 18.16, 'ppic_dt005_nt5e-4': 16.64, 'ppic_dt005_nt1e-3': 13.87, 'ppic_dt005_nt3e-3': 10.44, 'ppic_dt005_nt1e-2': 10.13, 'ppic_dt01_nt1e-4': 14.52, 'ppic_dt01_nt1e-3': 10.06, 'ppic_dt01_nt2e-3': 9.12, 'ppic_dt01_nt3e-3': 8.2, 'ppic_dt01_nt5e-3': 7.25, 'ppic_dt01_nt1e-2': 6.18, 'imex_dt0025': 28.6, 'imex_dt005': 14.62, 'imex_dt01': 7.66}
+ERRORS% {'R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1': 0.1947, 'R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2': 2.1375, 'pic_dt005_nt1e-6': 0.0004, 'pic_dt005_nt1e-4': 0.0498, 'pic_dt005_nt2e-4': 0.1177, 'pic_dt005_nt5e-4': 0.5301, 'pic_dt005_nt1e-3': 0.9192, 'pic_dt005_nt3e-3': 2.2375, 'pic_dt005_nt1e-2': 3.9861, 'pic_dt01_nt1e-4': 1.588, 'pic_dt01_nt1e-3': 1.605, 'pic_dt01_nt2e-3': 1.7289, 'pic_dt01_nt3e-3': 1.5929, 'pic_dt01_nt5e-3': 1.5055, 'pic_dt01_nt1e-2': 3.2877, 'ppic_dt005_nt1e-6': 0.0003, 'ppic_dt005_nt1e-4': 0.0466, 'ppic_dt005_nt2e-4': 0.1147, 'ppic_dt005_nt5e-4': 0.2874, 'ppic_dt005_nt1e-3': 0.7761, 'ppic_dt005_nt3e-3': 1.6198, 'ppic_dt005_nt1e-2': 2.6558, 'ppic_dt01_nt1e-4': 1.5877, 'ppic_dt01_nt1e-3': 1.6232, 'ppic_dt01_nt2e-3': 1.7552, 'ppic_dt01_nt3e-3': 1.7345, 'ppic_dt01_nt5e-3': 1.9176, 'ppic_dt01_nt1e-2': 1.9543, 'imex_dt0025': 2.8124, 'imex_dt005': 3.9861, 'imex_dt01': 7.1645}
+AUDIT PASS 186
+jax_backend=gpu x64=True precision=highest
+BANK {'rows': 1046529, 'row_blocks': 1, 'column_edges': [0, 32, 64, 128, 256, 384, 512], 'kept_blocks': 5, 'seconds': 9.6595672769472, 'rotated_bytes': 3214937088} 10.0
+TRUTH 15.5
+ARMS built 39.3
+VALIDATION {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True} 1.6609220728522088e-10 0.002280197946674513 43.4
+PHASE romA1 rep 0 t=13.8s 89.4
+PHASE romA1 rep 1 t=19.4s 95.1
+PHASE romA1 rep 2 t=25.0s 100.7
+PHASE romA1 rep 3 t=30.7s 106.3
+PHASE romA1 rep 4 t=36.3s 111.9
+PHASE romA1 rep 5 t=41.9s 117.6
+PHASE romA1 rep 6 t=47.5s 123.2
+PHASE romA1 rep 7 t=53.2s 128.9
+PHASE romA1 rep 8 t=58.8s 134.5
+PHASE romA1 rep 9 t=64.5s 140.1
+PHASE spec rep 0 t=144.7s 220.4
+PHASE spec rep 1 t=214.3s 290.0
+PHASE spec rep 2 t=283.9s 359.6
+PHASE spec rep 3 t=353.6s 429.3
+PHASE spec rep 4 t=423.4s 499.1
+PHASE spec rep 5 t=493.0s 568.7
+PHASE spec rep 6 t=562.9s 638.5
+PHASE spec rep 7 t=632.7s 708.3
+PHASE spec rep 8 t=702.8s 778.4
+PHASE spec rep 9 t=772.6s 848.3
+PHASE romA2 rep 0 t=785.5s 861.1
+PHASE romA2 rep 1 t=791.3s 866.9
+PHASE romA2 rep 2 t=797.0s 872.7
+PHASE romA2 rep 3 t=802.8s 878.5
+PHASE romA2 rep 4 t=808.6s 884.2
+PHASE romA2 rep 5 t=814.3s 890.0
+PHASE romA2 rep 6 t=820.1s 895.8
+PHASE romA2 rep 7 t=825.9s 901.5
+PHASE romA2 rep 8 t=831.7s 907.3
+PHASE romA2 rep 9 t=837.4s 913.1
+GATES {'paper_fom_tight_converged': True, 'spectral_tight_converged': True, 'same_discrete_solution': True, 'control_failed': True, 'deterministic': True, 'spectral_converged': True, 'lane_error_parity': True, 'drift': True, 'neighbour': False, 'device_guard': True}
+TIMINGS {'R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 176.45, 'R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 32.72, 'pic_dt005_nt1e-6': 94.65, 'pic_dt005_nt1e-4': 56.29, 'pic_dt005_nt2e-4': 50.08, 'pic_dt005_nt5e-4': 40.98, 'pic_dt005_nt1e-3': 35.74, 'pic_dt005_nt3e-3': 29.12, 'pic_dt005_nt1e-2': 28.66, 'pic_dt01_nt1e-4': 36.78, 'pic_dt01_nt1e-3': 25.9, 'pic_dt01_nt2e-3': 21.93, 'pic_dt01_nt3e-3': 19.55, 'pic_dt01_nt5e-3': 17.25, 'pic_dt01_nt1e-2': 15.48, 'ppic_dt005_nt1e-6': 74.61, 'ppic_dt005_nt1e-4': 39.39, 'ppic_dt005_nt2e-4': 35.93, 'ppic_dt005_nt5e-4': 29.36, 'ppic_dt005_nt1e-3': 24.79, 'ppic_dt005_nt3e-3': 19.46, 'ppic_dt005_nt1e-2': 18.64, 'ppic_dt01_nt1e-4': 29.99, 'ppic_dt01_nt1e-3': 20.13, 'ppic_dt01_nt2e-3': 17.15, 'ppic_dt01_nt3e-3': 14.53, 'ppic_dt01_nt5e-3': 12.6, 'ppic_dt01_nt1e-2': 11.36, 'imex_dt0025': 53.83, 'imex_dt005': 28.6, 'imex_dt01': 14.67}
+ERRORS% {'R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 0.5217, 'R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2': 1.8281, 'pic_dt005_nt1e-6': 0.0004, 'pic_dt005_nt1e-4': 0.0506, 'pic_dt005_nt2e-4': 0.1177, 'pic_dt005_nt5e-4': 0.5372, 'pic_dt005_nt1e-3': 0.9298, 'pic_dt005_nt3e-3': 2.2925, 'pic_dt005_nt1e-2': 4.1596, 'pic_dt01_nt1e-4': 1.6299, 'pic_dt01_nt1e-3': 1.6513, 'pic_dt01_nt2e-3': 1.7771, 'pic_dt01_nt3e-3': 1.6305, 'pic_dt01_nt5e-3': 1.5418, 'pic_dt01_nt1e-2': 3.4007, 'ppic_dt005_nt1e-6': 0.0003, 'ppic_dt005_nt1e-4': 0.0445, 'ppic_dt005_nt2e-4': 0.119, 'ppic_dt005_nt5e-4': 0.2907, 'ppic_dt005_nt1e-3': 0.7844, 'ppic_dt005_nt3e-3': 1.5907, 'ppic_dt005_nt1e-2': 2.2306, 'ppic_dt01_nt1e-4': 1.629, 'ppic_dt01_nt1e-3': 1.6686, 'ppic_dt01_nt2e-3': 1.8054, 'ppic_dt01_nt3e-3': 1.7817, 'ppic_dt01_nt5e-3': 1.9708, 'ppic_dt01_nt1e-2': 1.9125, 'imex_dt0025': 2.9189, 'imex_dt005': 4.1596, 'imex_dt01': 7.5477}
+AUDIT PASS 186
+ALL-DONE

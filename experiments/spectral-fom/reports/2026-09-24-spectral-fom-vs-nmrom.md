@@ -6,6 +6,7 @@ This report measures the strongest fast-transform full-order solver for each pro
 
 - **Poisson 2D square** (256, 1024, 2048, 4096): spectral/ours is 0.099–0.352 against the accurate setting and 0.332–0.569 against the fast setting. The DST solve is exact, with worst error ≤ 1.4e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
 - **Poisson 3D cube** (32, 64): spectral/ours is 0.396–0.514 against the accurate setting and 0.519–0.586 against the fast setting. The DST solve is exact, with worst error ≤ 1.9e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
+- **Burgers 2D** (256, 512, 1024): the matched spectral/ours ratio is 0.072–0.166 for the accurate setting and 0.166–0.444 for the fast one. Tight Picard, at reference accuracy, gives 0.174–0.536 and 0.706–2.893. At every measured mesh, the fastest spectral setting of at least the same accuracy is faster than both NM-ROM settings.
 - **Heat 2D** (1024, 2048): matched spectral/ours is 0.423–0.441 (accurate `lin_R128_bf`); 1.343–1.393 (fast `lin_R48_cn`); 0.650–0.700 (accurate_cn `lin_R128_cn`); 0.822–0.935 (fast_bf `lin_R48_bf`). The exact modal propagation is also the lane's truth.
 - **NS 3D** (recorded): CNAB2/ours is 1.091–7.790 for the accurate setting and 0.952–13.142 for the fast one. The ROM is faster than its matched CNAB2 setting in 7 of 8 rows. It is not faster at: 32³ fast (0.952).
 - **L-shape**: there is no spectral arm (see below).
@@ -42,6 +43,53 @@ Validation. The spectral solve was compared with the SciPy DST truth on every ca
 | 32³ | 8.6e-16 | 6.3e-08 / 6.7e-10 / 5.8e-12 | yes / yes / yes | 9.5e-11 | 2.0e-03 |
 | 64³ | 1.9e-15 | 4.7e-08 / 5.2e-10 / 4.1e-12 | yes / yes / yes | 9.8e-11 | 5.0e-04 |
 
+## Burgers 2D (Dirichlet walls, sign-upwind advection, backward Euler)
+
+The spectral FOM solves each backward-Euler step by the modal-Helmholtz fixed point $u \leftarrow u - (I+\Delta t\nu A)^{-1} r(u)$ on the paper's own residual (Picard), or takes one IMEX sweep. It is matched to each arm as the fastest ladder setting whose worst error is no worse than the arm's. "Tight" is Picard at ntol $10^{-6}$, $\Delta t=0.005$, the same tolerance as the reference.
+
+| mesh | GPU | job | role | arm | err (worst) | ms | matched spectral | its err | its ms | ratio (matched) | ratio (tight) | timing gates | audit |
+|---:|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---|---|
+| 256² | NVIDIA A100-PCIE-40GB | 4208042 | accurate | `R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 0.166% | 132.851 | ppic_dt005_nt2e-4 | 0.112% | 10.311 | **0.078** | 0.174 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 256² | NVIDIA A100-PCIE-40GB | 4208042 | fast | `R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 1.597% | 32.795 | pic_dt01_nt5e-3 | 1.455% | 5.430 | **0.166** | 0.706 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 512² | NVIDIA A100-PCIE-40GB | 4208042 | accurate | `R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 0.195% | 250.872 | ppic_dt005_nt2e-4 | 0.115% | 18.160 | **0.072** | 0.180 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 512² | NVIDIA A100-PCIE-40GB | 4208042 | fast | `R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2` | 2.138% | 33.860 | ppic_dt01_nt1e-2 | 1.954% | 6.179 | **0.182** | 1.335 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4208042 | accurate | `R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 0.522% | 176.447 | ppic_dt005_nt5e-4 | 0.291% | 29.359 | **0.166** | 0.536 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4208042 | fast | `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.828% | 32.718 | ppic_dt01_nt3e-3 | 1.782% | 14.527 | **0.444** | 2.893 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+
+Spectral ladder (worst / median error, GPU ms):
+
+| setting | 256² | 512² | 1024² |
+|---|---|---|---|
+| `pic_dt005_nt1e-6` | 0.000% / 0.000% / 23.166 | 0.000% / 0.000% / 45.212 | 0.000% / 0.000% / 94.651 |
+| `pic_dt005_nt1e-4` | 0.048% / 0.019% / 14.827 | 0.050% / 0.021% / 27.327 | 0.051% / 0.020% / 56.291 |
+| `pic_dt005_nt2e-4` | 0.114% / 0.045% / 14.050 | 0.118% / 0.046% / 25.134 | 0.118% / 0.046% / 50.080 |
+| `pic_dt005_nt5e-4` | 0.536% / 0.164% / 11.678 | 0.530% / 0.164% / 20.520 | 0.537% / 0.166% / 40.978 |
+| `pic_dt005_nt1e-3` | 0.899% / 0.358% / 10.500 | 0.919% / 0.383% / 17.994 | 0.930% / 0.397% / 35.738 |
+| `pic_dt005_nt3e-3` | 2.136% / 1.005% / 9.247 | 2.237% / 1.030% / 15.255 | 2.293% / 1.044% / 29.117 |
+| `pic_dt005_nt1e-2` | 3.683% / 1.506% / 8.789 | 3.986% / 1.524% / 14.641 | 4.160% / 1.534% / 28.660 |
+| `pic_dt01_nt1e-4` | 1.511% / 1.173% / 9.664 | 1.588% / 1.188% / 17.870 | 1.630% / 1.196% / 36.779 |
+| `pic_dt01_nt1e-3` | 1.547% / 1.205% / 7.439 | 1.605% / 1.214% / 12.972 | 1.651% / 1.219% / 25.901 |
+| `pic_dt01_nt2e-3` | 1.673% / 1.111% / 6.291 | 1.729% / 1.120% / 10.971 | 1.777% / 1.124% / 21.926 |
+| `pic_dt01_nt3e-3` | 1.492% / 1.117% / 5.782 | 1.593% / 1.108% / 9.948 | 1.631% / 1.103% / 19.550 |
+| `pic_dt01_nt5e-3` | 1.455% / 1.231% / 5.430 | 1.505% / 1.241% / 9.184 | 1.542% / 1.249% / 17.246 |
+| `pic_dt01_nt1e-2` | 3.084% / 1.367% / 5.005 | 3.288% / 1.411% / 8.199 | 3.401% / 1.434% / 15.476 |
+| `ppic_dt005_nt1e-6` | 0.000% / 0.000% / 18.622 | 0.000% / 0.000% / 35.352 | 0.000% / 0.000% / 74.605 |
+| `ppic_dt005_nt1e-4` | 0.047% / 0.021% / 10.922 | 0.047% / 0.021% / 19.499 | 0.044% / 0.022% / 39.393 |
+| `ppic_dt005_nt2e-4` | 0.112% / 0.045% / 10.311 | 0.115% / 0.047% / 18.160 | 0.119% / 0.048% / 35.925 |
+| `ppic_dt005_nt5e-4` | 0.282% / 0.144% / 9.587 | 0.287% / 0.150% / 16.636 | 0.291% / 0.148% / 29.359 |
+| `ppic_dt005_nt1e-3` | 0.784% / 0.336% / 8.420 | 0.776% / 0.345% / 13.873 | 0.784% / 0.341% / 24.788 |
+| `ppic_dt005_nt3e-3` | 1.671% / 1.021% / 6.687 | 1.620% / 1.031% / 10.439 | 1.591% / 1.036% / 19.458 |
+| `ppic_dt005_nt1e-2` | 2.292% / 1.931% / 6.672 | 2.656% / 2.235% / 10.126 | 2.231% / 1.771% / 18.637 |
+| `ppic_dt01_nt1e-4` | 1.512% / 1.171% / 7.906 | 1.588% / 1.186% / 14.521 | 1.629% / 1.194% / 29.994 |
+| `ppic_dt01_nt1e-3` | 1.562% / 1.230% / 5.739 | 1.623% / 1.240% / 10.062 | 1.669% / 1.239% / 20.127 |
+| `ppic_dt01_nt2e-3` | 1.669% / 1.263% / 5.309 | 1.755% / 1.261% / 9.122 | 1.805% / 1.260% / 17.154 |
+| `ppic_dt01_nt3e-3` | 1.651% / 1.271% / 4.939 | 1.735% / 1.273% / 8.202 | 1.782% / 1.271% / 14.527 |
+| `ppic_dt01_nt5e-3` | 1.822% / 1.306% / 4.490 | 1.918% / 1.281% / 7.252 | 1.971% / 1.284% / 12.599 |
+| `ppic_dt01_nt1e-2` | 1.859% / 1.282% / 3.977 | 1.954% / 1.269% / 6.179 | 1.913% / 1.193% / 11.362 |
+| `imex_dt0025` | 2.624% / 1.270% / 16.989 | 2.812% / 1.272% / 28.604 | 2.919% / 1.274% / 53.831 |
+| `imex_dt005` | 3.683% / 1.506% / 8.791 | 3.986% / 1.524% / 14.617 | 4.160% / 1.534% / 28.599 |
+| `imex_dt01` | 6.498% / 2.469% / 4.703 | 7.165% / 2.523% / 7.656 | 7.548% / 2.550% / 14.668 |
+
 Original pre-registered 11-setting ladder (spC/spE; superseded by the L1 ladder above, which contains it):
 
 | mesh | job | role | err | ms | matched spectral | its err | its ms | ratio (matched) | timing gates |
@@ -54,6 +102,12 @@ Original pre-registered 11-setting ladder (spC/spE; superseded by the L1 ladder 
 | 1024² | 4206571 | fast | 1.828% | 32.612 | pic_dt01_nt1e-3 | 1.651% | 25.484 | 0.781 | raw neighbour FAIL (case mix); case-normalised PASS (T1) |
 | 2048² | 4207481 | accurate | 0.534% | 174.959 | pic_dt005_nt1e-4 | 0.051% | 151.446 | 0.866 | all pass |
 | 2048² | 4207481 | fast | 1.872% | 33.914 | pic_dt01_nt1e-3 | 1.676% | 71.801 | 2.117 | all pass |
+
+| mesh | DST in $H^{-1}$ | paper FOM (1e-10) vs Picard (1e-10), max over t of diff/‖u0‖ | control (1.01ν) | ROM re-run vs lane errors (worst rel. dev.) |
+|---:|---|---:|---:|---|
+| 256² | mm | 1.5e-10 | 2.2e-03 | 8.5e-13, 3.7e-14 |
+| 512² | fft | 1.6e-10 | 2.3e-03 | 2.5e-13, 1.1e-13 |
+| 1024² | fft | 1.7e-10 | 2.3e-03 | 2.6e-13, 1.4e-14 |
 
 ## Heat 2D (Dirichlet, modal CN at the paper Δt and exact modal propagation)
 
@@ -97,6 +151,9 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 | poisson2d | 4096 | spB/output0 | 4206053 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925` |
 | poisson3d | 32 | spA/output3 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `aaca3a08cfb01f4b0463b898d04fd5be05d10ff9fc4c908c954e5ee707e92062` |
 | poisson3d | 64 | spA/output4 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `b694fc923deaaa930ddfb84508bc79f7610abf18f3ec8d08a558829ddc492663` |
+| burgers2d | 256 | spF/output0 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `4abee1a9ec2ce78663da0b5fd7c1b4135955b65bec6f2de94b2ff819237b2257` |
+| burgers2d | 512 | spF/output1 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `34a32abc32d7a7da91823a31ecf903c49d54a46200e5f502743be559b899696e` |
+| burgers2d | 1024 | spF/output2 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `36dcb41a858adca492253747e9970940fa931e3cea9cfdf271ef6041d17d93ae` |
 | burgers2d_original_ladder | 256 | spC/output0 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `5b9b5b75758c95e9d700d12f6123f032052c18df07c43ad4ff34469a5822f328` |
 | burgers2d_original_ladder | 512 | spC/output1 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `a73ae4889fc4cd15a22ad02689a7af1df66226a4f78003a7aeac31658e3a20c1` |
 | burgers2d_original_ladder | 1024 | spC/output2 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `036902853bb7b77aeb7747c6ecd969edcfedf9680f8d6846d3cafbc83bd356ba` |

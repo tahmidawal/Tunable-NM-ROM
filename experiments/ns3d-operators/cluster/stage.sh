@@ -4,7 +4,11 @@
 set -euo pipefail
 DEST="$1"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-if ssh tufts-login "test -e $DEST"; then echo "refusing: $DEST exists (dirs are never reused)"; exit 1; fi
+if [[ -n "$(git -C "$HERE" status --porcelain -- experiments/ns3d-operators)" ]]; then
+  echo "refusing: uncommitted changes in experiments/ns3d-operators"; exit 1
+fi
+# atomic claim: plain mkdir fails if the directory already exists (dirs are never reused)
+ssh tufts-login "mkdir -p $(dirname $DEST) && mkdir $DEST" || { echo "refusing: $DEST exists"; exit 1; }
 ssh tufts-login "mkdir -p $DEST/logs $DEST/output $DEST/experiments"
 for pkg in ns3d ns3d-grok ns3d-shift ns3d-shift-head ns3d-operators; do
   rsync -az --delete \
@@ -13,7 +17,4 @@ for pkg in ns3d ns3d-grok ns3d-shift ns3d-shift-head ns3d-operators; do
     --include='frozen/**.npz' --include='NEURALOPERATOR-LICENSE' --exclude='*' \
     "$HERE/experiments/$pkg/" "tufts-login:$DEST/experiments/$pkg/"
 done
-if [[ -n "$(git -C "$HERE" status --porcelain -- experiments/ns3d-operators)" ]]; then
-  echo "refusing: uncommitted changes in experiments/ns3d-operators"; exit 1
-fi
 git -C "$HERE" rev-parse HEAD | ssh tufts-login "cat > $DEST/COMMIT.txt"

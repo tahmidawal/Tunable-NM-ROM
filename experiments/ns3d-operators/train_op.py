@@ -109,6 +109,9 @@ def main():
     if args.smoke:
         config = dict(config, **config.get('smoke_overrides', {}))
     args.out.mkdir(parents=True, exist_ok=True)
+    for existing in ('best.pt', 'result.json', 'history.json'):
+        if (args.out / existing).exists():
+            raise RuntimeError(f'refusing: {args.out / existing} already exists')
 
     params, frames, overlap, gen_seconds = generate(n, args.smoke)
     import torch
@@ -137,12 +140,19 @@ def main():
     norm = (u_scale, mu, sd, out_scale)
     projector = O.Projector(n)
 
+    pinned = None if on_device else torch.empty((8,) + tuple(U.shape[1:]), dtype=U.dtype).pin_memory()
+
     def get(ids):
         idc = torch.as_tensor(ids, device='cuda')
-        batch = (U[idc] if on_device else U[torch.as_tensor(ids)].to('cuda', non_blocking=True)).double()
+        if on_device:
+            batch = U[idc].double()
+        else:
+            buf = pinned[:len(ids)]
+            torch.index_select(U, 0, torch.as_tensor(ids), out=buf)
+            batch = buf.to('cuda', non_blocking=True).double()
         return batch[:, 0], NU[idc], batch
 
-    def evaluate(net):
+    def evaluate(net, norm=norm):
         net.eval()
         errs = []
         with torch.no_grad():
@@ -169,21 +179,28 @@ def main():
         m = min(m, batch_size)
         torch.cuda.empty_cache(); torch.cuda.reset_peak_memory_stats()
         torch.manual_seed(seed)
-        net = O.make_model(config)
+        net = popt = None
         try:
-            loss_of(net, tr_idx[:m]).backward()
+            # two complete optimiser steps (AdamW state allocated) at this micro-batch
+            net = O.make_model(config)
+            popt = torch.optim.AdamW(net.parameters(), lr=1e-12, weight_decay=0.0)
+            for _ in range(2):
+                popt.zero_grad(set_to_none=True)
+                loss_of(net, tr_idx[:m]).backward()
+                torch.nn.utils.clip_grad_norm_(net.parameters(), 1.0)
+                popt.step()
             torch.cuda.synchronize()
             peak = torch.cuda.max_memory_allocated()
             probe[str(m)] = peak
-            del net
-            torch.cuda.empty_cache()
-            if peak < 0.80 * torch.cuda.get_device_properties(0).total_memory or m == 1:
-                micro = m
-                break
+            ok = peak < 0.80 * torch.cuda.get_device_properties(0).total_memory or m == 1
         except torch.OutOfMemoryError:
             probe[str(m)] = 'oom'
-            del net
-            torch.cuda.empty_cache()
+            ok = False
+        del net, popt
+        torch.cuda.empty_cache()
+        if ok:
+            micro = m
+            break
     if micro is None:
         raise RuntimeError('no micro-batch fits')
 
@@ -260,9 +277,15 @@ def main():
         if epoch - best_epoch >= patience:
             stop_reason = 'patience'; break
     seconds = time.monotonic() - started
+    del net, opt
+    torch.cuda.empty_cache()
     net2, norm2, ck = O.load_checkpoint(args.out / 'best.pt')
-    final = evaluate(net2)
-    result = dict(complete=True, arm=name, family=config['family'], config=config, mesh=n, micro_batch=micro,
+    final = evaluate(net2, norm2)
+    reproduced = abs(final['mean_case_max'] - best) <= 1e-6 * max(best, 1e-12)
+    finalisation_seconds = time.monotonic() - started - seconds
+    result = dict(complete=bool(stop_reason != 'signal' and reproduced), arm=name,
+                  validation_reproduced_from_checkpoint=bool(reproduced),
+                  finalisation_seconds=finalisation_seconds, family=config['family'], config=config, mesh=n, micro_batch=micro,
                   best_epoch=ck['epoch'], best_step=ck['step'], epochs_completed=len(history),
                   optimisation_steps=step, stop_reason=stop_reason, training_seconds=seconds,
                   wall_budget_seconds=wall, validation_best_checkpoint=final,

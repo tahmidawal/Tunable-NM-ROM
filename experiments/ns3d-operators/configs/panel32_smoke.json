@@ -1,0 +1,387 @@
+{
+ "n": 32,
+ "horizon": 0.2,
+ "dt_truth": 0.001,
+ "rank": 64,
+ "modes": 292,
+ "check_modes": 8,
+ "gram_block": 64,
+ "train_seed": 202609201,
+ "train_cases": 128,
+ "operator_train_cases": 512,
+ "eval_seed": 202609202,
+ "eval_cases": 16,
+ "span_rank": 16,
+ "rom_dt": 0.02,
+ "rom_iters": 3,
+ "damping": 1e-06,
+ "ic_iters": 12,
+ "cnab2_steps": [
+  200,
+  100,
+  80,
+  70,
+  60,
+  50,
+  40,
+  20,
+  10
+ ],
+ "frozen_dir": "experiments/ns3d-operators/frozen/h32",
+ "frozen_sha256": {
+  "head_k8.npz": "35c1a8aff8bdb5da292d3dd297470d25f23900b25529ba7fe99f309a8e792369",
+  "rotation.npz": "910d66995bc1f6604156c6a5c9491fa492e2947dd89000c4c22d7788ea3b523a",
+  "bank_probe.npz": "a78d896fa78efa8fba3bbbcd4fce81abd17ca34924acd720dd090a7d52312802"
+ },
+ "reference_summary": "experiments/ns3d-shift-head/runs/a2_h32/output/summary.json",
+ "reference_summary_sha256": "301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c",
+ "reference_errors": {
+  "nmrom_accurate_head_k8": "head_k8",
+  "nmrom_fast_span16": "span16",
+  "cnab2_s200": "cnab2_s200",
+  "cnab2_s100": "cnab2_s100",
+  "cnab2_s80": "cnab2_s80",
+  "cnab2_s70": "cnab2_s70",
+  "cnab2_s60": "cnab2_s60",
+  "cnab2_s50": "cnab2_s50",
+  "cnab2_s40": "cnab2_s40",
+  "cnab2_s20": "cnab2_s20",
+  "cnab2_s10": "cnab2_s10"
+ },
+ "reference_values": {
+  "head_k8": [
+   [
+    0.00021641618833253008,
+    0.0005075298890217876,
+    0.0006324004447494396,
+    0.0007341791409146906,
+    0.000810309509526983,
+    0.0009116072705732796
+   ],
+   [
+    0.00031933826632622595,
+    0.0003649692923188969,
+    0.0005660062598616067,
+    0.0007631039737852995,
+    0.0008781450149859923,
+    0.000942862452417961
+   ]
+  ],
+  "span16": [
+   [
+    0.013333946210413965,
+    0.012239700049509198,
+    0.014551108317285583,
+    0.012392067640185692,
+    0.013337095467381222,
+    0.028822425687095816
+   ],
+   [
+    0.008029915857061488,
+    0.006907776417945758,
+    0.007607670246495332,
+    0.008053894807602675,
+    0.01131172149346786,
+    0.013296908603426512
+   ]
+  ],
+  "cnab2_s200": [
+   [
+    2.564534329319944e-16,
+    2.556094719068547e-16,
+    2.539173907042174e-16,
+    2.4872870121068947e-16,
+    2.3871156633629576e-16,
+    2.436439370729139e-16
+   ],
+   [
+    2.4419234679981056e-16,
+    2.7387238121670954e-16,
+    2.697809368398351e-16,
+    2.6748589707520987e-16,
+    2.704084513036042e-16,
+    2.8023994653300676e-16
+   ]
+  ],
+  "cnab2_s100": [
+   [
+    2.564534329319944e-16,
+    7.895119920388866e-05,
+    9.502626457283152e-05,
+    8.768900522340963e-05,
+    7.53306293888748e-05,
+    6.370175760262733e-05
+   ],
+   [
+    2.4419234679981056e-16,
+    9.628707845162055e-05,
+    0.0001475862544867355,
+    0.0001623654116142557,
+    0.00015663681636029223,
+    0.00014260486339050534
+   ]
+  ],
+  "cnab2_s80": [
+   [
+    2.564534329319944e-16,
+    0.00013760231221397287,
+    0.00016619351654796396,
+    0.00015344757608396988,
+    0.000131822390161528,
+    0.00011145604990783036
+   ],
+   [
+    2.4419234679981056e-16,
+    0.00016784039217848865,
+    0.00025824976462459487,
+    0.0002843189723333439,
+    0.00027427230569866104,
+    0.00024963823559529994
+   ]
+  ],
+  "cnab2_s70": [
+   [
+    2.564534329319944e-16,
+    0.0001872241510819465,
+    0.00022667774665884304,
+    0.00020936553895146715,
+    0.0001798557817293024,
+    0.0001520504966364059
+   ],
+   [
+    2.4419234679981056e-16,
+    0.00022841094009706206,
+    0.0003524260027657833,
+    0.00038817318604287974,
+    0.00037440589635416046,
+    0.00034069390042634697
+   ]
+  ],
+  "cnab2_s60": [
+   [
+    2.564534329319944e-16,
+    0.0002633402465266719,
+    0.0003198458664059663,
+    0.00029552913578146343,
+    0.00025385692594841235,
+    0.00021457470488275114
+   ],
+   [
+    2.4419234679981056e-16,
+    0.0003213943519860488,
+    0.0004977552634070082,
+    0.0005484982277056894,
+    0.0005288759627706617,
+    0.00048105348928168646
+   ]
+  ],
+  "cnab2_s50": [
+   [
+    2.564534329319944e-16,
+    0.00038893336054820506,
+    0.00047438794265090476,
+    0.0004384696747828241,
+    0.0003765728745493859,
+    0.0003182166933065351
+   ],
+   [
+    2.4419234679981056e-16,
+    0.00047504292733611557,
+    0.0007396354875834988,
+    0.0008153424784384914,
+    0.000785589955059558,
+    0.0007140037605896467
+   ]
+  ],
+  "cnab2_s40": [
+   [
+    2.564534329319944e-16,
+    0.0006189761008362461,
+    0.0007593021422142886,
+    0.0007018222618119366,
+    0.0006024596293666047,
+    0.0005088615293231414
+   ],
+   [
+    2.4419234679981056e-16,
+    0.0007572891133614771,
+    0.001188809237017089,
+    0.0013102434642005957,
+    0.0012600469655280645,
+    0.0011433982038613884
+   ]
+  ],
+  "cnab2_s20": [
+   [
+    2.564534329319944e-16,
+    0.0025704329674756145,
+    0.0032287657968171814,
+    0.0029170815260857763,
+    0.0024862948194850397,
+    0.0020922209932626406
+   ],
+   [
+    2.4419234679981056e-16,
+    0.003152492057987745,
+    0.005524934735546123,
+    0.006236728991789764,
+    0.005826328314995061,
+    0.005267547759304244
+   ]
+  ],
+  "cnab2_s10": [
+   [
+    2.564534329319944e-16,
+    0.008995078846726304,
+    0.017652095822872353,
+    0.020551930838686314,
+    0.02243489322940937,
+    0.02569916746480037
+   ],
+   [
+    2.4419234679981056e-16,
+    0.010349696514882092,
+    0.030234590639100316,
+    0.06775288340114656,
+    0.17139947051716142,
+    0.49216691202456636
+   ]
+  ]
+ },
+ "operators": [
+  {
+   "arm": "don-s",
+   "family": "deeponet",
+   "trained": true,
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/smoke32/smoke_don-s/best.pt",
+   "sha256": "948dd3741b83488fe93106e4d2a54079ef35d68220a25c8aa58f1cb8ece377c5",
+   "validation_mean_case_max": 0.9869595107454137,
+   "training": {
+    "best_epoch": 45,
+    "best_step": 92,
+    "epochs_completed": 46,
+    "optimisation_steps": 92,
+    "stop_reason": "wall_budget",
+    "training_seconds": 5.008659719998832,
+    "micro_batch": 1,
+    "real_parameter_count": 23519,
+    "parameter_dtype": "torch.float32",
+    "validation_mean_case_max": 0.9869595107454137,
+    "validation_worst_case_max": 0.997258666522477,
+    "result_sha256": "5be0604800b239c206c0d477849800109474cc41f93dac3492f9b9bb9644b239"
+   },
+   "selected": true
+  },
+  {
+   "arm": "fno-s",
+   "family": "fno",
+   "trained": true,
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/smoke32/smoke_fno-s/best.pt",
+   "sha256": "f77ef32bfa811cb199ba408b0dc4ca928571caab3b211740ef6d3ea29b25414b",
+   "validation_mean_case_max": 0.9693798780273722,
+   "training": {
+    "best_epoch": 48,
+    "best_step": 97,
+    "epochs_completed": 49,
+    "optimisation_steps": 97,
+    "stop_reason": "wall_budget",
+    "training_seconds": 5.03031872700376,
+    "micro_batch": 1,
+    "real_parameter_count": 3415,
+    "parameter_dtype": "torch.float64",
+    "validation_mean_case_max": 0.9693798780273722,
+    "validation_worst_case_max": 0.9773405827721243,
+    "result_sha256": "741c816068c68797db1285038b15238a671bf20b60c18cdfd7a22aa838462a2b"
+   },
+   "selected": true
+  },
+  {
+   "arm": "tsol-s",
+   "family": "transolver",
+   "trained": true,
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/smoke32/smoke_tsol-s/best.pt",
+   "sha256": "61edecf6bc0512f8c7c6918f1f9ba367355b7660efe8454c2d635680c13d6913",
+   "validation_mean_case_max": 0.7655976855988571,
+   "training": {
+    "best_epoch": 68,
+    "best_step": 137,
+    "epochs_completed": 69,
+    "optimisation_steps": 137,
+    "stop_reason": "wall_budget",
+    "training_seconds": 5.028168206001283,
+    "micro_batch": 1,
+    "real_parameter_count": 19422,
+    "parameter_dtype": "torch.float32",
+    "validation_mean_case_max": 0.7655976855988571,
+    "validation_worst_case_max": 0.7712662301035028,
+    "result_sha256": "2612913000cec409f93be97007bd1efc5aa89aca96a27229932dd691570a6998"
+   },
+   "selected": true
+  },
+  {
+   "arm": "unet-s",
+   "family": "unet",
+   "trained": true,
+   "checkpoint": "/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/smoke32/smoke_unet-s/best.pt",
+   "sha256": "6b570eda09a626b3b1b15dad3e51a69dd4f20ff0415594dafad1906d9c31b784",
+   "validation_mean_case_max": 0.9656970867560695,
+   "training": {
+    "best_epoch": 23,
+    "best_step": 47,
+    "epochs_completed": 24,
+    "optimisation_steps": 47,
+    "stop_reason": "wall_budget",
+    "training_seconds": 5.121471154998289,
+    "micro_batch": 1,
+    "real_parameter_count": 1413279,
+    "parameter_dtype": "torch.float32",
+    "validation_mean_case_max": 0.9656970867560695,
+    "validation_worst_case_max": 0.9743828105767922,
+    "result_sha256": "ec7219d584c82e48ab5588e7df6284cac730d918a59ff754d807b3fe67bcb872"
+   },
+   "selected": true
+  }
+ ],
+ "operators_not_trained": [
+  {
+   "arm": "don-l",
+   "family": "deeponet",
+   "trained": false,
+   "reason": "no result.json"
+  },
+  {
+   "arm": "fno-l",
+   "family": "fno",
+   "trained": false,
+   "reason": "no result.json"
+  },
+  {
+   "arm": "tsol-l",
+   "family": "transolver",
+   "trained": false,
+   "reason": "no result.json"
+  },
+  {
+   "arm": "unet-l",
+   "family": "unet",
+   "trained": false,
+   "reason": "no result.json"
+  }
+ ],
+ "sample_seed": 20260955,
+ "sample_points": 8192,
+ "min_free_gb": 40,
+ "timing_rounds": 3,
+ "burn_calls": 2,
+ "timing_seed": 955,
+ "smoke": {
+  "eval_cases": 2,
+  "cnab2_steps": [
+   200,
+   50,
+   40
+  ],
+  "timing_rounds": 1,
+  "burn_calls": 1
+ }
+}

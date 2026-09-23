@@ -186,3 +186,43 @@ reproduction values are the gate), on H200. If it does not fit, the report says 
 Codex `exec` read-only design audit of this file and the code before the first training job
 (`checks/codex-design-audit.md`), and a results audit before reporting
 (`checks/codex-results-audit.md`). Dispositions go into amendments.
+
+## A1 (2026-09-23, before any cluster job) — Codex design audit, dispositions
+
+`codex exec` (read-only instructions; run with `--dangerously-bypass-approvals-and-sandbox` because
+the bubblewrap sandbox cannot start on this box, as in earlier lanes), report kept verbatim at
+`checks/codex-design-audit.md`. No leakage found; verdict "hold until the probe, directory-race and
+interruption issues are fixed". Dispositions:
+
+1. *Memory probe* — accepted: the probe now runs two complete AdamW steps (optimizer state allocated),
+   model construction is inside the OOM handler, and training objects are released before the
+   checkpoint reload.
+2. *Directory race* — accepted: `stage.sh` checks the tree is clean first and claims the remote
+   directory with a plain (atomic) `mkdir`; `train_op.py` refuses an output directory that already
+   holds `best.pt`/`result.json`/`history.json`.
+3. *Interrupted runs* — accepted: an arm stopped by a signal, or whose reloaded checkpoint does not
+   reproduce its recorded validation value (1e-6 relative), is written `complete=false` and is
+   ineligible for selection (= "not trained"). The job time limit (2.5 h) is ~2.5× the expected run.
+4. *Selection asymmetry* — accepted as a labelling requirement: the NM-ROM's $k=8$ was selected by the
+   shift-head lane on the same 16 development cases used here (as for Table 1); the operators select
+   size and checkpoint on the separate 64-trajectory validation split. The report states that the
+   $32^3$/$64^3$ cells are **development comparisons** in which the NM-ROM setting was chosen on the
+   evaluation cohort; only the stretch $96^3$ cell uses a cohort unused for either side's selection.
+5. *Disk cap / restricted audit* — accepted: the panel refuses to write fields if free space is below
+   40 GB **or** if its own saved-field total would exceed a hard cap of 4 GB (checked before each
+   write); the audit is called **restricted** in the report (exact recomputation on the saved cases,
+   sampled estimates elsewhere; the truth solver is the same CNAB2 code that produced the paper's rows
+   and is not independently re-solved).
+6. *Gates enforce status* — accepted: `summary.json` carries `status: final` only if every gate passes
+   (reproduction, drift, order, positive control, timed-output parity, bank rebuild, finite outputs,
+   ≥ 9 samples per arm and case); otherwise `PROVISIONAL (diagnostic only)`, and the report prints no
+   headline row from a provisional panel without that label. A 2 s GPU burn precedes each timing phase.
+   Speedups are labelled "vs the NM-ROM-accuracy CNAB2 comparator" (the Table-2 rule), not
+   equal-accuracy speedups per operator (those are printed separately as context).
+7. *Pinned fallback* — accepted: batches are gathered into a reusable pinned buffer; $96^3$ jobs request
+   ≥ 160 GB host memory.
+8. *Budget bookkeeping* — accepted: training time and finalisation time are recorded separately; the
+   final validation uses the checkpoint's own normalisation. The last update + validation may overrun
+   3000 s by one epoch's tail, as in the 2D cells.
+9. *U-Net equivariance* — accepted: stride-2 pooling/upsampling make the U-Net equivariant only to
+   shifts by multiples of 16 cells; the wording "translation-equivariant" applies to the FNO only.

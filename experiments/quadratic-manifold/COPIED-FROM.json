@@ -1,0 +1,201 @@
+{
+ "note": "Every file copied into this lane, with the b-panel commit it came from. Files marked identical:false were modified for this lane; the modifications are listed in `changes` and described in DESIGN.md. `qman.py`, `DESIGN.md` and `HANDOFF.md` are new to this lane.",
+ "source_worktree": "2026-09-17-b-panel",
+ "source_branch": "exp/2026-09-17-b-panel",
+ "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+ "changes": {
+  "panel.py": [
+   "new module docstring for this lane",
+   "import qman as QM",
+   "declare_subjects: the `qman` family from qman_ranks x qman_variants, M = 4r, priority 3.5",
+   "main: qranks / qman_maps and the assertion that qman_ranks needs pod_ranks",
+   "main: the quadratic manifolds are fitted while the snapshot matrix is resident, into report[\"quadratic_manifold\"]",
+   "build(): the `qman` branch -- GridBank([u_ref|V_r|W]) + qman.head, otherwise the POD branch verbatim",
+   "the timed row carries `variant`"
+  ],
+  "audit_panel.py": [
+   "`qman` added to reduced_fams and to the family sort order",
+   "the per-arm row carries variant, bank_columns, quadratic_terms, the chosen ridge, the held-out error, the snapshot residuals and the trial-map description",
+   "a qman_quad / qman_lin ladder beside the pod ladder"
+  ],
+  "smoke_panel.py": [
+   "cut down to this lane: the 128-interval rule-TRANSFER half and the duplicate-rule-set gate removed (this lane runs one mesh with one rule set)",
+   "qman.demo() and the quad-vs-lin gates added"
+  ],
+  "cluster/stage.py": [
+   "lane directory, namespace qman_20260922, qman.py staged, FNO phase removed"
+  ],
+  "cluster/collect.py": [
+   "lane directory and namespace; nothing excluded from the collection"
+  ],
+  "cluster/preserve_archive.py": [
+   "lane directory"
+  ],
+  "config-256-qman.json": [
+   "b-panel config-256.json trimmed to the endpoints plus the qman ladder; see DESIGN 3.1"
+  ],
+  "config-smoke64.json": [
+   "b-panel config-smoke64.json trimmed to this lane plus the qman ladder"
+  ]
+ },
+ "new_files": [
+  "qman.py",
+  "DESIGN.md",
+  "HANDOFF.md"
+ ],
+ "files": [
+  {
+   "lane_path": "panel.py",
+   "source_path": "experiments/b-panel/panel.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "68b6f4d0686dc6edaa9c6661b583dff21aa31c563366edd59deeef55a66bc771",
+   "lane_sha256": "0bee07149d842a05a867390fa78c68fec2a7b507d2f1bd8574fb88788fc909b1",
+   "identical": false,
+   "bytes": 54723
+  },
+  {
+   "lane_path": "audit_panel.py",
+   "source_path": "experiments/b-panel/audit_panel.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "957a74b1b940853cb9cd8e7486b98165043969e5adcc058bb78da8cc98fd2532",
+   "lane_sha256": "fba3695e57c7d75c2fed50b787fb6a6bb04b3ab103840d190e1c48c6c262c3a9",
+   "identical": false,
+   "bytes": 28056
+  },
+  {
+   "lane_path": "smoke_panel.py",
+   "source_path": "experiments/b-panel/smoke_panel.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "98f410aa3d9dea277a4fb269ea4777834747a8351acefbe6a3ef148458145b41",
+   "lane_sha256": "0e9b2a6e67b40da3f0625d993786b0fa155904b1c652ababd7956d9db62d4784",
+   "identical": false,
+   "bytes": 10917
+  },
+  {
+   "lane_path": "make_comparators.py",
+   "source_path": "experiments/b-panel/make_comparators.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "05b4e632088cf34cc5975299c0cf15aa9908526e018afa1ec8e306f0c1120e3f",
+   "lane_sha256": "05b4e632088cf34cc5975299c0cf15aa9908526e018afa1ec8e306f0c1120e3f",
+   "identical": true,
+   "bytes": 2009
+  },
+  {
+   "lane_path": "cluster/stage.py",
+   "source_path": "experiments/b-panel/cluster/stage.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "0d3ed8e2776b4921ae3748391376485086869e739b66d62c8d82b88add6ad222",
+   "lane_sha256": "d4deac47b115a03d7908ea1be41448e2ac9d67bfa359d3c439ba092e9d3e1606",
+   "identical": false,
+   "bytes": 6645
+  },
+  {
+   "lane_path": "cluster/collect.py",
+   "source_path": "experiments/b-panel/cluster/collect.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "9e8a97368a9dc35561c55881254d882b0eedddc821a59501333acd6578b65cdd",
+   "lane_sha256": "fc7826961a51403009dcb7c59eb168f93f14dedd60c512949444b1a4f74d49bd",
+   "identical": false,
+   "bytes": 2499
+  },
+  {
+   "lane_path": "cluster/preserve_archive.py",
+   "source_path": "experiments/b-panel/cluster/preserve_archive.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "ad117224af66b4f319234a55bd0782eeefcca3ce308d02d0b31c891e606c9a04",
+   "lane_sha256": "1c30aa7dad86e13d7b3b7c491effa6e6acc7dd39792c9ec8a0309c1c1dc8d23c",
+   "identical": false,
+   "bytes": 2467
+  },
+  {
+   "lane_path": "speed/fast.py",
+   "source_path": "experiments/b-panel/speed/fast.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "32bead3c144622d98bcf9825bf32954953350a2d4c44234e924ed6c7d6bb159b",
+   "lane_sha256": "32bead3c144622d98bcf9825bf32954953350a2d4c44234e924ed6c7d6bb159b",
+   "identical": true,
+   "bytes": 19610
+  },
+  {
+   "lane_path": "speed/ladders.py",
+   "source_path": "experiments/b-panel/speed/ladders.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "b2b42668af0e47aa65e7ae92d2cddfbcbfff25b6db161acefb79071bcba97bf6",
+   "lane_sha256": "b2b42668af0e47aa65e7ae92d2cddfbcbfff25b6db161acefb79071bcba97bf6",
+   "identical": true,
+   "bytes": 5030
+  },
+  {
+   "lane_path": "reports/generate_panel.py",
+   "source_path": "experiments/b-panel/reports/generate_panel.py",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "d8f928d33f203cbc93aaa9ec2687fec494d169f9a94d3381d8798c4f694c617e",
+   "lane_sha256": "d8f928d33f203cbc93aaa9ec2687fec494d169f9a94d3381d8798c4f694c617e",
+   "identical": true,
+   "bytes": 72148
+  },
+  {
+   "lane_path": "checks/comparators.json",
+   "source_path": "experiments/b-panel/checks/comparators.json",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "762ea295b07c5c72ee832204848dfa660e93ad2146947b67972a46252a3f4edc",
+   "lane_sha256": "762ea295b07c5c72ee832204848dfa660e93ad2146947b67972a46252a3f4edc",
+   "identical": true,
+   "bytes": 53858
+  },
+  {
+   "lane_path": "inputs/PROVENANCE.json",
+   "source_path": "experiments/b-panel/inputs/PROVENANCE.json",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "13f476b6b19175672d62b7629b92467a1425927f01bd71378a0136a9cdba25ca",
+   "lane_sha256": "13f476b6b19175672d62b7629b92467a1425927f01bd71378a0136a9cdba25ca",
+   "identical": true,
+   "bytes": 35016
+  },
+  {
+   "lane_path": "inputs/directions_qtd02.npz",
+   "source_path": "experiments/b-panel/inputs/directions_qtd02.npz",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+   "lane_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+   "identical": true,
+   "bytes": 4041852
+  },
+  {
+   "lane_path": "inputs/rules/rule_q0_reachable_m1024.npz",
+   "source_path": "experiments/b-panel/inputs/rules/rule_q0_reachable_m1024.npz",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+   "lane_sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+   "identical": true,
+   "bytes": 11139
+  },
+  {
+   "lane_path": "inputs/rules/rule_q256_reachable_m2048.npz",
+   "source_path": "experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+   "lane_sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+   "identical": true,
+   "bytes": 21729
+  },
+  {
+   "lane_path": "config-256-qman.json",
+   "source_path": "experiments/b-panel/config-256.json",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "994962b3e0ef6fff16fc16f5b78e145e58730244d0f687df881cbada413f7275",
+   "lane_sha256": "3920010602a3bd075408121a5c55b25b5fed99aeda3e0131781bbc54bc01b9a8",
+   "identical": false,
+   "bytes": 5507
+  },
+  {
+   "lane_path": "config-smoke64.json",
+   "source_path": "experiments/b-panel/config-smoke64.json",
+   "source_commit": "25434a27bfc8857d81859784250b0bfd9a78adfd",
+   "source_sha256": "3d4480e5ac896f302cf9a0ee8f6ced95fb7b8b4569cf012d4ea361bc0ef1e612",
+   "lane_sha256": "eefba8c155c4a873f8f194d2083587aa0c6a6df04a24c64e172ccdb777091b16",
+   "identical": false,
+   "bytes": 2440
+  }
+ ]
+}

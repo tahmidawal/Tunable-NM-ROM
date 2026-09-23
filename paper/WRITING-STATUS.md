@@ -1,5 +1,45 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — data-parity paragraph; discretisation scoping refined — CURRENT HANDOFF
+
+Source: `exp/2026-09-22-ops-tune-grid` @4fee6965, pinned in `evidence/ops-data-parity-2026-09-22/`:
+`for-paper-data-parity.md` (blob 672bad54, sha256 8d3620c6…) and `checks/for-paper-arithmetic.txt`
+(blob 68e12668, sha256 9d4fe930…), with the lane's DESIGN.md as a companion blob. The generator reads the
+primitive counts and the measured per-trajectory cost from the arithmetic re-derivation and recomputes every
+ratio itself (`nPar*` macros); nothing is quoted.
+
+**New Appendix C paragraph, "How much data each side was given"** — the lane's argument in the paper's voice:
+128 operator trajectories against 4 608 for the model they are compared against; the gap is what one training
+sample costs on each side, not a decision about what each method was allowed, and it runs against the operators'
+interest. Both sides draw from the same Gaussian-bump family through the same generator and are scored at the
+same six output times, but the operators' targets are 4096-interval solutions at Δt = 1.5625×10⁻⁴ restricted to
+the 256-interval grid, a median 127.2 s per trajectory, against about 0.19 s for a trajectory solved directly on
+the 256-interval grid — roughly 670×. The 128 cases are about 4.5 GPU-hours; 4 608 at that fidelity would be
+about 163 A100-hours. Data is also counted differently: 128 cases are 640 supervised states, while the head is
+fitted per state and sees 131 072 of the 235 008 states its 4 608 trajectories contain. "The 36× trajectory count
+should therefore not be read as a data advantage on equal terms."
+**Traceability honoured, in the text**: "The trajectory and state counts on our side, and the 0.19 s, are quoted
+from job 2837431's own record and were not re-derived from anything else in this repository; every other figure
+here is re-derived from the pinned source."
+
+**Discretisation scoping refined** (98928b03 said cohort-specific; it is cohort *and* reference specific):
+"That comparison belongs to this cohort and this reference, and it does not generalise in either respect. The
+operator percentages here are scored against a converged solve on the same grid in the same job, while 4.027 %
+is what that grid itself costs against a finer reference, so the two were never subtractable. Cohort alone moves
+an arm by more than the gap: the same unet-refine checkpoint scores 1.71 % on the matched eight cases and 4.55 %
+here, a factor of 2.7." The counter-examples and the "like-for-like re-measurement in progress" note stay.
+
+check_headline re-derives the parity primitives and every ratio from the pinned file, requires the traceability
+sentence and the "never subtractable" scoping to stay, and checks the same-checkpoint illustration against the
+two pinned lane records. Both checks pass.
+
+**Scope of this commit.** The other session's uncommitted §3 edits are still in `main.tex` /
+`method-details.tex`, so I did not touch, rebuild or commit them or `main.pdf`. Verified in a scratch copy of
+`paper/` with those two files restored from HEAD: 26 pages, 0 overfull boxes, no undefined references,
+References on page 9. Committed here: `sections/appendix.tex`, `gen_ops_panel.py`, `check_headline.py`,
+`tables/ops-numbers.tex`, the new evidence directory and this file. The PDF still needs a rebuild once that
+session lands.
+
 ## 2026-09-22 (paper lane) — discretisation-error claim requalified (ops-tune-grid correction) — CURRENT HANDOFF
 
 The Appendix C sentence "Every operator error exceeds the mesh's own discretisation error, 4.027 %" was

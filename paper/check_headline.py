@@ -381,7 +381,29 @@ _bv = [a for a in _pub if _dvb[(a, 'worst_fixed_initial_error')] < _disc]
 _bm = [a for a in _pub if _dmb[a] < _disc]
 assert _mp('nOpsBarPubArms') == str(len(_pub)) and _mp('nOpsBarBelowVal') == str(len(_bv)) and _mp('nOpsBarBelowMatch') == str(len(_bm))
 assert len(_bv) >= 1 and len(_bm) == len(_pub)          # off the panel's cohort the same bar is not exceeded everywhere
-assert 'does not\ngeneralise' in (P / 'sections/appendix.tex').read_text().replace('\r', '')   # the scoping sentence stays
+assert 'does not generalise' in ' '.join((P / 'sections/appendix.tex').read_text().split())   # the scoping sentence stays
+# 2026-09-22 data-parity intake (ops-tune-grid @4fee6965): primitives from the pinned re-derivation, ratios recomputed
+_pm = json.loads((P / 'evidence/ops-data-parity-2026-09-22/manifest.json').read_text())
+for _k, _v in _pm.items():
+    assert hashlib.sha256((P / f'evidence/ops-data-parity-2026-09-22/{_k}').read_bytes()).hexdigest() == _v['sha256'], _k
+    assert _v['commit'].startswith('4fee6965')
+_par = (P / 'evidence/ops-data-parity-2026-09-22/for-paper-arithmetic.txt').read_text()
+_pn = lambda pat: float(re.search(pat, _par).group(1))
+_optraj, _romtraj = int(_pn(r'(\d+) cases at pinned fidelity')), int(_pn(r'(\d+) cases at pinned fidelity: 586135'))
+_ops_s, _ratio = _pn(r'operator s/trajectory: median ([0-9.]+)'), _pn(r'cost ratio ([0-9.]+)')
+_perc, _pert = int(_pn(r'operator supervised states \d+\*(\d+) =')), int(_pn(r'states available \d+\*(\d+) ='))
+assert _mp('nParOpTraj') == str(_optraj) and _mp('nParTrajRatio') == f'{_romtraj / _optraj:.0f}'
+assert _mp('nParOpSec') == f'{_ops_s:.1f}' and _mp('nParRomSec') == f'{_ops_s / _ratio:.2f}'
+assert _mp('nParOpHours') == f'{_optraj * _ops_s / 3600:.1f}' and _mp('nParFullHours') == f'{_romtraj * _ops_s / 3600:.0f}'
+assert _mp('nParOpStates') == f'{_optraj * _perc:,}'.replace(',', r'\,')
+assert _mp('nParStatesAvail') == f'{_romtraj * _pert:,}'.replace(',', r'\,')
+_ap = (P / 'sections/appendix.tex').read_text()
+assert r'quoted from job \nParRomJob{}' in _ap and 'were not re-derived' in _ap        # the traceability caveat stays
+# the discretisation comparison is scoped to cohort AND reference, with the same-checkpoint illustration
+assert 'never subtractable' in _ap and r'\nOpsBarSameGap' in _ap
+assert _mp('nOpsBarSamePanel') == _e2(_or['unet-refine']['worst_evolved_percent'])
+assert _mp('nOpsBarSameMatch') == _e2(_dmb['unet-refine'])
+assert _mp('nOpsBarSameGap') == f"{_or['unet-refine']['worst_evolved_percent'] / _dmb['unet-refine']:.1f}"
 _appd = (P / 'sections/appendix.tex').read_text()
 assert r'\label{tab:deeponet2d}' in _appd and r'\input{tables/TR_deeponet2d}' in _appd
 for _phrase in ('not an architecture ceiling', 'not on the wall budget', 'vacuous at this patience',

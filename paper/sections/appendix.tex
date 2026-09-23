@@ -114,12 +114,20 @@ $\nOpsTwoDFastErr\,\%$ for the fast one. On these \nOpsTwoDCases{} cases, and ag
 panel's own reference, every operator arm's error also exceeds the
 discretisation error of the mesh itself, $\nOpsTwoDDisc\,\%$: on this
 cohort they do not resolve the discrete solution they were trained on.
-That comparison belongs to this cohort and this reference and does not
-generalise. Against the same number, \nOpsBarBelowValName{} is lower on
-the 32 validation cases of Table~\ref{tab:deeponet2d}
-($\nOpsBarBelowValErr\,\%$ worst), and on the matched eight cases all
-\nOpsBarBelowMatch{} of the \nOpsBarPubArms{} published U-Net,
-Transolver and FNO arms are lower. No
+That comparison belongs to this cohort and this
+reference, and it does not generalise in either respect. The operator
+percentages here are scored against a converged solve on the same grid
+in the same job, while $\nOpsTwoDDisc\,\%$ is what that grid itself
+costs against a finer reference, so the two were never subtractable.
+Cohort alone moves an arm by more than the gap: the same
+\nOpsBarBelowValName{} checkpoint scores $\nOpsBarSameMatch\,\%$ on the
+matched eight cases and $\nOpsBarSamePanel\,\%$ here, a factor of
+$\nOpsBarSameGap$. Against the same number,
+\nOpsBarBelowValName{} is lower on the 32 validation cases of
+Table~\ref{tab:deeponet2d} ($\nOpsBarBelowValErr\,\%$ worst), and on the
+matched eight cases all \nOpsBarBelowMatch{} of the \nOpsBarPubArms{}
+published U-Net, Transolver and FNO arms are lower. A like-for-like
+re-measurement on the validation cases is in progress. No
 NM-ROM or POD arm here is faster than its comparator either; the
 accurate setting meets the campaign's $\le 1\,\%$ accuracy bar and misses
 its $\ge 5\times$ speed bar ($\nOpsTwoDAccS\times$), which is what
@@ -135,6 +143,35 @@ across jobs. This lane also could not reproduce an earlier
 validation-selection pathology: here the selected arms are the better
 ones. The two cohorts are different splits with no case in common, so
 that is cohort-specific and refutes nothing.
+
+\paragraph{How much data each side was given.}
+The operators were trained on \nParOpTraj{} trajectories; the model they
+are compared against was fitted on \nParRomTraj{}. That gap is an
+artefact of what one training sample costs on each side, not a decision
+about how much data each method was allowed, and it runs against the
+operators' interest rather than for it. Both sides draw initial
+conditions from the same Gaussian-bump family through the same generator
+and are scored at the same six output times, but the operators' training
+targets were held to the stricter reference: each of their cases is a
+$4096$-interval solution at $\Delta t=1.5625{\times}10^{-4}$ restricted
+to the $256$-interval evaluation grid, costing a median of
+$\nParOpSec$\,s of A100 time per trajectory, while each trajectory
+behind the bank and the head was solved directly on the $256$-interval
+grid at $\Delta t=0.005$ for about $\nParRomSec$\,s, a factor of roughly
+$\nParCostRatio$. At that rate the operators' \nParOpTraj{} cases are
+what about $\nParOpHours$\,GPU-hours buys, and matching
+\nParRomTraj{} trajectories at the same fidelity would have cost about
+$\nParFullHours$\,A100-hours. The two sides also count data
+differently: an operator takes one input--output pair per trajectory and
+is supervised on the \nParPerCase{} evolved fields, so \nParOpTraj{}
+cases are \nParOpStates{} supervised states, while the head is fitted
+per state and sees \nParRomStates{} of the \nParStatesAvail{} states its
+\nParRomTraj{} trajectories contain. The $\nParTrajRatio\times$
+trajectory count should therefore not be read as a data advantage on
+equal terms. The trajectory and state counts on our side, and the
+$\nParRomSec$\,s, are quoted from job \nParRomJob{}'s own record and
+were not re-derived from anything else in this repository; every other
+figure here is re-derived from the pinned source.
 
 \paragraph{DeepONet in two dimensions.}
 DeepONet was the one operator named in our abstract that had never been

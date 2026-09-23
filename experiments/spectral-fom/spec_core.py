@@ -138,3 +138,74 @@ def make_poisson_interior(n, d, variant):
     def solve_mm(f, lam, S):
         return dstn_mm(dstn_mm(f, S) / lam, S)
     return lambda f: solve_mm(f, lam, S)
+
+
+# --------------------------------------------------------------- Burgers ------
+
+def make_burgers(L, dt, residual, m=0, max_iter=400, horizon=.25, spacing=.05, reg=1e-12, dst='fft'):
+    """Backward-Euler 2D Burgers on the paper's stencil (the `residual` passed in is the paper's own
+    `mr-burgers2d/engines.residual`, imported unchanged), each step solved to ||r|| <= ntol ||prev|| (the
+    paper's Newton stopping rule) by the fixed-point iteration  u <- u - H^{-1} r(u),  H = I + dt nu A
+    (the modal Helmholtz inverse, applied exactly by DST-I).  Its fixed point is the backward-Euler
+    solution.  m = 0: plain (Picard / chord) iteration; m > 0: Anderson acceleration with memory m.
+    max_iter = 1 with ntol = 0 is the one-sweep IMEX scheme (explicit upwind advection, implicit diffusion).
+    dst = 'fft' | 'mm' selects the DST-I implementation inside H^{-1} (same operator, round-off apart).
+    query(full (L+1)^2 initial field, nu, ntol) -> (6 output fields, iterations per step, final rel. res.)"""
+    k = np.arange(1, L)
+    l1 = 4.0 * L ** 2 * np.sin(np.pi * k / (2 * L)) ** 2
+    lam = jnp.asarray(l1[:, None] + l1[None, :])
+    nsub = int(round(spacing / dt))
+    nout = int(round(horizon / spacing))
+    assert abs(nsub * dt - spacing) < 1e-12
+    N = (L - 1) ** 2
+
+    S = jnp.asarray(sine_matrix(L - 1)) if dst == 'mm' else jnp.zeros((0, 0))
+
+    def hinv(v, nu, lam, S):
+        if dst == 'mm':
+            return dstn_mm(dstn_mm(v.reshape(L - 1, L - 1), S) / (1.0 + dt * nu * lam), S).reshape(-1)
+        return dstn_fft(dstn_fft(v.reshape(L - 1, L - 1)) / (1.0 + dt * nu * lam)).reshape(-1)
+
+    def step(prev, nu, ntol, lam, S):
+        thr = ntol * jnp.maximum(jnp.linalg.norm(prev), 1e-300)
+        r0 = residual(prev, prev, nu, dt, L)
+        if m == 0:
+            def body(s):
+                u, r, it = s
+                u = u - hinv(r, nu, lam, S)
+                return u, residual(u, prev, nu, dt, L), it + 1
+            u, r, it = jax.lax.while_loop(
+                lambda s: (jnp.linalg.norm(s[1]) > thr) & (s[2] < max_iter) & jnp.all(jnp.isfinite(s[1][:1])),
+                body, (prev, r0, jnp.int32(0)))
+            return u, (it, jnp.linalg.norm(r) / jnp.maximum(jnp.linalg.norm(prev), 1e-300))
+        # Anderson (type II): x_{k+1} = g_k - dG^T gamma, gamma = argmin || f_k - dF^T gamma ||
+        def body(s):
+            x, r, fprev, gprev, dF, dG, it = s
+            f = -hinv(r, nu, lam, S)
+            g = x + f
+            slot = (it - 1) % m
+            push = it > 0
+            dF = jnp.where(push, dF.at[slot].set(f - fprev), dF)
+            dG = jnp.where(push, dG.at[slot].set(g - gprev), dG)
+            valid = (jnp.arange(m) < jnp.minimum(it, m)).astype(x.dtype)
+            A = (dF @ dF.T) * valid[:, None] * valid[None, :]
+            scale = jnp.maximum(jnp.trace(A), 1e-300)
+            A = A + (reg * scale + (1.0 - valid)) * jnp.eye(m)
+            gam = jnp.linalg.solve(A, (dF @ f) * valid)
+            xn = g - gam @ dG
+            return xn, residual(xn, prev, nu, dt, L), f, g, dF, dG, it + 1
+        z = jnp.zeros((m, N), prev.dtype)
+        s = jax.lax.while_loop(
+            lambda s: (jnp.linalg.norm(s[1]) > thr) & (s[6] < max_iter) & jnp.all(jnp.isfinite(s[1][:1])),
+            body, (prev, r0, jnp.zeros_like(prev), jnp.zeros_like(prev), z, z, jnp.int32(0)))
+        u, r, it = s[0], s[1], s[6]
+        return u, (it, jnp.linalg.norm(r) / jnp.maximum(jnp.linalg.norm(prev), 1e-300))
+
+    @jax.jit
+    def query(u0, nu, ntol, lam, S):
+        def block(u, _):
+            u, (it, rr) = jax.lax.scan(lambda u, _: step(u, nu, ntol, lam, S), u, None, length=nsub)
+            return u, (jnp.pad(u.reshape(L - 1, L - 1), 1), it, rr)
+        _, (fields, it, rr) = jax.lax.scan(block, u0[1:-1, 1:-1].reshape(-1), None, length=nout)
+        return jnp.concatenate((jnp.pad(u0[1:-1, 1:-1], 1)[None], fields)), it.reshape(-1), rr.reshape(-1)
+    return lambda u0, nu, ntol: query(u0, nu, ntol, lam, S)

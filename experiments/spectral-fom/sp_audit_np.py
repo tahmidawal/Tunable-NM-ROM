@@ -60,9 +60,66 @@ def truths_poisson3d(R):
 TRUTHS = {'poisson2d': truths_poisson2d, 'poisson3d': truths_poisson3d}
 
 
+def audit_burgers(run, R, delete):
+    """Burgers: the truth is the paper's own FOM (fft_tight), saved by the driver.  Recompute from the saved fields,
+    in NumPy: every subject's full-grid evolved error on case 0 (full fields kept for the ROM arms and two spectral
+    subjects) and every subject's restricted-grid per-time absolute differences on every case; hashes are checked on
+    the full case-0 fields; determinism from the recorded hashes; the two controls on the real data."""
+    inv = R['invocations']
+    first = {}
+    for x in inv:
+        first.setdefault((x['name'], x['case']), x)
+    t0 = np.load(run / 'fields' / 'truth_case0.npy')
+    n00 = float(np.linalg.norm(t0[0]))
+    rows, ok_all, hash_ok = [], True, True
+    for (name, case), x in sorted(first.items()):
+        tr = np.load(run / 'fields' / f'truth_restricted_case{case}.npy')
+        fr = np.load(run / 'fields' / f'{name}_restricted_case{case}.npy')
+        rr = [float(np.linalg.norm(a - b)) for a, b in zip(fr, tr)]
+        d = max(abs(a - b) / (1e-8 * abs(b) + 1e-13) for a, b in zip(rr, x['restricted_abs_per_time']))
+        ok = d <= 1.0
+        row = dict(name=name, case=case, restricted_deviation_over_tolerance=d)
+        fp = run / 'fields' / f'{name}_case0.npy'
+        if case == 0 and fp.exists():
+            f = np.load(fp)
+            hash_ok &= hashlib.sha256(np.ascontiguousarray(f).tobytes()).hexdigest() == x['field_sha256']
+            ev = max(float(np.linalg.norm(a - b)) / n00 for a, b in zip(f[1:], t0[1:]))
+            row.update(full_recorded=x['same_grid_evolved'], full_recomputed=ev)
+            ok &= abs(ev - x['same_grid_evolved']) <= 1e-8 * x['same_grid_evolved'] + 1e-13
+        row['agrees'] = bool(ok)
+        ok_all &= ok
+        rows.append(row)
+    deterministic = all(x['field_sha256'] == first[(x['name'], x['case'])]['field_sha256'] for x in inv)
+    name0 = R['selected']['rom_accurate']
+    f0 = np.load(run / 'fields' / f'{name0}_case0.npy')
+    rec0 = first[(name0, 0)]['same_grid_evolved']
+    t1 = np.load(run / 'fields' / 'truth_restricted_case1.npy')
+    sw = max(float(np.linalg.norm(a - b)) for a, b in zip(f0[1:, ::max(1, (f0.shape[1] - 1) // 256), ::max(1, (f0.shape[1] - 1) // 256)], t1[1:]))
+    ctrl_swap = abs(sw - max(first[(name0, 0)]['restricted_abs_per_time'][1:])) > 1e-6 * sw
+    pert = rec0 * (1 + 1e-4)
+    ev0 = max(float(np.linalg.norm(a - b)) / n00 for a, b in zip(f0[1:], t0[1:]))
+    ctrl_pert = abs(ev0 - pert) > 1e-8 * pert + 1e-13
+    ok = bool(ok_all and hash_ok and deterministic and ctrl_swap and ctrl_pert)
+    audit = dict(verdict='PASS' if ok else 'FAIL', recomputed=len(rows), field_hashes_match=bool(hash_ok),
+                 deterministic=bool(deterministic), control_swapped_truth_detected=bool(ctrl_swap),
+                 control_perturbed_error_detected=bool(ctrl_pert), control_subject=name0,
+                 truth_method='the paper FOM fields saved by the driver (fft_tight); errors recomputed in NumPy', rows=rows)
+    (run / 'audit.json').write_text(json.dumps(audit, indent=1) + '\n')
+    print('AUDIT', audit['verdict'], len(rows), flush=True)
+    (run / 'sub').mkdir(exist_ok=True)
+    for q in (run / 'fields').glob('*restricted*.npy'):
+        shutil.copy(q, run / 'sub' / q.name)
+    if delete:
+        shutil.rmtree(run / 'fields')
+    if not ok:
+        sys.exit(1)
+
+
 def main(run, delete=False):
     run = Path(run)
     R = json.loads((run / 'result.json').read_text())
+    if R['problem'] == 'burgers2d':
+        return audit_burgers(run, R, delete)
     truths = TRUTHS[R['problem']](R)
     inv = R['invocations']
     first = {}

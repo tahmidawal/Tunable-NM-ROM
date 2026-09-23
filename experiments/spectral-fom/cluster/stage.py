@@ -39,7 +39,26 @@ P3D = [(f, P3K_COMMIT) for f in (
     f'{PP3}/runs/final08/checkpoints/bank.pkl', f'{PP3}/runs/final08/checkpoints/head_K16.pkl',
     f'{PP3}/runs/final08/checkpoints/cohorts.json', f'{P3K}/runs/prep_cube.npz', f'{P3K}/pbk3_core.py',
     f'{P3K}/pbk3_cube.py', f'{P3K}/frozen-N32.json', f'{P3K}/frozen-N64.json')]
+BKN = 'experiments/burgers-bank-knob'
+BKN_COMMIT = 'b393fa55'      # exp/2026-09-23-burgers-bank-knob (ROM code identical to the bk256b..bk2048b commits)
+BURG = [(f, BKN_COMMIT) for f in (
+    f'{BKN}/bankknob.py', f'{BKN}/bkfast.py', f'{BKN}/inputs/rotation_R512.npz', 'experiments/burgers-repanel/xfast.py',
+    'experiments/hires-burgers/hops.py', 'experiments/hires-burgers/hfast.py', 'experiments/b-panel/speed/fast.py',
+    'experiments/b-panel/speed/ladders.py', 'experiments/b-panel/inputs/directions_qtd02.npz',
+    'experiments/b-ladder-top/topfix.py', 'experiments/cheap-corrections/varpro.py', 'experiments/head-ablation/arms.py',
+    'experiments/head-ablation/ladder.py', 'experiments/head-ablation/ablation.py', 'experiments/mr-burgers2d/engines.py',
+    'experiments/mr-burgers2d/iterative_paths.py', 'experiments/mr-burgers2d/accuracy_paths.py',
+    'experiments/separable-decoder/sep_common.py',
+    'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
+    'experiments/b-panel/inputs/rules-eqtop/rule_q0_m1024_qrg304_reachable.npz',
+    'experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz',
+    f'{BKN}/config-256.json', f'{BKN}/config-512.json', f'{BKN}/config-1024.json', f'{BKN}/config-2048.json')]
+TREE_SETS = {'burgers': ['experiments/mr-burgers2d', 'experiments/separable-decoder', 'experiments/head-ablation',
+                         'experiments/cheap-corrections', 'experiments/b-ladder-top', 'experiments/b-panel/speed',
+                         'experiments/hires-burgers', 'experiments/burgers-repanel', BKN]}
 FILESETS = {'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
+            'burgers': BURG + [(f'{LANE}/sp_burgers.py', 'HEAD')] + [(f'{LANE}/lane-ref/burgers-{L}-{k}.json', 'HEAD')
+                                                                   for L in (256, 512, 1024, 2048) for k in ('errors', 'selection')],
             'p3d': P3D + [(f'{LANE}/sp3d_solve.py', 'HEAD')]}
 
 SCRIPT = '''#!/bin/bash
@@ -113,7 +132,9 @@ def main():
         content = git_bytes(c, name)
         if commit == 'HEAD':
             assert content == (ROOT / name).read_bytes(), f'uncommitted: {name}'
-        dest = out / 'code' / Path(name).name
+        tree = any(k in TREE_SETS for k in a.set) and not name.startswith(LANE + '/')
+        dest = out / 'code' / (name if tree else Path(name).name)
+        dest.parent.mkdir(parents=True, exist_ok=True)
         assert not dest.exists(), f'flat name collision: {name}'
         dest.write_bytes(content)
         proof.append(dict(source=name, flat=Path(name).name, bytes=len(content),
@@ -125,6 +146,9 @@ def main():
         drv, cfg = r.split(':')
         o = f'../output{i}'
         runs.append(f'"$PY" {drv} --config {cfg} --out {o}\n"$PY" sp_audit_np.py {o} --delete-fields || echo "AUDIT-FAILED {o}"')
+    tree_path = ':'.join(f'$TASK_ROOT/code/{d}' for k in a.set for d in TREE_SETS.get(k, []))
+    if tree_path:
+        runs.insert(0, f'export PYTHONPATH="{tree_path}"')
     script = SCRIPT.replace('__RUNS__', '\n'.join(runs))
     for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote),
                          ('__GPU__', '' if a.constraint else a.gpu + ':'),

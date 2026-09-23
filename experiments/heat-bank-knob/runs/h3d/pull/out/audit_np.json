@@ -1,0 +1,14 @@
+{
+ "passed": true,
+ "checked_error_vectors": 31500,
+ "max_subgrid_abs_discrepancy": 9.130495546819749e-16,
+ "max_full_abs_discrepancy": 6.657873336856705e-16,
+ "max_reduced_random_sample_relative_gap": 0.02122401270978958,
+ "controls": {
+  "swapped_case_detected": true,
+  "perturbed_error_detected": true
+ },
+ "failure_count": 0,
+ "failures": [],
+ "definition": "exact recomputation (<=1e-10) of every saved sub-grid and full-grid error with an independent SciPy DST reference; random-node full-grid estimate within 5% for reduced arms; swapped-case and perturbed-error controls must be detected"
+}

@@ -1,0 +1,27 @@
+{
+ "passed": true,
+ "version": 2,
+ "checked_error_vectors": 31500,
+ "max_subgrid_abs_discrepancy": 8.883840010772402e-16,
+ "max_full_abs_discrepancy": 6.252869141812888e-16,
+ "max_reduced_random_sample_relative_gap": 0.02122401270982267,
+ "diagnostic_max_reduced_subgrid_vs_fullgrid_relative_gap": 0.2201240447082073,
+ "coverage_missing": [],
+ "controls": {
+  "32": {
+   "swapped_case_detected": true,
+   "perturbed_error_detected": true
+  },
+  "64": {
+   "swapped_case_detected": true,
+   "perturbed_error_detected": true
+  },
+  "128": {
+   "swapped_case_detected": true,
+   "perturbed_error_detected": true
+  }
+ },
+ "failure_count": 0,
+ "failures": [],
+ "definition": "exact recomputation (<=1e-10) of every saved sub-grid and full-grid error with an independent SciPy DST reference; random-node full-grid estimate within 5% for reduced arms; swapped-case and perturbed-error controls must be detected"
+}

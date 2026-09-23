@@ -341,6 +341,351 @@ Cost profile at 4096 (held-out case 0, median ms of 5; stages timed separately, 
 | `nmrom_R16_q8_bf` | 2.000 | 0.870 | 0.712 | 1.389 | 4.163 |
 | `lin_R16_bf` | 1.985 | 0.000 | 0.084 | 1.382 | 2.896 |
 
+# 3D new bank (R=320, K=32) — job 4197416, NVIDIA H200, source bae9e1e6, audit passed: True
+
+`runs/h3d/summary.json` sha256 `63c29ad17ead0c1ce773119f0ce5a24e60f0e6da9e9f13713f71d00af85625ad`.
+
+
+## 32^3 — held-out `heldout_sealed_921099` (64 cases), selection on `validation_921777` (16 cases)
+
+Gates: parity max rel. diff 2.2712116375025637e-13 (pass True); determinism True; order-effect (neighbour) False (max ratio 1.029); NumPy audit True. **Usable: False**.
+
+| family | role | arm | R' | q | val worst % | held-out worst % | held-out median % | GPU ms | Table-1 FOM | FOM worst % | FOM ms | speedup | fast rule met on held-out |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---|
+| CN stepping | accurate | `lin_R320_cn` | 320 | 320 | 0.076 | 0.080 | 0.037 | 0.311 | `fom_cncg_dt0.025_rtol1e-4` | 0.078 | 3.38 | 10.85 |  |
+| CN stepping | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.222 | `fom_cncg_dt0.025_rtol1e-4` | 0.078 | 3.38 | 15.20 | True |
+| batched fit | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-6_NAMED`, 0.078 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.078 | 4.19 | acc x12.54 / fast x16.79 | |
+| batched fit | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 0.334 | `None` | - | nan | nan |  |
+| batched fit | fast | `lin_R128_bf` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.249 | `None` | - | nan | nan | True |
+| both families pooled | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-6_NAMED`, 0.078 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.078 | 4.19 | acc x12.54 / fast x18.84 | |
+| both families pooled | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 0.334 | `None` | - | nan | nan |  |
+| both families pooled | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.222 | `None` | - | nan | nan | True |
+
+Full held-out table (heldout_sealed_921099): every (R', q, stepping) arm. `x T1` = the family's Table-1 FOM time / arm time; `x own` = fastest FOM at least as accurate as the arm; `x named` = CN-CG dt 0.025 rtol 1e-6.
+
+| arm | R' | q | stepping | worst % | median % | GPU ms (p10-p90) | fails | x T1 | own FOM | x own | x named |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|
+| `nmrom_R320_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 6.666 (5.25-8.34) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.31 | 0.63 |
+| `nmrom_R320_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 7.312 (6.11-9.16) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.34 | 0.57 |
+| `nmrom_R320_q288_bf` | 320 | 288 | bf | 0.114 | 0.009 | 6.059 (5.37-7.24) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.56 | 0.69 |
+| `lin_R320_bf` | 320 | 320 | bf | 0.070 | 0.009 | 0.334 (0.31-1.38) | 0 | - | - | - | 12.54 |
+| `nmrom_R256_q0_bf` | 256 | 0 | bf | 2.003 | 0.334 | 6.357 (4.87-7.87) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.33 | 0.66 |
+| `nmrom_R256_q112_bf` | 256 | 112 | bf | 0.861 | 0.100 | 5.974 (4.95-7.77) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.41 | 0.70 |
+| `nmrom_R256_q224_bf` | 256 | 224 | bf | 0.206 | 0.023 | 5.713 (5.00-6.71) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.59 | 0.73 |
+| `lin_R256_bf` | 256 | 256 | bf | 0.190 | 0.022 | 0.303 (0.29-0.33) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 11.16 | 13.83 |
+| `nmrom_R192_q0_bf` | 192 | 0 | bf | 1.996 | 0.332 | 6.276 (4.92-7.72) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.33 | 0.67 |
+| `nmrom_R192_q80_bf` | 192 | 80 | bf | 1.069 | 0.146 | 5.854 (4.74-7.38) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.42 | 0.72 |
+| `nmrom_R192_q160_bf` | 192 | 160 | bf | 0.509 | 0.055 | 5.167 (4.63-5.91) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.48 | 0.81 |
+| `lin_R192_bf` | 192 | 192 | bf | 0.409 | 0.052 | 0.272 (0.25-0.30) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 9.10 | 15.38 |
+| `nmrom_R128_q0_bf` | 128 | 0 | bf | 2.095 | 0.349 | 6.125 (4.76-8.32) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.34 | 0.68 |
+| `nmrom_R128_q48_bf` | 128 | 48 | bf | 1.586 | 0.248 | 5.747 (4.71-7.21) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.36 | 0.73 |
+| `nmrom_R128_q96_bf` | 128 | 96 | bf | 1.230 | 0.176 | 4.530 (4.17-5.09) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.55 | 0.92 |
+| `lin_R128_bf` | 128 | 128 | bf | 1.111 | 0.161 | 0.249 (0.23-0.29) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 9.93 | 16.79 |
+| `nmrom_R64_q0_bf` | 64 | 0 | bf | 4.868 | 1.030 | 5.565 (4.67-6.80) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.33 | 0.75 |
+| `nmrom_R64_q16_bf` | 64 | 16 | bf | 4.844 | 1.020 | 5.030 (4.36-6.20) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.36 | 0.83 |
+| `nmrom_R64_q32_bf` | 64 | 32 | bf | 4.803 | 1.013 | 4.486 (4.06-5.16) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.40 | 0.93 |
+| `lin_R64_bf` | 64 | 64 | bf | 4.784 | 1.006 | 0.251 (0.23-0.31) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 7.24 | 16.70 |
+| `nmrom_R32_q0_bf` | 32 | 0 | bf | 14.211 | 3.376 | 4.485 (4.02-5.50) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.40 | 0.93 |
+| `lin_R32_bf` | 32 | 32 | bf | 14.203 | 3.371 | 0.975 (0.68-1.06) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.86 | 4.30 |
+| `parent_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 6.138 (4.81-7.74) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.34 | 0.68 |
+| `parent_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 6.797 (5.66-8.60) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.36 | 0.62 |
+| `parent_q288_bf` | 320 | 288 | bf | 0.114 | 0.009 | 5.610 (5.02-6.72) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.60 | 0.75 |
+| `parent_lin_bf` | 320 | 320 | bf | 0.070 | 0.009 | 0.970 (0.66-1.05) | 0 | - | - | - | 4.32 |
+| `nmrom_R320_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 26.624 (21.98-35.13) | 0 | 0.13 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.16 |
+| `nmrom_R320_q144_cn` | 320 | 144 | cn | 0.659 | 0.067 | 29.492 (24.80-37.02) | 0 | 0.11 | fom_cncg_dt0.05_rtol1e-3 | 0.08 | 0.14 |
+| `nmrom_R320_q288_cn` | 320 | 288 | cn | 0.114 | 0.037 | 60.073 (45.51-86.29) | 0 | 0.06 | fom_cncg_dt0.025_rtol1e-4 | 0.06 | 0.07 |
+| `lin_R320_cn` | 320 | 320 | cn | 0.080 | 0.037 | 0.311 (0.29-1.27) | 0 | 10.85 | fom_cncg_dt0.025_rtol1e-4 | 10.85 | 13.45 |
+| `nmrom_R256_q0_cn` | 256 | 0 | cn | 2.003 | 0.329 | 26.315 (21.47-34.19) | 0 | 0.13 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.16 |
+| `nmrom_R256_q112_cn` | 256 | 112 | cn | 0.861 | 0.091 | 45.164 (36.48-55.32) | 0 | 0.07 | fom_cncg_dt0.05_rtol1e-3 | 0.05 | 0.09 |
+| `nmrom_R256_q224_cn` | 256 | 224 | cn | 0.205 | 0.042 | 56.603 (45.88-72.61) | 0 | 0.06 | fom_cncg_dt0.025_rtol1e-4 | 0.06 | 0.07 |
+| `lin_R256_cn` | 256 | 256 | cn | 0.190 | 0.042 | 0.278 (0.26-0.30) | 0 | 12.15 | fom_cncg_dt0.025_rtol1e-4 | 12.15 | 15.05 |
+| `nmrom_R192_q0_cn` | 192 | 0 | cn | 1.996 | 0.325 | 26.476 (21.42-32.94) | 0 | 0.13 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.16 |
+| `nmrom_R192_q80_cn` | 192 | 80 | cn | 1.069 | 0.132 | 39.960 (30.02-52.22) | 0 | 0.08 | fom_cncg_dt0.05_rtol1e-3 | 0.06 | 0.10 |
+| `nmrom_R192_q160_cn` | 192 | 160 | cn | 0.509 | 0.059 | 59.511 (45.39-73.27) | 1 | 0.06 | fom_cncg_dt0.05_rtol1e-3 | 0.04 | 0.07 |
+| `lin_R192_cn` | 192 | 192 | cn | 0.409 | 0.058 | 0.239 (0.22-0.26) | 0 | 14.13 | fom_cncg_dt0.05_rtol1e-3 | 10.36 | 17.51 |
+| `nmrom_R128_q0_cn` | 128 | 0 | cn | 2.095 | 0.341 | 27.597 (21.69-37.79) | 0 | 0.12 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.15 |
+| `nmrom_R128_q48_cn` | 128 | 48 | cn | 1.586 | 0.218 | 38.257 (29.36-47.01) | 1 | 0.09 | fom_cncg_dt0.1_rtol1e-3 | 0.05 | 0.11 |
+| `nmrom_R128_q96_cn` | 128 | 96 | cn | 1.202 | 0.163 | 44.686 (37.37-62.12) | 0 | 0.08 | fom_cncg_dt0.05_rtol1e-3 | 0.06 | 0.09 |
+| `lin_R128_cn` | 128 | 128 | cn | 1.111 | 0.161 | 0.222 (0.20-0.25) | 0 | 15.20 | fom_cncg_dt0.05_rtol1e-3 | 11.15 | 18.84 |
+| `nmrom_R64_q0_cn` | 64 | 0 | cn | 4.868 | 1.027 | 36.445 (28.95-42.99) | 0 | 0.09 | fom_cncg_dt0.1_rtol1e-2 | 0.05 | 0.11 |
+| `nmrom_R64_q16_cn` | 64 | 16 | cn | 4.844 | 1.018 | 42.852 (37.29-54.86) | 1 | 0.08 | fom_cncg_dt0.1_rtol1e-2 | 0.04 | 0.10 |
+| `nmrom_R64_q32_cn` | 64 | 32 | cn | 4.803 | 1.009 | 42.029 (35.48-49.11) | 0 | 0.08 | fom_cncg_dt0.1_rtol1e-2 | 0.04 | 0.10 |
+| `lin_R64_cn` | 64 | 64 | cn | 4.784 | 1.006 | 0.222 (0.20-0.28) | 0 | 15.20 | fom_cncg_dt0.1_rtol1e-2 | 8.17 | 18.84 |
+| `nmrom_R32_q0_cn` | 32 | 0 | cn | 14.211 | 3.373 | 49.191 (39.70-60.29) | 0 | 0.07 | fom_cncg_dt0.1_rtol1e-2 | 0.04 | 0.09 |
+| `lin_R32_cn` | 32 | 32 | cn | 14.203 | 3.371 | 0.208 (0.19-0.26) | 0 | 16.27 | fom_cncg_dt0.1_rtol1e-2 | 8.74 | 20.16 |
+| `parent_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 25.715 (20.88-33.65) | 0 | 0.13 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.16 |
+| `parent_q144_cn` | 320 | 144 | cn | 0.659 | 0.067 | 28.074 (23.69-35.20) | 0 | 0.12 | fom_cncg_dt0.05_rtol1e-3 | 0.09 | 0.15 |
+| `parent_q288_cn` | 320 | 288 | cn | 0.114 | 0.037 | 58.650 (44.41-84.32) | 0 | 0.06 | fom_cncg_dt0.025_rtol1e-4 | 0.06 | 0.07 |
+| `parent_lin_cn` | 320 | 320 | cn | 0.080 | 0.037 | 0.253 (0.24-0.27) | 0 | 13.35 | fom_cncg_dt0.025_rtol1e-4 | 13.35 | 16.55 |
+
+| FOM / control | worst % | median % | GPU ms | fails |
+|---|---:|---:|---:|---:|
+| `dst_exact_CONTROL` | 0.000 | 0.000 | 1.470 | 0 |
+| `fom_cncg_dt0.1_rtol1e-2` | 2.128 | 1.725 | 1.816 | 0 |
+| `fom_cncg_dt0.1_rtol1e-3` | 1.458 | 0.607 | 2.080 | 0 |
+| `fom_cncg_dt0.05_rtol1e-2` | 2.382 | 2.032 | 2.126 | 0 |
+| `fom_cncg_dt0.1_rtol1e-4` | 1.458 | 0.603 | 2.416 | 0 |
+| `fom_cncg_dt0.05_rtol1e-3` | 0.322 | 0.198 | 2.478 | 0 |
+| `fom_cncg_dt0.05_rtol1e-4` | 0.321 | 0.146 | 2.736 | 0 |
+| `fom_cncg_dt0.025_rtol1e-2` | 1.696 | 1.217 | 2.759 | 0 |
+| `fom_cncg_dt0.025_rtol1e-3` | 0.649 | 0.545 | 2.973 | 0 |
+| `fom_cncg_dt0.025_rtol1e-4` | 0.078 | 0.047 | 3.379 | 0 |
+| `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.078 | 0.036 | 4.187 | 0 |
+
+Knob monotonicity (held-out worst error as R' falls):
+
+- cn_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [26.62, 26.32, 26.48, 27.6, 36.45, 49.19]; monotone False (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- cn_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.205, 0.509, 1.202, 4.803, 14.211], ms [60.07, 56.6, 59.51, 44.69, 42.03, 49.19]; monotone True (complete ladder True, failures [0, 0, 1, 0, 0, 0])
+- cn_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.08, 0.19, 0.409, 1.111, 4.784, 14.203], ms [0.31, 0.28, 0.24, 0.22, 0.22, 0.21]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [6.67, 6.36, 6.28, 6.12, 5.57, 4.49]; monotone False (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.206, 0.509, 1.23, 4.803, 14.211], ms [6.06, 5.71, 5.17, 4.53, 4.49, 4.49]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.07, 0.19, 0.409, 1.111, 4.784, 14.203], ms [0.33, 0.3, 0.27, 0.25, 0.25, 0.97]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- cn_linear_time_drop: linear rung at R'=R 0.311 ms vs cheapest R' meeting the fast rule (R'=128, 0.2223113551735878 ms): ratio 1.400688087807126; >= 2x: False
+- bf_linear_time_drop: linear rung at R'=R 0.334 ms vs cheapest R' meeting the fast rule (R'=128, 0.24943798780441284 ms): ratio 1.338616184772544; >= 2x: False
+
+## 64^3 — held-out `heldout_sealed_921099` (64 cases), selection on `validation_921777` (16 cases)
+
+Gates: parity max rel. diff 1.8389465202449804e-13 (pass True); determinism True; order-effect (neighbour) False (max ratio 1.041); NumPy audit True. **Usable: False**.
+
+| family | role | arm | R' | q | val worst % | held-out worst % | held-out median % | GPU ms | Table-1 FOM | FOM worst % | FOM ms | speedup | fast rule met on held-out |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---|
+| CN stepping | accurate | `lin_R320_cn` | 320 | 320 | 0.079 | 0.082 | 0.037 | 0.638 | `fom_cncg_dt0.025_rtol1e-4` | 0.081 | 5.42 | 8.50 |  |
+| CN stepping | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.380 | `fom_cncg_dt0.025_rtol1e-4` | 0.081 | 5.42 | 14.27 | True |
+| batched fit | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-4`, 0.081 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-4` | 0.081 | 5.42 | acc x7.96 / fast x12.88 | |
+| batched fit | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 0.682 | `None` | - | nan | nan |  |
+| batched fit | fast | `lin_R128_bf` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.421 | `None` | - | nan | nan | True |
+| both families pooled | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-4`, 0.081 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-4` | 0.081 | 5.42 | acc x7.96 / fast x14.27 | |
+| both families pooled | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 0.682 | `None` | - | nan | nan |  |
+| both families pooled | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 0.380 | `None` | - | nan | nan | True |
+
+Full held-out table (heldout_sealed_921099): every (R', q, stepping) arm. `x T1` = the family's Table-1 FOM time / arm time; `x own` = fastest FOM at least as accurate as the arm; `x named` = CN-CG dt 0.025 rtol 1e-6.
+
+| arm | R' | q | stepping | worst % | median % | GPU ms (p10-p90) | fails | x T1 | own FOM | x own | x named |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|
+| `nmrom_R320_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 6.953 (5.62-8.30) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.36 | 1.07 |
+| `nmrom_R320_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 7.226 (6.10-9.43) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.52 | 1.03 |
+| `nmrom_R320_q288_bf` | 320 | 288 | bf | 0.114 | 0.010 | 6.248 (5.53-7.61) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.87 | 1.19 |
+| `lin_R320_bf` | 320 | 320 | bf | 0.070 | 0.009 | 0.682 (0.65-1.52) | 0 | - | - | - | 10.91 |
+| `nmrom_R256_q0_bf` | 256 | 0 | bf | 2.003 | 0.334 | 6.705 (5.29-8.45) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.37 | 1.11 |
+| `nmrom_R256_q112_bf` | 256 | 112 | bf | 0.861 | 0.100 | 6.419 (5.06-8.01) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.58 | 1.16 |
+| `nmrom_R256_q224_bf` | 256 | 224 | bf | 0.206 | 0.023 | 5.850 (5.11-6.67) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.93 | 1.27 |
+| `lin_R256_bf` | 256 | 256 | bf | 0.190 | 0.023 | 0.596 (0.57-0.62) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 9.11 | 12.49 |
+| `nmrom_R192_q0_bf` | 192 | 0 | bf | 1.996 | 0.332 | 6.479 (5.27-7.91) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.38 | 1.15 |
+| `nmrom_R192_q80_bf` | 192 | 80 | bf | 1.069 | 0.149 | 5.793 (4.92-7.15) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.65 | 1.28 |
+| `nmrom_R192_q160_bf` | 192 | 160 | bf | 0.509 | 0.055 | 5.299 (4.77-5.96) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.71 | 1.40 |
+| `lin_R192_bf` | 192 | 192 | bf | 0.409 | 0.052 | 0.509 (0.49-0.53) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 7.35 | 14.61 |
+| `nmrom_R128_q0_bf` | 128 | 0 | bf | 2.095 | 0.349 | 6.332 (5.08-8.38) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.39 | 1.17 |
+| `nmrom_R128_q48_bf` | 128 | 48 | bf | 1.586 | 0.248 | 5.854 (4.78-7.32) | 0 | - | fom_cncg_dt0.1_rtol1e-3 | 0.54 | 1.27 |
+| `nmrom_R128_q96_bf` | 128 | 96 | bf | 1.230 | 0.176 | 4.569 (4.14-5.04) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.82 | 1.63 |
+| `lin_R128_bf` | 128 | 128 | bf | 1.111 | 0.161 | 0.421 (0.40-0.44) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 8.88 | 17.66 |
+| `nmrom_R64_q0_bf` | 64 | 0 | bf | 4.868 | 1.030 | 5.628 (4.49-7.15) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.44 | 1.32 |
+| `nmrom_R64_q16_bf` | 64 | 16 | bf | 4.844 | 1.020 | 4.983 (4.32-6.07) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.50 | 1.49 |
+| `nmrom_R64_q32_bf` | 64 | 32 | bf | 4.803 | 1.013 | 4.416 (4.04-5.19) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.56 | 1.68 |
+| `lin_R64_bf` | 64 | 64 | bf | 4.784 | 1.006 | 0.336 (0.32-0.35) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 7.37 | 22.10 |
+| `nmrom_R32_q0_bf` | 32 | 0 | bf | 14.211 | 3.376 | 4.350 (3.91-4.86) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.57 | 1.71 |
+| `lin_R32_bf` | 32 | 32 | bf | 14.203 | 3.371 | 0.950 (0.65-1.03) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 2.61 | 7.83 |
+| `parent_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 6.396 (5.10-7.63) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.39 | 1.16 |
+| `parent_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 6.652 (5.60-8.77) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 0.56 | 1.12 |
+| `parent_q288_bf` | 320 | 288 | bf | 0.114 | 0.010 | 5.743 (5.11-6.89) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 0.94 | 1.29 |
+| `parent_lin_bf` | 320 | 320 | bf | 0.070 | 0.009 | 1.080 (0.80-1.16) | 0 | - | - | - | 6.89 |
+| `nmrom_R320_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 27.688 (22.59-34.14) | 0 | 0.20 | fom_cncg_dt0.1_rtol1e-2 | 0.09 | 0.27 |
+| `nmrom_R320_q144_cn` | 320 | 144 | cn | 0.659 | 0.067 | 29.439 (24.51-36.64) | 0 | 0.18 | fom_cncg_dt0.05_rtol1e-3 | 0.13 | 0.25 |
+| `nmrom_R320_q288_cn` | 320 | 288 | cn | 0.114 | 0.037 | 61.675 (45.21-88.03) | 1 | 0.09 | fom_cncg_dt0.025_rtol1e-4 | 0.09 | 0.12 |
+| `lin_R320_cn` | 320 | 320 | cn | 0.082 | 0.037 | 0.638 (0.62-1.52) | 0 | 8.50 | fom_cncg_dt0.025_rtol1e-4 | 8.50 | 11.65 |
+| `nmrom_R256_q0_cn` | 256 | 0 | cn | 2.003 | 0.329 | 26.715 (22.25-36.34) | 0 | 0.20 | fom_cncg_dt0.1_rtol1e-2 | 0.09 | 0.28 |
+| `nmrom_R256_q112_cn` | 256 | 112 | cn | 0.861 | 0.092 | 45.146 (36.18-56.16) | 0 | 0.12 | fom_cncg_dt0.05_rtol1e-3 | 0.08 | 0.16 |
+| `nmrom_R256_q224_cn` | 256 | 224 | cn | 0.205 | 0.043 | 56.030 (46.67-75.33) | 0 | 0.10 | fom_cncg_dt0.025_rtol1e-4 | 0.10 | 0.13 |
+| `lin_R256_cn` | 256 | 256 | cn | 0.190 | 0.042 | 0.556 (0.54-0.58) | 0 | 9.75 | fom_cncg_dt0.025_rtol1e-4 | 9.75 | 13.37 |
+| `nmrom_R192_q0_cn` | 192 | 0 | cn | 1.996 | 0.325 | 27.286 (21.92-33.25) | 0 | 0.20 | fom_cncg_dt0.1_rtol1e-2 | 0.09 | 0.27 |
+| `nmrom_R192_q80_cn` | 192 | 80 | cn | 1.069 | 0.132 | 39.415 (31.13-51.74) | 0 | 0.14 | fom_cncg_dt0.05_rtol1e-3 | 0.09 | 0.19 |
+| `nmrom_R192_q160_cn` | 192 | 160 | cn | 0.509 | 0.060 | 59.096 (47.29-74.26) | 1 | 0.09 | fom_cncg_dt0.05_rtol1e-3 | 0.06 | 0.13 |
+| `lin_R192_cn` | 192 | 192 | cn | 0.409 | 0.059 | 0.473 (0.45-0.50) | 0 | 11.45 | fom_cncg_dt0.05_rtol1e-3 | 7.90 | 15.71 |
+| `nmrom_R128_q0_cn` | 128 | 0 | cn | 2.095 | 0.341 | 27.717 (22.20-37.83) | 0 | 0.20 | fom_cncg_dt0.1_rtol1e-2 | 0.09 | 0.27 |
+| `nmrom_R128_q48_cn` | 128 | 48 | cn | 1.586 | 0.219 | 37.818 (29.57-46.97) | 0 | 0.14 | fom_cncg_dt0.1_rtol1e-3 | 0.08 | 0.20 |
+| `nmrom_R128_q96_cn` | 128 | 96 | cn | 1.202 | 0.163 | 44.214 (37.20-62.91) | 0 | 0.12 | fom_cncg_dt0.05_rtol1e-3 | 0.08 | 0.17 |
+| `lin_R128_cn` | 128 | 128 | cn | 1.111 | 0.161 | 0.380 (0.37-0.40) | 0 | 14.27 | fom_cncg_dt0.05_rtol1e-3 | 9.84 | 19.56 |
+| `nmrom_R64_q0_cn` | 64 | 0 | cn | 4.868 | 1.027 | 37.282 (30.73-44.88) | 1 | 0.15 | fom_cncg_dt0.1_rtol1e-2 | 0.07 | 0.20 |
+| `nmrom_R64_q16_cn` | 64 | 16 | cn | 4.844 | 1.018 | 43.812 (37.46-55.52) | 0 | 0.12 | fom_cncg_dt0.1_rtol1e-2 | 0.06 | 0.17 |
+| `nmrom_R64_q32_cn` | 64 | 32 | cn | 4.803 | 1.009 | 44.209 (35.22-51.13) | 0 | 0.12 | fom_cncg_dt0.1_rtol1e-2 | 0.06 | 0.17 |
+| `lin_R64_cn` | 64 | 64 | cn | 4.784 | 1.006 | 0.301 (0.29-0.31) | 0 | 18.04 | fom_cncg_dt0.1_rtol1e-2 | 8.25 | 24.74 |
+| `nmrom_R32_q0_cn` | 32 | 0 | cn | 14.211 | 3.374 | 49.550 (40.12-60.15) | 0 | 0.11 | fom_cncg_dt0.1_rtol1e-2 | 0.05 | 0.15 |
+| `lin_R32_cn` | 32 | 32 | cn | 14.203 | 3.371 | 0.227 (0.20-0.25) | 0 | 23.93 | fom_cncg_dt0.1_rtol1e-2 | 10.95 | 32.81 |
+| `parent_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 26.616 (21.81-32.74) | 0 | 0.20 | fom_cncg_dt0.1_rtol1e-2 | 0.09 | 0.28 |
+| `parent_q144_cn` | 320 | 144 | cn | 0.659 | 0.067 | 28.335 (23.60-35.21) | 0 | 0.19 | fom_cncg_dt0.05_rtol1e-3 | 0.13 | 0.26 |
+| `parent_q288_cn` | 320 | 288 | cn | 0.114 | 0.037 | 60.167 (43.89-85.72) | 1 | 0.09 | fom_cncg_dt0.025_rtol1e-4 | 0.09 | 0.12 |
+| `parent_lin_cn` | 320 | 320 | cn | 0.082 | 0.037 | 0.517 (0.51-0.53) | 0 | 10.49 | fom_cncg_dt0.025_rtol1e-4 | 10.49 | 14.38 |
+
+| FOM / control | worst % | median % | GPU ms | fails |
+|---|---:|---:|---:|---:|
+| `dst_exact_CONTROL` | 0.000 | 0.000 | 1.498 | 0 |
+| `fom_cncg_dt0.1_rtol1e-2` | 1.639 | 1.270 | 2.481 | 0 |
+| `fom_cncg_dt0.05_rtol1e-2` | 1.985 | 1.637 | 2.867 | 0 |
+| `fom_cncg_dt0.1_rtol1e-3` | 1.527 | 0.618 | 3.164 | 0 |
+| `fom_cncg_dt0.05_rtol1e-3` | 0.335 | 0.186 | 3.740 | 0 |
+| `fom_cncg_dt0.025_rtol1e-2` | 1.802 | 1.347 | 3.909 | 0 |
+| `fom_cncg_dt0.1_rtol1e-4` | 1.527 | 0.615 | 4.002 | 0 |
+| `fom_cncg_dt0.025_rtol1e-3` | 0.622 | 0.505 | 4.338 | 0 |
+| `fom_cncg_dt0.05_rtol1e-4` | 0.333 | 0.149 | 4.556 | 0 |
+| `fom_cncg_dt0.025_rtol1e-4` | 0.081 | 0.043 | 5.423 | 0 |
+| `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.081 | 0.037 | 7.437 | 0 |
+
+Knob monotonicity (held-out worst error as R' falls):
+
+- cn_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [27.69, 26.71, 27.29, 27.72, 37.28, 49.55]; monotone False (complete ladder True, failures [0, 0, 0, 0, 1, 0])
+- cn_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.205, 0.509, 1.202, 4.803, 14.211], ms [61.68, 56.03, 59.1, 44.21, 44.21, 49.55]; monotone True (complete ladder True, failures [1, 0, 1, 0, 0, 0])
+- cn_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.082, 0.19, 0.409, 1.111, 4.784, 14.203], ms [0.64, 0.56, 0.47, 0.38, 0.3, 0.23]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [6.95, 6.7, 6.48, 6.33, 5.63, 4.35]; monotone False (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.206, 0.509, 1.23, 4.803, 14.211], ms [6.25, 5.85, 5.3, 4.57, 4.42, 4.35]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.07, 0.19, 0.409, 1.111, 4.784, 14.203], ms [0.68, 0.6, 0.51, 0.42, 0.34, 0.95]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- cn_linear_time_drop: linear rung at R'=R 0.638 ms vs cheapest R' meeting the fast rule (R'=128, 0.3801665734499693 ms): ratio 1.6791682768833718; >= 2x: False
+- bf_linear_time_drop: linear rung at R'=R 0.682 ms vs cheapest R' meeting the fast rule (R'=128, 0.4211186897009611 ms): ratio 1.6186501729703968; >= 2x: False
+
+## 128^3 — held-out `heldout_sealed_921099` (64 cases), selection on `validation_921777` (16 cases)
+
+Gates: parity max rel. diff 2.6709148178876865e-13 (pass True); determinism True; order-effect (neighbour) False (max ratio 1.023); NumPy audit True. **Usable: False**.
+
+| family | role | arm | R' | q | val worst % | held-out worst % | held-out median % | GPU ms | Table-1 FOM | FOM worst % | FOM ms | speedup | fast rule met on held-out |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---|
+| CN stepping | accurate | `lin_R320_cn` | 320 | 320 | 0.080 | 0.083 | 0.038 | 2.991 | `fom_cncg_dt0.025_rtol1e-4` | 0.082 | 17.33 | 5.79 |  |
+| CN stepping | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 1.367 | `fom_cncg_dt0.025_rtol1e-4` | 0.082 | 17.33 | 12.68 | True |
+| batched fit | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-6_NAMED`, 0.082 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.082 | 29.22 | acc x9.31 / fast x19.40 | |
+| batched fit | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 3.140 | `None` | - | nan | nan |  |
+| batched fit | fast | `lin_R128_bf` | 128 | 128 | 0.862 | 1.111 | 0.161 | 1.506 | `None` | - | nan | nan | True |
+| both families pooled | (no tested FOM is as accurate as `lin_R320_bf`; vs the most accurate tested FOM `fom_cncg_dt0.025_rtol1e-6_NAMED`, 0.082 % — LESS accurate than the arm) | | | | | | | | `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.082 | 29.22 | acc x9.31 / fast x21.38 | |
+| both families pooled | accurate | `lin_R320_bf` | 320 | 320 | 0.049 | 0.070 | 0.009 | 3.140 | `None` | - | nan | nan |  |
+| both families pooled | fast | `lin_R128_cn` | 128 | 128 | 0.862 | 1.111 | 0.161 | 1.367 | `None` | - | nan | nan | True |
+
+Full held-out table (heldout_sealed_921099): every (R', q, stepping) arm. `x T1` = the family's Table-1 FOM time / arm time; `x own` = fastest FOM at least as accurate as the arm; `x named` = CN-CG dt 0.025 rtol 1e-6.
+
+| arm | R' | q | stepping | worst % | median % | GPU ms (p10-p90) | fails | x T1 | own FOM | x own | x named |
+|---|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|
+| `nmrom_R320_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 9.138 (7.75-10.52) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.77 | 3.20 |
+| `nmrom_R320_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 9.455 (8.29-12.11) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 1.20 | 3.09 |
+| `nmrom_R320_q288_bf` | 320 | 288 | bf | 0.114 | 0.010 | 8.589 (7.73-9.70) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 2.02 | 3.40 |
+| `lin_R320_bf` | 320 | 320 | bf | 0.070 | 0.009 | 3.140 (3.10-3.64) | 0 | - | - | - | 9.31 |
+| `nmrom_R256_q0_bf` | 256 | 0 | bf | 2.003 | 0.334 | 8.279 (6.97-9.90) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.85 | 3.53 |
+| `nmrom_R256_q112_bf` | 256 | 112 | bf | 0.861 | 0.101 | 8.035 (6.87-9.70) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 1.41 | 3.64 |
+| `nmrom_R256_q224_bf` | 256 | 224 | bf | 0.206 | 0.023 | 7.634 (6.90-8.54) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 2.27 | 3.83 |
+| `lin_R256_bf` | 256 | 256 | bf | 0.190 | 0.023 | 2.592 (2.56-2.63) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 6.69 | 11.27 |
+| `nmrom_R192_q0_bf` | 192 | 0 | bf | 1.996 | 0.332 | 7.801 (6.61-9.91) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.90 | 3.75 |
+| `nmrom_R192_q80_bf` | 192 | 80 | bf | 1.069 | 0.149 | 7.160 (6.17-8.46) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 1.58 | 4.08 |
+| `nmrom_R192_q160_bf` | 192 | 160 | bf | 0.509 | 0.055 | 6.589 (6.05-7.28) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 1.72 | 4.43 |
+| `lin_R192_bf` | 192 | 192 | bf | 0.409 | 0.052 | 2.047 (2.03-2.08) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 5.53 | 14.27 |
+| `nmrom_R128_q0_bf` | 128 | 0 | bf | 2.095 | 0.349 | 7.095 (6.03-8.71) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.99 | 4.12 |
+| `nmrom_R128_q48_bf` | 128 | 48 | bf | 1.586 | 0.248 | 6.687 (5.63-8.16) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.05 | 4.37 |
+| `nmrom_R128_q96_bf` | 128 | 96 | bf | 1.230 | 0.176 | 5.374 (4.98-6.11) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 2.11 | 5.44 |
+| `lin_R128_bf` | 128 | 128 | bf | 1.111 | 0.161 | 1.506 (1.49-1.53) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 7.52 | 19.40 |
+| `nmrom_R64_q0_bf` | 64 | 0 | bf | 4.868 | 1.030 | 5.924 (4.94-7.69) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.19 | 4.93 |
+| `nmrom_R64_q16_bf` | 64 | 16 | bf | 4.844 | 1.020 | 5.471 (4.68-6.55) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.28 | 5.34 |
+| `nmrom_R64_q32_bf` | 64 | 32 | bf | 4.803 | 1.013 | 4.940 (4.41-5.68) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.42 | 5.91 |
+| `lin_R64_bf` | 64 | 64 | bf | 4.784 | 1.006 | 0.970 (0.95-0.99) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 7.24 | 30.11 |
+| `nmrom_R32_q0_bf` | 32 | 0 | bf | 14.211 | 3.376 | 4.510 (3.98-5.08) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 1.56 | 6.48 |
+| `lin_R32_bf` | 32 | 32 | bf | 14.203 | 3.371 | 0.891 (0.65-1.01) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 7.89 | 32.80 |
+| `parent_q0_bf` | 320 | 0 | bf | 2.004 | 0.335 | 8.267 (7.11-9.57) | 0 | - | fom_cncg_dt0.1_rtol1e-2 | 0.85 | 3.53 |
+| `parent_q144_bf` | 320 | 144 | bf | 0.659 | 0.065 | 8.658 (7.61-11.00) | 0 | - | fom_cncg_dt0.05_rtol1e-3 | 1.31 | 3.37 |
+| `parent_q288_bf` | 320 | 288 | bf | 0.114 | 0.010 | 7.827 (7.01-8.80) | 0 | - | fom_cncg_dt0.025_rtol1e-4 | 2.21 | 3.73 |
+| `parent_lin_bf` | 320 | 320 | bf | 0.070 | 0.009 | 2.760 (2.75-2.78) | 0 | - | - | - | 10.59 |
+| `nmrom_R320_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 30.175 (24.72-36.65) | 0 | 0.57 | fom_cncg_dt0.1_rtol1e-2 | 0.23 | 0.97 |
+| `nmrom_R320_q144_cn` | 320 | 144 | cn | 0.659 | 0.068 | 31.857 (26.63-39.46) | 0 | 0.54 | fom_cncg_dt0.05_rtol1e-3 | 0.36 | 0.92 |
+| `nmrom_R320_q288_cn` | 320 | 288 | cn | 0.114 | 0.038 | 63.779 (47.96-93.72) | 0 | 0.27 | fom_cncg_dt0.025_rtol1e-4 | 0.27 | 0.46 |
+| `lin_R320_cn` | 320 | 320 | cn | 0.083 | 0.038 | 2.991 (2.97-3.44) | 0 | 5.79 | fom_cncg_dt0.025_rtol1e-4 | 5.79 | 9.77 |
+| `nmrom_R256_q0_cn` | 256 | 0 | cn | 2.003 | 0.329 | 28.874 (23.90-35.81) | 0 | 0.60 | fom_cncg_dt0.1_rtol1e-2 | 0.24 | 1.01 |
+| `nmrom_R256_q112_cn` | 256 | 112 | cn | 0.861 | 0.093 | 47.467 (38.33-58.47) | 0 | 0.37 | fom_cncg_dt0.05_rtol1e-3 | 0.24 | 0.62 |
+| `nmrom_R256_q224_cn` | 256 | 224 | cn | 0.205 | 0.043 | 59.049 (49.00-74.50) | 1 | 0.29 | fom_cncg_dt0.025_rtol1e-4 | 0.29 | 0.49 |
+| `lin_R256_cn` | 256 | 256 | cn | 0.190 | 0.043 | 2.444 (2.42-2.47) | 0 | 7.09 | fom_cncg_dt0.025_rtol1e-4 | 7.09 | 11.95 |
+| `nmrom_R192_q0_cn` | 192 | 0 | cn | 1.996 | 0.325 | 28.835 (23.27-34.62) | 0 | 0.60 | fom_cncg_dt0.1_rtol1e-2 | 0.24 | 1.01 |
+| `nmrom_R192_q80_cn` | 192 | 80 | cn | 1.069 | 0.132 | 41.142 (31.93-52.55) | 0 | 0.42 | fom_cncg_dt0.05_rtol1e-3 | 0.28 | 0.71 |
+| `nmrom_R192_q160_cn` | 192 | 160 | cn | 0.509 | 0.061 | 63.009 (48.61-80.44) | 4 | 0.28 | fom_cncg_dt0.05_rtol1e-3 | 0.18 | 0.46 |
+| `lin_R192_cn` | 192 | 192 | cn | 0.409 | 0.059 | 1.908 (1.89-1.93) | 0 | 9.09 | fom_cncg_dt0.05_rtol1e-3 | 5.94 | 15.32 |
+| `nmrom_R128_q0_cn` | 128 | 0 | cn | 2.095 | 0.341 | 29.362 (23.44-39.55) | 0 | 0.59 | fom_cncg_dt0.1_rtol1e-2 | 0.24 | 1.00 |
+| `nmrom_R128_q48_cn` | 128 | 48 | cn | 1.586 | 0.219 | 39.635 (31.03-47.87) | 0 | 0.44 | fom_cncg_dt0.1_rtol1e-2 | 0.18 | 0.74 |
+| `nmrom_R128_q96_cn` | 128 | 96 | cn | 1.202 | 0.163 | 46.371 (38.83-65.94) | 0 | 0.37 | fom_cncg_dt0.05_rtol1e-3 | 0.24 | 0.63 |
+| `lin_R128_cn` | 128 | 128 | cn | 1.111 | 0.161 | 1.367 (1.35-1.39) | 0 | 12.68 | fom_cncg_dt0.05_rtol1e-3 | 8.29 | 21.38 |
+| `nmrom_R64_q0_cn` | 64 | 0 | cn | 4.868 | 1.027 | 38.248 (31.77-46.55) | 0 | 0.45 | fom_cncg_dt0.1_rtol1e-2 | 0.18 | 0.76 |
+| `nmrom_R64_q16_cn` | 64 | 16 | cn | 4.844 | 1.018 | 45.556 (38.13-56.45) | 0 | 0.38 | fom_cncg_dt0.1_rtol1e-2 | 0.15 | 0.64 |
+| `nmrom_R64_q32_cn` | 64 | 32 | cn | 4.803 | 1.009 | 45.507 (35.57-53.59) | 0 | 0.38 | fom_cncg_dt0.1_rtol1e-2 | 0.15 | 0.64 |
+| `lin_R64_cn` | 64 | 64 | cn | 4.784 | 1.006 | 0.829 (0.81-0.85) | 0 | 20.90 | fom_cncg_dt0.1_rtol1e-2 | 8.47 | 35.23 |
+| `nmrom_R32_q0_cn` | 32 | 0 | cn | 14.211 | 3.374 | 51.889 (42.32-60.34) | 0 | 0.33 | fom_cncg_dt0.1_rtol1e-2 | 0.14 | 0.56 |
+| `lin_R32_cn` | 32 | 32 | cn | 14.203 | 3.371 | 0.458 (0.44-0.47) | 0 | 37.84 | fom_cncg_dt0.1_rtol1e-2 | 15.35 | 63.80 |
+| `parent_q0_cn` | 320 | 0 | cn | 2.004 | 0.329 | 28.749 (23.65-34.67) | 0 | 0.60 | fom_cncg_dt0.1_rtol1e-2 | 0.24 | 1.02 |
+| `parent_q144_cn` | 320 | 144 | cn | 0.659 | 0.068 | 30.348 (25.68-37.00) | 0 | 0.57 | fom_cncg_dt0.05_rtol1e-3 | 0.37 | 0.96 |
+| `parent_q288_cn` | 320 | 288 | cn | 0.114 | 0.038 | 62.100 (46.24-90.92) | 0 | 0.28 | fom_cncg_dt0.025_rtol1e-4 | 0.28 | 0.47 |
+| `parent_lin_cn` | 320 | 320 | cn | 0.083 | 0.038 | 2.616 (2.60-2.63) | 0 | 6.63 | fom_cncg_dt0.025_rtol1e-4 | 6.63 | 11.17 |
+
+| FOM / control | worst % | median % | GPU ms | fails |
+|---|---:|---:|---:|---:|
+| `dst_exact_CONTROL` | 0.000 | 0.000 | 1.762 | 0 |
+| `fom_cncg_dt0.1_rtol1e-2` | 1.558 | 0.852 | 7.029 | 0 |
+| `fom_cncg_dt0.05_rtol1e-2` | 1.790 | 1.458 | 7.344 | 0 |
+| `fom_cncg_dt0.1_rtol1e-3` | 1.545 | 0.619 | 10.234 | 0 |
+| `fom_cncg_dt0.025_rtol1e-2` | 1.514 | 1.069 | 10.816 | 0 |
+| `fom_cncg_dt0.05_rtol1e-3` | 0.338 | 0.175 | 11.325 | 0 |
+| `fom_cncg_dt0.025_rtol1e-3` | 0.483 | 0.403 | 13.371 | 0 |
+| `fom_cncg_dt0.1_rtol1e-4` | 1.545 | 0.618 | 14.449 | 0 |
+| `fom_cncg_dt0.05_rtol1e-4` | 0.337 | 0.150 | 16.095 | 0 |
+| `fom_cncg_dt0.025_rtol1e-4` | 0.082 | 0.043 | 17.332 | 0 |
+| `fom_cncg_dt0.025_rtol1e-6_NAMED` | 0.082 | 0.037 | 29.219 | 0 |
+
+Knob monotonicity (held-out worst error as R' falls):
+
+- cn_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [30.17, 28.87, 28.83, 29.36, 38.25, 51.89]; monotone False (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- cn_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.205, 0.509, 1.202, 4.803, 14.211], ms [63.78, 59.05, 63.01, 46.37, 45.51, 51.89]; monotone True (complete ladder True, failures [0, 1, 4, 0, 0, 0])
+- cn_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.083, 0.19, 0.409, 1.111, 4.784, 14.203], ms [2.99, 2.44, 1.91, 1.37, 0.83, 0.46]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_q0: R' [320, 256, 192, 128, 64, 32] -> worst % [2.004, 2.003, 1.996, 2.095, 4.868, 14.211], ms [9.14, 8.28, 7.8, 7.09, 5.92, 4.51]; monotone False (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_qmax: R' [320, 256, 192, 128, 64, 32] -> worst % [0.114, 0.206, 0.509, 1.23, 4.803, 14.211], ms [8.59, 7.63, 6.59, 5.37, 4.94, 4.51]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- bf_linear: R' [320, 256, 192, 128, 64, 32] -> worst % [0.07, 0.19, 0.409, 1.111, 4.784, 14.203], ms [3.14, 2.59, 2.05, 1.51, 0.97, 0.89]; monotone True (complete ladder True, failures [0, 0, 0, 0, 0, 0])
+- cn_linear_time_drop: linear rung at R'=R 2.991 ms vs cheapest R' meeting the fast rule (R'=128, 1.3668525498360395 ms): ratio 2.1885283362634778; >= 2x: True
+- bf_linear_time_drop: linear rung at R'=R 3.140 ms vs cheapest R' meeting the fast rule (R'=128, 1.5061066951602697 ms): ratio 2.084755326396626; >= 2x: True
+
+Cost profile at 128 (held-out case 0, median ms of 5; stages timed separately, so they need not sum to the fused query):
+
+| arm | encode (G'^T u / moments) | init fit | evolve | decode (G'c) | fused query |
+|---|---:|---:|---:|---:|---:|
+| `nmrom_R320_q0_cn` | 1.686 | 12.666 | 19.055 | 1.638 | 34.431 |
+| `nmrom_R320_q144_cn` | 1.655 | 10.249 | 18.952 | 1.640 | 31.678 |
+| `nmrom_R320_q288_cn` | 1.681 | 11.634 | 33.905 | 1.633 | 48.108 |
+| `lin_R320_cn` | 1.834 | 0.000 | 0.082 | 1.643 | 2.926 |
+| `nmrom_R320_q0_bf` | 1.688 | 2.934 | 2.269 | 1.650 | 7.941 |
+| `nmrom_R320_q144_bf` | 1.751 | 2.033 | 2.530 | 1.643 | 7.264 |
+| `nmrom_R320_q288_bf` | 1.575 | 2.102 | 2.715 | 1.643 | 7.503 |
+| `lin_R320_bf` | 1.804 | 0.000 | 0.090 | 1.629 | 3.065 |
+| `nmrom_R256_q0_cn` | 1.466 | 11.760 | 18.971 | 1.350 | 33.007 |
+| `nmrom_R256_q112_cn` | 1.467 | 16.818 | 22.341 | 1.357 | 41.091 |
+| `nmrom_R256_q224_cn` | 1.475 | 10.172 | 32.043 | 1.337 | 44.195 |
+| `lin_R256_cn` | 1.473 | 0.000 | 0.080 | 1.336 | 2.387 |
+| `nmrom_R256_q0_bf` | 1.430 | 2.699 | 2.255 | 1.355 | 7.161 |
+| `nmrom_R256_q112_bf` | 1.307 | 1.996 | 3.309 | 1.351 | 7.506 |
+| `nmrom_R256_q224_bf` | 1.453 | 1.697 | 2.681 | 1.352 | 6.586 |
+| `lin_R256_bf` | 1.477 | 0.000 | 0.087 | 1.348 | 2.516 |
+| `nmrom_R192_q0_cn` | 1.060 | 11.688 | 19.219 | 1.051 | 32.489 |
+| `nmrom_R192_q80_cn` | 1.258 | 11.077 | 27.916 | 1.053 | 40.260 |
+| `nmrom_R192_q160_cn` | 1.216 | 13.367 | 32.645 | 1.049 | 47.104 |
+| `lin_R192_cn` | 1.128 | 0.000 | 0.078 | 1.062 | 1.843 |
+| `nmrom_R192_q0_bf` | 1.203 | 2.686 | 3.063 | 1.048 | 7.398 |
+| `nmrom_R192_q80_bf` | 1.090 | 2.038 | 1.641 | 1.051 | 5.312 |
+| `nmrom_R192_q160_bf` | 1.087 | 1.646 | 2.319 | 1.066 | 5.563 |
+| `lin_R192_bf` | 1.173 | 0.000 | 0.088 | 1.062 | 1.990 |
+| `nmrom_R128_q0_cn` | 0.796 | 11.515 | 20.069 | 0.754 | 32.513 |
+| `nmrom_R128_q48_cn` | 0.808 | 15.169 | 23.087 | 0.760 | 38.984 |
+| `nmrom_R128_q96_cn` | 0.806 | 10.735 | 25.790 | 0.754 | 37.207 |
+| `lin_R128_cn` | 0.816 | 0.000 | 0.074 | 0.750 | 1.310 |
+| `nmrom_R128_q0_bf` | 0.803 | 2.578 | 2.184 | 0.755 | 5.645 |
+| `nmrom_R128_q48_bf` | 0.791 | 1.970 | 2.694 | 0.756 | 5.803 |
+| `nmrom_R128_q96_bf` | 0.798 | 1.560 | 1.613 | 0.770 | 4.141 |
+| `lin_R128_bf` | 0.816 | 0.000 | 0.084 | 0.752 | 1.446 |
+| `nmrom_R64_q0_cn` | 0.553 | 13.257 | 22.966 | 0.469 | 36.451 |
+| `nmrom_R64_q16_cn` | 0.556 | 16.424 | 24.921 | 0.480 | 41.591 |
+| `nmrom_R64_q32_cn` | 0.556 | 13.088 | 26.833 | 0.468 | 40.182 |
+| `lin_R64_cn` | 0.565 | 0.000 | 0.075 | 0.466 | 0.757 |
+| `nmrom_R64_q0_bf` | 0.553 | 2.987 | 1.393 | 0.467 | 4.822 |
+| `nmrom_R64_q16_bf` | 0.555 | 1.830 | 2.509 | 0.467 | 4.610 |
+| `nmrom_R64_q32_bf` | 0.632 | 1.969 | 1.828 | 0.473 | 4.055 |
+| `lin_R64_bf` | 0.566 | 0.000 | 0.083 | 0.468 | 0.912 |
+| `nmrom_R32_q0_cn` | 0.415 | 16.236 | 27.916 | 0.233 | 44.234 |
+| `lin_R32_cn` | 0.432 | 0.000 | 0.077 | 0.227 | 0.389 |
+| `nmrom_R32_q0_bf` | 0.419 | 1.353 | 1.539 | 0.231 | 3.104 |
+| `lin_R32_bf` | 0.431 | 0.000 | 0.084 | 0.224 | 0.573 |
+
 ## Glossary
 
 - **R'**: number of leading columns of the rotated frozen bank used by a query (R' = R is the unmodified bank). The rotation orders columns by training energy (SVD of training coefficient vectors); computed once offline from training data only.

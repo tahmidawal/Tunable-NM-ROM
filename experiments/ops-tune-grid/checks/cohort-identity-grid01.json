@@ -1,0 +1,11 @@
+{
+  "what": "the matched eight-case ROM/FOM diagnosis cohort grid01 rebuilt in-job is byte-identical to the one the FNO comparison used",
+  "cohort_index_sha256_prefix": "8b8a2ee1157789da",
+  "expected_from": "experiments/neural-operator-audit/runs/fno_burgers02/field-audit.json -> diagnosis_cohort.cohort_index_sha256",
+  "matches": true,
+  "cases": 8,
+  "train_index_sha256_prefix": "5333584b7162df62",
+  "validation_index_sha256_prefix": "468b9e70df3392c4",
+  "meaning": "the evaluation chain in this lane is the published one end to end: the same 32 validation cases, the same eight diagnosis cases, the same references. Only the training data and the hyperparameters vary, which is what the lane set out to vary.",
+  "note": "audit.py asserts this equality as gate 3; confirming it while the job runs means a failure would be a science result, not a surprise at audit time."
+}

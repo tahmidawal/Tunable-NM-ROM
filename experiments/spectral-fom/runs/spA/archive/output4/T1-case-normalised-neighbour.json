@@ -1,0 +1,78 @@
+{
+ "source": "runs/spA/archive/output4/result.json",
+ "source_sha256": "b694fc923deaaa930ddfb84508bc79f7610abf18f3ec8d08a558829ddc492663",
+ "raw_neighbour_passed": true,
+ "raw_matches_recorded": true,
+ "case_normalised": {
+  "rows": [
+   {
+    "name": "R128_linear",
+    "phase": "romA1",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 1.0010773398987298,
+    "after_short_median": 0.9993349423697333,
+    "n_long": 152,
+    "n_short": 487,
+    "ratio": 1.0017435570949462
+   },
+   {
+    "name": "R64_linear",
+    "phase": "romA1",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 0.9991081504424636,
+    "after_short_median": 1.0017141043608324,
+    "n_long": 487,
+    "n_short": 153,
+    "ratio": 0.9973985053150154
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA2",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 0.9980872100153778,
+    "after_short_median": 1.0006785462635213,
+    "n_long": 157,
+    "n_short": 483,
+    "ratio": 0.9974104209010782
+   },
+   {
+    "name": "R64_linear",
+    "phase": "romA2",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 0.9992564927611853,
+    "after_short_median": 1.0022893622013322,
+    "n_long": 483,
+    "n_short": 156,
+    "ratio": 0.9969740580370066
+   },
+   {
+    "name": "dst_mm",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 1.0019201150732957,
+    "after_short_median": 0.994698395010472,
+    "n_long": 476,
+    "n_short": 163,
+    "ratio": 1.0072602108328
+   },
+   {
+    "name": "dst_fft",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 1.0024438583093724,
+    "after_short_median": 0.9993089086415605,
+    "n_long": 164,
+    "n_short": 476,
+    "ratio": 1.0031371177027466
+   }
+  ],
+  "limit": 1.1,
+  "passed": true
+ }
+}

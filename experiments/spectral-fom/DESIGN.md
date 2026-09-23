@@ -169,3 +169,25 @@ below about $10^{-9}$ at the finest meshes. Agreement limit: $10^{-9}$.
 
 **Spectral FOM for each arm.** The matched spectral FOM is the fastest of {`modal_exp`, `modal_cn`} × {fft, mm}
 whose worst error is $\le$ the arm's. `modal_exp` (exact) is always eligible.
+
+## Amendment T1 (2026-09-23, after spC; post hoc, disclosed) — case-normalised neighbour statistic
+
+**What failed.** At 512² and 1024² in spC, the pre-registered within-phase neighbour gate failed for the
+Burgers accurate arm in phase A1, with ratios 1.183 and 1.192.
+
+**Why the raw statistic is confounded.** With two ROM subjects, the "after itself" samples occur only across a
+case boundary. They are therefore a different mix of cases from the "after the other" samples. The Burgers ROM's
+cost depends on the case, because its iteration counts differ between cases.
+
+**The amended statistic.** Each time is divided by the median of the same subject on the same case in the same
+phase before the neighbour medians are taken. With that normalisation the ratio is 1.001 and 1.000. For the
+Poisson runs, whose cost does not depend on the case, it is 1.001–1.016. The raw gate is not redefined.
+
+**How it is applied.** Every run reports both statistics. A row whose raw gate fails but whose case-normalised
+gate passes is labelled as such, and is never called gate-clean without that qualifier. The harness computes
+both from spE on. For earlier runs the case-normalised value was recomputed offline with the same harness code
+(`T1-case-normalised-neighbour.json` beside each result). That recomputation also confirms the raw gate matches
+the recorded one.
+
+**Burgers 2048² rerun.** spC's 2048² pass ran out of memory on an A100-PCIE-40GB while building the bank. It is
+rerun unchanged as spE on an 80 GB card.

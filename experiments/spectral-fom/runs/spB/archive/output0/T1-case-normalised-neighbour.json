@@ -1,0 +1,78 @@
+{
+ "source": "runs/spB/archive/output0/result.json",
+ "source_sha256": "bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925",
+ "raw_neighbour_passed": true,
+ "raw_matches_recorded": true,
+ "case_normalised": {
+  "rows": [
+   {
+    "name": "R512_linear",
+    "phase": "romA1",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 0.9997797063030922,
+    "after_short_median": 1.0000001463738237,
+    "n_long": 28,
+    "n_short": 91,
+    "ratio": 0.9997795599615351
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA1",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 0.9996089416737807,
+    "after_short_median": 1.0002721895804663,
+    "n_long": 92,
+    "n_short": 28,
+    "ratio": 0.9993369325733591
+   },
+   {
+    "name": "R512_linear",
+    "phase": "romA2",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 1.0001242579149232,
+    "after_short_median": 0.9998757420850769,
+    "n_long": 29,
+    "n_short": 91,
+    "ratio": 1.0002485467137427
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA2",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 1.000004215094625,
+    "after_short_median": 0.9988198727541744,
+    "n_long": 91,
+    "n_short": 28,
+    "ratio": 1.0011857416664975
+   },
+   {
+    "name": "dst_mm",
+    "phase": "spec",
+    "long_predecessor": "dst_mm",
+    "short_predecessor": "dst_fft",
+    "after_long_median": 1.0008905532787264,
+    "after_short_median": 0.9997788368202392,
+    "n_long": 31,
+    "n_short": 88,
+    "ratio": 1.0011119623836238
+   },
+   {
+    "name": "dst_fft",
+    "phase": "spec",
+    "long_predecessor": "dst_mm",
+    "short_predecessor": "dst_fft",
+    "after_long_median": 1.0001798534829183,
+    "after_short_median": 0.999603052558568,
+    "n_long": 88,
+    "n_short": 32,
+    "ratio": 1.0005770299749224
+   }
+  ],
+  "limit": 1.1,
+  "passed": true
+ }
+}

@@ -123,6 +123,14 @@ class ABA:
         return float(np.median(v)), len(v)
 
     def gates(self, rom, spec):
+        out = self._gates(rom, spec, normalise=False)
+        out['neighbour_case_normalised'] = self._gates(rom, spec, normalise=True)['neighbour']
+        return out
+
+    def _gates(self, rom, spec, normalise):
+        """normalise=True (DESIGN amendment T1): every time is divided by the median of the same subject on the same
+        case in the same phase before the neighbour medians are taken, so a case-dependent cost (iteration counts
+        differ by case) cannot masquerade as an order effect."""
         lim = self.cfg['neighbour_limit']
         drift = []
         for s in rom:
@@ -136,6 +144,12 @@ class ABA:
                 continue
             inv = [x for x in self.invocations if x['phase'] == label]
             meds = {s['name']: self.med(s['name'], (label,))[0] for s in subs}
+            cmed = {}
+            if normalise:
+                for x in inv:
+                    cmed.setdefault((x['name'], x['case']), []).append(x['fused_device_seconds'])
+                cmed = {k: float(np.median(v)) for k, v in cmed.items()}
+            tval = (lambda x: x['fused_device_seconds'] / cmed[(x['name'], x['case'])]) if normalise else (lambda x: x['fused_device_seconds'])
             for s in subs:
                 others = {k: v for k, v in meds.items() if k != s['name']}
                 mine = [x for x in inv if x['name'] == s['name']]
@@ -151,8 +165,8 @@ class ABA:
                     order_ = sorted(others, key=others.get)
                     k3 = max(1, len(order_) // 3)
                     fast, slow = order_[:k3], order_[-k3:]
-                hi = [x['fused_device_seconds'] for x in mine if x['previous'] in slow]
-                lo = [x['fused_device_seconds'] for x in mine if x['previous'] in fast]
+                hi = [tval(x) for x in mine if x['previous'] in slow]
+                lo = [tval(x) for x in mine if x['previous'] in fast]
                 slow, lo_name = ','.join(slow), ','.join(fast)
                 if len(hi) >= 3 and len(lo) >= 3:
                     rows.append(dict(name=s['name'], phase=label, long_predecessor=slow, short_predecessor=lo_name,

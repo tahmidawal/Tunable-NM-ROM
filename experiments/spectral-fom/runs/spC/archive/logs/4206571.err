@@ -1,0 +1,20 @@
+E0923 06:41:18.004070 2516001 cuda_timer.cc:88] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+W0923 06:59:23.303773 2542200 hlo_rematerialization.cc:3231] Can't reduce memory use below 19.38GiB (20810979328 bytes) by rematerialization; only reduced to 31.97GiB (34326192128 bytes), down from 31.97GiB (34326192128 bytes) originally
+W0923 06:59:33.829246 2542200 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 15.98GiB (rounded to 17163096064)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0923 06:59:33.829622 2542200 bfc_allocator.cc:525] ***************************************************________________________________________________*
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/specfom_20260923/spC/code/sp_burgers.py", line 406, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/specfom_20260923/spC/code/sp_burgers.py", line 137, in main
+    g = jax.block_until_ready(base.at(xy, chunk=8192))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 15.98GiB. [executable_name='jit_concatenate'] [tf-allocator-allocation-error='']

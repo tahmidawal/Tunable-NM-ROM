@@ -34,6 +34,41 @@ Validation. The spectral solve was compared with the SciPy DST truth on every ca
 | 32³ | 8.6e-16 | 6.3e-08 / 6.7e-10 / 5.8e-12 | yes / yes / yes | 9.5e-11 | 2.0e-03 |
 | 64³ | 1.9e-15 | 4.7e-08 / 5.2e-10 / 4.1e-12 | yes / yes / yes | 9.8e-11 | 5.0e-04 |
 
+## Burgers 2D (Dirichlet walls, sign-upwind advection, backward Euler)
+
+The spectral FOM solves each backward-Euler step by the modal-Helmholtz fixed point $u \leftarrow u - (I+\Delta t\nu A)^{-1} r(u)$ on the paper's own residual (Picard), or takes one IMEX sweep. It is matched to each arm as the fastest ladder setting whose worst error is no worse than the arm's. "Tight" is Picard at ntol $10^{-6}$, $\Delta t=0.005$, the same tolerance as the reference.
+
+| mesh | GPU | job | role | arm | err (worst) | ms | matched spectral | its err | its ms | ratio (matched) | ratio (tight) | timing gates | audit |
+|---:|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---|---|
+| 256² | NVIDIA A100-PCIE-40GB | 4206571 | accurate | `R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 0.166% | 133.218 | pic_dt005_nt1e-4 | 0.048% | 14.596 | **0.110** | 0.173 | all pass | PASS |
+| 256² | NVIDIA A100-PCIE-40GB | 4206571 | fast | `R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 1.597% | 32.884 | pic_dt01_nt1e-3 | 1.547% | 7.304 | **0.222** | 0.699 | all pass | PASS |
+| 512² | NVIDIA A100-PCIE-40GB | 4206571 | accurate | `R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1` | 0.195% | 252.020 | pic_dt005_nt1e-4 | 0.050% | 27.592 | **0.109** | 0.178 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 512² | NVIDIA A100-PCIE-40GB | 4206571 | fast | `R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2` | 2.138% | 33.957 | pic_dt01_nt1e-3 | 1.605% | 13.106 | **0.386** | 1.324 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4206571 | accurate | `R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 0.522% | 176.276 | pic_dt005_nt1e-4 | 0.051% | 53.128 | **0.301** | 0.538 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+| 1024² | NVIDIA A100-PCIE-40GB | 4206571 | fast | `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.828% | 32.612 | pic_dt01_nt1e-3 | 1.651% | 25.484 | **0.781** | 2.908 | raw neighbour FAIL (case mix); case-normalised PASS (T1) | PASS |
+
+Spectral ladder (worst / median error, GPU ms):
+
+| setting | 256² | 512² | 1024² |
+|---|---|---|---|
+| `pic_dt005_nt1e-6` | 0.000% / 0.000% / 22.986 | 0.000% / 0.000% / 44.964 | 0.000% / 0.000% / 94.850 |
+| `pic_dt005_nt1e-4` | 0.048% / 0.019% / 14.596 | 0.050% / 0.021% / 27.592 | 0.051% / 0.020% / 53.128 |
+| `pic_dt005_nt1e-3` | 0.899% / 0.358% / 10.253 | 0.919% / 0.383% / 18.247 | 0.930% / 0.397% / 31.674 |
+| `pic_dt005_nt3e-3` | 2.136% / 1.005% / 9.062 | 2.237% / 1.030% / 15.451 | 2.293% / 1.044% / 26.958 |
+| `pic_dt005_nt1e-2` | 3.683% / 1.506% / 8.621 | 3.986% / 1.524% / 14.808 | 4.160% / 1.534% / 25.651 |
+| `pic_dt01_nt1e-4` | 1.511% / 1.173% / 9.708 | 1.588% / 1.188% / 17.914 | 1.630% / 1.196% / 36.716 |
+| `pic_dt01_nt1e-3` | 1.547% / 1.205% / 7.304 | 1.605% / 1.214% / 13.106 | 1.651% / 1.219% / 25.484 |
+| `pic_dt01_nt1e-2` | 3.084% / 1.367% / 4.876 | 3.288% / 1.411% / 8.127 | 3.401% / 1.434% / 14.020 |
+| `imex_dt0025` | 2.624% / 1.270% / 16.686 | 2.812% / 1.272% / 29.010 | 2.919% / 1.274% / 53.484 |
+| `imex_dt005` | 3.683% / 1.506% / 8.612 | 3.986% / 1.524% / 14.848 | 4.160% / 1.534% / 25.671 |
+| `imex_dt01` | 6.498% / 2.469% / 4.605 | 7.165% / 2.523% / 7.723 | 7.548% / 2.550% / 12.619 |
+
+| mesh | DST in $H^{-1}$ | paper FOM (1e-10) vs Picard (1e-10), max over t of diff/‖u0‖ | control (1.01ν) | ROM re-run vs lane errors (worst rel. dev.) |
+|---:|---|---:|---:|---|
+| 256² | mm | 1.5e-10 | 2.2e-03 | 3.8e-13, 2.8e-15 |
+| 512² | fft | 1.6e-10 | 2.3e-03 | 1.6e-13, 1.2e-13 |
+| 1024² | fft | 1.7e-10 | 2.3e-03 | 9.7e-14, 1.5e-14 |
+
 ## Navier–Stokes 3D (recorded from `ns3d-shift-head`, not rerun)
 
 CNAB2 is the lane FOM and is Fourier pseudo-spectral; the lane itself labels it not rule-compliant as an iterative FOM. Not rerun here. The ratio is CNAB2 ms / ROM ms, from the lane's own timing block and comparator rule. That lane used its protocol v2 (a fast block plus after-heavy gates), not this lane's A–B–A.
@@ -63,6 +98,9 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 | poisson2d | 4096 | spB/output0 | 4206053 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925` |
 | poisson3d | 32 | spA/output3 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `aaca3a08cfb01f4b0463b898d04fd5be05d10ff9fc4c908c954e5ee707e92062` |
 | poisson3d | 64 | spA/output4 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `b694fc923deaaa930ddfb84508bc79f7610abf18f3ec8d08a558829ddc492663` |
+| burgers2d | 256 | spC/output0 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `5b9b5b75758c95e9d700d12f6123f032052c18df07c43ad4ff34469a5822f328` |
+| burgers2d | 512 | spC/output1 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `a73ae4889fc4cd15a22ad02689a7af1df66226a4f78003a7aeac31658e3a20c1` |
+| burgers2d | 1024 | spC/output2 | 4206571 | NVIDIA A100-PCIE-40GB | 18a01be5bd | `036902853bb7b77aeb7747c6ecd969edcfedf9680f8d6846d3cafbc83bd356ba` |
 | ns3d (lane) | 32 | a2_h32 | 4198840 | NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB | e94d398e2f | `301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c` |
 | ns3d (lane) | 64 | a2_h64 | 4198090 | NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB | 229cbc5ff5 | `05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f` |
 | ns3d (lane) | 96 | a3_h96 | 4198101 | NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB | 229cbc5ff5 | `4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af` |

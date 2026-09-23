@@ -16,7 +16,7 @@ REPORT = HERE / 'reports' / '2026-09-24-spectral-fom-vs-nmrom.md'
 ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
     'poisson3d': [('spA', 'output3'), ('spA', 'output4')],
-    'burgers2d': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spC', 'output3')],
+    'burgers2d': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spE', 'output0')],
     'heat2d': [('spD', 'output0'), ('spD', 'output1'), ('spD', 'output2')],
     'heat3d': [],
 }
@@ -54,8 +54,18 @@ def ratio(a, b):
 
 
 def gate_str(g):
-    bad = [k for k, v in g.items() if not v]
+    bad = [k for k, v in g.items() if not v and k != 'neighbour_T1']
+    if 'neighbour' in bad and g.get('neighbour_T1'):
+        bad.remove('neighbour')
+        return ('raw neighbour FAIL (case mix); case-normalised PASS (T1)' + ('' if not bad else '; FAIL: ' + ', '.join(bad)))
     return 'all pass' if not bad else 'FAIL: ' + ', '.join(bad)
+
+
+def t1(att, od, R):
+    if 'neighbour_case_normalised' in R['timing_gates']:
+        return R['timing_gates']['neighbour_case_normalised']['passed']
+    p = HERE / 'runs' / att / 'archive' / od / 'T1-case-normalised-neighbour.json'
+    return json.loads(p.read_text())['case_normalised']['passed'] if p.exists() else None
 
 
 def rows_poisson(problem):
@@ -80,7 +90,7 @@ def rows_poisson(problem):
                         ratio_fast=T[best]['median_ms'] / T[rf]['median_ms'],
                         validation=dict(spectral_vs_scipy_worst=max(r['relative'] for r in V['spectral_vs_scipy']),
                                         cg=V['cg_convergence'], control=V['control']['relative_vs_truth']),
-                        gates=R['gates'], audit=None if x['A'] is None else x['A']['verdict'],
+                        gates=R['gates'], audit=None if x['A'] is None else x['A']['verdict'], neighbour_T1=t1(att, od, R),
                         drift=R['timing_gates']['drift']['rows'],
                         neighbour_worst=max(r.get('ratio', np.inf) for r in R['timing_gates']['neighbour']['rows'])))
     return out
@@ -118,7 +128,7 @@ def rows_burgers():
                         validation=dict(agreement=V['agreement_over_u0'], control=V['control']['agreement_over_u0'],
                                         fom_newton=V['paper_fom_tight']['newton_total'],
                                         picard_sweeps=V['spectral_tight']['iterations_total']),
-                        lane_parity=R['lane_error_parity'], gates=R['gates'],
+                        lane_parity=R['lane_error_parity'], gates=R['gates'], neighbour_T1=t1(att, od, R),
                         audit=None if x['A'] is None else x['A']['verdict'],
                         drift=R['timing_gates']['drift']['rows'],
                         neighbour_worst=max(r.get('ratio', np.inf) for r in R['timing_gates']['neighbour']['rows'])))
@@ -148,7 +158,7 @@ def rows_heat(problem):
                         arms=arms, spectral={k: dict(worst=E[k]['worst'], ms=T[k]['median_ms']) for k in specs},
                         validation=dict(exp_worst=max(r['worst'] for r in V['exp_vs_truth']),
                                         cn_vs_cncg=V['cn_vs_cncg']['worst'], control=V['control']['worst']),
-                        gates=R['gates'], audit=None if x['A'] is None else x['A']['verdict'],
+                        gates=R['gates'], audit=None if x['A'] is None else x['A']['verdict'], neighbour_T1=t1(att, od, R),
                         drift=R['timing_gates']['drift']['rows'],
                         neighbour_worst=max(r.get('ratio', np.inf) for r in R['timing_gates']['neighbour']['rows'])))
     return out
@@ -180,7 +190,7 @@ def main():
           'ratio vs accurate | ratio vs fast | timing gates | audit |')
         w('|---:|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|')
         for r in rows:
-            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'])
+            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
             w(f"| {r['mesh']}{unit} | {r['gpu']} | {r['job']} | `{r['accurate']['arm']}` | {pct(r['accurate']['worst'])} | "
               f"{f2(r['accurate']['ms'])} | `{r['fast']['arm']}` | {pct(r['fast']['worst'])} | {f2(r['fast']['ms'])} | "
               f"{f2(r['spectral']['dst_fft']['ms'])} | {f2(r['spectral']['dst_mm']['ms'])} | {sci(r['spectral_worst'])} | "
@@ -208,7 +218,7 @@ def main():
         w('| mesh | GPU | job | role | arm | err (worst) | ms | matched spectral | its err | its ms | ratio (matched) | ratio (tight) | timing gates | audit |')
         w('|---:|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---|---|')
         for r in S['burgers2d']:
-            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'])
+            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
             for role in ('rom_accurate', 'rom_fast'):
                 a = r['arms'][role]
                 w(f"| {r['mesh']}² | {r['gpu']} | {r['job']} | {role[4:]} | `{a['arm']}` | {pct(a['worst'])} | {f2(a['ms'])} | "
@@ -238,7 +248,7 @@ def main():
         w('| mesh | GPU | job | cohort | role | arm | err | ms | matched spectral | its err | its ms | ratio (matched) | ratio (exact) | timing gates | audit |')
         w('|---:|---|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---|---|')
         for r in rows:
-            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'])
+            g = dict(drift=r['gates']['drift'], neighbour=r['gates']['neighbour'], deterministic=r['gates']['deterministic'], neighbour_T1=r['neighbour_T1'])
             for role, a in r['arms'].items():
                 w(f"| {r['mesh']}{unit} | {r['gpu']} | {r['job']} | {r['cohort']} | {role[4:]} | `{a['arm']}` | {pct(a['worst'], 4)} | {f2(a['ms'])} | "
                   f"`{a['matched']}` | {pct(a['matched_worst'], 4)} | {f2(a['matched_ms'])} | **{a['ratio_matched']:.3f}** | {a['ratio_exact']:.3f} | {gate_str(g)} | {r['audit']} |")

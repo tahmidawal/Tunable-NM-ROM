@@ -1,0 +1,78 @@
+{
+ "source": "runs/spA/archive/output0/result.json",
+ "source_sha256": "827c48c6510de7f76e30611b30ae6beef0e133c67e49569d95bfd5c7f8839d98",
+ "raw_neighbour_passed": true,
+ "raw_matches_recorded": true,
+ "case_normalised": {
+  "rows": [
+   {
+    "name": "R512_linear",
+    "phase": "romA1",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 0.9989701061294503,
+    "after_short_median": 1.0002732816155453,
+    "n_long": 25,
+    "n_short": 94,
+    "ratio": 0.9986971805505088
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA1",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 0.9985565020641101,
+    "after_short_median": 1.0099670766342002,
+    "n_long": 94,
+    "n_short": 26,
+    "ratio": 0.988702033131499
+   },
+   {
+    "name": "R512_linear",
+    "phase": "romA2",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 0.999946842643557,
+    "after_short_median": 1.0,
+    "n_long": 26,
+    "n_short": 94,
+    "ratio": 0.999946842643557
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA2",
+    "long_predecessor": "R512_linear",
+    "short_predecessor": "R128_linear",
+    "after_long_median": 1.0000819558086655,
+    "after_short_median": 0.9978399581143831,
+    "n_long": 93,
+    "n_short": 26,
+    "ratio": 1.002246850986524
+   },
+   {
+    "name": "dst_mm",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 0.9980689022426033,
+    "after_short_median": 1.001959883251207,
+    "n_long": 89,
+    "n_short": 30,
+    "ratio": 0.9961166299433285
+   },
+   {
+    "name": "dst_fft",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 0.9989506139638307,
+    "after_short_median": 1.0002633363173572,
+    "n_long": 30,
+    "n_short": 90,
+    "ratio": 0.9986876232429357
+   }
+  ],
+  "limit": 1.1,
+  "passed": true
+ }
+}

@@ -1,0 +1,78 @@
+{
+ "source": "runs/spA/archive/output3/result.json",
+ "source_sha256": "aaca3a08cfb01f4b0463b898d04fd5be05d10ff9fc4c908c954e5ee707e92062",
+ "raw_neighbour_passed": true,
+ "raw_matches_recorded": true,
+ "case_normalised": {
+  "rows": [
+   {
+    "name": "R128_linear",
+    "phase": "romA1",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 1.001041788801347,
+    "after_short_median": 0.9990662074908888,
+    "n_long": 157,
+    "n_short": 482,
+    "ratio": 1.0019774278177416
+   },
+   {
+    "name": "R64_linear",
+    "phase": "romA1",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 1.0011721545130063,
+    "after_short_median": 0.9980716308335381,
+    "n_long": 483,
+    "n_short": 157,
+    "ratio": 1.003106514185639
+   },
+   {
+    "name": "R128_linear",
+    "phase": "romA2",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 0.9986584070974592,
+    "after_short_median": 1.000779346045237,
+    "n_long": 151,
+    "n_short": 488,
+    "ratio": 0.9978807127103901
+   },
+   {
+    "name": "R64_linear",
+    "phase": "romA2",
+    "long_predecessor": "R128_linear",
+    "short_predecessor": "R64_linear",
+    "after_long_median": 1.0026171765766692,
+    "after_short_median": 0.9955932440260844,
+    "n_long": 489,
+    "n_short": 151,
+    "ratio": 1.0070550223123056
+   },
+   {
+    "name": "dst_mm",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 1.0011470031961627,
+    "after_short_median": 0.9895650815262882,
+    "n_long": 480,
+    "n_short": 159,
+    "ratio": 1.0117040525035612
+   },
+   {
+    "name": "dst_fft",
+    "phase": "spec",
+    "long_predecessor": "dst_fft",
+    "short_predecessor": "dst_mm",
+    "after_long_median": 1.0014224924819213,
+    "after_short_median": 0.9993030689890259,
+    "n_long": 160,
+    "n_short": 480,
+    "ratio": 1.0021209016150021
+   }
+  ],
+  "limit": 1.1,
+  "passed": true
+ }
+}

@@ -40,9 +40,18 @@ submission.
 |---|---|---|---|---|
 | `gen01` | `specs/gen01.json` | 4183329 | FAILED 00:00:45, logs pulled, remote deleted | generation; died in `data.provenance` |
 | `gen02` | `specs/gen02.json` | 4183561 | RUNNING | generation, 4608 cases at 1024/3.125e-4 → `.../opstune_don_20260922/pool02` |
-| `lad01` | `specs/lad01.json` | — | staged, waiting on `gen02` | the data ladder: `c-pinned128`, `c-new128`, base at 512 / 2048 / top, 3000 s each |
+| `lad01` | `specs/lad01.json` | — | staged, waiting on `gen02` | the data ladder: `c-pinned128`, `c-new128`, base at 512 / 2048 / top, **plus `pod-128` and `pod-top`**, 3000 s each |
 | `tun01` | `specs/tun01.json` | — | waiting on `lad01` | the sweep: `s-base` + 11 one-factor arms at 1500 s, then the composed arm |
-| `fin01` | to be written after `tun01` | — | — | the selected recipe (and the best-worst-case arm if different) at 9000 s |
+| `fin01` | to be written after `tun01` | — | — | the selected vanilla recipe **and the tuned POD recipe** at 9000 s, plus the best-worst-case arm if the budget allows |
+
+## The POD-DeepONet arm (added 2026-09-22 by the coordinator, user-approved)
+
+Pre-registered in `DESIGN.md` §A4 **before it ran**. The 2022 variant: the trunk is the POD
+basis of the arm's own training outputs, one basis per evolved time, rank 64, built in float64
+from the training prefix only. **It costs no extra job** — `lad01` went from 5 arms to 7 and
+`fin01`'s second arm became the POD one, so the lane still uses five of its six submissions and
+nothing was cut. What it does *not* get, declared rather than discovered: two ladder rungs
+instead of four, and no sweep of its own (it inherits whichever tuned knobs apply to it).
 
 ## The one thing that must not be lost
 

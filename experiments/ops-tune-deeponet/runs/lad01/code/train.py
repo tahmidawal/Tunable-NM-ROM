@@ -145,6 +145,66 @@ def normalization(data, mode='global', chunk=64):
     return tuple(v.cuda() for v in (mean, std, scale))
 
 
+def pod_basis(targets, scale, rank, chunk=256):
+    """The POD basis of the TRAINING output fields, per evolved output time.
+
+    POD-DeepONet (Lu et al., CMAME 2022) replaces the learned trunk with this basis and lets the
+    branch learn the coefficients. Built here from the training prefix only -- no validation or
+    cohort field ever enters it -- and on the NORMALISED targets (divided by the same output
+    scale `model.predict` multiplies the network output by), so the module works in the same
+    units as the learned-trunk variant.
+
+    The Gram matrix and the eigendecomposition are float64 on the GPU. This project has been
+    caught once by an f32 Gram flooring POD around 2e-4 (CLAUDE.md, `GRAM64`); the modes are cast
+    to the network dtype only at the end.
+
+    Returns (modes [cout, rank, nodes], mean field [cout, nodes], captured energy fraction).
+    """
+    cases, times = targets.shape[0], targets.shape[1] - 1
+    nodes = targets.shape[-2] * targets.shape[-1]
+    # Mean subtraction costs one degree of freedom, so a cases x nodes matrix has rank <= cases-1
+    # and asking for more modes than that returns numerical noise divided by a zero eigenvalue.
+    if rank > cases - 1:
+        raise RuntimeError(f'a POD trunk of rank {rank} needs at least {rank + 1} training cases, not {cases}')
+    modes = torch.zeros(times, rank, nodes, dtype=torch.float64, device='cuda')
+    means = torch.zeros(times, nodes, dtype=torch.float64, device='cuda')
+    energy, conditioning = [], []
+    for channel in range(times):
+        # X: cases x nodes, normalised and mean-subtracted, assembled in chunks.
+        x = torch.empty(cases, nodes, dtype=torch.float64, device='cuda')
+        for start in range(0, cases, chunk):
+            block = targets[start:start + chunk, channel + 1].cuda()
+            x[start:start + chunk] = (block / scale_for(scale, channel)).reshape(block.shape[0], -1)
+        mean = x.mean(0)
+        x -= mean
+        gram = x @ x.T                                   # cases x cases, float64
+        values, vectors = torch.linalg.eigh(gram)
+        order = torch.argsort(values, descending=True)[:rank]
+        values, vectors = values[order].clamp_min(0), vectors[:, order]
+        basis = (x.T @ vectors) / values.clamp_min(1e-300).sqrt()[None]
+        modes[channel] = basis.T
+        means[channel] = mean
+        total = float(gram.diagonal().sum())
+        energy.append(float(values.sum()) / total if total > 0 else 0.)
+        conditioning.append(float(values[-1] / values[0].clamp_min(1e-300)))
+        del x, gram, vectors, basis
+        torch.cuda.empty_cache()
+    orthonormality = float((modes[0] @ modes[0].T - torch.eye(rank, dtype=torch.float64,
+                                                              device='cuda')).abs().max())
+    return modes, means, dict(captured_energy_per_time=energy, rank=rank, cases=cases,
+                              top_orthonormality_deviation=orthonormality,
+                              smallest_over_largest_eigenvalue=conditioning,
+                              well_conditioned=bool(min(conditioning) > 1e-12),
+                              note='built from the training prefix only, on normalised targets, '
+                                   'float64 Gram and eigendecomposition; the last column is the '
+                                   'retained spectrum ratio, so a rank that outruns the data is visible')
+
+
+def scale_for(scale, channel):
+    """The output scale that applies to one evolved channel (scalar, or per-time (1,5,1,1))."""
+    return scale if scale.ndim == 0 else scale.reshape(-1)[channel]
+
+
 def batch(data, ids):
     return tuple(data[key][ids].cuda() for key in ('input', 'parameters', 'target'))
 
@@ -227,6 +287,18 @@ def train(args):
     validation = arrays(validation_records)
     norm = normalization(training, config.get('output_scale_mode', 'global'))
     model = adapter.make_model(pde, config)
+    pod = None
+    if config.get('trunk') == 'pod':
+        if config.get('mesh_intervals') != training_records[0]['mesh']:
+            raise RuntimeError('a POD trunk needs mesh_intervals to match the data')
+        modes, means, pod = pod_basis(training['target'], norm[2], config['rank'])
+        network = model.network if hasattr(model, 'network') else model
+        with torch.no_grad():
+            network.modes.copy_(modes.to(network.modes.dtype))
+            network.mean_field.copy_(means.to(network.mean_field.dtype))
+        del modes, means
+        torch.cuda.empty_cache()
+        print(json.dumps(dict(pod=pod)), flush=True)
     adapter.check_dtypes(model)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
     cosine = config.get('schedule', 'plateau') == 'cosine'
@@ -386,7 +458,7 @@ def train(args):
         validation_interval_seconds=interval, patience=patience,
         schedule='cosine' if cosine else 'plateau',
         output_scale_mode=config.get('output_scale_mode', 'global'),
-        stop_reason=stop_reason, stopped_by_signal=stop_reason == 'signal',
+        pod=pod, stop_reason=stop_reason, stopped_by_signal=stop_reason == 'signal',
         stopped_by_wall_budget=stop_reason == 'wall_budget',
         stopped_by_early_stopping=stop_reason == 'early_stopping', stopped_by_epoch_cap=stop_reason == 'epoch_cap',
         wall_budget_seconds=args.wall_seconds, warmup_epochs=warmup,

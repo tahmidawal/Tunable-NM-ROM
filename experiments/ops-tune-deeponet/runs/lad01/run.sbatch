@@ -7,7 +7,7 @@
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=180G
-#SBATCH --time=07:00:00
+#SBATCH --time=08:30:00
 #SBATCH --signal=B:USR1@180
 #SBATCH --output=/cluster/tufts/paralab/tawal01/opstune_don_20260922/lad01/logs/%j.out
 #SBATCH --error=/cluster/tufts/paralab/tawal01/opstune_don_20260922/lad01/logs/%j.err

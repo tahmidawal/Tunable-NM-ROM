@@ -131,7 +131,7 @@ def main():
         h = hashlib.sha256(hold.read_bytes()).hexdigest()
         part = 'partial' in hold.name
         out += [f"## $4096^2$ held-out (hold64) — job {s['job_id']}, {s['gpu']}" + (' — PARTIAL: held-out errors complete (all 64 cases); timing from 1 repetition only (job cancelled to fit the allocation; see PROGRESS)' if part else ''), '',
-                f"Summary `checks/{hold.name}` sha256 `{h}`. FOM grid: the lean settings (fft_tight = untimed reference).", '',
+                f"Summary `checks/{hold.name}` sha256 `{h}`. GPU: {s['gpu']} (the dev6 selection job at $4096^2$ ran on an H200; H200s were saturated, so the held-out job moved to A100-80G at the coordinator's request — absolute ms are not comparable with the dev table, the ratios are same-job). FOM grid: the lean settings; fft_tight is the untimed reference and lean_tight / lean_nt1e-4_dt005 are untimed (never a comparator: an order of magnitude more accurate than every ROM arm and slower than lean_nt3e-3_l3e-3_dt005). Held-out errors are identical to the digit in the earlier clean partial run bkh64b (H200).", '',
                 '| role (frozen in selection-4096.json) | arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |', '|---|---|---|---|---|---|---|---|---|']
         selj = json.loads((LANE / 'selection-4096.json').read_text())
         roles = {}

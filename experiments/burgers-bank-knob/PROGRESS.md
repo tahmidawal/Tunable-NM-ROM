@@ -58,6 +58,11 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   1.4094 %; current R'=512 q=256 1.3297 %; chosen fast R'=128 linear 3.1107 %; current q=0 9.0302 %; sensitivity R'=384 linear
   1.3498 % (median 0.0297 %). Timing (1 rep): 106.6 / 113.9 / 24.7 / 42.2 / 60.9 ms → 5.02× / 4.70× / 10.99× / 6.42× / 8.80×.
 
+- bkh64f (hold64, A100-80G, config-h64a: bank in 32 row blocks): errors identical to bkh64b. Same-job ratios:
+  chosen accurate R'=384 q=256 1.409 % / 200.3 ms / 6.37× (lean_nt3e-3_l3e-3_dt005 1275 ms); current R'=512 q=256 1.330 % /
+  217.7 ms / 5.86×; chosen fast R'=128 linear 3.111 % / 46.7 ms / 13.76× (lean_nt1e-2_l1e-2_dt01 642.5 ms); current q=0
+  9.030 % / 84.7 ms / 7.58×; sensitivity R'=384 linear 1.350 % / 120.6 ms / 10.58×.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -72,5 +77,6 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bkh64 | 4210077 | 4096² hold64 | H200 | FAILED (group disk full) after 4/5 main reps; partial pulled + audited; remote deleted |
 | bkh64b | 4218386 | 4096² hold64 | H200 pax008 | quick phase (all 64-case errors) complete 13:11 (after the disk window); pax008 host ~3× slower (≈9 s host per timed invocation) → rep 0 took 1.9 h; CANCELLED after 1 rep (could not finish 5 in the limit); pulled with remote checksums, audited, remote deleted |
 | bkh64c/d | 4233906/4234407 | — | — | cancelled while pending (never ran), superseded by leaner configs |
-| bkh64e | 4235338 | 4096² hold64 | H200 | timed loop lean for held-out: no per-invocation re-score, subsample SHA each + full SHA every 8th, slow lean FOMs untimed; submitted 15:20 |
+| bkh64e | 4235338 | — | H200 | cancelled while pending (H200s saturated; coordinator asked to move to A100-80G), never ran |
+| bkh64f | 4239635 | 4096² hold64 | A100-80G pax106 | COMPLETED 3 h 05 min; collected, audited (ALL gates pass incl. 5 reps, order effect), remote deleted — THE held-out result |
 | bx2048 | 4202862 | 2048² | A100-80G | exploratory (A2) COMPLETED 31.5 min; audited (all gates pass), remote deleted |

@@ -83,6 +83,15 @@ def one(attempt, sub):
     table1['fast_gpu_ms_after_long'] = after[fastarm['name']]
     table1['accurate_speedup_after_long'] = ref['gpu_ms'] / after[acc['name']] if ref else None
     table1['fast_speedup_after_long'] = ref['gpu_ms'] / after[fastarm['name']] if ref else None
+    primary = {x['name'] for x in cand}
+    lim = R['neighbour_gate']['limit']
+    gate_breakdown = dict(
+        neighbour_primary_worst=max([r['ratio'] for r in R['neighbour_gate']['rows'] if r['name'] in primary] or [None]),
+        neighbour_primary_failing=[f"{r['name']}@{r.get('phase', '')} {r['ratio']:.3f}" for r in R['neighbour_gate']['rows'] if r['name'] in primary and r['ratio'] > lim],
+        neighbour_other_failing=[f"{r['name']}@{r.get('phase', '')} {r['ratio']:.3f}" for r in R['neighbour_gate']['rows'] if r['name'] not in primary and r['ratio'] > lim],
+        drift_primary_range=([min(r['ratio'] for r in R['drift_gate']['rows'] if r['name'] in primary),
+                              max(r['ratio'] for r in R['drift_gate']['rows'] if r['name'] in primary)] if R.get('drift_gate') else None),
+        drift_failing=([f"{r['name']} {r['ratio']:.3f}" for r in R['drift_gate']['rows'] if not (1 / lim <= r['ratio'] <= lim)] if R.get('drift_gate') else None))
     prof = {}
     for nm in [s['name'] for s in rom]:
         rows = [x for x in R['profile'] if x['name'] == nm]
@@ -97,7 +106,7 @@ def one(attempt, sub):
                 audit=dict(verdict=A['verdict'], summary=A['summary']),
                 floors={k: v['worst'] for k, v in R['floors'].items()},
                 result_sha256=hashlib.sha256((d / 'result.json').read_bytes()).hexdigest(),
-                most_accurate_arm=best['name'], matched_cg=(ref['name'] if ref else None), table1=table1,
+                gate_breakdown=gate_breakdown, most_accurate_arm=best['name'], matched_cg=(ref['name'] if ref else None), table1=table1,
                 subjects=subj, profile=prof, device_memory=R.get('device_memory'))
 
 
@@ -136,6 +145,10 @@ def main():
               f"{max(r['ratio'] for r in m['neighbour_gate']['rows']):.3f} (limit {m['neighbour_gate']['limit']}).",
               (f"Design {m['design']}. Drift gate (romA2/romA1 per arm): {'PASS' if m['drift_gate']['passed'] else 'FAIL'}, range "
                f"{min(r['ratio'] for r in m['drift_gate']['rows']):.3f}–{max(r['ratio'] for r in m['drift_gate']['rows']):.3f}." if m['drift_gate'] else f"Design {m['design']}."),
+              f"Gate breakdown: neighbour worst over primary arms {m['gate_breakdown']['neighbour_primary_worst']:.3f}; failing primary: "
+              f"{', '.join(m['gate_breakdown']['neighbour_primary_failing']) or 'none'}; failing other: {', '.join(m['gate_breakdown']['neighbour_other_failing']) or 'none'}; "
+              f"drift failing: {', '.join(m['gate_breakdown']['drift_failing'] or []) or 'none'}"
+              + (f"; drift range over primary arms {m['gate_breakdown']['drift_primary_range'][0]:.3f}–{m['gate_breakdown']['drift_primary_range'][1]:.3f}." if m['gate_breakdown']['drift_primary_range'] else '.'),
               f"Most accurate ROM arm: `{m['most_accurate_arm']}`; matched CG (fastest with worst error ≤ it): `{m['matched_cg']}`.", '',
               f"**Table-1 settings (pre-registered rule):** accurate `{m['table1']['accurate']}` "
               f"{m['table1']['accurate_worst_error']*100:.3f} % at {m['table1']['accurate_gpu_ms']:.2f} ms = "

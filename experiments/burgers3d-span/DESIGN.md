@@ -289,3 +289,17 @@ three predictor candidates and once after the sweep. Stationarity is measured af
 and backward-Euler steps Δt ∈ {0.005, 0.01} (the FOM grid has the same Δt knob; the reference stays Δt = 0.005).
 Selection (§6 with R1) is applied to the A2 panels, which contain every v1 arm; the v1 panels are reported as the
 first validation panels. Nothing else changes (bar, rules, FOM grid, cohorts, gates, stopping rule).
+
+## A3 — adaptive start for the fixed-sweep path (2026-09-23 ~19:15 EDT; AFTER the A2 validation panels at 33/65)
+
+Written after seeing `val33x`/`val65x` (jobs 4244595/4244597) and their certificates; labelled as such; held-out
+untouched. At 64³ the A2 fixed-sweep arms did not change errors (identical to the LM arms to 4 digits) and cut time
+by ~20–30 %, but the stopping rule still fails: the cheapest arm within 5 % that beats its own matched FOM would be the
+Δt = 0.01 fixed-sweep R'=128 arm (3.94 %, 9.37 ms vs `fom_dt0.01_nt0.01_lt0.1` 11.68 ms), which is **ineligible**
+under R1 item 6 because 6 of its 400 steps (1.5 %) end non-stationary — all at step 0 (after 3 sweeps) or step 2
+(first quadratic extrapolation). Added arms `fsa`: identical to `fs1` except that the first three steps use the
+adaptive LM of the original arms (while loop, the same stopping test, budget 50), R' ∈ {512,…,64}, Δt ∈ {0.005, 0.01}.
+The A3 panels contain every v1 and A2 arm again, timed in one allocation per mesh; selection (§6, R1, eligibility
+unchanged) is applied to the A3 panels. The A2 rerun at 129 (`val129y`) is cancelled as superseded. No rule, bar,
+cohort, FOM setting or gate changes. This is the last amendment before the stopping-rule date; whatever the A3
+panels show is applied as is.

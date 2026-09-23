@@ -571,7 +571,7 @@ def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jn
     return jax.jit(query), jax.jit(coef)
 
 
-def make_query_fs(n, Rp, M, dt=DT, gtol=1e-3, trust=jnp.inf, unroll=True, first_sweeps=3):
+def make_query_fs(n, Rp, M, dt=DT, gtol=1e-3, trust=jnp.inf, unroll=True, first_sweeps=3, adaptive_first=0):
     """Amendment A2 fast path: span + tensor rule, the same scaled LSPG residual and the same LM step
     (Cholesky of J^T J + lam diag(J^T J), clipped, damping carried, accept only if the residual decreases), but a
     FIXED number of sweeps per time step after the predictor (3 on the first two steps, which have no
@@ -638,8 +638,30 @@ def make_query_fs(n, Rp, M, dt=DT, gtol=1e-3, trust=jnp.inf, unroll=True, first_
                 return (w, wv, wp, lam), (w, rn, jnp.int32(nsweep), reason, gn, rej)
             return step
         carry = (w0, w0, w0, jnp.asarray(1e-6, dtype=jnp.float64))
-        carry, o1 = jax.lax.scan(make_step(first_sweeps), carry, jnp.arange(2), unroll=True)
-        _, o2 = jax.lax.scan(make_step(1), carry, jnp.arange(2, steps), unroll=unroll)
+        if adaptive_first:
+            # amendment A3: the first `adaptive_first` steps (no or short extrapolation history) use the adaptive
+            # LM of make_query (while loop, same stopping test, budget 50); every later step one fixed sweep
+            def evalJ(w, args):
+                p_ = args
+                return rj(jnp.einsum('mij,j->mi', Ts, w), w, p_)
+            lmA = make_fused_lm(evalJ, Rp, 50, trust, gtol, clip=True)
+
+            def astep(carry, k):
+                wv, wp, wp2, lam = carry
+                p = A @ wv
+                we = 2. * wv - wp
+                wq = jnp.where(k >= 2, 3. * wv - 3. * wp + wp2, we)
+                cand = jnp.stack((wv, we, wq))
+                Ju3 = jnp.einsum('mij,kj->kmi', Ts, cand)
+                rs = jnp.linalg.norm(jax.vmap(lambda Ju, c: rj(Ju, c, p)[0])(Ju3, cand), axis=1)
+                wi = cand[jnp.argmin(jnp.where(jnp.isfinite(rs), rs, jnp.inf))]
+                w2, rn, it, reason, gn, rej, lam2 = lmA(wi, p, 1e-12 * jnp.linalg.norm(t), lam)
+                return (w2, wv, wp, lam2), (w2, rn, it, reason, gn, rej)
+            carry, o1 = jax.lax.scan(astep, carry, jnp.arange(adaptive_first))
+            _, o2 = jax.lax.scan(make_step(1), carry, jnp.arange(adaptive_first, steps), unroll=unroll)
+        else:
+            carry, o1 = jax.lax.scan(make_step(first_sweeps), carry, jnp.arange(2), unroll=True)
+            _, o2 = jax.lax.scan(make_step(1), carry, jnp.arange(2, steps), unroll=unroll)
         ws, rn, it, reason, gn, rej = (jnp.concatenate((x, y)) for x, y in zip(o1, o2))
         internal = jnp.concatenate((w0[None], ws))
         X = data['Rq'] @ internal[::keep].T

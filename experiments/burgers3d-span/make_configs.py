@@ -5,6 +5,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 FS = False
+FSA = False
 
 
 def arms(R, exact):
@@ -20,6 +21,9 @@ def arms(R, exact):
         a.append(dict(kind='span', rule='exact', Rp=top))
     if FS:   # amendment A2: fixed-sweep fast path, two backward-Euler steps
         a += [dict(kind='span', rule='tensor', Rp=r, solver='fs1', dt=dt) for dt in (0.005, 0.01)
+              for r in span_ladder if r >= 64]
+    if FSA:  # amendment A3: adaptive LM on the first three steps, then fixed sweeps
+        a += [dict(kind='span', rule='tensor', Rp=r, solver='fsa', dt=dt) for dt in (0.005, 0.01)
               for r in span_ladder if r >= 64]
     return a
 
@@ -50,7 +54,10 @@ def main(R, tag=''):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 2 and sys.argv[2] == 'A2':
+    if len(sys.argv) > 2 and sys.argv[2] == 'A3':
+        FS = FSA = True
+        main(int(sys.argv[1]), tag='A3')
+    elif len(sys.argv) > 2 and sys.argv[2] == 'A2':
         FS = True
         main(int(sys.argv[1]), tag='A2')
     else:

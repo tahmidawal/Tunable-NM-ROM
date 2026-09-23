@@ -1,0 +1,102 @@
+host=pax105 source_commit=e5c71ce7cebb2c2705c3941f4d14ebf22195092b
+NVIDIA A100 80GB PCIe, GPU-a9dcc2dc-2ba8-5c5c-ed4c-ff7b876e8fee, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  367G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[3.3s] [mesh 65] bank evaluated (250047, 512) 2.8s
+[5.9s] [mesh 65] A (2052, 512) 5.3s
+[16.8s] [mesh 65] tensor (2052, 512, 512) 16.3s
+[17.5s] [mesh 65] lattice EQ m=3375 16.9s
+[21.8s] table gates {'A_dst_vs_explicit': 1.0922997737105012e-15, 'qr_reconstruction': 1.6584037126248495e-15, 'tensor_vs_direct': 2.596707090328751e-16}
+[39.2s] CERT span_R512_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 4.159e-05 umin -0.00528
+[43.7s] CERT span_R512_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 9.971e-06 umin -0.00511
+[48.2s] CERT span_R512_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 1.829e-05 umin -0.00534
+[52.7s] CERT span_R512_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 6.302e-06 umin -0.00164
+[57.2s] CERT span_R512_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0001413 umin -0.0119
+[66.0s] CERT span_R512_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.0009066 umin -0.0434
+[77.9s] CERT span_R384_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.0001311 umin -0.00929
+[80.5s] CERT span_R384_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 3.884e-05 umin -0.00863
+[83.0s] CERT span_R384_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 2.495e-05 umin -0.00549
+[85.6s] CERT span_R384_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 2.092e-05 umin -0.00309
+[88.2s] CERT span_R384_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0003693 umin -0.0219
+[93.2s] CERT span_R384_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.001994 umin -0.0587
+[105.1s] CERT span_R256_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.0003309 umin -0.0151
+[106.7s] CERT span_R256_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 8.131e-05 umin -0.0135
+[108.2s] CERT span_R256_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 5.96e-05 umin -0.00906
+[109.8s] CERT span_R256_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 3.662e-05 umin -0.00665
+[111.3s] CERT span_R256_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0003498 umin -0.0194
+[114.1s] CERT span_R256_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.003469 umin -0.0624
+[124.9s] CERT span_R192_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.0002071 umin -0.0123
+[126.1s] CERT span_R192_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 0.000215 umin -0.0224
+[127.4s] CERT span_R192_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 7.345e-05 umin -0.0106
+[128.6s] CERT span_R192_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 3.481e-05 umin -0.0049
+[129.8s] CERT span_R192_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0003512 umin -0.0238
+[132.1s] CERT span_R192_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.00257 umin -0.0655
+[141.5s] CERT span_R128_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.0003341 umin -0.0219
+[142.5s] CERT span_R128_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 0.0005024 umin -0.0221
+[143.6s] CERT span_R128_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 0.000182 umin -0.0198
+[144.6s] CERT span_R128_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 0.0001104 umin -0.0121
+[145.7s] CERT span_R128_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0009962 umin -0.0311
+[147.6s] CERT span_R128_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.00514 umin -0.0759
+[156.6s] CERT span_R96_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.0006428 umin -0.0264
+[157.6s] CERT span_R96_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 0.0008351 umin -0.0351
+[158.7s] CERT span_R96_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 0.0002475 umin -0.0247
+[159.8s] CERT span_R96_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 0.0001955 umin -0.0168
+[160.8s] CERT span_R96_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.0009909 umin -0.038
+[162.6s] CERT span_R96_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.004055 umin -0.0734
+[171.5s] CERT span_R64_tensor_fs1_dt0.005 draw 0 seed 923201: rho_max 0.001355 umin -0.0503
+[172.5s] CERT span_R64_tensor_fs1_dt0.005 draw 1 seed 923202: rho_max 0.001334 umin -0.0634
+[173.5s] CERT span_R64_tensor_fs1_dt0.005 draw 2 seed 923203: rho_max 0.001056 umin -0.0493
+[174.5s] CERT span_R64_tensor_fs1_dt0.005 draw 3 seed 923204: rho_max 0.000504 umin -0.0301
+[175.5s] CERT span_R64_tensor_fs1_dt0.005 draw 4 seed 923205: rho_max 0.001727 umin -0.0617
+[177.2s] CERT span_R64_tensor_fs1_dt0.005 draw 5 seed 923206: rho_max 0.005882 umin -0.112
+[184.3s] CERT span_R512_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 2.926e-05 umin -0.0047
+[187.0s] CERT span_R512_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 8.186e-06 umin -0.00417
+[189.8s] CERT span_R512_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 1.065e-05 umin -0.00399
+[192.5s] CERT span_R512_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 4.518e-06 umin -0.00138
+[195.2s] CERT span_R512_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0001029 umin -0.00987
+[200.5s] CERT span_R512_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.0006311 umin -0.0355
+[206.5s] CERT span_R384_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.0001 umin -0.00819
+[208.3s] CERT span_R384_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 3.202e-05 umin -0.00727
+[210.1s] CERT span_R384_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 1.292e-05 umin -0.00442
+[211.9s] CERT span_R384_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 1.573e-05 umin -0.00264
+[213.6s] CERT span_R384_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0002646 umin -0.0187
+[216.9s] CERT span_R384_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.001485 umin -0.0479
+[223.0s] CERT span_R256_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.0002694 umin -0.0136
+[224.2s] CERT span_R256_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 5.727e-05 umin -0.0112
+[225.5s] CERT span_R256_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 3.783e-05 umin -0.00722
+[226.7s] CERT span_R256_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 3.183e-05 umin -0.00625
+[227.9s] CERT span_R256_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0002769 umin -0.0173
+[230.1s] CERT span_R256_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.002671 umin -0.0538
+[235.7s] CERT span_R192_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.0001773 umin -0.0112
+[236.8s] CERT span_R192_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 0.0001658 umin -0.0195
+[237.8s] CERT span_R192_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 5.27e-05 umin -0.00862
+[238.9s] CERT span_R192_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 3.137e-05 umin -0.00453
+[239.9s] CERT span_R192_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0002825 umin -0.0213
+[241.9s] CERT span_R192_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.001956 umin -0.0552
+[247.1s] CERT span_R128_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.0002653 umin -0.0206
+[248.1s] CERT span_R128_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 0.0003766 umin -0.0166
+[249.0s] CERT span_R128_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 0.0001376 umin -0.0162
+[250.0s] CERT span_R128_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 9.058e-05 umin -0.0111
+[250.9s] CERT span_R128_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0007869 umin -0.0278
+[252.6s] CERT span_R128_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.004309 umin -0.069
+[257.9s] CERT span_R96_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.0005333 umin -0.0239
+[258.8s] CERT span_R96_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 0.00064 umin -0.0282
+[259.8s] CERT span_R96_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 0.0001916 umin -0.021
+[260.7s] CERT span_R96_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 0.0001668 umin -0.015
+[261.6s] CERT span_R96_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.0008581 umin -0.035
+[263.2s] CERT span_R96_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.00347 umin -0.0648
+[268.4s] CERT span_R64_tensor_fs1_dt0.01 draw 0 seed 923201: rho_max 0.001195 umin -0.044
+[269.3s] CERT span_R64_tensor_fs1_dt0.01 draw 1 seed 923202: rho_max 0.001035 umin -0.055
+[270.2s] CERT span_R64_tensor_fs1_dt0.01 draw 2 seed 923203: rho_max 0.0008752 umin -0.0438
+[271.0s] CERT span_R64_tensor_fs1_dt0.01 draw 3 seed 923204: rho_max 0.0004111 umin -0.0255
+[271.9s] CERT span_R64_tensor_fs1_dt0.01 draw 4 seed 923205: rho_max 0.001511 umin -0.0545
+[273.5s] CERT span_R64_tensor_fs1_dt0.01 draw 5 seed 923206: rho_max 0.0053 umin -0.103
+[277.6s] CERT span_R128_lat16_BADx05 draw 0 seed 923201: rho_max 0.5 umin -0.0216
+[278.8s] CERT span_R128_lat16_BADx05 draw 1 seed 923202: rho_max 0.5 umin -0.0142
+[280.0s] CERT span_R128_lat16_BADx05 draw 2 seed 923203: rho_max 0.5 umin -0.0201
+[281.2s] CERT span_R128_lat16_BADx05 draw 3 seed 923204: rho_max 0.5 umin -0.0124
+[282.5s] CERT span_R128_lat16_BADx05 draw 4 seed 923205: rho_max 0.5 umin -0.0238
+[284.6s] CERT span_R128_lat16_BADx05 draw 5 seed 923206: rho_max 0.5001 umin -0.0165
+PANEL COMPLETE
+ALL-DONE

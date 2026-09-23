@@ -48,7 +48,8 @@ def arm_list(cfg):
         g = a.get('gtol', cfg['gtol'])
         name = (f"span_R{Rp}_{rule}" if kind == 'span' else f"head{K}_R{Rp}_{rule}") + \
                ('' if g == cfg['gtol'] else f"_g{g:g}") + ('_BADx05' if a.get('bad') else '') + \
-               (f"_fs1_dt{a.get('dt', 0.005):g}" if a.get('solver') == 'fs1' else '')
+               (f"_fs1_dt{a.get('dt', 0.005):g}" if a.get('solver') == 'fs1' else '') + \
+               (f"_fsa_dt{a.get('dt', 0.005):g}" if a.get('solver') == 'fsa' else '')
         arms[name] = dict(a, gtol=g, name=name)
     return arms
 
@@ -145,23 +146,28 @@ def main():
     save()
 
     # ------------------------------------------------------------ arms
-    data, queries, coefs, hps = {}, {}, {}, {}
+    data, queries, coefs, hps, data_cache = {}, {}, {}, {}, {}
     for name, s in arms.items():
         M = M_of(s['Rp']) if s['kind'] == 'span' else M_of(s['K'])
         s['M'] = int(M)
         hk = model['heads'].get(int(s['K'])) if s['kind'] == 'head' else None
         if hk is not None:
             mesh['library'] = dict(Z=jnp.asarray(hk['Z']), H=jnp.asarray(hk['H']))
-        d = C.arm_data(mesh, s['kind'], s['rule'], s['Rp'], M)
-        if s.get('bad'):
-            d['Pq'] = d['Pq'] * 0.5
+        key = (s['kind'], s['rule'], s['Rp'], M, s.get('K'), bool(s.get('bad')))
+        if key not in data_cache:       # arms that differ only in solver/tolerance/dt share one copy of the tables
+            d = C.arm_data(mesh, s['kind'], s['rule'], s['Rp'], M)
+            if s.get('bad'):
+                d['Pq'] = d['Pq'] * 0.5
+            data_cache[key] = d
+        d = data_cache[key]
         data[name] = d
         trust = cfg['trust_fraction'] * (model['spread'][str(s['Rp'])] if s['kind'] == 'span' else hk['code_spread'])
         s['trust'] = float(trust)
         assert M >= (4 * s['Rp'] if s['kind'] == 'span' else 4 * s['K']) and M <= mesh['M_max'], (name, M)
-        if s.get('solver') == 'fs1':
+        if s.get('solver') in ('fs1', 'fsa'):
             assert s['kind'] == 'span' and s['rule'] == 'tensor'
-            queries[name], coefs[name] = C.make_query_fs(n, s['Rp'], M, dt=s.get('dt', C.DT), gtol=s['gtol'], trust=trust)
+            queries[name], coefs[name] = C.make_query_fs(n, s['Rp'], M, dt=s.get('dt', C.DT), gtol=s['gtol'], trust=trust,
+                                                         adaptive_first=3 if s['solver'] == 'fsa' else 0)
         else:
             queries[name], coefs[name] = C.make_query(n, s['kind'], s['rule'], s['Rp'], M, K=s.get('K'), gtol=s['gtol'],
                                                       step_budget=cfg['step_budget'], trust=trust, kxyz=mesh['kxyz'])

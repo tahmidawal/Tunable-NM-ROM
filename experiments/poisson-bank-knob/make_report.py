@@ -71,6 +71,12 @@ def one(attempt, sub):
                   fast_speedup=(ref['gpu_ms'] / fastarm['gpu_ms'] if ref else None),
                   accurate_total_ms=acc['total_ms'], fast_total_ms=fastarm['total_ms'],
                   fom_total_ms=(ref['total_ms'] if ref else None))
+    # conservative variant: arm time = its median right after a long CG neighbour (neighbour phase, cases 0-2)
+    after = {r['name']: r['after_long_median'] * 1e3 for r in R['neighbour_gate']['rows']}
+    table1['accurate_gpu_ms_after_long'] = after[acc['name']]
+    table1['fast_gpu_ms_after_long'] = after[fastarm['name']]
+    table1['accurate_speedup_after_long'] = ref['gpu_ms'] / after[acc['name']] if ref else None
+    table1['fast_speedup_after_long'] = ref['gpu_ms'] / after[fastarm['name']] if ref else None
     prof = {}
     for nm in [s['name'] for s in rom]:
         rows = [x for x in R['profile'] if x['name'] == nm]
@@ -127,7 +133,9 @@ def main():
               f"{m['table1']['accurate_speedup']:.1f}× vs `{m['table1']['fom']}` ({m['table1']['fom_gpu_ms']:.1f} ms, "
               f"{m['table1']['fom_worst_error']*100:.3f} %); fast `{m['table1']['fast']}` {m['table1']['fast_worst_error']*100:.3f} % "
               f"at {m['table1']['fast_gpu_ms']:.2f} ms = {m['table1']['fast_speedup']:.1f}× (fast bar: `R512_q0` "
-              f"{m['table1']['paper_fast_reference_worst_error']*100:.3f} %).", '',
+              f"{m['table1']['paper_fast_reference_worst_error']*100:.3f} %). Conservative (arm timed right after a long CG "
+              f"neighbour): accurate {m['table1']['accurate_gpu_ms_after_long']:.2f} ms = {m['table1']['accurate_speedup_after_long']:.1f}×, "
+              f"fast {m['table1']['fast_gpu_ms_after_long']:.2f} ms = {m['table1']['fast_speedup_after_long']:.1f}×.", '',
               "| R' | q | arm | worst err % | median err % | floor % | GPU ms | total ms | × vs matched CG (GPU) | × vs cg_0.01 (GPU) | own matched CG | × vs own matched CG | LM attempts |",
               '|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|']
         rom = sorted([s for s in m['subjects'].values() if s['family'] != 'cg'],

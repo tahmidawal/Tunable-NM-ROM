@@ -115,11 +115,75 @@ def audit_burgers(run, R, delete):
         sys.exit(1)
 
 
+def audit_heat(run, R, delete):
+    """Heat: an independent truth for cases 0 and 1 in NumPy (dense orthonormal sine matrix, exact propagation with the
+    discrete eigenvalues), against which every subject's full-field errors on those cases are recomputed; on every
+    case, every subject's subsampled-grid errors are recomputed against the driver's saved subsampled truth."""
+    import core as C          # the initial-condition formula only (the input)
+    n, d, cfg, lane = R['intervals'], R['dim'], R['config'], R['lane_config']
+    times, nu = lane['times'], lane['diffusivity']
+    S, l = sine(n)
+    lam = l[:, None] + l[None, :] if d == 2 else l[:, None, None] + l[None, :, None] + l[None, None, :]
+    fam = 'mr2d' if d == 2 else 'h3d'
+    draws = C.family(fam, R['cohort']['seed'], R['cohort']['count'])
+    inv = R['invocations']
+    first = {}
+    for x in inv:
+        first.setdefault((x['name'], x['case']), x)
+    truths = {}
+    for c in (0, 1):
+        u0 = np.asarray(C.initial_grid(n, d, draws[c]))
+        cc = apply(S, u0)
+        truths[c] = np.stack([u0] + [apply(S, cc * np.exp(-nu * t * lam)) for t in times[1:]])
+    relt = lambda f, t: [float(np.linalg.norm(a - b) / np.linalg.norm(b)) for a, b in zip(f, t)]
+    rows, ok_all, hash_ok = [], True, True
+    for (name, case), x in sorted(first.items()):
+        ts = np.load(run / 'fields' / f'truth_sub_case{case}.npy')
+        fs = np.load(run / 'fields' / f'{name}_sub_case{case}.npy')
+        es = relt(fs, ts)
+        dsub = max(abs(a - b) / (1e-8 * b + 1e-13) for a, b in zip(es, x['sub_errors']))
+        ok = dsub <= 1.0
+        row = dict(name=name, case=case, sub_deviation_over_tolerance=dsub)
+        if case in truths:
+            f = np.load(run / 'fields' / f'{name}_case{case}.npy')
+            hash_ok &= hashlib.sha256(np.ascontiguousarray(f).tobytes()).hexdigest() == x['field_sha256']
+            ef = relt(f, truths[case])
+            dfull = max(abs(a - b) / (1e-8 * b + 1e-12) for a, b in zip(ef, x['same_grid_per_time']))
+            row.update(full_recomputed_worst=max(ef), full_recorded_worst=x['same_grid_worst'], full_deviation_over_tolerance=dfull)
+            ok &= dfull <= 1.0
+        row['agrees'] = bool(ok)
+        ok_all &= ok
+        rows.append(row)
+    deterministic = all(x['field_sha256'] == first[(x['name'], x['case'])]['field_sha256'] for x in inv)
+    name0 = R['config']['rom_arms']['rom_accurate']
+    f0 = np.load(run / 'fields' / f'{name0}_case0.npy')
+    rec0 = first[(name0, 0)]['same_grid_worst']
+    ctrl_swap = abs(max(relt(f0, truths[1])) - rec0) > 1e-8 * rec0 + 1e-13
+    pert = rec0 * (1 + 1e-4)
+    ctrl_pert = abs(max(relt(f0, truths[0])) - pert) > 1e-8 * pert + 1e-13
+    ok = bool(ok_all and hash_ok and deterministic and ctrl_swap and ctrl_pert)
+    audit = dict(verdict='PASS' if ok else 'FAIL', recomputed=len(rows), field_hashes_match=bool(hash_ok),
+                 deterministic=bool(deterministic), control_swapped_truth_detected=bool(ctrl_swap),
+                 control_perturbed_error_detected=bool(ctrl_pert), control_subject=name0,
+                 truth_method='NumPy dense sine matrix exact propagation (cases 0,1); driver subsampled truth elsewhere', rows=rows)
+    (run / 'audit.json').write_text(json.dumps(audit, indent=1) + '\n')
+    print('AUDIT', audit['verdict'], len(rows), flush=True)
+    (run / 'sub').mkdir(exist_ok=True)
+    for q in (run / 'fields').glob('*sub_case*.npy'):
+        shutil.copy(q, run / 'sub' / q.name)
+    if delete:
+        shutil.rmtree(run / 'fields')
+    if not ok:
+        sys.exit(1)
+
+
 def main(run, delete=False):
     run = Path(run)
     R = json.loads((run / 'result.json').read_text())
     if R['problem'] == 'burgers2d':
         return audit_burgers(run, R, delete)
+    if R['problem'].startswith('heat'):
+        return audit_heat(run, R, delete)
     truths = TRUTHS[R['problem']](R)
     inv = R['invocations']
     first = {}

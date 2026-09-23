@@ -95,32 +95,51 @@ def make_poisson(n, d, variant):
 
 # ------------------------------------------------------------------ Heat ------
 
+def _dst_batched_fft(x, d):
+    """Orthonormal DST-I over the last d axes of a batched array."""
+    for ax in range(1, d + 1):
+        x = dst1_fft(x, x.ndim - ax)
+    return x
+
+
+def _dst_batched_mm(x, S, d):
+    if d == 2:
+        return S @ x @ S                                  # broadcasts over the leading batch axis
+    x = jnp.einsum('ai,...ijk->...ajk', S, x)
+    x = jnp.einsum('bj,...ajk->...abk', S, x)
+    return jnp.einsum('ck,...abk->...abc', S, x)
+
+
 def make_heat(n, d, nu, times, variant, scheme, dt=None):
-    """Exact modal solution of the paper's semi-discrete heat problem u' = -nu A u (A = the n^2-scaled
-    Dirichlet Laplacian), zero Dirichlet, on the interior.  Returns all output fields (len(times), full
-    nodal grid).  scheme='exp': exact propagation exp(-nu t lam); scheme='cn': Crank-Nicolson with step
-    dt applied exactly in modal space, g = (1 - dt nu lam/2)/(1 + dt nu lam/2), g^steps per output."""
+    """Exact modal solution of the heat lane's semi-discrete problem u' = -nu A u (A = the n^2-scaled Dirichlet
+    Laplacian, zero Dirichlet) on the INTERIOR grid (the lane's query scope: interior (n-1)^d field in -> all output
+    fields out).  scheme='exp': exact propagation exp(-nu t lam) (= the lane's same-grid truth, core.make_propagate);
+    scheme='cn': Crank-Nicolson with step dt applied exactly in modal space, factor g^s,
+    g = (1 - dt nu lam/2)/(1 + dt nu lam/2).  t = 0 is returned as the input itself (both factors are 1 there).
+    The later outputs are transformed as one batch."""
     lam = eig_grid(n, d)
+    assert times[0] == 0.0
+    later = list(times[1:])
     if scheme == 'exp':
-        fac = np.stack([np.exp(-nu * t * lam) for t in times])
+        fac = np.stack([np.exp(-nu * t * lam) for t in later])
     else:
         g = (1 - 0.5 * dt * nu * lam) / (1 + 0.5 * dt * nu * lam)
-        steps = [int(round(t / dt)) for t in times]
-        assert all(abs(s * dt - t) < 1e-12 for s, t in zip(steps, times)), (times, dt)
-        fac = np.stack([g ** s for s in steps])
+        steps = [int(round(t / dt)) for t in later]
+        assert all(abs(s_ * dt - t) < 1e-12 for s_, t in zip(steps, later)), (times, dt)
+        fac = np.stack([g ** s_ for s_ in steps])
     fac = jnp.asarray(fac)
     if variant == 'fft':
         @jax.jit
         def run(u0, fac):
-            c = dstn_fft(interior(u0))
-            return jax.lax.map(lambda f: pad1(dstn_fft(c * f)), fac)
+            c = _dst_batched_fft(u0[None], d)
+            return jnp.concatenate((u0[None], _dst_batched_fft(c * fac, d)))
         return lambda u: run(u, fac)
     S = jnp.asarray(sine_matrix(n - 1))
 
     @jax.jit
     def run_mm(u0, fac, S):
-        c = dstn_mm(interior(u0), S)
-        return jax.lax.map(lambda f: pad1(dstn_mm(c * f, S)), fac)
+        c = _dst_batched_mm(u0[None], S, d)
+        return jnp.concatenate((u0[None], _dst_batched_mm(c * fac, S, d)))
     return lambda u: run_mm(u, fac, S)
 
 

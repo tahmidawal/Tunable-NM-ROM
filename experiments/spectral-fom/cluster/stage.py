@@ -53,10 +53,18 @@ BURG = [(f, BKN_COMMIT) for f in (
     'experiments/b-panel/inputs/rules-eqtop/rule_q0_m1024_qrg304_reachable.npz',
     'experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz',
     f'{BKN}/config-256.json', f'{BKN}/config-512.json', f'{BKN}/config-1024.json', f'{BKN}/config-2048.json')]
-TREE_SETS = {'burgers': ['experiments/mr-burgers2d', 'experiments/separable-decoder', 'experiments/head-ablation',
+HBK = 'experiments/heat-bank-knob'
+HBK_COMMIT = '00147a52'      # exp/2026-09-23-heat-bank-knob; core/hbk_core/inputs/prep/configs identical to h2d 962ced91 / h3d bae9e1e6
+HEAT = [(f, HBK_COMMIT) for f in (
+    f'{HBK}/core.py', f'{HBK}/hbk_core.py', f'{HBK}/prep_2d.npz', f'{HBK}/prep_3d.npz', f'{HBK}/configs/h2d.json',
+    f'{HBK}/configs/h3d.json', f'{HBK}/inputs/SHA256SUMS', f'{HBK}/inputs/vp_R320/bank.pkl', f'{HBK}/inputs/vp_R320/head_K32.pkl',
+    f'{HBK}/inputs/vp_R320/training.json', f'{HBK}/inputs/wide2d/SHA256SUMS', f'{HBK}/inputs/wide2d/bank.pkl',
+    f'{HBK}/inputs/wide2d/head_K8.pkl', f'{HBK}/inputs/wide2d/training.json')]
+TREE_SETS = {'heat': [HBK], 'burgers': ['experiments/mr-burgers2d', 'experiments/separable-decoder', 'experiments/head-ablation',
                          'experiments/cheap-corrections', 'experiments/b-ladder-top', 'experiments/b-panel/speed',
                          'experiments/hires-burgers', 'experiments/burgers-repanel', BKN]}
-FILESETS = {'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
+FILESETS = {'heat': HEAT + [(f'{LANE}/sp_heat.py', 'HEAD')],
+            'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
             'burgers': BURG + [(f'{LANE}/sp_burgers.py', 'HEAD')] + [(f'{LANE}/lane-ref/burgers-{L}-{k}.json', 'HEAD')
                                                                    for L in (256, 512, 1024, 2048) for k in ('errors', 'selection')],
             'p3d': P3D + [(f'{LANE}/sp3d_solve.py', 'HEAD')]}

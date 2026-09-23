@@ -42,7 +42,7 @@
   384,
   512
  ],
- "bank_steps": 12000,
+ "bank_steps": 8000,
  "bank_batch_states": 128,
  "bank_learning_rate": 0.001,
  "bank_gradient_clip": 1.0,
@@ -68,9 +68,10 @@
  ],
  "head_width": 512,
  "head_depth": 3,
- "head_steps": 60000,
+ "head_steps": 40000,
  "head_batch_states": 256,
  "head_learning_rate": 0.0005,
  "head_checkpoint_every": 10000,
- "old_checkpoint": "experiments/burgers3d-span/inputs/old_b3d004_seed0_checkpoint.pkl"
+ "old_checkpoint": "experiments/burgers3d-span/inputs/old_b3d004_seed0_checkpoint.pkl",
+ "points_per_step": 32768
 }

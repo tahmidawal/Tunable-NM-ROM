@@ -174,8 +174,17 @@ def train_bank(groups, cfg, log):
     log_rows = []
     for it in range(cfg['bank_steps']):
         key, sub = jax.random.split(key)
-        batches = [jnp.asarray(u[np.sort(brng.integers(0, u.shape[0], B))].T) for u in uns]
-        net, state, val, aux = step(net, state, p, xs, mods, wts, batches)
+        pps = cfg.get('points_per_step')
+        if pps:   # amendment A1: a fresh random point subset per group and step (stochastic estimate of the same loss)
+            pidx = [np.sort(brng.choice(x.shape[0], size=min(pps, x.shape[0]), replace=False)) for x in xs]
+            rows = [np.sort(brng.integers(0, u.shape[0], B)) for u in uns]
+            batches = [jnp.asarray(u[r][:, pi].T) for u, r, pi in zip(uns, rows, pidx)]
+            pj = [jnp.asarray(pi) for pi in pidx]
+            net, state, val, aux = step(net, state, p, [x[i] for x, i in zip(xs, pj)], [m[i] for m, i in zip(mods, pj)],
+                                        wts, batches)
+        else:
+            batches = [jnp.asarray(u[np.sort(brng.integers(0, u.shape[0], B))].T) for u in uns]
+            net, state, val, aux = step(net, state, p, xs, mods, wts, batches)
         if (it + 1) % cfg['checkpoint_every'] == 0 or it + 1 == cfg['bank_steps'] or it + 1 == 50:
             worst, rms = validate(net, p, xs, vns)
             worst, rms = np.asarray(worst), np.asarray(rms)

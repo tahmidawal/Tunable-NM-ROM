@@ -258,3 +258,15 @@ Codex read-only audit: `checks/codex-design-audit-2026-09-23.txt` (2 blockers, 1
 - **FOM**: the full-order Newton–BiCGStab solver on the same mesh.
 - **Validation / sealed held-out**: cases used to choose settings / cases opened once after the choice is frozen.
 - **A–B–A**: ROM timing block, FOM timing block, ROM timing block, in one GPU allocation.
+
+## A1 — training compute (2026-09-23 17:25 EDT, before any ROM result; no test data seen)
+
+The first training attempts failed or were too slow, none produced a model: 4238911/4238912 and 4239869/4239874
+ran out of device memory (fused validation, then a 42 GiB step temporary beside the device-resident snapshots; fixed
+by chunked validation and host-side minibatches), and 4241058/4241062 ran at roughly 3 s per bank step on an A100
+(all 530k points of the three groups in every step), i.e. about 10 h for the declared 12 000 steps — past the
+stopping-rule date. Amended recipe (both widths): each bank step uses a fresh random subset of 32 768 points per
+group (the 33-node group keeps all 29 791), for the POD-mode mean term and the minibatch tail term alike — a
+stochastic estimate of the same loss; checkpoint selection still evaluates the full point sets. 8 000 bank steps
+(was 12 000), 40 000 head steps (was 60 000). Everything else in §3 and R1 is unchanged. The failed attempts' logs
+are kept in `runs/failed/`.

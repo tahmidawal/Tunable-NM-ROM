@@ -125,7 +125,9 @@ def audit_heat(run, R, delete):
     S, l = sine(n)
     lam = l[:, None] + l[None, :] if d == 2 else l[:, None, None] + l[None, :, None] + l[None, None, :]
     fam = 'mr2d' if d == 2 else 'h3d'
-    draws = C.family(fam, R['cohort']['seed'], R['cohort']['count'])
+    full = C.family(fam, R['cohort']['seed'], R['cohort']['count'])      # the family draw of the whole cohort
+    draws = np.asarray(R['cohort']['draws'])
+    assert np.array_equal(full[:len(draws)], draws), 'recorded draws are not the cohort prefix'
     inv = R['invocations']
     first = {}
     for x in inv:

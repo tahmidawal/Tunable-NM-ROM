@@ -75,7 +75,7 @@ def main():
               job_id=os.environ.get('SLURM_JOB_ID'), backend=jax.default_backend(), gpu=jax.devices()[0].device_kind,
               gpu_uuid=uuid0, nvidia_smi=inventory, matmul_precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'],
               jax_version=jax.__version__, smoke=bool(a.smoke), intervals=n, dim=d, model_sha256=model['sha256'],
-              cohort=dict(name=cname, seed=seed, count=int(len(draws)), sha256=K.sha_array(draws)),
+              cohort=dict(name=cname, seed=seed, count=int(count), used=int(len(draws)), sha256=K.sha_array(draws), draws=np.asarray(draws).tolist()),
               error_convention='relative L2 per output time vs exact modal propagation (discrete eigenvalues); max over cases x the six times',
               complete=False)
     save = lambda: C.dump(out / 'result.json', R_)

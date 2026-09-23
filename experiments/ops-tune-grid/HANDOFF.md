@@ -21,7 +21,6 @@ doesn't get questioned by reviewers."* Two objections, in priority order:
 |---|---|
 | `DESIGN.md` | written and pre-registered before any GPU job |
 | Codex design audit | ran; its sandbox could not read files (the recorded `bwrap` failure), so it audited the prompt's numbers only. Two findings, **both accepted and fixed** — see §A2 |
-| Independent subagent design audit | commissioned with the same adversarial brief |
 | Local gates | contract smoke, both training smokes and `smoke_tune.py` over all 23 configs: **pass** |
 | Independent subagent design audit | **done: 4 blockers, 17 majors, every finding accepted.** `reports/design-audit-2026-09-22.md`; disposition in `DESIGN.md` §A3 |
 | `gen01` (data) | **submitted, job `4183681`**, a100, 13 h limit; `jax_backend=gpu` confirmed |
@@ -35,15 +34,23 @@ The 128-vs-4608 gap is **not** a design choice — it is a data-generation-cost 
 operators' training targets were held to a far stricter reference than our own model's:
 
 - operator training case: 4096 intervals, $\Delta t = 1.5625\times10^{-4}$, restricted to
-  256 — **135 s per trajectory**;
+  256 — **127.2 s per trajectory** (median of the 16 archived per-case times);
 - NM-ROM bank/head trajectory: 256 intervals, $\Delta t = 0.005$, solved directly —
   **0.19 s per trajectory**.
 
-128 cases is what ~4.8 GPU-hours buys at the first rate. This lane generates the extended
-bank at 1024 intervals / $\Delta t = 3.125\times10^{-4}$ (**4.8 s per case**), which the
-frozen calibration measured at ≤0.31 % from the pinned reference — still **five or more times
-finer than the targets our own head trained on** — and controls that choice two ways (G1
-measures it on the real training cases; G2 retrains at fixed data size on both fidelities).
+128 cases is what about 4.5 GPU-hours buys at the first rate. This lane generates the extended
+bank at 1024 intervals / $\Delta t = 3.125\times10^{-4}$ (**4.8 s per case**), which the live
+`refinement02` calibration measured at **≤0.28 %** from the pinned reference — several times
+finer than the targets our own head trained on, and `gen01` measures that comparison directly
+rather than inferring it.
+
+**The argument that actually does the work is structural, not empirical:** the *evaluation*
+targets are unchanged, so any bias from training on 1024-fidelity targets lands **inside** the
+reported validation error, at 10–25× below the signal. It is counted against the operator, not
+hidden. Two controls bound it anyway — G1 measures the label noise on the real training cases
+(threshold 0.5 % worst), G2 retrains at fixed data size on both fidelities — and **G2 bounds
+the effect rather than resolving it**, because its expected size is at or below this project's
+own measured one-seed noise.
 
 ## Job order and why
 

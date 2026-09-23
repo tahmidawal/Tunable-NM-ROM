@@ -138,6 +138,10 @@ for e in sorted(ALL, key=lambda e: (e['problem'] != 'lshape', e['intervals'])):
       f"CG rtol {r2['fom'].split('_')[1] if r2['fom'] else '—'} | {f(a['order_gate']['pooled_paired_ratio'])} / "
       f"{f(a['order_gate']['max_arm_paired_ratio'])} | {'yes' if a['usable'] else 'NO'} |")
 w('')
+w("**Scope note for Table 1.** In the GPU-query scope every row of both problems passes every gate, including the "
+  "L-shape at $2048^2$. In the complete-query scope the L-shape $2048^2$ row fails the order gate (see Coverage), and "
+  "the complete-query times of the L-shape are dominated by host transfers of the $(N+1)^2$ field.")
+w('')
 w('## Where the speed comes from')
 w('')
 w("The selected arms change two things at once relative to the paper's settings: the truncation $R'$, and the "
@@ -222,6 +226,28 @@ for v in V:
         if name in keep or name.startswith('orig_'):
             w(f"| {label(name)} | {f(st['project_and_start'])} | {f(st['lm_solve'])} | {f(st['elimination_and_map'])} | "
               f"{f(st['reconstruction'])} | {f(st['sum'])} | {st['reconstruction_share']:.2f} |")
+w('')
+w("**Block-layout effect at $R'=R$.** The rotated bank is stored as nested column blocks, so an $R'=R$ decode is a sum "
+  "of several narrower products, while the unrotated parent decodes with one product. The two layouts do not cost the "
+  "same, and the difference goes either way. At the largest mesh of each problem, the reconstruction stage of the "
+  "rotated full-rank arm against the parent's (ms):")
+w('')
+w('| problem | mesh | rotated $R\'=R$ arm | reconstruction | parent arm | reconstruction | ratio |')
+w('|---|---|---|---:|---|---:|---:|')
+for v in V:
+    e = v['e']
+    top = max(x['e']['intervals'] for x in V if x['e']['problem'] == e['problem'])
+    if e['intervals'] != top:
+        continue
+    Rf = max(a['Rp'] for a in v['arms'])
+    for q in (0,):
+        a_, b_ = f'R{Rf}_q{q}', f'orig_q{q}'
+        if a_ in e['profile'] and b_ in e['profile']:
+            ra, rb = e['profile'][a_]['reconstruction'], e['profile'][b_]['reconstruction']
+            w(f"| {prob(e)} | {unit(e)} | {label(a_)} | {f(ra)} | {label(b_)} | {f(rb)} | {ra / rb:.2f} |")
+w('')
+w("So the truncation gains quoted above include a layout effect; they are ratios of the layouts as deployed. A "
+  "full-rank linear rung decoded through the single unrotated block, $u=G\\,(T_{:,1:R}a)$, was not measured.")
 w('')
 w('## Audit gates')
 w('')

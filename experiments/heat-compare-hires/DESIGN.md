@@ -182,7 +182,7 @@ Operational: `tr1024` (4196056) was cancelled by me while PENDING (no H200 free)
 unchanged as `tr1024a` (4196355), which landed on an A100-PCIE-40GB; FNO epochs there take ~470 s,
 so operators get few epochs within the 3000 s budget at both meshes (reported per arm).
 
-## A2 (2026-09-23 ~07:00 EDT, after pn1024a, before pn1024b / pn2048b / pn4096)
+## A2 (2026-09-23 ~06:55 EDT, after pn1024a, before pn1024b / pn2048b / pn4096)
 
 `pn1024a` (job 4205399, A100-80G, complete, all arms) FAILED the pre-registered v1 order gate:
 max per-block sentinel deviation 36.8 % > 10 %. Diagnosis from its raw data (not a threshold
@@ -204,7 +204,7 @@ cancelled while PENDING because no H200 was free; 1024² runs on an A100-80G (th
 requires H200 only at ≥2048²); every ratio is within one job, but absolute times at 1024² are
 A100 times, not the H200 times of the paper's Table 1 row.
 
-## A3 (2026-09-23 ~07:45 EDT): memory fix after pn2048b, before pn2048c / pn4096b
+## A3 (2026-09-23 ~07:20 EDT): memory fix after pn2048b, before pn2048c / pn4096b
 
 `pn2048b` (job 4206387, H200) died at the quadratic-manifold r=32 set-up with a GPU OOM:
 the `B^T B` gate made XLA materialise a transposed 17.5 GB copy of the 561-column bank under

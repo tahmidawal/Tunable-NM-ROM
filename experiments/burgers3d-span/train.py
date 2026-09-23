@@ -365,7 +365,11 @@ def main():
         vn2.append(m2)
         vperp.append(np.maximum(m2 - np.sum((Qg.T @ U.T) ** 2, axis=0), 0.))
     vt, vn2, vperp = np.concatenate(vt), np.concatenate(vn2), np.concatenate(vperp)
-    save(out / 'bank.pkl', dict(params=params, rotation=T, RG=RG, V=V, cfg=cfg,
+    cmean = ctarget.mean(0)
+    spread = {str(r): float(np.sqrt(np.mean(np.sum((ctarget[:, :r] - cmean[:r]) ** 2, axis=1))))
+              for r in cfg['ladder']}
+    rep['ordering']['coefficient_rms_spread'] = spread
+    save(out / 'bank.pkl', dict(params=params, rotation=T, RG=RG, V=V, cfg=cfg, coefficient_rms_spread=spread,
                                 info={k: v for k, v in rep.items() if k in ('bank', 'ordering')}))
     # ---- floors of the ordered bank at full native grids (bank-validation cohort, six output times)
     rep['floors_full'] = {str(n): C.clean(floors_full(params, T, n, full_val[n], cfg['ladder'])) for n in cfg['meshes']}

@@ -134,6 +134,23 @@ def main():
             L(f"| {r['method']} | {unk} | {f4(r['worst_evolved_percent'])} | {f4(r['median_evolved_percent'])} | "
               f"{ms(r['gpu_ms'])} | {fom} | {sp(r['speedup'])} | {'; '.join(note) if note else ''} |")
         L('')
+        # generated findings: never typed. "ours" = the head-only fast arm and the bank-span arms whose rule is within
+        # the bar (the q=256 rows are reference only by the coordinator's direction).
+        ours = [r for r in m['rows'] if r['gpu_ms'] is not None and (
+            r['method'].startswith('NM-ROM fast') or (r['family'] == 'bankspan' and 'within' in (r['rule_status'] or '')))]
+        others = [r for r in m['rows'] if r['gpu_ms'] is not None and r['family'] not in ('nmrom', 'bankspan')]
+        L('**Generated findings at this mesh** (from the table above):')
+        L('')
+        for r in ours:
+            L(f"- {r['method']}: worst {f4(r['worst_evolved_percent'])} % at {ms(r['gpu_ms'])} ms; "
+              + (f"{sp(r['speedup'])} against `{r['fom']}`" if r['fom'] else 'no FOM setting at least as accurate'))
+            dom = [o for o in others if o['worst_evolved_percent'] <= r['worst_evolved_percent'] and o['gpu_ms'] <= r['gpu_ms']]
+            L('  - baselines both at least as accurate AND at least as fast: ' +
+              (', '.join(f"{o['method']} ({f4(o['worst_evolved_percent'])} %, {ms(o['gpu_ms'])} ms)" for o in dom) if dom else 'none'))
+        beat = [o for o in others if o['speedup'] is not None and o['speedup'] > 1]
+        L('- baselines faster than the FOM setting the rule assigns them: ' +
+          (', '.join(f"{o['method']} {sp(o['speedup'])}" for o in beat) if beat else 'none'))
+        L('')
         L(f"FOM candidate grid (the rule chooses among all of these; ${n-1}^2$ = {(n-1)**2:,} unknowns):")
         L('')
         L('| FOM setting | worst % | median % | GPU ms | complete ms |')

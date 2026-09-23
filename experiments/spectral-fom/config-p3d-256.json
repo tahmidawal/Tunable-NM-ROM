@@ -1,0 +1,46 @@
+{
+ "intervals": 256,
+ "cohort": "development",
+ "case_count": 16,
+ "prep": "prep_cube.npz",
+ "weak_tests": 512,
+ "field_chunk": 8192,
+ "R_ladder": [
+  16,
+  32,
+  48,
+  64,
+  96,
+  128
+ ],
+ "accepted_checkpoint_sha256": {
+  "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+  "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+ },
+ "problem": "poisson3d",
+ "source_lane": "exp/2026-09-23-poisson-bank-knob-3d",
+ "source_lane_commit": "d2c775a9",
+ "spectral_variants": [
+  "fft",
+  "mm"
+ ],
+ "spectral_limit": 1e-10,
+ "cg_validation": [
+  1e-06,
+  1e-08,
+  1e-10
+ ],
+ "cg_validation_cap_per_interval": 400,
+ "cg_agreement_limit": 1e-08,
+ "repetitions": 10,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "neighbour_limit": 1.1,
+ "order_seed": 933256,
+ "arms": {
+  "accurate": "R128_linear",
+  "fast": "R64_linear"
+ },
+ "arms_source": "poisson-bank-knob-3d reports/summary.json row for c256 (job 4203255), lane commit 59b67ae2"
+}

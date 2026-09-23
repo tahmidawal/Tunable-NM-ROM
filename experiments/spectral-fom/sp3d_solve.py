@@ -65,11 +65,19 @@ def main():
     Tm = prep['T']
     rinfo = json.loads(str(prep['rotation_info']))
     assert rinfo['checkpoint_sha256'] == shas
-    frozen = json.loads((here / cfg['frozen_settings']).read_text())
-    assert frozen['intervals'] == n and frozen['selected_on'] == 'development'
     train = C.family(mcfg['train_seed'], mcfg['train_count'])
-    cases = C.family(mcfg['reserved_final_seed'], cfg['final_count'])
-    assert P3.sha_array(cases) == cfg['final_parameters_sha256']
+    if cfg.get('cohort', 'final') == 'final':
+        frozen = json.loads((here / cfg['frozen_settings']).read_text())
+        assert frozen['intervals'] == n and frozen['selected_on'] == 'development'
+        cases = C.family(mcfg['reserved_final_seed'], cfg['final_count'])
+        assert P3.sha_array(cases) == cfg['final_parameters_sha256']
+    else:
+        # development cohort (the lane's c128 / c256 selection rows): arms from the lane's summary row (config)
+        assert cfg['cohort'] == 'development'
+        frozen = dict(cfg['arms'], intervals=n, selected_on='development (lane summary row, this mesh)')
+        cases = C.family(mcfg['validation_seed'], mcfg['validation_count'])
+        coh = json.loads((here / 'cohorts.json').read_text())
+        np.testing.assert_array_equal(cases, np.asarray(coh['validation_parameters']))
     cases = cases[:cfg['case_count']]
     assert not any(np.allclose(t, s) for t in train for s in cases)
     R_ = dict(problem='poisson3d', config=cfg, commit=os.environ.get('SOURCE_COMMIT'),
@@ -77,7 +85,7 @@ def main():
               gpu=jax.devices()[0].device_kind, gpu_uuid=uuid0, nvidia_smi=inventory,
               matmul_precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'], jax_version=jax.__version__,
               smoke=bool(a.smoke), intervals=n, frozen_settings=frozen, checkpoint_sha256=shas,
-              cohort=dict(role='final', parameters=cases.tolist(), sha256=P3.sha_array(cases), count=int(len(cases))),
+              cohort=dict(role=cfg.get('cohort', 'final'), parameters=cases.tolist(), sha256=P3.sha_array(cases), count=int(len(cases))),
               error_convention='relative L2 over the (n-1)^3 interior vs the same-grid discrete solution (SciPy DST-I); worst over cases',
               complete=False)
     save = lambda: P3.dump(out / 'result.json', R_)

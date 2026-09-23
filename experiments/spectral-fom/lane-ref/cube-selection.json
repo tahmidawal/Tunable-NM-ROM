@@ -1,0 +1,107 @@
+{
+ "source": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-23-poisson-bank-knob-3d/experiments/poisson-bank-knob-3d/reports/summary.json",
+ "source_sha256": "3a5a11cac6274851a4f15b2a9cf65af5939a13cff7d9357ba33ce042361977b1",
+ "lane_commit": "59b67ae2",
+ "rows": {
+  "32": {
+   "attempt": "c32final",
+   "job": "4200246",
+   "cohort": "final",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "commit": "d2c775a9254f889b5bad52c04ef2e7685446fff8",
+   "row": {
+    "accurate": "R128_linear",
+    "fast": "R64_linear",
+    "accurate_worst_pct": 0.2308114066091169,
+    "fast_worst_pct": 0.4750741065355887,
+    "accurate_ms": 0.3190662246197462,
+    "fast_ms": 0.2874888014048338,
+    "fom": "cg_0.01",
+    "fom_worst_pct": 0.15655376030407586,
+    "fom_ms": 1.4118531253188848,
+    "accurate_speedup": 4.424953242862011,
+    "fast_speedup": 4.910984770258067,
+    "other_scope": {
+     "fom": "cg_0.01",
+     "accurate_speedup": 2.270200413212904,
+     "fast_speedup": 2.3180946633794544
+    }
+   }
+  },
+  "64": {
+   "attempt": "c64final",
+   "job": "4202245",
+   "cohort": "final",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "commit": "d2c775a9254f889b5bad52c04ef2e7685446fff8",
+   "row": {
+    "accurate": "R128_linear",
+    "fast": "R64_linear",
+    "accurate_worst_pct": 0.23106414045320234,
+    "fast_worst_pct": 0.46895301064366635,
+    "accurate_ms": 0.44204131700098515,
+    "fast_ms": 0.3544720821082592,
+    "fom": "cg_0.01",
+    "fom_worst_pct": 0.11432331552908126,
+    "fom_ms": 3.5678029526025057,
+    "accurate_speedup": 8.071197907037623,
+    "fast_speedup": 10.065116923687278,
+    "other_scope": {
+     "fom": "cg_0.01",
+     "accurate_speedup": 2.779057060562621,
+     "fast_speedup": 3.006550218052356
+    }
+   }
+  },
+  "256": {
+   "attempt": "c256",
+   "job": "4203255",
+   "cohort": "development",
+   "gpu": "NVIDIA H200",
+   "commit": "1c19cc094b284c82772f3f9fb557dc732eaecaa1",
+   "row": {
+    "accurate": "R128_linear",
+    "fast": "R64_linear",
+    "accurate_worst_pct": 0.14416550521635946,
+    "fast_worst_pct": 0.24113290147183053,
+    "accurate_ms": 6.12771138548851,
+    "fast_ms": 3.503422951325774,
+    "fom": "cg_0.01",
+    "fom_worst_pct": 0.048870968008946816,
+    "fom_ms": 142.19636982306838,
+    "accurate_speedup": 23.205461366834964,
+    "fast_speedup": 40.58783989219973,
+    "other_scope": {
+     "fom": "cg_0.01",
+     "accurate_speedup": 3.3240630247736815,
+     "fast_speedup": 3.5205530926548336
+    }
+   }
+  },
+  "128": {
+   "attempt": "c128",
+   "job": "4207945",
+   "cohort": "development",
+   "gpu": "NVIDIA H200",
+   "commit": "3f6b5280d1bb5a82a0c68e0b6c85073fab03cddf",
+   "row": {
+    "accurate": "R128_linear",
+    "fast": "R64_linear",
+    "accurate_worst_pct": 0.1442294413822588,
+    "fast_worst_pct": 0.24127057983127032,
+    "accurate_ms": 0.909754540771246,
+    "fast_ms": 0.5787564441561699,
+    "fom": "cg_0.01",
+    "fom_worst_pct": 0.07475800752263408,
+    "fom_ms": 12.418161379173398,
+    "accurate_speedup": 13.650013077863706,
+    "fast_speedup": 21.45662740270503,
+    "other_scope": {
+     "fom": "cg_0.01",
+     "accurate_speedup": 3.629089837816735,
+     "fast_speedup": 3.902710843459262
+    }
+   }
+  }
+ }
+}

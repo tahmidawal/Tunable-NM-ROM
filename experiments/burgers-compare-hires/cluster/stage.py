@@ -92,10 +92,11 @@ def main():
             [str(x.relative_to(ROOT)) for x in sorted((lane / 'inputs/opconfigs').glob('*.json'))
              if not x.name.startswith('smoke')]
         body = TRAIN.format(lane=LANE, mesh=a.mesh)
+        extra = []
     else:
-        import panel_body                          # the panel job's body lives beside the driver
+        import panel_body                          # the panel job's body lives beside this script
         cfg = json.loads((lane / a.config).read_text())
-        files, body = panel_body.files_and_body(ROOT, LANE, LIBS, OPS, CHECKPOINT, cfg, a)
+        files, body, extra = panel_body.files_and_body(ROOT, LANE, LIBS, OPS, CHECKPOINT, cfg, a)
     files = list(dict.fromkeys(files))
     out = lane / 'runs' / a.attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -109,6 +110,13 @@ def main():
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))
+    for src, name in extra:                       # uncommitted, hash-verified against a committed record
+        dest = out / name
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(Path(src).read_bytes())
+        proof.append(dict(source=str(src), staged_as=name, bytes=dest.stat().st_size,
+                          sha256=hashlib.sha256(dest.read_bytes()).hexdigest(), commit=None,
+                          note='operator checkpoint, verified against the committed operators-<L>.json'))
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()

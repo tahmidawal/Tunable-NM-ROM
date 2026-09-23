@@ -1,4 +1,10 @@
-"""Time the trained FNO on this job's six cases, in this job's allocation.
+"""Time one trained operator on this job's six cases, in this job's allocation (burgers-compare-hires Phase O).
+
+Copied from ops-timing-panel lib/fno_panel.py @ 31af60c8. Changes: the scored fields are ALSO written as
+`full_<name>_case<c>.npy` (float64) beside every JAX arm's, so audit_cmp.py scores every family with one code
+path; the GPU name is recorded for the same-GPU gate; repetitions/burn-in default to 5/20 (the protocol).
+
+Original docstring:
 
 The timing protocol is the `2026-09-14-no-audit` lane's `timing.py`, replicated:
 
@@ -67,8 +73,10 @@ def main():
     p.add_argument('--index', required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--name', default='fno-large')
-    p.add_argument('--repetitions', type=int, default=3)
-    p.add_argument('--burn-in', type=int, default=3)
+    p.add_argument('--repetitions', type=int, default=5)
+    p.add_argument('--burn-in', type=int, default=20)
+    p.add_argument('--fields', required=True)
+    p.add_argument('--role', default='')
     a = p.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -104,8 +112,8 @@ def main():
             assert fields.shape == case['target'].shape[:1] + case['target'].shape[2:], fields.shape
             supplied = case['input'][0]
             index = int(row['case_index'])
-            name = f"L{fields.shape[-1] - 1}_{a.name}_case{index}.npz"
-            np.savez_compressed(out / name, fields=fields)
+            name = f"full_{a.name}_case{index}.npy"
+            np.save(Path(a.fields) / f'full_{a.name}_case{index}.npy', np.ascontiguousarray(fields, dtype=np.float64))
             cases.append(dict(case_id=row['case_id'], case_index=index,
                               artifact=name,
                               field_sha256=hashlib.sha256(
@@ -121,7 +129,7 @@ def main():
     np.savez(out / f'{a.name}-timing.npz', device=device, host=hostt,
              case_ids=np.array([r['case_id'] for r in rows]))
     (out / f'{a.name}-timing.json').write_text(json.dumps(dict(
-        model=a.name, environment=environment,
+        model=a.name, role=a.role, gpu_name=torch.cuda.get_device_name(), environment=environment,
         checkpoint_sha256=dataset.sha256(a.checkpoint), config=checkpoint['config'],
         best_epoch=checkpoint['epoch'],
         parameter_tensor_elements=sum(p_.numel() for p_ in network.parameters()),
@@ -139,7 +147,7 @@ def main():
         scientific_status=('same-allocation, same-GPU timing against the JAX subjects of this job; '
                            'no ratio is taken against any other job'),
     ), indent=2) + '\n')
-    print('FNO PANEL COMPLETE', flush=True)
+    print('OPERATOR TIMING COMPLETE', a.name, flush=True)
 
 
 if __name__ == '__main__':

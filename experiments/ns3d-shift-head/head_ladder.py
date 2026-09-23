@@ -714,42 +714,93 @@ def main():
     sent_keys = [s for s in dict.fromkeys(sent_keys) if s in fast]
     sentinels = {s: fast[s] for s in sent_keys}
     reps = int(cfg["timing_repetitions"])
-    log(f"timing: {len(fast)} fast arms, {len(slow)} slow arms, {reps} reps")
+    cool = float(cfg.get("cooldown_seconds", 1.0))
+    ladder_keys = [k_ for k_ in fast if k_.startswith("query_")
+                   and k_.endswith(f"_dt{ladder_dt}_it{ladder_iters}")
+                   and ("_span" in k_ or "_k" in k_)]
+
+    def gpu_state(label):
+        try:
+            return dict(label=label, t=time.time() - t_job, smi=subprocess.check_output(
+                ["nvidia-smi", "--query-gpu=clocks.sm,clocks.mem,temperature.gpu,power.draw,"
+                 "clocks_throttle_reasons.active", "--format=csv,noheader"], text=True).strip())
+        except (OSError, subprocess.CalledProcessError):
+            return dict(label=label, smi="unavailable")
+
+    states = [gpu_state("start")]
+    log(f"timing v2: {len(fast)} fast arms, {len(slow)} slow arms, {reps} reps, "
+        f"cooldown {cool}s, {len(ladder_keys)} ladder arms")
     burn_gpu()
     t_sent0, _ = time_block(sentinels, reps, 2, seed=1)
     t_fast, last = time_block(fast, reps, 2, seed=2)
-    burn_gpu()
-    t_slow, last_slow = time_block(slow, max(5, int(cfg["slow_repetitions"])), 1, seed=3)
-    # sentinels again, each timed immediately after the longest arm of the job
-    longest = max(list(t_slow.items()) + [(k, v) for k, v in t_fast.items()],
-                  key=lambda kv: kv[1]["median_ms"])[0]
-    long_fn = slow.get(longest) or fast[longest]
-    after = {s: [] for s in sentinels}
+    states.append(gpu_state("after fast block"))
+    # slow arms in their own phase; every timed call starts after the same idle
+    # cool-down, so a heavy arm is not timed in the wake of another heavy arm
+    rng_s = np.random.default_rng(3)
+    for name in slow:
+        jax.block_until_ready(slow[name]())
+    t_slow = {name: [] for name in slow}
+    for _ in range(max(5, int(cfg["slow_repetitions"]))):
+        for name in rng_s.permutation(list(slow)):
+            time.sleep(cool)
+            t0 = time.perf_counter()
+            jax.block_until_ready(slow[name]())
+            t_slow[name].append((time.perf_counter() - t0) * 1e3)
+    t_slow = {k_: dict(median_ms=float(np.median(v_)), min_ms=float(np.min(v_)),
+                       max_ms=float(np.max(v_)), repetitions=v_) for k_, v_ in t_slow.items()}
+    states.append(gpu_state("after slow block"))
+    # the heavy neighbour: the longest FD-CG arm on the job's own mesh
+    heavy = max((k_ for k_ in slow if fd[k_]["mesh"] == n), key=lambda k_: t_slow[k_]["median_ms"])
+    heavy_fn = slow[heavy]
+    after_heavy = {k_: [] for k_ in ladder_keys}
+    after_cool = {k_: [] for k_ in ladder_keys}
+    rng_h = np.random.default_rng(4)
     for _ in range(reps):
-        for s, fn in sentinels.items():
-            jax.block_until_ready(long_fn())
-            t = time.perf_counter()
-            jax.block_until_ready(fn())
-            after[s].append((time.perf_counter() - t) * 1e3)
-    t_sent1, _ = time_block(sentinels, reps, 1, seed=4)
+        for name in rng_h.permutation(ladder_keys):
+            jax.block_until_ready(heavy_fn())
+            t0 = time.perf_counter()
+            jax.block_until_ready(fast[name]())
+            after_heavy[name].append((time.perf_counter() - t0) * 1e3)
+            jax.block_until_ready(heavy_fn())
+            time.sleep(cool)
+            t0 = time.perf_counter()
+            jax.block_until_ready(fast[name]())
+            after_cool[name].append((time.perf_counter() - t0) * 1e3)
+    states.append(gpu_state("after neighbour block"))
+    t_sent1, _ = time_block(sentinels, reps, 1, seed=5)
+    gate_ratio = float(cfg["neighbour_gate_ratio"])
     gate = {}
-    for s in sentinels:
-        base = t_sent0[s]["median_ms"]
-        gate[s] = dict(before_ms=base, in_fast_block_ms=t_fast[s]["median_ms"],
-                       after_long_neighbour_ms=float(np.median(after[s])),
-                       end_of_job_ms=t_sent1[s]["median_ms"],
-                       after_long_ratio=float(np.median(after[s]) / base),
-                       fast_block_ratio=float(t_fast[s]["median_ms"] / base),
-                       repetitions_after_long=after[s])
-    report["timing"] = dict(case=case, fast=t_fast, slow=t_slow, sentinels_before=t_sent0,
-                            sentinels_end=t_sent1, long_neighbour=longest,
-                            neighbour_gate=gate,
-                            neighbour_gate_passed=bool(all(
-                                g["after_long_ratio"] <= float(cfg["neighbour_gate_ratio"])
-                                and g["fast_block_ratio"] <= float(cfg["neighbour_gate_ratio"])
-                                for g in gate.values())))
-    log(f"neighbour gate: {report['timing']['neighbour_gate_passed']} "
-        f"{ {s: round(g['after_long_ratio'], 3) for s, g in gate.items()} }")
+    for name in ladder_keys:
+        base = t_fast[name]["median_ms"]
+        gate[name] = dict(fast_block_ms=base,
+                          after_heavy_ms=float(np.median(after_heavy[name])),
+                          after_heavy_cooldown_ms=float(np.median(after_cool[name])),
+                          after_heavy_ratio=float(np.median(after_heavy[name]) / base),
+                          after_cooldown_ratio=float(np.median(after_cool[name]) / base),
+                          repetitions_after_heavy=after_heavy[name],
+                          repetitions_after_cooldown=after_cool[name])
+    for name in sentinels:
+        gate.setdefault(name, {}).update(
+            solo_before_ms=t_sent0[name]["median_ms"], solo_end_ms=t_sent1[name]["median_ms"],
+            fast_block_ratio=float(t_fast[name]["median_ms"] / t_sent0[name]["median_ms"]))
+    passed_block = all(g["fast_block_ratio"] <= gate_ratio for g in gate.values()
+                       if "fast_block_ratio" in g)
+    passed_cool = all(g["after_cooldown_ratio"] <= gate_ratio for g in gate.values()
+                      if "after_cooldown_ratio" in g)
+    report["timing"] = dict(
+        protocol="v2", case=case, fast=t_fast, slow=t_slow, sentinels_before=t_sent0,
+        sentinels_end=t_sent1, heavy_neighbour=heavy, cooldown_seconds=cool,
+        neighbour_gate=gate, gpu_states=states,
+        neighbour_gate_fast_block_passed=bool(passed_block),
+        neighbour_gate_after_cooldown_passed=bool(passed_cool),
+        neighbour_gate_passed=bool(passed_block and passed_cool),
+        note=("CNAB2 comparisons use fast-block medians (all arms interleaved, randomised). "
+              "FD-CG arms are timed after an idle cool-down; the ladder arms are also timed "
+              "immediately after the heavy FD-CG neighbour (after_heavy, no cool-down), and "
+              "FD-CG speedups are reported against both the fast-block and the after-heavy "
+              "ROM medians, the latter being the conservative one."))
+    log(f"neighbour gate: block {passed_block} cooldown {passed_cool}; after-heavy ratios "
+        f"{ {k_.replace('query_', ''): round(g['after_heavy_ratio'], 3) for k_, g in gate.items() if 'after_heavy_ratio' in g} }")
     # errors of the timed outputs must equal the accuracy pass for that case
     agree = 0.0
     for name, value in last.items():

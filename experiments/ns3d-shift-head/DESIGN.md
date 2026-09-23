@@ -168,3 +168,24 @@ with two solves. This amendment supersedes the $q$ ladder above; everything else
 - Timing sentinels become span $R'=64$, span $R'=8$ and the selected head.
 - The corrections code path stays in `head_rom.py` (and $C$ is still computed and
   saved) but no $q>0$ arm is run; the random-direction control is dropped with it.
+
+## Amendment 2 (2026-09-23, after `a1_h64`) — timing protocol v2
+
+`a1_h64` (job 4197294) failed the pre-registered neighbour gate: inside the randomised
+fast block every sentinel stayed within 2.3 % of its solo median, but timed
+immediately after the job's longest arm (FD-CG at $128^3$, seconds long) the sentinels
+ran 17–23 % slower, and the slowdown decayed over the next few calls (end-of-job solo
+block: first repetition high, then back to baseline). The accuracy results of that job
+are unaffected; its FD-CG speedups are not usable as they stood, because the ROM was
+timed in the light state and FD-CG in the heavy one. The 96^3 job (4197368) was
+cancelled before its timing phase, and every mesh is rerun under v2:
+
+- fast block unchanged (all reduced arms + CNAB2 randomised and interleaved); CNAB2
+  speedups use it, and its gate (sentinel in-block median ≤ 1.10 × solo) is unchanged;
+- FD-CG arms are timed after a 1 s idle cool-down each, in their own phase;
+- every ladder arm is additionally timed (a) immediately after the heaviest FD-CG arm
+  on the job's own mesh and (b) after that neighbour plus the cool-down. Gate: (b) ≤
+  1.10 × fast-block median. (a) is reported, not gated: it is the measured cost of the
+  effect, and **FD-CG speedups are reported against both the fast-block median and the
+  after-heavy median, the latter as the conservative figure**;
+- GPU clocks / temperature / throttle reasons are logged at phase boundaries.

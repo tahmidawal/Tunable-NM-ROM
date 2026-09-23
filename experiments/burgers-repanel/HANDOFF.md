@@ -12,10 +12,17 @@ control. No retraining, frozen checkpoint, frozen rules, no re-certification.
 
 ## State (2026-09-22)
 
-- Design written and independently audited (see `reports/`). Codex could not run (bubblewrap
-  sandbox failure, a recorded landmine on this box); an independent subagent audited instead.
+- Design written and independently audited: `reports/design-audit-2026-09-22.md`, disposition in
+  `DESIGN.md` §9. Codex could not run (bubblewrap sandbox failure, a recorded landmine on this
+  box); an independent subagent audited instead. 23 findings, 13 fixed, the rest disclosed.
+  The one job-affecting finding (F1: the paper's 256²/512² *fast* rows print the b-speed `L4`
+  kernel, not the audited path) does **not** apply at 1024², so br1024 was unaffected.
 - Local $64^2$ smoke run: base arms register, parity passes at ~2e-14 with identical integers.
-- **br1024 submitted: job 4186871** (H200, 240G, 8 h), 2026-09-22 21:45 EDT. Jobs used 1 / 4.
+- **br1024 running: job 4187625** (A100-80G, 240G, 8 h), submitted 2026-09-22 22:12 EDT.
+  An earlier submission, 4186871, asked for an H200 and sat 27 min behind a fully allocated
+  pax[008-011]; it was cancelled **before it was ever allocated** (no GPU time, no output, remote
+  dir removed) and resubmitted on A100-80G, where four nodes had free GPUs. Jobs that consumed
+  GPU time: 1 / 4.
 - **The coordinator's 4096² addendum needs no job on the dev6 cohort.** `reports/unify_4096_ratio.py`
   (run, output in `reports/2026-09-22-4096-single-job-ladder.md`) shows job 4079320 already timed every
   tunability-ladder rung AND both comparators in one allocation: applying the paper's rule inside that one
@@ -67,9 +74,9 @@ jaxrun /home/tahmid/Dev/.venv/bin/python experiments/burgers-repanel/repanel.py 
 
 | attempt | job id | mesh | GPU | state | summary |
 |---|---|---|---|---|---|
-| br1024 | 4186871 | $1024^2$ | H200, 240G, 8 h | submitted 2026-09-22 21:45 EDT | |
-| br512 | — | $512^2$ | — | not submitted | |
-| br256 | — | $256^2$ | — | not submitted | |
+| br1024 | 4187625 | $1024^2$ | A100-80G, 240G, 8 h | submitted 2026-09-22 22:12 EDT (4186871 cancelled unallocated) | |
+| br512 | — | $512^2$ | A100-80G, 240G, 6 h | staged, waiting for the lane slot | |
+| br256 | — | $256^2$ | A100-80G, 120G, 6 h | staged, waiting for the lane slot | |
 
 Fourth job (4096² tunability ladder re-timing, coordinator's addendum) only if the three above
 are on track. See `DESIGN.md` §6.

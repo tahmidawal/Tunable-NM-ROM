@@ -110,9 +110,16 @@ NM-ROM and than the full-order setting the rule matches to them
 $\nOpsTwoDOpFastS\times$), and an order of magnitude less accurate:
 $\nOpsTwoDOpErrLo$--$\nOpsTwoDOpErrHi\,\%$ worst evolved error, against
 $\nOpsTwoDAccErr\,\%$ for the accurate NM-ROM setting and
-$\nOpsTwoDFastErr\,\%$ for the fast one. Every operator error exceeds the
-mesh's own discretisation error, $\nOpsTwoDDisc\,\%$: at this resolution
-they do not resolve the discrete solution they were trained on. No
+$\nOpsTwoDFastErr\,\%$ for the fast one. On these \nOpsTwoDCases{} cases, and against this
+panel's own reference, every operator arm's error also exceeds the
+discretisation error of the mesh itself, $\nOpsTwoDDisc\,\%$: on this
+cohort they do not resolve the discrete solution they were trained on.
+That comparison belongs to this cohort and this reference and does not
+generalise. Against the same number, \nOpsBarBelowValName{} is lower on
+the 32 validation cases of Table~\ref{tab:deeponet2d}
+($\nOpsBarBelowValErr\,\%$ worst), and on the matched eight cases all
+\nOpsBarBelowMatch{} of the \nOpsBarPubArms{} published U-Net,
+Transolver and FNO arms are lower. No
 NM-ROM or POD arm here is faster than its comparator either; the
 accurate setting meets the campaign's $\le 1\,\%$ accuracy bar and misses
 its $\ge 5\times$ speed bar ($\nOpsTwoDAccS\times$), which is what

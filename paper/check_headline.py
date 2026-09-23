@@ -333,7 +333,10 @@ assert _mp('nOpsTwoDOpFaster') == str(sum(_or[a]['speedup_gpu'] > 1 for a in _op
 assert _mp('nOpsTwoDAccErr') == _e2(_or['q256_M1088_eqtop_g0p001']['worst_evolved_percent'])
 assert _mp('nOpsTwoDFastErr') == _e2(_or['q0_M64_eqcert_g1em06_fastL4']['worst_evolved_percent'])
 _disc = _os['fom_discretisation_error_percent']['dense_tight']
-assert _mp('nOpsTwoDDisc') == f'{_disc:.3f}' and min(_oe) > _disc                 # every operator error exceeds the discretisation error
+assert _mp('nOpsTwoDDisc') == f'{_disc:.3f}'
+# 2026-09-22 (ops-tune-grid correction): the discretisation-error comparison holds on THIS panel's six development
+# cases against THIS panel's reference, and nowhere else is it asserted.  Both directions are checked.
+assert min(_oe) > _disc, 'panel cohort only: every operator arm of job ' + _os['job_id'] + ' exceeds its own reference discretisation error'
 assert float(_mp('nOpsTwoDAccS')) < 1 and all(_or[a]['speedup_gpu'] < 1 for a in _or if _or[a]['family'] in ('rom', 'fast', 'pod'))
 _cc = _os['fno_error_cross_check'][0]
 assert _cc['absolute_difference'] == 0.0 and _mp('nOpsTwoDFnoGap') == f"{_cc['absolute_difference']:.3e}"
@@ -371,6 +374,14 @@ _tr = [100 * _da['arms'][a]['train_loss_at_best'] ** 0.5 for a in _darms]
 assert (_mp('nDonTrainRmsLo'), _mp('nDonTrainRmsHi')) == (_e2(min(_tr)), _e2(max(_tr)))
 _pers = _da['persistence_baseline']['validation-32']['fixed_initial']['mean'] * 100
 assert _mp('nDonPersistMean') == _e2(_pers) and _mp('nDonVsPersist') == f"{_pers / min(_dv[(a, 'mean_fixed_initial_error')] for a in _darms):.1f}"
+_dvb = {(r['arm'], r['metric']): 100 * r['value'] for r in _ds['rows'] if 'arm' in r and r['cohort'] == 'validation-32'}
+_dmb = {r['arm']: 100 * r['value'] for r in _ds['rows'] if 'arm' in r and r['cohort'] == 'diagnosis-8' and r['metric'] == 'worst_fixed_initial_error'}
+_pub = sorted({a for a, _ in _dvb if not a.startswith('don-')})
+_bv = [a for a in _pub if _dvb[(a, 'worst_fixed_initial_error')] < _disc]
+_bm = [a for a in _pub if _dmb[a] < _disc]
+assert _mp('nOpsBarPubArms') == str(len(_pub)) and _mp('nOpsBarBelowVal') == str(len(_bv)) and _mp('nOpsBarBelowMatch') == str(len(_bm))
+assert len(_bv) >= 1 and len(_bm) == len(_pub)          # off the panel's cohort the same bar is not exceeded everywhere
+assert 'does not\ngeneralise' in (P / 'sections/appendix.tex').read_text().replace('\r', '')   # the scoping sentence stays
 _appd = (P / 'sections/appendix.tex').read_text()
 assert r'\label{tab:deeponet2d}' in _appd and r'\input{tables/TR_deeponet2d}' in _appd
 for _phrase in ('not an architecture ceiling', 'not on the wall budget', 'vacuous at this patience',

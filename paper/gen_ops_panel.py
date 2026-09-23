@@ -135,7 +135,17 @@ def deeponet_macros():
     stop = {DA['arms'][a]['stop_reason'] for a in DARMS}; assert stop == {'early_stopping'}       # none ran out of budget
     assert all(DA['arms'][a]['train_loss_final'] < DA['arms'][a]['train_loss_at_best'] for a in DARMS)  # training loss still falling
     assert min(dm) > max(others) and min(dm) < 100 * _pv['mean']              # worse than the other families, better than persistence
-    return dict(nDonArms=str(len(DARMS)), nDonMeanLo=e(min(dm)), nDonMeanHi=e(max(dm)),
+    # where the panel's discretisation-error comparison does and does not hold (ops-tune-grid correction, 2026-09-22)
+    bar = S['fom_discretisation_error_percent']['dense_tight']
+    pub = sorted({a for a, _ in DVAL if not a.startswith('don-')})
+    below_val = [a for a in pub if DVAL[(a, 'worst_fixed_initial_error')] < bar]
+    below_match = [a for a in pub if DMATCH[a] < bar]
+    assert len(below_val) >= 1 and len(below_match) == len(pub)          # the bar is not exceeded everywhere off the panel's cohort
+    return dict(nOpsBarPubArms=str(len(pub)), nOpsBarBelowVal=str(len(below_val)),
+                nOpsBarBelowValName=below_val[0].replace('-', '\\mbox{-}') if len(below_val) == 1 else '',
+                nOpsBarBelowValErr=e(min(DVAL[(a, 'worst_fixed_initial_error')] for a in below_val)),
+                nOpsBarBelowMatch=str(len(below_match)),
+                nDonArms=str(len(DARMS)), nDonMeanLo=e(min(dm)), nDonMeanHi=e(max(dm)),
                 nDonSelWorst=e(DVAL[('don-small', 'worst_fixed_initial_error')]),
                 nDonMatchLo=e(min(DMATCH[a] for a in DARMS)), nDonMatchHi=e(max(DMATCH[a] for a in DARMS)),
                 nDonOtherMeanLo=e(min(others)), nDonOtherMeanHi=e(max(others)),

@@ -1,5 +1,39 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-22 (paper lane) — discretisation-error claim requalified (ops-tune-grid correction) — CURRENT HANDOFF
+
+The Appendix C sentence "Every operator error exceeds the mesh's own discretisation error, 4.027 %" was
+cohort-specific and read as general. It holds on the timing panel's six development cases against that panel's
+own reference; it fails on validation-32 (`unet-medium`, 3.96 % worst) and on the matched eight cases (all 12
+published U-Net, Transolver and FNO arms are below the same number). New wording, all numbers from the two
+pinned lane blobs:
+
+> On these 6 cases, and against this panel's own reference, every operator arm's error also exceeds the
+> discretisation error of the mesh itself, 4.027 %: on this cohort they do not resolve the discrete solution they
+> were trained on. That comparison belongs to this cohort and this reference and does not generalise. Against the
+> same number, unet-medium is lower on the 32 validation cases of Table C.4 (3.96 % worst), and on the matched
+> eight cases all 12 of the 12 published U-Net, Transolver and FNO arms are lower.
+
+- New macros in `gen_ops_panel.py` (`nOpsBarPubArms`, `nOpsBarBelowVal`, `nOpsBarBelowValName`,
+  `nOpsBarBelowValErr`, `nOpsBarBelowMatch`), derived by comparing the DeepONet lane's validation-32 and
+  matched-8 records against the panel's own discretisation number. The generator asserts both directions.
+- `check_headline.py`: the inequality is still asserted, but only for the panel's own rows, and the assertion now
+  carries the message "panel cohort only: every operator arm of job 4179247 exceeds its own reference
+  discretisation error". It additionally re-derives the counts below the bar on the other two cohorts and
+  requires the scoping sentence to stay in the text, so neither direction can silently regress.
+- The like-for-like discretisation bar on validation-32 is being measured by the ops-tune-grid lane; when it
+  lands both cohorts' values can be stated.
+
+**Verification note.** Another session is concurrently rewriting §3 in `paper/main.tex` and
+`sections/method-details.tex` (uncommitted); with those edits in the tree References move to page 10, so
+`check_rewrite.py` fails in the live working copy. I verified this change against the committed main text in a
+scratch copy of `paper/` with `main.tex` and `method-details.tex` restored from HEAD: 26 pages, 0 overfull
+boxes, References on page 9. `check_headline.py` passes in the live tree. **This commit therefore contains only
+`sections/appendix.tex`, `gen_ops_panel.py`, `check_headline.py`, `tables/ops-numbers.tex` and this file** —
+`main.tex`, `main.pdf`, `PAPER.md`, `method-details.tex`, the figure PDFs and `rewrite-verification.json` were
+left alone so the other session's work is neither committed nor clobbered. The PDF needs a rebuild once that
+session lands.
+
 ## 2026-09-22 (paper lane) — DeepONet on 2D Burgers (Appendix C) — CURRENT HANDOFF
 
 DeepONet, the one operator named in the abstract that had never been trained on the 2D family, is now in the

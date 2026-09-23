@@ -84,6 +84,15 @@ def main():
             row(nm, FAMILY[fam], m['arm'], f"{m['real_parameter_count']:,}",
                 f"{tr['epochs_completed']} ep, best {tr['best_epoch']}, {tr['stop_reason']}")
         row(fom, 'FOM (CNAB2)', f"{res[fom]['steps']} steps")
+        faster = [nm for nm, r in res.items() if r['kind'] == 'cnab2' and nm in tim
+                  and tim[nm]['median_ms'] < tim[fom]['median_ms'] and not r['unstable']]
+        if faster:
+            nxt = max(faster, key=lambda nm: tim[nm]['median_ms'])
+            accw = res['nmrom_accurate_head_k8']['stats']['evolved_worst']
+            lines += ['', f'Next faster stable CNAB2 setting (not eligible under the rule): {res[nxt]["steps"]} steps, '
+                      f'{pct(res[nxt]["stats"]["evolved_worst"])} % ({res[nxt]["stats"]["evolved_worst"] / accw:.3f}× the '
+                      f'NM-ROM accurate error), {tim[nxt]["median_ms"]:.3f} ms; against it the NM-ROM accurate setting '
+                      f'would be {tim[nxt]["median_ms"] / tim["nmrom_accurate_head_k8"]["median_ms"]:.3g}×.']
         lines += ['', f'Gates: ' + ', '.join(f'{k} {"pass" if v else "FAIL"}' for k, v in s['gates'].items()
                                              if k != 'gated_arms') +
                   f'; independent restricted audit {"pass" if a["all_passed"] else "FAIL"} '

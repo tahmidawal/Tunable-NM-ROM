@@ -90,3 +90,13 @@ directory was deleted and the name retired. The same three meshes run as `pbkE` 
 plus rotated banks are about 34 GB. 4096² (`pbkD`, job 4197115) stays on an H200, because its 69 GB rotated bank does
 not fit an 80 GB card. All speedups are within-job ratios, so the GPU-type difference between the 4096² row and the
 other rows affects only absolute milliseconds, which are labelled with their GPU.
+
+## Amendment A3 (2026-09-23, before any 4096² result) — 4096² on any card of at least 80 GB
+
+`pbkD` (job 4197115, H200, Slurm start estimate 08:04) was cancelled by me while PENDING and its remote directory
+deleted. The earlier "must be an H200" reasoning was a units error on my part: an 80 GB A100/H100 has 81920 MiB =
+85.9e9 bytes, and the rotated f64 4096² bank is 68.7e9 bytes. Nothing else large is kept at 4096² (no original bank,
+no f32 copy), which leaves about 13e9 bytes of headroom at memory fraction 0.95. The job is restaged as `pbkF` with
+`--constraint="a100-80G|h100-80G|h200-141G"`. Separately, `pbkE` landed on an **A100-PCIE-40GB**. Its 2048² pass
+keeps both banks (34.4e9 bytes) against a 38.6e9-byte XLA cap. That pass is at risk; if it runs out of memory it is
+rerun without the original bank, with the parity then carried by 256² and 1024².

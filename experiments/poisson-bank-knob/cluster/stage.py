@@ -47,7 +47,8 @@ SCRIPT = '''#!/bin/bash
 #SBATCH --job-name=pbk___ATTEMPT__
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
-#SBATCH --gres=gpu:__GPU__:1
+#SBATCH --gres=gpu:__GPU__1
+__CONSTRAINT__
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=__MEM__
@@ -96,6 +97,7 @@ def main():
     p.add_argument('--hours', type=int, default=6)
     p.add_argument('--gpu', default='h200', choices=['a100', 'h100', 'h200', 'l40s'])
     p.add_argument('--mem', default='240G')
+    p.add_argument('--constraint', default=None, help='Slurm feature expression; replaces the typed gres')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     out = ROOT / LANE / 'runs' / a.attempt
@@ -125,7 +127,7 @@ def main():
         second += ('\n"$PY" __DRIVER__ --config %s --out ../output3\n"$PY" __AUDIT__ ../output3 --subsample __SUB__ --delete-fields'
                    % a.config3)
     script = script.replace('__SECOND__', second)
-    for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', a.gpu),
+    for token, value in (('__ATTEMPT__', a.attempt), ('__REMOTE__', remote), ('__GPU__', '' if a.constraint else a.gpu + ':'), ('__CONSTRAINT__', f'#SBATCH --constraint="{a.constraint}"' if a.constraint else ''),
                          ('__HOURS__', f'{a.hours:02d}'), ('__MEM__', a.mem),
                          ('__DRIVER__', a.driver), ('__AUDIT__', a.audit),
                          ('__CONFIG__', a.config), ('__SUB__', str(a.subsample)), ('__MEMFRAC__', a.memfrac)):

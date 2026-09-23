@@ -11,3 +11,5 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
 | smoke1 | 4197296 | 128² | A100 | done, smoke only, remote deleted |
+| bk4096 | 4197441 | 4096² | H200 240G | submitted 03:40 |
+| bk1024 | 4197443 | 1024² | A100-80G | submitted 03:40 |

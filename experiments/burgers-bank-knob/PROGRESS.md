@@ -26,6 +26,16 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 - bk256b (256², x1): parity 4.8e-14/2.4e-13; order 0.0 %/0.8 %. Rule: accurate = R'=384 LINEAR (0.166 %, 124 ms, 0.15×);
   fast = R'=128 linear (1.60 %, 31.8 ms, 0.30×). q droppable: YES.
 
+- Independent read-only subagent review (no blockers). M1: the certificate includes state k=j, which the EQ residual never
+  touches (backward Euler evaluates advection at the NEW state); re-thresholded at k>=j+1 (labelled SENSITIVITY) the
+  linear rung R'<=384 passes at 1024²/2048² and flips accurate -> R'=384 linear (0.211 %, 83 ms, 0.89× at 1024²;
+  0.219 %, 90 ms, 3.30× at 2048²) and q-droppable -> yes. M2: rho spot-check did not cover the selected arms -> audit
+  A3 now covers every arm (84 states, worst 9e-10) and recomputes every arm's coefficient map in NumPy (1.3e-14).
+  Order statistic switched to means (medians degenerate); gaps <= 1.1 %. All four meshes re-audited, all gates pass.
+- bx2048 (exploratory A2): M=2R' does NOT certify (ρ 0.120/0.126) and costs accuracy (R'=384: 0.433 % vs 0.219 %);
+  exact first step (x1) certifies (ρ 0.049) but costs 2.46 s (R'=384) / 1.18 s (R'=256) -> unusable. Cross-job repeat
+  of R'=384 linear / R'=384 q=256 / R'=128 linear: 89.4/176.3/34.6 ms vs 90.1/177.7/35.2 ms in bk2048b; errors identical.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -37,4 +47,4 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
 | bk512b | 4200506 | 512² | A100 | COMPLETED 19.8 min; collected, audited (all gates pass), remote deleted |
 | bk256b | 4202294 | 256² | A100 | COMPLETED 15.2 min; collected, audited (all gates pass), remote deleted |
-| bx2048 | 4202862 | 2048² | A100-80G | exploratory (A2), submitted |
+| bx2048 | 4202862 | 2048² | A100-80G | exploratory (A2) COMPLETED 31.5 min; audited (all gates pass), remote deleted |

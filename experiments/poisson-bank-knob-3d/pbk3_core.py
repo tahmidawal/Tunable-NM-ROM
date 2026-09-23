@@ -209,13 +209,15 @@ def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='
             after.setdefault(key, []).append(x[scope])
         elif x.get('variant') == control:
             ctrl.setdefault(key, []).append(x[scope])
-    per_arm, pooled, main_ratio, npairs = {}, [], {}, {}
+    per_arm, pooled, main_ratio, npairs, duplicates = {}, [], {}, {}, 0
     for name in names:
         r = []
         for key, v in after.items():
             if key[0] == name and key in ctrl:
-                r += [a / c for a, c in zip(v, ctrl[key])]
-        npairs[name] = len(r)
+                if len(v) != 1 or len(ctrl[key]) != 1:      # one after-CG and one control call per (arm, case, round)
+                    duplicates += 1
+                r.append(v[0] / ctrl[key][0])
+        npairs[name] = len(r)                                 # distinct (case, round) pairs
         if not r:
             continue
         per_arm[name] = float(np.median(r))
@@ -230,7 +232,8 @@ def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='
                max_arm_paired_ratio=max(per_arm.values()) if per_arm else None,
                per_arm_paired_ratio=per_arm, per_arm_after_over_main=main_ratio,
                required_pairs_per_arm=required_pairs, min_pairs_per_arm=min(npairs.values()) if npairs else 0,
-               coverage_ok=bool(npairs) and min(npairs.values()) >= required_pairs)
+               duplicate_pair_keys=duplicates,
+               coverage_ok=bool(npairs) and min(npairs.values()) >= required_pairs and duplicates == 0)
     out['passed'] = bool(pooled and out['coverage_ok'] and out['pooled_paired_ratio'] <= limit_pooled
                          and out['median_after_over_main'] <= limit_pooled and out['max_arm_paired_ratio'] <= limit_arm)
     return out

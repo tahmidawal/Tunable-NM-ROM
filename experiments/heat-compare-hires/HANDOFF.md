@@ -28,6 +28,7 @@ Lane dir `experiments/heat-compare-hires/`. Design + amendments: `DESIGN.md`. Na
 | pn2048b | 4206387 | panel 2048² (A2) | H200 pax008 | FAILED: GPU OOM at qm32 set-up (A3); no number used |
 | pn4096 | 4207404 | panel 4096² | H200 | CANCELLED by me while PENDING (pre-A3 code) |
 | pn2048c | 4207537 | panel 2048² (A3) | H200 pax010 | FAILED: torch OOM at FNO behind the JAX pool (A4); partial results diagnostic only |
-| pn4096b | 4207540 | panel 4096² (A3) | H200 pax011 | running |
-| pn2048d | — | panel 2048² (A4, operators first, XLA_FRAC 0.80) | H200 | submitted |
+| pn4096b | 4207540 | panel 4096² (A3) | H200 pax011 | FAILED: 70 GiB QM32 bank vs fragmented pool (A5); partial diagnostic only |
+| pn4096c | — | panel 4096² (A5, QM first) | H200 | submitted |
+| pn2048d | 4211204 | panel 2048² (A4, operators first, XLA_FRAC 0.80) | H200 | submitted |
 | pn4096 | — | panel 4096² (no operators) | H200 | staged |

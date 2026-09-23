@@ -1,0 +1,24 @@
+W0923 08:44:49.899374 1772275 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 70.09GiB (rounded to 75259384320)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0923 08:44:49.899913 1772275 bfc_allocator.cc:525] *__________________________________________________________________________________________________*
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096b/code/heat-compare-hires/panel.py", line 405, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096b/code/heat-compare-hires/panel.py", line 300, in main
+    B = build_fields(fm['Ux'], fm['Uy'], core_cols, n)
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096b/code/heat-compare-hires/panel.py", line 67, in build_fields
+    return C.block(buf)
+           ~~~~~~~^^^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn4096b/code/hires-heat/core.py", line 34, in block
+    jax.block_until_ready(x); return x
+    ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 70.09GiB. [executable_name='jit__lambda'] [tf-allocator-allocation-error='']

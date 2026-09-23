@@ -261,6 +261,54 @@ def main():
         run_operators()
     tests = C.mode_list(cfg['tests'], n, d)
 
+    # ---------------- factor model of the training snapshots at this mesh
+    if cfg.get('pod') or cfg.get('qm'):
+        t0 = time.perf_counter(); fm = P.factor_model(n, train)
+        # gate: factor representation reproduces directly generated training snapshots
+        gate = []
+        for j in cfg['factor_gate_draws']:
+            u = np.asarray(prop(C.initial_grid(n, d, train[j]), lam_d, tj, nu))
+            rep = P.field(fm, fm['C'][:, j * len(times):(j + 1) * len(times)])
+            gate.append(float(np.linalg.norm(u - rep) / np.linalg.norm(u)))
+        result['factor_model'] = dict(rho=list(fm['rho']), factor_residual=fm['factor_residual'], snapshot_gate_max=max(gate),
+                                      seconds=time.perf_counter() - t0, snapshots=int(fm['C'].shape[1]))
+        assert max(gate) < 1e-12 and fm['factor_residual'] < 1e-12, result['factor_model']
+        dump()
+
+    # ---------------- quadratic manifold (A5: optionally run FIRST at 4096^2 so its 70 GB bank gets a clean pool)
+    def run_qm():
+        if not cfg.get('qm'):
+            return
+        result['qm'] = {}
+        for r in cfg['qm']['ranks']:
+            t0 = time.perf_counter()
+            gamma, sel = P.qm_select(fm['C'], fm['traj'], r, seed=cfg['qm']['split_seed'], fraction=cfg['qm']['holdout_fraction'])
+            uref, Vc, W, A, st = P.qm_fit(fm['C'], r, gamma)
+            core_cols = np.concatenate((uref[:, None], Vc, W), 1)
+            B = build_fields(fm['Ux'], fm['Uy'], core_cols, n)
+            rt = np.linalg.qr(core_cols, mode='r'); rt = rt * np.where(np.diag(rt) < 0, -1., 1.)[:, None]
+            gram = gram_t(B, B); rgate = float(np.linalg.norm(gram - rt.T @ rt) / np.linalg.norm(gram)); del gram
+            a = C.weak_matrix(B, tests, n, d)
+            head = qm_head(r)
+            model = dict(d=d, head_fn=head, head_params={}, codes=jnp.asarray(A.T), directions=np.zeros((core_cols.shape[1], 0)))
+            setup = dict(n=n, d=d, times=times, nu=nu, modes=tests, a=a, rtri=rt, mode_lam=C.mode_eigs(n, tests), directions=model['directions'])
+            setup_s = time.perf_counter() - t0
+            result['qm'][str(r)] = dict(gamma=gamma, selection=sel, fit=st, rtri_gram_gate=rgate, columns=int(core_cols.shape[1]),
+                                        setup_seconds=setup_s, bank_bytes=int(B.size * 8))
+            assert rgate < 1e-10, rgate
+            dump()
+            for arm in cfg['qm']['arms']:
+                opt = {**cfg['nmrom']['defaults'], **arm.get('opt', {})}
+                stq = C.make_stages(model, setup, 0, opt)
+                run_block(f'qm{r}_{arm["name"]}', Method(lambda u, stq=stq: stq['query'](u, B)),
+                          dict(family='qm', unknowns=r, opt=opt, gamma=gamma, setup_seconds=setup_s))
+                idle(); sentinel(f'qm{r}_{arm["name"]}')
+            del B, model, setup; jax.clear_caches()
+
+
+    if cfg.get('qm_first'):
+        run_qm()
+
     # ---------------- NM-ROM + linear-bank baselines (frozen wide2d)
     if cfg.get('nmrom'):
         t0 = time.perf_counter()
@@ -287,20 +335,6 @@ def main():
             idle(); sentinel('linear_bank_moments_cn_BASELINE')
         del bank, model, setup; jax.clear_caches()
 
-    # ---------------- factor model of the training snapshots at this mesh
-    if cfg.get('pod') or cfg.get('qm'):
-        t0 = time.perf_counter(); fm = P.factor_model(n, train)
-        # gate: factor representation reproduces directly generated training snapshots
-        gate = []
-        for j in cfg['factor_gate_draws']:
-            u = np.asarray(prop(C.initial_grid(n, d, train[j]), lam_d, tj, nu))
-            rep = P.field(fm, fm['C'][:, j * len(times):(j + 1) * len(times)])
-            gate.append(float(np.linalg.norm(u - rep) / np.linalg.norm(u)))
-        result['factor_model'] = dict(rho=list(fm['rho']), factor_residual=fm['factor_residual'], snapshot_gate_max=max(gate),
-                                      seconds=time.perf_counter() - t0, snapshots=int(fm['C'].shape[1]))
-        assert max(gate) < 1e-12 and fm['factor_residual'] < 1e-12, result['factor_model']
-        dump()
-
     # ---------------- POD-Galerkin / POD-LSPG (uncentred POD of the training snapshots at this mesh)
     if cfg.get('pod'):
         rmax = max(cfg['pod']['ranks']); Ufull, sv = P.pod(fm['C'], rmax)
@@ -325,33 +359,8 @@ def main():
                 idle(); sentinel(f'pod{r}_{kind}')
             del V; jax.clear_caches()
 
-    # ---------------- quadratic manifold
-    if cfg.get('qm'):
-        result['qm'] = {}
-        for r in cfg['qm']['ranks']:
-            t0 = time.perf_counter()
-            gamma, sel = P.qm_select(fm['C'], fm['traj'], r, seed=cfg['qm']['split_seed'], fraction=cfg['qm']['holdout_fraction'])
-            uref, Vc, W, A, st = P.qm_fit(fm['C'], r, gamma)
-            core_cols = np.concatenate((uref[:, None], Vc, W), 1)
-            B = build_fields(fm['Ux'], fm['Uy'], core_cols, n)
-            rt = np.linalg.qr(core_cols, mode='r'); rt = rt * np.where(np.diag(rt) < 0, -1., 1.)[:, None]
-            gram = gram_t(B, B); rgate = float(np.linalg.norm(gram - rt.T @ rt) / np.linalg.norm(gram)); del gram
-            a = C.weak_matrix(B, tests, n, d)
-            head = qm_head(r)
-            model = dict(d=d, head_fn=head, head_params={}, codes=jnp.asarray(A.T), directions=np.zeros((core_cols.shape[1], 0)))
-            setup = dict(n=n, d=d, times=times, nu=nu, modes=tests, a=a, rtri=rt, mode_lam=C.mode_eigs(n, tests), directions=model['directions'])
-            setup_s = time.perf_counter() - t0
-            result['qm'][str(r)] = dict(gamma=gamma, selection=sel, fit=st, rtri_gram_gate=rgate, columns=int(core_cols.shape[1]),
-                                        setup_seconds=setup_s, bank_bytes=int(B.size * 8))
-            assert rgate < 1e-10, rgate
-            dump()
-            for arm in cfg['qm']['arms']:
-                opt = {**cfg['nmrom']['defaults'], **arm.get('opt', {})}
-                stq = C.make_stages(model, setup, 0, opt)
-                run_block(f'qm{r}_{arm["name"]}', Method(lambda u, stq=stq: stq['query'](u, B)),
-                          dict(family='qm', unknowns=r, opt=opt, gamma=gamma, setup_seconds=setup_s))
-                idle(); sentinel(f'qm{r}_{arm["name"]}')
-            del B, model, setup; jax.clear_caches()
+    if not cfg.get('qm_first'):
+        run_qm()
 
     # ---------------- labelled controls (not FOM candidates)
     run_block('dst_exact_CONTROL', Method(lambda u: (prop(u, lam_d, tj, nu),)), dict(family='control', unknowns=N))

@@ -32,6 +32,9 @@ TRAIN = {1024: 'tr1024a', 2048: 'tr2048'}
 for n in (1024, 2048, 4096):
     c = dict(base, mesh=n)
     c['operators_first'] = n == 2048   # DESIGN A4
+    c['qm_first'] = n == 4096           # DESIGN A5
+    if n == 4096:
+        c['qm'] = dict(c['qm'], ranks=[32, 16, 8])
     c['operators'] = {} if n == 4096 else {f'op_{o}': dict(checkpoint=f'{NS}/{TRAIN[n]}/out/{o}/best.pt', family=o) for o in ops}
     (HERE / 'configs' / f'pn{n}.json').write_text(json.dumps(c, indent=1) + '\n')
 smoke = dict(base, mesh=64, cohorts=[[791099, 2]], train=[791000, 32], repetitions=2, sentinel_reps=3, idle_seconds=0.1, local_smoke=True,
@@ -39,4 +42,5 @@ smoke = dict(base, mesh=64, cohorts=[[791099, 2]], train=[791000, 32], repetitio
              audit_intervals=32, random_audit_nodes=500, control_matmul_size=1024,
              operators={f'op_{o}': dict(checkpoint=f'/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/6777170d-0e90-4670-b7cb-4ee006705422/scratchpad/opsmoke1/{o}/best.pt', family=o) for o in ops})
 smoke['operators_first'] = True
+smoke['qm_first'] = True
 (HERE / 'configs' / 'smoke64.json').write_text(json.dumps(smoke, indent=1) + '\n')

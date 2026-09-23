@@ -225,3 +225,13 @@ never returns memory, leaving PyTorch 2 GB. Its partial results are kept in
 timed **first** (`operators_first`), while the GPU is still empty, and the JAX pool is capped at
 0.80 so the late U-Net re-time has room. Block order otherwise unchanged; the order gate (A2)
 covers the reordering. 1024² (`pn1024b`, operators after the quadratic manifold) is unchanged.
+
+## A5 (2026-09-23 ~09:10 EDT): 4096² allocation order, after pn4096b, before pn4096c
+
+`pn4096b` (job 4207540, H200) completed the NM-ROM, linear-bank, POD and quadratic-manifold
+r = 8, 16 blocks and died allocating the 70 GiB r = 32 quadratic-manifold bank: the JAX pool was
+already fragmented by the earlier 17–34 GB bases, so no contiguous region was left. Partial
+results kept in `runs/pn4096b/failed/` (diagnostic, not used). Fix: at 4096² the
+quadratic-manifold section runs **first**, largest rank first (r = 32, 16, 8), on a clean pool
+(`qm_first`); the factor model is now always built before the NM-ROM section (host-side,
+untimed). No timed code path changes; the A2 order gate covers the reordering.

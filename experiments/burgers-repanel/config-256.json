@@ -1,0 +1,373 @@
+{
+ "attempt": "br256",
+ "intervals": 256,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "skip_certificates": true,
+ "population": {
+  "mesh": 256,
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  ],
+  "note": "unused: skip_certificates is set. Kept so the cohort-disjointness assertions run."
+ },
+ "rule_status": {
+  "lat64_x1_g0p01": "CERTIFIED at 256^2 under addendum A2.1: passes 12/12 held-out draws across bc256 (rho_max 0.063) and bc256b (0.073), confirmation draw 0.054/0.068, bar 0.116",
+  "scaled": "NOT certified: selected in bc256 on draws 1-5 (rho_max 0.0994) but FAILED the confirmation draw (0.165); marginal 3/5 in bc256b. This is the rule the paper's current 256^2 row uses.",
+  "q0_scaled": "confirmed at 256^2 (bc256 0.0336 / bc256b 0.0571 confirmation, bar 0.116)",
+  "exact": "no rule: dense residual over all interior nodes"
+ },
+ "target_chunk": 4,
+ "restrict_to": 256,
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 0,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    1e-06
+   ],
+   "variants": [
+    {
+     "solver": "lu"
+    }
+   ],
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+       "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+       "mesh": 256,
+       "status": "b-eqtop q=0 rule, m=1024; confirmed (3/3) at 256^2"
+      }
+     ],
+     "base": [
+      1e-06
+     ],
+     "variants": [
+      {
+       "solver": "lu",
+       "gtols": [
+        1e-06
+       ]
+      },
+      {
+       "solver": "lu",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "gtols": [
+        0.001
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    1e-06
+   ],
+   "variants": [
+    {
+     "solver": "lu"
+    }
+   ],
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q256_m2560_bet101_fs64.npz",
+       "sha256": "3603d6e18cc799dd4c81c9f92843b607aefc65537665d93622e62d1936adc12e",
+       "mesh": 256,
+       "status": "b-eqtop q=256 rule, m=2560; the rule family the paper's current 256^2/512^2 accurate rows use"
+      }
+     ],
+     "base": [
+      1e-06
+     ],
+     "variants": [
+      {
+       "solver": "lu",
+       "gtols": [
+        1e-06
+       ]
+      },
+      {
+       "solver": "chol",
+       "gtols": [
+        1e-06
+       ]
+      },
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "gtols": [
+        1e-06,
+        0.001
+       ]
+      }
+     ]
+    },
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "exact_steps": 1,
+       "gtols": [
+        0.01
+       ]
+      }
+     ]
+    },
+    {
+     "name": "exact",
+     "exact": true,
+     "parts": [],
+     "base": [],
+     "variants": [
+      {
+       "solver": "chol",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "gtols": [
+        0.01
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_scaled_g1em06_base",
+  "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2"
+ ],
+ "reps": 5,
+ "required_reps": 5,
+ "order_seed": 20260922,
+ "burn_seconds": 0.25,
+ "parity_bar": 1e-09,
+ "roles": {
+  "optimised_accurate": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+  "optimised_fast": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+  "preoptimisation_accurate": "q256_M1088_scaled_g1em06_base",
+  "preoptimisation_fast": "q0_M64_scaled_g1em06_base",
+  "optimised_on_the_papers_own_rule": "q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2"
+ },
+ "fom_subsets": {
+  "b_panel": [
+   "fft_tight",
+   "nt1e-4_dt005",
+   "nt1e-3_dt005",
+   "nt1e-2_dt005",
+   "nt1e-4_dt01",
+   "nt1e-3_dt01",
+   "nt1e-2_dt01"
+  ],
+  "lean": [
+   "lean_tight",
+   "lean_nt1e-4_dt005",
+   "lean_nt1e-3_l1e-3_dt005",
+   "lean_nt3e-3_l3e-3_dt005",
+   "lean_nt1e-2_l1e-2_dt005",
+   "lean_nt1e-3_l1e-3_dt01",
+   "lean_nt3e-3_l3e-3_dt01",
+   "lean_nt1e-2_l1e-2_dt01"
+  ],
+  "full": [
+   "fft_tight",
+   "nt1e-4_dt005",
+   "nt1e-3_dt005",
+   "nt1e-2_dt005",
+   "nt1e-4_dt01",
+   "nt1e-3_dt01",
+   "nt1e-2_dt01",
+   "lean_tight",
+   "lean_nt1e-4_dt005",
+   "lean_nt1e-3_l1e-3_dt005",
+   "lean_nt3e-3_l3e-3_dt005",
+   "lean_nt1e-2_l1e-2_dt005",
+   "lean_nt1e-3_l1e-3_dt01",
+   "lean_nt3e-3_l3e-3_dt01",
+   "lean_nt1e-2_l1e-2_dt01"
+  ]
+ },
+ "profile_arms": [
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+  "q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2"
+ ],
+ "keep_for_reference": [
+  "_base",
+  "_fast",
+  "fft_tight",
+  "lean_",
+  "nt1e"
+ ],
+ "purpose": "DESIGN.md: re-time the paper's Burgers 256^2 rows on the optimised solver path against the pre-optimisation arm they were timed on, in ONE allocation. Frozen checkpoint, frozen rules, no certification, no retraining.",
+ "rule_notes": {
+  "scaled": "b-eqtop nodes at the same physical points, weights x (L/256)^2, NO refit",
+  "lat64": "uniform 63x63 interior sub-lattice, equal weights",
+  "exact": "no rule: dense advection over all (L-1)^2 interior nodes"
+ },
+ "fom_notes": "audited = iterative_paths.make_fom, the implementation the 256^2/512^2/1024^2 rows in the paper were selected against (it records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic, the implementation the 2048^2/4096^2 rows use. Both grids are timed here so the paper rule can be applied on either.",
+ "q0_through_hfast": true
+}

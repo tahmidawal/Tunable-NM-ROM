@@ -151,3 +151,21 @@ lane's `checks/bk<L>-summary.json`):
 
 **Spectral FOM for each ROM arm.** It is the fastest ladder subject whose worst error is $\le$ the arm's worst
 error. Tight Picard is also reported.
+
+## H. Heat (written before any heat job)
+
+**ROM arms.** The heat lane selects per stepping family (`cn`, `bf`) and pooled
+(`lane-ref/heat2d-selection.json`, from `heat-bank-knob/runs/h2d/summary.json` at e45cae7e). All distinct
+selected arms are timed:
+- pooled accurate is `lin_R128_bf` (role `rom_accurate`);
+- pooled fast is `lin_R48_cn` (role `rom_fast`);
+- `lin_R128_cn` and `lin_R48_bf` are timed as well.
+
+**Cohort.** The lane's held-out cohort (`heldout_sealed_791099`, 16 cases).
+
+**CN–CG validation tolerance.** It is rtol $10^{-11}$, not the smoke's $10^{-12}$. This was set before any
+heat job, after the Poisson runs showed that the paper's unpreconditioned CG cannot certify its true residual
+below about $10^{-9}$ at the finest meshes. Agreement limit: $10^{-9}$.
+
+**Spectral FOM for each arm.** The matched spectral FOM is the fastest of {`modal_exp`, `modal_cn`} × {fft, mm}
+whose worst error is $\le$ the arm's. `modal_exp` (exact) is always eligible.

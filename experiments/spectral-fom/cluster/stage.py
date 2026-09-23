@@ -54,7 +54,7 @@ BURG = [(f, BKN_COMMIT) for f in (
     'experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz',
     f'{BKN}/config-256.json', f'{BKN}/config-512.json', f'{BKN}/config-1024.json', f'{BKN}/config-2048.json')]
 HBK = 'experiments/heat-bank-knob'
-HBK_COMMIT = '00147a52'      # exp/2026-09-23-heat-bank-knob; core/hbk_core/inputs/prep/configs identical to h2d 962ced91 / h3d bae9e1e6
+HBK_COMMIT = 'c2fbe50b'      # exp/2026-09-23-heat-bank-knob; staged files identical to h2d 962ced91 / h3d bae9e1e6 / 00147a52
 HEAT = [(f, HBK_COMMIT) for f in (
     f'{HBK}/core.py', f'{HBK}/hbk_core.py', f'{HBK}/prep_2d.npz', f'{HBK}/prep_3d.npz', f'{HBK}/configs/h2d.json',
     f'{HBK}/configs/h3d.json', f'{HBK}/inputs/SHA256SUMS', f'{HBK}/inputs/vp_R320/bank.pkl', f'{HBK}/inputs/vp_R320/head_K32.pkl',

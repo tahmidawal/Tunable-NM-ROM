@@ -17,7 +17,7 @@ ACCEPTED = {
     'poisson2d': [('spA', 'output0'), ('spA', 'output1'), ('spA', 'output2'), ('spB', 'output0')],
     'poisson3d': [('spA', 'output3'), ('spA', 'output4')],
     'burgers2d': [('spC', 'output0'), ('spC', 'output1'), ('spC', 'output2'), ('spC', 'output3')],
-    'heat2d': [],
+    'heat2d': [('spD', 'output0'), ('spD', 'output1'), ('spD', 'output2')],
     'heat3d': [],
 }
 

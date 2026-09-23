@@ -140,7 +140,7 @@ def predict(model, field, mean, std, scale):
 def query_interior(model, u0, mean, std, scale):
     """The TIMED query: supplied interior field [n-1, n-1] on the GPU -> [6, n-1, n-1] on the GPU."""
     field = torch.nn.functional.pad(u0, (1, 1, 1, 1))[None, None]
-    return predict(model, field, mean, std, scale)[0, :, 1:-1, 1:-1]
+    return predict(model, field, mean, std, scale)[0, :, 1:-1, 1:-1].contiguous()
 
 
 def current_relative(prediction, target):

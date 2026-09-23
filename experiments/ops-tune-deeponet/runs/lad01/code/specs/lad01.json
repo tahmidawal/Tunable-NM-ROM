@@ -1,0 +1,66 @@
+{
+  "family": "deeponet",
+  "prefix": "don",
+  "pde": "burgers",
+  "base_config": "code/configs/deeponet/base.json",
+  "validation_index": "data/pinned/validation/index.json",
+  "reference_index": "data/pinned/refinement/index.json",
+  "cohort_train_mount": "pinned",
+  "mounts": {
+    "pinned": {
+      "source": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01",
+      "dirs": [
+        "train",
+        "validation",
+        "refinement"
+      ],
+      "train_index": "data/pinned/train/index.json"
+    },
+    "ext": {
+      "source": "/cluster/tufts/paralab/tawal01/opstune_don_20260922/pool02",
+      "dirs": [
+        "train",
+        "pool"
+      ],
+      "train_index": "data/ext/train/index.json",
+      "pool": "data/ext/pool"
+    }
+  },
+  "worker": "worker_tune.py",
+  "mem": "180G",
+  "job_name": "opstune_don_lad01",
+  "time": "07:00:00",
+  "global_seconds": 19800,
+  "reserve_seconds": 900,
+  "arms": [
+    {
+      "name": "c-pinned128",
+      "mount": "pinned",
+      "seconds": 3000
+    },
+    {
+      "name": "c-new128",
+      "mount": "ext",
+      "pool_limit": 128,
+      "seconds": 3000
+    },
+    {
+      "name": "base-512",
+      "mount": "ext",
+      "pool_limit": 512,
+      "seconds": 3000
+    },
+    {
+      "name": "base-2048",
+      "mount": "ext",
+      "pool_limit": 2048,
+      "seconds": 3000
+    },
+    {
+      "name": "base-top",
+      "mount": "ext",
+      "seconds": 3000
+    }
+  ],
+  "design": "DESIGN 2.3 / 5.2 T0-T1: the data ladder at fixed wall budget. c-pinned128 and c-new128 are the same 128 physical draws under the two target protocols; base-512 / base-2048 / base-top are nested prefixes of the same draw. Every arm is configs/deeponet/base.json unchanged, so training-set size is the only variable across the last three. No arm here is a selection candidate."
+}

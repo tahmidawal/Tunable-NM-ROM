@@ -190,12 +190,73 @@ def section_sweep(audits):
     return text, audit['decisions']
 
 
+def section_verdicts(audits, ladder_verdict, decisions, parent):
+    """T0-T6 of DESIGN 5.2, each stated with the number that decides it."""
+    lines = []
+    if 'T0' in ladder_verdict:
+        t0 = ladder_verdict['T0']
+        rho = t0.get('rho') or {}
+        lines.append(f"- **T0 (target protocol).** `c-new128` differs from `c-pinned128` by "
+                     f"**{100 * t0['signed_relative']:+.1f} %** of the pinned arm's validation mean. "
+                     f"The measured label discrepancy against that arm's own error is "
+                     f"{rho.get('mean_over_mean', float('nan')):.3f} mean-over-mean and "
+                     f"{rho.get('worst_over_worst', float('nan')):.3f} worst-over-worst; the bar is "
+                     f"{BARS['T0_rho']} on both, so the cheaper training targets are "
+                     f"**{'negligible' if t0.get('negligible') else 'MATERIAL'}** for this arm. "
+                     f"The perturbation is on training labels only — every evaluation cohort is "
+                     f"pinned refined-anchor data — and a perturbation of this size is expected to "
+                     f"cost accuracy rather than create it, so the ladder more likely understates "
+                     f"than overstates what pinned targets would give. That is a reasoned "
+                     f"expectation, not a bound.")
+    if 'T1' in ladder_verdict:
+        t1 = ladder_verdict['T1']
+        lines.append(f"- **T1 (data).** The top rung's validation mean is **{t1['ratio']:.2f}×** the "
+                     f"128-case rung's at the same wall budget, over rungs {t1['rungs']}. The "
+                     f"pre-chosen large-effect bar is {BARS['T1_large']}×, so this is "
+                     f"**{'a large data effect' if t1['large_effect'] else 'not a large data effect'}**. "
+                     + (f"The last rung-to-rung step changes the mean by "
+                        f"{100 * t1['final_step_relative']:+.1f} %, so at this compute there is "
+                        f"{'no further measurable gain' if t1.get('no_further_gain') else 'still measurable gain'}. "
+                        if 'final_step_relative' in t1 else '')
+                     + "More data at a fixed budget also means fewer passes per example, so this is "
+                       "the observed gain under the allotted compute, not a statement about data "
+                       "saturation.")
+    selection = (decisions or {}).get('selection')
+    if selection:
+        arms = {}
+        for audit in audits.values():
+            arms.update(arms_of(audit))
+        chosen = arms[selection['selected']]
+        f = chosen['fixed_initial']
+        within = {k: f[k] / FNO_LARGE[k] for k in ('median', 'maximum') if k in f}
+        lines.append(f"- **T3 (competitive with the FNO).** The selected arm "
+                     f"`{selection['selected']}` is {f['median'] / FNO_LARGE['median']:.2f}× "
+                     f"`fno-large`'s median and {f['maximum'] / FNO_LARGE['worst']:.2f}× its worst; "
+                     f"the bar is {BARS['T3_factor']}× on both, so T3 "
+                     f"**{'PASSES' if max(f['median'] / FNO_LARGE['median'], f['maximum'] / FNO_LARGE['worst']) <= BARS['T3_factor'] else 'FAILS'}**.")
+        if selection['selected'] != selection['best_worst_case_arm']:
+            lines.append(f"- **The selection rule optimises the mean, not the tail, and it did so "
+                         f"here:** `{selection['selected']}` has worst case "
+                         f"{pct(selection['selected_worst'])} % while `{selection['best_worst_case_arm']}` "
+                         f"has {pct(selection['best_worst'])} %. The rule is the FNO lane's own, "
+                         f"pre-registered before the job and not changed after it.")
+        below = f['maximum'] < BARS['T5_discretisation']
+        lines.append(f"- **T5 (context only).** The selected arm's validation worst is "
+                     f"{pct(f['maximum'])} %, {'below' if below else 'above'} the 4.0265 % worst error "
+                     f"of the converged same-grid full-order model — which was measured on the "
+                     f"**6-case development cohort**, not on these 32 validation cases, so this is "
+                     f"context and not a like-for-like comparison. `unet-medium` already sits below "
+                     f"that number on validation-32.")
+    return '\n'.join(lines) if lines else '*(no verdict is available until the jobs are collected)*'
+
+
 def main():
     audits, accounting, parent, inherited, sources = load()
     what_ran, arm_summary = section_what_ran(audits)
     ladder, ladder_verdict = section_ladder(audits, accounting)
     sweep, decisions = section_sweep(audits)
     accuracy = section_accuracy(audits, parent)
+    verdicts = section_verdicts(audits, ladder_verdict, decisions, parent)
     operator, nmrom, parity = accounting['operator'], accounting['nmrom'], accounting['parity']
     extended = next((a['extended_training_data'] for a in audits.values()
                      if a.get('extended_training_data', {}).get('present')), {})
@@ -276,7 +337,33 @@ model error and **not** small against a 2 % one. §3's T0 row gives the ratio pe
 
 {accuracy}
 
-## 6. Provenance
+## 6. The pre-registered verdicts
+
+{verdicts}
+
+## 7. What DeepONet was given that the other three families were not
+
+The U-Net, Transolver and FNO rows above are the published ones: 128 training cases, an
+inherited schedule, a 3000 s per-arm wall budget, one seed, one learning-rate refinement. This
+lane gave DeepONet, and only DeepONet:
+
+1. up to {extended.get('cases', 'n/a')} training cases instead of 128;
+2. a sweep over eleven one-factor arms plus a composed arm;
+3. a stopping rule and schedule chosen for it rather than inherited from the U-Net;
+4. a 3× longer final wall budget for the selected arm.
+
+**The paper must say so.** The like-for-like row against the published families is
+`ops-deeponet-b2d`'s `don-small` — 128 cases, inherited schedule, 3000 s — which stays in the
+table. (A sibling lane, `ops-tune-grid`, is doing the same for the other three families, so the
+final paper comparison may be less asymmetric than this list.)
+
+The asymmetry runs the other way too, and the paper should say that as well: each published
+operator training case cost {operator['per_case_seconds']['mean']:.0f} GPU-seconds to produce
+against 50-step 256² solves for our own model's snapshots, and at query time the NM-ROM is
+handed the governing equations and solves a residual while an operator is a feed-forward map
+with no access to them.
+
+## 8. Provenance
 
 {table(['source', 'sha256'], [[f'`{name}`', f'`{digest[:16]}…`'] for name, digest in sorted(sources.items())])}
 
@@ -287,6 +374,53 @@ byte-identical to the pinned generator, {len(inherited['changed'])} declared cha
 
 **No speed number appears in this report and none is admissible from this lane.** No timing block
 was run; `timing.py` is not staged. Nothing here is divided by a time from any other job.
+
+## 9. Glossary
+
+Every column and term above, for a reader opening this cold.
+
+- **Arm** — one training run: one configuration, one training-set size, one wall budget.
+- **Trajectory / case** — one draw of the five generation parameters $(c_x, c_y, w, a, \\nu)$,
+  solved from $t = 0$ to $t = 0.25$ and stored at six times. One case is one training example
+  for an operator.
+- **Fixed-initial relative error** — the metric everything is graded in: the interior $\\ell_2$
+  discrepancy between prediction and reference at one output time, divided by the interior
+  $\\ell_2$ norm of the supplied initial field. **mean / median / worst** are over the 32
+  validation cases of each case's maximum over the six output times.
+- **validation-32** — the 32 held-out cases every operator arm in the paper is graded on. Used
+  here for every selection decision, which is why the selected arm's mean is optimistically
+  biased for that metric.
+- **diagnosis-8 / the matched cohort** — the eight calibration cases the NM-ROM and the
+  full-order controls were graded on. Reused evidence, not an independent test set; no
+  selection here uses it.
+- **Training cases** — how many trajectories that arm trained on. 128 is what every published
+  operator arm had.
+- **Pinned / generated targets** — *pinned* targets come from the 4096-interval reference the
+  published cases used; *generated* ones from this lane's cheaper 1024-interval reference. Only
+  training targets are ever generated; every evaluation cohort is pinned.
+- **Label discrepancy, $\\rho$** — how far the generated training targets sit from the pinned
+  ones on the same 128 physical cases, and that distance divided by an arm's own error.
+- **NN distance** — the normalised distance from a validation case to its nearest training
+  case in parameter space, averaged over the 32. It falls as the training set grows; it is what
+  "more data" concretely buys on a five-parameter family.
+- **Steps / evaluations / epochs** — optimisation steps taken; validation evaluations performed
+  (200 per wall budget in this lane); passes over the training set. An epoch is 16 steps at 128
+  cases and 576 at 4608, which is why this lane counts in the other two.
+- **Ended by** — `wall budget` (the clock ran out), `early stopping` (50 evaluations with no new
+  best), `epoch cap`, `signal` (Slurm's warning before the limit).
+- **Patience could fire?** — whether the run was long enough for the stopping rule to be
+  reachable at all. `no` means the stop reason is a statement about the budget, never evidence
+  that the arm was still improving.
+- **val / train** — the arm's validation mean divided by its error on the first 128 training
+  cases at the same checkpoint: the generalisation gap.
+- **Knob / override** — the single configuration entry a sweep arm changes, and its value.
+- **`s-base`** — the sweep's own reference arm: the base configuration at the sweep budget, so
+  every one-factor arm is compared with something that had the same budget.
+- **Composition (`tuned`)** — the arm that takes every knob whose one-factor arm beat `s-base`
+  by at least 5 %.
+- **Persistence** — the trivial control: predict $u(t) = u(0)$ at every output time. No
+  training, no parameters. It sizes everything else.
+- **T0–T6** — the pass/fail criteria written down in `DESIGN.md` before any job ran.
 """
     (HERE / '2026-09-22-ops-tune-deeponet.md').write_text(body)
     summary = dict(generated='2026-09-22', report='2026-09-22-ops-tune-deeponet.md',

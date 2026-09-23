@@ -80,12 +80,38 @@ to extrapolate roughly twice as far in parameter space as one given the bottom r
 | `don-refine` | DeepONet (published) | 128 | 15.7642 | 12.4612 | 58.9848 | -1 | — | — | 4179556 |
 | `don-large` | DeepONet (published) | 128 | 18.2211 | 14.8022 | 60.3540 | -1 | — | — | 4179556 |
 
-## 6. Provenance
+## 6. The pre-registered verdicts
+
+*(no verdict is available until the jobs are collected)*
+
+## 7. What DeepONet was given that the other three families were not
+
+The U-Net, Transolver and FNO rows above are the published ones: 128 training cases, an
+inherited schedule, a 3000 s per-arm wall budget, one seed, one learning-rate refinement. This
+lane gave DeepONet, and only DeepONet:
+
+1. up to n/a training cases instead of 128;
+2. a sweep over eleven one-factor arms plus a composed arm;
+3. a stopping rule and schedule chosen for it rather than inherited from the U-Net;
+4. a 3× longer final wall budget for the selected arm.
+
+**The paper must say so.** The like-for-like row against the published families is
+`ops-deeponet-b2d`'s `don-small` — 128 cases, inherited schedule, 3000 s — which stays in the
+table. (A sibling lane, `ops-tune-grid`, is doing the same for the other three families, so the
+final paper comparison may be less asymmetric than this list.)
+
+The asymmetry runs the other way too, and the paper should say that as well: each published
+operator training case cost 130 GPU-seconds to produce
+against 50-step 256² solves for our own model's snapshots, and at query time the NM-ROM is
+handed the governing equations and solves a residual while an operator is a feed-forward map
+with no access to them.
+
+## 8. Provenance
 
 | source | sha256 |
 | --- | --- |
 | `experiments/ops-deeponet-b2d/reports/summary.json` | `0255abc0f16b88b7…` |
-| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `9eefbf61eeaac304…` |
+| `experiments/ops-tune-deeponet/checks/inherited-sources.json` | `8b390352004947ef…` |
 | `experiments/ops-tune-deeponet/reports/accounting.json` | `674fe5cc950feb38…` |
 
 Inherited-source check: **passed** —
@@ -95,3 +121,50 @@ byte-identical to the pinned generator, 6 declared changed,
 
 **No speed number appears in this report and none is admissible from this lane.** No timing block
 was run; `timing.py` is not staged. Nothing here is divided by a time from any other job.
+
+## 9. Glossary
+
+Every column and term above, for a reader opening this cold.
+
+- **Arm** — one training run: one configuration, one training-set size, one wall budget.
+- **Trajectory / case** — one draw of the five generation parameters $(c_x, c_y, w, a, \nu)$,
+  solved from $t = 0$ to $t = 0.25$ and stored at six times. One case is one training example
+  for an operator.
+- **Fixed-initial relative error** — the metric everything is graded in: the interior $\ell_2$
+  discrepancy between prediction and reference at one output time, divided by the interior
+  $\ell_2$ norm of the supplied initial field. **mean / median / worst** are over the 32
+  validation cases of each case's maximum over the six output times.
+- **validation-32** — the 32 held-out cases every operator arm in the paper is graded on. Used
+  here for every selection decision, which is why the selected arm's mean is optimistically
+  biased for that metric.
+- **diagnosis-8 / the matched cohort** — the eight calibration cases the NM-ROM and the
+  full-order controls were graded on. Reused evidence, not an independent test set; no
+  selection here uses it.
+- **Training cases** — how many trajectories that arm trained on. 128 is what every published
+  operator arm had.
+- **Pinned / generated targets** — *pinned* targets come from the 4096-interval reference the
+  published cases used; *generated* ones from this lane's cheaper 1024-interval reference. Only
+  training targets are ever generated; every evaluation cohort is pinned.
+- **Label discrepancy, $\rho$** — how far the generated training targets sit from the pinned
+  ones on the same 128 physical cases, and that distance divided by an arm's own error.
+- **NN distance** — the normalised distance from a validation case to its nearest training
+  case in parameter space, averaged over the 32. It falls as the training set grows; it is what
+  "more data" concretely buys on a five-parameter family.
+- **Steps / evaluations / epochs** — optimisation steps taken; validation evaluations performed
+  (200 per wall budget in this lane); passes over the training set. An epoch is 16 steps at 128
+  cases and 576 at 4608, which is why this lane counts in the other two.
+- **Ended by** — `wall budget` (the clock ran out), `early stopping` (50 evaluations with no new
+  best), `epoch cap`, `signal` (Slurm's warning before the limit).
+- **Patience could fire?** — whether the run was long enough for the stopping rule to be
+  reachable at all. `no` means the stop reason is a statement about the budget, never evidence
+  that the arm was still improving.
+- **val / train** — the arm's validation mean divided by its error on the first 128 training
+  cases at the same checkpoint: the generalisation gap.
+- **Knob / override** — the single configuration entry a sweep arm changes, and its value.
+- **`s-base`** — the sweep's own reference arm: the base configuration at the sweep budget, so
+  every one-factor arm is compared with something that had the same budget.
+- **Composition (`tuned`)** — the arm that takes every knob whose one-factor arm beat `s-base`
+  by at least 5 %.
+- **Persistence** — the trivial control: predict $u(t) = u(0)$ at every output time. No
+  training, no parameters. It sizes everything else.
+- **T0–T6** — the pass/fail criteria written down in `DESIGN.md` before any job ran.

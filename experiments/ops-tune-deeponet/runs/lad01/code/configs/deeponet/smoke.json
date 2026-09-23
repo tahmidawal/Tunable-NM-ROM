@@ -1,0 +1,28 @@
+{
+  "family": "deeponet",
+  "width": 8,
+  "rank": 16,
+  "trunk_width": 16,
+  "trunk_layers": 3,
+  "levels": 3,
+  "pool_bins": 4,
+  "trunk_frequencies": [
+    1.0,
+    2.0,
+    4.0
+  ],
+  "dtype": "float32",
+  "epochs": 2,
+  "validations_per_budget": 2,
+  "patience_evaluations": 50,
+  "plateau_patience_evaluations": 16,
+  "schedule": "plateau",
+  "output_scale_mode": "global",
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "min_learning_rate": 1e-05,
+  "weight_decay": 0.0001,
+  "warmup_steps": 0,
+  "seed": 20260914,
+  "note": "tiny; --smoke only"
+}

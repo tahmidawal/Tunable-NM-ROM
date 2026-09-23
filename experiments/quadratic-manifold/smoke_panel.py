@@ -186,11 +186,14 @@ def main():
 
     out['runs'] = dict(smoke64=run)
     rp = scratch / 'report'
-    subprocess.run([PY, str(HERE / 'reports/generate_panel.py'), '--audit', str(au),
-                    '--out-dir', str(rp), '--stem', 'smoke-panel'], check=True)
-    assert (rp / 'smoke-panel.md').exists() and (rp / 'summary.json').exists()
-    out['report'] = dict(md_bytes=(rp / 'smoke-panel.md').stat().st_size,
-                         summary_rows=len(json.loads((rp / 'summary.json').read_text())['rows']))
+    subprocess.run([PY, str(HERE / 'reports/make_table.py'), str(au), '--out-dir', str(rp),
+                    '--stem', 'smoke-panel'], check=True)
+    assert (rp / 'smoke-panel-table.md').exists() and (rp / 'summary.json').exists()
+    sm = json.loads((rp / 'summary.json').read_text())
+    assert [e['rank'] for e in sm['ladder']] == list(cfg['qman_ranks'])
+    assert all(e['quadratic_terms'] == QM.terms(e['rank']) for e in sm['ladder'])
+    out['report'] = dict(table_bytes=(rp / 'smoke-panel-table.md').stat().st_size,
+                         summary_rows=len(sm['rows']), ladder=sm['ladder'], answers=sm['answers'])
     out['total_seconds'] = time.perf_counter() - t_all
     out['deviation'] = 'one driver run with ~15 compiled subjects; exceeds the sub-minute rule (DESIGN A2)'
     out_json.write_text(json.dumps(out, indent=2) + '\n')

@@ -203,3 +203,15 @@ PENDING (it had staged the v1 code) and resubmitted as `pn2048b`. `pn1024` (4203
 cancelled while PENDING because no H200 was free; 1024² runs on an A100-80G (the lane rule
 requires H200 only at ≥2048²); every ratio is within one job, but absolute times at 1024² are
 A100 times, not the H200 times of the paper's Table 1 row.
+
+## A3 (2026-09-23 ~07:45 EDT): memory fix after pn2048b, before pn2048c / pn4096b
+
+`pn2048b` (job 4206387, H200) died at the quadratic-manifold r=32 set-up with a GPU OOM:
+the `B^T B` gate made XLA materialise a transposed 17.5 GB copy of the 561-column bank under
+the default 75 % allocator cap (blocks up to `qm16` had completed; no number from it is used).
+Fix, no change to any timed code path: bases are built row-block by row-block into one donated
+buffer, every offline `V^T X` / `B^T B` product is streamed over row chunks, device memory in
+use is logged after every block, and the allocator cap is 0.92 (the job owns the GPU). Verified
+locally at 256²: every error identical to the previous smoke to ≤2e-15; memory returns to
+baseline after each block (no leak); the compiled encode `B^T u` and decode `c B^T` contain no
+transposed copy of the bank. `pn4096` (4207404) was cancelled while PENDING (old code).

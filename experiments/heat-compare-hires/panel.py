@@ -50,11 +50,29 @@ def vmap_lap(n):
     return jax.jit(jax.vmap(lambda c: C.negative_laplacian(c, n), in_axes=-1, out_axes=-1))
 
 
-def build_fields(ux, uy, core_cols, n):
-    """[rho^2, k] core vectors -> [N, k] device fields (row-major, hires-heat bank ordering)."""
-    rx, ry = ux.shape[1], uy.shape[1]
-    f = jax.jit(lambda a, m, b: jnp.einsum('ia,abk,jb->ijk', a, m, b).reshape((n - 1) ** 2, -1))
-    return C.block(f(jnp.asarray(ux), jnp.asarray(core_cols.reshape(rx, ry, -1)), jnp.asarray(uy)))
+def build_fields(ux, uy, core_cols, n, rows=256):
+    """[rho^2, k] core vectors -> [N, k] device fields (row-major, hires-heat bank ordering), built row-block by
+    row-block into ONE donated buffer (peak = the bank + one block; no transposed or concatenated copy)."""
+    rx, ry = ux.shape[1], uy.shape[1]; k = core_cols.shape[1]; m = jnp.asarray(core_cols.reshape(rx, ry, k)); b = jnp.asarray(uy)
+    f = jax.jit(lambda a, m, b: jnp.einsum('ia,abk,jb->ijk', a, m, b).reshape(-1, k))
+    put = jax.jit(lambda buf, blk, start: jax.lax.dynamic_update_slice(buf, blk, (start, 0)), donate_argnums=0)
+    buf = jnp.zeros(((n - 1) ** 2, k))
+    for i0 in range(0, n - 1, rows):
+        a = jnp.asarray(ux[i0:min(i0 + rows, n - 1)])
+        if a.shape[0] < rows:   # keep one compiled shape: pad the last block, write only its valid rows
+            blk = f(jnp.pad(a, ((0, rows - a.shape[0]), (0, 0))), m, b)[:a.shape[0] * (n - 1)]
+        else:
+            blk = f(a, m, b)
+        buf = put(buf, blk, i0 * (n - 1))
+    return C.block(buf)
+
+
+def gram_t(A, B, chunk=1 << 19):
+    """A^T B streamed over row chunks (never materialises a transposed copy of a tall basis)."""
+    out = 0.
+    for s in range(0, A.shape[0], chunk):
+        out = out + np.asarray(A[s:s + chunk].T @ B[s:s + chunk])
+    return out
 
 
 def pod_operators(V, n, nu, dt, chunk=32):
@@ -64,10 +82,10 @@ def pod_operators(V, n, nu, dt, chunk=32):
     blocks = [(s, min(s + chunk, r)) for s in range(0, r, chunk)]
     for i, (a, b) in enumerate(blocks):
         Li = lap(V[:, a:b].reshape(shape + (b - a,))).reshape(-1, b - a)
-        K[:, a:b] = np.asarray(V.T @ Li)
+        K[:, a:b] = gram_t(V, Li)
         for c, d in blocks[i:]:
             Lj = Li if c == a else lap(V[:, c:d].reshape(shape + (d - c,))).reshape(-1, d - c)
-            G2[a:b, c:d] = np.asarray(Li.T @ Lj); G2[c:d, a:b] = G2[a:b, c:d].T
+            G2[a:b, c:d] = gram_t(Li, Lj); G2[c:d, a:b] = G2[a:b, c:d].T
             del Lj
         del Li
     return 0.5 * (K + K.T), G2, float(np.abs(K - K.T).max() / np.abs(K).max())
@@ -195,6 +213,11 @@ def main():
         row['block_seconds'] = time.perf_counter() - begin
         row['device_ms_median'] = float(np.median(row['device_ms']))
         row['worst_all_times'] = float(np.max(row['same']))
+        try:
+            row['device_bytes_in_use_after'] = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
+            row['device_peak_bytes'] = int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+        except Exception:
+            pass
         result['arms'][name] = row; result['blocks'].append(name)
         print('block', name, 'worst%', round(100 * row['worst_all_times'], 5), 'ms', round(row['device_ms_median'], 3), flush=True)
         dump()
@@ -248,7 +271,7 @@ def main():
         result['pod'] = dict(singular_values=sv[:rmax + 1].tolist(), ranks={})
         for r in cfg['pod']['ranks']:
             t0 = time.perf_counter(); V = build_fields(fm['Ux'], fm['Uy'], Ufull[:, :r], n)
-            orth = float(jnp.max(jnp.abs(V.T @ V - jnp.eye(r))))
+            orth = float(np.max(np.abs(gram_t(V, V) - np.eye(r))))
             K, G2, asym = pod_operators(V, n, nu, cfg['pod']['dt'])
             c = cfg['pod']['dt'] * nu / 2; I = np.eye(r)
             SG = np.linalg.solve(I + c * K, I - c * K); SL = np.linalg.solve(I + 2 * c * K + c * c * G2, I - c * c * G2)
@@ -276,7 +299,7 @@ def main():
             core_cols = np.concatenate((uref[:, None], Vc, W), 1)
             B = build_fields(fm['Ux'], fm['Uy'], core_cols, n)
             rt = np.linalg.qr(core_cols, mode='r'); rt = rt * np.where(np.diag(rt) < 0, -1., 1.)[:, None]
-            gram = B.T @ B; rgate = float(jnp.linalg.norm(gram - jnp.asarray(rt.T @ rt)) / jnp.linalg.norm(gram)); del gram
+            gram = gram_t(B, B); rgate = float(np.linalg.norm(gram - rt.T @ rt) / np.linalg.norm(gram)); del gram
             a = C.weak_matrix(B, tests, n, d)
             head = qm_head(r)
             model = dict(d=d, head_fn=head, head_params={}, codes=jnp.asarray(A.T), directions=np.zeros((core_cols.shape[1], 0)))

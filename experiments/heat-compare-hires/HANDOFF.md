@@ -25,5 +25,6 @@ Lane dir `experiments/heat-compare-hires/`. Design + amendments: `DESIGN.md`. Na
 | pn1024a | 4205399 | panel 1024² | A100-80G pax049 | COMPLETED 0:21, collected, remote kept; v1 order gate FAILED (noise) -> provisional/diagnostic, see DESIGN A2 |
 | pn1024b | 4206383 | panel 1024² (A2) | A100-80G pax049 | COMPLETED, collected, audit passed, status final |
 | pn2048 | 4203979 | panel 2048² | H200 | CANCELLED by me while PENDING (pre-A2 code); never ran |
-| pn2048b | 4206387 | panel 2048² (A2) | H200 pax008 | running |
+| pn2048b | 4206387 | panel 2048² (A2) | H200 pax008 | FAILED: GPU OOM at qm32 set-up (A3); no number used |
+| pn4096 | 4207404 | panel 4096² | H200 | CANCELLED by me while PENDING (pre-A3 code) |
 | pn4096 | — | panel 4096² (no operators) | H200 | staged |

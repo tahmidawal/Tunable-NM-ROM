@@ -426,7 +426,7 @@ def main():
     if not heldout:
         gate('fast_bar_reproduces', twin is not None and pb['percent'] is not None and abs(got / pb['percent'] - 1) <= 1e-6,
              parent=pb['percent'], this_job=got, arm=twin)
-    ferr = got      # DESIGN section 6: the fast bar is the q=0 setting's error re-measured in this job
+    ferr = got if got is not None else -1.   # DESIGN section 6: the fast bar is the q=0 setting's error re-measured in this job
 
     if heldout:
         # held-out: the frozen dev6 picks are REPORTED whatever they show; no selection, no dev-cohort checks
@@ -547,7 +547,8 @@ def main():
     print('failed gates:', failed)
     for k in ('accurate', 'fast'):
         v = sel.get(k)
-        print(k, v and (v['timed_arm'], round(v['worst_evolved_percent'], 4), round(v['median_gpu_ms'], 2), v['certificate']))
+        print(k, v and (v.get('timed_arm', v.get('name')), round(v['worst_evolved_percent'], 4), round(v['median_gpu_ms'], 2),
+                        v.get('certificate')))
     print('table1', sel.get('table1'))
     if 'general_path_section_6_3' in sel:
         print('general path', {k: v for k, v in sel['general_path_section_6_3'].items() if 'per_case' not in k})

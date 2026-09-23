@@ -59,6 +59,7 @@ def main():
     held.update(name=f"heldout{cfg['n']}", heldout=True, dev_seed=HELDOUT_SEED, dev_cases=32,
                 closed_seeds=[202609203, 202609211],
                 disjoint_against=[[202609202, 16], [202609203, 32], [202609211, 32]],
+                stream_audit=True,
                 question="single held-out evaluation of the frozen development setting")
     (HERE / "configs" / f"heldout{cfg['n']}.json").write_text(json.dumps(held, indent=2) + "\n")
     print(json.dumps(frozen, indent=2))

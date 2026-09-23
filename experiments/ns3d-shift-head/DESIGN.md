@@ -189,3 +189,18 @@ cancelled before its timing phase, and every mesh is rerun under v2:
   effect, and **FD-CG speedups are reported against both the fast-block median and the
   after-heavy median, the latter as the conservative figure**;
 - GPU clocks / temperature / throttle reasons are logged at phase boundaries.
+
+## Amendment 3 (2026-09-23, after all development jobs, before the held-out job) — freeze
+
+Frozen by `make_frozen.py a3_h96` from the 96^3 development job (4198101) into
+`frozen/frozen_settings.json` (+ head checkpoint, rotation, bank probe), committed before
+the held-out job is submitted. Mesh 96^3; head k=8 (selected by the pre-registered rule
+at every mesh); span ladder R' ∈ {64,48,32,16,8}; dt 0.02, 3 sweeps, damping 1e-6,
+encoder 12 sweeps; CNAB2 and FD-CG grids identical to development. Held-out seed
+202609221, 32 cases. Two plumbing changes since the development jobs, neither touching
+the model, solver or error code: (i) `stream_audit` — each saved field set is audited
+by `verify_head.py --only` in a separate process as soon as it exists and then deleted,
+because a 32-case cohort at 96^3 would otherwise put ~75 GB on a share that is 95 % full;
+(ii) nothing else. Known weakness carried into the held-out grid unchanged: the FD-CG
+3n=288^3 setting uses 40 steps, which is past its explicit stability margin (43 %
+development error); it is never a comparator and is kept only because the grid is frozen.

@@ -465,6 +465,26 @@ def main():
 
     save_keys = set()
     saved = {}
+    streamed = []
+
+    def stream_audit(section, table):
+        """With cfg['stream_audit'], audit each saved field file as soon as its entry
+        exists (separate process), then delete it, so at most one field set is on
+        disk. Used for the 32-case held-out cohort on a nearly full share."""
+        if not cfg.get("stream_audit"):
+            return
+        report[section] = table
+        for key in [k_ for k_ in saved if k_ not in streamed]:
+            path = out / f"fields_{key}.npy"
+            if not path.exists():
+                continue
+            dump()
+            rc = subprocess.run([sys.executable, str(HERE / "verify_head.py"), "--out",
+                                 str(out), "--only", key]).returncode
+            if rc:
+                raise RuntimeError(f"streamed audit failed for {key}")
+            path.unlink()
+            streamed.append(key)
     lin = {}
     if heldout:
         lin_grid = [(float(frozen["dt"]), int(frozen["iters"]))]
@@ -484,6 +504,7 @@ def main():
             np.save(out / f"fields_{key}.npy", fields)
             saved[key] = "lin"
         log(f"{key}: evolved worst {lin[key]['stats']['evolved_worst']:.6f}")
+        stream_audit("linear", lin)
     report["linear"] = lin
     dump()
 
@@ -510,6 +531,7 @@ def main():
             saved[key] = "span"
         del fields
         log(f"{key}: evolved worst {stats['evolved_worst'] if stats else float('nan'):.6f}")
+        stream_audit("span", span)
     report["span"] = span
     dump()
 
@@ -540,6 +562,7 @@ def main():
         del fields
         log(f"{key}: evolved worst "
             f"{stats['evolved_worst'] if stats else float('nan'):.6f}")
+        stream_audit("frontier", frontier)
     report["frontier"] = frontier
     dump()
 
@@ -614,6 +637,7 @@ def main():
                              errors=None if errors is None else errors.tolist(),
                              reference_itself=bool(abs(dtv - float(cfg["dt_truth"])) < 1e-15))
         log(f"CNAB2 steps={st}: {stats['evolved_worst'] if stats else float('nan'):.6f}")
+        stream_audit("cnab2", cnab)
     report["cnab2"] = cnab
     dump()
 
@@ -662,6 +686,7 @@ def main():
                        cg_hit_maxiter=bool(iters_v and max(iters_v) >= int(cfg["fd_maxiter"])))
         log(f"{key}: {stats['evolved_worst'] if stats else float('nan'):.6f} "
             f"cg_p_mean={fd[key]['cg_pressure_mean_iters']}")
+        stream_audit("fd_cg", fd)
     report["fd_cg"] = fd
     dump()
 

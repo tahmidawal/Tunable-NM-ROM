@@ -73,6 +73,12 @@ def comparator(foms, family, worst):
     return min(ok, key=lambda f: f["ms"]) if ok else None
 
 
+def most_accurate(foms, family):
+    ok = [f for f in foms if f["family"] == family and f["stable"] and f["worst"] is not None
+          and f["ms"] is not None and not f["reference"]]
+    return min(ok, key=lambda f: f["worst"]) if ok else None
+
+
 def rom_rows(s):
     t = s["timing"]["fast"]
     gate = s["timing"].get("neighbour_gate", {})
@@ -115,7 +121,12 @@ def speed_cells(row, foms, best_worst):
     for fam in ("CNAB2", "FD-CG"):
         c = comparator(foms, fam, row["worst"])
         if c is None:
-            cells += ["none as accurate", "—"]
+            b = most_accurate(foms, fam)
+            if fam == "FD-CG" and b is not None:
+                cells += [f"none as accurate; most accurate is {b['label']} "
+                          f"({pct(b['worst'])}, {ms(b['ms'])} ms)", "≥" + ratio(b, fam).replace(" / ", " / ≥") + "†"]
+            else:
+                cells += ["none as accurate", "—"]
         else:
             cells += [f"{c['label']} ({pct(c['worst'])}, {ms(c['ms'])} ms)",
                       f"**{ratio(c, fam)}**"]
@@ -152,7 +163,9 @@ def mesh_section(job):
              f"fastest setting at least as accurate as the most accurate ladder arm "
              f"({best_label}, {pct(best_worst)}). FD-CG cells give two ratios: against the "
              "arm's fast-block median / against its median measured immediately after the "
-             "heaviest FD-CG arm (conservative; timing protocol v2).\n")
+             "heaviest FD-CG arm (conservative; timing protocol v2). † = no tested FD-CG "
+             "setting is as accurate; ratio against the most accurate one (lower bound if "
+             "finer FD-CG is slower).\n")
     L.append("| arm | unknowns | evolved worst | evolved median | over 5 % | GPU ms | "
              "CNAB2 comparator | vs CNAB2 | FD-CG comparator | vs FD-CG | "
              "vs CNAB2 @ best arm | vs FD-CG @ best arm |")
@@ -305,7 +318,9 @@ def headline(jobs):
          "Ladder setting (dt and sweeps fixed in DESIGN.md). Worst/median = development "
          "evolved worst / median. Comparator = fastest stable FOM setting of the family no "
          "less accurate than the arm; FD-CG ratios are fast-block / after-heavy "
-         "(conservative).\n",
+         "(conservative). † = no tested FD-CG setting is as accurate as the arm; the ratio is "
+         "against the most accurate one, a lower bound only if a finer FD-CG setting would be "
+         "slower (every tested refinement was).\n",
          "| mesh | arm | unknowns | worst | median | GPU ms | CNAB2 comparator | vs CNAB2 | "
          "FD-CG comparator | vs FD-CG | job |",
          "|---:|---|---:|---:|---:|---:|---|---:|---|---:|---|"]
@@ -318,16 +333,7 @@ def headline(jobs):
                 and (r["kind"] == "span" or (r["kind"] == "head" and r["k"] == s["k_selected"]))]
         rows.sort(key=lambda r: (r["kind"] != "span", -(r.get("rank") or 0)))
         for r in rows:
-            cells = []
-            for fam in ("CNAB2", "FD-CG"):
-                c = comparator(foms, fam, r["worst"])
-                if c is None:
-                    cells += ["none as accurate", "—"]
-                else:
-                    txt = f"{c['ms'] / r['ms']:.2f}x"
-                    if fam == "FD-CG" and r.get("ms_heavy"):
-                        txt += f" / {c['ms'] / r['ms_heavy']:.2f}x"
-                    cells += [f"{c['label']} ({pct(c['worst'])}, {ms(c['ms'])} ms)", txt]
+            cells = speed_cells(r, foms, r["worst"])[:4]
             L.append(f"| {cfg['n']}^3 | {r['label']} | {r['unknowns']} | {pct(r['worst'])} | "
                      f"{pct(r['median'])} | {ms(r['ms'])} | " + " | ".join(cells)
                      + f" | {s['job_id']} |")

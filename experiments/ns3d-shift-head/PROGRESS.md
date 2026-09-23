@@ -41,3 +41,10 @@ Cluster namespace `/cluster/tufts/paralab/tawal01/nshead_20260923/`.
 - Ladder (dt 0.02, 3 sweeps): R'=64/48/32/16/8 = 0.616/1.005/1.262/2.959/5.549 % at
   7.84/5.80/5.46/4.64/4.18 ms -> 2.46x..4.61x vs CNAB2; head k=8 0.152 % at 8.19 ms, 2.89x vs CNAB2.
 - FD-CG never as accurate as the head at 64^3 (best 0.26 % at 128^3, 1.6 s).
+
+## 2026-09-23 ~06:30 EDT — development complete (v2: a2_h32 4198840, a2_h64 4198090, a3_h96 4198101)
+- `results/ladder.md` headline. 96^3: head k=8 0.153 % at 15.96 ms (6.67x CNAB2);
+  span R'=64..8 = 0.616..5.549 % at 15.39..8.16 ms (6.92x..10.97x CNAB2); monotone in
+  error and cost at every mesh. All gates pass; parent reproduction exact.
+- FD-CG never reaches the head's accuracy (best 0.277 % at 192^3, 7.7 s at 96^3).
+- Settings frozen (`frozen/`, DESIGN amendment 3); held-out job next.

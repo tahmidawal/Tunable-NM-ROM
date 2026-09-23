@@ -1,0 +1,123 @@
+{
+  "bank_probe_cases": 4,
+  "check_modes": 8,
+  "closed_seeds": [
+    202609203,
+    202609211
+  ],
+  "cnab2_steps": [
+    200,
+    100,
+    80,
+    70,
+    60,
+    50,
+    40,
+    20,
+    10
+  ],
+  "code_reg": 1e-06,
+  "cooldown_seconds": 1.0,
+  "damping": 1e-06,
+  "dev_cases": 32,
+  "dev_seed": 202609221,
+  "dt_truth": 0.001,
+  "fd_fine": [
+    [
+      2,
+      40,
+      1e-06
+    ],
+    [
+      2,
+      50,
+      1e-06
+    ],
+    [
+      3,
+      40,
+      1e-06
+    ]
+  ],
+  "fd_maxiter": 4000,
+  "fd_rtols": [
+    0.0001,
+    1e-06,
+    1e-08
+  ],
+  "fd_steps": [
+    20,
+    40,
+    50,
+    100
+  ],
+  "gram_block": 64,
+  "head_floor_lr": 1e-05,
+  "head_frame_every": 10,
+  "head_log_every": 5000,
+  "head_lr": 0.001,
+  "head_seed": 20260923,
+  "head_steps": 100000,
+  "head_train_cases": 512,
+  "horizon": 0.2,
+  "ic_iters": 12,
+  "iters_ladder": [
+    2,
+    3,
+    4
+  ],
+  "ks": [
+    8,
+    16,
+    32
+  ],
+  "ladder_dt": 0.02,
+  "ladder_iters": 3,
+  "lm_budget": 60,
+  "lm_gtol": 1e-07,
+  "modes": 292,
+  "n": 96,
+  "name": "heldout96",
+  "neighbour_gate_ratio": 1.1,
+  "q_ladder": [
+    0
+  ],
+  "question": "single held-out evaluation of the frozen development setting",
+  "rank": 64,
+  "rom_dt_ladder": [
+    0.04,
+    0.02,
+    0.01
+  ],
+  "slow_repetitions": 5,
+  "span_ladder": [
+    64,
+    48,
+    32,
+    16,
+    8
+  ],
+  "target_relative": 0.05,
+  "timing_case": 0,
+  "timing_repetitions": 7,
+  "train_cases": 128,
+  "train_seed": 202609201,
+  "val_every": 8,
+  "width": 256,
+  "heldout": true,
+  "disjoint_against": [
+    [
+      202609202,
+      16
+    ],
+    [
+      202609203,
+      32
+    ],
+    [
+      202609211,
+      32
+    ]
+  ],
+  "stream_audit": true
+}

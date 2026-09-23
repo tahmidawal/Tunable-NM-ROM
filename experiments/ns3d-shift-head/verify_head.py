@@ -50,25 +50,53 @@ def compare(errors, entry, target=0.05):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--only", default=None,
+                        help="streamed mode: verify one field set, append to verify_stream.json")
     args = parser.parse_args()
     report = json.loads((args.out / "summary.json").read_text())
+    stream_path = args.out / "verify_stream.json"
+    if args.only is None and not list(args.out.glob("fields_*.npy")) and stream_path.exists():
+        # streamed job: every field set was audited and deleted as it was produced
+        records = json.loads(stream_path.read_text())
+        w64 = max([r["gap"] for r in records["settings"].values() if r["dtype"] == "float64"] or [0.0])
+        w32 = max([r["gap"] for r in records["settings"].values() if r["dtype"] != "float64"] or [0.0])
+        missing = sorted(set(report.get("saved_fields", {})) - set(records["settings"]))
+        if missing:
+            raise RuntimeError(f"saved field sets never audited: {missing}")
+        payload = dict(schema="ns3d-shift-head-verify-v1", mode="streamed",
+                       worst_gap_float64=float(w64), worst_gap_float32=float(w32),
+                       control_gap=records["control_gap"],
+                       control_rejected=records["control_rejected"],
+                       settings=records["settings"], job_id=report.get("job_id"),
+                       source_commit=report.get("source_commit"))
+        (args.out / "verify.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        print("verify ok (streamed)", w64, w32, flush=True)
+        return
     truth = np.load(args.out / "dev_truth.npy")
-    paths = sorted(args.out.glob("fields_*.npy"))
-    if not paths:
+    if args.only is not None:
+        paths = [args.out / f"fields_{args.only}.npy"]
+    else:
+        paths = sorted(args.out.glob("fields_*.npy"))
+    if not paths or not paths[0].exists():
         raise RuntimeError("no saved fields to verify")
+    records = (json.loads(stream_path.read_text()) if stream_path.exists()
+               else dict(settings={}, control_gap=None, control_rejected=None))
 
-    # must-fail control on real data
+    # must-fail control on real data (once per job in streamed mode)
     first = paths[0]
-    key0 = first.stem.replace("fields_", "")
-    bad = np.load(first).astype(np.float64)
-    bad[0, 1:] += 1e-3 * np.linalg.norm(truth[0, 0]) / np.sqrt(truth[0, 0].size)
-    gap_bad, _, _ = compare(relative(bad, truth), claimed(report, key0))
-    control_rejected = gap_bad > 2e-6
-    print(f"control: perturbed copy of {key0} gap {gap_bad:.3e} rejected={control_rejected}",
-          flush=True)
+    if args.only is not None and records["control_rejected"] is not None:
+        gap_bad, control_rejected = records["control_gap"], records["control_rejected"]
+    else:
+        key0 = first.stem.replace("fields_", "")
+        bad = np.load(first).astype(np.float64)
+        bad[0, 1:] += 1e-3 * np.linalg.norm(truth[0, 0]) / np.sqrt(truth[0, 0].size)
+        gap_bad, _, _ = compare(relative(bad, truth), claimed(report, key0))
+        control_rejected = gap_bad > 2e-6
+        print(f"control: perturbed copy of {key0} gap {gap_bad:.3e} "
+              f"rejected={control_rejected}", flush=True)
+        del bad
     if not control_rejected:
         raise RuntimeError("the audit cannot detect a perturbed field set")
-    del bad
 
     checked = {}
     worst64 = worst32 = 0.0
@@ -88,6 +116,12 @@ def main():
         print(key, json.dumps(checked[key]), flush=True)
     if worst64 > 1e-12 or worst32 > 2e-6:
         raise RuntimeError(f"independent recomputation disagrees: f64 {worst64} f32 {worst32}")
+    if args.only is not None:
+        records["settings"].update(checked)
+        records["control_gap"], records["control_rejected"] = float(gap_bad), bool(control_rejected)
+        stream_path.write_text(json.dumps(records, indent=2, sort_keys=True) + "\n")
+        print("streamed verify ok", args.only, flush=True)
+        return
     payload = dict(schema="ns3d-shift-head-verify-v1", worst_gap_float64=float(worst64),
                    worst_gap_float32=float(worst32), control_gap=float(gap_bad),
                    control_rejected=bool(control_rejected), settings=checked,

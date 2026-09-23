@@ -1,0 +1,76 @@
+{
+  "schema": "ns3d-shift-head-frozen-v1",
+  "source_job": "4198101",
+  "source_commit": "229cbc5ff53666896aa4c968181efabb1f5bcbe9",
+  "source_attempt": "a3_h96",
+  "source_summary_sha256": "4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af",
+  "n": 96,
+  "rank": 64,
+  "modes": 292,
+  "k": 8,
+  "q_ladder": [
+    0
+  ],
+  "span_ladder": [
+    64,
+    48,
+    32,
+    16,
+    8
+  ],
+  "dt": 0.02,
+  "iters": 3,
+  "damping": 1e-06,
+  "ic_iters": 12,
+  "width": 256,
+  "head_file": "head_k8.npz",
+  "rotation_file": "rotation.npz",
+  "bank_probe_file": "bank_probe.npz",
+  "file_sha256": {
+    "head_k8.npz": "866130424a25a57d2075a05cfeb34122663ef6b0c37f69165175f1fd29b827d4",
+    "rotation.npz": "8bd170684a02d6d3b20e352a105a9e3610bb6d150b97172450d4aab1978e99a6",
+    "bank_probe.npz": "7780ce28abc3e0b4d9de82c5641ef66b2185557e147fad66f58436e31f8ee1d3"
+  },
+  "cnab2_steps": [
+    200,
+    100,
+    80,
+    70,
+    60,
+    50,
+    40,
+    20,
+    10
+  ],
+  "fd_steps": [
+    20,
+    40,
+    50,
+    100
+  ],
+  "fd_rtols": [
+    0.0001,
+    1e-06,
+    1e-08
+  ],
+  "fd_fine": [
+    [
+      2,
+      40,
+      1e-06
+    ],
+    [
+      2,
+      50,
+      1e-06
+    ],
+    [
+      3,
+      40,
+      1e-06
+    ]
+  ],
+  "selection_rule": "k: smallest development evolved worst at q=0 on the ladder setting, within 1 % relative the smaller k; ladder setting and R' ladder fixed in DESIGN.md before any job",
+  "heldout_seed": 202609221,
+  "heldout_cases": 32
+}

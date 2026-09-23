@@ -1,0 +1,27 @@
+host=pax050 source_commit=d2c775a9254f889b5bad52c04ef2e7685446fff8
+NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  4.3T  262G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+MESH 32 {'16': 5.8806, '32': 2.0119, '48': 0.8991, '64': 0.475, '96': 0.2646, '128': 0.2283} 9.5
+WARMUP 21 27.6
+MAIN 0 253.6
+MAIN 1 446.4
+MAIN 2 637.2
+MAIN 3 828.4
+MAIN 4 1021.4
+SLOW 0 1036.3
+SLOW 1 1050.3
+SLOW 2 1064.1
+NEIGHBOUR True 0.9777246285900976 0.9887268423197505 1.1539869251579222
+PROFILE 0 1370.3
+PROFILE 1 1505.5
+PROFILE 2 1639.5
+PARITY {'candidate': 'R128_q0', 'baseline': 'orig_q0', 'worst_field_relative': 1.4431707347647126e-15, 'limit': 1e-10, 'passed': True}
+PARITY {'candidate': 'orig_q0', 'baseline': 'engine_q0', 'worst_field_relative': 1.491592887379112e-15, 'limit': 1e-10, 'passed': True}
+PARITY {'candidate': 'R128_q96', 'baseline': 'orig_q96', 'worst_field_relative': 1.48564527913347e-15, 'limit': 1e-10, 'passed': True}
+PARITY {'candidate': 'orig_q96', 'baseline': 'engine_q96', 'worst_field_relative': 8.353639978967561e-16, 'limit': 1e-10, 'passed': True}
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'rom_stationary_parent_and_full_R': True, 'neighbour': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK3 CUBE COMPLETE
+PASS 1792 errors recomputed, worst relative deviation 9.8e-12, reference vs audit truth 8.6e-16, hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True; NumPy linear rung R'=64: 5.1e-15 (wrong-R' control 6.0e-04)
+ALL-DONE

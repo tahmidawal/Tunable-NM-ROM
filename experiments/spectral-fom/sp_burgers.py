@@ -126,7 +126,7 @@ def main():
     base = A.CoordBank(params, K, R)
     t0 = time.perf_counter()
     n = (L - 1) ** 2
-    nrb = int(lane.get('bank_blocks') or np.ceil(n * R / H.MAX_GEMM_ELEMENTS))
+    nrb = int(cfg.get('bank_blocks') or lane.get('bank_blocks') or np.ceil(n * R / H.MAX_GEMM_ELEMENTS))   # cfg override: memory only
     x = np.arange(1, L) / L
     redges = np.linspace(0, L - 1, nrb + 1).astype(int)
     nkeep = edges.index(Rmax)

@@ -233,3 +233,11 @@ $10^{-14}$ in 2D and 3D. On the local GB10 it was 10–20 % faster than `dst_fft
 **What happens to earlier runs.** The heat 4096² job spH (4209368) was cancelled by me. The squeue check showed it had just started running
 (correction: an earlier draft of this line said "before it started"). None of its output was pulled or used, and
 its directory was removed. spD (1024²/2048², two variants) is kept as a record.
+
+## Note K (2026-09-23) — Burgers 4096² row blocking
+
+spK (4210663) ran out of memory on an A100 80GB while building the bank. The job had four row blocks of 17 GB,
+and the rotated copy was transient alongside the 51.5 GB kept prefix. It is rerun as spL with `bank_blocks = 16`,
+which affects memory only. Rows are partitioned more finely, and every arm's arithmetic is otherwise unchanged. Any
+round-off difference this introduces is covered by the lane-error parity gate, which requires agreement to 1e-8
+relative. No output of spK was used, and its directory was removed.

@@ -66,6 +66,8 @@ def arm_name(s):
     base = f"{head}_{body}_{s['rule']}_{gt(s['gtol'])}_fast{sfx}"
     if s.get('cap'):
         base += f"_cap{s['cap']}"
+    if s.get('budget'):
+        base += f"_budget{s['budget']}"
     base += '__' + s.get('impl', 'parent') + ('_graphs' if s.get('graphs') else '')
     return base
 
@@ -400,7 +402,7 @@ def main():
         lattice = 'lattice' in cfg['rules'][s['rule']]
         data = dict(A=m_['A'](M), lam=o['lam'], G=m_['G'], G5=m_['G5'](s['rule']), Pq=Pq(s['rule'], M),
                     sx=o['sx'], sy=o['sy'])
-        common = dict(step_budget=st['step_budget'], gtol=s['gtol'], ridge=cfg['inner_damping'],
+        common = dict(step_budget=int(s.get('budget') or st['step_budget']), gtol=s['gtol'], ridge=cfg['inner_damping'],
                       solver=v.get('solver', 'lu'), clip=bool(v.get('clip')), lam_carry=bool(v.get('lamcarry')),
                       predictor='quad' if v.get('pred2') else 'lin')
         engflags = {}
@@ -487,7 +489,9 @@ def main():
                     stalled_steps=int(np.sum(~okstep)), nonlinear_converged=bool(okstep.all()),
                     max_relative_residual=float(np.nanmax(rn)))
 
-    keep_fields = set(n_ for pr in cfg.get('parity_pairs', []) for n_ in pr)
+    keep_fields = set(n_ for pr in cfg.get('parity_pairs', []) for n_ in pr) | (
+        {fs['name'] + sfx for fs in cfg['fom_settings'] for sfx in ('', '__graphs')}
+        if cfg.get('fom_mode_parity', True) and cfg.get('fom_both_modes', True) else set())
 
     def run_quick(names):
         for name in names:
@@ -507,7 +511,9 @@ def main():
                 row.update(rom_row(vh) if b['kind'] == 'rom' else fom_row(b, vh))
                 rep['quick'].append(row)
                 if name in keep_fields:
-                    kept[(name, c)] = (f, vh[1:4])
+                    # ROM: fields, (iterations, residual norms, reasons), all 51 internal states, rejected steps
+                    kept[(name, c)] = (f, vh[1:4], np.asarray(vh[7]) if b['kind'] == 'rom' else None,
+                                       np.asarray(vh[15]) if b['kind'] == 'rom' else None)
                 if cfg.get('save_restricted', True):
                     extra = dict(internal_latents=np.asarray(v[7])) if b['kind'] == 'rom' else {}
                     np.savez_compressed(out / f'restricted_{name}_case{c}.npz', fields=f[:, ::sub, ::sub], **extra)
@@ -539,16 +545,36 @@ def main():
     for fa, fb in cfg.get('parity_pairs', []):
         per = []
         for c in range(ncase):
-            (xa, ia), (xb, ib) = kept[(fa, c)], kept[(fb, c)]
+            (xa, ia, sa, ja), (xb, ib, sb, jb) = kept[(fa, c)], kept[(fb, c)]
             per.append(dict(case=c, relative=float(np.linalg.norm(xa - xb) / np.linalg.norm(xb)),
+                            states_relative=float(np.max(np.linalg.norm(sa - sb, axis=1) /
+                                                         np.maximum(np.linalg.norm(sb, axis=1), 1e-300))),
                             iterations_identical=bool(np.array_equal(ia[0], ib[0])),
                             reasons_identical=bool(np.array_equal(ia[2], ib[2])),
+                            rejections_identical=bool(np.array_equal(ja, jb)),
                             iterations_eng=int(np.sum(ia[0])), iterations_parent=int(np.sum(ib[0]))))
-        worst = max(x_['relative'] for x_ in per)
-        ints = all(x_['iterations_identical'] and x_['reasons_identical'] for x_ in per)
+        worst = max(max(x_['relative'], x_['states_relative']) for x_ in per)
+        ints = all(x_['iterations_identical'] and x_['reasons_identical'] and x_['rejections_identical'] for x_ in per)
         rep['parity'].append(dict(engineered=fa, parent=fb, worst_relative=worst, integers_identical=ints, bar=PBAR,
-                                  passed=bool(worst <= PBAR and ints), cases=per))
+                                  passed=bool(worst <= PBAR and ints), cases=per,
+                                  scope='output fields and all 51 internal states; per-step iterations, exit reasons '
+                                        'and rejected-step counts'))
         print('PARITY', fa, 'vs', fb, f'{worst:.3e}', 'integers', ints, flush=True)
+    # FOM compile-mode parity: fields and per-step Newton iteration vectors, every setting
+    rep['fom_mode_parity'] = []
+    for fs in cfg['fom_settings']:
+        a_, b_ = fs['name'] + '__graphs', fs['name']
+        if (a_, 0) not in kept:
+            continue
+        per = [dict(case=c, relative=float(np.linalg.norm(kept[(a_, c)][0] - kept[(b_, c)][0]) /
+                                           np.linalg.norm(kept[(b_, c)][0])),
+                    newton_identical=bool(np.array_equal(kept[(a_, c)][1][0], kept[(b_, c)][1][0])))
+               for c in range(ncase)]
+        w_ = max(x_['relative'] for x_ in per)
+        ok_ = all(x_['newton_identical'] for x_ in per)
+        rep['fom_mode_parity'].append(dict(setting=fs['name'], worst_relative=w_, newton_identical=ok_,
+                                           passed=bool(w_ <= PBAR and ok_), cases=per))
+        print('FOM-PARITY', fs['name'], f'{w_:.3e}', ok_, flush=True)
     kept.clear()
     save()
 
@@ -665,20 +691,26 @@ def main():
     for label, subs in (('romA1', timed_rom), ('romA2', timed_rom), ('fomB', timed_fom)):
         ivp = [x_ for x_ in inv if x_['phase'] == label]
         medians = {nm: med(nm, label) for nm in subs}
+        cm = {}
+        for x_ in ivp:
+            cm.setdefault((x_['name'], x_['case']), []).append(x_['gpu_seconds'])
+        cm = {k_: float(np.median(v_)) for k_, v_ in cm.items()}
         cut = np.quantile(list(medians.values()), [1 / 3, 2 / 3])
         for nm in subs:
             mine = [x_ for x_ in ivp if x_['name'] == nm and x_['previous'] is not None]
-            lo = [x_['gpu_seconds'] for x_ in mine if medians[x_['previous']] <= cut[0]]
-            hi = [x_['gpu_seconds'] for x_ in mine if medians[x_['previous']] >= cut[1]]
-            if len(lo) >= 3 and len(hi) >= 3:
-                rows.append(dict(name=nm, phase=label, after_short_median=float(np.median(lo)),
-                                 after_long_median=float(np.median(hi)), n_short=len(lo), n_long=len(hi),
-                                 ratio=float(np.median(hi) / np.median(lo))))
-    rep['gates']['neighbour'] = dict(rows=rows, limit=lim, passed=bool(all(r_['ratio'] <= lim for r_ in rows)),
-                                     rule='per subject and phase: median after a long predecessor (phase median in '
-                                          'the top third) / median after a short one (bottom third)')
+            lo = [x_['gpu_seconds'] / cm[(nm, x_['case'])] for x_ in mine if medians[x_['previous']] <= cut[0]]
+            hi = [x_['gpu_seconds'] / cm[(nm, x_['case'])] for x_ in mine if medians[x_['previous']] >= cut[1]]
+            ev = len(lo) >= 3 and len(hi) >= 3
+            rows.append(dict(name=nm, phase=label, n_short=len(lo), n_long=len(hi), evaluable=ev,
+                             ratio=float(np.mean(hi) / np.mean(lo)) if ev else None))
+    rep['gates']['neighbour'] = dict(rows=rows, limit=lim, passed=bool(all(r_['ratio'] <= lim for r_ in rows if r_['evaluable'])),
+                                     not_evaluable=[(r_['name'], r_['phase']) for r_ in rows if not r_['evaluable']],
+                                     rule='per subject and phase, CASE-CONTROLLED: every invocation divided by its '
+                                          '(subject, case, phase) median; mean after a long predecessor (phase median '
+                                          'in the top third) / mean after a short one (bottom third)')
     print('DRIFT', rep['gates']['drift']['passed'], min(d_['ratio'] for d_ in drift), max(d_['ratio'] for d_ in drift),
-          'NEIGHBOUR', rep['gates']['neighbour']['passed'], max([r_['ratio'] for r_ in rows] or [None]), flush=True)
+          'NEIGHBOUR', rep['gates']['neighbour']['passed'], max([r_['ratio'] for r_ in rows if r_['evaluable']] or [None]),
+          flush=True)
     cover = {(n_, c) for n_ in timed_rom + timed_fom for c in range(ncase)}
     counts = {k: sum(1 for x_ in inv if (x_['name'], x_['case']) == k) for k in cover}
     rep['gates']['repetition_output_identical'] = dict(passed=bool(inv) and all(x_['identical_to_quick'] for x_ in inv))

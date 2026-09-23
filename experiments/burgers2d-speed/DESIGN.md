@@ -134,3 +134,37 @@ $4096^2$ only; this lane's held-out jobs measure $256^2$–$1024^2$.
 
 Disk: restricted fields ($\le 257^2$ per output time) for every (arm, case), full fields for the audit case only;
 remote directories are deleted after a checksum-verified pull.
+
+## A0 — changes after the pre-run Codex design audit (2026-09-23 ~16:40 EDT, before any dev6 job)
+
+The independent read-only audit (Codex; findings kept in the lane's `checks/codex-design-audit.md`) found no algebraic
+error in E1–E3 (NumPy checks $<6\times10^{-16}$), confirmed the LM text is AST-identical to `hfast.make_fused_lm`,
+and raised five blockers, all addressed before the first real job:
+
+1. **Held-out audit path**: `audit_b2speed.py` now has an explicit held-out mode that consumes the frozen selection
+   (`heldout_selection` in the hold config, generated only from a COMMITTED `selection-<L>.json`), reports those picks
+   whatever they show, and applies no dev-cohort reproduction checks. The held-out FOM comparator is re-chosen on
+   hold64 by the same rule (fastest setting+mode at least as accurate as the frozen accurate pick) — stated now.
+   Held-out timed invocations check the full-output SHA on every invocation.
+2. **Neighbour gate is case-controlled**: each invocation is divided by its (subject, case, phase) median; the gate
+   is mean-after-long / mean-after-short ≤ 1.10; subjects with < 3 observations on either side are listed as not
+   evaluable (never silently dropped).
+3. **FOM compile-mode parity**: every FOM setting's two modes must give fields ≤ $10^{-10}$ relative and identical
+   per-step Newton iteration vectors on every case (`fom_mode_parity` gate).
+4. **Parity scope widened**: ROM parity compares the six output fields AND all 51 internal states, per-step
+   iterations, exit reasons and rejected-step counts. The cap-1 knob is parity-checked against the parent text with
+   an LM budget of 1 (the same semantics as a while loop capped at one iteration), for the linear rung $R'=128$ and
+   the $q=0$ head. New widths share the width-generic E1–E3 code whose parity is checked at $R'=128$ and $384$.
+5. **Injected controls run through the real predicates**: a swapped case must be rejected by the restricted-error
+   predicate, a $10^{-6}$ relative perturbation of a reported error by the full-grid predicate, a ×1.2 A2 time by the
+   drift gate.
+
+Should-fix items adopted: the fast bar is the $q=0$ setting's error **re-measured in this job** (gated against the
+parent's number); the FOM comparator requires `nonlinear_converged` on every case (inherited from the parent's
+audit; disclosed here); the §6.3 general-path factor $X$ is reported with a pre-registered "same error" criterion
+$|e_{\rm general}/e_{\rm fast}-1|\le 0.05$ on the worst evolved error, and is described as a reconstruction of the
+general solver on the linear rung (it also changes clipping, damping carry-over and predictor, so $X$ is the factor
+of the whole solver-policy change, not of any single option). Wording: the certificate covers the stored endpoint
+states $k\ge\max(j,1)$, not every trial state the LM or the predictor touches; the eqcert populations are
+certification data used in selection, not fresh confirmation (hold64 is the fresh confirmation). Min-of-two-modes
+timing is symmetric for ROM and FOM; both mode medians are reported; held-out timing uses the frozen mode.

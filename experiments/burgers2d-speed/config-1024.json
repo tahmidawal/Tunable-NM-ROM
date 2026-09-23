@@ -633,6 +633,49 @@
    "rule": "lat64",
    "gtol": 0.001,
    "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "candidate": false,
+   "certify": false,
+   "role": "parent_budget1_twin",
+   "budget": 1
+  },
+  {
+   "model": "trunc",
+   "Rp": 512,
+   "q": 0,
+   "M": 64,
+   "rule": "q0scaled",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "lu",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "q0",
+   "candidate": false,
+   "certify": false,
+   "role": "parent_budget1_twin",
+   "budget": 1
+  },
+  {
+   "model": "lin",
+   "Rp": 128,
+   "M": 512,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
     "solver": "lu"
    },
    "impl": "general",
@@ -667,6 +710,14 @@
   [
    "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2__eng",
    "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2__parent"
+  ],
+  [
+   "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2_cap1__eng_graphs",
+   "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2_budget1__parent"
+  ],
+  [
+   "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2_cap1__eng_graphs",
+   "R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2_budget1__parent"
   ],
   [
    "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",

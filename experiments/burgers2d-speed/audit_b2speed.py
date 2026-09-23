@@ -203,6 +203,11 @@ def main():
          pairs=[{k: x[k] for k in ('engineered', 'parent', 'worst_relative', 'integers_identical', 'passed')} for x in par],
          bar=cfg['parity_bar'])
 
+    fp = r.get('fom_mode_parity', [])
+    gate('fom_mode_parity', (not cfg.get('fom_both_modes', True)) or (len(fp) == len(cfg['fom_settings']) and
+                                                                      all(x['passed'] for x in fp)),
+         rows=[{k: x[k] for k in ('setting', 'worst_relative', 'newton_identical', 'passed')} for x in fp])
+
     # ---- certificates ----
     ps = r['population_source']
     nd, ci = ps['certification_draws'], ps.get('confirmation_draw_index')
@@ -305,19 +310,30 @@ def main():
     drift = drift_rows(inv)
     gate('drift_ABA', bool(drift) and all(1 / lim <= d['ratio'] <= lim for d in drift), limit=lim,
          worst=max((max(d['ratio'], 1 / d['ratio']) for d in drift), default=None), rows=drift)
-    nb = []
-    for label, subs in (('romA1', rom_timed), ('romA2', rom_timed), ('fomB', fom_timed)):
-        ivp = [x for x in inv if x['phase'] == label]
-        medians = {nm: medph(nm, label) for nm in subs}
-        cut = np.quantile(list(medians.values()), [1 / 3, 2 / 3])
-        for nm in subs:
-            mine = [x for x in ivp if x['name'] == nm and x.get('previous') is not None]
-            lo = [x['gpu_seconds'] for x in mine if medians[x['previous']] <= cut[0]]
-            hi = [x['gpu_seconds'] for x in mine if medians[x['previous']] >= cut[1]]
-            if len(lo) >= 3 and len(hi) >= 3:
-                nb.append(dict(name=nm, phase=label, ratio=med(hi) / med(lo), n_short=len(lo), n_long=len(hi)))
-    gate('neighbour', bool(nb) and all(x['ratio'] <= lim for x in nb), limit=lim,
-         worst=max((x['ratio'] for x in nb), default=None), evaluable=len(nb), rows=nb)
+    def neighbour_rows(rows_inv):
+        nb = []
+        for label, subs in (('romA1', rom_timed), ('romA2', rom_timed), ('fomB', fom_timed)):
+            ivp = [x for x in rows_inv if x['phase'] == label]
+            medians = {nm: medph(nm, label, rows_inv) for nm in subs}
+            cm = {}
+            for x in ivp:
+                cm.setdefault((x['name'], x['case']), []).append(x['gpu_seconds'])
+            cm = {k: med(v) for k, v in cm.items()}
+            cut = np.quantile(list(medians.values()), [1 / 3, 2 / 3])
+            for nm in subs:
+                mine = [x for x in ivp if x['name'] == nm and x.get('previous') is not None]
+                lo = [x['gpu_seconds'] / cm[(nm, x['case'])] for x in mine if medians[x['previous']] <= cut[0]]
+                hi = [x['gpu_seconds'] / cm[(nm, x['case'])] for x in mine if medians[x['previous']] >= cut[1]]
+                ev = len(lo) >= 3 and len(hi) >= 3
+                nb.append(dict(name=nm, phase=label, ratio=float(np.mean(hi) / np.mean(lo)) if ev else None,
+                               n_short=len(lo), n_long=len(hi), evaluable=ev))
+        return nb
+    nb = neighbour_rows(inv)
+    evn = [x for x in nb if x['evaluable']]
+    gate('neighbour', bool(evn) and all(x['ratio'] <= lim for x in evn), limit=lim,
+         worst=max((x['ratio'] for x in evn), default=None), evaluable=len(evn),
+         not_evaluable=[(x['name'], x['phase']) for x in nb if not x['evaluable']], rows=nb,
+         rule='case-controlled: invocation / its (subject, case, phase) median; mean after long / after short')
 
     # ---- tables ----
     quick = {}
@@ -394,14 +410,36 @@ def main():
     # ---- fast bar reproduction ----
     pb = cfg['parent_fast_bar']
     twin = next((n for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'parent'
-                 and t['model'] == 'trunc' and t['q'] == 0 and t['R_prime'] == 512), None)
-    ferr = pb['percent']
+                 and t['model'] == 'trunc' and t['q'] == 0 and t['R_prime'] == 512 and not t['cap']
+                 and 'budget' not in n), None)
     got = table[twin]['worst_evolved_percent'] if twin else None
-    gate('fast_bar_reproduces', twin is not None and ferr is not None and abs(got / ferr - 1) <= 1e-6,
-         parent=ferr, this_job=got, arm=twin)
+    heldout = bool(cfg.get('skip_certificates'))
+    if not heldout:
+        gate('fast_bar_reproduces', twin is not None and pb['percent'] is not None and abs(got / pb['percent'] - 1) <= 1e-6,
+             parent=pb['percent'], this_job=got, arm=twin)
+    ferr = got      # DESIGN section 6: the fast bar is the q=0 setting's error re-measured in this job
 
+    if heldout:
+        # held-out: the frozen dev6 picks are REPORTED whatever they show; no selection, no dev-cohort checks
+        hs = cfg['heldout_selection']
+        acc_n, fast_n = hs['accurate'], hs['fast']
+        f = fom_for(table[acc_n]['worst_evolved_percent'])
+        rowh = lambda n: {k: table[n].get(k) for k in ('name', 'worst_evolved_percent', 'median_evolved_percent',
+                                                       'median_gpu_ms', 'A1_median_ms', 'A2_median_ms',
+                                                       'total_iterations_per_case', 'max_iterations_per_step',
+                                                       'stalled_exits', 'budget_exits')}
+        sel = dict(mesh=L, rule='held-out: frozen dev6 selection (selection-<L>.json), reported as measured',
+                   accurate=rowh(acc_n), fast=rowh(fast_n),
+                   table1=dict(fom=f, fom_gpu_ms=foms[f]['median_gpu_ms'] if f else None,
+                               fom_worst_evolved_percent=foms[f]['worst_evolved_percent'] if f else None,
+                               accurate_speedup=foms[f]['median_gpu_ms'] / table[acc_n]['median_gpu_ms'] if f else None,
+                               fast_speedup=foms[f]['median_gpu_ms'] / table[fast_n]['median_gpu_ms'] if f else None),
+                   parent_settings_this_job={n: dict(rowh(n), speedup_vs_table1_fom=(foms[f]['median_gpu_ms'] /
+                                                                                       table[n]['median_gpu_ms']) if f else None)
+                                             for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'parent'},
+                   own_fom={n: fom_for(table[n]['worst_evolved_percent']) for n in (acc_n, fast_n)})
     # ---- the pre-registered rule ----
-    conf = {n: t for n, t in ktab.items() if t['certificate'] == 'confirmed'}
+    conf = {n: t for n, t in ktab.items() if t['certificate'] == 'confirmed'} if not heldout else {}
     key_err = lambda n: (ktab[n]['worst_evolved_percent'], ktab[n]['median_gpu_ms'])
     acc = min(conf, key=key_err) if conf else None
     acc_any = min(ktab, key=key_err) if ktab else None
@@ -409,6 +447,7 @@ def main():
     fast = min(fast_ok, key=lambda n: ktab[n]['median_gpu_ms']) if fast_ok else None
     fast_any_ok = [n for n in ktab if ktab[n]['worst_evolved_percent'] <= ferr]
     fast_any = min(fast_any_ok, key=lambda n: ktab[n]['median_gpu_ms']) if fast_any_ok else None
+    selh = sel if heldout else None
     sel = dict(mesh=L, rule='DESIGN.md section 6', knobs=len(ktab), confirmed=len(conf), fast_bar_percent=ferr,
                accurate=ktab.get(acc), fast=ktab.get(fast),
                accurate_if_certificates_ignored=ktab.get(acc_any) if acc_any != acc else None,
@@ -438,7 +477,7 @@ def main():
     # coordinator: general path vs fast path (paper section 6.3)
     gen = next((n for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'general'), None)
     if gen:
-        fastp = next(n for n, t in table.items() if t.get('impl') == 'parent' and t['model'] == 'lin'
+        fastp = next(n for n, t in table.items() if t.get('impl') == 'parent' and t['model'] == 'lin' and 'budget' not in n
                      and t['R_prime'] == table[gen]['R_prime'] and not t['exact_steps'])
         sel['general_path_section_6_3'] = dict(
             general_arm=gen, fast_path_arm=fastp, general_ms=table[gen]['median_gpu_ms'],
@@ -447,21 +486,39 @@ def main():
             fast_path_worst_evolved_percent=table[fastp]['worst_evolved_percent'],
             general_per_case=table[gen]['per_case_evolved_percent'], fast_per_case=table[fastp]['per_case_evolved_percent'],
             general_iterations=table[gen]['total_iterations_per_case'],
-            fast_iterations=table[fastp]['total_iterations_per_case'])
+            fast_iterations=table[fastp]['total_iterations_per_case'],
+            same_error_criterion='pre-registered: |worst evolved error (general) / (fast path) - 1| <= 0.05',
+            same_error=bool(abs(table[gen]['worst_evolved_percent'] / table[fastp]['worst_evolved_percent'] - 1) <= .05))
     if acc and fast:
         sel['parity_pairs'] = cfg.get('parity_pairs', [])
         sel['accurate_arm'], sel['fast_arm'] = ktab[acc]['timed_arm'], ktab[fast]['timed_arm']
 
+    if heldout:
+        sel = selh
     # ---- injected controls ----
     roms = [x for x in r['quick'] if x['family'] == 'rom']
     probe = [x for x in roms if x['same_grid_evolved'] > 1e-6][:6]
-    gap_swap = compare(probe, {c: truth_r[cases[(i + 1) % len(cases)]] for i, c in enumerate(cases)}) if len(cases) > 1 else None
-    gap_pert = compare([dict(x, same_grid_evolved=x['same_grid_evolved'] * (1 + 1e-3)) for x in probe], truth_r)
+    # swapped case through the ACTUAL restricted-error predicate (identity: gap <= 1e-9; else ratio in [0.5, 1.05])
+    if len(cases) > 1:
+        sw_ratios = []
+        gap_swap = compare(probe, {c: truth_r[cases[(i + 1) % len(cases)]] for i, c in enumerate(cases)}, sw_ratios)
+        swap_rejected = (gap_swap >= bar_r) if exact_restriction else not (min(sw_ratios) >= .5 and max(sw_ratios) <= 1.05)
+    else:
+        gap_swap, swap_rejected = None, True
+    # a 1e-6 relative perturbation of a reported error through the ACTUAL full-grid predicate (abs diff <= 1e-12)
+    pert_rejected = bool(full) and not all(abs(x['recomputed_evolved'] - x['job_evolved'] * (1 + 1e-6)) <= 1e-12
+                                           for x in full if x['job_evolved'] > 1e-6)
+    # identity restriction: also through the restricted predicate
+    if exact_restriction:
+        pert_rejected = pert_rejected and compare([dict(x, same_grid_evolved=x['same_grid_evolved'] * (1 + 1e-6))
+                                                   for x in probe], truth_r) >= bar_r
     victim = rom_timed[0] if rom_timed else None
     pinv = [dict(x, gpu_seconds=x['gpu_seconds'] * 1.2) if (x['name'] == victim and x['phase'] == 'romA2') else x for x in inv]
-    drift_detect = victim is not None and not all(1 / lim <= d['ratio'] <= lim for d in drift_rows(pinv))
-    gate('controls_detected', (gap_swap is None or gap_swap >= max(bar_r, 1.)) and gap_pert >= min(bar_r, 1e-4)
-         and drift_detect, swapped_case_gap=gap_swap, perturbed_error_gap=gap_pert, perturbed_A2_time_x1p2_detected=drift_detect)
+    drift_rejected = victim is not None and not all(1 / lim <= d['ratio'] <= lim for d in drift_rows(pinv))
+    gate('controls_detected', swap_rejected and pert_rejected and drift_rejected, swapped_case_gap=gap_swap,
+         swapped_case_rejected=swap_rejected, perturbed_error_1em6_rejected=pert_rejected,
+         perturbed_A2_time_x1p2_rejected=drift_rejected,
+         note='each injected control is run through the same predicate that accepts the job and must be rejected')
 
     failed = [k for k, v in gates.items() if not v['passed']]
     summary = dict(attempt=cfg['attempt'], job_id=r['job_id'], commit=r['commit'], gpu=r['gpu'], host=r.get('host'),

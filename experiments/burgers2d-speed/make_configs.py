@@ -71,6 +71,8 @@ def arm_name(s):
     b = f"R{s['Rp']}_{body}_{s['rule']}_{g}_fast{sfx}"
     if s.get('cap'):
         b += f"_cap{s['cap']}"
+    if s.get('budget'):
+        b += f"_budget{s['budget']}"
     return b + '__' + s.get('impl', 'parent') + ('_graphs' if s.get('graphs') else '')
 
 
@@ -99,6 +101,11 @@ def twins(L):
         par = mk(impl='parent', graphs=False, candidate=False, certify=False, role='parent_twin')
         tw.append(par)
         pairs += [[arm_name(mk(graphs=True)), arm_name(par)], [arm_name(mk(graphs=False)), arm_name(par)]]
+    # the cap-1 knob against the parent text with an LM budget of 1 (the same semantics as a while loop)
+    for mk in ((lambda **k: lin(L, 128, x1=(False if L <= 512 else None), **k)), (lambda **k: q0(**k))):
+        par1 = dict(mk(impl='parent', graphs=False, candidate=False, certify=False, role='parent_budget1_twin'), budget=1)
+        tw.append(par1)
+        pairs.append([arm_name(mk(cap=1, graphs=True)), arm_name(par1)])
     cands = candidates(L)
     for s in cands:
         if s['graphs']:
@@ -167,7 +174,11 @@ def smoke():
 
 def hold(L):
     """hold64 at this mesh, generated only from the committed selection-<L>.json (DESIGN.md section 6)."""
-    sel = json.loads((HERE / f'selection-{L}.json').read_text())
+    import subprocess
+    rel = f'experiments/burgers2d-speed/selection-{L}.json'
+    committed = subprocess.check_output(['git', '-C', str(HERE), 'show', f'HEAD:{rel}'])
+    assert committed == (HERE / f'selection-{L}.json').read_bytes(), 'selection must be committed before the held-out config'
+    sel = json.loads(committed)
     c = base(L, f'h{L}')
     allarms = {arm_name(s): s for s in c['arms']}
     want = list(dict.fromkeys([sel['accurate'], sel['fast']]))
@@ -176,8 +187,11 @@ def hold(L):
     c.update(arms=arms, eval_draws=[[20260916, 64]], expected_physical_sha256=None, skip_certificates=True,
              cohort_name='hold64: params_draw(20260916, 64), held-out; never used for any fit, rule or selection',
              parity_pairs=[p for p in sel['parity_pairs'] if all(x in {arm_name(s) for s in arms} for x in p)],
-             audit_arms=['fft_tight'] + want, rom_reps=2, fom_reps=1, required_reps=5, timed_full_sha_every=8,
+             audit_arms=['fft_tight'] + want, rom_reps=2, fom_reps=1, timed_full_sha_every=1,
              selection_source_summary_sha256=sel['source_summary_sha256'],
+             heldout_selection=dict(accurate=sel['accurate'], fast=sel['fast'],
+                                    parent_accurate_twin=sel['parent_accurate_twin'],
+                                    parent_fast_twin=sel['parent_fast_twin']),
              purpose='held-out confirmation of the committed dev6 selection at this mesh')
     return c
 

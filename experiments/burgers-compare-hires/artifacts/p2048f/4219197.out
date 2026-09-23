@@ -1,0 +1,125 @@
+host=pax049 source_commit=b2b7725d1ef8fcf08a2d57bf72deb4e02ca94936
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  370G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 4190209 rows in 1 blocks 8.8
+TRUTH 0 12.6
+TRUTH 1 14.4
+TRUTH 2 17.5
+TRUTH 3 20.2
+TRUTH 4 22.2
+TRUTH 5 23.9
+QUICK fft_tight evolved% 0.0 stalled 0 15.2 61.4
+QUICK nt1e-4_dt005 evolved% 0.0334 stalled 0 8.0 69.4
+QUICK nt1e-3_dt005 evolved% 0.054 stalled 0 7.0 76.4
+QUICK nt1e-2_dt005 evolved% 4.3716 stalled 0 4.6 81.0
+QUICK nt1e-4_dt01 evolved% 1.6507 stalled 0 8.7 89.7
+QUICK nt1e-3_dt01 evolved% 1.6493 stalled 0 5.7 95.4
+QUICK nt1e-2_dt01 evolved% 3.5129 stalled 0 4.0 99.4
+QUICK lean_tight evolved% 0.0 stalled 0 15.6 115.0
+QUICK lean_nt1e-4_dt005 evolved% 0.0334 stalled 0 7.7 122.7
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0543 stalled 0 5.2 127.9
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0494 stalled 0 4.9 132.9
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1615 stalled 0 4.6 137.4
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6501 stalled 0 5.3 142.8
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6651 stalled 0 4.1 146.9
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6773 stalled 0 3.9 150.9
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.3714 stalled 0 9.8 169.2
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5979 stalled 0 12.3 190.2
+TIMED F rep 0 313.2
+TIMED F rep 1 427.4
+TIMED F rep 2 541.6
+TIMED F rep 3 656.0
+TIMED F rep 4 770.4
+QUICK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5979 stalled 0 47.4 818.1
+BLOCK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 1002.8
+QUICK bank512_M2048_lat64_g1em06 evolved% 0.2907 stalled 0 10.9 1022.1
+BANKSPAN RHO bank512_M2048_lat64_g1em06 0.0573 ok 1031.6
+BLOCK bank512_M2048_lat64_g1em06 1061.4
+QUICK bank512_M2048_lat128_g1em06 evolved% 0.2909 stalled 0 13.0 1081.4
+BANKSPAN RHO bank512_M2048_lat128_g1em06 0.5058 exceeds 1095.0
+BLOCK bank512_M2048_lat128_g1em06 1148.4
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.2195 stalled 0 9.6 1165.1
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.0777 ok 1171.9
+BLOCK bank384_M1536_lat64_g1em06 1198.0
+QUICK bank384_M1536_lat128_g1em06 evolved% 0.2194 stalled 0 10.6 1213.6
+BANKSPAN RHO bank384_M1536_lat128_g1em06 0.4145 exceeds 1223.3
+BLOCK bank384_M1536_lat128_g1em06 1264.7
+QUICK bank256_M1024_lat64_g1em06 evolved% 0.7293 stalled 0 8.3 1279.7
+BANKSPAN RHO bank256_M1024_lat64_g1em06 0.078 ok 1285.7
+BLOCK bank256_M1024_lat64_g1em06 1308.5
+QUICK bank256_M1024_lat128_g1em06 evolved% 0.7282 stalled 0 8.7 1321.8
+BANKSPAN RHO bank256_M1024_lat128_g1em06 0.3521 exceeds 1328.8
+BLOCK bank256_M1024_lat128_g1em06 1361.2
+QUICK bank128_M512_lat64_g1em06 evolved% 1.8716 stalled 0 8.8 1376.0
+BANKSPAN RHO bank128_M512_lat64_g1em06 0.0479 ok 1380.8
+BLOCK bank128_M512_lat64_g1em06 1400.8
+QUICK bank128_M512_lat128_g1em06 evolved% 1.8719 stalled 0 7.0 1412.0
+BANKSPAN RHO bank128_M512_lat128_g1em06 0.1624 exceeds 1416.7
+BLOCK bank128_M512_lat128_g1em06 1441.1
+SNAPSHOTS (4190209, 3328) 544.4 1985.7
+POD 512 66.5 2052.3
+QUICK pod16_M64_dense_armsTwin evolved% 29.3744 stalled 0 15.9 2078.4
+QUICK pod16_M64_dense evolved% 29.3744 stalled 0 10.3 2091.9
+GRID PARITY pod16_M64_dense 1.318e-15 integers True
+BLOCK pod16_M64_dense 2130.0
+QUICK pod64_M256_dense evolved% 7.4711 stalled 0 29.1 2163.7
+BLOCK pod64_M256_dense 2282.2
+QUICK pod256_M1024_dense evolved% 1.1681 stalled 0 289.3 2578.0
+BLOCK pod256_M1024_dense 3994.6
+DROPPED (OOM) pod512_M2048_dense INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.14 = f64[64,4192257]{1,0} fusion(%bitcast.253.0, %wrapped_concatenate), kind=kCustom, calls=%gemm_fusion_dot.14_computation, metadata={op_name="ji
+QMAN r 16 ridge 0.01 |W| 0.009323 heldout 0.123232 lin/quad 0.140193 0.077261 56.0 4081.7
+QUICK qman16_quad_M64_armsTwin evolved% 22.6973 stalled 0 32.5 4126.5
+QUICK qman16_quad_M64 evolved% 22.6973 stalled 0 22.1 4153.7
+GRID PARITY qman16_quad_M64 1.935e-15 integers True
+BLOCK qman16_quad_M64 4258.2
+QMAN r 32 ridge 0.01 |W| 0.009629 heldout 0.060962 lin/quad 0.06322 0.030868 74.5 4347.6
+QUICK qman32_quad_M128 evolved% 13.06 stalled 0 63.6 4419.6
+BLOCK qman32_quad_M128 4694.0
+QMAN r 64 ridge 1.0 |W| 0.0005371 heldout 0.026351 lin/quad 0.022706 0.02068 159.9 4910.2
+DROPPED (build, OOM) qman64_quad_M256
+CMP COMPLETE
+torch_cuda True NVIDIA A100 80GB PCIe
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 891.246
+FNO burgers-dev-00001 device_ms 892.12
+FNO burgers-dev-00002 device_ms 893.04
+FNO burgers-dev-00003 device_ms 894.385
+FNO burgers-dev-00004 device_ms 893.871
+FNO burgers-dev-00005 device_ms 894.639
+OPERATOR TIMING COMPLETE fno-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 214.102
+FNO burgers-dev-00001 device_ms 213.971
+FNO burgers-dev-00002 device_ms 213.925
+FNO burgers-dev-00003 device_ms 213.987
+FNO burgers-dev-00004 device_ms 213.897
+FNO burgers-dev-00005 device_ms 213.951
+OPERATOR TIMING COMPLETE unet-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 526.631
+FNO burgers-dev-00001 device_ms 526.533
+FNO burgers-dev-00002 device_ms 526.642
+FNO burgers-dev-00003 device_ms 526.644
+FNO burgers-dev-00004 device_ms 526.565
+FNO burgers-dev-00005 device_ms 526.565
+OPERATOR TIMING COMPLETE tsol-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 207.514
+FNO burgers-dev-00001 device_ms 207.34
+FNO burgers-dev-00002 device_ms 207.93
+FNO burgers-dev-00003 device_ms 208.299
+FNO burgers-dev-00004 device_ms 207.536
+FNO burgers-dev-00005 device_ms 207.76
+OPERATOR TIMING COMPLETE don-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 891.062
+FNO burgers-dev-00001 device_ms 892.506
+FNO burgers-dev-00002 device_ms 893.862
+FNO burgers-dev-00003 device_ms 894.587
+FNO burgers-dev-00004 device_ms 894.152
+FNO burgers-dev-00005 device_ms 895.173
+OPERATOR TIMING COMPLETE fno-large-256
+AUDIT p2048 arms 38 failed gates: []
+ALL-DONE

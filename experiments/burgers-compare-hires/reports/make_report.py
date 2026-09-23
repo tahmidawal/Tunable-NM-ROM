@@ -57,6 +57,7 @@ def main():
         raw = Path(path).read_bytes()
         s = json.loads(raw)
         roles = s.get('roles') or {}
+        bsr = {b['arm']: b for b in ((s.get('bank_span') or {}).get('arms') or [])}
         rows = []
         for fam in ORDER:
             for x in sorted((x for x in s['arms'] if x['family'] == fam and x['phase'] != 'P'),
@@ -68,7 +69,12 @@ def main():
                                  fom_worst_evolved_percent=x.get('fom_worst_gpu_full'), speedup=x.get('speedup_gpu_full'),
                                  speedup_complete=x.get('speedup_complete_full'), fom_complete=x.get('fom_complete_full'),
                                  epochs=x.get('epochs'), stop_reason=x.get('stop_reason'), trained_at=x.get('trained_at'),
-                                 parameters=x.get('parameters'), rule_status=x.get('rule_status'),
+                                 parameters=x.get('parameters'),
+                                 rule_status=(('held-out rho_max %.4f over all states (k>=0, the house convention) -- %s the %.3f bar; '
+                                               '%.4f over time-stepped states (k>=1); %d states' % (
+                                                   bsr[x['name']]['rho_max'], 'EXCEEDS' if bsr[x['name']]['exceeds_bar'] else 'within',
+                                                   bsr[x['name']]['bar'], bsr[x['name']]['rho_max_k_ge_1'], bsr[x['name']]['states']))
+                                              if x['name'] in bsr else x.get('rule_status')),
                                  stalled_exits=x.get('stalled', 0) + x.get('timed_stalled', 0),
                                  timing_withheld=x.get('timing_withheld')))
         foms = sorted((x for x in s['arms'] if x['family'] == 'fom'), key=lambda x: x['gpu_ms'])

@@ -5,7 +5,7 @@ This report measures the strongest fast-transform full-order solver for each pro
 ## Findings (generated)
 
 - **Poisson 2D square** (256, 1024, 2048, 4096): spectral/ours is 0.099–0.352 against the accurate setting and 0.332–0.569 against the fast setting. The DST solve is exact, with worst error ≤ 1.4e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
-- **Poisson 3D cube** (32, 64): spectral/ours is 0.396–0.514 against the accurate setting and 0.519–0.586 against the fast setting. The DST solve is exact, with worst error ≤ 1.9e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
+- **Poisson 3D cube** (32, 64, 128, 256): spectral/ours is 0.223–0.514 against the accurate setting and 0.359–0.586 against the fast setting. The DST solve is exact, with worst error ≤ 1.9e-15. The spectral solver is **faster and more accurate than both settings at every mesh**.
 - **Burgers 2D** (256, 512, 1024, 2048, 4096): the matched spectral/ours ratio is 0.072–1.733 for the accurate setting and 0.166–3.854 for the fast one. Tight Picard, at reference accuracy, gives 0.174–5.709 and 0.706–26.127. The ROM is faster than its matched spectral setting at: 2048 fast, 4096 accurate, 4096 fast.
 - **Heat 2D** (1024, 2048, 4096): matched spectral/ours is 0.367–0.442 (accurate `lin_R128_bf`); 1.108–1.405 (fast `lin_R48_cn`); 0.590–0.699 (accurate_cn `lin_R128_cn`); 0.738–0.943 (fast_bf `lin_R48_bf`). The exact modal propagation is also the lane's truth.
 - **NS 3D** (recorded): CNAB2/ours is 1.091–7.790 for the accurate setting and 0.952–13.142 for the fast one. The ROM is faster than its matched CNAB2 setting in 7 of 8 rows. It is not faster at: 32³ fast (0.952).
@@ -35,6 +35,8 @@ Validation. The spectral solve was compared with the SciPy DST truth on every ca
 |---:|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|---|
 | 32³ | NVIDIA A100 80GB PCIe | 4206052 | `R128_linear` | 0.231% | 0.239 | `R64_linear` | 0.475% | 0.210 | 0.164 | 0.123 | 8.6e-16 | **0.514** | **0.586** | all pass | PASS |
 | 64³ | NVIDIA A100 80GB PCIe | 4206052 | `R128_linear` | 0.231% | 0.391 | `R64_linear` | 0.469% | 0.298 | 0.203 | 0.155 | 1.9e-15 | **0.396** | **0.519** | all pass | PASS |
+| 128³ | NVIDIA A100 80GB PCIe | 4214871 | `R128_linear` | 0.144% | 1.836 | `R64_linear` | 0.241% | 1.144 | 0.780 | 0.410 | 1.1e-15 | **0.223** | **0.359** | all pass | PASS |
+| 256³ | NVIDIA A100 80GB PCIe | 4214871 | `R128_linear` | 0.144% | 13.669 | `R64_linear` | 0.241% | 7.870 | 5.120 | 3.644 | 1.9e-15 | **0.267** | **0.463** | all pass | PASS |
 
 Validation. The spectral solve was compared with the SciPy DST truth on every case. The paper's CG was run at rtol $10^{-6}$, $10^{-8}$ and $10^{-10}$ on case 0, and its distance to the spectral field is given. The control (continuum eigenvalues) must exceed $10^{-10}$. "CG certified" gives the paper CG's own true-residual convergence flag at each rtol.
 
@@ -42,6 +44,8 @@ Validation. The spectral solve was compared with the SciPy DST truth on every ca
 |---:|---:|---|---|---:|---:|
 | 32³ | 8.6e-16 | 6.3e-08 / 6.7e-10 / 5.8e-12 | yes / yes / yes | 9.5e-11 | 2.0e-03 |
 | 64³ | 1.9e-15 | 4.7e-08 / 5.2e-10 / 4.1e-12 | yes / yes / yes | 9.8e-11 | 5.0e-04 |
+| 128³ | 1.1e-15 | 5.4e-08 / 4.2e-10 / 3.7e-12 | yes / yes / yes | 9.7e-11 | 1.7e-04 |
+| 256³ | 1.9e-15 | 3.7e-08 / 3.6e-10 / 2.5e-12 | yes / yes / yes | 9.9e-11 | 4.3e-05 |
 
 ## Burgers 2D (Dirichlet walls, sign-upwind advection, backward Euler)
 
@@ -181,6 +185,8 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 | poisson2d | 4096 | spB/output0 | 4206053 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925` |
 | poisson3d | 32 | spA/output3 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `aaca3a08cfb01f4b0463b898d04fd5be05d10ff9fc4c908c954e5ee707e92062` |
 | poisson3d | 64 | spA/output4 | 4206052 | NVIDIA A100 80GB PCIe | 4dc6759a61 | `b694fc923deaaa930ddfb84508bc79f7610abf18f3ec8d08a558829ddc492663` |
+| poisson3d | 128 | spM/output0 | 4214871 | NVIDIA A100 80GB PCIe | ac1dcf753d | `fe1d41a2a8883c11b73ad818f2f3e79980b58fab1a33f2ba67377890eced7f64` |
+| poisson3d | 256 | spM/output1 | 4214871 | NVIDIA A100 80GB PCIe | ac1dcf753d | `85babd42873563acf1a93fca9babd6e18e79a6bfaba2ae81224c7784bd8a4a26` |
 | burgers2d | 256 | spF/output0 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `4abee1a9ec2ce78663da0b5fd7c1b4135955b65bec6f2de94b2ff819237b2257` |
 | burgers2d | 512 | spF/output1 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `34a32abc32d7a7da91823a31ecf903c49d54a46200e5f502743be559b899696e` |
 | burgers2d | 1024 | spF/output2 | 4208042 | NVIDIA A100-PCIE-40GB | bf979ae6b1 | `36dcb41a858adca492253747e9970940fa931e3cea9cfdf271ef6041d17d93ae` |

@@ -613,6 +613,210 @@
     }
    ],
    "neighbour_worst": 1.013272952507029
+  },
+  {
+   "problem": "poisson3d",
+   "mesh": 128,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4214871",
+   "attempt": "spM",
+   "output": "output0",
+   "result": "runs/spM/archive/output0/result.json",
+   "result_sha256": "fe1d41a2a8883c11b73ad818f2f3e79980b58fab1a33f2ba67377890eced7f64",
+   "commit": "ac1dcf753d52311781b511588f10db6e674550c0",
+   "accurate": {
+    "arm": "R128_linear",
+    "worst": 0.0014422944138225877,
+    "ms": 1.8360933754593134,
+    "a1": 1.8347317818552256,
+    "a2": 1.838308060541749
+   },
+   "fast": {
+    "arm": "R64_linear",
+    "worst": 0.0024127057983127,
+    "ms": 1.1443935800343752,
+    "a1": 1.1456555221229792,
+    "a2": 1.1429854203015566
+   },
+   "spectral": {
+    "dst_fft": {
+     "worst": 6.149119019148279e-16,
+     "ms": 0.7797523867338896
+    },
+    "dst_mm": {
+     "worst": 1.144974482810853e-15,
+     "ms": 0.41031348519027233
+    }
+   },
+   "spectral_fom": "dst_mm",
+   "spectral_ms": 0.41031348519027233,
+   "spectral_worst": 1.144974482810853e-15,
+   "ratio_accurate": 0.22347092510348454,
+   "ratio_fast": 0.35854228156186213,
+   "validation": {
+    "spectral_vs_scipy_worst": 1.144974482810853e-15,
+    "cg": [
+     {
+      "rtol": 1e-06,
+      "case": 0,
+      "iterations": 378,
+      "converged": true,
+      "true_relative_residual": 9.96588827161691e-07,
+      "seconds": 0.45328179094940424,
+      "cg_vs_spectral": 5.376997248540703e-08,
+      "cg_vs_scipy_truth": 5.376997248645612e-08
+     },
+     {
+      "rtol": 1e-08,
+      "case": 0,
+      "iterations": 464,
+      "converged": true,
+      "true_relative_residual": 9.835848368932483e-09,
+      "seconds": 0.38184051122516394,
+      "cg_vs_spectral": 4.1978935185973565e-10,
+      "cg_vs_scipy_truth": 4.1978935335119606e-10
+     },
+     {
+      "rtol": 1e-10,
+      "case": 0,
+      "iterations": 544,
+      "converged": true,
+      "true_relative_residual": 9.668607025334898e-11,
+      "seconds": 0.39837293280288577,
+      "cg_vs_spectral": 3.652041233915235e-12,
+      "cg_vs_scipy_truth": 3.6520444922538236e-12
+     }
+    ],
+    "control": 0.0001714790311929658
+   },
+   "gates": {
+    "spectral_exact": true,
+    "cg_converges_to_spectral": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "R128_linear",
+     "romA1_median": 0.0018347317818552256,
+     "romA2_median": 0.001838308060541749,
+     "ratio": 1.001949210626802
+    },
+    {
+     "name": "R64_linear",
+     "romA1_median": 0.0011456555221229792,
+     "romA2_median": 0.0011429854203015566,
+     "ratio": 0.9976693676503434
+    }
+   ],
+   "neighbour_worst": 1.0049840403752583
+  },
+  {
+   "problem": "poisson3d",
+   "mesh": 256,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4214871",
+   "attempt": "spM",
+   "output": "output1",
+   "result": "runs/spM/archive/output1/result.json",
+   "result_sha256": "85babd42873563acf1a93fca9babd6e18e79a6bfaba2ae81224c7784bd8a4a26",
+   "commit": "ac1dcf753d52311781b511588f10db6e674550c0",
+   "accurate": {
+    "arm": "R128_linear",
+    "worst": 0.0014416550521635946,
+    "ms": 13.668542029336095,
+    "a1": 13.676160713657737,
+    "a2": 13.664327096194029
+   },
+   "fast": {
+    "arm": "R64_linear",
+    "worst": 0.0024113290147183054,
+    "ms": 7.869719062000513,
+    "a1": 7.868349552154541,
+    "a2": 7.872025249525905
+   },
+   "spectral": {
+    "dst_fft": {
+     "worst": 6.906804794475434e-16,
+     "ms": 5.119637353345752
+    },
+    "dst_mm": {
+     "worst": 1.8820262410778374e-15,
+     "ms": 3.64363263361156
+    }
+   },
+   "spectral_fom": "dst_mm",
+   "spectral_ms": 3.64363263361156,
+   "spectral_worst": 1.8820262410778374e-15,
+   "ratio_accurate": 0.26657068660222993,
+   "ratio_fast": 0.4629939906247853,
+   "validation": {
+    "spectral_vs_scipy_worst": 1.8820262410778374e-15,
+    "cg": [
+     {
+      "rtol": 1e-06,
+      "case": 0,
+      "iterations": 776,
+      "converged": true,
+      "true_relative_residual": 9.780026935710767e-07,
+      "seconds": 1.0624730680137873,
+      "cg_vs_spectral": 3.708472444223031e-08,
+      "cg_vs_scipy_truth": 3.708472447719753e-08
+     },
+     {
+      "rtol": 1e-08,
+      "case": 0,
+      "iterations": 941,
+      "converged": true,
+      "true_relative_residual": 9.93201285935971e-09,
+      "seconds": 1.1608110927045345,
+      "cg_vs_spectral": 3.559997659377121e-10,
+      "cg_vs_scipy_truth": 3.5599976631701944e-10
+     },
+     {
+      "rtol": 1e-10,
+      "case": 0,
+      "iterations": 1104,
+      "converged": true,
+      "true_relative_residual": 9.921085296187335e-11,
+      "seconds": 1.3133193119429052,
+      "cg_vs_spectral": 2.516196743165817e-12,
+      "cg_vs_scipy_truth": 2.516192041760881e-12
+     }
+    ],
+    "control": 4.2861751459693437e-05
+   },
+   "gates": {
+    "spectral_exact": true,
+    "cg_converges_to_spectral": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "R128_linear",
+     "romA1_median": 0.013676160713657737,
+     "romA2_median": 0.013664327096194029,
+     "ratio": 0.9991347266450379
+    },
+    {
+     "name": "R64_linear",
+     "romA1_median": 0.007868349552154541,
+     "romA2_median": 0.007872025249525905,
+     "ratio": 1.0004671497303215
+    }
+   ],
+   "neighbour_worst": 1.001272363663715
   }
  ],
  "burgers2d": [

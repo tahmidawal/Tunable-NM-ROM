@@ -1,0 +1,81 @@
+host=pax049 source_commit=ac1dcf753d52311781b511588f10db6e674550c0
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.3T  308G  94% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CGVAL {'rtol': 1e-06, 'case': 0, 'iterations': 378, 'converged': True, 'true_relative_residual': 9.96588827161691e-07, 'seconds': 0.45328179094940424, 'cg_vs_spectral': 5.376997248540703e-08, 'cg_vs_scipy_truth': 5.376997248645612e-08}
+CGVAL {'rtol': 1e-08, 'case': 0, 'iterations': 464, 'converged': True, 'true_relative_residual': 9.835848368932483e-09, 'seconds': 0.38184051122516394, 'cg_vs_spectral': 4.1978935185973565e-10, 'cg_vs_scipy_truth': 4.1978935335119606e-10}
+CGVAL {'rtol': 1e-10, 'case': 0, 'iterations': 544, 'converged': True, 'true_relative_residual': 9.668607025334898e-11, 'seconds': 0.39837293280288577, 'cg_vs_spectral': 3.652041233915235e-12, 'cg_vs_scipy_truth': 3.6520444922538236e-12}
+VALIDATION {'spectral_exact': True, 'cg_converges_to_spectral': True, 'control_failed': True} [5.376997248540703e-08, 4.1978935185973565e-10, 3.652041233915235e-12] 0.0001714790311929658
+PHASE romA1 rep 0 t=14.0s
+PHASE romA1 rep 1 t=19.1s
+PHASE romA1 rep 2 t=24.2s
+PHASE romA1 rep 3 t=29.3s
+PHASE romA1 rep 4 t=34.5s
+PHASE romA1 rep 5 t=39.6s
+PHASE romA1 rep 6 t=44.7s
+PHASE romA1 rep 7 t=49.9s
+PHASE romA1 rep 8 t=55.0s
+PHASE romA1 rep 9 t=60.1s
+PHASE spec rep 0 t=73.2s
+PHASE spec rep 1 t=78.3s
+PHASE spec rep 2 t=83.4s
+PHASE spec rep 3 t=88.5s
+PHASE spec rep 4 t=93.6s
+PHASE spec rep 5 t=98.7s
+PHASE spec rep 6 t=103.8s
+PHASE spec rep 7 t=108.9s
+PHASE spec rep 8 t=114.0s
+PHASE spec rep 9 t=119.1s
+PHASE romA2 rep 0 t=131.2s
+PHASE romA2 rep 1 t=136.3s
+PHASE romA2 rep 2 t=141.4s
+PHASE romA2 rep 3 t=146.6s
+PHASE romA2 rep 4 t=151.7s
+PHASE romA2 rep 5 t=156.8s
+PHASE romA2 rep 6 t=161.9s
+PHASE romA2 rep 7 t=167.1s
+PHASE romA2 rep 8 t=172.2s
+PHASE romA2 rep 9 t=177.4s
+GATES {'spectral_exact': True, 'cg_converges_to_spectral': True, 'control_failed': True, 'deterministic': True, 'drift': True, 'neighbour': True, 'device_guard': True}
+TIMINGS {'R128_linear': 1.8361, 'R64_linear': 1.1444, 'dst_fft': 0.7798, 'dst_mm': 0.4103}
+AUDIT PASS 64 0.011449744826797562
+jax_backend=gpu x64=True precision=highest
+CGVAL {'rtol': 1e-06, 'case': 0, 'iterations': 776, 'converged': True, 'true_relative_residual': 9.780026935710767e-07, 'seconds': 1.0624730680137873, 'cg_vs_spectral': 3.708472444223031e-08, 'cg_vs_scipy_truth': 3.708472447719753e-08}
+CGVAL {'rtol': 1e-08, 'case': 0, 'iterations': 941, 'converged': True, 'true_relative_residual': 9.93201285935971e-09, 'seconds': 1.1608110927045345, 'cg_vs_spectral': 3.559997659377121e-10, 'cg_vs_scipy_truth': 3.5599976631701944e-10}
+CGVAL {'rtol': 1e-10, 'case': 0, 'iterations': 1104, 'converged': True, 'true_relative_residual': 9.921085296187335e-11, 'seconds': 1.3133193119429052, 'cg_vs_spectral': 2.516196743165817e-12, 'cg_vs_scipy_truth': 2.516192041760881e-12}
+VALIDATION {'spectral_exact': True, 'cg_converges_to_spectral': True, 'control_failed': True} [3.708472444223031e-08, 3.559997659377121e-10, 2.516196743165817e-12] 4.2861751459693437e-05
+PHASE romA1 rep 0 t=25.1s
+PHASE romA1 rep 1 t=37.2s
+PHASE romA1 rep 2 t=49.3s
+PHASE romA1 rep 3 t=61.5s
+PHASE romA1 rep 4 t=73.7s
+PHASE romA1 rep 5 t=85.8s
+PHASE romA1 rep 6 t=97.9s
+PHASE romA1 rep 7 t=110.1s
+PHASE romA1 rep 8 t=122.2s
+PHASE romA1 rep 9 t=134.4s
+PHASE spec rep 0 t=158.3s
+PHASE spec rep 1 t=170.3s
+PHASE spec rep 2 t=182.3s
+PHASE spec rep 3 t=194.2s
+PHASE spec rep 4 t=206.2s
+PHASE spec rep 5 t=218.1s
+PHASE spec rep 6 t=230.1s
+PHASE spec rep 7 t=242.0s
+PHASE spec rep 8 t=253.9s
+PHASE spec rep 9 t=265.9s
+PHASE romA2 rep 0 t=285.1s
+PHASE romA2 rep 1 t=297.3s
+PHASE romA2 rep 2 t=309.4s
+PHASE romA2 rep 3 t=321.5s
+PHASE romA2 rep 4 t=333.7s
+PHASE romA2 rep 5 t=345.8s
+PHASE romA2 rep 6 t=358.0s
+PHASE romA2 rep 7 t=370.3s
+PHASE romA2 rep 8 t=382.5s
+PHASE romA2 rep 9 t=394.7s
+GATES {'spectral_exact': True, 'cg_converges_to_spectral': True, 'control_failed': True, 'deterministic': True, 'drift': True, 'neighbour': True, 'device_guard': True}
+TIMINGS {'R128_linear': 13.6685, 'R64_linear': 7.8697, 'dst_fft': 5.1196, 'dst_mm': 3.6436}
+AUDIT PASS 64 0.018689549049000585
+ALL-DONE

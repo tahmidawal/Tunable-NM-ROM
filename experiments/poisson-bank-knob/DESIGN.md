@@ -100,3 +100,19 @@ no f32 copy), which leaves about 13e9 bytes of headroom at memory fraction 0.95.
 `--constraint="a100-80G|h100-80G|h200-141G"`. Separately, `pbkE` landed on an **A100-PCIE-40GB**. Its 2048² pass
 keeps both banks (34.4e9 bytes) against a 38.6e9-byte XLA cap. That pass is at risk; if it runs out of memory it is
 rerun without the original bank, with the parity then carried by 256² and 1024².
+
+## Amendment A4 (2026-09-23) — pbkE 2048² out of memory on the 40 GB card, as A3 anticipated
+
+`pbkE` (job 4198039) completed and audited 256² and 1024². Its third pass, 2048², hit RESOURCE_EXHAUSTED
+("allocate 1.99GiB") during the bank build on the A100-PCIE-40GB. `set -e` stopped the job, so there is no ALL-DONE
+and no `OUTPUTS.sha256`. `output/` and `output2/` are collected by hand: checksums are computed remotely, verified
+after the pull, and the missing completion marker is not faked. `output3/` is empty and is discarded. 2048² reruns
+unchanged (original bank kept, so parity is checked at 2048² as well) as `pbkG`, with
+`--constraint="a100-80G|h100-80G|h200-141G"`.
+
+**Finding recorded before the 2048²/4096² results — neighbour gate FAILED at 256² and 1024² (pbkE).** Every ROM arm
+timed right after a CG $10^{-3}$ solve is slower by a roughly constant +0.5–0.8 ms: worst ratio 2.23 at 256² and 1.56 at
+1024²; limit 1.10. In the main phase, arms following a loose CG are not slower. The design has no control that
+separates "right after a long CG" from "after the slow phase, later in the job", so the cause is not identified. Both
+the main-phase and the conservative (after-long-neighbour) Table-1 times are reported. By the pre-registered rule, the
+256²/1024² timings are **not gate-clean**.

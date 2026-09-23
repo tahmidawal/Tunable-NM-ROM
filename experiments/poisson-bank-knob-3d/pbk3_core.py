@@ -194,13 +194,14 @@ def q_set(ladder, Rp, K):
 
 
 def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='control_no_cg',
-               limit_pooled=1.10, limit_arm=1.25):
+               limit_pooled=1.10, limit_arm=1.25, required_pairs=32):
     """Order-effect gate (amendment A1, DESIGN.md). Pairs every `gate_variant` invocation (the arm right
     after a long CG solve) with the interleaved `control` invocation of the same arm, case and round
     (identical sequence without the CG). Passes iff
       pooled median of the paired ratios            <= limit_pooled,
       median over arms of (after-CG median / main-phase median on the same cases) <= limit_pooled,
-      every arm's median paired ratio               <= limit_arm."""
+      every arm's median paired ratio               <= limit_arm,
+      and every listed arm has at least `required_pairs` pairs (coverage; A1: 16 cases x 2 rounds)."""
     after, ctrl = {}, {}
     for x in rows:
         key = (x['name'], x['case'], x.get('round', 0))
@@ -208,12 +209,13 @@ def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='
             after.setdefault(key, []).append(x[scope])
         elif x.get('variant') == control:
             ctrl.setdefault(key, []).append(x[scope])
-    per_arm, pooled, main_ratio = {}, [], {}
+    per_arm, pooled, main_ratio, npairs = {}, [], {}, {}
     for name in names:
         r = []
         for key, v in after.items():
             if key[0] == name and key in ctrl:
                 r += [a / c for a, c in zip(v, ctrl[key])]
+        npairs[name] = len(r)
         if not r:
             continue
         per_arm[name] = float(np.median(r))
@@ -226,8 +228,10 @@ def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='
                pooled_paired_ratio=float(np.median(pooled)) if pooled else None,
                median_after_over_main=float(np.median(list(main_ratio.values()))) if main_ratio else None,
                max_arm_paired_ratio=max(per_arm.values()) if per_arm else None,
-               per_arm_paired_ratio=per_arm, per_arm_after_over_main=main_ratio)
-    out['passed'] = bool(pooled and out['pooled_paired_ratio'] <= limit_pooled
+               per_arm_paired_ratio=per_arm, per_arm_after_over_main=main_ratio,
+               required_pairs_per_arm=required_pairs, min_pairs_per_arm=min(npairs.values()) if npairs else 0,
+               coverage_ok=bool(npairs) and min(npairs.values()) >= required_pairs)
+    out['passed'] = bool(pooled and out['coverage_ok'] and out['pooled_paired_ratio'] <= limit_pooled
                          and out['median_after_over_main'] <= limit_pooled and out['max_arm_paired_ratio'] <= limit_arm)
     return out
 

@@ -134,10 +134,12 @@ def profile(R):
 def order_gate_of(R):
     """The amended (A1) paired order-effect gate; recomputed from the raw rows for runs made before A1."""
     g = R['neighbour_gate']
-    if 'order_gate' in g:
-        return g['order_gate']
     names = [a['name'] for a in R['arms']]
-    return dict(P3.order_gate(R['neighbour'], R['invocations'], names, g['gate_scope']), recomputed_offline=True)
+    out = dict(P3.order_gate(R['neighbour'], R['invocations'], names, g['gate_scope']), recomputed_offline=True)
+    if 'order_gate' in g:      # the driver's own evaluation must agree on the statistic
+        for k in ('pooled_paired_ratio', 'median_after_over_main', 'max_arm_paired_ratio'):
+            assert abs(out[k] - g['order_gate'][k]) <= 1e-12 * abs(out[k]), (k, out[k], g['order_gate'][k])
+    return out
 
 
 def fmt(x, d=3):
@@ -207,7 +209,7 @@ def main():
                f"({entry['cases']} cases), scope {SCOPE[prob]}. Audit: **{A['verdict']}** — {A['summary']}. "
                f"Gates (neighbour = amended paired order gate A1): {', '.join(k + ('=ok' if v else '=FAIL') for k, v in entry['gates_amended'].items())}; "
                f"order gate: pooled paired {fmt(entry['order_gate']['pooled_paired_ratio'])}, after/main {fmt(entry['order_gate']['median_after_over_main'])}, "
-               f"max arm {fmt(entry['order_gate']['max_arm_paired_ratio'])} ({entry['order_gate']['pairs']} pairs). "
+               f"max arm {fmt(entry['order_gate']['max_arm_paired_ratio'])} ({entry['order_gate']['pairs']} pairs, min {entry['order_gate']['min_pairs_per_arm']} per arm, required {entry['order_gate']['required_pairs_per_arm']}). "
                f"Parity: {par}.", '']
         r = entry['row']
         md += [f"**Row ({entry['selection']}).** accurate `{r['accurate']}` {fmt(r['accurate_worst_pct'])} % @ "

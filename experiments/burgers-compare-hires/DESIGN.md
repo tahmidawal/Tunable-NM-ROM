@@ -199,3 +199,15 @@ no completion flag, and cannot be the accepted $2048^2$ panel; it is kept as a r
 `p2048c` reruns the whole $2048^2$ panel in one H200 allocation, unchanged otherwise; the FNO it times is
 `p2048b`'s in-job checkpoint, picked up through the A3 path (re-hashed against the SHA256 its training recorded).
 No number from `p2048b` is quoted as a result.
+
+## A6 (2026-09-23 ~11:20 EDT) — p2048b killed (host memory) during in-job FNO training; FNO salvaged; p2048c failed; p2048e
+
+- `p2048b` (4207177) ended OUT_OF_MEMORY (251 GB RSS against 240 GB) inside the in-job FNO training, after 19 completed
+  epochs and 2897 s of its 3000 s budget, before `train.py`'s closing re-score. `best.pt` (the training loop's own
+  best-validation checkpoint, epoch 18) is **salvaged** (`cluster/salvage_fno.py`: SHA256, embedded epoch and history
+  checked; stop reason recorded as the kill). Its FNO row therefore had 97 % of the budget, not 100 %, and says so.
+- `p2048c` (4215837, pax008) died silently during the POD-512 quick run (FAILED exit 1, empty stderr; MaxRSS 182 GB
+  sampled, node near its free-memory floor). `p2048d` (4218300) was cancelled while PENDING when A6 made its late
+  pickup unnecessary.
+- `p2048e`: the full $2048^2$ panel, unchanged, **--mem 400G**, all five operators staged from committed records
+  (no late pickup, no in-job training).

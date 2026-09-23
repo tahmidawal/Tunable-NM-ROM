@@ -1,0 +1,244 @@
+host=pax010 source_commit=3ac59bb9a3a57c185586b4369a08624629ecefd5
+NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534, 143771 MiB
+10.235.106.34:/projects/paralab  4.6T  4.3T  338G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 4190209 rows in 1 blocks 7.8
+TRUTH 0 10.5
+TRUTH 1 12.6
+TRUTH 2 15.3
+TRUTH 3 17.9
+TRUTH 4 20.3
+TRUTH 5 22.1
+QUICK fft_tight evolved% 0.0 stalled 0 8.6 88.6
+QUICK nt1e-4_dt005 evolved% 0.0334 stalled 0 5.5 94.0
+QUICK nt1e-3_dt005 evolved% 0.054 stalled 0 5.0 99.1
+QUICK nt1e-2_dt005 evolved% 4.3716 stalled 0 6.9 106.0
+QUICK nt1e-4_dt01 evolved% 1.6507 stalled 0 15.0 121.0
+QUICK nt1e-3_dt01 evolved% 1.6493 stalled 0 6.1 127.2
+QUICK nt1e-2_dt01 evolved% 3.5129 stalled 0 5.1 132.3
+QUICK lean_tight evolved% 0.0 stalled 0 11.0 143.3
+QUICK lean_nt1e-4_dt005 evolved% 0.0334 stalled 0 12.4 155.7
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0543 stalled 0 5.3 161.0
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0494 stalled 0 4.9 166.0
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1615 stalled 0 5.8 171.8
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6501 stalled 0 4.8 176.6
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6651 stalled 0 9.9 186.6
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6773 stalled 0 11.3 197.9
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.3714 stalled 0 13.2 220.3
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5979 stalled 0 16.6 245.2
+TIMED F rep 0 349.4
+TIMED F rep 1 432.0
+TIMED F rep 2 514.4
+TIMED F rep 3 596.6
+TIMED F rep 4 679.1
+QUICK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5979 stalled 0 25.8 705.1
+BLOCK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 791.9
+QUICK bank512_M2048_lat64_g1em06 evolved% 0.2907 stalled 0 9.3 808.4
+BANKSPAN RHO bank512_M2048_lat64_g1em06 0.0573 ok 814.7
+BLOCK bank512_M2048_lat64_g1em06 838.6
+QUICK bank512_M2048_lat128_g1em06 evolved% 0.2909 stalled 0 8.4 854.0
+BANKSPAN RHO bank512_M2048_lat128_g1em06 0.5058 exceeds 860.4
+BLOCK bank512_M2048_lat128_g1em06 891.0
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.2195 stalled 0 8.7 905.8
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.0777 ok 910.3
+BLOCK bank384_M1536_lat64_g1em06 932.5
+QUICK bank384_M1536_lat128_g1em06 evolved% 0.2194 stalled 0 7.4 944.3
+BANKSPAN RHO bank384_M1536_lat128_g1em06 0.4145 exceeds 948.8
+BLOCK bank384_M1536_lat128_g1em06 975.2
+QUICK bank256_M1024_lat64_g1em06 evolved% 0.7293 stalled 0 7.4 988.5
+BANKSPAN RHO bank256_M1024_lat64_g1em06 0.078 ok 992.4
+BLOCK bank256_M1024_lat64_g1em06 1012.9
+QUICK bank256_M1024_lat128_g1em06 evolved% 0.7282 stalled 0 6.8 1023.8
+BANKSPAN RHO bank256_M1024_lat128_g1em06 0.3521 exceeds 1027.2
+BLOCK bank256_M1024_lat128_g1em06 1050.5
+QUICK bank128_M512_lat64_g1em06 evolved% 1.8716 stalled 0 7.3 1063.0
+BANKSPAN RHO bank128_M512_lat64_g1em06 0.0479 ok 1066.4
+BLOCK bank128_M512_lat64_g1em06 1085.2
+QUICK bank128_M512_lat128_g1em06 evolved% 1.8719 stalled 0 6.2 1095.3
+BANKSPAN RHO bank128_M512_lat128_g1em06 0.1624 exceeds 1097.8
+BLOCK bank128_M512_lat128_g1em06 1118.2
+SNAPSHOTS (4190209, 3328) 752.6 1870.9
+POD 512 123.8 1994.8
+QUICK pod16_M64_dense_armsTwin evolved% 29.3744 stalled 0 9.9 2039.2
+QUICK pod16_M64_dense evolved% 29.3744 stalled 0 7.9 2050.4
+GRID PARITY pod16_M64_dense 1.310e-15 integers True
+BLOCK pod16_M64_dense 2078.6
+QUICK pod64_M256_dense evolved% 7.4711 stalled 0 16.7 2101.5
+BLOCK pod64_M256_dense 2161.6
+QUICK pod256_M1024_dense evolved% 1.1681 stalled 0 121.2 2313.1
+BLOCK pod256_M1024_dense 2893.1
+QUICK pod512_M2048_dense evolved% 0.4876 stalled 0 419.5 3319.6
+BLOCK pod512_M2048_dense 5398.2
+QMAN r 16 ridge 0.01 |W| 0.009323 heldout 0.123232 lin/quad 0.140193 0.077261 65.5 5490.6
+QUICK qman16_quad_M64_armsTwin evolved% 22.6973 stalled 0 17.6 5520.3
+QUICK qman16_quad_M64 evolved% 22.6973 stalled 0 12.5 5538.1
+GRID PARITY qman16_quad_M64 2.150e-15 integers True
+BLOCK qman16_quad_M64 5596.4
+QMAN r 32 ridge 0.01 |W| 0.009629 heldout 0.060962 lin/quad 0.06322 0.030868 82.3 5699.1
+QUICK qman32_quad_M128 evolved% 13.06 stalled 0 32.8 5740.9
+BLOCK qman32_quad_M128 5870.8
+CMP FAILED (operators and audit still run)
+torch_cuda True NVIDIA H200
+jax_backend=gpu x64=True
+CASE train burgers-train-00000 1.77
+CASE train burgers-train-00001 0.53
+CASE train burgers-train-00002 0.58
+CASE train burgers-train-00003 0.91
+CASE train burgers-train-00004 1.1
+CASE train burgers-train-00005 0.71
+CASE train burgers-train-00006 1.09
+CASE train burgers-train-00007 1.07
+CASE train burgers-train-00008 0.62
+CASE train burgers-train-00009 1.05
+CASE train burgers-train-00010 1.04
+CASE train burgers-train-00011 0.4
+CASE train burgers-train-00012 0.57
+CASE train burgers-train-00013 0.92
+CASE train burgers-train-00014 0.87
+CASE train burgers-train-00015 0.44
+CASE train burgers-train-00016 0.72
+CASE train burgers-train-00017 0.88
+CASE train burgers-train-00018 0.53
+CASE train burgers-train-00019 0.77
+CASE train burgers-train-00020 1.15
+CASE train burgers-train-00021 0.66
+CASE train burgers-train-00022 0.74
+CASE train burgers-train-00023 1.16
+CASE train burgers-train-00024 0.56
+CASE train burgers-train-00025 1.53
+CASE train burgers-train-00026 1.42
+CASE train burgers-train-00027 0.69
+CASE train burgers-train-00028 1.31
+CASE train burgers-train-00029 1.28
+CASE train burgers-train-00030 1.37
+CASE train burgers-train-00031 1.04
+CASE train burgers-train-00032 0.51
+CASE train burgers-train-00033 0.48
+CASE train burgers-train-00034 0.77
+CASE train burgers-train-00035 0.32
+CASE train burgers-train-00036 0.77
+CASE train burgers-train-00037 0.8
+CASE train burgers-train-00038 0.74
+CASE train burgers-train-00039 1.22
+CASE train burgers-train-00040 0.71
+CASE train burgers-train-00041 0.92
+CASE train burgers-train-00042 0.94
+CASE train burgers-train-00043 1.09
+CASE train burgers-train-00044 0.44
+CASE train burgers-train-00045 0.68
+CASE train burgers-train-00046 1.01
+CASE train burgers-train-00047 0.42
+CASE train burgers-train-00048 0.79
+CASE train burgers-train-00049 0.78
+CASE train burgers-train-00050 0.59
+CASE train burgers-train-00051 1.06
+CASE train burgers-train-00052 1.09
+CASE train burgers-train-00053 0.88
+CASE train burgers-train-00054 0.65
+CASE train burgers-train-00055 0.68
+CASE train burgers-train-00056 1.17
+CASE train burgers-train-00057 1.04
+CASE train burgers-train-00058 0.73
+CASE train burgers-train-00059 0.85
+CASE train burgers-train-00060 1.65
+CASE train burgers-train-00061 0.68
+CASE train burgers-train-00062 0.65
+CASE train burgers-train-00063 0.86
+CASE train burgers-train-00064 0.72
+CASE train burgers-train-00065 0.71
+CASE train burgers-train-00066 0.81
+CASE train burgers-train-00067 0.66
+CASE train burgers-train-00068 0.41
+CASE train burgers-train-00069 0.57
+CASE train burgers-train-00070 0.78
+CASE train burgers-train-00071 0.71
+CASE train burgers-train-00072 0.65
+CASE train burgers-train-00073 0.65
+CASE train burgers-train-00074 0.59
+CASE train burgers-train-00075 1.17
+CASE train burgers-train-00076 0.53
+CASE train burgers-train-00077 0.74
+CASE train burgers-train-00078 0.53
+CASE train burgers-train-00079 1.29
+CASE train burgers-train-00080 1.01
+CASE train burgers-train-00081 0.84
+CASE train burgers-train-00082 0.56
+CASE train burgers-train-00083 0.79
+CASE train burgers-train-00084 1.08
+CASE train burgers-train-00085 0.72
+CASE train burgers-train-00086 1.02
+CASE train burgers-train-00087 0.93
+CASE train burgers-train-00088 0.88
+CASE train burgers-train-00089 0.9
+CASE train burgers-train-00090 0.74
+CASE train burgers-train-00091 0.66
+CASE train burgers-train-00092 1.05
+CASE train burgers-train-00093 1.19
+CASE train burgers-train-00094 0.78
+CASE train burgers-train-00095 0.63
+CASE train burgers-train-00096 0.74
+CASE train burgers-train-00097 0.69
+CASE train burgers-train-00098 0.85
+CASE train burgers-train-00099 1.14
+CASE train burgers-train-00100 1.04
+CASE train burgers-train-00101 0.95
+CASE train burgers-train-00102 0.72
+CASE train burgers-train-00103 0.72
+CASE train burgers-train-00104 0.64
+CASE train burgers-train-00105 0.56
+CASE train burgers-train-00106 0.61
+CASE train burgers-train-00107 0.6
+CASE train burgers-train-00108 0.75
+CASE train burgers-train-00109 1.16
+CASE train burgers-train-00110 0.67
+CASE train burgers-train-00111 0.89
+CASE train burgers-train-00112 0.84
+CASE train burgers-train-00113 0.88
+CASE train burgers-train-00114 0.87
+CASE train burgers-train-00115 0.82
+CASE train burgers-train-00116 0.63
+CASE train burgers-train-00117 0.84
+CASE train burgers-train-00118 0.45
+CASE train burgers-train-00119 0.96
+CASE train burgers-train-00120 1.02
+CASE train burgers-train-00121 0.62
+CASE train burgers-train-00122 0.94
+CASE train burgers-train-00123 0.5
+CASE train burgers-train-00124 0.86
+CASE train burgers-train-00125 0.9
+CASE train burgers-train-00126 0.59
+CASE train burgers-train-00127 1.05
+CASE validation burgers-validation-00000 0.72
+CASE validation burgers-validation-00001 0.76
+CASE validation burgers-validation-00002 0.54
+CASE validation burgers-validation-00003 0.5
+CASE validation burgers-validation-00004 0.64
+CASE validation burgers-validation-00005 1.29
+CASE validation burgers-validation-00006 1.24
+CASE validation burgers-validation-00007 0.74
+CASE validation burgers-validation-00008 0.71
+CASE validation burgers-validation-00009 0.6
+CASE validation burgers-validation-00010 1.01
+CASE validation burgers-validation-00011 0.44
+CASE validation burgers-validation-00012 0.81
+CASE validation burgers-validation-00013 0.61
+CASE validation burgers-validation-00014 0.88
+CASE validation burgers-validation-00015 0.43
+CASE validation burgers-validation-00016 0.41
+CASE validation burgers-validation-00017 0.91
+CASE validation burgers-validation-00018 1.51
+CASE validation burgers-validation-00019 1.43
+CASE validation burgers-validation-00020 0.97
+CASE validation burgers-validation-00021 0.7
+CASE validation burgers-validation-00022 0.57
+CASE validation burgers-validation-00023 0.56
+CASE validation burgers-validation-00024 0.66
+CASE validation burgers-validation-00025 0.53
+CASE validation burgers-validation-00026 0.49
+CASE validation burgers-validation-00027 0.5
+CASE validation burgers-validation-00028 0.76
+CASE validation burgers-validation-00029 0.46
+CASE validation burgers-validation-00030 0.85
+CASE validation burgers-validation-00031 0.89
+OPDATA DONE {"mesh": 2048, "dt": 0.005, "ntol": 1e-06, "ltol": 1e-08, "solver": "iterative_paths.make_fom(L, dt, \"fft\") = fft_tight", "dev6_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a", "splits": {"train": {"cases": 128, "source_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49", "index_sha256": "8e4d0fbcd865136ff3e54743d34a833e908f58f76921b729dd87ccf386e0183e", "median_seconds": 0.7813750349450856, "max_seconds": 1.7664146171882749, "worst_relative_residual": 9.99203622613072e-07}, "validation": {"cases": 32, "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad", "index_sha256": "fd8e5ebf8a95aa114412b2968c167f2c7d616e1db4b2a71592eeede0b5c9b642", "median_seconds": 0.702908773906529, "max_seconds": 1.5067068552598357, "worst_relative_residual": 9.990318413300448e-07}}}

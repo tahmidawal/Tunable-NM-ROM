@@ -58,6 +58,26 @@
  },
  "operators": [
   {
+   "name": "fno-large",
+   "family": "fno",
+   "role": "the 256^2 panel's validation-selected fno configuration, retrained at 2048^2 (inside p2048b's H200 allocation)",
+   "local_path": "experiments/burgers-compare-hires/runs/p2048b/archive/out/fno-large/best.pt",
+   "sha256": "c51c689b79d3b5ae4bbb2787f7237931e03b87b32eb69f8632f12fc8864ebf0e",
+   "source_job": "4207177 (p2048b, in-job training, DESIGN A4/A6)",
+   "trained_at": "2048^2",
+   "epochs": 19,
+   "best_epoch": 18,
+   "stop_reason": "killed (host memory) after 19 completed epochs, 2897 s of the 3000 s budget",
+   "wall_budget_seconds": 3000,
+   "training_seconds": 2897.3974016210996,
+   "micro_batch_final": null,
+   "validation_mean_case_max": 0.060445553375523146,
+   "validation_worst_case_max": 0.14365063605664166,
+   "real_parameter_count": 17877317,
+   "salvaged": true,
+   "history_sha256": "40075361435d432a3a193fdf753e168dae8596f65547f4fe64814aaafc61933f"
+  },
+  {
    "name": "unet-refine",
    "family": "unet",
    "role": "the 256^2 panel's validation-selected unet configuration, retrained at 2048^2",
@@ -123,19 +143,6 @@
    "stop_reason": null
   }
  ],
- "failed": [
-  {
-   "name": "fno-large",
-   "family": "fno",
-   "failed": true,
-   "exit_code": 1
-  },
-  {
-   "name": "fno-large",
-   "family": "fno",
-   "failed": true,
-   "exit_code": 1
-  }
- ],
+ "failed": [],
  "note": "local_path is relative to the repository root of this worktree (checkpoints are git-ignored)"
 }

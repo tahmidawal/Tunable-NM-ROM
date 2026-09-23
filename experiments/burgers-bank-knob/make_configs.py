@@ -188,7 +188,12 @@ def explore(L):
 def main():
     (HERE / 'config-x2048.json').write_text(json.dumps(explore(2048), indent=1) + '\n')
     if (HERE / 'selection-4096.json').exists():
-        (HERE / 'config-h64.json').write_text(json.dumps(hold64(), indent=1) + '\n')
+        h = hold64()
+        (HERE / 'config-h64.json').write_text(json.dumps(h, indent=1) + '\n')
+        # A100-80G variant (coordinator, 2026-09-23 16:20: H200s saturated): the 64 GiB rotated bank in 32 row blocks of
+        # 2 GiB so the build transient stays ~4 GiB; identical arms, cohort and FOM grid; GPU differs from the dev job
+        h2 = dict(h, bank_blocks=32, gpu_note='A100-80G (the dev6 selection job bk4096b ran on an H200)')
+        (HERE / 'config-h64a.json').write_text(json.dumps(h2, indent=1) + '\n')
     for L in (256, 512, 1024, 2048, 4096):
         (HERE / f'config-{L}.json').write_text(json.dumps(base(L, f'bk{L}'), indent=1) + '\n')
     (HERE / 'config-smoke128.json').write_text(json.dumps(smoke(), indent=1) + '\n')

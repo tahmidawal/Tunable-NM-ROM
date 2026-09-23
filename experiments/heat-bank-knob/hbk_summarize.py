@@ -84,7 +84,11 @@ for mesh in res['meshes']:
                                      fast_meets_rule_on_heldout=hf['err_worst'] <= href_err,
                                      fom=fom and dict(method=fom['method'], err_worst=fom['err_worst'], ms=fom['ms_median']),
                                      speedup_accurate=fom and fom['ms_median'] / ha['ms_median'], speedup_fast=fom and fom['ms_median'] / hf['ms_median'],
-                                     failures=ha['failures'] + hf['failures']))
+                                     failures=ha['failures'] + hf['failures'],
+                                     no_comparator=fom is None,
+                                     most_accurate_fom_LESS_ACCURATE=None if fom is not None else (lambda f: dict(method=f['method'], err_worst=f['err_worst'], ms=f['ms_median'],
+                                         speedup_accurate=f['ms_median'] / ha['ms_median'], speedup_fast=f['ms_median'] / hf['ms_median']))(
+                                         min([r for r in R[held].values() if r['group'] == 'fom' and r['failures'] == 0], key=lambda r: (r['err_worst'], r['ms_median'])))))
     # every arm vs its own matched FOM (held-out and validation)
     for c in cohorts:
         for m, r in R[c].items():

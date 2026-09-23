@@ -24,6 +24,9 @@ for job, label in JOBS:
                 '|---|---|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---|']
         for fam, s in m['selection'].items():
             h = s['heldout']; fom = h['fom'] or {}
+            if h.get('no_comparator'):
+                x = h['most_accurate_fom_LESS_ACCURATE']
+                out.append(f"| {FAMS[fam]} | (no tested FOM is as accurate as `{s['accurate']}`; vs the most accurate tested FOM `{x['method']}`, {pct(x['err_worst'])} % — LESS accurate than the arm) | | | | | | | | `{x['method']}` | {pct(x['err_worst'])} | {x['ms']:.2f} | acc x{x['speedup_accurate']:.2f} / fast x{x['speedup_fast']:.2f} | |")
             for role in ('accurate', 'fast'):
                 a = h[role]
                 out.append(f"| {FAMS[fam]} | {role} | `{s[role]}` | {a['R']} | {a['q']} | {pct(s['validation'][role]['err_worst'])} | {pct(a['err_worst'])} | {pct(a['err_median'])} | {a['ms_median']:.3f} | "
@@ -32,7 +35,8 @@ for job, label in JOBS:
                                           heldout_err_median_pct=100 * a['err_median'], heldout_err_evolved_worst_pct=100 * a['err_evolved_worst'], gpu_ms=a['ms_median'],
                                           fom=fom.get('method'), fom_err_pct=100 * fom['err_worst'] if fom else None, fom_ms=fom.get('ms'), speedup=h['speedup_' + role],
                                           validation_err_worst_pct=100 * s['validation'][role]['err_worst'], paper_fast_heldout_err_pct=100 * h['paper_fast_err'],
-                                          fast_rule_met_heldout=h['fast_meets_rule_on_heldout'], failures=a['failures'], usable=g['usable'] and a['failures'] == 0))
+                                          fast_rule_met_heldout=h['fast_meets_rule_on_heldout'], failures=a['failures'], usable=g['usable'] and a['failures'] == 0,
+                                          no_comparator=h.get('no_comparator', False), vs_most_accurate_LESS_ACCURATE_fom=h.get('most_accurate_fom_LESS_ACCURATE')))
         out += ['', f"Full held-out table ({held}): every (R', q, stepping) arm. `x T1` = the family's Table-1 FOM time / arm time; `x own` = fastest FOM at least as accurate as the arm; `x named` = CN-CG dt 0.025 rtol 1e-6.", '',
                 "| arm | R' | q | stepping | worst % | median % | GPU ms (p10-p90) | fails | x T1 | own FOM | x own | x named |", '|---|---:|---:|---|---:|---:|---:|---:|---:|---|---:|---:|']
         t1 = {fam: (s['heldout']['fom'] or {}).get('ms') for fam, s in m['selection'].items()}

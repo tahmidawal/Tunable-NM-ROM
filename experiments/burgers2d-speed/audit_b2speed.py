@@ -471,6 +471,12 @@ def main():
                              accurate_speedup=(foms[f]['median_gpu_ms'] / ktab[acc]['median_gpu_ms']) if f else None,
                              fast_speedup=(foms[f]['median_gpu_ms'] / ktab[fast]['median_gpu_ms']) if f and fast else None)
     # the parent's Table-1 settings measured in this job (before): parent text, default compile
+    def twin_knob(n, t):
+        """The engineered knob a parent arm realises: an LM budget of 1 is the cap-1 knob (Codex results audit)."""
+        k = list(t['knob'])
+        if '_budget1' in n:
+            k[-1] = 1
+        return k
     before = {}
     for n, t in table.items():
         if t['family'] == 'rom' and t.get('impl') == 'parent':
@@ -481,7 +487,8 @@ def main():
                              engineered_same_knob={m: dict(ms=table[m]['median_gpu_ms'],
                                                            factor=t['median_gpu_ms'] / table[m]['median_gpu_ms'])
                                                    for m in table if table[m]['family'] == 'rom' and m != n
-                                                   and table[m].get('knob') == t['knob'] and table[m]['timed']})
+                                                   and table[m].get('impl') == 'eng' and table[m]['timed']
+                                                   and table[m].get('knob') == twin_knob(n, t)})
     sel['parent_settings_this_job'] = before
     # coordinator: general path vs fast path (paper section 6.3)
     gen = next((n for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'general'), None)

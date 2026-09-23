@@ -4,30 +4,38 @@ Status: **PROVISIONAL (3 of 3 dev6 meshes, 0 of 3 held-out meshes landed)**. Sam
 
 ## Table-1 rows: before (parent settings, parent code) and after (this lane), dev6
 
-| mesh | row | setting | worst evolved error | GPU ms | speedup vs FOM | iterations per case |
-|---|---|---|---|---|---|---|
-| $256^2$ | before | R'=384 linear, exact 1st step [parent] | 0.166 % | 125.6 | 0.13× | [53, 53, 50, 54, 45, 51] |
-| $256^2$ | before | R'=128 linear, exact 1st step [parent] | 1.597 % | 31.9 | 0.53× | [42, 47, 32, 40, 32, 37] |
-| $256^2$ | before | R'=512 q=0 head, no exact step [parent] | 1.889 % | 32.5 | 0.52× | [92, 101, 90, 87, 60, 75] |
-| $256^2$ | **after, accurate** | R'=384 linear, no exact step [eng_graphs] (graphs compile) | 0.166 % | 45.7 | **0.37×** | [53, 53, 50, 54, 45, 51] |
-| $256^2$ | **after, fast** | R'=128 linear, no exact step [eng_graphs] (graphs compile) | 1.597 % | 17.4 | **0.97×** | [42, 47, 32, 40, 32, 37] |
-| $256^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.048 % | 16.9 | 1× | |
-| $512^2$ | before | R'=384 linear, exact 1st step [parent] | 0.195 % | 233.3 | 0.12× | [53, 53, 49, 55, 45, 51] |
-| $512^2$ | before | R'=128 linear, exact 1st step [parent] | 1.748 % | 43.9 | 0.63× | [42, 47, 33, 40, 32, 37] |
-| $512^2$ | before | R'=512 q=0 head, no exact step [parent] | 2.138 % | 34.3 | 0.81× | [86, 99, 94, 91, 60, 75] |
-| $512^2$ | **after, accurate** | R'=384 linear, no exact step [eng] (default compile) | 0.195 % | 45.9 | **0.60×** | [53, 53, 49, 54, 45, 51] |
-| $512^2$ | **after, fast** | R'=128 linear, no exact step [eng] (default compile) | 1.748 % | 17.4 | **1.59×** | [42, 47, 33, 40, 32, 37] |
-| $512^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.050 % | 27.7 | 1× | |
-| $1024^2$ | before | R'=384 linear, no exact step [parent] | 0.211 % | 81.9 | 0.88× | [57, 55, 53, 57, 52, 52] |
-| $1024^2$ | before | R'=128 linear, no exact step [parent] | 1.828 % | 31.6 | 2.28× | [51, 55, 52, 52, 50, 51] |
-| $1024^2$ | before | R'=512 q=0 head, no exact step [parent] | 2.288 % | 35.6 | 2.02× | [85, 99, 97, 85, 60, 75] |
-| $1024^2$ | **after, accurate** | R'=384 linear, no exact step [eng] (default compile) | 0.211 % | 49.5 | **1.46×** | [57, 55, 53, 57, 52, 52] |
-| $1024^2$ | **after, fast** | R'=128 linear, no exact step [eng_graphs] (graphs compile) | 1.828 % | 21.3 | **3.39×** | [51, 55, 52, 52, 50, 51] |
-| $1024^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.048 % | 72.1 | 1× | |
+Table-1 convention: one FOM time per mesh (the fastest FOM setting and compile mode at least as accurate as the accurate row) divides BOTH rows. The last column instead divides by the fastest FOM at least as accurate as that row itself. "Before" rows are the parent lane's Table-1 settings replayed in the same allocation with the parent code (default compile); "after" combines the deployment change (the exact first step is dropped at $256^2$/$512^2$) with the engineering (same iterates at a given setting).
 
-- $256^2$: job 4241033 on NVIDIA A100 80GB PCIe (`pax106`), commit `90490ed2`, all gates pass; summary sha256 `b76277b3e85eca7c…`; fast bar (the $q=0$ setting re-measured) 1.889 %; knobs 22, confirmed 13.
-- $512^2$: job 4241035 on NVIDIA A100 80GB PCIe (`pax105`), commit `90490ed2`, all gates pass; summary sha256 `e9f16a1346bfaf93…`; fast bar (the $q=0$ setting re-measured) 2.138 %; knobs 22, confirmed 20.
-- $1024^2$: job 4241031 on NVIDIA A100 80GB PCIe (`pax049`), commit `90490ed2`, all gates pass; summary sha256 `be327a9e73f60d0a…`; fast bar (the $q=0$ setting re-measured) 2.288 %; knobs 12, confirmed 12.
+| mesh | row | setting | worst evolved error | GPU ms | speedup vs FOM (Table-1) | vs FOM as accurate as the row | iterations per case |
+|---|---|---|---|---|---|---|---|
+| $256^2$ | before | R'=384 linear, exact 1st step [parent] | 0.166 % | 125.6 | 0.13× | | [53, 53, 50, 54, 45, 51] |
+| $256^2$ | before | R'=128 linear, exact 1st step [parent] | 1.597 % | 31.9 | 0.53× | | [42, 47, 32, 40, 32, 37] |
+| $256^2$ | before | R'=512 q=0 head, no exact step [parent] | 1.889 % | 32.5 | 0.52× | | [92, 101, 90, 87, 60, 75] |
+| $256^2$ | **after, accurate** | R'=384 linear, no exact step [eng_graphs] (graphs compile) | 0.166 % | 45.7 | **0.37×** | 0.37× (`lean_nt3e-3_l3e-3_dt005__graphs`) | [53, 53, 50, 54, 45, 51] |
+| $256^2$ | **after, fast** | R'=128 linear, no exact step [eng_graphs] (graphs compile) | 1.597 % | 17.4 | **0.97×** | 0.50× (`lean_nt1e-2_l1e-2_dt01__graphs`) | [42, 47, 32, 40, 32, 37] |
+| $256^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.048 % | 16.9 | 1× | | |
+| $512^2$ | before | R'=384 linear, exact 1st step [parent] | 0.195 % | 233.3 | 0.12× | | [53, 53, 49, 55, 45, 51] |
+| $512^2$ | before | R'=128 linear, exact 1st step [parent] | 1.748 % | 43.9 | 0.63× | | [42, 47, 33, 40, 32, 37] |
+| $512^2$ | before | R'=512 q=0 head, no exact step [parent] | 2.138 % | 34.3 | 0.81× | | [86, 99, 94, 91, 60, 75] |
+| $512^2$ | **after, accurate** | R'=384 linear, no exact step [eng] (default compile) | 0.195 % | 45.9 | **0.60×** | 0.60× (`lean_nt3e-3_l3e-3_dt005__graphs`) | [53, 53, 49, 54, 45, 51] |
+| $512^2$ | **after, fast** | R'=128 linear, no exact step [eng] (default compile) | 1.748 % | 17.4 | **1.59×** | 0.82× (`lean_nt1e-2_l1e-2_dt01`) | [42, 47, 33, 40, 32, 37] |
+| $512^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.050 % | 27.7 | 1× | | |
+| $1024^2$ | before | R'=384 linear, no exact step [parent] | 0.211 % | 81.9 | 0.88× | | [57, 55, 53, 57, 52, 52] |
+| $1024^2$ | before | R'=128 linear, no exact step [parent] | 1.828 % | 31.6 | 2.28× | | [51, 55, 52, 52, 50, 51] |
+| $1024^2$ | before | R'=512 q=0 head, no exact step [parent] | 2.288 % | 35.6 | 2.02× | | [85, 99, 97, 85, 60, 75] |
+| $1024^2$ | **after, accurate** | R'=384 linear, no exact step [eng] (default compile) | 0.211 % | 49.5 | **1.46×** | 1.46× (`lean_nt3e-3_l3e-3_dt005__graphs`) | [57, 55, 53, 57, 52, 52] |
+| $1024^2$ | **after, fast** | R'=128 linear, no exact step [eng_graphs] (graphs compile) | 1.828 % | 21.3 | **3.39×** | 1.77× (`lean_nt1e-2_l1e-2_dt01__graphs`) | [51, 55, 52, 52, 50, 51] |
+| $1024^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` (fastest setting+mode at least as accurate as the accurate row) | 0.048 % | 72.1 | 1× | | |
+
+- $256^2$ fast near-tie (within 5 % in time, DESIGN §6): R'=128 linear, exact 1st step [eng_graphs], 1.597 %, 18.22 ms against the selected 17.44 ms.
+- $256^2$ accurate: dropping the exact first step changes the worst evolved error by 1.19e-08 percentage points (with x1 0.1656174424 %, without 0.1656174305 %) — a tie in substance, decided by the rule's error ordering; time 48.1 → 45.7 ms.
+- $256^2$ fast: dropping the exact first step changes the worst evolved error by -2.70e-08 percentage points (with x1 1.5967684778 %, without 1.5967685048 %) — a tie in substance; the fast row is decided by time; time 18.2 → 17.4 ms.
+- $512^2$ accurate: dropping the exact first step changes the worst evolved error by 5.68e-09 percentage points (with x1 0.1946611005 %, without 0.1946610948 %) — a tie in substance, decided by the rule's error ordering; time 56.0 → 45.9 ms.
+- $512^2$ fast: dropping the exact first step changes the worst evolved error by -7.21e-09 percentage points (with x1 1.7479877097 %, without 1.7479877169 %) — a tie in substance; the fast row is decided by time; time 20.7 → 17.4 ms.
+
+- $256^2$: job 4241033 on NVIDIA A100 80GB PCIe (`pax106`), commit `90490ed2`, all gates pass; summary sha256 `8dca51388f110595…`; fast bar (the $q=0$ setting re-measured) 1.889 %; knobs 22, confirmed 13.
+- $512^2$: job 4241035 on NVIDIA A100 80GB PCIe (`pax105`), commit `90490ed2`, all gates pass; summary sha256 `a9f3d94f41ac4932…`; fast bar (the $q=0$ setting re-measured) 2.138 %; knobs 22, confirmed 20.
+- $1024^2$: job 4241031 on NVIDIA A100 80GB PCIe (`pax049`), commit `90490ed2`, all gates pass; summary sha256 `4a04df35b19be0e0…`; fast bar (the $q=0$ setting re-measured) 2.288 %; knobs 12, confirmed 12.
 
 ## Held-out confirmation (hold64, frozen dev6 picks, reported as measured)
 
@@ -72,18 +80,18 @@ Parity: the engineered arm against the parent code at the same setting (and ever
 | $256^2$ | R'=384 linear, exact 1st step [parent] | 125.6 | 48.3 | 48.1 | 2.61× |
 | $256^2$ | R'=128 linear, exact 1st step [parent] | 31.9 | 18.5 | 18.2 | 1.75× |
 | $256^2$ | R'=512 q=0 head, no exact step [parent] | 32.5 | 32.2 | 31.7 | 1.02× |
-| $256^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 26.2 | 17.5 | 17.4 | 1.50× |
-| $256^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 24.8 | 32.2 | 31.7 | 0.78× |
+| $256^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 26.2 | 17.0 | 17.1 | 1.54× |
+| $256^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 24.8 | 21.1 | 21.0 | 1.18× |
 | $512^2$ | R'=384 linear, exact 1st step [parent] | 233.3 | 56.4 | 56.0 | 4.17× |
 | $512^2$ | R'=128 linear, exact 1st step [parent] | 43.9 | 20.9 | 20.7 | 2.13× |
 | $512^2$ | R'=512 q=0 head, no exact step [parent] | 34.3 | 34.3 | 33.8 | 1.01× |
-| $512^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 26.3 | 17.4 | 17.4 | 1.51× |
-| $512^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 25.9 | 34.3 | 33.8 | 0.77× |
+| $512^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 26.3 | 17.1 | 17.2 | 1.54× |
+| $512^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 25.9 | 22.5 | 22.3 | 1.16× |
 | $1024^2$ | R'=384 linear, no exact step [parent] | 81.9 | 49.5 | 49.6 | 1.65× |
 | $1024^2$ | R'=128 linear, no exact step [parent] | 31.6 | 21.3 | 21.3 | 1.48× |
 | $1024^2$ | R'=512 q=0 head, no exact step [parent] | 35.6 | 35.8 | 34.7 | 1.03× |
-| $1024^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 31.1 | 21.3 | 21.3 | 1.46× |
-| $1024^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 28.0 | 35.8 | 34.7 | 0.81× |
+| $1024^2$ | R'=128 linear, no exact step, LM budget 1 [parent] | 31.1 | 17.9 | 18.1 | 1.73× |
+| $1024^2$ | R'=512 q=0 head, no exact step, LM budget 1 [parent] | 28.0 | 24.5 | 23.8 | 1.18× |
 
 ## Paper §6.3: the fast solver path against the general path it replaced ($1024^2$, dev6, one allocation)
 
@@ -283,14 +291,14 @@ Fast path: Cholesky on the damped normal equation, clipped step, damping carried
 - **NM-ROM**: the nonlinear-manifold reduced-order model; here the frozen Burgers model whose state is a combination of $R'$ columns of a learned, rotated coordinate bank.
 - **FOM**: the full-order model, backward Euler with Newton–BiCGStab on the same mesh; 15 tolerance/time-step settings, each compiled in two modes.
 - **$R'$ (span width)**: how many leading columns of the rotated bank the ROM uses. **Linear rung**: the ROM solves directly for the $R'$ coefficients. **$q=0$ head**: the ROM solves for a 16-dimensional latent code mapped to the coefficients by the trained head.
-- **$M$**: number of sine test functions in the weak residual ($4R'$ here). **$m$**: number of quadrature nodes. **Lattice EQ (`lat64`)**: the empirical-quadrature rule on a uniform $63\times63$ sub-lattice.
+- **$M$**: number of sine test functions in the weak residual ($4R'$ for the linear rung, 64 for the $q=0$ head). **$m$**: number of quadrature nodes. **Lattice EQ (`lat64`)**: the empirical-quadrature rule on a uniform $63\times63$ sub-lattice.
 - **Exact first step (x1)**: the first time step uses the exact all-node residual instead of the quadrature.
 - **LM**: Levenberg–Marquardt, the damped Gauss–Newton solver run at every time step. **LM cap 1**: at most one LM iteration per time step (a deployment knob). **Budget exits**: time steps that ended because the cap was reached before the stopping test was met.
 - **Engineering (E1–E3)**: rewrites that compute the same numbers in a different order (separable test-matrix products, an analytic Jacobian for the exact step). **Compile mode**: `default`, or `graphs` (XLA command buffers/CUDA graphs). Both are applied to ROM and FOM alike; each subject's faster mode is used.
 - **Parity**: the check that engineered code reproduces the parent code's iterates (relative difference and identical integer diagnostics).
 - **Worst evolved error**: the largest over the dev cases of the largest over the five evolved output times of $\lVert u-u_{\rm ref}\rVert/\lVert u_0\rVert$, with $u_{\rm ref}$ the tight FOM on the same mesh.
 - **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases never used for any choice.
-- **Certificate**: the quadrature check $\rho\le 0.116$ on states reached on a separate population (5 draws + 1 confirmation draw); $k\ge\max(j,1)$ is the primary state set, $k\ge j+1$ the stricter reading.
+- **Certificate**: the quadrature check $\rho\le 0.116$ on states reached on a separate population (5 draws + 1 confirmation draw), a population used during selection (hold64 is the fresh confirmation); $k\ge\max(j,1)$ is the primary state set (the initial state excluded), $k\ge j+1$ the states at which the quadrature advection is actually evaluated (for an exact-first-step knob it drops one more state).
 - **Fast bar**: the worst evolved error of the paper's previous fast setting ($R'=512$, $q=0$), re-measured in the same job; the fast row is the cheapest certified setting at least that accurate.
 - **Speedup**: FOM milliseconds divided by ROM milliseconds, with one FOM time per mesh (the fastest FOM setting and mode at least as accurate as the accurate row). **Own speedup**: against the fastest FOM at least as accurate as that knob itself.
 - **A–B–A**: ROM arms timed (A1), then all FOM settings (B), then the ROM arms again (A2). **Drift gate**: A2/A1 median within 1.10. **Neighbour gate**: per subject, time after a long predecessor over time after a short one, case-controlled, at most 1.10.

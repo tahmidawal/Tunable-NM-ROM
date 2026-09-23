@@ -67,8 +67,13 @@ def main():
 
     # ---- headline -------------------------------------------------------------------------------------------
     o += ['## Table-1 rows: before (parent settings, parent code) and after (this lane), dev6', '',
-          '| mesh | row | setting | worst evolved error | GPU ms | speedup vs FOM | iterations per case |',
-          '|---|---|---|---|---|---|---|']
+          'Table-1 convention: one FOM time per mesh (the fastest FOM setting and compile mode at least as accurate as the '
+          'accurate row) divides BOTH rows. The last column instead divides by the fastest FOM at least as accurate as '
+          'that row itself. "Before" rows are the parent lane\'s Table-1 settings replayed in the same allocation with the '
+          'parent code (default compile); "after" combines the deployment change (the exact first step is dropped at '
+          '$256^2$/$512^2$) with the engineering (same iterates at a given setting).', '',
+          '| mesh | row | setting | worst evolved error | GPU ms | speedup vs FOM (Table-1) | vs FOM as accurate as the row | iterations per case |',
+          '|---|---|---|---|---|---|---|---|']
     for L, (s, _) in dev.items():
         se = s['selection']
         t1 = se.get('table1') or {}
@@ -77,15 +82,36 @@ def main():
             if 'budget1' in n:
                 continue
             o.append(f"| ${L}^2$ | before | {short(n)} | {f(b['worst_evolved_percent'])} % | {f(b['median_gpu_ms'], 1)} | "
-                     f"{sp(b['speedup_vs_table1_fom'])} | {b['total_iterations_per_case']} |")
+                     f"{sp(b['speedup_vs_table1_fom'])} | | {b['total_iterations_per_case']} |")
         for k in ('accurate', 'fast'):
             a = se.get(k)
             if a:
                 o.append(f"| ${L}^2$ | **after, {k}** | {short(a['timed_arm'])} ({a['mode']} compile) | "
                          f"{f(a['worst_evolved_percent'])} % | {f(a['median_gpu_ms'], 1)} | "
-                         f"**{sp(t1.get(k + '_speedup'))}** | {a['total_iterations_per_case']} |")
+                         f"**{sp(t1.get(k + '_speedup'))}** | {sp(a['own_speedup'])} (`{a['own_fom']}`) | "
+                         f"{a['total_iterations_per_case']} |")
         o.append(f"| ${L}^2$ | FOM | `{t1.get('fom')}` (fastest setting+mode at least as accurate as the accurate row) | "
-                 f"{f(t1.get('fom_worst_evolved_percent'))} % | {f(t1.get('fom_gpu_ms'), 1)} | 1× | |")
+                 f"{f(t1.get('fom_worst_evolved_percent'))} % | {f(t1.get('fom_gpu_ms'), 1)} | 1× | | |")
+    o.append('')
+    for L, (s, _) in dev.items():
+        se = s['selection']
+        if se.get('fast_near_ties'):
+            for n, v in se['fast_near_ties'].items():
+                o.append(f"- ${L}^2$ fast near-tie (within 5 % in time, DESIGN §6): {short(n)}, {f(v['err'])} %, "
+                         f"{f(v['ms'], 2)} ms against the selected {f(se['fast']['median_gpu_ms'], 2)} ms.")
+        for k in ('accurate', 'fast'):
+            a = se.get(k)
+            if a and not a['exact_steps'] and L <= 512:
+                twin = next((x for x in s['knobs'].values() if x['knob'][:10] == a['knob'][:10]
+                             and x['exact_steps'] == 1 and x['cap'] == a['cap']), None)
+                if twin:
+                    o.append(f"- ${L}^2$ {k}: dropping the exact first step changes the worst evolved error by "
+                             f"{twin['worst_evolved_percent'] - a['worst_evolved_percent']:.2e} percentage points "
+                             f"(with x1 {twin['worst_evolved_percent']:.10f} %, without {a['worst_evolved_percent']:.10f} %)"
+                             + (" — a tie in substance, decided by the rule's error ordering" if k == 'accurate' else
+                                " — a tie in substance; the fast row is decided by time")
+                             + f"; time {f(twin['median_gpu_ms'], 1)} "
+                             f"→ {f(a['median_gpu_ms'], 1)} ms.")
     o.append('')
     for L, (s, sh) in dev.items():
         o.append(f"- ${L}^2$: job {s['job_id']} on {s['gpu']} (`{s['host']}`), commit `{(s['commit'] or '')[:8]}`, "
@@ -211,7 +237,7 @@ def main():
           '- **$R\'$ (span width)**: how many leading columns of the rotated bank the ROM uses. **Linear rung**: the ROM '
           'solves directly for the $R\'$ coefficients. **$q=0$ head**: the ROM solves for a 16-dimensional latent code '
           'mapped to the coefficients by the trained head.',
-          '- **$M$**: number of sine test functions in the weak residual ($4R\'$ here). **$m$**: number of quadrature '
+          '- **$M$**: number of sine test functions in the weak residual ($4R\'$ for the linear rung, 64 for the $q=0$ head). **$m$**: number of quadrature '
           'nodes. **Lattice EQ (`lat64`)**: the empirical-quadrature rule on a uniform $63\\times63$ sub-lattice.',
           '- **Exact first step (x1)**: the first time step uses the exact all-node residual instead of the quadrature.',
           '- **LM**: Levenberg–Marquardt, the damped Gauss–Newton solver run at every time step. **LM cap 1**: at most one '
@@ -227,7 +253,9 @@ def main():
           '- **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases never used for '
           'any choice.',
           '- **Certificate**: the quadrature check $\\rho\\le 0.116$ on states reached on a separate population (5 draws + '
-          '1 confirmation draw); $k\\ge\\max(j,1)$ is the primary state set, $k\\ge j+1$ the stricter reading.',
+          '1 confirmation draw), a population used during selection (hold64 is the fresh confirmation); $k\\ge\\max(j,1)$ is the '
+          'primary state set (the initial state excluded), $k\\ge j+1$ the states at which the quadrature advection is '
+          'actually evaluated (for an exact-first-step knob it drops one more state).',
           '- **Fast bar**: the worst evolved error of the paper\'s previous fast setting ($R\'=512$, $q=0$), re-measured in '
           'the same job; the fast row is the cheapest certified setting at least that accurate.',
           '- **Speedup**: FOM milliseconds divided by ROM milliseconds, with one FOM time per mesh (the fastest FOM '

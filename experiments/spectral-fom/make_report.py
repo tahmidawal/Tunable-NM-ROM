@@ -352,6 +352,24 @@ def main():
         if r['role'] == 'rom_accurate':
             w(f"| ns3d (lane) | {r['mesh']} | {r['job']} | {r['job_id']} | {r['gpu']} | {str(r['commit'])[:10]} | `{r['summary_sha256']}` |")
     w('')
+    w('## Audit scope and review\n')
+    w('- **Poisson (2D, cube).** The audit recomputes every subject\'s error on every case at full resolution, '
+      'against a NumPy dense-sine truth.')
+    w('- **Burgers and heat.** The audit is **partial**.')
+    w('  - Full-grid errors are recomputed only where full fields were kept: case 0, for the ROM arms and one or two '
+      'spectral subjects.')
+    w('  - Every other (subject, case) is checked on a subsampled grid against the driver\'s saved subsampled truth.')
+    w('  - For Burgers, the truth is the paper\'s own FOM, and it is not recomputed independently.')
+    w('- **`check_timing.py`.** It independently recomputes, from the raw invocation records:')
+    w('  - every median, the drift gate, the raw neighbour gate and the case-normalised (T1) neighbour gate;')
+    w('  - the subject × phase × case × repetition inventory, which must have no duplicates or gaps;')
+    w('  - Burgers lane parity, on both arms and every case.')
+    w('  It includes two controls that must be detected. It passes on every accepted and record run.')
+    w('- **Codex review.** An independent read-only codex review (`checks/codex-review1.md`) found no blocker, and no '
+      'numerical mismatch in two recomputed rows. Its disposition is in `checks/codex-review1-disposition.md`.')
+    w('- **Burgers DST choice.** The DST implementation inside the Burgers $H^{-1}$ was chosen per mesh by a short, '
+      'untimed, fixed-order micro-benchmark with no burn-in, so a sub-optimal choice there would only make the '
+      'spectral side slower. The chosen variant is listed per mesh.\n')
     w('## Glossary\n')
     for k, v in (
         ('NM-ROM', 'the paper\'s reduced model: a frozen spatial bank G, with a query solving for a few coefficients.'),

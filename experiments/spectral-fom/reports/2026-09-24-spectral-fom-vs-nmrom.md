@@ -223,6 +223,21 @@ No spectral arm. The Dirichlet Laplacian on the L-shaped domain is not diagonali
 | ns3d (lane) | 96 | a3_h96 | 4198101 | NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB | 229cbc5ff5 | `4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af` |
 | ns3d (lane) | 96 | b2_heldout96 | 4202872 | NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB | 446c25dca4 | `326c60413f95da9144b47b4e251d5a0f350c98bda688a3a7f0ef1f08b1fc3f2d` |
 
+## Audit scope and review
+
+- **Poisson (2D, cube).** The audit recomputes every subject's error on every case at full resolution, against a NumPy dense-sine truth.
+- **Burgers and heat.** The audit is **partial**.
+  - Full-grid errors are recomputed only where full fields were kept: case 0, for the ROM arms and one or two spectral subjects.
+  - Every other (subject, case) is checked on a subsampled grid against the driver's saved subsampled truth.
+  - For Burgers, the truth is the paper's own FOM, and it is not recomputed independently.
+- **`check_timing.py`.** It independently recomputes, from the raw invocation records:
+  - every median, the drift gate, the raw neighbour gate and the case-normalised (T1) neighbour gate;
+  - the subject × phase × case × repetition inventory, which must have no duplicates or gaps;
+  - Burgers lane parity, on both arms and every case.
+  It includes two controls that must be detected. It passes on every accepted and record run.
+- **Codex review.** An independent read-only codex review (`checks/codex-review1.md`) found no blocker, and no numerical mismatch in two recomputed rows. Its disposition is in `checks/codex-review1-disposition.md`.
+- **Burgers DST choice.** The DST implementation inside the Burgers $H^{-1}$ was chosen per mesh by a short, untimed, fixed-order micro-benchmark with no burn-in, so a sub-optimal choice there would only make the spectral side slower. The chosen variant is listed per mesh.
+
 ## Glossary
 
 - **NM-ROM**: the paper's reduced model: a frozen spatial bank G, with a query solving for a few coefficients.

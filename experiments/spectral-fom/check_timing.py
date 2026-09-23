@@ -93,6 +93,58 @@ for prob, runs in ACCEPTED.items():
         ctrl_prev = any(x['previous'] != p_ for x, p_ in list(zip(seq, [None, None] + [x['name'] for x in seq[:-2]]))[2:])   # off-by-one alignment
         if not (ctrl_median and ctrl_prev):
             bad += 1; print('CONTROL NOT DETECTED', att, od)
-        print(f'{prob:10s} {att}/{od} n={R["intervals"]}: drift {dr_ok} neighbour {nb_ok} (worst {worst:.3f}) agrees_with_recorded={agree} controls_detected={ctrl_median and ctrl_prev}')
+        # inventory (codex review 1, item 4): every subject x phase x case x rep exactly once
+        reps = R['config']['repetitions']
+        ncase = len({x['case'] for x in inv})
+        want_cases = set(range(ncase))
+        inv_ok = True
+        for nm in names:
+            ph = ('romA1', 'romA2') if R['timings'][nm]['role'].startswith('rom') else ('spec',)
+            for p_ in ph:
+                keys = [(x['case'], x['rep']) for x in by[(nm, p_)]]
+                inv_ok &= len(keys) == len(set(keys)) == ncase * reps and {k[0] for k in keys} == want_cases
+        if not inv_ok:
+            bad += 1; print('INVENTORY MISMATCH', att, od)
+        # T1 case-normalised neighbour (codex review 1, item 3), recomputed independently
+        t1_ok = True
+        for ph in ('romA1', 'romA2', 'spec'):
+            seq = [x for x in inv if x['phase'] == ph]
+            subs = sorted({x['name'] for x in seq})
+            if len(subs) < 2:
+                continue
+            cm = defaultdict(list)
+            for x in seq:
+                cm[(x['name'], x['case'])].append(x['fused_device_seconds'])
+            cm = {k: np.median(v) for k, v in cm.items()}
+            med = {q: np.median([x['fused_device_seconds'] for x in seq if x['name'] == q]) for q in subs}
+            for q in subs:
+                oth = sorted((o for o in subs if o != q), key=lambda o: med[o])
+                if len(oth) == 1:
+                    o = oth[0]
+                    slow, fast = ([o], [q]) if med[o] >= med[q] else ([q], [o])
+                else:
+                    k = max(1, len(oth) // 3)
+                    fast, slow = oth[:k], oth[-k:]
+                hi = [x['fused_device_seconds'] / cm[(q, x['case'])] for x in seq if x['name'] == q and x['previous'] in slow]
+                lo = [x['fused_device_seconds'] / cm[(q, x['case'])] for x in seq if x['name'] == q and x['previous'] in fast]
+                t1_ok &= len(hi) >= 3 and len(lo) >= 3 and np.median(hi) / np.median(lo) <= lim
+        rec_t1 = R['timing_gates'].get('neighbour_case_normalised', {}).get('passed')
+        side = HERE / 'runs' / att / 'archive' / od / 'T1-case-normalised-neighbour.json'
+        if rec_t1 is None and side.exists():
+            rec_t1 = json.loads(side.read_text())['case_normalised']['passed']
+        if rec_t1 is not None and rec_t1 != t1_ok:
+            bad += 1; print('T1 MISMATCH', att, od)
+        # Burgers lane parity coverage (codex review 1, item 5): both selected arms, every case
+        par_ok = True
+        if prob.startswith('burgers'):
+            L = R['intervals']
+            lane = json.loads((HERE / 'lane-ref' / f'burgers-{L}-errors.json').read_text())
+            for role in ('rom_accurate', 'rom_fast'):
+                a = R['selected'][role]
+                mine = [x['same_grid_evolved'] for x in sorted(inv, key=lambda x: x['case']) if x['name'] == a and x['rep'] == 0 and x['phase'] == 'romA1']
+                par_ok &= a in lane and len(mine) == len(lane[a]) and max(abs(m - t) / t for m, t in zip(mine, lane[a])) <= 1e-8
+            if not par_ok:
+                bad += 1; print('LANE PARITY COVERAGE FAIL', att, od)
+        print(f'{prob:10s} {att}/{od} n={R["intervals"]} inventory={inv_ok} T1={t1_ok}' + (f' lane_parity_full={par_ok}' if prob.startswith('burgers') else '') + f' | drift {dr_ok} neighbour {nb_ok} (worst {worst:.3f}) agrees_with_recorded={agree} controls_detected={ctrl_median and ctrl_prev}')
 print('CHECK', 'PASS' if bad == 0 else f'FAIL ({bad})')
 sys.exit(1 if bad else 0)

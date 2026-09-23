@@ -4,7 +4,7 @@ import hashlib, json, sys
 from pathlib import Path
 
 LANE = Path(__file__).resolve().parent.parent
-PANELS = [('pn1024', 1024), ('pn2048', 2048), ('pn4096', 4096)]
+PANELS = [('pn1024b', 1024), ('pn2048c', 2048), ('pn4096b', 4096)]
 TRAIN = {1024: 'tr1024a', 2048: 'tr2048'}
 SHOW = {'nmrom': 'NM-ROM (ours)', 'linear_bank': 'linear bank (q=R rung)', 'pod': 'POD', 'qm': 'quadratic manifold',
         'operator': 'neural operator', 'control': 'control (not a FOM candidate)', 'fom': 'CN–CG full-order'}
@@ -54,12 +54,22 @@ for job, n in PANELS:
     if s.get('operators_missing'):
         out += ['', f"Operator checkpoints missing at run time: {', '.join(m['name'] for m in s['operators_missing'])}."]
     oe = g['order_effect']
+    retime_txt = ', '.join(v['of'] + ' ' + format(v['ratio'], '.3f') for v in oe.get('retime', {}).values())
     out += ['', f"Gates: audit passed **{g['audit_passed']}** ({g['audit_failure_count']} failures); order-effect gate **{oe['passed']}** "
-            f"(max sentinel deviation {100*oe['max_relative_deviation']:.1f} % vs tolerance {100*oe['tolerance']:.0f} %; positive control deviation "
+            f"(DESIGN A2: carry-over ratio {oe.get('carryover_ratio', float('nan')):.3f}, re-timed/original medians "
+            f"{retime_txt}, tolerance ±10 %; "
+            f"v1 per-block sentinel deviation {100*oe['max_relative_deviation']:.1f} %, reported only; positive control deviation "
             f"{100*oe['positive_control_min_relative_deviation']:.0f} %, fails as required: {oe['positive_control_fails_as_required']}); "
             f"NM-ROM reproduces hires-heat h2d-final04: **{g.get('nmrom_reproduces_h2d_final04', {}).get('passed')}** "
             f"(max relative difference {g.get('nmrom_reproduces_h2d_final04', {}).get('max_relative', float('nan')):.2e}); "
             f"summary vs independent recompute: max relative difference {g['summary_vs_audit_recompute_max_relative']:.1e}.", '']
+    ref = next((x for x in rows if x['method'] == 'nmrom_q32_field_direct_tol1e-4_chol'), None)
+    if ref:
+        better = sorted([x for x in rows if x['family'] not in ('fom', 'control', 'nmrom') and x['worst_all_times'] <= ref['worst_all_times']
+                         and x['device_ms_median'] <= ref['device_ms_median']], key=lambda x: x['device_ms_median'])
+        out += [f"Generated reading: the accurate NM-ROM setting (`nmrom_q32_field_direct_tol1e-4_chol`) is {100*ref['worst_all_times']:.4f} % worst at "
+                f"{ref['device_ms_median']:.3f} ms ({ref['speedup']:.2f}× its chosen FOM). Baseline arms at least as accurate AND at least as fast: "
+                + (', '.join(f"`{x['method']}` ({100*x['worst_all_times']:.4f} %, {x['device_ms_median']:.3f} ms)" for x in better) or 'none') + '.', '']
     if s.get('qm'):
         out += ['Quadratic manifold ridge weight chosen on the trajectory-split holdout: ' +
                 ', '.join(f"r={r}: γ={v['gamma']:g} ({v['columns']} columns)" for r, v in s['qm'].items()) + '.', '']

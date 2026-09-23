@@ -1,0 +1,5 @@
+{"rule": "DESIGN.md section 3 (+R1 item 8): R=512 unless its job fails, its 65-node condition exceeds 1e8, or its worst full-grid bank-validation floor at R'=R exceeds the R=384 model's at any mesh",
+ "R512": {"job": "4243740", "condition_65": 5613.6, "floor_at_R_worst_pct": {"33": 0.93, "65": 1.63, "129": 2.20}},
+ "R384": {"job": "4243743", "condition_65": 1214.2, "floor_at_R_worst_pct": {"33": 1.33, "65": 2.15, "129": 2.88}},
+ "chosen": 512,
+ "source": "checks/training-R512.json, checks/training-R384.json (floors_full, bank.condition_65)"}

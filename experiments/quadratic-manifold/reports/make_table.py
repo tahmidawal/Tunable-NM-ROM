@@ -107,7 +107,11 @@ def main():
             converged_quad=q_ and q_['converged_design5'], converged_lin=l_ and l_['converged_design5']))
 
     adm = [r for r in rows if r['family'] != 'fom' and r['admissible']]
-    best_qman = min((r for r in adm if r['family'] == 'qman'), key=lambda r: r['worst_evolved_percent'], default=None)
+    # "the quadratic manifold" is the `quad` variant; the `lin` control is reported beside it, never as it
+    best_qman = min((r for r in adm if r['family'] == 'qman' and r['variant'] == 'quad'),
+                    key=lambda r: r['worst_evolved_percent'], default=None)
+    best_qman_lin = min((r for r in adm if r['family'] == 'qman' and r['variant'] == 'lin'),
+                        key=lambda r: r['worst_evolved_percent'], default=None)
     nm = [r for r in adm if r['family'] in ('rom', 'fast')]
     best_nm = min(nm, key=lambda r: r['worst_evolved_percent'], default=None)
     fast_nm = min(nm, key=lambda r: r['median_gpu_ms'], default=None)
@@ -124,6 +128,10 @@ def main():
             best_qman=best_qman and dict(arm=best_qman['arm'], solved_dimension=best_qman['solved_dimension'],
                                          worst_evolved_percent=best_qman['worst_evolved_percent'],
                                          median_gpu_ms=best_qman['median_gpu_ms']),
+            best_qman_linear_control=best_qman_lin and dict(
+                arm=best_qman_lin['arm'], solved_dimension=best_qman_lin['solved_dimension'],
+                worst_evolved_percent=best_qman_lin['worst_evolved_percent'],
+                median_gpu_ms=best_qman_lin['median_gpu_ms']),
             best_nmrom=best_nm and dict(arm=best_nm['arm'], solved_dimension=best_nm['solved_dimension'],
                                         worst_evolved_percent=best_nm['worst_evolved_percent'],
                                         median_gpu_ms=best_nm['median_gpu_ms']),
@@ -164,7 +172,7 @@ def main():
                             min((x for x in rows if x['family'] == 'pod' and x['admissible']
                                  and x['worst_evolved_percent'] <= r['worst_evolved_percent'] + 1e-12),
                                 key=lambda x: x['median_gpu_ms'], default=None)))
-                   for r in rows if r['family'] == 'qman' and r['admissible']]),
+                   for r in rows if r['family'] == 'qman' and r['variant'] == 'quad' and r['admissible']]),
         matched_dimension_triples=[dict(
             dimension=k,
             qman=(qm.get((k, 'quad')) or {}).get('worst_evolved_percent'),

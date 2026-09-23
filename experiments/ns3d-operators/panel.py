@@ -246,7 +246,7 @@ def main():
             if float(np.max(np.abs(errors[c] - chk))) > 1e-12 * max(1.0, float(np.max(np.abs(chk)))):
                 raise RuntimeError('error reductions disagree')
             samples.append(sample(o))
-            if c in (0, 1):
+            if c in tuple(cfg.get('full_cases', (0, 1))):
                 fields[c] = o
         stats = D.stats_from_cases(errors, 0.05) if finite else None
         if finite:

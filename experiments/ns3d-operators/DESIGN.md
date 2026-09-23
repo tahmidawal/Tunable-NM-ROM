@@ -226,3 +226,11 @@ interruption issues are fixed". Dispositions:
    3000 s by one epoch's tail, as in the 2D cells.
 9. *U-Net equivariance* — accepted: stride-2 pooling/upsampling make the U-Net equivariant only to
    shifts by multiples of 16 cells; the wording "translation-equivariant" applies to the FNO only.
+
+## A2 (2026-09-23 ~15:25 EDT, after pn32, before any 64³/96³ panel) — saved full fields at 96³
+
+With 32 held-out cases at $96^3$ (127 MB per full field set), full fields of cases {0, 1, worst} for 19
+arms would exceed the 4 GB cap of A1 and abort the job. At $96^3$ only each arm's **worst case** is
+saved in full (plus its truth); samples are kept for every case as before. $32^3$ (done) and $64^3$
+keep {0, 1, worst}. Nothing else changes. `pn32` (job 4234771) passed every gate; no setting or
+selection was revisited after seeing it.

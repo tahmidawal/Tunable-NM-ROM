@@ -91,6 +91,7 @@ def main():
         reference_summary=REF[n], reference_summary_sha256=sha(ref_path),
         reference_errors=ref_map, reference_values=ref_values,
         operators=trained, operators_not_trained=[e for e in ops if not e['trained']],
+        full_cases=[] if heldout else [0, 1],
         sample_seed=20260923 + n, sample_points=8192, min_free_gb=40, timing_rounds=3, burn_calls=2,
         timing_seed=923 + n,
         smoke=dict(eval_cases=2, cnab2_steps=[200, 50, 40], timing_rounds=1, burn_calls=1))

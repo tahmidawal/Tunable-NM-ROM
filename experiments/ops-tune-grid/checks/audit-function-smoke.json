@@ -1,0 +1,12 @@
+{
+  "what": "unit smoke of the ops-tune-grid changes to audit.py, run locally before any training job",
+  "checked": [
+    "manifest_hashes surfaces the lane's trainbig/index-*.json entries alongside the two pinned split hashes, and ignores non-index files",
+    "the family whitelist admits fno/unet/transolver/deeponet",
+    "only batch_size is asserted as an invariant; the Poisson screen keeps the parent protocol",
+    "audit_arm takes allowed_train and main passes bank_indices into it",
+    "main records bank_index_sha256"
+  ],
+  "passed": true,
+  "limitation": "these are the changed pure functions only; the end-to-end audit of a collected attempt runs when grid01 returns"
+}

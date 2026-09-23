@@ -23,6 +23,9 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   With x1 the linear rung CERTIFIES up to R'=384 (ρ 0.068/0.069); R'=512 fails (0.137). Rule: accurate = R'=384 LINEAR
   (0.195 %, 229 ms, 0.12× vs lean_nt3e-3 28.6 ms); fast = R'=512 q=0 (2.14 %, 35.5 ms, 0.42×). q droppable at 512²: YES.
 
+- bk256b (256², x1): parity 4.8e-14/2.4e-13; order 0.0 %/0.8 %. Rule: accurate = R'=384 LINEAR (0.166 %, 124 ms, 0.15×);
+  fast = R'=128 linear (1.60 %, 31.8 ms, 0.30×). q droppable: YES.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -33,4 +36,5 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bk1024b | 4197475 | 1024² | A100-80G | COMPLETED 17.6 min; collected, audited (all gates pass after amendment A1), remote deleted |
 | bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
 | bk512b | 4200506 | 512² | A100 | COMPLETED 19.8 min; collected, audited (all gates pass), remote deleted |
-| bk256b | 4202294 | 256² | A100 | submitted |
+| bk256b | 4202294 | 256² | A100 | COMPLETED 15.2 min; collected, audited (all gates pass), remote deleted |
+| bx2048 | 4202862 | 2048² | A100-80G | exploratory (A2), submitted |

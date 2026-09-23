@@ -122,3 +122,19 @@ def make_heat(n, d, nu, times, variant, scheme, dt=None):
         c = dstn_mm(interior(u0), S)
         return jax.lax.map(lambda f: pad1(dstn_mm(c * f, S)), fac)
     return lambda u: run_mm(u, fac, S)
+
+
+def make_poisson_interior(n, d, variant):
+    """Interior (n-1)^d forcing in -> interior field out (the cube lane's query scope)."""
+    lam = jnp.asarray(eig_grid(n, d))
+    if variant == 'fft':
+        @jax.jit
+        def solve(f, lam):
+            return dstn_fft(dstn_fft(f) / lam)
+        return lambda f: solve(f, lam)
+    S = jnp.asarray(sine_matrix(n - 1))
+
+    @jax.jit
+    def solve_mm(f, lam, S):
+        return dstn_mm(dstn_mm(f, S) / lam, S)
+    return lambda f: solve_mm(f, lam, S)

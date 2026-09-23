@@ -31,7 +31,16 @@ P2D = [(f, PBK_COMMIT) for f in (
     'experiments/p-bank-head/pbh_core.py', 'experiments/p-linear/plin_core.py',
     'experiments/p-linear/checkpoints/primary_K32.pkl', 'experiments/p-linear/checkpoints/primary_K32-basis.npz',
     'experiments/hires-poisson/hp_core.py', f'{PBK}/pbk_core.py', f'{PBK}/runs/prep.npz')]
-FILESETS = {'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')]}
+P3K = 'experiments/poisson-bank-knob-3d'
+P3K_COMMIT = 'd2c775a9'      # exp/2026-09-23-poisson-bank-knob-3d, the commit of c32final/c64final
+PP3 = 'experiments/paper-p3d'
+P3D = [(f, P3K_COMMIT) for f in (
+    f'{PP3}/common.py', f'{PP3}/poisson.py', f'{PP3}/shared_rom.py', f'{PP3}/iterative_cg.py',
+    f'{PP3}/runs/final08/checkpoints/bank.pkl', f'{PP3}/runs/final08/checkpoints/head_K16.pkl',
+    f'{PP3}/runs/final08/checkpoints/cohorts.json', f'{P3K}/runs/prep_cube.npz', f'{P3K}/pbk3_core.py',
+    f'{P3K}/pbk3_cube.py', f'{P3K}/frozen-N32.json', f'{P3K}/frozen-N64.json')]
+FILESETS = {'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
+            'p3d': P3D + [(f'{LANE}/sp3d_solve.py', 'HEAD')]}
 
 SCRIPT = '''#!/bin/bash
 #SBATCH --job-name=specfom___ATTEMPT__
@@ -78,7 +87,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--runs', nargs='+', required=True)
-    p.add_argument('--set', required=True, choices=sorted(FILESETS))
+    p.add_argument('--set', required=True, nargs='+', choices=sorted(FILESETS))
     p.add_argument('--extra', nargs='*', default=[], help='extra (this lane, HEAD) files')
     p.add_argument('--memfrac', default='0.90')
     p.add_argument('--hours', type=int, default=6)
@@ -94,7 +103,7 @@ def main():
     (out / 'logs').mkdir()
     remote = f'{NAMESPACE}/{a.attempt}'
     head = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
-    files = [(f, 'HEAD') for f in MINE] + FILESETS[a.set] + [(f'{LANE}/{r.split(":")[1]}', 'HEAD') for r in a.runs] \
+    files = [(f, 'HEAD') for f in MINE] + [x for k in a.set for x in FILESETS[k]] + [(f'{LANE}/{r.split(":")[1]}', 'HEAD') for r in a.runs] \
         + [(f'{LANE}/{e}', 'HEAD') for e in a.extra]
     files = list(dict.fromkeys(files))
     proof = []

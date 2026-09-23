@@ -49,7 +49,15 @@ def truths_poisson2d(R):
     return [poisson_truth(C.full_source(n, p), n) for p in np.asarray(R['cohort']['parameters'])]
 
 
-TRUTHS = {'poisson2d': truths_poisson2d}
+def truths_poisson3d(R):
+    import poisson as PP      # source formula only (the input), not a solver
+    n = R['intervals']
+    S, l = sine(n)
+    lam = l[:, None, None] + l[None, :, None] + l[None, None, :]
+    return [apply(S, apply(S, np.asarray(PP.source(n, p))) / lam) for p in np.asarray(R['cohort']['parameters'])]
+
+
+TRUTHS = {'poisson2d': truths_poisson2d, 'poisson3d': truths_poisson3d}
 
 
 def main(run, delete=False):

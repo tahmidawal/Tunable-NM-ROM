@@ -19,8 +19,8 @@ Lane dir `experiments/heat-compare-hires/`. Design + amendments: `DESIGN.md`. Na
 | job | slurm | what | GPU | state |
 |---|---|---|---|---|
 | tr1024 | 4196056 | operator training 1024² | H200 | CANCELLED by me while PENDING; never ran |
-| tr1024a | 4196355 | operator training 1024² (4 × 3000 s) | A100-PCIE-40GB pax051 | running |
-| tr2048 | 4196062 | operator training 2048² (4 × 3000 s) | H200 pax008 | running |
-| pn1024 | — | panel 1024² | H200 | staged |
-| pn2048 | — | panel 2048² | H200 | staged |
+| tr1024a | 4196355 | operator training 1024² (4 × 3000 s) | A100-PCIE-40GB pax051 | COMPLETED 3:20:53, collected; remote kept for pn1024 |
+| tr2048 | 4196062 | operator training 2048² (4 × 3000 s) | H200 pax008 | COMPLETED 3:21:12, collected; remote kept for pn2048 |
+| pn1024 | 4203972 | panel 1024² | H200 | submitted |
+| pn2048 | 4203979 | panel 2048² | H200 | submitted |
 | pn4096 | — | panel 4096² (no operators) | H200 | staged |

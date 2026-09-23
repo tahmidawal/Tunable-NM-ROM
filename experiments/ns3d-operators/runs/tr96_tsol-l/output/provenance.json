@@ -1,0 +1,74 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "mesh": 96,
+ "arm": "tsol-l",
+ "config": {
+  "family": "transolver",
+  "dim": 192,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "ref": 8,
+  "warmup_steps": 160,
+  "dtype": "float32",
+  "smoke_overrides": {
+   "dim": 16,
+   "layers": 1,
+   "heads": 2,
+   "slices": 4,
+   "ref": 2,
+   "warmup_steps": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914,
+  "patch": 6
+ },
+ "config_sha256": "9c8a505ef66beee72c37f4d0c475539e7ee9b3c307e25db8e8160c861832ad48",
+ "sources": {
+  "audit_panel.py": "dd4c6878452f2ca8bd00db9ad2a8e4b8a8446a4f38dbfbe18c155d2766d21bd4",
+  "make_panel_config.py": "8fc67f1d393814fdfb31bc6691c554f621a31208dad0ffb8b6ecbc2a92479ac2",
+  "ops3d.py": "2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676",
+  "panel.py": "13f97f309b55af263c7b6c24434d78003878a98f624bef052aca25492f14815d",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_op.py": "55d5febe65955dcc9a46d97b8d04a79e07ace4deadeab8a228686ae2069dc519"
+ },
+ "ns3d_fom_sha256": "e4ffdbe6ec97dc77c457d4a92ac596cd9bfffa01a37e286f5f1a09358b7daff7",
+ "train_seed": 202609201,
+ "train_cases": 512,
+ "split": "index % 8 == 7 -> validation",
+ "train_count": 448,
+ "validation_count": 64,
+ "overlap_with_evaluation_cohorts": {
+  "dev": 0,
+  "heldout": 0
+ },
+ "generation_seconds": 491.1837303638458,
+ "parameter_sha256": "9f011fd077f94275bbba0aab1d3976fed1c9330147d098558bcf84528cbe9cf2",
+ "normalization": [
+  0.13714741995309407,
+  -5.401653455514296,
+  0.4754316623649701,
+  0.12352489755633178
+ ],
+ "data_on_device": false,
+ "micro_batch": 8,
+ "probe_peak_bytes": {
+  "8": 9530951680
+ },
+ "wall_budget_seconds": 3000.0,
+ "job_id": "4240001",
+ "node": "pax106",
+ "smoke": false,
+ "real_parameter_count": 18670440
+}

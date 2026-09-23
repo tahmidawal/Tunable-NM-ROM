@@ -5,11 +5,11 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --time=04:00:00
 set -euo pipefail
-CONFIG="$1"
+CONFIG="$1"; JFRAC="${2:-0.5}"
 TASK_ROOT="$PWD"
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
-export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true XLA_PYTHON_CLIENT_MEM_FRACTION=0.5
+export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true XLA_PYTHON_CLIENT_MEM_FRACTION=$JFRAC
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
 export XDG_CACHE_HOME="$TASK_ROOT/cache" MPLCONFIGDIR="$TASK_ROOT/cache/matplotlib" TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TASK_ROOT/output"

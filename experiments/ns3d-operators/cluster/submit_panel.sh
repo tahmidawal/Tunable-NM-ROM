@@ -8,7 +8,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 "$HERE/stage.sh" "$DEST"
 echo "--- squeue BEFORE"; ssh tufts-login 'squeue -u tawal01 -o "%.10i %.24j %.8T %.10M %R"'
 ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nsops_$JOB --gres=$GRES --constraint=$CONS --mem=$MEM \
-  --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/ns3d-operators/cluster/panel.sbatch $CONFIG")
+  --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err experiments/ns3d-operators/cluster/panel.sbatch $CONFIG ${6:-0.5}")
 echo "submitted job $ID into $DEST"
 sleep 3
 echo "--- squeue AFTER"; ssh tufts-login 'squeue -u tawal01 -o "%.10i %.24j %.8T %.10M %R"'

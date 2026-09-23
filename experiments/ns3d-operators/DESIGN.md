@@ -272,3 +272,11 @@ a mesh on the same GPU type"): at 96³ the 3000 s budget buys less work for the 
 32.6 GB training set exceeds 35 % of an 80 GB card, so it is held in pinned host memory, per A1.7). The
 report prints each arm's GPU and epochs, and the 96³ cell is labelled with this deviation. No selection
 has been made at 96³.
+
+## A5 (2026-09-23 ~17:25 EDT, after all 96³ training, before the 96³ panel) — 96³ panel GPU
+
+The 96³ size selection was written by `make_panel_config.py 96` from the validation records only
+(fno-l, unet-l, tsol-s, don-s). H200s are saturated, so the 96³ panel runs on an A100-80G (the GPU type
+of the shift-head held-out job it reproduces) instead of the H200 named in §7, with JAX's memory
+fraction raised to 0.7 (the rank-64 bank build at 96³ needs it; the operators need < 5 GB at batch 1).
+Everything else as pre-registered; cohort = the 32 held-out cases (seed 202609221), second opening.

@@ -1,0 +1,20 @@
+W0923 18:31:08.951682 3125151 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 7.83GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0923 18:31:08.953100 3124959 config_assigner.cc:383] Could not get config for HLO: %gemm_fusion_dot = f64[128,512,6]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=
+(parameter_0: f64[512,128,16004], parameter_1: f64[128,16004,6]) -> f64[128,512,6] {
+  %parameter_0 = f64[512,128,16004]{2,1,0} parameter(0)
+  %parameter_1 = f64[128,16004,6]{2,1,0} parameter(1)
+  ROOT %dot.1 = f64[128,512,6]{2,1,0} dot(%parameter_0, %parameter_1), lhs_batch_dims={1}, lhs_contracting_dims={2}, rhs_batch_dims={0}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=2}
+}, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=2}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot = f64[128,512,6]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=%gemm_fusion_dot_computation, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=2}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 7.83GiB.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3dspan_20260923/val129x/code/experiments/burgers3d-span/panel.py", line 423, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3dspan_20260923/val129x/code/experiments/burgers3d-span/panel.py", line 291, in main
+    p1 = Qraw @ (Qraw.T @ Y)
+                 ~~~~~~~^~~
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py", line 880, in _operator_matmul
+    return tensor_contractions.matmul(self, cast(ArrayLike, other))
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot = f64[128,512,6]{2,1,0} fusion(%bitcast.1.0, %bitcast.2), kind=kCustom, calls=%gemm_fusion_dot_computation, metadata={op_name="jit(matmul)/dot_general" stack_frame_id=2}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 7.83GiB.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

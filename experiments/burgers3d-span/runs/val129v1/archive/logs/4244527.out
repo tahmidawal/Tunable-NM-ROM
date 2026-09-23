@@ -1,0 +1,106 @@
+host=pax106 source_commit=a1680947dc0993a226058fc32dbaf66cdf7799f7
+NVIDIA A100 80GB PCIe, GPU-61e51c62-3b2d-491a-b5a7-38377f765df9, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  364G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[6.0s] [mesh 129] bank evaluated (2048383, 512) 3.2s
+[11.9s] [mesh 129] A (2049, 512) 9.2s
+[92.5s] [mesh 129] tensor (2049, 512, 512) 89.7s
+[93.1s] [mesh 129] lattice EQ m=3375 90.4s
+[98.5s] table gates {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16}
+[138.6s] references done, worst residual 9.39e-11
+[151.4s] ARM span_R512_tensor: worst evolved 1.5048% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[159.2s] ARM span_R384_tensor: worst evolved 2.0015% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[164.5s] ARM span_R256_tensor: worst evolved 3.0506% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[169.3s] ARM span_R192_tensor: worst evolved 3.8597% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[173.5s] ARM span_R128_tensor: worst evolved 5.4562% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[177.0s] ARM span_R96_tensor: worst evolved 7.6051% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[179.7s] ARM span_R64_tensor: worst evolved 11.0912% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[182.5s] ARM span_R32_tensor: worst evolved 18.5474% its/query 44 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[191.8s] ARM span_R512_tensor_g1e-06: worst evolved 1.5048% its/query 63 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[197.4s] ARM span_R512_lat16: worst evolved 1.6683% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[201.9s] ARM span_R256_lat16: worst evolved 3.0916% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[205.9s] ARM span_R128_lat16: worst evolved 5.4604% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[209.2s] ARM span_R64_lat16: worst evolved 11.0844% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[217.2s] ARM head32_R512_tensor: worst evolved 12.7125% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[222.5s] ARM head32_R256_tensor: worst evolved 12.5706% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[227.2s] ARM head32_R128_tensor: worst evolved 12.6695% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[235.3s] ARM head64_R512_tensor: worst evolved 15.1469% its/query 53 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[240.0s] ARM head32_R512_lat16: worst evolved 12.7134% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[246.7s] parity {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16, 'reference_residual': 9.392652521756866e-11, 'parity_trial_space': 1.0232706667831522e-14}
+[248.9s] FOM fom_dt0.005_nt0.1_lt0.5: worst evolved 73.0342%
+[250.8s] FOM fom_dt0.005_nt0.1_lt0.1: worst evolved 73.0342%
+[253.1s] FOM fom_dt0.005_nt0.03_lt0.5: worst evolved 67.6913%
+[255.8s] FOM fom_dt0.005_nt0.03_lt0.1: worst evolved 67.6913%
+[260.1s] FOM fom_dt0.005_nt0.01_lt0.5: worst evolved 3.9567%
+[264.6s] FOM fom_dt0.005_nt0.01_lt0.1: worst evolved 2.7709%
+[269.1s] FOM fom_dt0.005_nt0.003_lt0.5: worst evolved 2.9124%
+[273.2s] FOM fom_dt0.005_nt0.003_lt0.1: worst evolved 1.8464%
+[278.2s] FOM fom_dt0.005_nt0.001_lt0.5: worst evolved 0.8121%
+[283.0s] FOM fom_dt0.005_nt0.001_lt0.1: worst evolved 0.8114%
+[289.9s] FOM fom_dt0.005_nt0.0001_lt0.5: worst evolved 0.0498%
+[296.2s] FOM fom_dt0.005_nt0.0001_lt0.1: worst evolved 0.0498%
+[298.6s] FOM fom_dt0.01_nt0.1_lt0.5: worst evolved 68.7189%
+[301.0s] FOM fom_dt0.01_nt0.1_lt0.1: worst evolved 68.7189%
+[304.7s] FOM fom_dt0.01_nt0.03_lt0.5: worst evolved 28.2551%
+[308.2s] FOM fom_dt0.01_nt0.03_lt0.1: worst evolved 30.2036%
+[311.9s] FOM fom_dt0.01_nt0.01_lt0.5: worst evolved 2.8691%
+[316.2s] FOM fom_dt0.01_nt0.01_lt0.1: worst evolved 1.2018%
+[321.2s] FOM fom_dt0.01_nt0.003_lt0.5: worst evolved 1.7349%
+[324.4s] FOM fom_dt0.01_nt0.003_lt0.1: worst evolved 1.2486%
+[329.0s] FOM fom_dt0.01_nt0.001_lt0.5: worst evolved 1.4692%
+[334.0s] FOM fom_dt0.01_nt0.001_lt0.1: worst evolved 1.4449%
+[340.7s] FOM fom_dt0.01_nt0.0001_lt0.5: worst evolved 1.4604%
+[346.8s] FOM fom_dt0.01_nt0.0001_lt0.1: worst evolved 1.4599%
+[350.4s] FOM fom_dt0.025_nt0.01_lt0.5: worst evolved 4.9225%
+[354.2s] FOM fom_dt0.025_nt0.001_lt0.5: worst evolved 4.9169%
+[447.5s] timing phase A1 done (864 invocations)
+[577.9s] timing phase B done (1248 invocations)
+[668.9s] timing phase A2 done (864 invocations)
+[669.1s] timing gates drift 1.015 neighbour 1.009 determinism 0.00e+00
+[669.1s] TIME span_R512_tensor: 421.18 ms
+[669.1s] TIME span_R384_tensor: 195.89 ms
+[669.1s] TIME span_R256_tensor: 75.59 ms
+[669.1s] TIME span_R192_tensor: 43.97 ms
+[669.1s] TIME span_R128_tensor: 24.70 ms
+[669.1s] TIME span_R96_tensor: 19.08 ms
+[669.1s] TIME span_R64_tensor: 12.92 ms
+[669.1s] TIME span_R32_tensor: 9.98 ms
+[669.1s] TIME span_R512_tensor_g1e-06: 457.45 ms
+[669.1s] TIME span_R512_lat16: 120.48 ms
+[669.1s] TIME span_R256_lat16: 58.22 ms
+[669.1s] TIME span_R128_lat16: 35.99 ms
+[669.1s] TIME span_R64_lat16: 20.22 ms
+[669.1s] TIME head32_R512_tensor: 62.18 ms
+[669.1s] TIME head32_R256_tensor: 37.87 ms
+[669.1s] TIME head32_R128_tensor: 28.93 ms
+[669.1s] TIME head64_R512_tensor: 88.82 ms
+[669.1s] TIME head32_R512_lat16: 62.09 ms
+[669.1s] TIME fom_dt0.005_nt0.1_lt0.5: 6.89 ms
+[669.1s] TIME fom_dt0.005_nt0.1_lt0.1: 6.90 ms
+[669.1s] TIME fom_dt0.005_nt0.03_lt0.5: 23.68 ms
+[669.1s] TIME fom_dt0.005_nt0.03_lt0.1: 18.99 ms
+[669.1s] TIME fom_dt0.005_nt0.01_lt0.5: 125.01 ms
+[669.1s] TIME fom_dt0.005_nt0.01_lt0.1: 125.12 ms
+[669.1s] TIME fom_dt0.005_nt0.003_lt0.5: 127.25 ms
+[669.1s] TIME fom_dt0.005_nt0.003_lt0.1: 125.34 ms
+[669.1s] TIME fom_dt0.005_nt0.001_lt0.5: 154.95 ms
+[669.1s] TIME fom_dt0.005_nt0.001_lt0.1: 153.55 ms
+[669.1s] TIME fom_dt0.005_nt0.0001_lt0.5: 271.82 ms
+[669.1s] TIME fom_dt0.005_nt0.0001_lt0.1: 252.60 ms
+[669.1s] TIME fom_dt0.01_nt0.1_lt0.5: 3.66 ms
+[669.1s] TIME fom_dt0.01_nt0.1_lt0.1: 3.68 ms
+[669.1s] TIME fom_dt0.01_nt0.03_lt0.5: 59.36 ms
+[669.1s] TIME fom_dt0.01_nt0.03_lt0.1: 54.54 ms
+[669.1s] TIME fom_dt0.01_nt0.01_lt0.5: 65.21 ms
+[669.1s] TIME fom_dt0.01_nt0.01_lt0.1: 62.75 ms
+[669.1s] TIME fom_dt0.01_nt0.003_lt0.5: 82.77 ms
+[669.1s] TIME fom_dt0.01_nt0.003_lt0.1: 74.54 ms
+[669.1s] TIME fom_dt0.01_nt0.001_lt0.5: 118.17 ms
+[669.1s] TIME fom_dt0.01_nt0.001_lt0.1: 111.74 ms
+[669.1s] TIME fom_dt0.01_nt0.0001_lt0.5: 191.20 ms
+[669.1s] TIME fom_dt0.01_nt0.0001_lt0.1: 147.08 ms
+[669.1s] TIME fom_dt0.025_nt0.01_lt0.5: 42.12 ms
+[669.1s] TIME fom_dt0.025_nt0.001_lt0.5: 85.73 ms
+PANEL COMPLETE
+ALL-DONE

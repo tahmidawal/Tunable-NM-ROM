@@ -281,7 +281,7 @@ def main():
         save()
 
     # parity (a): trial space, rotated vs unrotated bank; (b) head arm rotated vs unrotated
-    if cfg.get('parity'):
+    if cfg.get('parity') and cfg['parity'].get('trial_space', True):
         Graw = C.bank_at(model['bank'], np.eye(R), C.interior_coords(n))
         Qraw, _ = jnp.linalg.qr(Graw, mode='reduced')
         Qrot = jnp.concatenate(mesh['Qb'], 1)

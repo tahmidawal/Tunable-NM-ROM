@@ -1,0 +1,43 @@
+host=pax105 source_commit=e5c71ce7cebb2c2705c3941f4d14ebf22195092b
+NVIDIA A100 80GB PCIe, GPU-23d3e7ad-ac8a-e90e-6fe4-8862db75d1e4, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  366G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[5.9s] [mesh 129] bank evaluated (2048383, 512) 3.1s
+[11.7s] [mesh 129] A (2049, 512) 8.9s
+[90.5s] [mesh 129] tensor (2049, 512, 512) 87.7s
+[91.1s] [mesh 129] lattice EQ m=3375 88.3s
+[96.4s] table gates {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16}
+[135.5s] references done, worst residual 9.39e-11
+[148.1s] ARM span_R512_tensor: worst evolved 1.5048% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[155.7s] ARM span_R384_tensor: worst evolved 2.0015% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[161.0s] ARM span_R256_tensor: worst evolved 3.0506% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[165.8s] ARM span_R192_tensor: worst evolved 3.8597% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[169.7s] ARM span_R128_tensor: worst evolved 5.4562% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[173.1s] ARM span_R96_tensor: worst evolved 7.6051% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[175.9s] ARM span_R64_tensor: worst evolved 11.0912% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[178.7s] ARM span_R32_tensor: worst evolved 18.5474% its/query 44 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[187.6s] ARM span_R512_tensor_g1e-06: worst evolved 1.5048% its/query 63 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[193.1s] ARM span_R512_lat16: worst evolved 1.6683% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[197.3s] ARM span_R256_lat16: worst evolved 3.0916% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[201.2s] ARM span_R128_lat16: worst evolved 5.4604% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[204.3s] ARM span_R64_lat16: worst evolved 11.0844% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[212.0s] ARM head32_R512_tensor: worst evolved 12.7125% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[217.4s] ARM head32_R256_tensor: worst evolved 12.5706% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[222.1s] ARM head32_R128_tensor: worst evolved 12.6695% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[230.2s] ARM head64_R512_tensor: worst evolved 15.1469% its/query 53 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[235.1s] ARM head32_R512_lat16: worst evolved 12.7134% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[247.5s] ARM span_R512_tensor_fs1_dt0.005: worst evolved 1.5048% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[257.8s] ARM span_R384_tensor_fs1_dt0.005: worst evolved 2.0015% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[266.5s] ARM span_R256_tensor_fs1_dt0.005: worst evolved 3.0506% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[275.2s] ARM span_R192_tensor_fs1_dt0.005: worst evolved 3.8597% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[283.0s] ARM span_R128_tensor_fs1_dt0.005: worst evolved 5.4562% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[290.4s] ARM span_R96_tensor_fs1_dt0.005: worst evolved 7.6051% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[297.7s] ARM span_R64_tensor_fs1_dt0.005: worst evolved 11.0913% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[304.8s] ARM span_R512_tensor_fs1_dt0.01: worst evolved 2.1002% its/query 29 reasons {'0': 13, '1': 0, '2': 0, '3': 0, '4': 387}
+[310.6s] ARM span_R384_tensor_fs1_dt0.01: worst evolved 2.1968% its/query 29 reasons {'0': 9, '1': 0, '2': 0, '3': 0, '4': 391}
+[315.6s] ARM span_R256_tensor_fs1_dt0.01: worst evolved 3.0335% its/query 29 reasons {'0': 9, '1': 0, '2': 0, '3': 0, '4': 391}
+[320.5s] ARM span_R192_tensor_fs1_dt0.01: worst evolved 3.7130% its/query 29 reasons {'0': 8, '1': 0, '2': 0, '3': 0, '4': 392}
+[325.1s] ARM span_R128_tensor_fs1_dt0.01: worst evolved 5.0835% its/query 29 reasons {'0': 5, '1': 0, '2': 0, '3': 0, '4': 395}
+[329.7s] ARM span_R96_tensor_fs1_dt0.01: worst evolved 7.0659% its/query 29 reasons {'0': 4, '1': 0, '2': 0, '3': 0, '4': 396}
+[334.1s] ARM span_R64_tensor_fs1_dt0.01: worst evolved 10.3618% its/query 29 reasons {'0': 3, '1': 0, '2': 0, '3': 0, '4': 397}

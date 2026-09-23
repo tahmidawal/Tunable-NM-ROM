@@ -2,7 +2,7 @@
 # Stage ONE isolated job directory and submit it (pattern: hires-heat cluster/submit.sh).
 #   cluster/submit.sh <job> <gpu: a100|h100|h200> <HH:MM:SS> <mem> '<command run from code/heat-compare-hires>'
 # Clean committed tree only (the commit is the recorded source). Never reuses a remote dir.
-# Enforces: gpu partition; at most 2 running/pending hcmp_* jobs of this lane; squeue before and after.
+# Optional env CONSTRAINT=<slurm feature> (e.g. a100-80G). Enforces: gpu partition; at most 2 running/pending hcmp_* jobs of this lane; squeue before and after.
 set -euo pipefail
 JOB=$1; GPU=$2; WALL=$3; MEM=$4; CMD=$5
 LANE=$(cd "$(dirname "$0")/.." && pwd); NS=/cluster/tufts/paralab/tawal01/hcmp_20260923; REMOTE=$NS/$JOB
@@ -22,6 +22,7 @@ cat > "$RUN/stage/run.sbatch" <<EOF
 #SBATCH --job-name=hcmp_$JOB
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:$GPU:1
+${CONSTRAINT:+#SBATCH --constraint=$CONSTRAINT}
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=$MEM
 #SBATCH --time=$WALL

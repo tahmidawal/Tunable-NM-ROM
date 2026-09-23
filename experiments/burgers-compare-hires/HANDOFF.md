@@ -16,7 +16,8 @@ archive history). Namespace `/cluster/tufts/paralab/tawal01/bcmp_20260923/`. Lan
 | p2048b | 4207177 | 2048^2 panel + in-job FNO training | JAX process killed (hash copy of 72 GB bank, A5); job OOM in FNO training; FNO checkpoint salvaged (A6); no numbers used |
 | p2048c | 4215837 | 2048^2 panel rerun | died silently in POD-512 quick run (A6); no numbers used |
 | p2048d | 4218300 | 2048^2 with late FNO pickup | cancelled while PENDING |
-| **p2048e** | **4218390** | **2048^2 panel, --mem 400G, all operators staged** | submitted |
+| **p2048e** | **4218390** | **2048^2 panel, H200, --mem 400G — PRIMARY by A7** | running since ~11:35; slowed by a memory-starved node (pax008 ~15 GB free) in the r=64 fit |
+| **p2048f** | **4219197** | **2048^2 panel, A100 fallback (A7)** | **done, 0 failed gates, collected, remote deleted** → `checks/p2048f-summary.json`; POD-512 and qman r=64 dropped (A100) |
 
 ## Commands
 
@@ -37,3 +38,15 @@ ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcmp_20260923/p2048e'
 - Bank-span ρ: `lat64` within the bar at every R' and both meshes; `lat128` exceeds it, always at k = 0 (the
   initial-fit state); over time-stepped states (k ≥ 1) every arm is ≤ ~0.03.
 - Operators at 1024^2/2048^2 got far fewer epochs than at 256^2 under the equal 3000 s budget (see the operator table).
+
+## TO FINISH (A7): when p2048e ends
+
+If it completed with its audit before 2026-09-24 12:00 EDT, it replaces p2048f as the 2048^2 panel:
+```bash
+$PY cluster/collect.py p2048e
+$PY audit_cmp.py runs/p2048e/archive/output --operators runs/p2048e/archive/output/operators-runtime.json --out checks/p2048e-summary.json
+$PY reports/make_report.py checks/p1024-summary.json checks/p2048e-summary.json --out-md reports/2026-09-23-burgers-compare-hires.md --out-json reports/summary.json --status final
+ssh tufts-login 'rm -rf /cluster/tufts/paralab/tawal01/bcmp_20260923/p2048e'
+```
+Otherwise p2048f stands and the report status becomes final with p2048f. Either way: commit, delete the remote dir,
+append a short lab-log line. Never mix ratios across the two jobs.

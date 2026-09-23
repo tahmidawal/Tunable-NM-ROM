@@ -180,6 +180,8 @@ def main():
     L = []
     w = L.append
     w('# Spectral / fast-transform FOMs vs NM-ROM (stored, not in the paper)\n')
+    w('**ARCHIVE ONLY.** On 2026-09-23 the user decided that this lane is an archive. It is not used in the paper. '
+      'The numbers below are final for the meshes listed.\n')
     w('This report measures the strongest fast-transform full-order solver for each problem in the paper and times it '
       'against our accurate and fast settings. Each comparison runs in the same allocation, on the same discrete system '
       'and against the same reference. The numbers are **stored for a later decision** and are not in `paper/`. '

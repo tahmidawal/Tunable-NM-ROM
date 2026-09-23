@@ -3984,6 +3984,284 @@
     }
    ],
    "neighbour_worst": 1.0028980130663532
+  },
+  {
+   "problem": "heat3d",
+   "mesh": 128,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4218304",
+   "attempt": "spP",
+   "output": "output0",
+   "result": "runs/spP/archive/output0/result.json",
+   "result_sha256": "0024ece6bb91be16b2a6c17137cfb4ba6fac5d682ca46864c9fa525d556dade4",
+   "commit": "24f93ca70dd63e0d4bdcce1818e6ba08f909d8e4",
+   "cohort": "heldout_sealed_921099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R320_bf",
+     "worst": 0.0006956896533743393,
+     "ms": 7.350360741838813,
+     "a1": 7.347863167524338,
+     "a2": 7.352595217525959,
+     "matched": "modal_exp_mm",
+     "matched_worst": 9.285001741131781e-16,
+     "matched_ms": 1.5327115543186665,
+     "ratio_matched": 0.20852194989483383,
+     "exact": "modal_exp_mm",
+     "exact_ms": 1.5327115543186665,
+     "ratio_exact": 0.20852194989483383
+    },
+    "rom_fast": {
+     "arm": "lin_R128_cn",
+     "worst": 0.011110287685852357,
+     "ms": 3.0466478783637285,
+     "a1": 3.0445647425949574,
+     "a2": 3.0489391647279263,
+     "matched": "modal_cn_mm",
+     "matched_worst": 0.0008204162233064572,
+     "matched_ms": 1.5321297105401754,
+     "ratio_matched": 0.502890314768847,
+     "exact": "modal_exp_mm",
+     "exact_ms": 1.5327115543186665,
+     "ratio_exact": 0.5030812931167629
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R320_cn",
+     "worst": 0.0008309139008444497,
+     "ms": 7.052382454276085,
+     "a1": 7.049754494801164,
+     "a2": 7.054365007206798,
+     "matched": "modal_cn_mm",
+     "matched_worst": 0.0008204162233064572,
+     "matched_ms": 1.5321297105401754,
+     "ratio_matched": 0.21724994645053547,
+     "exact": "modal_exp_mm",
+     "exact_ms": 1.5327115543186665,
+     "ratio_exact": 0.21733244960209644
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R128_bf",
+     "worst": 0.011110287685852357,
+     "ms": 3.348916070535779,
+     "a1": 3.346129320561886,
+     "a2": 3.3520867582410574,
+     "matched": "modal_cn_mm",
+     "matched_worst": 0.0008204162233064572,
+     "matched_ms": 1.5321297105401754,
+     "ratio_matched": 0.45750018163192024,
+     "exact": "modal_exp_mm",
+     "exact_ms": 1.5327115543186665,
+     "ratio_exact": 0.45767392255771117
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 1.577530979309277e-16,
+     "ms": 1.9476960878819227
+    },
+    "modal_cn_fft": {
+     "worst": 0.0008204162233064039,
+     "ms": 1.9482143688946962
+    },
+    "modal_exp_half": {
+     "worst": 5.3424586408718616e-15,
+     "ms": 3.5481704398989677
+    },
+    "modal_cn_half": {
+     "worst": 0.0008204162233062578,
+     "ms": 3.548169508576393
+    },
+    "modal_exp_mm": {
+     "worst": 9.285001741131781e-16,
+     "ms": 1.5327115543186665
+    },
+    "modal_cn_mm": {
+     "worst": 0.0008204162233064572,
+     "ms": 1.5321297105401754
+    }
+   },
+   "validation": {
+    "exp_worst": 5.3424586408718616e-15,
+    "cn_vs_cncg": 1.633115122943827e-11,
+    "control": 0.00019875395436356124
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "lin_R320_bf",
+     "romA1_median": 0.007347863167524338,
+     "romA2_median": 0.007352595217525959,
+     "ratio": 1.0006440035550113
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.0030445647425949574,
+     "romA2_median": 0.0030489391647279263,
+     "ratio": 1.0014367972116895
+    },
+    {
+     "name": "lin_R320_cn",
+     "romA1_median": 0.007049754494801164,
+     "romA2_median": 0.007054365007206798,
+     "ratio": 1.0006539961652614
+    },
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.003346129320561886,
+     "romA2_median": 0.0033520867582410574,
+     "ratio": 1.0017803967236303
+    }
+   ],
+   "neighbour_worst": 1.0007940577691377
+  },
+  {
+   "problem": "heat3d",
+   "mesh": 256,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4218304",
+   "attempt": "spP",
+   "output": "output1",
+   "result": "runs/spP/archive/output1/result.json",
+   "result_sha256": "558a72e2f82d29fe80eed43c94368aafc416be3dfc200960d92e518f3c4906e0",
+   "commit": "24f93ca70dd63e0d4bdcce1818e6ba08f909d8e4",
+   "cohort": "heldout_sealed_921099",
+   "arms": {
+    "rom_accurate": {
+     "arm": "lin_R320_bf",
+     "worst": 0.0006956913738238576,
+     "ms": 59.4401522539556,
+     "a1": 59.395851101726294,
+     "a2": 59.47403283789754,
+     "matched": "modal_exp_fft",
+     "matched_worst": 2.1991119473024452e-16,
+     "matched_ms": 15.090917004272342,
+     "ratio_matched": 0.253884225258997,
+     "exact": "modal_exp_fft",
+     "exact_ms": 15.090917004272342,
+     "ratio_exact": 0.253884225258997
+    },
+    "rom_fast": {
+     "arm": "lin_R128_cn",
+     "worst": 0.011110289037874145,
+     "ms": 24.73350102081895,
+     "a1": 24.678689427673817,
+     "a2": 24.76702514104545,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.0008223315592145126,
+     "matched_ms": 15.07621887139976,
+     "ratio_matched": 0.6095464956097256,
+     "exact": "modal_exp_fft",
+     "exact_ms": 15.090917004272342,
+     "ratio_exact": 0.6101407557130651
+    },
+    "rom_accurate_cn": {
+     "arm": "lin_R320_cn",
+     "worst": 0.0008326804243846214,
+     "ms": 57.151269633322954,
+     "a1": 57.1097987703979,
+     "a2": 57.18419584445655,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.0008223315592145126,
+     "matched_ms": 15.07621887139976,
+     "ratio_matched": 0.26379499472413,
+     "exact": "modal_exp_fft",
+     "exact_ms": 15.090917004272342,
+     "ratio_exact": 0.2640521741878039
+    },
+    "rom_fast_bf": {
+     "arm": "lin_R128_bf",
+     "worst": 0.011110289037874145,
+     "ms": 26.71296033076942,
+     "a1": 26.67514211498201,
+     "a2": 26.74662391655147,
+     "matched": "modal_cn_fft",
+     "matched_worst": 0.0008223315592145126,
+     "matched_ms": 15.07621887139976,
+     "ratio_matched": 0.5643784397056946,
+     "exact": "modal_exp_fft",
+     "exact_ms": 15.090917004272342,
+     "ratio_exact": 0.5649286644913636
+    }
+   },
+   "spectral": {
+    "modal_exp_fft": {
+     "worst": 2.1991119473024452e-16,
+     "ms": 15.090917004272342
+    },
+    "modal_cn_fft": {
+     "worst": 0.0008223315592145126,
+     "ms": 15.07621887139976
+    },
+    "modal_exp_half": {
+     "worst": 6.465434180011368e-15,
+     "ms": 31.33649635128677
+    },
+    "modal_cn_half": {
+     "worst": 0.0008223315592142288,
+     "ms": 31.349960016086698
+    },
+    "modal_exp_mm": {
+     "worst": 1.6744786309317483e-15,
+     "ms": 15.772852348163724
+    },
+    "modal_cn_mm": {
+     "worst": 0.0008223315592143819,
+     "ms": 15.812157653272152
+    }
+   },
+   "validation": {
+    "exp_worst": 6.465434180011368e-15,
+    "cn_vs_cncg": 1.2319503882196363e-11,
+    "control": 4.968328109842441e-05
+   },
+   "gates": {
+    "exp_exact": true,
+    "cn_matches_cncg": true,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "neighbour_T1": true,
+   "drift": [
+    {
+     "name": "lin_R320_bf",
+     "romA1_median": 0.059395851101726294,
+     "romA2_median": 0.05947403283789754,
+     "ratio": 1.0013162827827375
+    },
+    {
+     "name": "lin_R128_cn",
+     "romA1_median": 0.024678689427673817,
+     "romA2_median": 0.02476702514104545,
+     "ratio": 1.0035794329204766
+    },
+    {
+     "name": "lin_R320_cn",
+     "romA1_median": 0.0571097987703979,
+     "romA2_median": 0.05718419584445655,
+     "ratio": 1.0013027024374181
+    },
+    {
+     "name": "lin_R128_bf",
+     "romA1_median": 0.02667514211498201,
+     "romA2_median": 0.02674662391655147,
+     "ratio": 1.002679715866605
+    }
+   ],
+   "neighbour_worst": 1.001886319452738
   }
  ],
  "ns3d": {

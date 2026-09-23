@@ -1,0 +1,49 @@
+host=pax049 source_commit=24f93ca70dd63e0d4bdcce1818e6ba08f909d8e4
+NVIDIA A100 80GB PCIe, GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.3T  280G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+SETUP 47.0
+VALIDATION {'exp_exact': True, 'cn_matches_cncg': True, 'control_failed': True} {'rtol': 1e-11, 'cg_failures': 0, 'worst': 1.633115122943827e-11} 0.00019875395436356124 61.0
+PHASE romA1 rep 0 t=89.1s 156.8
+PHASE romA1 rep 1 t=165.9s 233.6
+PHASE romA1 rep 2 t=242.8s 310.5
+PHASE romA1 rep 3 t=319.8s 387.6
+PHASE romA1 rep 4 t=396.9s 464.6
+PHASE spec rep 0 t=524.9s 592.6
+PHASE spec rep 1 t=639.5s 707.3
+PHASE spec rep 2 t=754.5s 822.3
+PHASE spec rep 3 t=869.5s 937.3
+PHASE spec rep 4 t=984.7s 1052.4
+PHASE romA2 rep 0 t=1069.1s 1136.9
+PHASE romA2 rep 1 t=1146.6s 1214.3
+PHASE romA2 rep 2 t=1224.0s 1291.7
+PHASE romA2 rep 3 t=1301.6s 1369.3
+PHASE romA2 rep 4 t=1379.4s 1447.1
+GATES {'exp_exact': True, 'cn_matches_cncg': True, 'control_failed': True, 'deterministic': True, 'drift': True, 'neighbour': True, 'device_guard': True}
+TIMINGS {'lin_R320_bf': 7.35, 'lin_R128_cn': 3.047, 'lin_R320_cn': 7.052, 'lin_R128_bf': 3.349, 'modal_exp_fft': 1.948, 'modal_cn_fft': 1.948, 'modal_exp_half': 3.548, 'modal_cn_half': 3.548, 'modal_exp_mm': 1.533, 'modal_cn_mm': 1.532}
+ERRORS% {'lin_R320_bf': 0.06957, 'lin_R128_cn': 1.11103, 'lin_R320_cn': 0.08309, 'lin_R128_bf': 1.11103, 'modal_exp_fft': 0.0, 'modal_cn_fft': 0.08204, 'modal_exp_half': 0.0, 'modal_cn_half': 0.08204, 'modal_exp_mm': 0.0, 'modal_cn_mm': 0.08204}
+AUDIT PASS 640
+jax_backend=gpu x64=True precision=highest
+SETUP 304.4
+VALIDATION {'exp_exact': True, 'cn_matches_cncg': True, 'control_failed': True} {'rtol': 1e-11, 'cg_failures': 0, 'worst': 1.2319503882196363e-11} 4.968328109842441e-05 384.8
+PHASE romA1 rep 0 t=378.7s 774.5
+PHASE romA1 rep 1 t=744.5s 1140.3
+PHASE romA1 rep 2 t=1111.5s 1507.3
+PHASE romA1 rep 3 t=1479.0s 1874.9
+PHASE romA1 rep 4 t=1845.9s 2241.7
+PHASE spec rep 0 t=2402.9s 2798.8
+PHASE spec rep 1 t=2943.6s 3339.5
+PHASE spec rep 2 t=3486.0s 3881.8
+PHASE spec rep 3 t=4026.7s 4422.6
+PHASE spec rep 4 t=4567.8s 4963.7
+PHASE romA2 rep 0 t=4938.2s 5334.0
+PHASE romA2 rep 1 t=5301.9s 5697.8
+PHASE romA2 rep 2 t=5664.3s 6060.2
+PHASE romA2 rep 3 t=6026.9s 6422.8
+PHASE romA2 rep 4 t=6391.9s 6787.7
+GATES {'exp_exact': True, 'cn_matches_cncg': True, 'control_failed': True, 'deterministic': True, 'drift': True, 'neighbour': True, 'device_guard': True}
+TIMINGS {'lin_R320_bf': 59.44, 'lin_R128_cn': 24.734, 'lin_R320_cn': 57.151, 'lin_R128_bf': 26.713, 'modal_exp_fft': 15.091, 'modal_cn_fft': 15.076, 'modal_exp_half': 31.336, 'modal_cn_half': 31.35, 'modal_exp_mm': 15.773, 'modal_cn_mm': 15.812}
+ERRORS% {'lin_R320_bf': 0.06957, 'lin_R128_cn': 1.11103, 'lin_R320_cn': 0.08327, 'lin_R128_bf': 1.11103, 'modal_exp_fft': 0.0, 'modal_cn_fft': 0.08223, 'modal_exp_half': 0.0, 'modal_cn_half': 0.08223, 'modal_exp_mm': 0.0, 'modal_cn_mm': 0.08223}
+AUDIT PASS 640
+ALL-DONE

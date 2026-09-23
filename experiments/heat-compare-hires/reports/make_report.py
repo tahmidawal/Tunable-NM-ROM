@@ -1,4 +1,4 @@
-"""Generate reports/heat-compare-hires.md and reports/summary.json from runs/pn*/summary.json and
+"""Generate reports/2026-09-23-heat-compare-hires-1024-2048-4096.md and reports/summary.json from runs/pn*/summary.json and
 runs/tr*/pull/out/*/result.json. Never hand-type a number into the report: edit this script."""
 import hashlib, json, sys
 from pathlib import Path
@@ -70,6 +70,13 @@ for job, n in PANELS:
         out += [f"Generated reading: the accurate NM-ROM setting (`nmrom_q32_field_direct_tol1e-4_chol`) is {100*ref['worst_all_times']:.4f} % worst at "
                 f"{ref['device_ms_median']:.3f} ms ({ref['speedup']:.2f}× its chosen FOM). Baseline arms at least as accurate AND at least as fast: "
                 + (', '.join(f"`{x['method']}` ({100*x['worst_all_times']:.4f} %, {x['device_ms_median']:.3f} ms)" for x in better) or 'none') + '.', '']
+    cal = [(x['method'], next((y for y in rows if y['method'] == x['method'] + '_noautotune'), None)) for x in rows if x['family'] == 'qm']
+    cal = [(a, b) for a, b in cal if b is not None]
+    if cal:
+        out += ['Autotuning calibration (DESIGN A6): ' + '; '.join(
+            f"`{a}` {next(x for x in rows if x['method'] == a)['device_ms_median']:.3f} ms with GEMM autotuning vs {b['device_ms_median']:.3f} ms without "
+            f"(ratio {b['device_ms_median'] / next(x for x in rows if x['method'] == a)['device_ms_median']:.3f})" for a, b in cal)
+            + '. The r = 32 quadratic manifold at this mesh could only be compiled without autotuning (70 GiB bank).', '']
     if s.get('qm'):
         out += ['Quadratic manifold ridge weight chosen on the trajectory-split holdout: ' +
                 ', '.join(f"r={r}: γ={v['gamma']:g} ({v['columns']} columns)" for r, v in s['qm'].items()) + '.', '']
@@ -117,6 +124,6 @@ out += ['', '## Glossary', '',
         '- **FNO / U-Net / Transolver / DeepONet epochs**: every operator stopped on its 3000 s wall budget with its best validation checkpoint at or near the last epoch, '
         'i.e. still improving; see the training table.',
         '- **GPU**: 1024² ran on an A100 80GB (no H200 was free; DESIGN A2), 2048² and 4096² on an H200. Every ratio is inside one job.']
-(LANE / 'reports' / 'heat-compare-hires.md').write_text('\n'.join(out) + '\n')
+(LANE / 'reports' / '2026-09-23-heat-compare-hires-1024-2048-4096.md').write_text('\n'.join(out) + '\n')
 (LANE / 'reports' / 'summary.json').write_text(json.dumps(combined, indent=1) + '\n')
 print('\n'.join(out))

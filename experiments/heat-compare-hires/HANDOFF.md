@@ -30,6 +30,6 @@ Lane dir `experiments/heat-compare-hires/`. Design + amendments: `DESIGN.md`. Na
 | pn2048c | 4207537 | panel 2048² (A3) | H200 pax010 | FAILED: torch OOM at FNO behind the JAX pool (A4); partial results diagnostic only |
 | pn4096b | 4207540 | panel 4096² (A3) | H200 pax011 | FAILED: 70 GiB QM32 bank vs fragmented pool (A5); partial diagnostic only |
 | pn4096c | 4211639 | panel 4096² (A5) | H200 pax009 | FAILED at 50 s: GEMM autotuner scratch for the 70 GiB QM32 bank (A6); no number |
-| pn4096d | — | panel 4096² (A6) | H200 | submitted |
+| pn4096d | 4213233 | panel 4096² (A6) | H200 pax011 | COMPLETED, audit passed, status final; remote removed; namespace empty |
 | pn2048d | 4211204 | panel 2048² (A4) | H200 pax010 | COMPLETED, audit passed, status final; remote removed (and tr2048) |
 | pn4096 | — | panel 4096² (no operators) | H200 | staged |

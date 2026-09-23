@@ -304,13 +304,13 @@ Summary `checks/bx2048-summary.json` sha256 `d1155302d7376111c585708f86617bae0d0
 
 Summary `checks/bkh64-partial-summary.json` sha256 `7e7535405ff9c71d129b958ca00063bed41318e498744856714cfa0ef6eec93c`. FOM grid: the lean settings (fft_tight = untimed reference).
 
-| arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |
-|---|---|---|---|---|---|---|---|
-| `R512_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.330 | 0.120 | 113.5 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 4.74× |
-| `R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.350 | 0.030 | 60.1 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 8.95× |
-| `R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.409 | 0.114 | 106.6 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 5.05× |
-| `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 3.111 | 0.296 | 24.3 | `lean_nt1e-2_l1e-2_dt01` | 2.2148 | 272.6 | 11.20× |
-| `R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2` | 9.030 | 0.720 | 41.0 | `lean_nt1e-2_l1e-2_dt01` | 2.2148 | 272.6 | 6.65× |
+| role (frozen in selection-4096.json) | arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |
+|---|---|---|---|---|---|---|---|---|
+| current paper accurate | `R512_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.330 | 0.120 | 113.5 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 4.74× |
+| sensitivity accurate (k≥j+1) | `R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.350 | 0.030 | 60.1 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 8.95× |
+| chosen accurate (rule) | `R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 1.409 | 0.114 | 106.6 | `lean_nt3e-3_l3e-3_dt005` | 0.1377 | 538.0 | 5.05× |
+| chosen fast (rule) | `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 3.111 | 0.296 | 24.3 | `lean_nt1e-2_l1e-2_dt01` | 2.2148 | 272.6 | 11.20× |
+| current paper fast | `R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2` | 9.030 | 0.720 | 41.0 | `lean_nt1e-2_l1e-2_dt01` | 2.2148 | 272.6 | 6.65× |
 
 Gates: log_says_backend_gpu=True, complete=False, x64_and_highest=True, cohort_hash=True, rotation_file_is_the_committed_one=True, retained_repetitions_recomputed=False, restricted_recomputation_tracks_job=True, full_grid_errors_recomputed=True, controls_detected=True, parity_rotated_vs_unrotated=True, certificate_status_recomputed_matches_job=True, certificate_control_fails=True, rho_recomputed_in_numpy=True, coefficient_map_recomputed_in_numpy=True, no_order_effect=True.
 

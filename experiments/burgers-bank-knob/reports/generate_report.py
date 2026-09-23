@@ -132,9 +132,15 @@ def main():
         part = 'partial' in hold.name
         out += [f"## $4096^2$ held-out (hold64) — job {s['job_id']}, {s['gpu']}" + (' — PARTIAL (job died on a full group disk after 4 of 5 timed repetitions)' if part else ''), '',
                 f"Summary `checks/{hold.name}` sha256 `{h}`. FOM grid: the lean settings (fft_tight = untimed reference).", '',
-                '| arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |', '|---|---|---|---|---|---|---|---|']
+                '| role (frozen in selection-4096.json) | arm | worst evolved % | median % | GPU ms | fastest FOM ≥ as accurate | FOM % | FOM ms | speedup |', '|---|---|---|---|---|---|---|---|---|']
+        selj = json.loads((LANE / 'selection-4096.json').read_text())
+        roles = {}
+        for k, lab in (('accurate', 'chosen accurate (rule)'), ('fast', 'chosen fast (rule)'), ('current_accurate', 'current paper accurate'),
+                       ('current_fast', 'current paper fast'), ('sensitivity_accurate', 'sensitivity accurate (k≥j+1)'), ('sensitivity_fast', 'sensitivity fast')):
+            if selj.get(k):
+                roles.setdefault(selj[k], []).append(lab)
         for t in sorted([t for t in s['table'].values() if t['family'] == 'rom'], key=lambda t: t['worst_evolved_percent']):
-            out.append(f"| `{t['name']}` | {f(t['worst_evolved_percent'])} | {f(t['median_evolved_percent'])} | {f(t['median_gpu_ms'], 1)} | "
+            out.append(f"| {'; '.join(roles.get(t['name'], []))} | `{t['name']}` | {f(t['worst_evolved_percent'])} | {f(t['median_evolved_percent'])} | {f(t['median_gpu_ms'], 1)} | "
                        f"`{t.get('fom_at_least_as_accurate')}` | {f(t.get('fom_worst_evolved_percent'), 4)} | {f(t.get('fom_gpu_ms'), 1)} | {sp(t.get('speedup_gpu'))} |")
         out += ['', 'Gates: ' + ', '.join(f"{k}={v['passed']}" for k, v in s['gates'].items()) + '.', '']
     out += ['## Glossary', '',

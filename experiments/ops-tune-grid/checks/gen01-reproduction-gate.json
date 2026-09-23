@@ -1,0 +1,17 @@
+{
+  "job_id": "4183681",
+  "attempt": "gen01",
+  "gate": "REPRODUCTION",
+  "case": "burgers-train-00000",
+  "arrays_identical": true,
+  "bytes_identical": true,
+  "observed": "REPRODUCTION bytes_identical=True arrays_identical=True",
+  "meaning": "this lane regenerated a published Burgers training case at the pinned 4096/1.5625e-4 reference and the result is identical to the published file BYTE FOR BYTE, not merely array for array. DESIGN 3.2 deliberately asserts only array identity, because npz bytes also depend on the numpy version that wrote them and a numpy upgrade must not void a numerical gate for a non-numerical reason. The stronger property held anyway, so the generator, the frozen solver, the seed sequence and the save schema are all exactly the published ones.",
+  "licenses": "generating case indices beyond the frozen protocol 128-case cap, and generating at a declared solver setting rather than the one data.read_calibration selects",
+  "observed_seconds_per_case": 6.390625,
+  "projected_bulk_seconds": 29448.0,
+  "projected_bulk_hours": 8.18,
+  "budget_seconds": 36000.0,
+  "fits_budget": true,
+  "note": "rate from the first 65 cases: 533 s at n=65 minus 124 s at n=1, over 64 cases"
+}

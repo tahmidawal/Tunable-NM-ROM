@@ -55,6 +55,12 @@ def run(name, command):
         sys.exit(code)
 
 
+# The group share runs near full and a full share fails a job with an EMPTY log, which reads
+# as a code bug. Refuse to start rather than half-write a 16 GB bank (audit: disk budget).
+free = shutil.disk_usage('/cluster/tufts/paralab').free
+print(f'disk_free_bytes={free}', flush=True)
+assert free > SPEC.get('required_free_bytes', 80 * 10 ** 9), f'insufficient free space: {free}'
+
 run('generate', [PY, 'code/gen_bank.py', '--out', 'data/trainbig',
                  '--pinned-cache', 'data/train', '--count', str(SPEC['count']),
                  '--wall-budget-seconds', str(SPEC['generation_seconds'])]

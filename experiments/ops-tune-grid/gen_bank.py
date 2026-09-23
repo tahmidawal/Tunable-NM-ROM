@@ -16,10 +16,13 @@ Two things this script does that `data.generate` cannot:
 
 Neither bypass is taken on trust. `data.read_calibration`'s hash gate is replaced by a
 strictly stronger one: REPRODUCTION, which regenerates a published case at the pinned
-setting and asserts the resulting file is **bit-identical** to the published one. And the
+setting and asserts its **arrays are bitwise identical** to the published case's. File-byte
+identity is recorded but NOT asserted: `np.savez` is deterministic, so the bytes normally do
+match, but they are also a function of the numpy version that wrote them, and a numpy upgrade
+must not void a numerical gate for a non-numerical reason. And the
 cheap setting's cost is measured, not assumed: FIDELITY re-solves every published training
 case at the cheap setting and records its fixed-initial error against that case's own pinned
-target, so the label noise the lane trades for 28x more data is a measured per-case
+target, so the label noise the lane trades for 36x more data is a measured per-case
 distribution rather than an 8-case development estimate.
 """
 from __future__ import annotations
@@ -57,6 +60,14 @@ def load_generator():
     sys.modules['frozen_burgers_data'] = module
     spec.loader.exec_module(module)
     return module
+
+
+def summarise(rows):
+    values = [row['maximum'] for row in rows]
+    return dict(count=len(values),
+                worst=max(values) if values else None,
+                median=float(np.median(values)) if values else None,
+                mean=float(np.mean(values)) if values else None)
 
 
 def squeeze_target(path):
@@ -101,7 +112,15 @@ def main():
                   generator_sha256=GENERATOR_SHA256, source_sha256=data.source_hashes(),
                   provenance=data.provenance(jax), pinned_setting=dict(intervals=PINNED[0], dt=PINNED[1]),
                   cheap_setting=dict(intervals=CHEAP[0], dt=CHEAP[1]),
-                  requested_count=args.count, reproduction=None, fidelity=[], timings=[])
+                  requested_count=args.count, reproduction=None, fidelity=[], timings=[],
+                  protocol_note='This run loads the frozen data.py under protocol.json, whose '
+                  'contents are the REFINED protocol (sha dec2ba41...), which is the '
+                  'protocol_sha256 the published training index records. The published bank '
+                  'reached it through refine.py, which monkey-patches data.PROTOCOL_PATH to a '
+                  'file named protocol-refined.json, so the published source_sha256 keys that '
+                  'file under a different NAME with the same CONTENT. The two protocol '
+                  'variants differ only in anchor.dt, which this script does not read: it '
+                  'declares PINNED and CHEAP explicitly.')
     path = out / 'generation-report.json'
 
     def save_report():
@@ -112,8 +131,9 @@ def main():
     save_report()
 
     # ---------------------------------------------------------------- REPRODUCTION gate
-    # Regenerate a published case at the pinned setting and require the saved bytes to equal
-    # the published file's. This is what licenses every bypass above.
+    # Regenerate a published case at the pinned setting and require its ARRAYS to equal the
+    # published case's bitwise. This is what licenses every bypass above. The file-byte
+    # comparison beside it is recorded, not enforced (see the module docstring).
     record = data.case_record('train', 0)
     physical = engines.params_draw(record['seed'], 1)[0]
     query, dense = data.make_solver(engines, *PINNED, 256)
@@ -142,7 +162,19 @@ def main():
 
     # ------------------------------------------------------------------- bulk generation
     query, dense = data.make_solver(engines, *CHEAP, 256)
-    records = []
+    records, seen = [], {}
+    prefixes = set(args.prefixes)
+    written = {}
+
+    def write_prefix(count):
+        name = f'index-{count:05d}.json'
+        written[name] = str(write_index(out, records[:count], name, CHEAP, dict(
+            fidelity_vs_pinned_reference=summarise(report['fidelity']),
+            generation_report='generation-report.json')).name)
+        report['indices'] = sorted(written)
+        save_report()
+        print(f'INDEX {name} over {count} cases', flush=True)
+
     stop_reason = 'complete'
     for index in range(args.count):
         if time.monotonic() - started + 60. > args.wall_budget_seconds:
@@ -169,6 +201,17 @@ def main():
             report['fidelity'].append(dict(case_id=record['case_id'], maximum=errors['maximum'],
                                            per_time=errors['per_time']))
         report['timings'].append(elapsed)
+        # Disjointness inside the bank, checked HERE rather than at training time:
+        # dataset.load_index would catch a repeated physical input, but only after the whole
+        # bank had been generated, copied and staged.
+        key = hashlib.sha256(fields[0].tobytes() + physical[4].tobytes()).hexdigest()
+        if key in seen:
+            raise RuntimeError(f"duplicate physical input: {seen[key]} / {record['case_id']}")
+        seen[key] = record['case_id']
+        # Write every requested prefix index the moment it is reachable, so a run that stops
+        # early still leaves usable indices instead of none (DESIGN 5.1 item 4).
+        if len(records) in prefixes:
+            write_prefix(len(records))
         if index % 64 == 0 or index == args.count - 1:
             save_report()
             print(f"GENERATED {record['case_id']} n={len(records)} "
@@ -187,7 +230,7 @@ def main():
     jax.clear_caches()
     validation = args.pinned_cache.parent / 'validation'
     report['discretisation'] = {}
-    for label, dt in (('dt_converged', PINNED[1]), ('dt_panel', 0.00125)):
+    for label, dt in (('dt_converged', PINNED[1]), ('dt_panel', 0.00125), ('dt_nmrom_bank', 0.005)):
         rows = json.loads((validation / 'index.json').read_text())['records']
         query, dense = data.make_solver(engines, 256, dt, 256)
         errors = []
@@ -211,23 +254,16 @@ def main():
         jax.clear_caches()
 
     # --------------------------------------------------------------------- prefix indices
-    fidelity = [row['maximum'] for row in report['fidelity']]
-    summary = dict(count=len(fidelity),
-                   worst=max(fidelity) if fidelity else None,
-                   median=float(np.median(fidelity)) if fidelity else None,
-                   mean=float(np.mean(fidelity)) if fidelity else None)
-    report['fidelity_summary'] = summary
+    report['fidelity_summary'] = summarise(report['fidelity'])
     report['generated_count'] = len(records)
     report['stop_reason'] = stop_reason
     report['seconds_per_case_median'] = float(np.median(report['timings'])) if report['timings'] else None
-    written = []
-    for prefix in sorted(set(args.prefixes) | {len(records)}):
-        if prefix < 1 or prefix > len(records):
-            continue
-        written.append(str(write_index(out, records[:prefix], f'index-{prefix:05d}.json', CHEAP,
-                                       dict(fidelity_vs_pinned_reference=summary,
-                                            generation_report='generation-report.json')).name))
-    report['indices'] = written
+    # Re-emit every reachable prefix now that the fidelity summary is complete, and always
+    # emit one at the count actually reached so a short run still has a top rung.
+    for prefix in sorted(prefixes | {len(records)}):
+        if 1 <= prefix <= len(records):
+            write_prefix(prefix)
+    summary = report['fidelity_summary']
     report['complete'] = True
     save_report()
     print(json.dumps(dict(generated=len(records), stop_reason=stop_reason,

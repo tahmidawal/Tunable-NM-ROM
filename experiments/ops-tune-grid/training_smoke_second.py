@@ -19,7 +19,9 @@ import dataset
 TIMES = np.array([0., .05, .1, .15, .2, .25], dtype=np.float64)
 TINY = {'unet': dict(family='unet', base=8, groups=8),
         'transolver': dict(family='transolver', dim=32, layers=2, heads=4, slices=8, mlp_ratio=2, patch=4, ref=8),
-        'deeponet': dict(family='deeponet', width=8, rank=16, trunk_width=16, levels=2, pool_bins=2)}
+        'deeponet': dict(family='deeponet', width=8, rank=16, trunk_width=16, levels=2, pool_bins=2),
+        # The FNO is float64 by construction (`model.to_f64`), so it is smoked at float64 only.
+        'fno': dict(family='fno', width=8, modes=4, layers=2)}
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--out', required=True, type=Path)
@@ -28,6 +30,10 @@ parser.add_argument('--dtype', default='float32', choices=('float32', 'float64')
 parser.add_argument('--mesh', type=int, default=64)
 parser.add_argument('--pde', default='burgers', choices=('burgers', 'poisson'))
 args = parser.parse_args()
+# The FNO is float64 by construction (`model.to_f64` ignores a declared dtype), so record the
+# dtype it actually runs at rather than the float32 default.
+if args.family == 'fno':
+    args.dtype = 'float64'
 POISSON = args.pde == 'poisson'
 if POISSON:
     TIMES = np.array([0.], dtype=np.float64)

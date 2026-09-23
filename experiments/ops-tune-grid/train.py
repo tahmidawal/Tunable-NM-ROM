@@ -112,9 +112,16 @@ def train(args):
     # ReduceLROnPlateau(0.5, patience 20, min 1e-5), so an untuned config is unchanged.
     # 'cosine' decays over the configured epoch cap to the same 1e-5 floor and, unlike the
     # plateau rule, ignores the validation score, so it never sees the validation set.
+    # `plateau_patience` defaults to 20, the parent lane's value. It is configurable because
+    # BOTH patiences here are counted in EPOCHS, and an epoch is 16 gradient steps at 128
+    # training cases but 576 at 4608: left at 20/250 a large-data arm would fire the plateau
+    # rule at most once and could never early-stop, so it would finish at its initial
+    # learning rate while a small-data arm had annealed to the 1e-5 floor. A data ladder must
+    # hold the schedule constant in OPTIMISATION STEPS, not in epochs (DESIGN 5.3, audit B2).
     schedule = config.get('schedule', 'plateau')
     if schedule == 'plateau':
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=.5, patience=20, min_lr=1e-5)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, factor=.5, patience=int(config.get('plateau_patience', 20)), min_lr=1e-5)
     elif schedule == 'cosine':
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['epochs'], eta_min=1e-5)
     else:
@@ -205,6 +212,12 @@ def train(args):
     write_json(args.out / 'result.json', dict(complete=True, pde=pde, best_epoch=restored['epoch'],
         family=adapter.family_of(config), parameter_dtype=str(getattr(model, 'parameter_dtype', torch.float64)),
         epochs_completed=len(history), stop_reason=stop_reason, stopped_by_signal=stop_reason == 'signal',
+        # A data ladder must be compared on gradient steps, not epochs: an epoch is
+        # ceil(N/batch) steps and N varies by a factor of 36 across the ladder (DESIGN 5.3).
+        training_cases=len(training_records),
+        steps_per_epoch=-(-len(training_records) // config['batch_size']),
+        optimisation_steps=len(history) * -(-len(training_records) // config['batch_size']),
+        schedule=schedule, plateau_patience=int(config.get('plateau_patience', 20)),
         stopped_by_wall_budget=stop_reason == 'wall_budget',
         stopped_by_early_stopping=stop_reason == 'early_stopping', stopped_by_epoch_cap=stop_reason == 'epoch_cap',
         wall_budget_seconds=args.wall_seconds, warmup_epochs=warmup,

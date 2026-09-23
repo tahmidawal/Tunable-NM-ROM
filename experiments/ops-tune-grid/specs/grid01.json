@@ -5,6 +5,7 @@
   "prefix": "tune",
   "family": "unet",
   "smoke_families": [
+    "fno",
     "unet",
     "transolver"
   ],
@@ -18,10 +19,6 @@
       "config": "code/configs/fno/width96.json"
     },
     {
-      "name": "fno-layers6",
-      "config": "code/configs/fno/layers6.json"
-    },
-    {
       "name": "fno-norm",
       "config": "code/configs/fno/norm.json"
     },
@@ -30,9 +27,8 @@
       "config": "code/configs/fno/cosine.json"
     },
     {
-      "name": "fno-epochmatch",
-      "config": "code/configs/fno/epochmatch.json",
-      "seconds": 8700.0
+      "name": "fno-lr3e-3",
+      "config": "code/configs/fno/lr3e-3.json"
     },
     {
       "name": "unet-base64",
@@ -51,8 +47,8 @@
       "config": "code/configs/unet/cosine.json"
     },
     {
-      "name": "unet-base48-cosine",
-      "config": "code/configs/unet/base48-cosine.json"
+      "name": "unet-wd1e-3",
+      "config": "code/configs/unet/wd1e-3.json"
     },
     {
       "name": "tsol-slices32",
@@ -67,12 +63,18 @@
       "config": "code/configs/transolver/layers6-d192.json"
     },
     {
-      "name": "tsol-patch2",
-      "config": "code/configs/transolver/patch2.json"
-    },
-    {
       "name": "tsol-cosine",
       "config": "code/configs/transolver/cosine.json"
+    },
+    {
+      "name": "tsol-lr3e-3",
+      "config": "code/configs/transolver/lr3e-3.json"
+    },
+    {
+      "name": "fno-epochmatch",
+      "config": "code/configs/fno/epochmatch.json",
+      "seconds": 8700.0,
+      "role": "budget control, NOT a tuning arm; excluded from the DESIGN 4.2 selection"
     }
   ],
   "refine_learning_rate": null,
@@ -86,7 +88,10 @@
     "refinement"
   ],
   "train_index": "data/train/index.json",
-  "design": "Per-family hyperparameter grid at the PUBLISHED 128-case training set and the PUBLISHED 3000 s per-arm wall budget, so the tuning effect is measured with data and budget both held at the value the published arms used (DESIGN 5.2, 5.4). One exception, declared: fno-epochmatch gets 8700 s and an 1963-epoch cap, to reach the epoch count unet-medium reached in its 3000 s (DESIGN 6). No refinement arm: the published *-refine arms already exist and are carried over rather than re-run.",
+  "selection_excluded": [
+    "fno-epochmatch"
+  ],
+  "design": "Per-family hyperparameter grid at the PUBLISHED 128-case training set and the PUBLISHED 3000 s per-arm wall budget, so the tuning effect is measured with data and budget both held at the value the published arms used. Each family gets the same four knob classes: capacity, normalisation, learning-rate schedule and learning rate. fno-epochmatch is a BUDGET CONTROL at 8700 s with a 1963-epoch cap -- the count unet-medium reached in its published 3000 s -- and is excluded from the selection argmin so that a budget effect cannot be reported as a tuning effect. No refinement arm: the published *-refine arms are lower-learning-rate retrains and are carried over rather than re-run.",
   "matched_arms": {
     "unet01": "3780138",
     "tsol01": "3780139",

@@ -1,0 +1,71 @@
+{
+ "source": "checks/select-A3-n*.json",
+ "meshes": {
+  "33": {
+   "accurate": "span_R512_tensor_fsa_dt0.005",
+   "fast": "span_R96_tensor_fsa_dt0.01",
+   "fom": "fom_dt0.005_nt0.0001_lt0.1",
+   "accurate_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 512,
+    "solver": "fsa",
+    "dt": 0.005,
+    "gtol": 0.001
+   },
+   "fast_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 96,
+    "solver": "fsa",
+    "dt": 0.01,
+    "gtol": 0.001
+   },
+   "stopping_rule_pass": true
+  },
+  "65": {
+   "accurate": "span_R512_tensor_fsa_dt0.005",
+   "fast": "span_R128_tensor_fsa_dt0.01",
+   "fom": "fom_dt0.005_nt0.001_lt0.1",
+   "accurate_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 512,
+    "solver": "fsa",
+    "dt": 0.005,
+    "gtol": 0.001
+   },
+   "fast_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 128,
+    "solver": "fsa",
+    "dt": 0.01,
+    "gtol": 0.001
+   },
+   "stopping_rule_pass": true
+  },
+  "129": {
+   "accurate": "span_R512_tensor_fsa_dt0.005",
+   "fast": "span_R192_tensor_fsa_dt0.01",
+   "fom": "fom_dt0.01_nt0.01_lt0.1",
+   "accurate_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 512,
+    "solver": "fsa",
+    "dt": 0.005,
+    "gtol": 0.001
+   },
+   "fast_spec": {
+    "kind": "span",
+    "rule": "tensor",
+    "Rp": 192,
+    "solver": "fsa",
+    "dt": 0.01,
+    "gtol": 0.001
+   },
+   "stopping_rule_pass": true
+  }
+ }
+}

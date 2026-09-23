@@ -1,0 +1,161 @@
+host=pax049 source_commit=8ffad38a791897c0e095ad4f03c46937664877c4
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[5.9s] [mesh 129] bank evaluated (2048383, 512) 3.2s
+[11.7s] [mesh 129] A (2049, 512) 9.0s
+[91.0s] [mesh 129] tensor (2049, 512, 512) 88.3s
+[91.7s] [mesh 129] lattice EQ m=3375 89.0s
+[97.1s] table gates {'A_dst_vs_explicit': 2.0597461035739867e-15, 'qr_reconstruction': 4.750610649480455e-15, 'tensor_vs_direct': 2.298624444965682e-16}
+[136.7s] references done, worst residual 9.39e-11
+[149.5s] ARM span_R512_tensor: worst evolved 1.5048% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[157.3s] ARM span_R384_tensor: worst evolved 2.0015% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[162.6s] ARM span_R256_tensor: worst evolved 3.0506% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[167.4s] ARM span_R192_tensor: worst evolved 3.8597% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[171.2s] ARM span_R128_tensor: worst evolved 5.4562% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[174.7s] ARM span_R96_tensor: worst evolved 7.6051% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[177.5s] ARM span_R64_tensor: worst evolved 11.0912% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[180.4s] ARM span_R32_tensor: worst evolved 18.5474% its/query 44 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[189.4s] ARM span_R512_tensor_g1e-06: worst evolved 1.5048% its/query 63 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[195.2s] ARM span_R512_lat16: worst evolved 1.6683% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[199.5s] ARM span_R256_lat16: worst evolved 3.0916% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[203.4s] ARM span_R128_lat16: worst evolved 5.4604% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[206.6s] ARM span_R64_lat16: worst evolved 11.0844% its/query 50 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[214.5s] ARM head32_R512_tensor: worst evolved 12.7125% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[219.8s] ARM head32_R256_tensor: worst evolved 12.5706% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[224.5s] ARM head32_R128_tensor: worst evolved 12.6695% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[232.6s] ARM head64_R512_tensor: worst evolved 15.1469% its/query 53 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[237.4s] ARM head32_R512_lat16: worst evolved 12.7134% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[249.9s] ARM span_R512_tensor_fs1_dt0.005: worst evolved 1.5048% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[259.9s] ARM span_R384_tensor_fs1_dt0.005: worst evolved 2.0015% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[268.5s] ARM span_R256_tensor_fs1_dt0.005: worst evolved 3.0506% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[276.9s] ARM span_R192_tensor_fs1_dt0.005: worst evolved 3.8597% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[285.1s] ARM span_R128_tensor_fs1_dt0.005: worst evolved 5.4562% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[292.9s] ARM span_R96_tensor_fs1_dt0.005: worst evolved 7.6051% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[301.0s] ARM span_R64_tensor_fs1_dt0.005: worst evolved 11.0913% its/query 54 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[308.3s] ARM span_R512_tensor_fs1_dt0.01: worst evolved 2.1002% its/query 29 reasons {'0': 13, '1': 0, '2': 0, '3': 0, '4': 387}
+[314.4s] ARM span_R384_tensor_fs1_dt0.01: worst evolved 2.1968% its/query 29 reasons {'0': 9, '1': 0, '2': 0, '3': 0, '4': 391}
+[319.5s] ARM span_R256_tensor_fs1_dt0.01: worst evolved 3.0335% its/query 29 reasons {'0': 9, '1': 0, '2': 0, '3': 0, '4': 391}
+[324.8s] ARM span_R192_tensor_fs1_dt0.01: worst evolved 3.7130% its/query 29 reasons {'0': 8, '1': 0, '2': 0, '3': 0, '4': 392}
+[329.7s] ARM span_R128_tensor_fs1_dt0.01: worst evolved 5.0835% its/query 29 reasons {'0': 5, '1': 0, '2': 0, '3': 0, '4': 395}
+[334.6s] ARM span_R96_tensor_fs1_dt0.01: worst evolved 7.0659% its/query 29 reasons {'0': 4, '1': 0, '2': 0, '3': 0, '4': 396}
+[339.3s] ARM span_R64_tensor_fs1_dt0.01: worst evolved 10.3618% its/query 29 reasons {'0': 3, '1': 0, '2': 0, '3': 0, '4': 397}
+[350.8s] ARM span_R512_tensor_fsa_dt0.005: worst evolved 1.5048% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[359.9s] ARM span_R384_tensor_fsa_dt0.005: worst evolved 2.0015% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[367.7s] ARM span_R256_tensor_fsa_dt0.005: worst evolved 3.0506% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[375.8s] ARM span_R192_tensor_fsa_dt0.005: worst evolved 3.8597% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[383.0s] ARM span_R128_tensor_fsa_dt0.005: worst evolved 5.4562% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[390.2s] ARM span_R96_tensor_fsa_dt0.005: worst evolved 7.6051% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[397.5s] ARM span_R64_tensor_fsa_dt0.005: worst evolved 11.0912% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[404.1s] ARM span_R512_tensor_fsa_dt0.01: worst evolved 1.8265% its/query 28 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[409.5s] ARM span_R384_tensor_fsa_dt0.01: worst evolved 2.1584% its/query 28 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[413.9s] ARM span_R256_tensor_fsa_dt0.01: worst evolved 3.0334% its/query 28 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[418.4s] ARM span_R192_tensor_fsa_dt0.01: worst evolved 3.7129% its/query 28 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[422.4s] ARM span_R128_tensor_fsa_dt0.01: worst evolved 5.0835% its/query 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[426.4s] ARM span_R96_tensor_fsa_dt0.01: worst evolved 7.0659% its/query 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[430.6s] ARM span_R64_tensor_fsa_dt0.01: worst evolved 10.3617% its/query 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 400}
+[432.9s] FOM fom_dt0.005_nt0.1_lt0.5: worst evolved 73.0342%
+[434.9s] FOM fom_dt0.005_nt0.1_lt0.1: worst evolved 73.0342%
+[437.2s] FOM fom_dt0.005_nt0.03_lt0.5: worst evolved 67.6913%
+[439.5s] FOM fom_dt0.005_nt0.03_lt0.1: worst evolved 67.6913%
+[443.5s] FOM fom_dt0.005_nt0.01_lt0.5: worst evolved 3.9567%
+[447.3s] FOM fom_dt0.005_nt0.01_lt0.1: worst evolved 2.7709%
+[451.4s] FOM fom_dt0.005_nt0.003_lt0.5: worst evolved 2.9124%
+[455.5s] FOM fom_dt0.005_nt0.003_lt0.1: worst evolved 1.8464%
+[460.3s] FOM fom_dt0.005_nt0.001_lt0.5: worst evolved 0.8121%
+[464.8s] FOM fom_dt0.005_nt0.001_lt0.1: worst evolved 0.8114%
+[471.5s] FOM fom_dt0.005_nt0.0001_lt0.5: worst evolved 0.0498%
+[477.4s] FOM fom_dt0.005_nt0.0001_lt0.1: worst evolved 0.0498%
+[479.7s] FOM fom_dt0.01_nt0.1_lt0.5: worst evolved 68.7189%
+[481.9s] FOM fom_dt0.01_nt0.1_lt0.1: worst evolved 68.7189%
+[484.8s] FOM fom_dt0.01_nt0.03_lt0.5: worst evolved 28.2551%
+[487.6s] FOM fom_dt0.01_nt0.03_lt0.1: worst evolved 30.2036%
+[490.6s] FOM fom_dt0.01_nt0.01_lt0.5: worst evolved 2.8691%
+[493.6s] FOM fom_dt0.01_nt0.01_lt0.1: worst evolved 1.2018%
+[497.1s] FOM fom_dt0.01_nt0.003_lt0.5: worst evolved 1.7349%
+[500.4s] FOM fom_dt0.01_nt0.003_lt0.1: worst evolved 1.2486%
+[504.5s] FOM fom_dt0.01_nt0.001_lt0.5: worst evolved 1.4692%
+[508.4s] FOM fom_dt0.01_nt0.001_lt0.1: worst evolved 1.4449%
+[514.0s] FOM fom_dt0.01_nt0.0001_lt0.5: worst evolved 1.4604%
+[518.6s] FOM fom_dt0.01_nt0.0001_lt0.1: worst evolved 1.4599%
+[521.5s] FOM fom_dt0.025_nt0.01_lt0.5: worst evolved 4.9225%
+[524.9s] FOM fom_dt0.025_nt0.001_lt0.5: worst evolved 4.9169%
+[703.4s] timing phase A1 done (2208 invocations)
+[829.9s] timing phase B done (1248 invocations)
+[1005.0s] timing phase A2 done (2208 invocations)
+[1006.2s] timing gates drift 1.016 neighbour 1.028 determinism 0.00e+00
+[1006.2s] TIME span_R512_tensor: 406.90 ms
+[1006.2s] TIME span_R384_tensor: 189.39 ms
+[1006.2s] TIME span_R256_tensor: 73.41 ms
+[1006.2s] TIME span_R192_tensor: 43.09 ms
+[1006.2s] TIME span_R128_tensor: 24.56 ms
+[1006.2s] TIME span_R96_tensor: 18.93 ms
+[1006.2s] TIME span_R64_tensor: 12.83 ms
+[1006.2s] TIME span_R32_tensor: 9.91 ms
+[1006.2s] TIME span_R512_tensor_g1e-06: 442.11 ms
+[1006.2s] TIME span_R512_lat16: 121.17 ms
+[1006.2s] TIME span_R256_lat16: 57.75 ms
+[1006.2s] TIME span_R128_lat16: 35.64 ms
+[1006.2s] TIME span_R64_lat16: 19.90 ms
+[1006.2s] TIME head32_R512_tensor: 60.81 ms
+[1006.2s] TIME head32_R256_tensor: 37.68 ms
+[1006.2s] TIME head32_R128_tensor: 28.69 ms
+[1006.2s] TIME head64_R512_tensor: 86.11 ms
+[1006.2s] TIME head32_R512_lat16: 61.69 ms
+[1006.2s] TIME span_R512_tensor_fs1_dt0.005: 295.77 ms
+[1006.2s] TIME span_R384_tensor_fs1_dt0.005: 140.96 ms
+[1006.2s] TIME span_R256_tensor_fs1_dt0.005: 57.24 ms
+[1006.2s] TIME span_R192_tensor_fs1_dt0.005: 34.41 ms
+[1006.2s] TIME span_R128_tensor_fs1_dt0.005: 20.21 ms
+[1006.2s] TIME span_R96_tensor_fs1_dt0.005: 15.64 ms
+[1006.2s] TIME span_R64_tensor_fs1_dt0.005: 10.62 ms
+[1006.2s] TIME span_R512_tensor_fs1_dt0.01: 159.50 ms
+[1006.2s] TIME span_R384_tensor_fs1_dt0.01: 77.55 ms
+[1006.2s] TIME span_R256_tensor_fs1_dt0.01: 32.97 ms
+[1006.2s] TIME span_R192_tensor_fs1_dt0.01: 20.32 ms
+[1006.2s] TIME span_R128_tensor_fs1_dt0.01: 12.23 ms
+[1006.2s] TIME span_R96_tensor_fs1_dt0.01: 9.38 ms
+[1006.2s] TIME span_R64_tensor_fs1_dt0.01: 6.36 ms
+[1006.2s] TIME span_R512_tensor_fsa_dt0.005: 296.05 ms
+[1006.2s] TIME span_R384_tensor_fsa_dt0.005: 140.20 ms
+[1006.2s] TIME span_R256_tensor_fsa_dt0.005: 56.80 ms
+[1006.2s] TIME span_R192_tensor_fsa_dt0.005: 33.96 ms
+[1006.2s] TIME span_R128_tensor_fsa_dt0.005: 19.79 ms
+[1006.2s] TIME span_R96_tensor_fsa_dt0.005: 15.34 ms
+[1006.2s] TIME span_R64_tensor_fsa_dt0.005: 10.52 ms
+[1006.2s] TIME span_R512_tensor_fsa_dt0.01: 165.75 ms
+[1006.2s] TIME span_R384_tensor_fsa_dt0.01: 80.06 ms
+[1006.2s] TIME span_R256_tensor_fsa_dt0.01: 33.70 ms
+[1006.2s] TIME span_R192_tensor_fsa_dt0.01: 20.71 ms
+[1006.2s] TIME span_R128_tensor_fsa_dt0.01: 12.21 ms
+[1006.2s] TIME span_R96_tensor_fsa_dt0.01: 9.39 ms
+[1006.2s] TIME span_R64_tensor_fsa_dt0.01: 6.35 ms
+[1006.2s] TIME fom_dt0.005_nt0.1_lt0.5: 7.05 ms
+[1006.2s] TIME fom_dt0.005_nt0.1_lt0.1: 7.02 ms
+[1006.2s] TIME fom_dt0.005_nt0.03_lt0.5: 23.23 ms
+[1006.2s] TIME fom_dt0.005_nt0.03_lt0.1: 18.75 ms
+[1006.2s] TIME fom_dt0.005_nt0.01_lt0.5: 121.66 ms
+[1006.2s] TIME fom_dt0.005_nt0.01_lt0.1: 121.61 ms
+[1006.2s] TIME fom_dt0.005_nt0.003_lt0.5: 123.73 ms
+[1006.2s] TIME fom_dt0.005_nt0.003_lt0.1: 121.84 ms
+[1006.2s] TIME fom_dt0.005_nt0.001_lt0.5: 150.62 ms
+[1006.2s] TIME fom_dt0.005_nt0.001_lt0.1: 149.21 ms
+[1006.2s] TIME fom_dt0.005_nt0.0001_lt0.5: 263.98 ms
+[1006.2s] TIME fom_dt0.005_nt0.0001_lt0.1: 245.47 ms
+[1006.2s] TIME fom_dt0.01_nt0.1_lt0.5: 3.75 ms
+[1006.2s] TIME fom_dt0.01_nt0.1_lt0.1: 3.75 ms
+[1006.2s] TIME fom_dt0.01_nt0.03_lt0.5: 57.59 ms
+[1006.2s] TIME fom_dt0.01_nt0.03_lt0.1: 52.99 ms
+[1006.2s] TIME fom_dt0.01_nt0.01_lt0.5: 63.66 ms
+[1006.2s] TIME fom_dt0.01_nt0.01_lt0.1: 61.11 ms
+[1006.2s] TIME fom_dt0.01_nt0.003_lt0.5: 80.70 ms
+[1006.2s] TIME fom_dt0.01_nt0.003_lt0.1: 72.55 ms
+[1006.2s] TIME fom_dt0.01_nt0.001_lt0.5: 115.34 ms
+[1006.2s] TIME fom_dt0.01_nt0.001_lt0.1: 109.15 ms
+[1006.2s] TIME fom_dt0.01_nt0.0001_lt0.5: 186.34 ms
+[1006.2s] TIME fom_dt0.01_nt0.0001_lt0.1: 143.57 ms
+[1006.2s] TIME fom_dt0.025_nt0.01_lt0.5: 40.96 ms
+[1006.2s] TIME fom_dt0.025_nt0.001_lt0.5: 83.21 ms
+PANEL COMPLETE
+ALL-DONE

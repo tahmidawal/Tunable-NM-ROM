@@ -303,7 +303,14 @@ Fast path: Cholesky on the damped normal equation, clipped step, damping carried
 
 ## What failed, was retracted, or is provisional
 
-- See `PROGRESS.md` for the job-by-job record; anything listed there as failed or cancelled is not in the tables above.
+- $256^2$ accurate row stays **slower than the FOM**: 0.37× on dev6, 0.38× on hold64.
+- $256^2$ fast row stays **slower than the FOM**: 0.97× on dev6, 0.94× on hold64.
+- $512^2$ accurate row stays **slower than the FOM**: 0.60× on dev6, 0.61× on hold64.
+- $256^2$: the LM cap-1 knob is never selected — its worst errors, 3.230–8.687 %, 9 of 11 cap-1 knobs fail the certificate (9 unconfirmed knobs in total, all cap-1: True).
+- $512^2$: the LM cap-1 knob is never selected — its worst errors, 3.221–8.403 %, 2 of 11 cap-1 knobs fail the certificate (2 unconfirmed knobs in total, all cap-1: True).
+- $1024^2$: the LM cap-1 knob is never selected — its worst errors, 3.216–8.312 %, 0 of 6 cap-1 knobs fail the certificate (0 unconfirmed knobs in total, all cap-1: True).
+- Retracted before reporting: the audit's "before/after" factor for the two LM-budget-1 parent arms was first computed against the uncapped engineered arms (found by the Codex results audit, `checks/codex-results-audit-dev6.md`); fixed, summaries regenerated; no selection input changed. The selection files keep the sha256 of the summaries they were written from (git history has those bytes).
+- The held-out FOM comparator is re-chosen on hold64 by the same rule (fastest setting+mode at least as accurate as the accurate pick on hold64), as stated in DESIGN A0 before the held-out jobs.
 
 ## Glossary
 

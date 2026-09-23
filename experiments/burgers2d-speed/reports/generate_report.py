@@ -1,4 +1,4 @@
-"""Generate reports/2026-09-24-burgers2d-speed-small-meshes.md from checks/b*-summary.json and checks/h*-summary.json
+"""Generate reports/2026-09-23-burgers2d-speed-small-meshes.md from checks/b*-summary.json and checks/h*-summary.json
 (independent NumPy audits of the saved outputs). No number in the report is typed by hand.
 
     python reports/generate_report.py
@@ -10,7 +10,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LANE = HERE.parent
 MESHES = [256, 512, 1024]
-OUT = HERE / '2026-09-24-burgers2d-speed-small-meshes.md'
+OUT = HERE / '2026-09-23-burgers2d-speed-small-meshes.md'
 
 
 def f(x, d=3):
@@ -224,9 +224,28 @@ def main():
                      + f"; worst drift {f(dr.get('worst'))}, worst neighbour ratio {f(nb.get('worst'))} "
                        f"({nb.get('evaluable')} evaluable, not evaluable: {len(nb.get('not_evaluable') or [])}).")
     o.append('')
-    o += ['## What failed, was retracted, or is provisional', '',
-          '- See `PROGRESS.md` for the job-by-job record; anything listed there as failed or cancelled is not in the '
-          'tables above.', '']
+    o += ['## What failed, was retracted, or is provisional', '']
+    for L, (s, _) in dev.items():
+        t1 = s['selection'].get('table1') or {}
+        for k in ('accurate', 'fast'):
+            v = t1.get(k + '_speedup')
+            h = hold.get(L, ({}, None))[0].get('selection', {}).get('table1', {}).get(k + '_speedup') if L in hold else None
+            if v is not None and v < 1:
+                o.append(f"- ${L}^2$ {k} row stays **slower than the FOM**: {sp(v)} on dev6"
+                         + (f", {sp(h)} on hold64" if h is not None else '') + '.')
+    for L, (s, _) in dev.items():
+        bad = [k for k in s['knobs'].values() if k['certificate'] != 'confirmed']
+        caps = [k for k in s['knobs'].values() if k['cap']]
+        o.append(f"- ${L}^2$: the LM cap-1 knob is never selected — its worst errors, "
+                 f"{f(min(k['worst_evolved_percent'] for k in caps))}–{f(max(k['worst_evolved_percent'] for k in caps))} %, "
+                 f"{sum(1 for k in caps if k['certificate'] != 'confirmed')} of {len(caps)} cap-1 knobs fail the certificate "
+                 f"({len(bad)} unconfirmed knobs in total, all cap-1: {all(k['cap'] for k in bad)}).")
+    o += ['- Retracted before reporting: the audit\'s "before/after" factor for the two LM-budget-1 parent arms was first '
+          'computed against the uncapped engineered arms (found by the Codex results audit, `checks/codex-results-audit-dev6.md`); '
+          'fixed, summaries regenerated; no selection input changed. The selection files keep the sha256 of the summaries '
+          'they were written from (git history has those bytes).',
+          '- The held-out FOM comparator is re-chosen on hold64 by the same rule (fastest setting+mode at least as accurate as '
+          'the accurate pick on hold64), as stated in DESIGN A0 before the held-out jobs.', '']
 
     # ---- glossary ---------------------------------------------------------------------------------------------
     o += ['## Glossary', '',

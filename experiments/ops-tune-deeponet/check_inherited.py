@@ -32,7 +32,8 @@ INHERITED = ['dataset.py', 'model.py', 'evaluate_cohort.py', 'prepare_diagnosis_
 CHANGED = ['families.py', 'train.py', 'audit.py', 'check_inherited.py',
            'cluster/stage.py', 'cluster/collect.py']
 # New in this lane; no counterpart in the forked lane.
-NEW = ['gen_more.py', 'build_pool.py', 'worker_gen.py', 'worker_tune.py', 'compose.py']
+NEW = ['gen_more.py', 'build_pool.py', 'worker_gen.py', 'worker_tune.py', 'compose.py',
+       'make_fin_spec.py']
 # Claimed byte-identical to the pinned generator at GENERATOR.
 VENDORED = {'data.py': 'experiments/neural-operator-burgers/data.py',
             'refine.py': 'experiments/neural-operator-burgers/refine.py',

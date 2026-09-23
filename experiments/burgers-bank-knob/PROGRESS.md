@@ -11,5 +11,7 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
 | smoke1 | 4197296 | 128² | A100 | done, smoke only, remote deleted |
-| bk4096 | 4197441 | 4096² | H200 240G | submitted 02:35 EDT |
-| bk1024 | 4197443 | 1024² | A100-80G | submitted 02:35 EDT |
+| bk4096 | 4197441 | 4096² | H200 240G | cancelled while pending (same bug), never ran; remote removed |
+| bk1024 | 4197443 | 1024² | A100-80G | FAILED in 2 s: SyntaxError (repeated keyword `family`, introduced after smoke1); fixed f4c950a0; remote removed |
+| bk4096b | 4197473 | 4096² | H200 240G | submitted 02:45 EDT |
+| bk1024b | 4197475 | 1024² | A100-80G | submitted 02:45 EDT |

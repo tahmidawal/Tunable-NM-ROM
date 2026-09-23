@@ -1,0 +1,16 @@
+host=pax106 source_commit=4210adb1e15ed454545e37f9e1363ce698aa9c6e
+NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  365G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest (training)
+tables 32.1s
+data n=33 rows=384 steps=12 points=29791 worst residual 9.81e-09 42.2s
+data n=33 rows=48 steps=12 points=29791 worst residual 9.85e-09 6.3s
+data n=65 rows=384 steps=12 points=250047 worst residual 9.83e-09 78.0s
+data n=65 rows=48 steps=12 points=250047 worst residual 8.74e-09 10.9s
+data n=129 rows=384 steps=12 points=250047 worst residual 9.80e-09 484.3s
+data n=129 rows=48 steps=12 points=250047 worst residual 9.92e-09 66.0s
+group 33: S=4608 P=29791 POD modes 1536 dropped tail mean 3.039e-11 validation POD floor (worst) by rank {'64': 0.14558225102007968, '128': 0.06345170952551281, '256': 0.020727651066549932, '384': 0.013107511252199262, '512': 0.008646050067988173}
+group 65: S=4608 P=250047 POD modes 1536 dropped tail mean 7.933e-11 validation POD floor (worst) by rank {'64': 0.14916523598183387, '128': 0.06829105089418316, '256': 0.030726542959375578, '384': 0.021843161817046125, '512': 0.016103021437258832}
+group 129: S=4608 P=250047 POD modes 1536 dropped tail mean 1.426e-10 validation POD floor (worst) by rank {'64': 0.1518832370051309, '128': 0.07313580481486101, '256': 0.040893695365088564, '384': 0.029412059717542342, '512': 0.023621751675081914}
+BANK {"step": 50, "objective": -6.108742937641474, "train_mean_sq": 0.013531000531398685, "train_tail": 0.026996570096242675, "whitening": 0.051680046339836416, "validation_worst": {"33": 0.21593869312961522, "65": 0.22995930529536668, "129": 0.2548834895505648}, "validation_rms": {"33": 0.1095931117961587, "65": 0.11148066855055114, "129": 0.11294843400932526}, "seconds": 219.026776175946}

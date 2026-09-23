@@ -1,0 +1,21 @@
+jax_backend=gpu
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opstune_don_20260922/gen01/code/gen_more.py", line 338, in <module>
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opstune_don_20260922/gen01/code/gen_more.py", line 186, in generate
+    provenance=dict(data.provenance(jax), source_sha256=sources,
+                    ~~~~~~~~~~~~~~~^^^^^
+  File "/cluster/tufts/paralab/tawal01/opstune_don_20260922/gen01/code/data.py", line 97, in provenance
+    return dict(source_commit=commit, source_sha256=source_hashes(),
+                                                    ~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opstune_don_20260922/gen01/code/data.py", line 47, in source_hashes
+    return {str(path.relative_to(ROOT)): sha(path) for path in SOURCE_FILES}
+                                         ~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opstune_don_20260922/gen01/code/data.py", line 33, in sha
+    with Path(path).open("rb") as stream:
+         ~~~~~~~~~~~~~~~^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/pathlib/_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/cluster/tufts/paralab/tawal01/opstune_don_20260922/experiments/mr-burgers2d/engines.py'

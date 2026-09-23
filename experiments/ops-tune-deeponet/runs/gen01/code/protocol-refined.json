@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "dataset_seed": 20260914,
+  "pde_seed_code": 22,
+  "split_codes": {
+    "calibration": 0,
+    "train": 1,
+    "validation": 2
+  },
+  "counts": {
+    "calibration": 8,
+    "train": 128,
+    "validation": 32
+  },
+  "future_train_prefixes": [
+    512,
+    1024
+  ],
+  "training_intervals": 256,
+  "evaluation_intervals": [
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "anchor": {
+    "intervals": 4096,
+    "dt": 0.00015625
+  },
+  "candidates": [
+    {
+      "intervals": 256,
+      "dt": 0.00125
+    },
+    {
+      "intervals": 512,
+      "dt": 0.000625
+    },
+    {
+      "intervals": 1024,
+      "dt": 0.0003125
+    }
+  ],
+  "newton_tolerance": 1e-11,
+  "linear_tolerance": 1e-09,
+  "maximum_relative_residual": 2e-11,
+  "max_newton": 20,
+  "empirical_reference_budget": 0.001,
+  "reference_metric": "maximum over requested times of interior l2 difference divided by anchor initial interior l2 norm",
+  "reference_interpretation": "space/time refinement differences are empirical development evidence, not rigorous continuum error bounds",
+  "final_cohort": "sealed; no split code or generation command exists",
+  "focused_refinement": "Same 4096 spatial anchor, halved timestep after original empirical gate failed; original failure preserved separately."
+}

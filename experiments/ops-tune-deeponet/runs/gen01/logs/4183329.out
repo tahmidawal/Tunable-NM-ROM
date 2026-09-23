@@ -1,0 +1,9 @@
+host=pax050 source_commit=2cc1b86c006229d1d93a63a9bd2c29e3642ad1a9 job=4183329
+name, uuid, memory.total [MiB], driver_version
+NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB, 575.57.08
+10.235.106.20:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+data_verified_pinned=395
+torch 2.11.0+cu128 cuda True
+{"task": "self-check", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/gen_more.py", "self-check", "--output", "out/gen-self-check.json", "--pinned-index", "data/pinned/train/index.json"], "exit_code": 0, "started_unix": 1790121371.8626812, "ended_unix": 1790121380.6465778, "job_id": "4183329", "elapsed_seconds": 8.786014451179653}
+{"task": "generate", "command": ["/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python", "code/gen_more.py", "generate", "--out", "/cluster/tufts/paralab/tawal01/opstune_don_20260922/pool01", "--count", "4608", "--intervals", "256", "--candidates", "1024:0.0003125", "512:0.000625", "--milestones", "128", "512", "1024", "2048", "3072", "4608", "--pinned-index", "data/pinned/train/index.json", "--wall-budget-seconds", "25200", "--reserve-seconds", "1500"], "exit_code": 1, "started_unix": 1790121380.6527443, "ended_unix": 1790121383.2672138, "job_id": "4183329", "elapsed_seconds": 11.406649555079639}

@@ -3,12 +3,10 @@
 Copied from `experiments/ops-deeponet-b2d/train.py` (itself the parent FNO lane's driver).
 Every change below is guarded so that a config without the new keys trains exactly as before:
 
-  * `validations_per_budget` (or `validate_every_steps`) + `patience_evaluations` -- validation
-    cadence and early stopping measured in WALL FRACTION (or in optimisation steps) instead of
-    epochs, so one stopping rule holds across a training set that grows from 128 to 4608 cases
-    and every rung gets the same number of checkpoint-selection opportunities and the same
-    checkpoint I/O (DESIGN section 4.1). Absent => the inherited per-epoch cadence with
-    `patience` epochs.
+  * `validate_every_steps` + `patience_evaluations` -- validation cadence and early stopping
+    measured in optimisation steps instead of epochs, so one stopping rule holds across a
+    training set that grows from 128 to 4608 cases (DESIGN section 4.1). Absent => the
+    inherited per-epoch cadence with `patience` epochs.
   * `schedule: "cosine"` -- cosine decay driven by the fraction of the WALL budget elapsed,
     after `warmup_steps` of linear warm-up (DESIGN section 4.2). Absent => the inherited
     `ReduceLROnPlateau`.
@@ -89,7 +87,7 @@ def pool_arrays(pool, train_index, validation_index, limit):
     out = {}
     for key in ('input', 'target', 'parameters'):
         values = np.load(pool / f'{key}.npy', mmap_mode='r')[:count]
-        out[key] = torch.from_numpy(np.array(values))  # a writable copy of the read-only memmap
+        out[key] = torch.from_numpy(np.ascontiguousarray(values))
     return out, manifest, count
 
 
@@ -230,24 +228,17 @@ def train(args):
     adapter.check_dtypes(model)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
     cosine = config.get('schedule', 'plateau') == 'cosine'
-    # Wall-fraction cadence: every rung gets the same number of evaluations, hence the same
-    # checkpoint-selection opportunities and the same checkpoint I/O, inside its wall budget.
-    # (A 128-case epoch is 16 steps and a 4608-case epoch is 576, so a per-epoch or per-step
-    # rule is a different rule at every rung -- design audit M6/M7.)
-    per_budget = config.get('validations_per_budget')
-    interval = args.wall_seconds / per_budget if per_budget else None
     cadence = config.get('validate_every_steps')
-    plateau_patience = config.get('plateau_patience_evaluations',
-                                  20 if not (cadence or interval) else 16)
+    plateau_patience = config.get('plateau_patience_evaluations', 20 if not cadence else 8)
     scheduler = None if cosine else torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, factor=.5, patience=plateau_patience, min_lr=config.get('min_learning_rate', 1e-5))
     generator = torch.Generator().manual_seed(config['seed'])
     best, stale, history = float('inf'), 0, []
     warmup = int(config.get('warmup_epochs', 0))
-    patience = config['patience_evaluations'] if (cadence or interval) else config['patience']
+    patience = config['patience_evaluations'] if cadence else config['patience']
     started = time.monotonic()
     torch.cuda.reset_peak_memory_stats()
-    step, stop_reason, epoch, next_validation, losses = 0, None, 0, (interval or 0.), []
+    step, stop_reason, epoch = 0, None, 0
 
     def checkpoint_and_check(epoch, losses):
         """One validation evaluation: score, schedule, checkpoint, and the stop decision."""
@@ -276,9 +267,7 @@ def train(args):
             torch_rng=torch.get_rng_state(), cuda_rng=torch.cuda.get_rng_state_all(), permutation_rng=generator.get_state())
         if improved:
             save_checkpoint(args.out / 'best.pt', checkpoint)
-        # `last.pt` is written once, when the run ends: the inherited per-epoch write is 62 MB
-        # every ~1 s at 128 cases and every ~37 s at 4608, which would spend 36x more of an
-        # equal wall budget on I/O at the small rung (design audit M7).
+        save_checkpoint(args.out / 'last.pt', checkpoint)
         print(json.dumps({k: record[k] for k in ('epoch', 'step', 'train_mean_squared_relative_error',
                                                  'wall_seconds', 'best_so_far')}), flush=True)
         if STOP:
@@ -316,12 +305,9 @@ def train(args):
             optimizer.step()
             losses.append((float(loss.detach()), len(x)))
             step += 1
-            elapsed = time.monotonic() - started
-            due = (cadence and step % cadence == 0) or (interval and elapsed >= next_validation) \
-                or ((cadence or interval) and (STOP or elapsed >= args.wall_seconds))
+            due = cadence and (step % cadence == 0 or STOP
+                               or time.monotonic() - started >= args.wall_seconds)
             if due:
-                if interval:
-                    next_validation = max(elapsed, next_validation) + interval
                 stop_reason = checkpoint_and_check(epoch, losses)
                 losses = []
                 model.train()
@@ -329,7 +315,7 @@ def train(args):
                     break
         if stop_reason:
             break
-        if not (cadence or interval):
+        if not cadence:
             stop_reason = checkpoint_and_check(epoch, losses)
             if stop_reason:
                 break
@@ -337,14 +323,8 @@ def train(args):
         stop_reason = stop_reason or 'epoch_cap'
     if stop_reason is None:
         stop_reason = 'epoch_cap'
-    # A run must never end without an evaluation of its final state: an arm whose budget ends
-    # inside its first cadence window would otherwise have no `best.pt` to restore (design
-    # audit M19/19).
-    if not history or history[-1]['step'] != step:
-        checkpoint_and_check(epoch, losses)
-    save_checkpoint(args.out / 'last.pt', dict(model=model.state_dict(), config=config, pde=pde,
-        epoch=epoch, step=step, best=best, normalization=[v.cpu() for v in norm],
-        training_cases=len(training_records), stop_reason=stop_reason))
+    if not history:
+        raise RuntimeError('No validation evaluation completed; the budget is too small for the cadence')
     restored = torch.load(args.out / 'best.pt', map_location='cuda', weights_only=False)
     model.load_state_dict(restored['model'])
     # The reported errors and the saved prediction fields come from ONE batch-1 pass, so
@@ -382,8 +362,7 @@ def train(args):
         parameter_dtype=str(getattr(model, 'parameter_dtype', torch.float64)),
         epochs_completed=epoch + 1, steps_completed=step, evaluations_completed=len(history),
         training_cases=len(training_records), train_index_sha256=dataset.sha256(args.train_index),
-        validation_every_steps=cadence, validations_per_budget=per_budget,
-        validation_interval_seconds=interval, patience=patience,
+        validation_every_steps=cadence, patience=patience,
         schedule='cosine' if cosine else 'plateau',
         output_scale_mode=config.get('output_scale_mode', 'global'),
         stop_reason=stop_reason, stopped_by_signal=stop_reason == 'signal',

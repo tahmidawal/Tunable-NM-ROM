@@ -96,28 +96,6 @@ def gpu_modules():
     return jax, engines
 
 
-def provenance(jax, sources):
-    """`data.provenance` without its repository-layout assumption.
-
-    `data.provenance` calls `source_hashes()`, which is `path.relative_to(ROOT)` over paths
-    derived from `data.py`'s own location -- absent in the flat staged `code/` tree, where it
-    raises FileNotFoundError (job 4183329 died here after 45 s). Every other field is copied
-    verbatim; the source hashes are the vendored ones, already checked against the pinned
-    cache's index by `check_sources`.
-    """
-    import importlib.metadata
-    import platform
-    return dict(source_commit=os.environ.get('SOURCE_COMMIT'), source_sha256=sources,
-                job_id=os.environ.get('SLURM_JOB_ID'), gpu=jax.devices()[0].device_kind,
-                backend=jax.default_backend(), f64=bool(jax.config.jax_enable_x64),
-                matmul_precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'],
-                python=sys.version, platform=platform.platform(),
-                packages={name: importlib.metadata.version(name) for name in
-                          ('jax', 'jaxlib', 'numpy', 'scipy', 'optax')},
-                note='data.provenance with its repository-relative source_hashes replaced by the '
-                     'vendored hashes; every other field is data.provenance\'s own')
-
-
 def solve(jax, engines, query, dense, output_intervals, physical):
     """`data.solve` with its two-second clock warm-up removed.
 
@@ -148,21 +126,21 @@ def solve(jax, engines, query, dense, output_intervals, physical):
     return data.restrict(fields, output_intervals), iterations, residuals, elapsed
 
 
-def write_manifest(out, split, records):
+def write_manifest(out, records):
     lines = []
     for record in records:
-        lines.append(f"{record['sha256']}  {split}/{record['path']}")
-        lines.append(f"{record['solver_audit']['sha256']}  {split}/{record['solver_audit']['path']}")
-    index = out / split / 'index.json'
-    lines.append(f'{data.sha(index)}  {split}/index.json')
+        lines.append(f"{record['sha256']}  train/{record['path']}")
+        lines.append(f"{record['solver_audit']['sha256']}  train/{record['solver_audit']['path']}")
+    index = out / 'train/index.json'
+    lines.append(f'{data.sha(index)}  train/index.json')
     (out / 'DATA.sha256').write_text('\n'.join(lines) + '\n')
 
 
-def publish(out, split, report, records):
+def publish(out, report, records):
     """Write a self-consistent, `complete` index plus its manifest for the current prefix."""
     report = dict(report, count=len(records), complete=True, records=records)
-    data.write_json(out / split / 'index.json', report)
-    write_manifest(out, split, records)
+    data.write_json(out / 'train/index.json', report)
+    write_manifest(out, records)
     return report
 
 
@@ -193,8 +171,6 @@ def compare_with_pinned(pinned, index, params, fields):
 
 
 def generate(args):
-    if args.split != 'train' and args.intervals == 256:
-        raise RuntimeError('only the train split is generated at the production mesh')
     if args.pinned_index is None and args.intervals == 256:
         raise RuntimeError('--pinned-index is required at the production mesh: it is what the '
                            'vendored generator is verified against and what the target-protocol '
@@ -202,17 +178,13 @@ def generate(args):
     sources = check_sources(args.pinned_index)
     jax, engines = gpu_modules()
     out = Path(args.out).resolve()
-    split = args.split
-    (out / split).mkdir(parents=True, exist_ok=False)
+    (out / 'train').mkdir(parents=True, exist_ok=False)
     pinned = load_pinned(args.pinned_index)
     report = dict(schema_version=1, pde='burgers', kind='matched-neural-operator-dataset',
-                  split=split, count=0, mesh=args.intervals, complete=False,
+                  split='train', count=0, mesh=args.intervals, complete=False,
                   protocol_sha256=data.sha(HERE / 'protocol.json'),
-                  provenance=dict(provenance(jax, sources['sources']),
-                                  generator='gen_more.py', lane='experiments/ops-tune-deeponet',
-                                  vendored_verified_against=sources.get('verified_against'),
-                                  pinned_protocol_sha256=sources.get('pinned_protocol_sha256'),
-                                  protocol_in_use_sha256=sources.get('protocol_in_use')),
+                  provenance=dict(data.provenance(jax), source_sha256=sources,
+                                  generator='gen_more.py', lane='experiments/ops-tune-deeponet'),
                   records=[],
                   reference_setting=dict(intervals=None, dt=None,
                                          selected_by='gen_more profile; DESIGN section 2.3'),
@@ -222,7 +194,7 @@ def generate(args):
                                    interpretation=data.PROTOCOL['reference_interpretation']),
                   descriptors_are_model_inputs=False, final_cohort='sealed')
     started = time.monotonic()
-    physical = [engines.params_draw(data.case_seed(split, i), 1)[0] for i in range(args.count)]
+    physical = [engines.params_draw(data.case_seed('train', i), 1)[0] for i in range(args.count)]
 
     # -- profile ------------------------------------------------------------------
     profile = []
@@ -253,7 +225,7 @@ def generate(args):
                                        remaining_budget_seconds=budget,
                                        projected_seconds_for_count=chosen['projected_seconds_for_count'])
     print('CHOSEN ' + json.dumps(report['reference_setting']), flush=True)
-    data.write_json(out / split / 'index.json', report)
+    data.write_json(out / 'train/index.json', report)
 
     # -- bulk ---------------------------------------------------------------------
     query, dense = data.make_solver(engines, chosen['intervals'], chosen['dt'], args.intervals)
@@ -269,7 +241,7 @@ def generate(args):
                 report['stop_reason'] = f'generation budget reached at {len(records)} cases'
                 print('BUDGET STOP ' + report['stop_reason'], flush=True)
                 break
-            record = data.case_record(split, index)
+            record = data.case_record('train', index)
             fields, iterations, residuals, elapsed = solve(jax, engines, query, dense,
                                                            args.intervals, physical[index])
             if not np.array_equal(fields[0], engines.initial(args.intervals, physical[index])):
@@ -277,19 +249,19 @@ def generate(args):
             comparison = compare_with_pinned(pinned, index, physical[index].tolist(), fields)
             if comparison is not None:
                 comparisons.append(comparison)
-            generated = data.save_case(out / split, record, fields, physical[index], args.intervals,
+            generated = data.save_case(out / 'train', record, fields, physical[index], args.intervals,
                                        dict(intervals=chosen['intervals'], dt=chosen['dt'],
                                             max_relative_residual=float(residuals.max()),
                                             wall_seconds=elapsed,
                                             total_newton_iterations=int(iterations.sum()),
                                             role='declared cheaper reference setting; DESIGN section 2.3'))
             audit_name = record['case_id'] + '.solver.npz'
-            np.savez(out / split / audit_name, iterations=iterations, residuals=residuals)
-            generated['solver_audit'] = dict(path=audit_name, sha256=data.sha(out / split / audit_name))
+            np.savez(out / 'train' / audit_name, iterations=iterations, residuals=residuals)
+            generated['solver_audit'] = dict(path=audit_name, sha256=data.sha(out / 'train' / audit_name))
             records.append(generated)
             report['pinned_comparison'] = summarize(comparisons)
             if len(records) in milestones or index == args.count - 1:
-                publish(out, split, report, records)
+                publish(out, report, records)
                 print(f'MILESTONE {len(records)} elapsed={time.monotonic() - started:.0f}', flush=True)
             if index % 32 == 0:
                 print(f'GENERATED {record["case_id"]} seconds={elapsed:.2f} '
@@ -297,7 +269,7 @@ def generate(args):
     finally:
         report['pinned_comparison'] = summarize(comparisons)
         report['generation_seconds'] = time.monotonic() - started
-        final = publish(out, split, report, records)
+        final = publish(out, report, records)
         data.write_json(out / 'generation-report.json',
                         dict({k: v for k, v in final.items() if k != 'records'},
                              case_count=len(records), milestones=milestones,
@@ -346,9 +318,6 @@ if __name__ == '__main__':
     command.set_defaults(func=self_check)
     command = commands.add_parser('generate')
     command.add_argument('--out', required=True)
-    command.add_argument('--split', default='train', choices=['train', 'validation'],
-                         help='validation is for smoke use only; this lane grades on the pinned '
-                              'validation-32 and never on a regenerated one')
     command.add_argument('--count', type=int, default=4608)
     command.add_argument('--intervals', type=int, default=256)
     command.add_argument('--candidates', nargs='+', default=['1024:0.0003125', '512:0.000625'],

@@ -10,9 +10,17 @@ is edited.
 
 | | |
 |---|---|
-| status | lane open; design written; harness built; local smoke and cluster job **not yet run** |
-| jobs used | 0 of 4 |
-| running | none |
+| status | `qmn101` **submitted**: job **4185793**, A100-80G, 180G, 12 h, `qman_20260922/qmn101` |
+| jobs used | 1 of 4 |
+| running | 1 (the cap for this lane) |
+| audit | done before the submit — `checks/design-audit.md`, dispositions in `DESIGN.md` §A1; one BLOCKING finding fixed |
+| smoke | green after every amendment: 14 subjects, no drops, no failed gate, baseline case to 1.6e-14 |
+
+**The blocking finding, for whoever picks this up.** The ridge holdout used to split snapshot
+*columns*; the snapshot matrix concatenates trajectories at 26 states each, so it was holding out
+near-duplicates and could not see overfitting — it handed the *baseline* its weakest $W$. Measured,
+not argued: `checks/probe64.json`. It now splits by trajectory. If a future lane reuses
+`qman.fit`, keep that.
 
 ## The lane in one paragraph
 
@@ -36,7 +44,10 @@ single-job ratio.
 | `panel.py` | b-panel's driver + the `qman` family (diff listed in `COPIED-FROM.json`) |
 | `audit_panel.py` | the independent NumPy audit, `qman`-aware |
 | `smoke_panel.py` | local 64-interval smoke over every family, then the audit and report generator |
-| `config-256-qman.json` | the cluster job (`qmn101`) |
+| `config-256-qman.json` | the cluster job (`qmn101`) — 29 subjects: 21 reduced, 8 full-order |
+| `checks/design-audit.md` | the independent pre-job audit, verbatim |
+| `checks/probe64.json` | the measurement that confirmed the blocking finding |
+| `reports/make_table.py` | the table, `summary.json` and DESIGN §1's three answers, from the audit JSON |
 | `cluster/stage.py` | stage one attempt into `qman_20260922/<attempt>`; `collect.py` pulls it back |
 | `COPIED-FROM.json` | every copied file, its b-panel commit and hash, and what was changed |
 
@@ -68,6 +79,11 @@ $PY quadratic-manifold/cluster/collect.py qmn101
 
 ## Next
 
-1. Independent design audit → `checks/design-audit.md`, disposition into `DESIGN.md` §A1.
-2. Local smoke; then stage, submit and watch `qmn101`.
-3. Audit, report, lab-log entry.
+1. Watch 4185793; on completion run the audit, `reports/make_table.py`, the checksum-verified pull
+   (`cluster/collect.py qmn101`), then delete the remote job dir.
+2. Write `reports/2026-09-22-quadratic-manifold.md` from `reports/summary.json` — no hand-typed
+   numbers — answering DESIGN §1's three questions, and append the lab-log entry.
+3. Read the ladder with `DESIGN.md` §A1.1 in hand: check `ridge_at_grid_endpoint` and
+   $\lVert W\rVert_F$ per rung, and compare `qman32_quad_M128` with its two pre-declared
+   sensitivity arms (`qman32_quad_M512`, `qman32_quadg0p0001_M128`) before reading any rung as a
+   property of the method rather than of the selection rule or the test space.

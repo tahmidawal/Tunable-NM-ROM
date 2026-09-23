@@ -33,7 +33,8 @@ def load_model(model_dir, heads):
         f = Path(model_dir) / f'head_K{k}.pkl'
         h = pickle.loads(f.read_bytes())
         z = np.asarray(h['codes'])
-        out['heads'][k] = dict(params=tj(h['params']), Z=z, H=np.asarray(h['library_H']),
+        H = np.asarray(h['library_H']) if 'library_H' in h else np.asarray(jax.jit(C.head)(tj(h['params']), jnp.asarray(z)))
+        out['heads'][k] = dict(params=tj(h['params']), Z=z, H=H,
                                code_spread=float(np.sqrt(np.mean(np.sum((z - z.mean(0)) ** 2, axis=1)))))
         out['sha'][f.name] = C.sha_file(f)
     return out
@@ -156,8 +157,9 @@ def main():
         data[name] = d
         trust = cfg['trust_fraction'] * (model['spread'][str(s['Rp'])] if s['kind'] == 'span' else hk['code_spread'])
         s['trust'] = float(trust)
+        assert M >= (4 * s['Rp'] if s['kind'] == 'span' else 4 * s['K']) and M <= mesh['M_max'], (name, M)
         queries[name], coefs[name] = C.make_query(n, s['kind'], s['rule'], s['Rp'], M, K=s.get('K'), gtol=s['gtol'],
-                                                  step_budget=cfg['step_budget'], trust=trust)
+                                                  step_budget=cfg['step_budget'], trust=trust, kxyz=mesh['kxyz'])
         hps[name] = hk['params'] if hk is not None else {}
         rep['arms'][name] = dict(spec=s)
     save()
@@ -220,7 +222,7 @@ def main():
     rep['gates']['reference_residual'] = max(r['max_rel_residual'] for r in refrec)
     assert rep['gates']['reference_residual'] < 1e-9, refrec
     log(f'references done, worst residual {rep["gates"]["reference_residual"]:.2e}')
-    ridx = jnp.asarray(C.restrict_index(n, 17))
+    ridx = jnp.asarray(C.restrict_index(n, cfg.get('audit_lattice', 16)))
     errf = jax.jit(lambda f, r: jnp.linalg.norm(f - r, axis=1) / jnp.linalg.norm(r[0]))
     errr = jax.jit(lambda f, r, i: jnp.linalg.norm(f[:, i] - r[:, i], axis=1) / jnp.linalg.norm(r[0][i]))
     np.savez(out / 'fields' / 'reference_restricted.npz', **{f'c{j}': np.asarray(REF[j][:, ridx]) for j in cases},
@@ -351,7 +353,8 @@ def main():
             time.sleep(min(1.0, dt_))
 
     for phase, kind, names in (('A1', 'rom', list(arms)), ('B', 'fom', list(foms)), ('A2', 'rom', list(arms))):
-        order_ = [(nm, j) for nm in names if not arms.get(nm, {}).get('bad') for j in cases for _ in range(reps)]
+        order_ = [(nm, j) for nm in names if not arms.get(nm, {}).get('bad') and arms.get(nm, {}).get('rule') != 'exact'
+                  for j in cases for _ in range(reps)]
         prng.shuffle(order_)
         for nm, j in order_:
             timed(kind, nm, j, phase)
@@ -384,7 +387,18 @@ def main():
     rep['gates']['timing_drift_pass'] = bool(rep['gates']['timing_drift_worst'] <= 1.10)
     nb = float(np.mean(after_long) / np.mean(after_short)) if after_long and after_short else 1.0
     rep['gates']['timing_neighbour_ratio'] = nb
-    rep['gates']['timing_neighbour_pass'] = bool(nb <= 1.10)
+    fom_inv = [r for r in inv if r['kind'] == 'fom']
+    fmed = {}
+    for r in fom_inv:
+        fmed.setdefault((r['name'], r['case']), []).append(r['seconds'])
+    fmed = {k: np.median(v) for k, v in fmed.items()}
+    fl, fs = [], []
+    for prev, cur in zip(fom_inv[:-1], fom_inv[1:]):
+        v = cur['seconds'] / fmed[(cur['name'], cur['case'])]
+        (fl if tim[prev['name']]['median_ms'] >= 4 * tim[cur['name']]['median_ms'] else fs).append(v)
+    nbf = float(np.mean(fl) / np.mean(fs)) if fl and fs else 1.0
+    rep['gates']['timing_neighbour_ratio_fom'] = nbf
+    rep['gates']['timing_neighbour_pass'] = bool(nb <= 1.10 and nbf <= 1.10)
     rep['gates']['deterministic_outputs'] = max(r['max_diff_vs_quick'] for r in inv)
     log(f"timing gates drift {rep['gates']['timing_drift_worst']:.3f} neighbour {nb:.3f} "
         f"determinism {rep['gates']['deterministic_outputs']:.2e}")

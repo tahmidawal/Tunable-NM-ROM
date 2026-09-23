@@ -459,7 +459,7 @@ def make_head_fit(budget=200, gtol=1e-6):
     return fit
 
 
-def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jnp.inf, fit_budget=200):
+def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jnp.inf, fit_budget=200, kxyz=None):
     """Build the jitted query for one arm at mesh n.
 
     kind 'span' (unknowns c in R^{R'}) or 'head' (unknowns z in R^K, u = G_hat[:, :R'] h(z)[:R']);
@@ -474,8 +474,18 @@ def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jn
     def coef(w, hp):
         return w if kind == 'span' else head(hp, w)[:Rp]
 
+    if rule == 'exact':
+        eidx = tuple(jnp.asarray(np.asarray(kxyz)[:M, a]) for a in range(3))
+
+    def exact_adv(c, data):
+        return phiT(upwind(data['G'] @ c, n)[None], n, eidx)[0]
+
     def tested_adv(c, data):
         """(adv (M,), Ju (M, R')) of the rule at coefficients c."""
+        if rule == 'exact':          # control: the FOM's sign-upwind advection on every node, exact Jacobian
+            u = data['G'] @ c
+            cols = jax.vmap(lambda g: jax.jvp(lambda v: upwind(v, n), (u,), (g,))[1])(data['G'].T)
+            return exact_adv(c, data), phiT(cols, n, eidx).T
         if rule == 'tensor':
             Ju = jnp.einsum('mij,j->mi', data['Ts'], c)
             return 0.5 * Ju @ c, Ju
@@ -507,6 +517,8 @@ def make_query(n, kind, rule, Rp, M, K=None, gtol=1e-3, step_budget=50, trust=jn
         Ac = data['A'] @ c
         if rule == 'tensor':
             adv = 0.5 * jnp.einsum('mij,i,j->m', data['Ts'], c, c)
+        elif rule == 'exact':
+            adv = exact_adv(c, data)
         else:
             adv = data['Pq'].T @ adv_pts(jnp.einsum('msr,r->ms', data['G7'], c))
         return (Ac - prev + DT * (adv + nu * lam * Ac)) / (1.0 + DT * nu * lam)
@@ -564,8 +576,11 @@ def arm_data(mesh, kind, rule, Rp, M, lib=None):
     edges = mesh['edges']
     nb = edges.index(Rp)
     d = dict(Qb=tuple(mesh['Qb'][:nb]), Rq=mesh['Rq'][:Rp, :Rp], A=mesh['A'][:M, :Rp], lam=mesh['lam'][:M])
+    assert M <= mesh['A'].shape[0] and Rp <= mesh['A'].shape[1], (M, Rp, mesh['A'].shape)
     if rule == 'tensor':
         d['Ts'] = jnp.asarray(mesh['Tsym'][:M, :Rp, :Rp])
+    elif rule == 'exact':
+        d['G'] = jnp.asarray(mesh['G'][:, :Rp])
     else:
         d['G7'] = jnp.asarray(mesh['G7'][:, :, :Rp])
         d['Pq'] = jnp.asarray(mesh['Pq'][:, :M])
@@ -604,10 +619,12 @@ def rel_errors(fields, ref):
     return np.linalg.norm(f - r, axis=1) / n0
 
 
-def restrict_index(n, target=17):
-    """Interior indices of the common (target)-node sub-lattice x = k/(target-1) (for saved audit fields)."""
-    s = (n - 1) // (target - 1)
-    k = np.arange(1, target - 1) * s
+def restrict_index(n, per_axis=16):
+    """Interior indices of the OFFSET audit lattice x = (2k+1)/(2 per_axis), k = 0..per_axis-1 (16^3 nodes common
+    to every mesh, disjoint from the lat16 EQ lattice x = k/16)."""
+    s = (n - 1) // (2 * per_axis)
+    assert s >= 1 and s * 2 * per_axis == n - 1, n
+    k = (2 * np.arange(per_axis) + 1) * s
     I, J, K = np.meshgrid(k, k, k, indexing='ij')
     ni = n - 2
     return (((I - 1) * ni + (J - 1)) * ni + (K - 1)).ravel()

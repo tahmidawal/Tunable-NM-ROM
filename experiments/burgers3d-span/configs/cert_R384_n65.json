@@ -1,0 +1,144 @@
+{
+ "mesh": 65,
+ "lattice": 16,
+ "audit_lattice": 16,
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384
+ ],
+ "gtol": 0.001,
+ "step_budget": 50,
+ "trust_fraction": 0.05,
+ "rho_bar": 0.116,
+ "mode": "certify",
+ "arms": [
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 384
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 256
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 192
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 128
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 96
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 64
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 32
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 384,
+   "gtol": 1e-06
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 384
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 256
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 128
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 64
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 384,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 256,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 128,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 384,
+   "K": 64
+  },
+  {
+   "kind": "head",
+   "rule": "lat16",
+   "Rp": 384,
+   "K": 32
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 128,
+   "bad": true
+  }
+ ],
+ "cert_draws": [
+  [
+   923201,
+   8
+  ],
+  [
+   923202,
+   8
+  ],
+  [
+   923203,
+   8
+  ],
+  [
+   923204,
+   8
+  ],
+  [
+   923205,
+   8
+  ],
+  [
+   923206,
+   16
+  ]
+ ]
+}

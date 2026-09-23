@@ -1,0 +1,54 @@
+source_commit=e9f61d72314292d391250b3b0737cac494a4c5f5 job_id=4211204
+name, uuid, memory.total [MiB], driver_version
+NVIDIA H200, GPU-967d02be-9454-8cc1-4ee1-429c270b0eca, 143771 MiB, 575.57.08
+10.235.106.34:/projects/paralab  4.6T  4.3T  294G  94% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+torch_backend=cuda NVIDIA H200
+block op_fno worst% 3.98359 ms 460.412
+block op_unet worst% 2.76437 ms 155.387
+block op_transolver worst% 3.65774 ms 10.606
+block op_deeponet worst% 10.89613 ms 84.021
+block nmrom_q0_cn worst% 1.36159 ms 30.799
+block nmrom_q32_cn worst% 0.48761 ms 30.553
+block nmrom_q0_field_direct_tol1e-4_chol worst% 1.3616 ms 5.469
+block nmrom_q32_field_direct_tol1e-4_chol worst% 0.4876 ms 5.383
+block linear_bank_field_BASELINE worst% 0.13272 ms 2.137
+block linear_bank_moments_BASELINE worst% 0.13319 ms 1.342
+block linear_bank_moments_cn_BASELINE worst% 0.13319 ms 1.485
+block pod8_galerkin_cn worst% 22.45109 ms 0.492
+block pod8_lspg_cn worst% 22.45109 ms 0.498
+block pod8_galerkin_exact worst% 22.45109 ms 0.346
+block pod32_galerkin_cn worst% 0.98756 ms 0.844
+block pod32_lspg_cn worst% 0.98756 ms 0.84
+block pod32_galerkin_exact worst% 0.98756 ms 0.697
+block pod128_galerkin_cn worst% 0.04492 ms 2.249
+block pod128_lspg_cn worst% 0.04492 ms 2.246
+block pod128_galerkin_exact worst% 0.00111 ms 2.091
+block pod256_galerkin_cn worst% 0.04492 ms 4.158
+block pod256_lspg_cn worst% 0.04492 ms 4.163
+block pod256_galerkin_exact worst% 0.0 ms 4.001
+block qm8_cn worst% 3.97118 ms 6.906
+block qm8_field_direct_tol1e-4_chol worst% 3.97118 ms 2.907
+block qm16_cn worst% 0.48158 ms 10.268
+block qm16_field_direct_tol1e-4_chol worst% 0.48158 ms 5.373
+block qm32_cn worst% 0.17649 ms 13.592
+block qm32_field_direct_tol1e-4_chol worst% 0.49607 ms 11.794
+block dst_exact_CONTROL worst% 0.0 ms 1.933
+block coarse64_fom_cncg_dt0.05_rtol1e-3_CONTROL worst% 0.28698 ms 3.307
+block fom_cncg_dt0.1_rtol1e-2 worst% 0.82652 ms 174.981
+block fom_cncg_dt0.05_rtol1e-2 worst% 0.67514 ms 189.106
+block fom_cncg_dt0.025_rtol1e-2 worst% 0.83408 ms 219.181
+block fom_cncg_dt0.1_rtol1e-3 worst% 0.82529 ms 282.003
+block fom_cncg_dt0.05_rtol1e-3 worst% 0.18382 ms 279.787
+block fom_cncg_dt0.025_rtol1e-3 worst% 0.14737 ms 344.671
+block fom_cncg_dt0.05_rtol1e-4 worst% 0.18375 ms 443.806
+block fom_cncg_dt0.025_rtol1e-4 worst% 0.04491 ms 429.276
+block fom_cncg_dt0.025_rtol1e-6_NAMED worst% 0.04492 ms 820.438
+block fom_cncg_dt0.0125_rtol1e-6 worst% 0.01117 ms 939.988
+block fom_cncg_dt0.00625_rtol1e-8_TIGHT worst% 0.00279 ms 1509.13
+block nmrom_q32_field_direct_tol1e-4_chol__RETIME worst% 0.4876 ms 4.99
+block pod128_galerkin_cn__RETIME worst% 0.04492 ms 2.227
+block op_unet__RETIME worst% 2.76437 ms 155.482
+HEAT COMPARE PANEL COMPLETE {"order_effect": {"reference_ms": 2.2326544858515263, "max_relative_deviation": 0.12587898566488187, "tolerance": 0.1, "passed": false, "positive_control_min_relative_deviation": 61.36326659073384, "positive_control_fails_as_required": true}}
+run_exit=0

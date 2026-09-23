@@ -386,7 +386,7 @@ def main():
                            m=int(data['G5'].shape[0]), unknowns=d, exact_steps=j)
         rep['arm_setup'].append(dict(arm=name, family='rom', model=kind, R_prime=Rp, q=q, M=M, rule=s['rule'],
                                      m=int(data['G5'].shape[0]), unknowns=d, gtol=s['gtol'], variant=v,
-                                     exact_steps=j, trust=m_['trust'], role=s.get('role'), family=s.get('family'),
+                                     exact_steps=j, trust=m_['trust'], role=s.get('role'), arm_family=s.get('family'),
                                      control=bool(cfg['rules'][s['rule']].get('control')),
                                      timed=not s.get('untimed', False), certify=bool(s.get('certify', True)), **extra))
         return name

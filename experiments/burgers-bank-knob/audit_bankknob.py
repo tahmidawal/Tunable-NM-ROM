@@ -308,7 +308,7 @@ def main():
             st = setup[n]
             t.update(model=st['model'], R_prime=st['R_prime'], q=st['q'], M=st['M'], m=st['m'], rule=st['rule'],
                      unknowns=st['unknowns'], gtol=st['gtol'], exact_steps=st['exact_steps'],
-                     arm_family=st.get('family'),
+                     arm_family=st.get('arm_family'),
                      control=st.get('control'),
                      total_iterations_median=med([x['total_iterations'] for x in pc.values()]),
                      stalled_exits=int(sum(x['stalled_exits'] for x in pc.values())),

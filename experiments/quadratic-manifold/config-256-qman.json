@@ -174,7 +174,9 @@
     "qman8_quad_M32",
     "qman16_quad_M64",
     "qman32_quad_M128",
+    "qman32_quadg0p0001_M128",
     "qman64_quad_M256",
+    "qman32_quad_M512",
     "qman8_lin_M32",
     "qman16_lin_M64",
     "qman32_lin_M128",
@@ -209,5 +211,18 @@
   ],
   "qman_seed": 20260922,
   "qman_holdout": 0.2,
-  "qman_cold_axis_points": 96
+  "qman_cold_axis_points": 96,
+  "qman_extra_M": [
+    {
+      "r": 32,
+      "M": 512
+    }
+  ],
+  "qman_holdout_note": "fraction of TRAINING TRAJECTORIES held out for the ridge selection, not of snapshot columns: consecutive columns are near-duplicate states of one trajectory and a column split cannot see overfitting (DESIGN A1)",
+  "qman_extra_gamma": [
+    {
+      "r": 32,
+      "gamma": 0.0001
+    }
+  ]
 }

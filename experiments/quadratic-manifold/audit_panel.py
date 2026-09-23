@@ -95,7 +95,8 @@ def main():
     for g in ('directions_file_sha256', 'directions_prefix_hashes', 'repetition_output_identical',
               'fft_tight_converged_everywhere'):
         gate(g, bool(r['gates'].get(g, {}).get('passed')), r['gates'].get(g))
-    for g in ('direct_reproduces_fft_tight', 'fast_parity', 'fno_cohort_disjoint_from_training', 'transfer_fit_cert_disjoint'):
+    for g in ('direct_reproduces_fft_tight', 'fast_parity', 'quadratic_block_changes_the_answer',
+              'fno_cohort_disjoint_from_training', 'transfer_fit_cert_disjoint'):
         if g in r['gates']:
             gate(g, bool(r['gates'][g].get('passed')), r['gates'][g])
     gate('reference_residuals', all(x['max_relative_residual'] < 2e-11 for x in r['reference']),
@@ -272,7 +273,10 @@ def main():
             certified_secondary=rule.get('certified_secondary'), rule_source_job=rule.get('source_job'),
             ntol=t['ntol'], ltol=t['ltol'], preconditioner=t['preconditioner'],
             bank_columns=s.get('bank_columns'), quadratic_terms=s.get('quadratic_terms'),
-            qman_ridge=(s.get('manifold_fit') or {}).get('ridge'),
+            qman_ridge=(s.get('manifold_fit') or {}).get('ridge'), qman_forced_gamma=s.get('forced_gamma'),
+            qman_weight_frobenius_norm=(s.get('manifold_fit') or {}).get('weight_frobenius_norm'),
+            qman_heldout_trajectories=(s.get('manifold_fit') or {}).get('heldout_trajectories'),
+            qman_ridge_trace=(s.get('manifold_fit') or {}).get('ridge_trace'),
             qman_heldout_relative=(s.get('manifold_fit') or {}).get('heldout_relative'),
             qman_snapshot_relative_linear_only=(s.get('manifold_fit') or {}).get('snapshot_relative_linear_only'),
             qman_snapshot_relative_with_quadratic=(s.get('manifold_fit') or {}).get('snapshot_relative_with_quadratic'),
@@ -308,13 +312,18 @@ def main():
         row.pop('median_of_case_median_gpu_ms', None)
     floors = {}
     for e in r['reconstruction']:
-        key = ('pod', e.get('k')) if e.get('family') == 'pod' else ('rom', e.get('q'))
+        key = (('pod', e.get('k')) if e.get('family') == 'pod' else
+               ('qman', e.get('k'), e.get('variant')) if e.get('family') == 'qman' else
+               ('rom', e.get('q')))
         floors[key] = dict(best_found_percent=100 * e['worst_best_found'],
                            bank_projection_percent=(100 * e['worst_bank_projection']
                                                     if 'worst_bank_projection' in e else None))
     for x in rows:
         if x['family'] == 'pod':
             fl = floors.get(('pod', x['k'])) or {}
+            best = fl.get('best_found_percent')
+        elif x['family'] == 'qman':
+            fl = floors.get(('qman', x['k'], x.get('variant'))) or {}
             best = fl.get('best_found_percent')
         elif x['family'] in ('rom', 'fast'):
             fl = floors.get(('rom', x['q'])) or {}
@@ -328,8 +337,9 @@ def main():
             fl, best = {}, None
         x['best_found_percent'] = best
         x['best_found_kind'] = ('bank projection (all R coefficients)' if x['family'] == 'free'
+                                else ('quadratic-manifold best-found fit' if x['family'] == 'qman'
                                 else ('POD span projection' if x['family'] == 'pod'
-                                      else ('head manifold best-found' if best is not None else None)))
+                                      else ('head manifold best-found' if best is not None else None))))
         x['bank_projection_percent'] = fl.get('bank_projection_percent')
         x['solved_over_best_found'] = (x['worst_all_times_percent'] / best if best else None)
     by = {x['arm']: x for x in rows}

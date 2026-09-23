@@ -45,17 +45,28 @@ def head(r, quadratic):
     return lambda a: jnp.concatenate((one, a, a[iu] * a[ju]))
 
 
-def fit(Ut, r, gammas, seed, holdout):
+def fit(Ut, r, gammas, seed, holdout, states_per_trajectory):
     """Fit (u_ref, V_r, W) on the snapshot matrix `Ut` of shape (n, Ns).
 
-    The ridge gamma is chosen on a seeded held-out split of the SNAPSHOTS -- never on the
-    evaluation cohort -- by relative reconstruction error of the quadratic term against the
+    The ridge gamma is chosen on a seeded held-out split of the TRAINING SNAPSHOTS -- never on
+    the evaluation cohort -- by relative reconstruction error of the quadratic term against the
     linear term's residual, then W is refitted on all snapshots at the chosen gamma. Every
     gamma's held-out error is recorded, so the selection is auditable from the JSON alone.
+
+    The split is BY TRAJECTORY, not by snapshot column (DESIGN A1, finding 5a). The snapshot
+    matrix concatenates trajectories, so consecutive columns are states dt apart in a smooth
+    viscous flow -- near-duplicates. A uniform column holdout leaves almost every held-out
+    column's own temporal neighbours in the training half, the criterion cannot see overfitting,
+    and it rewards interpolation: at 64 intervals it chose gamma = 0 at r = 8, whose W then
+    reconstructed the snapshots 800x better and made the ROM arm non-convergent, 25 % WORSE than
+    its own linear control and 10x more expensive (`checks/probe64-*.json`). Holding out whole
+    trajectories removes that leak.
     """
     t0 = time.perf_counter()
     r = int(r)
     n, Ns = Ut.shape
+    per = int(states_per_trajectory)
+    assert per > 0 and Ns % per == 0, (Ns, per)
     P = terms(r)
     uref = jnp.mean(Ut, axis=1)
     Sc = Ut - uref[:, None]
@@ -66,9 +77,13 @@ def fit(Ut, r, gammas, seed, holdout):
     Pi = coefficients[jnp.asarray(iu)] * coefficients[jnp.asarray(ju)]      # (P, Ns)
 
     rng = np.random.default_rng(int(seed))
-    order = rng.permutation(Ns)
-    nte = max(1, int(round(float(holdout) * Ns)))
-    te, tr = np.sort(order[:nte]), np.sort(order[nte:])
+    traj = np.arange(Ns) // per
+    ntraj = int(traj[-1]) + 1
+    order = rng.permutation(ntraj)
+    nte_traj = max(1, int(round(float(holdout) * ntraj)))
+    held = np.isin(traj, order[:nte_traj])
+    te, tr = np.flatnonzero(held), np.flatnonzero(~held)
+    assert len(te) and len(tr)
     Ptr, Pte = Pi[:, tr], Pi[:, te]
     Mtr = Ptr @ Ptr.T
     scale = float(jnp.trace(Mtr)) / P
@@ -79,23 +94,40 @@ def fit(Ut, r, gammas, seed, holdout):
     for g in gammas:
         Wg = jnp.linalg.solve(Mtr + float(g) * scale * eye, Ctr.T).T
         err = float(jnp.linalg.norm(Wg @ Pte - E[:, te])) / max(norm_te, 1e-300)
-        trace.append(dict(gamma=float(g), heldout_relative=err))
-        if best is None or err < best[1]:
+        finite = bool(np.isfinite(err))
+        trace.append(dict(gamma=float(g), heldout_relative=(err if finite else None), finite=finite))
+        # A non-finite score must never win. `best` used to be seeded by the FIRST gamma, and the
+        # grid starts at 0: one NaN there locked gamma = 0 in with a NaN W, which then failed the
+        # driver's finiteness assertion in the middle of the timed loop (DESIGN A1, finding 5b).
+        if finite and (best is None or err < best[1]):
             best = (float(g), err)
         del Wg
+    assert best is not None, f'every ridge in {list(gammas)} gave a non-finite held-out score'
     gamma, heldout = best
-    W = jnp.linalg.solve(Pi @ Pi.T + gamma * scale * eye, (E @ Pi.T).T).T    # (n, P), all snapshots
+    Mfull = Pi @ Pi.T
+    scale_full = float(jnp.trace(Mfull)) / P          # the refit is scaled by its OWN Gram
+    W = jnp.linalg.solve(Mfull + gamma * scale_full * eye, (E @ Pi.T).T).T   # (n, P), all snapshots
     jax.block_until_ready(W)
+    assert bool(jnp.all(jnp.isfinite(W))), f'non-finite W at r={r}, gamma={gamma}'
 
     nrm = float(jnp.linalg.norm(Sc))
     linear_only = float(jnp.linalg.norm(E)) / max(nrm, 1e-300)
     quadratic_in = float(jnp.linalg.norm(W @ Pi - E)) / max(nrm, 1e-300)
-    ev = np.asarray(jnp.linalg.eigvalsh(Mtr))
+    ev = np.asarray(jnp.linalg.eigvalsh(Mfull))
+    # eigvalsh returns a small NEGATIVE smallest eigenvalue for a numerically singular PSD Gram,
+    # which would make the headline conditioning diagnostic negative and meaningless; the sign is
+    # reported beside a floored ratio instead (DESIGN A1, finding 5c).
+    ev_min = float(ev[0])
     info = dict(rank=r, quadratic_terms=P, bank_columns=1 + r + P, snapshots=int(Ns),
                 ridge=gamma, ridge_trace=trace, ridge_grid=[float(g) for g in gammas],
-                heldout_relative=heldout, heldout_fraction=float(holdout), heldout_snapshots=int(nte),
-                selection_seed=int(seed), gram_scale=scale,
-                gram_condition=float(ev[-1] / max(ev[0], 1e-300)), gram_min_eigenvalue=float(ev[0]),
+                heldout_relative=heldout, heldout_fraction=float(holdout),
+                heldout_trajectories=int(nte_traj), trajectories=int(ntraj),
+                heldout_snapshots=int(len(te)), states_per_trajectory=per,
+                split='by trajectory (DESIGN A1)',
+                selection_seed=int(seed), gram_scale=scale, gram_scale_full=scale_full,
+                weight_frobenius_norm=float(jnp.linalg.norm(W)),
+                gram_min_eigenvalue_negative=bool(ev_min < 0),
+                gram_condition=float(ev[-1] / max(ev_min, np.finfo(float).tiny)), gram_min_eigenvalue=ev_min,
                 snapshot_relative_linear_only=linear_only,
                 snapshot_relative_with_quadratic=quadratic_in,
                 pod_energy_total=float(energy), pod_eigenvalues=np.asarray(eig).tolist(),
@@ -103,7 +135,7 @@ def fit(Ut, r, gammas, seed, holdout):
                 centred=True, basis='POD of the centred snapshots (u_ref = snapshot mean)',
                 seconds=time.perf_counter() - t0)
     out = dict(uref=uref, V=V, W=W, coefficients=np.asarray(coefficients.T), info=info)
-    del Sc, E, Pi, Ptr, Pte, Mtr, Ctr
+    del Sc, E, Pi, Ptr, Pte, Mtr, Mfull, Ctr
     return out
 
 
@@ -129,9 +161,20 @@ def demo():
     W0 = 0.05 * rng.normal(size=(n, terms(r)))
     a = rng.normal(size=(r, Ns))
     U = uref[:, None] + V0 @ a + W0 @ (a[iu] * a[ju])
-    m = fit(jnp.asarray(U), r, (0., 1e-10, 1e-8, 1e-6, 1e-4, 1e-2), seed=0, holdout=0.2)
+    m = fit(jnp.asarray(U), r, (0., 1e-10, 1e-8, 1e-6, 1e-4, 1e-2), seed=0, holdout=0.2,
+            states_per_trajectory=20)
     i = m['info']
     assert i['ridge'] in i['ridge_grid'] and 0 < i['heldout_relative'] < 1
+    assert i['trajectories'] == 20 and i['heldout_trajectories'] == 4 and i['heldout_snapshots'] == 80
+    assert i['split'].startswith('by trajectory') and i['weight_frobenius_norm'] > 0
+    assert all(t['finite'] for t in i['ridge_trace'])
+    # a grid of only non-finite scores must raise, not silently keep the first gamma
+    try:
+        fit(jnp.asarray(np.full_like(U, np.nan)), r, (0.,), seed=0, holdout=0.2, states_per_trajectory=20)
+    except (AssertionError, FloatingPointError):
+        pass
+    else:
+        raise AssertionError('a non-finite fit was accepted')
     assert i['snapshot_relative_with_quadratic'] < 0.6 * i['snapshot_relative_linear_only'], i
     assert i['bank_columns'] == 1 + r + terms(r) and i['quadratic_terms'] == 6
 

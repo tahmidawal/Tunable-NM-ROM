@@ -126,6 +126,7 @@ def main():
                subjects=res['timed_subjects'], gates={k: v.get('passed') for k, v in res['gates'].items()})
     print('DRIVER smoke64', round(run['seconds'], 1), len(res['timed_subjects']), 'subjects', flush=True)
 
+    cfg0 = json.loads((HERE / 'config-smoke64.json').read_text())
     au = scratch / 'smoke64/audit.json'
     subprocess.run([PY, str(HERE / 'audit_panel.py'), str(od / 'result.json'), '--fields', str(od),
                     '--out', str(au), '--comparators', str(HERE / 'checks/comparators.json')], check=True)
@@ -133,7 +134,8 @@ def main():
     run['audit_failed'] = aj['failed']
     run['arms'] = {x['arm']: dict(family=x['family'], evolved=x['worst_evolved_percent'],
                                   gpu_ms=x['median_gpu_ms'], converged=x['converged_design5'],
-                                  admissible=x['admissible'], bank_columns=x.get('bank_columns'))
+                                  admissible=x['admissible'], bank_columns=x.get('bank_columns'),
+                                  best_found=x.get('best_found_percent'))
                    for x in aj['arms']}
     assert not aj['failed'], aj['failed']
 
@@ -147,10 +149,16 @@ def main():
     assert r0 <= 1e-12, r0
     print('GATE1c baseline', r0, flush=True)
     assert res['gates']['fast_parity']['passed'], res['gates']['fast_parity']
+    assert res['gates']['quadratic_block_changes_the_answer']['passed'], \
+        res['gates']['quadratic_block_changes_the_answer']
+    # DESIGN A1: the representation floor must exist for every qman arm, or a large evolved error
+    # cannot be attributed to the manifold rather than to the solve
+    fam = {(e['k'], e['variant']) for e in res['reconstruction'] if e['family'] == 'qman'}
+    assert fam == {(r_, v) for r_ in cfg0['qman_ranks'] for v in cfg0['qman_variants']}, fam
     assert res['gates']['direct_reproduces_fft_tight']['passed'], res['gates']['direct_reproduces_fft_tight']
 
     # ---- gate 3: the quadratic block is real and changes the answer -----------
-    cfg = json.loads((HERE / 'config-smoke64.json').read_text())
+    cfg = cfg0
     art = {(i['name'], i['case']): i['artifact'] for i in res['invocations']}
     cases = sorted({i['case'] for i in res['invocations']})
     qm = []
@@ -161,6 +169,11 @@ def main():
         assert sq['bank_columns'] == 1 + r_ + QM.terms(r_) and sl['bank_columns'] == 1 + r_, (sq, sl)
         assert sq['quadratic_terms'] == QM.terms(r_) and sl['quadratic_terms'] == 0
         assert sq['manifold_fit']['ridge'] in sq['manifold_fit']['ridge_grid']
+        # DESIGN A1: the ridge split is by TRAJECTORY, and W is finite and non-trivial
+        fi = sq['manifold_fit']
+        assert fi['split'].startswith('by trajectory') and fi['heldout_trajectories'] >= 1
+        assert fi['trajectories'] * fi['states_per_trajectory'] == fi['snapshots']
+        assert fi['weight_frobenius_norm'] > 0 and all(t['finite'] for t in fi['ridge_trace'])
         d = min(rel(np.load(od / art[(nq, c)])['fields'], np.load(od / art[(nl, c)])['fields']) for c in cases)
         assert d > 1e-6, (r_, d)
         qm.append(dict(rank=r_, bank_columns=sq['bank_columns'], ridge=sq['manifold_fit']['ridge'],
@@ -168,6 +181,11 @@ def main():
                        snapshot_linear_only=sq['manifold_fit']['snapshot_relative_linear_only'],
                        snapshot_with_quadratic=sq['manifold_fit']['snapshot_relative_with_quadratic'],
                        min_quad_vs_lin_field_relative=d,
+                       weight_frobenius_norm=sq['manifold_fit']['weight_frobenius_norm'],
+                       heldout_trajectories=sq['manifold_fit']['heldout_trajectories'],
+                       cold_axis_points=sq['cold_axis_points'],
+                       converged_quad=run['arms'][nq]['converged'], converged_lin=run['arms'][nl]['converged'],
+                       best_found_quad=run['arms'][nq]['best_found'], best_found_lin=run['arms'][nl]['best_found'],
                        evolved_quad=run['arms'][nq]['evolved'], evolved_lin=run['arms'][nl]['evolved'],
                        gpu_ms_quad=run['arms'][nq]['gpu_ms'], gpu_ms_lin=run['arms'][nl]['gpu_ms']))
     out['quadratic_manifold'] = qm

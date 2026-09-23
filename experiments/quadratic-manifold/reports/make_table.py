@@ -95,6 +95,11 @@ def main():
             quad_arm=q_ and q_['arm'], lin_arm=l_ and l_['arm'], pod_arm=(pod.get(k) or {}).get('arm'),
             quadratic_terms=q_ and q_.get('quadratic_terms'), bank_columns=q_ and q_.get('bank_columns'),
             ridge=q_ and q_.get('qman_ridge'), heldout_relative=q_ and q_.get('qman_heldout_relative'),
+            weight_frobenius_norm=q_ and q_.get('qman_weight_frobenius_norm'),
+            ridge_trace=q_ and q_.get('qman_ridge_trace'),
+            ridge_at_grid_endpoint=(None if not q_ or q_.get('qman_ridge') is None or not q_.get('qman_ridge_trace')
+                                    else bool(q_['qman_ridge'] in (min(t['gamma'] for t in q_['qman_ridge_trace']),
+                                                                   max(t['gamma'] for t in q_['qman_ridge_trace'])))),
             snapshot_relative_linear_only=q_ and q_.get('qman_snapshot_relative_linear_only'),
             snapshot_relative_with_quadratic=q_ and q_.get('qman_snapshot_relative_with_quadratic'),
             worst_evolved_quad=q_ and q_['worst_evolved_percent'],
@@ -191,7 +196,8 @@ def main():
         fom_discretisation_error_percent=d.get('fom_discretisation_error_percent'),
         rows=[{k: r[k] for k in (
             'arm', 'kind', 'family', 'variant', 'q', 'k', 'M', 'solved_dimension', 'bank_columns',
-            'quadratic_terms', 'qman_ridge', 'qman_heldout_relative', 'qman_snapshot_relative_linear_only',
+            'quadratic_terms', 'qman_ridge', 'qman_forced_gamma', 'qman_weight_frobenius_norm',
+            'qman_heldout_trajectories', 'qman_heldout_relative', 'qman_snapshot_relative_linear_only',
             'qman_snapshot_relative_with_quadratic', 'worst_evolved_percent', 'median_evolved_percent',
             'worst_all_times_percent', 'median_all_times_percent', 'worst_reference_percent',
             'worst_t0_compression_percent', 'median_gpu_ms', 'median_host_ms', 'per_case_evolved_percent',

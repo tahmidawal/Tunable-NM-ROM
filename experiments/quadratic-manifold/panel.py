@@ -144,6 +144,22 @@ def declare_subjects(cfg, K, R, sets):
             assert variant in ('quad', 'lin'), variant
             specs.append(dict(name=f'qman{r_}_{variant}_M{4 * r_}', family='qman', k=r_, M=4 * r_,
                               variant=variant, quadrature='dense', gtol=strict['gtol'], priority=3.5))
+    # DESIGN A1: one M-sensitivity arm, so "the quadratic manifold lost" and "M = 4r was too small
+    # for a trial space of 1 + r + r(r+1)/2 columns" are separable.
+    # DESIGN A1: one RIDGE-sensitivity arm at a declared fixed gamma. The selection rule may sit at
+    # a grid endpoint (too little regularisation overfits W and the LSPG solve stalls; too much
+    # makes the quadratic block vanish and the arm collapse onto its own linear control). The value
+    # is declared BEFORE the job in the config, never picked after seeing evaluation error.
+    for ex in cfg.get('qman_extra_gamma', []):
+        r_, g_ = int(ex['r']), float(ex['gamma'])
+        specs.append(dict(name=f'qman{r_}_quad{gt(g_)}_M{4 * r_}', family='qman', k=r_, M=4 * r_,
+                          variant='quad', forced_gamma=g_, quadrature='dense', gtol=strict['gtol'],
+                          priority=3.7))
+    for ex in cfg.get('qman_extra_M', []):
+        r_, M_ = int(ex['r']), int(ex['M'])
+        assert M_ != 4 * r_, ex
+        specs.append(dict(name=f'qman{r_}_quad_M{M_}', family='qman', k=r_, M=M_, variant='quad',
+                          quadrature='dense', gtol=strict['gtol'], priority=3.6))
     for q in cfg.get('extra_dense_q', []):
         M = int(cfg['extra_dense_M'])
         specs.append(dict(name=f'q{q}_M{M}_dense_{gt(strict["gtol"])}', family='rom', q=q, M=M,
@@ -322,7 +338,7 @@ def main():
     jax.block_until_ready(Rb)
     ranks = sorted(set(cfg.get('pod_ranks', [])))
     qranks = sorted(set(cfg.get('qman_ranks', [])))
-    qman_maps = {}
+    qman_maps, qman_forced = {}, {}
     # The quadratic manifolds are built from the same snapshot matrix as the POD arms, so the
     # snapshot block must run; a config that asks for one without the other is rejected here.
     assert not qranks or ranks, 'qman_ranks needs pod_ranks: both are built from the same snapshots'
@@ -342,15 +358,28 @@ def main():
         # one ridge-regularised linear solve per rung, no training run. The ridge is selected on
         # a seeded held-out split of these snapshots and never on the evaluation cohort.
         for r_ in qranks:
-            m_ = QM.fit(Ut, r_, cfg['qman_gammas'], cfg['qman_seed'], cfg['qman_holdout'])
+            m_ = QM.fit(Ut, r_, cfg['qman_gammas'], cfg['qman_seed'], cfg['qman_holdout'],
+                        sinfo['states_per_trajectory'])
             qman_maps[r_] = m_
             report['quadratic_manifold'].append(dict(m_['info'], snapshot_sha256=sinfo['snapshot_sha256'],
                                                      coefficients_sha256=sha_array(m_['coefficients'])))
             print('QMAN r', r_, 'P', m_['info']['quadratic_terms'], 'ridge', m_['info']['ridge'],
+                  'heldout_traj', m_['info']['heldout_trajectories'], '|W|', f"{m_['info']['weight_frobenius_norm']:.4g}",
                   'heldout', round(m_['info']['heldout_relative'], 6),
                   'lin/quad', round(m_['info']['snapshot_relative_linear_only'], 6),
                   round(m_['info']['snapshot_relative_with_quadratic'], 6),
                   round(m_['info']['seconds'], 1), flush=True)
+            save()
+        for ex in cfg.get('qman_extra_gamma', []):
+            r_, g_ = int(ex['r']), float(ex['gamma'])
+            m_ = QM.fit(Ut, r_, [g_], cfg['qman_seed'], cfg['qman_holdout'], sinfo['states_per_trajectory'])
+            qman_forced[(r_, g_)] = m_
+            report['quadratic_manifold'].append(dict(m_['info'], forced_gamma=g_,
+                                                     snapshot_sha256=sinfo['snapshot_sha256'],
+                                                     coefficients_sha256=sha_array(m_['coefficients'])))
+            print('QMAN r', r_, 'FORCED ridge', g_, '|W|', f"{m_['info']['weight_frobenius_norm']:.4g}",
+                  'lin/quad', round(m_['info']['snapshot_relative_linear_only'], 6),
+                  round(m_['info']['snapshot_relative_with_quadratic'], 6), flush=True)
             save()
         del Ut
         jax.clear_caches()
@@ -610,6 +639,55 @@ def main():
                                              worst_best_found=float(max(r['best_found_max'] for r in rows))))
         del span
         save()
+    # DESIGN A1 (finding 6): the quadratic manifold's own representation floor. Without it a large
+    # evolved error cannot be attributed -- manifold cannot represent the field, or LSPG cannot
+    # find it on the manifold. The `t0` compression column runs through the initializer and so
+    # conflates the two; this is the best-found fit with the shared LM, untimed and OOM-tolerant.
+    # Starts: the exact linear projection a0 = V_r^T (target - u_ref), the natural initial guess
+    # for a quadratic manifold, plus the nearest training coordinates to it.
+    for r_ in sorted(qman_maps):
+        for variant in sorted({sp['variant'] for sp in specs if sp['family'] == 'qman' and sp['k'] == r_}):
+            quad = (variant == 'quad')
+            t0 = time.perf_counter()
+            try:
+                mp = qman_maps[r_]
+                Bq = QM.bank_columns(mp, quad)
+                hd = QM.head(r_, quad)
+                co = jnp.asarray(mp['coefficients'])
+                recon = A.make_reconstruction(hd, r_, L, cfg['recon_budget'], linear=lin(r_))
+                rows = []
+                for case in refs:
+                    ref = refs[case]
+                    n0 = float(np.linalg.norm(ref[0]))
+                    man_err = []
+                    for ti in range(ref.shape[0]):
+                        target = jnp.asarray(ref[ti][1:-1, 1:-1].ravel())
+                        a0 = mp['V'].T @ (target - mp['uref'])
+                        near = jnp.argsort(jnp.sum((co - a0) ** 2, 1))[:max(cfg['recon_starts'] - 1, 1)]
+                        starts = jnp.concatenate((a0[None], co[near]))
+                        z, rn, it, reason = host(recon(starts, target, Bq))
+                        man_err.append(float(rn) / n0)
+                    rows.append(dict(case=case, best_found_per_time=man_err,
+                                     best_found_max=float(np.max(man_err))))
+                entry = dict(family='qman', k=r_, variant=variant, solved_dimension=r_, cases=rows,
+                             worst_best_found=float(max(x['best_found_max'] for x in rows)),
+                             starts=int(cfg['recon_starts']), budget=int(cfg['recon_budget']),
+                             seconds=time.perf_counter() - t0)
+                del Bq
+            except Exception as exc:          # noqa: BLE001 - an untimed diagnostic must not kill the job
+                if not is_oom(exc):
+                    raise
+                report['dropped'].append(dict(name=f'reconstruction_qman{r_}_{variant}', family='diagnostic',
+                                              phase='reconstruction', reason=str(exc)[:400],
+                                              seconds=time.perf_counter() - t0))
+                print('DROPPED (reconstruction, OOM) qman', r_, variant, flush=True)
+                jax.clear_caches()
+                save()
+                continue
+            report['reconstruction'].append(entry)
+            print('RECON qman', r_, variant, round(entry['worst_best_found'] * 100, 5),
+                  round(entry['seconds'], 1), flush=True)
+            save()
     jax.clear_caches()
 
     # ---------------------------------------------------------- subjects -----
@@ -688,7 +766,7 @@ def main():
             # identical u_ref and V_r). Residual, test projection, initializer, LM driver, budgets,
             # tolerance and output contract are `arms`' shared ones, exactly as for POD-LSPG.
             r_, M, quad = s['k'], s['M'], (s['variant'] == 'quad')
-            mp = qman_maps[r_]
+            mp = qman_forced[(r_, s['forced_gamma'])] if s.get('forced_gamma') is not None else qman_maps[r_]
             Bq = QM.bank_columns(mp, quad)
             gb = A.GridBank(Bq, L)
             head = QM.head(r_, quad)
@@ -698,8 +776,17 @@ def main():
             # the quadratic block takes D from r to 1 + r + r(r+1)/2, which at r = 64 is 2145
             # against the shared rule's 48^2 = 2304 points. `qman_cold_axis_points` raises the
             # rule for this family only; declared in DESIGN section 3.2 as a necessary deviation.
-            axis = int(cfg.get('qman_cold_axis_points', cfg['cold_axis_points']))
+            # DESIGN A1: the SHARED 48-point rule is kept wherever it is still over-determined in
+            # the bank's own columns (every rung through r = 32); only a rung that needs more is
+            # raised, so the low ranks stay bitwise cost-comparable with POD at the same rank.
+            axis = int(cfg['cold_axis_points'])
+            if axis ** 2 <= 2 * int(Bq.shape[1]):
+                axis = int(cfg.get('qman_cold_axis_points', axis))
             assert axis ** 2 > 2 * int(Bq.shape[1]), (axis, Bq.shape)
+            # DESIGN section 6's qman gates, asserted HERE and not only in the 64-interval smoke,
+            # so they also hold at the rungs the smoke never reaches (DESIGN A1, finding 8.3).
+            assert int(Bq.shape[1]) == 1 + r_ + (QM.terms(r_) if quad else 0), (r_, quad, Bq.shape)
+            assert mp['info']['ridge'] in mp['info']['ridge_grid'], mp['info']['ridge']
             cold, cinfo = A.build_cold(gb, head, co, axis)
             tr = radius(co)
             query = A.make_query(head, r_, L, dt, tr, 'dense', linear=lin(r_), ic_budget=strict['ic_budget'],
@@ -707,7 +794,8 @@ def main():
             setup = dict(arm=s['name'], family='qman', k=r_, M=M, m=None, quadrature='dense', gtol=s['gtol'],
                          solved_dimension=r_, linear_solve=lin(r_), step_budget=strict['step_budget'],
                          ic_budget=strict['ic_budget'], trust_radius=tr, cold=cinfo, variant=s['variant'],
-                         quadratic=bool(quad), bank_columns=int(Bq.shape[1]),
+                         quadratic=bool(quad), bank_columns=int(Bq.shape[1]), cold_axis_points=axis,
+                         forced_gamma=s.get('forced_gamma'),
                          quadratic_terms=(QM.terms(r_) if quad else 0), manifold_fit=mp['info'],
                          fit=('quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the '
                               'same truth snapshots' if quad else
@@ -880,6 +968,20 @@ def main():
             report['gates']['fast_parity'] = dict(passed=bool(worst_f <= cfg['fast_parity_bar'] and same_ints),
                                                   worst_relative=worst_f, integers_identical=same_ints,
                                                   bar=cfg['fast_parity_bar'], against=s['parity_against'], cases=per)
+    # DESIGN section 6 / A1: a silently-zero W would reproduce the linear arm exactly and read as
+    # "the quadratic term does not help". At every rank the two arms' output fields must differ.
+    pairs = []
+    for r_ in sorted(qman_maps):
+        nq, nl = f'qman{r_}_quad_M{4 * r_}', f'qman{r_}_lin_M{4 * r_}'
+        if nq not in built or nl not in built:
+            continue
+        d = min(rel(fields_kept[(nq, c)][0], fields_kept[(nl, c)][0]) for c in range(len(physical)))
+        pairs.append(dict(rank=r_, arms=[nq, nl], min_relative_difference=d, differ=bool(d > 1e-6)))
+    if pairs:
+        report['gates']['quadratic_block_changes_the_answer'] = dict(
+            passed=all(x['differ'] for x in pairs), pairs=pairs,
+            note='the quad and lin arms share u_ref and V_r exactly; only W differs')
+
     hashes = {}
     for x in report['invocations']:
         hashes.setdefault((x['name'], x['case']), set()).add(x['field_sha256'])

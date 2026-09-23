@@ -135,12 +135,16 @@ it is reported as such either way.
 The shared initializer fits the supplied field on the subject's own manifold at a fixed
 $48\times48=2304$-point Gauss rule. That rule is over-determined in the bank's columns for every
 incumbent family ($D\le512$) but **not** for `qman` at $r=64$ ($D=2145$). The `qman` family
-therefore uses a $96\times96=9216$-point rule (`qman_cold_axis_points`), asserted in the driver to
-satisfy $\text{points} > 2D$. This is offline setup only: the online initial fit still solves an
-$D$-dimensional least-squares system in $r$ unknowns, so the timed cost is unchanged by the
-deviation. Both `quad` and `lin` arms use the same 96-point rule, so the with/without-$W$
-comparison is unaffected; the `pod` arms keep the incumbent 48-point rule, so a `qman` `lin` row
-is **not** bitwise a `pod` row and is not claimed to be (§3.3).
+therefore raises the rule to $96\times96=9216$ points (`qman_cold_axis_points`) **only on a rung
+that needs it**; the driver keeps the incumbent 48-point rule wherever $\text{points}>2D$ still
+holds, which is every rung through $r=32$ ($2\times561<2304$), and asserts the condition either way.
+Only the $r=64$ pair is raised, so `qman8/16/32` stay cost-comparable with `pod8/16/32` at the same
+rank. The raised rule is **not** free at run time — `ui = e.sample_field(u0, xy, L)*w` and
+$y=Q^\top u_i$ run inside the timed query — but it is order microseconds and the kernel count is
+unchanged; the arm's `cold_axis_points` is reported in its row so the reader can see which rungs
+carry it. Both `quad` and `lin` arms at a rank share the rule, so the with/without-$W$ comparison is
+unaffected; the `pod` arms keep the incumbent rule and a `qman` `lin` row is **not** bitwise a `pod`
+row and is not claimed to be (§3.3).
 
 ### 3.3 What the `lin` arm is, and what it is not
 
@@ -188,6 +192,20 @@ residual.
 A `qman` arm that does not converge is **reported with its numbers and excluded from the
 admissible non-dominated set**, exactly as any other family would be. Non-convergence of the
 quadratic manifold is a finding about the method at that $r$, not a licence to retune it.
+
+**Carve-out (§A1).** Non-convergence that is attributable to *this harness* rather than to the
+method is not reported as a property of the method. Three such causes are named in advance, each
+with the evidence that would identify it and the response, and no other cause may be added after
+the data is seen:
+
+| cause | how it is identified from the recorded columns | response |
+|---|---|---|
+| an over-regularised or under-regularised $W$ | the selected $\gamma$ sits at an endpoint of the declared grid, and the pre-declared ridge-sensitivity arm at the same rank (§3.1) behaves differently | both rows are printed; the finding is about the *selection rule*, and the method's row is the better-behaved of the two, labelled |
+| the unpivoted Gauss-Jordan solve at $\le64$ unknowns | `qman64_quad` shows rejected or budget exits that `pod64` at the same rank does not | reported as a solver artifact of the shared contract, not as a property of the quadratic manifold |
+| the initial fit stalling on a nonlinear-in-$a$ head | the initial-fit gradient and relative residual columns fail while every time step passes | reported as an initializer artifact; the representation floor (§4) says whether the manifold could have held the field at all |
+
+In every case the number is still printed and the cause is stated beside it. The carve-out permits
+an **attribution**, never a rerun to improve a number — §8's stop rules (a) and (d) stand.
 
 ## 6. Gates (all must pass for a number to enter the report)
 
@@ -239,7 +257,15 @@ Pre-registered readings, stated before the data exists:
   not cover.
 * **Cost.** Whatever the accuracy, the online cost of the $O(r^2)$ Jacobian is reported as
   measured, not inferred, and the FOM-rule speedup of every `qman` row is given beside the
-  NM-ROM's from the same job.
+  NM-ROM's from the same job. **The fair headline comparison is dense against dense** (§A1): the
+  `qman` arms run the exact advection sum, while the NM-ROM's headline rows run a certified
+  empirical-quadrature rule and, for the fast setting, b-speed's optimised kernel. Geelen–Wright–
+  Willcox and Barnett–Farhat both pair the quadratic manifold with hyper-reduction (DEIM / ECSW);
+  this lane constructs none for it, because a certified rule is a lane's worth of work. A cost
+  ratio quoted against the EQ or fast NM-ROM rows therefore measures, in part, the absence of
+  hyper-reduction for the baseline, and **every such ratio carries that sentence**. The dense
+  NM-ROM arms `q0_M64_dense` and `q256_M1088_dense` are in this job precisely so the like-for-like
+  ratio exists.
 
 **The panel is unusable and this lane reports failure if**: any $10^{-9}$ fidelity gate fails (the
 panel would not be measuring the archived model), or `fft_tight` does not converge on every case
@@ -281,8 +307,93 @@ sealed cohorts, does not run the neural-operator arms, does not touch the root `
 another worktree or another namespace, and does not push or merge. One checkpoint, one training
 seed, six opened development cases, one mesh.
 
-## A1 — 2026-09-22, before any job: the independent design audit
+## A1 — 2026-09-22, before any job: the independent design audit, and the amendments it forced
 
-The protocol's pre-job independent audit was run against this document and the lane's code. Its
-findings and their disposition are recorded here before the first submit; see
-`checks/design-audit.md` for the full report.
+The protocol's pre-job independent audit was run against this document and the lane's code before
+the first submit. The full report is `checks/design-audit.md`; every disposition is below.
+
+**Codex could not run.** `codex exec -m gpt-6-astra -s read-only` was launched first, as the
+protocol asks, and its sandbox failed to start on this box — `bwrap: loopback: Failed RTM_NEWADDR:
+Operation not permitted`. It returned an explicit audit-access blocker having read nothing, rather
+than an opinion; that is the correct behaviour and it is recorded, not worked around. An
+independent subagent auditor was commissioned with the identical eight-question brief.
+
+### A1.1 The blocking finding, and the measurement that confirmed it
+
+The ridge selection of §2 held out a random 20 % of snapshot **columns**. The snapshot matrix
+concatenates trajectories at 26 states each, so consecutive columns are states $\Delta t=0.01$
+apart in a smooth viscous flow — near-duplicates. A uniform column holdout leaves almost every
+held-out column's own temporal neighbours in the training half, so the criterion cannot see
+overfitting and rewards interpolation. **This systematically hands the baseline its weakest $W$**,
+which is the worst possible defect in a lane whose purpose is to give a competing method a fair
+row.
+
+It was confirmed by measurement before anything was changed, not argued. The 64-interval smoke's
+$r=8$ rung was refitted with the ridge **forced** to $10^{-4}$ instead of the $0.0$ the column
+split selected, everything else identical (`checks/config-probe64.json`, evidence
+`checks/probe64.json`):
+
+| | column split, $\gamma=0$ | forced $\gamma=10^{-4}$ |
+|---|---|---|
+| converged (§5) | **no** | **yes** |
+| max LM iterations | 520 | 12 |
+| worst step stationarity | $8.7\times10^{-4}$ | $\le10^{-6}$ |
+| worst evolved % | 83.27 | **64.92** |
+| vs its own `lin` control (66.38 %) | 25 % **worse** | **better** |
+| vs POD-8 (66.61 %) | worse | **better** |
+| median GPU ms | 143.0 | **21.7** |
+
+The rule, not the method, produced the failure. **§2 is amended: the ridge holdout is by
+TRAJECTORY**, ~26 of the 128 held out at $256^2$, seeded as before, still touching only training
+data and never the evaluation cohort. `qman.fit` takes `states_per_trajectory` from the snapshot
+generator and asserts the column count divides by it.
+
+**The opposite tail is now visible too, and is not tuned away.** With the trajectory split the
+64-interval smoke — which has only 4 training trajectories, so 3 fit and 1 held out — selects the
+grid's **top** value $\gamma=1$, which shrinks $W$ to $\lVert W\rVert_F=0.0026$ and collapses the
+`quad` arm onto its `lin` control (66.382 % against 66.376 %). That is a small-sample artifact of a
+4-trajectory smoke, not a prediction for 128 trajectories, and the response is **not** to retune
+the criterion — that would be selecting the baseline's regularisation for a better-looking answer.
+The response is to make the outcome legible: see A1.2's ridge-sensitivity arm, the recorded
+$\gamma$ trace and $\lVert W\rVert_F$ per rung, and §5's carve-out.
+
+**Reading a boundary selection, pre-registered here.** If the criterion selects an endpoint of the
+declared grid at $256^2$, the row says so (`ridge_at_grid_endpoint` in the summary). At the top
+endpoint it means the quadratic term does not generalise across held-out trajectories on this
+problem — widening the grid upward would only shrink $W$ further, so the endpoint is
+self-consistent and the finding stands. At the bottom endpoint ($\gamma=0$) it means the criterion
+saw no overfitting penalty at all, and the ridge-sensitivity arm is the control that says whether
+that cost anything.
+
+### A1.2 Every finding and its disposition
+
+| # | severity | finding | disposition |
+|---|---|---|---|
+| 5a | **BLOCKING** | leaky column-level ridge holdout | **Fixed**, after the confirming measurement above. `qman.fit` splits by trajectory; §2 amended; the smoke asserts `split == 'by trajectory'` and that trajectories × states = snapshots |
+| 5b | should-fix (high) | a non-finite score in the $\gamma$ loop locks in $\gamma=0$ with a NaN $W$, killing the job mid-timing | **Fixed.** A non-finite score can never win; a grid of only non-finite scores raises; `assert isfinite(W)` after the refit; `demo()` checks that a non-finite fit is rejected |
+| 5c | note | `scale` from the 80 % Gram applied to the full-Gram refit; `gram_condition` can come out negative; $\lVert W\rVert_F$ recorded nowhere | **Fixed.** The refit uses its own Gram's scale; the condition number is floored and the negative-eigenvalue case flagged; $\lVert W\rVert_F$ is recorded per rung and surfaced into the table |
+| 6 | should-fix | no representation floor for `qman`, so a large error cannot be attributed to the manifold vs the solve | **Fixed.** An untimed, OOM-tolerant best-found fit per `qman` arm, started from the exact linear projection $a_0=V_r^\top(u-u_{\rm ref})$ plus its nearest training coordinates; wired through the audit's `best_found_percent` |
+| 4 | should-fix | §3.2's claim that the raised initializer rule costs nothing at run time is false | **Fixed both ways.** §3.2 corrected, and the rule is now raised **per rank** — 48 through $r=32$, 96 only at $r=64$ — so only the rung that needs it deviates |
+| 8.3 | note | the `qman` gates ran only in the smoke, never at $r=64$ | **Fixed.** Bank-column count and $\gamma$-in-grid are asserted in the driver at build; the quad-vs-lin field-difference gate is an in-job gate the independent audit re-checks |
+| 2 | should-fix | $M=4r$ may under-resolve a 2145-column trial space; a loss would not be separable from test-space truncation | **Accepted.** One $M$-sensitivity arm added, `qman32_quad` at $M=512$ against the ladder's $M=128$ |
+| — | new, from the smoke | the selection rule can sit at either grid endpoint | **Accepted.** One **pre-declared** ridge-sensitivity arm added, `qman32_quad` at a fixed $\gamma=10^{-4}$. The value is in the config before the job and is never chosen after seeing evaluation error |
+| 8.1 | should-fix | §7's cost bullet omits that `qman` has no hyper-reduction while the NM-ROM headline rows do | **Fixed.** §7 now pre-registers dense-vs-dense as the fair headline ratio and requires the qualification on any ratio against the EQ or fast rows |
+| 8.2 | should-fix | §5 has no carve-out for harness-attributable non-convergence | **Fixed.** §5 carries a carve-out naming the three admissible causes in advance, each with its identifying evidence; it permits attribution, never a rerun |
+| 3 (note) | note | §A1 cited a `checks/design-audit.md` that did not exist | **Fixed.** The report is committed at that path; this section is written from it |
+| 2 (GJ), 7 | note | the unpivoted Gauss-Jordan solve is a bigger risk for `qman64` than `pod64`; memory fits with ~10 GB steady state | **Noted, no change.** The GJ risk is the second row of §5's carve-out table; the memory finding confirms the plan and needs nothing |
+
+Two arms were added, so the $256^2$ job now declares **29** subjects (21 reduced, 8 full-order
+settings in 3 programs) against the 27 of §3.1 as first written; the $r$ ladder, the variants, the
+tolerance, the metrics, the gates and the pass/fail readings are unchanged. Both new arms are named
+in `config-256-qman.json`'s `priority_override` and are built after the eight ladder arms, so the
+OOM rule still takes `pod256`/`pod512` first.
+
+### A1.3 What the audit did not find
+
+No evaluation-data selection anywhere, in the design or the code. The trial map is the papers'
+method, and where it deviates it deviates in the baseline's **favour** — $W$ is unrestricted in
+$\mathbb R^{n\times P}$, of which Barnett–Farhat's $W=\bar V\bar W$ is a special case. The timing
+contract is comparable with the POD, NM-ROM and full-order rows. The wiring — the bank/head algebra,
+the `jacfwd` Jacobian, the initial-fit path, `GridBank`'s zero padding under homogeneous Dirichlet
+boundaries — is correct. The job fits on an 80 GB A100 with roughly 10 GB steady state against a
+72 GB budget, and `priority_override` is right if it does not.

@@ -7,8 +7,8 @@
   },
   "baseline_saved_case": {
     "arm": "q0_M64_eqcert_g1em06",
-    "relative_l2_to_saved_case": 1.8311499585206676e-14,
-    "latent_relative_l2": 6.457367866127525e-13,
+    "relative_l2_to_saved_case": 1.566965806738837e-14,
+    "latent_relative_l2": 6.109776000220976e-13,
     "budget_exits": 0,
     "converged": true
   },
@@ -16,33 +16,47 @@
     {
       "rank": 4,
       "bank_columns": 15,
-      "ridge": 0.0001,
-      "heldout_relative": 0.04223689999114159,
-      "snapshot_linear_only": 0.12457753486251989,
-      "snapshot_with_quadratic": 0.03841735775244967,
-      "min_quad_vs_lin_field_relative": 0.07522257471763036,
-      "evolved_quad": 67.32578563867835,
+      "ridge": 1.0,
+      "heldout_relative": 0.07777516738444124,
+      "snapshot_linear_only": 0.12457753486251988,
+      "snapshot_with_quadratic": 0.11142882524211517,
+      "min_quad_vs_lin_field_relative": 0.011201054550195013,
+      "weight_frobenius_norm": 0.007484855335667455,
+      "heldout_trajectories": 1,
+      "cold_axis_points": 48,
+      "converged_quad": true,
+      "converged_lin": true,
+      "best_found_quad": 101.65662561945337,
+      "best_found_lin": 102.2008465899412,
+      "evolved_quad": 70.56904350176703,
       "evolved_lin": 71.34333192236254,
-      "gpu_ms_quad": 20.298024497606093,
-      "gpu_ms_lin": 15.886503999354318
+      "gpu_ms_quad": 16.420199997810414,
+      "gpu_ms_lin": 16.010477502277354
     },
     {
       "rank": 8,
       "bank_columns": 45,
-      "ridge": 0.0,
-      "heldout_relative": 0.0018324650695237398,
-      "snapshot_linear_only": 0.03576736643513126,
-      "snapshot_with_quadratic": 4.457935643010621e-05,
-      "min_quad_vs_lin_field_relative": 0.7053735940559787,
-      "evolved_quad": 83.27344668302207,
+      "ridge": 1.0,
+      "heldout_relative": 0.044557217691535714,
+      "snapshot_linear_only": 0.03576736643513125,
+      "snapshot_with_quadratic": 0.03445826334678797,
+      "min_quad_vs_lin_field_relative": 0.0013301105477778285,
+      "weight_frobenius_norm": 0.0025762092819416266,
+      "heldout_trajectories": 1,
+      "cold_axis_points": 48,
+      "converged_quad": true,
+      "converged_lin": true,
+      "best_found_quad": 98.80003960041034,
+      "best_found_lin": 98.80369007827895,
+      "evolved_quad": 66.38178420326157,
       "evolved_lin": 66.37564463653204,
-      "gpu_ms_quad": 142.9589394974755,
-      "gpu_ms_lin": 14.684721500088926
+      "gpu_ms_quad": 17.831806999311084,
+      "gpu_ms_lin": 14.642734498920618
     }
   ],
   "cluster_config_declarations": {
     "config-256-qman.json": {
-      "subjects": 27,
+      "subjects": 29,
       "override": [
         "q0_M64_dense_g1em06",
         "q256_M1088_dense_g1em06",
@@ -52,7 +66,9 @@
         "qman8_quad_M32",
         "qman16_quad_M64",
         "qman32_quad_M128",
+        "qman32_quadg0p0001_M128",
         "qman64_quad_M256",
+        "qman32_quad_M512",
         "qman8_lin_M32",
         "qman16_lin_M64",
         "qman32_lin_M128",
@@ -68,8 +84,8 @@
   },
   "runs": {
     "smoke64": {
-      "seconds": 0.002078842997434549,
-      "reused_existing_output": true,
+      "seconds": 119.50590894299967,
+      "reused_existing_output": false,
       "subjects": [
         "fft_tight",
         "dense_tight",
@@ -79,6 +95,8 @@
         "q0_M64_eqcert_g1em06_fastL4",
         "qman4_quad_M16",
         "qman8_quad_M32",
+        "qman8_quadg0p0001_M32",
+        "qman8_quad_M64",
         "qman4_lin_M16",
         "qman8_lin_M32",
         "pod8_M32_dense",
@@ -90,6 +108,7 @@
         "directions_prefix_hashes": true,
         "direct_reproduces_fft_tight": true,
         "fast_parity": true,
+        "quadratic_block_changes_the_answer": true,
         "repetition_output_identical": true,
         "matched_rule_files_bitwise": null,
         "fft_tight_converged_everywhere": true
@@ -98,106 +117,136 @@
       "arms": {
         "q0_M64_dense_g1em06": {
           "family": "rom",
-          "evolved": 0.7644347328614239,
-          "gpu_ms": 189.81717549831956,
+          "evolved": 0.7644347328607192,
+          "gpu_ms": 186.11883349876734,
           "converged": true,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": 2.2959496706751534
         },
         "q0_M64_eqcert_g1em06": {
           "family": "rom",
-          "evolved": 1.137956671058166,
-          "gpu_ms": 86.0422865007422,
+          "evolved": 1.1379566710580147,
+          "gpu_ms": 86.12337950398796,
           "converged": true,
           "admissible": false,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": 2.2959496706751534
         },
         "q0_M64_eqcert_g1em06_fastL4": {
           "family": "fast",
-          "evolved": 1.1379566710578433,
-          "gpu_ms": 61.56269450002583,
+          "evolved": 1.1379566710578115,
+          "gpu_ms": 61.541864000901114,
           "converged": true,
           "admissible": false,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": 2.2959496706751534
         },
         "pod8_M32_dense": {
           "family": "pod",
           "evolved": 66.60504263459045,
-          "gpu_ms": 15.069916003994877,
+          "gpu_ms": 14.966440001444425,
           "converged": true,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": 99.0232327895711
         },
         "pod16_M64_dense": {
           "family": "pod",
           "evolved": 65.32931515677038,
-          "gpu_ms": 21.308710503944894,
+          "gpu_ms": 21.177193499170244,
           "converged": true,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": 97.32577770287926
         },
         "qman4_lin_M16": {
           "family": "qman",
           "evolved": 71.34333192236254,
-          "gpu_ms": 15.886503999354318,
+          "gpu_ms": 16.010477502277354,
           "converged": true,
           "admissible": true,
-          "bank_columns": 5
+          "bank_columns": 5,
+          "best_found": 102.2008465899412
         },
         "qman4_quad_M16": {
           "family": "qman",
-          "evolved": 67.32578563867835,
-          "gpu_ms": 20.298024497606093,
+          "evolved": 70.56904350176703,
+          "gpu_ms": 16.420199997810414,
           "converged": true,
           "admissible": true,
-          "bank_columns": 15
+          "bank_columns": 15,
+          "best_found": 101.65662561945337
         },
         "qman8_lin_M32": {
           "family": "qman",
           "evolved": 66.37564463653204,
-          "gpu_ms": 14.684721500088926,
+          "gpu_ms": 14.642734498920618,
           "converged": true,
           "admissible": true,
-          "bank_columns": 9
+          "bank_columns": 9,
+          "best_found": 98.80369007827895
         },
         "qman8_quad_M32": {
           "family": "qman",
-          "evolved": 83.27344668302207,
-          "gpu_ms": 142.9589394974755,
-          "converged": false,
-          "admissible": false,
-          "bank_columns": 45
+          "evolved": 66.38178420326157,
+          "gpu_ms": 17.831806999311084,
+          "converged": true,
+          "admissible": true,
+          "bank_columns": 45,
+          "best_found": 98.80003960041034
+        },
+        "qman8_quad_M64": {
+          "family": "qman",
+          "evolved": 66.42389576009207,
+          "gpu_ms": 20.549429500533734,
+          "converged": true,
+          "admissible": true,
+          "bank_columns": 45,
+          "best_found": 98.80003960041034
+        },
+        "qman8_quadg0p0001_M32": {
+          "family": "qman",
+          "evolved": 64.99362614611567,
+          "gpu_ms": 20.96006349893287,
+          "converged": true,
+          "admissible": true,
+          "bank_columns": 45,
+          "best_found": 98.80003960041034
         },
         "dense_tight": {
           "family": "fom",
           "evolved": 1.790191331924439e-14,
-          "gpu_ms": 43.26786450110376,
+          "gpu_ms": 42.537906501820544,
           "converged": null,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": null
         },
         "fft_tight": {
           "family": "fom",
           "evolved": 0.0,
-          "gpu_ms": 82.39885050352314,
+          "gpu_ms": 80.75166300113779,
           "converged": null,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": null
         },
         "nt1e-2_dt01": {
           "family": "fom",
           "evolved": 1.4285004987159995,
-          "gpu_ms": 8.469759501167573,
+          "gpu_ms": 8.260924503701972,
           "converged": null,
           "admissible": true,
-          "bank_columns": null
+          "bank_columns": null,
+          "best_found": null
         }
       }
     }
   },
   "report": {
-    "table_bytes": 2037,
-    "summary_rows": 12,
+    "table_bytes": 2342,
+    "summary_rows": 14,
     "ladder": [
       {
         "rank": 4,
@@ -206,41 +255,74 @@
         "pod_arm": null,
         "quadratic_terms": 10,
         "bank_columns": 15,
-        "ridge": 0.0001,
-        "heldout_relative": 0.04223689999114159,
-        "snapshot_relative_linear_only": 0.12457753486251989,
-        "snapshot_relative_with_quadratic": 0.03841735775244967,
-        "worst_evolved_quad": 67.32578563867835,
+        "ridge": 1.0,
+        "heldout_relative": 0.07777516738444124,
+        "weight_frobenius_norm": 0.007484855335667455,
+        "ridge_trace": [
+          {
+            "gamma": 0.0,
+            "heldout_relative": 6.316660778780962,
+            "finite": true
+          },
+          {
+            "gamma": 1e-08,
+            "heldout_relative": 6.273832891486987,
+            "finite": true
+          },
+          {
+            "gamma": 0.0001,
+            "heldout_relative": 2.7603227164905593,
+            "finite": true
+          },
+          {
+            "gamma": 1.0,
+            "heldout_relative": 0.07777516738444124,
+            "finite": true
+          }
+        ],
+        "ridge_at_grid_endpoint": true,
+        "snapshot_relative_linear_only": 0.12457753486251988,
+        "snapshot_relative_with_quadratic": 0.11142882524211517,
+        "worst_evolved_quad": 70.56904350176703,
         "worst_evolved_lin": 71.34333192236254,
         "worst_evolved_pod": null,
-        "quadratic_gain": 1.0596732180036548,
-        "gpu_ms_quad": 20.298024497606093,
-        "gpu_ms_lin": 15.886503999354318,
+        "quadratic_gain": 1.01097206908545,
+        "gpu_ms_quad": 16.420199997810414,
+        "gpu_ms_lin": 16.010477502277354,
         "gpu_ms_pod": null,
-        "quadratic_cost": 1.2776898239179038,
+        "quadratic_cost": 1.025590897927609,
         "converged_quad": true,
         "converged_lin": true
       },
       {
         "rank": 8,
-        "quad_arm": "qman8_quad_M32",
+        "quad_arm": "qman8_quadg0p0001_M32",
         "lin_arm": "qman8_lin_M32",
         "pod_arm": "pod8_M32_dense",
         "quadratic_terms": 36,
         "bank_columns": 45,
-        "ridge": 0.0,
-        "heldout_relative": 0.0018324650695237398,
-        "snapshot_relative_linear_only": 0.03576736643513126,
-        "snapshot_relative_with_quadratic": 4.457935643010621e-05,
-        "worst_evolved_quad": 83.27344668302207,
+        "ridge": 0.0001,
+        "heldout_relative": 0.9732305119948043,
+        "weight_frobenius_norm": 0.29063353766405386,
+        "ridge_trace": [
+          {
+            "gamma": 0.0001,
+            "heldout_relative": 0.9732305119948043,
+            "finite": true
+          }
+        ],
+        "ridge_at_grid_endpoint": true,
+        "snapshot_relative_linear_only": 0.03576736643513125,
+        "snapshot_relative_with_quadratic": 0.007735606643745725,
+        "worst_evolved_quad": 64.99362614611567,
         "worst_evolved_lin": 66.37564463653204,
         "worst_evolved_pod": 66.60504263459045,
-        "quadratic_gain": 0.7970805494480009,
-        "gpu_ms_quad": 142.9589394974755,
-        "gpu_ms_lin": 14.684721500088926,
-        "gpu_ms_pod": 15.069916003994877,
-        "quadratic_cost": 9.73521625838187,
-        "converged_quad": false,
+        "quadratic_gain": 1.0212639080532202,
+        "gpu_ms_quad": 20.96006349893287,
+        "gpu_ms_lin": 14.642734498920618,
+        "gpu_ms_pod": 14.966440001444425,
+        "quadratic_cost": 1.4314309598714592,
+        "converged_quad": true,
         "converged_lin": true
       }
     ],
@@ -248,36 +330,42 @@
       "q1_accuracy_at_matched_dimension": {
         "note": "worst evolved % of the best admissible quadratic-manifold arm against the best and the cheapest admissible NM-ROM arm of the SAME job, and the NM-ROM arm nearest it in solved unknowns",
         "best_qman": {
+          "arm": "qman8_quadg0p0001_M32",
+          "solved_dimension": 8,
+          "worst_evolved_percent": 64.99362614611567,
+          "median_gpu_ms": 20.96006349893287
+        },
+        "best_qman_linear_control": {
           "arm": "qman8_lin_M32",
           "solved_dimension": 8,
           "worst_evolved_percent": 66.37564463653204,
-          "median_gpu_ms": 14.684721500088926
+          "median_gpu_ms": 14.642734498920618
         },
         "best_nmrom": {
           "arm": "q0_M64_dense_g1em06",
           "solved_dimension": 16,
-          "worst_evolved_percent": 0.7644347328614239,
-          "median_gpu_ms": 189.81717549831956
+          "worst_evolved_percent": 0.7644347328607192,
+          "median_gpu_ms": 186.11883349876734
         },
         "cheapest_nmrom": {
           "arm": "q0_M64_dense_g1em06",
           "solved_dimension": 16,
-          "worst_evolved_percent": 0.7644347328614239,
-          "median_gpu_ms": 189.81717549831956
+          "worst_evolved_percent": 0.7644347328607192,
+          "median_gpu_ms": 186.11883349876734
         },
-        "qman_over_best_nmrom_error": 86.82970799622807,
+        "qman_over_best_nmrom_error": 85.02181200335069,
         "between_pod_and_nmrom": [
           {
             "rank": 4,
-            "qman": 67.32578563867835,
+            "qman": 70.56904350176703,
             "pod": null,
             "beats_pod_at_same_rank": null
           },
           {
             "rank": 8,
-            "qman": 83.27344668302207,
+            "qman": 64.99362614611567,
             "pod": 66.60504263459045,
-            "beats_pod_at_same_rank": false
+            "beats_pod_at_same_rank": true
           }
         ]
       },
@@ -286,21 +374,21 @@
         "per_rank": [
           {
             "rank": 4,
-            "gpu_ms_quad": 20.298024497606093,
-            "gpu_ms_lin": 15.886503999354318,
+            "gpu_ms_quad": 16.420199997810414,
+            "gpu_ms_lin": 16.010477502277354,
             "gpu_ms_pod": null,
-            "quad_over_lin": 1.2776898239179038,
+            "quad_over_lin": 1.025590897927609,
             "quad_over_pod": null,
             "bank_columns": 15,
             "quadratic_terms": 10
           },
           {
             "rank": 8,
-            "gpu_ms_quad": 142.9589394974755,
-            "gpu_ms_lin": 14.684721500088926,
-            "gpu_ms_pod": 15.069916003994877,
-            "quad_over_lin": 9.73521625838187,
-            "quad_over_pod": 9.486379317547529,
+            "gpu_ms_quad": 20.96006349893287,
+            "gpu_ms_lin": 14.642734498920618,
+            "gpu_ms_pod": 14.966440001444425,
+            "quad_over_lin": 1.4314309598714592,
+            "quad_over_pod": 1.4004708866577484,
             "bank_columns": 45,
             "quadratic_terms": 36
           }
@@ -310,69 +398,81 @@
         "note": "for each admissible quadratic-manifold arm, the cheapest admissible NM-ROM arm at least as accurate, and its solved unknowns against the quadratic arm's",
         "pairs": [
           {
-            "qman": "qman4_lin_M16",
-            "qman_unknowns": 4,
-            "qman_worst_evolved_percent": 71.34333192236254,
-            "nmrom_at_least_as_accurate": {
-              "arm": "q0_M64_dense_g1em06",
-              "unknowns": 16,
-              "worst_evolved_percent": 0.7644347328614239,
-              "median_gpu_ms": 189.81717549831956
-            },
-            "pod_at_least_as_accurate": {
-              "arm": "pod8_M32_dense",
-              "unknowns": 8,
-              "worst_evolved_percent": 66.60504263459045,
-              "median_gpu_ms": 15.069916003994877
-            }
-          },
-          {
             "qman": "qman4_quad_M16",
             "qman_unknowns": 4,
-            "qman_worst_evolved_percent": 67.32578563867835,
+            "qman_worst_evolved_percent": 70.56904350176703,
             "nmrom_at_least_as_accurate": {
               "arm": "q0_M64_dense_g1em06",
               "unknowns": 16,
-              "worst_evolved_percent": 0.7644347328614239,
-              "median_gpu_ms": 189.81717549831956
+              "worst_evolved_percent": 0.7644347328607192,
+              "median_gpu_ms": 186.11883349876734
             },
             "pod_at_least_as_accurate": {
               "arm": "pod8_M32_dense",
               "unknowns": 8,
               "worst_evolved_percent": 66.60504263459045,
-              "median_gpu_ms": 15.069916003994877
+              "median_gpu_ms": 14.966440001444425
             }
           },
           {
-            "qman": "qman8_lin_M32",
+            "qman": "qman8_quad_M32",
             "qman_unknowns": 8,
-            "qman_worst_evolved_percent": 66.37564463653204,
+            "qman_worst_evolved_percent": 66.38178420326157,
             "nmrom_at_least_as_accurate": {
               "arm": "q0_M64_dense_g1em06",
               "unknowns": 16,
-              "worst_evolved_percent": 0.7644347328614239,
-              "median_gpu_ms": 189.81717549831956
+              "worst_evolved_percent": 0.7644347328607192,
+              "median_gpu_ms": 186.11883349876734
             },
             "pod_at_least_as_accurate": {
               "arm": "pod16_M64_dense",
               "unknowns": 16,
               "worst_evolved_percent": 65.32931515677038,
-              "median_gpu_ms": 21.308710503944894
+              "median_gpu_ms": 21.177193499170244
             }
+          },
+          {
+            "qman": "qman8_quad_M64",
+            "qman_unknowns": 8,
+            "qman_worst_evolved_percent": 66.42389576009207,
+            "nmrom_at_least_as_accurate": {
+              "arm": "q0_M64_dense_g1em06",
+              "unknowns": 16,
+              "worst_evolved_percent": 0.7644347328607192,
+              "median_gpu_ms": 186.11883349876734
+            },
+            "pod_at_least_as_accurate": {
+              "arm": "pod16_M64_dense",
+              "unknowns": 16,
+              "worst_evolved_percent": 65.32931515677038,
+              "median_gpu_ms": 21.177193499170244
+            }
+          },
+          {
+            "qman": "qman8_quadg0p0001_M32",
+            "qman_unknowns": 8,
+            "qman_worst_evolved_percent": 64.99362614611567,
+            "nmrom_at_least_as_accurate": {
+              "arm": "q0_M64_dense_g1em06",
+              "unknowns": 16,
+              "worst_evolved_percent": 0.7644347328607192,
+              "median_gpu_ms": 186.11883349876734
+            },
+            "pod_at_least_as_accurate": null
           }
         ]
       },
       "matched_dimension_triples": [
         {
           "dimension": 4,
-          "qman": 67.32578563867835,
+          "qman": 70.56904350176703,
           "qman_lin": 71.34333192236254,
           "pod": null,
           "nmrom": null
         },
         {
           "dimension": 8,
-          "qman": 83.27344668302207,
+          "qman": 64.99362614611567,
           "qman_lin": 66.37564463653204,
           "pod": 66.60504263459045,
           "nmrom": null
@@ -380,6 +480,6 @@
       ]
     }
   },
-  "total_seconds": 13.58617427900026,
+  "total_seconds": 133.5294349629985,
   "deviation": "one driver run with ~15 compiled subjects; exceeds the sub-minute rule (DESIGN A2)"
 }

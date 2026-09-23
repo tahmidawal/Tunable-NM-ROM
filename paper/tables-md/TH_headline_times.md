@@ -1,4 +1,4 @@
-| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM setting | FOM ms | Timing | Other scope or FOM: acc. / fast | Status |
+| Problem | Mesh | Accurate | Fast | Accurate ms | Fast ms | FOM setting | FOM ms | Timing | Other scope, or the tighter (not rule-admissible) FOM: acc. / fast | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Poisson 2D | 256^2 | q=256 | q=0 | 7.12 | 6.70 | CG, rtol 10^{-2} | 22.29 | GPU query | — | development |
 | Poisson 2D | 1024^2 | q=256 | q=0 | 4.32 | 3.94 | CG, rtol 10^{-2} | 60.02 | GPU query | — | development |
@@ -22,9 +22,9 @@
 | Burgers 2D | 512^2 | q=256, M=1088, EQ m=2438 | q=0, M=64, EQ m=922 | 783.33 | 40.49 | Newton–BiCGStab, tol 10^{-3} | 52.92 | GPU query | — | development |
 | Burgers 2D | 1024^2 | q=256, M=1088, dense | q=0, M=64, EQ m=934 | 22053.85 | 40.27 | Newton–BiCGStab, tol 10^{-4} | 81.31 | GPU query | — | development |
 | Burgers 2D | 2048^2 | q=256, M=544, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 124.15 | 29.48 | Newton–BiCGStab, tol 3{\times}10^{-3} | 122.76 | GPU query | 0.99× / 2.01× (complete query); 6.07× / 25.5× (vs. tight Newton) | development |
-| Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.73 | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
+| Burgers 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 107.51 | 40.18^{b} | Newton–BiCGStab, tol 3{\times}10^{-3}; fast: Newton–BiCGStab, tol 10^{-3}, \Delta t=0.01, 406.0\,ms (job 4153483) | 523.85 | GPU query | 2.18× / 2.68× (complete query); 30.4× / 80.3× (vs. tight Newton) | development |
 | Burgers (held-out cases) 2D | 2048^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 114.91 | 29.19 | Newton–BiCGStab, tol 10^{-3} | 164.43 | GPU query | 1.28× / 2.49× (complete query); 6.48× / 25.5× (vs. tight Newton) | held-out |
-| Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 40.60 | Newton–BiCGStab, tol 3{\times}10^{-3} | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
+| Burgers (held-out cases) 2D | 4096^2 | q=256, M=1088, EQ lattice m=3969 | q=0, M=64, EQ m=1024 | 99.96 | 39.71^{b} | Newton–BiCGStab, tol 3{\times}10^{-3}; fast: Newton–BiCGStab, tol 10^{-3}, \Delta t=0.01, 401.2\,ms (job 4153483) | 537.39 | GPU query | 2.28× / 2.74× (complete query); 32.3× / 79.6× (vs. tight Newton) | held-out |
 | Burgers, exact first step 2D^{\ast} | 4096^2 | q=256, M=1088, EQ lattice m=3969, first step exact | — | 5308.00 | — | Newton–BiCGStab, tol 3{\times}10^{-3} | 523.76 | GPU query | — | confirmed rule |
 | Burgers, exact first step 2D^{\ast} | 4096^2 | q=256, M=1088, EQ lattice m=3969, first step exact | — | 6557.77 | — | Newton–BiCGStab, tol 3{\times}10^{-3} | 536.84 | GPU query | — | confirmed rule |
 | Burgers, confirmed rule 2D | 512^2 | q=256, M=1088, EQ lattice m=3969, first step exact | q=0, M=64, EQ m=1024 | 194.97 | 23.62 | Newton–BiCGStab, tol 3{\times}10^{-3} | 17.74 | GPU query | — | development |

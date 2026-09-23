@@ -1,5 +1,40 @@
 # Writing status — ICLR 2027 draft
 
+## 2026-09-23 (paper lane) — one-job speedups; the 4096² Burgers fast column reconciled — CURRENT HANDOFF
+
+Correction from the forensic audit of the Burgers speedups.
+- **Row-consistency defect fixed (the real bug).** The 10.10× fast-column ratio divided bh5's FOM time (job
+  4153483) by the ROM time printed from jobs 4079320/4079321, which differ by ~1.5 %. The generator now prints,
+  for that column, **bh5's own ROM time** for the same setting (`q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2`,
+  identical error to four decimals): Table C.4's fast ms for Burgers 4096² is **40.18** (was 40.73) and for the
+  held-out row **39.71** (was 40.60), each marked $^b$ and carrying "fast: Newton--BiCGStab, tol 10⁻³, Δt = 0.01,
+  406.0 ms (job 4153483)" (401.2 ms for the held-out row) beside the row's FOM setting. 406.0/40.185 = 10.10 and
+  401.19/39.713 = 10.10, so both printed ratios are now one job's numerator over the same job's denominator.
+  **No error, and no other time or ratio, changed.**
+- **check_headline** now asserts, for every row and both columns, that the printed speedup equals that column's
+  own numerator divided by that column's own ms, that both come from one recorded job id, and — where a column
+  carries its own comparator — that the setting matches, the comparator is at least as accurate, and the times
+  table names that job. This class of defect can no longer pass.
+- **Consistency of 10.10× versus 12.9×/13.2×.** Table 1's caption now says every ratio divides two times from one
+  job and that the 4096² Burgers fast column's pair comes from the later job's wider grid, where the rule picks
+  `lean_nt1e-3_l1e-3_dt01`. Table 4's caption says each block divides one FOM time, its most accurate setting's
+  comparator, measured with the rungs in the same job, "so the Burgers q = 0 ratio is therefore not Table 1's
+  fast-column ratio (10.10×), which uses a later job's wider grid". The §6.2 prose says the same in one clause.
+  **What I did not do:** Table 4 still prints 12.9×/13.2× for the q = 0 rung. Making that cell read 10.10× would
+  require dividing bh5's FOM time by the hires-burgers ROM time the ladder is measured with — precisely the
+  cross-job division item 2 forbids, and bh5 timed no other rung, so the block cannot move to that comparator as a
+  whole. The two ratios are now each internally consistent and each labelled with its job and comparator.
+- **Table C.4's "other scope" column** keeps the tight-Newton ratios and its header now reads "Other scope, or the
+  tighter (not rule-admissible) FOM", with a caption sentence saying that setting is far more accurate than the
+  NM-ROM, so the rule never selects it and those ratios are context, not headline numbers.
+
+**Commit scope.** Another session still holds uncommitted §3 edits in `main.tex` and `method-details.tex`. I
+staged **only my three main.tex hunks on top of HEAD** (the two captions and the §6.2 clause) by building a
+HEAD+mine copy and staging that, leaving their work uncommitted in the working tree; `method-details.tex`,
+`main.pdf` and `PAPER.md` are untouched and uncommitted. Verified in a scratch copy of `paper/` with the staged
+main.tex and HEAD's method-details: 26 pages, 0 overfull boxes, References on page 9. Both checks also pass in
+the live tree. The PDF still needs a rebuild once that session lands.
+
 ## 2026-09-22 (paper lane) — data-parity paragraph; discretisation scoping refined — CURRENT HANDOFF
 
 Source: `exp/2026-09-22-ops-tune-grid` @4fee6965, pinned in `evidence/ops-data-parity-2026-09-22/`:

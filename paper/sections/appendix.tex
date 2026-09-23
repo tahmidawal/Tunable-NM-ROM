@@ -387,7 +387,13 @@ of each frozen model, median times (ms), timing scope and evidence status
 (allocations: Appendix~\ref{app:provenance}). ``EQ'' and ``dense'' name the Burgers residual
 evaluation; ``single'' marks models measured at one setting. Where a
 run recorded both timing scopes, the speedups in the scope not used by
-Table~\ref{tab:headline} are listed; a series never mixes scopes.
+Table~\ref{tab:headline} are listed; a series never mixes scopes. The
+same column carries, for Burgers, the ratios against the tight Newton
+setting: that setting is far more accurate than the NM-ROM, so the rule
+never selects it and those ratios are context, not headline numbers.
+$^{b}$\,this column's time and its comparator were both measured in the
+later job named beside the FOM setting, so the ratio stays within one
+job.
 For heat that column gives the speedups against the tighter
 CN--CG setting (rtol $10^{-6}$). The heat batched fit solves each output time independently against
 exactly propagated test moments, exploiting the linear, autonomous

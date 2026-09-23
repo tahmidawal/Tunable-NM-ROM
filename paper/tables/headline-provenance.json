@@ -1649,7 +1649,7 @@
       "fast": {
         "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 2.414951606064111,
-        "ms": 40.726391365751624,
+        "ms": 40.184947894886136,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
         "own_fom": {
           "arm": "lean_nt1e-3_l1e-3_dt01",
@@ -1657,9 +1657,11 @@
           "err": 1.6607352179764727,
           "rom_ms": 40.184947894886136,
           "rom_err": 2.4149516060644993,
-          "job": "4153483"
+          "job": "4153483",
+          "name": "Newton--BiCGStab, tol $10^{-3}$, $\\Delta t{=}0.01$"
         },
         "speed_digits": 2,
+        "job": "4153483",
         "speedup": 10.10335695060514
       },
       "accurate": {
@@ -1802,7 +1804,7 @@
       "fast": {
         "label": "$q=0$, $M=64$, EQ $m=1024$",
         "error_pct": 9.030161732936454,
-        "ms": 40.60274315997958,
+        "ms": 39.71298527903855,
         "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
         "own_fom": {
           "arm": "lean_nt1e-3_l1e-3_dt01",
@@ -1810,9 +1812,11 @@
           "err": 2.0062467820726275,
           "rom_ms": 39.71298527903855,
           "rom_err": 9.030161732932955,
-          "job": "4153483"
+          "job": "4153483",
+          "name": "Newton--BiCGStab, tol $10^{-3}$, $\\Delta t{=}0.01$"
         },
         "speed_digits": 2,
+        "job": "4153483",
         "speedup": 10.10218474232255
       },
       "accurate": {
@@ -4912,8 +4916,11 @@
     "nTunePoissonSpeedMax": "117",
     "nTunePoissonFomTol": "cg_0.1",
     "nTuneBurgFomLabel": "tolerance $3{\\times}10^{-3}$",
+    "nTuneBurgFomName": "Newton--BiCGStab, tolerance $3{\\times}10^{-3}$",
     "nTuneHeatFomLabel": "$\\Delta t=0.025$, rtol $10^{-6}$",
-    "nTunePoissonFomLabel": "rtol $10^{-1}$"
+    "nTuneHeatFomName": "CN--CG, $\\Delta t=0.025$, rtol $10^{-6}$",
+    "nTunePoissonFomLabel": "rtol $10^{-1}$",
+    "nTunePoissonFomName": "CG, rtol $10^{-1}$"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

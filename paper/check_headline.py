@@ -14,12 +14,16 @@ for r in prov['rows']:
     for s in ('fast', 'accurate'):
         x = r[s]
         if not x: continue
+        # 2026-09-23: EVERY printed speedup divides two times measured in ONE job.  A column whose comparator comes
+        # from a later job prints that job's own ROM time too, and records which job it was.
         fo = x.get('own_fom')
-        if fo:                                                                  # 4096^2 Burgers fast column: its own denominator
-            assert abs(fo['ms'] / fo['rom_ms'] - x['speedup']) < 1e-12
-            assert abs(fo['rom_err'] - x['error_pct']) < 1e-6          # same fast setting; its time is this job's, not the row's
-        else:
-            assert abs(r['fom']['ms'] / x['ms'] - x['speedup']) < 1e-12        # same-row ratio only
+        num, job = (fo['ms'], fo['job']) if fo else (r['fom']['ms'], r['job_id'])
+        assert abs(num / x['ms'] - x['speedup']) < 1e-12, (r['problem'], r['intervals'], s)
+        assert x.get('job', r['job_id']) == job, (r['problem'], r['intervals'], s)     # numerator and denominator, one job
+        if fo:
+            assert x['ms'] == fo['rom_ms'] and abs(fo['rom_err'] - x['error_pct']) < 5e-3   # the same setting, re-timed
+            assert fo['err'] <= x['error_pct'] and fo['job'] != r['job_id']
+            assert f"job {fo['job']}" in (P / 'tables/TH_headline_times.tex').read_text()   # the caption names that job
         assert r['fom']['error_pct'] <= x['error_pct']                        # named FOM at least as accurate
         bold += x['speedup'] > 1
         series[(r['problem'], r['dim'], s)].append((r['intervals'], x['speedup']))

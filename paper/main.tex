@@ -481,10 +481,10 @@ retrained between them. Error is the worst relative $L^2$ error over the
 cohort (\%). Speedup is the FOM's median time divided by the NM-ROM's in
 the same GPU allocation, \textbf{bold} where the NM-ROM is faster. The
 FOM is the named iterative solver at its fastest tested setting that is at
-least as accurate as the accurate setting. For the $4096^2$ Burgers fast
-column, the numerator is instead the time for \nBhFastFom{}, the fastest tested setting at least
-as accurate as the fast setting. The FOM column reports the accurate
-setting's comparator. Marker definitions, the heat evolved-time errors and the
+least as accurate as the accurate setting. Each ratio divides two times from one job; for the
+$4096^2$ Burgers fast column both come from a later job with a wider
+grid of settings, where the rule picks \nBhFastFom{}. The FOM column
+reports the accurate setting's comparator. Marker definitions, the heat evolved-time errors and the
 quadrature labels are in Appendix~\ref{app:cg-current}. Dashes mark
 settings not measured. Times, settings and complete-query speedups:
 Table~\ref{tab:headline-times}.}
@@ -620,8 +620,10 @@ share settings; heat uses the sealed held-out cohort, Poisson
 development sources. On Burgers $q$ and $M$ change together
 ($M\approx4(k+q)$, $M=544$ an alternative at $q=256$; fixed-$M$ ladder:
 Table~\ref{tab:ladder-main}), $q>0$ with the lattice rule marked
-$^{w}$ in Table~\ref{tab:headline}. Each block uses one FOM time for all
-speedups, so its $q=0$ ratio differs from Table~\ref{tab:headline}'s fast column.
+$^{w}$ in Table~\ref{tab:headline}. Each block divides one FOM time, its most accurate
+setting's comparator, measured with the rungs in the same job; the
+Burgers $q=0$ ratio is therefore not Table~\ref{tab:headline}'s
+fast-column ratio ($\nBhFastS\times$), which uses a later job's wider grid.
 Heat and Poisson vary $q$ only.
 $^{\star}$\,looser stopping tolerance; $^{\dagger}$\,quadrature rule
 failed its held-out check.}
@@ -650,7 +652,8 @@ On Burgers at $4096^2$, changing the correction rank trades accuracy for cost. T
 shared Newton--BiCGStab setting
 ($\nTuneBurgDevSpeedMin$--$\nTuneBurgDevSpeedMax\times$ on development
 cases). Table~\ref{tab:headline}'s fast column is a different comparison:
-$\nBhFastS\times$ on both cohorts against the Newton--BiCGStab comparator selected for the fast setting. On linear problems the
+$\nBhFastS\times$ on both cohorts, against the setting the rule picks for
+it on a later job's wider grid. On linear problems the
 corrections are eliminated analytically, so accuracy improves at nearly
 constant cost.
 

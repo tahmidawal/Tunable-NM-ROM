@@ -222,7 +222,43 @@ def main():
         print('block', name, 'worst%', round(100 * row['worst_all_times'], 5), 'ms', round(row['device_ms_median'], 3), flush=True)
         dump()
 
+    # ---------------- neural operators (PyTorch, same process, same GPU); A4: optionally timed FIRST, while the GPU
+    # is still empty, because JAX's allocator pool never returns memory to PyTorch.
+    ops_env = {}
+    def run_operators():
+        if not cfg.get('operators'):
+            return
+        import torch
+        sys.path.insert(0, str(HERE / 'ops'))
+        import heatops as H
+        ops_env.update(torch=torch, H=H)
+        result['torch_environment'] = H.configure()
+        for name, spec in cfg['operators'].items():
+            path = Path(spec['checkpoint'])
+            if not path.exists():
+                result.setdefault('operators_missing', []).append(dict(name=name, checkpoint=str(path))); continue
+            net, norm, ck = H.load(path)
+            prov = json.loads((path.parent.parent / 'provenance.json').read_text())
+            assert ck['mesh'] == n and prov['mesh'] == n, ('operator trained at another mesh', ck['mesh'], n)
+            assert list(prov['train']) == list(cfg['train']) and list(prov['validation']) == list(cfg['validation']), prov
+            assert ck['family'] == spec['family'], (ck['family'], spec['family'])
+            sync = lambda o: torch.cuda.synchronize()
+            def run(x, net=net, norm=norm):
+                with torch.no_grad():
+                    return H.query_interior(net, x, *norm)
+            m = Method(run, prep=lambda u: torch.from_dlpack(u), fields=lambda o: jnp.from_dlpack(o), stats=lambda o: [], sync=sync)
+            run_block(name, m, dict(family='operator', unknowns=None, checkpoint=str(path), checkpoint_sha256=sha_file(path),
+                                    training_provenance=dict(job_id=prov.get('job_id'), train=prov['train'], validation=prov['validation'],
+                                                             wall_seconds=prov['wall_seconds']),
+                                    operator_family=ck['family'], best_epoch=int(ck['epoch']), best_step=int(ck['step']),
+                                    parameters=int(sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())),
+                                    parameter_dtype=str(getattr(net, 'parameter_dtype', torch.float64))))
+            del net; torch.cuda.empty_cache(); idle(); sentinel(name)
+
+
     sentinel('start')
+    if cfg.get('operators_first'):
+        run_operators()
     tests = C.mode_list(cfg['tests'], n, d)
 
     # ---------------- NM-ROM + linear-bank baselines (frozen wide2d)
@@ -325,33 +361,8 @@ def main():
         run_block(f'coarse{nc}_{cfg["coarse_cg"]}_CONTROL', Method(cq), dict(family='control', unknowns=(nc - 1) ** 2))
         idle(); sentinel(f'coarse{nc}')
 
-    # ---------------- neural operators (PyTorch, same process, same GPU)
-    if cfg.get('operators'):
-        import torch
-        sys.path.insert(0, str(HERE / 'ops'))
-        import heatops as H
-        result['torch_environment'] = H.configure()
-        for name, spec in cfg['operators'].items():
-            path = Path(spec['checkpoint'])
-            if not path.exists():
-                result.setdefault('operators_missing', []).append(dict(name=name, checkpoint=str(path))); continue
-            net, norm, ck = H.load(path)
-            prov = json.loads((path.parent.parent / 'provenance.json').read_text())
-            assert ck['mesh'] == n and prov['mesh'] == n, ('operator trained at another mesh', ck['mesh'], n)
-            assert list(prov['train']) == list(cfg['train']) and list(prov['validation']) == list(cfg['validation']), prov
-            assert ck['family'] == spec['family'], (ck['family'], spec['family'])
-            sync = lambda o: torch.cuda.synchronize()
-            def run(x, net=net, norm=norm):
-                with torch.no_grad():
-                    return H.query_interior(net, x, *norm)
-            m = Method(run, prep=lambda u: torch.from_dlpack(u), fields=lambda o: jnp.from_dlpack(o), stats=lambda o: [], sync=sync)
-            run_block(name, m, dict(family='operator', unknowns=None, checkpoint=str(path), checkpoint_sha256=sha_file(path),
-                                    training_provenance=dict(job_id=prov.get('job_id'), train=prov['train'], validation=prov['validation'],
-                                                             wall_seconds=prov['wall_seconds']),
-                                    operator_family=ck['family'], best_epoch=int(ck['epoch']), best_step=int(ck['step']),
-                                    parameters=int(sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())),
-                                    parameter_dtype=str(getattr(net, 'parameter_dtype', torch.float64))))
-            del net; torch.cuda.empty_cache(); idle(); sentinel(name)
+    if not cfg.get('operators_first'):
+        run_operators()
 
     # ---------------- full-order candidate grid, fastest first
     for name in cfg['fom_order']:
@@ -382,6 +393,7 @@ def main():
         run_block(f'pod{r}_galerkin_cn__RETIME', Method(lambda u: q(u, V)), dict(family='pod', retime_of=f'pod{r}_galerkin_cn', unknowns=None))
         idle(); sentinel(f'pod{r}_galerkin_cn__RETIME'); del V; jax.clear_caches()
     if rt.get('operator') and rt['operator'] in cfg.get('operators', {}) and Path(cfg['operators'][rt['operator']]['checkpoint']).exists():
+        torch, H = ops_env['torch'], ops_env['H']
         net, norm, ck = H.load(Path(cfg['operators'][rt['operator']]['checkpoint']))
         def run(x):
             with torch.no_grad():

@@ -1,0 +1,35 @@
+source_commit=bc8eb7972ab462f2cdcd84affd3338c8cfc7392c job_id=4207537
+name, uuid, memory.total [MiB], driver_version
+NVIDIA H200, GPU-967d02be-9454-8cc1-4ee1-429c270b0eca, 143771 MiB, 575.57.08
+10.235.106.34:/projects/paralab  4.6T  4.3T  338G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+block nmrom_q0_cn worst% 1.36159 ms 30.002
+block nmrom_q32_cn worst% 0.48761 ms 29.627
+block nmrom_q0_field_direct_tol1e-4_chol worst% 1.3616 ms 5.396
+block nmrom_q32_field_direct_tol1e-4_chol worst% 0.4876 ms 5.126
+block linear_bank_field_BASELINE worst% 0.13272 ms 2.138
+block linear_bank_moments_BASELINE worst% 0.13319 ms 1.343
+block linear_bank_moments_cn_BASELINE worst% 0.13319 ms 1.483
+block pod8_galerkin_cn worst% 22.45109 ms 0.483
+block pod8_lspg_cn worst% 22.45109 ms 0.483
+block pod8_galerkin_exact worst% 22.45109 ms 0.345
+block pod32_galerkin_cn worst% 0.98756 ms 0.835
+block pod32_lspg_cn worst% 0.98756 ms 0.823
+block pod32_galerkin_exact worst% 0.98756 ms 0.699
+block pod128_galerkin_cn worst% 0.04492 ms 2.232
+block pod128_lspg_cn worst% 0.04492 ms 2.233
+block pod128_galerkin_exact worst% 0.00111 ms 2.099
+block pod256_galerkin_cn worst% 0.04492 ms 4.142
+block pod256_lspg_cn worst% 0.04492 ms 4.139
+block pod256_galerkin_exact worst% 0.0 ms 3.995
+block qm8_cn worst% 3.97118 ms 6.587
+block qm8_field_direct_tol1e-4_chol worst% 3.97118 ms 2.733
+block qm16_cn worst% 0.48158 ms 10.006
+block qm16_field_direct_tol1e-4_chol worst% 0.48158 ms 5.403
+block qm32_cn worst% 0.17649 ms 13.531
+block qm32_field_direct_tol1e-4_chol worst% 0.49607 ms 11.742
+block dst_exact_CONTROL worst% 0.0 ms 1.926
+block coarse64_fom_cncg_dt0.05_rtol1e-3_CONTROL worst% 0.28698 ms 3.053
+torch_backend=cuda NVIDIA H200
+run_exit=1

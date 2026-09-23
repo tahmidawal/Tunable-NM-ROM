@@ -32,7 +32,7 @@ set -euo pipefail
 ROOT=$REMOTE
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
-export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest XLA_PYTHON_CLIENT_PREALLOCATE=false XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
+export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest XLA_PYTHON_CLIENT_PREALLOCATE=false XLA_PYTHON_CLIENT_MEM_FRACTION=${XLA_FRAC:-0.92}
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8 TMPDIR="\$ROOT/tmp" XDG_CACHE_HOME="\$ROOT/cache"
 mkdir -p "\$TMPDIR" "\$XDG_CACHE_HOME" "\$ROOT/out"
 cd "\$ROOT"; sha256sum -c SOURCE.sha256 > /dev/null

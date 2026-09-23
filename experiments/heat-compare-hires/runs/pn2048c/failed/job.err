@@ -1,0 +1,53 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/panel.py", line 405, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/panel.py", line 348, in main
+    run_block(name, m, dict(family='operator', unknowns=None, checkpoint=str(path), checkpoint_sha256=sha_file(path),
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            training_provenance=dict(job_id=prov.get('job_id'), train=prov['train'], validation=prov['validation'],
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+                            parameters=int(sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            parameter_dtype=str(getattr(net, 'parameter_dtype', torch.float64))))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/panel.py", line 192, in run_block
+    t = time.perf_counter(); o = method.run(x); row['warm_seconds'].append(time.perf_counter() - t)
+                                 ~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/panel.py", line 45, in run
+    out = self.run_raw(x); self.sync(out); return out
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/panel.py", line 346, in run
+    return H.query_interior(net, x, *norm)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/ops/heatops.py", line 143, in query_interior
+    return predict(model, field, mean, std, scale)[0, :, 1:-1, 1:-1].contiguous()
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/ops/heatops.py", line 131, in predict
+    output = model(features(field, mean, std)) * scale
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/models/fno.py", line 395, in forward
+    x = self.fno_blocks(x, layer_idx, output_shape=output_shape[layer_idx])
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/layers/fno_block.py", line 299, in forward
+    return self.forward_with_postactivation(x, index, output_shape)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/layers/fno_block.py", line 316, in forward_with_postactivation
+    x_fno = self.convs[index](x, output_shape=output_shape)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/hcmp_20260923/pn2048c/code/heat-compare-hires/ops/spectral_conv_f64.py", line 39, in forward
+    x = torch.fft.rfftn(x, norm=self.fft_norm, dim=fft_dims)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 18.01 GiB. GPU 0 has a total capacity of 139.80 GiB of which 2.17 GiB is free. Including non-PyTorch memory, this process has 137.62 GiB memory in use. Of the allocated memory 8.40 GiB is allocated by PyTorch, and 7.08 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

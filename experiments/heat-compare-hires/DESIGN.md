@@ -215,3 +215,13 @@ use is logged after every block, and the allocator cap is 0.92 (the job owns the
 locally at 256²: every error identical to the previous smoke to ≤2e-15; memory returns to
 baseline after each block (no leak); the compiled encode `B^T u` and decode `c B^T` contain no
 transposed copy of the bank. `pn4096` (4207404) was cancelled while PENDING (old code).
+
+## A4 (2026-09-23 ~08:50 EDT): operator memory at 2048², after pn2048c, before pn2048d
+
+`pn2048c` (job 4207537, H200) completed every JAX arm (27 blocks; JAX peak in use 39 GB) and died
+at the first operator (FNO) with a PyTorch OOM: JAX's allocator pool had grown to ~129 GB and
+never returns memory, leaving PyTorch 2 GB. Its partial results are kept in
+`runs/pn2048c/failed/` as a diagnostic and are not used. Fix: at 2048² the operator block is
+timed **first** (`operators_first`), while the GPU is still empty, and the JAX pool is capped at
+0.80 so the late U-Net re-time has room. Block order otherwise unchanged; the order gate (A2)
+covers the reordering. 1024² (`pn1024b`, operators after the quadratic manifold) is unchanged.

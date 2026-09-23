@@ -1,0 +1,70 @@
+host=pax008 source_commit=99e047aaa79fc38526acd1bd8ba340997e1218fd
+NVIDIA H200, GPU-aaf512b7-e3e2-7531-dd67-71a6810293b4, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.3T  267G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 4190209 rows in 1 blocks 10.4
+TRUTH 0 13.1
+TRUTH 1 13.9
+TRUTH 2 15.3
+TRUTH 3 16.6
+TRUTH 4 17.5
+TRUTH 5 18.3
+QUICK fft_tight evolved% 0.0 stalled 0 8.0 48.7
+QUICK nt1e-4_dt005 evolved% 0.0334 stalled 0 5.1 53.8
+QUICK nt1e-3_dt005 evolved% 0.054 stalled 0 4.7 58.5
+QUICK nt1e-2_dt005 evolved% 4.3716 stalled 0 3.7 62.2
+QUICK nt1e-4_dt01 evolved% 1.6507 stalled 0 5.9 68.1
+QUICK nt1e-3_dt01 evolved% 1.6493 stalled 0 4.2 72.3
+QUICK nt1e-2_dt01 evolved% 3.5129 stalled 0 3.5 75.8
+QUICK lean_tight evolved% 0.0 stalled 0 8.6 84.3
+QUICK lean_nt1e-4_dt005 evolved% 0.0334 stalled 0 4.7 89.0
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0543 stalled 0 3.7 92.7
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0494 stalled 0 3.6 96.4
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1615 stalled 0 3.5 99.9
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6501 stalled 0 4.4 104.2
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6651 stalled 0 3.2 107.4
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6773 stalled 0 3.1 110.6
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.3714 stalled 0 8.9 128.1
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5979 stalled 0 10.7 146.6
+TIMED F rep 0 227.6
+TIMED F rep 1 304.4
+TIMED F rep 2 381.4
+TIMED F rep 3 458.1
+TIMED F rep 4 535.0
+QUICK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5979 stalled 0 25.8 561.0
+BLOCK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 647.6
+QUICK bank512_M2048_lat64_g1em06 evolved% 0.2907 stalled 0 9.2 663.7
+BANKSPAN RHO bank512_M2048_lat64_g1em06 0.0573 ok 669.9
+BLOCK bank512_M2048_lat64_g1em06 692.3
+QUICK bank512_M2048_lat128_g1em06 evolved% 0.2909 stalled 0 8.1 707.2
+BANKSPAN RHO bank512_M2048_lat128_g1em06 0.5058 exceeds 713.6
+BLOCK bank512_M2048_lat128_g1em06 742.8
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.2195 stalled 0 8.4 757.2
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.0777 ok 761.7
+BLOCK bank384_M1536_lat64_g1em06 782.5
+QUICK bank384_M1536_lat128_g1em06 evolved% 0.2194 stalled 0 7.2 794.2
+BANKSPAN RHO bank384_M1536_lat128_g1em06 0.4145 exceeds 798.6
+BLOCK bank384_M1536_lat128_g1em06 823.5
+QUICK bank256_M1024_lat64_g1em06 evolved% 0.7293 stalled 0 7.1 836.3
+BANKSPAN RHO bank256_M1024_lat64_g1em06 0.078 ok 840.1
+BLOCK bank256_M1024_lat64_g1em06 859.2
+QUICK bank256_M1024_lat128_g1em06 evolved% 0.7282 stalled 0 6.7 870.2
+BANKSPAN RHO bank256_M1024_lat128_g1em06 0.3521 exceeds 873.5
+BLOCK bank256_M1024_lat128_g1em06 895.3
+QUICK bank128_M512_lat64_g1em06 evolved% 1.8716 stalled 0 7.4 908.1
+BANKSPAN RHO bank128_M512_lat64_g1em06 0.0479 ok 911.8
+BLOCK bank128_M512_lat64_g1em06 929.1
+QUICK bank128_M512_lat128_g1em06 evolved% 1.8719 stalled 0 6.2 939.1
+BANKSPAN RHO bank128_M512_lat128_g1em06 0.1624 exceeds 941.5
+BLOCK bank128_M512_lat128_g1em06 960.3
+SNAPSHOTS (4190209, 3328) 406.4 1366.8
+POD 512 70.0 1437.0
+QUICK pod16_M64_dense_armsTwin evolved% 29.3744 stalled 0 13.7 1474.7
+QUICK pod16_M64_dense evolved% 29.3744 stalled 0 11.4 1489.5
+GRID PARITY pod16_M64_dense 9.225e-16 integers True
+BLOCK pod16_M64_dense 1542.4
+QUICK pod64_M256_dense evolved% 7.4711 stalled 0 18.3 1568.8
+BLOCK pod64_M256_dense 1639.7
+QUICK pod256_M1024_dense evolved% 1.1681 stalled 0 123.8 1783.5
+BLOCK pod256_M1024_dense 2381.5

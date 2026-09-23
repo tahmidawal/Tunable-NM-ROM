@@ -221,3 +221,13 @@ by 2026-09-24 12:00 EDT; otherwise `p2048f` is.** The choice depends only on com
 numbers; the unused job is reported as run-and-not-used, and no ratio ever mixes the two jobs. Known consequence of the
 A100: the quadratic manifold at $r=64$ (a 72 GB bank on top of the 17 GB NM-ROM bank) cannot fit and will be dropped
 by the OOM policy and reported as such in `p2048f`.
+
+## A8 (2026-09-23 13:40 EDT) — the paralab share was 100 % full ~10:30–11:10 EDT (coordinator)
+
+Another lane's field dump filled the share in that window. It explains `p2048c`'s silent death (empty stderr, exit 1,
+not even the batch script's `|| echo` ran: the recorded "disk-full eats tracebacks" landmine) and plausibly
+contributed to `p2048b`'s end. Neither job's numbers are used anywhere. `p2048e` and `p2048f` were staged and started
+after 11:19, so none of their outputs was written in the window. The only artefact used that was written inside it is
+the salvaged `fno-large` 2048^2 checkpoint (`best.pt`, 11:02): every zip member passes its CRC, all 40 state tensors are
+finite, keys and shapes equal the 256^2 `fno-large`, its embedded epoch equals the history's best, and it re-hashes
+identically on the cluster and locally. It is used, with this note.

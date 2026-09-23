@@ -1,0 +1,26 @@
+{
+  "purpose": "Everything the ops-timing-panel harness needs to time this lane's arms in ONE allocation beside the NM-ROM, POD and the full-order solver \u2014 the only construction from which a speed number for these checkpoints may be formed. This lane states no speed number and forms no cross-job ratio.",
+  "add_to": "experiments/ops-timing-panel/operators.json -> checkpoints",
+  "source_commit": "3a01ac9b983166d21dbbac4179d34cfa4e3c2643",
+  "requires": {
+    "families_py": {
+      "path": "worktrees/2026-09-22-ops-tune-grid/experiments/ops-tune-grid/families.py",
+      "sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+      "why": "unchanged from the no-second/ops-deeponet lineage; listed so the harness can confirm it is the same file it already carries"
+    },
+    "model_py": {
+      "path": "worktrees/2026-09-22-ops-tune-grid/experiments/ops-tune-grid/model.py",
+      "sha256": "6868654370d4fa248b872b1964111f2cf7b6ec3ba641e8a4cb4c8b46c52d9fcb",
+      "why": "adds norm=config.get(\"norm\") to the neuralop FNO constructor; an arm whose config carries \"norm\" cannot be rebuilt without it"
+    },
+    "train_py": {
+      "path": "worktrees/2026-09-22-ops-tune-grid/experiments/ops-tune-grid/train.py",
+      "sha256": "e19dbee6ad38f616e5756edccba6dbdcc1628baef7ff486ca0f0f5e1699f3541",
+      "why": "adds the cosine schedule and the configurable plateau patience; needed only to re-train, not to load a checkpoint"
+    },
+    "unpack": "the checkpoint paths below live in a .gitignored extracted tree; if it is gone, rebuild it by concatenating runs/<attempt>/archive-parts/part-* (manifest.json carries each part's SHA256) and untarring, then re-verify every best.pt against the sha256 recorded here"
+  },
+  "must_travel_with_any_timing_row": "the accuracy block of each checkpoint below. Two of this lane's arms differ only in training-set size, so a speed row without its error and its training_cases is not interpretable.",
+  "cohort_caveat": "These accuracy numbers are on validation-32 and diagnosis-8 against the pinned fine reference. The panel's own operator percentages are on six development cases against a same-job converged 256-grid solve. The two are NOT subtractable: the same unet-refine checkpoint scores 1.7110 % on diagnosis-8 and 4.5529 % on the panel.",
+  "checkpoints": []
+}

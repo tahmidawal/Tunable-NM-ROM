@@ -146,7 +146,11 @@ def hold64():
     c.update(eval_draws=[[20260916, 64]], expected_physical_sha256=None, skip_certificates=True,
              cohort_name='hold64: params_draw(20260916, 64), held-out; never used to fit the bank, head, directions, '
                          'rotation, rules or the selection',
-             fom_settings=[FOM[0]] + [f for f in FOM if f.get('impl') == 'lean'], untimed_fom=['fft_tight'],
+             fom_settings=[FOM[0]] + [f for f in FOM if f.get('impl') == 'lean'],
+             # the two slow lean settings are strictly slower than lean_nt3e-3_l3e-3_dt005 and more accurate than every
+             # ROM arm by an order of magnitude, so they can never be the fastest FOM at least as accurate as a ROM arm:
+             # their errors are still measured (quick), their timing is dropped to fit the allocation (bkh64b lesson)
+             untimed_fom=['fft_tight', 'lean_tight', 'lean_nt1e-4_dt005'],
              audit_arms=['fft_tight'] + list(dict.fromkeys(want))[:2],
              # host-side per-invocation re-scoring is redundant (every timed field is SHA-identical to the scored quick
              # run) and costs ~3 s per 4096^2 invocation on a contended node (bkh64b); off for the held-out job only

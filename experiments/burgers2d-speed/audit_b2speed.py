@@ -165,7 +165,10 @@ def main():
     def compare(xrows, truth, ratios=None):
         gap = 0.
         for x in xrows:
-            f = np.load(o / f"restricted_{x['name']}_case{x['case']}.npz")['fields']
+            fpth = o / f"restricted_{x['name']}_case{x['case']}.npz"
+            if not fpth.exists() and cfg.get('save_restricted_skip_graphs_fom') and x['name'].endswith('__graphs'):
+                fpth = o / f"restricted_{strip_mode(x['name'])}_case{x['case']}.npz"   # SHA-identical (gated)
+            f = np.load(fpth)['fields']
             b = truth[x['case']]
             sg = np.linalg.norm((f - b).reshape(len(f), -1), axis=1) / np.linalg.norm(b[0])
             if x['same_grid_evolved'] > 1e-6:
@@ -203,8 +206,11 @@ def main():
          pairs=[{k: x[k] for k in ('engineered', 'parent', 'worst_relative', 'integers_identical', 'passed')} for x in par],
          bar=cfg['parity_bar'])
 
+    fsha = r.get('fom_mode_sha_identical', {})
+    gate('fom_mode_field_sha_identical', (not cfg.get('fom_both_modes', True)) or
+         (len(fsha) == len(cfg['fom_settings']) and all(fsha.values())), rows=fsha)
     fp = r.get('fom_mode_parity', [])
-    gate('fom_mode_parity', (not cfg.get('fom_both_modes', True)) or (len(fp) == len(cfg['fom_settings']) and
+    gate('fom_mode_parity', (not cfg.get('fom_both_modes', True)) or (not cfg.get('fom_mode_parity', True)) or (len(fp) == len(cfg['fom_settings']) and
                                                                       all(x['passed'] for x in fp)),
          rows=[{k: x[k] for k in ('setting', 'worst_relative', 'newton_identical', 'passed')} for x in fp])
 

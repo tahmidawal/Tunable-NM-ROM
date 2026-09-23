@@ -188,6 +188,7 @@ def hold(L):
              cohort_name='hold64: params_draw(20260916, 64), held-out; never used for any fit, rule or selection',
              parity_pairs=[p for p in sel['parity_pairs'] if all(x in {arm_name(s) for s in arms} for x in p)],
              audit_arms=['fft_tight'] + want, rom_reps=2, fom_reps=1, timed_full_sha_every=1,
+             fom_mode_parity=False, save_restricted_skip_graphs_fom=True,
              selection_source_summary_sha256=sel['source_summary_sha256'],
              heldout_selection=dict(accurate=sel['accurate'], fast=sel['fast'],
                                     parent_accurate_twin=sel['parent_accurate_twin'],

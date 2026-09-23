@@ -514,7 +514,8 @@ def main():
                     # ROM: fields, (iterations, residual norms, reasons), all 51 internal states, rejected steps
                     kept[(name, c)] = (f, vh[1:4], np.asarray(vh[7]) if b['kind'] == 'rom' else None,
                                        np.asarray(vh[15]) if b['kind'] == 'rom' else None)
-                if cfg.get('save_restricted', True):
+                if cfg.get('save_restricted', True) and not (cfg.get('save_restricted_skip_graphs_fom')
+                                                             and b['kind'] == 'fom' and b['graphs']):
                     extra = dict(internal_latents=np.asarray(v[7])) if b['kind'] == 'rom' else {}
                     np.savez_compressed(out / f'restricted_{name}_case{c}.npz', fields=f[:, ::sub, ::sub], **extra)
                 if c in cfg['audit_cases'] and name in cfg['audit_arms']:
@@ -560,6 +561,11 @@ def main():
                                   scope='output fields and all 51 internal states; per-step iterations, exit reasons '
                                         'and rejected-step counts'))
         print('PARITY', fa, 'vs', fb, f'{worst:.3e}', 'integers', ints, flush=True)
+    # FOM compile-mode identity by field SHA (every setting, every case; cheap, no fields held)
+    qs = {(x_['name'], x_['case']): x_['field_sha256'] for x_ in rep['quick']}
+    rep['fom_mode_sha_identical'] = {fs['name']: all(qs.get((fs['name'] + '__graphs', c)) == qs.get((fs['name'], c))
+                                                     for c in range(ncase))
+                                     for fs in cfg['fom_settings'] if (fs['name'] + '__graphs', 0) in qs}
     # FOM compile-mode parity: fields and per-step Newton iteration vectors, every setting
     rep['fom_mode_parity'] = []
     for fs in cfg['fom_settings']:

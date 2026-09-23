@@ -28,14 +28,15 @@ def rel(a, b):
     return float(np.linalg.norm(a - b) / np.linalg.norm(b))
 
 
-def main(run, delete=False):
+def main(run, delete=False, sub=0):
     run = Path(run)
     R = json.loads((run / 'result.json').read_text())
     n = R['intervals']
     dev = np.asarray(R['cohort']['parameters'])
     truths = [truth_np(p, n) for p in dev]
+    allinv = R['invocations'] + R.get('slow_invocations', []) + R.get('neighbour', [])
     first = {}
-    for x in R['invocations']:
+    for x in allinv:
         first.setdefault((x['name'], x['case']), x)
     worst_dev, count, hash_ok = 0.0, 0, True
     recomputed = {}
@@ -47,7 +48,7 @@ def main(run, delete=False):
         worst_dev = max(worst_dev, abs(e - x['same_grid_error']) / e)
         count += 1
     # every repetition must have produced the identical field
-    deterministic = all(x['field_sha256'] == first[(x['name'], x['case'])]['field_sha256'] for x in R['invocations'])
+    deterministic = all(x['field_sha256'] == first[(x['name'], x['case'])]['field_sha256'] for x in allinv)
     # controls that must FAIL
     name0 = R['arms'][0]['name']
     f0 = np.load(run / 'fields' / f'{name0}_case0.npy')
@@ -67,6 +68,11 @@ def main(run, delete=False):
                         f"swapped-case {ctrl_swap_detected}, perturbed-error {ctrl_perturb_detected}")
     (run / 'audit.json').write_text(json.dumps(audit, indent=1) + '\n')
     print(audit['verdict'], audit['summary'])
+    if sub and ok:
+        (run / 'sub').mkdir(exist_ok=True)
+        for (name, case) in first:
+            f = np.load(run / 'fields' / f'{name}_case{case}.npy')
+            np.save(run / 'sub' / f'{name}_case{case}_stride{sub}.npy', f[::sub, ::sub])
     if delete and ok:
         for f in (run / 'fields').glob('*.npy'):
             f.unlink()
@@ -74,4 +80,5 @@ def main(run, delete=False):
 
 
 if __name__ == '__main__':
-    sys.exit(0 if main(sys.argv[1], '--delete-fields' in sys.argv) else 1)
+    sub = int(sys.argv[sys.argv.index('--subsample') + 1]) if '--subsample' in sys.argv else 0
+    sys.exit(0 if main(sys.argv[1], '--delete-fields' in sys.argv, sub) else 1)

@@ -1,0 +1,174 @@
+{
+ "dim": 3,
+ "model": {
+  "kind": "mlp",
+  "bank": "vp_R320/bank.pkl",
+  "head": "vp_R320/head_K32.pkl"
+ },
+ "prep": "prep_3d.npz",
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 1024
+ },
+ "edges": [
+  0,
+  32,
+  64,
+  128,
+  192,
+  256,
+  320
+ ],
+ "ladder": [
+  320,
+  256,
+  192,
+  128,
+  64,
+  32
+ ],
+ "q_by_Rp": {
+  "320": [
+   0,
+   144,
+   288
+  ],
+  "256": [
+   0,
+   112,
+   224
+  ],
+  "192": [
+   0,
+   80,
+   160
+  ],
+  "128": [
+   0,
+   48,
+   96
+  ],
+  "64": [
+   0,
+   16,
+   32
+  ],
+  "32": [
+   0
+  ]
+ },
+ "rom_defaults": {
+  "init": "field",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "families": {
+  "cn": {
+   "init": "field"
+  },
+  "bf": {
+   "init": "field",
+   "stepping": "exact_direct",
+   "tolerance": 0.0001,
+   "cholesky": true
+  }
+ },
+ "parity": {
+  "meshes": [],
+  "q": [
+   0,
+   144,
+   288
+  ]
+ },
+ "cohorts": [
+  [
+   "validation_921777",
+   921777,
+   16
+  ],
+  [
+   "heldout_sealed_921099",
+   921099,
+   64
+  ]
+ ],
+ "meshes": [
+  256
+ ],
+ "cases_by_mesh": {},
+ "repetitions": 5,
+ "burn_seconds": 0.1,
+ "audit_intervals": 32,
+ "full_audit_cases": 2,
+ "full_audit_max_unknowns": 300000,
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-4": {
+   "dt": 0.025,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.025_rtol1e-3": {
+   "dt": 0.025,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-4": {
+   "dt": 0.05,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-4": {
+   "dt": 0.1,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  }
+ },
+ "neighbour": {
+  "cg": "fom_cncg_dt0.05_rtol1e-3",
+  "cohort": "heldout_sealed_921099",
+  "cases": 3,
+  "reps": 3
+ },
+ "profile": {
+  "meshes": [
+   256
+  ]
+ },
+ "paper_fast": {
+  "cn": "nmrom_R320_q0_cn",
+  "bf": "nmrom_R320_q0_bf"
+ }
+}

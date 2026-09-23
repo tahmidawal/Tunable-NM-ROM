@@ -1,0 +1,120 @@
+{
+ "dim": 3,
+ "model": {
+  "kind": "mlp",
+  "bank": "vp_R320/bank.pkl",
+  "head": "vp_R320/head_K32.pkl"
+ },
+ "prep": "prep_3d.npz",
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 1024
+ },
+ "edges": [
+  0,
+  32,
+  64,
+  128,
+  192,
+  256,
+  320
+ ],
+ "ladder": [
+  320,
+  64
+ ],
+ "q_by_Rp": {
+  "320": [
+   0,
+   288
+  ],
+  "64": [
+   0,
+   32
+  ]
+ },
+ "rom_defaults": {
+  "init": "field",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "families": {
+  "cn": {
+   "init": "field"
+  },
+  "bf": {
+   "init": "field",
+   "stepping": "exact_direct",
+   "tolerance": 0.0001,
+   "cholesky": true
+  }
+ },
+ "parity": {
+  "meshes": [
+   16
+  ],
+  "q": [
+   0,
+   288
+  ]
+ },
+ "cohorts": [
+  [
+   "validation_921777",
+   921777,
+   1
+  ],
+  [
+   "dev_920311",
+   920311,
+   1
+  ]
+ ],
+ "meshes": [
+  16
+ ],
+ "cases_by_mesh": {},
+ "repetitions": 1,
+ "burn_seconds": 0.01,
+ "audit_intervals": 8,
+ "full_audit_cases": 2,
+ "full_audit_max_unknowns": 300000,
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  }
+ },
+ "neighbour": {
+  "cg": "fom_cncg_dt0.05_rtol1e-3",
+  "cohort": "dev_920311",
+  "cases": 1,
+  "reps": 1
+ },
+ "profile": {
+  "meshes": [
+   16
+  ]
+ },
+ "paper_fast": {
+  "cn": "nmrom_R320_q0_cn",
+  "bf": "nmrom_R320_q0_bf"
+ },
+ "local_smoke": true
+}

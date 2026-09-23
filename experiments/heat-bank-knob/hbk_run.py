@@ -161,8 +161,9 @@ def main():
                 for rep in range(cfg['neighbour']['reps']):
                     order = list(np.random.default_rng([cfg.get('order_seed', 923), n, ci, rep, 3]).permutation(model_arms))
                     for m in order:
-                        C.burn(cfg['burn_seconds']); C.block(neighbour_cg(u0)); _, sec = timed(methods[m], u0)
-                        mesh['neighbour'].setdefault(m, []).append(dict(case=ci, ms=1e3 * sec))
+                        C.burn(cfg['burn_seconds']); C.block(neighbour_cg(u0)); res, sec = timed(methods[m], u0)
+                        if not np.array_equal(np.asarray(FP(res[0])), fps[m]): rows[m]['fingerprint_mismatch'] += 1
+                        mesh['neighbour'].setdefault(m, []).append(dict(case=ci, ms=1e3 * sec)); del res
             if ci == prof_case and n in cfg['profile']['meshes']:   # same-job stage profile
                 for name, st in stages.items():
                     if cfg['profile'].get('arms') and name not in cfg['profile']['arms'] and not name.startswith('lin_'): continue

@@ -1,0 +1,18 @@
+{
+  "what": "verification that cluster/collect.py's tar exclusions do what this lane needs, run on a mock attempt tree before any collection",
+  "why": "ladder01's attempt directory contains a ~16 GB copy of the extended training bank. Without an exclusion the archive would be 16 GB, would be chunked into ~370 git-tracked 45 MiB parts, and would blow this lane's 50 MB-per-file cap many times over.",
+  "archived": [
+    "ladder01/data/diagnosis-cohort/burgers-calibration-00000.npz",
+    "ladder01/data/trainbig/generation-report.json",
+    "ladder01/data/trainbig/index-00128.json",
+    "ladder01/out/lad-unet-n00128/best.pt",
+    "ladder01/out/lad-unet-n00128/history.json"
+  ],
+  "excluded": [
+    "ladder01/data/trainbig/burgers-train-*.npz  (the bank's case files)",
+    "ladder01/data/train/*, ladder01/data/refinement/*  (the pinned cache, archived by the Burgers lane)",
+    "ladder01/out/*/last.pt  (training is not resumable; best.pt carries the selected weights)"
+  ],
+  "consequence": "the extended bank itself is NOT committed. Its index-*.json and generation-report.json ARE, and they carry every case's SHA256, the solver setting and the seed sequence, so the bank stays verifiable and exactly regenerable by gen_bank.py in about 8 h on an A100. The gen01 reproduction gate showed generation is byte-deterministic, so a regenerated bank is the same bank.",
+  "passed": true
+}

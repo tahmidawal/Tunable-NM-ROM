@@ -9,7 +9,9 @@ path and the cluster namespace (audit finding B2, DESIGN A2).
 Excluded from the archive, exactly as the parent lane excluded them: the final-epoch
 optimiser state (`last.pt`; training is not resumable and `best.pt` carries the
 selected weights, normalisation and its own hash), package caches, the training
-cases and refinement anchors (already archived and hash-linked by the Burgers lane)
+cases and refinement anchors (already archived and hash-linked by the Burgers lane),
+this lane's own extended training bank (its case files only -- its indices and generation
+report are archived, and they hash-link every case)
 and the solver-audit sidecars. Everything else — every `best.pt`, every saved
 validation and cohort prediction, every history, the timing repetition arrays, the
 model-facing validation cases and the rebuilt cohort — is archived byte for byte
@@ -27,7 +29,14 @@ ROOT = Path(__file__).resolve().parents[3]
 LANE = ROOT / 'experiments/ops-tune-grid'
 NAMESPACE = '/cluster/tufts/paralab/tawal01/opstune_grid_20260922'
 EXCLUDES = ['--exclude=*/last.pt', '--exclude=*.solver.npz', '--exclude=cache', '--exclude=tmp',
-            '--exclude=data/train', '--exclude=data/refinement', '--exclude=code/__pycache__']
+            '--exclude=data/train', '--exclude=data/refinement', '--exclude=code/__pycache__',
+            # ops-tune-grid: the extended training bank is ~16 GB of case files, copied into
+            # every training attempt's own data/. Excluding the CASES keeps the archive the
+            # size the parent lane's was; the bank's `index-*.json` and `generation-report.json`
+            # are NOT excluded, and they carry every case's SHA256, the solver setting and the
+            # seed sequence -- so the bank stays verifiable and exactly regenerable
+            # (`gen_bank.py`, ~8 h on an A100) without being committed.
+            '--exclude=data/trainbig/*.npz']
 
 
 def ssh(command):

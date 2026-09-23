@@ -148,11 +148,17 @@ def train_bank(groups, cfg, log):
         upd, state = opt.update(grad, state, net)
         return optax.apply_updates(net, upd), state, val, aux
 
-    @jax.jit
+    qfun = jax.jit(lambda net, p, x: jnp.linalg.qr(C.features(dict(p, net=net), x), mode='reduced')[0])
+    efun = jax.jit(lambda q, y: jnp.sum((y - q @ (q.T @ y)) ** 2, axis=0))
+
     def validate(net, p, xs, vns):
+        """Per group, one QR, then the validation columns in chunks (job 4238911: the fused three-group validation
+        asked XLA for a 42 GiB temporary and ran out of memory on an 80 GB A100)."""
         worst, rms = [], []
         for x, vn in zip(xs, vns):
-            e = projection_errors(C.features(dict(p, net=net), x), vn)
+            q = qfun(net, p, x)
+            e = jnp.concatenate([efun(q, vn[:, s:s + 64]) for s in range(0, vn.shape[1], 64)])
+            del q
             worst.append(jnp.sqrt(jnp.max(jnp.maximum(e, 0.))))
             rms.append(jnp.sqrt(jnp.mean(jnp.maximum(e, 0.))))
         return jnp.stack(worst), jnp.stack(rms)

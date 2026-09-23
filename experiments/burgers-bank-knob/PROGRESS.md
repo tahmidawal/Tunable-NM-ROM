@@ -19,6 +19,10 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
   fast = R'=128 linear (1.87 %, 35 ms, 4.40×; current q=0 2.37 %, 47 ms, 3.31×). q not droppable (linear R'≥256 fails lat64
   certificate: ρ 0.206/0.161 cert, R'=256 0.078 cert but 0.119 confirmation). ρ failures sit at the initial state k=0.
 
+- bk512b (512², A100; accurate variant has an exact first step, x1): parity 5.3e-14/6.6e-14; order effect 0.0 % / 0.4 %.
+  With x1 the linear rung CERTIFIES up to R'=384 (ρ 0.068/0.069); R'=512 fails (0.137). Rule: accurate = R'=384 LINEAR
+  (0.195 %, 229 ms, 0.12× vs lean_nt3e-3 28.6 ms); fast = R'=512 q=0 (2.14 %, 35.5 ms, 0.42×). q droppable at 512²: YES.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -28,4 +32,5 @@ Design + pre-registered setting rule: `DESIGN.md` (committed before any mesh job
 | bk4096b | 4197473 | 4096² | H200 240G | submitted 02:45 EDT |
 | bk1024b | 4197475 | 1024² | A100-80G | COMPLETED 17.6 min; collected, audited (all gates pass after amendment A1), remote deleted |
 | bk2048b | 4198172 | 2048² | A100-80G | COMPLETED 38.7 min; collected, audited (all gates pass), remote deleted |
-| bk512b | 4200506 | 512² | A100 | submitted |
+| bk512b | 4200506 | 512² | A100 | COMPLETED 19.8 min; collected, audited (all gates pass), remote deleted |
+| bk256b | 4202294 | 256² | A100 | submitted |

@@ -45,17 +45,17 @@ Table-1 convention: one FOM time per mesh (the fastest FOM setting and compile m
 | $256^2$ | fast | R'=128 linear, no exact step [eng_graphs] | 2.547 % | 0.268 % | 18.2 | 0.94× | 4242040 | pass |
 | $256^2$ | parent setting | R'=384 linear, exact 1st step [parent] | 0.875 % | 0.026 % | 125.2 | 0.14× | 4242040 | |
 | $256^2$ | parent setting | R'=128 linear, exact 1st step [parent] | 2.547 % | 0.268 % | 33.9 | 0.50× | 4242040 | |
-| $256^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.109 % | | 17.1 | 1× | 4242040 | |
+| $256^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.109 % | | 17.1 | 1× | 4242040 (NVIDIA A100 80GB PCIe, `pax049`) | |
 | $512^2$ | accurate | R'=384 linear, no exact step [eng] | 1.128 % | 0.029 % | 46.3 | 0.61× | 4242063 | pass |
 | $512^2$ | fast | R'=128 linear, no exact step [eng] | 2.781 % | 0.281 % | 18.2 | 1.56× | 4242063 | pass |
 | $512^2$ | parent setting | R'=384 linear, exact 1st step [parent] | 1.128 % | 0.028 % | 235.7 | 0.12× | 4242063 | |
 | $512^2$ | parent setting | R'=512 q=0 head, no exact step [parent] | 7.839 % | 0.701 % | 32.9 | 0.86× | 4242063 | |
-| $512^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.119 % | | 28.4 | 1× | 4242063 | |
+| $512^2$ | FOM | `lean_nt3e-3_l3e-3_dt005__graphs` | 0.119 % | | 28.4 | 1× | 4242063 (NVIDIA A100 80GB PCIe, `pax049`) | |
 | $1024^2$ | accurate | R'=384 linear, no exact step [eng] | 1.250 % | 0.029 % | 53.1 | 1.56× | 4242036 | pass |
 | $1024^2$ | fast | R'=128 linear, no exact step [eng_graphs] | 2.960 % | 0.289 % | 22.1 | 3.75× | 4242036 | pass |
 | $1024^2$ | parent setting | R'=384 linear, no exact step [parent] | 1.250 % | 0.029 % | 89.1 | 0.93× | 4242036 | |
 | $1024^2$ | parent setting | R'=128 linear, no exact step [parent] | 2.960 % | 0.289 % | 33.2 | 2.49× | 4242036 | |
-| $1024^2$ | FOM | `lean_nt3e-3_l3e-3_dt005` | 0.129 % | | 82.7 | 1× | 4242036 | |
+| $1024^2$ | FOM | `lean_nt3e-3_l3e-3_dt005` | 0.129 % | | 82.7 | 1× | 4242036 (NVIDIA A100-PCIE-40GB, `pax003`) | |
 
 ## Engineering: same iterates, less time
 
@@ -301,6 +301,8 @@ Fast path: Cholesky on the damped normal equation, clipped step, damping carried
 - held-out $512^2$ (job 4242063): log_says_backend_gpu ✓, complete ✓, x64_and_highest ✓, cohort_hash ✓, rotation_file_is_the_committed_one ✓, directions_file ✓, phi_free_operator_parity ✓, repetition_output_identical ✓, retained_repetitions ✓, sep_lattice_projection ✓, retained_repetitions_recomputed ✓, restricted_recomputation_tracks_job ✓, full_grid_errors_recomputed ✓, parity ✓, fom_mode_field_sha_identical ✓, fom_mode_parity ✓, certificate_status_recomputed_matches_job ✓, rho_recomputed_in_numpy ✓, coefficient_map_recomputed_in_numpy ✓, drift_ABA ✓, neighbour ✓, fom_modes_same_error ✓, knob_error_identical_across_modes ✓, controls_detected ✓; worst drift 1.001, worst neighbour ratio 1.001 (38 evaluable, not evaluable: 0).
 - held-out $1024^2$ (job 4242036): log_says_backend_gpu ✓, complete ✓, x64_and_highest ✓, cohort_hash ✓, rotation_file_is_the_committed_one ✓, directions_file ✓, repetition_output_identical ✓, retained_repetitions ✓, sep_lattice_projection ✓, retained_repetitions_recomputed ✓, restricted_recomputation_tracks_job ✓, full_grid_errors_recomputed ✓, parity ✓, fom_mode_field_sha_identical ✓, fom_mode_parity ✓, certificate_status_recomputed_matches_job ✓, rho_recomputed_in_numpy ✓, coefficient_map_recomputed_in_numpy ✓, drift_ABA ✓, neighbour ✓, fom_modes_same_error ✓, knob_error_identical_across_modes ✓, controls_detected ✓; worst drift 1.010, worst neighbour ratio 1.007 (38 evaluable, not evaluable: 0).
 
+Scope of the held-out gates (Codex held-out audit, `checks/codex-results-audit-hold64.md`): certificates are not re-run on hold64 (the ρ checks there are vacuous by design; the certificate is a dev-stage property of the knob); FOM compile-mode identity is checked by output SHA on every case, not by per-step Newton vectors; with one FOM repetition per case the case-controlled FOM neighbour ratio is identically 1 (not informative); the full-grid error recomputation covers case 0, the other cases are checked on the restricted grid.
+
 ## What failed, was retracted, or is provisional
 
 - $256^2$ accurate row stays **slower than the FOM**: 0.37× on dev6, 0.38× on hold64.
@@ -323,7 +325,7 @@ Fast path: Cholesky on the damped normal equation, clipped step, damping carried
 - **Engineering (E1–E3)**: rewrites that compute the same numbers in a different order (separable test-matrix products, an analytic Jacobian for the exact step). **Compile mode**: `default`, or `graphs` (XLA command buffers/CUDA graphs). Both are applied to ROM and FOM alike; each subject's faster mode is used.
 - **Parity**: the check that engineered code reproduces the parent code's iterates (relative difference and identical integer diagnostics).
 - **Worst evolved error**: the largest over the dev cases of the largest over the five evolved output times of $\lVert u-u_{\rm ref}\rVert/\lVert u_0\rVert$, with $u_{\rm ref}$ the tight FOM on the same mesh.
-- **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases never used for any choice.
+- **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases, never used to select a ROM setting or compile mode (the FOM comparator on hold64 is re-chosen there by the same pre-registered rule).
 - **Certificate**: the quadrature check $\rho\le 0.116$ on states reached on a separate population (5 draws + 1 confirmation draw), a population used during selection (hold64 is the fresh confirmation); $k\ge\max(j,1)$ is the primary state set (the initial state excluded), $k\ge j+1$ the states at which the quadrature advection is actually evaluated (for an exact-first-step knob it drops one more state).
 - **Fast bar**: the worst evolved error of the paper's previous fast setting ($R'=512$, $q=0$), re-measured in the same job; the fast row is the cheapest certified setting at least that accurate.
 - **Speedup**: FOM milliseconds divided by ROM milliseconds, with one FOM time per mesh (the fastest FOM setting and mode at least as accurate as the accurate row). **Own speedup**: against the fastest FOM at least as accurate as that knob itself.

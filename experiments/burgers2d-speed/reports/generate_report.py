@@ -141,7 +141,7 @@ def main():
                          f"{f(b['median_evolved_percent'])} % | {f(b['median_gpu_ms'], 1)} | {sp(b['speedup_vs_table1_fom'])} | "
                          f"{s['job_id']} | |")
             o.append(f"| ${L}^2$ | FOM | `{t1['fom']}` | {f(t1['fom_worst_evolved_percent'])} % | | "
-                     f"{f(t1['fom_gpu_ms'], 1)} | 1× | {s['job_id']} | |")
+                     f"{f(t1['fom_gpu_ms'], 1)} | 1× | {s['job_id']} ({s['gpu']}, `{s['host']}`) | |")
         o.append('')
 
     # ---- engineering parity ---------------------------------------------------------------------------------
@@ -223,7 +223,11 @@ def main():
                      + ', '.join(f"{k} {'✓' if v['passed'] else '✗'}" for k, v in gs.items())
                      + f"; worst drift {f(dr.get('worst'))}, worst neighbour ratio {f(nb.get('worst'))} "
                        f"({nb.get('evaluable')} evaluable, not evaluable: {len(nb.get('not_evaluable') or [])}).")
-    o.append('')
+    o += ['', 'Scope of the held-out gates (Codex held-out audit, `checks/codex-results-audit-hold64.md`): certificates are not '
+          're-run on hold64 (the ρ checks there are vacuous by design; the certificate is a dev-stage property of the knob); '
+          'FOM compile-mode identity is checked by output SHA on every case, not by per-step Newton vectors; with one FOM '
+          'repetition per case the case-controlled FOM neighbour ratio is identically 1 (not informative); the full-grid '
+          'error recomputation covers case 0, the other cases are checked on the restricted grid.', '']
     o += ['## What failed, was retracted, or is provisional', '']
     for L, (s, _) in dev.items():
         t1 = s['selection'].get('table1') or {}
@@ -269,8 +273,8 @@ def main():
           'identical integer diagnostics).',
           '- **Worst evolved error**: the largest over the dev cases of the largest over the five evolved output times of '
           '$\\lVert u-u_{\\rm ref}\\rVert/\\lVert u_0\\rVert$, with $u_{\\rm ref}$ the tight FOM on the same mesh.',
-          '- **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases never used for '
-          'any choice.',
+          '- **dev6**: the six opened development cases used for selection. **hold64**: 64 held-out cases, never used to select a ROM '
+          'setting or compile mode (the FOM comparator on hold64 is re-chosen there by the same pre-registered rule).',
           '- **Certificate**: the quadrature check $\\rho\\le 0.116$ on states reached on a separate population (5 draws + '
           '1 confirmation draw), a population used during selection (hold64 is the fresh confirmation); $k\\ge\\max(j,1)$ is the '
           'primary state set (the initial state excluded), $k\\ge j+1$ the states at which the quadrature advection is '

@@ -30,6 +30,16 @@ Design, candidate set and pre-registered rule: `DESIGN.md` (committed before any
 - ~17:50 — held-out jobs h1024 (4242036), h256 (4242040), h512 (4242063) submitted from the committed selection; remote dev
   directories deleted after the verified pulls (smk/bench outputs were diagnostics, logs read, not archived).
 
+- ~18:00 — Codex results audit of dev6 (`checks/codex-results-audit-dev6.md`): every selection, speedup, certificate,
+  parity and gate independently confirmed; one bug found in an auxiliary before/after factor (LM-budget-1 parent arms matched
+  to uncapped engineered arms) — fixed, summaries regenerated, selection unaffected.
+- ~17:35 — held-out hold64 jobs complete, pulled, audited: **all gates pass** at all three meshes (parity at 1024² 3e-15).
+  256²: accurate 0.875 % worst / 0.026 % median, 45.1 ms, 0.38×; fast 2.547 % / 0.268 %, 18.2 ms, **0.94×** (FOM 17.1 ms).
+  512²: accurate 1.128 %, 46.3 ms, 0.61×; fast 2.781 %, 18.2 ms, **1.56×** (FOM 28.4 ms).
+  1024²: accurate 1.250 %, 53.1 ms, **1.56×** (parent code 89.1 ms, 0.93×); fast 2.960 %, 22.1 ms, 3.75× (FOM 82.7 ms).
+  Remote namespace emptied and removed. Report `reports/2026-09-23-burgers2d-speed-small-meshes.md`; lane summary
+  `checks/lane-summary.json`.
+
 ## Jobs
 | attempt | job | mesh | GPU | state |
 |---|---|---|---|---|
@@ -38,4 +48,4 @@ Design, candidate set and pre-registered rule: `DESIGN.md` (committed before any
 | b1024 | 4241031 | 1024² dev6 | A100 80GB (pax049) | done, pulled, audited, remote deleted |
 | b256 | 4241033 | 256² dev6 | A100 80GB (pax106) | done, pulled, audited, remote deleted |
 | b512 | 4241035 | 512² dev6 | A100 80GB (pax105) | done, pulled, audited, remote deleted |
-| h1024 / h256 / h512 | 4242036 / 4242040 / 4242063 | hold64 | A100 | submitted |
+| h1024 / h256 / h512 | 4242036 / 4242040 / 4242063 | hold64 | A100 (pax003 / pax049 / pax049) | done, pulled, audited, remote deleted |

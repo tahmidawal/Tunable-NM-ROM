@@ -24,7 +24,7 @@ All solvers solve the paper's own discrete system on the paper's own grid.
     that is, CN–CG with the linear solve done to round-off.
   - `modal_exp`: exact propagation $e^{-\nu t\lambda}$. This is the heat lane's same-grid truth, so its error is
     round-off by construction.
-- **Burgers 2D.** Specified separately, in section B below, before any Burgers timing.
+- **Burgers 2D.** See section B.
 - **L-shape.** No fast transform diagonalises the Dirichlet Laplacian on the non-rectangular domain. There is
   no spectral arm.
 - **NS 3D.** The lane's own CNAB2 FOM is already Fourier pseudo-spectral. Its timings are recorded from
@@ -74,9 +74,11 @@ until `block_until_ready`. This is the owning lane's scope.
 
 **Gates** (limit 1.10):
 - **Drift:** the ROM median in A2 divided by the median in A1 must lie in $[1/1.1,\ 1.1]$.
-- **Within-phase neighbour:** the median after the slowest-median other subject, divided by the median after the
-  fastest-median other subject, must be $\le 1.10$.
-  - With two subjects in a phase, the comparison is "after the other" vs "after itself", oriented slow over fast.
+- **Within-phase neighbour:** the median after a long predecessor, divided by the median after a short one, must
+  be $\le 1.10$.
+  - With two subjects in a phase, long and short are the slower and faster of {the other subject, itself}.
+  - With three or more subjects (the Burgers spectral ladder), long is the top third of the other subjects by
+    phase median, and short is the bottom third.
   - Each side needs at least 3 samples.
 
 Also required: determinism (byte-identical fields on every repetition), and the independent NumPy audit
@@ -95,3 +97,57 @@ For solvers with their own error (heat `modal_cn`, the Burgers ladder), it is th
 worst error is $\le$ our arm's worst error. The tight/exact spectral arm is also reported.
 
 **Timing rows that fail a gate** are reported with the failure beside them and are not called gate-clean.
+
+## B. Burgers 2D (written before any Burgers job)
+
+**Solver (`spec_core.make_burgers`).** Each backward-Euler step is solved by the fixed point
+$u \leftarrow u - H^{-1} r(u)$, where:
+- $r$ is the paper's own residual, `mr-burgers2d/engines.residual`, imported unchanged;
+- $H = I + \Delta t\,\nu A$ is applied exactly by DST.
+
+The fixed point satisfies $r(u) = 0$, so it is the paper's discrete solution. Each step stops at the paper's
+Newton rule, $\lVert r\rVert \le \text{ntol}\,\lVert u_{\text{prev}}\rVert$. With exactly one sweep, the scheme is
+the semi-implicit IMEX step: explicit upwind advection, implicit diffusion, and the same stencil.
+
+**Why plain Picard and not Anderson acceleration.** Local prototypes at 128² and 512² (dev4 cases 0 and 1)
+decided this before any timing:
+- Picard needs about 4 sweeps per step at ntol $10^{-6}$ and 1–2 sweeps at loose ntol, independent of mesh.
+- Anderson acceleration with memory 3 or 5 never reduced the sweep count, and cost 2–3× more per sweep.
+
+The paper's Newton–BiCGStab already uses $H^{-1}$ as its preconditioner. Pure Picard is the variant in which
+the whole solve is done by the fast transform.
+
+**Ladder (11 subjects).**
+- Picard with $\Delta t = 0.005$ and ntol $\in \{10^{-6}, 10^{-4}, 10^{-3}, 3\cdot10^{-3}, 10^{-2}\}$.
+- Picard with $\Delta t = 0.01$ and ntol $\in \{10^{-4}, 10^{-3}, 10^{-2}\}$.
+- IMEX with $\Delta t \in \{0.0025, 0.005, 0.01\}$.
+
+**DST implementation.** The DST inside $H^{-1}$ (fft or mm) is picked per mesh by an untimed micro-benchmark,
+and the choice is recorded.
+
+**Reference and error.**
+- The reference is the paper's `fft_tight` (Newton–BiCGStab, $\Delta t = 0.005$, ntol $10^{-6}$, ltol $10^{-8}$).
+- The error is $\max_{t \ge 0.05} \lVert u - u_{\text{ref}}\rVert / \lVert u_0\rVert$, worst over dev6.
+
+**Validation (case 0).**
+- The paper's FOM at ntol $10^{-10}$ / ltol $10^{-12}$ and spectral Picard at ntol $10^{-10}$ must agree to
+  $\le 10^{-8}\,\lVert u_0\rVert$.
+- The control, Picard on a residual with $1.01\nu$, must not agree.
+
+**Parity gate.** The re-run ROM arms must reproduce the burgers-bank-knob lane's recorded per-case errors to
+$10^{-8}$ relative.
+
+**ROM settings.** These are the lane's selection per mesh (`lane-ref/burgers-<L>-selection.json`, taken from the
+lane's `checks/bk<L>-summary.json`):
+
+| mesh | accurate | fast |
+|---|---|---|
+| 256² | R'=384 linear, x1 | R'=128 linear, x1 |
+| 512² | R'=384 linear, x1 | R'=512 q=0 |
+| 1024² | R'=384 q=256 | R'=128 linear |
+| 2048² | R'=384 q=256 | R'=128 linear |
+
+4096² waits for the lane's `selection-4096.json`.
+
+**Spectral FOM for each ROM arm.** It is the fastest ladder subject whose worst error is $\le$ the arm's worst
+error. Tight Picard is also reported.

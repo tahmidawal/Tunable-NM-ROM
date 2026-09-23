@@ -10,10 +10,10 @@ UUID guard; the Python garbage collector is disabled around the timed call.
 
 Gates (limit 1.10):
   drift      per ROM subject, median(romA2) / median(romA1) in [1/1.10, 1.10]
-  neighbour  per subject and phase, median(after the slowest-median other subject) /
-             median(after the fastest-median other subject) <= 1.10  (predecessor = the invocation
-             immediately before in the same phase; only phases with >= 2 subjects; needs >= 3 samples
-             on each side; a subject never counts as its own neighbour)
+  neighbour  per subject and phase, median(after a long predecessor) / median(after a short one) <= 1.10
+             (predecessor = the invocation immediately before, same phase).  Two subjects in the phase:
+             long/short = the slower/faster of {the other subject, itself}.  Three or more: long = the top third
+             of the OTHER subjects by phase median, short = the bottom third.  >= 3 samples on each side.
 Timing statistic: ROM = median over romA1 u romA2; spectral = median over its phase.
 GPU time = `fused_device_seconds`: from after the synchronised host->device input copy to
 block_until_ready of the outputs (the paper's GPU-query scope); `total_seconds` adds both copies.
@@ -138,19 +138,22 @@ class ABA:
             meds = {s['name']: self.med(s['name'], (label,))[0] for s in subs}
             for s in subs:
                 others = {k: v for k, v in meds.items() if k != s['name']}
-                slow, fast = max(others, key=others.get), min(others, key=others.get)
                 mine = [x for x in inv if x['name'] == s['name']]
-                if slow == fast:
-                    # two subjects: compare after-the-other vs after-itself
-                    hi = [x['fused_device_seconds'] for x in mine if x['previous'] == slow]
-                    lo = [x['fused_device_seconds'] for x in mine if x['previous'] == s['name']]
-                    lo_name = s['name']
-                    if meds[slow] < meds[s['name']]:
-                        hi, lo, slow, lo_name = lo, hi, s['name'], slow
+                if len(others) == 1:
+                    # two subjects: "after the other" vs "after itself", oriented slow over fast
+                    (other,) = others
+                    if meds[other] >= meds[s['name']]:
+                        slow, fast = [other], [s['name']]
+                    else:
+                        slow, fast = [s['name']], [other]
                 else:
-                    hi = [x['fused_device_seconds'] for x in mine if x['previous'] == slow]
-                    lo = [x['fused_device_seconds'] for x in mine if x['previous'] == fast]
-                    lo_name = fast
+                    # >= 3 subjects: predecessors among the other subjects, top third vs bottom third by median
+                    order_ = sorted(others, key=others.get)
+                    k3 = max(1, len(order_) // 3)
+                    fast, slow = order_[:k3], order_[-k3:]
+                hi = [x['fused_device_seconds'] for x in mine if x['previous'] in slow]
+                lo = [x['fused_device_seconds'] for x in mine if x['previous'] in fast]
+                slow, lo_name = ','.join(slow), ','.join(fast)
                 if len(hi) >= 3 and len(lo) >= 3:
                     rows.append(dict(name=s['name'], phase=label, long_predecessor=slow, short_predecessor=lo_name,
                                      after_long_median=float(np.median(hi)), after_short_median=float(np.median(lo)),

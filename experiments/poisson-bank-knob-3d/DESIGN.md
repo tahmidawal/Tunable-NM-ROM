@@ -91,3 +91,37 @@ are built on the local GB10 by `pbk3_prep.py` and pinned as `runs/prep_{lshape,c
 - Cost profile: four separately jitted stages of each ROM arm — (1) source projection and nearest-code start,
   (2) LM, (3) $y$ elimination and the coefficient map, (4) reconstruction $u = G'a$ with scatter. Each stage is
   synchronised, and all are reported at the largest mesh.
+
+## Amendment A1 (2026-09-23, after job c32 4197502 and diagnostics c32diag 4197813, c32diag2 4198000) — order-effect gate
+
+**What happened.** On the first development job, `c32`, the pre-registered neighbour gate failed: every ROM arm
+was about 1.1 ms slower after the CG $10^{-3}$ neighbour (ratios 1.35–5.8). Two diagnostic jobs on the
+same model and cohort show this is not an order effect of the CG predecessor:
+
+- The re-time omitted the device-guard call (a `cuInit` + UUID read by ctypes). The main phase makes
+  that call between the burn-in and every invocation.
+- With the call restored, the after-CG times equal the main-phase times, and so do the times of an
+  interleaved no-CG control.
+- Without the call, the arm is about 1 ms slower with or without the CG predecessor, and also after a
+  2 ms sleep. CG is affected in the same way.
+- Three back-to-back calls with no burn-in and no guard (steady state) give times equal to or below the
+  main phase for ROM and CG alike.
+
+The main-phase protocol, which the earlier Table-1 lanes also used, therefore measures warm steady-state
+latency.
+
+**Second finding.** A median of 6 sub-millisecond samples has a 97.5 % sampling spread of 1.2–1.4× (bootstrap on
+the c32 main phase). A per-arm limit of 1.10 over about 20 arms fails from noise alone.
+
+**Amended gate (used from the next job; the c32 run is superseded and not used).**
+- The neighbour phase runs the variants `after_cg` (CG $10^{-3}$ → burn-in → guard → arm) and
+  `control_no_cg` (burn-in → guard → arm). They are interleaved in random order for every arm, case
+  (16 cases) and round (2 rounds), which gives 32 pairs per arm.
+- It passes iff:
+  - the pooled median of the paired ratios is $\le 1.10$;
+  - the median over arms of (after-CG median / main-phase median on the same cases) is $\le 1.10$;
+  - every arm's median paired ratio is $\le 1.25$.
+- The gate is evaluated in the Table-1 scope. The other scope is recorded but does not gate.
+- The code is `pbk3_core.order_gate`. `make_tables.py` recomputes it from the raw rows.
+- **Control (must fail):** the no-guard variant, taken as the treatment, fails with a pooled ratio of
+  1.75–1.84 on both diagnostics.

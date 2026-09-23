@@ -193,33 +193,75 @@ def q_set(ladder, Rp, K):
     return sorted({q for q in ladder if q <= Rp - K})
 
 
+def order_gate(rows, main_rows, names, scope, gate_variant='after_cg', control='control_no_cg',
+               limit_pooled=1.10, limit_arm=1.25):
+    """Order-effect gate (amendment A1, DESIGN.md). Pairs every `gate_variant` invocation (the arm right
+    after a long CG solve) with the interleaved `control` invocation of the same arm, case and round
+    (identical sequence without the CG). Passes iff
+      pooled median of the paired ratios            <= limit_pooled,
+      median over arms of (after-CG median / main-phase median on the same cases) <= limit_pooled,
+      every arm's median paired ratio               <= limit_arm."""
+    after, ctrl = {}, {}
+    for x in rows:
+        key = (x['name'], x['case'], x.get('round', 0))
+        if x.get('variant') == gate_variant:
+            after.setdefault(key, []).append(x[scope])
+        elif x.get('variant') == control:
+            ctrl.setdefault(key, []).append(x[scope])
+    per_arm, pooled, main_ratio = {}, [], {}
+    for name in names:
+        r = []
+        for key, v in after.items():
+            if key[0] == name and key in ctrl:
+                r += [a / c for a, c in zip(v, ctrl[key])]
+        if not r:
+            continue
+        per_arm[name] = float(np.median(r))
+        pooled += r
+        cases = {k[1] for k in after if k[0] == name}
+        base = np.median([x[scope] for x in main_rows if x['name'] == name and x['case'] in cases])
+        main_ratio[name] = float(np.median([t for k, v in after.items() if k[0] == name for t in v]) / base)
+    out = dict(scope=scope, gate_variant=gate_variant, control=control, limit_pooled=limit_pooled,
+               limit_arm=limit_arm, pairs=len(pooled),
+               pooled_paired_ratio=float(np.median(pooled)) if pooled else None,
+               median_after_over_main=float(np.median(list(main_ratio.values()))) if main_ratio else None,
+               max_arm_paired_ratio=max(per_arm.values()) if per_arm else None,
+               per_arm_paired_ratio=per_arm, per_arm_after_over_main=main_ratio)
+    out['passed'] = bool(pooled and out['pooled_paired_ratio'] <= limit_pooled
+                         and out['median_after_over_main'] <= limit_pooled and out['max_arm_paired_ratio'] <= limit_arm)
+    return out
+
+
 def neighbour_phase(subjects, long_sub, invoke, record, main_rows, cfg, uuid0, order):
-    """Order-effect gate. Each variant re-times every ROM arm on cases 0..neighbour_cases-1:
-    [long CG solve if v['cg']] -> burn-in -> [device-guard call if v['guard']] -> the arm.
-    The main phase runs burn-in -> device-guard call -> subject, so the variant with cg=True, guard=True
-    differs from it ONLY by the long predecessor. Ratio = variant median / main-phase median on the
-    same cases; the gate is the configured variant in the configured (Table-1) scope."""
+    """Order-effect phase. For every round, case and arm (random order), each variant is run in random
+    order (interleaved, so the variants are paired):
+      [long CG solve if v['cg']] -> [burn-in] -> [device-guard call if v['guard']] -> [sleep] ->
+      [repeat-1 back-to-back calls] -> the recorded call.
+    The main phase runs burn-in -> device-guard call -> subject; `after_cg` (cg, guard) differs from it
+    only by the long predecessor and `control_no_cg` (guard) not at all. Gate: `order_gate`."""
     ncase = range(cfg['neighbour_cases'])
     variants = cfg.get('neighbour_variants', [dict(name='after_cg', cg=True, guard=True)])
     rows = []
-    for v in variants:
+    for rnd in range(cfg.get('neighbour_rounds', 1)):
         for case in ncase:
             for i in order.permutation(len(subjects)):
                 sub = subjects[int(i)]
-                if v['cg']:
-                    invoke(long_sub, case)
-                if v.get('burn', True):
-                    burn(cfg['burn_seconds'])
-                if v['guard']:
-                    assert gpu_uuid() == uuid0
-                if v.get('sleep'):
-                    time.sleep(v['sleep'])
-                for _ in range(v.get('repeat', 1) - 1):      # back-to-back calls; the last one is recorded
-                    invoke(sub, case)
-                field, row = invoke(sub, case)
-                rec = record(sub, case, 0, 'neighbour', field, row, long_sub['name'] if v['cg'] else None)
-                rec['variant'] = v['name']
-                rows.append(rec)
+                for j in order.permutation(len(variants)):
+                    v = variants[int(j)]
+                    if v['cg']:
+                        invoke(long_sub, case)
+                    if v.get('burn', True):
+                        burn(cfg['burn_seconds'])
+                    if v['guard']:
+                        assert gpu_uuid() == uuid0
+                    if v.get('sleep'):
+                        time.sleep(v['sleep'])
+                    for _ in range(v.get('repeat', 1) - 1):
+                        invoke(sub, case)
+                    field, row = invoke(sub, case)
+                    rec = record(sub, case, rnd, 'neighbour', field, row, long_sub['name'] if v['cg'] else None)
+                    rec['variant'], rec['round'] = v['name'], rnd
+                    rows.append(rec)
     gate_rows = []
     for v in variants:
         for sub in subjects:
@@ -229,8 +271,11 @@ def neighbour_phase(subjects, long_sub, invoke, record, main_rows, cfg, uuid0, o
                 gate_rows.append(dict(variant=v['name'], name=sub['name'], scope=scope, main_median=float(base),
                                       after_long_median=float(after), ratio=float(after / base)))
     gv, gs = cfg.get('neighbour_gate_variant', 'after_cg'), cfg['gate_scope']
-    gate = dict(rows=gate_rows, limit=cfg['neighbour_limit'], neighbour=long_sub['name'], cases=len(ncase),
+    names = [s['name'] for s in subjects]
+    gate = dict(rows=gate_rows, neighbour=long_sub['name'], cases=len(ncase), rounds=cfg.get('neighbour_rounds', 1),
                 gate_scope=gs, gate_variant=gv, variants=variants,
-                passed=bool(all(r['ratio'] <= cfg['neighbour_limit'] for r in gate_rows
-                                if r['scope'] == gs and r['variant'] == gv)))
+                order_gate=order_gate(rows, main_rows, names, gs, gv),
+                order_gate_other_scope=order_gate(rows, main_rows, names,
+                                                  'total_seconds' if gs == 'fused_device_seconds' else 'fused_device_seconds', gv))
+    gate['passed'] = gate['order_gate']['passed']
     return rows, gate

@@ -47,7 +47,7 @@
  "slow_repetitions": 3,
  "burn_seconds": 0.1,
  "neighbour_tolerance": 0.001,
- "neighbour_cases": 6,
+ "neighbour_cases": 16,
  "neighbour_limit": 1.1,
  "gate_scope": "fused_device_seconds",
  "profile_reps": 3,
@@ -67,5 +67,6 @@
    "guard": true
   }
  ],
- "neighbour_gate_variant": "after_cg"
+ "neighbour_gate_variant": "after_cg",
+ "neighbour_rounds": 2
 }

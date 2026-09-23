@@ -17,7 +17,11 @@ import json
 import sys
 from pathlib import Path
 
+import os
+os.environ.setdefault('JAX_PLATFORMS', 'cpu')
 import numpy as np
+
+import pbk3_core as P3
 
 HERE = Path(__file__).resolve().parent
 RUNS = HERE / 'runs'
@@ -127,6 +131,15 @@ def profile(R):
     return out
 
 
+def order_gate_of(R):
+    """The amended (A1) paired order-effect gate; recomputed from the raw rows for runs made before A1."""
+    g = R['neighbour_gate']
+    if 'order_gate' in g:
+        return g['order_gate']
+    names = [a['name'] for a in R['arms']]
+    return dict(P3.order_gate(R['neighbour'], R['invocations'], names, g['gate_scope']), recomputed_offline=True)
+
+
 def fmt(x, d=3):
     return '' if x is None else (f'{x:.{d}f}' if abs(x) >= 0.01 else f'{x:.2e}')
 
@@ -163,12 +176,12 @@ def main():
                      cases=len(R['cohort']['parameters']), scope=SCOPE[prob],
                      result_sha256=sha_file(base / 'result.json'), audit_sha256=sha_file(base / 'audit.json'),
                      audit=A['verdict'], audit_summary=A['summary'], gates=R['gates'],
-                     neighbour_max_ratio=max(r['ratio'] for r in R['neighbour_gate']['rows']
-                                             if r['scope'] == R['neighbour_gate']['gate_scope']
-                                             and r.get('variant', 'after_cg') == R['neighbour_gate'].get('gate_variant', 'after_cg')),
+                     order_gate=order_gate_of(R),
                      parity=R['parity'], floors={k: 100 * v['worst'] for k, v in R['floors'].items()},
                      not_constructible=R.get('not_constructible', []))
-        usable = A['verdict'] == 'PASS' and all(R['gates'].values())
+        gates = dict(R['gates'], neighbour=entry['order_gate']['passed'])
+        entry['gates_amended'] = gates
+        usable = A['verdict'] == 'PASS' and all(gates.values())
         entry['usable'] = usable
         if R['cohort'].get('role') == 'final':
             fz = R['frozen_settings']
@@ -192,8 +205,9 @@ def main():
         md += [f"## {'L-shape' if prob == 'lshape' else 'Poisson 3D'} {unit} — {attempt} ({role})", '',
                f"Job {R['job_id']}, {R['gpu']}, commit `{(R['commit'] or '')[:10]}`, cohort {entry['cohort']} "
                f"({entry['cases']} cases), scope {SCOPE[prob]}. Audit: **{A['verdict']}** — {A['summary']}. "
-               f"Gates: {', '.join(k + ('=ok' if v else '=FAIL') for k, v in R['gates'].items())}; "
-               f"neighbour max ratio {entry['neighbour_max_ratio']:.3f}. "
+               f"Gates (neighbour = amended paired order gate A1): {', '.join(k + ('=ok' if v else '=FAIL') for k, v in entry['gates_amended'].items())}; "
+               f"order gate: pooled paired {fmt(entry['order_gate']['pooled_paired_ratio'])}, after/main {fmt(entry['order_gate']['median_after_over_main'])}, "
+               f"max arm {fmt(entry['order_gate']['max_arm_paired_ratio'])} ({entry['order_gate']['pairs']} pairs). "
                f"Parity: {par}.", '']
         r = entry['row']
         md += [f"**Row ({entry['selection']}).** accurate `{r['accurate']}` {fmt(r['accurate_worst_pct'])} % @ "

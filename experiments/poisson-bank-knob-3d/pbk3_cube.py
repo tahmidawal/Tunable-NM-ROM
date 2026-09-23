@@ -368,7 +368,8 @@ def main():
     R_['neighbour'], R_['neighbour_gate'] = P3.neighbour_phase(subjects + (fast if cfg.get('neighbour_include_cg') else []), long_sub, invoke, record,
                                                              R_['invocations'], cfg, uuid0, order)
     gate_rows = [r for r in R_['neighbour_gate']['rows'] if r['variant'] == R_['neighbour_gate']['gate_variant']]
-    print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in gate_rows), flush=True)
+    og = R_['neighbour_gate']['order_gate']
+    print('NEIGHBOUR', og['passed'], og['pooled_paired_ratio'], og['median_after_over_main'], og['max_arm_paired_ratio'], flush=True)
     save()
     for rep in range(cfg['profile_reps']):
         for case in range(len(cases)):

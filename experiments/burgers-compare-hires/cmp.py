@@ -487,24 +487,26 @@ def main():
                               modes_sha256=sha_array(Vmodes))
             print('POD', max(pod_ranks), round(time.perf_counter() - t0, 1), el(), flush=True)
             save()
-        qfits = {}
-        if qranks:
-            cg = sfit.CentredGram(Ut, tb)
-            for r_ in qranks:
-                m_ = sfit.qman_fit(cg, r_, cfg['qman_gammas'], cfg['qman_seed'], cfg['qman_holdout'],
-                                   sinfo['states_per_trajectory'])
-                assert m_['info']['split'].startswith('by trajectory') and m_['info']['ridge'] in m_['info']['ridge_grid']
-                json.dumps(m_['info'], allow_nan=False)
-                qfits[r_] = m_
-                rep['quadratic_manifold'].append(dict(m_['info'], bank_sha256=sha_array(m_['bank'])))
-                print('QMAN r', r_, 'ridge', m_['info']['ridge'], '|W|', f"{m_['info']['weight_frobenius_norm']:.4g}",
-                      'heldout', round(m_['info']['heldout_relative'], 6), 'lin/quad',
-                      round(m_['info']['snapshot_relative_linear_only'], 6),
-                      round(m_['info']['snapshot_relative_with_quadratic'], 6), round(m_['info']['seconds'], 1), el(), flush=True)
-                save()
-            del cg
+        # The quadratic manifolds are fitted LAZILY, one rank at a time, each run and released before the next is
+        # fitted: at 2048^2 the snapshot matrix (111 GB) plus all three banks at once (96 GB) would not fit in host RAM.
+        state = dict(Ut=Ut, cg=None)
         del Ut
-        gc.collect()
+
+        def qman_fit(r_):
+            if state['cg'] is None:
+                state['cg'] = sfit.CentredGram(state['Ut'], tb)
+            m_ = sfit.qman_fit(state['cg'], r_, cfg['qman_gammas'], cfg['qman_seed'], cfg['qman_holdout'],
+                               sinfo['states_per_trajectory'])
+            assert m_['info']['split'].startswith('by trajectory') and m_['info']['ridge'] in m_['info']['ridge_grid']
+            json.dumps(m_['info'], allow_nan=False)
+            rep['quadratic_manifold'].append(dict(m_['info'], bank_sha256=sha_array(m_['bank'])))
+            print('QMAN r', r_, 'ridge', m_['info']['ridge'], '|W|', f"{m_['info']['weight_frobenius_norm']:.4g}",
+                  'heldout', round(m_['info']['heldout_relative'], 6), 'lin/quad',
+                  round(m_['info']['snapshot_relative_linear_only'], 6),
+                  round(m_['info']['snapshot_relative_with_quadratic'], 6), round(m_['info']['seconds'], 1), el(), flush=True)
+            save()
+            return m_
+
         rep['phases']['fits_seconds'] = time.perf_counter() - tS
 
         def build_grid_arm(name, family, Bhost, head, dim, co, M, axis_points, setup_extra, twin=False):
@@ -559,7 +561,13 @@ def main():
                          coords[:, :k], 4 * k, cfg['cold_axis_points'],
                          dict(fit='classical POD of truth snapshots at this mesh, identity head'))
             else:
-                m_ = qfits[k]
+                if Vmodes is not None:                       # every POD arm has run: release the POD basis
+                    Vmodes, coords = None, None
+                    gc.collect()
+                m_ = qman_fit(k)
+                if k == max(qranks):                         # last fit: release the snapshots before the biggest bank runs
+                    state['Ut'] = state['cg'] = None
+                    gc.collect()
                 ncol = m_['bank'].shape[1]
                 axis = int(cfg['cold_axis_points'])
                 if axis ** 2 <= 2 * ncol:
@@ -609,9 +617,11 @@ def main():
                 print('BLOCK', name, el(), flush=True)
             release(name)
             if fam == 'qman':
-                qfits[k]['bank'] = None
+                m_['bank'] = None
+                args_ = None
             gc.collect()
-        del Vmodes, coords, qfits
+        state.clear()
+        Vmodes = coords = None
         gc.collect()
     rep['phases']['S_seconds'] = time.perf_counter() - tS
 

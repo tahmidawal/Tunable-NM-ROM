@@ -206,7 +206,10 @@ def main():
          pairs=[{k: x[k] for k in ('engineered', 'parent', 'worst_relative', 'integers_identical', 'passed')} for x in par],
          bar=cfg['parity_bar'])
 
-    fsha = r.get('fom_mode_sha_identical', {})
+    qsha = {(x['name'], x['case']): x['field_sha256'] for x in r['quick']}
+    ncs = sorted({x['case'] for x in r['quick']})
+    fsha = {fs['name']: all(qsha.get((fs['name'] + '__graphs', c)) == qsha.get((fs['name'], c)) for c in ncs)
+            for fs in cfg['fom_settings'] if (fs['name'] + '__graphs', ncs[0]) in qsha}
     gate('fom_mode_field_sha_identical', (not cfg.get('fom_both_modes', True)) or
          (len(fsha) == len(cfg['fom_settings']) and all(fsha.values())), rows=fsha)
     fp = r.get('fom_mode_parity', [])

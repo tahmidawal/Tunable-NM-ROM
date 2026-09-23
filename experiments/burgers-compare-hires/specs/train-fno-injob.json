@@ -1,0 +1,5 @@
+{
+ "note": "fno-large at 2048^2 trained INSIDE the p2048 H200 allocation (DESIGN A4): it needs more than an A100-80G holds even at micro-batch 1 (t2048 and t2048s both OOM). Same config, same 3000 s budget; not timed, the panel's timed phases are over before it starts.",
+ "per_arm_seconds": 3000,
+ "arms": [{"name": "fno-large", "config": "inputs/opconfigs/fno-large.json"}]
+}

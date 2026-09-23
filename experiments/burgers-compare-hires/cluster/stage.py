@@ -81,6 +81,7 @@ def main():
     p.add_argument('--train-from')
     p.add_argument('--spec', default='specs/train.json')
     p.add_argument('--late', default=None, help='<train attempt>:<arm,arm>:<max wait s>')
+    p.add_argument('--train-in-job', default=None, help='spec name under specs/ to train inside the panel allocation')
     p.add_argument('--gpu', default='a100-80G', choices=sorted(GRES))
     p.add_argument('--mem', default='240G')
     p.add_argument('--hours', type=int, default=8)

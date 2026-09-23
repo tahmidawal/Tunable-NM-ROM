@@ -180,3 +180,11 @@ submitted concurrently: after its JAX phases it waits (bounded) for `t2048s`, re
 SHA256 the training job itself recorded, and times it in Phase O like every other operator
 (`cluster/late_ops.py`); the audit checks the timed checkpoint against that record. An arm that does not arrive in
 time gets no row and is reported as not run.
+
+## A4 (2026-09-23 ~07:00 EDT) — FNO at 2048^2 trained inside the p2048 H200 allocation
+
+`t2048s` confirmed that the f64 FNO cannot train at $2048^2$ on an A100-80G even at micro-batch 1 with
+`expandable_segments` (a 32 GiB request with 55 GiB in use). Every H200 is allocated to other lanes, so rather than
+a third training job, `p2048` (an H200 job) trains `fno-large` itself after its JAX phases (same data generator,
+config, 3000 s budget; nothing is timed while it trains), then times it in Phase O. DeepONet still comes from
+`t2048s` via A3. The first `p2048` submission (4206695) was cancelled while PENDING, before it ran.

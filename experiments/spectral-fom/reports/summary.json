@@ -1,0 +1,373 @@
+{
+ "poisson2d": [
+  {
+   "problem": "poisson2d",
+   "mesh": 4096,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "job": "4206053",
+   "attempt": "spB",
+   "output": "output0",
+   "result": "runs/spB/archive/output0/result.json",
+   "result_sha256": "bac443f6c851bc427776be103588af25106e95151dc81b8bc970e9cba5538925",
+   "commit": "4dc6759a618827ab2e984eb52eb9bd5a38281654",
+   "accurate": {
+    "arm": "R512_linear",
+    "worst": 0.007418976743525537,
+    "ms": 41.30542045459151,
+    "a1": 41.31912509910762,
+    "a2": 41.28579399548471
+   },
+   "fast": {
+    "arm": "R128_linear",
+    "worst": 0.02305917300406882,
+    "ms": 11.520144995301962,
+    "a1": 11.514137731865048,
+    "a2": 11.531628668308258
+   },
+   "spectral": {
+    "dst_fft": {
+     "worst": 9.398115707545116e-16,
+     "ms": 5.047306185588241
+    },
+    "dst_mm": {
+     "worst": 6.4289142661215904e-15,
+     "ms": 29.899972025305033
+    }
+   },
+   "spectral_fom": "dst_fft",
+   "spectral_ms": 5.047306185588241,
+   "spectral_worst": 9.398115707545116e-16,
+   "ratio_accurate": 0.12219476596629539,
+   "ratio_fast": 0.4381287030368616,
+   "validation": {
+    "spectral_vs_scipy_worst": 6.4289142661215904e-15,
+    "cg": [
+     {
+      "rtol": 1e-06,
+      "case": 0,
+      "iterations": 10795,
+      "true_relative_residual": 9.998227344854969e-07,
+      "converged": true,
+      "seconds": 9.631482147146016,
+      "cg_vs_spectral": 1.2310312990085156e-08,
+      "cg_vs_scipy_truth": 1.2310312989946964e-08
+     },
+     {
+      "rtol": 1e-08,
+      "case": 0,
+      "iterations": 12907,
+      "true_relative_residual": 1.0822316519880372e-08,
+      "converged": false,
+      "seconds": 10.965341613162309,
+      "cg_vs_spectral": 9.648019852502621e-11,
+      "cg_vs_scipy_truth": 9.648020987814123e-11
+     },
+     {
+      "rtol": 1e-10,
+      "case": 0,
+      "iterations": 14531,
+      "true_relative_residual": 4.535031927830193e-09,
+      "converged": false,
+      "seconds": 12.34670250536874,
+      "cg_vs_spectral": 8.22791998087055e-13,
+      "cg_vs_scipy_truth": 8.228110962780269e-13
+     }
+    ],
+    "control": 3.301681347601074e-07
+   },
+   "gates": {
+    "spectral_exact": true,
+    "cg_converges_to_spectral": false,
+    "control_failed": true,
+    "deterministic": true,
+    "drift": true,
+    "neighbour": true,
+    "device_guard": true
+   },
+   "audit": "PASS",
+   "drift": [
+    {
+     "name": "R512_linear",
+     "romA1_median": 0.04131912509910762,
+     "romA2_median": 0.04128579399548471,
+     "ratio": 0.9991933250391202
+    },
+    {
+     "name": "R128_linear",
+     "romA1_median": 0.011514137731865048,
+     "romA2_median": 0.011531628668308258,
+     "ratio": 1.0015190834824568
+    }
+   ],
+   "neighbour_worst": 1.001139977109793
+  }
+ ],
+ "poisson3d": [],
+ "burgers2d": [],
+ "heat2d": [],
+ "heat3d": [],
+ "ns3d": {
+  "source_lane": "exp/2026-09-23-ns3d-shift-head",
+  "source_commit": "708c70fe",
+  "frozen_settings_sha256": "4e3686b80d3dc0eb5f69ed609421cf1a6b2e4c29d20fcb785a0fd1b1b5acece9",
+  "note": "CNAB2 is the lane FOM and is Fourier pseudo-spectral; the lane itself labels it not rule-compliant as an iterative FOM. Not rerun here.",
+  "rows": [
+   {
+    "job": "a2_h32",
+    "job_id": "4198840",
+    "cohort": "development",
+    "mesh": 32,
+    "gpu": "NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB",
+    "commit": "e94d398e2f04dffba7f7cfee22b9f0b8c15b4a9d",
+    "role": "rom_accurate",
+    "arm": "head k=8",
+    "worst": 0.001509639233960683,
+    "median": 0.000901349503767134,
+    "rom_ms": 6.264349911361933,
+    "cnab2_matched": {
+     "label": "CNAB2 50 steps (dt=0.004)",
+     "worst": 0.0009431144407061322,
+     "ms": 6.8374499678611755
+    },
+    "ratio_matched": 1.0914859585764496,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018770526030129864,
+     "ms": 12.809116858989
+    },
+    "ratio_most_accurate": 2.0447639484117146,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a2_h32/output/summary.json",
+    "summary_sha256": "301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c"
+   },
+   {
+    "job": "a2_h32",
+    "job_id": "4198840",
+    "cohort": "development",
+    "mesh": 32,
+    "gpu": "NVIDIA A100-PCIE-40GB, GPU-044aa1d9-306e-fd26-64c9-39452ceb3021, 40960 MiB",
+    "commit": "e94d398e2f04dffba7f7cfee22b9f0b8c15b4a9d",
+    "role": "rom_fast",
+    "arm": "bank span R'=8",
+    "worst": 0.05548923549759548,
+    "median": 0.035921529957501655,
+    "rom_ms": 3.3947909250855446,
+    "cnab2_matched": {
+     "label": "CNAB2 20 steps (dt=0.01)",
+     "worst": 0.007881776999714821,
+     "ms": 3.2302909530699253
+    },
+    "ratio_matched": 0.9515434158845956,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018770526030129864,
+     "ms": 12.809116858989
+    },
+    "ratio_most_accurate": 3.773168110099807,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a2_h32/output/summary.json",
+    "summary_sha256": "301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c"
+   },
+   {
+    "job": "a2_h64",
+    "job_id": "4198090",
+    "cohort": "development",
+    "mesh": 64,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB",
+    "commit": "229cbc5ff53666896aa4c968181efabb1f5bcbe9",
+    "role": "rom_accurate",
+    "arm": "head k=8",
+    "worst": 0.001520090442617585,
+    "median": 0.0009193224805865571,
+    "rom_ms": 8.194072172045708,
+    "cnab2_matched": {
+     "label": "CNAB2 50 steps (dt=0.004)",
+     "worst": 0.0009325763258066603,
+     "ms": 23.64594116806984
+    },
+    "ratio_matched": 2.885737478458951,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018582399891435873,
+     "ms": 45.79629609361291
+    },
+    "ratio_most_accurate": 5.588954445611082,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a2_h64/output/summary.json",
+    "summary_sha256": "05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f"
+   },
+   {
+    "job": "a2_h64",
+    "job_id": "4198090",
+    "cohort": "development",
+    "mesh": 64,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB",
+    "commit": "229cbc5ff53666896aa4c968181efabb1f5bcbe9",
+    "role": "rom_fast",
+    "arm": "bank span R'=8",
+    "worst": 0.055485043475680416,
+    "median": 0.035919880042437624,
+    "rom_ms": 4.1789161041378975,
+    "cnab2_matched": {
+     "label": "CNAB2 40 steps (dt=0.005)",
+     "worst": 0.0038234674266350555,
+     "ms": 19.270620308816433
+    },
+    "ratio_matched": 4.611392004193376,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018582399891435873,
+     "ms": 45.79629609361291
+    },
+    "ratio_most_accurate": 10.958893395410865,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a2_h64/output/summary.json",
+    "summary_sha256": "05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f"
+   },
+   {
+    "job": "a3_h96",
+    "job_id": "4198101",
+    "cohort": "development",
+    "mesh": 96,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB",
+    "commit": "229cbc5ff53666896aa4c968181efabb1f5bcbe9",
+    "role": "rom_accurate",
+    "arm": "head k=8",
+    "worst": 0.0015263151916523438,
+    "median": 0.0009324055123261078,
+    "rom_ms": 15.955741982907057,
+    "cnab2_matched": {
+     "label": "CNAB2 60 steps (dt=0.0033333)",
+     "worst": 0.0006277086264013316,
+     "ms": 106.43051890656352
+    },
+    "ratio_matched": 6.670358484148188,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018582142791305812,
+     "ms": 174.5212273672223
+    },
+    "ratio_most_accurate": 10.937832133045399,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a3_h96/output/summary.json",
+    "summary_sha256": "4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af"
+   },
+   {
+    "job": "a3_h96",
+    "job_id": "4198101",
+    "cohort": "development",
+    "mesh": 96,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-2fa16ce0-8cbb-a4bf-cedd-ac0436db49e7, 81920 MiB",
+    "commit": "229cbc5ff53666896aa4c968181efabb1f5bcbe9",
+    "role": "rom_fast",
+    "arm": "bank span R'=8",
+    "worst": 0.05548504394374973,
+    "median": 0.035919882041252876,
+    "rom_ms": 8.160457015037537,
+    "cnab2_matched": {
+     "label": "CNAB2 50 steps (dt=0.004)",
+     "worst": 0.010478672026654923,
+     "ms": 89.5277769304812
+    },
+    "ratio_matched": 10.970926844600184,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.00018582142791305812,
+     "ms": 174.5212273672223
+    },
+    "ratio_most_accurate": 21.38620754274257,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/a3_h96/output/summary.json",
+    "summary_sha256": "4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af"
+   },
+   {
+    "job": "b2_heldout96",
+    "job_id": "4202872",
+    "cohort": "held-out",
+    "mesh": 96,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB",
+    "commit": "446c25dca4206e9fd2f7609a16d45c93e8215fb0",
+    "role": "rom_accurate",
+    "arm": "head k=8",
+    "worst": 0.002068056700074668,
+    "median": 0.0009144456004885626,
+    "rom_ms": 15.792279038578272,
+    "cnab2_matched": {
+     "label": "CNAB2 70 steps (dt=0.0028571)",
+     "worst": 0.0005611016610819449,
+     "ms": 123.02785599604249
+    },
+    "ratio_matched": 7.79038007722021,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.0002249130876126794,
+     "ms": 174.24468509852886
+    },
+    "ratio_most_accurate": 11.033536367542272,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/b2_heldout96/output/summary.json",
+    "summary_sha256": "326c60413f95da9144b47b4e251d5a0f350c98bda688a3a7f0ef1f08b1fc3f2d"
+   },
+   {
+    "job": "b2_heldout96",
+    "job_id": "4202872",
+    "cohort": "held-out",
+    "mesh": 96,
+    "gpu": "NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB",
+    "commit": "446c25dca4206e9fd2f7609a16d45c93e8215fb0",
+    "role": "rom_fast",
+    "arm": "bank span R'=8",
+    "worst": 0.06910846568640945,
+    "median": 0.03729958630249482,
+    "rom_ms": 8.10978701338172,
+    "cnab2_matched": {
+     "label": "CNAB2 60 steps (dt=0.0033333)",
+     "worst": 0.04738243822703786,
+     "ms": 106.58203717321157
+    },
+    "ratio_matched": 13.142396587893579,
+    "cnab2_most_accurate": {
+     "label": "CNAB2 100 steps (dt=0.002)",
+     "worst": 0.0002249130876126794,
+     "ms": 174.24468509852886
+    },
+    "ratio_most_accurate": 21.485728886715872,
+    "timing_gates": {
+     "fast_block": true,
+     "after_cooldown": true,
+     "passed": true
+    },
+    "summary": "experiments/ns3d-shift-head/runs/b2_heldout96/output/summary.json",
+    "summary_sha256": "326c60413f95da9144b47b4e251d5a0f350c98bda688a3a7f0ef1f08b1fc3f2d"
+   }
+  ]
+ }
+}

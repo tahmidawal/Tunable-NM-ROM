@@ -397,3 +397,52 @@ contract is comparable with the POD, NM-ROM and full-order rows. The wiring — 
 the `jacfwd` Jacobian, the initial-fit path, `GridBank`'s zero padding under homogeneous Dirichlet
 boundaries — is correct. The job fits on an 80 GB A100 with roughly 10 GB steady state against a
 72 GB budget, and `priority_override` is right if it does not.
+
+## A2 — 2026-09-22, after `qmn101` (job 4185793) died in 9 min 55 s with no numbers: retraction and fix
+
+**Nothing is retracted from the science, because the job produced no reduced-subject numbers.** It
+is recorded here in full anyway, because a job that dies is the part that gets silently dropped.
+
+`qmn101` (job 4185793, A100-80G `pax106`, source commit `ec1dd380`) passed the GPU preflight
+(`jax_backend=gpu`, x64, precision `highest`), declared all 29 subjects, solved the six 4096-interval
+references, fitted all four quadratic manifolds and both sensitivity fits, and then **died at the
+next `save()`** with `ValueError: Out of range float values are not JSON compliant: inf`.
+
+**Cause — my own §A1 fix, not the audit's finding.** §A1 disposition 5c replaced a possibly-negative
+Gram condition number with `ev[-1] / max(ev_min, float-tiny)`. At $r=64$ the Gram $\Pi\Pi^\top$
+(2080 × 2080 from 3328 snapshots) is numerically singular, `ev_min` is denormal, and the floored
+ratio **overflowed to $+\infty$**. `ladder.dump` writes with `allow_nan=False`, so one non-finite
+diagnostic killed a job that had already spent 8 minutes on the references. The hardening was worse
+than the thing it hardened.
+
+**Fix.** A Gram that cannot support a condition number reports `gram_condition = None` and sets
+`gram_rank_deficient`, which is the honest statement and is JSON-safe. `qman.fit` now also asserts
+`json.dumps(info, allow_nan=False)` **before returning**, so any future non-finite diagnostic fails
+in seconds with a readable message instead of after the references. `qman.demo()` covers both: it
+encodes the info dict and fits a deliberately rank-deficient Gram.
+
+**The fits themselves were healthy and are kept as evidence** (they are recomputed from the same
+seed in the resubmit, so nothing here is carried across jobs — it is reported because it is the
+first look at this construction at $256^2$ and it bears on §3.1's pre-registered prediction):
+
+| $r$ | $P$ | selected $\gamma$ | $\lVert W\rVert_F$ | snapshot rel., linear only → with quadratic |
+|---|---|---|---|---|
+| 8 | 36 | 0.01 (interior) | 0.0578 | 0.2660 → 0.1703 |
+| 16 | 136 | 0.01 (interior) | 0.0733 | 0.1367 → 0.0753 |
+| 32 | 528 | 0.01 (interior) | 0.0743 | 0.0606 → 0.0294 |
+| 64 | 2080 | **1.0 (top endpoint)** | 0.0039 | 0.0210 → 0.0191 |
+
+Two things follow, both pre-registered. First, the §A1 trajectory split behaves as intended on the
+real 128-trajectory snapshot set: it selects an **interior** $\gamma$ at every rung through $r=32$,
+where the quadratic term roughly halves the snapshot residual. The grid-endpoint selection in the
+64-interval smoke was the 4-trajectory small-sample artifact §A1.1 said it was, not the criterion.
+Second, at $r=64$ the selection sits at the **top** endpoint with $\lVert W\rVert_F$ an order of
+magnitude smaller and almost no residual reduction — the quadratic term does not generalise across
+held-out trajectories once $P=2080$ is fitted from 3328 snapshots. That is §3.1's recorded
+prediction ("the quadratic gain is largest at small $r$ and shrinks or reverses by $r=64$") and
+§A1.1's top-endpoint reading, and it is to be reported as such rather than tuned away.
+
+**Job accounting.** `qmn101` is spent: 2 of the 4-job budget after the resubmit. §8's stop rule (b)
+covers this — a job that dies is resubmitted once with the science unchanged — and the science IS
+unchanged: same subjects, same ladder, same $\gamma$ grid, same seeds, same cohort. The resubmit is
+`qmn102`, in its own directory. The remote `qmn101` directory is deleted.

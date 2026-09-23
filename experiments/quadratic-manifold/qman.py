@@ -20,6 +20,7 @@ affine linear-subspace control u_ref + V_r a on the identical basis.
 """
 from __future__ import annotations
 
+import json
 import time
 
 import numpy as np
@@ -114,10 +115,15 @@ def fit(Ut, r, gammas, seed, holdout, states_per_trajectory):
     linear_only = float(jnp.linalg.norm(E)) / max(nrm, 1e-300)
     quadratic_in = float(jnp.linalg.norm(W @ Pi - E)) / max(nrm, 1e-300)
     ev = np.asarray(jnp.linalg.eigvalsh(Mfull))
-    # eigvalsh returns a small NEGATIVE smallest eigenvalue for a numerically singular PSD Gram,
-    # which would make the headline conditioning diagnostic negative and meaningless; the sign is
-    # reported beside a floored ratio instead (DESIGN A1, finding 5c).
+    # eigvalsh returns a small NEGATIVE (or denormal) smallest eigenvalue for a numerically singular
+    # PSD Gram, which would make the headline conditioning diagnostic negative and meaningless
+    # (DESIGN A1, finding 5c). Flooring it at float-tiny was the first fix and was WORSE: at r = 64
+    # the ratio overflowed to +inf and the driver's `allow_nan=False` JSON writer killed the job
+    # (DESIGN A2). A Gram that cannot support a condition number reports None and sets the
+    # rank-deficiency flag, which is the honest statement and is JSON-safe.
     ev_min = float(ev[0])
+    cond = float(ev[-1] / ev_min) if ev_min > 0 else float('inf')
+    rank_deficient = not (ev_min > 0 and np.isfinite(cond))
     info = dict(rank=r, quadratic_terms=P, bank_columns=1 + r + P, snapshots=int(Ns),
                 ridge=gamma, ridge_trace=trace, ridge_grid=[float(g) for g in gammas],
                 heldout_relative=heldout, heldout_fraction=float(holdout),
@@ -126,14 +132,18 @@ def fit(Ut, r, gammas, seed, holdout, states_per_trajectory):
                 split='by trajectory (DESIGN A1)',
                 selection_seed=int(seed), gram_scale=scale, gram_scale_full=scale_full,
                 weight_frobenius_norm=float(jnp.linalg.norm(W)),
-                gram_min_eigenvalue_negative=bool(ev_min < 0),
-                gram_condition=float(ev[-1] / max(ev_min, np.finfo(float).tiny)), gram_min_eigenvalue=ev_min,
+                gram_min_eigenvalue_negative=bool(ev_min < 0), gram_rank_deficient=bool(rank_deficient),
+                gram_condition=(None if rank_deficient else cond), gram_min_eigenvalue=ev_min,
                 snapshot_relative_linear_only=linear_only,
                 snapshot_relative_with_quadratic=quadratic_in,
                 pod_energy_total=float(energy), pod_eigenvalues=np.asarray(eig).tolist(),
                 pod_tail_fraction=float(max(float(energy) - float(np.sum(np.asarray(eig))), 0.) / max(float(energy), 1e-300)),
                 centred=True, basis='POD of the centred snapshots (u_ref = snapshot mean)',
                 seconds=time.perf_counter() - t0)
+    # DESIGN A2: fail HERE, in seconds and with a readable message, rather than at the driver's
+    # next `dump()` -- `ladder.dump` writes with allow_nan=False, so one non-finite diagnostic
+    # anywhere in this dict kills the job after the references have already been solved.
+    json.dumps(info, allow_nan=False)
     out = dict(uref=uref, V=V, W=W, coefficients=np.asarray(coefficients.T), info=info)
     del Sc, E, Pi, Ptr, Pte, Mtr, Mfull, Ctr
     return out
@@ -192,8 +202,16 @@ def demo():
     Jan = np.asarray(m['V']) + np.asarray(m['W']) @ np.stack(
         [np.eye(r)[i_][iu] * np.asarray(z)[ju] + np.asarray(z)[iu] * np.eye(r)[i_][ju] for i_ in range(r)], 1)
     assert np.linalg.norm(J - Jan) / np.linalg.norm(J) < 1e-13, np.linalg.norm(J - Jan) / np.linalg.norm(J)
+    # DESIGN A2: every recorded value must survive the driver's `allow_nan=False` JSON writer, and
+    # a Gram too singular for a condition number must say None rather than overflow to inf.
+    json.dumps(i, allow_nan=False)
+    assert (i['gram_condition'] is None) == i['gram_rank_deficient']
+    rank1 = fit(jnp.asarray(np.repeat(U[:, :1], Ns, axis=1) + 1e-12 * rng.normal(size=U.shape)),
+                r, (1.,), seed=0, holdout=0.2, states_per_trajectory=20)['info']
+    json.dumps(rank1, allow_nan=False)
+    assert rank1['gram_condition'] is None or np.isfinite(rank1['gram_condition']), rank1['gram_condition']
     print('qman demo OK', {k: i[k] for k in ('ridge', 'heldout_relative', 'snapshot_relative_linear_only',
-                                             'snapshot_relative_with_quadratic')})
+                                             'snapshot_relative_with_quadratic', 'gram_condition')})
 
 
 if __name__ == '__main__':

@@ -133,7 +133,27 @@ def smoke():
     return c
 
 
+def hold64():
+    """The 4096^2 held-out job, generated ONLY from the committed dev6 selection (selection-4096.json): the chosen
+    accurate and fast arms, plus the paper's current fast/accurate settings (R'=512 (a) and (c)), one allocation, the
+    lean Newton-BiCGStab grid (the implementation the 4096^2 rows use) with fft_tight as the untimed reference."""
+    sel = json.loads((HERE / 'selection-4096.json').read_text())
+    c = base(4096, 'bkh64')
+    allarms = {arm_name(a): a for a in arms_for(4096, False)}
+    want = [sel['accurate'], sel['fast'], sel['current_accurate'], sel['current_fast']]
+    c['arms'] = [dict(allarms[n], certify=False) for n in dict.fromkeys(want)]
+    c.update(eval_draws=[[20260916, 64]], expected_physical_sha256=None, skip_certificates=True,
+             cohort_name='hold64: params_draw(20260916, 64), held-out; never used to fit the bank, head, directions, '
+                         'rotation, rules or the selection',
+             fom_settings=[FOM[0]] + [f for f in FOM if f.get('impl') == 'lean'], untimed_fom=['fft_tight'],
+             audit_arms=['fft_tight'] + list(dict.fromkeys(want))[:2], selection_source_summary_sha256=sel['source_summary_sha256'],
+             fom_subsets=dict(lean=[f['name'] for f in FOM if f.get('impl') == 'lean']))
+    return c
+
+
 def main():
+    if (HERE / 'selection-4096.json').exists():
+        (HERE / 'config-h64.json').write_text(json.dumps(hold64(), indent=1) + '\n')
     for L in (256, 512, 1024, 2048, 4096):
         (HERE / f'config-{L}.json').write_text(json.dumps(base(L, f'bk{L}'), indent=1) + '\n')
     (HERE / 'config-smoke128.json').write_text(json.dumps(smoke(), indent=1) + '\n')

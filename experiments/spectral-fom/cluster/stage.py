@@ -52,7 +52,8 @@ BURG = [(f, BKN_COMMIT) for f in (
     'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
     'experiments/b-panel/inputs/rules-eqtop/rule_q0_m1024_qrg304_reachable.npz',
     'experiments/b-panel/inputs/rules/rule_q256_reachable_m2048.npz',
-    f'{BKN}/config-256.json', f'{BKN}/config-512.json', f'{BKN}/config-1024.json', f'{BKN}/config-2048.json')]
+    f'{BKN}/config-256.json', f'{BKN}/config-512.json', f'{BKN}/config-1024.json', f'{BKN}/config-2048.json',
+    f'{BKN}/config-4096.json')]   # config-4096 identical at b393fa55 and at the selection commit 31c1e18b
 HBK = 'experiments/heat-bank-knob'
 HBK_COMMIT = 'c2fbe50b'      # exp/2026-09-23-heat-bank-knob; staged files identical to h2d 962ced91 / h3d bae9e1e6 / 00147a52
 HEAT = [(f, HBK_COMMIT) for f in (
@@ -66,7 +67,7 @@ TREE_SETS = {'heat': [HBK], 'burgers': ['experiments/mr-burgers2d', 'experiments
 FILESETS = {'heat': HEAT + [(f'{LANE}/sp_heat.py', 'HEAD')],
             'p2d': P2D + [(f'{LANE}/sp2d_solve.py', 'HEAD')],
             'burgers': BURG + [(f'{LANE}/sp_burgers.py', 'HEAD')] + [(f'{LANE}/lane-ref/burgers-{L}-{k}.json', 'HEAD')
-                                                                   for L in (256, 512, 1024, 2048) for k in ('errors', 'selection')],
+                                                                   for L in (256, 512, 1024, 2048, 4096) for k in ('errors', 'selection')],
             'p3d': P3D + [(f'{LANE}/sp3d_solve.py', 'HEAD')]}
 
 SCRIPT = '''#!/bin/bash

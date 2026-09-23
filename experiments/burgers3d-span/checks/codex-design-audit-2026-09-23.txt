@@ -1,0 +1,59 @@
+Read-only audit completed; no files changed and no Python, GPU, or cluster work run. References below use `common.py`, `train.py`, and `DESIGN.md` under `experiments/burgers3d-span/`. Resource estimates are analytical, not measured.
+
+1. **BLOCKER — NaN FOM trajectories can pass data validation.**  
+   `common.py:249–251`; `train.py:68–69`. A NaN residual terminates the Newton loop because its comparison is false. Then `max(worst, NaN)` can retain the previous finite value, letting the assertion pass and contaminated snapshots enter training.  
+   **Fix:** explicitly require every field and residual to be finite and every final residual to meet `ntol`. Return distinct converged, exhausted, and nonfinite statuses; enforce them for training and reference generation.
+
+2. **BLOCKER — The fast speedup and stopping criterion use an unmatched FOM.**  
+   `DESIGN.md:147–152,194–195`. Both speedups divide by the FOM matched to the **accurate** ROM. A ROM near the 5% limit can therefore “win” against an unnecessarily accurate comparator, including the gate that decides whether to open held-out data.  
+   **Fix:** match a separate FOM to each ROM’s error threshold. Use the fast-matched comparator for the stopping gate; retain the shared denominator only as an explicitly labelled secondary comparison.
+
+3. **MAJOR — Head training and validation use the wrong field metric outside mesh 65.**  
+   `train.py:202,212–225,349,358–366`. The coefficient transformation is correct, but Euclidean coefficient distance equals field distance only where the ordered bank is orthonormal: the ordering grid. On other groups, the correct error is
+   \[
+   \bigl(\|R_g(h(z)-c)\|_2^2+e_\perp^2\bigr)/\|u\|_g^2.
+   \]
+   Current losses, nearest validation starts, and checkpoint errors omit \(R_g\).  
+   **Fix:** retain each group’s weighted QR factor and use it in training, nearest-code search, and validation fitting. The deployed initial fit in `common.py:451–458,537–539` already uses the correct native-grid metric.
+
+4. **MAJOR — Held-out FOM selection is test-set tuning, even when mechanical.**  
+   `DESIGN.md:157–160`. ROM settings are frozen, but the FOM is selected from 26 candidates using held-out errors and timings. That row is a held-out oracle comparison, not evaluation of wholly frozen settings.  
+   **Fix:** freeze the per-arm matched FOM settings on validation too. Alternatively, report the held-out FOM frontier explicitly as an oracle, separately from the frozen-setting result.
+
+5. **MAJOR — Tensor admission needs narrower claims and a sharper certificate contract.**  
+   `DESIGN.md:43,95–101,129–135`; `common.py:578–595`. The tensor legitimately approximates tested sign-upwind advection and is exact on nonnegative states. It does **not** exactly solve the sign-upwind objective on unrestricted decoded states. The certificate checks residual values at accepted endpoints, not Jacobians, predictors, or LM trial states; small value discrepancy need not imply similar stationary points.  
+   **Fix:** call it an *empirically certified backward-advection surrogate*. Define the certified states explicitly as accepted \(u_1,\ldots,u_{50}\); excluding \(u_0\) is appropriate for backward Euler’s nonlinear term. Add dense sign-upwind stationarity or dense-solve comparisons on a fixed audit subset, plus negative-state controls. The 0.116 bar is a transferred empirical threshold, not a solution-error bound; five draws plus confirmation provide finite-cohort evidence only. Reject nonfinite certificates explicitly.
+
+6. **MAJOR — Tiny-step stalls remain eligible without stationarity.**  
+   `common.py:437–440`; `DESIGN.md:142–143`. A heavily damped, even rejected, tiny step exits with reason 2 regardless of the gradient. Eligibility excludes reason 3 and excessive budget exits, so an arbitrarily stalled arm can pass. Initial-fit failures also lack explicit eligibility rules.  
+   **Fix:** classify reason 2 as stalled unless the stationarity test passes; preregister allowable stalled counts and initial-fit acceptance. Check Jacobian and gradient finiteness as well as residual finiteness.
+
+7. **MAJOR — The bank loss is not the claimed exact, span-invariant objective.**  
+   `train.py:99–104,126–136`; `DESIGN.md:60–62`. Keeping 1536 POD modes omits a bank-dependent projection-error contribution; logging discarded energy does not restore it. The normalized Gram penalty also changes under a general invertible bank rotation, so it is not span-invariant.  
+   **Fix:** describe this as a truncated-POD surrogate with basis-conditioning regularization, or implement the complete snapshot objective. Report the discarded-energy bound beside the approximation.
+
+8. **MAJOR — Model-selection evidence does not implement the stated rule.**  
+   `DESIGN.md:77–81`; `train.py:311–314,351–353,375`; `configs/train_R512.json:12` and `train_R384.json:12`. Full-grid floors use only 16 of 48 bank-validation cases. No prescribed condition-number diagnostic is computed; the inverse identity check is not one.  
+   **Fix:** evaluate all 48 cases or amend the subset before results; record the native 65-grid bank condition number and implement deterministic fallback, failure, and tie rules.
+
+9. **MAJOR — Training is a substantial memory/time risk, not a lightweight insurance run.**  
+   `train.py:91–112,124–144`; `configs/train_R512.json:45`. The groups contain 29,791, 250,047, and 250,047 points. Their 4608-snapshot f64 training matrices total **about 19.5 GB**; retained POD modes add **6.5 GB**, before validation, QR, network activations, projection residuals, and reverse-mode workspaces. Host normalization/concatenation makes additional large copies. All points participate in every one of 12,000 updates.  
+   **Fix:** stream snapshot storage, accumulate projection energies without materializing full residual matrices, checkpoint activations, and establish peak-memory/per-step budgets. An 80 GB A100 is risky; H200 capacity alone does not establish deadline feasibility.
+
+10. **MAJOR — Tensor setup has enormous offline work and significant memory overlap.**  
+    `common.py:349–372`. At 129 nodes, each \(N\times512\) bank-sized array is **8.39 GB**; `G`, `Q` blocks, and `DG` already total roughly **25 GB**. A \(2048\times512\times512\) tensor is **4.29 GB**, with additional construction/symmetrization copies. The 4096 batched DST calls process approximately **4.3 TB of real input across the build**, before three-axis FFT intermediates and workspace.  
+    **Fix:** establish a setup budget; use bounded, synchronized tiles and immediate accumulation, releasing intermediates explicitly. Consider separable low-mode contractions. OOM is not certain on either GPU, but timely completion is unproven. Keep offline setup cost visible.
+
+11. **MAJOR — Independent audits do not cover the headline claim sufficiently.**  
+    `DESIGN.md:184–190,197–198`. Most full-grid errors remain unaudited; 129-node certificates have no independent check. The saved lattice is also the EQ lattice, making it especially weak at detecting between-node errors. The panel/certificate runner and `audit.py` are not present in the inspected lane.  
+    **Fix:** preregister independent off-lattice samples and full-grid cases at every mesh, explicit sampled case identities, and mutation controls for normalization, mode indexing, stencil sign, omitted states, and certificate eligibility. Require each mutation to fail its intended check, not merely make the run fail somewhere.
+
+12. **MAJOR — Timing gates leave FOM phase effects untested.**  
+    `DESIGN.md:164–173`. A–B–A brackets ROM drift, but the neighbour gate covers only ROM invocations. FOM settings can suffer predecessor effects within B without detection. Failed gates still leave provisional timings available to selection and the speed-based stopping decision.  
+    **Fix:** apply normalized neighbour checks to B, add fixed FOM sentinels around timing blocks, define empty-stratum handling and RNG seeds, and prohibit definitive speed claims or speed-based promotion when timing gates fail.
+
+13. **MINOR — Shell completion is delegated to callers.**  
+    `common.py:148–165,357–358,562–568`. Unlike vendor `test_modes_3d`, `modes()` does not complete shells itself. Correctness depends on every caller supplying completed counts, including head arms.  
+    **Fix:** centralize shell completion and assert every arm’s actual \(M\), table capacity, and QR prefix width.
+
+The core algebra checks out on inspection: DST normalization and indexing match the vendor; `dminus` matches its backward stencil; tensor symmetrization gives the correct quadratic value and Jacobian; lattice offsets, \(s^3\) weights, and `Pq` scaling are consistent; nested QR projection/decode and six output indices are correct. **Overall verdict:** the lane is mathematically plausible but not ready for an honest preregistered headline comparison. Fix nonfinite acceptance, cross-mesh head metrics, solver eligibility, and comparator selection first; then complete the certificate/audit implementation and demonstrate resource feasibility. The tensor is admissible as an empirical surrogate, not an unconditional exact sign-upwind ROM.

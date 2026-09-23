@@ -198,6 +198,53 @@ full fields only for case 0 of the reference and four audit arms (span R'=R tens
 FOM Δt 0.005 ntol 1e-3 ltol 0.5); training snapshots never leave the job. GPUs: A100-80GB / H100 / H200 only. The
 paralab free space is checked before submission.
 
+## R1 — revisions after the independent design audit (2026-09-23, before any job; override §§3–10 where they differ)
+
+Codex read-only audit: `checks/codex-design-audit-2026-09-23.txt` (2 blockers, 10 majors, 1 minor). Disposition:
+
+1. **Non-finite / unconverged FOM data (blocker) — fixed.** Training data, references and FOM rows record finiteness
+   and the Newton status; training data and references abort unless every field and residual is finite and every step
+   meets its tolerance within the 20-iteration cap. FOM grid rows that hit the cap are flagged (they stay comparators
+   only if finite; a capped row is marked).
+2. **Comparator of the fast setting (blocker) — partly accepted.** The brief fixes the paper rule (both speedups of a
+   mesh divide the time of the fastest FOM at least as accurate as the *accurate* setting); that stays the primary
+   Table-1 number. Every arm is additionally reported against its *own* matched FOM (the fastest FOM at least as
+   accurate as that arm). **The stopping rule (§10) uses the stricter own-matched comparator**: a setting passes only
+   if it is within 5 % and faster than the fastest FOM setting at least as accurate as itself.
+3. **Head metric off the ordering grid (major) — fixed.** Head training, validation and the nearest-code search now
+   use each group's own field metric (the triangular factor of the ordered bank on that group's points); targets are
+   trained at unit scale and the scale is folded exactly into the last layer and skip.
+4. **Held-out FOM selection (major) — both reported.** Primary: the §6 rule applied mechanically on the held-out
+   errors (it can only strengthen the FOM). Beside it: the FOM setting chosen on validation, frozen.
+5. **Tensor wording and certificate contract (major) — accepted.** The tensor is a *certified backward-advection
+   surrogate* of the sign-upwind tested advection, exact on nonnegative states; it does not solve the sign-upwind
+   objective exactly. Certified states are the accepted step endpoints $u_1,\dots,u_{50}$ of the deployed solver
+   (LM trial states and Jacobians are not certified); a non-finite $ho$ fails. The bar 0.116 is the paper's
+   transferred empirical threshold, not an error bound. Added control arm `exact` (span, R' = R, dense sign-upwind
+   tested advection on every node with its exact Jacobian; untimed, never eligible) on the validation cohort at 33
+   and 65 nodes: the field difference between the rule arms and `exact` measures what the rule changes in the solution.
+   The minimum decoded value on certified states is reported (negative-state evidence).
+6. **Stalls (major) — fixed.** LM exit reasons 0 (budget) and 2 (tiny step without stationarity) are non-stationary
+   exits. Eligible iff no reason-3 exit, non-stationary exits on ≤ 1 % of all evolution steps, all outputs finite.
+   Head initial fits are reported (iterations, exit, gradient) but do not gate.
+7. **Bank-loss wording (major) — accepted.** The loss is a truncated-POD surrogate of the mean projection error
+   (top 1536 modes per group; the discarded tail energy is recorded) plus the tail term, with a conditioning
+   regulariser that is not span-invariant.
+8. **Model-selection evidence (major) — fixed.** Full-grid bank floors use all 48 bank-validation trajectories; the
+   condition number of the bank on the 65-node grid (singular values of $R_G$) is recorded and used by the §3 rule.
+   Tie or both-fail: R = 512 if finite and conditioned, else R = 384.
+9. **Training memory (major) — accepted as a risk.** Both training jobs run on H200 (141 GB), 240 GB host memory.
+10. **Tensor setup cost (major) — accepted, measured.** Setup times are logged and reported; they are offline and not
+    charged to the query (as every precomputed table in the paper).
+11. **Audit coverage (major) — strengthened.** Saved restricted fields use an OFFSET lattice $x=(2k+1)/32$ ($16^3$
+    nodes, disjoint from the EQ lattice); full fields of case 0 for the reference and the audit arms at every mesh;
+    the NumPy $ho$ audit includes a sign-mutation control (downwind stencil) that must disagree.
+12. **FOM-phase timing effects (major) — fixed.** The neighbour gate is also applied within phase B (FOM invocations
+    normalised by their (setting, case) median). If any timing gate fails at a mesh, the timed phases are repeated
+    once in a new job; if a gate fails again, that mesh's speedups are labelled provisional and cannot satisfy the
+    stopping rule.
+13. **Shell completion (minor) — every arm asserts its actual M ≥ requested and M ≤ the table's M.**
+
 ## Glossary
 
 - **Bank / ordered bank / R'**: the learned spatial functions; the same functions rotated once so the first R' carry the

@@ -56,23 +56,28 @@ def group_points(n, cfg):
     return idx, x[idx]
 
 
-def generate(cfg, tab, rows, n, steps, idx, log, full_steps=None):
-    """Snapshots (len(rows)*len(steps), len(idx)) at the group's points (and optionally full fields)."""
+def generate(cfg, tab, rows, n, steps, idx, log, full_pos=None, full_rows=0):
+    """Snapshots (len(rows)*len(steps), len(idx)) at the group's points; for the first `full_rows` rows also the
+    full native fields at step positions `full_pos`. Every field and Newton residual must be finite and every step
+    must meet the Newton tolerance within the iteration cap (codex design audit #1)."""
     fom = C.make_fom(n, C.DT, cfg['data_ntol'], cfg['data_ltol'], save_steps=steps)
     t0 = time.perf_counter()
     out, full, worst = [], [], 0.
     idx_j = jnp.asarray(idx)
-    for r in rows:
+    for i, r in enumerate(rows):
         u0 = jnp.asarray(C.initial_interior(n, tab, r))
         f, it, rn = fom(u0, float(tab['nu'][r]))
-        worst = max(worst, float(jnp.max(rn)))
-        assert int(jnp.max(it)) < C.MAX_NEWTON and np.isfinite(worst), (n, r, int(jnp.max(it)), worst)
+        rn = np.asarray(rn)
+        ok = bool(np.isfinite(rn).all() and np.isfinite(np.asarray(f)).all() and rn.max() <= cfg['data_ntol']
+                  and int(jnp.max(it)) < C.MAX_NEWTON)
+        assert ok, (n, r, int(jnp.max(it)), float(np.nanmax(rn)))
+        worst = max(worst, float(rn.max()))
         out.append(np.asarray(f[:, idx_j]))
-        if full_steps is not None:
-            full.append(np.asarray(f[jnp.asarray(full_steps)]))
+        if full_pos is not None and i < full_rows:
+            full.append(np.asarray(f[jnp.asarray(full_pos)]))
     log(f'data n={n} rows={len(rows)} steps={len(steps)} points={len(idx)} worst residual {worst:.2e} '
         f'{time.perf_counter() - t0:.1f}s')
-    return np.concatenate(out), (np.stack(full) if full_steps is not None else None), worst
+    return np.concatenate(out), (np.stack(full) if full else None), worst
 
 
 def projection_errors(g, y):
@@ -183,48 +188,57 @@ def train_bank(groups, cfg, log):
     return params, info
 
 
-def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
-    """heat3d-bank train.train_head (auto-decoder head with linear skip, relative loss + tail), validation
-    best-found selection (4 nearest training codes as LM starts), all data as explicit jit arguments."""
-    target, norm2, perp = map(jnp.asarray, (target, norm2, perp))
+def train_head(y, gid, norm2, perp, vy, vgid, vnorm2, vperp, Rs, k, cfg, log):
+    """heat3d-bank train.train_head (auto-decoder head with linear skip, relative loss + 0.1 x squared relative loss)
+    on ordered coefficients, with every snapshot's error measured in its own group's field metric:
+    e_i = (||Rhat_g h(z_i) - y_i||^2 + perp_i) / ||u_i||^2. Validation = best-found fit from the 4 nearest training
+    codes (in ordered coordinates), LM in the group metric. All data are explicit jit arguments."""
+    sy = float(np.sqrt(np.mean(norm2)))            # targets trained at unit scale; folded back into the head below
+    y, norm2, perp = y / sy, norm2 / sy ** 2, perp / sy ** 2
+    vy, vnorm2, vperp = vy / sy, vnorm2 / sy ** 2, vperp / sy ** 2
+    y, gid, norm2, perp, Rs = map(jnp.asarray, (y, gid, norm2, perp, Rs))
     a, b = jax.random.split(jax.random.PRNGKey(cfg['model_seed'] + 100 + k))
     a0, a1 = jax.random.split(a)
-    R = target.shape[1]
+    R = y.shape[1]
     p = dict(net=mlp_init(a0, [k] + [cfg['head_width']] * cfg['head_depth'] + [R]),
              skip=jax.random.normal(a1, (k, R), dtype=jnp.float64) * .1)
-    z = .1 * jax.random.normal(b, (len(target), k), dtype=jnp.float64)
+    z = .1 * jax.random.normal(b, (len(y), k), dtype=jnp.float64)
     opt = optax.adam(optax.cosine_decay_schedule(cfg['head_learning_rate'], cfg['head_steps'], alpha=.03))
     state = opt.init((p, z))
-    batch = min(cfg['head_batch_states'], len(target))
+    batch = min(cfg['head_batch_states'], len(y))
 
-    def objective(pz, idx, target, norm2, perp):
+    def objective(pz, idx, y, gid, norm2, perp, Rs):
         p, z = pz
-        e = (jnp.sum((C.head(p, z[idx]) - target[idx]) ** 2, axis=1) + perp[idx]) / norm2[idx]
+        h = C.head(p, z[idx])
+        P = jnp.einsum('gij,bj->gbi', Rs, h)                         # (3, B, R)
+        pred = P[gid[idx], jnp.arange(idx.shape[0])]
+        e = (jnp.sum((pred - y[idx]) ** 2, axis=1) + perp[idx]) / norm2[idx]
         return jnp.mean(e) + .1 * jnp.mean(e ** 2)
 
     @jax.jit
-    def step(pz, state, key, target, norm2, perp):
-        value, grad = jax.value_and_grad(objective)(pz, jax.random.randint(key, (batch,), 0, len(target)),
-                                                    target, norm2, perp)
+    def step(pz, state, key, y, gid, norm2, perp, Rs):
+        value, grad = jax.value_and_grad(objective)(pz, jax.random.randint(key, (batch,), 0, len(y)),
+                                                    y, gid, norm2, perp, Rs)
         update, state = opt.update(grad, state, pz)
         return optax.apply_updates(pz, update), state, value
 
     fit = C.make_head_fit(budget=200, gtol=1e-8)
-    eye = jnp.eye(R)
 
     @jax.jit
-    def validate(p, z, vt, vn, vp):
-        lib = C.head(p, z)
-        d2 = jnp.sum(lib * lib, axis=1)[None, :] - 2 * vt @ lib.T
+    def validate(p, z, vy, vgid, vn, vp, Rs):
+        lib = C.head(p, z)                                            # ordered coordinates
+        vc = jax.vmap(lambda yy, g: jax.scipy.linalg.solve_triangular(Rs[g], yy, lower=False))(vy, vgid)
+        d2 = jnp.sum(lib * lib, axis=1)[None, :] - 2 * vc @ lib.T
         idx = jax.lax.top_k(-d2, 4)[1]
 
-        def one(t, s4):
-            out = jax.vmap(lambda s: fit(p, s, eye, t, R))(z[s4])
+        def one(args):
+            t, s4, g = args
+            out = jax.vmap(lambda s: fit(p, s, Rs[g], t, R))(z[s4])
             return jnp.min(out[1])
-        rn = jax.lax.map(lambda a: one(*a), (vt, idx))
+        rn = jax.lax.map(one, (vy, idx, vgid))
         return jnp.sqrt((rn ** 2 + vp) / vn)
 
-    vt, vn, vp = map(jnp.asarray, (vtarget, vnorm2, vperp))
+    vy, vgid, vn, vp = map(jnp.asarray, (vy, vgid, vnorm2, vperp))
     key = jax.random.PRNGKey(cfg['model_seed'] + 200 + k)
     pz = (p, z)
     best = (np.inf, None, None)
@@ -232,20 +246,29 @@ def train_head(target, norm2, perp, vtarget, vnorm2, vperp, k, cfg, log):
     rows = []
     for it in range(cfg['head_steps']):
         key, sub = jax.random.split(key)
-        pz, state, value = step(pz, state, sub, target, norm2, perp)
+        pz, state, value = step(pz, state, sub, y, gid, norm2, perp, Rs)
         if (it + 1) % cfg['head_checkpoint_every'] == 0 or it + 1 == cfg['head_steps']:
-            worst = float(jnp.max(validate(*pz, vt, vn, vp)))
+            ev = np.asarray(validate(*pz, vy, vgid, vn, vp, Rs))
+            worst = float(ev.max())
             rec = dict(k=k, step=it + 1, objective=float(value), validation_best_found_worst=worst,
+                       validation_best_found_worst_by_group=[float(ev[np.asarray(vgid) == g].max())
+                                                             for g in range(Rs.shape[0])],
                        seconds=time.perf_counter() - begin)
             rows.append(rec)
             log('HEAD ' + json.dumps(rec))
             if worst < best[0]:
                 best = (worst, pz, it + 1)
     p, z = best[1]
-    resid = np.asarray(target) - np.asarray(C.head(p, z))
-    err = np.sqrt((np.sum(resid ** 2, axis=1) + np.asarray(perp)) / np.asarray(norm2))
+    h = C.head(p, z)
+    P = jnp.einsum('gij,bj->gbi', Rs, h)
+    pred = np.asarray(P[gid, jnp.arange(len(gid))])
+    err = np.sqrt((np.sum((pred - np.asarray(y)) ** 2, axis=1) + np.asarray(perp)) / np.asarray(norm2))
     info = dict(k=k, selected_step=best[2], validation_best_found_worst=best[0], training_error_worst=float(err.max()),
-                training_error_mean=float(err.mean()), log=rows)
+                training_error_mean=float(err.mean()), target_scale=sy, log=rows)
+    net = list(p['net'])
+    w_, b_ = net[-1]
+    net[-1] = (w_ * sy, b_ * sy)
+    p = dict(net=net, skip=p['skip'] * sy)                           # h_saved(z) = sy * h_trained(z), exactly
     return dict(params=p, codes=z, info=info)
 
 
@@ -307,10 +330,9 @@ def main():
     for n in cfg['meshes']:
         idx, x = group_points(n, cfg)
         u, _, wtr = generate(cfg, tr, range(cfg['train_count']), n, steps, idx, log)
-        fs = [0, 10, 20, 30, 40, 50]
-        nfull = cfg['full_floor_cases']
-        v, vfull, wv = generate(cfg, bv, range(cfg['bankval_count']), n, steps, idx, log)
-        _, vfull, _ = generate(cfg, bv, range(nfull), n, fs, np.arange(0), log, full_steps=list(range(len(fs))))
+        fpos = [steps.index(k) for k in (0, 10, 20, 30, 40, 50)]
+        v, vfull, wv = generate(cfg, bv, range(cfg['bankval_count']), n, steps, idx, log, full_pos=fpos,
+                                full_rows=cfg['full_floor_cases'])
         full_val[n] = vfull.reshape(-1, vfull.shape[-1])
         groups.append(dict(name=str(n), n=n, x=x, idx=idx, u=u, v=v))
         rep.setdefault('data', {})[str(n)] = dict(points=len(idx), train_snapshots=len(u), validation_snapshots=len(v),
@@ -352,19 +374,32 @@ def main():
                            cumulative_energy={str(r): float(energy[r - 1]) for r in cfg['ladder']},
                            inverse_check=float(np.linalg.norm(V.T @ RG @ T - np.eye(len(T)))))
     log('ORDER ' + json.dumps(rep['ordering']['cumulative_energy']))
-    # validation targets (bank-validation seed) in ordered coordinates, for head selection
-    vt, vn2, vperp = [], [], []
-    for g in groups:
+    # head targets in each group's own field metric (codex design audit #3): G_hat_g sqrt(h_g) = Q_g Rhat_g;
+    # y = Q_g^T u (so ||Rhat_g h - y|| is the field distance on the group's points), perp = ||u||^2 - ||y||^2
+    Rs, ytr, gtr, vy, vgid, vn2, vperp, perp_t, norm_t = [], [], [], [], [], [], [], [], []
+    for gi, g in enumerate(groups):
         Gg = np.asarray(C.bank_at(params, T, g['x']))
         hg = (1.0 / (g['n'] - 1)) ** 3 * (len(C.interior_coords(g['n'])) / len(g['x']))
         Qg, Rg = np.linalg.qr(Gg * np.sqrt(hg), mode='reduced')
-        U = g['v'] * np.sqrt(hg)
-        c = np.linalg.solve(Rg, Qg.T @ U.T).T
-        vt.append(c)
-        m2 = np.sum(U * U, axis=1)
-        vn2.append(m2)
-        vperp.append(np.maximum(m2 - np.sum((Qg.T @ U.T) ** 2, axis=0), 0.))
-    vt, vn2, vperp = np.concatenate(vt), np.concatenate(vn2), np.concatenate(vperp)
+        del Gg
+        Rs.append(Rg)
+        for src, ys, ids, n2s, pps in ((g['u'], ytr, gtr, norm_t, perp_t), (g['v'], vy, vgid, vn2, vperp)):
+            U = src * np.sqrt(hg)
+            y = (Qg.T @ U.T).T
+            m2 = np.sum(U * U, axis=1)
+            ys.append(y)
+            ids.append(np.full(len(y), gi))
+            n2s.append(m2)
+            pps.append(np.maximum(m2 - np.sum(y * y, axis=1), 0.))
+            del U
+        del Qg
+    Rs = np.stack(Rs)
+    ytr, gtr, norm_t, perp_t = map(np.concatenate, (ytr, gtr, norm_t, perp_t))
+    vy, vgid, vn2, vperp = map(np.concatenate, (vy, vgid, vn2, vperp))
+    rep['ordering']['group_metric_deviation'] = [float(np.linalg.norm(Rs[i].T @ Rs[i] - np.eye(len(T))))
+                                                 for i in range(len(Rs))]
+    sv = np.linalg.svd(RG, compute_uv=False)
+    rep['bank']['condition_65'] = float(sv[0] / sv[-1])
     cmean = ctarget.mean(0)
     spread = {str(r): float(np.sqrt(np.mean(np.sum((ctarget[:, :r] - cmean[:r]) ** 2, axis=1))))
               for r in cfg['ladder']}
@@ -382,7 +417,7 @@ def main():
     # ---- heads on ordered coefficients of every training snapshot (all meshes)
     rep['heads'] = {}
     for k in cfg['latent_dimensions']:
-        h = train_head(ctarget, nrm2, perp, vt, vn2, vperp, k, cfg, log)
+        h = train_head(ytr, gtr, norm_t, perp_t, vy, vgid, vn2, vperp, Rs, k, cfg, log)
         H = np.asarray(C.head(h['params'], h['codes']))
         save(out / f'head_K{k}.pkl', dict(params=h['params'], codes=h['codes'], library_H=H, cfg=cfg, info=h['info']))
         rep['heads'][str(k)] = h['info']

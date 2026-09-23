@@ -48,3 +48,12 @@ Cluster namespace `/cluster/tufts/paralab/tawal01/nshead_20260923/`.
   error and cost at every mesh. All gates pass; parent reproduction exact.
 - FD-CG never reaches the head's accuracy (best 0.277 % at 192^3, 7.7 s at 96^3).
 - Settings frozen (`frozen/`, DESIGN amendment 3); held-out job next.
+
+## 2026-09-23 ~08:30 EDT — held-out opened (seed 202609221, 32 cases, 96^3)
+- First held-out job 4201281 crashed in its audit (absolute f32 bound vs a blown-up
+  FD-CG row), before timing; rerun 4202872 with the identical frozen settings
+  (sha256 4e3686b8…ce9) and relative audit tolerances (DESIGN amendment 4). ROM/CNAB2
+  rows reproduce the crashed attempt to 1.7e-12.
+- Held-out: head k=8 0.207 % worst (0/32 over 5 %), 7.79x CNAB2; span R'=64..8 =
+  1.12..6.91 % (R'=8: 5/32 over 5 %), 8.05x..13.14x CNAB2; monotone in error and cost.
+  All gates pass. Report: `reports/2026-09-23-ns3d-shift-head.md`.

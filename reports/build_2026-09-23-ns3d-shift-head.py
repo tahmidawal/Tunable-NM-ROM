@@ -15,7 +15,8 @@ sys.path.insert(0, str(LANE))
 import write_tables as W  # noqa: E402
 
 DEV_JOBS = ["a2_h32", "a2_h64", "a3_h96"]
-HELDOUT_JOB = "b1_heldout96"
+HELDOUT_JOB = "b2_heldout96"
+CRASHED = "b1_heldout96_crashed"
 V1_JOBS = ["a1_h32", "a1_h64"]
 
 
@@ -178,17 +179,52 @@ flowchart LR
                  f"sha256 `{hs['frozen_settings_sha256']}`, head checkpoint sha256 "
                  f"`{hs['frozen_head_sha256']}`, bank rebuild gap {hs['bank_rebuild_gap']:.1e}, "
                  f"disjointness {hs['heldout_disjointness']}.\n")
-        L.append(W.headline([HELDOUT_JOB]).split("\n", 2)[2])
+        L.append(W.headline([HELDOUT_JOB]).split("\n", 2)[2]
+                 .replace("development evolved worst", "held-out evolved worst"))
+        cp = LANE / "runs" / CRASHED / "output" / "summary.json"
+        if cp.exists():
+            cs = json.loads(cp.read_text())
+            gaps, n_rows, gfd, n_fd = 0.0, 0, 0.0, 0
+            for sec in ("linear", "span", "frontier", "cnab2", "fd_cg"):
+                for key, e in cs.get(sec, {}).items():
+                    f = hs.get(sec, {}).get(key)
+                    if f and e.get("errors") is not None and f.get("errors") is not None:
+                        a, b = e["errors"], f["errors"]
+                        d = max(abs(x - y) / max(1.0, abs(y)) for ra, rb in zip(a, b)
+                                for x, y in zip(ra, rb))
+                        if sec == "fd_cg":
+                            gfd, n_fd = max(gfd, d), n_fd + 1
+                        else:
+                            gaps, n_rows = max(gaps, d), n_rows + 1
+            L.append(f"\nThe held-out seed was opened by job {cs['job_id']}, which crashed in "
+                     "its audit of a blown-up FD-CG row before timing (DESIGN amendment 4; "
+                     f"record at `runs/{CRASHED}/`). This rerun, job {hs['job_id']}, uses the "
+                     f"same frozen settings. Over the {n_rows} reduced-model and CNAB2 rows both runs "
+                     f"computed, the largest per-case error difference is {gaps:.1e}; over the "
+                     f"{n_fd} FD-CG rows it is {gfd:.1e} (CG reductions are not bitwise "
+                     "reproducible on the GPU; relative to max(1, error)).\n")
+        sp, hd = ladder_rows(hs)
+        dv = S.get("a3_h96")
+        if dv:
+            dsp, dhd = ladder_rows(dv)
+            L.append("| arm | development worst | held-out worst | held-out median | held-out over 5 % |")
+            L.append("|---|---:|---:|---:|---:|")
+            for a, b in zip([dhd] + dsp, [hd] + sp):
+                L.append(f"| {b['label']} | {pct(a['worst'])} | {pct(b['worst'])} | "
+                         f"{pct(b['median'])} | {b['over']}/{b['cases']} |")
+            L.append("")
     else:
         L.append("Not opened.\n")
 
     # gates / retractions
     L.append("## Gates, controls and what went wrong\n")
-    for j in have:
-        s, v = S[j], V[j]
+    gate_jobs = [(j, S[j], V[j]) for j in have]
+    if held.exists():
+        gate_jobs.append((HELDOUT_JOB,) + tuple(W.load(HELDOUT_JOB)[:2]))
+    for j, s, v in gate_jobs:
         t = s["timing"]
         fz = s["control_frame_zero"]["stats"]
-        L.append(f"- **{s['config']['n']}^3:** frozen-frame control {pct(fz['evolved_worst'])} "
+        L.append(f"- **{s['config']['n']}^3{' held-out' if s.get('heldout_opened') else ''}:** frozen-frame control {pct(fz['evolved_worst'])} "
                  f"({fz['cases_evolved_over_target']}/{fz['cases']} over 5 %, must fail); head driver "
                  f"parity vs generic LM at 3 sweeps {s['head_parity_vs_lm']['parity']['3']:.1e}; "
                  f"rotation gate {s['rotation']['rotated_vs_rebuilt_operators']:.1e}; timing gates "
@@ -197,6 +233,7 @@ flowchart LR
                  f"{v['worst_gap_float64']:.1e} (control rejected: {v['control_rejected']}); "
                  f"timed-output agreement {t['timed_output_error_agreement']:.1e}.")
     L.append("""- **Retracted: the v1 FD-CG timings.** `a1_h64` (job 4197294) failed the pre-registered neighbour gate: ladder arms were 17–23 % slower when timed right after the seconds-long FD-CG arm at $128^3$, while staying within 2.3 % inside the randomised fast block. Its accuracy stands (reproduced exactly by `a2_h64`); its FD-CG ratios do not. Timing v2 (DESIGN amendment 2) was introduced and every mesh rerun; the 96^3 v1 job was cancelled before timing. `a1_h32` passed the v1 gate and is kept only as a record.
+- **The held-out job ran twice.** The first held-out job crashed in its own audit (an absolute float32 bound tripped by a blown-up FD-CG row) after computing every reduced-model and CNAB2 row but before timing; the audit tolerance was made relative and the identical frozen settings rerun (DESIGN amendment 4). Nothing was selected between the two runs; the reproducibility check is in the held-out section.
 - **Design changed mid-lane, before any job:** the correction directions $C_q$ were dropped at the user's direction and replaced by the importance-ordered span ladder (DESIGN amendment 1).
 - **Comparator granularity.** The CNAB2 grid has no step between 40 and 50 steps at the finer meshes, and FD-CG accuracy jumps between meshes, so a comparator can be much more accurate (and slower) than the arm it is matched to; comparators, their errors and times are printed beside every ratio.
 """)

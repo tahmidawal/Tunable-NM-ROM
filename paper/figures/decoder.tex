@@ -1,0 +1,66 @@
+% Model and online solve for Section 3.4. Top row: trained once, frozen.
+% Bottom row: solved at each query. Dashed tags: deployment knobs. No numbers.
+\begin{tikzpicture}[
+  font=\footnotesize,
+  box/.style={draw, rounded corners=1.5pt, minimum height=9mm, align=center,
+              inner sep=3pt},
+  dec/.style={box, fill=red!8, draw=red!60!black, text width=24mm},
+  latent/.style={box, fill=yellow!18, draw=orange!70!black},
+  bank/.style={box, fill=blue!8, draw=blue!55!black, text width=46mm},
+  io/.style={box, fill=gray!10, draw=black!55},
+  solve/.style={box, fill=green!9, draw=green!45!black},
+  sum/.style={circle, draw=black!65, fill=white, inner sep=0.6pt, font=\small},
+  knob/.style={draw=violet!70!black, dashed, rounded corners=1pt, fill=violet!4,
+               font=\scriptsize, inner sep=2pt, text=violet!70!black},
+  arr/.style={-{Latex[length=2mm]}, thick, draw=black!65},
+  upd/.style={-{Latex[length=2mm]}, thick, dashed, draw=green!45!black},
+  lbl/.style={font=\scriptsize\itshape, text=black!55},
+  row/.style={font=\scriptsize\bfseries, text=black!60, anchor=west}
+]
+  % ===== TOP ROW: the trial state =====
+  \node[row] at (-0.7,1.75) {TRIAL STATE \textmd{(bank and head trained once, then frozen)}};
+
+  \node[latent, text width=12mm] (z) at (0,0) {latent\\$z\in\Real^{k}$};
+  \node[dec] (skip) at (2.75,0.75) {linear skip\\$W\T z$};
+  \node[dec] (mlp) at (2.75,-0.75) {shallow MLP\\$\varphi_\theta(z)$};
+  \node[sum] (s1) at (4.55,0) {$+$};
+  \node[latent, text width=17mm] (h) at (6.2,0) {head output\\$\head(z)\in\Real^{R}$};
+  \node[latent, text width=17mm] (c) at (6.2,-1.75) {coefficients\\$c\in\Real^{R'}$};
+  \node[bank] (G) at (11.0,-0.85) {ordered spatial bank\\$\bank_{x,:}=\bcmask(x)\,g_\phi(x)\T$\\(coordinate network, zero on $\Gamma$)};
+  \node[io, text width=14mm] (u) at (14.6,-0.85) {field\\$u\in\Real^{n}$};
+
+  \draw[arr] (z.east) -- ++(0.3,0) |- (skip.west);
+  \draw[arr] (z.east) -- ++(0.3,0) |- (mlp.west);
+  \draw[arr] (skip.east) -| (s1.north);
+  \draw[arr] (mlp.east) -| (s1.south);
+  \draw[arr] (s1) -- (h);
+  \draw[arr] (h.east) -- ++(0.35,0) |- ([yshift=2mm]G.west)
+       node[pos=0.75, above, lbl] {head};
+  \draw[arr] (c.east) -- ++(0.35,0) |- ([yshift=-2mm]G.west)
+       node[pos=0.75, below, lbl] {span};
+  \draw[arr] (G) -- (u);
+
+  \node[knob, above=1.5mm of G] {accuracy knob: bank width $R'$};
+
+  % ===== BOTTOM ROW: online solve =====
+  \node[row] at (8.4,-2.75) {ONLINE SOLVE \textmd{(each query)}};
+
+  \node[io, text width=14mm] (res) at (14.6,-4.45) {residual\\$\rfull(u)$};
+  \node[solve, text width=40mm] (lin) at (11.0,-3.8) {linear terms, exact:\\preassembled $B=\tests\Aop\bank$};
+  \node[solve, text width=40mm] (eq) at (11.0,-5.1) {nonlinear terms: empirical\\quadrature on $m$ nodes};
+  \node[solve, text width=22mm] (rw) at (6.2,-4.45) {weak residual\\$\rweak\in\Real^{M}$};
+  \node[solve, text width=30mm] (lm) at (2.2,-4.45) {Levenberg--Marquardt\\step in $z$ or in $c$};
+
+  \draw[arr] (u) -- (res);
+  \draw[arr] (res.west) -- ++(-0.3,0) |- (lin.east);
+  \draw[arr] (res.west) -- ++(-0.3,0) |- (eq.east);
+  \draw[arr] (lin.west) -| ([xshift=3mm]rw.north);
+  \draw[arr] (eq.west) -| ([xshift=3mm]rw.south);
+  \draw[arr] (rw) -- (lm);
+  \draw[upd] (lm.north) -- ++(0,0.9) -| (z.south);
+  \draw[upd] ([xshift=6mm]lm.north) -- ++(0,0.6) -| (c.south);
+  \node[lbl, text=green!40!black] at (1.3,-3.3) {update};
+
+  \node[knob, below=1.5mm of eq] {cost knob: quadrature rule};
+  \node[knob, below=1.5mm of lm] {cost knob: stopping tolerance};
+\end{tikzpicture}

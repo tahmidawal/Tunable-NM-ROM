@@ -2,105 +2,18 @@
 \input{sections/method-details}
 
 \clearpage
-\section{Architecture and online data flow}
-\label{app:arch}
-Figure~\ref{fig:arch} shows the offline preparation and the online solve
-of every NM-ROM query in the paper.
-
-\begin{figure}[H]
-\centering
-\resizebox{\linewidth}{!}{\input{figures/architecture}}
-\caption{NM-ROM from training to prediction, read left to right. Offline
-(blue), training fixes the spatial bank $\bank$, the head $\head$, the
-correction directions $\corr$ and the weak tests; these never change
-again. Online (orange), the PDE inputs do two things: they set the
-starting reduced coordinates $(z_0,y_0)$, taken from stored training
-codes, and they enter the weak residual directly. The reduced solve then
-adjusts the $k+q$ unknowns $(z,y)$ until that residual is small, and the
-reconstruction returns $u=\bank[\head(z)+\corr y]$ at the requested
-times. Time-dependent problems repeat the solve once per step.
-Initialisation and the reduced solver are PDE-specific, and for linear
-PDEs the correction coefficients are eliminated analytically rather than
-iterated. Empirical quadrature (EQ) is an optional way to evaluate the
-residual, used for two-dimensional Burgers; the three-dimensional and
-wave solves evaluate it densely. Correction rank changes what the model
-can represent; EQ changes only how the residual is evaluated. Baselines
-are separate methods, not stages of this pipeline.}
-\label{fig:arch}
-\end{figure}
-
-
-\section{Neural operators in three dimensions}
+\section{Neural operators}
 \label{app:operators}
-Four neural operators were trained on the same data, split and wall budget
-as the three-dimensional models of this paper and evaluated in the same
-allocation: an FNO \citep{Li2020FNO}, a U-Net \citep{Ronneberger2015UNet},
-a DeepONet \citep{Lu2021DeepONet} and a Transolver \citep{WuTransolver2024}.
-Tables~\ref{tab:op-linear} and~\ref{tab:op-nonlinear} report worst
-same-grid error, median GPU query time and the speedup over the same
-full-order control used elsewhere in the row's problem. They win where
-our three-dimensional models fail: on Burgers 3D the best of them,
-\nOpBurgBestName, reaches $\nOpBurgBestErr\,\%$ at $\nOpBurgBestS\times$
-Newton--BiCGStab against $\nFailBurgersAcc\,\%$ for the NM-ROM, and the
-fastest is $\nOpBurgFastS\times$; on Navier--Stokes \nOpNsBestName{}
-reaches $\nOpNsBestErr\,\%$ against $\nFailNsAcc\,\%$. On Poisson 3D the
-corrected NM-ROM is the more accurate, and no operator is faster than CG
-(at most $\nOpPoissonFastS\times$); on heat the best operator error is
-$\nOpHeatBestErr\,\%$, with no CG measurement in that record and so no
-speedup. Five facts frame these numbers.
+We trained an FNO \citep{Li2020FNO}, a U-Net \citep{Ronneberger2015UNet},
+a DeepONet \citep{Lu2021DeepONet} and a Transolver \citep{WuTransolver2024}
+on the Burgers 2D family, on the same data split, metric, optimiser, seed
+and wall budget. They produce the requested output times in one pass, so
+their output times are fixed at training. An operator's own evaluation
+resolution can also trade accuracy for cost (\S\ref{sec:related}); here
+each trained operator has one evaluation setting.
+\todo{higher-resolution operator comparison (Burgers and heat) from the running lanes goes here.}
 
-First, every operator here is trained and evaluated at $32^3$. The same
-trained operators transfer badly to $64^3$: worst errors of
-$\nOpTransferLo$--$\nOpTransferHi\,\%$ across the four families,
-recovered to $\nOpNativeLo$--$\nOpNativeHi\,\%$ only by training on the
-native grid and interpolating (for the FNO, also by physical padding).
-The top of that recovered range is again DeepONet. The fine-mesh rows of Table~\ref{tab:headline} are
-therefore NM-ROM against the named solvers alone; no operator was trained
-at those meshes.
-
-Second, DeepONet is the weakest arm everywhere here (worst
-$\nOpDeepWorst\,\%$), and in three dimensions it is limited by the
-budget: every arm stopped on its step budget, recorded with its exit
-reason in Table~\ref{tab:development-training}. We do not read it as an
-architecture ceiling in either dimension.
-
-Third, the operators produce the requested output times directly, in one
-pass. They are not autoregressive rollouts, so the set of output times is
-fixed when they are trained.
-
-Fourth, each arm's stop reason is recorded with its budget
-(Table~\ref{tab:development-training}): every three-dimensional arm there
-stopped on its step budget rather than by early stopping, while the
-two-dimensional arms above train with an early-stopping patience. At
-equal wall time the float32 U-Net and Transolver completed more epochs
-than the float64 FNO, which favours them.
-
-Fifth, an operator's own evaluation resolution can trade accuracy for
-cost, as \S\ref{sec:related} says; the comparison here fixes one
-evaluation setting per trained operator.
-
-\begin{table}[htbp]
-\centering
-\caption{Three-dimensional linear problems at $32^3$, $\nOpCasesDev$
-development cases: worst same-grid relative $L^2$ error, median GPU query
-time and speedup over the problem's full-order control. Poisson uses the
-steady error and CG at rtol $10^{-2}$ as the control; the heat record has
-no CG measurement, so no heat speedup is inferred.}
-\label{tab:op-linear}
-\resizebox{\linewidth}{!}{\input{tables/TR_3d_linear}}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{Three-dimensional nonlinear problems at $32^3$: Burgers on its
-accepted final cohort ($\nOpCasesFinal$ cases, worst evolved error) and
-Navier--Stokes on a development cohort. Speedups divide the named
-full-order solver of the same problem in the same allocation.}
-\label{tab:op-nonlinear}
-\resizebox{\linewidth}{!}{\input{tables/TR_3d_nonlinear}}
-\end{table}
-
-\paragraph{Two dimensions at $256^2$.}
+\paragraph{Burgers at $256^2$.}
 The Burgers operators were also timed against the NM-ROM, POD and the
 full-order solver in one allocation (job \nOpsTwoDJob{},
 \nOpsTwoDCases{} development cases, \nOpsTwoDReps{} retained repetitions
@@ -110,98 +23,37 @@ NM-ROM and than the full-order setting the rule matches to them
 $\nOpsTwoDOpFastS\times$), and an order of magnitude less accurate:
 $\nOpsTwoDOpErrLo$--$\nOpsTwoDOpErrHi\,\%$ worst evolved error, against
 $\nOpsTwoDAccErr\,\%$ for the accurate NM-ROM setting and
-$\nOpsTwoDFastErr\,\%$ for the fast one. On these \nOpsTwoDCases{} cases, and against this
-panel's own reference, every operator arm's error also exceeds the
-discretisation error of the mesh itself, $\nOpsTwoDDisc\,\%$: on this
-cohort they do not resolve the discrete solution they were trained on.
-That comparison belongs to this cohort and this
-reference, and it does not generalise in either respect. The operator
-percentages here are scored against a converged solve on the same grid
-in the same job, while $\nOpsTwoDDisc\,\%$ is what that grid itself
-costs against a finer reference, so the two were never subtractable.
-Cohort alone moves an arm by more than the gap: the same
-\nOpsBarBelowValName{} checkpoint scores $\nOpsBarSameMatch\,\%$ on the
-matched eight cases and $\nOpsBarSamePanel\,\%$ here, a factor of
-$\nOpsBarSameGap$. Against the same number,
-\nOpsBarBelowValName{} is lower on the 32 validation cases of
-Table~\ref{tab:deeponet2d} ($\nOpsBarBelowValErr\,\%$ worst), and on the
-matched eight cases all \nOpsBarBelowMatch{} of the \nOpsBarPubArms{}
-published U-Net, Transolver and FNO arms are lower. A like-for-like
-re-measurement on the validation cases is in progress. No
-NM-ROM or POD arm here is faster than its comparator either; the
-accurate setting meets the campaign's $\le 1\,\%$ accuracy bar and misses
-its $\ge 5\times$ speed bar ($\nOpsTwoDAccS\times$), which is what
-Table~\ref{tab:headline} already shows for accurate Burgers below
-$4096^2$.
-
-Two asymmetries are declared and left in place, both favouring the
-operators: their complete-query scope is not charged the upload of the
-input field, and the fields their errors are scored on come from an
-extra, untimed query. The FNO error reproduces the earlier panel case by
-case (difference $\nOpsTwoDFnoGap$), and no timing was ever divided
-across jobs. This lane also could not reproduce an earlier
-validation-selection pathology: here the selected arms are the better
-ones. The two cohorts are different splits with no case in common, so
-that is cohort-specific and refutes nothing.
+$\nOpsTwoDFastErr\,\%$ for the fast one. At this mesh no NM-ROM or POD
+arm is faster than its comparator; the speedups of the NM-ROM appear at
+the finer meshes of Table~\ref{tab:headline}. Two asymmetries favour the
+operators and are left in place: their query is not charged the upload of
+the input field, and the fields their errors are scored on come from an
+extra, untimed query.
 
 \paragraph{How much data each side was given.}
-The operators were trained on \nParOpTraj{} trajectories; the model they
-are compared against was fitted on \nParRomTraj{}. That gap is an
-artefact of what one training sample costs on each side, not a decision
-about how much data each method was allowed, and it runs against the
-operators' interest rather than for it. Both sides draw initial
-conditions from the same Gaussian-bump family through the same generator
-and are scored at the same six output times, but the operators' training
-targets were held to the stricter reference: each of their cases is a
-$4096$-interval solution at $\Delta t=1.5625{\times}10^{-4}$ restricted
-to the $256$-interval evaluation grid, costing a median of
-$\nParOpSec$\,s of A100 time per trajectory, while each trajectory
-behind the bank and the head was solved directly on the $256$-interval
-grid at $\Delta t=0.005$ for about $\nParRomSec$\,s, a factor of roughly
-$\nParCostRatio$. At that rate the operators' \nParOpTraj{} cases are
-what about $\nParOpHours$\,GPU-hours buys, and matching
-\nParRomTraj{} trajectories at the same fidelity would have cost about
-$\nParFullHours$\,A100-hours. The two sides also count data
-differently: an operator takes one input--output pair per trajectory and
-is supervised on the \nParPerCase{} evolved fields, so \nParOpTraj{}
-cases are \nParOpStates{} supervised states, while the head is fitted
-per state and sees \nParRomStates{} of the \nParStatesAvail{} states its
-\nParRomTraj{} trajectories contain. The $\nParTrajRatio\times$
-trajectory count should therefore not be read as a data advantage on
-equal terms. The trajectory and state counts on our side, and the
-$\nParRomSec$\,s, are quoted from job \nParRomJob{}'s own record and
-were not re-derived from anything else in this repository; every other
-figure here is re-derived from the pinned source.
+The operators were trained on \nParOpTraj{} trajectories and our model
+on \nParRomTraj{}. The gap comes from the cost of one sample, not from a
+choice. Both sides draw initial conditions from the same family and are
+scored at the same output times, but each operator target is a
+$4096$-interval solution restricted to the $256$-interval grid, which
+costs about $\nParCostRatio$ times more than a trajectory behind our bank
+and head. Matching \nParRomTraj{} trajectories at that fidelity would
+cost about $\nParFullHours$\,A100-hours. An operator also sees one
+input--output pair per trajectory (\nParOpStates{} supervised states),
+while the head is fitted per state (\nParRomStates{} states).
 
-\paragraph{DeepONet in two dimensions.}
-DeepONet was the one operator named in our abstract that had never been
-trained on this 2D family. It now has been, on the same data, split,
-metric, optimiser, seed and wall budget as the U-Net, Transolver and FNO
-arms (job \nDonJob; Table~\ref{tab:deeponet2d}). Its \nDonArms{} arms
-reach $\nDonMeanLo$--$\nDonMeanHi\,\%$ mean validation error, against
+\paragraph{DeepONet.}
+DeepONet was trained on the same terms as the other three families (job
+\nDonJob; Table~\ref{tab:deeponet2d}). Its \nDonArms{} arms reach
+$\nDonMeanLo$--$\nDonMeanHi\,\%$ mean validation error, against
 $\nDonOtherMeanLo$--$\nDonOtherMeanHi\,\%$ for the selected arms of the
-other three families, and $\nDonMatchLo$--$\nDonMatchHi\,\%$ worst error
-on the matched eight-case cohort where the NM-ROM reaches
-$\nDonRomMatch\,\%$. A persistence control, which returns the supplied
-field at every output time, scores $\nDonPersistMean\,\%$, so these arms
-are about $\nDonVsPersist\times$ better than doing nothing.
-
-Four qualifications make this weak evidence about DeepONet, and we state
-them rather than drop the row; the paper's claim is about tunability,
-not about beating a baseline. All \nDonArms{} arms ended by early
-stopping, not on the wall budget, so the budget did not bind and their
-errors are not a budget-imposed floor. The lane's ``still improving''
-flag is vacuous at this patience: with patience \nDonPatience{} it could
-only be set above about 5000 epochs, against a cap of \nDonEpochCap{},
-and the training loss was still falling in all four histories, so this
-is not early stopping at convergence. Training used \nDonTrainCases{}
-cases, at $\nDonTrainRmsLo$--$\nDonTrainRmsHi\,\%$ training error
-against the validation errors above, so a data-limited reading is live
-and this lane does not separate it from a capacity reading; three
-coupled capacities are not a capacity sweep. And no speed number from
-this lane is admissible, so none is claimed. As in three dimensions,
-this is not an architecture ceiling: no DeepONet-specific schedule or
-hyperparameter search was run.
+other families, and $\nDonMatchLo$--$\nDonMatchHi\,\%$ worst error on the
+matched eight cases, where the NM-ROM reaches $\nDonRomMatch\,\%$. A
+persistence control, which returns the input field at every output time,
+scores $\nDonPersistMean\,\%$. All arms ended by early stopping with the
+training loss still falling, and no DeepONet-specific search was run, so
+we do not read these errors as an architecture ceiling. This lane took no
+timing.
 
 \begin{table}[htbp]
 \centering
@@ -232,7 +84,7 @@ add host transfer and are in the lane record.}
 \centering
 \caption{Recorded training budgets of the neural operators: parameters,
 step budget, steps completed, the step selected by validation, batch,
-learning rate, seed and exit reason. Every arm exits on its step budget.}
+learning rate, seed and exit reason.}
 \label{tab:development-training}
 \resizebox{\linewidth}{!}{\input{tables/TC_development_training}}
 \end{table}
@@ -241,8 +93,8 @@ learning rate, seed and exit reason. Every arm exits on its step budget.}
 \label{app:training-schedule}\label{app:provenance}
 Tables~\ref{tab:problems} and \ref{tab:spec} identify the two-dimensional
 studies and Table~\ref{tab:config3d} the three-dimensional ones. Within each study,
-training precedes evaluation and the selected bank, head and correction
-directions remain frozen. Deployment changes reduced coordinates, not
+training precedes evaluation, and the selected bank, its ordering and the
+head remain frozen. Deployment changes reduced coordinates, not
 network weights. Recorded training configurations and available offline
 costs are retained with the source evidence; unrecorded training costs
 are not inferred.
@@ -259,24 +111,11 @@ SHA256 in \texttt{evidence/training-configs-2026-09-21}).}
 
 \input{tables/TH_solver_details}
 
-\paragraph{Three-dimensional heat, new bank.} The bank of the Heat (new
-bank) rows ($R=\nHeatNewR$) was trained with a code-free
-variable-projection trainer that eliminates the coefficients exactly;
-its projection floor is $\nHeatNewFloor\,\%$. Its arms were fixed by a
-rule registered before the sealed cohort was opened. A second model
-($R=\nHeatNewBR$, $k=\nHeatNewBK$, $q=\nHeatNewBQ$), chosen after speed results had been seen,
-reaches $\nHeatNewBErr\,\%$ on the same sealed cohort at $128^3$,
-$\nHeatNewBCnS\times$ (Crank--Nicolson) and $\nHeatNewBBfS\times$ (batched
-fit) against the rule's CN--CG setting; it is not used in
-Table~\ref{tab:headline}.
-
-
 \begin{table}[htbp]
 \centering
 \caption{Problem specification. Cohort and reduced sizes are read from the run
-configurations where recorded. The Burgers sealed cohort has been opened
-and is reported in Table~\ref{tab:sealed}; other rows describe their
-recorded development and validation cohorts.}
+configurations where recorded; rows describe their recorded development,
+validation and held-out cohorts.}
 \label{tab:problems}
 \resizebox{\linewidth}{!}{\input{tables/T01_problems}}
 \end{table}
@@ -293,41 +132,17 @@ in the last column (code constants, not run outputs).}
 \subsection{Headline settings, times and timing protocol}
 \label{app:cg-current}\label{app:main-experiment-details}
 Table~\ref{tab:headline} markers.
-$^{f}$\,held-out final cohort (all others development);
-$^{r}$\,error against a refined reference, which includes discretisation
-error (all others same-grid); $^{t}$\,all output times including
-$t=0$; $^{e}$\,evolved output times only; $^{c}$\,complete-query time
-with host transfers (all others GPU query; heat was measured in GPU query
-only). Heat (wide bank) is a separately trained frozen model with a
-128-function bank ($q=32$ accurate); over evolved times its accurate
-error is $\nHeatWideAccEvolved\,\%$ ($\nHeatWideBatchedAccEvolved\,\%$
-batched; the batched fit: Table~\ref{tab:headline-times}); Heat (new
-bank) ($q=\nHeatNewQ$ accurate; Table~\ref{tab:config3d}): at most $\nHeatNewAccEvolved\,\%$
-($\nHeatNewBatchedAccEvolved\,\%$ batched) over evolved times;
-$^{n}$\,\nHeatNewNonstat{} solve (one step of one case) missed its
-stationarity rule, so no speedup is given. Burgers accurate
-quadrature: $^{s}$\,stored rule of job \provEqtopLadderJob{}
-($m=\nEqcLaneRuleM$; not the $q=256$ rule of Table~\ref{tab:eqladder}),
-not confirmed on re-draws: it fails the confirmation draw at $256^2$;
-$^{x}$\,its nodes with weights refit at $512^2$
-($m=\nEqcRowRuleMFiveTwelve$), one held-out draw, not re-drawn (with
-unrefit weights they pass \nEqcScaledPassFiveTwelve{} of
-\nEqcScaledDrawsFiveTwelve{} re-draws); $^{\ell}$\,$63{\times}63$
-lattice rule at $2048^2$, thin margin: it clears the re-draw bar by only
-$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ vs.\ $\nEqcBar$);
-$^{w}$\,the same rule at $4096^2$: five held-out draws pass and the
-confirmation draw does not; $^{v}$\,confirmed by the pre-registered
-re-draw procedure ($1024^2$: thin margin,
-$\rho_{\max}=\nEqcConfRhoTenTwentyFour$; none passes at $256^2$);
-$^{d}$\,dense residual. The earlier Burgers model has one setting and
-may exit on a stall; its rule-selected FOM is the relaxed Newton setting
-($10^{-2}/0.5$), and its tight-setting ratio is in
-Table~\ref{tab:headline-times} with the other rows' tight ratios; the
-FOM setting can differ between meshes of a series. $^{h}$\,64 held-out
-cases never used for selection (not the sealed final cohort); at $2048^2$
-the development-chosen $M=544$ setting was not run on them, so the
-$M=1088$ setting is shown. Poisson (dev.\ sources) rows use development
-sources of a separate run and are not the held-out cohort.
+\input{tables/TH_headline_markers}
+Burgers quadrature rules in detail: $^{s}$ is the stored rule of job
+\provEqtopLadderJob{} ($m=\nEqcLaneRuleM$), which fails the confirmation
+draw at $256^2$; $^{x}$ refits its weights at $512^2$
+($m=\nEqcRowRuleMFiveTwelve$); $^{\ell}$ clears the re-draw bar by only
+$\nEqcLatMargin$ ($\rho_{\max}=\nEqcLatConfRho$ against $\nEqcBar$).
+Over evolved times the accurate heat error is
+$\nHeatWideBatchedAccEvolved\,\%$ in two dimensions and
+$\nHeatNewBatchedAccEvolved\,\%$ in three. Poisson (dev.\ sources) rows
+use development sources of a separate run, not the held-out cohort. The
+FOM setting can differ between meshes of a series.
 
 Table~\ref{tab:headline-times} gives the settings and measured times
 behind every row of Table~\ref{tab:headline}. Every cost and error come
@@ -346,39 +161,19 @@ re-draw procedure (its pick failed the confirmation draw), so
 Table~\ref{tab:headline} has no confirmed-rule row there; a post-hoc
 follow-up rule with an exact first time step passes all
 \nEqcFollowDraws{} draws of two jobs and gives $\nEqcFollowErr\,\%$ at
-$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, the lattice quadrature rule used in the accurate
-rows passes checks on five held-out trajectory samples but fails on the
-independent confirmation sample ($\rho_{\max}=\nBhJzeroRho$ against the
-threshold $\nEqcBar$). Restricting the same sample to time step 2 onward
-gives $\rho_{\max}=\nBhJzeroRhoKtwo$, locating the failure in the first
-steps. The rule is validated on held-out states but not confirmed on
-independent re-draws.
-
-Using the exact residual at the first time step and the same quadrature
-rule thereafter passes all five checks and the confirmation check
-($\rho_{\max}=\nBhJoneRho$). The error is unchanged at the reported
-precision. Median query times are $\nBhJoneMsDev$\,ms on the six
-development cases and $\nBhJoneMsHold$\,ms on the 64 held-out cases.
-The corresponding speedups against Newton--BiCGStab are
-$\nBhJoneSDev\times$ and $\nBhJoneSHold\times$.
-These queries cost $\nBhJoneCostDev\times$ and $\nBhJoneCostHold\times$
-as much as queries using quadrature at every step in the same job
-(Table~\ref{tab:headline-times}). This variant is slower than the
-full-order solver on both cohorts.
-No confirmed form of this accurate lattice rule is also faster. In the
-wider bank, the settings whose quadrature is not confirmed reach
-$\nBhSubErrLo$--$\nBhSubErrHi\,\%$ error at
-$\nBhSubSLo$--$\nBhSubSHi\times$ the speed of Newton--BiCGStab.
-The fast setting's smaller rule passes the confirmation check and is
-faster than the full-order solver, at higher error.
+$\nEqcFollowS\times$ against the same Newton--BiCGStab rule. For Burgers at $4096^2$, the lattice quadrature rule of the accurate
+rows passes five held-out draws but fails the independent confirmation
+draw ($\rho_{\max}=\nBhJzeroRho$ against $\nEqcBar$); from time step 2 on
+it passes ($\rho_{\max}=\nBhJzeroRhoKtwo$), so the failure sits in the
+first steps. Using the exact residual at the first step passes every
+check ($\rho_{\max}=\nBhJoneRho$) at the same error, but costs
+$\nBhJoneCostDev\times$ as much and is then slower than the full-order
+solver ($\nBhJoneSDev\times$).
 
 For Burgers at $4096^2$, copying the six
 double-precision output fields to the host adds about
 $\nBurgHostGapMs$\,ms to every arm. The Poisson and three-dimensional heat CG comparators are
-unpreconditioned; heat CG is warm-started from the previous time level. The Heat2D rows use checkpoint
-\texttt{expanded\_seed790715}; Table~\ref{tab:problems} separates that
-checkpoint's lineage from the job that produced the printed
-measurements.
+unpreconditioned; heat CG is warm-started from the previous time level. 
 
 \begin{table}[htbp]
 \centering
@@ -420,11 +215,7 @@ steps; batched fit: each output time fitted independently to exactly
 propagated test moments (linear autonomous problems with eigenfunction
 tests only). The sealed 2D cohort was opened once and gives every
 wide-bank row of Table~\ref{tab:headline}; the development row ran on
-another GPU (A100) and is shown for reference. Wide bank: $R=128$, $k=8$;
-earlier: the $R=32$ checkpoint of the Heat rows; 3D, earlier bank: the
-three-dimensional model that preceded the new bank of
-Table~\ref{tab:headline} (it misses the 1\,\% all-times target;
-$256^3$ is the first 16 final cases, not a mesh trend).}
+another GPU (A100) and is shown for reference. Wide bank: $R=128$, $k=8$.}
 \label{tab:heat-hires}
 \resizebox{\linewidth}{!}{\input{tables/TH_heat_hires}}
 \end{table}
@@ -446,7 +237,7 @@ of that table with its residual path and median GPU query time from the
 same allocation, plus the exploratory hyper-reduced Kim et al.\ rows,
 whose hyper-reduction did not pass its reproduction gate. Our rows use
 the unoptimised dense reference path (no empirical quadrature, stopping
-tolerance $10^{-6}$, $M=4(k+q)$ tests); our optimised query is timed only
+tolerance $10^{-6}$); our optimised query is timed only
 in Table~\ref{tab:headline}, in other jobs, and no ratio across jobs is
 formed. The shallow masked-autoencoder NM-LSPG of \citet{KimChoi2022NMROM}
 passed its reproduction gate, on their own 2D Burgers benchmark (their
@@ -466,45 +257,11 @@ bank's \nBaseDataMatched{} trajectories.}
 
 \begin{table}[htbp]
 \centering
-\caption{Burgers 2D correction settings from one frozen model at $256^2$,
-test count fixed at $M=\nQxmFixedM$, dense residual, one allocation. Errors are worst
-evolved same-grid percentages on development cases; times are paired
-median GPU query times. All rows meet the stopping rule.}
-\label{tab:ladder-main}
-\input{tables/TR_correction_main}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\caption{Which knob to turn, measured on Burgers 2D from frozen models.
-Rank: fixed-$M$ ladder at $256^2$ (Table~\ref{tab:ladder-main}). EQ:
-dense time over EQ time at $q=0$ in one allocation per mesh. Tolerance
-and cap: 32 validation cases (Table~\ref{tab:knobs}),
-stopping tolerance $10^{-8}\!\to\!10^{-3}$ and iteration cap 2.
-$^{\ast}$\,Jobs \provPanelJob{} and \provPanelTenTwentyFourJob{};
-Table~\ref{tab:figure1-table} is another allocation.}
-\label{tab:knobs-main}
-\small
-\begin{tabular}{@{}llll@{}}
-\toprule
-Knob & Turn it to & Effect on error & Effect on cost \\
-\midrule
-Correction rank $q$ & $0\to256$ & $\nQxmErrSpan\times$ lower & $\nQxmCostSpan\times$ higher \\
-Empirical quadrature & dense $\to$ stored rule & Table~\ref{tab:figure1-table} & $\nPanelEqSpeedupZero\times$ lower at $256^2$, $\nPanelTenTwentyFourEqSpeedupZero\times$ at $1024^2$$^{\ast}$ \\
-Stopping tolerance & looser & $\nTuneTolErrConverged\to\nTuneTolErrLoose\,\%$ & $\nTuneTolSavingPct\,\%$ lower \\
-Iteration cap & 2 iterations & fails ($\nTuneCapTwoErr\,\%$) & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[htbp]
-\centering
 \caption{Dense and empirical-quadrature (EQ) residual evaluation on
 Burgers 2D at $256^2$. Error is worst evolved relative $L^2$ (\%); time is
 median GPU milliseconds from one allocation (job \provEqtopLadderJob, the
 EQ-ladder job of Table~\ref{tab:eqladder}; the $256^2$ row of
-Table~\ref{tab:headline} is job \provPanelJob{} and Table~\ref{tab:ladder-main}
-is the fixed-$M$ ladder job, each with its own measured error); the last column is dense
+Table~\ref{tab:headline} is job \provPanelJob{}, with its own measured error); the last column is dense
 time over EQ time. Dashes: no paired dense measurement. Rules at
 $q=\nEqtopConfirmedRungs$ pass every independent reconstruction;
 higher-rank rules pass some (Table~\ref{tab:eqladder}).}
@@ -516,20 +273,17 @@ higher-rank rules pass some (Table~\ref{tab:eqladder}).}
 \centering
 \caption{Three-dimensional configurations, read from the run records.
 Domains are the unit cube with homogeneous Dirichlet data, except
-Navier--Stokes, which is periodic. Burgers and Navier--Stokes appear in
-Table~\ref{tab:failures}.}
+Navier--Stokes, which is periodic.}
 \label{tab:config3d}
 \resizebox{\linewidth}{!}{\input{tables/TH_config3d}}
 \end{table}
 
-Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources), heat
-($u_t=\kappa\Delta u$, Gaussian initial fields) and scalar Burgers
-($u_t+u(u_x+u_y+u_z)=\nu\Delta u$, backward Euler, sign-upwind) are posed
-on the unit cube with zero Dirichlet walls and extend the operators of
-Appendix~\ref{app:method} across three axes. Navier--Stokes uses
-periodic vector fields, an incompressibility projection and the CNAB2
-integrator; its FOM is not a CG solve. All four three-dimensional problems are evaluated on held-out final
-cohorts whose settings were frozen beforehand.
+Three-dimensional Poisson ($-\Delta u=f$, Gaussian sources) and heat
+($u_t=\kappa\Delta u$, Gaussian initial fields) are posed on the unit
+cube with zero Dirichlet walls and extend the operators of
+Appendix~\ref{app:method} across three axes. Navier--Stokes is described in
+Appendix~\ref{app:method:ns}; its FOM is the pseudo-spectral CNAB2 solver,
+not a CG solve.
 
 \subsection{Source records}
 The accompanying source package retains the full experiment archive,
@@ -544,7 +298,7 @@ the displayed values through these machine-readable manifests:
 \item \texttt{tables/burgers-iterative-provenance.json}: the earlier
 fine-grid Burgers tight and relaxed controls.
 \item \texttt{tables/headline-provenance.json}: every row of
-Tables~\ref{tab:headline}, \ref{tab:headline-times}, \ref{tab:failures} and
+Tables~\ref{tab:headline}, \ref{tab:headline-times} and
 \ref{tab:config3d} and every row of Table~\ref{tab:tunability}, with the
 commit and SHA256 of each source record.
 \end{itemize}
@@ -555,37 +309,8 @@ numerical stopping, not a proof of global optimality.
 
 \input{tables/TH_jobs}
 
-\section{Validation of the correction and quadrature studies}
+\section{Quadrature and solver controls}
 \label{app:sealed-ladder}
-
-A separate ladder with $M=4(k+q)$, evaluated once on a sealed cohort,
-gives monotone error reduction for all \nSealedCheckpoints{} checkpoints
-(top-rank errors $\nSealedAllTopMin$--$\nSealedAllTopMax\,\%$, Table~\ref{tab:sealed}); \nSealedKnobBarCount{} of \nSealedCheckpoints{}
-meet the pre-registered secondary criterion (settings spanning at least
-$2\times$ in error and in cost). Two stricter pre-registered checks fail:
-the original model's sealed-to-development ratio at $q=0$ (one sealed case
-converges to a wrong branch, $\nSealedIncQzero\,\%$) and universal
-convergence (\nSealedUnconvergedPlain; Table~\ref{tab:sealed}).
-
-
-
-\begin{table}[htbp]
-\centering
-\caption{The sealed cohort (job \nSealedJob, \provSealedGpu),
-opened once after every choice was frozen. Top: per rung of the dense
-$M=4(k+q)$ ladder, the original model's sealed worst evolved error and device
-time, the seed mean $\pm$ sample standard deviation on the sealed and the
-development cohort, the pre-registered sealed-over-development ratio of seed means
-(raw and difficulty-normalised) and the converged count over the
-\nSealedCheckpoints{} checkpoints. Bottom: per-checkpoint verdicts. The
-original model's $q=0$ rung is a single sealed case converged to a wrong branch
-(gradient exit, zero budget exits); the pre-registered ratio criterion fails
-at $q=0$ for the original model alone (\nSealedCtwoIncQzeroRatio) and the
-convergence criterion fails on \nSealedUnconvergedPlain. Top-rank sealed errors per checkpoint: \nSealedTopPerCheckpoint.}
-\label{tab:sealed}
-\resizebox{\linewidth}{!}{\input{tables/T13_sealed}}\\[4pt]
-\resizebox{\linewidth}{!}{\input{tables/T13b_sealed_verdicts}}
-\end{table}
 
 \begin{table}[htbp]
 \centering
@@ -602,17 +327,6 @@ $q=32$. Ladder rows are read from the study's final summary record.}
 
 \begin{table}[htbp]
 \centering
-\caption{How the corrections are solved on Burgers, one job (job
-\provCcladJob, \provCcladGpu): joint LM on $(z,y)$, block-damped, and plain
-variable projection at $q=64$ and $128$. Same error where all converge; the
-block-damped step is the one kept.}
-\label{tab:solver-variants}
-\input{tables/T19_solver_variants}
-\end{table}
-
-
-\begin{table}[htbp]
-\centering
 \caption{Solver-side controls on Burgers 2D, 32 validation cases,
 one allocation: stopping tolerance, EQ node count $m$ and iteration cap,
 with full-order settings for scale. Error: worst over
@@ -623,12 +337,9 @@ discretisation error.}
 \input{tables/T08_solver_knobs}
 \end{table}
 
-\paragraph{Reading the validation tables.}
-Correction rank $q$ is the number of added coefficient directions;
-$M$ is the number of weak test modes and $m$ the quadrature node count.
-A scheduled ladder changes $M$ with $q$; the main fixed-test-space study
-holds $M$ constant. A sealed cohort is opened only after choices are frozen.
-Confirmed quadrature passes every independent reconstruction of the rule;
-marginal means some reconstructions fail. These statuses concern rule
-construction, not just the error of one selected trajectory. Same-grid
-error and error against a refined reference measure different quantities.
+\paragraph{Reading these tables.}
+$M$ is the number of weak test modes and $m$ the quadrature node count. A
+rule is confirmed when every independent reconstruction of it passes the
+bar, and marginal when only some do; these statuses concern the rule
+construction, not the error of one trajectory. Same-grid error and error
+against a refined reference measure different quantities.

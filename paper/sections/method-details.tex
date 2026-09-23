@@ -8,57 +8,31 @@
 \label{app:method}
 This appendix writes the reduced problem \eqref{eq:objective} out for
 each PDE: what the residual is, how the time step enters, and what is
-solved at each query. Poisson, heat and Burgers below are fully discrete
-weak least-squares problems; the wave arm (\S\ref{app:method:wave}) is an
-explicit second-order latent integration and is not an instance of
-\eqref{eq:objective}. Formulas are for the scalar two-dimensional
-Dirichlet case; three-dimensional and periodic-vector scope is stated in
-Appendix~\ref{app:main-experiment-details}.
+solved at each query. Formulas are for the scalar two-dimensional
+Dirichlet case. The three-dimensional problems are in
+Appendix~\ref{app:main-experiment-details} and Navier--Stokes in
+\S\ref{app:method:ns}.
 
 \subsection{Elliptic instance: Poisson}
 \label{app:method:poisson}
 
 For $\Aop u=f$ we take $\rowscale_\star=\rowscale$. Testing the residual
-and rescaling the rows leaves a small linear expression in the
-coefficients,
-\begin{equation}
-  \rweak(\latent,y)
-  \;=\;\rowscale^{-1}\tests(\Aop\umanifold-f)
-  \;=\; B_0\,\big(\head(\latent)+\corr y\big) - b_0,
-  \qquad
-  B_0=\tests\bank,\quad b_0=\rowscale^{-1}\tests f .
-  \label{eq:poisson-residual}
-\end{equation}
+and rescaling the rows leaves \eqref{eq:poisson-residual}.
 Because the retained tests are orthonormal and $\Aop u^{\star}=f$, this residual
 is exactly the tested error $\tests(\umanifold-u^{\star})$, so the minimised
 objective is the squared discrete $L^2$ error of the reduced state in the
 retained modes; this holds only for the modes $\tests$ retains.
 
-\paragraph{Analytically eliminated corrections.} Because the residual is
-linear in $y$, the best $y$ for a given $\latent$ can be written down
-instead of iterated for. Let $B_0\corr=Q\mathcal{R}$ be a thin QR
-factorisation. $Q$ does not depend on $\latent$, so the inner
-minimisation over $y$ has the closed form
-$\mathcal{R}y=Q\T(b_0-B_0\head(\latent))$ and the minimised value is
-\begin{equation}
-  \min_{y}\norm{B_0(\head(\latent)+\corr y)-b_0}
-  \;=\;
-  \norm{B_\perp \head(\latent)-b_\perp},
-  \qquad
-  B_\perp=(I-QQ\T)B_0,\quad b_\perp=(I-QQ\T)b_0 .
-  \label{eq:varpro}
-\end{equation}
-The LM iteration runs on $\latent$ alone with the deflated operator, and $y$ is
-recovered by one triangular solve. Because the projector is constant the
-elimination introduces no approximation and $B_\perp\dhead$ is the exact
-Jacobian of the eliminated residual; the only dropped derivative anywhere in
-the elliptic solve is the head curvature. At $q=R$ the deflated operator is
-zero, the latent problem is degenerate by construction, and the model is the
-linear least-squares solve $\min_y\norm{B_0 y-b_0}$; the timed top rung is that
-QR solve, not an LM iteration on a zero Jacobian. We report the reduced
-stationarity of the deflated problem, the augmented stationarity of the full
-problem, the backward error of the triangular recovery and the numerical rank
-of $B_0\corr$.
+\paragraph{Span solve.} In the span of the first $R'$ ordered columns the
+residual \eqref{eq:poisson-residual} is linear, with the fixed matrix
+$B_{R'}=B_0T_{:,1:R'}$. Let $B_{R'}=Q\mathcal R$ be a thin QR
+factorisation, computed once per mesh and width. The query is then
+$\mathcal R c=Q\T b_0$, one matrix--vector product and one triangular
+solve, with no iteration. At $R'=R$ this is the solve in the full bank,
+whose error is the bank floor in the tested norm. The head solve
+iterates Levenberg--Marquardt on $\latent$ with the exact Jacobian
+$B_0\dhead$. We report the stationarity of the head solve and the
+backward error and numerical rank of the triangular solve.
 % solves the k x k damped system by Gauss-Jordan with symmetric diagonal scaling
 % and a backward-error gate with a charged general-solve fallback.
 
@@ -73,41 +47,26 @@ $(I+\tfrac{\Delta t\kappa}{2}\Aop)u^{n+1}=(I-\tfrac{\Delta t\kappa}{2}\Aop)u^{n}
 and the reduced step substitutes the manifold into the fully discrete equation
 \emph{before} projecting. With $u^{n}=\umanifold(\latent_n)$, projecting with
 $\tests$ and row-scaling by $\rowscale_\star=I+\tfrac{\Delta t\kappa}{2}\rowscale$
-gives
-\begin{equation}
-  \rweakn{n}(\latent)
-  \;=\;
-  B_0\,\head(\latent) \;-\; D\,B_0\,\head(\latent_n),
-  \qquad
-  D=\diag\!\left(\frac{1-\tfrac{\Delta t\kappa}{2}\lambda_i}
-                      {1+\tfrac{\Delta t\kappa}{2}\lambda_i}\right),
-  \label{eq:heat-step}
-\end{equation}
-and $\latent_{n+1}=\argmin_{\latent}\norm{\rweakn{n}(\latent)}_2$, warm-started
-at $\latent_n$. Two points are structural. The right-hand side is built from
+gives \eqref{eq:heat-step},
+where $D=\diag\!\left((1-\tfrac{\Delta t\kappa}{2}\lambda_i)/(1+\tfrac{\Delta t\kappa}{2}\lambda_i)\right)$,
+warm-started at $\latent_n$. Two points are structural. The right-hand side is built from
 the \emph{decoded current state} at every step: carrying the quantity the
 previous step already made small freezes the recursion and reproduces a
 one-step solution to round-off. And $\latent_{n+1}$ enters through $\head$, so
 the step is a nonlinear least-squares problem, not a linear solve.
-With corrections, $c_n=\head(\latent_n)+\corr y_n$ replaces $\head(\latent_n)$:
-\begin{equation}
-  (\latent_{n+1},y_{n+1})=\argmin_{\latent,y}
-  \norm{B_0\big(\head(\latent)+\corr y\big)-D\,B_0\,c_n}_2 ,
-  \label{eq:heat-step-corrected}
-\end{equation}
-where $y$ is eliminated as in \eqref{eq:varpro} and the \emph{complete}
-previous coefficients $c_n$, corrections included, are carried into the next
-step. At $q=R$ the head is redundant and the step is the linear
+In the span the step is linear in the coefficients, and it is the linear
 least-squares recurrence
 \begin{equation}
   c_{n+1}=B_0^{+}D\,B_0\,c_n,
   \label{eq:heat-endpoint}
 \end{equation}
-with $B_0^{+}$ the pseudo-inverse ($M\ge R$; the numerical rank of $B_0$ is
-checked) and $c_0$ fitted to the supplied initial field. This endpoint is
-the weak Crank--Nicolson propagation of the bank coefficients, with no head
-and no iteration. It is the ``top rung'' of the heat ladder and the
-linear-bank baseline of the text. The deployed
+with $B_0$ replaced by $B_{R'}$, $B_{R'}^{+}$ the pseudo-inverse ($M\ge R'$;
+the numerical rank is checked) and $c_0$ fitted to the supplied initial
+field. This is the weak Crank--Nicolson propagation of the bank
+coefficients, with no head and no iteration. Because the heat equation is
+linear and autonomous and the tests are eigenfunctions, the coefficients
+at any output time can also be fitted directly to exactly propagated test
+moments; we call this the batched fit. The deployed
 path factors the damped normal matrix by Cholesky; a variant assembles the Gram
 matrix $S=B_0\T B_0$ offline and forms $H=\dhead\T S\dhead$ directly, which is
 exact and is reported as an algebraic ablation of the same step.
@@ -132,19 +91,9 @@ sign-upwind stencil
 $\delta_y$ analogous and switching on the same centre value, ghost zeros on all
 four walls, and backward Euler in time,
 $\rfull_n(u)=u-u^{n}+\Delta t\big(N(u)-\nu\Delta_h u\big)$. Projecting and row
-scaling by $\rowscale_\star=I+\Delta t\,\nu\rowscale$ gives, with
-$c=\head(\latent)+\corr y$,
-\begin{equation}
-  \rweakn{n}
-  \;=\;
-  \big(I+\Delta t\,\nu\rowscale\big)^{-1}
-  \Big[\,
-    B_0c-B_0c_n
-    \;+\;\Delta t\,\big(\,\widehat{N}(c)+\nu\rowscale B_0c\,\big)
-  \Big],
-  \label{eq:burgers-step}
-\end{equation}
-where the diffusion term is exact and the row scaling is the diagonal of the
+scaling by $\rowscale_\star=I+\Delta t\,\nu\rowscale$ gives \eqref{eq:burgers-step},
+with $c=\head(\latent)$ for the head and $c$ the span coefficients otherwise.
+The diffusion term is exact and the row scaling is the diagonal of the
 linearised implicit operator in the modal basis, the modal form of the
 Helmholtz preconditioner the full-order Newton solver uses. Only
 $\widehat{N}(c)\approx\tests N(\bank c)$ requires a choice: dense evaluation at
@@ -166,54 +115,41 @@ normal system by Cholesky factorisation. In every Burgers arm above $1024^2$
 except the $2048^2$ development accurate arm, the damping $\lambda$ is carried
 from one step to the next rather than reset to $\lambda_0$.
 
-\paragraph{Block-damped step.}
-With $\jac{}=[\jac{\latent}\;\;\jac{y}]$ the Jacobian of
-\eqref{eq:burgers-step} in $(\latent,y)$, obtained in one forward-mode pass,
-each iteration solves
-\begin{equation}
-  \Big(\jac{}\T\jac{}+\lambda\,D_{\latent}+\varepsilon\,D_{y}\Big)
-  \begin{bmatrix}\delta\latent\\ \delta y\end{bmatrix}=-\jac{}\T\rweakn{n},
-  \qquad \norm{\delta\latent}\le\Delta ,
-  \label{eq:block-damped}
-\end{equation}
-where $D_{\latent}=\diag(\diag(\jac{\latent}\T\jac{\latent}),0)$ carries the
-Levenberg--Marquardt damping on the latent block only,
-$D_{y}=\diag(0,I)$ with a fixed small ridge $\varepsilon$, and $\Delta$ is
-the $q=0$ trust radius. The correction step is therefore an undamped
-Gauss--Newton step on the current linearisation, not throttled by a radius
-calibrated for the latent code. The step is accepted only if the residual
-decreases; otherwise $\lambda$ grows as in \S\ref{app:method:codes}.
-Table~\ref{tab:solver-variants} compares it with joint damping and with
-variable projection.
+\subsection{Incompressible flow: Navier--Stokes}
+\label{app:method:ns}
 
-\subsection{Second-order instance: reflective waves}
-\label{app:method:wave}
+The unknown is the three-component velocity on the periodic unit cube,
+with zero mean, $\partial_t u+(u\cdot\nabla)u=-\nabla p+\nu\Delta u$,
+$\nabla\cdot u=0$. The initial velocity is the curl of two localised
+periodic vector potentials, each of the form
+$\exp[2\sum_{i}(\cos(2\pi(x_i-c_i))-1)]$ along a fixed direction, with a
+random common centre, separation in $[0.12,0.24]$, relative strength in
+$[0.6,1.4]$ and viscosity log-uniform in $[0.002,0.01]$. The horizon is
+$T=0.2$ with six output times. The data and the full-order comparator
+come from a Fourier pseudo-spectral Galerkin method with two-thirds
+dealiasing, Crank--Nicolson diffusion and second-order Adams--Bashforth
+advection (CNAB2). Diffusion and the Leray projection are diagonal in
+Fourier space, so CNAB2 performs no linear solve.
 
-For $u_{tt}=c^2\Delta u$ the bank is mass-orthonormal and the $R$ weak
-tests are the bank itself, so projection is Galerkin with stiffness
-$K=\bank\T M_h\Aop\bank$, $M_h$ the diagonal mass matrix. Writing the coefficients as
-$a(\latent,y)=\head(\latent)+\corr y$ and differentiating twice in time,
-$\ddot a=\dhead\,\ddot\latent+\head''(\latent)[\dot\latent,\dot\latent]+\corr\ddot y$,
-the projected equation $\ddot a=-c^2Ka$ becomes a linear least-squares
-problem for the joint acceleration,
-\begin{equation}
-  \big[\,\dhead(\latent)\;\;\corr\,\big]
-  \begin{pmatrix}\ddot\latent\\ \ddot y\end{pmatrix}
-  = -\Big(c^2K\,a+\head''(\latent)[\dot\latent,\dot\latent]\Big),
-  \label{eq:wave-accel}
-\end{equation}
-whose curvature term $\head''[\dot\latent,\dot\latent]$ is a
-forward-over-forward derivative of the head. The first-order system in
-$(\latent,y,\dot\latent,\dot y)$ is advanced with classical RK4 at a fixed
-step, one solve of \eqref{eq:wave-accel} per stage; there is no implicit
-residual minimisation and no stationarity exit. Initial coordinates and
-velocities are obtained from the supplied displacement and velocity. At $q=R$
-the head is dropped and $\ddot a=-c^2Ka$ is propagated exactly through the
-eigendecomposition $K=V\Lambda V\T$,
-$a(t)=V\big(\cos(\omega t)\,\hat a_0+\omega^{-1}\sin(\omega t)\,\hat b_0\big)$,
-$\omega=c\sqrt{\Lambda}$. The iterative full-order comparator uses implicit
-midpoint with CG. The error reported in Table~\ref{tab:failures} is the
-energy-state error over displacement and velocity.
+The flow carries its vortices across the domain, so a fixed bank sees a
+translated copy of every structure. Writing $u(x,t)=v(x-s(t),t)$ and
+using that the quadratic term, the Laplacian and the Leray projector
+commute with translation gives
+$\partial_t v=\dot s\cdot\nabla v+\mathcal P[N(v)]+\nu\Delta v$. The bank
+$\bank$ is a rank-64 POD of training states, each centred on its own
+energy centroid, and $v=\bank a$. With fixed solenoidal Fourier tests the
+per-step residual has the terms of the fixed-frame model plus one term
+that is linear in the frame increment $\delta=s^{n+1}-s^{n}$. All reduced
+tensors, including the quadratic term, are computed offline, so no
+quadrature is needed. The head of \eqref{eq:head} is trained as an
+auto-decoder on the centred bank coefficients of training states only,
+and the span uses the ordered bank of \eqref{eq:ordered}. A query centres
+the initial field, projects it on the bank and starts from the nearest
+stored code. It then takes a fixed number of damped Gauss--Newton sweeps
+per step in $(\latent,\delta)$ or $(c,\delta)$, with an analytic Jacobian
+and a Cholesky solve. With the frame held fixed, the same bank misses
+every case by far more than the 5\,\% target, so the moving frame is
+necessary.
 
 \subsection{Empirical quadrature: the fit and the counts}
 \label{app:method:eq}
@@ -228,7 +164,7 @@ state, is
   \label{eq:rho}
 \end{equation}
 over the held-out reachable states described below. The primary bar is
-the held-out $\rho$ of the original model's $q=0$ rule at the state that
+the held-out $\rho$ of the original model's head-only rule at the state that
 carries its largest first-interval error, measured in an earlier diagnostic
 study and fixed before any certification job ran; the tight bar was fixed
 before the EQ-ladder job of Table~\ref{tab:eqladder}. A candidate node set $\mathcal C$ is drawn once with a fixed seed. For each of
@@ -263,26 +199,27 @@ indices, weights, and the cached $m\times5\times R$ bank block.
 The representation ablations separate three error quantities: the
 \emph{bank floor}, the projection error onto $\operatorname{range}\bank$,
 which no head or solver can beat; the \emph{best-found} error, the
-smallest any point of the augmented manifold attains, located by a
-multistart oracle; and the \emph{solved} error, what the deployed
+smallest any point of the manifold attains, located by a multistart
+oracle; and the \emph{solved} error, what the deployed
 iteration actually returns.
 
 
-Write $\jac{}$ for the Jacobian of $\rweak$ in $(\latent,y)$. Each
+Write $\jac{}$ for the Jacobian of $\rweak$ in the unknowns $\xi$. Each
 Levenberg--Marquardt attempt solves
 $(H+\lambda\,\diag(\diag H))\,\delta=-g$ with $H=\jac{}\T\jac{}$ and
 $g=\jac{}\T\rweak$, and accepts $\delta$ only if the residual strictly
 decreases. The stationarity measure of \S\ref{sec:method:weak} is scale free: it
 divides the gradient norm by the sizes of the Jacobian and the residual,
 \begin{equation}
-  \station{\latent}{y}=\frac{\norm{\jac{}\T\rweak}_2}{\normF{\jac{}}\,\norm{\rweak}_2}
+  \eta(\xi)=\frac{\norm{\jac{}\T\rweak}_2}{\normF{\jac{}}\,\norm{\rweak}_2}
   \;\le\;\eta_{\mathrm{tol}} ,
   \label{eq:stationarity}
 \end{equation}
 so one tolerance $\eta_{\mathrm{tol}}$ serves every mesh and every rank.
 The elliptic solve starts from the cached training code nearest the
 projected source; the heat and Burgers queries start from the nearest
-codes and fit $(\latent,y)$ to the supplied initial field.
+codes and fit $\latent$ (or, in the span, $c$) to the supplied initial
+field.
 
 Damping starts at $\lambda_0=10^{-6}$ (Poisson, Burgers) or $10^{-4}$ (heat);
 $\lambda\leftarrow\max(\lambda/3,10^{-12})$ on acceptance and

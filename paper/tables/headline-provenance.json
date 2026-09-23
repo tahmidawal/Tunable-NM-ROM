@@ -1,4 +1,1375 @@
 {
+  "rule_2026_09_23": "ONE row per (problem, mesh), no variant rows (user decision 2026-09-23). Poisson 2D: accurate = most accurate primary ordered-bank arm, fast = cheapest primary arm with worst error <= the head at R'=512 (pre-registered, poisson-bank-knob DESIGN A1/A5). Navier--Stokes 3D: accurate = head k=8, fast = cheapest bank-span arm with worst error < 5 %. Heat rows: batched-fit arm. FOM rule unchanged; both speedups of a row divide one FOM time from the same job. Rows removed from Table 1 are listed in dropped_rows with the reason.",
+  "bankwidth_sources": {
+    "pbk_summary": {
+      "tree": "worktrees/2026-09-23-poisson-bank-knob",
+      "path": "experiments/poisson-bank-knob/reports/summary.json",
+      "commit": "06546331abc7bc294325da7451f00c3b65f6caa5",
+      "git_blob": "43631e96345d2d921824e6030985dffd96d9f88e",
+      "sha256": "f19d01721a0ba999518eeb3f05ee49ac4f0c10f52ca43313d35ce4c08940f67b",
+      "file": "pbk_summary.json",
+      "status": "development; poisson-bank-knob lane (closed); jobs 4199318 / 4199321, A-B-A timing",
+      "read": "committed blob",
+      "companions": {
+        "pbk_tables.generated.md": {
+          "path": "experiments/poisson-bank-knob/reports/tables.generated.md",
+          "git_blob": "b3e98780ebae712ecd5d5dce8c7ef84b00f1639f",
+          "sha256": "7646745b52ea4b319380ac49eb685001d2fe539a33e64bf038e8de1b18ebd259"
+        },
+        "pbk_DESIGN.md": {
+          "path": "experiments/poisson-bank-knob/DESIGN.md",
+          "git_blob": "b206e4742d8632ee530ebe9da88112388cd8239c",
+          "sha256": "09eabea256b03a122189434f1e4eee0200bef67873536c49c123ac0e02950a08"
+        },
+        "pbk_config-aba-256.json": {
+          "path": "experiments/poisson-bank-knob/config-aba-256.json",
+          "git_blob": "f684a8a14d07c47cb3293e28708e9fe6fb6e6f01",
+          "sha256": "0df367a70f2c16595c893b55448e2967fba9c7309c918db7a215eeead4a79747"
+        },
+        "pbk_config-aba-1024.json": {
+          "path": "experiments/poisson-bank-knob/config-aba-1024.json",
+          "git_blob": "e571e75837f0d12d279cc7f2de1be623cc75b707",
+          "sha256": "8201de362f17669ac664afb3b1f98e33c6114359ea6b9bb8cf50ee0cd069c6ef"
+        },
+        "pbk_config-aba-2048.json": {
+          "path": "experiments/poisson-bank-knob/config-aba-2048.json",
+          "git_blob": "90c201ae4de1b4331d726bac56be8ccbe7f3d3d6",
+          "sha256": "f36967cdb73c41f82d5f30e97b2e3b964d8ebe561d51343f7baa8fb0c1a9e1f1"
+        },
+        "pbk_config-aba-4096.json": {
+          "path": "experiments/poisson-bank-knob/config-aba-4096.json",
+          "git_blob": "4240f9a011dff7008088f3546b034910cc7bac29",
+          "sha256": "1aa63bf31653b107dea853a5b649ef62199f69f1cf389861d80f02a52f912536"
+        }
+      }
+    },
+    "ns_a2_h32": {
+      "tree": "worktrees/2026-09-23-ns3d-shift-head",
+      "path": "experiments/ns3d-shift-head/runs/a2_h32/output/summary.json",
+      "commit": "708c70fe7b5d8ccc6a272e4024f365fd6c4fa01b",
+      "git_blob": "f18b2334a6bd59df1dfbc17165a41c2ba7c5a236",
+      "sha256": "301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c",
+      "file": "ns_a2_h32.json",
+      "status": "development; ns3d-shift-head lane (closed)",
+      "read": "committed blob"
+    },
+    "ns_a2_h64": {
+      "tree": "worktrees/2026-09-23-ns3d-shift-head",
+      "path": "experiments/ns3d-shift-head/runs/a2_h64/output/summary.json",
+      "commit": "708c70fe7b5d8ccc6a272e4024f365fd6c4fa01b",
+      "git_blob": "d2b03197e82d4c66c92409b59c89dae48a3e0588",
+      "sha256": "05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f",
+      "file": "ns_a2_h64.json",
+      "status": "development; ns3d-shift-head lane (closed)",
+      "read": "committed blob"
+    },
+    "ns_a3_h96": {
+      "tree": "worktrees/2026-09-23-ns3d-shift-head",
+      "path": "experiments/ns3d-shift-head/runs/a3_h96/output/summary.json",
+      "commit": "708c70fe7b5d8ccc6a272e4024f365fd6c4fa01b",
+      "git_blob": "fea85ee4e518f0d37270f6ee098c6097b52628e9",
+      "sha256": "4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af",
+      "file": "ns_a3_h96.json",
+      "status": "development; ns3d-shift-head lane (closed)",
+      "read": "committed blob"
+    },
+    "ns_b2_heldout96": {
+      "tree": "worktrees/2026-09-23-ns3d-shift-head",
+      "path": "experiments/ns3d-shift-head/runs/b2_heldout96/output/summary.json",
+      "commit": "708c70fe7b5d8ccc6a272e4024f365fd6c4fa01b",
+      "git_blob": "3b6a0ded69b38b18bb7aee9d8422ccb863147e9d",
+      "sha256": "326c60413f95da9144b47b4e251d5a0f350c98bda688a3a7f0ef1f08b1fc3f2d",
+      "file": "ns_b2_heldout96.json",
+      "status": "held-out (opened once); ns3d-shift-head lane (closed)",
+      "read": "committed blob",
+      "companions": {
+        "ns_report_2026-09-23-ns3d-shift-head.md": {
+          "path": "reports/2026-09-23-ns3d-shift-head.md",
+          "git_blob": "3dbf22c5dfd301c9df669634e2fbcc7e8a201ea7",
+          "sha256": "1e049d4738bc8196f01881e7262a50d7728f0e6f77ea640fd47ac1de12947720"
+        }
+      }
+    }
+  },
+  "dropped_rows": [
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1567468474549267,
+        "ms": 6.7030745558440685,
+        "speedup": 3.3253067456640246
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.968850419215881,
+        "ms": 7.121342001482844,
+        "speedup": 3.1299969911002545
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.15274307683271274,
+        "ms": 22.289779037237167,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.15274307683271274,
+            "ms": 22.289779037237167
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+      },
+      "source": "paired_cg",
+      "job_id": "3780692",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "replaced by the ordered-bank (R') rows of the same model"
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1495039123511046,
+        "ms": 3.9406470023095608,
+        "speedup": 15.230242482252532
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9647906290076345,
+        "ms": 4.318764549680054,
+        "speedup": 13.89680050665934
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.07220757966955461,
+        "ms": 60.017009382136166,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.07220757966955461,
+            "ms": 60.017009382136166
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+      },
+      "source": "paired_cg",
+      "job_id": "3783813",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "replaced by the ordered-bank (R') rows of the same model"
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.1491428879205863,
+        "ms": 5.350430961698294,
+        "arm": "rom_q0_lean64",
+        "speedup": 74.34952018557414
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9645883880109439,
+        "ms": 5.466707516461611,
+        "arm": "rom_q256_lean64",
+        "speedup": 72.76811016327979
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-2}$",
+        "error_pct": 0.049005297417446865,
+        "ms": 397.80197478830814,
+        "arm": "cg_0.01",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.0002509335010835259,
+            "ms": 554.3579573277384
+          },
+          "cg_0.001": {
+            "err": 0.00544784519200537,
+            "ms": 488.1290914490819
+          },
+          "cg_0.01": {
+            "err": 0.049005297417446865,
+            "ms": 397.80197478830814
+          },
+          "cg_1e-06": {
+            "err": 2.2520594437806132e-06,
+            "ms": 671.2894008960575
+          }
+        }
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4049279",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp2048",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 28.72577516314283,
+        "fast": 28.7885735409717
+      },
+      "appendix_only": null,
+      "dropped": "replaced by the ordered-bank (R') rows of the same model"
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.149052648463983,
+        "ms": 16.741542145609856,
+        "arm": "rom_q0_lean64",
+        "speedup": 116.763196665527
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.964537840152561,
+        "ms": 16.921300441026688,
+        "arm": "rom_q256_lean64",
+        "speedup": 115.52279831238826
+      },
+      "fom": {
+        "name": "CG, rtol $10^{-1}$",
+        "error_pct": 0.4505524242017507,
+        "ms": 1954.7959780320525,
+        "arm": "cg_0.1",
+        "candidates": {
+          "cg_0.0001": {
+            "err": 0.00016721468602509662,
+            "ms": 3360.9984796494246
+          },
+          "cg_0.001": {
+            "err": 0.003990982558310612,
+            "ms": 3000.2080423291773
+          },
+          "cg_0.01": {
+            "err": 0.037865510109647026,
+            "ms": 2472.8083428926766
+          },
+          "cg_0.03": {
+            "err": 0.12280866110742777,
+            "ms": 2149.0802909247577
+          },
+          "cg_0.1": {
+            "err": 0.4505524242017507,
+            "ms": 1954.7959780320525
+          }
+        }
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4051236",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp4096",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 32.6738932378126,
+        "fast": 33.183477974139734
+      },
+      "appendix_only": null,
+      "dropped": "replaced by the ordered-bank (R') rows of the same model"
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 64,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.559260371319415,
+        "ms": 11.226765462197363,
+        "speedup": 0.22302384595833427
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 1.5860306094822634,
+        "ms": 2.503836411051452,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 1.5860306094822634,
+            "ms": 2.503836411051452
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "earlier heat checkpoint (Heat^r); dropped"
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 256,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.555681208224373,
+        "ms": 11.341399629600346,
+        "speedup": 0.6118243600736881
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 0.9254642451452146,
+        "ms": 6.938944570720196,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 0.9254642451452146,
+            "ms": 6.938944570720196
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "earlier heat checkpoint (Heat^r); dropped"
+    },
+    {
+      "problem": "Heat",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 4.555479479880739,
+        "ms": 12.206228449940681,
+        "speedup": 4.848179130967018
+      },
+      "accurate": null,
+      "fom": {
+        "name": "CN--CG, rtol $10^{-2}$",
+        "error_pct": 0.7706845902824921,
+        "ms": 59.1779820388183,
+        "arm": "fom_cg_cn_tol1e2",
+        "candidates": {
+          "fom_cg_cn_tol1e2": {
+            "err": 0.7706845902824921,
+            "ms": 59.1779820388183
+          }
+        },
+        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+      },
+      "source": "paired_cg",
+      "job_id": "3529772",
+      "cohort": "development",
+      "status": "development; earlier checkpoint, one setting",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "earlier heat checkpoint (Heat^r); dropped"
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615913158587163,
+        "ms": 27.77227619662881,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404915833639982,
+        "speedup": 1.5668124244211263
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.48761323417433267,
+        "ms": 27.33315690420568,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.2172399112779702,
+        "speedup": 1.5919839611588278
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.1838961673460271,
+        "ms": 43.51394739933312,
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491604803146899,
+            "ms": 128.38601460680366
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8603507545984647,
+            "ms": 35.9827745705843
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.8460943596585323,
+            "ms": 29.365314869210124
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1838961673460271,
+            "ms": 43.51394739933312
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8297581106840624,
+            "ms": 27.560366550460458
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8251832560215558,
+            "ms": 42.88227087818086
+          }
+        }
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 4.697079633236556,
+        "fast": 4.6228121057786415
+      },
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.3615913163566813,
+        "ms": 28.424680465832353,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404719172065523,
+        "speedup": 9.588343422515257
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132354521976,
+        "ms": 27.971579926088452,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724476505929355,
+        "speedup": 9.743661198324537
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
+        "error_pct": 0.18381600015544516,
+        "ms": 272.54559798166156,
+        "arm": "fom_cncg_dt0.05_rtol1e-3",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.044918130258744124,
+            "ms": 805.538103217259
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.8340810037615273,
+            "ms": 212.6287161372602
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.6751364622268284,
+            "ms": 181.64515704847872
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.18381600015544516,
+            "ms": 272.54559798166156
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8265156717741442,
+            "ms": 173.09919046238065
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8252879916894246,
+            "ms": 275.28702188283205
+          }
+        }
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 28.79844847326454,
+        "fast": 28.339389925088142
+      },
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Heat (wide bank)",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 1.361591316387811,
+        "ms": 32.19121345318854,
+        "arm": "nmrom_q0_cn",
+        "evolved_pct": 0.8404670019337802,
+        "speedup": 35.4082211317936
+      },
+      "accurate": {
+        "label": "$q=32$",
+        "error_pct": 0.4876132355320749,
+        "ms": 31.684864312410355,
+        "arm": "nmrom_q32_cn",
+        "evolved_pct": 0.21724597924783795,
+        "speedup": 35.97407245341486
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
+        "error_pct": 0.468383929956588,
+        "ms": 1139.833604451269,
+        "arm": "fom_cncg_dt0.05_rtol1e-2",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.04491875555185377,
+            "ms": 4713.3676435332745
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 0.6306085670350259,
+            "ms": 1204.3734728358686
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 0.468383929956588,
+            "ms": 1139.833604451269
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.1837618639251259,
+            "ms": 1619.40634297207
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 0.8249527728953475,
+            "ms": 1013.6782706249505
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 0.8253252913650924,
+            "ms": 1629.4863000512123
+          }
+        }
+      },
+      "source": "intake_01_hires-heat",
+      "job_id": "4060928",
+      "cohort": "final",
+      "status": "sealed held-out; opened once",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
+      "alt": {
+        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
+        "accurate": 148.75770326992182,
+        "fast": 146.4178307657556
+      },
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Burgers (held-out cases)",
+      "dim": 2,
+      "intervals": 2048,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 9.026025352815884,
+        "ms": 29.190955916419625,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
+        "speedup": 5.632838226422675
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
+        "error_pct": 1.3083877432126219,
+        "ms": 114.90617296658456,
+        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry",
+        "eq": "lattice",
+        "speedup": 1.4309756221682215
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $10^{-3}$",
+        "error_pct": 0.13033958081321567,
+        "ms": 164.42793235182762,
+        "arm": "lean_nt1e-3_l1e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.13033958081321567,
+            "ms": 164.42793235182762
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 750.6873530801386
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 744.6409987751395
+          }
+        }
+      },
+      "source": "intake_08_hires-burgers",
+      "job_id": "4077566",
+      "cohort": "held-out",
+      "status": "held-out; 64 cases, one timing repetition",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "64 cases, 1 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 1.2777564150155838,
+          "fast": 2.4948376811270667
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 6.480426417053205,
+          "fast": 25.509305036368687
+        }
+      ],
+      "appendix_only": null,
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    },
+    {
+      "problem": "Burgers (held-out cases)",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 9.030161732936454,
+        "ms": 39.71298527903855,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "own_fom": {
+          "arm": "lean_nt1e-3_l1e-3_dt01",
+          "ms": 401.18791395798326,
+          "err": 2.0062467820726275,
+          "rom_ms": 39.71298527903855,
+          "rom_err": 9.030161732932955,
+          "job": "4153483",
+          "name": "Newton--BiCGStab, tol $10^{-3}$, $\\Delta t{=}0.01$"
+        },
+        "speed_digits": 2,
+        "job": "4153483",
+        "speedup": 10.10218474232255
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
+        "error_pct": 1.3311527645946648,
+        "ms": 99.96451088227332,
+        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+        "eq": "lattice-unconfirmed",
+        "speedup": 5.37578595574943
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.13766972263962474,
+        "ms": 537.387813674286,
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.13307165913208607,
+            "ms": 704.6601281035691
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.13766972263962474,
+            "ms": 537.387813674286
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 3231.471635401249
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 3250.7355173584074
+          }
+        }
+      },
+      "source": "intake_10_hires-burgers",
+      "job_id": "4079321",
+      "cohort": "held-out",
+      "status": "held-out; 64 cases, one timing repetition",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "64 cases, 1 repetitions; NVIDIA H200",
+      "alt": [
+        {
+          "scope": "complete query",
+          "accurate": 2.2758457029052197,
+          "fast": 2.736178189146835
+        },
+        {
+          "scope": "vs.\\ tight Newton",
+          "accurate": 32.32618863315306,
+          "fast": 79.58752005175785
+        }
+      ],
+      "appendix_only": null,
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    },
+    {
+      "problem": "Burgers, confirmed rule",
+      "dim": 2,
+      "intervals": 512,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 2.137517893718323,
+        "ms": 23.617225931957364,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 0.7510534137686485
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$, first step exact",
+        "error_pct": 0.5623368901612699,
+        "ms": 194.97219868935645,
+        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
+        "eq": "confirmed",
+        "exact_steps": 1,
+        "confirmation_rho": 0.05179222156338272,
+        "heldout_rho": 0.0416053384707513,
+        "speedup": 0.09097603801556935
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.04971054736629807,
+        "ms": 17.73779815994203,
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-4_dt005": {
+            "err": 0.03409258759178587,
+            "ms": 35.069214878603816
+          },
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.5900452635486995,
+            "ms": 13.411175459623337
+          },
+          "c256_nt1e-4_dt005": {
+            "err": 1.5127842197199872,
+            "ms": 22.749958094209433
+          },
+          "lean_nt1e-2_l1e-2_dt01": {
+            "err": 1.620002548896976,
+            "ms": 9.30900708772242
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.050815849002648246,
+            "ms": 22.326122503727674
+          },
+          "lean_nt3e-3_l3e-3_dt0125": {
+            "err": 2.3371739391645305,
+            "ms": 10.404392844066024
+          },
+          "nt1e-4_dt005": {
+            "err": 0.03409258759178587,
+            "ms": 35.324522061273456
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1507446794317855,
+            "ms": 15.466967364773154
+          },
+          "lean_nt3e-3_l3e-3_dt01": {
+            "err": 1.6043563284109923,
+            "ms": 11.73742744140327
+          },
+          "lean_nt1e-3_l1e-3_dt025": {
+            "err": 5.353081455758417,
+            "ms": 8.923281682655215
+          },
+          "nt1e-3_dt005": {
+            "err": 0.051606745250107645,
+            "ms": 31.15108609199524
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 88.91526749357581
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.04971054736629807,
+            "ms": 17.73779815994203
+          },
+          "c128_nt1e-4_dt005": {
+            "err": 4.220918320853728,
+            "ms": 22.262195125222206
+          },
+          "lean_nt1e-3_l1e-3_dt0125": {
+            "err": 2.2692867912555577,
+            "ms": 11.839353013783693
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 88.15239649266005
+          }
+        }
+      },
+      "source": "eqcert_bc512",
+      "job_id": "4140818",
+      "cohort": "development",
+      "status": "development; re-drawn quadrature rule",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    },
+    {
+      "problem": "Burgers, confirmed rule",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "$q=0$, $M=64$, EQ $m=1024$",
+        "error_pct": 2.2883561038158087,
+        "ms": 24.99580103904009,
+        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+        "speedup": 1.3878442387854677
+      },
+      "accurate": {
+        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
+        "error_pct": 0.5856593373230501,
+        "ms": 108.58091607224196,
+        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+        "eq": "confirmed",
+        "exact_steps": 0,
+        "confirmation_rho": 0.11568388359449233,
+        "heldout_rho": 0.09579801801664642,
+        "speedup": 0.3194878043097294
+      },
+      "fom": {
+        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
+        "error_pct": 0.0483020286721527,
+        "ms": 34.69027846585959,
+        "arm": "lean_nt3e-3_l3e-3_dt005",
+        "candidates": {
+          "lean_nt1e-4_dt005": {
+            "err": 0.034280946985885186,
+            "ms": 77.54571153782308
+          },
+          "lean_nt1e-3_l1e-3_dt01": {
+            "err": 1.629403195288051,
+            "ms": 27.365293470211327
+          },
+          "c512_nt1e-4_dt005": {
+            "err": 0.8043058939317079,
+            "ms": 35.214396426454186
+          },
+          "lean_nt1e-2_l1e-2_dt01": {
+            "err": 1.6558277102038474,
+            "ms": 18.560041906312108
+          },
+          "lean_nt1e-3_l1e-3_dt005": {
+            "err": 0.0529575134971242,
+            "ms": 46.107542933896184
+          },
+          "lean_nt3e-3_l3e-3_dt0125": {
+            "err": 2.3945140627265458,
+            "ms": 21.12493198364973
+          },
+          "nt1e-4_dt005": {
+            "err": 0.034280946985885186,
+            "ms": 79.76043305825442
+          },
+          "lean_nt1e-2_l1e-2_dt005": {
+            "err": 2.1577540475792563,
+            "ms": 29.26900959573686
+          },
+          "lean_nt3e-3_l3e-3_dt01": {
+            "err": 1.6444945727483469,
+            "ms": 24.635344510897994
+          },
+          "lean_nt1e-3_l1e-3_dt025": {
+            "err": 5.470388326113463,
+            "ms": 18.928091507405043
+          },
+          "nt1e-3_dt005": {
+            "err": 0.05316179751071317,
+            "ms": 68.51616594940424
+          },
+          "lean_tight": {
+            "err": 0.0,
+            "ms": 204.7629951266572
+          },
+          "lean_nt3e-3_l3e-3_dt005": {
+            "err": 0.0483020286721527,
+            "ms": 34.69027846585959
+          },
+          "c256_nt1e-4_dt005": {
+            "err": 2.3127452779200612,
+            "ms": 23.066987399943173
+          },
+          "lean_nt1e-3_l1e-3_dt0125": {
+            "err": 2.324449424654293,
+            "ms": 24.32576648425311
+          },
+          "fft_tight": {
+            "err": 0.0,
+            "ms": 207.75559649337083
+          }
+        }
+      },
+      "source": "eqcert_bc1024",
+      "job_id": "4139290",
+      "cohort": "development",
+      "status": "development; re-drawn quadrature rule",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    },
+    {
+      "problem": "Burgers (earlier model)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 3.9076203252235464,
+        "ms": 41.676780325360596,
+        "speedup": 1.6326515366583647
+      },
+      "accurate": null,
+      "fom": {
+        "name": "Newton--BiCGStab, relaxed",
+        "error_pct": 2.3899365244885784,
+        "ms": 68.04365944117308,
+        "arm": "fft_loose",
+        "candidates": {
+          "fft_loose": {
+            "err": 2.3899365244885784,
+            "ms": 68.04365944117308
+          },
+          "fft_tight": {
+            "err": 2.1416109568868054,
+            "ms": 605.7469940278679
+          }
+        }
+      },
+      "source": "burgers_iter",
+      "job_id": "3534502",
+      "cohort": "development",
+      "status": "development; earlier model, stalled exits permitted",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 32,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.0041641834304134,
+        "ms": 25.414715986698866,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 1.0037384637131952,
+        "nonstationary": 0,
+        "speedup": 0.13101240439156023
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11358234526322153,
+        "ms": 58.15785040613264,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08396876425598045,
+        "nonstationary": 0,
+        "speedup": 0.05725182456184691
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.07837328908127797,
+        "ms": 3.3296430483460426,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.07826828732697816,
+            "ms": 4.132918547838926
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.07837328908127797,
+            "ms": 3.3296430483460426
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6490788124213854,
+            "ms": 2.941813552752137
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.6956205137348266,
+            "ms": 2.7315850602462888
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3208021541513088,
+            "ms": 2.7037019608542323
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.32228333462298625,
+            "ms": 2.45037698186934
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 2.381768572565625,
+            "ms": 2.114749513566494
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.4581232445140533,
+            "ms": 2.3071288596838713
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.4580990000350114,
+            "ms": 2.0208325004205108
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 2.1281271159545123,
+            "ms": 1.775157987140119
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.004188571279985,
+        "ms": 25.44845500960946,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 0.9634206328800607,
+        "nonstationary": 0,
+        "speedup": 0.20538158355346237
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11367043718775029,
+        "ms": 58.69116052053869,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08539337748575793,
+        "nonstationary": 1,
+        "speedup": 0.08905334197700171
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.08127465468538603,
+        "ms": 5.226643988862634,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08127651364566611,
+            "ms": 7.299848017282784
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.08127465468538603,
+            "ms": 5.226643988862634
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.6224545608136295,
+            "ms": 4.176954971626401
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.802078298617795,
+            "ms": 3.767221118323505
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.33345608501298957,
+            "ms": 4.436726565472782
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.334727175885224,
+            "ms": 3.58152505941689
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.9846742112079752,
+            "ms": 2.724988036789
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.5272915066045494,
+            "ms": 3.857177449390292
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.52705941096364,
+            "ms": 3.0397175578400493
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.6391844318855857,
+            "ms": 2.35329894348979
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Heat (new bank)",
+      "dim": 3,
+      "intervals": 128,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 2.004190061504043,
+        "ms": 28.24710833374411,
+        "arm": "nmrom_q0_field_cn",
+        "evolved_pct": 0.9549596522309409,
+        "nonstationary": 0,
+        "speedup": 0.6172579466258218
+      },
+      "accurate": {
+        "label": "$q=288$",
+        "error_pct": 0.11367573793847349,
+        "ms": 62.02554446645081,
+        "arm": "nmrom_q288_field_cn",
+        "evolved_pct": 0.08582484080217943,
+        "nonstationary": 0,
+        "speedup": 0.28110599009146797
+      },
+      "fom": {
+        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
+        "error_pct": 0.0820933177187895,
+        "ms": 17.435752088204026,
+        "arm": "fom_cncg_dt0.025_rtol1e-4",
+        "candidates": {
+          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+            "err": 0.08204000965799457,
+            "ms": 29.15126457810402
+          },
+          "fom_cncg_dt0.025_rtol1e-4": {
+            "err": 0.0820933177187895,
+            "ms": 17.435752088204026
+          },
+          "fom_cncg_dt0.025_rtol1e-3": {
+            "err": 0.4831598687764751,
+            "ms": 13.498243875801563
+          },
+          "fom_cncg_dt0.025_rtol1e-2": {
+            "err": 1.514418105827291,
+            "ms": 10.847708559595048
+          },
+          "fom_cncg_dt0.05_rtol1e-4": {
+            "err": 0.3366649417149719,
+            "ms": 16.0940270870924
+          },
+          "fom_cncg_dt0.05_rtol1e-3": {
+            "err": 0.33770474234495057,
+            "ms": 11.460236506536603
+          },
+          "fom_cncg_dt0.05_rtol1e-2": {
+            "err": 1.7900839947588665,
+            "ms": 7.461020490154624
+          },
+          "fom_cncg_dt0.1_rtol1e-4": {
+            "err": 1.545095463677621,
+            "ms": 14.418795937672257
+          },
+          "fom_cncg_dt0.1_rtol1e-3": {
+            "err": 1.5448409526565838,
+            "ms": 10.290460544638336
+          },
+          "fom_cncg_dt0.1_rtol1e-2": {
+            "err": 1.5575497707809325,
+            "ms": 7.043040473945439
+          }
+        }
+      },
+      "source": "heat3db_panel_a",
+      "job_id": "4153878",
+      "cohort": "final",
+      "status": "accepted final",
+      "error_convention": "same-grid, all times",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": null,
+      "dropped": "non-batched duplicate of the batched-fit row (same frozen model)"
+    },
+    {
+      "problem": "Poisson",
+      "dim": 2,
+      "intervals": 4096,
+      "fast": {
+        "label": "$q=0$",
+        "error_pct": 3.149052648463983,
+        "ms": 17.008751863613725,
+        "arm": "rom_q0_lean64",
+        "speedup": 104.64554296524506
+      },
+      "accurate": {
+        "label": "$q=256$",
+        "error_pct": 0.9645378401524893,
+        "ms": 17.165145371109247,
+        "arm": "rom_q256_lean64",
+        "speedup": 103.69210603510093
+      },
+      "fom": {
+        "name": "CG, rtol $2{\\times}10^{-1}$",
+        "error_pct": 0.7720330047906748,
+        "ms": 1779.890073928982,
+        "arm": "cg_0.2",
+        "candidates": {
+          "cg_0.01": {
+            "err": 0.037865510109647026,
+            "ms": 2465.6036919914186
+          },
+          "cg_0.1": {
+            "err": 0.4505524242017507,
+            "ms": 1949.5734714437276
+          },
+          "cg_0.2": {
+            "err": 0.7720330047906748,
+            "ms": 1779.890073928982
+          },
+          "cg_0.3": {
+            "err": 1.2950519116023134,
+            "ms": 1697.5208318326622
+          }
+        }
+      },
+      "source": "intake_00_hires-poisson",
+      "job_id": "4071227",
+      "cohort": "development",
+      "status": "development",
+      "error_convention": "same-grid",
+      "timing_scope": "GPU query",
+      "note": "12 development sources; NVIDIA H200; attempt hp4096b",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 27.375266061176745,
+        "fast": 27.646329527502953
+      },
+      "appendix_only": "re-measure of the row above",
+      "dropped": "replaced by the ordered-bank (R') rows of the same model"
+    },
+    {
+      "problem": "Burgers (earlier model)",
+      "dim": 2,
+      "intervals": 1024,
+      "fast": {
+        "label": "single",
+        "error_pct": 3.9076203252235464,
+        "ms": 41.676780325360596,
+        "speedup": 14.534399953617983
+      },
+      "accurate": null,
+      "fom": {
+        "name": "Newton--BiCGStab, tight",
+        "error_pct": 2.1416109568868054,
+        "ms": 605.7469940278679,
+        "arm": "fft_tight",
+        "candidates": {
+          "fft_loose": {
+            "err": 2.3899365244885784,
+            "ms": 68.04365944117308
+          },
+          "fft_tight": {
+            "err": 2.1416109568868054,
+            "ms": 605.7469940278679
+          }
+        }
+      },
+      "source": "burgers_iter",
+      "job_id": "3534502",
+      "cohort": "development",
+      "status": "development; earlier model, stalled exits permitted",
+      "error_convention": "refined reference",
+      "timing_scope": "GPU query",
+      "note": "",
+      "alt": null,
+      "appendix_only": "not the rule's full-order setting (a faster setting of the same solver is at least as accurate)",
+      "dropped": "Burgers variant row; held-out cases live in Table 4"
+    }
+  ],
+  "marker_definitions": [
+    {
+      "marker": "$^{o}$",
+      "definition": "ordered-bank settings of one frozen model, no retraining: Poisson accurate/fast = bank span $R'=512$ / $R'=128$ of the importance-ordered bank; Navier--Stokes accurate = head $k=8$, fast = bank span $R'=16$ (the cheapest span setting below 5\\,\\%); rows without this marker use correction-rank settings ($q$), pending the $R'$ reruns"
+    },
+    {
+      "marker": "$^{p}$",
+      "definition": "timing did not pass its job's pre-registered neighbour/drift gates; speedups provisional ($256^2$, $1024^2$)"
+    },
+    {
+      "marker": "$^{a}$",
+      "definition": "batched fit: all time steps of the linear autonomous heat problem solved together, same frozen model and settings"
+    },
+    {
+      "marker": "$^{f}$",
+      "definition": "held-out final cohort, evaluated once (all others development)"
+    },
+    {
+      "marker": "$^{t}$",
+      "definition": "error over all output times including $t=0$"
+    },
+    {
+      "marker": "$^{e}$",
+      "definition": "error over evolved output times only"
+    },
+    {
+      "marker": "$^{c}$",
+      "definition": "complete-query time with host transfers (all others GPU query)"
+    },
+    {
+      "marker": "$^{s}$",
+      "definition": "stored quadrature rule, not confirmed on re-draws"
+    },
+    {
+      "marker": "$^{x}$",
+      "definition": "stored quadrature nodes with weights refit at this mesh, one held-out draw"
+    },
+    {
+      "marker": "$^{\\ell}$",
+      "definition": "$63{\\times}63$ lattice quadrature rule, thin re-draw margin"
+    },
+    {
+      "marker": "$^{w}$",
+      "definition": "the same lattice rule at this mesh: five held-out draws pass, the confirmation draw does not"
+    },
+    {
+      "marker": "$^{d}$",
+      "definition": "dense residual"
+    }
+  ],
   "rule": "One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). One named FOM per row from the same allocation, at least as accurate as the accurate setting; speedup = FOM ms / NM-ROM ms. Exception: the 4096^2 Burgers fast column divides the fastest tested same-allocation setting at least as accurate as that fast setting (bh5 grid, same job). Bold = speedup > 1.",
   "sources": {
     "paired_cg": {
@@ -449,194 +1820,344 @@
       "dim": 2,
       "intervals": 256,
       "fast": {
-        "label": "$q=0$",
-        "error_pct": 3.1567468474549267,
-        "ms": 6.7030745558440685,
-        "speedup": 3.3253067456640246
+        "label": "span, $R'{=}128$",
+        "error_pct": 2.3140797786869416,
+        "ms": 0.5875241477042437,
+        "arm": "R128_linear",
+        "Rp": 128,
+        "family": "linear-rung",
+        "speedup": 17.50194559159736
       },
       "accurate": {
-        "label": "$q=256$",
-        "error_pct": 0.968850419215881,
-        "ms": 7.121342001482844,
-        "speedup": 3.1299969911002545
+        "label": "span, $R'{=}512$",
+        "error_pct": 0.7458632302014031,
+        "ms": 0.7673734799027443,
+        "arm": "R512_linear",
+        "Rp": 512,
+        "family": "linear-rung",
+        "speedup": 13.400014381748651
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.15274307683271274,
-        "ms": 22.289779037237167,
-        "arm": "cg_0.01",
+        "name": "CG, rtol $3{\\times}10^{-2}$",
+        "error_pct": 0.5480089862046315,
+        "ms": 10.282815666869283,
+        "arm": "cg_0.03",
         "candidates": {
           "cg_0.01": {
-            "err": 0.15274307683271274,
-            "ms": 22.289779037237167
+            "err": 0.1527430772078455,
+            "ms": 11.598120676353574
+          },
+          "cg_0.7": {
+            "err": 42.545369114856314,
+            "ms": 5.109690595418215
+          },
+          "cg_0.001": {
+            "err": 0.013000997403498273,
+            "ms": 14.211119851097465
+          },
+          "cg_0.5": {
+            "err": 35.17435788099199,
+            "ms": 6.129411049187183
+          },
+          "cg_0.1": {
+            "err": 2.1467071269950755,
+            "ms": 8.779773954302073
+          },
+          "cg_0.3": {
+            "err": 12.397299130508257,
+            "ms": 7.1940249763429165
+          },
+          "cg_0.2": {
+            "err": 7.155247587520542,
+            "ms": 7.837662473320961
+          },
+          "cg_0.03": {
+            "err": 0.5480089862046315,
+            "ms": 10.282815666869283
+          },
+          "cg_0.0001": {
+            "err": 0.001182207319659943,
+            "ms": 16.500477911904454
+          },
+          "cg_0.4": {
+            "err": 22.473333724920902,
+            "ms": 6.689851172268391
           }
-        },
-        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+        }
       },
-      "source": "paired_cg",
-      "job_id": "3780692",
+      "source": "bw_pbk_summary",
+      "job_id": "4199318",
       "cohort": "development",
-      "status": "development",
+      "status": "development; ordered bank; provisional timing (A-B-A drift gate failed)",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
+      "note": "12 development sources; NVIDIA A100 80GB PCIe; attempt pbkH; gates {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': False, 'profile_matches_fused': True, 'device_guard': True}",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 7.054936666906838,
+        "fast": 7.716436360724798
+      },
+      "appendix_only": null,
+      "bankwidth": true,
+      "provisional_timing": true
     },
     {
       "problem": "Poisson",
       "dim": 2,
       "intervals": 1024,
       "fast": {
-        "label": "$q=0$",
-        "error_pct": 3.1495039123511046,
-        "ms": 3.9406470023095608,
-        "speedup": 15.230242482252532
+        "label": "span, $R'{=}128$",
+        "error_pct": 2.3063961307404837,
+        "ms": 1.4412137679755688,
+        "arm": "R128_linear",
+        "Rp": 128,
+        "family": "linear-rung",
+        "speedup": 68.51667747448047
       },
       "accurate": {
-        "label": "$q=256$",
-        "error_pct": 0.9647906290076345,
-        "ms": 4.318764549680054,
-        "speedup": 13.89680050665934
+        "label": "span, $R'{=}512$",
+        "error_pct": 0.7421302120899466,
+        "ms": 3.5362488124519587,
+        "arm": "R512_linear",
+        "Rp": 512,
+        "family": "linear-rung",
+        "speedup": 27.924273474324227
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.07220757966955461,
-        "ms": 60.017009382136166,
-        "arm": "cg_0.01",
+        "name": "CG, rtol $3{\\times}10^{-2}$",
+        "error_pct": 0.22010804999718428,
+        "ms": 98.74717891216278,
+        "arm": "cg_0.03",
         "candidates": {
+          "cg_0.0001": {
+            "err": 0.00042102314707871127,
+            "ms": 155.7553370948881
+          },
+          "cg_0.5": {
+            "err": 9.015716507823326,
+            "ms": 66.25855155289173
+          },
+          "cg_0.7": {
+            "err": 16.490208844234893,
+            "ms": 61.23327184468508
+          },
+          "cg_0.001": {
+            "err": 0.00704966330773375,
+            "ms": 135.1896880660206
+          },
+          "cg_0.2": {
+            "err": 2.19971811917963,
+            "ms": 77.80983066186309
+          },
+          "cg_0.03": {
+            "err": 0.22010804999718428,
+            "ms": 98.74717891216278
+          },
+          "cg_0.1": {
+            "err": 0.7690035506507056,
+            "ms": 85.21960489451885
+          },
+          "cg_0.3": {
+            "err": 5.554564778333101,
+            "ms": 72.93857750482857
+          },
           "cg_0.01": {
-            "err": 0.07220757966955461,
-            "ms": 60.017009382136166
+            "err": 0.07220726616892795,
+            "ms": 110.62727612443268
+          },
+          "cg_0.4": {
+            "err": 7.2513088934514345,
+            "ms": 68.94621904939413
           }
-        },
-        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
+        }
       },
-      "source": "paired_cg",
-      "job_id": "3783813",
+      "source": "bw_pbk_summary",
+      "job_id": "4199318",
       "cohort": "development",
-      "status": "development",
+      "status": "development; ordered bank; provisional timing (A-B-A drift gate failed)",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
+      "note": "12 development sources; NVIDIA A100 80GB PCIe; attempt pbkH; gates {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': False, 'profile_matches_fused': True, 'device_guard': True}",
+      "alt": {
+        "scope": "complete query",
+        "accurate": 14.887417312738568,
+        "fast": 21.317436427414695
+      },
+      "appendix_only": null,
+      "bankwidth": true,
+      "provisional_timing": true
     },
     {
       "problem": "Poisson",
       "dim": 2,
       "intervals": 2048,
       "fast": {
-        "label": "$q=0$",
-        "error_pct": 3.1491428879205863,
-        "ms": 5.350430961698294,
-        "arm": "rom_q0_lean64",
-        "speedup": 74.34952018557414
+        "label": "span, $R'{=}128$",
+        "error_pct": 2.3060130533623275,
+        "ms": 3.7361127324402332,
+        "arm": "R128_linear",
+        "Rp": 128,
+        "family": "linear-rung",
+        "speedup": 174.0418521642314
       },
       "accurate": {
-        "label": "$q=256$",
-        "error_pct": 0.9645883880109439,
-        "ms": 5.466707516461611,
-        "arm": "rom_q256_lean64",
-        "speedup": 72.76811016327979
+        "label": "span, $R'{=}512$",
+        "error_pct": 0.7419441746164305,
+        "ms": 12.014209758490324,
+        "arm": "R512_linear",
+        "Rp": 512,
+        "family": "linear-rung",
+        "speedup": 54.122575926289905
       },
       "fom": {
-        "name": "CG, rtol $10^{-2}$",
-        "error_pct": 0.049005297417446865,
-        "ms": 397.80197478830814,
-        "arm": "cg_0.01",
+        "name": "CG, rtol $10^{-1}$",
+        "error_pct": 0.6088666412608817,
+        "ms": 650.2399798482656,
+        "arm": "cg_0.1",
         "candidates": {
-          "cg_0.0001": {
-            "err": 0.0002509335010835259,
-            "ms": 554.3579573277384
-          },
           "cg_0.001": {
-            "err": 0.00544784519200537,
-            "ms": 488.1290914490819
+            "err": 0.005447860110263101,
+            "ms": 1021.963318111375
+          },
+          "cg_0.1": {
+            "err": 0.6088666412608817,
+            "ms": 650.2399798482656
+          },
+          "cg_0.3": {
+            "err": 2.50244242003896,
+            "ms": 564.3610614351928
+          },
+          "cg_0.2": {
+            "err": 1.1782252597276004,
+            "ms": 599.3642348330468
+          },
+          "cg_0.03": {
+            "err": 0.16178789744188155,
+            "ms": 746.2591261137277
+          },
+          "cg_0.5": {
+            "err": 6.750293112078505,
+            "ms": 513.7166709173471
+          },
+          "cg_0.4": {
+            "err": 5.153751393601673,
+            "ms": 539.0580201055855
+          },
+          "cg_0.0001": {
+            "err": 0.0002509355133392339,
+            "ms": 1161.1720374785364
+          },
+          "cg_0.7": {
+            "err": 8.900938334064568,
+            "ms": 485.0989989936352
           },
           "cg_0.01": {
-            "err": 0.049005297417446865,
-            "ms": 397.80197478830814
-          },
-          "cg_1e-06": {
-            "err": 2.2520594437806132e-06,
-            "ms": 671.2894008960575
+            "err": 0.04900553940932719,
+            "ms": 836.8020982015878
           }
         }
       },
-      "source": "intake_00_hires-poisson",
-      "job_id": "4049279",
+      "source": "bw_pbk_summary",
+      "job_id": "4199318",
       "cohort": "development",
-      "status": "development",
+      "status": "development; ordered bank",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": "12 development sources; NVIDIA H200; attempt hp2048",
+      "note": "12 development sources; NVIDIA A100 80GB PCIe; attempt pbkH; gates {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}",
       "alt": {
         "scope": "complete query",
-        "accurate": 28.72577516314283,
-        "fast": 28.7885735409717
+        "accurate": 25.965034444229435,
+        "fast": 38.52306494171086
       },
-      "appendix_only": null
+      "appendix_only": null,
+      "bankwidth": true,
+      "provisional_timing": false
     },
     {
       "problem": "Poisson",
       "dim": 2,
       "intervals": 4096,
       "fast": {
-        "label": "$q=0$",
-        "error_pct": 3.149052648463983,
-        "ms": 16.741542145609856,
-        "arm": "rom_q0_lean64",
-        "speedup": 116.763196665527
+        "label": "span, $R'{=}128$",
+        "error_pct": 2.305917300406882,
+        "ms": 12.543563963845372,
+        "arm": "R128_linear",
+        "Rp": 128,
+        "family": "linear-rung",
+        "speedup": 357.9539574575933
       },
       "accurate": {
-        "label": "$q=256$",
-        "error_pct": 0.964537840152561,
-        "ms": 16.921300441026688,
-        "arm": "rom_q256_lean64",
-        "speedup": 115.52279831238826
+        "label": "span, $R'{=}512$",
+        "error_pct": 0.7418976743525537,
+        "ms": 42.387917870655656,
+        "arm": "R512_linear",
+        "Rp": 512,
+        "family": "linear-rung",
+        "speedup": 105.92684394600236
       },
       "fom": {
         "name": "CG, rtol $10^{-1}$",
         "error_pct": 0.4505524242017507,
-        "ms": 1954.7959780320525,
+        "ms": 4490.018361480907,
         "arm": "cg_0.1",
         "candidates": {
-          "cg_0.0001": {
-            "err": 0.00016721468602509662,
-            "ms": 3360.9984796494246
-          },
-          "cg_0.001": {
-            "err": 0.003990982558310612,
-            "ms": 3000.2080423291773
-          },
-          "cg_0.01": {
-            "err": 0.037865510109647026,
-            "ms": 2472.8083428926766
+          "cg_0.5": {
+            "err": 3.723701083802085,
+            "ms": 3617.0385987497866
           },
           "cg_0.03": {
             "err": 0.12280866110742777,
-            "ms": 2149.0802909247577
+            "ms": 4942.249141633511
+          },
+          "cg_0.001": {
+            "err": 0.003990982558310612,
+            "ms": 6886.377208400518
+          },
+          "cg_0.7": {
+            "err": 6.707812165908908,
+            "ms": 3378.9237539749593
           },
           "cg_0.1": {
             "err": 0.4505524242017507,
-            "ms": 1954.7959780320525
+            "ms": 4490.018361480907
+          },
+          "cg_0.3": {
+            "err": 1.2950519116023134,
+            "ms": 3910.70510703139
+          },
+          "cg_0.01": {
+            "err": 0.037865510109647026,
+            "ms": 5678.246273892
+          },
+          "cg_0.0001": {
+            "err": 0.00016721468602509662,
+            "ms": 7731.406214879826
+          },
+          "cg_0.4": {
+            "err": 2.2045345309206326,
+            "ms": 3744.972192682326
+          },
+          "cg_0.2": {
+            "err": 0.7720330047906748,
+            "ms": 4099.798246985301
           }
         }
       },
-      "source": "intake_00_hires-poisson",
-      "job_id": "4051236",
+      "source": "bw_pbk_summary",
+      "job_id": "4199321",
       "cohort": "development",
-      "status": "development",
+      "status": "development; ordered bank",
       "error_convention": "same-grid",
       "timing_scope": "GPU query",
-      "note": "12 development sources; NVIDIA H200; attempt hp4096",
+      "note": "12 development sources; NVIDIA A100 80GB PCIe; attempt pbkI; gates {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': False, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}",
       "alt": {
         "scope": "complete query",
-        "accurate": 32.6738932378126,
-        "fast": 33.183477974139734
+        "accurate": 46.291282631556705,
+        "fast": 66.21302878115607
       },
-      "appendix_only": null
+      "appendix_only": null,
+      "bankwidth": true,
+      "provisional_timing": false
     },
     {
       "problem": "Poisson, L-shape",
@@ -839,306 +2360,6 @@
         "scope": "GPU query",
         "accurate": 29.80145786227147,
         "fast": 30.162424750655408
-      },
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat",
-      "dim": 2,
-      "intervals": 64,
-      "fast": {
-        "label": "single",
-        "error_pct": 4.559260371319415,
-        "ms": 11.226765462197363,
-        "speedup": 0.22302384595833427
-      },
-      "accurate": null,
-      "fom": {
-        "name": "CN--CG, rtol $10^{-2}$",
-        "error_pct": 1.5860306094822634,
-        "ms": 2.503836411051452,
-        "arm": "fom_cg_cn_tol1e2",
-        "candidates": {
-          "fom_cg_cn_tol1e2": {
-            "err": 1.5860306094822634,
-            "ms": 2.503836411051452
-          }
-        },
-        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
-      },
-      "source": "paired_cg",
-      "job_id": "3529772",
-      "cohort": "development",
-      "status": "development; earlier checkpoint, one setting",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat",
-      "dim": 2,
-      "intervals": 256,
-      "fast": {
-        "label": "single",
-        "error_pct": 4.555681208224373,
-        "ms": 11.341399629600346,
-        "speedup": 0.6118243600736881
-      },
-      "accurate": null,
-      "fom": {
-        "name": "CN--CG, rtol $10^{-2}$",
-        "error_pct": 0.9254642451452146,
-        "ms": 6.938944570720196,
-        "arm": "fom_cg_cn_tol1e2",
-        "candidates": {
-          "fom_cg_cn_tol1e2": {
-            "err": 0.9254642451452146,
-            "ms": 6.938944570720196
-          }
-        },
-        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
-      },
-      "source": "paired_cg",
-      "job_id": "3529772",
-      "cohort": "development",
-      "status": "development; earlier checkpoint, one setting",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "single",
-        "error_pct": 4.555479479880739,
-        "ms": 12.206228449940681,
-        "speedup": 4.848179130967018
-      },
-      "accurate": null,
-      "fom": {
-        "name": "CN--CG, rtol $10^{-2}$",
-        "error_pct": 0.7706845902824921,
-        "ms": 59.1779820388183,
-        "arm": "fom_cg_cn_tol1e2",
-        "candidates": {
-          "fom_cg_cn_tol1e2": {
-            "err": 0.7706845902824921,
-            "ms": 59.1779820388183
-          }
-        },
-        "selection": "record: Fastest retained same-job passing iterative CG whose displayed error is no greater than the method error; no cross-job ratio. This is selection from a finite measured tolerance/time-step set."
-      },
-      "source": "paired_cg",
-      "job_id": "3529772",
-      "cohort": "development",
-      "status": "development; earlier checkpoint, one setting",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (wide bank)",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 1.3615913158587163,
-        "ms": 27.77227619662881,
-        "arm": "nmrom_q0_cn",
-        "evolved_pct": 0.8404915833639982,
-        "speedup": 1.5668124244211263
-      },
-      "accurate": {
-        "label": "$q=32$",
-        "error_pct": 0.48761323417433267,
-        "ms": 27.33315690420568,
-        "arm": "nmrom_q32_cn",
-        "evolved_pct": 0.2172399112779702,
-        "speedup": 1.5919839611588278
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
-        "error_pct": 0.1838961673460271,
-        "ms": 43.51394739933312,
-        "arm": "fom_cncg_dt0.05_rtol1e-3",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.04491604803146899,
-            "ms": 128.38601460680366
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 0.8603507545984647,
-            "ms": 35.9827745705843
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 0.8460943596585323,
-            "ms": 29.365314869210124
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.1838961673460271,
-            "ms": 43.51394739933312
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 0.8297581106840624,
-            "ms": 27.560366550460458
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 0.8251832560215558,
-            "ms": 42.88227087818086
-          }
-        }
-      },
-      "source": "intake_01_hires-heat",
-      "job_id": "4060928",
-      "cohort": "final",
-      "status": "sealed held-out; opened once",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
-      "alt": {
-        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
-        "accurate": 4.697079633236556,
-        "fast": 4.6228121057786415
-      },
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (wide bank)",
-      "dim": 2,
-      "intervals": 2048,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 1.3615913163566813,
-        "ms": 28.424680465832353,
-        "arm": "nmrom_q0_cn",
-        "evolved_pct": 0.8404719172065523,
-        "speedup": 9.588343422515257
-      },
-      "accurate": {
-        "label": "$q=32$",
-        "error_pct": 0.4876132354521976,
-        "ms": 27.971579926088452,
-        "arm": "nmrom_q32_cn",
-        "evolved_pct": 0.21724476505929355,
-        "speedup": 9.743661198324537
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-3}$",
-        "error_pct": 0.18381600015544516,
-        "ms": 272.54559798166156,
-        "arm": "fom_cncg_dt0.05_rtol1e-3",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.044918130258744124,
-            "ms": 805.538103217259
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 0.8340810037615273,
-            "ms": 212.6287161372602
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 0.6751364622268284,
-            "ms": 181.64515704847872
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.18381600015544516,
-            "ms": 272.54559798166156
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 0.8265156717741442,
-            "ms": 173.09919046238065
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 0.8252879916894246,
-            "ms": 275.28702188283205
-          }
-        }
-      },
-      "source": "intake_01_hires-heat",
-      "job_id": "4060928",
-      "cohort": "final",
-      "status": "sealed held-out; opened once",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
-      "alt": {
-        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
-        "accurate": 28.79844847326454,
-        "fast": 28.339389925088142
-      },
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (wide bank)",
-      "dim": 2,
-      "intervals": 4096,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 1.361591316387811,
-        "ms": 32.19121345318854,
-        "arm": "nmrom_q0_cn",
-        "evolved_pct": 0.8404670019337802,
-        "speedup": 35.4082211317936
-      },
-      "accurate": {
-        "label": "$q=32$",
-        "error_pct": 0.4876132355320749,
-        "ms": 31.684864312410355,
-        "arm": "nmrom_q32_cn",
-        "evolved_pct": 0.21724597924783795,
-        "speedup": 35.97407245341486
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.05$, rtol $10^{-2}$",
-        "error_pct": 0.468383929956588,
-        "ms": 1139.833604451269,
-        "arm": "fom_cncg_dt0.05_rtol1e-2",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.04491875555185377,
-            "ms": 4713.3676435332745
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 0.6306085670350259,
-            "ms": 1204.3734728358686
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 0.468383929956588,
-            "ms": 1139.833604451269
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.1837618639251259,
-            "ms": 1619.40634297207
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 0.8249527728953475,
-            "ms": 1013.6782706249505
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 0.8253252913650924,
-            "ms": 1629.4863000512123
-          }
-        }
-      },
-      "source": "intake_01_hires-heat",
-      "job_id": "4060928",
-      "cohort": "final",
-      "status": "sealed held-out; opened once",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "16 cases; NVIDIA H200; arms nmrom_q0_cn / nmrom_q32_cn",
-      "alt": {
-        "scope": "vs.\\ CN--CG rtol $10^{-6}$",
-        "accurate": 148.75770326992182,
-        "fast": 146.4178307657556
       },
       "appendix_only": null
     },
@@ -1738,386 +2959,6 @@
       "appendix_only": null
     },
     {
-      "problem": "Burgers (held-out cases)",
-      "dim": 2,
-      "intervals": 2048,
-      "fast": {
-        "label": "$q=0$, $M=64$, EQ $m=1024$",
-        "error_pct": 9.026025352815884,
-        "ms": 29.190955916419625,
-        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry",
-        "speedup": 5.632838226422675
-      },
-      "accurate": {
-        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
-        "error_pct": 1.3083877432126219,
-        "ms": 114.90617296658456,
-        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry",
-        "eq": "lattice",
-        "speedup": 1.4309756221682215
-      },
-      "fom": {
-        "name": "Newton--BiCGStab, tol $10^{-3}$",
-        "error_pct": 0.13033958081321567,
-        "ms": 164.42793235182762,
-        "arm": "lean_nt1e-3_l1e-3_dt005",
-        "candidates": {
-          "lean_nt1e-3_l1e-3_dt005": {
-            "err": 0.13033958081321567,
-            "ms": 164.42793235182762
-          },
-          "fft_tight": {
-            "err": 0.0,
-            "ms": 750.6873530801386
-          },
-          "lean_tight": {
-            "err": 0.0,
-            "ms": 744.6409987751395
-          }
-        }
-      },
-      "source": "intake_08_hires-burgers",
-      "job_id": "4077566",
-      "cohort": "held-out",
-      "status": "held-out; 64 cases, one timing repetition",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "64 cases, 1 repetitions; NVIDIA H200",
-      "alt": [
-        {
-          "scope": "complete query",
-          "accurate": 1.2777564150155838,
-          "fast": 2.4948376811270667
-        },
-        {
-          "scope": "vs.\\ tight Newton",
-          "accurate": 6.480426417053205,
-          "fast": 25.509305036368687
-        }
-      ],
-      "appendix_only": null
-    },
-    {
-      "problem": "Burgers (held-out cases)",
-      "dim": 2,
-      "intervals": 4096,
-      "fast": {
-        "label": "$q=0$, $M=64$, EQ $m=1024$",
-        "error_pct": 9.030161732936454,
-        "ms": 39.71298527903855,
-        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
-        "own_fom": {
-          "arm": "lean_nt1e-3_l1e-3_dt01",
-          "ms": 401.18791395798326,
-          "err": 2.0062467820726275,
-          "rom_ms": 39.71298527903855,
-          "rom_err": 9.030161732932955,
-          "job": "4153483",
-          "name": "Newton--BiCGStab, tol $10^{-3}$, $\\Delta t{=}0.01$"
-        },
-        "speed_digits": 2,
-        "job": "4153483",
-        "speedup": 10.10218474232255
-      },
-      "accurate": {
-        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
-        "error_pct": 1.3311527645946648,
-        "ms": 99.96451088227332,
-        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
-        "eq": "lattice-unconfirmed",
-        "speedup": 5.37578595574943
-      },
-      "fom": {
-        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
-        "error_pct": 0.13766972263962474,
-        "ms": 537.387813674286,
-        "arm": "lean_nt3e-3_l3e-3_dt005",
-        "candidates": {
-          "lean_nt1e-3_l1e-3_dt005": {
-            "err": 0.13307165913208607,
-            "ms": 704.6601281035691
-          },
-          "lean_nt3e-3_l3e-3_dt005": {
-            "err": 0.13766972263962474,
-            "ms": 537.387813674286
-          },
-          "lean_tight": {
-            "err": 0.0,
-            "ms": 3231.471635401249
-          },
-          "fft_tight": {
-            "err": 0.0,
-            "ms": 3250.7355173584074
-          }
-        }
-      },
-      "source": "intake_10_hires-burgers",
-      "job_id": "4079321",
-      "cohort": "held-out",
-      "status": "held-out; 64 cases, one timing repetition",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "64 cases, 1 repetitions; NVIDIA H200",
-      "alt": [
-        {
-          "scope": "complete query",
-          "accurate": 2.2758457029052197,
-          "fast": 2.736178189146835
-        },
-        {
-          "scope": "vs.\\ tight Newton",
-          "accurate": 32.32618863315306,
-          "fast": 79.58752005175785
-        }
-      ],
-      "appendix_only": null
-    },
-    {
-      "problem": "Burgers, confirmed rule",
-      "dim": 2,
-      "intervals": 512,
-      "fast": {
-        "label": "$q=0$, $M=64$, EQ $m=1024$",
-        "error_pct": 2.137517893718323,
-        "ms": 23.617225931957364,
-        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
-        "speedup": 0.7510534137686485
-      },
-      "accurate": {
-        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$, first step exact",
-        "error_pct": 0.5623368901612699,
-        "ms": 194.97219868935645,
-        "arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1",
-        "eq": "confirmed",
-        "exact_steps": 1,
-        "confirmation_rho": 0.05179222156338272,
-        "heldout_rho": 0.0416053384707513,
-        "speedup": 0.09097603801556935
-      },
-      "fom": {
-        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
-        "error_pct": 0.04971054736629807,
-        "ms": 17.73779815994203,
-        "arm": "lean_nt3e-3_l3e-3_dt005",
-        "candidates": {
-          "lean_nt1e-4_dt005": {
-            "err": 0.03409258759178587,
-            "ms": 35.069214878603816
-          },
-          "lean_nt1e-3_l1e-3_dt01": {
-            "err": 1.5900452635486995,
-            "ms": 13.411175459623337
-          },
-          "c256_nt1e-4_dt005": {
-            "err": 1.5127842197199872,
-            "ms": 22.749958094209433
-          },
-          "lean_nt1e-2_l1e-2_dt01": {
-            "err": 1.620002548896976,
-            "ms": 9.30900708772242
-          },
-          "lean_nt1e-3_l1e-3_dt005": {
-            "err": 0.050815849002648246,
-            "ms": 22.326122503727674
-          },
-          "lean_nt3e-3_l3e-3_dt0125": {
-            "err": 2.3371739391645305,
-            "ms": 10.404392844066024
-          },
-          "nt1e-4_dt005": {
-            "err": 0.03409258759178587,
-            "ms": 35.324522061273456
-          },
-          "lean_nt1e-2_l1e-2_dt005": {
-            "err": 2.1507446794317855,
-            "ms": 15.466967364773154
-          },
-          "lean_nt3e-3_l3e-3_dt01": {
-            "err": 1.6043563284109923,
-            "ms": 11.73742744140327
-          },
-          "lean_nt1e-3_l1e-3_dt025": {
-            "err": 5.353081455758417,
-            "ms": 8.923281682655215
-          },
-          "nt1e-3_dt005": {
-            "err": 0.051606745250107645,
-            "ms": 31.15108609199524
-          },
-          "lean_tight": {
-            "err": 0.0,
-            "ms": 88.91526749357581
-          },
-          "lean_nt3e-3_l3e-3_dt005": {
-            "err": 0.04971054736629807,
-            "ms": 17.73779815994203
-          },
-          "c128_nt1e-4_dt005": {
-            "err": 4.220918320853728,
-            "ms": 22.262195125222206
-          },
-          "lean_nt1e-3_l1e-3_dt0125": {
-            "err": 2.2692867912555577,
-            "ms": 11.839353013783693
-          },
-          "fft_tight": {
-            "err": 0.0,
-            "ms": 88.15239649266005
-          }
-        }
-      },
-      "source": "eqcert_bc512",
-      "job_id": "4140818",
-      "cohort": "development",
-      "status": "development; re-drawn quadrature rule",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Burgers, confirmed rule",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "$q=0$, $M=64$, EQ $m=1024$",
-        "error_pct": 2.2883561038158087,
-        "ms": 24.99580103904009,
-        "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
-        "speedup": 1.3878442387854677
-      },
-      "accurate": {
-        "label": "$q=256$, $M=1088$, EQ lattice $m=3969$",
-        "error_pct": 0.5856593373230501,
-        "ms": 108.58091607224196,
-        "arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
-        "eq": "confirmed",
-        "exact_steps": 0,
-        "confirmation_rho": 0.11568388359449233,
-        "heldout_rho": 0.09579801801664642,
-        "speedup": 0.3194878043097294
-      },
-      "fom": {
-        "name": "Newton--BiCGStab, tol $3{\\times}10^{-3}$",
-        "error_pct": 0.0483020286721527,
-        "ms": 34.69027846585959,
-        "arm": "lean_nt3e-3_l3e-3_dt005",
-        "candidates": {
-          "lean_nt1e-4_dt005": {
-            "err": 0.034280946985885186,
-            "ms": 77.54571153782308
-          },
-          "lean_nt1e-3_l1e-3_dt01": {
-            "err": 1.629403195288051,
-            "ms": 27.365293470211327
-          },
-          "c512_nt1e-4_dt005": {
-            "err": 0.8043058939317079,
-            "ms": 35.214396426454186
-          },
-          "lean_nt1e-2_l1e-2_dt01": {
-            "err": 1.6558277102038474,
-            "ms": 18.560041906312108
-          },
-          "lean_nt1e-3_l1e-3_dt005": {
-            "err": 0.0529575134971242,
-            "ms": 46.107542933896184
-          },
-          "lean_nt3e-3_l3e-3_dt0125": {
-            "err": 2.3945140627265458,
-            "ms": 21.12493198364973
-          },
-          "nt1e-4_dt005": {
-            "err": 0.034280946985885186,
-            "ms": 79.76043305825442
-          },
-          "lean_nt1e-2_l1e-2_dt005": {
-            "err": 2.1577540475792563,
-            "ms": 29.26900959573686
-          },
-          "lean_nt3e-3_l3e-3_dt01": {
-            "err": 1.6444945727483469,
-            "ms": 24.635344510897994
-          },
-          "lean_nt1e-3_l1e-3_dt025": {
-            "err": 5.470388326113463,
-            "ms": 18.928091507405043
-          },
-          "nt1e-3_dt005": {
-            "err": 0.05316179751071317,
-            "ms": 68.51616594940424
-          },
-          "lean_tight": {
-            "err": 0.0,
-            "ms": 204.7629951266572
-          },
-          "lean_nt3e-3_l3e-3_dt005": {
-            "err": 0.0483020286721527,
-            "ms": 34.69027846585959
-          },
-          "c256_nt1e-4_dt005": {
-            "err": 2.3127452779200612,
-            "ms": 23.066987399943173
-          },
-          "lean_nt1e-3_l1e-3_dt0125": {
-            "err": 2.324449424654293,
-            "ms": 24.32576648425311
-          },
-          "fft_tight": {
-            "err": 0.0,
-            "ms": 207.75559649337083
-          }
-        }
-      },
-      "source": "eqcert_bc1024",
-      "job_id": "4139290",
-      "cohort": "development",
-      "status": "development; re-drawn quadrature rule",
-      "error_convention": "same-grid, evolved",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Burgers (earlier model)",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "single",
-        "error_pct": 3.9076203252235464,
-        "ms": 41.676780325360596,
-        "speedup": 1.6326515366583647
-      },
-      "accurate": null,
-      "fom": {
-        "name": "Newton--BiCGStab, relaxed",
-        "error_pct": 2.3899365244885784,
-        "ms": 68.04365944117308,
-        "arm": "fft_loose",
-        "candidates": {
-          "fft_loose": {
-            "err": 2.3899365244885784,
-            "ms": 68.04365944117308
-          },
-          "fft_tight": {
-            "err": 2.1416109568868054,
-            "ms": 605.7469940278679
-          }
-        }
-      },
-      "source": "burgers_iter",
-      "job_id": "3534502",
-      "cohort": "development",
-      "status": "development; earlier model, stalled exits permitted",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
       "problem": "Poisson",
       "dim": 3,
       "intervals": 32,
@@ -2335,246 +3176,6 @@
         "accurate": 4.181976211016386,
         "fast": 4.207055069784597
       },
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (new bank)",
-      "dim": 3,
-      "intervals": 32,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 2.0041641834304134,
-        "ms": 25.414715986698866,
-        "arm": "nmrom_q0_field_cn",
-        "evolved_pct": 1.0037384637131952,
-        "nonstationary": 0,
-        "speedup": 0.13101240439156023
-      },
-      "accurate": {
-        "label": "$q=288$",
-        "error_pct": 0.11358234526322153,
-        "ms": 58.15785040613264,
-        "arm": "nmrom_q288_field_cn",
-        "evolved_pct": 0.08396876425598045,
-        "nonstationary": 0,
-        "speedup": 0.05725182456184691
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
-        "error_pct": 0.07837328908127797,
-        "ms": 3.3296430483460426,
-        "arm": "fom_cncg_dt0.025_rtol1e-4",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.07826828732697816,
-            "ms": 4.132918547838926
-          },
-          "fom_cncg_dt0.025_rtol1e-4": {
-            "err": 0.07837328908127797,
-            "ms": 3.3296430483460426
-          },
-          "fom_cncg_dt0.025_rtol1e-3": {
-            "err": 0.6490788124213854,
-            "ms": 2.941813552752137
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 1.6956205137348266,
-            "ms": 2.7315850602462888
-          },
-          "fom_cncg_dt0.05_rtol1e-4": {
-            "err": 0.3208021541513088,
-            "ms": 2.7037019608542323
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.32228333462298625,
-            "ms": 2.45037698186934
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 2.381768572565625,
-            "ms": 2.114749513566494
-          },
-          "fom_cncg_dt0.1_rtol1e-4": {
-            "err": 1.4581232445140533,
-            "ms": 2.3071288596838713
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 1.4580990000350114,
-            "ms": 2.0208325004205108
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 2.1281271159545123,
-            "ms": 1.775157987140119
-          }
-        }
-      },
-      "source": "heat3db_panel_a",
-      "job_id": "4153878",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (new bank)",
-      "dim": 3,
-      "intervals": 64,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 2.004188571279985,
-        "ms": 25.44845500960946,
-        "arm": "nmrom_q0_field_cn",
-        "evolved_pct": 0.9634206328800607,
-        "nonstationary": 0,
-        "speedup": 0.20538158355346237
-      },
-      "accurate": {
-        "label": "$q=288$",
-        "error_pct": 0.11367043718775029,
-        "ms": 58.69116052053869,
-        "arm": "nmrom_q288_field_cn",
-        "evolved_pct": 0.08539337748575793,
-        "nonstationary": 1,
-        "speedup": 0.08905334197700171
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
-        "error_pct": 0.08127465468538603,
-        "ms": 5.226643988862634,
-        "arm": "fom_cncg_dt0.025_rtol1e-4",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.08127651364566611,
-            "ms": 7.299848017282784
-          },
-          "fom_cncg_dt0.025_rtol1e-4": {
-            "err": 0.08127465468538603,
-            "ms": 5.226643988862634
-          },
-          "fom_cncg_dt0.025_rtol1e-3": {
-            "err": 0.6224545608136295,
-            "ms": 4.176954971626401
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 1.802078298617795,
-            "ms": 3.767221118323505
-          },
-          "fom_cncg_dt0.05_rtol1e-4": {
-            "err": 0.33345608501298957,
-            "ms": 4.436726565472782
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.334727175885224,
-            "ms": 3.58152505941689
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 1.9846742112079752,
-            "ms": 2.724988036789
-          },
-          "fom_cncg_dt0.1_rtol1e-4": {
-            "err": 1.5272915066045494,
-            "ms": 3.857177449390292
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 1.52705941096364,
-            "ms": 3.0397175578400493
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 1.6391844318855857,
-            "ms": 2.35329894348979
-          }
-        }
-      },
-      "source": "heat3db_panel_a",
-      "job_id": "4153878",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": null
-    },
-    {
-      "problem": "Heat (new bank)",
-      "dim": 3,
-      "intervals": 128,
-      "fast": {
-        "label": "$q=0$",
-        "error_pct": 2.004190061504043,
-        "ms": 28.24710833374411,
-        "arm": "nmrom_q0_field_cn",
-        "evolved_pct": 0.9549596522309409,
-        "nonstationary": 0,
-        "speedup": 0.6172579466258218
-      },
-      "accurate": {
-        "label": "$q=288$",
-        "error_pct": 0.11367573793847349,
-        "ms": 62.02554446645081,
-        "arm": "nmrom_q288_field_cn",
-        "evolved_pct": 0.08582484080217943,
-        "nonstationary": 0,
-        "speedup": 0.28110599009146797
-      },
-      "fom": {
-        "name": "CN--CG, $\\Delta t{=}0.025$, rtol $10^{-4}$",
-        "error_pct": 0.0820933177187895,
-        "ms": 17.435752088204026,
-        "arm": "fom_cncg_dt0.025_rtol1e-4",
-        "candidates": {
-          "fom_cncg_dt0.025_rtol1e-6_NAMED": {
-            "err": 0.08204000965799457,
-            "ms": 29.15126457810402
-          },
-          "fom_cncg_dt0.025_rtol1e-4": {
-            "err": 0.0820933177187895,
-            "ms": 17.435752088204026
-          },
-          "fom_cncg_dt0.025_rtol1e-3": {
-            "err": 0.4831598687764751,
-            "ms": 13.498243875801563
-          },
-          "fom_cncg_dt0.025_rtol1e-2": {
-            "err": 1.514418105827291,
-            "ms": 10.847708559595048
-          },
-          "fom_cncg_dt0.05_rtol1e-4": {
-            "err": 0.3366649417149719,
-            "ms": 16.0940270870924
-          },
-          "fom_cncg_dt0.05_rtol1e-3": {
-            "err": 0.33770474234495057,
-            "ms": 11.460236506536603
-          },
-          "fom_cncg_dt0.05_rtol1e-2": {
-            "err": 1.7900839947588665,
-            "ms": 7.461020490154624
-          },
-          "fom_cncg_dt0.1_rtol1e-4": {
-            "err": 1.545095463677621,
-            "ms": 14.418795937672257
-          },
-          "fom_cncg_dt0.1_rtol1e-3": {
-            "err": 1.5448409526565838,
-            "ms": 10.290460544638336
-          },
-          "fom_cncg_dt0.1_rtol1e-2": {
-            "err": 1.5575497707809325,
-            "ms": 7.043040473945439
-          }
-        }
-      },
-      "source": "heat3db_panel_a",
-      "job_id": "4153878",
-      "cohort": "final",
-      "status": "accepted final",
-      "error_convention": "same-grid, all times",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
       "appendix_only": null
     },
     {
@@ -2816,65 +3417,206 @@
       "note": "",
       "alt": null,
       "appendix_only": null
-    }
-  ],
-  "appendix_only_rows": [
+    },
     {
-      "problem": "Poisson",
-      "dim": 2,
-      "intervals": 4096,
+      "problem": "Navier--Stokes",
+      "dim": 3,
+      "intervals": 32,
       "fast": {
-        "label": "$q=0$",
-        "error_pct": 3.149052648463983,
-        "ms": 17.008751863613725,
-        "arm": "rom_q0_lean64",
-        "speedup": 104.64554296524506
+        "label": "bank span, $R'{=}16$",
+        "error_pct": 2.9563694698498253,
+        "ms": 3.654422704130411,
+        "arm": "span16_dt0.02_it3",
+        "Rp": 16,
+        "speedup": 1.8710068652247447
       },
       "accurate": {
-        "label": "$q=256$",
-        "error_pct": 0.9645378401524893,
-        "ms": 17.165145371109247,
-        "arm": "rom_q256_lean64",
-        "speedup": 103.69210603510093
+        "label": "head, $k{=}8$",
+        "error_pct": 0.1509639233960683,
+        "ms": 6.264349911361933,
+        "arm": "k8_q0_dt0.02_it3",
+        "k": 8,
+        "speedup": 1.0914859585764496
       },
       "fom": {
-        "name": "CG, rtol $2{\\times}10^{-1}$",
-        "error_pct": 0.7720330047906748,
-        "ms": 1779.890073928982,
-        "arm": "cg_0.2",
+        "name": "CNAB2 (spectral), 50 steps",
+        "error_pct": 0.09431144407061322,
+        "ms": 6.8374499678611755,
+        "arm": "CNAB2_s50",
         "candidates": {
-          "cg_0.01": {
-            "err": 0.037865510109647026,
-            "ms": 2465.6036919914186
+          "CNAB2_s10": {
+            "err": 76.69357970385128,
+            "ms": 1.9948659464716911
           },
-          "cg_0.1": {
-            "err": 0.4505524242017507,
-            "ms": 1949.5734714437276
+          "CNAB2_s100": {
+            "err": 0.018770526030129863,
+            "ms": 12.809116858989
           },
-          "cg_0.2": {
-            "err": 0.7720330047906748,
-            "ms": 1779.890073928982
+          "CNAB2_s20": {
+            "err": 0.7881776999714821,
+            "ms": 3.2302909530699253
           },
-          "cg_0.3": {
-            "err": 1.2950519116023134,
-            "ms": 1697.5208318326622
+          "CNAB2_s40": {
+            "err": 0.15156068778369158,
+            "ms": 5.600037053227425
+          },
+          "CNAB2_s50": {
+            "err": 0.09431144407061322,
+            "ms": 6.8374499678611755
+          },
+          "CNAB2_s60": {
+            "err": 0.06343740545357254,
+            "ms": 8.033489808440208
+          },
+          "CNAB2_s70": {
+            "err": 0.04488896060366061,
+            "ms": 9.234081022441387
+          },
+          "CNAB2_s80": {
+            "err": 0.03287528530206184,
+            "ms": 10.422755032777786
           }
         }
       },
-      "source": "intake_00_hires-poisson",
-      "job_id": "4071227",
+      "source": "bw_ns_a2_h32",
+      "job_id": "4198840",
       "cohort": "development",
-      "status": "development",
-      "error_convention": "same-grid",
+      "status": "development; co-moving frame",
+      "error_convention": "same-grid, evolved",
       "timing_scope": "GPU query",
-      "note": "12 development sources; NVIDIA H200; attempt hp4096b",
-      "alt": {
-        "scope": "complete query",
-        "accurate": 27.375266061176745,
-        "fast": 27.646329527502953
-      },
-      "appendix_only": "re-measure of the row above"
+      "note": "16 development cases; NVIDIA A100-PCIE-40GB; periodic, co-moving frame",
+      "alt": null,
+      "appendix_only": null,
+      "bankwidth": true
     },
+    {
+      "problem": "Navier--Stokes",
+      "dim": 3,
+      "intervals": 64,
+      "fast": {
+        "label": "bank span, $R'{=}16$",
+        "error_pct": 2.959313045285192,
+        "ms": 4.641085397452116,
+        "arm": "span16_dt0.02_it3",
+        "Rp": 16,
+        "speedup": 5.094916198062439
+      },
+      "accurate": {
+        "label": "head, $k{=}8$",
+        "error_pct": 0.15200904426175849,
+        "ms": 8.194072172045708,
+        "arm": "k8_q0_dt0.02_it3",
+        "k": 8,
+        "speedup": 2.885737478458951
+      },
+      "fom": {
+        "name": "CNAB2 (spectral), 50 steps",
+        "error_pct": 0.09325763258066602,
+        "ms": 23.64594116806984,
+        "arm": "CNAB2_s50",
+        "candidates": {
+          "CNAB2_s100": {
+            "err": 0.018582399891435872,
+            "ms": 45.79629609361291
+          },
+          "CNAB2_s40": {
+            "err": 0.38234674266350555,
+            "ms": 19.270620308816433
+          },
+          "CNAB2_s50": {
+            "err": 0.09325763258066602,
+            "ms": 23.64594116806984
+          },
+          "CNAB2_s60": {
+            "err": 0.06276115458454869,
+            "ms": 28.066263999789953
+          },
+          "CNAB2_s70": {
+            "err": 0.0444231961356389,
+            "ms": 32.46336989104748
+          },
+          "CNAB2_s80": {
+            "err": 0.03253976479737213,
+            "ms": 36.89115587621927
+          }
+        }
+      },
+      "source": "bw_ns_a2_h64",
+      "job_id": "4198090",
+      "cohort": "development",
+      "status": "development; co-moving frame",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "16 development cases; NVIDIA A100 80GB PCIe; periodic, co-moving frame",
+      "alt": null,
+      "appendix_only": null,
+      "bankwidth": true
+    },
+    {
+      "problem": "Navier--Stokes",
+      "dim": 3,
+      "intervals": 96,
+      "fast": {
+        "label": "bank span, $R'{=}16$",
+        "error_pct": 2.959314913167495,
+        "ms": 9.158429224044085,
+        "arm": "span16_dt0.02_it3",
+        "Rp": 16,
+        "speedup": 11.62104508348944
+      },
+      "accurate": {
+        "label": "head, $k{=}8$",
+        "error_pct": 0.15263151916523438,
+        "ms": 15.955741982907057,
+        "arm": "k8_q0_dt0.02_it3",
+        "k": 8,
+        "speedup": 6.670358484148188
+      },
+      "fom": {
+        "name": "CNAB2 (spectral), 60 steps",
+        "error_pct": 0.06277086264013315,
+        "ms": 106.43051890656352,
+        "arm": "CNAB2_s60",
+        "candidates": {
+          "CNAB2_s100": {
+            "err": 0.018582142791305812,
+            "ms": 174.5212273672223
+          },
+          "CNAB2_s40": {
+            "err": 21.106324736151468,
+            "ms": 72.51768000423908
+          },
+          "CNAB2_s50": {
+            "err": 1.0478672026654923,
+            "ms": 89.5277769304812
+          },
+          "CNAB2_s60": {
+            "err": 0.06277086264013315,
+            "ms": 106.43051890656352
+          },
+          "CNAB2_s70": {
+            "err": 0.04442249417867301,
+            "ms": 123.52765817195177
+          },
+          "CNAB2_s80": {
+            "err": 0.032539281232543946,
+            "ms": 140.44039696455002
+          }
+        }
+      },
+      "source": "bw_ns_a3_h96",
+      "job_id": "4198101",
+      "cohort": "development",
+      "status": "development; co-moving frame",
+      "error_convention": "same-grid, evolved",
+      "timing_scope": "GPU query",
+      "note": "16 development cases; NVIDIA A100 80GB PCIe; periodic, co-moving frame",
+      "alt": null,
+      "appendix_only": null,
+      "bankwidth": true
+    }
+  ],
+  "appendix_only_rows": [
     {
       "problem": "Burgers, exact first step",
       "dim": 2,
@@ -2976,43 +3718,6 @@
       "note": "",
       "alt": null,
       "appendix_only": "confirmed form of the 4096^2 lattice rule; slower than Newton--BiCGStab"
-    },
-    {
-      "problem": "Burgers (earlier model)",
-      "dim": 2,
-      "intervals": 1024,
-      "fast": {
-        "label": "single",
-        "error_pct": 3.9076203252235464,
-        "ms": 41.676780325360596,
-        "speedup": 14.534399953617983
-      },
-      "accurate": null,
-      "fom": {
-        "name": "Newton--BiCGStab, tight",
-        "error_pct": 2.1416109568868054,
-        "ms": 605.7469940278679,
-        "arm": "fft_tight",
-        "candidates": {
-          "fft_loose": {
-            "err": 2.3899365244885784,
-            "ms": 68.04365944117308
-          },
-          "fft_tight": {
-            "err": 2.1416109568868054,
-            "ms": 605.7469940278679
-          }
-        }
-      },
-      "source": "burgers_iter",
-      "job_id": "3534502",
-      "cohort": "development",
-      "status": "development; earlier model, stalled exits permitted",
-      "error_convention": "refined reference",
-      "timing_scope": "GPU query",
-      "note": "",
-      "alt": null,
-      "appendix_only": "not the rule's full-order setting (a faster setting of the same solver is at least as accurate)"
     },
     {
       "problem": "Poisson (dev. sources)",
@@ -4152,7 +4857,8 @@
           "speedup": 3.9630052502885103
         }
       ],
-      "style": "filled"
+      "style": "filled",
+      "legacy": true
     },
     {
       "series": "Burgers 2D, held-out (64)",
@@ -4226,7 +4932,8 @@
           "speedup": 4.252346687709975
         }
       ],
-      "style": "hollow"
+      "style": "hollow",
+      "legacy": true
     },
     {
       "series": "Heat 2D (wide bank), sealed (16)",
@@ -4267,57 +4974,319 @@
           "speedup": 193.43367704591816
         }
       ],
-      "style": "filled"
-    },
+      "style": "filled",
+      "legacy": true
+    }
+  ],
+  "tunability_bankwidth": [
     {
-      "series": "Poisson 2D, development (12)",
-      "source": "intake_00_hires-poisson",
+      "series": "Poisson 2D bank width, development (12)",
+      "source": "bw_pbk_summary",
       "cohort": "development (12)",
       "fom": {
         "arm": "cg_0.1",
+        "name": "CG",
+        "label": "rtol $10^{-1}$",
         "err": 0.4505524242017507,
-        "ms": 1954.7959780320525,
-        "name": "CG"
+        "ms": 4490.018361480907
       },
       "rungs": [
         {
-          "arm": "rom_q0_lean64",
+          "arm": "R512_q0",
+          "label": "head, $k{=}32$, $R'{=}512$",
+          "rowkey": "head512",
+          "kind": "head",
           "q": 0,
-          "kind": "rank",
-          "err": 3.149052648463983,
-          "ms": 16.741542145609856,
+          "Rp": 512,
+          "err": 3.1490526484643655,
+          "ms": 43.41587540693581,
           "certified": true,
-          "speedup": 116.763196665527
+          "speedup": 103.41881441744725
         },
         {
-          "arm": "rom_q64_lean64",
-          "q": 64,
-          "kind": "rank",
-          "err": 2.0756529668495234,
-          "ms": 16.913400264456868,
+          "arm": "R512_linear",
+          "label": "bank span, $R'{=}512$",
+          "rowkey": "R512_linear",
+          "kind": "span",
+          "q": 512,
+          "Rp": 512,
+          "err": 0.7418976743525537,
+          "ms": 42.387917870655656,
           "certified": true,
-          "speedup": 115.57675851496357
+          "speedup": 105.92684394600236
         },
         {
-          "arm": "rom_q128_lean64",
-          "q": 128,
-          "kind": "rank",
-          "err": 1.5456560864269675,
-          "ms": 16.866295132786036,
+          "arm": "R384_linear",
+          "label": "bank span, $R'{=}384$",
+          "rowkey": "R384_linear",
+          "kind": "span",
+          "q": 384,
+          "Rp": 384,
+          "err": 0.7683885159716002,
+          "ms": 32.483273185789585,
           "certified": true,
-          "speedup": 115.89954774550137
+          "speedup": 138.22555183401744
         },
         {
-          "arm": "rom_q256_lean64",
+          "arm": "R256_linear",
+          "label": "bank span, $R'{=}256$",
+          "rowkey": "R256_linear",
+          "kind": "span",
           "q": 256,
-          "kind": "rank",
-          "err": 0.964537840152561,
-          "ms": 16.921300441026688,
+          "Rp": 256,
+          "err": 0.9402973993674463,
+          "ms": 22.562330588698387,
           "certified": true,
-          "speedup": 115.52279831238826
+          "speedup": 199.00507812477426
+        },
+        {
+          "arm": "R128_linear",
+          "label": "bank span, $R'{=}128$",
+          "rowkey": "R128_linear",
+          "kind": "span",
+          "q": 128,
+          "Rp": 128,
+          "err": 2.305917300406882,
+          "ms": 12.543563963845372,
+          "certified": true,
+          "speedup": 357.9539574575933
+        },
+        {
+          "arm": "R64_linear",
+          "label": "bank span, $R'{=}64$",
+          "rowkey": "R64_linear",
+          "kind": "span",
+          "q": 64,
+          "Rp": 64,
+          "err": 5.334955114677229,
+          "ms": 7.1204425767064095,
+          "certified": true,
+          "speedup": 630.581359671295
+        },
+        {
+          "arm": "R32_linear",
+          "label": "bank span, $R'{=}32$",
+          "rowkey": "R32_linear",
+          "kind": "span",
+          "q": 32,
+          "Rp": 32,
+          "err": 9.165094708617112,
+          "ms": 4.391745897009969,
+          "certified": true,
+          "speedup": 1022.3766280598895
         }
       ],
-      "style": "filled"
+      "style": "filled",
+      "legacy": false,
+      "ordered": true,
+      "mesh": "$4096^2$",
+      "job": "4199321"
+    },
+    {
+      "series": "Navier--Stokes 3D, development (16)",
+      "source": "bw_ns_a3_h96",
+      "cohort": "development (16)",
+      "fom": {
+        "arm": "CNAB2_s60",
+        "name": "CNAB2 (spectral)",
+        "label": "60 steps",
+        "err": 0.06277086264013315,
+        "ms": 106.43051890656352
+      },
+      "rungs": [
+        {
+          "arm": "k8_q0_dt0.02_it3",
+          "label": "head, $k{=}8$",
+          "err": 0.15263151916523438,
+          "ms": 15.955741982907057,
+          "cases": 16,
+          "over": 0,
+          "kind": "head",
+          "k": 8,
+          "rowkey": "head",
+          "q": 0,
+          "certified": true,
+          "speedup": 6.670358484148188
+        },
+        {
+          "arm": "span64_dt0.02_it3",
+          "label": "bank span, $R'{=}64$",
+          "err": 0.6159202153327479,
+          "ms": 15.390531159937382,
+          "cases": 16,
+          "over": 0,
+          "kind": "span",
+          "Rp": 64,
+          "rowkey": "span64",
+          "q": 0,
+          "certified": true,
+          "speedup": 6.915324610992604
+        },
+        {
+          "arm": "span48_dt0.02_it3",
+          "label": "bank span, $R'{=}48$",
+          "err": 1.0045074950522395,
+          "ms": 12.869608122855425,
+          "cases": 16,
+          "over": 0,
+          "kind": "span",
+          "Rp": 48,
+          "rowkey": "span48",
+          "q": 0,
+          "certified": true,
+          "speedup": 8.269911398277246
+        },
+        {
+          "arm": "span32_dt0.02_it3",
+          "label": "bank span, $R'{=}32$",
+          "err": 1.2622115431323526,
+          "ms": 11.638464871793985,
+          "cases": 16,
+          "over": 0,
+          "kind": "span",
+          "Rp": 32,
+          "rowkey": "span32",
+          "q": 0,
+          "certified": true,
+          "speedup": 9.144721411197422
+        },
+        {
+          "arm": "span16_dt0.02_it3",
+          "label": "bank span, $R'{=}16$",
+          "err": 2.959314913167495,
+          "ms": 9.158429224044085,
+          "cases": 16,
+          "over": 0,
+          "kind": "span",
+          "Rp": 16,
+          "rowkey": "span16",
+          "q": 0,
+          "certified": true,
+          "speedup": 11.62104508348944
+        },
+        {
+          "arm": "span8_dt0.02_it3",
+          "label": "bank span, $R'{=}8$",
+          "err": 5.548504394374973,
+          "ms": 8.160457015037537,
+          "cases": 16,
+          "over": 2,
+          "kind": "span",
+          "Rp": 8,
+          "rowkey": "span8",
+          "q": 0,
+          "certified": true,
+          "speedup": 13.042225295769658
+        }
+      ],
+      "style": "filled",
+      "legacy": false,
+      "ordered": true,
+      "mesh": "$96^3$",
+      "job": "4198101"
+    },
+    {
+      "series": "Navier--Stokes 3D, held-out (32)",
+      "source": "bw_ns_b2_heldout96",
+      "cohort": "held-out (32)",
+      "fom": {
+        "arm": "CNAB2_s70",
+        "name": "CNAB2 (spectral)",
+        "label": "70 steps",
+        "err": 0.056110166108194484,
+        "ms": 123.02785599604249
+      },
+      "rungs": [
+        {
+          "arm": "k8_q0_dt0.02_it3",
+          "label": "head, $k{=}8$",
+          "err": 0.2068056700074668,
+          "ms": 15.792279038578272,
+          "cases": 32,
+          "over": 0,
+          "kind": "head",
+          "k": 8,
+          "rowkey": "head",
+          "q": 0,
+          "certified": true,
+          "speedup": 7.79038007722021
+        },
+        {
+          "arm": "span64_dt0.02_it3",
+          "label": "bank span, $R'{=}64$",
+          "err": 1.1231648947922244,
+          "ms": 15.278344973921776,
+          "cases": 32,
+          "over": 0,
+          "kind": "span",
+          "Rp": 64,
+          "rowkey": "span64",
+          "q": 0,
+          "certified": true,
+          "speedup": 8.05243344132075
+        },
+        {
+          "arm": "span48_dt0.02_it3",
+          "label": "bank span, $R'{=}48$",
+          "err": 1.2641934340927963,
+          "ms": 12.607665732502937,
+          "cases": 32,
+          "over": 0,
+          "kind": "span",
+          "Rp": 48,
+          "rowkey": "span48",
+          "q": 0,
+          "certified": true,
+          "speedup": 9.758178762534369
+        },
+        {
+          "arm": "span32_dt0.02_it3",
+          "label": "bank span, $R'{=}32$",
+          "err": 1.4590911092401084,
+          "ms": 11.456083972007036,
+          "cases": 32,
+          "over": 0,
+          "kind": "span",
+          "Rp": 32,
+          "rowkey": "span32",
+          "q": 0,
+          "certified": true,
+          "speedup": 10.739084690428362
+        },
+        {
+          "arm": "span16_dt0.02_it3",
+          "label": "bank span, $R'{=}16$",
+          "err": 3.242509154928365,
+          "ms": 9.203015826642513,
+          "cases": 32,
+          "over": 0,
+          "kind": "span",
+          "Rp": 16,
+          "rowkey": "span16",
+          "q": 0,
+          "certified": true,
+          "speedup": 13.368210846696552
+        },
+        {
+          "arm": "span8_dt0.02_it3",
+          "label": "bank span, $R'{=}8$",
+          "err": 6.910846568640945,
+          "ms": 8.10978701338172,
+          "cases": 32,
+          "over": 5,
+          "kind": "span",
+          "Rp": 8,
+          "rowkey": "span8",
+          "q": 0,
+          "certified": true,
+          "speedup": 15.170294336095123
+        }
+      ],
+      "style": "filled",
+      "legacy": false,
+      "ordered": true,
+      "mesh": "$96^3$",
+      "job": "4202872"
     }
   ],
   "incoming": [],
@@ -4754,10 +5723,10 @@
     }
   ],
   "macros": {
-    "nHeadPoissonAccErr": "0.96",
-    "nHeadPoissonAccS": "13.9",
-    "nHeadPoissonFastS": "15.2",
-    "nHeadPoissonMesh": "1024^2",
+    "nHeadPoissonAccErr": "0.74",
+    "nHeadPoissonAccS": "106",
+    "nHeadPoissonFastS": "358",
+    "nHeadPoissonMesh": "4096^2",
     "nHeadLshapeAccS": "6.07",
     "nHeadLshapeAccErr": "2.12",
     "nHeadHeatFastS": "4.85",
@@ -4883,8 +5852,8 @@
     "nEqcFollowDraws": "12",
     "nEqcFollowErr": "0.520",
     "nEqcFollowS": "0.085",
-    "nHeadFasterRows": "27",
-    "nHeadRows": "37",
+    "nHeadFasterRows": "22",
+    "nHeadRows": "26",
     "nHeadAccFasterSubOne": "15",
     "nBaseOursFastWorst": "6.79\\mbox{--}7.72",
     "nBaseOursAccWorst": "0.88\\mbox{--}1.05",
@@ -4903,6 +5872,30 @@
     "nBaseKimEpochs": "229\\mbox{--}231",
     "nBaseKimWall": "4800",
     "nBaseKimWidth": "4096",
+    "nBwPoisAccErr": "0.74",
+    "nBwPoisAccS": "106",
+    "nBwPoisFastErr": "2.31",
+    "nBwPoisFastS": "358",
+    "nBwPoisHeadErr": "3.15",
+    "nBwPoisNarrowErr": "9.17",
+    "nBwPoisErrSpan": "12.4",
+    "nBwPoisCostSpan": "9.65",
+    "nBwPoisNarrowS": "1022",
+    "nNsHeadK": "8",
+    "nNsBankR": "64",
+    "nNsHeadErr": "0.15",
+    "nNsHeadS": "6.67",
+    "nNsFastErr": "2.96",
+    "nNsFastS": "11.6",
+    "nNsHoldHeadErr": "0.21",
+    "nNsHoldHeadS": "7.79",
+    "nNsSpanWideErr": "0.62",
+    "nNsSpanNarrowErr": "5.55",
+    "nNsSpanCostSpan": "1.89",
+    "nNsHeadVsSpan": "36",
+    "nNsHeadCases": "16",
+    "nNsHoldCases": "32",
+    "nNsSmallS": "1.09",
     "nTuneBurgDevSpeedMin": "4.12",
     "nTuneBurgDevSpeedMax": "12.9",
     "nTuneBurgDevFomTol": "lean_nt3e-3_l3e-3_dt005",
@@ -4912,15 +5905,10 @@
     "nTuneHeatSpeedMin": "146",
     "nTuneHeatSpeedMax": "193",
     "nTuneHeatFomTol": "fom_cncg_dt0.025_rtol1e-6_NAMED",
-    "nTunePoissonSpeedMin": "116",
-    "nTunePoissonSpeedMax": "117",
-    "nTunePoissonFomTol": "cg_0.1",
     "nTuneBurgFomLabel": "tolerance $3{\\times}10^{-3}$",
     "nTuneBurgFomName": "Newton--BiCGStab, tolerance $3{\\times}10^{-3}$",
     "nTuneHeatFomLabel": "$\\Delta t=0.025$, rtol $10^{-6}$",
-    "nTuneHeatFomName": "CN--CG, $\\Delta t=0.025$, rtol $10^{-6}$",
-    "nTunePoissonFomLabel": "rtol $10^{-1}$",
-    "nTunePoissonFomName": "CG, rtol $10^{-1}$"
+    "nTuneHeatFomName": "CN--CG, $\\Delta t=0.025$, rtol $10^{-6}$"
   },
   "intake_schema": "nmrom-headline-rows-v1"
 }

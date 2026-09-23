@@ -90,7 +90,7 @@ INCOMING = [  # paused-lane slots; empty once every listed lane has been ingeste
     # burgers-heldout filled 2026-09-22: the wider bank did not improve held-out accuracy, so it is a
     # limitations sentence, not a Table 1 row.  The 4096^2 quadrature re-timing is a relabel plus appendix rows.
 ]
-ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, exact first step', 'Burgers, confirmed rule', 'Burgers (earlier model)', 'Heat (new bank)', 'Heat (new bank, batched fit)']
+ORDER = ['Poisson', 'Poisson (dev. sources)', 'Poisson, L-shape', 'Heat', 'Heat (wide bank)', 'Heat (wide bank, batched fit)', 'Burgers', 'Burgers (held-out cases)', 'Burgers, exact first step', 'Burgers, confirmed rule', 'Burgers (earlier model)', 'Heat (new bank)', 'Heat (new bank, batched fit)', 'Navier--Stokes']
 
 
 def digest(b: bytes) -> str:
@@ -143,6 +143,63 @@ for k, v in MAN.items():
     b = (E / f'{k}.json').read_bytes()
     assert digest(b) == v['sha256'], k
     D[k] = json.loads(b)
+
+# ---- bank-width (ordered bank R') evidence, 2026-09-23 ------------------------------------------------------
+# The paper's deployment knob is now the ordered bank width R' (C_q dropped).  Two closed lanes enter Tables 1/4
+# through committed blobs copied into evidence/bankwidth-2026-09-23/ and pinned by commit, git blob and sha256.
+# Refresh with:  gen_headline.py --refresh-bankwidth   (reads `git show <commit>:<path>` only, never a working tree)
+EBW = HERE / 'evidence/bankwidth-2026-09-23'
+_PBK, _NSH = WT + '2026-09-23-poisson-bank-knob', WT + '2026-09-23-ns3d-shift-head'
+BW_SOURCES = {  # key -> (tree, path in tree, commit, expected sha256 prefix (as recorded by the lane), status, file name)
+    'pbk_summary': (_PBK, 'experiments/poisson-bank-knob/reports/summary.json', '06546331', 'f19d0172',
+                    'development; poisson-bank-knob lane (closed); jobs 4199318 / 4199321, A-B-A timing', 'pbk_summary.json'),
+    'ns_a2_h32': (_NSH, 'experiments/ns3d-shift-head/runs/a2_h32/output/summary.json', '708c70fe',
+                  '301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c', 'development; ns3d-shift-head lane (closed)', 'ns_a2_h32.json'),
+    'ns_a2_h64': (_NSH, 'experiments/ns3d-shift-head/runs/a2_h64/output/summary.json', '708c70fe',
+                  '05b79b91a4fe94574fd1e7f4c74f6839797377549bc07eccc142d3addc27900f', 'development; ns3d-shift-head lane (closed)', 'ns_a2_h64.json'),
+    'ns_a3_h96': (_NSH, 'experiments/ns3d-shift-head/runs/a3_h96/output/summary.json', '708c70fe',
+                  '4217f379fd91555045f005a0f8c38b40082b565d7e336c549be77d73b8b061af', 'development; ns3d-shift-head lane (closed)', 'ns_a3_h96.json'),
+    'ns_b2_heldout96': (_NSH, 'experiments/ns3d-shift-head/runs/b2_heldout96/output/summary.json', '708c70fe',
+                        '326c60413f95da9144b47b4e251d5a0f350c98bda688a3a7f0ef1f08b1fc3f2d', 'held-out (opened once); ns3d-shift-head lane (closed)', 'ns_b2_heldout96.json'),
+}
+BW_COMPANIONS = {  # key -> [(path in tree, stored name)]; pinned (blob + sha256) and copied, not loaded as JSON except configs
+    'pbk_summary': [('experiments/poisson-bank-knob/reports/tables.generated.md', 'pbk_tables.generated.md'),
+                    ('experiments/poisson-bank-knob/DESIGN.md', 'pbk_DESIGN.md')]
+                   + [(f'experiments/poisson-bank-knob/config-aba-{n}.json', f'pbk_config-aba-{n}.json') for n in (256, 1024, 2048, 4096)],
+    'ns_b2_heldout96': [('reports/2026-09-23-ns3d-shift-head.md', 'ns_report_2026-09-23-ns3d-shift-head.md')],
+}
+
+
+def refresh_bankwidth():
+    EBW.mkdir(parents=True, exist_ok=True)
+    man = {}
+    for key, (tree, path, commit, want, status, fname) in BW_SOURCES.items():
+        g = lambda *a: subprocess.check_output(['git', '-C', str(REPO / tree), *a])
+        full = g('rev-parse', commit).decode().strip()
+        raw = g('show', f'{full}:{path}')
+        assert digest(raw).startswith(want), (key, digest(raw), want)          # the sha256 the lane recorded
+        (EBW / fname).write_bytes(raw)
+        man[key] = dict(tree=tree, path=path, commit=full, git_blob=g('rev-parse', f'{full}:{path}').decode().strip(),
+                        sha256=digest(raw), file=fname, status=status, read='committed blob')
+        comp = {}
+        for rel, cname in BW_COMPANIONS.get(key, []):
+            rc = g('show', f'{full}:{rel}'); (EBW / cname).write_bytes(rc)
+            comp[cname] = dict(path=rel, git_blob=g('rev-parse', f'{full}:{rel}').decode().strip(), sha256=digest(rc))
+        if comp: man[key]['companions'] = comp
+    (EBW / 'manifest.json').write_text(json.dumps(man, indent=2) + '\n')
+
+
+if '--refresh-bankwidth' in sys.argv:
+    refresh_bankwidth()
+BWMAN = json.loads((EBW / 'manifest.json').read_text())
+assert set(BWMAN) == set(BW_SOURCES)
+BW = {}
+for k, v in BWMAN.items():
+    b = (EBW / v['file']).read_bytes(); assert digest(b) == v['sha256'] and v['sha256'].startswith(BW_SOURCES[k][3]), k
+    BW[k] = json.loads(b)
+    for cname, cv in v.get('companions', {}).items():
+        assert digest((EBW / cname).read_bytes()) == cv['sha256'], cname
+BWCFG = {n: json.loads((EBW / f'pbk_config-aba-{n}.json').read_text()) for n in (256, 1024, 2048, 4096)}
 
 ROWS = []  # headline rows
 APPX = []  # measured rows shown only in the appendix timing table (re-measures, duplicates of a final-cohort mesh)
@@ -763,6 +820,126 @@ if BURG_PARTS:
 if 'bh5_summary' in D:
     burgers_heldout()
 
+# ---- bank-width rows (2026-09-23 user decision: one Table-1 row per (problem, mesh); R' is the deployment knob) ----
+BWF = {}   # facts for Table 4 and the \nBw* / \nNs* macros
+
+
+def bw_poisson():
+    """Poisson 2D, ordered bank (frozen primary_K32 model, R=512), poisson-bank-knob lane, pre-registered rule
+    (DESIGN A1/A5): accurate = most accurate primary arm (bank-span linear rung or head q=0); fast = cheapest
+    primary arm whose worst error is at most the head's at R'=512 (R512_q0); FOM = fastest tested CG setting
+    whose worst error is at most the accurate arm's.  Both speedups divide that one CG time, same job.
+    Every choice is re-derived here from the stored times and asserted against the lane's own table1 record."""
+    d = BW['pbk_summary']; key = 'bw_pbk_summary'
+    for m in d['meshes']:
+        n = m['intervals']; S = m['subjects']; t1 = m['table1']; g = m['gates']; cfg = BWCFG[n]
+        assert m['design'] == 'ABA' and m['audit']['verdict'] == 'PASS' and cfg['intervals'] == n and cfg['design'] == 'ABA'
+        assert all(g[x] for x in ('parity', 'deterministic', 'cg_converged', 'profile_matches_fused', 'device_guard')), (n, g)
+        cases = cfg['eval_count'] + cfg['fresh_count']
+        for s in S.values():                                  # every ROM subject timed cases x reps x (A1, A2); CG cases x reps
+            assert s['samples'] == cases * (cfg['cg_repetitions'] if s['family'] == 'cg' else 2 * cfg['repetitions']), (n, s['name'])
+        prim = {k: v for k, v in S.items() if v['family'] in ('linear-rung', 'nm-rom')}
+        acc = min(prim, key=lambda k: prim[k]['worst_error'])
+        bar = S['R512_q0']['worst_error']
+        fast = min((k for k in prim if prim[k]['worst_error'] <= bar), key=lambda k: prim[k]['gpu_ms'])
+        cands = {k: dict(err=100 * v['worst_error'], ms=v['gpu_ms']) for k, v in S.items() if v['family'] == 'cg'}
+        fom = rule_pick(cands, 100 * S[acc]['worst_error'])
+        assert (acc, fast, fom) == (t1['accurate'], t1['fast'], t1['fom']) == ('R512_linear', 'R128_linear', fom), (n, acc, fast, fom)
+        a, f, c = S[acc], S[fast], S[fom]
+        assert abs(c['gpu_ms'] / a['gpu_ms'] - t1['accurate_speedup']) < 1e-9 and abs(c['gpu_ms'] / f['gpu_ms'] - t1['fast_speedup']) < 1e-9
+        # 2026-09-23 lane report: the 256^2 and 1024^2 Table-1 timings are provisional (A-B-A drift gate failed);
+        # 2048^2 and 4096^2 are gate-clean for the selected arms.
+        prov = not g['drift']
+        lab = lambda s: (r"span, $R'{=}" + str(s['Rp']) + '$') if s['family'] == 'linear-rung' else (r"head, $R'{=}" + str(s['Rp']) + '$')
+        st = lambda s: setting(lab(s), 100 * s['worst_error'], s['gpu_ms'], arm=s['name'], Rp=s['Rp'], family=s['family'])
+        row('Poisson', 2, n, st(f), st(a),
+            dict(name='CG, rtol $' + tol_tex(c['tolerance']) + '$', error_pct=100 * c['worst_error'], ms=c['gpu_ms'], arm=fom, candidates=cands),
+            key, m['job_id'], 'development', 'development; ordered bank' + ('; provisional timing (A-B-A drift gate failed)' if prov else ''),
+            'same-grid', 'GPU query', note=f"{cases} development sources; {m['gpu']}; attempt {m['attempt']}; gates {g}",
+            alt=dict(scope='complete query', accurate=c['total_ms'] / a['total_ms'], fast=c['total_ms'] / f['total_ms']))
+        ROWS[-1]['bankwidth'] = True; ROWS[-1]['provisional_timing'] = prov
+        BWF[('pois', n)] = dict(S=S, cases=cases, job=m['job_id'], gpu=m['gpu'], gates=g, breakdown=m['gate_breakdown'])
+    assert {n for (_, n), v in BWF.items() if not v['gates']['drift']} == {256, 1024}          # matches the lane's report
+    # Table 4 block: the 4096^2 ladder, one CG setting (fastest at least as accurate as the block's most accurate rung)
+    S = BWF[('pois', 4096)]['S']
+    ladder = [f'R{r}_linear' for r in (512, 384, 256, 128, 64, 32)]
+    errs = [S[k]['worst_error'] for k in ladder]; mss = [S[k]['gpu_ms'] for k in ladder]
+    assert all(x < y for x, y in zip(errs, errs[1:])) and all(x > y for x, y in zip(mss, mss[1:]))   # monotone in both
+    assert d['verdict']['4096']["linear rung q=R'"]['monotone_error'] and abs(d['verdict']['4096']["linear rung q=R'"]['cost_range'] - mss[0] / mss[-1]) < 1e-9
+    _K = int(BWCFG[4096]['model']['id'].split('_K')[1]); assert BWCFG[4096]['model']['checkpoint_path'].endswith(f'primary_K{_K}.pkl')
+    rungs = [dict(arm='R512_q0', label=r"head, $k{=}" + str(_K) + r"$, $R'{=}512$", rowkey='head512', kind='head', q=0, Rp=512,
+                  err=100 * S['R512_q0']['worst_error'], ms=S['R512_q0']['gpu_ms'], certified=True)]
+    rungs += [dict(arm=k, label=r"bank span, $R'{=}" + str(S[k]['Rp']) + '$', rowkey=k, kind='span', q=S[k]['q'], Rp=S[k]['Rp'],
+                   err=100 * S[k]['worst_error'], ms=S[k]['gpu_ms'], certified=True) for k in ladder]
+    cands = {k: dict(err=100 * v['worst_error'], ms=v['gpu_ms']) for k, v in S.items() if v['family'] == 'cg'}
+    BWF['pois_block'] = dict(rungs=rungs, cands=cands, job=BWF[('pois', 4096)]['job'], cases=BWF[('pois', 4096)]['cases'],
+                             label='rtol $' + tol_tex(S[rule_pick(cands, min(r['err'] for r in rungs))]['tolerance']) + '$')
+
+
+def ns_arms(s):
+    """Head k and bank-span R' arms at the pre-registered ladder setting, and the CNAB2 grid, from one ns3d-shift-head summary.
+    Times are the fast-block medians (all arms and CNAB2 settings interleaved, randomised; v2 protocol, gates passed)."""
+    cfg, t = s['config'], s['timing']
+    assert s['schema'] == 'ns3d-shift-head-v1' and not s['smoke'] and t['protocol'] == 'v2'
+    assert t['neighbour_gate_passed'] and t['neighbour_gate_fast_block_passed'] and t['neighbour_gate_after_cooldown_passed']
+    assert s['k_selected'] == 8 and cfg['rank'] == 64 and s['device'].startswith('[CudaDevice')
+    tag = f"dt{cfg['ladder_dt']}_it{cfg['ladder_iters']}"
+    def arm(key, e, lab):
+        st = e['stats']; assert e['finite'] and e['dt'] == cfg['ladder_dt'] and e['iters'] == cfg['ladder_iters']
+        return dict(arm=key, label=lab, err=100 * st['evolved_worst'], ms=t['fast'][f'query_{key}']['median_ms'], cases=st['cases'],
+                    over=st['cases_evolved_over_target'])
+    k = s['k_selected']
+    head = arm(f'k{k}_q0_{tag}', s['frontier'][f'k{k}_q0_{tag}'], f'head, $k{{=}}{k}$'); head.update(kind='head', k=k)
+    span = {}
+    for R in (64, 48, 32, 16, 8):
+        span[R] = arm(f'span{R}_{tag}', s['span'][f'span{R}_{tag}'], r"bank span, $R'{=}" + str(R) + '$'); span[R].update(kind='span', Rp=R)
+    cn = {}
+    for e in s['cnab2'].values():
+        if e['unstable'] or e['stats'] is None or e.get('reference_itself'): continue     # the truth setting itself is not a comparator
+        key = f"CNAB2_s{e['steps']}"; cn[key] = dict(err=100 * e['stats']['evolved_worst'], ms=t['fast'][key]['median_ms'], steps=e['steps'], dt=e['dt'])
+    assert len({a['cases'] for a in [head, *span.values()]}) == 1
+    return head, span, cn
+
+
+def bw_ns():
+    """Navier--Stokes 3D (periodic, co-moving frame; ns3d-shift-head lane).  Table 1 (user decision 2026-09-23):
+    accurate = head k=8; fast = cheapest bank-span arm whose worst error is below 5 %; FOM = fastest CNAB2 setting at
+    least as accurate as the accurate arm, same job; both speedups divide that one CNAB2 time."""
+    for key in ('ns_a2_h32', 'ns_a2_h64', 'ns_a3_h96'):
+        s = BW[key]; n = s['config']['n']; assert not s['heldout_opened']
+        head, span, cn = ns_arms(s)
+        fast = min((R for R in span if span[R]['err'] < 5), key=lambda R: span[R]['ms']); assert fast == 16, (n, fast)
+        pick = rule_pick({k: dict(err=v['err'], ms=v['ms']) for k, v in cn.items()}, head['err'])
+        c = cn[pick]
+        # the lane's own comparator for the head (report table) must be this setting
+        assert c['err'] <= head['err'] and all(v['ms'] >= c['ms'] for v in cn.values() if v['err'] <= head['err'])
+        f = span[fast]
+        row('Navier--Stokes', 3, n, setting(f['label'], f['err'], f['ms'], arm=f['arm'], Rp=fast),
+            setting(head['label'], head['err'], head['ms'], arm=head['arm'], k=head['k']),
+            dict(name=f"CNAB2 (spectral), {c['steps']} steps", error_pct=c['err'], ms=c['ms'], arm=pick,
+                 candidates={k: dict(err=v['err'], ms=v['ms']) for k, v in cn.items()}),
+            'bw_' + key, s['job_id'], 'development', 'development; co-moving frame', 'same-grid, evolved', 'GPU query',
+            note=f"{head['cases']} development cases; {s['gpu'].split(',')[0]}; periodic, co-moving frame")
+        ROWS[-1]['bankwidth'] = True
+        BWF[('ns', n)] = dict(head=head, span=span, cn=cn, job=s['job_id'], fom=pick)
+    # Table 4 block at 96^3: development and held-out columns, one CNAB2 setting per cohort (fastest at least as accurate
+    # as the cohort's most accurate arm, which is the head in both cohorts), same job per cohort.
+    for cohort, key in (('development', 'ns_a3_h96'), ('held-out', 'ns_b2_heldout96')):
+        s = BW[key]; assert s['config']['n'] == 96 and s['heldout_opened'] == (cohort == 'held-out')
+        head, span, cn = ns_arms(s)
+        rungs = [dict(head, rowkey='head', q=0, certified=True)] + [dict(span[R], rowkey=f'span{R}', q=0, certified=True) for R in (64, 48, 32, 16, 8)]
+        best = min(r['err'] for r in rungs); assert best == head['err']
+        errs = [span[R]['err'] for R in (64, 48, 32, 16, 8)]; mss = [span[R]['ms'] for R in (64, 48, 32, 16, 8)]
+        assert all(x < y for x, y in zip(errs, errs[1:])) and all(x > y for x, y in zip(mss, mss[1:]))    # the ladder is monotone
+        BWF[('ns_block', cohort)] = dict(rungs=rungs, cands={k: dict(err=v['err'], ms=v['ms']) for k, v in cn.items()}, cn=cn, job=s['job_id'],
+                                         cases=head['cases'], head=head, span=span)
+    if 'frozen_settings_sha256' in BW['ns_b2_heldout96']:
+        BWF['ns_frozen'] = BW['ns_b2_heldout96']['frozen_settings_sha256']
+
+
+bw_poisson()
+bw_ns()
+
 ROWS.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals'], r['fom']['ms']))
 APPX.sort(key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
 for r in ROWS + APPX:
@@ -778,6 +955,26 @@ for r in ROWS + APPX:
             r[s]['speedup'] = fo['ms'] / r[s]['ms']
         else:
             r[s]['speedup'] = r['fom']['ms'] / r[s]['ms']
+
+# 2026-09-23 user decision: Table 1 has ONE row per (problem, mesh), no variant rows.  Rows that leave Table 1 are kept
+# (with their reason) in DROPPED so the legacy prose macros that still cite them stay defined and traceable; they are
+# printed nowhere.  ALL = every measured row, for those macros.
+DROP_RULES = [  # (predicate, reason)
+    (lambda r: r['problem'] == 'Poisson' and r['dim'] == 2 and not r.get('bankwidth'), 'replaced by the ordered-bank (R\') rows of the same model'),
+    (lambda r: r['problem'] == 'Heat' and r['dim'] == 2, 'earlier heat checkpoint (Heat^r); dropped'),
+    (lambda r: r['problem'] in ('Heat (wide bank)', 'Heat (new bank)'), 'non-batched duplicate of the batched-fit row (same frozen model)'),
+    (lambda r: r['problem'] in ('Burgers (held-out cases)', 'Burgers, confirmed rule', 'Burgers (earlier model)'), 'Burgers variant row; held-out cases live in Table 4'),
+]
+DROPPED = []
+for _src in (ROWS, APPX):
+    for r in list(_src):
+        why = next((w for p, w in DROP_RULES if p(r)), None)
+        if why:
+            _src.remove(r); DROPPED.append(dict(r, dropped=why))
+ALL = ROWS + APPX + DROPPED
+_one = defaultdict(int)
+for r in ROWS: _one[(r['problem'].split(' (')[0], r['dim'], r['intervals'])] += 1
+assert all(v == 1 for v in _one.values()), [k for k, v in _one.items() if v > 1]     # one row per (problem, mesh)
 
 
 # ---- rendering -----------------------------------------------------------------------------------------
@@ -795,7 +992,11 @@ def marks(r):
     if r['status'].startswith('provisional'): m += r'$^{p}$'
     if r['cohort'] == 'final' and not r['status'].startswith('provisional'): m += r'$^{f}$'
     if r['cohort'] == 'held-out': m += r'$^{h}$'            # held-out cases never used for selection, not the sealed final cohort
+    if 'batched fit' in r['problem']: m += r'$^{a}$'         # 2026-09-23: batched exact-propagator fit of the same frozen model
+    if r.get('bankwidth'): m += r'$^{o}$'                    # 2026-09-23: settings are ordered-bank settings (head / span R')
     return m
+DISPLAY = {'Heat (wide bank, batched fit)': 'Heat', 'Heat (new bank, batched fit)': 'Heat'}   # one heat row per mesh; the marker says how it is solved
+def mesh_mark(r): return r'$^{p}$' if r.get('provisional_timing') else ''   # timing gate failed: provisional speedups
 EQMARK = {'dense': r'$^{d}$', 'single-draw': r'$^{s}$', 'not-confirmed': r'$^{s}$', 'single-draw-refit': r'$^{x}$', 'confirmed': r'$^{v}$', 'lattice': r'$^{\ell}$', 'lattice-unconfirmed': r'$^{w}$'}
 def cells(s): return [e(s['error_pct']) + EQMARK.get(s.get('eq'), ''), r'---$^{n}$' if s.get('nonstationary') else sp(s['speedup'], s.get('speed_digits'))] if s else ['---', '---']   # a solve that missed its stopping rule does not enter a speedup
 
@@ -824,9 +1025,9 @@ for dim in (2, 3):
     lines += [r'\midrule', r'\multicolumn{8}{@{}l}{\emph{' + ('Two' if dim == 2 else 'Three') + r'-dimensional}} \\']
     seen = None
     for r in [x for x in ROWS if x['dim'] == dim]:
-        pname = r['problem'] + marks(r)
-        c = [pname if (r['problem'], r['status']) != seen else '', mesh(r)] + cells(r['accurate']) + cells(r['fast']) + [e(r['fom']['error_pct']), r['fom']['name']]
-        seen = (r['problem'], r['status']); lines.append(' & '.join(c) + r' \\')
+        pname = DISPLAY.get(r['problem'], r['problem']) + marks(r)
+        c = [pname if pname != seen else '', mesh(r) + mesh_mark(r)] + cells(r['accurate']) + cells(r['fast']) + [e(r['fom']['error_pct']), r['fom']['name']]
+        seen = pname; lines.append(' & '.join(c) + r' \\')
         mdrows.append([f"{r['problem']} {dim}D ({r['status']})", f"{r['intervals']}^{dim}"] + [md(x) for x in c[2:]])
     for p in [x for x in PENDING if x['dim'] == dim]:
         if p['lane'] in INGESTED: continue       # a closed, ingested lane leaves no reserved slot; its unfilled meshes are reported in the appendix
@@ -854,7 +1055,7 @@ for r in sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']),
          r['fom']['name'] + (r'; fast: ' + f['own_fom']['name'] + f", {f['own_fom']['ms']:.1f}" + r'\,ms (job ' + f['own_fom']['job'] + ')' if f and f.get('own_fom') else ''),
          f"{r['fom']['ms']:.2f}", r['timing_scope'],
          '; '.join(spn(x['accurate']) + r'$\times$ / ' + spn(x['fast']) + r'$\times$ (' + x['scope'] + ')' for x in (r['alt'] if isinstance(r['alt'], list) else [r['alt']])) if r.get('alt') else '---',
-         r['status'].split(';')[0]]
+         r['status'].split(';')[0] + (' (timing provisional$^{p}$)' if r.get('provisional_timing') else '')]
     tl.append(' & '.join(c) + r' \\'); tmd.append([md(re.sub(r'\\texttt\{(\w+)\}', r'\1', x)) for x in c])
 tl += [r'\bottomrule', r'\end{tabular}']
 write('TH_headline_times', tl, ['Problem', 'Mesh', 'Accurate', 'Fast', 'Accurate ms', 'Fast ms', 'FOM setting', 'FOM ms', 'Timing', 'Other scope, or the tighter (not rule-admissible) FOM: acc. / fast', 'Status'], tmd)
@@ -1023,15 +1224,16 @@ fl += [r'\bottomrule', r'\end{tabular}']
 write('TH_failures', fl, ['Problem', 'Setting', 'NM-ROM err. (%)', 'FOM err. (%)', 'Speedup', 'FOM'], fmd)
 
 # prose macros used by abstract / results: only values present in the generated headline table
-def best(pred, key):
-    c = [r for r in ROWS if pred(r) and r[key] and not r['source'].startswith('intake_')]   # lane rows stay out of abstract/conclusion macros
+def best(pred, key, pool=None):
+    c = [r for r in (ROWS if pool is None else pool) if pred(r) and r[key] and not r['source'].startswith('intake_')]   # lane rows stay out of abstract/conclusion macros
     return max(c, key=lambda r: r[key]['speedup'])
 mac = {}
 pa = best(lambda r: r['problem'] == 'Poisson' and r['dim'] == 2, 'accurate')
 mac['nHeadPoissonAccErr'] = e(pa['accurate']['error_pct']); mac['nHeadPoissonAccS'] = spn(pa['accurate']['speedup'])
 mac['nHeadPoissonFastS'] = spn(pa['fast']['speedup']); mac['nHeadPoissonMesh'] = f"{pa['intervals']}^2"
 la = best(lambda r: r['problem'] == 'Poisson, L-shape', 'accurate'); mac['nHeadLshapeAccS'] = spn(la['accurate']['speedup']); mac['nHeadLshapeAccErr'] = e(la['accurate']['error_pct'])
-ha = best(lambda r: r['problem'] == 'Heat' and r['dim'] == 2, 'fast'); mac['nHeadHeatFastS'] = spn(ha['fast']['speedup']); mac['nHeadHeatFastErr'] = e(ha['fast']['error_pct'])
+ha = best(lambda r: r['problem'] == 'Heat' and r['dim'] == 2, 'fast', ALL)   # LEGACY: earlier heat checkpoint, no longer in Table 1
+mac['nHeadHeatFastS'] = spn(ha['fast']['speedup']); mac['nHeadHeatFastErr'] = e(ha['fast']['error_pct'])
 bb = [r for r in ROWS if r['problem'] == 'Burgers']
 b1024 = [r for r in bb if r['intervals'] == 1024 and not r['source'].startswith('intake_')][0]; b256 = [r for r in bb if r['intervals'] == 256][0]
 mac['nHeadBurgersFastS'] = spn(b1024['fast']['speedup']); mac['nHeadBurgersFastErr'] = e(b1024['fast']['error_pct'])
@@ -1040,7 +1242,7 @@ p3a = best(lambda r: r['problem'] == 'Poisson' and r['dim'] == 3, 'accurate'); m
 bq = P[(1024, 'q128_M576_eqxfer_g1em06')]; assert bq['admissible'] and bq['converged_design5']
 mac['nHeadBurgersMidErr'] = e(bq['worst_evolved_percent']); mac['nHeadBurgersMidS'] = spn(b1024['fom']['ms'] / bq['median_gpu_ms'])
 # Heat 3D new bank (Table 1 rows 'Heat (new bank)', panel A) and the NS follow-up diagnosis
-_h3r = {(r['problem'], r['intervals']): r for r in ROWS if r['dim'] == 3 and r['problem'].startswith('Heat (new bank')}
+_h3r = {(r['problem'], r['intervals']): r for r in ALL if r['dim'] == 3 and r['problem'].startswith('Heat (new bank')}
 mac['nHeatNewAccErr'] = e(max(r['accurate']['error_pct'] for r in _h3r.values()))
 mac['nHeatNewAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ == 'Heat (new bank)'))
 mac['nHeatNewBatchedAccEvolved'] = e(max(r['accurate']['evolved_pct'] for (p_, n_), r in _h3r.items() if p_ != 'Heat (new bank)'))
@@ -1072,12 +1274,12 @@ if HP:
     mac['nHiresLshapeAccErr'] = e(max(v['acc_err'] for v in ls.values())); mac['nHiresLshapeFloor'] = e(max(v['floor_pct'] for v in ls.values()))
     mac['nHiresFloorSquare'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] == 'Poisson'):.3f}"
     mac['nHiresFloorCube'] = f"{max(v['floor_pct'] for k, v in sq.items() if k[0] != 'Poisson'):.3f}"
-    for r in ROWS:
-        if r['source'].startswith('intake_') and r['problem'] == 'Poisson':
+    for r in ALL:   # LEGACY (hires-poisson q rows, replaced in Table 1 by the ordered-bank rows)
+        if r['source'].startswith('intake_') and r['problem'] == 'Poisson' and not r.get('appendix_only'):
             w = {2048: 'TwentyFortyEight', 4096: 'FortyNinetySix'}[r['intervals']]
             mac['nHiresPoissonAccS' + w] = spn(r['accurate']['speedup']); mac['nHiresPoissonAccTotalS' + w] = spn(r['alt']['accurate'])
 if HH:
-    W = {(r['problem'], r['intervals']): r for r in ROWS if r['problem'].startswith('Heat (wide bank')}
+    W = {(r['problem'], r['intervals']): r for r in ALL if r['problem'].startswith('Heat (wide bank')}
     cn4, bf4 = W[('Heat (wide bank)', 4096)], W[('Heat (wide bank, batched fit)', 4096)]
     assert cn4['accurate']['error_pct'] == max(W[k]['accurate']['error_pct'] for k in W if k[1] > 1024)   # one sealed value at both meshes
     mac['nHeatWideAccErr'] = e(cn4['accurate']['error_pct']); mac['nHeatWideAccEvolved'] = e(cn4['accurate']['evolved_pct'])
@@ -1102,7 +1304,7 @@ if HB:
     for att, w in (('hb2kh64', 'TwentyFortyEight'), ('hb4kh64', 'FortyNinetySix')):
         g = HB[(att, 'gate')]; mac['nBurgGateBad' + w] = str(g['bad']); mac['nBurgGateRows' + w] = str(g['rows'])
     mac['nBurgGateWorstPct'] = f"{100 * max(HB[(a, 'gate')]['worst_gap'] for a in ('hb2kh64', 'hb4kh64')):.1f}"
-    H = {(r['problem'], r['intervals']): r for r in ROWS if r['problem'].startswith('Burgers') and r['intervals'] >= 2048}
+    H = {(r['problem'], r['intervals']): r for r in ALL if r['problem'].startswith('Burgers') and r['intervals'] >= 2048 and not r.get('appendix_only')}
     mac['nBurgHoldAccErrFortyNinetySix'] = e(H[('Burgers (held-out cases)', 4096)]['accurate']['error_pct'])
     mac['nBurgDevAccErrFortyNinetySix'] = e(H[('Burgers', 4096)]['accurate']['error_pct'])
     mac['nBurgDevAccSFortyNinetySix'] = spn(H[('Burgers', 4096)]['accurate']['speedup'])
@@ -1132,19 +1334,53 @@ mac['nHeadFasterRows'] = str(sum(1 for r in ROWS if any(r[s] and r[s]['speedup']
 mac['nHeadRows'] = str(len(ROWS))
 mac['nHeadAccFasterSubOne'] = str(sum(1 for r in ROWS if r['accurate'] and r['accurate']['speedup'] > 1 and r['accurate']['error_pct'] < 1))
 mac.update(NB)
+# ---- bank-width macros (2026-09-23): Poisson 2D 4096^2 ladder and Navier--Stokes 3D; every value from the pinned blobs ----
+_p4 = [r for r in ROWS if r.get('bankwidth') and r['problem'] == 'Poisson' and r['intervals'] == 4096][0]
+_pb = BWF['pois_block']; _pr_ = {r['arm']: r for r in _pb['rungs']}
+_pfom = _pb['cands'][rule_pick(_pb['cands'], min(r['err'] for r in _pb['rungs']))]
+assert _pfom['ms'] == _p4['fom']['ms']                      # the Table-4 block FOM is Table 1's 4096^2 comparator
+mac['nBwPoisAccErr'] = e(_p4['accurate']['error_pct']); mac['nBwPoisAccS'] = spn(_p4['accurate']['speedup'])
+mac['nBwPoisFastErr'] = e(_p4['fast']['error_pct']); mac['nBwPoisFastS'] = spn(_p4['fast']['speedup'])
+mac['nBwPoisHeadErr'] = e(_pr_['R512_q0']['err']); mac['nBwPoisNarrowErr'] = e(_pr_['R32_linear']['err'])
+mac['nBwPoisErrSpan'] = spn(_pr_['R32_linear']['err'] / _pr_['R512_linear']['err'])
+mac['nBwPoisCostSpan'] = spn(_pr_['R512_linear']['ms'] / _pr_['R32_linear']['ms'])
+mac['nBwPoisNarrowS'] = spn(_pfom['ms'] / _pr_['R32_linear']['ms'])
+_n96 = [r for r in ROWS if r['problem'] == 'Navier--Stokes' and r['intervals'] == 96][0]
+_n32 = [r for r in ROWS if r['problem'] == 'Navier--Stokes' and r['intervals'] == 32][0]
+_nd, _nh = BWF[('ns_block', 'development')], BWF[('ns_block', 'held-out')]
+mac['nNsHeadK'] = str(_nd['head']['k']); mac['nNsBankR'] = str(BW['ns_a3_h96']['config']['rank'])
+mac['nNsHeadErr'] = e(_n96['accurate']['error_pct']); mac['nNsHeadS'] = spn(_n96['accurate']['speedup'])
+mac['nNsFastErr'] = e(_n96['fast']['error_pct']); mac['nNsFastS'] = spn(_n96['fast']['speedup'])
+_hfom = _nh['cands'][rule_pick(_nh['cands'], _nh['head']['err'])]
+mac['nNsHoldHeadErr'] = e(_nh['head']['err']); mac['nNsHoldHeadS'] = spn(_hfom['ms'] / _nh['head']['ms'])
+mac['nNsSpanWideErr'] = e(_nd['span'][64]['err']); mac['nNsSpanNarrowErr'] = e(_nd['span'][8]['err'])
+mac['nNsSpanCostSpan'] = spn(_nd['span'][64]['ms'] / _nd['span'][8]['ms'])
+mac['nNsHeadVsSpan'] = f"{_nd['span'][8]['err'] / _nd['head']['err']:.0f}"
+mac['nNsHeadCases'] = str(_nd['cases']); mac['nNsHoldCases'] = str(_nh['cases'])
+mac['nNsSmallS'] = spn(_n32['accurate']['speedup'])
+assert _nd['head']['err'] == _n96['accurate']['error_pct'] and _nd['head']['k'] == 8 and (_nd['cases'], _nh['cases']) == (16, 32)
 (HERE / 'tables/headline-numbers.tex').write_text('% GENERATED by paper/gen_headline.py -- do not edit.\n' + ''.join(f'\\newcommand{{\\{k}}}{{{v}}}\n' for k, v in sorted(mac.items())))
 
 # ---- compact 3D configuration table (values read from the run records) ---------------------------------------
 cfg = []
 b3 = D['burgers3d']
-cfg.append(['Burgers 3D', f'${B3N}^3$', str(B['rom_q192']['cases']) + ' final', '0, 192', 'Newton--BiCGStab, $\\Delta t=0.01$', 'dense'])
-cfg.append(['Poisson 3D', '$32^3$, $64^3$', str(pr[(64, 'nmrom_K16_q96_dense')]['cases']) + ' final', '0, 32, 96 ($k=16$)', 'CG, rtol $10^{-2}$, no preconditioner', 'dense'])
-cfg.append(['Heat 3D (new bank)', '$32^3$, $64^3$, $128^3$', '64 sealed final (all times)', '0, 288 ($k=32$, $R=320$)', 'CN--CG, setting per row by the rule; named $\\Delta t=0.025$, rtol $10^{-6}$', 'exact (linear)'])
-ns = D['ns3d']
-cfg.append(['Navier--Stokes 3D', f"${ns['n']}^3$ periodic", f"{ns['cohort_count']} final", ', '.join(str(q) for q in ns['q_values']) + f" ($k={ns['k']}$, $R={ns['r']}$, $M={ns['test_modes']}$)", 'CNAB2, $\\Delta t=0.01$', 'dense'])
+# 2026-09-23 coordinator: Burgers 3D is no longer in the paper (row dropped); the Navier--Stokes row is the
+# ns3d-shift-head model of Table 1, read from the same pinned blobs.
+cfg.append(['Poisson 3D', '$32^3$, $64^3$', str(pr[(64, 'nmrom_K16_q96_dense')]['cases']) + ' final', '$q\\in\\{0, 32, 96\\}$ ($k=16$)', 'CG, rtol $10^{-2}$, no preconditioner', 'dense'])
+cfg.append(['Heat 3D (new bank)', '$32^3$, $64^3$, $128^3$', '64 sealed final (all times)', '$q\\in\\{0, 288\\}$ ($k=32$, $R=320$)', 'CN--CG, setting per row by the rule; named $\\Delta t=0.025$, rtol $10^{-6}$', 'exact (linear)'])
+_nsd = [BW[k] for k in ('ns_a2_h32', 'ns_a2_h64', 'ns_a3_h96')]; _nsh = BW['ns_b2_heldout96']
+assert {x['config']['rank'] for x in _nsd + [_nsh]} == {64} and {x['k_selected'] for x in _nsd + [_nsh]} == {8}
+_spans = sorted({int(k.split('_')[0][4:]) for x in _nsd + [_nsh] for k in x['span']}, reverse=True)
+_devc = {x['frontier'][f"k8_q0_dt{x['config']['ladder_dt']}_it{x['config']['ladder_iters']}"]['stats']['cases'] for x in _nsd}
+_holdc = BWF[('ns_block', 'held-out')]['cases']; assert _devc == {16} and _holdc == 32
+_steps = sorted({BWF[('ns', n)]['cn'][BWF[('ns', n)]['fom']]['steps'] for n in (32, 64, 96)}
+                | {BWF[('ns_block', c)]['cn'][rule_pick(BWF[('ns_block', c)]['cands'], BWF[('ns_block', c)]['head']['err'])]['steps'] for c in ('development', 'held-out')})
+cfg.append(['Navier--Stokes 3D', ', '.join(f"${x['config']['n']}^3$" for x in _nsd) + ' periodic', f"{_devc.pop()} dev.\\ + {_holdc} held-out (${_nsh['config']['n']}^3$)",
+            f"POD bank $R={_nsd[0]['config']['rank']}$ in a moving frame; head $k={_nsd[0]['k_selected']}$; span $R'\\in\\{{{', '.join(map(str, _spans))}\\}}$",
+            f"CNAB2 (spectral), {_steps[0]}--{_steps[-1]} steps (per row by the rule)", 'exact (precomputed quadratic tensor)'])
 cl = [r'% GENERATED by paper/gen_headline.py -- do not edit.', r'\scriptsize', r'\begin{tabular}{@{}lllp{3.3cm}p{3.6cm}l@{}}', r'\toprule',
-      r'Problem & Mesh & Cases & Correction ranks & Named FOM & Residual \\', r'\midrule'] + [' & '.join(c) + r' \\' for c in cfg] + [r'\bottomrule', r'\end{tabular}']
-write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Correction ranks', 'Named FOM', 'Residual'], [[md(x) for x in c] for c in cfg])
+      r'Problem & Mesh & Cases & Reduced model & Named FOM & Residual \\', r'\midrule'] + [' & '.join(c) + r' \\' for c in cfg] + [r'\bottomrule', r'\end{tabular}']
+write('TH_config3d', cl, ['Problem', 'Mesh', 'Cases', 'Reduced model', 'Named FOM', 'Residual'], [[md(x) for x in c] for c in cfg])
 
 # allocations, moved out of the tables into one reproducibility paragraph
 def _jobs(rows):
@@ -1156,8 +1392,7 @@ def _jobs(rows):
 _srt = sorted(ROWS + APPX, key=lambda r: (r['dim'], ORDER.index(r['problem']), r['intervals']))
 jp = [r'% GENERATED by paper/gen_headline.py -- do not edit.',
       r'\paragraph{Allocations.} Every ratio pairs times from one Slurm allocation. Tables~\ref{tab:headline} and~\ref{tab:headline-times}: ' + _jobs(_srt) + '. '
-      + r'Table~\ref{tab:failures}: Burgers 3D ' + str(D['burgers3d']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '; Wave 2D ' + str(next(iter({r['job_id'] for r in D['wave'] if r.get('mesh') == 1024}))) + '. '
-      + r'Table~\ref{tab:config3d}: Burgers 3D ' + str(b3['job_id']) + '; Poisson 3D ' + str(p3['job_id']) + '; Heat 3D ' + str(D['heat3db_panel_a']['metadata']['job_id']) + '; Navier--Stokes 3D ' + str(ns['job_id']) + '. '
+      + r'Table~\ref{tab:config3d}: Poisson 3D ' + str(p3['job_id']) + '; Heat 3D ' + str(D['heat3db_panel_a']['metadata']['job_id']) + '; Navier--Stokes 3D ' + ', '.join(x['job_id'] for x in _nsd + [_nsh]) + '. '
       + (r'Table~\ref{tab:heat-hires}: ' + ', '.join(sorted({r['job'] for r in HEAT_APPX})) + '. ' if HEAT_APPX else '')
       + (r'Tables~\ref{tab:nmrom-baselines} and~\ref{tab:nmrom-baselines-appx}: ' + ', '.join(f"${n}^2$ {j}" for n, j in NBJ.items()) + r' (reproduction gate: ' + str(NBP['gate05']['provenance']['job_id']) + ').' if NBP else '')]
 # train/evaluation disjointness of the Burgers checkpoint (read-only regeneration check, output snapshotted in evidence/)
@@ -1209,15 +1444,22 @@ assert all(_R[r['arm']]['failures'] == 0 for r in _hr)
 _tune_series('Heat 2D (wide bank), sealed (16)', _kh['h2d-final04'], 'sealed (16)', _hr,
              {k: dict(err=100 * v['error_evolved_worst'], ms=v['device_ms_median']) for k, v in _R.items() if k.startswith('fom_cncg_') and v['failures'] == 0}, 'filled')
 TUNE[-1]['fom']['name'] = 'CN--CG'
-_kp = [k for k, v in MAN.items() if v.get('adapter') == 'hires-poisson-v1'][0]
-_P = {r['subject']: r for r in D[_kp]['rows'] if r['attempt'] == 'hp4096' and r['mesh'] == 'square 4096²'}
-_pr = [dict(arm=f'rom_q{q}_lean64', q=q, kind='rank', err=100 * _P[f'rom_q{q}_lean64']['worst_same_grid'], ms=_P[f'rom_q{q}_lean64']['median_device_ms'], certified=True)
-       for q in (0, 64, 128, 256)]
-_nc = _P['rom_q256_lean64']['cases']
-_tune_series('Poisson 2D, development (12)', _kp, 'development (12)', _pr,
-             {k: dict(err=100 * v['worst_same_grid'], ms=v['median_device_ms']) for k, v in _P.items() if v['family'] == 'cg' and not k.startswith('coarse') and v['cases'] == _nc}, 'filled')
-TUNE[-1]['fom']['name'] = 'CG'
-for tt_ in TUNE:
+# 2026-09-23: the Poisson correction-rank series is replaced by the ordered-bank (R') ladder at 4096^2 and a Navier--Stokes
+# 96^3 block (development and held-out cohorts, one CNAB2 setting per cohort).  Legacy series keep legacy=True.
+for tt_ in TUNE: tt_['legacy'] = True
+def _bw_series(name, key, cohort_lab, rungs, cands, fom_name, fom_label, mesh, job):
+    best = min(r['err'] for r in rungs); c = rule_pick(cands, best); fm = cands[c]
+    for r in rungs: r['speedup'] = fm['ms'] / r['ms']
+    TUNE.append(dict(series=name, source=key, cohort=cohort_lab, fom=dict(arm=c, name=fom_name, label=fom_label(c), **fm), rungs=rungs,
+                     style='filled', legacy=False, ordered=True, mesh=mesh, job=str(job)))
+_pb = BWF['pois_block']
+_bw_series(f"Poisson 2D bank width, development ({_pb['cases']})", 'bw_pbk_summary', f"development ({_pb['cases']})", _pb['rungs'], _pb['cands'],
+           'CG', lambda c: 'rtol $' + tol_tex(BWF[('pois', 4096)]['S'][c]['tolerance']) + '$', '$4096^2$', _pb['job'])
+for _coh, _key in (('development', 'ns_a3_h96'), ('held-out', 'ns_b2_heldout96')):
+    _b = BWF[('ns_block', _coh)]
+    _bw_series(f"Navier--Stokes 3D, {_coh} ({_b['cases']})", 'bw_' + _key, f"{_coh} ({_b['cases']})", _b['rungs'], _b['cands'],
+               'CNAB2 (spectral)', lambda c, _b=_b: f"{_b['cn'][c]['steps']} steps", f"${BW[_key]['config']['n']}^3$", _b['job'])
+for tt_ in [t_ for t_ in TUNE if t_['legacy']]:
     mac_key = {'Burgers 2D, development (6)': 'BurgDev', 'Burgers 2D, held-out (64)': 'BurgHold', 'Heat 2D (wide bank), sealed (16)': 'Heat', 'Poisson 2D, development (12)': 'Poisson'}[tt_['series']]
     sp_ = [r['speedup'] for r in tt_['rungs'] if r['kind'] == 'rank' and r['certified']]
     mac[f'nTune{mac_key}SpeedMin'] = spn(min(sp_)); mac[f'nTune{mac_key}SpeedMax'] = spn(max(sp_))
@@ -1225,7 +1467,7 @@ for tt_ in TUNE:
 def _tol(x):
     m_, ex = f'{float(x):.0e}'.split('e'); ex = int(ex)
     return f'10^{{{ex}}}' if m_ == '1' else f'{m_}{{\\times}}10^{{{ex}}}'
-for tt_ in TUNE:
+for tt_ in [t_ for t_ in TUNE if t_['legacy']]:
     a = tt_['fom']['arm']; k = {'Newton--BiCGStab': 'Burg', 'CN--CG': 'Heat', 'CG': 'Poisson'}[tt_['fom']['name']]
     if a.startswith('lean_nt'): lab = 'tolerance $' + _tol(a.split('_nt')[1].split('_')[0]) + '$'
     elif a.startswith('fom_cncg'): lab = '$\\Delta t=' + a.split('_dt')[1].split('_')[0] + '$, rtol $' + _tol(a.split('rtol')[1].split('_')[0]) + '$'
@@ -1237,10 +1479,47 @@ bdev = TUNE[0]; assert all(r['speedup'] > 1 for r in bdev['rungs'])
     f'\\newcommand{{\\{k}}}{{{v}}}\n' for k, v in sorted(mac.items()) if k.startswith('nTune') and not k.endswith('FomTol')))
 assert all(r['speedup'] > 1 for t_ in TUNE for r in t_['rungs'])      # every rung of every series is faster than its FOM setting
 
+# ---- Table 1 marker definitions (generated so the caption / appendix can \input them; only markers printed in the table) ----
+_bwp = sorted({(r['accurate']['Rp'], r['fast']['Rp']) for r in ROWS if r.get('bankwidth') and r['problem'] == 'Poisson'}); assert len(_bwp) == 1
+_bwn = sorted({(r['accurate']['k'], r['fast']['Rp']) for r in ROWS if r['problem'] == 'Navier--Stokes'}); assert len(_bwn) == 1
+_prov_meshes = [r['intervals'] for r in ROWS if r.get('provisional_timing')]
+MARKDEF = [  # (marker as printed, definition)
+    (r'$^{o}$', f"ordered-bank settings of one frozen model, no retraining: Poisson accurate/fast = bank span $R'={_bwp[0][0]}$ / $R'={_bwp[0][1]}$ "
+                f"of the importance-ordered bank; Navier--Stokes accurate = head $k={_bwn[0][0]}$, fast = bank span $R'={_bwn[0][1]}$ (the cheapest span "
+                r"setting below 5\,\%); rows without this marker use correction-rank settings ($q$), pending the $R'$ reruns"),
+    (r'$^{p}$', r"timing did not pass its job's pre-registered neighbour/drift gates; speedups provisional (" + ', '.join(f'${n}^2$' for n in _prov_meshes) + ')'),
+    (r'$^{a}$', r'batched fit: all time steps of the linear autonomous heat problem solved together, same frozen model and settings'),
+    (r'$^{f}$', r'held-out final cohort, evaluated once (all others development)'),
+    (r'$^{t}$', r'error over all output times including $t=0$'),
+    (r'$^{e}$', r'error over evolved output times only'),
+    (r'$^{c}$', r'complete-query time with host transfers (all others GPU query)'),
+    (r'$^{h}$', r'held-out cases never used for selection'),
+    (r'$^{r}$', r'error against a refined reference'),
+    (r'$^{s}$', r'stored quadrature rule, not confirmed on re-draws'),
+    (r'$^{x}$', r'stored quadrature nodes with weights refit at this mesh, one held-out draw'),
+    (r'$^{v}$', r'quadrature rule confirmed by the pre-registered re-draw procedure'),
+    (r'$^{\ell}$', r'$63{\times}63$ lattice quadrature rule, thin re-draw margin'),
+    (r'$^{w}$', r'the same lattice rule at this mesh: five held-out draws pass, the confirmation draw does not'),
+    (r'$^{d}$', r'dense residual'),
+    (r'---$^{n}$', r'a solve missed its stationarity rule, so no speedup is given'),
+]
+_tex1 = (HERE / 'tables/TH_headline.tex').read_text()
+_used = [(m, d_) for m, d_ in MARKDEF if m in _tex1]
+_left = re.findall(r'\$\^\{[^}]+\}\$', re.sub('|'.join(re.escape(m) for m, _ in _used), '', _tex1))
+assert not _left, ('undefined Table 1 marker', _left)                         # every printed marker has a definition
+(HERE / 'tables/TH_headline_markers.tex').write_text('% GENERATED by paper/gen_headline.py -- do not edit.  Table 1 marker definitions.\n'
+                                                     + '; '.join(m.replace('---', '') + r'\,' + d_ for m, d_ in _used) + '.\n')
+
 (HERE / 'tables/headline-provenance.json').write_text(json.dumps(dict(
+    rule_2026_09_23='ONE row per (problem, mesh), no variant rows (user decision 2026-09-23). Poisson 2D: accurate = most accurate primary ordered-bank arm, '
+                    'fast = cheapest primary arm with worst error <= the head at R\'=512 (pre-registered, poisson-bank-knob DESIGN A1/A5). Navier--Stokes 3D: '
+                    'accurate = head k=8, fast = cheapest bank-span arm with worst error < 5 %. Heat rows: batched-fit arm. FOM rule unchanged; both speedups '
+                    'of a row divide one FOM time from the same job. Rows removed from Table 1 are listed in dropped_rows with the reason.',
+    bankwidth_sources=BWMAN, dropped_rows=DROPPED, marker_definitions=[dict(marker=m, definition=d_) for m, d_ in _used],
     rule='One frozen model per row. fast = q=0; accurate = largest stored correction rank at the standard time step (Burgers: fastest / lowest-error admissible residual evaluation at that rank). '
          'One named FOM per row from the same allocation, at least as accurate as the accurate setting; speedup = FOM ms / NM-ROM ms. '
          'Exception: the 4096^2 Burgers fast column divides the fastest tested same-allocation setting at least as accurate as that fast setting (bh5 grid, same job). Bold = speedup > 1.',
     sources=MAN, rows=ROWS, appendix_only_rows=APPX, lane_controls={f'{k[0]}|{k[1]}': v for k, v in HP.items()},
-    heat_appendix_rows=HEAT_APPX, heat_facts=HH, tunability=TUNE, incoming=INCOMING, nmrom_baselines=appx_nb, burgers_facts={f'{k[0]}|{k[1]}' if isinstance(k, tuple) else k: v for k, v in HB.items() if not (isinstance(k, tuple) and k[1] in ('coarse', 'acc'))}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
+    heat_appendix_rows=HEAT_APPX, heat_facts=HH, tunability=[t_ for t_ in TUNE if t_['legacy']], tunability_bankwidth=[t_ for t_ in TUNE if not t_['legacy']],   # split so the (unbuilt) figure script still reads its legacy series
+    incoming=INCOMING, nmrom_baselines=appx_nb, burgers_facts={f'{k[0]}|{k[1]}' if isinstance(k, tuple) else k: v for k, v in HB.items() if not (isinstance(k, tuple) and k[1] in ('coarse', 'acc'))}, failures=F, pending=PENDING, macros=mac, intake_schema=INTAKE_SCHEMA), indent=2) + '\n')
 print(f'Headline: {len(ROWS)} rows, {mac["nHeadFasterRows"]} with a faster NM-ROM setting; {len(F)} failure rows; all snapshots hash-verified.')

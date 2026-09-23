@@ -1,13 +1,14 @@
-"""Table: correction-rank tunability at 4096^2 (replaces the former Figure 2, fig_tunability_rank).
+"""Table 4: bank-width tunability at the finest mesh (2026-09-23; formerly correction-rank tunability at 4096^2).
 
 Reads ONLY paper/tables/headline-provenance.json ("tunability", written by gen_headline.py from hash-pinned
-snapshots) -- the same data the figure generator reads.  One frozen model and one allocation per series; every
-speedup is that series' ONE full-order setting's median GPU ms divided by the rung's, re-derived here and asserted
-against the stored ratio.  Writes tables/TH_tunability.tex (+ tables-md/TH_tunability.md).
+snapshots).  One frozen model per block; within a cohort every speedup is ONE full-order setting's median GPU ms
+(the fastest tested setting at least as accurate as the cohort's most accurate row, same job) divided by the row's,
+re-derived here and asserted against the stored ratio.  Writes tables/TH_tunability.tex (+ tables-md/TH_tunability.md).
 
-Layout: development-cohort columns and held-out-cohort columns side by side, so the two Burgers series (same
-settings, same allocation type, different cohorts) share rows; heat (sealed held-out cohort) fills the held-out
-columns and Poisson (development sources) the development columns.
+Blocks (development columns | held-out columns):
+  Poisson 2D, ordered bank (R') at 4096^2      head R'=512 + bank-span rungs R'=512..32 | ---
+  Navier--Stokes 3D, co-moving frame at 96^3    head k=8 + bank-span rungs R'=64..8     | same arms, held-out cohort
+  Burgers 2D and Heat 2D correction-rank blocks (legacy; kept until their R' reruns land)
 """
 import json
 from pathlib import Path
@@ -15,10 +16,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 PROV = json.loads((HERE / 'tables/headline-provenance.json').read_text())
 
-BLOCKS = [  # (block label, development series, held-out series)
-    ('Burgers 2D (6 development / 64 held-out cases)', 'Burgers 2D, development (6)', 'Burgers 2D, held-out (64)'),
-    ('Heat 2D, wide bank (16 sealed held-out cases)', None, 'Heat 2D (wide bank), sealed (16)'),
-    ('Poisson 2D (12 development sources)', 'Poisson 2D, development (12)', None),
+BLOCKS = [  # (family, development series, held-out series)
+    ('Poisson', 'Poisson 2D bank width, development (12)', None),
+    ('Navier--Stokes', 'Navier--Stokes 3D, development (16)', 'Navier--Stokes 3D, held-out (32)'),
+    ('Burgers', 'Burgers 2D, development (6)', 'Burgers 2D, held-out (64)'),
+    ('Heat', None, 'Heat 2D (wide bank), sealed (16)'),
 ]
 
 
@@ -37,13 +39,15 @@ def fom_label(arm):
 
 
 def setting(r, fam):
+    """Row label: ordered-bank rows carry their own generated label; legacy correction-rank rows are built here."""
+    if r.get('label'): return r['label'][0].upper() + r['label'][1:]
     s = f"$q={r['q']}$" + (f", $M={r['M']}$" if fam == 'Burgers' else '')
     if r['kind'] == 'tolerance': s += r', looser tol.$^{\star}$'
     if not r['certified']: s += r'$^{\dagger}$'
     return s
 
 
-def key(r): return (r['q'], r.get('M') or 0, r['kind'])
+def key(r): return r['rowkey'] if r.get('rowkey') else (r['q'], r.get('M') or 0, r['kind'])
 
 
 def cells(r, fom):
@@ -52,8 +56,32 @@ def cells(r, fom):
     return [e(r['err']), ms(r['ms']), sp(fom['ms'] / r['ms'])]
 
 
+def title(fam, D, H):
+    ref = D or H
+    if not ref.get('legacy', True):
+        coh = ' / '.join(x['cohort'].replace('development (', '').replace('held-out (', '').rstrip(')') + (' development' if x is D else ' held-out')
+                         for x in (D, H) if x)
+        what = {'Poisson': 'Poisson 2D, ordered bank', 'Navier--Stokes': 'Navier--Stokes 3D, co-moving frame, ordered bank'}[fam]
+        unit = 'sources' if fam == 'Poisson' else 'cases'
+        return f"{what}, {ref['mesh']} ({coh} {unit})"
+    return {'Burgers': 'Burgers 2D, correction rank (6 development / 64 held-out cases)',
+            'Heat': 'Heat 2D, wide bank, correction rank (16 sealed held-out cases)'}[fam]
+
+
+def fom_text(D, H):
+    xs = [x for x in (D, H) if x]
+    names = {x['fom']['name'] for x in xs}; assert len(names) == 1
+    if all(x.get('legacy', True) for x in xs):
+        arms = {x['fom']['arm'] for x in xs}; assert len(arms) == 1     # legacy blocks: one named FOM setting per block
+        return f"{names.pop()}, {fom_label(arms.pop())}"
+    labs = [x['fom']['label'] for x in xs]                              # ordered-bank blocks: one setting per cohort, same job as its rows
+    if len(set(labs)) == 1: return names.pop() + ', ' + labs[0]
+    if all(l.endswith(' steps') for l in labs): return names.pop() + ', ' + ' / '.join(l[:-6] for l in labs) + ' steps'
+    return names.pop() + ', ' + ' / '.join(labs)
+
+
 def render():
-    ser = {s['series']: s for s in PROV['tunability']}
+    ser = {s['series']: s for s in PROV['tunability'] + PROV['tunability_bankwidth']}
     assert set(ser) == {x for b in BLOCKS for x in b[1:] if x}, set(ser)
     L = [r'% GENERATED by paper/gen_tunability_table.py from tables/headline-provenance.json -- do not edit.',
          r'\small\setlength{\tabcolsep}{4pt}', r'\begin{tabular}{@{}lrrrrrr@{}}', r'\toprule',
@@ -61,27 +89,28 @@ def render():
          r'\cmidrule(lr){2-4}\cmidrule(l){5-7}',
          r'Setting & Err.\ (\%) & ms & Speedup & Err.\ (\%) & ms & Speedup \\']
     rows_md = []
-    for lab, dev, held in BLOCKS:
+    for fam, dev, held in BLOCKS:
+        D, H = ser.get(dev), ser.get(held)
+        lab = title(fam, D, H)
         L += [r'\midrule', r'\multicolumn{7}{@{}l}{\emph{' + lab + r'}} \\']
         rows_md.append([lab] + [''] * 6)
-        D, H = ser.get(dev), ser.get(held)
-        fam = lab.split()[0]
-        ref = D or H
-        names = {x['fom']['name'] for x in (D, H) if x}; arms = {x['fom']['arm'] for x in (D, H) if x}
-        assert len(names) == 1 and len(arms) == 1                     # one named FOM setting per block
-        keys = sorted({key(r) for x in (D, H) if x for r in x['rungs']})
+        for x in (D, H):                                               # each cohort's FOM: fastest at least as accurate as its best row
+            if x: assert x['fom']['err'] <= min(r['err'] for r in x['rungs']) + 1e-12
         byk = lambda x: {key(r): r for r in x['rungs']} if x else {}
         dk, hk = byk(D), byk(H)
-        first = True
+        if (D or H).get('legacy', True):
+            keys = sorted(set(dk) | set(hk))
+        else:
+            keys = [key(r) for r in (D or H)['rungs']]
+            assert set(keys) == set(dk) | set(hk)
         for k in keys:
             r0 = dk.get(k) or hk.get(k)
-            if dk.get(k) and hk.get(k): assert dk[k]['certified'] == hk[k]['certified'] and dk[k]['kind'] == hk[k]['kind']
+            if dk.get(k) and hk.get(k): assert dk[k]['certified'] == hk[k]['certified'] and dk[k]['kind'] == hk[k]['kind'] and setting(dk[k], fam) == setting(hk[k], fam)
             c = cells(dk.get(k), D['fom'] if D else None) + cells(hk.get(k), H['fom'] if H else None)
             row = [setting(r0, fam)] + c
-            L.append(' & '.join(row) + r' \\'); rows_md.append(row); first = False
-        fl = [f"{ref['fom']['name']}, {fom_label(ref['fom']['arm'])}"]
+            L.append(' & '.join(row) + r' \\'); rows_md.append(row)
         fc = [(e(x['fom']['err']), ms(x['fom']['ms']), r'1$\times$') if x else ('---',) * 3 for x in (D, H)]
-        row = [r'\emph{FOM:} ' + fl[0]] + list(fc[0]) + list(fc[1])
+        row = [r'\emph{FOM:} ' + fom_text(D, H)] + list(fc[0]) + list(fc[1])
         L.append(' & '.join(row) + r' \\'); rows_md.append(row)
     L += [r'\bottomrule', r'\end{tabular}']
     return '\n'.join(L) + '\n', rows_md
@@ -91,7 +120,7 @@ if __name__ == '__main__':
     tex, rows = render()
     (HERE / 'tables/TH_tunability.tex').write_text(tex)
     head = ['Setting', 'Dev. err (%)', 'Dev. ms', 'Dev. speedup', 'Held-out err (%)', 'Held-out ms', 'Held-out speedup']
-    clean = lambda s: s.replace('$', '').replace(r'\times', '×').replace(r'{\times}', '×').replace(r'\emph{', '').replace('}', '').replace('{', '').replace(r'\ ', ' ').replace('--', '–').replace('^', '')
+    clean = lambda s: s.replace('$', '').replace(r'\times', '×').replace(r'{\times}', '×').replace(r'\emph{', '').replace('{=}', '=').replace('}', '').replace('{', '').replace(r'\ ', ' ').replace('--', '–').replace('^', '')
     (HERE / 'tables-md/TH_tunability.md').write_text('| ' + ' | '.join(head) + ' |\n| ' + ' | '.join(['---'] * len(head)) + ' |\n'
                                                    + ''.join('| ' + ' | '.join(clean(c) for c in r) + ' |\n' for r in rows))
     print('tunability table:', len(rows), 'rows')

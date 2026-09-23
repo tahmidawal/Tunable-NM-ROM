@@ -147,7 +147,10 @@ def hold64():
              cohort_name='hold64: params_draw(20260916, 64), held-out; never used to fit the bank, head, directions, '
                          'rotation, rules or the selection',
              fom_settings=[FOM[0]] + [f for f in FOM if f.get('impl') == 'lean'], untimed_fom=['fft_tight'],
-             audit_arms=['fft_tight'] + list(dict.fromkeys(want))[:2], selection_source_summary_sha256=sel['source_summary_sha256'],
+             audit_arms=['fft_tight'] + list(dict.fromkeys(want))[:2],
+             # host-side per-invocation re-scoring is redundant (every timed field is SHA-identical to the scored quick
+             # run) and costs ~3 s per 4096^2 invocation on a contended node (bkh64b); off for the held-out job only
+             timed_skip_score=True, selection_source_summary_sha256=sel['source_summary_sha256'],
              fom_subsets=dict(lean=[f['name'] for f in FOM if f.get('impl') == 'lean']))
     return c
 

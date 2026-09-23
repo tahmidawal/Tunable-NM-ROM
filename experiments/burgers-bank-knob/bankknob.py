@@ -551,7 +551,8 @@ def main():
                     prev = gs
                     same = sha_array(f) == quick_sha[(name, c)]
                     row = dict(name=name, case=c, rep=r_, phase=ph_name, seq=seq, family=b['family'], gpu_seconds=gs,
-                               host_seconds=hs, identical_to_quick=same, same_grid_evolved=score(f, c)['same_grid_evolved'])
+                               host_seconds=hs, identical_to_quick=same,
+                               same_grid_evolved=(None if cfg.get('timed_skip_score') else score(f, c)['same_grid_evolved']))
                     vh = (None,) + tuple(host(v[1:]))
                     if b['kind'] == 'rom':
                         row['total_iterations'] = int(np.sum(np.asarray(vh[1])))

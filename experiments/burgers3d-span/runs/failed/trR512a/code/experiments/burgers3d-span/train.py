@@ -113,8 +113,7 @@ def train_bank(groups, cfg, log):
             pod[str(r)] = float(jnp.sqrt(jnp.max(jnp.maximum(1 - jnp.sum((modes[:, :r].T @ vn) ** 2, axis=0), 0.))))
         log(f"group {g['name']}: S={S} P={un.shape[1]} POD modes {K} dropped tail mean {dropped:.3e} "
             f"validation POD floor (worst) by rank {pod}")
-        del unj                                  # snapshots stay on the host; minibatches are uploaded per step
-        G.append(dict(name=g['name'], x=jnp.asarray(g['x']), un=un, modes=modes, weights=weights, vn=vn,
+        G.append(dict(name=g['name'], x=jnp.asarray(g['x']), un=unj, modes=modes, weights=weights, vn=vn,
                       pod=pod, dropped=dropped))
     opt = optax.chain(optax.clip_by_global_norm(cfg['bank_gradient_clip']),
                       optax.adam(optax.warmup_cosine_decay_schedule(0., cfg['bank_learning_rate'], cfg['warmup'],
@@ -142,22 +141,18 @@ def train_bank(groups, cfg, log):
         return jnp.log(mean) + tw * jnp.log(tail) + ww * white, (mean, tail, white)
 
     @jax.jit
-    def step(net, state, p, xs, modes, weights, batches):
+    def step(net, state, key, p, xs, modes, weights, uns):
+        keys = jax.random.split(key, len(uns))
+        batches = [u[jax.random.randint(k, (B,), 0, u.shape[0])].T for k, u in zip(keys, uns)]
         (val, aux), grad = jax.value_and_grad(objective, has_aux=True)(net, p, xs, modes, weights, batches)
         upd, state = opt.update(grad, state, net)
         return optax.apply_updates(net, upd), state, val, aux
 
-    qfun = jax.jit(lambda net, p, x: jnp.linalg.qr(C.features(dict(p, net=net), x), mode='reduced')[0])
-    efun = jax.jit(lambda q, y: jnp.sum((y - q @ (q.T @ y)) ** 2, axis=0))
-
+    @jax.jit
     def validate(net, p, xs, vns):
-        """Per group, one QR, then the validation columns in chunks (job 4238911: the fused three-group validation
-        asked XLA for a 42 GiB temporary and ran out of memory on an 80 GB A100)."""
         worst, rms = [], []
         for x, vn in zip(xs, vns):
-            q = qfun(net, p, x)
-            e = jnp.concatenate([efun(q, vn[:, s:s + 64]) for s in range(0, vn.shape[1], 64)])
-            del q
+            e = projection_errors(C.features(dict(p, net=net), x), vn)
             worst.append(jnp.sqrt(jnp.max(jnp.maximum(e, 0.))))
             rms.append(jnp.sqrt(jnp.mean(jnp.maximum(e, 0.))))
         return jnp.stack(worst), jnp.stack(rms)
@@ -168,14 +163,12 @@ def train_bank(groups, cfg, log):
     uns = [g['un'] for g in G]
     vns = [g['vn'] for g in G]
     key = jax.random.PRNGKey(cfg['model_seed'] + 1)
-    brng = np.random.default_rng(cfg['model_seed'] + 1)          # host minibatch draws (job 4239869: device OOM)
     net = p['net']
     best = (np.inf, None, None)
     log_rows = []
     for it in range(cfg['bank_steps']):
         key, sub = jax.random.split(key)
-        batches = [jnp.asarray(u[np.sort(brng.integers(0, u.shape[0], B))].T) for u in uns]
-        net, state, val, aux = step(net, state, p, xs, mods, wts, batches)
+        net, state, val, aux = step(net, state, sub, p, xs, mods, wts, uns)
         if (it + 1) % cfg['checkpoint_every'] == 0 or it + 1 == cfg['bank_steps'] or it + 1 == 50:
             worst, rms = validate(net, p, xs, vns)
             worst, rms = np.asarray(worst), np.asarray(rms)

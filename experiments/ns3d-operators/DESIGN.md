@@ -299,3 +299,15 @@ on the device (`last_out`, never read after the field-parity change of A3): 19 a
 no setting, model, selection or gate changes. pn96b reproduced pn96's accuracy pass exactly (gap 0 on
 every arm); its logs and partial summary are kept at `runs/pn96b_crashed/`, remote deleted. Rerun
 `pn96c`, same config, same cohort, A100-80G, JAX fraction 0.55.
+
+## A8 (2026-09-23 ~18:40 EDT) — Codex results audit of 96³, dispositions
+
+`checks/codex-results-audit-96.md`: no numerical blocker; recomputed all 19 arms, the FOM rule
+(CNAB2 70 steps; 60 steps ineligible), speedups, the 19 saved full fields (4.1e-16), sha256 chain,
+selection (config committed before pn96), gates; the reruns changed memory handling only. Verdict: the
+row may enter Table 2 as a qualified held-out comparison. Accepted and applied in the generated report:
+(1) audit coverage printed per mesh (worst case only at 96³); (2) the A4 GPU split is printed for every
+operator arm (all-arms table) and the Transolver size/hardware confound is stated; (3) reruns "agree
+within reproduction tolerance" (generated gap), not "identical"; (4) the epoch range is generated and
+"not converged" softened to "budget-limited"; (5) parity scope (sampled timed-field parity on the final
+A2 repetition) and the cohort's fourth opening are stated.

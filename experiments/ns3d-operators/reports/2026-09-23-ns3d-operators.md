@@ -18,31 +18,31 @@ Cohort: seed 202609202, 16 cases (development). Comparator (the Table-2 rule): C
 
 Next faster stable CNAB2 setting (not eligible under the rule): 40 steps, 0.152 % (1.004× the NM-ROM accurate error), 5.522 ms; against it the NM-ROM accurate setting would be 0.954×.
 
-Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (perturbed control rejected: True; sampled-estimate max gap 0.217).
+Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (exact recomputation on cases [0, 1] + each arm's worst case, 8192-point samples elsewhere; perturbed control rejected: True; sampled-estimate max gap 0.217).
 
 <details><summary>All arms of this job (19)</summary>
 
-| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| cnab2_s10 | 76.7 | 9.94 | 1.698 | 3.98× | 1× (cnab2_s10) | 1.003 | 0.991 |
-| cnab2_s100 | 0.019 | 0.011 | 13.533 | *0.5×* | 1× (cnab2_s100) | 0.999 | 1.003 |
-| cnab2_s20 | 0.788 | 0.382 | 2.965 | 2.28× | 1× (cnab2_s20) | 1.020 | 0.995 |
-| cnab2_s200 | 3e-14 | 2.8e-14 | 26.155 | *0.259×* | 1× (cnab2_s200) | 0.996 | 1.001 |
-| cnab2_s40 | 0.152 | 0.089 | 5.522 | 1.22× | 1× (cnab2_s40) | 1.007 | 0.994 |
-| cnab2_s50 | 0.094 | 0.055 | 6.764 | 1× | 1× (cnab2_s50) | 1.000 | 0.996 |
-| cnab2_s60 | 0.063 | 0.037 | 8.044 | *0.841×* | 1× (cnab2_s60) | 1.000 | 1.001 |
-| cnab2_s70 | 0.045 | 0.026 | 9.413 | *0.719×* | 1× (cnab2_s70) | 0.996 | 1.009 |
-| cnab2_s80 | 0.033 | 0.019 | 10.985 | *0.616×* | 1× (cnab2_s80) | 1.001 | 1.003 |
-| nmrom_accurate_head_k8 | 0.151 | 0.09 | 5.788 | 1.17× | 1.17× (cnab2_s50) | 1.003 | 0.985 |
-| nmrom_fast_span16 | 2.96 | 2.02 | 3.216 | 2.1× | *0.922×* (cnab2_s20) | 1.022 | 0.997 |
-| op_don-l | 98.4 | 96.7 | 8.673 | *0.78×* | *0.196×* (cnab2_s10) | 1.004 | 1.000 |
-| op_don-s | 52.6 | 41.1 | 3.677 | 1.84× | *0.806×* (cnab2_s20) | 1.002 | 0.996 |
-| op_fno-l | 0.396 | 0.231 | 3.127 | 2.16× | 1.77× (cnab2_s40) | 1.007 | 0.996 |
-| op_fno-s | 0.471 | 0.282 | 3.100 | 2.18× | 1.78× (cnab2_s40) | 1.004 | 0.996 |
-| op_tsol-l | 0.821 | 0.608 | 33.240 | *0.203×* | *0.0892×* (cnab2_s20) | 1.003 | 1.000 |
-| op_tsol-s | 0.538 | 0.348 | 16.275 | *0.416×* | *0.339×* (cnab2_s40) | 1.000 | 0.999 |
-| op_unet-l | 0.479 | 0.31 | 15.040 | *0.45×* | *0.367×* (cnab2_s40) | 1.000 | 0.997 |
-| op_unet-s | 0.67 | 0.443 | 7.585 | *0.892×* | *0.728×* (cnab2_s40) | 1.002 | 0.996 |
+| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order | training (epochs, GPU, validation mean) |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| cnab2_s10 | 76.7 | 9.94 | 1.698 | 3.98× | 1× (cnab2_s10) | 1.003 | 0.991 |  |
+| cnab2_s100 | 0.019 | 0.011 | 13.533 | *0.5×* | 1× (cnab2_s100) | 0.999 | 1.003 |  |
+| cnab2_s20 | 0.788 | 0.382 | 2.965 | 2.28× | 1× (cnab2_s20) | 1.020 | 0.995 |  |
+| cnab2_s200 | 3e-14 | 2.8e-14 | 26.155 | *0.259×* | 1× (cnab2_s200) | 0.996 | 1.001 |  |
+| cnab2_s40 | 0.152 | 0.089 | 5.522 | 1.22× | 1× (cnab2_s40) | 1.007 | 0.994 |  |
+| cnab2_s50 | 0.094 | 0.055 | 6.764 | 1× | 1× (cnab2_s50) | 1.000 | 0.996 |  |
+| cnab2_s60 | 0.063 | 0.037 | 8.044 | *0.841×* | 1× (cnab2_s60) | 1.000 | 1.001 |  |
+| cnab2_s70 | 0.045 | 0.026 | 9.413 | *0.719×* | 1× (cnab2_s70) | 0.996 | 1.009 |  |
+| cnab2_s80 | 0.033 | 0.019 | 10.985 | *0.616×* | 1× (cnab2_s80) | 1.001 | 1.003 |  |
+| nmrom_accurate_head_k8 | 0.151 | 0.09 | 5.788 | 1.17× | 1.17× (cnab2_s50) | 1.003 | 0.985 |  |
+| nmrom_fast_span16 | 2.96 | 2.02 | 3.216 | 2.1× | *0.922×* (cnab2_s20) | 1.022 | 0.997 |  |
+| op_don-l | 98.4 | 96.7 | 8.673 | *0.78×* | *0.196×* (cnab2_s10) | 1.004 | 1.000 | 265 ep, A100 80GB PCIe, 96.2 % |
+| op_don-s | 52.6 | 41.1 | 3.677 | 1.84× | *0.806×* (cnab2_s20) | 1.002 | 0.996 | 298 ep, A100 80GB PCIe, 40.7 %, selected |
+| op_fno-l | 0.396 | 0.231 | 3.127 | 2.16× | 1.77× (cnab2_s40) | 1.007 | 0.996 | 624 ep, A100 80GB PCIe, 0.243 %, selected |
+| op_fno-s | 0.471 | 0.282 | 3.100 | 2.18× | 1.78× (cnab2_s40) | 1.004 | 0.996 | 705 ep, A100 80GB PCIe, 0.289 % |
+| op_tsol-l | 0.821 | 0.608 | 33.240 | *0.203×* | *0.0892×* (cnab2_s20) | 1.003 | 1.000 | 113 ep, A100 80GB PCIe, 0.617 % |
+| op_tsol-s | 0.538 | 0.348 | 16.275 | *0.416×* | *0.339×* (cnab2_s40) | 1.000 | 0.999 | 269 ep, A100 80GB PCIe, 0.353 %, selected |
+| op_unet-l | 0.479 | 0.31 | 15.040 | *0.45×* | *0.367×* (cnab2_s40) | 1.000 | 0.997 | 458 ep, A100 80GB PCIe, 0.318 %, selected |
+| op_unet-s | 0.67 | 0.443 | 7.585 | *0.892×* | *0.728×* (cnab2_s40) | 1.002 | 0.996 | 758 ep, A100 80GB PCIe, 0.458 % |
 
 </details>
 
@@ -62,31 +62,31 @@ Cohort: seed 202609202, 16 cases (development). Comparator (the Table-2 rule): C
 
 Next faster stable CNAB2 setting (not eligible under the rule): 40 steps, 0.382 % (2.515× the NM-ROM accurate error), 19.187 ms; against it the NM-ROM accurate setting would be 2.47×.
 
-Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (perturbed control rejected: True; sampled-estimate max gap 0.422).
+Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (exact recomputation on cases [0, 1] + each arm's worst case, 8192-point samples elsewhere; perturbed control rejected: True; sampled-estimate max gap 0.422).
 
 <details><summary>All arms of this job (19)</summary>
 
-| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| cnab2_s10 | 272 | 19.1 | 5.561 | 4.25× | 3.45× (cnab2_s40) | 0.998 | 1.000 |
-| cnab2_s100 | 0.019 | 0.011 | 45.801 | *0.516×* | 1× (cnab2_s100) | 0.996 | 1.001 |
-| cnab2_s20 | 686 | 2.75 | 10.392 | 2.27× | 1.85× (cnab2_s40) | 0.982 | 1.011 |
-| cnab2_s200 | 4.3e-14 | 3.8e-14 | 90.061 | *0.262×* | 1× (cnab2_s200) | 0.995 | 1.001 |
-| cnab2_s40 | 0.382 | 0.088 | 19.187 | 1.23× | 1× (cnab2_s40) | 0.994 | 1.001 |
-| cnab2_s50 | 0.093 | 0.055 | 23.638 | 1× | 1× (cnab2_s50) | 0.995 | 1.002 |
-| cnab2_s60 | 0.063 | 0.037 | 28.105 | *0.841×* | 1× (cnab2_s60) | 0.995 | 1.001 |
-| cnab2_s70 | 0.044 | 0.026 | 32.517 | *0.727×* | 1× (cnab2_s70) | 0.995 | 1.001 |
-| cnab2_s80 | 0.033 | 0.019 | 36.922 | *0.64×* | 1× (cnab2_s80) | 0.995 | 1.002 |
-| nmrom_accurate_head_k8 | 0.152 | 0.092 | 7.759 | 3.05× | 3.05× (cnab2_s50) | 0.998 | 0.993 |
-| nmrom_fast_span16 | 2.96 | 2.02 | 4.379 | 5.4× | 4.38× (cnab2_s40) | 1.001 | 1.006 |
-| op_don-l | 51.6 | 36.4 | 47.837 | *0.494×* | *0.401×* (cnab2_s40) | 1.008 | 1.004 |
-| op_don-s | 51.7 | 36.1 | 17.345 | 1.36× | 1.11× (cnab2_s40) | 1.000 | 1.006 |
-| op_fno-l | 1.34 | 0.93 | 11.528 | 2.05× | 1.66× (cnab2_s40) | 1.005 | 1.003 |
-| op_fno-s | 1.56 | 1.1 | 9.060 | 2.61× | 2.12× (cnab2_s40) | 1.008 | 1.004 |
-| op_tsol-l | 1.22 | 0.94 | 33.792 | *0.699×* | *0.568×* (cnab2_s40) | 1.008 | 1.000 |
-| op_tsol-s | 1.68 | 1.4 | 16.940 | 1.4× | 1.13× (cnab2_s40) | 1.001 | 0.998 |
-| op_unet-l | 1.11 | 0.864 | 32.077 | *0.737×* | *0.598×* (cnab2_s40) | 1.003 | 0.998 |
-| op_unet-s | 1.21 | 0.908 | 15.879 | 1.49× | 1.21× (cnab2_s40) | 0.997 | 0.996 |
+| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order | training (epochs, GPU, validation mean) |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| cnab2_s10 | 272 | 19.1 | 5.561 | 4.25× | 3.45× (cnab2_s40) | 0.998 | 1.000 |  |
+| cnab2_s100 | 0.019 | 0.011 | 45.801 | *0.516×* | 1× (cnab2_s100) | 0.996 | 1.001 |  |
+| cnab2_s20 | 686 | 2.75 | 10.392 | 2.27× | 1.85× (cnab2_s40) | 0.982 | 1.011 |  |
+| cnab2_s200 | 4.3e-14 | 3.8e-14 | 90.061 | *0.262×* | 1× (cnab2_s200) | 0.995 | 1.001 |  |
+| cnab2_s40 | 0.382 | 0.088 | 19.187 | 1.23× | 1× (cnab2_s40) | 0.994 | 1.001 |  |
+| cnab2_s50 | 0.093 | 0.055 | 23.638 | 1× | 1× (cnab2_s50) | 0.995 | 1.002 |  |
+| cnab2_s60 | 0.063 | 0.037 | 28.105 | *0.841×* | 1× (cnab2_s60) | 0.995 | 1.001 |  |
+| cnab2_s70 | 0.044 | 0.026 | 32.517 | *0.727×* | 1× (cnab2_s70) | 0.995 | 1.001 |  |
+| cnab2_s80 | 0.033 | 0.019 | 36.922 | *0.64×* | 1× (cnab2_s80) | 0.995 | 1.002 |  |
+| nmrom_accurate_head_k8 | 0.152 | 0.092 | 7.759 | 3.05× | 3.05× (cnab2_s50) | 0.998 | 0.993 |  |
+| nmrom_fast_span16 | 2.96 | 2.02 | 4.379 | 5.4× | 4.38× (cnab2_s40) | 1.001 | 1.006 |  |
+| op_don-l | 51.6 | 36.4 | 47.837 | *0.494×* | *0.401×* (cnab2_s40) | 1.008 | 1.004 | 114 ep, A100 80GB PCIe, 35.1 % |
+| op_don-s | 51.7 | 36.1 | 17.345 | 1.36× | 1.11× (cnab2_s40) | 1.000 | 1.006 | 232 ep, A100 80GB PCIe, 33.5 %, selected |
+| op_fno-l | 1.34 | 0.93 | 11.528 | 2.05× | 1.66× (cnab2_s40) | 1.005 | 1.003 | 88 ep, A100 80GB PCIe, 0.894 %, selected |
+| op_fno-s | 1.56 | 1.1 | 9.060 | 2.61× | 2.12× (cnab2_s40) | 1.008 | 1.004 | 97 ep, A100 80GB PCIe, 1.07 % |
+| op_tsol-l | 1.22 | 0.94 | 33.792 | *0.699×* | *0.568×* (cnab2_s40) | 1.008 | 1.000 | 110 ep, A100 80GB PCIe, 0.942 %, selected |
+| op_tsol-s | 1.68 | 1.4 | 16.940 | 1.4× | 1.13× (cnab2_s40) | 1.001 | 0.998 | 249 ep, A100 80GB PCIe, 1.38 % |
+| op_unet-l | 1.11 | 0.864 | 32.077 | *0.737×* | *0.598×* (cnab2_s40) | 1.003 | 0.998 | 80 ep, A100 80GB PCIe, 0.839 %, selected |
+| op_unet-s | 1.21 | 0.908 | 15.879 | 1.49× | 1.21× (cnab2_s40) | 0.997 | 0.996 | 165 ep, A100 80GB PCIe, 0.917 % |
 
 </details>
 
@@ -106,31 +106,31 @@ Cohort: seed 202609221, 32 cases (held-out, no choice made on it). Comparator (t
 
 Next faster stable CNAB2 setting (not eligible under the rule): 60 steps, 4.74 % (22.912× the NM-ROM accurate error), 109.343 ms; against it the NM-ROM accurate setting would be 6.91×.
 
-Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (perturbed control rejected: True; sampled-estimate max gap 0.552).
+Gates: all_passed pass, bank_rebuild pass, coverage pass, drift pass, finite_reported_arms pass, fom_found pass, order pass, positive_control_failed_as_required pass, reproduction pass, timed_outputs_match pass; independent restricted audit pass (exact recomputation on cases [] + each arm's worst case, 8192-point samples elsewhere; perturbed control rejected: True; sampled-estimate max gap 0.552).
 
 <details><summary>All arms of this job (19)</summary>
 
-| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| cnab2_s10 | 2.58e+03 | 14.9 | 22.079 | 5.74× | 4.95× (cnab2_s60) | 1.009 | 0.998 |
-| cnab2_s100 | 0.022 | 0.01 | 179.080 | *0.708×* | 1× (cnab2_s100) | 1.002 | 0.999 |
-| cnab2_s20 | 9.33e+10 | 1.19 | 39.503 | 3.21× | 2.77× (cnab2_s60) | 1.002 | 1.000 |
-| cnab2_s200 | 6.6e-14 | 5.4e-14 | 353.564 | *0.359×* | 1× (cnab2_s200) | 1.001 | 1.000 |
-| cnab2_s40 | 3.98e+35 | 0.081 | 74.394 | 1.7× | 1.47× (cnab2_s60) | 1.002 | 1.000 |
-| cnab2_s50 | 2.69e+06 | 0.051 | 91.868 | 1.38× | 1.19× (cnab2_s60) | 1.003 | 0.999 |
-| cnab2_s60 | 4.74 | 0.034 | 109.343 | 1.16× | 1× (cnab2_s60) | 1.003 | 0.999 |
-| cnab2_s70 | 0.056 | 0.024 | 126.781 | 1× | 1× (cnab2_s70) | 1.002 | 1.000 |
-| cnab2_s80 | 0.039 | 0.018 | 144.259 | *0.879×* | 1× (cnab2_s80) | 1.002 | 0.999 |
-| nmrom_accurate_head_k8 | 0.207 | 0.091 | 15.820 | 8.01× | 8.01× (cnab2_s70) | 1.002 | 0.999 |
-| nmrom_fast_span16 | 3.24 | 2 | 8.825 | 14.4× | 14.4× (cnab2_s70) | 1.017 | 0.997 |
-| op_don-l | 61.4 | 46.9 | 157.862 | *0.803×* | *0.693×* (cnab2_s60) | 1.000 | 1.000 |
-| op_don-s | 51.4 | 38.9 | 56.195 | 2.26× | 1.95× (cnab2_s60) | 1.000 | 1.001 |
-| op_fno-l | 1.51 | 0.705 | 39.238 | 3.23× | 3.23× (cnab2_s70) | 0.999 | 1.001 |
-| op_fno-s | 1.69 | 0.823 | 30.671 | 4.13× | 4.13× (cnab2_s70) | 0.998 | 1.001 |
-| op_tsol-l | 2.39 | 1.12 | 36.005 | 3.52× | 3.52× (cnab2_s70) | 1.002 | 0.997 |
-| op_tsol-s | 1.16 | 0.6 | 19.060 | 6.65× | 6.65× (cnab2_s70) | 1.005 | 0.999 |
-| op_unet-l | 2.29 | 1.2 | 88.343 | 1.44× | 1.44× (cnab2_s70) | 1.001 | 0.999 |
-| op_unet-s | 4.53 | 2.19 | 40.198 | 3.15× | 3.15× (cnab2_s70) | 1.003 | 0.998 |
+| Arm | Worst (%) | Median (%) | GPU ms | vs rule FOM | vs matched CNAB2 | drift | order | training (epochs, GPU, validation mean) |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| cnab2_s10 | 2.58e+03 | 14.9 | 22.079 | 5.74× | 4.95× (cnab2_s60) | 1.009 | 0.998 |  |
+| cnab2_s100 | 0.022 | 0.01 | 179.080 | *0.708×* | 1× (cnab2_s100) | 1.002 | 0.999 |  |
+| cnab2_s20 | 9.33e+10 | 1.19 | 39.503 | 3.21× | 2.77× (cnab2_s60) | 1.002 | 1.000 |  |
+| cnab2_s200 | 6.6e-14 | 5.4e-14 | 353.564 | *0.359×* | 1× (cnab2_s200) | 1.001 | 1.000 |  |
+| cnab2_s40 | 3.98e+35 | 0.081 | 74.394 | 1.7× | 1.47× (cnab2_s60) | 1.002 | 1.000 |  |
+| cnab2_s50 | 2.69e+06 | 0.051 | 91.868 | 1.38× | 1.19× (cnab2_s60) | 1.003 | 0.999 |  |
+| cnab2_s60 | 4.74 | 0.034 | 109.343 | 1.16× | 1× (cnab2_s60) | 1.003 | 0.999 |  |
+| cnab2_s70 | 0.056 | 0.024 | 126.781 | 1× | 1× (cnab2_s70) | 1.002 | 1.000 |  |
+| cnab2_s80 | 0.039 | 0.018 | 144.259 | *0.879×* | 1× (cnab2_s80) | 1.002 | 0.999 |  |
+| nmrom_accurate_head_k8 | 0.207 | 0.091 | 15.820 | 8.01× | 8.01× (cnab2_s70) | 1.002 | 0.999 |  |
+| nmrom_fast_span16 | 3.24 | 2 | 8.825 | 14.4× | 14.4× (cnab2_s70) | 1.017 | 0.997 |  |
+| op_don-l | 61.4 | 46.9 | 157.862 | *0.803×* | *0.693×* (cnab2_s60) | 1.000 | 1.000 | 35 ep, A100 80GB PCIe, 46.8 % |
+| op_don-s | 51.4 | 38.9 | 56.195 | 2.26× | 1.95× (cnab2_s60) | 1.000 | 1.001 | 70 ep, A100 80GB PCIe, 39.3 %, selected |
+| op_fno-l | 1.51 | 0.705 | 39.238 | 3.23× | 3.23× (cnab2_s70) | 0.999 | 1.001 | 110 ep, H200, 0.76 %, selected |
+| op_fno-s | 1.69 | 0.823 | 30.671 | 4.13× | 4.13× (cnab2_s70) | 0.998 | 1.001 | 130 ep, H200, 0.862 % |
+| op_tsol-l | 2.39 | 1.12 | 36.005 | 3.52× | 3.52× (cnab2_s70) | 1.002 | 0.997 | 85 ep, A100 80GB PCIe, 1.26 % |
+| op_tsol-s | 1.16 | 0.6 | 19.060 | 6.65× | 6.65× (cnab2_s70) | 1.005 | 0.999 | 510 ep, H200, 0.62 %, selected |
+| op_unet-l | 2.29 | 1.2 | 88.343 | 1.44× | 1.44× (cnab2_s70) | 1.001 | 0.999 | 62 ep, H200, 1.24 %, selected |
+| op_unet-s | 4.53 | 2.19 | 40.198 | 3.15× | 3.15× (cnab2_s70) | 1.003 | 0.998 | 51 ep, H200, 2.35 % |
 
 </details>
 
@@ -141,11 +141,12 @@ Both sides draw from training seed 202609201, the same 512 trajectories. The ope
 ## Caveats that travel with these rows
 
 - Development comparisons at 32³/64³: the NM-ROM setting was chosen on the evaluation cases.
-- 96³: operator training split across GPU types (A4); the panel needed two reruns for memory (pn96 OOM in PyTorch warm-up, pn96b OOM from held timed outputs; A6, A7), with identical accuracy passes; only pn96c is reported.
+- 96³: operator training split across GPU types (A4): FNO, U-Net and Transolver-small on H200, Transolver-large and both DeepONets on A100-80G. Transolver size and training hardware are confounded (small, H200, selected, versus large, A100, fewer epochs); the selection is valid under the validation rule but cannot say which size would win with equal work. All inference timings are from the one A100 panel. The panel needed two reruns for memory (pn96 OOM in PyTorch warm-up, pn96b OOM from held timed outputs; A6, A7); their accuracy passes agree with pn96c within the reproduction tolerance (max 3.4e-13 absolute); only pn96c is reported. The held-out cohort was opened for the fourth time overall (shift-head evaluation plus three panel attempts).
+- Timed-field parity (A3) in pn96c compares the final A2 repetition of every case on the 8192 sample points, alongside full-grid error parity; pn32/pn64 had error parity only.
 - At 32³ the next faster CNAB2 setting misses the rule by 0.4 % of the NM-ROM error (see the mesh section); against it the accurate setting would be slower than the full-order solver.
 - Timed-output parity in pn32/pn64 compares the error of each timed output with the accuracy pass (error-metric parity), not the fields themselves (DESIGN A3).
-- The audit is restricted: exact recomputation on cases {0, 1, worst} per arm, and 8192-point sampled estimates elsewhere, which are diagnostic only (they scatter by tens of percent for localised errors); the truth solver is not re-solved.
-- Operators are budget-limited, not converged: 3000 s bought 80 to 760 epochs depending on family and mesh (Training column).
+- The audit is restricted: exact recomputation on cases {0, 1, worst} per arm at 32³/64³ and on the worst case only at 96³, and 8192-point sampled estimates elsewhere, which are diagnostic only (they scatter by tens of percent for localised errors); the truth solver is not re-solved.
+- Operators are budget-limited: 3000 s bought 62 to 624 epochs for the selected arms depending on family and mesh (Training column); most stopped on the budget while still improving on validation, which does not by itself prove they were far from converged.
 
 ## Glossary
 

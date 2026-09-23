@@ -578,7 +578,8 @@ def arm_data(mesh, kind, rule, Rp, M, lib=None):
     d = dict(Qb=tuple(mesh['Qb'][:nb]), Rq=mesh['Rq'][:Rp, :Rp], A=mesh['A'][:M, :Rp], lam=mesh['lam'][:M])
     assert M <= mesh['A'].shape[0] and Rp <= mesh['A'].shape[1], (M, Rp, mesh['A'].shape)
     if rule == 'tensor':
-        d['Ts'] = jnp.asarray(mesh['Tsym'][:M, :Rp, :Rp])
+        full = M == mesh['Tsym'].shape[0] and Rp == mesh['Tsym'].shape[1]
+        d['Ts'] = mesh['Tsym'] if full else jnp.asarray(mesh['Tsym'][:M, :Rp, :Rp])      # no copy of the full table
     elif rule == 'exact':
         d['G'] = jnp.asarray(mesh['G'][:, :Rp])
     else:
@@ -590,25 +591,26 @@ def arm_data(mesh, kind, rule, Rp, M, lib=None):
     return jax.tree_util.tree_map(lambda a: block(jnp.asarray(a)), d)
 
 
-def rho_states(C, mesh, data, rule, M):
-    """rho(u) = ||rule(u) - Phi^T a_upwind(u)|| / ||Phi^T a_upwind(u)|| for coefficient rows C (k, R') of G_hat[:, :R']."""
-    n = mesh['n']
-    idx = tuple(jnp.asarray(mesh['kxyz'][:M, a]) for a in range(3))
-    Rp = C.shape[1]
-    G = mesh['G'][:, :Rp]
+def make_rho(n, rule, M, kxyz):
+    """Jitted rho over a batch of coefficient rows: rho(u) = ||rule(u) - Phi^T a_upwind(u)|| / ||Phi^T a_upwind(u)||
+    for u = G c with G the arm's (N, R') ordered bank at this mesh; also the minimum decoded value per state."""
+    idx = tuple(jnp.asarray(np.asarray(kxyz)[:M, a]) for a in range(3))
     dx = 1.0 / (n - 1)
     adv_pts = jax.vmap(lambda us: advect_points(us, dx))
 
-    @jax.jit
     def one(c, G, data):
-        ex = phiT(upwind(G @ c, n)[None], n, idx)[0]
+        u = G @ c
+        ex = phiT(upwind(u, n)[None], n, idx)[0]
         if rule == 'tensor':
             ru = 0.5 * jnp.einsum('mij,i,j->m', data['Ts'], c, c)
         else:
             ru = data['Pq'].T @ adv_pts(jnp.einsum('msr,r->ms', data['G7'], c))
-        return jnp.linalg.norm(ru - ex) / jnp.maximum(jnp.linalg.norm(ex), 1e-300), jnp.min(G @ c)
-    out = [one(c, G, data) for c in C]
-    return np.array([float(a) for a, _ in out]), np.array([float(b) for _, b in out])
+        return jnp.linalg.norm(ru - ex) / jnp.maximum(jnp.linalg.norm(ex), 1e-300), jnp.min(u)
+
+    @jax.jit
+    def batch(C, G, data):
+        return jax.lax.map(lambda c: one(c, G, data), C)
+    return batch
 
 
 def rel_errors(fields, ref):

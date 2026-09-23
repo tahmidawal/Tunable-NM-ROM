@@ -19,7 +19,8 @@ def eligibility(arm, cert):
     if cert is None:
         why.append('no certificate')
     elif not cert['confirmed']:
-        why.append('certificate not confirmed (rho_max by draw ' + ', '.join(f'{r:.3f}' for r in cert['rho_max_draws']) + ')')
+        why.append('certificate not confirmed (rho_max by draw ' +
+                   ', '.join('non-finite' if r is None else f'{r:.3f}' for r in cert['rho_max_draws']) + ')')
     if not arm['all_finite']:
         why.append('non-finite output')
     if reasons.get('3', 0):
@@ -55,7 +56,8 @@ def main():
         cert = Ce['certificates'].get(name)
         ok, why = eligibility(arm, cert)
         rows[name] = dict(spec=arm['spec'], worst_evolved=arm['worst_evolved'], median_ms=tim.get(name, {}).get('median_ms'),
-                          eligible=ok, why_not=why, rho_max=None if cert is None else max(cert['rho_max_draws']),
+                          eligible=ok, why_not=why,
+                          rho_max=None if cert is None or None in cert['rho_max_draws'] else max(cert['rho_max_draws']),
                           certified=None if cert is None else cert['confirmed'],
                           min_decoded=None if cert is None else min(d['umin'] for d in cert['draws']),
                           iterations_per_query=arm['lm_iterations_per_query_median'])

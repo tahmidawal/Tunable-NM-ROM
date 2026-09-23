@@ -172,6 +172,8 @@ def main():
         bar = cfg['rho_bar']
         for name, s in arms.items():
             cert = dict(draws=[], bar=bar)
+            Garm = mesh['G'] if s['Rp'] == R else block(mesh['G'][:, :s['Rp']])
+            rho_fn = C.make_rho(n, s['rule'], s['M'], mesh['kxyz'])
             for di, (seed, count) in enumerate(cfg['cert_draws']):
                 tab = C.table(seed, count)
                 rows = []
@@ -180,11 +182,12 @@ def main():
                     o = run(name, u0, float(tab['nu'][j]))
                     internal = o[1]
                     Cs = jax.vmap(lambda w: coefs[name](w, hps[name]))(internal[1:])
-                    rho, umin = C.rho_states(Cs, mesh, data[name], s['rule'], s['M'])
-                    rows.append(dict(row=j, rho=rho.tolist(), rho_max=float(rho.max()), umin=float(umin.min()),
+                    rho, umin = map(np.asarray, rho_fn(Cs, Garm, data[name]))
+                    rmax = float(rho.max()) if np.isfinite(rho).all() else float('inf')   # non-finite rho fails
+                    rows.append(dict(row=j, rho=rho.tolist(), rho_max=rmax, umin=float(umin.min()),
                                      reasons=np.asarray(o[3]).tolist(), iterations=np.asarray(o[2]).tolist(),
                                      finite=bool(np.isfinite(np.asarray(o[0])).all())))
-                    if di == 0 and j == 0 or float(rho.max()) >= max(r['rho_max'] for r in rows):
+                    if j == 0 or rmax >= max(r['rho_max'] for r in rows):
                         np.savez(out / 'fields' / f'cert_{name}_d{di}.npz', coefs=np.asarray(Cs), rho=rho,
                                  seed=seed, row=j, arg=int(np.argmax(rho)))
                 rm = max(r['rho_max'] for r in rows)
@@ -195,6 +198,7 @@ def main():
             cert['confirmed'] = all(d['passed'] for d in cert['draws'])
             cert['rho_max_draws'] = [d['rho_max'] for d in cert['draws']]
             rep['certificates'][name] = cert
+            del Garm
             save()
         rep['gates']['bad_control_not_confirmed'] = all(not c['confirmed'] for nm, c in rep['certificates'].items()
                                                         if 'BAD' in nm)

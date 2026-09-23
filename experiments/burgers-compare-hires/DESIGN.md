@@ -211,3 +211,13 @@ No number from `p2048b` is quoted as a result.
   pickup unnecessary.
 - `p2048e`: the full $2048^2$ panel, unchanged, **--mem 400G**, all five operators staged from committed records
   (no late pickup, no in-job training).
+
+## A7 (2026-09-23 11:25 EDT, before either job starts) — pre-registered fallback for 2048^2
+
+Slurm estimates `p2048e` (H200, 400G) will start at ~21:00 EDT. A fallback `p2048f` — the identical panel on an
+**A100-80G** (400G host) — is submitted now and runs concurrently (the lane's 2-job cap). The decision rule, fixed
+now, before any number from either exists: **`p2048e` is the accepted $2048^2$ panel if it completes with its audit
+by 2026-09-24 12:00 EDT; otherwise `p2048f` is.** The choice depends only on completion and time, never on the
+numbers; the unused job is reported as run-and-not-used, and no ratio ever mixes the two jobs. Known consequence of the
+A100: the quadratic manifold at $r=64$ (a 72 GB bank on top of the 17 GB NM-ROM bank) cannot fit and will be dropped
+by the OOM policy and reported as such in `p2048f`.

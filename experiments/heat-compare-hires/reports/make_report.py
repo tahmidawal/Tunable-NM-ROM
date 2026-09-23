@@ -4,7 +4,7 @@ import hashlib, json, sys
 from pathlib import Path
 
 LANE = Path(__file__).resolve().parent.parent
-PANELS = [('pn1024b', 1024), ('pn2048d', 2048), ('pn4096c', 4096)]
+PANELS = [('pn1024b', 1024), ('pn2048d', 2048), ('pn4096d', 4096)]
 TRAIN = {1024: 'tr1024a', 2048: 'tr2048'}
 SHOW = {'nmrom': 'NM-ROM (ours)', 'linear_bank': 'linear bank (q=R rung)', 'pod': 'POD', 'qm': 'quadratic manifold',
         'operator': 'neural operator', 'control': 'control (not a FOM candidate)', 'fom': 'CN–CG full-order'}

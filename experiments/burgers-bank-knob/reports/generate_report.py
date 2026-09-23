@@ -113,6 +113,17 @@ def main():
         out.append(f"Order effect: pooled gap {f(oe.get('pooled_gap'), 4)} (n long {oe.get('pooled_n_long')}), worst evaluable arm "
                    f"{f(oe.get('worst_evaluable_arm_gap'), 4)} over {oe.get('evaluable_arms')} arms.")
         out.append('')
+    bx = LANE / 'checks' / 'bx2048-summary.json'
+    if bx.exists():
+        s = json.loads(bx.read_text())
+        h = hashlib.sha256(bx.read_bytes()).hexdigest()
+        out += [f"## Exploratory (DESIGN A2, not a selection input): linear-rung certificate remedies at $2048^2$ — job {s['job_id']}, {s['gpu']}", '',
+                f"Summary `checks/bx2048-summary.json` sha256 `{h}`. Same protocol as the main panel; the rule's picks re-timed beside them.", '',
+                '| arm | unknowns | M | exact first step | worst evolved % | GPU ms | ρ max (cert / confirm) | certificate | speedup |', '|---|---|---|---|---|---|---|---|---|']
+        for t in sorted([t for t in s['table'].values() if t['family'] == 'rom' and t['timed']], key=lambda t: (-t['R_prime'], t['M'])):
+            out.append(f"| `{t['name']}` | {t['unknowns']} | {t['M']} | {bool(t['exact_steps'])} | {f(t['worst_evolved_percent'])} | "
+                       f"{f(t['median_gpu_ms'], 1)} | {f(t['rho_max_cert'], 4)} / {f(t['rho_max_confirmation'], 4)} | {t['certificate']} | {sp(t.get('speedup_gpu'))} |")
+        out.append('')
     if hold.exists():
         s = json.loads(hold.read_text())
         h = hashlib.sha256(hold.read_bytes()).hexdigest()

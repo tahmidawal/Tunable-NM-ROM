@@ -285,6 +285,21 @@ Gates: log_says_backend_gpu=True, complete=True, x64_and_highest=True, cohort_ha
 
 Order effect: pooled gap 0.0025 (n long 184), worst evaluable arm 0.0199 over 14 arms.
 
+## Exploratory (DESIGN A2, not a selection input): linear-rung certificate remedies at $2048^2$ — job 4202862, NVIDIA A100 80GB PCIe
+
+Summary `checks/bx2048-summary.json` sha256 `d1155302d7376111c585708f86617bae0d026d1abc2ca35f4217f00c4ec9a539`. Same protocol as the main panel; the rule's picks re-timed beside them.
+
+| arm | unknowns | M | exact first step | worst evolved % | GPU ms | ρ max (cert / confirm) | certificate | speedup |
+|---|---|---|---|---|---|---|---|---|
+| `R512_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 512 | 1024 | False | 0.518 | 102.0 | 0.1195 / 0.0872 | not confirmed (4/5 draws, confirmation True) | 2.90× |
+| `R384_lin_M768_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 384 | 768 | False | 0.433 | 75.3 | 0.1258 / 0.0789 | not confirmed (3/5 draws, confirmation True) | 3.94× |
+| `R384_q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 272 | 1088 | False | 0.534 | 176.3 | 0.0964 / 0.1082 | confirmed | 1.68× |
+| `R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1` | 384 | 1536 | True | 0.219 | 2,460.3 | 0.0486 / 0.0470 | confirmed | 0.12× |
+| `R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 384 | 1536 | False | 0.219 | 89.4 | 0.1614 / 0.1068 | not confirmed (3/5 draws, confirmation True) | 3.31× |
+| `R256_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 256 | 512 | False | 1.855 | 52.7 | 0.0504 / 0.0786 | confirmed | 2.92× |
+| `R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1` | 256 | 1024 | True | 0.729 | 1,181.3 | 0.0336 / 0.0541 | confirmed | 0.25× |
+| `R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2` | 128 | 512 | False | 1.872 | 34.6 | 0.0479 / 0.0846 | confirmed | 4.45× |
+
 ## Glossary
 
 - **$R'$** — how many columns of the rotated spatial bank a query uses (of $R=512$). The rotation is computed once, offline, from training codes only, so the first columns carry the most training energy.

@@ -33,3 +33,5 @@ Lane dir `experiments/heat-compare-hires/`. Design + amendments: `DESIGN.md`. Na
 | pn4096d | 4213233 | panel 4096² (A6) | H200 pax011 | COMPLETED, audit passed, status final; remote removed; namespace empty |
 | pn2048d | 4211204 | panel 2048² (A4) | H200 pax010 | COMPLETED, audit passed, status final; remote removed (and tr2048) |
 | pn4096 | — | panel 4096² (no operators) | H200 | staged |
+
+## STATE (2026-09-23 ~11:20 EDT): lane closed. All three meshes final (pn1024b, pn2048d, pn4096d); namespace deleted; lab-log entry appended (copy: checks/2026-09-23-lab-log-entry.md). Branch local only (never push).

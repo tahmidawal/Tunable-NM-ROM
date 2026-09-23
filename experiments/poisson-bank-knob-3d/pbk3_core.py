@@ -208,9 +208,14 @@ def neighbour_phase(subjects, long_sub, invoke, record, main_rows, cfg, uuid0, o
                 sub = subjects[int(i)]
                 if v['cg']:
                     invoke(long_sub, case)
-                burn(cfg['burn_seconds'])
+                if v.get('burn', True):
+                    burn(cfg['burn_seconds'])
                 if v['guard']:
                     assert gpu_uuid() == uuid0
+                if v.get('sleep'):
+                    time.sleep(v['sleep'])
+                for _ in range(v.get('repeat', 1) - 1):      # back-to-back calls; the last one is recorded
+                    invoke(sub, case)
                 field, row = invoke(sub, case)
                 rec = record(sub, case, 0, 'neighbour', field, row, long_sub['name'] if v['cg'] else None)
                 rec['variant'] = v['name']

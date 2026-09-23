@@ -1,0 +1,102 @@
+{
+ "attempt": "c32diag2",
+ "intervals": 32,
+ "order_seed": 923232,
+ "cohort": "development",
+ "case_count": 16,
+ "problem": "cube",
+ "prep": "prep_cube.npz",
+ "weak_tests": 512,
+ "lm_budget": 160,
+ "lm_tolerance": 1e-06,
+ "initial_starts": 3,
+ "field_chunk": 8192,
+ "R_ladder": [
+  16,
+  32,
+  48,
+  64,
+  96,
+  128
+ ],
+ "q_ladder": [
+  0,
+  32,
+  96
+ ],
+ "parity_q": [
+  0,
+  96
+ ],
+ "parity_limit": 1e-10,
+ "engine_parity_limit": 1e-10,
+ "dense_engine_max": 64,
+ "cg_iterations_per_interval": 40,
+ "cg_fast": [
+  0.3,
+  0.1,
+  0.03,
+  0.01,
+  0.003
+ ],
+ "cg_slow": [
+  0.001,
+  0.0001
+ ],
+ "repetitions": 2,
+ "slow_repetitions": 3,
+ "burn_seconds": 0.1,
+ "neighbour_tolerance": 0.001,
+ "neighbour_cases": 6,
+ "neighbour_limit": 1.1,
+ "gate_scope": "fused_device_seconds",
+ "profile_reps": 3,
+ "accepted_checkpoint_sha256": {
+  "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+  "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+ },
+ "neighbour_variants": [
+  {
+   "name": "after_cg",
+   "cg": true,
+   "guard": true
+  },
+  {
+   "name": "control_no_cg",
+   "cg": false,
+   "guard": true
+  },
+  {
+   "name": "noguard",
+   "cg": false,
+   "guard": false
+  },
+  {
+   "name": "noguard_sleep2ms",
+   "cg": false,
+   "guard": false,
+   "sleep": 0.002
+  },
+  {
+   "name": "noguard_repeat3",
+   "cg": false,
+   "guard": false,
+   "repeat": 3
+  },
+  {
+   "name": "guard_repeat3",
+   "cg": false,
+   "guard": true,
+   "repeat": 3
+  },
+  {
+   "name": "noburn_noguard_repeat3",
+   "cg": false,
+   "guard": false,
+   "burn": false,
+   "repeat": 3
+  }
+ ],
+ "neighbour_gate_variant": "after_cg",
+ "neighbour_include_cg": true
+}

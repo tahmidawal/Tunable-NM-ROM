@@ -354,7 +354,7 @@ def main():
         save()
     # ---- neighbour (order-effect) gate: each ROM arm immediately after a long CG solve
     long_sub = [s for s in slow if s['tolerance'] == cfg['neighbour_tolerance']][0]
-    R_['neighbour'], R_['neighbour_gate'] = P3.neighbour_phase(subjects, long_sub, invoke, record,
+    R_['neighbour'], R_['neighbour_gate'] = P3.neighbour_phase(subjects + (fast if cfg.get('neighbour_include_cg') else []), long_sub, invoke, record,
                                                              R_['invocations'], cfg, uuid0, order)
     gate_rows = [r for r in R_['neighbour_gate']['rows'] if r['variant'] == R_['neighbour_gate']['gate_variant']]
     print('NEIGHBOUR', R_['neighbour_gate']['passed'], max(r['ratio'] for r in gate_rows), flush=True)

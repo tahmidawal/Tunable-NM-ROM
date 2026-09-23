@@ -15,7 +15,15 @@ control. No retraining, frozen checkpoint, frozen rules, no re-certification.
 - Design written and independently audited (see `reports/`). Codex could not run (bubblewrap
   sandbox failure, a recorded landmine on this box); an independent subagent audited instead.
 - Local $64^2$ smoke run: base arms register, parity passes at ~2e-14 with identical integers.
-- Nothing submitted yet. Jobs used 0 / 4.
+- **br1024 submitted: job 4186871** (H200, 240G, 8 h), 2026-09-22 21:45 EDT. Jobs used 1 / 4.
+- **The coordinator's 4096² addendum needs no job on the dev6 cohort.** `reports/unify_4096_ratio.py`
+  (run, output in `reports/2026-09-22-4096-single-job-ladder.md`) shows job 4079320 already timed every
+  tunability-ladder rung AND both comparators in one allocation: applying the paper's rule inside that one
+  job gives 9.96× for the fast arm (comparator `lean_nt1e-3_l1e-3_dt01`, 405.52 ms) and 6.77 / 4.67 / 4.12 /
+  4.87 / 3.96× for the other rungs (comparator `lean_nt3e-3_l3e-3_dt005`). Both tables can print 9.96×.
+  The hold64 job 4079321 timed only four full-order settings (no dt = 0.01 arms), so its 13.24× is
+  rule-correct for the grid it tested but not comparable; that, not the dev6 ladder, is what a fourth job
+  would fix.
 
 ## Files
 
@@ -59,7 +67,7 @@ jaxrun /home/tahmid/Dev/.venv/bin/python experiments/burgers-repanel/repanel.py 
 
 | attempt | job id | mesh | GPU | state | summary |
 |---|---|---|---|---|---|
-| br1024 | — | $1024^2$ | H200 | not submitted | |
+| br1024 | 4186871 | $1024^2$ | H200, 240G, 8 h | submitted 2026-09-22 21:45 EDT | |
 | br512 | — | $512^2$ | — | not submitted | |
 | br256 | — | $256^2$ | — | not submitted | |
 

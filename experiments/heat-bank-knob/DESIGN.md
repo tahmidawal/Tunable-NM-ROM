@@ -91,3 +91,11 @@ the largest mesh.
 
 The held-out cohorts were opened before (Table 1); nothing is trained or tuned on them here. Timing noise between
 jobs is not a factor in any ratio (every ratio divides two times of one job).
+
+## Addendum 1 (2026-09-23 ~07:00 EDT, after the h3d 32³ mesh was seen, before any 256³ data)
+
+At 32³ the 3D linear rung at R'=R (held-out 0.0695 %, batched fit) is more accurate than every CN–CG setting of the grid;
+the tight setting (Δt 0.025, rtol 1e-6) is bounded by its CN time error (0.078 %). The Table-1 rule then has no comparator
+for that row. The 256³ job (h3d256, resubmitted) adds Δt 0.0125 with rtol 1e-6 and 1e-4. The rule is unchanged. For
+32³–128³ (job h3d, grid unchanged), rows without a comparator are reported as such, with the ratio to the most accurate
+tested FOM (named) given separately and labelled as a comparison against a LESS accurate FOM.

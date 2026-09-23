@@ -32,7 +32,11 @@ D3 = dict(dim=3, model=dict(kind='mlp', bank='vp_R320/bank.pkl', head='vp_R320/h
           full_audit_cases=2, full_audit_max_unknowns=300000, cg_arms=CG,
           neighbour=dict(cg='fom_cncg_dt0.05_rtol1e-3', cohort='heldout_sealed_921099', cases=3, reps=3),
           profile=dict(meshes=[128]), paper_fast={'cn': 'nmrom_R320_q0_cn', 'bf': 'nmrom_R320_q0_bf'})
-cfgs = {'h2d.json': D2, 'h3d.json': D3, 'h3d256.json': dict(D3, meshes=[256], parity=dict(meshes=[], q=[0, 144, 288]), profile=dict(meshes=[256]))}
+# 2026-09-23 addendum (before any 256^3 data): the 3D linear rung at R'=R (0.0695 % at 32^3) is more accurate than every CN-CG
+# setting of the grid (the tight dt 0.025 rtol 1e-6 is CN-time-error bound at ~0.078 %), so the rule had no comparator; the 256^3
+# grid adds dt 0.0125 (rtol 1e-6, 1e-4). Rule unchanged.
+CG256 = dict(CG, **{'fom_cncg_dt0.0125_rtol1e-6': dict(dt=.0125, tolerance=1e-6), 'fom_cncg_dt0.0125_rtol1e-4': dict(dt=.0125, tolerance=1e-4)})
+cfgs = {'h2d.json': D2, 'h3d.json': D3, 'h3d256.json': dict(D3, meshes=[256], parity=dict(meshes=[], q=[0, 144, 288]), profile=dict(meshes=[256]), cg_arms=CG256)}
 sm_cg = {k: CG[k] for k in ('fom_cncg_dt0.025_rtol1e-6_NAMED', 'fom_cncg_dt0.05_rtol1e-3')}
 cfgs['smoke2d.json'] = dict(D2, local_smoke=True, meshes=[64, 128], ladder=[128, 32], q_by_Rp={'128': [0, 32], '32': [0, 24]},
                             parity=dict(meshes=[64, 128], q=[0, 32]), cohorts=[['validation_791001', 791001, 1], ['dev_790711', 790711, 2]],

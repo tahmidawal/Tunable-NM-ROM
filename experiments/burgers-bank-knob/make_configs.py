@@ -151,7 +151,31 @@ def hold64():
     return c
 
 
+def explore(L):
+    """EXPLORATORY (DESIGN amendment A2), not an input of the pre-registered selection: can the linear rung at high
+    R' be made to pass the lat64 certificate (its failures sit at the initial state k = 0) by (i) fewer weak tests,
+    M = 2R', or (ii) an exact first step (x1), and at what cost. References: the rule's picks at this mesh."""
+    c = base(L, f'bx{L}')
+    acc, gacc = accurate(L)
+    x1 = dict(acc, exact_steps=1)
+    arms = []
+    for Rp in (512, 384, 256):
+        arms.append(dict(model='lin', Rp=Rp, M=2 * Rp, rule='lat64', gtol=gacc, variant=acc, family='explore'))
+    for Rp in (384, 256):
+        arms.append(dict(model='lin', Rp=Rp, M=4 * Rp, rule='lat64', gtol=gacc, variant=x1, family='explore'))
+    arms.append(dict(model='lin', Rp=384, M=4 * 384, rule='lat64', gtol=gacc, variant=acc, family='b'))
+    arms.append(dict(model='trunc', Rp=384, q=256, M=1088, rule='lat64', gtol=gacc, variant=acc, family='c'))
+    arms.append(dict(model='lin', Rp=128, M=512, rule='lat64', gtol=gacc, variant=acc, family='b'))
+    arms.append(dict(model='trunc', Rp=512, q=256, M=1088, rule='bad0', gtol=gacc, variant=acc, family='control',
+                     untimed=True))
+    c.update(arms=arms, keep_parent=False, parity_pairs=[],
+             audit_arms=['fft_tight', arm_name(arms[0]), arm_name(arms[3])],
+             purpose='EXPLORATORY (DESIGN A2): linear-rung certificate remedies at this mesh; not a selection input')
+    return c
+
+
 def main():
+    (HERE / 'config-x2048.json').write_text(json.dumps(explore(2048), indent=1) + '\n')
     if (HERE / 'selection-4096.json').exists():
         (HERE / 'config-h64.json').write_text(json.dumps(hold64(), indent=1) + '\n')
     for L in (256, 512, 1024, 2048, 4096):

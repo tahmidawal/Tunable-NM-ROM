@@ -118,3 +118,12 @@ $R'=384/512$), whose error sits on shock fronts that every-4th-node subsampling 
 restriction, not of the job: the exact full-grid recomputation of the audit case agrees to $10^{-18}$ for those
 same arms. The gate is now one-sided in spirit: restricted/full ratio in $[0.5, 1.05]$ for every (arm, case) (a
 swapped case gives ratios ~$10^2$ and is still detected); the legacy two-sided result is reported beside it.
+
+**A2 (2026-09-23 ~05:00 EDT, after bk1024b/bk2048b/bk512b; exploratory, NOT an input of the §6 rule).** At
+$1024^2$ and $2048^2$ the linear rung at $R'\ge 256$ fails the `lat64` certificate, and every failing state is
+the initial fitted state ($k=0$; $R'=512$ also $k=1,2$); at $512^2$, where the accurate variant solves the first
+step exactly (`x1`), the linear rung certifies up to $R'=384$. One extra job `bx2048` ($2048^2$, A100-80G) measures
+two remedies on the linear rung at $R'\in\{512,384,256\}$: (i) $M=2R'$ tests instead of $4R'$; (ii) the exact
+first step (`x1`) at $M=4R'$ for $R'\in\{384,256\}$, with the rule's $2048^2$ picks and the `bad0` control
+beside them, same certificate and timing protocol. Its arms are reported separately and never enter the §6
+selection or the hold64 job.

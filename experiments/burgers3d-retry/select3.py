@@ -84,6 +84,7 @@ def main():
         cert = Ce['certificates'].get(name)
         ok, why = eligibility(arm, cert)
         rows[name] = dict(spec=arm['spec'], worst_evolved=arm['worst_evolved'], median_ms=tim.get(name, {}).get('median_ms'),
+                          median_evolved=arm.get('median_worst_evolved'),
                           eligible=ok, why_not=why,
                           rho_max=None if cert is None or None in cert['rho_max_draws'] else max(cert['rho_max_draws']),
                           certified=None if cert is None else cert['confirmed'],

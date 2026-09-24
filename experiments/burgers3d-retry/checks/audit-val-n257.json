@@ -1,0 +1,104 @@
+{
+ "mesh": 257,
+ "job": "4249218",
+ "checks": {
+  "restricted_errors": {
+   "n": 2560,
+   "worst_rel": 1.1105677663652218e-15,
+   "passed": true
+  },
+  "control_swapped_case_detected": true,
+  "control_perturbed_error_detected": true,
+  "full_errors_case0": {
+   "arms": [
+    [
+     "span_R512_fsc_dt0.005",
+     3.476931267221324e-15
+    ]
+   ],
+   "passed": true
+  },
+  "rho_numpy": {
+   "states": 6,
+   "worst_diff": 1.745565497701662e-17,
+   "rows": [
+    {
+     "arm": "span_R256_fsc_dt0.01",
+     "file": "cert_span_R256_fsc_dt0.01_d4.npz",
+     "rho_numpy": 0.00047999961369809234,
+     "rho_recorded": 0.00047999961369809543,
+     "diff": 3.0899761915836876e-18,
+     "tol": 1e-08,
+     "ok": true
+    },
+    {
+     "arm": "span_R512_fsc_dt0.01",
+     "file": "cert_span_R512_fsc_dt0.01_d4.npz",
+     "rho_numpy": 8.518203073995766e-05,
+     "rho_recorded": 8.51820307399543e-05,
+     "diff": 3.3610267347050637e-18,
+     "tol": 1e-08,
+     "ok": true
+    },
+    {
+     "arm": "span_R128_fsc_dt0.005",
+     "file": "cert_span_R128_fsc_dt0.005_d1.npz",
+     "rho_numpy": 0.0005593253274933527,
+     "rho_recorded": 0.0005593253274933352,
+     "diff": 1.745565497701662e-17,
+     "tol": 1e-08,
+     "ok": true
+    },
+    {
+     "arm": "span_R192_fsc_dt0.01",
+     "file": "cert_span_R192_fsc_dt0.01_d4.npz",
+     "rho_numpy": 0.0004669983017840083,
+     "rho_recorded": 0.0004669983017840216,
+     "diff": 1.328147661294743e-17,
+     "tol": 1e-08,
+     "ok": true
+    },
+    {
+     "arm": "span_R384_fsc_dt0.005",
+     "file": "cert_span_R384_fsc_dt0.005_d4.npz",
+     "rho_numpy": 0.0001407945625370562,
+     "rho_recorded": 0.0001407945625370465,
+     "diff": 9.703609443745265e-18,
+     "tol": 1e-08,
+     "ok": true
+    },
+    {
+     "arm": "span_R64_fsc_dt0.005",
+     "file": "cert_span_R64_fsc_dt0.005_d1.npz",
+     "rho_numpy": 0.0013516379581473676,
+     "rho_recorded": 0.0013516379581473834,
+     "diff": 1.5829351718288365e-17,
+     "tol": 1e-08,
+     "ok": true
+    }
+   ],
+   "passed": true
+  },
+  "control_downwind_mutation_detected": true,
+  "selection_matches_artifact": {
+   "recomputed": {
+    "accurate": "span_R512_fsc_dt0.01",
+    "fast": "span_R256_fsc_dt0.01",
+    "fom": "fom_dt0.01_nt0.01_lt0.1"
+   },
+   "artifact": {
+    "accurate": "span_R512_fsc_dt0.01",
+    "fast": "span_R256_fsc_dt0.01",
+    "fom": "fom_dt0.01_nt0.01_lt0.1"
+   },
+   "passed": true
+  }
+ },
+ "failures": [],
+ "recomputed_selection": {
+  "accurate": "span_R512_fsc_dt0.01",
+  "fast": "span_R256_fsc_dt0.01",
+  "fom": "fom_dt0.01_nt0.01_lt0.1"
+ },
+ "passed": true
+}

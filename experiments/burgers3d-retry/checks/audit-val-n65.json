@@ -789,12 +789,26 @@
    ],
    "passed": true
   },
-  "control_downwind_mutation_detected": true
+  "control_downwind_mutation_detected": true,
+  "selection_matches_artifact": {
+   "recomputed": {
+    "accurate": "span_R512_fsc_dt0.005",
+    "fast": "span_R192_fsc_dt0.01",
+    "fom": "fom_dt0.005_nt0.001_lt0.1"
+   },
+   "artifact": {
+    "accurate": "span_R512_fsc_dt0.005",
+    "fast": "span_R192_fsc_dt0.01",
+    "fom": "fom_dt0.005_nt0.001_lt0.1"
+   },
+   "passed": true
+  }
  },
  "failures": [],
  "recomputed_selection": {
   "accurate": "span_R512_fsc_dt0.005",
-  "fast": "span_R192_fsc_dt0.01"
+  "fast": "span_R192_fsc_dt0.01",
+  "fom": "fom_dt0.005_nt0.001_lt0.1"
  },
  "passed": true
 }

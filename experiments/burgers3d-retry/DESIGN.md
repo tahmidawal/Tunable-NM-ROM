@@ -185,3 +185,8 @@ Codex read-only audit: `checks/codex-design-audit-2026-09-23.txt` (2 blockers, 5
 
 Arms after R1 (every mesh): span `fsc`, R′ ∈ {512, 384, 256, 192, 128, 96, 64} × Δt ∈ {0.005, 0.01} (14 arms), plus the
 4 head arms if §4 admits a head.
+
+**R1-7 rehearsal figures (`reh257b`, job 4246870, H200, frozen lane-1 bank, probe cohort 923651 × 4; diagnostic).**
+Tables at 257 nodes: bank rows 9 s, Gram + A 16 s, tensor 276 s; all table gates ≤ 6.6e-15. Four span arms and two FOM
+settings ran to completion; timing gates pass (drift 1.006, neighbour 1.077 / 1.000, determinism 0). Median ms: span
+R′ = 512 Δt .005 (f64) 128.2; R′ = 192 Δt .01 25.7; FOM Δt .01 ntol 1e-2 199.6. Feasible on one H200.

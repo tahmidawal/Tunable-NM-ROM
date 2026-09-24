@@ -1,0 +1,76 @@
+{
+ "meshes": [
+  17,
+  33
+ ],
+ "order_mesh": 17,
+ "train_seed": 923701,
+ "train_count": 6,
+ "bankval_seed": 923751,
+ "bankval_count": 3,
+ "full_floor_cases": 3,
+ "train_steps": [
+  0,
+  1,
+  2,
+  4,
+  7,
+  10,
+  15,
+  20,
+  25,
+  30,
+  40,
+  50
+ ],
+ "data_ntol": 1e-08,
+ "data_ltol": 1e-09,
+ "group_points_cap": 250047,
+ "subset_seed": 923002,
+ "model_seed": 923703,
+ "fourier_features": 128,
+ "fourier_scale": 2.0,
+ "bank_width": 512,
+ "bank_depth": 3,
+ "bank_rank": 64,
+ "modes": 32,
+ "pod_reference_ranks": [
+  16,
+  32
+ ],
+ "bank_steps": 20,
+ "bank_batch_states": 128,
+ "bank_learning_rate": 0.001,
+ "bank_gradient_clip": 1.0,
+ "warmup": 5,
+ "tail_power": 4,
+ "tail_weight": 0.5,
+ "white_weight": 0.001,
+ "white_group": "17",
+ "checkpoint_every": 10,
+ "ladder": [
+  16,
+  32,
+  64
+ ],
+ "head_width": 512,
+ "head_depth": 3,
+ "head_steps": 40,
+ "head_batch_states": 256,
+ "head_learning_rate": 0.0005,
+ "head_checkpoint_every": 20,
+ "old_checkpoint": null,
+ "points_per_step": 4096,
+ "compare_bank": "experiments/burgers3d-span/inputs/model_R512",
+ "head_variants": [
+  [
+   16,
+   0.0
+  ],
+  [
+   32,
+   0.001
+  ]
+ ],
+ "local_smoke": true
+}

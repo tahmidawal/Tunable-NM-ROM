@@ -1,0 +1,13 @@
+host=pax008 source_commit=705c0c8f984561894ed9162b6e0a740ca01330b1
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  373G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest (training)
+tables 98.4s
+data n=33 rows=1536 steps=12 points=29791 worst residual 9.99e-09 104.5s
+data n=33 rows=96 steps=12 points=29791 worst residual 9.74e-09 7.6s
+data n=65 rows=1536 steps=12 points=250047 worst residual 9.94e-09 190.5s
+data n=65 rows=96 steps=12 points=250047 worst residual 9.95e-09 13.9s
+data n=129 rows=1536 steps=12 points=250047 worst residual 1.00e-08 890.0s
+data n=129 rows=96 steps=12 points=250047 worst residual 9.85e-09 62.9s
+group 33: S=18432 P=29791 POD modes 1536 dropped tail mean 1.310e-09 validation POD floor (worst) by rank {'64': 0.17897450861089256, '128': 0.07117201260637614, '256': 0.03282137069655294, '384': 0.019023740531235327, '512': 0.012000327949522006}

@@ -1,15 +1,15 @@
 #!/bin/bash
-#SBATCH --job-name=b3r_trw512h
+#SBATCH --job-name=b3r_trw512b
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:h200:1
 
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=320G
 #SBATCH --time=10:00:00
-#SBATCH --output=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512h/logs/%j.out
-#SBATCH --error=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512h/logs/%j.err
+#SBATCH --output=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512b/logs/%j.out
+#SBATCH --error=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512b/logs/%j.err
 set -euo pipefail
-TASK_ROOT=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512h
+TASK_ROOT=/cluster/tufts/paralab/tawal01/b3dretry_20260923/trw512b
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92

@@ -1,0 +1,12 @@
+host=pax008 source_commit=705c0c8f984561894ed9162b6e0a740ca01330b1
+NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  373G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest (training)
+tables 98.4s
+data n=33 rows=1536 steps=12 points=29791 worst residual 9.99e-09 101.5s
+data n=33 rows=96 steps=12 points=29791 worst residual 9.74e-09 7.5s
+data n=65 rows=1536 steps=12 points=250047 worst residual 9.94e-09 189.6s
+data n=65 rows=96 steps=12 points=250047 worst residual 9.95e-09 13.6s
+data n=129 rows=1536 steps=12 points=250047 worst residual 1.00e-08 928.2s
+data n=129 rows=96 steps=12 points=250047 worst residual 9.85e-09 60.2s

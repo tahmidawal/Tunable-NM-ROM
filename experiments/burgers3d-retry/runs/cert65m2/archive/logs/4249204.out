@@ -1,0 +1,95 @@
+host=pax010 source_commit=a104b8dfa44f8ee60f2fa2ef9f2802d46e19eb01
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB
+10.235.106.34:/projects/paralab  4.6T  4.2T  372G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[9.4s] [mesh 65] bank rows [(64, 250047), (32, 250047), (32, 250047), (64, 250047), (64, 250047), (128, 250047), (128, 250047)] 8.1s
+[12.5s] [mesh 65] Gram cond 1.0000, A (2052, 512) 11.1s
+[18.6s] [mesh 65] tensor (2052, 512, 512) 17.2s
+[24.3s] table gates {'bank_condition': 1.000000000000256, 'gram_condition': 1.000000000000512, 'A_dst_vs_explicit': 5.3541872302052214e-15, 'cholesky_reconstruction': 3.5527136788004978e-15, 'tensor_vs_direct': 2.744020987841064e-16}
+[40.3s] CERT span_R512_fsc_dt0.005 draw 0 seed 923811: rho_max 2.205e-05 umin -0.00603
+[42.3s] CERT span_R512_fsc_dt0.005 draw 1 seed 923812: rho_max 2.818e-05 umin -0.00448
+[44.3s] CERT span_R512_fsc_dt0.005 draw 2 seed 923813: rho_max 8.874e-06 umin -0.00285
+[46.3s] CERT span_R512_fsc_dt0.005 draw 3 seed 923814: rho_max 1.134e-05 umin -0.00289
+[48.3s] CERT span_R512_fsc_dt0.005 draw 4 seed 923815: rho_max 0.0001862 umin -0.0166
+[52.1s] CERT span_R512_fsc_dt0.005 draw 5 seed 923816: rho_max 5.754e-05 umin -0.00641
+[57.7s] CERT span_R512_fsc_dt0.01 draw 0 seed 923811: rho_max 1.307e-05 umin -0.00461
+[59.1s] CERT span_R512_fsc_dt0.01 draw 1 seed 923812: rho_max 1.795e-05 umin -0.00383
+[60.6s] CERT span_R512_fsc_dt0.01 draw 2 seed 923813: rho_max 5.585e-06 umin -0.00222
+[62.0s] CERT span_R512_fsc_dt0.01 draw 3 seed 923814: rho_max 9.766e-06 umin -0.00266
+[63.5s] CERT span_R512_fsc_dt0.01 draw 4 seed 923815: rho_max 5.896e-05 umin -0.00914
+[66.2s] CERT span_R512_fsc_dt0.01 draw 5 seed 923816: rho_max 3.818e-05 umin -0.00521
+[77.1s] CERT span_R384_fsc_dt0.005 draw 0 seed 923811: rho_max 2.649e-05 umin -0.00738
+[78.5s] CERT span_R384_fsc_dt0.005 draw 1 seed 923812: rho_max 5.941e-05 umin -0.00733
+[80.0s] CERT span_R384_fsc_dt0.005 draw 2 seed 923813: rho_max 1.067e-05 umin -0.00262
+[81.4s] CERT span_R384_fsc_dt0.005 draw 3 seed 923814: rho_max 1.291e-05 umin -0.00283
+[82.9s] CERT span_R384_fsc_dt0.005 draw 4 seed 923815: rho_max 0.0001177 umin -0.0141
+[85.6s] CERT span_R384_fsc_dt0.005 draw 5 seed 923816: rho_max 7.842e-05 umin -0.00719
+[90.7s] CERT span_R384_fsc_dt0.01 draw 0 seed 923811: rho_max 1.403e-05 umin -0.0052
+[91.8s] CERT span_R384_fsc_dt0.01 draw 1 seed 923812: rho_max 4.039e-05 umin -0.00595
+[93.0s] CERT span_R384_fsc_dt0.01 draw 2 seed 923813: rho_max 7.672e-06 umin -0.00212
+[94.2s] CERT span_R384_fsc_dt0.01 draw 3 seed 923814: rho_max 1.003e-05 umin -0.00262
+[95.3s] CERT span_R384_fsc_dt0.01 draw 4 seed 923815: rho_max 3.467e-05 umin -0.00779
+[97.3s] CERT span_R384_fsc_dt0.01 draw 5 seed 923816: rho_max 5.676e-05 umin -0.00613
+[107.4s] CERT span_R256_fsc_dt0.005 draw 0 seed 923811: rho_max 9.36e-05 umin -0.0131
+[108.5s] CERT span_R256_fsc_dt0.005 draw 1 seed 923812: rho_max 0.0002518 umin -0.0175
+[109.7s] CERT span_R256_fsc_dt0.005 draw 2 seed 923813: rho_max 3.085e-05 umin -0.00556
+[110.8s] CERT span_R256_fsc_dt0.005 draw 3 seed 923814: rho_max 4.987e-05 umin -0.00637
+[112.0s] CERT span_R256_fsc_dt0.005 draw 4 seed 923815: rho_max 0.00124 umin -0.0363
+[114.0s] CERT span_R256_fsc_dt0.005 draw 5 seed 923816: rho_max 0.0002545 umin -0.0118
+[119.0s] CERT span_R256_fsc_dt0.01 draw 0 seed 923811: rho_max 5.875e-05 umin -0.0106
+[120.0s] CERT span_R256_fsc_dt0.01 draw 1 seed 923812: rho_max 0.0001909 umin -0.0153
+[120.9s] CERT span_R256_fsc_dt0.01 draw 2 seed 923813: rho_max 2.144e-05 umin -0.00445
+[122.0s] CERT span_R256_fsc_dt0.01 draw 3 seed 923814: rho_max 3.033e-05 umin -0.00606
+[122.9s] CERT span_R256_fsc_dt0.01 draw 4 seed 923815: rho_max 0.0008483 umin -0.0296
+[124.7s] CERT span_R256_fsc_dt0.01 draw 5 seed 923816: rho_max 0.0002016 umin -0.0106
+[134.5s] CERT span_R192_fsc_dt0.005 draw 0 seed 923811: rho_max 0.0002311 umin -0.0256
+[135.6s] CERT span_R192_fsc_dt0.005 draw 1 seed 923812: rho_max 0.0008318 umin -0.0361
+[136.6s] CERT span_R192_fsc_dt0.005 draw 2 seed 923813: rho_max 0.0001795 umin -0.0106
+[137.7s] CERT span_R192_fsc_dt0.005 draw 3 seed 923814: rho_max 0.0001452 umin -0.00769
+[138.7s] CERT span_R192_fsc_dt0.005 draw 4 seed 923815: rho_max 0.00165 umin -0.0471
+[140.6s] CERT span_R192_fsc_dt0.005 draw 5 seed 923816: rho_max 0.0004074 umin -0.021
+[145.5s] CERT span_R192_fsc_dt0.01 draw 0 seed 923811: rho_max 0.000162 umin -0.0211
+[146.5s] CERT span_R192_fsc_dt0.01 draw 1 seed 923812: rho_max 0.0006745 umin -0.0322
+[147.4s] CERT span_R192_fsc_dt0.01 draw 2 seed 923813: rho_max 0.0001349 umin -0.00918
+[148.4s] CERT span_R192_fsc_dt0.01 draw 3 seed 923814: rho_max 9.478e-05 umin -0.00706
+[149.3s] CERT span_R192_fsc_dt0.01 draw 4 seed 923815: rho_max 0.00111 umin -0.0375
+[150.9s] CERT span_R192_fsc_dt0.01 draw 5 seed 923816: rho_max 0.0003367 umin -0.0189
+[160.8s] CERT span_R128_fsc_dt0.005 draw 0 seed 923811: rho_max 0.0005795 umin -0.0356
+[161.8s] CERT span_R128_fsc_dt0.005 draw 1 seed 923812: rho_max 0.001403 umin -0.0522
+[162.8s] CERT span_R128_fsc_dt0.005 draw 2 seed 923813: rho_max 0.0003128 umin -0.018
+[163.8s] CERT span_R128_fsc_dt0.005 draw 3 seed 923814: rho_max 0.0003043 umin -0.0159
+[164.8s] CERT span_R128_fsc_dt0.005 draw 4 seed 923815: rho_max 0.001385 umin -0.0478
+[166.4s] CERT span_R128_fsc_dt0.005 draw 5 seed 923816: rho_max 0.001319 umin -0.0358
+[171.5s] CERT span_R128_fsc_dt0.01 draw 0 seed 923811: rho_max 0.0004393 umin -0.0308
+[172.4s] CERT span_R128_fsc_dt0.01 draw 1 seed 923812: rho_max 0.001157 umin -0.0468
+[173.3s] CERT span_R128_fsc_dt0.01 draw 2 seed 923813: rho_max 0.0002095 umin -0.0145
+[174.2s] CERT span_R128_fsc_dt0.01 draw 3 seed 923814: rho_max 0.000228 umin -0.0142
+[175.1s] CERT span_R128_fsc_dt0.01 draw 4 seed 923815: rho_max 0.0009465 umin -0.0388
+[176.6s] CERT span_R128_fsc_dt0.01 draw 5 seed 923816: rho_max 0.001116 umin -0.0317
+[187.4s] CERT span_R96_fsc_dt0.005 draw 0 seed 923811: rho_max 0.0008619 umin -0.0418
+[188.4s] CERT span_R96_fsc_dt0.005 draw 1 seed 923812: rho_max 0.001274 umin -0.0506
+[189.3s] CERT span_R96_fsc_dt0.005 draw 2 seed 923813: rho_max 0.0004046 umin -0.0253
+[190.2s] CERT span_R96_fsc_dt0.005 draw 3 seed 923814: rho_max 0.0008046 umin -0.0216
+[191.1s] CERT span_R96_fsc_dt0.005 draw 4 seed 923815: rho_max 0.0009763 umin -0.0449
+[192.7s] CERT span_R96_fsc_dt0.005 draw 5 seed 923816: rho_max 0.001273 umin -0.0313
+[198.2s] CERT span_R96_fsc_dt0.01 draw 0 seed 923811: rho_max 0.0005964 umin -0.0353
+[199.1s] CERT span_R96_fsc_dt0.01 draw 1 seed 923812: rho_max 0.00103 umin -0.0478
+[199.9s] CERT span_R96_fsc_dt0.01 draw 2 seed 923813: rho_max 0.0003125 umin -0.0208
+[200.8s] CERT span_R96_fsc_dt0.01 draw 3 seed 923814: rho_max 0.0005798 umin -0.0203
+[201.7s] CERT span_R96_fsc_dt0.01 draw 4 seed 923815: rho_max 0.0006746 umin -0.0396
+[203.1s] CERT span_R96_fsc_dt0.01 draw 5 seed 923816: rho_max 0.001106 umin -0.0287
+[213.1s] CERT span_R64_fsc_dt0.005 draw 0 seed 923811: rho_max 0.001686 umin -0.0673
+[214.0s] CERT span_R64_fsc_dt0.005 draw 1 seed 923812: rho_max 0.003922 umin -0.0883
+[214.9s] CERT span_R64_fsc_dt0.005 draw 2 seed 923813: rho_max 0.0009734 umin -0.0425
+[215.8s] CERT span_R64_fsc_dt0.005 draw 3 seed 923814: rho_max 0.001624 umin -0.0262
+[216.7s] CERT span_R64_fsc_dt0.005 draw 4 seed 923815: rho_max 0.0006597 umin -0.0383
+[218.2s] CERT span_R64_fsc_dt0.005 draw 5 seed 923816: rho_max 0.001735 umin -0.0473
+[224.0s] CERT span_R64_fsc_dt0.01 draw 0 seed 923811: rho_max 0.00139 umin -0.0599
+[224.9s] CERT span_R64_fsc_dt0.01 draw 1 seed 923812: rho_max 0.003416 umin -0.0817
+[225.7s] CERT span_R64_fsc_dt0.01 draw 2 seed 923813: rho_max 0.0007941 umin -0.0354
+[226.6s] CERT span_R64_fsc_dt0.01 draw 3 seed 923814: rho_max 0.001253 umin -0.0248
+[227.4s] CERT span_R64_fsc_dt0.01 draw 4 seed 923815: rho_max 0.0005751 umin -0.0347
+[228.9s] CERT span_R64_fsc_dt0.01 draw 5 seed 923816: rho_max 0.001575 umin -0.0415
+PANEL COMPLETE
+ALL-DONE

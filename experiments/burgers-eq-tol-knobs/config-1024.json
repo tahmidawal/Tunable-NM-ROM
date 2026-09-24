@@ -1,0 +1,1047 @@
+{
+ "attempt": "e1024",
+ "intervals": 1024,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "cohort_name": "dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "rho_bar": 0.116,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "population": {
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+   ],
+   [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+   ]
+  ],
+  "confirm_draw": [
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55
+  ],
+  "note": "burgers-eqcert populations (as the parent lane): 256^2 params_draw(20260922,56), else params_draw(20260921,56); 5 certification draws x 8 + 1 confirmation draw x 16"
+ },
+ "rules": {
+  "lat64": {
+   "lattice": 64,
+   "note": "uniform 63x63 interior sub-lattice, equal weights; the paper accurate rule (burgers-eqcert: certified at 256^2 (bc256b, x1), 512^2 (x1), 1024^2; 2048^2 certificate-only; 4096^2 NOT confirmed)"
+  },
+  "lat32": {
+   "lattice": [
+    32,
+    32
+   ],
+   "note": "tensor sub-lattice 31 x 31 = 961 nodes, equal weights (L/32)(L/32); same physical points at every L"
+  },
+  "lat32x64": {
+   "lattice": [
+    32,
+    64
+   ],
+   "note": "tensor sub-lattice 31 x 63 = 1953 nodes, equal weights (L/32)(L/64); same physical points at every L"
+  },
+  "lat64x128": {
+   "lattice": [
+    64,
+    128
+   ],
+   "note": "tensor sub-lattice 63 x 127 = 8001 nodes, equal weights (L/64)(L/128); same physical points at every L"
+  },
+  "lat128": {
+   "lattice": [
+    128,
+    128
+   ],
+   "note": "tensor sub-lattice 127 x 127 = 16129 nodes, equal weights (L/128)(L/128); same physical points at every L"
+  }
+ },
+ "arms": [
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "current"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "current"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat32",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat32",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat32x64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat32x64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64x128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64x128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.1,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.1,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.0001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.0001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 50
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "dense"
+  },
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 50
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "dense"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "current"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "current"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat32",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat32",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat32x64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat32x64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64x128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64x128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat128",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "eq-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.1,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.1,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.01,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.0001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.0001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": true,
+   "role": "tol-ladder"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 50
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "dense"
+  },
+  {
+   "model": "lin",
+   "Rp": 96,
+   "M": 384,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true,
+    "exact_steps": 50
+   },
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "family": "lin",
+   "certify": false,
+   "role": "dense"
+  }
+ ],
+ "parity_pairs": [
+  [
+   "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs",
+   "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng"
+  ],
+  [
+   "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng"
+  ],
+  [
+   "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs",
+   "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng"
+  ]
+ ],
+ "parity_bar": 1e-10,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  }
+ ],
+ "fom_both_modes": true,
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+  "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs",
+  "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs",
+  "R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs"
+ ],
+ "restrict_to": 256,
+ "target_chunk": 4,
+ "dense_tangent_group": 34,
+ "phi_gate_max_mesh": 512,
+ "rom_reps": 5,
+ "fom_reps": 3,
+ "order_seed": 20260925,
+ "burn_seconds": 0.1,
+ "phase_cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "gate_limit": 1.1,
+ "purpose": "DESIGN.md: EQ node-count ladder, dense residual and gtol ladder at the Table-1 settings, 1024^2",
+ "recorded_table1": {
+  "R384": {
+   "percent": 0.2108198098221833,
+   "job": "4241031 (b1024)",
+   "source": "experiments/burgers2d-speed/checks/b1024-summary.json knobs R384 ... __eng"
+  },
+  "R96": {
+   "percent": 2.787033939328547,
+   "job": "4241031 (b1024)",
+   "source": "experiments/burgers2d-speed/checks/b1024-summary.json knobs R96 ... __eng_graphs"
+  }
+ }
+}

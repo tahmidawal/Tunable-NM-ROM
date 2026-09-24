@@ -85,7 +85,10 @@ def build():
     d.update(attempt='e4096', rules=rules_block(b1024), arms=arms_for([384, 64], 'parent', [False], dense=False),
              purpose='DESIGN.md: EQ node-count ladder and gtol ladder at the Table-1 settings, 4096^2 (bank-knob text)',
              recorded_table1=RECORDED[4096], order_seed=20260926, parity_pairs=[], fom_both_modes=False,
-             audit_cases=[], audit_arms=[])
+             audit_cases=[], audit_arms=[], attempt_note='e4096 (H200) never started: H200 queue estimate 2 days; '
+                                                         'e4096b on A100-80G with bank_columns 384 (DESIGN A1)',
+             bank_columns=384, ladder=[32, 64, 128, 256, 384])
+    d['attempt'] = 'e4096b'
     d.pop('parent_fast_bar', None)
     (HERE / 'config-4096.json').write_text(json.dumps(d, indent=1) + '\n')
 

@@ -124,3 +124,14 @@ reported as not done. $4096^2$ is secondary: if its job has not finished by ~04:
 |---|---|---|---|
 | `e1024` | $1024^2$ dev6 | A100 80 GB | 36 ROM arms + 30 FOM subjects |
 | `e4096` | $4096^2$ dev6 | H200 (the 69 GB rotated bank; bk4096b ran on H200) | 16 ROM arms + 15 FOM settings |
+
+## A1 — 2026-09-24 ~21:00 EDT, before any 4096² result: `e4096` moved from H200 to A100-80G
+
+`e4096` (job 4303889, H200) never started: the scheduler's start estimate was 2026-09-26 (a long H200 queue from another
+user), past the hard stop. It is cancelled and replaced by `e4096b` on an **A100 80 GB**. To fit, the driver gains C4
+(`bank_columns = 384`): the offline rotation keeps only the first 384 rotated columns, $(GT)_{[:, :384]} = G\,T_{[:, :384]}$
+(51.5 GB instead of 68.7 GB). No arm reads a column beyond $R'=384$, so every arm, rule and number is defined exactly as
+before; round-off may differ at the GEMM level (different matrix shape), which the Table-1 parity gate ($10^{-6}$ on
+the worst error) covers. Checked locally at $128^2$ (`bank_columns=64`): the $R'=32$ arm's worst error is unchanged
+(3.0634 %). Absolute ms at $4096^2$ are on an A100, not the H200 of bk4096b; speedups are same-job. The e1024 job is
+unaffected (staged from the earlier commit, no `bank_columns`).

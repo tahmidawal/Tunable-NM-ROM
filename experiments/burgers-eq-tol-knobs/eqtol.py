@@ -8,6 +8,8 @@ cohort, bank, rotation, operators, truth, arms, parity, certificates, A-B-A timi
       hops.lattice_rule (which is used unchanged for square lattices);
   C2  E1 separable tables for such lattices (`lattice_tables2`) and b2fast.proj_vec / proj_cols generalised to an
       (nx, ny) node array; for nx == ny the emitted operations are the originals (same reshape, same einsums);
+  C4  optional `bank_columns` Rb < R: the rotation keeps only the first Rb rotated columns, (G T)[:, :Rb] = G T[:, :Rb]
+      (used at 4096^2 so the bank fits an 80 GB A100; every arm reads a prefix R' <= Rb, so no arm changes);
   C3  nothing else: the dense-residual arm is the existing exact-step path run for every step
       (variant exact_steps = 50, E2 analytic Jacobian + E3 dense projection), and the tolerance arms are the
       existing `gtol` field.
@@ -159,7 +161,8 @@ def main():
     st = cfg['strict']
     BAR = cfg['rho_bar']
     edges = [0] + list(cfg['ladder'])
-    assert edges[-1] == R and edges == sorted(edges)
+    Rb = int(cfg.get('bank_columns') or R)       # C4: keep only the first Rb rotated columns (memory at 4096^2)
+    assert edges[-1] == Rb <= R and edges == sorted(edges)
     rep = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                host=os.uname().nodename, backend=jax.default_backend(), gpu=jax.devices()[0].device_kind,
                nvidia_smi=smi, x64=True, matmul_precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'],
@@ -243,7 +246,7 @@ def main():
     for i0, i1 in zip(redges[:-1], redges[1:]):
         xy = np.stack(np.meshgrid(x[i0:i1], x, indexing='ij'), -1).reshape(-1, 2)
         g = jax.block_until_ready(base.at(xy, chunk=8192))
-        Grot.append(jax.block_until_ready(rotate(g, Tj)))
+        Grot.append(jax.block_until_ready(rotate(g, Tj[:, :Rb])))
         del g
     Grot = tuple(Grot)
     rep['phases']['bank'] = dict(rows=n, row_blocks=nrb, column_edges=edges, seconds=time.perf_counter() - t0,
@@ -313,7 +316,7 @@ def main():
             kx, ky, lam = H.modes_lean(L, M)
             sx, sy = (jnp.asarray(t_) for t_ in H.sine_tables(L, kx, ky))
             o = dict(kx=kx, ky=ky, lam=jnp.asarray(lam), sx=sx, sy=sy,
-                     Arot=BK.project_nested(Grot, edges, R, sx, sy, L), sepd=B2.dense_tables(L, kx, ky))
+                     Arot=BK.project_nested(Grot, edges, Rb, sx, sy, L), sepd=B2.dense_tables(L, kx, ky))
             ops_M[M] = jax.block_until_ready(o)
         return ops_M[M]
 
@@ -321,7 +324,7 @@ def main():
     og = operators(Mg)
     if L <= cfg.get('phi_gate_max_mesh', 512):
         Phig, lamg, _ = e.modes(L, Mg)
-        Gflat = BK.bank_apply(Grot, jnp.eye(R))
+        Gflat = BK.bank_apply(Grot, jnp.eye(Rb))
         Aref = jnp.asarray(Phig).T @ Gflat
         g0 = dict(M=Mg, lam_identical=bool(np.array_equal(lamg, np.asarray(og['lam']))),
                   A_relative=float(jnp.linalg.norm(og['Arot'] - Aref) / jnp.linalg.norm(Aref)))

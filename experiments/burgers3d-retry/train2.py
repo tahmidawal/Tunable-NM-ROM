@@ -106,11 +106,18 @@ def train_bank(groups, cfg, log):
     for g in groups:
         un = g['u'] / np.linalg.norm(g['u'], axis=1, keepdims=True)
         S = un.shape[0]
-        unj = jnp.asarray(un)
-        lam, w = jnp.linalg.eigh(jax.jit(lambda a: a @ a.T)(unj))
+        # chunked over points (an unchunked 18432 x 250047 GEMM failed its autotuner allocation, job 4246814)
+        acc = jax.jit(lambda Gm, a: Gm + a @ a.T)
+        Gm = jnp.zeros((S, S))
+        for s0 in range(0, un.shape[1], 16384):
+            Gm = acc(Gm, jnp.asarray(un[:, s0:s0 + 16384]))
+        lam, w = jnp.linalg.eigh(Gm)
+        del Gm
         lam, w = lam[::-1], w[:, ::-1]
         K = min(cfg['modes'], S)
-        modes = (unj.T @ w[:, :K]) / jnp.sqrt(jnp.maximum(lam[:K], 1e-300))
+        wk = w[:, :K] / jnp.sqrt(jnp.maximum(lam[:K], 1e-300))[None, :]
+        mk = jax.jit(lambda a, wk: a.T @ wk)
+        modes = jnp.concatenate([mk(jnp.asarray(un[:, s0:s0 + 16384]), wk) for s0 in range(0, un.shape[1], 16384)], 0)
         weights = jnp.maximum(lam[:K], 0.) / S
         dropped = float(jnp.sum(jnp.maximum(lam[K:], 0.)) / S)
         vn = jnp.asarray((g['v'] / np.linalg.norm(g['v'], axis=1, keepdims=True)).T)
@@ -119,7 +126,7 @@ def train_bank(groups, cfg, log):
             pod[str(r)] = float(jnp.sqrt(jnp.max(jnp.maximum(1 - jnp.sum((modes[:, :r].T @ vn) ** 2, axis=0), 0.))))
         log(f"group {g['name']}: S={S} P={un.shape[1]} POD modes {K} dropped tail mean {dropped:.3e} "
             f"validation POD floor (worst) by rank {pod}")
-        del unj                                  # snapshots stay on the host; minibatches are uploaded per step
+        del wk                                   # snapshots stay on the host; minibatches are uploaded per step
         G.append(dict(name=g['name'], x=jnp.asarray(g['x']), un=un, modes=modes, weights=weights, vn=vn,
                       pod=pod, dropped=dropped))
     opt = optax.chain(optax.clip_by_global_norm(cfg['bank_gradient_clip']),

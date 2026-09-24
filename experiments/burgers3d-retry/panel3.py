@@ -73,7 +73,7 @@ def main():
     arms = {}
     for s in cfg['arms']:
         s = dict(s, gtol=s.get('gtol', cfg['gtol']))
-        arms[arm_name(s, cfg['gtol'])] = dict(s, name=arm_name(s, cfg['gtol']))
+        arms[arm_name(s, cfg['gtol'])] = dict(s, name=arm_name(s, cfg['gtol']), rule='tensor')
     heads_needed = sorted({str(x['head']) for x in arms.values() if x['kind'] == 'head'})
     model = load_model(a.model, heads_needed)
     rep = dict(config=cfg, mode=cfg['mode'], mesh=n, commit=os.environ.get('SOURCE_COMMIT'),

@@ -45,8 +45,11 @@ def build_tables(n, bank, T, ladder, M_of, log=print, tensor=True):
     GTb = tuple(jax.block_until_ready(feature_rows(bank, Tn[:, a:b], x)) for a, b in zip(edges[:-1], edges[1:]))
     del x
     log(f'[mesh {n}] bank rows {[g.shape for g in GTb]} {time.perf_counter() - t0:.1f}s')
-    gram = jax.jit(lambda a, b: a @ b.T)
-    Gm = jnp.block([[gram(a, b) for b in GTb] for a in GTb])
+    acc = jax.jit(lambda Gm, rows: Gm + rows @ rows.T)            # chunked over points (autotuner memory at 257)
+    Gm = jnp.zeros((R, R))
+    N = GTb[0].shape[1]
+    for s0 in range(0, N, 1 << 20):
+        Gm = acc(Gm, jnp.concatenate([g[:, s0:s0 + (1 << 20)] for g in GTb], 0))
     assert bool(jnp.all(jnp.isfinite(Gm)))
     L = jnp.linalg.cholesky(Gm)
     ev = jnp.linalg.eigvalsh(Gm)

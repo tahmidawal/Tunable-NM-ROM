@@ -108,6 +108,8 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--rho-states', type=int, default=0, help='0 = all arms/draws; else at most this many states')
     ap.add_argument('--rho-always', nargs='*', default=[], help='arm names always audited when subsetting')
+    ap.add_argument('--rho-arms', type=int, default=0, help='0 = every file; else the always-arms + this many others')
+    ap.add_argument('--selection', help='selection JSON of this mesh: the recomputed selection must match it')
     a = ap.parse_args()
     P = json.loads((Path(a.panel) / 'result.json').read_text())
     F = Path(a.panel) / 'fields'
@@ -177,12 +179,20 @@ def main():
         T = np.asarray(b['rotation'])
         R = T.shape[1]
         files = sorted(f for c in a.cert for f in (Path(c) / 'fields').glob('cert_*_d*.npz'))
-        if a.rho_states and len(files) > a.rho_states:
-            keep = [f for f in files if any(s_ in f.name for s_ in a.rho_always)]
-            rest = [f for f in files if f not in keep]
+        if a.rho_arms:                               # R1-6: distinct arms (arg-max-rho draw of each)
+            best = {}
+            for f_ in files:
+                nm = f_.name[len('cert_'):f_.name.rindex('_d')]
+                z = np.load(f_)
+                r_ = float(z['rho'][int(z['arg'])])
+                if nm not in best or r_ > best[nm][0]:
+                    best[nm] = (r_, f_)
+            always = [nm for nm in best if nm in a.rho_always]
+            rest = sorted(nm for nm in best if nm not in always)
             rng = np.random.default_rng(923999)
-            files = keep + [rest[i] for i in sorted(rng.choice(len(rest), size=max(a.rho_states - len(keep), 0),
+            pick = always + [rest[i] for i in sorted(rng.choice(len(rest), size=min(a.rho_arms, len(rest)),
                                                                  replace=False))]
+            files = [best[nm][1] for nm in pick]
         specs, Cfull = [], []
         for f_ in files:
             name = f_.name[len('cert_'):f_.name.rindex('_d')]
@@ -205,7 +215,8 @@ def main():
             ex = tested(stencil_adv(u, n, 'upwind'), n, idx)
             ru = tested(stencil_adv(u, n, 'backward'), n, idx)
             rho = float(np.linalg.norm(ru - ex) / np.linalg.norm(ex))
-            tol = 1e-6 if spec.get('t32') else 1e-8
+            assert not spec.get('t32'), 'float32 arms were removed (R1-3)'
+            tol = 1e-8
             rows.append(dict(arm=name, file=f_.name, rho_numpy=rho, rho_recorded=recd, diff=abs(rho - recd),
                              tol=tol, ok=abs(rho - recd) <= tol))
             dn = tested(stencil_adv(u, n, 'downwind'), n, idx)
@@ -230,6 +241,17 @@ def main():
         acc = min(el)[2] if el else None
         fastc = [(t, k_) for e, t, k_ in el if e <= 0.05]
         rep['recomputed_selection'] = dict(accurate=acc, fast=min(fastc)[1] if fastc else None)
+        if a.selection:
+            sel = json.loads(Path(a.selection).read_text())
+            sel = sel['meshes'][str(n)] if 'meshes' in sel else sel
+            fo = {k_: (v['worst_evolved'], tim[k_]['median_ms']) for k_, v in P['fom'].items() if v['all_finite']}
+            ae = max(max(q['err'][1:]) for q in P['arms'][acc]['quick']) if acc else None
+            okf = [(t, k_) for k_, (e, t) in fo.items() if acc and e <= ae]
+            rep['recomputed_selection']['fom'] = min(okf)[1] if okf else None
+            same = all(rep['recomputed_selection'][r_] == sel.get(r_) for r_ in ('accurate', 'fast', 'fom'))
+            rep['checks']['selection_matches_artifact'] = dict(recomputed=rep['recomputed_selection'],
+                                                               artifact={r_: sel.get(r_) for r_ in ('accurate', 'fast', 'fom')},
+                                                               passed=same)
     rep['passed'] = (not rep['failures'] and all(v.get('passed', True) if isinstance(v, dict) else bool(v)
                                                   for v in rep['checks'].values()))
     Path(a.out).write_text(json.dumps(rep, indent=1) + '\n')

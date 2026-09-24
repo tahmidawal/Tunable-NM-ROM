@@ -98,7 +98,9 @@ def main():
     t_tab = time.perf_counter()
     tb = TB.build_tables(n, model['bank'], model['T'], ladder, M_of, log=log)
     rep['table_seconds'] = time.perf_counter() - t_tab
-    rep['gates']['gram_condition'] = tb['gram_cond']
+    rep['gates']['bank_condition'] = tb['gram_cond']                          # sqrt(lambda_max/lambda_min) of the Gram
+    rep['gates']['gram_condition'] = tb['gram_cond'] ** 2
+    assert np.isfinite(rep['gates']['gram_condition']) and rep['gates']['gram_condition'] <= 1e8, rep['gates']
     rng = np.random.default_rng(20260923)
     kx = tb['kxyz']
     pick = rng.choice(tb['M_max'], size=min(6, tb['M_max']), replace=False)
@@ -291,9 +293,11 @@ def main():
     reps = cfg['reps']
     prng = np.random.default_rng(cfg.get('timing_seed', 923777))
     x = jnp.ones((2048, 2048))
-    t0 = time.perf_counter()
-    while time.perf_counter() - t0 < 2.0:
-        block(x @ x)
+
+    def burn(sec=2.0):
+        t0 = time.perf_counter()
+        while time.perf_counter() - t0 < sec:
+            block(x @ x)
     inv = []
 
     def timed(kind, name, j, phase):
@@ -305,10 +309,12 @@ def main():
         inv.append(dict(kind=kind, name=name, case=j, phase=phase, seconds=dt_, max_diff_vs_quick=d))
         if dt_ >= 0.5:
             time.sleep(min(1.0, dt_))
+            burn(0.2)
 
     for phase, kind, names in (('A1', 'rom', list(arms)), ('B', 'fom', list(foms)), ('A2', 'rom', list(arms))):
         order_ = [(nm, j) for nm in names for j in cases for _ in range(reps)]
         prng.shuffle(order_)
+        burn()
         for nm, j in order_:
             timed(kind, nm, j, phase)
         log(f'timing phase {phase} done ({len(order_)} invocations)')
@@ -350,8 +356,9 @@ def main():
         (fl if tim[prev['name']]['median_ms'] >= 4 * tim[cur['name']]['median_ms'] else fs).append(v)
     nbf = float(np.mean(fl) / np.mean(fs)) if fl and fs else 1.0
     rep['gates']['timing_neighbour_ratio_fom'] = nbf
-    rep['gates']['timing_neighbour_pass'] = bool(nb <= 1.10 and nbf <= 1.10)
+    rep['gates']['timing_neighbour_pass'] = bool(1 / 1.10 <= nb <= 1.10 and 1 / 1.10 <= nbf <= 1.10)   # two-sided
     rep['gates']['deterministic_outputs'] = max(r['max_diff_vs_quick'] for r in inv)
+    rep['gates']['deterministic_pass'] = bool(rep['gates']['deterministic_outputs'] <= 1e-12)
     log(f"timing gates drift {rep['gates']['timing_drift_worst']:.3f} neighbour {nb:.3f} / {nbf:.3f} "
         f"determinism {rep['gates']['deterministic_outputs']:.2e}")
     for nm, v in tim.items():

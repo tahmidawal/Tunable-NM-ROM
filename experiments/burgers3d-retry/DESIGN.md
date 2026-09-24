@@ -151,3 +151,37 @@ panels; a `codex exec` results audit before the report. Every change after a res
 amendment. The report is generated from the JSONs by `report3.py`.
 
 Deadline: report to the user by 2026-09-24 20:00 EDT whatever the outcome.
+
+## R1 — revisions after the independent design audit (2026-09-23 ~20:45 EDT, before any validation panel; override §§4–9)
+
+Codex read-only audit: `checks/codex-design-audit-2026-09-23.txt` (2 blockers, 5 majors, 2 minors). Disposition:
+
+1. **Success must require both frozen settings (blocker) — fixed.** `select3.py` adds `lane_success`: on the held-out
+   cohort, the frozen accurate and fast arms are both eligible, fast ≤ 5 %, both paper-rule speedups > 1, every timing /
+   determinism gate passed, and a FOM at least as accurate as the accurate arm exists. The verdict of the lane is
+   stated per mesh against this gate; the own-matched speedup is reported beside it.
+2. **Certificates bound to the evaluated model (blocker) — fixed.** `select3.py` asserts, for every certification
+   job merged, identical model sha256s, exactly the six prescribed draws, and identical deployed arm specs
+   (kind, R′, solver, Δt, head, K, η, M, trust).
+3. **Float32 table (major) — removed.** All arms use the float64 table; the lane's method is f64 end to end. (The
+   float32 variant's cached-predictor contraction is not exactly the certified operator; dropping it costs ~1.5× at
+   R′ = 512 per §2.1 and removes the question.)
+4. **Head initial fit (major) — fixed.** A head arm whose initial fit ends with reason 3 or non-finite on any case is
+   ineligible.
+5. **Timing gates (major) — fixed.** GPU burn-in (2 s) before every timed phase and 0.2 s after every cool-down; the
+   neighbour gates are two-sided, ∈ [1/1.10, 1.10]; a determinism gate (timed outputs equal the quick run on the audit
+   lattice to ≤ 1e-12) joins the timing gates. Full-output parity is not re-checked inside timing (the sampled guarantee
+   on the 16³ lattice is what is pre-registered).
+6. **Audit coverage (major) — fixed.** `audit3.py --selection` recomputes accurate, fast and the paper-rule FOM from
+   the recorded numbers and must match `selection.json`; at 257 nodes the NumPy ρ audit covers the arg-max-ρ state of
+   the selected arms plus 4 other distinct arms chosen with a fixed seed; at 65/129 every arm.
+7. **257-node feasibility (major) — measured.** Rehearsal `reh257b` (probe cohort, frozen lane-1 bank) records table
+   build time and runs to completion before any 257-node validation job is submitted; its figures are added below.
+8. **Condition number (minor) — fixed.** Recorded as `bank_condition` = √(λmax/λmin) of the Gram and
+   `gram_condition` = λmax/λmin; the panel aborts if the Gram condition exceeds 1e8.
+9. **Candidate cutoff (minor) — fixed.** Candidates M1/M2 count only if their training job has completed by
+   **2026-09-24 03:00 EDT**; a technical failure before then may be resubmitted once unchanged. The model choice is
+   written mechanically to `checks/model-choice.json` with every candidate's floors.
+
+Arms after R1 (every mesh): span `fsc`, R′ ∈ {512, 384, 256, 192, 128, 96, 64} × Δt ∈ {0.005, 0.01} (14 arms), plus the
+4 head arms if §4 admits a head.

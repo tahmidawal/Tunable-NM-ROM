@@ -16,8 +16,7 @@ CERT_DRAWS = [[923811 + i, 8] for i in range(5)] + [[923816, 16]]
 
 
 def arms(head):
-    out = [dict(kind='span', Rp=r, solver='fsc', dt=dt, **({'t32': True} if t32 else {}))
-           for r in LADDER for dt in (0.005, 0.01) for t32 in (False, True)]
+    out = [dict(kind='span', Rp=r, solver='fsc', dt=dt) for r in LADDER for dt in (0.005, 0.01)]     # f64 only (R1-3)
     if head:
         K = int(head.split('_')[0][1:])
         out += [dict(kind='head', head=head, K=K, Rp=r, solver='fsh', dt=dt) for r in (512, 256) for dt in (0.005, 0.01)]
@@ -37,7 +36,7 @@ def main():
                 model=str(a.model))
     assert len(FOM_GRID) == 26
     for n in MESHES:
-        audit = ['span_R512_fsc_dt0.005', 'span_R192_fsc_dt0.01_t32', 'fom_dt0.005_nt0.001_lt0.5'] if n < 257 else \
+        audit = ['span_R512_fsc_dt0.005', 'span_R192_fsc_dt0.01', 'fom_dt0.005_nt0.001_lt0.5'] if n < 257 else \
                 ['span_R512_fsc_dt0.005']
         (HERE / 'configs' / f'val_n{n}.json').write_text(json.dumps(dict(
             base, mesh=n, mode='panel', cohort_seed=923801, cohort_count=64, audit_arms=audit), indent=1) + '\n')

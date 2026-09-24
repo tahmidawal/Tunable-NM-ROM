@@ -190,3 +190,22 @@ Arms after R1 (every mesh): span `fsc`, R′ ∈ {512, 384, 256, 192, 128, 96, 6
 Tables at 257 nodes: bank rows 9 s, Gram + A 16 s, tensor 276 s; all table gates ≤ 6.6e-15. Four span arms and two FOM
 settings ran to completion; timing gates pass (drift 1.006, neighbour 1.077 / 1.000, determinism 0). Median ms: span
 R′ = 512 Δt .005 (f64) 128.2; R′ = 192 Δt .01 25.7; FOM Δt .01 ntol 1e-2 199.6. Feasible on one H200.
+
+## A1 — M2 panels started before M1 finished (decision 2026-09-23 ~23:05 EDT, before any ROM validation result; TEXT WRITTEN 2026-09-24 ~01:30 EDT)
+
+**Record-keeping note.** This amendment was meant to be appended at 23:05, but the append was chained after a
+`make_configs3.py` call that failed (repository-root path bug), so the text was never written although commit
+`18d83362`'s message refers to it; the codex results audit found the gap. The content below is what was decided then.
+
+`trw1024b` (M2, job 4246994) completed at 22:17; `trw512b` (M1, job 4246993) was ~1 h behind (slow host-side setup on
+a shared node). §4's choice uses only the training-side floors recorded in the training JSONs, so the M2 validation and
+certification jobs (4249201/04/10/16/18/21) were launched at ~23:05 with the rule that, if M1 won under §4 when it
+completed, all panels would be rerun for M1. M1 completed at ~00:15 (before the 03:00 cutoff); `choose_model.py`
+selected M2 (max worst floor at R′ = 512: M2 3.12 %, M1 3.28 %, M0 4.70 %; `checks/model-choice.json`). M2 heads:
+best-found worst 41 / 23 / 16 / 23 / 24 % (K16 / K32 / K64 / K32 c1e-3 / K32 c1e-2), all above the 10 % bar → span-only
+(14 arms per mesh). Training failures: trw512h 4246814 (autotuner OOM on the unchunked POD Gram; fixed by chunking),
+trw1024h 4246815 cancelled before reaching that step; resubmitted otherwise unchanged as trw512b / trw1024b (R1-9).
+
+**Audit coverage note (codex results audit, minor).** At 257 nodes only the fast arm's held-out case-0 full field was
+saved (disk); the accurate arm and FOM are audited on the 16³ restricted lattice, and their full-grid errors are the
+in-job values.

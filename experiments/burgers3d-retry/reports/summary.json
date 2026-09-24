@@ -1,6 +1,6 @@
 {
  "lane": "exp/2026-09-23-burgers3d-retry",
- "status": "provisional (held-out audits and codex results audit pending)",
+ "status": "final (sealed held-out cohort opened once; NumPy audits PASS on every validation and held-out panel; codex results audit: numbers reproduce, no blocker)",
  "model_choice": {
   "rule": "min over candidates of max over meshes (33/65/129) of worst full-grid bank-validation floor at R=512",
   "score": {
@@ -971,7 +971,7 @@
     "stopping_rule_pass": false,
     "lane_success": false
    },
-   "audit_heldout_passed": null
+   "audit_heldout_passed": true
   },
   "129": {
    "heldout": {
@@ -1910,7 +1910,7 @@
     "stopping_rule_pass": true,
     "lane_success": false
    },
-   "audit_heldout_passed": null
+   "audit_heldout_passed": true
   },
   "257": {
    "heldout": {
@@ -2852,7 +2852,7 @@
     "stopping_rule_pass": true,
     "lane_success": true
    },
-   "audit_heldout_passed": null
+   "audit_heldout_passed": true
   }
  }
 }

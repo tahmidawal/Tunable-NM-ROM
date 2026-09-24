@@ -82,6 +82,17 @@ def main():
             L.append(f"- {CELLS[n]} held-out, FOM frozen on validation `{s['frozen_validation_fom']}`: "
                      f"{pct(fr.get('worst_evolved'))} % at {ms(fr.get('median_ms'))} ms; job {s['job_id']}, {s['gpu']}.")
     L.append('')
+    L.append('## Verdict (lane-success gate, DESIGN R1-1: both frozen settings eligible on held-out, fast ≤ 5 %, both '
+             'paper-rule speedups > 1, all gates)\n')
+    for n in MESHES:
+        s = load(f'checks/select-heldout-n{n}.json')
+        if s:
+            ar, fr = s['accurate_row'], s['fast_row']
+            L.append(f"- **{CELLS[n]}: {'POSITIVE' if s['lane_success'] else 'NEGATIVE'}** — accurate {pct(ar['worst_evolved'])} % at "
+                     f"{sx(ar['speedup_rule'])}, fast {pct(fr['worst_evolved'])} % at {sx(fr['speedup_rule'])} (own-matched "
+                     f"{sx(fr['speedup_own'])}) against `{s['fom']}`.")
+    L.append('\nEvery headline arm is a linear span of the ordered bank (no head passed the admission bar); the nonlinear head '
+             'contributes nothing to this row.\n')
     # validation
     L.append('## Validation (cohort 923801 × 64): the settings rule\n')
     L.append('| mesh | accurate | worst % | ms | speedup (own) | fast | worst % | ms | speedup (own) | FOM | FOM worst % | FOM ms | '

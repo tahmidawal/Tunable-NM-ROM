@@ -1,0 +1,613 @@
+{
+ "mesh": 129,
+ "cohort": {
+  "seed": 923801,
+  "count": 64,
+  "table_sha256": "b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c"
+ },
+ "job_id": "4249210",
+ "cert_job_id": "4249216",
+ "gpu": "NVIDIA H200",
+ "commit": "a104b8dfa44f8ee60f2fa2ef9f2802d46e19eb01",
+ "accurate": "span_R512_fsc_dt0.005",
+ "fast": "span_R192_fsc_dt0.01",
+ "fom": "fom_dt0.01_nt0.01_lt0.1",
+ "fom_note": null,
+ "fast_bar": 0.05,
+ "accurate_row": {
+  "spec": {
+   "kind": "span",
+   "Rp": 512,
+   "solver": "fsc",
+   "dt": 0.005,
+   "gtol": 0.001,
+   "name": "span_R512_fsc_dt0.005",
+   "rule": "tensor",
+   "M": 2049,
+   "trust": 0.005882959239393264
+  },
+  "worst_evolved": 0.01730047123168081,
+  "median_ms": 84.7082904074341,
+  "median_evolved": 0.0013470765782667693,
+  "eligible": true,
+  "why_not": [],
+  "rho_max": 0.0002664275072588791,
+  "certified": true,
+  "min_decoded": -0.0305554277734291,
+  "iterations_per_query": 51.0,
+  "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+  "speedup_own": 0.3256084653906123,
+  "speedup_rule": 0.3256084653906123
+ },
+ "fast_row": {
+  "spec": {
+   "kind": "span",
+   "Rp": 192,
+   "solver": "fsc",
+   "dt": 0.01,
+   "gtol": 0.001,
+   "name": "span_R192_fsc_dt0.01",
+   "rule": "tensor",
+   "M": 771,
+   "trust": 0.005882492368858914
+  },
+  "worst_evolved": 0.04466127199866169,
+  "median_ms": 10.11926936917007,
+  "median_evolved": 0.010696745103757623,
+  "eligible": true,
+  "why_not": [],
+  "rho_max": 0.0007846770277005658,
+  "certified": true,
+  "min_decoded": -0.04857989995099399,
+  "iterations_per_query": 26.0,
+  "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+  "speedup_own": 2.725664812269846,
+  "speedup_rule": 2.725664812269846
+ },
+ "fom_row": {
+  "worst_evolved": 0.011871763586101331,
+  "all_finite": true,
+  "median_ms": 27.58173644542694,
+  "capped": false
+ },
+ "arms": {
+  "span_R512_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R512_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 2049,
+    "trust": 0.005882959239393264
+   },
+   "worst_evolved": 0.01730047123168081,
+   "median_ms": 84.7082904074341,
+   "median_evolved": 0.0013470765782667693,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0002664275072588791,
+   "certified": true,
+   "min_decoded": -0.0305554277734291,
+   "iterations_per_query": 51.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 0.3256084653906123,
+   "speedup_rule": 0.3256084653906123
+  },
+  "span_R512_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R512_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 2049,
+    "trust": 0.005882959239393264
+   },
+   "worst_evolved": 0.018600762453747397,
+   "median_ms": 50.81062717363238,
+   "median_evolved": 0.007382910737581125,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 9.907869441536376e-05,
+   "certified": true,
+   "min_decoded": -0.018703332730232808,
+   "iterations_per_query": 27.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 0.5428340089401648,
+   "speedup_rule": 0.5428340089401648
+  },
+  "span_R384_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 384,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R384_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 1538,
+    "trust": 0.005882931077135096
+   },
+   "worst_evolved": 0.02574228316820459,
+   "median_ms": 46.23167891986668,
+   "median_evolved": 0.0021027391562904833,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.00017485177112339483,
+   "certified": true,
+   "min_decoded": -0.026014837302807306,
+   "iterations_per_query": 51.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 0.5965982004078705,
+   "speedup_rule": 0.5965982004078705
+  },
+  "span_R384_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 384,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R384_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 1538,
+    "trust": 0.005882931077135096
+   },
+   "worst_evolved": 0.024842137681594573,
+   "median_ms": 28.3405021764338,
+   "median_evolved": 0.007621443495681076,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 6.428807980171534e-05,
+   "certified": true,
+   "min_decoded": -0.016006736816737678,
+   "iterations_per_query": 27.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 0.9732268071227826,
+   "speedup_rule": 0.9732268071227826
+  },
+  "span_R256_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 256,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R256_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 1024,
+    "trust": 0.005882787424980454
+   },
+   "worst_evolved": 0.03257191874675391,
+   "median_ms": 23.439536802470684,
+   "median_evolved": 0.0043063312224187016,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0011762815709770267,
+   "certified": true,
+   "min_decoded": -0.051630301029090976,
+   "iterations_per_query": 51.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 1.1767184939644217,
+   "speedup_rule": 1.1767184939644217
+  },
+  "span_R256_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 256,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R256_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 1024,
+    "trust": 0.005882787424980454
+   },
+   "worst_evolved": 0.03129162846105184,
+   "median_ms": 14.322497881948948,
+   "median_evolved": 0.008291419040785938,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0007771317337861112,
+   "certified": true,
+   "min_decoded": -0.04064575009287483,
+   "iterations_per_query": 27.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 1.9257629969831582,
+   "speedup_rule": 1.9257629969831582
+  },
+  "span_R192_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 192,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R192_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 771,
+    "trust": 0.005882492368858914
+   },
+   "worst_evolved": 0.04727634134203201,
+   "median_ms": 16.3805375341326,
+   "median_evolved": 0.0071376113882070415,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0011728296106465472,
+   "certified": true,
+   "min_decoded": -0.06104150696895883,
+   "iterations_per_query": 51.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 1.6838114370761081,
+   "speedup_rule": 1.6838114370761081
+  },
+  "span_R192_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 192,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R192_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 771,
+    "trust": 0.005882492368858914
+   },
+   "worst_evolved": 0.04466127199866169,
+   "median_ms": 10.11926936917007,
+   "median_evolved": 0.010696745103757623,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0007846770277005658,
+   "certified": true,
+   "min_decoded": -0.04857989995099399,
+   "iterations_per_query": 26.0,
+   "own_fom": "fom_dt0.01_nt0.01_lt0.1",
+   "speedup_own": 2.725664812269846,
+   "speedup_rule": 2.725664812269846
+  },
+  "span_R128_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 128,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R128_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 513,
+    "trust": 0.005881318998034554
+   },
+   "worst_evolved": 0.09224715146853499,
+   "median_ms": 11.145169148221612,
+   "median_evolved": 0.015102630482915698,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0009569636377156126,
+   "certified": true,
+   "min_decoded": -0.06632434040332705,
+   "iterations_per_query": 51.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 1.5464229994996463,
+   "speedup_rule": 2.4747705556203283
+  },
+  "span_R128_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 128,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R128_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 513,
+    "trust": 0.005881318998034554
+   },
+   "worst_evolved": 0.08772965920209005,
+   "median_ms": 6.831494625657797,
+   "median_evolved": 0.01650835256045857,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0007865609905258861,
+   "certified": true,
+   "min_decoded": -0.05908380776628491,
+   "iterations_per_query": 26.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 2.5228953323613617,
+   "speedup_rule": 4.037438065432296
+  },
+  "span_R96_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 96,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R96_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 386,
+    "trust": 0.005879222462834622
+   },
+   "worst_evolved": 0.13087052557712175,
+   "median_ms": 8.31268634647131,
+   "median_evolved": 0.02378865527762937,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0008445767904782756,
+   "certified": true,
+   "min_decoded": -0.05743113848616983,
+   "iterations_per_query": 50.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 2.073354531347139,
+   "speedup_rule": 3.3180292502116644
+  },
+  "span_R96_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 96,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R96_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 386,
+    "trust": 0.005879222462834622
+   },
+   "worst_evolved": 0.12466958743220061,
+   "median_ms": 5.172303412109613,
+   "median_evolved": 0.02496928521922686,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0007339608780058796,
+   "certified": true,
+   "min_decoded": -0.050004668157300244,
+   "iterations_per_query": 26.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 3.3321993183485983,
+   "speedup_rule": 5.332582845169412
+  },
+  "span_R64_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 64,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R64_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 256,
+    "trust": 0.005872364706071131
+   },
+   "worst_evolved": 0.20586425313557605,
+   "median_ms": 6.855021929368377,
+   "median_evolved": 0.04262549160239791,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.0024303404164037765,
+   "certified": true,
+   "min_decoded": -0.10547451719338774,
+   "iterations_per_query": 50.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 2.514236435960145,
+   "speedup_rule": 4.023581066496797
+  },
+  "span_R64_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 64,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R64_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 256,
+    "trust": 0.005872364706071131
+   },
+   "worst_evolved": 0.19703270124975472,
+   "median_ms": 4.2172682005912066,
+   "median_evolved": 0.042831022378749764,
+   "eligible": true,
+   "why_not": [],
+   "rho_max": 0.002108844732060527,
+   "certified": true,
+   "min_decoded": -0.09676348634999776,
+   "iterations_per_query": 26.0,
+   "own_fom": "fom_dt0.025_nt0.01_lt0.5",
+   "speedup_own": 4.086803372312826,
+   "speedup_rule": 6.540190268563033
+  }
+ },
+ "foms": {
+  "fom_dt0.005_nt0.1_lt0.5": {
+   "worst_evolved": 0.8472616862813447,
+   "all_finite": true,
+   "median_ms": 4.249266581609845,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.1_lt0.1": {
+   "worst_evolved": 0.8472616862813447,
+   "all_finite": true,
+   "median_ms": 4.237504908815026,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.03_lt0.5": {
+   "worst_evolved": 0.6460261914874442,
+   "all_finite": true,
+   "median_ms": 4.529945086687803,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.03_lt0.1": {
+   "worst_evolved": 0.6460261914874442,
+   "all_finite": true,
+   "median_ms": 4.537448287010193,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.01_lt0.5": {
+   "worst_evolved": 0.20894870035274965,
+   "all_finite": true,
+   "median_ms": 54.827459855005145,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.01_lt0.1": {
+   "worst_evolved": 0.20894870035274965,
+   "all_finite": true,
+   "median_ms": 54.8158148303628,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.003_lt0.5": {
+   "worst_evolved": 0.025152667397714934,
+   "all_finite": true,
+   "median_ms": 54.898542584851384,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.003_lt0.1": {
+   "worst_evolved": 0.022930382184936583,
+   "all_finite": true,
+   "median_ms": 54.875764064490795,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.001_lt0.5": {
+   "worst_evolved": 0.009199146802756505,
+   "all_finite": true,
+   "median_ms": 66.94266223348677,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.001_lt0.1": {
+   "worst_evolved": 0.00919494634445726,
+   "all_finite": true,
+   "median_ms": 66.92792708054185,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.0001_lt0.5": {
+   "worst_evolved": 0.0005664546546788352,
+   "all_finite": true,
+   "median_ms": 116.015097592026,
+   "capped": false
+  },
+  "fom_dt0.005_nt0.0001_lt0.1": {
+   "worst_evolved": 0.0005451935258866292,
+   "all_finite": true,
+   "median_ms": 106.23786551877856,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.1_lt0.5": {
+   "worst_evolved": 0.7287504225495927,
+   "all_finite": true,
+   "median_ms": 2.342700958251953,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.1_lt0.1": {
+   "worst_evolved": 0.7287504225495927,
+   "all_finite": true,
+   "median_ms": 2.355896169319749,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.03_lt0.5": {
+   "worst_evolved": 0.4064228163561538,
+   "all_finite": true,
+   "median_ms": 22.06074050627649,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.03_lt0.1": {
+   "worst_evolved": 0.4064228163561538,
+   "all_finite": true,
+   "median_ms": 18.97277100943029,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.01_lt0.5": {
+   "worst_evolved": 0.03305638189496826,
+   "all_finite": true,
+   "median_ms": 27.612839126959443,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.01_lt0.1": {
+   "worst_evolved": 0.011871763586101331,
+   "all_finite": true,
+   "median_ms": 27.58173644542694,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.003_lt0.5": {
+   "worst_evolved": 0.016792787275797527,
+   "all_finite": true,
+   "median_ms": 35.634312545880675,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.003_lt0.1": {
+   "worst_evolved": 0.013320624080601745,
+   "all_finite": true,
+   "median_ms": 31.240399926900864,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.001_lt0.5": {
+   "worst_evolved": 0.015159310001179791,
+   "all_finite": true,
+   "median_ms": 52.17528669163585,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.001_lt0.1": {
+   "worst_evolved": 0.013930120435096153,
+   "all_finite": true,
+   "median_ms": 47.99575940705836,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.0001_lt0.5": {
+   "worst_evolved": 0.014050899301417064,
+   "all_finite": true,
+   "median_ms": 81.98334253393114,
+   "capped": false
+  },
+  "fom_dt0.01_nt0.0001_lt0.1": {
+   "worst_evolved": 0.014052965055352694,
+   "all_finite": true,
+   "median_ms": 61.3370081409812,
+   "capped": false
+  },
+  "fom_dt0.025_nt0.01_lt0.5": {
+   "worst_evolved": 0.04892338973129288,
+   "all_finite": true,
+   "median_ms": 17.235145904123783,
+   "capped": false
+  },
+  "fom_dt0.025_nt0.001_lt0.5": {
+   "worst_evolved": 0.04850763027808901,
+   "all_finite": true,
+   "median_ms": 38.335793651640415,
+   "capped": false
+  }
+ },
+ "reselected_on_this_cohort": {
+  "accurate": "span_R512_fsc_dt0.005",
+  "fast": "span_R192_fsc_dt0.01"
+ },
+ "fast_within_bar": true,
+ "timing_gates": {
+  "drift": 1.0923531067786494,
+  "neighbour": 1.0073732008461098,
+  "neighbour_fom": 1.0061061301751377,
+  "passed": true
+ },
+ "other_gates": {
+  "bank_condition": 1.0011383652927264,
+  "gram_condition": 1.0022780264609925,
+  "A_dst_vs_explicit": 3.344963487717207e-15,
+  "cholesky_reconstruction": 2.2202277602662333e-15,
+  "tensor_vs_direct": 2.449198940906077e-16,
+  "reference_residual": 9.988482663064131e-11,
+  "deterministic_outputs": 0.0,
+  "deterministic_pass": true
+ },
+ "bad_control_not_confirmed": true,
+ "stopping_rule_candidates": [
+  "span_R256_fsc_dt0.005",
+  "span_R256_fsc_dt0.01",
+  "span_R192_fsc_dt0.005",
+  "span_R192_fsc_dt0.01"
+ ],
+ "stopping_rule_pass": true,
+ "lane_success": false
+}

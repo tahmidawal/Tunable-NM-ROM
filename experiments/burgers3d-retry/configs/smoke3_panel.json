@@ -1,0 +1,49 @@
+{
+ "mesh": 33,
+ "audit_lattice": 16,
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "rho_bar": 0.116,
+ "ref_ntol": 1e-10,
+ "ref_ltol": 1e-11,
+ "fom_grid": [
+  [
+   0.01,
+   0.01,
+   0.1
+  ],
+  [
+   0.005,
+   0.001,
+   0.1
+  ]
+ ],
+ "reps": 2,
+ "arms": [
+  {
+   "kind": "span",
+   "Rp": 512,
+   "solver": "fsc",
+   "dt": 0.01,
+   "t32": true
+  },
+  {
+   "kind": "span",
+   "Rp": 128,
+   "solver": "fsc",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "Rp": 512,
+   "solver": "fsc",
+   "dt": 0.005
+  }
+ ],
+ "audit_arms": [
+  "span_R128_fsc_dt0.01"
+ ],
+ "mode": "panel",
+ "cohort_seed": 923651,
+ "cohort_count": 3
+}

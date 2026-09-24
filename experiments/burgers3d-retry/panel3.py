@@ -37,7 +37,7 @@ def load_model(model_dir, heads):
         f = Path(model_dir) / f'head_{tag}.pkl'
         h = pickle.loads(f.read_bytes())
         z = np.asarray(h['codes'])
-        H = np.asarray(h['library_H'])
+        H = np.asarray(h['library_H']) if 'library_H' in h else np.asarray(jax.jit(C.head)(tj(h['params']), jnp.asarray(z)))
         out['heads'][tag] = dict(params=tj(h['params']), Z=z, H=H,
                                  code_spread=float(np.sqrt(np.mean(np.sum((z - z.mean(0)) ** 2, axis=1)))))
         out['sha'][f.name] = C.sha_file(f)

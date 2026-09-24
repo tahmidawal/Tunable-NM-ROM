@@ -1,0 +1,50 @@
+{
+ "mode": "podscale",
+ "points_cap": 250047,
+ "subset_seed": 923002,
+ "train_seed": 923601,
+ "val_seed": 923651,
+ "train_steps": [
+  0,
+  1,
+  2,
+  4,
+  7,
+  10,
+  15,
+  20,
+  25,
+  30,
+  40,
+  50
+ ],
+ "ranks": [
+  64,
+  128,
+  192,
+  256,
+  384,
+  512,
+  768,
+  1024,
+  1536
+ ],
+ "ladder": [
+  64,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "model": "experiments/burgers3d-span/inputs/model_R512",
+ "mesh": 65,
+ "train_sizes": [
+  96,
+  192,
+  384,
+  768,
+  1536
+ ],
+ "val_count": 96
+}

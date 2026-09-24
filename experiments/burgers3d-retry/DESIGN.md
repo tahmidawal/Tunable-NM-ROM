@@ -45,9 +45,28 @@ Run before any design choice below; results are recorded in §2.1 when collected
 Local runs on the GB10 are not used for any number: the box returned NaN from f64 GEMM/QR non-deterministically on
 2026-09-23 (the same code gives finite tables on the cluster); every check runs on the cluster.
 
-### 2.1 Probe results
+### 2.1 Probe results (collected 2026-09-23 ~22:30 EDT; files in `checks/probe-*.json`)
 
-(filled in from the probe JSONs before §4 is written)
+**Solver path (`fscchkh`, H200, 4 probe cases per mesh).** The cached-predictor path reproduces lane 1's fixed-sweep
+path to ≤ 3.1e-15 relative (fields) at every mesh and R′ tested, with identical stationarity; the float32 table changes
+fields by ≤ 1.2e-8 relative. Median GPU ms (65 nodes): R′ = 512, Δt = 0.005: 124.6 (lane-1 path) → 80.6 (cached) →
+52.8 (cached + f32); Δt = 0.01: 66.1 → 46.0 → 29.8; R′ = 256, Δt = 0.01: 14.5 → 11.9 → 9.7.
+
+**Full-order cost and bank floor by mesh (`fineh`, H200, 8 probe cases, frozen lane-1 bank, full grids).**
+
+| nodes | FOM Δt .01 ntol 1e-2 (ms / worst %) | FOM Δt .005 ntol 1e-3 | FOM Δt .025 | bank floor (evolved, worst %) R′ = 512 / 256 / 192 / 128 |
+|---|---|---|---|---|
+| 129 | 27.5 / 1.08 | 67.4 / 0.64 | 18.5 / 4.24 | 1.09 / 2.29 / 3.09 / 4.75 |
+| 257 | 200.2 / 1.10 | 491.7 / 0.67 | 132.5 / 4.59 | 1.34 / 2.68 / 3.67 / 5.31 |
+
+The FOM costs 7.3× more at 257 than at 129 nodes; the bank's floor rises by only ~20 %. 256³ is therefore the regime
+where a reduced model can win both columns; 64³ (11.6 ms on an A100) cannot win the accurate column at any R′ ≥ 384.
+
+**Data scaling of the linear floor (`pod65`, 96 probe-validation cases incl. t = 0).** POD worst floor at R = 512 vs
+number of training trajectories: 96 → 6.65 %, 192 → 4.97 %, 384 → 4.40 %, 768 → 4.46 %, 1536 → 3.64 %; RMS
+0.79 → 0.41 %. The frozen lane-1 bank on the same fields: 3.27 % worst / 0.49 % RMS. **The worst-case linear floor is
+set by the family's n-width (a few hard cases), not by the amount of data**: 4× data lowers it by ~0.8 points. More
+data mainly helps the RMS and, possibly, the head (auto-decoder generalisation).
 
 ## 3. Cohorts of this lane (fresh seeds, never used by lane 1 or by the probes)
 

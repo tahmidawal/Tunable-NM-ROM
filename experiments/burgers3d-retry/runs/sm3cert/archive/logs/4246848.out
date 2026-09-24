@@ -1,0 +1,14 @@
+host=pax009 source_commit=fea43959271a8e0fc4c1610cefdd783a5b4ca885
+NVIDIA H200, GPU-9414f59f-8546-1c49-b2f9-c0bffc2ea441, 143771 MiB
+10.235.106.21:/projects/paralab  4.6T  4.2T  373G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[4.3s] [mesh 33] bank rows [(128, 29791), (384, 29791)] 2.9s
+[11.5s] [mesh 33] Gram cond 1.0316, A (2049, 512) 10.1s
+[17.3s] [mesh 33] tensor (2049, 512, 512) 15.9s
+[23.2s] table gates {'gram_condition': 1.031646668751848, 'A_dst_vs_explicit': 5.731998533959678e-15, 'cholesky_reconstruction': 1.4432852807129465e-15, 'tensor_vs_direct': 2.6763786236201983e-16}
+[33.7s] CERT span_R512_fsc_dt0.01_t32 draw 0 seed 923651: rho_max 0.000101 umin -0.00597
+[39.6s] CERT span_R128_fsc_dt0.01 draw 0 seed 923651: rho_max 0.000723 umin -0.017
+[47.7s] CERT span_R512_fsc_dt0.005 draw 0 seed 923651: rho_max 0.0001426 umin -0.00711
+PANEL COMPLETE
+ALL-DONE

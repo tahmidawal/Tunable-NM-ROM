@@ -1,0 +1,24 @@
+host=pax008 source_commit=1c3e28a6cde9315eabdc9c65997d81d29928a987
+NVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  373G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[3.6s] [mesh 33] bank rows [(256, 29791), (256, 29791)] 1.7s
+[6.1s] [mesh 33] Gram cond 1.0316, A (2049, 512) 4.3s
+[11.8s] [mesh 33] tensor (2049, 512, 512) 10.0s
+[16.7s] table gates {'gram_condition': 1.031646668751848, 'A_dst_vs_explicit': 5.731998533959678e-15, 'cholesky_reconstruction': 1.1102194467022666e-15, 'tensor_vs_direct': 2.7400807649744017e-16}
+[22.4s] references done, worst residual 9.81e-11
+[33.5s] ARM headK32_R512_fsh_dt0.01: worst evolved 9.3113% median 7.9502% its/query 29 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 75}
+[49.7s] ARM headK32_R256_fsh_dt0.005: worst evolved 9.0377% median 7.8417% its/query 52 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 150}
+[54.9s] ARM span_R256_fsc_dt0.01: worst evolved 1.1632% median 1.0454% its/query 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 75}
+[55.9s] FOM fom_dt0.01_nt0.01_lt0.1: worst evolved 0.8210%
+[58.6s] timing phase A1 done (18 invocations)
+[58.6s] timing phase B done (6 invocations)
+[58.9s] timing phase A2 done (18 invocations)
+[58.9s] timing gates drift 1.044 neighbour 1.000 / 1.000 determinism 0.00e+00
+[58.9s] TIME headK32_R512_fsh_dt0.01: 14.87 ms
+[58.9s] TIME headK32_R256_fsh_dt0.005: 18.21 ms
+[58.9s] TIME span_R256_fsc_dt0.01: 11.89 ms
+[58.9s] TIME fom_dt0.01_nt0.01_lt0.1: 4.96 ms
+PANEL COMPLETE
+ALL-DONE

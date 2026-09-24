@@ -1,0 +1,78 @@
+{
+ "config": {
+  "mesh": 257,
+  "audit_lattice": 16,
+  "gtol": 0.001,
+  "trust_fraction": 0.05,
+  "rho_bar": 0.116,
+  "ref_ntol": 1e-10,
+  "ref_ltol": 1e-11,
+  "fom_grid": [
+   [
+    0.01,
+    0.01,
+    0.1
+   ],
+   [
+    0.025,
+    0.01,
+    0.5
+   ]
+  ],
+  "reps": 2,
+  "arms": [
+   {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.01,
+    "t32": true
+   },
+   {
+    "kind": "span",
+    "Rp": 256,
+    "solver": "fsc",
+    "dt": 0.01,
+    "t32": true
+   },
+   {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.005
+   },
+   {
+    "kind": "span",
+    "Rp": 192,
+    "solver": "fsc",
+    "dt": 0.01
+   }
+  ],
+  "audit_arms": [],
+  "mode": "panel",
+  "cohort_seed": 923651,
+  "cohort_count": 4
+ },
+ "mode": "panel",
+ "mesh": 257,
+ "commit": "b048b758a6cc24c09d766a774454660fead4879b",
+ "job_id": "4246859",
+ "backend": "gpu",
+ "gpu": "NVIDIA H200",
+ "nvidia_smi": [
+  "GPU 0: NVIDIA H200 (UUID: GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19)"
+ ],
+ "x64": true,
+ "precision": "highest",
+ "jax_version": "0.10.2",
+ "model_sha256": {
+  "bank.pkl": "85b144175a39e1aca3f0391392fbb8eff6047041b498d20a90d26f83848960d8"
+ },
+ "gates": {},
+ "arms": {},
+ "fom": {},
+ "timing": {},
+ "certificates": {},
+ "complete": false,
+ "timing_contract": "GPU query: supplied dense initial interior field resident on the GPU -> six dense GPU output fields, block_until_ready on the whole output; compilation excluded"
+}

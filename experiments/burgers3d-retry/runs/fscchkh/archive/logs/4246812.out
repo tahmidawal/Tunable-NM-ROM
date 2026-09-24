@@ -1,0 +1,119 @@
+host=pax008 source_commit=705c0c8f984561894ed9162b6e0a740ca01330b1
+NVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  373G  92% /cluster/tufts/paralab
+jax_backend=gpu
+[mesh 33] bank evaluated (29791, 512) 1.2s
+[mesh 33] A (2049, 512) 3.7s
+[mesh 33] tensor (2049, 512, 512) 6.9s
+33 128 0.01 0 rel diff fsc 7.17e-16 fsc32 7.38e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 128 0.01 1 rel diff fsc 7.27e-16 fsc32 8.11e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 128 0.01 2 rel diff fsc 6.53e-16 fsc32 4.34e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 128 0.01 3 rel diff fsc 7.92e-16 fsc32 4.78e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 128 0.01 fs ms 5.59
+33 128 0.01 fsc ms 5.40
+33 128 0.01 fsc32 ms 4.43
+33 192 0.01 0 rel diff fsc 7.35e-16 fsc32 9.88e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 192 0.01 1 rel diff fsc 6.52e-16 fsc32 8.01e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 192 0.01 2 rel diff fsc 5.90e-16 fsc32 5.24e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 192 0.01 3 rel diff fsc 1.18e-15 fsc32 4.76e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 192 0.01 fs ms 8.89
+33 192 0.01 fsc ms 7.87
+33 192 0.01 fsc32 ms 6.92
+33 256 0.01 0 rel diff fsc 7.70e-16 fsc32 9.63e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 256 0.01 1 rel diff fsc 7.55e-16 fsc32 9.76e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 256 0.01 2 rel diff fsc 4.65e-16 fsc32 6.13e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 256 0.01 3 rel diff fsc 6.84e-16 fsc32 4.86e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 256 0.01 fs ms 14.24
+33 256 0.01 fsc ms 11.69
+33 256 0.01 fsc32 ms 9.52
+33 512 0.01 0 rel diff fsc 9.65e-16 fsc32 1.11e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.01 1 rel diff fsc 1.01e-15 fsc32 1.16e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.01 2 rel diff fsc 6.62e-16 fsc32 5.51e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.01 3 rel diff fsc 4.74e-16 fsc32 8.39e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.01 fs ms 67.21
+33 512 0.01 fsc ms 47.09
+33 512 0.01 fsc32 ms 30.54
+33 512 0.005 0 rel diff fsc 9.89e-16 fsc32 7.52e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.005 1 rel diff fsc 1.78e-15 fsc32 7.40e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.005 2 rel diff fsc 1.62e-15 fsc32 4.31e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.005 3 rel diff fsc 1.32e-15 fsc32 6.32e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+33 512 0.005 fs ms 124.57
+33 512 0.005 fsc ms 80.59
+33 512 0.005 fsc32 ms 52.73
+[mesh 65] bank evaluated (250047, 512) 2.4s
+[mesh 65] A (2052, 512) 5.0s
+[mesh 65] tensor (2052, 512, 512) 11.1s
+65 128 0.01 0 rel diff fsc 7.16e-16 fsc32 9.24e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 128 0.01 1 rel diff fsc 8.96e-16 fsc32 1.05e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 128 0.01 2 rel diff fsc 4.33e-16 fsc32 5.27e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 128 0.01 3 rel diff fsc 3.97e-16 fsc32 7.74e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 128 0.01 fs ms 5.62
+65 128 0.01 fsc ms 5.33
+65 128 0.01 fsc32 ms 4.48
+65 192 0.01 0 rel diff fsc 7.12e-16 fsc32 1.10e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 192 0.01 1 rel diff fsc 1.32e-15 fsc32 6.80e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 192 0.01 2 rel diff fsc 4.37e-16 fsc32 6.66e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 192 0.01 3 rel diff fsc 5.32e-16 fsc32 7.38e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 192 0.01 fs ms 9.27
+65 192 0.01 fsc ms 8.16
+65 192 0.01 fsc32 ms 7.29
+65 256 0.01 0 rel diff fsc 5.64e-16 fsc32 9.80e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 256 0.01 1 rel diff fsc 5.62e-16 fsc32 1.10e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 256 0.01 2 rel diff fsc 5.75e-16 fsc32 7.22e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 256 0.01 3 rel diff fsc 5.14e-16 fsc32 5.16e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 256 0.01 fs ms 14.47
+65 256 0.01 fsc ms 11.89
+65 256 0.01 fsc32 ms 9.73
+65 512 0.01 0 rel diff fsc 6.26e-16 fsc32 9.89e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.01 1 rel diff fsc 8.11e-16 fsc32 1.13e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.01 2 rel diff fsc 6.10e-16 fsc32 6.22e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.01 3 rel diff fsc 5.22e-16 fsc32 9.14e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.01 fs ms 66.12
+65 512 0.01 fsc ms 46.02
+65 512 0.01 fsc32 ms 29.81
+65 512 0.005 0 rel diff fsc 3.12e-15 fsc32 1.04e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.005 1 rel diff fsc 1.13e-15 fsc32 1.01e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.005 2 rel diff fsc 1.50e-15 fsc32 4.89e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.005 3 rel diff fsc 1.19e-15 fsc32 5.85e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+65 512 0.005 fs ms 124.56
+65 512 0.005 fsc ms 80.57
+65 512 0.005 fsc32 ms 52.82
+[mesh 129] bank evaluated (2048383, 512) 1.5s
+[mesh 129] A (2049, 512) 4.2s
+[mesh 129] tensor (2049, 512, 512) 40.4s
+129 128 0.01 0 rel diff fsc 1.27e-15 fsc32 7.90e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 128 0.01 1 rel diff fsc 5.57e-16 fsc32 7.48e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 128 0.01 2 rel diff fsc 8.24e-16 fsc32 3.95e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 128 0.01 3 rel diff fsc 5.63e-16 fsc32 5.31e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 128 0.01 fs ms 6.48
+129 128 0.01 fsc ms 6.21
+129 128 0.01 fsc32 ms 5.37
+129 192 0.01 0 rel diff fsc 1.12e-15 fsc32 1.06e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 192 0.01 1 rel diff fsc 8.10e-16 fsc32 7.77e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 192 0.01 2 rel diff fsc 4.67e-16 fsc32 4.62e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 192 0.01 3 rel diff fsc 1.03e-15 fsc32 5.91e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 192 0.01 fs ms 10.61
+129 192 0.01 fsc ms 9.52
+129 192 0.01 fsc32 ms 8.65
+129 256 0.01 0 rel diff fsc 8.78e-16 fsc32 1.11e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 256 0.01 1 rel diff fsc 9.82e-16 fsc32 8.23e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 256 0.01 2 rel diff fsc 6.82e-16 fsc32 4.76e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 256 0.01 3 rel diff fsc 7.33e-16 fsc32 5.86e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 256 0.01 fs ms 16.29
+129 256 0.01 fsc ms 13.71
+129 256 0.01 fsc32 ms 11.58
+129 512 0.01 0 rel diff fsc 5.57e-16 fsc32 1.22e-08 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.01 1 rel diff fsc 6.34e-16 fsc32 9.91e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.01 2 rel diff fsc 5.66e-16 fsc32 5.59e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.01 3 rel diff fsc 6.35e-16 fsc32 7.03e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.01 fs ms 69.75
+129 512 0.01 fsc ms 49.67
+129 512 0.01 fsc32 ms 33.44
+129 512 0.005 0 rel diff fsc 1.25e-15 fsc32 8.75e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.005 1 rel diff fsc 1.10e-15 fsc32 7.12e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.005 2 rel diff fsc 1.22e-15 fsc32 3.98e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.005 3 rel diff fsc 8.38e-16 fsc32 4.59e-09 nonstationary {'fs': 0, 'fsc': 0, 'fsc32': 0}
+129 512 0.005 fs ms 128.06
+129 512 0.005 fsc ms 84.14
+129 512 0.005 fsc32 ms 56.39
+CHECK COMPLETE

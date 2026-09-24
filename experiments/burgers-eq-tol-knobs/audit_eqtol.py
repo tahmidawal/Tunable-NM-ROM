@@ -1,19 +1,13 @@
-"""Independent NumPy audit + pre-registered selection for one burgers2d-speed attempt (no JAX anywhere in this file).
-Helpers (features_np, rho_np, ...) are copied from experiments/burgers-bank-knob/audit_bankknob.py @ b5c843ab.
+"""Independent NumPy audit + ladder tables for one burgers-eq-tol-knobs attempt (no JAX anywhere in this file).
 
-From the SAVED outputs, the checkpoint and the committed rotation only, it
-  * recomputes every (arm, case) evolved error on the restricted grid and, for the audit case, on the full grid;
-  * re-derives every certificate status from the saved per-state rho (k >= max(j,1) primary; k >= j+1 beside it)
-    and recomputes rho in NumPy for spot states (argmax cert, argmax confirmation, 2 random, every certified knob);
-  * recomputes the coefficient map of every ROM arm (case 0) in NumPy against the saved field;
-  * checks parity, the fast-bar reproduction, repetitions, and recomputes the A-B-A drift and neighbour gates from
-    the raw invocations;
-  * builds the knob table (time = faster compile mode), the FOM table (fastest setting+mode), applies the
-    pre-registered rule of DESIGN.md section 6, and the coordinator's general-path factor X (1024^2);
-  * runs injected controls (swapped case, perturbed error, perturbed A2 time) that must be DETECTED.
+This is experiments/burgers2d-speed/audit_b2speed.py @ fb4a9ff7 with the selection section replaced by the ladder
+tables of DESIGN.md section 4 and the Table-1 parity gate of section 5. Unchanged from the parent audit: every gate
+up to and including the knob table (restricted- and full-grid error recompute, certificate status from saved rho,
+rho recomputed in NumPy on spot states, coefficient map, repetitions, A-B-A drift and neighbour gates recomputed
+from raw invocations, compile-mode parity) and the injected controls.
 
-    python audit_b2speed.py runs/<attempt>/archive --checkpoint <pkl> --rotation <npz> --directions <npz> \
-        --out checks/<attempt>-summary.json [--write-selection selection-<L>.json]
+    python audit_eqtol.py runs/<attempt>/archive --checkpoint <pkl> --rotation <npz> --directions <npz> \
+        --out checks/<attempt>-summary.json
 """
 import argparse
 import hashlib
@@ -197,8 +191,9 @@ def main():
             job = next(x for x in r['quick'] if x['name'] == name and x['case'] == c)
             full.append(dict(name=name, case=c, recomputed_evolved=max(sg[1:]), job_evolved=job['same_grid_evolved'],
                              abs_diff=abs(max(sg[1:]) - job['same_grid_evolved'])))
-    gate('full_grid_errors_recomputed', bool(full) and all(x['abs_diff'] <= 1e-12 for x in full),
-         worst_abs_diff=max([x['abs_diff'] for x in full] or [None]), arms=len(full))
+    gate('full_grid_errors_recomputed', (not cfg['audit_cases']) or (bool(full) and all(x['abs_diff'] <= 1e-12 for x in full)),
+         worst_abs_diff=max([x['abs_diff'] for x in full] or [None]), arms=len(full),
+         note=None if cfg['audit_cases'] else 'no full fields saved at this mesh (DESIGN section 5); not evaluated')
 
     # ---- parity ----
     par = r['parity']
@@ -416,101 +411,61 @@ def main():
         ktab[best] = t
     gate('knob_error_identical_across_modes', not err_mismatch, mismatches=err_mismatch)
 
-    # ---- fast bar reproduction ----
-    pb = cfg['parent_fast_bar']
-    twin = next((n for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'parent'
-                 and t['model'] == 'trunc' and t['q'] == 0 and t['R_prime'] == 512 and not t['cap']
-                 and 'budget' not in n), None)
-    got = table[twin]['worst_evolved_percent'] if twin else None
-    heldout = bool(cfg.get('skip_certificates'))
-    if not heldout:
-        gate('fast_bar_reproduces', twin is not None and pb['percent'] is not None and abs(got / pb['percent'] - 1) <= 1e-6,
-             parent=pb['percent'], this_job=got, arm=twin)
-    ferr = got if got is not None else -1.   # DESIGN section 6: the fast bar is the q=0 setting's error re-measured in this job
+    # ---- ladder tables (DESIGN section 4) ----
+    T1 = 'lean_nt3e-3_l3e-3_dt005'
+    t1 = min([n for n in foms if strip_mode(n) == T1], key=lambda n: foms[n]['median_gpu_ms'])
+    t1ms = foms[t1]['median_gpu_ms']
+    rule_m = {x['rule']: x['m'] for x in r['rules']}
+    m_cur = rule_m['lat64']
+    rows = {}
+    for n, t in ktab.items():
+        st = setup[n]
+        dense = bool(t['exact_steps']) and t['exact_steps'] >= int(round(.25 / r['dt']))
+        it = t['total_iterations_per_case']
+        rows[n] = dict(arm=n, R_prime=t['R_prime'], M=t['M'], role=st.get('role'), rule='dense' if dense else t['rule'],
+                       N_eq=None if dense else t['m'], N_eq_ratio=None if dense else t['m'] / m_cur, gtol=t['gtol'],
+                       mode=t['mode'], other_mode_ms=t['other_mode_ms'],
+                       worst_percent=t['worst_evolved_percent'], median_percent=t['median_evolved_percent'],
+                       per_case_percent=table[n]['per_case_evolved_percent'],
+                       median_gpu_ms=t['median_gpu_ms'], A1_ms=table[n]['A1_median_ms'], A2_ms=table[n]['A2_median_ms'],
+                       table1_fom=t1, table1_fom_ms=t1ms, speedup_vs_table1_fom=t1ms / t['median_gpu_ms'],
+                       own_fom=t['own_fom'], own_fom_ms=t['own_fom_ms'], own_speedup=t['own_speedup'],
+                       iterations_per_case=it, iterations_total=int(sum(it)), iterations_median_case=med(it),
+                       max_iterations_per_step=t['max_iterations_per_step'], stalled_exits=t['stalled_exits'],
+                       budget_exits=t['budget_exits'],
+                       certificate='not applicable (dense residual)' if dense else t['certificate'],
+                       rho_max_cert=t['rho_max_cert'], rho_max_confirmation=t['rho_max_confirmation'],
+                       certificate_k_ge_j_plus_1=t['certificate_k_ge_j_plus_1'])
+    ladders, parity = {}, []
+    for Rp in sorted({x['R_prime'] for x in rows.values()}, reverse=True):
+        mine = {n: x for n, x in rows.items() if x['R_prime'] == Rp}
+        cur = next(n for n, x in mine.items() if x['rule'] == 'lat64' and x['gtol'] == 1e-3)
+        c = mine[cur]
+        for x in mine.values():
+            x['ms_over_current'] = x['median_gpu_ms'] / c['median_gpu_ms']
+            x['worst_over_current'] = x['worst_percent'] / c['worst_percent']
+            x['median_err_over_current'] = x['median_percent'] / c['median_percent']
+            x['time_saving_vs_current'] = 1 - x['median_gpu_ms'] / c['median_gpu_ms']
+        eq = sorted([n for n, x in mine.items() if x['gtol'] == 1e-3 and x['rule'] != 'dense'], key=lambda n: mine[n]['N_eq'])
+        tol = sorted([n for n, x in mine.items() if x['rule'] == 'lat64'], key=lambda n: -mine[n]['gtol'])
+        dn = next((n for n, x in mine.items() if x['rule'] == 'dense'), None)
+        ladders[str(Rp)] = dict(current=cur, eq_ladder=eq, tol_ladder=tol, dense=dn,
+                                dense_over_current_ms=(mine[dn]['median_gpu_ms'] / c['median_gpu_ms']) if dn else None,
+                                dense_worst_percent=mine[dn]['worst_percent'] if dn else None,
+                                current_worst_percent=c['worst_percent'])
+        rec = cfg.get('recorded_table1', {}).get(f'R{Rp}')
+        if rec:
+            parity.append(dict(R_prime=Rp, arm=cur, recorded_percent=rec['percent'], this_job_percent=c['worst_percent'],
+                               relative=abs(c['worst_percent'] / rec['percent'] - 1), recorded_job=rec['job'],
+                               source=rec['source']))
+    gate('table1_parity', bool(parity) and len(parity) == len(cfg.get('recorded_table1', {})) and
+         all(x['relative'] <= 1e-6 for x in parity), rows=parity, bar=1e-6)
+    sel = dict(mesh=L, table1_fom=t1, table1_fom_ms=t1ms, table1_fom_worst_percent=foms[t1]['worst_evolved_percent'],
+               table1_fom_newton_iterations_per_case=foms[t1]['newton_iterations_per_case'],
+               fastest_fom_at_least_as_accurate_as_current_accurate=fom_for(
+                   rows[ladders[max(ladders, key=int)]['current']]['worst_percent']),
+               ladders=ladders, rows=rows)
 
-    if heldout:
-        # held-out: the frozen dev6 picks are REPORTED whatever they show; no selection, no dev-cohort checks
-        hs = cfg['heldout_selection']
-        acc_n, fast_n = hs['accurate'], hs['fast']
-        f = fom_for(table[acc_n]['worst_evolved_percent'])
-        rowh = lambda n: {k: table[n].get(k) for k in ('name', 'worst_evolved_percent', 'median_evolved_percent',
-                                                       'median_gpu_ms', 'A1_median_ms', 'A2_median_ms',
-                                                       'total_iterations_per_case', 'max_iterations_per_step',
-                                                       'stalled_exits', 'budget_exits')}
-        sel = dict(mesh=L, rule='held-out: frozen dev6 selection (selection-<L>.json), reported as measured',
-                   accurate=rowh(acc_n), fast=rowh(fast_n),
-                   table1=dict(fom=f, fom_gpu_ms=foms[f]['median_gpu_ms'] if f else None,
-                               fom_worst_evolved_percent=foms[f]['worst_evolved_percent'] if f else None,
-                               accurate_speedup=foms[f]['median_gpu_ms'] / table[acc_n]['median_gpu_ms'] if f else None,
-                               fast_speedup=foms[f]['median_gpu_ms'] / table[fast_n]['median_gpu_ms'] if f else None),
-                   parent_settings_this_job={n: dict(rowh(n), speedup_vs_table1_fom=(foms[f]['median_gpu_ms'] /
-                                                                                       table[n]['median_gpu_ms']) if f else None)
-                                             for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'parent'},
-                   own_fom={n: fom_for(table[n]['worst_evolved_percent']) for n in (acc_n, fast_n)})
-    # ---- the pre-registered rule ----
-    conf = {n: t for n, t in ktab.items() if t['certificate'] == 'confirmed'} if not heldout else {}
-    key_err = lambda n: (ktab[n]['worst_evolved_percent'], ktab[n]['median_gpu_ms'])
-    acc = min(conf, key=key_err) if conf else None
-    acc_any = min(ktab, key=key_err) if ktab else None
-    fast_ok = [n for n in conf if ktab[n]['worst_evolved_percent'] <= ferr]
-    fast = min(fast_ok, key=lambda n: ktab[n]['median_gpu_ms']) if fast_ok else None
-    fast_any_ok = [n for n in ktab if ktab[n]['worst_evolved_percent'] <= ferr]
-    fast_any = min(fast_any_ok, key=lambda n: ktab[n]['median_gpu_ms']) if fast_any_ok else None
-    selh = sel if heldout else None
-    sel = dict(mesh=L, rule='DESIGN.md section 6', knobs=len(ktab), confirmed=len(conf), fast_bar_percent=ferr,
-               accurate=ktab.get(acc), fast=ktab.get(fast),
-               accurate_if_certificates_ignored=ktab.get(acc_any) if acc_any != acc else None,
-               fast_if_certificates_ignored=ktab.get(fast_any) if fast_any != fast else None,
-               fast_near_ties={n: dict(ms=ktab[n]['median_gpu_ms'], err=ktab[n]['worst_evolved_percent'])
-                               for n in fast_ok if fast and n != fast and ktab[n]['median_gpu_ms'] <= 1.05 * ktab[fast]['median_gpu_ms']})
-    if acc:
-        f = fom_for(ktab[acc]['worst_evolved_percent'])
-        sel['table1'] = dict(fom=f, fom_gpu_ms=foms[f]['median_gpu_ms'] if f else None,
-                             fom_worst_evolved_percent=foms[f]['worst_evolved_percent'] if f else None,
-                             accurate_ms=ktab[acc]['median_gpu_ms'], fast_ms=ktab[fast]['median_gpu_ms'] if fast else None,
-                             accurate_speedup=(foms[f]['median_gpu_ms'] / ktab[acc]['median_gpu_ms']) if f else None,
-                             fast_speedup=(foms[f]['median_gpu_ms'] / ktab[fast]['median_gpu_ms']) if f and fast else None)
-    # the parent's Table-1 settings measured in this job (before): parent text, default compile
-    def twin_knob(n, t):
-        """The engineered knob a parent arm realises: an LM budget of 1 is the cap-1 knob (Codex results audit)."""
-        k = list(t['knob'])
-        if '_budget1' in n:
-            k[-1] = 1
-        return k
-    before = {}
-    for n, t in table.items():
-        if t['family'] == 'rom' and t.get('impl') == 'parent':
-            f = fom_for(ktab[acc]['worst_evolved_percent']) if acc else None
-            before[n] = dict(median_gpu_ms=t['median_gpu_ms'], worst_evolved_percent=t['worst_evolved_percent'],
-                             speedup_vs_table1_fom=(foms[f]['median_gpu_ms'] / t['median_gpu_ms']) if f else None,
-                             total_iterations_per_case=t['total_iterations_per_case'],
-                             engineered_same_knob={m: dict(ms=table[m]['median_gpu_ms'],
-                                                           factor=t['median_gpu_ms'] / table[m]['median_gpu_ms'])
-                                                   for m in table if table[m]['family'] == 'rom' and m != n
-                                                   and table[m].get('impl') == 'eng' and table[m]['timed']
-                                                   and table[m].get('knob') == twin_knob(n, t)})
-    sel['parent_settings_this_job'] = before
-    # coordinator: general path vs fast path (paper section 6.3)
-    gen = next((n for n, t in table.items() if t['family'] == 'rom' and t.get('impl') == 'general'), None)
-    if gen:
-        fastp = next(n for n, t in table.items() if t.get('impl') == 'parent' and t['model'] == 'lin' and 'budget' not in n
-                     and t['R_prime'] == table[gen]['R_prime'] and not t['exact_steps'])
-        sel['general_path_section_6_3'] = dict(
-            general_arm=gen, fast_path_arm=fastp, general_ms=table[gen]['median_gpu_ms'],
-            fast_path_ms=table[fastp]['median_gpu_ms'], X=table[gen]['median_gpu_ms'] / table[fastp]['median_gpu_ms'],
-            general_worst_evolved_percent=table[gen]['worst_evolved_percent'],
-            fast_path_worst_evolved_percent=table[fastp]['worst_evolved_percent'],
-            general_per_case=table[gen]['per_case_evolved_percent'], fast_per_case=table[fastp]['per_case_evolved_percent'],
-            general_iterations=table[gen]['total_iterations_per_case'],
-            fast_iterations=table[fastp]['total_iterations_per_case'],
-            same_error_criterion='pre-registered: |worst evolved error (general) / (fast path) - 1| <= 0.05',
-            same_error=bool(abs(table[gen]['worst_evolved_percent'] / table[fastp]['worst_evolved_percent'] - 1) <= .05))
-    if acc and fast:
-        sel['parity_pairs'] = cfg.get('parity_pairs', [])
-        sel['accurate_arm'], sel['fast_arm'] = ktab[acc]['timed_arm'], ktab[fast]['timed_arm']
-
-    if heldout:
-        sel = selh
     # ---- injected controls ----
     roms = [x for x in r['quick'] if x['family'] == 'rom']
     probe = [x for x in roms if x['same_grid_evolved'] > 1e-6][:6]
@@ -539,31 +494,19 @@ def main():
     failed = [k for k, v in gates.items() if not v['passed']]
     summary = dict(attempt=cfg['attempt'], job_id=r['job_id'], commit=r['commit'], gpu=r['gpu'], host=r.get('host'),
                    intervals=L, cohort=r['cohort_name'], cohort_cases=len(cases), elapsed_seconds=r.get('elapsed_seconds'),
-                   gates=gates, failed_gates=failed, accepted=not failed, selection=sel, knobs=ktab, table=table,
+                   gates=gates, failed_gates=failed, accepted=not failed, ladder=sel, knobs=ktab, table=table,
                    certificates=cert, rho_spot=spot, full_grid=full, coefficient_map=cmap,
                    sources=dict(result_json_sha256=sha(o / 'result.json')))
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(summary, indent=1, allow_nan=False, default=float) + '\n')
     print('failed gates:', failed)
-    for k in ('accurate', 'fast'):
-        v = sel.get(k)
-        print(k, v and (v.get('timed_arm', v.get('name')), round(v['worst_evolved_percent'], 4), round(v['median_gpu_ms'], 2),
-                        v.get('certificate')))
-    print('table1', sel.get('table1'))
-    if 'general_path_section_6_3' in sel:
-        print('general path', {k: v for k, v in sel['general_path_section_6_3'].items() if 'per_case' not in k})
-    if a.write_selection:
-        assert not failed and acc and fast, 'selection is written only from an accepted job with both picks'
-        tw = [n for n, t in table.items() if t.get('impl') == 'parent']
-        pacc = next(n for n in tw if table[n]['model'] == 'lin' and table[n]['R_prime'] == 384)
-        pfast = {256: 128, 512: None, 1024: 128}[L]
-        pfast = (next(n for n in tw if table[n]['model'] == 'lin' and table[n]['R_prime'] == 128) if pfast else
-                 next(n for n in tw if table[n]['model'] == 'trunc'))
-        Path(a.write_selection).write_text(json.dumps(dict(
-            mesh=L, accurate=ktab[acc]['timed_arm'], fast=ktab[fast]['timed_arm'], parent_accurate_twin=pacc,
-            parent_fast_twin=pfast, parity_pairs=cfg.get('parity_pairs', []),
-            source_summary_sha256=hashlib.sha256(Path(a.out).read_bytes()).hexdigest(),
-            source_attempt=cfg['attempt'], source_job=r['job_id']), indent=1) + '\n')
+    print('Table-1 FOM', t1, round(t1ms, 3), 'ms')
+    for Rp, lad in ladders.items():
+        for n in [lad['current']] + lad['eq_ladder'] + lad['tol_ladder'] + ([lad['dense']] if lad['dense'] else []):
+            x = rows[n]
+            print(Rp, x['rule'], x['N_eq'], x['gtol'], f"{x['worst_percent']:.4f}", f"{x['median_percent']:.4f}",
+                  f"{x['median_gpu_ms']:.2f}", f"{x['speedup_vs_table1_fom']:.2f}x", x['iterations_per_case'],
+                  x['certificate'], x['rho_max_cert'])
 
 
 if __name__ == '__main__':

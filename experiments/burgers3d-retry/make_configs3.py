@@ -28,7 +28,7 @@ def main():
     ap.add_argument('--model', required=True)
     ap.add_argument('--head')
     a = ap.parse_args()
-    md = HERE.parent.parent.parent / a.model if not Path(a.model).is_absolute() else Path(a.model)
+    md = HERE.parent.parent / a.model if not Path(a.model).is_absolute() else Path(a.model)
     files = ['bank.pkl'] + ([f'head_{a.head}.pkl'] if a.head else [])
     sha = {f: hashlib.sha256((md / f).read_bytes()).hexdigest() for f in files}
     base = dict(audit_lattice=16, gtol=1e-3, trust_fraction=0.05, rho_bar=0.116, ref_ntol=1e-10, ref_ltol=1e-11,

@@ -1,0 +1,35 @@
+{
+ "rule": "DESIGN.md sections 8 + R1 (select3.py), validation cohort 923801 x 64, H200",
+ "model": "M2",
+ "model_dir": "experiments/burgers3d-retry/inputs/model_M2",
+ "bank_sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+ "meshes": {
+  "65": {
+   "accurate": "span_R512_fsc_dt0.005",
+   "fast": "span_R192_fsc_dt0.01",
+   "fom": "fom_dt0.005_nt0.001_lt0.1",
+   "validation_job": "4249201",
+   "cert_job": "4249204",
+   "validation_lane_success": false,
+   "timing_gates_passed": true
+  },
+  "129": {
+   "accurate": "span_R512_fsc_dt0.005",
+   "fast": "span_R192_fsc_dt0.01",
+   "fom": "fom_dt0.01_nt0.01_lt0.1",
+   "validation_job": "4249210",
+   "cert_job": "4249216",
+   "validation_lane_success": false,
+   "timing_gates_passed": true
+  },
+  "257": {
+   "accurate": "span_R512_fsc_dt0.01",
+   "fast": "span_R256_fsc_dt0.01",
+   "fom": "fom_dt0.01_nt0.01_lt0.1",
+   "validation_job": "4249218",
+   "cert_job": "4249221",
+   "validation_lane_success": true,
+   "timing_gates_passed": true
+  }
+ }
+}

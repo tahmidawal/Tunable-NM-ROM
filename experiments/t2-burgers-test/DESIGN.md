@@ -147,3 +147,11 @@ repetition over 64 cases takes ~790 s, so at 2048² an A100 run (~4× the FOM co
 16:00 cutoff — the A1 A100 fallback is not viable. Three H100 80 GB GPUs (pax063) are idle. Therefore `t2048` is
 cancelled while PENDING and `t2048a` — identical config (`config-t2048a.json` differs only in `attempt`) — is submitted
 on H100. Only `t2048a` is evaluated at 2048²; its ratios are same-job H100 ratios (the dev cell is H200, p2048e).
+
+## Execution record (2026-09-25, after the runs; no setting changed)
+
+`d256` 4327402, `t256` 4327396, `t1024` 4327389 (A100 80 GB PCIe, pax105, commit `1f8e2797`); `t2048` 4327384
+cancelled while PENDING (A2); `t2048a` 4327887 (H100 PCIe, pax063, commit `9707f897`, config identical except
+`attempt`). Each ran once; all four audits (remote and local) have 0 failed gates; every log has `jax_backend=gpu`.
+Results pulled with checksums; every remote attempt directory and the namespace were deleted. Report:
+`reports/2026-09-25-t2-burgers-test.md`, `reports/summary.json`.

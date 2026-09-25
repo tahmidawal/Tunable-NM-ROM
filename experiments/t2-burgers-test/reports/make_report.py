@@ -216,6 +216,13 @@ def md_cell(L, c, lines):
         lines.append(f"FOM reproduction vs burgers2d-test (`{Path(fr['source']).name}` sha256 `{fr['sha256'][:12]}…`): "
                      f"{len(fr['per_setting'])} settings, max relative difference of the worst test error "
                      f"{fmt(fr['max_rel_diff'], 3)}.\n")
+    for side, cc in (('test', t), ('development', d)):
+        ops = [cc['rows'][k] for k in ('fno', 'unet', 'tsol', 'don')]
+        dom = [LABEL[k] for k in ('accurate', 'head') if not cc['rows'][k].get('missing') and
+               all(cc['rows'][k]['worst_percent'] <= o['worst_percent'] and cc['rows'][k]['speedup'] >= o['speedup'] for o in ops)]
+        c.setdefault('dominance', {})[side] = dom
+        lines.append(f"NM-ROM rows at least as accurate AND at least as fast as all four Table 2 operators ({side}): "
+                     f"{', '.join(dom) if dom else 'none'}.\n")
     pc = c['paper_check']
     bad = [p['row'] for p in pc if not p['matches']]
     lines.append(f"Paper Table 2 development values recomputed from the records: "
@@ -248,7 +255,6 @@ def main():
     out = dict(status=a.status, lane='t2-burgers-test', design='experiments/t2-burgers-test/DESIGN.md', cells=cells,
                rule='one FOM per cell: fastest FOM setting (median GPU ms, same job) with worst evolved error <= the '
                     'accurate NM-ROM setting\'s worst; speedup = FOM ms / row ms, same job')
-    (HERE / 'summary.json').write_text(json.dumps(out, indent=1, default=float) + '\n')
 
     L_ = []
     L_.append('# Table 2 (Burgers 2D, NM-ROM vs neural operators) on the 64 held-out test cases\n')
@@ -293,6 +299,7 @@ def main():
     L_.append('- **d256**: the 256² job run on the development cases with this lane\'s driver, for a like-for-like '
               'development value (the paper\'s 256² cell came from a different driver).')
     (HERE / '2026-09-25-t2-burgers-test.md').write_text('\n'.join(L_) + '\n')
+    (HERE / 'summary.json').write_text(json.dumps(out, indent=1, default=float) + '\n')
     print('report written', {L: (cells[L]['test']['fom']['name'], [p['matches'] for p in cells[L]['paper_check']]) for L in cells})
 
 

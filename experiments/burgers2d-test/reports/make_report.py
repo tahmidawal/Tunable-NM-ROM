@@ -1,0 +1,187 @@
+"""Generate reports/summary.json and reports/2026-09-25-burgers2d-test-table1.md from the audited test summaries
+(checks/t<L>-summary.json) and the parent lanes' development summaries. No number in the report is typed by hand.
+
+    python reports/make_report.py
+"""
+import hashlib
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+LANE = HERE.parent
+EXP = LANE.parent
+MESHES = [256, 512, 1024, 2048, 4096]
+OUT_MD = HERE / '2026-09-25-burgers2d-test-table1.md'
+OUT_JSON = HERE / 'summary.json'
+WIDTH = {256: (384, 96, 128), 512: (384, 96, 128), 1024: (384, 96, 128), 2048: (384, 64, 128), 4096: (384, 64, 128)}
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def dev_row(L):
+    """Development (dev6) values at the Table-1 widths, Table-1 convention, from the parent lanes' audited summaries."""
+    acc, fast, extra = WIDTH[L]
+    if L <= 1024:
+        p = EXP / 'burgers2d-speed' / 'checks' / f'b{L}-summary.json'
+        s = json.loads(p.read_text())
+        pick = {}
+        for Rp in (acc, fast, extra):
+            hit = [v for v in s['knobs'].values() if v['model'] == 'lin' and v['R_prime'] == Rp and not v['cap']
+                   and not v['exact_steps']]
+            assert len(hit) == 1
+            pick[Rp] = dict(arm=hit[0]['timed_arm'], worst_evolved_percent=hit[0]['worst_evolved_percent'],
+                            median_evolved_percent=hit[0]['median_evolved_percent'], median_gpu_ms=hit[0]['median_gpu_ms'])
+        t1 = s['selection']['table1']
+        fom, fom_ms, fom_err = t1['fom'], t1['fom_gpu_ms'], t1['fom_worst_evolved_percent']
+        assert abs(pick[acc]['median_gpu_ms'] - t1['accurate_ms']) < 1e-9
+    else:
+        p = EXP / 'burgers-bank-knob' / 'checks' / f'bk{L}-summary.json'
+        s = json.loads(p.read_text())
+        pick = {}
+        for Rp in (acc, fast, extra):
+            n = f'R{Rp}_lin_M{4 * Rp}_lat64_g0p001_fast_chol_clip_lamcarry_pred2'
+            t = s['table'][n]
+            pick[Rp] = dict(arm=n, worst_evolved_percent=t['worst_evolved_percent'],
+                            median_evolved_percent=t['median_evolved_percent'], median_gpu_ms=t['median_gpu_ms'])
+        ta = s['table'][pick[acc]['arm']]
+        fom, fom_ms, fom_err = ta['fom_at_least_as_accurate'], ta['fom_gpu_ms'], s['table'][ta['fom_at_least_as_accurate']]['worst_evolved_percent']
+    for Rp in pick:
+        pick[Rp]['table1_speedup_gpu'] = fom_ms / pick[Rp]['median_gpu_ms']
+    return dict(source=str(p.relative_to(EXP.parent)), sha256=sha(p), job=s['job_id'], gpu=s['gpu'], cases=s['cohort_cases'],
+                accepted=s['accepted'], fom=fom, fom_gpu_ms=fom_ms, fom_worst_evolved_percent=fom_err,
+                accurate=pick[acc], fast=pick[fast], extra=pick[extra])
+
+
+def test_row(L):
+    p = LANE / 'checks' / f't{L}-summary.json'
+    if not p.exists():
+        return None
+    s = json.loads(p.read_text())
+    res = s['sources']['result_json_sha256']
+    sel = s['selection']
+    keep = ('name', 'worst_evolved_percent', 'median_evolved_percent', 'median_gpu_ms', 'A1_median_ms', 'A2_median_ms',
+            'table1_speedup_gpu', 'own_fom', 'own_fom_ms', 'own_speedup_gpu', 'stalled_exits', 'budget_exits',
+            'max_iterations_per_step', 'invocations')
+    roles = {r: {k: v.get(k) for k in keep} for r, v in sel['roles'].items()}
+    sec = {k: {kk: v.get(kk) for kk in keep} for k, v in sel.get('secondary_faster_mode', {}).items()}
+    return dict(source=str(p.relative_to(EXP.parent)), sha256=sha(p), result_json_sha256=res, job=s['job_id'], gpu=s['gpu'],
+                host=s['host'], commit=s['commit'], cases=s['cohort_cases'], accepted=s['accepted'],
+                failed_gates=s['failed_gates'], elapsed_seconds=s['elapsed_seconds'], primary_impl=sel['primary_impl'],
+                table1=sel['table1'], roles=roles, secondary_faster_mode=sec,
+                reproduction=s['gates'].get('reproduces_prior_heldout'),
+                gates={k: v['passed'] for k, v in s['gates'].items()})
+
+
+def pct(x, d=2):
+    return '—' if x is None else f'{x:.{d}f}'
+
+
+def spd(x):
+    return '—' if x is None else (f'{x:.2f}×' if x < 10 else f'{x:.1f}×')
+
+
+def ms(x):
+    return '—' if x is None else f'{x:.1f}'
+
+
+def main():
+    rows = {}
+    for L in MESHES:
+        rows[L] = dict(test=test_row(L), development=dev_row(L))
+    done = [L for L in MESHES if rows[L]['test']]
+    acc_all = all(rows[L]['test']['accepted'] for L in done)
+    status = ('final' if len(done) == len(MESHES) and acc_all else
+              f'PROVISIONAL: {len(done)} of {len(MESHES)} meshes landed' + ('' if acc_all else '; some gates FAILED'))
+    OUT_JSON.write_text(json.dumps(dict(lane='exp/2026-09-25-burgers2d-test', status=status, meshes=rows), indent=1) + '\n')
+    o = ['# Burgers 2D Table-1 settings on the 64 held-out test cases, with the development values beside them', '',
+         f'Status: **{status}**. Every number below is generated by `reports/make_report.py` from the audited summaries '
+         '(`checks/t<L>-summary.json`, independent NumPy audits of the saved job outputs) and from the parent lanes\' '
+         'development summaries; none is typed by hand. Settings were frozen in `DESIGN.md` before any test job ran.', '',
+         '## Table-1 rows: test (64 cases) vs development (6 cases)', '',
+         'Speedup = the Table-1 FOM\'s median GPU ms / the arm\'s median GPU ms, both from the same job. The Table-1 FOM '
+         'is the fastest timed full-order Newton–BiCGStab setting that converged on every case and whose worst error is '
+         'at most the accurate arm\'s, on the same cases, in the same job.', '',
+         '| mesh | cohort | accurate worst % | accurate speedup | fast worst % | fast speedup | FOM worst % | '
+         'accurate ms | fast ms | FOM setting | FOM ms | job | GPU |',
+         '|---|---|---|---|---|---|---|---|---|---|---|---|---|']
+    for L in MESHES:
+        acc, fast, _ = WIDTH[L]
+        t, d = rows[L]['test'], rows[L]['development']
+        if t:
+            ra, rf = t['roles']['accurate'], t['roles']['fast']
+            o.append(f"| ${L}^2$ | **test64** | {pct(ra['worst_evolved_percent'])} | {spd(ra['table1_speedup_gpu'])} | "
+                     f"{pct(rf['worst_evolved_percent'])} | {spd(rf['table1_speedup_gpu'])} | "
+                     f"{pct(t['table1']['fom_worst_evolved_percent'], 3)} | {ms(ra['median_gpu_ms'])} | "
+                     f"{ms(rf['median_gpu_ms'])} | `{t['table1']['fom']}` | {ms(t['table1']['fom_gpu_ms'])} | "
+                     f"{t['job']} | {t['gpu']} |")
+        else:
+            o.append(f'| ${L}^2$ | **test64** | not landed | | | | | | | | | | |')
+        o.append(f"| | dev6 | {pct(d['accurate']['worst_evolved_percent'])} | {spd(d['accurate']['table1_speedup_gpu'])} | "
+                 f"{pct(d['fast']['worst_evolved_percent'])} | {spd(d['fast']['table1_speedup_gpu'])} | "
+                 f"{pct(d['fom_worst_evolved_percent'], 3)} | {ms(d['accurate']['median_gpu_ms'])} | "
+                 f"{ms(d['fast']['median_gpu_ms'])} | `{d['fom']}` | {ms(d['fom_gpu_ms'])} | {d['job']} | {d['gpu']} |")
+    o += ['', f"Widths: accurate $R'=384$ everywhere; fast $R'=96$ at $256^2$–$1024^2$ and $R'=64$ at $2048^2$/$4096^2$.", '',
+          '## Medians and the extra width', '',
+          '| mesh | arm | worst % (test) | median % (test) | median ms (test) | Table-1 speedup (test) | own FOM (test) | '
+          'own speedup (test) | worst % (dev) | speedup (dev) |', '|---|---|---|---|---|---|---|---|---|---|']
+    for L in MESHES:
+        t, d = rows[L]['test'], rows[L]['development']
+        for role, Rp in zip(('accurate', 'fast', 'extra'), WIDTH[L]):
+            dv = d[role]
+            if t:
+                x = t['roles'][role]
+                o.append(f"| ${L}^2$ | {role} $R'={Rp}$ | {pct(x['worst_evolved_percent'])} | "
+                         f"{pct(x['median_evolved_percent'], 3)} | {ms(x['median_gpu_ms'])} | "
+                         f"{spd(x['table1_speedup_gpu'])} | `{x['own_fom']}` | {spd(x['own_speedup_gpu'])} | "
+                         f"{pct(dv['worst_evolved_percent'])} | {spd(dv['table1_speedup_gpu'])} |")
+            else:
+                o.append(f"| ${L}^2$ | {role} $R'={Rp}$ | — | — | — | — | — | — | {pct(dv['worst_evolved_percent'])} | "
+                         f"{spd(dv['table1_speedup_gpu'])} |")
+    t2 = rows[2048]['test']
+    if t2 and t2['secondary_faster_mode']:
+        o += ['', "## $2048^2$ secondary: the engineered code path of the $256^2$–$1024^2$ rows (reported, not a Table-1 "
+              'number)', '', '| arm (faster mode) | worst % | median ms | Table-1 speedup |', '|---|---|---|---|']
+        for k, x in t2['secondary_faster_mode'].items():
+            o.append(f"| `{x['name']}` | {pct(x['worst_evolved_percent'])} | {ms(x['median_gpu_ms'])} | "
+                     f"{spd(x['table1_speedup_gpu'])} |")
+    o += ['', '## Gates and provenance', '', '| mesh | job | accepted | failed gates | reproduces earlier held-out job | '
+          'summary sha256 | result.json sha256 | commit |', '|---|---|---|---|---|---|---|---|']
+    for L in MESHES:
+        t = rows[L]['test']
+        if not t:
+            o.append(f'| ${L}^2$ | — | not landed | | | | | |')
+            continue
+        rp = t['reproduction']
+        rps = '—' if rp is None else (f"{'yes' if rp['passed'] else 'NO'} (job {rp['prior_job']}, "
+                                      f"{sum(x['passed'] for x in rp['rows'])}/{len(rp['rows'])} rows)")
+        o.append(f"| ${L}^2$ | {t['job']} | {'yes' if t['accepted'] else 'NO'} | {', '.join(t['failed_gates']) or 'none'} | "
+                 f"{rps} | `{t['sha256']}` | `{t['result_json_sha256']}` | `{(t['commit'] or '')[:12]}` |")
+    o += ['', 'Development sources:', '']
+    for L in MESHES:
+        d = rows[L]['development']
+        o.append(f"- ${L}^2$: `{d['source']}` sha256 `{d['sha256']}`, job {d['job']} ({d['gpu']}, {d['cases']} cases)")
+    o += ['', '## Glossary', '',
+          '- **test64 / hold64**: the 64 held-out cases `params_draw(20260916, 64)`; never used to fit, choose or tune '
+          'anything. **dev6**: the six development cases the settings were chosen on.',
+          "- **$R'$**: number of leading columns of the frozen, rotated bank the solution is searched in (the "
+          '"linear rung": no neural head, $R\'$ unknowns). **accurate / fast / extra**: the frozen Table-1 widths.',
+          '- **worst %**: worst over cases of the largest relative error over the five evolved output times, against the '
+          'tight Newton reference on the same mesh, in percent of the initial field norm. **median %**: the median over cases.',
+          '- **ms**: median GPU milliseconds of one query (dense initial field on the GPU to six dense output fields).',
+          '- **FOM**: full-order model, Newton–BiCGStab backward Euler on the same grid. **Table-1 FOM**: the fastest FOM '
+          'setting at least as accurate as the accurate arm in the same job. **own FOM**: the fastest FOM at least as '
+          'accurate as that arm.',
+          '- **speedup**: FOM ms / arm ms, same job, same GPU. Absolute ms from different jobs are not comparable.',
+          '- **eng / parent**: two implementations of the same solver (the engineered path reproduces the parent\'s '
+          'iterates); the Table-1 row at each mesh uses the one that produced its development number.',
+          '- **reproduces earlier held-out job**: arms and FOM settings shared with the earlier held-out run at this mesh '
+          'give the same worst error to 1e-6 relative.']
+    OUT_MD.write_text('\n'.join(o) + '\n')
+    print(OUT_MD, sha(OUT_MD))
+    print(OUT_JSON, sha(OUT_JSON))
+
+
+if __name__ == '__main__':
+    main()

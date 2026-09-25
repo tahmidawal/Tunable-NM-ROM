@@ -144,3 +144,19 @@ job) is listed. The paper is not edited.
 A crash is recorded and archived; a rerun with an identical config is allowed only for an
 infrastructure cause (OOM, node failure, preflight 42), disclosed as an amendment with the cohort's
 opening count. A failed gate is reported, not worked around.
+
+## A1 (2026-09-25 ~08:40 EDT, after both test jobs) — execution record
+
+* Pre-registration committed at `69df5396`; report generator + smoke archive at `7bf42bc4` (the staged
+  source commit of all three jobs, recorded in each job's `COMMIT.txt`).
+* Smoke `smk32` = job 4327116 (seed 7, 2 cases, 1 round; A100 80GB, pax106): ran end to end, audit
+  passed; its drift gate failed with 1 round of 2 cases, as expected for a smoke; not a result.
+* Test jobs, submitted concurrently in their own directories, `squeue` before/after each:
+  `t2t32` = job 4327166, `t2t64` = job 4327176, both A100 80GB PCIe on node pax106 (distinct GPU
+  UUIDs), `jax_backend=gpu`, one attempt each, no rerun. Both `status: final` (every gate passed; the
+  reproduction gate against ns3d-test's test jobs at ≤ 1.6e-10). In-job audit passed and rejected the
+  perturbed copy; the local re-audit (run on a hard-linked copy so the pulled `audit.json` is untouched,
+  saved as `runs/<job>/audit_local.json`) agrees. Outputs pulled with checksum verification; every
+  cluster directory and the namespace `t2ntest_20260925` are deleted.
+* No setting, model, size or checkpoint was changed after the configs were committed. Saved fields
+  (≈4.2 GB, gitignored) are local only under `runs/*/output/fields/`, hashes in `OUTPUTS.sha256`.

@@ -182,6 +182,58 @@ def main():
             w(f"| {label(nm, r)} | {pct(r['evolved_worst'])} | {r['median_ms']:.3g} | {sp(r['speedup_vs_fom'])} | "
               f"{pct(d['evolved_worst']) if d else '—'} | {d['median_ms']:.3g} | {sp(d['speedup_vs_fom'])}{dsel} |")
         w('')
+    w('### Reading and caveats (generated)')
+    w('')
+    for n in jobs:
+        t, dv = summary['meshes'][str(n)]['test'], summary['meshes'][str(n)]['development']
+        acc, fast = t['table2']['nmrom_accurate_head_k8'], t['table2']['nmrom_fast_span16']
+        facts = []
+        if t['fom']['setting'] != dv['fom']['setting']:
+            alt = dv['fom']['setting']
+            ar = t['all_arms'][alt]
+            facts.append(f"the FOM changes from CNAB2 {dv['fom']['steps']} steps (dev) to {t['fom']['steps']} steps "
+                         f"(test): {t['fom']['steps']} steps reaches {pct(t['fom']['evolved_worst'])} % on test, "
+                         f"at or below the head's {pct(acc['evolved_worst'])} %. Against CNAB2 {ar['steps']} steps "
+                         f"({pct(ar['evolved_worst'])} % on test) the head would be "
+                         f"{ar['median_ms'] / acc['median_ms']:.3g}× — context only, not the Table 2 rule")
+        doms = [label(nm, r) for nm, r in t['table2'].items() if nm != 'nmrom_accurate_head_k8'
+                and r['evolved_worst'] <= acc['evolved_worst'] and r['median_ms'] <= acc['median_ms']]
+        more_acc = [label(nm, r) for nm, r in t['table2'].items() if r['kind'] == 'operator'
+                    and r['evolved_worst'] < acc['evolved_worst']]
+        facts.append('no Table 2 operator is more accurate than the NM-ROM accurate setting' if not more_acc else
+                     'more accurate than the NM-ROM accurate setting: ' + ', '.join(more_acc))
+        facts.append('nothing dominates the accurate setting (more accurate and faster)' if not doms else
+                     'dominating the accurate setting: ' + ', '.join(doms))
+        faster_ops = [label(nm, r) for nm, r in t['table2'].items() if r['kind'] == 'operator'
+                      and r['median_ms'] < acc['median_ms']]
+        if faster_ops:
+            facts.append('operators faster than the accurate setting (all less accurate): ' + ', '.join(faster_ops))
+        dom_fast = [label(nm, r) for nm, r in t['table2'].items() if r['kind'] == 'operator'
+                    and r['evolved_worst'] <= fast['evolved_worst'] and r['median_ms'] <= fast['median_ms']]
+        facts.append("nothing dominates span R'=16" if not dom_fast else
+                     "operators dominating span R'=16 (at least as accurate and at least as fast): " + ', '.join(dom_fast))
+        ratios = ', '.join(f"{label(nm, r)} {r['evolved_worst'] / dv['all_arms'][nm]['evolved_worst']:.2f}×"
+                           for nm, r in t['table2'].items() if nm in dv['all_arms'])
+        facts.append(f'test/dev worst-error ratio: {ratios}; CNAB2 rule FOM '
+                     f"{t['fom']['evolved_worst'] / dv['all_arms'][t['fom']['setting']]['evolved_worst']:.2f}× "
+                     'at the same step count')
+        mac, dmac = t['most_accurate_size_on_cohort'], dv['most_accurate_size_on_cohort']
+        for f in FAM_ORDER:
+            selnm = next((nm for nm, r in t['all_arms'].items() if r.get('family') == f and r.get('selected')), None)
+            if selnm and (mac.get(f) != selnm or dmac.get(f) != selnm):
+                facts.append(f"{FAMILY[f]}: validation pick {t['all_arms'][selnm]['arm']}; most accurate on test "
+                             f"{t['all_arms'][mac[f]]['arm']} ({pct(t['all_arms'][mac[f]]['evolved_worst'])} %, "
+                             f"{sp(t['all_arms'][mac[f]]['speedup_vs_fom'])}), on development "
+                             f"{dv['all_arms'][dmac[f]]['arm']} — the caption's \"most accurate trained size\" "
+                             'wording does not describe the rule applied')
+        w(f'- **{n}³.** ' + '; '.join(facts) + '.')
+    w('- **Cohort.** The test cohort at 32³/64³ was opened once before (ns3d-test, NM-ROM and CNAB2 only); this is '
+      'its second opening there and the first for the operators. No choice was made on it. The operators were '
+      'trained on the NM-ROM head\'s training trajectories and sized on their validation split, never on test.')
+    w('- **Hardware.** Both test jobs ran concurrently on one node, each on its own A100 80GB PCIe (GPU UUIDs in the '
+      'summaries); every ratio is within one job. Test and development ms come from different jobs and cards and '
+      'are shown side by side only; no ratio mixes them.')
+    w('')
     w('## 2. Every evaluated arm (test panels)')
     w('')
     w('All eight trained operator checkpoints per mesh and the full CNAB2 ladder, same job. "val %" = validation '

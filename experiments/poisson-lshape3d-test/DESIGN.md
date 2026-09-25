@@ -1,6 +1,6 @@
 # poisson-lshape3d-test — design and pre-registration
 
-Written and committed **before any test job of this lane was submitted** (2026-09-25, ~03:40 EDT). Lane branch
+Written and committed **before any test job of this lane was submitted** (commit `4b08ccb1`, 2026-09-25 03:07 EDT). Lane branch
 `exp/2026-09-25-poisson-lshape3d-test`, forked from `exp/2026-09-23-poisson-bank-knob-3d` @ `59b67ae2`
 (sparse worktree `worktrees/2026-09-25-poisson-lshape3d-test`, never pushed). Cluster namespace
 `/cluster/tufts/paralab/tawal01/pl3test_20260925/`. Hard stop 2026-09-25 18:00 EDT.
@@ -118,7 +118,7 @@ cases above the development worst error are reported as well as the worst.
 - If a frozen fast arm exceeds the paper's "< 5 %" fast criterion on test, it is reported as exceeding it. It is not
   replaced.
 
-## Amendment A1 (2026-09-25 ~04:05 EDT, after jobs 4319385, 4319382, 4319381, 4319374) — L-shape test-cohort hash
+## Amendment A1 (commit `39144077`, 2026-09-25 03:11 EDT, after jobs 4319385, 4319382, 4319381, 4319374) — L-shape test-cohort hash
 
 All four L-shape test jobs (`lt256` 4319385, `lt512` 4319382, `lt1024` 4319381, `lt2048` 4319374) stopped within
 seconds, at the driver's cohort assertion. The parameters sha256 recorded above
